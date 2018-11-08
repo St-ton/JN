@@ -435,8 +435,8 @@ function getJTLVersionDB(bool $bDate = false)
         'SELECT nVersion, dAktualisiert FROM tversion',
         \DB\ReturnType::SINGLE_OBJECT
     );
-    if (isset($versionData->nVersion) && is_numeric($versionData->nVersion)) {
-        $ret = (int)$versionData->nVersion;
+    if (isset($versionData->nVersion)) {
+        $ret = $versionData->nVersion;
     }
     if ($bDate) {
         $ret = $versionData->dAktualisiert;

@@ -675,7 +675,7 @@
                     </table>
                 </div>
             </div>
-            <div class="save_wrapper">
+            <div class="save_wrapper btn-group">
                 <button type="submit" value="{if !isset($Versandart->kVersandart) || !$Versandart->kVersandart}{#createShippingType#}{else}{#modifyedShippingType#}{/if}"
                         class="btn btn-primary">
                     {if !isset($Versandart->kVersandart) || !$Versandart->kVersandart}
@@ -684,6 +684,7 @@
                         <i class="fa fa-edit"></i> {#modifyedShippingType#}
                     {/if}
                 </button>
+                <a href="versandarten.php" value="{#cancel#}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {#cancel#}</a>
             </div>
         </div>
     </form>

@@ -455,7 +455,7 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
 
 if ($step === 'neue Versandart') {
     $versandlaender = $db->query(
-        'SELECT *, cDeutsch AS cName FROM tland ORDER BY cDeutsch', 
+        'SELECT *, cDeutsch AS cName FROM tland ORDER BY cDeutsch',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     if ($versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl') {
@@ -467,7 +467,14 @@ if ($step === 'neue Versandart') {
     if ($versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl') {
         $smarty->assign('einheit', 'Stück');
     }
-    $zahlungsarten      = $db->selectAll('tzahlungsart', 'nActive', 1, '*', 'cAnbieter, nSort, cName');
+    // prevent "unusable" payment methods from displaying them in the config section (mainly the null-payment)
+    $zahlungsarten = $db->selectAll(
+        'tzahlungsart',
+        ['nActive', 'nNutzbar'],
+        [1, 1],
+        '*',
+        'cAnbieter, nSort, cName'
+    );
     $oVersandklasse_arr = $db->selectAll('tversandklasse', [], [], '*', 'kVersandklasse');
     $smarty->assign('versandKlassen', $oVersandklasse_arr);
     $kVersandartTMP = 0;
@@ -512,7 +519,7 @@ if ($step === 'uebersicht') {
         $versandarten[$i]->versandartzahlungsarten = $db->query(
             'SELECT tversandartzahlungsart.*
                 FROM tversandartzahlungsart
-                JOIN tzahlungsart 
+                JOIN tzahlungsart
                     ON tzahlungsart.kZahlungsart = tversandartzahlungsart.kZahlungsart
                 WHERE tversandartzahlungsart.kVersandart = ' . (int)$versandarten[$i]->kVersandart . '
                 ORDER BY tzahlungsart.cAnbieter, tzahlungsart.nSort, tzahlungsart.cName',
@@ -603,16 +610,13 @@ if ($step === 'uebersicht') {
             'cName',
             'cISOSprache'
         );
-
-        if (is_array($kKundengruppe_arr)) {
-            foreach ($kKundengruppe_arr as $kKundengruppe) {
-                if ($kKundengruppe == '-1') {
-                    $versandarten[$i]->cKundengruppenName_arr[] = 'Alle';
-                } else {
-                    foreach ($oKundengruppen_arr as $oKundengruppen) {
-                        if ($oKundengruppen->kKundengruppe == $kKundengruppe) {
-                            $versandarten[$i]->cKundengruppenName_arr[] = $oKundengruppen->cName;
-                        }
+        foreach ($kKundengruppe_arr as $kKundengruppe) {
+            if ($kKundengruppe == '-1') {
+                $versandarten[$i]->cKundengruppenName_arr[] = 'Alle';
+            } else {
+                foreach ($oKundengruppen_arr as $oKundengruppen) {
+                    if ($oKundengruppen->kKundengruppe == $kKundengruppe) {
+                        $versandarten[$i]->cKundengruppenName_arr[] = $oKundengruppen->cName;
                     }
                 }
             }

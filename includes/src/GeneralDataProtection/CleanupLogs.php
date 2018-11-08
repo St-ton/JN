@@ -209,7 +209,7 @@ class CleanupLogs extends Method implements MethodInterface
         \Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tkundendatenhistory
             WHERE
-                dErstellt < SELECT MAKEDATE(YEAR(:pNow) - 1, 1)
+                dErstellt < MAKEDATE(YEAR(:pNow) - 1, 1)
             ORDER BY dErstellt ASC
             LIMIT :pLimit',
             [

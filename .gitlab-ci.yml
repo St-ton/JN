@@ -190,14 +190,14 @@ build:
       --volume $(pwd):/dockerBuild \
       --name="$CI_CONTAINER_NAME-build" \
       $CI_REGISTRY_IMAGE/building_testing-php7.1 \
-      /bin/bash -c "cp -a /dockerBuild/. /build; bash $BUILD_SCRIPT_PATH  $CI_COMMIT_REF_NAME $CI_COMMIT_SHA /build; ls -la /build"
+      /bin/bash -c "cp -a /dockerBuild/. /build; bash $BUILD_SCRIPT_PATH  $CI_COMMIT_REF_NAME $CI_COMMIT_SHA /build; ls -la /build/admin/includes/shopmd5files"
 
     docker cp $CI_CONTAINER_NAME-build:/build/. $(pwd)
 
-    ls -la $(pwd)
+    ls -la $(pwd)/admin/includes/shopmd5files
 
     docker run \
-      --volume $(pwd):/build
+      --volume $(pwd):/build \
       --name "$CI_CONTAINER_NAME-mariadb" \
       -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD \
       -d mariadb:10.2 \

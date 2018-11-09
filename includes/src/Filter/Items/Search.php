@@ -116,9 +116,9 @@ class Search extends AbstractFilter
     }
 
     /**
-     * @return int|null
+     * @return int|string|null
      */
-    public function getValue(): ?int
+    public function getValue()
     {
         return $this->searchID;
     }

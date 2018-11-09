@@ -734,7 +734,7 @@ function gibStepZahlung()
             ->assign('AktiveVerpackung', $aktiveVerpackung)
             ->assign('Kunde', $_SESSION['Kunde'])
             ->assign('Lieferadresse', $_SESSION['Lieferadresse'])
-            ->assign('OrderAmount', Session::Cart()->gibGesamtsummeWaren(true))
+            ->assign('OrderAmount', \Session\Session::getCart()->gibGesamtsummeWaren(true))
             ->assign('ShopCreditAmount', $_SESSION['Kunde']->fGuthaben);
 
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG);

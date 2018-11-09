@@ -65,7 +65,7 @@ $oSprache             = Sprache::getInstance(true);
  */
 function clearCacheSync($cacheID, $tags = null)
 {
-    $cache = Shop::Cache();
+    $cache = Shop::Container()->getCache();
     $cache->flush($cacheID);
     if ($tags !== null) {
         $cache->flushTags($tags);
@@ -815,7 +815,7 @@ function deleteArticleImage($oArtikelPict = null, int $kArtikel = 0, int $kArtik
         }
         $db->delete('tartikelpict', 'kArtikelPict', (int)$oArtikelPict->kArtikelPict);
     }
-    $cache = Shop::Cache();
+    $cache = Shop::Container()->getCache();
     $cache->flushTags([CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
 }
 
@@ -1253,7 +1253,7 @@ function syncException(string $msg, int $wawiExceptionCode = null)
  */
 function flushCategoryTreeCache()
 {
-    return Shop::Cache()->flushTags(['jtl_category_tree']);
+    return Shop::Container()->getCache()->flushTags(['jtl_category_tree']);
 }
 
 /**
@@ -1262,7 +1262,7 @@ function flushCategoryTreeCache()
  */
 function flushCustomerPriceCache(int $kKunde)
 {
-    return Shop::Cache()->flush('custprice_' . $kKunde);
+    return Shop::Container()->getCache()->flush('custprice_' . $kKunde);
 }
 
 /**

@@ -21,8 +21,8 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
     $mysqlVersion = DBMigrationHelper::getMySQLVersion();
 
     if ($clearCache) {
-        if (Shop::Cache()->isActive()) {
-            Shop::Cache()->flushTags([CACHING_GROUP_CORE . '_getDBStruct']);
+        if (Shop::Container()->getCache()->isActive()) {
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE . '_getDBStruct']);
         } else {
             AdminSession::set('getDBStruct_extended', false);
             AdminSession::set('getDBStruct_normal', false);
@@ -34,8 +34,8 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
     if ($extended) {
         $cacheID = 'getDBStruct_extended';
         if ($dbStruct['extended'] === null) {
-            $dbStruct['extended'] = Shop::Cache()->isActive()
-                ? Shop::Cache()->get($cacheID)
+            $dbStruct['extended'] = Shop::Container()->getCache()->isActive()
+                ? Shop::Container()->getCache()->get($cacheID)
                 : AdminSession::get($cacheID, false);
         }
         $cDBStruct_arr =& $dbStruct['extended'];
@@ -58,8 +58,8 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
     } else {
         $cacheID = 'getDBStruct_normal';
         if ($dbStruct['normal'] === null) {
-            $dbStruct['normal'] = Shop::Cache()->isActive()
-                ? Shop::Cache()->get($cacheID)
+            $dbStruct['normal'] = Shop::Container()->getCache()->isActive()
+                ? Shop::Container()->getCache()->get($cacheID)
                 : AdminSession::get($cacheID);
         }
         $cDBStruct_arr =& $dbStruct['normal'];
@@ -127,8 +127,8 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                 $cDBStruct_arr[$cTable]->Migration = DBMigrationHelper::isTableNeedMigration($oData);
             }
         }
-        if (Shop::Cache()->isActive()) {
-            Shop::Cache()->set($cacheID, $cDBStruct_arr, [CACHING_GROUP_CORE, CACHING_GROUP_CORE . '_getDBStruct']);
+        if (Shop::Container()->getCache()->isActive()) {
+            Shop::Container()->getCache()->set($cacheID, $cDBStruct_arr, [CACHING_GROUP_CORE, CACHING_GROUP_CORE . '_getDBStruct']);
         } else {
             AdminSession::set($cacheID, $cDBStruct_arr);
         }

@@ -132,10 +132,10 @@ class Hersteller
             $oSprache = Sprache::getDefaultLanguage();
             $kSprache = (int)$oSprache->kSprache;
         }
-        $cacheID     = 'manuf_' . $kHersteller . '_' . $kSprache . Shop::Cache()->getBaseID();
+        $cacheID     = 'manuf_' . $kHersteller . '_' . $kSprache . Shop::Container()->getCache()->getBaseID();
         $cacheTags   = [CACHING_GROUP_MANUFACTURER];
         $cached      = true;
-        if ($noCache === true || ($oHersteller = Shop::Cache()->get($cacheID)) === false) {
+        if ($noCache === true || ($oHersteller = Shop::Container()->getCache()->get($cacheID)) === false) {
             $oHersteller = Shop::Container()->getDB()->queryPrepared(
                 "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                     thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
@@ -161,7 +161,7 @@ class Hersteller
                 'cached'      => false,
                 'cacheTags'   => &$cacheTags
             ]);
-            Shop::Cache()->set($cacheID, $oHersteller, $cacheTags);
+            Shop::Container()->getCache()->set($cacheID, $oHersteller, $cacheTags);
         }
         if ($cached === true) {
             executeHook(HOOK_HERSTELLER_CLASS_LOADFROMDB, [

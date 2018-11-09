@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 /**
- * @global JTLSmarty $smarty
+ * @global Smarty\JTLSmarty $smarty
  */
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'template_inc.php';
@@ -18,10 +18,9 @@ $lessVarsSkin   = [];
 $lessColors_arr = [];
 $lessColorsSkin = [];
 $oTemplate      = Template::getInstance();
+$admin          = (isset($_GET['admin']) && $_GET['admin'] === 'true');
 $templateHelper = TemplateHelper::getInstance(true);
 $templateHelper->disableCaching();
-$admin          = (isset($_GET['admin']) && $_GET['admin'] === 'true');
-/** @global JTLSmarty $smarty */
 if (isset($_POST['key'], $_POST['upload'])) {
     $file     = PFAD_ROOT . PFAD_TEMPLATES . $_POST['upload'];
     $response = new stdClass();

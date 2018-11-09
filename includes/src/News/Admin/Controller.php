@@ -15,6 +15,7 @@ use News\CategoryList;
 use News\CommentList;
 use News\Item;
 use News\ItemList;
+use Smarty\JTLSmarty;
 use Tightenco\Collect\Support\Collection;
 use function Functional\map;
 
@@ -34,7 +35,7 @@ class Controller
     private $db;
 
     /**
-     * @var \JTLSmarty
+     * @var JTLSmarty
      */
     private $smarty;
 
@@ -66,10 +67,10 @@ class Controller
     /**
      * Controller constructor.
      * @param DbInterface       $db
-     * @param \JTLSmarty        $smarty
+     * @param JTLSmarty         $smarty
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, \JTLSmarty $smarty, JTLCacheInterface $cache)
+    public function __construct(DbInterface $db, JTLSmarty $smarty, JTLCacheInterface $cache)
     {
         $this->db     = $db;
         $this->smarty = $smarty;

@@ -42,7 +42,7 @@ function saveShopLogo(array $cFiles_arr): int
             $option->cName                 = 'shop_logo';
             $option->cWert                 = $cFiles_arr['shopLogo']['name'];
             Shop::Container()->getDB()->update('teinstellungen', 'cName', 'shop_logo', $option);
-            Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 
             return 1; // Alles O.K.
         }

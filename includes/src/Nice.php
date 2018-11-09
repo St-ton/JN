@@ -48,7 +48,7 @@ class Nice
      */
     protected function __construct()
     {
-        if (($this->cBrocken = Shop::Cache()->get('cbrocken')) === false) {
+        if (($this->cBrocken = Shop::Container()->getCache()->get('cbrocken')) === false) {
             // Hole Brocken
             $oBrocken = Shop::Container()->getDB()->query(
                 'SELECT cBrocken 
@@ -72,7 +72,7 @@ class Nice
                         base64_decode($oBrocken->cBrocken)
                     )
                 );
-                Shop::Cache()->set('cbrocken', $this->cBrocken, [CACHING_GROUP_CORE]);
+                Shop::Container()->getCache()->set('cbrocken', $this->cBrocken, [CACHING_GROUP_CORE]);
             }
         }
         // Brocken zerlegen

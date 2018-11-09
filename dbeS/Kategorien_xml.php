@@ -233,7 +233,7 @@ function bearbeiteInsert($xml)
 //        if (isset($Kategorie->kOberKategorie) && $Kategorie->kOberKategorie > 0) {
 //            $flushArray[] = CACHING_GROUP_CATEGORY . '_' . $Kategorie->kOberKategorie;
 //        }
-//        Shop::Cache()->flushTags($flushArray);
+//        Shop::Container()->getCache()->flushTags($flushArray);
     //@todo: the above does not really work on parent categories when adding/deleting child categories
 }
 

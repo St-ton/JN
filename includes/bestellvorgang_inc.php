@@ -1437,13 +1437,13 @@ function getPaymentSurchageDiscount($Zahlungsart)
 
 /**
  * @param string $cModulId
- * @return bool|Plugin
+ * @return bool|\Plugin\Plugin
  */
 function gibPluginZahlungsart($cModulId)
 {
-    $kPlugin = Plugin::getIDByModuleID($cModulId);
+    $kPlugin = \Plugin\Plugin::getIDByModuleID($cModulId);
     if ($kPlugin > 0) {
-        $oPlugin = new Plugin($kPlugin);
+        $oPlugin = new \Plugin\Plugin($kPlugin);
         if ($oPlugin->kPlugin > 0) {
             return $oPlugin;
         }
@@ -1704,12 +1704,12 @@ function zahlungsartGueltig($paymentMethod): bool
     if (!isset($paymentMethod->cModulId)) {
         return false;
     }
-    $kPlugin = Plugin::getIDByModuleID($paymentMethod->cModulId);
+    $kPlugin = \Plugin\Plugin::getIDByModuleID($paymentMethod->cModulId);
     if ($kPlugin > 0) {
-        $oPlugin = new Plugin($kPlugin);
+        $oPlugin = new \Plugin\Plugin($kPlugin);
         if ($oPlugin->kPlugin > 0) {
             // Plugin muss aktiv sein
-            if ($oPlugin->nStatus !== Plugin::PLUGIN_ACTIVATED) {
+            if ($oPlugin->nStatus !== \Plugin\Plugin::PLUGIN_ACTIVATED) {
                 return false;
             }
             require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
@@ -1732,7 +1732,7 @@ function zahlungsartGueltig($paymentMethod): bool
 
                 return false;
             }
-            if (!Plugin::licenseCheck($oPlugin, ['cModulId' => $paymentMethod->cModulId])) {
+            if (!\Plugin\Plugin::licenseCheck($oPlugin, ['cModulId' => $paymentMethod->cModulId])) {
                 return false;
             }
 

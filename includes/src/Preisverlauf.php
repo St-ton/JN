@@ -54,7 +54,7 @@ class Preisverlauf
     public function gibPreisverlauf(int $kArtikel, int $kKundengruppe, int $nMonat)
     {
         $cacheID = 'gpv_' . $kArtikel . '_' . $kKundengruppe . '_' . $nMonat;
-        if (($obj_arr = Shop::Cache()->get($cacheID)) === false) {
+        if (($obj_arr = Shop::Container()->getCache()->get($cacheID)) === false) {
             $obj_arr = Shop::Container()->getDB()->query(
                 'SELECT tpreisverlauf.fVKNetto, tartikel.fMwst, UNIX_TIMESTAMP(tpreisverlauf.dDate) AS timestamp
                     FROM tpreisverlauf 
@@ -79,7 +79,7 @@ class Preisverlauf
                 }
             }
             unset($_pv);
-            Shop::Cache()->set($cacheID, $obj_arr, [CACHING_GROUP_ARTICLE, CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
+            Shop::Container()->getCache()->set($cacheID, $obj_arr, [CACHING_GROUP_ARTICLE, CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
         }
 
         return $obj_arr;

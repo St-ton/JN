@@ -151,10 +151,10 @@ final class Shopsetting implements ArrayAccess
             $cacheID = 'setting_' . $section;
             // Template work around
             if ($section === CONF_TEMPLATE) {
-                if (($templateSettings = Shop::Cache()->get($cacheID)) === false) {
+                if (($templateSettings = Shop::Container()->getCache()->get($cacheID)) === false) {
                     $template         = Template::getInstance();
                     $templateSettings = $template->getConfig();
-                    Shop::Cache()->set($cacheID, $templateSettings, [CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION]);
+                    Shop::Container()->getCache()->set($cacheID, $templateSettings, [CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION]);
                 }
                 if (is_array($templateSettings)) {
                     foreach ($templateSettings as $templateSection => $templateSetting) {
@@ -163,7 +163,7 @@ final class Shopsetting implements ArrayAccess
                 }
             } else {
                 try {
-                    if (($settings = Shop::Cache()->get($cacheID)) !== false) {
+                    if (($settings = Shop::Container()->getCache()->get($cacheID)) !== false) {
                         foreach ($settings as $setting) {
                             $this->container[$offset][$setting->cName] = $setting->cWert;
                         }
@@ -208,7 +208,7 @@ final class Shopsetting implements ArrayAccess
                             $this->container[$offset][$setting->cName] = $setting->cWert;
                         }
                     }
-                    Shop::Cache()->set($cacheID, $settings, [CACHING_GROUP_OPTION]);
+                    Shop::Container()->getCache()->set($cacheID, $settings, [CACHING_GROUP_OPTION]);
                 }
             }
         }
@@ -324,9 +324,9 @@ final class Shopsetting implements ArrayAccess
     public function preLoad(): array
     {
         $cacheID = 'settings_all_preload';
-        if (($result = Shop::Cache()->get($cacheID)) === false) {
+        if (($result = Shop::Container()->getCache()->get($cacheID)) === false) {
             $result = $this->getAll();
-            Shop::Cache()->set($cacheID, $result, [CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION, CACHING_GROUP_CORE]);
+            Shop::Container()->getCache()->set($cacheID, $result, [CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION, CACHING_GROUP_CORE]);
         }
         $this->container   = $result;
         $this->allSettings = $result;

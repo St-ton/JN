@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/includes/admininclude.php';
-/** @global JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $oAccount->permission('EXTENSION_SELECTIONWIZARD_VIEW', true, true);
 $cFehler  = '';
 $cHinweis = '';

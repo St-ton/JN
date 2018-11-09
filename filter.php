@@ -9,7 +9,7 @@ if (!defined('PFAD_ROOT')) {
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Shop::setPageType(PAGE_ARTIKELLISTE);
-/** @global JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 /** @global \Filter\ProductFilter $NaviFilter*/
 $Einstellungen      = Shopsetting::getInstance()->getAll();
 $conf               = $Einstellungen;

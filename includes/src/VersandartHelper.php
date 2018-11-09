@@ -34,7 +34,7 @@ class VersandartHelper
      */
     public function __construct()
     {
-        $this->cacheID         = 'smeth_' . Shop::Cache()->getBaseID();
+        $this->cacheID         = 'smeth_' . Shop::Container()->getCache()->getBaseID();
         $this->shippingMethods = $this->getShippingMethods();
         self::$instance        = $this;
     }
@@ -1318,7 +1318,7 @@ class VersandartHelper
                 $oVersandart->fVersandkostenfreiAbX .
                 strlen($oVersandart->cLaender) . '_' .
                 Shop::getLanguageID();
-            if (($vkfls = Shop::Cache()->get($cacheID)) === false) {
+            if (($vkfls = Shop::Container()->getCache()->get($cacheID)) === false) {
                 // remove empty strings
                 $cLaender_arr = array_filter(explode(' ', $oVersandart->cLaender));
                 // only select the needed row
@@ -1341,7 +1341,7 @@ class VersandartHelper
                 }, $countries));
 
                 $vkfls = sprintf(Shop::Lang()->get('noShippingCostsAtExtended', 'basket'), $resultString);
-                Shop::Cache()->set($cacheID, $vkfls, [CACHING_GROUP_OPTION]);
+                Shop::Container()->getCache()->set($cacheID, $vkfls, [CACHING_GROUP_OPTION]);
             }
 
             return $vkfls;
@@ -1363,7 +1363,7 @@ class VersandartHelper
         $defaultShipping = self::normalerArtikelversand($cLand);
         $cacheID         = 'vkfrei_' . $kKundengruppe . '_' .
             $cLand . '_' . $versandklassen . '_' . Shop::getLanguageCode();
-        if (($oVersandart = Shop::Cache()->get($cacheID)) === false) {
+        if (($oVersandart = Shop::Container()->getCache()->get($cacheID)) === false) {
             if (strlen($cLand) > 0) {
                 $cKundeSQLWhere = " AND cLaender LIKE '%" . StringHandler::filterXSS($cLand) . "%'";
             } else {
@@ -1402,7 +1402,7 @@ class VersandartHelper
                 ],
                 \DB\ReturnType::SINGLE_OBJECT
             );
-            Shop::Cache()->set($cacheID, $oVersandart, [CACHING_GROUP_OPTION]);
+            Shop::Container()->getCache()->set($cacheID, $oVersandart, [CACHING_GROUP_OPTION]);
         }
 
         return !empty($oVersandart) && $oVersandart->fVersandkostenfreiAbX > 0

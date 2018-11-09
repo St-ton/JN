@@ -73,14 +73,14 @@ interface BoxInterface
     public function setTemplateFile(string $templateFile): void;
 
     /**
-     * @return null|\Plugin
+     * @return null|\Plugin\Plugin
      */
-    public function getPlugin(): ?\Plugin;
+    public function getPlugin(): ?\Plugin\Plugin;
 
     /**
-     * @param null|\Plugin $plugin
+     * @param null|\Plugin\Plugin $plugin
      */
-    public function setPlugin(\Plugin $plugin): void;
+    public function setPlugin(\Plugin\Plugin $plugin): void;
 
     /**
      * @return int

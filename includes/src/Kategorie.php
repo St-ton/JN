@@ -175,7 +175,7 @@ class Kategorie
             '_' . $kSprache .
             '_cg_' . $kKundengruppe .
             '_ssl_' . RequestHelper::checkSSL();
-        if (!$noCache && ($category = Shop::Cache()->get($cacheID)) !== false) {
+        if (!$noCache && ($category = Shop::Container()->getCache()->get($cacheID)) !== false) {
             foreach (get_object_vars($category) as $k => $v) {
                 $this->$k = $v;
             }
@@ -355,7 +355,7 @@ class Kategorie
             'cached'     => false
         ]);
         if (!$noCache) {
-            Shop::Cache()->set($cacheID, $this, $cacheTags);
+            Shop::Container()->getCache()->set($cacheID, $this, $cacheTags);
         }
 
         return $this;
@@ -450,12 +450,12 @@ class Kategorie
             $res = $this->cBildURL;
         } else {
             $cacheID = 'gkb_' . $this->kKategorie;
-            if (($res = Shop::Cache()->get($cacheID)) === false) {
+            if (($res = Shop::Container()->getCache()->get($cacheID)) === false) {
                 $resObj = Shop::Container()->getDB()->select('tkategoriepict', 'kKategorie', (int)$this->kKategorie);
                 $res    = (isset($resObj->cPfad) && $resObj->cPfad)
                     ? PFAD_KATEGORIEBILDER . $resObj->cPfad
                     : BILD_KEIN_KATEGORIEBILD_VORHANDEN;
-                Shop::Cache()->set(
+                Shop::Container()->getCache()->set(
                     $cacheID,
                     $res,
                     [CACHING_GROUP_CATEGORY . '_' . $this->kKategorie, CACHING_GROUP_CATEGORY]

@@ -9,6 +9,7 @@ namespace Survey;
 use DB\DbInterface;
 use DB\ReturnType;
 use Session\Session;
+use Smarty\JTLSmarty;
 use Tightenco\Collect\Support\Collection;
 
 /**
@@ -28,7 +29,7 @@ class Controller
     private $db;
 
     /**
-     * @var \JTLSmarty
+     * @var JTLSmarty
      */
     private $smarty;
 
@@ -40,9 +41,9 @@ class Controller
     /**
      * Controller constructor.
      * @param DbInterface $db
-     * @param \JTLSmarty  $smarty
+     * @param JTLSmarty   $smarty
      */
-    public function __construct(DbInterface $db, \JTLSmarty $smarty)
+    public function __construct(DbInterface $db, JTLSmarty $smarty)
     {
         $this->db     = $db;
         $this->smarty = $smarty;

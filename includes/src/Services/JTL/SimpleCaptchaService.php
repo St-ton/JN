@@ -9,8 +9,9 @@
 namespace Services\JTL;
 
 use Exception;
-use Session;
+use Session\Session;
 use Shop;
+use Smarty\JTLSmarty;
 
 /**
  * Class SimpleCaptchaService
@@ -49,7 +50,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param \JTLSmarty $smarty
+     * @param JTLSmarty $smarty
      * @return string
      */
     public function getHeadMarkup($smarty): string
@@ -58,7 +59,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param \JTLSmarty $smarty
+     * @param JTLSmarty $smarty
      * @return string
      * @throws \SmartyException
      */

@@ -8,7 +8,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('ORDER_PACKAGE_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $cHinweis     = '';
 $cFehler      = '';
 $step         = 'zusatzverpackung';

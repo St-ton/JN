@@ -204,8 +204,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
                     }
                 }
                 $oWarenkorbpositionen_arr[] = $Position;
-                // Clear Cache
-                Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $Position->kArtikel]);
+                Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $Position->kArtikel]);
             } elseif ($Position->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 aktualisiereLagerbestand(
                     $Position->Artikel,
@@ -214,8 +213,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
                     $productFilter
                 );
                 $oWarenkorbpositionen_arr[] = $Position;
-                // Clear Cache
-                Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $Position->kArtikel]);
+                Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $Position->kArtikel]);
             }
 
             $order->Positionen[] = $Position;
@@ -1001,10 +999,9 @@ function setzeSmartyWeiterleitung(Bestellung $bestellung): void
             [$_SESSION['Zahlungsart']->cModulId]
         );
     }
-    // Zahlungsart als Plugin
-    $kPlugin = Plugin::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
+    $kPlugin = \Plugin\Plugin::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
     if ($kPlugin > 0) {
-        $oPlugin            = new Plugin($kPlugin);
+        $oPlugin            = new \Plugin\Plugin($kPlugin);
         $GLOBALS['oPlugin'] = $oPlugin;
         if ($oPlugin->kPlugin > 0) {
             require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION .

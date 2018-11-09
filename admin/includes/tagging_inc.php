@@ -91,7 +91,7 @@ function loescheTagsVomArtikel($kArtikel_arr, int $kTag)
                     \DB\ReturnType::DEFAULT
                 );
             }
-            Shop::Cache()->flushTags(['CACHING_GROUP_ARTICLE_' . $kArtikel]);
+            Shop::Container()->getCache()->flushTags(['CACHING_GROUP_ARTICLE_' . $kArtikel]);
         }
 
         return true;
@@ -119,7 +119,7 @@ function flushAffectedArticleCache(array $tagIDs)
             $articleCacheIDs[] = CACHING_GROUP_ARTICLE . '_' . $_article->kArtikel;
         }
 
-        return Shop::Cache()->flushTags($articleCacheIDs);
+        return Shop::Container()->getCache()->flushTags($articleCacheIDs);
     }
 
     return 0;

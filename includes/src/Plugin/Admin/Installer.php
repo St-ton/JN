@@ -171,7 +171,7 @@ final class Installer
             }
         }
         if (\count($tagsToFlush) > 0) {
-            \Shop::Cache()->flushTags($tagsToFlush);
+            \Shop::Container()->getCache()->flushTags($tagsToFlush);
         }
         $licenceClassFile = $versionedDir . \PFAD_PLUGIN_LICENCE . $plugin->cLizenzKlasseName;
         if (isset($this->plugin->cLizenz, $this->plugin->nStatus)

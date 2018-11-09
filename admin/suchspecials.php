@@ -7,20 +7,16 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 
 $oAccount->permission('SETTINGS_SPECIALPRODUCTS_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $Einstellungen = Shop::getSettings([CONF_KUNDENFELD]);
 $cHinweis      = '';
 $cFehler       = '';
 $step          = 'suchspecials';
 
 setzeSprache();
-
-// Tabs
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
-
-// Einstellungen
 if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
     $cHinweis .= saveAdminSectionSettings(CONF_SUCHSPECIAL, $_POST);
 } elseif (isset($_POST['suchspecials']) && (int)$_POST['suchspecials'] === 1 && FormHelper::validateToken()) {
@@ -238,33 +234,8 @@ $oSuchSpecials_arr    = [];
 foreach ($oSuchSpecials_arrTMP as $oSuchSpecials) {
     $oSuchSpecials_arr[$oSuchSpecials->kKey] = $oSuchSpecials->cSeo;
 }
-$oConfig_arr = Shop::Container()->getDB()->selectAll(
-    'teinstellungenconf',
-    'kEinstellungenSektion',
-    CONF_SUCHSPECIAL,
-    '*',
-    'nSort'
-);
-$configCount = count($oConfig_arr);
-for ($i = 0; $i < $configCount; $i++) {
-    $oConfig_arr[$i]->ConfWerte     = Shop::Container()->getDB()->selectAll(
-        'teinstellungenconfwerte',
-        'kEinstellungenConf',
-        (int)$oConfig_arr[$i]->kEinstellungenConf,
-        '*',
-        'nSort'
-    );
-    $oSetValue                      = Shop::Container()->getDB()->select(
-        'teinstellungen',
-        'kEinstellungenSektion',
-        (int)$oConfig_arr[$i]->kEinstellungenSektion,
-        'cName',
-        $oConfig_arr[$i]->cWertName
-    );
-    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
-}
 
-$smarty->assign('oConfig_arr', $oConfig_arr)
+$smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SUCHSPECIAL))
        ->assign('oSuchSpecials_arr', $oSuchSpecials_arr)
        ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('hinweis', $cHinweis)

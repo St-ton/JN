@@ -172,7 +172,7 @@ function getRemoteDataIO($cURL, $cDataName, $cTpl, $cWrapperID, $cPost = null, $
         $cacheID = $cDataName . '_' . $cTpl . '_' . md5($cWrapperID . $cURL);
         if (($cData = Shop::Container()->getCache()->get($cacheID)) === false) {
             $cData = RequestHelper::http_get_contents($cURL, 15, $cPost);
-            Shop::Cache()->set($cacheID, $cData, [CACHING_GROUP_OBJECT], 3600);
+            Shop::Container()->getCache()->set($cacheID, $cData, [CACHING_GROUP_OBJECT], 3600);
         }
     } else {
         $cData = RequestHelper::http_get_contents($cURL, 15, $cPost);

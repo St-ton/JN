@@ -6,7 +6,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'pluginverwaltung_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 
@@ -91,20 +91,20 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
         $kPlugin = (int)$_POST['kPlugin'];
         $oPlugin = $db->select('tplugin', 'kPlugin', $kPlugin);
         if (isset($oPlugin->kPlugin) && $oPlugin->kPlugin > 0) {
-            $oPlugin = new Plugin($kPlugin, true);
+            $oPlugin = new \Plugin\Plugin($kPlugin, true);
             require_once $oPlugin->cLicencePfad . $oPlugin->cLizenzKlasseName;
             $oPluginLicence = new $oPlugin->cLizenzKlasse();
             $cLicenceMethod = PLUGIN_LICENCE_METHODE;
             if ($oPluginLicence->$cLicenceMethod(StringHandler::filterXSS($_POST['cKey']))) {
                 $oPlugin->cFehler = '';
-                $oPlugin->nStatus = Plugin::PLUGIN_ACTIVATED;
+                $oPlugin->nStatus = \Plugin\Plugin::PLUGIN_ACTIVATED;
                 $oPlugin->cLizenz = StringHandler::filterXSS($_POST['cKey']);
                 $oPlugin->updateInDB();
                 $cHinweis = 'Ihr Plugin-Lizenzschlüssel wurde gespeichert.';
                 $step     = 'pluginverwaltung_uebersicht';
                 $reload   = true;
                 // Lizenzpruefung bestanden => aktiviere alle Zahlungsarten (falls vorhanden)
-                Plugin::updatePaymentMethodState($oPlugin, 1);
+                \Plugin\Plugin::updatePaymentMethodState($oPlugin, 1);
             } else {
                 $cFehler = 'Fehler: Ihr Lizenzschlüssel ist ungültig.';
             }
@@ -266,7 +266,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($oSprache_arr as $oSprache) {
-                foreach (\Plugin::getLanguageVariables($kPlugin) as $langVar) {
+                foreach (\Plugin\Plugin::getLanguageVariables($kPlugin) as $langVar) {
                     $kPluginSprachvariable = $langVar->kPluginSprachvariable;
                     $cSprachvariable       = $langVar->cName;
                     $cISO                  = strtoupper($oSprache->cISO);
@@ -355,7 +355,7 @@ if ($step === 'pluginverwaltung_uebersicht') {
     );
     $smarty->assign('oSprache_arr', $oSprache_arr)
            ->assign('kPlugin', $kPlugin)
-           ->assign('oPluginSprachvariable_arr', \Plugin::getLanguageVariables($kPlugin));
+           ->assign('oPluginSprachvariable_arr', \Plugin\Plugin::getLanguageVariables($kPlugin));
 }
 
 if ($reload === true) {

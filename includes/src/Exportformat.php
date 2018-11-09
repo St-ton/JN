@@ -95,7 +95,7 @@ class Exportformat
     protected $nUseCache = 1;
 
     /**
-     * @var JTLSmarty
+     * @var Smarty\JTLSmarty
      */
     protected $smarty;
 
@@ -1047,8 +1047,10 @@ class Exportformat
         if ($this->getPlugin() > 0 && strpos($this->getContent(), PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
             $this->log('Starting plugin exportformat "' . $this->getName() .
                 '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
-                ' with caching ' . ((Shop::Cache()->isActive() && $this->useCache()) ? 'enabled' : 'disabled'));
-            $oPlugin = new Plugin($this->getPlugin());
+                ' with caching ' . ((Shop::Container()->getCache()->isActive() && $this->useCache())
+                    ? 'enabled'
+                    : 'disabled'));
+            $oPlugin = new \Plugin\Plugin($this->getPlugin());
             if ($isCron === true) {
                 global $oJobQueue;
                 $oJobQueue = $queueObject;
@@ -1114,7 +1116,7 @@ class Exportformat
 
         $this->log('Starting exportformat "' . StringHandler::convertUTF8($this->getName()) .
             '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
-            ' with caching ' . ((Shop::Cache()->isActive() && $this->useCache()) ? 'enabled' : 'disabled') .
+            ' with caching ' . ((Shop::Container()->getCache()->isActive() && $this->useCache()) ? 'enabled' : 'disabled') .
             ' - ' . $queueObject->nLimitN . '/' . $max . ' products exported');
         // Kopfzeile schreiben
         if ((int)$this->queue->nLimitN === 0) {

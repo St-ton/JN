@@ -154,7 +154,7 @@ build:
       --volume $(pwd):/dockerBuild \
       --name="$CI_CONTAINER_NAME-php7.1" \
       $CI_REGISTRY_IMAGE/building_testing-php7.1 \
-      /bin/bash -c "cp -a /dockerBuild/. /build; ls -la; ls -la /build; bash $TESTS_SCRIPT_PATH"
+      /bin/bash -c "cp -a /dockerBuild/. /build; bash $TESTS_SCRIPT_PATH"
 
     docker rm "$CI_CONTAINER_NAME-php7.1" >/dev/null
     echo "Tests finished and docker image deleted"

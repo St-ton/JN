@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-composer install
+composer install -d includes
 includes/vendor/bin/phpunit tests

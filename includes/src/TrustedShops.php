@@ -195,7 +195,7 @@ class TrustedShops
     {
         $conf    = Shop::getSettings([CONF_GLOBAL]);
         $cacheID = 'jtl_ts_' . $tsId . '_' . $cISOSprache;
-        if (($artikel = Shop::Cache()->get($cacheID)) !== false) {
+        if (($artikel = Shop::Container()->getCache()->get($cacheID)) !== false) {
             foreach (get_object_vars($artikel) as $k => $v) {
                 $this->$k = $v;
             }
@@ -267,7 +267,7 @@ class TrustedShops
                 $this->cBedingungURL . "' target='_blank'>Condizioni</a> della protezione acquirenti.";
             $this->cBoxText['default'] = $this->cBoxText['de'];
         }
-        Shop::Cache()->set($cacheID, $this, [CACHING_GROUP_OPTION, CACHING_GROUP_CORE]);
+        Shop::Container()->getCache()->set($cacheID, $this, [CACHING_GROUP_OPTION, CACHING_GROUP_CORE]);
 
         return $this;
     }

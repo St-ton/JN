@@ -6,7 +6,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_CONTACTFORM_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cTab     = 'config';
 $step     = 'uebersicht';
@@ -120,33 +120,6 @@ if (((isset($_GET['kKontaktBetreff']) && (int)$_GET['kKontaktBetreff'] > 0) ||
 }
 
 if ($step === 'uebersicht') {
-    $Conf = Shop::Container()->getDB()->selectAll(
-        'teinstellungenconf',
-        'kEinstellungenSektion',
-        CONF_KONTAKTFORMULAR,
-        '*',
-        'nSort'
-    );
-    $configCount = count($Conf);
-    for ($i = 0; $i < $configCount; $i++) {
-        if ($Conf[$i]->cInputTyp === 'selectbox') {
-            $Conf[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
-                'teinstellungenconfwerte',
-                'kEinstellungenConf',
-                (int)$Conf[$i]->kEinstellungenConf,
-                '*',
-                'nSort'
-            );
-        }
-        $setValue = Shop::Container()->getDB()->select(
-            'teinstellungen',
-            'kEinstellungenSektion',
-            CONF_KONTAKTFORMULAR,
-            'cName',
-            $Conf[$i]->cWertName
-        );
-        $Conf[$i]->gesetzterWert = $setValue->cWert ?? null;
-    }
     $neuerBetreffs = Shop::Container()->getDB()->query(
         'SELECT * FROM tkontaktbetreff ORDER BY nSort',
         \DB\ReturnType::ARRAY_OF_OBJECTS
@@ -180,7 +153,7 @@ if ($step === 'uebersicht') {
         $Content[$SpezialContent[$i]->cISOSprache . '_' . $SpezialContent[$i]->cTyp] = $SpezialContent[$i]->cContent;
     }
     $smarty->assign('Betreffs', $neuerBetreffs)
-           ->assign('Conf', $Conf)
+           ->assign('Conf', getAdminSectionSettings(CONF_KONTAKTFORMULAR))
            ->assign('Content', $Content);
 }
 

@@ -5,8 +5,8 @@
  */
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return string
  */
 function includeMailTemplate($params, $smarty)

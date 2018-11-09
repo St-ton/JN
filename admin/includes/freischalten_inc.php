@@ -166,8 +166,7 @@ function schalteBewertungFrei($kBewertung_arr, $kArtikel_arr, $kBewertungAll_arr
             checkeBewertungGuthabenBonus($kBewertung, $Einstellungen);
             $tags[] = CACHING_GROUP_ARTICLE . '_' . $kArtikel;
         }
-        // Clear Cache
-        Shop::Cache()->flushTags(array_unique($tags));
+        Shop::Container()->getCache()->flushTags(array_unique($tags));
 
         return true;
     }
@@ -262,7 +261,7 @@ function schalteTagsFrei($kTag_arr): bool
             );
         }
     }
-    Shop::Cache()->flushTags($tags);
+    Shop::Container()->getCache()->flushTags($tags);
 
     return true;
 }

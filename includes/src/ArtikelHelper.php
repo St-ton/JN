@@ -2201,8 +2201,8 @@ class ArtikelHelper
     }
 
     /**
-     * @param int       $configID
-     * @param JTLSmarty $smarty
+     * @param int              $configID
+     * @param Smarty\JTLSmarty $smarty
      * @former holeKonfigBearbeitenModus()
      * @since 5.0.0
      */

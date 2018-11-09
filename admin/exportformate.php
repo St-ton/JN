@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 
 $oAccount->permission('EXPORT_FORMATS_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $fehler              = '';
 $hinweis             = '';
 $step                = 'uebersicht';
@@ -251,35 +251,7 @@ if ($step === 'neuer Export') {
         }
         $smarty->assign('Exportformat', $exportformat);
     }
-
-    $Conf      = Shop::Container()->getDB()->selectAll(
-        'teinstellungenconf',
-        'kEinstellungenSektion',
-        CONF_EXPORTFORMATE,
-        '*',
-        'nSort'
-    );
-    $confCount = count($Conf);
-    for ($i = 0; $i < $confCount; $i++) {
-        if ($Conf[$i]->cInputTyp === 'selectbox') {
-            $Conf[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
-                'teinstellungenconfwerte',
-                'kEinstellungenConf',
-                (int)$Conf[$i]->kEinstellungenConf,
-                '*',
-                'nSort'
-            );
-        }
-        if (isset($exportformat->kExportformat)) {
-            $setValue = Shop::Container()->getDB()->select(
-                'texportformateinstellungen',
-                ['kExportformat', 'cName'],
-                [(int)$exportformat->kExportformat, $Conf[$i]->cWertName]
-            );
-            $Conf[$i]->gesetzterWert = $setValue->cWert ?? null;
-        }
-    }
-    $smarty->assign('Conf', $Conf);
+    $smarty->assign('Conf', getAdminSectionSettings(CONF_EXPORTFORMATE));
 }
 
 $smarty->assign('step', $step)

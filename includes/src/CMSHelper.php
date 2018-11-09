@@ -74,7 +74,7 @@ class CMSHelper
             return $items;
         }
         $cacheID = 'news_' . md5(json_encode($conf['news']) . '_' . Shop::getLanguage());
-        if (($items = Shop::Cache()->get($cacheID)) === false) {
+        if (($items = Shop::Container()->getCache()->get($cacheID)) === false) {
             if ((int)$conf['news']['news_anzahl_content'] > 0) {
                 $cSQL = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
             }
@@ -113,7 +113,7 @@ class CMSHelper
                 'cacheTags' => &$cacheTags,
                 'oNews_arr' => $items
             ]);
-            Shop::Cache()->set($cacheID, $items, $cacheTags);
+            Shop::Container()->getCache()->set($cacheID, $items, $cacheTags);
 
             return $items;
         }

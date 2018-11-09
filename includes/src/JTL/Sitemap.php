@@ -9,6 +9,7 @@ namespace JTL;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use Session\Session;
+use Smarty\JTLSmarty;
 
 /**
  * Class Sitemap
@@ -57,9 +58,9 @@ class Sitemap
     }
 
     /**
-     * @param \JTLSmarty $smarty
+     * @param JTLSmarty $smarty
      */
-    public function assignData(\JTLSmarty $smarty)
+    public function assignData(JTLSmarty $smarty): void
     {
         $smarty->assign('oKategorieliste', $this->getCategories())
                ->assign('oGlobaleMerkmale_arr', $this->getGlobalAttributes())

@@ -15,7 +15,6 @@ $oAccount           = new AdminAccount();
 $adminLoginGruppe   = !empty($oAccount->account()->oGroup->kAdminlogingruppe)
     ? (int)$oAccount->account()->oGroup->kAdminlogingruppe
     : -1;
-// Einstellungen
 $configSections = Shop::Container()->getDB()->query(
     "SELECT teinstellungensektion.*, COUNT(teinstellungenconf.kEinstellungenSektion) AS anz
         FROM teinstellungensektion 
@@ -89,7 +88,7 @@ foreach ($mainGroups as $mainGroup) {
                     ON tplugin.kPlugin = tpluginadminmenu.kPlugin
                 WHERE tplugin.nStatus = :state
                 ORDER BY tplugin.nPrio, tplugin.cName',
-            ['state' => Plugin::PLUGIN_ACTIVATED],
+            ['state' => \Plugin\Plugin::PLUGIN_ACTIVATED],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($pluginLinks as $pluginLink) {

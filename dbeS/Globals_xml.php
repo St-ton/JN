@@ -71,7 +71,7 @@ function bearbeiteUpdates($xml)
             $oSprache_arr[$i]->cStandard = $oSprache_arr[$i]->cWawiStandard;
             unset($oSprache_arr[$i]->cWawiStandard);
         }
-        Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
+        Shop::Container()->getCache()->flushTags([CACHING_GROUP_LANGUAGE]);
         if (count($oSprache_arr) > 0) {
             DBDelInsert('tsprache', $oSprache_arr, 1);
         }
@@ -132,7 +132,7 @@ function bearbeiteUpdates($xml)
                     );
                 }
             }
-            Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]);
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]);
         }
         // Warenlager
         if (isset($xml['globals']['twarenlager']) && is_array($xml['globals']['twarenlager'])) {

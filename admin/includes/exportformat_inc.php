@@ -291,7 +291,7 @@ function holeMaxExportArtikelAnzahl(&$oExportformat)
                 )";
     }
     $cid = 'xp_' . md5(json_encode($cSQL_arr) . $sql);
-    if (($count = Shop::Cache()->get($cid)) !== false) {
+    if (($count = Shop::Container()->getCache()->get($cid)) !== false) {
         return $count;
     }
 
@@ -310,7 +310,7 @@ function holeMaxExportArtikelAnzahl(&$oExportformat)
                 {$sql}",
         \DB\ReturnType::SINGLE_OBJECT
     );
-    Shop::Cache()->set($cid, $count, [CACHING_GROUP_CORE], 120);
+    Shop::Container()->getCache()->set($cid, $count, [CACHING_GROUP_CORE], 120);
 
     return $count;
 }

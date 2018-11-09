@@ -788,7 +788,6 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         ORDER BY tkampagnevorgang.dErstellt DESC",
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
-
                 if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
                     Session\Session::getCustomerGroup()->setMayViewPrices(1);
                     $count = count($oDaten_arr);
@@ -1195,8 +1194,7 @@ function speicherKampagne($oKampagne)
     } else {
         $oKampagne->insertInDB();
     }
-    // Speichern
-    Shop::Cache()->flush('campaigns');
+    Shop::Container()->getCache()->flush('campaigns');
 
     return 1;
 }
@@ -1250,7 +1248,7 @@ function loescheGewaehlteKampagnen($kKampagne_arr)
                 }
             }
         }
-        Shop::Cache()->flush('campaigns');
+        Shop::Container()->getCache()->flush('campaigns');
 
         return 1;
     }

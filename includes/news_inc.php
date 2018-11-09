@@ -191,9 +191,9 @@ function baueNewsMetaStart($oNewsNaviFilter)
 }
 
 /**
- * @param JTLSmarty   $smarty
- * @param string|null $AktuelleSeite
- * @param string      $cCanonicalURL
+ * @param Smarty\JTLSmarty $smarty
+ * @param string|null      $AktuelleSeite
+ * @param string           $cCanonicalURL
  * @deprecated since 5.0.0
  */
 function baueNewsKruemel($smarty, $AktuelleSeite, &$cCanonicalURL)

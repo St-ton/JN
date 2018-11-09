@@ -7,7 +7,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . 'toolsajax.server.php';
 $oAccount->permission('SLIDER_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'slider_inc.php';
 $cFehler     = '';
 $cHinweis    = '';
@@ -163,7 +163,7 @@ switch ($action) {
     case 'delete':
         $slider   = new Slider();
         $slider->load($kSlider, false);
-        $bSuccess = $slider->delete($kSlider);
+        $bSuccess = $slider->delete();
         if ($bSuccess === true) {
             header('Location: ' . $redirectUrl);
             exit;

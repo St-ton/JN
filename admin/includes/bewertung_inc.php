@@ -44,7 +44,7 @@ function editiereBewertung($cPost_arr): bool
             Shop::Container()->getDB()->update('tbewertung', 'kBewertung', $kBewertung, $upd);
             aktualisiereDurchschnitt($oBewertung->kArtikel, $conf['bewertung']['bewertung_freischalten']);
 
-            Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $oBewertung->kArtikel]);
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $oBewertung->kArtikel]);
 
             return true;
         }

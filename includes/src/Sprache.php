@@ -188,7 +188,7 @@ class Sprache
     public function generateLangVars()
     {
         if ($this->cacheID !== null) {
-            return ($this->langVars = Shop::Cache()->get($this->cacheID)) === false
+            return ($this->langVars = Shop::Container()->getCache()->get($this->cacheID)) === false
                 ? []
                 : $this->langVars;
         }
@@ -202,7 +202,7 @@ class Sprache
      */
     public function saveLangVars()
     {
-        return Shop::Cache()->set($this->cacheID, $this->langVars, [CACHING_GROUP_LANGUAGE]);
+        return Shop::Container()->getCache()->set($this->cacheID, $this->langVars, [CACHING_GROUP_LANGUAGE]);
     }
 
     /**
@@ -213,7 +213,7 @@ class Sprache
     {
         if (!isset($this->isoAssociation[$kSprache])) {
             $cacheID = 'lang_iso_ks';
-            if (($this->isoAssociation = Shop::Cache()->get($cacheID)) === false
+            if (($this->isoAssociation = Shop::Container()->getCache()->get($cacheID)) === false
                 || !isset($this->isoAssociation[$kSprache])
             ) {
                 $this->isoAssociation[$kSprache] = Shop::Container()->getDB()->select(
@@ -227,7 +227,7 @@ class Sprache
                     false,
                     'cISO'
                 );
-                Shop::Cache()->set($cacheID, $this->isoAssociation, [CACHING_GROUP_LANGUAGE]);
+                Shop::Container()->getCache()->set($cacheID, $this->isoAssociation, [CACHING_GROUP_LANGUAGE]);
             }
         }
 
@@ -242,7 +242,7 @@ class Sprache
     {
         if (!isset($this->idAssociation[$cISO])) {
             $cacheID = 'lang_id_ks';
-            if (($this->idAssociation = Shop::Cache()->get($cacheID)) === false
+            if (($this->idAssociation = Shop::Container()->getCache()->get($cacheID)) === false
                 || !isset($this->idAssociation[$cISO])
             ) {
                 $res = Shop::Container()->getDB()->select('tsprachiso', 'cISO', $cISO);
@@ -250,7 +250,7 @@ class Sprache
                     $res->kSprachISO = (int)$res->kSprachISO;
                 }
                 $this->idAssociation[$cISO] = $res;
-                Shop::Cache()->set($cacheID, $this->idAssociation, [CACHING_GROUP_LANGUAGE]);
+                Shop::Container()->getCache()->set($cacheID, $this->idAssociation, [CACHING_GROUP_LANGUAGE]);
             }
         }
 
@@ -861,7 +861,7 @@ class Sprache
     {
         if ($this->oSprache_arr === null || $this->oSprache_arr === false) {
             $cacheID = 'langobj';
-            if (($this->oSprache_arr = Shop::Cache()->get($cacheID)) === false) {
+            if (($this->oSprache_arr = Shop::Container()->getCache()->get($cacheID)) === false) {
                 $this->oSprache_arr = array_map(
                     function ($e) {
                         $e->kSprache = (int)$e->kSprache;
@@ -870,7 +870,7 @@ class Sprache
                     },
                     Shop::Container()->getDB()->query('SELECT kSprache FROM tsprache', \DB\ReturnType::ARRAY_OF_OBJECTS)
                 );
-                Shop::Cache()->set($cacheID, $this->oSprache_arr, [CACHING_GROUP_LANGUAGE]);
+                Shop::Container()->getCache()->set($cacheID, $this->oSprache_arr, [CACHING_GROUP_LANGUAGE]);
             }
         }
 
@@ -1020,13 +1020,13 @@ class Sprache
         }
 
         $cacheID = 'shop_lang_' . (($bShop === true) ? 'b' : '');
-        if (($lang = Shop::Cache()->get($cacheID)) !== false && $lang !== null) {
+        if (($lang = Shop::Container()->getCache()->get($cacheID)) !== false && $lang !== null) {
             return $lang;
         }
         $row  = $bShop ? 'cShopStandard' : 'cStandard';
         $lang = Shop::Container()->getDB()->select('tsprache', $row, 'Y');
         $lang->kSprache = (int)$lang->kSprache;
-        Shop::Cache()->set($cacheID, $lang, [CACHING_GROUP_LANGUAGE]);
+        Shop::Container()->getCache()->set($cacheID, $lang, [CACHING_GROUP_LANGUAGE]);
 
         return $lang;
     }

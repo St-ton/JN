@@ -6,9 +6,8 @@
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'agbwrb_inc.php';
-/** @global JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $oAccount->permission('ORDER_AGB_WRB_VIEW', true, true);
-
 $cHinweis = '';
 $cFehler  = '';
 $step     = 'agbwrb_uebersicht';

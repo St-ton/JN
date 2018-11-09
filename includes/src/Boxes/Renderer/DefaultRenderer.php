@@ -16,7 +16,7 @@ use Boxes\Items\BoxInterface;
 class DefaultRenderer implements RendererInterface
 {
     /**
-     * @var \JTLSmarty
+     * @var \Smarty\JTLSmarty
      */
     protected $smarty;
 

@@ -10,7 +10,6 @@ use Filter\AbstractFilter;
 use Filter\Config;
 use Filter\Option;
 use Filter\Items\Attribute;
-use Filter\Items\ItemAttribute;
 use Filter\Type;
 
 /**
@@ -42,7 +41,7 @@ class Service
     {
         $this->db = $db;
 
-        \GetText::getInstance()->addAdminLocale('opc');
+        \GetText::getInstance()->loadAdminLocale('opc');
     }
 
     /**

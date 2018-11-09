@@ -1,3 +1,16 @@
+
+msgid "The OPC update is not installed properly. Please update your migrations."
+msgstr "Das OPC Update wurde nicht ordnungsgemäß installiert. Bitte aktualisieren Sie ihre Migrationen."
+
+msgid "Draft"
+msgstr "Entwurf"
+
+msgid "extended"
+msgstr "erweitert"
+
+msgid "replaced"
+msgstr "ersetzt"
+
 # OPC GUI
 
 msgid "Import"

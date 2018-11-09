@@ -34,7 +34,7 @@ $smarty->assign('shopUrl', $shopUrl)
 
 if ($opc->isOPCInstalled() === false) {
     // OPC not installed correctly
-    $smarty->assign('error', 'The OPC update is not installed properly. Please update your migrations.')
+    $smarty->assign('error', __('The OPC update is not installed properly. Please update your migrations.'))
            ->display('onpage-composer.tpl');
 } elseif ($action === 'edit') {
     // Enter OPC to edit a page
@@ -48,12 +48,12 @@ if ($opc->isOPCInstalled() === false) {
            ->display('onpage-composer.tpl');
 } elseif ($action !== '' && FormHelper::validateToken() === false) {
     // OPC action while XSRF validation failed
-    $error = 'Wrong XSRF token.';
+    $error = __('Wrong XSRF token.');
 } elseif ($action === 'replace' || $action === 'extend') {
     // Create a new OPC page draft
     try {
-        $newName = 'Entwurf ' . ($opcPageDB->getDraftCount($pageId) + 1)
-            . ($action === 'extend' ? ' (erweitert)' : ' (ersetzt)');
+        $newName = __('Draft') . ' ' . ($opcPageDB->getDraftCount($pageId) + 1)
+            . ($action === 'extend' ? ' (' . __('extended') . ')' : ' (' . __('replaced') . ')');
         $page    = $opcPage
             ->createDraft($pageId)
             ->setUrl($pageUrl)
@@ -72,8 +72,8 @@ if ($opc->isOPCInstalled() === false) {
     try {
         $adoptFromDraft = $opcPage->getDraft($adoptFromKey);
         $isReplace      = $adoptFromDraft->isReplace();
-        $newName        = 'Entwurf ' . ($opcPageDB->getDraftCount($pageId) + 1)
-            . ($isReplace ? ' (erweitert)' : ' (ersetzt)');
+        $newName        = __('Draft') . ' ' . ($opcPageDB->getDraftCount($pageId) + 1)
+            . ($isReplace ? ' (' . __('extended') . ')' : ' (' . __('replaced') . ')');
         $page           = $opcPage
             ->createDraft($pageId)
             ->setUrl($pageUrl)

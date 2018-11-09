@@ -1,0 +1,6 @@
+
+msgid "The OPC content for this page has been reseted."
+msgstr "Der Composer-Inhalt für die Seite wurde zurückgesetzt."
+
+msgid "The draft has been deleted."
+msgstr "Der Entwurf wurde gelöscht."

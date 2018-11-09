@@ -230,16 +230,12 @@ class DB
 
         /** @var Portlet $portlet */
         $fullClass = "\\OPC\\Portlets\\$class";
-        $portlet   = new $fullClass();
+        $portlet   = new $fullClass($class, $portletDB->kPortlet, $portletDB->kPlugin);
 
         return $portlet
-            ->setId($portletDB->kPortlet)
-            ->setPluginId($portletDB->kPlugin)
             ->setTitle($portletDB->cTitle)
-            ->setClass($portletDB->cClass)
             ->setGroup($portletDB->cGroup)
-            ->setActive((int)$portletDB->bActive === 1)
-            ->assemble();
+            ->setActive((int)$portletDB->bActive === 1);
     }
 
     /**

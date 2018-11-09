@@ -56,32 +56,35 @@ class GetText
     }
 
     /**
+     * @param string $domain
      * @return GetText
      */
-    private function loadAdminLocale(): self
+    public function loadAdminLocale(string $domain = 'base'): self
     {
-        return $this->addLocale(PFAD_ROOT . PFAD_ADMIN . "locale");
+        return $this->addLocale(PFAD_ROOT . PFAD_ADMIN, $domain);
     }
 
     /**
-     * @param $dir
+     * @param string $domain
+     * @param Plugin $plugin
      * @return GetText
      */
-    public function addAdminLocale($dir): self
+    public function loadPluginLocale(string $domain, \Plugin $plugin): self
     {
-        return $this->addLocale(PFAD_ROOT . PFAD_ADMIN . "locale/$dir");
+        return $this->addLocale($plugin->cAdminmenuPfad, $domain);
     }
 
     /**
-     * @param $dir
+     * @param string $path
      * @return GetText
      */
-    public function addLocale($dir): self
+    public function addLocale(string $dir, string $domain): self
     {
-        $path = "$dir/{$this->langIso}.mo";
+        $path = "{$dir}locale/{$this->langIso}/{$domain}.mo";
 
         if (file_exists($path)) {
-            $translations = Gettext\Translations::fromMoFile("$dir/{$this->langIso}.mo");
+            $translations = Gettext\Translations::fromMoFile($path);
+//            $translations->setDomain($domain);
             $this->translator->loadTranslations($translations);
         }
 
@@ -95,5 +98,16 @@ class GetText
     public function translate(string $string): string
     {
         return $this->translator->gettext($string);
+    }
+
+    /**
+     * @param string $domain
+     * @return $this
+     */
+    public function changeCurrentDomain(string $domain): self
+    {
+        $this->translator->defaultDomain($domain);
+
+        return $this;
     }
 }

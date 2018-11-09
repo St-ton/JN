@@ -48,9 +48,21 @@ abstract class Portlet implements \JsonSerializable
 
     /**
      * Portlet constructor.
+     * @param string $class
+     * @param int $id
+     * @param int $pluginId
      */
-    final public function __construct()
+    final public function __construct(string $class, int $id, int $pluginId)
     {
+        $this->class  = $class;
+        $this->id     = $id;
+        $this->plugin = $pluginId > 0 ? new \Plugin($pluginId) : null;
+
+        if ($this->plugin === null) {
+            \GetText::getInstance()->loadAdminLocale('portlets/' . $this->class);
+        } else {
+            \GetText::getInstance()->loadPluginLocale('portlets/' . $this->class, $this->plugin);
+        }
     }
 
     /**
@@ -132,45 +144,12 @@ abstract class Portlet implements \JsonSerializable
     }
 
     /**
-     * @param int $id
-     * @return Portlet
-     */
-    public function setId(int $id): self
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * @param int $pluginId
-     * @return Portlet
-     */
-    public function setPluginId(int $pluginId): self
-    {
-        $this->plugin = $pluginId > 0 ? new \Plugin($pluginId) : null;
-
-        return $this;
-    }
-
-    /**
      * @param string $title
      * @return Portlet
      */
     public function setTitle(string $title): self
     {
         $this->title = $title;
-
-        return $this;
-    }
-
-    /**
-     * @param string $class
-     * @return Portlet
-     */
-    public function setClass(string $class): self
-    {
-        $this->class = $class;
 
         return $this;
     }
@@ -201,21 +180,6 @@ abstract class Portlet implements \JsonSerializable
     public function setActive(bool $active): self
     {
         $this->active = $active;
-
-        return $this;
-    }
-
-    /**
-     * Make the portlet ready to use, e.g. load language files
-     */
-    public function assemble()
-    {
-        if ($this->plugin === null) {
-            \GetText::getInstance()->addAdminLocale('portlets/' . $this->class);
-        } else {
-            $path = $this->plugin->cAdminmenuPfad . 'portlets/' . $this->class . '/locale';
-            \GetText::getInstance()->addLocale($path);
-        }
 
         return $this;
     }

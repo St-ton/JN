@@ -621,6 +621,7 @@ class Session
      */
     public static function cart(): \Warenkorb
     {
+        \Shop::dbg(1,false,1,4);
         \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
         return self::getCart();
     }

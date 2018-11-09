@@ -73,9 +73,9 @@ class Revision
 
     /**
      * @param string $type
-     * @return string|null
+     * @return array|null
      */
-    private function getMapping(string $type): ?string
+    private function getMapping(string $type): ?array
     {
         return $this->mapping[$type] ?? null;
     }

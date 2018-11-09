@@ -1,37 +1,230 @@
+image: docker:stable
+
+variables:
+  # When using dind service we need to instruct docker, to talk with the
+  # daemon started inside of the service. The daemon is available with
+  # a network connection instead of the default /var/run/docker.sock socket.
+  #
+  # The 'docker' hostname is the alias of the service container as described at
+  # https://docs.gitlab.com/ee/ci/docker/using_docker_images.html#accessing-the-services
+  #
+  # Note that if you're using Kubernetes executor, the variable should be set to
+  # tcp://localhost:2375 because of how Kubernetes executor connects services
+  # to the job container
+  #DOCKER_HOST: tcp://docker:2375/
+  # When using dind, it's wise to use the overlayfs driver for
+  # improved performance.
+  DOCKER_DRIVER: overlay2
+  MOUNT_POINT: /builds/$CI_PROJECT_PATH
+
+services:
+- docker:dind
+
 stages:
+#  - codeclimate
   - test
   - build
+#  - deploy
 
-archive:
-  stage: build
+
+#code_quality:
+#  stage: codeclimate
+#  services:
+#    - docker:stable-dind
+#  variables:
+#    DOCKER_DRIVER: overlay2
+#  script:
+#    - codeQuality
+#  artifacts:
+#    paths: [gl-code-quality-report.json]
+#  only:
+#    - branches
+#  except:
+#    - master
+#  tags:
+#    - building_testing_docker
+
+test_PHP_7.1:
+  stage: test
+  services:
+  - docker:stable-dind
+  variables:
+    DOCKER_DRIVER: overlay2
   script:
-    - bash $CI_PROJECT_DIR/tools/build.sh "$CI_COMMIT_REF_NAME" "$CI_COMMIT_SHA" "$CI_PROJECT_DIR"
-    - buildscript pipeline:shop "$CI_PROJECT_DIR" "$CI_COMMIT_REF_NAME" "$CI_PROJECT_URL" "$CI_COMMIT_SHA"
+    - testingPHP71
+  only:
+    - branches
+  except:
+    - master
+  tags:
+    - building_testing_docker
+
+test_PHP_7.2:
+  stage: test
+  services:
+    - docker:stable-dind
+  variables:
+    DOCKER_DRIVER: overlay2
+  script:
+    - testingPHP72
+  only:
+    - branches
+  except:
+    - master
+  tags:
+    - building_testing_docker
+
+test_PHP_7.3:
+  stage: test
+  services:
+    - docker:stable-dind
+  variables:
+    DOCKER_DRIVER: overlay2
+  allow_failure: true
+  script:
+    - testingPHP73
+  only:
+    - branches
+  except:
+    - master
+  tags:
+    - building_testing_docker
+
+build:
+  stage: build
+  services:
+    - docker:stable-dind
+  variables:
+    DOCKER_DRIVER: overlay2
+  script:
+    - buildProcess
   only:
     - master
     - /^release\/.*$/
     - tags
   tags:
-    - build
+    - building_testing_docker
 
-testphp71:
-  image: gitlab.jtl-software.de:4567/jtlshop/shop4/php71
-  stage: test
-  script:
-    - cd includes
-    - php /root/composer.phar install
-    - cd ../
-    - includes/vendor/bin/phpunit tests
-  tags:
-      - docker
+#deploy:
+#  stage: deploy
+#  services:
+#    - docker:stable-dind
+#  variables:
+#    DOCKER_DRIVER: overlay2
+#  script:
+#    - deployProcess
+#  only:
+#    - master
+#    - /^release\/.*$/
+#    - tags
+#  tags:
+#    - build
 
-testphp72:
-  image: gitlab.jtl-software.de:4567/jtlshop/shop4/php72
-  stage: test
-  script:
-    - cd includes
-    - php /root/composer.phar install
-    - cd ../
-    - includes/vendor/bin/phpunit tests
-  tags:
-      - docker
+
+.methods: &methods |
+  export CI_APPLICATION_REPOSITORY=$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG
+  export CI_APPLICATION_TAG=$CI_COMMIT_SHA
+  export CI_CONTAINER_NAME=ci_job_build_${CI_JOB_ID}
+  export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
+  export TESTS_SCRIPT_PATH=tools/scripts/tests.sh
+  export BUILD_SCRIPT_PATH=tools/scripts/build.sh
+  export DEPLOY_SCRIPT_PATH=tools/scripts/deploy.sh
+
+  function dockerLogin() {
+    if [[ -n "$CI_USER_VAR" ]]; then
+      echo "Logging to GitLab Container Registry with CI credentials..."
+      docker login -u "$CI_USER_VAR" -p "$CI_USER_PW_VAR" "$CI_REGISTRY"
+      echo ""
+    fi
+  }
+  function codeQuality() {
+    docker run \
+      --env SOURCE_CODE="$PWD" \
+      --volume "$PWD":/code \
+      --volume /var/run/docker.sock:/var/run/docker.sock \
+      -i \
+      "registry.gitlab.com/gitlab-org/security-products/codequality:$SP_VERSION" /code
+
+    cat gl-code-quality-report.json
+  }
+  function testingPHP71() {
+    echo "Testing projekt in PHP 7.1 docker image..."
+
+    docker run \
+      --volume $(pwd):/dockerBuild \
+      --name="$CI_CONTAINER_NAME-php7.1" \
+      $CI_REGISTRY_IMAGE/building_testing-php7.1 \
+      /bin/bash -c "cp -a /dockerBuild/. /build; bash $TESTS_SCRIPT_PATH"
+
+    docker rm "$CI_CONTAINER_NAME-php7.1" >/dev/null
+    echo "Tests finished and docker image deleted"
+  }
+  function testingPHP72() {
+    echo "Testing projekt in PHP 7.2 docker image..."
+
+    docker run \
+      --volume $(pwd):/dockerBuild \
+      --name="$CI_CONTAINER_NAME-php7.2" \
+      $CI_REGISTRY_IMAGE/building_testing-php7.2 \
+      /bin/bash -c "cp -a /dockerBuild/. /build; bash $TESTS_SCRIPT_PATH"
+
+    docker rm "$CI_CONTAINER_NAME-php7.2" >/dev/null
+    echo "Tests finished and docker image deleted"
+  }
+  function testingPHP73() {
+    echo "Testing projekt in PHP 7.3 docker image..."
+
+    docker run \
+      --volume $(pwd):/dockerBuild \
+      --name="$CI_CONTAINER_NAME-php7.3" \
+      $CI_REGISTRY_IMAGE/building_testing-php7.3 \
+      /bin/bash -c "cp -a /dockerBuild/. /build; bash $TESTS_SCRIPT_PATH"
+
+    docker rm "$CI_CONTAINER_NAME-php7.3" >/dev/null
+    echo "Tests finished and docker image deleted"
+  }
+  function buildProcess() {
+    echo "Building projekt in PHP 7.1 docker image..."
+
+    docker run \
+      --volume $(pwd):/dockerBuild \
+      --name="$CI_CONTAINER_NAME-build" \
+      $CI_REGISTRY_IMAGE/building_testing-php7.1 \
+      /bin/bash -c "cp -a /dockerBuild/. /build; bash $BUILD_SCRIPT_PATH  $CI_COMMIT_REF_NAME $CI_COMMIT_SHA /build; ls -la /build/admin/includes/shopmd5files"
+
+    docker cp $CI_CONTAINER_NAME-build:/build/. $(pwd)
+
+    ls -la $(pwd)/admin/includes/shopmd5files
+
+    docker run \
+      --volume $(pwd):/build \
+      --name "$CI_CONTAINER_NAME-mariadb" \
+      -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD \
+      -d mariadb:10.2 \
+      --character-set-server=utf8 \
+      --collation-server=utf8_unicode_ci
+      /bin/bash -c "ls -la /build"
+
+    docker commit "$CI_CONTAINER_NAME-build" "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG-build"
+    docker rm "$CI_CONTAINER_NAME-build" >/dev/null
+    echo ""
+
+    echo "Pushing to GitLab Container Registry..."
+    docker push "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG-build"
+    echo "Build finished and docker image deleted"
+  }
+  function deployProcess() {
+    echo "Deploying archive to build server..."
+
+    docker run \
+      --name="$CI_CONTAINER_NAME-deploy" \
+      $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG-build \
+      /bin/bash -c "bash $DEPLOY_SCRIPT_PATH $CI_PROJECT_NAME $CI_COMMIT_REF_NAME /archive"
+
+    docker cp $CI_CONTAINER_NAME-deploy:/archive/. $CI_BUILD_SERVER_ARCHIVE_PATH
+    docker rm $CI_CONTAINER_NAME-deploy >/dev/null
+  }
+
+before_script:
+- *methods
+- dockerLogin

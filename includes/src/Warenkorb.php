@@ -858,7 +858,7 @@ class Warenkorb
                         }
                     }
                 }
-                $anz                         = $this->gibAnzahlEinesArtikels($oArtikel->kArtikel);
+                $anz                    = $this->gibAnzahlEinesArtikels($oArtikel->kArtikel);
                 $pos->Artikel           = $oArtikel;
                 $pos->fPreisEinzelNetto = $oArtikel->gibPreis($anz, []);
                 $pos->fPreis            = $oArtikel->gibPreis($anz, $pos->WarenkorbPosEigenschaftArr);

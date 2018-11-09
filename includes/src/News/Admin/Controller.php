@@ -243,6 +243,7 @@ class Controller
                 $ins->kNewsKategorie = (int)$categoryID;
                 $this->db->insert('tnewskategorienews', $ins);
             }
+            $this->flushCache();
             $this->msg .= 'Ihre News wurde erfolgreich gespeichert.<br />';
             if (isset($post['continue']) && $post['continue'] === '1') {
                 $this->step         = 'news_editieren';
@@ -251,7 +252,6 @@ class Controller
                 $tab = \RequestHelper::verifyGPDataString('tab');
                 $this->newsRedirect(empty($tab) ? 'aktiv' : $tab, $this->msg);
             }
-            $this->flushCache();
         } else {
             $newsCategories = $this->getAllNewsCategories(false);
             $newsItem       = new Item($this->db);

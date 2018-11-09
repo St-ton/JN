@@ -45,54 +45,8 @@
         <div class="backend-main">
             <nav class="backend-navbar">
                 <ul class="backend-navbar-left">
-                    <li>
-                        <div class="backend-search dropdown">
-                            <i class="fa fa-search"></i>
-                            <input id="backend-search-input" placeholder="Suchbegriff" name="cSuche" type="search"
-                                   value="" autocomplete="off">
-                            <ul id="backend-search-dropdown"></ul>
-                            <script>
-                                var lastIoSearchCall = null;
-                                var searchDropdown = $('#backend-search-dropdown');
-
-                                $('#backend-search-input')
-                                    .on('input', function() {
-                                        var value = $(this).val();
-
-                                        if (value.length >= 3) {
-                                            if(lastIoSearchCall) {
-                                                lastIoSearchCall.abort();
-                                                lastIoSearchCall = null;
-                                            }
-
-                                            lastIoSearchCall = ioCall('adminSearch', [value], function (data) {
-                                                var tpl = data.data.tpl;
-
-                                                if (tpl) {
-                                                    searchDropdown.html(tpl).addClass('open');
-                                                } else {
-                                                    searchDropdown.removeClass('open');
-                                                }
-                                            });
-                                        } else {
-                                            searchDropdown.removeClass('open');
-                                        }
-                                    })
-                                    .keydown(function(e) {
-                                        if(e.key === 'Enter') {
-                                            var searchString = $('#backend-search-input').val();
-
-                                            window.location.href = 'einstellungen.php?cSuche=' + searchString
-                                                + '&einstellungen_suchen=1';
-                                        }
-                                    });
-                                $(document).click(function(e) {
-                                    if ($(e.target).closest('.backend-search').length === 0) {
-                                        searchDropdown.removeClass('open');
-                                    }
-                                });
-                            </script>
-                        </div>
+                    <li class="dropdown">
+                        {include file='tpl_inc/backend_search.tpl'}
                     </li>
                 </ul>
                 <ul class="backend-navbar-right">

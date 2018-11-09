@@ -68,12 +68,13 @@ class CMSHelper
      */
     public static function getHomeNews(array $conf): \Tightenco\Collect\Support\Collection
     {
-        $cSQL      = '';
+        $cSQL  = '';
         $items = new \Tightenco\Collect\Support\Collection();
         if (!isset($conf['news']['news_anzahl_content']) || (int)$conf['news']['news_anzahl_content'] === 0) {
             return $items;
         }
-        $cacheID = 'news_' . md5(json_encode($conf['news']) . '_' . Shop::getLanguage());
+        $langID  = Shop::getLanguageID();
+        $cacheID = 'news_' . md5(json_encode($conf['news']) . '_' . $langID);
         if (($items = Shop::Container()->getCache()->get($cacheID)) === false) {
             if ((int)$conf['news']['news_anzahl_content'] > 0) {
                 $cSQL = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
@@ -91,8 +92,8 @@ class CMSHelper
                     LEFT JOIN tseo 
                         ON tseo.cKey = 'kNews'
                         AND tseo.kKey = tnews.kNews
-                        AND tseo.kSprache = " . Shop::getLanguage() . "
-                    WHERE t.languageID = " . Shop::getLanguage() . "
+                        AND tseo.kSprache = " . $langID . "
+                    WHERE t.languageID = " . $langID . "
                         AND tnews.nAktiv = 1
                         AND tnews.dGueltigVon <= NOW()
                         AND (tnews.cKundengruppe LIKE '%;-1;%' 
@@ -106,8 +107,8 @@ class CMSHelper
             $items->createItems(\Functional\map($newsIDs, function ($e) {
                 return (int)$e->kNews;
             }));
-            $items = $items->getItems();
-            $cacheTags = [CACHING_GROUP_NEWS, CACHING_GROUP_OPTION];
+            $items     = $items->getItems();
+            $cacheTags = [CACHING_GROUP_NEWS];
             executeHook(HOOK_GET_NEWS, [
                 'cached'    => false,
                 'cacheTags' => &$cacheTags,

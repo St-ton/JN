@@ -70,7 +70,7 @@ class WidgetServerSettings extends WidgetBase
      */
     public function checkMaxExecutionTime(): bool
     {
-        return PHPSettingsHelper::getInstance()->hasMinExecutionTime(60);
+        return Shop()->PHPSettingsHelper()->hasMinExecutionTime(60);
     }
 
     /**
@@ -78,7 +78,7 @@ class WidgetServerSettings extends WidgetBase
      */
     public function checkMaxFilesize(): bool
     {
-        return PHPSettingsHelper::getInstance()->hasMinUploadSize(5 * 1024 * 1024);
+        return Shop()->PHPSettingsHelper()->hasMinUploadSize(5 * 1024 * 1024);
     }
 
     /**
@@ -86,7 +86,7 @@ class WidgetServerSettings extends WidgetBase
      */
     public function checkMemoryLimit(): bool
     {
-        return PHPSettingsHelper::getInstance()->hasMinLimit(64 * 1024 * 1024);
+        return Shop()->PHPSettingsHelper()->hasMinLimit(64 * 1024 * 1024);
     }
 
     /**
@@ -94,7 +94,7 @@ class WidgetServerSettings extends WidgetBase
      */
     public function checkPostMaxSize(): bool
     {
-        return PHPSettingsHelper::getInstance()->hasMinPostSize(8 * 1024 * 1024);
+        return Shop()->PHPSettingsHelper()->hasMinPostSize(8 * 1024 * 1024);
     }
 
     /**
@@ -102,6 +102,6 @@ class WidgetServerSettings extends WidgetBase
      */
     public function checkAllowUrlFopen(): bool
     {
-        return PHPSettingsHelper::getInstance()->fopenWrapper();
+        return Shop()->PHPSettingsHelper()->fopenWrapper();
     }
 }

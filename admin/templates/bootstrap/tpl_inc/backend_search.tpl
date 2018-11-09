@@ -4,10 +4,14 @@
            value="" autocomplete="off">
     <ul id="backend-search-dropdown"></ul>
     <script>
-        var lastIoSearchCall = null;
-        var searchDropdown = $('#backend-search-dropdown');
+        var lastIoSearchCall    = null;
+        var searchItems         = null;
+        var selectedSearchIndex = null;
+        var selectedSearchItem  = null;
+        var searchDropdown      = $('#backend-search-dropdown');
+        var searchInput         = $('#backend-search-input');
 
-        $('#backend-search-input')
+        searchInput
             .on('input', function() {
                 var value = $(this).val();
 
@@ -25,6 +29,10 @@
                         } else {
                             searchDropdown.removeClass('open');
                         }
+
+                        searchItems         = null;
+                        selectedSearchIndex = null;
+                        selectedSearchItem  = null;
                     });
                 } else {
                     searchDropdown.removeClass('open');
@@ -32,18 +40,52 @@
             })
             .keydown(function(e) {
                 if(e.key === 'Enter') {
-                    var searchString = $('#backend-search-input').val();
-
-                    window.location.href = 'einstellungen.php?cSuche=' + searchString
-                        + '&einstellungen_suchen=1';
-                } else if(e.key === 'ArrowDown') {
-                    console.log("down")
+                    if(selectedSearchItem === null) {
+                        var searchString = $('#backend-search-input').val();
+                        window.location.href = 'einstellungen.php?cSuche=' + searchString + '&einstellungen_suchen=1';
+                    } else {
+                        window.location.href = selectedSearchItem.find('a').attr('href');
+                    }
+                } else if(e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                    arrowNavigate(e.key === 'ArrowDown');
+                    e.preventDefault();
                 }
             });
+        searchDropdown.keydown(function (e) {
+            if(e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                arrowNavigate(e.key === 'ArrowDown');
+                e.preventDefault();
+            }
+        });
         $(document).click(function(e) {
             if ($(e.target).closest('.backend-search').length === 0) {
                 searchDropdown.removeClass('open');
             }
         });
+
+        function arrowNavigate(down = false)
+        {
+            if(searchItems === null) {
+                searchItems = searchDropdown.find('.backend-search-item');
+            }
+
+            if(selectedSearchIndex === null) {
+                if(down)
+                    selectedSearchIndex = 0;
+                else
+                    selectedSearchIndex = searchItems.length - 1;
+            } else {
+                if(down)
+                    selectedSearchIndex = (selectedSearchIndex + 1) % searchItems.length;
+                else
+                    selectedSearchIndex = (selectedSearchIndex - 1 + searchItems.length) % searchItems.length;
+            }
+
+            searchDropdown.find('.selected').removeClass('selected');
+            selectedSearchItem = $(searchItems[selectedSearchIndex]);
+            selectedSearchItem.addClass('selected');
+            selectedSearchItem.find('a').focus();
+            searchInput.focus();
+        }
     </script>
 </div>

@@ -356,6 +356,9 @@
 .backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left .backend-search #backend-search-dropdown .backend-search-item {
   padding: 0.25em 0;
 }
+.backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left .backend-search #backend-search-dropdown .backend-search-item.selected {
+  background: #abd1f6;
+}
 .backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-right {
   margin: 0;
   padding: 0;

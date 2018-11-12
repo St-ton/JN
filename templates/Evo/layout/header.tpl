@@ -220,4 +220,12 @@
     {block name='header-breadcrumb'}
         {include file='layout/breadcrumb.tpl'}
     {/block}
+    {if isset($alerts)}
+        {if !empty($alerts->getNoticeAlert())}
+            <div class="alert alert-{$alerts->getNoticeAlert()->getVariant()}">{$alerts->getNoticeAlert()->getMessage()}</div>
+        {/if}
+        {if !empty($alerts->getErrorAlert())}
+            <div class="alert alert-{$alerts->getErrorAlert()->getVariant()}">{$alerts->getErrorAlert()->getMessage()}</div>
+        {/if}
+    {/if}
 {/block}{* /content-all-starttags *}

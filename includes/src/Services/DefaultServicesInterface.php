@@ -19,6 +19,7 @@ use Services\JTL\CryptoServiceInterface;
 use Services\JTL\LinkServiceInterface;
 use Services\JTL\NewsServiceInterface;
 use Services\JTL\PasswordServiceInterface;
+use Services\JTL\AlertServiceInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -119,4 +120,9 @@ interface DefaultServicesInterface extends ContainerInterface
      * @return NewsServiceInterface
      */
     public function getNewsService() : NewsServiceInterface;
+
+    /**
+     * @return AlertServiceInterface
+     */
+    public function getAlertService() : AlertServiceInterface;
 }

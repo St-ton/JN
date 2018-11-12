@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 /**
  * Interface IPlugin
@@ -29,6 +33,13 @@ interface IPlugin
      * @return mixed
      */
     public function disabled();
+
+    /**
+     * @param mixed $oldVersion
+     * @param mixed $newVersion
+     * @return mixed
+     */
+    public function updated($oldVersion, $newVersion);
 
     /**
      * @param int         $type

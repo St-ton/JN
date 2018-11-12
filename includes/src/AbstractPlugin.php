@@ -86,6 +86,14 @@ abstract class AbstractPlugin implements IPlugin
     }
 
     /**
+     * @param mixed $oldVersion
+     * @param mixed $newVersion
+     */
+    public function updated($oldVersion, $newVersion)
+    {
+    }
+
+    /**
      * @return Plugin
      */
     public function getPlugin()

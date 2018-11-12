@@ -156,7 +156,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         $db->delete('tumfrage', 'kUmfrage', $kUmfrage);
                         $db->delete('tseo', ['cKey', 'kKey'], ['kUmfrage', $kUmfrage]);
                     }
-                    $oUmfrage->cSeo = checkSeo(getSeo(strlen($cSeo) > 0 ? $cSeo : $cName));
+                    $oUmfrage->cSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo(strlen($cSeo) > 0 ? $cSeo : $cName));
                     if (isset($kUmfrage) && $kUmfrage > 0) {
                         $oUmfrage->kUmfrage = $kUmfrage;
                         $db->insert('tumfrage', $oUmfrage);

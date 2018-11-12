@@ -1661,8 +1661,8 @@ class ArtikelHelper
                         $neuerTag           = new Tag();
                         $neuerTag->kSprache = Shop::getLanguage();
                         $neuerTag->cName    = $tag;
-                        $neuerTag->cSeo     = getSeo($tag);
-                        $neuerTag->cSeo     = checkSeo($neuerTag->cSeo);
+                        $neuerTag->cSeo     = \JTL\SeoHelper::getSeo($tag);
+                        $neuerTag->cSeo     = \JTL\SeoHelper::checkSeo($neuerTag->cSeo);
                         $neuerTag->nAktiv   = 0;
                         $kTag               = $neuerTag->insertInDB();
                         if ($kTag > 0) {

@@ -275,10 +275,10 @@ function bearbeiteInsert($xml, array $conf)
     if ($artikel_arr[0]->kArtikel > 0) {
         if (!$artikel_arr[0]->cSeo) {
             //get seo-path from productname, but replace slashes
-            $artikel_arr[0]->cSeo = getFlatSeoPath($artikel_arr[0]->cName);
+            $artikel_arr[0]->cSeo = \JTL\SeoHelper::getFlatSeoPath($artikel_arr[0]->cName);
         }
-        $artikel_arr[0]->cSeo = getSeo($artikel_arr[0]->cSeo);
-        $artikel_arr[0]->cSeo = checkSeo($artikel_arr[0]->cSeo);
+        $artikel_arr[0]->cSeo = \JTL\SeoHelper::getSeo($artikel_arr[0]->cSeo);
+        $artikel_arr[0]->cSeo = \JTL\SeoHelper::checkSeo($artikel_arr[0]->cSeo);
         //persistente werte
         $artikel_arr[0]->dLetzteAktualisierung = 'NOW()';
         //mysql strict fixes
@@ -360,7 +360,7 @@ function bearbeiteInsert($xml, array $conf)
             continue;
         }
         if (!$artikelsprache_arr[$i]->cSeo) {
-            $artikelsprache_arr[$i]->cSeo = getFlatSeoPath($artikelsprache_arr[$i]->cName);
+            $artikelsprache_arr[$i]->cSeo = \JTL\SeoHelper::getFlatSeoPath($artikelsprache_arr[$i]->cName);
         }
         if (!$artikelsprache_arr[$i]->cSeo) {
             $artikelsprache_arr[$i]->cSeo = $artikel_arr[0]->cSeo;
@@ -368,8 +368,8 @@ function bearbeiteInsert($xml, array $conf)
         if (!$artikelsprache_arr[$i]->cSeo) {
             $artikelsprache_arr[$i]->cSeo = $artikel_arr[0]->cName;
         }
-        $artikelsprache_arr[$i]->cSeo = getSeo($artikelsprache_arr[$i]->cSeo);
-        $artikelsprache_arr[$i]->cSeo = checkSeo($artikelsprache_arr[$i]->cSeo);
+        $artikelsprache_arr[$i]->cSeo = \JTL\SeoHelper::getSeo($artikelsprache_arr[$i]->cSeo);
+        $artikelsprache_arr[$i]->cSeo = \JTL\SeoHelper::checkSeo($artikelsprache_arr[$i]->cSeo);
 
         DBUpdateInsert('tartikelsprache', [$artikelsprache_arr[$i]], 'kArtikel', 'kSprache');
         Shop::Container()->getDB()->delete(

@@ -899,9 +899,9 @@ class ProductFilter
 
     /**
      * @param string $filterClassName
-     * @return int|null
+     * @return int|array|null
      */
-    public function getFilterValue(string $filterClassName): ?int
+    public function getFilterValue(string $filterClassName)
     {
         return \array_reduce(
             $this->activeFilters,

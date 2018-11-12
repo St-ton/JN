@@ -565,20 +565,20 @@ class TableCreator
             // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
             $bLinkStandard = false;
             $defaultLang   = new \stdClass();
-            foreach ($links['LinkLanguage'] as $l => $LinkLanguage_arr) {
+            foreach ($links['LinkLanguage'] as $l => $localized) {
                 \preg_match("/[0-9]+\sattr/", $l, $hits1);
                 \preg_match('/[0-9]+/', $l, $hits2);
                 if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($l)) {
-                    $linkLang->cISOSprache = \strtolower($LinkLanguage_arr['iso']);
+                    $linkLang->cISOSprache = \strtolower($localized['iso']);
                 } elseif (\strlen($hits2[0]) === \strlen($l)) {
                     // tlinksprache füllen
-                    $linkLang->cSeo             = \checkSeo(\getSeo($LinkLanguage_arr['Seo']));
-                    $linkLang->cName            = $LinkLanguage_arr['Name'];
-                    $linkLang->cTitle           = $LinkLanguage_arr['Title'];
+                    $linkLang->cSeo             = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($localized['Seo']));
+                    $linkLang->cName            = $localized['Name'];
+                    $linkLang->cTitle           = $localized['Title'];
                     $linkLang->cContent         = '';
-                    $linkLang->cMetaTitle       = $LinkLanguage_arr['MetaTitle'];
-                    $linkLang->cMetaKeywords    = $LinkLanguage_arr['MetaKeywords'];
-                    $linkLang->cMetaDescription = $LinkLanguage_arr['MetaDescription'];
+                    $linkLang->cMetaTitle       = $localized['MetaTitle'];
+                    $linkLang->cMetaKeywords    = $localized['MetaKeywords'];
+                    $linkLang->cMetaDescription = $localized['MetaDescription'];
 
                     $this->db->insert('tlinksprache', $linkLang);
                     // Erste Linksprache vom Plugin als Standard setzen
@@ -598,7 +598,7 @@ class TableCreator
                         );
                         // tseo füllen
                         $oSeo           = new \stdClass();
-                        $oSeo->cSeo     = \checkSeo(\getSeo($LinkLanguage_arr['Seo']));
+                        $oSeo->cSeo     = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($localized['Seo']));
                         $oSeo->cKey     = 'kLink';
                         $oSeo->kKey     = $kLink;
                         $oSeo->kSprache = $allLanguages[$linkLang->cISOSprache]->kSprache;
@@ -622,7 +622,7 @@ class TableCreator
                     ['kLink', $kLink, (int)$oSprachAssoc->kSprache]
                 );
                 $oSeo           = new \stdClass();
-                $oSeo->cSeo     = \checkSeo(\getSeo($defaultLang->cSeo));
+                $oSeo->cSeo     = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($defaultLang->cSeo));
                 $oSeo->cKey     = 'kLink';
                 $oSeo->kKey     = $kLink;
                 $oSeo->kSprache = $oSprachAssoc->kSprache;

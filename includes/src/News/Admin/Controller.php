@@ -149,7 +149,9 @@ class Controller
                 $seoData->cKey     = 'kNews';
                 $seoData->kKey     = $newsItemID;
                 $seoData->kSprache = $langID;
-                $seoData->cSeo     = \checkSeo(\getSeo($this->getSeo($post, $languages, $iso)));
+                $seoData->cSeo     = \JTL\SeoHelper::checkSeo(
+                    \JTL\SeoHelper::getSeo($this->getSeo($post, $languages, $iso))
+                );
                 $this->db->insert('tnewssprache', $loc);
                 $this->db->insert('tseo', $seoData);
 
@@ -186,7 +188,9 @@ class Controller
                         ]
                     );
                     $oSeo           = new \stdClass();
-                    $oSeo->cSeo     = \checkSeo(\getSeo($prefix . '-' . $month . '-' . $year));
+                    $oSeo->cSeo     = \JTL\SeoHelper::checkSeo(
+                        \JTL\SeoHelper::getSeo($prefix . '-' . $month . '-' . $year)
+                    );
                     $oSeo->cKey     = 'kNewsMonatsUebersicht';
                     $oSeo->kKey     = $monthOverview->kNewsMonatsUebersicht;
                     $oSeo->kSprache = $langID;
@@ -211,7 +215,9 @@ class Controller
                         ['kNewsMonatsUebersicht', $kNewsMonatsUebersicht, $langID]
                     );
                     $oSeo           = new \stdClass();
-                    $oSeo->cSeo     = \checkSeo(\getSeo($prefix . '-' . $month . '-' . $year));
+                    $oSeo->cSeo     = \JTL\SeoHelper::checkSeo(
+                        \JTL\SeoHelper::getSeo($prefix . '-' . $month . '-' . $year)
+                    );
                     $oSeo->cKey     = 'kNewsMonatsUebersicht';
                     $oSeo->kKey     = $kNewsMonatsUebersicht;
                     $oSeo->kSprache = $langID;
@@ -243,6 +249,7 @@ class Controller
                 $ins->kNewsKategorie = (int)$categoryID;
                 $this->db->insert('tnewskategorienews', $ins);
             }
+            $this->flushCache();
             $this->msg .= 'Ihre News wurde erfolgreich gespeichert.<br />';
             if (isset($post['continue']) && $post['continue'] === '1') {
                 $this->step         = 'news_editieren';
@@ -251,7 +258,6 @@ class Controller
                 $tab = \RequestHelper::verifyGPDataString('tab');
                 $this->newsRedirect(empty($tab) ? 'aktiv' : $tab, $this->msg);
             }
-            $this->flushCache();
         } else {
             $newsCategories = $this->getAllNewsCategories(false);
             $newsItem       = new Item($this->db);
@@ -484,7 +490,7 @@ class Controller
             $seoData->cKey     = 'kNewsKategorie';
             $seoData->kKey     = $categoryID;
             $seoData->kSprache = $loc->languageID;
-            $seoData->cSeo     = \checkSeo(\getSeo($cSeo));
+            $seoData->cSeo     = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($cSeo));
             if (empty($seoData->cSeo)) {
                 continue;
             }

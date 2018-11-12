@@ -648,12 +648,12 @@ class Artikel
     /**
      * @var array
      */
-    public $oStueckliste_arr;
+    public $oStueckliste_arr = [];
 
     /**
      * @var array
      */
-    public $nVariationKombiUnique_arr;
+    public $nVariationKombiUnique_arr = [];
 
     /**
      * @var int
@@ -798,7 +798,7 @@ class Artikel
     /**
      * @var array
      */
-    public $oWarenlager_arr;
+    public $oWarenlager_arr = [];
 
     /**
      * @var array

@@ -525,7 +525,9 @@ final class LinkAdmin
                 \JTL_CHARSET
             );
             $this->db->delete('tlinksprache', ['kLink', 'cISOSprache'], [$kLink, $sprache->cISO]);
-            $linkSprache->cSeo = $link->nLinkart === 2 ? $linkSprache->cSeo : \getSeo($linkSprache->cSeo);
+            $linkSprache->cSeo = $link->nLinkart === 2
+                ? $linkSprache->cSeo
+                : \JTL\SeoHelper::getSeo($linkSprache->cSeo);
             $this->db->insert('tlinksprache', $linkSprache);
             $oSpracheTMP = $this->db->select('tsprache', 'cISO ', $linkSprache->cISOSprache);
             if (isset($oSpracheTMP->kSprache) && $oSpracheTMP->kSprache > 0) {
@@ -535,7 +537,7 @@ final class LinkAdmin
                     ['kLink', (int)$linkSprache->kLink, (int)$oSpracheTMP->kSprache]
                 );
                 $oSeo           = new \stdClass();
-                $oSeo->cSeo     = \checkSeo($linkSprache->cSeo);
+                $oSeo->cSeo     = \JTL\SeoHelper::checkSeo($linkSprache->cSeo);
                 $oSeo->kKey     = $linkSprache->kLink;
                 $oSeo->cKey     = 'kLink';
                 $oSeo->kSprache = $oSpracheTMP->kSprache;

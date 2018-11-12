@@ -127,7 +127,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                     );
                     // Aktivierte Suchanfragen in tseo eintragen
                     $oSeo           = new stdClass();
-                    $oSeo->cSeo     = checkSeo(getSeo($query->cSuche));
+                    $oSeo->cSeo     = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($query->cSuche));
                     $oSeo->cKey     = 'kSuchanfrage';
                     $oSeo->kKey     = $nAktiv;
                     $oSeo->kSprache = $_SESSION['kSprache'];

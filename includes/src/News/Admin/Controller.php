@@ -149,7 +149,9 @@ class Controller
                 $seoData->cKey     = 'kNews';
                 $seoData->kKey     = $newsItemID;
                 $seoData->kSprache = $langID;
-                $seoData->cSeo     = \checkSeo(\getSeo($this->getSeo($post, $languages, $iso)));
+                $seoData->cSeo     = \JTL\SeoHelper::checkSeo(
+                    \JTL\SeoHelper::getSeo($this->getSeo($post, $languages, $iso))
+                );
                 $this->db->insert('tnewssprache', $loc);
                 $this->db->insert('tseo', $seoData);
 
@@ -186,7 +188,9 @@ class Controller
                         ]
                     );
                     $oSeo           = new \stdClass();
-                    $oSeo->cSeo     = \checkSeo(\getSeo($prefix . '-' . $month . '-' . $year));
+                    $oSeo->cSeo     = \JTL\SeoHelper::checkSeo(
+                        \JTL\SeoHelper::getSeo($prefix . '-' . $month . '-' . $year)
+                    );
                     $oSeo->cKey     = 'kNewsMonatsUebersicht';
                     $oSeo->kKey     = $monthOverview->kNewsMonatsUebersicht;
                     $oSeo->kSprache = $langID;
@@ -211,7 +215,9 @@ class Controller
                         ['kNewsMonatsUebersicht', $kNewsMonatsUebersicht, $langID]
                     );
                     $oSeo           = new \stdClass();
-                    $oSeo->cSeo     = \checkSeo(\getSeo($prefix . '-' . $month . '-' . $year));
+                    $oSeo->cSeo     = \JTL\SeoHelper::checkSeo(
+                        \JTL\SeoHelper::getSeo($prefix . '-' . $month . '-' . $year)
+                    );
                     $oSeo->cKey     = 'kNewsMonatsUebersicht';
                     $oSeo->kKey     = $kNewsMonatsUebersicht;
                     $oSeo->kSprache = $langID;
@@ -484,7 +490,7 @@ class Controller
             $seoData->cKey     = 'kNewsKategorie';
             $seoData->kKey     = $categoryID;
             $seoData->kSprache = $loc->languageID;
-            $seoData->cSeo     = \checkSeo(\getSeo($cSeo));
+            $seoData->cSeo     = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($cSeo));
             if (empty($seoData->cSeo)) {
                 continue;
             }

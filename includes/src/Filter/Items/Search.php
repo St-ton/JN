@@ -278,8 +278,8 @@ class Search extends AbstractFilter
                 $searchQuery->nAnzahlTreffer  = $hits;
                 $searchQuery->nAnzahlGesuche  = 1;
                 $searchQuery->dZuletztGesucht = 'NOW()';
-                $searchQuery->cSeo            = \getSeo($Suchausdruck);
-                $searchQuery->cSeo            = \checkSeo($searchQuery->cSeo);
+                $searchQuery->cSeo            = \JTL\SeoHelper::getSeo($Suchausdruck);
+                $searchQuery->cSeo            = \JTL\SeoHelper::checkSeo($searchQuery->cSeo);
                 $previuousQuery               = $this->productFilter->getDB()->select(
                     'tsuchanfrage',
                     'kSprache',

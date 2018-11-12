@@ -62,7 +62,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::vali
                     // Aktivierten Tag in tseo eintragen
                     $oSeo           = new stdClass();
                     $oSeo->cSeo     = isset($oTag->cName)
-                        ? checkSeo(getSeo($oTag->cName))
+                        ? \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($oTag->cName))
                         : '';
                     $oSeo->cKey     = 'kTag';
                     $oSeo->kKey     = $nAktiv;

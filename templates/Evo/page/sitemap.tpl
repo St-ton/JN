@@ -12,11 +12,11 @@
             <div class="panel-body">
                 {block name='sitemap-pages-body'}
                     <div class="row">
-                        {foreach $linkgroups as $oLinkgruppe}
-                            {if isset($oLinkgruppe->cName) && $oLinkgruppe->cName !== 'hidden' && isset($oLinkgruppe->Links) && !empty($oLinkgruppe->Links)}
+                        {foreach $linkgroups as $linkgroup}
+                            {if isset($linkgroup->getName()) && $linkgroup->getName() !== 'hidden' && !empty($linkgroup->getLinks())}
                                 <div class="col-sm-6 col-md-4">
                                     <ul class="list-unstyled">
-                                        {include file='snippets/linkgroup_list.tpl' linkgroupIdentifier=$linkgroupName tplscope='sitemap'}
+                                        {include file='snippets/linkgroup_list.tpl' linkgroupIdentifier=$linkgroup->getTemplate() tplscope='sitemap'}
                                     </ul>
                                 </div>
                             {/if}

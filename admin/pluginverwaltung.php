@@ -332,7 +332,6 @@ if ($step === 'pluginverwaltung_uebersicht') {
             }
         }
     }
-    Shop::dbg($vLicenseFiles);
     if (!empty($vLicenseFiles)) {
         $smarty->assign('szLicenses', json_encode($vLicenseFiles));
     }

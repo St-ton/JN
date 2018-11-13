@@ -142,7 +142,7 @@ deploy:
     cat gl-code-quality-report.json
   }
   function testing() {
-    echo "Pulling gitlab docker container $CI_REGISTRY_IMAGE/building_testing-php$PHP_VERSION_TEST_STEP..."
+    echo "Pulling gitlab docker container $CI_REGISTRY_IMAGE/testing-php$PHP_VERSION_TEST_STEP..."
     docker pull $CI_REGISTRY_IMAGE/testing-php$PHP_VERSION_TEST_STEP > /dev/null
 
     echo "Testing projekt in PHP $PHP_VERSION_TEST_STEP docker image..."
@@ -151,7 +151,7 @@ deploy:
       --volume $(pwd):/dockerBuild \
       --name="$CI_CONTAINER_NAME-php$PHP_VERSION_TEST_STEP" \
       -t \
-      $CI_REGISTRY_IMAGE/building_testing-php$PHP_VERSION_TEST_STEP \
+      $CI_REGISTRY_IMAGE/testing-php$PHP_VERSION_TEST_STEP \
       /bin/bash -c "cp -a /dockerBuild/. /build; bash $TESTS_SCRIPT_PATH"
 
     docker rm -f -v "$CI_CONTAINER_NAME-php$PHP_VERSION_TEST_STEP" >/dev/null

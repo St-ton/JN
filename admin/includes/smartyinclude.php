@@ -3,9 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_menu.php';
-
 $smarty             = \Smarty\JTLSmarty::getInstance(false, true);
 $templateDir        = $smarty->getTemplateDir($smarty->context);
 $template           = AdminTemplate::getInstance();
@@ -252,7 +249,6 @@ $smarty->assign('URL_SHOP', $shopURL)
        ->assign('PFAD_CODEMIRROR', $shopURL . '/' . PFAD_CODEMIRROR)
        ->assign('Einstellungen', $config)
        ->assign('oLinkOberGruppe_arr', $mainGroups)
-       ->assign('adminMenu', $adminMenu)
        ->assign('currentMenuPath', [$currentToplevel, $currentSecondLevel, $currentThirdLevel])
        ->assign('SektionenEinstellungen', $configSections)
        ->assign('notifications', Notification::getInstance())

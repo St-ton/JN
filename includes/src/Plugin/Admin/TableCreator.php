@@ -9,6 +9,7 @@ namespace Plugin\Admin;
 use DB\DbInterface;
 use Plugin\InstallCode;
 use Plugin\Plugin;
+use Plugin\PluginHelper;
 
 /**
  * Class TableCreator
@@ -668,7 +669,7 @@ class TableCreator
             }
             $method                         = new \stdClass();
             $method->cName                  = $data['Name'];
-            $method->cModulId               = Plugin::getModuleIDByPluginID(
+            $method->cModulId               = PluginHelper::getModuleIDByPluginID(
                 $this->plugin->kPlugin,
                 $data['Name']
             );
@@ -714,7 +715,7 @@ class TableCreator
                 return InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD;
             }
             $paymentClass                         = new \stdClass();
-            $paymentClass->cModulId               = Plugin::getModuleIDByPluginID(
+            $paymentClass->cModulId               = PluginHelper::getModuleIDByPluginID(
                 $this->plugin->kPlugin,
                 $data['Name']
             );

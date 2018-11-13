@@ -103,7 +103,7 @@ class PremiumPlugin
      */
     public function __construct(string $pluginID)
     {
-        $plugin            = \Plugin\Plugin::getPluginById($pluginID);
+        $plugin            = \Plugin\PluginHelper::getPluginById($pluginID);
         $this->pluginID    = $pluginID;
         $this->exists      = file_exists(PFAD_ROOT . PFAD_PLUGIN . $pluginID . '/info.xml');
         $this->isInstalled = $plugin !== null && $plugin->kPlugin > 0;

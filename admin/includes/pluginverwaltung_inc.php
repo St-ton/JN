@@ -146,5 +146,5 @@ function deaktivierePlugin(int $kPlugin): int
 function gibSprachVariablen(int $kPlugin): array
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Plugin\Plugin::getLanguageVariables($kPlugin);
+    return \Plugin\PluginHelper::getLanguageVariables($kPlugin);
 }

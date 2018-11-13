@@ -12,6 +12,7 @@ use JTLShop\SemVer\Version;
 use Plugin\Admin\Validation\ValidatorInterface;
 use Plugin\InstallCode;
 use Plugin\Plugin;
+use Plugin\PluginHelper;
 
 /**
  * Class Installer
@@ -271,7 +272,7 @@ final class Installer
         }
         if ($code === InstallCode::OK
             && $this->plugin === null
-            && ($p = Plugin::bootstrapper($plugin->kPlugin)) !== null
+            && ($p = PluginHelper::bootstrapper($plugin->kPlugin)) !== null
         ) {
             $p->installed();
         }

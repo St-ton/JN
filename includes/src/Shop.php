@@ -765,7 +765,7 @@ final class Shop
             self::Container()->getCache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
         }
         foreach ($plugins as $plugin) {
-            if (($p = \Plugin\Plugin::bootstrapper($plugin->kPlugin)) !== null) {
+            if (($p = \Plugin\PluginHelper::bootstrapper($plugin->kPlugin)) !== null) {
                 $p->boot(EventDispatcher::getInstance());
             }
         }

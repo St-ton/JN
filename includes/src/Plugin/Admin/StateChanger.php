@@ -8,9 +8,10 @@ namespace Plugin\Admin;
 
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
+use Plugin\Admin\Validation\Shop4Validator;
 use Plugin\InstallCode;
 use Plugin\Plugin;
-use Plugin\Admin\Validation\Shop4Validator;
+use Plugin\PluginHelper;
 
 /**
  * Class StateChanger
@@ -80,7 +81,7 @@ class StateChanger
             $this->db->update('topcportlet', 'kPlugin', $pluginID, (object)['bActive' => 1]);
             $this->db->update('topcblueprint', 'kPlugin', $pluginID, (object)['bActive' => 1]);
 
-            if (($p = Plugin::bootstrapper($pluginID)) !== null) {
+            if (($p = PluginHelper::bootstrapper($pluginID)) !== null) {
                 $p->enabled();
             }
 
@@ -104,7 +105,7 @@ class StateChanger
         if ($pluginID <= 0) {
             return InstallCode::WRONG_PARAM;
         }
-        if (($p = Plugin::bootstrapper($pluginID)) !== null) {
+        if (($p = PluginHelper::bootstrapper($pluginID)) !== null) {
             $p->disabled();
         }
         $this->db->update('tplugin', 'kPlugin', $pluginID, (object)['nStatus' => Plugin::PLUGIN_DISABLED]);

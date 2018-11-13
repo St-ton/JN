@@ -10,6 +10,7 @@ use DB\DbInterface;
 use DB\ReturnType;
 use Plugin\InstallCode;
 use Plugin\Plugin;
+use Plugin\PluginHelper;
 
 /**
  * Class Uninstaller
@@ -71,7 +72,7 @@ class Uninstaller
             $this->doSQLDelete($pluginID, $update, $newPluginID);
         }
         \Shop::Container()->getCache()->flushAll();
-        if (($p = Plugin::bootstrapper($pluginID)) !== null) {
+        if (($p = PluginHelper::bootstrapper($pluginID)) !== null) {
             $p->uninstalled();
         }
 
@@ -154,6 +155,7 @@ class Uninstaller
             ReturnType::AFFECTED_ROWS
         );
     }
+
     /**
      * @param int      $pluginID
      * @param bool     $update

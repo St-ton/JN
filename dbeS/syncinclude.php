@@ -56,7 +56,7 @@ $DB    = new \DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 $cache = Shop::Container()->getCache()->setJtlCacheConfig();
 
 $GLOBALS['bSeo']      = true; //compatibility!
-$oPluginHookListe_arr = \Plugin\Plugin::getHookList();
+$oPluginHookListe_arr = \Plugin\PluginHelper::getHookList();
 $oSprache             = Sprache::getInstance(true);
 
 /**

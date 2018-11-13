@@ -84,8 +84,8 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
     $db->update('tzahlungsart', 'kZahlungsart', (int)$zahlungsart->kZahlungsart, $upd);
     // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
     if (strpos($zahlungsart->cModulId, 'kPlugin_') !== false) {
-        $kPlugin     = \Plugin\Plugin::getIDByModuleID($zahlungsart->cModulId);
-        $cModulId    = \Plugin\Plugin::getModuleIDByPluginID($kPlugin, $zahlungsart->cName);
+        $kPlugin     = \Plugin\PluginHelper::getIDByModuleID($zahlungsart->cModulId);
+        $cModulId    = \Plugin\PluginHelper::getModuleIDByPluginID($kPlugin, $zahlungsart->cName);
         $Conf        = $db->query(
             "SELECT *
                 FROM tplugineinstellungenconf
@@ -200,8 +200,8 @@ if ($step === 'einstellen') {
         }
         // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
         if (strpos($zahlungsart->cModulId, 'kPlugin_') !== false) {
-            $kPlugin     = \Plugin\Plugin::getIDByModuleID($zahlungsart->cModulId);
-            $cModulId    = \Plugin\Plugin::getModuleIDByPluginID($kPlugin, $zahlungsart->cName);
+            $kPlugin     = \Plugin\PluginHelper::getIDByModuleID($zahlungsart->cModulId);
+            $cModulId    = \Plugin\PluginHelper::getModuleIDByPluginID($kPlugin, $zahlungsart->cName);
             $Conf        = $db->query(
                 "SELECT *
                     FROM tplugineinstellungenconf

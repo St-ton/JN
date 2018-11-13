@@ -107,7 +107,7 @@ $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
 
 // Plugin Zahlungsmethode beachten
 $kPlugin = isset($bestellung->Zahlungsart->cModulId)
-    ? \Plugin\Plugin::getIDByModuleID($bestellung->Zahlungsart->cModulId)
+    ? \Plugin\PluginHelper::getIDByModuleID($bestellung->Zahlungsart->cModulId)
     : 0;
 if ($kPlugin > 0) {
     $oPlugin = new \Plugin\Plugin($kPlugin);

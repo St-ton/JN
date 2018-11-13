@@ -412,7 +412,7 @@ class PluginValidation
                 $return .= 'Bootstrap-Klasse "%cPluginID%\\Bootstrap" existiert nicht';
                 break;
             case InstallCode::INVALID_BOOTSTRAP_IMPLEMENTATION:
-                $return .= 'Bootstrap-Klasse "%cPluginID%\\Bootstrap" muss das Interface "IPlugin" implementieren';
+                $return .= 'Bootstrap-Klasse "%cPluginID%\\Bootstrap" muss das PlugInterface implementieren';
                 break;
             case InstallCode::INVALID_AUTHOR:
                 $return .= 'Autor entspricht nicht der Konvention.';

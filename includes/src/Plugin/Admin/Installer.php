@@ -8,6 +8,8 @@ namespace Plugin\Admin;
 
 use DB\DbInterface;
 use JTL\XMLParser;
+use JTLShop\SemVer\Version;
+use Plugin\Admin\Validation\ValidatorInterface;
 use Plugin\InstallCode;
 use Plugin\Plugin;
 
@@ -33,9 +35,14 @@ final class Installer
     private $uninstaller;
 
     /**
-     * @var Validator
+     * @var ValidatorInterface
      */
     private $validator;
+
+    /**
+     * @var ValidatorInterface
+     */
+    private $modernValidator;
 
     /**
      * @var Plugin|null
@@ -44,15 +51,21 @@ final class Installer
 
     /**
      * Installer constructor.
-     * @param DbInterface $db
-     * @param Uninstaller $uninstaller
-     * @param Validator   $validator
+     * @param DbInterface        $db
+     * @param Uninstaller        $uninstaller
+     * @param ValidatorInterface $validator
+     * @param ValidatorInterface $modernValidator
      */
-    public function __construct(DbInterface $db, Uninstaller $uninstaller, Validator $validator)
-    {
-        $this->db          = $db;
-        $this->uninstaller = $uninstaller;
-        $this->validator   = $validator;
+    public function __construct(
+        DbInterface $db,
+        Uninstaller $uninstaller,
+        ValidatorInterface $validator,
+        ValidatorInterface $modernValidator
+    ) {
+        $this->db              = $db;
+        $this->uninstaller     = $uninstaller;
+        $this->validator       = $validator;
+        $this->modernValidator = $modernValidator;
     }
 
     /**
@@ -96,14 +109,19 @@ final class Installer
         if (empty($this->dir)) {
             return InstallCode::WRONG_PARAM;
         }
-        $baseDir = \PFAD_ROOT . \PFAD_PLUGIN . \basename($this->dir);
+        $validator = $this->validator;
+        $baseDir   = \PFAD_ROOT . \PFAD_PLUGIN . \basename($this->dir);
         if (!\file_exists($baseDir . '/' . \PLUGIN_INFO_FILE)) {
-            return InstallCode::INFO_XML_MISSING;
+            $baseDir   = \PFAD_ROOT . 'plugins/' . \basename($this->dir);
+            $validator = $this->modernValidator;
+            if (!\file_exists($baseDir . '/' . \PLUGIN_INFO_FILE)) {
+                return InstallCode::INFO_XML_MISSING;
+            }
         }
         $parser = new XMLParser();
         $xml    = $parser->parse($baseDir . '/' . \PLUGIN_INFO_FILE);
-        $this->validator->setDir($baseDir);
-        $code = $this->validator->pluginPlausiIntern($xml, $this->plugin !== null);
+        $validator->setDir($baseDir);
+        $code = $validator->pluginPlausiIntern($xml, $this->plugin !== null);
         if ($this->plugin !== null && $this->plugin->kPlugin > 0 && $code === InstallCode::DUPLICATE_PLUGIN_ID) {
             $code = InstallCode::OK;
         }
@@ -121,20 +139,32 @@ final class Installer
      * @return int
      * @former installierePlugin()
      */
-    public function installierePlugin($xml): int
+    public function installierePlugin(array $xml): int
     {
-        $baseNode         = $xml['jtlshop3plugin'][0];
+        $baseNode         = $this->getBaseNode($xml);
         $versionNode      = $baseNode['Install'][0]['Version'];
-        $lastVersionKey   = \count($versionNode) / 2 - 1;
         $xmlVersion       = (int)$baseNode['XMLVersion'];
         $licenceClass     = '';
         $licenceClassName = '';
         $state            = Plugin::PLUGIN_ACTIVATED;
         $tagsToFlush      = [];
-        $basePath         = \PFAD_ROOT . \PFAD_PLUGIN . $this->dir . '/';
-        $version          = (int)$versionNode[$lastVersionKey . ' attr']['nr'];
-        $versionedDir     = $basePath . \PFAD_PLUGIN_VERSION . $version . '/';
-        $tags             = empty($baseNode['Install'][0]['FlushTags'])
+        $basePath         = \PFAD_ROOT . \PFAD_PLUGIN . $this->dir . \DIRECTORY_SEPARATOR;
+        $lastVersionKey   = null;
+
+        $modern = false;
+
+        if (\is_array($versionNode)) {
+            $lastVersionKey = \count($versionNode) / 2 - 1;
+            $version        = (int)$versionNode[$lastVersionKey . ' attr']['nr'];
+            $versionedDir   = $basePath . \PFAD_PLUGIN_VERSION . $version . '/';
+        } else {
+            $version      = (int)$versionNode;
+            $basePath     = \PFAD_ROOT . 'plugins' . \DIRECTORY_SEPARATOR . $this->dir;
+            $versionedDir = $basePath;
+            $versionNode  = [];
+            $modern       = true;
+        }
+        $tags = empty($baseNode['Install'][0]['FlushTags'])
             ? []
             : \explode(',', $baseNode['Install'][0]['FlushTags']);
         if (isset($baseNode['LicenceClass'], $baseNode['LicenceClassFile'])
@@ -143,7 +173,7 @@ final class Installer
         ) {
             $licenceClass     = $baseNode['LicenceClass'];
             $licenceClassName = $baseNode['LicenceClassFile'];
-            $state           = Plugin::PLUGIN_LICENSE_KEY_MISSING;
+            $state            = Plugin::PLUGIN_LICENSE_KEY_MISSING;
         }
         $plugin                       = new \stdClass();
         $plugin->cName                = $baseNode['Name'];
@@ -162,7 +192,9 @@ final class Installer
         $plugin->nXMLVersion          = $xmlVersion;
         $plugin->nPrio                = 0;
         $plugin->dZuletztAktualisiert = 'NOW()';
-        $plugin->dErstellt            = $versionNode[$lastVersionKey]['CreateDate'];
+        $plugin->dErstellt            = $lastVersionKey !== null
+            ? $versionNode[$lastVersionKey]['CreateDate']
+            : $baseNode['Install'][0]['CreateDate'];
         $plugin->bBootstrap           = \is_file($versionedDir . '/' . 'bootstrap.php') ? 1 : 0;
 
         foreach ($tags as $_tag) {
@@ -191,7 +223,6 @@ final class Installer
             ? $this->plugin->dInstalliert
             : 'NOW()';
         $kPlugin              = $this->db->insert('tplugin', $plugin);
-        $nVersion             = (int)$versionNode[$lastVersionKey . ' attr']['nr'];
         $plugin->kPlugin      = $kPlugin;
 
         if ($kPlugin <= 0) {
@@ -208,7 +239,7 @@ final class Installer
         $hasSQLError = false;
         $code        = 1;
         foreach ($versionNode as $i => $versionData) {
-            if ($nVersion > 0
+            if ($version > 0
                 && isset($this->plugin->kPlugin, $versionData['nr'])
                 && $this->plugin->nVersion >= (int)$versionData['nr']
             ) {
@@ -231,6 +262,11 @@ final class Installer
                 break;
             }
         }
+        if ($modern === true) {
+            $this->updateByMigration($plugin, $versionedDir, Version::parse($version));
+            die('modern updated');
+        }
+        die('post!');
         // Ist ein SQL Fehler aufgetreten? Wenn ja, deinstalliere wieder alles
         if ($hasSQLError) {
             $this->uninstaller->uninstall($plugin->kPlugin);
@@ -256,6 +292,15 @@ final class Installer
         }
 
         return $code;
+    }
+
+    /**
+     * @param array $xml
+     * @return array
+     */
+    private function getBaseNode(array $xml): array
+    {
+        return $xml['jtlshopplugin'][0] ?? $xml['jtlshop3plugin'][0];
     }
 
     /**
@@ -298,6 +343,31 @@ final class Installer
         \fclose($handle);
 
         return $sqlLines;
+    }
+
+    /**
+     * @param \stdClass $plugin
+     * @param string    $pluginPath
+     * @param Version   $targetVersion
+     * @return \IMigration|Version
+     * @throws \Exception
+     */
+    private function updateByMigration(\stdClass $plugin, string $pluginPath, Version $targetVersion)
+    {
+        $path              = $pluginPath . \DIRECTORY_SEPARATOR . \PFAD_PLUGIN_MIGRATIONS;
+        $manager           = new MigrationManager($this->db, $path, $plugin->cPluginID);
+        $pendingMigrations = $manager->getPendingMigrations();
+        \Shop::dbg($pendingMigrations, false, '$pendingMigrations:');
+        if (\count($pendingMigrations) === 0) {
+            return $targetVersion;
+        }
+        $id = \reset($pendingMigrations);
+        \Shop::dbg($id, false, 'ID:');
+        $migration = $manager->getMigrationById($id);
+
+        $manager->executeMigration($migration, \IMigration::UP);
+
+        return $migration;
     }
 
     /**
@@ -418,7 +488,7 @@ final class Installer
                         $conf->cName
                     );
                     if (!isset($confData[$name])) {
-                        $confData[$name] = new \stdClass();
+                        $confData[$name]          = new \stdClass();
                         $confData[$name]->kPlugin = $oldPluginID;
                         $confData[$name]->cName   = \str_replace(
                             'kPlugin_' . $pluginID . '_',

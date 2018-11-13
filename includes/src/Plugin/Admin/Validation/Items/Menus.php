@@ -46,6 +46,8 @@ class Menus extends AbstractItem
                         return InstallCode::INVALID_CUSTOM_LINK_FILE_NAME;
                     }
                     if (!\file_exists($dir . \PFAD_PLUGIN_ADMINMENU . $Customlink_arr['Filename'])) {
+                        \Shop::dbg($dir, false, 'dir:');
+                        \Shop::dbg($dir . \PFAD_PLUGIN_ADMINMENU . $Customlink_arr['Filename'], true, 'd',56);
                         return InstallCode::MISSING_CUSTOM_LINK_FILE;
                     }
                 }

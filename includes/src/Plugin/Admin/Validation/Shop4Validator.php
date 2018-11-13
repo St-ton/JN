@@ -4,58 +4,19 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin;
+namespace Plugin\Admin\Validation;
 
-use DB\DbInterface;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
-use Plugin\Admin\Validation\Shop4ValidationFactory;
 use Plugin\InstallCode;
 
 /**
- * Class Validator
- * @package Plugin\Admin
+ * Class Shop4Validator
+ * @package Plugin\Admin\Validation
  */
-final class Validator
+final class Shop4Validator extends AbstractValidator
 {
-    private const BASE_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var string
-     */
-    private $dir;
-
-    /**
-     * Validator constructor.
-     * @param DbInterface $db
-     */
-    public function __construct(DbInterface $db)
-    {
-        $this->db = $db;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDir(): string
-    {
-        return $this->dir;
-    }
-
-    /**
-     * @param string $dir
-     */
-    public function setDir(string $dir): void
-    {
-        $this->dir = \strpos($dir, self::BASE_DIR) === 0
-            ? $dir
-            : self::BASE_DIR . $dir;
-    }
+    protected const BASE_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
 
     /**
      * @param int  $kPlugin

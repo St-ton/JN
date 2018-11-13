@@ -20,42 +20,30 @@ class Licence extends AbstractItem
     public function validate(): int
     {
         $requiresMissingIoncube = false;
-        $installNode            = $this->getInstallNode();
         $node                   = $this->getBaseNode();
         $dir                    = $this->getDir();
-        if (isset($node['LicenceClassFile']) && !\extension_loaded('ionCube Loader')) {
-            // ioncube is not loaded
-            $nLastVersionKey    = \count($installNode['Version']) / 2 - 1;
-            $nLastPluginVersion = (int)$installNode['Version'][$nLastVersionKey . ' attr']['nr'];
-            if (\file_exists($dir . '/' . \PFAD_PLUGIN_VERSION . $nLastPluginVersion . '/' .
-                \PFAD_PLUGIN_LICENCE . $node['LicenceClassFile'])
-            ) {
-                $content = \file_get_contents($dir . '/' .
-                    \PFAD_PLUGIN_VERSION . $nLastPluginVersion . '/' .
-                    \PFAD_PLUGIN_LICENCE . $node['LicenceClassFile']);
-                // ioncube encoded files usually have a header that checks loaded extions itself
-                // but it can also be in short form, where there are no opening php tags
-                $requiresMissingIoncube = ((\strpos($content, 'ionCube') !== false
-                        && \strpos($content, 'extension_loaded') !== false)
-                    || \strpos($content, '<?php') === false);
-            }
+        if (isset($node['LicenceClassFile'])
+            && !\extension_loaded('ionCube Loader')
+            && \file_exists($dir . \PFAD_PLUGIN_LICENCE . $node['LicenceClassFile'])
+        ) {
+            $content = \file_get_contents($dir . \PFAD_PLUGIN_LICENCE . $node['LicenceClassFile']);
+            // ioncube encoded files usually have a header that checks loaded extions itself
+            // but it can also be in short form, where there are no opening php tags
+            $requiresMissingIoncube = ((\strpos($content, 'ionCube') !== false
+                    && \strpos($content, 'extension_loaded') !== false)
+                || \strpos($content, '<?php') === false);
         }
-        $nLastVersionKey    = \count($installNode['Version']) / 2 - 1;
-        $nLastPluginVersion = (int)$installNode['Version'][$nLastVersionKey . ' attr']['nr'];
-        $versionedDir       = $dir . '/' . \PFAD_PLUGIN_VERSION . $nLastPluginVersion . '/';
         if (isset($node['LicenceClassFile']) && \strlen($node['LicenceClassFile']) > 0) {
-            if (!\file_exists($versionedDir . \PFAD_PLUGIN_LICENCE . $node['LicenceClassFile'])) {
+            if (!\file_exists($dir . \PFAD_PLUGIN_LICENCE . $node['LicenceClassFile'])) {
                 return InstallCode::MISSING_LICENCE_FILE;
             }
-            if (empty($node['LicenceClass'])
-                || $node['LicenceClass'] !== $node['PluginID'] . \PLUGIN_LICENCE_CLASS
-            ) {
+            if (empty($node['LicenceClass']) || $node['LicenceClass'] !== $node['PluginID'] . \PLUGIN_LICENCE_CLASS) {
                 return InstallCode::INVALID_LICENCE_FILE_NAME;
             }
             if ($requiresMissingIoncube) {
                 return InstallCode::IONCUBE_REQUIRED;
             }
-            require_once $versionedDir . \PFAD_PLUGIN_LICENCE . $node['LicenceClassFile'];
+            require_once $dir . \PFAD_PLUGIN_LICENCE . $node['LicenceClassFile'];
             if (!\class_exists($node['LicenceClass'])) {
                 return InstallCode::MISSING_LICENCE;
             }

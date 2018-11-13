@@ -9,6 +9,7 @@ namespace Plugin\Admin;
 use DB\DbInterface;
 use JTL\XMLParser;
 use Mapper\PluginValidation;
+use Plugin\Admin\Validation\ValidatorInterface;
 use Plugin\InstallCode;
 use Plugin\Plugin;
 use Tightenco\Collect\Support\Collection;
@@ -22,25 +23,34 @@ final class Listing
 {
     private const PLUGINS_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
 
+    private const NEW_PLUGINS_DIR = \PFAD_ROOT . 'plugins' . \DIRECTORY_SEPARATOR;
+
     /**
      * @var DbInterface
      */
     private $db;
 
     /**
-     * @var Validator
+     * @var ValidatorInterface
      */
     private $validator;
 
     /**
-     * Listing constructor.
-     * @param DbInterface $db
-     * @param Validator   $validator
+     * @var ValidatorInterface
      */
-    public function __construct(DbInterface $db, Validator $validator)
+    private $modernValidator;
+
+    /**
+     * Listing constructor.
+     * @param DbInterface        $db
+     * @param ValidatorInterface $validator
+     * @param ValidatorInterface $modernValidator
+     */
+    public function __construct(DbInterface $db, ValidatorInterface $validator, ValidatorInterface $modernValidator)
     {
-        $this->db        = $db;
-        $this->validator = $validator;
+        $this->db              = $db;
+        $this->validator       = $validator;
+        $this->modernValidator = $modernValidator;
     }
 
     /**
@@ -88,7 +98,21 @@ final class Listing
         $installedPlugins = $installed->map(function ($item) {
             return $item->cVerzeichnis;
         });
-        $parser = new XMLParser();
+        $parser           = new XMLParser();
+        $this->getOldPlugins($parser, $plugins, $installedPlugins);
+        $this->getNewPlugins($parser, $plugins, $installedPlugins);
+
+        return $this->sort($plugins);
+    }
+
+    /**
+     * @param XMLParser  $parser
+     * @param \stdClass  $plugins
+     * @param Collection $installedPlugins
+     * @return \stdClass
+     */
+    private function getOldPlugins(XMLParser $parser, \stdClass $plugins, $installedPlugins): \stdClass
+    {
         foreach (new \DirectoryIterator(self::PLUGINS_DIR) as $fileinfo) {
             if ($fileinfo->isDot() || !$fileinfo->isDir()) {
                 continue;
@@ -118,7 +142,51 @@ final class Listing
             }
         }
 
-        return $this->sort($plugins);
+        return $plugins;
+    }
+
+    /**
+     * @param XMLParser  $parser
+     * @param \stdClass  $plugins
+     * @param Collection $installedPlugins
+     * @return \stdClass
+     */
+    private function getNewPlugins(XMLParser $parser, \stdClass $plugins, $installedPlugins): \stdClass
+    {
+        foreach (new \DirectoryIterator(self::NEW_PLUGINS_DIR) as $fileinfo) {
+            if ($fileinfo->isDot() || !$fileinfo->isDir()) {
+                continue;
+            }
+            $dir  = $fileinfo->getBasename();
+            $info = $fileinfo->getPathname() . '/' . \PLUGIN_INFO_FILE;
+            if (!\file_exists($info)) {
+                continue;
+            }
+            $xml  = $parser->parse($info);
+            $code = $this->modernValidator->validateByPath(self::NEW_PLUGINS_DIR . $dir);
+            if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $installedPlugins->contains($dir)) {
+                $xml['cVerzeichnis']    = $dir;
+                $xml['shop4compatible'] = isset($xml['jtlshop3plugin'][0]['Shop4Version']);
+                $xml['shop5compatible'] = isset($xml['jtlshopplugin'][0]['ShopVersion']);
+                $plugins->index[$dir]   = $this->makeXMLToObj($xml);
+                $plugins->installiert[] = &$plugins->index[$dir];
+            } elseif ($code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE || $code === InstallCode::OK) {
+                $xml['cVerzeichnis']    = $dir;
+                $xml['shop4compatible'] = $code === InstallCode::OK;
+                $xml['shop5compatible'] = isset($xml['jtlshopplugin'][0]['ShopVersion']);
+                $plugins->index[$dir]   = $this->makeXMLToObj($xml);
+                $plugins->verfuegbar[]  = &$plugins->index[$dir];
+            } else {
+                $xml['cVerzeichnis']    = $dir;
+                $xml['cFehlercode']     = $code;
+                $xml['shop4compatible'] = false;
+                $xml['shop5compatible'] = false;
+                $plugins->index[$dir]   = $this->makeXMLToObj($xml);
+                $plugins->fehlerhaft[]  = &$plugins->index[$dir];
+            }
+        }
+
+        return $plugins;
     }
 
     /**
@@ -143,47 +211,55 @@ final class Listing
     /**
      * Baut aus einer XML ein Objekt
      *
-     * @param array $XML
+     * @param array $xml
      * @return \stdClass
      */
-    private function makeXMLToObj($XML): \stdClass
+    private function makeXMLToObj($xml): \stdClass
     {
-        $res = new \stdClass();
-        if (isset($XML['jtlshop3plugin']) && \is_array($XML['jtlshop3plugin'])) {
-            if (!isset($XML['jtlshop3plugin'][0]['Install'][0]['Version'])) {
+        $res                  = new \stdClass();
+        $node                 = null;
+        $res->shop4compatible = false;
+        $res->shop5compatible = false;
+        $res->cName           = $xml['cVerzeichnis'];
+        $res->cDescription    = '';
+        $res->cVerzeichnis    = $xml['cVerzeichnis'];
+        if (isset($xml['jtlshopplugin']) && \is_array($xml['jtlshopplugin'])) {
+            $node                 = $xml['jtlshopplugin'][0];
+            $res->shop5compatible = true;
+        } elseif (isset($xml['jtlshop3plugin']) && \is_array($xml['jtlshop3plugin'])) {
+            $node = $xml['jtlshop3plugin'][0];
+        }
+        if ($node !== null) {
+            if (!isset($node['Install'][0]['Version'])) {
                 return $res;
             }
-            if (!isset($XML['jtlshop3plugin'][0]['Name'])) {
+            if (!isset($node['Name'])) {
                 return $res;
             }
-            $node        = $XML['jtlshop3plugin'][0];
-            $lastVersion = \count($node['Install'][0]['Version']) / 2 - 1;
-
             $res->cName           = $node['Name'];
             $res->cDescription    = $node['Description'] ?? '';
             $res->cAuthor         = $node['Author'] ?? '';
             $res->cPluginID       = $node['PluginID'];
             $res->cIcon           = $node['Icon'] ?? null;
-            $res->cVerzeichnis    = $XML['cVerzeichnis'];
-            $res->shop4compatible = !empty($XML['shop4compatible'])
-                ? $XML['shop4compatible']
+            $res->cVerzeichnis    = $xml['cVerzeichnis'];
+            $res->shop4compatible = !empty($xml['shop4compatible'])
+                ? $xml['shop4compatible']
                 : false;
-            $res->nVersion        = $lastVersion >= 0
-            && isset($node['Install'][0]['Version'][$lastVersion . ' attr']['nr'])
-                ? (int)$node['Install'][0]['Version'][$lastVersion . ' attr']['nr']
-                : 0;
-            $res->cVersion        = \number_format($res->nVersion / 100, 2);
+            if (\is_array($node['Install'][0]['Version'])) {
+                $lastVersion   = \count($node['Install'][0]['Version']) / 2 - 1;
+                $res->nVersion = $lastVersion >= 0
+                && isset($node['Install'][0]['Version'][$lastVersion . ' attr']['nr'])
+                    ? (int)$node['Install'][0]['Version'][$lastVersion . ' attr']['nr']
+                    : 0;
+                $res->cVersion = \number_format($res->nVersion / 100, 2);
+            } else {
+                $res->cVersion = $node['Install'][0]['Version'];
+            }
         }
-
-        if (empty($res->cName) && empty($res->cDescription) && !empty($XML['cVerzeichnis'])) {
-            $res->cName        = $XML['cVerzeichnis'];
-            $res->cDescription = '';
-            $res->cVerzeichnis = $XML['cVerzeichnis'];
-        }
-        if (isset($XML['cFehlercode']) && \strlen($XML['cFehlercode']) > 0) {
+        if (!empty($xml['cFehlercode'])) {
             $mapper                   = new PluginValidation();
-            $res->cFehlercode         = $XML['cFehlercode'];
-            $res->cFehlerBeschreibung = $mapper->map($XML['cFehlercode'], $res);
+            $res->cFehlercode         = $xml['cFehlercode'];
+            $res->cFehlerBeschreibung = $mapper->map($xml['cFehlercode'], $res);
         }
 
         return $res;

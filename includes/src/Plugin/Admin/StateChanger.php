@@ -10,6 +10,7 @@ use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use Plugin\InstallCode;
 use Plugin\Plugin;
+use Plugin\Admin\Validation\Shop4Validator;
 
 /**
  * Class StateChanger
@@ -28,17 +29,17 @@ class StateChanger
     private $cache;
 
     /**
-     * @var Validator
+     * @var Shop4Validator
      */
     private $validator;
 
     /**
      * StateChanger constructor.
-     * @param DbInterface       $db
-     * @param JTLCacheInterface $cache
-     * @param Validator|null    $validator
+     * @param DbInterface         $db
+     * @param JTLCacheInterface   $cache
+     * @param Shop4Validator|null $validator
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache, Validator $validator = null)
+    public function __construct(DbInterface $db, JTLCacheInterface $cache, Shop4Validator $validator = null)
     {
         $this->db        = $db;
         $this->cache     = $cache;

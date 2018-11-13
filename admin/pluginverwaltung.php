@@ -10,19 +10,20 @@ $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'pluginverwaltung_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 
-$reload       = false;
-$cHinweis     = '';
-$cFehler      = '';
-$step         = 'pluginverwaltung_uebersicht';
-$db           = Shop::Container()->getDB();
-$cache        = Shop::Container()->getCache();
-$uninstaller  = new \Plugin\Admin\Uninstaller($db);
-$validator    = new \Plugin\Admin\Validator($db);
-$listing      = new \Plugin\Admin\Listing($db, $validator);
-$installer    = new \Plugin\Admin\Installer($db, $uninstaller, $validator);
-$updater      = new \Plugin\Admin\Updater($db, $installer);
-$extractor    = new \Plugin\Admin\Extractor();
-$stateChanger = new \Plugin\Admin\StateChanger(
+$reload          = false;
+$cHinweis        = '';
+$cFehler         = '';
+$step            = 'pluginverwaltung_uebersicht';
+$db              = Shop::Container()->getDB();
+$cache           = Shop::Container()->getCache();
+$uninstaller     = new \Plugin\Admin\Uninstaller($db);
+$validator       = new \Plugin\Admin\Validation\Shop4Validator($db);
+$modernValidator = new \Plugin\Admin\Validation\ModernValidator($db);
+$listing         = new \Plugin\Admin\Listing($db, $validator, $modernValidator);
+$installer       = new \Plugin\Admin\Installer($db, $uninstaller, $validator, $modernValidator);
+$updater         = new \Plugin\Admin\Updater($db, $installer);
+$extractor       = new \Plugin\Admin\Extractor();
+$stateChanger    = new \Plugin\Admin\StateChanger(
     $db,
     $cache,
     $validator

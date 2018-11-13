@@ -66,4 +66,14 @@ interface ValidationItemInterface
      * @param string $dir
      */
     public function setBaseDir(string $dir): void;
+
+    /**
+     * @return string
+     */
+    public function getVersion(): string;
+
+    /**
+     * @param string $version
+     */
+    public function setVersion(string $version): void;
 }

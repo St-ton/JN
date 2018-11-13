@@ -52,12 +52,12 @@ class AbstractItem implements ValidationItemInterface
      * @param string $version
      * @param string $pluginID
      */
-    public function __construct($baseNode, $baseDir, $version, $pluginID)
+    public function __construct(array $baseNode, string $baseDir, string $version, string $pluginID)
     {
         $this->baseNode    = $baseNode;
         $this->installNode = $baseNode['Install'][0];
         $this->baseDir     = $baseDir;
-        $this->dir         = $baseDir . '/' . \PFAD_PLUGIN_VERSION . $version . '/';
+        $this->dir         = $baseDir . \DIRECTORY_SEPARATOR . \PFAD_PLUGIN_VERSION . $version . \DIRECTORY_SEPARATOR;
         $this->version     = $version;
         $this->pluginID    = $pluginID;
     }
@@ -148,5 +148,21 @@ class AbstractItem implements ValidationItemInterface
     public function setDir(string $dir): void
     {
         $this->dir = $dir;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getVersion(): string
+    {
+        return $this->version;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setVersion(string $version): void
+    {
+        $this->version = $version;
     }
 }

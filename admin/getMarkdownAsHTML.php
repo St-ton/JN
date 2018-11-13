@@ -17,7 +17,9 @@ $oAccount->redirectOnFailure();
 
 if (isset($_POST['path']) && FormHelper::validateToken()) {
     $path = realpath($_POST['path']);
-    if ($path !== false && strpos($path . '/', PFAD_ROOT . PFAD_PLUGIN) === 0) {
+    if ($path !== false
+        && (strpos($path . '/', PFAD_ROOT . 'plugins') === 0 || strpos($path . '/', PFAD_ROOT . PFAD_PLUGIN) === 0)
+    ) {
         $info = pathinfo($path);
         if (strtolower($info['extension']) === 'md') {
             $oParseDown       = new Parsedown();

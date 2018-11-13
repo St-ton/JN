@@ -57,7 +57,9 @@ if (!empty($_FILES['file_data'])) {
         'status_5' => [],
         'status_6' => []
     ];
-
+    foreach ($pluginsInstalled as $_plugin) {
+        $pluginsInstalledByState['status_' . $_plugin->nStatus][] = $_plugin;
+    }
     $errorCount = count($pluginsInstalledByState['status_3']) +
         count($pluginsInstalledByState['status_4']) +
         count($pluginsInstalledByState['status_5']) +
@@ -330,6 +332,7 @@ if ($step === 'pluginverwaltung_uebersicht') {
             }
         }
     }
+    Shop::dbg($vLicenseFiles);
     if (!empty($vLicenseFiles)) {
         $smarty->assign('szLicenses', json_encode($vLicenseFiles));
     }
@@ -337,7 +340,7 @@ if ($step === 'pluginverwaltung_uebersicht') {
         count($pluginsInstalledByState['status_4']) +
         count($pluginsInstalledByState['status_5']) +
         count($pluginsInstalledByState['status_6']);
-} elseif ($step === 'pluginverwaltung_sprachvariablen') { // Sprachvariablen
+} elseif ($step === 'pluginverwaltung_sprachvariablen') {
     $kPlugin      = RequestHelper::verifyGPCDataInt('kPlugin');
     $oSprache_arr = $db->query(
         'SELECT * FROM tsprache',

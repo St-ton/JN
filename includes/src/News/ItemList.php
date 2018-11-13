@@ -52,6 +52,7 @@ final class ItemList implements ItemListInterface
         if (\count($this->itemIDs) === 0) {
             return $this->items;
         }
+        $itemList      = \implode(',', $this->itemIDs);
         $itemLanguages = $this->db->query(
             'SELECT tnewssprache.languageID,
             tnewssprache.languageCode,
@@ -74,8 +75,9 @@ final class ItemList implements ItemListInterface
                 JOIN tseo 
                     ON tseo.cKey = \'kNews\'
                     AND tseo.kKey = tnews.kNews
-                WHERE tnews.kNews  IN (' . \implode(',', $this->itemIDs) . ')
-                GROUP BY tnews.kNews, tnewssprache.languageID',
+                WHERE tnews.kNews IN (' . $itemList  . ')
+                GROUP BY tnews.kNews, tnewssprache.languageID
+                ORDER BY FIELD(tnews.kNews, ' . $itemList . ')',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $items         = map(group($itemLanguages, function ($e) {

@@ -326,7 +326,7 @@ class WarenkorbPos
         $weight = $this->Artikel->fGewicht * $this->nAnzahl;
 
         if ($this->kKonfigitem === 0 && !empty($this->cUnique)) {
-            foreach (Session::Cart()->PositionenArr as $pos) {
+            foreach (\Session\Session::getCart()->PositionenArr as $pos) {
                 if ($pos->istKonfigKind() && $pos->cUnique === $this->cUnique) {
                     $weight += $pos->fGesamtgewicht;
                 }
@@ -357,7 +357,7 @@ class WarenkorbPos
         if (!is_array($_SESSION['Waehrungen'])) {
             return $this;
         }
-        foreach (Session::getCurrencies() as $currency) {
+        foreach (\Session\Session::getCurrencies() as $currency) {
             $currencyName = $currency->getName();
             // Standardartikel
             $this->cGesamtpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(

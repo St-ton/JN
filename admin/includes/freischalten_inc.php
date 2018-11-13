@@ -200,7 +200,7 @@ function schalteSuchanfragenFrei($kSuchanfrage_arr): bool
             );
             // Aktivierte Suchanfragen in tseo eintragen
             $oSeo           = new stdClass();
-            $oSeo->cSeo     = checkSeo(getSeo($oSuchanfrage->cSuche));
+            $oSeo->cSeo     = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($oSuchanfrage->cSuche));
             $oSeo->cKey     = 'kSuchanfrage';
             $oSeo->kKey     = $kSuchanfrage;
             $oSeo->kSprache = $oSuchanfrage->kSprache;
@@ -248,7 +248,7 @@ function schalteTagsFrei($kTag_arr): bool
                 ['kTag', $kTag, (int)$oTag->kSprache]
             );
             $oSeo           = new stdClass();
-            $oSeo->cSeo     = checkSeo(getSeo($oTag->cName));
+            $oSeo->cSeo     = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($oTag->cName));
             $oSeo->cKey     = 'kTag';
             $oSeo->kKey     = $kTag;
             $oSeo->kSprache = (int)$oTag->kSprache;

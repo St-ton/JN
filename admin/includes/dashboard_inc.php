@@ -169,7 +169,7 @@ function getRemoteDataIO($cURL, $cDataName, $cTpl, $cWrapperID, $cPost = null, $
     $oURLsToCache_arr = ['oNews_arr', 'oMarketplace_arr', 'oMarketplaceUpdates_arr', 'oPatch_arr', 'oDuk', 'oHelp_arr'];
 
     if (in_array($cDataName, $oURLsToCache_arr, true)) {
-        $cacheID = $cDataName . '_' . $cTpl . '_' . md5($cWrapperID . $cURL);
+        $cacheID = str_replace('/', '_', $cDataName . '_' . $cTpl . '_' . md5($cWrapperID . $cURL));
         if (($cData = Shop::Container()->getCache()->get($cacheID)) === false) {
             $cData = RequestHelper::http_get_contents($cURL, 15, $cPost);
             Shop::Container()->getCache()->set($cacheID, $cData, [CACHING_GROUP_OBJECT], 3600);

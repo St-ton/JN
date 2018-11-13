@@ -44,7 +44,7 @@ if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
         $cBestSellerSeo,
         SEARCHSPECIALS_BESTSELLER
     )) {
-        $cBestSellerSeo = checkSeo(getSeo($cBestSellerSeo));
+        $cBestSellerSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($cBestSellerSeo));
 
         if ($cBestSellerSeo !== $_POST['bestseller']) {
             $cHinweis .= 'Das BestSeller Seo "' . StringHandler::filterXSS($_POST['bestseller']) .
@@ -67,7 +67,7 @@ if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
         $cSonderangeboteSeo,
         SEARCHSPECIALS_SPECIALOFFERS
     )) {
-        $cSonderangeboteSeo = checkSeo(getSeo($cSonderangeboteSeo));
+        $cSonderangeboteSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($cSonderangeboteSeo));
 
         if ($cSonderangeboteSeo !== $_POST['sonderangebote']) {
             $cHinweis .= 'Das Sonderangebot Seo "' . StringHandler::filterXSS($_POST['sonderangebote']) .
@@ -90,7 +90,7 @@ if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
         $cNeuImSortimentSeo,
         SEARCHSPECIALS_NEWPRODUCTS
     )) {
-        $cNeuImSortimentSeo = checkSeo(getSeo($cNeuImSortimentSeo));
+        $cNeuImSortimentSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($cNeuImSortimentSeo));
 
         if ($cNeuImSortimentSeo !== $_POST['neu_im_sortiment']) {
             $cHinweis .= 'Das Neu im Sortiment Seo "' . StringHandler::filterXSS($_POST['neu_im_sortiment']) .
@@ -113,7 +113,7 @@ if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
         $cTopAngeboteSeo,
         SEARCHSPECIALS_TOPOFFERS
     )) {
-        $cTopAngeboteSeo = checkSeo(getSeo($cTopAngeboteSeo));
+        $cTopAngeboteSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($cTopAngeboteSeo));
 
         if ($cTopAngeboteSeo !== $_POST['top_angebote']) {
             $cHinweis .= 'Das Top Angebote Seo "' . StringHandler::filterXSS($_POST['top_angebote']) .
@@ -136,7 +136,7 @@ if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
         $cInKuerzeVerfuegbarSeo,
         SEARCHSPECIALS_UPCOMINGPRODUCTS
     )) {
-        $cInKuerzeVerfuegbarSeo = checkSeo(getSeo($cInKuerzeVerfuegbarSeo));
+        $cInKuerzeVerfuegbarSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($cInKuerzeVerfuegbarSeo));
         if ($cInKuerzeVerfuegbarSeo !== $_POST['in_kuerze_verfuegbar']) {
             $cHinweis .= 'Das In kürze Verfügbar Seo "' .
                 StringHandler::filterXSS($_POST['in_kuerze_verfuegbar']) .
@@ -157,7 +157,7 @@ if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
         $cTopBewertetSeo,
         SEARCHSPECIALS_TOPREVIEWS
     )) {
-        $cTopBewertetSeo = checkSeo(getSeo($cTopBewertetSeo));
+        $cTopBewertetSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($cTopBewertetSeo));
 
         if ($cTopBewertetSeo !== $_POST['top_bewertet']) {
             $cHinweis .= 'Das In kürze Verfügbar Seo "' .

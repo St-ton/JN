@@ -214,7 +214,10 @@ class Controller
                 $answer = [];
 
                 foreach ($question->getAnswerOptions() as $answerOption) {
-                    $answer[] = $post['sq' . $questionID . '_' . $answerOption->getID()];
+                    $idx = 'sq' . $questionID . '_' . $answerOption->getID();
+                    if (isset($post[$idx])) {
+                        $answer[] = $post[$idx];
+                    }
                 }
             } else {
                 $answer = $post['sq' . $questionID];

@@ -8,8 +8,6 @@
     {rdelim}
 </script>
 
-{include file='snippets/extension.tpl'}
-
 <h1>{lang key='orderCompletedPre' section='checkout'}</h1>
 
 <div class="row">

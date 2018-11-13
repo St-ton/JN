@@ -67,6 +67,7 @@
 .backend-wrapper {
   display: flex;
   flex-direction: row;
+  min-height: 100%;
 }
 .backend-wrapper .dropdown-menu,
 .backend-wrapper #backend-search-dropdown {
@@ -88,7 +89,7 @@
   height: 64px;
   padding: 1em;
   z-index: 2;
-  box-shadow: 1px -1px 2px #eef0f3;
+  box-shadow: 1px 3px 4px rgba(46, 46, 46, 0.09);
 }
 .backend-wrapper > .backend-sidebar > .backend-brandbar .backend-brand,
 .backend-wrapper > .backend-sidebar > .backend-brandbar .backend-brand img {
@@ -100,6 +101,13 @@
   background: none;
   border: none;
   color: #9b9b9b;
+  outline: none;
+}
+.backend-wrapper > .backend-sidebar > .backend-brandbar .backend-sidebar-toggle:hover {
+  color: #5cbcf6;
+}
+.backend-wrapper > .backend-sidebar > .backend-brandbar .backend-sidebar-toggle > .fa:before {
+  content: "\f100";
 }
 .backend-wrapper > .backend-sidebar > .backend-navigation {
   flex: auto;
@@ -157,21 +165,14 @@
   color: #fff;
   border-bottom: none;
 }
+.backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.secondlevel > li.current > a {
+  font-weight: bold;
+}
 .backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.secondlevel > li > a {
   border-left: 6px solid transparent;
   display: flex;
   align-items: center;
   font-size: 0.85em;
-}
-.backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.secondlevel > li > a:not(.collapsed) {
-  background-color: #5cbcf6;
-  border-left: 6px solid #0b6aa2;
-}
-.backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.secondlevel > li > a:not(.collapsed) > .fa {
-  color: #0b6aa2;
-}
-.backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.secondlevel > li > a:not(.collapsed) > .fa:before {
-  content: "\f077";
 }
 .backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.secondlevel > li > a > span {
   flex: auto;
@@ -183,10 +184,34 @@
 .backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.secondlevel > li > a > .fa:before {
   content: "\f078";
 }
+.backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.secondlevel > li > .thirdlevel {
+  height: 0;
+  overflow: hidden;
+}
+.backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.secondlevel > li.expanded > a {
+  background-color: #5cbcf6;
+  border-left: 6px solid #0b6aa2;
+}
+.backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.secondlevel > li.expanded > a > .fa {
+  color: #0b6aa2;
+}
+.backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.secondlevel > li.expanded > a > .fa:before {
+  content: "\f077";
+}
+.backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.secondlevel > li.expanded > .thirdlevel {
+  height: auto;
+}
 .backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.thirdlevel > li {
   background-color: #5cbcf6;
   font-size: 0.85em;
   list-style-type: disc;
+}
+.backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.thirdlevel > li > a {
+  padding-left: 1.5em;
+}
+.backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.thirdlevel > li.current > a {
+  color: #0b6aa2;
+  font-weight: bold;
 }
 .backend-wrapper > .backend-sidebar > .backend-navigation .backend-root-menu-icon-system:before {
   content: "\f013";
@@ -202,6 +227,65 @@
 }
 .backend-wrapper > .backend-sidebar > .backend-navigation .backend-root-menu-icon-plugins:before {
   content: "\f1e6";
+}
+.backend-wrapper > .backend-sidebar.collapsed {
+  width: 64px;
+}
+.backend-wrapper > .backend-sidebar.collapsed .backend-brand {
+  display: none;
+}
+.backend-wrapper > .backend-sidebar.collapsed .backend-sidebar-toggle > .fa:before {
+  content: "\f101";
+}
+.backend-wrapper > .backend-sidebar.collapsed > .backend-navigation .secondlevel {
+  display: none;
+}
+.backend-wrapper > .backend-sidebar.collapsed > .backend-navigation .secondlevel > li {
+  width: 256px;
+}
+.backend-wrapper > .backend-sidebar.collapsed > .backend-navigation .toplevel > li,
+.backend-wrapper > .backend-sidebar.collapsed > .backend-navigation .toplevel > li.single {
+  padding-bottom: 0.5em;
+  position: relative;
+}
+.backend-wrapper > .backend-sidebar.collapsed > .backend-navigation .toplevel > li.current .backend-root-label,
+.backend-wrapper > .backend-sidebar.collapsed > .backend-navigation .toplevel > li.single.current .backend-root-label,
+.backend-wrapper > .backend-sidebar.collapsed > .backend-navigation .toplevel > li.compact-expanded .backend-root-label,
+.backend-wrapper > .backend-sidebar.collapsed > .backend-navigation .toplevel > li.single.compact-expanded .backend-root-label {
+  background-color: #5cbcf6;
+}
+.backend-wrapper > .backend-sidebar.collapsed > .backend-navigation .toplevel > li.current .backend-root-label > a,
+.backend-wrapper > .backend-sidebar.collapsed > .backend-navigation .toplevel > li.single.current .backend-root-label > a,
+.backend-wrapper > .backend-sidebar.collapsed > .backend-navigation .toplevel > li.compact-expanded .backend-root-label > a,
+.backend-wrapper > .backend-sidebar.collapsed > .backend-navigation .toplevel > li.single.compact-expanded .backend-root-label > a {
+  color: #fff;
+}
+.backend-wrapper > .backend-sidebar.collapsed > .backend-navigation .toplevel > li.compact-expanded .backend-root-label,
+.backend-wrapper > .backend-sidebar.collapsed > .backend-navigation .toplevel > li.single.compact-expanded .backend-root-label {
+  border-left: 6px solid #0b6aa2;
+}
+.backend-wrapper > .backend-sidebar.collapsed > .backend-navigation .toplevel > li.compact-expanded .secondlevel,
+.backend-wrapper > .backend-sidebar.collapsed > .backend-navigation .toplevel > li.single.compact-expanded .secondlevel {
+  display: block;
+  position: absolute;
+  overflow: hidden;
+  top: 0;
+  left: 64px;
+  width: 256px;
+  background: #3098d6;
+  z-index: 4;
+}
+.backend-wrapper > .backend-sidebar.collapsed > .backend-navigation .toplevel > li > .backend-root-label,
+.backend-wrapper > .backend-sidebar.collapsed > .backend-navigation .toplevel > li.single > .backend-root-label {
+  padding-bottom: 0;
+}
+.backend-wrapper > .backend-sidebar.collapsed > .backend-navigation .toplevel > li > .backend-root-label > a,
+.backend-wrapper > .backend-sidebar.collapsed > .backend-navigation .toplevel > li.single > .backend-root-label > a {
+  border-bottom: none;
+}
+.backend-wrapper > .backend-sidebar.collapsed > .backend-navigation .toplevel > li > .backend-root-label > a > span,
+.backend-wrapper > .backend-sidebar.collapsed > .backend-navigation .toplevel > li.single > .backend-root-label > a > span {
+  display: none;
 }
 .backend-wrapper > .backend-main {
   flex: auto;
@@ -260,17 +344,17 @@
 .backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left .backend-search #backend-search-dropdown.open {
   display: block;
 }
-.backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left .backend-search #backend-search-dropdown > li {
-  padding: 0 1em;
-}
 .backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left .backend-search #backend-search-dropdown h4 {
-  margin: 0.5em 0;
+  margin: 0.5em 1em;
 }
 .backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left .backend-search #backend-search-dropdown .backend-search-section {
-  padding-left: 1em;
+  padding-left: 0;
 }
 .backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left .backend-search #backend-search-dropdown .backend-search-item {
-  padding: 0.25em 0;
+  padding: 0.25em 2em;
+}
+.backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left .backend-search #backend-search-dropdown .backend-search-item.selected {
+  background: #abd1f6;
 }
 .backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-right {
   margin: 0;
@@ -293,6 +377,9 @@
   padding: 32px;
   background: #f5f7fa;
   flex: auto;
+}
+.panel.widget {
+  box-shadow: 1px 1px 4px #d5d7da;
 }
 @media (max-width: 768px) {
   #content_wrapper.container-fluid,

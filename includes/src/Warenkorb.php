@@ -858,7 +858,7 @@ class Warenkorb
                         }
                     }
                 }
-                $anz                         = $this->gibAnzahlEinesArtikels($oArtikel->kArtikel);
+                $anz                    = $this->gibAnzahlEinesArtikels($oArtikel->kArtikel);
                 $pos->Artikel           = $oArtikel;
                 $pos->fPreisEinzelNetto = $oArtikel->gibPreis($anz, []);
                 $pos->fPreis            = $oArtikel->gibPreis($anz, $pos->WarenkorbPosEigenschaftArr);
@@ -1052,7 +1052,7 @@ class Warenkorb
             $_SESSION['Bestellung']->GuthabenNutzen   = 1;
             $_SESSION['Bestellung']->fGuthabenGenutzt = min(
                 $_SESSION['Kunde']->fGuthaben,
-                Session::Cart()->gibGesamtsummeWaren(true, false)
+                \Session\Session::getCart()->gibGesamtsummeWaren(true, false)
             );
             $gesamtsumme -= $_SESSION['Bestellung']->fGuthabenGenutzt * $conversionFactor;
         }

@@ -8,10 +8,6 @@
     {rdelim}
 </script>
 
-{if !empty($cFehler)}
-    <div class="alert alert-danger">{$cFehler}</div>
-{/if}
-
 {include file='snippets/extension.tpl'}
 
 <h1>{lang key='orderCompletedPre' section='checkout'}</h1>

@@ -72,9 +72,14 @@ if ($step === 'umfrage_uebersicht') {
     executeHook(HOOK_UMFRAGE_PAGE_UEBERSICHT);
 }
 
-$smarty->assign('hinweis', $cHinweis)
-       ->assign('Link', $link)
-       ->assign('fehler', $controller->getErrorMsg())
+if (!empty($controller->getErrorMsg())) {
+    Shop::Container()->getAlertService()->setErrorAlert(\Alert::VARIANT_DANGER, $controller->getErrorMsg());
+}
+if (!empty($cHinweis)) {
+    Shop::Container()->getAlertService()->setNoticeAlert(\Alert::VARIANT_INFO, $cHinweis);
+}
+
+$smarty->assign('Link', $link)
        ->assign('step', $step)
        ->assign('oUmfrage_arr', $sourveys)
        ->assign('nAktuelleSeite', $nAktuelleSeite);

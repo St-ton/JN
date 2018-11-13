@@ -86,9 +86,14 @@ $cMetaTitle = \Filter\Metadata::prepareMeta(
     (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']
 );
 
-Shop::Smarty()->assign('hinweis', $controller->getNoticeMsg())
-    ->assign('fehler', $controller->getErrorMsg())
-    ->assign('oPagination', $pagination)
+if ($controller->getNoticeMsg() !== '') {
+    Shop::Container()->getAlertService()->setNoticeAlert(\Alert::VARIANT_INFO, $controller->getNoticeMsg());
+}
+if ($controller->getErrorMsg() !== '') {
+    Shop::Container()->getAlertService()->setErrorAlert(\Alert::VARIANT_DANGER, $controller->getErrorMsg());
+}
+
+Shop::Smarty()->assign('oPagination', $pagination)
     ->assign('code_news', false);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

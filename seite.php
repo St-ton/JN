@@ -82,6 +82,10 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_LINK, $link->getID(), Shop::getLanguage(), $smarty);
 }
 
+if (!empty($cFehler)) {
+    Shop::Container()->getAlertService()->setErrorAlert(\Alert::VARIANT_DANGER, $cFehler);
+}
+
 require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_SEITE_PAGE_IF_LINKART);
 $smarty->assign('Link', $link)

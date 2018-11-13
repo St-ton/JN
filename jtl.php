@@ -787,6 +787,14 @@ $cMetaTitle       = $oMeta->cTitle;
 $cMetaDescription = $oMeta->cDesc;
 $cMetaKeywords    = $oMeta->cKeywords;
 $link             = $linkHelper->getPageLink($kLink);
+
+if (!empty($cFehler)) {
+    Shop::Container()->getAlertService()->setErrorAlert(\Alert::VARIANT_DANGER, $cFehler);
+}
+if (!empty($cHinweis)) {
+    Shop::Container()->getAlertService()->setNoticeAlert(\Alert::VARIANT_INFO, $cHinweis);
+}
+
 Shop::Smarty()
     ->assign('bewertungen', $ratings)
     ->assign('cHinweis', $cHinweis)

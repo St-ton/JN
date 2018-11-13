@@ -2,12 +2,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{if !empty($hinweis)}
-    <div class="alert alert-info">{$hinweis}</div>
-{/if}
-{if !empty($fehler)}
-    <div class="alert alert-danger">{$fehler}</div>
-{/if}
 {include file='snippets/extension.tpl'}
 
 {if !empty($cNewsErr)}

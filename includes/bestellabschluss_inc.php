@@ -999,7 +999,7 @@ function setzeSmartyWeiterleitung(Bestellung $bestellung): void
             [$_SESSION['Zahlungsart']->cModulId]
         );
     }
-    $kPlugin = \Plugin\Plugin::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
+    $kPlugin = \Plugin\PluginHelper::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
     if ($kPlugin > 0) {
         $oPlugin            = new \Plugin\Plugin($kPlugin);
         $GLOBALS['oPlugin'] = $oPlugin;

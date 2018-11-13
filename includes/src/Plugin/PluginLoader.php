@@ -32,7 +32,7 @@ class PluginLoader
     public function __construct(Plugin $plugin, DbInterface $db)
     {
         $this->plugin = $plugin;
-        $this->db = $db;
+        $this->db     = $db;
     }
 
     /**
@@ -70,21 +70,22 @@ class PluginLoader
      */
     public function loadPaths(): void
     {
-        $shopURL    = \Shop::getURL();
-        $shopURLSSL = \Shop::getURL(true);
-        $basePath   = \PFAD_ROOT . \PFAD_PLUGIN;
-        $versioned  = $this->plugin->cVerzeichnis . '/' . \PFAD_PLUGIN_VERSION . $this->plugin->nVersion . '/';
-        $pluginBase = \PFAD_PLUGIN . $versioned;
-        $this->plugin->cPluginPfad             = $basePath . $versioned;
-        $this->plugin->cFrontendPfad           = $this->plugin->cPluginPfad . \PFAD_PLUGIN_FRONTEND;
-        $this->plugin->cFrontendPfadURL        = $shopURL . '/' . $pluginBase . \PFAD_PLUGIN_FRONTEND; // deprecated
-        $this->plugin->cFrontendPfadURLSSL     = $shopURLSSL . '/' . $pluginBase . \PFAD_PLUGIN_FRONTEND;
-        $this->plugin->cAdminmenuPfad          = $this->plugin->cPluginPfad . \PFAD_PLUGIN_ADMINMENU;
-        $this->plugin->cAdminmenuPfadURL       = $shopURL . '/' . $pluginBase . \PFAD_PLUGIN_ADMINMENU;
-        $this->plugin->cAdminmenuPfadURLSSL    = $shopURLSSL . '/' . $pluginBase . \PFAD_PLUGIN_ADMINMENU;
-        $this->plugin->cLicencePfad            = $this->plugin->cPluginPfad . \PFAD_PLUGIN_LICENCE;
-        $this->plugin->cLicencePfadURL         = $shopURL . '/' . $pluginBase . \PFAD_PLUGIN_LICENCE;
-        $this->plugin->cLicencePfadURLSSL      = $shopURLSSL . '/' . $pluginBase . \PFAD_PLUGIN_LICENCE;
+        $shopURL                            = \Shop::getURL();
+        $shopURLSSL                         = \Shop::getURL(true);
+        $basePath                           = \PFAD_ROOT . \PFAD_PLUGIN;
+        $versioned                          = $this->plugin->cVerzeichnis . '/' .
+            \PFAD_PLUGIN_VERSION . $this->plugin->nVersion . '/';
+        $pluginBase                         = \PFAD_PLUGIN . $versioned;
+        $this->plugin->cPluginPfad          = $basePath . $versioned;
+        $this->plugin->cFrontendPfad        = $this->plugin->cPluginPfad . \PFAD_PLUGIN_FRONTEND;
+        $this->plugin->cFrontendPfadURL     = $shopURL . '/' . $pluginBase . \PFAD_PLUGIN_FRONTEND; // deprecated
+        $this->plugin->cFrontendPfadURLSSL  = $shopURLSSL . '/' . $pluginBase . \PFAD_PLUGIN_FRONTEND;
+        $this->plugin->cAdminmenuPfad       = $this->plugin->cPluginPfad . \PFAD_PLUGIN_ADMINMENU;
+        $this->plugin->cAdminmenuPfadURL    = $shopURL . '/' . $pluginBase . \PFAD_PLUGIN_ADMINMENU;
+        $this->plugin->cAdminmenuPfadURLSSL = $shopURLSSL . '/' . $pluginBase . \PFAD_PLUGIN_ADMINMENU;
+        $this->plugin->cLicencePfad         = $this->plugin->cPluginPfad . \PFAD_PLUGIN_LICENCE;
+        $this->plugin->cLicencePfadURL      = $shopURL . '/' . $pluginBase . \PFAD_PLUGIN_LICENCE;
+        $this->plugin->cLicencePfadURLSSL   = $shopURLSSL . '/' . $pluginBase . \PFAD_PLUGIN_LICENCE;
     }
 
     /**
@@ -100,19 +101,11 @@ class PluginLoader
             $this->plugin->changelogPath = $szPluginMainPath . 'CHANGELOG.md';
         }
         if ($this->plugin->cTextLicensePath === '') {
-            // we're only searching for multiple license-files, if we did not done this before yet!
-            $vPossibleLicenseNames = [
-                '',
-                'license.md',
-                'License.md',
-                'LICENSE.md'
-            ];
-            $i                     = \count($vPossibleLicenseNames) - 1;
-            for (; $i !== 0 && !$this->checkFileExistence($szPluginMainPath . $vPossibleLicenseNames[$i]); $i--) {
-                // we're only couting down to our find (or a empty string, if nothing was found)
-            }
-            if ($vPossibleLicenseNames[$i] !== '') {
-                $this->plugin->cTextLicensePath = $szPluginMainPath . $vPossibleLicenseNames[$i];
+            foreach (['license.md', 'License.md', 'LICENSE.md'] as $licenseName) {
+                if ($this->checkFileExistence($licenseName)) {
+                    $this->plugin->cTextLicensePath = $szPluginMainPath . $licenseName;
+                    break;
+                }
             }
         }
     }
@@ -134,7 +127,7 @@ class PluginLoader
         foreach ($this->plugin->oPluginEinstellung_arr as $conf) {
             $conf->kPlugin = (int)$conf->kPlugin;
             if ($conf->cConf === 'M') {
-                $conf->cWert = \unserialize($conf->cWert);
+                $conf->cWert = \unserialize($conf->cWert, ['allowed_classes' => false]);
             }
             unset($conf->cConf);
         }
@@ -280,7 +273,7 @@ class PluginLoader
                 'kZahlungsart',
                 (int)$method->kZahlungsart
             );
-            $cModulId                                     = PluginHelper::getModuleIDByPluginID(
+            $cModulId                                = PluginHelper::getModuleIDByPluginID(
                 $this->plugin->kPlugin,
                 $method->cName
             );
@@ -292,11 +285,11 @@ class PluginLoader
                     ORDER BY nSort",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            $methodsAssoc[$method->cModulId]              = $method;
+            $methodsAssoc[$method->cModulId]         = $method;
         }
         $this->plugin->oPluginZahlungsmethode_arr      = $methods;
         $this->plugin->oPluginZahlungsmethodeAssoc_arr = $methodsAssoc;
-        $paymentMethodClasses                  = $this->db->selectAll(
+        $paymentMethodClasses                          = $this->db->selectAll(
             'tpluginzahlungsartklasse',
             'kPlugin',
             (int)$this->plugin->kPlugin
@@ -390,7 +383,7 @@ class PluginLoader
             'kPlugin',
             (int)$this->plugin->kPlugin
         );
-        if (\is_object($this->plugin->oPluginUninstall)) {
+        if ($this->plugin->oPluginUninstall !== null) {
             $this->plugin->cPluginUninstallPfad = \PFAD_ROOT . \PFAD_PLUGIN . $this->plugin->cVerzeichnis . '/' .
                 \PFAD_PLUGIN_VERSION . $this->plugin->nVersion . '/' .
                 \PFAD_PLUGIN_UNINSTALL . $this->plugin->oPluginUninstall->cDateiname;

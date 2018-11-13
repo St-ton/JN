@@ -7,7 +7,6 @@
 namespace Plugin\Admin;
 
 use DB\DbInterface;
-use DB\ReturnType;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
 use Plugin\Admin\Validation\Shop4ValidationFactory;
@@ -69,12 +68,12 @@ final class Validator
         if (empty($plugin->kPlugin)) {
             return InstallCode::NO_PLUGIN_FOUND;
         }
-        $dir = self::BASE_DIR . $plugin->cVerzeichnis;
+        $dir  = self::BASE_DIR . $plugin->cVerzeichnis;
+        $info = $dir . '/' . \PLUGIN_INFO_FILE;
         $this->setDir($dir);
         if (!\is_dir($dir)) {
             return InstallCode::DIR_DOES_NOT_EXIST;
         }
-        $info = $dir . '/' . \PLUGIN_INFO_FILE;
         if (!\file_exists($info)) {
             return InstallCode::INFO_XML_MISSING;
         }
@@ -97,7 +96,7 @@ final class Validator
         if (!\is_dir($this->dir)) {
             return InstallCode::DIR_DOES_NOT_EXIST;
         }
-        $infoXML = "{$this->dir}/" . \PLUGIN_INFO_FILE;
+        $infoXML = $this->dir . '/' . \PLUGIN_INFO_FILE;
         if (!\file_exists($infoXML)) {
             return InstallCode::INFO_XML_MISSING;
         }
@@ -119,10 +118,7 @@ final class Validator
         $parsedXMLShopVersion = null;
         $parsedVersion        = null;
         $baseNode             = $xml['jtlshop3plugin'][0];
-        $oVersion             = $this->db->query('SELECT nVersion FROM tversion LIMIT 1', ReturnType::SINGLE_OBJECT);
-        if ($oVersion->nVersion > 0) {
-            $parsedVersion = Version::parse($oVersion->nVersion);
-        }
+        $parsedVersion        = Version::parse(\APPLICATION_VERSION);
         if (!isset($baseNode['XMLVersion'])) {
             return InstallCode::INVALID_XML_VERSION;
         }
@@ -132,7 +128,6 @@ final class Validator
         ) {
             return InstallCode::INVALID_XML_VERSION;
         }
-        $nXMLVersion = (int)$xml['jtlshop3plugin'][0]['XMLVersion'];
         if (empty($baseNode['ShopVersion']) && empty($baseNode['Shop4Version'])) {
             return InstallCode::INVALID_SHOP_VERSION;
         }
@@ -142,52 +137,20 @@ final class Validator
                 return InstallCode::DUPLICATE_PLUGIN_ID;
             }
         }
-        if ((isset($baseNode['ShopVersion'])
-                && \strlen($hits[0]) !== \strlen($baseNode['ShopVersion'])
-                && (int)$baseNode['ShopVersion'] >= 300)
-            || (isset($baseNode['Shop4Version'])
-                && \strlen($hits[0]) !== \strlen($baseNode['Shop4Version'])
-                && (int)$baseNode['Shop4Version'] >= 300)
-        ) {
-            return InstallCode::INVALID_SHOP_VERSION;
-        }
         if (isset($baseNode['Shop4Version'])) {
             $parsedXMLShopVersion = Version::parse($baseNode['Shop4Version']);
             $isShop4Compatible    = true;
         } else {
             $parsedXMLShopVersion = Version::parse($baseNode['ShopVersion']);
         }
-        $installNode = $baseNode['Install'][0];
         if (empty($parsedVersion)
             || empty($parsedXMLShopVersion)
             || $parsedXMLShopVersion->greaterThan($parsedVersion)
         ) {
             return InstallCode::SHOP_VERSION_COMPATIBILITY;
         }
-        if (!isset($baseNode['Author'])) {
-            return InstallCode::INVALID_AUTHOR;
-        }
-        if (!isset($baseNode['Name'])) {
-            return InstallCode::INVALID_NAME;
-        }
-        \preg_match(
-            '/[a-zA-Z0-9äÄüÜöÖß' . '\(\)_ -]+/',
-            $baseNode['Name'],
-            $hits
-        );
-        if (!isset($hits[0]) || \strlen($hits[0]) !== \strlen($baseNode['Name'])) {
-            return InstallCode::INVALID_NAME;
-        }
-        \preg_match('/[\w_]+/', $baseNode['PluginID'], $hits);
-        if (empty($baseNode['PluginID']) || \strlen($hits[0]) !== \strlen($baseNode['PluginID'])) {
-            return InstallCode::INVALID_PLUGIN_ID;
-        }
 
-        if (!isset($baseNode['Install']) || !\is_array($baseNode['Install'])) {
-            return InstallCode::INSTALL_NODE_MISSING;
-        }
-
-        $cVersionsnummer = $this->getVersion($installNode, $this->dir);
+        $cVersionsnummer = $this->getVersion($baseNode['Install'][0], $this->dir);
         if (!\is_string($cVersionsnummer)) {
             return $cVersionsnummer;
         }
@@ -198,9 +161,6 @@ final class Validator
             if ($res !== InstallCode::OK) {
                 return $res;
             }
-        }
-        if ($nXMLVersion > 100) {
-            return $isShop4Compatible ? InstallCode::OK : InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE;
         }
 
         return $isShop4Compatible ? InstallCode::OK : InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE;

@@ -6,6 +6,7 @@
 
 namespace Plugin\Admin\Validation;
 
+use Plugin\Admin\Validation\Items\Author;
 use Plugin\Admin\Validation\Items\Blueprints;
 use Plugin\Admin\Validation\Items\Bootstrapper;
 use Plugin\Admin\Validation\Items\Boxes;
@@ -14,11 +15,14 @@ use Plugin\Admin\Validation\Items\Exports;
 use Plugin\Admin\Validation\Items\ExtendedTemplates;
 use Plugin\Admin\Validation\Items\FrontendLinks;
 use Plugin\Admin\Validation\Items\Hooks;
+use Plugin\Admin\Validation\Items\Installation;
 use Plugin\Admin\Validation\Items\Licence;
 use Plugin\Admin\Validation\Items\Localization;
 use Plugin\Admin\Validation\Items\MailTemplates;
 use Plugin\Admin\Validation\Items\Menus;
+use Plugin\Admin\Validation\Items\Name;
 use Plugin\Admin\Validation\Items\PaymentMethods;
+use Plugin\Admin\Validation\Items\PluginID;
 use Plugin\Admin\Validation\Items\Portlets;
 use Plugin\Admin\Validation\Items\Uninstaller;
 use Plugin\Admin\Validation\Items\Widgets;
@@ -40,6 +44,10 @@ class Shop4ValidationFactory
     {
         $validation   = [];
 //        $validation[] = new Bootstrapper($node, $dir, $version, $pluginID);
+        $validation[] = new Name($node, $dir, $version, $pluginID);
+        $validation[] = new PluginID($node, $dir, $version, $pluginID);
+        $validation[] = new Installation($node, $dir, $version, $pluginID);
+        $validation[] = new Author($node, $dir, $version, $pluginID);
         $validation[] = new Licence($node, $dir, $version, $pluginID);
         $validation[] = new Hooks($node, $dir, $version, $pluginID);
         $validation[] = new Menus($node, $dir, $version, $pluginID);

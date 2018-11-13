@@ -134,7 +134,7 @@ function bearbeiteInsert($xml, array $conf)
 
     if (isset($xml['tartikel']['tkategorieartikel'])
         && (int)$conf['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE
-        && Shop::Cache()->isCacheGroupActive(CACHING_GROUP_CATEGORY)
+        && Shop::Container()->getCache()->isCacheGroupActive(CACHING_GROUP_CATEGORY)
     ) {
         $currentArticleCategories = [];
         $newArticleCategories     = [];
@@ -275,10 +275,10 @@ function bearbeiteInsert($xml, array $conf)
     if ($artikel_arr[0]->kArtikel > 0) {
         if (!$artikel_arr[0]->cSeo) {
             //get seo-path from productname, but replace slashes
-            $artikel_arr[0]->cSeo = getFlatSeoPath($artikel_arr[0]->cName);
+            $artikel_arr[0]->cSeo = \JTL\SeoHelper::getFlatSeoPath($artikel_arr[0]->cName);
         }
-        $artikel_arr[0]->cSeo = getSeo($artikel_arr[0]->cSeo);
-        $artikel_arr[0]->cSeo = checkSeo($artikel_arr[0]->cSeo);
+        $artikel_arr[0]->cSeo = \JTL\SeoHelper::getSeo($artikel_arr[0]->cSeo);
+        $artikel_arr[0]->cSeo = \JTL\SeoHelper::checkSeo($artikel_arr[0]->cSeo);
         //persistente werte
         $artikel_arr[0]->dLetzteAktualisierung = 'NOW()';
         //mysql strict fixes
@@ -360,7 +360,7 @@ function bearbeiteInsert($xml, array $conf)
             continue;
         }
         if (!$artikelsprache_arr[$i]->cSeo) {
-            $artikelsprache_arr[$i]->cSeo = getFlatSeoPath($artikelsprache_arr[$i]->cName);
+            $artikelsprache_arr[$i]->cSeo = \JTL\SeoHelper::getFlatSeoPath($artikelsprache_arr[$i]->cName);
         }
         if (!$artikelsprache_arr[$i]->cSeo) {
             $artikelsprache_arr[$i]->cSeo = $artikel_arr[0]->cSeo;
@@ -368,8 +368,8 @@ function bearbeiteInsert($xml, array $conf)
         if (!$artikelsprache_arr[$i]->cSeo) {
             $artikelsprache_arr[$i]->cSeo = $artikel_arr[0]->cName;
         }
-        $artikelsprache_arr[$i]->cSeo = getSeo($artikelsprache_arr[$i]->cSeo);
-        $artikelsprache_arr[$i]->cSeo = checkSeo($artikelsprache_arr[$i]->cSeo);
+        $artikelsprache_arr[$i]->cSeo = \JTL\SeoHelper::getSeo($artikelsprache_arr[$i]->cSeo);
+        $artikelsprache_arr[$i]->cSeo = \JTL\SeoHelper::checkSeo($artikelsprache_arr[$i]->cSeo);
 
         DBUpdateInsert('tartikelsprache', [$artikelsprache_arr[$i]], 'kArtikel', 'kSprache');
         Shop::Container()->getDB()->delete(
@@ -502,7 +502,7 @@ function bearbeiteInsert($xml, array $conf)
             }
         }
         if (count($cacheIDs) > 0) {
-            Shop::Cache()->flushTags($cacheIDs);
+            Shop::Container()->getCache()->flushTags($cacheIDs);
         }
     }
     if (isset($xml['tartikel']['tartikelupload']) && is_array($xml['tartikel']['tartikelupload'])) {
@@ -1268,7 +1268,7 @@ function checkArtikelBildLoeschung(int $kArtikel)
     foreach ($oArtikelPict_arr as $oArtikelPict) {
         deleteArticleImage($oArtikelPict, $kArtikel);
     }
-    Shop::Cache()->flush('arr_article_images_' . $kArtikel);
+    Shop::Container()->getCache()->flush('arr_article_images_' . $kArtikel);
 }
 
 /**
@@ -1393,7 +1393,7 @@ function clearProductCaches($products)
     $cacheTags[] = 'jtl_mmf';
     $cacheTags   = array_unique($cacheTags);
     // flush article cache, category cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes
-    $totalCount = Shop::Cache()->flushTags($cacheTags);
+    $totalCount = Shop::Container()->getCache()->flushTags($cacheTags);
     $end        = microtime(true);
     Shop::Container()->getLogService()->debug(
         'Flushed a total of ' . $totalCount .

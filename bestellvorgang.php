@@ -220,7 +220,7 @@ if ($step === 'Bestaetigung'
         $_SESSION['Bestellung']->GuthabenNutzen   = 1;
         $_SESSION['Bestellung']->fGuthabenGenutzt = min(
             $_SESSION['Kunde']->fGuthaben,
-            Session::Cart()->gibGesamtsummeWaren(true, false)
+            \Session\Session::getCart()->gibGesamtsummeWaren(true, false)
         );
     }
     Warenkorb::refreshChecksum($cart);

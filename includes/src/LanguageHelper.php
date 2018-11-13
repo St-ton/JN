@@ -24,7 +24,7 @@ class LanguageHelper
      */
     public function __construct()
     {
-        $this->cacheID  = 'langdata_' . Shop::Cache()->getBaseID(false, false, true, true, true, false);
+        $this->cacheID  = 'langdata_' . Shop::Container()->getCache()->getBaseID(false, false, true, true, true, false);
         self::$instance = $this;
     }
 

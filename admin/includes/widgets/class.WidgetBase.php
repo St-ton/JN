@@ -10,12 +10,12 @@
 class WidgetBase
 {
     /**
-     * @var JTLSmarty
+     * @var Smarty\JTLSmarty
      */
     public $oSmarty;
 
     /**
-     * @var NiceDB
+     * @var \DB\DbInterface
      */
     public $oDB;
 
@@ -25,9 +25,9 @@ class WidgetBase
     public $oPlugin;
 
     /**
-     * @param JTLSmarty $oSmarty
-     * @param NiceDB    $oDB
-     * @param Plugin    $oPlugin
+     * @param Smarty\JTLSmarty $oSmarty
+     * @param \DB\DbInterface  $oDB
+     * @param Plugin           $oPlugin
      */
     public function __construct($oSmarty = null, $oDB = null, &$oPlugin = null)
     {

@@ -5,21 +5,52 @@
  */
 
 /**
- * @param int $configSectionID
+ * @param int|array $configSectionID
  * @return array
  */
-function getAdminSectionSettings(int $configSectionID)
+function getAdminSectionSettings($configSectionID)
 {
-    $confData = Shop::Container()->getDB()->selectAll(
-        'teinstellungenconf',
-        'kEinstellungenSektion',
-        $configSectionID,
-        '*',
-        'nSort'
-    );
+    $db = Shop::Container()->getDB();
+    if (is_array($configSectionID)) {
+        $confData = $db->query(
+            'SELECT *
+                FROM teinstellungenconf
+                WHERE kEinstellungenConf IN (' . implode(',', $configSectionID) . ')
+                ORDER BY nSort',
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+    } else {
+        $confData = $db->selectAll(
+            'teinstellungenconf',
+            'kEinstellungenSektion',
+            $configSectionID,
+            '*',
+            'nSort'
+        );
+    }
     foreach ($confData as $conf) {
-        if ($conf->cInputTyp === 'selectbox') {
-            $conf->ConfWerte = Shop::Container()->getDB()->selectAll(
+        $conf->kEinstellungenSektion = (int)$conf->kEinstellungenSektion;
+        $conf->kEinstellungenConf    = (int)$conf->kEinstellungenConf;
+        $conf->nSort                 = (int)$conf->nSort;
+        $conf->nStandardAnzeigen     = (int)$conf->nStandardAnzeigen;
+        $conf->nModul                = (int)$conf->nModul;
+        if ($conf->cInputTyp === 'listbox') {
+            $conf->ConfWerte = $db->selectAll(
+                'tkundengruppe',
+                [],
+                [],
+                'kKundengruppe, cName',
+                'cStandard DESC'
+            );
+        } elseif ($conf->cInputTyp === 'selectkdngrp') {
+            $conf->ConfWerte = $db->query(
+                'SELECT kKundengruppe, cName
+                    FROM tkundengruppe
+                    ORDER BY cStandard DESC',
+                \DB\ReturnType::ARRAY_OF_OBJECTS
+            );
+        } else {
+            $conf->ConfWerte = $db->selectAll(
                 'teinstellungenconfwerte',
                 'kEinstellungenConf',
                 $conf->kEinstellungenConf,
@@ -27,12 +58,30 @@ function getAdminSectionSettings(int $configSectionID)
                 'nSort'
             );
         }
-        $oSetValue           = Shop::Container()->getDB()->select(
-            'teinstellungen',
-            ['kEinstellungenSektion', 'cName'],
-            [$configSectionID, $conf->cWertName]
-        );
-        $conf->gesetzterWert = $oSetValue->cWert ?? null;
+        if ($conf->cInputTyp === 'listbox') {
+            $oSetValue = $db->selectAll(
+                'teinstellungen',
+                ['kEinstellungenSektion', 'cName'],
+                [$conf->kEinstellungenSektion, $conf->cWertName],
+                'cWert'
+            );
+
+            $conf->gesetzterWert = $oSetValue;
+        } elseif ($conf->cInputTyp === 'selectkdngrp') {
+            $oSetValue = $db->selectAll(
+                'teinstellungen',
+                ['kEinstellungenSektion', 'cName'],
+                [$conf->kEinstellungenSektion, $conf->cWertName]
+            );
+            $conf->gesetzterWert = $oSetValue;
+        } else {
+            $oSetValue = $db->select(
+                'teinstellungen',
+                ['kEinstellungenSektion', 'cName'],
+                [$conf->kEinstellungenSektion, $conf->cWertName]
+            );
+            $conf->gesetzterWert = $oSetValue->cWert ?? null;
+        }
     }
 
     return $confData;
@@ -88,7 +137,7 @@ function saveAdminSettings(array $settingsIDs, array &$cPost_arr, $tags = [CACHI
             Shop::Container()->getDB()->insert('teinstellungen', $val);
         }
     }
-    Shop::Cache()->flushTags($tags);
+    Shop::Container()->getCache()->flushTags($tags);
 
     return 'Ihre Einstellungen wurden erfolgreich übernommen.';
 }
@@ -185,7 +234,7 @@ function saveAdminSectionSettings(int $configSectionID, array &$cPost_arr, $tags
             Shop::Container()->getDB()->insert('teinstellungen', $val);
         }
     }
-    Shop::Cache()->flushTags($tags);
+    Shop::Container()->getCache()->flushTags($tags);
 
     return 'Ihre Einstellungen wurden erfolgreich übernommen.';
 }

@@ -147,7 +147,7 @@ class Status
                         AND tplugin.nStatus = :state',
                 [
                     'hook'  => $hookID,
-                    'state' => Plugin::PLUGIN_ACTIVATED
+                    'state' => \Plugin\Plugin::PLUGIN_ACTIVATED
                 ],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );

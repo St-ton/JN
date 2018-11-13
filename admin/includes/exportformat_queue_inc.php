@@ -292,11 +292,11 @@ function holeExportformatQueueBearbeitet($nStunden)
 }
 
 /**
- * @param JTLSmarty $smarty
- * @param array     $messages
+ * @param Smarty\JTLSmarty $smarty
+ * @param array            $messages
  * @return string
  */
-function exportformatQueueActionErstellen(JTLSmarty $smarty, array &$messages)
+function exportformatQueueActionErstellen(Smarty\JTLSmarty $smarty, array &$messages)
 {
     $smarty->assign('oExportformat_arr', holeAlleExportformate());
 
@@ -304,11 +304,11 @@ function exportformatQueueActionErstellen(JTLSmarty $smarty, array &$messages)
 }
 
 /**
- * @param JTLSmarty $smarty
- * @param array     $messages
+ * @param Smarty\JTLSmarty $smarty
+ * @param array            $messages
  * @return string
  */
-function exportformatQueueActionEditieren(JTLSmarty $smarty, array &$messages)
+function exportformatQueueActionEditieren(Smarty\JTLSmarty $smarty, array &$messages)
 {
     $kCron = RequestHelper::verifyGPCDataInt('kCron');
     $oCron = $kCron > 0 ? holeCron($kCron) : 0;
@@ -326,11 +326,11 @@ function exportformatQueueActionEditieren(JTLSmarty $smarty, array &$messages)
 }
 
 /**
- * @param JTLSmarty $smarty
- * @param array     $messages
+ * @param Smarty\JTLSmarty $smarty
+ * @param array            $messages
  * @return string
  */
-function exportformatQueueActionLoeschen(JTLSmarty $smarty, array &$messages)
+function exportformatQueueActionLoeschen(Smarty\JTLSmarty $smarty, array &$messages)
 {
     $kCron_arr = $_POST['kCron'];
 
@@ -348,11 +348,11 @@ function exportformatQueueActionLoeschen(JTLSmarty $smarty, array &$messages)
 }
 
 /**
- * @param JTLSmarty $smarty
- * @param array     $messages
+ * @param Smarty\JTLSmarty $smarty
+ * @param array            $messages
  * @return string
  */
-function exportformatQueueActionTriggern(JTLSmarty $smarty, array &$messages)
+function exportformatQueueActionTriggern(Smarty\JTLSmarty $smarty, array &$messages)
 {
     global $bCronManuell, $oCron_arr, $oJobQueue_arr;
     $bCronManuell = true;
@@ -382,11 +382,11 @@ function exportformatQueueActionTriggern(JTLSmarty $smarty, array &$messages)
 }
 
 /**
- * @param JTLSmarty $smarty
- * @param array     $messages
+ * @param Smarty\JTLSmarty $smarty
+ * @param array            $messages
  * @return string
  */
-function exportformatQueueActionFertiggestellt(JTLSmarty $smarty, array &$messages)
+function exportformatQueueActionFertiggestellt(Smarty\JTLSmarty $smarty, array &$messages)
 {
     $nStunden = RequestHelper::verifyGPCDataInt('nStunden');
     if ($nStunden <= 0) {
@@ -400,11 +400,11 @@ function exportformatQueueActionFertiggestellt(JTLSmarty $smarty, array &$messag
 }
 
 /**
- * @param JTLSmarty $smarty
- * @param array     $messages
+ * @param Smarty\JTLSmarty $smarty
+ * @param array            $messages
  * @return string
  */
-function exportformatQueueActionErstellenEintragen(JTLSmarty $smarty, array &$messages)
+function exportformatQueueActionErstellenEintragen(Smarty\JTLSmarty $smarty, array &$messages)
 {
     $kExportformat = (int)$_POST['kExportformat'];
     $dStart        = $_POST['dStart'];
@@ -484,12 +484,12 @@ function exportformatQueueRedirect($cTab = '', array &$messages = null)
 }
 
 /**
- * @param string $step
- * @param JTLSmarty $smarty
- * @param array $messages
+ * @param string           $step
+ * @param Smarty\JTLSmarty $smarty
+ * @param array            $messages
  * @return void
  */
-function exportformatQueueFinalize($step, JTLSmarty $smarty, array &$messages)
+function exportformatQueueFinalize($step, Smarty\JTLSmarty $smarty, array &$messages)
 {
     if (isset($_SESSION['exportformatQueue.notice'])) {
         $messages['notice'] = $_SESSION['exportformatQueue.notice'];

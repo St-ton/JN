@@ -12,7 +12,7 @@ include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
 $cFehler           = null;
 $cStep             = 'uebersicht';
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $smarty->assign('cTab', $cStep);
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
@@ -153,7 +153,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && FormHelper::validateToken()) {
         }
     }
     Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
-    Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 
     $smarty->assign('saved', true);
 }

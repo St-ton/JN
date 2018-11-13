@@ -223,7 +223,7 @@ class AuswahlAssistent
     /**
      * Return the HTML for this selection wizard in its current state
      *
-     * @param JTLSmarty $smarty
+     * @param Smarty\JTLSmarty $smarty
      * @return string
      */
     public function fetchForm($smarty): string
@@ -382,7 +382,7 @@ class AuswahlAssistent
      * @param string                     $cKey
      * @param int                        $kKey
      * @param int                        $kSprache
-     * @param JTLSmarty                  $smarty
+     * @param Smarty\JTLSmarty           $smarty
      * @param array                      $selected
      * @param \Filter\ProductFilter|null $pf
      * @return self|null

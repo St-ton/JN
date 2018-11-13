@@ -99,7 +99,7 @@ class KategorieHelper
         $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $stockJoin   = '';
         $extended    = !empty($stockFilter);
-        if (false === ($fullCats = Shop::Cache()->get(self::$cacheID))) {
+        if (false === ($fullCats = Shop::Container()->getCache()->get(self::$cacheID))) {
             if (!empty($_SESSION['oKategorie_arr_new'])) {
                 self::$fullCategories = $_SESSION['oKategorie_arr_new'];
 
@@ -305,7 +305,7 @@ class KategorieHelper
             }
             executeHook(HOOK_GET_ALL_CATEGORIES, ['categories' => &$fullCats]);
 
-            if (Shop::Cache()->set(self::$cacheID, $fullCats, [CACHING_GROUP_CATEGORY, 'jtl_category_tree']) === false) {
+            if (Shop::Container()->getCache()->set(self::$cacheID, $fullCats, [CACHING_GROUP_CATEGORY, 'jtl_category_tree']) === false) {
                 $_SESSION['oKategorie_arr_new'] = $fullCats;
             }
         }
@@ -723,7 +723,7 @@ class KategorieHelper
             $conf = Shop::getSettings([CONF_TEMPLATE]);
             if ((!isset($conf['template']['categories']['sidebox_categories_full_category_tree'])
                     || $conf['template']['categories']['sidebox_categories_full_category_tree'] !== 'Y')
-                && (($categories = Shop::Cache()->get($cacheID)) === false
+                && (($categories = Shop::Container()->getCache()->get($cacheID)) === false
                     || !isset($categories[0]))
             ) {
                 $categories = [];
@@ -759,7 +759,7 @@ class KategorieHelper
                             : '';
                     }
                 }
-                Shop::Cache()->set($cacheID, $categories, [CACHING_GROUP_CATEGORY]);
+                Shop::Container()->getCache()->set($cacheID, $categories, [CACHING_GROUP_CATEGORY]);
             }
         }
 

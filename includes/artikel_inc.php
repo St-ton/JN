@@ -243,8 +243,8 @@ function buildConfig($kArtikel, $fAnzahl, $variations, $configGroups, $configGro
 }
 
 /**
- * @param int       $kKonfig
- * @param JTLSmarty $smarty
+ * @param int              $kKonfig
+ * @param Smarty\JTLSmarty $smarty
  * @deprecated since 5.0.0
  */
 function holeKonfigBearbeitenModus($kKonfig, $smarty)

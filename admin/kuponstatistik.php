@@ -6,7 +6,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('STATS_COUPON_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $step        = 'kuponstatistik_uebersicht';
 $cWhere      = '';
 $coupons_arr = Shop::Container()->getDB()->query(

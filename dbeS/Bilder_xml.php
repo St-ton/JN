@@ -403,7 +403,7 @@ function bearbeite($xml, string $unzipPath)
             ) as $article) {
                 $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . $article->kArtikel;
             }
-            Shop::Cache()->flushTags($cacheTags);
+            Shop::Container()->getCache()->flushTags($cacheTags);
             unlink($unzipPath . $imgFilename);
         }
     }
@@ -1126,7 +1126,7 @@ function bearbeiteDeletes($xml)
             array_walk($cacheTags, function (&$i) {
                 $i = CACHING_GROUP_ARTICLE . '_' . $i;
             });
-            Shop::Cache()->flushTags($cacheTags);
+            Shop::Container()->getCache()->flushTags($cacheTags);
         }
     }
     //Merkmalbilder löschen

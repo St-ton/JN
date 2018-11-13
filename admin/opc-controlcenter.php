@@ -5,7 +5,7 @@
  */
 
 /**
- * @global JTLSmarty $smarty
+ * @global Smarty\JTLSmarty $smarty
  * @global AdminAccount $oAccount
  */
 

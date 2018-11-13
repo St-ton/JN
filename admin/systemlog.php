@@ -5,7 +5,7 @@
  */
 
 /**
- * @global JTLSmarty $smarty
+ * @global Smarty\JTLSmarty $smarty
  * @global AdminAccount $oAccount
  */
 require_once __DIR__ . '/includes/admininclude.php';
@@ -26,7 +26,7 @@ if (FormHelper::validateToken()) {
             'systemlog_flag',
             (object)['cWert' => $minLogLevel]
         );
-        Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
+        Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
         $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
         $smarty->assign('cTab', 'config');
     } elseif (RequestHelper::verifyGPDataString('action') === 'delselected') {

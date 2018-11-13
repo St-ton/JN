@@ -326,7 +326,7 @@ final class Link extends AbstractLink
         $link->bSSL       = (int)$link->bSSL;
         $link->nLinkart   = (int)$link->nLinkart;
         $link->nSort      = (int)$link->nSort;
-        $link->enabled    = $link->pluginState === null || (int)$link->pluginState === \Plugin::PLUGIN_ACTIVATED;
+        $link->enabled    = $link->pluginState === null || (int)$link->pluginState === \Plugin\Plugin::PLUGIN_ACTIVATED;
         if ($link->languageID === 0) {
             $link->languageID = \Shop::getLanguageID();
         }

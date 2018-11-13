@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyConversionSmarty')
        ->registerPlugin('function', 'getCurrencyConversionTooltipButton', 'getCurrencyConversionTooltipButton')
        ->registerPlugin('function', 'getCurrentPage', 'getCurrentPage')
@@ -19,8 +19,8 @@ $smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyC
        ->registerPlugin('block', 't', 'gettextTranslate');
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return mixed
  */
 function getRevisions($params, $smarty)
@@ -37,8 +37,8 @@ function getRevisions($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return string
  */
 function getCurrencyConversionSmarty($params, $smarty)
@@ -63,8 +63,8 @@ function getCurrencyConversionSmarty($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return string
  */
 function getCurrencyConversionTooltipButton($params, $smarty)
@@ -73,7 +73,8 @@ function getCurrencyConversionTooltipButton($params, $smarty)
 
     if (isset($params['inputId'])) {
         $inputId = $params['inputId'];
-        $button  = '<button type="button" class="btn btn-tooltip btn-info" id="' . $inputId . 'Tooltip" data-html="true"';
+        $button  = '<button type="button" class="btn btn-tooltip btn-info" id="' .
+            $inputId . 'Tooltip" data-html="true"';
         $button  .= ' data-toggle="tooltip" data-placement="' . $placement . '">';
         $button  .= '<i class="fa fa-eur"></i></button>';
 
@@ -84,10 +85,10 @@ function getCurrencyConversionTooltipButton($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  */
-function getCurrentPage($params, $smarty)
+function getCurrentPage($params, $smarty): void
 {
     $path = $_SERVER['SCRIPT_NAME'];
     $page = basename($path, '.php');
@@ -98,8 +99,8 @@ function getCurrentPage($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return string
  */
 function getHelpDesc($params, $smarty)
@@ -120,7 +121,7 @@ function getHelpDesc($params, $smarty)
  * @param mixed $cRecht
  * @return bool
  */
-function permission($cRecht)
+function permission($cRecht): bool
 {
     $bOkay = false;
     if (isset($_SESSION['AdminAccount'])) {
@@ -141,8 +142,8 @@ function permission($cRecht)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return string
  */
 function SmartyConvertDate($params, $smarty)
@@ -168,8 +169,8 @@ function SmartyConvertDate($params, $smarty)
 /**
  * Map marketplace categoryId to localized category name
  *
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  */
 function getExtensionCategory($params, $smarty)
 {
@@ -194,8 +195,8 @@ function getExtensionCategory($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return string|null
  */
 function formatVersion($params, $smarty)
@@ -217,7 +218,7 @@ function formatVersion($params, $smarty)
  * array['d']     - Default imageset to use [ 404 | mm | identicon | monsterid | wavatar ]
  * array['r']     - Maximum rating (inclusive) [ g | pg | r | x ]
  *
- * @param JTLSmarty $smarty
+ * @param Smarty\JTLSmarty $smarty
  * @source https://gravatar.com/site/implement/images/php/
  * @return string
  */
@@ -245,8 +246,8 @@ function gravatarImage($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return string
  */
 function captchaMarkup($params, $smarty)

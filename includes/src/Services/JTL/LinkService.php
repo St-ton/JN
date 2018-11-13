@@ -390,6 +390,9 @@ final class LinkService implements LinkServiceInterface
             $first = $linkGroup->getLinks()->first(function (LinkInterface $link) use ($type) {
                 return $link->getLinkType() === $type;
             });
+            if ($first !== null) {
+                break;
+            }
         }
 //        if ($cISOSprache !== null) {
 //            $shopISO = \Shop::getLanguageCode();

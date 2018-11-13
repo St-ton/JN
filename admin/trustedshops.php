@@ -10,7 +10,7 @@ define('SHOP_SOFTWARE', 'JTL');
 
 $oAccount->permission('ORDER_TRUSTEDSHOPS_VIEW', true, true);
 
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 $step     = 'uebersicht';
@@ -42,7 +42,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
                 $aktWert->cName                 = 'trustedshops_nutzen';
                 $aktWert->kEinstellungenSektion = CONF_TRUSTEDSHOPS;
                 Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
-                Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
+                Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
             } else {
                 $cFehler .= 'Fehler: Es wurde kein Zertifikat fü die aktuelle Sprache gefunden.';
             }
@@ -120,7 +120,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
         }
 
         $cHinweis .= 'Ihre Einstellungen wurden übernommen.';
-        Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
+        Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
         unset($oConfig_arr);
     }
 } elseif (isset($_POST['kaeuferschutzupdate'])
@@ -200,7 +200,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
     } else {
         $cFehler .= 'Fehler: Bitte geben Sie eine tsID ein!<br>';
     }
-    Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 } elseif (isset($_POST['kundenbewertungupdate']) && (int)$_POST['kundenbewertungupdate'] === 1) {
     if (isset($_POST['tsKundenbewertungActive']) || isset($_POST['tsKundenbewertungDeActive'])) {
         $nStatus = 0;

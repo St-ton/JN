@@ -119,10 +119,10 @@ function bearbeiteInsert($xml)
     $kategorie_arr = mapArray($xml, 'tkategorie', $GLOBALS['mKategorie']);
     if ($kategorie_arr[0]->kKategorie > 0) {
         if (!$kategorie_arr[0]->cSeo) {
-            $kategorie_arr[0]->cSeo = getFlatSeoPath($kategorie_arr[0]->cName);
+            $kategorie_arr[0]->cSeo = \JTL\SeoHelper::getFlatSeoPath($kategorie_arr[0]->cName);
         }
-        $kategorie_arr[0]->cSeo                  = getSeo($kategorie_arr[0]->cSeo);
-        $kategorie_arr[0]->cSeo                  = checkSeo($kategorie_arr[0]->cSeo);
+        $kategorie_arr[0]->cSeo                  = \JTL\SeoHelper::getSeo($kategorie_arr[0]->cSeo);
+        $kategorie_arr[0]->cSeo                  = \JTL\SeoHelper::checkSeo($kategorie_arr[0]->cSeo);
         $kategorie_arr[0]->dLetzteAktualisierung = 'NOW()';
         $kategorie_arr[0]->lft                   = $oDataOld->lft ?? 0;
         $kategorie_arr[0]->rght                  = $oDataOld->rght ?? 0;
@@ -160,8 +160,8 @@ function bearbeiteInsert($xml)
         if (!$catLanguages[$i]->cSeo) {
             $catLanguages[$i]->cSeo = $kategorie_arr[0]->cName;
         }
-        $catLanguages[$i]->cSeo = getSeo($catLanguages[$i]->cSeo);
-        $catLanguages[$i]->cSeo = checkSeo($catLanguages[$i]->cSeo);
+        $catLanguages[$i]->cSeo = \JTL\SeoHelper::getSeo($catLanguages[$i]->cSeo);
+        $catLanguages[$i]->cSeo = \JTL\SeoHelper::checkSeo($catLanguages[$i]->cSeo);
         DBUpdateInsert('tkategoriesprache', [$catLanguages[$i]], 'kKategorie', 'kSprache');
 
         $db->delete(
@@ -233,7 +233,7 @@ function bearbeiteInsert($xml)
 //        if (isset($Kategorie->kOberKategorie) && $Kategorie->kOberKategorie > 0) {
 //            $flushArray[] = CACHING_GROUP_CATEGORY . '_' . $Kategorie->kOberKategorie;
 //        }
-//        Shop::Cache()->flushTags($flushArray);
+//        Shop::Container()->getCache()->flushTags($flushArray);
     //@todo: the above does not really work on parent categories when adding/deleting child categories
 }
 

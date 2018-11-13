@@ -102,8 +102,8 @@ class Session
                 || SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NEVER
             ) {
                 $save = SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
-                    && \Shop::Cache()->isAvailable()
-                    && \Shop::Cache()->isActive();
+                    && \Shop::Container()->getCache()->isAvailable()
+                    && \Shop::Container()->getCache()->isActive();
 
                 self::$handler = new SessionHandlerBot($save);
             } else {
@@ -335,7 +335,7 @@ class Session
         if (!$_SESSION['Kundengruppe']->hasAttributes()) {
             $_SESSION['Kundengruppe']->initAttributes();
         }
-        if (\Shop::Cache()->isCacheGroupActive(\CACHING_GROUP_CORE) === false) {
+        if (\Shop::Container()->getCache()->isCacheGroupActive(\CACHING_GROUP_CORE) === false) {
             $_SESSION['Linkgruppen'] = \Shop::Container()->getLinkService()->getLinkGroups();
             $_SESSION['Hersteller']  = \HerstellerHelper::getInstance()->getManufacturers();
         }

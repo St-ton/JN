@@ -42,7 +42,7 @@ class ArtikelListe
             '_' . $anzahl .
             '_' . $kSprache .
             '_' . $kKundengruppe;
-        $objArr  = Shop::Cache()->get($cacheID);
+        $objArr  = Shop::Container()->getCache()->get($cacheID);
         if ($objArr === false) {
             $qry = ($topneu === 'neu')
                 ? "cNeu = 'Y'"
@@ -61,7 +61,7 @@ class ArtikelListe
                     ORDER BY rand() LIMIT " . $anzahl,
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            Shop::Cache()->set($cacheID, $objArr, [CACHING_GROUP_CATEGORY]);
+            Shop::Container()->getCache()->set($cacheID, $objArr, [CACHING_GROUP_CATEGORY]);
         }
         if (is_array($objArr)) {
             $defaultOptions = Artikel::getDefaultOptions();
@@ -106,7 +106,7 @@ class ArtikelListe
             $kSprache = Shop::getLanguageID();
         }
         $cacheID = 'jtl_top_' . md5($kKategorie . $limitStart . $limitAnzahl . $kKundengruppe . $kSprache);
-        if (($res = Shop::Cache()->get($cacheID)) !== false) {
+        if (($res = Shop::Container()->getCache()->get($cacheID)) !== false) {
             $this->elemente = $res;
         } else {
             $hstSQL = '';
@@ -138,7 +138,7 @@ class ArtikelListe
                 $artikel->fuelleArtikel($obj->kArtikel, $defaultOptions);
                 $this->elemente[] = $artikel;
             }
-            Shop::Cache()->set(
+            Shop::Container()->getCache()->set(
                 $cacheID,
                 $this->elemente,
                 [CACHING_GROUP_CATEGORY, CACHING_GROUP_CATEGORY . '_' . $kKategorie]
@@ -199,7 +199,7 @@ class ArtikelListe
             }
         }
         $cacheID = 'hTA_' . md5(json_encode($categoryIDs));
-        $objArr  = Shop::Cache()->get($cacheID);
+        $objArr  = Shop::Container()->getCache()->get($cacheID);
         if ($objArr === false && count($categoryIDs) > 0) {
             $Einstellungen = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
             $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
@@ -228,7 +228,7 @@ class ArtikelListe
             foreach ($categoryIDs as $category) {
                 $cacheTags[] = CACHING_GROUP_CATEGORY . '_' . $category;
             }
-            Shop::Cache()->set($cacheID, $objArr, $cacheTags);
+            Shop::Container()->getCache()->set($cacheID, $objArr, $cacheTags);
         }
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($objArr as $obj) {
@@ -268,7 +268,7 @@ class ArtikelListe
             });
         }
         $cacheID = 'hBsA_' . md5(json_encode($arr_kKategorie) . json_encode($keys));
-        $objArr  = Shop::Cache()->get($cacheID);
+        $objArr  = Shop::Container()->getCache()->get($cacheID);
         if ($objArr === false && count($arr_kKategorie) > 0) {
             $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
             //top artikel nicht nochmal in den bestsellen vorkommen lassen
@@ -307,7 +307,7 @@ class ArtikelListe
             foreach ($arr_kKategorie as $category) {
                 $cacheTags[] = CACHING_GROUP_CATEGORY . '_' . $category;
             }
-            Shop::Cache()->set($cacheID, $objArr, $cacheTags);
+            Shop::Container()->getCache()->set($cacheID, $objArr, $cacheTags);
         }
         if (is_array($objArr)) {
             $defaultOptions = Artikel::getDefaultOptions();

@@ -331,7 +331,7 @@ class Preise
     {
         if ($kKunde > 0) {
             $cacheID = 'custprice_' . $kKunde;
-            if (($oCustomPrice = Shop::Cache()->get($cacheID)) === false) {
+            if (($oCustomPrice = Shop::Container()->getCache()->get($cacheID)) === false) {
                 $oCustomPrice = Shop::Container()->getDB()->query(
                     "SELECT count(kPreis) AS nAnzahl 
                         FROM tpreis
@@ -340,7 +340,7 @@ class Preise
                 );
                 if (is_object($oCustomPrice)) {
                     $cacheTags = [CACHING_GROUP_ARTICLE];
-                    Shop::Cache()->set($cacheID, $oCustomPrice, $cacheTags);
+                    Shop::Container()->getCache()->set($cacheID, $oCustomPrice, $cacheTags);
                 }
             }
 

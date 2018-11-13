@@ -377,9 +377,9 @@ class Plugin
             '_' . \RequestHelper::checkSSL() .
             '_' . \Shop::getLanguage();
         if ($invalidateCache === true) {
-            \Shop::Cache()->flush('hook_list');
-            \Shop::Cache()->flushTags([\CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $kPlugin]);
-        } elseif (($plugin = \Shop::Cache()->get($cacheID)) !== false) {
+            \Shop::Container()->getCache()->flush('hook_list');
+            \Shop::Container()->getCache()->flushTags([\CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $kPlugin]);
+        } elseif (($plugin = \Shop::Container()->getCache()->get($cacheID)) !== false) {
             foreach (\get_object_vars($plugin) as $k => $v) {
                 $this->$k = $v;
             }
@@ -415,7 +415,7 @@ class Plugin
         $this->loadUninstall($db);
         $this->pluginCacheID    = 'plgn_' . $this->kPlugin . '_' . $this->nVersion;
         $this->pluginCacheGroup = \CACHING_GROUP_PLUGIN . '_' . $this->kPlugin;
-        \Shop::Cache()->set($cacheID, $this, [\CACHING_GROUP_PLUGIN, $this->pluginCacheGroup]);
+        \Shop::Container()->getCache()->set($cacheID, $this, [\CACHING_GROUP_PLUGIN, $this->pluginCacheGroup]);
 
         return $this;
     }
@@ -862,13 +862,13 @@ class Plugin
     public static function getPluginById(string $cPluginID): ?self
     {
         $cacheID = 'plugin_id_list';
-        if (($plugins = \Shop::Cache()->get($cacheID)) === false) {
+        if (($plugins = \Shop::Container()->getCache()->get($cacheID)) === false) {
             $plugins = \Shop::Container()->getDB()->query(
                 'SELECT kPlugin, cPluginID 
                     FROM tplugin',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            \Shop::Cache()->set($cacheID, $plugins, [\CACHING_GROUP_PLUGIN]);
+            \Shop::Container()->getCache()->set($cacheID, $plugins, [\CACHING_GROUP_PLUGIN]);
         }
         foreach ($plugins as $plugin) {
             if ($plugin->cPluginID === $cPluginID) {
@@ -921,7 +921,7 @@ class Plugin
             return self::$hookList;
         }
         $cacheID = 'hook_list';
-        if (($hooks = \Shop::Cache()->get($cacheID)) !== false) {
+        if (($hooks = \Shop::Container()->getCache()->get($cacheID)) !== false) {
             self::$hookList = $hooks;
 
             return $hooks;
@@ -965,7 +965,7 @@ class Plugin
                 $hooks[\HOOK_SEITE_PAGE_IF_LINKART][0] = $plugin;
             }
         }
-        \Shop::Cache()->set($cacheID, $hooks, [\CACHING_GROUP_PLUGIN]);
+        \Shop::Container()->getCache()->set($cacheID, $hooks, [\CACHING_GROUP_PLUGIN]);
         self::$hookList = $hooks;
 
         return $hooks;
@@ -1046,7 +1046,7 @@ class Plugin
         }
 
         $cacheID = 'template_paths';
-        if (($templatePaths = \Shop::Cache()->get($cacheID)) !== false) {
+        if (($templatePaths = \Shop::Container()->getCache()->get($cacheID)) !== false) {
             self::$templatePaths = $templatePaths;
 
             return $templatePaths;
@@ -1069,7 +1069,7 @@ class Plugin
             }
         }
 
-        \Shop::Cache()->set($cacheID, $templatePaths, [\CACHING_GROUP_PLUGIN]);
+        \Shop::Container()->getCache()->set($cacheID, $templatePaths, [\CACHING_GROUP_PLUGIN]);
 
         return $templatePaths;
     }

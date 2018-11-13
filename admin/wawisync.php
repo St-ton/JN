@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/includes/admininclude.php';
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $oAccount->permission('WAWI_SYNC_VIEW', true, true);
 
 $cFehler  = '';

@@ -6,7 +6,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_COMPARELIST_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 $cSetting = '(469, 470)';

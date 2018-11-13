@@ -81,7 +81,7 @@
                 <div class="col-xs-12 col-md-6">
                     {include file='snippets/form_group_simple.tpl'
                         options=[
-                            'email', 'email', 'question_email',
+                            'email', 'question_email', 'email',
                             {$Anfrage->cMail|default:null}, {lang key='email' section='account data'},
                             true, $fehlendeAngaben_fragezumprodukt.email|default:null, 'email'
                         ]

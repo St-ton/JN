@@ -316,6 +316,7 @@ if ($step === 'pluginverwaltung_uebersicht') {
         $pluginsInstalledByState['status_' . $_plugin->nStatus][] = $_plugin;
     }
     foreach ($pluginsAvailable as $available) {
+        /** @var \Plugin\Admin\ListingItem $available */
         $szFolder = $available->getPath() . '/';
         $files    = [
             'license.md',
@@ -324,7 +325,7 @@ if ($step === 'pluginverwaltung_uebersicht') {
         ];
         foreach ($files as $file) {
             if (file_exists($szFolder . $file)) {
-                $vLicenseFiles[$available->getPath()] = $file;
+                $vLicenseFiles[$available->getDir()] = $szFolder . $file;
                 break;
             }
         }

@@ -201,7 +201,7 @@ class MigrationManager
 
                     $migration = new $class($info, $date);
 
-                    if (!is_subclass_of($migration, 'IMigration')) {
+                    if (!is_subclass_of($migration, IMigration::class)) {
                         throw new \InvalidArgumentException(sprintf(
                             'The class "%s" in file "%s" must implement IMigration interface',
                             $class,

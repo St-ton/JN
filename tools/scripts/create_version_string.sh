@@ -63,7 +63,8 @@ get_last_tag()
     fi
 }
 
-get_latest_patch() {
+get_latest_patch()
+{
     MAJOR=$1;
     MINOR=$2;
     GREATEST_LATEST_PATCH=0;
@@ -92,9 +93,9 @@ create_version_string()
         SHOP_VERSION_MAJOR=${BASH_REMATCH[1]};
         SHOP_VERSION_MINOR=${BASH_REMATCH[2]};
         SHOP_VERSION_PATCH=${BASH_REMATCH[3]};
-        if [ ! -z "${BASH_REMATCH[5]}" ]; then
+        if [[ ! -z "${BASH_REMATCH[5]}" ]]; then
             SHOP_VERSION_GREEK=${BASH_REMATCH[5]};
-            if [ ! -z "${BASH_REMATCH[7]}" ]; then
+            if [[ ! -z "${BASH_REMATCH[7]}" ]]; then
                 SHOP_VERSION_PRERELEASENUMBER=${BASH_REMATCH[7]};
             fi
         fi
@@ -120,7 +121,7 @@ create_version_string()
         fi
     fi
 
-    NEW_VERSION="$SHOP_VERSION_MAJOR.$SHOP_VERSION_MINOR.$SHOP_VERSION_PATCH";
+    export NEW_VERSION="$SHOP_VERSION_MAJOR.$SHOP_VERSION_MINOR.$SHOP_VERSION_PATCH";
 
     if [ -v SHOP_VERSION_GREEK ] && [ ! -z "${SHOP_VERSION_GREEK}" ]; then
         NEW_VERSION="$NEW_VERSION-$SHOP_VERSION_GREEK";

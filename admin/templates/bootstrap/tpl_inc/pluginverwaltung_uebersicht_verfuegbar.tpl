@@ -85,7 +85,7 @@
                         </thead>
                         <tbody>
                         {foreach name="verfuergbareplugins" from=$PluginVerfuebar_arr item=PluginVerfuebar}
-                            <tr>
+                            <tr class="plugin{if $PluginVerfuebar->shop5compatible} alert alert-info{elseif !$PluginVerfuebar->shop4compatible} alert alert-danger{/if}">
                                 <td class="check"><input type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$PluginVerfuebar->cVerzeichnis}" value="{$PluginVerfuebar->cVerzeichnis}" /></td>
                                 <td>
                                     <label for="plugin-check-{$PluginVerfuebar->cVerzeichnis}">{$PluginVerfuebar->cName}</label>

@@ -355,7 +355,7 @@ if ($reload === true) {
     header('Location: ' . Shop::getURL() . '/' . PFAD_ADMIN . 'pluginverwaltung.php', true, 303);
     exit();
 }
-if (defined('PLUGIN_DEV_MODE') && PLUGIN_DEV_MODE === true) {
+if (PLUGIN_DEV_MODE === true) {
     $pluginDevNotice = 'Ihr Shop befindet sich im Plugin-Entwicklungsmodus. ' .
         'Änderungen an der XML-Datei eines aktivierten Plugins bewirken ein automatisches Update.';
     $cHinweis        = empty($cHinweis)

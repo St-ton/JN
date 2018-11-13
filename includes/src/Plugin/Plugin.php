@@ -9,6 +9,7 @@ namespace Plugin;
 use DB\DbInterface;
 use JTL\XMLParser;
 use Plugin\Admin\StateChanger;
+use Plugin\Admin\Validation\Shop4Validator;
 use Plugin\Admin\Validator;
 
 /**
@@ -353,11 +354,11 @@ class Plugin
         if ($kPlugin > 0) {
             $db = \Shop::Container()->getDB();
             $this->loadFromDB($kPlugin, $db, $invalidateCache);
-            if (\defined('PLUGIN_DEV_MODE') && \PLUGIN_DEV_MODE === true && $suppressReload === false) {
+            if (\PLUGIN_DEV_MODE === true && $suppressReload === false) {
                 $stateChanger = new StateChanger(
                     $db,
                     \Shop::Container()->getCache(),
-                    new Validator($db)
+                    new Shop4Validator($db)
                 );
                 $stateChanger->reload($this, false);
                 $this->loadFromDB($kPlugin, $db, $invalidateCache);

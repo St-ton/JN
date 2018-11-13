@@ -84,7 +84,6 @@ class GetText
 
         if (file_exists($path)) {
             $translations = Gettext\Translations::fromMoFile($path);
-//            $translations->setDomain($domain);
             $this->translator->loadTranslations($translations);
         }
 

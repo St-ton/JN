@@ -41,7 +41,7 @@
 {/literal}
 
 <div id="verfuegbar" class="tab-pane fade {if isset($cTab) && $cTab === 'verfuegbar'} active in{/if}">
-    {if isset($PluginVerfuebar_arr) && $PluginVerfuebar_arr|@count > 0}
+    {if $pluginsAvailable->count() > 0}
         <form name="pluginverwaltung" method="post" action="pluginverwaltung.php">
             {$jtl_token}
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
@@ -84,24 +84,23 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach name="verfuergbareplugins" from=$PluginVerfuebar_arr item=PluginVerfuebar}
-                            <tr class="plugin{if $PluginVerfuebar->shop5compatible} alert alert-info{elseif !$PluginVerfuebar->shop4compatible} alert alert-danger{/if}">
-                                <td class="check"><input type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$PluginVerfuebar->cVerzeichnis}" value="{$PluginVerfuebar->cVerzeichnis}" /></td>
+                        {foreach $pluginsAvailable->toArray() as $plugin}
+                            <tr class="plugin{if $plugin->isShop5Compatible()} alert alert-info{elseif !$plugin->isShop4Compatible()} alert alert-danger{/if}">
+                                <td class="check"><input type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$plugin->getDir()}" value="{$plugin->getDir()}" /></td>
                                 <td>
-                                    <label for="plugin-check-{$PluginVerfuebar->cVerzeichnis}">{$PluginVerfuebar->cName}</label>
-                                    <p>{$PluginVerfuebar->cDescription}</p>
-                                    {if isset($PluginVerfuebar->shop4compatible) && $PluginVerfuebar->shop4compatible === false}
-                                        <div class="alert alert-info"><strong>Achtung:</strong> Plugin ist nicht vollst&auml;ndig Shop4-kompatibel! Es k&ouml;nnen daher Probleme beim Betrieb entstehen.</div>
+                                    <label for="plugin-check-{$plugin->getDir()}">{$plugin->getName()}</label>
+                                    <p>{$plugin->getDescription()}</p>
+                                    {if $plugin->isShop4Compatible() === false && $plugin->isShop5Compatible() === false}
+                                        <div class="alert alert-info"><strong>Achtung:</strong> Plugin ist nicht vollständig Shop5-kompatibel! Es können daher Probleme beim Betrieb entstehen.</div>
                                     {/if}
                                 </td>
-                                <td class="tcenter">{$PluginVerfuebar->cVersion}</td>
-                                <td class="tcenter">{$PluginVerfuebar->cVerzeichnis}</td>
+                                <td class="tcenter">{$plugin->getVersion()}</td>
+                                <td class="tcenter">{$plugin->getDir()}</td>
                             </tr>
                         {/foreach}
                         </tbody>
                         <tfoot>
                         <tr>
-                            {*<td class="check"><input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessages(this.form);" /></td>*}
                             <td class="check"><input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessagesExcept(this.form, vLicenses);" /></td>
                             <td colspan="5"><label for="ALLMSGS4">{#pluginSelectAll#}</label></td>
                         </tr>

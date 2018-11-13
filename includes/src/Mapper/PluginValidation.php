@@ -16,10 +16,10 @@ class PluginValidation
 {
     /**
      * @param int     $code
-     * @param \Plugin\Plugin|\stdClass|null $plugin
+     * @param string|null $plugin
      * @return string
      */
-    public function map($code, $plugin): string
+    public function map($code, $pluginID): string
     {
         if ($code === 0) {
             return '';
@@ -449,6 +449,6 @@ class PluginValidation
                 break;
         }
 
-        return \str_replace('%cPluginID%', $plugin->cPluginID ?? '', $return);
+        return \str_replace('%cPluginID%', $pluginID ?? '', $return);
     }
 }

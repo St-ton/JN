@@ -1,5 +1,5 @@
 <div id="fehlerhaft" class="tab-pane fade {if isset($cTab) && $cTab === 'fehlerhaft'} active in{/if}">
-    {if isset($PluginFehlerhaft_arr) && $PluginFehlerhaft_arr|@count > 0}
+    {if $pluginsErroneous->count() > 0}
         <form name="pluginverwaltung" method="post" action="pluginverwaltung.php">
             {$jtl_token}
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
@@ -18,20 +18,20 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach from=$PluginFehlerhaft_arr item=PluginFehlerhaft}
+                        {foreach $pluginsErroneous->toArray() as $plugin}
                             <tr>
                                 <td>
-                                    <strong>{if !empty($PluginFehlerhaft->cName)}{$PluginFehlerhaft->cName}{/if}</strong>
-                                    <p>{if !empty($PluginFehlerhaft->cDescription)}{$PluginFehlerhaft->cDescription}{/if}</p>
+                                    <strong>{$plugin->getName()}</strong>
+                                    <p>{$plugin->getDescription()}</p>
                                 </td>
                                 <td>
                                     <p>
-                                        <span class="badge error">{if !empty($PluginFehlerhaft->cFehlercode)}{$PluginFehlerhaft->cFehlercode}{/if}</span>
-                                        {if !empty($PluginFehlerhaft->cFehlerBeschreibung)}{$PluginFehlerhaft->cFehlerBeschreibung}{/if}
+                                        <span class="badge error">{$plugin->getErrorCode()}</span>
+                                        {$plugin->getErrorMessage()}
                                     </p>
                                 </td>
-                                <td class="tcenter">{if !empty($PluginFehlerhaft->cVersion)}{$PluginFehlerhaft->cVersion}{/if}</td>
-                                <td class="tcenter">{if !empty($PluginFehlerhaft->cVerzeichnis)}{$PluginFehlerhaft->cVerzeichnis}{/if}</td>
+                                <td class="tcenter">{$plugin->getVersion()}</td>
+                                <td class="tcenter">{$plugin->getDir()}</td>
                             </tr>
                         {/foreach}
                         </tbody>

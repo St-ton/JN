@@ -29,6 +29,18 @@ $stateChanger    = new \Plugin\Admin\StateChanger(
     $validator
 );
 
+$pluginsInstalled = $listing->getInstalled();
+$pluginsAll       = $listing->getAll($pluginsInstalled);
+foreach ($pluginsInstalled as $_plugin) {
+    $pluginsInstalledByState['status_' . $_plugin->nStatus][] = $_plugin;
+}
+$pluginsAvailable = $pluginsAll->filter(function (\Plugin\Admin\ListingItem $item) {
+    return $item->isAvailable() === true && $item->isInstalled() === false;
+});
+$pluginsErroneous = $pluginsAll->filter(function (\Plugin\Admin\ListingItem $item) {
+    return $item->isHasError() === true && $item->isInstalled() === false;
+});
+
 if (isset($_SESSION['plugin_msg'])) {
     $cHinweis = $_SESSION['plugin_msg'];
     unset($_SESSION['plugin_msg']);
@@ -45,13 +57,6 @@ if (!empty($_FILES['file_data'])) {
         'status_5' => [],
         'status_6' => []
     ];
-    $pluginsInstalled        = $listing->getInstalled();
-    $pluginsAll              = $listing->getAll($pluginsInstalled);
-    foreach ($pluginsInstalled as $_plugin) {
-        $pluginsInstalledByState['status_' . $_plugin->nStatus][] = $_plugin;
-    }
-    $pluginsAvailable = $pluginsAll->verfuegbar;
-    $pluginsErroneous = $pluginsAll->fehlerhaft;
 
     $errorCount = count($pluginsInstalledByState['status_3']) +
         count($pluginsInstalledByState['status_4']) +
@@ -59,17 +64,17 @@ if (!empty($_FILES['file_data'])) {
         count($pluginsInstalledByState['status_6']);
 
     $smarty->configLoad('german.conf', 'pluginverwaltung')
-           ->assign('PluginInstalliertByStatus_arr', $pluginsInstalledByState)
+           ->assign('pluginsByState', $pluginsInstalledByState)
            ->assign('PluginErrorCount', $errorCount)
            ->assign('PluginInstalliert_arr', $pluginsInstalled)
-           ->assign('PluginVerfuebar_arr', $pluginsAvailable)
-           ->assign('PluginFehlerhaft_arr', $pluginsErroneous);
+           ->assign('pluginsAvailable', $pluginsAvailable)
+           ->assign('pluginsErroneous', $pluginsErroneous);
 
     $response->html                   = new stdClass();
     $response->html->verfuegbar       = $smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_verfuegbar.tpl');
     $response->html->verfuegbar_count = count($pluginsAvailable);
     $response->html->fehlerhaft       = $smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_fehlerhaft.tpl');
-    $response->html->fehlerhaft_count = count($pluginsErroneous);
+    $response->html->fehlerhaft_count = $pluginsErroneous->count();
     die(json_encode($response));
 }
 
@@ -307,47 +312,30 @@ if ($step === 'pluginverwaltung_uebersicht') {
         'status_5' => [],
         'status_6' => []
     ];
-    $pluginsInstalled        = $listing->getInstalled();
-    $pluginsAll              = $listing->getAll($pluginsInstalled);
     foreach ($pluginsInstalled as $_plugin) {
         $pluginsInstalledByState['status_' . $_plugin->nStatus][] = $_plugin;
     }
-    $pluginsAvailable = $pluginsAll->verfuegbar;
-    $pluginsErroneous = $pluginsAll->fehlerhaft;
-    if (count($pluginsAvailable) > 0) {
-        foreach ($pluginsAvailable as $i => $PluginVerfuebar) {
-            // searching for multiple names of license files (e.g. LICENSE.md or License.md and so on)
-            $szFolder              = PFAD_ROOT . PFAD_PLUGIN . $pluginsAvailable[$i]->cVerzeichnis . '/';
-            $vPossibleLicenseNames = [
-                '',
-                'license.md',
-                'License.md',
-                'LICENSE.md'
-            ];
-            $j                     = count($vPossibleLicenseNames) - 1;
-            for (; $j !== 0 && !file_exists($szFolder . $vPossibleLicenseNames[$j]); $j--) {
-                // we're only counting up to our find
-            }
-            // only if we found something, we add it to our array
-            if ('' !== $vPossibleLicenseNames[$j]) {
-                $vLicenseFiles[$pluginsAvailable[$i]->cVerzeichnis] = $szFolder . $vPossibleLicenseNames[$j];
+    foreach ($pluginsAvailable as $available) {
+        $szFolder = $available->getPath() . '/';
+        $files    = [
+            'license.md',
+            'License.md',
+            'LICENSE.md'
+        ];
+        foreach ($files as $file) {
+            if (file_exists($szFolder . $file)) {
+                $vLicenseFiles[$available->getPath()] = $file;
+                break;
             }
         }
-        if (!empty($vLicenseFiles)) {
-            $smarty->assign('szLicenses', json_encode($vLicenseFiles));
-        }
+    }
+    if (!empty($vLicenseFiles)) {
+        $smarty->assign('szLicenses', json_encode($vLicenseFiles));
     }
     $errorCount = count($pluginsInstalledByState['status_3']) +
         count($pluginsInstalledByState['status_4']) +
         count($pluginsInstalledByState['status_5']) +
         count($pluginsInstalledByState['status_6']);
-
-    $smarty->assign('PluginInstalliertByStatus_arr', $pluginsInstalledByState)
-           ->assign('PluginErrorCount', $errorCount)
-           ->assign('PluginInstalliert_arr', $pluginsInstalled)
-           ->assign('PluginVerfuebar_arr', $pluginsAvailable)
-           ->assign('PluginFehlerhaft_arr', $pluginsErroneous)
-           ->assign('PluginIndex_arr', $pluginsAll->index);
 } elseif ($step === 'pluginverwaltung_sprachvariablen') { // Sprachvariablen
     $kPlugin      = RequestHelper::verifyGPCDataInt('kPlugin');
     $oSprache_arr = $db->query(
@@ -377,4 +365,10 @@ $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->assign('mapper', new \Mapper\PluginState())
+       ->assign('pluginsByState', $pluginsInstalledByState)
+       ->assign('PluginErrorCount', $errorCount)
+       ->assign('PluginInstalliert_arr', $pluginsInstalled)
+       ->assign('pluginsAvailable', $pluginsAvailable)
+       ->assign('pluginsErroneous', $pluginsErroneous)
+       ->assign('allPluginItems', $pluginsAll)
        ->display('pluginverwaltung.tpl');

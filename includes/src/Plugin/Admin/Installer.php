@@ -264,9 +264,7 @@ final class Installer
         }
         if ($modern === true) {
             $this->updateByMigration($plugin, $versionedDir, Version::parse($version));
-            die('modern updated');
         }
-        die('post!');
         // Ist ein SQL Fehler aufgetreten? Wenn ja, deinstalliere wieder alles
         if ($hasSQLError) {
             $this->uninstaller->uninstall($plugin->kPlugin);

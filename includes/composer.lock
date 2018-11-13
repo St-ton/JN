@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0f0fbcd6aa83d5ee89afa4f2ad77170f",
+    "content-hash": "ffc517ade59ae8b6695e91efdc094d30",
     "packages": [
         {
             "name": "andyftw/ssllabs-php",
@@ -817,7 +817,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.jtl-software.de/jtlshop/scc.git",
-                "reference": "962eec6cfe8be2955605d92c8398196873425ac4"
+                "reference": "bfdd10739ed0f486e03c32de1eae9e0130fa24f3"
             },
             "require": {
                 "myclabs/php-enum": "^1.5",
@@ -844,7 +844,7 @@
             "keywords": [
                 "jtl-shop"
             ],
-            "time": "2018-11-07T11:11:53+00:00"
+            "time": "2018-11-08T11:42:51+00:00"
         },
         {
             "name": "jtlshop/semver",
@@ -1976,16 +1976,16 @@
         },
         {
             "name": "tightenco/collect",
-            "version": "v5.7.12",
+            "version": "v5.7.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tightenco/collect.git",
-                "reference": "0d89929f10a495ebafc15fb6bff5581d10c38abb"
+                "reference": "5172ad96c54560352b79386b293375da40280fdc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tightenco/collect/zipball/0d89929f10a495ebafc15fb6bff5581d10c38abb",
-                "reference": "0d89929f10a495ebafc15fb6bff5581d10c38abb",
+                "url": "https://api.github.com/repos/tightenco/collect/zipball/5172ad96c54560352b79386b293375da40280fdc",
+                "reference": "5172ad96c54560352b79386b293375da40280fdc",
                 "shasum": ""
             },
             "require": {
@@ -2022,7 +2022,7 @@
                 "collection",
                 "laravel"
             ],
-            "time": "2018-10-30T21:09:13+00:00"
+            "time": "2018-11-09T19:12:42+00:00"
         },
         {
             "name": "tubalmartin/cssmin",

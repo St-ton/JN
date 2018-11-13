@@ -194,19 +194,19 @@ if ($step === 'Bestaetigung') {
     //TODO: in funktion
     if (!empty($couponErrors['ungueltig'])){
         if ($couponErrors['ungueltig'] === 1) {
-            Shop::Container()->getAlertService()->addCustomAlert('VARIANT_DANGER', Shop::Lang()->get('couponErr1'), 'couponError');
+            Shop::Container()->getAlertService()->addCustomAlert(\Alert::VARIANT_DANGER, Shop::Lang()->get('couponErr1'), 'couponError');
         } elseif ($couponErrors['ungueltig'] === 2) {
-            Shop::Container()->getAlertService()->addCustomAlert('VARIANT_DANGER', Shop::Lang()->get('couponErr2'), 'couponError');
+            Shop::Container()->getAlertService()->addCustomAlert(\Alert::VARIANT_DANGER, Shop::Lang()->get('couponErr2'), 'couponError');
         } elseif ($couponErrors['ungueltig'] === 3) {
-            Shop::Container()->getAlertService()->addCustomAlert('VARIANT_DANGER', Shop::Lang()->get('couponErr3'), 'couponError');
+            Shop::Container()->getAlertService()->addCustomAlert(\Alert::VARIANT_DANGER, Shop::Lang()->get('couponErr3'), 'couponError');
         } elseif ($couponErrors['ungueltig'] === 4) {
-            Shop::Container()->getAlertService()->addCustomAlert('VARIANT_DANGER', Shop::Lang()->get('couponErr4'), 'couponError');
+            Shop::Container()->getAlertService()->addCustomAlert(\Alert::VARIANT_DANGER, Shop::Lang()->get('couponErr4'), 'couponError');
         } elseif ($couponErrors['ungueltig'] === 6) {
-            Shop::Container()->getAlertService()->addCustomAlert('VARIANT_DANGER', Shop::Lang()->get('couponErr6'), 'couponError');
+            Shop::Container()->getAlertService()->addCustomAlert(\Alert::VARIANT_DANGER, Shop::Lang()->get('couponErr6'), 'couponError');
         } elseif ($couponErrors['ungueltig'] === 11 || $couponErrors['ungueltig'] === 12) {
-            Shop::Container()->getAlertService()->addCustomAlert('VARIANT_DANGER', Shop::Lang()->get('invalidCouponCode'), 'couponError');
+            Shop::Container()->getAlertService()->addCustomAlert(\Alert::VARIANT_DANGER, Shop::Lang()->get('invalidCouponCode'), 'couponError');
         } else {
-            Shop::Container()->getAlertService()->addCustomAlert('VARIANT_DANGER', Shop::Lang()->get('couponErr99'), 'couponError');
+            Shop::Container()->getAlertService()->addCustomAlert(\Alert::VARIANT_DANGER, Shop::Lang()->get('couponErr99'), 'couponError');
         }
     }
     //TODO: noch weg

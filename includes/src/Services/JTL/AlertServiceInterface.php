@@ -12,17 +12,21 @@ namespace Services\JTL;
  */
 interface AlertServiceInterface
 {
-    public function addAlert(string $variant, string $message, string $type, string $key): void;
+    public function initFromSession(): void;
 
-    public function setErrorAlert(string $variant, string $message): AlertService;
+    public function addAlert(string $variant, string $message, string $type, string $key): \Alert;
 
-    public function setNoticeAlert(string $variant, string $message): AlertService;
+    public function setErrorAlert(string $variant, string $message): \Alert;
 
-    public function addCustomAlert(string $variant, string $message, string $key): AlertService;
+    public function setNoticeAlert(string $variant, string $message): \Alert;
+
+    public function addCustomAlert(string $variant, string $message, string $key): \Alert;
 
     public function getErrorAlert(): ?\Alert;
 
     public function getNoticeAlert(): ?\Alert;
 
     public function getCustomAlert(string $key): ?\Alert;
+
+    public function getCustomAlerts(): array;
 }

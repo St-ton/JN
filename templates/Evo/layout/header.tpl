@@ -220,12 +220,13 @@
     {block name='header-breadcrumb'}
         {include file='layout/breadcrumb.tpl'}
     {/block}
-    {if isset($alerts)}
-        {if !empty($alerts->getNoticeAlert())}
-            <div class="alert alert-{$alerts->getNoticeAlert()->getVariant()}">{$alerts->getNoticeAlert()->getMessage()}</div>
+
+    {if isset($smarty.session.alerts)}
+        {if !empty($smarty.session.alerts->getNoticeAlert())}
+            {include file='snippets/alert.tpl' alert=$smarty.session.alerts->getNoticeAlert()}
         {/if}
-        {if !empty($alerts->getErrorAlert())}
-            <div class="alert alert-{$alerts->getErrorAlert()->getVariant()}">{$alerts->getErrorAlert()->getMessage()}</div>
+        {if !empty($smarty.session.alerts->getErrorAlert())}
+            {include file='snippets/alert.tpl' alert=$smarty.session.alerts->getErrorAlert()}
         {/if}
     {/if}
 {/block}{* /content-all-starttags *}

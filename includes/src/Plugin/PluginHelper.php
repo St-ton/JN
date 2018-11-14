@@ -104,7 +104,7 @@ class PluginHelper
      * @param string $pluginID
      * @return null|Plugin
      */
-    public static function getPluginById(string $pluginID): ?self
+    public static function getPluginById(string $pluginID): ?Plugin
     {
         $cacheID = 'plugin_id_list';
         if (($plugins = \Shop::Container()->getCache()->get($cacheID)) === false) {

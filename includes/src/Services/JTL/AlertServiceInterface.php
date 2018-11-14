@@ -6,23 +6,40 @@
 
 namespace Services\JTL;
 
+use Alert;
+
 /**
- * Class LinkService
- * @package Link
+ * Class AlertService
  */
 interface AlertServiceInterface
 {
-    public function addAlert(string $variant, string $message, string $type, string $key): void;
+    /**
+     * @return void
+     */
+    public function initFromSession(): void;
 
-    public function setErrorAlert(string $variant, string $message): AlertService;
+    /**
+     * @param string $type
+     * @param string $message
+     * @param string $key
+     * @return Alert
+     */
+    public function addAlert(string $type, string $message, string $key): Alert;
 
-    public function setNoticeAlert(string $variant, string $message): AlertService;
+    /**
+     * @param string $key
+     * @return null|Alert
+     */
+    public function getAlert(string $key): ?Alert;
 
-    public function addCustomAlert(string $variant, string $message, string $key): AlertService;
+    /**
+     * @return array
+     */
+    public function getAlertlist(): array;
 
-    public function getErrorAlert(): ?\Alert;
-
-    public function getNoticeAlert(): ?\Alert;
-
-    public function getCustomAlert(string $key): ?\Alert;
+    /**
+     * @param string $key
+     * @return void
+     */
+    public function unsetAlert(string $key): void;
 }

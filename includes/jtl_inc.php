@@ -506,7 +506,6 @@ function fuehreLoginAus($userLogin, $passLogin): void
                 }
             }
             $cHinweis .= Shop::Lang()->get('incorrectLogin');
-            Shop::Container()->getAlertService()->setNoticeAlert('VARIANT_INFO', Shop::Lang()->get('incorrectLogin'));
         }
     }
 }

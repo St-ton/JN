@@ -189,27 +189,6 @@ if ($step === 'ZahlungZusatzschritt') {
 }
 if ($step === 'Bestaetigung') {
     plausiGuthaben($_POST);
-
-    $couponErrors = plausiKupon($_POST);
-    //TODO: in funktion
-    if (!empty($couponErrors['ungueltig'])){
-        if ($couponErrors['ungueltig'] === 1) {
-            Shop::Container()->getAlertService()->addCustomAlert('VARIANT_DANGER', Shop::Lang()->get('couponErr1'), 'couponError');
-        } elseif ($couponErrors['ungueltig'] === 2) {
-            Shop::Container()->getAlertService()->addCustomAlert('VARIANT_DANGER', Shop::Lang()->get('couponErr2'), 'couponError');
-        } elseif ($couponErrors['ungueltig'] === 3) {
-            Shop::Container()->getAlertService()->addCustomAlert('VARIANT_DANGER', Shop::Lang()->get('couponErr3'), 'couponError');
-        } elseif ($couponErrors['ungueltig'] === 4) {
-            Shop::Container()->getAlertService()->addCustomAlert('VARIANT_DANGER', Shop::Lang()->get('couponErr4'), 'couponError');
-        } elseif ($couponErrors['ungueltig'] === 6) {
-            Shop::Container()->getAlertService()->addCustomAlert('VARIANT_DANGER', Shop::Lang()->get('couponErr6'), 'couponError');
-        } elseif ($couponErrors['ungueltig'] === 11 || $couponErrors['ungueltig'] === 12) {
-            Shop::Container()->getAlertService()->addCustomAlert('VARIANT_DANGER', Shop::Lang()->get('invalidCouponCode'), 'couponError');
-        } else {
-            Shop::Container()->getAlertService()->addCustomAlert('VARIANT_DANGER', Shop::Lang()->get('couponErr99'), 'couponError');
-        }
-    }
-    //TODO: noch weg
     Shop::Smarty()->assign('cKuponfehler_arr', plausiKupon($_POST));
     //evtl genutztes guthaben anpassen
     pruefeGuthabenNutzen();

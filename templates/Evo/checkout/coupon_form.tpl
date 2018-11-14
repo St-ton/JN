@@ -3,11 +3,11 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {if isset(Shop::Container()->getAlertService()->getCustomAlert('couponError'))}
-    {include file='snippets/alert.tpl' alert=Shop::Container()->getAlertService()->getCustomAlert('couponError')}
+    <div class="alert alert-{Shop::Container()->getAlertService()->getCustomAlert('couponError')->getVariant()}">
+        {Shop::Container()->getAlertService()->getCustomAlert('couponError')->getMessage()}
+        {Shop::Container()->getAlertService()->unsetAlert('Custom', 'couponError')}
+    </div>
 {/if}
-{*{if isset($smarty.session.alerts) && isset($smarty.session.alerts->getCustomAlert('couponError'))}*}
-    {*{include file='snippets/alert.tpl' alert=$smarty.session.alerts->getCustomAlert('couponError')}*}
-{*{/if}*}
 {if $KuponMoeglich == 1}
     <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form form-inline evo-validate">
         {$jtl_token}

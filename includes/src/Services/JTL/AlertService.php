@@ -11,6 +11,12 @@ namespace Services\JTL;
  */
 class AlertService implements AlertServiceInterface
 {
+//    private $alertList = [
+//        'notice' => null,
+//        'error'  => null,
+//        'custom' => []
+//    ];
+
     private $alertError;
     private $alertNotice;
     private $alertCustom = [];
@@ -20,70 +26,55 @@ class AlertService implements AlertServiceInterface
      */
     private static $instance;
 
+
     /**
-     * Alertservice constructor.
+     * Alertervice constructor.
      */
     public function __construct()
     {
-        $this->initFromSession();
-//        self::$instance = $this;
+        self::$instance = $this;
     }
 
-    public function initFromSession(): void
-    {
-        if (isset($_SESSION['alerts']) && is_a($_SESSION['alerts'], 'AlertService')) {
-            $this->alertError  = $_SESSION['alerts']->getErrorAlert();
-            $this->alertNotice = $_SESSION['alerts']->getNoticeAlert();
-            $this->alertCustom = $_SESSION['alerts']->getCustomAlerts();
-        }
-    }
+    private const TYPE_ERROR  = 'Error';
+    private const TYPE_NOTICE = 'Notice';
+    private const TYPE_CUSTOM = 'Custom';
 
     /**
      * @inheritdoc
      */
-//    public static function getInstance()
-//    {
-//        return self::$instance ?? new self();
-//    }
+    public static function getInstance()
+    {
+        return self::$instance ?? new self();
+    }
 
-    public function addAlert(
-        string $variant,
-        string $message,
-        string $type,
-        string $key = ''
-    ): \Alert {
-        $alert = new \Alert($variant, $message, $type, $key);
-        if($type === \Alert::TYPE_CUSTOM) {
-            $this->alertCustom[$key] = $alert;
+    public function addAlert(string $variant, string $message, string $type, string $key = '', bool $toSession = true): void
+    {
+        if($type === self::TYPE_CUSTOM) {
+            $this->alertCustom[$key] = new \Alert($variant, $message);
         } else {
             $alertName = 'alert'.$type;
-            $this->$alertName = $alert;
+            $this->$alertName = new \Alert($variant, $message);
         }
         //TODO:: mit Session Klasse arbeiten?
         $_SESSION['alerts'] = $this;
-
-        return $alert;
     }
 
-    public function setErrorAlert(string $variant, string $message): \Alert
+    public function setErrorAlert(string $variant, string $message): self
     {
-        $alert = $this->addAlert($variant, $message, \Alert::TYPE_ERROR);
-
-        return $alert;
+        $this->addAlert($variant, $message, self::TYPE_ERROR);
+        return $this;
     }
 
-    public function setNoticeAlert(string $variant, string $message): \Alert
+    public function setNoticeAlert(string $variant, string $message): self
     {
-        $alert = $this->addAlert($variant, $message, \Alert::TYPE_NOTICE);
-
-        return $alert;
+        $this->addAlert($variant, $message, self::TYPE_NOTICE);
+        return $this;
     }
 
-    public function addCustomAlert(string $variant, string $message, string $key): \Alert
+    public function addCustomAlert(string $variant, string $message, string $key): self
     {
-        $alert = $this->addAlert($variant, $message, \Alert::TYPE_CUSTOM, $key);
-
-        return $alert;
+        $this->addAlert($variant, $message, self::TYPE_CUSTOM, $key);
+        return $this;
     }
 
     public function getErrorAlert(): ?\Alert
@@ -101,18 +92,13 @@ class AlertService implements AlertServiceInterface
         return $this->alertCustom[$key] ?? null;
     }
 
-    public function getCustomAlerts(): array
+    public function unsetAlert($type, $key = ''): void
     {
-        return $this->alertCustom;
-    }
-
-    public function unsetAlert(\Alert $alert): void
-    {
-        if($alert->getType() === \Alert::TYPE_CUSTOM) {
-            unset($_SESSION['alerts']->alertCustom[$alert->getKey()]);
+        if($type === self::TYPE_CUSTOM) {
+            unset($_SESSION['alerts']->alertCustom[$key]);
         } else {
-            $alertName = 'alert'.$alert->getType() ;
-            $_SESSION['alerts']->$alertName = null;
+            $alertName = 'alert'.$type;
+            unset($_SESSION['alerts']->$alertName);
         }
     }
 }

@@ -53,7 +53,7 @@ class Updater
             $this->installer->setPlugin($plugin);
             $this->installer->setDir($plugin->cVerzeichnis);
 
-            return $this->installer->installierePluginVorbereitung();
+            return $this->installer->prepare();
         }
 
         return InstallCode::NO_PLUGIN_FOUND;

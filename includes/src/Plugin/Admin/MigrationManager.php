@@ -110,7 +110,6 @@ final class MigrationManager
         if ($identifier === null) {
             $identifier = \max(\array_merge($executedMigrations, \array_keys($migrations)));
         }
-
         $direction = $identifier > $currentId ? \IMigration::UP : \IMigration::DOWN;
         $executed  = [];
 
@@ -241,13 +240,11 @@ final class MigrationManager
             $migrations = [];
             $executed   = $this->getExecutedMigrations();
             $path       = $this->getPath();
-            \Shop::dbg($path, false, 'checking path:');
             foreach (new \DirectoryIterator($path) as $fileinfo) {
                 if ($fileinfo->isDot() || $fileinfo->getExtension() !== 'php') {
                     continue;
                 }
                 $baseName = $fileinfo->getBasename();
-                \Shop::dbg($baseName, false, '$baseName:');
                 if ($this->helper->isValidMigrationFileName($baseName)) {
                     $filePath = $fileinfo->getPathname();
                     $id       = $this->helper->getIdFromFileName($baseName);
@@ -263,7 +260,7 @@ final class MigrationManager
                         ));
                     }
                     $migration = new $class('Plugin migration from ' . $this->pluginID, $date);
-
+                    /** @var \IMigration $migration */
                     if (!\is_subclass_of($migration, \IMigration::class)) {
                         throw new \InvalidArgumentException(\sprintf(
                             'The class "%s" in file "%s" must implement IMigration interface',
@@ -326,9 +323,7 @@ final class MigrationManager
     public function getPendingMigrations(): array
     {
         $executed   = $this->getExecutedMigrations();
-        \Shop::dbg($executed, false, '$executed:');
         $migrations = \array_keys($this->getMigrations());
-        \Shop::dbg($migrations, false, 'this->getMigrations:');
 
         return \array_udiff($migrations, $executed, function ($a, $b) {
             return \strcmp((string)$a, (string)$b);

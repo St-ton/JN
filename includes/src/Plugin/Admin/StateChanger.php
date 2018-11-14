@@ -147,7 +147,7 @@ class StateChanger
             $installer->setPlugin($plugin);
             $installer->setDir($plugin->cVerzeichnis);
 
-            return $installer->installierePluginVorbereitung();
+            return $installer->prepare();
         }
 
         return 200; // kein Reload nötig, da info file älter als dZuletztAktualisiert

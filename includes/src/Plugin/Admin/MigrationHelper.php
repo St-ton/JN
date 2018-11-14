@@ -19,6 +19,11 @@ final class MigrationHelper
     /**
      * @var string
      */
+    public const MIGRATION_CLASS_NAME_PATTERN = '/Migration(\d+)$/i';
+
+    /**
+     * @var string
+     */
     private $path;
 
     /**
@@ -176,5 +181,21 @@ final class MigrationHelper
         }
 
         return true;
+    }
+
+    /**
+     * Returns names like '12345678901234'.
+     *
+     * @param string $className File Name
+     * @return string|null
+     */
+    public static function mapClassNameToId($className)
+    {
+        $matches = [];
+        if (\preg_match(self::MIGRATION_CLASS_NAME_PATTERN, $className, $matches)) {
+            return $matches[1];
+        }
+
+        return null;
     }
 }

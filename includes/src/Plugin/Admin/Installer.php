@@ -106,7 +106,7 @@ final class Installer
      * @return int
      * @former installierePluginVorbereitung()
      */
-    public function installierePluginVorbereitung(): int
+    public function prepare(): int
     {
         if (empty($this->dir)) {
             return InstallCode::WRONG_PARAM;
@@ -128,7 +128,7 @@ final class Installer
             $code = InstallCode::OK;
         }
         if ($code === InstallCode::OK || $code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE) {
-            $code = $this->installierePlugin($xml);
+            $code = $this->install($xml);
         }
 
         return $code;
@@ -141,7 +141,7 @@ final class Installer
      * @return int
      * @former installierePlugin()
      */
-    public function installierePlugin(array $xml): int
+    public function install(array $xml): int
     {
         $baseNode         = $this->getBaseNode($xml);
         $versionNode      = $baseNode['Install'][0]['Version'];
@@ -154,6 +154,7 @@ final class Installer
         $lastVersionKey   = null;
         $modern           = false;
 
+        // @todo:
         if (\is_array($versionNode)) {
             $lastVersionKey = \count($versionNode) / 2 - 1;
             $version        = (int)$versionNode[$lastVersionKey . ' attr']['nr'];
@@ -348,7 +349,7 @@ final class Installer
      * @param \stdClass $plugin
      * @param string    $pluginPath
      * @param Version   $targetVersion
-     * @return \IMigration|Version
+     * @return array|Version
      * @throws \Exception
      */
     private function updateByMigration(\stdClass $plugin, string $pluginPath, Version $targetVersion)
@@ -356,17 +357,15 @@ final class Installer
         $path              = $pluginPath . \DIRECTORY_SEPARATOR . \PFAD_PLUGIN_MIGRATIONS;
         $manager           = new MigrationManager($this->db, $path, $plugin->cPluginID);
         $pendingMigrations = $manager->getPendingMigrations();
-        \Shop::dbg($pendingMigrations, false, '$pendingMigrations:');
         if (\count($pendingMigrations) === 0) {
             return $targetVersion;
         }
-        $id = \reset($pendingMigrations);
-        \Shop::dbg($id, false, 'ID:');
-        $migration = $manager->getMigrationById($id);
-
-        $manager->executeMigration($migration, \IMigration::UP);
-
-        return $migration;
+//        $id = \reset($pendingMigrations);
+//        \Shop::dbg($id, false, 'ID:');
+//        $migration = $manager->getMigrationById($id);
+//
+//        $manager->executeMigration($migration, \IMigration::UP);
+        return $manager->migrate(null);
     }
 
     /**

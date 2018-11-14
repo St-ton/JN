@@ -5,9 +5,10 @@
                 <li class="{if $smarty.foreach.modules.first}first{elseif $smarty.foreach.modules.last}last{/if}">
                     <p class="key">{$oModul->cName}
                         <span class="value {if $oModul->bActive}success{/if}">
-                            {if $oModul->bActive}<span class="label label-success pull-right">Aktiv</span>
+                            {if $oModul->bActive}
+                                <span class="label label-success pull-right">Aktiv</span>
                             {else}
-                                <a href="http://shop.jtl-software.de/Erweiterungen" target="_blank">Jetzt kaufen</a>
+                                <a href="{$oModul->cURL}" target="_blank">Jetzt kaufen</a>
                             {/if}
                         </span>
                     </p>

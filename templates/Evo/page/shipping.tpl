@@ -2,6 +2,16 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
+{if !empty($hinweis)}
+    <div class="alert alert-info">
+        {$hinweis}
+    </div>
+{/if}
+{if !empty($fehler)}
+    <div class="alert alert-danger">
+        {$fehler}
+    </div>
+{/if}
 {if isset($Einstellungen.global.global_versandermittlung_anzeigen) && $Einstellungen.global.global_versandermittlung_anzeigen === 'Y'}
     {include file='snippets/opc_mount_point.tpl' id='opc_shipping_prepend'}
     {if isset($smarty.session.Warenkorb->PositionenArr) && $smarty.session.Warenkorb->PositionenArr|@count > 0}

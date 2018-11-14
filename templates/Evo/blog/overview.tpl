@@ -4,6 +4,13 @@
  *}
 <h1>{lang key='news' section='news'}</h1>
 
+{if !empty($hinweis)}
+    <div class="alert alert-info">{$hinweis}</div>
+{/if}
+{if !empty($fehler)}
+    <div class="alert alert-danger">{$fehler}</div>
+{/if}
+
 {include file='snippets/extension.tpl'}
 
 {include file='snippets/opc_mount_point.tpl' id='opc_news_overview_filter_prepend'}

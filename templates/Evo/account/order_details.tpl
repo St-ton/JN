@@ -8,6 +8,10 @@
     {rdelim}
 </script>
 
+{if !empty($cFehler)}
+    <div class="alert alert-danger">{$cFehler}</div>
+{/if}
+
 <h1>{lang key='orderCompletedPre' section='checkout'}</h1>
 
 <div class="row">

@@ -290,14 +290,6 @@ if ($customerID > 0) {
         'dErstellt DESC'
     );
 }
-
-if ($cFehler !== '') {
-    Shop::Container()->getAlertService()->setErrorAlert(\Alert::VARIANT_DANGER, $cFehler);
-}
-if ($cHinweis !== '') {
-    Shop::Container()->getAlertService()->setNoticeAlert(\Alert::VARIANT_INFO, $cHinweis);
-}
-
 Shop::Smarty()->assign('CWunschliste', $wishlist)
     ->assign('oWunschliste_arr', $wishlists)
     ->assign('wlsearch', $cSuche)

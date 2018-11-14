@@ -10,7 +10,9 @@
     <h1>{lang key='forgotPassword' section='global'}</h1>
     
     {include file='snippets/extension.tpl'}
-
+    {if !empty($cFehler)}
+        <div class="alert alert-danger">{$cFehler}</div>
+    {/if}
     {if $step === 'formular'}
         {if empty($hinweis)}
             <div class="alert alert-info">{lang key='forgotPasswordDesc' section='forgot password'}</div>

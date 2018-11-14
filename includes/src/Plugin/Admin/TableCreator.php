@@ -83,68 +83,69 @@ class TableCreator
     public function installPluginTables($xml, $plugin): int
     {
         $this->plugin   = $plugin;
-        $hooksNode      = isset($xml['jtlshop3plugin'][0]['Install'][0]['Hooks'])
-        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['Hooks'])
-            ? $xml['jtlshop3plugin'][0]['Install'][0]['Hooks']
+        $base           = $xml['jtlshop3plugin'][0] ?? $xml['jtlshopplugin'][0]; // @todo
+        $hooksNode      = isset($base['Install'][0]['Hooks'])
+        && \is_array($base['Install'][0]['Hooks'])
+            ? $base['Install'][0]['Hooks']
             : null;
-        $uninstallNode  = !empty($xml['jtlshop3plugin'][0]['Uninstall'])
-            ? $xml['jtlshop3plugin'][0]['Uninstall']
+        $uninstallNode  = !empty($base['Uninstall'])
+            ? $base['Uninstall']
             : null;
-        $adminNode      = isset($xml['jtlshop3plugin'][0]['Install'][0]['Adminmenu'])
-        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['Adminmenu'])
-            ? $xml['jtlshop3plugin'][0]['Install'][0]['Adminmenu']
+        $adminNode      = isset($base['Install'][0]['Adminmenu'])
+        && \is_array($base['Install'][0]['Adminmenu'])
+            ? $base['Install'][0]['Adminmenu']
             : null;
-        $frontendNode   = isset($xml['jtlshop3plugin'][0]['Install'][0]['FrontendLink'][0]['Link'])
-        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['FrontendLink'][0]['Link'])
-            ? $xml['jtlshop3plugin'][0]['Install'][0]['FrontendLink'][0]['Link']
+        $frontendNode   = isset($base['Install'][0]['FrontendLink'][0]['Link'])
+        && \is_array($base['Install'][0]['FrontendLink'][0]['Link'])
+            ? $base['Install'][0]['FrontendLink'][0]['Link']
             : [];
-        $paymentNode    = isset($xml['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method'])
-        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method'])
-        && \count($xml['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method']) > 0
-            ? $xml['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method']
+        $paymentNode    = isset($base['Install'][0]['PaymentMethod'][0]['Method'])
+        && \is_array($base['Install'][0]['PaymentMethod'][0]['Method'])
+        && \count($base['Install'][0]['PaymentMethod'][0]['Method']) > 0
+            ? $base['Install'][0]['PaymentMethod'][0]['Method']
             : [];
-        $boxesNode      = isset($xml['jtlshop3plugin'][0]['Install'][0]['Boxes'])
-        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['Boxes'])
-            ? $xml['jtlshop3plugin'][0]['Install'][0]['Boxes'][0]['Box']
+        $boxesNode      = isset($base['Install'][0]['Boxes'])
+        && \is_array($base['Install'][0]['Boxes'])
+            ? $base['Install'][0]['Boxes'][0]['Box']
             : [];
-        $checkboxesNode = isset($xml['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function'])
-        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'])
-        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function'])
-        && \count($xml['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function']) > 0
-            ? $xml['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function']
+        $checkboxesNode = isset($base['Install'][0]['CheckBoxFunction'][0]['Function'])
+        && \is_array($base['Install'][0]['CheckBoxFunction'])
+        && \is_array($base['Install'][0]['CheckBoxFunction'][0]['Function'])
+        && \count($base['Install'][0]['CheckBoxFunction'][0]['Function']) > 0
+            ? $base['Install'][0]['CheckBoxFunction'][0]['Function']
             : [];
-        $templatesNode  = isset($xml['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'])
-        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'])
-            ? (array)$xml['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'][0]['Template']
+        $templatesNode  = isset($base['Install'][0]['ExtendedTemplates'])
+        && \is_array($base['Install'][0]['ExtendedTemplates'])
+            ? (array)$base['Install'][0]['ExtendedTemplates'][0]['Template']
             : [];
-        $mailNode       = isset($xml['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'][0]['Template'])
-        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'][0]['Template'])
-            ? $xml['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'][0]['Template']
+        $mailNode       = isset($base['Install'][0]['Emailtemplate'][0]['Template'])
+        && \is_array($base['Install'][0]['Emailtemplate'][0]['Template'])
+            ? $base['Install'][0]['Emailtemplate'][0]['Template']
             : [];
-        $localeNode     = $xml['jtlshop3plugin'][0]['Install'][0]['Locales'][0]['Variable'] ?? [];
-        $widgetsNode    = isset($xml['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget'])
-        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget'])
-            ? $xml['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget']
+        $localeNode     = $base['Install'][0]['Locales'][0]['Variable'] ?? [];
+        $widgetsNode    = isset($base['Install'][0]['AdminWidget'][0]['Widget'])
+        && \is_array($base['Install'][0]['AdminWidget'][0]['Widget'])
+            ? $base['Install'][0]['AdminWidget'][0]['Widget']
             : [];
-        $portletsNode   = isset($xml['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'])
-        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'])
-            ? $xml['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']
+        $portletsNode   = isset($base['Install'][0]['Portlets'][0]['Portlet'])
+        && \is_array($base['Install'][0]['Portlets'][0]['Portlet'])
+            ? $base['Install'][0]['Portlets'][0]['Portlet']
             : [];
-        $blueprintsNode = isset($xml['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'])
-        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'])
-            ? $xml['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint']
+        $blueprintsNode = isset($base['Install'][0]['Blueprints'][0]['Blueprint'])
+        && \is_array($base['Install'][0]['Blueprints'][0]['Blueprint'])
+            ? $base['Install'][0]['Blueprints'][0]['Blueprint']
             : [];
-        $exportNode     = isset($xml['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format'])
-        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format'])
-            ? $xml['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format']
+        $exportNode     = isset($base['Install'][0]['ExportFormat'][0]['Format'])
+        && \is_array($base['Install'][0]['ExportFormat'][0]['Format'])
+            ? $base['Install'][0]['ExportFormat'][0]['Format']
             : [];
-        $cssNode        = isset($xml['jtlshop3plugin'][0]['Install'][0]['CSS'][0]['file'])
-        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['CSS'][0]['file'])
-            ? $xml['jtlshop3plugin'][0]['Install'][0]['CSS'][0]['file']
+        $cssNode        = isset($base['Install'][0]['CSS'][0]['file'])
+        && \is_array($base['Install'][0]['CSS'][0]['file'])
+            ? $base['Install'][0]['CSS'][0]['file']
             : [];
-        $jsNode         = isset($xml['jtlshop3plugin'][0]['Install'][0]['JS'][0]['file'])
-        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['JS'][0]['file'])
-            ? $xml['jtlshop3plugin'][0]['Install'][0]['JS'][0]['file']
+        $jsNode         = isset($base['Install'][0]['JS'][0]['file'])
+        && \is_array($base['Install'][0]['JS'][0]['file'])
+            ? $base['Install'][0]['JS'][0]['file']
             : [];
         if ($hooksNode !== null && ($res = $this->installHooks($hooksNode)) !== InstallCode::OK) {
             return $res;
@@ -315,7 +316,6 @@ class TableCreator
             if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($i)) {
                 $sort = (int)$settingsLinks['sort'];
             } elseif (\strlen($hits2[0]) === \strlen($i)) {
-                // tpluginadminmenu füllen
                 $menuItem             = new \stdClass();
                 $menuItem->kPlugin    = $this->plugin->kPlugin;
                 $menuItem->cName      = $settingsLinks['Name'];

@@ -8,6 +8,7 @@ namespace Plugin;
 
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
+use DB\ReturnType;
 
 /**
  * Class PluginLoader
@@ -208,7 +209,7 @@ class PluginLoader
                     ON tplugineinstellungenconf.kPlugin = tplugineinstellungen.kPlugin
                     AND tplugineinstellungen.cName = tplugineinstellungenconf.cWertName
                 WHERE tplugineinstellungen.kPlugin = ' . $this->plugin->kPlugin,
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($this->plugin->oPluginEinstellung_arr as $conf) {
             $conf->kPlugin = (int)$conf->kPlugin;
@@ -230,7 +231,7 @@ class PluginLoader
             $cfg->kPluginAdminMenu         = (int)$cfg->kPluginAdminMenu;
             $cfg->nSort                    = (int)$cfg->nSort;
 
-            $tmpConf[$i]->oPluginEinstellungenConfWerte_arr = [];
+            $cfg->oPluginEinstellungenConfWerte_arr = [];
             if ($cfg->cInputTyp === 'selectbox' || $cfg->cInputTyp === 'radio') {
                 if (!empty($cfg->cSourceFile)) {
                     $tmpConf[$i]->oPluginEinstellungenConfWerte_arr = $this->plugin->getDynamicOptions($cfg);

@@ -2,7 +2,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{*{$alert|var_dump}*}
 <div class="alert alert-{$alert->getType()}" data-fade-out="{$alert->getFadeOut()}">
     {if !empty($alert->getIcon())}<span class="fa fa-{$alert->getIcon()}"></span>{/if}
 

@@ -73,6 +73,9 @@ class Alert
     public const FADE_MEDIUM = 5000;
     public const FADE_NEVER  = 0;
 
+    public const ICON_WARNING = 'warning';
+    public const ICON_INFO    = 'info';
+    public const ICON_CHECK   = 'check';
 
     /**
      * @param string $message
@@ -99,19 +102,19 @@ class Alert
         switch ($type) {
             case self::TYPE_DANGER:
                 $this->setDismissable(true)
-                     ->setIcon('warning');
+                     ->setIcon(self::ICON_WARNING);
                 break;
             case self::TYPE_WARNING:
                 $this->setDismissable(true)
-                     ->setIcon('warning');
+                     ->setIcon(self::ICON_WARNING);
                 break;
             case self::TYPE_INFO:
                 $this->setFadeOut(self::FADE_SLOW)
-                     ->setIcon('info');
+                     ->setIcon(self::ICON_INFO);
                 break;
             case self::TYPE_SUCCESS:
                 $this->setFadeOut(self::FADE_MEDIUM)
-                     ->setIcon('check');
+                     ->setIcon(self::ICON_CHECK);
                 break;
             default;
                 break;

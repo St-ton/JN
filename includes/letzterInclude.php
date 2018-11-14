@@ -176,4 +176,5 @@ $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('nIsSSL', RequestHelper::checkSSL())
        ->assign('boxes', $boxesToShow)
        ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
-       ->assign('Besucherzaehler', $visitorCount);
+       ->assign('Besucherzaehler', $visitorCount)
+       ->assign('alertList', Shop::Container()->getAlertService()->getAlertlist());

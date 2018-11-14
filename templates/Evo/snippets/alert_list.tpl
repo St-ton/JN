@@ -2,9 +2,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{if isset($smarty.session.alerts)}
+{if isset($alertList)}
     <div id="alert-list">
-    {foreach $smarty.session.alerts->getAlertList() as $alert}
+    {foreach $alertList as $alert}
         {if $alert->getShowInAlertListTemplate()}
             {$alert->display()}
         {/if}

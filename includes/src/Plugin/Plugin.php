@@ -380,71 +380,14 @@ class Plugin
      */
     private function loadFromDB(int $kPlugin, DbInterface $db, bool $invalidateCache = false): ?self
     {
-        $cache   = \Shop::Container()->getCache();
-        $cacheID = \CACHING_GROUP_PLUGIN . '_' . $kPlugin .
-            '_' . \RequestHelper::checkSSL() .
-            '_' . \Shop::getLanguage();
-        if ($invalidateCache === true) {
-            $cache->flush('hook_list');
-            $cache->flushTags([\CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $kPlugin]);
-        } elseif (($plugin = $cache->get($cacheID)) !== false) {
-            foreach (\get_object_vars($plugin) as $k => $v) {
-                $this->$k = $v;
-            }
-
-            return $this;
-        }
-        $obj = $db->select('tplugin', 'kPlugin', $kPlugin);
-        if (!\is_object($obj)) {
+        $loader = new PluginLoader($this, $db, \Shop::Container()->getCache());
+        try {
+            $loader->init($kPlugin, $invalidateCache);
+        } catch (\InvalidArgumentException $e) {
             return null;
         }
-        foreach (\get_object_vars($obj) as $k => $v) {
-            $this->$k = $v;
-        }
-        $this->kPlugin                 = (int)$this->kPlugin;
-        $this->nStatus                 = (int)$this->nStatus;
-        $this->nPrio                   = (int)$this->nPrio;
-        $this->bBootstrap              = (int)$this->bBootstrap === 1;
-        $this->dInstalliert_DE         = $this->gibDateTimeLokalisiert($this->dInstalliert);
-        $this->dZuletztAktualisiert_DE = $this->gibDateTimeLokalisiert($this->dZuletztAktualisiert);
-        $this->dErstellt_DE            = $this->gibDateTimeLokalisiert($this->dErstellt, true);
-
-        $loader = new PluginLoader($this, $db);
-
-        $loader->loadPaths();
-        $loader->loadHooks();
-        $loader->loadAdminMenu();
-        $loader->loadMarkdownFiles();
-        $loader->loadConfig();
-        $loader->loadLocalization();
-        $loader->loadLinks();
-        $loader->loadPaymentMethods();
-        $loader->loadMailTemplates();
-        $loader->loadWidgets();
-        $loader->loadPortlets();
-        $loader->loadUninstall();
-        $this->pluginCacheID    = 'plgn_' . $this->kPlugin . '_' . $this->nVersion;
-        $this->pluginCacheGroup = \CACHING_GROUP_PLUGIN . '_' . $this->kPlugin;
-        $cache->set($cacheID, $this, [\CACHING_GROUP_PLUGIN, $this->pluginCacheGroup]);
 
         return $this;
-    }
-
-    /**
-     * localize datetime to DE
-     *
-     * @param string $cDateTime
-     * @param bool   $bDateOnly
-     * @return string
-     */
-    public function gibDateTimeLokalisiert($cDateTime, bool $bDateOnly = false): string
-    {
-        if (\strlen($cDateTime) === 0) {
-            return '';
-        }
-        $date = new \DateTime($cDateTime);
-
-        return $date->format($bDateOnly ? 'd.m.Y' : 'd.m.Y H:i');
     }
 
     /**

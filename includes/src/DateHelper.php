@@ -84,6 +84,20 @@ class DateHelper
     }
 
     /**
+     * localize datetime to DE
+     *
+     * @param string $input
+     * @param bool   $dateOnly
+     * @return string
+     */
+    public static function localize(string $input, bool $dateOnly = false): string
+    {
+        $date = new \DateTime($input);
+
+        return $date->format($dateOnly ? 'd.m.Y' : 'd.m.Y H:i');
+    }
+
+    /**
      * @param string|null $date
      * @return string
      */

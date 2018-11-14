@@ -6,6 +6,7 @@
 
 namespace Plugin;
 
+use Cache\JTLCacheInterface;
 use DB\DbInterface;
 
 /**
@@ -25,20 +26,97 @@ class PluginLoader
     private $db;
 
     /**
-     * PluginLoader constructor.
-     * @param Plugin      $plugin
-     * @param DbInterface $db
+     * @var JTLCacheInterface
      */
-    public function __construct(Plugin $plugin, DbInterface $db)
+    private $cache;
+
+    /**
+     * @var string
+     */
+    private $cacheID;
+
+    /**
+     * PluginLoader constructor.
+     * @param Plugin            $plugin
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
+     */
+    public function __construct(Plugin $plugin, DbInterface $db, JTLCacheInterface $cache)
     {
         $this->plugin = $plugin;
         $this->db     = $db;
+        $this->cache  = $cache;
     }
 
     /**
-     *
+     * @param int  $id
+     * @param bool $invalidateCache
+     * @return bool
+     * @throws \InvalidArgumentException
      */
-    public function loadHooks(): void
+    public function init(int $id, bool $invalidateCache = false): bool
+    {
+        $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id .
+            '_' . \RequestHelper::checkSSL() .
+            '_' . \Shop::getLanguage();
+        if ($invalidateCache === true) {
+            $this->cache->flush('hook_list');
+            $this->cache->flushTags([\CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $id]);
+        } elseif (($plugin = $this->cache->get($this->cacheID)) !== false) {
+            foreach (\get_object_vars($plugin) as $k => $v) {
+                $this->plugin->$k = $v;
+            }
+
+            return true;
+        }
+        $obj = $this->db->select('tplugin', 'kPlugin', $id);
+        if ($obj === null) {
+            throw new \InvalidArgumentException('Cannot find plugin with ID ' . $id);
+        }
+        foreach (\get_object_vars($obj) as $k => $v) {
+            $this->plugin->$k = $v;
+        }
+        $this->plugin->kPlugin                 = (int)$this->plugin->kPlugin;
+        $this->plugin->nStatus                 = (int)$this->plugin->nStatus;
+        $this->plugin->nPrio                   = (int)$this->plugin->nPrio;
+        $this->plugin->bBootstrap              = (int)$this->plugin->bBootstrap === 1;
+        $this->plugin->pluginCacheGroup        = \CACHING_GROUP_PLUGIN . '_' . $this->plugin->kPlugin;
+        $this->plugin->pluginCacheID           = $this->plugin->pluginCacheGroup . '_' . $this->plugin->nVersion;
+        $this->plugin->dInstalliert_DE         = \DateHelper::localize($this->plugin->dInstalliert);
+        $this->plugin->dZuletztAktualisiert_DE = \DateHelper::localize($this->plugin->dZuletztAktualisiert);
+        $this->plugin->dErstellt_DE            = \DateHelper::localize($this->plugin->dErstellt, true);
+
+        $this->loadPaths()
+             ->loadHooks()
+             ->loadAdminMenu()
+             ->loadMarkdownFiles()
+             ->loadConfig()
+             ->loadLocalization()
+             ->loadLinks()
+             ->loadPaymentMethods()
+             ->loadMailTemplates()
+             ->loadWidgets()
+             ->loadPortlets()
+             ->loadUninstall()
+             ->cache();
+
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function cache(): bool
+    {
+        return $this->cacheID !== null
+            ? $this->cache->set($this->cacheID, $this, [\CACHING_GROUP_PLUGIN, $this->plugin->pluginCacheGroup])
+            : false;
+    }
+
+    /**
+     * @return PluginLoader
+     */
+    public function loadHooks(): self
     {
         $this->plugin->oPluginHook_arr = \array_map(function ($hook) {
             $hook->kPluginHook = (int)$hook->kPluginHook;
@@ -48,12 +126,14 @@ class PluginLoader
 
             return $hook;
         }, $this->db->selectAll('tpluginhook', 'kPlugin', $this->plugin->kPlugin));
+
+        return $this;
     }
 
     /**
-     *
+     * @return PluginLoader
      */
-    public function loadAdminMenu(): void
+    public function loadAdminMenu(): self
     {
         $this->plugin->oPluginAdminMenu_arr = \array_map(function ($menu) {
             $menu->kPluginAdminMenu = (int)$menu->kPluginAdminMenu;
@@ -63,12 +143,14 @@ class PluginLoader
 
             return $menu;
         }, $this->db->selectAll('tpluginadminmenu', 'kPlugin', $this->plugin->kPlugin, '*', 'nSort'));
+
+        return $this;
     }
 
     /**
-     *
+     * @return PluginLoader
      */
-    public function loadPaths(): void
+    public function loadPaths(): self
     {
         $shopURL                            = \Shop::getURL();
         $shopURLSSL                         = \Shop::getURL(true);
@@ -86,12 +168,14 @@ class PluginLoader
         $this->plugin->cLicencePfad         = $this->plugin->cPluginPfad . \PFAD_PLUGIN_LICENCE;
         $this->plugin->cLicencePfadURL      = $shopURL . '/' . $pluginBase . \PFAD_PLUGIN_LICENCE;
         $this->plugin->cLicencePfadURLSSL   = $shopURLSSL . '/' . $pluginBase . \PFAD_PLUGIN_LICENCE;
+
+        return $this;
     }
 
     /**
-     *
+     * @return PluginLoader
      */
-    public function loadMarkdownFiles(): void
+    public function loadMarkdownFiles(): self
     {
         $szPluginMainPath = \PFAD_ROOT . \PFAD_PLUGIN . $this->plugin->cVerzeichnis . '/';
         if ($this->plugin->cTextReadmePath === '' && $this->checkFileExistence($szPluginMainPath . 'README.md')) {
@@ -108,12 +192,14 @@ class PluginLoader
                 }
             }
         }
+
+        return $this;
     }
 
     /**
-     *
+     * @return PluginLoader
      */
-    public function loadConfig(): void
+    public function loadConfig(): self
     {
         $this->plugin->oPluginEinstellung_arr = $this->db->query(
             'SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
@@ -168,12 +254,14 @@ class PluginLoader
         $this->plugin->oPluginEinstellungConf_arr  = $tmpConf;
         $this->plugin->oPluginEinstellungAssoc_arr = PluginHelper::getConfigByID($this->plugin->kPlugin);
         $this->plugin->oPluginSprachvariable_arr   = PluginHelper::getLanguageVariables($this->plugin->kPlugin);
+
+        return $this;
     }
 
     /**
-     *
+     * @return PluginLoader
      */
-    public function loadLocalization(): void
+    public function loadLocalization(): self
     {
         $iso = '';
         if (isset($_SESSION['cISOSprache']) && \strlen($_SESSION['cISOSprache']) > 0) {
@@ -188,12 +276,14 @@ class PluginLoader
             $this->plugin->kPlugin,
             $iso
         );
+
+        return $this;
     }
 
     /**
-     *
+     * @return PluginLoader
      */
-    public function loadLinks(): void
+    public function loadLinks(): self
     {
         $linkData = $this->db->queryPrepared(
             "SELECT tlink.*, tlinksprache.*, tsprache.kSprache 
@@ -243,12 +333,14 @@ class PluginLoader
             }
             $this->plugin->oPluginFrontendLink_arr[] = $link;
         }
+
+        return $this;
     }
 
     /**
-     *
+     * @return PluginLoader
      */
-    public function loadPaymentMethods(): void
+    public function loadPaymentMethods(): self
     {
         $methodsAssoc = [];
         $methods      = $this->db->query(
@@ -299,12 +391,14 @@ class PluginLoader
                 $this->plugin->oPluginZahlungsKlasseAssoc_arr[$oZahlungsartKlasse->cModulId] = $oZahlungsartKlasse;
             }
         }
+
+        return $this;
     }
 
     /**
-     *
+     * @return PluginLoader
      */
-    public function loadMailTemplates(): void
+    public function loadMailTemplates(): self
     {
         $mailTplAssoc = [];
         $mailTpls     = $this->db->selectAll('tpluginemailvorlage', 'kPlugin', (int)$this->plugin->kPlugin);
@@ -328,12 +422,14 @@ class PluginLoader
 
         $this->plugin->oPluginEmailvorlage_arr      = $mailTpls;
         $this->plugin->oPluginEmailvorlageAssoc_arr = $mailTplAssoc;
+
+        return $this;
     }
 
     /**
-     *
+     * @return PluginLoader
      */
-    public function loadWidgets(): void
+    public function loadWidgets(): self
     {
         $this->plugin->oPluginAdminWidget_arr = $this->db->selectAll(
             'tadminwidgets',
@@ -347,12 +443,14 @@ class PluginLoader
             $this->plugin->oPluginAdminWidgetAssoc_arr[$oPluginAdminWidget->kWidget] =
                 $this->plugin->oPluginAdminWidget_arr[$i];
         }
+
+        return $this;
     }
 
     /**
-     *
+     * @return PluginLoader
      */
-    public function loadPortlets(): void
+    public function loadPortlets(): self
     {
         try {
             $this->plugin->oPluginEditorPortlet_arr = $this->db->selectAll(
@@ -371,12 +469,14 @@ class PluginLoader
             $this->plugin->oPluginEditorPortletAssoc_arr[$oPluginEditorPortlet->kPortlet] =
                 $this->plugin->oPluginEditorPortlet_arr[$i];
         }
+
+        return $this;
     }
 
     /**
-     *
+     * @return PluginLoader
      */
-    public function loadUninstall(): void
+    public function loadUninstall(): self
     {
         $this->plugin->oPluginUninstall = $this->db->select(
             'tpluginuninstall',
@@ -388,6 +488,8 @@ class PluginLoader
                 \PFAD_PLUGIN_VERSION . $this->plugin->nVersion . '/' .
                 \PFAD_PLUGIN_UNINSTALL . $this->plugin->oPluginUninstall->cDateiname;
         }
+
+        return $this;
     }
 
     /**

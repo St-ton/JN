@@ -1,0 +1,192 @@
+<?php declare(strict_types=1);
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license       http://jtl-url.de/jtlshoplicense
+ */
+
+namespace Plugin;
+
+/**
+ * Class Extension
+ * @package Plugin
+ */
+class Extension
+{
+    use \MagicCompatibilityTrait;
+
+    public static $mapping = [
+        'kPlugin' => 'ID'
+    ];
+
+    /**
+     * @var int
+     */
+    private $id;
+
+    /**
+     * @var string
+     */
+    private $pluginID;
+
+    /**
+     * @var int
+     */
+    private $state = State::DISABLED;
+
+    /**
+     * @var MetaData
+     */
+    private $meta;
+
+    /**
+     * @var Paths
+     */
+    private $paths;
+
+    /**
+     * @var int
+     */
+    private $priority = 5;
+
+    /**
+     * @var string
+     */
+    private $version;
+
+    /**
+     * @var Config
+     */
+    private $config;
+
+    public function __construct()
+    {
+    }
+
+    /**
+     * @return int
+     */
+    public function getID(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setID(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPluginID(): string
+    {
+        return $this->pluginID;
+    }
+
+    /**
+     * @param string $pluginID
+     */
+    public function setPluginID(string $pluginID): void
+    {
+        $this->pluginID = $pluginID;
+    }
+
+    /**
+     * @return int
+     */
+    public function getState(): int
+    {
+        return $this->state;
+    }
+
+    /**
+     * @param int $state
+     */
+    public function setState(int $state): void
+    {
+        $this->state = $state;
+    }
+
+    /**
+     * @return MetaData
+     */
+    public function getMeta(): MetaData
+    {
+        return $this->meta;
+    }
+
+    /**
+     * @param MetaData $meta
+     */
+    public function setMeta(MetaData $meta): void
+    {
+        $this->meta = $meta;
+    }
+
+    /**
+     * @return Paths
+     */
+    public function getPaths(): Paths
+    {
+        return $this->paths;
+    }
+
+    /**
+     * @param Paths $paths
+     */
+    public function setPaths(Paths $paths): void
+    {
+        $this->paths = $paths;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPriority(): int
+    {
+        return $this->priority;
+    }
+
+    /**
+     * @param int $priority
+     */
+    public function setPriority(int $priority): void
+    {
+        $this->priority = $priority;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersion(): string
+    {
+        return $this->version;
+    }
+
+    /**
+     * @param string $version
+     */
+    public function setVersion(string $version): void
+    {
+        $this->version = $version;
+    }
+
+    /**
+     * @return Config
+     */
+    public function getConfig(): Config
+    {
+        return $this->config;
+    }
+
+    /**
+     * @param Config $config
+     */
+    public function setConfig(Config $config): void
+    {
+        $this->config = $config;
+    }
+}

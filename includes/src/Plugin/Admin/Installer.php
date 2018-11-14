@@ -232,7 +232,7 @@ final class Installer
         }
         $tableCreator = new TableCreator($this->db);
         $tableCreator->setOldPlugin($this->plugin);
-        $res = $tableCreator->installPluginTables($xml, $plugin);
+        $res = $tableCreator->install($xml, $plugin);
         if ($res !== InstallCode::OK) {
             $this->uninstaller->uninstall($kPlugin);
 

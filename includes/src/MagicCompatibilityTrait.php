@@ -20,9 +20,9 @@ trait MagicCompatibilityTrait
 
     /**
      * @param string $value
-     * @return string|null
+     * @return string|array|null
      */
-    private static function getMapping($value): ?string
+    private static function getMapping($value)
     {
         return self::$mapping[$value] ?? null;
     }
@@ -38,6 +38,12 @@ trait MagicCompatibilityTrait
             return $this->$name;
         }
         if (($mapped = self::getMapping($name)) !== null) {
+            if (is_array($mapped) && count($mapped) === 2) {
+                $method1 = $mapped[0];
+                $method2 = 'get' . $mapped[1];
+
+                return call_user_func([$this->$method1(), $method2]);
+            }
             $method = 'get' . $mapped;
 
             return $this->$method();

@@ -80,7 +80,7 @@ class TableCreator
      * @param object $plugin
      * @return int
      */
-    public function installPluginTables($xml, $plugin): int
+    public function install($xml, $plugin): int
     {
         $this->plugin   = $plugin;
         $base           = $xml['jtlshop3plugin'][0] ?? $xml['jtlshopplugin'][0]; // @todo

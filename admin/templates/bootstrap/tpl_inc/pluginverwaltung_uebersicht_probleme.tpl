@@ -43,7 +43,7 @@
                         </td>
                         <td class="tcenter">
                             <h4 class="label-wrap">
-                                <span class="label {if $plugin->nStatus === \Plugin\Plugin::PLUGIN_ACTIVATED}success label-success{elseif $plugin->nStatus == 1}success label-info{elseif $plugin->nStatus == 3}success label-default{elseif $plugin->nStatus == 4 || $plugin->nStatus == 5}info label-info{elseif $plugin->nStatus == 6}danger label-danger{/if}">
+                                <span class="label {if $plugin->nStatus === \Plugin\State::ACTIVATED}success label-success{elseif $plugin->nStatus === \Plugin\State::DISABLED}success label-info{elseif $plugin->nStatus === \Plugin\State::ERRONEOUS}success label-default{elseif $plugin->nStatus === \Plugin\State::UPDATE_FAILED || $plugin->nStatus === \Plugin\State::LICENSE_KEY_MISSING}info label-info{elseif $plugin->nStatus === \Plugin\State::LICENSE_KEY_INVALID}danger label-danger{/if}">
                                     {$mapper->map($plugin->nStatus)}
                                 </span>
                             </h4>
@@ -102,7 +102,7 @@
                         </td>
                         <td class="tcenter">
                             <h4 class="label-wrap">
-                            <span class="label {if $plugin->nStatus === \Plugin\Plugin::PLUGIN_ACTIVATED}success label-success{elseif $plugin->nStatus == 1}success label-info{elseif $plugin->nStatus == 3}success label-default{elseif $plugin->nStatus == 4 || $plugin->nStatus == 5}info label-info{elseif $plugin->nStatus == 6}danger label-danger{/if}">
+                            <span class="label {if $plugin->nStatus === \Plugin\State::ACTIVATED}success label-success{elseif $plugin->nStatus === \Plugin\State::DISABLED}success label-info{elseif $plugin->nStatus === \Plugin\State::ERRONEOUS}success label-default{elseif $plugin->nStatus === \Plugin\State::UPDATE_FAILED || $plugin->nStatus === \Plugin\State::LICENSE_KEY_MISSING}info label-info{elseif $plugin->nStatus === \Plugin\State::LICENSE_KEY_INVALID}danger label-danger{/if}">
                                 {$mapper->map($plugin->nStatus)}
                             </span>
                             </h4>
@@ -163,7 +163,7 @@
                         </td>
                         <td class="tcenter">
                             <h4 class="label-wrap">
-                                <span class="label {if $plugin->nStatus === \Plugin\Plugin::PLUGIN_ACTIVATED}success label-success{elseif $plugin->nStatus == 1}success label-info{elseif $plugin->nStatus == 3}success label-default{elseif $plugin->nStatus == 4 || $plugin->nStatus == 5}info label-info{elseif $plugin->nStatus == 6}danger label-danger{/if}">
+                                <span class="label {if $plugin->nStatus === \Plugin\State::ACTIVATED}success label-success{elseif $plugin->nStatus === \Plugin\State::DISABLED}success label-info{elseif $plugin->nStatus === \Plugin\State::ERRONEOUS}success label-default{elseif $plugin->nStatus === \Plugin\State::UPDATE_FAILED || $plugin->nStatus === \Plugin\State::LICENSE_KEY_MISSING}info label-info{elseif $plugin->nStatus === \Plugin\State::LICENSE_KEY_INVALID}danger label-danger{/if}">
                                     {$mapper->map($plugin->nStatus)}
                                 </span>
                             </h4>
@@ -229,7 +229,7 @@
                         </td>
                         <td class="tcenter plugin-status">
                             <h4 class="label-wrap">
-                                <span class="label {if $plugin->nStatus === \Plugin\Plugin::PLUGIN_ACTIVATED}success label-success{elseif $plugin->nStatus == 1}success label-info{elseif $plugin->nStatus == 3}success label-default{elseif $plugin->nStatus == 4 || $plugin->nStatus == 5}info label-info{elseif $plugin->nStatus == 6}danger label-danger{/if}">
+                                <span class="label {if $plugin->nStatus === \Plugin\State::ACTIVATED}success label-success{elseif $plugin->nStatus === \Plugin\State::DISABLED}success label-info{elseif $plugin->nStatus === \Plugin\State::ERRONEOUS}success label-default{elseif $plugin->nStatus === \Plugin\State::UPDATE_FAILED || $plugin->nStatus === \Plugin\State::LICENSE_KEY_MISSING}info label-info{elseif $plugin->nStatus === \Plugin\State::LICENSE_KEY_INVALID}danger label-danger{/if}">
                                     {$mapper->map($plugin->nStatus)}
                                 </span>
                             </h4>

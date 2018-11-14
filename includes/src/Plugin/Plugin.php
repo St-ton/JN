@@ -6,11 +6,11 @@
 
 namespace Plugin;
 
+use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use JTL\XMLParser;
 use Plugin\Admin\StateChanger;
 use Plugin\Admin\Validation\Shop4Validator;
-use Plugin\Admin\Validator;
 
 /**
  * Class Plugin
@@ -325,16 +325,17 @@ class Plugin
     public function __construct(int $kPlugin = 0, bool $invalidateCache = false, bool $suppressReload = false)
     {
         if ($kPlugin > 0) {
-            $db = \Shop::Container()->getDB();
-            $this->loadFromDB($kPlugin, $db, $invalidateCache);
+            $db    = \Shop::Container()->getDB();
+            $cache = \Shop::Container()->getCache();
+            $this->loadFromDB($kPlugin, $db, $cache, $invalidateCache);
             if (\PLUGIN_DEV_MODE === true && $suppressReload === false) {
                 $stateChanger = new StateChanger(
                     $db,
-                    \Shop::Container()->getCache(),
+                    $cache,
                     new Shop4Validator($db)
                 );
                 $stateChanger->reload($this, false);
-                $this->loadFromDB($kPlugin, $db, $invalidateCache);
+                $this->loadFromDB($kPlugin, $db, $cache, $invalidateCache);
             }
         }
     }
@@ -345,7 +346,8 @@ class Plugin
      */
     public static function getHookList(): array
     {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+
         return PluginHelper::getHookList();
     }
 
@@ -356,21 +358,23 @@ class Plugin
      */
     public static function setHookList(array $hookList): bool
     {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+
         return PluginHelper::setHookList($hookList);
     }
 
     /**
-     * @param int         $kPlugin
-     * @param DbInterface $db
-     * @param bool        $invalidateCache
+     * @param int               $id
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
+     * @param bool              $invalidate
      * @return null|$this
      */
-    private function loadFromDB(int $kPlugin, DbInterface $db, bool $invalidateCache = false): ?self
+    private function loadFromDB(int $id, DbInterface $db, JTLCacheInterface $cache, bool $invalidate = false): ?self
     {
-        $loader = new PluginLoader($this, $db, \Shop::Container()->getCache());
+        $loader = new PluginLoader($this, $db, $cache);
         try {
-            $loader->init($kPlugin, $invalidateCache);
+            $loader->init($id, $invalidate);
         } catch (\InvalidArgumentException $e) {
             return null;
         }
@@ -414,7 +418,8 @@ class Plugin
      */
     public function setConf(): bool
     {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+
         return false;
     }
 
@@ -424,7 +429,8 @@ class Plugin
      */
     public function getConf(): bool
     {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+
         return false;
     }
 
@@ -435,7 +441,8 @@ class Plugin
      */
     public static function getPluginById(string $pluginID): ?self
     {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+
         return PluginHelper::getPluginById($pluginID);
     }
 
@@ -496,7 +503,8 @@ class Plugin
      */
     public static function bootstrapper(int $id)
     {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+
         return PluginHelper::bootstrapper($id);
     }
 
@@ -506,7 +514,8 @@ class Plugin
      */
     public static function getTemplatePaths(): array
     {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+
         return PluginHelper::getTemplatePaths();
     }
 }

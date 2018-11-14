@@ -1709,7 +1709,7 @@ function zahlungsartGueltig($paymentMethod): bool
         $oPlugin = new \Plugin\Plugin($kPlugin);
         if ($oPlugin->kPlugin > 0) {
             // Plugin muss aktiv sein
-            if ($oPlugin->nStatus !== \Plugin\Plugin::PLUGIN_ACTIVATED) {
+            if ($oPlugin->nStatus !== \Plugin\State::ACTIVATED) {
                 return false;
             }
             require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .

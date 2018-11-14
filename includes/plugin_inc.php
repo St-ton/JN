@@ -175,7 +175,7 @@ function gibPluginExtendedTemplates(): array
                 ON tplugintemplate.kPlugin = tplugin.kPlugin
                 WHERE tplugin.nStatus = :state 
             ORDER BY tplugin.nPrio DESC',
-        ['state' => \Plugin\Plugin::PLUGIN_ACTIVATED],
+        ['state' => \Plugin\State::ACTIVATED],
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($oTemplate_arr as $oTemplate) {

@@ -13,6 +13,7 @@ use Plugin\Admin\Validation\ValidatorInterface;
 use Plugin\InstallCode;
 use Plugin\Plugin;
 use Plugin\PluginHelper;
+use Plugin\State;
 
 /**
  * Class Installer
@@ -147,12 +148,11 @@ final class Installer
         $xmlVersion       = (int)$baseNode['XMLVersion'];
         $licenceClass     = '';
         $licenceClassName = '';
-        $state            = Plugin::PLUGIN_ACTIVATED;
+        $state            = State::ACTIVATED;
         $tagsToFlush      = [];
         $basePath         = \PFAD_ROOT . \PFAD_PLUGIN . $this->dir . \DIRECTORY_SEPARATOR;
         $lastVersionKey   = null;
-
-        $modern = false;
+        $modern           = false;
 
         if (\is_array($versionNode)) {
             $lastVersionKey = \count($versionNode) / 2 - 1;
@@ -174,7 +174,7 @@ final class Installer
         ) {
             $licenceClass     = $baseNode['LicenceClass'];
             $licenceClassName = $baseNode['LicenceClassFile'];
-            $state            = Plugin::PLUGIN_LICENSE_KEY_MISSING;
+            $state            = State::LICENSE_KEY_MISSING;
         }
         $plugin                       = new \stdClass();
         $plugin->cName                = $baseNode['Name'];

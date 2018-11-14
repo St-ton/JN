@@ -105,7 +105,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
             $cLicenceMethod = PLUGIN_LICENCE_METHODE;
             if ($oPluginLicence->$cLicenceMethod(StringHandler::filterXSS($_POST['cKey']))) {
                 $oPlugin->cFehler = '';
-                $oPlugin->nStatus = \Plugin\Plugin::PLUGIN_ACTIVATED;
+                $oPlugin->nStatus = \Plugin\State::ACTIVATED;
                 $oPlugin->cLizenz = StringHandler::filterXSS($_POST['cKey']);
                 $oPlugin->updateInDB();
                 $cHinweis = 'Ihr Plugin-Lizenzschlüssel wurde gespeichert.';

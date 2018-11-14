@@ -759,7 +759,7 @@ final class Shop
                     WHERE nStatus = :state
                       AND bBootstrap = 1 
                     ORDER BY nPrio ASC',
-                ['state' => \Plugin\Plugin::PLUGIN_ACTIVATED],
+                ['state' => \Plugin\State::ACTIVATED],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             ) ?: [];
             self::Container()->getCache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);

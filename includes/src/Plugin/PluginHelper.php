@@ -53,7 +53,7 @@ class PluginHelper
                     ON tpluginhook.kPlugin = tplugin.kPlugin
                 WHERE tplugin.nStatus = :state
                 ORDER BY tpluginhook.nPriority, tplugin.kPlugin',
-            ['state' => Plugin::PLUGIN_ACTIVATED],
+            ['state' => State::ACTIVATED],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($hookData as $hook) {
@@ -144,7 +144,7 @@ class PluginHelper
         $plugins       = \Shop::Container()->getDB()->selectAll(
             'tplugin',
             'nStatus',
-            Plugin::PLUGIN_ACTIVATED,
+            State::ACTIVATED,
             'cPluginID,cVerzeichnis,nVersion',
             'nPrio'
         );
@@ -179,8 +179,8 @@ class PluginHelper
             $licenceMethod = \PLUGIN_LICENCE_METHODE;
 
             if (!$licence->$licenceMethod($plugin->cLizenz)) {
-                $plugin->nStatus = Plugin::PLUGIN_LICENSE_KEY_INVALID;
-                $plugin->cFehler = 'Lizenzschl&uuml;ssel ist ung&uuml;ltig';
+                $plugin->nStatus = State::LICENSE_KEY_INVALID;
+                $plugin->cFehler = 'Lizenzschlüssel ist ungültig';
                 $plugin->updateInDB();
                 \Shop::Container()->getLogService()->withName('kPlugin')->error(
                     'Plugin Lizenzprüfung: Das Plugin "' . $plugin->cName .

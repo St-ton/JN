@@ -7,6 +7,7 @@
 namespace Mapper;
 
 use Plugin\Plugin;
+use Plugin\State;
 
 /**
  * Class PluginState
@@ -21,17 +22,17 @@ class PluginState
     public function map(int $state): string
     {
         switch ($state) {
-            case Plugin::PLUGIN_DISABLED:
+            case State::DISABLED:
                 return 'Deaktiviert';
-            case Plugin::PLUGIN_ACTIVATED:
+            case State::ACTIVATED:
                 return 'Aktiviert';
-            case Plugin::PLUGIN_ERRONEOUS:
+            case State::ERRONEOUS:
                 return 'Fehlerhaft';
-            case Plugin::PLUGIN_UPDATE_FAILED:
+            case State::UPDATE_FAILED:
                 return 'Update fehlgeschlagen';
-            case Plugin::PLUGIN_LICENSE_KEY_MISSING:
+            case State::LICENSE_KEY_MISSING:
                 return 'Lizenzschlüssel fehlt';
-            case Plugin::PLUGIN_LICENSE_KEY_INVALID:
+            case State::LICENSE_KEY_INVALID:
                 return 'Lizenzschlüssel ungültig';
             default:
                 return 'Unbekannt';

@@ -15,6 +15,7 @@ use DB\ReturnType;
 use Filter\ProductFilter;
 use Filter\SearchResultsInterface;
 use Filter\Visibility;
+use Plugin\State;
 use Session\Session;
 
 /**
@@ -344,7 +345,7 @@ class BoxService implements BoxServiceInterface
             : '';
         $cPluginAktiv     = $active
             ? ' AND (tplugin.nStatus IS NULL OR tplugin.nStatus = ' .
-            \Plugin\Plugin::PLUGIN_ACTIVATED . "  OR tboxvorlage.eTyp != 'plugin')"
+            State::ACTIVATED . "  OR tboxvorlage.eTyp != 'plugin')"
             : '';
         if (($grouped = \Shop::Container()->getCache()->get($cacheID)) === false) {
             $boxData = $this->db->query(

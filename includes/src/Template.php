@@ -181,7 +181,7 @@ class Template
                     ON tplugin.kPlugin = tplugin_resources.kPlugin
                 WHERE tplugin.nStatus = :state
                 ORDER BY tplugin_resources.priority DESC',
-            ['state' => \Plugin\Plugin::PLUGIN_ACTIVATED],
+            ['state' => \Plugin\State::ACTIVATED],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $grouped    = \Functional\group($resourcesc, function ($e) {

@@ -12,6 +12,7 @@ use Plugin\Admin\Validation\Shop4Validator;
 use Plugin\InstallCode;
 use Plugin\Plugin;
 use Plugin\PluginHelper;
+use Plugin\State;
 
 /**
  * Class StateChanger
@@ -74,7 +75,7 @@ class StateChanger
                 'tplugin',
                 'kPlugin',
                 $pluginID,
-                (object)['nStatus' => Plugin::PLUGIN_ACTIVATED]
+                (object)['nStatus' => State::ACTIVATED]
             );
             $this->db->update('tadminwidgets', 'kPlugin', $pluginID, (object)['bActive' => 1]);
             $this->db->update('tlink', 'kPlugin', $pluginID, (object)['bIsActive' => 1]);
@@ -108,7 +109,7 @@ class StateChanger
         if (($p = PluginHelper::bootstrapper($pluginID)) !== null) {
             $p->disabled();
         }
-        $this->db->update('tplugin', 'kPlugin', $pluginID, (object)['nStatus' => Plugin::PLUGIN_DISABLED]);
+        $this->db->update('tplugin', 'kPlugin', $pluginID, (object)['nStatus' => State::DISABLED]);
         $this->db->update('tadminwidgets', 'kPlugin', $pluginID, (object)['bActive' => 0]);
         $this->db->update('tlink', 'kPlugin', $pluginID, (object)['bIsActive' => 0]);
         $this->db->update('topcportlet', 'kPlugin', $pluginID, (object)['bActive' => 0]);

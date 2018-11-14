@@ -88,7 +88,7 @@ foreach ($mainGroups as $mainGroup) {
                     ON tplugin.kPlugin = tpluginadminmenu.kPlugin
                 WHERE tplugin.nStatus = :state
                 ORDER BY tplugin.nPrio, tplugin.cName',
-            ['state' => \Plugin\Plugin::PLUGIN_ACTIVATED],
+            ['state' => \Plugin\State::ACTIVATED],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($pluginLinks as $pluginLink) {

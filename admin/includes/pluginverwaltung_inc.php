@@ -74,7 +74,7 @@ function installierePluginVorbereitung($dir, $oldPlugin = 0)
         $installer->setDir($dir);
     }
 
-    return $installer->installierePluginVorbereitung();
+    return $installer->prepare();
 }
 
 /**

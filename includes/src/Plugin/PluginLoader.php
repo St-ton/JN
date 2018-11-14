@@ -109,7 +109,7 @@ class PluginLoader
     public function cache(): bool
     {
         return $this->cacheID !== null
-            ? $this->cache->set($this->cacheID, $this, [\CACHING_GROUP_PLUGIN, $this->plugin->pluginCacheGroup])
+            ? $this->cache->set($this->cacheID, $this->plugin, [\CACHING_GROUP_PLUGIN, $this->plugin->pluginCacheGroup])
             : false;
     }
 

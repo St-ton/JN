@@ -226,7 +226,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
         if (is_array($dirs)) {
             foreach ($dirs as $dir) {
                 $installer->setDir(basename($dir));
-                $res = $installer->installierePluginVorbereitung();
+                $res = $installer->prepare();
                 if ($res === \Plugin\InstallCode::OK || $res === \Plugin\InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE) {
                     $cHinweis = 'Ihre ausgewählten Plugins wurden erfolgreich installiert.';
                     $reload   = true;

@@ -54,44 +54,52 @@ class ExtensionLoader
     /**
      * @param int  $id
      * @param bool $invalidateCache
-     * @return bool
-     * @throws \InvalidArgumentException
+     * @return Extension
      */
-    public function init(int $id, bool $invalidateCache = false): bool
+    public function init(int $id, bool $invalidateCache = false): Extension
     {
         $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id .
-            '_' . \RequestHelper::checkSSL() .
             '_' . \Shop::getLanguage();
         if ($invalidateCache === true) {
             $this->cache->flush('hook_list');
             $this->cache->flushTags([\CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $id]);
         }
-//        elseif (($plugin = $this->cache->get($this->cacheID)) !== false) {
-//            foreach (\get_object_vars($plugin) as $k => $v) {
-//                $this->plugin->$k = $v;
+//        elseif (($data = $this->cache->get($this->cacheID)) !== false) {
+//            $extension = new Extension();
+//            foreach (\get_object_vars($data) as $k => $v) {
+//                $extension->$k = $v;
 //            }
 //
-//            return true;
+//            return $extension;
 //        }
         $obj = $this->db->select('tplugin', 'kPlugin', $id);
         if ($obj === null) {
             throw new \InvalidArgumentException('Cannot find plugin with ID ' . $id);
         }
+
+        return $this->loadFromObject($obj);
+    }
+
+    /**
+     * @param \stdClass $obj
+     * @return Extension
+     */
+    public function loadFromObject(\stdClass $obj): Extension
+    {
         $paths = $this->loadPaths($obj->cVerzeichnis);
 
         $extension = new Extension();
         $extension->setMeta($this->loadMetaData($obj));
         $extension->setPaths($paths);
         $extension->setState((int)$obj->nStatus);
-        $extension->setID($id);
-        $extension->setLinks($this->loadLinks($id));
+        $extension->setID((int)$obj->kPlugin);
+        $extension->setLinks($this->loadLinks((int)$obj->kPlugin));
         $extension->setPluginID($obj->cPluginID);
         $extension->setPriority((int)$obj->nPrio);
         $extension->setVersion($obj->nVersion);
         $extension->setConfig($this->loadConfig($paths->getAdminPath(), $extension->getID()));
-//        \Shop::dbg($extension, true, 'Extension:');
 
-        return true;
+        return $extension;
     }
 
     /**
@@ -162,7 +170,7 @@ class ExtensionLoader
      */
     private function loadPaths(string $pluginDir): Paths
     {
-        $shopURL  = \Shop::getURL() . '/';
+        $shopURL  = \Shop::getURL(true) . '/';
         $basePath = \PFAD_ROOT . \PFAD_EXTENSIONS . $pluginDir . \DIRECTORY_SEPARATOR;
         $baseURL  = $shopURL . \PFAD_EXTENSIONS . $pluginDir . '/';
 

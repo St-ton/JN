@@ -112,15 +112,15 @@ final class MigrationManager
         }
         $direction = $identifier > $currentId ? \IMigration::UP : \IMigration::DOWN;
         $executed  = [];
-
         try {
             if ($direction === \IMigration::DOWN) {
                 \krsort($migrations);
                 foreach ($migrations as $migration) {
-                    if ($migration->getId() <= $identifier) {
+                    $id = $migration->getId();
+                    if ($id <= $identifier) {
                         break;
                     }
-                    if (\in_array($migration->getId(), $executedMigrations)) {
+                    if (\in_array($id, $executedMigrations, true)) {
                         $executed[] = $migration;
                         $this->executeMigration($migration, \IMigration::DOWN);
                     }
@@ -128,10 +128,11 @@ final class MigrationManager
             }
             \ksort($migrations);
             foreach ($migrations as $migration) {
-                if ($migration->getId() > $identifier) {
+                $id = $migration->getId();
+                if ($id > $identifier) {
                     break;
                 }
-                if (!\in_array($migration->getId(), $executedMigrations)) {
+                if (!\in_array($id, $executedMigrations, true)) {
                     $executed[] = $migration;
                     $this->executeMigration($migration, \IMigration::UP);
                 }
@@ -369,7 +370,7 @@ final class MigrationManager
             );
             $this->db->executeQuery($sql, \DB\ReturnType::AFFECTED_ROWS);
         } else {
-            $sql = \sprintf("DELETE FROM tmigration WHERE kMigration = '%s'", $migration->getId());
+            $sql = \sprintf("DELETE FROM tpluginmigration WHERE kMigration = '%s'", $migration->getId());
             $this->db->executeQuery($sql, \DB\ReturnType::AFFECTED_ROWS);
         }
 

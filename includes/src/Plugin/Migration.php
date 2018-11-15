@@ -15,7 +15,7 @@ use Plugin\Admin\MigrationHelper;
 class Migration extends \Migration
 {
     /**
-     * @return string|null
+     * @return int|null
      */
     public function getId()
     {

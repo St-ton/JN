@@ -54,6 +54,7 @@ class Uninstaller
         }
         if (!$update) {
             // Plugin wird vollständig deinstalliert
+            $this->executeMigrations($plugin);
             if (isset($plugin->oPluginUninstall->kPluginUninstall)
                 && (int)$plugin->oPluginUninstall->kPluginUninstall > 0
             ) {
@@ -77,6 +78,22 @@ class Uninstaller
         }
 
         return InstallCode::OK;
+    }
+
+    /**
+     * @param Plugin $plugin
+     * @return array
+     * @throws \Exception
+     */
+    private function executeMigrations($plugin): array
+    {
+        $manager           = new MigrationManager(
+            $this->db,
+            $plugin->cPluginPfad . \PFAD_PLUGIN_MIGRATIONS,
+            $plugin->cPluginID
+        );
+
+        return $manager->migrate(0);
     }
 
     /**

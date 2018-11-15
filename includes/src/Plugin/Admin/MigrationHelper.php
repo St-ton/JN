@@ -57,13 +57,13 @@ final class MigrationHelper
      * Get the id from a file name.
      *
      * @param string $fileName File Name
-     * @return string|null
+     * @return int|null
      */
-    public function getIdFromFileName($fileName): ?string
+    public function getIdFromFileName($fileName): ?int
     {
         $matches = [];
         if (\preg_match(self::MIGRATION_FILE_NAME_PATTERN, \basename($fileName), $matches)) {
-            return $matches[1];
+            return (int)$matches[1];
         }
 
         return null;
@@ -187,13 +187,13 @@ final class MigrationHelper
      * Returns names like '12345678901234'.
      *
      * @param string $className File Name
-     * @return string|null
+     * @return int|null
      */
-    public static function mapClassNameToId($className)
+    public static function mapClassNameToId($className): ?int
     {
         $matches = [];
         if (\preg_match(self::MIGRATION_CLASS_NAME_PATTERN, $className, $matches)) {
-            return $matches[1];
+            return (int)$matches[1];
         }
 
         return null;

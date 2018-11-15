@@ -37,6 +37,11 @@ class PluginLoader
     private $cacheID;
 
     /**
+     * @var string
+     */
+    private $basePath = \PFAD_ROOT . \PFAD_PLUGIN;
+
+    /**
      * PluginLoader constructor.
      * @param Plugin            $plugin
      * @param DbInterface       $db
@@ -155,9 +160,9 @@ class PluginLoader
     {
         $shopURL                            = \Shop::getURL();
         $shopURLSSL                         = \Shop::getURL(true);
-        $basePath                           = \PFAD_ROOT . \PFAD_PLUGIN;
-        $versioned                          = $this->plugin->cVerzeichnis . '/' .
-            \PFAD_PLUGIN_VERSION . $this->plugin->nVersion . '/';
+        $basePath                           = $this->basePath;
+        $versioned                          = $this->plugin->cVerzeichnis . \DIRECTORY_SEPARATOR .
+            \PFAD_PLUGIN_VERSION . $this->plugin->nVersion . \DIRECTORY_SEPARATOR;
         $pluginBase                         = \PFAD_PLUGIN . $versioned;
         $this->plugin->cPluginPfad          = $basePath . $versioned;
         $this->plugin->cFrontendPfad        = $this->plugin->cPluginPfad . \PFAD_PLUGIN_FRONTEND;
@@ -178,7 +183,7 @@ class PluginLoader
      */
     public function loadMarkdownFiles(): self
     {
-        $szPluginMainPath = \PFAD_ROOT . \PFAD_PLUGIN . $this->plugin->cVerzeichnis . '/';
+        $szPluginMainPath = $this->basePath . $this->plugin->cVerzeichnis . '/';
         if ($this->plugin->cTextReadmePath === '' && $this->checkFileExistence($szPluginMainPath . 'README.md')) {
             $this->plugin->cTextReadmePath = $szPluginMainPath . 'README.md';
         }
@@ -352,12 +357,12 @@ class PluginLoader
         );
         foreach ($methods as $method) {
             $method->cZusatzschrittTemplate          = \strlen($method->cZusatzschrittTemplate)
-                ? \PFAD_ROOT . \PFAD_PLUGIN . $this->plugin->cVerzeichnis . '/' .
+                ? $this->basePath . $this->plugin->cVerzeichnis . '/' .
                 \PFAD_PLUGIN_VERSION . $this->plugin->nVersion . '/' .
                 \PFAD_PLUGIN_PAYMENTMETHOD . $method->cZusatzschrittTemplate
                 : '';
             $method->cTemplateFileURL                = \strlen($method->cPluginTemplate)
-                ? \PFAD_ROOT . \PFAD_PLUGIN . $this->plugin->cVerzeichnis . '/' .
+                ? $this->basePath . $this->plugin->cVerzeichnis . '/' .
                 \PFAD_PLUGIN_VERSION . $this->plugin->nVersion . '/' .
                 \PFAD_PLUGIN_PAYMENTMETHOD . $method->cPluginTemplate
                 : '';
@@ -485,7 +490,7 @@ class PluginLoader
             (int)$this->plugin->kPlugin
         );
         if ($this->plugin->oPluginUninstall !== null) {
-            $this->plugin->cPluginUninstallPfad = \PFAD_ROOT . \PFAD_PLUGIN . $this->plugin->cVerzeichnis . '/' .
+            $this->plugin->cPluginUninstallPfad = $this->basePath . $this->plugin->cVerzeichnis . '/' .
                 \PFAD_PLUGIN_VERSION . $this->plugin->nVersion . '/' .
                 \PFAD_PLUGIN_UNINSTALL . $this->plugin->oPluginUninstall->cDateiname;
         }

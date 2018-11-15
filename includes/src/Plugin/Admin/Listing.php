@@ -23,7 +23,7 @@ final class Listing
 {
     private const PLUGINS_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
 
-    private const NEW_PLUGINS_DIR = \PFAD_ROOT . 'plugins' . \DIRECTORY_SEPARATOR;
+    private const NEW_PLUGINS_DIR = \PFAD_ROOT . \PFAD_EXTENSIONS;
 
     /**
      * @var DbInterface

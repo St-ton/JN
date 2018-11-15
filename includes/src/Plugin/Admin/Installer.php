@@ -114,7 +114,7 @@ final class Installer
         $validator = $this->validator;
         $baseDir   = \PFAD_ROOT . \PFAD_PLUGIN . \basename($this->dir);
         if (!\file_exists($baseDir . '/' . \PLUGIN_INFO_FILE)) {
-            $baseDir   = \PFAD_ROOT . 'plugins/' . \basename($this->dir);
+            $baseDir   = \PFAD_ROOT . \PFAD_EXTENSIONS . \basename($this->dir);
             $validator = $this->modernValidator;
             if (!\file_exists($baseDir . '/' . \PLUGIN_INFO_FILE)) {
                 return InstallCode::INFO_XML_MISSING;
@@ -153,15 +153,16 @@ final class Installer
         $basePath         = \PFAD_ROOT . \PFAD_PLUGIN . $this->dir . \DIRECTORY_SEPARATOR;
         $lastVersionKey   = null;
         $modern           = false;
+        $plugin           = new \stdClass();
 
         // @todo:
         if (\is_array($versionNode)) {
             $lastVersionKey = \count($versionNode) / 2 - 1;
             $version        = (int)$versionNode[$lastVersionKey . ' attr']['nr'];
-            $versionedDir   = $basePath . \PFAD_PLUGIN_VERSION . $version . '/';
+            $versionedDir   = $basePath . \PFAD_PLUGIN_VERSION . $version . \DIRECTORY_SEPARATOR;
         } else {
             $version      = (int)$versionNode;
-            $basePath     = \PFAD_ROOT . 'plugins' . \DIRECTORY_SEPARATOR . $this->dir;
+            $basePath     = \PFAD_ROOT . \PFAD_EXTENSIONS . $this->dir . \DIRECTORY_SEPARATOR;
             $versionedDir = $basePath;
             $versionNode  = [];
             $modern       = true;
@@ -177,7 +178,7 @@ final class Installer
             $licenceClassName = $baseNode['LicenceClassFile'];
             $state            = State::LICENSE_KEY_MISSING;
         }
-        $plugin                       = new \stdClass();
+        $plugin->bExtension           = (int)$modern;
         $plugin->cName                = $baseNode['Name'];
         $plugin->cBeschreibung        = $baseNode['Description'];
         $plugin->cAutor               = $baseNode['Author'];
@@ -197,7 +198,7 @@ final class Installer
         $plugin->dErstellt            = $lastVersionKey !== null
             ? $versionNode[$lastVersionKey]['CreateDate']
             : $baseNode['Install'][0]['CreateDate'];
-        $plugin->bBootstrap           = \is_file($versionedDir . '/' . 'bootstrap.php') ? 1 : 0;
+        $plugin->bBootstrap           = \is_file($versionedDir . 'bootstrap.php') ? 1 : 0;
 
         foreach ($tags as $_tag) {
             if (\defined(\trim($_tag))) {
@@ -360,11 +361,7 @@ final class Installer
         if (\count($pendingMigrations) === 0) {
             return $targetVersion;
         }
-//        $id = \reset($pendingMigrations);
-//        \Shop::dbg($id, false, 'ID:');
-//        $migration = $manager->getMigrationById($id);
-//
-//        $manager->executeMigration($migration, \IMigration::UP);
+
         return $manager->migrate(null);
     }
 

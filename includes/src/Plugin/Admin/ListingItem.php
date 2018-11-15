@@ -136,7 +136,6 @@ class ListingItem
         if ($xml['cFehlercode'] !== InstallCode::OK) {
             $mapper             = new PluginValidation();
             $this->hasError     = true;
-//            \Shop::dbg($xml['cFehlercode'], false, 'set error because:');
             $this->errorCode    = $xml['cFehlercode'];
             $this->errorMessage = $mapper->map($xml['cFehlercode'], $this->getID());
         }

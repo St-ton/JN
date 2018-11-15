@@ -86,11 +86,16 @@ class PluginLoader
         $this->plugin->nStatus                 = (int)$this->plugin->nStatus;
         $this->plugin->nPrio                   = (int)$this->plugin->nPrio;
         $this->plugin->bBootstrap              = (int)$this->plugin->bBootstrap === 1;
+        $this->plugin->bExtension              = (int)$this->plugin->bExtension === 1;
         $this->plugin->pluginCacheGroup        = \CACHING_GROUP_PLUGIN . '_' . $this->plugin->kPlugin;
         $this->plugin->pluginCacheID           = $this->plugin->pluginCacheGroup . '_' . $this->plugin->nVersion;
         $this->plugin->dInstalliert_DE         = \DateHelper::localize($this->plugin->dInstalliert);
         $this->plugin->dZuletztAktualisiert_DE = \DateHelper::localize($this->plugin->dZuletztAktualisiert);
         $this->plugin->dErstellt_DE            = \DateHelper::localize($this->plugin->dErstellt, true);
+
+        $this->basePath = $this->plugin->bExtension === true
+            ? \PFAD_ROOT . \PFAD_EXTENSIONS
+            : \PFAD_ROOT . \PFAD_PLUGIN;
 
         $this->loadPaths()
              ->loadHooks()
@@ -161,9 +166,13 @@ class PluginLoader
         $shopURL                            = \Shop::getURL();
         $shopURLSSL                         = \Shop::getURL(true);
         $basePath                           = $this->basePath;
-        $versioned                          = $this->plugin->cVerzeichnis . \DIRECTORY_SEPARATOR .
+        $versioned                          = $this->plugin->bExtension === true
+            ? $this->plugin->cVerzeichnis . \DIRECTORY_SEPARATOR
+            : $this->plugin->cVerzeichnis . \DIRECTORY_SEPARATOR .
             \PFAD_PLUGIN_VERSION . $this->plugin->nVersion . \DIRECTORY_SEPARATOR;
-        $pluginBase                         = \PFAD_PLUGIN . $versioned;
+        $pluginBase                         = $this->plugin->bExtension === true
+            ? \PFAD_EXTENSIONS . $versioned
+            : \PFAD_PLUGIN . $versioned;
         $this->plugin->cPluginPfad          = $basePath . $versioned;
         $this->plugin->cFrontendPfad        = $this->plugin->cPluginPfad . \PFAD_PLUGIN_FRONTEND;
         $this->plugin->cFrontendPfadURL     = $shopURL . '/' . $pluginBase . \PFAD_PLUGIN_FRONTEND; // deprecated

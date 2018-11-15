@@ -316,6 +316,11 @@ class Plugin
     public $updateAvailable = false;
 
     /**
+     * @var bool
+     */
+    public $bExtension = false;
+
+    /**
      * Konstruktor
      *
      * @param int  $kPlugin

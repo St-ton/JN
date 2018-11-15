@@ -74,7 +74,6 @@ class ExtensionLoader
 //            return true;
 //        }
         $obj = $this->db->select('tplugin', 'kPlugin', $id);
-//        \Shop::dbg($obj, false, 'loaded:');
         if ($obj === null) {
             throw new \InvalidArgumentException('Cannot find plugin with ID ' . $id);
         }
@@ -90,9 +89,7 @@ class ExtensionLoader
         $extension->setPriority((int)$obj->nPrio);
         $extension->setVersion($obj->nVersion);
         $extension->setConfig($this->loadConfig($paths->getAdminPath(), $extension->getID()));
-
-//        \Shop::dbg($this->loadHooks(), false, 'loaded hooks:');
-        \Shop::dbg($extension, true, 'Extension:');
+//        \Shop::dbg($extension, true, 'Extension:');
 
         return true;
     }
@@ -103,7 +100,7 @@ class ExtensionLoader
      */
     public function loadLinks(int $id): Links
     {
-        $data = $this->db->queryPrepared(
+        $data  = $this->db->queryPrepared(
             "SELECT tlink.kLink
                 FROM tlink
                 JOIN tlinksprache
@@ -166,11 +163,8 @@ class ExtensionLoader
     private function loadPaths(string $pluginDir): Paths
     {
         $shopURL  = \Shop::getURL() . '/';
-        $basePath = \PFAD_ROOT .
-            'plugins' . \DIRECTORY_SEPARATOR .
-            $pluginDir . \DIRECTORY_SEPARATOR;
-
-        $baseURL = $shopURL . 'plugins/' . $pluginDir . '/';
+        $basePath = \PFAD_ROOT . \PFAD_EXTENSIONS . $pluginDir . \DIRECTORY_SEPARATOR;
+        $baseURL  = $shopURL . \PFAD_EXTENSIONS . $pluginDir . '/';
 
         $paths = new Paths();
         $paths->setBasePath($basePath);

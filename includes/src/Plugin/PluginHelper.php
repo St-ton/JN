@@ -385,7 +385,9 @@ class PluginHelper
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($data as $item) {
-            $conf[$item->cName] = $item->cConf === 'M' ? \unserialize($item->cWert) : $item->cWert;
+            $conf[$item->cName] = $item->cConf === 'M'
+                ? \unserialize($item->cWert, ['allowed_classes' => false])
+                : $item->cWert;
         }
 
         return $conf;

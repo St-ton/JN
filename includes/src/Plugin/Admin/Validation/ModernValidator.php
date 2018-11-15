@@ -16,7 +16,7 @@ use Plugin\InstallCode;
  */
 final class ModernValidator extends AbstractValidator
 {
-    protected const BASE_DIR = \PFAD_ROOT . 'plugins' . \DIRECTORY_SEPARATOR;
+    protected const BASE_DIR = \PFAD_ROOT . \PFAD_EXTENSIONS;
 
     /**
      * @inheritdoc

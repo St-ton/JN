@@ -2,7 +2,6 @@ stages:
 #  - codeclimate
   - test
   - build
-  - cleanUpBuildStage
   - deploy
   - cleanUpDeployStage
 
@@ -73,6 +72,15 @@ stages:
       echo "Logout from GitLab Container Registry with CI credentials..."
       docker logout "$CI_REGISTRY"
       echo ""
+    fi
+  }
+
+.failedDeployStageScript: &failedDeployStageScript |
+  function failedScript() {
+    export running=$(docker inspect -f '{{.State.Running}}' ci_job_build_deploy_$CI_COMMIT_SHA)
+
+    if [[ ! -z "$running" ]]; then
+      docker stop ci_job_build_deploy_$CI_COMMIT_SHA && docker rm ci_job_build_deploy_$CI_COMMIT_SHA
     fi
   }
 
@@ -153,18 +161,6 @@ build:
   tags:
     - build
 
-removeContainerOfFailedBuildJob:
-  stage: cleanUpBuildStage
-  script:
-    - docker stop ci_job_build_deploy_$CI_COMMIT_SHA && docker rm ci_job_build_deploy_$CI_COMMIT_SHA
-  only:
-    - master
-    - /^release\/.*$/
-    - tags
-  when: on_failure
-  tags:
-    - build
-
 deploy:
   stage: deploy
   variables:
@@ -182,13 +178,15 @@ deploy:
     - master
     - /^release\/.*$/
     - tags
+  when: on_success
   tags:
     - build
 
 removeContainerOfFailedDeployJob:
   stage: cleanUpDeployStage
   script:
-    - docker stop ci_job_build_deploy_$CI_COMMIT_SHA && docker rm ci_job_build_deploy_$CI_COMMIT_SHA
+    - *failedDeployStageScript
+    - failedScript
   only:
     - master
     - /^release\/.*$/

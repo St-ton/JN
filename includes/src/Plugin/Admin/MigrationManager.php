@@ -99,6 +99,9 @@ final class MigrationManager
      */
     public function migrate($identifier = null): array
     {
+        if (!\is_dir($this->getPath())) {
+            return [];
+        }
         $migrations         = $this->getMigrations();
         $executedMigrations = $this->getExecutedMigrations();
         $currentId          = $this->getCurrentId();

@@ -25,7 +25,6 @@ if [[ ! -z $(find . -maxdepth 1 -type d -regex '^./patch-dir-.*') ]]; then
         HIGHER_VERSION_STR="${HIGHER_VERSION//[\.]/-}";
         PATCH_FILENAME="${PROJECT_NAME}-${LOWER_VERSION_STR}-to-${HIGHER_VERSION_STR}.zip";
         PATCH_ARCHIVE_PATH="${3}/${PATCH_FILENAME}";
-        PATCH_EXCLUDE_STR="";
         CUR_PWD=$(pwd);
         echo "  Patch '${LOWER_VERSION}' to '${HIGHER_VERSION}'";
         cd ${path};

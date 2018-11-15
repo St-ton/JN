@@ -17,12 +17,9 @@ build_create()
     # $7 tpl diff path
     export TPL_DIFF_PATH=$7;
 
-    # start tag for tpl diff
-    local TPL_DIFF_START_TAG="v4.06.9";
     local SCRIPT_DIR="${REPOSITORY_DIR}/tools/scripts";
     local VERSION_REGEX="v?([0-9]{1,})\\.([0-9]{1,})\\.([0-9]{1,})(-(alpha|beta|rc)(\\.([0-9]{1,}))?)?";
 
-    source ${SCRIPT_DIR}/create_template_diff.sh;
     source ${SCRIPT_DIR}/create_version_string.sh;
 
     # Deactivate git renameList

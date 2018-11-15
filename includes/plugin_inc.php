@@ -18,33 +18,29 @@ function executeHook(int $hookID, $args_arr = [])
     if (empty($hookList[$hookID]) || !is_array($hookList[$hookID])) {
         return;
     }
-    foreach ($hookList[$hookID] as $oPluginTmp) {
-        //try to get plugin instance from registry
-        $oPlugin = Shop::get('oplugin_' . $oPluginTmp->kPlugin);
-        //not found in registry - create new
+    $db    = \Shop::Container()->getDB();
+    $cache = \Shop::Container()->getCache();
+    foreach ($hookList[$hookID] as $item) {
+        $oPlugin = Shop::get('oplugin_' . $item->kPlugin);
         if ($oPlugin === null) {
-            $oPlugin = new \Plugin\Plugin($oPluginTmp->kPlugin);
-            if (!$oPlugin->kPlugin) {
+            $loader  = new \Plugin\PluginLoader(new \Plugin\Plugin(), $db, $cache);
+            $oPlugin = $loader->init((int)$item->kPlugin);
+            if ($oPlugin === null) {
                 continue;
             }
-            //license check is only executed once per plugin
             if (!\Plugin\PluginHelper::licenseCheck($oPlugin)) {
                 continue;
             }
-            //save to registry
-            Shop::set('oplugin_' . $oPluginTmp->kPlugin, $oPlugin);
+            Shop::set('oplugin_' . $item->kPlugin, $oPlugin);
         }
         if ($smarty !== null) {
             $smarty->assign('oPlugin_' . $oPlugin->cPluginID, $oPlugin);
         }
-        $cDateiname = $oPluginTmp->cDateiname;
-        // Welcher Hook wurde aufgerufen?
+        $cDateiname           = $item->cDateiname;
         $oPlugin->nCalledHook = $hookID;
         if ($hookID === HOOK_SEITE_PAGE_IF_LINKART && $cDateiname === PLUGIN_SEITENHANDLER) {
-            // Work Around, falls der Hook auf geht => Frontend Link
             include PFAD_ROOT . PFAD_INCLUDES . PLUGIN_SEITENHANDLER;
         } elseif ($hookID === HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION) {
-            // Work Around, falls der Hook auf geht => CheckBox Trigger Special Function
             if ((int)$oPlugin->kPlugin === (int)$args_arr['oCheckBox']->oCheckBoxFunktion->kPlugin) {
                 include $oPlugin->cFrontendPfad . $cDateiname;
             }
@@ -70,7 +66,7 @@ function executeHook(int $hookID, $args_arr = [])
 
 /**
  * @param \Plugin\Plugin $oPlugin
- * @param array  $xParam_arr
+ * @param array          $xParam_arr
  * @return bool
  * @deprecated since 5.0.0
  */
@@ -82,7 +78,7 @@ function pluginLizenzpruefung($oPlugin, array $xParam_arr = []): bool
 
 /**
  * @param \Plugin\Plugin $oPlugin
- * @param int    $nStatus
+ * @param int            $nStatus
  * @deprecated since 5.0.0
  */
 function aenderPluginZahlungsartStatus($oPlugin, int $nStatus)

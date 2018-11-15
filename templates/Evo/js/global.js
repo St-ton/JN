@@ -593,6 +593,19 @@ $(document).ready(function () {
     });
 
     /*
+     * alert actions
+     */
+    $('.alert .close').on('click', function (){
+        $(this).parent().fadeOut(1000);
+    });
+
+    $('.alert').each(function(){
+        if ($(this).data('fade-out') > 0) {
+            $(this).fadeOut($(this).data('fade-out'));
+        }
+    });
+
+    /*
      * set bootstrap viewport
      */
     (function($, document, window, viewport){

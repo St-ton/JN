@@ -6,6 +6,11 @@
 
 namespace Plugin;
 
+use Plugin\ExtensionData\Config;
+use Plugin\ExtensionData\Links;
+use Plugin\ExtensionData\Meta;
+use Plugin\ExtensionData\Paths;
+
 /**
  * Class Extension
  * @package Plugin
@@ -34,7 +39,7 @@ class Extension
     private $state = State::DISABLED;
 
     /**
-     * @var MetaData
+     * @var Meta
      */
     private $meta;
 
@@ -57,6 +62,11 @@ class Extension
      * @var Config
      */
     private $config;
+
+    /**
+     * @var Links
+     */
+    private $links;
 
     public function __construct()
     {
@@ -111,17 +121,17 @@ class Extension
     }
 
     /**
-     * @return MetaData
+     * @return Meta
      */
-    public function getMeta(): MetaData
+    public function getMeta(): Meta
     {
         return $this->meta;
     }
 
     /**
-     * @param MetaData $meta
+     * @param Meta $meta
      */
-    public function setMeta(MetaData $meta): void
+    public function setMeta(Meta $meta): void
     {
         $this->meta = $meta;
     }
@@ -188,5 +198,21 @@ class Extension
     public function setConfig(Config $config): void
     {
         $this->config = $config;
+    }
+
+    /**
+     * @return Links
+     */
+    public function getLinks(): Links
+    {
+        return $this->links;
+    }
+
+    /**
+     * @param Links $links
+     */
+    public function setLinks(Links $links): void
+    {
+        $this->links = $links;
     }
 }

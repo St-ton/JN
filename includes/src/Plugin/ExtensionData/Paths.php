@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace Plugin\ExtensionData;
 
 /**
  * Class Paths

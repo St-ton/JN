@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace Plugin\ExtensionData;
 
 /**
  * Class MetaData
  * @package Plugin
  */
-class MetaData
+class Meta
 {
     /**
      * @var string

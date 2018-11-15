@@ -4,8 +4,9 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace Plugin\ExtensionData;
 
+use Tightenco\Collect\Support\Collection;
 use function Functional\first;
 use function Functional\group;
 
@@ -21,30 +22,37 @@ class Config
     private $adminPath;
 
     /**
+     * @var Collection
+     */
+    private $options;
+
+    /**
      * Config constructor.
      * @param string $adminPath
      */
     public function __construct(string $adminPath)
     {
         $this->adminPath = $adminPath;
+        $this->options   = new Collection();
     }
 
     /**
      * @param array $data
-     * @return array
+     * @return Config
      */
-    public function load(array $data): array
+    public function load(array $data): self
     {
         $grouped = group($data, function ($e) {
             return $e->id;
         });
-        $options = [];
         foreach ($grouped as $values) {
-            $base = first($values);
+            $base             = first($values);
             $cfg              = new \stdClass();
             $cfg->id          = (int)$base->id;
+            $cfg->valueID     = $base->confName;
             $cfg->menuID      = (int)$base->menuID;
-            $cfg->name        = $base->name;
+            $cfg->niceName    = $base->name;
+            $cfg->name        = $base->confNicename;
             $cfg->description = $base->description;
             $cfg->inputType   = $base->inputType;
             $cfg->sort        = (int)$base->nSort;
@@ -53,23 +61,24 @@ class Config
             $cfg->value       = $base->confType === 'M'
                 ? \unserialize($base->currentValue, ['allowed_classes' => false])
                 : $base->currentValue;
-            $cfg->options     = [];
+//            $cfg->raw         = $base;
+            $cfg->options = [];
             if (!empty($cfg->sourceFile) && ($cfg->inputType === 'selectbox' || $cfg->inputType === 'radio')) {
                 $cfg->options = $this->getDynamicOptions($cfg);
-            } elseif (!($base->confValue === null && $base->confName === null)) {
+            } elseif (!($base->confValue === null && $base->confNicename === null)) {
                 foreach ($values as $value) {
-                    $opt        = new \stdClass();
-                    $opt->name  = $value->confName;
-                    $opt->value = $value->confValue;
-                    $opt->sort  = (int)$value->confSort;
+                    $opt           = new \stdClass();
+                    $opt->niceName = $value->confNicename;
+                    $opt->value    = $value->confValue;
+                    $opt->sort     = (int)$value->confSort;
 
                     $cfg->options[] = $opt;
                 }
             }
-            $options[] = $cfg;
+            $this->options->push($cfg);
         }
 
-        return $options;
+        return $this;
     }
 
     /**
@@ -90,5 +99,61 @@ class Config
         }
 
         return $dynamicOptions;
+    }
+
+    /**
+     * @param string $name
+     * @return \stdClass|null
+     */
+    public function getOption(string $name): ?\stdClass
+    {
+        return $this->options->first(function (\stdClass $item) use ($name) {
+            return $item->valueID === $name;
+        });
+    }
+
+    /**
+     * @param string $name
+     * @return mixed
+     */
+    public function getValue(string $name)
+    {
+        $item = $this->options->first(function (\stdClass $item) use ($name) {
+            return $item->valueID === $name;
+        });
+
+        return $item->value ?? null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAdminPath(): string
+    {
+        return $this->adminPath;
+    }
+
+    /**
+     * @param string $adminPath
+     */
+    public function setAdminPath(string $adminPath): void
+    {
+        $this->adminPath = $adminPath;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getOptions(): Collection
+    {
+        return $this->options;
+    }
+
+    /**
+     * @param Collection $options
+     */
+    public function setOptions(Collection $options): void
+    {
+        $this->options = $options;
     }
 }

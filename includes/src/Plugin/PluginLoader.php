@@ -295,7 +295,7 @@ class PluginLoader
                     ON tsprache.cISO = tlinksprache.cISOSprache
                 WHERE tlink.kPlugin = :plgn",
             ['plgn' => $this->plugin->kPlugin],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         $linkData = \Functional\group($linkData, function ($e) {
             return $e->kLink;
@@ -348,7 +348,7 @@ class PluginLoader
             "SELECT *
                 FROM tzahlungsart
                 WHERE cModulId LIKE 'kPlugin\_" . $this->plugin->kPlugin . "%'",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($methods as $method) {
             $method->cZusatzschrittTemplate          = \strlen($method->cZusatzschrittTemplate)
@@ -376,7 +376,7 @@ class PluginLoader
                     WHERE cWertName LIKE '" . $cModulId . "_%'
                         AND cConf = 'Y'
                     ORDER BY nSort",
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             $methodsAssoc[$method->cModulId]         = $method;
         }

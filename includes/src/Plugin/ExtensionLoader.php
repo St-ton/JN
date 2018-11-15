@@ -9,6 +9,10 @@ namespace Plugin;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\ReturnType;
+use Plugin\ExtensionData\Config;
+use Plugin\ExtensionData\Links;
+use Plugin\ExtensionData\Meta;
+use Plugin\ExtensionData\Paths;
 
 /**
  * Class ExtensionLoader
@@ -37,22 +41,14 @@ class ExtensionLoader
     private $cacheID;
 
     /**
-     * @var MetaData
-     */
-    private $metaData;
-
-    /**
      * PluginLoader constructor.
-     * @param Plugin            $plugin
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache, MetaData $metaData)
+    public function __construct(DbInterface $db, JTLCacheInterface $cache)
     {
-//        $this->plugin = $plugin;
-        $this->db     = $db;
-        $this->cache  = $cache;
-        $this->metaData = $metaData;
+        $this->db    = $db;
+        $this->cache = $cache;
     }
 
     /**
@@ -78,23 +74,23 @@ class ExtensionLoader
 //            return true;
 //        }
         $obj = $this->db->select('tplugin', 'kPlugin', $id);
-        \Shop::dbg($obj, false, 'loaded:');
+//        \Shop::dbg($obj, false, 'loaded:');
         if ($obj === null) {
             throw new \InvalidArgumentException('Cannot find plugin with ID ' . $id);
         }
-        $extension = new Extension();
-
-        $extension->setMeta($this->metaData->loadDBMapping($obj));
         $paths = $this->loadPaths($obj->cVerzeichnis);
+
+        $extension = new Extension();
+        $extension->setMeta($this->loadMetaData($obj));
         $extension->setPaths($paths);
         $extension->setState((int)$obj->nStatus);
-        $extension->setID((int)$obj->kPlugin);
+        $extension->setID($id);
+        $extension->setLinks($this->loadLinks($id));
         $extension->setPluginID($obj->cPluginID);
         $extension->setPriority((int)$obj->nPrio);
         $extension->setVersion($obj->nVersion);
-        $config = $this->loadConfig($paths->getAdminPath(), $extension->getID());
-        \Shop::dbg($config, true, 'config:');
-//        $extension->setConfig();
+        $extension->setConfig($this->loadConfig($paths->getAdminPath(), $extension->getID()));
+
 //        \Shop::dbg($this->loadHooks(), false, 'loaded hooks:');
         \Shop::dbg($extension, true, 'Extension:');
 
@@ -102,17 +98,52 @@ class ExtensionLoader
     }
 
     /**
-     * @param string $path
-     * @param int    $id
-     * @return array
+     * @param int $id
+     * @return Links
      */
-    private function loadConfig(string $path, int $id): array
+    public function loadLinks(int $id): Links
     {
         $data = $this->db->queryPrepared(
+            "SELECT tlink.kLink
+                FROM tlink
+                JOIN tlinksprache
+                    ON tlink.kLink = tlinksprache.kLink
+                JOIN tsprache
+                    ON tsprache.cISO = tlinksprache.cISOSprache
+                WHERE tlink.kPlugin = :plgn
+                GROUP BY tlink.kLink",
+            ['plgn' => $id],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        $links = new Links();
+
+        return $links->load($data);
+    }
+
+    /**
+     * @param \stdClass $obj
+     * @return Meta
+     */
+    private function loadMetaData(\stdClass $obj): Meta
+    {
+        $metaData = new Meta();
+
+        return $metaData->loadDBMapping($obj);
+    }
+
+    /**
+     * @param string $path
+     * @param int    $id
+     * @return Config
+     */
+    private function loadConfig(string $path, int $id): Config
+    {
+        $data   = $this->db->queryPrepared(
             'SELECT c.kPluginEinstellungenConf AS id, c.cName AS name,
             c.cBeschreibung AS description, c.kPluginAdminMenu AS menuID, c.cConf AS confType,
             c.nSort, c.cInputTyp AS inputType, c.cSourceFile AS sourceFile,
-            v.cName AS confName, v.cWert AS confValue, v.nSort AS confSort, e.cWert AS currentValue 
+            v.cName AS confNicename, v.cWert AS confValue, v.nSort AS confSort, e.cWert AS currentValue,
+            c.cWertName AS confName
             FROM tplugineinstellungenconf AS c
             LEFT JOIN tplugineinstellungenconfwerte AS v
               ON c.kPluginEinstellungenConf = v.kPluginEinstellungenConf
@@ -134,8 +165,8 @@ class ExtensionLoader
      */
     private function loadPaths(string $pluginDir): Paths
     {
-        $shopURL                         = \Shop::getURL() . '/';
-        $basePath                           = \PFAD_ROOT .
+        $shopURL  = \Shop::getURL() . '/';
+        $basePath = \PFAD_ROOT .
             'plugins' . \DIRECTORY_SEPARATOR .
             $pluginDir . \DIRECTORY_SEPARATOR;
 
@@ -168,10 +199,5 @@ class ExtensionLoader
         }, $this->db->selectAll('tpluginhook', 'kPlugin', $this->plugin->kPlugin));
 
         return $hooks;
-    }
-
-    public function loadMetaData()
-    {
-
     }
 }

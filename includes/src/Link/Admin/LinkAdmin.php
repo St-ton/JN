@@ -525,7 +525,7 @@ final class LinkAdmin
                 \JTL_CHARSET
             );
             $this->db->delete('tlinksprache', ['kLink', 'cISOSprache'], [$kLink, $sprache->cISO]);
-            $linkSprache->cSeo = $link->nLinkart === 2
+            $linkSprache->cSeo = $link->nLinkart === \LINKTYP_EXTERNE_URL
                 ? $linkSprache->cSeo
                 : \JTL\SeoHelper::getSeo($linkSprache->cSeo);
             $this->db->insert('tlinksprache', $linkSprache);

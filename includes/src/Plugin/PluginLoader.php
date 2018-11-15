@@ -57,10 +57,10 @@ class PluginLoader
     /**
      * @param int  $id
      * @param bool $invalidateCache
-     * @return bool
+     * @return Plugin
      * @throws \InvalidArgumentException
      */
-    public function init(int $id, bool $invalidateCache = false): bool
+    public function init(int $id, bool $invalidateCache = false): Plugin
     {
         $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id .
             '_' . \RequestHelper::checkSSL() .
@@ -73,7 +73,7 @@ class PluginLoader
                 $this->plugin->$k = $v;
             }
 
-            return true;
+            return $this->plugin;
         }
         $obj = $this->db->select('tplugin', 'kPlugin', $id);
         if ($obj === null) {
@@ -111,7 +111,7 @@ class PluginLoader
              ->loadUninstall()
              ->cache();
 
-        return true;
+        return $this->plugin;
     }
 
     /**

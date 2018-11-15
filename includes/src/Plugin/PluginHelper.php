@@ -77,7 +77,7 @@ class PluginHelper
             // Es war min. einmal der Seiten Link Plugin Handler enthalten um einen Frontend Link anzusteuern
             if ($exists) {
                 $plugin                                = new \stdClass();
-                $plugin->kPlugin                       = $hook->kPlugin;
+                $plugin->kPlugin                       = (int)$hook->kPlugin;
                 $plugin->nVersion                      = $hook->nVersion;
                 $plugin->cDateiname                    = \PLUGIN_SEITENHANDLER;
                 $hooks[\HOOK_SEITE_PAGE_IF_LINKART][0] = $plugin;

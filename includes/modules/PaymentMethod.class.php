@@ -736,7 +736,7 @@ class PaymentMethod
         $oTmpPlugin    = $oPlugin;
         $paymentMethod = null;
         // Zahlungsart als Plugin
-        $kPlugin = \Plugin\PluginHelper::getIDByModuleID($moduleId);
+        $kPlugin = \Plugin\Helper::getIDByModuleID($moduleId);
         if ($kPlugin > 0) {
             $oPlugin            = new \Plugin\Plugin($kPlugin);
             $GLOBALS['oPlugin'] = $oPlugin;

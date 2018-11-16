@@ -1441,7 +1441,7 @@ function getPaymentSurchageDiscount($Zahlungsart)
  */
 function gibPluginZahlungsart($cModulId)
 {
-    $kPlugin = \Plugin\PluginHelper::getIDByModuleID($cModulId);
+    $kPlugin = \Plugin\Helper::getIDByModuleID($cModulId);
     if ($kPlugin > 0) {
         $oPlugin = new \Plugin\Plugin($kPlugin);
         if ($oPlugin->kPlugin > 0) {
@@ -1704,7 +1704,7 @@ function zahlungsartGueltig($paymentMethod): bool
     if (!isset($paymentMethod->cModulId)) {
         return false;
     }
-    $kPlugin = \Plugin\PluginHelper::getIDByModuleID($paymentMethod->cModulId);
+    $kPlugin = \Plugin\Helper::getIDByModuleID($paymentMethod->cModulId);
     if ($kPlugin > 0) {
         $oPlugin = new \Plugin\Plugin($kPlugin);
         if ($oPlugin->kPlugin > 0) {
@@ -1732,7 +1732,7 @@ function zahlungsartGueltig($paymentMethod): bool
 
                 return false;
             }
-            if (!\Plugin\PluginHelper::licenseCheck($oPlugin, ['cModulId' => $paymentMethod->cModulId])) {
+            if (!\Plugin\Helper::licenseCheck($oPlugin, ['cModulId' => $paymentMethod->cModulId])) {
                 return false;
             }
 

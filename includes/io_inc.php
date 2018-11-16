@@ -19,6 +19,7 @@ $io->register('suggestions')
    ->register('getBasketItems')
    ->register('getCategoryMenu')
    ->register('getRegionsByCountry')
+   ->register('checkDeliveryCountry')
    ->register('setSelectionWizardAnswers')
    ->register('getCitiesByZip');
 
@@ -962,6 +963,22 @@ function getRegionsByCountry($country)
         $regions = Staat::getRegions($country);
         $regions = utf8_convert_recursive($regions);
         $response->script("this.response = " . json_encode($regions) . ";");
+    }
+
+    return $response;
+}
+
+/**
+ * @param $country
+ * @return IOResponse
+ */
+function checkDeliveryCountry($country)
+{
+    $response = new IOResponse();
+
+    if (strlen($country) === 2) {
+        $deliveryCountries = gibBelieferbareLaender($_SESSION['Kundengruppe']->kKundengruppe, false, false, [$country]);
+        $response->script('this.response = ' . (count($deliveryCountries) === 1 ? 'true' : 'false') . ';');
     }
 
     return $response;

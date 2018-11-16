@@ -3052,75 +3052,45 @@ function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $kKun
 }
 
 /**
- * @param int  $kKundengruppe
- * @param bool $bIgnoreSetting
- * @param bool $bForceAll
+ * @param int   $kKundengruppe
+ * @param bool  $bIgnoreSetting
+ * @param bool  $bForceAll
+ * @param array $filterISO
  * @return array
  */
-function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bForceAll = false)
+function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bForceAll = false, $filterISO = [])
 {
     if (empty($kKundengruppe)) {
         $kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
-    $sprache = Shop::DB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
-    $sel_var = 'cDeutsch';
     $conf    = Shop::getSettings([CONF_KUNDEN]);
-    if (strtolower($sprache->cNameEnglisch) !== 'german') {
-        $sel_var = 'cEnglisch';
-    }
-    if (!$bForceAll && ($conf['kunden']['kundenregistrierung_nur_lieferlaender'] === 'Y' || $bIgnoreSetting)) {
-        $laender_arr = [];
-        $ll_obj_arr  = Shop::DB()->query(
-            "SELECT cLaender 
-                FROM tversandart 
-                WHERE (cKundengruppen = '-1' 
-                  OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0)", 2
-        );
-        $where       = '';
-        foreach ($ll_obj_arr as $cLaender) {
-            $pcs = explode(' ', $cLaender->cLaender);
-            foreach ($pcs as $i => $land) {
-                if ($land && !in_array($land, $laender_arr, true)) {
-                    if (count($laender_arr) > 0) {
-                        $where .= ' OR ';
-                    }
-                    $laender_arr[] = $land;
-                    $where        .= ' cISO = "' . $land . '"';
-                }
-            }
-        }
-        $laender = Shop::DB()->query("SELECT cISO, $sel_var AS cName FROM tland WHERE $where ORDER BY $sel_var", 2);
-    } else {
-        $laender = Shop::DB()->query("SELECT cISO, $sel_var AS cName FROM tland ORDER BY $sel_var", 2);
-    }
-    if (is_array($laender)) {
-        usort(
-            $laender, function ($a, $b) {
-                $a = mb_convert_case($a->cName, MB_CASE_LOWER, 'iso-8859-1');
-                $b = mb_convert_case($b->cName, MB_CASE_LOWER, 'iso-8859-1');
-                $a = str_replace(
-                    ['ä', 'ü', 'ö', 'ss', utf8_decode('ä'), utf8_decode('ü'), utf8_decode('ö')],
-                    ['a', 'u', 'o', 'ß', 'a', 'u', 'o', 'ß'],
-                    $a
-                );
-                $b = str_replace(
-                    ['ä', 'ü', 'ö', 'ss', utf8_decode('ä'), utf8_decode('ü'), utf8_decode('ö')],
-                    ['a', 'u', 'o', 'ß', 'a', 'u', 'o', 'ß'],
-                    $b
-                );
-                if ($a === $b) {
-                    return 0;
-                }
+    $nameCol = Sprache::getInstance()->gibISO() === 'ger' ? 'cDeutsch' : 'cEnglisch';
 
-                return $a < $b ? -1 : 1;
-            }
+    if (!$bForceAll && ($conf['kunden']['kundenregistrierung_nur_lieferlaender'] === 'Y' || $bIgnoreSetting)) {
+        $countries = Shop::DB()->query(
+            "SELECT DISTINCT tland.cISO, $nameCol AS cName
+                FROM tland
+                INNER JOIN tversandart ON FIND_IN_SET(tland.cISO, REPLACE(tversandart.cLaender, ' ', ','))
+                WHERE (tversandart.cKundengruppen = '-1'
+                    OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0)
+                    " . (count($filterISO) > 0 ? "AND tland.cISO IN ('" . implode("','", $filterISO) . "')" : '') . "
+                ORDER BY CONVERT($nameCol USING utf8) COLLATE utf8_german2_ci",
+            2
+        );
+    } else {
+        $countries = Shop::DB()->query(
+            "SELECT cISO, $nameCol AS cName
+                FROM tland
+                " . (count($filterISO) > 0 ? "WHERE tland.cISO IN ('" . implode("','", $filterISO) . "')" : '') . "
+                ORDER BY CONVERT($nameCol USING utf8) COLLATE utf8_german2_ci",
+            2
         );
     }
     executeHook(HOOK_TOOLSGLOBAL_INC_GIBBELIEFERBARELAENDER, [
-        'oLaender_arr' => &$laender
+        'oLaender_arr' => &$countries
     ]);
 
-    return $laender;
+    return $countries;
 }
 
 /**

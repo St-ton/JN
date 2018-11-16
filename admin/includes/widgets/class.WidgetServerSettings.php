@@ -11,10 +11,16 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_WIDGETS . 'class.Widg
 class WidgetServerSettings extends WidgetBase
 {
     /**
+     * @var PHPSettingsHelper
+     */
+    private $helper;
+
+    /**
      *
      */
     public function init()
     {
+        $this->helper = PHPSettingsHelper::getInstance();
         $this->oSmarty->assign('maxExecutionTime', ini_get('max_execution_time'))
                       ->assign('bMaxExecutionTime', $this->checkMaxExecutionTime())
                       ->assign('maxFilesize', ini_get('upload_max_filesize'))
@@ -52,17 +58,15 @@ class WidgetServerSettings extends WidgetBase
         if (class_exists('Systemcheck_Environment')) {
             $oSystemCheck  = new Systemcheck_Environment();
             $vCheckResults = $oSystemCheck->executeTestGroup('Shop4');
-            if (in_array('recommendations', array_keys($vCheckResults, true))) {
+            if (in_array('recommendations', array_keys($vCheckResults), true)) {
                 foreach ($vCheckResults['recommendations'] as $object) {
                     if ($object instanceof Systemcheck_Tests_Shop4_PhpSoapExtension) {
                         // SOAP is OFF
-
                         return false;
                     }
                 }
             }
         }
-
         // (we suppress errors here, if the Systemcheck is not present on this system)
         return true;
     }
@@ -72,7 +76,7 @@ class WidgetServerSettings extends WidgetBase
      */
     public function checkMaxExecutionTime(): bool
     {
-        return Shop()->PHPSettingsHelper()->hasMinExecutionTime(60);
+        return $this->helper->hasMinExecutionTime(60);
     }
 
     /**
@@ -80,7 +84,7 @@ class WidgetServerSettings extends WidgetBase
      */
     public function checkMaxFilesize(): bool
     {
-        return Shop()->PHPSettingsHelper()->hasMinUploadSize(5 * 1024 * 1024);
+        return $this->helper->hasMinUploadSize(5 * 1024 * 1024);
     }
 
     /**
@@ -88,7 +92,7 @@ class WidgetServerSettings extends WidgetBase
      */
     public function checkMemoryLimit(): bool
     {
-        return Shop()->PHPSettingsHelper()->hasMinLimit(64 * 1024 * 1024);
+        return $this->helper->hasMinLimit(64 * 1024 * 1024);
     }
 
     /**
@@ -96,7 +100,7 @@ class WidgetServerSettings extends WidgetBase
      */
     public function checkPostMaxSize(): bool
     {
-        return Shop()->PHPSettingsHelper()->hasMinPostSize(8 * 1024 * 1024);
+        return $this->helper->hasMinPostSize(8 * 1024 * 1024);
     }
 
     /**
@@ -104,6 +108,6 @@ class WidgetServerSettings extends WidgetBase
      */
     public function checkAllowUrlFopen(): bool
     {
-        return Shop()->PHPSettingsHelper()->fopenWrapper();
+        return $this->helper->fopenWrapper();
     }
 }

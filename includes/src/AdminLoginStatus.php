@@ -28,4 +28,6 @@ abstract class AdminLoginStatus
     public const ERROR_UNKNOWN = -7;
 
     public const ERROR_LOCKED = -8;
+
+    public const ERROR_SESSION_INVALID = -9;
 }

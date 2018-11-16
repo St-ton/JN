@@ -97,9 +97,9 @@ class Search extends AbstractFilter
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getError()
+    public function getError(): ?string
     {
         return $this->error;
     }
@@ -116,7 +116,7 @@ class Search extends AbstractFilter
     }
 
     /**
-     * @return int
+     * @return int|string|null
      */
     public function getValue()
     {
@@ -166,8 +166,10 @@ class Search extends AbstractFilter
         if ($languageID > 0 && \strlen($searchTerm) > 0) {
             $searchQuery = $this->productFilter->getDB()->select(
                 'tsuchanfrage',
-                'cSuche', $this->productFilter->getDB()->escape($searchTerm),
-                'kSprache', $languageID
+                'cSuche',
+                $searchTerm,
+                'kSprache',
+                $languageID
             );
         }
         $this->setValue((isset($searchQuery->kSuchanfrage) && $searchQuery->kSuchanfrage > 0)
@@ -216,7 +218,7 @@ class Search extends AbstractFilter
             return false;
         }
         $Suchausdruck = \str_replace(["'", "\\", "*", "%"], '', $query);
-        $languageID   = (int)$languageIDExt > 0 ? (int)$languageIDExt : $this->getLanguageID();
+        $languageID   = $languageIDExt > 0 ? $languageIDExt : $this->getLanguageID();
         // db füllen für auswertugnen / suggest, dabei Blacklist beachten
         $tempQueries = \explode(';', $Suchausdruck);
         $blacklist   = $this->productFilter->getDB()->select(
@@ -276,13 +278,16 @@ class Search extends AbstractFilter
                 $searchQuery->nAnzahlTreffer  = $hits;
                 $searchQuery->nAnzahlGesuche  = 1;
                 $searchQuery->dZuletztGesucht = 'NOW()';
-                $searchQuery->cSeo            = \getSeo($Suchausdruck);
-                $searchQuery->cSeo            = \checkSeo($searchQuery->cSeo);
+                $searchQuery->cSeo            = \JTL\SeoHelper::getSeo($Suchausdruck);
+                $searchQuery->cSeo            = \JTL\SeoHelper::checkSeo($searchQuery->cSeo);
                 $previuousQuery               = $this->productFilter->getDB()->select(
                     'tsuchanfrage',
-                    'kSprache', (int)$searchQuery->kSprache,
-                    'cSuche', $Suchausdruck,
-                    null, null,
+                    'kSprache',
+                    (int)$searchQuery->kSprache,
+                    'cSuche',
+                    $Suchausdruck,
+                    null,
+                    null,
                     false,
                     'kSuchanfrage'
                 );
@@ -312,9 +317,12 @@ class Search extends AbstractFilter
                 $queryMiss->dZuletztGesucht = 'NOW()';
                 $queryMiss_old              = $this->productFilter->getDB()->select(
                     'tsuchanfrageerfolglos',
-                    'kSprache', (int)$queryMiss->kSprache,
-                    'cSuche', $Suchausdruck,
-                    null, null,
+                    'kSprache',
+                    (int)$queryMiss->kSprache,
+                    'cSuche',
+                    $Suchausdruck,
+                    null,
+                    null,
                     false,
                     'kSuchanfrageErfolglos'
                 );
@@ -498,11 +506,14 @@ class Search extends AbstractFilter
         $nPrioStep        = $nCount > 0
             ? ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9
             : 0;
-        $activeValues     = \array_map(function ($f) { // @todo: create method for this logic
-            /** @var Search $f */
-            return $f->getValue();
-        }, $this->productFilter->getSearchFilter());
-
+        $activeValues     = \array_map(
+            function ($f) {
+                // @todo: create method for this logic
+                /** @var Search $f */
+                return $f->getValue();
+            },
+            $this->productFilter->getSearchFilter()
+        );
         foreach ($searchFilters as $searchFilter) {
             $class = \rand(1, 10);
             if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep > 0) {

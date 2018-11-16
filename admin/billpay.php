@@ -12,7 +12,7 @@ include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
 $cFehler           = null;
 $cStep             = 'uebersicht';
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $smarty->assign('cTab', $cStep);
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
@@ -26,8 +26,8 @@ if (strlen($oBillpay->getSetting('pid')) > 0 &&
 ) {
     $oItem_arr = [];
     $oConfig   = $oBillpay->getApi('module_config');
-    foreach (['AUT' => ['EUR'], 'DEU' => ['EUR'], 'NLD' => ['EUR'], 'CHE' => ['EUR', 'CHF']] as $cLand => $cWaehrung_arr) {
-        foreach ($cWaehrung_arr as $cWaehrung) {
+    foreach (['AUT' => ['EUR'], 'DEU' => ['EUR'], 'NLD' => ['EUR'], 'CHE' => ['EUR', 'CHF']] as $cLand => $currencies) {
+        foreach ($currencies as $cWaehrung) {
             $oItem            = new stdClass;
             $oItem->cLand     = $cLand;
             $oItem->cWaehrung = $cWaehrung;
@@ -153,7 +153,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && FormHelper::validateToken()) {
         }
     }
     Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
-    Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 
     $smarty->assign('saved', true);
 }
@@ -171,8 +171,10 @@ for ($i = 0; $i < $configCount; $i++) {
     }
     $setValue                = Shop::Container()->getDB()->select(
         'teinstellungen',
-        'kEinstellungenSektion', (int)$Conf[$i]->kEinstellungenSektion,
-        'cName', $Conf[$i]->cWertName
+        'kEinstellungenSektion',
+        (int)$Conf[$i]->kEinstellungenSektion,
+        'cName',
+        $Conf[$i]->cWertName
     );
     $Conf[$i]->gesetzterWert = isset($setValue->cWert) ? StringHandler::htmlentities($setValue->cWert) : null;
 }

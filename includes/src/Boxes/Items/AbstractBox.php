@@ -791,10 +791,10 @@ abstract class AbstractBox implements BoxInterface
         if (!\count($oCloud_arr)) {
             return '';
         }
-        $oTags_arr                       = [];
-        $oTags_arr['options']['speed']   = $nSpeed;
-        $oTags_arr['options']['opacity'] = $nOpacity;
-        $gibTagFarbe                     = function () {
+        $tags                       = [];
+        $tags['options']['speed']   = $nSpeed;
+        $tags['options']['opacity'] = $nOpacity;
+        $gibTagFarbe                = function () {
             $cColor = '';
             $cCodes = ['00', '33', '66', '99', 'CC', 'FF'];
             for ($i = 0; $i < 3; $i++) {
@@ -812,7 +812,7 @@ abstract class AbstractBox implements BoxInterface
             $cRandomColor        = (!$cColor || !$cColorHover) ? $gibTagFarbe() : '';
             $cName               = \urlencode($cName);
             $cName               = \str_replace('+', ' ', $cName); /* fix :) */
-            $oTags_arr['tags'][] = [
+            $tags['tags'][] = [
                 'name'  => $cName,
                 'url'   => $oCloud->cURL,
                 'size'  => (\count($oCloud_arr) <= 5) ? '100' : (string)($oCloud->Klasse * 10), /* 10 bis 100 */
@@ -821,7 +821,7 @@ abstract class AbstractBox implements BoxInterface
             ];
         }
 
-        return \urlencode(\json_encode($oTags_arr));
+        return \urlencode(\json_encode($tags));
     }
 
     /**

@@ -820,7 +820,7 @@ class Billpay extends PaymentMethod
             ),                                                             // shippingpricegross
             BPHelper::fmtAmount($oBasketInfo->fTotal[AMT_NET], true),      // carttotalprice
             BPHelper::fmtAmount($oBasketInfo->fTotal[AMT_GROSS], true),    // carttotalpricegross
-            BPHelper::strEncode(Session::Currency()->getCode(), 3),        // currency
+            BPHelper::strEncode(\Session\Session::getCurrency()->getCode(), 3),        // currency
             $cReference                                                    // reference
         );
 
@@ -1143,7 +1143,7 @@ class Billpay extends PaymentMethod
         $oBasketInfo->fRebate    = [0, 0];// rabatt
         $oBasketInfo->fSurcharge = [0, 0];// zuschlag
         $oBasketInfo->fTotal     = [0, 0];// warenkorb
-        $oBasketInfo->cCurrency  = Session::Currency();
+        $oBasketInfo->cCurrency  = \Session\Session::getCurrency();
 
         foreach ($oBasket->PositionenArr as $oPosition) {
             $fPreisEinzelNetto = $oPosition->fPreisEinzelNetto;
@@ -1468,7 +1468,7 @@ class BPHelper
             $cAmount *= 100;
         }
         if ($bFmt) {
-            $cAmount = Preise::getLocalizedPriceString($cAmount, Session::Currency()->getCode(), true, 2);
+            $cAmount = Preise::getLocalizedPriceString($cAmount, \Session\Session::getCurrency()->getCode(), true, 2);
         }
 
         return $cAmount;
@@ -1485,7 +1485,7 @@ class BPHelper
         $fAmount = round($fAmount, 2);
         $cAmount = number_format($fAmount / 100, 2, '.', '');
         if ($bFmt) {
-            $cAmount = Preise::getLocalizedPriceString($cAmount, Session::Currency()->getCode(), $bHTML, 2);
+            $cAmount = Preise::getLocalizedPriceString($cAmount, \Session\Session::getCurrency()->getCode(), $bHTML, 2);
         }
 
         return $cAmount;

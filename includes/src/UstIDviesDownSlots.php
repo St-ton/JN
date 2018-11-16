@@ -148,9 +148,9 @@ class UstIDviesDownSlots
      */
     private $szDownInfo = '';
 
-    const WEEKDAY = 0;
-    const START   = 1;
-    const ENDING  = 2;
+    public const WEEKDAY = 0;
+    public const START   = 1;
+    public const ENDING  = 2;
 
     /**
      *

@@ -18,4 +18,4 @@ if (!isset($_GET['img'], $_GET['a']) || !is_array($_GET['img'])) {
     throw new InvalidArgumentException('Missing arguments');
 }
 
-Shop::Media();
+Media::getInstance();

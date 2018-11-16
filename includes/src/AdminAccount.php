@@ -308,14 +308,17 @@ class AdminAccount
     }
 
     /**
-     *
+     * @param int $errCode
      */
-    public function redirectOnFailure(): void
+    public function redirectOnFailure(int $errCode = 0): void
     {
         if (!$this->logged()) {
             $url = strpos(basename($_SERVER['REQUEST_URI']), 'logout.php') === false
                 ? '?uri=' . base64_encode(basename($_SERVER['REQUEST_URI']))
                 : '';
+            if ($errCode !== 0) {
+                $url .= (strpos($url, '?') === false ? '?' : '&') . 'errCode=' . $errCode;
+            }
             header('Location: index.php' . $url);
             exit();
         }
@@ -358,9 +361,10 @@ class AdminAccount
     /**
      * @param int $nAdminLoginGroup
      * @param int $nAdminMenuGroup
+     * @param string $keyPrefix
      * @return array
      */
-    public function getVisibleMenu(int $nAdminLoginGroup, int $nAdminMenuGroup): array
+    public function getVisibleMenu(int $nAdminLoginGroup, int $nAdminMenuGroup, string $keyPrefix): array
     {
         if ($nAdminLoginGroup === ADMINGROUP) {
             $links = Shop::Container()->getDB()->selectAll(
@@ -387,8 +391,9 @@ class AdminAccount
             );
         }
 
-        return \Functional\map($links, function ($e) {
+        return \Functional\map($links, function ($e) use ($keyPrefix) {
             $e->kAdminmenu        = (int)$e->kAdminmenu;
+            $e->key               = $keyPrefix . '.' . $e->kAdminmenu;
             $e->kAdminmenueGruppe = (int)$e->kAdminmenueGruppe;
             $e->nSort             = (int)$e->nSort;
 
@@ -448,10 +453,11 @@ class AdminAccount
         if (isset($_SESSION['AdminAccount']->cLogin, $_POST['TwoFA_code'])) {
             $oTwoFA = new TwoFA();
             $oTwoFA->setUserByName($_SESSION['AdminAccount']->cLogin);
-            // check the 2fa-code here really
-            $this->twoFaAuthenticated = $_SESSION['AdminAccount']->TwoFA_valid = $oTwoFA->isCodeValid($_POST['TwoFA_code']);
+            $valid                                 = $oTwoFA->isCodeValid($_POST['TwoFA_code']);
+            $this->twoFaAuthenticated              = $valid;
+            $_SESSION['AdminAccount']->TwoFA_valid = $valid;
 
-            return $this->twoFaAuthenticated;
+            return $valid;
         }
 
         return false;

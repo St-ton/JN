@@ -62,11 +62,11 @@ class PriceRange
     public function __construct(int $articleID, int $customerGroupID = 0, int $customerID = 0)
     {
         if ($customerGroupID === 0) {
-            $customerGroupID = Session::CustomerGroup()->getID();
+            $customerGroupID = \Session\Session::getCustomerGroup()->getID();
         }
 
         if ($customerID === 0) {
-            $customerID = Session::Customer()->kKunde ?? 0;
+            $customerID = \Session\Session::getCustomer()->kKunde ?? 0;
         }
 
         $this->customerGroupID = $customerGroupID;
@@ -91,9 +91,8 @@ class PriceRange
 
     /**
      * load price range from database
-     * @return void
      */
-    private function loadPriceRange()
+    private function loadPriceRange(): void
     {
         $priceRange = Shop::Container()->getDB()->queryPrepared(
             'SELECT fVKNettoMin, fVKNettoMax 
@@ -138,7 +137,7 @@ class PriceRange
         $this->maxBruttoPrice = \TaxHelper::getGross($this->maxNettoPrice, $ust);
     }
 
-    public function loadConfiguratorRange()
+    public function loadConfiguratorRange(): void
     {
         $configItems = Shop::Container()->getDB()->queryPrepared(
             'SELECT tartikel.kArtikel,
@@ -194,13 +193,17 @@ class PriceRange
             $ust = TaxHelper::getSalesTax($configItem->kSteuerklasse);
 
             if ((int)$configItem->bPreis === 0) {
-                $configGroups[$configItemID]->prices->min[] = (float)$configItem->fMin * \TaxHelper::getGross((float)$configItem->fMinPreis, $ust, 4);
-                $configGroups[$configItemID]->prices->max[] = (float)$configItem->fMax * \TaxHelper::getGross((float)$configItem->fMaxPreis, $ust, 4);
+                $configGroups[$configItemID]->prices->min[] =
+                    (float)$configItem->fMin * \TaxHelper::getGross((float)$configItem->fMinPreis, $ust, 4);
+                $configGroups[$configItemID]->prices->max[] =
+                    (float)$configItem->fMax * \TaxHelper::getGross((float)$configItem->fMaxPreis, $ust, 4);
             } else {
                 $priceRange = new PriceRange((int)$configItem->kKindArtikel, $this->customerGroupID, $this->customerID);
                 // Es wird immer maxNettoPrice verwendet, da im Konfigurator keine Staffelpreise berücksichtigt werden
-                $configGroups[$configItemID]->prices->min[] = (float)$configItem->fMin * \TaxHelper::getGross($priceRange->maxNettoPrice, $ust, 4);
-                $configGroups[$configItemID]->prices->max[] = (float)$configItem->fMax * \TaxHelper::getGross($priceRange->maxNettoPrice, $ust, 4);
+                $configGroups[$configItemID]->prices->min[] =
+                    (float)$configItem->fMin * \TaxHelper::getGross($priceRange->maxNettoPrice, $ust, 4);
+                $configGroups[$configItemID]->prices->max[] =
+                    (float)$configItem->fMax * \TaxHelper::getGross($priceRange->maxNettoPrice, $ust, 4);
             }
         }
 
@@ -218,7 +221,11 @@ class PriceRange
                 $minPrice += $price;
             }
             // ...und zusätzlich - bis zur Maximalanzahl - alle Preise < 0, also alle Abschläge
-            foreach (array_slice($configGroup->prices->min, $configGroup->nMin, $configGroup->nMax - $configGroup->nMin) as $price) {
+            foreach (array_slice(
+                $configGroup->prices->min,
+                $configGroup->nMin,
+                $configGroup->nMax - $configGroup->nMin
+            ) as $price) {
                 if ($price < 0) {
                     $minPrice += $price;
                 }
@@ -229,7 +236,11 @@ class PriceRange
                 $maxPrice += $price;
             }
             // ...und danach - bis zur Maximalanzahl - nur noch Preise > 0, also keine Abschläge
-            foreach (array_slice($configGroup->prices->max, $configGroup->nMin, $configGroup->nMax - $configGroup->nMin) as $price) {
+            foreach (array_slice(
+                $configGroup->prices->max,
+                $configGroup->nMin,
+                $configGroup->nMax - $configGroup->nMin
+            ) as $price) {
                 if ($price > 0) {
                     $maxPrice += $price;
                 }
@@ -250,10 +261,9 @@ class PriceRange
      * @param float $discount
      * @return void
      */
-    public function setDiscount(float $discount)
+    public function setDiscount(float $discount): void
     {
         $discount /= 100;
-
         if ($discount !== $this->discount) {
             $this->minNettoPrice /= (1 - $this->discount);
             $this->maxNettoPrice /= (1 - $this->discount);
@@ -317,7 +327,7 @@ class PriceRange
      */
     public function getMinLocalized(int $netto = null)
     {
-        $currency = Session::Currency();
+        $currency = \Session\Session::getCurrency();
 
         if ($netto !== null) {
             return $netto === 0
@@ -338,7 +348,7 @@ class PriceRange
      */
     public function getMaxLocalized(int $netto = null)
     {
-        $currency = Session::Currency();
+        $currency = \Session\Session::getCurrency();
 
         if ($netto !== null) {
             return $netto === 0

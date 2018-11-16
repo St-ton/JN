@@ -16,8 +16,8 @@ class CMSHelper
      */
     public static function getHomeBoxes(): array
     {
-        $customerGroupID = Session::CustomerGroup()->getID();
-        if (!$customerGroupID || !Session::CustomerGroup()->mayViewCategories()) {
+        $customerGroupID = \Session\Session::getCustomerGroup()->getID();
+        if (!$customerGroupID || !\Session\Session::getCustomerGroup()->mayViewCategories()) {
             return [];
         }
         $boxes = self::getHomeBoxList(Shop::getSettings([CONF_STARTSEITE])['startseite']);
@@ -68,13 +68,14 @@ class CMSHelper
      */
     public static function getHomeNews(array $conf): \Tightenco\Collect\Support\Collection
     {
-        $cSQL      = '';
+        $cSQL  = '';
         $items = new \Tightenco\Collect\Support\Collection();
         if (!isset($conf['news']['news_anzahl_content']) || (int)$conf['news']['news_anzahl_content'] === 0) {
             return $items;
         }
-        $cacheID = 'news_' . md5(json_encode($conf['news']) . '_' . Shop::getLanguage());
-        if (($items = Shop::Cache()->get($cacheID)) === false) {
+        $langID  = Shop::getLanguageID();
+        $cacheID = 'news_' . md5(json_encode($conf['news']) . '_' . $langID);
+        if (($items = Shop::Container()->getCache()->get($cacheID)) === false) {
             if ((int)$conf['news']['news_anzahl_content'] > 0) {
                 $cSQL = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
             }
@@ -91,12 +92,12 @@ class CMSHelper
                     LEFT JOIN tseo 
                         ON tseo.cKey = 'kNews'
                         AND tseo.kKey = tnews.kNews
-                        AND tseo.kSprache = " . Shop::getLanguage() . "
-                    WHERE t.languageID = " . Shop::getLanguage() . "
+                        AND tseo.kSprache = " . $langID . "
+                    WHERE t.languageID = " . $langID . "
                         AND tnews.nAktiv = 1
                         AND tnews.dGueltigVon <= NOW()
                         AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                            OR FIND_IN_SET('" . Session::CustomerGroup()->getID() . "', 
+                            OR FIND_IN_SET('" . \Session\Session::getCustomerGroup()->getID() . "', 
                             REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     GROUP BY tnews.kNews
                     ORDER BY tnews.dGueltigVon DESC" . $cSQL,
@@ -106,14 +107,14 @@ class CMSHelper
             $items->createItems(\Functional\map($newsIDs, function ($e) {
                 return (int)$e->kNews;
             }));
-            $items = $items->getItems();
-            $cacheTags = [CACHING_GROUP_NEWS, CACHING_GROUP_OPTION];
+            $items     = $items->getItems();
+            $cacheTags = [CACHING_GROUP_NEWS];
             executeHook(HOOK_GET_NEWS, [
                 'cached'    => false,
                 'cacheTags' => &$cacheTags,
                 'oNews_arr' => $items
             ]);
-            Shop::Cache()->set($cacheID, $items, $cacheTags);
+            Shop::Container()->getCache()->set($cacheID, $items, $cacheTags);
 
             return $items;
         }
@@ -347,7 +348,7 @@ class CMSHelper
                     ON tartikelattribut.kArtikel = tartikel.kArtikel
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() .
+                    AND tartikelsichtbarkeit.kKundengruppe = " . \Session\Session::getCustomerGroup()->getID() .
             " WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "' " .
             Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() .

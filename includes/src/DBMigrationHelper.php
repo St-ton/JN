@@ -9,17 +9,17 @@
  */
 class DBMigrationHelper
 {
-    const IN_USE  = 'in_use';
-    const SUCCESS = 'success';
-    const FAILURE = 'failure';
+    public const IN_USE  = 'in_use';
+    public const SUCCESS = 'success';
+    public const FAILURE = 'failure';
 
-    const MIGRATE_NONE   = 0x0000;
-    const MIGRATE_INNODB = 0x0001;
-    const MIGRATE_UTF8   = 0x0002;
-    const MIGRATE_TEXT   = 0x0004;
-    const MIGRATE_C_UTF8 = 0x00A0;
-    const MIGRATE_TABLE  = self::MIGRATE_INNODB | self::MIGRATE_UTF8;
-    const MIGRATE_COLUMN = self::MIGRATE_C_UTF8 | self::MIGRATE_TEXT;
+    public const MIGRATE_NONE   = 0x0000;
+    public const MIGRATE_INNODB = 0x0001;
+    public const MIGRATE_UTF8   = 0x0002;
+    public const MIGRATE_TEXT   = 0x0004;
+    public const MIGRATE_C_UTF8 = 0x00A0;
+    public const MIGRATE_TABLE  = self::MIGRATE_INNODB | self::MIGRATE_UTF8;
+    public const MIGRATE_COLUMN = self::MIGRATE_C_UTF8 | self::MIGRATE_TEXT;
 
     /**
      * @return stdClass
@@ -42,7 +42,10 @@ class DBMigrationHelper
                     WHERE `COLLATION_NAME` = 'utf8_unicode_ci'",
                 \DB\ReturnType::SINGLE_OBJECT
             );
-            $innodbPath    = Shop::Container()->getDB()->query('SELECT @@innodb_data_file_path AS path', \DB\ReturnType::SINGLE_OBJECT);
+            $innodbPath    = Shop::Container()->getDB()->query(
+                'SELECT @@innodb_data_file_path AS path',
+                \DB\ReturnType::SINGLE_OBJECT
+            );
             $innodbSize    = 'auto';
 
             if ($innodbPath && stripos($innodbPath->path, 'autoextend') === false) {
@@ -73,9 +76,11 @@ class DBMigrationHelper
             $versionInfo->server = Shop::Container()->getDB()->info();
             $versionInfo->innodb = new stdClass();
 
-            $versionInfo->innodb->support = $innodbSupport && in_array($innodbSupport->SUPPORT, ['YES', 'DEFAULT'], true);
+            $versionInfo->innodb->support = $innodbSupport
+                && in_array($innodbSupport->SUPPORT, ['YES', 'DEFAULT'], true);
             $versionInfo->innodb->version = Shop::Container()->getDB()->query(
-                "SHOW VARIABLES LIKE 'innodb_version'", \DB\ReturnType::SINGLE_OBJECT
+                "SHOW VARIABLES LIKE 'innodb_version'",
+                \DB\ReturnType::SINGLE_OBJECT
             )->Value;
             $versionInfo->innodb->size    = $innodbSize;
             $versionInfo->collation_utf8  = $utf8Support && strtolower($utf8Support->IS_COMPILED) === 'yes';
@@ -96,12 +101,16 @@ class DBMigrationHelper
                 , COUNT(c.COLUMN_NAME) TEXT_FIELDS
                 , COUNT(IF(c.COLLATION_NAME = 'utf8_unicode_ci', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
                 FROM information_schema.TABLES t
-                LEFT JOIN information_schema.COLUMNS c ON c.TABLE_NAME = t.TABLE_NAME
-                                                       AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
-                                                       AND (c.COLUMN_TYPE = 'text' OR c.COLLATION_NAME != 'utf8_unicode_ci')
+                LEFT JOIN information_schema.COLUMNS c 
+                    ON c.TABLE_NAME = t.TABLE_NAME
+                    AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
+                    AND (c.COLUMN_TYPE = 'text' OR c.COLLATION_NAME != 'utf8_unicode_ci')
                 WHERE t.`TABLE_SCHEMA` = :schema
                     AND t.`TABLE_NAME` NOT LIKE 'xplugin_%'
-                    AND (t.`ENGINE` != 'InnoDB' OR t.`TABLE_COLLATION` != 'utf8_unicode_ci' OR c.COLLATION_NAME != 'utf8_unicode_ci' OR c.COLUMN_TYPE = 'text')
+                    AND (t.`ENGINE` != 'InnoDB' 
+                           OR t.`TABLE_COLLATION` != 'utf8_unicode_ci' 
+                           OR c.COLLATION_NAME != 'utf8_unicode_ci' 
+                           OR c.COLUMN_TYPE = 'text')
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
                 ORDER BY t.`TABLE_NAME`;",
             ['schema' => $database],
@@ -123,13 +132,17 @@ class DBMigrationHelper
                 , COUNT(c.COLUMN_NAME) TEXT_FIELDS
                 , COUNT(IF(c.COLLATION_NAME = 'utf8_unicode_ci', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
                 FROM information_schema.TABLES t
-                LEFT JOIN information_schema.COLUMNS c ON c.TABLE_NAME = t.TABLE_NAME
-                                                       AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
-                                                       AND (c.COLUMN_TYPE = 'text' OR c.COLLATION_NAME != 'utf8_unicode_ci')
+                LEFT JOIN information_schema.COLUMNS c 
+                    ON c.TABLE_NAME = t.TABLE_NAME
+                    AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
+                    AND (c.COLUMN_TYPE = 'text' OR c.COLLATION_NAME != 'utf8_unicode_ci')
                 WHERE t.`TABLE_SCHEMA` = :schema
                     AND t.`TABLE_NAME` NOT LIKE 'xplugin_%'
                     " . (!empty($excludeStr) ? "AND t.`TABLE_NAME` NOT IN ('" . $excludeStr . "')" : '') . "
-                    AND (t.`ENGINE` != 'InnoDB' OR t.`TABLE_COLLATION` != 'utf8_unicode_ci' OR c.COLLATION_NAME != 'utf8_unicode_ci' OR c.COLUMN_TYPE = 'text')
+                    AND (t.`ENGINE` != 'InnoDB' 
+                        OR t.`TABLE_COLLATION` != 'utf8_unicode_ci' 
+                        OR c.COLLATION_NAME != 'utf8_unicode_ci' 
+                        OR c.COLUMN_TYPE = 'text')
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`
                 ORDER BY t.`TABLE_NAME` LIMIT 1",
             ['schema' => $database],
@@ -150,9 +163,10 @@ class DBMigrationHelper
                 , COUNT(c.COLUMN_NAME) TEXT_FIELDS
                 , COUNT(IF(c.COLLATION_NAME = \'utf8_unicode_ci\', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
                 FROM information_schema.TABLES t
-                LEFT JOIN information_schema.COLUMNS c ON c.TABLE_NAME = t.TABLE_NAME
-                                                       AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
-                                                       AND (c.COLUMN_TYPE = \'text\' OR c.COLLATION_NAME != \'utf8_unicode_ci\')
+                LEFT JOIN information_schema.COLUMNS c 
+                    ON c.TABLE_NAME = t.TABLE_NAME
+                    AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
+                    AND (c.COLUMN_TYPE = \'text\' OR c.COLLATION_NAME != \'utf8_unicode_ci\')
                 WHERE t.`TABLE_SCHEMA` = :schema
                     AND t.`TABLE_NAME` = :table
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
@@ -181,8 +195,8 @@ class DBMigrationHelper
                 FROM information_schema.STATISTICS
                 WHERE `TABLE_SCHEMA` = :schema
                     {$filter}
-                    AND `INDEX_TYPE` = 'FULLTEXT'
-                    ", $params,
+                    AND `INDEX_TYPE` = 'FULLTEXT'",
+            $params,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
@@ -201,16 +215,16 @@ class DBMigrationHelper
 
         if (is_object($oTable)) {
             if ($oTable->ENGINE !== 'InnoDB') {
-                $result = ($result | self::MIGRATE_INNODB);
+                $result |= self::MIGRATE_INNODB;
             }
             if ($oTable->TABLE_COLLATION !== 'utf8_unicode_ci') {
-                $result = ($result | self::MIGRATE_UTF8);
+                $result |= self::MIGRATE_UTF8;
             }
             if (isset($oTable->TEXT_FIELDS) && (int)$oTable->TEXT_FIELDS > 0) {
-                $result = ($result | self::MIGRATE_TEXT);
+                $result |= self::MIGRATE_TEXT;
             }
             if (isset($oTable->FIELD_COLLATIONS) && (int)$oTable->FIELD_COLLATIONS > 0) {
-                $result = ($result | self::MIGRATE_C_UTF8);
+                $result |= self::MIGRATE_C_UTF8;
             }
         }
 
@@ -257,7 +271,9 @@ class DBMigrationHelper
                 WHERE `TABLE_SCHEMA` = :schema
                     AND `TABLE_NAME` = :table
                     AND `CHARACTER_SET_NAME` IS NOT NULL
-                    AND (`CHARACTER_SET_NAME` != 'utf8' OR `COLLATION_NAME` != 'utf8_unicode_ci' OR COLUMN_TYPE = 'text')
+                    AND (`CHARACTER_SET_NAME` != 'utf8' 
+                       OR `COLLATION_NAME` != 'utf8_unicode_ci' 
+                       OR COLUMN_TYPE = 'text')
                 ORDER BY `ORDINAL_POSITION`",
             ['schema' => $database, 'table'  => $cTable],
             \DB\ReturnType::ARRAY_OF_OBJECTS

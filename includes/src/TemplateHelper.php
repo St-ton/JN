@@ -290,7 +290,7 @@ class TemplateHelper
     {
         $isAdmin = $isAdmin ?? $this->isAdmin;
         $cacheID = 'tpl_' . $cOrdner . ($isAdmin ? '_admin' : '');
-        if ($this->cachingEnabled === true && ($oTemplate = Shop::Cache()->get($cacheID)) !== false) {
+        if ($this->cachingEnabled === true && ($oTemplate = Shop::Container()->getCache()->get($cacheID)) !== false) {
             return $oTemplate;
         }
 
@@ -340,7 +340,7 @@ class TemplateHelper
             $oTemplate->cName = $oTemplate->cOrdner;
         }
         if ($this->cachingEnabled === true) {
-            Shop::Cache()->set($cacheID, $oTemplate, [CACHING_GROUP_TEMPLATE]);
+            Shop::Container()->getCache()->set($cacheID, $oTemplate, [CACHING_GROUP_TEMPLATE]);
         }
 
         return $oTemplate;

@@ -6,7 +6,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('EXPORT_SITEMAP_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 
@@ -155,36 +155,8 @@ foreach ($oSitemapReport_arr as $i => $oSitemapReport) {
         );
     }
 }
-$oConfig_arr = Shop::Container()->getDB()->selectAll(
-    'teinstellungenconf',
-    'kEinstellungenSektion',
-    CONF_SITEMAP,
-    '*',
-    'nSort'
-);
-$count       = count($oConfig_arr);
-for ($i = 0; $i < $count; ++$i) {
-    if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
-            'teinstellungenconfwerte',
-            'kEinstellungenConf',
-            (int)$oConfig_arr[$i]->kEinstellungenConf,
-            '*',
-            'nSort'
-        );
-    }
 
-    $oSetValue                      = Shop::Container()->getDB()->select(
-        'teinstellungen',
-        'kEinstellungenSektion',
-        CONF_SITEMAP,
-        'cName',
-        $oConfig_arr[$i]->cWertName
-    );
-    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
-}
-
-$smarty->assign('oConfig_arr', $oConfig_arr)
+$smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SITEMAP))
        ->assign('nSitemapDownloadYear', $nYearDownloads)
        ->assign('oSitemapDownloadYears_arr', $oSitemapDownloadYears_arr)
        ->assign('oSitemapDownloadPagination', $oSitemapDownloadPagination)

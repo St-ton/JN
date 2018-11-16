@@ -8,7 +8,6 @@ namespace Services\JTL;
 
 use Boxes\FactoryInterface;
 use Boxes\Items\BoxInterface;
-use Boxes\Items\Plugin;
 use Boxes\Type;
 use Boxes\Renderer\DefaultRenderer;
 use DB\DbInterface;
@@ -16,6 +15,7 @@ use DB\ReturnType;
 use Filter\ProductFilter;
 use Filter\SearchResultsInterface;
 use Filter\Visibility;
+use Session\Session;
 
 /**
  * Class BoxService
@@ -274,7 +274,7 @@ class BoxService implements BoxServiceInterface
         ];
         $smarty->assign('BoxenEinstellungen', $this->config)
                ->assign('bBoxenFilterNach', $showBoxes)
-               ->assign('NettoPreise', \Session::CustomerGroup()->getIsMerchant());
+               ->assign('NettoPreise', Session::getCustomerGroup()->getIsMerchant());
 
         $boxRenderer = new DefaultRenderer($smarty);
         foreach ($positionedBoxes as $_position => $boxes) {
@@ -344,9 +344,9 @@ class BoxService implements BoxServiceInterface
             : '';
         $cPluginAktiv     = $active
             ? ' AND (tplugin.nStatus IS NULL OR tplugin.nStatus = ' .
-            \Plugin::PLUGIN_ACTIVATED . "  OR tboxvorlage.eTyp != 'plugin')"
+            \Plugin\Plugin::PLUGIN_ACTIVATED . "  OR tboxvorlage.eTyp != 'plugin')"
             : '';
-        if (($grouped = \Shop::Cache()->get($cacheID)) === false) {
+        if (($grouped = \Shop::Container()->getCache()->get($cacheID)) === false) {
             $boxData = $this->db->query(
                 'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
                        tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
@@ -374,7 +374,7 @@ class BoxService implements BoxServiceInterface
             $grouped = \Functional\group($boxData, function ($e) {
                 return $e->kBox;
             });
-            \Shop::Cache()->set($cacheID, $grouped, \array_unique($cacheTags));
+            \Shop::Container()->getCache()->set($cacheID, $grouped, \array_unique($cacheTags));
         }
         $children = [];
         foreach ($grouped as $i => $boxes) {
@@ -400,8 +400,8 @@ class BoxService implements BoxServiceInterface
             $first       = \Functional\first($boxes);
             $boxInstance = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp === Type::PLUGIN);
             $boxInstance->map($boxes);
-            if (\get_class($boxInstance) === Plugin::class) {
-                $plugin = new \Plugin($boxInstance->getCustomID());
+            if (\get_class($boxInstance) === \Plugin\Plugin::class) {
+                $plugin = new \Plugin\Plugin($boxInstance->getCustomID());
                 $boxInstance->setTemplateFile(
                     $plugin->cFrontendPfad .
                     \PFAD_PLUGIN_BOXEN .

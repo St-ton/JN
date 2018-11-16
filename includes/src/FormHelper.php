@@ -72,7 +72,12 @@ class FormHelper
      */
     public static function eingabenKorrekt(array $fehlendeAngaben): int
     {
-        return (int)\Functional\none($fehlendeAngaben, function ($e) { return $e > 0; });
+        return (int)\Functional\none(
+            $fehlendeAngaben,
+            function ($e) {
+                return $e > 0;
+            }
+        );
     }
     
     /**
@@ -220,7 +225,7 @@ class FormHelper
      */
     public static function checkSubject(): bool
     {
-        $kKundengruppe = Session::CustomerGroup()->getID();
+        $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
         if (!$kKundengruppe) {
             $kKundengruppe = (int)$_SESSION['Kunde']->kKundengruppe;
             if (!$kKundengruppe) {

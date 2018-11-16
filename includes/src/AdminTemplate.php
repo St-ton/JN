@@ -104,14 +104,14 @@ class AdminTemplate
     public function init(): self
     {
         $cacheID = 'current_template__admin';
-        if (($oTemplate = Shop::Cache()->get($cacheID)) !== false) {
+        if (($oTemplate = Shop::Container()->getCache()->get($cacheID)) !== false) {
             self::$cTemplate = $oTemplate->cTemplate;
         } else {
             $oTemplate = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'admin');
             //dump('$oTemplate', $oTemplate);
             if ($oTemplate) {
                 self::$cTemplate = $oTemplate->cTemplate;
-                Shop::Cache()->set($cacheID, $oTemplate, [CACHING_GROUP_TEMPLATE]);
+                Shop::Container()->getCache()->set($cacheID, $oTemplate, [CACHING_GROUP_TEMPLATE]);
 
                 return $this;
             }
@@ -134,7 +134,7 @@ class AdminTemplate
         $folders   = [];
         $folders[] = $cOrdner;
         $cacheID   = 'template_minify_data_adm_' . $cOrdner . (($absolute === true) ? '_a' : '');
-        if (($tplGroups_arr = Shop::Cache()->get($cacheID)) === false) {
+        if (($tplGroups_arr = Shop::Container()->getCache()->get($cacheID)) === false) {
             $tplGroups_arr = [
                 'admin_css' => [],
                 'admin_js'  => []
@@ -163,10 +163,13 @@ class AdminTemplate
                                 PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path;
                             $cCustomFilePath = str_replace('.css', '_custom.css', $cFilePath);
                             if (file_exists($cCustomFilePath)) {
-                                $tplGroups_arr[$name][] = str_replace('.css', '_custom.css',
+                                $tplGroups_arr[$name][] = str_replace(
+                                    '.css',
+                                    '_custom.css',
                                     ($absolute === true ? PFAD_ROOT : '') .
                                     (self::$isAdmin === true ? PFAD_ADMIN : '') .
-                                    PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path);
+                                    PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path
+                                );
                             }
                         }
                     }
@@ -194,7 +197,7 @@ class AdminTemplate
             if (!self::$isAdmin) {
                 executeHook(HOOK_CSS_JS_LIST, ['groups' => &$tplGroups_arr, 'cache_tags' => &$cacheTags]);
             }
-            Shop::Cache()->set($cacheID, $tplGroups_arr, $cacheTags);
+            Shop::Container()->getCache()->set($cacheID, $tplGroups_arr, $cacheTags);
         }
 
         return $tplGroups_arr;

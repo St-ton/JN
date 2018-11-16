@@ -15,7 +15,7 @@ $Einstellungen = Shopsetting::getInstance()->getAll();
 $linkHelper    = Shop::Container()->getLinkService();
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLABSCHLUSS);
 $link          = $linkHelper->getPageLink($kLink);
-$cart          = Session::Cart();
+$cart          = \Session\Session::getCart();
 $smarty        = Shop::Smarty();
 $bestellung    = null;
 if (isset($_GET['i'])) {
@@ -107,10 +107,10 @@ $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
 
 // Plugin Zahlungsmethode beachten
 $kPlugin = isset($bestellung->Zahlungsart->cModulId)
-    ? Plugin::getIDByModuleID($bestellung->Zahlungsart->cModulId)
+    ? \Plugin\Plugin::getIDByModuleID($bestellung->Zahlungsart->cModulId)
     : 0;
 if ($kPlugin > 0) {
-    $oPlugin = new Plugin($kPlugin);
+    $oPlugin = new \Plugin\Plugin($kPlugin);
     $smarty->assign('oPlugin', $oPlugin);
 }
 if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung) || isset($_GET['i'])) {

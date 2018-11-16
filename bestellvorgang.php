@@ -15,7 +15,7 @@ Shop::setPageType(PAGE_BESTELLVORGANG);
 $Einstellungen = Shopsetting::getInstance()->getAll();
 $step          = 'accountwahl';
 $cHinweis      = '';
-$cart          = Session::Cart();
+$cart          = \Session\Session::getCart();
 unset($_SESSION['ajaxcheckout']);
 // Loginbenutzer?
 if (isset($_POST['login']) && (int)$_POST['login'] === 1) {
@@ -82,6 +82,9 @@ if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 0) {
     $_POST['form']     = 1;
     include PFAD_ROOT . 'registrieren.php';
 }
+if (isset($_GET['kZahlungsart']) && (int)$_GET['kZahlungsart'] > 0) {
+    zahlungsartKorrekt((int)$_GET['kZahlungsart']);
+}
 if ((isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1) || isset($_GET['kVersandart'])) {
     unset($_SESSION['Zahlungsart']);
     $kVersandart = null;
@@ -109,7 +112,7 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     if (!isset($_SESSION['Versandart']) || !is_object($_SESSION['Versandart'])) {
         $land          = $_SESSION['Lieferadresse']->cLand ?? $_SESSION['Kunde']->cLand;
         $plz           = $_SESSION['Lieferadresse']->cPLZ ?? $_SESSION['Kunde']->cPLZ;
-        $kKundengruppe = Session::CustomerGroup()->getID();
+        $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
 
         $oVersandart_arr  = VersandartHelper::getPossibleShippingMethods(
             $land,
@@ -204,6 +207,25 @@ if (isset($_SESSION['Zahlungsart'])
     $paymentMethod = PaymentMethod::create('za_billpay_jtl');
     $paymentMethod->handleConfirmation();
 }
+if ($step === 'Bestaetigung'
+    && $cart->gibGesamtsummeWaren(true) === 0.0
+) {
+    $savedPayment   = $_SESSION['AktiveZahlungsart'];
+    $oPaymentMethod = PaymentMethod::create('za_null_jtl');
+    zahlungsartKorrekt($oPaymentMethod->kZahlungsart);
+
+    if ((isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1)
+        || (isset($cPost_arr['guthabenVerrechnen']) && (int)$cPost_arr['guthabenVerrechnen'] === 1)
+    ) {
+        $_SESSION['Bestellung']->GuthabenNutzen   = 1;
+        $_SESSION['Bestellung']->fGuthabenGenutzt = min(
+            $_SESSION['Kunde']->fGuthaben,
+            \Session\Session::getCart()->gibGesamtsummeWaren(true, false)
+        );
+    }
+    Warenkorb::refreshChecksum($cart);
+    $_SESSION['AktiveZahlungsart'] = $savedPayment;
+}
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
@@ -215,7 +237,7 @@ Shop::Smarty()->assign(
     'AGB',
     Shop::Container()->getLinkService()->getAGBWRB(
         Shop::getLanguage(),
-        Session::CustomerGroup()->getID()
+        \Session\Session::getCustomerGroup()->getID()
     )
 )
     ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))

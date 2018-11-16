@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_SAVED_BASKETS_VIEW', true, true);
 
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $cHinweis          = '';
 $cFehler           = '';
 $step              = 'uebersicht';
@@ -15,11 +15,9 @@ $settingsIDs       = [540];
 $cSucheSQL         = new stdClass();
 $cSucheSQL->cJOIN  = '';
 $cSucheSQL->cWHERE = '';
-// Tabs
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
-// Suche
 if (strlen(RequestHelper::verifyGPDataString('cSuche')) > 0) {
     $cSuche = Shop::Container()->getDB()->escape(StringHandler::filterXSS(RequestHelper::verifyGPDataString('cSuche')));
 
@@ -31,7 +29,6 @@ if (strlen(RequestHelper::verifyGPDataString('cSuche')) > 0) {
 
     $smarty->assign('cSuche', $cSuche);
 }
-// Einstellungen
 if (isset($_POST['einstellungen'])
     && (int)$_POST['einstellungen'] === 1
     && (isset($_POST['speichern']) || (isset($_POST['a']) && $_POST['a'] === 'speichern'))
@@ -70,7 +67,6 @@ $oKundeAnzahl = Shop::Container()->getDB()->query(
     \DB\ReturnType::SINGLE_OBJECT
 );
 
-// Pagination
 $oPagiKunden = (new Pagination('kunden'))
     ->setItemCount($oKundeAnzahl->nAnzahl)
     ->assemble();
@@ -102,7 +98,6 @@ foreach ($oKunde_arr as $i => $oKunde) {
 $smarty->assign('oKunde_arr', $oKunde_arr)
        ->assign('oPagiKunden', $oPagiKunden);
 
-// Anzeigen
 if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
     $step   = 'anzeigen';
     $kKunde = (int)$_GET['a'];
@@ -143,38 +138,10 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
     $smarty->assign('oWarenkorbPersPos_arr', $oWarenkorbPersPos_arr)
            ->assign('kKunde', $kKunde)
            ->assign('oPagiWarenkorb', $oPagiWarenkorb);
-} else {
-    $oConfig_arr = Shop::Container()->getDB()->query(
-        'SELECT *
-            FROM teinstellungenconf
-            WHERE kEinstellungenConf IN (' . implode(',', $settingsIDs) . ')
-            ORDER BY nSort',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
-    );
-    $configCount = count($oConfig_arr);
-    for ($i = 0; $i < $configCount; $i++) {
-        $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
-            'teinstellungenconfwerte',
-            'kEinstellungenConf',
-            (int)$oConfig_arr[$i]->kEinstellungenConf,
-            '*',
-            'nSort'
-        );
-
-        $oSetValue = Shop::Container()->getDB()->select(
-            'teinstellungen',
-            'kEinstellungenSektion',
-            (int)$oConfig_arr[$i]->kEinstellungenSektion,
-            'cName',
-            $oConfig_arr[$i]->cWertName
-        );
-        $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
-    }
-
-    $smarty->assign('oConfig_arr', $oConfig_arr);
 }
 
 $smarty->assign('step', $step)
        ->assign('cHinweis', $cHinweis)
        ->assign('cFehler', $cFehler)
+       ->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
        ->display('warenkorbpers.tpl');

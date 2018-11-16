@@ -166,8 +166,7 @@ function schalteBewertungFrei($kBewertung_arr, $kArtikel_arr, $kBewertungAll_arr
             checkeBewertungGuthabenBonus($kBewertung, $Einstellungen);
             $tags[] = CACHING_GROUP_ARTICLE . '_' . $kArtikel;
         }
-        // Clear Cache
-        Shop::Cache()->flushTags(array_unique($tags));
+        Shop::Container()->getCache()->flushTags(array_unique($tags));
 
         return true;
     }
@@ -201,7 +200,7 @@ function schalteSuchanfragenFrei($kSuchanfrage_arr): bool
             );
             // Aktivierte Suchanfragen in tseo eintragen
             $oSeo           = new stdClass();
-            $oSeo->cSeo     = checkSeo(getSeo($oSuchanfrage->cSuche));
+            $oSeo->cSeo     = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($oSuchanfrage->cSuche));
             $oSeo->cKey     = 'kSuchanfrage';
             $oSeo->kKey     = $kSuchanfrage;
             $oSeo->kSprache = $oSuchanfrage->kSprache;
@@ -249,7 +248,7 @@ function schalteTagsFrei($kTag_arr): bool
                 ['kTag', $kTag, (int)$oTag->kSprache]
             );
             $oSeo           = new stdClass();
-            $oSeo->cSeo     = checkSeo(getSeo($oTag->cName));
+            $oSeo->cSeo     = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($oTag->cName));
             $oSeo->cKey     = 'kTag';
             $oSeo->kKey     = $kTag;
             $oSeo->kSprache = (int)$oTag->kSprache;
@@ -262,7 +261,7 @@ function schalteTagsFrei($kTag_arr): bool
             );
         }
     }
-    Shop::Cache()->flushTags($tags);
+    Shop::Container()->getCache()->flushTags($tags);
 
     return true;
 }

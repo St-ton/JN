@@ -5,7 +5,7 @@
  */
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('BOXES_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 
 $cHinweis   = '';
 $cFehler    = '';
@@ -73,7 +73,8 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && FormHe
             }
             $smarty->assign('oEditBox', $oBox)
                    ->assign('revisionData', $revisionData)
-                   ->assign('oLink_arr',
+                   ->assign(
+                       'oLink_arr',
                        Shop::Container()->getDB()->query('SELECT * FROM tlinkgruppe', \DB\ReturnType::ARRAY_OF_OBJECTS)
                    );
             break;
@@ -175,7 +176,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && FormHe
         default:
             break;
     }
-    $flushres = Shop::Cache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes']);
+    $flushres = Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes']);
     Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
 }
 $oBoxen_arr      = $boxService->buildList($nPage, false, true);

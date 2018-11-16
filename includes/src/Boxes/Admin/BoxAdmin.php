@@ -294,17 +294,17 @@ final class BoxAdmin
             $ok = true;
             for ($i = 0; $i < \count($validPageTypes) && $ok; $i++) {
                 $ok = $this->db->executeQueryPrepared(
-                        'REPLACE INTO tboxenanzeige 
-                            SET bAnzeigen = :show,
-                                nSeite = :page, 
-                                ePosition = :position',
-                        [
-                            'show'     => $show,
-                            'page'     => $i,
-                            'position' => $position
-                        ],
-                        ReturnType::DEFAULT
-                    ) && $ok;
+                    'REPLACE INTO tboxenanzeige 
+                        SET bAnzeigen = :show,
+                            nSeite = :page, 
+                            ePosition = :position',
+                    [
+                        'show'     => $show,
+                        'page'     => $i,
+                        'position' => $position
+                    ],
+                    ReturnType::DEFAULT
+                ) && $ok;
             }
 
             return $ok;
@@ -338,34 +338,34 @@ final class BoxAdmin
                 $oBox = $this->db->select('tboxensichtbar', 'kBox', $boxID);
                 $ok   = !empty($oBox)
                     ? ($this->db->query(
-                            'UPDATE tboxensichtbar 
-                                SET nSort = ' . $nSort . ',
-                                    bAktiv = ' . $active . ' 
-                                WHERE kBox = ' . $boxID . ' 
-                                    AND kSeite = ' . $i,
-                            ReturnType::DEFAULT
-                        ) !== false)
+                        'UPDATE tboxensichtbar 
+                            SET nSort = ' . $nSort . ',
+                                bAktiv = ' . $active . ' 
+                            WHERE kBox = ' . $boxID . ' 
+                                AND kSeite = ' . $i,
+                        ReturnType::DEFAULT
+                    ) !== false)
                     : ($this->db->query(
-                            'INSERT INTO tboxensichtbar 
-                                SET kBox = ' . $boxID . ',
-                                    kSeite = ' . $i . ', 
-                                    nSort = ' . $nSort . ', 
-                                    bAktiv = ' . $active,
-                            ReturnType::DEFAULT
-                        ) === true);
+                        'INSERT INTO tboxensichtbar 
+                            SET kBox = ' . $boxID . ',
+                                kSeite = ' . $i . ', 
+                                nSort = ' . $nSort . ', 
+                                bAktiv = ' . $active,
+                        ReturnType::DEFAULT
+                    ) === true);
             }
 
             return $ok;
         }
 
         return $this->db->query(
-                'REPLACE INTO tboxensichtbar 
-                  SET kBox = ' . $boxID . ', 
-                      kSeite = ' . $pageID . ', 
-                      nSort = ' . $nSort . ', 
-                      bAktiv = ' . $active,
-                ReturnType::AFFECTED_ROWS
-            ) !== false;
+            'REPLACE INTO tboxensichtbar 
+              SET kBox = ' . $boxID . ', 
+                  kSeite = ' . $pageID . ', 
+                  nSort = ' . $nSort . ', 
+                  bAktiv = ' . $active,
+            ReturnType::AFFECTED_ROWS
+        ) !== false;
     }
 
     /**
@@ -403,11 +403,11 @@ final class BoxAdmin
             for ($i = 0; $i < \count($validPageTypes) && $ok; ++$i) {
                 $upd->bAktiv = $active;
                 $ok          = $this->db->update(
-                        'tboxensichtbar',
-                        ['kBox', 'kSeite'],
-                        [$boxID, $i],
-                        $upd
-                    ) >= 0;
+                    'tboxensichtbar',
+                    ['kBox', 'kSeite'],
+                    [$boxID, $i],
+                    $upd
+                ) >= 0;
             }
 
             return $ok;

@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  *
- * @global JTLSmarty $smarty
+ * @global Smarty\JTLSmarty $smarty
  */
 $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisStringLocalizedSmarty')
        ->registerPlugin('function', 'load_boxes', 'load_boxes')
@@ -30,8 +30,8 @@ $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisSt
        ->registerPlugin('function', 'getStates', 'getStates');
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return array|void
  */
 function get_product_list($params, $smarty)
@@ -102,8 +102,8 @@ function get_product_list($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return bool|string
  */
 function get_static_route($params, $smarty)
@@ -130,8 +130,8 @@ function get_static_route($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return array
  */
 function get_manufacturers($params, $smarty)
@@ -147,8 +147,8 @@ function get_manufacturers($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return string
  */
 function load_boxes_raw($params, $smarty)
@@ -160,8 +160,8 @@ function load_boxes_raw($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return array|void
  */
 function getBoxesByPosition($params, $smarty)
@@ -178,8 +178,8 @@ function getBoxesByPosition($params, $smarty)
 }
 
 /**
- * @param array     $params - categoryId mainCategoryId. 0 for first level categories
- * @param JTLSmarty $smarty
+ * @param array            $params - categoryId mainCategoryId. 0 for first level categories
+ * @param Smarty\JTLSmarty $smarty
  * @return array|void
  */
 function get_category_array($params, $smarty)
@@ -215,8 +215,8 @@ function get_category_array($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return array|void
  */
 function get_category_parents($params, $smarty)
@@ -238,8 +238,8 @@ function get_category_parents($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return string
  */
 function get_img_tag($params, $smarty)
@@ -266,8 +266,8 @@ function get_img_tag($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return string
  */
 function load_boxes($params, $smarty)
@@ -284,7 +284,7 @@ function load_boxes($params, $smarty)
                 $oPluginVar = '';
                 $cTemplate  = 'tpl_inc/boxes/' . $oBox->cTemplate;
                 if ($oBox->eTyp === 'plugin') {
-                    $oPlugin = new Plugin($oBox->kCustomID);
+                    $oPlugin = new Plugin\Plugin($oBox->kCustomID);
                     if ($oPlugin->kPlugin > 0 && $oPlugin->nStatus === 2) {
                         $cTemplate    = $oBox->cTemplate;
                         $cOldTplDir   = $cTemplateDir;
@@ -336,8 +336,8 @@ function load_boxes($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  */
 function has_boxes($params, $smarty)
 {
@@ -362,8 +362,8 @@ function truncate($text, $numb)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return mixed|string
  */
 function gibPreisStringLocalizedSmarty($params, $smarty)
@@ -394,13 +394,13 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
             if ($fVPEWert > 0) {
                 $oAufpreis->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
                     $fAufpreisNetto / $fVPEWert,
-                    Session::Currency()->getCode(),
+                    \Session\Session::getCurrency()->getCode(),
                     true,
                     $nGenauigkeit
                 ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
                 $oAufpreis->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
                     ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
-                    Session::Currency()->getCode(),
+                    \Session\Session::getCurrency()->getCode(),
                     true,
                     $nGenauigkeit
                 ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
@@ -423,23 +423,25 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
 
             if ($fVPEWert > 0) {
                 $oAufpreis->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
-                        TaxHelper::getGross($fAufpreisNetto / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
-                        Session::Currency()->getCode(),
-                        true,
-                        $nGenauigkeit
-                    ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
+                    TaxHelper::getGross($fAufpreisNetto / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
+                    \Session\Session::getCurrency()->getCode(),
+                    true,
+                    $nGenauigkeit
+                ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
                 $oAufpreis->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
-                        TaxHelper::getGross(
-                            ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
-                            $_SESSION['Steuersatz'][$kSteuerklasse]
-                        ),
-                        Session::Currency()->getCode(),
-                        true,
-                        $nGenauigkeit
-                    ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
+                    TaxHelper::getGross(
+                        ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
+                        $_SESSION['Steuersatz'][$kSteuerklasse]
+                    ),
+                    \Session\Session::getCurrency()->getCode(),
+                    true,
+                    $nGenauigkeit
+                ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
 
-                $oAufpreis->cAufpreisLocalized = $oAufpreis->cAufpreisLocalized . ', ' . $oAufpreis->cPreisVPEWertAufpreis;
-                $oAufpreis->cPreisInklAufpreis = $oAufpreis->cPreisInklAufpreis . ', ' . $oAufpreis->cPreisVPEWertInklAufpreis;
+                $oAufpreis->cAufpreisLocalized = $oAufpreis->cAufpreisLocalized .
+                    ', ' . $oAufpreis->cPreisVPEWertAufpreis;
+                $oAufpreis->cPreisInklAufpreis = $oAufpreis->cPreisInklAufpreis .
+                    ', ' . $oAufpreis->cPreisVPEWertInklAufpreis;
             }
         }
     }
@@ -450,8 +452,8 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  */
 function hasCheckBoxForLocation($params, $smarty)
 {
@@ -462,8 +464,8 @@ function hasCheckBoxForLocation($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return string
  */
 function getCheckBoxForLocation($params, $smarty)
@@ -499,8 +501,8 @@ function getCheckBoxForLocation($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return string
  */
 function aaURLEncode($params, $smarty)
@@ -537,8 +539,8 @@ function aaURLEncode($params, $smarty)
 }
 
 /**
- * @param array     $params - ['type'] Templatename of link, ['assign'] array name to assign
- * @param JTLSmarty $smarty
+ * @param array            $params - ['type'] Templatename of link, ['assign'] array name to assign
+ * @param Smarty\JTLSmarty $smarty
  */
 function get_navigation($params, $smarty)
 {
@@ -548,7 +550,10 @@ function get_navigation($params, $smarty)
         $linkGroups  = Shop::Container()->getLinkService()->getVisibleLinkGroups();
         $oLinkGruppe = $linkGroups->getLinkgroupByTemplate($linkgroupIdentifier);
     }
-    if (is_object($oLinkGruppe) && isset($params['assign']) && $oLinkGruppe->isAvailableInLanguage(Shop::getLanguageID())) {
+    if (is_object($oLinkGruppe)
+        && isset($params['assign'])
+        && $oLinkGruppe->isAvailableInLanguage(Shop::getLanguageID())
+    ) {
         $smarty->assign($params['assign'], build_navigation_subs($oLinkGruppe));
     }
 }
@@ -579,8 +584,8 @@ function build_navigation_subs($linkGroup, $kVaterLink = 0)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  */
 function get_trustedshops_data($params, $smarty)
 {
@@ -592,8 +597,8 @@ function get_trustedshops_data($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return string|object|null
  */
 function prepare_image_details($params, $smarty)
@@ -676,8 +681,8 @@ function get_image_size($image)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return mixed
  */
 function get_cms_content($params, $smarty)
@@ -697,8 +702,8 @@ function get_cms_content($params, $smarty)
 }
 
 /**
- * @param array     $params - variationen, maxVariationCount, maxWerteCount
- * @param JTLSmarty $smarty
+ * @param array            $params - variationen, maxVariationCount, maxWerteCount
+ * @param Smarty\JTLSmarty $smarty
  * @return int - 0: no listable variations, 1: normal listable variations, 2: only child listable variations
  */
 function hasOnlyListableVariations($params, $smarty)
@@ -787,8 +792,8 @@ function has_translation($mixed, $to = null)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return string
  */
 function captchaMarkup($params, $smarty)
@@ -801,8 +806,8 @@ function captchaMarkup($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return object|null
  */
 function getStates($params, $smarty)

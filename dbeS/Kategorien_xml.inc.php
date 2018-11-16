@@ -44,5 +44,5 @@ function rebuildCategoryTree(int $parentID, int $left, int $level = 0)
 function Kategorien_xml_Finish()
 {
     rebuildCategoryTree(0, 1);
-    Shop::Cache()->flushTags([CACHING_GROUP_CATEGORY]);
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_CATEGORY]);
 }

@@ -8,7 +8,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('ORDER_PACKAGE_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $cHinweis     = '';
 $cFehler      = '';
 $step         = 'zusatzverpackung';
@@ -45,7 +45,7 @@ if ($action === 'save') {
         $cFehler .= 'Fehler: Bitte wählen Sie mindestens eine Kundengruppe aus.<br />';
     }
 
-    if($cFehler !== '') {
+    if ($cFehler !== '') {
         holdInputOnError($oVerpackung, $kKundengruppe_arr, $kVerpackung, $smarty);
         $action = 'edit';
     } else {
@@ -190,25 +190,23 @@ function gibKundengruppeObj($cKundengruppe)
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $kKundengruppe_arr = explode(';', $cKundengruppe);
-        if (is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0) {
-            if (!in_array('-1', $kKundengruppe_arr)) {
-                foreach ($kKundengruppe_arr as $kKundengruppe) {
-                    $kKundengruppe          = (int)$kKundengruppe;
-                    $kKundengruppeTMP_arr[] = $kKundengruppe;
-                    if (is_array($oKundengruppe_arr) && count($oKundengruppe_arr) > 0) {
-                        foreach ($oKundengruppe_arr as $oKundengruppe) {
-                            if ($oKundengruppe->kKundengruppe == $kKundengruppe) {
-                                $cKundengruppeTMP_arr[] = $oKundengruppe->cName;
-                                break;
-                            }
+        if (!in_array('-1', $kKundengruppe_arr)) {
+            foreach ($kKundengruppe_arr as $kKundengruppe) {
+                $kKundengruppe          = (int)$kKundengruppe;
+                $kKundengruppeTMP_arr[] = $kKundengruppe;
+                if (is_array($oKundengruppe_arr) && count($oKundengruppe_arr) > 0) {
+                    foreach ($oKundengruppe_arr as $oKundengruppe) {
+                        if ($oKundengruppe->kKundengruppe == $kKundengruppe) {
+                            $cKundengruppeTMP_arr[] = $oKundengruppe->cName;
+                            break;
                         }
                     }
                 }
-            } elseif (count($oKundengruppe_arr) > 0) {
-                foreach ($oKundengruppe_arr as $oKundengruppe) {
-                    $kKundengruppeTMP_arr[] = $oKundengruppe->kKundengruppe;
-                    $cKundengruppeTMP_arr[] = $oKundengruppe->cName;
-                }
+            }
+        } elseif (count($oKundengruppe_arr) > 0) {
+            foreach ($oKundengruppe_arr as $oKundengruppe) {
+                $kKundengruppeTMP_arr[] = $oKundengruppe->kKundengruppe;
+                $cKundengruppeTMP_arr[] = $oKundengruppe->cName;
             }
         }
     }
@@ -225,7 +223,8 @@ function gibKundengruppeObj($cKundengruppe)
  * @param object $smarty
  * @return void
  */
-function holdInputOnError($oVerpackung, $kKundengruppe_arr, $kVerpackung, &$smarty) {
+function holdInputOnError($oVerpackung, $kKundengruppe_arr, $kVerpackung, &$smarty)
+{
     $oVerpackung->oSprach_arr = [];
     foreach ($_POST as $key => $value) {
         if (strpos($key, 'cName') !== false) {

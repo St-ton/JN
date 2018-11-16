@@ -12,17 +12,17 @@ class MigrationHelper
     /**
      * @var string
      */
-    const DATE_FORMAT = 'YmdHis';
+    public const DATE_FORMAT = 'YmdHis';
 
     /**
      * @var string
      */
-    const MIGRATION_CLASS_NAME_PATTERN = '/^Migration_(\d+)$/i';
+    public const MIGRATION_CLASS_NAME_PATTERN = '/^Migration_(\d+)$/i';
 
     /**
      * @var string
      */
-    const MIGRATION_FILE_NAME_PATTERN = '/^(\d+)_([\w_]+).php$/i';
+    public const MIGRATION_FILE_NAME_PATTERN = '/^(\d+)_([\w_]+).php$/i';
 
     /**
      * Gets the migration path.

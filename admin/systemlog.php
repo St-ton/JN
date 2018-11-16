@@ -5,7 +5,7 @@
  */
 
 /**
- * @global JTLSmarty $smarty
+ * @global Smarty\JTLSmarty $smarty
  * @global AdminAccount $oAccount
  */
 require_once __DIR__ . '/includes/admininclude.php';
@@ -20,8 +20,13 @@ if (FormHelper::validateToken()) {
         $cHinweis = 'Ihr Systemlog wurde erfolgreich gelöscht.';
     } elseif (RequestHelper::verifyGPDataString('action') === 'save') {
         $minLogLevel = (int)($_POST['minLogLevel'] ?? 0);
-        Shop::Container()->getDB()->update('teinstellungen', 'cName', 'systemlog_flag', (object)['cWert' => $minLogLevel]);
-        Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
+        Shop::Container()->getDB()->update(
+            'teinstellungen',
+            'cName',
+            'systemlog_flag',
+            (object)['cWert' => $minLogLevel]
+        );
+        Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
         $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
         $smarty->assign('cTab', 'config');
     } elseif (RequestHelper::verifyGPDataString('action') === 'delselected') {

@@ -11,10 +11,11 @@
 function speicherTrennzeichen(array $cPostAssoc_arr): bool
 {
     foreach ([JTL_SEPARATOR_WEIGHT, JTL_SEPARATOR_AMOUNT, JTL_SEPARATOR_LENGTH] as $nEinheit) {
-        if (isset($cPostAssoc_arr['nDezimal_' . $nEinheit],
+        if (isset(
+            $cPostAssoc_arr['nDezimal_' . $nEinheit],
             $cPostAssoc_arr['cDezZeichen_' . $nEinheit],
-            $cPostAssoc_arr['cTausenderZeichen_' . $nEinheit])
-        ) {
+            $cPostAssoc_arr['cTausenderZeichen_' . $nEinheit]
+        )) {
             $oTrennzeichen = new Trennzeichen();
             $oTrennzeichen->setSprache($_SESSION['kSprache'])
                           ->setEinheit($nEinheit)
@@ -31,7 +32,9 @@ function speicherTrennzeichen(array $cPostAssoc_arr): bool
         }
     }
 
-    Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
+    Shop::Container()->getCache()->flushTags(
+        [CACHING_GROUP_CORE, CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]
+    );
 
     return true;
 }

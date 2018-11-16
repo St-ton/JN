@@ -22,8 +22,8 @@ final class UpcomingProducts extends AbstractBox
     {
         parent::__construct($config);
         $this->setShow(false);
-        $customerGroupID = \Session::CustomerGroup()->getID();
-        if ($customerGroupID > 0 && \Session::CustomerGroup()->mayViewCategories()) {
+        $customerGroupID = \Session\Session::getCustomerGroup()->getID();
+        if ($customerGroupID > 0 && \Session\Session::getCustomerGroup()->mayViewCategories()) {
             $cached         = true;
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();

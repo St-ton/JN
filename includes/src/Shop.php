@@ -21,7 +21,7 @@ use Filter\ProductFilter;
  * Class Shop
  * @method static \Cache\JTLCacheInterface Cache()
  * @method static Sprache Lang()
- * @method static JTLSmarty Smarty(bool $fast_init = false, bool $isAdmin = false)
+ * @method static \Smarty\JTLSmarty Smarty(bool $fast_init = false, bool $isAdmin = false)
  * @method static Media Media()
  * @method static EventDispatcher Event()
  * @method static bool has(string $key)
@@ -471,11 +471,11 @@ final class Shop
      * get remote service instance
      *
      * @return \Network\JTLApi
-     * @deprecated since Shop 5.0 use Shop::Container()->get(JTLApi::class) instead
-     * @throws
+     * @deprecated since 5.0.0 use Shop::Container()->get(JTLApi::class) instead
      */
     public function RS(): \Network\JTLApi
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         return self::Container()->get(\Network\JTLApi::class);
     }
 
@@ -484,9 +484,11 @@ final class Shop
      *
      * @return \Session\Session
      * @throws Exception
+     * @deprecated since 5.0.0
      */
     public function Session(): \Session\Session
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         return \Session\Session::getInstance();
     }
 
@@ -494,19 +496,21 @@ final class Shop
      * get db adapter instance
      *
      * @return \DB\DbInterface
-     * @deprecated since Shop 5 use Shop::Container()->getDB() instead
+     * @deprecated since 5.0.0 - use Shop::Container()->getDB() instead
      */
     public function _DB(): \DB\DbInterface
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         return self::Container()->getDB();
     }
 
     /**
      * @return \DB\DbInterface
-     * @deprecated since Shop 5 use Shop::Container()->getDB() instead
+     * @deprecated since 5.0.0 - use Shop::Container()->getDB() instead
      */
     public static function DB(): \DB\DbInterface
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         return self::Container()->getDB();
     }
 
@@ -524,9 +528,11 @@ final class Shop
      * get config
      *
      * @return Shopsetting
+     * @deprecated since 5.0.0
      */
     public function Config(): Shopsetting
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         return self::$settings;
     }
 
@@ -534,10 +540,11 @@ final class Shop
      * get garbage collector
      *
      * @return DbService\GcServiceInterface
-     * @deprecated since 5.0 -> use Shop::Container()->getGc() instead
+     * @deprecated since 5.0.0 -> use Shop::Container()->getGc() instead
      */
     public function Gc(): DbService\GcServiceInterface
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         return static::Container()->getDBServiceGC();
     }
 
@@ -545,17 +552,21 @@ final class Shop
      * get logger
      *
      * @return Jtllog
+     * @deprecated since 5.0.0
      */
     public function Logger(): Jtllog
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         return new Jtllog();
     }
 
     /**
      * @return PHPSettingsHelper
+     * @deprecated since 5.0.0
      */
     public function PHPSettingsHelper(): PHPSettingsHelper
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         return PHPSettingsHelper::getInstance();
     }
 
@@ -563,10 +574,11 @@ final class Shop
      * get cache instance
      *
      * @return \Cache\JTLCacheInterface
-     * @deprecated since shop 5.0
+     * @deprecated since 5.0.0
      */
     public function _Cache(): \Cache\JTLCacheInterface
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         return self::Container()->getCache();
     }
 
@@ -577,7 +589,7 @@ final class Shop
      * @param bool $isAdmin
      * @return \Smarty\JTLSmarty
      */
-    public function _Smarty(bool $fast_init = false, bool $isAdmin = false): JTLSmarty
+    public function _Smarty(bool $fast_init = false, bool $isAdmin = false): \Smarty\JTLSmarty
     {
         return \Smarty\JTLSmarty::getInstance($fast_init, $isAdmin);
     }
@@ -586,9 +598,11 @@ final class Shop
      * get media instance
      *
      * @return Media
+     * @deprecated since 5.0.0
      */
     public function _Media(): Media
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         return Media::getInstance();
     }
 
@@ -596,9 +610,11 @@ final class Shop
      * get event instance
      *
      * @return EventDispatcher
+     * @deprecated since 5.0.0
      */
     public function _Event(): EventDispatcher
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         return EventDispatcher::getInstance();
     }
 
@@ -608,7 +624,7 @@ final class Shop
      */
     public static function fire(string $eventName, $arguments = []): void
     {
-        self::Event()->fire($eventName, $arguments);
+        EventDispatcher::getInstance()->fire($eventName, $arguments);
     }
 
     /**
@@ -736,20 +752,20 @@ final class Shop
     public static function bootstrap(): void
     {
         $cacheID = 'plgnbtsrp';
-        if (($plugins = self::Cache()->get($cacheID)) === false) {
+        if (($plugins = self::Container()->getCache()->get($cacheID)) === false) {
             $plugins = self::Container()->getDB()->queryPrepared(
                 'SELECT kPlugin 
                     FROM tplugin 
                     WHERE nStatus = :state
                       AND bBootstrap = 1 
                     ORDER BY nPrio ASC',
-                ['state' => Plugin::PLUGIN_ACTIVATED],
+                ['state' => \Plugin\Plugin::PLUGIN_ACTIVATED],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             ) ?: [];
-            self::Cache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
+            self::Container()->getCache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
         }
         foreach ($plugins as $plugin) {
-            if (($p = Plugin::bootstrapper($plugin->kPlugin)) !== null) {
+            if (($p = \Plugin\Plugin::bootstrapper($plugin->kPlugin)) !== null) {
                 $p->boot(EventDispatcher::getInstance());
             }
         }
@@ -855,7 +871,9 @@ final class Shop
             );
             exit();
         }
-        if ((self::$kArtikel > 0 || self::$kKategorie > 0) && !Session::CustomerGroup()->mayViewCategories()) {
+        if ((self::$kArtikel > 0 || self::$kKategorie > 0)
+            && !\Session\Session::getCustomerGroup()->mayViewCategories()
+        ) {
             // falls Artikel/Kategorien nicht gesehen werden duerfen -> login
             header('Location: ' . LinkHelper::getInstance()->getStaticRoute('jtl.php') . '?li=1', true, 303);
             exit;
@@ -863,13 +881,13 @@ final class Shop
         $conf = new \Filter\Config();
         $conf->setLanguageID(self::$kSprache);
         $conf->setLanguages(self::Lang()->getLangArray());
-        $conf->setCustomerGroupID(\Session::CustomerGroup()->getID());
+        $conf->setCustomerGroupID(\Session\Session::getCustomerGroup()->getID());
         $conf->setConfig(self::$settings->getAll());
         $conf->setBaseURL(self::getURL() . '/');
         self::$productFilter = new ProductFilter($conf, self::Container()->getDB(), self::Container()->getCache());
         self::seoCheck();
         self::setImageBaseURL(defined('IMAGE_BASE_URL') ? IMAGE_BASE_URL : self::getURL());
-        self::Event()->fire('shop.run');
+        EventDispatcher::getInstance()->fire('shop.run');
 
         self::$productFilter->initStates(self::getParameters());
 
@@ -883,10 +901,11 @@ final class Shop
      */
     public static function getParameters(): array
     {
-        if (self::$kKategorie > 0 && !Kategorie::isVisible(self::$kKategorie, Session::CustomerGroup()->getID())) {
+        if (self::$kKategorie > 0
+            && !Kategorie::isVisible(self::$kKategorie, \Session\Session::getCustomerGroup()->getID())
+        ) {
             self::$kKategorie = 0;
         }
-        // check variation combination
         if (ArtikelHelper::isVariChild(self::$kArtikel)) {
             self::$kVariKindArtikel = self::$kArtikel;
             self::$kArtikel         = ArtikelHelper::getParent(self::$kArtikel);
@@ -971,7 +990,7 @@ final class Shop
                 }
                 $customFilterArr = explode($seoParam, $seo);
                 if (count($customFilterArr) > 1) {
-                    list($seo, $customFilterSeo) = $customFilterArr;
+                    [$seo, $customFilterSeo] = $customFilterArr;
                     if (strpos($customFilterSeo, SEP_HST) !== false) {
                         $arr             = explode(SEP_HST, $customFilterSeo);
                         $customFilterSeo = $arr[0];
@@ -1085,7 +1104,7 @@ final class Shop
             }
             $categories = explode(SEP_KAT, $seo);
             if (is_array($categories) && count($categories) > 1) {
-                list($seo, $katseo) = $categories;
+                [$seo, $katseo] = $categories;
                 if (strpos($katseo, SEP_HST) !== false) {
                     $arr    = explode(SEP_HST, $katseo);
                     $katseo = $arr[0];
@@ -1377,8 +1396,8 @@ final class Shop
                 $link = null;
                 self::setPageType(PAGE_STARTSEITE);
                 self::$fileName = 'seite.php';
-                if (Session::CustomerGroup()->getID() > 0) {
-                    $cKundengruppenSQL = " AND (FIND_IN_SET('" . Session::CustomerGroup()->getID()
+                if (\Session\Session::getCustomerGroup()->getID() > 0) {
+                    $cKundengruppenSQL = " AND (FIND_IN_SET('" . \Session\Session::getCustomerGroup()->getID()
                         . "', REPLACE(cKundengruppen, ';', ',')) > 0
                         OR cKundengruppen IS NULL 
                         OR cKundengruppen = 'NULL' 
@@ -1916,7 +1935,9 @@ final class Shop
             return new \Services\JTL\CaptchaService(new \Services\JTL\SimpleCaptchaService(
                 // Captcha Prüfung ist bei eingeloggtem Kunden, bei bereits erfolgter Prüfung
                 // oder ausgeschaltetem Captcha nicht notwendig
-                !(Session::get('bAnti_spam_already_checked', false) || Session::Customer()->isLoggedIn())
+                !(\Session\Session::get('bAnti_spam_already_checked', false)
+                    || \Session\Session::getCustomer()->isLoggedIn()
+                )
             ));
         });
     }
@@ -1935,7 +1956,7 @@ final class Shop
                 $faviconUrl .= '/favicon-default.ico';
             }
         } else {
-            $smarty           = JTLSmarty::getInstance(false, true);
+            $smarty           = \Smarty\JTLSmarty::getInstance(false, true);
             $templateDir      = $smarty->getTemplateDir($smarty->context);
             $shopTemplatePath = str_replace(PFAD_ROOT, '', $templateDir);
             $faviconUrl       = self::getURL();

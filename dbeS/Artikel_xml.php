@@ -134,7 +134,7 @@ function bearbeiteInsert($xml, array $conf)
 
     if (isset($xml['tartikel']['tkategorieartikel'])
         && (int)$conf['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE
-        && Shop::Cache()->isCacheGroupActive(CACHING_GROUP_CATEGORY)
+        && Shop::Container()->getCache()->isCacheGroupActive(CACHING_GROUP_CATEGORY)
     ) {
         $currentArticleCategories = [];
         $newArticleCategories     = [];
@@ -275,10 +275,10 @@ function bearbeiteInsert($xml, array $conf)
     if ($artikel_arr[0]->kArtikel > 0) {
         if (!$artikel_arr[0]->cSeo) {
             //get seo-path from productname, but replace slashes
-            $artikel_arr[0]->cSeo = getFlatSeoPath($artikel_arr[0]->cName);
+            $artikel_arr[0]->cSeo = \JTL\SeoHelper::getFlatSeoPath($artikel_arr[0]->cName);
         }
-        $artikel_arr[0]->cSeo = getSeo($artikel_arr[0]->cSeo);
-        $artikel_arr[0]->cSeo = checkSeo($artikel_arr[0]->cSeo);
+        $artikel_arr[0]->cSeo = \JTL\SeoHelper::getSeo($artikel_arr[0]->cSeo);
+        $artikel_arr[0]->cSeo = \JTL\SeoHelper::checkSeo($artikel_arr[0]->cSeo);
         //persistente werte
         $artikel_arr[0]->dLetzteAktualisierung = 'NOW()';
         //mysql strict fixes
@@ -360,7 +360,7 @@ function bearbeiteInsert($xml, array $conf)
             continue;
         }
         if (!$artikelsprache_arr[$i]->cSeo) {
-            $artikelsprache_arr[$i]->cSeo = getFlatSeoPath($artikelsprache_arr[$i]->cName);
+            $artikelsprache_arr[$i]->cSeo = \JTL\SeoHelper::getFlatSeoPath($artikelsprache_arr[$i]->cName);
         }
         if (!$artikelsprache_arr[$i]->cSeo) {
             $artikelsprache_arr[$i]->cSeo = $artikel_arr[0]->cSeo;
@@ -368,8 +368,8 @@ function bearbeiteInsert($xml, array $conf)
         if (!$artikelsprache_arr[$i]->cSeo) {
             $artikelsprache_arr[$i]->cSeo = $artikel_arr[0]->cName;
         }
-        $artikelsprache_arr[$i]->cSeo = getSeo($artikelsprache_arr[$i]->cSeo);
-        $artikelsprache_arr[$i]->cSeo = checkSeo($artikelsprache_arr[$i]->cSeo);
+        $artikelsprache_arr[$i]->cSeo = \JTL\SeoHelper::getSeo($artikelsprache_arr[$i]->cSeo);
+        $artikelsprache_arr[$i]->cSeo = \JTL\SeoHelper::checkSeo($artikelsprache_arr[$i]->cSeo);
 
         DBUpdateInsert('tartikelsprache', [$artikelsprache_arr[$i]], 'kArtikel', 'kSprache');
         Shop::Container()->getDB()->delete(
@@ -502,7 +502,7 @@ function bearbeiteInsert($xml, array $conf)
             }
         }
         if (count($cacheIDs) > 0) {
-            Shop::Cache()->flushTags($cacheIDs);
+            Shop::Container()->getCache()->flushTags($cacheIDs);
         }
     }
     if (isset($xml['tartikel']['tartikelupload']) && is_array($xml['tartikel']['tartikelupload'])) {
@@ -997,8 +997,9 @@ function removeProductIdfromCoupons(int $kArtikel)
  */
 function loescheArtikel(int $kArtikel, int $nIstVater = 0, bool $bForce = false, array $conf = null)
 {
+    $db = Shop::Container()->getDB();
     // get list of all categories the article was associated with
-    $articleCategories = Shop::Container()->getDB()->selectAll(
+    $articleCategories = $db->selectAll(
         'tkategorieartikel',
         'kArtikel',
         $kArtikel,
@@ -1011,7 +1012,7 @@ function loescheArtikel(int $kArtikel, int $nIstVater = 0, bool $bForce = false,
         $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         foreach ($articleCategories as $category) {
             // check if the article was the only one in at least one of these categories
-            $categoryCount = Shop::Container()->getDB()->query(
+            $categoryCount = $db->query(
                 'SELECT COUNT(tkategorieartikel.kArtikel) AS cnt
                     FROM tkategorieartikel
                     LEFT JOIN tartikel
@@ -1027,28 +1028,28 @@ function loescheArtikel(int $kArtikel, int $nIstVater = 0, bool $bForce = false,
         }
     }
     if ($kArtikel > 0) {
-        $manufacturerID = Shop::Container()->getDB()->queryPrepared(
+        $manufacturerID = $db->queryPrepared(
             'SELECT kHersteller 
                 FROM tartikel 
                 WHERE kArtikel = :pid',
             ['pid' => $kArtikel],
             \DB\ReturnType::SINGLE_OBJECT
         );
-        Shop::Container()->getDB()->delete('tseo', ['cKey', 'kKey'], ['kArtikel', (int)$kArtikel]);
-        Shop::Container()->getDB()->delete('tartikel', 'kArtikel', $kArtikel);
-        Shop::Container()->getDB()->delete('tpreise', 'kArtikel', $kArtikel);
-        Shop::Container()->getDB()->delete('tpricerange', 'kArtikel', $kArtikel);
-        Shop::Container()->getDB()->delete('tkategorieartikel', 'kArtikel', $kArtikel);
-        Shop::Container()->getDB()->delete('tartikelsprache', 'kArtikel', $kArtikel);
-        Shop::Container()->getDB()->delete('tartikelattribut', 'kArtikel', $kArtikel);
-        Shop::Container()->getDB()->delete('tartikelwarenlager', 'kArtikel', $kArtikel);
+        $db->delete('tseo', ['cKey', 'kKey'], ['kArtikel', $kArtikel]);
+        $db->delete('tartikel', 'kArtikel', $kArtikel);
+        $db->delete('tpreise', 'kArtikel', $kArtikel);
+        $db->delete('tpricerange', 'kArtikel', $kArtikel);
+        $db->delete('tkategorieartikel', 'kArtikel', $kArtikel);
+        $db->delete('tartikelsprache', 'kArtikel', $kArtikel);
+        $db->delete('tartikelattribut', 'kArtikel', $kArtikel);
+        $db->delete('tartikelwarenlager', 'kArtikel', $kArtikel);
         loescheArtikelAttribute($kArtikel);
         loescheArtikelEigenschaftWert($kArtikel);
         loescheArtikelEigenschaft($kArtikel);
         loescheSonderpreise($kArtikel);
-        Shop::Container()->getDB()->delete('txsell', 'kArtikel', $kArtikel);
-        Shop::Container()->getDB()->delete('tartikelmerkmal', 'kArtikel', $kArtikel);
-        Shop::Container()->getDB()->delete('tartikelsichtbarkeit', 'kArtikel', $kArtikel);
+        $db->delete('txsell', 'kArtikel', $kArtikel);
+        $db->delete('tartikelmerkmal', 'kArtikel', $kArtikel);
+        $db->delete('tartikelsichtbarkeit', 'kArtikel', $kArtikel);
         loescheArtikelMediendateien($kArtikel);
         if ($bForce === false) {
             loescheArtikelDownload($kArtikel);
@@ -1075,10 +1076,11 @@ function loescheArtikel(int $kArtikel, int $nIstVater = 0, bool $bForce = false,
  */
 function loescheEigenschaft(int $attributeID)
 {
-    Shop::Container()->getDB()->delete('teigenschaft', 'kEigenschaft', $attributeID);
-    Shop::Container()->getDB()->delete('teigenschaftsprache', 'kEigenschaft', $attributeID);
-    Shop::Container()->getDB()->delete('teigenschaftsichtbarkeit', 'kEigenschaft', $attributeID);
-    Shop::Container()->getDB()->delete('teigenschaftwert', 'kEigenschaft', $attributeID);
+    $db = Shop::Container()->getDB();
+    $db->delete('teigenschaft', 'kEigenschaft', $attributeID);
+    $db->delete('teigenschaftsprache', 'kEigenschaft', $attributeID);
+    $db->delete('teigenschaftsichtbarkeit', 'kEigenschaft', $attributeID);
+    $db->delete('teigenschaftwert', 'kEigenschaft', $attributeID);
 }
 
 /**
@@ -1097,11 +1099,12 @@ function loescheArtikelEigenschaft(int $kArtikel)
  */
 function loescheEigenschaftWert(int $attributeIDWert)
 {
-    Shop::Container()->getDB()->delete('teigenschaftwert', 'kEigenschaftWert', $attributeIDWert);
-    Shop::Container()->getDB()->delete('teigenschaftwertaufpreis', 'kEigenschaftWert', $attributeIDWert);
-    Shop::Container()->getDB()->delete('teigenschaftwertsichtbarkeit', 'kEigenschaftWert', $attributeIDWert);
-    Shop::Container()->getDB()->delete('teigenschaftwertsprache', 'kEigenschaftWert', $attributeIDWert);
-    Shop::Container()->getDB()->delete('teigenschaftwertabhaengigkeit', 'kEigenschaftWert', $attributeIDWert);
+    $db = Shop::Container()->getDB();
+    $db->delete('teigenschaftwert', 'kEigenschaftWert', $attributeIDWert);
+    $db->delete('teigenschaftwertaufpreis', 'kEigenschaftWert', $attributeIDWert);
+    $db->delete('teigenschaftwertsichtbarkeit', 'kEigenschaftWert', $attributeIDWert);
+    $db->delete('teigenschaftwertsprache', 'kEigenschaftWert', $attributeIDWert);
+    $db->delete('teigenschaftwertabhaengigkeit', 'kEigenschaftWert', $attributeIDWert);
 }
 
 /**
@@ -1262,12 +1265,10 @@ function checkArtikelBildLoeschung(int $kArtikel)
         $kArtikel,
         'kArtikelPict, kMainArtikelBild, cPfad'
     );
-    // Hat der Artikel Bilder die auf eine Verknüpfung verlinken wobei der Eigentümer Artikel des Bilder gelöscht wurde
-    // und nun der zu löschende Artikel die letzte Refenz darauf ist?
     foreach ($oArtikelPict_arr as $oArtikelPict) {
         deleteArticleImage($oArtikelPict, $kArtikel);
     }
-    Shop::Cache()->flush('arr_article_images_' . $kArtikel);
+    Shop::Container()->getCache()->flush('arr_article_images_' . $kArtikel);
 }
 
 /**
@@ -1392,7 +1393,7 @@ function clearProductCaches($products)
     $cacheTags[] = 'jtl_mmf';
     $cacheTags   = array_unique($cacheTags);
     // flush article cache, category cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes
-    $totalCount = Shop::Cache()->flushTags($cacheTags);
+    $totalCount = Shop::Container()->getCache()->flushTags($cacheTags);
     $end        = microtime(true);
     Shop::Container()->getLogService()->debug(
         'Flushed a total of ' . $totalCount .

@@ -60,17 +60,18 @@ class cache_advancedfile implements ICachingMethod
             return false;
         }
         $info = \pathinfo($fileName);
-        if (\strpos(\realpath($info['dirname']), \realpath($dir)) !== 0) {
+        $real = \realpath($info['dirname']);
+        if (!\is_string($real) || \strpos($real, \realpath($dir)) !== 0) {
             return false;
         }
 
         return \file_put_contents(
-                $fileName,
-                \serialize([
-                    'value'    => $content,
-                    'lifetime' => $expiration ?? $this->options['lifetime']
-                ])
-            ) !== false;
+            $fileName,
+            \serialize([
+                'value'    => $content,
+                'lifetime' => $expiration ?? $this->options['lifetime']
+            ])
+        ) !== false;
     }
 
     /**
@@ -164,9 +165,9 @@ class cache_advancedfile implements ICachingMethod
         );
         foreach (new \RecursiveIteratorIterator($rdi, \RecursiveIteratorIterator::CHILD_FIRST) as $value) {
             if ($value->isLink() || $value->isFile()) {
-                \unlink($value);
+                \unlink($value->getPathname());
             } elseif ($value->isDir()) {
-                \rmdir($value);
+                \rmdir($value->getPathname());
             }
         }
 
@@ -233,7 +234,10 @@ class cache_advancedfile implements ICachingMethod
                         continue;
                     }
                 }
-                if (\file_exists($path . $cacheID) || !\file_exists($fileName) || !\symlink($fileName, $path . $cacheID)) {
+                if (\file_exists($path . $cacheID)
+                    || !\file_exists($fileName)
+                    || !\symlink($fileName, $path . $cacheID)
+                ) {
                     $res = false;
                     continue;
                 }
@@ -266,9 +270,10 @@ class cache_advancedfile implements ICachingMethod
                 foreach (new \RecursiveIteratorIterator($rdi, \RecursiveIteratorIterator::CHILD_FIRST) as $value) {
                     $res = false;
                     if ($value->isLink()) {
-                        //cache entries may have multiple tags - so check if the real entry still exists
+                        $value = $value->getPathname();
+                        // cache entries may have multiple tags - so check if the real entry still exists
                         if (($target = \readlink($value)) !== false && \is_file($target)) {
-                            //delete real cache entry
+                            // delete real cache entry
                             $res = \unlink($target);
                         }
                         // delete symlink to the entry

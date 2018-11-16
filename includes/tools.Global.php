@@ -192,7 +192,8 @@ function pruefeHttps()
  */
 function loeseHttps()
 {
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);}
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+}
 
 /**
  * @return array
@@ -231,15 +232,21 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $p
  * @param string         $lieferland
  * @param string         $versandklassen
  * @param int            $kKundengruppe
- * @param Artikel|object $oArtikel
- * @param bool           $checkProductDepedency
+ * @param Artikel|object $product
+ * @param bool           $checkDepedency
  * @return mixed
  * @deprecated since 5.0.0
  */
-function gibGuenstigsteVersandart($lieferland, $versandklassen, $kKundengruppe, $oArtikel, $checkProductDepedency = true)
+function gibGuenstigsteVersandart($lieferland, $versandklassen, $kKundengruppe, $product, $checkDepedency = true)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return VersandartHelper::getFavourableShippingMethod($lieferland, $versandklassen, $kKundengruppe, $oArtikel, $checkProductDepedency);
+    return VersandartHelper::getFavourableShippingMethod(
+        $lieferland,
+        $versandklassen,
+        $kKundengruppe,
+        $product,
+        $checkDepedency
+    );
 }
 
 /**
@@ -616,60 +623,63 @@ function gibArtikelBildPfad($cPfad)
  */
 function gibAlleKategorienNoHTML($nKategorieBox = 0)
 {
-    $oKategorienNoHTML_arr = [];
-    $nTiefe                = 0;
+    $categories = [];
+    $depth      = 0;
 
     if (K_KATEGORIE_TIEFE <= 0) {
-        return [];
+        return $categories;
     }
     $oKategorien = new KategorieListe();
     $oKategorien->getAllCategoriesOnLevel(0);
-    foreach ($oKategorien->elemente as $oKategorie) {
+    foreach ($oKategorien->elemente as $category) {
+        $catID = $category->kKategorie;
         //Kategoriebox Filter
         if ($nKategorieBox > 0
-            && $nTiefe === 0
-            && $oKategorie->CategoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX] != $nKategorieBox
+            && $depth === 0
+            && $category->CategoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX] != $nKategorieBox
         ) {
             continue;
         }
         unset($oKategorienNoHTML);
-        $oKategorienNoHTML = $oKategorie;
+        $oKategorienNoHTML = $category;
         unset($oKategorienNoHTML->Unterkategorien);
-        $oKategorienNoHTML->oUnterKat_arr               = [];
-        $oKategorienNoHTML_arr[$oKategorie->kKategorie] = $oKategorienNoHTML;
+        $oKategorienNoHTML->oUnterKat_arr = [];
+        $categories[$catID]               = $oKategorienNoHTML;
         //nur wenn unterkategorien enthalten sind!
         if (K_KATEGORIE_TIEFE < 2) {
             continue;
         }
-        $oAktKategorie = new Kategorie($oKategorie->kKategorie);
+        $oAktKategorie = new Kategorie($catID);
         if ($oAktKategorie->bUnterKategorien) {
-            $nTiefe           = 1;
-            $oUnterKategorien = new KategorieListe();
-            $oUnterKategorien->getAllCategoriesOnLevel($oAktKategorie->kKategorie);
-            foreach ($oUnterKategorien->elemente as $oUKategorie) {
+            $depth         = 1;
+            $subCategories = new KategorieListe();
+            $subCategories->getAllCategoriesOnLevel($oAktKategorie->kKategorie);
+            foreach ($subCategories->elemente as $subCat) {
+                $subID = (int)$subCat->kKategorie;
                 unset($oKategorienNoHTML);
-                $oKategorienNoHTML = $oUKategorie;
+                $oKategorienNoHTML = $subCat;
                 unset($oKategorienNoHTML->Unterkategorien);
-                $oKategorienNoHTML->oUnterKat_arr                                                        = [];
-                $oKategorienNoHTML_arr[$oKategorie->kKategorie]->oUnterKat_arr[$oUKategorie->kKategorie] = $oKategorienNoHTML;
+                $oKategorienNoHTML->oUnterKat_arr          = [];
+                $categories[$catID]->oUnterKat_arr[$subID] = $oKategorienNoHTML;
 
                 if (K_KATEGORIE_TIEFE < 3) {
                     continue;
                 }
-                $nTiefe                = 2;
-                $oUnterUnterKategorien = new KategorieListe();
-                $oUnterUnterKategorien->getAllCategoriesOnLevel($oUKategorie->kKategorie);
-                foreach ($oUnterUnterKategorien->elemente as $oUUKategorie) {
+                $depth            = 2;
+                $subSubCategories = new KategorieListe();
+                $subSubCategories->getAllCategoriesOnLevel($subID);
+                foreach ($subSubCategories->elemente as $subSubCat) {
+                    $subSubID = $subSubCat->kKategorie;
                     unset($oKategorienNoHTML);
-                    $oKategorienNoHTML = $oUUKategorie;
+                    $oKategorienNoHTML = $subSubCat;
                     unset($oKategorienNoHTML->Unterkategorien);
-                    $oKategorienNoHTML_arr[$oKategorie->kKategorie]->oUnterKat_arr[$oUKategorie->kKategorie]->oUnterKat_arr[$oUUKategorie->kKategorie] = $oKategorienNoHTML;
+                    $categories[$catID]->oUnterKat_arr[$subID]->oUnterKat_arr[$subSubID] = $oKategorienNoHTML;
                 }
             }
         }
     }
 
-    return $oKategorienNoHTML_arr;
+    return $categories;
 }
 
 /**
@@ -1105,7 +1115,9 @@ function standardspracheAktiv($bShop = false, $kSprache = null)
 function gibStandardWaehrung($bISO = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Session directly instead.', E_USER_DEPRECATED);
-    return $bISO === true ? Session::Currency()->getCode() : Session::Currency()->getID();
+    return $bISO === true
+        ? \Session\Session::getCurrency()->getCode()
+        : \Session\Session::getCurrency()->getID();
 }
 
 /**
@@ -1219,7 +1231,7 @@ function gibPreisLocalizedOhneFaktor($preis, $waehrung = 0, $html = true)
 function gibPreisStringLocalized($price, $currency = 0, $html = 1, $decimals = 2)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Preise::getLocalizedPriceString() instead.', E_USER_DEPRECATED);
-    return Preise::getLocalizedPriceString($price, $currency, $html, $decimals);
+    return Preise::getLocalizedPriceString($price, $currency, (bool)$html, $decimals);
 }
 
 /**

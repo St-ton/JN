@@ -56,7 +56,8 @@ class Rating extends AbstractFilter
      */
     public function setSeo(array $languages): FilterInterface
     {
-        $this->setName(\Shop::Lang()->get('from', 'productDetails') . ' ' .
+        $this->setName(
+            \Shop::Lang()->get('from', 'productDetails') . ' ' .
             $this->getValue() . ' ' .
             \Shop::Lang()->get($this->getValue() > 0 ? 'starPlural' : 'starSingular')
         );
@@ -164,7 +165,7 @@ class Rating extends AbstractFilter
         if (\count($options) === 0) {
             $this->hide();
         }
-        $this->productFilter->getCache()->set($cacheID, $options, [CACHING_GROUP_FILTER]);
+        $this->productFilter->getCache()->set($cacheID, $options, [\CACHING_GROUP_FILTER]);
 
         return $options;
     }

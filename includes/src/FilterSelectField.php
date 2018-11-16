@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+/**
+ * Class FilterSelectField
+ */
 class FilterSelectField extends FilterField
 {
     /**
@@ -65,7 +68,7 @@ class FilterSelectField extends FilterField
     /**
      * @return string|null
      */
-    public function getWhereClause()
+    public function getWhereClause(): ?string
     {
         $cValue  = $this->oOption_arr[(int)$this->cValue]->getValue();
         $nTestOp = $this->oOption_arr[(int)$this->cValue]->getTestOp();
@@ -99,8 +102,8 @@ class FilterSelectField extends FilterField
     /**
      * @return FilterSelectOption|null
      */
-    public function getSelectedOption()
+    public function getSelectedOption(): ?FilterSelectOption
     {
-        return $this->oOption_arr[(int)$this->cValue];
+        return $this->oOption_arr[(int)$this->cValue] ?? null;
     }
 }

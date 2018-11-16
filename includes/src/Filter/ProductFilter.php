@@ -727,9 +727,12 @@ class ProductFilter
             $this->searchQuery->setName($params['cSuche']);
             $oSuchanfrage = $this->db->select(
                 'tsuchanfrage',
-                'cSuche', $params['cSuche'],
-                'kSprache', $this->getFilterConfig()->getLanguageID(),
-                'nAktiv', 1,
+                'cSuche',
+                $params['cSuche'],
+                'kSprache',
+                $this->getFilterConfig()->getLanguageID(),
+                'nAktiv',
+                1,
                 false,
                 'kSuchanfrage'
             );
@@ -896,9 +899,9 @@ class ProductFilter
 
     /**
      * @param string $filterClassName
-     * @return int|null
+     * @return int|array|null
      */
-    public function getFilterValue(string $filterClassName): ?int
+    public function getFilterValue(string $filterClassName)
     {
         return \array_reduce(
             $this->activeFilters,
@@ -1925,16 +1928,18 @@ class ProductFilter
                     $filter[] = $value;
                 }
             }
-        } elseif (\count($_GET) > 0) {
-            foreach ($_GET as $key => $value) {
-                if (\preg_match('/mf\d+/i', $key)) {
-                    $filter[] = (int)$value;
+        } elseif (isset($_SERVER['REQUEST_METHOD'])) {
+            if ($_SERVER['REQUEST_METHOD'] === 'GET' && \count($_GET) > 0) {
+                foreach ($_GET as $key => $value) {
+                    if (\preg_match('/mf\d+/i', $key)) {
+                        $filter[] = (int)$value;
+                    }
                 }
-            }
-        } elseif (\count($_POST) > 0) {
-            foreach ($_POST as $key => $value) {
-                if (\preg_match('/mf\d+/i', $key)) {
-                    $filter[] = (int)$value;
+            } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && \count($_POST) > 0) {
+                foreach ($_POST as $key => $value) {
+                    if (\preg_match('/mf\d+/i', $key)) {
+                        $filter[] = (int)$value;
+                    }
                 }
             }
         }

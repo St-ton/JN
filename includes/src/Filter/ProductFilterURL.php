@@ -197,7 +197,7 @@ class ProductFilterURL
             }
         }
         if (empty($seoFilterParams) && $languageID !== \Shop::getLanguageID()) {
-            $language = first(Session::Languages(), function ($l) use ($languageID) {
+            $language = first(\Session\Session::getLanguages(), function ($l) use ($languageID) {
                 return $l->kSprache === $languageID;
             });
             if ($language !== null) {
@@ -358,13 +358,12 @@ class ProductFilterURL
         }
 
         foreach (\array_filter(
-                     $this->productFilter->getAvailableFilters(),
-                     function ($f) {
-                         /** @var FilterInterface $f */
-                         return $f->isInitialized() && $f->isCustom();
-                     }
-                ) as $filter
-        ) {
+            $this->productFilter->getAvailableFilters(),
+            function ($f) {
+                /** @var FilterInterface $f */
+                return $f->isInitialized() && $f->isCustom();
+            }
+        ) as $filter) {
             /** @var FilterInterface $filter */
             $extraFilter = clone $filter;
             $urls        = [];

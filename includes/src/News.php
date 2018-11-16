@@ -479,7 +479,7 @@ class News extends MainModel
         }
         $kKundengruppe = null;
         if (isset($_SESSION['Kundengruppe']->kKundengruppe)) {
-            $kKundengruppe = Session::CustomerGroup()->getID();
+            $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
         } else {
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
         }
@@ -549,7 +549,7 @@ class News extends MainModel
             );
             $oNewsCategories     = is_array($oNewsCategories) ? $oNewsCategories : [];
             $oNewsCategories_arr = self::buildNewsCategoryTree($oNewsCategories);
-            Shop::Cache()->set($cacheID, $oNewsCategories_arr, [CACHING_GROUP_OBJECT], 3600);
+            Shop::Container()->getCache()->set($cacheID, $oNewsCategories_arr, [CACHING_GROUP_OBJECT], 3600);
         }
 
         return $flatten ? self::flattenNewsCategoryTree($oNewsCategories_arr) : $oNewsCategories_arr;

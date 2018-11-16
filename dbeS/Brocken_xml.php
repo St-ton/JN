@@ -32,7 +32,7 @@ if (auth()) {
             );
         }
         $return = 0;
-        Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
+        Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
     }
 }
 

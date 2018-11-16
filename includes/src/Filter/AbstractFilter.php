@@ -396,8 +396,6 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function getName(): ?string
     {
-        if (is_int($this->name))
-        \Shop::dbg($this, false, '3', 6);
         return $this->name;
     }
 

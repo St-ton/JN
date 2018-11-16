@@ -5,7 +5,7 @@
  */
 
 /**
- * @global JTLSmarty $smarty
+ * @global Smarty\JTLSmarty $smarty
  * @global AdminAccount $oAccount
  */
 
@@ -50,7 +50,10 @@ if (FormHelper::validateToken()) {
             break;
         case 'new':
             $oRedirect = new Redirect();
-            if ($oRedirect->saveExt(RequestHelper::verifyGPDataString('cFromUrl'), RequestHelper::verifyGPDataString('cToUrl'))) {
+            if ($oRedirect->saveExt(
+                RequestHelper::verifyGPDataString('cFromUrl'),
+                RequestHelper::verifyGPDataString('cToUrl')
+            )) {
                 $cHinweis = 'Ihre Weiterleitung wurde erfolgreich gespeichert';
             } else {
                 $cFehler = 'Fehler: Bitte prüfen Sie Ihre Eingaben';
@@ -104,13 +107,15 @@ $oPagination
     ->assemble();
 
 $oRedirect_arr = Redirect::getRedirects(
-    $oFilter->getWhereSQL(), $oPagination->getOrderSQL(), $oPagination->getLimitSQL()
+    $oFilter->getWhereSQL(),
+    $oPagination->getOrderSQL(),
+    $oPagination->getLimitSQL()
 );
 
 handleCsvExportAction(
-    'redirects', 'redirects.csv',
-    function () use ($oFilter, $oPagination, $nRedirectCount)
-    {
+    'redirects',
+    'redirects.csv',
+    function () use ($oFilter, $oPagination, $nRedirectCount) {
         $cWhereSQL = $oFilter->getWhereSQL();
         $cOrderSQL = $oPagination->getOrderSQL();
 

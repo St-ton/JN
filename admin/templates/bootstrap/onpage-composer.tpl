@@ -72,38 +72,38 @@
                             <ul class="dropdown-menu">
                                 <li>
                                     <a href="#" id="btnImport" data-toggle="tooltip" data-placement="right">
-                                        <i class="fa fa-upload"></i> {t}Import{/t}
+                                        <i class="fa fa-upload"></i> {__("Import")}
                                     </a>
                                 </li>
                                 <li role="separator" class="divider"></li>
                                 <li>
                                     <a href="#" id="btnExport" data-toggle="tooltip" data-placement="right">
-                                        <i class="fa fa-download"></i> {t}Export{/t}
+                                        <i class="fa fa-download"></i> {__("Export")}
                                     </a>
                                 </li>
                                 <li role="separator" class="divider"></li>
                                 <li>
                                     <a href="#" id="btnHelp" data-toggle="tooltip" data-placement="right">
-                                        <i class="fa fa-question-circle"></i> {t}Help{/t}
+                                        <i class="fa fa-question-circle"></i> {__("Help")}
                                     </a>
                                 </li>
                             </ul>
                         </li>
                         <li>
                             <a href="#" id="btnPublish" data-toggle="tooltip" data-placement="bottom"
-                               title="{t}Publicate{/t}">
+                               title="{__("Publicate")}">
                                 <i class="fa fa-newspaper-o fa-fw"></i>
                             </a>
                         </li>
                         <li>
                             <a href="#" id="btnSave" data-toggle="tooltip" data-placement="bottom"
-                               title="{t}Save page{/t}">
+                               title="{__("Save page")}">
                                 <i class="fa fa-save"></i>
                             </a>
                         </li>
                         <li>
                             <a href="#" id="btnClose" data-toggle="tooltip" data-placement="bottom"
-                               title="{t}Close OnPage-Composer{/t}">
+                               title="{__("Close OnPage-Composer")}">
                                 <i class="fa fa-close"></i>
                             </a>
                         </li>
@@ -113,11 +113,11 @@
         </nav>
 
         <ul id="composer-tabs" class="nav nav-tabs">
-            <li class="active"><a href="#portlets" data-toggle="tab">{t}Portlets{/t}</a></li>
-            <li><a href="#blueprints" data-toggle="tab">{t}Blueprints{/t}</a></li>
-            <li><a href="#revisions" data-toggle="tab">{t}Revisions{/t}</a></li>
+            <li class="active"><a href="#portlets" data-toggle="tab">{__("Portlets")}</a></li>
+            <li><a href="#blueprints" data-toggle="tab">{__("Blueprints")}</a></li>
+            <li><a href="#revisions" data-toggle="tab">{__("Revisions")}</a></li>
             <li>
-                <a href="#pagetree" data-toggle="tab" title="{t}Page structure{/t}">
+                <a href="#pagetree" data-toggle="tab" title="{__("Page structure")}">
                     <i class="fa fa-sitemap"></i>
                 </a>
             </li>
@@ -152,7 +152,7 @@
                         <div id="blueprintList"></div>
                         <div class="list-group-item">
                             <a href="#" class="blueprintButton btn" id="btnImportBlueprint">
-                                <i class="fa fa-upload"></i> <span>{t}Import blueprint{/t}</span>
+                                <i class="fa fa-upload"></i> <span>{__("Import blueprint")}</span>
                             </a>
                         </div>
                     </div>
@@ -161,10 +161,10 @@
                 <div class="tab-pane" id="revisions">
                     <div class="list-group">
                         <a class="list-group-item revisionBtn" href="#" data-revision-id="-1" id="unsavedRevision">
-                            <i>{t}Unsaved revision{/t}</i>
+                            <i>{__("Unsaved revision")}</i>
                         </a>
                         <a class="list-group-item revisionBtn" href="#" data-revision-id="0">
-                            {t}Current revision{/t}
+                            {__("Current revision")}
                         </a>
                         <div id="revisionList"></div>
                     </div>
@@ -210,7 +210,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">{t}Please wait...{/t}</h4>
+                    <h4 class="modal-title">{__("Please wait...")}</h4>
                 </div>
                 <div class="modal-body">
                     <div class="progress">
@@ -226,7 +226,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">{t}Error{/t}</h4>
+                    <h4 class="modal-title">{__("Error")}</h4>
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-danger" id="errorAlert">
@@ -244,14 +244,14 @@
                     <button type="button" class="close" data-dismiss="modal">
                         <i class="fa fa-lg fa-times"></i>
                     </button>
-                    <h4 class="modal-title" id="configModalTitle">{t}Edit Portlet{/t}</h4>
+                    <h4 class="modal-title" id="configModalTitle">{__("Edit Portlet")}</h4>
                 </div>
                 <form id="configForm">
                     <div class="modal-body" id="configModalBody"></div>
                     <div class="modal-footer">
                         <div class="btn-group">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">{t}Cancel{/t}</button>
-                            <button class="btn btn-primary">{t}Save{/t}</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">{__("Cancel")}</button>
+                            <button class="btn btn-primary">{__("Save")}</button>
                         </div>
                     </div>
                 </form>
@@ -263,20 +263,20 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">{t}Save this Portlet as a blueprint{/t}</h4>
+                    <h4 class="modal-title">{__("Save this Portlet as a blueprint")}</h4>
                 </div>
                 <form id="blueprintForm">
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="blueprintName">{t}Blueprint name{/t}</label>
+                            <label for="blueprintName">{__("Blueprint name")}</label>
                             <input type="text" class="form-control" id="blueprintName" name="blueprintName"
                                    value="Neue Vorlage">
                         </div>
                     </div>
                     <div class="modal-footer">
                         <div class="btn-group">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">{t}Cancel{/t}</button>
-                            <button class="btn btn-primary">{t}Save{/t}</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">{__("Cancel")}</button>
+                            <button class="btn btn-primary">{__("Save")}</button>
                         </div>
                     </div>
                 </form>
@@ -288,14 +288,14 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">{t}Delete Blueprint?{/t}</h4>
+                    <h4 class="modal-title">{__("Delete Blueprint?")}</h4>
                 </div>
                 <form id="blueprintDeleteForm">
                     <div class="modal-footer">
                         <div class="btn-group">
                             <input type="hidden" id="blueprintDeleteId" name="id" value="">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">{t}Cancel{/t}</button>
-                            <button class="btn btn-primary">{t}Delete{/t}</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">{__("Cancel")}</button>
+                            <button class="btn btn-primary">{__("Delete")}</button>
                         </div>
                     </div>
                 </form>
@@ -307,7 +307,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">{t}Help{/t}</h4>
+                    <h4 class="modal-title">{__("Help")}</h4>
                 </div>
                 <div class="modal-body">
                     <div class="row">

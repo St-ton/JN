@@ -16,7 +16,7 @@ $smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyC
        ->registerPlugin('function', 'getRevisions', 'getRevisions')
        ->registerPlugin('function', 'captchaMarkup', 'captchaMarkup')
        ->registerPlugin('modifier', 'permission', 'permission')
-       ->registerPlugin('block', 't', 'gettextTranslate');
+       ->registerPlugin('function', '__', [L10n\GetText::getInstance(), 'translate']);
 
 /**
  * @param array            $params
@@ -257,18 +257,4 @@ function captchaMarkup($params, $smarty)
     }
 
     return Shop::Container()->getCaptchaService()->getHeadMarkup($smarty);
-}
-
-/**
- * @param array  $params
- * @param string $content
- * @return string
- */
-function gettextTranslate($params, $content)
-{
-    if (!empty($content)) {
-        return __($content);
-    }
-
-    return '';
 }

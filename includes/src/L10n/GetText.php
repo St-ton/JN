@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace L10n;
+
 /**
  * Class GetText
  */
@@ -29,10 +31,10 @@ class GetText
      */
     private function __construct()
     {
-        $this->translator = new Gettext\Translator();
+        $this->translator = new \Gettext\Translator();
         $this->translator->register();
 
-        $this->setLangIso(Shop::getLanguage(true))
+        $this->setLangIso(\Shop::getLanguage(true))
              ->loadAdminLocale();
     }
 
@@ -61,12 +63,12 @@ class GetText
      */
     public function loadAdminLocale(string $domain = 'base'): self
     {
-        return $this->addLocale(PFAD_ROOT . PFAD_ADMIN, $domain);
+        return $this->addLocale(\PFAD_ROOT . \PFAD_ADMIN, $domain);
     }
 
     /**
      * @param string $domain
-     * @param Plugin $plugin
+     * @param \Plugin $plugin
      * @return GetText
      */
     public function loadPluginLocale(string $domain, \Plugin $plugin): self
@@ -83,7 +85,7 @@ class GetText
         $path = "{$dir}locale/{$this->langIso}/{$domain}.mo";
 
         if (file_exists($path)) {
-            $translations = Gettext\Translations::fromMoFile($path);
+            $translations = \Gettext\Translations::fromMoFile($path);
             $this->translator->loadTranslations($translations);
         }
 

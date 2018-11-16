@@ -158,7 +158,7 @@ class PageDB
                 FROM topcpage AS o
                     JOIN tsprache AS s ON CONCAT('$pageIdSearchPrefix', s.kSprache) = o.cPageId
                 WHERE kSprache != $languageKey",
-            2
+            ReturnType::ARRAY_OF_OBJECTS
         );
     }
 

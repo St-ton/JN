@@ -12,7 +12,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
-GetText::getInstance()->loadAdminLocale('opc-controlcenter');
+\L10n\GetText::getInstance()->loadAdminLocale('opc-controlcenter');
 
 $notice = '';
 $error  = '';

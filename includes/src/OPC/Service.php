@@ -41,7 +41,7 @@ class Service
     {
         $this->db = $db;
 
-        \GetText::getInstance()->loadAdminLocale('opc');
+        \L10n\GetText::getInstance()->loadAdminLocale('opc');
     }
 
     /**

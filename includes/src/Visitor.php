@@ -26,7 +26,7 @@ class Visitor
             );
         }
         self::archive();
-        $oVisitor = self::dbLookup($userAgent, RequestHelper::getIP());
+        $oVisitor = self::dbLookup($userAgent, RequestHelper::getRealIP());
         if ($oVisitor === null) {
             if (isset($_SESSION['oBesucher'])) {
                 $oVisitor = self::updateVisitorObject($_SESSION['oBesucher'], 0, $userAgent, $kBesucherBot);
@@ -117,9 +117,9 @@ class Visitor
     public static function updateVisitorObject($vis, int $visId, $szUserAgent, int $kBesucherBot)
     {
         $vis->kBesucher         = (int)$visId;
-        $vis->cIP               = (new \GeneralDataProtection\IpAnonymizer(RequestHelper::getIP()))->anonymize(); // anonymize immediately
+        $vis->cIP               = (new \GeneralDataProtection\IpAnonymizer(RequestHelper::getRealIP()))->anonymize(); // anonymize immediately
         $vis->cSessID           = session_id();
-        $vis->cID               = md5($szUserAgent . RequestHelper::getIP());
+        $vis->cID               = md5($szUserAgent . RequestHelper::getRealIP());
         $vis->kKunde            = \Session\Session::getCustomer()->getID();
         $vis->kBestellung       = $vis->kKunde > 0 ? self::refreshCustomerOrderId((int)$vis->kKunde) : 0;
         $vis->cReferer          = self::getReferer();
@@ -142,9 +142,9 @@ class Visitor
     {
         $vis                    = new stdClass();
         $vis->kBesucher         = 0;
-        $vis->cIP               = (new \GeneralDataProtection\IpAnonymizer(RequestHelper::getIP()))->anonymize(); // anonymize immediately
+        $vis->cIP               = (new \GeneralDataProtection\IpAnonymizer(RequestHelper::getRealIP()))->anonymize(); // anonymize immediately
         $vis->cSessID           = session_id();
-        $vis->cID               = md5($szUserAgent . RequestHelper::getIP());
+        $vis->cID               = md5($szUserAgent . RequestHelper::getRealIP());
         $vis->kKunde            = \Session\Session::getCustomer()->getID();
         $vis->kBestellung       = $vis->kKunde > 0 ? self::refreshCustomerOrderId((int)$vis->kKunde) : 0;
         $vis->cEinstiegsseite   = $_SERVER['REQUEST_URI'];

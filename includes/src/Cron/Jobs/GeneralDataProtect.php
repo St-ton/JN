@@ -27,4 +27,3 @@ class GeneralDataProtect extends Job
         return $this;
     }
 }
-

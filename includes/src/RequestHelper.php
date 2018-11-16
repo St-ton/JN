@@ -104,25 +104,6 @@ class RequestHelper
     }
 
     /**
-     * NOTE:
-     * We do NOT use any anonymization HERE!
-     * This is moved into a "seperate proceeding":
-     * 1.) first, use this method, to fetch a (real) IP
-     * 2.) than, use the IpAnonymizer, to "->anonymize()" it
-     *
-     * @param bool $bBestellung
-     * @return string
-     * @former gibIP()
-     * @since 5.0.0
-     * @deprecated same as getRealIP()
-     */
-    public static function getIP(bool $bBestellung = false): string
-    {
-
-        return self::getRealIP();
-    }
-
-    /**
      * Gibt einen String für einen Header mit dem angegebenen Status-Code aus
      *
      * @param int $nStatusCode

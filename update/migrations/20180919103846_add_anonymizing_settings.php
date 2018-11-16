@@ -58,10 +58,9 @@ class Migration_20180919103846 extends Migration implements IMigration
         // remove the journal-table
         $this->execute('DROP TABLE tanondatajournal');
 
-        // remove the cron-job from the cron-table
-        $oCronDataProtection = $this->fetchArray("SELECT * FROM tcron WHERE cJobArt = 'dataprotection'");
-        $this->execute("DELETE FROM tcron WHERE kCron = '{$oCronDataProtection[0]['kCron']}'");
-
+        // remove the cron-job from the cron-table and all possibly running job
+        $this->execute("DELETE FROM tcron WHERE cJobArt = 'dataprotection'");
+        $this->execute("DELETE FROM tjobqueue WHERE cJobArt = 'dataprotection'");
 
         // restore the old "IPs speichern" settings (teinstellungenconf::kEinstellungenConf=335,1133)
         $this->execute("
@@ -78,4 +77,3 @@ class Migration_20180919103846 extends Migration implements IMigration
         ");
     }
 }
-

@@ -219,4 +219,3 @@ class CleanupLogs extends Method implements MethodInterface
         );
     }
 }
-

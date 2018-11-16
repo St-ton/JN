@@ -1156,7 +1156,7 @@ class ArtikelHelper
         $history->cFax       = $data->tnachricht->cFax;
         $history->cMail      = $data->tnachricht->cMail;
         $history->cNachricht = $data->tnachricht->cNachricht;
-        $history->cIP        = RequestHelper::getIP();
+        $history->cIP        = RequestHelper::getRealIP();
         $history->dErstellt  = 'NOW()';
 
         $inquiryID                     = Shop::Container()->getDB()->insert('tproduktanfragehistory', $history);
@@ -1182,7 +1182,7 @@ class ArtikelHelper
                 FROM tproduktanfragehistory
                 WHERE cIP = :ip
                     AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
-            ['ip' => RequestHelper::getIP(), 'min' => $min],
+            ['ip' => RequestHelper::getRealIP(), 'min' => $min],
             \DB\ReturnType::SINGLE_OBJECT
         );
 
@@ -1212,7 +1212,7 @@ class ArtikelHelper
                 $inquiry            = self::getAvailabilityFormDefaults();
                 $inquiry->kSprache  = Shop::getLanguage();
                 $inquiry->kArtikel  = (int)$_POST['a'];
-                $inquiry->cIP       = RequestHelper::getIP();
+                $inquiry->cIP       = RequestHelper::getRealIP();
                 $inquiry->dErstellt = 'NOW()';
                 $inquiry->nStatus   = 0;
                 $checkBox           = new CheckBox();
@@ -1338,7 +1338,7 @@ class ArtikelHelper
                 FROM tverfuegbarkeitsbenachrichtigung
                 WHERE cIP = :ip
                 AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
-            ['ip' => RequestHelper::getIP(), 'min' => $min],
+            ['ip' => RequestHelper::getRealIP(), 'min' => $min],
             \DB\ReturnType::SINGLE_OBJECT
         );
 
@@ -1588,7 +1588,7 @@ class ArtikelHelper
                     && $_SESSION['Kunde']->kKunde > 0)
                 || $conf['artikeldetails']['tagging_freischaltung'] === 'O'
             ) {
-                $ip = RequestHelper::getIP();
+                $ip = RequestHelper::getRealIP();
                 if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                     $tagPostings = Shop::Container()->getDB()->queryPrepared(
                         'SELECT COUNT(kTagKunde) AS Anzahl

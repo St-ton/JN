@@ -8,6 +8,7 @@ namespace OPC;
 
 use DB\DbInterface;
 use DB\ReturnType;
+use Plugin\Plugin;
 
 /**
  * Class DB
@@ -222,7 +223,7 @@ class DB
         }
 
         if ($portletDB->kPlugin > 0) {
-            $plugin  = new \Plugin($portletDB->kPlugin);
+            $plugin  = new Plugin((int)$portletDB->kPlugin);
             $include = $plugin->cAdminmenuPfad . \PFAD_PLUGIN_PORTLETS
                 . $portletDB->cClass . '/' . $portletDB->cClass . '.php';
             require_once $include;

@@ -263,12 +263,9 @@ function captchaMarkup($params, $smarty)
  * @param array  $params
  * @param string $content
  * @return string
+ * @todo: as function not block
  */
 function gettextTranslate($params, $content)
 {
-    if (!empty($content)) {
-        return __($content);
-    }
-
-    return '';
+    return __($content ?? '');
 }

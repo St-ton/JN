@@ -7,7 +7,7 @@
             <li>
                 <ul class="backend-search-section">
                     {foreach $setting->oEinstellung_arr as $s}
-                        <li class="backend-search-item">
+                        <li class="backend-search-item" tabindex="-1">
                             <a href="einstellungen.php?cSuche={$s->kEinstellungenConf}&einstellungen_suchen=1"
                                class="value">
                                 <span>{$s->cName} (Einstellungsnr.: {$s->kEinstellungenConf})</span>
@@ -25,7 +25,7 @@
         <li>
             <ul class="backend-search-section">
                 {foreach $shippings as $shipping}
-                    <li class="backend-search-item">
+                    <li class="backend-search-item" tabindex="-1">
                         <form method="post" action="versandarten.php">
                             {$jtl_token}
                             <input type="hidden" name="edit" value="{$shipping->kVersandart}">
@@ -42,7 +42,7 @@
         <li>
             <ul class="backend-search-section">
                 {foreach $paymentMethods as $paymentMethod}
-                    <li class="backend-search-item">
+                    <li class="backend-search-item" tabindex="-1">
                         <a href="zahlungsarten.php?kZahlungsart={$paymentMethod->kZahlungsart}&token={$smarty.session.jtl_token}" class="value">
                             <p>{$paymentMethod->cName}</p>
                         </a>

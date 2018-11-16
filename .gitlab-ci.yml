@@ -8,7 +8,7 @@ stages:
 .testingScript: &testingScript |
   function testing() {
     echo "Testing projekt in PHP $PHP_VERSION_TEST_STEP docker image..."
-    bash tools/scripts/tests.sh
+    bash build/scripts/tests.sh
     echo "Tests finished"
   }
 .beforeBuildDeployScripts: &beforeBuildDeployScripts |
@@ -16,8 +16,8 @@ stages:
   export CI_APPLICATION_TAG=$CI_COMMIT_SHA
   export CI_CONTAINER_NAME=ci_job_build_deploy_$CI_COMMIT_SHA
   export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
-  export BUILD_SCRIPT_PATH=tools/scripts/build.sh
-  export DEPLOY_SCRIPT_PATH=tools/scripts/deploy.sh
+  export BUILD_SCRIPT_PATH=build/scripts/build.sh
+  export DEPLOY_SCRIPT_PATH=build/scripts/deploy.sh
 
   function dockerLogin() {
     if [[ -n "$CI_USER_VAR" ]]; then

@@ -146,42 +146,42 @@ class Nice
         $oModul->kModulId = SHOP_ERWEITERUNG_UMFRAGE;
         $oModul->cName    = 'Umfragen Modul';
         $oModul->cDefine  = 'SHOP_ERWEITERUNG_UMFRAGE';
-        $oModul->cURL     = '';
+        $oModul->cURL     = 'https://jtl-url.de/ykepb';
         $oModul_arr[]     = $oModul;
         // Auswahlassistent Modul
         $oModul           = new stdClass();
         $oModul->kModulId = SHOP_ERWEITERUNG_AUSWAHLASSISTENT;
         $oModul->cName    = 'Auswahlassistent Modul';
         $oModul->cDefine  = 'SHOP_ERWEITERUNG_AUSWAHLASSISTENT';
-        $oModul->cURL     = '';
+        $oModul->cURL     = 'https://jtl-url.de/q6tox';
         $oModul_arr[]     = $oModul;
         // Upload Modul
         $oModul           = new stdClass();
         $oModul->kModulId = SHOP_ERWEITERUNG_UPLOADS;
         $oModul->cName    = 'Upload Modul';
         $oModul->cDefine  = 'SHOP_ERWEITERUNG_UPLOADS';
-        $oModul->cURL     = '';
+        $oModul->cURL     = 'https://jtl-url.de/7-cop';
         $oModul_arr[]     = $oModul;
         // Upload Modul
         $oModul           = new stdClass();
         $oModul->kModulId = SHOP_ERWEITERUNG_DOWNLOADS;
         $oModul->cName    = 'Download Modul';
         $oModul->cDefine  = 'SHOP_ERWEITERUNG_DOWNLOADS';
-        $oModul->cURL     = '';
+        $oModul->cURL     = 'https://jtl-url.de/i0zvj';
         $oModul_arr[]     = $oModul;
         // Konfigurator Modul
         $oModul           = new stdClass();
         $oModul->kModulId = SHOP_ERWEITERUNG_KONFIGURATOR;
         $oModul->cName    = 'Konfigurator Modul';
         $oModul->cDefine  = 'SHOP_ERWEITERUNG_KONFIGURATOR';
-        $oModul->cURL     = '';
+        $oModul->cURL     = 'https://jtl-url.de/ni9f5';
         $oModul_arr[]     = $oModul;
         // Brandfree Option
         $oModul           = new stdClass();
         $oModul->kModulId = SHOP_ERWEITERUNG_BRANDFREE;
         $oModul->cName    = 'Brandfree Option';
         $oModul->cDefine  = 'SHOP_ERWEITERUNG_BRANDFREE';
-        $oModul->cURL     = '';
+        $oModul->cURL     = 'https://jtl-url.de/t4egb';
         $oModul_arr[]     = $oModul;
         
         return $oModul_arr;

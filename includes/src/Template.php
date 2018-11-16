@@ -176,11 +176,12 @@ class Template
     public function getPluginResources(): array
     {
         $resourcesc = Shop::Container()->getDB()->queryPrepared(
-            'SELECT * FROM tplugin_resources
+            'SELECT * 
+                FROM tplugin_resources AS res
                 JOIN tplugin
-                    ON tplugin.kPlugin = tplugin_resources.kPlugin
+                    ON tplugin.kPlugin = res.kPlugin
                 WHERE tplugin.nStatus = :state
-                ORDER BY tplugin_resources.priority DESC',
+                ORDER BY res.priority DESC',
             ['state' => \Plugin\State::ACTIVATED],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -208,13 +209,16 @@ class Template
      */
     private function getPluginResourcesPath(array $items): array
     {
-        foreach ($items as &$item) {
-            $item->abs = PFAD_ROOT . PFAD_PLUGIN . $item->cVerzeichnis . '/' .
-                PFAD_PLUGIN_VERSION . $item->nVersion . '/' .
-                PFAD_PLUGIN_FRONTEND . $item->type . '/' . $item->path;
-            $item->rel = PFAD_PLUGIN . $item->cVerzeichnis . '/' .
-                PFAD_PLUGIN_VERSION . $item->nVersion . '/' .
-                PFAD_PLUGIN_FRONTEND . $item->type . '/' . $item->path;
+        foreach ($items as $item) {
+            $frontend = PFAD_PLUGIN_FRONTEND . $item->type . '/' . $item->path;
+            if ((int)$item->bExtension === 1) {
+                $item->rel = PFAD_EXTENSIONS . $item->cVerzeichnis . '/';
+            } else {
+                $item->rel = PFAD_PLUGIN . $item->cVerzeichnis . '/';
+                $frontend = PFAD_PLUGIN_VERSION . $item->nVersion . '/' . $frontend;
+            }
+            $item->rel .= $frontend;
+            $item->abs = PFAD_ROOT . $item->rel;
         }
 
         return $items;

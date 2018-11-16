@@ -267,8 +267,8 @@ class PluginLoader
             }
         }
         $this->plugin->oPluginEinstellungConf_arr  = $tmpConf;
-        $this->plugin->oPluginEinstellungAssoc_arr = PluginHelper::getConfigByID($this->plugin->kPlugin);
-        $this->plugin->oPluginSprachvariable_arr   = PluginHelper::getLanguageVariables($this->plugin->kPlugin);
+        $this->plugin->oPluginEinstellungAssoc_arr = Helper::getConfigByID($this->plugin->kPlugin);
+        $this->plugin->oPluginSprachvariable_arr   = Helper::getLanguageVariables($this->plugin->kPlugin);
 
         return $this;
     }
@@ -287,7 +287,7 @@ class PluginLoader
                 $iso = $oSprache->cISO;
             }
         }
-        $this->plugin->oPluginSprachvariableAssoc_arr = PluginHelper::getLanguageVariablesByID(
+        $this->plugin->oPluginSprachvariableAssoc_arr = Helper::getLanguageVariablesByID(
             $this->plugin->kPlugin,
             $iso
         );
@@ -380,7 +380,7 @@ class PluginLoader
                 'kZahlungsart',
                 (int)$method->kZahlungsart
             );
-            $cModulId                                = PluginHelper::getModuleIDByPluginID(
+            $cModulId                                = Helper::getModuleIDByPluginID(
                 $this->plugin->kPlugin,
                 $method->cName
             );

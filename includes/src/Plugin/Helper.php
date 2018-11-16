@@ -7,10 +7,10 @@
 namespace Plugin;
 
 /**
- * Class PluginHelper
+ * Class Helper
  * @package Plugin
  */
-class PluginHelper
+class Helper
 {
     /**
      * @var array

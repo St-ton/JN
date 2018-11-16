@@ -33,6 +33,26 @@ class Meta
     private $url;
 
     /**
+     * @var string
+     */
+    private $icon;
+
+    /**
+     * @var string
+     */
+    private $readmeMD;
+
+    /**
+     * @var string
+     */
+    private $licenseMD;
+
+    /**
+     * @var string
+     */
+    private $changelogMD;
+
+    /**
      * @var \DateTime
      */
     private $dateLastUpdate;
@@ -120,6 +140,70 @@ class Meta
     public function setURL(string $url): void
     {
         $this->url = $url;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getIcon(): ?string
+    {
+        return $this->icon;
+    }
+
+    /**
+     * @param string $icon
+     */
+    public function setIcon(string $icon): void
+    {
+        $this->icon = $icon;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getReadmeMD(): ?string
+    {
+        return $this->readmeMD;
+    }
+
+    /**
+     * @param string $readmeMD
+     */
+    public function setReadmeMD(string $readmeMD): void
+    {
+        $this->readmeMD = $readmeMD;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLicenseMD(): ?string
+    {
+        return $this->licenseMD;
+    }
+
+    /**
+     * @param string $licenseMD
+     */
+    public function setLicenseMD(string $licenseMD): void
+    {
+        $this->licenseMD = $licenseMD;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getChangelogMD(): ?string
+    {
+        return $this->changelogMD;
+    }
+
+    /**
+     * @param string $changelogMD
+     */
+    public function setChangelogMD(string $changelogMD): void
+    {
+        $this->changelogMD = $changelogMD;
     }
 
     /**

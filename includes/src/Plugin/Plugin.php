@@ -353,7 +353,7 @@ class Plugin
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
 
-        return PluginHelper::getHookList();
+        return Helper::getHookList();
     }
 
     /**
@@ -365,7 +365,7 @@ class Plugin
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
 
-        return PluginHelper::setHookList($hookList);
+        return Helper::setHookList($hookList);
     }
 
     /**
@@ -448,7 +448,7 @@ class Plugin
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
 
-        return PluginHelper::getPluginById($pluginID);
+        return Helper::getPluginById($pluginID);
     }
 
     /**
@@ -510,7 +510,7 @@ class Plugin
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
 
-        return PluginHelper::bootstrapper($id);
+        return Helper::bootstrapper($id);
     }
 
     /**
@@ -521,6 +521,6 @@ class Plugin
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
 
-        return PluginHelper::getTemplatePaths();
+        return Helper::getTemplatePaths();
     }
 }

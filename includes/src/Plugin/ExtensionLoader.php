@@ -88,7 +88,7 @@ class ExtensionLoader
     {
         $paths = $this->loadPaths($obj->cVerzeichnis);
 
-        $extension = new Extension();
+        $extension = new ExtensionBC();
         $extension->setMeta($this->loadMetaData($obj));
         $extension->setPaths($paths);
         $extension->setState((int)$obj->nStatus);

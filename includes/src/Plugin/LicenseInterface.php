@@ -7,9 +7,10 @@
 namespace Plugin;
 
 /**
- * Interface PluginLizenz
+ * Interface LicenseInterface
+ * @package Plugin
  */
-interface PluginLicenseInterface
+interface LicenseInterface
 {
     /**
      * @param string $cLicence

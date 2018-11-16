@@ -112,7 +112,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
                 $step     = 'pluginverwaltung_uebersicht';
                 $reload   = true;
                 // Lizenzpruefung bestanden => aktiviere alle Zahlungsarten (falls vorhanden)
-                \Plugin\PluginHelper::updatePaymentMethodState($oPlugin, 1);
+                \Plugin\Helper::updatePaymentMethodState($oPlugin, 1);
             } else {
                 $cFehler = 'Fehler: Ihr Lizenzschlüssel ist ungültig.';
             }
@@ -274,7 +274,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($oSprache_arr as $oSprache) {
-                foreach (\Plugin\PluginHelper::getLanguageVariables($kPlugin) as $langVar) {
+                foreach (\Plugin\Helper::getLanguageVariables($kPlugin) as $langVar) {
                     $kPluginSprachvariable = $langVar->kPluginSprachvariable;
                     $cSprachvariable       = $langVar->cName;
                     $cISO                  = strtoupper($oSprache->cISO);
@@ -347,7 +347,7 @@ if ($step === 'pluginverwaltung_uebersicht') {
     );
     $smarty->assign('oSprache_arr', $oSprache_arr)
            ->assign('kPlugin', $kPlugin)
-           ->assign('oPluginSprachvariable_arr', \Plugin\PluginHelper::getLanguageVariables($kPlugin));
+           ->assign('oPluginSprachvariable_arr', \Plugin\Helper::getLanguageVariables($kPlugin));
 }
 
 if ($reload === true) {

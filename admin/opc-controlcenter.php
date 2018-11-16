@@ -30,7 +30,7 @@ if (FormHelper::validateToken()) {
     if ($action === 'restore') {
         $pageId = RequestHelper::verifyGPDataString('pageId');
         $opcPage->deletePage($pageId);
-        $notice = __('The OPC content for this page has been reseted.');
+        $notice = __('The OPC content for this page has been reset.');
     } elseif ($action === 'discard') {
         $pageKey = RequestHelper::verifyGPCDataInt('pageKey');
         $opcPage->deleteDraft($pageKey);

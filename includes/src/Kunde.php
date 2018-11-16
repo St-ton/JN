@@ -450,10 +450,12 @@ class Kunde
                 : date_format(date_create($this->dGeburtstag), 'd.m.Y');
 
             $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
-            $cDatum_arr               = DateHelper::getDateParts($this->dErstellt);
-            $this->dErstellt_DE       = $cDatum_arr['cTag'] . '.' .
-                $cDatum_arr['cMonat'] . '.' .
-                $cDatum_arr['cJahr'];
+            $cDatum_arr               = DateHelper::getDateParts($this->dErstellt ?? '');
+            if (count($cDatum_arr) > 0) {
+                $this->dErstellt_DE       = $cDatum_arr['cTag'] . '.' .
+                    $cDatum_arr['cMonat'] . '.' .
+                    $cDatum_arr['cJahr'];
+            }
             executeHook(HOOK_KUNDE_CLASS_LOADFROMDB);
         }
 
@@ -791,7 +793,7 @@ class Kunde
             [
                 'kKunde'   => $this->kKunde,
                 'cKey'     => $key,
-                'dExpires' => $expires->format(DateTime::ISO8601),
+                'dExpires' => $expires->format(DateTime::ATOM),
             ],
             \DB\ReturnType::AFFECTED_ROWS
         );

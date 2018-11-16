@@ -160,14 +160,14 @@ class Kampagne
     public static function getAvailable(): array
     {
         $cacheID = 'campaigns';
-        if (($oKampagne_arr = Shop::Cache()->get($cacheID)) === false) {
+        if (($oKampagne_arr = Shop::Container()->getCache()->get($cacheID)) === false) {
             $oKampagne_arr = Shop::Container()->getDB()->selectAll(
                 'tkampagne',
                 'nAktiv',
                 1,
                 '*, DATE_FORMAT(dErstellt, \'%d.%m.%Y %H:%i:%s\') AS dErstellt_DE'
             );
-            $setRes = Shop::Cache()->set($cacheID, $oKampagne_arr, [CACHING_GROUP_CORE]);
+            $setRes = Shop::Container()->getCache()->set($cacheID, $oKampagne_arr, [CACHING_GROUP_CORE]);
             if ($setRes === false) {
                 // could not save to cache - use session instead
                 $_SESSION['Kampagnen'] = [];

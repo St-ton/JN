@@ -104,9 +104,9 @@ function pruefeKategorieSichtbarkeit(int $customerGroupID)
     if (!$customerGroupID) {
         return false;
     }
-    $cacheID      = 'catlist_p_' . Shop::Cache()->getBaseID(false, false, $customerGroupID, true, false);
+    $cacheID      = 'catlist_p_' . Shop::Container()->getCache()->getBaseID(false, false, $customerGroupID, true, false);
     $save         = false;
-    $categoryList = Shop::Cache()->get($cacheID);
+    $categoryList = Shop::Container()->getCache()->get($cacheID);
     $useCache     = true;
     if ($categoryList === false) {
         $useCache     = false;
@@ -147,7 +147,7 @@ function pruefeKategorieSichtbarkeit(int $customerGroupID)
     if ($save === true) {
         if ($useCache === true) {
             //category list has changed - write back changes to cache
-            Shop::Cache()->set($cacheID, $categoryList, [CACHING_GROUP_CATEGORY]);
+            Shop::Container()->getCache()->set($cacheID, $categoryList, [CACHING_GROUP_CATEGORY]);
         } else {
             $_SESSION['oKategorie_arr'] = $categoryList;
         }

@@ -90,7 +90,7 @@ function createSearchIndex($index, $create)
                 $settings['suche_fulltext'] = 'N';
                 saveAdminSectionSettings(CONF_ARTIKELUEBERSICHT, $settings);
 
-                Shop::Cache()->flushTags([
+                Shop::Container()->getCache()->flushTags([
                     CACHING_GROUP_OPTION,
                     CACHING_GROUP_CORE,
                     CACHING_GROUP_ARTICLE,

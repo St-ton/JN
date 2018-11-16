@@ -70,7 +70,7 @@ class Uninstaller
             // Plugin wird nur teilweise deinstalliert, weil es danach ein Update gibt
             $this->doSQLDelete($pluginID, $update, $newPluginID);
         }
-        \Shop::Cache()->flushAll();
+        \Shop::Container()->getCache()->flushAll();
         if (($p = Plugin::bootstrapper($pluginID)) !== null) {
             $p->uninstalled();
         }

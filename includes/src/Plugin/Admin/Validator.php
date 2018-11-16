@@ -388,7 +388,7 @@ final class Validator
      */
     private function validateHooks(array $installNode, string $versionedDir): int
     {
-        if (!isset($installNode['Hooks']) || \is_array($installNode['Hooks'])) {
+        if (!isset($installNode['Hooks']) || !\is_array($installNode['Hooks'])) {
             return InstallCode::OK;
         }
         if (\count($installNode['Hooks'][0]) === 1) {
@@ -403,7 +403,7 @@ final class Validator
                     if (\strlen($hook) === 0) {
                         return InstallCode::INVALID_HOOK;
                     }
-                    if (!\file_exists($versionedDir . \PFAD_PLUGIN_FRONTEND . $hook['Hook'])) {
+                    if (!\file_exists($versionedDir . \PFAD_PLUGIN_FRONTEND . $hook)) {
                         return InstallCode::MISSING_HOOK_FILE;
                     }
                 }

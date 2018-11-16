@@ -191,10 +191,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public static function uploadMax()
         {
+            $helper = PHPSettingsHelper::getInstance();
+
             return min(
-                Shop()->PHPSettingsHelper()->uploadMaxFileSize(),
-                Shop()->PHPSettingsHelper()->postMaxSize(),
-                Shop()->PHPSettingsHelper()->limit()
+                $helper->uploadMaxFileSize(),
+                $helper->postMaxSize(),
+                $helper->limit()
             );
         }
 

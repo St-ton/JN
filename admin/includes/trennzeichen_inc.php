@@ -32,7 +32,9 @@ function speicherTrennzeichen(array $cPostAssoc_arr): bool
         }
     }
 
-    Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
+    Shop::Container()->getCache()->flushTags(
+        [CACHING_GROUP_CORE, CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]
+    );
 
     return true;
 }

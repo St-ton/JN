@@ -125,7 +125,7 @@ function bearbeiteInsert($xml)
         $clearTags[] = (int)$oArtikel->kArtikel;
         versendeVerfuegbarkeitsbenachrichtigung($oArtikel);
     }
-    Shop::Cache()->flushTags(\Functional\map(array_unique($clearTags), function ($e) {
+    Shop::Container()->getCache()->flushTags(\Functional\map(array_unique($clearTags), function ($e) {
         return CACHING_GROUP_ARTICLE . '_' . $e;
     }));
 }

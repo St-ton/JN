@@ -30,15 +30,15 @@ function bereiteNewsletterVor($Einstellungen)
 }
 
 /**
- * @param JTLSmarty $mailSmarty
- * @param object    $oNewsletter
- * @param array     $Einstellungen
- * @param string    $oEmailempfaenger
- * @param array     $oArtikel_arr
- * @param array     $oHersteller_arr
- * @param array     $oKategorie_arr
- * @param string    $oKampagne
- * @param string    $oKunde
+ * @param Smarty\JTLSmarty $mailSmarty
+ * @param object           $oNewsletter
+ * @param array            $Einstellungen
+ * @param string           $oEmailempfaenger
+ * @param array            $oArtikel_arr
+ * @param array            $oHersteller_arr
+ * @param array            $oKategorie_arr
+ * @param string           $oKampagne
+ * @param string           $oKunde
  * @return string|bool
  */
 function versendeNewsletter(
@@ -59,12 +59,12 @@ function versendeNewsletter(
                ->assign('Herstellerliste', $oHersteller_arr)
                ->assign('Kategorieliste', $oKategorie_arr)
                ->assign('Kampagne', $oKampagne)
-               ->assign('cNewsletterURL', Shop::getURL() .
+               ->assign(
+                   'cNewsletterURL',
+                   Shop::getURL() .
                    '/newsletter.php?show=' .
                    ($oNewsletter->kNewsletter ?? '0')
                );
-
-    // Nettopreise?
     $NettoPreise = 0;
     $bodyHtml    = '';
     if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
@@ -146,14 +146,14 @@ function versendeNewsletter(
 }
 
 /**
- * @param JTLSmarty $mailSmarty
- * @param object    $oNewsletter
- * @param array     $oArtikel_arr
- * @param array     $oHersteller_arr
- * @param array     $oKategorie_arr
- * @param string    $oKampagne
- * @param string    $oEmailempfaenger
- * @param string    $oKunde
+ * @param \Smarty\JTLSmarty $mailSmarty
+ * @param object            $oNewsletter
+ * @param array             $oArtikel_arr
+ * @param array             $oHersteller_arr
+ * @param array             $oKategorie_arr
+ * @param string            $oKampagne
+ * @param string            $oEmailempfaenger
+ * @param string            $oKunde
  * @return string
  */
 function gibStaticHtml(
@@ -286,7 +286,7 @@ function speicherVorlage($cPost_arr)
  * @param int    $kNewslettervorlage
  * @return array
  */
-function speicherVorlageStd($oNewslettervorlageStd, $kNewslettervorlageStd, $cPost_arr, $kNewslettervorlage)
+function speicherVorlageStd($oNewslettervorlageStd, $kNewslettervorlageStd, $cPost_arr, $kNewslettervorlage): array
 {
     $kNewslettervorlageStd = (int)$kNewslettervorlageStd;
     $cPlausiValue_arr      = [];
@@ -502,35 +502,29 @@ function speicherVorlageStd($oNewslettervorlageStd, $kNewslettervorlageStd, $cPo
  * @param string $cTyp
  * @return string
  */
-function mappeFileTyp($cTyp)
+function mappeFileTyp($cTyp): string
 {
     switch ($cTyp) {
         case 'image/jpeg':
             return '.jpg';
-            break;
         case 'image/pjpeg':
             return '.jpg';
-            break;
         case 'image/gif':
             return '.gif';
-            break;
         case 'image/png':
             return '.png';
-            break;
         case 'image/bmp':
             return '.bmp';
-            break;
         default:
             return '.jpg';
-            break;
     }
 }
 
 /**
  * @param string $cText
- * @return mixed
+ * @return string
  */
-function br2nl($cText)
+function br2nl($cText): string
 {
     return str_replace(['<br>', '<br />', '<br/>'], "\n", $cText);
 }
@@ -613,22 +607,18 @@ function mappeVorlageStdVar($cText, $oNewsletterStdVar_arr, $bNoHTML = false)
  * @param string $cArt
  * @return array
  */
-function pruefeVorlageStd($cName, $kKundengruppe_arr, $cBetreff, $cArt)
+function pruefeVorlageStd($cName, $kKundengruppe_arr, $cBetreff, $cArt): array
 {
     $cPlausiValue_arr = [];
-    // Vorlagennamen pruefen
     if (empty($cName)) {
         $cPlausiValue_arr['cName'] = 1;
     }
-    // Kundengruppen pruefen
     if (!is_array($kKundengruppe_arr) || count($kKundengruppe_arr) === 0) {
         $cPlausiValue_arr['kKundengruppe_arr'] = 1;
     }
-    // Betreff pruefen
     if (empty($cBetreff)) {
         $cPlausiValue_arr['cBetreff'] = 1;
     }
-    // Art pruefen
     if (empty($cArt)) {
         $cPlausiValue_arr['cArt'] = 1;
     }
@@ -645,30 +635,24 @@ function pruefeVorlageStd($cName, $kKundengruppe_arr, $cBetreff, $cArt)
  * @param string $cText
  * @return array
  */
-function pruefeVorlage($cName, $kKundengruppe_arr, $cBetreff, $cArt, $cHtml, $cText)
+function pruefeVorlage($cName, $kKundengruppe_arr, $cBetreff, $cArt, $cHtml, $cText): array
 {
     $cPlausiValue_arr = [];
-    // Vorlagennamen pruefen
     if (empty($cName)) {
         $cPlausiValue_arr['cName'] = 1;
     }
-    // Kundengruppen pruefen
     if (!is_array($kKundengruppe_arr) || count($kKundengruppe_arr) === 0) {
         $cPlausiValue_arr['kKundengruppe_arr'] = 1;
     }
-    // Betreff pruefen
     if (empty($cBetreff)) {
         $cPlausiValue_arr['cBetreff'] = 1;
     }
-    // Art pruefen
     if (empty($cArt)) {
         $cPlausiValue_arr['cArt'] = 1;
     }
-    // HTML pruefen
     if (empty($cHtml)) {
         $cPlausiValue_arr['cHtml'] = 1;
     }
-    // Text pruefen
     if (empty($cText)) {
         $cPlausiValue_arr['cText'] = 1;
     }
@@ -683,7 +667,7 @@ function pruefeVorlage($cName, $kKundengruppe_arr, $cBetreff, $cArt, $cHtml, $cT
  *
  * @param int $kNewsletterVorlageStd
  * @param int $kNewsletterVorlage
- * @return null
+ * @return stdClass|null
  */
 function holeNewslettervorlageStd(int $kNewsletterVorlageStd, int $kNewsletterVorlage = 0)
 {
@@ -781,7 +765,7 @@ function holeNewslettervorlageStd(int $kNewsletterVorlageStd, int $kNewsletterVo
  * @param string $cArtikel
  * @return stdClass
  */
-function explodecArtikel($cArtikel)
+function explodecArtikel($cArtikel): stdClass
 {
     $cArtikelTMP_arr                = explode(';', $cArtikel);
     $oExplodedArtikel               = new stdClass();
@@ -809,7 +793,7 @@ function explodecArtikel($cArtikel)
  * @param string $cKundengruppe
  * @return array
  */
-function explodecKundengruppe($cKundengruppe)
+function explodecKundengruppe($cKundengruppe): array
 {
     // cKundengruppe exploden
     $cKundengruppeTMP_arr = explode(';', $cKundengruppe);
@@ -985,7 +969,7 @@ function baueZeitAusDB($dZeitDB)
  * @param stdClass $cAktiveSucheSQL
  * @return int
  */
-function holeAbonnentenAnzahl($cAktiveSucheSQL)
+function holeAbonnentenAnzahl($cAktiveSucheSQL): int
 {
     return (int)Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl
@@ -998,9 +982,9 @@ function holeAbonnentenAnzahl($cAktiveSucheSQL)
 /**
  * @param string   $cSQL
  * @param stdClass $cAktiveSucheSQL
- * @return mixed
+ * @return array
  */
-function holeAbonnenten($cSQL, $cAktiveSucheSQL)
+function holeAbonnenten($cSQL, $cAktiveSucheSQL): array
 {
     return Shop::Container()->getDB()->query(
         "SELECT tnewsletterempfaenger.*, 
@@ -1027,7 +1011,7 @@ function holeAbonnenten($cSQL, $cAktiveSucheSQL)
  * @param array $kNewsletterEmpfaenger_arr
  * @return bool
  */
-function loescheAbonnenten($kNewsletterEmpfaenger_arr)
+function loescheAbonnenten($kNewsletterEmpfaenger_arr): bool
 {
     if (!is_array($kNewsletterEmpfaenger_arr) || count($kNewsletterEmpfaenger_arr) === 0) {
         return false;
@@ -1085,7 +1069,7 @@ function loescheAbonnenten($kNewsletterEmpfaenger_arr)
  * @param array $kNewsletterEmpfaenger_arr
  * @return bool
  */
-function aktiviereAbonnenten($kNewsletterEmpfaenger_arr)
+function aktiviereAbonnenten($kNewsletterEmpfaenger_arr): bool
 {
     if (!is_array($kNewsletterEmpfaenger_arr) || count($kNewsletterEmpfaenger_arr) === 0) {
         return false;
@@ -1142,7 +1126,7 @@ function aktiviereAbonnenten($kNewsletterEmpfaenger_arr)
 
 /**
  * @param array $cPost_arr
- * @return int
+ * @return int|stdClass
  */
 function gibAbonnent($cPost_arr)
 {
@@ -1321,9 +1305,9 @@ function gibAHKKeys($cKey, $bArtikelnummer = false)
  * @param string|object $oKampagne
  * @param int           $kKundengruppe
  * @param int           $kSprache
- * @return array
+ * @return Artikel[]
  */
-function gibArtikelObjekte($kArtikel_arr, $oKampagne = '', int $kKundengruppe = 0, int $kSprache = 0)
+function gibArtikelObjekte($kArtikel_arr, $oKampagne = '', int $kKundengruppe = 0, int $kSprache = 0): array
 {
     if (!is_array($kArtikel_arr) || count($kArtikel_arr) === 0) {
         return [];
@@ -1381,7 +1365,7 @@ function gibArtikelObjekte($kArtikel_arr, $oKampagne = '', int $kKundengruppe = 
  * @param int|object $kSprache
  * @return array
  */
-function gibHerstellerObjekte($kHersteller_arr, $oKampagne = 0, $kSprache = 0)
+function gibHerstellerObjekte($kHersteller_arr, $oKampagne = 0, int $kSprache = 0)
 {
     if (!is_array($kHersteller_arr) || count($kHersteller_arr) === 0) {
         return [];
@@ -1392,7 +1376,7 @@ function gibHerstellerObjekte($kHersteller_arr, $oKampagne = 0, $kSprache = 0)
     foreach ($kHersteller_arr as $kHersteller) {
         $kHersteller = (int)$kHersteller;
         if ($kHersteller > 0) {
-            $oHersteller = new Hersteller($kHersteller);
+            $oHersteller = new Hersteller($kHersteller, $kSprache);
             if (strpos($oHersteller->cURL, $shopURL) === false) {
                 $oHersteller->cURL = $oHersteller->cURL = $shopURL . $oHersteller->cURL;
             }

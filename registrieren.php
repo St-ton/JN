@@ -65,7 +65,8 @@ Shop::Smarty()->assign('editRechnungsadresse', $editRechnungsadresse)
     ->assign('hinweis', $hinweis)
     ->assign('step', $step)
     ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
-    ->assign('code_registrieren', false);
+    ->assign('code_registrieren', false)
+    ->assign('unregForm', 0);
 
 $cCanonicalURL = $linkHelper->getStaticRoute('registrieren.php');
 // Metaangaben

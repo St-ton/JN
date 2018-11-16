@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 
 $oAccount->permission('SETTINGS_ARTICLEOVERVIEW_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $kSektion         = CONF_ARTIKELUEBERSICHT;
 $Einstellungen    = Shop::getSettings([$kSektion]);
 $standardwaehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
@@ -61,11 +61,18 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
             case 'tartikel':
                 $cSpalten_arr = array_intersect(
                     $cSuchspalten_arr,
-                    ['cName', 'cSeo', 'cSuchbegriffe', 'cArtNr', 'cKurzBeschreibung', 'cBeschreibung', 'cBarcode', 'cISBN', 'cHAN', 'cAnmerkung']
+                    ['cName', 'cSeo', 'cSuchbegriffe',
+                     'cArtNr', 'cKurzBeschreibung',
+                     'cBeschreibung', 'cBarcode',
+                     'cISBN', 'cHAN', 'cAnmerkung'
+                    ]
                 );
                 break;
             case 'tartikelsprache':
-                $cSpalten_arr = array_intersect($cSuchspalten_arr, ['cName', 'cSeo', 'cKurzBeschreibung', 'cBeschreibung']);
+                $cSpalten_arr = array_intersect(
+                    $cSuchspalten_arr,
+                    ['cName', 'cSeo', 'cKurzBeschreibung', 'cBeschreibung']
+                );
                 break;
             default:
                 header(RequestHelper::makeHTTPHeader(403), true);
@@ -88,7 +95,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
         }
 
         if ($res === 0) {
-            $cFehler      = 'Der Index für die Volltextsuche konnte nicht angelegt werden! Die Volltextsuche wird deaktiviert.';
+            $cFehler      = 'Der Index für die Volltextsuche konnte nicht angelegt werden! ' .
+                'Die Volltextsuche wird deaktiviert.';
             $shopSettings = Shopsetting::getInstance();
             $settings     = $shopSettings[Shopsetting::mapSettingName(CONF_ARTIKELUEBERSICHT)];
 
@@ -96,7 +104,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
                 $settings['suche_fulltext'] = 'N';
                 saveAdminSectionSettings($kSektion, $settings);
 
-                Shop::Cache()->flushTags([
+                Shop::Container()->getCache()->flushTags([
                     CACHING_GROUP_OPTION,
                     CACHING_GROUP_CORE,
                     CACHING_GROUP_ARTICLE,
@@ -141,7 +149,9 @@ if (isset($_POST['einstellungen_bearbeiten'])
     $shopSettings = Shopsetting::getInstance();
     $cHinweis    .= saveAdminSectionSettings($kSektion, $_POST);
 
-    Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_CORE, CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]);
+    Shop::Container()->getCache()->flushTags(
+        [CACHING_GROUP_OPTION, CACHING_GROUP_CORE, CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]
+    );
     $shopSettings->reset();
 
     $fulltextChanged = false;
@@ -176,32 +186,6 @@ if (isset($_POST['einstellungen_bearbeiten'])
 }
 
 $section = Shop::Container()->getDB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
-$Conf    = Shop::Container()->getDB()->query(
-    "SELECT *
-        FROM teinstellungenconf
-        WHERE nModul = 0 
-            AND kEinstellungenSektion = $kSektion
-        ORDER BY nSort",
-    \DB\ReturnType::ARRAY_OF_OBJECTS
-);
-
-$configCount = count($Conf);
-for ($i = 0; $i < $configCount; $i++) {
-    if (in_array($Conf[$i]->cInputTyp, ['selectbox', 'listbox'], true)) {
-        $Conf[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
-            'teinstellungenconfwerte',
-            'kEinstellungenConf',
-            (int)$Conf[$i]->kEinstellungenConf,
-            '*',
-            'nSort'
-        );
-    }
-
-    if (isset($Conf[$i]->cWertName)) {
-        $Conf[$i]->gesetzterWert = $Einstellungen['artikeluebersicht'][$Conf[$i]->cWertName];
-    }
-}
-
 if ($Einstellungen['artikeluebersicht']['suche_fulltext'] !== 'N'
     && (!Shop::Container()->getDB()->query(
         "SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'",
@@ -225,7 +209,7 @@ $smarty->configLoad('german.conf', 'einstellungen')
     ->assign('action', 'sucheinstellungen.php')
     ->assign('kEinstellungenSektion', $kSektion)
     ->assign('Sektion', $section)
-    ->assign('Conf', $Conf)
+    ->assign('Conf', getAdminSectionSettings(CONF_ARTIKELUEBERSICHT))
     ->assign('cPrefDesc', $smarty->getConfigVars('prefDesc' . $kSektion))
     ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $kSektion))
     ->assign('step', $step)

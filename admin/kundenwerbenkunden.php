@@ -8,7 +8,7 @@ require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
 $oAccount->permission('MODULE_CAC_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $Einstellungen = Shop::getSettings([CONF_KUNDENWERBENKUNDEN]);
 $cHinweis      = '';
 $cFehler       = '';
@@ -36,54 +36,7 @@ if (RequestHelper::verifyGPCDataInt('KwK') === 1
     }
 }
 if ($step === 'kwk_uebersicht') {
-    $oConfig_arr = Shop::Container()->getDB()->selectAll(
-        'teinstellungenconf',
-        'kEinstellungenSektion',
-        CONF_KUNDENWERBENKUNDEN,
-        '*',
-        'nSort'
-    );
-    $configCount = count($oConfig_arr);
-    for ($i = 0; $i < $configCount; $i++) {
-        if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-            $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
-                'teinstellungenconfwerte',
-                'kEinstellungenConf',
-                (int)$oConfig_arr[$i]->kEinstellungenConf,
-                '*',
-                'nSort'
-            );
-        } elseif ($oConfig_arr[$i]->cInputTyp === 'selectkdngrp') {
-            $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->query(
-                'SELECT kKundengruppe, cName
-                    FROM tkundengruppe
-                    ORDER BY cStandard DESC',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
-            );
-        }
-
-        if ($oConfig_arr[$i]->cInputTyp === 'selectkdngrp') {
-            $oSetValue = Shop::Container()->getDB()->selectAll(
-                'teinstellungen',
-                ['kEinstellungenSektion', 'cName'],
-                [CONF_KUNDENWERBENKUNDEN,
-                 $oConfig_arr[$i]->cWertName]
-            );
-            $oConfig_arr[$i]->gesetzterWert = $oSetValue;
-        } else {
-            $oSetValue = Shop::Container()->getDB()->select(
-                'teinstellungen',
-                'kEinstellungenSektion',
-                CONF_KUNDENWERBENKUNDEN,
-                'cName',
-                $oConfig_arr[$i]->cWertName
-            );
-            $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
-        }
-    }
-
-    // Anzahl
-    $oAnzahlReg = Shop::Container()->getDB()->query(
+    $oAnzahlReg      = Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tkundenwerbenkunden
             WHERE nRegistriert = 0',
@@ -95,13 +48,12 @@ if ($step === 'kwk_uebersicht') {
             WHERE nRegistriert = 1',
         \DB\ReturnType::SINGLE_OBJECT
     );
-    $oAnzahlPraemie = Shop::Container()->getDB()->query(
+    $oAnzahlPraemie  = Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tkundenwerbenkundenbonus',
         \DB\ReturnType::SINGLE_OBJECT
     );
 
-    // Paginationen
     $oPagiNichtReg = (new Pagination('nichtreg'))
         ->setItemCount($oAnzahlReg->nAnzahl)
         ->assemble();
@@ -112,7 +64,6 @@ if ($step === 'kwk_uebersicht') {
         ->setItemCount($oAnzahlPraemie->nAnzahl)
         ->assemble();
 
-    // tkundenwerbenkunden Nicht registrierte Kunden
     $oKwKNichtReg_arr = Shop::Container()->getDB()->query(
         "SELECT tkundenwerbenkunden.*, tkunde.kKunde AS kKundeBestand, tkunde.cMail, 
             DATE_FORMAT(tkundenwerbenkunden.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de,
@@ -130,7 +81,6 @@ if ($step === 'kwk_uebersicht') {
 
         $oKwKNichtReg_arr[$i]->cBestandNachname = $oKunde->cNachname;
     }
-    // tkundenwerbenkunden registrierte Kunden
     $oKwKReg_arr = Shop::Container()->getDB()->query(
         "SELECT tkundenwerbenkunden.*, 
             DATE_FORMAT(tkundenwerbenkunden.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de,
@@ -167,7 +117,7 @@ if ($step === 'kwk_uebersicht') {
 
         $oKwKBestandBonus_arr[$i]->cBestandNachname = $oKunde->cNachname;
     }
-    $smarty->assign('oConfig_arr', $oConfig_arr)
+    $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_KUNDENWERBENKUNDEN))
         ->assign('oKwKNichtReg_arr', $oKwKNichtReg_arr)
         ->assign('oKwKReg_arr', $oKwKReg_arr)
         ->assign('oKwKBestandBonus_arr', $oKwKBestandBonus_arr)

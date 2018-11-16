@@ -26,7 +26,9 @@ $cSh = RequestHelper::verifyGPDataString('sh');
 
 executeHook(HOOK_NOTIFY_HASHPARAMETER_DEFINITION);
 
-if (strlen(RequestHelper::verifyGPDataString('ph')) === 0 && strlen(RequestHelper::verifyGPDataString('externalBDRID')) > 0) {
+if (strlen(RequestHelper::verifyGPDataString('ph')) === 0
+    && strlen(RequestHelper::verifyGPDataString('externalBDRID')) > 0
+) {
     $cPh = RequestHelper::verifyGPDataString('externalBDRID');
     if ($cPh[0] === '_') {
         $cPh = '';
@@ -78,7 +80,8 @@ if (strlen($cSh) > 0) {
     }
     require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
 
-    $logger->debug('Session Hash ' . $cSh . ' ergab cModulId aus Session: ' . $_SESSION['Zahlungsart']->cModulId ?? '---');
+    $logger->debug('Session Hash ' . $cSh . ' ergab cModulId aus Session: ' . $_SESSION['Zahlungsart']->cModulId
+        ?? '---');
     if (!isset($paymentSession->kBestellung) || !$paymentSession->kBestellung) {
         // Generate fake Order and ask PaymentMethod if order should be finalized
         $order = fakeBestellung();
@@ -91,9 +94,9 @@ if (strlen($cSh) > 0) {
                 $logger->debug('Session Hash: ' . $cSh . ' ergab Methode: ' . print_r($paymentMethod, true));
             }
 
-            $kPlugin = Plugin::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
+            $kPlugin = \Plugin\Plugin::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
             if ($kPlugin > 0) {
-                $oPlugin            = new Plugin($kPlugin);
+                $oPlugin            = new \Plugin\Plugin($kPlugin);
                 $GLOBALS['oPlugin'] = $oPlugin;
             }
 
@@ -144,7 +147,8 @@ if (strlen($cSh) > 0) {
         $order = new Bestellung($paymentSession->kBestellung);
         $order->fuelleBestellung(false);
         include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-        $logger->debug('Session Hash ' . $cSh . ' hat kBestellung. Modul ' . $order->Zahlungsart->cModulId . ' wird aufgerufen');
+        $logger->debug('Session Hash ' . $cSh . ' hat kBestellung. Modul ' . $order->Zahlungsart->cModulId .
+            ' wird aufgerufen');
 
         $paymentMethod = PaymentMethod::create($order->Zahlungsart->cModulId);
         $paymentMethod->handleNotification($order, '_' . $sessionHash, $_REQUEST);
@@ -193,7 +197,7 @@ if ($moduleId !== null) {
     $paymentMethod = PaymentMethod::create($moduleId);
     if ($paymentMethod !== null) {
         if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
-            $logger->debug('Payment Hash ' . $cPh . ' ergab Order' . print_r($paymentMethod, true), 1);
+            $logger->debug('Payment Hash ' . $cPh . ' ergab Order' . print_r($paymentMethod, true));
         }
         $paymentHash = Shop::Container()->getDB()->escape(StringHandler::htmlentities(StringHandler::filterXSS($cPh)));
         $paymentMethod->handleNotification($order, $paymentHash, $_REQUEST);

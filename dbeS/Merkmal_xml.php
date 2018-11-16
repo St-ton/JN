@@ -129,12 +129,12 @@ function bearbeiteInsert($xml)
                                     ]
                                 );
                                 if (trim($localized[$j]->cSeo)) {
-                                    $cSeo = getFlatSeoPath($localized[$j]->cSeo);
+                                    $cSeo = \JTL\SeoHelper::getFlatSeoPath($localized[$j]->cSeo);
                                 } else {
-                                    $cSeo = getFlatSeoPath($localized[$j]->cWert);
+                                    $cSeo = \JTL\SeoHelper::getFlatSeoPath($localized[$j]->cWert);
                                 }
-                                $localized[$j]->cSeo = getSeo($cSeo);
-                                $localized[$j]->cSeo = checkSeo($localized[$j]->cSeo);
+                                $localized[$j]->cSeo = \JTL\SeoHelper::getSeo($cSeo);
+                                $localized[$j]->cSeo = \JTL\SeoHelper::checkSeo($localized[$j]->cSeo);
                                 DBUpdateInsert(
                                     'tmerkmalwertsprache',
                                     [$localized[$j]],
@@ -181,12 +181,12 @@ function bearbeiteInsert($xml)
                                     ]
                                 );
                                 if (trim($localized[$j]->cSeo)) {
-                                    $cSeo = getFlatSeoPath($localized[$j]->cSeo);
+                                    $cSeo = \JTL\SeoHelper::getFlatSeoPath($localized[$j]->cSeo);
                                 } else {
-                                    $cSeo = getFlatSeoPath($localized[$j]->cWert);
+                                    $cSeo = \JTL\SeoHelper::getFlatSeoPath($localized[$j]->cWert);
                                 }
-                                $localized[$j]->cSeo = getSeo($cSeo);
-                                $localized[$j]->cSeo = checkSeo($localized[$j]->cSeo);
+                                $localized[$j]->cSeo = \JTL\SeoHelper::getSeo($cSeo);
+                                $localized[$j]->cSeo = \JTL\SeoHelper::checkSeo($localized[$j]->cSeo);
                                 DBUpdateInsert(
                                     'tmerkmalwertsprache',
                                     [$localized[$j]],
@@ -258,11 +258,11 @@ function bearbeiteInsert($xml)
                                     ]
                                 );
                                 $cSeo = trim($localized[$j]->cSeo)
-                                    ? getFlatSeoPath($localized[$j]->cSeo)
-                                    : getFlatSeoPath($localized[$j]->cWert);
+                                    ? \JTL\SeoHelper::getFlatSeoPath($localized[$j]->cSeo)
+                                    : \JTL\SeoHelper::getFlatSeoPath($localized[$j]->cWert);
 
-                                $localized[$j]->cSeo = getSeo($cSeo);
-                                $localized[$j]->cSeo = checkSeo($localized[$j]->cSeo);
+                                $localized[$j]->cSeo = \JTL\SeoHelper::getSeo($cSeo);
+                                $localized[$j]->cSeo = \JTL\SeoHelper::checkSeo($localized[$j]->cSeo);
                                 DBUpdateInsert(
                                     'tmerkmalwertsprache',
                                     [$localized[$j]],
@@ -310,13 +310,13 @@ function bearbeiteInsert($xml)
                                     ]
                                 );
                                 if (trim($localized[$j]->cSeo)) {
-                                    $cSeo = getFlatSeoPath($localized[$j]->cSeo);
+                                    $cSeo = \JTL\SeoHelper::getFlatSeoPath($localized[$j]->cSeo);
                                 } else {
-                                    $cSeo = getFlatSeoPath($localized[$j]->cWert);
+                                    $cSeo = \JTL\SeoHelper::getFlatSeoPath($localized[$j]->cWert);
                                 }
 
-                                $localized[$j]->cSeo = getSeo($cSeo);
-                                $localized[$j]->cSeo = checkSeo($localized[$j]->cSeo);
+                                $localized[$j]->cSeo = \JTL\SeoHelper::getSeo($cSeo);
+                                $localized[$j]->cSeo = \JTL\SeoHelper::checkSeo($localized[$j]->cSeo);
                                 DBUpdateInsert(
                                     'tmerkmalwertsprache',
                                     [$localized[$j]],
@@ -399,11 +399,11 @@ function bearbeiteInsert($xml)
                 ]
             );
             $cSeo = trim($localized[$j]->cSeo)
-                ? getFlatSeoPath($localized[$j]->cSeo)
-                : getFlatSeoPath($localized[$j]->cWert);
+                ? \JTL\SeoHelper::getFlatSeoPath($localized[$j]->cSeo)
+                : \JTL\SeoHelper::getFlatSeoPath($localized[$j]->cWert);
 
-            $localized[$j]->cSeo = getSeo($cSeo);
-            $localized[$j]->cSeo = checkSeo($localized[$j]->cSeo);
+            $localized[$j]->cSeo = \JTL\SeoHelper::getSeo($cSeo);
+            $localized[$j]->cSeo = \JTL\SeoHelper::checkSeo($localized[$j]->cSeo);
             DBUpdateInsert('tmerkmalwertsprache', [$localized[$j]], 'kMerkmalWert', 'kSprache');
             $oSeo           = new stdClass();
             $oSeo->cSeo     = $localized[$j]->cSeo;
@@ -467,8 +467,8 @@ function fuelleFehlendeMMWInSeo($oMM_arr)
                     continue;
                 }
                 // Sprache vom Shop wurde nicht von der Wawi mitgeschickt und muss somit in tseo nachgefüllt werden
-                $cSeo = isset($oMMW->cNameSTD) ? getSeo($oMMW->cNameSTD) : '';
-                $cSeo = checkSeo($cSeo);
+                $cSeo = isset($oMMW->cNameSTD) ? \JTL\SeoHelper::getSeo($oMMW->cNameSTD) : '';
+                $cSeo = \JTL\SeoHelper::checkSeo($cSeo);
                 $db->query(
                     "DELETE tmerkmalwertsprache, tseo FROM tmerkmalwertsprache
                         LEFT JOIN tseo

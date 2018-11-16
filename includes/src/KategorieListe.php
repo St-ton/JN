@@ -118,7 +118,7 @@ class KategorieListe
         }
         if ($kKategorie === 0 && self::$wasModified === true) {
             $cacheID = CACHING_GROUP_CATEGORY . '_list_' . $kKundengruppe . '_' . $kSprache;
-            $res     = Shop::Cache()->set($cacheID, self::$allCats[$cacheID], [CACHING_GROUP_CATEGORY]);
+            $res     = Shop::Container()->getCache()->set($cacheID, self::$allCats[$cacheID], [CACHING_GROUP_CATEGORY]);
             if ($res === false) {
                 //could not save to cache - so save to session like in 3.18 base
                 $_SESSION['kKategorieVonUnterkategorien_arr'] = self::$allCats[$cacheID]['kKategorieVonUnterkategorien_arr'];
@@ -140,7 +140,7 @@ class KategorieListe
         if (isset(self::$allCats[$cacheID])) {
             return self::$allCats[$cacheID];
         }
-        if (($allCategories = Shop::Cache()->get($cacheID)) !== false) {
+        if (($allCategories = Shop::Container()->getCache()->get($cacheID)) !== false) {
             self::$allCats[$cacheID] = $allCategories;
 
             return $allCategories;

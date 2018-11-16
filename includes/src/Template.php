@@ -106,7 +106,7 @@ class Template
         }
         $cacheID = 'current_template_' .
             (self::$isAdmin === true ? '_admin' : '');
-        if (($oTemplate = Shop::Cache()->get($cacheID)) !== false) {
+        if (($oTemplate = Shop::Container()->getCache()->get($cacheID)) !== false) {
             self::$cTemplate   = $oTemplate->cTemplate;
             self::$parent      = $oTemplate->parent;
             $this->name        = $oTemplate->name;
@@ -139,7 +139,7 @@ class Template
             $_SESSION['template']   = $tplObject;
             $_SESSION['cTemplate']  = self::$cTemplate;
 
-            Shop::Cache()->set($cacheID, $oTemplate, [CACHING_GROUP_TEMPLATE]);
+            Shop::Container()->getCache()->set($cacheID, $oTemplate, [CACHING_GROUP_TEMPLATE]);
         }
 
         return $this;
@@ -181,7 +181,7 @@ class Template
                     ON tplugin.kPlugin = tplugin_resources.kPlugin
                 WHERE tplugin.nStatus = :state
                 ORDER BY tplugin_resources.priority DESC',
-            ['state' => Plugin::PLUGIN_ACTIVATED],
+            ['state' => \Plugin\Plugin::PLUGIN_ACTIVATED],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $grouped    = \Functional\group($resourcesc, function ($e) {
@@ -285,7 +285,7 @@ class Template
         }
         $folders[] = $dir;
         $cacheID   = 'tpl_mnfy_dt_' . $dir . $parentHash;
-        if (($tplGroups = Shop::Cache()->get($cacheID)) === false) {
+        if (($tplGroups = Shop::Container()->getCache()->get($cacheID)) === false) {
             $tplGroups = [
                 'plugin_css'     => [],
                 'plugin_js_head' => [],
@@ -408,7 +408,7 @@ class Template
                 'groups'     => &$tplGroups,
                 'cache_tags' => &$cacheTags
             ]);
-            Shop::Cache()->set($cacheID, $tplGroups, $cacheTags);
+            Shop::Container()->getCache()->set($cacheID, $tplGroups, $cacheTags);
         }
         foreach ($tplGroups as $name => $_tplGroup) {
             $res[$name] = [];
@@ -726,7 +726,7 @@ class Template
                 }
             }
         }
-        Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_TEMPLATE]);
+        Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_TEMPLATE]);
 
         return $inserted > 0;
     }
@@ -776,7 +776,7 @@ class Template
             $_ins->cWert     = $cWert;
             Shop::Container()->getDB()->insert('ttemplateeinstellungen', $_ins);
         }
-        Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_TEMPLATE]);
+        Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_TEMPLATE]);
 
         return $this;
     }

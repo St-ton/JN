@@ -770,12 +770,15 @@ class WarenkorbHelper
             $redirectParam[] = R_MINDESTMENGE;
         }
         // lager beachten
-        if ($product->cLagerBeachten === 'Y'
-            && $product->cLagerVariation !== 'Y'
-            && $product->cLagerKleinerNull !== 'Y'
-            && $product->fPackeinheit * ($qty + $cart->gibAnzahlEinesArtikels($kArtikel)) > $product->fLagerbestand
-        ) {
-            $redirectParam[] = R_LAGER;
+        if ($product->cLagerBeachten === 'Y' && $product->cLagerVariation !== 'Y' && $product->cLagerKleinerNull !== 'Y') {
+            foreach ($product->getAllDependentProducts(true) as $dependent) {
+                /** @var Artikel $product */
+                $depProduct = $dependent->product;
+                if ($depProduct->fPackeinheit * ($qty + $_SESSION['Warenkorb']->getDependentAmount($depProduct->kArtikel, true)) > $depProduct->fLagerbestand) {
+                    $redirectParam[] = R_LAGER;
+                    break;
+                }
+            }
         }
         // darf preise sehen und somit einkaufen?
         if (!\Session\Session::getCustomerGroup()->mayViewPrices() || !\Session\Session::getCustomerGroup()->mayViewCategories()) {
@@ -1541,6 +1544,11 @@ class WarenkorbHelper
         $drop = null;
         $post = false;
         $cart = \Session\Session::getCart();
+        if (isset($_POST['dropPos']) && $_POST['dropPos'] === 'assetToUse') {
+            $_SESSION['Bestellung']->GuthabenNutzen   = false;
+            $_SESSION['Bestellung']->fGuthabenGenutzt = 0;
+            unset($_POST['dropPos']);
+        }
         if (isset($_POST['dropPos'])) {
             $drop = (int)$_POST['dropPos'];
             $post = true;
@@ -1614,13 +1622,22 @@ class WarenkorbHelper
                     }
                     if ($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerVariation !== 'Y'
                         && $Artikel->cLagerKleinerNull !== 'Y'
-                        && $Artikel->fPackeinheit * ((float)$_POST['anzahl'][$i] + $cart->gibAnzahlEinesArtikels(
-                            $position->kArtikel,
-                            $i
-                        )) > $Artikel->fLagerbestand
                     ) {
-                        $gueltig                         = false;
-                        $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('quantityNotAvailable', 'messages');
+                        foreach ($Artikel->getAllDependentProducts(true) as $dependent) {
+                            /** @var Artikel $product */
+                            $product = $dependent->product;
+                            if ($product->fPackeinheit * ((float)$_POST['anzahl'][$i]
+                                    + $_SESSION['Warenkorb']->getDependentAmount(
+                                        $product->kArtikel,
+                                        true,
+                                        [$i]
+                                    )) > $product->fLagerbestand
+                            ) {
+                                $gueltig                         = false;
+                                $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('quantityNotAvailable', 'messages');
+                                break;
+                            }
+                        }
                     }
                     // maximale Bestellmenge des Artikels beachten
                     if (isset($Artikel->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE])
@@ -1900,10 +1917,10 @@ class WarenkorbHelper
             $giftsTmp = Shop::Container()->getDB()->query(
                 "SELECT tartikel.kArtikel, tartikelattribut.cWert
                     FROM tartikel
-                    JOIN tartikelattribut 
+                    JOIN tartikelattribut
                         ON tartikelattribut.kArtikel = tartikel.kArtikel
-                    WHERE (tartikel.fLagerbestand > 0 || 
-                          (tartikel.fLagerbestand <= 0 && 
+                    WHERE (tartikel.fLagerbestand > 0 ||
+                          (tartikel.fLagerbestand <= 0 &&
                           (tartikel.cLagerBeachten = 'N' || tartikel.cLagerKleinerNull = 'Y')))
                         AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
                         AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .

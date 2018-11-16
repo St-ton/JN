@@ -551,8 +551,8 @@ function gibStepUnregistriertBestellen(): void
 {
     global $Kunde;
     $herkunfte = Shop::Container()->getDB()->query(
-        'SELECT * 
-            FROM tkundenherkunft 
+        'SELECT *
+            FROM tkundenherkunft
             ORDER BY nSort',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
@@ -733,7 +733,9 @@ function gibStepZahlung()
             ->assign('AktiveZahlungsart', $aktiveZahlungsart)
             ->assign('AktiveVerpackung', $aktiveVerpackung)
             ->assign('Kunde', $_SESSION['Kunde'])
-            ->assign('Lieferadresse', $_SESSION['Lieferadresse']);
+            ->assign('Lieferadresse', $_SESSION['Lieferadresse'])
+            ->assign('OrderAmount', \Session\Session::getCart()->gibGesamtsummeWaren(true))
+            ->assign('ShopCreditAmount', $_SESSION['Kunde']->fGuthaben);
 
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG);
 
@@ -1188,14 +1190,26 @@ function zahlungsartKorrekt(int $kZahlungsart): int
         && isset($_SESSION['Versandart']->kVersandart)
         && (int)$_SESSION['Versandart']->kVersandart > 0
     ) {
-        $Zahlungsart = Shop::Container()->getDB()->query(
+        $Zahlungsart = Shop::Container()->getDB()->executeQueryPrepared(
             'SELECT tversandartzahlungsart.*, tzahlungsart.*
                 FROM tversandartzahlungsart, tzahlungsart
-                WHERE tversandartzahlungsart.kVersandart = ' . (int)$_SESSION['Versandart']->kVersandart . '
+                WHERE tversandartzahlungsart.kVersandart = :session_kversandart
                     AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
-                    AND tversandartzahlungsart.kZahlungsart = ' . $kZahlungsart,
+                    AND tversandartzahlungsart.kZahlungsart = :kzahlungsart',
+            [
+                'session_kversandart' => (int)$_SESSION['Versandart']->kVersandart,
+                'kzahlungsart'        => $kZahlungsart
+            ],
             \DB\ReturnType::SINGLE_OBJECT
         );
+        if (!$Zahlungsart) {
+			$Zahlungsart = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
+			// only the null-payment-method is allowed to go ahead in this case
+			if ('za_null_jtl' !== $Zahlungsart->cModulId) {
+
+				return 0;
+			}
+		}
         if (isset($Zahlungsart->cModulId) && strlen($Zahlungsart->cModulId) > 0) {
             $einstellungen = Shop::Container()->getDB()->selectAll(
                 'teinstellungen',
@@ -1264,6 +1278,9 @@ function zahlungsartKorrekt(int $kZahlungsart): int
             $ZahlungsInfo    = new stdClass();
             $zusatzangabenDa = false;
             switch ($Zahlungsart->cModulId) {
+                case 'za_null_jtl' :
+                    // the null-paymentMethod did not has any additional-steps
+                    break;
                 case 'za_kreditkarte_jtl':
                     if (isset($_POST['kreditkartennr'])
                         && $_POST['kreditkartennr']
@@ -1420,13 +1437,13 @@ function getPaymentSurchageDiscount($Zahlungsart)
 
 /**
  * @param string $cModulId
- * @return bool|Plugin
+ * @return bool|\Plugin\Plugin
  */
 function gibPluginZahlungsart($cModulId)
 {
-    $kPlugin = Plugin::getIDByModuleID($cModulId);
+    $kPlugin = \Plugin\Plugin::getIDByModuleID($cModulId);
     if ($kPlugin > 0) {
-        $oPlugin = new Plugin($kPlugin);
+        $oPlugin = new \Plugin\Plugin($kPlugin);
         if ($oPlugin->kPlugin > 0) {
             return $oPlugin;
         }
@@ -1687,12 +1704,12 @@ function zahlungsartGueltig($paymentMethod): bool
     if (!isset($paymentMethod->cModulId)) {
         return false;
     }
-    $kPlugin = Plugin::getIDByModuleID($paymentMethod->cModulId);
+    $kPlugin = \Plugin\Plugin::getIDByModuleID($paymentMethod->cModulId);
     if ($kPlugin > 0) {
-        $oPlugin = new Plugin($kPlugin);
+        $oPlugin = new \Plugin\Plugin($kPlugin);
         if ($oPlugin->kPlugin > 0) {
             // Plugin muss aktiv sein
-            if ($oPlugin->nStatus !== Plugin::PLUGIN_ACTIVATED) {
+            if ($oPlugin->nStatus !== \Plugin\Plugin::PLUGIN_ACTIVATED) {
                 return false;
             }
             require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
@@ -1715,7 +1732,7 @@ function zahlungsartGueltig($paymentMethod): bool
 
                 return false;
             }
-            if (!Plugin::licenseCheck($oPlugin, ['cModulId' => $paymentMethod->cModulId])) {
+            if (!\Plugin\Plugin::licenseCheck($oPlugin, ['cModulId' => $paymentMethod->cModulId])) {
                 return false;
             }
 
@@ -3134,8 +3151,8 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0): void
     global $step;
     $conf      = Shop::getSettings([CONF_KUNDEN]);
     $herkunfte = Shop::Container()->getDB()->query(
-        'SELECT * 
-            FROM tkundenherkunft 
+        'SELECT *
+            FROM tkundenherkunft
             ORDER BY nSort',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
@@ -3685,10 +3702,10 @@ function mappeBestellvorgangZahlungshinweis(int $nHinweisCode)
 function isEmailAvailable(string $email, int $customerID = 0): bool
 {
     return Shop::Container()->getDB()->queryPrepared(
-        'SELECT * 
-            FROM tkunde 
-            WHERE cmail = :email 
-              AND nRegistriert = 1 
+        'SELECT *
+            FROM tkunde
+            WHERE cmail = :email
+              AND nRegistriert = 1
             AND kKunde != :customerID',
         ['email' => $email, 'customerID' => $customerID],
         \DB\ReturnType::SINGLE_OBJECT

@@ -84,24 +84,24 @@ class Session
     {
         self::$instance    = $this;
         self::$sessionName = $sessionName;
-        $bot               = SAVE_BOT_SESSION !== 0 && isset($_SERVER['HTTP_USER_AGENT'])
+        $bot               = \SAVE_BOT_SESSION !== 0 && isset($_SERVER['HTTP_USER_AGENT'])
             ? self::getIsCrawler($_SERVER['HTTP_USER_AGENT'])
             : false;
         \session_name(self::$sessionName);
-        if ($bot === false || SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NORMAL) {
+        if ($bot === false || \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NORMAL) {
             self::$handler = \ES_SESSIONS === 1
                 ? new SessionHandlerDB(\Shop::Container()->getDB())
                 : new SessionHandlerJTL();
         } else {
-            if (SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_COMBINED
-                || SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
+            if (\SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_COMBINED
+                || \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
             ) {
                 \session_id('jtl-bot');
             }
-            if (SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
-                || SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NEVER
+            if (\SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
+                || \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NEVER
             ) {
-                $save = SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
+                $save = \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
                     && \Shop::Container()->getCache()->isAvailable()
                     && \Shop::Container()->getCache()->isActive();
 

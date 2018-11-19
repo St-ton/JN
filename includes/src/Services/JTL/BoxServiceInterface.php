@@ -10,7 +10,6 @@ use Boxes\FactoryInterface;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use Filter\ProductFilter;
-use Filter\SearchResultsInterface;
 
 /**
  * Class BoxService
@@ -63,11 +62,10 @@ interface BoxServiceInterface
     public function filterBoxVisibility(int $boxID, int $pageType, $filter = ''): int;
 
     /**
-     * @param ProductFilter          $pf
-     * @param SearchResultsInterface $sr
+     * @param ProductFilter $pf
      * @return bool
      */
-    public function showBoxes(ProductFilter $pf, SearchResultsInterface $sr): bool;
+    public function showBoxes(ProductFilter $pf): bool;
 
     /**
      * get raw data from visible boxes

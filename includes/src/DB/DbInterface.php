@@ -246,7 +246,7 @@ interface DbInterface extends \Serializable
      * @param int|bool $echo print current stmt
      * @param bool     $bExecuteHook should function executeHook be executed
      * @param callable $fnInfo statistic callback
-     * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
+     * @return array|object|int|bool - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws \InvalidArgumentException
      */
     public function executeQueryPrepared(

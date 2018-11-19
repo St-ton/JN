@@ -333,6 +333,19 @@ class Preise
                 $kSteuerklasse = (int)$tax->kSteuerklasse;
             }
             $this->fUst          = gibUst($kSteuerklasse);
+            $tmp = Shop::DB()->select(
+                'tartikel',
+                'kArtikel',
+                $kArtikel,
+                null,
+                null,
+                null,
+                null,
+                false,
+                'fMwSt'
+                );
+            $defaultTax        = $tmp->fMwSt;
+            $currentTax        = $this->fUst;
             $this->kArtikel      = $kArtikel;
             $this->kKundengruppe = $kKundengruppe;
             $this->kKunde        = $kKunde;
@@ -344,7 +357,7 @@ class Preise
                 }
                 // Standardpreis
                 if ($price->nAnzahlAb < 1) {
-                    $this->fVKNetto = (float)$price->fVKNetto;
+                    $this->fVKNetto = $this->getRecalculatedNetPrice($price->fVKNetto, $defaultTax, $currentTax);
                     $specialPrice   = Shop::DB()->query("
                         SELECT tsonderpreise.fNettoPreis, tartikelsonderpreis.dEnde AS dEnde_en,
                             DATE_FORMAT(tartikelsonderpreis.dEnde, '%d.%m.%Y') AS dEnde_de
@@ -361,7 +374,7 @@ class Preise
                             WHERE tsonderpreise.kKundengruppe = {$kKundengruppe}", 1);
 
                     if (isset($specialPrice->fNettoPreis) && (double)$specialPrice->fNettoPreis < $this->fVKNetto) {
-                        $specialPriceValue       = (double)$specialPrice->fNettoPreis;
+                        $specialPriceValue       = $this->getRecalculatedNetPrice($specialPrice->fNettoPreis, $defaultTax, $currentTax);
                         $this->alterVKNetto      = $this->fVKNetto;
                         $this->fVKNetto          = $specialPriceValue;
                         $this->Sonderpreis_aktiv = 1;
@@ -375,20 +388,37 @@ class Preise
                         $priceGetter = "fPreis{$i}";
 
                         $this->{$scaleGetter} = (int)$price->nAnzahlAb;
-                        $this->{$priceGetter} = ($specialPriceValue !== null)
-                            ? $specialPriceValue
-                            : (double)$price->fVKNetto;
+                        $this->{$priceGetter} = $specialPriceValue ?? $this->getRecalculatedNetPrice($price->fVKNetto, $defaultTax, $currentTax);
                     }
 
                     $this->nAnzahl_arr[] = (int)$price->nAnzahlAb;
                     $this->fPreis_arr[]  =
                         ($specialPriceValue !== null && $specialPriceValue < (double)$price->fVKNetto)
                             ? $specialPriceValue
-                            : (double)$price->fVKNetto;
+                            : $this->getRecalculatedNetPrice($price->fVKNetto, $defaultTax, $currentTax);
                 }
             }
         }
         $this->berechneVKs();
+    }
+    
+    /**
+     * Return recalculated new net price based on the rounded default gross price.
+     * This is necessary for having consistent gross prices in case of threshold delivery (Tax rate != default tax rate).
+     *
+     * @param double $netPrice the product net price
+     * @param double $defaultTax the default tax factor of the product e.g. 19 for 19% vat
+     * @param double $conversionTax the taxFactor of the delivery country / delivery threshold
+     * @return double calculated net price based on a rounded(!!!) DEFAULT gross price.
+     */
+    private function getRecalculatedNetPrice($netPrice, $defaultTax, $conversionTax)
+    {
+        $newNetPrice = $netPrice;
+        if (defined('CONSISTENT_GROSS_PRICES') && CONSISTENT_GROSS_PRICES === true && $defaultTax > 0 && $conversionTax > 0 && $defaultTax != $conversionTax) {
+            $newNetPrice = round($netPrice * ($defaultTax + 100) / 100, 2) / ($conversionTax + 100) * 100;
+        }
+        
+        return (double)$newNetPrice;
     }
 
     /**

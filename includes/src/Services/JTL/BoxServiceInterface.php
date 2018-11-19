@@ -7,6 +7,7 @@
 namespace Services\JTL;
 
 use Boxes\FactoryInterface;
+use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use Filter\ProductFilter;
 use Filter\SearchResultsInterface;
@@ -17,25 +18,28 @@ use Filter\SearchResultsInterface;
 interface BoxServiceInterface
 {
     /**
-     * @param array            $config
-     * @param FactoryInterface $factory
-     * @param DbInterface      $db
+     * @param array             $config
+     * @param FactoryInterface  $factory
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
      * @return BoxServiceInterface
      */
     public static function getInstance(
         array $config,
         FactoryInterface $factory,
-        DbInterface $db
+        DbInterface $db,
+        JTLCacheInterface $cache
     ): BoxServiceInterface;
 
     /**
      * BoxService constructor.
      *
-     * @param array            $config
-     * @param FactoryInterface $factory
-     * @param DbInterface      $db
+     * @param array             $config
+     * @param FactoryInterface  $factory
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
      */
-    public function __construct(array $config, FactoryInterface $factory, DbInterface $db);
+    public function __construct(array $config, FactoryInterface $factory, DbInterface $db, JTLCacheInterface $cache);
 
     /**
      * @param int $productID

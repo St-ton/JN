@@ -1919,7 +1919,8 @@ final class Shop
             return new \Services\JTL\BoxService(
                 Shopsetting::getInstance()->getAll(),
                 $container->getBoxFactory(),
-                $container->getDB()
+                $container->getDB(),
+                $container->getCache()
             );
         });
         // Captcha

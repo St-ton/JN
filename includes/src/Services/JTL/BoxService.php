@@ -8,14 +8,17 @@ namespace Services\JTL;
 
 use Boxes\FactoryInterface;
 use Boxes\Items\BoxInterface;
+use Boxes\Items\Extension;
 use Boxes\Items\Plugin;
-use Boxes\Type;
 use Boxes\Renderer\DefaultRenderer;
+use Boxes\Type;
+use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\ReturnType;
 use Filter\ProductFilter;
 use Filter\SearchResultsInterface;
 use Filter\Visibility;
+use Plugin\ExtensionLoader;
 use Plugin\State;
 use Session\Session;
 
@@ -57,36 +60,45 @@ class BoxService implements BoxServiceInterface
     private $db;
 
     /**
+     * @var JTLCacheInterface
+     */
+    private $cache;
+
+    /**
      * @var BoxServiceInterface
      */
     private static $instance;
 
     /**
-     * @param array            $config
-     * @param FactoryInterface $factory
-     * @param DbInterface      $db
+     * @param array             $config
+     * @param FactoryInterface  $factory
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
      * @return BoxServiceInterface
      */
     public static function getInstance(
         array $config,
         FactoryInterface $factory,
-        DbInterface $db
+        DbInterface $db,
+        JTLCacheInterface $cache
     ): BoxServiceInterface {
-        return self::$instance ?? new self($config, $factory, $db);
+        return self::$instance ?? new self($config, $factory, $db, $cache);
     }
 
     /**
      * BoxService constructor.
      *
-     * @param array            $config
-     * @param FactoryInterface $factory
-     * @param DbInterface      $db
+     * @param array             $config
+     * @param FactoryInterface  $factory
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
      */
-    public function __construct(array $config, FactoryInterface $factory, DbInterface $db)
+    public function __construct(array $config, FactoryInterface $factory, DbInterface $db, JTLCacheInterface $cache)
     {
         $this->config   = $config;
         $this->factory  = $factory;
         $this->db       = $db;
+        $this->cache    = $cache;
         self::$instance = $this;
     }
 
@@ -346,9 +358,9 @@ class BoxService implements BoxServiceInterface
             : '';
         $cPluginAktiv     = $active
             ? ' AND (tplugin.nStatus IS NULL OR tplugin.nStatus = ' .
-            State::ACTIVATED . "  OR tboxvorlage.eTyp != 'plugin')"
+            State::ACTIVATED . "  OR tboxvorlage.eTyp != 'plugin' OR tboxvorlage.eTyp != 'extension')"
             : '';
-        if (($grouped = \Shop::Container()->getCache()->get($cacheID)) === false) {
+        if (($grouped = $this->cache->get($cacheID)) === false) {
             $boxData = $this->db->query(
                 'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
                        tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
@@ -376,51 +388,62 @@ class BoxService implements BoxServiceInterface
             $grouped = \Functional\group($boxData, function ($e) {
                 return $e->kBox;
             });
-            \Shop::Container()->getCache()->set($cacheID, $grouped, \array_unique($cacheTags));
+            $this->cache->set($cacheID, $grouped, \array_unique($cacheTags));
         }
+
+        return $this->getItems($grouped);
+    }
+
+    /**
+     * @param array $grouped
+     * @return array
+     */
+    private function getItems(array $grouped): array
+    {
         $children = [];
+        $result   = [];
         foreach ($grouped as $i => $boxes) {
-            if (!\is_array($boxes)) {
-                continue;
-            }
             $first = \Functional\first($boxes);
             if ((int)$first->kContainer > 0) {
-                $boxInstance = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp === Type::PLUGIN);
-                $boxInstance->map($boxes);
+                $box = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp);
+                $box->map($boxes);
                 if (!isset($children[(int)$first->kContainer])) {
                     $children[(int)$first->kContainer] = [];
                 }
-                $children[(int)$first->kContainer][] = $boxInstance;
+                $children[(int)$first->kContainer][] = $box;
                 unset($grouped[$i]);
             }
         }
-        $result = [];
         foreach ($grouped as $boxes) {
-            if (!\is_array($boxes)) {
-                continue;
-            }
-            $first       = \Functional\first($boxes);
-            $boxInstance = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp === Type::PLUGIN);
-            $boxInstance->map($boxes);
-            if (\get_class($boxInstance) === Plugin::class) {
-                $plugin = new \Plugin\Plugin($boxInstance->getCustomID());
-                $boxInstance->setTemplateFile(
+            $first = \Functional\first($boxes);
+            $box   = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp);
+            $box->map($boxes);
+            $class = \get_class($box);
+            if ($class === Plugin::class) {
+                $plugin = new \Plugin\Plugin($box->getCustomID());
+                $box->setTemplateFile(
                     $plugin->cFrontendPfad .
                     \PFAD_PLUGIN_BOXEN .
-                    $boxInstance->getTemplateFile()
+                    $box->getTemplateFile()
                 );
-                $boxInstance->setPlugin($plugin);
+                $box->setPlugin($plugin);
+            } elseif ($class === Extension::class) {
+                $loader    = new ExtensionLoader($this->db, $this->cache);
+                $extension = $loader->init($box->getCustomID());
+                $box->setTemplateFile(
+                    $extension->getPaths()->getFrontendPath() .
+                    $box->getTemplateFile()
+                );
+                $box->setExtension($extension);
+            } elseif ($box->getType() === Type::CONTAINER) {
+                $box->setChildren($children);
             }
-            if ($boxInstance->getType() === Type::CONTAINER) {
-                $boxInstance->setChildren($children);
-            }
-            $result[] = $boxInstance;
+            $result[] = $box;
         }
-        $byPosition  = \Functional\group($result, function (BoxInterface $e) {
+        $this->boxes = \Functional\group($result, function (BoxInterface $e) {
             return $e->getPosition();
         });
-        $this->boxes = $byPosition;
 
-        return $byPosition;
+        return $this->boxes;
     }
 }

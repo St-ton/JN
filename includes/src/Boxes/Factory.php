@@ -7,11 +7,13 @@
 namespace Boxes;
 
 use Boxes\Items\{BestsellingProducts,
+    BoxDefault,
     BoxInterface,
     Cart,
     CompareList,
     Container,
     DirectPurchase,
+    Extension,
     FilterAttribute,
     FilterCategory,
     FilterItem,
@@ -40,8 +42,7 @@ use Boxes\Items\{BestsellingProducts,
     TrustedShopsReviews,
     TrustedShopsSeal,
     UpcomingProducts,
-    Wishlist
-};
+    Wishlist};
 
 /**
  * Class Factory
@@ -68,7 +69,7 @@ class Factory implements FactoryInterface
     /**
      * @inheritdoc
      */
-    public function getBoxByBaseType(int $baseType, bool $isPlugin): BoxInterface
+    public function getBoxByBaseType(int $baseType, string $type = null): BoxInterface
     {
         switch ($baseType) {
             case \BOX_BESTSELLER:
@@ -139,7 +140,14 @@ class Factory implements FactoryInterface
             case \BOX_SUCHWOLKE:
                 return new SearchCloud($this->config);
             default:
-                return $isPlugin ? new Plugin($this->config) : new Items\BoxDefault($this->config);
+                if ($type === Type::PLUGIN) {
+                    return new Plugin($this->config);
+                }
+                if ($type === Type::EXTENSION) {
+                    return new Extension($this->config);
+                }
+
+                return new BoxDefault($this->config);
         }
     }
 }

@@ -33,4 +33,6 @@ class Type extends Enum
     public const TPL = 'tpl';
 
     public const CONTAINER = 'container';
+
+    public const EXTENSION = 'extension';
 }

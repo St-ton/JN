@@ -8,6 +8,7 @@ namespace Services\JTL;
 
 use Boxes\FactoryInterface;
 use Boxes\Items\BoxInterface;
+use Boxes\Items\Plugin;
 use Boxes\Type;
 use Boxes\Renderer\DefaultRenderer;
 use DB\DbInterface;
@@ -401,7 +402,7 @@ class BoxService implements BoxServiceInterface
             $first       = \Functional\first($boxes);
             $boxInstance = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp === Type::PLUGIN);
             $boxInstance->map($boxes);
-            if (\get_class($boxInstance) === \Plugin\Plugin::class) {
+            if (\get_class($boxInstance) === Plugin::class) {
                 $plugin = new \Plugin\Plugin($boxInstance->getCustomID());
                 $boxInstance->setTemplateFile(
                     $plugin->cFrontendPfad .

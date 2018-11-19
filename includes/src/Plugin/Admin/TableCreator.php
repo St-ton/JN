@@ -83,7 +83,14 @@ class TableCreator
     public function install($xml, $plugin): int
     {
         $this->plugin   = $plugin;
-        $base           = $xml['jtlshop3plugin'][0] ?? $xml['jtlshopplugin'][0]; // @todo
+        // @todo
+        if (isset($xml['jtlshopplugin'][0])) {
+            $modern = true;
+            $base   = $xml['jtlshopplugin'][0];
+        } else {
+            $modern = false;
+            $base   = $xml['jtlshop3plugin'][0];
+        }
         $hooksNode      = isset($base['Install'][0]['Hooks'])
         && \is_array($base['Install'][0]['Hooks'])
             ? $base['Install'][0]['Hooks']
@@ -162,7 +169,7 @@ class TableCreator
         if (($res = $this->installPaymentMethods($paymentNode)) !== InstallCode::OK) {
             return $res;
         }
-        if (($res = $this->installBoxes($boxesNode)) !== InstallCode::OK) {
+        if (($res = $this->installBoxes($boxesNode, $modern)) !== InstallCode::OK) {
             return $res;
         }
         if (($res = $this->installTemplates($templatesNode)) !== InstallCode::OK) {
@@ -968,9 +975,10 @@ class TableCreator
 
     /**
      * @param array $node
+     * @param bool  $modern
      * @return int
      */
-    private function installBoxes(array $node): int
+    private function installBoxes(array $node, bool $modern = false): int
     {
         foreach ($node as $h => $box) {
             \preg_match('/[0-9]+/', $h, $hits3);
@@ -979,7 +987,7 @@ class TableCreator
             }
             $boxTpl              = new \stdClass();
             $boxTpl->kCustomID   = $this->plugin->kPlugin;
-            $boxTpl->eTyp        = 'plugin';
+            $boxTpl->eTyp        = $modern ? 'extension' : 'plugin';
             $boxTpl->cName       = $box['Name'];
             $boxTpl->cVerfuegbar = $box['Available'];
             $boxTpl->cTemplate   = $box['TemplateFile'];

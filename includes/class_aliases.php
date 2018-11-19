@@ -15,3 +15,4 @@ class_alias(\Plugin\PluginInterface::class, 'IPlugin', true);
 class_alias(\Plugin\AbstractPlugin::class, 'AbstractPlugin', true);
 class_alias(\Plugin\LicenseInterface::class, 'IPluginLizenz', true);
 class_alias(\Plugin\LicenseInterface::class, 'PluginLizenz', true);
+class_alias(\Events\Dispatcher::class, 'EventDispatcher', true);

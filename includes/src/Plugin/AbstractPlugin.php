@@ -6,6 +6,8 @@
 
 namespace Plugin;
 
+use Events\Dispatcher;
+
 /**
  * class AbstractPlugin
  */
@@ -37,9 +39,9 @@ abstract class AbstractPlugin implements PluginInterface
     }
 
     /**
-     * @param \EventDispatcher $dispatcher
+     * @param Dispatcher $dispatcher
      */
-    public function boot(\EventDispatcher $dispatcher)
+    public function boot(Dispatcher $dispatcher)
     {
         $dispatcher->listen('backend.notification', function (\Notification $notify) use (&$dispatcher) {
             $dispatcher->forget('backend.notification');

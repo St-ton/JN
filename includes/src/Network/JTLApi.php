@@ -29,21 +29,14 @@ final class JTLApi
     private $nice;
 
     /**
-     * @var \Shop
-     */
-    private $shop;
-
-    /**
      * JTLApi constructor.
      * @param array $session
      * @param \Nice $nice
-     * @param \Shop $shop
      */
-    public function __construct(array &$session, \Nice $nice, \Shop $shop)
+    public function __construct(array &$session, \Nice $nice)
     {
         $this->session = &$session;
         $this->nice    = $nice;
-        $this->shop    = $shop;
     }
 
     /**
@@ -84,7 +77,7 @@ final class JTLApi
      */
     public function getLatestVersion(): Version
     {
-        $shopVersion       = $this->shop->_getVersion();
+        $shopVersion       = \APPLICATION_VERSION;
         $parsedShopVersion = Version::parse($shopVersion);
         $oVersions         = $this->getAvailableVersions();
 
@@ -112,10 +105,7 @@ final class JTLApi
             return false;
         }
 
-        $shopVersion = $this->shop->_getVersion();
-        $oVersion    = $this->getLatestVersion();
-
-        return $oVersion->greaterThan(Version::parse($shopVersion));
+        return $this->getLatestVersion()->greaterThan(Version::parse(\APPLICATION_VERSION));
     }
 
     /**

@@ -23,7 +23,7 @@ use Filter\ProductFilter;
  * @method static Sprache Lang()
  * @method static \Smarty\JTLSmarty Smarty(bool $fast_init = false, bool $isAdmin = false)
  * @method static Media Media()
- * @method static EventDispatcher Event()
+ * @method static \Events\Dispatcher Event()
  * @method static bool has(string $key)
  * @method static Shop set(string $key, mixed $value)
  * @method static null|mixed get($key)
@@ -578,7 +578,7 @@ final class Shop
      */
     public function _Cache(): \Cache\JTLCacheInterface
     {
-        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+//        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         return self::Container()->getCache();
     }
 
@@ -609,13 +609,13 @@ final class Shop
     /**
      * get event instance
      *
-     * @return EventDispatcher
+     * @return \Events\Dispatcher
      * @deprecated since 5.0.0
      */
-    public function _Event(): EventDispatcher
+    public function _Event(): \Events\Dispatcher
     {
         trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-        return EventDispatcher::getInstance();
+        return \Events\Dispatcher::getInstance();
     }
 
     /**
@@ -624,7 +624,7 @@ final class Shop
      */
     public static function fire(string $eventName, $arguments = []): void
     {
-        EventDispatcher::getInstance()->fire($eventName, $arguments);
+        \Events\Dispatcher::getInstance()->fire($eventName, $arguments);
     }
 
     /**
@@ -766,7 +766,7 @@ final class Shop
         }
         foreach ($plugins as $plugin) {
             if (($p = \Plugin\Helper::bootstrapper($plugin->kPlugin)) !== null) {
-                $p->boot(EventDispatcher::getInstance());
+                $p->boot(\Events\Dispatcher::getInstance());
             }
         }
     }
@@ -887,7 +887,7 @@ final class Shop
         self::$productFilter = new ProductFilter($conf, self::Container()->getDB(), self::Container()->getCache());
         self::seoCheck();
         self::setImageBaseURL(defined('IMAGE_BASE_URL') ? IMAGE_BASE_URL : self::getURL());
-        EventDispatcher::getInstance()->fire('shop.run');
+        \Events\Dispatcher::getInstance()->fire(\Events\Event::RUN);
 
         self::$productFilter->initStates(self::getParameters());
 
@@ -1650,14 +1650,6 @@ final class Shop
     }
 
     /**
-     * @return string
-     */
-    public function _getVersion(): string
-    {
-        return APPLICATION_VERSION;
-    }
-
-    /**
      * get logo from db, fallback to first file in logo dir
      *
      * @var bool $fullURL - prepend shop url if set to true
@@ -1888,7 +1880,7 @@ final class Shop
         });
         // NETWORK & API
         $container->setFactory(\Network\JTLApi::class, function () {
-            return new \Network\JTLApi($_SESSION, Nice::getInstance(), self::getInstance());
+            return new \Network\JTLApi($_SESSION, Nice::getInstance());
         });
         // DB SERVICES
         $container->setSingleton(DbService\GcServiceInterface::class, function (Container $container) {

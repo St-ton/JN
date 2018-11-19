@@ -6,15 +6,17 @@
 
 namespace Plugin;
 
+use Events\Dispatcher;
+
 /**
  * Interface PluginInterface
  */
 interface PluginInterface
 {
     /**
-     * @param \EventDispatcher $dispatcher
+     * @param Dispatcher $dispatcher
      */
-    public function boot(\EventDispatcher $dispatcher);
+    public function boot(Dispatcher $dispatcher);
 
     /**
      * @return mixed

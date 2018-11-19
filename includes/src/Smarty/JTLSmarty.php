@@ -6,6 +6,8 @@
 
 namespace Smarty;
 
+use Events\Dispatcher;
+
 /**
  * Class JTLSmarty
  * @method JTLSmarty assign(string $variable, mixed $value)
@@ -202,7 +204,7 @@ class JTLSmarty extends \SmartyBC
         if ((isset($hookList[\HOOK_SMARTY_OUTPUTFILTER])
                 && \is_array($hookList[\HOOK_SMARTY_OUTPUTFILTER])
                 && \count($hookList[\HOOK_SMARTY_OUTPUTFILTER]) > 0)
-                || \count(\EventDispatcher::getInstance()->getListeners('shop.hook.' . \HOOK_SMARTY_OUTPUTFILTER)) > 0
+                || \count(Dispatcher::getInstance()->getListeners('shop.hook.' . \HOOK_SMARTY_OUTPUTFILTER)) > 0
         ) {
             require_once \PFAD_ROOT . \PFAD_PHPQUERY . 'phpquery.class.php';
             $this->unregisterFilter('output', [$this, 'outputFilter']);

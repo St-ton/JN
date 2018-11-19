@@ -241,12 +241,12 @@ class ArtikelHelper
         }
         if ($langID > 0 && !Sprache::isDefaultLanguageActive()) {
             $attr->cSELECT = 'teigenschaftsprache.cName AS cName_teigenschaftsprache, ';
-            $attr->cJOIN   = 'LEFT JOIN teigenschaftsprache 
+            $attr->cJOIN   = 'LEFT JOIN teigenschaftsprache
                                         ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
                                         AND teigenschaftsprache.kSprache = ' . $langID;
 
             $attrVal->cSELECT = 'teigenschaftwertsprache.cName AS cName_teigenschaftwertsprache, ';
-            $attrVal->cJOIN   = 'LEFT JOIN teigenschaftwertsprache 
+            $attrVal->cJOIN   = 'LEFT JOIN teigenschaftwertsprache
                                     ON teigenschaftwertsprache.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                                     AND teigenschaftwertsprache.kSprache = ' . $langID;
         }
@@ -403,7 +403,7 @@ class ArtikelHelper
         $propData        = Shop::Container()->getDB()->queryPrepared(
             'SELECT teigenschaft.kEigenschaft,teigenschaft.cName,teigenschaft.cTyp
                 FROM teigenschaft
-                LEFT JOIN teigenschaftsichtbarkeit 
+                LEFT JOIN teigenschaftsichtbarkeit
                     ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
                     AND teigenschaftsichtbarkeit.kKundengruppe = :cgroupid
                 WHERE teigenschaft.kArtikel = :articleid
@@ -421,7 +421,7 @@ class ArtikelHelper
             if ($prop->cTyp !== 'FREIFELD' && $prop->cTyp !== 'PFLICHT-FREIFELD') {
                 if (self::hasSelectedVariationValue($prop->kEigenschaft)) {
                     $propExists = Shop::Container()->getDB()->queryPrepared(
-                        'SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName, 
+                        'SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName,
                             teigenschaftwertsichtbarkeit.kKundengruppe
                             FROM teigenschaftwert
                             LEFT JOIN teigenschaftwertsichtbarkeit
@@ -850,7 +850,7 @@ class ArtikelHelper
                 'SELECT txsell.*, txsellgruppe.cName, txsellgruppe.cBeschreibung
                     FROM txsell
                     JOIN tartikel
-                        ON txsell.kXSellArtikel = tartikel.kArtikel 
+                        ON txsell.kXSellArtikel = tartikel.kArtikel
                     LEFT JOIN txsellgruppe
                         ON txsellgruppe.kXSellGruppe = txsell.kXSellGruppe
                         AND txsellgruppe.kSprache = :lid
@@ -917,7 +917,7 @@ class ArtikelHelper
                     IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel) AS kXSellArtikel,
                     SUM(txsellkauf.nAnzahl) nAnzahl
                         FROM txsellkauf
-                        JOIN tartikel 
+                        JOIN tartikel
                             ON tartikel.kArtikel = txsellkauf.kXSellArtikel
                         WHERE txsellkauf.kArtikel = {$productID}
                             AND (tartikel.kVaterArtikel != (
@@ -1156,7 +1156,7 @@ class ArtikelHelper
         $history->cFax       = $data->tnachricht->cFax;
         $history->cMail      = $data->tnachricht->cMail;
         $history->cNachricht = $data->tnachricht->cNachricht;
-        $history->cIP        = RequestHelper::getIP();
+        $history->cIP        = RequestHelper::getRealIP();
         $history->dErstellt  = 'NOW()';
 
         $inquiryID                     = Shop::Container()->getDB()->insert('tproduktanfragehistory', $history);
@@ -1182,7 +1182,7 @@ class ArtikelHelper
                 FROM tproduktanfragehistory
                 WHERE cIP = :ip
                     AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
-            ['ip' => RequestHelper::getIP(), 'min' => $min],
+            ['ip' => RequestHelper::getRealIP(), 'min' => $min],
             \DB\ReturnType::SINGLE_OBJECT
         );
 
@@ -1212,7 +1212,7 @@ class ArtikelHelper
                 $inquiry            = self::getAvailabilityFormDefaults();
                 $inquiry->kSprache  = Shop::getLanguage();
                 $inquiry->kArtikel  = (int)$_POST['a'];
-                $inquiry->cIP       = RequestHelper::getIP();
+                $inquiry->cIP       = RequestHelper::getRealIP();
                 $inquiry->dErstellt = 'NOW()';
                 $inquiry->nStatus   = 0;
                 $checkBox           = new CheckBox();
@@ -1233,12 +1233,12 @@ class ArtikelHelper
                 )->checkLogging(CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $customerGroupID, $_POST, true);
 
                 $inquiryID = Shop::Container()->getDB()->queryPrepared(
-                    'INSERT INTO tverfuegbarkeitsbenachrichtigung 
-                        (cVorname, cNachname, cMail, kSprache, kArtikel, cIP, dErstellt, nStatus) 
-                        VALUES 
+                    'INSERT INTO tverfuegbarkeitsbenachrichtigung
+                        (cVorname, cNachname, cMail, kSprache, kArtikel, cIP, dErstellt, nStatus)
+                        VALUES
                         (:cVorname, :cNachname, :cMail, :kSprache, :kArtikel, :cIP, NOW(), :nStatus)
-                        ON DUPLICATE KEY UPDATE 
-                            cVorname = :cVorname, cNachname = :cNachname, ksprache = :kSprache, 
+                        ON DUPLICATE KEY UPDATE
+                            cVorname = :cVorname, cNachname = :cNachname, ksprache = :kSprache,
                             cIP = :cIP, dErstellt = NOW(), nStatus = :nStatus',
                     get_object_vars($inquiry),
                     \DB\ReturnType::LAST_INSERTED_ID
@@ -1338,7 +1338,7 @@ class ArtikelHelper
                 FROM tverfuegbarkeitsbenachrichtigung
                 WHERE cIP = :ip
                 AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
-            ['ip' => RequestHelper::getIP(), 'min' => $min],
+            ['ip' => RequestHelper::getRealIP(), 'min' => $min],
             \DB\ReturnType::SINGLE_OBJECT
         );
 
@@ -1400,7 +1400,7 @@ class ArtikelHelper
             $prev        = Shop::Container()->getDB()->query(
                 'SELECT tartikel.kArtikel
                     FROM tkategorieartikel, tpreise, tartikel
-                    LEFT JOIN tartikelsichtbarkeit 
+                    LEFT JOIN tartikelsichtbarkeit
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
@@ -1417,7 +1417,7 @@ class ArtikelHelper
             $next        = Shop::Container()->getDB()->query(
                 'SELECT tartikel.kArtikel
                     FROM tkategorieartikel, tpreise, tartikel
-                    LEFT JOIN tartikelsichtbarkeit 
+                    LEFT JOIN tartikelsichtbarkeit
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
@@ -1579,7 +1579,7 @@ class ArtikelHelper
                 exit();
             }
             Shop::Container()->getDB()->query(
-                "DELETE FROM ttagkunde 
+                "DELETE FROM ttagkunde
                     WHERE dZeit < DATE_SUB(NOW(),INTERVAL 1 MONTH)",
                 \DB\ReturnType::DEFAULT
             );
@@ -1588,7 +1588,7 @@ class ArtikelHelper
                     && $_SESSION['Kunde']->kKunde > 0)
                 || $conf['artikeldetails']['tagging_freischaltung'] === 'O'
             ) {
-                $ip = RequestHelper::getIP();
+                $ip = RequestHelper::getRealIP();
                 if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                     $tagPostings = Shop::Container()->getDB()->queryPrepared(
                         'SELECT COUNT(kTagKunde) AS Anzahl
@@ -1977,13 +1977,13 @@ class ArtikelHelper
                             WHERE kArtikel = ' . $productID . '
                             AND nSort <= 10
                         ) AS ssSuchCache
-                        JOIN tsuchcachetreffer 
+                        JOIN tsuchcachetreffer
                             ON tsuchcachetreffer.kSuchCache = ssSuchCache.kSuchCache
                             AND tsuchcachetreffer.kArtikel != ' . $productID . '
-                        LEFT JOIN tartikelsichtbarkeit 
+                        LEFT JOIN tartikelsichtbarkeit
                             ON tsuchcachetreffer.kArtikel = tartikelsichtbarkeit.kArtikel
                             AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
-                        JOIN tartikel 
+                        JOIN tartikel
                             ON tartikel.kArtikel = tsuchcachetreffer.kArtikel
                             AND tartikel.kVaterArtikel != ' . $productID . '
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL ' . $stockFilterSQL . ' ' . $xsellSQL . '
@@ -2012,13 +2012,13 @@ class ArtikelHelper
                                     FROM ttagartikel
                                     WHERE kArtikel = ' . $productID . '
                             ) AS ssTag
-                            JOIN ttagartikel 
+                            JOIN ttagartikel
                                 ON ttagartikel.kTag = ssTag.kTag
                                 AND ttagartikel.kArtikel != ' . $productID . '
-                            LEFT JOIN tartikelsichtbarkeit 
+                            LEFT JOIN tartikelsichtbarkeit
                                 ON ttagartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                                 AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
-                            JOIN tartikel 
+                            JOIN tartikel
                                 ON tartikel.kArtikel = ttagartikel.kArtikel
                                 AND tartikel.kVaterArtikel != ' . $productID . '
                             WHERE tartikelsichtbarkeit.kArtikel IS NULL ' . $stockFilterSQL . ' ' . $xsellSQL . '

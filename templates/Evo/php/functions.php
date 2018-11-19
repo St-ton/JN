@@ -6,8 +6,6 @@
  * @global Smarty\JTLSmarty $smarty
  */
 $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisStringLocalizedSmarty')
-       ->registerPlugin('function', 'load_boxes', 'load_boxes')
-       ->registerPlugin('function', 'load_boxes_raw', 'load_boxes_raw')
        ->registerPlugin('function', 'getBoxesByPosition', 'getBoxesByPosition')
        ->registerPlugin('function', 'has_boxes', 'has_boxes')
        ->registerPlugin('function', 'image', 'get_img_tag')
@@ -149,19 +147,6 @@ function get_manufacturers($params, $smarty)
 /**
  * @param array            $params
  * @param Smarty\JTLSmarty $smarty
- * @return string
- */
-function load_boxes_raw($params, $smarty)
-{
-    if (isset($params['array'], $params['assign']) && $params['array'] === true) {
-        $rawData = Shop::Container()->getBoxService()->getRawData();
-        $smarty->assign($params['assign'], $rawData[$params['type']] ?? null);
-    }
-}
-
-/**
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
  * @return array|void
  */
 function getBoxesByPosition($params, $smarty)
@@ -263,76 +248,6 @@ function get_img_tag($params, $smarty)
     }
 
     return '<img src="' . $imageURL . '"' . $imageID . $imageALT . $imageTITLE . $imageCLASS . ' />';
-}
-
-/**
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
- * @return string
- */
-function load_boxes($params, $smarty)
-{
-    $cTplData     = '';
-    $cOldTplDir   = '';
-    $oBoxen_arr   = Shop::Container()->getBoxService()->compatGet();
-    $cTemplateDir = $smarty->getTemplateDir($smarty->context);
-    if (is_array($oBoxen_arr) && isset($params['type'])) {
-        $cType   = $params['type'];
-        $_sBoxes = $smarty->getTemplateVars('boxes');
-        if (isset($_sBoxes[$cType], $oBoxen_arr[$cType]) && is_array($oBoxen_arr[$cType])) {
-            foreach ($oBoxen_arr[$cType] as $oBox) {
-                $oPluginVar = '';
-                $cTemplate  = 'tpl_inc/boxes/' . $oBox->cTemplate;
-                if ($oBox->eTyp === 'plugin') {
-                    $oPlugin = new Plugin\Plugin($oBox->kCustomID);
-                    if ($oPlugin->kPlugin > 0 && $oPlugin->nStatus === 2) {
-                        $cTemplate    = $oBox->cTemplate;
-                        $cOldTplDir   = $cTemplateDir;
-                        $cTemplateDir = $oPlugin->cFrontendPfad . PFAD_PLUGIN_BOXEN;
-                        $oPluginVar   = 'oPlugin' . $oBox->kBox;
-                        $smarty->assign($oPluginVar, $oPlugin);
-                    }
-                } elseif ($oBox->eTyp === 'link') {
-                    foreach (Shop::Container()->getLinkService()->getLinkGroups() as $oLinkTpl) {
-                        if ($oLinkTpl->kLinkgruppe == $oBox->kCustomID) {
-                            $oBox->oLinkGruppeTemplate = $oLinkTpl;
-                            $oBox->oLinkGruppe         = $oLinkTpl;
-                        }
-                    }
-                }
-                if (file_exists($cTemplateDir . '/' . $cTemplate)) {
-                    $oBoxVar = 'oBox' . $oBox->kBox;
-                    $smarty->assign($oBoxVar, $oBox);
-                    // Custom Template
-                    $Einstellungen = $smarty->getTemplateVars('Einstellungen');
-                    if ($Einstellungen['template']['general']['use_customtpl'] === 'Y') {
-                        $cTemplatePath   = pathinfo($cTemplate);
-                        $cCustomTemplate = $cTemplatePath['dirname'] . '/' . $cTemplatePath['filename'] . '_custom.tpl';
-                        if (file_exists($cTemplateDir . '/' . $cCustomTemplate)) {
-                            $cTemplate = $cCustomTemplate;
-                        }
-                    }
-                    $cTemplatePath = $cTemplateDir . '/' . $cTemplate;
-                    if ($oBox->eTyp === 'plugin') {
-                        $cTplData .= "{include file='" . $cTemplatePath . "' oBox=\$$oBoxVar oPlugin=\$$oPluginVar}";
-                    } else {
-                        $cTplData .= "{include file='" . $cTemplatePath . "' oBox=\$$oBoxVar}";
-                    }
-
-                    if (strlen($cOldTplDir)) {
-                        $cTemplateDir = $cOldTplDir;
-                    }
-                }
-            }
-        }
-    }
-    if (isset($params['assign'])) {
-        $smarty->assign($params['assign'], $cTplData);
-
-        return;
-    }
-
-    return $cTplData;
 }
 
 /**

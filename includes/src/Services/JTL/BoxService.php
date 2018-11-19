@@ -16,7 +16,6 @@ use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\ReturnType;
 use Filter\ProductFilter;
-use Filter\SearchResultsInterface;
 use Filter\Visibility;
 use Plugin\ExtensionLoader;
 use Plugin\State;
@@ -156,7 +155,7 @@ class BoxService implements BoxServiceInterface
         }
         $visibility = [];
         $boxes      = $this->db->selectAll('tboxenanzeige', 'nSeite', $pageType);
-        if (\is_array($boxes) && \count($boxes)) {
+        if (\count($boxes) > 0) {
             foreach ($boxes as $box) {
                 $visibility[$box->ePosition] = (boolean)$box->bAnzeigen;
             }
@@ -173,27 +172,28 @@ class BoxService implements BoxServiceInterface
     /**
      * @param int          $boxID
      * @param int          $pageType
-     * @param string|array $cFilter
+     * @param string|array $filter
      * @return int
      */
-    public function filterBoxVisibility(int $boxID, int $pageType, $cFilter = ''): int
+    public function filterBoxVisibility(int $boxID, int $pageType, $filter = ''): int
     {
-        if (\is_array($cFilter)) {
-            $cFilter = \array_unique($cFilter);
-            $cFilter = \implode(',', $cFilter);
+        if (\is_array($filter)) {
+            $filter = \implode(',', \array_unique($filter));
         }
-        $upd          = new \stdClass();
-        $upd->cFilter = $cFilter;
 
-        return $this->db->update('tboxensichtbar', ['kBox', 'kSeite'], [$boxID, $pageType], $upd);
+        return $this->db->update(
+            'tboxensichtbar',
+            ['kBox', 'kSeite'],
+            [$boxID, $pageType],
+            (object)['cFilter' => $filter]
+        );
     }
 
     /**
-     * @param ProductFilter          $pf
-     * @param SearchResultsInterface $sr
+     * @param ProductFilter $pf
      * @return bool
      */
-    public function showBoxes(ProductFilter $pf, SearchResultsInterface $sr): bool
+    public function showBoxes(ProductFilter $pf): bool
     {
         $cf  = $pf->getCategoryFilter();
         $mf  = $pf->getManufacturerFilter();
@@ -256,16 +256,12 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @param array $positionedBoxes
-     * @return array
-     * @throws \Exception
-     * @throws \SmartyException
+     * @param int $pageType
+     * @return int
      */
-    public function render(array $positionedBoxes): array
+    private function getCurrentPageID(int $pageType): int
     {
-        $smarty   = \Shop::Smarty();
-        $pageType = \Shop::getPageType();
-        $pageID   = 0;
+        $pageID = 0;
         if ($pageType === \PAGE_ARTIKELLISTE) {
             $pageID = (int)\Shop::$kKategorie;
         } elseif ($pageType === \PAGE_ARTIKEL) {
@@ -275,22 +271,32 @@ class BoxService implements BoxServiceInterface
         } elseif ($pageType === \PAGE_HERSTELLER) {
             $pageID = (int)\Shop::$kHersteller;
         }
-        $originalArticle = $smarty->getTemplateVars('Artikel');
-        $productFilter   = \Shop::getProductFilter();
-        $showBoxes       = !empty($this->config)
-            ? $this->showBoxes($productFilter, $productFilter->getSearchResults())
-            : 0;
-        $htmlArray       = [
+
+        return $pageID;
+    }
+
+    /**
+     * @param array $positionedBoxes
+     * @return array
+     * @throws \Exception
+     * @throws \SmartyException
+     */
+    public function render(array $positionedBoxes): array
+    {
+        $smarty    = \Shop::Smarty();
+        $renderer  = new DefaultRenderer($smarty);
+        $pageType  = \Shop::getPageType();
+        $pageID    = $this->getCurrentPageID($pageType);
+        $product   = $smarty->getTemplateVars('Artikel');
+        $htmlArray = [
             'top'    => null,
             'right'  => null,
             'bottom' => null,
             'left'   => null
         ];
         $smarty->assign('BoxenEinstellungen', $this->config)
-               ->assign('bBoxenFilterNach', $showBoxes)
+               ->assign('bBoxenFilterNach', $this->showBoxes(\Shop::getProductFilter()))
                ->assign('NettoPreise', Session::getCustomerGroup()->getIsMerchant());
-
-        $boxRenderer = new DefaultRenderer($smarty);
         foreach ($positionedBoxes as $_position => $boxes) {
             if (!\is_array($boxes)) {
                 $boxes = [];
@@ -300,11 +306,11 @@ class BoxService implements BoxServiceInterface
             foreach ($boxes as $box) {
                 /** @var BoxInterface $box */
                 $renderClass = $box->getRenderer();
-                if ($renderClass !== \get_class($boxRenderer)) {
-                    $boxRenderer = new $renderClass($smarty);
+                if ($renderClass !== \get_class($renderer)) {
+                    $renderer = new $renderClass($smarty);
                 }
-                $boxRenderer->setBox($box);
-                $html = \trim($boxRenderer->render($pageType, $pageID));
+                $renderer->setBox($box);
+                $html = \trim($renderer->render($pageType, $pageID));
                 $box->setRenderedContent($html);
                 $htmlArray[$_position]       .= $html;
                 $this->rawData[$_position][] = [
@@ -315,8 +321,8 @@ class BoxService implements BoxServiceInterface
         }
         $smarty->clearAssign('BoxenEinstellungen');
         // avoid modification of article object on render loop
-        if ($originalArticle !== null) {
-            $smarty->assign('Artikel', $originalArticle);
+        if ($product !== null) {
+            $smarty->assign('Artikel', $product);
         }
 
         return $htmlArray;
@@ -331,13 +337,12 @@ class BoxService implements BoxServiceInterface
     public function buildList(int $pageType = 0, bool $active = true, bool $visible = false): array
     {
         $cacheID           = 'bx_' . $pageType .
-            '_' . ($active === true ? '1' : '0') .
-            '_' . ($visible === true ? '1' : '0') .
+            '_' . (int)$active .
+            '_' . (int)$visible .
             '_' . \Shop::getLanguageID();
-        $this->visibility  = $this->getVisibility($pageType);
-        $template          = \Template::getInstance();
-        $templatePositions = $template->getBoxLayoutXML();
         $visiblePositions  = [];
+        $this->visibility  = $this->getVisibility($pageType);
+        $templatePositions = \Template::getInstance()->getBoxLayoutXML();
         foreach ($this->visibility as $position => $isVisible) {
             if (isset($templatePositions[$position])) {
                 $isVisible = $isVisible && $templatePositions[$position];
@@ -352,13 +357,13 @@ class BoxService implements BoxServiceInterface
         $visiblePositions = \Functional\map($visiblePositions, function ($e) {
             return "'" . $e . "'";
         });
-        $cacheTags        = [\CACHING_GROUP_OBJECT, \CACHING_GROUP_BOX, 'boxes'];
-        $cSQLAktiv        = $active
+        $activeSQL        = $active
             ? ' AND tboxen.ePosition IN (' . \implode(',', $visiblePositions) . ')'
             : '';
-        $cPluginAktiv     = $active
+        $plgnSQL          = $active
             ? ' AND (tplugin.nStatus IS NULL OR tplugin.nStatus = ' .
-            State::ACTIVATED . "  OR tboxvorlage.eTyp != 'plugin' OR tboxvorlage.eTyp != 'extension')"
+            State::ACTIVATED . "  OR tboxvorlage.eTyp != '" . Type::PLUGIN .
+            "' OR tboxvorlage.eTyp != '" . Type::EXTENSION . "')"
             : '';
         if (($grouped = $this->cache->get($cacheID)) === false) {
             $boxData = $this->db->query(
@@ -380,15 +385,15 @@ class BoxService implements BoxServiceInterface
                         ON tboxsprache.kBox = tboxen.kBox
                     LEFT JOIN tsprache
                         ON tsprache.cISO = tboxsprache.cISO
-                    WHERE tboxen.kContainer > -1 ' . $cSQLAktiv . $cPluginAktiv . ' 
+                    WHERE tboxen.kContainer > -1 ' . $activeSQL . $plgnSQL . ' 
                     GROUP BY tboxsprache.kBoxSprache, tboxen.kBox, tboxensichtbar.cFilter
                     ORDER BY tboxensichtbar.nSort, tboxen.kBox ASC',
                 ReturnType::ARRAY_OF_OBJECTS
             );
             $grouped = \Functional\group($boxData, function ($e) {
-                return $e->kBox;
+                return (int)$e->kBox;
             });
-            $this->cache->set($cacheID, $grouped, \array_unique($cacheTags));
+            $this->cache->set($cacheID, $grouped, [\CACHING_GROUP_OBJECT, \CACHING_GROUP_BOX, 'boxes']);
         }
 
         return $this->getItems($grouped);

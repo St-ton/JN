@@ -57,10 +57,10 @@ interface BoxServiceInterface
     /**
      * @param int          $boxID
      * @param int          $pageType
-     * @param string|array $cFilter
+     * @param string|array $filter
      * @return int
      */
-    public function filterBoxVisibility(int $boxID, int $pageType, $cFilter = ''): int;
+    public function filterBoxVisibility(int $boxID, int $pageType, $filter = ''): int;
 
     /**
      * @param ProductFilter          $pf

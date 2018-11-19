@@ -31,7 +31,7 @@
                         <div class="backend-root-label">
                             <a href="#" class="parent"
                                onclick="return expandRootItem($('#root-menu-entry-{$rootEntryName}'))">
-                                <i class="fa fa-2x fa-fw backend-root-menu-icon-{$rootEntryName}"></i>
+                                <i class="fa fa-2x fa-fw backend-root-menu-icon-{$oLinkOberGruppe->key}"></i>
                                 <span>{$oLinkOberGruppe->cName}</span>
                             </a>
                         </div>

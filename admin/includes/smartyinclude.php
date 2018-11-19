@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+require_once __DIR__ . '/admin_menu.php';
+
 $smarty             = \Smarty\JTLSmarty::getInstance(false, true);
 $templateDir        = $smarty->getTemplateDir($smarty->context);
 $template           = AdminTemplate::getInstance();
@@ -48,182 +51,6 @@ $oPluginSearch = Shop::Container()->getDB()->query(
     \DB\ReturnType::SINGLE_OBJECT
 );
 
-$curScriptFileName  = basename($_SERVER['PHP_SELF']);
-$currentToplevel    = 0;
-$currentSecondLevel = 0;
-$currentThirdLevel  = 0;
-
-foreach ($mainGroups as $mainGroup) {
-    $mainGroup->kAdminmenueGruppe     = (int)$mainGroup->kAdminmenueGruppe;
-    $mainGroup->key                   = (string)$mainGroup->kAdminmenueGruppe;
-    $mainGroup->kAdminmenueOberGruppe = (int)$mainGroup->kAdminmenueOberGruppe;
-    $mainGroup->nSort                 = (int)$mainGroup->nSort;
-    $mainGroup->oLinkGruppe_arr       = [];
-    $mainGroup->oLink_arr             = [];
-
-    $childLinks = Shop::Container()->getDB()->selectAll(
-        'tadminmenugruppe',
-        'kAdminmenueOberGruppe',
-        (int)$mainGroup->kAdminmenueGruppe,
-        '*',
-        'cName, nSort'
-    );
-
-    foreach ($childLinks as $link) {
-        $link->kAdminmenueGruppe     = (int)$link->kAdminmenueGruppe;
-        $link->key                   = $mainGroup->key . '.' . $link->kAdminmenueGruppe;
-        $link->kAdminmenueOberGruppe = (int)$link->kAdminmenueOberGruppe;
-        $link->nSort                 = (int)$link->nSort;
-        $link->oLink_arr             = $oAccount->getVisibleMenu($adminLoginGruppe, $link->kAdminmenueGruppe, $link->key);
-
-        foreach ($configSections as $_k => $_configSection) {
-            $_configSection->kEinstellungenSektion = (int)$_configSection->kEinstellungenSektion;
-            $_configSection->key                   = $link->key . '.e' . $_configSection->kEinstellungenSektion;
-            $_configSection->kAdminmenueGruppe     = (int)$_configSection->kAdminmenueGruppe;
-            $_configSection->nSort                 = (int)$_configSection->nSort;
-            $_configSection->anz                   = (int)$_configSection->anz;
-
-            if ($_configSection->kEinstellungenSektion === 4) {
-                $_configSection->cURL = 'sucheinstellungen.php';
-            }
-
-            if ($_configSection->kAdminmenueGruppe === $link->kAdminmenueGruppe
-                && $oAccount->permission($_configSection->cRecht)
-            ) {
-                $link->oLink_arr[] = $_configSection;
-                unset($configSections[$_k]);
-            }
-        }
-
-        foreach ($link->oLink_arr as $grandchildLink) {
-            $urlParts             = parse_url($grandchildLink->cURL);
-            $urlParts['basename'] = basename($urlParts['path']);
-
-            if (empty($urlParts['query'])) {
-                $urlParts['query'] = [];
-            } else {
-                parse_str($urlParts['query'], $urlParts['query']);
-            }
-
-            if ($grandchildLink->cURL === $curScriptFileName
-                || $curScriptFileName === 'einstellungen.php'
-                && $urlParts['basename'] === 'einstellungen.php'
-                && RequestHelper::verifyGPCDataInt('kSektion') === $grandchildLink->kEinstellungenSektion
-                || $curScriptFileName === 'statistik.php'
-                && $urlParts['basename'] === 'statistik.php'
-                && isset($urlParts['query']['s'])
-                && RequestHelper::verifyGPCDataInt('s') === (int)$urlParts['query']['s']
-            ) {
-                $currentToplevel    = $mainGroup->key;
-                $currentSecondLevel = $link->key;
-                $currentThirdLevel  = $grandchildLink->key;
-            }
-        }
-    }
-    $mainGroup->oLinkGruppe_arr = $childLinks;
-    // Plugin Work Around
-    if ((int)$mainGroup->kAdminmenueGruppe === LINKTYP_BACKEND_PLUGINS && $oAccount->permission('PLUGIN_ADMIN_VIEW')) {
-        $pluginLinks = Shop::Container()->getDB()->queryPrepared(
-            'SELECT DISTINCT tplugin.kPlugin, tplugin.cName, tplugin.cPluginID, tplugin.nPrio
-                FROM tplugin INNER JOIN tpluginadminmenu
-                    ON tplugin.kPlugin = tpluginadminmenu.kPlugin
-                WHERE tplugin.nStatus = :state
-                ORDER BY tplugin.nPrio, tplugin.cName',
-            ['state' => \Plugin\Plugin::PLUGIN_ACTIVATED],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($pluginLinks as $pluginLink) {
-            $pluginLink->kPlugin   = (int)$pluginLink->kPlugin;
-            $pluginLink->key       = $mainGroup->key . '.2.' . $pluginLink->kPlugin;
-            $pluginLink->nPrio     = (int)$pluginLink->nPrio;
-            $pluginLink->cLinkname = $pluginLink->cName;
-            $pluginLink->cURL      = $shopURL . '/' . PFAD_ADMIN . 'plugin.php?kPlugin=' . $pluginLink->kPlugin;
-            $pluginLink->cRecht    = 'PLUGIN_ADMIN_VIEW';
-        }
-        $mainGroup->oLinkGruppe_arr = [];
-        $pluginManager              = new stdClass();
-        $pluginManager->cName       = 'Übersicht';
-        $pluginManager->key         = $mainGroup->key . '.' . 1;
-        $pluginManager->break       = false;
-        $pluginManager->oLink_arr   = Shop::Container()->getDB()->selectAll(
-            'tadminmenu',
-            'kAdminmenueGruppe',
-            (int)$mainGroup->kAdminmenueGruppe,
-            '*',
-            'cLinkname'
-        );
-        $pluginManager->oLink_arr   = \Functional\map(
-            $pluginManager->oLink_arr,
-            function ($e) use ($pluginManager) {
-                $e->kAdminmenu        = (int)$e->kAdminmenu;
-                $e->key               = $pluginManager->key . '.' . $e->kAdminmenu;
-                $e->kAdminmenueGruppe = (int)$e->kAdminmenueGruppe;
-                $e->nSort             = (int)$e->nSort;
-
-                return $e;
-            }
-        );
-
-        foreach ($pluginManager->oLink_arr as $grandchildLink) {
-            if ($grandchildLink->cURL === $curScriptFileName) {
-                $currentToplevel    = $mainGroup->key;
-                $currentSecondLevel = $pluginManager->key;
-                $currentThirdLevel  = $grandchildLink->key;
-            }
-        }
-
-        $mainGroup->oLinkGruppe_arr[] = $pluginManager;
-        $pluginCount                  = count($pluginLinks);
-        $maxEntries                   = $pluginCount > 24 ? 10 : 6;
-        $pluginListChunks             = array_chunk($pluginLinks, $maxEntries);
-        foreach ($pluginListChunks as $chunkIndex => $_chunk) {
-            $pluginList                   = new stdClass();
-            $pluginList->cName            = 'Plugins';
-            $pluginList->key              = $mainGroup->key . '.' . (2 + $chunkIndex);
-            $pluginList->oLink_arr        = $_chunk;
-            $mainGroup->oLinkGruppe_arr[] = $pluginList;
-
-            foreach ($pluginList->oLink_arr as $link) {
-                if ($curScriptFileName === 'plugin.php'
-                    && RequestHelper::verifyGPCDataInt('kPlugin') === $link->kPlugin
-                ) {
-                    $currentToplevel    = $mainGroup->key;
-                    $currentSecondLevel = $pluginList->key;
-                    $currentThirdLevel  = $link->key;
-                }
-            }
-        }
-        if ($pluginCount > 12) {
-            //make the submenu full-width if more then 12 plugins are listed
-            $mainGroup->class = 'yamm-fw';
-        }
-    } elseif ((int)$mainGroup->kAdminmenueGruppe === 17 && $oAccount->permission('PLUGIN_ADMIN_VIEW')) {
-        if (isset($oPluginSearch->kPlugin) && $oPluginSearch->kPlugin > 0) {
-            $oPluginSearch->cLinkname = 'JTL Search';
-            $oPluginSearch->cURL      = $shopURL . '/' . PFAD_ADMIN .
-                'plugin.php?kPlugin=' . $oPluginSearch->kPlugin;
-            $oPluginSearch->cRecht    = 'PLUGIN_ADMIN_VIEW';
-            $oPluginSearch->key       = $oPluginSearch->kPlugin;
-
-            $nI                     = count($mainGroup->oLink_arr);
-            $mainGroup->oLink_arr[] = $oPluginSearch;
-            ObjectHelper::sortBy($mainGroup->oLink_arr, 'cLinkname');
-        }
-    } else {
-        $mainGroup->oLink_arr = $oAccount->getVisibleMenu($adminLoginGruppe, $mainGroup->kAdminmenueGruppe, $mainGroup->key);
-
-        foreach ($mainGroup->oLink_arr as $link) {
-            if ($link->cURL === $curScriptFileName) {
-                $currentToplevel    = $mainGroup->key;
-                $currentSecondLevel = $link->key;
-                $currentThirdLevel  = 0;
-            }
-        }
-    }
-    if (empty($mainGroup->oLinkGruppe_arr) && empty($mainGroup->oLink_arr)) {
-        unset($mainGroup);
-    }
-}
 if (is_array($currentTemplateDir)) {
     $currentTemplateDir = $currentTemplateDir[$smarty->context];
 }
@@ -232,6 +59,103 @@ if (empty($template->version)) {
 } else {
     $adminTplVersion = $template->version;
 }
+
+$curScriptFileName  = basename($_SERVER['PHP_SELF']);
+$currentToplevel    = 0;
+$currentSecondLevel = 0;
+$currentThirdLevel  = 0;
+$mainGroups         = [];
+$rootKey            = 0;
+
+// TODO: integrate JTL Search Plugin when it is enabled
+
+foreach ($adminMenu as $rootName => $rootEntry) {
+    $mainGroup = (object)[
+        'cName'           => $rootName,
+        'oLink_arr'       => [],
+        'oLinkGruppe_arr' => [],
+        'key'             => (string)$rootKey,
+    ];
+
+    $secondKey = 0;
+
+    foreach ($rootEntry as $secondName => $secondEntry) {
+        $linkGruppe = (object)[
+            'cName'     => $secondName,
+            'oLink_arr' => [],
+            'key'       => "$rootKey.$secondKey",
+        ];
+
+        if ($secondEntry === 'DYNAMIC_PLUGINS') {
+            $pluginLinks = Shop::Container()->getDB()->queryPrepared(
+                'SELECT DISTINCT p.kPlugin, p.cName, p.cPluginID, p.nPrio
+                    FROM tplugin AS p INNER JOIN tpluginadminmenu AS pam
+                        ON p.kPlugin = pam.kPlugin
+                    WHERE p.nStatus = :state
+                    ORDER BY p.nPrio, p.cName',
+                ['state' => \Plugin\Plugin::PLUGIN_ACTIVATED],
+                \DB\ReturnType::ARRAY_OF_OBJECTS
+            );
+
+            foreach ($pluginLinks as $pluginLink) {
+                $pluginLink->kPlugin = (int)$pluginLink->kPlugin;
+
+                $link = (object)[
+                    'cLinkname' => $pluginLink->cName,
+                    'cURL'      => $shopURL . '/' . PFAD_ADMIN . 'plugin.php?kPlugin=' . $pluginLink->kPlugin,
+                    'cRecht'    => 'PLUGIN_ADMIN_VIEW',
+                    'key'       => "$rootKey.$secondKey." . $pluginLink->kPlugin,
+                ];
+
+                $linkGruppe->oLink_arr[] = $link;
+            }
+        } else {
+            $thirdKey = 0;
+
+            foreach ($secondEntry as $thirdName => $thirdEntry) {
+                $link = (object)[
+                    'cLinkname' => $thirdName,
+                    'cURL'      => $thirdEntry->link,
+                    'cRecht'    => $thirdEntry->rights,
+                    'key'       => "$rootKey.$secondKey.$thirdKey",
+                ];
+
+                $urlParts             = parse_url($link->cURL);
+                $urlParts['basename'] = basename($urlParts['path']);
+
+                if (empty($urlParts['query'])) {
+                    $urlParts['query'] = [];
+                } else {
+                    parse_str($urlParts['query'], $urlParts['query']);
+                }
+
+                if ($link->cURL === $curScriptFileName
+                    || $curScriptFileName === 'einstellungen.php'
+                    && $urlParts['basename'] === 'einstellungen.php'
+                    && RequestHelper::verifyGPCDataInt('kSektion') === (int)$urlParts['query']['kSektion']
+                    || $curScriptFileName === 'statistik.php'
+                    && $urlParts['basename'] === 'statistik.php'
+                    && isset($urlParts['query']['s'])
+                    && RequestHelper::verifyGPCDataInt('s') === (int)$urlParts['query']['s']
+                ) {
+                    $currentToplevel    = $mainGroup->key;
+                    $currentSecondLevel = $linkGruppe->key;
+                    $currentThirdLevel  = $link->key;
+                }
+
+                $linkGruppe->oLink_arr[] = $link;
+                $thirdKey++;
+            }
+        }
+
+        $mainGroup->oLinkGruppe_arr[] = $linkGruppe;
+        $secondKey++;
+    }
+
+    $mainGroups[] = $mainGroup;
+    $rootKey++;
+}
+
 $smarty->assign('URL_SHOP', $shopURL)
        ->assign('jtl_token', FormHelper::getTokenInput())
        ->assign('shopURL', $shopURL)

@@ -37,7 +37,7 @@ $adminMenu = [
     __('Contents') => [
         __('Item') => [
             __('Item details') => (object)[
-                'link' => 'einstellungen.php?kSektion=7',
+                'link' => 'einstellungen.php?kSektion=5',
                 'rights' => 'SETTINGS_ARTICLEDETAILS_VIEW',
             ],
             __('Customer reviews') => (object)[
@@ -59,7 +59,7 @@ $adminMenu = [
         ],
         __('Pages') => [
             __('OnPage Composer') => (object)[
-                'link' => 'opc.php',
+                'link' => 'opc-controlcenter.php',
                 'rights' => 'DISPLAY_TEMPLATE_VIEW',
             ],
             __('Startseite') => (object)[
@@ -90,17 +90,17 @@ $adminMenu = [
                 'link' => 'sprache.php',
                 'rights' => 'LANGUAGE_VIEW',
             ],
-            __('IT-Recht Kanzlei') => (object)[
-                // TODO: correct link and rights
-                'link' => 'sprache.php',
-                'rights' => 'LANGUAGE_VIEW',
-                'partner' => true
-            ],
-            __('Trustbadge Reviews') => (object)[
-                'link' => 'premiumplugin.php?plugin_id=agws_ts_features',
-                'rights' => 'PLUGIN_ADMIN_VIEW',
-                'partner' => true
-            ],
+//            __('IT-Recht Kanzlei') => (object)[
+//                // TODO: correct link and rights
+//                'link' => 'sprache.php',
+//                'rights' => 'LANGUAGE_VIEW',
+//                'partner' => true
+//            ],
+//            __('Trustbadge Reviews') => (object)[
+//                'link' => 'premiumplugin.php?plugin_id=agws_ts_features',
+//                'rights' => 'PLUGIN_ADMIN_VIEW',
+//                'partner' => true
+//            ],
         ],
         __('Forms') => [
             __('Form settings') => (object)[
@@ -168,17 +168,17 @@ $adminMenu = [
                 'link' => 'zahlungsarten.php',
                 'rights' => 'ORDER_PAYMENT_VIEW',
             ],
-            __('Amazon Payments') => (object)[
-                'link' => 'premiumplugin.php?plugin_id=s360_amazon_lpa_shop4',
-                'rights' => 'PLUGIN_ADMIN_VIEW',
-                'partner' => true
-            ],
-            __('Skrill') => (object)[
-                // TODO: correct link and rights
-                'link' => 'shoptemplate.php',
-                'rights' => 'DISPLAY_TEMPLATE_VIEW',
-                'partner' => true
-            ],
+//            __('Amazon Payments') => (object)[
+//                'link' => 'premiumplugin.php?plugin_id=s360_amazon_lpa_shop4',
+//                'rights' => 'PLUGIN_ADMIN_VIEW',
+//                'partner' => true
+//            ],
+//            __('Skrill') => (object)[
+//                // TODO: correct link and rights
+//                'link' => '',
+//                'rights' => '',
+//                'partner' => true
+//            ],
         ],
         __('Delivery') => [
             __('Shipping methods') => (object)[
@@ -360,7 +360,7 @@ $adminMenu = [
         ],
         __('Search') => [
             __('Search settings') => (object)[
-                'link' => 'einstellungen.php?kSektion=4',
+                'link' => 'sucheinstellungen.php',
                 'rights' => 'SETTINGS_ARTICLEOVERVIEW_VIEW',
             ],
             __('Filter') => (object)[
@@ -375,10 +375,10 @@ $adminMenu = [
     ],
     __('Plugins') => [
         __('Overview') => [
-            __('Plug-in marketplace') => (object)[
-                'link' => 'marktplatz.php',
-                'rights' => 'PLUGIN_ADMIN_VIEW',
-            ],
+//            __('Plug-in marketplace') => (object)[
+//                'link' => 'marktplatz.php',
+//                'rights' => 'PLUGIN_ADMIN_VIEW',
+//            ],
             __('Plug-in administration') => (object)[
                 'link' => 'pluginverwaltung.php',
                 'rights' => 'PLUGIN_ADMIN_VIEW',
@@ -388,6 +388,6 @@ $adminMenu = [
                 'rights' => 'PROFILER_VIEW',
             ],
         ],
-        __('Plugins') => [],
+        __('Plugins') => 'DYNAMIC_PLUGINS',
     ],
 ];

@@ -704,7 +704,7 @@ class Warenkorb
         if ((!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true)
             && $this->config['kaufabwicklung']['bestellabschluss_spamschutz_nutzen'] === 'Y'
             && $this->config['kaufabwicklung']['bestellabschluss_ip_speichern'] === 'Y'
-            && ($ip = RequestHelper::getIP(true))
+            && ($ip = RequestHelper::getRealIP())
         ) {
             $cnt = Shop::Container()->getDB()->executeQueryPrepared(
                 'SELECT COUNT(*) AS anz

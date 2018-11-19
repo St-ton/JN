@@ -244,18 +244,18 @@ class Vergleichsliste
         if (count($compareList->oArtikel_arr) === 0) {
             return;
         }
-        $nVergleiche = Shop::Container()->getDB()->queryPrepared(
+        $oVergleiche = Shop::Container()->getDB()->queryPrepared(
             'SELECT COUNT(kVergleichsliste) AS nVergleiche
                 FROM tvergleichsliste
                 WHERE cIP = :ip
                     AND dDate > DATE_SUB(NOW(),INTERVAL 1 DAY)',
-            ['ip' => RequestHelper::getIP()],
+            ['ip' => RequestHelper::getRealIP()],
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        if ($nVergleiche->nVergleiche < 3) {
+        if ($oVergleiche->nVergleiche < 3) {
             $compareListTable        = new stdClass();
-            $compareListTable->cIP   = RequestHelper::getIP();
+            $compareListTable->cIP   = RequestHelper::getRealIP();
             $compareListTable->dDate = date('Y-m-d H:i:s');
             $kVergleichsliste = Shop::Container()->getDB()->insert('tvergleichsliste', $compareListTable);
             foreach ($compareList->oArtikel_arr as $oArtikel) {

@@ -159,7 +159,7 @@ function sendeMail($ModulId, $Object, $mail = null)
                ->assign('WRB', $WRB)
                ->assign('DSE', $DSE)
                ->assign('WRBForm', $WRBForm)
-               ->assign('IP', StringHandler::htmlentities(StringHandler::filterXSS(RequestHelper::getIP())));
+               ->assign('IP', StringHandler::htmlentities(StringHandler::filterXSS(RequestHelper::getRealIP())));
 
     $Object = lokalisiereInhalt($Object);
     // ModulId von einer Plugin Emailvorlage vorhanden?
@@ -177,8 +177,8 @@ function sendeMail($ModulId, $Object, $mail = null)
     }
 
     $Emailvorlage = Shop::Container()->getDB()->query(
-        'SELECT * 
-            FROM ' . $cTable . ' 
+        'SELECT *
+            FROM ' . $cTable . '
             WHERE ' . $cSQLWhere,
         \DB\ReturnType::SINGLE_OBJECT
     );
@@ -245,7 +245,7 @@ function sendeMail($ModulId, $Object, $mail = null)
                 $oZahlungsartConf = Shop::Container()->getDB()->queryPrepared(
                     'SELECT tzahlungsartsprache.*
                         FROM tzahlungsartsprache
-                        JOIN tzahlungsart 
+                        JOIN tzahlungsart
                             ON tzahlungsart.kZahlungsart = tzahlungsartsprache.kZahlungsart
                             AND tzahlungsart.cModulId = :module
                         WHERE tzahlungsartsprache.cISOSprache = :iso',
@@ -286,7 +286,7 @@ function sendeMail($ModulId, $Object, $mail = null)
                 $oZahlungsartConf = Shop::Container()->getDB()->queryPrepared(
                     'SELECT tzahlungsartsprache.*
                         FROM tzahlungsartsprache
-                        JOIN tzahlungsart 
+                        JOIN tzahlungsart
                             ON tzahlungsart.kZahlungsart = tzahlungsartsprache.kZahlungsart
                             AND tzahlungsart.cModulId = :module
                         WHERE tzahlungsartsprache.cISOSprache = :iso',

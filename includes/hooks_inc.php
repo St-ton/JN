@@ -228,6 +228,8 @@ define('HOOK_NAVI_PAGE', 31);
  * Kurz vor der Anzeige in der News Detailansicht
  *
  * @file news.php
+ * @param \News\Item newsItem - since 5.0.0
+ * @param Pagination pagination - since 5.0.0
  */
 define('HOOK_NEWS_PAGE_DETAILANSICHT', 32);
 
@@ -235,6 +237,8 @@ define('HOOK_NEWS_PAGE_DETAILANSICHT', 32);
  * Kurz vor der Anzeige in der News Übersicht
  *
  * @file news.php
+ * @param News\Category category - since 5.0.0
+ * @param Tightenco\Collect\Support\Collection items - since 5.0.0
  */
 define('HOOK_NEWS_PAGE_NEWSUEBERSICHT', 33);
 
@@ -722,7 +726,7 @@ define('HOOK_LETZTERINCLUDE_INC', 99);
  * after template switch in sendeMail()
  *
  * @file mailTools.php
- * @param JTLSmarty  - mailsmarty
+ * @param Smarty\JTLSmarty  - mailsmarty
  * @param mail
  * @param kEmailvorlage
  * @param kSprache
@@ -1029,7 +1033,7 @@ define('HOOK_CRON_EXPORTFORMATE_OUTPUT_FETCHED', 139);
  * at the end of smarty outputfilter
  *
  * @file JTLSmarty.php
- * @param JTLSmarty smarty
+ * @param Smarty\JTLSmarty smarty
  */
 define('HOOK_SMARTY_OUTPUTFILTER', 140);
 
@@ -1129,7 +1133,7 @@ define('HOOK_ARTIKEL_XML_BEARBEITEDELETES', 152);
  * in sendeMail() before actually sending an email
  *
  * @file mailTools.php
- * @param JTLSmarty  - mailsmarty
+ * @param Smarty\JTLSmarty  - mailsmarty
  * @param mail
  * @param kEmailvorlage
  * @param kSprache
@@ -1445,7 +1449,7 @@ define('HOOK_CACHE_FLUSH_AFTER', 200);
  *
  * @since 4.0
  * @file JTLSmarty.php
- * @param smarty - JTLSmarty
+ * @param smarty - Smarty\JTLSmarty
  */
 define('HOOK_SMARTY_OUTPUTFILTER_CACHE', 202);
 
@@ -1572,7 +1576,8 @@ define('HOOK_IO_HANDLE_REQUEST', 213);
  *
  * @since 4.0
  * @file class.core.Shop.php
- * @param int - pageType
+ * @param int    pageType
+ * @param string pageName
  */
 define('HOOK_SHOP_SET_PAGE_TYPE', 214);
 
@@ -1621,7 +1626,7 @@ define('HOOK_GET_ALL_CATEGORIES', 219);
 /**
  * @since 4.04
  * @file seite_inc.php
- * @param array - oNews_arr
+ * @param \Tightenco\Collect\Support\Collection - oNews_arr
  * @param array - cacheTags
  * @param bool  - cached
  */
@@ -1650,7 +1655,7 @@ define('HOOK_BACKEND_ACCOUNT_EDIT', 222);
  * @since 4.05
  * @file admin/includes/benutzerverwaltung_inc.php
  * @param Account   - oAccount
- * @param JTLSmarty - smarty
+ * @param Smarty\JTLSmarty - smarty
  * @param array     - attribs - extended attributes
  * @param string    - &content
  */
@@ -1659,7 +1664,7 @@ define('HOOK_BACKEND_ACCOUNT_PREPARE_EDIT', 223);
 /**
  * @since 4.05
  * @file seite_inc.php
- * @param boxes - list of boxes for the home page
+ * @param array boxes - list of boxes for the home page
  */
 define('HOOK_BOXEN_HOME', 224);
 

@@ -24,11 +24,9 @@ if (auth()) {
                 case 'lief.xml':
                     bearbeiteInsert($oXml);
                     break;
-
                 case 'del_lief.xml':
                     bearbeiteDelete($oXml);
                     break;
-
             }
             removeTemporaryFiles($xmlFile);
         }
@@ -80,27 +78,28 @@ function bearbeiteInsert($oXml)
 function bearbeiteDelete($oXml)
 {
     $kLieferschein_arr = $oXml->kLieferschein;
+    $db                = Shop::Container()->getDB();
     if (!is_array($kLieferschein_arr)) {
         $kLieferschein_arr = (array)$kLieferschein_arr;
     }
     foreach ($kLieferschein_arr as $kLieferschein) {
         $kLieferschein = (int)$kLieferschein;
-        Shop::Container()->getDB()->delete('tversand', 'kLieferschein', $kLieferschein);
-        Shop::Container()->getDB()->delete('tlieferschein', 'kLieferschein', $kLieferschein);
+        $db->delete('tversand', 'kLieferschein', $kLieferschein);
+        $db->delete('tlieferschein', 'kLieferschein', $kLieferschein);
 
-        $positions = Shop::Container()->getDB()->selectAll(
+        $positions = $db->selectAll(
             'tlieferscheinpos',
             'kLieferschein',
             $kLieferschein,
             'kLieferscheinPos'
         );
         foreach ($positions as $position) {
-            Shop::Container()->getDB()->delete(
+            $db->delete(
                 'tlieferscheinpos',
                 'kLieferscheinPos',
                 (int)$position->kLieferscheinPos
             );
-            Shop::Container()->getDB()->delete(
+            $db->delete(
                 'tlieferscheinposinfo',
                 'kLieferscheinPos',
                 (int)$position->kLieferscheinPos

@@ -15,12 +15,12 @@ class PasswordService implements PasswordServiceInterface
     /**
      * The lowest allowed ascii character in decimal representation
      */
-    const ASCII_MIN = 33;
+    public const ASCII_MIN = 33;
 
     /**
      * The highest allowed ascii character in decimal representation
      */
-    const ASCII_MAX = 127;
+    public const ASCII_MAX = 127;
 
     /**
      * @var CryptoServiceInterface
@@ -60,7 +60,7 @@ class PasswordService implements PasswordServiceInterface
      */
     public function hash($password): string
     {
-        return password_hash($password, PASSWORD_DEFAULT);
+        return \password_hash($password, \PASSWORD_DEFAULT);
     }
 
     /**
@@ -77,7 +77,7 @@ class PasswordService implements PasswordServiceInterface
             return \cryptPasswort($password, $hash) !== false;
         }
 
-        return password_verify($password, $hash);
+        return \password_verify($password, $hash);
     }
 
     /**
@@ -89,7 +89,7 @@ class PasswordService implements PasswordServiceInterface
 
         return $length === 32 || $length === 40
             ? true
-            : password_needs_rehash($hash, PASSWORD_DEFAULT);
+            : \password_needs_rehash($hash, \PASSWORD_DEFAULT);
     }
 
     /**
@@ -97,6 +97,6 @@ class PasswordService implements PasswordServiceInterface
      */
     public function getInfo($hash): array
     {
-        return password_get_info($hash);
+        return \password_get_info($hash);
     }
 }

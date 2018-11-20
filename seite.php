@@ -9,7 +9,6 @@ if (!defined('PFAD_ROOT')) {
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 $smarty                 = Shop::Smarty();
-$AktuelleSeite          = 'SEITE';
 $Einstellungen          = Shopsetting::getInstance()->getAll();
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
@@ -35,25 +34,24 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
         header('Location: ' . $cCanonicalURL, true, $link->getRedirectCode());
         exit();
     }
-    $AktuelleSeite = 'STARTSEITE';
     $smarty->assign('StartseiteBoxen', CMSHelper::getHomeBoxes())
            ->assign('oNews_arr', ($Einstellungen['news']['news_benutzen'] === 'Y') ? CMSHelper::getHomeNews($Einstellungen) : []);
     AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguage(), $smarty);
 } elseif ($link->getLinkType() === LINKTYP_AGB) {
     $smarty->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
         Shop::getLanguage(),
-        Session::CustomerGroup()->getID()
+        \Session\Session::getCustomerGroup()->getID()
     ));
 } elseif ($link->getLinkType() === LINKTYP_WRB) {
     $smarty->assign('WRB', Shop::Container()->getLinkService()->getAGBWRB(
         Shop::getLanguage(),
-        Session::CustomerGroup()->getID()
+        \Session\Session::getCustomerGroup()->getID()
     ));
 } elseif ($link->getLinkType() === LINKTYP_VERSAND) {
     if (isset($_POST['land'], $_POST['plz']) && !VersandartHelper::getShippingCosts($_POST['land'], $_POST['plz'])) {
         $smarty->assign('fehler', Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'));
     }
-    $smarty->assign('laender', VersandartHelper::getPossibleShippingCountries(Session\Session::CustomerGroup()->getID()));
+    $smarty->assign('laender', VersandartHelper::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID()));
 } elseif ($link->getLinkType() === LINKTYP_LIVESUCHE) {
     $smarty->assign('LivesucheTop', CMSHelper::getLiveSearchTop($Einstellungen))
            ->assign('LivesucheLast', CMSHelper::getLiveSearchLast($Einstellungen));
@@ -86,7 +84,6 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_SEITE_PAGE_IF_LINKART);
-// MetaTitle bei bFileNotFound redirect
 $smarty->assign('Link', $link)
        ->assign('bSeiteNichtGefunden', Shop::getPageType() === PAGE_404)
        ->assign('cFehler', !empty($cFehler) ? $cFehler : null)
@@ -95,24 +92,29 @@ $smarty->assign('Link', $link)
 $cMetaTitle       = $link->getMetaTitle();
 $cMetaDescription = $link->getMetaDescription() ?? null;
 $cMetaKeywords    = $link->getMetaKeyword() ?? null;
-if (empty($cMetaTitle) || empty($cMetaDescription) || empty($cMetaKeywords)) {
-    $kSprache            = Shop::getLanguage();
-    $oGlobaleMetaAngaben = $oGlobaleMetaAngabenAssoc_arr[$kSprache] ?? null;
-
-    if (is_object($oGlobaleMetaAngaben)) {
-        if (empty($cMetaTitle)) {
-            $cMetaTitle = $oGlobaleMetaAngaben->Title;
-        }
-        if (empty($cMetaDescription)) {
-            $cMetaDescription = $oGlobaleMetaAngaben->Meta_Description;
-        }
-        if (empty($cMetaKeywords)) {
-            $cMetaKeywords = $oGlobaleMetaAngaben->Meta_Keywords;
-        }
+$kSprache         = Shop::getLanguage();
+$globalMeta       = $oGlobaleMetaAngabenAssoc_arr[$kSprache] ?? null;
+if ($globalMeta !== null) {
+    if (empty($cMetaTitle)) {
+        $cMetaTitle = $globalMeta->Title;
+    }
+    if (empty($cMetaDescription)) {
+        $cMetaDescription = $globalMeta->Meta_Description;
+    }
+    if (empty($cMetaKeywords)) {
+        $cMetaKeywords = $globalMeta->Meta_Keywords;
     }
 }
-$cMetaTitle       = \Filter\Metadata::prepareMeta($cMetaTitle, null, (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']);
-$cMetaDescription = \Filter\Metadata::prepareMeta($cMetaDescription, null, (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_description']);
+$cMetaTitle       = \Filter\Metadata::prepareMeta(
+    $cMetaTitle,
+    null,
+    (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']
+);
+$cMetaDescription = \Filter\Metadata::prepareMeta(
+    $cMetaDescription,
+    null,
+    (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_description']
+);
 
 $smarty->assign('meta_title', $cMetaTitle)
        ->assign('meta_description', $cMetaDescription)

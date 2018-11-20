@@ -46,10 +46,11 @@ function bearbeiteVerfuegbarkeitsbenachrichtigungenAck($xml)
             [$xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung']];
     }
     if (is_array($xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'])) {
+        $db = Shop::Container()->getDB();
         foreach ($xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'] as $msg) {
             $msg = (int)$msg;
             if ($msg > 0) {
-                Shop::Container()->getDB()->update(
+                $db->update(
                     'tverfuegbarkeitsbenachrichtigung',
                     'kVerfuegbarkeitsbenachrichtigung',
                     $msg,
@@ -65,15 +66,16 @@ function bearbeiteVerfuegbarkeitsbenachrichtigungenAck($xml)
  */
 function bearbeiteUploadQueueAck($xml)
 {
+    $db = Shop::Container()->getDB();
     if (is_array($xml['ack_uploadqueue']['kuploadqueue'])) {
         foreach ($xml['ack_uploadqueue']['kuploadqueue'] as $kUploadqueue) {
             $kUploadqueue = (int)$kUploadqueue;
             if ($kUploadqueue > 0) {
-                Shop::Container()->getDB()->delete('tuploadqueue', 'kUploadqueue', $kUploadqueue);
+                $db->delete('tuploadqueue', 'kUploadqueue', $kUploadqueue);
             }
         }
     } elseif ((int)$xml['ack_uploadqueue']['kuploadqueue'] > 0) {
-        Shop::Container()->getDB()->delete(
+        $db->delete(
             'tuploadqueue',
             'kUploadqueue',
             (int)$xml['ack_uploadqueue']['kuploadqueue']

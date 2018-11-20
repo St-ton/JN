@@ -4,6 +4,9 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+/**
+ * Class Statusmail
+ */
 class Statusmail
 {
     /**
@@ -11,8 +14,14 @@ class Statusmail
      */
     private $db;
 
+    /**
+     * @var string
+     */
     private $dateStart;
 
+    /**
+     * @var string
+     */
     private $dateEnd;
 
     /**
@@ -743,7 +752,7 @@ class Statusmail
                     FROM tjtllog
                     WHERE dErstellt >= :from
                         AND dErstellt < :to
-                        AND nLevel IN (' . implode(',', array_map('intval', $logLevels)) . ')
+                        AND nLevel IN (' . implode(',', array_map('\intval', $logLevels)) . ')
                     ORDER BY dErstellt DESC',
                 [
                     'from' => $this->dateStart,

@@ -8,6 +8,7 @@ namespace OPC;
 
 use DB\DbInterface;
 use DB\ReturnType;
+use Plugin\Plugin;
 
 /**
  * Class DB
@@ -222,22 +223,18 @@ class DB
         }
 
         if ($portletDB->kPlugin > 0) {
-            $plugin  = new \Plugin($portletDB->kPlugin);
-            $include = PFAD_ROOT . \PFAD_PLUGIN . $plugin->cVerzeichnis . '/' . \PFAD_PLUGIN_VERSION
-                . $plugin->getCurrentVersion() . '/' . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS
+            $plugin  = new Plugin((int)$portletDB->kPlugin);
+            $include = $plugin->cAdminmenuPfad . \PFAD_PLUGIN_PORTLETS
                 . $portletDB->cClass . '/' . $portletDB->cClass . '.php';
             require_once $include;
         }
 
         /** @var Portlet $portlet */
         $fullClass = "\\OPC\\Portlets\\$class";
-        $portlet   = new $fullClass();
+        $portlet   = new $fullClass($class, $portletDB->kPortlet, $portletDB->kPlugin);
 
         return $portlet
-            ->setId($portletDB->kPortlet)
-            ->setPluginId($portletDB->kPlugin)
             ->setTitle($portletDB->cTitle)
-            ->setClass($portletDB->cClass)
             ->setGroup($portletDB->cGroup)
             ->setActive((int)$portletDB->bActive === 1);
     }

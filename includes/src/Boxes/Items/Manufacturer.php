@@ -40,7 +40,7 @@ final class Manufacturer extends AbstractBox
     /**
      * @param array $manufacturers
      */
-    public function setManufacturers(array $manufacturers)
+    public function setManufacturers(array $manufacturers): void
     {
         $this->manufacturerList = $manufacturers;
     }

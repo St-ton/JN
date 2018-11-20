@@ -9,6 +9,7 @@ namespace JTL;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use Session\Session;
+use Smarty\JTLSmarty;
 
 /**
  * Class Sitemap
@@ -53,13 +54,13 @@ class Sitemap
         $this->cache           = $cache;
         $this->conf            = $conf;
         $this->langID          = \Shop::getLanguageID();
-        $this->customerGroupID = Session::CustomerGroup()->getID();
+        $this->customerGroupID = Session::getCustomerGroup()->getID();
     }
 
     /**
-     * @param \JTLSmarty $smarty
+     * @param JTLSmarty $smarty
      */
-    public function assignData(\JTLSmarty $smarty)
+    public function assignData(JTLSmarty $smarty): void
     {
         $smarty->assign('oKategorieliste', $this->getCategories())
                ->assign('oGlobaleMerkmale_arr', $this->getGlobalAttributes())
@@ -92,12 +93,14 @@ class Sitemap
         $cacheID = 'news_category_' . $this->langID . '_' . $this->customerGroupID;
         if (($newsCategories = $this->cache->get($cacheID)) === false) {
             $newsCategories = $this->db->queryPrepared(
-                "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
-                tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
+                "SELECT tnewskategorie.kNewsKategorie, t.languageID AS kSprache, t.name AS cName,
+                t.description AS cBeschreibung, t.metaTitle AS cMetaTitle, t.metaDescription AS cMetaDescription,
                 tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung, 
                 tnewskategorie.cPreviewImage, tseo.cSeo,
                 COUNT(DISTINCT(tnewskategorienews.kNews)) AS nAnzahlNews
                     FROM tnewskategorie
+                    JOIN tnewskategoriesprache t 
+                        ON tnewskategorie.kNewsKategorie = t.kNewsKategorie
                     LEFT JOIN tnewskategorienews 
                         ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
                     LEFT JOIN tnews 
@@ -106,7 +109,7 @@ class Sitemap
                         ON tseo.cKey = 'kNewsKategorie'
                         AND tseo.kKey = tnewskategorie.kNewsKategorie
                         AND tseo.kSprache = :lid
-                    WHERE tnewskategorie.kSprache = :lid
+                    WHERE t.languageID = :lid
                         AND tnewskategorie.nAktiv = 1
                         AND tnews.nAktiv = 1
                         AND tnews.dGueltigVon <= NOW()
@@ -125,18 +128,21 @@ class Sitemap
                 $newsCategory->cURLFull = \UrlHelper::buildURL($newsCategory, \URLART_NEWSKATEGORIE, true);
 
                 $entries = $this->db->queryPrepared(
-                    "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, 
-                    tnews.cText, tnews.cVorschauText, tnews.cMetaTitle, tnews.cMetaDescription, 
-                    tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, 
-                    tseo.cSeo, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
+                    "SELECT tnews.kNews, t.languageID AS kSprache, tnews.cKundengruppe, t.title AS cBetreff, 
+                    t.content AS cText, t.preview AS cVorschauText, t.metaTitle AS cMetaTitle, 
+                    t.metaDescription AS cMetaDescription, t.metaKeywords AS cMetaKeywords, 
+                    tnews.nAktiv, tnews.dErstellt, tseo.cSeo, 
+                    DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
                         FROM tnews
+                        JOIN tnewssprache t 
+                            ON tnews.kNews = t.kNews
                         JOIN tnewskategorienews 
                             ON tnewskategorienews.kNews = tnews.kNews
                         LEFT JOIN tseo 
                             ON tseo.cKey = 'kNews'
                             AND tseo.kKey = tnews.kNews
                             AND tseo.kSprache = :lid
-                        WHERE tnews.kSprache = :lid
+                        WHERE t.languageID = :lid
                             AND tnewskategorienews.kNewsKategorie = :cid
                             AND tnews.nAktiv = 1
                             AND tnews.dGueltigVon <= NOW()
@@ -177,6 +183,8 @@ class Sitemap
                 "SELECT tseo.cSeo, tnewsmonatsuebersicht.cName, tnewsmonatsuebersicht.kNewsMonatsUebersicht, 
                 MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr, COUNT(*) AS nAnzahl
                     FROM tnews
+                    JOIN tnewssprache t 
+                        ON tnews.kNews = t.kNews
                     JOIN tnewsmonatsuebersicht 
                         ON tnewsmonatsuebersicht.nMonat = MONTH(tnews.dGueltigVon)
                         AND tnewsmonatsuebersicht.nJahr = YEAR(tnews.dGueltigVon)
@@ -187,27 +195,30 @@ class Sitemap
                         AND tseo.kSprache = :lid
                     WHERE tnews.dGueltigVon < NOW()
                         AND tnews.nAktiv = 1
-                        AND tnews.kSprache = :lid
-                    GROUP BY YEAR(tnews.dGueltigVon) , MONTH(tnews.dGueltigVon)
+                        AND t.languageID = :lid
+                    GROUP BY YEAR(tnews.dGueltigVon), MONTH(tnews.dGueltigVon)
                     ORDER BY tnews.dGueltigVon DESC",
                 ['lid' => $this->langID],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($overview as $news) {
                 $entries = $this->db->queryPrepared(
-                    "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
-                    tnews.cVorschauText, tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords,
+                    "SELECT tnews.kNews, t.languageID AS kSprache, tnews.cKundengruppe, 
+                    t.title AS cBetreff, t.content AS cText, t.preview AS cVorschauText, 
+                    t.metaTitle AS cMetaTitle, t.metaDescription AS cMetaDescription, t.metaKeywords AS cMetaKeywords,
                     tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
                     COUNT(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 
                     DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
                         FROM tnews
+                        JOIN tnewssprache t 
+                            ON tnews.kNews = t.kNews
                         LEFT JOIN tnewskommentar 
                             ON tnews.kNews = tnewskommentar.kNews
                         LEFT JOIN tseo 
                             ON tseo.cKey = 'kNews'
                             AND tseo.kKey = tnews.kNews
                             AND tseo.kSprache = :lid
-                        WHERE tnews.kSprache = :lid
+                        WHERE t.languageID = :lid
                             AND tnews.nAktiv = 1
                             AND (tnews.cKundengruppe LIKE '%;-1;%' 
                                 OR FIND_IN_SET(:cgid, REPLACE(tnews.cKundengruppe, ';', ',')) > 0)

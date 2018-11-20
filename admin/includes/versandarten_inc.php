@@ -160,27 +160,25 @@ function gibGesetzteVersandklassenUebersicht($cVersandklassen)
 }
 
 /**
- * @param string $cKundengruppen
+ * @param string $customerGroupsString
  * @return array
  */
-function gibGesetzteKundengruppen($cKundengruppen)
+function gibGesetzteKundengruppen($customerGroupsString)
 {
-    $bGesetzteKG_arr   = [];
-    $cKG_arr           = explode(';', trim($cKundengruppen));
-    $oKundengruppe_arr = Shop::Container()->getDB()->query(
+    $activeGroups = [];
+    $groups       = StringHandler::parseSSK($customerGroupsString);
+    $groupData    = Shop::Container()->getDB()->query(
         'SELECT kKundengruppe
             FROM tkundengruppe
             ORDER BY kKundengruppe',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    foreach ($oKundengruppe_arr as $oKundengruppe) {
-        $bGesetzteKG_arr[$oKundengruppe->kKundengruppe] = in_array($oKundengruppe->kKundengruppe, $cKG_arr);
+    foreach ($groupData as $group) {
+        $activeGroups[(int)$group->kKundengruppe] = in_array($group->kKundengruppe, $groups);
     }
-    if ($cKundengruppen === '-1') {
-        $bGesetzteKG_arr['alle'] = true;
-    }
+    $activeGroups['alle'] = $customerGroupsString === '-1';
 
-    return $bGesetzteKG_arr;
+    return $activeGroups;
 }
 
 /**
@@ -278,7 +276,6 @@ function getCombinations(array $shipClasses, int $length)
 {
     $baselen = count($shipClasses);
     if ($baselen === 0) {
-
         return [];
     }
     if ($length === 1) {
@@ -346,13 +343,11 @@ function getMissingShippingClassCombi()
 
     // if a shipping method is valid for all classes return
     if (in_array('-1', $combinationInUse, false)) {
-
         return [];
     }
 
     $len = count($shipClasses);
     if ($len > SHIPPING_CLASS_MAX_VALIDATION_COUNT) {
-
         return -1;
     }
 

@@ -77,11 +77,6 @@ class CheckBox
     /**
      * @var array
      */
-    public $cKundengruppeAssoc_arr;
-
-    /**
-     * @var array
-     */
     public $kKundengruppe_arr;
 
     /**
@@ -174,20 +169,6 @@ class CheckBox
                 Shop::Container()->getDB()->update('tcheckbox', 'kCheckBox', (int)$this->kCheckBox, $upd);
             }
         }
-        // Mapping Kundengruppe
-        if (is_array($this->kKundengruppe_arr) && count($this->kKundengruppe_arr) > 0) {
-            $this->cKundengruppeAssoc_arr = [];
-            foreach ($this->kKundengruppe_arr as $kKundengruppe) {
-                $oKundengruppe = Shop::Container()->getDB()->select(
-                    'tkundengruppe',
-                    'kKundengruppe',
-                    (int)$kKundengruppe
-                );
-                if (isset($oKundengruppe->cName) && strlen($oKundengruppe->cName) > 0) {
-                    $this->cKundengruppeAssoc_arr[$kKundengruppe] = $oKundengruppe->cName;
-                }
-            }
-        }
         if ($this->kLink > 0) {
             $this->oLink = new \Link\Link(Shop::Container()->getDB());
             $this->oLink->load($this->kLink);
@@ -226,7 +207,7 @@ class CheckBox
     ): array {
         if (!$kKundengruppe) {
             if (isset($_SESSION['Kundengruppe']->kKundengruppe)) {
-                $kKundengruppe = Session::CustomerGroup()->getID();
+                $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
             } else {
                 $kKundengruppe = Kundengruppe::getDefaultGroupID();
             }
@@ -498,7 +479,6 @@ class CheckBox
                 $oCheckBox->oCheckBoxFunktion,
                 $oCheckBox->dErstellt_DE,
                 $oCheckBox->oLink,
-                $oCheckBox->cKundengruppeAssoc_arr,
                 $oCheckBox->oCheckBoxSprache_arr,
                 $oCheckBox->cLink
             );
@@ -589,7 +569,9 @@ class CheckBox
             return false;
         }
         $Einstellungen = Shop::getSettings([CONF_EMAILS]);
-        if (isset($Einstellungen['emails']['email_master_absender']) && strlen($Einstellungen['emails']['email_master_absender']) > 0) {
+        if (isset($Einstellungen['emails']['email_master_absender'])
+            && strlen($Einstellungen['emails']['email_master_absender']) > 0
+        ) {
             require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
             $oObj                = new stdClass();
             $oObj->oCheckBox     = $oCheckBox;

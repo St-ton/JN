@@ -90,7 +90,7 @@ class Navigation
     /**
      * @param int $pageType
      */
-    public function setPageType(int $pageType)
+    public function setPageType(int $pageType): void
     {
         $this->pageType = $pageType;
     }
@@ -106,7 +106,7 @@ class Navigation
     /**
      * @param \KategorieListe|null $categoryList
      */
-    public function setCategoryList(\KategorieListe $categoryList)
+    public function setCategoryList(\KategorieListe $categoryList): void
     {
         $this->categoryList = $categoryList;
     }
@@ -122,7 +122,7 @@ class Navigation
     /**
      * @param string $baseURL
      */
-    public function setBaseURL(string $baseURL)
+    public function setBaseURL(string $baseURL): void
     {
         $this->baseURL = $baseURL;
     }
@@ -130,7 +130,7 @@ class Navigation
     /**
      * @return \Artikel|null
      */
-    public function getProduct()
+    public function getProduct(): ?\Artikel
     {
         return $this->product;
     }
@@ -138,15 +138,15 @@ class Navigation
     /**
      * @param \Artikel|null $product
      */
-    public function setProduct(\Artikel $product)
+    public function setProduct(\Artikel $product): void
     {
         $this->product = $product;
     }
 
     /**
-     * @return Link|null
+     * @return LinkInterface|null
      */
-    public function getLink()
+    public function getLink(): ?LinkInterface
     {
         return $this->link;
     }
@@ -154,7 +154,7 @@ class Navigation
     /**
      * @param LinkInterface|null $link
      */
-    public function setLink(LinkInterface $link)
+    public function setLink(LinkInterface $link): void
     {
         $this->link = $link;
     }
@@ -162,7 +162,7 @@ class Navigation
     /**
      * @return string|null
      */
-    public function getLinkURL()
+    public function getLinkURL(): ?string
     {
         return $this->linkURL;
     }
@@ -170,7 +170,7 @@ class Navigation
     /**
      * @param string $url
      */
-    public function setLinkURL(string $url)
+    public function setLinkURL(string $url): void
     {
         $this->linkURL = $url;
     }
@@ -178,7 +178,7 @@ class Navigation
     /**
      * @return ProductFilter|null
      */
-    public function getProductFilter()
+    public function getProductFilter(): ?ProductFilter
     {
         return $this->productFilter;
     }
@@ -186,7 +186,7 @@ class Navigation
     /**
      * @param ProductFilter|null $productFilter
      */
-    public function setProductFilter(ProductFilter $productFilter)
+    public function setProductFilter(ProductFilter $productFilter): void
     {
         $this->productFilter = $productFilter;
     }
@@ -194,7 +194,7 @@ class Navigation
     /**
      * @return NavigationEntry|null
      */
-    public function getCustomNavigationEntry()
+    public function getCustomNavigationEntry(): ?NavigationEntry
     {
         return $this->customNavigationEntry;
     }
@@ -202,7 +202,7 @@ class Navigation
     /**
      * @param NavigationEntry|null $customNavigationEntry
      */
-    public function setCustomNavigationEntry(NavigationEntry $customNavigationEntry)
+    public function setCustomNavigationEntry(NavigationEntry $customNavigationEntry): void
     {
         $this->customNavigationEntry = $customNavigationEntry;
     }
@@ -261,12 +261,18 @@ class Navigation
                 break;
 
             case \PAGE_ARTIKEL:
-                if ($this->categoryList === null || $this->product === null || \count($this->categoryList->elemente) === 0) {
+                if ($this->categoryList === null
+                    || $this->product === null
+                    || \count($this->categoryList->elemente) === 0
+                ) {
                     break;
                 }
                 $elemCount = \count($this->categoryList->elemente) - 1;
                 for ($i = $elemCount; $i >= 0; $i--) {
-                    if (isset($this->categoryList->elemente[$i]->cKurzbezeichnung, $this->categoryList->elemente[$i]->cURL)) {
+                    if (isset(
+                        $this->categoryList->elemente[$i]->cKurzbezeichnung,
+                        $this->categoryList->elemente[$i]->cURL
+                    )) {
                         $ele = new NavigationEntry();
                         $ele->setName($this->categoryList->elemente[$i]->cKurzbezeichnung);
                         $ele->setURL($this->categoryList->elemente[$i]->cURL);
@@ -279,13 +285,13 @@ class Navigation
                 $ele->setURL($this->product->cURL);
                 $ele->setURLFull($this->product->cURLFull);
                 if ($this->product->isChild()) {
-                    $Vater                   = new \Artikel();
-                    $oArtikelOptionen        = new \stdClass();
-                    $oArtikelOptionen->nMain = 1;
-                    $Vater->fuelleArtikel($this->product->kVaterArtikel, $oArtikelOptionen);
-                    $ele->setName($Vater->cKurzbezeichnung);
-                    $ele->setURL($Vater->cURL);
-                    $ele->setURLFull($Vater->cURLFull);
+                    $parent         = new \Artikel();
+                    $options        = new \stdClass();
+                    $options->nMain = 1;
+                    $parent->fuelleArtikel($this->product->kVaterArtikel, $options);
+                    $ele->setName($parent->cKurzbezeichnung);
+                    $ele->setURL($parent->cURL);
+                    $ele->setURLFull($parent->cURLFull);
                     $ele->setHasChild(true);
                 }
                 $breadCrumb[] = $ele;
@@ -330,12 +336,12 @@ class Navigation
 
             case \PAGE_LOGIN:
             case \PAGE_MEINKONTO:
-                $cText   = \Session::Customer()->getID() > 0
+                $name    = \Session\Session::getCustomer()->getID() > 0
                     ? $this->language->get('account', 'breadcrumb')
                     : $this->language->get('login', 'breadcrumb');
                 $url     = $this->linkService->getStaticRoute('jtl.php', false);
                 $urlFull = $this->linkService->getStaticRoute('jtl.php');
-                $ele->setName($cText);
+                $ele->setName($name);
                 $ele->setURL($url);
                 $ele->setURLFull($urlFull);
                 $breadCrumb[] = $ele;
@@ -457,17 +463,17 @@ class Navigation
                     $ele->setURL($this->product->cURL);
                     $ele->setURLFull($this->product->cURLFull);
                     if ($this->product->isChild()) {
-                        $Vater                   = new \Artikel();
-                        $oArtikelOptionen        = new \stdClass();
-                        $oArtikelOptionen->nMain = 1;
-                        $Vater->fuelleArtikel($this->product->kVaterArtikel, $oArtikelOptionen);
-                        $ele->setName($Vater->cKurzbezeichnung);
-                        $ele->setURL($Vater->cURL);
-                        $ele->setURLFull($Vater->cURLFull);
+                        $parent         = new \Artikel();
+                        $options        = new \stdClass();
+                        $options->nMain = 1;
+                        $parent->fuelleArtikel($this->product->kVaterArtikel, $options);
+                        $ele->setName($parent->cKurzbezeichnung);
+                        $ele->setURL($parent->cURL);
+                        $ele->setURLFull($parent->cURLFull);
                         $ele->setHasChild(true);
                     }
                     $breadCrumb[] = $ele;
-                    $ele = new NavigationEntry();
+                    $ele          = new NavigationEntry();
                     $ele->setName($this->language->get('bewertung', 'breadcrumb'));
                     $ele->setURL('bewertung.php?a=' . $this->product->kArtikel . '&bfa=1');
                     $ele->setURLFull($this->baseURL . 'bewertung.php?a=' . $this->product->kArtikel . '&bfa=1');
@@ -484,13 +490,13 @@ class Navigation
             default:
                 if ($this->link !== null && $this->link instanceof Link) {
                     $elems = $this->linkService->getParentLinks($this->link->getID())->map(function (LinkInterface $l) {
-                            $res = new NavigationEntry();
-                            $res->setName($l->getName());
-                            $res->setURL($l->getURL());
-                            $res->setURLFull($l->getURL());
+                        $res = new NavigationEntry();
+                        $res->setName($l->getName());
+                        $res->setURL($l->getURL());
+                        $res->setURLFull($l->getURL());
 
-                            return $res;
-                        })->reverse()->all();
+                        return $res;
+                    })->reverse()->all();
 
                     $breadCrumb = \array_merge($breadCrumb, $elems);
                     $ele->setName($this->link->getName());

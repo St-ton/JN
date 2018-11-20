@@ -9,7 +9,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'kontakt_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_KONTAKT);
-$AktuelleSeite = 'KONTAKT';
 $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
 $linkHelper    = Shop::Container()->getLinkService();
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
@@ -24,7 +23,7 @@ if (FormHelper::checkSubject()) {
     $fehlendeAngaben = [];
     if (isset($_POST['kontakt']) && (int)$_POST['kontakt'] === 1) {
         $fehlendeAngaben = FormHelper::getMissingContactFormData();
-        $kKundengruppe   = Session::CustomerGroup()->getID();
+        $kKundengruppe   = \Session\Session::getCustomerGroup()->getID();
         // CheckBox Plausi
         $oCheckBox       = new CheckBox();
         $fehlendeAngaben = array_merge(
@@ -66,7 +65,7 @@ if (FormHelper::checkSubject()) {
         "SELECT *
             FROM tkontaktbetreff
             WHERE (cKundengruppen = 0 
-            OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
+            OR FIND_IN_SET('" . \Session\Session::getCustomerGroup()->getID()
                 . "', REPLACE(cKundengruppen, ';', ',')) > 0) 
             ORDER BY nSort",
         \DB\ReturnType::ARRAY_OF_OBJECTS

@@ -20,10 +20,10 @@ class Type extends Enum
     /**
      * filter can increase product amount
      */
-    const OR = 0;
+    public const OR = 0;
 
     /**
      * filter will decrease product amount
      */
-    const AND = 1;
+    public const AND = 1;
 }

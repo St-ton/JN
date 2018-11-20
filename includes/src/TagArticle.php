@@ -70,6 +70,11 @@ class TagArticle
     {
         $obj = ObjectHelper::copyMembers($this);
 
-        return Shop::Container()->getDB()->update('ttagartikel', ['kTag', 'kArtikel'], [$obj->kTag, $obj->kArtikel], $obj);
+        return Shop::Container()->getDB()->update(
+            'ttagartikel',
+            ['kTag', 'kArtikel'],
+            [$obj->kTag, $obj->kArtikel],
+            $obj
+        );
     }
 }

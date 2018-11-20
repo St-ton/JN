@@ -48,8 +48,8 @@ function bearbeiteDeletes($xml)
     if (!isset($xml['del_kategorien']['kKategorie'])) {
         return;
     }
-    // Alle Shop Kundengruppen holen
-    $customerGroups = Shop::Container()->getDB()->query(
+    $db             = Shop::Container()->getDB();
+    $customerGroups = $db->query(
         'SELECT kKundengruppe FROM tkundengruppe',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
@@ -65,7 +65,7 @@ function bearbeiteDeletes($xml)
         if ($kKategorie > 0) {
             loescheKategorie($kKategorie);
             //hole alle artikel raus in dieser Kategorie
-            $oArtikel_arr = Shop::Container()->getDB()->selectAll(
+            $oArtikel_arr = $db->selectAll(
                 'tkategorieartikel',
                 'kKategorie',
                 $kKategorie,
@@ -104,8 +104,9 @@ function bearbeiteInsert($xml)
     if (!is_array($xml['tkategorie'])) {
         return;
     }
+    $db = Shop::Container()->getDB();
     // Altes SEO merken => falls sich es bei der aktualisierten Kategorie ändert => Eintrag in tredirect
-    $oDataOld      = Shop::Container()->getDB()->query(
+    $oDataOld      = $db->query(
         'SELECT cSeo, lft, rght, nLevel
             FROM tkategorie
             WHERE kKategorie = ' . $Kategorie->kKategorie,
@@ -118,10 +119,10 @@ function bearbeiteInsert($xml)
     $kategorie_arr = mapArray($xml, 'tkategorie', $GLOBALS['mKategorie']);
     if ($kategorie_arr[0]->kKategorie > 0) {
         if (!$kategorie_arr[0]->cSeo) {
-            $kategorie_arr[0]->cSeo = getFlatSeoPath($kategorie_arr[0]->cName);
+            $kategorie_arr[0]->cSeo = \JTL\SeoHelper::getFlatSeoPath($kategorie_arr[0]->cName);
         }
-        $kategorie_arr[0]->cSeo                  = getSeo($kategorie_arr[0]->cSeo);
-        $kategorie_arr[0]->cSeo                  = checkSeo($kategorie_arr[0]->cSeo);
+        $kategorie_arr[0]->cSeo                  = \JTL\SeoHelper::getSeo($kategorie_arr[0]->cSeo);
+        $kategorie_arr[0]->cSeo                  = \JTL\SeoHelper::checkSeo($kategorie_arr[0]->cSeo);
         $kategorie_arr[0]->dLetzteAktualisierung = 'NOW()';
         $kategorie_arr[0]->lft                   = $oDataOld->lft ?? 0;
         $kategorie_arr[0]->rght                  = $oDataOld->rght ?? 0;
@@ -130,7 +131,7 @@ function bearbeiteInsert($xml)
         if (isset($oDataOld->cSeo)) {
             checkDbeSXmlRedirect($oDataOld->cSeo, $kategorie_arr[0]->cSeo);
         }
-        Shop::Container()->getDB()->query(
+        $db->query(
             "INSERT INTO tseo
                 SELECT tkategorie.cSeo, 'kKategorie', tkategorie.kKategorie, tsprache.kSprache
                     FROM tkategorie, tsprache
@@ -159,11 +160,11 @@ function bearbeiteInsert($xml)
         if (!$catLanguages[$i]->cSeo) {
             $catLanguages[$i]->cSeo = $kategorie_arr[0]->cName;
         }
-        $catLanguages[$i]->cSeo = getSeo($catLanguages[$i]->cSeo);
-        $catLanguages[$i]->cSeo = checkSeo($catLanguages[$i]->cSeo);
+        $catLanguages[$i]->cSeo = \JTL\SeoHelper::getSeo($catLanguages[$i]->cSeo);
+        $catLanguages[$i]->cSeo = \JTL\SeoHelper::checkSeo($catLanguages[$i]->cSeo);
         DBUpdateInsert('tkategoriesprache', [$catLanguages[$i]], 'kKategorie', 'kSprache');
 
-        Shop::Container()->getDB()->delete(
+        $db->delete(
             'tseo',
             ['cKey', 'kKey', 'kSprache'],
             ['kKategorie', (int)$catLanguages[$i]->kKategorie, (int)$catLanguages[$i]->kSprache]
@@ -174,7 +175,7 @@ function bearbeiteInsert($xml)
         $oSeo->cKey     = 'kKategorie';
         $oSeo->kKey     = $catLanguages[$i]->kKategorie;
         $oSeo->kSprache = $catLanguages[$i]->kSprache;
-        Shop::Container()->getDB()->insert('tseo', $oSeo);
+        $db->insert('tseo', $oSeo);
         // Insert into tredirect weil sich das SEO vom geändert hat
         if (isset($oSeoAssoc_arr[$catLanguages[$i]->kSprache])) {
             checkDbeSXmlRedirect(
@@ -183,7 +184,7 @@ function bearbeiteInsert($xml)
             );
         }
     }
-    $customerGroups = Shop::Container()->getDB()->query(
+    $customerGroups = $db->query(
         'SELECT kKundengruppe FROM tkundengruppe',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
@@ -195,7 +196,7 @@ function bearbeiteInsert($xml)
         'kKategorie'
     );
     $productIDs   = [];
-    $oArtikel_arr = Shop::Container()->getDB()->selectAll(
+    $oArtikel_arr = $db->selectAll(
         'tkategorieartikel',
         'kKategorie',
         $kategorie_arr[0]->kKategorie,
@@ -232,7 +233,7 @@ function bearbeiteInsert($xml)
 //        if (isset($Kategorie->kOberKategorie) && $Kategorie->kOberKategorie > 0) {
 //            $flushArray[] = CACHING_GROUP_CATEGORY . '_' . $Kategorie->kOberKategorie;
 //        }
-//        Shop::Cache()->flushTags($flushArray);
+//        Shop::Container()->getCache()->flushTags($flushArray);
     //@todo: the above does not really work on parent categories when adding/deleting child categories
 }
 
@@ -241,7 +242,8 @@ function bearbeiteInsert($xml)
  */
 function loescheKategorie(int $kKategorie)
 {
-    $attributes = Shop::Container()->getDB()->selectAll(
+    $db         = Shop::Container()->getDB();
+    $attributes = $db->selectAll(
         'tkategorieattribut',
         'kKategorie',
         $kKategorie,
@@ -250,11 +252,11 @@ function loescheKategorie(int $kKategorie)
     foreach ($attributes as $attribute) {
         deleteKategorieAttribut((int)$attribute->kKategorieAttribut);
     }
-    Shop::Container()->getDB()->delete('tseo', ['kKey', 'cKey'], [$kKategorie, 'kKategorie']);
-    Shop::Container()->getDB()->delete('tkategorie', 'kKategorie', $kKategorie);
-    Shop::Container()->getDB()->delete('tkategoriekundengruppe', 'kKategorie', $kKategorie);
-    Shop::Container()->getDB()->delete('tkategoriesichtbarkeit', 'kKategorie', $kKategorie);
-    Shop::Container()->getDB()->delete('tkategoriesprache', 'kKategorie', $kKategorie);
+    $db->delete('tseo', ['kKey', 'cKey'], [$kKategorie, 'kKategorie']);
+    $db->delete('tkategorie', 'kKategorie', $kKategorie);
+    $db->delete('tkategoriekundengruppe', 'kKategorie', $kKategorie);
+    $db->delete('tkategoriesichtbarkeit', 'kKategorie', $kKategorie);
+    $db->delete('tkategoriesprache', 'kKategorie', $kKategorie);
 }
 
 /**

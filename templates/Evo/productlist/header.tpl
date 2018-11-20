@@ -32,7 +32,7 @@
 
 {include file='snippets/extension.tpl'}
 
-{block name='productlist-header'}
+{block name='productlist-header-navinfo'}
 {if $oNavigationsinfo->hasData()}
     <div class="title">{if $oNavigationsinfo->getName()}<h1>{$oNavigationsinfo->getName()}</h1>{/if}</div>
     <div class="desc clearfix">

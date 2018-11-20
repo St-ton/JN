@@ -91,7 +91,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 'nMax'          => (float)$this->nMax,
                 'nTyp'          => (int)$this->nTyp,
                 'fInitial'      => (float)$this->getInitQuantity(),
-                'bAnzahl'       => $this->getAnzeigeTyp() == KONFIG_ANZEIGE_TYP_RADIO || $this->getAnzeigeTyp() == KONFIG_ANZEIGE_TYP_DROPDOWN,
+                'bAnzahl'       => $this->getAnzeigeTyp() == KONFIG_ANZEIGE_TYP_RADIO
+                    || $this->getAnzeigeTyp() == KONFIG_ANZEIGE_TYP_DROPDOWN,
                 'cName'         => $this->oSprache->getName(),
                 'cBeschreibung' => $this->oSprache->getBeschreibung(),
                 'oItem_arr'     => $this->oItem_arr

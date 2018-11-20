@@ -83,8 +83,8 @@ class Notification implements IteratorAggregate, Countable
 
         if ($status->hasPendingUpdates()) {
             $this->add(
-                NotificationEntry::TYPE_DANGER, 
-                'Systemupdate', 
+                NotificationEntry::TYPE_DANGER,
+                'Systemupdate',
                 'Ein Datenbank-Update ist zwingend notwendig',
                 'dbupdater.php'
             );
@@ -92,8 +92,8 @@ class Notification implements IteratorAggregate, Countable
 
         if (!$status->validFolderPermissions()) {
             $this->add(
-                NotificationEntry::TYPE_DANGER, 
-                'Dateisystem', 
+                NotificationEntry::TYPE_DANGER,
+                'Dateisystem',
                 'Es sind Verzeichnisse nicht beschreibbar.',
                 'permissioncheck.php'
             );
@@ -109,10 +109,19 @@ class Notification implements IteratorAggregate, Countable
 
         if (!$status->validDatabaseStruct()) {
             $this->add(
-                NotificationEntry::TYPE_DANGER,
-                'Datenbank',
+                NotificationEntry::TYPE_WARNING,
+                'Datenbankstruktur',
                 'Es liegen Fehler in der Datenbankstruktur vor.',
                 'dbcheck.php'
+            );
+        }
+
+        if (!$status->validModifiedFileStruct() || !$status->validOrphanedFilesStruct()) {
+            $this->add(
+                NotificationEntry::TYPE_WARNING,
+                'Dateistruktur',
+                'Es liegen Fehler in der Dateistruktur vor.',
+                'filecheck.php'
             );
         }
 

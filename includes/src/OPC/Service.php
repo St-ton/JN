@@ -10,7 +10,6 @@ use Filter\AbstractFilter;
 use Filter\Config;
 use Filter\Option;
 use Filter\Items\Attribute;
-use Filter\Items\ItemAttribute;
 use Filter\Type;
 
 /**
@@ -41,6 +40,8 @@ class Service
     public function __construct(DB $db)
     {
         $this->db = $db;
+
+        \L10n\GetText::getInstance()->loadAdminLocale('opc');
     }
 
     /**
@@ -70,12 +71,27 @@ class Service
      */
     public function registerAdminIOFunctions(\AdminIO $io)
     {
-        $this->adminName = $io->getAccount()->account()->cLogin;
+        $adminAccount = $io->getAccount();
+
+        if ($adminAccount === null) {
+            throw new \Exception('Admin account was not set on AdminIO.');
+        }
+
+        $this->adminName = $adminAccount->account()->cLogin;
 
         foreach ($this->getIOFunctionNames() as $functionName) {
             $publicFunctionName = 'opc' . \ucfirst($functionName);
             $io->register($publicFunctionName, [$this, $functionName], null, 'CONTENT_PAGE_VIEW');
         }
+    }
+
+    /**
+     * @return null|string
+     * @throws \Exception
+     */
+    public function getAdminSessionToken()
+    {
+        return \Shop::getAdminSessionToken();
     }
 
     /**

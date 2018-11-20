@@ -61,11 +61,11 @@ function bearbeiteEinstellungsSuche($cSuche, $bSpeichern = false)
             if ($bRange) {
                 // Suche war eine Range
                 $oSQL->nSuchModus = 2;
-                $oSQL->cSearch    = 'Suche nach ID Range: ' . 
-                    (int)$kEinstellungenConf_arr[0] . ' - ' . 
+                $oSQL->cSearch    = 'Suche nach ID Range: ' .
+                    (int)$kEinstellungenConf_arr[0] . ' - ' .
                     (int)$kEinstellungenConf_arr[1];
-                $oSQL->cWHERE .= ' AND ((kEinstellungenConf BETWEEN ' . 
-                    (int)$kEinstellungenConf_arr[0] . ' AND ' . 
+                $oSQL->cWHERE .= ' AND ((kEinstellungenConf BETWEEN ' .
+                    (int)$kEinstellungenConf_arr[0] . ' AND ' .
                     (int)$kEinstellungenConf_arr[1] . ") AND cConf = 'Y')";
             } elseif ((int)$cSuche > 0) { // Suche in cName oder kEinstellungenConf suchen
                 $oSQL->nSuchModus = 3;

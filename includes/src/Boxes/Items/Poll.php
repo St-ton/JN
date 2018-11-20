@@ -26,7 +26,7 @@ final class Poll extends AbstractBox
             ? ' LIMIT ' . (int)$conf
             : '';
         $langID    = \Shop::getLanguageID();
-        $cacheID   = 'bu_' . $langID . '_' . \Session::CustomerGroup()->getID() . \md5($cSQL);
+        $cacheID   = 'bu_' . $langID . '_' . \Session\Session::getCustomerGroup()->getID() . \md5($cSQL);
         $cacheTags = [\CACHING_GROUP_BOX, \CACHING_GROUP_CORE];
         $cached    = true;
         if (($polls = \Shop::Container()->getCache()->get($cacheID)) === false) {
@@ -52,7 +52,7 @@ final class Poll extends AbstractBox
                         AND NOW() BETWEEN dGueltigVon AND COALESCE(dGueltigBis, NOW())
                     GROUP BY tumfrage.kUmfrage
                     ORDER BY tumfrage.dGueltigVon DESC" . $cSQL,
-                ['lid' => $langID, 'cid' => \Session::CustomerGroup()->getID()],
+                ['lid' => $langID, 'cid' => \Session\Session::getCustomerGroup()->getID()],
                 ReturnType::ARRAY_OF_OBJECTS
             );
             \Shop::Container()->getCache()->set($cacheID, $polls, $cacheTags);

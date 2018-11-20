@@ -24,42 +24,26 @@
             $('#submitDelete').data('name', 'inaktiv');
         });
 
-        $('#category-list td[data-name="category"]').click(function(event) {
+        $('#category-list i.nav-toggle').click(function(event) {
             event.stopPropagation();
-            var currentLevel = parseInt($(this).parent().data('level')),
-                state = $(this).hasClass('hide-toggle-on'),
-                nextEl = $(this).parent().next(),
+            var tr = $(this).closest('tr');
+            var td = $(this).parent();
+            var currentLevel = parseInt(tr.data('level')),
+                state = td.hasClass('hide-toggle-on'),
+                nextEl = tr.next(),
                 nextLevel = parseInt(nextEl.data('level'));
             while (currentLevel < nextLevel) {
                 nextEl.toggle(state);
                 nextEl = nextEl.next();
                 nextLevel = parseInt(nextEl.data('level'));
             }
-            $(this).toggleClass('hide-toggle-on');
+            td.toggleClass('hide-toggle-on');
+            td.find('i.fa').toggleClass('fa-caret-right fa-caret-down');
         });
     });
 </script>
 {include file='tpl_inc/seite_header.tpl' cTitel=#news# cBeschreibung=#newsDesc# cDokuURL=#newsURL#}
 <div id="content" class="container-fluid">
-    <div class="block">
-        <form name="sprache" method="post" action="news.php">
-            {$jtl_token}
-            <input type="hidden" name="sprachwechsel" value="1" />
-            <div class="input-group p25 left">
-                <span class="input-group-addon">
-                    <label for="lang-changer">{#changeLanguage#}</label>
-                </span>
-                <span class="input-group-wrap last">
-                    <select id="lang-changer" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
-                        {foreach $Sprachen as $sprache}
-                            <option value="{$sprache->kSprache}" {if $sprache->kSprache==$smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
-                        {/foreach}
-                    </select>
-                </span>
-            </div>
-        </form>
-    </div>
-
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'inaktiv'} active{/if}">
             <a data-toggle="tab" role="tab" href="#inaktiv">{#newsCommentActivate#}</a>
@@ -105,22 +89,22 @@
                                 {foreach $oNewsKommentar_arr as $oNewsKommentar}
                                     <tr>
                                         <td class="check">
-                                            <input type="checkbox" name="kNewsKommentar[]" value="{$oNewsKommentar->kNewsKommentar}" id="comment-{$oNewsKommentar->kNewsKommentar}" />
+                                            <input type="checkbox" name="kNewsKommentar[]" value="{$oNewsKommentar->getID()}" id="comment-{$oNewsKommentar->getID()}" />
                                         </td>
-                                        <td>
-                                            <label for="comment-{$oNewsKommentar->kNewsKommentar}">
-                                            {if $oNewsKommentar->cVorname|strlen > 0}
-                                                {$oNewsKommentar->cVorname} {$oNewsKommentar->cNachname}
-                                            {else}
-                                                {$oNewsKommentar->cName}
-                                            {/if}
+                                        <td class="TD2">
+                                            <label for="comment-{$oNewsKommentar->getID()}">
+                                            {*{if $oNewsKommentar->cVorname|strlen > 0}*}
+                                                {*{$oNewsKommentar->cVorname} {$oNewsKommentar->cNachname}*}
+                                            {*{else}*}
+                                                {$oNewsKommentar->getName()}
+                                            {*{/if}*}
                                             </label>
                                         </td>
-                                        <td>{$oNewsKommentar->cBetreff|truncate:50:'...'}</td>
-                                        <td>{$oNewsKommentar->cKommentar|truncate:150:'...'}</td>
-                                        <td class="tcenter">{$oNewsKommentar->dErstellt_de}</td>
+                                        <td class="TD3">{$oNewsKommentar->getNewsTitle()|truncate:50:'...'}</td>
+                                        <td class="TD4">{$oNewsKommentar->getText()|truncate:150:'...'}</td>
+                                        <td class="tcenter">{$oNewsKommentar->getDateCreatedCompat()}</td>
                                         <td class="tcenter">
-                                            <a href="news.php?news=1&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
+                                            <a href="news.php?news=1&kNews={$oNewsKommentar->getNewsID()}&kNewsKommentar={$oNewsKommentar->getID()}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
                                                class="btn btn-primary" title="{#modify#}">
                                                 <i class="fa fa-edit"></i>
                                             </a>
@@ -131,7 +115,7 @@
                                 <tfoot>
                                     <tr>
                                         <td class="check"><input name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                                        <td colspan="5"><label for="ALLMSGS1">Alle ausw&auml;hlen</label></td>
+                                        <td colspan="5"><label for="ALLMSGS1">Alle auswählen</label></td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -149,7 +133,6 @@
                 <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
             {/if}
         </div>
-        <!-- #inaktiv -->
         <div id="aktiv" class="tab-pane fade{if isset($cTab) && $cTab === 'aktiv'} active in{/if}">
             {include file='tpl_inc/pagination.tpl' oPagination=$oPagiNews cAnchor='aktiv'}
             <form name="news" method="post" action="news.php">
@@ -167,7 +150,7 @@
                             <tr>
                                 <th class="check"></th>
                                 <th class="tleft">{#newsHeadline#}</th>
-                                <th class="tleft">{#newsCategory#}</th>
+                                {*<th class="tleft">{#newsCategory#}</th>*}
                                 <th class="tleft">{#newsCustomerGrp#}</th>
                                 <th class="tleft">{#newsValidation#}</th>
                                 <th>{#newsActive#}</th>
@@ -179,32 +162,32 @@
                             <tbody>
                             {if $oNews_arr|@count > 0 && $oNews_arr}
                                 {foreach $oNews_arr as $oNews}
-                                    <tr>
-                                        <td class="check"><input type="checkbox" name="kNews[]" value="{$oNews->kNews}" id="news-cb-{$oNews->kNews}" /></td>
-                                        <td><label for="news-cb-{$oNews->kNews}">{$oNews->cBetreff}</label></td>
-                                        <td>{$oNews->KategorieAusgabe}</td>
-                                        <td>
-                                            {foreach $oNews->cKundengruppe_arr as $cKundengruppe}
-                                                {$cKundengruppe}{if !$cKundengruppe@last},{/if}
+                                    <tr class="tab_bg{$oNews@iteration%2}">
+                                        <td class="check"><input type="checkbox" name="kNews[]" value="{$oNews->getID()}" id="news-cb-{$oNews->getID()}" /></td>
+                                        <td class="TD2"><label for="news-cb-{$oNews->getID()}">{$oNews->getTitle()}</label></td>
+                                        {*<td class="TD3">{$oNews->KategorieAusgabe}</td>*}
+                                        <td class="TD4">
+                                            {foreach $oNews->getCustomerGroups() as $customerGroupID}
+                                                {if $customerGroupID === -1}Alle{else}{Kundengruppe::getNameByID($customerGroupID)}{/if}{if !$customerGroupID@last},{/if}
                                             {/foreach}
                                         </td>
-                                        <td>{$oNews->dGueltigVon_de}</td>
-                                        <td class="tcenter"><i class="fa fa-{if $oNews->nAktiv == 1}check{else}close{/if}"></i></td>
+                                        <td class="TD5">{$oNews->getDateValidFromLocalizedCompat()}</td>
+                                        <td class="tcenter"><i class="fa fa-{if $oNews->getIsActive()}check{else}close{/if}"></i></td>
                                         <td class="tcenter">
-                                            {if $oNews->nNewsKommentarAnzahl > 0}
-                                                <a href="news.php?news=1&nd=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}">{$oNews->nNewsKommentarAnzahl}</a>
+                                            {if $oNews->getCommentCount() > 0}
+                                                <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}">{$oNews->getCommentCount()}</a>
                                             {else}
-                                                {$oNews->nNewsKommentarAnzahl}
+                                                {$oNews->getCommentCount()}
                                             {/if}
                                         </td>
-                                        <td class="tcenter">{$oNews->Datum}</td>
+                                        <td class="tcenter">{$oNews->getDateCompat()}</td>
                                         <td class="tcenter">
                                             <div class="btn-group">
-                                                <a href="news.php?news=1&news_editieren=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}"
+                                                <a href="news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
                                                    class="btn btn-primary" title="{#modify#}">
                                                     <i class="fa fa-edit"></i>
                                                 </a>
-                                                <a href="news.php?news=1&nd=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}"
+                                                <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
                                                    class="btn btn-default" title="{#newsPreview#}">
                                                     <i class="fa fa-eye"></i>
                                                 </a>
@@ -271,30 +254,27 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {if $oNewsKategorie_arr|@count > 0 && $oNewsKategorie_arr}
-                                {foreach $oNewsKategorieFlat_arr as $oNewsKategorie}
-                                    <tr class="{if (int)$oNewsKategorie->nLevel > 0}hidden-soft{/if}" data-level="{$oNewsKategorie->nLevel}">
-                                        <td class="check">
-                                            <input type="checkbox" name="kNewsKategorie[]" data-name="{$oNewsKategorie->cName}" value="{$oNewsKategorie->kNewsKategorie}" id="newscat-{$oNewsKategorie->kNewsKategorie}" />
+                            {if $oNewsKategorie_arr|@count}
+                                {foreach $oNewsKategorie_arr as $oNewsKategorie}
+                                    <tr scope="row" class="tab_bg{$oNewsKategorie@iteration % 2}{if $oNewsKategorie->getLevel() > 1} hidden-soft{/if}" data-level="{$oNewsKategorie->getLevel()}">
+                                        <th class="check">
+                                            <input type="checkbox" name="kNewsKategorie[]" data-name="{$oNewsKategorie->getName()}" value="{$oNewsKategorie->getID()}" id="newscat-{$oNewsKategorie->getID()}" />
+                                        </th>
+                                        <td class="TD2{if $oNewsKategorie->getLevel() === 1} hide-toggle-on{/if}" data-name="category">
+                                            <i class="fa fa-caret-right nav-toggle{if $oNewsKategorie->getChildren()->count() === 0} hidden{/if}" style="cursor:pointer"></i>
+                                            <label for="newscat-{$oNewsKategorie->getID()}">{$oNewsKategorie->getName()|default:'???'}</label>
                                         </td>
-                                        <td class="{if (int)$oNewsKategorie->nLevel === 0}hide-toggle-on{/if}" data-name="category">
-                                            {for $i=1 to $oNewsKategorie->nLevel}&nbsp;&nbsp;&nbsp;{/for}
-                                            <i class="fa fa-caret-down nav-toggle {if !isset($oNewsKategorie->children)}invisible{/if}"></i>
-                                            <label>
-                                                {$oNewsKategorie->cName}
-                                            </label>
-
-                                        </td>
-                                        <td class="tcenter">{$oNewsKategorie->nSort}</td>
-                                        <td class="tcenter">{if $oNewsKategorie->nAktiv === '1'}{#yes#}{else}{#no#}{/if}</td>
-                                        <td class="tcenter">{$oNewsKategorie->dLetzteAktualisierung_de}</td>
+                                        <td class="tcenter">{$oNewsKategorie->getSort()}</td>
+                                        <td class="tcenter"><i class="fa fa-{if $oNewsKategorie->getIsActive()}check{else}close{/if}"></i></td>
+                                        <td class="tcenter">{$oNewsKategorie->getDateLastModified()->format('d.m.Y H:i')}</td>
                                         <td class="tcenter">
-                                            <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->kNewsKategorie}&tab=kategorien&token={$smarty.session.jtl_token}"
+                                            <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
                                                class="btn btn-primary" title="{#modify#}">
                                                 <i class="fa fa-edit"></i>
                                             </a>
                                         </td>
                                     </tr>
+                                    {include 'tpl_inc/newscategories_recursive.tpl' children=$oNewsKategorie->getChildren() level=$oNewsKategorie->getLevel()}
                                 {/foreach}
                             {else}
                                 <tr>
@@ -325,12 +305,12 @@
                 </div>
             </form>
         </div>
-        <!-- #kategorien -->
         <div id="einstellungen" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
             <form name="einstellen" method="post" action="news.php">
                 {$jtl_token}
                 <input type="hidden" name="einstellungen" value="1" />
                 <input type="hidden" name="tab" value="einstellungen" />
+                <input type="hidden" name="news" value="1" />
 
                 <div class="panel panel-default settings">
                     <div class="panel-body">
@@ -381,9 +361,7 @@
                 </div>
             </form>
         </div>
-        <!-- #einstellungen -->
     </div>
-    <!-- .tab-content -->
 </div>
 <div class="modal delete-modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">

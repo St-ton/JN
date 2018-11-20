@@ -9,7 +9,7 @@ if (!defined('PFAD_ROOT')) {
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Shop::setPageType(PAGE_ARTIKELLISTE);
-/** @global JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 /** @global \Filter\ProductFilter $NaviFilter*/
 $Einstellungen      = Shopsetting::getInstance()->getAll();
 $conf               = $Einstellungen;
@@ -22,7 +22,6 @@ $expandedCategories = new KategorieListe();
 $hasError           = false;
 $cParameter_arr     = Shop::getParameters();
 if ($NaviFilter->hasCategory()) {
-    $AktuelleSeite               = 'PRODUKTE';
     $kKategorie                  = $NaviFilter->getCategory()->getValue();
     $_SESSION['LetzteKategorie'] = $kKategorie;
     if ($AktuelleKategorie->kKategorie === null) {
@@ -46,9 +45,8 @@ if ($conf['navigationsfilter']['allgemein_weiterleitung'] === 'Y' && $oSuchergeb
         ? (new \Kategorie(
             $categoryID,
             $NaviFilter->getFilterConfig()->getLanguageID(),
-            $NaviFilter->getFilterConfig()->getCustomerGroupID())
-        )
-            ->existierenUnterkategorien()
+            $NaviFilter->getFilterConfig()->getCustomerGroupID()
+        ))->existierenUnterkategorien()
         : false;
     if ($NaviFilter->getFilterCount() > 0
         || $NaviFilter->getRealSearch() !== null
@@ -78,8 +76,8 @@ if ($conf['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y'
     });
     $bestsellers = Bestseller::buildBestsellers(
         $productsIDs,
-        Session::CustomerGroup()->getID(),
-        Session::CustomerGroup()->mayViewCategories(),
+        \Session\Session::getCustomerGroup()->getID(),
+        \Session\Session::getCustomerGroup()->mayViewCategories(),
         false,
         (int)$conf['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'],
         (int)$conf['global']['global_bestseller_minanzahl']

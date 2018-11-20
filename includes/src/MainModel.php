@@ -24,9 +24,9 @@ abstract class MainModel
     }
 
     /**
-     * @param int  $kKey
+     * @param int         $kKey
      * @param null|object $oObj
-     * @param null|array $xOption
+     * @param null|array  $xOption
      */
     abstract public function load($kKey, $oObj = null, $xOption = null);
 
@@ -104,8 +104,7 @@ abstract class MainModel
      */
     public function getPublic(array $Nonpublics)
     {
-        $Obj = new stdClass();
-
+        $Obj     = new stdClass();
         $members = array_keys(get_object_vars($this));
         if (is_array($members) && count($members) > 0) {
             foreach ($members as $member) {

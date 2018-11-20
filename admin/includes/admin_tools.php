@@ -5,41 +5,86 @@
  */
 
 /**
- * @param int $kEinstellungenSektion
+ * @param int|array $configSectionID
  * @return array
  */
-function getAdminSectionSettings($kEinstellungenSektion)
+function getAdminSectionSettings($configSectionID)
 {
-    $kEinstellungenSektion = (int)$kEinstellungenSektion;
-    $oConfig_arr           = [];
-    if ($kEinstellungenSektion > 0) {
-        $oConfig_arr = Shop::Container()->getDB()->selectAll(
+    $db = Shop::Container()->getDB();
+    if (is_array($configSectionID)) {
+        $confData = $db->query(
+            'SELECT *
+                FROM teinstellungenconf
+                WHERE kEinstellungenConf IN (' . implode(',', $configSectionID) . ')
+                ORDER BY nSort',
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+    } else {
+        $confData = $db->selectAll(
             'teinstellungenconf',
             'kEinstellungenSektion',
-            $kEinstellungenSektion,
+            $configSectionID,
             '*',
             'nSort'
         );
-        foreach ($oConfig_arr as $conf) {
-            if ($conf->cInputTyp === 'selectbox') {
-                $conf->ConfWerte = Shop::Container()->getDB()->selectAll(
-                    'teinstellungenconfwerte',
-                    'kEinstellungenConf',
-                    $conf->kEinstellungenConf,
-                    '*',
-                    'nSort'
-                );
-            }
-            $oSetValue           = Shop::Container()->getDB()->select(
+    }
+    foreach ($confData as $conf) {
+        $conf->kEinstellungenSektion = (int)$conf->kEinstellungenSektion;
+        $conf->kEinstellungenConf    = (int)$conf->kEinstellungenConf;
+        $conf->nSort                 = (int)$conf->nSort;
+        $conf->nStandardAnzeigen     = (int)$conf->nStandardAnzeigen;
+        $conf->nModul                = (int)$conf->nModul;
+        if ($conf->cInputTyp === 'listbox') {
+            $conf->ConfWerte = $db->selectAll(
+                'tkundengruppe',
+                [],
+                [],
+                'kKundengruppe, cName',
+                'cStandard DESC'
+            );
+        } elseif ($conf->cInputTyp === 'selectkdngrp') {
+            $conf->ConfWerte = $db->query(
+                'SELECT kKundengruppe, cName
+                    FROM tkundengruppe
+                    ORDER BY cStandard DESC',
+                \DB\ReturnType::ARRAY_OF_OBJECTS
+            );
+        } else {
+            $conf->ConfWerte = $db->selectAll(
+                'teinstellungenconfwerte',
+                'kEinstellungenConf',
+                $conf->kEinstellungenConf,
+                '*',
+                'nSort'
+            );
+        }
+        if ($conf->cInputTyp === 'listbox') {
+            $oSetValue = $db->selectAll(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
-                [$kEinstellungenSektion, $conf->cWertName]
+                [$conf->kEinstellungenSektion, $conf->cWertName],
+                'cWert'
+            );
+
+            $conf->gesetzterWert = $oSetValue;
+        } elseif ($conf->cInputTyp === 'selectkdngrp') {
+            $oSetValue = $db->selectAll(
+                'teinstellungen',
+                ['kEinstellungenSektion', 'cName'],
+                [$conf->kEinstellungenSektion, $conf->cWertName]
+            );
+            $conf->gesetzterWert = $oSetValue;
+        } else {
+            $oSetValue = $db->select(
+                'teinstellungen',
+                ['kEinstellungenSektion', 'cName'],
+                [$conf->kEinstellungenSektion, $conf->cWertName]
             );
             $conf->gesetzterWert = $oSetValue->cWert ?? null;
         }
     }
 
-    return $oConfig_arr;
+    return $confData;
 }
 
 /**
@@ -48,39 +93,39 @@ function getAdminSectionSettings($kEinstellungenSektion)
  * @param array $tags
  * @return string
  */
-function saveAdminSettings($settingsIDs, &$cPost_arr, $tags = [CACHING_GROUP_OPTION])
+function saveAdminSettings(array $settingsIDs, array &$cPost_arr, $tags = [CACHING_GROUP_OPTION])
 {
     array_walk($settingsIDs, function (&$i) {
         $i = (int)$i;
     });
-    $oConfig_arr = Shop::Container()->getDB()->query(
+    $confData = Shop::Container()->getDB()->query(
         'SELECT *
             FROM teinstellungenconf
             WHERE kEinstellungenConf IN (' . implode(',', $settingsIDs) . ')
             ORDER BY nSort',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    if (count($oConfig_arr) === 0) {
+    if (count($confData) === 0) {
         return 'Fehler beim Speichern Ihrer Einstellungen.';
     }
-    foreach ($oConfig_arr as $config) {
-        $aktWert                        = new stdClass();
-        $aktWert->cWert                 = $cPost_arr[$config->cWertName] ?? null;
-        $aktWert->cName                 = $config->cWertName;
-        $aktWert->kEinstellungenSektion = (int)$config->kEinstellungenSektion;
+    foreach ($confData as $config) {
+        $val                        = new stdClass();
+        $val->cWert                 = $cPost_arr[$config->cWertName] ?? null;
+        $val->cName                 = $config->cWertName;
+        $val->kEinstellungenSektion = (int)$config->kEinstellungenSektion;
         switch ($config->cInputTyp) {
             case 'kommazahl':
-                $aktWert->cWert = (float)$aktWert->cWert;
+                $val->cWert = (float)$val->cWert;
                 break;
             case 'zahl':
             case 'number':
-                $aktWert->cWert = (int)$aktWert->cWert;
+                $val->cWert = (int)$val->cWert;
                 break;
             case 'text':
-                $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                $val->cWert = substr($val->cWert, 0, 255);
                 break;
             case 'listbox':
-                bearbeiteListBox($aktWert->cWert, $aktWert->cName, $aktWert->kEinstellungenSektion);
+                bearbeiteListBox($val->cWert, $val->cName, $val->kEinstellungenSektion);
                 break;
         }
         if ($config->cInputTyp !== 'listbox') {
@@ -89,44 +134,43 @@ function saveAdminSettings($settingsIDs, &$cPost_arr, $tags = [CACHING_GROUP_OPT
                 ['kEinstellungenSektion', 'cName'],
                 [(int)$config->kEinstellungenSektion, $config->cWertName]
             );
-            Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
+            Shop::Container()->getDB()->insert('teinstellungen', $val);
         }
     }
-    Shop::Cache()->flushTags($tags);
+    Shop::Container()->getCache()->flushTags($tags);
 
     return 'Ihre Einstellungen wurden erfolgreich übernommen.';
 }
 
 /**
- * @param array  $cListBox_arr
+ * @param array  $listBoxes
  * @param string $cWertName
- * @param int    $kEinstellungenSektion
+ * @param int    $configSectionID
  */
-function bearbeiteListBox($cListBox_arr, $cWertName, int $kEinstellungenSektion)
+function bearbeiteListBox($listBoxes, $cWertName, int $configSectionID)
 {
-    if (is_array($cListBox_arr) && count($cListBox_arr) > 0) {
+    if (is_array($listBoxes) && count($listBoxes) > 0) {
         Shop::Container()->getDB()->delete(
             'teinstellungen',
             ['kEinstellungenSektion', 'cName'],
-            [$kEinstellungenSektion, $cWertName]
+            [$configSectionID, $cWertName]
         );
-        foreach ($cListBox_arr as $cListBox) {
+        foreach ($listBoxes as $cListBox) {
             $oAktWert                        = new stdClass();
             $oAktWert->cWert                 = $cListBox;
             $oAktWert->cName                 = $cWertName;
-            $oAktWert->kEinstellungenSektion = $kEinstellungenSektion;
+            $oAktWert->kEinstellungenSektion = $configSectionID;
 
             Shop::Container()->getDB()->insert('teinstellungen', $oAktWert);
         }
     } elseif ($cWertName === 'bewertungserinnerung_kundengruppen' || $cWertName === 'kwk_kundengruppen') {
         // Leere Kundengruppen Work Around
-        // Standard Kundengruppe aus DB holen
         $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
         if ($oKundengruppe->kKundengruppe > 0) {
             Shop::Container()->getDB()->delete(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
-                [$kEinstellungenSektion, $cWertName]
+                [$configSectionID, $cWertName]
             );
             $oAktWert                        = new stdClass();
             $oAktWert->cWert                 = $oKundengruppe->kKundengruppe;
@@ -139,45 +183,45 @@ function bearbeiteListBox($cListBox_arr, $cWertName, int $kEinstellungenSektion)
 }
 
 /**
- * @param int   $kEinstellungenSektion
+ * @param int   $configSectionID
  * @param array $cPost_arr
  * @param array $tags
  * @return string
  */
-function saveAdminSectionSettings(int $kEinstellungenSektion, &$cPost_arr, $tags = [CACHING_GROUP_OPTION])
+function saveAdminSectionSettings(int $configSectionID, array &$cPost_arr, $tags = [CACHING_GROUP_OPTION])
 {
     if (!FormHelper::validateToken()) {
         return 'Fehler: Cross site request forgery.';
     }
-    $oConfig_arr = Shop::Container()->getDB()->selectAll(
+    $confData = Shop::Container()->getDB()->selectAll(
         'teinstellungenconf',
         ['kEinstellungenSektion', 'cConf'],
-        [$kEinstellungenSektion, 'Y'],
+        [$configSectionID, 'Y'],
         '*',
         'nSort'
     );
-    if (count($oConfig_arr) === 0) {
+    if (count($confData) === 0) {
         return 'Fehler beim Speichern Ihrer Einstellungen.';
     }
-    foreach ($oConfig_arr as $config) {
-        $aktWert                        = new stdClass();
-        $aktWert->cWert                 = $cPost_arr[$config->cWertName] ?? null;
-        $aktWert->cName                 = $config->cWertName;
-        $aktWert->kEinstellungenSektion = $kEinstellungenSektion;
+    foreach ($confData as $config) {
+        $val                        = new stdClass();
+        $val->cWert                 = $cPost_arr[$config->cWertName] ?? null;
+        $val->cName                 = $config->cWertName;
+        $val->kEinstellungenSektion = $configSectionID;
         switch ($config->cInputTyp) {
             case 'kommazahl':
-                $aktWert->cWert = (float)str_replace(',', '.', $aktWert->cWert);
+                $val->cWert = (float)str_replace(',', '.', $val->cWert);
                 break;
             case 'zahl':
             case 'number':
-                $aktWert->cWert = (int)$aktWert->cWert;
+                $val->cWert = (int)$val->cWert;
                 break;
             case 'text':
-                $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                $val->cWert = substr($val->cWert, 0, 255);
                 break;
             case 'listbox':
             case 'selectkdngrp':
-                bearbeiteListBox($aktWert->cWert, $config->cWertName, $kEinstellungenSektion);
+                bearbeiteListBox($val->cWert, $config->cWertName, $configSectionID);
                 break;
         }
 
@@ -185,12 +229,12 @@ function saveAdminSectionSettings(int $kEinstellungenSektion, &$cPost_arr, $tags
             Shop::Container()->getDB()->delete(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
-                [$kEinstellungenSektion, $config->cWertName]
+                [$configSectionID, $config->cWertName]
             );
-            Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
+            Shop::Container()->getDB()->insert('teinstellungen', $val);
         }
     }
-    Shop::Cache()->flushTags($tags);
+    Shop::Container()->getCache()->flushTags($tags);
 
     return 'Ihre Einstellungen wurden erfolgreich übernommen.';
 }
@@ -236,42 +280,13 @@ function holeAlleKampagnen(bool $bInterneKampagne = false, bool $bAktivAbfragen 
  * @param array $oXML_arr
  * @param int   $nLevel
  * @return array
+ * @deprecated since 5.0.0
  */
 function getArrangedArray($oXML_arr, int $nLevel = 1)
 {
-    if (!is_array($oXML_arr)) {
-        return $oXML_arr;
-    }
-    $cArrayKeys = array_keys($oXML_arr);
-    $nCount     = count($oXML_arr);
-    for ($i = 0; $i < $nCount; $i++) {
-        if (strpos($cArrayKeys[$i], ' attr') !== false) {
-            //attribut array -> nicht beachten -> weiter
-            continue;
-        }
-        if ($nLevel === 0 || (int)$cArrayKeys[$i] > 0 || $cArrayKeys[$i] == '0') {
-            //int Arrayelement -> in die Tiefe gehen
-            $oXML_arr[$cArrayKeys[$i]] = getArrangedArray($oXML_arr[$cArrayKeys[$i]]);
-        } elseif (isset($oXML_arr[$cArrayKeys[$i]][0])) {
-            $oXML_arr[$cArrayKeys[$i]] = getArrangedArray($oXML_arr[$cArrayKeys[$i]]);
-        } else {
-            if ($oXML_arr[$cArrayKeys[$i]] === '') {
-                //empty node
-                continue;
-            }
-            //kein Attributzweig, kein numerischer Anfang
-            $tmp_arr           = [];
-            $tmp_arr['0 attr'] = $oXML_arr[$cArrayKeys[$i] . ' attr'] ?? null;
-            $tmp_arr['0']      = $oXML_arr[$cArrayKeys[$i]];
-            unset($oXML_arr[$cArrayKeys[$i]], $oXML_arr[$cArrayKeys[$i] . ' attr']);
-            $oXML_arr[$cArrayKeys[$i]] = $tmp_arr;
-            if (is_array($oXML_arr[$cArrayKeys[$i]]['0'])) {
-                $oXML_arr[$cArrayKeys[$i]]['0'] = getArrangedArray($oXML_arr[$cArrayKeys[$i]]['0']);
-            }
-        }
-    }
-
-    return $oXML_arr;
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $parser = new \JTL\XMLParser();
+    return $parser->getArrangedArray($oXML_arr, $nLevel);
 }
 
 /**
@@ -279,27 +294,27 @@ function getArrangedArray($oXML_arr, int $nLevel = 1)
  */
 function holeBewertungserinnerungSettings()
 {
-    $Einstellungen = [];
-    // Einstellungen für die Bewertung holen
-    $oEinstellungen_arr = Shop::Container()->getDB()->selectAll(
+    $conf     = [];
+    $confData = Shop::Container()->getDB()->selectAll(
         'teinstellungen',
         'kEinstellungenSektion',
         CONF_BEWERTUNG
     );
-    $Einstellungen['bewertung']                                       = [];
-    $Einstellungen['bewertung']['bewertungserinnerung_kundengruppen'] = [];
 
-    foreach ($oEinstellungen_arr as $oEinstellungen) {
-        if ($oEinstellungen->cName) {
-            if ($oEinstellungen->cName === 'bewertungserinnerung_kundengruppen') {
-                $Einstellungen['bewertung'][$oEinstellungen->cName][] = $oEinstellungen->cWert;
+    $conf['bewertung']                                       = [];
+    $conf['bewertung']['bewertungserinnerung_kundengruppen'] = [];
+
+    foreach ($confData as $data) {
+        if ($data->cName) {
+            if ($data->cName === 'bewertungserinnerung_kundengruppen') {
+                $conf['bewertung'][$data->cName][] = $data->cWert;
             } else {
-                $Einstellungen['bewertung'][$oEinstellungen->cName] = $oEinstellungen->cWert;
+                $conf['bewertung'][$data->cName] = $data->cWert;
             }
         }
     }
 
-    return $Einstellungen['bewertung'];
+    return $conf['bewertung'];
 }
 
 /**
@@ -348,7 +363,6 @@ function setzeSpracheTrustedShops()
         'pl' => 'Polnisch',
         'es' => 'Spanisch'
     ];
-    // setze std Sprache als aktuelle Sprache
     if (!isset($_SESSION['TrustedShops']->oSprache->cISOSprache)) {
         if (!isset($_SESSION['TrustedShops'])) {
             $_SESSION['TrustedShops']           = new stdClass();
@@ -367,36 +381,36 @@ function setzeSpracheTrustedShops()
 }
 
 /**
- * @param int $nMonth
- * @param int $nYear
+ * @param int $month
+ * @param int $year
  * @return int
  */
-function firstDayOfMonth($nMonth = -1, $nYear = -1)
+function firstDayOfMonth(int $month = -1, int $year = -1)
 {
     return mktime(
         0,
         0,
         0,
-        $nMonth > -1 ? $nMonth : date('m'),
+        $month > -1 ? $month : date('m'),
         1,
-        $nYear > -1 ? $nYear : date('Y')
+        $year > -1 ? $year : date('Y')
     );
 }
 
 /**
- * @param int $nMonth
- * @param int $nYear
+ * @param int $month
+ * @param int $year
  * @return int
  */
-function lastDayOfMonth($nMonth = -1, $nYear = -1)
+function lastDayOfMonth(int $month = -1, int $year = -1)
 {
     return mktime(
         23,
         59,
         59,
-        $nMonth > -1 ? $nMonth : date('m'),
-        date('t', firstDayOfMonth($nMonth, $nYear)),
-        $nYear > -1 ? $nYear : date('Y')
+        $month > -1 ? $month : date('m'),
+        date('t', firstDayOfMonth($month, $year)),
+        $year > -1 ? $year : date('Y')
     );
 }
 
@@ -409,76 +423,75 @@ function lastDayOfMonth($nMonth = -1, $nYear = -1)
  * @param string $cDatum
  * @return array
  */
-function ermittleDatumWoche($cDatum)
+function ermittleDatumWoche(string $cDatum)
 {
-    if (strlen($cDatum) > 0) {
-        list($cJahr, $cMonat, $cTag) = explode('-', $cDatum);
-        // So = 0, SA = 6
-        $nWochentag = (int)date('w', mktime(0, 0, 0, (int)$cMonat, (int)$cTag, (int)$cJahr));
-        // Woche soll Montag starten - also So = 6, Mo = 0
-        if ($nWochentag === 0) {
-            $nWochentag = 6;
-        } else {
-            $nWochentag--;
-        }
-        // Wochenstart ermitteln
-        $nTagOld = (int)$cTag;
-        $nTag    = (int)$cTag - $nWochentag;
-        $nMonat  = (int)$cMonat;
-        $nJahr   = (int)$cJahr;
-        if ($nTag <= 0) {
-            --$nMonat;
-            if ($nMonat === 0) {
-                $nMonat = 12;
-                ++$nJahr;
-            }
-
-            $nAnzahlTageProMonat = date('t', mktime(0, 0, 0, $nMonat, 1, $nJahr));
-            $nTag                = $nAnzahlTageProMonat - $nWochentag + $nTagOld;
-        }
-        $nStampStart = mktime(0, 0, 0, $nMonat, $nTag, $nJahr);
-        // Wochenende ermitteln
-        $nTage               = 6;
-        $nAnzahlTageProMonat = date('t', mktime(0, 0, 0, $nMonat, 1, $nJahr));
-        $nTag                += $nTage;
-        if ($nTag > $nAnzahlTageProMonat) {
-            $nTag -= $nAnzahlTageProMonat;
-            ++$nMonat;
-            if ($nMonat > 12) {
-                $nMonat = 1;
-                ++$nJahr;
-            }
+    if (strlen($cDatum) < 0) {
+        return [];
+    }
+    list($cJahr, $cMonat, $cTag) = explode('-', $cDatum);
+    // So = 0, SA = 6
+    $nWochentag = (int)date('w', mktime(0, 0, 0, (int)$cMonat, (int)$cTag, (int)$cJahr));
+    // Woche soll Montag starten - also So = 6, Mo = 0
+    if ($nWochentag === 0) {
+        $nWochentag = 6;
+    } else {
+        $nWochentag--;
+    }
+    // Wochenstart ermitteln
+    $nTagOld = (int)$cTag;
+    $nTag    = (int)$cTag - $nWochentag;
+    $nMonat  = (int)$cMonat;
+    $nJahr   = (int)$cJahr;
+    if ($nTag <= 0) {
+        --$nMonat;
+        if ($nMonat === 0) {
+            $nMonat = 12;
+            ++$nJahr;
         }
 
-        $nStampEnde = mktime(23, 59, 59, $nMonat, $nTag, $nJahr);
-
-        return [$nStampStart, $nStampEnde];
+        $daysPerMonth = date('t', mktime(0, 0, 0, $nMonat, 1, $nJahr));
+        $nTag         = $daysPerMonth - $nWochentag + $nTagOld;
+    }
+    $nStampStart = mktime(0, 0, 0, $nMonat, $nTag, $nJahr);
+    // Wochenende ermitteln
+    $nTage        = 6;
+    $daysPerMonth = date('t', mktime(0, 0, 0, $nMonat, 1, $nJahr));
+    $nTag         += $nTage;
+    if ($nTag > $daysPerMonth) {
+        $nTag -= $daysPerMonth;
+        ++$nMonat;
+        if ($nMonat > 12) {
+            $nMonat = 1;
+            ++$nJahr;
+        }
     }
 
-    return [];
+    $nStampEnde = mktime(23, 59, 59, $nMonat, $nTag, $nJahr);
+
+    return [$nStampStart, $nStampEnde];
 }
 
 /**
  * Return version of files
  *
  * @param bool $bDate
- * @return mixed
+ * @return int|string
  */
 function getJTLVersionDB(bool $bDate = false)
 {
-    $nRet     = 0;
-    $nVersion = Shop::Container()->getDB()->query(
+    $ret         = 0;
+    $versionData = Shop::Container()->getDB()->query(
         'SELECT nVersion, dAktualisiert FROM tversion',
         \DB\ReturnType::SINGLE_OBJECT
     );
-    if (isset($nVersion->nVersion) && is_numeric($nVersion->nVersion)) {
-        $nRet = (int)$nVersion->nVersion;
+    if (isset($versionData->nVersion)) {
+        $ret = $versionData->nVersion;
     }
     if ($bDate) {
-        $nRet = $nVersion->dAktualisiert;
+        $ret = $versionData->dAktualisiert;
     }
 
-    return $nRet;
+    return $ret;
 }
 
 /**
@@ -566,7 +579,7 @@ function reloadFavs()
     global $oAccount;
 
     $tpl = Shop::Smarty()->assign('favorites', $oAccount->favorites())
-                         ->fetch('tpl_inc/favs_drop.tpl');
+               ->fetch('tpl_inc/favs_drop.tpl');
 
     return ['tpl' => $tpl];
 }
@@ -589,7 +602,7 @@ function getNotifyDropIO()
  * @return string delimiter guess
  * @former guessCsvDelimiter()
  */
-function getCsvDelimiter($filename)
+function getCsvDelimiter(string $filename)
 {
     $file      = fopen($filename, 'r');
     $firstLine = fgets($file);

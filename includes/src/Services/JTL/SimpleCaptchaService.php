@@ -9,8 +9,9 @@
 namespace Services\JTL;
 
 use Exception;
-use Session;
+use Session\Session;
 use Shop;
+use Smarty\JTLSmarty;
 
 /**
  * Class SimpleCaptchaService
@@ -49,7 +50,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param \JTLSmarty $smarty
+     * @param JTLSmarty $smarty
      * @return string
      */
     public function getHeadMarkup($smarty): string
@@ -58,7 +59,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param \JTLSmarty $smarty
+     * @param JTLSmarty $smarty
      * @return string
      * @throws \SmartyException
      */
@@ -125,7 +126,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
             return '0';
         }
         $cryptoService = Shop::Container()->getCryptoService();
-        $key           = BLOWFISH_KEY;
+        $key           = \BLOWFISH_KEY;
         $mod1          = (\ord($key[0]) + \ord($key[1]) + \ord($key[2])) % 9 + 1;
         $mod2          = \strlen($_SERVER['DOCUMENT_ROOT']) % 9 + 1;
 

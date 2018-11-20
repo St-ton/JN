@@ -19,7 +19,7 @@ class SearchSpecialHelper
     {
         $langID  = $langID > 0 ? $langID : Shop::getLanguageID();
         $cacheID = 'haso_' . $langID;
-        if (($overlays = Shop::Cache()->get($cacheID)) === false) {
+        if (($overlays = Shop::Container()->getCache()->get($cacheID)) === false) {
             $ssoList = Shop::Container()->getDB()->query(
                 "SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache,
                     tsuchspecialoverlaysprache.cBildPfad, tsuchspecialoverlaysprache.nAktiv,
@@ -57,7 +57,7 @@ class SearchSpecialHelper
                 $overlays[$idx]->cPfadNormal = PFAD_SUCHSPECIALOVERLAY_NORMAL . $overlays[$idx]->cBildPfad;
                 $overlays[$idx]->cPfadGross  = PFAD_SUCHSPECIALOVERLAY_GROSS . $overlays[$idx]->cBildPfad;
             }
-            Shop::Cache()->set($cacheID, $overlays, [CACHING_GROUP_OPTION]);
+            Shop::Container()->getCache()->set($cacheID, $overlays, [CACHING_GROUP_OPTION]);
         }
 
         return $overlays;
@@ -108,16 +108,19 @@ class SearchSpecialHelper
     public static function buildURL(int $kKey)
     {
         $cacheID = 'bsurl_' . $kKey . '_' . Shop::getLanguageID();
-        if (($url = Shop::Cache()->get($cacheID)) !== false) {
+        if (($url = Shop::Container()->getCache()->get($cacheID)) !== false) {
             executeHook(HOOK_BOXEN_INC_SUCHSPECIALURL);
 
             return $url;
         }
         $oSeo = Shop::Container()->getDB()->select(
             'tseo',
-            'kSprache', Shop::getLanguageID(),
-            'cKey', 'suchspecial',
-            'kKey', $kKey,
+            'kSprache',
+            Shop::getLanguageID(),
+            'cKey',
+            'suchspecial',
+            'kKey',
+            $kKey,
             false,
             'cSeo'
         ) ?? new stdClass();
@@ -125,7 +128,7 @@ class SearchSpecialHelper
         $oSeo->kSuchspecial = $kKey;
         executeHook(HOOK_BOXEN_INC_SUCHSPECIALURL);
         $url = UrlHelper::buildURL($oSeo, URLART_SEARCHSPECIALS);
-        Shop::Cache()->set($cacheID, $url, [CACHING_GROUP_CATEGORY]);
+        Shop::Container()->getCache()->set($cacheID, $url, [CACHING_GROUP_CATEGORY]);
 
         return $url;
     }
@@ -289,5 +292,4 @@ class SearchSpecialHelper
 
         return self::randomizeAndLimit($new, min(count($new), $nLimit));
     }
-
 }

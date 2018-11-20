@@ -5,7 +5,7 @@
  */
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('DISPLAY_OWN_LOGO_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'shoplogouploader_inc.php';
 
 if (isset($_POST['key'], $_POST['logo'])) {
@@ -19,7 +19,7 @@ if (isset($_POST['key'], $_POST['logo'])) {
         $option->cName                 = 'shop_logo';
         $option->cWert                 = null;
         Shop::Container()->getDB()->update('teinstellungen', 'cName', 'shop_logo', $option);
-        Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
+        Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
     } else {
         $response->status = 'FAILED';
     }

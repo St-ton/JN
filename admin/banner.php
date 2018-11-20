@@ -5,7 +5,7 @@
  */
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('DISPLAY_BANNER_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'banner_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 $cFehler  = '';
@@ -128,7 +128,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
 switch ($cAction) {
     case 'area':
         $id      = (int)$_POST['id'];
-        $oBanner = holeBanner($id, false); //do not fill with complete article object to avoid utf8 errors on json_encode
+        $oBanner = holeBanner($id, false);
         if (!is_object($oBanner)) {
             $cFehler = 'Banner wurde nicht gefunden';
             $cAction = 'view';

@@ -114,7 +114,7 @@ final class LinkList implements LinkListInterface
     /**
      * @inheritdoc
      */
-    public function setLinks(Collection $links)
+    public function setLinks(Collection $links): void
     {
         $this->links = $links;
     }
@@ -122,7 +122,7 @@ final class LinkList implements LinkListInterface
     /**
      * @inheritdoc
      */
-    public function addLink(LinkInterface $link)
+    public function addLink(LinkInterface $link): void
     {
         $this->links->push($link);
     }

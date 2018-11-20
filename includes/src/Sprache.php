@@ -28,7 +28,7 @@
  * @method bool valid()
  * @method bool isValid()
  * @method array|mixed|null getLangArray()
- * @method static bool|string getIsoFromLangID(int $kSprache)
+ * @method bool|string getIsoFromLangID(int $kSprache)
  * @method static stdClass|null getLangIDFromIso(string $cISO)
  * @method static bool|int|string getLanguageDataByType(string $cISO = '', int $kSprache = 0)
  */
@@ -177,7 +177,7 @@ class Sprache
      * @param string $method
      * @return string|null
      */
-    private static function map($method)
+    private static function map($method): ?string
     {
         return self::$mapping[$method] ?? null;
     }
@@ -188,7 +188,7 @@ class Sprache
     public function generateLangVars()
     {
         if ($this->cacheID !== null) {
-            return ($this->langVars = Shop::Cache()->get($this->cacheID)) === false
+            return ($this->langVars = Shop::Container()->getCache()->get($this->cacheID)) === false
                 ? []
                 : $this->langVars;
         }
@@ -202,7 +202,7 @@ class Sprache
      */
     public function saveLangVars()
     {
-        return Shop::Cache()->set($this->cacheID, $this->langVars, [CACHING_GROUP_LANGUAGE]);
+        return Shop::Container()->getCache()->set($this->cacheID, $this->langVars, [CACHING_GROUP_LANGUAGE]);
     }
 
     /**
@@ -213,18 +213,21 @@ class Sprache
     {
         if (!isset($this->isoAssociation[$kSprache])) {
             $cacheID = 'lang_iso_ks';
-            if (($this->isoAssociation = Shop::Cache()->get($cacheID)) === false
+            if (($this->isoAssociation = Shop::Container()->getCache()->get($cacheID)) === false
                 || !isset($this->isoAssociation[$kSprache])
             ) {
                 $this->isoAssociation[$kSprache] = Shop::Container()->getDB()->select(
                     'tsprache',
-                    'kSprache', $kSprache,
-                    null, null,
-                    null, null,
+                    'kSprache',
+                    $kSprache,
+                    null,
+                    null,
+                    null,
+                    null,
                     false,
                     'cISO'
                 );
-                Shop::Cache()->set($cacheID, $this->isoAssociation, [CACHING_GROUP_LANGUAGE]);
+                Shop::Container()->getCache()->set($cacheID, $this->isoAssociation, [CACHING_GROUP_LANGUAGE]);
             }
         }
 
@@ -239,7 +242,7 @@ class Sprache
     {
         if (!isset($this->idAssociation[$cISO])) {
             $cacheID = 'lang_id_ks';
-            if (($this->idAssociation = Shop::Cache()->get($cacheID)) === false
+            if (($this->idAssociation = Shop::Container()->getCache()->get($cacheID)) === false
                 || !isset($this->idAssociation[$cISO])
             ) {
                 $res = Shop::Container()->getDB()->select('tsprachiso', 'cISO', $cISO);
@@ -247,7 +250,7 @@ class Sprache
                     $res->kSprachISO = (int)$res->kSprachISO;
                 }
                 $this->idAssociation[$cISO] = $res;
-                Shop::Cache()->set($cacheID, $this->idAssociation, [CACHING_GROUP_LANGUAGE]);
+                Shop::Container()->getCache()->set($cacheID, $this->idAssociation, [CACHING_GROUP_LANGUAGE]);
             }
         }
 
@@ -259,7 +262,7 @@ class Sprache
      * @param mixed null|string $default
      * @return string|null
      */
-    public function getSectionName(int $kSektion, $default = null)
+    public function getSectionName(int $kSektion, $default = null): ?string
     {
         $section = Shop::Container()->getDB()->select('tsprachsektion', 'kSprachsektion', $kSektion);
 
@@ -858,7 +861,7 @@ class Sprache
     {
         if ($this->oSprache_arr === null || $this->oSprache_arr === false) {
             $cacheID = 'langobj';
-            if (($this->oSprache_arr = Shop::Cache()->get($cacheID)) === false) {
+            if (($this->oSprache_arr = Shop::Container()->getCache()->get($cacheID)) === false) {
                 $this->oSprache_arr = array_map(
                     function ($e) {
                         $e->kSprache = (int)$e->kSprache;
@@ -867,7 +870,7 @@ class Sprache
                     },
                     Shop::Container()->getDB()->query('SELECT kSprache FROM tsprache', \DB\ReturnType::ARRAY_OF_OBJECTS)
                 );
-                Shop::Cache()->set($cacheID, $this->oSprache_arr, [CACHING_GROUP_LANGUAGE]);
+                Shop::Container()->getCache()->set($cacheID, $this->oSprache_arr, [CACHING_GROUP_LANGUAGE]);
             }
         }
 
@@ -930,7 +933,7 @@ class Sprache
      */
     public static function getAllLanguages(int $nOption = 0)
     {
-        $languages = Session::Languages();
+        $languages = \Session\Session::getLanguages();
         if (count($languages) > 0) {
             switch ($nOption) {
                 case 2:
@@ -984,7 +987,7 @@ class Sprache
         }
         $langToCheckAgainst = $kSprache !== null ? (int)$kSprache : Shop::getLanguageID();
         if ($langToCheckAgainst > 0) {
-            foreach (Session::Languages() as $Sprache) {
+            foreach (\Session\Session::getLanguages() as $Sprache) {
                 if ($Sprache->cStandard === 'Y' && (int)$Sprache->kSprache === $langToCheckAgainst && !$bShop) {
                     return true;
                 }
@@ -1007,7 +1010,7 @@ class Sprache
      */
     public static function getDefaultLanguage($bShop = true)
     {
-        foreach (Session::Languages() as $Sprache) {
+        foreach (\Session\Session::getLanguages() as $Sprache) {
             if ($Sprache->cStandard === 'Y' && !$bShop) {
                 return $Sprache;
             }
@@ -1017,13 +1020,13 @@ class Sprache
         }
 
         $cacheID = 'shop_lang_' . (($bShop === true) ? 'b' : '');
-        if (($lang = Shop::Cache()->get($cacheID)) !== false && $lang !== null) {
+        if (($lang = Shop::Container()->getCache()->get($cacheID)) !== false && $lang !== null) {
             return $lang;
         }
         $row  = $bShop ? 'cShopStandard' : 'cStandard';
         $lang = Shop::Container()->getDB()->select('tsprache', $row, 'Y');
         $lang->kSprache = (int)$lang->kSprache;
-        Shop::Cache()->set($cacheID, $lang, [CACHING_GROUP_LANGUAGE]);
+        Shop::Container()->getCache()->set($cacheID, $lang, [CACHING_GROUP_LANGUAGE]);
 
         return $lang;
     }
@@ -1032,9 +1035,9 @@ class Sprache
      * @former setzeSpracheUndWaehrungLink()
      * @since 5.0.0
      */
-    public static function generateLanguageAndCurrencyLinks()
+    public static function generateLanguageAndCurrencyLinks(): void
     {
-        global $oZusatzFilter, $AktuellerArtikel, $AktuelleSeite;
+        global $oZusatzFilter, $AktuellerArtikel;
         $kLink         = Shop::$kLink;
         $kSeite        = Shop::$kSeite;
         $shopURL       = Shop::getURL() . '/';
@@ -1048,7 +1051,7 @@ class Sprache
         $mapped      = $mapper->map(Shop::getPageType());
         $specialPage = $mapped > 0 ? $ls->getSpecialPage($mapped) : null;
         $page        = $kLink > 0 ? $ls->getPageLink($kLink) : null;
-        if (count(Session::Languages()) > 1) {
+        if (count(\Session\Session::getLanguages()) > 1) {
             /** @var Artikel $AktuellerArtikel */
             if ($AktuellerArtikel !== null
                 && $AktuellerArtikel->kArtikel > 0
@@ -1056,7 +1059,7 @@ class Sprache
             ) {
                 $AktuellerArtikel->baueArtikelSprachURL();
             }
-            foreach (Session::Languages() as $lang) {
+            foreach (\Session\Session::getLanguages() as $lang) {
                 if (isset($AktuellerArtikel->cSprachURL_arr[$lang->cISO])) {
                     $lang->cURL     = $AktuellerArtikel->cSprachURL_arr[$lang->cISO];
                     $lang->cURLFull = $shopURL . $AktuellerArtikel->cSprachURL_arr[$lang->cISO];
@@ -1064,12 +1067,23 @@ class Sprache
                     if (Shop::getPageType() === PAGE_STARTSEITE) {
                         $url = $shopURL . '?lang=' . $lang->cISO;
                     } elseif ($specialPage->getFileName() !== '') {
-                        $url = $helper->getStaticRoute($specialPage->getFileName(), false, false, $lang->cISO);
-                        // check if there is a SEO link for the given file
-                        if ($url === $specialPage->getFileName()) { //no SEO link - fall back to php file with GET param
-                            $url = $shopURL . $specialPage->getFileName() . '?lang=' . $lang->cISO;
-                        } else { //there is a SEO link - make it a full URL
-                            $url = $helper->getStaticRoute($specialPage->getFileName(), true, false, $lang->cISO);
+                        if (Shop::$kNews > 0) {
+                            $newsItem = new News\Item(Shop::Container()->getDB());
+                            $newsItem->load(Shop::$kNews);
+                            $url = $newsItem->getURL($lang->kSprache);
+                        } elseif (Shop::$kNewsKategorie > 0) {
+                            $newsCategory = new \News\Category(Shop::Container()->getDB());
+                            $newsCategory->load(Shop::$kNewsKategorie);
+                            $url = $newsCategory->getURL($lang->kSprache);
+                        } else {
+                            $url = $helper->getStaticRoute($specialPage->getFileName(), false, false, $lang->cISO);
+                            // check if there is a SEO link for the given file
+                            if ($url === $specialPage->getFileName()) {
+                                // no SEO link - fall back to php file with GET param
+                                $url = $shopURL . $specialPage->getFileName() . '?lang=' . $lang->cISO;
+                            } else { //there is a SEO link - make it a full URL
+                                $url = $helper->getStaticRoute($specialPage->getFileName(), true, false, $lang->cISO);
+                            }
                         }
                     } else {
                         $url = $specialPage->getURL($lang->kSprache);
@@ -1102,15 +1116,15 @@ class Sprache
                 }
             }
         }
-        if (count(Session::Currencies()) > 1) {
+        if (count(Session::getCurrencies()) > 1) {
             if ($AktuellerArtikel !== null
                 && $AktuellerArtikel->kArtikel > 0
                 && empty($AktuellerArtikel->cSprachURL_arr)
             ) {
                 $AktuellerArtikel->baueArtikelSprachURL(false);
             }
-            $currentCurrencyCode = Session\Session::Currency()->getID();
-            foreach (Session::Currencies() as $currency) {
+            $currentCurrencyCode = Session\Session::getCurrency()->getID();
+            foreach (Session::getCurrencies() as $currency) {
                 if (isset($AktuellerArtikel->cSprachURL_arr[Shop::getLanguageCode()])) {
                     $url = $AktuellerArtikel->cSprachURL_arr[Shop::getLanguageCode()];
                 } elseif ($specialPage !== null) {
@@ -1120,10 +1134,12 @@ class Sprache
                             $url = '';
                         } elseif ($specialPage->getFileName() !== null) {
                             $url = $helper->getStaticRoute($specialPage->getFileName(), false);
-                            //check if there is a SEO link for the given file
-                            if ($url === $specialPage->getFileName()) { //no SEO link - fall back to php file with GET param
+                            // check if there is a SEO link for the given file
+                            if ($url === $specialPage->getFileName()) {
+                                // no SEO link - fall back to php file with GET param
                                 $url = $shopURL . $specialPage->getFileName();
-                            } else { //there is a SEO link - make it a full URL
+                            } else {
+                                // there is a SEO link - make it a full URL
                                 $url = $helper->getStaticRoute($specialPage->getFileName(), true);
                             }
                         }
@@ -1149,7 +1165,7 @@ class Sprache
             'oAktuellerArtikel' => &$AktuellerArtikel,
             'kSeite'            => &$kSeite,
             'kLink'             => &$kLink,
-            'AktuelleSeite'     => &$AktuelleSeite
+            'AktuelleSeite'     => &Shop::$AktuelleSeite
         ]);
     }
     /**

@@ -96,7 +96,7 @@ class Limit extends AbstractFilter
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())
-                ->setName($name)
+                ->setName((string)$name)
                 ->setValue($limitOption)
                 ->setSort($i);
         }

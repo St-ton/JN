@@ -96,7 +96,11 @@ class AuswahlAssistent
             $kSprache = Shop::getLanguageID();
         }
 
-        if ($kKey > 0 && $kSprache > 0 && !empty($cKey) && $oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
+        if ($kKey > 0
+            && $kSprache > 0
+            && !empty($cKey)
+            && $oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)
+        ) {
             $this->loadFromDB($cKey, $kKey, $kSprache, $bOnlyActive);
         }
     }
@@ -219,7 +223,7 @@ class AuswahlAssistent
     /**
      * Return the HTML for this selection wizard in its current state
      *
-     * @param JTLSmarty $smarty
+     * @param Smarty\JTLSmarty $smarty
      * @return string
      */
     public function fetchForm($smarty): string
@@ -378,13 +382,19 @@ class AuswahlAssistent
      * @param string                     $cKey
      * @param int                        $kKey
      * @param int                        $kSprache
-     * @param JTLSmarty                  $smarty
+     * @param Smarty\JTLSmarty           $smarty
      * @param array                      $selected
      * @param \Filter\ProductFilter|null $pf
      * @return self|null
      */
-    public static function startIfRequired($cKey, int $kKey, int $kSprache = 0, $smarty = null, $selected = [], $pf = null)
-    {
+    public static function startIfRequired(
+        $cKey,
+        int $kKey,
+        int $kSprache = 0,
+        $smarty = null,
+        $selected = [],
+        $pf = null
+    ) {
         // only start if enabled in the backend settings
         if (!self::isRequired()) {
             return null;
@@ -418,19 +428,5 @@ class AuswahlAssistent
     public static function getLinks(): array
     {
         return Shop::Container()->getDB()->selectAll('tlink', 'nLinkart', LINKTYP_AUSWAHLASSISTENT);
-    }
-
-    /**
-     * @deprecated since 4.05 - Used by old AWA
-     * @param string $cKey
-     * @param int    $kKey
-     * @param int    $kSprache
-     * @return AuswahlAssistentGruppe|bool
-     */
-    public static function getGroupsByLocation($cKey, $kKey, $kSprache)
-    {
-        trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
-        return false;
     }
 }

@@ -12,20 +12,10 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 
 Shop::setPageType(PAGE_BESTELLVORGANG);
-$AktuelleSeite = 'BESTELLVORGANG';
-$Einstellungen = Shop::getSettings([
-    CONF_GLOBAL,
-    CONF_RSS,
-    CONF_KUNDEN,
-    CONF_KAUFABWICKLUNG,
-    CONF_KUNDENFELD,
-    CONF_TRUSTEDSHOPS,
-    CONF_ARTIKELDETAILS
-]);
-$step     = 'accountwahl';
-$cHinweis = '';
-$cart     = Session::Cart();
-// Kill Ajaxcheckout falls vorhanden
+$Einstellungen = Shopsetting::getInstance()->getAll();
+$step          = 'accountwahl';
+$cHinweis      = '';
+$cart          = \Session\Session::getCart();
 unset($_SESSION['ajaxcheckout']);
 // Loginbenutzer?
 if (isset($_POST['login']) && (int)$_POST['login'] === 1) {
@@ -92,6 +82,9 @@ if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 0) {
     $_POST['form']     = 1;
     include PFAD_ROOT . 'registrieren.php';
 }
+if (isset($_GET['kZahlungsart']) && (int)$_GET['kZahlungsart'] > 0) {
+    zahlungsartKorrekt((int)$_GET['kZahlungsart']);
+}
 if ((isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1) || isset($_GET['kVersandart'])) {
     unset($_SESSION['Zahlungsart']);
     $kVersandart = null;
@@ -119,7 +112,7 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     if (!isset($_SESSION['Versandart']) || !is_object($_SESSION['Versandart'])) {
         $land          = $_SESSION['Lieferadresse']->cLand ?? $_SESSION['Kunde']->cLand;
         $plz           = $_SESSION['Lieferadresse']->cPLZ ?? $_SESSION['Kunde']->cPLZ;
-        $kKundengruppe = Session::CustomerGroup()->getID();
+        $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
 
         $oVersandart_arr  = VersandartHelper::getPossibleShippingMethods(
             $land,
@@ -139,8 +132,8 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
 if (class_exists('Download') && Download::hasDownloads($cart)) {
     if ($step !== 'accountwahl' && empty($_SESSION['Kunde']->cPasswort)) {
         // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
-        $step = 'accountwahl';
-        $cHinweis = Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
+        $step      = 'accountwahl';
+        $cHinweis  = Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
         $cPost_arr = StringHandler::filterXSS($_POST);
 
         Shop::Smarty()->assign('cKundenattribut_arr', getKundenattribute($cPost_arr))
@@ -148,7 +141,10 @@ if (class_exists('Download') && Download::hasDownloads($cart)) {
             ->assign('cPost_var', $cPost_arr);
 
         if ((int)$cPost_arr['shipping_address'] === 1) {
-            Shop::Smarty()->assign('Lieferadresse', mappeLieferadresseKontaktdaten($cPost_arr['register']['shipping_address']));
+            Shop::Smarty()->assign(
+                'Lieferadresse',
+                mappeLieferadresseKontaktdaten($cPost_arr['register']['shipping_address'])
+            );
         }
 
         unset($_SESSION['Kunde']);
@@ -211,17 +207,39 @@ if (isset($_SESSION['Zahlungsart'])
     $paymentMethod = PaymentMethod::create('za_billpay_jtl');
     $paymentMethod->handleConfirmation();
 }
+if ($step === 'Bestaetigung'
+    && $cart->gibGesamtsummeWaren(true) === 0.0
+) {
+    $savedPayment   = $_SESSION['AktiveZahlungsart'];
+    $oPaymentMethod = PaymentMethod::create('za_null_jtl');
+    zahlungsartKorrekt($oPaymentMethod->kZahlungsart);
+
+    if ((isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1)
+        || (isset($cPost_arr['guthabenVerrechnen']) && (int)$cPost_arr['guthabenVerrechnen'] === 1)
+    ) {
+        $_SESSION['Bestellung']->GuthabenNutzen   = 1;
+        $_SESSION['Bestellung']->fGuthabenGenutzt = min(
+            $_SESSION['Kunde']->fGuthaben,
+            \Session\Session::getCart()->gibGesamtsummeWaren(true, false)
+        );
+    }
+    Warenkorb::refreshChecksum($cart);
+    $_SESSION['AktiveZahlungsart'] = $savedPayment;
+}
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-$linkHelper    = Shop::Container()->getLinkService();
-$kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLVORGANG);
-$link          = $linkHelper->getPageLink($kLink);
+$linkHelper = Shop::Container()->getLinkService();
+$kLink      = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLVORGANG);
+$link       = $linkHelper->getPageLink($kLink);
 WarenkorbHelper::addVariationPictures($cart);
-Shop::Smarty()->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
+Shop::Smarty()->assign(
+    'AGB',
+    Shop::Container()->getLinkService()->getAGBWRB(
         Shop::getLanguage(),
-        Session::CustomerGroup()->getID())
+        \Session\Session::getCustomerGroup()->getID()
     )
+)
     ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
     ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
     ->assign('Link', $link)

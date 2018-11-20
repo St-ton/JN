@@ -14,16 +14,17 @@ use MyCLabs\Enum\Enum;
  */
 class Type extends Enum
 {
-    const EXPORT = 'exportformat';
+    public const EXPORT = 'exportformat';
 
-    const STATUSMAIL = 'statusemail';
+    public const STATUSMAIL = 'statusemail';
 
-    const TS_RATING = 'tskundenbewertung';
+    public const TS_RATING = 'tskundenbewertung';
 
-    const CLEAR_CACHE = 'clearcache';
+    public const CLEAR_CACHE = 'clearcache';
 
-    const NEWSLETTER = 'newsletter';
+    public const NEWSLETTER = 'newsletter';
 
-    const PLUGIN = 'plugin';
+    public const PLUGIN = 'plugin';
 
+    public const DATAPROTECTION = 'dataprotection';
 }

@@ -88,7 +88,7 @@ abstract class AbstractFilter implements FilterInterface
     protected $activeValues;
 
     /**
-     * workaround since built-in filters can be registered multiple times (for example Navigationsfilter->KategorieFilter)
+     * workaround since built-in filters can be registered multiple times (like Navigationsfilter->KategorieFilter)
      * this makes sure there value is not used more then once when Navigationsfilter::getURL()
      * generates the current URL.
      *
@@ -326,7 +326,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getUnsetFilterURL($idx = null)
+    public function getUnsetFilterURL($idx = null): ?string
     {
         if ($idx !== null && \is_array($idx) && \count($idx) === 1) {
             $idx = $idx[0];
@@ -394,7 +394,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -629,7 +629,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getIcon()
+    public function getIcon(): ?string
     {
         return $this->icon;
     }

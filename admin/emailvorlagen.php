@@ -2,15 +2,13 @@
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
- *
- * @global JTLSmarty $smarty
  */
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('CONTENT_EMAIL_TEMPLATE_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $Emailvorlage          = null;
 $hinweis               = '';
 $cHinweis              = '';
@@ -64,7 +62,11 @@ if (isset($_POST['resetEmailvorlage'])
     if ($oEmailvorlage->kEmailvorlage > 0 && isset($_POST['resetConfirmJaSubmit'])) {
         // Resetten
         if (RequestHelper::verifyGPCDataInt('kPlugin') > 0) {
-            Shop::Container()->getDB()->delete('tpluginemailvorlagesprache', 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
+            Shop::Container()->getDB()->delete(
+                'tpluginemailvorlagesprache',
+                'kEmailvorlage',
+                (int)$_POST['kEmailvorlage']
+            );
         } else {
             Shop::Container()->getDB()->query(
                 'DELETE temailvorlage, temailvorlagesprache
@@ -91,7 +93,11 @@ if (isset($_POST['resetEmailvorlage'])
         );
         $languages = Sprache::getAllLanguages();
         if (RequestHelper::verifyGPCDataInt('kPlugin') === 0) {
-            $vorlage   = Shop::Container()->getDB()->select('temailvorlageoriginal', 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
+            $vorlage   = Shop::Container()->getDB()->select(
+                'temailvorlageoriginal',
+                'kEmailvorlage',
+                (int)$_POST['kEmailvorlage']
+            );
             if (isset($vorlage->cDateiname) && strlen($vorlage->cDateiname) > 0) {
                 foreach ($languages as $_lang) {
                     $path = PFAD_ROOT . PFAD_EMAILVORLAGEN . $_lang->cISO;
@@ -134,7 +140,11 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
             ORDER BY cShopStandard DESC, cNameDeutsch',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    $Emailvorlage                 = Shop::Container()->getDB()->select($cTable, 'kEmailvorlage', (int)$_POST['preview']);
+    $Emailvorlage                 = Shop::Container()->getDB()->select(
+        $cTable,
+        'kEmailvorlage',
+        (int)$_POST['preview']
+    );
     $bestellung                   = new stdClass();
     $bestellung->kWaehrung        = 1;
     $bestellung->kSprache         = 1;
@@ -161,7 +171,7 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
     $bestellung->dErstelldatum_en       = '12th October 2010';
     $bestellung->cBestellwertLocalized  = '511,00 EUR';
     $bestellung->GuthabenNutzen         = 1;
-    $bestellung->GutscheinLocalized     = '5,00 &euro;';
+    $bestellung->GutscheinLocalized     = '5,00 EUR';
     $bestellung->fWarensumme            = 433.004004;
     $bestellung->fVersand               = 0;
     $bestellung->nZahlungsTyp           = 0;
@@ -738,7 +748,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
             );
             Shop::Container()->getDB()->insert($cTableSprache, $Emailvorlagesprache);
             //Smarty Objekt bauen
-            $mailSmarty = new \Smarty\JTLSmarty(true, false, false, 'mail');
+            $mailSmarty = new Smarty\JTLSmarty(true, false, false, 'mail');
             $mailSmarty->registerResource('db', new SmartyResourceNiceDB('mail'))
                        ->registerPlugin('function', 'includeMailTemplate', 'includeMailTemplate')
                        ->setCaching(Smarty::CACHING_OFF)

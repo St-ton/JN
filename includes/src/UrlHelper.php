@@ -70,9 +70,9 @@ class UrlHelper
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getUrl()
+    public function getUrl(): ?string
     {
         return $this->url;
     }
@@ -116,7 +116,9 @@ class UrlHelper
             // case normalization
             $this->path = preg_replace_callback(
                 '/(%([0-9abcdef][0-9abcdef]))/x',
-                function ($x) {return '%' . strtoupper($x[2]);},
+                function ($x) {
+                    return '%' . strtoupper($x[2]);
+                },
                 $this->path
             );
             // percent-encoding normalization
@@ -243,7 +245,9 @@ class UrlHelper
      */
     private function schemeBasedNormalization(): self
     {
-        if (isset($this->default_scheme_ports[$this->scheme]) && $this->default_scheme_ports[$this->scheme] == $this->port) {
+        if (isset($this->default_scheme_ports[$this->scheme])
+            && $this->default_scheme_ports[$this->scheme] == $this->port
+        ) {
             $this->port = '';
         }
 
@@ -287,7 +291,11 @@ class UrlHelper
                         return $prefix . $obj->cLocalizedSeo[$_SESSION['cISOSprache']];
                     }
                     // Hole aktuelle Spezialseite und gib den URL Dateinamen zurück
-                    $oSpezialseite = Shop::Container()->getDB()->select('tspezialseite', 'nLinkart', (int)$obj->nLinkart);
+                    $oSpezialseite = Shop::Container()->getDB()->select(
+                        'tspezialseite',
+                        'nLinkart',
+                        (int)$obj->nLinkart
+                    );
 
                     return !empty($oSpezialseite->cDateiname)
                         ? $prefix . $oSpezialseite->cDateiname
@@ -314,6 +322,12 @@ class UrlHelper
                         : $prefix . '?m=' . $obj->kMerkmalWert . $lang;
 
                 case URLART_NEWS:
+                    if ($obj instanceof \News\Item) {
+                        /** @var \News\Item $obj */
+                        return !empty($obj->getSEO())
+                            ? $obj->getURL()
+                            : $prefix . '?n=' . $obj->getID() . $lang;
+                    }
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
                         : $prefix . '?n=' . $obj->kNews . $lang;

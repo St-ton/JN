@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 /**
- * @global JTLSmarty $smarty
+ * @global Smarty\JTLSmarty $smarty
  */
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'template_inc.php';
@@ -18,10 +18,9 @@ $lessVarsSkin   = [];
 $lessColors_arr = [];
 $lessColorsSkin = [];
 $oTemplate      = Template::getInstance();
+$admin          = (isset($_GET['admin']) && $_GET['admin'] === 'true');
 $templateHelper = TemplateHelper::getInstance(true);
 $templateHelper->disableCaching();
-$admin          = (isset($_GET['admin']) && $_GET['admin'] === 'true');
-/** @global JTLSmarty $smarty */
 if (isset($_POST['key'], $_POST['upload'])) {
     $file     = PFAD_ROOT . PFAD_TEMPLATES . $_POST['upload'];
     $response = new stdClass();
@@ -73,7 +72,8 @@ if (isset($_POST['type']) && $_POST['type'] === 'layout' && FormHelper::validate
         $cCSS   = $oCSS->renderCSS();
         $nCheck = file_put_contents($cCustomCSSFile, $cCSS);
         if ($nCheck === false) {
-            $cFehler = 'Style-Datei konnte nicht geschrieben werden. Überprüfen Sie die Dateirechte von ' . $cCustomCSSFile . '.';
+            $cFehler = 'Style-Datei konnte nicht geschrieben werden. Überprüfen Sie die Dateirechte von ' .
+                $cCustomCSSFile . '.';
         } else {
             $cHinweis = 'Layout wurde erfolgreich angepasst.';
         }
@@ -109,13 +109,16 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && FormHelper::valida
                                 && $_setting->cKey === $cName
                             ) {
                                 //target folder
-                                $base = PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/' . $_setting->rawAttributes['target'];
+                                $base = PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/' .
+                                    $_setting->rawAttributes['target'];
                                 //optional target file name + extension
                                 if (isset($_setting->rawAttributes['targetFileName'])) {
                                     $cWert = $_setting->rawAttributes['targetFileName'];
                                 }
                                 $targetFile = $base . $cWert;
-                                if (strpos($targetFile, $base) !== 0 || !move_uploaded_file($file['tmp_name'], $targetFile)) {
+                                if (strpos($targetFile, $base) !== 0
+                                    || !move_uploaded_file($file['tmp_name'], $targetFile)
+                                ) {
                                     $uploadError = '&uploadError=true';
                                 }
                                 $break = true;
@@ -183,24 +186,28 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::val
                     && !file_exists(PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/' . $_setting->rawAttributes['target']
                         . $_setting->rawAttributes['targetFileName'])
                 ) {
-
                     $_setting->cValue = null;
                 }
             }
-            if (isset($_conf->cKey, $_conf->oSettings_arr) && $_conf->cKey === 'theme' && count($_conf->oSettings_arr) > 0) {
+            if (isset($_conf->cKey, $_conf->oSettings_arr)
+                && $_conf->cKey === 'theme'
+                && count($_conf->oSettings_arr) > 0
+            ) {
                 foreach ($_conf->oSettings_arr as $_themeConf) {
-                    if (isset($_themeConf->cKey, $_themeConf->oOptions_arr) &&
-                        $_themeConf->cKey === 'theme_default' &&
-                        count($_themeConf->oOptions_arr) > 0
+                    if (isset($_themeConf->cKey, $_themeConf->oOptions_arr)
+                        && $_themeConf->cKey === 'theme_default'
+                        && count($_themeConf->oOptions_arr) > 0
                     ) {
                         foreach ($_themeConf->oOptions_arr as $_theme) {
                             $previewImage = isset($_theme->cOrdner)
-                                ? PFAD_ROOT . PFAD_TEMPLATES . $_theme->cOrdner . '/themes/' . $_theme->cValue . '/preview.png'
+                                ? PFAD_ROOT . PFAD_TEMPLATES . $_theme->cOrdner . '/themes/' .
+                                $_theme->cValue . '/preview.png'
                                 : PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/themes/' . $_theme->cValue . '/preview.png';
                             if (file_exists($previewImage)) {
+                                $base = $shopURL . PFAD_TEMPLATES;
                                 $preview[$_theme->cValue] = isset($_theme->cOrdner)
-                                    ? $shopURL . PFAD_TEMPLATES . $_theme->cOrdner . '/themes/' . $_theme->cValue . '/preview.png'
-                                    : $shopURL . PFAD_TEMPLATES . $cOrdner . '/themes/' . $_theme->cValue . '/preview.png';
+                                    ? $base . $_theme->cOrdner . '/themes/' . $_theme->cValue . '/preview.png'
+                                    : $base . $cOrdner . '/themes/' . $_theme->cValue . '/preview.png';
                             }
                         }
                         break;

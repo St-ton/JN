@@ -19,7 +19,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';
 
 Shop::setPageType(PAGE_REGISTRIERUNG);
-$AktuelleSeite        = 'REGISTRIEREN';
 $Einstellungen        = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
@@ -66,7 +65,8 @@ Shop::Smarty()->assign('editRechnungsadresse', $editRechnungsadresse)
     ->assign('hinweis', $hinweis)
     ->assign('step', $step)
     ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
-    ->assign('code_registrieren', false);
+    ->assign('code_registrieren', false)
+    ->assign('unregForm', 0);
 
 $cCanonicalURL = $linkHelper->getStaticRoute('registrieren.php');
 // Metaangaben

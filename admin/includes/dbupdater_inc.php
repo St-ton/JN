@@ -226,7 +226,7 @@ function updateFertig(int $nVersion)
             dAktualisiert = NOW()",
         \DB\ReturnType::DEFAULT
     );
-    Shop::Cache()->flushAll();
+    Shop::Container()->getCache()->flushAll();
     header('Location: ' . Shop::getURL() . '/' . PFAD_ADMIN . 'dbupdater.php?nErrorCode=100');
     exit();
 }

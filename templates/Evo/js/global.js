@@ -608,6 +608,22 @@ $(document).ready(function () {
         $body.attr('data-touchcapable', isTouchCapable() ? 'true' : 'false');
     })(jQuery, document, window, ResponsiveBootstrapToolkit);
 
+    /**
+     * provide the possibility of removing the shop-credit in
+     * the "Versandart/Zahlungsart"-step/mask
+     */
+    $("#using-shop-credit").on('click', function() {
+        // remove the shop-credit from the basket
+        // by loading it with POST-var "dropPos"
+        $.ajax({
+            url    : 'warenkorb.php',
+            method : 'POST',
+            data   : {dropPos : 'assetToUse'}
+        }).done(function(data) {
+            $('input[name="Versandart"]:checked', '#checkout-shipping-payment').change();
+        })
+    });
+
     lazyLoadMenu($('body').attr('data-viewport'));
     categoryMenu();
     regionsToState();

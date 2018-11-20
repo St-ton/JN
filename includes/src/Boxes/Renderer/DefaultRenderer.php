@@ -16,7 +16,7 @@ use Boxes\Items\BoxInterface;
 class DefaultRenderer implements RendererInterface
 {
     /**
-     * @var \JTLSmarty
+     * @var \Smarty\JTLSmarty
      */
     protected $smarty;
 
@@ -37,7 +37,7 @@ class DefaultRenderer implements RendererInterface
     /**
      * @inheritdoc
      */
-    public function setBox(BoxInterface $box)
+    public function setBox(BoxInterface $box): void
     {
         $this->box = $box;
     }

@@ -167,7 +167,7 @@ class IOMethods
 
             return $objResponse;
         }
-        $cart = Session::Cart();
+        $cart = \Session\Session::getCart();
         WarenkorbHelper::addVariationPictures($cart);
         /** @var Warenkorb $cart */
         $cart->fuegeEin($kArtikel, $amount, $properties)
@@ -208,16 +208,19 @@ class IOMethods
 
         $kKundengruppe = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
             ? $_SESSION['Kunde']->kKundengruppe
-            : Session::CustomerGroup()->getID();
+            : \Session\Session::getCustomerGroup()->getID();
         $oXSelling     = ArtikelHelper::getXSelling($kArtikel, $Artikel->nIstVater > 0);
 
-        $smarty->assign('WarenkorbVersandkostenfreiHinweis', VersandartHelper::getShippingFreeString(
-                    VersandartHelper::getFreeShippingMinimum($kKundengruppe),
-                    $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
-                ))
+        $smarty->assign(
+            'WarenkorbVersandkostenfreiHinweis',
+            VersandartHelper::getShippingFreeString(
+                VersandartHelper::getFreeShippingMinimum($kKundengruppe),
+                $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
+            )
+        )
                ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
                ->assign('fAnzahl', $amount)
-               ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
+               ->assign('NettoPreise', \Session\Session::getCustomerGroup()->getIsMerchant())
                ->assign('Einstellungen', $config)
                ->assign('Xselling', $oXSelling)
                ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
@@ -382,7 +385,7 @@ class IOMethods
         $objResponse = new IOResponse();
         $qty         = (int)$qty === 0 ? 1 : (int)$qty;
         $smarty      = Shop::Smarty();
-        if (empty($customerID = Session::Customer()->getID())) {
+        if (\Session\Session::getCustomer()->getID() === 0) {
             $oResponse->nType     = 1;
             $oResponse->cLocation = Shop::Container()->getLinkService()->getStaticRoute('jtl.php') .
                 '?a=' . $kArtikel .
@@ -519,9 +522,7 @@ class IOMethods
     public function getBasketItems($nTyp = 0): IOResponse
     {
         require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-
-        $smarty      = Shop::Smarty();
-        $cart        = Session::Cart();
+        $cart        = \Session\Session::getCart();
         $oResponse   = new stdClass();
         $objResponse = new IOResponse();
 
@@ -529,7 +530,8 @@ class IOMethods
         switch ($nTyp) {
             default:
             case 0:
-                $kKundengruppe = Session::CustomerGroup()->getID();
+                $smarty        = Shop::Smarty();
+                $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
                 $nAnzahl       = $cart->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]);
                 $cLand         = $_SESSION['cLieferlandISO'] ?? '';
                 $cPLZ          = '*';
@@ -539,7 +541,7 @@ class IOMethods
                     $cLand         = $_SESSION['Kunde']->cLand;
                     $cPLZ          = $_SESSION['Kunde']->cPLZ;
                 }
-
+                $error               = $smarty->getTemplateVars('fehler');
                 $versandkostenfreiAb = VersandartHelper::getFreeShippingMinimum($kKundengruppe, $cLand);
                 $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
                        ->assign('Warensumme', $cart->gibGesamtsummeWaren())
@@ -550,7 +552,7 @@ class IOMethods
                        ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
                        ->assign('WarenkorbGesamtgewicht', $cart->getWeight())
                        ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($cart))
-                       ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
+                       ->assign('NettoPreise', \Session\Session::getCustomerGroup()->getIsMerchant())
                        ->assign('FavourableShipping', $cart->getFavourableShipping())
                        ->assign('WarenkorbVersandkostenfreiHinweis', VersandartHelper::getShippingFreeString(
                            $versandkostenfreiAb,
@@ -589,17 +591,17 @@ class IOMethods
         $variationValues = $aValues['eigenschaftwert'] ?? [];
         $amount          = $aValues['anzahl'] ?? 1;
         $oKonfig         = ArtikelHelper::buildConfig(
-            $productID, 
+            $productID,
             $amount,
-            $variationValues, 
-            $items, 
+            $variationValues,
+            $items,
             $quantities,
             $itemQuantities
         );
-        $net             = Session::CustomerGroup()->getIsMerchant();
+        $net             = \Session\Session::getCustomerGroup()->getIsMerchant();
         $Artikel->fuelleArtikel($productID, null);
         $Artikel->Preise->cVKLocalized[$net] =
-            Preise::getLocalizedPriceString($Artikel->Preise->fVK[$net] * $amount, 0, true);
+            Preise::getLocalizedPriceString($Artikel->Preise->fVK[$net] * $amount, null, true);
 
         $smarty->assign('oKonfig', $oKonfig)
                ->assign('NettoPreise', $net)
@@ -616,7 +618,7 @@ class IOMethods
      * @param array|null $selectedVariationValues
      * @return null|stdClass
      */
-    public function getArticleStockInfo(int $productID, $selectedVariationValues = null)
+    public function getArticleStockInfo(int $productID, $selectedVariationValues = null): ?stdClass
     {
         $result = (object)[
             'stock'  => false,
@@ -625,7 +627,7 @@ class IOMethods
         ];
 
         if ($selectedVariationValues !== null) {
-            $products = getArticleByVariations($productID, $selectedVariationValues);
+            $products = $this->getArticleByVariations($productID, $selectedVariationValues);
 
             if (count($products) === 1) {
                 $productID = $products[0]->kArtikel;
@@ -655,7 +657,9 @@ class IOMethods
 
             if ($stockInfo->notExists || !$stockInfo->inStock) {
                 $result->stock = false;
-                $result->text  = $stockInfo->notExists ? Shop::Lang()->get('notAvailableInSelection') : Shop::Lang()->get('ampelRot');
+                $result->text  = $stockInfo->notExists
+                    ? Shop::Lang()->get('notAvailableInSelection')
+                    : Shop::Lang()->get('ampelRot');
             } else {
                 $result->stock = true;
                 $result->text  = '';
@@ -694,7 +698,7 @@ class IOMethods
         $oArtikelOptionen->nMain                     = 1;
         $oArtikelOptionen->nWarenlager               = 1;
         $oArtikel                                    = new Artikel();
-        $oArtikel->fuelleArtikel($kVaterArtikel, $oArtikelOptionen, Session::CustomerGroup()->getID());
+        $oArtikel->fuelleArtikel($kVaterArtikel, $oArtikelOptionen, \Session\Session::getCustomerGroup()->getID());
         $weightDiff   = 0;
         $newProductNr = '';
         foreach ($valueID_arr as $valueID) {
@@ -718,17 +722,14 @@ class IOMethods
 
         // Alle Variationen ohne Freifeld
         $nKeyValueVariation_arr = $oArtikel->keyValueVariations($oArtikel->VariationenOhneFreifeld);
-
-        // Freifeldpositionen gesondert zwischenspeichern
         foreach ($valueID_arr as $kKey => $cVal) {
             if (!isset($nKeyValueVariation_arr[$kKey])) {
                 unset($valueID_arr[$kKey]);
-                $kFreifeldEigeschaftWert_arr[$kKey] = $cVal;
             }
         }
 
-        $nNettoPreise = Session::CustomerGroup()->getIsMerchant();
-        $fVKNetto     = $oArtikel->gibPreis($fAnzahl, $valueID_arr, Session::CustomerGroup()->getID());
+        $nNettoPreise = \Session\Session::getCustomerGroup()->getIsMerchant();
+        $fVKNetto     = $oArtikel->gibPreis($fAnzahl, $valueID_arr, \Session\Session::getCustomerGroup()->getID());
         $fVK          = [
             TaxHelper::getGross($fVKNetto, $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]),
             $fVKNetto
@@ -761,8 +762,11 @@ class IOMethods
             $cStaffelVK = [0 => [], 1 => []];
             foreach ($oArtikel->staffelPreis_arr as $staffelPreis) {
                 $nAnzahl                 = &$staffelPreis['nAnzahl'];
-                $fStaffelVKNetto         = $oArtikel->gibPreis($nAnzahl, $valueID_arr,
-                    Session::CustomerGroup()->getID());
+                $fStaffelVKNetto         = $oArtikel->gibPreis(
+                    $nAnzahl,
+                    $valueID_arr,
+                    \Session\Session::getCustomerGroup()->getID()
+                );
                 $fStaffelVK[0][$nAnzahl] = TaxHelper::getGross(
                     $fStaffelVKNetto,
                     $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]
@@ -929,7 +933,8 @@ class IOMethods
 
             $objResponse->jsfunc('$.evo.article().variationDisableAll', $wrapper);
             $nPossibleVariations = $oArtikel->getVariationsBySelection($kGesetzteEigeschaftWert_arr, false);
-            $checkStockInfo      = count($kGesetzteEigeschaftWert_arr) > 0 && (count($kGesetzteEigeschaftWert_arr) === count($nPossibleVariations) - 1);
+            $checkStockInfo      = count($kGesetzteEigeschaftWert_arr) > 0
+                && (count($kGesetzteEigeschaftWert_arr) === count($nPossibleVariations) - 1);
             $stockInfo           = (object)[
                 'stock'  => true,
                 'status' => 2,
@@ -945,10 +950,18 @@ class IOMethods
                         $stockInfo->text  = '';
 
                         if (isset($nPossibleVariations[$value->kEigenschaft])
-                            && in_array($value->kEigenschaftWert, $nPossibleVariations[$value->kEigenschaft])) {
-                            $objResponse->jsfunc('$.evo.article().variationEnable', $value->kEigenschaft, $value->kEigenschaftWert, $wrapper);
+                            && in_array($value->kEigenschaftWert, $nPossibleVariations[$value->kEigenschaft])
+                        ) {
+                            $objResponse->jsfunc(
+                                '$.evo.article().variationEnable',
+                                $value->kEigenschaft,
+                                $value->kEigenschaftWert,
+                                $wrapper
+                            );
 
-                            if ($checkStockInfo && !array_key_exists($value->kEigenschaft, $kGesetzteEigeschaftWert_arr)) {
+                            if ($checkStockInfo
+                                && !array_key_exists($value->kEigenschaft, $kGesetzteEigeschaftWert_arr)
+                            ) {
                                 $kGesetzteEigeschaftWert_arr[$value->kEigenschaft] = $value->kEigenschaftWert;
 
                                 $products = $this->getArticleByVariations($kVaterArtikel, $kGesetzteEigeschaftWert_arr);
@@ -965,7 +978,8 @@ class IOMethods
                         if ($value->notExists || !$value->inStock) {
                             $stockInfo->stock  = false;
                             $stockInfo->status = 0;
-                            $stockInfo->text   = $value->notExists ? Shop::Lang()->get('notAvailableInSelection')
+                            $stockInfo->text   = $value->notExists
+                                ? Shop::Lang()->get('notAvailableInSelection')
                                 : Shop::Lang()->get('ampelRot');
                         }
                         if (!$stockInfo->stock) {
@@ -1003,7 +1017,7 @@ class IOMethods
      * @param array $selectedVariationValues
      * @return array
      */
-    public function getArticleByVariations(int $parentProductID, $selectedVariationValues)
+    public function getArticleByVariations(int $parentProductID, $selectedVariationValues): array
     {
         if (!is_array($selectedVariationValues) || count($selectedVariationValues) === 0) {
             return [];
@@ -1028,12 +1042,14 @@ class IOMethods
         }
 
         $combinationSQL = ($combinations !== null && count($combinations) > 0)
-            ? 'teigenschaftkombiwert.kEigenschaftKombi IN (
-                     SELECT kEigenschaftKombi
-                     FROM teigenschaftkombiwert
-                     WHERE (kEigenschaft, kEigenschaftWert) IN (' . implode(', ', $combinations) . ')
-                     GROUP BY kEigenschaftKombi
-                     HAVING COUNT(kEigenschaftKombi) = ' . count($combinations) . '
+            ? 'EXISTS (
+                     SELECT 1
+                     FROM teigenschaftkombiwert innerKombiwert
+                     WHERE (innerKombiwert.kEigenschaft, innerKombiwert.kEigenschaftWert) IN 
+                     (' . implode(', ', $combinations) . ')
+                        AND innerKombiwert.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+                     GROUP BY innerKombiwert.kEigenschaftKombi
+                     HAVING COUNT(innerKombiwert.kEigenschaftKombi) = ' . count($combinations) . '
                 )
                 AND '
             : '';
@@ -1055,8 +1071,8 @@ class IOMethods
                     AND tartikelsichtbarkeit.kArtikel IS NULL',
             [
                 'languageID'      => Shop::getLanguageID(),
-                'customergroupID' => Session::CustomerGroup()->getID(),
-                'parentProductID' => (int)$parentProductID,
+                'customergroupID' => \Session\Session::getCustomerGroup()->getID(),
+                'parentProductID' => $parentProductID,
                 'variationID'     => $variationID,
                 'variationValue'  => $variationValue,
             ],
@@ -1135,8 +1151,8 @@ class IOMethods
                 || $AWA->getCurQuestion() === $AWA->getQuestionCount()
                 || $AWA->getQuestion($AWA->getCurQuestion())->nTotalResultCount === 0) {
                 $response->script("window.location.href='" . StringHandler::htmlentitydecode(
-                        $NaviFilter->getFilterURL()->getURL()
-                    ) . "';");
+                    $NaviFilter->getFilterURL()->getURL()
+                ) . "';");
             } else {
                 $response->assign('selectionwizard', 'innerHTML', $AWA->fetchForm($smarty));
             }

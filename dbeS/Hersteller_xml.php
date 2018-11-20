@@ -42,18 +42,19 @@ function bearbeiteHerstellerDeletes($xml)
         $xml['del_hersteller']['kHersteller'] = [$xml['del_hersteller']['kHersteller']];
     }
     if (isset($xml['del_hersteller']['kHersteller']) && is_array($xml['del_hersteller']['kHersteller'])) {
+        $db = Shop::Container()->getDB();
         foreach ($xml['del_hersteller']['kHersteller'] as $kHersteller) {
             $kHersteller = (int)$kHersteller;
             if ($kHersteller > 0) {
-                $affectedArticles = Shop::Container()->getDB()->selectAll(
+                $affectedArticles = $db->selectAll(
                     'tartikel',
                     'kHersteller',
                     $kHersteller,
                     'kArtikel'
                 );
-                Shop::Container()->getDB()->delete('tseo', ['kKey', 'cKey'], [$kHersteller, 'kHersteller']);
-                Shop::Container()->getDB()->delete('thersteller', 'kHersteller', $kHersteller);
-                Shop::Container()->getDB()->delete('therstellersprache', 'kHersteller', $kHersteller);
+                $db->delete('tseo', ['kKey', 'cKey'], [$kHersteller, 'kHersteller']);
+                $db->delete('thersteller', 'kHersteller', $kHersteller);
+                $db->delete('therstellersprache', 'kHersteller', $kHersteller);
 
                 executeHook(HOOK_HERSTELLER_XML_BEARBEITEDELETES, ['kHersteller' => $kHersteller]);
                 $cacheTags[] = CACHING_GROUP_MANUFACTURER . '_' . $kHersteller;
@@ -62,11 +63,11 @@ function bearbeiteHerstellerDeletes($xml)
                     foreach ($affectedArticles as $article) {
                         $articleCacheTags[] = CACHING_GROUP_ARTICLE . '_' . $article->kArtikel;
                     }
-                    Shop::Cache()->flushTags($articleCacheTags);
+                    Shop::Container()->getCache()->flushTags($articleCacheTags);
                 }
             }
         }
-        Shop::Cache()->flushTags($cacheTags);
+        Shop::Container()->getCache()->flushTags($cacheTags);
     }
 }
 
@@ -82,23 +83,24 @@ function bearbeiteHersteller($xml)
     $oSprache_arr  = Sprache::getAllLanguages();
     $mfCount       = count($manufacturers);
     $cacheTags     = [];
+    $db            = Shop::Container()->getDB();
     for ($i = 0; $i < $mfCount; $i++) {
         $id               = (int)$manufacturers[$i]->kHersteller;
-        $affectedArticles = Shop::Container()->getDB()->selectAll('tartikel', 'kHersteller', $id, 'kArtikel');
-        Shop::Container()->getDB()->delete('tseo', ['kKey', 'cKey'], [$id, 'kHersteller']);
+        $affectedArticles = $db->selectAll('tartikel', 'kHersteller', $id, 'kArtikel');
+        $db->delete('tseo', ['kKey', 'cKey'], [$id, 'kHersteller']);
         if (!trim($manufacturers[$i]->cSeo)) {
-            $manufacturers[$i]->cSeo = getFlatSeoPath($manufacturers[$i]->cName);
+            $manufacturers[$i]->cSeo = \JTL\SeoHelper::getFlatSeoPath($manufacturers[$i]->cName);
         }
         //alten Bildpfad merken
-        $oHerstellerBild              = Shop::Container()->getDB()->query(
+        $oHerstellerBild              = $db->query(
             'SELECT cBildPfad 
                 FROM thersteller 
                 WHERE kHersteller = ' . $id,
             \DB\ReturnType::SINGLE_OBJECT
         );
         $manufacturers[$i]->cBildPfad = $oHerstellerBild->cBildPfad ?? '';
-        $manufacturers[$i]->cSeo      = getSeo($manufacturers[$i]->cSeo);
-        $manufacturers[$i]->cSeo      = checkSeo($manufacturers[$i]->cSeo);
+        $manufacturers[$i]->cSeo      = \JTL\SeoHelper::getSeo($manufacturers[$i]->cSeo);
+        $manufacturers[$i]->cSeo      = \JTL\SeoHelper::checkSeo($manufacturers[$i]->cSeo);
         DBUpdateInsert('thersteller', [$manufacturers[$i]], 'kHersteller');
 
         $cXMLSprache = '';
@@ -112,18 +114,18 @@ function bearbeiteHersteller($xml)
             $_baseSeo = $manufacturers[$i]->cSeo;
             foreach ($_herstellerSeo as $_hs) {
                 if (isset($_hs->kSprache) && (int)$_hs->kSprache === (int)$oSprache->kSprache && !empty($_hs->cSeo)) {
-                    $_baseSeo = getSeo($_hs->cSeo);
+                    $_baseSeo = \JTL\SeoHelper::getSeo($_hs->cSeo);
                     break;
                 }
             }
             $oSeo           = new stdClass();
-            $oSeo->cSeo     = checkSeo($_baseSeo);
+            $oSeo->cSeo     = \JTL\SeoHelper::checkSeo($_baseSeo);
             $oSeo->cKey     = 'kHersteller';
             $oSeo->kKey     = $id;
             $oSeo->kSprache = (int)$oSprache->kSprache;
-            Shop::Container()->getDB()->insert('tseo', $oSeo);
+            $db->insert('tseo', $oSeo);
         }
-        Shop::Container()->getDB()->delete('therstellersprache', 'kHersteller', $id);
+        $db->delete('therstellersprache', 'kHersteller', $id);
 
         updateXMLinDB($cXMLSprache, 'therstellersprache', $GLOBALS['mHerstellerSprache'], 'kHersteller', 'kSprache');
 
@@ -134,8 +136,8 @@ function bearbeiteHersteller($xml)
             foreach ($affectedArticles as $article) {
                 $articleCacheTags[] = CACHING_GROUP_ARTICLE . '_' . $article->kArtikel;
             }
-            Shop::Cache()->flushTags($articleCacheTags);
+            Shop::Container()->getCache()->flushTags($articleCacheTags);
         }
     }
-    Shop::Cache()->flushTags($cacheTags);
+    Shop::Container()->getCache()->flushTags($cacheTags);
 }

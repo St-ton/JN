@@ -918,7 +918,7 @@ final class Shop
             'kArtikel'               => self::$kArtikel,
             'kVariKindArtikel'       => self::$kVariKindArtikel,
             'kSeite'                 => self::$kSeite,
-            'kLink'                  => self::$kSeite > 0 ? self::$kSeite : self::$kLink,
+            'kLink'                  => self::$kLink,
             'kSuchanfrage'           => self::$kSuchanfrage,
             'kMerkmalWert'           => self::$kMerkmalWert,
             'kTag'                   => self::$kTag,
@@ -1797,6 +1797,28 @@ final class Shop
         self::$logged = $result;
 
         return $result;
+    }
+
+    /**
+     * @return string|null
+     * @throws Exception
+     */
+    public static function getAdminSessionToken(): ? string
+    {
+        if (!self::isAdmin()) {
+            return null;
+        }
+
+        $oldID = session_id();
+        session_write_close();
+        session_id($_COOKIE['eSIdAdm']);
+        session_start();
+        $adminToken = $_SESSION['jtl_token'];
+        session_write_close();
+        session_id($oldID);
+        session_start();
+
+        return $adminToken;
     }
 
     /**

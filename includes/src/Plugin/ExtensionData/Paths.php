@@ -15,6 +15,11 @@ class Paths
     /**
      * @var string
      */
+    private $baseDir;
+
+    /**
+     * @var string
+     */
     private $basePath;
 
     /**
@@ -38,9 +43,30 @@ class Paths
     private $adminURL;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $licencePath;
+
+    /**
+     * @var string|null
+     */
+    private $uninstaller;
+
+    /**
+     * @return string
+     */
+    public function getBaseDir(): string
+    {
+        return $this->baseDir;
+    }
+
+    /**
+     * @param string $baseDir
+     */
+    public function setBaseDir(string $baseDir): void
+    {
+        $this->baseDir = $baseDir;
+    }
 
     /**
      * @return string
@@ -123,9 +149,9 @@ class Paths
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getLicencePath(): string
+    public function getLicencePath(): ?string
     {
         return $this->licencePath;
     }
@@ -136,5 +162,21 @@ class Paths
     public function setLicencePath(string $licencePath): void
     {
         $this->licencePath = $licencePath;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUninstaller(): ?string
+    {
+        return $this->uninstaller;
+    }
+
+    /**
+     * @param string|null $uninstaller
+     */
+    public function setUninstaller(?string $uninstaller): void
+    {
+        $this->uninstaller = $uninstaller;
     }
 }

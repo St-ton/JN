@@ -4,18 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTLShop\SemVer\Version;
-use Services\Container;
 use DB\Services as DbService;
+use Filter\ProductFilter;
 use JTL\ProcessingHandler\NiceDBHandler;
-use Monolog\Handler\StreamHandler;
+use JTLShop\SemVer\Version;
 use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
-use \Services\JTL\Validation\ValidationServiceInterface;
-use \Services\JTL\Validation\ValidationService;
+use Services\Container;
 use Services\JTL\Validation\RuleSet;
-use Filter\ProductFilter;
+use Services\JTL\Validation\ValidationService;
+use Services\JTL\Validation\ValidationServiceInterface;
 
 /**
  * Class Shop
@@ -751,10 +751,12 @@ final class Shop
      */
     public static function bootstrap(): void
     {
+        $db      = self::Container()->getDB();
+        $cache   = self::Container()->getCache();
         $cacheID = 'plgnbtsrp';
-        if (($plugins = self::Container()->getCache()->get($cacheID)) === false) {
-            $plugins = self::Container()->getDB()->queryPrepared(
-                'SELECT kPlugin 
+        if (($plugins = $cache->get($cacheID)) === false) {
+            $plugins = $db->queryPrepared(
+                'SELECT kPlugin, bBootstrap, bExtension 
                     FROM tplugin 
                     WHERE nStatus = :state
                       AND bBootstrap = 1 
@@ -762,11 +764,15 @@ final class Shop
                 ['state' => \Plugin\State::ACTIVATED],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             ) ?: [];
-            self::Container()->getCache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
+            $cache->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
         }
+        $dispatcher      = \Events\Dispatcher::getInstance();
+        $extensionLoader = new \Plugin\ExtensionLoader($db, $cache);
+        $pluginLoader    = new \Plugin\PluginLoader($db, $cache);
         foreach ($plugins as $plugin) {
-            if (($p = \Plugin\Helper::bootstrapper($plugin->kPlugin)) !== null) {
-                $p->boot(\Events\Dispatcher::getInstance());
+            $loader = (int)$plugin->bExtension === 1 ? $extensionLoader : $pluginLoader;
+            if (($p = \Plugin\Helper::bootstrap($plugin->kPlugin, $loader)) !== null) {
+                $p->boot($dispatcher);
             }
         }
     }

@@ -427,7 +427,7 @@ class BoxService implements BoxServiceInterface
             if ($class === Plugin::class) {
                 $plugin = new \Plugin\Plugin($box->getCustomID());
                 $box->setTemplateFile(
-                    $plugin->cFrontendPfad .
+                    $plugin->getPaths()->getFrontendPath() .
                     \PFAD_PLUGIN_BOXEN .
                     $box->getTemplateFile()
                 );

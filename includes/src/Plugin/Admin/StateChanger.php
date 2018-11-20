@@ -9,9 +9,12 @@ namespace Plugin\Admin;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use Plugin\Admin\Validation\Shop4Validator;
+use Plugin\Admin\Validation\ValidatorInterface;
+use Plugin\ExtensionLoader;
+use Plugin\Helper;
 use Plugin\InstallCode;
 use Plugin\Plugin;
-use Plugin\Helper;
+use Plugin\PluginLoader;
 use Plugin\State;
 
 /**
@@ -36,16 +39,27 @@ class StateChanger
     private $validator;
 
     /**
-     * StateChanger constructor.
-     * @param DbInterface         $db
-     * @param JTLCacheInterface   $cache
-     * @param Shop4Validator|null $validator
+     * @var ValidatorInterface
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache, Shop4Validator $validator = null)
-    {
-        $this->db        = $db;
-        $this->cache     = $cache;
-        $this->validator = $validator;
+    protected $modernValidator;
+
+    /**
+     * StateChanger constructor.
+     * @param DbInterface             $db
+     * @param JTLCacheInterface       $cache
+     * @param ValidatorInterface|null $validator
+     * @param ValidatorInterface|null $modernValidator
+     */
+    public function __construct(
+        DbInterface $db,
+        JTLCacheInterface $cache,
+        ValidatorInterface $validator = null,
+        ValidatorInterface $modernValidator = null
+    ) {
+        $this->db              = $db;
+        $this->cache           = $cache;
+        $this->validator       = $validator;
+        $this->modernValidator = $modernValidator;
     }
 
     /**
@@ -81,8 +95,13 @@ class StateChanger
             $this->db->update('tlink', 'kPlugin', $pluginID, (object)['bIsActive' => 1]);
             $this->db->update('topcportlet', 'kPlugin', $pluginID, (object)['bActive' => 1]);
             $this->db->update('topcblueprint', 'kPlugin', $pluginID, (object)['bActive' => 1]);
+            if ((int)$pluginData->bExtension === 1) {
+                $loader = new ExtensionLoader($this->db, $this->cache);
+            } else {
+                $loader = new PluginLoader($this->db, $this->cache);
+            }
 
-            if (($p = Helper::bootstrapper($pluginID)) !== null) {
+            if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
                 $p->enabled();
             }
 
@@ -106,7 +125,13 @@ class StateChanger
         if ($pluginID <= 0) {
             return InstallCode::WRONG_PARAM;
         }
-        if (($p = Helper::bootstrapper($pluginID)) !== null) {
+        $pluginData = $this->db->select('tplugin', 'kPlugin', $pluginID);
+        if ((int)$pluginData->bExtension === 1) {
+            $loader = new ExtensionLoader($this->db, $this->cache);
+        } else {
+            $loader = new PluginLoader($this->db, $this->cache);
+        }
+        if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
             $p->disabled();
         }
         $this->db->update('tplugin', 'kPlugin', $pluginID, (object)['nStatus' => State::DISABLED]);
@@ -134,18 +159,17 @@ class StateChanger
      */
     public function reload($plugin, $forceReload = false): int
     {
-        $info = \PFAD_ROOT . \PFAD_PLUGIN . $plugin->cVerzeichnis . '/' . \PLUGIN_INFO_FILE;
+        $info = $plugin->getPaths()->getBasePath() . \PLUGIN_INFO_FILE;
         if (!\file_exists($info)) {
             return -1;
         }
-        $lastUpdate    = new \DateTimeImmutable($plugin->dZuletztAktualisiert);
+        $lastUpdate    = $plugin->getMeta()->getDateLastUpdate();
         $lastXMLChange = \filemtime($info);
         if ($forceReload === true || $lastXMLChange > $lastUpdate->getTimestamp()) {
             $uninstaller = new Uninstaller($this->db);
-            $installer   = new Installer($this->db, $uninstaller, $this->validator);
-            $installer->setDir($plugin->cVerzeichnis);
+            $installer   = new Installer($this->db, $uninstaller, $this->validator, $this->modernValidator);
+            $installer->setDir($plugin->getPaths()->getBaseDir());
             $installer->setPlugin($plugin);
-            $installer->setDir($plugin->cVerzeichnis);
 
             return $installer->prepare();
         }

@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace Plugin\ExtensionData;
 
 /**
  * Class Hook
@@ -31,6 +31,11 @@ class Hook
      * @var int
      */
     private $priority;
+
+    /**
+     * @var int
+     */
+    private $calledHookID = -1;
 
     /**
      * @return string
@@ -94,5 +99,21 @@ class Hook
     public function setPriority(int $priority): void
     {
         $this->priority = $priority;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCalledHookID(): int
+    {
+        return $this->calledHookID;
+    }
+
+    /**
+     * @param int $calledHookID
+     */
+    public function setCalledHookID(int $calledHookID): void
+    {
+        $this->calledHookID = $calledHookID;
     }
 }

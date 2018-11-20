@@ -162,30 +162,29 @@ class Helper
     }
 
     /**
-     * @param Plugin $plugin
-     * @param array  $params
+     * @param AbstractExtension $plugin
+     * @param array             $params
      * @return bool
      * @former pluginLizenzpruefung()
      * @since 5.0.0
      */
-    public static function licenseCheck(Plugin $plugin, array $params = []): bool
+    public static function licenseCheck(AbstractExtension $plugin, array $params = []): bool
     {
-        if (isset($plugin->cLizenzKlasse, $plugin->cLizenzKlasseName)
-            && \strlen($plugin->cLizenzKlasse) > 0
-            && \strlen($plugin->cLizenzKlasseName) > 0
-        ) {
-            require_once $plugin->cLicencePfad . $plugin->cLizenzKlasseName;
-            $licence       = new $plugin->cLizenzKlasse();
-            $licenceMethod = \PLUGIN_LICENCE_METHODE;
+        $license = $plugin->getLicense();
+        if ($license->hasLicenseCheck()) {
+            require_once $plugin->getPaths()->getLicencePath() . $license->getClassName();
+            $class    = $license->getClass();
+            $instance = new $class();
+            $method   = \PLUGIN_LICENCE_METHODE;
 
-            if (!$licence->$licenceMethod($plugin->cLizenz)) {
-                $plugin->nStatus = State::LICENSE_KEY_INVALID;
+            if (!$instance->$method($license->getKey())) {
+                $plugin->setState(State::LICENSE_KEY_INVALID);
                 $plugin->cFehler = 'Lizenzschlüssel ist ungültig';
                 $plugin->updateInDB();
                 \Shop::Container()->getLogService()->withName('kPlugin')->error(
-                    'Plugin Lizenzprüfung: Das Plugin "' . $plugin->cName .
+                    'Plugin Lizenzprüfung: Das Plugin "' . $plugin->getMeta()->getName() .
                     '" hat keinen gültigen Lizenzschlüssel und wurde daher deaktiviert!',
-                    [$plugin->kPlugin]
+                    [$plugin->getID()]
                 );
                 if (isset($params['cModulId']) && \strlen($params['cModulId']) > 0) {
                     self::updatePaymentMethodState($plugin, 0);
@@ -197,6 +196,7 @@ class Helper
 
         return true;
     }
+
     /**
      * @param int $state
      * @param int $id
@@ -394,19 +394,19 @@ class Helper
     }
 
     /**
-     * @param int $id
-     * @return mixed
+     * @param int             $id
+     * @param LoaderInterface $loader
+     * @return mixed|null
      */
-    public static function bootstrapper(int $id)
+    public static function bootstrap(int $id, LoaderInterface $loader)
     {
         if (!isset(self::$bootstrapper[$id])) {
-            $plugin = new Plugin($id);
-            if ($plugin === null || $plugin->bBootstrap === false) {
+            $plugin = $loader->init($id);
+            if ($plugin === null || $plugin->isBootstrap() === false) {
                 return null;
             }
-            $file  = $plugin->cPluginPfad . \PLUGIN_BOOTSTRAPPER;
-            $class = \sprintf('%s\\%s', $plugin->cPluginID, 'Bootstrap');
-
+            $file  = $plugin->getPaths()->getBasePath() . \PLUGIN_BOOTSTRAPPER;
+            $class = \sprintf('%s\\%s', $plugin->getPluginID(), 'Bootstrap');
             if (!\is_file($file)) {
                 return null;
             }
@@ -416,7 +416,6 @@ class Helper
             if (!\class_exists($class)) {
                 return null;
             }
-
             $bootstrapper = new $class($plugin);
             if (!\is_subclass_of($bootstrapper, AbstractPlugin::class)) {
                 return null;
@@ -426,4 +425,6 @@ class Helper
 
         return self::$bootstrapper[$id];
     }
+
+    public static function bootstrapper($id) {}
 }

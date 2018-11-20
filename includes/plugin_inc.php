@@ -23,7 +23,7 @@ function executeHook(int $hookID, $args_arr = [])
     foreach ($hookList[$hookID] as $item) {
         $oPlugin = Shop::get('oplugin_' . $item->kPlugin);
         if ($oPlugin === null) {
-            $loader  = new \Plugin\PluginLoader(new \Plugin\Plugin(), $db, $cache);
+            $loader  = new \Plugin\PluginLoader($db, $cache);
             $oPlugin = $loader->init((int)$item->kPlugin);
             if ($oPlugin === null) {
                 continue;
@@ -34,32 +34,32 @@ function executeHook(int $hookID, $args_arr = [])
             Shop::set('oplugin_' . $item->kPlugin, $oPlugin);
         }
         if ($smarty !== null) {
-            $smarty->assign('oPlugin_' . $oPlugin->cPluginID, $oPlugin);
+            $smarty->assign('oPlugin_' . $oPlugin->getPluginID(), $oPlugin);
         }
-        $cDateiname           = $item->cDateiname;
+        $file                 = $item->cDateiname;
         $oPlugin->nCalledHook = $hookID;
-        if ($hookID === HOOK_SEITE_PAGE_IF_LINKART && $cDateiname === PLUGIN_SEITENHANDLER) {
+        if ($hookID === HOOK_SEITE_PAGE_IF_LINKART && $file === PLUGIN_SEITENHANDLER) {
             include PFAD_ROOT . PFAD_INCLUDES . PLUGIN_SEITENHANDLER;
         } elseif ($hookID === HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION) {
-            if ((int)$oPlugin->kPlugin === (int)$args_arr['oCheckBox']->oCheckBoxFunktion->kPlugin) {
-                include $oPlugin->cFrontendPfad . $cDateiname;
+            if ($oPlugin->getID() === (int)$args_arr['oCheckBox']->oCheckBoxFunktion->kPlugin) {
+                include $oPlugin->getPaths()->getFrontendPath() . $file;
             }
-        } elseif (is_file($oPlugin->cFrontendPfad . $cDateiname)) {
+        } elseif (is_file($oPlugin->getPaths()->getFrontendPath() . $file)) {
             $start = microtime(true);
-            include $oPlugin->cFrontendPfad . $cDateiname;
+            include $oPlugin->getPaths()->getFrontendPath() . $file;
             if (PROFILE_PLUGINS === true) {
                 $runData = [
                     'runtime'   => microtime(true) - $start,
                     'timestamp' => microtime(true),
                     'hookID'    => $hookID,
                     'runcount'  => 1,
-                    'file'      => $oPlugin->cFrontendPfad . $cDateiname
+                    'file'      => $oPlugin->getPaths()->getFrontendPath() . $file
                 ];
                 Profiler::setPluginProfile($runData);
             }
         }
         if ($smarty !== null) {
-            $smarty->clearAssign('oPlugin_' . $oPlugin->cPluginID);
+            $smarty->clearAssign('oPlugin_' . $oPlugin->getPluginID());
         }
     }
 }

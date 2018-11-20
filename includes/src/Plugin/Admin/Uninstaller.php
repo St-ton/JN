@@ -59,7 +59,7 @@ class Uninstaller
                 && (int)$plugin->oPluginUninstall->kPluginUninstall > 0
             ) {
                 try {
-                    include $plugin->cPluginUninstallPfad;
+                    include $plugin->getPaths()->getUninstaller();
                 } catch (\Exception $exc) {
                 }
             }

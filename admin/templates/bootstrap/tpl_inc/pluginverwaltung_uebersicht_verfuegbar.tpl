@@ -84,18 +84,18 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach $pluginsAvailable->toArray() as $plugin}
-                            <tr class="plugin{if $plugin->isShop5Compatible()} alert alert-info{elseif !$plugin->isShop4Compatible()} alert alert-danger{/if}">
-                                <td class="check"><input type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$plugin->getDir()}" value="{$plugin->getDir()}" /></td>
+                        {foreach $pluginsAvailable->toArray() as $listingItem}
+                            <tr class="plugin{if $listingItem->isShop5Compatible()} alert alert-info{elseif !$listingItem->isShop4Compatible()} alert alert-danger{/if}">
+                                <td class="check"><input type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$listingItem->getDir()}" value="{$listingItem->getDir()}" /></td>
                                 <td>
-                                    <label for="plugin-check-{$plugin->getDir()}">{$plugin->getName()}</label>
-                                    <p>{$plugin->getDescription()}</p>
-                                    {if $plugin->isShop4Compatible() === false && $plugin->isShop5Compatible() === false}
+                                    <label for="plugin-check-{$listingItem->getDir()}">{$listingItem->getName()}</label>
+                                    <p>{$listingItem->getDescription()}</p>
+                                    {if $listingItem->isShop4Compatible() === false && $listingItem->isShop5Compatible() === false}
                                         <div class="alert alert-info"><strong>Achtung:</strong> Plugin ist nicht vollständig Shop5-kompatibel! Es können daher Probleme beim Betrieb entstehen.</div>
                                     {/if}
                                 </td>
-                                <td class="tcenter">{$plugin->getVersion()}</td>
-                                <td class="tcenter">{$plugin->getDir()}</td>
+                                <td class="tcenter">{$listingItem->getVersion()}</td>
+                                <td class="tcenter">{$listingItem->getDir()}</td>
                             </tr>
                         {/foreach}
                         </tbody>

@@ -1,8 +1,8 @@
 {config_load file="$lang.conf" section='plugin'}
 <div class="settings-content">
-    <form method="post" action="plugin.php?kPlugin={$oPlugin->kPlugin}" class="navbar-form">
+    <form method="post" action="plugin.php?kPlugin={$oPlugin->getID()}" class="navbar-form">
         {$jtl_token}
-        <input type="hidden" name="kPlugin" value="{$oPlugin->kPlugin}" />
+        <input type="hidden" name="kPlugin" value="{$oPlugin->getID()}" />
         <input type="hidden" name="kPluginAdminMenu" value="{$oPluginAdminMenu->kPluginAdminMenu}" />
         <input type="hidden" name="Setting" value="1" />
         {assign var=open value=0}

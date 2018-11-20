@@ -25,13 +25,13 @@
                         </thead>
                         <tbody>
                         {foreach $pluginsByState.status_1 as $plugin}
-                            <tr {if $plugin->updateAvailable === true && $plugin->cFehler === ''}class="highlight"{/if}>
+                            <tr {if $plugin->getMeta()->isUpdateAvailable() && $plugin->cFehler === ''}class="highlight"{/if}>
                                 <td class="check">
-                                    <input type="checkbox" name="kPlugin[]" id="plugin-check-{$plugin->kPlugin}" value="{$plugin->kPlugin}" />
+                                    <input type="checkbox" name="kPlugin[]" id="plugin-check-{$plugin->getID()}" value="{$plugin->getID()}" />
                                 </td>
                                 <td>
-                                    <label for="plugin-check-{$plugin->kPlugin}">{$plugin->cName}</label
-                                    {if $plugin->updateAvailable === true || (isset($plugin->cInfo) && $plugin->cInfo|strlen > 0)}
+                                    <label for="plugin-check-{$plugin->getID()}">{$plugin->getMeta()->getName()}</label
+                                    {if $plugin->getMeta()->isUpdateAvailable() || (isset($plugin->cInfo) && $plugin->cInfo|strlen > 0)}
                                         <p>
                                             {if $plugin->cFehler === ''}
                                                 {if isset($plugin->cInfo) && $plugin->cInfo|strlen > 0}{$plugin->cInfo}<br />{/if}{#pluginUpdateExists#}
@@ -43,41 +43,41 @@
                                 </td>
                                 <td class="tcenter plugin-status">
                                     <h4 class="label-wrap text-nowrap">
-                                        <span class="label {if $plugin->nStatus === \Plugin\State::ACTIVATED}success label-success{elseif $plugin->nStatus == 1}success label-info{elseif $plugin->nStatus == 3}success label-default{elseif $plugin->nStatus == 4 || $plugin->nStatus == 5}info label-info{elseif $plugin->nStatus == 6}danger label-danger{/if}">
-                                            {$mapper->map($plugin->nStatus)}
+                                        <span class="label {if $plugin->getState() === \Plugin\State::ACTIVATED}success label-success{elseif $plugin->getState() == 1}success label-info{elseif $plugin->getState() == 3}success label-default{elseif $plugin->getState() == 4 || $plugin->getState() == 5}info label-info{elseif $plugin->getState() == 6}danger label-danger{/if}">
+                                            {$mapper->map($plugin->getState())}
                                         </span>
                                         {if isset($PluginIndex_arr[$plugin->cVerzeichnis]->shop4compatible) && $PluginIndex_arr[$plugin->cVerzeichnis]->shop4compatible === false}
                                             <span title="Achtung: Plugin ist nicht vollst&auml;ndig Shop4-kompatibel! Es k&ouml;nnen daher Probleme beim Betrieb entstehen." class="label warning label-warning"><i class="fa fa-warning"></i></span>
                                         {/if}
                                     </h4>
                                 </td>
-                                <td class="tcenter plugin-version">{number_format($plugin->nVersion / 100, 2)}{if $plugin->updateAvailable === true} <span class="label label-success update-info">{number_format((float)$plugin->getCurrentVersion() / 100, 2)}</span>{/if}</td>
-                                <td class="tcenter plugin-install-date">{$plugin->dInstalliert_DE}</td>
+                                <td class="tcenter plugin-version">{number_format($plugin->nVersion / 100, 2)}{if $plugin->getMeta()->isUpdateAvailable()} <span class="label label-success update-info">{number_format((float)$plugin->getCurrentVersion() / 100, 2)}</span>{/if}</td>
+                                <td class="tcenter plugin-install-date">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
                                 <td class="tcenter plugin-folder">{$plugin->cVerzeichnis}</td>
                                 <td class="tcenter plugin-lang-vars">
                                     {if isset($plugin->oPluginSprachvariableAssoc_arr) && $plugin->oPluginSprachvariableAssoc_arr|@count > 0}
-                                        <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->kPlugin}"
+                                        <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
                                            class="btn btn-default btn-sm" title="{#modify#}"><i class="fa fa-edit"></i></a>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-frontend-links">
                                     {if isset($plugin->oPluginFrontendLink_arr) && $plugin->oPluginFrontendLink_arr|@count > 0}
-                                        <a href="links.php?kPlugin={$plugin->kPlugin}" class="btn btn-default btn-sm" title="{#modify#}"><i class="fa fa-edit"></i></a>
+                                        <a href="links.php?kPlugin={$plugin->getID()}" class="btn btn-default btn-sm" title="{#modify#}"><i class="fa fa-edit"></i></a>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-license">
                                     {if isset($plugin->cLizenzKlasse) && $plugin->cLizenzKlasse|strlen > 0}
                                         {if isset($plugin->cLizenzKlasse) && $plugin->cLizenzKlasse|strlen > 0}
                                             <button name="lizenzkey" type="submit" title="{#modify#}"
-                                                    class="btn {if $plugin->cLizenz && $plugin->cLizenz|strlen > 0}btn-default{else}btn-primary{/if} btn-sm" value="{$plugin->kPlugin}">
+                                                    class="btn {if $plugin->cLizenz && $plugin->cLizenz|strlen > 0}btn-default{else}btn-primary{/if} btn-sm" value="{$plugin->getID()}">
                                                 <i class="fa fa-edit"></i>
                                             </button>
                                         {/if}
                                     {/if}
                                 </td>
                                 <td class="tcenter">
-                                    {if $plugin->updateAvailable === true && $plugin->cFehler === ''}
-                                        <a onclick="ackCheck({$plugin->kPlugin}, 'deaktiviert'); return false;" class="btn btn-primary btn-sm" title="{#pluginBtnUpdate#}"><i class="fa fa-refresh"></i></a>
+                                    {if $plugin->getMeta()->isUpdateAvailable() && $plugin->cFehler === ''}
+                                        <a onclick="ackCheck({$plugin->getID()}, 'deaktiviert'); return false;" class="btn btn-primary btn-sm" title="{#pluginBtnUpdate#}"><i class="fa fa-refresh"></i></a>
                                     {/if}
                                 </td>
                             </tr>

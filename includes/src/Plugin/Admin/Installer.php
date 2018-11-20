@@ -10,9 +10,11 @@ use DB\DbInterface;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
 use Plugin\Admin\Validation\ValidatorInterface;
+use Plugin\ExtensionLoader;
 use Plugin\InstallCode;
 use Plugin\Plugin;
 use Plugin\Helper;
+use Plugin\PluginLoader;
 use Plugin\State;
 
 /**
@@ -160,12 +162,14 @@ final class Installer
             $lastVersionKey = \count($versionNode) / 2 - 1;
             $version        = (int)$versionNode[$lastVersionKey . ' attr']['nr'];
             $versionedDir   = $basePath . \PFAD_PLUGIN_VERSION . $version . \DIRECTORY_SEPARATOR;
+            $loader         = new PluginLoader($this->db, \Shop::Container()->getCache());
         } else {
             $version      = (int)$versionNode;
             $basePath     = \PFAD_ROOT . \PFAD_EXTENSIONS . $this->dir . \DIRECTORY_SEPARATOR;
             $versionedDir = $basePath;
             $versionNode  = [];
             $modern       = true;
+            $loader       = new ExtensionLoader($this->db, \Shop::Container()->getCache());
         }
         $tags = empty($baseNode['Install'][0]['FlushTags'])
             ? []
@@ -209,21 +213,21 @@ final class Installer
             \Shop::Container()->getCache()->flushTags($tagsToFlush);
         }
         $licenceClassFile = $versionedDir . \PFAD_PLUGIN_LICENCE . $plugin->cLizenzKlasseName;
-        if (isset($this->plugin->cLizenz, $this->plugin->nStatus)
-            && (int)$this->plugin->nStatus > 0
-            && \strlen($this->plugin->cLizenz) > 0
+        if ($this->plugin !== null
             && \is_file($licenceClassFile)
+            && $this->plugin->getState() > 0
+            && $this->plugin->getLicense()->hasLicense()
         ) {
             require_once $licenceClassFile;
             $pluginLicence = new $plugin->cLizenzKlasse();
             $licenceMethod = \PLUGIN_LICENCE_METHODE;
-            if ($pluginLicence->$licenceMethod($this->plugin->cLizenz)) {
-                $plugin->cLizenz = $this->plugin->cLizenz;
-                $plugin->nStatus = $this->plugin->nStatus;
+            if ($pluginLicence->$licenceMethod($this->plugin->getLicense()->getKey())) {
+                $plugin->cLizenz = $this->plugin->getLicense()->getKey();
+                $plugin->nStatus = $this->plugin->getState();
             }
         }
-        $plugin->dInstalliert = ($this->plugin !== null && $this->plugin->kPlugin > 0)
-            ? $this->plugin->dInstalliert
+        $plugin->dInstalliert = ($this->plugin !== null && $this->plugin->getID() > 0)
+            ? $this->plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')
             : 'NOW()';
         $kPlugin              = $this->db->insert('tplugin', $plugin);
         $plugin->kPlugin      = $kPlugin;
@@ -243,8 +247,9 @@ final class Installer
         $code        = 1;
         foreach ($versionNode as $i => $versionData) {
             if ($version > 0
-                && isset($this->plugin->kPlugin, $versionData['nr'])
-                && $this->plugin->nVersion >= (int)$versionData['nr']
+                && $this->plugin !== null
+                && isset($versionData['nr'])
+                && $this->plugin->getMeta()->getVersion() >= (int)$versionData['nr']
             ) {
                 continue;
             }
@@ -274,7 +279,7 @@ final class Installer
         }
         if ($code === InstallCode::OK
             && $this->plugin === null
-            && ($p = Helper::bootstrapper($plugin->kPlugin)) !== null
+            && ($p = Helper::bootstrap($plugin->kPlugin, $loader)) !== null
         ) {
             $p->installed();
         }
@@ -282,11 +287,10 @@ final class Installer
         if ($xmlVersion > 100 && ($code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE || $code === InstallCode::OK)) {
             $code = InstallCode::OK;
             // Update
-            if ($this->plugin !== null && $this->plugin->kPlugin > 0 && $code === 1) {
+            if ($this->plugin !== null && $this->plugin->getID() > 0) {
                 $code = $this->syncPluginUpdate($plugin->kPlugin);
             }
         } elseif ($this->plugin !== null
-            && $this->plugin->kPlugin
             && ($code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE || $code === InstallCode::OK)
         ) {
             $code = $this->syncPluginUpdate($plugin->kPlugin);

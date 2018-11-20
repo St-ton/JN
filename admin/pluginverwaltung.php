@@ -19,20 +19,21 @@ $cache           = Shop::Container()->getCache();
 $uninstaller     = new \Plugin\Admin\Uninstaller($db);
 $validator       = new \Plugin\Admin\Validation\Shop4Validator($db);
 $modernValidator = new \Plugin\Admin\Validation\ModernValidator($db);
-$listing         = new \Plugin\Admin\Listing($db, $validator, $modernValidator);
+$listing         = new \Plugin\Admin\Listing($db, $cache, $validator, $modernValidator);
 $installer       = new \Plugin\Admin\Installer($db, $uninstaller, $validator, $modernValidator);
 $updater         = new \Plugin\Admin\Updater($db, $installer);
 $extractor       = new \Plugin\Admin\Extractor();
 $stateChanger    = new \Plugin\Admin\StateChanger(
     $db,
     $cache,
-    $validator
+    $validator,
+    $modernValidator
 );
 
 $pluginsInstalled = $listing->getInstalled();
 $pluginsAll       = $listing->getAll($pluginsInstalled);
 foreach ($pluginsInstalled as $_plugin) {
-    $pluginsInstalledByState['status_' . $_plugin->nStatus][] = $_plugin;
+    $pluginsInstalledByState['status_' . $_plugin->getState()][] = $_plugin;
 }
 $pluginsAvailable = $pluginsAll->filter(function (\Plugin\Admin\ListingItem $item) {
     return $item->isAvailable() === true && $item->isInstalled() === false;
@@ -40,7 +41,6 @@ $pluginsAvailable = $pluginsAll->filter(function (\Plugin\Admin\ListingItem $ite
 $pluginsErroneous = $pluginsAll->filter(function (\Plugin\Admin\ListingItem $item) {
     return $item->isHasError() === true && $item->isInstalled() === false;
 });
-
 if (isset($_SESSION['plugin_msg'])) {
     $cHinweis = $_SESSION['plugin_msg'];
     unset($_SESSION['plugin_msg']);
@@ -58,7 +58,7 @@ if (!empty($_FILES['file_data'])) {
         'status_6' => []
     ];
     foreach ($pluginsInstalled as $_plugin) {
-        $pluginsInstalledByState['status_' . $_plugin->nStatus][] = $_plugin;
+        $pluginsInstalledByState['status_' . $_plugin->getState()][] = $_plugin;
     }
     $errorCount = count($pluginsInstalledByState['status_3']) +
         count($pluginsInstalledByState['status_4']) +
@@ -105,7 +105,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
             $cLicenceMethod = PLUGIN_LICENCE_METHODE;
             if ($oPluginLicence->$cLicenceMethod(StringHandler::filterXSS($_POST['cKey']))) {
                 $oPlugin->cFehler = '';
-                $oPlugin->nStatus = \Plugin\State::ACTIVATED;
+                $oPlugin->setState(\Plugin\State::ACTIVATED);
                 $oPlugin->cLizenz = StringHandler::filterXSS($_POST['cKey']);
                 $oPlugin->updateInDB();
                 $cHinweis = 'Ihr Plugin-Lizenzschlüssel wurde gespeichert.';
@@ -315,7 +315,7 @@ if ($step === 'pluginverwaltung_uebersicht') {
         'status_6' => []
     ];
     foreach ($pluginsInstalled as $_plugin) {
-        $pluginsInstalledByState['status_' . $_plugin->nStatus][] = $_plugin;
+        $pluginsInstalledByState['status_' . $_plugin->getState()][] = $_plugin;
     }
     foreach ($pluginsAvailable as $available) {
         /** @var \Plugin\Admin\ListingItem $available */
@@ -362,7 +362,6 @@ if (PLUGIN_DEV_MODE === true) {
         ? $pluginDevNotice
         : $pluginDevNotice . '<br>' . $cHinweis;
 }
-
 $smarty->assign('hinweis', $cHinweis)
        ->assign('hinweis64', base64_encode($cHinweis))
        ->assign('fehler', $cFehler)

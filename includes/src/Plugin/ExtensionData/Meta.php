@@ -63,6 +63,16 @@ class Meta
     private $dateInstalled;
 
     /**
+     * @var int|string
+     */
+    private $version;
+
+    /**
+     * @var bool
+     */
+    private $updateAvailable = false;
+
+    /**
      * @param \stdClass $data
      * @return $this
      */
@@ -74,6 +84,7 @@ class Meta
         $this->url            = $data->cURL;
         $this->dateInstalled  = new \DateTime($data->dInstalliert);
         $this->dateLastUpdate = new \DateTime($data->dZuletztAktualisiert);
+        $this->version        = $data->nVersion;
 
         return $this;
     }
@@ -236,5 +247,37 @@ class Meta
     public function setDateInstalled(\DateTime $dateInstalled): void
     {
         $this->dateInstalled = $dateInstalled;
+    }
+
+    /**
+     * @return string|int
+     */
+    public function getVersion()
+    {
+        return $this->version;
+    }
+
+    /**
+     * @param string|int $version
+     */
+    public function setVersion($version): void
+    {
+        $this->version = $version;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUpdateAvailable(): bool
+    {
+        return $this->updateAvailable;
+    }
+
+    /**
+     * @param bool $updateAvailable
+     */
+    public function setUpdateAvailable(bool $updateAvailable): void
+    {
+        $this->updateAvailable = $updateAvailable;
     }
 }

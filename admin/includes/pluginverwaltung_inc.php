@@ -95,7 +95,8 @@ function reloadPlugin($oPlugin, $forceReload = false)
     $stateChanger = new \Plugin\Admin\StateChanger(
         $db,
         Shop::Container()->getCache(),
-        new \Plugin\Admin\Validator($db)
+        new \Plugin\Admin\Validation\Shop4Validator($db),
+        new \Plugin\Admin\Validation\ModernValidator($db)
     );
 
     return $stateChanger->reload($oPlugin, $forceReload);

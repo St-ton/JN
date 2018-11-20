@@ -10,150 +10,23 @@ use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use JTL\XMLParser;
 use Plugin\Admin\StateChanger;
+use Plugin\Admin\Validation\ModernValidator;
 use Plugin\Admin\Validation\Shop4Validator;
 
 /**
  * Class Plugin
  */
-class Plugin
+class Plugin extends ExtensionBC
 {
-    /**
-     * @var int
-     */
-    public $kPlugin;
-
-    /**
-     * @var int
-     */
-    public $nStatus;
-
-    /**
-     * @var int
-     */
-    public $nVersion;
-
     /**
      * @var int
      */
     public $nXMLVersion;
 
     /**
-     * @var int
-     */
-    public $nPrio;
-
-    /**
-     * @var string
-     */
-    public $cName;
-
-    /**
-     * @var string
-     */
-    public $cBeschreibung;
-
-    /**
-     * @var string
-     */
-    public $cAutor;
-
-    /**
-     * @var string
-     */
-    public $cURL;
-
-    /**
-     * @var string
-     */
-    public $cVerzeichnis;
-
-    /**
-     * @var string
-     */
-    public $cPluginID;
-
-    /**
      * @var string
      */
     public $cFehler;
-
-    /**
-     * @var string
-     */
-    public $cLizenz;
-
-    /**
-     * @var string
-     */
-    public $cLizenzKlasse;
-
-    /**
-     * @var string
-     */
-    public $cLizenzKlasseName;
-
-    /**
-     * @var string
-     * @since 4.05
-     */
-    public $cPluginPfad;
-
-    /**
-     * @var string
-     */
-    public $cFrontendPfad;
-
-    /**
-     * @var string
-     */
-    public $cFrontendPfadURL;
-
-    /**
-     * @var string
-     */
-    public $cFrontendPfadURLSSL;
-
-    /**
-     * @var string
-     */
-    public $cAdminmenuPfad;
-
-    /**
-     * @var string
-     */
-    public $cAdminmenuPfadURL;
-
-    /**
-     * @var string
-     */
-    public $cLicencePfad;
-
-    /**
-     * @var string
-     */
-    public $cLicencePfadURL;
-
-    /**
-     * @var string
-     */
-    public $cLicencePfadURLSSL;
-
-    /**
-     * @var string
-     */
-    public $dZuletztAktualisiert;
-
-    /**
-     * @var string
-     */
-    public $dInstalliert;
-
-    /**
-     * Plugin Date
-     *
-     * @var string
-     */
-    public $dErstellt;
 
     /**
      * @var array
@@ -263,11 +136,6 @@ class Plugin
     /**
      * @var string
      */
-    public $cPluginUninstallPfad;
-
-    /**
-     * @var string
-     */
     public $cAdminmenuPfadURLSSL;
 
     /**
@@ -311,16 +179,6 @@ class Plugin
     public $changelogPath = '';
 
     /**
-     * @var bool
-     */
-    public $updateAvailable = false;
-
-    /**
-     * @var bool
-     */
-    public $bExtension = false;
-
-    /**
      * Konstruktor
      *
      * @param int  $kPlugin
@@ -337,7 +195,8 @@ class Plugin
                 $stateChanger = new StateChanger(
                     $db,
                     $cache,
-                    new Shop4Validator($db)
+                    new Shop4Validator($db),
+                    new ModernValidator($db)
                 );
                 $stateChanger->reload($this, false);
                 $this->loadFromDB($kPlugin, $db, $cache, $invalidateCache);
@@ -377,9 +236,9 @@ class Plugin
      */
     private function loadFromDB(int $id, DbInterface $db, JTLCacheInterface $cache, bool $invalidate = false): ?self
     {
-        $loader = new PluginLoader($this, $db, $cache);
+        $loader = new PluginLoader($db, $cache);
         try {
-            $loader->init($id, $invalidate);
+            $loader->setPlugin($this)->init($id, $invalidate);
         } catch (\InvalidArgumentException $e) {
             return null;
         }
@@ -395,24 +254,23 @@ class Plugin
     public function updateInDB(): int
     {
         $obj                       = new \stdClass();
-        $obj->kPlugin              = $this->kPlugin;
-        $obj->cName                = $this->cName;
-        $obj->cBeschreibung        = $this->cBeschreibung;
-        $obj->cAutor               = $this->cAutor;
-        $obj->cURL                 = $this->cURL;
-        $obj->cVerzeichnis         = $this->cVerzeichnis;
+        $obj->kPlugin              = $this->getID();
+        $obj->cName                = $this->getMeta()->getName();
+        $obj->cBeschreibung        = $this->getMeta()->getDescription();
+        $obj->cAutor               = $this->getMeta()->getAuthor();
+        $obj->cURL                 = $this->getMeta()->getURL();
+        $obj->cVerzeichnis         = $this->getPaths()->getBaseDir();
         $obj->cFehler              = $this->cFehler;
-        $obj->cLizenz              = $this->cLizenz;
-        $obj->cLizenzKlasse        = $this->cLizenzKlasse;
-        $obj->cLizenzKlasseName    = $this->cLizenzKlasseName;
-        $obj->nStatus              = $this->nStatus;
-        $obj->nVersion             = $this->nVersion;
+        $obj->cLizenz              = $this->getLicense()->getKey();
+        $obj->cLizenzKlasse        = $this->getLicense()->getClass();
+        $obj->cLizenzKlasseName    = $this->getLicense()->getClassName();
+        $obj->nStatus              = $this->getState();
+        $obj->nVersion             = $this->getMeta()->getVersion();
         $obj->nXMLVersion          = $this->nXMLVersion;
-        $obj->nPrio                = $this->nPrio;
-        $obj->dZuletztAktualisiert = $this->dZuletztAktualisiert;
-        $obj->dInstalliert         = $this->dInstalliert;
-        $obj->dErstellt            = $this->dErstellt;
-        $obj->bBootstrap           = $this->bBootstrap ? 1 : 0;
+        $obj->nPrio                = $this->getPriority();
+        $obj->dZuletztAktualisiert = $this->getMeta()->getDateLastUpdate()->format('d.m.Y H:i');
+        $obj->dInstalliert         = $this->getMeta()->getDateInstalled()->format('d.m.Y H:i');
+        $obj->bBootstrap           = $this->isBootstrap() ? 1 : 0;
 
         return \Shop::Container()->getDB()->update('tplugin', 'kPlugin', $obj->kPlugin, $obj);
     }
@@ -456,7 +314,7 @@ class Plugin
      */
     public function getCurrentVersion(): int
     {
-        $path = \PFAD_ROOT . \PFAD_PLUGIN . $this->cVerzeichnis;
+        $path = \PFAD_ROOT . \PFAD_PLUGIN . $this->getPaths()->getBaseDir();
         if (\is_dir($path) && \file_exists($path . '/' . \PLUGIN_INFO_FILE)) {
             $parser  = new XMLParser();
             $xml     = $parser->parse($path . '/' . \PLUGIN_INFO_FILE);
@@ -488,8 +346,8 @@ class Plugin
     public function getDynamicOptions($conf): ?array
     {
         $dynamicOptions = null;
-        if (!empty($conf->cSourceFile) && \file_exists($this->cAdminmenuPfad . $conf->cSourceFile)) {
-            $dynamicOptions = include $this->cAdminmenuPfad . $conf->cSourceFile;
+        if (!empty($conf->cSourceFile) && \file_exists($this->getPaths()->getAdminPath() . $conf->cSourceFile)) {
+            $dynamicOptions = include $this->getPaths()->getAdminPath() . $conf->cSourceFile;
             foreach ($dynamicOptions as $option) {
                 $option->kPluginEinstellungenConf = $conf->kPluginEinstellungenConf;
                 if (!isset($option->nSort)) {
@@ -499,18 +357,6 @@ class Plugin
         }
 
         return $dynamicOptions;
-    }
-
-    /**
-     * @param int $id
-     * @return mixed
-     * @deprecated since 5.0.0
-     */
-    public static function bootstrapper(int $id)
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return Helper::bootstrapper($id);
     }
 
     /**

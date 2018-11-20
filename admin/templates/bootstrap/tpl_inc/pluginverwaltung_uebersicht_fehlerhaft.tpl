@@ -18,20 +18,20 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach $pluginsErroneous->toArray() as $plugin}
+                        {foreach $pluginsErroneous->toArray() as $listingItem}
                             <tr>
                                 <td>
-                                    <strong>{$plugin->getName()}</strong>
-                                    <p>{$plugin->getDescription()}</p>
+                                    <strong>{$listingItem->getName()}</strong>
+                                    <p>{$listingItem->getDescription()}</p>
                                 </td>
                                 <td>
                                     <p>
-                                        <span class="badge error">{$plugin->getErrorCode()}</span>
-                                        {$plugin->getErrorMessage()}
+                                        <span class="badge error">{$listingItem->getErrorCode()}</span>
+                                        {$listingItem->getErrorMessage()}
                                     </p>
                                 </td>
-                                <td class="tcenter">{$plugin->getVersion()}</td>
-                                <td class="tcenter">{$plugin->getDir()}</td>
+                                <td class="tcenter">{$listingItem->getVersion()}</td>
+                                <td class="tcenter">{$listingItem->getDir()}</td>
                             </tr>
                         {/foreach}
                         </tbody>

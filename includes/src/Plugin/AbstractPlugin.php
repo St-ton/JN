@@ -35,7 +35,7 @@ abstract class AbstractPlugin implements PluginInterface
     final public function __construct($plugin)
     {
         $this->plugin   = $plugin;
-        $this->pluginId = $plugin->cPluginID;
+        $this->pluginId = $plugin->getPluginID();
     }
 
     /**

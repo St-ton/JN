@@ -6,12 +6,16 @@
 
 namespace Plugin\Admin;
 
+use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use JTL\XMLParser;
 use Mapper\PluginValidation;
+use Plugin\AbstractExtension;
 use Plugin\Admin\Validation\ValidatorInterface;
+use Plugin\ExtensionLoader;
 use Plugin\InstallCode;
 use Plugin\Plugin;
+use Plugin\PluginLoader;
 use Tightenco\Collect\Support\Collection;
 use function Functional\map;
 
@@ -23,12 +27,17 @@ final class Listing
 {
     private const PLUGINS_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
 
-    private const NEW_PLUGINS_DIR = \PFAD_ROOT . \PFAD_EXTENSIONS;
+    private const EXTENSIONS_DIR = \PFAD_ROOT . \PFAD_EXTENSIONS;
 
     /**
      * @var DbInterface
      */
     private $db;
+
+    /**
+     * @var JTLCacheInterface
+     */
+    private $cache;
 
     /**
      * @var ValidatorInterface
@@ -48,12 +57,18 @@ final class Listing
     /**
      * Listing constructor.
      * @param DbInterface        $db
+     * @param JTLCacheInterface  $cache
      * @param ValidatorInterface $validator
      * @param ValidatorInterface $modernValidator
      */
-    public function __construct(DbInterface $db, ValidatorInterface $validator, ValidatorInterface $modernValidator)
-    {
+    public function __construct(
+        DbInterface $db,
+        JTLCacheInterface $cache,
+        ValidatorInterface $validator,
+        ValidatorInterface $modernValidator
+    ) {
         $this->db              = $db;
+        $this->cache           = $cache;
         $this->validator       = $validator;
         $this->modernValidator = $modernValidator;
         $this->plugins         = new Collection();
@@ -65,24 +80,35 @@ final class Listing
      */
     public function getInstalled(): Collection
     {
-        $plugins   = new Collection();
-        $mapper    = new PluginValidation();
-        $pluginIDs = map(
-            $this->db->selectAll('tplugin', [], [], 'kPlugin', 'cName, cAutor, nPrio'),
+        $plugins         = new Collection();
+        $mapper          = new PluginValidation();
+        $pluginIDs       = map(
+            $this->db->selectAll('tplugin', [], [], 'kPlugin, bExtension', 'cName, cAutor, nPrio'),
             function (\stdClass $e) {
-                return (int)$e->kPlugin;
+                $e->kPlugin    = (int)$e->kPlugin;
+                $e->bExtension = (int)$e->bExtension;
+
+                return $e;
             }
         );
+        $pluginLoader    = new PluginLoader($this->db, $this->cache);
+        $extensionLoader = new ExtensionLoader($this->db, $this->cache);
         foreach ($pluginIDs as $pluginID) {
-            $plugin                  = new Plugin($pluginID, true);
-            $plugin->updateAvailable = $plugin->nVersion < $plugin->getCurrentVersion();
-            if ($plugin->updateAvailable === true) {
-                $code = $this->validator->validateByPluginID($pluginID, true);
+            if ($pluginID->bExtension === 1) {
+                $plugin = $extensionLoader->init($pluginID->kPlugin, true);
+            } else {
+                $pluginLoader->setPlugin(new Plugin());
+                $plugin = $pluginLoader->init($pluginID->kPlugin, true);
+            }
+            $plugin->getMeta()->setUpdateAvailable($plugin->getMeta()->getVersion() < $plugin->getCurrentVersion());
+            if ($plugin->getMeta()->isUpdateAvailable()) {
+                $code = $this->validator->validateByPluginID($pluginID->kPlugin, true);
                 if ($code !== InstallCode::OK) {
-                    $plugin->cFehler = $mapper->map($code, $plugin->cPluginID);
+                    $plugin->cFehler = $mapper->map($code, $plugin->getPluginID());
                 }
             }
             $plugins->push($plugin);
+            unset($plugin);
         }
 
         return $plugins;
@@ -95,12 +121,12 @@ final class Listing
      */
     public function getAll(Collection $installed): Collection
     {
-        $installedPlugins = $installed->map(function ($item) {
-            return $item->cVerzeichnis;
+        $installedPlugins = $installed->map(function (AbstractExtension $item) {
+            return $item->getPaths()->getBaseDir();
         });
         $parser           = new XMLParser();
         $this->parsePluginsDir($parser, self::PLUGINS_DIR, $installedPlugins);
-        $this->parsePluginsDir($parser, self::NEW_PLUGINS_DIR, $installedPlugins);
+        $this->parsePluginsDir($parser, self::EXTENSIONS_DIR, $installedPlugins);
         $this->sort();
 
         return $this->plugins;
@@ -114,7 +140,7 @@ final class Listing
      */
     private function parsePluginsDir(XMLParser $parser, string $pluginDir, $installedPlugins): Collection
     {
-        $validator = $pluginDir === self::NEW_PLUGINS_DIR
+        $validator = $pluginDir === self::EXTENSIONS_DIR
             ? $this->modernValidator
             : $this->validator;
         foreach (new \DirectoryIterator($pluginDir) as $fileinfo) {

@@ -600,7 +600,7 @@ final class BoxAdmin
             case \PAGE_NEWSDETAIL:
                 return 'Newsdetail';
             case \PAGE_UMFRAGE:
-                return 'Uumfrage';
+                return 'Umfrage';
             case \PAGE_PLUGIN:
                 return 'Plugin';
             case \PAGE_404:

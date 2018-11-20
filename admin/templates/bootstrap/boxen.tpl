@@ -248,6 +248,9 @@
             </div>
         {else}
             <div class="">
+                {if $nPage === 0}
+                    <div class="alert alert-info">{#warningChangesForAllPages#}</div>
+                {/if}
                 <form name="boxen" method="post" action="boxen.php">
                     {$jtl_token}
                     <div class="input-group p25 left">

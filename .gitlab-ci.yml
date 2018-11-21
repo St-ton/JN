@@ -3,7 +3,7 @@ stages:
   - test
   - build
   - deploy
-  - cleanUpDeployStage
+  - cleanUp
 
 .testingScript: &testingScript |
   function testing() {
@@ -11,7 +11,7 @@ stages:
     bash build/scripts/tests.sh
     echo "Tests finished"
   }
-.beforeBuildDeployScripts: &beforeBuildDeployScripts |
+.preBuildDeployScripts: &preBuildDeployScripts |
   export CI_APPLICATION_REPOSITORY=$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG
   export CI_APPLICATION_TAG=$CI_COMMIT_SHA
   export CI_CONTAINER_NAME=ci_job_build_deploy_$CI_COMMIT_SHA
@@ -66,7 +66,7 @@ stages:
     docker rm "$CI_CONTAINER_NAME" >/dev/null
   }
 
-.afterBuildDeployScripts: &afterBuildDeployScripts |
+.postBuildDeployScripts: &postBuildDeployScripts |
   function dockerLogout() {
     if [[ -n "$CI_USER_VAR" ]]; then
       echo "Logout from GitLab Container Registry with CI credentials..."
@@ -75,7 +75,7 @@ stages:
     fi
   }
 
-.failedDeployStageScript: &failedDeployStageScript |
+.cleanUpScript: &cleanUpScript |
   function failedScript() {
     export running=$(docker inspect -f '{{.State.Running}}' ci_job_build_deploy_$CI_COMMIT_SHA)
 
@@ -147,12 +147,12 @@ test_PHP_7.3:
 build:
   stage: build
   before_script:
-    - *beforeBuildDeployScripts
+    - *preBuildDeployScripts
     - dockerLogin
   script:
     - buildProcess
   after_script:
-    - *afterBuildDeployScripts
+    - *postBuildDeployScripts
     - dockerLogout
   only:
     - master
@@ -166,13 +166,13 @@ deploy:
   variables:
     GIT_STRATEGY: none
   before_script:
-    - *beforeBuildDeployScripts
+    - *preBuildDeployScripts
     - dockerLogin
   script:
     - deployProcess
     - buildscript pipeline:shop5up "$CI_PROJECT_DIR" "$CI_COMMIT_REF_NAME" "$CI_COMMIT_SHA"
   after_script:
-    - *afterBuildDeployScripts
+    - *postBuildDeployScripts
     - dockerLogout
   only:
     - master
@@ -182,10 +182,10 @@ deploy:
   tags:
     - build
 
-removeContainerOfFailedDeployJob:
-  stage: cleanUpDeployStage
+removeContainer:
+  stage: cleanUp
   script:
-    - *failedDeployStageScript
+    - *cleanUpScript
     - failedScript
   only:
     - master

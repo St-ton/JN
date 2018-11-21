@@ -102,7 +102,7 @@ function bearbeiteDeletes($xml)
         $xml['del_kunden']['kKunde'] = [$xml['del_kunden']['kKunde']];
     }
     foreach ($xml['del_kunden']['kKunde'] as $kKunde) {
-        (new Kunde((int)$kKunde))->deleteCustomer('wawi');
+        (new Kunde((int)$kKunde))->deleteAccount('wawi', true);
     }
 }
 

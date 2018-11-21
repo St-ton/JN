@@ -36,29 +36,33 @@ class Journal
         $this->oNow     = $oNow;
     }
 
-    public static const ISSUER_CUSTOMER    = 'CUSTOMER';
-    public static const ISSUER_APPLICATION = 'APPLICATION';
-    public static const ISSUER_ADMIN       = 'ADMIN';
+    public const ISSUER_CUSTOMER    = 'CUSTOMER';
+    public const ISSUER_APPLICATION = 'APPLICATION';
+    public const ISSUER_ADMIN       = 'ADMIN';
+    public const ISSUER_PLUGIN      = 'PLUGIN';
+
+    public const ACTION_CUSTOMER_DEACTIVATED = 'CUSTOMER_DEACTIVATED';
+    public const ACTION_CUSTOMER_DELETED    = 'CUSTOMER_DELETED';
 
     /**
-     * saves the occurence of a data-modify-event to the journal
-     *
-     * @param string $szAction
-     * @param string $szIssuer
+     * @param string $issuer
+     * @param int $issuerID
+     * @param string $action
+     * @param string $message
      */
-    public function save(string $szIssuer, int $iIssuerId, string $szAction): void
+    public function addEntry(string $issuer, int $issuerID, string $action, string $message): void
     {
         \Shop::Container()->getDB()->queryPrepared(
-            'INSERT INTO tanondatajournal(cAction, cIssuer, iIssuerId, dEventTime)
-            VALUES(pAction, pIssuer, pIssuerId, pEventTime)',
+            'INSERT INTO tanondatajournal(cIssuer, iIssuerId, cAction, cMessage, dEventTime)
+                VALUES(:pIssuer, :pIssuerId, :cAction, :cMessage, :pEventTime)',
             [
-                'pAction'    => $szAction,
-                'pIssuer'    => $szIssuer,
-                'pIssuerId'  => $iIssuerId,
+                'cMessage'   => $message,
+                'cAction'    => $action,
+                'pIssuer'    => $issuer,
+                'pIssuerId'  => $issuerID,
                 'pEventTime' => $this->oNow->format('Y-m-d H:i:s')
             ],
             \DB\ReturnType::AFFECTED_ROWS
         );
     }
-
 }

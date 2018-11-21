@@ -543,7 +543,12 @@ if ($customerID > 0) {
             $cHinweis .= Shop::Lang()->get('csrfValidationFailed', 'global');
             Shop::Container()->getLogService()->error('CSRF-Warnung fuer Account-Loeschung und kKunde ' . $customerID);
         } else {
-            Session::Customer()->checkDeleteCustomer('customer', true);
+            \Session\Session::getCustomer()->deleteAccount(
+                GeneralDataProtection\Journal::ISSUER_CUSTOMER,
+                \Session\Session::getCustomer()->getID(),
+                false,
+                true
+            );
 
             executeHook(HOOK_JTL_PAGE_KUNDENACCOUNTLOESCHEN);
             session_destroy();

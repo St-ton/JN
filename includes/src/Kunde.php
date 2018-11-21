@@ -880,21 +880,29 @@ class Kunde
         return $cAnrede;
     }
 
-    //TODO: muss auch in dbes aufrubar sein
-    //TODO Wawi Sync
     /**
-     * @param string $deletedBy
-     * @param bool $sendMail
+     * @param string $issuer
+     * @param int $issuerID
+     * @param bool $force
+     * @param bool $confirmationMail
      */
-    public function checkDeleteCustomer(string $deletedBy = 'customer', bool $sendMail = false)
+    public function deleteAccount(string $issuer, int $issuerID, bool $force = false, bool $confirmationMail = false): void
     {
         $customerID = $this->getID();
+        $db         = Shop::Container()->getDB();
+
         if (empty($customerID)) {
             return;
         }
 
+        if ($force) {
+            $this->erasePersonalData($issuer, $issuerID);
+
+            return;
+        }
+
         $cancellationTime       = 14;
-        $openOrders             = Shop::Container()->getDB()->queryPrepared(
+        $openOrders             = $db->queryPrepared(
             'SELECT COUNT(kBestellung) AS orderCount
                     FROM tbestellung
                     WHERE cStatus NOT IN (:orderSent, :orderCanceled)
@@ -906,7 +914,7 @@ class Kunde
             ],
             \DB\ReturnType::SINGLE_OBJECT
         );
-        $openOrderCancellations = Shop::Container()->getDB()->queryPrepared(
+        $openOrderCancellations = $db->queryPrepared(
             'SELECT COUNT(kBestellung) AS orderCount
                     FROM tbestellung
                     WHERE kKunde = :customerId
@@ -921,68 +929,76 @@ class Kunde
         );
 
         if (empty($openOrders->orderCount) && empty($openOrderCancellations->orderCount)) {
-            $this->deleteCustomer($deletedBy);
-            $logMessage = \sprintf('Account with ID kKunde = %s deleted by %s', $customerID, $deletedBy);
+            $this->erasePersonalData($issuer, $issuerID);
+            $logMessage = \sprintf('Account with ID kKunde = %s deleted', $customerID);
         } else {
-            Shop::Container()->getDB()->update('tkunde', 'kKunde', $customerID, (object)[
+            $db->update('tkunde', 'kKunde', $customerID, (object)[
                 'cPasswort'    => '',
                 'nRegistriert' => 0,
             ]);
-            $logMessage = \sprintf('Account with ID kKunde = %s deleted by %s, but had %s open orders with %s still in cancellation time. Account is deactivated until all orders are completed.',
+            $logMessage = \sprintf('Account with ID kKunde = %s deleted, but had %s open orders with %s still in cancellation time. Account is deactivated until all orders are completed.',
                 $customerID,
-                $deletedBy,
                 $openOrders->orderCount,
                 $openOrderCancellations->orderCount);
+
+            (new GeneralDataProtection\Journal())->addEntry(
+                $issuer,
+                $customerID,
+                GeneralDataProtection\Journal::ACTION_CUSTOMER_DEACTIVATED,
+                $logMessage
+            );
         }
 
         Shop::Container()->getLogService()->notice($logMessage);
 
-        if ($sendMail) {
-            sendeMail(MAILTEMPLATE_KUNDENACCOUNT_GELOESCHT, (object)['tkunde' => $customerID]);
+        if ($confirmationMail) {
+            sendeMail(MAILTEMPLATE_KUNDENACCOUNT_GELOESCHT, (object)['tkunde' => \Session\Session::getCustomer()]);
         }
     }
 
     /**
-     * @param string $deletedBy
+     * @param string $issuer
+     * @param int $issuerID
      */
-    public function deleteCustomer(string $deletedBy = 'customer')
+    private function erasePersonalData(string $issuer, int $issuerID): void
     {
         $customerID = $this->getID();
+        $db         = Shop::Container()->getDB();
         if (empty($customerID)) {
             return;
         }
         $anonymous = 'Anonym';
 
-        Shop::Container()->getDB()->delete('tlieferadresse', 'kKunde', $customerID);
-        Shop::Container()->getDB()->delete('trechnungsadresse', 'kKunde', $customerID);
-        Shop::Container()->getDB()->delete('tkundenattribut', 'kKunde', $customerID);
-        Shop::Container()->getDB()->delete('tkunde', 'kKunde', $customerID);
-        Shop::Container()->getDB()->delete('tkundendatenhistory', 'kKunde', $customerID);
-        Shop::Container()->getDB()->delete('tkundenkontodaten', 'kKunde', $customerID);
-        Shop::Container()->getDB()->delete('tzahlungsinfo', 'kKunde', $customerID);
-        Shop::Container()->getDB()->delete('tkundenwerbenkunden', 'kKunde', $customerID);
-        Shop::Container()->getDB()->delete('tkundenwerbenkundenbonus', 'kKunde', $customerID);
-        Shop::Container()->getDB()->delete('tkuponneukunde', 'cEmail', $this->cMail);
+        $db->delete('tlieferadresse', 'kKunde', $customerID);
+        $db->delete('trechnungsadresse', 'kKunde', $customerID);
+        $db->delete('tkundenattribut', 'kKunde', $customerID);
+        $db->delete('tkunde', 'kKunde', $customerID);
+        $db->delete('tkundendatenhistory', 'kKunde', $customerID);
+        $db->delete('tkundenkontodaten', 'kKunde', $customerID);
+        $db->delete('tzahlungsinfo', 'kKunde', $customerID);
+        $db->delete('tkundenwerbenkunden', 'kKunde', $customerID);
+        $db->delete('tkundenwerbenkundenbonus', 'kKunde', $customerID);
+        $db->delete('tkuponneukunde', 'cEmail', $this->cMail);
 
         $obj        = new stdClass();
         $obj->cName = $anonymous;
-        Shop::Container()->getDB()->update('tbewertung', 'kKunde', $customerID, $obj);
+        $db->update('tbewertung', 'kKunde', $customerID, $obj);
         $obj->cEmail = $anonymous;
-        Shop::Container()->getDB()->update('tnewskommentar', 'kKunde', $customerID, $obj);
+        $db->update('tnewskommentar', 'kKunde', $customerID, $obj);
         $obj        = new stdClass();
         $obj->cMail = $anonymous;
-        Shop::Container()->getDB()->update('tkuponkunde', 'kKunde', $customerID, $obj);
+        $db->update('tkuponkunde', 'kKunde', $customerID, $obj);
 
         //newsletter
-        Shop::Container()->getDB()->queryPrepared(
+        $db->queryPrepared(
             'DELETE FROM tnewsletterempfaenger
                 WHERE cEmail = :email
                     OR kKunde = :customerID',
             ['email' => $this->cMail, 'customerID' => $customerID],
             \DB\ReturnType::AFFECTED_ROWS
         );
-        Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', (object)[
-            'kSprache'     => (int)$_SESSION['Kunde']->kSprache,
+        $db->insert('tnewsletterempfaengerhistory', (object)[
+            'kSprache'     => $this->kSprache,
             'kKunde'       => $customerID,
             'cAnrede'      => $anonymous,
             'cVorname'     => $anonymous,
@@ -1000,11 +1016,11 @@ class Kunde
         $obj->cVorname  = $anonymous;
         $obj->cNachname = $anonymous;
         $obj->cEmail    = $anonymous;
-        Shop::Container()->getDB()->update('tnewsletterempfaengerhistory', 'kKunde', $customerID, $obj);
-        Shop::Container()->getDB()->update('tnewsletterempfaengerhistory', 'cEmail', $this->cMail, $obj);
+        $db->update('tnewsletterempfaengerhistory', 'kKunde', $customerID, $obj);
+        $db->update('tnewsletterempfaengerhistory', 'cEmail', $this->cMail, $obj);
 
         //wishlist
-        Shop::Container()->getDB()->queryPrepared(
+        $db->queryPrepared(
             'DELETE twunschliste, twunschlistepos, twunschlisteposeigenschaft, twunschlisteversand
                 FROM twunschliste
                 LEFT JOIN twunschlistepos
@@ -1019,7 +1035,7 @@ class Kunde
         );
 
         //cart
-        Shop::Container()->getDB()->queryPrepared(
+        $db->queryPrepared(
             'DELETE twarenkorbpers, twarenkorbperspos, twarenkorbpersposeigenschaft
                 FROM twarenkorbpers
                 LEFT JOIN twarenkorbperspos
@@ -1030,7 +1046,13 @@ class Kunde
             ['customerID' => $customerID],
             \DB\ReturnType::DEFAULT
         );
-        //TODO Journal Entry
-        // ->addToJournal('Customer with ID kKunde=' . $customerID . ' deleted', $deletedBy);
+
+        $logMessage = \sprintf('Account with ID kKunde = %s deleted by %s', $customerID, $issuer);
+        (new GeneralDataProtection\Journal())->addEntry(
+            $issuer,
+            $issuerID,
+            GeneralDataProtection\Journal::ACTION_CUSTOMER_DELETED,
+            $logMessage
+        );
     }
 }

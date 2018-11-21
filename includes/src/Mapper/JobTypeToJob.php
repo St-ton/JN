@@ -11,6 +11,7 @@ use Cron\Jobs\Export;
 use Cron\Jobs\Newsletter;
 use Cron\Jobs\Statusmail;
 use Cron\Jobs\GeneralDataProtect;
+use Cron\Jobs\Store;
 use Cron\Type;
 
 /**
@@ -34,6 +35,8 @@ class JobTypeToJob
                 return Newsletter::class;
             case Type::DATAPROTECTION:
                 return GeneralDataProtect::class;
+            case Type::STORE:
+                return Store::class;
             default:
                 $mapping = null;
                 \Shop::Event()->fire('mapCronJobType', ['type' => $type, 'mapping' => &$mapping]);

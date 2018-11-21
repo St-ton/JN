@@ -296,7 +296,8 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
         $order->dBezahltDatum    = 'NOW()';
         $order->cZahlungsartName = Shop::Lang()->get('paymentNotNecessary', 'checkout');
     }
-    $order->cIP = $_SESSION['IP']->cIP ?? RequestHelper::getIP(true);
+    // no anonymization is done here anymore, cause we got a contract
+    $order->cIP = $_SESSION['IP']->cIP ?? RequestHelper::getRealIP();
     //#8544
     $order->fWaehrungsFaktor = \Session\Session::getCurrency()->getConversionFactor();
 
@@ -1111,7 +1112,8 @@ function fakeBestellung()
     }
     $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
     if ($conf['kaufabwicklung']['bestellabschluss_ip_speichern'] === 'Y') {
-        $order->cIP = RequestHelper::getIP();
+        // non-anonymized IP (! we got a contract)
+        $order->cIP = RequestHelper::getRealIP();
     }
 
     return $order->fuelleBestellung(false, true);

@@ -76,6 +76,7 @@ class Banner extends \OPC\Portlet
     /**
      * @param PortletInstance $instance
      * @return string
+     * @throws \Exception
      */
     public function getPreviewHtml(PortletInstance $instance): string
     {
@@ -99,39 +100,31 @@ class Banner extends \OPC\Portlet
     }
 
     /**
-     * @return string
-     */
-    public function getButtonHtml(): string
-    {
-        return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Banner';
-    }
-
-    /**
      * @return array
      */
     public function getPropertyDesc(): array
     {
         return [
             'src'   => [
-                'label'      => 'Bild',
+                'label'      => __('Image'),
                 'type'       => 'image',
                 'default'    => '',
                 'dspl_width' => 50,
                 'required'   => true,
             ],
             'zones' => [
-                'label'   => 'Zonen',
+                'label'   => __('Zones'),
                 'type'    => 'banner-zones',
                 'default' => '[]',
             ],
             'class' => [
-                'label' => 'CSS Class',
+                'label' => __('CSS class'),
             ],
             'alt'   => [
-                'label' => 'Altenativtext',
+                'label' => __('Altenativ text'),
             ],
             'title' => [
-                'label' => 'Titel'
+                'label' => __('Title')
             ],
         ];
 
@@ -143,8 +136,8 @@ class Banner extends \OPC\Portlet
     public function getPropertyTabs(): array
     {
         return [
-            'Styles'    => 'styles',
-            'Animation' => 'animations',
+            __('Styles')    => 'styles',
+            __('Animation') => 'animations',
         ];
     }
 }

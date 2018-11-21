@@ -15,7 +15,8 @@ $smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyC
        ->registerPlugin('function', 'gravatarImage', 'gravatarImage')
        ->registerPlugin('function', 'getRevisions', 'getRevisions')
        ->registerPlugin('function', 'captchaMarkup', 'captchaMarkup')
-       ->registerPlugin('modifier', 'permission', 'permission');
+       ->registerPlugin('modifier', 'permission', 'permission')
+       ->registerPlugin('function', '__', [L10n\GetText::getInstance(), 'translate']);
 
 /**
  * @param array            $params

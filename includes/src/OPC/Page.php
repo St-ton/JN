@@ -298,6 +298,17 @@ class Page implements \JsonSerializable
     }
 
     /**
+     * @param AreaList $newList
+     * @return $this
+     */
+    public function setAreaList(AreaList $newList)
+    {
+        $this->areaList = $newList;
+
+        return $this;
+    }
+
+    /**
      * @param string $json
      * @return $this
      */

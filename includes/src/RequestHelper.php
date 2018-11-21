@@ -95,23 +95,9 @@ class RequestHelper
             $ip = $_SERVER['REMOTE_ADDR'];
         }
 
-        return ($ip = filter_var($ip, FILTER_VALIDATE_IP)) === false ? '0.0.0.0' : $ip;
-    }
-
-    /**
-     * @param bool $bBestellung
-     * @return string
-     * @former gibIP()
-     * @since 5.0.0
-     */
-    public static function getIP(bool $bBestellung = false): string
-    {
-        $ip   = self::getRealIP();
-        $conf = Shop::getSettings([CONF_KAUFABWICKLUNG, CONF_GLOBAL]);
-        if (($bBestellung && $conf['kaufabwicklung']['bestellabschluss_ip_speichern'] === 'N')
-            || (!$bBestellung && $conf['global']['global_ips_speichern'] === 'N')
-        ) {
-            $ip = substr($ip, 0, strpos($ip, '.', strpos($ip, '.') + 1) + 1) . '*.*';
+        // if the given IP is not valid, we return placeholders (note: placeholders are the "legacy way")
+        if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6)) {
+            return (new \GeneralDataProtection\IpAnonymizer($ip))->getPlaceholder();
         }
 
         return $ip;

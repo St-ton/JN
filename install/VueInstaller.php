@@ -158,7 +158,7 @@ class VueInstaller
                 ifndef('DB_USER', $credentials['user']);
                 ifndef('DB_PASS', $credentials['pass']);
                 ifndef('DB_NAME', $credentials['name']);
-                $this->db = new NiceDB(
+                $this->db = new \DB\NiceDB(
                     $credentials['host'],
                     $credentials['user'],
                     $credentials['pass'],
@@ -225,12 +225,12 @@ class VueInstaller
             if (!empty($credentials['socket'])) {
                 $socket = "\ndefine('DB_SOCKET', '" . $credentials['host'] . "');";
             }
-            $cPfadRoot = PFAD_ROOT;
+            $rootPath = PFAD_ROOT;
             if (strpos(PFAD_ROOT, '\\') !== false) {
-                $cPfadRoot = str_replace('\\', '\\\\', $cPfadRoot);
+                $rootPath = str_replace('\\', '\\\\', $rootPath);
             }
             $cConfigFile = "<?php
-define('PFAD_ROOT', '" . $cPfadRoot . "');
+define('PFAD_ROOT', '" . $rootPath . "');
 define('URL_SHOP', '" . substr(URL_SHOP, 0, strlen(URL_SHOP) - 1) . "');" .
                 $socket . "
 define('DB_HOST','" . $credentials['host'] . "');
@@ -250,7 +250,6 @@ define('ADMIN_LOG_LEVEL', 0);
 define('SMARTY_LOG_LEVEL', 0);
 //excplicitly show/hide errors
 ini_set('display_errors', 0);" . "\n";
-            //file speichern
             $file = fopen(PFAD_ROOT . PFAD_INCLUDES . 'config.JTL-Shop.ini.php', 'w');
             fwrite($file, $cConfigFile);
             fclose($file);
@@ -350,7 +349,7 @@ ini_set('display_errors', 0);" . "\n";
                 define('DB_SOCKET', $this->post['socket']);
             }
             try {
-                $db = new NiceDB($this->post['host'], $this->post['user'], $this->post['pass'], $this->post['name']);
+                $db = new \DB\NiceDB($this->post['host'], $this->post['user'], $this->post['pass'], $this->post['name']);
                 if (!$db->isConnected()) {
                     $res->error = true;
                     $res->msg   = 'Keine Verbindung möglich';

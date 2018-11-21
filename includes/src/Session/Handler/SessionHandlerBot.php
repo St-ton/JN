@@ -58,7 +58,9 @@ class SessionHandlerBot extends SessionHandlerJTL implements \SessionHandlerInte
     {
         $sessionData = '';
         if ($this->doSave === true) {
-            $sessionData = (($sessionData = \Shop::Cache()->get($this->sessionID)) !== false) ? $sessionData : '';
+            $sessionData = (($sessionData = \Shop::Container()->getCache()->get($this->sessionID)) !== false)
+                ? $sessionData
+                : '';
         }
         if ($sessionData === '') {
             Session::getInstance()->setStandardSessionVars();
@@ -75,7 +77,7 @@ class SessionHandlerBot extends SessionHandlerJTL implements \SessionHandlerInte
     public function write($sessID, $sessData)
     {
         if ($this->doSave === true) {
-            \Shop::Cache()->set($this->sessionID, $sessData, [\CACHING_GROUP_CORE]);
+            \Shop::Container()->getCache()->set($this->sessionID, $sessData, [\CACHING_GROUP_CORE]);
         }
 
         return true;

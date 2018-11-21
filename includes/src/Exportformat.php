@@ -95,7 +95,7 @@ class Exportformat
     protected $nUseCache = 1;
 
     /**
-     * @var JTLSmarty
+     * @var Smarty\JTLSmarty
      */
     protected $smarty;
 
@@ -159,7 +159,7 @@ class Exportformat
     /**
      * @param \Psr\Log\LoggerInterface $logger
      */
-    public function setLogger(\Psr\Log\LoggerInterface $logger)
+    public function setLogger(\Psr\Log\LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }
@@ -168,7 +168,7 @@ class Exportformat
      * @param string     $msg
      * @param null|array $context
      */
-    private function log($msg, array $context = [])
+    private function log($msg, array $context = []): void
     {
         if ($this->logger !== null) {
             $this->logger->log(JTLLOG_LEVEL_NOTICE, $msg, $context);
@@ -196,29 +196,7 @@ class Exportformat
             foreach (get_object_vars($oObj) as $k => $v) {
                 $this->$k = $v;
             }
-            $confObj = Shop::Container()->getDB()->selectAll('texportformateinstellungen', 'kExportformat',
-                $kExportformat);
-            foreach ($confObj as $conf) {
-                $this->config[$conf->cName] = $conf->cWert;
-            }
-            if (!isset($this->config['exportformate_lager_ueber_null'])) {
-                $this->config['exportformate_lager_ueber_null'] = 'N';
-            }
-            if (!isset($this->config['exportformate_preis_ueber_null'])) {
-                $this->config['exportformate_preis_ueber_null'] = 'N';
-            }
-            if (!isset($this->config['exportformate_beschreibung'])) {
-                $this->config['exportformate_beschreibung'] = 'N';
-            }
-            if (!isset($this->config['exportformate_quot'])) {
-                $this->config['exportformate_quot'] = 'N';
-            }
-            if (!isset($this->config['exportformate_equot'])) {
-                $this->config['exportformate_equot'] = 'N';
-            }
-            if (!isset($this->config['exportformate_semikolon'])) {
-                $this->config['exportformate_semikolon'] = 'N';
-            }
+            $this->setConfig($kExportformat);
             if (!$this->getKundengruppe()) {
                 $this->setKundengruppe(Kundengruppe::getDefaultGroupID());
             }
@@ -227,6 +205,39 @@ class Exportformat
         }
 
         return $this;
+    }
+
+    /**
+     * @param int $kExportformat
+     */
+    private function setConfig(int $kExportformat): void
+    {
+        $confObj = Shop::Container()->getDB()->selectAll(
+            'texportformateinstellungen',
+            'kExportformat',
+            $kExportformat
+        );
+        foreach ($confObj as $conf) {
+            $this->config[$conf->cName] = $conf->cWert;
+        }
+        if (!isset($this->config['exportformate_lager_ueber_null'])) {
+            $this->config['exportformate_lager_ueber_null'] = 'N';
+        }
+        if (!isset($this->config['exportformate_preis_ueber_null'])) {
+            $this->config['exportformate_preis_ueber_null'] = 'N';
+        }
+        if (!isset($this->config['exportformate_beschreibung'])) {
+            $this->config['exportformate_beschreibung'] = 'N';
+        }
+        if (!isset($this->config['exportformate_quot'])) {
+            $this->config['exportformate_quot'] = 'N';
+        }
+        if (!isset($this->config['exportformate_equot'])) {
+            $this->config['exportformate_equot'] = 'N';
+        }
+        if (!isset($this->config['exportformate_semikolon'])) {
+            $this->config['exportformate_semikolon'] = 'N';
+        }
     }
 
     /**
@@ -542,7 +553,7 @@ class Exportformat
     /**
      * @return string|null
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->cName;
     }
@@ -550,7 +561,7 @@ class Exportformat
     /**
      * @return string|null
      */
-    public function getDateiname()
+    public function getDateiname(): ?string
     {
         return $this->cDateiname;
     }
@@ -558,7 +569,7 @@ class Exportformat
     /**
      * @return string|null
      */
-    public function getKopfzeile()
+    public function getKopfzeile(): ?string
     {
         return $this->cKopfzeile;
     }
@@ -566,7 +577,7 @@ class Exportformat
     /**
      * @return string|null
      */
-    public function getContent()
+    public function getContent(): ?string
     {
         return $this->cContent;
     }
@@ -574,7 +585,7 @@ class Exportformat
     /**
      * @return string|null
      */
-    public function getFusszeile()
+    public function getFusszeile(): ?string
     {
         return $this->cFusszeile;
     }
@@ -582,7 +593,7 @@ class Exportformat
     /**
      * @return string|null
      */
-    public function getKodierung()
+    public function getKodierung(): ?string
     {
         return $this->cKodierung;
     }
@@ -590,7 +601,7 @@ class Exportformat
     /**
      * @return int|null
      */
-    public function getSpecial()
+    public function getSpecial(): ?int
     {
         return $this->nSpecial;
     }
@@ -598,7 +609,7 @@ class Exportformat
     /**
      * @return int|null
      */
-    public function getVarKombiOption()
+    public function getVarKombiOption(): ?int
     {
         return $this->nVarKombiOption;
     }
@@ -606,7 +617,7 @@ class Exportformat
     /**
      * @return int|null
      */
-    public function getSplitgroesse()
+    public function getSplitgroesse(): ?int
     {
         return $this->nSplitgroesse;
     }
@@ -614,7 +625,7 @@ class Exportformat
     /**
      * @return string|null
      */
-    public function getZuletztErstellt()
+    public function getZuletztErstellt(): ?string
     {
         return $this->dZuletztErstellt;
     }
@@ -667,11 +678,11 @@ class Exportformat
                 $_upd        = new stdClass();
                 $_upd->cWert = $conf['cWert'];
                 $ok          = $ok && (Shop::Container()->getDB()->update(
-                            'tboxensichtbar',
-                            ['kExportformat', 'cName'],
-                            [$this->getExportformat(), $conf['cName']],
-                            $_upd
-                        ) >= 0);
+                    'tboxensichtbar',
+                    ['kExportformat', 'cName'],
+                    [$this->getExportformat(), $conf['cName']],
+                    $_upd
+                ) >= 0);
             }
         }
 
@@ -679,7 +690,8 @@ class Exportformat
     }
 
     /**
-     * @return $this
+     * @return Exportformat
+     * @throws SmartyException
      */
     private function initSmarty(): self
     {
@@ -689,9 +701,8 @@ class Exportformat
             ->setCompileDir(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR)
             ->registerResource('db', new SmartyResourceNiceDB('export'))
             ->assign('URL_SHOP', Shop::getURL())
-            ->assign('Waehrung', Session::Currency())
+            ->assign('Waehrung', \Session\Session::getCurrency())
             ->assign('Einstellungen', $this->getConfig());
-
         // disable php execution in export format templates for security
         if (EXPORTFORMAT_USE_SECURITY) {
             $this->smarty->activateBackendSecurityMode();
@@ -710,7 +721,7 @@ class Exportformat
             $this->oldSession->Kundengruppe = $_SESSION['Kundengruppe'];
             $this->oldSession->kSprache     = $_SESSION['kSprache'];
             $this->oldSession->cISO         = $_SESSION['cISOSprache'];
-            $this->oldSession->Waehrung     = Session::Currency();
+            $this->oldSession->Waehrung     = \Session\Session::getCurrency();
         }
         $this->currency = $this->kWaehrung > 0
             ? new Currency($this->kWaehrung)
@@ -1036,8 +1047,10 @@ class Exportformat
         if ($this->getPlugin() > 0 && strpos($this->getContent(), PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
             $this->log('Starting plugin exportformat "' . $this->getName() .
                 '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
-                ' with caching ' . ((Shop::Cache()->isActive() && $this->useCache()) ? 'enabled' : 'disabled'));
-            $oPlugin = new Plugin($this->getPlugin());
+                ' with caching ' . ((Shop::Container()->getCache()->isActive() && $this->useCache())
+                    ? 'enabled'
+                    : 'disabled'));
+            $oPlugin = new \Plugin\Plugin($this->getPlugin());
             if ($isCron === true) {
                 global $oJobQueue;
                 $oJobQueue = $queueObject;
@@ -1103,7 +1116,7 @@ class Exportformat
 
         $this->log('Starting exportformat "' . StringHandler::convertUTF8($this->getName()) .
             '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
-            ' with caching ' . ((Shop::Cache()->isActive() && $this->useCache()) ? 'enabled' : 'disabled') .
+            ' with caching ' . ((Shop::Container()->getCache()->isActive() && $this->useCache()) ? 'enabled' : 'disabled') .
             ' - ' . $queueObject->nLimitN . '/' . $max . ' products exported');
         // Kopfzeile schreiben
         if ((int)$this->queue->nLimitN === 0) {
@@ -1142,8 +1155,10 @@ class Exportformat
             $findTwo[]    = ';';
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
-        foreach (Shop::Container()->getDB()->query($this->getExportSQL(),
-            \DB\ReturnType::QUERYSINGLE) as $productData) {
+        foreach (Shop::Container()->getDB()->query(
+            $this->getExportSQL(),
+            \DB\ReturnType::QUERYSINGLE
+        ) as $productData) {
             $product = new Artikel();
             $product->fuelleArtikel(
                 $productData['kArtikel'],
@@ -1211,8 +1226,9 @@ class Exportformat
                     str_replace(
                         $findTwo,
                         $replaceTwo,
-                        StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace,
-                            $product->cKurzBeschreibung)))
+                        StringHandler::unhtmlentities(
+                            strip_tags(str_replace($find, $replace, $product->cKurzBeschreibung))
+                        )
                     )
                 );
                 $product->fUst                  = TaxHelper::getSalesTax($product->kSteuerklasse);
@@ -1227,7 +1243,8 @@ class Exportformat
                     $this->kKundengruppe,
                     !$this->useCache()
                 );
-                // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
+                // calling gibKategoriepfad() should not be necessary
+                // since it has already been called in Kategorie::loadFromDB()
                 $product->Kategoriepfad = $product->Kategorie->cKategoriePfad ?? $helper->getPath($product->Kategorie);
                 $product->Versandkosten = VersandartHelper::getLowestShippingFees(
                     $this->config['exportformate_lieferland'] ?? '',
@@ -1347,7 +1364,8 @@ class Exportformat
 
                         echo json_encode($oCallback);
                     } else {
-                        header('Location: exportformate.php?action=exported&token=' .
+                        header(
+                            'Location: exportformate.php?action=exported&token=' .
                             $_SESSION['jtl_token'] .
                             '&kExportformat=' . $this->getExportformat() .
                             '&max=' . $max .
@@ -1421,13 +1439,14 @@ class Exportformat
         }
         if (empty($post['cContent'])) {
             $validation['cContent'] = 1;
-        } elseif ((
+        } elseif (!EXPORTFORMAT_ALLOW_PHP
+            && (
                 strpos($post['cContent'], '{php}') !== false
                 || strpos($post['cContent'], '<?php') !== false
                 || strpos($post['cContent'], '<%') !== false
                 || strpos($post['cContent'], '<%=') !== false
                 || strpos($post['cContent'], '<script language="php">') !== false
-            ) && !EXPORTFORMAT_ALLOW_PHP
+            )
         ) {
             $validation['cContent'] = 2;
         } else {

@@ -9,7 +9,8 @@
  */
 class MediaImageCompatibility implements IMedia
 {
-    const REGEX = '/^bilder\/produkte\/(?P<size>mini|klein|normal|gross)\/(?P<path>(?P<name>[a-zA-Z0-9\-_]+)\.(?P<ext>jpg|jpeg|png|gif))$/';
+    public const REGEX = '/^bilder\/produkte\/(?P<size>mini|klein|normal|gross)' .
+        '\/(?P<path>(?P<name>[a-zA-Z0-9\-_]+)\.(?P<ext>jpg|jpeg|png|gif))$/';
 
     /**
      * @param string $request
@@ -66,13 +67,12 @@ class MediaImageCompatibility implements IMedia
             $seo           = strtolower(Shop::Container()->getDB()->escape($seo));
 
             $fallback = Shop::Container()->getDB()->query(
-              "SELECT a.kArtikel, a.cSeo, a.cName, a.cArtNr, a.cBarcode 
-                  FROM tartikel a 
-                  WHERE 
-                      LOWER(a.cName) = '{$name}' 
-                      OR LOWER(a.cSeo) = '{$seo}' 
-                      OR LOWER(a.cBarcode) = '{$barcode}' 
-                      OR LOWER(a.cArtNr) = '{$articleNumber}'",
+                "SELECT a.kArtikel, a.cSeo, a.cName, a.cArtNr, a.cBarcode 
+                    FROM tartikel a 
+                    WHERE LOWER(a.cName) = '{$name}' 
+                        OR LOWER(a.cSeo) = '{$seo}' 
+                        OR LOWER(a.cBarcode) = '{$barcode}' 
+                        OR LOWER(a.cArtNr) = '{$articleNumber}'",
                 \DB\ReturnType::SINGLE_OBJECT
             );
         }
@@ -112,7 +112,7 @@ class MediaImageCompatibility implements IMedia
      * @param string $request
      * @return array|null
      */
-    private function parse($request)
+    private function parse($request): ?array
     {
         if (!is_string($request) || $request === '') {
             return null;
@@ -123,7 +123,7 @@ class MediaImageCompatibility implements IMedia
         }
 
         return preg_match(self::REGEX, $request, $matches)
-            ? array_intersect_key($matches, array_flip(array_filter(array_keys($matches), 'is_string')))
+            ? array_intersect_key($matches, array_flip(array_filter(array_keys($matches), '\is_string')))
             : null;
     }
 }

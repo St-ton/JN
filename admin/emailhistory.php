@@ -6,7 +6,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('EMAILHISTORY_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $cHinweis        = '';
 $cFehler         = '';
 $step            = 'uebersicht';
@@ -19,7 +19,10 @@ if ($cAction === 'delete') {
         if (true !== $oEmailhistory->deleteAll()) {
             $cFehler = 'Fehler: eMail-History konnte nicht gelöscht werden!';
         }
-    } elseif (isset($_POST['kEmailhistory']) && is_array($_POST['kEmailhistory']) && count($_POST['kEmailhistory']) > 0) {
+    } elseif (isset($_POST['kEmailhistory'])
+        && is_array($_POST['kEmailhistory'])
+        && count($_POST['kEmailhistory']) > 0
+    ) {
         $oEmailhistory->deletePack($_POST['kEmailhistory']);
         $cHinweis = 'Ihre markierten Logbucheinträge wurden erfolgreich gelöscht.';
     } else {

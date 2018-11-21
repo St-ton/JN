@@ -9,9 +9,9 @@
  */
 final class ImageCloud
 {
-    const USER_AGENT     = 'JTL-ImageCloud/1.0';
-    const CLOUD_SALT     = '### JTL-ImageCloudStorage ###';
-    const CLOUD_ENDPOINT = 'https://ics.jtl-software.de';
+    public const USER_AGENT     = 'JTL-ImageCloud/1.0';
+    public const CLOUD_SALT     = '### JTL-ImageCloudStorage ###';
+    public const CLOUD_ENDPOINT = 'https://ics.jtl-software.de';
 
     private static $uid;
 
@@ -20,7 +20,7 @@ final class ImageCloud
     /**
      * @return ImageCloud
      */
-    public static function getInstance()
+    public static function getInstance(): self
     {
         return self::$instance ?? new self();
     }
@@ -125,8 +125,14 @@ final class ImageCloud
 
         $pathinfo = pathinfo($filename);
 
-        return sprintf('%s_%s_%s_%s.%s', $size[0], $size[1], md5_file($filename),
-            bin2hex(mhash(MHASH_SHA512, file_get_contents($filename) . self::CLOUD_SALT)), $pathinfo['extension']);
+        return sprintf(
+            '%s_%s_%s_%s.%s',
+            $size[0],
+            $size[1],
+            md5_file($filename),
+            bin2hex(mhash(MHASH_SHA512, file_get_contents($filename) . self::CLOUD_SALT)),
+            $pathinfo['extension']
+        );
     }
 
     /**
@@ -144,7 +150,7 @@ final class ImageCloud
      * @param string $hash
      * @return string
      */
-    private function getCloudEndpoint($hash)
+    private function getCloudEndpoint($hash): string
     {
         return sprintf('%s/%s', self::CLOUD_ENDPOINT, $hash);
     }

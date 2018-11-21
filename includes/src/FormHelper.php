@@ -72,9 +72,14 @@ class FormHelper
      */
     public static function eingabenKorrekt(array $fehlendeAngaben): int
     {
-        return (int)\Functional\none($fehlendeAngaben, function ($e) { return $e > 0; });
+        return (int)\Functional\none(
+            $fehlendeAngaben,
+            function ($e) {
+                return $e > 0;
+            }
+        );
     }
-    
+
     /**
      * @return array
      * @former gibFehlendeEingabenKontaktformular()
@@ -220,7 +225,7 @@ class FormHelper
      */
     public static function checkSubject(): bool
     {
-        $kKundengruppe = Session::CustomerGroup()->getID();
+        $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
         if (!$kKundengruppe) {
             $kKundengruppe = (int)$_SESSION['Kunde']->kKundengruppe;
             if (!$kKundengruppe) {
@@ -331,7 +336,7 @@ class FormHelper
         $KontaktHistory->cFax            = $Objekt->tnachricht->cFax ?? null;
         $KontaktHistory->cMail           = $Objekt->tnachricht->cMail ?? null;
         $KontaktHistory->cNachricht      = $Objekt->tnachricht->cNachricht ?? null;
-        $KontaktHistory->cIP             = RequestHelper::getIP();
+        $KontaktHistory->cIP             = RequestHelper::getRealIP();
         $KontaktHistory->dErstellt       = 'NOW()';
 
         return Shop::Container()->getDB()->insert('tkontakthistory', $KontaktHistory);
@@ -349,11 +354,11 @@ class FormHelper
         }
         $min     = (int)$min;
         $history = Shop::Container()->getDB()->executeQueryPrepared(
-            'SELECT kKontaktHistory 
-                FROM tkontakthistory 
-                WHERE cIP = :ip 
+            'SELECT kKontaktHistory
+                FROM tkontakthistory
+                WHERE cIP = :ip
                     AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
-            ['ip' => RequestHelper::getIP(), 'min' => $min],
+            ['ip' => RequestHelper::getRealIP(), 'min' => $min],
             \DB\ReturnType::SINGLE_OBJECT
         );
 

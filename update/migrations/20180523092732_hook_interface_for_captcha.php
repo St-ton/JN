@@ -45,7 +45,7 @@ class Migration_20180523092732 extends Migration implements IMigration
         $this->setLocalization('ger', 'global', 'captcha_code_active', 'Spamschutz aktiv');
         $this->setLocalization('eng', 'global', 'captcha_code_active', 'Spam protection active');
 
-        Shop::Cache()->flushTags(CACHING_GROUP_OPTION);
+        Shop::Container()->getCache()->flushTags(CACHING_GROUP_OPTION);
     }
 
     /**
@@ -75,6 +75,6 @@ class Migration_20180523092732 extends Migration implements IMigration
 
         $this->removeLocalization('captcha_code_active');
 
-        Shop::Cache()->flushTags(CACHING_GROUP_OPTION);
+        Shop::Container()->getCache()->flushTags(CACHING_GROUP_OPTION);
     }
 }

@@ -24,8 +24,8 @@ function createSearchIndex($index, $create)
     try {
         if (Shop::Container()->getDB()->query(
             "SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'",
-            \DB\ReturnType::SINGLE_OBJECT)
-        ) {
+            \DB\ReturnType::SINGLE_OBJECT
+        )) {
             Shop::Container()->getDB()->executeQuery(
                 "ALTER TABLE $index DROP KEY idx_{$index}_fulltext",
                 \DB\ReturnType::QUERYSINGLE
@@ -90,7 +90,7 @@ function createSearchIndex($index, $create)
                 $settings['suche_fulltext'] = 'N';
                 saveAdminSectionSettings(CONF_ARTIKELUEBERSICHT, $settings);
 
-                Shop::Cache()->flushTags([
+                Shop::Container()->getCache()->flushTags([
                     CACHING_GROUP_OPTION,
                     CACHING_GROUP_CORE,
                     CACHING_GROUP_ARTICLE,

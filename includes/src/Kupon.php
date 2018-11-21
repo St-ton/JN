@@ -482,7 +482,7 @@ class Kupon
     /**
      * @return int|null
      */
-    public function getKupon()
+    public function getKupon(): ?int
     {
         return $this->kKupon;
     }
@@ -490,7 +490,7 @@ class Kupon
     /**
      * @return int|null
      */
-    public function getKundengruppe()
+    public function getKundengruppe(): ?int
     {
         return $this->kKundengruppe;
     }
@@ -498,7 +498,7 @@ class Kupon
     /**
      * @return int|null
      */
-    public function getSteuerklasse()
+    public function getSteuerklasse(): ?int
     {
         return $this->kSteuerklasse;
     }
@@ -506,13 +506,13 @@ class Kupon
     /**
      * @return string|null
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->cName;
     }
 
     /**
-     * @return float|null
+     * @return string|float|null
      */
     public function getWert()
     {
@@ -522,7 +522,7 @@ class Kupon
     /**
      * @return string|null
      */
-    public function getWertTyp()
+    public function getWertTyp(): ?string
     {
         return $this->cWertTyp;
     }
@@ -530,7 +530,7 @@ class Kupon
     /**
      * @return string|null
      */
-    public function getGueltigAb()
+    public function getGueltigAb(): ?string
     {
         return $this->dGueltigAb;
     }
@@ -538,13 +538,13 @@ class Kupon
     /**
      * @return string|null
      */
-    public function getGueltigBis()
+    public function getGueltigBis(): ?string
     {
         return $this->dGueltigBis;
     }
 
     /**
-     * @return float|null
+     * @return string|float|null
      */
     public function getMindestbestellwert()
     {
@@ -554,39 +554,39 @@ class Kupon
     /**
      * @return string|null
      */
-    public function getCode()
+    public function getCode(): ?string
     {
         return $this->cCode;
     }
 
     /**
-     * @return int|null
+     * @return int
      */
-    public function getVerwendungen()
+    public function getVerwendungen(): int
     {
-        return $this->nVerwendungen;
+        return (int)($this->nVerwendungen ?? 0);
     }
 
     /**
-     * @return int|null
+     * @return int
      */
-    public function getVerwendungenBisher()
+    public function getVerwendungenBisher(): int
     {
-        return $this->nVerwendungenBisher;
+        return (int)($this->nVerwendungenBisher ?? 0);
     }
 
     /**
-     * @return int|null
+     * @return int
      */
-    public function getVerwendungenProKunde()
+    public function getVerwendungenProKunde(): int
     {
-        return $this->nVerwendungenProKunde;
+        return (int)($this->nVerwendungenProKunde ?? 0);
     }
 
     /**
      * @return string|null
      */
-    public function getArtikel()
+    public function getArtikel(): ?string
     {
         return $this->cArtikel;
     }
@@ -594,7 +594,7 @@ class Kupon
     /**
      * @return string|null
      */
-    public function getHersteller()
+    public function getHersteller(): ?string
     {
         return $this->cHersteller;
     }
@@ -602,7 +602,7 @@ class Kupon
     /**
      * @return string|null
      */
-    public function getKategorien()
+    public function getKategorien(): ?string
     {
         return $this->cKategorien;
     }
@@ -610,7 +610,7 @@ class Kupon
     /**
      * @return string|null
      */
-    public function getKunden()
+    public function getKunden(): ?string
     {
         return $this->cKunden;
     }
@@ -618,7 +618,7 @@ class Kupon
     /**
      * @return string|null
      */
-    public function getKuponTyp()
+    public function getKuponTyp(): ?string
     {
         return $this->cKuponTyp;
     }
@@ -626,7 +626,7 @@ class Kupon
     /**
      * @return string|null
      */
-    public function getLieferlaender()
+    public function getLieferlaender(): ?string
     {
         return $this->cLieferlaender;
     }
@@ -634,7 +634,7 @@ class Kupon
     /**
      * @return string|null
      */
-    public function getZusatzgebuehren()
+    public function getZusatzgebuehren(): ?string
     {
         return $this->cZusatzgebuehren;
     }
@@ -642,7 +642,7 @@ class Kupon
     /**
      * @return string|null
      */
-    public function getAktiv()
+    public function getAktiv(): ?string
     {
         return $this->cAktiv;
     }
@@ -650,17 +650,17 @@ class Kupon
     /**
      * @return string|null
      */
-    public function getErstellt()
+    public function getErstellt(): ?string
     {
         return $this->dErstellt;
     }
 
     /**
-     * @return int|null
+     * @return int
      */
-    public function getGanzenWKRabattieren()
+    public function getGanzenWKRabattieren(): int
     {
-        return $this->nGanzenWKRabattieren;
+        return (int)($this->nGanzenWKRabattieren ?? 0);
     }
 
     /**
@@ -766,9 +766,9 @@ class Kupon
                 ? empty($cCode)
                 : Shop::Container()->getDB()->select('tkupon', 'cCode', $cCode))) {
             $cCode = $prefix . substr(str_shuffle(str_repeat(
-                    $lowerString . $upperString . $numbersString,
-                    $len
-                )), 0, $len) . $suffix;
+                $lowerString . $upperString . $numbersString,
+                $len
+            )), 0, $len) . $suffix;
         }
 
         return $cCode;
@@ -778,13 +778,13 @@ class Kupon
      * @former altenKuponNeuBerechnen()
      * @since 5.0.0
      */
-    public static function reCheck()
+    public static function reCheck(): void
     {
         // Wenn Kupon vorhanden und prozentual auf ganzen Warenkorb, dann verwerfen und neu anlegen
         if (isset($_SESSION['Kupon']) && $_SESSION['Kupon']->cWertTyp === 'prozent') {
             $oKupon = $_SESSION['Kupon'];
             unset($_SESSION['Kupon']);
-            Session::Cart()->setzePositionsPreise();
+            \Session\Session::getCart()->setzePositionsPreise();
             require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
             self::acceptCoupon($oKupon);
         }
@@ -797,7 +797,7 @@ class Kupon
      */
     public static function couponsAvailable(): int
     {
-        $cart        = Session::Cart();
+        $cart        = \Session\Session::getCart();
         $productQry  = '';
         $manufQry    = '';
         $categories  = [];
@@ -861,7 +861,7 @@ class Kupon
                         OR cKuponTyp = 'standard')
                     AND (kKundengruppe = -1
                         OR kKundengruppe = 0
-                        OR kKundengruppe = " . Session::CustomerGroup()->getID() . ")
+                        OR kKundengruppe = " . \Session\Session::getCustomerGroup()->getID() . ")
                     AND (nVerwendungen = 0
                         OR nVerwendungen > nVerwendungenBisher)
                     AND (cArtikel = '' $productQry)
@@ -894,28 +894,30 @@ class Kupon
         if (date_create($Kupon->dGueltigAb) > date_create()) {
             $ret['ungueltig'] = 3;
         }
-        if ($Kupon->fMindestbestellwert > Session::Cart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)) {
+        if ($Kupon->fMindestbestellwert > \Session\Session::getCart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)) {
             $ret['ungueltig'] = 4;
         }
         if ($Kupon->cWertTyp === 'festpreis'
             && $Kupon->nGanzenWKRabattieren === '0'
-            && $Kupon->fMindestbestellwert > gibGesamtsummeKuponartikelImWarenkorb($Kupon,
-                Session::Cart()->PositionenArr)
+            && $Kupon->fMindestbestellwert > gibGesamtsummeKuponartikelImWarenkorb(
+                $Kupon,
+                \Session\Session::getCart()->PositionenArr
+            )
         ) {
             $ret['ungueltig'] = 4;
         }
-        if ($Kupon->kKundengruppe > 0 && $Kupon->kKundengruppe != Session::CustomerGroup()->getID()) {
+        if ($Kupon->kKundengruppe > 0 && $Kupon->kKundengruppe != \Session\Session::getCustomerGroup()->getID()) {
             $ret['ungueltig'] = 5;
         }
         if ($Kupon->nVerwendungen > 0 && $Kupon->nVerwendungen <= $Kupon->nVerwendungenBisher) {
             $ret['ungueltig'] = 6;
         }
-        if ($Kupon->cArtikel && !warenkorbKuponFaehigArtikel($Kupon, Session::Cart()->PositionenArr)) {
+        if ($Kupon->cArtikel && !warenkorbKuponFaehigArtikel($Kupon, \Session\Session::getCart()->PositionenArr)) {
             $ret['ungueltig'] = 7;
         }
         if ($Kupon->cKategorien
             && $Kupon->cKategorien != -1
-            && !warenkorbKuponFaehigKategorien($Kupon, Session::Cart()->PositionenArr)
+            && !warenkorbKuponFaehigKategorien($Kupon, \Session\Session::getCart()->PositionenArr)
         ) {
             $ret['ungueltig'] = 8;
         }
@@ -952,7 +954,7 @@ class Kupon
         //Hersteller
         if ((int)$Kupon->cHersteller !== -1
             && !empty($Kupon->cHersteller)
-            && !warenkorbKuponFaehigHersteller($Kupon, Session::Cart()->PositionenArr)
+            && !warenkorbKuponFaehigHersteller($Kupon, \Session\Session::getCart()->PositionenArr)
         ) {
             $ret['ungueltig'] = 12;
         }
@@ -1010,9 +1012,9 @@ class Kupon
      * @former kuponAnnehmen()
      * @since 5.0.0
      */
-    public static function acceptCoupon($Kupon)
+    public static function acceptCoupon($Kupon): void
     {
-        $cart                        = Session::Cart();
+        $cart                        = \Session\Session::getCart();
         $logger                      = Shop::Container()->getLogService();
         $Kupon->nGanzenWKRabattieren = (int)$Kupon->nGanzenWKRabattieren;
         if ((!empty($_SESSION['oVersandfreiKupon']) || !empty($_SESSION['VersandKupon']) || !empty($_SESSION['Kupon']))
@@ -1026,8 +1028,10 @@ class Kupon
             if ($Kupon->fWert > $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)) {
                 $couponPrice = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
             }
-            if ($Kupon->nGanzenWKRabattieren === 0 && $Kupon->fWert > gibGesamtsummeKuponartikelImWarenkorb($Kupon,
-                    $cart->PositionenArr)) {
+            if ($Kupon->nGanzenWKRabattieren === 0 && $Kupon->fWert > gibGesamtsummeKuponartikelImWarenkorb(
+                $Kupon,
+                $cart->PositionenArr
+            )) {
                 $couponPrice = gibGesamtsummeKuponartikelImWarenkorb($Kupon, $cart->PositionenArr);
             }
         } elseif ($Kupon->cWertTyp === 'prozent') {
@@ -1039,8 +1043,10 @@ class Kupon
                     foreach ($cart->PositionenArr as $oWKPosition) {
                         $articlePrice += WarenkorbHelper::checkSetPercentCouponWKPos($oWKPosition, $Kupon)->fPreis;
                         if (!empty(WarenkorbHelper::checkSetPercentCouponWKPos($oWKPosition, $Kupon)->cName)) {
-                            $articleName_arr[] = WarenkorbHelper::checkSetPercentCouponWKPos($oWKPosition,
-                                $Kupon)->cName;
+                            $articleName_arr[] = WarenkorbHelper::checkSetPercentCouponWKPos(
+                                $oWKPosition,
+                                $Kupon
+                            )->cName;
                         }
                     }
                     $couponPrice = ($articlePrice / 100) * (float)$Kupon->fWert;
@@ -1125,9 +1131,9 @@ class Kupon
      * @former resetNeuKundenKupon()
      * @since 5.0.0
      */
-    public static function resetNewCustomerCoupon()
+    public static function resetNewCustomerCoupon(): void
     {
-        if (Session::Customer()->isLoggedIn()) {
+        if (\Session\Session::getCustomer()->isLoggedIn()) {
             $hash = Kuponneukunde::Hash(
                 null,
                 trim($_SESSION['Kunde']->cNachname),
@@ -1141,7 +1147,7 @@ class Kupon
         }
 
         unset($_SESSION['NeukundenKupon'], $_SESSION['NeukundenKuponAngenommen']);
-        Session::Cart()
+        \Session\Session::getCart()
                ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
                ->setzePositionsPreise();
     }

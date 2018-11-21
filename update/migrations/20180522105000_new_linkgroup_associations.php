@@ -61,7 +61,7 @@ class Migration_20180522105000 extends Migration implements IMigration
                 $linkSprache->cTitle      = '';
                 $linkSprache->cContent    = '';
                 $linkSprache->cMetaTitle  = '';
-                $linkSprache->cSeo        = getSeo($linkSprache->cSeo);
+                $linkSprache->cSeo        = \JTL\SeoHelper::getSeo($linkSprache->cSeo);
                 Shop::Container()->getDB()->insert('tlinksprache', $linkSprache);
             }
         }
@@ -80,7 +80,7 @@ class Migration_20180522105000 extends Migration implements IMigration
         );
         foreach ($missingSeo as $item) {
             $oSeo           = new stdClass();
-            $oSeo->cSeo     = checkSeo($item->cSeo);
+            $oSeo->cSeo     = \JTL\SeoHelper::checkSeo($item->cSeo);
             $oSeo->kKey     = $item->kLink;
             $oSeo->cKey     = 'kLink';
             $oSeo->kSprache = $item->kSprache;

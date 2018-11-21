@@ -28,11 +28,11 @@ class Migration_20160523153200 extends Migration implements IMigration
                            WHERE  data1.`cMail` = data2.`cMail` 
                              AND data1.`kArtikel` = data2.`kArtikel` 
                              AND data1.`kVerfuegbarkeitsbenachrichtigung` < data2.`kVerfuegbarkeitsbenachrichtigung`");
-        $this->execute("CREATE UNIQUE INDEX `idx_cMail_kArtikel`  ON `tverfuegbarkeitsbenachrichtigung` (cMail, kArtikel)");
+        MigrationHelper::createIndex('tverfuegbarkeitsbenachrichtigung', ['cMail', 'kArtikel'], 'idx_cMail_kArtikel', true);
     }
 
     public function down()
     {
-        $this->execute("DROP INDEX `idx_cMail_kArtikel` ON `tverfuegbarkeitsbenachrichtigung`");
+        MigrationHelper::dropIndex('tverfuegbarkeitsbenachrichtigung', 'idx_cMail_kArtikel');
     }
 }

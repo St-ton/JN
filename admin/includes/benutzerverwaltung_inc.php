@@ -192,11 +192,11 @@ function benutzerverwaltungDeleteAttributes(stdClass $oAccount): bool
 }
 
 /**
- * @param JTLSmarty $smarty
- * @param array $messages
+ * @param Smarty\JTLSmarty $smarty
+ * @param array            $messages
  * @return string
  */
-function benutzerverwaltungActionAccountLock(JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungActionAccountLock(Smarty\JTLSmarty $smarty, array &$messages)
 {
     $kAdminlogin = (int)$_POST['id'];
     $oAccount    = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $kAdminlogin);
@@ -228,11 +228,11 @@ function benutzerverwaltungActionAccountLock(JTLSmarty $smarty, array &$messages
 }
 
 /**
- * @param JTLSmarty $smarty
- * @param array $messages
+ * @param Smarty\JTLSmarty $smarty
+ * @param array            $messages
  * @return string
  */
-function benutzerverwaltungActionAccountUnLock(JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungActionAccountUnLock(Smarty\JTLSmarty $smarty, array &$messages)
 {
     $kAdminlogin = (int)$_POST['id'];
     $oAccount    = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $kAdminlogin);
@@ -258,11 +258,11 @@ function benutzerverwaltungActionAccountUnLock(JTLSmarty $smarty, array &$messag
 }
 
 /**
- * @param JTLSmarty $smarty
- * @param array $messages
+ * @param Smarty\JTLSmarty $smarty
+ * @param array            $messages
  * @return string
  */
-function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungActionAccountEdit(Smarty\JTLSmarty $smarty, array &$messages)
 {
     $_SESSION['AdminAccount']->TwoFA_valid = true;
 
@@ -467,11 +467,11 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
 }
 
 /**
- * @param JTLSmarty $smarty
- * @param array $messages
+ * @param Smarty\JTLSmarty $smarty
+ * @param array            $messages
  * @return string
  */
-function benutzerverwaltungActionAccountDelete(JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungActionAccountDelete(Smarty\JTLSmarty $smarty, array &$messages)
 {
     $kAdminlogin = (int)$_POST['id'];
     $oCount      = Shop::Container()->getDB()->query(
@@ -511,11 +511,11 @@ function benutzerverwaltungActionAccountDelete(JTLSmarty $smarty, array &$messag
 }
 
 /**
- * @param JTLSmarty $smarty
- * @param array $messages
+ * @param Smarty\JTLSmarty $smarty
+ * @param array            $messages
  * @return string
  */
-function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungActionGroupEdit(Smarty\JTLSmarty $smarty, array &$messages)
 {
     $bDebug            = isset($_POST['debug']);
     $kAdminlogingruppe = isset($_POST['id'])
@@ -527,8 +527,16 @@ function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages)
         $oAdminGroup->kAdminlogingruppe = isset($_POST['kAdminlogingruppe'])
             ? (int)$_POST['kAdminlogingruppe']
             : 0;
-        $oAdminGroup->cGruppe           = htmlspecialchars(trim($_POST['cGruppe']), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-        $oAdminGroup->cBeschreibung     = htmlspecialchars(trim($_POST['cBeschreibung']), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+        $oAdminGroup->cGruppe           = htmlspecialchars(
+            trim($_POST['cGruppe']),
+            ENT_COMPAT | ENT_HTML401,
+            JTL_CHARSET
+        );
+        $oAdminGroup->cBeschreibung     = htmlspecialchars(
+            trim($_POST['cBeschreibung']),
+            ENT_COMPAT | ENT_HTML401,
+            JTL_CHARSET
+        );
         $oAdminGroupPermission_arr      = $_POST['perm'];
 
         if (strlen($oAdminGroup->cGruppe) === 0) {
@@ -605,11 +613,11 @@ function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages)
 }
 
 /**
- * @param JTLSmarty $smarty
- * @param array $messages
+ * @param Smarty\JTLSmarty $smarty
+ * @param array            $messages
  * @return string
  */
-function benutzerverwaltungActionGroupDelete(JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungActionGroupDelete(Smarty\JTLSmarty $smarty, array &$messages)
 {
     $kAdminlogingruppe = (int)$_POST['id'];
     $oResult           = Shop::Container()->getDB()->query(
@@ -672,11 +680,11 @@ function benutzerverwaltungRedirect($cTab = '', array &$messages = null)
 }
 
 /**
- * @param string $step
- * @param JTLSmarty $smarty
- * @param array $messages
+ * @param string           $step
+ * @param Smarty\JTLSmarty $smarty
+ * @param array            $messages
  */
-function benutzerverwaltungFinalize($step, JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungFinalize($step, Smarty\JTLSmarty $smarty, array &$messages)
 {
     if (isset($_SESSION['benutzerverwaltung.notice'])) {
         $messages['notice'] = $_SESSION['benutzerverwaltung.notice'];

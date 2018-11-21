@@ -77,7 +77,7 @@ class PageTypeToLinkType
                 return \LINKTYP_WUNSCHLISTE;
             case \PAGE_VERGLEICHSLISTE:
                 return \LINKTYP_VERGLEICHSLISTE;
-            default;
+            default:
                 return 0;
         }
     }

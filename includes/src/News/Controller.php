@@ -9,6 +9,7 @@ namespace News;
 use DB\DbInterface;
 use DB\ReturnType;
 use Session\Session;
+use Smarty\JTLSmarty;
 use Tightenco\Collect\Support\Collection;
 use function Functional\every;
 use function Functional\map;
@@ -25,7 +26,7 @@ class Controller
     private $db;
 
     /**
-     * @var \JTLSmarty
+     * @var JTLSmarty
      */
     private $smarty;
 
@@ -53,9 +54,9 @@ class Controller
      * Controller constructor.
      * @param DbInterface $db
      * @param array       $config
-     * @param \JTLSmarty  $smarty
+     * @param JTLSmarty   $smarty
      */
-    public function __construct(DbInterface $db, array $config, \JTLSmarty $smarty)
+    public function __construct(DbInterface $db, array $config, JTLSmarty $smarty)
     {
         $this->config = $config;
         $this->db     = $db;
@@ -290,7 +291,7 @@ class Controller
 
         \executeHook(\HOOK_NEWS_PAGE_NEWSKOMMENTAR_PLAUSI);
 
-        if ($this->config['news']['news_kommentare_eingeloggt'] === 'Y' && Session::Customer()->getID() > 0) {
+        if ($this->config['news']['news_kommentare_eingeloggt'] === 'Y' && Session::getCustomer()->getID() > 0) {
             if ($checkedOK) {
                 $comment             = new \stdClass();
                 $comment->kNews      = (int)$data['kNews'];
@@ -319,16 +320,16 @@ class Controller
             }
         } elseif ($this->config['news']['news_kommentare_eingeloggt'] === 'N') {
             if ($checkedOK) {
-                if (Session::Customer()->getID() > 0) {
-                    $cName  = Session::Customer()->cVorname . ' ' . Session::Customer()->cNachname[0] . '.';
-                    $cEmail = Session::Customer()->cMail;
+                if (Session::getCustomer()->getID() > 0) {
+                    $cName  = Session::getCustomer()->cVorname . ' ' . Session::getCustomer()->cNachname[0] . '.';
+                    $cEmail = Session::getCustomer()->cMail;
                 } else {
                     $cName  = \StringHandler::filterXSS($data['cName'] ?? '');
                     $cEmail = \StringHandler::filterXSS($data['cEmail'] ?? '');
                 }
                 $comment         = new \stdClass();
                 $comment->kNews  = (int)$data['kNews'];
-                $comment->kKunde = Session::Customer()->getID();
+                $comment->kKunde = Session::getCustomer()->getID();
                 $comment->nAktiv = $this->config['news']['news_kommentare_freischalten'] === 'Y'
                     ? 0
                     : 1;
@@ -383,7 +384,7 @@ class Controller
                     FROM tnewskommentar
                     WHERE kNews = :nid
                         AND kKunde = :cid',
-                ['nid' => $newsID, 'cid' => Session::Customer()->getID()],
+                ['nid' => $newsID, 'cid' => Session::getCustomer()->getID()],
                 ReturnType::SINGLE_OBJECT
             );
 
@@ -466,10 +467,10 @@ class Controller
                 $oSQL->cSortSQL = ' ORDER BY tnews.dGueltigVon';
                 break;
             case 3: // Name a ... z
-                $oSQL->cSortSQL = ' ORDER BY tnews.cBetreff';
+                $oSQL->cSortSQL = ' ORDER BY tnewssprache.title';
                 break;
             case 4: // Name z ... a
-                $oSQL->cSortSQL = ' ORDER BY tnews.cBetreff DESC';
+                $oSQL->cSortSQL = ' ORDER BY tnewssprache.title DESC';
                 break;
             case 5: // Anzahl Kommentare absteigend
                 $oSQL->cSortSQL = ' ORDER BY nNewsKommentarAnzahl DESC';
@@ -518,7 +519,7 @@ class Controller
                 WHERE tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= NOW()
                     AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                        OR FIND_IN_SET('" . Session::CustomerGroup()->getID() .
+                        OR FIND_IN_SET('" . Session::getCustomerGroup()->getID() .
                     "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     AND tnewssprache.languageID = " . \Shop::getLanguageID() . "
                 GROUP BY nJahr, nMonat

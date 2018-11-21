@@ -39,23 +39,24 @@ echo $return;
  */
 function bildercheck_xml(SimpleXMLElement $xml)
 {
+    $db     = Shop::Container()->getDB();
     $found  = [];
     $sqls   = [];
     $object = get_object($xml);
     foreach ($object->items as $item) {
-        $hash   = Shop::Container()->getDB()->escape($item->hash);
+        $hash   = $db->escape($item->hash);
         $sqls[] = "(kBild={$item->id} && cPfad='{$hash}')";
     }
     $sqlOr  = implode(' || ', $sqls);
     $sql    = "SELECT kBild AS id, cPfad AS hash FROM tbild WHERE {$sqlOr}";
-    $images = Shop::Container()->getDB()->query($sql, \DB\ReturnType::ARRAY_OF_OBJECTS);
+    $images = $db->query($sql, \DB\ReturnType::ARRAY_OF_OBJECTS);
     if ($images !== false) {
         foreach ($images as $image) {
             $storage = PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $image->hash;
             if (!file_exists($storage)) {
                 Shop::Container()->getLogService()->debug("Dropping orphan {$image->id} -> {$image->hash}: no such file");
-                Shop::Container()->getDB()->delete('tbild', 'kBild', $image->id);
-                Shop::Container()->getDB()->delete('tartikelpict', 'kBild', $image->id);
+                $db->delete('tbild', 'kBild', $image->id);
+                $db->delete('tartikelpict', 'kBild', $image->id);
             }
             $found[] = $image->id;
         }

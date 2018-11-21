@@ -364,19 +364,23 @@ class Attribute extends BaseAttribute
                     ->setOrigin(__CLASS__));
             }
             if (\count($activeOrFilterIDs) > 0) {
-                $state->addSelect('IF(EXISTS (SELECT 1
-                             FROM tartikelmerkmal AS im1
-                             INNER JOIN tartikel AS innerProduct ON innerProduct.kArtikel = im1.kArtikel
-                                WHERE ' . $productFilter . ' AND im1.kMerkmalWert IN (' . \implode(', ',
-                        \array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])) . ')
-                                    AND im1.kArtikel = tartikel.kArtikel
-                             GROUP BY innerProduct.kArtikel
-                             HAVING COUNT(im1.kArtikel) = (SELECT COUNT(DISTINCT im2.kMerkmal)
-                                                           FROM tartikelmerkmal im2
-                                                           INNER JOIN tartikel AS innerProduct ON innerProduct.kArtikel = im2.kArtikel
-                                                           WHERE ' . $productFilter . ' AND im2.kMerkmalWert IN
-                                                                 (' . \implode(', ', \array_merge($activeOrFilterIDs,
-                        ['tartikelmerkmal.kMerkmalWert'])) . '))), tartikel.kArtikel, NULL) AS kArtikel');
+                $state->addSelect(
+                    'IF(EXISTS (SELECT 1
+                     FROM tartikelmerkmal AS im1
+                     INNER JOIN tartikel AS innerProduct ON innerProduct.kArtikel = im1.kArtikel
+                        WHERE ' . $productFilter . ' AND im1.kMerkmalWert IN (' .
+                        \implode(', ', \array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])) . ')
+                            AND im1.kArtikel = tartikel.kArtikel
+                        GROUP BY innerProduct.kArtikel
+                        HAVING COUNT(im1.kArtikel) = (SELECT COUNT(DISTINCT im2.kMerkmal)
+                           FROM tartikelmerkmal im2
+                           INNER JOIN tartikel AS innerProduct ON innerProduct.kArtikel = im2.kArtikel
+                           WHERE ' . $productFilter . ' AND im2.kMerkmalWert IN (' .
+                                \implode(
+                                    ', ',
+                                    \array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])
+                                ) . '))), tartikel.kArtikel, NULL) AS kArtikel'
+                );
             } else {
                 $state->addSelect('tartikel.kArtikel AS kArtikel');
             }
@@ -401,11 +405,11 @@ class Attribute extends BaseAttribute
             );
             if (\count($catAttributeFilters) > 0) {
                 $state->addCondition('tmerkmal.cName IN (' . \implode(',', map(
-                        $catAttributeFilters,
-                        function ($e) {
-                            return '"' . $e . '"';
-                        }
-                    )) . ')');
+                    $catAttributeFilters,
+                    function ($e) {
+                        return '"' . $e . '"';
+                    }
+                )) . ')');
             }
         }
 
@@ -577,7 +581,7 @@ class Attribute extends BaseAttribute
     /**
      * @param Option $option
      */
-    protected function sortNumeric(Option $option)
+    protected function sortNumeric(Option $option): void
     {
         $options = $option->getOptions();
         \usort($options, function (Option $a, Option $b) {
@@ -589,7 +593,7 @@ class Attribute extends BaseAttribute
     /**
      * @param Option $option
      */
-    protected function sortByCountDesc(Option $option)
+    protected function sortByCountDesc(Option $option): void
     {
         $options = $option->getOptions();
         \usort($options, function (Option $a, Option $b) {

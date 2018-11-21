@@ -18,7 +18,7 @@ $updater  = new Updater();
 $template = Template::getInstance();
 $_smarty  = new \Smarty\JTLSmarty(true, true);
 $_smarty->clearCompiledTemplate();
-Shop::Cache()->flushAll();
+Shop::Container()->getCache()->flushAll();
 
 $currentFileVersion     = $updater->getCurrentFileVersion();
 $currentDatabaseVersion = $updater->getCurrentDatabaseVersion();

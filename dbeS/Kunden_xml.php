@@ -44,6 +44,7 @@ echo $return;
 function aktiviereKunden($xml)
 {
     $kunden = mapArray($xml['aktiviere_kunden'], 'tkunde', []);
+    $db     = Shop::Container()->getDB();
     foreach ($kunden as $kunde) {
         if (!($kunde->kKunde > 0 && $kunde->kKundenGruppe > 0)) {
             continue;
@@ -51,7 +52,7 @@ function aktiviereKunden($xml)
         $kunde_db = new Kunde($kunde->kKunde);
 
         if ($kunde_db->kKunde > 0 && $kunde_db->kKundengruppe != $kunde->kKundenGruppe) {
-            Shop::Container()->getDB()->update(
+            $db->update(
                 'tkunde',
                 'kKunde',
                 (int)$kunde->kKunde,
@@ -64,7 +65,7 @@ function aktiviereKunden($xml)
                 sendeMail(MAILTEMPLATE_KUNDENGRUPPE_ZUWEISEN, $obj);
             }
         }
-        Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$kunde->kKunde, (object)['cAktiv' => 'Y']);
+        $db->update('tkunde', 'kKunde', (int)$kunde->kKunde, (object)['cAktiv' => 'Y']);
     }
 }
 
@@ -77,7 +78,7 @@ function generiereNeuePasswoerter($xml)
     foreach ($oKundeXML_arr as $oKundeXML) {
         if (isset($oKundeXML->kKunde) && $oKundeXML->kKunde > 0) {
             $oKunde = new Kunde((int)$oKundeXML->kKunde);
-            if ($oKunde->nRegistriert == 1 && $oKunde->cMail) {
+            if ($oKunde->nRegistriert === 1 && $oKunde->cMail) {
                 $oKunde->prepareResetPassword();
             } else {
                 syncException(
@@ -117,10 +118,11 @@ function bearbeiteAck($xml)
         $xml['ack_kunden']['kKunde'] = [$xml['ack_kunden']['kKunde']];
     }
     if (is_array($xml['ack_kunden']['kKunde'])) {
+        $db = Shop::Container()->getDB();
         foreach ($xml['ack_kunden']['kKunde'] as $kKunde) {
             $kKunde = (int)$kKunde;
             if ($kKunde > 0) {
-                Shop::Container()->getDB()->update('tkunde', 'kKunde', $kKunde, (object)['cAbgeholt' => 'Y']);
+                $db->update('tkunde', 'kKunde', $kKunde, (object)['cAbgeholt' => 'Y']);
             }
         }
     }
@@ -139,14 +141,14 @@ function bearbeiteGutscheine($xml)
         if (!($gutschein->kGutschein > 0 && $gutschein->kKunde > 0)) {
             continue;
         }
-        $gutschein_exists = Shop::Container()->getDB()->select('tgutschein', 'kGutschein', (int)$gutschein->kGutschein);
-        if (!isset($gutschein_exists->kGutschein) || !$gutschein_exists->kGutschein) {
-            $kGutschein = Shop::Container()->getDB()->insert('tgutschein', $gutschein);
-            Shop::Container()->getLogService()->debug('Gutschein fuer kKunde ' .
+        $exists = Shop::Container()->getDB()->select('tgutschein', 'kGutschein', (int)$gutschein->kGutschein);
+        if (!isset($exists->kGutschein) || !$exists->kGutschein) {
+            Shop::Container()->getDB()->insert('tgutschein', $gutschein);
+            Shop::Container()->getLogService()->debug(
+                'Gutschein fuer kKunde ' .
                 (int)$gutschein->kKunde . ' wurde eingeloest. ' .
                 print_r($gutschein, true)
             );
-            //kundenkto erhöhen
             Shop::Container()->getDB()->query(
                 'UPDATE tkunde 
                     SET fGuthaben = fGuthaben + ' . (float)$gutschein->fWert . ' 
@@ -160,7 +162,6 @@ function bearbeiteGutscheine($xml)
                         AND fGuthaben < 0',
                 \DB\ReturnType::AFFECTED_ROWS
             );
-            //mail
             $kunde           = new Kunde((int)$gutschein->kKunde);
             $obj             = new stdClass();
             $obj->tkunde     = $kunde;

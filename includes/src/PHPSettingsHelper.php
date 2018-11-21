@@ -192,6 +192,8 @@ class PHPSettingsHelper
      */
     public static function phpLinkCheck(string $url): bool
     {
+        $errno  = null;
+        $errstr = null;
         $url    = parse_url(trim($url));
         $scheme = strtolower($url['scheme']);
         if ($scheme !== 'http' && $scheme !== 'https') {

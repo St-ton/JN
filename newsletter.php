@@ -14,7 +14,7 @@ $oLink->kLink = 0;
 foreach ($links as $l) {
     $customerGroupIDs = StringHandler::parseSSK($l->cKundengruppen);
     $ok               = array_reduce($customerGroupIDs, function ($c, $p) {
-        return $c === true || $p === 'NULL' || (int)$p === Session::CustomerGroup()->getID();
+        return $c === true || $p === 'NULL' || (int)$p === \Session\Session::getCustomerGroup()->getID();
     }, false);
     if ($ok === true) {
         $oLink = $l;
@@ -48,7 +48,7 @@ $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 // Freischaltcode wurde übergeben
 if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
     $cOption         = 'freischalten';
-    $cFreischaltCode = StringHandler::htmlentities(StringHandler::filterXSS(Shop::Container()->getDB()->escape(strip_tags($_GET['fc']))));
+    $cFreischaltCode = StringHandler::htmlentities(StringHandler::filterXSS(strip_tags($_GET['fc'])));
     $recicpient      = Shop::Container()->getDB()->select('tnewsletterempfaenger', 'cOptCode', $cFreischaltCode);
 
     if (isset($recicpient->kNewsletterEmpfaenger) && $recicpient->kNewsletterEmpfaenger > 0) {
@@ -66,12 +66,13 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
             "UPDATE tnewsletterempfaenger, tkunde
                 SET tnewsletterempfaenger.kKunde = tkunde.kKunde
                 WHERE tkunde.cMail = tnewsletterempfaenger.cEmail
-                    AND tnewsletterempfaenger.kKunde = 0", 3
+                    AND tnewsletterempfaenger.kKunde = 0",
+            \DB\ReturnType::DEFAULT
         );
         // Protokollieren (freigeschaltet)
         $upd           = new stdClass();
         $upd->dOptCode = 'NOW()';
-        $upd->cOptIp   = RequestHelper::getIP();
+        $upd->cOptIp   = RequestHelper::getRealIP();
         Shop::Container()->getDB()->update(
             'tnewsletterempfaengerhistory',
             ['cOptCode', 'cAktion'],
@@ -109,13 +110,12 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
         $hist->dEingetragen = $recicpient->dEingetragen;
         $hist->dAusgetragen = 'NOW()';
         $hist->dOptCode     = '_DBNULL_';
-        $hist->cRegIp       = RequestHelper::getIP(); // IP of the current event-issuer
-
+        $hist->cRegIp       = RequestHelper::getRealIP();
         Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $hist);
 
-        executeHook(HOOK_NEWSLETTER_PAGE_HISTORYEMPFAENGEREINTRAGEN,
-            ['oNewsletterEmpfaengerHistory' => $hist]
-        );
+        executeHook(HOOK_NEWSLETTER_PAGE_HISTORYEMPFAENGEREINTRAGEN, [
+            'oNewsletterEmpfaengerHistory' => $hist
+        ]);
         $oBlacklist            = new stdClass();
         $oBlacklist->cMail     = $recicpient->cEmail;
         $oBlacklist->dErstellt = 'NOW()';
@@ -144,8 +144,7 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
     $oKunde->cEmail    = isset($_POST['cEmail'])
         ? StringHandler::filterXSS(Shop::Container()->getDB()->escape(strip_tags($_POST['cEmail'])))
         : null;
-    $oKunde->cRegIp    = RequestHelper::getIP(); // IP of the current event-issuer
-
+    $oKunde->cRegIp    = RequestHelper::getRealIP();
     if (!SimpleMail::checkBlacklist($oKunde->cEmail)) {
         Shop::Smarty()->assign('oPlausi', fuegeNewsletterEmpfaengerEin($oKunde, true));
         Shop::Container()->getDB()->delete('tnewsletterempfaengerblacklist', 'cMail', $oKunde->cEmail);
@@ -181,7 +180,7 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
             Shop::Container()->getDB()->delete(
                 'tnewsletterempfaenger',
                 'cEmail',
-                StringHandler::htmlentities(StringHandler::filterXSS(Shop::Container()->getDB()->escape($_POST['cEmail'])))
+                StringHandler::htmlentities(StringHandler::filterXSS($_POST['cEmail']))
             );
             $hist               = new stdClass();
             $hist->kSprache     = $recicpient->kSprache;
@@ -196,8 +195,7 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
             $hist->dEingetragen = $recicpient->dEingetragen;
             $hist->dAusgetragen = 'NOW()';
             $hist->dOptCode     = '_DBNULL_';
-            $hist->cRegIp       = RequestHelper::getIP(); // IP of the current event-issuer
-
+            $hist->cRegIp       = RequestHelper::getRealIP();
             Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $hist);
 
             executeHook(
@@ -224,7 +222,7 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
     $cOption            = 'anzeigen';
     $kNewsletterHistory = (int)$_GET['show'];
     $oNewsletterHistory = Shop::Container()->getDB()->query(
-        "SELECT kNewsletterHistory, nAnzahl, cBetreff, cHTMLStatic, cKundengruppeKey, 
+        "SELECT kNewsletterHistory, nAnzahl, cBetreff, cHTMLStatic, cKundengruppeKey,
             DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
             FROM tnewsletterhistory
             WHERE kNewsletterHistory = " . $kNewsletterHistory,

@@ -6,14 +6,17 @@
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('DISPLAY_BRANDING_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 $step     = 'branding_uebersicht';
 
 if (RequestHelper::verifyGPCDataInt('branding') === 1) {
     $step = 'branding_detail';
-    if (isset($_POST['speicher_einstellung']) && (int)$_POST['speicher_einstellung'] === 1 && FormHelper::validateToken()) {
+    if (isset($_POST['speicher_einstellung'])
+        && (int)$_POST['speicher_einstellung'] === 1
+        && FormHelper::validateToken()
+    ) {
         if (speicherEinstellung(RequestHelper::verifyGPCDataInt('kBranding'), $_POST, $_FILES)) {
             $cHinweis .= 'Ihre Einstellung wurde erfolgreich gespeichert.<br />';
         } else {

@@ -26,9 +26,9 @@ class WidgetProductDemand extends WidgetBase
      * @param int $nYear
      * @param int $nMonth
      * @param int $nLimit
-     * @return mixed
+     * @return array
      */
-    public function getBotsOfMonth($nYear, $nMonth, $nLimit = 10)
+    public function getBotsOfMonth($nYear, $nMonth, int $nLimit = 10)
     {
         return Shop::Container()->getDB()->query(
             "SELECT *, COUNT(tbesucherbot.kBesucherBot) AS nAnzahl
@@ -39,7 +39,8 @@ class WidgetProductDemand extends WidgetBase
                     AND YEAR(tbesucherarchiv.dZeit) = '" . (int)$nYear . "'
                     AND MONTH(tbesucherarchiv.dZeit) = '" . (int)$nMonth . "'
                 GROUP BY tbesucherbot.kBesucherBot 
-                LIMIT 0," . (int)$nLimit, 2
+                LIMIT 0," . $nLimit,
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
 

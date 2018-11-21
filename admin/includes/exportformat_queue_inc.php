@@ -9,7 +9,8 @@
  */
 function holeExportformatCron()
 {
-    $oExportformatCron_arr = Shop::Container()->getDB()->query(
+    $db      = Shop::Container()->getDB();
+    $exports = $db->query(
         "SELECT texportformat.*, tcron.kCron, tcron.nAlleXStd, tcron.dStart, 
             DATE_FORMAT(tcron.dStart, '%d.%m.%Y %H:%i') AS dStart_de, tcron.dLetzterStart, 
             DATE_FORMAT(tcron.dLetzterStart, '%d.%m.%Y %H:%i') AS dLetzterStart_de,
@@ -21,33 +22,33 @@ function holeExportformatCron()
             ORDER BY tcron.dStart DESC",
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    foreach ($oExportformatCron_arr as $oExportformatCron) {
-        $oExportformatCron->cAlleXStdToDays      = rechneUmAlleXStunden($oExportformatCron->nAlleXStd);
-        $oExportformatCron->Sprache              = Shop::Container()->getDB()->select(
+    foreach ($exports as $export) {
+        $export->cAlleXStdToDays      = rechneUmAlleXStunden($export->nAlleXStd);
+        $export->Sprache              = $db->select(
             'tsprache',
             'kSprache',
-            (int)$oExportformatCron->kSprache
+            (int)$export->kSprache
         );
-        $oExportformatCron->Waehrung             = Shop::Container()->getDB()->select(
+        $export->Waehrung             = $db->select(
             'twaehrung',
             'kWaehrung',
-            (int)$oExportformatCron->kWaehrung
+            (int)$export->kWaehrung
         );
-        $oExportformatCron->Kundengruppe         = Shop::Container()->getDB()->select(
+        $export->Kundengruppe         = $db->select(
             'tkundengruppe',
             'kKundengruppe',
-            (int)$oExportformatCron->kKundengruppe
+            (int)$export->kKundengruppe
         );
-        $oExportformatCron->oJobQueue            = Shop::Container()->getDB()->query(
+        $export->oJobQueue            = $db->query(
             "SELECT *, DATE_FORMAT(dZuletztGelaufen, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_de 
                 FROM tjobqueue 
-                WHERE kCron = " . (int)$oExportformatCron->kCron,
+                WHERE kCron = " . (int)$export->kCron,
             \DB\ReturnType::SINGLE_OBJECT
         );
-        $oExportformatCron->nAnzahlArtikel       = holeMaxExportArtikelAnzahl($oExportformatCron);
+        $export->nAnzahlArtikel       = holeMaxExportArtikelAnzahl($export);
     }
 
-    return $oExportformatCron_arr;
+    return $exports;
 }
 
 /**
@@ -200,7 +201,10 @@ function erstelleExportformatCron($kExportformat, $dStart, $nAlleXStunden, $kCro
  */
 function dStartPruefen($dStart)
 {
-    if (preg_match('/^([0-3]{1}[0-9]{1}[.]{1}[0-1]{1}[0-9]{1}[.]{1}[0-9]{4}[ ]{1}[0-2]{1}[0-9]{1}[:]{1}[0-6]{1}[0-9]{1})/', $dStart)) {
+    if (preg_match(
+        '/^([0-3]{1}[0-9]{1}[.]{1}[0-1]{1}[0-9]{1}[.]{1}[0-9]{4}[ ]{1}[0-2]{1}[0-9]{1}[:]{1}[0-6]{1}[0-9]{1})/',
+        $dStart
+    )) {
         return true;
     }
 
@@ -288,11 +292,11 @@ function holeExportformatQueueBearbeitet($nStunden)
 }
 
 /**
- * @param JTLSmarty $smarty
- * @param array     $messages
+ * @param Smarty\JTLSmarty $smarty
+ * @param array            $messages
  * @return string
  */
-function exportformatQueueActionErstellen(JTLSmarty $smarty, array &$messages)
+function exportformatQueueActionErstellen(Smarty\JTLSmarty $smarty, array &$messages)
 {
     $smarty->assign('oExportformat_arr', holeAlleExportformate());
 
@@ -300,11 +304,11 @@ function exportformatQueueActionErstellen(JTLSmarty $smarty, array &$messages)
 }
 
 /**
- * @param JTLSmarty $smarty
- * @param array     $messages
+ * @param Smarty\JTLSmarty $smarty
+ * @param array            $messages
  * @return string
  */
-function exportformatQueueActionEditieren(JTLSmarty $smarty, array &$messages)
+function exportformatQueueActionEditieren(Smarty\JTLSmarty $smarty, array &$messages)
 {
     $kCron = RequestHelper::verifyGPCDataInt('kCron');
     $oCron = $kCron > 0 ? holeCron($kCron) : 0;
@@ -322,11 +326,11 @@ function exportformatQueueActionEditieren(JTLSmarty $smarty, array &$messages)
 }
 
 /**
- * @param JTLSmarty $smarty
- * @param array     $messages
+ * @param Smarty\JTLSmarty $smarty
+ * @param array            $messages
  * @return string
  */
-function exportformatQueueActionLoeschen(JTLSmarty $smarty, array &$messages)
+function exportformatQueueActionLoeschen(Smarty\JTLSmarty $smarty, array &$messages)
 {
     $kCron_arr = $_POST['kCron'];
 
@@ -344,11 +348,11 @@ function exportformatQueueActionLoeschen(JTLSmarty $smarty, array &$messages)
 }
 
 /**
- * @param JTLSmarty $smarty
- * @param array     $messages
+ * @param Smarty\JTLSmarty $smarty
+ * @param array            $messages
  * @return string
  */
-function exportformatQueueActionTriggern(JTLSmarty $smarty, array &$messages)
+function exportformatQueueActionTriggern(Smarty\JTLSmarty $smarty, array &$messages)
 {
     global $bCronManuell, $oCron_arr, $oJobQueue_arr;
     $bCronManuell = true;
@@ -378,11 +382,11 @@ function exportformatQueueActionTriggern(JTLSmarty $smarty, array &$messages)
 }
 
 /**
- * @param JTLSmarty $smarty
- * @param array     $messages
+ * @param Smarty\JTLSmarty $smarty
+ * @param array            $messages
  * @return string
  */
-function exportformatQueueActionFertiggestellt(JTLSmarty $smarty, array &$messages)
+function exportformatQueueActionFertiggestellt(Smarty\JTLSmarty $smarty, array &$messages)
 {
     $nStunden = RequestHelper::verifyGPCDataInt('nStunden');
     if ($nStunden <= 0) {
@@ -396,11 +400,11 @@ function exportformatQueueActionFertiggestellt(JTLSmarty $smarty, array &$messag
 }
 
 /**
- * @param JTLSmarty $smarty
- * @param array     $messages
+ * @param Smarty\JTLSmarty $smarty
+ * @param array            $messages
  * @return string
  */
-function exportformatQueueActionErstellenEintragen(JTLSmarty $smarty, array &$messages)
+function exportformatQueueActionErstellenEintragen(Smarty\JTLSmarty $smarty, array &$messages)
 {
     $kExportformat = (int)$_POST['kExportformat'];
     $dStart        = $_POST['dStart'];
@@ -433,7 +437,7 @@ function exportformatQueueActionErstellenEintragen(JTLSmarty $smarty, array &$me
                     $step               = 'erstellen';
                 }
             } else { // Alle X Stunden ist entweder leer oder kleiner als 6
-                $messages['error'] .= 'Fehler: Bitte geben Sie einen Wert grö&ßer oder gleich 1 ein.<br />';
+                $messages['error'] .= 'Fehler: Bitte geben Sie einen Wert größer oder gleich 1 ein.<br />';
                 $step               = 'erstellen';
                 $smarty->assign('oFehler', $oValues);
             }
@@ -474,17 +478,18 @@ function exportformatQueueRedirect($cTab = '', array &$messages = null)
         $urlParams['tab'] = StringHandler::filterXSS($cTab);
     }
 
-    header('Location: exportformat_queue.php' . (is_array($urlParams) ? '?' . http_build_query($urlParams, '', '&') : ''));
+    header('Location: exportformat_queue.php' .
+        (is_array($urlParams) ? '?' . http_build_query($urlParams, '', '&') : ''));
     exit;
 }
 
 /**
- * @param string $step
- * @param JTLSmarty $smarty
- * @param array $messages
+ * @param string           $step
+ * @param Smarty\JTLSmarty $smarty
+ * @param array            $messages
  * @return void
  */
-function exportformatQueueFinalize($step, JTLSmarty $smarty, array &$messages)
+function exportformatQueueFinalize($step, Smarty\JTLSmarty $smarty, array &$messages)
 {
     if (isset($_SESSION['exportformatQueue.notice'])) {
         $messages['notice'] = $_SESSION['exportformatQueue.notice'];

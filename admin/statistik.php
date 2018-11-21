@@ -28,14 +28,16 @@ switch ($nStatsType) {
         $oAccount->redirectOnFailure();
         break;
 }
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $cHinweis          = '';
 $cFehler           = '';
 $nAnzeigeIntervall = 0;
 
 $oFilter    = new Filter('statistics');
 $oDateRange = $oFilter->addDaterangefield(
-    'Zeitraum', '', date_create()->modify('-1 year')->modify('+1 day')->format('d.m.Y') . ' - ' . date('d.m.Y')
+    'Zeitraum',
+    '',
+    date_create()->modify('-1 year')->modify('+1 day')->format('d.m.Y') . ' - ' . date('d.m.Y')
 );
 $oFilter->assemble();
 $nDateStampVon = strtotime($oDateRange->getStart());

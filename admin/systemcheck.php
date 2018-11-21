@@ -8,7 +8,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->redirectOnFailure();
 
 $phpInfo = '';
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 if (isset($_GET['phpinfo'])) {
     if (in_array('phpinfo', explode(',', ini_get('disable_functions')), true)) {
         return;
@@ -17,6 +17,7 @@ if (isset($_GET['phpinfo'])) {
     phpinfo();
     $content = ob_get_contents();
     ob_end_clean();
+    require_once PFAD_ROOT . PFAD_PHPQUERY . 'phpquery.class.php';
 
     $doc     = phpQuery::newDocumentHTML($content, JTL_CHARSET);
     $phpInfo = pq('body', $doc)->html();

@@ -26,33 +26,33 @@
                         </thead>
                         <tbody>
                         {foreach from=$PluginInstalliertByStatus_arr.status_2 item=PluginInstalliert}
-                            <tr {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0 && $PluginInstalliert->cUpdateFehler == 1}class="highlight"{/if}>
+                            <tr {if $PluginInstalliert->updateAvailable === true && $PluginInstalliert->cFehler === ''}class="highlight"{/if}>
                                 <td class="check">
                                     <input type="checkbox" name="kPlugin[]" id="plugin-check-{$PluginInstalliert->kPlugin}" value="{$PluginInstalliert->kPlugin}" />
                                 </td>
                                 <td>
                                     <label for="plugin-check-{$PluginInstalliert->kPlugin}">{$PluginInstalliert->cName}</label>
-                                    {if (isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0) || (isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0)}
+                                    {if $PluginInstalliert->updateAvailable === true || (isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0)}
                                         <p>
-                                            {if $PluginInstalliert->cUpdateFehler == 1}
+                                            {if $PluginInstalliert->cFehler === ''}
                                                 {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}
                                             {else}
-                                                {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}. <br />{#pluginUpdateExistsError#}: <br />{$PluginInstalliert->cUpdateFehler}
+                                                {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}. <br />{#pluginUpdateExistsError#}: <br />{$PluginInstalliert->cFehler}
                                             {/if}
                                         </p>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-status">
                                     <h4 class="label-wrap text-nowrap">
-                                        <span class="label {if $PluginInstalliert->nStatus === Plugin::PLUGIN_ACTIVATED}success label-success{elseif $PluginInstalliert->nStatus == 1}success label-info{elseif $PluginInstalliert->nStatus == 3}success label-default{elseif $PluginInstalliert->nStatus == 4 || $PluginInstalliert->nStatus == 5}info label-info{elseif $PluginInstalliert->nStatus == 6}danger label-danger{/if}">
-                                            {$PluginInstalliert->cStatus}
+                                        <span class="label {if $PluginInstalliert->nStatus === \Plugin\Plugin::PLUGIN_ACTIVATED}success label-success{elseif $PluginInstalliert->nStatus == 1}success label-info{elseif $PluginInstalliert->nStatus == 3}success label-default{elseif $PluginInstalliert->nStatus == 4 || $PluginInstalliert->nStatus == 5}info label-info{elseif $PluginInstalliert->nStatus == 6}danger label-danger{/if}">
+                                            {$mapper->map($PluginInstalliert->nStatus)}
                                         </span>
                                         {if isset($PluginIndex_arr[$PluginInstalliert->cVerzeichnis]->shop4compatible) && $PluginIndex_arr[$PluginInstalliert->cVerzeichnis]->shop4compatible === false}
-                                            <span title="Achtung: Plugin ist nicht vollst&auml;ndig Shop4-kompatibel! Es k&ouml;nnen daher Probleme beim Betrieb entstehen." class="label warning label-warning"><i class="fa fa-warning"></i></span>
+                                            <span title="Achtung: Plugin ist nicht vollständig Shop4-kompatibel! Es können daher Probleme beim Betrieb entstehen." class="label warning label-warning"><i class="fa fa-warning"></i></span>
                                         {/if}
                                     </h4>
                                 </td>
-                                <td class="tcenter plugin-version">{$PluginInstalliert->dVersion}{if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0} <span class="badge update-available">{$PluginInstalliert->dUpdate}</span>{/if}</td>
+                                <td class="tcenter plugin-version">{number_format($PluginInstalliert->nVersion / 100, 2)}{if $PluginInstalliert->updateAvailable === true} <span class="badge update-available">{number_format((float)$PluginInstalliert->getCurrentVersion() / 100, 2)}</span>{/if}</td>
                                 <td class="tcenter plugin-install-date">{$PluginInstalliert->dInstalliert_DE}</td>
                                 <td class="tcenter plugin-folder">{$PluginInstalliert->cVerzeichnis}</td>
                                 <td class="tcenter plugin-lang-vars">
@@ -77,7 +77,7 @@
                                 <td class="tcenter plugin-config">
                                     {assign var=btnGroup value=false}
                                     {if (isset($PluginInstalliert->oPluginEinstellung_arr) && $PluginInstalliert->oPluginEinstellung_arr|@count > 0) || (isset($PluginInstalliert->oPluginAdminMenu_arr) && $PluginInstalliert->oPluginAdminMenu_arr|@count > 0) &&
-                                    (isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0 && $PluginInstalliert->cUpdateFehler == 1)}
+                                    ($PluginInstalliert->updateAvailable === true && $PluginInstalliert->cFehler === '')}
                                         {assign var=btnGroup value=true}
                                     {/if}
                                     {if $btnGroup}
@@ -91,7 +91,7 @@
                                                 {*<a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$PluginInstalliert->kPlugin}" title="Dokumentation"><i class="fa fa-file-text-o"></i></a>*}
                                             {/if}
                                         {/if}
-                                        {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0 && $PluginInstalliert->cUpdateFehler == 1}
+                                        {if $PluginInstalliert->updateAvailable === true && $PluginInstalliert->cFehler === ''}
                                             <a onclick="ackCheck({$PluginInstalliert->kPlugin});return false;" class="btn btn-success btn-sm" title="{#pluginBtnUpdate#}"><i class="fa fa-refresh"></i></a>
                                         {/if}
                                         {if $btnGroup}

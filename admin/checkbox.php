@@ -8,7 +8,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CHECKBOXES_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'checkbox_inc.php';
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $Einstellungen     = Shop::getSettings([CONF_CHECKBOX]);
 $cHinweis          = '';
 $cFehler           = '';
@@ -79,10 +79,10 @@ $smarty->assign('oCheckBox_arr', $oCheckBox_arr)
            \DB\ReturnType::ARRAY_OF_OBJECTS
        ))
        ->assign('oLink_arr', Shop::Container()->getDB()->query(
-            "SELECT * 
+           "SELECT * 
               FROM tlink 
               ORDER BY cName",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+           \DB\ReturnType::ARRAY_OF_OBJECTS
        ))
        ->assign('oCheckBoxFunktion_arr', $oCheckBox->getCheckBoxFunctions())
        ->assign('cHinweis', $cHinweis)

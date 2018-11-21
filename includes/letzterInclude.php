@@ -30,7 +30,7 @@ executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
 ]);
 $kKundengruppe = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
     ? $_SESSION['Kunde']->kKundengruppe
-    : Session::CustomerGroup()->getID();
+    : \Session\Session::getCustomerGroup()->getID();
 $cKundenherkunft = (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0)
     ? $_SESSION['Kunde']->cLand
     : '';
@@ -55,7 +55,6 @@ if (is_object($oGlobaleMetaAngaben)) {
         $cMetaKeywords = $oGlobaleMetaAngaben->Meta_Keywords;
     }
 }
-// Kategorielisten aufbauen
 if (!isset($AktuelleKategorie)) {
     $AktuelleKategorie = null;
 }
@@ -85,7 +84,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('ShopURL', $shopURL)
        ->assign('imageBaseURL', Shop::getImageBaseURL())
        ->assign('ShopURLSSL', Shop::getURL(true))
-       ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
+       ->assign('NettoPreise', \Session\Session::getCustomerGroup()->getIsMerchant())
        ->assign('cShopName', $cShopName)
        ->assign('KaufabwicklungsURL', $linkHelper->getStaticRoute('bestellvorgang.php'))
        ->assign('WarenkorbArtikelanzahl', $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]))
@@ -121,6 +120,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
        ->assign('FavourableShipping', $cart->getFavourableShipping())
        ->assign('Einstellungen', $Einstellungen)
+       ->assign('isFluidTemplate', isset($Einstellungen['template']['theme']['pagelayout']) && $Einstellungen['template']['theme']['pagelayout'] === 'fluid')
        ->assign('deletedPositions', Warenkorb::$deletedPositions)
        ->assign('updatedPositions', Warenkorb::$updatedPositions)
        ->assign('cCanonicalURL', $cCanonicalURL ?? null)
@@ -164,9 +164,8 @@ $oExtension = (new ExtensionPoint($pagetType, Shop::getParameters(), Shop::getLa
 executeHook(HOOK_LETZTERINCLUDE_INC);
 $boxes       = Shop::Container()->getBoxService();
 $boxesToShow = $boxes->render($boxes->buildList($pagetType));
-/* @global Artikel $AktuellerArtikel */
+/* @global null|Artikel $AktuellerArtikel */
 if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
-    // Letzten angesehenden Artikel hinzufügen
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
 }
 $visitorCount = $Einstellungen['global']['global_zaehler_anzeigen'] === 'Y'

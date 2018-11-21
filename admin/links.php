@@ -9,7 +9,7 @@ $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'links_inc.php';
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $hinweis            = '';
 $fehler             = '';
 $step               = 'uebersicht';
@@ -193,8 +193,11 @@ if ($continue
                 $oDatei->cNameFull = $Datei;
                 $oDatei->cURL      = '<img class="link_image" src="' .
                     $shopURL . PFAD_BILDER . PFAD_LINKBILDER . $link->getID() . '/' . $Datei . '" />';
-                $oDatei->nBild     = (int)substr(str_replace('Bild', '', $Datei), 0,
-                    strpos(str_replace('Bild', '', $Datei), '.'));
+                $oDatei->nBild     = (int)substr(
+                    str_replace('Bild', '', $Datei),
+                    0,
+                    strpos(str_replace('Bild', '', $Datei), '.')
+                );
                 $cDatei_arr[]      = $oDatei;
             }
         }

@@ -82,7 +82,7 @@ class JTLSmarty extends \SmartyBC
                 \mkdir($_compileDir);
             }
             $templatePaths[$this->context] = \PFAD_ROOT . \PFAD_TEMPLATES . $cTemplate . '/';
-            foreach (\Plugin::getTemplatePaths() as $moduleId => $path) {
+            foreach (\Plugin\Plugin::getTemplatePaths() as $moduleId => $path) {
                 $templateKey                 = 'plugin_' . $moduleId;
                 $templatePaths[$templateKey] = $path;
             }
@@ -198,7 +198,7 @@ class JTLSmarty extends \SmartyBC
      */
     public function outputFilter(string $tplOutput): string
     {
-        $hookList = \Plugin::getHookList();
+        $hookList = \Plugin\Plugin::getHookList();
         if ((isset($hookList[\HOOK_SMARTY_OUTPUTFILTER])
                 && \is_array($hookList[\HOOK_SMARTY_OUTPUTFILTER])
                 && \count($hookList[\HOOK_SMARTY_OUTPUTFILTER]) > 0)
@@ -405,12 +405,12 @@ class JTLSmarty extends \SmartyBC
         ) {
             $pluginTemplateExtends = [];
 
-            foreach (\Plugin::getTemplatePaths() as $moduleId => $pluginTemplatePath) {
+            foreach (\Plugin\Plugin::getTemplatePaths() as $moduleId => $pluginTemplatePath) {
                 $templateKey = 'plugin_' . $moduleId;
                 $templateVar = 'oPlugin_' . $moduleId;
 
                 if ($this->getTemplateVars($templateVar) === null) {
-                    $oPlugin = \Plugin::getPluginById($moduleId);
+                    $oPlugin = \Plugin\Plugin::getPluginById($moduleId);
                     $this->assign($templateVar, $oPlugin);
                 }
 

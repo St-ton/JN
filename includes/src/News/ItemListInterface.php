@@ -6,7 +6,6 @@
 
 namespace News;
 
-
 use Tightenco\Collect\Support\Collection;
 
 /**

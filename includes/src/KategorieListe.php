@@ -39,11 +39,11 @@ class KategorieListe
     public function holKategorienAufEinenBlick(int $levels = 2, int $kKundengruppe = 0, int $kSprache = 0): array
     {
         $this->elemente = [];
-        if (!Session::CustomerGroup()->mayViewCategories()) {
+        if (!\Session\Session::getCustomerGroup()->mayViewCategories()) {
             return $this->elemente;
         }
         if (!$kKundengruppe) {
-            $kKundengruppe = Session::CustomerGroup()->getID();
+            $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
         }
         if (!$kSprache) {
             $kSprache = Shop::getLanguageID();
@@ -65,9 +65,12 @@ class KategorieListe
                     $kategorie2->children = [];
 
                     if ($levels > 2) {
-                        //3rd level
-                        $kategorie2->children = $this->holUnterkategorien($kategorie2->kKategorie, $kKundengruppe,
-                            $kSprache);
+                        // 3rd level
+                        $kategorie2->children = $this->holUnterkategorien(
+                            $kategorie2->kKategorie,
+                            $kKundengruppe,
+                            $kSprache
+                        );
                     }
                     $kategorie1->children[] = $kategorie2;
                 }
@@ -89,11 +92,11 @@ class KategorieListe
     public function getAllCategoriesOnLevel(int $kKategorie, int $kKundengruppe = 0, int $kSprache = 0): array
     {
         $this->elemente = [];
-        if (!Session::CustomerGroup()->mayViewCategories()) {
+        if (!\Session\Session::getCustomerGroup()->mayViewCategories()) {
             return $this->elemente;
         }
         if (!$kKundengruppe) {
-            $kKundengruppe = Session::CustomerGroup()->getID();
+            $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
         }
         if (!$kSprache) {
             $kSprache = Shop::getLanguageID();
@@ -115,7 +118,7 @@ class KategorieListe
         }
         if ($kKategorie === 0 && self::$wasModified === true) {
             $cacheID = CACHING_GROUP_CATEGORY . '_list_' . $kKundengruppe . '_' . $kSprache;
-            $res     = Shop::Cache()->set($cacheID, self::$allCats[$cacheID], [CACHING_GROUP_CATEGORY]);
+            $res     = Shop::Container()->getCache()->set($cacheID, self::$allCats[$cacheID], [CACHING_GROUP_CATEGORY]);
             if ($res === false) {
                 //could not save to cache - so save to session like in 3.18 base
                 $_SESSION['kKategorieVonUnterkategorien_arr'] = self::$allCats[$cacheID]['kKategorieVonUnterkategorien_arr'];
@@ -137,7 +140,7 @@ class KategorieListe
         if (isset(self::$allCats[$cacheID])) {
             return self::$allCats[$cacheID];
         }
-        if (($allCategories = Shop::Cache()->get($cacheID)) !== false) {
+        if (($allCategories = Shop::Container()->getCache()->get($cacheID)) !== false) {
             self::$allCats[$cacheID] = $allCategories;
 
             return $allCategories;
@@ -160,7 +163,7 @@ class KategorieListe
      * @param int   $kKundengruppe
      * @param int   $kSprache
      */
-    public static function setCategoryList($categoryList, int $kKundengruppe, int $kSprache)
+    public static function setCategoryList($categoryList, int $kKundengruppe, int $kSprache): void
     {
         $cacheID                 = CACHING_GROUP_CATEGORY . '_list_' . $kKundengruppe . '_' . $kSprache;
         self::$allCats[$cacheID] = $categoryList;
@@ -177,13 +180,13 @@ class KategorieListe
     public function getOpenCategories($AktuelleKategorie, int $kKundengruppe = 0, int $kSprache = 0): array
     {
         $this->elemente = [];
-        if (!Session::CustomerGroup()->mayViewCategories()) {
+        if (!\Session\Session::getCustomerGroup()->mayViewCategories()) {
             return $this->elemente;
         }
         $this->elemente[]       = $AktuelleKategorie;
         $AktuellekOberkategorie = $AktuelleKategorie->kOberKategorie;
         if (!$kKundengruppe) {
-            $kKundengruppe = Session::CustomerGroup()->getID();
+            $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
         }
         if (!$kSprache) {
             $kSprache = Shop::getLanguageID();
@@ -214,11 +217,11 @@ class KategorieListe
     public function getUnterkategorien($AktuelleKategorie, int $kKundengruppe = 0, int $kSprache = 0): array
     {
         $this->elemente = [];
-        if (!Session::CustomerGroup()->mayViewCategories()) {
+        if (!\Session\Session::getCustomerGroup()->mayViewCategories()) {
             return $this->elemente;
         }
         if (!$kKundengruppe) {
-            $kKundengruppe = Session::CustomerGroup()->getID();
+            $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
         }
         if (!$kSprache) {
             $kSprache = Shop::getLanguageID();
@@ -248,11 +251,11 @@ class KategorieListe
     public function holUnterkategorien(int $kKategorie, int $kKundengruppe, int $kSprache): array
     {
         $oKategorie_arr = [];
-        if (!Session::CustomerGroup()->mayViewCategories()) {
+        if (!\Session\Session::getCustomerGroup()->mayViewCategories()) {
             return [];
         }
         if (!$kKundengruppe) {
-            $kKundengruppe = Session::CustomerGroup()->getID();
+            $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
         }
         if (!$kSprache) {
             $kSprache = Shop::getLanguageID();
@@ -331,9 +334,12 @@ class KategorieListe
                     if ($kSprache !== $kDefaultLang) {
                         $oSeo = Shop::Container()->getDB()->select(
                             'tseo',
-                            'cKey', 'kKategorie',
-                            'kSprache', $kDefaultLang,
-                            'kKey', (int)$oKategorie->kKategorie
+                            'cKey',
+                            'kKategorie',
+                            'kSprache',
+                            $kDefaultLang,
+                            'kKey',
+                            (int)$oKategorie->kKategorie
                         );
                         if (isset($oSeo->cSeo)) {
                             $oKategorie->cSeo = $oSeo->cSeo;

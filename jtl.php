@@ -61,7 +61,7 @@ if (isset($_GET['updated_pw']) && $_GET['updated_pw'] === 'true') {
 if (isset($_POST['login']) && (int)$_POST['login'] === 1 && !empty($_POST['email']) && !empty($_POST['passwort'])) {
     fuehreLoginAus($_POST['email'], $_POST['passwort']);
 }
-$customerID             = Session::Customer()->getID();
+$customerID             = \Session\Session::getCustomer()->getID();
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $editRechnungsadresse   = 0;
@@ -88,7 +88,7 @@ if ($customerID > 0) {
         // Sprache und Waehrung beibehalten
         $kSprache    = Shop::getLanguage();
         $cISOSprache = Shop::getLanguage(true);
-        $Waehrung    = Session::Currency();
+        $Waehrung    = \Session\Session::getCurrency();
         // Kategoriecache loeschen
         unset(
             $_SESSION['kKategorieVonUnterkategorien_arr'],
@@ -236,7 +236,7 @@ if ($customerID > 0) {
         if ($kWunschliste) {
             // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
             $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
-            if (!empty($oWunschliste->kKunde) && (int)$oWunschliste->kKunde === Session::Customer()->getID()) {
+            if (!empty($oWunschliste->kKunde) && (int)$oWunschliste->kKunde === \Session\Session::getCustomer()->getID()) {
                 $step                    = 'wunschliste anzeigen';
                 $cHinweis               .= Wunschliste::update($kWunschliste);
                 $_SESSION['Wunschliste'] = new Wunschliste($_SESSION['Wunschliste']->kWunschliste ?? $kWunschliste);
@@ -291,7 +291,7 @@ if ($customerID > 0) {
         if ($kWunschliste) {
             $oWunschliste = new Wunschliste($kWunschliste);
 
-            if ($oWunschliste->kKunde > 0 && $oWunschliste->kKunde === Session::Customer()->getID()) {
+            if ($oWunschliste->kKunde > 0 && $oWunschliste->kKunde === \Session\Session::getCustomer()->getID()) {
                 $step = 'wunschliste anzeigen';
                 $oWunschliste->entferneAllePos();
                 if ((int)$_SESSION['Wunschliste']->kWunschliste === $oWunschliste->kWunschliste) {
@@ -307,7 +307,7 @@ if ($customerID > 0) {
         $kWunschliste = RequestHelper::verifyGPCDataInt('wl');
         if ($kWunschliste) {
             $oWunschliste = new Wunschliste($kWunschliste);
-            if ($oWunschliste->kKunde && $oWunschliste->kKunde === Session::Customer()->getID()) {
+            if ($oWunschliste->kKunde && $oWunschliste->kKunde === \Session\Session::getCustomer()->getID()) {
                 $step = 'wunschliste anzeigen';
                 $oWunschlistePosSuche_arr          = $oWunschliste->sucheInWunschliste($cSuche);
                 $oWunschliste->CWunschlistePos_arr = $oWunschlistePosSuche_arr;
@@ -321,7 +321,7 @@ if ($customerID > 0) {
         if ($kWunschliste > 0) {
             // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
             $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
-            if (isset($oWunschliste->kKunde) && (int)$oWunschliste->kKunde === Session::Customer()->getID()) {
+            if (isset($oWunschliste->kKunde) && (int)$oWunschliste->kKunde === \Session\Session::getCustomer()->getID()) {
                 if (isset($_REQUEST['wlAction']) && FormHelper::validateToken()) {
                     $wlAction = RequestHelper::verifyGPDataString('wlAction');
                     if ($wlAction === 'setPrivate') {
@@ -352,7 +352,7 @@ if ($customerID > 0) {
         Shop::Smarty()->assign('cPost_arr', $cPost_arr);
 
         $fehlendeAngaben = checkKundenFormularArray($cPost_arr, 1, 0);
-        $kKundengruppe   = Session::CustomerGroup()->getID();
+        $kKundengruppe   = \Session\Session::getCustomerGroup()->getID();
         // CheckBox Plausi
         $oCheckBox           = new CheckBox();
         $fehlendeAngaben     = array_merge(
@@ -424,9 +424,9 @@ if ($customerID > 0) {
             $cHinweis .= Shop::Lang()->get('dataEditSuccessful', 'login');
             TaxHelper::setTaxRates();
             if (isset($_SESSION['Warenkorb']->kWarenkorb)
-                && Session::Cart()->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
+                && \Session\Session::getCart()->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
             ) {
-                Session::Cart()->gibGesamtsummeWarenLocalized();
+                \Session\Session::getCart()->gibGesamtsummeWarenLocalized();
             }
         } else {
             Shop::Smarty()->assign('fehlendeAngaben', $fehlendeAngaben);
@@ -494,7 +494,7 @@ if ($customerID > 0) {
         $bestellung = new Bestellung(RequestHelper::verifyGPCDataInt('bestellung'), true);
         if ($bestellung->kKunde !== null
             && (int)$bestellung->kKunde > 0
-            && (int)$bestellung->kKunde === Session::Customer()->getID()
+            && (int)$bestellung->kKunde === \Session\Session::getCustomer()->getID()
         ) {
             // Download wurde angefordert?
             if (RequestHelper::verifyGPCDataInt('dl') > 0 && class_exists('Download')) {

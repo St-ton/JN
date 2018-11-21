@@ -109,9 +109,9 @@ if (RequestHelper::verifyGPCDataInt('zusatzschritt') === 1) {
     }
 }
 // Zahlungsart als Plugin
-$kPlugin = Plugin::getIDByModuleID($bestellung->Zahlungsart->cModulId);
+$kPlugin = \Plugin\Plugin::getIDByModuleID($bestellung->Zahlungsart->cModulId);
 if ($kPlugin > 0) {
-    $oPlugin = new Plugin($kPlugin);
+    $oPlugin = new \Plugin\Plugin($kPlugin);
     if ($oPlugin->kPlugin > 0) {
         require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
             PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . PFAD_PLUGIN_PAYMENTMETHOD .
@@ -139,7 +139,7 @@ $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategor
 $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
-Shop::Smarty()->assign('WarensummeLocalized', Session::Cart()->gibGesamtsummeWarenLocalized())
+Shop::Smarty()->assign('WarensummeLocalized', \Session\Session::getCart()->gibGesamtsummeWarenLocalized())
     ->assign('Bestellung', $bestellung);
 
 unset(

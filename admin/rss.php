@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'rss_inc.php';
 
 $oAccount->permission('EXPORT_RSSFEED_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 
@@ -21,35 +21,14 @@ if (isset($_GET['f']) && (int)$_GET['f'] === 1 && FormHelper::validateToken()) {
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_RSS, $_POST);
 }
-$oConfig_arr = Shop::Container()->getDB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_RSS, '*', 'nSort');
-$count = count($oConfig_arr);
-for ($i = 0; $i < $count; $i++) {
-    if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
-            'teinstellungenconfwerte',
-            'kEinstellungenConf',
-            $oConfig_arr[$i]->kEinstellungenConf,
-            '*',
-            'nSort'
-        );
-    }
-    $oSetValue = Shop::Container()->getDB()->select(
-        'teinstellungen',
-        'kEinstellungenSektion',
-        CONF_RSS,
-        'cName',
-        $oConfig_arr[$i]->cWertName
-    );
-    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
-}
-
 if (!is_writable(PFAD_ROOT . FILE_RSS_FEED)) {
     $rssNotice = "'" . PFAD_ROOT . FILE_RSS_FEED . "' kann nicht geschrieben werden.
-        Bitte achten Sie darauf, dass diese Datei ausreichende Schreibrechte besitzt. Ansonsten kann keine RSS XML Datei erstellt werden.";
+        Bitte achten Sie darauf, dass diese Datei ausreichende Schreibrechte besitzt. " .
+        "Ansonsten kann keine RSS XML Datei erstellt werden.";
 } else {
     $rssNotice = '<a href="rss.php?f=1">RSS-Feed XML Datei erstellen</a>';
 }
-$smarty->assign('oConfig_arr', $oConfig_arr)
+$smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_RSS))
        ->assign('hinweis', $cHinweis)
        ->assign('rsshinweis', $rssNotice)
        ->assign('fehler', $cFehler)

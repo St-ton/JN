@@ -3,8 +3,6 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {function draftItem}
-    {assign var='queryDraft' value=$query|cat:'&pageKey='|cat:$draftKey}
-
     {if $isCurDraft}
         {assign var='draftTooltip' value='Momentan öffentlich'}
         {if $draftPublishTo !== null}
@@ -16,28 +14,33 @@
         {assign var='draftTooltip' value='Entwurf'}
     {/if}
 
-    <div class="list-group-item list-group-item-{if $isCurDraft}success{else}default{/if}" data-toggle="tooltip"
-         data-placement="right" data-draft-key="{$draftKey}" title="{$draftTooltip}">
-        <a href="admin/onpage-composer.php{$queryDraft}&action=edit" role="button" title="Entwurf bearbeiten">
+    <form method="post" action="admin/onpage-composer.php"
+          class="list-group-item list-group-item-{if $isCurDraft}success{else}default{/if}"
+          data-toggle="tooltip" data-placement="right" data-draft-key="{$draftKey}" title="{$draftTooltip}">
+        <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
+        <input type="hidden" name="pageKey" value="{$draftKey}">
+        <button type="submit" name="action" value="edit" title="Entwurf bearbeiten" class="btn-link">
             {if $isCurDraft}
                 <b><i class="fa fa-fw fa-newspaper-o"></i> {$draftName}</b>
             {else}
                 <i class="fa fa-fw fa-file-o"></i> {$draftName}
             {/if}
-        </a>
-        <a href="admin/onpage-composer.php{$queryDraft}&action=discard"
+        </button>
+        <button type="button"
            class="btn btn-sm btn-danger opc-draft-item-discard pull-right"
            title="Entwurf löschen" role="button" id="btnDiscard{$draftKey}">
             <i class="fa fa-trash"></i>
-        </a>
+        </button>
         <script>
             (function() {
                 var btnDiscard = $('#btnDiscard{$draftKey}');
                 btnDiscard.click(function(e) {
                     e.preventDefault();
                     if(confirm("Wollen Sie diesen Entwurf wirklich löschen?")) {
-                        var href = btnDiscard.attr('href');
-                        $.ajax(href + '&async=yes', {
+                        $.ajax({
+                            method: 'post',
+                            url: 'admin/onpage-composer.php',
+                            data: { action: 'discard', pageKey: {$draftKey}, jtl_token: '{$adminSessionToken}' },
                             success: function(jqxhr, textStatus) {
                                 if(jqxhr === 'ok') {
                                     btnDiscard.closest('.list-group-item').remove();
@@ -49,13 +52,15 @@
                 });
             })();
         </script>
-    </div>
+    </form>
 {/function}
 
 {assign var="curPage" value=$opcPageService->getCurPage()}
 {assign var="curPageId" value=$curPage->getId()}
 {assign var="pageDrafts" value=$opcPageService->getDrafts($curPageId)}
 {assign var="curDraftKey" value=$curPage->getKey()}
+{assign var="adminSessionToken" value=$opc->getAdminSessionToken()}
+{assign var="otherLangDrafts" value=$opcPageService->getOtherLanguageDrafts($curPageId)}
 
 <div id="opc-switcher">
     <div class="switcher">
@@ -67,13 +72,10 @@
                 <h2>OnPage Composer</h2>
             </div>
             <div class="switcher-content">
-                {assign var="query" value="?token="|cat:$smarty.session.jtl_token}
-
                 {if $pageDrafts|count > 0}
                     <div class="list-group">
                         {if $curDraftKey > 0}
                             {call draftItem isCurDraft=true
-                                query=$query
                                 draftKey=$curDraftKey
                                 draftPublishFrom=$curPage->getPublishFrom()
                                 draftPublishTo=$curPage->getPublishTo()
@@ -83,7 +85,6 @@
                         {foreach $pageDrafts as $i => $draft}
                             {if $curDraftKey != $draft->getKey()}
                                 {call draftItem isCurDraft=false
-                                    query=$query
                                     draftKey=$draft->getKey()
                                     draftPublishFrom=$draft->getPublishFrom()
                                     draftPublishTo=$draft->getPublishTo()
@@ -92,17 +93,13 @@
                         {/foreach}
                     </div>
                 {/if}
-
-                {assign var="query" value=$query|cat:"&pageId="|cat:$curPage->getId()}
-                {assign var="query" value=$query|cat:"&pageUrl="|cat:$curPage->getUrl()}
-
                 {if $pageDrafts|count > 0}
                     <p>
-                        <a href="admin/onpage-composer.php{$query}&action=restore" class="btn btn-sm btn-danger"
+                        <button type="button" class="btn btn-sm btn-danger"
                            title="Verwirft alle vorhandenen Entwürfe!" id="btnDiscardAll">
                             <i class="fa fa-trash"></i>
                             Alle Entwürfe verwerfen
-                        </a>
+                        </button>
                         <script>
                             (function() {
                                 var btnDiscardAll = $('#btnDiscardAll');
@@ -111,8 +108,13 @@
                                     var keys = $('#opc-switcher .list-group .list-group-item')
                                         .map(function() { return $(this).data('draft-key'); });
                                     if(confirm('Wollen Sie wirklich alle Entwürfe für die Seite löschen?')) {
-                                        var href = btnDiscardAll.attr('href');
-                                        $.ajax(href + '&async=yes', {
+                                        $.ajax({
+                                            method: 'post',
+                                            url: 'admin/onpage-composer.php',
+                                            data: {
+                                                action: 'restore', pageId: '{$curPageId}',
+                                                jtl_token: '{$adminSessionToken}'
+                                            },
                                             success: function(jqxhr, textStatus) {
                                                 if(jqxhr === 'ok') {
                                                     btnDiscardAll.closest('p').remove();
@@ -131,18 +133,46 @@
                     <p><label>Neuer Entwurf:</label></p>
                 {/if}
 
-                <div class="btn-group">
-                    <a href="admin/onpage-composer.php{$query}&action=extend" class="btn btn-sm btn-primary"
-                       title="Die aktuelle Seite in einem neuem Entwurf erweitern">
-                        <i class="fa fa-plus-circle"></i>
-                        Seite erweitern
-                    </a>
-                    <a href="admin/onpage-composer.php{$query}&action=replace" class="btn btn-sm btn-primary"
-                       title="Die aktuelle Seite in einem neuem Entwurf ersetzen">
-                        <i class="fa fa-file-o"></i>
-                        Seite ersetzen
-                    </a>
-                </div>
+                <form method="post" action="admin/onpage-composer.php">
+                    <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
+                    <input type="hidden" name="pageId" value="{$curPage->getId()}">
+                    <input type="hidden" name="pageUrl" value="{$curPage->getUrl()}">
+                    <div class="btn-group">
+                        <button type="submit" name="action" value="extend" class="btn btn-sm btn-primary">
+                            <i class="fa fa-plus-circle"></i>
+                            Seite erweitern
+                        </button>
+                        <button type="submit" name="action" value="replace" class="btn btn-sm btn-primary">
+                            <i class="fa fa-file-o"></i>
+                            Seite ersetzen
+                        </button>
+                    </div>
+                </form>
+                {if $otherLangDrafts|count > 0}
+                    <form method="post" action="admin/onpage-composer.php">
+                        <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
+                        <input type="hidden" name="pageId" value="{$curPage->getId()}">
+                        <input type="hidden" name="pageUrl" value="{$curPage->getUrl()}">
+                        <input type="hidden" name="action" value="adopt">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-language"></i>
+                                Aus anderer Sprache übernehmen <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                {foreach $otherLangDrafts as $draft}
+                                    <li>
+                                        <button type="submit" name="adoptFromKey" value="{$draft->kPage}"
+                                                class="btn btn-link">
+                                            <b>{$draft->cNameEnglisch}</b> : {$draft->cName}
+                                        </button>
+                                    </li>
+                                {/foreach}
+                            </ul>
+                        </div>
+                    </form>
+                {/if}
             </div>
         </div>
     </div>

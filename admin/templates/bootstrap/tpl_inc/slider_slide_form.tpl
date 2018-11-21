@@ -45,8 +45,6 @@
             </div>
             <table class="hidden"><tbody id="newSlide">{slide oSlide=null kSlide='NEU'}</tbody></table>
             <div class="panel-footer">
-                <div class="upload_info kcfinder_path">{$kcfinderBaseURL}</div>
-                <div class="upload_info shop_url">{$shopURL}</div>
                 <div class="btn-group">
                     <button type="button" class="btn btn-default" onclick="window.location.href = 'slider.php';"><i class="fa fa-angle-double-left"></i> zur&uuml;ck</button>
                     <button type="button" class="btn btn-success" onclick="addSlide();"><i class="glyphicon glyphicon-plus"></i> Hinzuf&uuml;gen</button>

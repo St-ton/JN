@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -10,10 +10,12 @@ use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\ReturnType;
 use Plugin\ExtensionData\AdminMenu;
+use Plugin\ExtensionData\Cache;
 use Plugin\ExtensionData\Config;
 use Plugin\ExtensionData\Hook;
 use Plugin\ExtensionData\License;
 use Plugin\ExtensionData\Links;
+use Plugin\ExtensionData\Localization;
 use Plugin\ExtensionData\Meta;
 use Plugin\ExtensionData\Paths;
 use Tightenco\Collect\Support\Collection;
@@ -60,6 +62,32 @@ abstract class AbstractLoader implements LoaderInterface
         $links = new Links();
 
         return $links->load($data);
+    }
+
+    /**
+     * @param int $id
+     * @return Localization
+     */
+    protected function loadLocalization(int $id): Localization
+    {
+        $data = \Shop::Container()->getDB()->queryPrepared(
+            'SELECT l.kPluginSprachvariable, l.kPlugin, l.cName, l.cBeschreibung,
+            COALESCE(c.cISO, tpluginsprachvariablesprache.cISO)  AS cISO,
+            COALESCE(c.cName, tpluginsprachvariablesprache.cName) AS customValue
+            FROM tpluginsprachvariable AS l
+            LEFT JOIN tpluginsprachvariablecustomsprache AS c
+                ON c.kPluginSprachvariable = l.kPluginSprachvariable
+            LEFT JOIN tpluginsprachvariablesprache
+                ON tpluginsprachvariablesprache.kPluginSprachvariable = l.kPluginSprachvariable
+                AND tpluginsprachvariablesprache.cISO = COALESCE(c.cISO, tpluginsprachvariablesprache.cISO)
+            WHERE l.kPlugin = :pid
+            ORDER BY l.kPluginSprachvariable',
+            ['pid' => $id],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        $localization = new Localization();
+
+        return $localization->load($data);
     }
 
     /**
@@ -148,7 +176,7 @@ abstract class AbstractLoader implements LoaderInterface
      * @param \stdClass $data
      * @return License
      */
-    public function loadLicense($data): License
+    protected function loadLicense($data): License
     {
         $license = new License();
         $license->setClass($data->cLizenzKlasse);
@@ -160,12 +188,25 @@ abstract class AbstractLoader implements LoaderInterface
 
     /**
      * @param AbstractExtension $extension
+     * @return Cache
+     */
+    protected function loadCacheData(AbstractExtension $extension): Cache
+    {
+        $cache = new Cache();
+        $cache->setGroup(\CACHING_GROUP_PLUGIN . '_' . $extension->getID());
+        $cache->setID($cache->getGroup() . '_' . $extension->getMeta()->getVersion());
+
+        return $cache;
+    }
+
+    /**
+     * @param AbstractExtension $extension
      * @return AdminMenu
      */
-    public function loadAdminMenu(AbstractExtension $extension): AdminMenu
+    protected function loadAdminMenu(AbstractExtension $extension): AdminMenu
     {
-        $i      = -1;
-        $menues = \array_map(function ($menu) use (&$i) {
+        $i     = -1;
+        $menus = \array_map(function ($menu) use (&$i) {
             $menu->name             = $menu->cName;
             $menu->kPluginAdminMenu = (int)$menu->kPluginAdminMenu;
             $menu->id               = (int)$menu->kPluginAdminMenu;
@@ -182,7 +223,7 @@ abstract class AbstractLoader implements LoaderInterface
 
             return $menu;
         }, $this->db->selectAll('tpluginadminmenu', 'kPlugin', $extension->getID(), '*', 'nSort'));
-        $menus  = collect($menues);
+        $menus = collect($menus);
         $this->addMarkdownToAdminMenu($extension, $menus);
 
         $adminMenu = new AdminMenu();
@@ -197,7 +238,7 @@ abstract class AbstractLoader implements LoaderInterface
      * @param Collection        $items
      * @return Collection
      */
-    private function addMarkdownToAdminMenu(AbstractExtension $extension, Collection $items): Collection
+    protected function addMarkdownToAdminMenu(AbstractExtension $extension, Collection $items): Collection
     {
         $meta     = $extension->getMeta();
         $lastItem = $items->last();
@@ -274,7 +315,7 @@ abstract class AbstractLoader implements LoaderInterface
      * @param Meta   $meta
      * @return AbstractLoader
      */
-    public function loadMarkdownFiles(string $basePath, Meta $meta): self
+    protected function loadMarkdownFiles(string $basePath, Meta $meta): self
     {
         if ($this->checkFileExistence($basePath . 'README.md')) {
             $meta->setReadmeMD($basePath . 'README.md');

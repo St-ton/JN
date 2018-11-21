@@ -6,6 +6,8 @@
 
 namespace Plugin;
 
+use Cache\JTLCacheInterface;
+use DB\DbInterface;
 use Plugin\ExtensionData\Config;
 
 /**
@@ -429,12 +431,27 @@ class Helper
     }
 
     /**
-     * @param bool $isExtension
-     * @param null $db
-     * @param null $cache
+     * @param int                    $id
+     * @param DbInterface|null       $db
+     * @param JTLCacheInterface|null $cache
      * @return LoaderInterface
      */
-    public static function getLoader(bool $isExtension, $db = null, $cache = null): LoaderInterface
+    public static function getLoaderByPluginID(int $id, DbInterface $db = null, $cache = null): LoaderInterface
+    {
+        $cache = $cache ?? \Shop::Container()->getCache();
+        $db    = $db ?? \Shop::Container()->getDB();
+        $data  = $db->select('tplugin', 'kPlugin', $id);
+
+        return self::getLoader((bool)($data->bExtension ?? false), $db, $cache);
+    }
+
+    /**
+     * @param bool                   $isExtension
+     * @param DbInterface|null       $db
+     * @param JTLCacheInterface|null $cache
+     * @return LoaderInterface
+     */
+    public static function getLoader(bool $isExtension, DbInterface $db = null, $cache = null): LoaderInterface
     {
         $cache = $cache ?? \Shop::Container()->getCache();
         $db    = $db ?? \Shop::Container()->getDB();

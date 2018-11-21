@@ -8,7 +8,6 @@ namespace Plugin;
 
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
-use Plugin\ExtensionData\Cache;
 
 /**
  * Class ExtensionLoader
@@ -28,9 +27,7 @@ class ExtensionLoader extends AbstractLoader
     }
 
     /**
-     * @param int  $id
-     * @param bool $invalidateCache
-     * @return Extension
+     * @inheritdoc
      */
     public function init(int $id, bool $invalidateCache = false): Extension
     {
@@ -57,8 +54,7 @@ class ExtensionLoader extends AbstractLoader
     }
 
     /**
-     * @param \stdClass $obj
-     * @return Extension
+     * @inheritdoc
      */
     public function loadFromObject($obj): Extension
     {
@@ -76,11 +72,7 @@ class ExtensionLoader extends AbstractLoader
         $extension->setPriority((int)$obj->nPrio);
         $extension->setConfig($this->loadConfig($paths->getAdminPath(), $extension->getID()));
         $extension->setLicense($this->loadLicense($obj));
-
-        $cache = new Cache();
-        $cache->setGroup(\CACHING_GROUP_PLUGIN . '_' . $extension->getID());
-        $cache->setID($cache->getGroup() . '_' . $extension->getMeta()->getVersion());
-        $extension->setCache($cache);
+        $extension->setCache($this->loadCacheData($extension));
 
         $this->loadAdminMenu($extension);
 

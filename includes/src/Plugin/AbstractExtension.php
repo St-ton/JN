@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -12,6 +12,7 @@ use Plugin\ExtensionData\Config;
 use Plugin\ExtensionData\Hook;
 use Plugin\ExtensionData\License;
 use Plugin\ExtensionData\Links;
+use Plugin\ExtensionData\Localization;
 use Plugin\ExtensionData\Meta;
 use Plugin\ExtensionData\Paths;
 
@@ -90,6 +91,11 @@ abstract class AbstractExtension
      * @var AdminMenu
      */
     protected $adminMenu;
+
+    /**
+     * @var Localization
+     */
+    protected $localization;
 
     /**
      * @return int
@@ -313,5 +319,21 @@ abstract class AbstractExtension
     public function setAdminMenu(AdminMenu $adminMenu): void
     {
         $this->adminMenu = $adminMenu;
+    }
+
+    /**
+     * @return Localization
+     */
+    public function getLocalization(): Localization
+    {
+        return $this->localization;
+    }
+
+    /**
+     * @param Localization $localization
+     */
+    public function setLocalization(Localization $localization): void
+    {
+        $this->localization = $localization;
     }
 }

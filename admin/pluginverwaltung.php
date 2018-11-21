@@ -10,6 +10,7 @@ $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'pluginverwaltung_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 
+$errorCount      = 0;
 $reload          = false;
 $cHinweis        = '';
 $cFehler         = '';
@@ -343,13 +344,14 @@ if ($step === 'pluginverwaltung_uebersicht') {
         count($pluginsInstalledByState['status_6']);
 } elseif ($step === 'pluginverwaltung_sprachvariablen') {
     $kPlugin      = RequestHelper::verifyGPCDataInt('kPlugin');
-    $oSprache_arr = $db->query(
+    $loader = \Plugin\Helper::getLoaderByPluginID($kPlugin);
+    $languages = $db->query(
         'SELECT * FROM tsprache',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    $smarty->assign('oSprache_arr', $oSprache_arr)
-           ->assign('kPlugin', $kPlugin)
-           ->assign('oPluginSprachvariable_arr', \Plugin\Helper::getLanguageVariables($kPlugin));
+    $smarty->assign('languages', $languages)
+           ->assign('plugin', $loader->init($kPlugin))
+           ->assign('kPlugin', $kPlugin);
 }
 
 if ($reload === true) {

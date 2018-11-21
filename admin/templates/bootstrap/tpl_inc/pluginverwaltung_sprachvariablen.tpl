@@ -14,7 +14,7 @@
 </script>
 {include file='tpl_inc/seite_header.tpl' cTitel=#pluginverwaltung# cBeschreibung=#pluginverwaltungDesc#}
 <div id="content" class="container-fluid">
-    {if !empty($oPluginSprachvariable_arr) && is_array($oPluginSprachvariable_arr)}
+    {if $plugin->getLocalization()->getLangVars()->count() > 0}
         <form name="pluginverwaltung" method="post" action="pluginverwaltung.php">
             {$jtl_token}
             <input type="hidden" name="pluginverwaltung_sprachvariable" value="1" />
@@ -32,28 +32,27 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach name="pluginsprachvariablen" from=$oPluginSprachvariable_arr item=oPluginSprachvariable}
+                        {foreach $plugin->getLocalization()->getLangVars() as $var}
                             <tr>
-                                <td><strong>{$oPluginSprachvariable->cName}</strong></td>
-                                <td>{$oPluginSprachvariable->cBeschreibung}</td>
+                                <td><strong>{$var->name}</strong></td>
+                                <td>{$var->description}</td>
                             </tr>
-
-                            {foreach name="sprachen" from=$oSprache_arr item=oSprache}
+                            {foreach $languages as $lang}
                                 <tr>
-                                    <td>{$oSprache->cNameDeutsch}</td>
+                                    <td>{$lang->cNameDeutsch}</td>
                                     <td>
-                                        {assign var=cISOSprache value=$oSprache->cISO|upper}
-                                        {if isset($oPluginSprachvariable->oPluginSprachvariableSprache_arr[$cISOSprache]) && $oPluginSprachvariable->oPluginSprachvariableSprache_arr[$cISOSprache]|strlen > 0}
-                                            <input class="form-control" style="width: 300px;" name="{$oPluginSprachvariable->kPluginSprachvariable}_{$cISOSprache}" type="text" value="{$oPluginSprachvariable->oPluginSprachvariableSprache_arr[$cISOSprache]|escape:'html'}" />
+                                        {assign var=cISOSprache value=strtoupper($lang->cISO)}
+                                        {if isset($var->values[$cISOSprache]) && $var->values[$cISOSprache]|strlen > 0}
+                                            <input class="form-control" style="width: 350px;" name="{$var->id}_{$cISOSprache}" type="text" value="{$var->values[$cISOSprache]|escape:'html'}" />
                                         {else}
-                                            <input class="form-control" style="width: 300px;" name="{$oPluginSprachvariable->kPluginSprachvariable}_{$cISOSprache}" type="text" value="" />
+                                            <input class="form-control" style="width: 350px;" name="{$var->id}_{$cISOSprache}" type="text" value="" />
                                         {/if}
                                     </td>
                                 </tr>
                             {/foreach}
                             <tr>
                                 <td>&nbsp;</td>
-                                <td><a onclick="ackCheck({$oPluginSprachvariable->kPluginSprachvariable}, {$kPlugin}); return false;" class="btn btn-danger button reset"><i class="fa fa-warning"></i> {#pluginLocalesStd#}</a></td>
+                                <td><a onclick="ackCheck({$var->id}, {$kPlugin}); return false;" class="btn btn-danger button reset"><i class="fa fa-warning"></i> {#pluginLocalesStd#}</a></td>
                             </tr>
                         {/foreach}
                         </tbody>

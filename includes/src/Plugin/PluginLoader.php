@@ -12,6 +12,7 @@ use DB\ReturnType;
 use Plugin\ExtensionData\Cache;
 use Plugin\ExtensionData\Config;
 use Plugin\ExtensionData\Links;
+use Plugin\ExtensionData\Localization;
 use Plugin\ExtensionData\Meta;
 use Plugin\ExtensionData\Paths;
 
@@ -54,10 +55,7 @@ class PluginLoader extends AbstractLoader
     }
 
     /**
-     * @param int  $id
-     * @param bool $invalidateCache
-     * @return Plugin
-     * @throws \InvalidArgumentException
+     * @inheritdoc
      */
     public function init(int $id, bool $invalidateCache = false): Plugin
     {
@@ -126,7 +124,7 @@ class PluginLoader extends AbstractLoader
         $this->loadMarkdownFiles($this->plugin->getPaths()->getBasePath(), $this->plugin->getMeta());
         $this->loadAdminMenu($this->plugin);
         $this->plugin->setConfig($this->loadConfig($this->plugin->getPaths()->getAdminPath(), $this->plugin->getID()));
-        $this->loadLocalization();
+        $this->plugin->setLocalization($this->loadLocalization($this->plugin->getID()));
         $this->plugin->setLinks($this->loadLinks($this->plugin->getID()));
         $this->loadPaymentMethods();
         $this->loadMailTemplates();
@@ -140,7 +138,7 @@ class PluginLoader extends AbstractLoader
     /**
      * @return bool
      */
-    public function cache(): bool
+    protected function cache(): bool
     {
         return $this->cacheID !== null
             ? $this->cache->set($this->cacheID, $this->plugin, [\CACHING_GROUP_PLUGIN, $this->plugin->pluginCacheGroup])
@@ -150,7 +148,7 @@ class PluginLoader extends AbstractLoader
     /**
      * @inheritdoc
      */
-    public function loadPaths(string $pluginDir): Paths
+    protected function loadPaths(string $pluginDir): Paths
     {
         $shopURL   = \Shop::getURL();
         $basePath  = \PFAD_ROOT . \PFAD_PLUGIN . $pluginDir . \DIRECTORY_SEPARATOR;
@@ -175,7 +173,7 @@ class PluginLoader extends AbstractLoader
     /**
      * @inheritdoc
      */
-    public function loadConfig(string $path, int $id): Config
+    protected function loadConfig(string $path, int $id): Config
     {
         $config       = parent::loadConfig($path, $id);
         $assocCompat  = [];
@@ -212,32 +210,21 @@ class PluginLoader extends AbstractLoader
     }
 
     /**
-     * @return PluginLoader
+     * @inheritdoc
      */
-    public function loadLocalization(): self
+    protected function loadLocalization(int $id): Localization
     {
-        $this->plugin->oPluginSprachvariable_arr = Helper::getLanguageVariables($this->plugin->getID());
-        $iso                                     = '';
-        if (isset($_SESSION['cISOSprache']) && \strlen($_SESSION['cISOSprache']) > 0) {
-            $iso = $_SESSION['cISOSprache'];
-        } else {
-            $oSprache = \Sprache::getDefaultLanguage();
-            if ($oSprache !== null && \strlen($oSprache->cISO) > 0) {
-                $iso = $oSprache->cISO;
-            }
-        }
-        $this->plugin->oPluginSprachvariableAssoc_arr = Helper::getLanguageVariablesByID(
-            $this->plugin->getID(),
-            $iso
-        );
+        $localization                                 = parent::loadLocalization($id);
+        $this->plugin->oPluginSprachvariable_arr      = $localization->getLangVars()->toArray();
+        $this->plugin->oPluginSprachvariableAssoc_arr = $localization->getTranslations();
 
-        return $this;
+        return $localization;
     }
 
     /**
      * @return PluginLoader
      */
-    public function loadPaymentMethods(): self
+    protected function loadPaymentMethods(): self
     {
         $methodsAssoc = [];
         $methods      = $this->db->query(

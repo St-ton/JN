@@ -33,11 +33,6 @@ class Plugin extends ExtensionBC
     /**
      * @var array
      */
-    public $oPluginAdminMenu_arr = [];
-
-    /**
-     * @var array
-     */
     public $oPluginEinstellung_arr = [];
 
     /**

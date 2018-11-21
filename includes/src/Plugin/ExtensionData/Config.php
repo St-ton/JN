@@ -16,6 +16,12 @@ use function Functional\group;
  */
 class Config
 {
+    public const TYPE_NOT_CONFIGURABLE = 'N';
+
+    public const TYPE_CONFIGURABLE = 'Y';
+
+    public const TYPE_DYNAMIC = 'M';
+
     /**
      * @var string
      */
@@ -58,7 +64,7 @@ class Config
             $cfg->sort        = (int)$base->nSort;
             $cfg->confType    = $base->confType;
             $cfg->sourceFile  = $base->sourceFile;
-            $cfg->value       = $base->confType === 'M'
+            $cfg->value       = $base->confType === self::TYPE_DYNAMIC
                 ? \unserialize($base->currentValue, ['allowed_classes' => false])
                 : $base->currentValue;
 //            $cfg->raw         = $base;
@@ -88,12 +94,18 @@ class Config
     public function getDynamicOptions($conf): ?array
     {
         $dynamicOptions = null;
-        if (!empty($conf->cSourceFile) && \file_exists($this->adminPath . $conf->cSourceFile)) {
-            $dynamicOptions = include $this->adminPath . $conf->cSourceFile;
+        if (!empty($conf->sourceFile) && \file_exists($this->adminPath . $conf->sourceFile)) {
+            $dynamicOptions = include $this->adminPath . $conf->sourceFile;
             foreach ($dynamicOptions as $option) {
-                $option->kPluginEinstellungenConf = $conf->kPluginEinstellungenConf;
+                $option->kPluginEinstellungenConf = $conf->id;
+                $option->id                       = $conf->id;
+                $option->niceName                 = $option->cName;
+                $option->value                    = $option->cWert;
                 if (!isset($option->nSort)) {
                     $option->nSort = 0;
+                }
+                if (!isset($option->sort)) {
+                    $option->sort = $option->nSort;
                 }
             }
         }

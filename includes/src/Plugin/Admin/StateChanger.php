@@ -166,7 +166,7 @@ class StateChanger
         $lastUpdate    = $plugin->getMeta()->getDateLastUpdate();
         $lastXMLChange = \filemtime($info);
         if ($forceReload === true || $lastXMLChange > $lastUpdate->getTimestamp()) {
-            $uninstaller = new Uninstaller($this->db);
+            $uninstaller = new Uninstaller($this->db, $this->cache);
             $installer   = new Installer($this->db, $uninstaller, $this->validator, $this->modernValidator);
             $installer->setDir($plugin->getPaths()->getBaseDir());
             $installer->setPlugin($plugin);

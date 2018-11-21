@@ -43,17 +43,24 @@
                                 </td>
                                 <td class="tcenter plugin-status">
                                     <h4 class="label-wrap text-nowrap">
-                                        <span class="label {if $plugin->getState() === \Plugin\State::ACTIVATED}success label-success{elseif $plugin->getState() == 1}success label-info{elseif $plugin->getState() == 3}success label-default{elseif $plugin->getState() == 4 || $plugin->getState() == 5}info label-info{elseif $plugin->getState() == 6}danger label-danger{/if}">
+                                        <span class="label {if $plugin->getState() === \Plugin\State::ACTIVATED}success label-success{elseif $plugin->getState() === \Plugin\State::DISABLED}success label-info{elseif $plugin->getState() === \Plugin\State::ERRONEOUS}success label-default{elseif $plugin->getState() === \Plugin\State::UPDATE_FAILED || $plugin->getState() === \Plugin\State::LICENSE_KEY_MISSING}info label-info{elseif $plugin->getState() === \Plugin\State::LICENSE_KEY_INVALID}danger label-danger{/if}">
                                             {$mapper->map($plugin->getState())}
                                         </span>
-                                        {if isset($PluginIndex_arr[$plugin->cVerzeichnis]->shop4compatible) && $PluginIndex_arr[$plugin->cVerzeichnis]->shop4compatible === false}
-                                            <span title="Achtung: Plugin ist nicht vollst&auml;ndig Shop4-kompatibel! Es k&ouml;nnen daher Probleme beim Betrieb entstehen." class="label warning label-warning"><i class="fa fa-warning"></i></span>
-                                        {/if}
+                                        {foreach $allPluginItems as $p}
+                                            {if $p->getID() === $plugin->getPluginID()}
+                                                {if $p->isShop5Compatible() === false}
+                                                    <span title="Achtung: Plugin ist nicht vollständig Shop5-kompatibel! Es können daher Probleme beim Betrieb entstehen." class="label warning label-warning"><i class="fa fa-warning"></i></span>
+                                                {elseif $p->isShop5Compatible() === false && $p->isShop4Compatible() === false}
+                                                    <span title="Achtung: Plugin ist nicht vollständig Shop4-kompatibel! Es können daher Probleme beim Betrieb entstehen." class="label warning label-warning"><i class="fa fa-warning"></i></span>
+                                                {/if}
+                                                {break}
+                                            {/if}
+                                        {/foreach}
                                     </h4>
                                 </td>
-                                <td class="tcenter plugin-version">{number_format($plugin->nVersion / 100, 2)}{if $plugin->getMeta()->isUpdateAvailable()} <span class="label label-success update-info">{number_format((float)$plugin->getCurrentVersion() / 100, 2)}</span>{/if}</td>
+                                <td class="tcenter plugin-version">{number_format($plugin->getMeta()->getVersion() / 100, 2)}{if $plugin->getMeta()->isUpdateAvailable()} <span class="label label-success update-info">{number_format((float)$plugin->getCurrentVersion() / 100, 2)}</span>{/if}</td>
                                 <td class="tcenter plugin-install-date">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
-                                <td class="tcenter plugin-folder">{$plugin->cVerzeichnis}</td>
+                                <td class="tcenter plugin-folder">{$plugin->getPaths()->getBaseDir()}</td>
                                 <td class="tcenter plugin-lang-vars">
                                     {if isset($plugin->oPluginSprachvariableAssoc_arr) && $plugin->oPluginSprachvariableAssoc_arr|@count > 0}
                                         <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
@@ -66,13 +73,11 @@
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-license">
-                                    {if isset($plugin->cLizenzKlasse) && $plugin->cLizenzKlasse|strlen > 0}
-                                        {if isset($plugin->cLizenzKlasse) && $plugin->cLizenzKlasse|strlen > 0}
-                                            <button name="lizenzkey" type="submit" title="{#modify#}"
-                                                    class="btn {if $plugin->cLizenz && $plugin->cLizenz|strlen > 0}btn-default{else}btn-primary{/if} btn-sm" value="{$plugin->getID()}">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                        {/if}
+                                    {if $plugin->getLicense()->hasLicenseCheck()}
+                                        <button name="lizenzkey" type="submit" title="{#modify#}"
+                                                class="btn {if $plugin->getLicense()->hasLicense()}btn-default{else}btn-primary{/if} btn-sm" value="{$plugin->getID()}">
+                                            <i class="fa fa-edit"></i>
+                                        </button>
                                     {/if}
                                 </td>
                                 <td class="tcenter">

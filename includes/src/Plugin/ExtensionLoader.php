@@ -66,6 +66,7 @@ class ExtensionLoader extends AbstractLoader
         $extension = new Extension();
         $extension->setMeta($this->loadMetaData($obj));
         $extension->setPaths($paths);
+        $this->loadMarkdownFiles($paths->getBasePath(), $extension->getMeta());
         $extension->setState((int)$obj->nStatus);
         $extension->setID((int)$obj->kPlugin);
         $extension->setBootstrap(true);
@@ -73,6 +74,8 @@ class ExtensionLoader extends AbstractLoader
         $extension->setPluginID($obj->cPluginID);
         $extension->setPriority((int)$obj->nPrio);
         $extension->setConfig($this->loadConfig($paths->getAdminPath(), $extension->getID()));
+        $extension->setLicense($this->loadLicense($obj));
+        $this->loadAdminMenu($extension);
 
         return $extension;
     }

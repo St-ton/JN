@@ -75,9 +75,9 @@
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-license">
-                                    {if isset($plugin->cLizenzKlasse) && $plugin->cLizenzKlasse|strlen > 0}
+                                    {if $plugin->getLicense()->hasLicenseCheck()}
                                         <button name="lizenzkey" type="submit" title="{#modify#}"
-                                                class="btn {if $plugin->cLizenz && $plugin->cLizenz|strlen > 0}btn-default{else}btn-primary{/if} btn-sm" value="{$plugin->getID()}">
+                                                class="btn {if $plugin->getLicense()->hasLicense()}btn-default{else}btn-primary{/if} btn-sm" value="{$plugin->getID()}">
                                         <i class="fa fa-edit"></i></button>
                                     {/if}
                                 </td>

@@ -44,11 +44,13 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
 function updatePlugin(int $kPlugin)
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $db          = Shop::Container()->getDB();
-    $uninstaller = new \Plugin\Admin\Uninstaller($db);
-    $validator   = new \Plugin\Admin\Validator($db);
-    $installer   = new \Plugin\Admin\Installer($db, $uninstaller, $validator);
-    $updater     = new \Plugin\Admin\Updater($db, $installer);
+    $db              = Shop::Container()->getDB();
+    $cache           = Shop::Container()->getCache();
+    $uninstaller     = new \Plugin\Admin\Uninstaller($db, $cache);
+    $validator       = new \Plugin\Admin\Validation\Shop4Validator($db);
+    $modernValidator = new \Plugin\Admin\Validation\ModernValidator($db);
+    $installer       = new \Plugin\Admin\Installer($db, $uninstaller, $validator, $modernValidator);
+    $updater         = new \Plugin\Admin\Updater($db, $installer);
 
     return $updater->update($kPlugin);
 }
@@ -64,10 +66,12 @@ function updatePlugin(int $kPlugin)
 function installierePluginVorbereitung($dir, $oldPlugin = 0)
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $db          = Shop::Container()->getDB();
-    $uninstaller = new \Plugin\Admin\Uninstaller($db);
-    $validator   = new \Plugin\Admin\Validator($db);
-    $installer   = new \Plugin\Admin\Installer($db, $uninstaller, $validator);
+    $db              = Shop::Container()->getDB();
+    $cache           = Shop::Container()->getCache();
+    $uninstaller     = new \Plugin\Admin\Uninstaller($db, $cache);
+    $validator       = new \Plugin\Admin\Validation\Shop4Validator($db);
+    $modernValidator = new \Plugin\Admin\Validation\ModernValidator($db);
+    $installer       = new \Plugin\Admin\Installer($db, $uninstaller, $validator, $modernValidator);
     $installer->setDir($dir);
     if ($oldPlugin !== 0) {
         $installer->setPlugin($oldPlugin);
@@ -116,7 +120,8 @@ function aktivierePlugin(int $kPlugin): int
     $stateChanger = new \Plugin\Admin\StateChanger(
         $db,
         Shop::Container()->getCache(),
-        new \Plugin\Admin\Validator($db)
+        new \Plugin\Admin\Validation\Shop4Validator($db),
+        new \Plugin\Admin\Validation\ModernValidator($db)
     );
 
     return $stateChanger->activate($kPlugin);

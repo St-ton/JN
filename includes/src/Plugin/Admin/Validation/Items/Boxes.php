@@ -42,7 +42,9 @@ class Boxes extends AbstractItem
             if (empty($box['TemplateFile'])) {
                 return InstallCode::INVALID_BOX_TEMPLATE;
             }
-            if (!\file_exists($base . $box['TemplateFile'])) {
+            $new = $dir . \PFAD_PLUGIN_FRONTEND . 'boxes/' . $box['TemplateFile'];
+            $old = $base . $box['TemplateFile'];
+            if (!\file_exists($new) && !\file_exists($old)) {
                 return InstallCode::MISSING_BOX_TEMPLATE_FILE;
             }
         }

@@ -85,8 +85,17 @@
                         </thead>
                         <tbody>
                         {foreach $pluginsAvailable->toArray() as $listingItem}
-                            <tr class="plugin{if $listingItem->isShop5Compatible()} alert alert-info{elseif !$listingItem->isShop4Compatible()} alert alert-danger{/if}">
-                                <td class="check"><input type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$listingItem->getDir()}" value="{$listingItem->getDir()}" /></td>
+                            <tr class="plugin">
+                                <td class="check">
+                                    <input type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$listingItem->getDir()}" value="{$listingItem->getDir()}" />
+                                    {if $listingItem->isShop5Compatible() === false}
+                                        {if $listingItem->isShop4Compatible() === false}
+                                            <span title="Achtung: Plugin ist nicht vollständig Shop4-kompatibel! Es können daher Probleme beim Betrieb entstehen." class="label warning label-danger"><i class="fa fa-warning"></i></span>
+                                        {else}
+                                            <span title="Achtung: Plugin ist nicht vollständig Shop5-kompatibel! Es können daher Probleme beim Betrieb entstehen." class="label warning label-warning"><i class="fa fa-warning"></i></span>
+                                        {/if}
+                                    {/if}
+                                </td>
                                 <td>
                                     <label for="plugin-check-{$listingItem->getDir()}">{$listingItem->getName()}</label>
                                     <p>{$listingItem->getDescription()}</p>

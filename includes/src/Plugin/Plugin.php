@@ -183,24 +183,11 @@ class Plugin extends ExtensionBC
      *
      * @param int  $kPlugin
      * @param bool $invalidateCache - set to true to clear plugin cache
-     * @param bool $suppressReload - set to true when the plugin shouldn't be reloaded, not even in plugin dev mode
      */
-    public function __construct(int $kPlugin = 0, bool $invalidateCache = false, bool $suppressReload = false)
+    public function __construct(int $kPlugin = 0, bool $invalidateCache = false)
     {
         if ($kPlugin > 0) {
-            $db    = \Shop::Container()->getDB();
-            $cache = \Shop::Container()->getCache();
-            $this->loadFromDB($kPlugin, $db, $cache, $invalidateCache);
-            if (\PLUGIN_DEV_MODE === true && $suppressReload === false) {
-                $stateChanger = new StateChanger(
-                    $db,
-                    $cache,
-                    new Shop4Validator($db),
-                    new ModernValidator($db)
-                );
-                $stateChanger->reload($this, false);
-                $this->loadFromDB($kPlugin, $db, $cache, $invalidateCache);
-            }
+            $this->loadFromDB($kPlugin, \Shop::Container()->getDB(), \Shop::Container()->getCache(), $invalidateCache);
         }
     }
 

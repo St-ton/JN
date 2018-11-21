@@ -126,7 +126,7 @@ final class Installer
         $xml    = $parser->parse($baseDir . '/' . \PLUGIN_INFO_FILE);
         $validator->setDir($baseDir);
         $code = $validator->pluginPlausiIntern($xml, $this->plugin !== null);
-        if ($this->plugin !== null && $this->plugin->kPlugin > 0 && $code === InstallCode::DUPLICATE_PLUGIN_ID) {
+        if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $this->plugin !== null && $this->plugin->getID() > 0) {
             $code = InstallCode::OK;
         }
         if ($code === InstallCode::OK || $code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE) {

@@ -16,7 +16,7 @@ $cFehler         = '';
 $step            = 'pluginverwaltung_uebersicht';
 $db              = Shop::Container()->getDB();
 $cache           = Shop::Container()->getCache();
-$uninstaller     = new \Plugin\Admin\Uninstaller($db);
+$uninstaller     = new \Plugin\Admin\Uninstaller($db, $cache);
 $validator       = new \Plugin\Admin\Validation\Shop4Validator($db);
 $modernValidator = new \Plugin\Admin\Validation\ModernValidator($db);
 $listing         = new \Plugin\Admin\Listing($db, $cache, $validator, $modernValidator);
@@ -97,16 +97,18 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
     ) { // Lizenzkey eingeben
         $step    = 'pluginverwaltung_lizenzkey';
         $kPlugin = (int)$_POST['kPlugin'];
-        $oPlugin = $db->select('tplugin', 'kPlugin', $kPlugin);
-        if (isset($oPlugin->kPlugin) && $oPlugin->kPlugin > 0) {
-            $oPlugin = new \Plugin\Plugin($kPlugin, true);
-            require_once $oPlugin->cLicencePfad . $oPlugin->cLizenzKlasseName;
-            $oPluginLicence = new $oPlugin->cLizenzKlasse();
+        $data    = $db->select('tplugin', 'kPlugin', $kPlugin);
+        if (isset($data->kPlugin) && $data->kPlugin > 0) {
+            $loader  = \Plugin\Helper::getLoader((int)$data->bExtension === 1, $db, $cache);
+            $oPlugin = $loader->init($kPlugin, true);
+            require_once $oPlugin->getPaths()->getLicencePath() . $oPlugin->getLicense()->getClassName();
+            $class = $oPlugin->getLicense()->getClass();
+            $oPluginLicence = new $class();
             $cLicenceMethod = PLUGIN_LICENCE_METHODE;
             if ($oPluginLicence->$cLicenceMethod(StringHandler::filterXSS($_POST['cKey']))) {
                 $oPlugin->cFehler = '';
                 $oPlugin->setState(\Plugin\State::ACTIVATED);
-                $oPlugin->cLizenz = StringHandler::filterXSS($_POST['cKey']);
+                $oPlugin->getLicense()->setKey(StringHandler::filterXSS($_POST['cKey']));
                 $oPlugin->updateInDB();
                 $cHinweis = 'Ihr Plugin-Lizenzschlüssel wurde gespeichert.';
                 $step     = 'pluginverwaltung_uebersicht';
@@ -354,13 +356,6 @@ if ($reload === true) {
     $_SESSION['plugin_msg'] = $cHinweis;
     header('Location: ' . Shop::getURL() . '/' . PFAD_ADMIN . 'pluginverwaltung.php', true, 303);
     exit();
-}
-if (PLUGIN_DEV_MODE === true) {
-    $pluginDevNotice = 'Ihr Shop befindet sich im Plugin-Entwicklungsmodus. ' .
-        'Änderungen an der XML-Datei eines aktivierten Plugins bewirken ein automatisches Update.';
-    $cHinweis        = empty($cHinweis)
-        ? $pluginDevNotice
-        : $pluginDevNotice . '<br>' . $cHinweis;
 }
 $smarty->assign('hinweis', $cHinweis)
        ->assign('hinweis64', base64_encode($cHinweis))

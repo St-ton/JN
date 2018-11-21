@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -6,17 +6,20 @@
 
 namespace Plugin\Admin;
 
+use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\ReturnType;
-use Plugin\InstallCode;
-use Plugin\Plugin;
+use Plugin\AbstractExtension;
+use Plugin\ExtensionLoader;
 use Plugin\Helper;
+use Plugin\InstallCode;
+use Plugin\PluginLoader;
 
 /**
  * Class Uninstaller
  * @package Plugin\Admin
  */
-class Uninstaller
+final class Uninstaller
 {
     /**
      * @var DbInterface
@@ -24,12 +27,19 @@ class Uninstaller
     private $db;
 
     /**
-     * Uninstaller constructor.
-     * @param DbInterface $db
+     * @var JTLCacheInterface
      */
-    public function __construct(DbInterface $db)
+    private $cache;
+
+    /**
+     * Uninstaller constructor.
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
+     */
+    public function __construct(DbInterface $db, JTLCacheInterface $cache)
     {
-        $this->db = $db;
+        $this->db    = $db;
+        $this->cache = $cache;
     }
 
     /**
@@ -48,9 +58,16 @@ class Uninstaller
         if ($pluginID <= 0) {
             return InstallCode::WRONG_PARAM;
         }
-        $plugin = new Plugin($pluginID, false, true); // suppress reload = true um Endlosrekursion zu verhindern
-        if (empty($plugin->kPlugin)) {
-            return InstallCode::NO_PLUGIN_FOUND;
+        $data = $this->db->select('tplugin', 'kPlugin', $pluginID);
+        if ((int)$data->bExtension === 1) {
+            $loader = new ExtensionLoader($this->db, $this->cache);
+            $plugin = $loader->init($pluginID);
+        } else {
+            $loader = new PluginLoader($this->db, $this->cache);
+            $plugin = $loader->init($pluginID);//
+        }
+        if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
+            $p->uninstalled();
         }
         if (!$update) {
             // Plugin wird vollständig deinstalliert
@@ -72,25 +89,22 @@ class Uninstaller
             // Plugin wird nur teilweise deinstalliert, weil es danach ein Update gibt
             $this->doSQLDelete($pluginID, $update, $newPluginID);
         }
-        \Shop::Container()->getCache()->flushAll();
-        if (($p = Helper::bootstrapper($pluginID)) !== null) {
-            $p->uninstalled();
-        }
+        $this->cache->flushAll();
 
         return InstallCode::OK;
     }
 
     /**
-     * @param Plugin $plugin
+     * @param AbstractExtension $plugin
      * @return array
      * @throws \Exception
      */
     private function executeMigrations($plugin): array
     {
-        $manager           = new MigrationManager(
+        $manager = new MigrationManager(
             $this->db,
-            $plugin->cPluginPfad . \PFAD_PLUGIN_MIGRATIONS,
-            $plugin->cPluginID
+            $plugin->getPaths()->getBasePath() . \PFAD_PLUGIN_MIGRATIONS,
+            $plugin->getPluginID()
         );
 
         return $manager->migrate(0);
@@ -129,7 +143,7 @@ class Uninstaller
                 LEFT JOIN tboxen 
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
                 WHERE tboxvorlage.kCustomID = " . $pluginID . "
-                    AND tboxvorlage.eTyp = 'plugin'",
+                    AND (tboxvorlage.eTyp = 'plugin' OR tboxvorlage.eTyp = 'extension')",
             ReturnType::AFFECTED_ROWS
         );
         $this->db->query(

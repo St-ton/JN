@@ -6,6 +6,7 @@
 
 namespace Plugin;
 
+use Plugin\ExtensionData\AdminMenu;
 use Plugin\ExtensionData\Cache;
 use Plugin\ExtensionData\Config;
 use Plugin\ExtensionData\Hook;
@@ -81,9 +82,14 @@ abstract class AbstractExtension
     protected $bootstrap = false;
 
     /**
-     * @var Hook
+     * @var Hook[]
      */
     protected $hooks;
+
+    /**
+     * @var AdminMenu
+     */
+    protected $adminMenu;
 
     /**
      * @return int
@@ -278,18 +284,34 @@ abstract class AbstractExtension
     }
 
     /**
-     * @return Hook
+     * @return Hook[]
      */
-    public function getHooks(): Hook
+    public function getHooks(): array
     {
         return $this->hooks;
     }
 
     /**
-     * @param Hook $hooks
+     * @param Hook[] $hooks
      */
-    public function setHooks(Hook $hooks): void
+    public function setHooks(array $hooks): void
     {
         $this->hooks = $hooks;
+    }
+
+    /**
+     * @return AdminMenu
+     */
+    public function getAdminMenu(): AdminMenu
+    {
+        return $this->adminMenu;
+    }
+
+    /**
+     * @param AdminMenu $adminMenu
+     */
+    public function setAdminMenu(AdminMenu $adminMenu): void
+    {
+        $this->adminMenu = $adminMenu;
     }
 }

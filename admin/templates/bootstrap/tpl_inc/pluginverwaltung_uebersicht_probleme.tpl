@@ -48,9 +48,9 @@
                                 </span>
                             </h4>
                         </td>
-                        <td class="tcenter">{number_format($plugin->nVersion / 100, 2)}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{number_format((float)$plugin->getCurrentVersion() / 100, 2)}</span>{/if}</td>
-                        <td class="tcenter">{$plugin->dInstalliert_DE}</td>
-                        <td class="tcenter">{$plugin->cVerzeichnis}</td>
+                        <td class="tcenter">{number_format($plugin->getMeta()->getVersion() / 100, 2)}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{number_format((float)$plugin->getCurrentVersion() / 100, 2)}</span>{/if}</td>
+                        <td class="tcenter">{$plugin->getDateInstalled()->format('d.m.Y H:i')}</td>
+                        <td class="tcenter">{$plugin->getPaths()->getBaseDir()}</td>
                         <td class="tcenter">
                             {if isset($plugin->oPluginSprachvariableAssoc_arr) && $plugin->oPluginSprachvariableAssoc_arr|@count > 0}
                                 <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
@@ -65,9 +65,9 @@
                             {/if}
                         </td>
                         <td class="tcenter">
-                            {if isset($plugin->cLizenzKlasse) && $plugin->cLizenzKlasse|strlen > 0}
-                                {if $plugin->cLizenz && $plugin->cLizenz|strlen > 0}
-                                    <strong>{#pluginBtnLicence#}:</strong> {$plugin->cLizenz}
+                            {if $plugin->getLicense()->hasLicenseCheck()}
+                                {if $plugin->getLicense()->hasLicense()}
+                                    <strong>{#pluginBtnLicence#}:</strong> {$plugin->getLicense()->getKey()}
                                     <button name="lizenzkey" type="submit" class="btn btn-default" value="{$plugin->getID()}">
                                         <i class="fa fa-edit"></i> {#pluginBtnLicenceChange#}</button>
                                 {else}
@@ -107,9 +107,9 @@
                             </span>
                             </h4>
                         </td>
-                        <td class="tcenter">{number_format($plugin->nVersion / 100, 2)}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{number_format((float)$plugin->getCurrentVersion() / 100, 2)}</span>{/if}</td>
+                        <td class="tcenter">{number_format($plugin->getMeta()->getVersion() / 100, 2)}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{number_format((float)$plugin->getCurrentVersion() / 100, 2)}</span>{/if}</td>
                         <td class="tcenter">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
-                        <td class="tcenter">{$plugin->cVerzeichnis}</td>
+                        <td class="tcenter">{$plugin->getPaths()->getBaseDir()}</td>
                         <td class="tcenter">
                             {if isset($plugin->oPluginSprachvariableAssoc_arr) && $plugin->oPluginSprachvariableAssoc_arr|@count > 0}
                                 <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}" class="btn btn-default">{#modify#}</a>
@@ -124,9 +124,9 @@
                             {/if}
                         </td>
                         <td class="tcenter">
-                            {if isset($plugin->cLizenzKlasse) && $plugin->cLizenzKlasse|strlen > 0}
-                                {if $plugin->cLizenz && $plugin->cLizenz|strlen > 0}
-                                    {$plugin->cLizenz|truncate:35:'...':true}
+                            {if $plugin->getLicense()->hasLicenseCheck()}
+                                {if $plugin->getLicense()->hasLicense()}
+                                    {$plugin->getLicense()->getKey()|truncate:35:'...':true}
                                     <button name="lizenzkey" type="submit" class="btn btn-default" value="{$plugin->getID()}">
                                         <i class="fa fa-edit"></i> {#pluginBtnLicenceChange#}
                                     </button>
@@ -168,7 +168,7 @@
                                 </span>
                             </h4>
                         </td>
-                        <td class="tcenter">{number_format($plugin->nVersion / 100, 2)}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{number_format((float)$plugin->getCurrentVersion() / 100, 2)}</span>{/if}</td>
+                        <td class="tcenter">{number_format($plugin->getMeta()->getVersion() / 100, 2)}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{number_format((float)$plugin->getCurrentVersion() / 100, 2)}</span>{/if}</td>
                         <td class="tcenter">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
                         <td class="tcenter">{$plugin->getPaths()->getBaseDir()}</td>
                         <td class="tcenter">
@@ -188,9 +188,9 @@
                             {/if}
                         </td>
                         <td class="tcenter">
-                            {if isset($plugin->cLizenzKlasse) && $plugin->cLizenzKlasse|strlen > 0}
-                                {if $plugin->cLizenz && $plugin->cLizenz|strlen > 0}
-                                    <strong>{#pluginBtnLicence#}:</strong> {$plugin->cLizenz}
+                            {if $plugin->getLicense()->hasLicenseCheck()}
+                                {if $plugin->getLicense()->hasLicense()}
+                                    <strong>{#pluginBtnLicence#}:</strong> {$plugin->getLicense()->getKey()}
                                     <button name="lizenzkey" type="submit" class="btn btn-default"
                                             value="{$plugin->getID()}">
                                         <i class="fa fa-edit"></i> {#pluginBtnLicenceChange#}
@@ -254,9 +254,9 @@
                             {/if}
                         </td>
                         <td class="tcenter plugin-license">
-                            {if isset($plugin->cLizenzKlasse) && $plugin->cLizenzKlasse|strlen > 0}
-                                {if $plugin->cLizenz && $plugin->cLizenz|strlen > 0}
-                                    <strong>{#pluginBtnLicence#}:</strong> {$plugin->cLizenz}
+                            {if $plugin->getLicense()->hasLicenseCheck()}
+                                {if $plugin->getLicense()->hasLicense()}
+                                    <strong>{#pluginBtnLicence#}:</strong> {$plugin->getLicense()->getKey()}
                                     <button name="lizenzkey" type="submit" class="btn btn-default"
                                             value="{$plugin->getID()}" title="{#modify#}">
                                         <i class="fa fa-edit"></i></button>

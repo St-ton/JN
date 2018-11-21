@@ -362,8 +362,8 @@ class BoxService implements BoxServiceInterface
             : '';
         $plgnSQL          = $active
             ? ' AND (tplugin.nStatus IS NULL OR tplugin.nStatus = ' .
-            State::ACTIVATED . "  OR tboxvorlage.eTyp != '" . Type::PLUGIN .
-            "' OR tboxvorlage.eTyp != '" . Type::EXTENSION . "')"
+            State::ACTIVATED . "  OR (tboxvorlage.eTyp != '" . Type::PLUGIN .
+            "' AND tboxvorlage.eTyp != '" . Type::EXTENSION . "'))"
             : '';
         if (($grouped = $this->cache->get($cacheID)) === false) {
             $boxData = $this->db->query(
@@ -435,6 +435,7 @@ class BoxService implements BoxServiceInterface
             } elseif ($class === Extension::class) {
                 $loader    = new ExtensionLoader($this->db, $this->cache);
                 $extension = $loader->init($box->getCustomID());
+
                 $box->setTemplateFile(
                     $extension->getPaths()->getFrontendPath() .
                     $box->getTemplateFile()

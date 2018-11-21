@@ -11,7 +11,6 @@ use DB\DbInterface;
 use DB\ReturnType;
 use Plugin\ExtensionData\Cache;
 use Plugin\ExtensionData\Config;
-use Plugin\ExtensionData\License;
 use Plugin\ExtensionData\Links;
 use Plugin\ExtensionData\Meta;
 use Plugin\ExtensionData\Paths;
@@ -107,13 +106,11 @@ class PluginLoader extends AbstractLoader
         $meta->setURL($obj->cURL);
         $meta->setVersion($obj->nVersion);
         $meta->setIcon($obj->cIcon);
+        $meta->setAuthor($obj->cAutor);
+
         $this->plugin->setMeta($meta);
 
-        $license = new License();
-        $license->setClass($obj->cLizenzKlasse);
-        $license->setClassName($obj->cLizenzKlasseName);
-        $license->setKey($obj->cLizenz);
-        $this->plugin->setLicense($license);
+        $this->plugin->setLicense($this->loadLicense($obj));
 
         $this->plugin->setLinks(new Links());
 
@@ -126,8 +123,8 @@ class PluginLoader extends AbstractLoader
 
         $this->plugin->setPaths($this->loadPaths($obj->cVerzeichnis));
         $this->plugin->oPluginHook_arr = $this->loadHooks();
-        $this->loadAdminMenu();
-        $this->loadMarkdownFiles();
+        $this->loadAdminMenu($this->plugin);
+        $this->loadMarkdownFiles($this->plugin->getPaths()->getBasePath(), $this->plugin->getMeta());
         $this->plugin->setConfig($this->loadConfig($this->plugin->getPaths()->getAdminPath(), $this->plugin->getID()));
         $this->loadLocalization();
         $this->plugin->setLinks($this->loadLinks($this->plugin->getID()));
@@ -151,44 +148,14 @@ class PluginLoader extends AbstractLoader
     }
 
     /**
-     * @return PluginLoader
-     */
-    public function loadAdminMenu(): self
-    {
-        $this->plugin->oPluginAdminMenu_arr = \array_map(function ($menu) {
-            $menu->kPluginAdminMenu = (int)$menu->kPluginAdminMenu;
-            $menu->kPlugin          = (int)$menu->kPlugin;
-            $menu->nSort            = (int)$menu->nSort;
-            $menu->nConf            = (int)$menu->nConf;
-
-            return $menu;
-        }, $this->db->selectAll('tpluginadminmenu', 'kPlugin', $this->plugin->getID(), '*', 'nSort'));
-
-        return $this;
-    }
-
-    /**
      * @inheritdoc
      */
     public function loadPaths(string $pluginDir): Paths
     {
-        $shopURL = \Shop::getURL();
-//        $shopURLSSL                         = \Shop::getURL(true);
+        $shopURL  = \Shop::getURL();
         $basePath = \PFAD_ROOT . \PFAD_PLUGIN . $pluginDir . \DIRECTORY_SEPARATOR;
         $baseURL  = $shopURL . \PFAD_EXTENSIONS . $pluginDir . '/';
         $basePath .= \PFAD_PLUGIN_VERSION . $this->plugin->getMeta()->getVersion() . \DIRECTORY_SEPARATOR;
-//        $pluginBase                         = \PFAD_PLUGIN . $versioned;
-//        $this->plugin->cPluginPfad          = $basePath . $versioned;
-//        $this->plugin->cFrontendPfad        = $this->plugin->cPluginPfad . \PFAD_PLUGIN_FRONTEND;
-//        $this->plugin->cFrontendPfadURL     = $shopURL . '/' . $pluginBase . \PFAD_PLUGIN_FRONTEND; // deprecated
-//        $this->plugin->cFrontendPfadURLSSL  = $shopURLSSL . '/' . $pluginBase . \PFAD_PLUGIN_FRONTEND;
-//        $this->plugin->cAdminmenuPfad       = $this->plugin->cPluginPfad . \PFAD_PLUGIN_ADMINMENU;
-//        $this->plugin->cAdminmenuPfadURL    = $shopURL . '/' . $pluginBase . \PFAD_PLUGIN_ADMINMENU;
-//        $this->plugin->cAdminmenuPfadURLSSL = $shopURLSSL . '/' . $pluginBase . \PFAD_PLUGIN_ADMINMENU;
-//        $this->plugin->cLicencePfad         = $this->plugin->cPluginPfad . \PFAD_PLUGIN_LICENCE;
-//        $this->plugin->cLicencePfadURL      = $shopURL . '/' . $pluginBase . \PFAD_PLUGIN_LICENCE;
-//        $this->plugin->cLicencePfadURLSSL   = $shopURLSSL . '/' . $pluginBase . \PFAD_PLUGIN_LICENCE;
-
 
         $paths = new Paths();
         $paths->setBaseDir($pluginDir);
@@ -202,30 +169,6 @@ class PluginLoader extends AbstractLoader
 
 
         return $paths;
-    }
-
-    /**
-     * @return PluginLoader
-     */
-    public function loadMarkdownFiles(): self
-    {
-        $szPluginMainPath = $this->basePath . $this->plugin->getPaths()->getBasePath() . '/';
-        if ($this->plugin->cTextReadmePath === '' && $this->checkFileExistence($szPluginMainPath . 'README.md')) {
-            $this->plugin->cTextReadmePath = $szPluginMainPath . 'README.md';
-        }
-        if ($this->plugin->changelogPath === '' && $this->checkFileExistence($szPluginMainPath . 'CHANGELOG.md')) {
-            $this->plugin->changelogPath = $szPluginMainPath . 'CHANGELOG.md';
-        }
-        if ($this->plugin->cTextLicensePath === '') {
-            foreach (['license.md', 'License.md', 'LICENSE.md'] as $licenseName) {
-                if ($this->checkFileExistence($licenseName)) {
-                    $this->plugin->cTextLicensePath = $szPluginMainPath . $licenseName;
-                    break;
-                }
-            }
-        }
-
-        return $this;
     }
 
     /**
@@ -245,7 +188,7 @@ class PluginLoader extends AbstractLoader
         );
         foreach ($this->plugin->oPluginEinstellung_arr as $conf) {
             $conf->kPlugin = (int)$conf->kPlugin;
-            if ($conf->cConf === 'M') {
+            if ($conf->cConf === Config::TYPE_DYNAMIC) {
                 $conf->cWert = \unserialize($conf->cWert, ['allowed_classes' => false]);
             }
             unset($conf->cConf);
@@ -325,7 +268,7 @@ class PluginLoader extends AbstractLoader
                 WHERE cModulId LIKE 'kPlugin\_" . $this->plugin->getID() . "%'",
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $version = $this->plugin->getMeta()->getVersion();
+        $version      = $this->plugin->getMeta()->getVersion();
         foreach ($methods as $method) {
             $method->cZusatzschrittTemplate          = \strlen($method->cZusatzschrittTemplate)
                 ? $this->basePath . $this->plugin->getPaths()->getBasePath() . '/' .
@@ -411,8 +354,9 @@ class PluginLoader extends AbstractLoader
             'kPlugin',
             $this->plugin->getID()
         );
+        $adminPath                            = $this->plugin->getPaths()->getAdminPath();
         foreach ($this->plugin->oPluginAdminWidget_arr as $i => $oPluginAdminWidget) {
-            $this->plugin->oPluginAdminWidget_arr[$i]->cClassAbs                     = $this->plugin->cAdminmenuPfad .
+            $this->plugin->oPluginAdminWidget_arr[$i]->cClassAbs                     = $adminPath .
                 \PFAD_PLUGIN_WIDGET . 'class.Widget' .
                 $oPluginAdminWidget->cClass . '.php';
             $this->plugin->oPluginAdminWidgetAssoc_arr[$oPluginAdminWidget->kWidget] =
@@ -447,22 +391,5 @@ class PluginLoader extends AbstractLoader
         }
 
         return $this;
-    }
-
-    /**
-     * perform a "search for a particular file" only once
-     *
-     * @param string $szCanonicalFileName - full path of the file to check
-     * @return bool
-     */
-    private function checkFileExistence($szCanonicalFileName): bool
-    {
-        static $vChecked = [];
-        if (!\array_key_exists($szCanonicalFileName, $vChecked)) {
-            // only if we did not know that file (in our "remember-array"), we perform this check
-            $vChecked[$szCanonicalFileName] = \file_exists($szCanonicalFileName); // do the actual check
-        }
-
-        return $vChecked[$szCanonicalFileName];
     }
 }

@@ -9,8 +9,10 @@ namespace Plugin;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\ReturnType;
+use Plugin\ExtensionData\AdminMenu;
 use Plugin\ExtensionData\Config;
 use Plugin\ExtensionData\Hook;
+use Plugin\ExtensionData\License;
 use Plugin\ExtensionData\Links;
 use Plugin\ExtensionData\Meta;
 use Plugin\ExtensionData\Paths;
@@ -137,5 +139,80 @@ abstract class AbstractLoader implements LoaderInterface
         }, $this->db->selectAll('tpluginhook', 'kPlugin', $this->plugin->getID()));
 
         return $hooks;
+    }
+
+    /**
+     * @param \stdClass $data
+     * @return License
+     */
+    public function loadLicense($data): License
+    {
+        $license = new License();
+        $license->setClass($data->cLizenzKlasse);
+        $license->setClassName($data->cLizenzKlasseName);
+        $license->setKey($data->cLizenz);
+
+        return $license;
+    }
+
+    /**
+     * @param AbstractExtension $extension
+     * @return AdminMenu
+     */
+    public function loadAdminMenu(AbstractExtension $extension): AdminMenu
+    {
+        $menues = \array_map(function ($menu) {
+            $menu->kPluginAdminMenu = (int)$menu->kPluginAdminMenu;
+            $menu->kPlugin          = (int)$menu->kPlugin;
+            $menu->nSort            = (int)$menu->nSort;
+            $menu->nConf            = (int)$menu->nConf;
+
+            return $menu;
+        }, $this->db->selectAll('tpluginadminmenu', 'kPlugin', $extension->getID(), '*', 'nSort'));
+        $adminMenu = new AdminMenu();
+        $adminMenu->setItems(collect($menues));
+        $extension->setAdminMenu($adminMenu);
+
+        return $adminMenu;
+    }
+
+    /**
+     * @param string $basePath
+     * @param Meta   $meta
+     * @return AbstractLoader
+     */
+    public function loadMarkdownFiles(string $basePath, Meta $meta): self
+    {
+        if ($this->checkFileExistence($basePath . 'README.md')) {
+            $meta->setReadmeMD($basePath . 'README.md');
+        }
+        if ($this->checkFileExistence($basePath . 'CHANGELOG.md')) {
+            $meta->setChangelogMD($basePath . 'CHANGELOG.md');
+        }
+        foreach (['license.md', 'License.md', 'LICENSE.md'] as $licenseName) {
+            if ($this->checkFileExistence($licenseName)) {
+                $meta->setLicenseMD($basePath . $licenseName);
+                break;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * perform a "search for a particular file" only once
+     *
+     * @param string $szCanonicalFileName - full path of the file to check
+     * @return bool
+     */
+    protected function checkFileExistence($szCanonicalFileName): bool
+    {
+        static $vChecked = [];
+        if (!\array_key_exists($szCanonicalFileName, $vChecked)) {
+            // only if we did not know that file (in our "remember-array"), we perform this check
+            $vChecked[$szCanonicalFileName] = \file_exists($szCanonicalFileName); // do the actual check
+        }
+
+        return $vChecked[$szCanonicalFileName];
     }
 }

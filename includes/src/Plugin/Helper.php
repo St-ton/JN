@@ -6,6 +6,8 @@
 
 namespace Plugin;
 
+use Plugin\ExtensionData\Config;
+
 /**
  * Class Helper
  * @package Plugin
@@ -385,7 +387,7 @@ class Helper
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($data as $item) {
-            $conf[$item->cName] = $item->cConf === 'M'
+            $conf[$item->cName] = $item->cConf === Config::TYPE_DYNAMIC
                 ? \unserialize($item->cWert, ['allowed_classes' => false])
                 : $item->cWert;
         }
@@ -426,5 +428,17 @@ class Helper
         return self::$bootstrapper[$id];
     }
 
-    public static function bootstrapper($id) {}
+    /**
+     * @param bool $isExtension
+     * @param null $db
+     * @param null $cache
+     * @return LoaderInterface
+     */
+    public static function getLoader(bool $isExtension, $db = null, $cache = null): LoaderInterface
+    {
+        $cache = $cache ?? \Shop::Container()->getCache();
+        $db    = $db ?? \Shop::Container()->getDB();
+
+        return $isExtension ? new ExtensionLoader($db, $cache) : new PluginLoader($db, $cache);
+    }
 }

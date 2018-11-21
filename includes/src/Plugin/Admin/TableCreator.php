@@ -7,6 +7,7 @@
 namespace Plugin\Admin;
 
 use DB\DbInterface;
+use Plugin\ExtensionData\Config;
 use Plugin\InstallCode;
 use Plugin\Plugin;
 use Plugin\Helper;
@@ -399,7 +400,7 @@ class TableCreator
                                 $plgnConf->cSourceFile = $setting['OptionsSource'][0]['File'];
                             }
                             if ($multiple === true) {
-                                $plgnConf->cConf = 'M';
+                                $plgnConf->cConf = Config::TYPE_DYNAMIC;
                             }
                         }
                         $plgnConfTmpID = $this->db->select(
@@ -834,7 +835,7 @@ class TableCreator
                         $type         = $Setting_arr['type'];
                         $multiple     = (isset($Setting_arr['multiple'])
                             && $Setting_arr['multiple'] === 'Y'
-                            && $type === 'selectbox');
+                            && $type === InputType::SELECT);
                         $initialValue = ($multiple === true)
                             ? \serialize([$Setting_arr['initialValue']])
                             : $Setting_arr['initialValue'];
@@ -866,8 +867,8 @@ class TableCreator
                         $plgnConf->cWertName        = $moduleID . '_' . $Setting_arr['ValueName'];
                         $plgnConf->cInputTyp        = $type;
                         $plgnConf->nSort            = $nSort;
-                        $plgnConf->cConf            = ($type === 'selectbox' && $multiple === true)
-                            ? 'M'
+                        $plgnConf->cConf            = ($type === InputType::SELECT && $multiple === true)
+                            ? Config::TYPE_DYNAMIC
                             : $cConf;
                         $plgnConfTmpID              = $this->db->select(
                             'tplugineinstellungenconf',
@@ -893,7 +894,7 @@ class TableCreator
                             return InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD_SETTING;
                         }
                         // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
-                        if ($type === 'selectbox') {
+                        if ($type === InputType::SELECT) {
                             if (isset($Setting_arr['OptionsSource'])
                                 && \is_array($Setting_arr['OptionsSource'])
                                 && \count($Setting_arr['OptionsSource']) > 0
@@ -930,7 +931,7 @@ class TableCreator
 
                                 $this->db->insert('tplugineinstellungenconfwerte', $plgnConfValues);
                             }
-                        } elseif ($type === 'radio') {
+                        } elseif ($type === InputType::RADIO) {
                             if (isset($Setting_arr['OptionsSource'])
                                 && \is_array($Setting_arr['OptionsSource'])
                                 && \count($Setting_arr['OptionsSource']) > 0

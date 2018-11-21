@@ -20,6 +20,9 @@ class Links
      */
     private $links;
 
+    /**
+     * Links constructor.
+     */
     public function __construct()
     {
         $this->links = new Collection();

@@ -136,6 +136,18 @@ class PluginLoader extends AbstractLoader
     }
 
     /**
+     * @param int $id
+     * @return Links
+     */
+    protected function loadLinks(int $id): Links
+    {
+        $links = parent::loadLinks($id);
+        $this->plugin->oPluginFrontendLink_arr = $links->getLinks()->toArray();
+
+        return $links;
+    }
+
+    /**
      * @return bool
      */
     protected function cache(): bool

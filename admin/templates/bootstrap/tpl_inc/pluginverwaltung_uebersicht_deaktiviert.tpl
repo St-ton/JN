@@ -68,7 +68,7 @@
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-frontend-links">
-                                    {if isset($plugin->oPluginFrontendLink_arr) && $plugin->oPluginFrontendLink_arr|@count > 0}
+                                    {if $plugin->getLinks()->getLinks()->count() > 0}
                                         <a href="links.php?kPlugin={$plugin->getID()}" class="btn btn-default btn-sm" title="{#modify#}"><i class="fa fa-edit"></i></a>
                                     {/if}
                                 </td>

@@ -1,0 +1,36 @@
+{
+    "name": "jtlshop/vue-updater",
+    "description": "Vue.js based updater for Shop5",
+    "version": "1.0.0",
+    "keywords": ["jtl", "jtl-shop"],
+    "homepage": "https://jtl-software.de/",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "JTL-Software GmbH",
+            "email": "info@jtl-software.de",
+            "homepage": "https://jtl-software.de/"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.9",
+        "foxy/foxy": "^1.0",
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "repositories": [
+        { "type": "vcs", "url": "git@gitlab.jtl-software.de:f.moche/wizard.git" }
+    ],
+    "autoload": {
+        "files": [ "VueUpdater.php"]
+    },
+    "config": {
+        "foxy": {
+            "manager": "npm",
+            "manager-version": {
+                "npm": ">=6.0"
+            },
+            "manager-install-options": " && npm audit fix && npm run build"
+        }
+    }
+}

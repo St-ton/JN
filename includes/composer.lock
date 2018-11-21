@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "0f0fbcd6aa83d5ee89afa4f2ad77170f",
+    "content-hash": "410acced0ea7462bf8141234e201f216",
     "packages": [
         {
             "name": "andyftw/ssllabs-php",
@@ -305,12 +305,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/erusev/parsedown.git",
-                "reference": "2bd7113c55fc413b2ea3bb9f9629cbeeffa4c3d1"
+                "reference": "e124572b600830facd7b1d7f04b269b6d0b3b4ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erusev/parsedown/zipball/2bd7113c55fc413b2ea3bb9f9629cbeeffa4c3d1",
-                "reference": "2bd7113c55fc413b2ea3bb9f9629cbeeffa4c3d1",
+                "url": "https://api.github.com/repos/erusev/parsedown/zipball/e124572b600830facd7b1d7f04b269b6d0b3b4ed",
+                "reference": "e124572b600830facd7b1d7f04b269b6d0b3b4ed",
                 "shasum": ""
             },
             "require": {
@@ -343,7 +343,7 @@
                 "markdown",
                 "parser"
             ],
-            "time": "2018-11-06T21:49:46+00:00"
+            "time": "2018-11-16T07:45:32+00:00"
         },
         {
             "name": "icecave/isolator",
@@ -817,7 +817,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.jtl-software.de/jtlshop/scc.git",
-                "reference": "962eec6cfe8be2955605d92c8398196873425ac4"
+                "reference": "f826daec0a84ed389a4bdc04b2233d0c3b2c3ccf"
             },
             "require": {
                 "myclabs/php-enum": "^1.5",
@@ -844,7 +844,7 @@
             "keywords": [
                 "jtl-shop"
             ],
-            "time": "2018-11-07T11:11:53+00:00"
+            "time": "2018-11-16T14:55:48+00:00"
         },
         {
             "name": "jtlshop/semver",
@@ -1422,16 +1422,16 @@
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v6.0.5",
+            "version": "v6.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "cb3ea134d4d3729e7857737d5f320cce9caf4d32"
+                "reference": "8190d73eb5def11a43cfb020b7f36db65330698c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/cb3ea134d4d3729e7857737d5f320cce9caf4d32",
-                "reference": "cb3ea134d4d3729e7857737d5f320cce9caf4d32",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/8190d73eb5def11a43cfb020b7f36db65330698c",
+                "reference": "8190d73eb5def11a43cfb020b7f36db65330698c",
                 "shasum": ""
             },
             "require": {
@@ -1484,7 +1484,7 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2018-03-27T13:49:45+00:00"
+            "time": "2018-11-16T00:41:32+00:00"
         },
         {
             "name": "phpmyadmin/sql-parser",
@@ -1976,16 +1976,16 @@
         },
         {
             "name": "tightenco/collect",
-            "version": "v5.7.12",
+            "version": "v5.7.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tightenco/collect.git",
-                "reference": "0d89929f10a495ebafc15fb6bff5581d10c38abb"
+                "reference": "5172ad96c54560352b79386b293375da40280fdc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tightenco/collect/zipball/0d89929f10a495ebafc15fb6bff5581d10c38abb",
-                "reference": "0d89929f10a495ebafc15fb6bff5581d10c38abb",
+                "url": "https://api.github.com/repos/tightenco/collect/zipball/5172ad96c54560352b79386b293375da40280fdc",
+                "reference": "5172ad96c54560352b79386b293375da40280fdc",
                 "shasum": ""
             },
             "require": {
@@ -2022,7 +2022,7 @@
                 "collection",
                 "laravel"
             ],
-            "time": "2018-10-30T21:09:13+00:00"
+            "time": "2018-11-09T19:12:42+00:00"
         },
         {
             "name": "tubalmartin/cssmin",
@@ -2909,16 +2909,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.4.3",
+            "version": "7.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "c151651fb6ed264038d486ea262e243af72e5e64"
+                "reference": "b1be2c8530c4c29c3519a052c9fb6cee55053bbd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c151651fb6ed264038d486ea262e243af72e5e64",
-                "reference": "c151651fb6ed264038d486ea262e243af72e5e64",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/b1be2c8530c4c29c3519a052c9fb6cee55053bbd",
+                "reference": "b1be2c8530c4c29c3519a052c9fb6cee55053bbd",
                 "shasum": ""
             },
             "require": {
@@ -2989,7 +2989,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-10-23T05:57:41+00:00"
+            "time": "2018-11-14T16:52:02+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -3949,7 +3949,8 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.1"
+        "php": ">=7.1",
+        "ext-json": "*"
     },
     "platform-dev": []
 }

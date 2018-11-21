@@ -5,7 +5,7 @@
  */
 
 // Version
-define('APPLICATION_VERSION', '5.0.0');
+define('APPLICATION_VERSION', '4.06.5');
 define('APPLICATION_BUILD_SHA', '#DEV#');
 define('JTL_MIN_WAWI_VERSION', 100000);
 // Einstellungssektionen

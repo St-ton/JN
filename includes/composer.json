@@ -26,7 +26,8 @@
         "mrclay/minify": "~3.0.0",
         "myclabs/php-enum": "^1.6",
         "jtlshop/semver": "~0.0.5",
-        "studio-42/elfinder": "^2.1"
+        "studio-42/elfinder": "^2.1",
+        "ext-json": "*"
     },
     "require-dev": {
         "phpunit/php-token-stream": "^3.0",

@@ -178,7 +178,7 @@ class VueInstaller
     }
 
     /**
-     * @return VueInstaller
+     * @return VueUpdater
      * @throws \Exceptions\InvalidEntityNameException
      */
     private function doInstall(): self
@@ -296,7 +296,7 @@ ini_set('display_errors', 0);" . "\n";
     }
 
     /**
-     * @return VueInstaller
+     * @return VueUpdater
      * @throws \Exceptions\InvalidEntityNameException
      */
     private function insertUsers(): self

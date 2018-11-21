@@ -12,6 +12,7 @@ use Cron\Jobs\ImageCache;
 use Cron\Jobs\Newsletter;
 use Cron\Jobs\Statusmail;
 use Cron\Jobs\GeneralDataProtect;
+use Cron\Jobs\Store;
 use Cron\Type;
 use Events\Dispatcher;
 use Events\Event;
@@ -39,6 +40,8 @@ class JobTypeToJob
                 return Newsletter::class;
             case Type::DATAPROTECTION:
                 return GeneralDataProtect::class;
+            case Type::STORE:
+                return Store::class;
             default:
                 $mapping = null;
                 Dispatcher::getInstance()->fire(Event::MAP_CRONJOB_TYPE, ['type' => $type, 'mapping' => &$mapping]);

@@ -84,7 +84,11 @@
         {
             "type": "vcs",
             "url": "https://gitlab.jtl-software.de/jtlshop/scc.git"
-        }
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.jtl-software.de/jtl/oauth2-client.git"
+        }        
 
     ],
     "autoload": {

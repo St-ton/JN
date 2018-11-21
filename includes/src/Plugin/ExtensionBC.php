@@ -14,6 +14,9 @@ class ExtensionBC extends AbstractExtension
 {
     use \MagicCompatibilityTrait;
 
+    /**
+     * @var array
+     */
     public static $mapping = [
         'kPlugin'                 => 'ID',
         'nStatus'                 => 'State',
@@ -25,11 +28,11 @@ class ExtensionBC extends AbstractExtension
         'cURL'                    => ['getMeta', 'URL'],
         'cVerzeichnis'            => ['getPaths', 'BaseDir'],
         'cPluginID'               => 'PluginID',
-        'cFehler'                 => '',
+//        'cFehler'                 => '',
         'cLizenz'                 => ['getLicense', 'Key'],
         'cLizenzKlasse'           => ['getLicense', 'Class'],
         'cLizenzKlasseName'       => ['getLicense', 'ClassName'],
-        'cPluginPfad'             => ['getPaths', 'BasePath'],
+        'cPluginPfad'             => ['getPaths', 'VersionedPath'],
         'cFrontendPfad'           => ['getPaths', 'FrontendPath'],
         'cFrontendPfadURL'        => ['getPaths', 'FrontendURL'],
         'cFrontendPfadURLSSL'     => ['getPaths', 'FrontendURL'],

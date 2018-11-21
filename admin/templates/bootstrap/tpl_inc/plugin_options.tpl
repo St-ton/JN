@@ -7,18 +7,10 @@
             <input type="hidden" name="kPluginAdminMenu" value="{$oPluginAdminMenu->kPluginAdminMenu}" />
             <input type="hidden" name="Setting" value="1" />
             {assign var=open value=0}
-            {*$oPluginAdminMenu->kPluginAdminMenu: {$oPluginAdminMenu->kPluginAdminMenu|var_dump}*}
-            {*Config:<br>*}
-            {*<pre>{$oPlugin->getConfig()->getOptions()|var_dump}</pre>*}
             {foreach $oPlugin->getConfig()->getOptions() as $confItem}
                 {if $oPluginAdminMenu->kPluginAdminMenu !== $confItem->menuID}
                     {continue}
                 {/if}
-                {*{foreach $oPlugin->oPluginEinstellung_arr as $oPluginEinstellung}*}
-                    {*{if $oPluginEinstellung->name == $confItem->cWertName}*}
-                        {*{assign var=cEinstellungWert value=$oPluginEinstellung->cWert}*}
-                    {*{/if}*}
-                {*{/foreach}*}
                 {if $confItem->confType === Plugin\ExtensionData\Config::TYPE_NOT_CONFIGURABLE}
                     {if $open > 0}
                         </div><!-- .panel-body -->

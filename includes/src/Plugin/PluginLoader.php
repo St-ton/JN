@@ -123,8 +123,8 @@ class PluginLoader extends AbstractLoader
 
         $this->plugin->setPaths($this->loadPaths($obj->cVerzeichnis));
         $this->plugin->oPluginHook_arr = $this->loadHooks();
-        $this->loadAdminMenu($this->plugin);
         $this->loadMarkdownFiles($this->plugin->getPaths()->getBasePath(), $this->plugin->getMeta());
+        $this->loadAdminMenu($this->plugin);
         $this->plugin->setConfig($this->loadConfig($this->plugin->getPaths()->getAdminPath(), $this->plugin->getID()));
         $this->loadLocalization();
         $this->plugin->setLinks($this->loadLinks($this->plugin->getID()));
@@ -152,20 +152,21 @@ class PluginLoader extends AbstractLoader
      */
     public function loadPaths(string $pluginDir): Paths
     {
-        $shopURL  = \Shop::getURL();
-        $basePath = \PFAD_ROOT . \PFAD_PLUGIN . $pluginDir . \DIRECTORY_SEPARATOR;
-        $baseURL  = $shopURL . \PFAD_EXTENSIONS . $pluginDir . '/';
-        $basePath .= \PFAD_PLUGIN_VERSION . $this->plugin->getMeta()->getVersion() . \DIRECTORY_SEPARATOR;
+        $shopURL   = \Shop::getURL();
+        $basePath  = \PFAD_ROOT . \PFAD_PLUGIN . $pluginDir . \DIRECTORY_SEPARATOR;
+        $versioned = $basePath . \PFAD_PLUGIN_VERSION . $this->plugin->getMeta()->getVersion() . \DIRECTORY_SEPARATOR;
+        $baseURL   = $shopURL . \PFAD_EXTENSIONS . $pluginDir . '/';
 
         $paths = new Paths();
         $paths->setBaseDir($pluginDir);
         $paths->setBasePath($basePath);
-        $paths->setFrontendPath($basePath . \PFAD_PLUGIN_FRONTEND);
+        $paths->setVersionedPath($versioned);
+        $paths->setFrontendPath($versioned . \PFAD_PLUGIN_FRONTEND);
         $paths->setFrontendURL($baseURL . \PFAD_PLUGIN_FRONTEND);
-        $paths->setAdminPath($basePath . \PFAD_PLUGIN_ADMINMENU);
+        $paths->setAdminPath($versioned . \PFAD_PLUGIN_ADMINMENU);
         $paths->setAdminURL($baseURL . \PFAD_PLUGIN_ADMINMENU);
-        $paths->setLicencePath($basePath . \PFAD_PLUGIN_LICENCE);
-        $paths->setUninstaller($basePath . \PFAD_PLUGIN_UNINSTALL);
+        $paths->setLicencePath($versioned . \PFAD_PLUGIN_LICENCE);
+        $paths->setUninstaller($versioned . \PFAD_PLUGIN_UNINSTALL);
 
 
         return $paths;
@@ -176,60 +177,36 @@ class PluginLoader extends AbstractLoader
      */
     public function loadConfig(string $path, int $id): Config
     {
-        $config                               = parent::loadConfig($path, $id);
-        $this->plugin->oPluginEinstellung_arr = $this->db->query(
-            'SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
-                FROM tplugineinstellungen
-                LEFT JOIN tplugineinstellungenconf
-                    ON tplugineinstellungenconf.kPlugin = tplugineinstellungen.kPlugin
-                    AND tplugineinstellungen.cName = tplugineinstellungenconf.cWertName
-                WHERE tplugineinstellungen.kPlugin = ' . $id,
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($this->plugin->oPluginEinstellung_arr as $conf) {
-            $conf->kPlugin = (int)$conf->kPlugin;
-            if ($conf->cConf === Config::TYPE_DYNAMIC) {
-                $conf->cWert = \unserialize($conf->cWert, ['allowed_classes' => false]);
-            }
-            unset($conf->cConf);
-        }
-        $tmpConf = $this->db->selectAll(
-            'tplugineinstellungenconf',
-            'kPlugin',
-            $this->plugin->getID(),
-            '*',
-            'nSort'
-        );
-        foreach ($tmpConf as $i => $cfg) {
-            $cfg->kPluginEinstellungenConf = (int)$cfg->kPluginEinstellungenConf;
-            $cfg->kPlugin                  = (int)$cfg->kPlugin;
-            $cfg->kPluginAdminMenu         = (int)$cfg->kPluginAdminMenu;
-            $cfg->nSort                    = (int)$cfg->nSort;
+        $config       = parent::loadConfig($path, $id);
+        $assocCompat  = [];
+        $confCompat   = [];
+        $configCompat = [];
+        foreach ($config->getOptions()->toArray() as $option) {
+            $assocCompat[$option->valueID] = $option->value;
 
-            $cfg->oPluginEinstellungenConfWerte_arr = [];
-            if ($cfg->cInputTyp === 'selectbox' || $cfg->cInputTyp === 'radio') {
-                if (!empty($cfg->cSourceFile)) {
-                    $tmpConf[$i]->oPluginEinstellungenConfWerte_arr = $this->plugin->getDynamicOptions($cfg);
-                } else {
-                    $confValues                                     = \array_map(function ($c) {
-                        $c->kPluginEinstellungenConf = (int)$c->kPluginEinstellungenConf;
-                        $c->nSort                    = (int)$c->nSort;
+            $configCompatItem          = new \stdClass();
+            $configCompatItem->kPlugin = $id;
+            $configCompatItem->cName   = $option->niceName;
+            $configCompatItem->cWert   = $option->value;
+            $configCompat[]            = $configCompatItem;
 
-                        return $c;
-                    }, $this->db->selectAll(
-                        'tplugineinstellungenconfwerte',
-                        'kPluginEinstellungenConf',
-                        (int)$cfg->kPluginEinstellungenConf,
-                        '*',
-                        'nSort'
-                    ));
-                    $tmpConf[$i]->oPluginEinstellungenConfWerte_arr = $confValues;
-                }
-            }
+            $confCompatItem                                    = new \stdClass();
+            $confCompatItem->kPluginEinstellungenConf          = $option->id;
+            $confCompatItem->kPlugin                           = $id;
+            $confCompatItem->kPluginAdminMenu                  = $option->menuID;
+            $confCompatItem->cName                             = $option->niceName;
+            $confCompatItem->cBeschreibung                     = $option->description;
+            $confCompatItem->cWertName                         = $option->valueID;
+            $confCompatItem->cInputTyp                         = $option->inputType;
+            $confCompatItem->nSort                             = $option->sort;
+            $confCompatItem->cConf                             = $option->confType;
+            $confCompatItem->cSourceFile                       = $option->sourceFile;
+            $confCompatItem->oPluginEinstellungenConfWerte_arr = $option->options;
+            $confCompat[]                                      = $confCompatItem;
         }
-        $this->plugin->oPluginEinstellungConf_arr  = $tmpConf;
-        $this->plugin->oPluginEinstellungAssoc_arr = Helper::getConfigByID($id);
-        $this->plugin->oPluginSprachvariable_arr   = Helper::getLanguageVariables($id);
+        $this->plugin->oPluginEinstellung_arr      = $configCompat;
+        $this->plugin->oPluginEinstellungAssoc_arr = $assocCompat;
+        $this->plugin->oPluginEinstellungConf_arr  = $confCompat;
 
         return $config;
     }
@@ -239,7 +216,8 @@ class PluginLoader extends AbstractLoader
      */
     public function loadLocalization(): self
     {
-        $iso = '';
+        $this->plugin->oPluginSprachvariable_arr = Helper::getLanguageVariables($this->plugin->getID());
+        $iso                                     = '';
         if (isset($_SESSION['cISOSprache']) && \strlen($_SESSION['cISOSprache']) > 0) {
             $iso = $_SESSION['cISOSprache'];
         } else {

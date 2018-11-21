@@ -6,6 +6,7 @@
 
 namespace Plugin\ExtensionData;
 
+use Plugin\Admin\InputType;
 use Tightenco\Collect\Support\Collection;
 use function Functional\first;
 use function Functional\group;
@@ -69,7 +70,9 @@ class Config
                 : $base->currentValue;
 //            $cfg->raw         = $base;
             $cfg->options = [];
-            if (!empty($cfg->sourceFile) && ($cfg->inputType === 'selectbox' || $cfg->inputType === 'radio')) {
+            if (!empty($cfg->sourceFile)
+                && ($cfg->inputType === InputType::SELECT || $cfg->inputType === InputType::RADIO)
+            ) {
                 $cfg->options = $this->getDynamicOptions($cfg);
             } elseif (!($base->confValue === null && $base->confNicename === null)) {
                 foreach ($values as $value) {

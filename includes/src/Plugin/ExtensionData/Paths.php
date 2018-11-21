@@ -25,6 +25,11 @@ class Paths
     /**
      * @var string
      */
+    private $versionedPath;
+
+    /**
+     * @var string
+     */
     private $frontendPath;
 
     /**
@@ -82,6 +87,22 @@ class Paths
     public function setBasePath(string $basePath): void
     {
         $this->basePath = $basePath;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersionedPath(): string
+    {
+        return $this->versionedPath;
+    }
+
+    /**
+     * @param string $versionedPath
+     */
+    public function setVersionedPath(string $versionedPath): void
+    {
+        $this->versionedPath = $versionedPath;
     }
 
     /**

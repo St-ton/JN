@@ -16,6 +16,7 @@ use Plugin\ExtensionData\License;
 use Plugin\ExtensionData\Links;
 use Plugin\ExtensionData\Meta;
 use Plugin\ExtensionData\Paths;
+use Tightenco\Collect\Support\Collection;
 
 /**
  * Class AbstractLoader
@@ -91,6 +92,7 @@ abstract class AbstractLoader implements LoaderInterface
             LEFT JOIN tplugineinstellungen AS e
 			  ON e.kPlugin = c.kPlugin AND e.cName = c.cWertName
             WHERE c.kPlugin = :pid
+            GROUP BY id, confValue
             ORDER BY c.nSort',
             ['pid' => $id],
             ReturnType::ARRAY_OF_OBJECTS
@@ -113,6 +115,7 @@ abstract class AbstractLoader implements LoaderInterface
         $paths = new Paths();
         $paths->setBaseDir($pluginDir);
         $paths->setBasePath($basePath);
+        $paths->setVersionedPath($basePath);
         $paths->setFrontendPath($basePath . \PFAD_PLUGIN_FRONTEND);
         $paths->setFrontendURL($baseURL . \PFAD_PLUGIN_FRONTEND);
         $paths->setAdminPath($basePath . \PFAD_PLUGIN_ADMINMENU);
@@ -161,19 +164,109 @@ abstract class AbstractLoader implements LoaderInterface
      */
     public function loadAdminMenu(AbstractExtension $extension): AdminMenu
     {
-        $menues = \array_map(function ($menu) {
+        $i      = -1;
+        $menues = \array_map(function ($menu) use (&$i) {
+            $menu->name             = $menu->cName;
             $menu->kPluginAdminMenu = (int)$menu->kPluginAdminMenu;
+            $menu->id               = (int)$menu->kPluginAdminMenu;
             $menu->kPlugin          = (int)$menu->kPlugin;
+            $menu->pluginID         = (int)$menu->kPlugin;
             $menu->nSort            = (int)$menu->nSort;
             $menu->nConf            = (int)$menu->nConf;
+            $menu->configurable     = (bool)$menu->nConf;
+            $menu->file             = $menu->cDateiname;
+            $menu->isMarkdown       = false;
+            $menu->idx              = ++$i;
+            $menu->html             = '';
+            $menu->tpl              = '';
 
             return $menu;
         }, $this->db->selectAll('tpluginadminmenu', 'kPlugin', $extension->getID(), '*', 'nSort'));
+        $menus  = collect($menues);
+        $this->addMarkdownToAdminMenu($extension, $menus);
+
         $adminMenu = new AdminMenu();
-        $adminMenu->setItems(collect($menues));
+        $adminMenu->setItems($menus);
         $extension->setAdminMenu($adminMenu);
 
         return $adminMenu;
+    }
+
+    /**
+     * @param AbstractExtension $extension
+     * @param Collection        $items
+     * @return Collection
+     */
+    private function addMarkdownToAdminMenu(AbstractExtension $extension, Collection $items): Collection
+    {
+        $meta     = $extension->getMeta();
+        $lastItem = $items->last();
+        $lastIdx  = $lastItem->idx ?? -1;
+        if (!empty($meta->getReadmeMD())) {
+            ++$lastIdx;
+            $menu                   = new \stdClass();
+            $menu->kPluginAdminMenu = -1;
+            $menu->id               = 'md-' . $lastIdx;
+            $menu->kPlugin          = $extension->getID();
+            $menu->pluginID         = $menu->kPlugin;
+            $menu->nSort            = $items->count() + 1;
+            $menu->sort             = $menu->nSort;
+            $menu->cName            = 'Dokumentation';
+            $menu->name             = $menu->cName;
+            $menu->cDateiname       = $meta->getReadmeMD();
+            $menu->file             = $menu->cDateiname;
+            $menu->idx              = $lastIdx;
+            $menu->nConf            = 0;
+            $menu->configurable     = false;
+            $menu->isMarkdown       = true;
+            $menu->tpl              = 'tpl_inc/plugin_documentation.tpl';
+            $menu->html             = '';
+            $items->push($menu);
+        }
+        if (!empty($meta->getLicenseMD())) {
+            ++$lastIdx;
+            $menu                   = new \stdClass();
+            $menu->kPluginAdminMenu = -1;
+            $menu->id               = 'md-' . $lastIdx;
+            $menu->kPlugin          = $extension->getID();
+            $menu->pluginID         = $menu->kPlugin;
+            $menu->nSort            = $items->count() + 1;
+            $menu->sort             = $menu->nSort;
+            $menu->cName            = 'Lizenzvereinbarungen';
+            $menu->name             = $menu->cName;
+            $menu->cDateiname       = $meta->getLicenseMD();
+            $menu->file             = $menu->cDateiname;
+            $menu->idx              = $lastIdx;
+            $menu->nConf            = 0;
+            $menu->configurable     = false;
+            $menu->isMarkdown       = true;
+            $menu->tpl              = 'tpl_inc/plugin_license.tpl';
+            $menu->html             = '';
+            $items->push($menu);
+        }
+        if (!empty($meta->getChangelogMD())) {
+            ++$lastIdx;
+            $menu                   = new \stdClass();
+            $menu->kPluginAdminMenu = -1;
+            $menu->id               = 'md-' . $lastIdx;
+            $menu->kPlugin          = $extension->getID();
+            $menu->pluginID         = $menu->kPlugin;
+            $menu->nSort            = $items->count() + 1;
+            $menu->sort             = $menu->nSort;
+            $menu->cName            = 'Changelog';
+            $menu->name             = $menu->cName;
+            $menu->cDateiname       = $meta->getChangelogMD();
+            $menu->file             = $menu->cDateiname;
+            $menu->idx              = $lastIdx;
+            $menu->nConf            = 0;
+            $menu->configurable     = false;
+            $menu->isMarkdown       = true;
+            $menu->tpl              = 'tpl_inc/plugin_changelog.tpl';
+            $menu->html             = '';
+            $items->push($menu);
+        }
+
+        return $items;
     }
 
     /**
@@ -190,7 +283,7 @@ abstract class AbstractLoader implements LoaderInterface
             $meta->setChangelogMD($basePath . 'CHANGELOG.md');
         }
         foreach (['license.md', 'License.md', 'LICENSE.md'] as $licenseName) {
-            if ($this->checkFileExistence($licenseName)) {
+            if ($this->checkFileExistence($basePath . $licenseName)) {
                 $meta->setLicenseMD($basePath . $licenseName);
                 break;
             }

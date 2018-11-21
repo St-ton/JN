@@ -13,7 +13,6 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 $cHinweis        = '';
 $cFehler         = '';
 $step            = 'plugin_uebersicht';
-$customTabs      = [];
 $invalidateCache = false;
 $bError          = false;
 $updated         = false;
@@ -51,23 +50,21 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
                 if (isset($_POST[$oPluginEinstellungConf->cWertName])) {
                     if (is_array($_POST[$oPluginEinstellungConf->cWertName])) {
                         if ($oPluginEinstellungConf->cConf === 'M') {
-                            //selectbox with "multiple" attribute
+                            // selectbox with "multiple" attribute
                             $oPluginEinstellung->cWert = serialize($_POST[$oPluginEinstellungConf->cWertName]);
                         } else {
-                            //radio buttons
+                            // radio buttons
                             $oPluginEinstellung->cWert = $_POST[$oPluginEinstellungConf->cWertName][0];
                         }
                     } else {
-                        //textarea/text
+                        // textarea/text
                         $oPluginEinstellung->cWert = $_POST[$oPluginEinstellungConf->cWertName];
                     }
                 } else {
-                    //checkboxes that are not checked
+                    // checkboxes that are not checked
                     $oPluginEinstellung->cWert = null;
                 }
-                $kKey = $db->insert('tplugineinstellungen', $oPluginEinstellung);
-
-                if (!$kKey) {
+                if (!$db->insert('tplugineinstellungen', $oPluginEinstellung)) {
                     $bError = true;
                 }
                 $invalidateCache = true;
@@ -86,158 +83,43 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
         $smarty->assign('defaultTabbertab', RequestHelper::verifyGPDataString('cPluginTab'));
     }
     $data = $db->select('tplugin', 'kPlugin', $kPlugin);
-    if ($data === null) {
-        $cFehler = 'nix';
-    } else {
+    if ($data !== null) {
         $loader  = \Plugin\Helper::getLoader((int)$data->bExtension === 1, $db, $cache);
         $oPlugin = $loader->init($kPlugin, $invalidateCache);
     }
     if ($oPlugin !== null) {
         $smarty->assign('oPlugin', $oPlugin);
-//        if (!$invalidateCache) { //make sure dynamic options are reloaded
-//            foreach ($oPlugin->oPluginEinstellungConf_arr as $option) {
-//                if (!empty($option->cSourceFile)) {
-//                    $option->oPluginEinstellungenConfWerte_arr = $oPlugin->getDynamicOptions($option);
-//                }
-//            }
-//        }
         if ($updated === true) {
             executeHook(HOOK_PLUGIN_SAVE_OPTIONS, [
                 'plugin'   => $oPlugin,
                 'hasError' => &$bError,
                 'msg'      => &$cHinweis,
                 'error'    => $cFehler,
-                'options'  => $oPlugin->oPluginEinstellungAssoc_arr
+                'options'  => $oPlugin->getConfig()->getOptions()
             ]);
         }
-        $i                  = 0;
-        $j                  = 0;
-        $fAddAsDocTab       = false;
-        $fAddAsLicenseTab   = false;
-        $fAddAsChangelogTab = false;
-        $oParseDown         = new Parsedown();
-        $adminMenu          = $oPlugin->getAdminMenu();
-        $readmeMD           = $oPlugin->getMeta()->getReadmeMD();
-        $licenseMD          = $oPlugin->getMeta()->getLicenseMD();
-        $changelogMD        = $oPlugin->getMeta()->getChangelogMD();
-        if (!empty($readmeMD)) {
-            $szReadmeContent = $oParseDown->text(StringHandler::convertUTF8(file_get_contents($readmeMD)));
-
-            $smarty->assign('szReadmeContent', $szReadmeContent);
-
-            $oUnnamedTab                   = new stdClass();
-            $oUnnamedTab->kPluginAdminMenu = $adminMenu->getItems()->count() + 1;
-            $oUnnamedTab->kPlugin          = $oPlugin->getID();
-            $oUnnamedTab->cName            = 'Dokumentation';
-            $oUnnamedTab->cDateiname       = '';
-            $oUnnamedTab->nSort            = $oUnnamedTab->kPluginAdminMenu;
-            $oUnnamedTab->nConf            = 0;
-            $adminMenu->addItem($oUnnamedTab);
-
-            $fAddAsDocTab = true;
-        }
-        if (!empty($licenseMD)) {
-            $licenseContent = $oParseDown->text(StringHandler::convertUTF8(file_get_contents($licenseMD)));
-
-            $smarty->assign('szLicenseContent', $licenseContent);
-
-            $oUnnamedTab                   = new stdClass();
-            $oUnnamedTab->kPluginAdminMenu = $adminMenu->getItems()->count() + 1;
-            $oUnnamedTab->kPlugin          = $oPlugin->getID();
-            $oUnnamedTab->cName            = 'Lizenzvereinbarung';
-            $oUnnamedTab->cDateiname       = '';
-            $oUnnamedTab->nSort            = $oUnnamedTab->kPluginAdminMenu;
-            $oUnnamedTab->nConf            = 0;
-            $adminMenu->addItem($oUnnamedTab);
-
-            $fAddAsLicenseTab = true;
-        }
-        if (!empty($changelogMD)) {
-            $changelogContent = $oParseDown->text(StringHandler::convertUTF8(file_get_contents($changelogMD)));
-
-            $smarty->assign('szChangelogContent', $changelogContent);
-
-            $oUnnamedTab                   = new stdClass();
-            $oUnnamedTab->kPluginAdminMenu = $adminMenu->getItems()->count() + 1;
-            $oUnnamedTab->kPlugin          = $oPlugin->getID();
-            $oUnnamedTab->cName            = 'Changelog';
-            $oUnnamedTab->cDateiname       = '';
-            $oUnnamedTab->nSort            = $oUnnamedTab->kPluginAdminMenu;
-            $oUnnamedTab->nConf            = 0;
-            $adminMenu->addItem($oUnnamedTab);
-
-            $fAddAsChangelogTab = true;
-        }
-        // build the tabs
-        foreach ($adminMenu->getItems() as $_adminMenu) {
-            if ((int)$_adminMenu->nConf === 0
-                && $_adminMenu->cDateiname !== ''
-                && file_exists($oPlugin->getPaths()->getAdminPath() . $_adminMenu->cDateiname)
+        foreach ($oPlugin->getAdminMenu()->getItems() as $menu) {
+            if ($menu->isMarkdown === true) {
+                $parseDown = new Parsedown();
+                $content   = $parseDown->text(StringHandler::convertUTF8(file_get_contents($menu->file)));
+                $smarty->assign('content', $content);
+                $menu->html = $smarty->fetch($menu->tpl);
+            } elseif ($menu->configurable === false
+                && $menu->file !== ''
+                && file_exists($oPlugin->getPaths()->getAdminPath() . $menu->file)
             ) {
                 ob_start();
-                require $oPlugin->getPaths()->getAdminPath() . $_adminMenu->cDateiname;
-
-                $tab                   = new stdClass();
-                $tab->file             = $oPlugin->getPaths()->getAdminPath() . $_adminMenu->cDateiname;
-                $tab->idx              = $i;
-                $tab->id               = str_replace('.php', '', $_adminMenu->cDateiname);
-                $tab->kPluginAdminMenu = $_adminMenu->kPluginAdminMenu;
-                $tab->cName            = $_adminMenu->cName;
-                $tab->html             = ob_get_contents();
-                $customTabs[]          = $tab;
+                require $oPlugin->getPaths()->getAdminPath() . $menu->file;
+                $menu->html = ob_get_contents();
                 ob_end_clean();
-                ++$i;
-            } elseif ((int)$_adminMenu->nConf === 1) {
-                $smarty->assign('oPluginAdminMenu', $_adminMenu);
-                $tab                   = new stdClass();
-                $tab->file             = $oPlugin->getPaths()->getAdminPath() . $_adminMenu->cDateiname;
-                $tab->idx              = $i;
-                $tab->id               = 'settings-' . $j;
-                $tab->kPluginAdminMenu = $_adminMenu->kPluginAdminMenu;
-                $tab->cName            = $_adminMenu->cName;
-                $tab->html             = $smarty->fetch('tpl_inc/plugin_options.tpl');
-                $customTabs[]          = $tab;
-                ++$j;
-            } elseif ($fAddAsDocTab === true) {
-                $tab                   = new stdClass();
-                $tab->file             = '';
-                $tab->idx              = $i;
-                $tab->id               = 'addon-' . $j;
-                $tab->kPluginAdminMenu = $_adminMenu->kPluginAdminMenu;
-                $tab->cName            = $_adminMenu->cName;
-                $tab->html             = $smarty->fetch('tpl_inc/plugin_documentation.tpl');
-                $customTabs[]          = $tab;
-                ++$j;
-                $fAddAsDocTab = false; // prevent another appending!
-            } elseif ($fAddAsLicenseTab === true) {
-                $tab                   = new stdClass();
-                $tab->file             = '';
-                $tab->idx              = $i;
-                $tab->id               = 'addon-' . $j;
-                $tab->kPluginAdminMenu = $_adminMenu->kPluginAdminMenu;
-                $tab->cName            = $_adminMenu->cName;
-                $tab->html             = $smarty->fetch('tpl_inc/plugin_license.tpl');
-                $customTabs[]          = $tab;
-                ++$j;
-                $fAddAsLicenseTab = false; // prevent another appending!
-            } elseif ($fAddAsChangelogTab === true) {
-                $tab                   = new stdClass();
-                $tab->file             = '';
-                $tab->idx              = $i;
-                $tab->id               = 'addon-' . $j;
-                $tab->kPluginAdminMenu = $_adminMenu->kPluginAdminMenu;
-                $tab->cName            = $_adminMenu->cName;
-                $tab->html             = $smarty->fetch('tpl_inc/plugin_changelog.tpl');
-                $customTabs[]          = $tab;
-                ++$j;
-                $fAddAsChangelogTab = false; // prevent another appending!
+            } elseif ($menu->configurable === true) {
+                $smarty->assign('oPluginAdminMenu', $menu);
+                $menu->html = $smarty->fetch('tpl_inc/plugin_options.tpl');
             }
         }
     }
 }
-
-$smarty->assign('customPluginTabs', $customTabs)
-       ->assign('oPlugin', $oPlugin)
+$smarty->assign('oPlugin', $oPlugin)
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)

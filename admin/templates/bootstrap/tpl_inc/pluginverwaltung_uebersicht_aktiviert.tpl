@@ -83,17 +83,18 @@
                                 </td>
                                 <td class="tcenter plugin-config">
                                     {assign var=btnGroup value=false}
-                                    {if (isset($plugin->oPluginEinstellung_arr) && $plugin->oPluginEinstellung_arr|@count > 0) || (isset($plugin->oPluginAdminMenu_arr) && $plugin->oPluginAdminMenu_arr|@count > 0) &&
-                                    ($plugin->getMeta()->isUpdateAvailable() && $plugin->cFehler === '')}
+                                    {if $plugin->getConfig()->getOptions()->count() > 0
+                                        || $plugin->getAdminMenu()->getItems()->count()
+                                        && ($plugin->getMeta()->isUpdateAvailable() && $plugin->cFehler === '')}
                                         {assign var=btnGroup value=true}
                                     {/if}
                                     {if $btnGroup}
                                     <div class="btn-group" style="min-width:75px;">
                                         {/if}
-                                        {if (isset($plugin->oPluginEinstellung_arr) && $plugin->oPluginEinstellung_arr|@count > 0) || (isset($plugin->oPluginAdminMenu_arr) && $plugin->oPluginAdminMenu_arr|@count > 0)}
+                                        {if $plugin->getConfig()->getOptions()->count() || $plugin->getAdminMenu()->getItems()->count()}
                                             <a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$plugin->getID()}" title="Einstellungen"><i class="fa fa-cogs"></i></a>
                                         {else}
-                                            {if (isset($plugin->cTextReadmePath) && $plugin->cTextReadmePath|count_characters > 0) || (isset($plugin->cTextLicensePath) && $plugin->cTextLicensePath|count_characters > 0)}
+                                            {if $plugin->getMeta()->getLicenseMD() || $plugin->getMeta()->getReadmeMD()}
                                                 <a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$plugin->getID()}" title="Dokumentation"><i class="fa fa-copy"></i></a>
                                                 {*<a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$plugin->getID()}" title="Dokumentation"><i class="fa fa-file-text-o"></i></a>*}
                                             {/if}

@@ -9,9 +9,6 @@ namespace Plugin;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use JTL\XMLParser;
-use Plugin\Admin\StateChanger;
-use Plugin\Admin\Validation\ModernValidator;
-use Plugin\Admin\Validation\Shop4Validator;
 
 /**
  * Class Plugin
@@ -121,21 +118,6 @@ class Plugin extends ExtensionBC
     /**
      * @var string
      */
-    public $dInstalliert_DE;
-
-    /**
-     * @var string
-     */
-    public $dZuletztAktualisiert_DE;
-
-    /**
-     * @var string
-     */
-    public $dErstellt_DE;
-
-    /**
-     * @var string
-     */
     public $cAdminmenuPfadURLSSL;
 
     /**
@@ -149,11 +131,6 @@ class Plugin extends ExtensionBC
     public $pluginCacheGroup;
 
     /**
-     * @var string
-     */
-    public $cIcon;
-
-    /**
      * @var int
      */
     public $bBootstrap;
@@ -162,21 +139,6 @@ class Plugin extends ExtensionBC
      * @var int
      */
     public $nCalledHook;
-
-    /**
-     * @var string  holds the path to a README.md
-     */
-    public $cTextReadmePath = '';
-
-    /**
-     * @var string  holds the path to a license-file ("LICENSE.md", "License.md", "license.md")
-     */
-    public $cTextLicensePath = '';
-
-    /**
-     * @var string  holds the path to a CHANGELOG.md
-     */
-    public $changelogPath = '';
 
     /**
      * Konstruktor
@@ -302,15 +264,14 @@ class Plugin extends ExtensionBC
     public function getCurrentVersion(): int
     {
         $path = \PFAD_ROOT . \PFAD_PLUGIN . $this->getPaths()->getBaseDir();
-        if (\is_dir($path) && \file_exists($path . '/' . \PLUGIN_INFO_FILE)) {
-            $parser  = new XMLParser();
-            $xml     = $parser->parse($path . '/' . \PLUGIN_INFO_FILE);
-            $version = \count($xml['jtlshop3plugin'][0]['Install'][0]['Version']) / 2 - 1;
-
-            return (int)$xml['jtlshop3plugin'][0]['Install'][0]['Version'][$version . ' attr']['nr'];
+        if (!\is_dir($path) || !\file_exists($path . '/' . \PLUGIN_INFO_FILE)) {
+            return 0;
         }
+        $parser  = new XMLParser();
+        $xml     = $parser->parse($path . '/' . \PLUGIN_INFO_FILE);
+        $version = \count($xml['jtlshop3plugin'][0]['Install'][0]['Version']) / 2 - 1;
 
-        return 0;
+        return (int)$xml['jtlshop3plugin'][0]['Install'][0]['Version'][$version . ' attr']['nr'];
     }
 
     /**
@@ -324,26 +285,6 @@ class Plugin extends ExtensionBC
         $mapper = new \Mapper\PluginState();
 
         return $mapper->map($state);
-    }
-
-    /**
-     * @param object $conf
-     * @return null|array
-     */
-    public function getDynamicOptions($conf): ?array
-    {
-        $dynamicOptions = null;
-        if (!empty($conf->cSourceFile) && \file_exists($this->getPaths()->getAdminPath() . $conf->cSourceFile)) {
-            $dynamicOptions = include $this->getPaths()->getAdminPath() . $conf->cSourceFile;
-            foreach ($dynamicOptions as $option) {
-                $option->kPluginEinstellungenConf = $conf->kPluginEinstellungenConf;
-                if (!isset($option->nSort)) {
-                    $option->nSort = 0;
-                }
-            }
-        }
-
-        return $dynamicOptions;
     }
 
     /**

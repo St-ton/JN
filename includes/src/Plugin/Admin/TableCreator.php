@@ -365,15 +365,15 @@ class TableCreator
                         $plgnConf->cWert   = $initialValue;
                         $exists            = $this->db->select(
                             'tplugineinstellungen',
-                            'cName',
-                            $plgnConf->cName
+                            ['cName', 'kPlugin'],
+                            [$plgnConf->cName, $plgnConf->kPlugin]
                         );
 
                         if ($exists !== null) {
                             $this->db->update(
                                 'tplugineinstellungen',
-                                'cName',
-                                $plgnConf->cName,
+                                ['cName', 'kPlugin'],
+                                [$plgnConf->cName, $plgnConf->kPlugin],
                                 $plgnConf
                             );
                         } else {
@@ -405,14 +405,14 @@ class TableCreator
                         }
                         $plgnConfTmpID = $this->db->select(
                             'tplugineinstellungenconf',
-                            'cWertName',
-                            $plgnConf->cWertName
+                            ['kPlugin', 'cWertName'],
+                            [$plgnConf->kPlugin, $plgnConf->cWertName]
                         );
                         if ($plgnConfTmpID !== null) {
                             $this->db->update(
                                 'tplugineinstellungenconf',
-                                'cWertName',
-                                $plgnConf->cWertName,
+                                ['kPlugin', 'cWertName'],
+                                [$plgnConf->kPlugin, $plgnConf->cWertName],
                                 $plgnConf
                             );
                             $confID = $plgnConfTmpID->kPluginEinstellungenConf;

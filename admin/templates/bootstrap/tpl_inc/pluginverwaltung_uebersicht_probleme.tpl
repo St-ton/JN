@@ -25,20 +25,14 @@
                 </thead>
                 <tbody>
                 {foreach $pluginsByState.status_3 as $plugin}
-                    <tr {if $plugin->getMeta()->isUpdateAvailable() && $plugin->cFehler === ''}class="highlight"{/if}>
+                    <tr{if $plugin->getMeta()->isUpdateAvailable()} class="highlight"{/if}>
                         <td class="check">
                             <input type="checkbox" name="kPlugin[]" value="{$plugin->getID()}" id="plugin-problem-{$plugin->getID()}" />
                         </td>
                         <td>
                             <label for="plugin-problem-{$plugin->getID()}">{$plugin->getMeta()->getName()}</label>
-                            {if $plugin->getMeta()->isUpdateAvailable() || (isset($plugin->cInfo) && $plugin->cInfo|strlen > 0)}
-                                <p>
-                                    {if $plugin->cFehler === ''}
-                                        {if isset($plugin->cInfo) && $plugin->cInfo|strlen > 0}{$plugin->cInfo}<br />{/if}{#pluginUpdateExists#}
-                                    {else}
-                                        {if isset($plugin->cInfo) && $plugin->cInfo|strlen > 0}{$plugin->cInfo}<br />{/if}{#pluginUpdateExists#}. <br />{#pluginUpdateExistsError#}: <br />{$plugin->cUpdateFehler}
-                                    {/if}
-                                </p>
+                            {if $plugin->getMeta()->isUpdateAvailable()}
+                                <p>{#pluginUpdateExists#}</p>
                             {/if}
                         </td>
                         <td class="tcenter">
@@ -77,27 +71,21 @@
                             {/if}
                         </td>
                         <td class="tcenter">
-                            {if $plugin->getMeta()->isUpdateAvailable() && $plugin->cFehler === ''}
+                            {if $plugin->getMeta()->isUpdateAvailable()}
                                 <a onclick="ackCheck({$plugin->getID()}, '#probleme'); return false;" class="btn btn-primary">{#pluginBtnUpdate#}</a>
                             {/if}
                         </td>
                     </tr>
                 {/foreach}
                 {foreach $pluginsByState.status_4 as $plugin}
-                    <tr {if $plugin->getMeta()->isUpdateAvailable() && $plugin->cFehler === ''}class="highlight"{/if}>
+                    <tr{if $plugin->getMeta()->isUpdateAvailable()} class="highlight"{/if}>
                         <td class="check">
                             <input type="checkbox" name="kPlugin[]" value="{$plugin->getID()}" id="plugin-problem-{$plugin->getID()}" />
                         </td>
                         <td>
                             <label for="plugin-problem-{$plugin->getID()}">{$plugin->getMeta()->getName()}</label>
-                            {if $plugin->getMeta()->isUpdateAvailable() || (isset($plugin->cInfo) && $plugin->cInfo|strlen > 0)}
-                                <p>
-                                    {if $plugin->cFehler === ''}
-                                        {if isset($plugin->cInfo) && $plugin->cInfo|strlen > 0}{$plugin->cInfo}<br />{/if}{#pluginUpdateExists#}
-                                    {else}
-                                        {if isset($plugin->cInfo) && $plugin->cInfo|strlen > 0}{$plugin->cInfo}<br />{/if}{#pluginUpdateExists#}. <br />{#pluginUpdateExistsError#}: <br />{$plugin->cUpdateFehler}
-                                    {/if}
-                                </p>
+                            {if $plugin->getMeta()->isUpdateAvailable()}
+                                <p>{#pluginUpdateExists#}</p>
                             {/if}
                         </td>
                         <td class="tcenter">
@@ -138,27 +126,21 @@
                             {/if}
                         </td>
                         <td class="tcenter">
-                            {if $plugin->getMeta()->isUpdateAvailable() && $plugin->cFehler === ''}
+                            {if $plugin->getMeta()->isUpdateAvailable()}
                                 <a onclick="ackCheck({$plugin->getID()}, '#probleme'); return false;" class="btn btn-primary">{#pluginBtnUpdate#}</a>
                             {/if}
                         </td>
                     </tr>
                 {/foreach}
                 {foreach $pluginsByState.status_5 as $plugin}
-                    <tr {if $plugin->getMeta()->isUpdateAvailable() && $plugin->cFehler === ''}class="highlight"{/if}>
+                    <tr{if $plugin->getMeta()->isUpdateAvailable()} class="highlight"{/if}>
                         <td class="check">
                             <input type="checkbox" name="kPlugin[]" value="{$plugin->getID()}" id="plugin-problem-{$plugin->getID()}"/>
                         </td>
                         <td>
                             <label for="plugin-problem-{$plugin->getID()}">{$plugin->getMeta()->getName()}</label>
-                            {if $plugin->getMeta()->isUpdateAvailable() || (isset($plugin->cInfo) && $plugin->cInfo|strlen > 0)}
-                                <p>
-                                    {if $plugin->cFehler === ''}
-                                        {if isset($plugin->cInfo) && $plugin->cInfo|strlen > 0}{$plugin->cInfo}<br />{/if}{#pluginUpdateExists#}
-                                    {else}
-                                        {if isset($plugin->cInfo) && $plugin->cInfo|strlen > 0}{$plugin->cInfo}<br />{/if}{#pluginUpdateExists#}. <br />{#pluginUpdateExistsError#}: <br />{$plugin->cUpdateFehler}
-                                    {/if}
-                                </p>
+                            {if $plugin->getMeta()->isUpdateAvailable()}
+                                <p>{#pluginUpdateExists#}</p>
                             {/if}
                         </td>
                         <td class="tcenter">
@@ -203,27 +185,21 @@
                             {/if}
                         </td>
                         <td class="tcenter">
-                            {if $plugin->getMeta()->isUpdateAvailable() && $plugin->cFehler === ''}
+                            {if $plugin->getMeta()->isUpdateAvailable()}
                                 <a onclick="ackCheck({$plugin->getID()}, '#probleme'); return false;" class="btn btn-primary">{#pluginBtnUpdate#}</a>
                             {/if}
                         </td>
                     </tr>
                 {/foreach}
                 {foreach $pluginsByState.status_6 as $plugin}
-                    <tr {if $plugin->getMeta()->isUpdateAvailable() && $plugin->cFehler === ''}class="highlight"{/if}>
+                    <tr{if $plugin->getMeta()->isUpdateAvailable()} class="highlight"{/if}>
                         <td class="check">
                             <input type="checkbox" name="kPlugin[]" value="{$plugin->getID()}" id="plugin-problem-{$plugin->getID()}" />
                         </td>
                         <td>
                             <label for="plugin-problem-{$plugin->getID()}">{$plugin->getMeta()->getName()}</label>
-                            {if $plugin->getMeta()->isUpdateAvailable() || (isset($plugin->cInfo) && $plugin->cInfo|strlen > 0)}
-                                <p>
-                                    {if $plugin->cFehler === ''}
-                                        {if isset($plugin->cInfo) && $plugin->cInfo|strlen > 0}{$plugin->cInfo}<br />{/if}{#pluginUpdateExists#}
-                                    {else}
-                                        {if isset($plugin->cInfo) && $plugin->cInfo|strlen > 0}{$plugin->cInfo}<br />{/if}{#pluginUpdateExists#}. <br />{#pluginUpdateExistsError#}: <br />{$plugin->cUpdateFehler}
-                                    {/if}
-                                </p>
+                            {if $plugin->getMeta()->isUpdateAvailable()}
+                                <p>{#pluginUpdateExists#}</p>
                             {/if}
                         </td>
                         <td class="tcenter plugin-status">
@@ -266,7 +242,7 @@
                             {/if}
                         </td>
                         <td class="tcenter">
-                            {if $plugin->getMeta()->isUpdateAvailable() && $plugin->cFehler === ''}
+                            {if $plugin->getMeta()->isUpdateAvailable()}
                                 <a onclick="ackCheck({$plugin->getID()}, '#probleme'); return false;" class="btn btn-primary">{#pluginBtnUpdate#}</a>
                             {/if}
                         </td>

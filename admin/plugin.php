@@ -49,7 +49,7 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
                 $oPluginEinstellung->cName   = $oPluginEinstellungConf->cWertName;
                 if (isset($_POST[$oPluginEinstellungConf->cWertName])) {
                     if (is_array($_POST[$oPluginEinstellungConf->cWertName])) {
-                        if ($oPluginEinstellungConf->cConf === 'M') {
+                        if ($oPluginEinstellungConf->cConf === \Plugin\ExtensionData\Config::TYPE_DYNAMIC) {
                             // selectbox with "multiple" attribute
                             $oPluginEinstellung->cWert = serialize($_POST[$oPluginEinstellungConf->cWertName]);
                         } else {

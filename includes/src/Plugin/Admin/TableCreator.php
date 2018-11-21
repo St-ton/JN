@@ -349,7 +349,7 @@ class TableCreator
                         $type         = $setting['type'];
                         $multiple     = (isset($setting['multiple'])
                             && $setting['multiple'] === 'Y'
-                            && $type === 'selectbox');
+                            && $type === InputType::SELECT);
                         $initialValue = ($multiple === true) ?
                             \serialize([$setting['initialValue']])
                             : $setting['initialValue'];
@@ -395,7 +395,7 @@ class TableCreator
                         $plgnConf->nSort            = $sort;
                         $plgnConf->cConf            = $cConf;
                         //dynamic data source for selectbox/radio
-                        if ($type === 'selectbox' || $type === 'radio') {
+                        if ($type === InputType::SELECT || $type === InputType::RADIO) {
                             if (isset($setting['OptionsSource'][0]['File'])) {
                                 $plgnConf->cSourceFile = $setting['OptionsSource'][0]['File'];
                             }
@@ -428,7 +428,7 @@ class TableCreator
                         }
                         $sort = 0;
                         // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
-                        if ($type === 'selectbox') {
+                        if ($type === InputType::SELECT) {
                             if (isset($setting['OptionsSource'])
                                 && \is_array($setting['OptionsSource'])
                                 && \count($setting['OptionsSource']) > 0
@@ -467,7 +467,7 @@ class TableCreator
 
                                 $this->db->insert('tplugineinstellungenconfwerte', $plgnConfValues);
                             }
-                        } elseif ($type === 'radio') {
+                        } elseif ($type === InputType::RADIO) {
                             if (isset($setting['OptionsSource'])
                                 && \is_array($setting['OptionsSource'])
                                 && \count($setting['OptionsSource']) > 0

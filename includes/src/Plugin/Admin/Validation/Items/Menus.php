@@ -6,6 +6,7 @@
 
 namespace Plugin\Admin\Validation\Items;
 
+use Plugin\Admin\InputType;
 use Plugin\Admin\Validation\ValidationItemInterface;
 use Plugin\InstallCode;
 
@@ -93,7 +94,7 @@ class Menus extends AbstractItem
                         ) {
                             return InstallCode::INVALID_CONF_VALUE_NAME;
                         }
-                        if ($type === 'selectbox') {
+                        if ($type === InputType::SELECT) {
                             if (isset($setting['OptionsSource'])
                                 && \is_array($setting['OptionsSource'])
                                 && \count($setting['OptionsSource']) > 0
@@ -143,7 +144,7 @@ class Menus extends AbstractItem
                             } else {
                                 return InstallCode::MISSING_CONFIG_SELECTBOX_OPTIONS;
                             }
-                        } elseif ($type === 'radio') {
+                        } elseif ($type === InputType::RADIO) {
                             if (isset($setting['OptionsSource'])
                                 && \is_array($setting['OptionsSource'])
                                 && \count($setting['OptionsSource']) > 0

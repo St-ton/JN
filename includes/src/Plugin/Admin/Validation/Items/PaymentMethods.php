@@ -6,6 +6,7 @@
 
 namespace Plugin\Admin\Validation\Items;
 
+use Plugin\Admin\InputType;
 use Plugin\InstallCode;
 
 /**
@@ -209,7 +210,7 @@ class PaymentMethods extends AbstractItem
                     if (\strlen($setting['ValueName']) === 0) {
                         return InstallCode::INVALID_PAYMENT_METHOD_VALUE_NAME;
                     }
-                    if ($type === 'selectbox') {
+                    if ($type === InputType::SELECT) {
                         if (!isset($setting['SelectboxOptions'])
                             || !\is_array($setting['SelectboxOptions'])
                             || \count($setting['SelectboxOptions']) === 0
@@ -245,7 +246,7 @@ class PaymentMethods extends AbstractItem
                                 return InstallCode::INVALID_PAYMENT_METHOD_OPTION;
                             }
                         }
-                    } elseif ($type === 'radio') {
+                    } elseif ($type === InputType::RADIO) {
                         if (!isset($setting['RadioOptions'])
                             || !\is_array($setting['RadioOptions'])
                             || \count($setting['RadioOptions']) === 0

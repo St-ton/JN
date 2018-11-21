@@ -25,20 +25,14 @@
                         </thead>
                         <tbody>
                         {foreach $pluginsByState.status_1 as $plugin}
-                            <tr {if $plugin->getMeta()->isUpdateAvailable() && $plugin->cFehler === ''}class="highlight"{/if}>
+                            <tr {if $plugin->getMeta()->isUpdateAvailable()}class="highlight"{/if}>
                                 <td class="check">
                                     <input type="checkbox" name="kPlugin[]" id="plugin-check-{$plugin->getID()}" value="{$plugin->getID()}" />
                                 </td>
                                 <td>
                                     <label for="plugin-check-{$plugin->getID()}">{$plugin->getMeta()->getName()}</label
                                     {if $plugin->getMeta()->isUpdateAvailable() || (isset($plugin->cInfo) && $plugin->cInfo|strlen > 0)}
-                                        <p>
-                                            {if $plugin->cFehler === ''}
-                                                {if isset($plugin->cInfo) && $plugin->cInfo|strlen > 0}{$plugin->cInfo}<br />{/if}{#pluginUpdateExists#}
-                                            {else}
-                                                {if isset($plugin->cInfo) && $plugin->cInfo|strlen > 0}{$plugin->cInfo}<br />{/if}{#pluginUpdateExists#}. <br />{#pluginUpdateExistsError#}: <br />{$plugin->cUpdateFehler}
-                                            {/if}
-                                        </p>
+                                        <p>{#pluginUpdateExists#}</p>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-status">
@@ -81,7 +75,7 @@
                                     {/if}
                                 </td>
                                 <td class="tcenter">
-                                    {if $plugin->getMeta()->isUpdateAvailable() && $plugin->cFehler === ''}
+                                    {if $plugin->getMeta()->isUpdateAvailable()}
                                         <a onclick="ackCheck({$plugin->getID()}, 'deaktiviert'); return false;" class="btn btn-primary btn-sm" title="{#pluginBtnUpdate#}"><i class="fa fa-refresh"></i></a>
                                     {/if}
                                 </td>

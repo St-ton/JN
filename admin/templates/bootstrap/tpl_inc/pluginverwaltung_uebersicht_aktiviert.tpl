@@ -26,20 +26,14 @@
                         </thead>
                         <tbody>
                         {foreach $pluginsByState.status_2 as $plugin}
-                            <tr {if $plugin->getMeta()->isUpdateAvailable() && $plugin->cFehler === ''}class="highlight"{/if}>
+                            <tr{if $plugin->getMeta()->isUpdateAvailable()} class="highlight"{/if}>
                                 <td class="check">
                                     <input type="checkbox" name="kPlugin[]" id="plugin-check-{$plugin->getID()}" value="{$plugin->getID()}" />
                                 </td>
                                 <td>
                                     <label for="plugin-check-{$plugin->getID()}">{$plugin->getMeta()->getName()}</label>
                                     {if $plugin->getMeta()->isUpdateAvailable() || (isset($plugin->cInfo) && $plugin->cInfo|strlen > 0)}
-                                        <p>
-                                            {if $PluginInstalliert_arr->cFehler === ''}
-                                                {if isset($plugin->cInfo) && $plugin->cInfo|strlen > 0}{$plugin->cInfo}<br />{/if}{#pluginUpdateExists#}
-                                            {else}
-                                                {if isset($plugin->cInfo) && $plugin->cInfo|strlen > 0}{$plugin->cInfo}<br />{/if}{#pluginUpdateExists#}. <br />{#pluginUpdateExistsError#}: <br />{$plugin->cFehler}
-                                            {/if}
-                                        </p>
+                                        <p>{#pluginUpdateExists#}</p>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-status">
@@ -84,26 +78,24 @@
                                 <td class="tcenter plugin-config">
                                     {assign var=btnGroup value=false}
                                     {if $plugin->getConfig()->getOptions()->count() > 0
-                                        || $plugin->getAdminMenu()->getItems()->count()
-                                        && ($plugin->getMeta()->isUpdateAvailable() && $plugin->cFehler === '')}
+                                        || $plugin->getAdminMenu()->getItems()->count() > 0
+                                        || $plugin->getMeta()->isUpdateAvailable()}
                                         {assign var=btnGroup value=true}
                                     {/if}
                                     {if $btnGroup}
-                                    <div class="btn-group" style="min-width:75px;">
-                                        {/if}
-                                        {if $plugin->getConfig()->getOptions()->count() || $plugin->getAdminMenu()->getItems()->count()}
-                                            <a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$plugin->getID()}" title="Einstellungen"><i class="fa fa-cogs"></i></a>
-                                        {else}
-                                            {if $plugin->getMeta()->getLicenseMD() || $plugin->getMeta()->getReadmeMD()}
-                                                <a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$plugin->getID()}" title="Dokumentation"><i class="fa fa-copy"></i></a>
-                                                {*<a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$plugin->getID()}" title="Dokumentation"><i class="fa fa-file-text-o"></i></a>*}
-                                            {/if}
-                                        {/if}
-                                        {if $plugin->getMeta()->isUpdateAvailable() && $plugin->cFehler === ''}
-                                            <a onclick="ackCheck({$plugin->getID()});return false;" class="btn btn-success btn-sm" title="{#pluginBtnUpdate#}"><i class="fa fa-refresh"></i></a>
-                                        {/if}
-                                        {if $btnGroup}
-                                    </div>
+                                        <div class="btn-group" style="min-width:75px;">
+                                    {/if}
+                                    {if $plugin->getConfig()->getOptions()->count() || $plugin->getAdminMenu()->getItems()->count()}
+                                        <a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$plugin->getID()}" title="Einstellungen"><i class="fa fa-cogs"></i></a>
+                                    {elseif $plugin->getMeta()->getLicenseMD() || $plugin->getMeta()->getReadmeMD()}
+                                        <a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$plugin->getID()}" title="Dokumentation"><i class="fa fa-copy"></i></a>
+                                        {*<a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$plugin->getID()}" title="Dokumentation"><i class="fa fa-file-text-o"></i></a>*}
+                                    {/if}
+                                    {if $plugin->getMeta()->isUpdateAvailable()}
+                                        <a onclick="ackCheck({$plugin->getID()});return false;" class="btn btn-success btn-sm" title="{#pluginBtnUpdate#}"><i class="fa fa-refresh"></i></a>
+                                    {/if}
+                                    {if $btnGroup}
+                                        </div>
                                     {/if}
                                 </td>
                             </tr>

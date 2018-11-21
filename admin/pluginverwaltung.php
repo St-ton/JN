@@ -107,7 +107,6 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
             $oPluginLicence = new $class();
             $cLicenceMethod = PLUGIN_LICENCE_METHODE;
             if ($oPluginLicence->$cLicenceMethod(StringHandler::filterXSS($_POST['cKey']))) {
-                $oPlugin->cFehler = '';
                 $oPlugin->setState(\Plugin\State::ACTIVATED);
                 $oPlugin->getLicense()->setKey(StringHandler::filterXSS($_POST['cKey']));
                 $oPlugin->updateInDB();

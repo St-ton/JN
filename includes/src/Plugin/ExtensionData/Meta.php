@@ -73,6 +73,11 @@ class Meta
     private $updateAvailable = false;
 
     /**
+     * @var string|null
+     */
+    private $error;
+
+    /**
      * @param \stdClass $data
      * @return $this
      */

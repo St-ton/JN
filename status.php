@@ -17,7 +17,7 @@ $Einstellungen = Shop::getSettings([
 $hinweis       = '';
 $linkHelper    = Shop::Container()->getLinkService();
 
-if (strlen($_GET['uid']) === 40) {
+if (strlen($_GET['uid']) === 23) {
     $status = Shop::Container()->getDB()->queryPrepared(
         'SELECT kBestellung 
             FROM tbestellstatus 
@@ -33,7 +33,9 @@ if (strlen($_GET['uid']) === 40) {
     $bestellung = new Bestellung($status->kBestellung, true);
     $smarty->assign('Bestellung', $bestellung)
            ->assign('Kunde', new Kunde($bestellung->kKunde))
-           ->assign('Lieferadresse', $bestellung->Lieferadresse);
+           ->assign('Lieferadresse', $bestellung->Lieferadresse)
+           ->assign('showLoginPanel', \Session\Session::getCustomer()->isLoggedIn())
+           ->assign('billingAddress', $bestellung->oRechnungsadresse);
 } else {
     header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
     exit;

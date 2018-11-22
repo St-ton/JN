@@ -13,7 +13,7 @@
 function pluginPlausi(int $kPlugin, $cVerzeichnis = '')
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $validator = new \Plugin\Admin\Validator(Shop::Container()->getDB());
+    $validator = new \Plugin\Admin\Validation\PluginValidator(Shop::Container()->getDB());
     $validator->setDir($cVerzeichnis);
 
     return $validator->validateByPluginID($kPlugin);
@@ -28,7 +28,7 @@ function pluginPlausi(int $kPlugin, $cVerzeichnis = '')
 function pluginPlausiIntern($XML_arr, $cVerzeichnis)
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $validator = new \Plugin\Admin\Validator(Shop::Container()->getDB());
+    $validator = new \Plugin\Admin\Validation\PluginValidator(Shop::Container()->getDB());
     $validator->setDir($cVerzeichnis);
 
     return $validator->pluginPlausiIntern($XML_arr, false);
@@ -46,10 +46,10 @@ function updatePlugin(int $kPlugin)
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $db              = Shop::Container()->getDB();
     $cache           = Shop::Container()->getCache();
-    $uninstaller     = new \Plugin\Admin\Uninstaller($db, $cache);
+    $uninstaller     = new \Plugin\Admin\Installation\Uninstaller($db, $cache);
     $validator       = new \Plugin\Admin\Validation\PluginValidator($db);
     $modernValidator = new \Plugin\Admin\Validation\ExtensionValidator($db);
-    $installer       = new \Plugin\Admin\Installer($db, $uninstaller, $validator, $modernValidator);
+    $installer       = new \Plugin\Admin\Installation\Installer($db, $uninstaller, $validator, $modernValidator);
     $updater         = new \Plugin\Admin\Updater($db, $installer);
 
     return $updater->update($kPlugin);
@@ -68,10 +68,10 @@ function installierePluginVorbereitung($dir, $oldPlugin = 0)
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $db              = Shop::Container()->getDB();
     $cache           = Shop::Container()->getCache();
-    $uninstaller     = new \Plugin\Admin\Uninstaller($db, $cache);
+    $uninstaller     = new \Plugin\Admin\Installation\Uninstaller($db, $cache);
     $validator       = new \Plugin\Admin\Validation\PluginValidator($db);
     $modernValidator = new \Plugin\Admin\Validation\ExtensionValidator($db);
-    $installer       = new \Plugin\Admin\Installer($db, $uninstaller, $validator, $modernValidator);
+    $installer       = new \Plugin\Admin\Installation\Installer($db, $uninstaller, $validator, $modernValidator);
     $installer->setDir($dir);
     if ($oldPlugin !== 0) {
         $installer->setPlugin($oldPlugin);

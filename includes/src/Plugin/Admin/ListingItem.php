@@ -117,11 +117,11 @@ class ListingItem
             if (!isset($node['Name'])) {
                 return $this;
             }
-            $this->name              = $node['Name'];
-            $this->description       = $node['Description'] ?? '';
-            $this->author            = $node['Author'] ?? '';
-            $this->id                = $node['PluginID'];
-            $this->icon              = $node['Icon'] ?? null;
+            $this->name        = $node['Name'];
+            $this->description = $node['Description'] ?? '';
+            $this->author      = $node['Author'] ?? '';
+            $this->id          = $node['PluginID'];
+            $this->icon        = $node['Icon'] ?? null;
             if (\is_array($node['Install'][0]['Version'])) {
                 $lastVersion   = \count($node['Install'][0]['Version']) / 2 - 1;
                 $version       = $lastVersion >= 0

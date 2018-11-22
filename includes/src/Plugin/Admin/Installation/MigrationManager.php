@@ -4,10 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin;
+namespace Plugin\Admin\Installation;
 
 use DB\DbInterface;
 use JTLShop\SemVer\Version;
+use Plugin\MigrationHelper;
 
 /**
  * Class Migration
@@ -102,6 +103,7 @@ final class MigrationManager
         if (!\is_dir($this->getPath())) {
             return [];
         }
+        $migration          = null;
         $migrations         = $this->getMigrations();
         $executedMigrations = $this->getExecutedMigrations();
         $currentId          = $this->getCurrentId();

@@ -17,13 +17,13 @@ $cFehler         = '';
 $step            = 'pluginverwaltung_uebersicht';
 $db              = Shop::Container()->getDB();
 $cache           = Shop::Container()->getCache();
-$uninstaller     = new \Plugin\Admin\Uninstaller($db, $cache);
+$uninstaller     = new \Plugin\Admin\Installation\Uninstaller($db, $cache);
 $validator       = new \Plugin\Admin\Validation\PluginValidator($db);
 $modernValidator = new \Plugin\Admin\Validation\ExtensionValidator($db);
 $listing         = new \Plugin\Admin\Listing($db, $cache, $validator, $modernValidator);
-$installer       = new \Plugin\Admin\Installer($db, $uninstaller, $validator, $modernValidator);
+$installer       = new \Plugin\Admin\Installation\Installer($db, $uninstaller, $validator, $modernValidator);
 $updater         = new \Plugin\Admin\Updater($db, $installer);
-$extractor       = new \Plugin\Admin\Extractor();
+$extractor       = new \Plugin\Admin\Installation\Extractor();
 $stateChanger    = new \Plugin\Admin\StateChanger(
     $db,
     $cache,

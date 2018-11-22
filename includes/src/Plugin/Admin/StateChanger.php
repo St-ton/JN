@@ -8,6 +8,9 @@ namespace Plugin\Admin;
 
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
+use Plugin\Admin\Installation\Installer;
+use Plugin\Admin\Installation\Uninstaller;
+use Plugin\Admin\Validation\ExtensionValidator;
 use Plugin\Admin\Validation\PluginValidator;
 use Plugin\Admin\Validation\ValidatorInterface;
 use Plugin\ExtensionLoader;
@@ -34,32 +37,32 @@ class StateChanger
     private $cache;
 
     /**
-     * @var PluginValidator
+     * @var ValidatorInterface|PluginValidator
      */
-    private $validator;
+    private $pluginValidator;
 
     /**
-     * @var ValidatorInterface
+     * @var ValidatorInterface|ExtensionValidator
      */
-    protected $modernValidator;
+    protected $extensionValidator;
 
     /**
      * StateChanger constructor.
      * @param DbInterface             $db
      * @param JTLCacheInterface       $cache
-     * @param ValidatorInterface|null $validator
-     * @param ValidatorInterface|null $modernValidator
+     * @param ValidatorInterface|null $pluginValidator
+     * @param ValidatorInterface|null $extensionValidator
      */
     public function __construct(
         DbInterface $db,
         JTLCacheInterface $cache,
-        ValidatorInterface $validator = null,
-        ValidatorInterface $modernValidator = null
+        ValidatorInterface $pluginValidator = null,
+        ValidatorInterface $extensionValidator = null
     ) {
-        $this->db              = $db;
-        $this->cache           = $cache;
-        $this->validator       = $validator;
-        $this->modernValidator = $modernValidator;
+        $this->db                 = $db;
+        $this->cache              = $cache;
+        $this->pluginValidator    = $pluginValidator;
+        $this->extensionValidator = $extensionValidator;
     }
 
     /**
@@ -79,7 +82,7 @@ class StateChanger
             return InstallCode::NO_PLUGIN_FOUND;
         }
         $path       = \PFAD_ROOT . \PFAD_PLUGIN;
-        $validation = $this->validator->validateByPath($path . $pluginData->cVerzeichnis);
+        $validation = $this->pluginValidator->validateByPath($path . $pluginData->cVerzeichnis);
 
         if ($validation === InstallCode::OK
             || $validation === InstallCode::DUPLICATE_PLUGIN_ID
@@ -167,7 +170,7 @@ class StateChanger
         $lastXMLChange = \filemtime($info);
         if ($forceReload === true || $lastXMLChange > $lastUpdate->getTimestamp()) {
             $uninstaller = new Uninstaller($this->db, $this->cache);
-            $installer   = new Installer($this->db, $uninstaller, $this->validator, $this->modernValidator);
+            $installer   = new Installer($this->db, $uninstaller, $this->pluginValidator, $this->extensionValidator);
             $installer->setDir($plugin->getPaths()->getBaseDir());
             $installer->setPlugin($plugin);
 

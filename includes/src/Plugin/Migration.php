@@ -6,8 +6,6 @@
 
 namespace Plugin;
 
-use Plugin\Admin\MigrationHelper;
-
 /**
  * Class Migration
  * @package Plugin

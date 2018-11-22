@@ -7,6 +7,7 @@
 namespace Plugin\Admin;
 
 use DB\DbInterface;
+use Plugin\Admin\Installation\Installer;
 use Plugin\InstallCode;
 use Plugin\Plugin;
 
@@ -41,6 +42,7 @@ class Updater
      * @param int $pluginID
      * @return int
      * @former updatePlugin()
+     * @todo
      */
     public function update(int $pluginID): int
     {

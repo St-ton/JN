@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin;
+namespace Plugin;
 
 /**
  * Class MigrationHelper

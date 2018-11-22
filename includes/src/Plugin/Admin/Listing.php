@@ -104,6 +104,7 @@ final class Listing
             if ($plugin->getMeta()->isUpdateAvailable()) {
                 $code = $this->validator->validateByPluginID($pluginID->kPlugin, true);
                 if ($code !== InstallCode::OK) {
+                    // @todo
                     $plugin->cFehler = $mapper->map($code, $plugin->getPluginID());
                 }
             }

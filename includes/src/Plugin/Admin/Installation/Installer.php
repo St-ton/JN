@@ -4,16 +4,16 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin;
+namespace Plugin\Admin\Installation;
 
 use DB\DbInterface;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
 use Plugin\Admin\Validation\ValidatorInterface;
 use Plugin\ExtensionLoader;
+use Plugin\Helper;
 use Plugin\InstallCode;
 use Plugin\Plugin;
-use Plugin\Helper;
 use Plugin\PluginLoader;
 use Plugin\State;
 
@@ -41,17 +41,22 @@ final class Installer
     /**
      * @var ValidatorInterface
      */
-    private $validator;
+    private $pluginValidator;
 
     /**
      * @var ValidatorInterface
      */
-    private $modernValidator;
+    private $extensionValidator;
 
     /**
      * @var Plugin|null
      */
     private $plugin;
+
+    /**
+     * @var bool
+     */
+    private $isExtension = false;
 
     /**
      * Installer constructor.
@@ -66,10 +71,10 @@ final class Installer
         ValidatorInterface $validator,
         ValidatorInterface $modernValidator
     ) {
-        $this->db              = $db;
-        $this->uninstaller     = $uninstaller;
-        $this->validator       = $validator;
-        $this->modernValidator = $modernValidator;
+        $this->db                 = $db;
+        $this->uninstaller        = $uninstaller;
+        $this->pluginValidator    = $validator;
+        $this->extensionValidator = $modernValidator;
     }
 
     /**
@@ -113,11 +118,12 @@ final class Installer
         if (empty($this->dir)) {
             return InstallCode::WRONG_PARAM;
         }
-        $validator = $this->validator;
+        $validator = $this->pluginValidator;
         $baseDir   = \PFAD_ROOT . \PFAD_PLUGIN . \basename($this->dir);
         if (!\file_exists($baseDir . '/' . \PLUGIN_INFO_FILE)) {
             $baseDir   = \PFAD_ROOT . \PFAD_EXTENSIONS . \basename($this->dir);
-            $validator = $this->modernValidator;
+            $validator = $this->extensionValidator;
+            $this->isExtension = true;
             if (!\file_exists($baseDir . '/' . \PLUGIN_INFO_FILE)) {
                 return InstallCode::INFO_XML_MISSING;
             }
@@ -235,16 +241,18 @@ final class Installer
         if ($kPlugin <= 0) {
             return InstallCode::WRONG_PARAM;
         }
-        $tableCreator = new TableCreator($this->db);
-        $tableCreator->setOldPlugin($this->plugin);
-        $res = $tableCreator->install($xml, $plugin);
+
+        $factory = $this->isExtension
+            ? new PluginInstallerFactory($this->db, $xml, $plugin)
+            : new ExtensionInstallerFactory($this->db, $xml, $plugin);
+        $res     = $factory->install();
         if ($res !== InstallCode::OK) {
             $this->uninstaller->uninstall($kPlugin);
 
             return $res;
         }
         $hasSQLError = false;
-        $code        = 1;
+        $code        = InstallCode::OK;
         foreach ($versionNode as $i => $versionData) {
             if ($version > 0
                 && $this->plugin !== null

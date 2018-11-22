@@ -35,7 +35,6 @@ trait MagicCompatibilityTrait
     {
         $bt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
         if (\strpos($bt[0]['file'], PFAD_ROOT . PFAD_PLUGIN) === false) {
-            Shop::dbg($name, true, 'd',5);
             trigger_error(__CLASS__ . ': getter should be used to get ' . $name, E_USER_DEPRECATED);
         }
         if (property_exists($this, $name)) {

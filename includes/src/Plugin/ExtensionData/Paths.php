@@ -15,6 +15,11 @@ class Paths
     /**
      * @var string
      */
+    private $shopURL;
+
+    /**
+     * @var string
+     */
     private $baseDir;
 
     /**
@@ -56,6 +61,22 @@ class Paths
      * @var string|null
      */
     private $uninstaller;
+
+    /**
+     * @return string
+     */
+    public function getShopURL(): string
+    {
+        return $this->shopURL;
+    }
+
+    /**
+     * @param string $shopURL
+     */
+    public function setShopURL(string $shopURL): void
+    {
+        $this->shopURL = $shopURL;
+    }
 
     /**
      * @return string

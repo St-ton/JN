@@ -8,12 +8,10 @@ namespace Plugin;
 
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
-use Plugin\ExtensionData\Cache;
 use Plugin\ExtensionData\Config;
+use Plugin\ExtensionData\Hook;
 use Plugin\ExtensionData\Links;
-use Plugin\ExtensionData\Meta;
 use Plugin\ExtensionData\Paths;
-use Plugin\ExtensionData\Widget;
 
 /**
  * Class PluginLoader
@@ -61,9 +59,7 @@ class PluginLoader extends AbstractLoader
         if ($this->plugin === null) {
             $this->plugin = new Plugin();
         }
-        $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id .
-            '_' . \RequestHelper::checkSSL() .
-            '_' . \Shop::getLanguage();
+        $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id;// . '_' . \Shop::getLanguageID();
         if ($invalidateCache === true) {
             $this->cache->flush('hook_list');
             $this->cache->flushTags([\CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $id]);
@@ -95,29 +91,16 @@ class PluginLoader extends AbstractLoader
         $this->plugin->setBootstrap((int)$obj->bBootstrap === 1);
         $this->plugin->setIsExtension((int)$obj->bExtension === 1);
 
-        $meta = new Meta();
-        $meta->setName($obj->cName);
-        $meta->setDateInstalled(new \DateTime($obj->dInstalliert));
-        $meta->setDateLastUpdate(new \DateTime($obj->dZuletztAktualisiert));
-        $meta->setDescription($obj->cBeschreibung);
-        $meta->setURL($obj->cURL);
-        $meta->setVersion($obj->nVersion);
-        $meta->setIcon($obj->cIcon);
-        $meta->setAuthor($obj->cAutor);
-
-        $this->plugin->setMeta($meta);
+        $this->plugin->setMeta($this->loadMetaData($obj));
         $this->plugin->setLicense($this->loadLicense($obj));
         $this->plugin->setLinks(new Links());
 
-        $cache = new Cache();
-        $cache->setGroup(\CACHING_GROUP_PLUGIN . '_' . $this->plugin->getID());
-        $cache->setID($cache->getGroup() . '_' . $meta->getVersion());
-        $this->plugin->setCache($cache);
+        $this->plugin->setCache($this->loadCacheData($this->plugin));
 
         $this->basePath = \PFAD_ROOT . \PFAD_PLUGIN;
 
         $this->plugin->setPaths($this->loadPaths($obj->cVerzeichnis));
-        $this->plugin->oPluginHook_arr = $this->loadHooks();
+        $this->plugin->oPluginHook_arr = $this->loadHooks((int)$obj->kPlugin);
         $this->loadMarkdownFiles($this->plugin->getPaths()->getBasePath(), $this->plugin->getMeta());
         $this->loadAdminMenu($this->plugin);
         $this->plugin->setConfig($this->loadConfig($this->plugin->getPaths()->getAdminPath(), $this->plugin->getID()));
@@ -129,6 +112,25 @@ class PluginLoader extends AbstractLoader
         $this->cache();
 
         return $this->plugin;
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    protected function loadHooks(int $id): array
+    {
+        $hooks = \array_map(function ($data) {
+            $hook = new Hook();
+            $hook->setPriority((int)$data->nPriority);
+            $hook->setFile($data->cDateiname);
+            $hook->setID((int)$data->nHook);
+            $hook->setPluginID((int)$data->kPlugin);
+
+            return $hook;
+        }, $this->db->selectAll('tpluginhook', 'kPlugin', $id));
+
+        return $hooks;
     }
 
     /**
@@ -146,12 +148,12 @@ class PluginLoader extends AbstractLoader
      */
     protected function loadPaths(string $pluginDir): Paths
     {
-        $shopURL   = \Shop::getURL();
+        $paths     = parent::loadPaths($pluginDir);
+        $shopURL   = $paths->getShopURL();
         $basePath  = \PFAD_ROOT . \PFAD_PLUGIN . $pluginDir . \DIRECTORY_SEPARATOR;
         $versioned = $basePath . \PFAD_PLUGIN_VERSION . $this->plugin->getMeta()->getVersion() . \DIRECTORY_SEPARATOR;
         $baseURL   = $shopURL . \PFAD_EXTENSIONS . $pluginDir . '/';
 
-        $paths = new Paths();
         $paths->setBaseDir($pluginDir);
         $paths->setBasePath($basePath);
         $paths->setVersionedPath($versioned);
@@ -202,37 +204,5 @@ class PluginLoader extends AbstractLoader
         $this->plugin->oPluginEinstellungConf_arr  = $confCompat;
 
         return $config;
-    }
-
-    /**
-     * @param AbstractExtension $extension
-     * @return Widget
-     */
-    protected function loadWidgets(AbstractExtension $extension): Widget
-    {
-        $data    = $this->db->selectAll(
-            'tadminwidgets',
-            'kPlugin',
-            $extension->getID()
-        );
-        $path    = $extension->getPaths()->getAdminPath();
-        $widgets = new Widget();
-        foreach ($data as $widget) {
-            $widget->id          = (int)$widget->kWidget;
-            $widget->bActive     = (int)$widget->bActive;
-            $widget->bExpanded   = (int)$widget->bExpanded;
-            $widget->nPos        = (int)$widget->nPos;
-            $widget->isExtension = false;
-            $widget->kPlugin     = (int)$widget->kPlugin;
-            $widget->kWidget     = (int)$widget->kWidget;
-            $widget->namespache  = null;
-            $widget->classFile   = $path .
-                \PFAD_PLUGIN_WIDGET . 'class.Widget' .
-                $widget->cClass . '.php';
-            $widget->className   = 'Widget' . $widget->cClass;
-            $widgets->addWidget($widget);
-        }
-
-        return $widgets;
     }
 }

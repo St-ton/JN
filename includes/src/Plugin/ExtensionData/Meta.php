@@ -87,6 +87,7 @@ class Meta
         $this->description    = $data->cBeschreibung;
         $this->name           = $data->cName;
         $this->url            = $data->cURL;
+        $this->icon           = $data->cIcon;
         $this->dateInstalled  = new \DateTime($data->dInstalliert);
         $this->dateLastUpdate = new \DateTime($data->dZuletztAktualisiert);
         $this->version        = $data->nVersion;

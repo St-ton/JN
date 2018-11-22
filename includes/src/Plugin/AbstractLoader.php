@@ -12,7 +12,6 @@ use DB\ReturnType;
 use Plugin\ExtensionData\AdminMenu;
 use Plugin\ExtensionData\Cache;
 use Plugin\ExtensionData\Config;
-use Plugin\ExtensionData\Hook;
 use Plugin\ExtensionData\License;
 use Plugin\ExtensionData\Links;
 use Plugin\ExtensionData\Localization;
@@ -144,6 +143,7 @@ abstract class AbstractLoader implements LoaderInterface
         $baseURL  = $shopURL . \PFAD_EXTENSIONS . $pluginDir . '/';
 
         $paths = new Paths();
+        $paths->setShopURL($shopURL);
         $paths->setBaseDir($pluginDir);
         $paths->setBasePath($basePath);
         $paths->setVersionedPath($basePath);
@@ -155,24 +155,6 @@ abstract class AbstractLoader implements LoaderInterface
         $paths->setUninstaller($basePath . \PFAD_PLUGIN_UNINSTALL);
 
         return $paths;
-    }
-
-    /**
-     * @return array
-     */
-    protected function loadHooks(): array
-    {
-        $hooks = \array_map(function ($data) {
-            $hook = new Hook();
-            $hook->setPriority((int)$data->nPriority);
-            $hook->setFile($data->cDateiname);
-            $hook->setID((int)$data->nHook);
-            $hook->setPluginID((int)$data->kPlugin);
-
-            return $hook;
-        }, $this->db->selectAll('tpluginhook', 'kPlugin', $this->plugin->getID()));
-
-        return $hooks;
     }
 
     /**

@@ -10,6 +10,9 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 $kSektion = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
 $bSuche   = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
 
+L10n\GetText::getInstance()->loadAdminLocale('configs')
+                           ->loadAdminLocale('confvalues');
+
 if ($bSuche) {
     $oAccount->permission('SETTINGS_SEARCH_VIEW', true, true);
 }
@@ -210,7 +213,13 @@ if ($step === 'einstellungen bearbeiten') {
         $config->nStandardAnzeigen     = (int)$config->nStandardAnzeigen;
         $config->nSort                 = (int)$config->nSort;
         $config->nModul                = (int)$config->nModul;
-        $oSection = SettingSection::getInstance((int)$config->kEinstellungenSektion);
+        $oSection                      = SettingSection::getInstance((int)$config->kEinstellungenSektion);
+
+        if (!empty($config->cWertName)) {
+            $config->cName         = __("{$config->cWertName}_name");
+            $config->cBeschreibung = __("{$config->cWertName}_desc");
+        }
+
         //@ToDo: Setting 492 is the only one listbox at the moment.
         //But In special case of setting 492 values come from kKundengruppe instead of teinstellungenconfwerte
         if ($config->cInputTyp === 'listbox' && $config->kEinstellungenConf === 492) {
@@ -228,6 +237,10 @@ if ($step === 'einstellungen bearbeiten') {
                 '*',
                 'nSort'
             );
+
+            foreach ($config->ConfWerte as $value) {
+                $value->cName = __("{$config->cWertName}_value({$value->cWert})");
+            }
         }
         if ($config->cInputTyp === 'listbox') {
             $setValue                = Shop::Container()->getDB()->selectAll(

@@ -11,7 +11,7 @@
     <div class="backend-navigation">
         <ul class="backend-menu toplevel">
             {foreach $oLinkOberGruppe_arr as $oLinkOberGruppe}
-                {assign var='rootEntryName' value=$oLinkOberGruppe->cName|replace:' ':'-'|replace:'&':''|lower}
+                {assign var='rootEntryName' value=$oLinkOberGruppe->cName|regex_replace:'/[^a-zA-Z0-9]/':'-'|lower}
                 {if $oLinkOberGruppe->oLinkGruppe_arr|@count === 0 && $oLinkOberGruppe->oLink_arr|@count === 1}
                     <li class="single {if isset($oLinkOberGruppe->class)}{$oLinkOberGruppe->class}{/if}
                                {if $oLinkOberGruppe->key === $currentMenuPath[0]}current{/if}">
@@ -23,8 +23,7 @@
                         </div>
                     </li>
                 {else}
-                    {assign var='rootEntryName'
-                            value=$oLinkOberGruppe->cName|replace:' ':'-'|replace:'&':''|lower}
+                    {*{assign var='rootEntryName' value=$oLinkOberGruppe->cName|regex_replace:'/[^a-zA-Z0-9]/':'-'|lower}*}
                     <li id="root-menu-entry-{$rootEntryName}"
                         class="{if isset($oLinkOberGruppe->class)}{$oLinkOberGruppe->class}{/if}
                                {if $oLinkOberGruppe->key === $currentMenuPath[0]}current{/if}">

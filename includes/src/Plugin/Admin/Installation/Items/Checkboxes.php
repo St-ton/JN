@@ -17,10 +17,9 @@ class Checkboxes extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function getNode(): ?array
+    public function getNode(): array
     {
         return isset($this->baseNode['Install'][0]['CheckBoxFunction'][0]['Function'])
-        && \is_array($this->baseNode['Install'][0]['CheckBoxFunction'])
         && \is_array($this->baseNode['Install'][0]['CheckBoxFunction'][0]['Function'])
         && \count($this->baseNode['Install'][0]['CheckBoxFunction'][0]['Function']) > 0
             ? $this->baseNode['Install'][0]['CheckBoxFunction'][0]['Function']

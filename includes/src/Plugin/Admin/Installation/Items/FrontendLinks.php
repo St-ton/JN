@@ -17,7 +17,7 @@ class FrontendLinks extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function getNode(): ?array
+    public function getNode(): array
     {
         return isset($this->baseNode['Install'][0]['FrontendLink'][0]['Link'])
         && \is_array($this->baseNode['Install'][0]['FrontendLink'][0]['Link'])

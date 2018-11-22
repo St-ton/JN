@@ -17,7 +17,7 @@ class MailTemplates extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function getNode(): ?array
+    public function getNode(): array
     {
         return isset($this->baseNode['Install'][0]['Emailtemplate'][0]['Template'])
         && \is_array($this->baseNode['Install'][0]['Emailtemplate'][0]['Template'])

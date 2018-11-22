@@ -17,7 +17,7 @@ class Widgets extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function getNode(): ?array
+    public function getNode(): array
     {
         return isset($this->baseNode['Install'][0]['AdminWidget'][0]['Widget'])
         && \is_array($this->baseNode['Install'][0]['AdminWidget'][0]['Widget'])

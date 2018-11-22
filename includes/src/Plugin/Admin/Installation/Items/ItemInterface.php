@@ -25,9 +25,9 @@ interface ItemInterface
     public function __construct(DbInterface $db = null, array $baseNode = null, $plugin = null, $oldPlugin = null);
 
     /**
-     * @return array|null
+     * @return array
      */
-    public function getNode(): ?array;
+    public function getNode(): array;
 
     /**
      * @return mixed

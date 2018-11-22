@@ -17,11 +17,11 @@ class Uninstall extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function getNode(): ?array
+    public function getNode(): array
     {
         return !empty($base['Uninstall'])
-            ? $base['Uninstall']
-            : null;
+            ? (array)$base['Uninstall']
+            : [];
     }
 
     /**
@@ -29,14 +29,13 @@ class Uninstall extends AbstractItem
      */
     public function install()
     {
-        if (($node = $this->getNode()) === null) {
-            return InstallCode::OK;
-        }
-        $uninstall             = new \stdClass();
-        $uninstall->kPlugin    = $this->plugin->kPlugin;
-        $uninstall->cDateiname = $node;
-        if (!$this->db->insert('tpluginuninstall', $uninstall)) {
-            return InstallCode::SQL_CANNOT_SAVE_UNINSTALL;
+        foreach ($this->getNode() as $node) {
+            $uninstall             = new \stdClass();
+            $uninstall->kPlugin    = $this->plugin->kPlugin;
+            $uninstall->cDateiname = $node;
+            if (!$this->db->insert('tpluginuninstall', $uninstall)) {
+                return InstallCode::SQL_CANNOT_SAVE_UNINSTALL;
+            }
         }
 
         return InstallCode::OK;

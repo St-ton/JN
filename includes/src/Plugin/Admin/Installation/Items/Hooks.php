@@ -17,7 +17,7 @@ class Hooks extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function getNode(): ?array
+    public function getNode(): array
     {
         return isset($this->baseNode['Install'][0]['Hooks'])
         && \is_array($this->baseNode['Install'][0]['Hooks'])

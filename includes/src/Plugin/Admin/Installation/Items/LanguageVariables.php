@@ -17,7 +17,7 @@ class LanguageVariables extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function getNode(): ?array
+    public function getNode(): array
     {
         return $this->baseNode['Install'][0]['Locales'][0]['Variable'] ?? [];
     }

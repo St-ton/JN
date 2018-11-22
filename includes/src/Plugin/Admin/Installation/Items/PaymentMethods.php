@@ -20,7 +20,7 @@ class PaymentMethods extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function getNode(): ?array
+    public function getNode(): array
     {
         return isset($this->baseNode['Install'][0]['PaymentMethod'][0]['Method'])
         && \is_array($this->baseNode['Install'][0]['PaymentMethod'][0]['Method'])

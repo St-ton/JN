@@ -17,12 +17,9 @@ class Templates extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function getNode(): ?array
+    public function getNode(): array
     {
-        return isset($this->baseNode['Install'][0]['ExtendedTemplates'])
-        && \is_array($this->baseNode['Install'][0]['ExtendedTemplates'])
-            ? (array)$this->baseNode['Install'][0]['ExtendedTemplates'][0]['Template']
-            : [];
+        return (array)($this->baseNode['Install'][0]['ExtendedTemplates'][0]['Template'] ?? []);
     }
 
     /**

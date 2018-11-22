@@ -3,7 +3,11 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 <h1>{lang key='deleteAccount' section='login'}</h1>
-
+{if !empty($openOrders)}
+    <div class="alert alert-danger">
+        {lang key='customerOpenOrders' section='account data' printf=$openOrders->openOrders|cat:':::'|cat:$openOrders->openOrderCancellations}
+    </div>
+{/if}
 {if empty($hinweis)}
     <div class="alert alert-danger">{lang key='reallyDeleteAccount' section='login'}</div>
 {/if}

@@ -43,6 +43,11 @@ class Migration_20181121155840 extends Migration implements IMigration
             ENGINE=InnoDB
             DEFAULT CHARSET=utf8
         ");
+        $this->setLocalization('ger', 'account data', 'customerOpenOrders', 'Sie haben noch %s offene Bestellungen, bzw. %s 
+        Bestellungen deren Retourenfrist noch nicht abgelaufen ist. Wenn Sie Ihr Kundenkonto jetzt löschen, werden alle 
+        restlichen Daten automatisch gelöscht, sobald alle Bestellungen abgeschlossen sind.');
+        $this->setLocalization('eng', 'account data', 'customerOpenOrders', 'You have $s open orders and %s orders in cancellation time.
+        You can delete your account. The remaining data will be deleted automatically after all orders are finished.');
     }
 
     public function down()
@@ -60,5 +65,7 @@ class Migration_20181121155840 extends Migration implements IMigration
             ENGINE=InnoDB
             DEFAULT CHARSET=utf8
         ");
+
+        $this->removeLocalization('customerOpenOrders');
     }
 }

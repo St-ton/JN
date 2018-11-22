@@ -889,7 +889,6 @@ class Kunde
     public function deleteAccount(string $issuerType, int $issuerID, bool $force = false, bool $confirmationMail = false): void
     {
         $customerID = $this->getID();
-        $db         = Shop::Container()->getDB();
 
         if (empty($customerID)) {
             return;
@@ -901,8 +900,46 @@ class Kunde
             return;
         }
 
-        $cancellationTime       = 14;
-        $openOrders             = $db->queryPrepared(
+        $openOrders = $this->getOpenOrders();
+        if (!$openOrders) {
+            $this->erasePersonalData($issuerType, $issuerID);
+            $logMessage = \sprintf('Account with ID kKunde = %s deleted', $customerID);
+        } else {
+            Shop::Container()->getDB()->update('tkunde', 'kKunde', $customerID, (object)[
+                'cPasswort'    => '',
+                'nRegistriert' => 0,
+            ]);
+            $logMessage = \sprintf('Account with ID kKunde = %s deleted, but had %s open orders with %s still in cancellation time. Account is deactivated until all orders are completed.',
+                $customerID,
+                $openOrders->openOrders,
+                $openOrders->openOrderCancellations);
+
+            (new GeneralDataProtection\Journal())->addEntry(
+                $issuerType,
+                $customerID,
+                GeneralDataProtection\Journal::ACTION_CUSTOMER_DEACTIVATED,
+                $logMessage,
+                (object)['kKunde' => $customerID]
+            );
+        }
+
+        Shop::Container()->getLogService()->notice($logMessage);
+
+        if ($confirmationMail) {
+            sendeMail(MAILTEMPLATE_KUNDENACCOUNT_GELOESCHT, (object)['tkunde' => \Session\Session::getCustomer()]);
+        }
+    }
+
+    /**
+     * @return false|stdClass
+     */
+    public function getOpenOrders()
+    {
+        $cancellationTime = 14;
+        $db               = Shop::Container()->getDB();
+        $customerID       = $this->getID();
+
+        $openOrders = $db->queryPrepared(
             'SELECT COUNT(kBestellung) AS orderCount
                     FROM tbestellung
                     WHERE cStatus NOT IN (:orderSent, :orderCanceled)
@@ -928,35 +965,16 @@ class Kunde
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        if (empty($openOrders->orderCount) && empty($openOrderCancellations->orderCount)) {
-            $this->erasePersonalData($issuerType, $issuerID);
-            $logMessage = \sprintf('Account with ID kKunde = %s deleted', $customerID);
-        } else {
-            $db->update('tkunde', 'kKunde', $customerID, (object)[
-                'cPasswort'    => '',
-                'nRegistriert' => 0,
-            ]);
-            $logMessage = \sprintf('Account with ID kKunde = %s deleted, but had %s open orders with %s still in cancellation time. Account is deactivated until all orders are completed.',
-                $customerID,
-                $openOrders->orderCount,
-                $openOrderCancellations->orderCount);
-
-            (new GeneralDataProtection\Journal())->addEntry(
-                $issuerType,
-                $customerID,
-                GeneralDataProtection\Journal::ACTION_CUSTOMER_DEACTIVATED,
-                $logMessage,
-                (object)['kKunde' => $customerID]
-            );
+        if (!empty($openOrders->orderCount) || !empty($openOrderCancellations->orderCount))
+        {
+            return (object)[
+                'openOrders' => $openOrders->orderCount,
+                'openOrderCancellations' => $openOrderCancellations->orderCount
+            ];
         }
 
-        Shop::Container()->getLogService()->notice($logMessage);
-
-        if ($confirmationMail) {
-            sendeMail(MAILTEMPLATE_KUNDENACCOUNT_GELOESCHT, (object)['tkunde' => \Session\Session::getCustomer()]);
-        }
+        return false;
     }
-
     /**
      * @param string $issuerType
      * @param int $issuerID

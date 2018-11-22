@@ -121,6 +121,7 @@ if ($customerID > 0) {
     }
 
     if (isset($_GET['del']) && (int)$_GET['del'] === 1) {
+        $smarty->assign('openOrders', \Session\Session::getCustomer()->getOpenOrders());
         $step = 'account loeschen';
     }
     // Vorhandenen Warenkorb mit persistenten Warenkorb mergen?

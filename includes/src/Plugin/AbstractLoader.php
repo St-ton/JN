@@ -20,6 +20,7 @@ use Plugin\ExtensionData\MailTemplates;
 use Plugin\ExtensionData\Meta;
 use Plugin\ExtensionData\Paths;
 use Plugin\ExtensionData\PaymentMethods;
+use Plugin\ExtensionData\Portlets;
 use Plugin\ExtensionData\Widget;
 use Tightenco\Collect\Support\Collection;
 
@@ -428,5 +429,45 @@ abstract class AbstractLoader implements LoaderInterface
         $pmm = new PaymentMethods();
 
         return $pmm->load($methods, $extension->getPaths()->getVersionedPath());
+    }
+
+    /**
+     * @param AbstractExtension $extension
+     * @return Portlets
+     */
+    public function loadPortlets(AbstractExtension $extension): Portlets
+    {
+        try {
+            $data = $this->db->selectAll(
+                'topcportlet',
+                'kPlugin',
+                $this->plugin->getID()
+            );
+        } catch (\InvalidArgumentException $e) {
+            $data = [];
+        }
+        $portlets  = new Portlets();
+
+        return $portlets->load($data, $extension->getPaths()->getAdminPath());
+    }
+
+    /**
+     * @param AbstractExtension $extension
+     * @return Portlets
+     */
+    public function loadBlueprints(AbstractExtension $extension): Portlets
+    {
+        try {
+            $data = $this->db->selectAll(
+                'topcportlet',
+                'kPlugin',
+                $this->plugin->getID()
+            );
+        } catch (\InvalidArgumentException $e) {
+            $data = [];
+        }
+        $portlets  = new Portlets();
+
+        return $portlets->load($data, $extension->getPaths()->getAdminPath());
     }
 }

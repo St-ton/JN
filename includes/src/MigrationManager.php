@@ -246,8 +246,7 @@ class MigrationManager
             $migrations = [];
         }
 
-        return array_keys($migrations);
-    }
+        return array_keys($migrations);}
 
     /**
      * @return array

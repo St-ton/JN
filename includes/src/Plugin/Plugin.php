@@ -51,16 +51,6 @@ class Plugin extends ExtensionBC
     public $oPluginZahlungsKlasseAssoc_arr = [];
 
     /**
-     * @var array
-     */
-    public $oPluginEditorPortlet_arr = [];
-
-    /**
-     * @var array
-     */
-    public $oPluginEditorPortletAssoc_arr = [];
-
-    /**
      * @var \stdClass
      */
     public $oPluginUninstall;

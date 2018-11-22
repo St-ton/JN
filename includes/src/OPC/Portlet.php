@@ -6,6 +6,9 @@
 
 namespace OPC;
 
+use Plugin\Extension;
+use Plugin\ExtensionLoader;
+
 /**
  * Class Portlet
  * @package OPC
@@ -22,7 +25,7 @@ abstract class Portlet implements \JsonSerializable
     protected $id = 0;
 
     /**
-     * @var null|\Plugin
+     * @var Extension
      */
     protected $plugin;
 
@@ -49,14 +52,17 @@ abstract class Portlet implements \JsonSerializable
     /**
      * Portlet constructor.
      * @param string $class
-     * @param int $id
-     * @param int $pluginId
+     * @param int    $id
+     * @param int    $pluginId
      */
     final public function __construct(string $class, int $id, int $pluginId)
     {
-        $this->class  = $class;
-        $this->id     = $id;
-        $this->plugin = $pluginId > 0 ? new \Plugin($pluginId) : null;
+        $this->class = $class;
+        $this->id    = $id;
+        if ($pluginId > 0) {
+            $loader       = new ExtensionLoader(\Shop::Container()->getDB(), \Shop::Container()->getCache());
+            $this->plugin = $loader->init($pluginId);
+        }
 
         if ($this->plugin === null) {
             \L10n\GetText::getInstance()->loadAdminLocale('portlets/' . $this->class);
@@ -108,7 +114,7 @@ abstract class Portlet implements \JsonSerializable
      */
     public function getPluginId(): int
     {
-        return $this->plugin === null ? 0 : $this->plugin->kPlugin;
+        return $this->plugin === null ? 0 : $this->plugin->getID();
     }
 
     /**
@@ -166,9 +172,9 @@ abstract class Portlet implements \JsonSerializable
     }
 
     /**
-     * @return \Plugin|null
+     * @return Extension|null
      */
-    public function getPlugin()
+    public function getPlugin(): ?Extension
     {
         return $this->plugin;
     }

@@ -8,6 +8,8 @@ namespace OPC;
 
 use DB\DbInterface;
 use DB\ReturnType;
+use Plugin\Extension;
+use Plugin\ExtensionLoader;
 use Plugin\Plugin;
 
 /**
@@ -223,9 +225,10 @@ class DB
         }
 
         if ($portletDB->kPlugin > 0) {
-            $plugin  = new Plugin((int)$portletDB->kPlugin);
-            $include = $plugin->cAdminmenuPfad . \PFAD_PLUGIN_PORTLETS
-                . $portletDB->cClass . '/' . $portletDB->cClass . '.php';
+            $loader = new ExtensionLoader($this->shopDB, \Shop::Container()->getCache());
+            $plugin = $loader->init((int)$portletDB->kPlugin);
+            $include = $plugin->getPaths()->getAdminPath() . \PFAD_PLUGIN_PORTLETS .
+                $portletDB->cClass . '/' . $portletDB->cClass . '.php';
             require_once $include;
         }
 

@@ -246,6 +246,9 @@ final class MigrationManager
             $migrations = [];
             $executed   = $this->getExecutedMigrations();
             $path       = $this->getPath();
+            if (!\is_dir($path)) {
+                return [];
+            }
             foreach (new \DirectoryIterator($path) as $fileinfo) {
                 if ($fileinfo->isDot() || $fileinfo->getExtension() !== 'php') {
                     continue;

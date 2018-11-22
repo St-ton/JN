@@ -19,9 +19,9 @@ class Portlets extends AbstractItem
      */
     public function getNode(): array
     {
-        return isset($this->baseNode['Install'][0]['Blueprints'][0]['Blueprint'])
-        && \is_array($this->baseNode['Install'][0]['Blueprints'][0]['Blueprint'])
-            ? $this->baseNode['Install'][0]['Blueprints'][0]['Blueprint']
+        return isset($this->baseNode['Install'][0]['Portlets'][0]['Portlet'])
+        && \is_array($this->baseNode['Install'][0]['Portlets'][0]['Portlet'])
+            ? $this->baseNode['Install'][0]['Portlets'][0]['Portlet']
             : [];
     }
 

@@ -205,7 +205,7 @@ final class Uninstaller
                 LEFT JOIN tpluginsqlfehler
                     ON tpluginsqlfehler.kPluginHook = tpluginhook.kPluginHook
                 WHERE tpluginhook.kPlugin = ' . $pluginID,
-            ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
         $this->db->delete('tpluginadminmenu', 'kPlugin', $pluginID);
         $this->db->query(
@@ -215,7 +215,7 @@ final class Uninstaller
                     ON tplugineinstellungenconfwerte.kPluginEinstellungenConf = 
                     tplugineinstellungenconf.kPluginEinstellungenConf
                 WHERE tplugineinstellungenconf.kPlugin = ' . $pluginID,
-            ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
 
         $this->db->delete('tpluginuninstall', 'kPlugin', $pluginID);
@@ -264,7 +264,7 @@ final class Uninstaller
                     ON tseo.cKey = 'kLink'
                     AND tseo.kKey = tlink.kLink
                 WHERE tlink.kPlugin = " . $pluginID,
-            ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
         $this->db->delete('tpluginzahlungsartklasse', 'kPlugin', $pluginID);
         $this->db->delete('tplugintemplate', 'kPlugin', $pluginID);
@@ -280,7 +280,7 @@ final class Uninstaller
                 LEFT JOIN texportformatqueuebearbeitet
                     ON texportformatqueuebearbeitet.kExportformat = texportformat.kExportformat
                 WHERE texportformat.kPlugin = ' . $pluginID,
-            ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
         $this->db->delete('tplugin', 'kPlugin', $pluginID);
     }

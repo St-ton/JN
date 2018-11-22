@@ -1082,7 +1082,7 @@ class Exportformat
             $exportformat->tkampagne_cWert      = $this->campaignValue;
             // needed for plugin exports
             $ExportEinstellungen = $this->getConfig();
-            include $oPlugin->cAdminmenuPfad . PFAD_PLUGIN_EXPORTFORMAT .
+            include $oPlugin->getPaths()->getAdminPath() . PFAD_PLUGIN_EXPORTFORMAT .
                 str_replace(PLUGIN_EXPORTFORMAT_CONTENTFILE, '', $this->getContent());
 
             if (isset($queueObject->kExportqueue)) {

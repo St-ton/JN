@@ -13,6 +13,7 @@ use Plugin\ExtensionData\Config;
 use Plugin\ExtensionData\Links;
 use Plugin\ExtensionData\Meta;
 use Plugin\ExtensionData\Paths;
+use Plugin\ExtensionData\Portlets;
 use Plugin\ExtensionData\Widget;
 
 /**
@@ -126,7 +127,7 @@ class PluginLoader extends AbstractLoader
         $this->plugin->setWidgets($this->loadWidgets($this->plugin));
         $this->plugin->setPaymentMethods($this->loadPaymentMethods($this->plugin));
         $this->plugin->setMailTemplates($this->loadMailTemplates($this->plugin));
-        $this->loadPortlets();
+        $this->plugin->setPortlets($this->loadPortlets($this->plugin));
         $this->cache();
 
         return $this->plugin;
@@ -236,32 +237,5 @@ class PluginLoader extends AbstractLoader
         }
 
         return $widgets;
-    }
-
-    /**
-     * @return PluginLoader
-     */
-    public function loadPortlets(): self
-    {
-        try {
-            $this->plugin->oPluginEditorPortlet_arr = $this->db->selectAll(
-                'topcportlet',
-                'kPlugin',
-                $this->plugin->getID()
-            );
-        } catch (\InvalidArgumentException $e) {
-            $this->plugin->oPluginEditorPortlet_arr = [];
-        }
-        $adminPath = $this->plugin->getPaths()->getAdminPath();
-        foreach ($this->plugin->oPluginEditorPortlet_arr as $i => $oPluginEditorPortlet) {
-            $this->plugin->oPluginEditorPortlet_arr[$i]->cClassAbs = $adminPath .
-                \PFAD_PLUGIN_PORTLETS . $oPluginEditorPortlet->cClass . '/' .
-                $oPluginEditorPortlet->cClass . '.php';
-
-            $this->plugin->oPluginEditorPortletAssoc_arr[$oPluginEditorPortlet->kPortlet] =
-                $this->plugin->oPluginEditorPortlet_arr[$i];
-        }
-
-        return $this;
     }
 }

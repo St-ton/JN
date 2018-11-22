@@ -56,10 +56,9 @@ trait PortletHtml
      */
     final protected function getTemplatePath(): string
     {
-        if ($this->getPlugin() !== null) {
-            return PFAD_ROOT . \PFAD_PLUGIN . $this->getPlugin()->cVerzeichnis . '/' . \PFAD_PLUGIN_VERSION
-                . $this->getPlugin()->getCurrentVersion() . '/' . \PFAD_PLUGIN_ADMINMENU  . 'portlets/'
-                . $this->getClass() . '/';
+        $plugin = $this->getPlugin();
+        if ($plugin !== null) {
+            return $plugin->getPaths()->getAdminPath() . \PFAD_PLUGIN_PORTLETS . $this->getClass() . '/';
         }
 
         return PFAD_ROOT . \PFAD_TEMPLATES . 'Evo/portlets/' . $this->getClass() . '/';

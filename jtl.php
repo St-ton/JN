@@ -830,7 +830,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $smarty->assign('Kunde', $knd)
                ->assign('cKundenattribut_arr', $cKundenattribut_arr)
                ->assign('Einstellungen', $Einstellungen)
-               ->assign('laender', gibBelieferbareLaender($_SESSION['Kunde']->kKundengruppe));
+               ->assign('laender', gibBelieferbareLaender($_SESSION['Kunde']->kKundengruppe, false, true));
         // selbstdef. Kundenfelder
         $oKundenfeld_arr = Shop::DB()->selectAll('tkundenfeld', 'kSprache', Shop::getLanguage(), '*', 'nSort DESC');
         if (is_array($oKundenfeld_arr) && count($oKundenfeld_arr) > 0) {

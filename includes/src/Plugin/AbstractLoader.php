@@ -20,7 +20,6 @@ use Plugin\ExtensionData\MailTemplates;
 use Plugin\ExtensionData\Meta;
 use Plugin\ExtensionData\Paths;
 use Plugin\ExtensionData\PaymentMethods;
-use Plugin\ExtensionData\Portlets;
 use Plugin\ExtensionData\Widget;
 use Tightenco\Collect\Support\Collection;
 
@@ -380,7 +379,7 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadMailTemplates(AbstractExtension $extension): MailTemplates
     {
-        $data = $this->db->queryPrepared(
+        $data          = $this->db->queryPrepared(
             'SELECT * FROM tpluginemailvorlage
             JOIN tpluginemailvorlagesprache AS loc
                 ON loc.kEmailvorlage = tpluginemailvorlage.kEmailvorlage
@@ -399,7 +398,7 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadPaymentMethods(AbstractExtension $extension): PaymentMethods
     {
-        $methods      = $this->db->query(
+        $methods = $this->db->query(
             "SELECT *
                 FROM tzahlungsart
                 JOIN tpluginzahlungsartklasse
@@ -420,7 +419,7 @@ abstract class AbstractLoader implements LoaderInterface
                     ORDER BY nSort",
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            $method->oZahlungsmethodeSprache_arr =  $this->db->selectAll(
+            $method->oZahlungsmethodeSprache_arr     = $this->db->selectAll(
                 'tzahlungsartsprache',
                 'kZahlungsart',
                 (int)$method->kZahlungsart
@@ -429,45 +428,5 @@ abstract class AbstractLoader implements LoaderInterface
         $pmm = new PaymentMethods();
 
         return $pmm->load($methods, $extension->getPaths()->getVersionedPath());
-    }
-
-    /**
-     * @param AbstractExtension $extension
-     * @return Portlets
-     */
-    public function loadPortlets(AbstractExtension $extension): Portlets
-    {
-        try {
-            $data = $this->db->selectAll(
-                'topcportlet',
-                'kPlugin',
-                $this->plugin->getID()
-            );
-        } catch (\InvalidArgumentException $e) {
-            $data = [];
-        }
-        $portlets  = new Portlets();
-
-        return $portlets->load($data, $extension->getPaths()->getAdminPath());
-    }
-
-    /**
-     * @param AbstractExtension $extension
-     * @return Portlets
-     */
-    public function loadBlueprints(AbstractExtension $extension): Portlets
-    {
-        try {
-            $data = $this->db->selectAll(
-                'topcportlet',
-                'kPlugin',
-                $this->plugin->getID()
-            );
-        } catch (\InvalidArgumentException $e) {
-            $data = [];
-        }
-        $portlets  = new Portlets();
-
-        return $portlets->load($data, $extension->getPaths()->getAdminPath());
     }
 }

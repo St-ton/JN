@@ -13,7 +13,6 @@ use Plugin\ExtensionData\Config;
 use Plugin\ExtensionData\Links;
 use Plugin\ExtensionData\Meta;
 use Plugin\ExtensionData\Paths;
-use Plugin\ExtensionData\Portlets;
 use Plugin\ExtensionData\Widget;
 
 /**
@@ -127,7 +126,6 @@ class PluginLoader extends AbstractLoader
         $this->plugin->setWidgets($this->loadWidgets($this->plugin));
         $this->plugin->setPaymentMethods($this->loadPaymentMethods($this->plugin));
         $this->plugin->setMailTemplates($this->loadMailTemplates($this->plugin));
-        $this->plugin->setPortlets($this->loadPortlets($this->plugin));
         $this->cache();
 
         return $this->plugin;
@@ -163,7 +161,6 @@ class PluginLoader extends AbstractLoader
         $paths->setAdminURL($baseURL . \PFAD_PLUGIN_ADMINMENU);
         $paths->setLicencePath($versioned . \PFAD_PLUGIN_LICENCE);
         $paths->setUninstaller($versioned . \PFAD_PLUGIN_UNINSTALL);
-
 
         return $paths;
     }

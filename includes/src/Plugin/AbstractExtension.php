@@ -17,7 +17,6 @@ use Plugin\ExtensionData\MailTemplates;
 use Plugin\ExtensionData\Meta;
 use Plugin\ExtensionData\Paths;
 use Plugin\ExtensionData\PaymentMethods;
-use Plugin\ExtensionData\Portlets;
 use Plugin\ExtensionData\Widget;
 
 /**
@@ -115,11 +114,6 @@ abstract class AbstractExtension
      * @var PaymentMethods
      */
     protected $paymentMethods;
-
-    /**
-     * @var Portlets
-     */
-    protected $portlets;
 
     /**
      * @return int
@@ -407,21 +401,5 @@ abstract class AbstractExtension
     public function setPaymentMethods(PaymentMethods $paymentMethods): void
     {
         $this->paymentMethods = $paymentMethods;
-    }
-
-    /**
-     * @return Portlets
-     */
-    public function getPortlets(): Portlets
-    {
-        return $this->portlets;
-    }
-
-    /**
-     * @param Portlets $portlets
-     */
-    public function setPortlets(Portlets $portlets): void
-    {
-        $this->portlets = $portlets;
     }
 }

@@ -34,7 +34,8 @@ class PaymentMethods extends AbstractItem
      */
     public function install(): int
     {
-        $shopURL = \Shop::getURL(true) . '/';
+        $shopURL  = \Shop::getURL(true) . '/';
+        $pluginID = $this->plugin->kPlugin;
         foreach ($this->getNode() as $u => $data) {
             \preg_match("/[0-9]+\sattr/", $u, $hits1);
             \preg_match('/[0-9]+/', $u, $hits2);
@@ -43,10 +44,7 @@ class PaymentMethods extends AbstractItem
             }
             $method                         = new \stdClass();
             $method->cName                  = $data['Name'];
-            $method->cModulId               = Helper::getModuleIDByPluginID(
-                $this->plugin->kPlugin,
-                $data['Name']
-            );
+            $method->cModulId               = Helper::getModuleIDByPluginID($pluginID, $data['Name']);
             $method->cKundengruppen         = '';
             $method->cPluginTemplate        = $data['TemplateFile'] ?? null;
             $method->cZusatzschrittTemplate = $data['AdditionalTemplateFile'] ?? null;
@@ -57,12 +55,8 @@ class PaymentMethods extends AbstractItem
                 ? (int)$data['SendMail']
                 : 0;
             $method->nActive                = 1;
-            $method->cAnbieter              = \is_array($data['Provider'])
-                ? ''
-                : $data['Provider'];
-            $method->cTSCode                = \is_array($data['TSCode'])
-                ? ''
-                : $data['TSCode'];
+            $method->cAnbieter              = \is_array($data['Provider']) ? '' : $data['Provider'];
+            $method->cTSCode                = \is_array($data['TSCode']) ? '' : $data['TSCode'];
             $method->nWaehrendBestellung    = (int)$data['PreOrder'];
             $method->nCURL                  = (int)$data['Curl'];
             $method->nSOAP                  = (int)$data['Soap'];
@@ -73,15 +67,12 @@ class PaymentMethods extends AbstractItem
                 \PFAD_PLUGIN_PAYMENTMETHOD . $data['PictureURL']
                 : '';
             $method->nNutzbar               = 0;
-            $check                          = false;
             if ($method->nCURL === 0 && $method->nSOAP === 0 && $method->nSOCKETS === 0) {
                 $method->nNutzbar = 1;
-            } else {
-                $check = true;
             }
             $methodID             = $this->db->insert('tzahlungsart', $method);
             $method->kZahlungsart = $methodID;
-            if ($check) {
+            if ($method->nNutzbar === 0) {
                 \ZahlungsartHelper::activatePaymentMethod($method);
             }
             $moduleID = $method->cModulId;
@@ -89,11 +80,8 @@ class PaymentMethods extends AbstractItem
                 return InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD;
             }
             $paymentClass                         = new \stdClass();
-            $paymentClass->cModulId               = Helper::getModuleIDByPluginID(
-                $this->plugin->kPlugin,
-                $data['Name']
-            );
-            $paymentClass->kPlugin                = $this->plugin->kPlugin;
+            $paymentClass->cModulId               = Helper::getModuleIDByPluginID($pluginID, $data['Name']);
+            $paymentClass->kPlugin                = $pluginID;
             $paymentClass->cClassPfad             = $data['ClassFile'] ?? null;
             $paymentClass->cClassName             = $data['ClassName'] ?? null;
             $paymentClass->cTemplatePfad          = $data['TemplateFile'] ?? null;
@@ -101,42 +89,33 @@ class PaymentMethods extends AbstractItem
 
             $this->db->insert('tpluginzahlungsartklasse', $paymentClass);
 
-            $iso = '';
-            // Hole alle Sprachen des Shops
-            // Assoc cISO
-            $allLanguages = \Sprache::getAllLanguages(2);
-            // Ist der erste Standard Link gesetzt worden? => wird etwas weiter unten gebraucht
-            // Falls Shopsprachen vom Plugin nicht berücksichtigt wurden, werden diese weiter unten
-            // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
+            $iso                    = '';
+            $allLanguages           = \Sprache::getAllLanguages(2);
             $bZahlungsartStandard   = false;
             $oZahlungsartSpracheStd = new \stdClass();
-
             foreach ($data['MethodLanguage'] as $l => $MethodLanguage_arr) {
                 \preg_match("/[0-9]+\sattr/", $l, $hits1);
                 \preg_match('/[0-9]+/', $l, $hits2);
                 if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($l)) {
                     $iso = \strtolower($MethodLanguage_arr['iso']);
                 } elseif (\strlen($hits2[0]) === \strlen($l)) {
-                    $oZahlungsartSprache               = new \stdClass();
-                    $oZahlungsartSprache->kZahlungsart = $methodID;
-                    $oZahlungsartSprache->cISOSprache  = $iso;
-                    $oZahlungsartSprache->cName        = $MethodLanguage_arr['Name'];
-                    $oZahlungsartSprache->cGebuehrname = $MethodLanguage_arr['ChargeName'];
-                    $oZahlungsartSprache->cHinweisText = $MethodLanguage_arr['InfoText'];
-                    // Erste ZahlungsartSprache vom Plugin als Standard setzen
+                    $localizedMethod               = new \stdClass();
+                    $localizedMethod->kZahlungsart = $methodID;
+                    $localizedMethod->cISOSprache  = $iso;
+                    $localizedMethod->cName        = $MethodLanguage_arr['Name'];
+                    $localizedMethod->cGebuehrname = $MethodLanguage_arr['ChargeName'];
+                    $localizedMethod->cHinweisText = $MethodLanguage_arr['InfoText'];
                     if (!$bZahlungsartStandard) {
-                        $oZahlungsartSpracheStd = $oZahlungsartSprache;
+                        $oZahlungsartSpracheStd = $localizedMethod;
                         $bZahlungsartStandard   = true;
                     }
-                    $kZahlungsartTMP = $this->db->insert('tzahlungsartsprache', $oZahlungsartSprache);
+                    $kZahlungsartTMP = $this->db->insert('tzahlungsartsprache', $localizedMethod);
                     if (!$kZahlungsartTMP) {
-                        // Eine Sprache in den Zahlungsmethoden konnte nicht in die Datenbank gespeichert werden
                         return InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD_LOCALIZATION;
                     }
 
-                    if (isset($allLanguages[$oZahlungsartSprache->cISOSprache])) {
-                        // Resette aktuelle Sprache
-                        unset($allLanguages[$oZahlungsartSprache->cISOSprache]);
+                    if (isset($allLanguages[$localizedMethod->cISOSprache])) {
+                        unset($allLanguages[$localizedMethod->cISOSprache]);
                         $allLanguages = \array_merge($allLanguages);
                     }
                 }
@@ -151,8 +130,6 @@ class PaymentMethods extends AbstractItem
                     return InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD_LANGUAGE;
                 }
             }
-            // Zahlungsmethode Einstellungen
-            // Vordefinierte Einstellungen
             $names        = ['Anzahl Bestellungen nötig', 'Mindestbestellwert', 'Maximaler Bestellwert'];
             $valueNames   = ['min_bestellungen', 'min', 'max'];
             $descriptions = [
@@ -163,16 +140,13 @@ class PaymentMethods extends AbstractItem
             $nSort_arr    = [100, 101, 102];
 
             for ($z = 0; $z < 3; $z++) {
-                // tplugineinstellungen füllen
                 $conf          = new \stdClass();
-                $conf->kPlugin = $this->plugin->kPlugin;
+                $conf->kPlugin = $pluginID;
                 $conf->cName   = $moduleID . '_' . $valueNames[$z];
                 $conf->cWert   = 0;
-
                 $this->db->insert('tplugineinstellungen', $conf);
-                // tplugineinstellungenconf füllen
                 $plgnConf                   = new \stdClass();
-                $plgnConf->kPlugin          = $this->plugin->kPlugin;
+                $plgnConf->kPlugin          = $pluginID;
                 $plgnConf->kPluginAdminMenu = 0;
                 $plgnConf->cName            = $names[$z];
                 $plgnConf->cBeschreibung    = $descriptions[$z];
@@ -184,10 +158,7 @@ class PaymentMethods extends AbstractItem
                 $this->db->insert('tplugineinstellungenconf', $plgnConf);
             }
 
-            if (isset($data['Setting'])
-                && \is_array($data['Setting'])
-                && \count($data['Setting']) > 0
-            ) {
+            if (isset($data['Setting']) && \is_array($data['Setting']) && \count($data['Setting']) > 0) {
                 $type         = '';
                 $initialValue = '';
                 $nSort        = 0;
@@ -202,14 +173,14 @@ class PaymentMethods extends AbstractItem
                         $multiple     = (isset($Setting_arr['multiple'])
                             && $Setting_arr['multiple'] === 'Y'
                             && $type === InputType::SELECT);
-                        $initialValue = ($multiple === true)
+                        $initialValue = $multiple === true
                             ? \serialize([$Setting_arr['initialValue']])
                             : $Setting_arr['initialValue'];
                         $nSort        = $Setting_arr['sort'];
                         $cConf        = $Setting_arr['conf'];
                     } elseif (\strlen($hits4[0]) === \strlen($j)) {
                         $conf          = new \stdClass();
-                        $conf->kPlugin = $this->plugin->kPlugin;
+                        $conf->kPlugin = $pluginID;
                         $conf->cName   = $moduleID . '_' . $Setting_arr['ValueName'];
                         $conf->cWert   = $initialValue;
                         if ($this->db->select('tplugineinstellungen', 'cName', $conf->cName) !== null) {
@@ -223,7 +194,7 @@ class PaymentMethods extends AbstractItem
                             $this->db->insert('tplugineinstellungen', $conf);
                         }
                         $plgnConf                   = new \stdClass();
-                        $plgnConf->kPlugin          = $this->plugin->kPlugin;
+                        $plgnConf->kPlugin          = $pluginID;
                         $plgnConf->kPluginAdminMenu = 0;
                         $plgnConf->cName            = $Setting_arr['Name'];
                         $plgnConf->cBeschreibung    = (!isset($Setting_arr['Description'])

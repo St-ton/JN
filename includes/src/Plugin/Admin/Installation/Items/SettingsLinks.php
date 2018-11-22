@@ -32,7 +32,8 @@ class SettingsLinks extends AbstractItem
      */
     public function install(): int
     {
-        $node = $this->getNode();
+        $node     = $this->getNode();
+        $pluginID = $this->plugin->kPlugin;
         if (!isset($node[0]['Settingslink'])
             || !\is_array($node[0]['Settingslink'])
             || \count($node[0]['Settingslink']) === 0
@@ -47,15 +48,14 @@ class SettingsLinks extends AbstractItem
                 $sort = (int)$settingsLinks['sort'];
             } elseif (\strlen($hits2[0]) === \strlen($i)) {
                 $menuItem             = new \stdClass();
-                $menuItem->kPlugin    = $this->plugin->kPlugin;
+                $menuItem->kPlugin    = $pluginID;
                 $menuItem->cName      = $settingsLinks['Name'];
                 $menuItem->cDateiname = '';
                 $menuItem->nSort      = $sort;
                 $menuItem->nConf      = 1;
 
-                $kPluginAdminMenu = $this->db->insert('tpluginadminmenu', $menuItem);
-
-                if ($kPluginAdminMenu <= 0) {
+                $menuID = $this->db->insert('tpluginadminmenu', $menuItem);
+                if ($menuID <= 0) {
                     return InstallCode::SQL_CANNOT_SAVE_SETTINGS_ITEM;
                 }
                 $type         = '';
@@ -66,7 +66,6 @@ class SettingsLinks extends AbstractItem
                 foreach ($settingsLinks['Setting'] as $j => $setting) {
                     \preg_match("/[0-9]+\sattr/", $j, $hits3);
                     \preg_match('/[0-9]+/', $j, $hits4);
-
                     if (isset($hits3[0]) && \strlen($hits3[0]) === \strlen($j)) {
                         $type         = $setting['type'];
                         $multiple     = (isset($setting['multiple'])
@@ -78,9 +77,8 @@ class SettingsLinks extends AbstractItem
                         $sort         = $setting['sort'];
                         $cConf        = $setting['conf'];
                     } elseif (\strlen($hits4[0]) === \strlen($j)) {
-                        // tplugineinstellungen füllen
                         $plgnConf          = new \stdClass();
-                        $plgnConf->kPlugin = $this->plugin->kPlugin;
+                        $plgnConf->kPlugin = $pluginID;
                         $plgnConf->cName   = \is_array($setting['ValueName'])
                             ? $setting['ValueName']['0']
                             : $setting['ValueName'];
@@ -101,10 +99,9 @@ class SettingsLinks extends AbstractItem
                         } else {
                             $this->db->insert('tplugineinstellungen', $plgnConf);
                         }
-                        // tplugineinstellungenconf füllen
                         $plgnConf                   = new \stdClass();
-                        $plgnConf->kPlugin          = $this->plugin->kPlugin;
-                        $plgnConf->kPluginAdminMenu = $kPluginAdminMenu;
+                        $plgnConf->kPlugin          = $pluginID;
+                        $plgnConf->kPluginAdminMenu = $menuID;
                         $plgnConf->cName            = $setting['Name'];
                         $plgnConf->cBeschreibung    = (!isset($setting['Description'])
                             || \is_array($setting['Description']))
@@ -144,28 +141,26 @@ class SettingsLinks extends AbstractItem
                                 $plgnConf
                             );
                         }
-                        // tplugineinstellungenconfwerte füllen
                         if ($confID <= 0) {
                             return InstallCode::SQL_CANNOT_SAVE_SETTING;
                         }
                         $sort = 0;
                         // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
                         if ($type === InputType::SELECT) {
+                            $optNode = $setting['SelectboxOptions'][0] ?? [];
                             if (isset($setting['OptionsSource'])
                                 && \is_array($setting['OptionsSource'])
                                 && \count($setting['OptionsSource']) > 0
                             ) {
                                 //do nothing for now
-                            } elseif (\count($setting['SelectboxOptions'][0]) === 1) {
-                                // Es gibt mehr als 1 Option
-                                foreach ($setting['SelectboxOptions'][0]['Option'] as $y => $Option_arr) {
+                            } elseif (\count($optNode) === 1) { // Es gibt mehr als eine Option
+                                foreach ($optNode['Option'] as $y => $Option_arr) {
                                     \preg_match("/[0-9]+\sattr/", $y, $hits6);
-
                                     if (isset($hits6[0]) && \strlen($hits6[0]) === \strlen($y)) {
                                         $cWert = $Option_arr['value'];
                                         $sort  = $Option_arr['sort'];
                                         $yx    = \substr($y, 0, \strpos($y, ' '));
-                                        $cName = $setting['SelectboxOptions'][0]['Option'][$yx];
+                                        $cName = $optNode['Option'][$yx];
 
                                         $plgnConfValues                           = new \stdClass();
                                         $plgnConfValues->kPluginEinstellungenConf = $confID;
@@ -176,32 +171,28 @@ class SettingsLinks extends AbstractItem
                                         $this->db->insert('tplugineinstellungenconfwerte', $plgnConfValues);
                                     }
                                 }
-                            } elseif (\count($setting['SelectboxOptions'][0]) === 2) {
-                                // Es gibt nur eine Option
+                            } elseif (\count($optNode) === 2) { // Es gibt nur eine Option
                                 $plgnConfValues                           = new \stdClass();
                                 $plgnConfValues->kPluginEinstellungenConf = $confID;
-                                $plgnConfValues->cName                    =
-                                    $setting['SelectboxOptions'][0]['Option'];
-                                $plgnConfValues->cWert                    =
-                                    $setting['SelectboxOptions'][0]['Option attr']['value'];
-                                $plgnConfValues->nSort                    =
-                                    $setting['SelectboxOptions'][0]['Option attr']['sort'];
-
+                                $plgnConfValues->cName                    = $optNode['Option'];
+                                $plgnConfValues->cWert                    = $optNode['Option attr']['value'];
+                                $plgnConfValues->nSort                    = $optNode['Option attr']['sort'];
                                 $this->db->insert('tplugineinstellungenconfwerte', $plgnConfValues);
                             }
                         } elseif ($type === InputType::RADIO) {
+                            $optNode = $setting['RadioOptions'][0] ?? [];
                             if (isset($setting['OptionsSource'])
                                 && \is_array($setting['OptionsSource'])
                                 && \count($setting['OptionsSource']) > 0
                             ) {
-                            } elseif (\count($setting['RadioOptions'][0]) === 1) { // Es gibt mehr als eine Option
-                                foreach ($setting['RadioOptions'][0]['Option'] as $y => $Option_arr) {
+                            } elseif (\count($optNode) === 1) { // Es gibt mehr als eine Option
+                                foreach ($optNode['Option'] as $y => $Option_arr) {
                                     \preg_match("/[0-9]+\sattr/", $y, $hits6);
                                     if (isset($hits6[0]) && \strlen($hits6[0]) === \strlen($y)) {
                                         $cWert = $Option_arr['value'];
                                         $sort  = $Option_arr['sort'];
                                         $yx    = \substr($y, 0, \strpos($y, ' '));
-                                        $cName = $setting['RadioOptions'][0]['Option'][$yx];
+                                        $cName = $optNode['Option'][$yx];
 
                                         $plgnConfValues                           = new \stdClass();
                                         $plgnConfValues->kPluginEinstellungenConf = $confID;
@@ -215,15 +206,12 @@ class SettingsLinks extends AbstractItem
                                         );
                                     }
                                 }
-                            } elseif (\count($setting['RadioOptions'][0]) === 2) {
-                                // Es gibt nur eine Option
+                            } elseif (\count($optNode) === 2) { // Es gibt nur eine Option
                                 $plgnConfValues                           = new \stdClass();
                                 $plgnConfValues->kPluginEinstellungenConf = $confID;
-                                $plgnConfValues->cName                    = $setting['RadioOptions'][0]['Option'];
-                                $plgnConfValues->cWert                    =
-                                    $setting['RadioOptions'][0]['Option attr']['value'];
-                                $plgnConfValues->nSort                    =
-                                    $setting['RadioOptions'][0]['Option attr']['sort'];
+                                $plgnConfValues->cName                    = $optNode['Option'];
+                                $plgnConfValues->cWert                    = $optNode['Option attr']['value'];
+                                $plgnConfValues->nSort                    = $optNode['Option attr']['sort'];
 
                                 $this->db->insert('tplugineinstellungenconfwerte', $plgnConfValues);
                             }

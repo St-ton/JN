@@ -35,8 +35,8 @@ class Exports extends AbstractItem
         $defaultLanguageID      = $language->kSprache;
         $defaultCurrencyID      = \Session\Session::getCurrency()->getID();
         foreach ($this->getNode() as $u => $data) {
-            \preg_match('/[0-9]+/', $u, $hits2);
-            if (\strlen($hits2[0]) !== \strlen($u)) {
+            \preg_match('/[0-9]+/', $u, $hits);
+            if (\strlen($hits[0]) !== \strlen($u)) {
                 continue;
             }
             $export                   = new \stdClass();
@@ -78,35 +78,23 @@ class Exports extends AbstractItem
                 ? $data['OnlyStockGreaterZero']
                 : 'N';
             $this->db->insert('texportformateinstellungen', $exportConf);
-            $exportConf                = new \stdClass();
-            $exportConf->kExportformat = $exportID;
-            $exportConf->cName         = 'exportformate_preis_ueber_null';
-            $exportConf->cWert         = $data['OnlyPriceGreaterZero'] === 'Y' ? 'Y' : 'N';
+            $exportConf->cName = 'exportformate_preis_ueber_null';
+            $exportConf->cWert = $data['OnlyPriceGreaterZero'] === 'Y' ? 'Y' : 'N';
             $this->db->insert('texportformateinstellungen', $exportConf);
-            $exportConf                = new \stdClass();
-            $exportConf->kExportformat = $exportID;
-            $exportConf->cName         = 'exportformate_beschreibung';
-            $exportConf->cWert         = $data['OnlyProductsWithDescription'] === 'Y' ? 'Y' : 'N';
+            $exportConf->cName = 'exportformate_beschreibung';
+            $exportConf->cWert = $data['OnlyProductsWithDescription'] === 'Y' ? 'Y' : 'N';
             $this->db->insert('texportformateinstellungen', $exportConf);
-            $exportConf                = new \stdClass();
-            $exportConf->kExportformat = $exportID;
-            $exportConf->cName         = 'exportformate_lieferland';
-            $exportConf->cWert         = $data['ShippingCostsDeliveryCountry'];
+            $exportConf->cName = 'exportformate_lieferland';
+            $exportConf->cWert = $data['ShippingCostsDeliveryCountry'];
             $this->db->insert('texportformateinstellungen', $exportConf);
-            $exportConf                = new \stdClass();
-            $exportConf->kExportformat = $exportID;
-            $exportConf->cName         = 'exportformate_quot';
-            $exportConf->cWert         = $data['EncodingQuote'] === 'Y' ? 'Y' : 'N';
+            $exportConf->cName = 'exportformate_quot';
+            $exportConf->cWert = $data['EncodingQuote'] === 'Y' ? 'Y' : 'N';
             $this->db->insert('texportformateinstellungen', $exportConf);
-            $exportConf                = new \stdClass();
-            $exportConf->kExportformat = $exportID;
-            $exportConf->cName         = 'exportformate_equot';
-            $exportConf->cWert         = $data['EncodingDoubleQuote'] === 'Y' ? 'Y' : 'N';
+            $exportConf->cName = 'exportformate_equot';
+            $exportConf->cWert = $data['EncodingDoubleQuote'] === 'Y' ? 'Y' : 'N';
             $this->db->insert('texportformateinstellungen', $exportConf);
-            $exportConf                = new \stdClass();
-            $exportConf->kExportformat = $exportID;
-            $exportConf->cName         = 'exportformate_semikolon';
-            $exportConf->cWert         = $data['EncodingSemicolon'] === 'Y' ? 'Y' : 'N';
+            $exportConf->cName = 'exportformate_semikolon';
+            $exportConf->cWert = $data['EncodingSemicolon'] === 'Y' ? 'Y' : 'N';
             $this->db->insert('texportformateinstellungen', $exportConf);
         }
 

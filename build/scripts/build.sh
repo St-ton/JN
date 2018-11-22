@@ -14,8 +14,6 @@ build_create()
     export DB_PASSWORD=$5;
     # $6 database name
     export DB_NAME=$6;
-    # $7 tpl diff path
-    export TPL_DIFF_PATH=$7;
 
     local SCRIPT_DIR="${REPOSITORY_DIR}/build/scripts";
     local VERSION_REGEX="v?([0-9]{1,})\\.([0-9]{1,})\\.([0-9]{1,})(-(alpha|beta|rc)(\\.([0-9]{1,}))?)?";

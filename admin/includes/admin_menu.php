@@ -62,7 +62,7 @@ $adminMenu = [
                 'link' => 'opc-controlcenter.php',
                 'rights' => 'DISPLAY_TEMPLATE_VIEW',
             ],
-            __('Startseite') => (object)[
+            __('Front page') => (object)[
                 'link' => 'einstellungen.php?kSektion=2',
                 'rights' => 'SETTINGS_STARTPAGE_VIEW',
             ],

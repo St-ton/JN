@@ -81,8 +81,8 @@ msgid "OnPage Composer"
 msgstr "OnPage Composer"
 
 # Menu Items
-msgid "Startseiten"
-msgstr "Start pages"
+msgid "Front page"
+msgstr "Startseite"
 
 msgid "GTC/cancellation policy"
 msgstr "AGB / Widerrufsbelehrung"

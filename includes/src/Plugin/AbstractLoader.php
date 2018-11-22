@@ -153,6 +153,8 @@ abstract class AbstractLoader implements LoaderInterface
         $paths->setAdminURL($baseURL . \PFAD_PLUGIN_ADMINMENU);
         $paths->setLicencePath($basePath . \PFAD_PLUGIN_LICENCE);
         $paths->setUninstaller($basePath . \PFAD_PLUGIN_UNINSTALL);
+        $paths->setPortletsPath($basePath . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS);
+        $paths->setExportPath($basePath . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_EXPORTFORMAT);
 
         return $paths;
     }

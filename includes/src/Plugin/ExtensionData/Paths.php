@@ -63,6 +63,16 @@ class Paths
     private $uninstaller;
 
     /**
+     * @var string|null
+     */
+    private $portletsPath;
+
+    /**
+     * @var string|null
+     */
+    private $exportPath;
+
+    /**
      * @return string
      */
     public function getShopURL(): string
@@ -220,5 +230,37 @@ class Paths
     public function setUninstaller(?string $uninstaller): void
     {
         $this->uninstaller = $uninstaller;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPortletsPath(): ?string
+    {
+        return $this->portletsPath;
+    }
+
+    /**
+     * @param string|null $portletsPath
+     */
+    public function setPortletsPath(?string $portletsPath): void
+    {
+        $this->portletsPath = $portletsPath;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getExportPath(): ?string
+    {
+        return $this->exportPath;
+    }
+
+    /**
+     * @param string|null $exportPath
+     */
+    public function setExportPath(?string $exportPath): void
+    {
+        $this->exportPath = $exportPath;
     }
 }

@@ -163,6 +163,8 @@ class PluginLoader extends AbstractLoader
         $paths->setAdminURL($baseURL . \PFAD_PLUGIN_ADMINMENU);
         $paths->setLicencePath($versioned . \PFAD_PLUGIN_LICENCE);
         $paths->setUninstaller($versioned . \PFAD_PLUGIN_UNINSTALL);
+        $paths->setPortletsPath($versioned . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS);
+        $paths->setExportPath($versioned . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS);
 
         return $paths;
     }

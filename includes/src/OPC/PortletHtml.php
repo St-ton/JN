@@ -58,7 +58,7 @@ trait PortletHtml
     {
         $plugin = $this->getPlugin();
         if ($plugin !== null) {
-            return $plugin->getPaths()->getAdminPath() . \PFAD_PLUGIN_PORTLETS . $this->getClass() . '/';
+            return $plugin->getPaths()->getPortletsPath() . $this->getClass() . '/';
         }
 
         return PFAD_ROOT . \PFAD_TEMPLATES . 'Evo/portlets/' . $this->getClass() . '/';

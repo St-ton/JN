@@ -227,7 +227,7 @@ class DB
         if ($portletDB->kPlugin > 0) {
             $loader = new ExtensionLoader($this->shopDB, \Shop::Container()->getCache());
             $plugin = $loader->init((int)$portletDB->kPlugin);
-            $include = $plugin->getPaths()->getAdminPath() . \PFAD_PLUGIN_PORTLETS .
+            $include = $plugin->getPaths()->getPortletsPath() .
                 $portletDB->cClass . '/' . $portletDB->cClass . '.php';
             require_once $include;
         }

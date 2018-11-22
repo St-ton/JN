@@ -10,6 +10,7 @@ use Plugin\Admin\Validation\Items\Author;
 use Plugin\Admin\Validation\Items\Blueprints;
 use Plugin\Admin\Validation\Items\Boxes;
 use Plugin\Admin\Validation\Items\Checkboxes;
+use Plugin\Admin\Validation\Items\DateCreated;
 use Plugin\Admin\Validation\Items\Exports;
 use Plugin\Admin\Validation\Items\ExtendedTemplates;
 use Plugin\Admin\Validation\Items\FrontendLinks;
@@ -25,6 +26,7 @@ use Plugin\Admin\Validation\Items\PluginID;
 use Plugin\Admin\Validation\Items\Portlets;
 use Plugin\Admin\Validation\Items\Uninstaller;
 use Plugin\Admin\Validation\Items\WidgetsExtension;
+use Plugin\Admin\Validation\Items\XMLVersion;
 
 /**
  * Class ExtensionValidationFactory
@@ -44,6 +46,8 @@ class ExtensionValidationFactory
         $validation = [];
 //        $validation[] = new Bootstrapper($node, $dir, $version, $pluginID);
         $validation[] = new Name($node, $dir, $version, $pluginID);
+        $validation[] = new XMLVersion($node, $dir, $version, $pluginID);
+        $validation[] = new DateCreated($node, $dir, $version, $pluginID);
         $validation[] = new PluginID($node, $dir, $version, $pluginID);
         $validation[] = new Installation($node, $dir, $version, $pluginID);
         $validation[] = new Author($node, $dir, $version, $pluginID);

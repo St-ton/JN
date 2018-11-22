@@ -30,13 +30,14 @@ class Migration_20181121155840 extends Migration implements IMigration
         $this->execute('DROP TABLE IF EXISTS `tanondatajournal`');
         $this->execute("
             CREATE TABLE IF NOT EXISTS tanondatajournal(
-                kAnonDatenHistory INT(11) NOT NULL AUTO_INCREMENT,
+                kAnondatajournal INT(11) NOT NULL AUTO_INCREMENT,
                 cIssuer VARCHAR(255) DEFAULT '' COMMENT 'application(cron), user, admin, plugin',
                 iIssuerId INT(11) DEFAULT NULL COMMENT 'id of the issuer (e.g Kkunde, kPlugin)',
                 cAction VARCHAR(255) DEFAULT '',
-                cMessage TEXT DEFAULT '',
+                cDetail TEXT DEFAULT '' COMMENT 'json with important data',
+                cMessage TEXT DEFAULT '' COMMENT 'more detailed description of the action',
                 dEventTime DATETIME DEFAULT NULL,
-                PRIMARY KEY kAnonDatenHistory(kAnonDatenHistory),
+                PRIMARY KEY kAnondatajournal(kAnondatajournal),
                 KEY kIssuer(iIssuerId)
             )
             ENGINE=InnoDB

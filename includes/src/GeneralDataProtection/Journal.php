@@ -36,31 +36,34 @@ class Journal
         $this->oNow     = $oNow;
     }
 
-    public const ISSUER_CUSTOMER    = 'CUSTOMER';
-    public const ISSUER_APPLICATION = 'APPLICATION';
-    public const ISSUER_ADMIN       = 'ADMIN';
-    public const ISSUER_PLUGIN      = 'PLUGIN';
+    public const ISSUER_TYPE_CUSTOMER    = 'CUSTOMER';
+    public const ISSUER_TYPE_APPLICATION = 'APPLICATION';
+    public const ISSUER_TYPE_DBES        = 'DBES';
+    public const ISSUER_TYPE_ADMIN       = 'ADMIN';
+    public const ISSUER_TYPE_PLUGIN      = 'PLUGIN';
 
     public const ACTION_CUSTOMER_DEACTIVATED = 'CUSTOMER_DEACTIVATED';
-    public const ACTION_CUSTOMER_DELETED    = 'CUSTOMER_DELETED';
+    public const ACTION_CUSTOMER_DELETED     = 'CUSTOMER_DELETED';
 
     /**
-     * @param string $issuer
+     * @param string $issuerType
      * @param int $issuerID
      * @param string $action
      * @param string $message
+     * @param \stdClass|null $detail
      */
-    public function addEntry(string $issuer, int $issuerID, string $action, string $message): void
+    public function addEntry(string $issuerType, int $issuerID, string $action, string $message = '', \stdClass $detail = null): void
     {
         \Shop::Container()->getDB()->queryPrepared(
-            'INSERT INTO tanondatajournal(cIssuer, iIssuerId, cAction, cMessage, dEventTime)
-                VALUES(:pIssuer, :pIssuerId, :cAction, :cMessage, :pEventTime)',
+            'INSERT INTO tanondatajournal(cIssuer, iIssuerId, cAction, cDetail, cMessage, dEventTime)
+                VALUES(:cIssuer, :iIssuerId, :cAction, :cDetail, :cMessage, :dEventTime)',
             [
                 'cMessage'   => $message,
+                'cDetail'    => json_encode($detail),
                 'cAction'    => $action,
-                'pIssuer'    => $issuer,
-                'pIssuerId'  => $issuerID,
-                'pEventTime' => $this->oNow->format('Y-m-d H:i:s')
+                'cIssuer'    => $issuerType,
+                'iIssuerId'  => $issuerID,
+                'dEventTime' => $this->oNow->format('Y-m-d H:i:s')
             ],
             \DB\ReturnType::AFFECTED_ROWS
         );

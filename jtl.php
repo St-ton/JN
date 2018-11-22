@@ -544,7 +544,7 @@ if ($customerID > 0) {
             Shop::Container()->getLogService()->error('CSRF-Warnung fuer Account-Loeschung und kKunde ' . $customerID);
         } else {
             \Session\Session::getCustomer()->deleteAccount(
-                GeneralDataProtection\Journal::ISSUER_CUSTOMER,
+                GeneralDataProtection\Journal::ISSUER_TYPE_CUSTOMER,
                 \Session\Session::getCustomer()->getID(),
                 false,
                 true

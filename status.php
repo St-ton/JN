@@ -17,7 +17,7 @@ $Einstellungen = Shop::getSettings([
 $hinweis       = '';
 $linkHelper    = Shop::Container()->getLinkService();
 
-if (strlen($_GET['uid']) === 23) {
+if (isset($_GET['uid'])) {
     $status = Shop::Container()->getDB()->queryPrepared(
         'SELECT kBestellung 
             FROM tbestellstatus 

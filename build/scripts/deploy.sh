@@ -9,7 +9,7 @@ ARCHIVE_PATH="${3}/${FILENAME}";
 echo "";
 echo "Create zip of build '${TAG}'...";
 
-zip -r -q ${ARCHIVE_PATH} . -x \*.git* \*.idea* \*docs/* \*patch-dir-* \*tests/* \*tools/* \*.asset_cs \*.php_cs \*.travis.yml \*phpunit.xml;
+zip -r -q ${ARCHIVE_PATH} . -x \*.git* \*.idea* \*build/* \*docs/* \*patch-dir-* \*tests/* \*.asset_cs \*.php_cs \*.travis.yml \*phpunit.xml;
 echo "  ${FILENAME}";
 echo "";
 
@@ -25,7 +25,6 @@ if [[ ! -z $(find . -maxdepth 1 -type d -regex '^./patch-dir-.*') ]]; then
         HIGHER_VERSION_STR="${HIGHER_VERSION//[\.]/-}";
         PATCH_FILENAME="${PROJECT_NAME}-${LOWER_VERSION_STR}-to-${HIGHER_VERSION_STR}.zip";
         PATCH_ARCHIVE_PATH="${3}/${PATCH_FILENAME}";
-        PATCH_EXCLUDE_STR="";
         CUR_PWD=$(pwd);
         echo "  Patch '${LOWER_VERSION}' to '${HIGHER_VERSION}'";
         cd ${path};

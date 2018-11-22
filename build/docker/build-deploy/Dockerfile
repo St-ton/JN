@@ -10,9 +10,8 @@ RUN apt-get update \
     && apt-get install -y git patchutils software-properties-common wget unzip zip \
     && add-apt-repository ppa:ondrej/php \
     && apt-get update \
-    && apt-get install -y php-imagick php7.1 php7.1-bcmath php7.1-bz2 php7.1-cgi php7.1-cli php7.1-common php7.1-curl \
-        php7.1-fpm php7.1-gd php7.1-imap php7.1-intl php7.1-json php7.1-mbstring php7.1-mysql php7.1-opcache \
-        php7.1-readline php7.1-soap php7.1-sqlite3 php7.1-xml php7.1-xsl php7.1-zip
+    && apt-get install -y php7.1 php7.1-bcmath php7.1-bz2 php7.1-cli php7.1-common php7.1-curl php7.1-intl php7.1-json \
+        php7.1-mbstring php7.1-mysql php7.1-readline php7.1-soap php7.1-sqlite3 php7.1-xml php7.1-xsl php7.1-zip
 RUN cd /root \
     && wget https://composer.github.io/installer.sig -O - -q | tr -d '\n' > installer.sig \
     && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \

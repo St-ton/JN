@@ -36,13 +36,14 @@
                         </thead>
                         <tbody>
                             {foreach $pages as $page}
+                                {assign var="pageIdHash" value=$page->cPageId|md5}
                                 {assign var="publicPageRow" value=$opcPageDB->getPublicPageRow($page->cPageId)}
                                 <tr>
                                     <td>
                                         <a href="{$URL_SHOP}{$page->cPageUrl}" target="_blank">{$page->cPageUrl}</a>
                                     </td>
                                     <td>
-                                        <a href="#page-{$page->cPageId}" data-toggle="collapse">{$page->cPageId}</a>
+                                        <a href="#page-{$pageIdHash}" data-toggle="collapse">{$page->cPageId}</a>
                                     </td>
                                     <td>
                                         <div class="btn-group pull-right">
@@ -63,7 +64,7 @@
                                 </tr>
                                 <tr>
                                     <td colspan="3">
-                                        <div  class="collapse" id="page-{$page->cPageId}">
+                                        <div  class="collapse" id="page-{$pageIdHash}">
                                         <table class="list table ">
                                             <thead>
                                             <tr>

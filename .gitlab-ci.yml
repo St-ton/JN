@@ -42,6 +42,7 @@ stages:
 
     echo "Building projekt in PHP 7.1 and mariadb server 10.2 docker image..."
     docker run \
+      --volume ~/.ssh:/.ssh-gitlab-runner \
       --volume $(pwd):/dockerBuild \
       --name="$CI_CONTAINER_NAME" \
       -d \
@@ -51,7 +52,7 @@ stages:
       -e MYSQL_ROOT_PASSWORD="$DOCKER_MARIADB_PASSWORD" \
       -e MYSQL_DATABASE="build_$DB_NAME" \
       "$CI_CONTAINER_NAME" \
-      sh -c "cp -a /dockerBuild/. /build; /etc/init.d/mysql start; echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null; bash $BUILD_SCRIPT_PATH '/build' $CI_COMMIT_REF_NAME $CI_COMMIT_SHA 'root' '$DOCKER_MARIADB_PASSWORD' 'build_$DB_NAME'"
+      sh -c "cp -a /dockerBuild/. /build; cp -r /.ssh-gitlab-runner/. ~/.ssh; /etc/init.d/mysql start; echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null; bash $BUILD_SCRIPT_PATH '/build' $CI_COMMIT_REF_NAME $CI_COMMIT_SHA 'root' '$DOCKER_MARIADB_PASSWORD' 'build_$DB_NAME'"
 
     echo "Build finished"
   }

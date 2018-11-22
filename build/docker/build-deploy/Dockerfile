@@ -1,5 +1,4 @@
 FROM mariadb:10.2
-ENV DEBIAN_FRONTEND nointeractive
 ENV MYSQL_ROOT_PASSWORD root
 ENV MYSQL_DATABASE build_database
 WORKDIR '/build'
@@ -7,7 +6,7 @@ RUN mkdir /archive
 RUN echo "[GLOBAL]" > /root/.my.cnf
 RUN echo "max_allowed_packet=64M" >> /root/.my.cnf
 RUN apt-get update \
-    && apt-get install -y git patchutils software-properties-common ca-certificates wget unzip zip \
+    && apt-get install -y git patchutils software-properties-common wget unzip zip \
     && add-apt-repository ppa:ondrej/php \
     && apt-get update \
     && apt-get install -y php7.1 php7.1-bcmath php7.1-bz2 php7.1-cli php7.1-common php7.1-curl php7.1-intl php7.1-json \

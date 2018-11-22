@@ -18,6 +18,7 @@ use Plugin\ExtensionData\Links;
 use Plugin\ExtensionData\Localization;
 use Plugin\ExtensionData\Meta;
 use Plugin\ExtensionData\Paths;
+use Plugin\ExtensionData\Widget;
 use Tightenco\Collect\Support\Collection;
 
 /**
@@ -70,7 +71,7 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadLocalization(int $id): Localization
     {
-        $data = \Shop::Container()->getDB()->queryPrepared(
+        $data         = \Shop::Container()->getDB()->queryPrepared(
             'SELECT l.kPluginSprachvariable, l.kPlugin, l.cName, l.cBeschreibung,
             COALESCE(c.cISO, tpluginsprachvariablesprache.cISO)  AS cISO,
             COALESCE(c.cName, tpluginsprachvariablesprache.cName) AS customValue
@@ -348,5 +349,25 @@ abstract class AbstractLoader implements LoaderInterface
         }
 
         return $vChecked[$szCanonicalFileName];
+    }
+
+    /**
+     * @param AbstractExtension $extension
+     * @return Widget
+     */
+    protected function loadWidgets(AbstractExtension $extension): Widget
+    {
+        $data = $this->db->selectAll(
+            'tadminwidgets',
+            'kPlugin',
+            $extension->getID()
+        );
+        foreach ($data as $item) {
+            $item->namespace = '\\' . $extension->getPluginID() . '\\';
+        }
+        $adminPath = $extension->getPaths()->getAdminPath();
+        $widgets   = new Widget();
+
+        return $widgets->load($data, $adminPath);
     }
 }

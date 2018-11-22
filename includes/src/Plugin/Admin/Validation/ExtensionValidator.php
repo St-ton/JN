@@ -6,15 +6,14 @@
 
 namespace Plugin\Admin\Validation;
 
-use JTL\XMLParser;
 use JTLShop\SemVer\Version;
 use Plugin\InstallCode;
 
 /**
- * Class ModernValidator
+ * Class ExtensionValidator
  * @package Plugin\Admin\Validation
  */
-final class ModernValidator extends AbstractValidator
+final class ExtensionValidator extends AbstractValidator
 {
     protected const BASE_DIR = \PFAD_ROOT . \PFAD_EXTENSIONS;
 
@@ -59,7 +58,7 @@ final class ModernValidator extends AbstractValidator
         if (!\is_string($cVersionsnummer)) {
             return $cVersionsnummer;
         }
-        $validation = new Shop4ValidationFactory();
+        $validation = new ExtensionValidationFactory();
         $checks     = $validation->getValidations($baseNode, $this->dir, $cVersionsnummer, $baseNode['PluginID']);
         foreach ($checks as $check) {
             $check->setDir($this->dir . \DIRECTORY_SEPARATOR); // override versioned dir from base validator
@@ -73,7 +72,7 @@ final class ModernValidator extends AbstractValidator
     }
 
     /**
-     * @param array  $node
+     * @param array $node
      * @return int|string
      */
     private function getVersion($node)

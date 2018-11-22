@@ -8,7 +8,7 @@ namespace Plugin\Admin;
 
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
-use Plugin\Admin\Validation\Shop4Validator;
+use Plugin\Admin\Validation\PluginValidator;
 use Plugin\Admin\Validation\ValidatorInterface;
 use Plugin\ExtensionLoader;
 use Plugin\Helper;
@@ -34,7 +34,7 @@ class StateChanger
     private $cache;
 
     /**
-     * @var Shop4Validator
+     * @var PluginValidator
      */
     private $validator;
 

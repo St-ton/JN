@@ -15,6 +15,7 @@ use Plugin\ExtensionData\Links;
 use Plugin\ExtensionData\Localization;
 use Plugin\ExtensionData\Meta;
 use Plugin\ExtensionData\Paths;
+use Plugin\ExtensionData\Widget;
 
 /**
  * Class PluginLoader
@@ -126,9 +127,9 @@ class PluginLoader extends AbstractLoader
         $this->plugin->setConfig($this->loadConfig($this->plugin->getPaths()->getAdminPath(), $this->plugin->getID()));
         $this->plugin->setLocalization($this->loadLocalization($this->plugin->getID()));
         $this->plugin->setLinks($this->loadLinks($this->plugin->getID()));
+        $this->plugin->setWidgets($this->loadWidgets($this->plugin));
         $this->loadPaymentMethods();
         $this->loadMailTemplates();
-        $this->loadWidgets();
         $this->loadPortlets();
         $this->cache();
 
@@ -141,7 +142,7 @@ class PluginLoader extends AbstractLoader
      */
     protected function loadLinks(int $id): Links
     {
-        $links = parent::loadLinks($id);
+        $links                                 = parent::loadLinks($id);
         $this->plugin->oPluginFrontendLink_arr = $links->getLinks()->toArray();
 
         return $links;
@@ -322,25 +323,37 @@ class PluginLoader extends AbstractLoader
     }
 
     /**
-     * @return PluginLoader
+     * @param AbstractExtension $extension
+     * @return Widget
      */
-    public function loadWidgets(): self
+    protected function loadWidgets(AbstractExtension $extension): Widget
     {
-        $this->plugin->oPluginAdminWidget_arr = $this->db->selectAll(
+        $data    = $this->db->selectAll(
             'tadminwidgets',
             'kPlugin',
-            $this->plugin->getID()
+            $extension->getID()
         );
-        $adminPath                            = $this->plugin->getPaths()->getAdminPath();
-        foreach ($this->plugin->oPluginAdminWidget_arr as $i => $oPluginAdminWidget) {
-            $this->plugin->oPluginAdminWidget_arr[$i]->cClassAbs                     = $adminPath .
+        $path    = $extension->getPaths()->getAdminPath();
+        $widgets = new Widget();
+        foreach ($data as $widget) {
+            $widget->id          = (int)$widget->kWidget;
+            $widget->bActive     = (int)$widget->bActive;
+            $widget->bExpanded   = (int)$widget->bExpanded;
+            $widget->nPos        = (int)$widget->nPos;
+            $widget->isExtension = false;
+            $widget->kPlugin     = (int)$widget->kPlugin;
+            $widget->kWidget     = (int)$widget->kWidget;
+            $widget->namespache  = null;
+            $widget->classFile   = $path .
                 \PFAD_PLUGIN_WIDGET . 'class.Widget' .
-                $oPluginAdminWidget->cClass . '.php';
-            $this->plugin->oPluginAdminWidgetAssoc_arr[$oPluginAdminWidget->kWidget] =
-                $this->plugin->oPluginAdminWidget_arr[$i];
+                $widget->cClass . '.php';
+            $widget->className   = 'Widget' . $widget->cClass;
+
+            $this->plugin->oPluginAdminWidgetAssoc_arr[$widget->kWidget] = $widget;
+            $widgets->addWidget($widget);
         }
 
-        return $this;
+        return $widgets;
     }
 
     /**

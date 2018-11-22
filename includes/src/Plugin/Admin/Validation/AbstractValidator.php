@@ -30,7 +30,7 @@ abstract class AbstractValidator implements ValidatorInterface
     protected $dir;
 
     /**
-     * Shop4Validator constructor.
+     * PluginValidator constructor.
      * @param DbInterface $db
      */
     public function __construct(DbInterface $db)

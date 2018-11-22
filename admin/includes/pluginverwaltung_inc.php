@@ -47,8 +47,8 @@ function updatePlugin(int $kPlugin)
     $db              = Shop::Container()->getDB();
     $cache           = Shop::Container()->getCache();
     $uninstaller     = new \Plugin\Admin\Uninstaller($db, $cache);
-    $validator       = new \Plugin\Admin\Validation\Shop4Validator($db);
-    $modernValidator = new \Plugin\Admin\Validation\ModernValidator($db);
+    $validator       = new \Plugin\Admin\Validation\PluginValidator($db);
+    $modernValidator = new \Plugin\Admin\Validation\ExtensionValidator($db);
     $installer       = new \Plugin\Admin\Installer($db, $uninstaller, $validator, $modernValidator);
     $updater         = new \Plugin\Admin\Updater($db, $installer);
 
@@ -69,8 +69,8 @@ function installierePluginVorbereitung($dir, $oldPlugin = 0)
     $db              = Shop::Container()->getDB();
     $cache           = Shop::Container()->getCache();
     $uninstaller     = new \Plugin\Admin\Uninstaller($db, $cache);
-    $validator       = new \Plugin\Admin\Validation\Shop4Validator($db);
-    $modernValidator = new \Plugin\Admin\Validation\ModernValidator($db);
+    $validator       = new \Plugin\Admin\Validation\PluginValidator($db);
+    $modernValidator = new \Plugin\Admin\Validation\ExtensionValidator($db);
     $installer       = new \Plugin\Admin\Installer($db, $uninstaller, $validator, $modernValidator);
     $installer->setDir($dir);
     if ($oldPlugin !== 0) {
@@ -99,8 +99,8 @@ function reloadPlugin($oPlugin, $forceReload = false)
     $stateChanger = new \Plugin\Admin\StateChanger(
         $db,
         Shop::Container()->getCache(),
-        new \Plugin\Admin\Validation\Shop4Validator($db),
-        new \Plugin\Admin\Validation\ModernValidator($db)
+        new \Plugin\Admin\Validation\PluginValidator($db),
+        new \Plugin\Admin\Validation\ExtensionValidator($db)
     );
 
     return $stateChanger->reload($oPlugin, $forceReload);
@@ -120,8 +120,8 @@ function aktivierePlugin(int $kPlugin): int
     $stateChanger = new \Plugin\Admin\StateChanger(
         $db,
         Shop::Container()->getCache(),
-        new \Plugin\Admin\Validation\Shop4Validator($db),
-        new \Plugin\Admin\Validation\ModernValidator($db)
+        new \Plugin\Admin\Validation\PluginValidator($db),
+        new \Plugin\Admin\Validation\ExtensionValidator($db)
     );
 
     return $stateChanger->activate($kPlugin);

@@ -7,7 +7,7 @@
 /**
  * Class WidgetBase
  */
-class WidgetBase
+abstract class WidgetBase
 {
     /**
      * @var Smarty\JTLSmarty
@@ -25,14 +25,14 @@ class WidgetBase
     public $oPlugin;
 
     /**
-     * @param Smarty\JTLSmarty $oSmarty
-     * @param \DB\DbInterface  $oDB
-     * @param Plugin           $oPlugin
+     * @param Smarty\JTLSmarty $smarty
+     * @param \DB\DbInterface  $db
+     * @param Plugin|\Plugin\Extension $oPlugin
      */
-    public function __construct($oSmarty = null, $oDB = null, &$oPlugin = null)
+    public function __construct($smarty = null, $db = null, &$oPlugin = null)
     {
-        $this->oSmarty = $oSmarty ?? Shop::Smarty();
-        $this->oDB     = $oDB ?? Shop::Container()->getDB();
+        $this->oSmarty = $smarty ?? Shop::Smarty();
+        $this->oDB     = $db ?? Shop::Container()->getDB();
         $this->oPlugin = $oPlugin;
         $this->init();
     }

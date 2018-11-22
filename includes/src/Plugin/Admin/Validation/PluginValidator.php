@@ -11,10 +11,10 @@ use JTLShop\SemVer\Version;
 use Plugin\InstallCode;
 
 /**
- * Class Shop4Validator
+ * Class PluginValidator
  * @package Plugin\Admin\Validation
  */
-final class Shop4Validator extends AbstractValidator
+final class PluginValidator extends AbstractValidator
 {
     protected const BASE_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
 
@@ -115,7 +115,7 @@ final class Shop4Validator extends AbstractValidator
         if (!\is_string($cVersionsnummer)) {
             return $cVersionsnummer;
         }
-        $validation = new Shop4ValidationFactory();
+        $validation = new PluginValidationFactory();
         $checks     = $validation->getValidations($baseNode, $this->dir, $cVersionsnummer, $baseNode['PluginID']);
         foreach ($checks as $check) {
             $res = $check->validate();

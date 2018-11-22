@@ -1228,24 +1228,26 @@ class TableCreator
      */
     private function installAdminWidgets(array $node): int
     {
-        foreach ($node as $u => $widget) {
+        foreach ($node as $u => $widgetData) {
             \preg_match('/[0-9]+/', $u, $hits2);
             if (\strlen($hits2[0]) !== \strlen($u)) {
                 continue;
             }
             $widget               = new \stdClass();
             $widget->kPlugin      = $this->plugin->kPlugin;
-            $widget->cTitle       = $widget['Title'];
-            $widget->cClass       = $widget['Class'] . '_' . $this->plugin->cPluginID;
-            $widget->eContainer   = $widget['Container'];
-            $widget->cDescription = $widget['Description'];
+            $widget->cTitle       = $widgetData['Title'];
+            $widget->cClass       = $this->plugin->bExtension === 1 // @todo
+                ? $widgetData['Class']
+                : $widgetData['Class'] . '_' . $this->plugin->cPluginID;
+            $widget->eContainer   = $widgetData['Container'];
+            $widget->cDescription = $widgetData['Description'];
             if (\is_array($widget->cDescription)) {
                 //@todo: when description is empty, this becomes an array with indices [0] => '' and [0 attr] => ''
                 $widget->cDescription = $widget->cDescription[0];
             }
-            $widget->nPos      = $widget['Pos'];
-            $widget->bExpanded = $widget['Expanded'];
-            $widget->bActive   = $widget['Active'];
+            $widget->nPos      = $widgetData['Pos'];
+            $widget->bExpanded = $widgetData['Expanded'];
+            $widget->bActive   = $widgetData['Active'];
             if (!$this->db->insert('tadminwidgets', $widget)) {
                 return InstallCode::SQL_CANNOT_SAVE_WIDGET;
             }

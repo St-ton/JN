@@ -28,7 +28,6 @@ class ExtensionBC extends AbstractExtension
         'cURL'                    => ['getMeta', 'URL'],
         'cVerzeichnis'            => ['getPaths', 'BaseDir'],
         'cPluginID'               => 'PluginID',
-        //        'cFehler'                 => '',
         'cLizenz'                 => ['getLicense', 'Key'],
         'cLizenzKlasse'           => ['getLicense', 'Class'],
         'cLizenzKlasseName'       => ['getLicense', 'ClassName'],

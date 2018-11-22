@@ -58,21 +58,25 @@ class ExtensionLoader extends AbstractLoader
      */
     public function loadFromObject($obj): Extension
     {
+        $id = (int)$obj->kPlugin;
         $paths = $this->loadPaths($obj->cVerzeichnis);
 
         $extension = new Extension();
+        $extension->setIsExtension(true);
         $extension->setMeta($this->loadMetaData($obj));
         $extension->setPaths($paths);
         $this->loadMarkdownFiles($paths->getBasePath(), $extension->getMeta());
         $extension->setState((int)$obj->nStatus);
-        $extension->setID((int)$obj->kPlugin);
+        $extension->setID($id);
         $extension->setBootstrap(true);
-        $extension->setLinks($this->loadLinks((int)$obj->kPlugin));
+        $extension->setLinks($this->loadLinks($id));
         $extension->setPluginID($obj->cPluginID);
         $extension->setPriority((int)$obj->nPrio);
         $extension->setConfig($this->loadConfig($paths->getAdminPath(), $extension->getID()));
         $extension->setLicense($this->loadLicense($obj));
         $extension->setCache($this->loadCacheData($extension));
+        $extension->setLocalization($this->loadLocalization($id));
+        $extension->setWidgets($this->loadWidgets($extension));
 
         $this->loadAdminMenu($extension);
 

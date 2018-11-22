@@ -10,39 +10,54 @@
  */
 function getWidgets(bool $bActive = true)
 {
-    $oWidget_arr = Shop::Container()->getDB()->selectAll(
-        'tadminwidgets',
-        'bActive',
-        (int)$bActive,
-        '*',
-        'eContainer ASC, nPos ASC'
+    $cache   = Shop::Container()->getCache();
+    $db      = Shop::Container()->getDB();
+    $widgets = $db->queryPrepared(
+        'SELECT tadminwidgets.*, tplugin.cPluginID, tplugin.bExtension
+            FROM tadminwidgets
+            LEFT JOIN tplugin 
+                ON tplugin.kPlugin = tadminwidgets.kPlugin
+            WHERE bActive = :active
+            ORDER BY eContainer ASC, nPos ASC',
+        ['active' => (int)$bActive],
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     if ($bActive) {
-        foreach ($oWidget_arr as $i => $oWidget) {
-            $oWidget_arr[$i]->cContent = '';
-            $cClass                    = 'Widget' . $oWidget->cClass;
-            $cClassFile                = 'class.' . $cClass . '.php';
-            $cClassPath                = PFAD_ROOT . PFAD_ADMIN . 'includes/widgets/' . $cClassFile;
-            $oWidget->cNiceTitle       = str_replace(['--', ' '], '-', $oWidget->cTitle);
-            $oWidget->cNiceTitle       = strtolower(preg_replace('/[äüöß\(\)\/\\\]/iu', '', $oWidget->cNiceTitle));
-            $oPlugin = null;
-            if (isset($oWidget->kPlugin) && $oWidget->kPlugin > 0) {
-                $oPlugin    = new Plugin($oWidget->kPlugin);
-                $cClass     = 'Widget' . $oPlugin->oPluginAdminWidgetAssoc_arr[$oWidget->kWidget]->cClass;
-                $cClassPath = $oPlugin->oPluginAdminWidgetAssoc_arr[$oWidget->kWidget]->cClassAbs;
+        foreach ($widgets as $widget) {
+            $widget->kWidget    = (int)$widget->kWidget;
+            $widget->kPlugin    = (int)$widget->kPlugin;
+            $widget->nPos       = (int)$widget->nPos;
+            $widget->bExpanded  = (int)$widget->bExpanded;
+            $widget->bActive    = (int)$widget->bActive;
+            $widget->cContent   = '';
+            $cClass             = 'Widget' . $widget->cClass;
+            $cClassFile         = 'class.' . $cClass . '.php';
+            $cClassPath         = PFAD_ROOT . PFAD_ADMIN . 'includes/widgets/' . $cClassFile;
+            $widget->cNiceTitle = str_replace(['--', ' '], '-', $widget->cTitle);
+            $widget->cNiceTitle = strtolower(preg_replace('/[äüöß\(\)\/\\\]/iu', '', $widget->cNiceTitle));
+            $oPlugin            = null;
+            if ($widget->kPlugin > 0) {
+                $loader  = \Plugin\Helper::getLoader((int)$widget->bExtension === 1, $db, $cache);
+                $oPlugin = $loader->init($widget->kPlugin);
+                $hit     = $oPlugin->getWidgets()->getWidgetByID($widget->kWidget);
+                if ($hit === null) {
+                    continue;
+                }
+                $cClass     = $hit->className;
+                $cClassPath = $hit->classFile;
             }
             if (file_exists($cClassPath)) {
                 require_once $cClassPath;
                 if (class_exists($cClass)) {
                     /** @var WidgetBase $oClassObj */
-                    $oClassObj                 = new $cClass(null, null, $oPlugin);
-                    $oWidget_arr[$i]->cContent = $oClassObj->getContent();
+                    $oClassObj        = new $cClass(null, $db, $oPlugin);
+                    $widget->cContent = $oClassObj->getContent();
                 }
             }
         }
     }
 
-    return $oWidget_arr;
+    return $widgets;
 }
 
 /**

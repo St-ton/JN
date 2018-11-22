@@ -16,16 +16,6 @@ use JTL\XMLParser;
 class Plugin extends ExtensionBC
 {
     /**
-     * @var int
-     */
-    public $nXMLVersion;
-
-    /**
-     * @var string
-     */
-    public $cFehler;
-
-    /**
      * @var array
      */
     public $oPluginHook_arr = [];
@@ -138,13 +128,13 @@ class Plugin extends ExtensionBC
     /**
      * Konstruktor
      *
-     * @param int  $kPlugin
+     * @param int  $id
      * @param bool $invalidateCache - set to true to clear plugin cache
      */
-    public function __construct(int $kPlugin = 0, bool $invalidateCache = false)
+    public function __construct(int $id = 0, bool $invalidateCache = false)
     {
-        if ($kPlugin > 0) {
-            $this->loadFromDB($kPlugin, \Shop::Container()->getDB(), \Shop::Container()->getCache(), $invalidateCache);
+        if ($id > 0) {
+            $this->loadFromDB($id, \Shop::Container()->getDB(), \Shop::Container()->getCache(), $invalidateCache);
         }
     }
 
@@ -191,8 +181,6 @@ class Plugin extends ExtensionBC
     }
 
     /**
-     * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
-     *
      * @return int
      */
     public function updateInDB(): int
@@ -204,13 +192,12 @@ class Plugin extends ExtensionBC
         $obj->cAutor               = $this->getMeta()->getAuthor();
         $obj->cURL                 = $this->getMeta()->getURL();
         $obj->cVerzeichnis         = $this->getPaths()->getBaseDir();
-        $obj->cFehler              = $this->cFehler;
+        $obj->cFehler              = '';
         $obj->cLizenz              = $this->getLicense()->getKey();
         $obj->cLizenzKlasse        = $this->getLicense()->getClass();
         $obj->cLizenzKlasseName    = $this->getLicense()->getClassName();
         $obj->nStatus              = $this->getState();
         $obj->nVersion             = $this->getMeta()->getVersion();
-        $obj->nXMLVersion          = $this->nXMLVersion;
         $obj->nPrio                = $this->getPriority();
         $obj->dZuletztAktualisiert = $this->getMeta()->getDateLastUpdate()->format('d.m.Y H:i');
         $obj->dInstalliert         = $this->getMeta()->getDateInstalled()->format('d.m.Y H:i');

@@ -28,10 +28,10 @@ use Plugin\Admin\Validation\Items\Uninstaller;
 use Plugin\Admin\Validation\Items\Widgets;
 
 /**
- * Class Shop4ValidationFactory
+ * Class PluginValidationFactory
  * @package Plugin\Admin\Validation
  */
-class Shop4ValidationFactory
+class PluginValidationFactory
 {
     /**
      * @param array  $node

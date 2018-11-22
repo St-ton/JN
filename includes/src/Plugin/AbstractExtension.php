@@ -15,6 +15,7 @@ use Plugin\ExtensionData\Links;
 use Plugin\ExtensionData\Localization;
 use Plugin\ExtensionData\Meta;
 use Plugin\ExtensionData\Paths;
+use Plugin\ExtensionData\Widget;
 
 /**
  * Class AbstractExtension
@@ -96,6 +97,11 @@ abstract class AbstractExtension
      * @var Localization
      */
     protected $localization;
+
+    /**
+     * @var Widget
+     */
+    protected $widget;
 
     /**
      * @return int
@@ -335,5 +341,21 @@ abstract class AbstractExtension
     public function setLocalization(Localization $localization): void
     {
         $this->localization = $localization;
+    }
+
+    /**
+     * @return Widget
+     */
+    public function getWidgets(): Widget
+    {
+        return $this->widget;
+    }
+
+    /**
+     * @param Widget $widget
+     */
+    public function setWidgets(Widget $widget): void
+    {
+        $this->widget = $widget;
     }
 }

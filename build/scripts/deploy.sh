@@ -3,13 +3,13 @@
 PROJECT_NAME=$1;
 TAG=$2;
 VERSION="${TAG//[\/\.]/-}";
-FILENAME="${PROJECT_NAME}-${VERSION}.zip";
+FILENAME="shop-${VERSION}.zip";
 ARCHIVE_PATH="${3}/${FILENAME}";
 
 echo "";
 echo "Create zip of build '${TAG}'...";
 
-zip -r ${ARCHIVE_PATH} . -x \*.git* \*.idea* \*build/* \*docs/* \*patch-dir-* \*tests/* \*.asset_cs \*.php_cs \*.travis.yml \*phpunit.xml;
+zip -r -q ${ARCHIVE_PATH} . -x \*.git* \*.idea* \*build/* \*docs/* \*patch-dir-* \*tests/* \*.asset_cs \*.php_cs \*.travis.yml \*phpunit.xml;
 echo "  ${FILENAME}";
 echo "";
 

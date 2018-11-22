@@ -16,8 +16,10 @@ use Plugin\ExtensionData\Hook;
 use Plugin\ExtensionData\License;
 use Plugin\ExtensionData\Links;
 use Plugin\ExtensionData\Localization;
+use Plugin\ExtensionData\MailTemplates;
 use Plugin\ExtensionData\Meta;
 use Plugin\ExtensionData\Paths;
+use Plugin\ExtensionData\PaymentMethods;
 use Plugin\ExtensionData\Widget;
 use Tightenco\Collect\Support\Collection;
 
@@ -369,5 +371,62 @@ abstract class AbstractLoader implements LoaderInterface
         $widgets   = new Widget();
 
         return $widgets->load($data, $adminPath);
+    }
+
+    /**
+     * @param AbstractExtension $extension
+     * @return MailTemplates
+     */
+    protected function loadMailTemplates(AbstractExtension $extension): MailTemplates
+    {
+        $data = $this->db->queryPrepared(
+            'SELECT * FROM tpluginemailvorlage
+            JOIN tpluginemailvorlagesprache AS loc
+                ON loc.kEmailvorlage = tpluginemailvorlage.kEmailvorlage
+            WHERE tpluginemailvorlage.kPlugin = :id',
+            ['id' => $extension->getID()],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        $mailTemplates = new MailTemplates();
+
+        return $mailTemplates->load($data);
+    }
+
+    /**
+     * @param AbstractExtension $extension
+     * @return PaymentMethods
+     */
+    protected function loadPaymentMethods(AbstractExtension $extension): PaymentMethods
+    {
+        $methods      = $this->db->query(
+            "SELECT *
+                FROM tzahlungsart
+                JOIN tpluginzahlungsartklasse
+		            ON tpluginzahlungsartklasse.cModulID = tzahlungsart.cModulId
+                WHERE tzahlungsart.cModulId LIKE 'kPlugin\_" . $extension->getID() . "%'",
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        foreach ($methods as $method) {
+            $cModulId                                = Helper::getModuleIDByPluginID(
+                $extension->getID(),
+                $method->cName
+            );
+            $method->oZahlungsmethodeEinstellung_arr = $this->db->query(
+                "SELECT *
+                    FROM tplugineinstellungenconf
+                    WHERE cWertName LIKE '" . $cModulId . "_%'
+                        AND cConf = 'Y'
+                    ORDER BY nSort",
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+            $method->oZahlungsmethodeSprache_arr =  $this->db->selectAll(
+                'tzahlungsartsprache',
+                'kZahlungsart',
+                (int)$method->kZahlungsart
+            );
+        }
+        $pmm = new PaymentMethods();
+
+        return $pmm->load($methods, $extension->getPaths()->getVersionedPath());
     }
 }

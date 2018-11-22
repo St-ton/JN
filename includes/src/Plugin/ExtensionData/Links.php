@@ -44,6 +44,14 @@ class Links
     }
 
     /**
+     * @return array
+     */
+    public function getLinksCompat(): array
+    {
+        return $this->links->toArray();
+    }
+
+    /**
      * @return Collection
      */
     public function getLinks(): Collection

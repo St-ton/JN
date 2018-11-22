@@ -106,6 +106,14 @@ class Localization
     }
 
     /**
+     * @return array
+     */
+    public function getLangVarsCompat(): array
+    {
+        return $this->langVars->toArray();
+    }
+
+    /**
      * @return Collection
      */
     public function getLangVars(): Collection

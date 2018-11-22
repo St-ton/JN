@@ -38,21 +38,6 @@ class Plugin extends ExtensionBC
     /**
      * @var array
      */
-    public $oPluginSprachvariable_arr = [];
-
-    /**
-     * @var array
-     */
-    public $oPluginSprachvariableAssoc_arr = [];
-
-    /**
-     * @var array
-     */
-    public $oPluginFrontendLink_arr = [];
-
-    /**
-     * @var array
-     */
     public $oPluginZahlungsmethode_arr = [];
 
     /**
@@ -64,26 +49,6 @@ class Plugin extends ExtensionBC
      * @var array
      */
     public $oPluginZahlungsKlasseAssoc_arr = [];
-
-    /**
-     * @var array
-     */
-    public $oPluginEmailvorlage_arr = [];
-
-    /**
-     * @var array
-     */
-    public $oPluginEmailvorlageAssoc_arr = [];
-
-    /**
-     * @var array
-     */
-    public $oPluginAdminWidget_arr = [];
-
-    /**
-     * @var array
-     */
-    public $oPluginAdminWidgetAssoc_arr = [];
 
     /**
      * @var array
@@ -124,6 +89,11 @@ class Plugin extends ExtensionBC
      * @var int
      */
     public $nCalledHook;
+
+    /**
+     * @var string
+     */
+    public $cFehler = '';
 
     /**
      * Konstruktor
@@ -192,7 +162,7 @@ class Plugin extends ExtensionBC
         $obj->cAutor               = $this->getMeta()->getAuthor();
         $obj->cURL                 = $this->getMeta()->getURL();
         $obj->cVerzeichnis         = $this->getPaths()->getBaseDir();
-        $obj->cFehler              = '';
+        $obj->cFehler              = $this->cFehler;
         $obj->cLizenz              = $this->getLicense()->getKey();
         $obj->cLizenzKlasse        = $this->getLicense()->getClass();
         $obj->cLizenzKlasseName    = $this->getLicense()->getClassName();

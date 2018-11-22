@@ -183,7 +183,7 @@ class Helper
 
             if (!$instance->$method($license->getKey())) {
                 $plugin->setState(State::LICENSE_KEY_INVALID);
-                $plugin->cFehler = 'Lizenzschlüssel ist ungültig';
+                $plugin->cFehler = 'Lizenzschlüssel ist ungültig'; //@todo
                 $plugin->updateInDB();
                 \Shop::Container()->getLogService()->withName('kPlugin')->error(
                     'Plugin Lizenzprüfung: Das Plugin "' . $plugin->getMeta()->getName() .

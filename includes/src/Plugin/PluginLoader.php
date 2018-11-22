@@ -8,11 +8,9 @@ namespace Plugin;
 
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
-use DB\ReturnType;
 use Plugin\ExtensionData\Cache;
 use Plugin\ExtensionData\Config;
 use Plugin\ExtensionData\Links;
-use Plugin\ExtensionData\Localization;
 use Plugin\ExtensionData\Meta;
 use Plugin\ExtensionData\Paths;
 use Plugin\ExtensionData\Widget;
@@ -108,9 +106,7 @@ class PluginLoader extends AbstractLoader
         $meta->setAuthor($obj->cAutor);
 
         $this->plugin->setMeta($meta);
-
         $this->plugin->setLicense($this->loadLicense($obj));
-
         $this->plugin->setLinks(new Links());
 
         $cache = new Cache();
@@ -128,24 +124,12 @@ class PluginLoader extends AbstractLoader
         $this->plugin->setLocalization($this->loadLocalization($this->plugin->getID()));
         $this->plugin->setLinks($this->loadLinks($this->plugin->getID()));
         $this->plugin->setWidgets($this->loadWidgets($this->plugin));
-        $this->loadPaymentMethods();
-        $this->loadMailTemplates();
+        $this->plugin->setPaymentMethods($this->loadPaymentMethods($this->plugin));
+        $this->plugin->setMailTemplates($this->loadMailTemplates($this->plugin));
         $this->loadPortlets();
         $this->cache();
 
         return $this->plugin;
-    }
-
-    /**
-     * @param int $id
-     * @return Links
-     */
-    protected function loadLinks(int $id): Links
-    {
-        $links                                 = parent::loadLinks($id);
-        $this->plugin->oPluginFrontendLink_arr = $links->getLinks()->toArray();
-
-        return $links;
     }
 
     /**
@@ -223,106 +207,6 @@ class PluginLoader extends AbstractLoader
     }
 
     /**
-     * @inheritdoc
-     */
-    protected function loadLocalization(int $id): Localization
-    {
-        $localization                                 = parent::loadLocalization($id);
-        $this->plugin->oPluginSprachvariable_arr      = $localization->getLangVars()->toArray();
-        $this->plugin->oPluginSprachvariableAssoc_arr = $localization->getTranslations();
-
-        return $localization;
-    }
-
-    /**
-     * @return PluginLoader
-     */
-    protected function loadPaymentMethods(): self
-    {
-        $methodsAssoc = [];
-        $methods      = $this->db->query(
-            "SELECT *
-                FROM tzahlungsart
-                WHERE cModulId LIKE 'kPlugin\_" . $this->plugin->getID() . "%'",
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        $version      = $this->plugin->getMeta()->getVersion();
-        foreach ($methods as $method) {
-            $method->cZusatzschrittTemplate          = \strlen($method->cZusatzschrittTemplate)
-                ? $this->basePath . $this->plugin->getPaths()->getBasePath() . '/' .
-                \PFAD_PLUGIN_VERSION . $version . '/' .
-                \PFAD_PLUGIN_PAYMENTMETHOD . $method->cZusatzschrittTemplate
-                : '';
-            $method->cTemplateFileURL                = \strlen($method->cPluginTemplate)
-                ? $this->basePath . $this->plugin->getPaths()->getBasePath() . '/' .
-                \PFAD_PLUGIN_VERSION . $version . '/' .
-                \PFAD_PLUGIN_PAYMENTMETHOD . $method->cPluginTemplate
-                : '';
-            $method->oZahlungsmethodeSprache_arr     = $this->db->selectAll(
-                'tzahlungsartsprache',
-                'kZahlungsart',
-                (int)$method->kZahlungsart
-            );
-            $cModulId                                = Helper::getModuleIDByPluginID(
-                $this->plugin->getID(),
-                $method->cName
-            );
-            $method->oZahlungsmethodeEinstellung_arr = $this->db->query(
-                "SELECT *
-                    FROM tplugineinstellungenconf
-                    WHERE cWertName LIKE '" . $cModulId . "_%'
-                        AND cConf = 'Y'
-                    ORDER BY nSort",
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-            $methodsAssoc[$method->cModulId]         = $method;
-        }
-        $this->plugin->oPluginZahlungsmethode_arr      = $methods;
-        $this->plugin->oPluginZahlungsmethodeAssoc_arr = $methodsAssoc;
-        $paymentMethodClasses                          = $this->db->selectAll(
-            'tpluginzahlungsartklasse',
-            'kPlugin',
-            $this->plugin->getID()
-        );
-        foreach ($paymentMethodClasses as $oZahlungsartKlasse) {
-            $this->plugin->oPluginZahlungsKlasseAssoc_arr[$oZahlungsartKlasse->cModulId] = $oZahlungsartKlasse;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return PluginLoader
-     */
-    public function loadMailTemplates(): self
-    {
-        $mailTplAssoc = [];
-        $mailTpls     = $this->db->selectAll('tpluginemailvorlage', 'kPlugin', $this->plugin->getID());
-        foreach ($mailTpls as $i => $tpl) {
-            $mailTpls[$i]->oPluginEmailvorlageSprache_arr = $this->db->selectAll(
-                'tpluginemailvorlagesprache',
-                'kEmailvorlage',
-                (int)$tpl->kEmailvorlage
-            );
-            if (\is_array($mailTpls[$i]->oPluginEmailvorlageSprache_arr)
-                && \count($mailTpls[$i]->oPluginEmailvorlageSprache_arr) > 0
-            ) {
-                $mailTpls[$i]->oPluginEmailvorlageSpracheAssoc_arr = [];
-                foreach ($mailTpls[$i]->oPluginEmailvorlageSprache_arr as $oPluginEmailvorlageSprache) {
-                    $mailTpls[$i]->oPluginEmailvorlageSpracheAssoc_arr[$oPluginEmailvorlageSprache->kSprache] =
-                        $oPluginEmailvorlageSprache;
-                }
-            }
-            $mailTplAssoc[$tpl->cModulId] = $mailTpls[$i];
-        }
-
-        $this->plugin->oPluginEmailvorlage_arr      = $mailTpls;
-        $this->plugin->oPluginEmailvorlageAssoc_arr = $mailTplAssoc;
-
-        return $this;
-    }
-
-    /**
      * @param AbstractExtension $extension
      * @return Widget
      */
@@ -348,8 +232,6 @@ class PluginLoader extends AbstractLoader
                 \PFAD_PLUGIN_WIDGET . 'class.Widget' .
                 $widget->cClass . '.php';
             $widget->className   = 'Widget' . $widget->cClass;
-
-            $this->plugin->oPluginAdminWidgetAssoc_arr[$widget->kWidget] = $widget;
             $widgets->addWidget($widget);
         }
 

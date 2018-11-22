@@ -34,6 +34,7 @@ class Hook
 
     /**
      * @var int
+     * @todo
      */
     private $calledHookID = -1;
 

@@ -77,6 +77,8 @@ class ExtensionLoader extends AbstractLoader
         $extension->setCache($this->loadCacheData($extension));
         $extension->setLocalization($this->loadLocalization($id));
         $extension->setWidgets($this->loadWidgets($extension));
+        $extension->setMailTemplates($this->loadMailTemplates($extension));
+        $extension->setPaymentMethods($this->loadPaymentMethods($extension));
 
         $this->loadAdminMenu($extension);
 

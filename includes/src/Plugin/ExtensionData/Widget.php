@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -7,6 +7,7 @@
 namespace Plugin\ExtensionData;
 
 use Tightenco\Collect\Support\Collection;
+use function Functional\reindex;
 
 /**
  * Class Widget
@@ -19,6 +20,9 @@ class Widget
      */
     private $widgets;
 
+    /**
+     * Widget constructor.
+     */
     public function __construct()
     {
         $this->widgets = new Collection();
@@ -62,6 +66,16 @@ class Widget
     public function getWidgets(): Collection
     {
         return $this->widgets;
+    }
+
+    /**
+     * @return array
+     */
+    public function getWidgetsAssoc(): array
+    {
+        return reindex($this->widgets, function ($e) {
+            return $e->kWidget;
+        });
     }
 
     /**

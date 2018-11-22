@@ -13,8 +13,10 @@ use Plugin\ExtensionData\Hook;
 use Plugin\ExtensionData\License;
 use Plugin\ExtensionData\Links;
 use Plugin\ExtensionData\Localization;
+use Plugin\ExtensionData\MailTemplates;
 use Plugin\ExtensionData\Meta;
 use Plugin\ExtensionData\Paths;
+use Plugin\ExtensionData\PaymentMethods;
 use Plugin\ExtensionData\Widget;
 
 /**
@@ -101,7 +103,17 @@ abstract class AbstractExtension
     /**
      * @var Widget
      */
-    protected $widget;
+    protected $widgets;
+
+    /**
+     * @var MailTemplates
+     */
+    protected $mailTemplates;
+
+    /**
+     * @var PaymentMethods
+     */
+    protected $paymentMethods;
 
     /**
      * @return int
@@ -348,14 +360,46 @@ abstract class AbstractExtension
      */
     public function getWidgets(): Widget
     {
-        return $this->widget;
+        return $this->widgets;
     }
 
     /**
-     * @param Widget $widget
+     * @param Widget $widgets
      */
-    public function setWidgets(Widget $widget): void
+    public function setWidgets(Widget $widgets): void
     {
-        $this->widget = $widget;
+        $this->widgets = $widgets;
+    }
+
+    /**
+     * @return MailTemplates
+     */
+    public function getMailTemplates(): MailTemplates
+    {
+        return $this->mailTemplates;
+    }
+
+    /**
+     * @param MailTemplates $mailTemplates
+     */
+    public function setMailTemplates(MailTemplates $mailTemplates): void
+    {
+        $this->mailTemplates = $mailTemplates;
+    }
+
+    /**
+     * @return PaymentMethods
+     */
+    public function getPaymentMethods(): PaymentMethods
+    {
+        return $this->paymentMethods;
+    }
+
+    /**
+     * @param PaymentMethods $paymentMethods
+     */
+    public function setPaymentMethods(PaymentMethods $paymentMethods): void
+    {
+        $this->paymentMethods = $paymentMethods;
     }
 }

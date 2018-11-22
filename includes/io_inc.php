@@ -969,7 +969,7 @@ function getRegionsByCountry($country)
 }
 
 /**
- * @param $country
+ * @param string $country
  * @return IOResponse
  */
 function checkDeliveryCountry($country)

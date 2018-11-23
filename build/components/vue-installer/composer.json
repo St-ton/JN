@@ -3,14 +3,14 @@
     "description": "Vue.js based installer for Shop5",
     "version": "1.0.0",
     "keywords": ["jtl", "jtl-shop"],
-    "homepage": "https://jtl-software.de/",
+    "homepage": "https://www.jtl-software.de/",
     "type": "library",
     "license": "MIT",
     "authors": [
         {
             "name": "JTL-Software GmbH",
             "email": "info@jtl-software.de",
-            "homepage": "https://jtl-software.de/"
+            "homepage": "https://www.jtl-software.de/"
         }
     ],
     "require": {
@@ -19,11 +19,11 @@
         "andyftw/image-faker": "^1.1",
         "imanee/imanee": "dev-master",
         "cocur/slugify": "^2.5",
-        "jtlshop/shop4-wizard": "dev-master",
+        "jtlshop/shop-wizard": "dev-master",
         "foxy/foxy": "^1.0"
     },
     "repositories": [
-        { "type": "vcs", "url": "git@gitlab.jtl-software.de:f.moche/wizard.git" }
+        { "type": "vcs", "url": "https://gitlab.jtl-software.de/jtlshop/wizard.git" }
     ],
     "autoload": {
         "files": [ "VueInstaller.php", "DemoDataInstaller.php", "Faker/Commerce.php", "Faker/de_DE/Commerce.php"]

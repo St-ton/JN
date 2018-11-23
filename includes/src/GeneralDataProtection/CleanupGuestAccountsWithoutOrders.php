@@ -29,7 +29,7 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
     private function cleanup_tkunde()
     {
         $guestAccounts = \Shop::Container()->getDB()->queryPrepared(
-            "SELECT *
+            "SELECT kKunde
                 FROM tkunde
                 WHERE nRegistriert = 0
                   AND cAbgeholt ='Y'

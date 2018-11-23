@@ -709,13 +709,4 @@ function bearbeiteBestellattribute(int $kBestellung, $orderAttributes)
     } else {
         $db->delete('tbestellattribut', 'kBestellung', $kBestellung);
     }
-
-    /**
-     * @param int $kKunde
-     * @deprecated since 5.0.0 - daily checked by GeneralDataProtection/CleanupGuestAccountsWithoutOrders
-     */
-    function checkGuestAccount(int $kKunde)
-    {
-        trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    }
 }

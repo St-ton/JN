@@ -927,7 +927,7 @@ class Kunde
         Shop::Container()->getLogService()->notice($logMessage);
 
         if ($confirmationMail) {
-            sendeMail(MAILTEMPLATE_KUNDENACCOUNT_GELOESCHT, (object)['tkunde' => \Session\Session::getCustomer()]);
+            sendeMail(MAILTEMPLATE_KUNDENACCOUNT_GELOESCHT, (object)['tkunde' => $this]);
         }
     }
 
@@ -940,14 +940,14 @@ class Kunde
         $db               = Shop::Container()->getDB();
         $customerID       = $this->getID();
 
-        $openOrders = $db->queryPrepared(
+        $openOrders               = $db->queryPrepared(
             'SELECT COUNT(kBestellung) AS orderCount
                     FROM tbestellung
                     WHERE cStatus NOT IN (:orderSent, :orderCanceled)
                         AND kKunde = :customerId',
             [
-                'customerId' => $customerID,
-                'orderSent' => BESTELLUNG_STATUS_VERSANDT,
+                'customerId'    => $customerID,
+                'orderSent'     => BESTELLUNG_STATUS_VERSANDT,
                 'orderCanceled' => BESTELLUNG_STATUS_STORNO,
             ],
             \DB\ReturnType::SINGLE_OBJECT
@@ -959,8 +959,8 @@ class Kunde
                         AND cStatus = :orderSent
                         AND DATE(dVersandDatum) > DATE_SUB(NOW(), INTERVAL :cancellationTime DAY)',
             [
-                'customerId' => $customerID,
-                'orderSent' => BESTELLUNG_STATUS_VERSANDT,
+                'customerId'       => $customerID,
+                'orderSent'        => BESTELLUNG_STATUS_VERSANDT,
                 'cancellationTime' => $cancellationTime,
             ],
             \DB\ReturnType::SINGLE_OBJECT
@@ -969,8 +969,8 @@ class Kunde
         if (!empty($openOrders->orderCount) || !empty($ordersInCancellationTime->orderCount))
         {
             return (object)[
-                'openOrders' => $openOrders->orderCount,
-                'ordersInCancellationTime' => $ordersInCancellationTime->orderCount
+                'openOrders'               => (int)$openOrders->orderCount,
+                'ordersInCancellationTime' => (int)$ordersInCancellationTime->orderCount
             ];
         }
 
@@ -1004,14 +1004,13 @@ class Kunde
         $db->delete('tproduktanfragehistory', 'cMail', $this->cMail);
         $db->delete('tverfuegbarkeitsbenachrichtigung', 'cMail', $this->cMail);
 
-        $obj        = new stdClass();
-        $obj->cName = $anonymous;
-        $db->update('tbewertung', 'kKunde', $customerID, $obj);
-        $obj->cEmail = $anonymous;
-        $db->update('tnewskommentar', 'kKunde', $customerID, $obj);
-        $obj        = new stdClass();
-        $obj->cMail = $anonymous;
-        $db->update('tkuponkunde', 'kKunde', $customerID, $obj);
+
+        $db->update('tbewertung', 'kKunde', $customerID, (object)['cName' => $anonymous]);
+        $db->update('tnewskommentar', 'kKunde', $customerID, (object)[
+            'cName'  => $anonymous,
+            'cEmail' => $anonymous
+        ]);
+        $db->update('tkuponkunde', 'kKunde', $customerID, (object)['cMail' => $anonymous]);
 
         //newsletter
         $db->queryPrepared(

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "f112ccd2078cbd99c88003804aa3a1d9",
+    "content-hash": "79435aac684579e98100a537ca5a3a10",
     "packages": [
         {
             "name": "andyftw/image-faker",
@@ -290,12 +290,12 @@
             "time": "2015-11-20T02:04:09+00:00"
         },
         {
-            "name": "jtlshop/shop4-wizard",
+            "name": "jtlshop/shop-wizard",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@gitlab.jtl-software.de:f.moche/wizard.git",
-                "reference": "057f0271aa01749ce4dd4c921e9b2eadd6b4500a"
+                "url": "https://gitlab.jtl-software.de/jtlshop/wizard.git",
+                "reference": "c27d1f6d425b641e7f3a49e57ffd42bcb6d47cbb"
             },
             "require": {
                 "php": ">=5.4"
@@ -313,16 +313,16 @@
                 {
                     "name": "JTL-Software GmbH",
                     "email": "info@jtl-software.de",
-                    "homepage": "https://jtl-software.de/"
+                    "homepage": "https://www.jtl-software.de/"
                 }
             ],
-            "description": "Shop4 Wizard",
-            "homepage": "https://jtl-software.de/",
+            "description": "Shop Wizard",
+            "homepage": "https://www.jtl-software.de/",
             "keywords": [
                 "jtl",
                 "jtl-shop"
             ],
-            "time": "2018-08-14T14:55:01+00:00"
+            "time": "2018-11-23T15:54:47+00:00"
         }
     ],
     "packages-dev": [],
@@ -330,7 +330,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "imanee/imanee": 20,
-        "jtlshop/shop4-wizard": 20
+        "jtlshop/shop-wizard": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

@@ -1,5 +1,4 @@
 FROM mariadb:10.2
-ENV DEBIAN_FRONTEND nointeractive
 ENV MYSQL_ROOT_PASSWORD root
 ENV MYSQL_DATABASE build_database
 WORKDIR '/build'

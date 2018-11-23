@@ -5,7 +5,15 @@
 <h1>{lang key='deleteAccount' section='login'}</h1>
 {if !empty($openOrders)}
     <div class="alert alert-danger">
-        {lang key='customerOpenOrders' section='account data' printf=$openOrders->openOrders|cat:':::'|cat:$openOrders->openOrderCancellations}
+        {if $openOrders->ordersInCancellationTime > 0}
+            {assign
+                var='customerOrdersInCancellationTime'
+                value={lang key='customerOrdersInCancellationTime'
+                section='account data'
+                printf=$openOrders->ordersInCancellationTime}
+            }
+        {/if}
+        {lang key='customerOpenOrders' section='account data' printf=$openOrders->openOrders|cat:':::'|cat:{$customerOrdersInCancellationTime|default:''}}
     </div>
 {/if}
 {if empty($hinweis)}

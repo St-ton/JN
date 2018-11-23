@@ -909,10 +909,11 @@ class Kunde
                 'cPasswort'    => '',
                 'nRegistriert' => 0,
             ]);
-            $logMessage = \sprintf('Account with ID kKunde = %s deleted, but had %s open orders with %s still in cancellation time. Account is deactivated until all orders are completed.',
+            $logMessage = \sprintf('Account with ID kKunde = %s deleted, but had %s open orders with %s still in 
+            cancellation time. Account is deactivated until all orders are completed.',
                 $customerID,
                 $openOrders->openOrders,
-                $openOrders->openOrderCancellations);
+                $openOrders->ordersInCancellationTime);
 
             (new GeneralDataProtection\Journal())->addEntry(
                 $issuerType,
@@ -935,7 +936,7 @@ class Kunde
      */
     public function getOpenOrders()
     {
-        $cancellationTime = 14;
+        $cancellationTime = Shopsetting::getInstance()->getValue(CONF_GLOBAL, 'global_cancellation_time');
         $db               = Shop::Container()->getDB();
         $customerID       = $this->getID();
 
@@ -951,7 +952,7 @@ class Kunde
             ],
             \DB\ReturnType::SINGLE_OBJECT
         );
-        $openOrderCancellations = $db->queryPrepared(
+        $ordersInCancellationTime = $db->queryPrepared(
             'SELECT COUNT(kBestellung) AS orderCount
                     FROM tbestellung
                     WHERE kKunde = :customerId
@@ -965,16 +966,17 @@ class Kunde
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        if (!empty($openOrders->orderCount) || !empty($openOrderCancellations->orderCount))
+        if (!empty($openOrders->orderCount) || !empty($ordersInCancellationTime->orderCount))
         {
             return (object)[
                 'openOrders' => $openOrders->orderCount,
-                'openOrderCancellations' => $openOrderCancellations->orderCount
+                'ordersInCancellationTime' => $ordersInCancellationTime->orderCount
             ];
         }
 
         return false;
     }
+
     /**
      * @param string $issuerType
      * @param int $issuerID

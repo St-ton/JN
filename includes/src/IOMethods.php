@@ -1119,7 +1119,7 @@ class IOMethods
      * @param string $country
      * @return IOResponse
      */
-    public function getRegionsByCountry($country): IOResponse
+    public function getRegionsByCountry(string $country): IOResponse
     {
         $response = new IOResponse();
 
@@ -1135,7 +1135,7 @@ class IOMethods
      * @param string $country
      * @return IOResponse
      */
-    public function checkDeliveryCountry($country)
+    public function checkDeliveryCountry(string $country): IOResponse
     {
         $response = new IOResponse();
 

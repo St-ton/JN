@@ -2138,7 +2138,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
             } elseif ($cUstPruefung === 999) {
                 // BZSt ist nicht erreichbar aber Stringprüfung war erfolgreich
                 $ret['ustid'] = 4;
-            } elseif ($cUstPruefung !== 200 && $cUstPruefung !== 1) { // UstID ist durch BZSt ungültig
+            } elseif (!in_array($cUstPruefung, array(1, 200, 216, 218, 219, 222))) { //https://evatr.bff-online.de/eVatR/xmlrpc/codes
                 $ret['ustid'] = 5;
             }
         }

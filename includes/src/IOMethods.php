@@ -45,6 +45,7 @@ class IOMethods
                         ->register('getBasketItems', [$this, 'getBasketItems'])
                         ->register('getCategoryMenu', [$this, 'getCategoryMenu'])
                         ->register('getRegionsByCountry', [$this, 'getRegionsByCountry'])
+                        ->register('checkDeliveryCountry', [$this, 'checkDeliveryCountry'])
                         ->register('setSelectionWizardAnswers', [$this, 'setSelectionWizardAnswers'])
                         ->register('getCitiesByZip', [$this, 'getCitiesByZip']);
     }
@@ -1125,6 +1126,22 @@ class IOMethods
         if (strlen($country) === 2) {
             $regions = Staat::getRegions($country);
             $response->script('this.response = ' . json_encode($regions) . ';');
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param string $country
+     * @return IOResponse
+     */
+    public function checkDeliveryCountry($country)
+    {
+        $response = new IOResponse();
+
+        if (strlen($country) === 2) {
+            $deliveryCountries = VersandartHelper::getPossibleShippingCountries(Session::getCustomerGroup()->getID(), false, false, [$country]);
+            $response->script('this.response = ' . (count($deliveryCountries) === 1 ? 'true' : 'false') . ';');
         }
 
         return $response;

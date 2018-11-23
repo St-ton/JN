@@ -49,6 +49,9 @@ build_create()
     echo "Add old files";
     build_add_old_files;
 
+    echo "Create shop installer";
+    build_create_shop_installer;
+
     echo "Creating md5 hashfile";
     build_create_md5_hashfile ${APPLICATION_VERSION_STR};
 
@@ -130,6 +133,10 @@ build_add_old_files()
     while read line; do
         echo "<?php // moved to /includes/src" > ${REPOSITORY_DIR}/${line};
     done < ${REPOSITORY_DIR}/oldfiles.txt
+}
+
+build_create_shop_installer() {
+    composer install --no-dev -d ${REPOSITORY_DIR}/build/components/vue-installer
 }
 
 build_create_md5_hashfile()

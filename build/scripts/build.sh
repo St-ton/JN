@@ -156,8 +156,9 @@ build_create_md5_hashfile()
 build_import_initial_schema()
 {
     local INITIALSCHEMA=${REPOSITORY_DIR}/install/initial_schema.sql
-
+    ls -la ${INITIALSCHEMA};
     mysql -u${DB_USER} -p${DB_PASSWORD} -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}" || exit 1
+    echo "Databas '${DB_NAME}' created";
     mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} < ${INITIALSCHEMA} || exit 1
 }
 

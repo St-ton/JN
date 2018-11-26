@@ -108,6 +108,7 @@ final class MigrationHelper
             (
                 kMigration bigint(14) NOT NULL, 
                 nVersion int(3) NOT NULL, 
+                pluginID varchar(255) NOT NULL, 
                 dExecuted datetime NOT NULL,
                 PRIMARY KEY (kMigration)
             ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'",

@@ -368,7 +368,7 @@ final class Installer
     private function updateByMigration(\stdClass $plugin, string $pluginPath, Version $targetVersion)
     {
         $path              = $pluginPath . \DIRECTORY_SEPARATOR . \PFAD_PLUGIN_MIGRATIONS;
-        $manager           = new MigrationManager($this->db, $path, $plugin->cPluginID);
+        $manager           = new MigrationManager($this->db, $path, $plugin->cPluginID, $targetVersion);
         $pendingMigrations = $manager->getPendingMigrations();
         if (\count($pendingMigrations) === 0) {
             return $targetVersion;

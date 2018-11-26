@@ -46,17 +46,24 @@ final class MigrationManager
     private $helper;
 
     /**
+     * @var Version
+     */
+    private $version;
+
+    /**
      * MigrationManager constructor.
      * @param DbInterface $db
      * @param string      $path
      * @param string      $pluginID
+     * @param Version     $version
      */
-    public function __construct(DbInterface $db, string $path, string $pluginID)
+    public function __construct(DbInterface $db, string $path, string $pluginID, Version $version = null)
     {
-        $this->helper       = new MigrationHelper($path);
-        $this->db           = $db;
-        $this->pluginID     = $pluginID;
-        $this->path         = $path;
+        $this->helper   = new MigrationHelper($path);
+        $this->db       = $db;
+        $this->pluginID = $pluginID;
+        $this->path     = $path;
+        $this->version  = $version;
     }
 
     /**
@@ -369,11 +376,12 @@ final class MigrationManager
     public function migrated(\IMigration $migration, $direction, $executed): self
     {
         if (\strcasecmp($direction, \IMigration::UP) === 0) {
-            $version = Version::parse(\APPLICATION_VERSION);
             $sql     = \sprintf(
-                "INSERT INTO tpluginmigration (kMigration, nVersion, dExecuted) VALUES ('%s', '%s', '%s');",
+                "INSERT INTO tpluginmigration (kMigration, nVersion, pluginID, dExecuted)
+                    VALUES ('%s', '%s', '%s', '%s')",
                 $migration->getId(),
-                \sprintf('%d%02d', $version->getMajor(), $version->getMinor()),
+                \sprintf('%d%02d', $this->version->getMajor(), $this->version->getMinor()),
+                $this->pluginID,
                 $executed->format('Y-m-d H:i:s')
             );
             $this->db->executeQuery($sql, \DB\ReturnType::AFFECTED_ROWS);

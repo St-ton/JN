@@ -52,7 +52,7 @@ stages:
       -e MYSQL_ROOT_PASSWORD="$DOCKER_MARIADB_PASSWORD" \
       -e MYSQL_DATABASE="build_$DB_NAME" \
       "$CI_CONTAINER_NAME" \
-      sh -c "cp -r /dockerBuild/. /build; /etc/init.d/mysql start; bash $BUILD_SCRIPT_PATH '/build' $CI_COMMIT_REF_NAME $CI_COMMIT_SHA 'root' '$DOCKER_MARIADB_PASSWORD' 'build_$DB_NAME'"
+      sh -c "cp -r /dockerBuild/. /build; /etc/init.d/mysql start; mysql -uroot -p$DOCKER_MARIADB_PASSWORD; bash $BUILD_SCRIPT_PATH '/build' $CI_COMMIT_REF_NAME $CI_COMMIT_SHA 'root' '$DOCKER_MARIADB_PASSWORD' 'build_$DB_NAME'"
 
     echo "Build finished"
   }

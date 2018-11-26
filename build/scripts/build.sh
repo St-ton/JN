@@ -158,14 +158,13 @@ build_import_initial_schema()
     local INITIALSCHEMA=${REPOSITORY_DIR}/install/initial_schema.sql
 
     mysql -u${DB_USER} -p${DB_PASSWORD} -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}" || $(echo "failed to create database" && exit 1);
-    echo "created database";
+
     while read -r table;
     do
         mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "DROP TABLE IF EXISTS ${table}" || $(echo "failed to delete table ${table}" && exit 1);
     done< <(mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | sed 1d);
-    echo "removed tables";
+
     mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} < ${INITIALSCHEMA} || $(echo "failed to import initial schema to database" && exit 1);
-    echo "imported initial schema";
 }
 
 build_create_config_file()

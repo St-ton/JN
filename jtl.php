@@ -669,7 +669,7 @@ if ($customerID > 0) {
 
         Shop::Smarty()->assign('Kunde', $knd)
             ->assign('cKundenattribut_arr', $cKundenattribut_arr)
-            ->assign('laender', VersandartHelper::getPossibleShippingCountries($_SESSION['Kunde']->kKundengruppe));
+            ->assign('laender', VersandartHelper::getPossibleShippingCountries($_SESSION['Kunde']->kKundengruppe, false, true));
         $oKundenfeld_arr = Shop::Container()->getDB()->selectAll(
             'tkundenfeld',
             'kSprache',

@@ -9,6 +9,7 @@ namespace Plugin\Admin\Installation;
 use DB\DbInterface;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
+use Plugin\AbstractExtension;
 use Plugin\Admin\Validation\ValidatorInterface;
 use Plugin\ExtensionLoader;
 use Plugin\Helper;
@@ -49,7 +50,7 @@ final class Installer
     private $extensionValidator;
 
     /**
-     * @var Plugin|null
+     * @var AbstractExtension|null
      */
     private $plugin;
 
@@ -94,17 +95,17 @@ final class Installer
     }
 
     /**
-     * @return Plugin|null
+     * @return AbstractExtension|null
      */
-    public function getPlugin(): ?Plugin
+    public function getPlugin(): ?AbstractExtension
     {
         return $this->plugin;
     }
 
     /**
-     * @param Plugin|null $plugin
+     * @param AbstractExtension|null $plugin
      */
-    public function setPlugin(Plugin $plugin): void
+    public function setPlugin(AbstractExtension $plugin): void
     {
         $this->plugin = $plugin;
     }
@@ -459,12 +460,11 @@ final class Installer
      */
     public function syncPluginUpdate(int $pluginID): int
     {
-        $oldPluginID = (int)$this->plugin->kPlugin;
+        $oldPluginID = $this->plugin->getID();
         $res         = $this->uninstaller->uninstall($oldPluginID, true, $pluginID);
 
         if ($res === InstallCode::OK) {
-            $upd          = new \stdClass();
-            $upd->kPlugin = $oldPluginID;
+            $upd = (object)['kPlugin' => $oldPluginID];
             $this->db->update('tplugin', 'kPlugin', $pluginID, $upd);
             $this->db->update('tpluginhook', 'kPlugin', $pluginID, $upd);
             $this->db->update('tpluginadminmenu', 'kPlugin', $pluginID, $upd);
@@ -554,7 +554,7 @@ final class Installer
             }
             $kEmailvorlageNeu = 0;
             $kEmailvorlageAlt = 0;
-            foreach ($this->plugin->oPluginEmailvorlageAssoc_arr as $cModulId => $oldMailTpl) {
+            foreach ($this->plugin->getMailTemplates()->getTemplatesAssoc() as $cModulId => $oldMailTpl) {
                 $newMailTpl = $this->db->select(
                     'tpluginemailvorlage',
                     'kPlugin',

@@ -6,6 +6,8 @@
 
 namespace Plugin;
 
+use JTL\XMLParser;
+
 /**
  * Class Extension
  * @package Plugin
@@ -14,10 +16,16 @@ class Extension extends AbstractExtension
 {
     /**
      * @return string
-     * @todo
      */
     public function getCurrentVersion(): string
     {
-        return $this->getMeta()->getVersion();
+        $path = $this->getPaths()->getBasePath();
+        if (!\is_dir($path) || !\file_exists($path . '/' . \PLUGIN_INFO_FILE)) {
+            return '0';
+        }
+        $parser  = new XMLParser();
+        $xml     = $parser->parse($path . '/' . \PLUGIN_INFO_FILE);
+
+        return $xml['jtlshopplugin'][0]['Install'][0]['Version'] ?? '0';
     }
 }

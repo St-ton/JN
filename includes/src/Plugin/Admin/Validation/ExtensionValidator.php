@@ -24,7 +24,7 @@ final class ExtensionValidator extends AbstractValidator
     {
         $parsedXMLShopVersion = null;
         $parsedVersion        = null;
-        $baseNode             = $xml['jtlshopplugin'][0];
+        $baseNode             = $xml['jtlshopplugin'][0] ?? null;
         $parsedVersion        = Version::parse(\APPLICATION_VERSION);
         if (!isset($baseNode['XMLVersion'])) {
             return InstallCode::INVALID_XML_VERSION;

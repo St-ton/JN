@@ -79,7 +79,7 @@ class FormHelper
             }
         );
     }
-    
+
     /**
      * @return array
      * @former gibFehlendeEingabenKontaktformular()
@@ -336,7 +336,7 @@ class FormHelper
         $KontaktHistory->cFax            = $Objekt->tnachricht->cFax ?? null;
         $KontaktHistory->cMail           = $Objekt->tnachricht->cMail ?? null;
         $KontaktHistory->cNachricht      = $Objekt->tnachricht->cNachricht ?? null;
-        $KontaktHistory->cIP             = RequestHelper::getIP();
+        $KontaktHistory->cIP             = RequestHelper::getRealIP();
         $KontaktHistory->dErstellt       = 'NOW()';
 
         return Shop::Container()->getDB()->insert('tkontakthistory', $KontaktHistory);
@@ -354,11 +354,11 @@ class FormHelper
         }
         $min     = (int)$min;
         $history = Shop::Container()->getDB()->executeQueryPrepared(
-            'SELECT kKontaktHistory 
-                FROM tkontakthistory 
-                WHERE cIP = :ip 
+            'SELECT kKontaktHistory
+                FROM tkontakthistory
+                WHERE cIP = :ip
                     AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
-            ['ip' => RequestHelper::getIP(), 'min' => $min],
+            ['ip' => RequestHelper::getRealIP(), 'min' => $min],
             \DB\ReturnType::SINGLE_OBJECT
         );
 

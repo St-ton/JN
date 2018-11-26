@@ -490,6 +490,7 @@ class PortletInstance implements \JsonSerializable
     /**
      * @param array $data
      * @return $this
+     * @throws \Exception
      */
     public function deserialize($data)
     {

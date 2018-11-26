@@ -168,7 +168,11 @@ function writeLog($logfile, $entry, $level)
         if (!$logfile) {
             return false;
         }
-        fwrite($logfile, "\n[" . date('m.d.y H:i:s') . "] [" . RequestHelper::getIP() . "]\n" . $entry);
+        fwrite($logfile,
+            "\n[" . date('m.d.y H:i:s') . "] " .
+            "[" . (new \GeneralDataProtection\IpAnonymizer(RequestHelper::getRealIP()))->anonymize() . "]\n" .
+            $entry
+        );
         fclose($logfile);
     }
 
@@ -1469,7 +1473,7 @@ function getRealIp()
 function gibIP($bBestellung = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use RequestHelper::getIP() instead.', E_USER_DEPRECATED);
-    return RequestHelper::getIP($bBestellung);
+    return RequestHelper::getRealIP();
 }
 
 /**

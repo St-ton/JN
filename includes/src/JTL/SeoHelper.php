@@ -30,6 +30,10 @@ class SeoHelper
         if (!$url || !\is_string($url)) {
             return '';
         }
+        $exists = \Shop::Container()->getDB()->select('tseo', 'cSeo', $url);
+        if ($exists === null) {
+            return $url;
+        }
         \Shop::Container()->getDB()->query("SET @IKEY := 0", \DB\ReturnType::QUERYSINGLE);
         $obj = \Shop::Container()->getDB()->query(
             "SELECT oseo.newSeo

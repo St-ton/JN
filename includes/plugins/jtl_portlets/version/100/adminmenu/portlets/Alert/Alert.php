@@ -35,18 +35,18 @@ class Alert extends \OPC\Portlet
     {
         return [
             'some-text'   => [
-                'label'   => _('a text'),
+                'label'   => __('a text'),
                 'type'    => 'text',
-                'default' => _('Hello world!'),
+                'default' => __('Hello world!'),
             ],
             'type-select' => [
-                'label'   => _('Alert Type'),
+                'label'   => __('Alert Type'),
                 'type'    => 'select',
                 'options'    => [
-                    'success' => _('Success'),
-                    'info'    => _('Info'),
-                    'warning' => _('Warning'),
-                    'danger'  => _('Danger'),
+                    'success' => __('Success'),
+                    'info'    => __('Info'),
+                    'warning' => __('Warning'),
+                    'danger'  => __('Danger'),
                 ],
                 'default' => 'info',
             ],

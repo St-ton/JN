@@ -29,7 +29,8 @@ class Migration_20181115131359 extends Migration implements IMigration
     {
         $this->execute(
             "UPDATE teinstellungenconf
-                SET cBeschreibung = 'Damit gibt es bei der Lieferadresse nur Länder zur Auswahl, für die min. eine Versandart definiert ist.'"
+                SET cBeschreibung = 'Damit gibt es bei der Lieferadresse nur Länder zur Auswahl, für die min. eine Versandart definiert ist.'
+                WHERE cName = 'kundenregistrierung_nur_lieferlaender'"
         );
     }
 
@@ -37,7 +38,8 @@ class Migration_20181115131359 extends Migration implements IMigration
     {
         $this->execute(
             "UPDATE teinstellungenconf
-                SET cBeschreibung = 'Damit gibt es bei der Rechnungsadresse und Lieferadresse nur Länder zur Auswahl, für die min. eine Versandart definiert ist.'"
+                SET cBeschreibung = 'Damit gibt es bei der Rechnungsadresse und Lieferadresse nur Länder zur Auswahl, für die min. eine Versandart definiert ist.'
+                WHERE cName = 'kundenregistrierung_nur_lieferlaender'"
         );
     }
 }

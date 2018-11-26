@@ -34,8 +34,9 @@
             });
         </script>
     {/if}
-    
-    {$showLoginPanel = true}
+    {if !isset($showLoginPanel)}
+        {$showLoginPanel = true}
+    {/if}
     {if $step === 'login' || (isset($editRechnungsadresse) && $editRechnungsadresse)}
         {$showLoginPanel = false}
     {/if}

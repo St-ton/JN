@@ -14,8 +14,6 @@ build_create()
     export DB_PASSWORD=$5;
     # $6 database name
     export DB_NAME=$6;
-    # $7 tpl diff path
-    export TPL_DIFF_PATH=$7;
 
     local SCRIPT_DIR="${REPOSITORY_DIR}/build/scripts";
     local VERSION_REGEX="v?([0-9]{1,})\\.([0-9]{1,})\\.([0-9]{1,})(-(alpha|beta|rc)(\\.([0-9]{1,}))?)?";
@@ -23,7 +21,7 @@ build_create()
     source ${SCRIPT_DIR}/create_version_string.sh;
 
     # Deactivate git renameList
-    git config diff.renames 0
+    git config diff.renames 0;
 
     echo "Create build info";
     create_version_string ${REPOSITORY_DIR} ${APPLICATION_VERSION} ${APPLICATION_BUILD_SHA};
@@ -50,6 +48,9 @@ build_create()
 
     echo "Add old files";
     build_add_old_files;
+
+    echo "Create shop installer";
+    build_create_shop_installer;
 
     echo "Creating md5 hashfile";
     build_create_md5_hashfile ${APPLICATION_VERSION_STR};
@@ -78,7 +79,7 @@ build_create()
     fi
 
     # Activate git renameList
-    git config diff.renames 1
+    git config diff.renames 1;
 }
 
 build_composer_execute()
@@ -112,13 +113,13 @@ build_move_class_files()
 {
     # Move admin old classes
     if [[ -d "${REPOSITORY_DIR}/admin/classes/old/" ]]; then
-        cp -a ${REPOSITORY_DIR}/admin/classes/old/. ${REPOSITORY_DIR}/admin/classes
-        rm -R ${REPOSITORY_DIR}/admin/classes/old
+        cp -a ${REPOSITORY_DIR}/admin/classes/old/. ${REPOSITORY_DIR}/admin/classes;
+        rm -R ${REPOSITORY_DIR}/admin/classes/old;
     fi
     # Move old classes
     if [[ -d "${REPOSITORY_DIR}/classes/old/" ]]; then
-        cp -a ${REPOSITORY_DIR}/classes/old/. ${REPOSITORY_DIR}/classes
-        rm -R ${REPOSITORY_DIR}/classes/old
+        cp -a ${REPOSITORY_DIR}/classes/old/. ${REPOSITORY_DIR}/classes;
+        rm -R ${REPOSITORY_DIR}/classes/old;
     fi
 }
 
@@ -131,7 +132,11 @@ build_add_old_files()
 {
     while read line; do
         echo "<?php // moved to /includes/src" > ${REPOSITORY_DIR}/${line};
-    done < ${REPOSITORY_DIR}/oldfiles.txt
+    done < ${REPOSITORY_DIR}/oldfiles.txt;
+}
+
+build_create_shop_installer() {
+    composer install --no-dev -q -d ${REPOSITORY_DIR}/build/components/vue-installer;
 }
 
 build_create_md5_hashfile()
@@ -142,7 +147,7 @@ build_create_md5_hashfile()
     local MD5_HASH_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/${VERSION}.csv";
 
     cd ${REPOSITORY_DIR};
-    find -type f ! \( -name ".git*" -o -name ".idea*" -o -name ".htaccess" -o -name ".php_cs" -o -name "config.JTL-Shop.ini.initial.php" -o -name "robots.txt" -o -name "rss.xml" -o -name "shopinfo.xml" -o -name "sitemap_index.xml" -o -name "*.md" \) -printf "'%P'\n" | grep -vE "admin/gfx/|admin/includes/emailpdfs/|admin/includes/shopmd5files/|admin/templates_c/|bilder/|build/|docs/|downloads/|export/|gfx/|includes/plugins/|includes/vendor/|install/|jtllogs/|mediafiles/|templates_c/|tests/|uploads/" | xargs md5sum | awk '{ print $1";"$2; }' | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME}
+    find -type f ! \( -name ".git*" -o -name ".idea*" -o -name ".htaccess" -o -name ".php_cs" -o -name "config.JTL-Shop.ini.initial.php" -o -name "robots.txt" -o -name "rss.xml" -o -name "shopinfo.xml" -o -name "sitemap_index.xml" -o -name "*.md" \) -printf "'%P'\n" | grep -vE "admin/gfx/|admin/includes/emailpdfs/|admin/includes/shopmd5files/|admin/templates_c/|bilder/|build/|docs/|downloads/|export/|gfx/|includes/plugins/|includes/vendor/|install/|jtllogs/|mediafiles/|templates_c/|tests/|uploads/" | xargs md5sum | awk '{ print $1";"$2; }' | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
     cd ${CUR_PWD};
 
     echo "  File checksums admin/includes/shopmd5files/${VERSION}.csv";
@@ -152,8 +157,14 @@ build_import_initial_schema()
 {
     local INITIALSCHEMA=${REPOSITORY_DIR}/install/initial_schema.sql
 
-    mysql -u${DB_USER} -p${DB_PASSWORD} -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}" || exit 1
-    mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} < ${INITIALSCHEMA} || exit 1
+    mysql -u${DB_USER} -p${DB_PASSWORD} -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}" || echo "failed to create database" && exit 1;
+
+    while read -r table;
+    do
+        mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "DROP TABLE IF EXISTS ${table}" || echo "failed to delete table ${table}" && exit 1;
+    done< <(mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | sed 1d);
+
+    mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} < ${INITIALSCHEMA} || echo "failed to import initial schema to database" && exit 1;
 }
 
 build_create_config_file()
@@ -164,7 +175,7 @@ build_create_config_file()
         define('DB_USER', '${DB_USER}'); \
         define('DB_PASS', '${DB_PASSWORD}'); \
         define('DB_NAME', '${DB_NAME}'); \
-        define('BLOWFISH_KEY', 'BLOWFISH_KEY');" > ${REPOSITORY_DIR}/includes/config.JTL-Shop.ini.php
+        define('BLOWFISH_KEY', 'BLOWFISH_KEY');" > ${REPOSITORY_DIR}/includes/config.JTL-Shop.ini.php;
 }
 
 build_migrate()
@@ -181,13 +192,13 @@ build_migrate()
             echo \$result;
             exit(1);
         }
-    "
+    ";
 
-    echo 'TRUNCATE tmigration' | mysql -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME}
-    echo 'TRUNCATE tmigrationlog' | mysql -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME}
-    echo 'TRUNCATE tversion' | mysql -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME}
+    echo 'TRUNCATE tmigration' | mysql -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
+    echo 'TRUNCATE tmigrationlog' | mysql -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
+    echo 'TRUNCATE tversion' | mysql -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
 
-    echo "INSERT INTO tversion (nVersion, nZeileVon, nZeileBis, nInArbeit, nFehler, nTyp, cFehlerSQL, dAktualisiert) VALUES ('${APPLICATION_VERSION}', 1, 0, 0, 0, 0, '', NOW())" | mysql -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME}
+    echo "INSERT INTO tversion (nVersion, nZeileVon, nZeileBis, nInArbeit, nFehler, nTyp, cFehlerSQL, dAktualisiert) VALUES ('${APPLICATION_VERSION}', 1, 0, 0, 0, 0, '', NOW())" | mysql -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
 }
 
 build_create_db_struct()
@@ -228,12 +239,12 @@ build_create_db_struct()
 build_create_initial_schema()
 {
     local INITIAL_SCHEMA_PATH=${REPOSITORY_DIR}/install/initial_schema.sql;
-    local MYSQL_CONN="-u${DB_USER} -p${DB_PASSWORD}"
-    local ORDER_BY="table_name ASC"
-    local SQL="SET group_concat_max_len = 1048576;"
-          SQL="${SQL} SELECT GROUP_CONCAT(table_name ORDER BY ${ORDER_BY} SEPARATOR ' ')"
-          SQL="${SQL} FROM information_schema.tables"
-          SQL="${SQL} WHERE table_schema='${DB_NAME}'"
+    local MYSQL_CONN="-u${DB_USER} -p${DB_PASSWORD}";
+    local ORDER_BY="table_name ASC";
+    local SQL="SET group_concat_max_len = 1048576;";
+          SQL="${SQL} SELECT GROUP_CONCAT(table_name ORDER BY ${ORDER_BY} SEPARATOR ' ')";
+          SQL="${SQL} FROM information_schema.tables";
+          SQL="${SQL} WHERE table_schema='${DB_NAME}'";
     local TABLES=$(mysql ${MYSQL_CONN} -ANe"${SQL}");
 
     mysqldump -u${DB_USER} -p${DB_PASSWORD} --default-character-set=utf8 --skip-comments=true --skip-dump-date=true \
@@ -245,7 +256,7 @@ build_clean_up()
     #Delete created database
     mysql -u${DB_USER} -p${DB_PASSWORD} -e "DROP DATABASE IF EXISTS ${DB_NAME}";
     #Delete created config file
-    rm ${REPOSITORY_DIR}/includes/config.JTL-Shop.ini.php
+    rm ${REPOSITORY_DIR}/includes/config.JTL-Shop.ini.php;
 }
 
 build_create_patches()

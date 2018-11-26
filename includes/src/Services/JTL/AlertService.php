@@ -36,8 +36,8 @@ class AlertService implements AlertServiceInterface
     /**
      * @inheritdoc
      */
-    public function addAlert(string $type, string $message, string $key = ''): Alert {
-
+    public function addAlert(string $type, string $message, string $key): Alert
+    {
         $alert                 = new Alert($type, $message, $key);
         $this->alertList[$key] = $alert;
         $_SESSION['alerts']    = $this;

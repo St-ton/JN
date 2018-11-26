@@ -2,7 +2,7 @@
 /**
  * refactor_tanonjournaldata
  *
- * @author Michael Hillmann
+ * @author mh
  * @created Wed, 21 Nov 2018 15:58:40 +0100
  */
 
@@ -22,8 +22,8 @@
  */
 class Migration_20181121155840 extends Migration implements IMigration
 {
-    protected $author = 'Michael Hillmann';
-    protected $description = 'refactor_tanonjournaldata';
+    protected $author = 'mh';
+    protected $description = 'Refactor tanonjournaldata';
 
     public function up()
     {

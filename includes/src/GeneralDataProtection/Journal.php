@@ -52,8 +52,13 @@ class Journal
      * @param string $message
      * @param \stdClass|null $detail
      */
-    public function addEntry(string $issuerType, int $issuerID, string $action, string $message = '', \stdClass $detail = null): void
-    {
+    public function addEntry(
+        string $issuerType,
+        int $issuerID,
+        string $action,
+        string $message = '',
+        \stdClass $detail = null
+    ): void {
         \Shop::Container()->getDB()->queryPrepared(
             'INSERT INTO tanondatajournal(cIssuer, iIssuerId, cAction, cDetail, cMessage, dEventTime)
                 VALUES(:cIssuer, :iIssuerId, :cAction, :cDetail, :cMessage, :dEventTime)',

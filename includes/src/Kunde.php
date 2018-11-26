@@ -886,8 +886,12 @@ class Kunde
      * @param bool $force
      * @param bool $confirmationMail
      */
-    public function deleteAccount(string $issuerType, int $issuerID, bool $force = false, bool $confirmationMail = false): void
-    {
+    public function deleteAccount(
+        string $issuerType,
+        int $issuerID,
+        bool $force = false,
+        bool $confirmationMail = false
+    ): void {
         $customerID = $this->getID();
 
         if (empty($customerID)) {
@@ -909,11 +913,13 @@ class Kunde
                 'cPasswort'    => '',
                 'nRegistriert' => 0,
             ]);
-            $logMessage = \sprintf('Account with ID kKunde = %s deleted, but had %s open orders with %s still in 
-            cancellation time. Account is deactivated until all orders are completed.',
+            $logMessage = \sprintf(
+                'Account with ID kKunde = %s deleted, but had %s open orders with %s still in cancellation time. ' .
+                'Account is deactivated until all orders are completed.',
                 $customerID,
                 $openOrders->openOrders,
-                $openOrders->ordersInCancellationTime);
+                $openOrders->ordersInCancellationTime
+            );
 
             (new GeneralDataProtection\Journal())->addEntry(
                 $issuerType,
@@ -966,8 +972,7 @@ class Kunde
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        if (!empty($openOrders->orderCount) || !empty($ordersInCancellationTime->orderCount))
-        {
+        if (!empty($openOrders->orderCount) || !empty($ordersInCancellationTime->orderCount)) {
             return (object)[
                 'openOrders'               => (int)$openOrders->orderCount,
                 'ordersInCancellationTime' => (int)$ordersInCancellationTime->orderCount
@@ -1003,7 +1008,6 @@ class Kunde
         $db->delete('tkontakthistory', 'cMail', $this->cMail);
         $db->delete('tproduktanfragehistory', 'cMail', $this->cMail);
         $db->delete('tverfuegbarkeitsbenachrichtigung', 'cMail', $this->cMail);
-
 
         $db->update('tbewertung', 'kKunde', $customerID, (object)['cName' => $anonymous]);
         $db->update('tnewskommentar', 'kKunde', $customerID, (object)[

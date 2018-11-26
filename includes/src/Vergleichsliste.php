@@ -128,6 +128,10 @@ class Vergleichsliste
         $variations = [];
         foreach ($compareList->oArtikel_arr as $oArtikel) {
             /** @var Artikel|stdClass $oArtikel */
+            $product                 = new Artikel();
+            $product->kArtikel       = $oArtikel->kArtikel;
+            $oArtikel->oMerkmale_arr = $product->holeMerkmale()->oMerkmale_arr;
+
             if (isset($oArtikel->oMerkmale_arr) && count($oArtikel->oMerkmale_arr) > 0) {
                 // Falls das Merkmal Array nicht leer ist
                 if (count($attributes) > 0) {

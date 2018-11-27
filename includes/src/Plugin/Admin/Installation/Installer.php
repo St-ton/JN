@@ -14,7 +14,6 @@ use Plugin\Admin\Validation\ValidatorInterface;
 use Plugin\ExtensionLoader;
 use Plugin\Helper;
 use Plugin\InstallCode;
-use Plugin\Plugin;
 use Plugin\PluginLoader;
 use Plugin\State;
 
@@ -122,17 +121,17 @@ final class Installer
         $validator = $this->pluginValidator;
         $baseDir   = \PFAD_ROOT . \PFAD_PLUGIN . \basename($this->dir);
         if (!\file_exists($baseDir . '/' . \PLUGIN_INFO_FILE)) {
-            $baseDir   = \PFAD_ROOT . \PFAD_EXTENSIONS . \basename($this->dir);
-            $validator = $this->extensionValidator;
+            $baseDir           = \PFAD_ROOT . \PFAD_EXTENSIONS . \basename($this->dir);
+            $validator         = $this->extensionValidator;
             $this->isExtension = true;
             if (!\file_exists($baseDir . '/' . \PLUGIN_INFO_FILE)) {
                 return InstallCode::INFO_XML_MISSING;
             }
         }
+        $validator->setDir($baseDir);
         $parser = new XMLParser();
         $xml    = $parser->parse($baseDir . '/' . \PLUGIN_INFO_FILE);
-        $validator->setDir($baseDir);
-        $code = $validator->pluginPlausiIntern($xml, $this->plugin !== null);
+        $code   = $validator->pluginPlausiIntern($xml, $this->plugin !== null);
         if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $this->plugin !== null && $this->plugin->getID() > 0) {
             $code = InstallCode::OK;
         }
@@ -153,7 +152,7 @@ final class Installer
     public function install(array $xml): int
     {
         $baseNode         = $this->getBaseNode($xml);
-        $versionNode      = $baseNode['Install'][0]['Version'];
+        $versionNode      = $baseNode['Install'][0]['Version'] ?? null;
         $xmlVersion       = (int)$baseNode['XMLVersion'];
         $licenceClass     = '';
         $licenceClassName = '';
@@ -163,6 +162,7 @@ final class Installer
         $lastVersionKey   = null;
         $modern           = false;
         $plugin           = new \stdClass();
+        $p = null;
 
         // @todo:
         if (\is_array($versionNode)) {
@@ -210,7 +210,6 @@ final class Installer
             ? $versionNode[$lastVersionKey]['CreateDate']
             : $baseNode['CreateDate'];
         $plugin->bBootstrap           = \is_file($versionedDir . 'bootstrap.php') ? 1 : 0;
-
         foreach ($tags as $_tag) {
             if (\defined(\trim($_tag))) {
                 $tagsToFlush[] = \constant(\trim($_tag));
@@ -238,7 +237,6 @@ final class Installer
             : 'NOW()';
         $kPlugin              = $this->db->insert('tplugin', $plugin);
         $plugin->kPlugin      = $kPlugin;
-
         if ($kPlugin <= 0) {
             return InstallCode::WRONG_PARAM;
         }
@@ -292,17 +290,14 @@ final class Installer
         ) {
             $p->installed();
         }
-        // Installation von höheren XML Versionen
-        if ($xmlVersion > 100 && ($code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE || $code === InstallCode::OK)) {
-            $code = InstallCode::OK;
-            // Update
-            if ($this->plugin !== null && $this->plugin->getID() > 0) {
-                $code = $this->syncPluginUpdate($plugin->kPlugin);
-            }
-        } elseif ($this->plugin !== null
+        if ($this->plugin !== null
             && ($code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE || $code === InstallCode::OK)
         ) {
             $code = $this->syncPluginUpdate($plugin->kPlugin);
+            if (($p = Helper::bootstrap($this->plugin->getID(), $loader)) !== null) {
+                $p->updated($this->plugin->getMeta()->getVersion(), $version);
+            }
+
         }
 
         return $code;

@@ -111,7 +111,11 @@ class ListingItem
             $node = $xml['jtlshop3plugin'][0];
         }
         if ($node !== null) {
-            if (!isset($node['Install'][0]['Version'])) {
+            if ($this->isShop5Compatible) {
+                if (!isset($node['Version'])) {
+                    return $this;
+                }
+            } elseif (!isset($node['Install'][0]['Version'])) {
                 return $this;
             }
             if (!isset($node['Name'])) {
@@ -122,7 +126,7 @@ class ListingItem
             $this->author      = $node['Author'] ?? '';
             $this->id          = $node['PluginID'];
             $this->icon        = $node['Icon'] ?? null;
-            if (\is_array($node['Install'][0]['Version'])) {
+            if (isset($node['Install'][0]['Version']) && \is_array($node['Install'][0]['Version'])) {
                 $lastVersion   = \count($node['Install'][0]['Version']) / 2 - 1;
                 $version       = $lastVersion >= 0
                 && isset($node['Install'][0]['Version'][$lastVersion . ' attr']['nr'])
@@ -130,7 +134,7 @@ class ListingItem
                     : 0;
                 $this->version = \number_format($version / 100, 2);
             } else {
-                $this->version = $node['Install'][0]['Version'];
+                $this->version = $node['Version'];
             }
         }
         if ($xml['cFehlercode'] !== InstallCode::OK) {

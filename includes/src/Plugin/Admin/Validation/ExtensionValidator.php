@@ -22,10 +22,9 @@ final class ExtensionValidator extends AbstractValidator
      */
     public function pluginPlausiIntern($xml, bool $forUpdate): int
     {
-        $parsedXMLShopVersion = null;
-        $parsedVersion        = null;
-        $baseNode             = $xml['jtlshopplugin'][0] ?? null;
-        $parsedVersion        = Version::parse(\APPLICATION_VERSION);
+        $baseNode    = $xml['jtlshopplugin'][0] ?? null;
+        $appVersion  = Version::parse(\APPLICATION_VERSION);
+        $shopVersion = null;
         if (!isset($baseNode['XMLVersion'])) {
             return InstallCode::INVALID_XML_VERSION;
         }
@@ -39,22 +38,19 @@ final class ExtensionValidator extends AbstractValidator
             return InstallCode::INVALID_SHOP_VERSION;
         }
         if ($forUpdate === false) {
-            $oPluginTMP = $this->db->select('tplugin', 'cPluginID', $baseNode['PluginID']);
-            if (isset($oPluginTMP->kPlugin) && $oPluginTMP->kPlugin > 0) {
+            $check = $this->db->select('tplugin', 'cPluginID', $baseNode['PluginID']);
+            if (isset($check->kPlugin) && $check->kPlugin > 0) {
                 return InstallCode::DUPLICATE_PLUGIN_ID;
             }
         }
         if (isset($baseNode['ShopVersion'])) {
-            $parsedXMLShopVersion = Version::parse($baseNode['ShopVersion']);
+            $shopVersion = Version::parse($baseNode['ShopVersion']);
         }
-        if (empty($parsedVersion)
-            || empty($parsedXMLShopVersion)
-            || $parsedXMLShopVersion->greaterThan($parsedVersion)
-        ) {
+        if (empty($appVersion) || empty($shopVersion) || $shopVersion->greaterThan($appVersion)) {
             return InstallCode::SHOP_VERSION_COMPATIBILITY;
         }
 
-        $cVersionsnummer = $this->getVersion($baseNode['Install'][0]);
+        $cVersionsnummer = $this->getVersion($baseNode);
         if (!\is_string($cVersionsnummer)) {
             return $cVersionsnummer;
         }

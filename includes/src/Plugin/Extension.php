@@ -26,6 +26,6 @@ class Extension extends AbstractExtension
         $parser  = new XMLParser();
         $xml     = $parser->parse($path . '/' . \PLUGIN_INFO_FILE);
 
-        return $xml['jtlshopplugin'][0]['Install'][0]['Version'] ?? '0';
+        return $xml['jtlshopplugin']['Version'] ?? '0';
     }
 }

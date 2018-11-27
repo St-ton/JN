@@ -37,8 +37,8 @@ interface ValidatorInterface
     public function validateByPluginID(int $kPlugin, bool $forUpdate = false): int;
 
     /**
-     * @param      $xml
-     * @param bool $forUpdate
+     * @param array $xml
+     * @param bool  $forUpdate
      * @return int
      * @former pluginPlausiIntern()
      */

@@ -171,7 +171,7 @@ final class Installer
             $versionedDir   = $basePath . \PFAD_PLUGIN_VERSION . $version . \DIRECTORY_SEPARATOR;
             $loader         = new PluginLoader($this->db, \Shop::Container()->getCache());
         } else {
-            $version      = (int)$versionNode;
+            $version      = $baseNode['Version'];
             $basePath     = \PFAD_ROOT . \PFAD_EXTENSIONS . $this->dir . \DIRECTORY_SEPARATOR;
             $versionedDir = $basePath;
             $versionNode  = [];
@@ -208,7 +208,7 @@ final class Installer
         $plugin->dZuletztAktualisiert = 'NOW()';
         $plugin->dErstellt            = $lastVersionKey !== null
             ? $versionNode[$lastVersionKey]['CreateDate']
-            : $baseNode['Install'][0]['CreateDate'];
+            : $baseNode['CreateDate'];
         $plugin->bBootstrap           = \is_file($versionedDir . 'bootstrap.php') ? 1 : 0;
 
         foreach ($tags as $_tag) {

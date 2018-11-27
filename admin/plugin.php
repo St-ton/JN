@@ -26,7 +26,7 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
         if (!FormHelper::validateToken()) {
             $bError = true;
         } else {
-            $oPluginEinstellungConf_arr = isset($_POST['kPluginAdminMenu'])
+            $plgnConf = isset($_POST['kPluginAdminMenu'])
                 ? $db->queryPrepared(
                     "SELECT *
                         FROM tplugineinstellungenconf
@@ -38,33 +38,33 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 )
                 : [];
-            foreach ($oPluginEinstellungConf_arr as $oPluginEinstellungConf) {
+            foreach ($plgnConf as $current) {
                 $db->delete(
                     'tplugineinstellungen',
                     ['kPlugin', 'cName'],
-                    [$kPlugin, $oPluginEinstellungConf->cWertName]
+                    [$kPlugin, $current->cWertName]
                 );
-                $oPluginEinstellung          = new stdClass();
-                $oPluginEinstellung->kPlugin = $kPlugin;
-                $oPluginEinstellung->cName   = $oPluginEinstellungConf->cWertName;
-                if (isset($_POST[$oPluginEinstellungConf->cWertName])) {
-                    if (is_array($_POST[$oPluginEinstellungConf->cWertName])) {
-                        if ($oPluginEinstellungConf->cConf === \Plugin\ExtensionData\Config::TYPE_DYNAMIC) {
+                $upd          = new stdClass();
+                $upd->kPlugin = $kPlugin;
+                $upd->cName   = $current->cWertName;
+                if (isset($_POST[$current->cWertName])) {
+                    if (is_array($_POST[$current->cWertName])) {
+                        if ($current->cConf === \Plugin\ExtensionData\Config::TYPE_DYNAMIC) {
                             // selectbox with "multiple" attribute
-                            $oPluginEinstellung->cWert = serialize($_POST[$oPluginEinstellungConf->cWertName]);
+                            $upd->cWert = serialize($_POST[$current->cWertName]);
                         } else {
                             // radio buttons
-                            $oPluginEinstellung->cWert = $_POST[$oPluginEinstellungConf->cWertName][0];
+                            $upd->cWert = $_POST[$current->cWertName][0];
                         }
                     } else {
                         // textarea/text
-                        $oPluginEinstellung->cWert = $_POST[$oPluginEinstellungConf->cWertName];
+                        $upd->cWert = $_POST[$current->cWertName];
                     }
                 } else {
                     // checkboxes that are not checked
-                    $oPluginEinstellung->cWert = null;
+                    $upd->cWert = null;
                 }
-                if (!$db->insert('tplugineinstellungen', $oPluginEinstellung)) {
+                if (!$db->insert('tplugineinstellungen', $upd)) {
                     $bError = true;
                 }
                 $invalidateCache = true;
@@ -102,8 +102,7 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
             if ($menu->isMarkdown === true) {
                 $parseDown = new Parsedown();
                 $content   = $parseDown->text(StringHandler::convertUTF8(file_get_contents($menu->file)));
-                $smarty->assign('content', $content);
-                $menu->html = $smarty->fetch($menu->tpl);
+                $menu->html = $smarty->assign('content', $content)->fetch($menu->tpl);
             } elseif ($menu->configurable === false
                 && $menu->file !== ''
                 && file_exists($oPlugin->getPaths()->getAdminPath() . $menu->file)

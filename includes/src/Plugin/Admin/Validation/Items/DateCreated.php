@@ -20,16 +20,16 @@ class DateCreated extends AbstractItem
     public function validate(): int
     {
         $baseNode = $this->getBaseNode();
-        if (!isset($baseNode['Install'][0]['CreateDate'])) {
+        if (!isset($baseNode['CreateDate'])) {
             return InstallCode::INVALID_DATE;
         }
         \preg_match(
             '/[0-9]{4}-[0-1]{1}[0-9]{1}-[0-3]{1}[0-9]{1}/',
-            $baseNode['Install'][0]['CreateDate'],
+            $baseNode['CreateDate'],
             $hits
         );
 
-        return !isset($hits[0]) || \strlen($hits[0]) !== \strlen($baseNode['Install'][0]['CreateDate'])
+        return !isset($hits[0]) || \strlen($hits[0]) !== \strlen($baseNode['CreateDate'])
             ? InstallCode::INVALID_DATE
             : InstallCode::OK;
     }

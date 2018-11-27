@@ -150,21 +150,21 @@ class PluginLoader extends AbstractLoader
     {
         $paths     = parent::loadPaths($pluginDir);
         $shopURL   = $paths->getShopURL();
-        $basePath  = \PFAD_ROOT . \PFAD_PLUGIN . $pluginDir . \DIRECTORY_SEPARATOR;
-        $versioned = $basePath . \PFAD_PLUGIN_VERSION . $this->plugin->getMeta()->getVersion() . \DIRECTORY_SEPARATOR;
-        $baseURL   = $shopURL . \PFAD_EXTENSIONS . $pluginDir . '/';
+        $basePath  = \PFAD_ROOT . \PFAD_PLUGIN . $pluginDir . '/';
+        $versioned = \PFAD_PLUGIN_VERSION . $this->plugin->getMeta()->getVersion() . '/';
+        $baseURL   = $shopURL . \PFAD_PLUGIN . $pluginDir . '/';
 
         $paths->setBaseDir($pluginDir);
         $paths->setBasePath($basePath);
-        $paths->setVersionedPath($versioned);
-        $paths->setFrontendPath($versioned . \PFAD_PLUGIN_FRONTEND);
-        $paths->setFrontendURL($baseURL . \PFAD_PLUGIN_FRONTEND);
-        $paths->setAdminPath($versioned . \PFAD_PLUGIN_ADMINMENU);
-        $paths->setAdminURL($baseURL . \PFAD_PLUGIN_ADMINMENU);
-        $paths->setLicencePath($versioned . \PFAD_PLUGIN_LICENCE);
-        $paths->setUninstaller($versioned . \PFAD_PLUGIN_UNINSTALL);
-        $paths->setPortletsPath($versioned . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS);
-        $paths->setExportPath($versioned . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS);
+        $paths->setVersionedPath($basePath . $versioned);
+        $paths->setFrontendPath($basePath . $versioned . \PFAD_PLUGIN_FRONTEND);
+        $paths->setFrontendURL($baseURL . $versioned . \PFAD_PLUGIN_FRONTEND);
+        $paths->setAdminPath($basePath . $versioned . \PFAD_PLUGIN_ADMINMENU);
+        $paths->setAdminURL($baseURL . $versioned . \PFAD_PLUGIN_ADMINMENU);
+        $paths->setLicencePath($basePath . $versioned . \PFAD_PLUGIN_LICENCE);
+        $paths->setUninstaller($basePath . $versioned . \PFAD_PLUGIN_UNINSTALL);
+        $paths->setPortletsPath($basePath . $versioned . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS);
+        $paths->setExportPath($basePath . $versioned . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS);
 
         return $paths;
     }

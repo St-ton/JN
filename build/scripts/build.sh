@@ -252,7 +252,9 @@ build_add_files_to_patch_dir()
         if [[ ! -z "${rename_path}" ]]; then
             path=${rename_path};
         fi
-        rsync -R ${path} ${PATCH_DIR};
+        if [[ -f ${path} ]]; then
+            rsync -R ${path} ${PATCH_DIR};
+        fi
     done< <(git diff --name-status --diff-filter=d ${PATCH_VERSION} ${APPLICATION_VERSION});
 
     if [[ -f "${PATCH_DIR}/includes/composer.json" ]]; then

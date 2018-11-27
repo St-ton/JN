@@ -295,11 +295,11 @@ build_add_files_to_patch_dir()
     done< <(git diff --name-status --diff-filter=d ${PATCH_VERSION} ${APPLICATION_VERSION});
 
     if [[ -f "${PATCH_DIR}/includes/composer.json" ]]; then
-        mkdir /tmp_composer;
-        mkdir /tmp_composer/includes;
-        touch /tmp_composer/includes/composer.json;
-        git show ${PATCH_VERSION}:includes/composer.json > /tmp_composer/includes/composer.json;
-        composer install --no-dev -q -d /tmp_composer/includes;
+        mkdir /tmp_composer_${PATCH_VERSION};
+        mkdir /tmp_composer_${PATCH_VERSION}/includes;
+        touch /tmp_composer_${PATCH_VERSION}/includes/composer.json;
+        git show ${PATCH_VERSION}:includes/composer.json > /tmp_composer_${PATCH_VERSION}/includes/composer.json;
+        composer install --no-dev -q -d /tmp_composer_${PATCH_VERSION}/includes;
 
         while read -r line;
         do
@@ -313,7 +313,7 @@ build_add_files_to_patch_dir()
             else
                 rsync -R ${path} ${PATCH_DIR};
             fi
-        done< <(diff -rq /tmp_composer/includes/vendor includes/vendor);
+        done< <(diff -rq /tmp_composer_${PATCH_VERSION}/includes/vendor includes/vendor);
     fi
 }
 

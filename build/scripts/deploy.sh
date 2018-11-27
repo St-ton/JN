@@ -3,7 +3,7 @@
 PROJECT_NAME=$1;
 TAG=$2;
 VERSION="${TAG//[\/\.]/-}";
-FILENAME="${PROJECT_NAME}-${VERSION}.zip";
+FILENAME="shop-${VERSION}.zip";
 ARCHIVE_PATH="${3}/${FILENAME}";
 
 echo "";

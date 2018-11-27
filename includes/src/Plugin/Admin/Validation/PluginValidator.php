@@ -92,6 +92,9 @@ final class PluginValidator extends AbstractValidator
         if (empty($baseNode['ShopVersion']) && empty($baseNode['Shop4Version'])) {
             return InstallCode::INVALID_SHOP_VERSION;
         }
+        if (empty($baseNode['PluginID'])) {
+            return InstallCode::INVALID_PLUGIN_ID;
+        }
         if ($forUpdate === false) {
             $oPluginTMP = $this->db->select('tplugin', 'cPluginID', $baseNode['PluginID']);
             if (isset($oPluginTMP->kPlugin) && $oPluginTMP->kPlugin > 0) {

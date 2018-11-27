@@ -121,6 +121,7 @@ if ($customerID > 0) {
     }
 
     if (isset($_GET['del']) && (int)$_GET['del'] === 1) {
+        $smarty->assign('openOrders', \Session\Session::getCustomer()->getOpenOrders());
         $step = 'account loeschen';
     }
     // Vorhandenen Warenkorb mit persistenten Warenkorb mergen?
@@ -543,85 +544,12 @@ if ($customerID > 0) {
             $cHinweis .= Shop::Lang()->get('csrfValidationFailed', 'global');
             Shop::Container()->getLogService()->error('CSRF-Warnung fuer Account-Loeschung und kKunde ' . $customerID);
         } else {
-            $oBestellung = Shop::Container()->getDB()->query(
-                "SELECT COUNT(kBestellung) AS countBestellung
-                    FROM tbestellung
-                    WHERE cStatus NOT IN (" . BESTELLUNG_STATUS_VERSANDT . ", " . BESTELLUNG_STATUS_STORNO . ")
-                        AND kKunde = " . $customerID,
-                \DB\ReturnType::SINGLE_OBJECT
+            \Session\Session::getCustomer()->deleteAccount(
+                GeneralDataProtection\Journal::ISSUER_TYPE_CUSTOMER,
+                \Session\Session::getCustomer()->getID(),
+                false,
+                true
             );
-
-            if (isset($oBestellung->countBestellung) && (int)$oBestellung->countBestellung === 0) {
-                // Keine Bestellungen die noch nicht verschickt oder storniert wurden mehr vorhanden
-                // - die Kundendaten werden gelöscht
-                $cText = 'Der Kunde ' . $_SESSION['Kunde']->cVorname . ' ' .
-                    $_SESSION['Kunde']->cNachname . ' (' . $customerID . ') hat am ' . date('d.m.Y') .
-                    ' um ' . date('H:m:i') . ' Uhr sein Kundenkonto gelöscht. Es gab keine offenen Bestellungen mehr';
-
-                Shop::Container()->getDB()->delete('tlieferadresse', 'kKunde', $customerID);
-                Shop::Container()->getDB()->delete('trechnungsadresse', 'kKunde', $customerID);
-                Shop::Container()->getDB()->delete('tkundenattribut', 'kKunde', $customerID);
-                Shop::Container()->getDB()->delete('tkunde', 'kKunde', $customerID);
-            } else {
-                // Es gibt noch Bestellungen, die noch nicht versandt oder storniert wurden
-                // - der Account wird in einen Gastzugang umgewandelt
-                $cText = 'Der Kunde ' . $_SESSION['Kunde']->cVorname . ' ' .
-                    $_SESSION['Kunde']->cNachname . ' (' . $customerID . ') hat am ' . date('d.m.Y') .
-                    ' um ' . date('H:m:i') . ' Uhr sein Kundenkonto gelöscht. Es gab noch ' .
-                    $oBestellung->countBestellung . ' offene Bestellungen.' .
-                    ' Der Account wurde deshalb in einen temporären Gastzugang umgewandelt.';
-
-                Shop::Container()->getDB()->update('tkunde', 'kKunde', $customerID, (object)[
-                    'cPasswort'    => '',
-                    'nRegistriert' => 0,
-                ]);
-            }
-
-            Shop::Container()->getLogService()->notice($cText);
-            // Newsletter
-            Shop::Container()->getDB()->delete('tnewsletterempfaenger', 'cEmail', $_SESSION['Kunde']->cMail);
-            Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', (object)[
-                'kSprache'     => (int)$_SESSION['Kunde']->kSprache,
-                'kKunde'       => $customerID,
-                'cAnrede'      => $_SESSION['Kunde']->cAnrede,
-                'cVorname'     => $_SESSION['Kunde']->cVorname,
-                'cNachname'    => $_SESSION['Kunde']->cNachname,
-                'cEmail'       => $_SESSION['Kunde']->cMail,
-                'cOptCode'     => '',
-                'cLoeschCode'  => '',
-                'cAktion'      => 'Geloescht',
-                'dAusgetragen' => 'NOW()',
-                'dEingetragen' => '',
-                'dOptCode'     => '',
-            ]);
-            // Wunschliste
-            Shop::Container()->getDB()->query(
-                'DELETE twunschliste, twunschlistepos, twunschlisteposeigenschaft, twunschlisteversand
-                        FROM twunschliste
-                        LEFT JOIN twunschlistepos
-                            ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
-                        LEFT JOIN twunschlisteposeigenschaft
-                            ON twunschlisteposeigenschaft.kWunschlistePos = twunschlistepos.kWunschlistePos
-                        LEFT JOIN twunschlisteversand
-                            ON twunschlisteversand.kWunschliste = twunschliste.kWunschliste
-                        WHERE twunschliste.kKunde = ' . $customerID,
-                \DB\ReturnType::DEFAULT
-            );
-            // Pers. Warenkorb
-            Shop::Container()->getDB()->query(
-                'DELETE twarenkorbpers, twarenkorbperspos, twarenkorbpersposeigenschaft
-                    FROM twarenkorbpers
-                    LEFT JOIN twarenkorbperspos
-                        ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
-                    LEFT JOIN twarenkorbpersposeigenschaft
-                        ON twarenkorbpersposeigenschaft.kWarenkorbPersPos = twarenkorbperspos.kWarenkorbPersPos
-                    WHERE twarenkorbpers.kKunde = ' . $customerID,
-                \DB\ReturnType::DEFAULT
-            );
-
-            sendeMail(MAILTEMPLATE_KUNDENACCOUNT_GELOESCHT, (object)[
-                'tkunde' => $_SESSION['Kunde']
-            ]);
 
             executeHook(HOOK_JTL_PAGE_KUNDENACCOUNTLOESCHEN);
             session_destroy();

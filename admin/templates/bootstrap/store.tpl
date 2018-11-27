@@ -7,11 +7,14 @@
 {if isset($error)}
     <div class="alert alert-danger">{$error}</div>
 {/if}
-    {if $hasAuth}
-        <a href="store.php?revoke" class="btn btn-danger">{#storeRevoke#}</a>
-    {else}
-        <a href="store.php?redirect" target="_blank" class="btn btn-primary">{#storeLink#}</a>
-    {/if}
+    <form action="store.php" method="POST">
+        {$jtl_token}
+        {if $hasAuth}
+            <button name="action" value="revoke" class="btn btn-danger">{#storeRevoke#}</button>
+        {else}
+            <button name="action" value="redirect" class="btn btn-primary">{#storeLink#}</button>
+        {/if}
+    </form>
 </div>
 
 {include file='tpl_inc/footer.tpl'}

@@ -233,7 +233,7 @@ final class Installer
             }
         }
         $plugin->dInstalliert = ($this->plugin !== null && $this->plugin->getID() > 0)
-            ? $this->plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')
+            ? $this->plugin->getMeta()->getDateInstalled()->format('Y-m-d H:i:s')
             : 'NOW()';
         $kPlugin              = $this->db->insert('tplugin', $plugin);
         $plugin->kPlugin      = $kPlugin;
@@ -506,8 +506,8 @@ final class Installer
                     \DB\ReturnType::AFFECTED_ROWS
                 );
 
-                foreach ($confData as $oEinstellung) {
-                    $this->db->insert('tplugineinstellungen', $oEinstellung);
+                foreach ($confData as $value) {
+                    $this->db->insert('tplugineinstellungen', $value);
                 }
             }
             $this->db->query(
@@ -574,8 +574,7 @@ final class Installer
                     );
                 }
             }
-            $upd                = new \stdClass();
-            $upd->kEmailvorlage = $kEmailvorlageNeu;
+            $upd = (object)['kEmailvorlage' => $kEmailvorlageNeu];
             $this->db->update('tpluginemailvorlageeinstellungen', 'kEmailvorlage', $kEmailvorlageAlt, $upd);
             $this->db->update('tlink', 'kPlugin', $pluginID, (object)['kPlugin' => $oldPluginID]);
             // tboxen
@@ -589,8 +588,7 @@ final class Installer
             } else {
                 $this->db->delete('tboxen', 'kCustomID', $oldPluginID);
             }
-            $upd          = new \stdClass();
-            $upd->kPlugin = $oldPluginID;
+            $upd = (object)['kPlugin' => $oldPluginID];
             $this->db->update('tcheckboxfunktion', 'kPlugin', $pluginID, $upd);
             $this->db->update('tspezialseite', 'kPlugin', $pluginID, $upd);
             $oldPaymentMethods = $this->db->query(
@@ -622,9 +620,8 @@ final class Installer
                         \DB\ReturnType::AFFECTED_ROWS
                     );
 
-                    $setSQL            = ' , kZahlungsart = ' . $method->kZahlungsart;
-                    $upd               = new \stdClass();
-                    $upd->kZahlungsart = $method->kZahlungsart;
+                    $setSQL = ' , kZahlungsart = ' . $method->kZahlungsart;
+                    $upd    = (object)['kZahlungsart' => $method->kZahlungsart];
                     $this->db->update('tzahlungsartsprache', 'kZahlungsart', $newPaymentMethod->kZahlungsart, $upd);
                 }
 

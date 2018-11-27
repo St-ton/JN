@@ -28,7 +28,7 @@ if [[ ! -z $(find . -maxdepth 1 -type d -regex '^./patch-dir-.*') ]]; then
         CUR_PWD=$(pwd);
         echo "  Patch '${LOWER_VERSION}' to '${HIGHER_VERSION}'";
         cd ${path};
-        zip -r -q ${PATCH_ARCHIVE_PATH} . -x  \*.git* \*.idea* \*docs/* \*patch-dir-* \*tests/* \*tools/* \*.asset_cs \*.php_cs \*.travis.yml \*phpunit.xml \*includes/package.json \*includes/package-lock.json;
+        zip -r -q ${PATCH_ARCHIVE_PATH} . -x  \*.git* \*.idea* \*build/* \*docs/* \*patch-dir-* \*tests/* \*.asset_cs \*.php_cs \*.travis.yml \*phpunit.xml \*includes/package.json \*includes/package-lock.json;
         echo "    ${PATCH_FILENAME}";
         cd ${CUR_PWD};
     done< <(find . -maxdepth 1 -type d -regex '^./patch-dir-.*');

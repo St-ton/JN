@@ -30,7 +30,7 @@ class AdminMenu extends AbstractItem
      */
     public function install(): int
     {
-        $node = $this->getBaseNode();
+        $node = $this->getNode();
         if (isset($node[0]['Customlink'])
             && \is_array($node[0]['Customlink'])
             && \count($node[0]['Customlink']) > 0

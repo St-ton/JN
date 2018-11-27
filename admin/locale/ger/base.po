@@ -1,0 +1,11 @@
+msgid "Image"
+msgstr "Bild"
+
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgid "Save"
+msgstr "Speichern"
+
+msgid "Wrong XSRF token."
+msgstr "Falsches XSRF token."

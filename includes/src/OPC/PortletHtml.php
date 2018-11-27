@@ -39,7 +39,16 @@ trait PortletHtml
      */
     public function getButtonHtml(): string
     {
-        return $this->getTitle();
+        return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"><br>' . $this->getTitle();
+    }
+
+    /**
+     * @param string $faType
+     * @return string
+     */
+    public function getFontAwesomeButtonHtml(string $faType): string
+    {
+        return '<i class="fa fa-' . $faType . '"></i><br>' . $this->getTitle();
     }
 
     /**
@@ -142,7 +151,7 @@ trait PortletHtml
         }
 
         if (\count($desc) > 0) {
-            $tabs = ['Allgemein' => $desc] + $tabs;
+            $tabs = [__('General') => $desc] + $tabs;
         }
 
         $res  = '';

@@ -207,6 +207,7 @@ function setzeWarenkorbPersInWarenkorb(int $customerID): bool
     $cart->PositionenArr = [];
 
     $oWarenkorbPers = new WarenkorbPers($customerID);
+    /** @var WarenkorbPersPos $oWarenkorbPersPos */
     foreach ($oWarenkorbPers->oWarenkorbPersPos_arr as $oWarenkorbPersPos) {
         if ($oWarenkorbPersPos->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
             $kArtikelGeschenk = (int)$oWarenkorbPersPos->kArtikel;
@@ -235,17 +236,26 @@ function setzeWarenkorbPersInWarenkorb(int $customerID): bool
                      ->fuegeEin($kArtikelGeschenk, 1, [], C_WARENKORBPOS_TYP_GRATISGESCHENK);
             }
         } else {
-            WarenkorbHelper::addProductIDToCart(
-                $oWarenkorbPersPos->kArtikel,
+            $tmpProduct = new Artikel();
+            $tmpProduct->fuelleArtikel($oWarenkorbPersPos->kArtikel, Artikel::getDefaultOptions());
+
+            if ((int)$tmpProduct->kArtikel > 0 && count(WarenkorbHelper::addToCartCheck(
+                $tmpProduct,
                 $oWarenkorbPersPos->fAnzahl,
-                $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr,
-                1,
-                $oWarenkorbPersPos->cUnique,
-                $oWarenkorbPersPos->kKonfigitem,
-                null,
-                true,
-                $oWarenkorbPersPos->cResponsibility
-            );
+                $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr
+            )) === 0) {
+                WarenkorbHelper::addProductIDToCart(
+                    $oWarenkorbPersPos->kArtikel,
+                    $oWarenkorbPersPos->fAnzahl,
+                    $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr,
+                    1,
+                    $oWarenkorbPersPos->cUnique,
+                    $oWarenkorbPersPos->kKonfigitem,
+                    null,
+                    true,
+                    $oWarenkorbPersPos->cResponsibility
+                );
+            }
         }
     }
 
@@ -298,6 +308,7 @@ function pruefeWarenkorbArtikelSichtbarkeit(int $customerGroupID): void
 /**
  * @param string $userLogin
  * @param string $passLogin
+ * @throws Exception
  */
 function fuehreLoginAus($userLogin, $passLogin): void
 {
@@ -368,7 +379,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
                     $oWarenkorbPers->ueberpruefePositionen(true);
                     if (count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0) {
                         foreach ($oWarenkorbPers->oWarenkorbPersPos_arr as $oWarenkorbPersPos) {
-                            if (!empty($oWarenkorbPers->Artikel->bHasKonfig)) {
+                            if (!empty($oWarenkorbPersPos->Artikel->bHasKonfig)) {
                                 continue;
                             }
                             // Gratisgeschenk in Warenkorb legen

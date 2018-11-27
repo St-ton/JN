@@ -121,10 +121,10 @@ class ListingItem
             if (!isset($node['Name'])) {
                 return $this;
             }
-            $this->name        = $node['Name'];
+            $this->name        = $node['Name'] ?? '';
             $this->description = $node['Description'] ?? '';
             $this->author      = $node['Author'] ?? '';
-            $this->id          = $node['PluginID'];
+            $this->id          = $node['PluginID'] ?? '';
             $this->icon        = $node['Icon'] ?? null;
             if (isset($node['Install'][0]['Version']) && \is_array($node['Install'][0]['Version'])) {
                 $lastVersion   = \count($node['Install'][0]['Version']) / 2 - 1;

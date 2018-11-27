@@ -1341,9 +1341,8 @@ final class Shop
                 //save data from child article POST and add to redirect
                 $cRP = '';
                 if (is_array($_POST) && count($_POST) > 0) {
-                    $cMember_arr = array_keys($_POST);
-                    foreach ($cMember_arr as $cMember) {
-                        $cRP .= '&' . $cMember . '=' . $_POST[$cMember];
+                    foreach (array_keys($_POST) as $key) {
+                        $cRP .= '&' . $key . '=' . $_POST[$key];
                     }
                     // Redirect POST
                     $cRP = '&cRP=' . base64_encode($cRP);
@@ -1390,14 +1389,14 @@ final class Shop
             self::setPageType(PAGE_ARTIKELLISTE);
         } elseif (!self::$kLink) {
             //check path
-            $cPath        = self::getRequestUri();
-            $cRequestFile = '/' . ltrim($cPath, '/');
-            if ($cRequestFile === '/index.php') {
+            $path        = self::getRequestUri();
+            $requestFile = '/' . ltrim($path, '/');
+            if ($requestFile === '/index.php') {
                 // special case: /index.php shall be redirected to Shop-URL
                 header('Location: ' . self::getURL(), true, 301);
                 exit;
             }
-            if ($cRequestFile === '/') {
+            if ($requestFile === '/') {
                 // special case: home page is accessible without seo url
                 $link = null;
                 self::setPageType(PAGE_STARTSEITE);
@@ -1418,8 +1417,8 @@ final class Shop
                 self::$kLink = isset($link->kLink)
                     ? (int)$link->kLink
                     : self::Container()->getLinkService()->getSpecialPageLinkKey(LINKTYP_STARTSEITE);
-            } elseif (self::Media()->isValidRequest($cPath)) {
-                self::Media()->handleRequest($cPath);
+            } elseif (self::Media()->isValidRequest($path)) {
+                self::Media()->handleRequest($path);
             } else {
                 self::$is404    = true;
                 self::$fileName = null;

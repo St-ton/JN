@@ -193,7 +193,7 @@ class Updater
 
         if (empty($targetVersion)) {
             $api               = Shop::Container()->get(\Network\JTLApi::class);
-            $availableUpdates  = $api->getAvailableVersions();
+            $availableUpdates  = $api->getAvailableVersions() ?? [];
             $versionCollection = new VersionCollection();
 
             foreach ($availableUpdates as $availableUpdate) {

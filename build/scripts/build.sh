@@ -36,9 +36,6 @@ build_create()
     echo "Git Submodule init";
     build_git_submodule_init;
 
-    echo "Compile themes";
-    build_compile_themes;
-
     echo "Creating md5 hashfile";
     build_create_md5_hashfile ${APPLICATION_VERSION_STR};
 
@@ -78,42 +75,6 @@ build_git_submodule_init()
 {
     git submodule init -- ${REPOSITORY_DIR};
     git submodule update -- ${REPOSITORY_DIR};
-}
-
-build_compile_themes()
-{
-    THEME_PATH=/templates/Evo/themes;
-
-    while read -r theme;
-    do
-        php -r "
-            require_once '${REPOSITORY_DIR}/includes/vendor/autoload.php';
-
-            \$template          = 'Evo';
-            \$directory         = '${theme}';
-            \$sourceMapFilename = 'sourcemap.map';
-            \$options           = [
-                'sourceMap'         => true,
-                'sourceMapWriteTo'  => \$directory . '/' . \$sourceMapFilename,
-                'sourceMapURL'      => \$sourceMapFilename,
-                'sourceMapRootpath' => '../',
-                'sourceMapBasepath' => '${REPOSITORY_DIR}/templates/' . \$template . '/themes/',
-            ];
-            if (file_exists(\$directory . '/less/theme.less')) {
-                try {
-                    \$parser = new Less_Parser(\$options);
-                    \$parser->parseFile(\$directory . '/less/theme.less', '/');
-                    \$css    = \$parser->getCss();
-                    file_put_contents(\$directory . '/bootstrap.css', \$css);
-
-                    echo 'Theme wurde erfolgreich nach ' . \$directory . '/bootstrap.css kompiliert.'.PHP_EOL;
-                } catch (\Exception \$e) {
-                    echo \$e->getMessage();
-                    exit(1);
-                }
-            }
-        ";
-    done< <(find ${REPOSITORY_DIR}${THEME_PATH} -maxdepth 1 -mindepth 1 -type d);
 }
 
 build_create_md5_hashfile()

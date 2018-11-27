@@ -879,4 +879,210 @@ class Kunde
 
         return $cAnrede;
     }
+
+    /**
+     * @param string $issuerType
+     * @param int $issuerID
+     * @param bool $force
+     * @param bool $confirmationMail
+     */
+    public function deleteAccount(
+        string $issuerType,
+        int $issuerID,
+        bool $force = false,
+        bool $confirmationMail = false
+    ): void {
+        $customerID = $this->getID();
+
+        if (empty($customerID)) {
+            return;
+        }
+
+        if ($force) {
+            $this->erasePersonalData($issuerType, $issuerID);
+
+            return;
+        }
+
+        $openOrders = $this->getOpenOrders();
+        if (!$openOrders) {
+            $this->erasePersonalData($issuerType, $issuerID);
+            $logMessage = \sprintf('Account with ID kKunde = %s deleted', $customerID);
+        } else {
+            Shop::Container()->getDB()->update('tkunde', 'kKunde', $customerID, (object)[
+                'cPasswort'    => '',
+                'nRegistriert' => 0,
+            ]);
+            $logMessage = \sprintf(
+                'Account with ID kKunde = %s deleted, but had %s open orders with %s still in cancellation time. ' .
+                'Account is deactivated until all orders are completed.',
+                $customerID,
+                $openOrders->openOrders,
+                $openOrders->ordersInCancellationTime
+            );
+
+            (new GeneralDataProtection\Journal())->addEntry(
+                $issuerType,
+                $customerID,
+                GeneralDataProtection\Journal::ACTION_CUSTOMER_DEACTIVATED,
+                $logMessage,
+                (object)['kKunde' => $customerID]
+            );
+        }
+
+        Shop::Container()->getLogService()->notice($logMessage);
+
+        if ($confirmationMail) {
+            sendeMail(MAILTEMPLATE_KUNDENACCOUNT_GELOESCHT, (object)['tkunde' => $this]);
+        }
+    }
+
+    /**
+     * @return false|stdClass
+     */
+    public function getOpenOrders()
+    {
+        $cancellationTime = Shopsetting::getInstance()->getValue(CONF_GLOBAL, 'global_cancellation_time');
+        $db               = Shop::Container()->getDB();
+        $customerID       = $this->getID();
+
+        $openOrders               = $db->queryPrepared(
+            'SELECT COUNT(kBestellung) AS orderCount
+                    FROM tbestellung
+                    WHERE cStatus NOT IN (:orderSent, :orderCanceled)
+                        AND kKunde = :customerId',
+            [
+                'customerId'    => $customerID,
+                'orderSent'     => BESTELLUNG_STATUS_VERSANDT,
+                'orderCanceled' => BESTELLUNG_STATUS_STORNO,
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
+        );
+        $ordersInCancellationTime = $db->queryPrepared(
+            'SELECT COUNT(kBestellung) AS orderCount
+                    FROM tbestellung
+                    WHERE kKunde = :customerId
+                        AND cStatus = :orderSent
+                        AND DATE(dVersandDatum) > DATE_SUB(NOW(), INTERVAL :cancellationTime DAY)',
+            [
+                'customerId'       => $customerID,
+                'orderSent'        => BESTELLUNG_STATUS_VERSANDT,
+                'cancellationTime' => $cancellationTime,
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
+        );
+
+        if (!empty($openOrders->orderCount) || !empty($ordersInCancellationTime->orderCount)) {
+            return (object)[
+                'openOrders'               => (int)$openOrders->orderCount,
+                'ordersInCancellationTime' => (int)$ordersInCancellationTime->orderCount
+            ];
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $issuerType
+     * @param int $issuerID
+     */
+    private function erasePersonalData(string $issuerType, int $issuerID): void
+    {
+        $customerID = $this->getID();
+        $db         = Shop::Container()->getDB();
+        if (empty($customerID)) {
+            return;
+        }
+        $anonymous = 'Anonym';
+
+        $db->delete('tlieferadresse', 'kKunde', $customerID);
+        $db->delete('trechnungsadresse', 'kKunde', $customerID);
+        $db->delete('tkundenattribut', 'kKunde', $customerID);
+        $db->delete('tkunde', 'kKunde', $customerID);
+        $db->delete('tkundendatenhistory', 'kKunde', $customerID);
+        $db->delete('tkundenkontodaten', 'kKunde', $customerID);
+        $db->delete('tzahlungsinfo', 'kKunde', $customerID);
+        $db->delete('tkundenwerbenkunden', 'kKunde', $customerID);
+        $db->delete('tkundenwerbenkundenbonus', 'kKunde', $customerID);
+        $db->delete('tkuponneukunde', 'cEmail', $this->cMail);
+        $db->delete('tkontakthistory', 'cMail', $this->cMail);
+        $db->delete('tproduktanfragehistory', 'cMail', $this->cMail);
+        $db->delete('tverfuegbarkeitsbenachrichtigung', 'cMail', $this->cMail);
+
+        $db->update('tbewertung', 'kKunde', $customerID, (object)['cName' => $anonymous]);
+        $db->update('tnewskommentar', 'kKunde', $customerID, (object)[
+            'cName'  => $anonymous,
+            'cEmail' => $anonymous
+        ]);
+        $db->update('tkuponkunde', 'kKunde', $customerID, (object)['cMail' => $anonymous]);
+
+        //newsletter
+        $db->queryPrepared(
+            'DELETE FROM tnewsletterempfaenger
+                WHERE cEmail = :email
+                    OR kKunde = :customerID',
+            ['email' => $this->cMail, 'customerID' => $customerID],
+            \DB\ReturnType::AFFECTED_ROWS
+        );
+
+        $obj            = new stdClass();
+        $obj->cAnrede   = $anonymous;
+        $obj->cVorname  = $anonymous;
+        $obj->cNachname = $anonymous;
+        $obj->cEmail    = $anonymous;
+        $db->update('tnewsletterempfaengerhistory', 'kKunde', $customerID, $obj);
+        $db->update('tnewsletterempfaengerhistory', 'cEmail', $this->cMail, $obj);
+
+        $db->insert('tnewsletterempfaengerhistory', (object)[
+            'kSprache'     => $this->kSprache,
+            'kKunde'       => $customerID,
+            'cAnrede'      => $anonymous,
+            'cVorname'     => $anonymous,
+            'cNachname'    => $anonymous,
+            'cEmail'       => $anonymous,
+            'cOptCode'     => '',
+            'cLoeschCode'  => '',
+            'cAktion'      => 'Geloescht',
+            'dAusgetragen' => 'NOW()',
+            'dEingetragen' => '',
+            'dOptCode'     => '',
+        ]);
+
+        //wishlist
+        $db->queryPrepared(
+            'DELETE twunschliste, twunschlistepos, twunschlisteposeigenschaft, twunschlisteversand
+                FROM twunschliste
+                LEFT JOIN twunschlistepos
+                    ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
+                LEFT JOIN twunschlisteposeigenschaft
+                    ON twunschlisteposeigenschaft.kWunschlistePos = twunschlistepos.kWunschlistePos
+                LEFT JOIN twunschlisteversand
+                    ON twunschlisteversand.kWunschliste = twunschliste.kWunschliste
+                WHERE twunschliste.kKunde = :customerID',
+            ['customerID' => $customerID],
+            \DB\ReturnType::DEFAULT
+        );
+
+        //cart
+        $db->queryPrepared(
+            'DELETE twarenkorbpers, twarenkorbperspos, twarenkorbpersposeigenschaft
+                FROM twarenkorbpers
+                LEFT JOIN twarenkorbperspos
+                    ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
+                LEFT JOIN twarenkorbpersposeigenschaft
+                    ON twarenkorbpersposeigenschaft.kWarenkorbPersPos = twarenkorbperspos.kWarenkorbPersPos
+                WHERE twarenkorbpers.kKunde = :customerID',
+            ['customerID' => $customerID],
+            \DB\ReturnType::DEFAULT
+        );
+
+        $logMessage = \sprintf('Account with ID kKunde = %s deleted', $customerID);
+        (new GeneralDataProtection\Journal())->addEntry(
+            $issuerType,
+            $issuerID,
+            GeneralDataProtection\Journal::ACTION_CUSTOMER_DELETED,
+            $logMessage,
+            (object)['kKunde' => $customerID]
+        );
+    }
 }

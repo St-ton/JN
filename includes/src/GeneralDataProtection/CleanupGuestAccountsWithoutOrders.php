@@ -28,33 +28,18 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
      */
     private function cleanup_tkunde()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared(
-            'SELECT *
-            FROM tkunde k
-                JOIN tbestellung b ON b.kKunde = k.kKunde
-            WHERE
-                b.cStatus IN (' . BESTELLUNG_STATUS_VERSANDT . ', ' . BESTELLUNG_STATUS_STORNO . ')
-                AND k.nRegistriert = 0
-                AND b.cAbgeholt = \'Y\'
-            LIMIT :pLimit',
-            [
-                'pLimit' => $this->iWorkLimit
-            ],
+        $guestAccounts = \Shop::Container()->getDB()->queryPrepared(
+            "SELECT kKunde
+                FROM tkunde
+                WHERE nRegistriert = 0
+                  AND cAbgeholt ='Y'
+                LIMIT :pLimit",
+            ['pLimit' => $this->iWorkLimit],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!\is_array($vResult)) {
-            return;
-        }
-        foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared(
-                'DELETE FROM tkunde
-                WHERE
-                    kKunde = :pKeyKunde',
-                [
-                    'pKeyKunde' => $oResult->kKunde
-                ],
-                \DB\ReturnType::AFFECTED_ROWS
-            );
+
+        foreach ($guestAccounts as $guestAccount) {
+            (new \Kunde((int)$guestAccount->kKunde))->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0, true);
         }
     }
 }

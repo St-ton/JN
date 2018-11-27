@@ -121,9 +121,6 @@ function bearbeiteDel($xml)
                 'SELECT kKunde FROM tbestellung WHERE kBestellung = ' . $orderID,
                 \DB\ReturnType::SINGLE_OBJECT
             );
-            if (isset($b->kKunde) && $b->kKunde > 0) {
-                checkGuestAccount($b->kKunde);
-            }
         }
     }
 }
@@ -180,7 +177,6 @@ function bearbeiteStorno($xml)
                 (object)['cStatus' => BESTELLUNG_STATUS_STORNO]
             );
         }
-        checkGuestAccount($kunde->kKunde);
         executeHook(HOOK_BESTELLUNGEN_XML_BEARBEITESTORNO, [
             'oBestellung' => &$bestellungTmp,
             'oKunde'      => &$kunde,
@@ -218,7 +214,6 @@ function bearbeiteRestorno($xml)
                 $orderID,
                 (object)['cStatus' => BESTELLUNG_STATUS_IN_BEARBEITUNG]
             );
-            checkGuestAccount($kunde->kKunde);
         }
     }
 }
@@ -466,7 +461,6 @@ function bearbeiteUpdate($xml)
             sendeMail(MAILTEMPLATE_BESTELLUNG_AKTUALISIERT, $oMail);
         }
     }
-    checkGuestAccount($kunde->kKunde);
     executeHook(HOOK_BESTELLUNGEN_XML_BEARBEITEUPDATE, [
         'oBestellung'    => &$oBestellung,
         'oBestellungAlt' => &$oBestellungAlt,
@@ -605,8 +599,6 @@ function bearbeiteSet($xml)
             $oKwK->verbucheBestandskundenBoni($kunde->cMail);
         }
 
-        checkGuestAccount((int)$shopOrder->kKunde);
-
         if (!$shopOrder->dBezahltDatum && $order->dBezahltDatum && $kunde->kKunde > 0) {
             //sende Zahlungseingangmail
             $oModule = gibZahlungsmodul($order->kBestellung);
@@ -669,32 +661,6 @@ function deleteOrder(int $kBestellung)
                 'kWarenkorbPos',
                 (int)$position->kWarenkorbPos
             );
-        }
-    }
-}
-
-/**
- * @param int $kKunde
- */
-function checkGuestAccount(int $kKunde)
-{
-    // Bei komplett versendeten Gastbestellungen Kundendaten aus dem Shop loeschen
-    $kunde = new Kunde($kKunde);
-    $db    = Shop::Container()->getDB();
-    if ($kunde->cPasswort !== null && strlen($kunde->cPasswort) < 10) {
-        // Da Gastkonten auch durch Kundenkontolöschung entstehen können, kann es auch mehrere Bestellungen geben
-        $oBestellung = $db->query(
-            'SELECT COUNT(kBestellung) AS countBestellung
-                FROM tbestellung
-                WHERE cStatus NOT IN (' . BESTELLUNG_STATUS_VERSANDT . ', ' . BESTELLUNG_STATUS_STORNO . ')
-                    AND kKunde = ' . (int)$kunde->kKunde,
-            \DB\ReturnType::SINGLE_OBJECT
-        );
-        if (isset($oBestellung->countBestellung) && (int)$oBestellung->countBestellung === 0) {
-            $db->delete('tlieferadresse', 'kKunde', (int)$kunde->kKunde);
-            $db->delete('trechnungsadresse', 'kKunde', (int)$kunde->kKunde);
-            $db->delete('tkundenattribut', 'kKunde', (int)$kunde->kKunde);
-            $db->delete('tkunde', 'kKunde', (int)$kunde->kKunde);
         }
     }
 }

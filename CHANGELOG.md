@@ -1,6 +1,12 @@
 # JTL-Shop Changelog
 
-## [4.06.9]
+## [4.06.10]
+
+Dieses Update enthält Bugfixes und Sicherheitsupdates.
+
+Alle für diese Zielversion gelösten Vorgänge finden Sie unter diesem Link: https://jtl-url.de/cl40610
+
+## [4.06.9] - 2018-09-19
 
 Dieses Update enthält Fehlerbehebungen. 
 

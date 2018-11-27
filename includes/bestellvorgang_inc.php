@@ -305,13 +305,36 @@ function pruefeRechnungsadresseStep($cGet_arr): void
 {
     global $step, $Kunde;
     //sondersteps Rechnungsadresse ändern
-    if (!empty($_SESSION['Kunde'])
+    if (!empty(\Session\Session::getCustomer()->cOrt)
         && isset($cGet_arr['editRechnungsadresse'])
         && (int)$cGet_arr['editRechnungsadresse'] === 1
     ) {
         Kupon::resetNewCustomerCoupon();
-        $Kunde = $_SESSION['Kunde'];
+        $Kunde = \Session\Session::getCustomer();
         $step  = 'edit_customer_address';
+    }
+
+    if (!empty(\Session\Session::getCustomer()->cOrt)
+        && count(VersandartHelper::getPossibleShippingCountries(
+            \Session\Session::getCustomerGroup()->getID(),
+            false,
+            false,
+            [\Session\Session::getCustomer()->cLand]
+        )) === 0
+    ) {
+        Shop::Smarty()->assign('forceDeliveryAddress', 1);
+
+        if (!isset($_SESSION['Lieferadresse'])
+            || count(VersandartHelper::getPossibleShippingCountries(
+                \Session\Session::getCustomerGroup()->getID(),
+                false,
+                false,
+                [$_SESSION['Lieferadresse']->cLand]
+            )) === 0
+        ) {
+            $Kunde = \Session\Session::getCustomer();
+            $step  = 'edit_customer_address';
+        }
     }
 
     if (isset($_SESSION['checkout.register']) && (int)$_SESSION['checkout.register'] === 1) {
@@ -560,7 +583,8 @@ function gibStepUnregistriertBestellen(): void
     Shop::Smarty()->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
         ->assign('herkunfte', $herkunfte)
         ->assign('Kunde', $Kunde ?? null)
-        ->assign('laender', VersandartHelper::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID()))
+        ->assign('laender', VersandartHelper::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID(), false, true))
+        ->assign('LieferLaender', VersandartHelper::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID()))
         ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder())
         ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
         ->assign('code_registrieren', false);
@@ -612,7 +636,8 @@ function gibStepLieferadresse()
         Shop::Smarty()->assign('Lieferadressen', $Lieferadressen);
         $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
     }
-    Shop::Smarty()->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
+    Shop::Smarty()->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe, false, true))
+        ->assign('LieferLaender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
         ->assign('Kunde', $_SESSION['Kunde'] ?? null)
         ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse ?? null);
     if (isset($_SESSION['Bestellung']->kLieferadresse) && $_SESSION['Bestellung']->kLieferadresse == -1) {
@@ -3167,7 +3192,7 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0): void
     Shop::Smarty()->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
         ->assign('herkunfte', $herkunfte)
         ->assign('Kunde', $_SESSION['Kunde'])
-        ->assign('laender', VersandartHelper::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID()))
+        ->assign('laender', VersandartHelper::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID(), false, true))
         ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder());
     if (is_array($_SESSION['Kunde']->cKundenattribut_arr)) {
         Shop::Smarty()->assign('cKundenattribut_arr', $_SESSION['Kunde']->cKundenattribut_arr);
@@ -3204,7 +3229,8 @@ function setzeFehlerSmartyRechnungsadresse($cFehlendeEingaben_arr, $nUnreg = 0, 
     Shop::Smarty()->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
         ->assign('herkunfte', $herkunfte)
         ->assign('Kunde', $oKunde_tmp)
-        ->assign('laender', VersandartHelper::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID()))
+        ->assign('laender', VersandartHelper::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID(), false, true))
+        ->assign('LieferLaender', VersandartHelper::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID()))
         ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder())
         ->assign('warning_passwortlaenge', lang_passwortlaenge($conf['kunden']['kundenregistrierung_passwortlaenge']));
     if (is_array($_SESSION['Kunde']->cKundenattribut_arr)) {
@@ -3352,7 +3378,7 @@ function setzeSmartyLieferadresse(): void
         Shop::Smarty()->assign('Lieferadressen', $Lieferadressen)
             ->assign('GuthabenLocalized', \Session\Session::getCustomer()->gibGuthabenLocalized());
     }
-    Shop::Smarty()->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
+    Shop::Smarty()->assign('LieferLaender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
         ->assign('Kunde', $_SESSION['Kunde'])
         ->assign('KuponMoeglich', Kupon::couponsAvailable())
         ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse);
@@ -3387,7 +3413,8 @@ function setzeFehlerSmartyLieferadresse($missingData, array $cPost_arr): void
             ->assign('GuthabenLocalized', \Session\Session::getCustomer()->gibGuthabenLocalized());
     }
     setzeFehlendeAngaben($missingData, 'shipping_address');
-    Shop::Smarty()->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
+    Shop::Smarty()->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe), false, true)
+        ->assign('LieferLaender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
         ->assign('Kunde', $_SESSION['Kunde'])
         ->assign('KuponMoeglich', Kupon::couponsAvailable())
         ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse)

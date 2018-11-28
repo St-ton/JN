@@ -184,7 +184,7 @@ build_create_initial_schema()
           SQL="${SQL} WHERE table_schema='${DB_NAME}'";
     local TABLES=$(mysql ${MYSQL_CONN} -ANe"${SQL}");
 
-    mysqldump -u${DB_USER} -p${DB_PASSWORD} --default-character-set=utf8 --skip-comments=true --skip-dump-date=true \
+    mysqldump -u${DB_USER} -p${DB_PASSWORD} --skip-comments=true --skip-dump-date=true \
         --add-locks=false --add-drop-table=false --no-autocommit=false ${DB_NAME} ${TABLES} > ${INITIAL_SCHEMA_PATH};
 }
 

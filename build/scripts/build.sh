@@ -84,7 +84,7 @@ build_create_md5_hashfile()
     local MD5_HASH_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/${VERSION}.csv";
 
     cd ${REPOSITORY_DIR};
-    find -type f ! \( -name ".git*" -o -name ".idea*" -o -name ".htaccess" -o -name ".php_cs" -o -name "config.JTL-Shop.ini.initial.php" -o -name "robots.txt" -o -name "rss.xml" -o -name "shopinfo.xml" -o -name "sitemap_index.xml" -o -name "*.md" \) -printf "'%P'\n" | grep -vE "admin/gfx/|admin/includes/emailpdfs/|admin/includes/shopmd5files/|admin/templates_c/|bilder/|build/|docs/|downloads/|export/|gfx/|includes/plugins/|includes/vendor/|install/|jtllogs/|mediafiles/|templates_c/|tests/|uploads/" | xargs md5sum | awk '{ print $1";"$2; }' | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
+    find -type f ! \( -name ".asset_cs" -or -name ".git*" -or -name ".idea*" -or -name ".htaccess" -or -name ".php_cs" -or -name "config.JTL-Shop.ini.initial.php" -or -name "robots.txt" -or -name "rss.xml" -or -name "shopinfo.xml" -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" | grep -vE ".git/|.idea/|admin/gfx/|admin/includes/emailpdfs/|admin/includes/shopmd5files/|admin/templates_c/|bilder/|build/|docs/|downloads/|export/|gfx/|includes/plugins/|includes/vendor/|install/|jtllogs/|mediafiles/|templates/Evo/|templates_c/|tests/|uploads/" | xargs md5sum | awk '{ print $2";"$1; }' | sort --field-separator=';' -k1 -k2 > ${MD5_HASH_FILENAME};
     cd ${CUR_PWD};
 
     echo "  File checksums admin/includes/shopmd5files/${VERSION}.csv";
@@ -145,18 +145,18 @@ build_create_db_struct()
     local VERSION=$1;
     local i=0;
     local DB_STRUCTURE='{';
-    local TABLE_COUNT=$(mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | wc -l)-1;
+    local TABLE_COUNT=$(($(mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | wc -l)-1));
     local SCHEMAJSON_PATH=${REPOSITORY_DIR}/admin/includes/shopmd5files/dbstruct_${VERSION}.json;
 
     while ((i++)); read -r table;
     do
         DB_STRUCTURE+='"'${table}'":[';
         local j=0;
-        local COLUMN_COUNT=$(mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show keys from ${table};" | wc -l)-1;
+        local COLUMN_COUNT=$(($(mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "SHOW COLUMNS FROM ${table};" | wc -l)-1));
 
         while ((j++)); read -r column;
         do
-            local value=$(echo "${column}" | awk -F'\t' '{print $5}');
+            local value=$(echo "${column}" | awk -F'\t' '{print $1}');
             DB_STRUCTURE+='"'${value}'"';
 
             if [[ ${j} -lt ${COLUMN_COUNT} ]]; then
@@ -164,7 +164,7 @@ build_create_db_struct()
             else
                 DB_STRUCTURE+=']';
             fi
-        done< <(mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show keys from ${table};" | sed 1d);
+        done< <(mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "SHOW COLUMNS FROM ${table};" | sed 1d);
 
         if [[ ${i} -lt ${TABLE_COUNT} ]]; then
             DB_STRUCTURE+=',';

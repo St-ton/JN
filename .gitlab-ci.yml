@@ -60,7 +60,7 @@ stages:
     echo "Deploying archive to build server..."
     docker exec \
       $CI_CONTAINER_NAME \
-      /bin/bash -c "bash $DEPLOY_SCRIPT_PATH $CI_PROJECT_NAME $CI_COMMIT_REF_NAME /archive"
+      sh -c "bash $DEPLOY_SCRIPT_PATH $CI_PROJECT_NAME $CI_COMMIT_REF_NAME /archive"
 
     docker cp $CI_CONTAINER_NAME:/archive/. $CI_BUILD_SERVER_ARCHIVE_PATH
     docker stop "$CI_CONTAINER_NAME"

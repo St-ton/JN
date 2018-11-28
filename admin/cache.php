@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/includes/admininclude.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 /** @global Smarty\JTLSmarty $smarty */
 setzeSprache();
 $oAccount->permission('OBJECTCACHE_VIEW', true, true);
@@ -15,6 +16,10 @@ $tab          = 'uebersicht';
 $action       = (isset($_POST['a']) && FormHelper::validateToken()) ? $_POST['a'] : null;
 $cache        = null;
 $opcacheStats = null;
+
+L10n\GetText::getInstance()->loadAdminLocale('configs')
+                           ->loadAdminLocale('confvalues');
+
 if (0 < strlen(RequestHelper::verifyGPDataString('tab'))) {
     $smarty->assign('tab', RequestHelper::verifyGPDataString('tab'));
 }
@@ -133,6 +138,7 @@ switch ($action) {
         );
         $i             = 0;
         $settingsCount = count($settings);
+
         while ($i < $settingsCount) {
             if (isset($_POST[$settings[$i]->cWertName])) {
                 $value                        = new stdClass();
@@ -288,6 +294,8 @@ $settings = Shop::Container()->getDB()->selectAll(
     '*',
     'nSort'
 );
+
+localizeConfigs($settings);
 foreach ($settings as $i => $setting) {
     if ($setting->cName === 'caching_types_disabled') {
         unset($settings[$i]);
@@ -301,6 +309,7 @@ foreach ($settings as $i => $setting) {
             '*',
             'nSort'
         );
+        localizeConfigValues($setting, $setting->ConfWerte);
     }
     $oSetValue              = Shop::Container()->getDB()->select(
         'teinstellungen',
@@ -317,7 +326,11 @@ $advancedSettings = Shop::Container()->getDB()->query(
         ORDER BY nSort',
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
-$settingsCount    = count($advancedSettings);
+
+localizeConfigs($advancedSettings);
+
+$settingsCount = count($advancedSettings);
+
 for ($i = 0; $i < $settingsCount; ++$i) {
     if ($advancedSettings[$i]->cInputTyp === 'selectbox') {
         $advancedSettings[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
@@ -327,6 +340,7 @@ for ($i = 0; $i < $settingsCount; ++$i) {
             '*',
             'nSort'
         );
+        localizeConfigValues($advancedSettings[$i], $advancedSettings[$i]->ConfWerte);
     }
     $oSetValue                           = Shop::Container()->getDB()->select(
         'teinstellungen',

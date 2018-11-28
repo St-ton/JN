@@ -4,12 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/includes/admininclude.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 
 $oAccount->permission('ORDER_PAYMENT_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'zahlungsarten_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
+
+L10n\GetText::getInstance()->loadAdminLocale('configs')
+                           ->loadAdminLocale('confgroups')
+                           ->loadAdminLocale('confvalues')
+                           ->loadAdminLocale('confsections');
+
 /** @global Smarty\JTLSmarty $smarty */
 $db               = Shop::Container()->getDB();
 $standardwaehrung = $db->select('twaehrung', 'cStandard', 'Y');
@@ -153,6 +160,7 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
                 [CONF_ZAHLUNGSARTEN, $Conf[$i]->cWertName]
             );
             $db->insert('teinstellungen', $aktWert);
+            localizeConfig($Conf[$i]);
         }
     }
 
@@ -247,6 +255,7 @@ if ($step === 'einstellen') {
                         '*',
                         'nSort'
                     );
+                    localizeConfigValues($Conf[$i], $Conf[$i]->ConfWerte);
                 }
                 $setValue = $db->select(
                     'teinstellungen',
@@ -256,6 +265,7 @@ if ($step === 'einstellen') {
                     $Conf[$i]->cWertName
                 );
                 $Conf[$i]->gesetzterWert = $setValue->cWert ?? null;
+                localizeConfig($Conf[$i]);
             }
         }
 

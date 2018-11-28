@@ -11,7 +11,9 @@ $kSektion = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
 $bSuche   = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
 
 L10n\GetText::getInstance()->loadAdminLocale('configs')
-                           ->loadAdminLocale('confvalues');
+                            ->loadAdminLocale('confgroups')
+                            ->loadAdminLocale('confvalues')
+                            ->loadAdminLocale('confsections');
 
 if ($bSuche) {
     $oAccount->permission('SETTINGS_SEARCH_VIEW', true, true);
@@ -67,6 +69,8 @@ if ($kSektion > 0) {
     $section = Shop::Container()->getDB()->select('teinstellungensektion', 'kEinstellungenSektion', CONF_GLOBAL);
     $smarty->assign('kEinstellungenSektion', CONF_GLOBAL);
 }
+
+localizeConfigSection($section);
 
 if ($bSuche) {
     $step = 'einstellungen bearbeiten';
@@ -177,6 +181,7 @@ if ($step === 'uebersicht') {
         );
 
         $sections[$i]->anz = $anz_einstellunen->anz;
+        localizeConfigSection($sections[$i]);
     }
     $smarty->assign('Sektionen', $sections);
 }
@@ -215,10 +220,7 @@ if ($step === 'einstellungen bearbeiten') {
         $config->nModul                = (int)$config->nModul;
         $oSection                      = SettingSection::getInstance((int)$config->kEinstellungenSektion);
 
-        if (!empty($config->cWertName)) {
-            $config->cName         = __("{$config->cWertName}_name");
-            $config->cBeschreibung = __("{$config->cWertName}_desc");
-        }
+        localizeConfig($config);
 
         //@ToDo: Setting 492 is the only one listbox at the moment.
         //But In special case of setting 492 values come from kKundengruppe instead of teinstellungenconfwerte
@@ -238,9 +240,7 @@ if ($step === 'einstellungen bearbeiten') {
                 'nSort'
             );
 
-            foreach ($config->ConfWerte as $value) {
-                $value->cName = __("{$config->cWertName}_value({$value->cWert})");
-            }
+            localizeConfigValues($config, $config->ConfWerte);
         }
         if ($config->cInputTyp === 'listbox') {
             $setValue                = Shop::Container()->getDB()->selectAll(

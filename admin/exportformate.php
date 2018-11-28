@@ -5,6 +5,10 @@
  */
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
+
+L10n\GetText::getInstance()->loadAdminLocale('configs')
+                           ->loadAdminLocale('confvalues');
 
 $oAccount->permission('EXPORT_FORMATS_VIEW', true, true);
 /** @global Smarty\JTLSmarty $smarty */
@@ -60,6 +64,7 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && FormHelper
             '*',
             'nSort'
         );
+        localizeConfigs($Conf);
         $configCount = count($Conf);
         for ($i = 0; $i < $configCount; $i++) {
             $aktWert                = new stdClass();
@@ -251,7 +256,14 @@ if ($step === 'neuer Export') {
         }
         $smarty->assign('Exportformat', $exportformat);
     }
-    $smarty->assign('Conf', getAdminSectionSettings(CONF_EXPORTFORMATE));
+    $configs = getAdminSectionSettings(CONF_EXPORTFORMATE);
+    localizeConfigs($configs);
+
+    foreach ($configs as $config) {
+        localizeConfigValues($config, $config->ConfWerte);
+    }
+
+    $smarty->assign('Conf', $configs);
 }
 
 $smarty->assign('step', $step)

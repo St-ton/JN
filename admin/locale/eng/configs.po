@@ -5,10 +5,10 @@ msgid "systemlog_flag_desc"
 msgstr ""
 
 msgid "artikel_artikelanzeigefilter_name"
-msgstr "Artikelanzeigefilter"
+msgstr "Product display filter"
 
 msgid "artikel_artikelanzeigefilter_desc"
-msgstr "Folgende Artikel werden im Shop zu finden sein"
+msgstr "These products will be available in the shop"
 
 msgid "artikel_artikelanzeigefilter_seo_name"
 msgstr "Direktaufruf ausverkaufter Artikel"
@@ -1883,7 +1883,7 @@ msgid "sonstiges_gratisgeschenk_sortierung_desc"
 msgstr "Wie sollen die Artikel sortiert werden?"
 
 msgid "zahlungsart_ueberweisung_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
+msgstr "Number of required orders"
 
 msgid "zahlungsart_ueberweisung_min_bestellungen_desc"
 msgstr "Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen."
@@ -1901,7 +1901,7 @@ msgid "zahlungsart_ueberweisung_max_desc"
 msgstr "Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)"
 
 msgid "zahlungsart_nachnahme_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
+msgstr "Number of required orders"
 
 msgid "zahlungsart_nachnahme_min_bestellungen_desc"
 msgstr "Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen."
@@ -1919,7 +1919,7 @@ msgid "zahlungsart_nachnahme_max_desc"
 msgstr "Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)"
 
 msgid "zahlungsart_kreditkarte_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
+msgstr "Number of required orders"
 
 msgid "zahlungsart_kreditkarte_min_bestellungen_desc"
 msgstr "Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen."
@@ -1937,7 +1937,7 @@ msgid "zahlungsart_kreditkarte_max_desc"
 msgstr "Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)"
 
 msgid "zahlungsart_rechnung_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
+msgstr "Number of required orders"
 
 msgid "zahlungsart_rechnung_min_bestellungen_desc"
 msgstr "Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen."
@@ -1955,13 +1955,13 @@ msgid "zahlungsart_rechnung_max_desc"
 msgstr "Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)"
 
 msgid "zahlungsart_billpay_mode_name"
-msgstr "Modus"
+msgstr "Mode"
 
 msgid "zahlungsart_billpay_mode_desc"
 msgstr ""
 
 msgid "zahlungsart_lastschrift_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
+msgstr "Number of required orders"
 
 msgid "zahlungsart_lastschrift_min_bestellungen_desc"
 msgstr "Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen."
@@ -1979,7 +1979,7 @@ msgid "zahlungsart_lastschrift_max_desc"
 msgstr "Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)"
 
 msgid "zahlungsart_billpay_mid_name"
-msgstr "Händler-ID"
+msgstr "Merchant ID"
 
 msgid "zahlungsart_billpay_mid_desc"
 msgstr "ID des Händlers (mid)"
@@ -2015,10 +2015,10 @@ msgid "zahlungsart_lastschrift_kreditinstitut_abfrage_desc"
 msgstr "Soll das Feld Kreditinstitut im Bestellvorgang abgefragt werden?"
 
 msgid "zahlungsart_barzahlung_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
+msgstr "Number of required orders"
 
 msgid "zahlungsart_barzahlung_min_bestellungen_desc"
-msgstr "Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen."
+msgstr "Only Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen."
 
 msgid "zahlungsart_barzahlung_min_name"
 msgstr "Mindestbestellwert"
@@ -2129,7 +2129,7 @@ msgid "zahlungsart_sofortueberweisung_debugmode_desc"
 msgstr "Aktivieren Sie den Debug Modus, wenn Sie das Bezahlsystem testen wollen ohne dass tatsächlich Buchungen vorgenommen werden. Es wird dazu auf extra Testserver umgestellt. Denken Sie bitte daran, dass Sie eventuell auch in der Benutzeroberfläche des Zahlung"
 
 msgid "zahlungsart_billpay_invoice_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
+msgstr "Number of required orders"
 
 msgid "zahlungsart_billpay_invoice_min_bestellungen_desc"
 msgstr "Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen."
@@ -2147,7 +2147,7 @@ msgid "zahlungsart_billpay_invoice_max_desc"
 msgstr "Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)"
 
 msgid "zahlungsart_billpay_direct_debit_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
+msgstr "Number of required orders"
 
 msgid "zahlungsart_billpay_direct_debit_min_bestellungen_desc"
 msgstr "Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen."
@@ -2165,7 +2165,7 @@ msgid "zahlungsart_billpay_direct_debit_max_desc"
 msgstr "Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)"
 
 msgid "zahlungsart_billpay_rate_payment_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
+msgstr "Number of required orders"
 
 msgid "zahlungsart_billpay_rate_payment_min_bestellungen_desc"
 msgstr "Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen."
@@ -2183,7 +2183,7 @@ msgid "zahlungsart_billpay_rate_payment_max_desc"
 msgstr "Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)"
 
 msgid "zahlungsart_billpay_paylater_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
+msgstr "Number of required orders"
 
 msgid "zahlungsart_billpay_paylater_min_bestellungen_desc"
 msgstr "Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen."
@@ -2201,7 +2201,7 @@ msgid "zahlungsart_billpay_paylater_max_desc"
 msgstr "Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)"
 
 msgid "exportformate_lager_ueber_null_name"
-msgstr "Nur Produkte mit Lagerbestand über 0"
+msgstr "Only products mit Lagerbestand über 0"
 
 msgid "exportformate_lager_ueber_null_desc"
 msgstr ""
@@ -2219,10 +2219,10 @@ msgid "exportformate_beschreibung_desc"
 msgstr ""
 
 msgid "exportformate_lieferland_name"
-msgstr "Versandkosten Lieferland (ISO-Code)"
+msgstr "Shipping fee Lieferland (ISO-Code)"
 
 msgid "exportformate_lieferland_desc"
-msgstr "Es werden autom. die günstigsten Versandkosten zu diesem Lieferland berechnet. ISO-Code angeben, z.B. DE"
+msgstr "Es werden automatisch die günstigsten Versandkosten zu diesem Lieferland berechnet. ISO-Code angeben, z.B. DE"
 
 msgid "exportformate_quot_name"
 msgstr "Zeichenmaskierung &quot;"
@@ -2375,7 +2375,7 @@ msgid "preisverlauf_anzahl_monate_desc"
 msgstr "Wieviele der letzten Monate sollen für den Preisverlauf beachtet werden? "
 
 msgid "vergleichsliste_anzahl_name"
-msgstr "Anzahl maximaler Produkte"
+msgstr "Maximum number of products"
 
 msgid "vergleichsliste_anzahl_desc"
 msgstr "Maximale Anzahl der Produkte auf der Vergleichsliste"
@@ -2444,7 +2444,7 @@ msgid "vergleichsliste_target_name"
 msgstr "Position der Vergleichsliste"
 
 msgid "vergleichsliste_target_desc"
-msgstr "Soll die Vergleichsliste in einem neuen Fenster oder im alten Fenster geöffnet werden?"
+msgstr "Should the checklist be opened in a new window or in the existing window?"
 
 msgid "bewertung_anzeigen_name"
 msgstr "Bewertungssystem nutzen"
@@ -3077,16 +3077,16 @@ msgid "kwk_kundengruppen_desc"
 msgstr "Welche Kundengruppe soll Neukunden zugewiesen werden?"
 
 msgid "trustedshops_nutzen_name"
-msgstr "Trusted Shops K&auml;uferschutz nutzen"
+msgstr "Use Trusted Shops customer protection"
 
 msgid "trustedshops_nutzen_desc"
-msgstr "Wollen Sie Trusted Shops nutzen?"
+msgstr "Would you like to use TrustedShops?"
 
 msgid "trustedshops_kundenbewertung_anzeigen_name"
-msgstr "Trusted Shops Kundenbewertung anzeigen"
+msgstr "Show Trusted Shops customer reviews"
 
 msgid "trustedshops_kundenbewertung_anzeigen_desc"
-msgstr "Soll die Kundenbewertung in einer Box angezeigt werden?"
+msgstr "Should the customer reviews be shown in a box?"
 
 msgid "suchspecials_sortierung_bestseller_name"
 msgstr "Bestseller sortierung"
@@ -3209,13 +3209,13 @@ msgid "caching_types_disabled_desc"
 msgstr ""
 
 msgid "caching_activated_name"
-msgstr "Objekt-Cache aktivieren?"
+msgstr "Enable Object Cache?"
 
 msgid "caching_activated_desc"
-msgstr "Soll der Cache genutzt werden?"
+msgstr "Should the cache be used?"
 
 msgid "caching_method_name"
-msgstr "Methode"
+msgstr "Method"
 
 msgid "caching_method_desc"
 msgstr "Welche Cache-Methode soll genutzt werden?"
@@ -3239,10 +3239,10 @@ msgid "caching_redis_db_desc"
 msgstr "Datenbank-Nummer für Methode Redis (leer lassen für Standard)"
 
 msgid "caching_redis_pass_name"
-msgstr "Redis-Passwort"
+msgstr "Redis password"
 
 msgid "caching_redis_pass_desc"
-msgstr "optionales Passwort für Methode Redis"
+msgstr "Optional password for method Redis"
 
 msgid "caching_redis_persistent_name"
 msgstr "Redis-Persistenz"
@@ -3275,10 +3275,10 @@ msgid "caching_debug_desc"
 msgstr "Debugging aktivieren?"
 
 msgid "caching_debug_method_name"
-msgstr "Debug-Methode"
+msgstr "Debug-Method"
 
 msgid "caching_debug_method_desc"
-msgstr "Debugging-Methode"
+msgstr "Debugging-Method"
 
 msgid "caching_rediscluster_hosts_name"
 msgstr "Cluster-Hosts"
@@ -3287,10 +3287,10 @@ msgid "caching_rediscluster_hosts_desc"
 msgstr "Cluster-Hosts (Name:Port, mit Komma getrennt)"
 
 msgid "caching_rediscluster_strategy_name"
-msgstr "Strategie"
+msgstr "Strategy"
 
 msgid "caching_rediscluster_strategy_desc"
-msgstr "Strategie"
+msgstr "Strategy"
 
 msgid "compile_check_name"
 msgstr "Compile-Check aktivieren?"

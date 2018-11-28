@@ -197,9 +197,10 @@ function holeEinstellungAbteil($oSQL, $nSort, $kEinstellungenSektion)
  */
 function holeEinstellungHeadline($nSort, $sectionID)
 {
-    $configHead  = new stdClass();
-    $sectionID   = (int)$sectionID;
-    $nSort       = (int)$nSort;
+    $configHead = new stdClass();
+    $sectionID  = (int)$sectionID;
+    $nSort      = (int)$nSort;
+
     if ($nSort > 0 && $sectionID > 0) {
         $oEinstellungTMP_arr = Shop::Container()->getDB()->query(
             'SELECT *
@@ -318,4 +319,69 @@ function sortiereEinstellungen($oEinstellung_arr)
     }
 
     return [];
+}
+
+/**
+ * @param object $config
+ */
+function localizeConfig($config)
+{
+    if ($config->cConf === 'Y') {
+        $config->cName         = __("{$config->cWertName}_name");
+        $config->cBeschreibung = __("{$config->cWertName}_desc");
+
+        if ($config->cBeschreibung === "{$config->cWertName}_desc") {
+            $config->cBeschreibung = '';
+        }
+    } elseif ($config->cConf === 'N') {
+        $config->cName = __("configgroup_{$config->kEinstellungenConf}");
+    }
+}
+
+/**
+ * @param object[] $configs
+ */
+function localizeConfigs($configs)
+{
+    foreach ($configs as $config) {
+        localizeConfig($config);
+    }
+}
+
+/**
+ * @param object $config
+ * @param object $value
+ */
+function localizeConfigValue($config, $value)
+{
+    $value->cName = __("{$config->cWertName}_value({$value->cWert})");
+}
+
+/**
+ * @param object $config
+ * @param object[] $values
+ */
+function localizeConfigValues($config, $values)
+{
+    foreach ($values as $value) {
+        localizeConfigValue($config, $value);
+    }
+}
+
+/**
+ * @param object $section
+ */
+function localizeConfigSection($section)
+{
+    $section->cName = __("configsection_{$section->kEinstellungenSektion}");
+}
+
+/**
+ * @param object[] $sections
+ */
+function localizeConfigSections($sections)
+{
+    foreach ($sections as $section) {
+        localizeConfigSection($section);
+    }
 }

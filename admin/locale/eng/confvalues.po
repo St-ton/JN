@@ -2,10 +2,10 @@ msgid "artikel_artikelanzeigefilter_value(1)"
 msgstr "Alle Artikel anzeigen"
 
 msgid "artikel_artikelanzeigefilter_value(2)"
-msgstr "Nur Artikel mit Lagerbestand>0 anzeigen"
+msgstr "Show only products with stock > 0"
 
 msgid "artikel_artikelanzeigefilter_value(3)"
-msgstr "Nur Artikel mit Lagerbestand>0 oder deren Lagerbestand<0 werden darf"
+msgstr "Show only products with stock > 0 or those who can get a stock < 0"
 
 msgid "artikel_artikelanzeigefilter_seo_value(404)"
 msgstr "Seite nicht gefunden (404 Not Found)"
@@ -1409,7 +1409,7 @@ msgid "zahlungsart_billpay_mode_value(live)"
 msgstr "Live"
 
 msgid "zahlungsart_billpay_mode_value(test)"
-msgstr "Testumgebung"
+msgstr "Testing environment"
 
 msgid "zahlungsart_lastschrift_bic_abfrage_value(N)"
 msgstr "Nicht abfragen"
@@ -1745,7 +1745,7 @@ msgid "vergleichsliste_target_value(blank)"
 msgstr "In einem neuen Fenster"
 
 msgid "vergleichsliste_target_value(popup)"
-msgstr "Als Popup"
+msgstr "As popup"
 
 msgid "bewertung_anzeigen_value(Y)"
 msgstr "Yes"
@@ -2600,7 +2600,7 @@ msgid "caching_debug_method_value(ssd)"
 msgstr "JTLDebug"
 
 msgid "caching_rediscluster_strategy_value(1)"
-msgstr "Alle Anfragen nur an Master"
+msgstr "All requests only to Master"
 
 msgid "caching_rediscluster_strategy_value(2)"
 msgstr "Failover für Leseanfragen an Slaves"

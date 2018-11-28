@@ -65,7 +65,7 @@ build_create()
     build_migrate;
 
     echo "Creating database struct";
-    build_create_db_struct;
+    build_create_db_struct ${APPLICATION_VERSION_STR};
 
     echo "Creating new initial schema";
     build_create_initial_schema;

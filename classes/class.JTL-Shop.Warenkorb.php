@@ -201,45 +201,47 @@ class Warenkorb
     ) {
         //toDo schaue, ob diese Pos nicht markiert werden muesste, wenn anzahl>lager gekauft wird
         //schaue, ob es nicht schon Positionen mit diesem Artikel gibt
-        foreach ($this->PositionenArr as $i => $Position) {
-            if (isset($Position->Artikel->kArtikel) &&
-                $Position->Artikel->kArtikel == $kArtikel &&
-                $Position->nPosTyp == $nPosTyp &&
-                !$Position->cUnique
-            ) {
-                $neuePos = false;
-                //hat diese Position schon einen EigenschaftWert ausgewaehlt und ist das dieselbe eigenschaft wie ausgewaehlt?
-                foreach ($Position->WarenkorbPosEigenschaftArr as $WKEigenschaft) {
-                    foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {
-                        //gleiche Eigenschaft suchen
-                        if ($oEigenschaftwerte->kEigenschaft == $WKEigenschaft->kEigenschaft) {
-                            //ist es ein Freifeld mit unterschieldichem Inhalt oder eine Eigenschaft mit unterschielichem Wert?
-                            if (($WKEigenschaft->kEigenschaftWert > 0 &&
-                                    $WKEigenschaft->kEigenschaftWert != $oEigenschaftwerte->kEigenschaftWert) ||
-                                (($WKEigenschaft->cTyp === 'FREIFELD' || $WKEigenschaft->cTyp === 'PFLICHT-FREIFELD') &&
-                                    $WKEigenschaft->cEigenschaftWertName[$_SESSION['cISOSprache']] != $oEigenschaftwerte->cFreifeldWert)
-                            ) {
-                                $neuePos = true;
-                                break;
+        if (!$cUnique) {
+            foreach ($this->PositionenArr as $i => $Position) {
+                if (isset($Position->Artikel->kArtikel) &&
+                    $Position->Artikel->kArtikel == $kArtikel &&
+                    $Position->nPosTyp == $nPosTyp &&
+                    !$Position->cUnique
+                ) {
+                    $neuePos = false;
+                    //hat diese Position schon einen EigenschaftWert ausgewaehlt und ist das dieselbe eigenschaft wie ausgewaehlt?
+                    foreach ($Position->WarenkorbPosEigenschaftArr as $WKEigenschaft) {
+                        foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {
+                            //gleiche Eigenschaft suchen
+                            if ($oEigenschaftwerte->kEigenschaft == $WKEigenschaft->kEigenschaft) {
+                                //ist es ein Freifeld mit unterschieldichem Inhalt oder eine Eigenschaft mit unterschielichem Wert?
+                                if (($WKEigenschaft->kEigenschaftWert > 0 &&
+                                        $WKEigenschaft->kEigenschaftWert != $oEigenschaftwerte->kEigenschaftWert) ||
+                                    (($WKEigenschaft->cTyp === 'FREIFELD' || $WKEigenschaft->cTyp === 'PFLICHT-FREIFELD') &&
+                                        $WKEigenschaft->cEigenschaftWertName[$_SESSION['cISOSprache']] != $oEigenschaftwerte->cFreifeldWert)
+                                ) {
+                                    $neuePos = true;
+                                    break;
+                                }
                             }
                         }
                     }
-                }
-                if (!$neuePos && !$cUnique) {
-                    //erhoehe Anzahl dieser Position
-                    $this->PositionenArr[$i]->nZeitLetzteAenderung = time();
-                    $this->PositionenArr[$i]->nAnzahl += $anzahl;
-                    if ($setzePositionsPreise === true) {
-                        $this->setzePositionsPreise();
-                    }
-                    executeHook(HOOK_WARENKORB_CLASS_FUEGEEIN, [
-                        'kArtikel'      => $kArtikel,
-                        'oPosition_arr' => &$this->PositionenArr,
-                        'nAnzahl'       => &$anzahl,
-                        'exists'        => true
-                    ]);
+                    if (!$neuePos && !$cUnique) {
+                        //erhoehe Anzahl dieser Position
+                        $this->PositionenArr[$i]->nZeitLetzteAenderung = time();
+                        $this->PositionenArr[$i]->nAnzahl += $anzahl;
+                        if ($setzePositionsPreise === true) {
+                            $this->setzePositionsPreise();
+                        }
+                        executeHook(HOOK_WARENKORB_CLASS_FUEGEEIN, [
+                            'kArtikel'      => $kArtikel,
+                            'oPosition_arr' => &$this->PositionenArr,
+                            'nAnzahl'       => &$anzahl,
+                            'exists'        => true
+                        ]);
 
-                    return $this;
+                        return $this;
+                    }
                 }
             }
         }

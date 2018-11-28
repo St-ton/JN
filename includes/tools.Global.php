@@ -922,7 +922,8 @@ function checkeWarenkorbEingang()
                                     $oKonfigitem->oEigenschaftwerte_arr,
                                     C_WARENKORBPOS_TYP_ARTIKEL,
                                     $cUnique,
-                                    $oKonfigitem->getKonfigitem()
+                                    $oKonfigitem->getKonfigitem(),
+                                    false
                                 );
                                 break;
 
@@ -1514,7 +1515,7 @@ function fuegeEinInWarenkorb(
                 return false;
             }
         }
-        $_SESSION['Warenkorb']->fuegeEin($kArtikel, $anzahl, $oEigenschaftwerte_arr, 1, $cUnique, $kKonfigitem, $setzePositionsPreise, $cResponsibility)
+        $_SESSION['Warenkorb']->fuegeEin($kArtikel, $anzahl, $oEigenschaftwerte_arr, 1, $cUnique, $kKonfigitem, false, $cResponsibility)
                               ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
                               ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
                               ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
@@ -1525,7 +1526,11 @@ function fuegeEinInWarenkorb(
                               ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
                               ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
 
-        resetNeuKundenKupon();
+        resetNeuKundenKupon(false);
+
+        if ($setzePositionsPreise) {
+            $_SESSION['Warenkorb']->setzePositionsPreise();
+        }
         unset(
             $_SESSION['VersandKupon'],
             $_SESSION['Versandart'],
@@ -6193,8 +6198,9 @@ function convertCurrency($price, $iso = null, $id = null, $useRounding = true, $
 
 /**
  * @todo: validate.
+ * @param bool $setzePositionspreise
  */
-function resetNeuKundenKupon()
+function resetNeuKundenKupon($setzePositionspreise = true)
 {
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     if (isset($_SESSION['Kunde'])) {
@@ -6212,8 +6218,10 @@ function resetNeuKundenKupon()
 
     unset($_SESSION['NeukundenKupon'], $_SESSION['NeukundenKuponAngenommen']);
     /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
-    $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
-                          ->setzePositionsPreise();
+    $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON);
+    if ($setzePositionspreise) {
+        $_SESSION['Warenkorb']->setzePositionsPreise();
+    }
 }
 
 /**

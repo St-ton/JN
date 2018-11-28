@@ -354,11 +354,12 @@ class WarenkorbPos
     {
         /** @var array('Warenkorb' => Warenkorb) $_SESSION */
         if (is_array($_SESSION['Waehrungen'])) {
+            $ust = gibUst($this->kSteuerklasse);
             foreach ($_SESSION['Waehrungen'] as $Waehrung) {
                 // Standardartikel
-                $this->cGesamtpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(berechneBrutto($this->fPreis * $this->nAnzahl, gibUst($this->kSteuerklasse)), $Waehrung);
+                $this->cGesamtpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(berechneBrutto($this->fPreis * $this->nAnzahl, $ust), $Waehrung);
                 $this->cGesamtpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized($this->fPreis * $this->nAnzahl, $Waehrung);
-                $this->cEinzelpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(berechneBrutto($this->fPreis, gibUst($this->kSteuerklasse)), $Waehrung);
+                $this->cEinzelpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(berechneBrutto($this->fPreis, $ust), $Waehrung);
                 $this->cEinzelpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized($this->fPreis, $Waehrung);
 
                 if (!empty($this->Artikel->cVPEEinheit) && isset($this->Artikel->cVPE) && $this->Artikel->cVPE === 'Y' && $this->Artikel->fVPEWert > 0) {
@@ -366,9 +367,9 @@ class WarenkorbPos
                 }
 
                 if ($this->istKonfigVater()) {
-                    $this->cKonfigpreisLocalized[0][$Waehrung->cName]       = gibPreisStringLocalized(berechneBrutto($this->fPreis * $this->nAnzahl, gibUst($this->kSteuerklasse)), $Waehrung);
+                    $this->cKonfigpreisLocalized[0][$Waehrung->cName]       = gibPreisStringLocalized(berechneBrutto($this->fPreis * $this->nAnzahl, $ust), $Waehrung);
                     $this->cKonfigpreisLocalized[1][$Waehrung->cName]       = gibPreisStringLocalized($this->fPreis * $this->nAnzahl, $Waehrung);
-                    $this->cKonfigeinzelpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(berechneBrutto($this->fPreis, gibUst($this->kSteuerklasse)), $Waehrung);
+                    $this->cKonfigeinzelpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(berechneBrutto($this->fPreis, $ust), $Waehrung);
                     $this->cKonfigeinzelpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized($this->fPreis, $Waehrung);
                 }
 
@@ -377,14 +378,20 @@ class WarenkorbPos
                     $fPreisNetto  = 0;
                     $fPreisBrutto = 0;
                     $nVaterPos    = null;
-                    /** @var WarenkorbPos $oPosition */
-                    foreach ($_SESSION['Warenkorb']->PositionenArr as $nPos => $oPosition) {
-                        if ($this->cUnique == $oPosition->cUnique) {
-                            $fPreisNetto += $oPosition->fPreis * $oPosition->nAnzahl;
-                            $fPreisBrutto += berechneBrutto($oPosition->fPreis * $oPosition->nAnzahl, gibUst($oPosition->kSteuerklasse), 4);
+                    if ($this->cUnique) {
+                        /** @var WarenkorbPos $oPosition */
+                        foreach ($_SESSION['Warenkorb']->PositionenArr as $nPos => $oPosition) {
+                            if ($this->cUnique == $oPosition->cUnique) {
+                                $fPreisNetto  += $oPosition->fPreis * $oPosition->nAnzahl;
+                                $fPreisBrutto += berechneBrutto(
+                                    $oPosition->fPreis * $oPosition->nAnzahl,
+                                    gibUst($oPosition->kSteuerklasse),
+                                    4
+                                );
 
-                            if ($oPosition->istKonfigVater()) {
-                                $nVaterPos = $nPos;
+                                if ($oPosition->istKonfigVater()) {
+                                    $nVaterPos = $nPos;
+                                }
                             }
                         }
                     }
@@ -531,8 +538,18 @@ class WarenkorbPos
      */
     public function isIgnoreMultiplier()
     {
-        $konfigItem = new Konfigitem($this->kKonfigitem);
+        static $ignoreMultipliers = null;
 
-        return $konfigItem->ignoreMultiplier();
+        if ($ignoreMultipliers === null) {
+            $konfigItem        = new Konfigitem($this->kKonfigitem);
+            $ignoreMultipliers = [
+                $this->kKonfigitem => $konfigItem->ignoreMultiplier(),
+            ];
+        } elseif (!array_key_exists($this->kKonfigitem, $ignoreMultipliers)) {
+            $konfigItem                            = new Konfigitem($this->kKonfigitem);
+            $ignoreMultipliers[$this->kKonfigitem] = $konfigItem->ignoreMultiplier();
+        }
+
+        return $ignoreMultipliers[$this->kKonfigitem];
     }
 }

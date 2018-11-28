@@ -975,6 +975,7 @@ define('HOOK_INDEX_NAVI_HEAD_POSTGET', 132);
  * after instanciating JTLSmarty
  *
  * @file smartyInclude.php
+ * @param \Smarty\JTLSmarty $smarty
  */
 define('HOOK_SMARTY_INC', 133);
 
@@ -1034,6 +1035,7 @@ define('HOOK_CRON_EXPORTFORMATE_OUTPUT_FETCHED', 139);
  *
  * @file JTLSmarty.php
  * @param Smarty\JTLSmarty smarty
+ * @param phpQueryObject document
  */
 define('HOOK_SMARTY_OUTPUTFILTER', 140);
 

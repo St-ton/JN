@@ -29,7 +29,7 @@ class ExtensionLoader extends AbstractLoader
     /**
      * @inheritdoc
      */
-    public function init(int $id, bool $invalidateCache = false): Extension
+    public function init(int $id, bool $invalidateCache = false)
     {
         $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id .
             '_' . \Shop::getLanguageID();

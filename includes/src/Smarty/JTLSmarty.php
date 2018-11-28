@@ -150,7 +150,7 @@ class JTLSmarty extends \SmartyBC
             self::$_instance = $this;
         }
         if ($isAdmin === false && $fast_init === false) {
-            \executeHook(\HOOK_SMARTY_INC);
+            \executeHook(\HOOK_SMARTY_INC, ['smarty' => $this]);
         }
     }
 
@@ -209,7 +209,7 @@ class JTLSmarty extends \SmartyBC
             require_once \PFAD_ROOT . \PFAD_PHPQUERY . 'phpquery.class.php';
             $this->unregisterFilter('output', [$this, 'outputFilter']);
             $doc = \phpQuery::newDocumentHTML($tplOutput, \JTL_CHARSET);
-            \executeHook(\HOOK_SMARTY_OUTPUTFILTER);
+            \executeHook(\HOOK_SMARTY_OUTPUTFILTER, ['smarty' => $this, 'document' => $doc]);
             $tplOutput = $doc->htmlOuter();
         }
 

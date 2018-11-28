@@ -54,7 +54,7 @@ class PluginLoader extends AbstractLoader
     /**
      * @inheritdoc
      */
-    public function init(int $id, bool $invalidateCache = false): Plugin
+    public function init(int $id, bool $invalidateCache = false)
     {
         if ($this->plugin === null) {
             $this->plugin = new Plugin();

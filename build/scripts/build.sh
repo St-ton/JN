@@ -133,10 +133,7 @@ build_migrate()
         }
     ";
 
-    echo 'TRUNCATE tmigration' | mysql -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
-    echo 'TRUNCATE tmigrationlog' | mysql -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
     echo 'TRUNCATE tversion' | mysql -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
-
     echo "INSERT INTO tversion (nVersion, nZeileVon, nZeileBis, nInArbeit, nFehler, nTyp, cFehlerSQL, dAktualisiert) VALUES ('${APPLICATION_VERSION_STR}', 1, 0, 0, 0, 0, '', NOW())" | mysql -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
 }
 

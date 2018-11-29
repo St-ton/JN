@@ -935,21 +935,10 @@ class Kupon
             $ret['ungueltig'] = 10;
         }
         // Neukundenkupon
-        if ($Kupon->cKuponTyp === 'neukundenkupon') {
-            $Hash = Kuponneukunde::Hash(
-                null,
-                trim($_SESSION['Kunde']->cNachname),
-                trim($_SESSION['Kunde']->cStrasse),
-                null,
-                trim($_SESSION['Kunde']->cPLZ),
-                trim($_SESSION['Kunde']->cOrt),
-                trim($_SESSION['Kunde']->cLand)
-            );
-
-            $Kuponneukunde = Kuponneukunde::Load($_SESSION['Kunde']->cMail, $Hash);
-            if ($Kuponneukunde !== null && $Kuponneukunde->cVerwendet === 'Y') {
-                $ret['ungueltig'] = 11;
-            }
+        if ($Kupon->cKuponTyp === 'neukundenkupon'
+            && self::newCustomerCouponUsed($_SESSION['Kunde']->cMail, (int)$Kupon->kKupon)
+        ) {
+            $ret['ungueltig'] = 11;
         }
         //Hersteller
         if ((int)$Kupon->cHersteller !== -1
@@ -1005,6 +994,22 @@ class Kupon
         }
 
         return $ret;
+    }
+
+    /**
+     * @param string $email
+     * @param int $newCustomerCouponID
+     * @return bool
+     */
+    public static function newCustomerCouponUsed(string $email, int $newCustomerCouponID): bool
+    {
+        $newCustomerCouponUsed = Shop::Container()->getDB()->select(
+            'tkuponkunde',
+            ['kKupon', 'cMail'],
+            [$newCustomerCouponID, $email]
+        );
+
+        return $newCustomerCouponUsed !== null;
     }
 
     /**
@@ -1133,19 +1138,6 @@ class Kupon
      */
     public static function resetNewCustomerCoupon(): void
     {
-        if (\Session\Session::getCustomer()->isLoggedIn()) {
-            $hash = Kuponneukunde::Hash(
-                null,
-                trim($_SESSION['Kunde']->cNachname),
-                trim($_SESSION['Kunde']->cStrasse),
-                null,
-                trim($_SESSION['Kunde']->cPLZ),
-                trim($_SESSION['Kunde']->cOrt),
-                trim($_SESSION['Kunde']->cLand)
-            );
-            Shop::Container()->getDB()->delete('tkuponneukunde', ['cDatenHash', 'cVerwendet'], [$hash, 'N']);
-        }
-
         unset($_SESSION['NeukundenKupon'], $_SESSION['NeukundenKuponAngenommen']);
         \Session\Session::getCart()
                ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)

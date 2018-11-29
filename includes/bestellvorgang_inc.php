@@ -980,12 +980,6 @@ function plausiNeukundenKupon()
     if ((!isset($_SESSION['Kupon']->cKuponTyp) || $_SESSION['Kupon']->cKuponTyp !== 'standard')
         && !empty($_SESSION['Kunde']->cMail)
     ) {
-        $query  = 'SELECT tbestellung.kBestellung
-            FROM tkunde
-            JOIN tbestellung
-                ON tbestellung.kKunde = tkunde.kKunde
-            WHERE tkunde.cMail = :mail';
-        $values = ['mail' => $_SESSION['Kunde']->cMail];
         $conf   = Shop::getSettings([CONF_KAUFABWICKLUNG]);
         if (empty($_SESSION['Kunde']->kKunde)
             && $conf['kaufabwicklung']['bestellvorgang_unregneukundenkupon_zulassen'] === 'N'
@@ -993,56 +987,36 @@ function plausiNeukundenKupon()
             //unregistrierte Neukunden, keine Kupons für Gastbestellungen zugelassen
             return;
         }
+        //not for allready registered customers with order(s)
         if (!empty($_SESSION['Kunde']->kKunde)) {
-            // registrierte Kunden und Neukunden mit Kundenkonto
-            $query           .= ' OR tkunde.kKunde = :kkunde';
-            $values['kkunde'] = $_SESSION['Kunde']->kKunde;
+            $oBestellung  = Shop::Container()->getDB()->executeQueryPrepared('
+              SELECT tbestellung.kBestellung
+                FROM tkunde
+                JOIN tbestellung
+                    ON tbestellung.kKunde = tkunde.kKunde
+                WHERE tkunde.kKunde = :customerID
+                LIMIT 1',
+                ['customerID' => $_SESSION['Kunde']->kKunde],
+                \DB\ReturnType::SINGLE_OBJECT
+            );
+            if (!empty($oBestellung)) {
+                return;
+            }
         }
-        $query      .= ' LIMIT 1';
-        $oBestellung = Shop::Container()->getDB()->executeQueryPrepared($query, $values, \DB\ReturnType::SINGLE_OBJECT);
 
-        if (!empty($oBestellung)) {
-            return;
-        }
         $NeukundenKupons = (new Kupon())->getNewCustomerCoupon();
         if (!empty($NeukundenKupons)) {
-            $verwendet = Shop::Container()->getDB()->select('tkuponneukunde', 'cEmail', $_SESSION['Kunde']->cMail);
-            $verwendet = !empty($verwendet) ? $verwendet->cVerwendet : null;
             foreach ($NeukundenKupons as $NeukundenKupon) {
                 // teste ob Kunde mit cMail den Neukundenkupon schon verwendet hat...
-                $oDbKuponKunde = Shop::Container()->getDB()->select(
-                    'tkuponkunde',
-                    ['kKupon', 'cMail'],
-                    [$NeukundenKupon->kKupon, $_SESSION['Kunde']->cMail]
-                );
-                if (is_object($oDbKuponKunde)) {
+                $newCustomerCouponUsed = Kupon::newCustomerCouponUsed($_SESSION['Kunde']->cMail, $NeukundenKupon->kKupon);
+                if ($newCustomerCouponUsed) {
                     // ...falls ja, versuche nächsten Neukundenkupon
                     continue;
                 }
-                if ((empty($verwendet) || $verwendet === 'N') && angabenKorrekt(Kupon::checkCoupon($NeukundenKupon))) {
+                if (angabenKorrekt(Kupon::checkCoupon($NeukundenKupon))) {
                     Kupon::acceptCoupon($NeukundenKupon);
-                    if (empty($verwendet)) {
-                        $hash    = Kuponneukunde::Hash(
-                            null,
-                            trim($_SESSION['Kunde']->cNachname),
-                            trim($_SESSION['Kunde']->cStrasse),
-                            null,
-                            trim($_SESSION['Kunde']->cPLZ),
-                            trim($_SESSION['Kunde']->cOrt),
-                            trim($_SESSION['Kunde']->cLand)
-                        );
-                        $Options = [
-                            'Kupon'     => $NeukundenKupon->kKupon,
-                            'Email'     => $_SESSION['Kunde']->cMail,
-                            'DatenHash' => $hash,
-                            'Erstellt'  => 'NOW()',
-                            'Verwendet' => 'N'
-                        ];
 
-                        $Kuponneukunde = new Kuponneukunde();
-                        $Kuponneukunde->setOptions($Options);
-                        $Kuponneukunde->Save();
-                    }
+                    //TODO: nur ein NeuKundenKupon?
                     break;
                 }
             }

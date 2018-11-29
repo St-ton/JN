@@ -267,9 +267,7 @@ function augmentCoupon($oKupon)
 
     $oMaxErstelltDB   = Shop::Container()->getDB()->query(
         'SELECT max(dErstellt) as dLastUse
-            FROM ' . ($oKupon->cKuponTyp === 'neukundenkupon'
-                ? 'tkuponneukunde'
-                : 'tkuponkunde') . '
+            FROM tkuponkunde
             WHERE kKupon = ' . (int)$oKupon->kKupon,
         \DB\ReturnType::SINGLE_OBJECT
     );

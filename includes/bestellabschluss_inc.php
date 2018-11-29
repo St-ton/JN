@@ -917,14 +917,6 @@ function KuponVerwendungen($oBestellung): void
         Shop::Container()->getDB()->delete('tkuponkunde', ['kKunde', 'kKupon'], [(int)$KuponKunde->kKunde, $kKupon]);
         Shop::Container()->getDB()->insert('tkuponkunde', $KuponKunde);
 
-        if (isset($_SESSION['NeukundenKupon']->kKupon) && $_SESSION['NeukundenKupon']->kKupon > 0) {
-            Shop::Container()->getDB()->delete(
-                'tkuponneukunde',
-                ['kKupon', 'cEmail'],
-                [$kKupon, $_SESSION['Kunde']->cMail]
-            );
-        }
-
         $oKuponBestellung                     = new KuponBestellung();
         $oKuponBestellung->kKupon             = $kKupon;
         $oKuponBestellung->kBestellung        = $oBestellung->kBestellung;
@@ -1194,19 +1186,6 @@ function finalisiereBestellung($orderNo = '', bool $sendMail = true): Bestellung
     $order = new Bestellung($_SESSION['kBestellung']);
     $order->fuelleBestellung(false);
     $order->machGoogleAnalyticsReady();
-
-    if ($order->oRechnungsadresse !== null) {
-        $hash = Kuponneukunde::Hash(
-            null,
-            trim($order->oRechnungsadresse->cNachname),
-            trim($order->oRechnungsadresse->cStrasse),
-            null,
-            trim($order->oRechnungsadresse->cPLZ),
-            trim($order->oRechnungsadresse->cOrt),
-            trim($order->oRechnungsadresse->cLand)
-        );
-        Shop::Container()->getDB()->update('tkuponneukunde', 'cDatenHash', $hash, (object)['cVerwendet' => 'Y']);
-    }
 
     $_upd              = new stdClass();
     $_upd->kKunde      = (int)$_SESSION['Warenkorb']->kKunde;

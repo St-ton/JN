@@ -5,7 +5,7 @@
  */
 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
-require_once str_replace('frontend', '', $oPlugin->cFrontendPfad) . 'paypal-sdk/vendor/autoload.php';
+require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/vendor/autoload.php';
 require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad) . 'class/PayPal.helper.class.php';
 
 use PayPal\Api\Amount;

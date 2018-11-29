@@ -30,6 +30,12 @@
         <Version nr="106">
             <CreateDate>2016-09-14</CreateDate>
         </Version>
+        <Version nr="107">
+            <CreateDate>2017-03-01</CreateDate>
+        </Version>
+        <Version nr="108">
+            <CreateDate>2017-05-05</CreateDate>
+        </Version>
         <Hooks>
             <Hook id="6">6_7_jtl_paypal.php</Hook>
             <Hook id="7">6_7_jtl_paypal.php</Hook>
@@ -42,6 +48,7 @@
             <Hook id="144">144_jtl_paypal.php</Hook>
             <Hook id="180">180_jtl_paypal.php</Hook>
             <Hook id="208">208_jtl_paypalplus.php</Hook>
+            <Hook id="213">213_jtl_paypal.php</Hook>
         </Hooks>
         <FrontendLink>
             <Link>
@@ -112,46 +119,50 @@
         <CSS>
             <file>
                 <name>style.css</name>
-                <condition>PAGE_BESTELLVORGANG,PAGE_ARTIKEL,PAGE_WARENKORB</condition>
             </file>
         </CSS>
+        <JS>
+            <file>
+                <name>paypal.js</name>
+            </file>
+        </JS>
         <Locales>
             <Variable>
                 <Name>jtl_paypal_payment_invoice_name</Name>
                 <Description>PayPal PLUS Zahlungsartname bei Rechnungskauf</Description>
-                <VariableLocalized iso="GER">Rechnung (PayPal PLUS)</VariableLocalized>
-                <VariableLocalized iso="ENG">Invoice (PayPal PLUS)</VariableLocalized>
+                <VariableLocalized iso="GER">Kauf auf Rechnung (PayPal PLUS)</VariableLocalized>
+                <VariableLocalized iso="ENG">Purchase on Account (PayPal PLUS)</VariableLocalized>
                 <VariableLocalized iso="FRE">Facture (PayPal PLUS)</VariableLocalized>
             </Variable>
             <Variable>
                 <Name>jtl_paypal_warenkorb_max</Name>
-                <Description></Description>
+                <Description/>
                 <VariableLocalized iso="GER">Bitte reduzieren Sie Ihren Warenkorbwert auf maximal %Wert%.
                 </VariableLocalized>
             </Variable>
             <Variable>
                 <Name>jtl_paypal_warenkorb_min</Name>
-                <Description></Description>
+                <Description/>
                 <VariableLocalized iso="GER">Sie haben den Mindestbestellwert noch nicht erreicht. Dieser liegt bei
                     %Wert%.
                 </VariableLocalized>
             </Variable>
             <Variable>
                 <Name>jtl_paypal_notallowed</Name>
-                <Description></Description>
+                <Description/>
                 <VariableLocalized iso="GER">Sie haben mindestens einen Artikel im Warenkorb, der nicht über PayPal
                     Express bezahlt werden kann.
                 </VariableLocalized>
             </Variable>
             <Variable>
                 <Name>jtl_paypal_lieferadresse_nicht_aenderbar</Name>
-                <Description></Description>
+                <Description/>
                 <VariableLocalized iso="GER">Bei der Zahlart PayPal Express ist die Lieferadresse nicht änderbar.
                 </VariableLocalized>
             </Variable>
             <Variable>
                 <Name>jtl_paypal_pui</Name>
-                <Description></Description>
+                <Description/>
                 <VariableLocalized iso="GER"><![CDATA[Bitte überweisen Sie den Betrag in Höhe von %value% %currency% bis zum %payment_due_date% auf das unten angegebene Konto
 
 Empfänger: %account_holder_name%
@@ -162,30 +173,30 @@ Referenznummer: %reference_number%]]></VariableLocalized>
             </Variable>
             <Variable>
                 <Name>jtl_paypal_pui_legal</Name>
-                <Description></Description>
+                <Description/>
                 <VariableLocalized iso="GER">%company% hat die Forderung gegen Sie im Rahmen eines laufenden Factoringvertrages an die PayPal (Europe) S.àr.l. et Cie, S.C.A. abgetreten. Zahlungen mit schuldbefreiender Wirkung können nur an die PayPal (Europe) S.àr.l. et Cie, S.C.A. geleistet werden.</VariableLocalized>
             </Variable>
             <Variable>
                 <Name>jtl_paypal_verify_error</Name>
-                <Description></Description>
+                <Description/>
                 <VariableLocalized iso="GER">Die Adressdatenprüfung ist fehlgeschlagen</VariableLocalized>
                 <VariableLocalized iso="ENG">Address Verification Failed</VariableLocalized>
             </Variable>
             <Variable>
                 <Name>jtl_paypal_verify_error_text</Name>
-                <Description></Description>
+                <Description/>
                 <VariableLocalized iso="GER">Bitte korrigieren Sie die nachfolgenden Felder in Ihrer %link%</VariableLocalized>
                 <VariableLocalized iso="ENG">Please verify your %link% information</VariableLocalized>
             </Variable>
             <Variable>
                 <Name>jtl_paypal_verify_internal</Name>
-                <Description></Description>
+                <Description/>
                 <VariableLocalized iso="GER">Interner Fehler</VariableLocalized>
                 <VariableLocalized iso="ENG">Internal Error</VariableLocalized>
             </Variable>
             <Variable>
                 <Name>jtl_paypal_verify_internal_text</Name>
-                <Description></Description>
+                <Description/>
                 <VariableLocalized iso="GER">Die ausgewählte Zahlungsmethode ist derzeit nicht verfügbar</VariableLocalized>
                 <VariableLocalized iso="ENG">The requested Payment Method is currently not available</VariableLocalized>
             </Variable>
@@ -215,7 +226,23 @@ Referenznummer: %reference_number%]]></VariableLocalized>
                     <ChargeName>PayPal PLUS</ChargeName>
                     <InfoText>PayPal, debit, creditcard or payment upon invoice</InfoText>
                 </MethodLanguage>
-                <Setting type="selectbox" initialValue="sandbox" sort="1" conf="Y">
+                <Setting type="text" initialValue="JTL-Shop" sort="1" conf="Y">
+                    <Name>Anzeigename für PayPal Login</Name>
+                    <Description>Verwendeter Name auf der PayPal-Seite</Description>
+                    <ValueName>brand</ValueName>
+                </Setting>
+                <Setting type="text" initialValue="" sort="2" conf="Y">
+                    <Name>Shoplogo für PayPal Login</Name>
+                    <Description>Übergeben Sie Ihr offizielles Logo an die PayPal-Seite und erhöhen Ihre Conversion: Bitte nutzen Sie einen sicheren https-Speicherort. Die maximale Größe ist 750 x 90 Pixel.</Description>
+                    <ValueName>shoplogo</ValueName>
+                </Setting>
+                <Setting type="text" initialValue="ffffff" sort="3" conf="Y">
+                    <Name>Hintergrundfarbe für PayPal Login</Name>
+                    <Description>Hinterlegen Sie hier eine eigene Farbe für den Anmeldebereich von PayPal. Es
+                        ensteht ein Verlauf von Weiss zu Ihrer Farbe. (ohne führendes "#")</Description>
+                    <ValueName>bordercolor</ValueName>
+                </Setting>
+                <Setting type="selectbox" initialValue="sandbox" sort="4" conf="Y">
                     <Name>Live oder Sandbox</Name>
                     <Description>Liveschaltung oder Test?</Description>
                     <ValueName>api_live_sandbox</ValueName>
@@ -246,7 +273,7 @@ Referenznummer: %reference_number%]]></VariableLocalized>
                 </Setting>
             </Method>
             <Method>
-                <Name>PayPal Ratenzahlung</Name>
+                <Name>PayPal Finance</Name>
                 <PictureURL>images/de-ppcc-logo-175px.png</PictureURL>
                 <Sort>1</Sort>
                 <SendMail>1</SendMail>
@@ -270,15 +297,6 @@ Referenznummer: %reference_number%]]></VariableLocalized>
                     <ChargeName>Installments powered by PayPal</ChargeName>
                     <InfoText/>
                 </MethodLanguage>
-                <Setting type="selectbox" initialValue="sandbox" sort="1" conf="Y">
-                    <Name>Live oder Sandbox</Name>
-                    <Description>Liveschaltung oder Test?</Description>
-                    <ValueName>api_live_sandbox</ValueName>
-                    <SelectboxOptions>
-                        <Option value="live" sort="1">Live</Option>
-                        <Option value="sandbox" sort="2">Sandbox</Option>
-                    </SelectboxOptions>
-                </Setting>
                 <Setting type="text" initialValue="JTL-Shop" sort="1" conf="Y">
                     <Name>Anzeigename für PayPal Login</Name>
                     <Description>Verwendeter Name auf der PayPal-Seite</Description>
@@ -295,56 +313,34 @@ Referenznummer: %reference_number%]]></VariableLocalized>
                         ensteht ein Verlauf von Weiss zu Ihrer Farbe. (ohne führendes "#")</Description>
                     <ValueName>bordercolor</ValueName>
                 </Setting>
+                <Setting type="selectbox" initialValue="sandbox" sort="4" conf="Y">
+                    <Name>Live oder Sandbox</Name>
+                    <Description>Liveschaltung oder Test?</Description>
+                    <ValueName>api_live_sandbox</ValueName>
+                    <SelectboxOptions>
+                        <Option value="live" sort="1">Live</Option>
+                        <Option value="sandbox" sort="2">Sandbox</Option>
+                    </SelectboxOptions>
+                </Setting>
                 <Setting type="text" initialValue="" sort="6" conf="Y">
-                    <Name>PayPal-API-Client-ID (Rest) (Live)</Name>
+                    <Name>PayPal-API-Client-ID (Live)</Name>
                     <Description>Tragen Sie hier die Client-ID ein</Description>
                     <ValueName>api_live_client_id</ValueName>
                 </Setting>
                 <Setting type="password" initialValue="" sort="7" conf="Y">
-                    <Name>PayPal-API-Secret (Rest) (Live)</Name>
+                    <Name>PayPal-API-Secret (Live)</Name>
                     <Description>Tragen Sie hier den Secret-Key ein</Description>
                     <ValueName>api_live_secret</ValueName>
                 </Setting>
                 <Setting type="text" initialValue="" sort="8" conf="Y">
-                    <Name>PayPal-API-Client-ID (Rest) (Sandbox)</Name>
+                    <Name>PayPal-API-Client-ID (Sandbox)</Name>
                     <Description>Tragen Sie hier die Client-ID ein</Description>
                     <ValueName>api_sandbox_client_id</ValueName>
                 </Setting>
                 <Setting type="password" initialValue="" sort="9" conf="Y">
-                    <Name>PayPal-API-Secret (Rest) (Sandbox)</Name>
+                    <Name>PayPal-API-Secret (Sandbox)</Name>
                     <Description>Tragen Sie hier den Secret-Key ein</Description>
                     <ValueName>api_sandbox_secret</ValueName>
-                </Setting>
-                
-                <Setting type="text" initialValue="" sort="10" conf="Y">
-                    <Name>PayPal-API-Benutzer (NVP) (Live)</Name>
-                    <Description>Tragen Sie hier den Benutzernamen ein</Description>
-                    <ValueName>api_live_user</ValueName>
-                </Setting>
-                <Setting type="password" initialValue="" sort="11" conf="Y">
-                    <Name>PayPal-API-Passwort (NVP) (Live)</Name>
-                    <Description>Tragen Sie hier das Passwort ein</Description>
-                    <ValueName>api_live_pass</ValueName>
-                </Setting>
-                <Setting type="password" initialValue="" sort="12" conf="Y">
-                    <Name>PayPal-API-Signatur (NVP) (Live)</Name>
-                    <Description>Tragen Sie hier API Signatur ein</Description>
-                    <ValueName>api_live_signatur</ValueName>
-                </Setting>
-                <Setting type="text" initialValue="" sort="13" conf="Y">
-                    <Name>PayPal-API-Benutzer (NVP) (Sandbox)</Name>
-                    <Description>Tragen Sie hier den Benutzernamen ein</Description>
-                    <ValueName>api_sandbox_user</ValueName>
-                </Setting>
-                <Setting type="password" initialValue="" sort="14" conf="Y">
-                    <Name>PayPal-API-Passwort (NVP) (Sandbox)</Name>
-                    <Description>Tragen Sie hier das Passwort ein</Description>
-                    <ValueName>api_sandbox_pass</ValueName>
-                </Setting>
-                <Setting type="password" initialValue="" sort="15" conf="Y">
-                    <Name>PayPal-API-Signatur (NVP) (Sandbox)</Name>
-                    <Description>Tragen Sie hier API Signatur ein</Description>
-                    <ValueName>api_sandbox_signatur</ValueName>
                 </Setting>
             </Method>
             <Method>
@@ -615,7 +611,7 @@ Best Regards
                         <Option value="large" sort="3">groß</Option>
                     </SelectboxOptions>
                 </Setting>
-                <Setting type="text" initialValue=".panel-note, #basket_checkout" sort="5" conf="Y">
+                <Setting type="text" initialValue=".panel-note, #basket_checkout, .basket-well .proceed" sort="5" conf="Y">
                     <Name>PHPQuery Selector</Name>
                     <Description />
                     <ValueName>jtl_paypal_express_cart_button_selector</ValueName>
@@ -686,63 +682,29 @@ Best Regards
                     </SelectboxOptions>
                 </Setting>
             </Settingslink>
-
             <Settingslink sort="3">
-                <Name>PayPal PLUS</Name>
-                
-                <Setting type="text" initialValue="Y" sort="0" conf="N">
-                    <Name>Allgemein</Name>
-                    <Description />
-                    <ValueName>jtl_paypal_general_headline</ValueName>
-                </Setting>
-
-                <Setting type="selectbox" initialValue="N" sort="1" conf="Y">
-                    <Name>Styles aktivieren</Name>
-                    <Description></Description>
-                    <ValueName>jtl_paypal_style_enabled</ValueName>
-                    <SelectboxOptions>
-                        <Option value="N" sort="1">Nein</Option>
-                        <Option value="Y" sort="2">Ja</Option>
-                    </SelectboxOptions>
-                </Setting>
-                
-                <Setting type="selectbox" initialValue="0" sort="2" conf="Y">
-                    <Name>Eigene Zahlungsarten</Name>
-                    <Description></Description>
-                    <ValueName>jtl_paypal_psp_type</ValueName>
-                    <SelectboxOptions>
-                        <Option value="0" sort="1">Integriert in PayPal <![CDATA[&#10010;]]> Wallet</Option>
-                        <Option value="1" sort="2">Standard Zahlungsartauswahl</Option>
-                    </SelectboxOptions>
-                </Setting>
-                
-                <Setting type="text" initialValue="Y" sort="3" conf="N">
-                    <Name>Web Profil</Name>
-                    <Description />
-                    <ValueName>jtl_paypal_wp_headline</ValueName>
-                </Setting>
-                
-                <Setting type="text" initialValue="JTL-Shop" sort="4" conf="Y">
-                    <Name>Anzeigename für PayPal Login</Name>
-                    <Description>Verwendeter Name auf der PayPal-Seite</Description>
-                    <ValueName>brand</ValueName>
-                </Setting>
-                <Setting type="text" initialValue="" sort="5" conf="Y">
-                    <Name>Shoplogo</Name>
-                    <Description>Übergeben Sie Ihr offizielles Logo an die PayPal-Seite und erhöhen Ihre Conversion: Bitte nutzen Sie einen sicheren https-Speicherort. Die maximale Größe ist 190 x 60 Pixel.</Description>
-                    <ValueName>shoplogo</ValueName>
-                </Setting>
-            </Settingslink>
-            
-            <Settingslink sort="4">
                 <Name>PayPal Ratenzahlung</Name>
                 <Setting type="text" initialValue="Y" sort="1" conf="N">
-                    <Name>Einstellungen für Positionierung der Finanzierungs-Box im Warenkorb</Name>
+                    <Name>Allgemein</Name>
+                    <Description />
+                    <ValueName>tl_paypal_finance_capture_headline</ValueName>
+                </Setting>
+                <Setting type="selectbox" initialValue="N" sort="2" conf="Y">
+                    <Name>Finanzierungs-Box</Name>
+                    <Description/>
+                    <ValueName>jtl_paypal_finance_box_details</ValueName>
+                    <SelectboxOptions>
+                        <Option value="N" sort="1">Finanzierung ab XX,00 EUR im Monat</Option>
+                        <Option value="Y" sort="2">Finanzierungsbeispiel anzeigen</Option>
+                    </SelectboxOptions>
+                </Setting>
+                <Setting type="text" initialValue="Y" sort="3" conf="N">
+                    <Name>Finanzierungs-Box im Warenkorb</Name>
                     <Description />
                     <ValueName>tl_paypal_finance_wk_headline</ValueName>
                 </Setting>
-                <Setting type="selectbox" initialValue="N" sort="2" conf="Y">
-                    <Name>Finanzierungs-Box auf Warenkorbseite aktivieren?</Name>
+                <Setting type="selectbox" initialValue="N" sort="4" conf="Y">
+                    <Name>Finanzierungs-Box aktivieren?</Name>
                     <Description/>
                     <ValueName>jtl_paypal_finance_cart_box</ValueName>
                     <SelectboxOptions>
@@ -767,12 +729,12 @@ Best Regards
                     </SelectboxOptions>
                 </Setting>
                 <Setting type="text" initialValue="Y" sort="10" conf="N">
-                    <Name>Einstellungen für PayPal Finanzierungs-Box auf der Artikeldetailseite</Name>
+                    <Name>Finanzierungs-Box auf Artikeldetailseite</Name>
                     <Description />
                     <ValueName>jtl_paypal_finance_article_headline</ValueName>
                 </Setting>
                 <Setting type="selectbox" initialValue="N" sort="11" conf="Y">
-                    <Name>Finanzierungs-Box auf Artikeldetailseite aktivieren?</Name>
+                    <Name>Finanzierungs-Box aktivieren?</Name>
                     <Description/>
                     <ValueName>jtl_paypal_finance_article</ValueName>
                     <SelectboxOptions>
@@ -785,7 +747,7 @@ Best Regards
                     <Description />
                     <ValueName>jtl_paypal_finance_article_selector</ValueName>
                 </Setting>
-                <Setting type="selectbox" initialValue="after" sort="14" conf="Y">
+                <Setting type="selectbox" initialValue="prepend" sort="14" conf="Y">
                     <Name>PHPQuery Methode</Name>
                     <Description />
                     <ValueName>jtl_paypal_finance_article_method</ValueName>
@@ -797,27 +759,41 @@ Best Regards
                     </SelectboxOptions>
                 </Setting>
             </Settingslink>
-
-            <Customlink sort="5">
-                <Name>Zahlungsarten PLUS</Name>
-                <Filename>payment.php</Filename>
-            </Customlink>
-            <Customlink sort="6">
-                <Name>Webhooks PLUS</Name>
-                <Filename>webhooks.php</Filename>
-            </Customlink>
-            <Settingslink sort="7">
-                <Name>Styles PLUS</Name>
-                
+            <Settingslink sort="4">
+                <Name>PayPal PLUS</Name>
                 <Setting type="text" initialValue="Y" sort="0" conf="N">
+                    <Name>Allgemein</Name>
+                    <Description />
+                    <ValueName>jtl_paypal_general_headline</ValueName>
+                </Setting>
+                <Setting type="selectbox" initialValue="0" sort="1" conf="Y">
+                    <Name>Eigene Zahlungsarten</Name>
+                    <Description/>
+                    <ValueName>jtl_paypal_psp_type</ValueName>
+                    <SelectboxOptions>
+                        <Option value="0" sort="1">Integriert in Payment Wall</Option>
+                        <Option value="1" sort="2">Standard Zahlungsartauswahl unterhalb der Payment Wall</Option>
+                    </SelectboxOptions>
+                </Setting>
+                <Setting type="selectbox" initialValue="N" sort="2" conf="Y">
+                    <Name>Styles aktivieren</Name>
+                    <Description/>
+                    <ValueName>jtl_paypal_style_enabled</ValueName>
+                    <SelectboxOptions>
+                        <Option value="N" sort="1">Nein</Option>
+                        <Option value="Y" sort="2">Ja</Option>
+                    </SelectboxOptions>
+                </Setting>
+
+                <Setting type="text" initialValue="Y" sort="3" conf="N">
                     <Name>Schrift</Name>
                     <Description />
                     <ValueName>jtl_paypal_style_font_headline</ValueName>
                 </Setting>
 
-                <Setting type="selectbox" initialValue="Arial" sort="1" conf="Y">
+                <Setting type="selectbox" initialValue="Arial" sort="4" conf="Y">
                     <Name>Schriftart</Name>
-                    <Description></Description>
+                    <Description/>
                     <ValueName>jtl_paypal_style_font_family</ValueName>
                     <SelectboxOptions>
                         <Option value="Arial" sort="1">Arial</Option>
@@ -830,9 +806,9 @@ Best Regards
                     </SelectboxOptions>
                 </Setting>
 
-                <Setting type="selectbox" initialValue="12px" sort="2" conf="Y">
+                <Setting type="selectbox" initialValue="12px" sort="5" conf="Y">
                     <Name>Schriftgröße</Name>
-                    <Description></Description>
+                    <Description/>
                     <ValueName>jtl_paypal_style_font_size</ValueName>
                     <SelectboxOptions>
                         <Option value="12px" sort="1">12px</Option>
@@ -843,9 +819,9 @@ Best Regards
                     </SelectboxOptions>
                 </Setting>
 
-                <Setting type="selectbox" initialValue="normal" sort="3" conf="Y">
+                <Setting type="selectbox" initialValue="normal" sort="6" conf="Y">
                     <Name>Schriftstil</Name>
-                    <Description></Description>
+                    <Description/>
                     <ValueName>jtl_paypal_style_font_style</ValueName>
                     <SelectboxOptions>
                         <Option value="normal" sort="1">Normal</Option>
@@ -853,21 +829,21 @@ Best Regards
                     </SelectboxOptions>
                 </Setting>
 
-                <Setting type="text" initialValue="Y" sort="4" conf="N">
+                <Setting type="text" initialValue="Y" sort="7" conf="N">
                     <Name>Link</Name>
                     <Description />
                     <ValueName>jtl_paypal_style_link_headline</ValueName>
                 </Setting>
 
-                <Setting type="text" initialValue="black" sort="5" conf="Y">
+                <Setting type="text" initialValue="black" sort="8" conf="Y">
                     <Name>Farbe</Name>
                     <Description />
                     <ValueName>jtl_paypal_style_link_color</ValueName>
                 </Setting>
 
-                <Setting type="selectbox" initialValue="none" sort="6" conf="Y">
+                <Setting type="selectbox" initialValue="none" sort="9" conf="Y">
                     <Name>Schriftdekoration</Name>
-                    <Description></Description>
+                    <Description/>
                     <ValueName>jtl_paypal_style_link_text_decoration</ValueName>
                     <SelectboxOptions>
                         <Option value="none" sort="1">Keine</Option>
@@ -875,21 +851,21 @@ Best Regards
                     </SelectboxOptions>
                 </Setting>
 
-                <Setting type="text" initialValue="Y" sort="7" conf="N">
+                <Setting type="text" initialValue="Y" sort="10" conf="N">
                     <Name>Link (visited)</Name>
                     <Description />
                     <ValueName>jtl_paypal_style_visited_headline</ValueName>
                 </Setting>
 
-                <Setting type="text" initialValue="black" sort="8" conf="Y">
+                <Setting type="text" initialValue="black" sort="11" conf="Y">
                     <Name>Farbe</Name>
                     <Description />
                     <ValueName>jtl_paypal_style_visited_color</ValueName>
                 </Setting>
 
-                <Setting type="selectbox" initialValue="none" sort="9" conf="Y">
+                <Setting type="selectbox" initialValue="none" sort="12" conf="Y">
                     <Name>Schriftdekoration</Name>
-                    <Description></Description>
+                    <Description/>
                     <ValueName>jtl_paypal_style_visited_text_decoration</ValueName>
                     <SelectboxOptions>
                         <Option value="none" sort="1">Keine</Option>
@@ -897,21 +873,21 @@ Best Regards
                     </SelectboxOptions>
                 </Setting>
 
-                <Setting type="text" initialValue="Y" sort="10" conf="N">
+                <Setting type="text" initialValue="Y" sort="13" conf="N">
                     <Name>Link (active)</Name>
                     <Description />
                     <ValueName>jtl_paypal_style_active_headline</ValueName>
                 </Setting>
 
-                <Setting type="text" initialValue="black" sort="11" conf="Y">
+                <Setting type="text" initialValue="black" sort="14" conf="Y">
                     <Name>Farbe</Name>
                     <Description />
                     <ValueName>jtl_paypal_style_active_color</ValueName>
                 </Setting>
 
-                <Setting type="selectbox" initialValue="none" sort="12" conf="Y">
+                <Setting type="selectbox" initialValue="none" sort="15" conf="Y">
                     <Name>Schriftdekoration</Name>
-                    <Description></Description>
+                    <Description/>
                     <ValueName>jtl_paypal_style_active_text_decoration</ValueName>
                     <SelectboxOptions>
                         <Option value="none" sort="1">Keine</Option>
@@ -919,21 +895,21 @@ Best Regards
                     </SelectboxOptions>
                 </Setting>
 
-                <Setting type="text" initialValue="Y" sort="13" conf="N">
+                <Setting type="text" initialValue="Y" sort="16" conf="N">
                     <Name>Link (hover)</Name>
                     <Description />
                     <ValueName>jtl_paypal_style_hover_headline</ValueName>
                 </Setting>
 
-                <Setting type="text" initialValue="black" sort="14" conf="Y">
+                <Setting type="text" initialValue="black" sort="17" conf="Y">
                     <Name>Farbe</Name>
                     <Description />
                     <ValueName>jtl_paypal_style_hover_color</ValueName>
                 </Setting>
 
-                <Setting type="selectbox" initialValue="none" sort="15" conf="Y">
+                <Setting type="selectbox" initialValue="none" sort="18" conf="Y">
                     <Name>Schriftdekoration</Name>
-                    <Description></Description>
+                    <Description/>
                     <ValueName>jtl_paypal_style_hover_text_decoration</ValueName>
                     <SelectboxOptions>
                         <Option value="none" sort="1">Keine</Option>
@@ -941,7 +917,18 @@ Best Regards
                     </SelectboxOptions>
                 </Setting>
             </Settingslink>
-
+            <Customlink sort="5">
+                <Name>Zahlungsarten PLUS</Name>
+                <Filename>payment.php</Filename>
+            </Customlink>
+            <Customlink sort="7">
+                <Name>Webhooks</Name>
+                <Filename>webhooks.php</Filename>
+            </Customlink>
+            <Customlink sort="8">
+                <Name>Bestellungen</Name>
+                <Filename>orders.php</Filename>
+            </Customlink>
         </Adminmenu>
     </Install>
 </jtlshop3plugin>

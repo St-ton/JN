@@ -1296,8 +1296,9 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
     if ($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerVariation !== 'Y' && $Artikel->cLagerKleinerNull !== 'Y') {
         foreach ($Artikel->getAllDependentProducts(true) as $dependent) {
             /** @var Artikel $product */
-            $product = $dependent->product;
-            if ($product->fPackeinheit * ($anzahl + $_SESSION['Warenkorb']->getDependentAmount($product->kArtikel, true)) > $product->fLagerbestand) {
+            $product   = $dependent->product;
+            $depAmount = $_SESSION['Warenkorb']->getDependentAmount($product->kArtikel, true);
+            if ($product->fPackeinheit * ($anzahl * $dependent->stockFactor + $depAmount) > $product->fLagerbestand) {
                 $redirectParam[] = R_LAGER;
                 break;
             }
@@ -1339,11 +1340,6 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
         $conf['global']['global_preis0'] === 'N'
     ) {
         $redirectParam[] = R_AUFANFRAGE;
-    }
-    // Stücklistenkomponente oder Stückliste und ein Teil ist bereits im Warenkorb?
-    $xReturn = pruefeWarenkorbStueckliste($Artikel, $anzahl);
-    if ($xReturn !== null) {
-        $redirectParam[] = $xReturn;
     }
     if (is_array($Artikel->Variationen) && count($Artikel->Variationen) > 0) {
         //fehlen zu einer Variation werte?
@@ -6017,52 +6013,11 @@ function gibStuecklistenKomponente($kStueckliste, $bAssoc = false)
 /**
  * @param Artikel $oArtikel
  * @param float   $fAnzahl
+ * @deprecated since 4.06.10 - will be tested by SHOP-1861
  * @return int|null
  */
 function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
 {
-    $oStueckliste = ArtikelHelper::isStuecklisteKomponente($oArtikel->kArtikel, true);
-    if (is_object($oArtikel) && $oArtikel->cLagerBeachten === 'Y' &&
-        $oArtikel->cLagerKleinerNull !== 'Y' &&
-        ($oArtikel->kStueckliste > 0 || $oStueckliste)
-    ) {
-        $bKomponente                = false;
-        $oStuecklisteKomponente_arr = null;
-        if (isset($oStueckliste->kStueckliste)) {
-            $bKomponente = true;
-        } else {
-            $oStuecklisteKomponente_arr = gibStuecklistenKomponente($oArtikel->kStueckliste, true);
-        }
-        /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
-        foreach ($_SESSION['Warenkorb']->PositionenArr as $oPosition) {
-            if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
-                // Komponente soll hinzugefügt werden aber die Stückliste ist bereits im Warenkorb
-                // => Prüfen ob der Lagebestand nicht unterschritten wird
-                if ($bKomponente && isset($oPosition->Artikel->kStueckliste) && $oPosition->Artikel->kStueckliste > 0 &&
-                    ($oPosition->nAnzahl * $oStueckliste->fAnzahl + $fAnzahl) > $oArtikel->fLagerbestand) {
-                    return R_LAGER;
-                }
-                if (!$bKomponente && count($oStuecklisteKomponente_arr) > 0) {
-                    //Test auf Stücklistenkomponenten in der aktuellen Position
-                    if (isset($oPosition->Artikel->kStueckliste) && $oPosition->Artikel->kStueckliste) {
-                        $oPositionKomponenten_arr = gibStuecklistenKomponente($oPosition->Artikel->kStueckliste, true);
-                        foreach ($oPositionKomponenten_arr as $oKomponente) {
-                            $desiredComponentQuantity = $fAnzahl * $oStuecklisteKomponente_arr[$oKomponente->kArtikel]->fAnzahl;
-                            $currentComponentStock    = $oPosition->Artikel->fLagerbestand * $oKomponente->fAnzahl;
-                            if ($desiredComponentQuantity > $currentComponentStock) {
-                                return R_LAGER;
-                            }
-                        }
-                    } elseif (isset($oStuecklisteKomponente_arr[$oPosition->kArtikel])
-                        && (($oPosition->nAnzahl * $oStuecklisteKomponente_arr[$oPosition->kArtikel]->fAnzahl) +
-                            ($oStuecklisteKomponente_arr[$oPosition->kArtikel]->fAnzahl * $fAnzahl)) > $oPosition->Artikel->fLagerbestand) {
-                        return R_LAGER;
-                    }
-                }
-            }
-        }
-    }
-
     return null;
 }
 

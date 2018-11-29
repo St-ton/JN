@@ -1,5 +1,9 @@
 # JTL-Shop Changelog
 
+## [4.05.9] 
+
+Dieses Update enthält Sicherheitfixes (JTL-Search-Plugin + Filecache). 
+
 ## [4.05.8]
 
 Dieses Update enthält ausschließlich einen TLS1.2-Fix für das alte PayPal-Classic-Zahlungsmodul. 

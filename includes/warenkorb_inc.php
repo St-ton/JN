@@ -175,10 +175,20 @@ function uebernehmeWarenkorbAenderungen()
                 if ($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerVariation !== 'Y' && $Artikel->cLagerKleinerNull !== 'Y') {
                     foreach ($Artikel->getAllDependentProducts(true) as $dependent) {
                         /** @var Artikel $product */
-                        $product = $dependent->product;
-                        if ($product->fPackeinheit * ((float)$_POST['anzahl'][$i] + $_SESSION['Warenkorb']->getDependentAmount($product->kArtikel, true, [$i])) > $product->fLagerbestand) {
-                            $gueltig                         = false;
-                            $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('quantityNotAvailable', 'messages');
+                        $product   = $dependent->product;
+                        $depAmount = $_SESSION['Warenkorb']->getDependentAmount($product->kArtikel, true, [$i]);
+                        if ($product->fPackeinheit * ((float)$_POST['anzahl'][$i] * $dependent->stockFactor + $depAmount) > $product->fLagerbestand) {
+                            $gueltig   = false;
+                            $newAmount = floor(($product->fLagerbestand / $product->fPackeinheit - $depAmount) / $dependent->stockFactor);
+
+                            if ($newAmount > 0 && $newAmount < $_SESSION['Warenkorb']->PositionenArr[$i]->nAnzahl) {
+                                $_SESSION['Warenkorb']->PositionenArr[$i]->nAnzahl = $newAmount;
+                            }
+
+                            $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get(
+                                'quantityNotAvailable',
+                                'messages'
+                            );
                             break;
                         }
                     }
@@ -209,12 +219,6 @@ function uebernehmeWarenkorbAenderungen()
                             break;
                         }
                     }
-                }
-                // Stücklistenkomponente oder Stückliste und ein Teil ist bereits im Warenkorb?
-                $xReturn = pruefeWarenkorbStueckliste($Artikel, $_POST['anzahl'][$i]);
-                if ($xReturn !== null) {
-                    $gueltig                         = false;
-                    $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('quantityNotAvailableVar', 'messages');
                 }
 
                 if ($gueltig) {

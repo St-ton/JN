@@ -6763,7 +6763,7 @@ class Artikel
             if (!$onlyStockRelevant || ($item->cLagerBeachten === 'Y' && $item->cLagerKleinerNull !== 'Y')) {
                 $depProducts[$item->kArtikel] = (object)[
                     'product'     => $item,
-                    'stockFactor' => $item->fAnzahl_stueckliste,
+                    'stockFactor' => (float)$item->fAnzahl_stueckliste,
                 ];
             }
         }

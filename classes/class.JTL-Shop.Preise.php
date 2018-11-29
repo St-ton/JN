@@ -388,7 +388,7 @@ class Preise
                         $priceGetter = "fPreis{$i}";
 
                         $this->{$scaleGetter} = (int)$price->nAnzahlAb;
-                        $this->{$priceGetter} = $specialPriceValue ?? $this->getRecalculatedNetPrice($price->fVKNetto, $defaultTax, $currentTax);
+                        $this->{$priceGetter} = isset($specialPriceValue) ? $specialPriceValue : $this->getRecalculatedNetPrice($price->fVKNetto, $defaultTax, $currentTax);
                     }
 
                     $this->nAnzahl_arr[] = (int)$price->nAnzahlAb;

@@ -6,20 +6,19 @@ stages:
   - cleanUp
 
 .testingScript: &testingScript |
-  export CI_CONTAINER_NAME=ci_job_build_deploy_$CI_COMMIT_SHA
+  export CI_CONTAINER_NAME=ci_job_testing_$CI_COMMIT_SHA
 
   function testing() {
     echo "Testing projekt in PHP $PHP_VERSION_TEST_STEP docker image..."
 
     docker run \
-      --rm \
       --volume $(pwd):/dockerBuild \
-      --name="$CI_CONTAINER_NAME-testing-php$PHP_VERSION_TEST_STEP" \
+      --name="$CI_CONTAINER_NAME-php$PHP_VERSION_TEST_STEP" \
       $CI_REGISTRY_IMAGE/testing-php$PHP_VERSION_TEST_STEP \
       sh -c "cp -r /dockerBuild/. /build; bash build/scripts/tests.sh"
 
-    docker stop "$CI_CONTAINER_NAME-testing-php$PHP_VERSION_TEST_STEP"
-    docker rm -fv "$CI_CONTAINER_NAME-testing-php$PHP_VERSION_TEST_STEP" >/dev/null
+    docker stop "$CI_CONTAINER_NAME-php$PHP_VERSION_TEST_STEP"
+    docker rm -fv "$CI_CONTAINER_NAME-php$PHP_VERSION_TEST_STEP" >/dev/null
 
     echo "Tests finished"
   }

@@ -25,9 +25,9 @@ build_create()
     create_version_string ${REPOSITORY_DIR} ${APPLICATION_VERSION};
 
     if [[ ! -z "${MAJOR_MINOR_VERSION}" ]]; then
-        APPLICATION_VERSION_STR=${MAJOR_MINOR_VERSION};
+        export APPLICATION_VERSION_STR=${MAJOR_MINOR_VERSION};
     else
-        APPLICATION_VERSION_STR=${APPLICATION_VERSION};
+        export APPLICATION_VERSION_STR=${APPLICATION_VERSION};
     fi
 
     echo "Executing composer";
@@ -37,7 +37,7 @@ build_create()
     build_git_submodule_init;
 
     echo "Creating md5 hashfile";
-    build_create_md5_hashfile ${APPLICATION_VERSION_STR};
+    build_create_md5_hashfile;
 
     echo "Importing initial schema";
     build_import_initial_schema;
@@ -46,10 +46,10 @@ build_create()
     build_create_config_file;
 
     echo "Executing migrations";
-    build_migrate ${APPLICATION_VERSION_STR};
+    build_migrate;
 
     echo "Creating database struct";
-    build_create_db_struct ${APPLICATION_VERSION_STR};
+    build_create_db_struct;
 
     echo "Creating new initial schema";
     build_create_initial_schema;
@@ -79,15 +79,14 @@ build_git_submodule_init()
 
 build_create_md5_hashfile()
 {
-    local VERSION=$1;
     local CUR_PWD=$(pwd);
-    local MD5_HASH_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/${VERSION}.csv";
+    local MD5_HASH_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/${APPLICATION_VERSION_STR}.csv";
 
     cd ${REPOSITORY_DIR};
     find -type f ! \( -name ".asset_cs" -or -name ".git*" -or -name ".idea*" -or -name ".htaccess" -or -name ".php_cs" -or -name ".travis.yml" -or -name "config.JTL-Shop.ini.initial.php" -or -name "phpunit.xml" -or -name "robots.txt" -or -name "rss.xml" -or -name "shopinfo.xml" -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" | grep -vE ".git/|.idea/|admin/gfx/|admin/includes/emailpdfs/|admin/includes/shopmd5files/|admin/templates_c/|bilder/|build/|docs/|downloads/|export/|gfx/|includes/plugins/|includes/vendor/|install/|jtllogs/|mediafiles/|templates/Evo/|templates_c/|tests/|uploads/" | xargs md5sum | awk '{ print $2";"$1; }' | sort --field-separator=';' -k1 -k2 > ${MD5_HASH_FILENAME};
     cd ${CUR_PWD};
 
-    echo "  File checksums admin/includes/shopmd5files/${VERSION}.csv";
+    echo "  File checksums admin/includes/shopmd5files/${APPLICATION_VERSION_STR}.csv";
 }
 
 build_import_initial_schema()
@@ -117,8 +116,6 @@ build_create_config_file()
 
 build_migrate()
 {
-    APPLICATION_VERSION_STR=$1;
-
     php -r "
         require_once '${REPOSITORY_DIR}/includes/globalinclude.php'; \
         \$manager = new MigrationManager(null); \
@@ -139,11 +136,10 @@ build_migrate()
 
 build_create_db_struct()
 {
-    local VERSION=$1;
     local i=0;
     local DB_STRUCTURE='{';
     local TABLE_COUNT=$(($(mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | wc -l)-1));
-    local SCHEMAJSON_PATH=${REPOSITORY_DIR}/admin/includes/shopmd5files/dbstruct_${VERSION}.json;
+    local SCHEMAJSON_PATH=${REPOSITORY_DIR}/admin/includes/shopmd5files/dbstruct_${APPLICATION_VERSION_STR}.json;
 
     while ((i++)); read -r table;
     do
@@ -253,6 +249,10 @@ build_add_files_to_patch_dir()
             rsync -R ${path} ${PATCH_DIR};
         fi
     done< <(git diff --name-status --diff-filter=d ${PATCH_VERSION} ${APPLICATION_VERSION});
+
+    # Rsync shopmd5files
+    rsync -R admin/includes/shopmd5files/dbstruct_${APPLICATION_VERSION_STR}.json ${PATCH_DIR};
+    rsync -R admin/includes/shopmd5files/${APPLICATION_VERSION_STR}.csv ${PATCH_DIR};
 
     if [[ -f "${PATCH_DIR}/includes/composer.json" ]]; then
         mkdir /tmp_composer_${PATCH_VERSION};

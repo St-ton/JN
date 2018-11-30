@@ -1,5 +1,9 @@
 # JTL-Shop Changelog
 
+## [4.06.11]
+
+Dieses Update enthält einen Bugfix zur Unterstützung von MySQL-Server 5.5 und kleiner. 
+
 ## [4.06.10]
 
 Dieses Update enthält Bugfixes und Sicherheitsupdates.

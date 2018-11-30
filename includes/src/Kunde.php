@@ -1013,7 +1013,6 @@ class Kunde
             'cName'  => $anonymous,
             'cEmail' => $anonymous
         ]);
-        $db->update('tkuponkunde', 'kKunde', $customerID, (object)['cMail' => $anonymous]);
 
         //newsletter
         $db->queryPrepared(

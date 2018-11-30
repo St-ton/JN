@@ -949,23 +949,24 @@ class Kupon
         }
         $alreadyUsedSQL = '';
         $bindings       = [];
-        if (!empty($_SESSION['Kunde']->kKunde) && !empty($_SESSION['Kunde']->cMail)) {
+        $email          = self::hash($_SESSION['Kunde']->cMail);
+        if (!empty($_SESSION['Kunde']->kKunde) && !empty($email)) {
             $alreadyUsedSQL = 'SELECT SUM(nVerwendungen) AS nVerwendungen
                                   FROM tkuponkunde
                                   WHERE (kKunde = :customer OR cMail = :mail)
                                       AND kKupon = :coupon';
             $bindings       = [
                 'customer' => (int)$_SESSION['Kunde']->kKunde,
-                'mail'     => $_SESSION['Kunde']->cMail,
+                'mail'     => $email,
                 'coupon'   => (int)$Kupon->kKupon
             ];
-        } elseif (!empty($_SESSION['Kunde']->cMail)) {
+        } elseif (!empty($email)) {
             $alreadyUsedSQL = 'SELECT SUM(nVerwendungen) AS nVerwendungen
                                   FROM tkuponkunde
                                   WHERE cMail = :mail
                                       AND kKupon = :coupon';
             $bindings       = [
-                'mail'   => $_SESSION['Kunde']->cMail,
+                'mail'   => $email,
                 'coupon' => (int)$Kupon->kKupon
             ];
         } elseif (!empty($_SESSION['Kunde']->kKunde)) {
@@ -1006,7 +1007,7 @@ class Kupon
         $newCustomerCouponUsed = Shop::Container()->getDB()->select(
             'tkuponkunde',
             ['kKupon', 'cMail'],
-            [$newCustomerCouponID, $email]
+            [$newCustomerCouponID, self::hash($email)]
         );
 
         return $newCustomerCouponUsed !== null;
@@ -1142,5 +1143,14 @@ class Kupon
         \Session\Session::getCart()
                ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
                ->setzePositionsPreise();
+    }
+
+    /**
+     * @param string $strToHash
+     * @return string
+     */
+    public static function hash(string $strToHash)
+    {
+        return md5($strToHash);
     }
 }

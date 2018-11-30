@@ -902,13 +902,14 @@ function KuponVerwendungen($oBestellung): void
         $KuponKunde                = new stdClass();
         $KuponKunde->kKupon        = $kKupon;
         $KuponKunde->kKunde        = $_SESSION['Warenkorb']->kKunde;
-        $KuponKunde->cMail         = StringHandler::filterXSS($_SESSION['Kunde']->cMail);
+        $KuponKunde->cMail         = Kupon::hash(StringHandler::filterXSS($_SESSION['Kunde']->cMail));
         $KuponKunde->dErstellt     = 'NOW()';
         $KuponKunde->nVerwendungen = 1;
-        $KuponKundeBisher          = Shop::Container()->getDB()->query(
-            "SELECT SUM(nVerwendungen) AS nVerwendungen
+        $KuponKundeBisher          = Shop::Container()->getDB()->queryPrepared(
+            'SELECT SUM(nVerwendungen) AS nVerwendungen
                 FROM tkuponkunde
-                WHERE cMail = '{$KuponKunde->cMail}'",
+                WHERE cMail = :email',
+            ['email' => $KuponKunde->cMail],
             \DB\ReturnType::SINGLE_OBJECT
         );
         if (isset($KuponKundeBisher->nVerwendungen) && $KuponKundeBisher->nVerwendungen > 0) {

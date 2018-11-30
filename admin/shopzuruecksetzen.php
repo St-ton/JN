@@ -235,7 +235,6 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && Form
                     $db->query('TRUNCATE tkupon', \DB\ReturnType::DEFAULT);
                     $db->query('TRUNCATE tkuponbestellung', \DB\ReturnType::DEFAULT);
                     $db->query('TRUNCATE tkuponkunde', \DB\ReturnType::DEFAULT);
-                    $db->query('TRUNCATE tkuponneukunde', \DB\ReturnType::DEFAULT);
                     $db->query('TRUNCATE tkuponsprache', \DB\ReturnType::DEFAULT);
                     break;
             }

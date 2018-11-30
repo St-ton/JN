@@ -23,11 +23,18 @@
 class Migration_20181129151242 extends Migration implements IMigration
 {
     protected $author = 'mh';
-    protected $description = 'Remove tkuponneukunde';
+    protected $description = 'Remove tkuponneukunde, hash tkuponkunde cMail';
 
     public function up()
     {
         $this->execute('DROP TABLE IF EXISTS `tkuponneukunde`');
+
+        //hash all emails
+        $customerCoupons = $this->fetchAll('SELECT `kKuponKunde`, `cMail` FROM `tkuponkunde`');
+        foreach ($customerCoupons as $customerCoupon) {
+            $this->execute("UPDATE `tkuponkunde` SET `cMail` = '" . \Kupon::hash($customerCoupon->cMail)
+                . "' WHERE `kKuponKunde` = " . $customerCoupon->kKuponKunde);
+        }
     }
 
     public function down()

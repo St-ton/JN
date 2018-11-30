@@ -3070,7 +3070,7 @@ function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bF
                 WHERE (tversandart.cKundengruppen = '-1'
                     OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0)
                     " . (count($filterISO) > 0 ? "AND tland.cISO IN ('" . implode("','", $filterISO) . "')" : '') . "
-                ORDER BY CONVERT($nameCol USING utf8) COLLATE utf8_german2_ci",
+                ORDER BY CONVERT($nameCol USING latin1) COLLATE latin1_german2_ci",
             2
         );
     } else {
@@ -3078,7 +3078,7 @@ function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bF
             "SELECT cISO, $nameCol AS cName
                 FROM tland
                 " . (count($filterISO) > 0 ? "WHERE tland.cISO IN ('" . implode("','", $filterISO) . "')" : '') . "
-                ORDER BY CONVERT($nameCol USING utf8) COLLATE utf8_german2_ci",
+                ORDER BY CONVERT($nameCol USING latin1) COLLATE latin1_german2_ci",
             2
         );
     }

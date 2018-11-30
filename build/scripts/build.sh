@@ -251,11 +251,8 @@ build_add_files_to_patch_dir()
     done< <(git diff --name-status --diff-filter=d ${PATCH_VERSION} ${APPLICATION_VERSION});
     
     # Rsync shopmd5files
-    DBSTRUCT_JSON=${REPOSITORY_DIR}/admin/includes/shopmd5files/dbstruct_${APPLICATION_VERSION_STR}.json
-    FILECHECK_CSV=${REPOSITORY_DIR}/admin/includes/shopmd5files/${APPLICATION_VERSION_STR}.csv
-
-    rsync -R ${DBSTRUCT_JSON} ${PATCH_DIR};
-    rsync -R ${FILECHECK_CSV} ${PATCH_DIR};
+    rsync -R admin/includes/shopmd5files/dbstruct_${APPLICATION_VERSION_STR}.json ${PATCH_DIR};
+    rsync -R admin/includes/shopmd5files/${APPLICATION_VERSION_STR}.csv ${PATCH_DIR};
 
     if [[ -f "${PATCH_DIR}/includes/composer.json" ]]; then
         mkdir /tmp/composer_${PATCH_VERSION};

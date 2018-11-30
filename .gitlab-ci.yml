@@ -8,7 +8,14 @@ stages:
 .testingScript: &testingScript |
   function testing() {
     echo "Testing projekt in PHP $PHP_VERSION_TEST_STEP docker image..."
-    bash build/scripts/tests.sh
+
+    docker run \
+      --rm
+      --volume $(pwd):/dockerBuild \
+      --name="$CI_CONTAINER_NAME-testing-php$PHP_VERSION_TEST_STEP" \
+      $CI_REGISTRY_IMAGE/testing-php$PHP_VERSION_TEST_STEP \
+      sh -c "bash build/scripts/tests.sh"
+
     echo "Tests finished"
   }
 .preBuildDeployScripts: &preBuildDeployScripts |
@@ -101,7 +108,6 @@ stages:
 #    - building_testing_docker
 
 test_PHP_5.6:
-  image: $CI_REGISTRY_IMAGE/testing-php5.6
   stage: test
   variables:
     PHP_VERSION_TEST_STEP: '5.6'
@@ -114,10 +120,9 @@ test_PHP_5.6:
     - master
     - /^release\/.*$/
   tags:
-    - building_testing_docker
+    - build
 
 test_PHP_7.1:
-  image: $CI_REGISTRY_IMAGE/testing-php7.1
   stage: test
   variables:
     PHP_VERSION_TEST_STEP: '7.1'
@@ -130,10 +135,9 @@ test_PHP_7.1:
     - master
     - /^release\/.*$/
   tags:
-    - building_testing_docker
+    - build
 
 test_PHP_7.2:
-  image: $CI_REGISTRY_IMAGE/testing-php7.2
   stage: test
   variables:
     PHP_VERSION_TEST_STEP: '7.2'
@@ -146,10 +150,9 @@ test_PHP_7.2:
     - master
     - /^release\/.*$/
   tags:
-    - building_testing_docker
+    - build
 
 test_PHP_7.3:
-  image: $CI_REGISTRY_IMAGE/testing-php7.3
   stage: test
   variables:
     PHP_VERSION_TEST_STEP: '7.3'
@@ -162,7 +165,7 @@ test_PHP_7.3:
     - master
     - /^release\/.*$/
   tags:
-    - building_testing_docker
+    - build
 
 build:
   stage: build

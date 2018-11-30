@@ -10,7 +10,7 @@ stages:
     echo "Testing projekt in PHP $PHP_VERSION_TEST_STEP docker image..."
 
     docker run \
-      --rm
+      --rm \
       --volume $(pwd):/dockerBuild \
       --name="$CI_CONTAINER_NAME-testing-php$PHP_VERSION_TEST_STEP" \
       $CI_REGISTRY_IMAGE/testing-php$PHP_VERSION_TEST_STEP \

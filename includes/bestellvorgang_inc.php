@@ -987,7 +987,7 @@ function plausiNeukundenKupon()
             //unregistrierte Neukunden, keine Kupons für Gastbestellungen zugelassen
             return;
         }
-        //not for allready registered customers with order(s)
+        //not for already registered customers with order(s)
         if (!empty($_SESSION['Kunde']->kKunde)) {
             $oBestellung  = Shop::Container()->getDB()->executeQueryPrepared('
               SELECT tbestellung.kBestellung
@@ -1005,18 +1005,10 @@ function plausiNeukundenKupon()
         }
 
         $NeukundenKupons = (new Kupon())->getNewCustomerCoupon();
-        if (!empty($NeukundenKupons)) {
+        if (!empty($NeukundenKupons) && !Kupon::newCustomerCouponUsed($_SESSION['Kunde']->cMail)) {
             foreach ($NeukundenKupons as $NeukundenKupon) {
-                // teste ob Kunde mit cMail den Neukundenkupon schon verwendet hat...
-                $newCustomerCouponUsed = Kupon::newCustomerCouponUsed($_SESSION['Kunde']->cMail, $NeukundenKupon->kKupon);
-                if ($newCustomerCouponUsed) {
-                    // ...falls ja, versuche nächsten Neukundenkupon
-                    continue;
-                }
                 if (angabenKorrekt(Kupon::checkCoupon($NeukundenKupon))) {
                     Kupon::acceptCoupon($NeukundenKupon);
-
-                    //TODO: nur ein NeuKundenKupon?
                     break;
                 }
             }

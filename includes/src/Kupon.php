@@ -998,19 +998,24 @@ class Kupon
     }
 
     /**
+     * check if a new customer coupon was already used for an email
      * @param string $email
-     * @param int $newCustomerCouponID
      * @return bool
      */
-    public static function newCustomerCouponUsed(string $email, int $newCustomerCouponID): bool
+    public static function newCustomerCouponUsed(string $email): bool
     {
-        $newCustomerCouponUsed = Shop::Container()->getDB()->select(
-            'tkuponkunde',
-            ['kKupon', 'cMail'],
-            [$newCustomerCouponID, self::hash($email)]
+        $newCustomerCouponUsed = Shop::Container()->getDB()->queryPrepared(
+            "SELECT tkk.kKuponKunde
+                FROM tkuponkunde tkk
+                LEFT JOIN tkupon tk
+                  ON tkk.kKupon = tk.kKupon
+                WHERE tkk.cMail = :email
+                  AND tk.cKuponTyp = 'neukundenkupon'",
+            ['email' => self::hash($email)],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return $newCustomerCouponUsed !== null;
+        return !empty($newCustomerCouponUsed);
     }
 
     /**

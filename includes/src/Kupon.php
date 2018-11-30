@@ -936,7 +936,7 @@ class Kupon
         }
         // Neukundenkupon
         if ($Kupon->cKuponTyp === 'neukundenkupon'
-            && self::newCustomerCouponUsed($_SESSION['Kunde']->cMail, (int)$Kupon->kKupon)
+            && self::newCustomerCouponUsed($_SESSION['Kunde']->cMail)
         ) {
             $ret['ungueltig'] = 11;
         }
@@ -1154,8 +1154,8 @@ class Kupon
      * @param string $strToHash
      * @return string
      */
-    public static function hash(string $strToHash)
+    public static function hash(string $strToHash): string
     {
-        return md5($strToHash);
+        return $strToHash === '' ? '' : md5($strToHash);
     }
 }

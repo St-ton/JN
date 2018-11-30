@@ -16,7 +16,7 @@ stages:
       --volume $(pwd):/dockerBuild \
       --name="$CI_CONTAINER_NAME-testing-php$PHP_VERSION_TEST_STEP" \
       $CI_REGISTRY_IMAGE/testing-php$PHP_VERSION_TEST_STEP \
-      sh -c "bash build/scripts/tests.sh"
+      sh -c "cp -r /dockerBuild/. /build; bash build/scripts/tests.sh"
 
     echo "Tests finished"
   }

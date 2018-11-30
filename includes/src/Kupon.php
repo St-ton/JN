@@ -949,7 +949,7 @@ class Kupon
         }
         $alreadyUsedSQL = '';
         $bindings       = [];
-        $email          = self::hash($_SESSION['Kunde']->cMail);
+        $email          = self::hash($_SESSION['Kunde']->cMail ?? '');
         if (!empty($_SESSION['Kunde']->kKunde) && !empty($email)) {
             $alreadyUsedSQL = 'SELECT SUM(nVerwendungen) AS nVerwendungen
                                   FROM tkuponkunde

@@ -28,10 +28,10 @@ build_create()
 
     if [[ "$APPLICATION_VERSION"  == "master" ]]; then
         if [[ ! -z "${NEW_VERSION}" ]]; then
-            APPLICATION_VERSION_STR=${NEW_VERSION};
+            export APPLICATION_VERSION_STR=${NEW_VERSION};
         fi
     else
-        APPLICATION_VERSION_STR=${APPLICATION_VERSION};
+        export APPLICATION_VERSION_STR=${APPLICATION_VERSION};
     fi
 
     echo "Executing composer";
@@ -53,7 +53,7 @@ build_create()
     build_create_shop_installer;
 
     echo "Creating md5 hashfile";
-    build_create_md5_hashfile ${APPLICATION_VERSION_STR};
+    build_create_md5_hashfile;
 
     echo "Importing initial schema";
     build_import_initial_schema;
@@ -65,7 +65,7 @@ build_create()
     build_migrate;
 
     echo "Creating database struct";
-    build_create_db_struct ${APPLICATION_VERSION_STR};
+    build_create_db_struct;
 
     echo "Creating new initial schema";
     build_create_initial_schema;
@@ -141,13 +141,13 @@ build_create_shop_installer() {
 
 build_create_md5_hashfile()
 {
-    local VERSION="${1//[\/\.]/-}";
+    local VERSION="${APPLICATION_VERSION_STR//[\/\.]/-}";
     local VERSION="${VERSION//[v]/}";
     local CUR_PWD=$(pwd);
     local MD5_HASH_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/${VERSION}.csv";
 
     cd ${REPOSITORY_DIR};
-    find -type f ! \( -name ".asset_cs" -or -name ".git*" -or -name ".idea*" -or -name ".htaccess" -or -name ".php_cs" -or -name ".travis.yml" -or -name "config.JTL-Shop.ini.initial.php" -or -name "phpunit.xml" -or -name "robots.txt" -or -name "rss.xml" -or -name "shopinfo.xml" -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" | grep -vE ".git/|admin/gfx/|admin/includes/emailpdfs/|admin/includes/shopmd5files/|admin/templates_c/|bilder/|build/|docs/|downloads/|export/|gfx/|includes/plugins/|includes/vendor/|install/|jtllogs/|mediafiles/|templates_c/|tests/|uploads/" | xargs md5sum | awk '{ print $1";"$2; }' | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
+    find -type f ! \( -name ".asset_cs" -or -name ".git*" -or -name ".idea*" -or -name ".htaccess" -or -name ".php_cs" -or -name ".travis.yml" -or -name "composer.lock" -or -name "config.JTL-Shop.ini.initial.php" -or -name "phpunit.xml" -or -name "robots.txt" -or -name "rss.xml" -or -name "shopinfo.xml" -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" | grep -vE ".git/|admin/gfx/|admin/includes/emailpdfs/|admin/includes/shopmd5files/|admin/templates_c/|bilder/|build/|docs/|downloads/|export/|gfx/|includes/plugins/|includes/vendor/|install/|jtllogs/|mediafiles/|templates_c/|tests/|uploads/" | xargs md5sum | awk '{ print $1";"$2; }' | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
     cd ${CUR_PWD};
 
     echo "  File checksums admin/includes/shopmd5files/${VERSION}.csv";
@@ -195,16 +195,15 @@ build_migrate()
     ";
 
     echo 'TRUNCATE tversion' | mysql -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
-    echo "INSERT INTO tversion (nVersion, nZeileVon, nZeileBis, nInArbeit, nFehler, nTyp, cFehlerSQL, dAktualisiert) VALUES ('${APPLICATION_VERSION}', 1, 0, 0, 0, 0, '', NOW())" | mysql -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
+    echo "INSERT INTO tversion (nVersion, nZeileVon, nZeileBis, nInArbeit, nFehler, nTyp, cFehlerSQL, dAktualisiert) VALUES ('${APPLICATION_VERSION_STR}', 1, 0, 0, 0, 0, '', NOW())" | mysql -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
 }
 
 build_create_db_struct()
 {
-    local VERSION=$1;
     local i=0;
     local DB_STRUCTURE='{';
     local TABLE_COUNT=$(($(mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | wc -l)-1));
-    local SCHEMAJSON_PATH=${REPOSITORY_DIR}/admin/includes/shopmd5files/dbstruct_${VERSION}.json;
+    local SCHEMAJSON_PATH=${REPOSITORY_DIR}/admin/includes/shopmd5files/dbstruct_${APPLICATION_VERSION_STR}.json;
 
     while ((i++)); read -r table;
     do
@@ -314,6 +313,11 @@ build_add_files_to_patch_dir()
             rsync -R ${path} ${PATCH_DIR};
         fi
     done< <(git diff --name-status --diff-filter=d ${PATCH_VERSION} ${APPLICATION_VERSION});
+
+    # Rsync shopmd5files
+    rsync -R admin/includes/shopmd5files/dbstruct_${APPLICATION_VERSION_STR}.json ${PATCH_DIR};
+    rsync -R admin/includes/shopmd5files/${APPLICATION_VERSION_STR}.csv ${PATCH_DIR};
+    rsync -R includes/defines_inc.php ${PATCH_DIR};
 
     if [[ -f "${PATCH_DIR}/includes/composer.json" ]]; then
         mkdir /tmp_composer;

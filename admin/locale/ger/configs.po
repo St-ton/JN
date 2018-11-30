@@ -1214,7 +1214,7 @@ msgid "kundenregistrierung_nur_lieferlaender_name"
 msgstr "Nur belieferbare Länder in Auswahl"
 
 msgid "kundenregistrierung_nur_lieferlaender_desc"
-msgstr "Damit gibt es bei der Rechnungsadresse und Lieferadresse nur Länder zur Auswahl, für die min. eine Versandart definiert ist"
+msgstr "Damit gibt es bei der Lieferadresse nur Länder zur Auswahl, für die min. eine Versandart definiert ist."
 
 msgid "kundenregistrierung_abgleichen_plz_name"
 msgstr "PLZ Prüfung aktivieren"

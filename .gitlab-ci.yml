@@ -93,7 +93,7 @@ stages:
     export running=$(docker inspect -f '{{.State.Running}}' ci_job_build_deploy_$CI_COMMIT_SHA)
 
     if [[ ! -z "$running" ]]; then
-      docker stop ci_job_build_deploy_$CI_COMMIT_SHA && docker rm ci_job_build_deploy_$CI_COMMIT_SHA
+      docker stop ci_job_build_deploy_$CI_COMMIT_SHA && docker rm -fv ci_job_build_deploy_$CI_COMMIT_SHA
     fi
   }
 

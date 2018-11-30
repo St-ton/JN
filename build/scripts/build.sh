@@ -251,17 +251,19 @@ build_add_files_to_patch_dir()
     done< <(git diff --name-status --diff-filter=d ${PATCH_VERSION} ${APPLICATION_VERSION});
 
     # Rsync shopmd5files
+    echo "Sync individual files";
     rsync -R admin/includes/shopmd5files/dbstruct_${APPLICATION_VERSION_STR}.json ${PATCH_DIR};
     rsync -R admin/includes/shopmd5files/${APPLICATION_VERSION_STR}.csv ${PATCH_DIR};
     rsync -R includes/defines_inc.php ${PATCH_DIR};
 
     if [[ -f "${PATCH_DIR}/includes/composer.json" ]]; then
-        mkdir /tmp_composer_${PATCH_VERSION};
-        mkdir /tmp_composer_${PATCH_VERSION}/includes;
-        touch /tmp_composer_${PATCH_VERSION}/includes/composer.json;
-        git show ${PATCH_VERSION}:includes/composer.json > /tmp_composer_${PATCH_VERSION}/includes/composer.json;
-        composer install --no-dev -q -d /tmp_composer_${PATCH_VERSION}/includes;
+        mkdir /tmp/composer_${PATCH_VERSION};
+        mkdir /tmp/composer_${PATCH_VERSION}/includes;
+        touch /tmp/composer_${PATCH_VERSION}/includes/composer.json;
+        git show ${PATCH_VERSION}:includes/composer.json > /tmp/composer_${PATCH_VERSION}/includes/composer.json;
+        composer install --no-dev -q -d /tmp/composer_${PATCH_VERSION}/includes;
 
+        echo "Sync composer packages files";
         while read -r line;
         do
             path=$(echo "${line}" | grep "^Files.*differ$" | sed 's/^Files .* and \(.*\) differ$/\1/');
@@ -274,7 +276,7 @@ build_add_files_to_patch_dir()
             else
                 rsync -R ${path} ${PATCH_DIR};
             fi
-        done< <(diff -rq /tmp_composer_${PATCH_VERSION}/includes/vendor includes/vendor);
+        done< <(diff -rq /tmp/composer_${PATCH_VERSION}/includes/vendor includes/vendor);
     fi
 }
 

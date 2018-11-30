@@ -6,6 +6,8 @@ stages:
   - cleanUp
 
 .testingScript: &testingScript |
+  export CI_CONTAINER_NAME=ci_job_build_deploy_$CI_COMMIT_SHA
+
   function testing() {
     echo "Testing projekt in PHP $PHP_VERSION_TEST_STEP docker image..."
 

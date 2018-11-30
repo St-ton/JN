@@ -9,6 +9,12 @@ stages:
   export CI_CONTAINER_NAME=ci_job_testing_$CI_COMMIT_SHA
 
   function testing() {
+    if [[ -n "$CI_USER_VAR" ]]; then
+      echo "Logging to GitLab Container Registry with CI credentials..."
+      docker login -u "$CI_USER_VAR" -p "$CI_USER_PW_VAR" "$CI_REGISTRY"
+      echo ""
+    fi
+
     echo "Testing projekt in PHP $PHP_VERSION_TEST_STEP docker image..."
 
     docker run \
@@ -93,7 +99,7 @@ stages:
     export running=$(docker inspect -f '{{.State.Running}}' ci_job_build_deploy_$CI_COMMIT_SHA)
 
     if [[ ! -z "$running" ]]; then
-      docker stop ci_job_build_deploy_$CI_COMMIT_SHA && docker rm ci_job_build_deploy_$CI_COMMIT_SHA
+      docker stop ci_job_build_deploy_$CI_COMMIT_SHA && docker rm -fv ci_job_build_deploy_$CI_COMMIT_SHA
     fi
   }
 

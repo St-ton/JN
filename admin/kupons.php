@@ -232,7 +232,7 @@ if ($action === 'bearbeiten') {
 
     handleCsvExportAction(
         Kupon::TYPE_STANDARD,
-        Kupon::TYPE_STANDARD . 'csv',
+        Kupon::TYPE_STANDARD . '.csv',
         function () use ($oFilterStandard) {
             return getExportableCoupons(Kupon::TYPE_STANDARD, $oFilterStandard->getWhereSQL());
         },
@@ -241,7 +241,7 @@ if ($action === 'bearbeiten') {
     );
     handleCsvExportAction(
         Kupon::TYPE_SHIPPING,
-        Kupon::TYPE_SHIPPING . 'csv',
+        Kupon::TYPE_SHIPPING . '.csv',
         function () use ($oFilterVersand) {
             return getExportableCoupons(Kupon::TYPE_SHIPPING, $oFilterVersand->getWhereSQL());
         },

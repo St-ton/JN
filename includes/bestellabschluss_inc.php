@@ -872,7 +872,7 @@ function KuponVerwendungen($oBestellung): void
         $cKuponTyp = Kupon::TYPE_NEWCUSTOMER;
     }
     if (isset($_SESSION['Kupon']->kKupon) && $_SESSION['Kupon']->kKupon > 0) {
-        $kKupon = $_SESSION['Kupon']->kKupon;
+        $kKupon    = $_SESSION['Kupon']->kKupon;
         $cKuponTyp = Kupon::TYPE_STANDARD;
     }
     if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
@@ -929,6 +929,7 @@ function KuponVerwendungen($oBestellung): void
         $oKuponBestellung->fKuponwertBrutto   = $fKuponwertBrutto;
         $oKuponBestellung->cKuponTyp          = $cKuponTyp;
         $oKuponBestellung->dErstellt          = 'NOW()';
+
         $oKuponBestellung->save();
     }
 }

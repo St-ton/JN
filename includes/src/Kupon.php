@@ -887,110 +887,97 @@ class Kupon
         $ret = [];
         if ($Kupon->cAktiv !== 'Y') {
             $ret['ungueltig'] = 1;
-        }
-        if (!empty($Kupon->dGueltigBis) && date_create($Kupon->dGueltigBis) < date_create()) {
+        } elseif (!empty($Kupon->dGueltigBis) && date_create($Kupon->dGueltigBis) < date_create()) {
             $ret['ungueltig'] = 2;
-        }
-        if (date_create($Kupon->dGueltigAb) > date_create()) {
+        } elseif (date_create($Kupon->dGueltigAb) > date_create()) {
             $ret['ungueltig'] = 3;
-        }
-        if ($Kupon->fMindestbestellwert > \Session\Session::getCart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)) {
-            $ret['ungueltig'] = 4;
-        }
-        if ($Kupon->cWertTyp === 'festpreis'
-            && $Kupon->nGanzenWKRabattieren === '0'
-            && $Kupon->fMindestbestellwert > gibGesamtsummeKuponartikelImWarenkorb(
-                $Kupon,
-                \Session\Session::getCart()->PositionenArr
-            )
+        } elseif ($Kupon->fMindestbestellwert > \Session\Session::getCart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
+                || ($Kupon->cWertTyp === 'festpreis'
+                    && $Kupon->nGanzenWKRabattieren === '0'
+                    && $Kupon->fMindestbestellwert > gibGesamtsummeKuponartikelImWarenkorb(
+                        $Kupon,
+                        \Session\Session::getCart()->PositionenArr
+                    )
+                )
         ) {
             $ret['ungueltig'] = 4;
-        }
-        if ($Kupon->kKundengruppe > 0 && $Kupon->kKundengruppe != \Session\Session::getCustomerGroup()->getID()) {
+        } elseif ($Kupon->kKundengruppe > 0 && $Kupon->kKundengruppe != \Session\Session::getCustomerGroup()->getID()) {
             $ret['ungueltig'] = 5;
-        }
-        if ($Kupon->nVerwendungen > 0 && $Kupon->nVerwendungen <= $Kupon->nVerwendungenBisher) {
+        } elseif ($Kupon->nVerwendungen > 0 && $Kupon->nVerwendungen <= $Kupon->nVerwendungenBisher) {
             $ret['ungueltig'] = 6;
-        }
-        if ($Kupon->cArtikel && !warenkorbKuponFaehigArtikel($Kupon, \Session\Session::getCart()->PositionenArr)) {
+        } elseif ($Kupon->cArtikel && !warenkorbKuponFaehigArtikel($Kupon, \Session\Session::getCart()->PositionenArr)) {
             $ret['ungueltig'] = 7;
-        }
-        if ($Kupon->cKategorien
+        } elseif ($Kupon->cKategorien
             && $Kupon->cKategorien != -1
             && !warenkorbKuponFaehigKategorien($Kupon, \Session\Session::getCart()->PositionenArr)
         ) {
             $ret['ungueltig'] = 8;
-        }
-        if (($Kupon->cKunden != -1 && !empty($_SESSION['Kunde']->kKunde)
+        } elseif (($Kupon->cKunden != -1 && !empty($_SESSION['Kunde']->kKunde)
                 && strpos($Kupon->cKunden, $_SESSION['Kunde']->kKunde . ';') === false
                 && $Kupon->cKuponTyp !== 'neukundenkupon')
             || ($Kupon->cKunden != -1 && $Kupon->cKuponTyp !== 'neukundenkupon' && !isset($_SESSION['Kunde']->kKunde))
         ) {
             $ret['ungueltig'] = 9;
-        }
-        if ($Kupon->cKuponTyp === 'versandkupon'
+        } elseif ($Kupon->cKuponTyp === 'versandkupon'
             && isset($_SESSION['Lieferadresse'])
             && strpos($Kupon->cLieferlaender, $_SESSION['Lieferadresse']->cLand) === false
         ) {
             $ret['ungueltig'] = 10;
-        }
-        // Neukundenkupon
-        if ($Kupon->cKuponTyp === 'neukundenkupon'
+        } elseif ($Kupon->cKuponTyp === 'neukundenkupon'
             && self::newCustomerCouponUsed($_SESSION['Kunde']->cMail)
         ) {
             $ret['ungueltig'] = 11;
-        }
-        //Hersteller
-        if ((int)$Kupon->cHersteller !== -1
+        } elseif ((int)$Kupon->cHersteller !== -1
             && !empty($Kupon->cHersteller)
             && !warenkorbKuponFaehigHersteller($Kupon, \Session\Session::getCart()->PositionenArr)
         ) {
             $ret['ungueltig'] = 12;
-        }
-        $alreadyUsedSQL = '';
-        $bindings       = [];
-        $email          = $_SESSION['Kunde']->cMail ?? '';
-        if (!empty($_SESSION['Kunde']->kKunde) && !empty($email)) {
-            $alreadyUsedSQL = 'SELECT SUM(nVerwendungen) AS nVerwendungen
-                                  FROM tkuponkunde
-                                  WHERE (kKunde = :customer OR cMail = :mail)
-                                      AND kKupon = :coupon';
-            $bindings       = [
-                'customer' => (int)$_SESSION['Kunde']->kKunde,
-                'mail'     => $email,
-                'coupon'   => (int)$Kupon->kKupon
-            ];
-        } elseif (!empty($email)) {
-            $alreadyUsedSQL = 'SELECT SUM(nVerwendungen) AS nVerwendungen
-                                  FROM tkuponkunde
-                                  WHERE cMail = :mail
-                                      AND kKupon = :coupon';
-            $bindings       = [
-                'mail'   => $email,
-                'coupon' => (int)$Kupon->kKupon
-            ];
-        } elseif (!empty($_SESSION['Kunde']->kKunde)) {
-            $alreadyUsedSQL = 'SELECT SUM(nVerwendungen) AS nVerwendungen
-                                  FROM tkuponkunde
-                                  WHERE kKunde = :customer
-                                      AND kKupon = :coupon';
-            $bindings       = [
-                'customer' => (int)$_SESSION['Kunde']->kKunde,
-                'coupon'   => (int)$Kupon->kKupon
-            ];
-        }
-        if ($alreadyUsedSQL !== '') {
-            //hat der kunde schon die max. Verwendungsanzahl erreicht?
-            $anz = Shop::Container()->getDB()->executeQueryPrepared(
-                $alreadyUsedSQL,
-                $bindings,
-                \DB\ReturnType::SINGLE_OBJECT
-            );
-            if (isset($Kupon->nVerwendungenProKunde, $anz->nVerwendungen)
-                && $anz->nVerwendungen >= $Kupon->nVerwendungenProKunde
-                && $Kupon->nVerwendungenProKunde > 0
-            ) {
-                $ret['ungueltig'] = 6;
+        } else {
+            $alreadyUsedSQL = '';
+            $bindings = [];
+            $email = $_SESSION['Kunde']->cMail ?? '';
+            if (!empty($_SESSION['Kunde']->kKunde) && !empty($email)) {
+                $alreadyUsedSQL = 'SELECT SUM(nVerwendungen) AS nVerwendungen
+                                      FROM tkuponkunde
+                                      WHERE (kKunde = :customer OR cMail = :mail)
+                                          AND kKupon = :coupon';
+                $bindings = [
+                    'customer' => (int)$_SESSION['Kunde']->kKunde,
+                    'mail' => $email,
+                    'coupon' => (int)$Kupon->kKupon
+                ];
+            } elseif (!empty($email)) {
+                $alreadyUsedSQL = 'SELECT SUM(nVerwendungen) AS nVerwendungen
+                                      FROM tkuponkunde
+                                      WHERE cMail = :mail
+                                          AND kKupon = :coupon';
+                $bindings = [
+                    'mail' => $email,
+                    'coupon' => (int)$Kupon->kKupon
+                ];
+            } elseif (!empty($_SESSION['Kunde']->kKunde)) {
+                $alreadyUsedSQL = 'SELECT SUM(nVerwendungen) AS nVerwendungen
+                                      FROM tkuponkunde
+                                      WHERE kKunde = :customer
+                                          AND kKupon = :coupon';
+                $bindings = [
+                    'customer' => (int)$_SESSION['Kunde']->kKunde,
+                    'coupon' => (int)$Kupon->kKupon
+                ];
+            }
+            if ($alreadyUsedSQL !== '') {
+                //hat der kunde schon die max. Verwendungsanzahl erreicht?
+                $anz = Shop::Container()->getDB()->executeQueryPrepared(
+                    $alreadyUsedSQL,
+                    $bindings,
+                    \DB\ReturnType::SINGLE_OBJECT
+                );
+                if (isset($Kupon->nVerwendungenProKunde, $anz->nVerwendungen)
+                    && $anz->nVerwendungen >= $Kupon->nVerwendungenProKunde
+                    && $Kupon->nVerwendungenProKunde > 0
+                ) {
+                    $ret['ungueltig'] = 6;
+                }
             }
         }
 

@@ -350,7 +350,7 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
     $Kupon->cCode                 = 'geheimcode';
     $Kupon->nVerwendungenProKunde = 2;
     $Kupon->AngezeigterName       = 'lokalisierter Name des Kupons';
-    $Kupon->cKuponTyp             = 'standard';
+    $Kupon->cKuponTyp             = Kupon::TYPE_STANDARD;
     $Kupon->cLocalizedWert        = '5 EUR';
     $Kupon->cLocalizedMBW         = '100,00 EUR';
     $Kupon->fMindestbestellwert   = 100;

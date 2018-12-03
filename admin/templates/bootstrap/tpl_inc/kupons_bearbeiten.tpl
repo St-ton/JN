@@ -4,11 +4,11 @@
     {assign var=cTitel value=#modifyCoupon#}
 {/if}
 
-{if $oKupon->cKuponTyp === 'standard'}
+{if $oKupon->cKuponTyp === $couponTypes.standard}
     {assign var=cTitel value="$cTitel : Standardkupon"}
-{elseif $oKupon->cKuponTyp === 'versandkupon'}
+{elseif $oKupon->cKuponTyp === $couponTypes.shipping}
     {assign var=cTitel value="$cTitel : Versandkostenfrei-Kupon"}
-{elseif $oKupon->cKuponTyp === 'neukundenkupon'}
+{elseif $oKupon->cKuponTyp === $couponTypes.newCustomer}
     {assign var=cTitel value="$cTitel : Neukunden-/Begr&uuml;&szlig;ungskupon"}
 {/if}
 
@@ -16,7 +16,7 @@
 
 <script>
     $(function () {
-        {if $oKupon->cKuponTyp == 'standard' || $oKupon->cKuponTyp == 'neukundenkupon'}
+        {if $oKupon->cKuponTyp == $couponTypes.standard || $oKupon->cKuponTyp == $couponTypes.newCustomer}
             makeCurrencyTooltip('fWert');
         {/if}
         makeCurrencyTooltip('fMindestbestellwert');
@@ -71,7 +71,7 @@
                 {/foreach}
             </div>
         </div>
-        {if empty($oKupon->kKupon) && isset($oKupon->cKuponTyp) && $oKupon->cKuponTyp !== 'neukundenkupon'}
+        {if empty($oKupon->kKupon) && isset($oKupon->cKuponTyp) && $oKupon->cKuponTyp !== $couponTypes.newCustomer}
             <div class="panel panel-default settings">
                 <div class="panel-heading">
                     <h3 class="panel-title"><label><input type="checkbox" name="couponCreation" id="couponCreation" class="checkfield"{if isset($oKupon->massCreationCoupon->cActiv) && $oKupon->massCreationCoupon->cActiv == 1} checked{/if} value="1" />{#couponsCreation#}</label></h3>
@@ -133,7 +133,7 @@
                 <h3 class="panel-title">{#general#}</h3>
             </div>
             <div class="panel-body">
-                {if $oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'neukundenkupon'}
+                {if $oKupon->cKuponTyp === $couponTypes.standard || $oKupon->cKuponTyp === $couponTypes.newCustomer}
                     <div class="input-group">
                         <span class="input-group-addon">
                             <label for="fWert">{#value#} ({#gross#})</label>
@@ -186,7 +186,7 @@
                         </span>
                     </div>
                 {/if}
-                {if $oKupon->cKuponTyp === 'versandkupon'}
+                {if $oKupon->cKuponTyp === $couponTypes.shipping}
                     <div class="input-group">
                         <span class="input-group-addon">
                             <label for="cZusatzgebuehren">{#additionalShippingCosts#}</label>
@@ -208,7 +208,7 @@
                         {getCurrencyConversionTooltipButton inputId='fMindestbestellwert'}
                     </span>
                 </div>
-                {if $oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon'}
+                {if $oKupon->cKuponTyp === $couponTypes.standard || $oKupon->cKuponTyp === $couponTypes.shipping}
                     <div class="input-group{if isset($oKupon->massCreationCoupon)} hidden{/if}" id="singleCouponCode">
                         <span class="input-group-addon">
                             <label for="cCode">{#code#}</label>
@@ -219,7 +219,7 @@
                         <span class="input-group-addon">{getHelpDesc cDesc=#codeHint#}</span>
                     </div>
                 {/if}
-                {if $oKupon->cKuponTyp === 'versandkupon'}
+                {if $oKupon->cKuponTyp === $couponTypes.shipping}
                     <div class="input-group">
                         <span class="input-group-addon">
                             <label for="cLieferlaender">{#shippingCountries#}</label>
@@ -238,7 +238,7 @@
                         <input type="text" class="form-control" name="nVerwendungen" id="nVerwendungen" value="{$oKupon->nVerwendungen}">
                     </span>
                 </div>
-                {if $oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon'}
+                {if $oKupon->cKuponTyp === $couponTypes.standard || $oKupon->cKuponTyp === $couponTypes.shipping}
                     <div class="input-group">
                         <span class="input-group-addon">
                             <label for="nVerwendungenProKunde">{#usesPerCustomer#}</label>
@@ -403,7 +403,7 @@
                     </span>
                     <span class="input-group-addon">{getHelpDesc cDesc=#multipleChoice#}</span>
                 </div>
-                {if $oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon'}
+                {if $oKupon->cKuponTyp === $couponTypes.standard || $oKupon->cKuponTyp === $couponTypes.shipping}
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='customerPicker'
                         modalTitle='Kunden ausw&auml;hlen'

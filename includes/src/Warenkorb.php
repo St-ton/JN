@@ -1512,10 +1512,10 @@ class Warenkorb
             // Kupon darf nicht im leeren Warenkorb eingelöst werden
             if (isset($_SESSION['Warenkorb']) && $this->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
                 $Kupon = Shop::Container()->getDB()->select('tkupon', 'kKupon', (int)$_SESSION['Kupon']->kKupon);
-                if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
+                if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === Kupon::TYPE_STANDARD) {
                     $isValid = (1 === angabenKorrekt(Kupon::checkCoupon($Kupon)));
                     $this->updateCouponValue();
-                } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
+                } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
                     //@todo?
                 } else {
                     $isValid = false;
@@ -1528,13 +1528,13 @@ class Warenkorb
             }
         } elseif (isset($_SESSION['Kupon']->nGanzenWKRabattieren)
             && (int)$_SESSION['Kupon']->nGanzenWKRabattieren === 0
-            && $_SESSION['Kupon']->cKuponTyp === 'standard'
+            && $_SESSION['Kupon']->cKuponTyp === Kupon::TYPE_STANDARD
             && $_SESSION['Kupon']->cWertTyp === 'prozent'
         ) {
             if (isset($_SESSION['Warenkorb']) && $this->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
                 $Kupon   = Shop::Container()->getDB()->select('tkupon', 'kKupon', (int)$_SESSION['Kupon']->kKupon);
                 $isValid = false;
-                if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
+                if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === Kupon::TYPE_STANDARD) {
                     $isValid = (1 === angabenKorrekt(Kupon::checkCoupon($Kupon)));
                 }
             }
@@ -1545,7 +1545,7 @@ class Warenkorb
             }
         } elseif (isset($_SESSION['Kupon']->nGanzenWKRabattieren)
             && (int)$_SESSION['Kupon']->nGanzenWKRabattieren === 0
-            && $_SESSION['Kupon']->cKuponTyp === 'standard'
+            && $_SESSION['Kupon']->cKuponTyp === Kupon::TYPE_STANDARD
         ) {
             //we have a coupon in the current session but none in the cart.
             //this happens with coupons tied to special articles that are no longer valid.

@@ -390,8 +390,8 @@ function pruefeLieferadresseStep($cGet_arr): void
  */
 function pruefeVersandkostenfreiKuponVorgemerkt(): array
 {
-    if ((isset($_SESSION['Kupon']) && $_SESSION['Kupon']->cKuponTyp === 'versandkupon')
-        || (isset($_SESSION['oVersandfreiKupon']) && $_SESSION['oVersandfreiKupon']->cKuponTyp === 'versandkupon')
+    if ((isset($_SESSION['Kupon']) && $_SESSION['Kupon']->cKuponTyp === Kupon::TYPE_SHIPPING)
+        || (isset($_SESSION['oVersandfreiKupon']) && $_SESSION['oVersandfreiKupon']->cKuponTyp === Kupon::TYPE_SHIPPING)
     ) {
         \Session\Session::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
         unset($_SESSION['Kupon']);
@@ -952,7 +952,7 @@ function plausiKupon($cPost_arr)
             $nKuponfehler_arr = Kupon::checkCoupon($Kupon);
             if (angabenKorrekt($nKuponfehler_arr)) {
                 Kupon::acceptCoupon($Kupon);
-                if ($Kupon->cKuponTyp === 'versandkupon') { // Versandfrei Kupon
+                if ($Kupon->cKuponTyp === Kupon::TYPE_SHIPPING) { // Versandfrei Kupon
                     $_SESSION['oVersandfreiKupon'] = $Kupon;
                 }
             } else {

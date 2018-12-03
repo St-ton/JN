@@ -36,6 +36,8 @@ class Migration_20181129151242 extends Migration implements IMigration
                           `dErstellt` datetime NOT NULL,
                           PRIMARY KEY (`kKuponFlag`)
                         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci');
+
+        $this->execute('ALTER TABLE `tkuponbestellung` CHANGE COLUMN `cKuponTyp` `cKuponTyp` VARCHAR(255) NOT NULL');
     }
 
     public function down()
@@ -52,5 +54,7 @@ class Migration_20181129151242 extends Migration implements IMigration
                           PRIMARY KEY (`kKuponNeukunde`),
                           KEY `cEmail` (`cEmail`,`cDatenHash`)
                         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci");
+
+        $this->execute("ALTER TABLE `tkuponbestellung` CHANGE COLUMN `cKuponTyp` `cKuponTyp` enum('prozent', 'festpreis', 'versand', 'neukunden') COLLATE utf8_unicode_ci DEFAULT NULL");
     }
 }

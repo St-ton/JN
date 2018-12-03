@@ -864,20 +864,16 @@ function KuponVerwendungen($oBestellung): void
     $fKuponwertBrutto = 0;
     if (isset($_SESSION['VersandKupon']->kKupon) && $_SESSION['VersandKupon']->kKupon > 0) {
         $kKupon           = $_SESSION['VersandKupon']->kKupon;
-        $cKuponTyp        = 'versand';
+        $cKuponTyp        = Kupon::TYPE_SHIPPING;
         $fKuponwertBrutto = $_SESSION['Versandart']->fPreis;
     }
     if (isset($_SESSION['NeukundenKupon']->kKupon) && $_SESSION['NeukundenKupon']->kKupon > 0) {
         $kKupon    = $_SESSION['NeukundenKupon']->kKupon;
-        $cKuponTyp = 'neukunden';
+        $cKuponTyp = Kupon::TYPE_NEWCUSTOMER;
     }
     if (isset($_SESSION['Kupon']->kKupon) && $_SESSION['Kupon']->kKupon > 0) {
         $kKupon = $_SESSION['Kupon']->kKupon;
-        if (isset($_SESSION['Kupon']->cWertTyp)
-            && ($_SESSION['Kupon']->cWertTyp === 'prozent' || $_SESSION['Kupon']->cWertTyp === 'festpreis')
-        ) {
-            $cKuponTyp = $_SESSION['Kupon']->cWertTyp;
-        }
+        $cKuponTyp = Kupon::TYPE_STANDARD;
     }
     if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
         foreach ($_SESSION['Warenkorb']->PositionenArr as $Position) {

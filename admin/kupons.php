@@ -15,7 +15,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 $cHinweis         = '';
 $cFehler          = '';
 $action           = '';
-$tab              = 'standard';
+$tab              = Kupon::TYPE_STANDARD;
 $oSprache_arr     = Sprache::getAllLanguages();
 $oKupon           = null;
 $importDeleteDone = false;
@@ -117,7 +117,7 @@ if ($action === 'bearbeiten') {
         // erfolgreich gespeichert => evtl. Emails versenden
         if (isset($_POST['informieren'])
             && $_POST['informieren'] === 'Y'
-            && ($oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon')
+            && ($oKupon->cKuponTyp === Kupon::TYPE_STANDARD || $oKupon->cKuponTyp === Kupon::TYPE_SHIPPING)
             && $oKupon->cAktiv === 'Y'
         ) {
             informCouponCustomers($oKupon);
@@ -190,7 +190,7 @@ if ($action === 'bearbeiten') {
     deactivateOutdatedCoupons();
     deactivateExhaustedCoupons();
 
-    $oFilterStandard = new Filter('standard');
+    $oFilterStandard = new Filter(Kupon::TYPE_STANDARD);
     $oFilterStandard->addTextfield('Name', 'cName');
     $oFilterStandard->addTextfield('Code', 'cCode');
     $oAktivSelect = $oFilterStandard->addSelectfield('Status', 'cAktiv');
@@ -199,7 +199,7 @@ if ($action === 'bearbeiten') {
     $oAktivSelect->addSelectOption('inaktiv', 'N', 4);
     $oFilterStandard->assemble();
 
-    $oFilterVersand = new Filter('versand');
+    $oFilterVersand = new Filter(Kupon::TYPE_SHIPPING);
     $oFilterVersand->addTextfield('Name', 'cName');
     $oFilterVersand->addTextfield('Code', 'cCode');
     $oAktivSelect = $oFilterVersand->addSelectfield('Status', 'cAktiv');
@@ -208,7 +208,7 @@ if ($action === 'bearbeiten') {
     $oAktivSelect->addSelectOption('inaktiv', 'N', 4);
     $oFilterVersand->assemble();
 
-    $oFilterNeukunden = new Filter('neukunden');
+    $oFilterNeukunden = new Filter(Kupon::TYPE_NEWCUSTOMER);
     $oFilterNeukunden->addTextfield('Name', 'cName');
     $oAktivSelect = $oFilterNeukunden->addSelectfield('Status', 'cAktiv');
     $oAktivSelect->addSelectOption('alle', '', 0);
@@ -223,68 +223,68 @@ if ($action === 'bearbeiten') {
         ['dLastUse', 'Zuletzt verwendet']
     ];
 
-    $nKuponStandardCount  = getCouponCount('standard', $oFilterStandard->getWhereSQL());
-    $nKuponVersandCount   = getCouponCount('versandkupon', $oFilterVersand->getWhereSQL());
-    $nKuponNeukundenCount = getCouponCount('neukundenkupon', $oFilterNeukunden->getWhereSQL());
-    $nKuponStandardTotal  = getCouponCount('standard');
-    $nKuponVersandTotal   = getCouponCount('versandkupon');
-    $nKuponNeukundenTotal = getCouponCount('neukundenkupon');
+    $nKuponStandardCount  = getCouponCount(Kupon::TYPE_STANDARD, $oFilterStandard->getWhereSQL());
+    $nKuponVersandCount   = getCouponCount(Kupon::TYPE_SHIPPING, $oFilterVersand->getWhereSQL());
+    $nKuponNeukundenCount = getCouponCount(Kupon::TYPE_NEWCUSTOMER, $oFilterNeukunden->getWhereSQL());
+    $nKuponStandardTotal  = getCouponCount(Kupon::TYPE_STANDARD);
+    $nKuponVersandTotal   = getCouponCount(Kupon::TYPE_SHIPPING);
+    $nKuponNeukundenTotal = getCouponCount(Kupon::TYPE_NEWCUSTOMER);
 
     handleCsvExportAction(
-        'standard',
-        'standard.csv',
+        Kupon::TYPE_STANDARD,
+        Kupon::TYPE_STANDARD . 'csv',
         function () use ($oFilterStandard) {
-            return getExportableCoupons('standard', $oFilterStandard->getWhereSQL());
+            return getExportableCoupons(Kupon::TYPE_STANDARD, $oFilterStandard->getWhereSQL());
         },
         [],
         ['kKupon']
     );
     handleCsvExportAction(
-        'versandkupon',
-        'versandkupon.csv',
+        Kupon::TYPE_SHIPPING,
+        Kupon::TYPE_SHIPPING . 'csv',
         function () use ($oFilterVersand) {
-            return getExportableCoupons('versandkupon', $oFilterVersand->getWhereSQL());
+            return getExportableCoupons(Kupon::TYPE_SHIPPING, $oFilterVersand->getWhereSQL());
         },
         [],
         ['kKupon']
     );
     handleCsvExportAction(
-        'neukundenkupon',
-        'neukundenkupon.csv',
+        Kupon::TYPE_NEWCUSTOMER,
+        Kupon::TYPE_NEWCUSTOMER . '.csv',
         function () use ($oFilterNeukunden) {
-            return getExportableCoupons('neukundenkupon', $oFilterNeukunden->getWhereSQL());
+            return getExportableCoupons(Kupon::TYPE_NEWCUSTOMER, $oFilterNeukunden->getWhereSQL());
         },
         [],
         ['kKupon']
     );
 
-    $oPaginationStandard  = (new Pagination('standard'))
+    $oPaginationStandard  = (new Pagination(Kupon::TYPE_STANDARD))
         ->setSortByOptions($cSortByOption_arr)
         ->setItemCount($nKuponStandardCount)
         ->assemble();
-    $oPaginationVersand   = (new Pagination('versand'))
+    $oPaginationVersand   = (new Pagination(Kupon::TYPE_SHIPPING))
         ->setSortByOptions($cSortByOption_arr)
         ->setItemCount($nKuponVersandCount)
         ->assemble();
-    $oPaginationNeukunden = (new Pagination('neukunden'))
+    $oPaginationNeukunden = (new Pagination(Kupon::TYPE_NEWCUSTOMER))
         ->setSortByOptions($cSortByOption_arr)
         ->setItemCount($nKuponNeukundenCount)
         ->assemble();
 
     $oKuponStandard_arr  = getCoupons(
-        'standard',
+        Kupon::TYPE_STANDARD,
         $oFilterStandard->getWhereSQL(),
         $oPaginationStandard->getOrderSQL(),
         $oPaginationStandard->getLimitSQL()
     );
     $oKuponVersand_arr   = getCoupons(
-        'versandkupon',
+        Kupon::TYPE_SHIPPING,
         $oFilterVersand->getWhereSQL(),
         $oPaginationVersand->getOrderSQL(),
         $oPaginationVersand->getLimitSQL()
     );
     $oKuponNeukunden_arr = getCoupons(
-        'neukundenkupon',
+        Kupon::TYPE_NEWCUSTOMER,
         $oFilterNeukunden->getWhereSQL(),
         $oPaginationNeukunden->getOrderSQL(),
         $oPaginationNeukunden->getLimitSQL()
@@ -308,4 +308,5 @@ if ($action === 'bearbeiten') {
 $smarty->assign('action', $action)
        ->assign('cHinweis', $cHinweis)
        ->assign('cFehler', $cFehler)
+       ->assign('couponTypes', Kupon::getCouponTypes())
        ->display('kupons.tpl');

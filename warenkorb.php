@@ -54,10 +54,10 @@ if ($cart !== null
             'nReturnValue' => &$nReturnValue
         ]);
         if ($nReturnValue) {
-            if ($Kupon->cKuponTyp === 'standard') {
+            if ($Kupon->cKuponTyp === Kupon::TYPE_STANDARD) {
                 Kupon::acceptCoupon($Kupon);
                 executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
-            } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
+            } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
                 // Aktiven Kupon aus der Session löschen und dessen Warenkorbposition
                 $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
                 // Versandfrei Kupon

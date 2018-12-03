@@ -16,15 +16,15 @@ function loescheKupons($kKupon_arr)
     }
     $kKupon_arr = array_map('\intval', $kKupon_arr);
     $nRows      = Shop::Container()->getDB()->query(
-        'DELETE
+        'DELETE tkupon, tkuponsprache, tkuponkunde, tkuponbestellung
             FROM tkupon
-            WHERE kKupon IN(' . implode(',', $kKupon_arr) . ')',
-        \DB\ReturnType::AFFECTED_ROWS
-    );
-    Shop::Container()->getDB()->query(
-        'DELETE
-            FROM tkuponsprache
-            WHERE kKupon IN(' . implode(',', $kKupon_arr) . ')',
+            LEFT JOIN tkuponsprache
+              ON tkuponsprache.kKupon = tkupon.kKupon
+            LEFT JOIN tkuponkunde
+              ON tkuponkunde.kKupon = tkupon.kKupon
+            LEFT JOIN tkuponbestellung
+              ON tkuponbestellung.kKupon = tkupon.kKupon
+            WHERE tkupon.kKupon IN(' . implode(',', $kKupon_arr) . ')',
         \DB\ReturnType::AFFECTED_ROWS
     );
 

@@ -23,22 +23,25 @@
 class Migration_20181129151242 extends Migration implements IMigration
 {
     protected $author = 'mh';
-    protected $description = 'Remove tkuponneukunde, hash tkuponkunde cMail';
+    protected $description = 'Remove tkuponneukunde, add tkuponflag';
 
     public function up()
     {
         $this->execute('DROP TABLE IF EXISTS `tkuponneukunde`');
 
-        //hash all emails
-        $customerCoupons = $this->fetchAll('SELECT `kKuponKunde`, `cMail` FROM `tkuponkunde`');
-        foreach ($customerCoupons as $customerCoupon) {
-            $this->execute("UPDATE `tkuponkunde` SET `cMail` = '" . \Kupon::hash($customerCoupon->cMail)
-                . "' WHERE `kKuponKunde` = " . $customerCoupon->kKuponKunde);
-        }
+        $this->execute('CREATE TABLE `tkuponflag` (
+                          `kKuponFlag` int(10) unsigned NOT NULL AUTO_INCREMENT,
+                          `cEmailHash` varchar(255) NOT NULL,
+                          `cKuponTyp` varchar(255) NOT NULL,
+                          `dErstellt` datetime NOT NULL,
+                          PRIMARY KEY (`kKuponFlag`)
+                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci');
     }
 
     public function down()
     {
+        $this->execute('DROP TABLE IF EXISTS `tkuponflag`');
+
         $this->execute("CREATE TABLE `tkuponneukunde` (
                           `kKuponNeukunde` int(10) unsigned NOT NULL AUTO_INCREMENT,
                           `kKupon` int(10) unsigned NOT NULL,

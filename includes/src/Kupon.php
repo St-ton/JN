@@ -949,7 +949,7 @@ class Kupon
         }
         $alreadyUsedSQL = '';
         $bindings       = [];
-        $email          = self::hash($_SESSION['Kunde']->cMail ?? '');
+        $email          = $_SESSION['Kunde']->cMail ?? '';
         if (!empty($_SESSION['Kunde']->kKunde) && !empty($email)) {
             $alreadyUsedSQL = 'SELECT SUM(nVerwendungen) AS nVerwendungen
                                   FROM tkuponkunde
@@ -1005,12 +1005,10 @@ class Kupon
     public static function newCustomerCouponUsed(string $email): bool
     {
         $newCustomerCouponUsed = Shop::Container()->getDB()->queryPrepared(
-            "SELECT tkk.kKuponKunde
-                FROM tkuponkunde tkk
-                LEFT JOIN tkupon tk
-                  ON tkk.kKupon = tk.kKupon
-                WHERE tkk.cMail = :email
-                  AND tk.cKuponTyp = 'neukundenkupon'",
+            "SELECT kKuponFlag
+                FROM tkuponflag
+                WHERE cEmailHash = :email
+                  AND cKuponTyp = 'neukunden'",
             ['email' => self::hash($email)],
             \DB\ReturnType::SINGLE_OBJECT
         );

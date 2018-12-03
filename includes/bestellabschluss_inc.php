@@ -902,7 +902,7 @@ function KuponVerwendungen($oBestellung): void
         $KuponKunde                = new stdClass();
         $KuponKunde->kKupon        = $kKupon;
         $KuponKunde->kKunde        = $_SESSION['Warenkorb']->kKunde;
-        $KuponKunde->cMail         = Kupon::hash(StringHandler::filterXSS($_SESSION['Kunde']->cMail));
+        $KuponKunde->cMail         = StringHandler::filterXSS($_SESSION['Kunde']->cMail);
         $KuponKunde->dErstellt     = 'NOW()';
         $KuponKunde->nVerwendungen = 1;
         $KuponKundeBisher          = Shop::Container()->getDB()->queryPrepared(
@@ -917,6 +917,12 @@ function KuponVerwendungen($oBestellung): void
         }
         Shop::Container()->getDB()->delete('tkuponkunde', ['kKunde', 'kKupon'], [(int)$KuponKunde->kKunde, $kKupon]);
         Shop::Container()->getDB()->insert('tkuponkunde', $KuponKunde);
+
+        Shop::Container()->getDB()->insert('tkuponflag', (object)[
+            'cKuponTyp'  => $cKuponTyp,
+            'cEmailHash' => Kupon::hash($KuponKunde->cMail),
+            'dErstellt'  => 'NOW()'
+        ]);
 
         $oKuponBestellung                     = new KuponBestellung();
         $oKuponBestellung->kKupon             = $kKupon;

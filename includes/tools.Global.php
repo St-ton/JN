@@ -2904,12 +2904,13 @@ function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $kKun
 }
 
 /**
- * @param int  $kKundengruppe
- * @param bool $bIgnoreSetting
- * @param bool $bForceAll
+ * @param int   $kKundengruppe
+ * @param bool  $bIgnoreSetting
+ * @param bool  $bForceAll
+ * @param array $filterISO
  * @return array
  */
-function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bForceAll = false)
+function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bForceAll = false, $filterISO = [])
 {
     if (empty($kKundengruppe)) {
         $kKundengruppe = Kundengruppe::getDefaultGroupID();
@@ -2928,7 +2929,7 @@ function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bF
                 WHERE (cKundengruppen = '-1' 
                   OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')", 2
         );
-        $where       = '';
+        $where       = '(';
         foreach ($ll_obj_arr as $cLaender) {
             $pcs = explode(' ', $cLaender->cLaender);
             foreach ($pcs as $i => $land) {
@@ -2937,13 +2938,21 @@ function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bF
                         $where .= ' OR ';
                     }
                     $laender_arr[] = $land;
-                    $where .= ' cISO = "' . $land . '"';
+                    $where .= " cISO = '" . $land . "'";
                 }
             }
         }
+        $where .= ')';
+        if (count($filterISO) > 0) {
+            $where .= " AND tland.cISO IN ('" . implode("','", $filterISO) . "')";
+        }
         $laender = Shop::DB()->query("SELECT cISO, $sel_var AS cName FROM tland WHERE $where ORDER BY $sel_var", 2);
     } else {
-        $laender = Shop::DB()->query("SELECT cISO, $sel_var AS cName FROM tland ORDER BY $sel_var", 2);
+        $where = '';
+        if (count($filterISO) > 0) {
+            $where .= "WHERE tland.cISO IN ('" . implode("','", $filterISO) . "')";
+        }
+        $laender = Shop::DB()->query("SELECT cISO, $sel_var AS cName FROM tland $where ORDER BY $sel_var", 2);
     }
     if (is_array($laender)) {
         usort(

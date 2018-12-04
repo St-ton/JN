@@ -108,6 +108,25 @@ $(document).ready(function() {
                             {if isset($cError_arr.cMail)}<span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>{/if}
                         </div>
                     </div>
+                    <div class="item">
+                        <div class="input-group{if isset($cError_arr.kSprache)} error{/if}">
+                            <span class="input-group-addon">
+                                <label for="kSprache">Sprache</label>
+                            </span>
+                            <span class="input-group-wrap">
+                                <select id="kSprache" class="form-control" name="kSprache">
+                                    {foreach $languages as $language}
+                                        <option value="{$language->kSprache}"
+                                                {if isset($oAccount->kSprache) && (int)$oAccount->kSprache === $language->kSprache}
+                                                    selected="selected"
+                                                {/if}>
+                                            {$language->cNameEnglisch}
+                                        </option>
+                                    {/foreach}
+                                </select>
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
 

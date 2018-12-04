@@ -287,16 +287,18 @@ function benutzerverwaltungActionAccountEdit(Smarty\JTLSmarty $smarty, array &$m
     if (isset($_POST['save'])) {
         $cError_arr           = [];
         $oTmpAcc              = new stdClass();
-        $oTmpAcc->kAdminlogin = isset($_POST['kAdminlogin'])
-            ? (int)$_POST['kAdminlogin']
-            : 0;
+        $oTmpAcc->kAdminlogin = isset($_POST['kAdminlogin']) ? (int)$_POST['kAdminlogin'] : 0;
         $oTmpAcc->cName       = htmlspecialchars(trim($_POST['cName']), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $oTmpAcc->cMail       = htmlspecialchars(trim($_POST['cMail']), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+        $oTmpAcc->kSprache    = (int)$_POST['kSprache'];
         $oTmpAcc->cLogin      = trim($_POST['cLogin']);
         $oTmpAcc->cPass       = trim($_POST['cPass']);
         $oTmpAcc->b2FAauth    = (int)$_POST['b2FAauth'];
         $tmpAttribs           = $_POST['extAttribs'] ?? [];
-        (0 < strlen($_POST['c2FAsecret'])) ? $oTmpAcc->c2FAauthSecret = trim($_POST['c2FAsecret']) : null;
+
+        if (0 < strlen($_POST['c2FAsecret'])) {
+            $oTmpAcc->c2FAauthSecret = trim($_POST['c2FAsecret']);
+        }
 
         $dGueltigBisAktiv = (isset($_POST['dGueltigBisAktiv']) && ($_POST['dGueltigBisAktiv'] === '1'));
         if ($dGueltigBisAktiv) {
@@ -370,6 +372,8 @@ function benutzerverwaltungActionAccountEdit(Smarty\JTLSmarty $smarty, array &$m
             } else {
                 unset($oTmpAcc->cPass);
             }
+
+            $_SESSION['AdminAccount']->kSprache = $oTmpAcc->kSprache;
 
             if (Shop::Container()->getDB()->update('tadminlogin', 'kAdminlogin', $oTmpAcc->kAdminlogin, $oTmpAcc) >= 0
                 && benutzerverwaltungSaveAttributes($oTmpAcc, $tmpAttribs, $messages, $cError_arr)
@@ -697,7 +701,8 @@ function benutzerverwaltungFinalize($step, Smarty\JTLSmarty $smarty, array &$mes
 
     switch ($step) {
         case 'account_edit':
-            $smarty->assign('oAdminGroup_arr', getAdminGroups());
+            $smarty->assign('oAdminGroup_arr', getAdminGroups())
+                   ->assign('languages', Shop::Lang()->getInstalled());
             break;
         case 'account_view':
             $smarty->assign('oAdminList_arr', getAdminList())

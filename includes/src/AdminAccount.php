@@ -488,6 +488,7 @@ class AdminAccount
             $_SESSION['AdminAccount']->cLogin      = $oAdmin->cLogin;
             $_SESSION['AdminAccount']->cMail       = $oAdmin->cMail;
             $_SESSION['AdminAccount']->cPass       = $oAdmin->cPass;
+            $_SESSION['AdminAccount']->kSprache    = (int)$oAdmin->kSprache;
 
             if (!is_object($oGroup)) {
                 $oGroup                    = new stdClass();

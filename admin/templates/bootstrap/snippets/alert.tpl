@@ -6,13 +6,13 @@
     {if !empty($alert->getIcon())}<span class="fa fa-{$alert->getIcon()}"></span>{/if}
 
     {if !empty({$alert->getLinkHref()}) && empty({$alert->getLinkText()})}
-    <a href="{$alert->getLinkHref()}">
-        {/if}
+        <a href="{$alert->getLinkHref()}">
+    {/if}
 
-        {$alert->getMessage()}
+    {$alert->getMessage()}
 
-        {if !empty({$alert->getLinkHref()}) && empty({$alert->getLinkText()})}
-    </a>
+    {if !empty({$alert->getLinkHref()}) && empty({$alert->getLinkText()})}
+        </a>
     {/if}
 
     {if !empty({$alert->getLinkHref()}) && !empty({$alert->getLinkText()})}

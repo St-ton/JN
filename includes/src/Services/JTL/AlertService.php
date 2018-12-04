@@ -28,7 +28,7 @@ class AlertService implements AlertServiceInterface
      */
     public function initFromSession(): void
     {
-        $alerts = \Session::get('alerts');
+        $alerts = $_SESSION['alerts'] ?? '';
 
         if (!empty($alerts)) {
             foreach ($alerts as $alertSerialized) {

@@ -129,7 +129,7 @@ class Alert
             if ($this->getOptions() !== null) {
                 foreach ($this->getOptions() as $optionKey => $optionValue) {
                     $methodName = 'set' . ucfirst($optionKey);
-                    if (is_callable($methodName, true)) {
+                    if (is_callable([$this, $methodName])) {
                         $this->$methodName($optionValue);
                     }
                 }
@@ -367,7 +367,10 @@ class Alert
      */
     private function addToSession(): void
     {
-        Session::set('alerts.' . $this->getKey(), serialize($this));
+        if (!isset($_SESSION['alerts'])) {
+            $_SESSION['alerts'] = [];
+        }
+        $_SESSION['alerts'][$this->getKey()] = serialize($this);
     }
 
     /**

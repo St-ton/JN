@@ -29,19 +29,22 @@ class AlertService implements AlertServiceInterface
     public function initFromSession(): void
     {
         $alerts = \Session::get('alerts');
-        if ($alerts !== null && is_a($alerts, 'Services\JTL\AlertService')) {
-            $this->alertList = $alerts->getAlertList();
+
+        if (!empty($alerts)) {
+            foreach ($alerts as $alertSerialized) {
+                $alert = unserialize($alertSerialized, ['allowed_classes', 'Alert']);
+                $this->alertList[$alert->getKey()] = $alert;
+            }
         }
     }
 
     /**
      * @inheritdoc
      */
-    public function addAlert(string $type, string $message, string $key): Alert
+    public function addAlert(string $type, string $message, string $key, array $options = null): Alert
     {
-        $alert                 = new Alert($type, $message, $key);
+        $alert                 = new Alert($type, $message, $key, $options);
         $this->alertList[$key] = $alert;
-        \Session::set('alerts', $this);
 
         return $alert;
     }
@@ -60,16 +63,5 @@ class AlertService implements AlertServiceInterface
     public function getAlertList(): array
     {
         return $this->alertList;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function unsetAlert(string $key): void
-    {
-        $alerts = \Session::get('alerts');
-        if (isset($alerts, $alerts->alertList[$key])) {
-            unset($alerts->alertList[$key]);
-        }
     }
 }

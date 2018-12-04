@@ -37,9 +37,4 @@ interface AlertServiceInterface
      */
     public function getAlertlist(): array;
 
-    /**
-     * @param string $key
-     * @return void
-     */
-    public function unsetAlert(string $key): void;
 }

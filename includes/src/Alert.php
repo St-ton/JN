@@ -42,7 +42,7 @@ class Alert
     /**
      * @var bool
      */
-    private $removeFromSession = true;
+    private $saveInSession = false;
 
     /**
      * @var string
@@ -58,6 +58,11 @@ class Alert
      * @var string
      */
     private $icon;
+
+    /**
+     * @var array|null
+     */
+    private $options;
 
     public const TYPE_PRIMARY   = 'primary';
     public const TYPE_SECONDARY = 'secondary';
@@ -81,25 +86,25 @@ class Alert
      * @param string $message
      * @param string $type
      * @param string $key
+     * @param array|null $options
      * constructor
      */
-    public function __construct(string $type, string $message, string $key)
-    {
-        $this->initAlert($type, $message, $key);
-    }
-
-    /**
-     * @param string $message
-     * @param string $type
-     * @param string $key
-     */
-    public function initAlert(string $type, string $message, string $key): void
+    public function __construct(string $type, string $message, string $key, array $options = null)
     {
         $this->setType($type)
              ->setMessage($message)
-             ->setKey($key);
+             ->setKey($key)
+             ->setOptions($options);
 
-        switch ($type) {
+        $this->initAlert();
+    }
+
+    /**
+     * @param bool $initFromUnserialize
+     */
+    private function initAlert(bool $initFromUnserialize = false): void
+    {
+        switch ($this->getType()) {
             case self::TYPE_DANGER:
                 $this->setDismissable(true)
                      ->setIcon(self::ICON_WARNING);
@@ -119,6 +124,20 @@ class Alert
             default;
                 break;
         }
+
+        if (!$initFromUnserialize) {
+            if ($this->getOptions() !== null) {
+                foreach ($this->getOptions() as $optionKey => $optionValue) {
+                    $methodName = 'set' . ucfirst($optionKey);
+                    if (is_callable($methodName, true)) {
+                        $this->$methodName($optionValue);
+                    }
+                }
+            }
+            if ($this->getSaveInSession()) {
+                $this->addToSession();
+            }
+        }
     }
 
     /**
@@ -129,8 +148,8 @@ class Alert
         Shop::Smarty()->assign('alert', $this)
             ->display('snippets/alert.tpl');
 
-        if ($this->removeFromSession) {
-            Shop::Container()->getAlertService()->unsetAlert($this->getKey());
+        if ($this->getSaveInSession()) {
+            $this->removeFromSession();
         }
     }
 
@@ -146,7 +165,7 @@ class Alert
      * @param string $message
      * @return $this
      */
-    public function setMessage(string $message): self
+    private function setMessage(string $message): self
     {
         $this->message = $message;
 
@@ -165,7 +184,7 @@ class Alert
      * @param string $type
      * @return $this
      */
-    public function setType(string $type): self
+    private function setType(string $type): self
     {
         $this->type = $type;
 
@@ -184,7 +203,7 @@ class Alert
      * @param string $key
      * @return $this
      */
-    public function setKey(string $key): self
+    private function setKey(string $key): self
     {
         $this->key = $key;
 
@@ -203,7 +222,7 @@ class Alert
      * @param bool $dismissable
      * @return $this
      */
-    public function setDismissable(bool $dismissable): self
+    private function setDismissable(bool $dismissable): self
     {
         $this->dismissable = $dismissable;
 
@@ -222,7 +241,7 @@ class Alert
      * @param int $fadeOut
      * @return $this
      */
-    public function setFadeOut(int $fadeOut): self
+    private function setFadeOut(int $fadeOut): self
     {
         $this->fadeOut = $fadeOut;
 
@@ -232,18 +251,18 @@ class Alert
     /**
      * @return bool
      */
-    public function getRemoveFromSession(): bool
+    public function getSaveInSession(): bool
     {
-        return $this->removeFromSession;
+        return $this->saveInSession;
     }
 
     /**
-     * @param bool $removeFromSession
+     * @param bool $saveInSession
      * @return $this
      */
-    public function setRemoveFromSession(bool $removeFromSession): self
+    private function setSaveInSession(bool $saveInSession): self
     {
-        $this->removeFromSession = $removeFromSession;
+        $this->saveInSession = $saveInSession;
 
         return $this;
     }
@@ -260,7 +279,7 @@ class Alert
      * @param bool $showInAlertListTemplate
      * @return $this
      */
-    public function setShowInAlertListTemplate(bool $showInAlertListTemplate): self
+    private function setShowInAlertListTemplate(bool $showInAlertListTemplate): self
     {
         $this->showInAlertListTemplate = $showInAlertListTemplate;
 
@@ -279,7 +298,7 @@ class Alert
      * @param string $linkHref
      * @return $this
      */
-    public function setLinkHref(string $linkHref): self
+    private function setLinkHref(string $linkHref): self
     {
         $this->linkHref = $linkHref;
 
@@ -298,7 +317,7 @@ class Alert
      * @param string $linkText
      * @return $this
      */
-    public function setLinkText(string $linkText): self
+    private function setLinkText(string $linkText): self
     {
         $this->linkText = $linkText;
 
@@ -317,10 +336,62 @@ class Alert
      * @param string $icon
      * @return $this
      */
-    public function setIcon(string $icon): self
+    private function setIcon(string $icon): self
     {
         $this->icon = $icon;
 
         return $this;
+    }
+
+    /**
+     * @return null|array
+     */
+    private function getOptions(): ?array
+    {
+        return $this->options;
+    }
+
+    /**
+     * @param array $options
+     * @return $this
+     */
+    private function setOptions(array $options): self
+    {
+        $this->options = $options;
+
+        return $this;
+    }
+
+    /**
+     * save Alert in Session
+     */
+    private function addToSession(): void
+    {
+        Session::set('alerts.' . $this->getKey(), serialize($this));
+    }
+
+    /**
+     * remove Alert from Session
+     */
+    private function removeFromSession(): void
+    {
+        if (isset($_SESSION['alerts'][$this->getKey()])) {
+            unset($_SESSION['alerts'][$this->getKey()]);
+        }
+    }
+
+    public function __sleep()
+    {
+        $propertiesToSave =['type', 'message', 'key'];
+        if ($this->getOptions() !== null) {
+            $propertiesToSave = array_merge($propertiesToSave, array_keys($this->options));
+        }
+
+        return $propertiesToSave;
+    }
+
+    public function __wakeup()
+    {
+        $this->initAlert(true);
     }
 }

@@ -14,7 +14,7 @@ use Smarty\JTLSmarty;
  *
  * @package Widgets
  */
-abstract class AbstractWidget
+abstract class AbstractWidget implements WidgetInterface
 {
     /**
      * @var JTLSmarty
@@ -41,7 +41,7 @@ abstract class AbstractWidget
      * @param \DB\DbInterface  $db
      * @param \Plugin|\Plugin\Extension $oPlugin
      */
-    public function __construct($smarty = null, $db = null, &$oPlugin = null)
+    public function __construct($smarty = null, $db = null, $oPlugin = null)
     {
         $this->oSmarty = $smarty ?? \Shop::Smarty();
         $this->oDB     = $db ?? \Shop::Container()->getDB();

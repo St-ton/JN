@@ -32,6 +32,11 @@ abstract class WidgetBase
     public $oPlugin;
 
     /**
+     * @var bool
+     */
+    public $hasBody = true;
+
+    /**
      * @param \Smarty\JTLSmarty $smarty
      * @param \DB\DbInterface  $db
      * @param \Plugin|\Plugin\Extension $oPlugin
@@ -42,6 +47,54 @@ abstract class WidgetBase
         $this->oDB     = $db ?? \Shop::Container()->getDB();
         $this->oPlugin = $oPlugin;
         $this->init();
+    }
+
+    /**
+     * @return JTLSmarty
+     */
+    public function getSmarty(): JTLSmarty
+    {
+        return $this->oSmarty;
+    }
+
+    /**
+     * @param JTLSmarty $oSmarty
+     */
+    public function setSmarty(JTLSmarty $oSmarty): void
+    {
+        $this->oSmarty = $oSmarty;
+    }
+
+    /**
+     * @return \DB\DbInterface
+     */
+    public function getDB(): \DB\DbInterface
+    {
+        return $this->oDB;
+    }
+
+    /**
+     * @param \DB\DbInterface $oDB
+     */
+    public function setDB(\DB\DbInterface $oDB): void
+    {
+        $this->oDB = $oDB;
+    }
+
+    /**
+     * @return AbstractExtension
+     */
+    public function getPlugin(): AbstractExtension
+    {
+        return $this->oPlugin;
+    }
+
+    /**
+     * @param AbstractExtension $oPlugin
+     */
+    public function setPlugin(AbstractExtension $oPlugin): void
+    {
+        $this->oPlugin = $oPlugin;
     }
 
     /**

@@ -32,6 +32,7 @@ function getWidgets(bool $bActive = true)
             $widget->bActive    = (int)$widget->bActive;
             $widget->bExtension = (int)$widget->bExtension;
             $widget->cContent   = '';
+
             $className          = '\Widgets\\' . $widget->cClass;
             $classFile          = null;
             $classPath          = null;
@@ -55,6 +56,7 @@ function getWidgets(bool $bActive = true)
                 /** @var \Widgets\WidgetBase $instance */
                 $instance         = new $className(null, $db, $plugin);
                 $widget->cContent = $instance->getContent();
+                $widget->hasBody  = $instance->hasBody;
             }
         }
     }

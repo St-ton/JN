@@ -7,7 +7,9 @@
 namespace Widgets;
 
 /**
- * Class WidgetNews
+ * Class News
+ *
+ * @package Widgets
  */
 class News extends WidgetBase
 {

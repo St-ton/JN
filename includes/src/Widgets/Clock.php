@@ -7,14 +7,12 @@
 namespace Widgets;
 
 /**
- * Class WidgetClock
+ * Class Clock
+ *
+ * @package Widgets
  */
 class Clock extends WidgetBase
 {
-    public function init()
-    {
-    }
-
     /**
      * @return string
      */

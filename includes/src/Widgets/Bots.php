@@ -7,7 +7,9 @@
 namespace Widgets;
 
 /**
- * Class WidgetBots
+ * Class Bots
+ *
+ * @package Widgets
  */
 class Bots extends WidgetBase
 {

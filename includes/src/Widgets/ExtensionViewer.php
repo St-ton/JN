@@ -7,7 +7,9 @@
 namespace Widgets;
 
 /**
- * Class WidgetExtensionViewer
+ * Class ExtensionViewer
+ *
+ * @package Widgets
  */
 class ExtensionViewer extends WidgetBase
 {

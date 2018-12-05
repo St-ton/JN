@@ -7,23 +7,17 @@
 namespace Widgets;
 
 /**
- * Class WidgetPatch
+ * Class Patch
+ *
+ * @package Widgets
  */
 class Patch extends WidgetBase
 {
-    /**
-     *
-     */
-    public function init()
-    {
-        $this->oSmarty->assign('version', getJTLVersionDB());
-    }
-
     /**
      * @return string
      */
     public function getContent()
     {
-        return $this->oSmarty->fetch('tpl_inc/widgets/patch.tpl');
+        return $this->oSmarty->assign('version', getJTLVersionDB())->fetch('tpl_inc/widgets/patch.tpl');
     }
 }

@@ -7,7 +7,9 @@
 namespace Widgets;
 
 /**
- * Class WidgetVisitors
+ * Class Visitors
+ *
+ * @package Widgets
  */
 class Visitors extends WidgetBase
 {

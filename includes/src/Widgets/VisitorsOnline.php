@@ -7,7 +7,9 @@
 namespace Widgets;
 
 /**
- * Class WidgetVisitorsOnline
+ * Class VisitorsOnline
+ *
+ * @package Widgets
  */
 class VisitorsOnline extends WidgetBase
 {
@@ -57,10 +59,10 @@ class VisitorsOnline extends WidgetBase
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $cryptoService = \Shop::Container()->getCryptoService();
-        foreach ($visitors as $i => $oVisitor) {
-            $visitors[$i]->cNachname = trim($cryptoService->decryptXTEA($oVisitor->cNachname ?? ''));
-            if ($oVisitor->kBestellung > 0) {
-                $visitors[$i]->fGesamtsumme = \Preise::getLocalizedPriceString($oVisitor->fGesamtsumme);
+        foreach ($visitors as $visitor) {
+            $visitor->cNachname = trim($cryptoService->decryptXTEA($visitor->cNachname ?? ''));
+            if ($visitor->kBestellung > 0) {
+                $visitor->fGesamtsumme = \Preise::getLocalizedPriceString($visitor->fGesamtsumme);
             }
         }
 
@@ -73,19 +75,19 @@ class VisitorsOnline extends WidgetBase
      */
     public function getVisitorsInfo(array $visitors): \stdClass
     {
-        $oInfo            = new \stdClass();
-        $oInfo->nCustomer = 0;
-        $oInfo->nAll      = count($visitors);
-        if ($oInfo->nAll > 0) {
+        $info            = new \stdClass();
+        $info->nCustomer = 0;
+        $info->nAll      = count($visitors);
+        if ($info->nAll > 0) {
             foreach ($visitors as $i => $oVisitor) {
                 if ($oVisitor->kKunde > 0) {
-                    $oInfo->nCustomer++;
+                    $info->nCustomer++;
                 }
             }
         }
-        $oInfo->nUnknown = $oInfo->nAll - $oInfo->nCustomer;
+        $info->nUnknown = $info->nAll - $info->nCustomer;
 
-        return $oInfo;
+        return $info;
     }
 
     /**

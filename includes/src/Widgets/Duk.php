@@ -7,18 +7,12 @@
 namespace Widgets;
 
 /**
- * Class WidgetDuk
+ * Class Duk
+ *
+ * @package Widgets
  */
 class Duk extends WidgetBase
 {
-    /**
-     *
-     */
-    public function init()
-    {
-        $this->oSmarty->assign('JTLURL_GET_DUK', JTLURL_GET_DUK);
-    }
-
     /**
      * @return string
      */

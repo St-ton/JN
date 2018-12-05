@@ -7,7 +7,9 @@
 namespace Widgets;
 
 /**
- * Class WidgetServerSettings
+ * Class ServerSettings
+ *
+ * @package Widgets
  */
 class ServerSettings extends WidgetBase
 {
@@ -68,7 +70,7 @@ class ServerSettings extends WidgetBase
                 }
             }
         }
-        // (we suppress errors here, if the Systemcheck is not present on this system)
+
         return true;
     }
 

@@ -11,6 +11,8 @@ use Smarty\JTLSmarty;
 
 /**
  * Class WidgetBase
+ *
+ * @package Widgets
  */
 abstract class WidgetBase
 {

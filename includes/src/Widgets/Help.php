@@ -7,18 +7,12 @@
 namespace Widgets;
 
 /**
- * Class WidgetHelp
+ * Class Help
+ *
+ * @package Widgets
  */
 class Help extends WidgetBase
 {
-    /**
-     *
-     */
-    public function init()
-    {
-        $this->oSmarty->assign('JTLURL_GET_SHOPHELP', \JTLURL_GET_SHOPHELP);
-    }
-
     /**
      * @return string
      */

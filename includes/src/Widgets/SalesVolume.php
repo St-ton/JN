@@ -10,7 +10,9 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
 require_once PFAD_ROOT . PFAD_FLASHCHART . 'php-ofc-library/open-flash-chart.php';
 
 /**
- * Class WidgetSalesVolume
+ * Class SalesVolume
+ *
+ * @package Widgets
  */
 class SalesVolume extends WidgetBase
 {
@@ -51,7 +53,7 @@ class SalesVolume extends WidgetBase
     /**
      * @return \Linechart
      */
-    public function getJSON()
+    public function getJSON(): \Linechart
     {
         $dateLastMonth = new \DateTime();
         $dateLastMonth->modify('-1 month');

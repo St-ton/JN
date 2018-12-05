@@ -7,7 +7,9 @@
 namespace Widgets;
 
 /**
- * Class WidgetShopinfo
+ * Class Shopinfo
+ *
+ * @package Widgets
  */
 class Shopinfo extends WidgetBase
 {
@@ -16,8 +18,8 @@ class Shopinfo extends WidgetBase
      */
     public function init()
     {
-        $oTpl            = \Template::getInstance();
-        $strTplVersion   = $oTpl->getVersion();
+        $tpl             = \Template::getInstance();
+        $strTplVersion   = $tpl->getVersion();
         $strFileVersion  = \Shop::getApplicationVersion();
         $strDBVersion    = \Shop::getShopDatabaseVersion();
         $strUpdated      = date_format(date_create(getJTLVersionDB(true)), 'd.m.Y, H:i:m');

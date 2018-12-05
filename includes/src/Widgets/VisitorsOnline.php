@@ -1,21 +1,22 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_WIDGETS . 'class.WidgetBase.php';
+
+namespace Widgets;
 
 /**
  * Class WidgetVisitorsOnline
  */
-class WidgetVisitorsOnline extends WidgetBase
+class VisitorsOnline extends WidgetBase
 {
     /**
      *
      */
     public function init()
     {
-        Visitor::archive();
+        \Visitor::archive();
     }
 
     /**
@@ -25,7 +26,7 @@ class WidgetVisitorsOnline extends WidgetBase
     {
         // clause 'ANY_VALUE' is needed by servers, who has the 'sql_mode'-setting 'only_full_group_by' enabled.
         // this is the default since mysql version >= 5.7.x
-        $visitors = Shop::Container()->getDB()->query(
+        $visitors      = $this->oDB->query(
             'SELECT `otab`.*,
                 `tbestellung`.`fGesamtsumme` AS fGesamtsumme, `tbestellung`.`dErstellt` as dErstellt,
                 `tkunde`.`cVorname` as cVorname, `tkunde`.`cNachname` AS cNachname,
@@ -55,11 +56,11 @@ class WidgetVisitorsOnline extends WidgetBase
                 AND `tbesucher`.`kKunde` = 0',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        $cryptoService = Shop::Container()->getCryptoService();
+        $cryptoService = \Shop::Container()->getCryptoService();
         foreach ($visitors as $i => $oVisitor) {
             $visitors[$i]->cNachname = trim($cryptoService->decryptXTEA($oVisitor->cNachname ?? ''));
             if ($oVisitor->kBestellung > 0) {
-                $visitors[$i]->fGesamtsumme = Preise::getLocalizedPriceString($oVisitor->fGesamtsumme);
+                $visitors[$i]->fGesamtsumme = \Preise::getLocalizedPriceString($oVisitor->fGesamtsumme);
             }
         }
 
@@ -68,11 +69,11 @@ class WidgetVisitorsOnline extends WidgetBase
 
     /**
      * @param array $visitors
-     * @return stdClass
+     * @return \stdClass
      */
-    public function getVisitorsInfo(array $visitors): stdClass
+    public function getVisitorsInfo(array $visitors): \stdClass
     {
-        $oInfo            = new stdClass();
+        $oInfo            = new \stdClass();
         $oInfo->nCustomer = 0;
         $oInfo->nAll      = count($visitors);
         if ($oInfo->nAll > 0) {
@@ -92,10 +93,10 @@ class WidgetVisitorsOnline extends WidgetBase
      */
     public function getContent()
     {
-        $oVisitors_arr = $this->getVisitors();
+        $visitors = $this->getVisitors();
 
-        return $this->oSmarty->assign('oVisitors_arr', $oVisitors_arr)
-            ->assign('oVisitorsInfo', $this->getVisitorsInfo($oVisitors_arr))
-            ->fetch('tpl_inc/widgets/visitors_online.tpl');
+        return $this->oSmarty->assign('oVisitors_arr', $visitors)
+                             ->assign('oVisitorsInfo', $this->getVisitorsInfo($visitors))
+                             ->fetch('tpl_inc/widgets/visitors_online.tpl');
     }
 }

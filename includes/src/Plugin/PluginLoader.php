@@ -12,6 +12,7 @@ use Plugin\ExtensionData\Config;
 use Plugin\ExtensionData\Hook;
 use Plugin\ExtensionData\Links;
 use Plugin\ExtensionData\Paths;
+use Plugin\ExtensionData\Widget;
 
 /**
  * Class PluginLoader
@@ -89,7 +90,7 @@ class PluginLoader extends AbstractLoader
         $this->plugin->setState((int)$obj->nStatus);
         $this->plugin->setPriority((int)$obj->nPrio);
         $this->plugin->setBootstrap((int)$obj->bBootstrap === 1);
-        $this->plugin->setIsExtension((int)$obj->bExtension === 1);
+        $this->plugin->setIsExtension(isset($obj->bExtension) && (int)$obj->bExtension === 1);
 
         $this->plugin->setMeta($this->loadMetaData($obj));
         $this->plugin->setLicense($this->loadLicense($obj));
@@ -112,6 +113,25 @@ class PluginLoader extends AbstractLoader
         $this->cache();
 
         return $this->plugin;
+    }
+
+    /**
+     * @param AbstractExtension $extension
+     * @return Widget
+     */
+    protected function loadWidgets(AbstractExtension $extension): Widget
+    {
+        $widgets = parent::loadWidgets($extension);
+        foreach ($widgets->getWidgets() as $widget) {
+            $widget->className = \str_replace($widget->namespace, 'Widget', $widget->className);
+            $widget->namespace = null;
+            $widget->classFile = \str_replace(
+                PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_WIDGET,
+                PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_WIDGET . 'class.Widget',
+                $widget->classFile
+            );
+        }
+        return $widgets;
     }
 
     /**

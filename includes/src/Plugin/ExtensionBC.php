@@ -37,6 +37,7 @@ class ExtensionBC extends AbstractExtension
         'cFrontendPfadURLSSL'             => ['getPaths', 'FrontendURL'],
         'cAdminmenuPfad'                  => ['getPaths', 'AdminPath'],
         'cAdminmenuPfadURL'               => ['getPaths', 'AdminURL'],
+        'cAdminmenuPfadURLSSL'            => ['getPaths', 'AdminURL'],
         'cLicencePfad'                    => ['getPaths', 'LicencePath'],
         'oPluginSprachvariable_arr'       => ['getLocalization', 'LangVarsCompat'],
         'oPluginSprachvariableAssoc_arr'  => ['getLocalization', 'Translations'],
@@ -68,7 +69,6 @@ class ExtensionBC extends AbstractExtension
         //        'cLicencePfadURLSSL'              => '',
         //        'oPluginHook_arr'                 => '',
         //        'oPluginUninstall'                => '',
-        //        'cAdminmenuPfadURLSSL'            => '',
     ];
 
     /**

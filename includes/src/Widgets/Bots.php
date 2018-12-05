@@ -3,26 +3,27 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_FLASHCHART . 'php-ofc-library/open-flash-chart.php';
+
+namespace Widgets;
 
 /**
  * Class WidgetBots
  */
-class WidgetBots extends WidgetBase
+class Bots extends WidgetBase
 {
     /**
      * @var array
      */
-    public $oBots_arr;
+    public $bots;
 
     /**
      *
      */
     public function init()
     {
-        $nYear           = (int)date('Y');
-        $nMonth          = (int)date('m');
-        $this->oBots_arr = $this->getBotsOfMonth($nYear, $nMonth);
+        $nYear      = (int)date('Y');
+        $nMonth     = (int)date('m');
+        $this->bots = $this->getBotsOfMonth($nYear, $nMonth);
     }
 
     /**
@@ -33,7 +34,7 @@ class WidgetBots extends WidgetBase
      */
     public function getBotsOfMonth($nYear, $nMonth, $nLimit = 10)
     {
-        return (new Statistik(firstDayOfMonth($nMonth, $nYear), time()))->holeBotStats($nLimit);
+        return (new \Statistik(firstDayOfMonth($nMonth, $nYear), time()))->holeBotStats($nLimit);
     }
 
     /**
@@ -41,16 +42,17 @@ class WidgetBots extends WidgetBase
      */
     public function getJSON()
     {
-        $pie = new pie();
+        require_once PFAD_ROOT . PFAD_FLASHCHART . 'php-ofc-library/open-flash-chart.php';
+
+        $pie = new \pie();
         $pie->set_alpha(0.6);
         $pie->set_start_angle(35);
-        $pie->add_animation(new pie_fade());
+        $pie->add_animation(new \pie_fade());
         $pie->set_tooltip('#val# of #total#<br>#percent# of 100%');
         $pie->set_colours(['#1C9E05', '#FF368D']);
-        $pie->set_values([2, 3, 4, new pie_value(6.5, 'hello (6.5)')]);
+        $pie->set_values([2, 3, 4, new \pie_value(6.5, 'hello (6.5)')]);
 
-        // chart
-        $chart = new open_flash_chart();
+        $chart = new \open_flash_chart();
         $chart->add_element($pie);
         $chart->set_bg_colour('#ffffff');
 
@@ -62,8 +64,8 @@ class WidgetBots extends WidgetBase
      */
     public function getContent()
     {
-        return $this->oSmarty->assign('oBots_arr', $this->oBots_arr)
-            ->assign('oBotsJSON', $this->getJSON())
-            ->fetch('tpl_inc/widgets/bots.tpl');
+        return $this->oSmarty->assign('oBots_arr', $this->bots)
+                             ->assign('oBotsJSON', $this->getJSON())
+                             ->fetch('tpl_inc/widgets/bots.tpl');
     }
 }

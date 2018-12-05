@@ -770,7 +770,7 @@ final class Shop
         $extensionLoader = new \Plugin\ExtensionLoader($db, $cache);
         $pluginLoader    = new \Plugin\PluginLoader($db, $cache);
         foreach ($plugins as $plugin) {
-            $loader = (int)$plugin->bExtension === 1 ? $extensionLoader : $pluginLoader;
+            $loader = isset($plugin->bExtension) && (int)$plugin->bExtension === 1 ? $extensionLoader : $pluginLoader;
             if (($p = \Plugin\Helper::bootstrap($plugin->kPlugin, $loader)) !== null) {
                 $p->boot($dispatcher);
             }

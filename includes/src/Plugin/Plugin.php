@@ -58,11 +58,6 @@ class Plugin extends ExtensionBC
     /**
      * @var string
      */
-    public $cAdminmenuPfadURLSSL;
-
-    /**
-     * @var string
-     */
     public $pluginCacheID;
 
     /**

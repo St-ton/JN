@@ -18,8 +18,9 @@ function getWidgets(bool $bActive = true)
             LEFT JOIN tplugin 
                 ON tplugin.kPlugin = tadminwidgets.kPlugin
             WHERE bActive = :active
+                AND tplugin.nStatus IS NULL OR tplugin.nStatus = :activated
             ORDER BY eContainer ASC, nPos ASC',
-        ['active' => (int)$bActive],
+        ['active' => (int)$bActive, 'activated' => \Plugin\State::ACTIVATED],
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     if ($bActive) {
@@ -29,30 +30,31 @@ function getWidgets(bool $bActive = true)
             $widget->nPos       = (int)$widget->nPos;
             $widget->bExpanded  = (int)$widget->bExpanded;
             $widget->bActive    = (int)$widget->bActive;
+            $widget->bExtension = (int)$widget->bExtension;
             $widget->cContent   = '';
-            $cClass             = 'Widget' . $widget->cClass;
-            $cClassFile         = 'class.' . $cClass . '.php';
-            $cClassPath         = PFAD_ROOT . PFAD_ADMIN . 'includes/widgets/' . $cClassFile;
+            $className          = '\Widgets\\' . $widget->cClass;
+            $classFile          = null;
+            $classPath          = null;
             $widget->cNiceTitle = str_replace(['--', ' '], '-', $widget->cTitle);
             $widget->cNiceTitle = strtolower(preg_replace('/[äüöß\(\)\/\\\]/iu', '', $widget->cNiceTitle));
-            $oPlugin            = null;
+            $plugin             = null;
             if ($widget->kPlugin > 0) {
-                $loader  = \Plugin\Helper::getLoader((int)$widget->bExtension === 1, $db, $cache);
-                $oPlugin = $loader->init($widget->kPlugin);
-                $hit     = $oPlugin->getWidgets()->getWidgetByID($widget->kWidget);
+                $loader      = \Plugin\Helper::getLoader($widget->bExtension === 1, $db, $cache);
+                $plugin      = $loader->init($widget->kPlugin);
+                $hit         = $plugin->getWidgets()->getWidgetByID($widget->kWidget);
                 if ($hit === null) {
                     continue;
                 }
-                $cClass     = $hit->className;
-                $cClassPath = $hit->classFile;
+                $className = $hit->className;
+                $classPath = $hit->classFile;
             }
-            if (file_exists($cClassPath)) {
-                require_once $cClassPath;
-                if (class_exists($cClass)) {
-                    /** @var WidgetBase $oClassObj */
-                    $oClassObj        = new $cClass(null, $db, $oPlugin);
-                    $widget->cContent = $oClassObj->getContent();
-                }
+            if ($classPath !== null && file_exists($classPath)) {
+                require_once $classPath;
+            }
+            if (class_exists($className)) {
+                /** @var \Widgets\WidgetBase $instance */
+                $instance         = new $className(null, $db, $plugin);
+                $widget->cContent = $instance->getContent();
             }
         }
     }

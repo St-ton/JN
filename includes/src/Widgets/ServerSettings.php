@@ -3,15 +3,16 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_WIDGETS . 'class.WidgetBase.php';
+
+namespace Widgets;
 
 /**
  * Class WidgetServerSettings
  */
-class WidgetServerSettings extends WidgetBase
+class ServerSettings extends WidgetBase
 {
     /**
-     * @var PHPSettingsHelper
+     * @var \PHPSettingsHelper
      */
     private $helper;
 
@@ -20,7 +21,7 @@ class WidgetServerSettings extends WidgetBase
      */
     public function init()
     {
-        $this->helper = PHPSettingsHelper::getInstance();
+        $this->helper = \PHPSettingsHelper::getInstance();
         $this->oSmarty->assign('maxExecutionTime', ini_get('max_execution_time'))
                       ->assign('bMaxExecutionTime', $this->checkMaxExecutionTime())
                       ->assign('maxFilesize', ini_get('upload_max_filesize'))
@@ -56,11 +57,11 @@ class WidgetServerSettings extends WidgetBase
     public function SOAPcheck(): bool
     {
         if (class_exists('Systemcheck_Environment')) {
-            $oSystemCheck  = new Systemcheck_Environment();
+            $oSystemCheck  = new \Systemcheck_Environment();
             $vCheckResults = $oSystemCheck->executeTestGroup('Shop4');
-            if (in_array('recommendations', array_keys($vCheckResults), true)) {
+            if (\in_array('recommendations', \array_keys($vCheckResults), true)) {
                 foreach ($vCheckResults['recommendations'] as $object) {
-                    if ($object instanceof Systemcheck_Tests_Shop4_PhpSoapExtension) {
+                    if ($object instanceof \Systemcheck_Tests_Shop4_PhpSoapExtension) {
                         // SOAP is OFF
                         return false;
                     }

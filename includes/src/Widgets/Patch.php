@@ -3,12 +3,13 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_WIDGETS . 'class.WidgetBase.php';
+
+namespace Widgets;
 
 /**
  * Class WidgetPatch
  */
-class WidgetPatch extends WidgetBase
+class Patch extends WidgetBase
 {
     /**
      *
@@ -16,7 +17,6 @@ class WidgetPatch extends WidgetBase
     public function init()
     {
         $this->oSmarty->assign('version', getJTLVersionDB());
-        $this->oSmarty->assign('JTLURL_GET_SHOPPATCH', JTLURL_GET_SHOPPATCH);
     }
 
     /**

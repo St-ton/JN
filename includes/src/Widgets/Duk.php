@@ -3,15 +3,20 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_WIDGETS . 'class.WidgetBase.php';
+
+namespace Widgets;
 
 /**
- * Class WidgetClock
+ * Class WidgetDuk
  */
-class WidgetClock extends WidgetBase
+class Duk extends WidgetBase
 {
+    /**
+     *
+     */
     public function init()
     {
+        $this->oSmarty->assign('JTLURL_GET_DUK', JTLURL_GET_DUK);
     }
 
     /**
@@ -19,6 +24,6 @@ class WidgetClock extends WidgetBase
      */
     public function getContent()
     {
-        return $this->oSmarty->fetch('tpl_inc/widgets/clock.tpl');
+        return $this->oSmarty->fetch('tpl_inc/widgets/duk.tpl');
     }
 }

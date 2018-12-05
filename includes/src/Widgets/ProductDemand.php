@@ -3,12 +3,13 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_WIDGETS . 'class.WidgetBase.php';
+
+namespace Widgets;
 
 /**
  * Class WidgetProductDemand
  */
-class WidgetProductDemand extends WidgetBase
+class ProductDemand extends WidgetBase
 {
     /**
      * @var array
@@ -23,21 +24,21 @@ class WidgetProductDemand extends WidgetBase
     }
 
     /**
-     * @param int $nYear
-     * @param int $nMonth
+     * @param int $year
+     * @param int $month
      * @param int $nLimit
      * @return array
      */
-    public function getBotsOfMonth($nYear, $nMonth, int $nLimit = 10)
+    public function getBotsOfMonth(int $year, int $month, int $nLimit = 10): array
     {
-        return Shop::Container()->getDB()->query(
+        return $this->oDB->query(
             "SELECT *, COUNT(tbesucherbot.kBesucherBot) AS nAnzahl
                 FROM tbesucherarchiv
                 LEFT JOIN tbesucherbot
                     ON tbesucherarchiv.kBesucherBot = tbesucherbot.kBesucherBot
                 WHERE tbesucherarchiv.kBesucherBot > 0
-                    AND YEAR(tbesucherarchiv.dZeit) = '" . (int)$nYear . "'
-                    AND MONTH(tbesucherarchiv.dZeit) = '" . (int)$nMonth . "'
+                    AND YEAR(tbesucherarchiv.dZeit) = '" . $year . "'
+                    AND MONTH(tbesucherarchiv.dZeit) = '" . $month . "'
                 GROUP BY tbesucherbot.kBesucherBot 
                 LIMIT 0," . $nLimit,
             \DB\ReturnType::ARRAY_OF_OBJECTS

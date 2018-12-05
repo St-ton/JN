@@ -16,4 +16,4 @@ class_alias(\Plugin\AbstractPlugin::class, 'AbstractPlugin', true);
 class_alias(\Plugin\LicenseInterface::class, 'IPluginLizenz', true);
 class_alias(\Plugin\LicenseInterface::class, 'PluginLizenz', true);
 class_alias(\Events\Dispatcher::class, 'EventDispatcher', true);
-class_alias(\Widgets\WidgetBase::class, 'WidgetBase', true);
+class_alias(\Widgets\AbstractWidget::class, 'WidgetBase', true);

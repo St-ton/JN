@@ -11,7 +11,7 @@ namespace Widgets;
  *
  * @package Widgets
  */
-class ServerSettings extends WidgetBase
+class ServerSettings extends AbstractWidget
 {
     /**
      * @var \PHPSettingsHelper

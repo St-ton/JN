@@ -14,7 +14,7 @@ require_once PFAD_ROOT . PFAD_FLASHCHART . 'php-ofc-library/open-flash-chart.php
  *
  * @package Widgets
  */
-class SalesVolume extends WidgetBase
+class SalesVolume extends AbstractWidget
 {
     /**
      * @var \stdClass

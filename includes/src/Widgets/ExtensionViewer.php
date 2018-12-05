@@ -11,7 +11,7 @@ namespace Widgets;
  *
  * @package Widgets
  */
-class ExtensionViewer extends WidgetBase
+class ExtensionViewer extends AbstractWidget
 {
     /**
      *

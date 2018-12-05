@@ -11,7 +11,7 @@ namespace Widgets;
  *
  * @package Widgets
  */
-class Shopinfo extends WidgetBase
+class Shopinfo extends AbstractWidget
 {
     /**
      *

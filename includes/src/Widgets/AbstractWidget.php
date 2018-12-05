@@ -10,11 +10,11 @@ use Plugin\AbstractExtension;
 use Smarty\JTLSmarty;
 
 /**
- * Class WidgetBase
+ * Class AbstractWidget
  *
  * @package Widgets
  */
-abstract class WidgetBase
+abstract class AbstractWidget
 {
     /**
      * @var JTLSmarty

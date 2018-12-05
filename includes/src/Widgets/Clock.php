@@ -11,7 +11,7 @@ namespace Widgets;
  *
  * @package Widgets
  */
-class Clock extends WidgetBase
+class Clock extends AbstractWidget
 {
     /**
      * @return string

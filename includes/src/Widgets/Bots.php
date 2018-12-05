@@ -11,7 +11,7 @@ namespace Widgets;
  *
  * @package Widgets
  */
-class Bots extends WidgetBase
+class Bots extends AbstractWidget
 {
     /**
      * @var array

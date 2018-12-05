@@ -11,7 +11,7 @@ namespace Widgets;
  *
  * @package Widgets
  */
-class VisitorsOnline extends WidgetBase
+class VisitorsOnline extends AbstractWidget
 {
     /**
      *

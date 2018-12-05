@@ -11,7 +11,7 @@ namespace Widgets;
  *
  * @package Widgets
  */
-class Patch extends WidgetBase
+class Patch extends AbstractWidget
 {
     /**
      * @return string

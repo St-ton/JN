@@ -11,7 +11,7 @@ namespace Widgets;
  *
  * @package Widgets
  */
-class Duk extends WidgetBase
+class Duk extends AbstractWidget
 {
     /**
      * @return string

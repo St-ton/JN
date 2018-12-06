@@ -25,7 +25,7 @@ class Visitors extends AbstractWidget
      */
     public function getVisitorsOfCurrentMonth(): array
     {
-        $oStatistik = new \Statistik(firstDayOfMonth(), time());
+        $oStatistik = new \Statistik(\firstDayOfMonth(), \time());
 
         return $oStatistik->holeBesucherStats(2);
     }
@@ -35,13 +35,13 @@ class Visitors extends AbstractWidget
      */
     public function getVisitorsOfLastMonth(): array
     {
-        $month = date('m') - 1;
-        $year  = date('Y');
+        $month = \date('m') - 1;
+        $year  = (int)\date('Y');
         if ($month <= 0) {
             $month = 12;
-            $year  = date('Y') - 1;
+            $year  = \date('Y') - 1;
         }
-        $oStatistik = new \Statistik(firstDayOfMonth($month, $year), lastDayOfMonth($month, $year));
+        $oStatistik = new \Statistik(\firstDayOfMonth($month, $year), \lastDayOfMonth($month, $year));
 
         return $oStatistik->holeBesucherStats(2);
     }
@@ -51,14 +51,14 @@ class Visitors extends AbstractWidget
      */
     public function getJSON(): \Linechart
     {
-        require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
+        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'statistik_inc.php';
         $currentMonth = $this->getVisitorsOfCurrentMonth();
         $lastMonth    = $this->getVisitorsOfLastMonth();
         foreach ($currentMonth as $oCurrentMonth) {
-            $oCurrentMonth->dZeit = substr($oCurrentMonth->dZeit, 0, 2);
+            $oCurrentMonth->dZeit = \substr($oCurrentMonth->dZeit, 0, 2);
         }
         foreach ($lastMonth as $oLastMonth) {
-            $oLastMonth->dZeit = substr($oLastMonth->dZeit, 0, 2);
+            $oLastMonth->dZeit = \substr($oLastMonth->dZeit, 0, 2);
         }
 
         $series = [
@@ -66,7 +66,7 @@ class Visitors extends AbstractWidget
             'Dieser Monat'  => $currentMonth
         ];
 
-        return prepareLineChartStatsMulti($series, getAxisNames(STATS_ADMIN_TYPE_BESUCHER), 2);
+        return \prepareLineChartStatsMulti($series, \getAxisNames(\STATS_ADMIN_TYPE_BESUCHER), 2);
     }
 
     /**

@@ -23,8 +23,8 @@ class Bots extends AbstractWidget
      */
     public function init()
     {
-        $nYear      = (int)date('Y');
-        $nMonth     = (int)date('m');
+        $nYear      = (int)\date('Y');
+        $nMonth     = (int)\date('m');
         $this->bots = $this->getBotsOfMonth($nYear, $nMonth);
     }
 
@@ -36,7 +36,7 @@ class Bots extends AbstractWidget
      */
     public function getBotsOfMonth($nYear, $nMonth, $nLimit = 10)
     {
-        return (new \Statistik(firstDayOfMonth($nMonth, $nYear), time()))->holeBotStats($nLimit);
+        return (new \Statistik(\firstDayOfMonth($nMonth, $nYear), \time()))->holeBotStats($nLimit);
     }
 
     /**
@@ -44,7 +44,7 @@ class Bots extends AbstractWidget
      */
     public function getJSON()
     {
-        require_once PFAD_ROOT . PFAD_FLASHCHART . 'php-ofc-library/open-flash-chart.php';
+        require_once \PFAD_ROOT . \PFAD_FLASHCHART . 'php-ofc-library/open-flash-chart.php';
 
         $pie = new \pie();
         $pie->set_alpha(0.6);

@@ -34,13 +34,13 @@ class SalesVolume extends AbstractWidget
      * @param int $year
      * @return array|mixed
      */
-    public function calcVolumeOfMonth($month, $year)
+    public function calcVolumeOfMonth(int $month, int $year)
     {
         $interval = 0;
-        $stats    = gibBackendStatistik(
+        $stats    = \gibBackendStatistik(
             \STATS_ADMIN_TYPE_UMSATZ,
-            firstDayOfMonth($month, $year),
-            lastDayOfMonth($month, $year),
+            \firstDayOfMonth($month, $year),
+            \lastDayOfMonth($month, $year),
             $interval
         );
         foreach ($stats as $stat) {
@@ -57,21 +57,21 @@ class SalesVolume extends AbstractWidget
     {
         $dateLastMonth = new \DateTime();
         $dateLastMonth->modify('-1 month');
-        $dateLastMonth = $dateLastMonth->format('U');
-        $currentMonth  = $this->calcVolumeOfMonth(date('n'), date('Y'));
-        $lastMonth     = $this->calcVolumeOfMonth(date('n', $dateLastMonth), date('Y', $dateLastMonth));
+        $dateLastMonth = (int)$dateLastMonth->format('U');
+        $currentMonth  = $this->calcVolumeOfMonth((int)\date('n'), (int)\date('Y'));
+        $lastMonth     = $this->calcVolumeOfMonth((int)\date('n', $dateLastMonth), (int)\date('Y', $dateLastMonth));
         foreach ($currentMonth as $month) {
-            $month->dZeit = substr($month->dZeit, 0, 2);
+            $month->dZeit = \substr($month->dZeit, 0, 2);
         }
         foreach ($lastMonth as $month) {
-            $month->dZeit = substr($month->dZeit, 0, 2);
+            $month->dZeit = \substr($month->dZeit, 0, 2);
         }
         $series = [
             'Letzter Monat' => $lastMonth,
             'Dieser Monat'  => $currentMonth
         ];
 
-        return prepareLineChartStatsMulti($series, getAxisNames(\STATS_ADMIN_TYPE_UMSATZ), 2);
+        return \prepareLineChartStatsMulti($series, \getAxisNames(\STATS_ADMIN_TYPE_UMSATZ), 2);
     }
 
     /**

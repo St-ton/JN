@@ -24,13 +24,13 @@ class ServerSettings extends AbstractWidget
     public function init()
     {
         $this->helper = \PHPSettingsHelper::getInstance();
-        $this->oSmarty->assign('maxExecutionTime', ini_get('max_execution_time'))
+        $this->oSmarty->assign('maxExecutionTime', \ini_get('max_execution_time'))
                       ->assign('bMaxExecutionTime', $this->checkMaxExecutionTime())
-                      ->assign('maxFilesize', ini_get('upload_max_filesize'))
+                      ->assign('maxFilesize', \ini_get('upload_max_filesize'))
                       ->assign('bMaxFilesize', $this->checkMaxFilesize())
-                      ->assign('memoryLimit', ini_get('memory_limit'))
+                      ->assign('memoryLimit', \ini_get('memory_limit'))
                       ->assign('bMemoryLimit', $this->checkMemoryLimit())
-                      ->assign('postMaxSize', ini_get('post_max_size'))
+                      ->assign('postMaxSize', \ini_get('post_max_size'))
                       ->assign('bPostMaxSize', $this->checkPostMaxSize())
                       ->assign('bAllowUrlFopen', $this->checkAllowUrlFopen())
                       ->assign('SOAPCheck', $this->SOAPcheck());
@@ -58,7 +58,7 @@ class ServerSettings extends AbstractWidget
      */
     public function SOAPcheck(): bool
     {
-        if (class_exists('Systemcheck_Environment')) {
+        if (\class_exists('Systemcheck_Environment')) {
             $oSystemCheck  = new \Systemcheck_Environment();
             $vCheckResults = $oSystemCheck->executeTestGroup('Shop4');
             if (\in_array('recommendations', \array_keys($vCheckResults), true)) {

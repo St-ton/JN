@@ -60,7 +60,7 @@ class VisitorsOnline extends AbstractWidget
         );
         $cryptoService = \Shop::Container()->getCryptoService();
         foreach ($visitors as $visitor) {
-            $visitor->cNachname = trim($cryptoService->decryptXTEA($visitor->cNachname ?? ''));
+            $visitor->cNachname = \trim($cryptoService->decryptXTEA($visitor->cNachname ?? ''));
             if ($visitor->kBestellung > 0) {
                 $visitor->fGesamtsumme = \Preise::getLocalizedPriceString($visitor->fGesamtsumme);
             }
@@ -77,9 +77,9 @@ class VisitorsOnline extends AbstractWidget
     {
         $info            = new \stdClass();
         $info->nCustomer = 0;
-        $info->nAll      = count($visitors);
+        $info->nAll      = \count($visitors);
         if ($info->nAll > 0) {
-            foreach ($visitors as $i => $oVisitor) {
+            foreach ($visitors as $oVisitor) {
                 if ($oVisitor->kKunde > 0) {
                     $info->nCustomer++;
                 }

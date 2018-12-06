@@ -75,7 +75,7 @@ class GetText
      */
     public function loadPluginLocale(string $domain, AbstractExtension $plugin): self
     {
-        return $this->addLocale($plugin->getPaths()->getAdminPath(), $domain);
+        return $this->addLocale($plugin->getPaths()->getBasePath(), $domain);
     }
 
     /**

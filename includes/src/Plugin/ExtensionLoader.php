@@ -8,6 +8,7 @@ namespace Plugin;
 
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
+use L10n\GetText;
 
 /**
  * Class ExtensionLoader
@@ -81,6 +82,7 @@ class ExtensionLoader extends AbstractLoader
         $extension->setPaymentMethods($this->loadPaymentMethods($extension));
 
         $this->loadAdminMenu($extension);
+        GetText::getInstance()->loadPluginLocale($obj->cPluginID, $extension);
 
         return $extension;
     }

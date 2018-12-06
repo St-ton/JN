@@ -7,22 +7,22 @@
 namespace News;
 
 /**
- * Class Item
+ * Interface ItemInterface
  * @package News
  */
-interface ItemInterFace
+interface ItemInterface
 {
     /**
      * @param int $id
-     * @return ItemInterFace
+     * @return ItemInterface
      */
-    public function load(int $id): ItemInterFace;
+    public function load(int $id): ItemInterface;
 
     /**
      * @param \stdClass[] $localizedItems
-     * @return ItemInterFace
+     * @return ItemInterface
      */
-    public function map(array $localizedItems): ItemInterFace;
+    public function map(array $localizedItems): ItemInterface;
 
     /**
      * @param int $customerGroupID

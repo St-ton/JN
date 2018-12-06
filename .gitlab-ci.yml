@@ -201,7 +201,7 @@ removeContainerPHP7.2:
   when: on_failure
   tags:
     - build
-    -
+
 removeContainerPHP7.3:
   stage: test
   variables:

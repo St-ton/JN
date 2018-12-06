@@ -107,16 +107,16 @@ class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
                     $('.bounding-box').remove();
                     $('.tpl-debug-start').each(function(){
                         var elem = $(this),
-                            boxElem;
-                        uid  = elem.attr('data-uid'),
-                        tpl  = elem.attr('data-tpl'),
-                        next = elem.nextUntil('.tpl-debug-end[data-uid=\"' + uid +'\"]'),
-                        box  = {
-                            left: 999999,
-                            right: 0,
-                            top: 999999,
-                            bottom: 0
-                        };
+                            boxElem,
+                            uid  = elem.attr('data-uid'),
+                            tpl  = elem.attr('data-tpl'),
+                            next = elem.nextUntil('.tpl-debug-end[data-uid=\"' + uid +'\"]'),
+                            box  = {
+                                left: 999999,
+                                right: 0,
+                                top: 999999,
+                                bottom: 0
+                            };
                                 
                         next.each(function(i, c) {
                             var bb, 

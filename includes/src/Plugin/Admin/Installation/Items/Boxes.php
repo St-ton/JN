@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -30,9 +30,10 @@ class Boxes extends AbstractItem
      */
     public function install(): int
     {
-        foreach ($this->getNode() as $h => $box) {
-            \preg_match('/[0-9]+/', $h, $hits3);
-            if (\strlen($hits3[0]) !== \strlen($h)) {
+        foreach ($this->getNode() as $i => $box) {
+            $i = (string)$i;
+            \preg_match('/[0-9]+/', $i, $hits);
+            if (\strlen($hits[0]) !== \strlen($i)) {
                 continue;
             }
             $boxTpl              = new \stdClass();

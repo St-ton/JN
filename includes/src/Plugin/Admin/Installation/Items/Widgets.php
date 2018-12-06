@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -30,9 +30,10 @@ class Widgets extends AbstractItem
      */
     public function install(): int
     {
-        foreach ($this->getNode() as $u => $widgetData) {
-            \preg_match('/[0-9]+/', $u, $hits2);
-            if (\strlen($hits2[0]) !== \strlen($u)) {
+        foreach ($this->getNode() as $i => $widgetData) {
+            $i = (string)$i;
+            \preg_match('/[0-9]+/', $i, $hits);
+            if (\strlen($hits[0]) !== \strlen($i)) {
                 continue;
             }
             $widget               = new \stdClass();

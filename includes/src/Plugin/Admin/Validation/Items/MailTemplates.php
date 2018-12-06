@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -29,10 +29,11 @@ class MailTemplates extends AbstractItem
         ) {
             return InstallCode::MISSING_EMAIL_TEMPLATES;
         }
-        foreach ($node['Emailtemplate'][0]['Template'] as $u => $tpl) {
-            \preg_match('/[0-9]+\sattr/', $u, $hits1);
-            \preg_match('/[0-9]+/', $u, $hits2);
-            if (\strlen($hits2[0]) !== \strlen($u)) {
+        foreach ($node['Emailtemplate'][0]['Template'] as $i => $tpl) {
+            $i = (string)$i;
+            \preg_match('/[0-9]+\sattr/', $i, $hits1);
+            \preg_match('/[0-9]+/', $i, $hits2);
+            if (\strlen($hits2[0]) !== \strlen($i)) {
                 continue;
             }
             \preg_match(
@@ -68,6 +69,7 @@ class MailTemplates extends AbstractItem
                 return InstallCode::MISSING_EMAIL_TEMPLATE_LANGUAGE;
             }
             foreach ($tpl['TemplateLanguage'] as $l => $localized) {
+                $l = (string)$l;
                 \preg_match('/[0-9]+\sattr/', $l, $hits1);
                 \preg_match('/[0-9]+/', $l, $hits2);
                 if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($l)) {

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -31,10 +31,10 @@ class Exports extends AbstractItem
             return InstallCode::MISSING_FORMATS;
         }
         $base = $dir . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_EXPORTFORMAT;
-        foreach ($node['ExportFormat'][0]['Format'] as $h => $export) {
-            \preg_match('/[0-9]+\sattr/', $h, $hits1);
-            \preg_match('/[0-9]+/', $h, $hits2);
-            if (\strlen($hits2[0]) !== \strlen($h)) {
+        foreach ($node['ExportFormat'][0]['Format'] as $i => $export) {
+            $i = (string)$i;
+            \preg_match('/[0-9]+/', $i, $hits2);
+            if (\strlen($hits2[0]) !== \strlen($i)) {
                 continue;
             }
             if (\strlen($export['Name']) === 0) {

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -31,9 +31,10 @@ class Boxes extends AbstractItem
             return InstallCode::MISSING_BOX;
         }
         $base = $dir . \PFAD_PLUGIN_FRONTEND . \PFAD_PLUGIN_BOXEN;
-        foreach ($node['Boxes'][0]['Box'] as $h => $box) {
-            \preg_match('/[0-9]+/', $h, $hits3);
-            if (\strlen($hits3[0]) !== \strlen($h)) {
+        foreach ($node['Boxes'][0]['Box'] as $i => $box) {
+            $i = (string)$i;
+            \preg_match('/[0-9]+/', $i, $hits3);
+            if (\strlen($hits3[0]) !== \strlen($i)) {
                 continue;
             }
             if (empty($box['Name'])) {

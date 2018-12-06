@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -34,9 +34,10 @@ class Exports extends AbstractItem
         $language               = \Sprache::getDefaultLanguage(true);
         $defaultLanguageID      = $language->kSprache;
         $defaultCurrencyID      = \Session\Session::getCurrency()->getID();
-        foreach ($this->getNode() as $u => $data) {
-            \preg_match('/[0-9]+/', $u, $hits);
-            if (\strlen($hits[0]) !== \strlen($u)) {
+        foreach ($this->getNode() as $i => $data) {
+            $i = (string)$i;
+            \preg_match('/[0-9]+/', $i, $hits);
+            if (\strlen($hits[0]) !== \strlen($i)) {
                 continue;
             }
             $export                   = new \stdClass();

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -36,10 +36,11 @@ class PaymentMethods extends AbstractItem
     {
         $shopURL  = \Shop::getURL(true) . '/';
         $pluginID = $this->plugin->kPlugin;
-        foreach ($this->getNode() as $u => $data) {
-            \preg_match("/[0-9]+\sattr/", $u, $hits1);
-            \preg_match('/[0-9]+/', $u, $hits2);
-            if (\strlen($hits2[0]) !== \strlen($u)) {
+        foreach ($this->getNode() as $i => $data) {
+            $i = (string)$i;
+            \preg_match("/[0-9]+\sattr/", $i, $hits1);
+            \preg_match('/[0-9]+/', $i, $hits2);
+            if (\strlen($hits2[0]) !== \strlen($i)) {
                 continue;
             }
             $method                         = new \stdClass();
@@ -93,18 +94,19 @@ class PaymentMethods extends AbstractItem
             $allLanguages           = \Sprache::getAllLanguages(2);
             $bZahlungsartStandard   = false;
             $oZahlungsartSpracheStd = new \stdClass();
-            foreach ($data['MethodLanguage'] as $l => $MethodLanguage_arr) {
+            foreach ($data['MethodLanguage'] as $l => $loc) {
+                $l = (string)$l;
                 \preg_match("/[0-9]+\sattr/", $l, $hits1);
                 \preg_match('/[0-9]+/', $l, $hits2);
                 if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($l)) {
-                    $iso = \strtolower($MethodLanguage_arr['iso']);
+                    $iso = \strtolower($loc['iso']);
                 } elseif (\strlen($hits2[0]) === \strlen($l)) {
                     $localizedMethod               = new \stdClass();
                     $localizedMethod->kZahlungsart = $methodID;
                     $localizedMethod->cISOSprache  = $iso;
-                    $localizedMethod->cName        = $MethodLanguage_arr['Name'];
-                    $localizedMethod->cGebuehrname = $MethodLanguage_arr['ChargeName'];
-                    $localizedMethod->cHinweisText = $MethodLanguage_arr['InfoText'];
+                    $localizedMethod->cName        = $loc['Name'];
+                    $localizedMethod->cGebuehrname = $loc['ChargeName'];
+                    $localizedMethod->cHinweisText = $loc['InfoText'];
                     if (!$bZahlungsartStandard) {
                         $oZahlungsartSpracheStd = $localizedMethod;
                         $bZahlungsartStandard   = true;
@@ -164,24 +166,25 @@ class PaymentMethods extends AbstractItem
                 $nSort        = 0;
                 $cConf        = 'Y';
                 $multiple     = false;
-                foreach ($data['Setting'] as $j => $Setting_arr) {
+                foreach ($data['Setting'] as $j => $config) {
+                    $j = (string)$j;
                     \preg_match('/[0-9]+\sattr/', $j, $hits3);
                     \preg_match('/[0-9]+/', $j, $hits4);
 
                     if (isset($hits3[0]) && \strlen($hits3[0]) === \strlen($j)) {
-                        $type         = $Setting_arr['type'];
-                        $multiple     = (isset($Setting_arr['multiple'])
-                            && $Setting_arr['multiple'] === 'Y'
+                        $type         = $config['type'];
+                        $multiple     = (isset($config['multiple'])
+                            && $config['multiple'] === 'Y'
                             && $type === InputType::SELECT);
                         $initialValue = $multiple === true
-                            ? \serialize([$Setting_arr['initialValue']])
-                            : $Setting_arr['initialValue'];
-                        $nSort        = $Setting_arr['sort'];
-                        $cConf        = $Setting_arr['conf'];
+                            ? \serialize([$config['initialValue']])
+                            : $config['initialValue'];
+                        $nSort        = $config['sort'];
+                        $cConf        = $config['conf'];
                     } elseif (\strlen($hits4[0]) === \strlen($j)) {
                         $conf          = new \stdClass();
                         $conf->kPlugin = $pluginID;
-                        $conf->cName   = $moduleID . '_' . $Setting_arr['ValueName'];
+                        $conf->cName   = $moduleID . '_' . $config['ValueName'];
                         $conf->cWert   = $initialValue;
                         if ($this->db->select('tplugineinstellungen', 'cName', $conf->cName) !== null) {
                             $this->db->update(
@@ -196,12 +199,12 @@ class PaymentMethods extends AbstractItem
                         $plgnConf                   = new \stdClass();
                         $plgnConf->kPlugin          = $pluginID;
                         $plgnConf->kPluginAdminMenu = 0;
-                        $plgnConf->cName            = $Setting_arr['Name'];
-                        $plgnConf->cBeschreibung    = (!isset($Setting_arr['Description'])
-                            || \is_array($Setting_arr['Description']))
+                        $plgnConf->cName            = $config['Name'];
+                        $plgnConf->cBeschreibung    = (!isset($config['Description'])
+                            || \is_array($config['Description']))
                             ? ''
-                            : $Setting_arr['Description'];
-                        $plgnConf->cWertName        = $moduleID . '_' . $Setting_arr['ValueName'];
+                            : $config['Description'];
+                        $plgnConf->cWertName        = $moduleID . '_' . $config['ValueName'];
                         $plgnConf->cInputTyp        = $type;
                         $plgnConf->nSort            = $nSort;
                         $plgnConf->cConf            = ($type === InputType::SELECT && $multiple === true)
@@ -232,19 +235,20 @@ class PaymentMethods extends AbstractItem
                         }
                         // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
                         if ($type === InputType::SELECT) {
-                            if (isset($Setting_arr['OptionsSource'])
-                                && \is_array($Setting_arr['OptionsSource'])
-                                && \count($Setting_arr['OptionsSource']) > 0
+                            if (isset($config['OptionsSource'])
+                                && \is_array($config['OptionsSource'])
+                                && \count($config['OptionsSource']) > 0
                             ) {
                                 //do nothing for now
-                            } elseif (\count($Setting_arr['SelectboxOptions'][0]) === 1) {
-                                foreach ($Setting_arr['SelectboxOptions'][0]['Option'] as $y => $Option_arr) {
+                            } elseif (\count($config['SelectboxOptions'][0]) === 1) {
+                                foreach ($config['SelectboxOptions'][0]['Option'] as $y => $option) {
+                                    $y = (string)$y;
                                     \preg_match('/[0-9]+\sattr/', $y, $hits6);
                                     if (isset($hits6[0]) && \strlen($hits6[0]) === \strlen($y)) {
-                                        $cWert = $Option_arr['value'];
-                                        $nSort = $Option_arr['sort'];
+                                        $cWert = $option['value'];
+                                        $nSort = $option['sort'];
                                         $yx    = \substr($y, 0, \strpos($y, ' '));
-                                        $cName = $Setting_arr['SelectboxOptions'][0]['Option'][$yx];
+                                        $cName = $config['SelectboxOptions'][0]['Option'][$yx];
 
                                         $plgnConfValues                           = new \stdClass();
                                         $plgnConfValues->kPluginEinstellungenConf = $kPluginEinstellungenConf;
@@ -258,8 +262,8 @@ class PaymentMethods extends AbstractItem
                                         );
                                     }
                                 }
-                            } elseif (\count($Setting_arr['SelectboxOptions'][0]) === 2) {
-                                $idx                                      = $Setting_arr['SelectboxOptions'][0];
+                            } elseif (\count($config['SelectboxOptions'][0]) === 2) {
+                                $idx                                      = $config['SelectboxOptions'][0];
                                 $plgnConfValues                           = new \stdClass();
                                 $plgnConfValues->kPluginEinstellungenConf = $kPluginEinstellungenConf;
                                 $plgnConfValues->cName                    = $idx['Option'];
@@ -269,19 +273,19 @@ class PaymentMethods extends AbstractItem
                                 $this->db->insert('tplugineinstellungenconfwerte', $plgnConfValues);
                             }
                         } elseif ($type === InputType::RADIO) {
-                            if (isset($Setting_arr['OptionsSource'])
-                                && \is_array($Setting_arr['OptionsSource'])
-                                && \count($Setting_arr['OptionsSource']) > 0
+                            if (isset($config['OptionsSource'])
+                                && \is_array($config['OptionsSource'])
+                                && \count($config['OptionsSource']) > 0
                             ) {
                                 //do nothing for now
-                            } elseif (\count($Setting_arr['RadioOptions'][0]) === 1) { // Es gibt mehr als eine Option
-                                foreach ($Setting_arr['RadioOptions'][0]['Option'] as $y => $Option_arr) {
+                            } elseif (\count($config['RadioOptions'][0]) === 1) { // Es gibt mehr als eine Option
+                                foreach ($config['RadioOptions'][0]['Option'] as $y => $option) {
                                     \preg_match('/[0-9]+\sattr/', $y, $hits6);
                                     if (\strlen($hits6[0]) === \strlen($y)) {
-                                        $cWert = $Option_arr['value'];
-                                        $nSort = $Option_arr['sort'];
+                                        $cWert = $option['value'];
+                                        $nSort = $option['sort'];
                                         $yx    = \substr($y, 0, \strpos($y, ' '));
-                                        $cName = $Setting_arr['RadioOptions'][0]['Option'][$yx];
+                                        $cName = $config['RadioOptions'][0]['Option'][$yx];
 
                                         $plgnConfValues                           = new \stdClass();
                                         $plgnConfValues->kPluginEinstellungenConf = $kPluginEinstellungenConf;
@@ -292,8 +296,8 @@ class PaymentMethods extends AbstractItem
                                         $this->db->insert('tplugineinstellungenconfwerte', $plgnConfValues);
                                     }
                                 }
-                            } elseif (\count($Setting_arr['RadioOptions'][0]) === 2) { //Es gibt nur 1 Option
-                                $idx                                      = $Setting_arr['RadioOptions'][0];
+                            } elseif (\count($config['RadioOptions'][0]) === 2) { //Es gibt nur 1 Option
+                                $idx                                      = $config['RadioOptions'][0];
                                 $plgnConfValues                           = new \stdClass();
                                 $plgnConfValues->kPluginEinstellungenConf = $kPluginEinstellungenConf;
                                 $plgnConfValues->cName                    = $idx['Option'];

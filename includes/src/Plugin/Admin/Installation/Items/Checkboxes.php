@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -31,9 +31,10 @@ class Checkboxes extends AbstractItem
      */
     public function install(): int
     {
-        foreach ($this->getNode() as $t => $function) {
-            \preg_match('/[0-9]+/', $t, $hits2);
-            if (\strlen($hits2[0]) !== \strlen($t)) {
+        foreach ($this->getNode() as $i => $function) {
+            $i = (string)$i;
+            \preg_match('/[0-9]+/', $i, $hits);
+            if (\strlen($hits[0]) !== \strlen($i)) {
                 continue;
             }
             $cbFunction          = new \stdClass();

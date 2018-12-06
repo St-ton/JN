@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -37,6 +37,7 @@ class AdminMenu extends AbstractItem
         ) {
             $sort = 0;
             foreach ($node[0]['Customlink'] as $i => $customLink) {
+                $i = (string)$i;
                 \preg_match("/[0-9]+\sattr/", $i, $hits1);
                 \preg_match('/[0-9]+/', $i, $hits2);
                 if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($i)) {

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -30,6 +30,7 @@ class Localization extends AbstractItem
             return InstallCode::MISSING_LANG_VARS;
         }
         foreach ($node['Locales'][0]['Variable'] as $t => $var) {
+            $t = (string)$t;
             \preg_match('/[0-9]+/', $t, $hits2);
             if (\strlen($hits2[0]) !== \strlen($t)) {
                 continue;
@@ -58,6 +59,7 @@ class Localization extends AbstractItem
             ) {
                 // Mehr als eine Sprache vorhanden
                 foreach ($var['VariableLocalized'] as $i => $localized) {
+                    $i = (string)$i;
                     \preg_match('/[0-9]+\sattr/', $i, $hits1);
                     \preg_match('/[0-9]+/', $i, $hits2);
                     if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($i)) {

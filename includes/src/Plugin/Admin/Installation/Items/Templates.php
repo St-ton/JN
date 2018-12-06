@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -28,8 +28,8 @@ class Templates extends AbstractItem
     public function install(): int
     {
         foreach ($this->getNode() as $template) {
-            \preg_match("/[a-zA-Z0-9\/_\-]+\.tpl/", $template, $hits3);
-            if (\strlen($hits3[0]) !== \strlen($template)) {
+            \preg_match("/[a-zA-Z0-9\/_\-]+\.tpl/", $template, $hits);
+            if (\strlen($hits[0]) !== \strlen($template)) {
                 continue;
             }
             $plgnTpl            = new \stdClass();

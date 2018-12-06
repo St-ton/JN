@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -29,6 +29,7 @@ class LanguageVariables extends AbstractItem
     {
         $languages = \Sprache::getAllLanguages(2);
         foreach ($this->getNode() as $t => $langVar) {
+            $t = (string)$t;
             \preg_match('/[0-9]+/', $t, $hits1);
             if (\strlen($hits1[0]) !== \strlen($t)) {
                 continue;
@@ -78,11 +79,12 @@ class LanguageVariables extends AbstractItem
                 && \is_array($langVar['VariableLocalized'])
                 && \count($langVar['VariableLocalized']) > 0
             ) {
-                foreach ($langVar['VariableLocalized'] as $i => $VariableLocalized_arr) {
+                foreach ($langVar['VariableLocalized'] as $i => $loc) {
+                    $i = (string)$i;
                     \preg_match("/[0-9]+\sattr/", $i, $hits1);
 
                     if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($i)) {
-                        $cISO                             = $VariableLocalized_arr['iso'];
+                        $cISO                             = $loc['iso'];
                         $yx                               = \substr($i, 0, \strpos($i, ' '));
                         $cName                            = $langVar['VariableLocalized'][$yx];
                         $localized                        = new \stdClass();

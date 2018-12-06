@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -31,10 +31,11 @@ class Blueprints extends AbstractItem
             return InstallCode::MISSING_BLUEPRINTS;
         }
         $base = $dir . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_BLUEPRINTS;
-        foreach ($node['Blueprints'][0]['Blueprint'] as $u => $blueprint) {
-            \preg_match('/[0-9]+\sattr/', $u, $hits1);
-            \preg_match('/[0-9]+/', $u, $hits2);
-            if (\strlen($hits2[0]) === \strlen($u)) {
+        foreach ($node['Blueprints'][0]['Blueprint'] as $i => $blueprint) {
+            $i = (string)$i;
+            \preg_match('/[0-9]+\sattr/', $i, $hits1);
+            \preg_match('/[0-9]+/', $i, $hits2);
+            if (\strlen($hits2[0]) === \strlen($i)) {
                 \preg_match(
                     "/[a-zA-Z0-9\/_\-\ äÄüÜöÖß" . \utf8_decode('äÄüÜöÖß') . "\(\) ]+/",
                     $blueprint['Name'],

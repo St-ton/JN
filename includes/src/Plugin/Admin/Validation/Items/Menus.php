@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -32,6 +32,7 @@ class Menus extends AbstractItem
             && \count($node['Customlink']) > 0
         ) {
             foreach ($node['Customlink'] as $i => $Customlink_arr) {
+                $i = (string)$i;
                 \preg_match('/[0-9]+\sattr/', $i, $hits1);
                 \preg_match('/[0-9]+/', $i, $hits2);
                 if (\strlen($hits2[0]) === \strlen($i)) {
@@ -56,6 +57,7 @@ class Menus extends AbstractItem
             return InstallCode::OK;
         }
         foreach ($node['Settingslink'] as $i => $settingsLink) {
+            $i = (string)$i;
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
             if (\strlen($hits2[0]) === \strlen($i)) {
@@ -70,6 +72,7 @@ class Menus extends AbstractItem
                     return InstallCode::MISSING_CONFIG;
                 }
                 foreach ($settingsLink['Setting'] as $j => $setting) {
+                    $j = (string)$j;
                     \preg_match('/[0-9]+\sattr/', $j, $hits3);
                     \preg_match('/[0-9]+/', $j, $hits4);
 
@@ -113,19 +116,20 @@ class Menus extends AbstractItem
                                 && \count($setting['SelectboxOptions']) > 0
                             ) {
                                 if (\count($setting['SelectboxOptions'][0]) === 1) {
-                                    foreach ($setting['SelectboxOptions'][0]['Option'] as $y => $Option_arr) {
+                                    foreach ($setting['SelectboxOptions'][0]['Option'] as $y => $option) {
+                                        $y = (string)$y;
                                         \preg_match('/[0-9]+\sattr/', $y, $hits6);
                                         \preg_match('/[0-9]+/', $y, $hits7);
 
                                         if (isset($hits6[0]) && \strlen($hits6[0]) === \strlen($y)) {
-                                            if (\strlen($Option_arr['value']) === 0) {
+                                            if (\strlen($option['value']) === 0) {
                                                 return InstallCode::INVALID_CONFIG_OPTION;
                                             }
-                                            if (\strlen($Option_arr['sort']) === 0) {
+                                            if (\strlen($option['sort']) === 0) {
                                                 return InstallCode::INVALID_CONFIG_OPTION;
                                             }
                                         } elseif (\strlen($hits7[0]) === \strlen($y)) {
-                                            if (\strlen($Option_arr) === 0) {
+                                            if (\strlen($option) === 0) {
                                                 return InstallCode::INVALID_CONFIG_OPTION;
                                             }
                                         }
@@ -155,18 +159,19 @@ class Menus extends AbstractItem
                                 && \count($setting['RadioOptions']) > 0
                             ) {
                                 if (\count($setting['RadioOptions'][0]) === 1) {
-                                    foreach ($setting['RadioOptions'][0]['Option'] as $y => $Option_arr) {
+                                    foreach ($setting['RadioOptions'][0]['Option'] as $y => $option) {
+                                        $y = (string)$y;
                                         \preg_match('/[0-9]+\sattr/', $y, $hits6);
                                         \preg_match('/[0-9]+/', $y, $hits7);
                                         if (isset($hits6[0]) && \strlen($hits6[0]) === \strlen($y)) {
-                                            if (\strlen($Option_arr['value']) === 0) {
+                                            if (\strlen($option['value']) === 0) {
                                                 return InstallCode::INVALID_CONFIG_OPTION;
                                             }
-                                            if (\strlen($Option_arr['sort']) === 0) {
+                                            if (\strlen($option['sort']) === 0) {
                                                 return InstallCode::INVALID_CONFIG_OPTION;
                                             }
                                         } elseif (\strlen($hits7[0]) === \strlen($y)) {
-                                            if (\strlen($Option_arr) === 0) {
+                                            if (\strlen($option) === 0) {
                                                 return InstallCode::INVALID_CONFIG_OPTION;
                                             }
                                         }

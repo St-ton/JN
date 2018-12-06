@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -38,9 +38,10 @@ class Blueprints extends AbstractItem
             $this->plugin->cVerzeichnis . '/' . \PFAD_PLUGIN_VERSION .
             $this->plugin->nVersion . '/' .
             \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_BLUEPRINTS;
-        foreach ($this->getNode() as $u => $blueprint) {
-            \preg_match('/[0-9]+/', $u, $hits2);
-            if (\strlen($hits2[0]) !== \strlen($u)) {
+        foreach ($this->getNode() as $i => $blueprint) {
+            $i = (string)$i;
+            \preg_match('/[0-9]+/', $i, $hits2);
+            if (\strlen($hits2[0]) !== \strlen($i)) {
                 continue;
             }
             $blueprintJson = \file_get_contents($base . $blueprint['JSONFile']);

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -29,11 +29,12 @@ class FrontendLinks extends AbstractItem
         if (!isset($node['Link']) || !\is_array($node['Link']) || \count($node['Link']) === 0) {
             return InstallCode::MISSING_FRONTEND_LINKS;
         }
-        foreach ($node['Link'] as $u => $link) {
-            \preg_match('/[0-9]+\sattr/', $u, $hits1);
-            \preg_match('/[0-9]+/', $u, $hits2);
+        foreach ($node['Link'] as $i => $link) {
+            $i = (string)$i;
+            \preg_match('/[0-9]+\sattr/', $i, $hits1);
+            \preg_match('/[0-9]+/', $i, $hits2);
 
-            if (\strlen($hits2[0]) !== \strlen($u)) {
+            if (\strlen($hits2[0]) !== \strlen($i)) {
                 continue;
             }
             if (\strlen($link['Filename']) === 0) {
@@ -108,6 +109,7 @@ class FrontendLinks extends AbstractItem
                 return InstallCode::INVALID_FRONEND_LINK_ISO;
             }
             foreach ($link['LinkLanguage'] as $l => $localized) {
+                $l = (string)$l;
                 \preg_match('/[0-9]+\sattr/', $l, $hits1);
                 \preg_match('/[0-9]+/', $l, $hits2);
                 if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($l)) {

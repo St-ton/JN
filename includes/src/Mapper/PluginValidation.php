@@ -444,6 +444,9 @@ class PluginValidation
             case InstallCode::INVALID_BLUEPRINT_FILE:
                 $return = 'Fehler: Die Datei für das Blueprint existiert nicht';
                 break;
+            case InstallCode::EXT_MUST_NOT_HAVE_UNINSTALLER:
+                $return = 'Fehler: Extension darf keinen Uninstaller definieren';
+                break;
             default:
                 $return = 'Unbekannter Fehler.';
                 break;

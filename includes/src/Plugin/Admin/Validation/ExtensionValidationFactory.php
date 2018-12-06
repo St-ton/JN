@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -21,6 +21,7 @@ use Plugin\Admin\Validation\Items\Localization;
 use Plugin\Admin\Validation\Items\MailTemplates;
 use Plugin\Admin\Validation\Items\Menus;
 use Plugin\Admin\Validation\Items\Name;
+use Plugin\Admin\Validation\Items\NoUninstaller;
 use Plugin\Admin\Validation\Items\PaymentMethods;
 use Plugin\Admin\Validation\Items\PluginID;
 use Plugin\Admin\Validation\Items\Portlets;
@@ -65,7 +66,7 @@ class ExtensionValidationFactory
         $validation[] = new WidgetsExtension($node, $dir, $version, $pluginID);
         $validation[] = new Exports($node, $dir, $version, $pluginID);
         $validation[] = new ExtendedTemplates($node, $dir, $version, $pluginID);
-        $validation[] = new Uninstaller($node, $dir, $version, $pluginID);
+        $validation[] = new NoUninstaller($node, $dir, $version, $pluginID);
 
         return $validation;
     }

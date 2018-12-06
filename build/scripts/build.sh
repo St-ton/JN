@@ -68,7 +68,7 @@ build_create()
 
 build_composer_execute()
 {
-    composer install --no-dev -q -d ${REPOSITORY_DIR}/includes;
+    composer install --no-dev -d ${REPOSITORY_DIR}/includes;
 }
 
 build_git_submodule_init()

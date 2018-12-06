@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 echo "Execute composer install...";
-composer install -q -d includes;
+composer install -d includes;

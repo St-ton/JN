@@ -73,16 +73,16 @@ class ExtensionLoader extends AbstractLoader
         $extension->setLinks($this->loadLinks($id));
         $extension->setPluginID($obj->cPluginID);
         $extension->setPriority((int)$obj->nPrio);
-        $extension->setConfig($this->loadConfig($paths->getAdminPath(), $extension->getID()));
         $extension->setLicense($this->loadLicense($obj));
         $extension->setCache($this->loadCacheData($extension));
+        GetText::getInstance()->loadPluginLocale($obj->cPluginID, $extension);
+        $extension->setConfig($this->loadConfig($paths->getAdminPath(), $extension->getID()));
         $extension->setLocalization($this->loadLocalization($id));
         $extension->setWidgets($this->loadWidgets($extension));
         $extension->setMailTemplates($this->loadMailTemplates($extension));
         $extension->setPaymentMethods($this->loadPaymentMethods($extension));
 
         $this->loadAdminMenu($extension);
-        GetText::getInstance()->loadPluginLocale($obj->cPluginID, $extension);
 
         return $extension;
     }

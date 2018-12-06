@@ -104,7 +104,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
             $loader  = \Plugin\Helper::getLoader((int)$data->bExtension === 1, $db, $cache);
             $oPlugin = $loader->init($kPlugin, true);
             require_once $oPlugin->getPaths()->getLicencePath() . $oPlugin->getLicense()->getClassName();
-            $class = $oPlugin->getLicense()->getClass();
+            $class          = $oPlugin->getLicense()->getClass();
             $oPluginLicence = new $class();
             $cLicenceMethod = PLUGIN_LICENCE_METHODE;
             if ($oPluginLicence->$cLicenceMethod(StringHandler::filterXSS($_POST['cKey']))) {
@@ -343,8 +343,8 @@ if ($step === 'pluginverwaltung_uebersicht') {
         + count($pluginsInstalledByState['status_5'])
         + count($pluginsInstalledByState['status_6']);
 } elseif ($step === 'pluginverwaltung_sprachvariablen') {
-    $kPlugin      = RequestHelper::verifyGPCDataInt('kPlugin');
-    $loader = \Plugin\Helper::getLoaderByPluginID($kPlugin);
+    $kPlugin   = RequestHelper::verifyGPCDataInt('kPlugin');
+    $loader    = \Plugin\Helper::getLoaderByPluginID($kPlugin);
     $languages = $db->query(
         'SELECT * FROM tsprache',
         \DB\ReturnType::ARRAY_OF_OBJECTS

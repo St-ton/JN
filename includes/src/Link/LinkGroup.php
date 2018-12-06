@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -23,7 +23,7 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @var array
      */
-    protected static $mapping = [
+    public static $mapping = [
         'cLocalizedName' => 'Name',
         'Links'          => 'Links'
     ];

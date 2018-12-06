@@ -10,6 +10,7 @@ use Plugin\AbstractExtension;
 
 /**
  * Class GetText
+ * @package L10n
  */
 class GetText
 {

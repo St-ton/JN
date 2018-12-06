@@ -8,7 +8,6 @@ namespace Plugin\Admin\Validation;
 
 use DB\DbInterface;
 use JTL\XMLParser;
-use JTLShop\SemVer\Version;
 use Plugin\InstallCode;
 
 /**
@@ -30,12 +29,19 @@ abstract class AbstractValidator implements ValidatorInterface
     protected $dir;
 
     /**
-     * PluginValidator constructor.
-     * @param DbInterface $db
+     * @var XMLParser
      */
-    public function __construct(DbInterface $db)
+    protected $parser;
+
+    /**
+     * AbstractValidator constructor.
+     * @param DbInterface $db
+     * @param XMLParser   $parser
+     */
+    public function __construct(DbInterface $db, XMLParser $parser)
     {
         $this->db = $db;
+        $this->parser = $parser;
     }
 
     /**
@@ -72,10 +78,8 @@ abstract class AbstractValidator implements ValidatorInterface
         if (!\file_exists($infoXML)) {
             return InstallCode::INFO_XML_MISSING;
         }
-        $parser = new XMLParser();
-        $xml    = $parser->parse($infoXML);
 
-        return $this->pluginPlausiIntern($xml, $forUpdate);
+        return $this->pluginPlausiIntern($this->parser->parse($infoXML), $forUpdate);
     }
 
     /**
@@ -96,8 +100,7 @@ abstract class AbstractValidator implements ValidatorInterface
         if (!\file_exists($info)) {
             return InstallCode::INFO_XML_MISSING;
         }
-        $parser = new XMLParser();
 
-        return $this->pluginPlausiIntern($parser->parse($info), $forUpdate);
+        return $this->pluginPlausiIntern($this->parser->parse($info), $forUpdate);
     }
 }

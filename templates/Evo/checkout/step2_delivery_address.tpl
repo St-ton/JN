@@ -21,6 +21,7 @@
                 {$jtl_token}
                 <fieldset>
                     <ul class="list-group">
+                        {if !isset($forceDeliveryAddress)}
                         <li class="list-group-item">
                             <div class="radio">
                                 <label class="control-label" for="delivery0"><input type="radio" name="kLieferadresse" onclick="changeState('0')" value="0" id="delivery0" {if $kLieferadresse == 0}checked{/if}>
@@ -28,6 +29,7 @@
                                 </label>
                             </div>
                         </li>
+                        {/if}
                         {if !empty($Lieferadressen)}
                             {foreach name=lieferad from=$Lieferadressen item=adresse}
                                 {if $adresse->kLieferadresse>0}

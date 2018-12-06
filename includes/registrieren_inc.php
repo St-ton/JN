@@ -225,7 +225,7 @@ function gibFormularDaten($nCheckout = 0)
     $smarty->assign('herkunfte', $herkunfte)
            ->assign('Kunde', $Kunde)
            ->assign('cKundenattribut_arr', $cKundenattribut_arr)
-           ->assign('laender', gibBelieferbareLaender($_SESSION['Kundengruppe']->kKundengruppe))
+           ->assign('laender', gibBelieferbareLaender($_SESSION['Kundengruppe']->kKundengruppe, false, true))
            ->assign('warning_passwortlaenge', lang_passwortlaenge($Einstellungen['kunden']['kundenregistrierung_passwortlaenge']))
            ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder());
 

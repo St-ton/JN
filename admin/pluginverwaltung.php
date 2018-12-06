@@ -62,10 +62,10 @@ if (!empty($_FILES['file_data'])) {
     foreach ($pluginsInstalled as $_plugin) {
         $pluginsInstalledByState['status_' . $_plugin->getState()][] = $_plugin;
     }
-    $errorCount = count($pluginsInstalledByState['status_3']) +
-        count($pluginsInstalledByState['status_4']) +
-        count($pluginsInstalledByState['status_5']) +
-        count($pluginsInstalledByState['status_6']);
+    $errorCount = count($pluginsInstalledByState['status_3'])
+        + count($pluginsInstalledByState['status_4'])
+        + count($pluginsInstalledByState['status_5'])
+        + count($pluginsInstalledByState['status_6']);
 
     $smarty->configLoad('german.conf', 'pluginverwaltung')
            ->assign('pluginsByState', $pluginsInstalledByState)
@@ -338,10 +338,10 @@ if ($step === 'pluginverwaltung_uebersicht') {
     if (!empty($vLicenseFiles)) {
         $smarty->assign('szLicenses', json_encode($vLicenseFiles));
     }
-    $errorCount = count($pluginsInstalledByState['status_3']) +
-        count($pluginsInstalledByState['status_4']) +
-        count($pluginsInstalledByState['status_5']) +
-        count($pluginsInstalledByState['status_6']);
+    $errorCount = count($pluginsInstalledByState['status_3'])
+        + count($pluginsInstalledByState['status_4'])
+        + count($pluginsInstalledByState['status_5'])
+        + count($pluginsInstalledByState['status_6']);
 } elseif ($step === 'pluginverwaltung_sprachvariablen') {
     $kPlugin      = RequestHelper::verifyGPCDataInt('kPlugin');
     $loader = \Plugin\Helper::getLoaderByPluginID($kPlugin);

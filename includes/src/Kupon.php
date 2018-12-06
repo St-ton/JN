@@ -890,95 +890,88 @@ class Kupon
     {
         $ret = [];
         if ($Kupon->cAktiv !== 'Y') {
+            //not active
             $ret['ungueltig'] = 1;
         } elseif (!empty($Kupon->dGueltigBis) && date_create($Kupon->dGueltigBis) < date_create()) {
+            //expired
             $ret['ungueltig'] = 2;
         } elseif (date_create($Kupon->dGueltigAb) > date_create()) {
+            //invalid at the moment
             $ret['ungueltig'] = 3;
         } elseif ($Kupon->fMindestbestellwert > \Session\Session::getCart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
-                || ($Kupon->cWertTyp === 'festpreis'
-                    && $Kupon->nGanzenWKRabattieren === '0'
-                    && $Kupon->fMindestbestellwert > gibGesamtsummeKuponartikelImWarenkorb(
-                        $Kupon,
-                        \Session\Session::getCart()->PositionenArr
-                    )
+            || ($Kupon->cWertTyp === 'festpreis'
+                && $Kupon->nGanzenWKRabattieren === '0'
+                && $Kupon->fMindestbestellwert > gibGesamtsummeKuponartikelImWarenkorb(
+                    $Kupon,
+                    \Session\Session::getCart()->PositionenArr
                 )
+            )
         ) {
+            //minimum order value not reached for whole cart or the products which are valid for this coupon
             $ret['ungueltig'] = 4;
-        } elseif ($Kupon->kKundengruppe > 0 && $Kupon->kKundengruppe != \Session\Session::getCustomerGroup()->getID()) {
+        } elseif ($Kupon->kKundengruppe > 0 && (int)$Kupon->kKundengruppe !== \Session\Session::getCustomerGroup()->getID()) {
+            //invalid customer group
             $ret['ungueltig'] = 5;
         } elseif ($Kupon->nVerwendungen > 0 && $Kupon->nVerwendungen <= $Kupon->nVerwendungenBisher) {
+            //maximum usage reached
             $ret['ungueltig'] = 6;
-        } elseif ($Kupon->cArtikel && !warenkorbKuponFaehigArtikel($Kupon, \Session\Session::getCart()->PositionenArr)) {
+        } elseif (!warenkorbKuponFaehigArtikel($Kupon, \Session\Session::getCart()->PositionenArr)) {
+            //cart needs at least one product for which this coupon is valid
             $ret['ungueltig'] = 7;
-        } elseif ($Kupon->cKategorien
-            && $Kupon->cKategorien != -1
-            && !warenkorbKuponFaehigKategorien($Kupon, \Session\Session::getCart()->PositionenArr)
-        ) {
+        } elseif (!warenkorbKuponFaehigKategorien($Kupon, \Session\Session::getCart()->PositionenArr)) {
+            //cart needs at least one category for which this coupon is valid
             $ret['ungueltig'] = 8;
-        } elseif (($Kupon->cKunden != -1 && !empty($_SESSION['Kunde']->kKunde)
-                && strpos($Kupon->cKunden, $_SESSION['Kunde']->kKunde . ';') === false
-                && $Kupon->cKuponTyp !== self::TYPE_NEWCUSTOMER)
-            || ($Kupon->cKunden != -1 && $Kupon->cKuponTyp !== self::TYPE_NEWCUSTOMER && !isset($_SESSION['Kunde']->kKunde))
+        } elseif ($Kupon->cKuponTyp !== self::TYPE_NEWCUSTOMER
+            && (int)$Kupon->cKunden !== -1
+            && (!empty($_SESSION['Kunde']->kKunde
+                    && strpos($Kupon->cKunden, $_SESSION['Kunde']->kKunde . ';') === false)
+                || !isset($_SESSION['Kunde']->kKunde)
+            )
         ) {
+            //invalid for account
             $ret['ungueltig'] = 9;
         } elseif ($Kupon->cKuponTyp === self::TYPE_SHIPPING
             && isset($_SESSION['Lieferadresse'])
             && strpos($Kupon->cLieferlaender, $_SESSION['Lieferadresse']->cLand) === false
         ) {
+            //invalid for shipping country
             $ret['ungueltig'] = 10;
         } elseif ($Kupon->cKuponTyp === self::TYPE_NEWCUSTOMER
             && self::newCustomerCouponUsed($_SESSION['Kunde']->cMail)
         ) {
+            //email already used for a new-customer coupon
             $ret['ungueltig'] = 11;
-        } elseif ((int)$Kupon->cHersteller !== -1
-            && !empty($Kupon->cHersteller)
-            && !warenkorbKuponFaehigHersteller($Kupon, \Session\Session::getCart()->PositionenArr)
-        ) {
+        } elseif (!warenkorbKuponFaehigHersteller($Kupon, \Session\Session::getCart()->PositionenArr)) {
+            //invalid for manufacturer
             $ret['ungueltig'] = 12;
         } else {
-            $alreadyUsedSQL = '';
-            $bindings = [];
-            $email = $_SESSION['Kunde']->cMail ?? '';
+            //check if max usage of coupon is reached for cutomer
+            $alreadyUsedSQL = 'SELECT SUM(nVerwendungen) AS nVerwendungen
+                                  FROM tkuponkunde
+                                  WHERE kKupon = :coupon';
+            $bindings       = ['coupon' => (int)$Kupon->kKupon];
+            $email          = $_SESSION['Kunde']->cMail ?? '';
+
             if (!empty($_SESSION['Kunde']->kKunde) && !empty($email)) {
-                $alreadyUsedSQL = 'SELECT SUM(nVerwendungen) AS nVerwendungen
-                                      FROM tkuponkunde
-                                      WHERE (kKunde = :customer OR cMail = :mail)
-                                          AND kKupon = :coupon';
-                $bindings = [
-                    'customer' => (int)$_SESSION['Kunde']->kKunde,
-                    'mail' => $email,
-                    'coupon' => (int)$Kupon->kKupon
-                ];
+                $alreadyUsedSQL      .= ' AND (kKunde = :customer OR cMail = :mail)';
+                $bindings['customer'] = (int)$_SESSION['Kunde']->kKunde;
+                $bindings['mail']     = $email;
             } elseif (!empty($email)) {
-                $alreadyUsedSQL = 'SELECT SUM(nVerwendungen) AS nVerwendungen
-                                      FROM tkuponkunde
-                                      WHERE cMail = :mail
-                                          AND kKupon = :coupon';
-                $bindings = [
-                    'mail' => $email,
-                    'coupon' => (int)$Kupon->kKupon
-                ];
+                $alreadyUsedSQL  .= ' AND cMail = :mail';
+                $bindings['mail'] = $email;
             } elseif (!empty($_SESSION['Kunde']->kKunde)) {
-                $alreadyUsedSQL = 'SELECT SUM(nVerwendungen) AS nVerwendungen
-                                      FROM tkuponkunde
-                                      WHERE kKunde = :customer
-                                          AND kKupon = :coupon';
-                $bindings = [
-                    'customer' => (int)$_SESSION['Kunde']->kKunde,
-                    'coupon' => (int)$Kupon->kKupon
-                ];
+                $alreadyUsedSQL      .= ' AND kKunde = :customer';
+                $bindings['customer'] = (int)$_SESSION['Kunde']->kKunde;
             }
-            if ($alreadyUsedSQL !== '') {
-                //hat der kunde schon die max. Verwendungsanzahl erreicht?
+            if (count($bindings) > 1) {
                 $anz = Shop::Container()->getDB()->executeQueryPrepared(
                     $alreadyUsedSQL,
                     $bindings,
                     \DB\ReturnType::SINGLE_OBJECT
                 );
                 if (isset($Kupon->nVerwendungenProKunde, $anz->nVerwendungen)
-                    && $anz->nVerwendungen >= $Kupon->nVerwendungenProKunde
                     && $Kupon->nVerwendungenProKunde > 0
+                    && $anz->nVerwendungen >= $Kupon->nVerwendungenProKunde
                 ) {
                     $ret['ungueltig'] = 6;
                 }

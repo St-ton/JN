@@ -897,21 +897,25 @@ function KuponVerwendungen($oBestellung): void
         );
         $KuponKunde                = new stdClass();
         $KuponKunde->kKupon        = $kKupon;
-        $KuponKunde->kKunde        = $_SESSION['Warenkorb']->kKunde;
+        $KuponKunde->kKunde        = (int)$_SESSION['Warenkorb']->kKunde;
         $KuponKunde->cMail         = StringHandler::filterXSS($_SESSION['Kunde']->cMail);
         $KuponKunde->dErstellt     = 'NOW()';
         $KuponKunde->nVerwendungen = 1;
         $KuponKundeBisher          = Shop::Container()->getDB()->queryPrepared(
             'SELECT SUM(nVerwendungen) AS nVerwendungen
                 FROM tkuponkunde
-                WHERE cMail = :email',
-            ['email' => $KuponKunde->cMail],
+                WHERE kKupon = :couponID 
+                  AND cMail = :email',
+            [
+                'email'    => $KuponKunde->cMail,
+                'couponID' => $KuponKunde->kKupon
+            ],
             \DB\ReturnType::SINGLE_OBJECT
         );
         if (isset($KuponKundeBisher->nVerwendungen) && $KuponKundeBisher->nVerwendungen > 0) {
             $KuponKunde->nVerwendungen += $KuponKundeBisher->nVerwendungen;
         }
-        Shop::Container()->getDB()->delete('tkuponkunde', ['kKunde', 'kKupon'], [(int)$KuponKunde->kKunde, $kKupon]);
+        Shop::Container()->getDB()->delete('tkuponkunde', ['kKunde', 'kKupon'], [$KuponKunde->kKunde, $kKupon]);
         Shop::Container()->getDB()->insert('tkuponkunde', $KuponKunde);
 
         Shop::Container()->getDB()->insert('tkuponflag', (object)[

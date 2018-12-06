@@ -2429,13 +2429,10 @@ function gibGesamtsummeKuponartikelImWarenkorb($Kupon, array $cartPositions)
 {
     $gesamtsumme = 0;
     foreach ($cartPositions as $Position) {
-        if ((empty($Kupon->cArtikel) || warenkorbKuponFaehigArtikel($Kupon, [$Position]))
-            && (empty($Kupon->cHersteller)
-                || $Kupon->cHersteller === '-1'
-                || warenkorbKuponFaehigHersteller($Kupon, [$Position]))
-            && (empty($Kupon->cKategorien)
-                || $Kupon->cKategorien === '-1'
-                || warenkorbKuponFaehigKategorien($Kupon, [$Position]))
+        if ($Position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+            && warenkorbKuponFaehigArtikel($Kupon, [$Position])
+            && warenkorbKuponFaehigHersteller($Kupon, [$Position])
+            && warenkorbKuponFaehigKategorien($Kupon, [$Position])
         ) {
             $gesamtsumme += $Position->fPreis *
                 $Position->nAnzahl *
@@ -2453,15 +2450,19 @@ function gibGesamtsummeKuponartikelImWarenkorb($Kupon, array $cartPositions)
  */
 function warenkorbKuponFaehigArtikel($Kupon, array $cartPositions): bool
 {
-    foreach ($cartPositions as $Pos) {
-        if ($Pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
-            && preg_match('/;' . preg_quote($Pos->Artikel->cArtNr, '/') . ';/i', $Kupon->cArtikel)
-        ) {
-            return true;
+    if (!empty($Kupon->cArtikel)) {
+        foreach ($cartPositions as $Pos) {
+            if ($Pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+                && preg_match('/;' . preg_quote($Pos->Artikel->cArtNr, '/') . ';/i', $Kupon->cArtikel)
+            ) {
+                return true;
+            }
         }
+
+        return false;
     }
 
-    return false;
+    return true;
 }
 
 /**
@@ -2471,15 +2472,19 @@ function warenkorbKuponFaehigArtikel($Kupon, array $cartPositions): bool
  */
 function warenkorbKuponFaehigHersteller($Kupon, array $cartPositions): bool
 {
-    foreach ($cartPositions as $Pos) {
-        if ($Pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
-            && preg_match('/;' . preg_quote($Pos->Artikel->kHersteller, '/') . ';/i', $Kupon->cHersteller)
-        ) {
-            return true;
+    if (!empty($Kupon->cHersteller) && (int)$Kupon->cHersteller !== -1) {
+        foreach ($cartPositions as $Pos) {
+            if ($Pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+                && preg_match('/;' . preg_quote($Pos->Artikel->kHersteller, '/') . ';/i', $Kupon->cHersteller)
+            ) {
+                return true;
+            }
         }
+
+        return false;
     }
 
-    return false;
+    return true;
 }
 
 /**
@@ -2489,31 +2494,35 @@ function warenkorbKuponFaehigHersteller($Kupon, array $cartPositions): bool
  */
 function warenkorbKuponFaehigKategorien($Kupon, array $cartPositions): bool
 {
-    $categories = [];
-    foreach ($cartPositions as $Pos) {
-        if (empty($Pos->Artikel)) {
-            continue;
-        }
-        $kArtikel = $Pos->Artikel->kArtikel;
-        // Kind?
-        if (ArtikelHelper::isVariChild($kArtikel)) {
-            $kArtikel = ArtikelHelper::getParent($kArtikel);
-        }
-        $catData = Shop::Container()->getDB()->selectAll('tkategorieartikel', 'kArtikel', $kArtikel, 'kKategorie');
-        foreach ($catData as $category) {
-            $category->kKategorie = (int)$category->kKategorie;
-            if (!in_array($category->kKategorie, $categories, true)) {
-                $categories[] = $category->kKategorie;
+    if (!empty($Kupon->cKategorien) && (int)$Kupon->cKategorien !== -1) {
+        $categories = [];
+        foreach ($cartPositions as $Pos) {
+            if (empty($Pos->Artikel)) {
+                continue;
+            }
+            $kArtikel = $Pos->Artikel->kArtikel;
+            // Kind?
+            if (ArtikelHelper::isVariChild($kArtikel)) {
+                $kArtikel = ArtikelHelper::getParent($kArtikel);
+            }
+            $catData = Shop::Container()->getDB()->selectAll('tkategorieartikel', 'kArtikel', $kArtikel, 'kKategorie');
+            foreach ($catData as $category) {
+                $category->kKategorie = (int)$category->kKategorie;
+                if (!in_array($category->kKategorie, $categories, true)) {
+                    $categories[] = $category->kKategorie;
+                }
             }
         }
-    }
-    foreach ($categories as $category) {
-        if (preg_match('/;' . preg_quote($category, '/') . ';/i', $Kupon->cKategorien)) {
-            return true;
+        foreach ($categories as $category) {
+            if (preg_match('/;' . preg_quote($category, '/') . ';/i', $Kupon->cKategorien)) {
+                return true;
+            }
         }
+
+        return false;
     }
 
-    return false;
+    return true;
 }
 
 /**

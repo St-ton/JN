@@ -36,7 +36,7 @@ class GetText
         $this->translator = new \Gettext\Translator();
         $this->translator->register();
 
-        $this->setLangIso(\Shop::getLanguage(true))
+        $this->setLangIso(\Shop::getLanguageCode())
              ->loadAdminLocale();
     }
 

@@ -149,12 +149,15 @@ class Helper
             'tplugin',
             'nStatus',
             State::ACTIVATED,
-            'cPluginID,cVerzeichnis,nVersion',
+            'cPluginID, cVerzeichnis, nVersion, bExtension',
             'nPrio'
         );
 
         foreach ($plugins as $plugin) {
-            $path = \PFAD_ROOT . \PFAD_PLUGIN . $plugin->cVerzeichnis . '/' .
+            $path = (int)$plugin->bExtension === 1
+                ? \PFAD_ROOT . \PFAD_EXTENSIONS . $plugin->cVerzeichnis . '/' .
+                \PFAD_PLUGIN_FRONTEND . \PFAD_PLUGIN_TEMPLATE
+                : \PFAD_ROOT . \PFAD_PLUGIN . $plugin->cVerzeichnis . '/' .
                 \PFAD_PLUGIN_VERSION . $plugin->nVersion . '/' . \PFAD_PLUGIN_FRONTEND . \PFAD_PLUGIN_TEMPLATE;
             if (\is_dir($path)) {
                 $templatePaths[$plugin->cPluginID] = $path;

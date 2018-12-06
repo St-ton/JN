@@ -414,7 +414,7 @@ class JTLSmarty extends \SmartyBC
             'transform' => $transform
         ]);
 
-        if ($this->context === 'frontend'
+        if ($this->context === ContextType::FRONTEND
             && $resourceName === $resource_cfb_name
             && \file_exists($this->getTemplateDir(ContextType::FRONTEND) . $resource_cfb_name)
         ) {

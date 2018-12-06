@@ -6,8 +6,11 @@
 
 namespace Plugin;
 
+use DB\DbInterface;
+
 /**
  * Class MigrationHelper
+ * @package Plugin
  */
 final class MigrationHelper
 {
@@ -27,12 +30,19 @@ final class MigrationHelper
     private $path;
 
     /**
-     * MigrationHelper constructor.
-     * @param string $path
+     * @var DbInterface
      */
-    public function __construct(string $path)
+    private $db;
+
+    /**
+     * MigrationHelper constructor.
+     * @param string      $path
+     * @param DbInterface $db
+     */
+    public function __construct(string $path, DbInterface $db)
     {
         $this->path = $path;
+        $this->db   = $db;
     }
 
     /**
@@ -103,7 +113,7 @@ final class MigrationHelper
      */
     public function verifyIntegrity(): void
     {
-        \Shop::Container()->getDB()->query(
+        $this->db->query(
             "CREATE TABLE IF NOT EXISTS tpluginmigration 
             (
                 kMigration bigint(14) NOT NULL, 
@@ -114,7 +124,7 @@ final class MigrationHelper
             ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'",
             \DB\ReturnType::DEFAULT
         );
-        \Shop::Container()->getDB()->query(
+        $this->db->query(
             "CREATE TABLE IF NOT EXISTS tmigrationlog 
             (
                 kMigrationlog int(10) NOT NULL AUTO_INCREMENT, 
@@ -136,7 +146,7 @@ final class MigrationHelper
      */
     public function indexColumns(string $idxTable, string $idxName): array
     {
-        return \Shop::Container()->getDB()->queryPrepared(
+        return $this->db->queryPrepared(
             "SHOW INDEXES FROM `$idxTable` WHERE Key_name = :idxName",
             ['idxName' => $idxName],
             \DB\ReturnType::ARRAY_OF_OBJECTS
@@ -161,7 +171,7 @@ final class MigrationHelper
                 . ' INDEX `' . $idxName . '` ON `' . $idxTable . '` '
                 . '(`' . \implode('`, `', $idxColumns) . '`)';
 
-            return !\Shop::Container()->getDB()->executeQuery($ddl, \DB\ReturnType::DEFAULT) ? false : true;
+            return !$this->db->executeQuery($ddl, \DB\ReturnType::DEFAULT) ? false : true;
         }
 
         return false;
@@ -175,7 +185,7 @@ final class MigrationHelper
     public function dropIndex(string $idxTable, string $idxName): bool
     {
         if (\count($this->indexColumns($idxTable, $idxName)) > 0) {
-            return !\Shop::Container()->getDB()->executeQuery(
+            return !$this->db->executeQuery(
                 'DROP INDEX `' . $idxName . '` ON `' . $idxTable . '` ',
                 \DB\ReturnType::DEFAULT
             ) ? false : true;

@@ -12,11 +12,11 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 function bereiteNewsletterVor($Einstellungen)
 {
     //Smarty Objekt bauen
-    $mailSmarty = new \Smarty\JTLSmarty(true, false, false, 'newsletter');
+    $mailSmarty = new \Smarty\JTLSmarty(true, \Smarty\ContextType::NEWSLETTER);
     $mailSmarty->setCaching(0)
                ->setDebugging(0)
                ->setCompileDir(PFAD_ROOT . PFAD_COMPILEDIR)
-               ->registerResource('db', new SmartyResourceNiceDB('newsletter'))
+               ->registerResource('db', new SmartyResourceNiceDB(\Smarty\ContextType::NEWSLETTER))
                ->assign('Firma', Shop::Container()->getDB()->query(
                    'SELECT *  FROM tfirma',
                    \DB\ReturnType::SINGLE_OBJECT

@@ -695,11 +695,11 @@ class Exportformat
      */
     private function initSmarty(): self
     {
-        $this->smarty = (new \Smarty\JTLSmarty(true, false, false, 'export'))
+        $this->smarty = (new \Smarty\JTLSmarty(true, \Smarty\ContextType::EXPORT))
             ->setCaching(0)
             ->setTemplateDir(PFAD_TEMPLATES)
             ->setCompileDir(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR)
-            ->registerResource('db', new SmartyResourceNiceDB('export'))
+            ->registerResource('db', new SmartyResourceNiceDB(\Smarty\ContextType::EXPORT))
             ->assign('URL_SHOP', Shop::getURL())
             ->assign('Waehrung', \Session\Session::getCurrency())
             ->assign('Einstellungen', $this->getConfig());

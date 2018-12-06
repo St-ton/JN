@@ -8,6 +8,7 @@ namespace Smarty;
 
 /**
  * Class JTLSmartyTemplateHints
+ * @package Smarty
  */
 class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
 {
@@ -58,7 +59,8 @@ class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
         } elseif (\SHOW_TEMPLATE_HINTS === 4) {
             $tplID = \uniqid('tpl');
             if ($tplName !== 'layout/header.tpl' && $tplName !== 'layout/header_custom.tpl') {
-                echo '<span class="tpl-debug-start" data-uid="' . $tplID . '" style="display:none;" data-tpl="' . $tplName . '">';
+                echo '<span class="tpl-debug-start" data-uid="' .
+                    $tplID . '" style="display:none;" data-tpl="' . $tplName . '">';
                 echo '<span class="tpl-name">' . $tplName . '</span>';
                 echo '</span>';
             }
@@ -77,7 +79,10 @@ class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
         );
         if (\SHOW_TEMPLATE_HINTS === 1) {
             echo '<!-- end ' . $tplName . '-->';
-        } elseif (\SHOW_TEMPLATE_HINTS === 2 && $tplName === 'layout/header.tpl' && $tplName === 'layout/header_custom.tpl') {
+        } elseif (\SHOW_TEMPLATE_HINTS === 2
+            && $tplName === 'layout/header.tpl'
+            && $tplName === 'layout/header_custom.tpl'
+        ) {
             echo '<style>
                     .tpl-debug{border:1px dashed black;position:relative;min-height:25px;opacity:.75;z-index:9;}
                     .tpl-name{position:absolute;left:0;}

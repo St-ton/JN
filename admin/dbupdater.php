@@ -16,7 +16,7 @@ $oAccount->permission('SHOP_UPDATE_VIEW', true, true);
 
 $updater  = new Updater();
 $template = Template::getInstance();
-$_smarty  = new \Smarty\JTLSmarty(true, true);
+$_smarty  = new \Smarty\JTLSmarty(true, \Smarty\ContextType::BACKEND);
 $_smarty->clearCompiledTemplate();
 Shop::Container()->getCache()->flushAll();
 

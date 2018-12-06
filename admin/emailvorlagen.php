@@ -748,8 +748,8 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
             );
             Shop::Container()->getDB()->insert($cTableSprache, $Emailvorlagesprache);
             //Smarty Objekt bauen
-            $mailSmarty = new Smarty\JTLSmarty(true, false, false, 'mail');
-            $mailSmarty->registerResource('db', new SmartyResourceNiceDB('mail'))
+            $mailSmarty = new Smarty\JTLSmarty(true, \Smarty\ContextType::MAIL);
+            $mailSmarty->registerResource('db', new SmartyResourceNiceDB(\Smarty\ContextType::MAIL))
                        ->registerPlugin('function', 'includeMailTemplate', 'includeMailTemplate')
                        ->setCaching(Smarty::CACHING_OFF)
                        ->setDebugging(Smarty::DEBUG_OFF)

@@ -583,15 +583,13 @@ final class Shop
     }
 
     /**
-     * get template engine instance
-     *
-     * @param bool $fast_init
-     * @param bool $isAdmin
+     * @param bool   $fast
+     * @param string $context
      * @return \Smarty\JTLSmarty
      */
-    public function _Smarty(bool $fast_init = false, bool $isAdmin = false): \Smarty\JTLSmarty
+    public function _Smarty(bool $fast = false, string $context = \Smarty\ContextType::FRONTEND): \Smarty\JTLSmarty
     {
-        return \Smarty\JTLSmarty::getInstance($fast_init, $isAdmin);
+        return \Smarty\JTLSmarty::getInstance($fast, $context);
     }
 
     /**

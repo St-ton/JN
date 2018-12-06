@@ -52,6 +52,7 @@ ifndef('DEBUG_FRAME', false);
 ifndef('SMARTY_DEBUG_CONSOLE', false);
 ifndef('SMARTY_SHOW_LANGKEY', false);
 ifndef('SMARTY_FORCE_COMPILE', false);
+ifndef('SMARTY_USE_SUB_DIRS', false);
 ifndef('JTL_INCLUDE_ONLY_DB', 0);
 ifndef('SOCKET_TIMEOUT', 30);
 ifndef('ARTICLES_PER_PAGE_HARD_LIMIT', 100);

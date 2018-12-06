@@ -74,8 +74,8 @@ function sendeMail($ModulId, $Object, $mail = null)
     $absender_name = $config['emails']['email_master_absender_name'];
     $absender_mail = $config['emails']['email_master_absender'];
     $kopie         = '';
-    $mailSmarty = new \Smarty\JTLSmarty(true, false, false, 'mail');
-    $mailSmarty->registerResource('db', new SmartyResourceNiceDB('mail'))
+    $mailSmarty = new \Smarty\JTLSmarty(true, \Smarty\ContextType::MAIL);
+    $mailSmarty->registerResource('db', new SmartyResourceNiceDB(\Smarty\ContextType::MAIL))
                ->registerPlugin('function', 'includeMailTemplate', 'includeMailTemplate')
                ->setCaching(0)
                ->setDebugging(0)

@@ -34,10 +34,17 @@ class Migration_20181129151242 extends Migration implements IMigration
                           `cEmailHash` varchar(255) NOT NULL,
                           `cKuponTyp` varchar(255) NOT NULL,
                           `dErstellt` datetime NOT NULL,
-                          PRIMARY KEY (`kKuponFlag`)
+                          PRIMARY KEY (`kKuponFlag`),
+                          KEY cEmailHash_cKuponTyp (`cEmailHash`, `cKuponTyp`)
                         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci');
 
         $this->execute('ALTER TABLE `tkuponbestellung` CHANGE COLUMN `cKuponTyp` `cKuponTyp` VARCHAR(255) NOT NULL');
+
+
+        $this->execute('ALTER TABLE `tkuponkunde`
+                          DROP KEY `kKupon`,
+                          DROP KEY `kKunde`,
+                          ADD UNIQUE KEY `kKupon_cMail` (`kKupon`, `cMail`)');
     }
 
     public function down()
@@ -56,5 +63,10 @@ class Migration_20181129151242 extends Migration implements IMigration
                         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci");
 
         $this->execute("ALTER TABLE `tkuponbestellung` CHANGE COLUMN `cKuponTyp` `cKuponTyp` enum('prozent', 'festpreis', 'versand', 'neukunden') COLLATE utf8_unicode_ci DEFAULT NULL");
+
+        $this->execute('ALTER TABLE `tkuponkunde`
+                          DROP KEY `kKupon_cMail`,
+                          ADD KEY `kKupon` (`kKupon`),
+                          ADD KEY `kKunde` (`kKunde`)');
     }
 }

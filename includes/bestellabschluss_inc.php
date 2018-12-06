@@ -863,16 +863,16 @@ function KuponVerwendungen($oBestellung): void
     $cKuponTyp        = '';
     $fKuponwertBrutto = 0;
     if (isset($_SESSION['VersandKupon']->kKupon) && $_SESSION['VersandKupon']->kKupon > 0) {
-        $kKupon           = $_SESSION['VersandKupon']->kKupon;
+        $kKupon           = (int)$_SESSION['VersandKupon']->kKupon;
         $cKuponTyp        = Kupon::TYPE_SHIPPING;
         $fKuponwertBrutto = $_SESSION['Versandart']->fPreis;
     }
     if (isset($_SESSION['NeukundenKupon']->kKupon) && $_SESSION['NeukundenKupon']->kKupon > 0) {
-        $kKupon    = $_SESSION['NeukundenKupon']->kKupon;
+        $kKupon    = (int)$_SESSION['NeukundenKupon']->kKupon;
         $cKuponTyp = Kupon::TYPE_NEWCUSTOMER;
     }
     if (isset($_SESSION['Kupon']->kKupon) && $_SESSION['Kupon']->kKupon > 0) {
-        $kKupon    = $_SESSION['Kupon']->kKupon;
+        $kKupon    = (int)$_SESSION['Kupon']->kKupon;
         $cKuponTyp = Kupon::TYPE_STANDARD;
     }
     if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
@@ -889,38 +889,33 @@ function KuponVerwendungen($oBestellung): void
             }
         }
     }
-    $kKupon = (int)$kKupon;
     if ($kKupon > 0) {
-        Shop::Container()->getDB()->query(
-            'UPDATE tkupon SET nVerwendungenBisher = nVerwendungenBisher + 1 WHERE kKupon = ' . $kKupon,
+        Shop::Container()->getDB()->queryPrepared(
+            'UPDATE tkupon
+              SET nVerwendungenBisher = nVerwendungenBisher + 1
+              WHERE kKupon = :couponID',
+            ['couponID' => $kKupon],
             \DB\ReturnType::DEFAULT
         );
-        $KuponKunde                = new stdClass();
-        $KuponKunde->kKupon        = $kKupon;
-        $KuponKunde->kKunde        = (int)$_SESSION['Warenkorb']->kKunde;
-        $KuponKunde->cMail         = StringHandler::filterXSS($_SESSION['Kunde']->cMail);
-        $KuponKunde->dErstellt     = 'NOW()';
-        $KuponKunde->nVerwendungen = 1;
-        $KuponKundeBisher          = Shop::Container()->getDB()->queryPrepared(
-            'SELECT SUM(nVerwendungen) AS nVerwendungen
-                FROM tkuponkunde
-                WHERE kKupon = :couponID 
-                  AND cMail = :email',
+
+        Shop::Container()->getDB()->queryPrepared(
+            'INSERT INTO `tkuponkunde` (kKupon, kKunde, cMail, dErstellt, nVerwendungen)
+                VALUES (:couponID, :customerID, :email, :created, :used)
+                ON DUPLICATE KEY UPDATE
+                  nVerwendungen = nVerwendungen + 1',
             [
-                'email'    => $KuponKunde->cMail,
-                'couponID' => $KuponKunde->kKupon
+                'couponID'   => $kKupon,
+                'customerID' => (int)$_SESSION['Warenkorb']->kKunde,
+                'email' => $_SESSION['Kunde']->cMail,
+                'created' => 'NOW()',
+                'used' => 1
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        if (isset($KuponKundeBisher->nVerwendungen) && $KuponKundeBisher->nVerwendungen > 0) {
-            $KuponKunde->nVerwendungen += $KuponKundeBisher->nVerwendungen;
-        }
-        Shop::Container()->getDB()->delete('tkuponkunde', ['kKunde', 'kKupon'], [$KuponKunde->kKunde, $kKupon]);
-        Shop::Container()->getDB()->insert('tkuponkunde', $KuponKunde);
 
         Shop::Container()->getDB()->insert('tkuponflag', (object)[
             'cKuponTyp'  => $cKuponTyp,
-            'cEmailHash' => Kupon::hash($KuponKunde->cMail),
+            'cEmailHash' => Kupon::hash($_SESSION['Kunde']->cMail),
             'dErstellt'  => 'NOW()'
         ]);
 

@@ -936,42 +936,30 @@ class Kupon
         ) {
             //invalid for shipping country
             $ret['ungueltig'] = 10;
-        } elseif ($Kupon->cKuponTyp === self::TYPE_NEWCUSTOMER
-            && self::newCustomerCouponUsed($_SESSION['Kunde']->cMail)
-        ) {
-            //email already used for a new-customer coupon
-            $ret['ungueltig'] = 11;
         } elseif (!warenkorbKuponFaehigHersteller($Kupon, \Session\Session::getCart()->PositionenArr)) {
             //invalid for manufacturer
             $ret['ungueltig'] = 12;
-        } else {
-            //check if max usage of coupon is reached for cutomer
-            $alreadyUsedSQL = 'SELECT SUM(nVerwendungen) AS nVerwendungen
-                                  FROM tkuponkunde
-                                  WHERE kKupon = :coupon';
-            $bindings       = ['coupon' => (int)$Kupon->kKupon];
-            $email          = $_SESSION['Kunde']->cMail ?? '';
-
-            if (!empty($_SESSION['Kunde']->kKunde) && !empty($email)) {
-                $alreadyUsedSQL      .= ' AND (kKunde = :customer OR cMail = :mail)';
-                $bindings['customer'] = (int)$_SESSION['Kunde']->kKunde;
-                $bindings['mail']     = $email;
-            } elseif (!empty($email)) {
-                $alreadyUsedSQL  .= ' AND cMail = :mail';
-                $bindings['mail'] = $email;
-            } elseif (!empty($_SESSION['Kunde']->kKunde)) {
-                $alreadyUsedSQL      .= ' AND kKunde = :customer';
-                $bindings['customer'] = (int)$_SESSION['Kunde']->kKunde;
-            }
-            if (count($bindings) > 1) {
-                $anz = Shop::Container()->getDB()->executeQueryPrepared(
-                    $alreadyUsedSQL,
-                    $bindings,
+        } elseif (!empty($_SESSION['Kunde']->cMail)) {
+            if ($Kupon->cKuponTyp === self::TYPE_NEWCUSTOMER
+                && self::newCustomerCouponUsed($_SESSION['Kunde']->cMail)
+            ) {
+                //email already used for a new-customer coupon
+                $ret['ungueltig'] = 11;
+            } elseif (!empty($Kupon->nVerwendungenProKunde) && $Kupon->nVerwendungenProKunde > 0) {
+                //check if max usage of coupon is reached for cutomer
+                $countCouponUsed= Shop::Container()->getDB()->executeQueryPrepared(
+                    'SELECT SUM(nVerwendungen) AS nVerwendungen
+                      FROM tkuponkunde
+                      WHERE kKupon = :coupon
+                        AND cMail = :email',
+                    [
+                        'coupon' => (int)$Kupon->kKupon,
+                        'email'  => $_SESSION['Kunde']->cMail
+                    ],
                     \DB\ReturnType::SINGLE_OBJECT
                 );
-                if (isset($Kupon->nVerwendungenProKunde, $anz->nVerwendungen)
-                    && $Kupon->nVerwendungenProKunde > 0
-                    && $anz->nVerwendungen >= $Kupon->nVerwendungenProKunde
+                if (isset($countCouponUsed->nVerwendungen)
+                    && $countCouponUsed->nVerwendungen >= $Kupon->nVerwendungenProKunde
                 ) {
                     $ret['ungueltig'] = 6;
                 }

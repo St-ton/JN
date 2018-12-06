@@ -4465,7 +4465,7 @@ function setzeSpracheUndWaehrungLink()
             } else {
                 $cUrl = gibNaviURL($NaviFilter, true, $oZusatzFilter, $oSprache->kSprache);
                 if (!empty($NaviFilter->nSeite) && $NaviFilter->nSeite > 1) {
-                    if (strpos($sprachURL, 'navi.php') !== false) {
+                    if (strpos($cUrl, 'navi.php') !== false) {
                         $cUrl .= '&amp;seite=' . $NaviFilter->nSeite;
                     } else {
                         $cUrl .= SEP_SEITE . $NaviFilter->nSeite;

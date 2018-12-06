@@ -72,7 +72,7 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadLocalization(int $id): Localization
     {
-        $data         = \Shop::Container()->getDB()->queryPrepared(
+        $data         = $this->db->queryPrepared(
             'SELECT l.kPluginSprachvariable, l.kPlugin, l.cName, l.cBeschreibung,
             COALESCE(c.cISO, tpluginsprachvariablesprache.cISO)  AS cISO,
             COALESCE(c.cName, tpluginsprachvariablesprache.cName) AS customValue

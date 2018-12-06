@@ -29,6 +29,16 @@ stages:
     echo "Tests finished"
   }
 
+.cleanUpTesting: &cleanUpTesting |
+  function failedTesting() {
+    export CI_CONTAINER_NAME=ci_job_build_deploy_$CI_COMMIT_SHA-testing-php$PHP_VERSION_TEST_STEP
+    export running=$(docker inspect -f '{{.State.Running}}' $CI_CONTAINER_NAME)
+
+    if [[ ! -z "$running" ]]; then
+      docker stop $CI_CONTAINER_NAME && docker rm -fv $CI_CONTAINER_NAME
+    fi
+  }
+
 .preBuildDeployScripts: &preBuildDeployScripts |
   export CI_APPLICATION_REPOSITORY=$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG
   export CI_APPLICATION_TAG=$CI_COMMIT_SHA
@@ -157,6 +167,54 @@ test_PHP_7.3:
     - branches
   except:
     - master
+  tags:
+    - build
+
+removeContainerPHP7.1:
+  stage: test
+  variables:
+    PHP_VERSION_TEST_STEP: '7.1'
+  script:
+    - *cleanUpTesting
+    - failedTesting
+  only:
+    - branches
+  except:
+    - master
+    - /^release\/.*$/
+  when: on_failure
+  tags:
+    - build
+
+removeContainerPHP7.2:
+  stage: test
+  variables:
+    PHP_VERSION_TEST_STEP: '7.2'
+  script:
+    - *cleanUpTesting
+    - failedTesting
+  only:
+    - branches
+  except:
+    - master
+    - /^release\/.*$/
+  when: on_failure
+  tags:
+    - build
+    -
+removeContainerPHP7.3:
+  stage: test
+  variables:
+    PHP_VERSION_TEST_STEP: '7.3'
+  script:
+    - *cleanUpTesting
+    - failedTesting
+  only:
+    - branches
+  except:
+    - master
+    - /^release\/.*$/
+  when: on_failure
   tags:
     - build
 

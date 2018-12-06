@@ -5,7 +5,7 @@ composer install -q -d includes;
 
 echo "Build components...";
 for component in build/components/*/ ; do
-    composer install -q -d ${component};
+    composer install -d ${component};
 done
 
 echo "Execute tests...";

@@ -14,6 +14,9 @@ class NavigationEntry
 {
     use \MagicCompatibilityTrait;
 
+    /**
+     * @var array
+     */
     protected static $mapping = [
         'name'     => 'Name',
         'url'      => 'URL',

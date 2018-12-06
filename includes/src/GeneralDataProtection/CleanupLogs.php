@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -6,7 +6,12 @@
 
 namespace GeneralDataProtection;
 
+use DB\ReturnType;
+
 /**
+ * Class CleanupLogs
+ * @package GeneralDataProtection
+ *
  * Delete old logs containing personal data.
  * (interval former "interval_clear_logs" = 90 days)
  *
@@ -25,26 +30,26 @@ namespace GeneralDataProtection;
 class CleanupLogs extends Method implements MethodInterface
 {
     /**
-     * runs all anonymize-routines
+     * runs all anonymize routines
      */
-    public function execute()
+    public function execute(): void
     {
-        $this->clean_temailhistory();
-        $this->clean_tkontakthistory();
-        $this->clean_tkundenwerbenkunden();
-        $this->clean_tzahlungslog();
-        $this->clean_tproduktanfragehistory();
-        $this->clean_tverfuegbarkeitsbenachrichtigung();
-        $this->clean_tjtllog();
-        $this->clean_tzahlungseingang();
-        $this->clean_tkundendatenhistory();
+        $this->cleanupEmailHistory();
+        $this->cleanupContactHistory();
+        $this->cleanupCustomerRecruitings();
+        $this->cleanupPaymentLogEntries();
+        $this->cleanupProductInquiries();
+        $this->cleanupAvailabilityInquiries();
+        $this->cleanupLogs();
+        $this->cleanupPaymentConfirmations();
+        $this->cleanupCustomerDataHistory();
     }
 
     /**
-     * delete email-history
+     * delete email history
      * older than given interval
      */
-    private function clean_temailhistory()
+    private function cleanupEmailHistory()
     {
         \Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM temailhistory
@@ -52,18 +57,18 @@ class CleanupLogs extends Method implements MethodInterface
             ORDER BY dSent ASC
             LIMIT :pLimit',
             [
-                'pDateLimit' => $this->szDateLimit,
-                'pLimit'     => $this->iWorkLimit
+                'pDateLimit' => $this->dateLimit,
+                'pLimit'     => $this->workLimit
             ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
     }
 
     /**
-     * delete customer-hostory
+     * delete customer history
      * older than given interval
      */
-    private function clean_tkontakthistory()
+    private function cleanupContactHistory(): void
     {
         \Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tkontakthistory
@@ -71,18 +76,18 @@ class CleanupLogs extends Method implements MethodInterface
             ORDER BY dErstellt ASC
             LIMIT :pLimit',
             [
-                'pDateLimit' => $this->szDateLimit,
-                'pLimit'     => $this->iWorkLimit
+                'pDateLimit' => $this->dateLimit,
+                'pLimit'     => $this->workLimit
             ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
     }
 
     /**
-     * delete customer-recruitings
+     * delete customer recruitings
      * older than the given interval
      */
-    private function clean_tkundenwerbenkunden()
+    private function cleanupCustomerRecruitings(): void
     {
         \Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tkundenwerbenkunden
@@ -90,18 +95,18 @@ class CleanupLogs extends Method implements MethodInterface
             ORDER BY dErstellt ASC
             LIMIT :pLimit',
             [
-                'pDateLimit' => $this->szDateLimit,
-                'pLimit'     => $this->iWorkLimit
+                'pDateLimit' => $this->dateLimit,
+                'pLimit'     => $this->workLimit
             ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
     }
 
     /**
-     * delete log-entries of payments
+     * delete log entries of payments
      * older than the given interval
      */
-    private function clean_tzahlungslog()
+    private function cleanupPaymentLogEntries(): void
     {
         \Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tzahlungslog
@@ -109,18 +114,18 @@ class CleanupLogs extends Method implements MethodInterface
             ORDER BY dDatum ASC
             LIMIT :pLimit',
             [
-                'pDateLimit' => $this->szDateLimit,
-                'pLimit'     => $this->iWorkLimit
+                'pDateLimit' => $this->dateLimit,
+                'pLimit'     => $this->workLimit
             ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
     }
 
     /**
-     * delete product demands of customers,
+     * delete product inquiries of customers
      * older than the given interval
      */
-    private function clean_tproduktanfragehistory()
+    private function cleanupProductInquiries(): void
     {
         \Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tproduktanfragehistory
@@ -128,18 +133,18 @@ class CleanupLogs extends Method implements MethodInterface
             ORDER BY dErstellt ASC
             LIMIT :pLimit',
             [
-                'pDateLimit' => $this->szDateLimit,
-                'pLimit'     => $this->iWorkLimit
+                'pDateLimit' => $this->dateLimit,
+                'pLimit'     => $this->workLimit
             ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
     }
 
     /**
-     * delete availability demands of customers,
+     * delete availability demands of customers
      * older than the given interval
      */
-    private function clean_tverfuegbarkeitsbenachrichtigung()
+    private function cleanupAvailabilityInquiries(): void
     {
         \Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tverfuegbarkeitsbenachrichtigung
@@ -147,18 +152,18 @@ class CleanupLogs extends Method implements MethodInterface
             ORDER BY dErstellt ASC
             LIMIT :pLimit',
             [
-                'pDateLimit' => $this->szDateLimit,
-                'pLimit'     => $this->iWorkLimit
+                'pDateLimit' => $this->dateLimit,
+                'pLimit'     => $this->workLimit
             ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
     }
 
     /**
-     * delete jtl-log-entries,
+     * delete jtl log entries
      * older than the given interval
      */
-    private function clean_tjtllog()
+    private function cleanupLogs(): void
     {
         \Shop::Container()->getDB()->queryPrepared(
             "DELETE FROM tjtllog
@@ -168,19 +173,18 @@ class CleanupLogs extends Method implements MethodInterface
             ORDER BY dErstellt ASC
             LIMIT :pLimit",
             [
-                'pDateLimit' => $this->szDateLimit,
-                'pLimit'     => $this->iWorkLimit
+                'pDateLimit' => $this->dateLimit,
+                'pLimit'     => $this->workLimit
             ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
     }
 
     /**
-     * delete payment-confirmations of customers,
-     * not collected by 'wawi' and
-     * older than the given interval
+     * delete payment confirmations of customers
+     * not collected by 'wawi' and older than the given interval
      */
-    private function clean_tzahlungseingang()
+    private function cleanupPaymentConfirmations(): void
     {
         \Shop::Container()->getDB()->queryPrepared(
             "DELETE FROM tzahlungseingang
@@ -190,20 +194,20 @@ class CleanupLogs extends Method implements MethodInterface
             ORDER BY dZeit ASC
             LIMIT :pLimit",
             [
-                'pDateLimit' => $this->szDateLimit,
-                'pLimit'     => $this->iWorkLimit
+                'pDateLimit' => $this->dateLimit,
+                'pLimit'     => $this->workLimit
             ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
     }
 
     /**
-     * delete customer-data-historytory
-     * CONSIDER: using no time-base or limit here!
+     * delete customer data history
+     * CONSIDER: using no time base or limit here!
      *
      * (§76 BDSG Abs(4) : "Die Protokolldaten sind am Ende des auf deren Generierung folgenden Jahres zu löschen.")
      */
-    private function clean_tkundendatenhistory()
+    private function cleanupCustomerDataHistory(): void
     {
         \Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tkundendatenhistory
@@ -212,10 +216,10 @@ class CleanupLogs extends Method implements MethodInterface
             ORDER BY dErstellt ASC
             LIMIT :pLimit',
             [
-                'pNow'   => $this->oNow->format('Y-m-d H:i:s'),
-                'pLimit' => $this->iWorkLimit
+                'pNow'   => $this->now->format('Y-m-d H:i:s'),
+                'pLimit' => $this->workLimit
             ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
     }
 }

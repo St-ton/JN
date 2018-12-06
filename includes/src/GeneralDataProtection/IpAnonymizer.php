@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -7,7 +7,8 @@
 namespace GeneralDataProtection;
 
 /**
- * class IpAnonymizer
+ * Class IpAnonymizer
+ * @package GeneralDataProtection
  *
  * v4
  * anonymize()       : 255.255.255.34 -> 255.255.255.0
@@ -30,9 +31,9 @@ class IpAnonymizer
     /**
      * binary "packed" IP
      *
-     * @var binary
+     * @var string
      */
-    private $bRawIp = null;
+    private $bRawIp;
 
     /**
      * current IP-anonymization-mask
@@ -75,8 +76,7 @@ class IpAnonymizer
     /**
      * @var object Monolog\Logger
      */
-    private $oLogger;
-
+    private $logger;
 
     /**
      * @param string
@@ -85,9 +85,9 @@ class IpAnonymizer
     public function __construct(string $szIP = '', bool $bBeautify = false)
     {
         try {
-            $this->oLogger = \Shop::Container()->getLogService();
+            $this->logger = \Shop::Container()->getLogService();
         } catch (\Exception $e) {
-            $this->oLogger = null;
+            $this->logger = null;
         }
 
         $this->setMaskV4('255.255.0.0');
@@ -99,7 +99,7 @@ class IpAnonymizer
                 $this->init();
             } catch (\Exception $e) {
                 // The current PHP-version did not support IPv6 addresses!
-                ($this->oLogger !== null) ?: $this->oLogger->log(JTLLOG_LEVEL_NOTICE, $e->getMessage());
+                ($this->logger !== null) ?: $this->logger->log(\JTLLOG_LEVEL_NOTICE, $e->getMessage());
 
                 return;
             }
@@ -116,7 +116,7 @@ class IpAnonymizer
      */
     private function init()
     {
-        if ($this->szIP === '' || strpos($this->szIP, '*') !== false) {
+        if ($this->szIP === '' || \strpos($this->szIP, '*') !== false) {
             // if there is an old fashioned anonymization or
             // an empty string, we do nothing (but set a flag)
             $this->bOldFashionedAnon = true;
@@ -125,14 +125,14 @@ class IpAnonymizer
         }
         // any ':' means, we got an IPv6-address
         // ("::127.0.0.1" or "::ffff:127.0.0.3" is valid too!)
-        if (strpos($this->szIP, ':') !== false) {
-            $this->bRawIp = @inet_pton($this->szIP);
+        if (\strpos($this->szIP, ':') !== false) {
+            $this->bRawIp = @\inet_pton($this->szIP);
         } else {
-            $this->bRawIp = @inet_pton($this->rmLeadingZero($this->szIP));
+            $this->bRawIp = @\inet_pton($this->rmLeadingZero($this->szIP));
         }
         if ($this->bRawIp === false) {
-            ($this->oLogger !== null) ?: $this->oLogger->log(
-                JTLLOG_LEVEL_WARNING,
+            ($this->logger !== null) ?: $this->logger->log(
+                \JTLLOG_LEVEL_WARNING,
                 'Wrong IP: ' . $this->szIP
             );
             $this->bRawIp = '';
@@ -185,14 +185,14 @@ class IpAnonymizer
         if ($this->bOldFashionedAnon !== false) {
             return $this->szIP;
         }
-        $szReadableIp = inet_ntop(inet_pton($this->szIpMask) & $this->bRawIp);
+        $szReadableIp = \inet_ntop(\inet_pton($this->szIpMask) & $this->bRawIp);
 
-        if ($this->bBeautifyFlag === true && strpos($szReadableIp, '::') !== false) {
-            $iColonPos = strpos($szReadableIp, '::');
+        if ($this->bBeautifyFlag === true && \strpos($szReadableIp, '::') !== false) {
+            $iColonPos = \strpos($szReadableIp, '::');
             $iStrEnd   = \strlen($szReadableIp) - 2;
 
             $iBlockCount = \count(
-                preg_split('/:/', str_replace('::', ':', $szReadableIp), -1, PREG_SPLIT_NO_EMPTY)
+                \preg_split('/:/', \str_replace('::', ':', $szReadableIp), -1, \PREG_SPLIT_NO_EMPTY)
             );
             $szReplacement = '';
             $iDiff         = 8 - $iBlockCount;
@@ -202,11 +202,11 @@ class IpAnonymizer
             if (($iColonPos | $iStrEnd) === 0) { // for pure "::"
                 $szReadableIp = $szReplacement;
             } elseif ($iColonPos === 0) {
-                $szReadableIp = str_replace('::', $szReplacement . ':', $szReadableIp);
+                $szReadableIp = \str_replace('::', $szReplacement . ':', $szReadableIp);
             } elseif ($iColonPos === $iStrEnd) {
-                $szReadableIp = str_replace('::', ':' . $szReplacement, $szReadableIp);
+                $szReadableIp = \str_replace('::', ':' . $szReplacement, $szReadableIp);
             } else {
-                $szReadableIp = str_replace('::', ':' . $szReplacement . ':', $szReadableIp);
+                $szReadableIp = \str_replace('::', ':' . $szReplacement . ':', $szReadableIp);
             }
         }
 
@@ -221,14 +221,14 @@ class IpAnonymizer
      */
     public function anonymizeLegacy(): string
     {
-        $vMaskParts = preg_split('/[\.:]/', $this->szIpMask);
-        $vIpParts   = preg_split('/[\.:]/', $this->szIP);
+        $vMaskParts = \preg_split('/[\.:]/', $this->szIpMask);
+        $vIpParts   = \preg_split('/[\.:]/', $this->szIP);
         $nLen       = \count($vIpParts);
         (4 === $nLen) ? $szGlue = '.' : $szGlue = ':';
         for ($i = 0; $i < $nLen; $i++) {
-            (hexdec($vMaskParts[$i]) !== 0) ?: $vIpParts{$i} = '*';
+            (\hexdec($vMaskParts[$i]) !== 0) ?: $vIpParts{$i} = '*';
         }
-        return implode($szGlue, $vIpParts);
+        return \implode($szGlue, $vIpParts);
     }
 
     /**
@@ -250,7 +250,7 @@ class IpAnonymizer
     /**
      * @param string
      */
-    public function setMaskV4(string $szMask)
+    public function setMaskV4(string $szMask): void
     {
         $this->szIpMaskv4 = $szMask;
     }
@@ -258,7 +258,7 @@ class IpAnonymizer
     /**
      * @param string
      */
-    public function setMaskV6(string $szMask)
+    public function setMaskV6(string $szMask): void
     {
         $this->szIpMaskv6 = $szMask;
     }
@@ -272,10 +272,10 @@ class IpAnonymizer
      */
     private function rmLeadingZero(string $szIpString): string
     {
-        $vIpParts = preg_split('/[\.:]/', $szIpString);
-        $szGlue   = strpos($szIpString, '.') !== false ? '.' : ':';
+        $vIpParts = \preg_split('/[\.:]/', $szIpString);
+        $szGlue   = \strpos($szIpString, '.') !== false ? '.' : ':';
 
-        return implode($szGlue, array_map(function ($e) {
+        return \implode($szGlue, \array_map(function ($e) {
             return (int)$e;
         }, $vIpParts));
     }

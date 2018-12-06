@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -6,9 +6,13 @@
 
 namespace GeneralDataProtection;
 
+use DB\ReturnType;
+
 /**
- * class TableCleaner
- * controller-class of "shop customer data anonymization"
+ * Class TableCleaner
+ * @package GeneralDataProtection
+ *
+ * controller of "shop customer data anonymization"
  * ("GDPR" or "Global Data Protection Rules", german: "DSGVO")
  */
 class TableCleaner
@@ -18,12 +22,12 @@ class TableCleaner
      *
      * @var object DateTime
      */
-    private $oNow;
+    private $now;
 
     /**
      * @var object Monolog\Logger
      */
-    private $oLogger;
+    private $logger;
 
     /**
      * anonymize-methods
@@ -31,50 +35,52 @@ class TableCleaner
      *
      * @var array
      */
-    private $vMethods = [
-        ['szName' => 'AnonymizeIps',                      'iIntervalDays' => 7],
-        ['szName' => 'AnonymizeDeletedCustomer',          'iIntervalDays' => 7],
-        ['szName' => 'CleanupOldGuestAccounts',           'iIntervalDays' => 365],
-        ['szName' => 'CleanupCustomerRelicts',            'iIntervalDays' => 0],
-        ['szName' => 'CleanupGuestAccountsWithoutOrders', 'iIntervalDays' => 0],
-        ['szName' => 'CleanupNewsletterRecipients',       'iIntervalDays' => 30],
-        ['szName' => 'CleanupLogs',                       'iIntervalDays' => 90],
-        ['szName' => 'CleanupService',                    'iIntervalDays' => 0] // multiple own intervals
+    private $methods = [
+        ['szName' => 'AnonymizeIps',                      'intervalDays' => 7],
+        ['szName' => 'AnonymizeDeletedCustomer',          'intervalDays' => 7],
+        ['szName' => 'CleanupOldGuestAccounts',           'intervalDays' => 365],
+        ['szName' => 'CleanupCustomerRelicts',            'intervalDays' => 0],
+        ['szName' => 'CleanupGuestAccountsWithoutOrders', 'intervalDays' => 0],
+        ['szName' => 'CleanupNewsletterRecipients',       'intervalDays' => 30],
+        ['szName' => 'CleanupLogs',                       'intervalDays' => 90],
+        ['szName' => 'CleanupService',                    'intervalDays' => 0] // multiple own intervals
     ];
 
-
+    /**
+     * TableCleaner constructor.
+     * @throws \Exception
+     */
     public function __construct()
     {
-        // get the main-logger
         try {
-            $this->oLogger = \Shop::Container()->getLogService();
+            $this->logger = \Shop::Container()->getLogService();
         } catch (\Exception $e) {
-            $this->oLogger = null;
+            $this->logger = null;
         }
         // sets the time which has to be used by all sub-processes
-        $this->oNow = new \DateTime();
+        $this->now = new \DateTime();
     }
 
     /**
-     * run all anonymize and clean-up methods
+     * run all anonymize and clean up methods
      */
-    public function execute()
+    public function execute(): void
     {
-        $nTimeStart    = microtime(true); // runtime-measurement
-        $nMethodsCount = \count($this->vMethods);
+        $nTimeStart    = \microtime(true); // runtime-measurement
+        $nMethodsCount = \count($this->methods);
         // iterate over the indexed array (configurable order!)
         for ($i=0; $i < $nMethodsCount; $i++) {
-            $szMethodName = __NAMESPACE__ . '\\' . $this->vMethods[$i]['szName'];
-            (new $szMethodName($this->oNow, $this->vMethods[$i]['iIntervalDays']))->execute();
-            ($this->oLogger === null) ?: $this->oLogger->log(
-                JTLLOG_LEVEL_NOTICE,
-                'Anonymize Method executed: ' . $this->vMethods[$i]['szName']
+            $szMethodName = __NAMESPACE__ . '\\' . $this->methods[$i]['szName'];
+            (new $szMethodName($this->now, $this->methods[$i]['intervalDays']))->execute();
+            ($this->logger === null) ?: $this->logger->log(
+                \JTLLOG_LEVEL_NOTICE,
+                'Anonymize Method executed: ' . $this->methods[$i]['szName']
             );
         }
-        $nTimeElapsed = microtime(true) - $nTimeStart; // runtime-measurement
-        ($this->oLogger === null) ?: $this->oLogger->log(
-            JTLLOG_LEVEL_NOTICE,
-            'Anonymizing finished in: ' . sprintf('%01.4fs', $nTimeElapsed)
+        $nTimeElapsed = \microtime(true) - $nTimeStart; // runtime-measurement
+        ($this->logger === null) ?: $this->logger->log(
+            \JTLLOG_LEVEL_NOTICE,
+            'Anonymizing finished in: ' . \sprintf('%01.4fs', $nTimeElapsed)
         );
     }
 
@@ -88,9 +94,9 @@ class TableCleaner
             'DELETE FROM tanondatajournal
             WHERE dEventTime <= LAST_DAY(DATE_ADD(:pNow - INTERVAL 2 YEAR, INTERVAL 12 - MONTH(:pNow) MONTH))',
             [
-                'pNow' => $this->oNow->format('Y-m-d H:i:s')
+                'pNow' => $this->now->format('Y-m-d H:i:s')
             ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
     }
 }

@@ -90,5 +90,4 @@ class License
     {
         $this->class = $class;
     }
-
 }

@@ -10,6 +10,7 @@ use Events\Dispatcher;
 
 /**
  * Interface PluginInterface
+ * @package Plugin
  */
 interface PluginInterface
 {

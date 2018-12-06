@@ -43,7 +43,6 @@ class Updater
      * @param int $pluginID
      * @return int
      * @former updatePlugin()
-     * @todo
      */
     public function update(int $pluginID): int
     {

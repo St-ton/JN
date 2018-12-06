@@ -60,16 +60,10 @@ class MailTemplates
             }
             $templates[] = $first;
         }
-        $this->templates = $templates;
-//        \Shop::dbg($templates, false, 'new1:');
-
+        $this->templates      = $templates;
         $this->templatesAssoc = reindex($templates, function ($item) {
             return $item->cModulId;
         });
-//        \Shop::dbg($test, true, 'assoc:');
-
-//        $this->plugin->oPluginEmailvorlage_arr      = $templates;
-//        $this->plugin->oPluginEmailvorlageAssoc_arr = $mailTplAssoc;
 
         return $this;
     }

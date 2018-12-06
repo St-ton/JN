@@ -12,6 +12,7 @@ use JTL\XMLParser;
 
 /**
  * Class Plugin
+ * @package Plugin
  */
 class Plugin extends ExtensionBC
 {

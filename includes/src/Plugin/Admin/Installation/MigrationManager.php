@@ -59,7 +59,7 @@ final class MigrationManager
      */
     public function __construct(DbInterface $db, string $path, string $pluginID, Version $version = null)
     {
-        $this->helper   = new MigrationHelper($path);
+        $this->helper   = new MigrationHelper($path, $db);
         $this->db       = $db;
         $this->pluginID = $pluginID;
         $this->path     = $path;

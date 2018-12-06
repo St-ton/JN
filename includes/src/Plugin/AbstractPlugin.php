@@ -9,7 +9,8 @@ namespace Plugin;
 use Events\Dispatcher;
 
 /**
- * class AbstractPlugin
+ * Class AbstractPlugin
+ * @package Plugin
  */
 abstract class AbstractPlugin implements PluginInterface
 {

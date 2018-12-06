@@ -1,6 +1,7 @@
 stages:
 #  - codeclimate
   - test
+  - cleanUpTest
   - build
   - deploy
   - cleanUp
@@ -171,7 +172,7 @@ test_PHP_7.3:
     - build
 
 removeContainerPHP7.1:
-  stage: test
+  stage: cleanUpTest
   variables:
     PHP_VERSION_TEST_STEP: '7.1'
   script:
@@ -187,7 +188,7 @@ removeContainerPHP7.1:
     - build
 
 removeContainerPHP7.2:
-  stage: test
+  stage: cleanUpTest
   variables:
     PHP_VERSION_TEST_STEP: '7.2'
   script:
@@ -203,7 +204,7 @@ removeContainerPHP7.2:
     - build
 
 removeContainerPHP7.3:
-  stage: test
+  stage: cleanUpTest
   variables:
     PHP_VERSION_TEST_STEP: '7.3'
   script:

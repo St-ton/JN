@@ -128,10 +128,8 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
     } elseif (is_array($kPlugin_arr) && count($kPlugin_arr) > 0) {
         foreach ($kPlugin_arr as $kPlugin) {
             $kPlugin = (int)$kPlugin;
-            // Aktivieren
             if (isset($_POST['aktivieren'])) {
                 $res = $stateChanger->activate($kPlugin);
-
                 switch ($res) {
                     case \Plugin\InstallCode::OK:
                         if ($cHinweis !== 'Ihre ausgewählten Plugins wurden erfolgreich aktiviert.') {
@@ -145,6 +143,8 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
                     case \Plugin\InstallCode::NO_PLUGIN_FOUND:
                         $cFehler = 'Fehler: Ihr ausgewähltes Plugin konnte nicht in der Datenbank ' .
                             'gefunden werden oder ist schon aktiv.';
+                        break;
+                    default:
                         break;
                 }
 

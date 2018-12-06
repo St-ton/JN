@@ -81,9 +81,13 @@ class StateChanger
         if (empty($pluginData->kPlugin)) {
             return InstallCode::NO_PLUGIN_FOUND;
         }
-        $path       = \PFAD_ROOT . \PFAD_PLUGIN;
-        $validation = $this->pluginValidator->validateByPath($path . $pluginData->cVerzeichnis);
-
+        if ((int)$pluginData->bExtension === 1) {
+            $path       = \PFAD_ROOT . \PFAD_EXTENSIONS;
+            $validation = $this->extensionValidator->validateByPath($path . $pluginData->cVerzeichnis);
+        } else {
+            $path       = \PFAD_ROOT . \PFAD_PLUGIN;
+            $validation = $this->pluginValidator->validateByPath($path . $pluginData->cVerzeichnis);
+        }
         if ($validation === InstallCode::OK
             || $validation === InstallCode::DUPLICATE_PLUGIN_ID
             || $validation === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE

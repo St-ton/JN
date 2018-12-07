@@ -38,8 +38,21 @@ class Migration_20181129151242 extends Migration implements IMigration
                           KEY cEmailHash_cKuponTyp (`cEmailHash`, `cKuponTyp`)
                         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci');
 
-        $this->execute('ALTER TABLE `tkuponbestellung` CHANGE COLUMN `cKuponTyp` `cKuponTyp` VARCHAR(255) NOT NULL');
+        //add flags for already used new customer coupons
+        $newCustomerCouponEmails = $this->fetchAll(
+            "SELECT tkuponkunde.cMail
+                FROM tkuponkunde
+                LEFT JOIN tkupon
+                  ON tkupon.kKupon = tkuponkunde.kKupon
+                WHERE tkupon.cKuponTyp = 'neukundenkupon'
+                GROUP BY tkuponkunde.cMail"
+        );
+        foreach ($newCustomerCouponEmails as $email) {
+            $this->execute("INSERT INTO `tkuponflag` (`cEmailHash`, `cKuponTyp`, `dErstellt`)
+                              VALUES ('" . Kupon::hash($email->cMail) . "', 'neukundenkupon', NOW())");
+        }
 
+        $this->execute('ALTER TABLE `tkuponbestellung` CHANGE COLUMN `cKuponTyp` `cKuponTyp` VARCHAR(255) NOT NULL');
 
         $this->execute('ALTER TABLE `tkuponkunde`
                           DROP KEY `kKupon`,

@@ -900,14 +900,13 @@ function KuponVerwendungen($oBestellung): void
 
         Shop::Container()->getDB()->queryPrepared(
             'INSERT INTO `tkuponkunde` (kKupon, kKunde, cMail, dErstellt, nVerwendungen)
-                VALUES (:couponID, :customerID, :email, :created, :used)
+                VALUES (:couponID, :customerID, :email, NOW(), :used)
                 ON DUPLICATE KEY UPDATE
                   nVerwendungen = nVerwendungen + 1',
             [
                 'couponID'   => $kKupon,
                 'customerID' => (int)$_SESSION['Warenkorb']->kKunde,
-                'email' => $_SESSION['Kunde']->cMail,
-                'created' => 'NOW()',
+                'email' => Kupon::hash($_SESSION['Kunde']->cMail),
                 'used' => 1
             ],
             \DB\ReturnType::AFFECTED_ROWS

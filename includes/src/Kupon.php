@@ -954,7 +954,7 @@ class Kupon
                         AND cMail = :email',
                     [
                         'coupon' => (int)$Kupon->kKupon,
-                        'email'  => $_SESSION['Kunde']->cMail
+                        'email'  => self::hash($_SESSION['Kunde']->cMail)
                     ],
                     \DB\ReturnType::SINGLE_OBJECT
                 );
@@ -1129,7 +1129,7 @@ class Kupon
      */
     public static function hash(string $strToHash): string
     {
-        return $strToHash === '' ? '' : md5($strToHash);
+        return $strToHash === '' ? '' : hash('sha256', $strToHash);
     }
 
     /**

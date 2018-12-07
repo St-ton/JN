@@ -30,17 +30,18 @@ class Migration_20181129151242 extends Migration implements IMigration
         $this->execute('DROP TABLE IF EXISTS `tkuponneukunde`');
 
         $this->execute('CREATE TABLE `tkuponflag` (
-                          `kKuponFlag` int(10) unsigned NOT NULL AUTO_INCREMENT,
-                          `cEmailHash` varchar(255) NOT NULL,
-                          `cKuponTyp` varchar(255) NOT NULL,
-                          `dErstellt` datetime NOT NULL,
+                          `kKuponFlag` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+                          `cEmailHash` VARCHAR(255) NOT NULL,
+                          `cKuponTyp`  VARCHAR(255) NOT NULL,
+                          `dErstellt`  DATETIME NOT NULL,
                           PRIMARY KEY (`kKuponFlag`),
                           KEY cEmailHash_cKuponTyp (`cEmailHash`, `cKuponTyp`)
                         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci');
 
         //add flags for already used new customer coupons
         $newCustomerCouponEmails = $this->fetchAll(
-            "SELECT tkuponkunde.cMail
+            "SELECT tkuponkunde.cMail,
+                  MAX(tkuponkunde.dErstellt) as dErstellt
                 FROM tkuponkunde
                 LEFT JOIN tkupon
                   ON tkupon.kKupon = tkuponkunde.kKupon
@@ -48,8 +49,11 @@ class Migration_20181129151242 extends Migration implements IMigration
                 GROUP BY tkuponkunde.cMail"
         );
         foreach ($newCustomerCouponEmails as $email) {
-            $this->execute("INSERT INTO `tkuponflag` (`cEmailHash`, `cKuponTyp`, `dErstellt`)
-                              VALUES ('" . Kupon::hash($email->cMail) . "', 'neukundenkupon', NOW())");
+            Shop::Container()->getDB()->insert('tkuponflag', (object)[
+                'cEmailHash' => Kupon::hash($email->cMail),
+                'cKuponTyp'  => 'neukundenkupon',
+                'dErstellt'  => $email->dErstellt
+            ]);
         }
 
         $this->execute('ALTER TABLE `tkuponbestellung` CHANGE COLUMN `cKuponTyp` `cKuponTyp` VARCHAR(255) NOT NULL');
@@ -91,17 +95,18 @@ class Migration_20181129151242 extends Migration implements IMigration
         $this->execute('DROP TABLE IF EXISTS `tkuponflag`');
 
         $this->execute("CREATE TABLE `tkuponneukunde` (
-                          `kKuponNeukunde` int(10) unsigned NOT NULL AUTO_INCREMENT,
-                          `kKupon` int(10) unsigned NOT NULL,
-                          `cEmail` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-                          `cDatenHash` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-                          `dErstellt` datetime NOT NULL,
-                          `cVerwendet` varchar(1) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'N',
+                          `kKuponNeukunde` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+                          `kKupon`         INT(10) UNSIGNED NOT NULL,
+                          `cEmail`         VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+                          `cDatenHash`     VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+                          `dErstellt`      DATETIME NOT NULL,
+                          `cVerwendet`     VARCHAR(1) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'N',
                           PRIMARY KEY (`kKuponNeukunde`),
                           KEY `cEmail` (`cEmail`,`cDatenHash`)
                         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci");
 
-        $this->execute("ALTER TABLE `tkuponbestellung` CHANGE COLUMN `cKuponTyp` `cKuponTyp` enum('prozent', 'festpreis', 'versand', 'neukunden') COLLATE utf8_unicode_ci DEFAULT NULL");
+        $this->execute("ALTER TABLE `tkuponbestellung`
+                          CHANGE COLUMN `cKuponTyp` `cKuponTyp` ENUM('prozent', 'festpreis', 'versand', 'neukunden') COLLATE utf8_unicode_ci DEFAULT NULL");
 
         $this->execute('ALTER TABLE `tkuponkunde`
                           DROP KEY `kKupon_cMail`,

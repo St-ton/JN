@@ -54,10 +54,33 @@ class Migration_20181129151242 extends Migration implements IMigration
 
         $this->execute('ALTER TABLE `tkuponbestellung` CHANGE COLUMN `cKuponTyp` `cKuponTyp` VARCHAR(255) NOT NULL');
 
+        //fix nVerwendungen -> remove kKunde, allow only unique entries for each cMail + kKupon
+        $oldCustomerCoupons = $this->fetchAll('
+          SELECT tkuponkunde.cMail,
+                tkuponkunde.kKupon,
+                COUNT(tkuponkunde.cMail) as nVerwendungen,
+                MAX(tkuponkunde.dErstellt) as dErstellt
+            FROM tkuponkunde
+            LEFT JOIN tkupon
+                ON tkupon.kKupon = tkuponkunde.kKupon
+            GROUP BY tkuponkunde.cMail, tkuponkunde.kKupon'
+        );
+
+        $this->execute('TRUNCATE TABLE tkuponkunde');
         $this->execute('ALTER TABLE `tkuponkunde`
                           DROP KEY `kKupon`,
                           DROP KEY `kKunde`,
+                          DROP COLUMN `kKunde`,
                           ADD UNIQUE KEY `kKupon_cMail` (`kKupon`, `cMail`)');
+
+        foreach ($oldCustomerCoupons as $oldCoupon) {
+            Shop::Container()->getDB()->insert('tkuponkunde', (object)[
+                'cMail'         => Kupon::hash($oldCoupon->cMail),
+                'kKupon'        => $oldCoupon->kKupon,
+                'nVerwendungen' => $oldCoupon->nVerwendungen,
+                'dErstellt'     => $oldCoupon->dErstellt
+            ]);
+        }
 
         $this->setLocalization('ger', 'global', 'couponErr6', 'Fehler: Maximale Verwendungen für den Kupon erreicht.');
         $this->setLocalization('eng', 'global', 'couponErr6', 'Error: Maximum usage reached for this coupon.');
@@ -82,6 +105,7 @@ class Migration_20181129151242 extends Migration implements IMigration
 
         $this->execute('ALTER TABLE `tkuponkunde`
                           DROP KEY `kKupon_cMail`,
+                          ADD COLUMN `kKunde` INT(10) UNSIGNED AFTER `kKupon`,
                           ADD KEY `kKupon` (`kKupon`),
                           ADD KEY `kKunde` (`kKunde`)');
 

@@ -12,7 +12,7 @@ use DB\ReturnType;
  * Class CleanupOldGuestAccounts
  * @package GeneralDataProtection
  *
- * Remove guest accounts fetched by JTL-Wawi and older than x days
+ * Remove guest accounts fetched by JTL Wawi and older than x days
  * (interval former "interval_delete_guest_accounts" = 365 days)
  *
  * names of the tables, we manipulate:

@@ -53,9 +53,6 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
             ],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!\is_array($data)) {
-            return;
-        }
         foreach ($data as $res) {
             \Shop::Container()->getDB()->queryPrepared(
                 'DELETE e, h

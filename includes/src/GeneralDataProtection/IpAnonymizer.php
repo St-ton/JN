@@ -152,6 +152,7 @@ class IpAnonymizer
                 }
                 break;
             default:
+                break;
         }
     }
 

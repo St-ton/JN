@@ -12,7 +12,7 @@ use DB\ReturnType;
  * Class Journal
  * @package GeneralDataProtection
  *
- * writes a journal of customer-data-changes,
+ * writes a journal of customer data changes,
  * e.g. deletion of a customer
  *
  * usage:

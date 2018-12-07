@@ -102,7 +102,6 @@ class AnonymizeIps extends Method implements MethodInterface
         ]
     ];
 
-
     /**
      * run all anonymize processes
      */

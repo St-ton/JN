@@ -115,11 +115,11 @@ class BaseSearchSpecial extends AbstractFilter
     {
         switch ($this->value) {
             case \SEARCHSPECIALS_BESTSELLER:
-                $nAnzahl = (($min = $this->getConfig('global')['global_bestseller_minanzahl']) > 0)
+                $count = (($min = $this->getConfig('global')['global_bestseller_minanzahl']) > 0)
                     ? (int)$min
                     : 100;
 
-                return "ROUND(tbestseller.fAnzahl) >= " . $nAnzahl;
+                return "ROUND(tbestseller.fAnzahl) >= " . $count;
 
             case \SEARCHSPECIALS_SPECIALOFFERS:
                 $tasp = 'tartikelsonderpreis';
@@ -135,12 +135,12 @@ class BaseSearchSpecial extends AbstractFilter
                                     AND " . $tsp . " .kKundengruppe = " . \Session::getCustomerGroup()->getID();
 
             case \SEARCHSPECIALS_NEWPRODUCTS:
-                $alter_tage = (($age = $this->getConfig('boxen')['box_neuimsortiment_alter_tage']) > 0)
+                $days = (($age = $this->getConfig('boxen')['box_neuimsortiment_alter_tage']) > 0)
                     ? (int)$age
                     : 30;
 
                 return "tartikel.cNeu = 'Y' 
-                    AND DATE_SUB(NOW(), INTERVAL $alter_tage DAY) < tartikel.dErstellt 
+                    AND DATE_SUB(NOW(), INTERVAL " . $days . " DAY) < tartikel.dErstellt 
                     AND tartikel.cNeu = 'Y'";
 
             case \SEARCHSPECIALS_TOPOFFERS:
@@ -151,11 +151,11 @@ class BaseSearchSpecial extends AbstractFilter
 
             case \SEARCHSPECIALS_TOPREVIEWS:
                 if (!$this->productFilter->hasRatingFilter()) {
-                    $nMindestSterne = ($min = $this->getConfig('boxen')['boxen_topbewertet_minsterne']) > 0
+                    $minStars = ($min = $this->getConfig('boxen')['boxen_topbewertet_minsterne']) > 0
                         ? (int)$min
                         : 4;
 
-                    return ' ROUND(taex.fDurchschnittsBewertung) >= ' . $nMindestSterne;
+                    return ' ROUND(taex.fDurchschnittsBewertung) >= ' . $minStars;
                 }
                 break;
 

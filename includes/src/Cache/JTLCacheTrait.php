@@ -369,7 +369,7 @@ trait JTLCacheTrait
     /**
      * @inheritdoc
      */
-    public function getError()
+    public function getError(): string
     {
         return $this->error;
     }
@@ -377,8 +377,10 @@ trait JTLCacheTrait
     /**
      * @inheritdoc
      */
-    public function setError(string $error)
+    public function setError(string $error): JTLCacheInterface
     {
         $this->error = $error;
+
+        return $this;
     }
 }

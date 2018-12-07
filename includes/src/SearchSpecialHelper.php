@@ -271,11 +271,11 @@ class SearchSpecialHelper
         if (!$kKundengruppe) {
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
         }
-        $config     = Shop::getSettings([CONF_BOXEN]);
-        $nAlterTage = ($config['boxen']['box_neuimsortiment_alter_tage'] > 0)
+        $config = Shop::getSettings([CONF_BOXEN]);
+        $days   = ($config['boxen']['box_neuimsortiment_alter_tage'] > 0)
             ? (int)$config['boxen']['box_neuimsortiment_alter_tage']
             : 30;
-        $new = Shop::Container()->getDB()->query(
+        $new    = Shop::Container()->getDB()->query(
             "SELECT tartikel.kArtikel
                 FROM tartikel
                 LEFT JOIN tartikelsichtbarkeit 
@@ -284,7 +284,7 @@ class SearchSpecialHelper
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.cNeu = 'Y'
                     AND dErscheinungsdatum <= NOW()
-                    AND DATE_SUB(NOW(), INTERVAL " . $nAlterTage . " DAY) < tartikel.dErstellt
+                    AND DATE_SUB(NOW(), INTERVAL " . $days . " DAY) < tartikel.dErstellt
                     " . self::getParentSQL() . "
                     " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
             \DB\ReturnType::ARRAY_OF_OBJECTS

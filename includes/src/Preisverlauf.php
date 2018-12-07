@@ -79,7 +79,11 @@ class Preisverlauf
                 }
             }
             unset($_pv);
-            Shop::Container()->getCache()->set($cacheID, $obj_arr, [CACHING_GROUP_ARTICLE, CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
+            Shop::Container()->getCache()->set(
+                $cacheID,
+                $obj_arr,
+                [CACHING_GROUP_ARTICLE, CACHING_GROUP_ARTICLE . '_' . $kArtikel]
+            );
         }
 
         return $obj_arr;

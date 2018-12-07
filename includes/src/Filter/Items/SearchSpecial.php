@@ -363,12 +363,12 @@ class SearchSpecial extends AbstractFilter
                     $state->addCondition($tsonderpreise . '.kKundengruppe = ' . $this->getCustomerGroupID());
                     break;
                 case \SEARCHSPECIALS_NEWPRODUCTS:
-                    $name       = \Shop::Lang()->get('newProducts');
-                    $alter_tage = (($age = $this->getConfig('boxen')['box_neuimsortiment_alter_tage']) > 0)
+                    $name = \Shop::Lang()->get('newProducts');
+                    $days = (($age = $this->getConfig('boxen')['box_neuimsortiment_alter_tage']) > 0)
                         ? (int)$age
                         : 30;
                     $state->addCondition("tartikel.cNeu = 'Y' 
-                        AND DATE_SUB(NOW(), INTERVAL " . $alter_tage . 'DAY) < tartikel.dErstellt');
+                        AND DATE_SUB(NOW(), INTERVAL " . $days . ' DAY) < tartikel.dErstellt');
                     break;
                 case \SEARCHSPECIALS_TOPOFFERS:
                     $name = \Shop::Lang()->get('topOffer');

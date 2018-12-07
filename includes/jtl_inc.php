@@ -487,6 +487,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
                                 );
                             }
                         } else {
+                            \Session\Session::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
                             Shop::Smarty()->assign('cKuponfehler', $Kuponfehler['ungueltig']);
                         }
                     }

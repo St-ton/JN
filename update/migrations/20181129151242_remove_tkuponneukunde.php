@@ -45,6 +45,9 @@ class Migration_20181129151242 extends Migration implements IMigration
                           DROP KEY `kKupon`,
                           DROP KEY `kKunde`,
                           ADD UNIQUE KEY `kKupon_cMail` (`kKupon`, `cMail`)');
+
+        $this->setLocalization('ger', 'global', 'couponErr6', 'Fehler: Maximale Verwendungen für den Kupon erreicht.');
+        $this->setLocalization('eng', 'global', 'couponErr6', 'Error: Maximum usage reached for this coupon.');
     }
 
     public function down()
@@ -68,5 +71,8 @@ class Migration_20181129151242 extends Migration implements IMigration
                           DROP KEY `kKupon_cMail`,
                           ADD KEY `kKupon` (`kKupon`),
                           ADD KEY `kKunde` (`kKunde`)');
+
+        $this->setLocalization('ger', 'global', 'couponErr6', 'Fehler: Maximale Verwendungen erreicht.');
+        $this->setLocalization('eng', 'global', 'couponErr6', 'Error: Maximum usage reached');
     }
 }

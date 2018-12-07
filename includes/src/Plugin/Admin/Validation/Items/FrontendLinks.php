@@ -60,7 +60,7 @@ class FrontendLinks extends AbstractItem
                 if (\strlen($link['Template']) === 0) {
                     return InstallCode::INVALID_FRONTEND_LINK_TEMPLATE_FULLSCREEN_TEMPLATE;
                 }
-                \preg_match("/[a-zA-Z0-9\/_\-.]+.tpl/", $link['Template'], $hits1);
+                \preg_match('/[a-zA-Z0-9\/_\-.]+.tpl/', $link['Template'], $hits1);
                 if (\strlen($hits1[0]) === \strlen($link['Template'])) {
                     if (!\file_exists($dir .
                         \PFAD_PLUGIN_FRONTEND . \PFAD_PLUGIN_TEMPLATE . $link['Template'])
@@ -75,7 +75,7 @@ class FrontendLinks extends AbstractItem
                 if (\strlen($link['FullscreenTemplate']) === 0) {
                     return InstallCode::INVALID_FRONTEND_LINK_TEMPLATE_FULLSCREEN_TEMPLATE;
                 }
-                \preg_match("/[a-zA-Z0-9\/_\-.]+.tpl/", $link['FullscreenTemplate'], $hits1);
+                \preg_match('/[a-zA-Z0-9\/_\-.]+.tpl/', $link['FullscreenTemplate'], $hits1);
                 if (\strlen($hits1[0]) === \strlen($link['FullscreenTemplate'])) {
                     if (!\file_exists($dir .
                         \PFAD_PLUGIN_FRONTEND . \PFAD_PLUGIN_TEMPLATE . $link['FullscreenTemplate'])
@@ -119,13 +119,13 @@ class FrontendLinks extends AbstractItem
                         return InstallCode::INVALID_FRONEND_LINK_ISO;
                     }
                 } elseif (\strlen($hits2[0]) === \strlen($l)) {
-                    \preg_match("/[a-zA-Z0-9- ]+/", $localized['Seo'], $hits1);
+                    \preg_match('/[a-zA-Z0-9- ]+/', $localized['Seo'], $hits1);
                     $len = \strlen($localized['Seo']);
                     if ($len === 0 || \strlen($hits1[0]) !== $len) {
                         return InstallCode::INVALID_FRONEND_LINK_SEO;
                     }
                     \preg_match(
-                        '/[a-zA-Z0-9äÄüÜöÖß' . "\- ]+/",
+                        '/[a-zA-Z0-9äÄüÜöÖß' . '\- ]+/',
                         $localized['Name'],
                         $hits1
                     );
@@ -134,7 +134,7 @@ class FrontendLinks extends AbstractItem
                         return InstallCode::INVALID_FRONEND_LINK_NAME;
                     }
                     \preg_match(
-                        '/[a-zA-Z0-9äÄüÜöÖß' . "\- ]+/",
+                        '/[a-zA-Z0-9äÄüÜöÖß' . '\- ]+/',
                         $localized['Title'],
                         $hits1
                     );
@@ -143,7 +143,7 @@ class FrontendLinks extends AbstractItem
                         return InstallCode::INVALID_FRONEND_LINK_TITLE;
                     }
                     \preg_match(
-                        '/[a-zA-Z0-9äÄüÜöÖß' . "\,\.\- ]+/",
+                        '/[a-zA-Z0-9äÄüÜöÖß' . '\,\.\- ]+/',
                         $localized['MetaTitle'],
                         $hits1
                     );
@@ -152,7 +152,7 @@ class FrontendLinks extends AbstractItem
                         return InstallCode::INVALID_FRONEND_LINK_META_TITLE;
                     }
                     \preg_match(
-                        '/[a-zA-Z0-9äÄüÜöÖß' . "\,\- ]+/",
+                        '/[a-zA-Z0-9äÄüÜöÖß' . '\,\- ]+/',
                         $localized['MetaKeywords'],
                         $hits1
                     );
@@ -161,7 +161,7 @@ class FrontendLinks extends AbstractItem
                         return InstallCode::INVALID_FRONEND_LINK_META_KEYWORDS;
                     }
                     \preg_match(
-                        '/[a-zA-Z0-9äÄüÜöÖß' . "\,\.\- ]+/",
+                        '/[a-zA-Z0-9äÄüÜöÖß' . '\,\.\- ]+/',
                         $localized['MetaDescription'],
                         $hits1
                     );

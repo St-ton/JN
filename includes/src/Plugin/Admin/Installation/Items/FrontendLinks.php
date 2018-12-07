@@ -88,8 +88,8 @@ class FrontendLinks extends AbstractItem
                         $this->db->query(
                             "DELETE FROM tseo
                                 WHERE cKey = 'kLink'
-                                    AND (kKey = " . $linkID . $or . ")
-                                    AND kSprache = " . (int)$allLanguages[$linkLang->cISOSprache]->kSprache,
+                                    AND (kKey = " . $linkID . $or . ')
+                                    AND kSprache = ' . (int)$allLanguages[$linkLang->cISOSprache]->kSprache,
                             ReturnType::DEFAULT
                         );
                         $seo           = new \stdClass();
@@ -134,7 +134,7 @@ class FrontendLinks extends AbstractItem
                 ['kLink', $linkID, (int)$language->kSprache]
             );
             $seo           = new \stdClass();
-            $seo->cSeo     = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($defaultLang->cSeo));
+            $seo->cSeo     = SeoHelper::checkSeo(SeoHelper::getSeo($defaultLang->cSeo));
             $seo->cKey     = 'kLink';
             $seo->kKey     = $linkID;
             $seo->kSprache = $language->kSprache;

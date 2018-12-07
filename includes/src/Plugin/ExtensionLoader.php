@@ -59,7 +59,7 @@ class ExtensionLoader extends AbstractLoader
      */
     public function loadFromObject($obj): Extension
     {
-        $id = (int)$obj->kPlugin;
+        $id    = (int)$obj->kPlugin;
         $paths = $this->loadPaths($obj->cVerzeichnis);
 
         $extension = new Extension();

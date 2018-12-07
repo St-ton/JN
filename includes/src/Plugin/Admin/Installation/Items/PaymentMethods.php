@@ -38,7 +38,7 @@ class PaymentMethods extends AbstractItem
         $pluginID = $this->plugin->kPlugin;
         foreach ($this->getNode() as $i => $data) {
             $i = (string)$i;
-            \preg_match("/[0-9]+\sattr/", $i, $hits1);
+            \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
             if (\strlen($hits2[0]) !== \strlen($i)) {
                 continue;
@@ -96,7 +96,7 @@ class PaymentMethods extends AbstractItem
             $oZahlungsartSpracheStd = new \stdClass();
             foreach ($data['MethodLanguage'] as $l => $loc) {
                 $l = (string)$l;
-                \preg_match("/[0-9]+\sattr/", $l, $hits1);
+                \preg_match('/[0-9]+\sattr/', $l, $hits1);
                 \preg_match('/[0-9]+/', $l, $hits2);
                 if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($l)) {
                     $iso = \strtolower($loc['iso']);

@@ -36,14 +36,14 @@ class Portlets extends AbstractItem
             \preg_match('/[0-9]+/', $i, $hits2);
             if (\strlen($hits2[0]) === \strlen($i)) {
                 \preg_match(
-                    "/[a-zA-Z0-9\/_\-äÄüÜöÖß" . \utf8_decode('äÄüÜöÖß') . "\(\) ]+/",
+                    '/[a-zA-Z0-9\/_\-äÄüÜöÖß' . \utf8_decode('äÄüÜöÖß') . '\(\) ]+/',
                     $portlet['Title'],
                     $hits1
                 );
                 if (\strlen($hits1[0]) !== \strlen($portlet['Title'])) {
                     return InstallCode::INVALID_PORTLET_TITLE;
                 }
-                \preg_match("/[a-zA-Z0-9\/_\-.]+/", $portlet['Class'], $hits1);
+                \preg_match('/[a-zA-Z0-9\/_\-.]+/', $portlet['Class'], $hits1);
                 if (\strlen($hits1[0]) === \strlen($portlet['Class'])) {
                     if (!\file_exists($dir .
                         \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS . $portlet['Class'] . '/' .
@@ -55,14 +55,14 @@ class Portlets extends AbstractItem
                     return InstallCode::INVALID_PORTLET_CLASS;
                 }
                 \preg_match(
-                    "/[a-zA-Z0-9\/_\-äÄüÜöÖß" . \utf8_decode('äÄüÜöÖß') . "\(\) ]+/",
+                    '/[a-zA-Z0-9\/_\-äÄüÜöÖß' . \utf8_decode('äÄüÜöÖß') . '\(\) ]+/',
                     $portlet['Group'],
                     $hits1
                 );
                 if (\strlen($hits1[0]) !== \strlen($portlet['Group'])) {
                     return InstallCode::INVALID_PORTLET_GROUP;
                 }
-                \preg_match("/[0-1]{1}/", $portlet['Active'], $hits1);
+                \preg_match('/[0-1]{1}/', $portlet['Active'], $hits1);
                 if (\strlen($hits1[0]) !== \strlen($portlet['Active'])) {
                     return InstallCode::INVALID_PORTLET_ACTIVE;
                 }

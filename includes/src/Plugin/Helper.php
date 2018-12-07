@@ -8,6 +8,7 @@ namespace Plugin;
 
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
+use DB\ReturnType;
 use Plugin\ExtensionData\Config;
 
 /**
@@ -58,7 +59,7 @@ class Helper
                 WHERE tplugin.nStatus = :state
                 ORDER BY tpluginhook.nPriority, tplugin.kPlugin',
             ['state' => State::ACTIVATED],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($hookData as $hook) {
             $plugin             = new \stdClass();
@@ -115,7 +116,7 @@ class Helper
             $plugins = \Shop::Container()->getDB()->query(
                 'SELECT kPlugin, cPluginID 
                     FROM tplugin',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             \Shop::Container()->getCache()->set($cacheID, $plugins, [\CACHING_GROUP_PLUGIN]);
         }
@@ -303,7 +304,7 @@ class Helper
                     AND c.kPluginSprachvariable = t.kPluginSprachvariable
                     AND tpluginsprachvariablesprache.cISO = c.cISO
                 WHERE t.kPlugin = ' . $id . $cSQL,
-            \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
+            ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
         if (!\is_array($langVars) || \count($langVars) < 1) {
             $langVars = \Shop::Container()->getDB()->query(
@@ -315,7 +316,7 @@ class Helper
                 \strtoupper($cISO) . "' AS cISO
                     FROM tpluginsprachvariable
                     WHERE tpluginsprachvariable.kPlugin = " . $id,
-                \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                ReturnType::ARRAY_OF_ASSOC_ARRAYS
             );
         }
         foreach ($langVars as $_sv) {
@@ -347,7 +348,7 @@ class Helper
             WHERE l.kPlugin = :pid
             ORDER BY l.kPluginSprachvariable',
             ['pid' => $kPlugin],
-            \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
+            ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
         if (\count($langVars) === 0) {
             return [];
@@ -389,7 +390,7 @@ class Helper
                     AND tplugineinstellungen.cName = tplugineinstellungenconf.cWertName
                 WHERE tplugin.kPlugin = :pid',
             ['pid' => $id],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($data as $item) {
             $conf[$item->cName] = $item->cConf === Config::TYPE_DYNAMIC

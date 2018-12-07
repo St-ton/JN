@@ -37,7 +37,7 @@ class MailTemplates extends AbstractItem
                 continue;
             }
             \preg_match(
-                "/[a-zA-Z0-9\/_\-äÄüÜöÖß" . " ]+/",
+                '/[a-zA-Z0-9\/_\-äÄüÜöÖß' . ' ]+/',
                 $tpl['Name'],
                 $hits1
             );
@@ -73,13 +73,13 @@ class MailTemplates extends AbstractItem
                 \preg_match('/[0-9]+\sattr/', $l, $hits1);
                 \preg_match('/[0-9]+/', $l, $hits2);
                 if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($l)) {
-                    \preg_match("/[A-Z]{3}/", $localized['iso'], $hits);
+                    \preg_match('/[A-Z]{3}/', $localized['iso'], $hits);
                     $len = \strlen($localized['iso']);
                     if ($len === 0 || \strlen($hits[0]) !== $len) {
                         return InstallCode::INVALID_EMAIL_TEMPLATE_ISO;
                     }
                 } elseif (\strlen($hits2[0]) === \strlen($l)) {
-                    \preg_match("/[a-zA-Z0-9\/_\-.#: ]+/", $localized['Subject'], $hits1);
+                    \preg_match('/[a-zA-Z0-9\/_\-.#: ]+/', $localized['Subject'], $hits1);
                     $len = \strlen($localized['Subject']);
                     if ($len === 0 || \strlen($hits1[0]) !== $len) {
                         return InstallCode::INVALID_EMAIL_TEMPLATE_SUBJECT;

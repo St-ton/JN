@@ -40,7 +40,7 @@ abstract class AbstractValidator implements ValidatorInterface
      */
     public function __construct(DbInterface $db, XMLParser $parser)
     {
-        $this->db = $db;
+        $this->db     = $db;
         $this->parser = $parser;
     }
 

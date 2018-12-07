@@ -43,7 +43,7 @@ class SettingsLinks extends AbstractItem
         $sort = 0;
         foreach ($node[0]['Settingslink'] as $i => $settingsLinks) {
             $i = (string)$i;
-            \preg_match("/[0-9]+\sattr/", $i, $hits1);
+            \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
             if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($i)) {
                 $sort = (int)$settingsLinks['sort'];
@@ -66,7 +66,7 @@ class SettingsLinks extends AbstractItem
                 $multiple     = false;
                 foreach ($settingsLinks['Setting'] as $j => $setting) {
                     $j = (string)$j;
-                    \preg_match("/[0-9]+\sattr/", $j, $hits3);
+                    \preg_match('/[0-9]+\sattr/', $j, $hits3);
                     \preg_match('/[0-9]+/', $j, $hits4);
                     if (isset($hits3[0]) && \strlen($hits3[0]) === \strlen($j)) {
                         $type         = $setting['type'];
@@ -158,7 +158,7 @@ class SettingsLinks extends AbstractItem
                             } elseif (\count($optNode) === 1) { // Es gibt mehr als eine Option
                                 foreach ($optNode['Option'] as $y => $option) {
                                     $y = (string)$y;
-                                    \preg_match("/[0-9]+\sattr/", $y, $hits6);
+                                    \preg_match('/[0-9]+\sattr/', $y, $hits6);
                                     if (isset($hits6[0]) && \strlen($hits6[0]) === \strlen($y)) {
                                         $cWert = $option['value'];
                                         $sort  = $option['sort'];
@@ -190,7 +190,7 @@ class SettingsLinks extends AbstractItem
                             ) {
                             } elseif (\count($optNode) === 1) { // Es gibt mehr als eine Option
                                 foreach ($optNode['Option'] as $y => $option) {
-                                    \preg_match("/[0-9]+\sattr/", $y, $hits6);
+                                    \preg_match('/[0-9]+\sattr/', $y, $hits6);
                                     if (isset($hits6[0]) && \strlen($hits6[0]) === \strlen($y)) {
                                         $cWert = $option['value'];
                                         $sort  = $option['sort'];

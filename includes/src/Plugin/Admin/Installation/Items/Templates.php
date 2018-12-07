@@ -28,7 +28,7 @@ class Templates extends AbstractItem
     public function install(): int
     {
         foreach ($this->getNode() as $template) {
-            \preg_match("/[a-zA-Z0-9\/_\-]+\.tpl/", $template, $hits);
+            \preg_match('/[a-zA-Z0-9\/_\-]+\.tpl/', $template, $hits);
             if (\strlen($hits[0]) !== \strlen($template)) {
                 continue;
             }

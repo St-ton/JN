@@ -7,6 +7,7 @@
 namespace Plugin\Admin\Installation;
 
 use DB\DbInterface;
+use DB\ReturnType;
 use JTLShop\SemVer\Version;
 use Plugin\MigrationHelper;
 
@@ -302,14 +303,14 @@ final class MigrationManager
      */
     public function getCurrentId(): int
     {
-        $oVersion = $this->db->query(
-            "SELECT kMigration 
+        $version = $this->db->query(
+            'SELECT kMigration 
                 FROM tpluginmigration 
-                ORDER BY kMigration DESC",
-            \DB\ReturnType::SINGLE_OBJECT
+                ORDER BY kMigration DESC',
+            ReturnType::SINGLE_OBJECT
         );
 
-        return $oVersion ? (int)$oVersion->kMigration : 0;
+        return $version ? (int)$version->kMigration : 0;
     }
 
     /**
@@ -320,10 +321,10 @@ final class MigrationManager
         if ($this->executedMigrations === null) {
             $this->executedMigrations = [];
             $migrations               = $this->db->executeQuery(
-                "SELECT * 
+                'SELECT * 
                     FROM tpluginmigration 
-                    ORDER BY kMigration ASC",
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY kMigration ASC',
+                ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($migrations as $m) {
                 $this->executedMigrations[$m->kMigration] = new \DateTime($m->dExecuted);
@@ -364,7 +365,7 @@ final class MigrationManager
             (new \DateTime('now'))->format('Y-m-d H:i:s')
         );
 
-        return $this->db->executeQuery($sql, \DB\ReturnType::AFFECTED_ROWS);
+        return $this->db->executeQuery($sql, ReturnType::AFFECTED_ROWS);
     }
 
     /**
@@ -376,7 +377,7 @@ final class MigrationManager
     public function migrated(\IMigration $migration, $direction, $executed): self
     {
         if (\strcasecmp($direction, \IMigration::UP) === 0) {
-            $sql     = \sprintf(
+            $sql = \sprintf(
                 "INSERT INTO tpluginmigration (kMigration, nVersion, pluginID, dExecuted)
                     VALUES ('%s', '%s', '%s', '%s')",
                 $migration->getId(),
@@ -384,10 +385,10 @@ final class MigrationManager
                 $this->pluginID,
                 $executed->format('Y-m-d H:i:s')
             );
-            $this->db->executeQuery($sql, \DB\ReturnType::AFFECTED_ROWS);
+            $this->db->executeQuery($sql, ReturnType::AFFECTED_ROWS);
         } else {
             $sql = \sprintf("DELETE FROM tpluginmigration WHERE kMigration = '%s'", $migration->getId());
-            $this->db->executeQuery($sql, \DB\ReturnType::AFFECTED_ROWS);
+            $this->db->executeQuery($sql, ReturnType::AFFECTED_ROWS);
         }
 
         return $this;

@@ -46,7 +46,7 @@ class Localization extends AbstractItem
                 if (!isset($var['VariableLocalized attr']['iso'])) {
                     return InstallCode::MISSING_LOCALIZED_LANG_VAR;
                 }
-                \preg_match("/[A-Z]{3}/", $var['VariableLocalized attr']['iso'], $hits);
+                \preg_match('/[A-Z]{3}/', $var['VariableLocalized attr']['iso'], $hits);
                 if (\strlen($hits[0]) !== \strlen($var['VariableLocalized attr']['iso'])) {
                     return InstallCode::INVALID_LANG_VAR_ISO;
                 }
@@ -63,7 +63,7 @@ class Localization extends AbstractItem
                     \preg_match('/[0-9]+\sattr/', $i, $hits1);
                     \preg_match('/[0-9]+/', $i, $hits2);
                     if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($i)) {
-                        \preg_match("/[A-Z]{3}/", $localized['iso'], $hits);
+                        \preg_match('/[A-Z]{3}/', $localized['iso'], $hits);
                         $len = \strlen($localized['iso']);
                         if ($len === 0 || \strlen($hits[0]) !== $len) {
                             return InstallCode::INVALID_LANG_VAR_ISO;

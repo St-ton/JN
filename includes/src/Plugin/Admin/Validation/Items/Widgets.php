@@ -40,14 +40,14 @@ class Widgets extends AbstractItem
                 continue;
             }
             \preg_match(
-                "/[a-zA-Z0-9\/_\-äÄüÜöÖß" . "\(\) ]+/",
+                '/[a-zA-Z0-9\/_\-äÄüÜöÖß' . "\(\) ]+/",
                 $widget['Title'],
                 $hits1
             );
             if (\strlen($hits1[0]) !== \strlen($widget['Title'])) {
                 return InstallCode::INVALID_WIDGET_TITLE;
             }
-            \preg_match("/[a-zA-Z0-9\/_\-.]+/", $widget['Class'], $hits1);
+            \preg_match('/[a-zA-Z0-9\/_\-.]+/', $widget['Class'], $hits1);
             if (\strlen($hits1[0]) !== \strlen($widget['Class'])) {
                 return InstallCode::INVALID_WIDGET_CLASS;
             }
@@ -61,11 +61,11 @@ class Widgets extends AbstractItem
             if (\strlen($hits1[0]) !== \strlen($widget['Pos'])) {
                 return InstallCode::INVALID_WIDGET_POS;
             }
-            \preg_match("/[0-1]{1}/", $widget['Expanded'], $hits1);
+            \preg_match('/[0-1]{1}/', $widget['Expanded'], $hits1);
             if (\strlen($hits1[0]) !== \strlen($widget['Expanded'])) {
                 return InstallCode::INVALID_WIDGET_EXPANDED;
             }
-            \preg_match("/[0-1]{1}/", $widget['Active'], $hits1);
+            \preg_match('/[0-1]{1}/', $widget['Active'], $hits1);
             if (\strlen($hits1[0]) !== \strlen($widget['Active'])) {
                 return InstallCode::INVALID_WIDGET_ACTIVE;
             }

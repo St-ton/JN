@@ -41,7 +41,7 @@ class FrontendLinks extends AbstractItem
                 return InstallCode::INVALID_FRONTEND_LINK_FILENAME;
             }
             \preg_match(
-                "/[a-zA-Z0-9äÄöÖüÜß" . "\_\- ]+/",
+                '/[a-zA-Z0-9äÄöÖüÜß' . '\_\- ]+/',
                 $link['Name'],
                 $hits1
             );
@@ -86,16 +86,16 @@ class FrontendLinks extends AbstractItem
                     return InstallCode::INVALID_FULLSCREEN_TEMPLATE_NAME;
                 }
             }
-            \preg_match("/[NY]{1,1}/", $link['VisibleAfterLogin'], $hits2);
+            \preg_match('/[NY]{1,1}/', $link['VisibleAfterLogin'], $hits2);
             if (\strlen($hits2[0]) !== \strlen($link['VisibleAfterLogin'])) {
                 return InstallCode::INVALID_FRONEND_LINK_VISIBILITY;
             }
-            \preg_match("/[NY]{1,1}/", $link['PrintButton'], $hits3);
+            \preg_match('/[NY]{1,1}/', $link['PrintButton'], $hits3);
             if (\strlen($hits3[0]) !== \strlen($link['PrintButton'])) {
                 return InstallCode::INVALID_FRONEND_LINK_PRINT;
             }
             if (isset($link['NoFollow'])) {
-                \preg_match("/[NY]{1,1}/", $link['NoFollow'], $hits3);
+                \preg_match('/[NY]{1,1}/', $link['NoFollow'], $hits3);
             } else {
                 $hits3 = [];
             }
@@ -113,7 +113,7 @@ class FrontendLinks extends AbstractItem
                 \preg_match('/[0-9]+\sattr/', $l, $hits1);
                 \preg_match('/[0-9]+/', $l, $hits2);
                 if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($l)) {
-                    \preg_match("/[A-Z]{3}/", $localized['iso'], $hits);
+                    \preg_match('/[A-Z]{3}/', $localized['iso'], $hits);
                     $len = \strlen($localized['iso']);
                     if ($len === 0 || \strlen($hits[0]) !== $len) {
                         return InstallCode::INVALID_FRONEND_LINK_ISO;
@@ -125,7 +125,7 @@ class FrontendLinks extends AbstractItem
                         return InstallCode::INVALID_FRONEND_LINK_SEO;
                     }
                     \preg_match(
-                        "/[a-zA-Z0-9äÄüÜöÖß" . "\- ]+/",
+                        '/[a-zA-Z0-9äÄüÜöÖß' . "\- ]+/",
                         $localized['Name'],
                         $hits1
                     );
@@ -134,7 +134,7 @@ class FrontendLinks extends AbstractItem
                         return InstallCode::INVALID_FRONEND_LINK_NAME;
                     }
                     \preg_match(
-                        "/[a-zA-Z0-9äÄüÜöÖß" . "\- ]+/",
+                        '/[a-zA-Z0-9äÄüÜöÖß' . "\- ]+/",
                         $localized['Title'],
                         $hits1
                     );
@@ -143,7 +143,7 @@ class FrontendLinks extends AbstractItem
                         return InstallCode::INVALID_FRONEND_LINK_TITLE;
                     }
                     \preg_match(
-                        "/[a-zA-Z0-9äÄüÜöÖß" . "\,\.\- ]+/",
+                        '/[a-zA-Z0-9äÄüÜöÖß' . "\,\.\- ]+/",
                         $localized['MetaTitle'],
                         $hits1
                     );
@@ -152,7 +152,7 @@ class FrontendLinks extends AbstractItem
                         return InstallCode::INVALID_FRONEND_LINK_META_TITLE;
                     }
                     \preg_match(
-                        "/[a-zA-Z0-9äÄüÜöÖß" . "\,\- ]+/",
+                        '/[a-zA-Z0-9äÄüÜöÖß' . "\,\- ]+/",
                         $localized['MetaKeywords'],
                         $hits1
                     );
@@ -161,7 +161,7 @@ class FrontendLinks extends AbstractItem
                         return InstallCode::INVALID_FRONEND_LINK_META_KEYWORDS;
                     }
                     \preg_match(
-                        "/[a-zA-Z0-9äÄüÜöÖß" . "\,\.\- ]+/",
+                        '/[a-zA-Z0-9äÄüÜöÖß' . "\,\.\- ]+/",
                         $localized['MetaDescription'],
                         $hits1
                     );

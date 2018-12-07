@@ -124,27 +124,29 @@ final class Uninstaller
                     ON tpluginsprachvariablecustomsprache.cSprachvariable = tpluginsprachvariable.cName
                     AND tpluginsprachvariablecustomsprache.kPlugin = tpluginsprachvariable.kPlugin
                 WHERE tpluginsprachvariable.kPlugin = ' . $pluginID,
-            ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
         $this->db->delete('tplugineinstellungen', 'kPlugin', $pluginID);
         $this->db->delete('tplugincustomtabelle', 'kPlugin', $pluginID);
         $this->db->delete('tpluginlinkdatei', 'kPlugin', $pluginID);
-        $this->db->query(
-            "DELETE tzahlungsartsprache, tzahlungsart
+        $this->db->queryPrepared(
+            'DELETE tzahlungsartsprache, tzahlungsart
                 FROM tzahlungsart
                 LEFT JOIN tzahlungsartsprache
                     ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
-                WHERE tzahlungsart.cModulId LIKE 'kPlugin_" . $pluginID . "_%'",
-            ReturnType::AFFECTED_ROWS
+                WHERE tzahlungsart.cModulId LIKE :pid',
+            ['pid' => 'kPlugin_' . $pluginID . '_%'],
+            ReturnType::DEFAULT
         );
-        $this->db->query(
+        $this->db->queryPrepared(
             "DELETE tboxen, tboxvorlage
                 FROM tboxvorlage
                 LEFT JOIN tboxen 
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                WHERE tboxvorlage.kCustomID = " . $pluginID . "
+                WHERE tboxvorlage.kCustomID = :pid
                     AND (tboxvorlage.eTyp = 'plugin' OR tboxvorlage.eTyp = 'extension')",
-            ReturnType::AFFECTED_ROWS
+            ['pid' => $pluginID],
+            ReturnType::DEFAULT
         );
         $this->db->query(
             'DELETE tpluginemailvorlageeinstellungen, tpluginemailvorlagespracheoriginal,
@@ -157,7 +159,7 @@ final class Uninstaller
                 LEFT JOIN tpluginemailvorlagesprache
                     ON tpluginemailvorlagesprache.kEmailvorlage = tpluginemailvorlage.kEmailvorlage
                 WHERE tpluginemailvorlage.kPlugin = ' . $pluginID,
-            ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
     }
 
@@ -172,9 +174,8 @@ final class Uninstaller
                 LEFT JOIN tpluginsprachvariablesprache
                     ON tpluginsprachvariablesprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
                 WHERE tpluginsprachvariable.kPlugin = ' . $pluginID,
-            ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
-
         $this->db->delete('tboxvorlage', ['kCustomID', 'eTyp'], [$pluginID, 'plugin']);
         $this->db->delete('tpluginlinkdatei', 'kPlugin', $pluginID);
         $this->db->query(
@@ -183,7 +184,7 @@ final class Uninstaller
                 LEFT JOIN tpluginemailvorlagespracheoriginal
                     ON tpluginemailvorlagespracheoriginal.kEmailvorlage = tpluginemailvorlage.kEmailvorlage
                 WHERE tpluginemailvorlage.kPlugin = ' . $pluginID,
-            ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
     }
 
@@ -224,10 +225,10 @@ final class Uninstaller
         if ($newPluginID !== null && $newPluginID > 0) {
             $newPluginID = (int)$newPluginID;
             $links       = $this->db->query(
-                "SELECT kLink
+                'SELECT kLink
                     FROM tlink
-                    WHERE kPlugin IN ({$pluginID}, {$newPluginID})
-                        ORDER BY kLink",
+                    WHERE kPlugin IN (' . $pluginID . ', ' . $newPluginID . ')
+                        ORDER BY kLink',
                 ReturnType::ARRAY_OF_OBJECTS
             );
         }

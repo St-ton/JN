@@ -43,7 +43,6 @@ class PluginValidationFactory
     public function getValidations($node, $dir, $version, $pluginID): array
     {
         $validation   = [];
-//        $validation[] = new Bootstrapper($node, $dir, $version, $pluginID);
         $validation[] = new Name($node, $dir, $version, $pluginID);
         $validation[] = new PluginID($node, $dir, $version, $pluginID);
         $validation[] = new Installation($node, $dir, $version, $pluginID);

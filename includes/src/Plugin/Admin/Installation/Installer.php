@@ -7,6 +7,7 @@
 namespace Plugin\Admin\Installation;
 
 use DB\DbInterface;
+use DB\ReturnType;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
 use Plugin\AbstractExtension;
@@ -162,8 +163,7 @@ final class Installer
         $lastVersionKey   = null;
         $modern           = false;
         $plugin           = new \stdClass();
-        $p = null;
-
+        $p                = null;
         // @todo:
         if (\is_array($versionNode)) {
             $lastVersionKey = \count($versionNode) / 2 - 1;
@@ -298,7 +298,6 @@ final class Installer
             if (($p = Helper::bootstrap($this->plugin->getID(), $loader)) !== null) {
                 $p->updated($this->plugin->getMeta()->getVersion(), $version);
             }
-
         }
 
         return $code;
@@ -402,7 +401,7 @@ final class Installer
                 // when using "create table if not exists" statement, the table name is at index 5, otherwise at 2
                 $index = (\stripos($sql, 'create table if not exists') !== false) ? 5 : 2;
                 $tmp   = \explode(' ', $sql);
-                $table = \str_replace(["'", "`"], '', $tmp[$index]);
+                $table = \str_replace(["'", '`'], '', $tmp[$index]);
                 \preg_match($sqlRegEx, $table, $hits);
                 if (!isset($hits[0]) || \strlen($hits[0]) !== \strlen($table)) {
                     return InstallCode::SQL_WRONG_TABLE_NAME_CREATE;
@@ -420,14 +419,14 @@ final class Installer
                 // when using "drop table if exists" statement, the table name is at index 5, otherwise at 2
                 $index = (\stripos($sql, 'drop table if exists') !== false) ? 4 : 2;
                 $tmp   = \explode(' ', \StringHandler::removeNumerousWhitespaces($sql));
-                $table = \str_replace(["'", "`"], '', $tmp[$index]);
+                $table = \str_replace(["'", '`'], '', $tmp[$index]);
                 \preg_match($sqlRegEx, $table, $hits);
                 if (\strlen($hits[0]) !== \strlen($table)) {
                     return InstallCode::SQL_WRONG_TABLE_NAME_DELETE;
                 }
             }
 
-            $this->db->query($sql, \DB\ReturnType::DEFAULT);
+            $this->db->query($sql, ReturnType::DEFAULT);
             $errNo = $this->db->getErrorCode();
             if ($errNo) {
                 \Shop::Container()->getLogService()->withName('kPlugin')->error(
@@ -480,7 +479,7 @@ final class Installer
                     FROM tplugineinstellungen
                     WHERE kPlugin IN (' . $oldPluginID . ', ' . $pluginID . ')
                     ORDER BY kPlugin',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             if (\count($pluginConf) > 0) {
                 $confData = [];
@@ -504,7 +503,7 @@ final class Installer
                 $this->db->query(
                     'DELETE FROM tplugineinstellungen
                         WHERE kPlugin IN (' . $oldPluginID . ', ' . $pluginID . ')',
-                    \DB\ReturnType::AFFECTED_ROWS
+                    ReturnType::AFFECTED_ROWS
                 );
 
                 foreach ($confData as $value) {
@@ -516,14 +515,14 @@ final class Installer
                     SET kPlugin = " . $oldPluginID . ",
                         cName = REPLACE(cName, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
                     WHERE kPlugin = " . $pluginID,
-                \DB\ReturnType::AFFECTED_ROWS
+                ReturnType::AFFECTED_ROWS
             );
             $this->db->query(
                 "UPDATE tplugineinstellungenconf
                     SET kPlugin = " . $oldPluginID . ",
                         cWertName = REPLACE(cWertName, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
                     WHERE kPlugin = " . $pluginID,
-                \DB\ReturnType::AFFECTED_ROWS
+                ReturnType::AFFECTED_ROWS
             );
             $this->db->update(
                 'tboxvorlage',
@@ -536,7 +535,7 @@ final class Installer
                     SET kPlugin = " . $oldPluginID . ",
                         cModulId = REPLACE(cModulId, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
                     WHERE kPlugin = " . $pluginID,
-                \DB\ReturnType::AFFECTED_ROWS
+                ReturnType::AFFECTED_ROWS
             );
             $oldMailTpl = $this->db->select('tpluginemailvorlage', 'kPlugin', $oldPluginID);
             $newMailTpl = $this->db->select('tpluginemailvorlage', 'kPlugin', $pluginID);
@@ -592,23 +591,25 @@ final class Installer
             $upd = (object)['kPlugin' => $oldPluginID];
             $this->db->update('tcheckboxfunktion', 'kPlugin', $pluginID, $upd);
             $this->db->update('tspezialseite', 'kPlugin', $pluginID, $upd);
-            $oldPaymentMethods = $this->db->query(
-                "SELECT kZahlungsart, cModulId
+            $oldPaymentMethods = $this->db->queryPrepared(
+                'SELECT kZahlungsart, cModulId
                     FROM tzahlungsart
-                    WHERE cModulId LIKE 'kPlugin_{$oldPluginID}_%'",
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                    WHERE cModulId LIKE :newID',
+                ['newID' => 'kPlugin_' . $oldPluginID . '_%'],
+                ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($oldPaymentMethods as $method) {
-                $cModulIdNew      = \str_replace(
-                    "kPlugin_{$oldPluginID}_",
-                    "kPlugin_{$pluginID}_",
+                $oldModuleID      = \str_replace(
+                    'kPlugin_' . $oldPluginID . '_',
+                    'kPlugin_' . $pluginID . '_',
                     $method->cModulId
                 );
-                $newPaymentMethod = $this->db->query(
-                    "SELECT kZahlungsart
+                $newPaymentMethod = $this->db->queryPrepared(
+                    'SELECT kZahlungsart
                         FROM tzahlungsart
-                        WHERE cModulId LIKE '{$cModulIdNew}'",
-                    \DB\ReturnType::SINGLE_OBJECT
+                        WHERE cModulId LIKE :oldID',
+                    ['oldID' => $oldModuleID],
+                    ReturnType::SINGLE_OBJECT
                 );
                 $setSQL           = '';
                 if (isset($method->kZahlungsart, $newPaymentMethod->kZahlungsart)) {
@@ -618,7 +619,7 @@ final class Installer
                             JOIN tzahlungsartsprache
                                 ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
                             WHERE tzahlungsart.kZahlungsart = ' . $method->kZahlungsart,
-                        \DB\ReturnType::AFFECTED_ROWS
+                        ReturnType::AFFECTED_ROWS
                     );
 
                     $setSQL = ' , kZahlungsart = ' . $method->kZahlungsart;
@@ -626,12 +627,12 @@ final class Installer
                     $this->db->update('tzahlungsartsprache', 'kZahlungsart', $newPaymentMethod->kZahlungsart, $upd);
                 }
 
-                $this->db->query(
-                    "UPDATE tzahlungsart
-                        SET cModulId = '{$method->cModulId}'
-                        " . $setSQL . "
-                        WHERE cModulId LIKE '{$cModulIdNew}'",
-                    \DB\ReturnType::AFFECTED_ROWS
+                $this->db->queryPrepared(
+                    'UPDATE tzahlungsart
+                        SET cModulId = :newID ' . $setSQL . '
+                        WHERE cModulId LIKE :oldID',
+                    ['oldID' => $oldModuleID, 'newID' => $method->cModulId],
+                    ReturnType::AFFECTED_ROWS
                 );
             }
 

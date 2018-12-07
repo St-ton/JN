@@ -7,6 +7,7 @@
 namespace Plugin;
 
 use DB\DbInterface;
+use DB\ReturnType;
 
 /**
  * Class MigrationHelper
@@ -122,7 +123,7 @@ final class MigrationHelper
                 dExecuted datetime NOT NULL,
                 PRIMARY KEY (kMigration)
             ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->db->query(
             "CREATE TABLE IF NOT EXISTS tmigrationlog 
@@ -135,7 +136,7 @@ final class MigrationHelper
                 dCreated datetime NOT NULL, 
                 PRIMARY KEY (kMigrationlog)
             ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
     }
 
@@ -147,9 +148,9 @@ final class MigrationHelper
     public function indexColumns(string $idxTable, string $idxName): array
     {
         return $this->db->queryPrepared(
-            "SHOW INDEXES FROM `$idxTable` WHERE Key_name = :idxName",
+            'SHOW INDEXES FROM `' . $idxTable . '` WHERE Key_name = :idxName',
             ['idxName' => $idxName],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
     }
 
@@ -171,7 +172,7 @@ final class MigrationHelper
                 . ' INDEX `' . $idxName . '` ON `' . $idxTable . '` '
                 . '(`' . \implode('`, `', $idxColumns) . '`)';
 
-            return !$this->db->executeQuery($ddl, \DB\ReturnType::DEFAULT) ? false : true;
+            return !$this->db->executeQuery($ddl, ReturnType::DEFAULT) ? false : true;
         }
 
         return false;
@@ -187,7 +188,7 @@ final class MigrationHelper
         if (\count($this->indexColumns($idxTable, $idxName)) > 0) {
             return !$this->db->executeQuery(
                 'DROP INDEX `' . $idxName . '` ON `' . $idxTable . '` ',
-                \DB\ReturnType::DEFAULT
+                ReturnType::DEFAULT
             ) ? false : true;
         }
 

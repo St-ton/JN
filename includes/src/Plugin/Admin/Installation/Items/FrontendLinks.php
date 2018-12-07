@@ -6,6 +6,8 @@
 
 namespace Plugin\Admin\Installation\Items;
 
+use DB\ReturnType;
+use JTL\SeoHelper;
 use Plugin\InstallCode;
 
 /**
@@ -34,7 +36,7 @@ class FrontendLinks extends AbstractItem
         $oldPluginID = $this->oldPlugin->kPlugin ?? 0;
         foreach ($this->getNode() as $i => $links) {
             $i = (string)$i;
-            \preg_match("/[0-9]+\sattr/", $i, $hits1);
+            \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
             if (\strlen($hits2[0]) !== \strlen($i)) {
                 continue;
@@ -64,12 +66,12 @@ class FrontendLinks extends AbstractItem
                 : $this->db->select('tlink', 'kPlugin', $oldPluginID, 'cName', $links['Name']);
             foreach ($links['LinkLanguage'] as $l => $localized) {
                 $l = (string)$l;
-                \preg_match("/[0-9]+\sattr/", $l, $hits1);
+                \preg_match('/[0-9]+\sattr/', $l, $hits1);
                 \preg_match('/[0-9]+/', $l, $hits2);
                 if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($l)) {
                     $linkLang->cISOSprache = \strtolower($localized['iso']);
                 } elseif (\strlen($hits2[0]) === \strlen($l)) {
-                    $linkLang->cSeo             = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($localized['Seo']));
+                    $linkLang->cSeo             = SeoHelper::checkSeo(SeoHelper::getSeo($localized['Seo']));
                     $linkLang->cName            = $localized['Name'];
                     $linkLang->cTitle           = $localized['Title'];
                     $linkLang->cContent         = '';
@@ -88,10 +90,10 @@ class FrontendLinks extends AbstractItem
                                 WHERE cKey = 'kLink'
                                     AND (kKey = " . $linkID . $or . ")
                                     AND kSprache = " . (int)$allLanguages[$linkLang->cISOSprache]->kSprache,
-                            \DB\ReturnType::DEFAULT
+                            ReturnType::DEFAULT
                         );
                         $seo           = new \stdClass();
-                        $seo->cSeo     = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($localized['Seo']));
+                        $seo->cSeo     = SeoHelper::checkSeo(SeoHelper::getSeo($localized['Seo']));
                         $seo->cKey     = 'kLink';
                         $seo->kKey     = $linkID;
                         $seo->kSprache = $allLanguages[$linkLang->cISOSprache]->kSprache;

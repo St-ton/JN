@@ -50,14 +50,14 @@ abstract class AbstractLoader implements LoaderInterface
     protected function loadLinks(int $id): Links
     {
         $data  = $this->db->queryPrepared(
-            "SELECT tlink.kLink
+            'SELECT tlink.kLink
                 FROM tlink
                 JOIN tlinksprache
                     ON tlink.kLink = tlinksprache.kLink
                 JOIN tsprache
                     ON tsprache.cISO = tlinksprache.cISOSprache
                 WHERE tlink.kPlugin = :plgn
-                GROUP BY tlink.kLink",
+                GROUP BY tlink.kLink',
             ['plgn' => $id],
             ReturnType::ARRAY_OF_OBJECTS
         );

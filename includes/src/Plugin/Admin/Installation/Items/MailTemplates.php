@@ -32,7 +32,7 @@ class MailTemplates extends AbstractItem
     {
         foreach ($this->getNode() as $i => $template) {
             $i = (string)$i;
-            \preg_match("/[0-9]+\sattr/", $i, $hits1);
+            \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
             if (\strlen($hits2[0]) !== \strlen($i)) {
                 continue;

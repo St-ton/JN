@@ -81,7 +81,7 @@ class LanguageVariables extends AbstractItem
             ) {
                 foreach ($langVar['VariableLocalized'] as $i => $loc) {
                     $i = (string)$i;
-                    \preg_match("/[0-9]+\sattr/", $i, $hits1);
+                    \preg_match('/[0-9]+\sattr/', $i, $hits1);
 
                     if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($i)) {
                         $cISO                             = $loc['iso'];

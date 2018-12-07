@@ -7,13 +7,14 @@
 namespace OPC\Portlets;
 
 use function Functional\unique;
+use OPC\Portlet;
 use OPC\PortletInstance;
 
 /**
  * Class Container
  * @package OPC\Portlets
  */
-class Container extends \OPC\Portlet
+class Container extends Portlet
 {
     /**
      * @param PortletInstance $instance
@@ -45,7 +46,8 @@ class Container extends \OPC\Portlet
 
             $instance->setProperty(
                 'video-poster-url',
-                \Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.xs/' . $name);
+                \Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.xs/' . $name
+            );
         }
         if (!empty($instance->getProperty("class"))) {
             $instance->addClass($instance->getProperty("class"));
@@ -85,14 +87,16 @@ class Container extends \OPC\Portlet
 
             $instance->setProperty(
                 'video-poster-url',
-                \Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.xs/' . $name);
+                \Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.xs/' . $name
+            );
 
             $name = \explode('/', $instance->getProperty('video-src'));
             $name = \end($name);
 
             $instance->setProperty(
                 'video-src-url',
-                \Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Videos/' . $name);
+                \Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Videos/' . $name
+            );
         }
 
 

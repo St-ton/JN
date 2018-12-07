@@ -6,13 +6,14 @@
 
 namespace OPC\Portlets;
 
+use OPC\Portlet;
 use OPC\PortletInstance;
 
 /**
  * Class Accordion
  * @package OPC\Portlets
  */
-class Accordion extends \OPC\Portlet
+class Accordion extends Portlet
 {
     /**
      * @param PortletInstance $instance

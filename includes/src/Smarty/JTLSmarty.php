@@ -401,7 +401,7 @@ class JTLSmarty extends \SmartyBC
         }
         if (\strpos($resourceName, 'file:') === 0) {
             $resourceName = \str_replace('file:', '', $resourceName);
-            $transform     = true;
+            $transform    = true;
         }
         $resource_custom_name = $this->getCustomFile($resourceName);
         $resource_cfb_name    = $resource_custom_name;

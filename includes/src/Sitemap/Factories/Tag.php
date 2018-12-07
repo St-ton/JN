@@ -6,6 +6,7 @@
 
 namespace Sitemap\Factories;
 
+use DB\ReturnType;
 use function Functional\map;
 
 /**
@@ -31,7 +32,7 @@ final class Tag extends AbstractFactory
                 WHERE ttag.kSprache IN (" . \implode(',', $languageIDs) . ")
                     AND ttag.nAktiv = 1
                 ORDER BY ttag.kTag",
-            \DB\ReturnType::QUERYSINGLE
+            ReturnType::QUERYSINGLE
         );
         while (($tag = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
             $tag->langID = (int)$tag->langID;

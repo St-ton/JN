@@ -6,6 +6,7 @@
 
 namespace Sitemap\Factories;
 
+use DB\ReturnType;
 use function Functional\map;
 
 /**
@@ -44,7 +45,7 @@ final class Attribute extends AbstractFactory
                     AND tmerkmalsprache.kSprache IN (" . \implode(',', $languageIDs) . ")
                 GROUP BY tmerkmalwert.kMerkmalWert
                 ORDER BY tmerkmal.kMerkmal, tmerkmal.cName",
-            \DB\ReturnType::QUERYSINGLE
+            ReturnType::QUERYSINGLE
         );
         while (($attribute = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
             $attribute->kMerkmal     = (int)$attribute->kMerkmal;

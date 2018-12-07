@@ -6,13 +6,14 @@
 
 namespace OPC\Portlets;
 
+use OPC\Portlet;
 use OPC\PortletInstance;
 
 /**
  * Class Banner
  * @package OPC\Portlets
  */
-class Banner extends \OPC\Portlet
+class Banner extends Portlet
 {
     /**
      * @param PortletInstance $instance
@@ -32,11 +33,11 @@ class Banner extends \OPC\Portlet
             return $oImageMap;
         }
 
-        $cBildPfad            = PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . basename($instance->getProperty('src'));
+        $cBildPfad            = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . \basename($instance->getProperty('src'));
         $oImageMap->cBildPfad = \Shop::getURL() . $oImageMap->cBildPfad;
         $cParse_arr           = \parse_url($oImageMap->cBildPfad);
         $oImageMap->cBild     = \substr($cParse_arr['path'], \strrpos($cParse_arr['path'], '/') + 1);
-        list($width, $height) = \getimagesize($cBildPfad);
+        [$width, $height]     = \getimagesize($cBildPfad);
         $oImageMap->fWidth    = $width;
         $oImageMap->fHeight   = $height;
         $defaultOptions       = \Artikel::getDefaultOptions();
@@ -68,9 +69,9 @@ class Banner extends \OPC\Portlet
     /**
      * @return string
      */
-    public function getPlaceholderImgUrl()
+    public function getPlaceholderImgUrl(): string
     {
-        return \Shop::getURL() . '/' . PFAD_TEMPLATES . 'Evo/portlets/Banner/preview.banner.png';
+        return \Shop::getURL() . '/' . \PFAD_TEMPLATES . 'Evo/portlets/Banner/preview.banner.png';
     }
 
     /**
@@ -127,7 +128,6 @@ class Banner extends \OPC\Portlet
                 'label' => __('Title')
             ],
         ];
-
     }
 
     /**

@@ -78,7 +78,7 @@ class DB
      * @param Blueprint $blueprint
      * @throws \Exception
      */
-    public function loadBlueprint(Blueprint $blueprint)
+    public function loadBlueprint(Blueprint $blueprint): void
     {
         $blueprintDB = $this->shopDB->select('topcblueprint', 'kBlueprint', $blueprint->getId());
 
@@ -88,10 +88,9 @@ class DB
 
         $content = \json_decode($blueprintDB->cJson, true);
 
-        $blueprint
-            ->setId($blueprintDB->kBlueprint)
-            ->setName($blueprintDB->cName)
-            ->deserialize(['name' => $blueprintDB->cName, 'content' => $content]);
+        $blueprint->setId($blueprintDB->kBlueprint)
+                  ->setName($blueprintDB->cName)
+                  ->deserialize(['name' => $blueprintDB->cName, 'content' => $content]);
     }
 
     /**

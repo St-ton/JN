@@ -68,7 +68,7 @@ class Blueprint implements \JsonSerializable
     /**
      * @return PortletInstance|null
      */
-    public function getInstance()
+    public function getInstance(): ?self
     {
         return $this->instance;
     }
@@ -89,7 +89,7 @@ class Blueprint implements \JsonSerializable
      * @return $this
      * @throws \Exception
      */
-    public function deserialize($data)
+    public function deserialize(array $data): self
     {
         $this->setName($data['name']);
         $instance = \Shop::Container()->getOPC()->getPortletInstance($data['content']);

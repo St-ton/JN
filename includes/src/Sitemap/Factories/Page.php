@@ -6,6 +6,7 @@
 
 namespace Sitemap\Factories;
 
+use DB\ReturnType;
 use Link\Link;
 use Link\LinkList;
 use function Functional\first;
@@ -50,7 +51,7 @@ final class Page extends AbstractFactory
                         OR FIND_IN_SET(:cGrpID, REPLACE(tlink.cKundengruppen, ';', ',')) > 0)
                 ORDER BY tlinksprache.kLink",
             ['cGrpID' => $customerGroup],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         $linkIDs       = map($res, function ($e) {
             return $e->id;

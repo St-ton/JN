@@ -55,7 +55,7 @@ class BaseSearchSpecial extends AbstractFilter
      */
     public function setSeo(array $languages): FilterInterface
     {
-        $oSeo_arr = $this->productFilter->getDB()->selectAll(
+        $seoData = $this->productFilter->getDB()->selectAll(
             'tseo',
             ['cKey', 'kKey'],
             ['suchspecial', $this->getValue()],
@@ -64,7 +64,7 @@ class BaseSearchSpecial extends AbstractFilter
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            foreach ($oSeo_arr as $oSeo) {
+            foreach ($seoData as $oSeo) {
                 $oSeo->kSprache = (int)$oSeo->kSprache;
                 if ($language->kSprache === $oSeo->kSprache) {
                     $this->cSeo[$language->kSprache] = $oSeo->cSeo;

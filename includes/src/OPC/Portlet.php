@@ -6,6 +6,7 @@
 
 namespace OPC;
 
+use Plugin\AbstractExtension;
 use Plugin\Extension;
 use Plugin\ExtensionLoader;
 
@@ -172,9 +173,9 @@ abstract class Portlet implements \JsonSerializable
     }
 
     /**
-     * @return Extension|null
+     * @return AbstractExtension|null
      */
-    public function getPlugin(): ?Extension
+    public function getPlugin(): ?AbstractExtension
     {
         return $this->plugin;
     }

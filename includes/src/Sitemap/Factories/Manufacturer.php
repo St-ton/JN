@@ -6,6 +6,7 @@
 
 namespace Sitemap\Factories;
 
+use DB\ReturnType;
 use function Functional\map;
 
 /**
@@ -31,7 +32,7 @@ final class Manufacturer extends AbstractFactory
                     AND tseo.kKey = thersteller.kHersteller
                     AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ")
                 ORDER BY thersteller.kHersteller",
-            \DB\ReturnType::QUERYSINGLE
+            ReturnType::QUERYSINGLE
         );
         while (($mf = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
             $mf->kHersteller = (int)$mf->kHersteller;

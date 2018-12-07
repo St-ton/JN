@@ -6,6 +6,7 @@
 
 namespace Sitemap\Factories;
 
+use DB\ReturnType;
 use function Functional\first;
 use function Functional\map;
 
@@ -55,7 +56,7 @@ final class Product extends AbstractFactory
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL" . $andWhere . "
                 ORDER BY tartikel.kArtikel",
             ['kGrpID' => $defaultCustomerGroupID],
-            \DB\ReturnType::QUERYSINGLE
+            ReturnType::QUERYSINGLE
         );
 
         while (($product = $res->fetch(\PDO::FETCH_OBJ)) !== false) {

@@ -34,7 +34,7 @@ class PageDB
      */
     public function getPageCount(): int
     {
-        return $this->shopDB->query(
+        return (int)$this->shopDB->query(
             'SELECT COUNT(DISTINCT cPageId) AS count FROM topcpage',
             ReturnType::SINGLE_OBJECT
         )->count;
@@ -43,7 +43,7 @@ class PageDB
     /**
      * @return array
      */
-    public function getPages()
+    public function getPages(): array
     {
         return $this->shopDB->query(
             'SELECT cPageId, cPageUrl FROM topcpage GROUP BY cPageId, cPageUrl',
@@ -75,10 +75,10 @@ class PageDB
 
     /**
      * @param int $key
-     * @return object
+     * @return \stdClass
      * @throws \Exception
      */
-    public function getDraftRow(int $key)
+    public function getDraftRow(int $key): \stdClass
     {
         $draftRow = $this->shopDB->select('topcpage', 'kPage', $key);
 
@@ -110,7 +110,7 @@ class PageDB
      * @param string $id
      * @return null|\stdClass
      */
-    public function getPublicPageRow(string $id)
+    public function getPublicPageRow(string $id): ?\stdClass
     {
         $publicRow = $this->shopDB->queryPrepared(
             'SELECT * FROM topcpage
@@ -147,11 +147,11 @@ class PageDB
      */
     public function getOtherLanguageDraftRows(string $id): array
     {
-        $pageIdFields       = explode(';', $id);
-        $langField          = array_pop($pageIdFields);
-        $languageKey        = explode(':', $langField);
+        $pageIdFields       = \explode(';', $id);
+        $langField          = \array_pop($pageIdFields);
+        $languageKey        = \explode(':', $langField);
         $languageKey        = (int)$languageKey[1];
-        $pageIdSearchPrefix = implode(';', $pageIdFields) . ';lang:';
+        $pageIdSearchPrefix = \implode(';', $pageIdFields) . ';lang:';
 
         return $this->shopDB->query(
             "SELECT o.*, s.kSprache, s.cNameEnglisch
@@ -179,7 +179,7 @@ class PageDB
      * @return Page
      * @throws \Exception
      */
-    public function getRevision(int $revId) : Page
+    public function getRevision(int $revId): Page
     {
         $revisionRow = $this->getRevisionRow($revId);
 
@@ -201,7 +201,7 @@ class PageDB
      * @param string $id
      * @return null|Page
      */
-    public function getPublicPage(string $id)
+    public function getPublicPage(string $id): ?Page
     {
         $publicRow = $this->getPublicPageRow($id);
 
@@ -333,7 +333,7 @@ class PageDB
      * @param object $row
      * @return Page
      */
-    protected function getPageFromRow($row) : Page
+    protected function getPageFromRow($row): Page
     {
         $page = (new Page())
             ->setKey($row->kPage)

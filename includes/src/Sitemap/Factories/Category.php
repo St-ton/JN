@@ -6,6 +6,7 @@
 
 namespace Sitemap\Factories;
 
+use DB\ReturnType;
 use function Functional\first;
 use function Functional\map;
 
@@ -45,7 +46,7 @@ final class Category extends AbstractFactory
             [
                 'cGrpID' => $customerGroup
             ],
-            \DB\ReturnType::QUERYSINGLE
+            ReturnType::QUERYSINGLE
         );
         while (($category = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
             $category->kKategorie = (int)$category->kKategorie;

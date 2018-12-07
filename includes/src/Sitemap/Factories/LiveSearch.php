@@ -6,6 +6,7 @@
 
 namespace Sitemap\Factories;
 
+use DB\ReturnType;
 use function Functional\map;
 
 /**
@@ -32,7 +33,7 @@ final class LiveSearch extends AbstractFactory
                 WHERE tsuchanfrage.nAktiv = 1
                     AND tsuchanfrage.kSprache IN (" . \implode(',', $languageIDs) . ")
                 ORDER BY tsuchanfrage.kSuchanfrage",
-            \DB\ReturnType::QUERYSINGLE
+            ReturnType::QUERYSINGLE
         );
         while (($ls = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
             $ls->kSuchanfrage = (int)$ls->kSuchanfrage;

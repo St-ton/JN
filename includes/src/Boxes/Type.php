@@ -9,7 +9,7 @@ namespace Boxes;
 use MyCLabs\Enum\Enum;
 
 /**
- * Class ComponentPropertyType
+ * Class Type
  *
  * @package Boxes
  * @method Type DEFAULT()

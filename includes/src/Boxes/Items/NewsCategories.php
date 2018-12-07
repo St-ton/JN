@@ -7,15 +7,16 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
+use Session\Session;
 
 /**
  * Class NewsCategories
- * @package Boxes
+ * @package Boxes\Items
  */
 final class NewsCategories extends AbstractBox
 {
     /**
-     * Wishlist constructor.
+     * NewsCategories constructor.
      * @param array $config
      */
     public function __construct(array $config)
@@ -26,7 +27,7 @@ final class NewsCategories extends AbstractBox
             ? ' LIMIT ' . (int)$config['news']['news_anzahl_box']
             : '';
         $langID    = \Shop::getLanguageID();
-        $cacheID   = 'bnk_' . $langID . '_' . \Session\Session::getCustomerGroup()->getID() . '_' . \md5($cSQL);
+        $cacheID   = 'bnk_' . $langID . '_' . Session::getCustomerGroup()->getID() . '_' . \md5($cSQL);
         $cached    = true;
         $cacheTags = [\CACHING_GROUP_BOX, \CACHING_GROUP_NEWS];
         if (($newsCategories = \Shop::Container()->getCache()->get($cacheID)) === false) {
@@ -57,7 +58,7 @@ final class NewsCategories extends AbstractBox
                         AND t.languageID = :lid
                     GROUP BY tnewskategorienews.kNewsKategorie
                     ORDER BY tnewskategorie.nSort DESC" . $cSQL,
-                ['lid' => $langID, 'cid' => \Session\Session::getCustomerGroup()->getID()],
+                ['lid' => $langID, 'cid' => Session::getCustomerGroup()->getID()],
                 ReturnType::ARRAY_OF_OBJECTS
             );
             \Shop::Container()->getCache()->set($cacheID, $newsCategories, $cacheTags);

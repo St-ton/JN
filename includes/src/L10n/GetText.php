@@ -6,6 +6,8 @@
 
 namespace L10n;
 
+use Gettext\Translations;
+use Gettext\Translator;
 use Plugin\AbstractExtension;
 
 /**
@@ -34,7 +36,7 @@ class GetText
      */
     private function __construct()
     {
-        $this->translator = new \Gettext\Translator();
+        $this->translator = new Translator();
         $this->translator->register();
 
         $this->setLangIso(\Shop::getLanguageCode())
@@ -86,10 +88,10 @@ class GetText
      */
     public function addLocale(string $dir, string $domain): self
     {
-        $path = "{$dir}locale/{$this->langIso}/{$domain}.mo";
+        $path = $dir . 'locale/' . $this->langIso . '/' . $domain . 'mo';
 
         if (\file_exists($path)) {
-            $translations = \Gettext\Translations::fromMoFile($path);
+            $translations = Translations::fromMoFile($path);
             $this->translator->loadTranslations($translations);
         }
 

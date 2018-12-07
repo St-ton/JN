@@ -217,7 +217,7 @@ class Search extends AbstractFilter
         if (empty($query)) {
             return false;
         }
-        $Suchausdruck = \str_replace(["'", "\\", "*", "%"], '', $query);
+        $Suchausdruck = \str_replace(["'", '\\', '*', '%'], '', $query);
         $languageID   = $languageIDExt > 0 ? $languageIDExt : $this->getLanguageID();
         // db füllen für auswertugnen / suggest, dabei Blacklist beachten
         $tempQueries = \explode(';', $Suchausdruck);

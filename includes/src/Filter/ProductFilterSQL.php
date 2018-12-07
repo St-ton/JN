@@ -152,7 +152,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
         if ($filterType === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
             || $filterType === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
         ) {
-            $or = $filterType === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+            $or        = $filterType === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
                 ? " OR tartikel.cLagerKleinerNull = 'Y'"
                 : '';
             $filterSQL = ($withAnd === true ? ' AND ' : ' ') .

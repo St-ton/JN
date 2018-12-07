@@ -10,12 +10,12 @@ use DB\ReturnType;
 
 /**
  * Class NewsCurrentMonth
- * @package Boxes
+ * @package Boxes\Items
  */
 final class NewsCurrentMonth extends AbstractBox
 {
     /**
-     * Wishlist constructor.
+     * NewsCurrentMonth constructor.
      * @param array $config
      */
     public function __construct(array $config)

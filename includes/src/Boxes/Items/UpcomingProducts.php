@@ -7,23 +7,24 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
+use Session\Session;
 
 /**
  * Class UpcomingProducts
- * @package Boxes
+ * @package Boxes\Items
  */
 final class UpcomingProducts extends AbstractBox
 {
     /**
-     * Cart constructor.
+     * UpcomingProducts constructor.
      * @param array $config
      */
     public function __construct(array $config)
     {
         parent::__construct($config);
         $this->setShow(false);
-        $customerGroupID = \Session\Session::getCustomerGroup()->getID();
-        if ($customerGroupID > 0 && \Session\Session::getCustomerGroup()->mayViewCategories()) {
+        $customerGroupID = Session::getCustomerGroup()->getID();
+        if ($customerGroupID > 0 && Session::getCustomerGroup()->mayViewCategories()) {
             $cached         = true;
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();

@@ -8,7 +8,7 @@ namespace Boxes\Items;
 
 /**
  * Class LinkGroup
- * @package Boxes
+ * @package Boxes\Items
  */
 final class LinkGroup extends AbstractBox
 {

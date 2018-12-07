@@ -10,12 +10,12 @@ use DB\ReturnType;
 
 /**
  * Class SearchCloud
- * @package Boxes
+ * @package Boxes\Items
  */
 final class SearchCloud extends AbstractBox
 {
     /**
-     * Cart constructor.
+     * SearchCloud constructor.
      * @param array $config
      */
     public function __construct(array $config)

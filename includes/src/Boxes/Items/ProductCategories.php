@@ -6,21 +6,23 @@
 
 namespace Boxes\Items;
 
+use Session\Session;
+
 /**
  * Class ProductCategories
- * @package Boxes
+ * @package Boxes\Items
  */
 final class ProductCategories extends AbstractBox
 {
     /**
-     * DirectPurchase constructor.
+     * ProductCategories constructor.
      * @param array $config
      */
     public function __construct(array $config)
     {
         parent::__construct($config);
         $show = isset($config['global']['global_sichtbarkeit'])
-            && ((int)$config['global']['global_sichtbarkeit'] !== 3 || \Session\Session::getCustomer()->getID() > 0);
+            && ((int)$config['global']['global_sichtbarkeit'] !== 3 || Session::getCustomer()->getID() > 0);
         $this->setShow($show);
         if ($show === true) {
             $categories = $this->getCategories();

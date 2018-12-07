@@ -8,7 +8,7 @@ namespace Boxes\Items;
 
 /**
  * Class Manufacturer
- * @package Boxes
+ * @package Boxes\Items
  */
 final class Manufacturer extends AbstractBox
 {

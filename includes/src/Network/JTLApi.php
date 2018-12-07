@@ -65,8 +65,7 @@ final class JTLApi
     public function getAvailableVersions()
     {
         if (!isset($this->session['rs']['versions'])) {
-            $uri = self::URI_VERSION . '/versions';
-            $this->session['rs']['versions'] = $this->call($uri);
+            $this->session['rs']['versions'] = $this->call(self::URI_VERSION . '/versions');
         }
 
         return $this->session['rs']['versions'];

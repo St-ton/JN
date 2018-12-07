@@ -451,56 +451,56 @@ class Controller
      */
     public static function getFilterSQL(bool $bActiveOnly = false): \stdClass
     {
-        $oSQL              = new \stdClass();
-        $oSQL->cSortSQL    = '';
-        $oSQL->cDatumSQL   = '';
-        $oSQL->cNewsKatSQL = '';
+        $sql              = new \stdClass();
+        $sql->cSortSQL    = '';
+        $sql->cDatumSQL   = '';
+        $sql->cNewsKatSQL = '';
         switch ($_SESSION['NewsNaviFilter']->nSort) {
             case -1:
             default:
-                $oSQL->cSortSQL = ' ORDER BY tnews.dGueltigVon DESC, tnews.dErstellt DESC';
+                $sql->cSortSQL = ' ORDER BY tnews.dGueltigVon DESC, tnews.dErstellt DESC';
                 break;
             case 1: // Datum absteigend
-                $oSQL->cSortSQL = ' ORDER BY tnews.dGueltigVon DESC, tnews.dErstellt DESC';
+                $sql->cSortSQL = ' ORDER BY tnews.dGueltigVon DESC, tnews.dErstellt DESC';
                 break;
             case 2: // Datum aufsteigend
-                $oSQL->cSortSQL = ' ORDER BY tnews.dGueltigVon';
+                $sql->cSortSQL = ' ORDER BY tnews.dGueltigVon';
                 break;
             case 3: // Name a ... z
-                $oSQL->cSortSQL = ' ORDER BY tnewssprache.title';
+                $sql->cSortSQL = ' ORDER BY tnewssprache.title';
                 break;
             case 4: // Name z ... a
-                $oSQL->cSortSQL = ' ORDER BY tnewssprache.title DESC';
+                $sql->cSortSQL = ' ORDER BY tnewssprache.title DESC';
                 break;
             case 5: // Anzahl Kommentare absteigend
-                $oSQL->cSortSQL = ' ORDER BY nNewsKommentarAnzahl DESC';
+                $sql->cSortSQL = ' ORDER BY nNewsKommentarAnzahl DESC';
                 break;
             case 6: // Anzahl Kommentare aufsteigend
-                $oSQL->cSortSQL = ' ORDER BY nNewsKommentarAnzahl';
+                $sql->cSortSQL = ' ORDER BY nNewsKommentarAnzahl';
                 break;
         }
         if ($_SESSION['NewsNaviFilter']->cDatum !== -1 && \strlen($_SESSION['NewsNaviFilter']->cDatum) > 0) {
-            $_date = \explode('-', $_SESSION['NewsNaviFilter']->cDatum);
-            if (\count($_date) > 1) {
-                [$nMonat, $nJahr] = $_date;
-                $oSQL->cDatumSQL = " AND MONTH(tnews.dGueltigVon) = '" . (int)$nMonat . "' 
+            $date = \explode('-', $_SESSION['NewsNaviFilter']->cDatum);
+            if (\count($date) > 1) {
+                [$nMonat, $nJahr] = $date;
+                $sql->cDatumSQL   = " AND MONTH(tnews.dGueltigVon) = '" . (int)$nMonat . "' 
                                       AND YEAR(tnews.dGueltigVon) = '" . (int)$nJahr . "'";
             } else { //invalid date given/xss -> reset to -1
                 $_SESSION['NewsNaviFilter']->cDatum = -1;
             }
         }
         if ($_SESSION['NewsNaviFilter']->nNewsKat > 0) {
-            $oSQL->cNewsKatSQL = ' AND tnewskategorienews.kNewsKategorie = ' .
+            $sql->cNewsKatSQL = ' AND tnewskategorienews.kNewsKategorie = ' .
                 (int)$_SESSION['NewsNaviFilter']->nNewsKat;
         }
 
         if ($bActiveOnly) {
-            $oSQL->cNewsKatSQL .= ' JOIN tnewskategorie 
+            $sql->cNewsKatSQL .= ' JOIN tnewskategorie 
                                     ON tnewskategorie.kNewsKategorie = tnewskategorienews.kNewsKategorie
                                     AND tnewskategorie.nAktiv = 1';
         }
 
-        return $oSQL;
+        return $sql;
     }
 
     /**

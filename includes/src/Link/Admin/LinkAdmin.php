@@ -469,7 +469,6 @@ final class LinkAdmin
             $assoc->linkID      = $kLink;
             $assoc->linkGroupID = (int)$post['kLinkgruppe'];
             $this->db->insert('tlinkgroupassociations', $assoc);
-
         } else {
             $kLink    = (int)$post['kLink'];
             $revision = new \Revision();

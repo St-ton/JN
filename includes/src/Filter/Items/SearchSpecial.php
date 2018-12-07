@@ -14,6 +14,7 @@ use Filter\Option;
 use Filter\ProductFilter;
 use Filter\StateSQL;
 use Filter\Type;
+use Session\Session;
 
 /**
  * Class SearchSpecial
@@ -176,7 +177,7 @@ class SearchSpecial extends AbstractFilter
                                         AND " . $tasp . ".dStart <= NOW()
                                         AND (" . $tasp . ".dEnde >= CURDATE() 
                                             OR " . $tasp . ".dEnde IS NULL)
-                                        AND " . $tsp . " .kKundengruppe = " . \Session::getCustomerGroup()->getID();
+                                        AND " . $tsp . " .kKundengruppe = " . Session::getCustomerGroup()->getID();
                     break;
 
                 case \SEARCHSPECIALS_NEWPRODUCTS:
@@ -185,7 +186,7 @@ class SearchSpecial extends AbstractFilter
                         : 30;
 
                     $conditions[] = "tartikel.cNeu = 'Y' 
-                                AND DATE_SUB(NOW(),INTERVAL $days DAY) < tartikel.dErstellt 
+                                AND DATE_SUB(NOW(),INTERVAL " . $days  . " DAY) < tartikel.dErstellt 
                                 AND tartikel.cNeu = 'Y'";
                     break;
 
@@ -357,8 +358,8 @@ class SearchSpecial extends AbstractFilter
                     }
                     $state->addCondition("tartikelsonderpreis.cAktiv = 'Y' 
                         AND tartikelsonderpreis.dStart <= NOW()");
-                    $state->addCondition("(tartikelsonderpreis.dEnde IS NULL
-                        OR tartikelsonderpreis.dEnde >= CURDATE())");
+                    $state->addCondition('(tartikelsonderpreis.dEnde IS NULL
+                        OR tartikelsonderpreis.dEnde >= CURDATE())');
                     $state->addCondition($tsonderpreise . '.kKundengruppe = ' . $this->getCustomerGroupID());
                     break;
                 case \SEARCHSPECIALS_NEWPRODUCTS:
@@ -367,7 +368,7 @@ class SearchSpecial extends AbstractFilter
                         ? (int)$age
                         : 30;
                     $state->addCondition("tartikel.cNeu = 'Y' 
-                        AND DATE_SUB(NOW(), INTERVAL $alter_tage DAY) < tartikel.dErstellt");
+                        AND DATE_SUB(NOW(), INTERVAL " . $alter_tage . 'DAY) < tartikel.dErstellt');
                     break;
                 case \SEARCHSPECIALS_TOPOFFERS:
                     $name = \Shop::Lang()->get('topOffer');

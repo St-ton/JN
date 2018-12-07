@@ -13,7 +13,7 @@ use function Functional\first;
 
 /**
  * Class AbstractBox
- * @package Boxes
+ * @package Boxes\Items
  */
 abstract class AbstractBox implements BoxInterface
 {
@@ -829,10 +829,10 @@ abstract class AbstractBox implements BoxInterface
             if ($iCur++ >= $iMax) {
                 break;
             }
-            $cName               = $oCloud->cName ?? $oCloud->cSuche;
-            $cRandomColor        = (!$cColor || !$cColorHover) ? $gibTagFarbe() : '';
-            $cName               = \urlencode($cName);
-            $cName               = \str_replace('+', ' ', $cName); /* fix :) */
+            $cName          = $oCloud->cName ?? $oCloud->cSuche;
+            $cRandomColor   = (!$cColor || !$cColorHover) ? $gibTagFarbe() : '';
+            $cName          = \urlencode($cName);
+            $cName          = \str_replace('+', ' ', $cName); /* fix :) */
             $tags['tags'][] = [
                 'name'  => $cName,
                 'url'   => $oCloud->cURL,

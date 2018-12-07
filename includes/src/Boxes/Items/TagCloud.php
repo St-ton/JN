@@ -10,12 +10,12 @@ use DB\ReturnType;
 
 /**
  * Class TagCloud
- * @package Boxes
+ * @package Boxes\Items
  */
 final class TagCloud extends AbstractBox
 {
     /**
-     * Cart constructor.
+     * TagCloud constructor.
      * @param array $config
      */
     public function __construct(array $config)

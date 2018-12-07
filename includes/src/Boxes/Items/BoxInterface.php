@@ -10,11 +10,10 @@ use Filter\FilterInterface;
 
 /**
  * Interface BoxInterface
- * @package Boxes
+ * @package Boxes\Items
  */
 interface BoxInterface
 {
-
     /**
      * BoxInterface constructor.
      *

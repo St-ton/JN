@@ -1565,7 +1565,7 @@ class ProductFilter
         }
         // search special sorting
         if ($this->hasSearchSpecial()) {
-            //@todo oooooooooooooooooo!
+            //@todo
             $oSuchspecialEinstellung_arr = $this->getSearchSpecialConfigMapping();
             $idx                         = $this->getSearchSpecial()->getValue();
             $ssConf                      = isset($oSuchspecialEinstellung_arr[$idx]) ?: null;
@@ -1692,8 +1692,12 @@ class ProductFilter
             if (!empty($this->search->getName())) {
                 if ($this->searchQuery->getError() === null) {
                     $this->search->saveQuery($productCount, $this->search->getName(), !$this->bExtendedJTLSearch);
-                    $this->search->setQueryID($this->search->getName() ?? '', $this->getFilterConfig()->getLanguageID());
-                    $this->searchQuery->setValue($this->search->getValue())->setSeo($this->getFilterConfig()->getLanguages());
+                    $this->search->setQueryID(
+                        $this->search->getName() ?? '',
+                        $this->getFilterConfig()->getLanguageID()
+                    );
+                    $this->searchQuery->setValue($this->search->getValue())
+                                      ->setSeo($this->getFilterConfig()->getLanguages());
                 } else {
                     $error = $this->searchQuery->getError();
                 }
@@ -1845,8 +1849,8 @@ class ProductFilter
                 // this is the most clean and usual behaviour.
                 // 'misc' and custom contain clean new filters that can be calculated by just iterating over the array
                 foreach ($active as $filter) {
-                    $joins[]      = $filter->getSQLJoin();
-                    $condition    = $filter->getSQLCondition();
+                    $joins[]   = $filter->getSQLJoin();
+                    $condition = $filter->getSQLCondition();
                     if (!empty($condition)) {
                         $conditions[] = "\n#condition from filter " . $type . "\n" . $condition;
                     }

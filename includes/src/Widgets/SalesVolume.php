@@ -6,9 +6,6 @@
 
 namespace Widgets;
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
-require_once PFAD_ROOT . PFAD_FLASHCHART . 'php-ofc-library/open-flash-chart.php';
-
 /**
  * Class SalesVolume
  *
@@ -26,6 +23,8 @@ class SalesVolume extends AbstractWidget
      */
     public function init()
     {
+        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'statistik_inc.php';
+        require_once \PFAD_ROOT . \PFAD_FLASHCHART . 'php-ofc-library/open-flash-chart.php';
         $this->oWaehrung = $this->oDB->select('twaehrung', 'cStandard', 'Y');
     }
 

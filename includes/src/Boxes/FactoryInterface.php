@@ -9,15 +9,13 @@ namespace Boxes;
 use Boxes\Items\BoxInterface;
 
 /**
- * Class Factory
- *
+ * Interface FactoryInterface
  * @package Boxes
  */
 interface FactoryInterface
 {
     /**
-     * Factory constructor.
-     *
+     * FactoryInterface constructor.
      * @param array $config
      */
     public function __construct(array $config);

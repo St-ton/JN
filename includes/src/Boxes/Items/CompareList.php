@@ -6,10 +6,9 @@
 
 namespace Boxes\Items;
 
-
 /**
  * Class CompareList
- * @package Boxes
+ * @package Boxes\Items
  */
 final class CompareList extends AbstractBox
 {

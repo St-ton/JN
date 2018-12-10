@@ -104,7 +104,7 @@ class PaymentMethods extends AbstractItem
                 }
             }
             if (isset($method['ClassName'])) {
-                \preg_match("/[a-zA-Z0-9\/_\-]+/", $method['ClassName'], $hits1);
+                \preg_match('/[a-zA-Z0-9\/_\-]+/', $method['ClassName'], $hits1);
                 if (\strlen($hits1[0]) !== \strlen($method['ClassName'])) {
                     return InstallCode::INVALID_PAYMENT_METHOD_CLASS_NAME;
                 }

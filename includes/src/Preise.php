@@ -213,7 +213,7 @@ class Preise
                 $kSteuerklasse = (int)$tax->kSteuerklasse;
             }
             $this->fUst        = TaxHelper::getSalesTax($kSteuerklasse);
-            $tmp = Shop::Container()->getDB()->select(
+            $tmp               = Shop::Container()->getDB()->select(
                 'tartikel',
                 'kArtikel',
                 $kArtikel,
@@ -240,10 +240,10 @@ class Preise
                             DATE_FORMAT(tartikelsonderpreis.dEnde, '%d.%m.%Y') AS dEnde_de
                             FROM tsonderpreise
                             JOIN tartikel 
-                                ON tartikel.kArtikel = " . $kArtikel . "
+                                ON tartikel.kArtikel = " . $kArtikel . '
                             JOIN tartikelsonderpreis 
                                 ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
-                                AND tartikelsonderpreis.kArtikel = " . $kArtikel . "
+                                AND tartikelsonderpreis.kArtikel = ' . $kArtikel . "
                                 AND tartikelsonderpreis.cAktiv = 'Y'
                                 AND tartikelsonderpreis.dStart <= CURDATE()
                                 AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE()) 
@@ -388,13 +388,13 @@ class Preise
             $this->fUst = TaxHelper::getSalesTax($ust_obj->kSteuerklasse);
             //hat dieser Artikel fuer diese Kundengruppe einen Sonderpreis?
             $sonderpreis = Shop::Container()->getDB()->query(
-                "SELECT tsonderpreise.fNettoPreis
+                'SELECT tsonderpreise.fNettoPreis
                     FROM tsonderpreise
                     JOIN tartikel 
-                        ON tartikel.kArtikel = " . $kArtikel . "
+                        ON tartikel.kArtikel = ' . $kArtikel . '
                     JOIN tartikelsonderpreis 
                         ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
-                        AND tartikelsonderpreis.kArtikel = " . $kArtikel . "
+                        AND tartikelsonderpreis.kArtikel = ' . $kArtikel . "
                         AND tartikelsonderpreis.cAktiv = 'Y'
                         AND tartikelsonderpreis.dStart <= CURDATE()
                         AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())

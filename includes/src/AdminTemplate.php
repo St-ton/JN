@@ -64,7 +64,7 @@ class AdminTemplate
      */
     public function __construct()
     {
-        self::$helper  = TemplateHelper::getInstance(true);
+        self::$helper = TemplateHelper::getInstance(true);
         $this->init();
         self::$instance = $this;
     }
@@ -161,7 +161,7 @@ class AdminTemplate
                             $tplGroups_arr[$name][] = ($absolute === true ? PFAD_ROOT : '') .
                                 (self::$isAdmin === true ? PFAD_ADMIN : '') .
                                 PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path;
-                            $cCustomFilePath = str_replace('.css', '_custom.css', $cFilePath);
+                            $cCustomFilePath        = str_replace('.css', '_custom.css', $cFilePath);
                             if (file_exists($cCustomFilePath)) {
                                 $tplGroups_arr[$name][] = str_replace(
                                     '.css',

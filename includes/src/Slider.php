@@ -179,11 +179,11 @@ class Slider implements IExtensionPoint
             $kSlider = $this->id;
         }
         $data  = Shop::Container()->getDB()->queryPrepared(
-            "SELECT *, tslider.kSlider AS id FROM tslider
+            'SELECT *, tslider.kSlider AS id FROM tslider
                 LEFT JOIN tslide
                     ON tslider.kSlider = tslide.kSlider
-                WHERE tslider.kSlider = :kslider" . $activeSQL .
-            " ORDER BY tslide.nSort",
+                WHERE tslider.kSlider = :kslider' . $activeSQL .
+            ' ORDER BY tslide.nSort',
             ['kslider' => $kSlider],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );

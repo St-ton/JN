@@ -49,12 +49,12 @@ final class Product extends AbstractFactory
                 JOIN tseo 
                     ON tseo.cKey = 'kArtikel'
                     AND tseo.kKey = tartikel.kArtikel
-                    AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ")
+                    AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ')
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = :kGrpID
-                WHERE tartikelsichtbarkeit.kArtikel IS NULL" . $andWhere . "
-                ORDER BY tartikel.kArtikel",
+                WHERE tartikelsichtbarkeit.kArtikel IS NULL' . $andWhere . '
+                ORDER BY tartikel.kArtikel',
             ['kGrpID' => $defaultCustomerGroupID],
             ReturnType::QUERYSINGLE
         );

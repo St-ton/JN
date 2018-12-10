@@ -522,8 +522,8 @@ final class LinkService implements LinkServiceInterface
         if ($langID <= 0 || $customerGroupID <= 0) {
             return false;
         }
-        $oLinkAGB   = null;
-        $oLinkWRB   = null;
+        $oLinkAGB = null;
+        $oLinkWRB = null;
         // kLink für AGB und WRB suchen
         foreach ($this->getSpecialPages() as $sp) {
             /** @var \Link\LinkInterface $sp */
@@ -535,8 +535,10 @@ final class LinkService implements LinkServiceInterface
         }
         $oAGBWRB = $this->db->select(
             'ttext',
-            'kKundengruppe', $customerGroupID,
-            'kSprache', $langID
+            'kKundengruppe',
+            $customerGroupID,
+            'kSprache',
+            $langID
         );
         if (empty($oAGBWRB->kText)) {
             $oAGBWRB = $this->db->select('ttext', 'nStandard', 1);

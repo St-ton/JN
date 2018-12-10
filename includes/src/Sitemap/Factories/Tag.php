@@ -29,9 +29,9 @@ final class Tag extends AbstractFactory
                 JOIN tseo 
                     ON tseo.cKey = 'kTag'
                     AND tseo.kKey = ttag.kTag
-                WHERE ttag.kSprache IN (" . \implode(',', $languageIDs) . ")
+                WHERE ttag.kSprache IN (" . \implode(',', $languageIDs) . ')
                     AND ttag.nAktiv = 1
-                ORDER BY ttag.kTag",
+                ORDER BY ttag.kTag',
             ReturnType::QUERYSINGLE
         );
         while (($tag = $res->fetch(\PDO::FETCH_OBJ)) !== false) {

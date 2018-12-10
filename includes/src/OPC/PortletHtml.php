@@ -159,19 +159,19 @@ trait PortletHtml
 
         foreach ($tabs as $tabname => $props) {
             $tabid  = \preg_replace('/[^A-Za-z0-9\-]/', '', $tabname);
-            $active = $i === 0 ? " class='active'" : "";
+            $active = $i === 0 ? " class='active'" : '';
             $res   .= "<li$active>";
             $res   .= "<a href='#$tabid' data-toggle='tab'>$tabname</a></li>";
             $i ++;
         }
 
-        $res .= "</ul>";
+        $res .= '</ul>';
         $res .= "<div class='tab-content'>";
         $i    = 0;
 
         foreach ($tabs as $tabname => $props) {
             $tabid  = \preg_replace('/[^A-Za-z0-9\-]/', '', $tabname);
-            $active = $i === 0 ? " active" : "";
+            $active = $i === 0 ? ' active' : '';
             $res   .= "<div class='tab-pane$active' id='$tabid'>";
             $res   .= "<div class='row'>";
 
@@ -193,7 +193,7 @@ trait PortletHtml
                         || $props[$propDesc['showOnProp']]['type'] === 'radio'
                     ) {
                         $res .="    
-                                    if ($('[name=\"" . $propDesc['showOnProp'] . "\"][value=\"" .
+                                    if ($('[name=\"" . $propDesc['showOnProp'] . '"][value="' .
                                         $propDesc['showOnPropValue'] . "\"]').prop('checked') == true){
                                         $('#collapseContainer$cllpsID').show();
                                     }
@@ -218,17 +218,17 @@ trait PortletHtml
                     foreach ($propDesc['layoutCollapse'] as $colapsePropname => $collapsePropdesc) {
                         $res .= $this->getAutoConfigProp($instance, $colapsePropname, $collapsePropdesc);
                     }
-                    $res .= "</div></div></div>"; // row, collapse, col-xs-*
+                    $res .= '</div></div></div>'; // row, collapse, col-xs-*
                 }
 
                 if (!empty($propDesc['collapseControlEnd'])) {
-                    $res .= "</div>"; // collapse
+                    $res .= '</div>'; // collapse
                 }
             }
             $i++;
-            $res .= "</div></div>"; // row, tab-pane
+            $res .= '</div></div>'; // row, tab-pane
         }
-        $res .= "</div>";
+        $res .= '</div>';
 
         return $res;
     }

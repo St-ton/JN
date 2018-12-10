@@ -401,8 +401,8 @@ class Bestellung
         if (!($this->kWarenkorb > 0 || $nZahlungExtern > 0)) {
             return $this;
         }
-        $warenwert = null;
-        $date      = null;
+        $warenwert        = null;
+        $date             = null;
         $this->Positionen = Shop::Container()->getDB()->selectAll(
             'twarenkorbpos',
             'kWarenkorb',
@@ -450,7 +450,7 @@ class Bestellung
                 WHERE kWarenkorb = ' . (int)$this->kWarenkorb,
             \DB\ReturnType::SINGLE_OBJECT
         );
-        $date = Shop::Container()->getDB()->query(
+        $date                   = Shop::Container()->getDB()->query(
             "SELECT date_format(dVersandDatum,'%d.%m.%Y') AS dVersanddatum_de,
                 date_format(dBezahltDatum,'%d.%m.%Y') AS dBezahldatum_de,
                 date_format(dErstellt,'%d.%m.%Y %H:%i:%s') AS dErstelldatum_de,
@@ -555,10 +555,10 @@ class Bestellung
                 || $position->nPosTyp === C_WARENKORBPOS_TYP_VERPACKUNG
             ) {
                 $this->fVersandNetto += $position->fPreis;
-                $this->fVersand += $position->fPreis + ($position->fPreis * $position->fMwSt) / 100;
+                $this->fVersand      += $position->fPreis + ($position->fPreis * $position->fMwSt) / 100;
             } else {
                 $this->fWarensummeNetto += $position->fPreis * $position->nAnzahl;
-                $this->fWarensumme += ($position->fPreis + ($position->fPreis * $position->fMwSt) / 100)
+                $this->fWarensumme      += ($position->fPreis + ($position->fPreis * $position->fMwSt) / 100)
                     * $position->nAnzahl;
             }
 
@@ -649,7 +649,7 @@ class Bestellung
                     foreach ($this->Positionen as $nPos => $_pos) {
                         if ($position->cUnique === $_pos->cUnique) {
                             $fPreisNetto  += $_pos->fPreis * $_pos->nAnzahl;
-                            $ust          = TaxHelper::getSalesTax($_pos->kSteuerklasse ?? null);
+                            $ust           = TaxHelper::getSalesTax($_pos->kSteuerklasse ?? null);
                             $fPreisBrutto += TaxHelper::getGross($_pos->fPreis * $_pos->nAnzahl, $ust);
                             if ((int)$_pos->kKonfigitem === 0 &&
                                 is_string($_pos->cUnique) &&
@@ -662,7 +662,7 @@ class Bestellung
                     if ($nVaterPos !== null) {
                         $oVaterPos = $this->Positionen[$nVaterPos];
                         if (is_object($oVaterPos)) {
-                            $position->nAnzahlEinzel       = $position->nAnzahl / $oVaterPos->nAnzahl;
+                            $position->nAnzahlEinzel                   = $position->nAnzahl / $oVaterPos->nAnzahl;
                             $oVaterPos->cKonfigpreisLocalized[0]       = Preise::getLocalizedPriceString(
                                 $fPreisBrutto,
                                 $this->Waehrung
@@ -708,8 +708,8 @@ class Bestellung
             $this->fWarensummeKundenwaehrung + $this->fVersandKundenwaehrung
         );
 
-        $oData       = new stdClass();
-        $oData->cPLZ = $this->oRechnungsadresse->cPLZ ?? ($this->Lieferadresse->cPLZ ?? '');
+        $oData                   = new stdClass();
+        $oData->cPLZ             = $this->oRechnungsadresse->cPLZ ?? ($this->Lieferadresse->cPLZ ?? '');
         $this->oLieferschein_arr = [];
         if ((int)$this->kBestellung > 0) {
             $kLieferschein_arr = Shop::Container()->getDB()->selectAll(
@@ -733,11 +733,11 @@ class Bestellung
                         )
                             && $_lieferscheinPos->getBestellPos() === $oPosition->kBestellpos
                         ) {
-                            $oPosition->kLieferschein_arr[] = $_lieferschein->getLieferschein();
-                            $oPosition->nAusgeliefert       = $_lieferscheinPos->getAnzahl();
+                            $oPosition->kLieferschein_arr[]  = $_lieferschein->getLieferschein();
+                            $oPosition->nAusgeliefert        = $_lieferscheinPos->getAnzahl();
                             $oPosition->nAusgeliefertGesamt += $oPosition->nAusgeliefert;
-                            $oPosition->nOffenGesamt -= $oPosition->nAusgeliefert;
-                            $_lieferschein->oPosition_arr[] = &$oPosition;
+                            $oPosition->nOffenGesamt        -= $oPosition->nAusgeliefert;
+                            $_lieferschein->oPosition_arr[]  = &$oPosition;
                             if (!isset($_lieferscheinPos->oPosition) || !is_object($_lieferscheinPos->oPosition)) {
                                 $_lieferscheinPos->oPosition = &$oPosition;
                             }

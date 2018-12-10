@@ -193,11 +193,11 @@ class AuswahlAssistent
                 $cParameter_arr['MerkmalFilter_arr'] = array_slice($this->kSelection_arr, 1);
             }
         }
-        $NaviFilter         = Shop::buildProductFilter($cParameter_arr);
-        $AktuelleKategorie  = isset($cParameter_arr['kKategorie'])
+        $NaviFilter        = Shop::buildProductFilter($cParameter_arr);
+        $AktuelleKategorie = isset($cParameter_arr['kKategorie'])
             ? new Kategorie($cParameter_arr['kKategorie'])
             : null;
-        $attributeFilters = (new \Filter\SearchResults())->setFilterOptions(
+        $attributeFilters  = (new \Filter\SearchResults())->setFilterOptions(
             $NaviFilter,
             $AktuelleKategorie,
             true
@@ -210,7 +210,7 @@ class AuswahlAssistent
                 $oFrage->oWert_arr         = $attributeFilter->getOptions();
                 $oFrage->nTotalResultCount = 0;
                 foreach ($attributeFilter->getOptions() as $oWert) {
-                    $oFrage->nTotalResultCount                            += $oWert->getCount();
+                    $oFrage->nTotalResultCount                           += $oWert->getCount();
                     $oFrage->oWert_assoc[$oWert->getData('kMerkmalWert')] = $oWert;
                 }
             }

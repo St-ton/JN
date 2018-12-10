@@ -29,11 +29,11 @@ class VCard
     public const OPT_ERR_IGNORE = 0x01;
     public const OPT_ERR_RAISE  = 0x02;
 
-    public const MODE_UNKNOWN   = 0x00;
-    public const MODE_SINGLE    = 0x01;
-    public const MODE_MULTIPLE  = 0x02;
+    public const MODE_UNKNOWN  = 0x00;
+    public const MODE_SINGLE   = 0x01;
+    public const MODE_MULTIPLE = 0x02;
 
-    public const ERR_INVALID    = 0x01;
+    public const ERR_INVALID = 0x01;
 
     /**
      * @var string
@@ -43,17 +43,17 @@ class VCard
     /**
      * @var array
      */
-    private $data     = [];
+    private $data = [];
 
     /**
      * @var int
      */
-    private $mode     = self::MODE_UNKNOWN;
+    private $mode = self::MODE_UNKNOWN;
 
     /**
      * @var int
      */
-    private $iVCard   = 0;
+    private $iVCard = 0;
 
     /**
      * @var array
@@ -289,8 +289,8 @@ class VCard
         $params   = [];
 
         if (strpos($key, 'item') === 0) {
-            $tmpKey  = explode('.', $key, 2);
-            $key     = $tmpKey[1];
+            $tmpKey = explode('.', $key, 2);
+            $key    = $tmpKey[1];
         }
 
         if (count($keyParts) > 1) {

@@ -32,8 +32,8 @@ class Checker
      */
     public function __construct(DbInterface $db, LoggerInterface $logger)
     {
-        $this->db      = $db;
-        $this->logger  = $logger;
+        $this->db     = $db;
+        $this->logger = $logger;
     }
 
     /**

@@ -43,8 +43,8 @@ final class TopOffers extends AbstractBox
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             AND tartikel.cTopArtikel = 'Y' " .
                         $stockFilterSQL .
-                        $parentSQL . "
-                        ORDER BY RAND() LIMIT " . $limit,
+                        $parentSQL . '
+                        ORDER BY RAND() LIMIT ' . $limit,
                     ['cid' => $customerGroupID],
                     ReturnType::ARRAY_OF_OBJECTS
                 );

@@ -158,7 +158,7 @@ class Kategorie
         if (!$kKundengruppe) {
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
             if (!isset($_SESSION['Kundengruppe']->kKundengruppe)) { //auswahlassistent admin fix
-                $_SESSION['Kundengruppe'] = new stdClass();
+                $_SESSION['Kundengruppe']                = new stdClass();
                 $_SESSION['Kundengruppe']->kKundengruppe = $kKundengruppe;
             }
         }
@@ -197,24 +197,24 @@ class Kategorie
                 tkategoriesprache.cMetaDescription AS cMetaDescription_spr,
                 tkategoriesprache.cMetaKeywords AS cMetaKeywords_spr, 
                 tkategoriesprache.cTitleTag AS cTitleTag_spr, ';
-            $oSQLKategorie->cJOIN  = ' JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie';
-            $oSQLKategorie->cWHERE = ' AND tkategoriesprache.kSprache = ' . $kSprache;
+            $oSQLKategorie->cJOIN   = ' JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie';
+            $oSQLKategorie->cWHERE  = ' AND tkategoriesprache.kSprache = ' . $kSprache;
         }
         $oKategorie = Shop::Container()->getDB()->query(
-            "SELECT tkategorie.kKategorie, " . $oSQLKategorie->cSELECT . " tkategorie.kOberKategorie, 
+            'SELECT tkategorie.kKategorie, ' . $oSQLKategorie->cSELECT . ' tkategorie.kOberKategorie, 
                 tkategorie.nSort, tkategorie.dLetzteAktualisierung,
                 tkategorie.cName, tkategorie.cBeschreibung, tseo.cSeo, tkategoriepict.cPfad, tkategoriepict.cType
                 FROM tkategorie
-                " . $oSQLKategorie->cJOIN . "
+                ' . $oSQLKategorie->cJOIN . '
                 LEFT JOIN tkategoriesichtbarkeit ON tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie
-                    AND tkategoriesichtbarkeit.kKundengruppe = " . $kKundengruppe . "
+                    AND tkategoriesichtbarkeit.kKundengruppe = ' . $kKundengruppe . "
                 LEFT JOIN tseo ON tseo.cKey = 'kKategorie'
-                    AND tseo.kKey = " . $kKategorie . "
-                    AND tseo.kSprache = " . $kSprache . "
+                    AND tseo.kKey = " . $kKategorie . '
+                    AND tseo.kSprache = ' . $kSprache . '
                 LEFT JOIN tkategoriepict ON tkategoriepict.kKategorie = tkategorie.kKategorie
-                WHERE tkategorie.kKategorie = " . $kKategorie . "
-                    " . $oSQLKategorie->cWHERE . "
-                    AND tkategoriesichtbarkeit.kKategorie IS NULL",
+                WHERE tkategorie.kKategorie = ' . $kKategorie . '
+                    ' . $oSQLKategorie->cWHERE . '
+                    AND tkategoriesichtbarkeit.kKategorie IS NULL',
             \DB\ReturnType::SINGLE_OBJECT
         );
         if ($oKategorie === null || $oKategorie === false) {

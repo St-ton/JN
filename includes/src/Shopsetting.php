@@ -287,7 +287,7 @@ final class Shopsetting implements ArrayAccess
                 ORDER BY kEinstellungenSektion',
             \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
-        $result = [];
+        $result   = [];
         foreach (self::$mapping as $mappingID => $sectionName) {
             foreach ($settings as $setting) {
                 $kEinstellungenSektion = (int)$setting['kEinstellungenSektion'];

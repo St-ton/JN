@@ -69,10 +69,10 @@ class PriceRange
             $customerID = \Session\Session::getCustomer()->kKunde ?? 0;
         }
 
-        $this->customerGroupID = $customerGroupID;
-        $this->customerID      = $customerID;
-        $this->discount        = 0;
-        $this->articleData     = Shop::Container()->getDB()->select(
+        $this->customerGroupID            = $customerGroupID;
+        $this->customerID                 = $customerID;
+        $this->discount                   = 0;
+        $this->articleData                = Shop::Container()->getDB()->select(
             'tartikel',
             'kArtikel',
             $articleID,
@@ -272,8 +272,8 @@ class PriceRange
 
             $ust = TaxHelper::getSalesTax($this->articleData->kSteuerklasse);
 
-            $this->minNettoPrice  *= (1 - $this->discount);
-            $this->maxNettoPrice  *= (1 - $this->discount);
+            $this->minNettoPrice *= (1 - $this->discount);
+            $this->maxNettoPrice *= (1 - $this->discount);
             $this->minBruttoPrice = \TaxHelper::getGross($this->minNettoPrice, $ust);
             $this->maxBruttoPrice = \TaxHelper::getGross($this->maxNettoPrice, $ust);
         }

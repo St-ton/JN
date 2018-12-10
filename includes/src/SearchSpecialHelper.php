@@ -21,7 +21,7 @@ class SearchSpecialHelper
         $cacheID = 'haso_' . $langID;
         if (($overlays = Shop::Container()->getCache()->get($cacheID)) === false) {
             $ssoList = Shop::Container()->getDB()->query(
-                "SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache,
+                'SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache,
                     tsuchspecialoverlaysprache.cBildPfad, tsuchspecialoverlaysprache.nAktiv,
                     tsuchspecialoverlaysprache.nPrio, tsuchspecialoverlaysprache.nMargin,
                     tsuchspecialoverlaysprache.nTransparenz,
@@ -29,10 +29,10 @@ class SearchSpecialHelper
                     FROM tsuchspecialoverlay
                     JOIN tsuchspecialoverlaysprache
                         ON tsuchspecialoverlaysprache.kSuchspecialOverlay = tsuchspecialoverlay.kSuchspecialOverlay
-                        AND tsuchspecialoverlaysprache.kSprache = " . $langID . "
+                        AND tsuchspecialoverlaysprache.kSprache = ' . $langID . '
                     WHERE tsuchspecialoverlaysprache.nAktiv = 1
                         AND tsuchspecialoverlaysprache.nPrio > 0
-                    ORDER BY tsuchspecialoverlaysprache.nPrio DESC",
+                    ORDER BY tsuchspecialoverlaysprache.nPrio DESC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
@@ -46,8 +46,8 @@ class SearchSpecialHelper
                 $sso->nGroesse            = (int)$sso->nGroesse;
                 $sso->nPosition           = (int)$sso->nPosition;
 
-                $idx = strtolower(str_replace([' ', '-', '_'], '', $sso->cSuchspecial));
-                $idx = preg_replace(
+                $idx                         = strtolower(str_replace([' ', '-', '_'], '', $sso->cSuchspecial));
+                $idx                         = preg_replace(
                     ['/Ä/', '/Ö/', '/Ü/', '/ä/', '/ö/', '/ü/', '/ß/'],
                     ['ae', 'oe', 'ue', 'ae', 'oe', 'ue', 'ss'],
                     $idx
@@ -170,15 +170,15 @@ class SearchSpecialHelper
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
         }
         $topArticles = Shop::Container()->getDB()->query(
-            "SELECT tartikel.kArtikel
+            'SELECT tartikel.kArtikel
                 FROM tartikel
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = ' . $kKundengruppe . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.cTopArtikel = 'Y'
-                    " . self::getParentSQL() . "
-                    " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
+                    " . self::getParentSQL() . '
+                    ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
@@ -201,18 +201,18 @@ class SearchSpecialHelper
         $nSchwelleBestseller     = isset($oGlobalnEinstellung_arr['global']['global_bestseller_minanzahl'])
             ? (float)$oGlobalnEinstellung_arr['global']['global_bestseller_minanzahl']
             : 10;
-        $bestsellers = Shop::Container()->getDB()->query(
-            "SELECT tartikel.kArtikel, tbestseller.fAnzahl
+        $bestsellers             = Shop::Container()->getDB()->query(
+            'SELECT tartikel.kArtikel, tbestseller.fAnzahl
                 FROM tbestseller, tartikel
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = ' . $kKundengruppe . '
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tbestseller.kArtikel = tartikel.kArtikel
-                    AND round(tbestseller.fAnzahl) >= " . $nSchwelleBestseller . "
-                    " . self::getParentSQL() . "
-                    " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . "
-                ORDER BY fAnzahl DESC",
+                    AND round(tbestseller.fAnzahl) >= ' . $nSchwelleBestseller . '
+                    ' . self::getParentSQL() . '
+                    ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
+                ORDER BY fAnzahl DESC',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
@@ -232,7 +232,7 @@ class SearchSpecialHelper
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
         }
         $specialOffers = Shop::Container()->getDB()->query(
-            "SELECT tartikel.kArtikel, tsonderpreise.fNettoPreis
+            'SELECT tartikel.kArtikel, tsonderpreise.fNettoPreis
                 FROM tartikel
                 JOIN tartikelsonderpreis 
                     ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
@@ -240,16 +240,16 @@ class SearchSpecialHelper
                     ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = ' . $kKundengruppe . '
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikelsonderpreis.kArtikel = tartikel.kArtikel
-                    AND tsonderpreise.kKundengruppe = " . $kKundengruppe . "
+                    AND tsonderpreise.kKundengruppe = ' . $kKundengruppe . "
                     AND tartikelsonderpreis.cAktiv = 'Y'
                     AND tartikelsonderpreis.dStart <= NOW()
                     AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())
                     AND (tartikelsonderpreis.nAnzahl < tartikel.fLagerbestand OR tartikelsonderpreis.nIstAnzahl = 0)
-                    " . self::getParentSQL() . "
-                    " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
+                    " . self::getParentSQL() . '
+                    ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
@@ -276,17 +276,17 @@ class SearchSpecialHelper
             ? (int)$config['boxen']['box_neuimsortiment_alter_tage']
             : 30;
         $new    = Shop::Container()->getDB()->query(
-            "SELECT tartikel.kArtikel
+            'SELECT tartikel.kArtikel
                 FROM tartikel
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = ' . $kKundengruppe . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.cNeu = 'Y'
                     AND dErscheinungsdatum <= NOW()
-                    AND DATE_SUB(NOW(), INTERVAL " . $days . " DAY) < tartikel.dErstellt
-                    " . self::getParentSQL() . "
-                    " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
+                    AND DATE_SUB(NOW(), INTERVAL " . $days . ' DAY) < tartikel.dErstellt
+                    ' . self::getParentSQL() . '
+                    ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 

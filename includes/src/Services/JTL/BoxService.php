@@ -312,7 +312,7 @@ class BoxService implements BoxServiceInterface
                 $renderer->setBox($box);
                 $html = \trim($renderer->render($pageType, $pageID));
                 $box->setRenderedContent($html);
-                $htmlArray[$_position]       .= $html;
+                $htmlArray[$_position]      .= $html;
                 $this->rawData[$_position][] = [
                     'obj' => $box,
                     'tpl' => $box->getTemplateFile()

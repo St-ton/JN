@@ -178,8 +178,8 @@ class PriceRange extends AbstractFilter
         $conversionFactor    = Session::getCurrency()->getConversionFactor();
         $customerGroupID     = Session::getCustomerGroup()->getID();
 
-        $oFilter             = new \stdClass();
-        $oFilter->cJoin      = 'JOIN tpreise 
+        $oFilter         = new \stdClass();
+        $oFilter->cJoin  = 'JOIN tpreise 
                 ON tartikel.kArtikel = tpreise.kArtikel 
                 AND tpreise.kKundengruppe = ' . $customerGroupID . '
             LEFT JOIN tartikelkategorierabatt 
@@ -193,11 +193,11 @@ class PriceRange extends AbstractFilter
             LEFT JOIN tsonderpreise 
                 ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
                 AND tsonderpreise.kKundengruppe = " . $customerGroupID;
-        $oFilter->cWhere     = '';
-        $fKundenrabatt       = (isset($_SESSION['Kunde']->fRabatt) && $_SESSION['Kunde']->fRabatt > 0)
+        $oFilter->cWhere = '';
+        $fKundenrabatt   = (isset($_SESSION['Kunde']->fRabatt) && $_SESSION['Kunde']->fRabatt > 0)
             ? (float)$_SESSION['Kunde']->fRabatt
             : 0.0;
-        $rateKeys            = \array_keys($_SESSION['Steuersatz']);
+        $rateKeys        = \array_keys($_SESSION['Steuersatz']);
         // bis
         if (Session::getCustomerGroup()->isMerchant()) {
             $oFilter->cWhere .= ' ROUND(LEAST((tpreise.fVKNetto * ' .
@@ -239,7 +239,7 @@ class PriceRange extends AbstractFilter
                     $conversionFactor . '))) * ((100 + ' . $fSteuersatz . ') / 100), 2),';
             }
             $oFilter->cWhere .= '0';
-            $count           = \count($rateKeys);
+            $count            = \count($rateKeys);
             for ($x = 0; $x < $count; ++$x) {
                 $oFilter->cWhere .= ')';
             }
@@ -323,13 +323,13 @@ class PriceRange extends AbstractFilter
         }
         $max = \count($ranges) - 1;
         foreach ($ranges as $i => $rangeFilter) {
-            $sql  .= 'COUNT(DISTINCT IF(';
-            $nBis  = $rangeFilter->nBis;
+            $sql .= 'COUNT(DISTINCT IF(';
+            $nBis = $rangeFilter->nBis;
             // Finde den höchsten und kleinsten Steuersatz
             if (\is_array($_SESSION['Steuersatz']) && !Session::getCustomerGroup()->isMerchant()) {
                 $rates = \array_keys($_SESSION['Steuersatz']);
                 foreach ($rates as $nSteuersatzKeys) {
-                    $fSteuersatz  = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
+                    $fSteuersatz = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
                     $sql        .= 'IF(tartikel.kSteuerklasse = ' . $nSteuersatzKeys . ',
                         ROUND(LEAST((tpreise.fVKNetto * ' . $currency->getConversionFactor() .
                         ') * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .

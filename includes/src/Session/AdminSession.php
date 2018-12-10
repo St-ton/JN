@@ -54,7 +54,7 @@ class AdminSession
         self::$_instance = $this;
         \session_name('eSIdAdm');
 
-        self::$handler = \ES_SESSIONS === 1
+        self::$handler  = \ES_SESSIONS === 1
             ? new SessionHandlerDB(\Shop::Container()->getDB(), 'tadminsession')
             : new SessionHandlerJTL();
         $conf           = \Shop::getSettings([\CONF_GLOBAL])['global'];
@@ -77,7 +77,7 @@ class AdminSession
             $set    = true;
             $domain = $conf['global_cookie_domain'];
         }
-        if (isset($conf['global_cookie_lifetime']) 
+        if (isset($conf['global_cookie_lifetime'])
             && \is_numeric($conf['global_cookie_lifetime'])
             && (int)$conf['global_cookie_lifetime'] > 0
         ) {

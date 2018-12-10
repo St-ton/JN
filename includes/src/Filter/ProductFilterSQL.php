@@ -166,7 +166,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
                             WHERE teigenschaft.kArtikel = tartikel.kArtikel
                         ) > 0
                     )" . $or .
-                ")";
+                ')';
         }
         \executeHook(\HOOK_STOCK_FILTER, [
             'conf'      => $filterType,

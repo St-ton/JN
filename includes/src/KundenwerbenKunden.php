@@ -249,7 +249,7 @@ class KundenwerbenKunden
         $cVorname  = StringHandler::filterXSS($post['cVorname']);
         $cNachname = StringHandler::filterXSS($post['cNachname']);
         $cEmail    = StringHandler::filterXSS($post['cEmail']);
-        $oKunde = Shop::Container()->getDB()->select('tkunde', 'cMail', $cEmail);
+        $oKunde    = Shop::Container()->getDB()->select('tkunde', 'cMail', $cEmail);
 
         if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
             return false;

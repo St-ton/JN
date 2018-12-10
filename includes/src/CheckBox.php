@@ -164,8 +164,8 @@ class CheckBox
                 $this->oCheckBoxFunktion = $oCheckBoxFunktion;
             } else {
                 $this->kCheckBoxFunktion = 0;
-                $upd = new stdClass();
-                $upd->kCheckBoxFunktion = 0;
+                $upd                     = new stdClass();
+                $upd->kCheckBoxFunktion  = 0;
                 Shop::Container()->getDB()->update('tcheckbox', 'kCheckBox', (int)$this->kCheckBox, $upd);
             }
         }
@@ -227,8 +227,8 @@ class CheckBox
             "SELECT kCheckBox FROM tcheckbox
                 WHERE FIND_IN_SET('" . $nAnzeigeOrt . "', REPLACE(cAnzeigeOrt, ';', ',')) > 0
                     AND FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppe, ';', ',')) > 0
-                    " . $cSQL . "
-                ORDER BY nSort",
+                    " . $cSQL . '
+                ORDER BY nSort',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oCheckBoxTMP_arr as $oCheckBoxTMP) {

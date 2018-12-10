@@ -65,7 +65,7 @@ class BestellungHelper extends WarenkorbHelper
                     ];
 
                     if ((int)$oPosition->nAnzahl != $oPosition->nAnzahl) {
-                        $item->amount[self::NET] *= $oPosition->nAnzahl;
+                        $item->amount[self::NET]   *= $oPosition->nAnzahl;
                         $item->amount[self::GROSS] *= $oPosition->nAnzahl;
 
                         $item->name = sprintf(
@@ -78,7 +78,7 @@ class BestellungHelper extends WarenkorbHelper
                         $item->quantity = (int)$oPosition->nAnzahl;
                     }
 
-                    $info->article[self::NET] += $item->amount[self::NET] * $item->quantity;
+                    $info->article[self::NET]   += $item->amount[self::NET] * $item->quantity;
                     $info->article[self::GROSS] += $item->amount[self::GROSS] * $item->quantity;
 
                     $info->items[] = $item;
@@ -88,20 +88,20 @@ class BestellungHelper extends WarenkorbHelper
                 case C_WARENKORBPOS_TYP_VERSANDZUSCHLAG:
                 case C_WARENKORBPOS_TYP_VERPACKUNG:
                 case C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG:
-                    $info->shipping[self::NET] += $amount * $oPosition->nAnzahl;
+                    $info->shipping[self::NET]   += $amount * $oPosition->nAnzahl;
                     $info->shipping[self::GROSS] += $amountGross * $oPosition->nAnzahl;
                     break;
 
                 case C_WARENKORBPOS_TYP_KUPON:
                 case C_WARENKORBPOS_TYP_GUTSCHEIN:
                 case C_WARENKORBPOS_TYP_NEUKUNDENKUPON:
-                    $info->discount[self::NET] += $amount * $oPosition->nAnzahl;
+                    $info->discount[self::NET]   += $amount * $oPosition->nAnzahl;
                     $info->discount[self::GROSS] += $amountGross * $oPosition->nAnzahl;
                     break;
 
                 case C_WARENKORBPOS_TYP_ZAHLUNGSART:
                 case C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR:
-                    $info->surcharge[self::NET] += $amount * $oPosition->nAnzahl;
+                    $info->surcharge[self::NET]   += $amount * $oPosition->nAnzahl;
                     $info->surcharge[self::GROSS] += $amountGross * $oPosition->nAnzahl;
                     break;
             }
@@ -111,19 +111,19 @@ class BestellungHelper extends WarenkorbHelper
             $amountGross = $order->fGuthaben;
             $amount      = $amountGross;
 
-            $info->discount[self::NET] += $amount;
+            $info->discount[self::NET]   += $amount;
             $info->discount[self::GROSS] += $amountGross;
         }
 
         // positive discount
-        $info->discount[self::NET] *= -1;
+        $info->discount[self::NET]   *= -1;
         $info->discount[self::GROSS] *= -1;
 
         // total
         // $info->total[self::NET]   = $info->article[self::NET] + $info->shipping[self::NET] - $info->discount[self::NET] + $info->surcharge[self::NET];
         // $info->total[self::GROSS] = $info->article[self::GROSS] + $info->shipping[self::GROSS] - $info->discount[self::GROSS] + $info->surcharge[self::GROSS];
 
-        $info->total[self::NET] = $order->fGesamtsummeNetto;
+        $info->total[self::NET]   = $order->fGesamtsummeNetto;
         $info->total[self::GROSS] = $order->fGesamtsumme;
 
         $formatter = function ($prop) use ($decimals) {

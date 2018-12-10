@@ -31,8 +31,8 @@ final class LiveSearch extends AbstractFactory
                     ON tseo.cKey = 'kSuchanfrage'
                     AND tseo.kKey = tsuchanfrage.kSuchanfrage
                 WHERE tsuchanfrage.nAktiv = 1
-                    AND tsuchanfrage.kSprache IN (" . \implode(',', $languageIDs) . ")
-                ORDER BY tsuchanfrage.kSuchanfrage",
+                    AND tsuchanfrage.kSprache IN (" . \implode(',', $languageIDs) . ')
+                ORDER BY tsuchanfrage.kSuchanfrage',
             ReturnType::QUERYSINGLE
         );
         while (($ls = $res->fetch(\PDO::FETCH_OBJ)) !== false) {

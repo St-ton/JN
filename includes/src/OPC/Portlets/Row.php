@@ -130,7 +130,6 @@ class Row extends Portlet
                     'lg' => $sumLG === 0 ? false : ($sumLG % 12 === 0),
                 ],
             ];
-
         }
 
         return $colLayouts;

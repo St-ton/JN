@@ -130,7 +130,7 @@ class MigrationManager
     {
         // reset cached executed migrations
         $this->executedMigrations = null;
-        $start = new DateTime('now');
+        $start                    = new DateTime('now');
         try {
             Shop::Container()->getDB()->beginTransaction();
             $migration->$direction();
@@ -227,9 +227,9 @@ class MigrationManager
     public function getCurrentId(): int
     {
         $oVersion = Shop::Container()->getDB()->query(
-            "SELECT kMigration 
+            'SELECT kMigration 
                 FROM tmigration 
-                ORDER BY kMigration DESC",
+                ORDER BY kMigration DESC',
             \DB\ReturnType::SINGLE_OBJECT
         );
 
@@ -246,7 +246,8 @@ class MigrationManager
             $migrations = [];
         }
 
-        return array_keys($migrations);}
+        return array_keys($migrations);
+    }
 
     /**
      * @return array
@@ -268,9 +269,9 @@ class MigrationManager
     {
         if ($this->executedMigrations === null) {
             $migrations = Shop::Container()->getDB()->executeQuery(
-                "SELECT * 
+                'SELECT * 
                     FROM tmigration 
-                    ORDER BY kMigration ASC",
+                    ORDER BY kMigration ASC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($migrations as $m) {

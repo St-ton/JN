@@ -93,8 +93,8 @@ class SearchSpecial extends AbstractFilter
                 "SELECT tseo.cSeo, tseo.kSprache
                     FROM tseo
                     WHERE cKey = 'suchspecial' 
-                        AND kKey IN (" . \implode(', ', $val) . ")
-                    ORDER BY kSprache",
+                        AND kKey IN (" . \implode(', ', $val) . ')
+                    ORDER BY kSprache',
                 ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($languages as $language) {
@@ -172,12 +172,12 @@ class SearchSpecial extends AbstractFilter
                         $tasp = 'tasp';
                         $tsp  = 'tsp';
                     }
-                    $conditions[] = $tasp . " .kArtikel = tartikel.kArtikel
-                                        AND " . $tasp . ".cAktiv = 'Y' 
-                                        AND " . $tasp . ".dStart <= NOW()
-                                        AND (" . $tasp . ".dEnde >= CURDATE() 
-                                            OR " . $tasp . ".dEnde IS NULL)
-                                        AND " . $tsp . " .kKundengruppe = " . Session::getCustomerGroup()->getID();
+                    $conditions[] = $tasp . ' .kArtikel = tartikel.kArtikel
+                                        AND ' . $tasp . ".cAktiv = 'Y' 
+                                        AND " . $tasp . '.dStart <= NOW()
+                                        AND (' . $tasp . '.dEnde >= CURDATE() 
+                                            OR ' . $tasp . '.dEnde IS NULL)
+                                        AND ' . $tsp . ' .kKundengruppe = ' . Session::getCustomerGroup()->getID();
                     break;
 
                 case \SEARCHSPECIALS_NEWPRODUCTS:

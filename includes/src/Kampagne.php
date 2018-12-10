@@ -167,7 +167,7 @@ class Kampagne
                 1,
                 '*, DATE_FORMAT(dErstellt, \'%d.%m.%Y %H:%i:%s\') AS dErstellt_DE'
             );
-            $setRes = Shop::Container()->getCache()->set($cacheID, $oKampagne_arr, [CACHING_GROUP_CORE]);
+            $setRes        = Shop::Container()->getCache()->set($cacheID, $oKampagne_arr, [CACHING_GROUP_CORE]);
             if ($setRes === false) {
                 // could not save to cache - use session instead
                 $_SESSION['Kampagnen'] = [];
@@ -252,7 +252,7 @@ class Kampagne
                 );
 
                 if (!isset($oVorgang->kKampagneVorgang)) {
-                    $oKampagne                       = new Kampagne(KAMPAGNE_INTERN_GOOGLE);
+                    $oKampagne           = new Kampagne(KAMPAGNE_INTERN_GOOGLE);
                     $event               = new stdClass();
                     $event->kKampagne    = KAMPAGNE_INTERN_GOOGLE;
                     $event->kKampagneDef = KAMPAGNE_DEF_HIT;

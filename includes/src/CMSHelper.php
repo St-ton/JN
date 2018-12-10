@@ -79,7 +79,7 @@ class CMSHelper
             if ((int)$conf['news']['news_anzahl_content'] > 0) {
                 $cSQL = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
             }
-            $newsIDs    = Shop::Container()->getDB()->query(
+            $newsIDs = Shop::Container()->getDB()->query(
                 "SELECT tnews.kNews
                     FROM tnews
                     JOIN tnewskategorienews 
@@ -92,8 +92,8 @@ class CMSHelper
                     LEFT JOIN tseo 
                         ON tseo.cKey = 'kNews'
                         AND tseo.kKey = tnews.kNews
-                        AND tseo.kSprache = " . $langID . "
-                    WHERE t.languageID = " . $langID . "
+                        AND tseo.kSprache = " . $langID . '
+                    WHERE t.languageID = ' . $langID . "
                         AND tnews.nAktiv = 1
                         AND tnews.dGueltigVon <= NOW()
                         AND (tnews.cKundengruppe LIKE '%;-1;%' 
@@ -103,7 +103,7 @@ class CMSHelper
                     ORDER BY tnews.dGueltigVon DESC" . $cSQL,
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            $items = new \News\ItemList(Shop::Container()->getDB());
+            $items   = new \News\ItemList(Shop::Container()->getDB());
             $items->createItems(\Functional\map($newsIDs, function ($e) {
                 return (int)$e->kNews;
             }));
@@ -342,13 +342,13 @@ class CMSHelper
             ? ' LIMIT ' . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
             : '';
         $tmpGifts = Shop::Container()->getDB()->query(
-            "SELECT tartikel.kArtikel, tartikelattribut.cWert
+            'SELECT tartikel.kArtikel, tartikelattribut.cWert
                 FROM tartikel
                 JOIN tartikelattribut 
                     ON tartikelattribut.kArtikel = tartikel.kArtikel
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . \Session\Session::getCustomerGroup()->getID() .
+                    AND tartikelsichtbarkeit.kKundengruppe = ' . \Session\Session::getCustomerGroup()->getID() .
             " WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "' " .
             Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() .

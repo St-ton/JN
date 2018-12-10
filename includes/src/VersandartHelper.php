@@ -469,7 +469,7 @@ class VersandartHelper
             ) { // Normale Variation
                 if ($oArtikel['cInputData']{0} === '_') {
                     // 1D
-                    $cVariation0 = substr($oArtikel['cInputData'], 1);
+                    $cVariation0                         = substr($oArtikel['cInputData'], 1);
                     [$kEigenschaft0, $kEigenschaftWert0] = explode(':', $cVariation0);
 
                     $oVariation = ArtikelHelper::findVariation(
@@ -515,9 +515,9 @@ class VersandartHelper
                 $oArtikelKind = new Artikel();
                 if ($oArtikel['cInputData']{0} === '_') {
                     // 1D
-                    $cVariation0 = substr($oArtikel['cInputData'], 1);
+                    $cVariation0                         = substr($oArtikel['cInputData'], 1);
                     [$kEigenschaft0, $kEigenschaftWert0] = explode(':', $cVariation0);
-                    $kKindArtikel = ArtikelHelper::getChildProdctIDByAttribute(
+                    $kKindArtikel                        = ArtikelHelper::getChildProdctIDByAttribute(
                         $oArtikelTMP->kArtikel,
                         $kEigenschaft0,
                         $kEigenschaftWert0
@@ -612,7 +612,7 @@ class VersandartHelper
             }
 
             $oVersandartNurWK->fEndpreis += $fSumme;
-            $oVersandart                 = self::getFavourableShippingMethod(
+            $oVersandart                  = self::getFavourableShippingMethod(
                 $cLandISO,
                 $cVersandklassen,
                 $kKundengruppe,
@@ -736,7 +736,7 @@ class VersandartHelper
      */
     public static function gibHinzukommendeArtikelAbhaengigeVersandkosten($oArtikel, $cLandISO, $fArtikelAnzahl)
     {
-        $oArtikel->kArtikel = (int)$oArtikel->kArtikel;
+        $oArtikel->kArtikel              = (int)$oArtikel->kArtikel;
         $nArtikelAbhaengigeVersandkosten = self::pruefeArtikelabhaengigeVersandkosten($oArtikel);
         if ($nArtikelAbhaengigeVersandkosten === 1) {
             return self::gibArtikelabhaengigeVersandkosten($cLandISO, $oArtikel, $fArtikelAnzahl, false);
@@ -758,7 +758,7 @@ class VersandartHelper
                     // zaehle die Anzahl vom Warenkorb hinzu und gib die Kosten fuer den Artikel im Warenkorb
                     if ($shipping->kArtikel === $oArtikel->kArtikel) {
                         $nAnzahl += $shipping->nAnzahl;
-                        $fKosten = $shipping->fKosten;
+                        $fKosten  = $shipping->fKosten;
                         break;
                     }
                 }
@@ -844,7 +844,7 @@ class VersandartHelper
                     $arrKosten = explode(':', $KostenTeil);
                     foreach ($arrKosten as $staffel) {
                         [$bisAnzahl, $fPreis] = explode('-', $staffel);
-                        $fPreis = (float)str_replace(',', '.', $fPreis);
+                        $fPreis               = (float)str_replace(',', '.', $fPreis);
                         if ($fPreis >= 0 && $bisAnzahl > 0 && $nAnzahl <= $bisAnzahl) {
                             $oVersandPos = new stdClass();
                             //posname lokalisiert ablegen
@@ -1034,11 +1034,11 @@ class VersandartHelper
                 break;
 
             case 'vm_versandberechnung_gewicht_jtl':
-                $warenkorbgewicht = $Artikel
+                $warenkorbgewicht  = $Artikel
                     ? $Artikel->fGewicht
                     : \Session\Session::getCart()->getWeight();
                 $warenkorbgewicht += $oZusatzArtikel->fGewicht;
-                $versand          = Shop::Container()->getDB()->queryPrepared(
+                $versand           = Shop::Container()->getDB()->queryPrepared(
                     'SELECT *
                         FROM tversandartstaffel
                         WHERE kVersandart = :sid
@@ -1055,11 +1055,11 @@ class VersandartHelper
                 break;
 
             case 'vm_versandberechnung_warenwert_jtl':
-                $warenkorbwert = $Artikel
+                $warenkorbwert  = $Artikel
                     ? $Artikel->Preise->fVKNetto
                     : \Session\Session::getCart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
                 $warenkorbwert += $oZusatzArtikel->fWarenwertNetto;
-                $versand       = Shop::Container()->getDB()->queryPrepared(
+                $versand        = Shop::Container()->getDB()->queryPrepared(
                     'SELECT *
                         FROM tversandartstaffel
                         WHERE kVersandart = :sid
@@ -1083,7 +1083,7 @@ class VersandartHelper
                         : 0;
                 }
                 $artikelanzahl += $oZusatzArtikel->fAnzahl;
-                $versand       = Shop::Container()->getDB()->queryPrepared(
+                $versand        = Shop::Container()->getDB()->queryPrepared(
                     'SELECT *
                         FROM tversandartstaffel
                         WHERE kVersandart = :sid
@@ -1109,7 +1109,7 @@ class VersandartHelper
                 || !empty($Artikel->FunktionsAttribute['versandkosten gestaffelt']))
         ) {
             $fArticleSpecific = self::gibArtikelabhaengigeVersandkosten($cISO, $Artikel, 1);
-            $preis            += $fArticleSpecific->fKosten ?? 0;
+            $preis           += $fArticleSpecific->fKosten ?? 0;
         }
         //Deckelung?
         if ($preis >= $versandart->fDeckelung && $versandart->fDeckelung > 0) {
@@ -1326,13 +1326,13 @@ class VersandartHelper
                     ? 'cDeutsch'
                     : 'cEnglisch';
                 // generate IN sql statement with stringified country isos
-                $sql       = " cISO IN (" . implode(', ', array_map(function ($iso) {
+                $sql       = ' cISO IN (' . implode(', ', array_map(function ($iso) {
                     return "'" . $iso . "'";
                 }, $cLaender_arr)) . ')';
                 $countries = Shop::Container()->getDB()->query(
-                    "SELECT " . $select . " AS name
+                    'SELECT ' . $select . ' AS name
                     FROM tland
-                    WHERE " . $sql,
+                    WHERE ' . $sql,
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 // re-concatinate isos with "," for the final output
@@ -1392,9 +1392,9 @@ class VersandartHelper
                             OR cVersandklassen RLIKE :cShippingClass)
                         AND (cKundengruppen = '-1'
                             OR FIND_IN_SET(:cGroupID, REPLACE(cKundengruppen, ';', ',')) > 0)
-                        " . $cKundeSQLWhere . $cProductSpecificSQLWhere . "
+                        " . $cKundeSQLWhere . $cProductSpecificSQLWhere . '
                     ORDER BY tversandart.fVersandkostenfreiAbX, tversandart.nSort ASC
-                    LIMIT 1",
+                    LIMIT 1',
                 [
                     'cLangID'        => Shop::getLanguageCode(),
                     'cShippingClass' => '^([0-9 -]* )?' . $versandklassen . ' ',
@@ -1450,7 +1450,6 @@ class VersandartHelper
                     ORDER BY CONVERT($colName USING utf8) COLLATE utf8_german2_ci",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-
         }
         executeHook(HOOK_TOOLSGLOBAL_INC_GIBBELIEFERBARELAENDER, [
             'oLaender_arr' => &$countries

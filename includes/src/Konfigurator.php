@@ -104,14 +104,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                         }
                         // Konfiguration validieren
                         if (self::validateBasket($oPosition->kArtikel, $oKonfigitem_arr) !== true) {
-                            $bDeleted = true;
+                            $bDeleted            = true;
                             $beDeletednPos_arr[] = $nPos;
                             //loescheWarenkorbPosition($nPos);
                         }
                     } elseif (!$oPosition->cUnique) {
                         // Konfiguration vorhanden -> löschen
                         if (self::hasKonfig($oPosition->kArtikel)) {
-                            $bDeleted = true;
+                            $bDeleted            = true;
                             $beDeletednPos_arr[] = $nPos;
                             //loescheWarenkorbPosition($nPos);
                         }

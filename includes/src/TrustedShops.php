@@ -649,7 +649,7 @@ class TrustedShops
 
             return 4; // Das Zertifikat ist gesperrt
         }
-        if (strlen($returnValue->certificationLanguage) > 0 
+        if (strlen($returnValue->certificationLanguage) > 0
             && strtolower($returnValue->certificationLanguage) !== strtolower($cISOSprache)
         ) {
             Shop::Container()->getLogService()->error(
@@ -719,10 +719,10 @@ class TrustedShops
             $this->nAktiv = 0;
             // Prüfe ob das Zertifikat vorhanden ist
             $oZertifikat = Shop::Container()->getDB()->select(
-                'ttrustedshopszertifikat', 
-                'cTSID', 
-                Shop::Container()->getDB()->escape($cTSID), 
-                'cISOSprache', 
+                'ttrustedshopszertifikat',
+                'cTSID',
+                Shop::Container()->getDB()->escape($cTSID),
+                'cISOSprache',
                 $cISOSprache
             );
             if (isset($oZertifikat->kTrustedShopsZertifikat) && $oZertifikat->kTrustedShopsZertifikat > 0) {
@@ -758,7 +758,7 @@ class TrustedShops
         $oZertifikat = null;
         if (strlen($cISOSprache) > 0 && strlen($tsId) > 0) {
             $oZertifikat = Shop::Container()->getDB()->select(
-                'ttrustedshopszertifikat', 
+                'ttrustedshopszertifikat',
                 'cISOSprache',
                 $cISOSprache,
                 'cTSID',
@@ -932,7 +932,7 @@ class TrustedShops
         if (strlen($cISOSprache) > 0) {
             $rating = Shop::Container()->getDB()->select(
                 'ttrustedshopskundenbewertung',
-                'cISOSprache', 
+                'cISOSprache',
                 $cISOSprache
             );
             

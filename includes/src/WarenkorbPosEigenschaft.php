@@ -103,7 +103,7 @@ class WarenkorbPosEigenschaft
      */
     public function loadFromDB(int $kWarenkorbPosEigenschaft): self
     {
-        $obj     = Shop::Container()->getDB()->select(
+        $obj = Shop::Container()->getDB()->select(
             'twarenkorbposeigenschaft',
             'kWarenkorbPosEigenschaft',
             $kWarenkorbPosEigenschaft

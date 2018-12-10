@@ -510,10 +510,10 @@ class Controller
     private function getNewsDates($oSQL): array
     {
         $dateData = $this->db->query(
-            "SELECT MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr
+            'SELECT MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr
                 FROM tnews 
                 JOIN tnewskategorienews 
-                    ON tnewskategorienews.kNews = tnews.kNews" . $oSQL->cNewsKatSQL . "
+                    ON tnewskategorienews.kNews = tnews.kNews' . $oSQL->cNewsKatSQL . "
                 JOIN tnewssprache
                     ON tnewssprache.kNews = tnews.kNews
                 WHERE tnews.nAktiv = 1
@@ -521,9 +521,9 @@ class Controller
                     AND (tnews.cKundengruppe LIKE '%;-1;%' 
                         OR FIND_IN_SET('" . Session::getCustomerGroup()->getID() .
                     "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
-                    AND tnewssprache.languageID = " . \Shop::getLanguageID() . "
+                    AND tnewssprache.languageID = " . \Shop::getLanguageID() . '
                 GROUP BY nJahr, nMonat
-                ORDER BY dGueltigVon DESC",
+                ORDER BY dGueltigVon DESC',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $dates    = [];

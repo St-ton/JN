@@ -82,7 +82,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public function jsonSerialize()
         {
             if ($this->oSprache === null) {
-                $this->oSprache  = new Konfiggruppesprache($this->kKonfiggruppe);
+                $this->oSprache = new Konfiggruppesprache($this->kKonfiggruppe);
             }
             $override = [
                 'kKonfiggruppe' => (int)$this->kKonfiggruppe,
@@ -97,7 +97,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 'cBeschreibung' => $this->oSprache->getBeschreibung(),
                 'oItem_arr'     => $this->oItem_arr
             ];
-            $result = array_merge(get_object_vars($this), $override);
+            $result   = array_merge(get_object_vars($this), $override);
 
             return StringHandler::utf8_convert_recursive($result);
         }

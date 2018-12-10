@@ -307,13 +307,13 @@ class IOMethods
                 if ($box->getType() === \Boxes\Type::CONTAINER) {
                     foreach ($box->getChildren() as $childBox) {
                         if (get_class($childBox) === \Boxes\Items\CompareList::class) {
-                            $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $childBox);
+                            $renderer                                     = new \Boxes\Renderer\DefaultRenderer($smarty, $childBox);
                             $oResponse->cBoxContainer[$childBox->getID()] = $renderer->render();
                         }
                     }
                 }
                 if (get_class($box) === \Boxes\Items\CompareList::class) {
-                    $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
+                    $renderer                                = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
                     $oResponse->cBoxContainer[$box->getID()] = $renderer->render();
                 }
             }
@@ -362,7 +362,7 @@ class IOMethods
                         }
                     }
                 } elseif (get_class($box) === \Boxes\Items\CompareList::class) {
-                    $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
+                    $renderer                                = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
                     $oResponse->cBoxContainer[$box->getID()] = $renderer->render();
                 }
             }
@@ -452,12 +452,12 @@ class IOMethods
                 if ($box->getType() === \Boxes\Type::CONTAINER) {
                     foreach ($box->getChildren() as $childBox) {
                         if (get_class($childBox) === \Boxes\Items\Wishlist::class) {
-                            $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $childBox);
+                            $renderer                                     = new \Boxes\Renderer\DefaultRenderer($smarty, $childBox);
                             $oResponse->cBoxContainer[$childBox->getID()] = $renderer->render();
                         }
                     }
                 } elseif (get_class($box) === \Boxes\Items\Wishlist::class) {
-                    $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
+                    $renderer                                = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
                     $oResponse->cBoxContainer[$box->getID()] = $renderer->render();
                 }
             }
@@ -500,12 +500,12 @@ class IOMethods
                 if ($box->getType() === \Boxes\Type::CONTAINER) {
                     foreach ($box->getChildren() as $childBox) {
                         if ($childBox->getType() === \Boxes\Items\Wishlist::class) {
-                            $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $childBox);
+                            $renderer                                     = new \Boxes\Renderer\DefaultRenderer($smarty, $childBox);
                             $oResponse->cBoxContainer[$childBox->getID()] = $renderer->render();
                         }
                     }
                 } elseif (get_class($box) === \Boxes\Items\Wishlist::class) {
-                    $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
+                    $renderer                                = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
                     $oResponse->cBoxContainer[$box->getID()] = $renderer->render();
                 }
             }
@@ -704,7 +704,7 @@ class IOMethods
         $newProductNr = '';
         foreach ($valueID_arr as $valueID) {
             $currentValue = new EigenschaftWert($valueID);
-            $weightDiff   += $currentValue->fGewichtDiff;
+            $weightDiff  += $currentValue->fGewichtDiff;
             $newProductNr = (!empty($currentValue->cArtNr) && $oArtikel->cArtNr !== $currentValue->cArtNr)
                 ? $currentValue->cArtNr
                 : $oArtikel->cArtNr;
@@ -1008,7 +1008,7 @@ class IOMethods
         } else {
             $objResponse->jsfunc('$.evo.error', 'Article not found', $kVaterArtikel);
         }
-        $objResponse->jsfunc("$.evo.article().variationRefreshAll", $wrapper);
+        $objResponse->jsfunc('$.evo.article().variationRefreshAll', $wrapper);
 
         return $objResponse;
     }

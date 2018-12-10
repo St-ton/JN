@@ -371,8 +371,8 @@ class Updater
 
             return $targetVersion;
         }
-        $id                = reset($pendingMigrations);
-        $migration         = $manager->getMigrationById($id);
+        $id        = reset($pendingMigrations);
+        $migration = $manager->getMigrationById($id);
 
         $manager->executeMigration($migration, IMigration::UP);
 
@@ -398,7 +398,7 @@ class Updater
     protected function setVersion(Version $targetVersion): void
     {
         $db              = Shop::Container()->getDB();
-        $tVersionColumns = $db->executeQuery("SHOW COLUMNS FROM `tversion`", \DB\ReturnType::ARRAY_OF_OBJECTS);
+        $tVersionColumns = $db->executeQuery('SHOW COLUMNS FROM `tversion`', \DB\ReturnType::ARRAY_OF_OBJECTS);
         foreach ($tVersionColumns as $column) {
             if ($column->Field === 'nVersion') {
                 if ($column->Type !== 'varchar(20)') {

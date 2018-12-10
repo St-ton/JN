@@ -137,8 +137,8 @@ class KategorieHelper
 
             if ($getDescription === true) {
                 $descriptionSelect = $isDefaultLang === true
-                    ? ", node.cBeschreibung" // no description needed if we don't show category info in mega menu
-                    : ", node.cBeschreibung, tkategoriesprache.cBeschreibung AS cBeschreibung_spr";
+                    ? ', node.cBeschreibung' // no description needed if we don't show category info in mega menu
+                    : ', node.cBeschreibung, tkategoriesprache.cBeschreibung AS cBeschreibung_spr';
             }
             $imageSelect          = ($categoryCount >= $categoryLimit
                 && isset(self::$config['template']['megamenu']['show_category_images'])
@@ -186,7 +186,7 @@ class KategorieHelper
                 // if we want to display all categories without filtering out empty ones,
                 // we don't have to check the product count
                 // this saves a very expensive join - cnt will be always -1
-                $countSelect = ', -1 AS cnt';
+                $countSelect          = ', -1 AS cnt';
                 $hasArticlesCheckJoin = '';
                 $visibilityJoin       = '';
                 $visibilityWhere      = '';

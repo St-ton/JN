@@ -275,7 +275,7 @@ class Session
         foreach ($_SESSION['Sprachen'] as $oSprache) {
             $cISO              = \StringHandler::convertISO2ISO639($oSprache->cISO);
             $oSprache->cISO639 = $cISO;
-            $allowed[]    = $cISO;
+            $allowed[]         = $cISO;
             if ($oSprache->cShopStandard === 'Y') {
                 $defaultLang = $cISO;
             }
@@ -745,7 +745,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kKategorie > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -756,7 +756,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kSeite > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -767,7 +767,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kVariKindArtikel > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -778,7 +778,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kHersteller > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -789,7 +789,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kSuchanfrage > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -800,7 +800,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kMerkmalWert > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -811,7 +811,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kTag > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -822,7 +822,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kSuchspecial > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -833,7 +833,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kNews > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -844,7 +844,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kNewsMonatsUebersicht > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -855,7 +855,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kNewsKategorie > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -866,7 +866,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kUmfrage > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -877,7 +877,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 }
                 \header('Location: ' . \Shop::getURL() . '/' . $seo, true, 301);
                 exit;
@@ -918,7 +918,7 @@ class Session
      */
     public static function setSpecialLinks(): LinkGroupCollection
     {
-        $linkGroups = \Shop::Container()->getLinkService()->getLinkGroups();
+        $linkGroups                    = \Shop::Container()->getLinkService()->getLinkGroups();
         $_SESSION['Link_Datenschutz']  = $linkGroups->Link_Datenschutz;
         $_SESSION['Link_AGB']          = $linkGroups->Link_AGB;
         $_SESSION['Link_Versandseite'] = $linkGroups->Link_Versandseite;

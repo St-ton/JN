@@ -192,14 +192,14 @@ class Category extends BaseCategory
             return $this->options;
         }
         $categories       = $this->productFilter->getDB()->executeQuery(
-            "SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
+            'SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
                 ssMerkmal.nSort, COUNT(*) AS nAnzahl
-                FROM (" . $baseQuery . " ) AS ssMerkmal
+                FROM (' . $baseQuery . " ) AS ssMerkmal
                     LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kKategorie
                         AND tseo.cKey = 'kKategorie'
-                        AND tseo.kSprache = " . $this->getLanguageID() . "
+                        AND tseo.kSprache = " . $this->getLanguageID() . '
                     GROUP BY ssMerkmal.kKategorie
-                    ORDER BY ssMerkmal.nSort, ssMerkmal.cName",
+                    ORDER BY ssMerkmal.nSort, ssMerkmal.cName',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $langID           = $this->getLanguageID();

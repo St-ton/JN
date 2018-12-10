@@ -524,7 +524,7 @@ class Wunschliste
                                 );
                                 if (empty($oEigenschaftWertVorhanden->kEigenschaftKombi)) {
                                     $cArtikel_arr[] = $wlPosition->cArtikelName;
-                                    $hinweis        .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
+                                    $hinweis       .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
                                     $this->delWunschlistePosSess($wlPosition->kArtikel);
                                     break;
                                 }
@@ -559,7 +559,7 @@ class Wunschliste
                                         && empty($oEigenschaftWertVorhanden->cFreifeldWert)
                                     ) {
                                         $cArtikel_arr[] = $wlPosition->cArtikelName;
-                                        $hinweis        .= '<br />' .
+                                        $hinweis       .= '<br />' .
                                             Shop::Lang()->get('noProductWishlist', 'messages');
 
                                         $this->delWunschlistePosSess($wlPosition->kArtikel);
@@ -573,12 +573,12 @@ class Wunschliste
                     }
                 } else {
                     $cArtikel_arr[] = $wlPosition->cArtikelName;
-                    $hinweis        .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
+                    $hinweis       .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
                     $this->delWunschlistePosSess($wlPosition->kArtikel);
                 }
             } else {
                 $cArtikel_arr[] = $wlPosition->cArtikelName;
-                $hinweis        .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
+                $hinweis       .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
                 $this->delWunschlistePosSess($wlPosition->kArtikel);
             }
         }
@@ -906,7 +906,7 @@ class Wunschliste
         // Hat der benutzer mehr Emails angegeben als erlaubt sind?
         if (count($recipients) > (int)$conf['global']['global_wunschliste_max_email']) {
             $nZuviel = count($recipients) - (int)$conf['global']['global_wunschliste_max_email'];
-            $msg .= '<br />';
+            $msg    .= '<br />';
 
             if (strpos($msg, Shop::Lang()->get('novalidEmail', 'messages')) === false) {
                 $msg = Shop::Lang()->get('novalidEmail', 'messages');

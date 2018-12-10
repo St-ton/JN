@@ -119,7 +119,7 @@ class BaseSearchSpecial extends AbstractFilter
                     ? (int)$min
                     : 100;
 
-                return "ROUND(tbestseller.fAnzahl) >= " . $count;
+                return 'ROUND(tbestseller.fAnzahl) >= ' . $count;
 
             case \SEARCHSPECIALS_SPECIALOFFERS:
                 $tasp = 'tartikelsonderpreis';
@@ -129,10 +129,10 @@ class BaseSearchSpecial extends AbstractFilter
                     $tsp  = 'tsp';
                 }
 
-                return $tasp . " .kArtikel = tartikel.kArtikel
-                                    AND " . $tasp . ".cAktiv = 'Y' AND " . $tasp . ".dStart <= NOW()
-                                    AND (" . $tasp . ".dEnde >= CURDATE() OR " . $tasp . ".dEnde IS NULL)
-                                    AND " . $tsp . " .kKundengruppe = " . \Session::getCustomerGroup()->getID();
+                return $tasp . ' .kArtikel = tartikel.kArtikel
+                                    AND ' . $tasp . ".cAktiv = 'Y' AND " . $tasp . '.dStart <= NOW()
+                                    AND (' . $tasp . '.dEnde >= CURDATE() OR ' . $tasp . '.dEnde IS NULL)
+                                    AND ' . $tsp . ' .kKundengruppe = ' . \Session::getCustomerGroup()->getID();
 
             case \SEARCHSPECIALS_NEWPRODUCTS:
                 $days = (($age = $this->getConfig('boxen')['box_neuimsortiment_alter_tage']) > 0)

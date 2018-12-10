@@ -364,7 +364,7 @@ class DBMigrationHelper
                 $columnChange[] = "    CHANGE COLUMN `{$oColumn->COLUMN_NAME}` `{$oColumn->COLUMN_NAME}` "
                     ."{$oColumn->COLUMN_TYPE} CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci'"
                     . ($oColumn->IS_NULLABLE === 'YES' ? ' NULL' : ' NOT NULL')
-                    . ($oColumn->IS_NULLABLE === 'NO' && $oColumn->COLUMN_DEFAULT === null ? '' : " DEFAULT "
+                    . ($oColumn->IS_NULLABLE === 'NO' && $oColumn->COLUMN_DEFAULT === null ? '' : ' DEFAULT '
                         . ($oColumn->COLUMN_DEFAULT === null ? 'NULL' : "'{$oColumn->COLUMN_DEFAULT}'"));
             }
 

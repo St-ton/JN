@@ -49,8 +49,8 @@ class Container extends Portlet
                 \Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.xs/' . $name
             );
         }
-        if (!empty($instance->getProperty("class"))) {
-            $instance->addClass($instance->getProperty("class"));
+        if (!empty($instance->getProperty('class'))) {
+            $instance->addClass($instance->getProperty('class'));
         }
 
 
@@ -76,8 +76,8 @@ class Container extends Portlet
 
             $instance->getImageAttributes(\Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.xs/' . $name);
         }
-        if (!empty($instance->getProperty("class"))) {
-            $instance->addClass($instance->getProperty("class"));
+        if (!empty($instance->getProperty('class'))) {
+            $instance->addClass($instance->getProperty('class'));
         }
         if ($instance->getProperty('background-flag') === 'video') {
             $instance->setStyle('overflow', 'hidden');

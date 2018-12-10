@@ -259,7 +259,7 @@ class Warenkorb
             if (!$neuePos && !$cUnique) {
                 //erhoehe Anzahl dieser Position
                 $this->PositionenArr[$i]->nZeitLetzteAenderung = time();
-                $this->PositionenArr[$i]->nAnzahl              += $anzahl;
+                $this->PositionenArr[$i]->nAnzahl             += $anzahl;
                 if ($setzePositionsPreise === true) {
                     $this->setzePositionsPreise();
                 }
@@ -329,7 +329,7 @@ class Warenkorb
             $pos->cName[$lang->cISO] = (isset($localized->cName) && strlen(trim($localized->cName)) > 0)
                 ? $localized->cName
                 : $pos->Artikel->cName;
-            $lieferstatus_spr                    = Shop::Container()->getDB()->select(
+            $lieferstatus_spr        = Shop::Container()->getDB()->select(
                 'tlieferstatus',
                 'kLieferstatus',
                 (int)($pos->Artikel->kLieferstatus ?? 0),
@@ -611,7 +611,7 @@ class Warenkorb
         }
         $pos->nPosTyp  = $typ;
         $pos->cHinweis = $hinweis;
-        $nOffset                = array_push($this->PositionenArr, $pos);
+        $nOffset       = array_push($this->PositionenArr, $pos);
         $pos           = $this->PositionenArr[$nOffset - 1];
         foreach (Session::getCurrencies() as $currency) {
             $currencyName = $currency->getName();
@@ -665,7 +665,7 @@ class Warenkorb
                 if ($nVaterPos !== null) {
                     $parent = $this->PositionenArr[$nVaterPos];
                     if (is_object($parent)) {
-                        $pos->nAnzahlEinzel                        = $pos->nAnzahl / $parent->nAnzahl;
+                        $pos->nAnzahlEinzel                              = $pos->nAnzahl / $parent->nAnzahl;
                         $parent->cKonfigpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
                             $fPreisBrutto,
                             $currency
@@ -1054,7 +1054,7 @@ class Warenkorb
                 $_SESSION['Kunde']->fGuthaben,
                 \Session\Session::getCart()->gibGesamtsummeWaren(true, false)
             );
-            $gesamtsumme -= $_SESSION['Bestellung']->fGuthabenGenutzt * $conversionFactor;
+            $gesamtsumme                             -= $_SESSION['Bestellung']->fGuthabenGenutzt * $conversionFactor;
         }
         // Lokalisierung aufheben
         $gesamtsumme /= $conversionFactor;
@@ -1225,7 +1225,7 @@ class Warenkorb
                     $steuerpos[$idx]->fBetrag         = ($position->fPreis * $position->nAnzahl * $ust) / 100.0;
                     $steuerpos[$idx]->cPreisLocalized = Preise::getLocalizedPriceString($steuerpos[$idx]->fBetrag);
                 } else {
-                    $steuerpos[$idx]->fBetrag         += ($position->fPreis * $position->nAnzahl * $ust) / 100.0;
+                    $steuerpos[$idx]->fBetrag        += ($position->fPreis * $position->nAnzahl * $ust) / 100.0;
                     $steuerpos[$idx]->cPreisLocalized = Preise::getLocalizedPriceString($steuerpos[$idx]->fBetrag);
                 }
             }
@@ -1725,9 +1725,9 @@ class Warenkorb
         $shippingClasses = [];
 
         foreach ($this->PositionenArr as $Position) {
-            $totalWeight       += $Position->fGesamtgewicht;
+            $totalWeight      += $Position->fGesamtgewicht;
             $shippingClasses[] = $Position->kVersandklasse;
-            $maxPrices         += $Position->Artikel->Preise->fVKNetto ?? 0;
+            $maxPrices        += $Position->Artikel->Preise->fVKNetto ?? 0;
         }
 
         // cheapest shipping except shippings that offer cash payment

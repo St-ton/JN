@@ -776,11 +776,11 @@ class SearchResults implements SearchResultsInterface
              ->setAttributeFilterOptions($attribtuteFilterOptions)
              ->setCustomFilterOptions($customFilterOptions)
              ->setSearchFilterJSON(AbstractBox::getJSONString(\array_map(
-                 function ($e) {
-                     $e->cURL = \StringHandler::htmlentitydecode($e->cURL);
+                    function ($e) {
+                        $e->cURL = \StringHandler::htmlentitydecode($e->cURL);
 
-                     return $e;
-                 },
+                        return $e;
+                    },
                  $searchFilterOptions
              )));
 

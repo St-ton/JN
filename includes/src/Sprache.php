@@ -937,10 +937,14 @@ class Sprache
         if (count($languages) > 0) {
             switch ($nOption) {
                 case 2:
-                    return \Functional\reindex($languages, function ($e) { return $e->cISO; });
+                    return \Functional\reindex($languages, function ($e) {
+                        return $e->cISO;
+                    });
 
                 case 1:
-                    return \Functional\reindex($languages, function ($e) { return $e->kSprache; });
+                    return \Functional\reindex($languages, function ($e) {
+                        return $e->kSprache;
+                    });
 
                 case 0:
                 default:
@@ -962,10 +966,14 @@ class Sprache
         );
         switch ($nOption) {
             case 2:
-                return \Functional\reindex($oSprach_arr, function ($e) { return $e->cISO; });
+                return \Functional\reindex($oSprach_arr, function ($e) {
+                    return $e->cISO;
+                });
 
             case 1:
-                return \Functional\reindex($oSprach_arr, function ($e) { return $e->kSprache; });
+                return \Functional\reindex($oSprach_arr, function ($e) {
+                    return $e->kSprache;
+                });
 
             case 0:
             default:
@@ -1023,8 +1031,8 @@ class Sprache
         if (($lang = Shop::Container()->getCache()->get($cacheID)) !== false && $lang !== null) {
             return $lang;
         }
-        $row  = $bShop ? 'cShopStandard' : 'cStandard';
-        $lang = Shop::Container()->getDB()->select('tsprache', $row, 'Y');
+        $row            = $bShop ? 'cShopStandard' : 'cStandard';
+        $lang           = Shop::Container()->getDB()->select('tsprache', $row, 'Y');
         $lang->kSprache = (int)$lang->kSprache;
         Shop::Container()->getCache()->set($cacheID, $lang, [CACHING_GROUP_LANGUAGE]);
 
@@ -1094,7 +1102,7 @@ class Sprache
                 } elseif ($page !== null) {
                     $lang->cURL = $page->getURL($lang->kSprache);
                     if (strpos($lang->cURL, '/?s=') !== false) {
-                        $lang->cURL     .= '&amp;lang=' . $lang->cISO;
+                        $lang->cURL    .= '&amp;lang=' . $lang->cISO;
                         $lang->cURLFull = rtrim($shopURL, '/') . $lang->cURL;
                     } else {
                         $lang->cURLFull = $lang->cURL;

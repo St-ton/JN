@@ -15,7 +15,7 @@ trait MigrationTableTrait
     public function getLocaleSections(): array
     {
         $result = [];
-        $items  = $this->fetchAll("SELECT kSprachsektion AS id, cName AS name FROM tsprachsektion");
+        $items  = $this->fetchAll('SELECT kSprachsektion AS id, cName AS name FROM tsprachsektion');
         foreach ($items as $item) {
             $result[$item->name] = $item->id;
         }
@@ -29,7 +29,7 @@ trait MigrationTableTrait
     public function getLocales(): array
     {
         $result = [];
-        $items  = $this->fetchAll("SELECT kSprachISO AS id, cISO AS name FROM tsprachiso");
+        $items  = $this->fetchAll('SELECT kSprachISO AS id, cISO AS name FROM tsprachiso');
         foreach ($items as $item) {
             $result[$item->name] = $item->id;
         }

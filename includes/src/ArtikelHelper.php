@@ -272,13 +272,13 @@ class ArtikelHelper
         );
 
         $oEigenschaftTMP_arr = Shop::Container()->getDB()->query(
-            "SELECT teigenschaft.kEigenschaft,teigenschaft.cName,teigenschaft.cTyp
+            'SELECT teigenschaft.kEigenschaft,teigenschaft.cName,teigenschaft.cTyp
                 FROM teigenschaft
                 LEFT JOIN teigenschaftsichtbarkeit
                     ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
-                    AND teigenschaftsichtbarkeit.kKundengruppe = " . $customerGroup . "
-                WHERE (teigenschaft.kArtikel = " . $parentID . "
-                    OR teigenschaft.kArtikel = " . $productID . ")
+                    AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroup . '
+                WHERE (teigenschaft.kArtikel = ' . $parentID . '
+                    OR teigenschaft.kArtikel = ' . $productID . ")
                     AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                     AND (teigenschaft.cTyp = 'FREIFELD'
                     OR teigenschaft.cTyp = 'PFLICHT-FREIFELD')",
@@ -635,7 +635,7 @@ class ArtikelHelper
 
             if ($threshold > 0 && $result->fMassMenge > $threshold) {
                 $result->fGrundpreisMenge = $nAmount;
-                $result->fMassMenge       /= $fFactor;
+                $result->fMassMenge      /= $fFactor;
                 $result->fVPEWert         = $result->fMassMenge / $amount / $result->fGrundpreisMenge;
                 $result->fBasePreis       = $price / $result->fVPEWert;
                 $result->cVPEEinheit      = $result->fGrundpreisMenge . ' ' .
@@ -1579,8 +1579,8 @@ class ArtikelHelper
                 exit();
             }
             Shop::Container()->getDB()->query(
-                "DELETE FROM ttagkunde
-                    WHERE dZeit < DATE_SUB(NOW(),INTERVAL 1 MONTH)",
+                'DELETE FROM ttagkunde
+                    WHERE dZeit < DATE_SUB(NOW(),INTERVAL 1 MONTH)',
                 \DB\ReturnType::DEFAULT
             );
             if (($conf['artikeldetails']['tagging_freischaltung'] === 'Y'
@@ -1929,7 +1929,7 @@ class ArtikelHelper
 
         if ($productID > 0) {
             if ((int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0) {
-                $cLimit = " LIMIT " . (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
+                $cLimit = ' LIMIT ' . (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
             }
             $stockFilterSQL    = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $customerGroupID   = \Session\Session::getCustomerGroup()->getID();
@@ -2171,7 +2171,7 @@ class ArtikelHelper
                 if ($configItem->bAktiv) {
                     $config->fGesamtpreis[0] += $configItem->getPreis() * $configItem->fAnzahlWK;
                     $config->fGesamtpreis[1] += $configItem->getPreis(true) * $configItem->fAnzahlWK;
-                    $configGroup->bAktiv     = true;
+                    $configGroup->bAktiv      = true;
                     if ($configItem->getArtikel() !== null
                         && $configItem->getArtikel()->cLagerBeachten === 'Y'
                         && $config->nMinDeliveryDays < $configItem->getArtikel()->nMinDeliveryDays

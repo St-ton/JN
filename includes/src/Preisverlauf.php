@@ -55,7 +55,7 @@ class Preisverlauf
     {
         $cacheID = 'gpv_' . $kArtikel . '_' . $kKundengruppe . '_' . $nMonat;
         if (($obj_arr = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $obj_arr = Shop::Container()->getDB()->query(
+            $obj_arr   = Shop::Container()->getDB()->query(
                 'SELECT tpreisverlauf.fVKNetto, tartikel.fMwst, UNIX_TIMESTAMP(tpreisverlauf.dDate) AS timestamp
                     FROM tpreisverlauf 
                     LEFT JOIN tartikel
@@ -71,8 +71,8 @@ class Preisverlauf
             foreach ($obj_arr as &$_pv) {
                 if (isset($_pv->timestamp)) {
                     $dt->setTimestamp((int)$_pv->timestamp);
-                    $_pv->date   = $dt->format('d.m.');
-                    $_pv->fPreis = \Session\Session::getCustomerGroup()->isMerchant()
+                    $_pv->date     = $dt->format('d.m.');
+                    $_pv->fPreis   = \Session\Session::getCustomerGroup()->isMerchant()
                         ? round($_pv->fVKNetto * $_currency->getConversionFactor(), 2)
                         : TaxHelper::getGross($_pv->fVKNetto * $_currency->getConversionFactor(), $_pv->fMwst);
                     $_pv->currency = $_currency->getCode();

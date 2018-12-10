@@ -42,9 +42,9 @@ final class Attribute extends AbstractFactory
                     AND tseo.kKey = tmerkmalwert.kMerkmalWert
                     AND tseo.kSprache = tmerkmalsprache.kSprache
                 WHERE tmerkmal.nGlobal = 1 
-                    AND tmerkmalsprache.kSprache IN (" . \implode(',', $languageIDs) . ")
+                    AND tmerkmalsprache.kSprache IN (" . \implode(',', $languageIDs) . ')
                 GROUP BY tmerkmalwert.kMerkmalWert
-                ORDER BY tmerkmal.kMerkmal, tmerkmal.cName",
+                ORDER BY tmerkmal.kMerkmal, tmerkmal.cName',
             ReturnType::QUERYSINGLE
         );
         while (($attribute = $res->fetch(\PDO::FETCH_OBJ)) !== false) {

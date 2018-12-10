@@ -24,7 +24,7 @@ class Panel extends Portlet
     {
         $instance->addClass('panel')->addClass('panel-' . $instance->getProperty('panel-state'))->addClass($instance->getProperty('panel-class'));
 
-        $ret = '<div ' . $instance->getAttributeString() . ' ' . $instance->getDataAttributeString() . '>';
+        $ret  = '<div ' . $instance->getAttributeString() . ' ' . $instance->getDataAttributeString() . '>';
         $ret .= !empty($instance->getProperty('title-flag'))
             ? '<div class="panel-heading opc-area" data-area-id="pnl_title">' .
             $instance->getSubareaPreviewHtml('pnl_title') . '</div>'
@@ -50,7 +50,7 @@ class Panel extends Portlet
                  ->addClass('panel-' . $instance->getProperty('panel-state'))
                  ->addClass($instance->getProperty('panel-class'));
 
-        $ret = '<div ' . $instance->getAttributeString() . '>';
+        $ret  = '<div ' . $instance->getAttributeString() . '>';
         $ret .= !empty($instance->getProperty('title-flag'))
             ? '<div class="panel-heading">' . $instance->getSubareaFinalHtml('pnl_title') . '</div>'
             : '';

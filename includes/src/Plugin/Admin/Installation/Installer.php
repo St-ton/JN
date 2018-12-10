@@ -511,15 +511,15 @@ final class Installer
                 }
             }
             $this->db->query(
-                "UPDATE tplugineinstellungen
-                    SET kPlugin = " . $oldPluginID . ",
+                'UPDATE tplugineinstellungen
+                    SET kPlugin = ' . $oldPluginID . ",
                         cName = REPLACE(cName, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
                     WHERE kPlugin = " . $pluginID,
                 ReturnType::AFFECTED_ROWS
             );
             $this->db->query(
-                "UPDATE tplugineinstellungenconf
-                    SET kPlugin = " . $oldPluginID . ",
+                'UPDATE tplugineinstellungenconf
+                    SET kPlugin = ' . $oldPluginID . ",
                         cWertName = REPLACE(cWertName, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
                     WHERE kPlugin = " . $pluginID,
                 ReturnType::AFFECTED_ROWS
@@ -531,8 +531,8 @@ final class Installer
                 (object)['kCustomID' => $oldPluginID]
             );
             $this->db->query(
-                "UPDATE tpluginzahlungsartklasse
-                    SET kPlugin = " . $oldPluginID . ",
+                'UPDATE tpluginzahlungsartklasse
+                    SET kPlugin = ' . $oldPluginID . ",
                         cModulId = REPLACE(cModulId, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
                     WHERE kPlugin = " . $pluginID,
                 ReturnType::AFFECTED_ROWS

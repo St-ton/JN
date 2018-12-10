@@ -47,8 +47,8 @@ final class NewProducts extends AbstractBox
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             AND tartikel.cNeu = 'Y' " . $stockFilterSQL . $parentSQL . "
                             AND cNeu = 'Y' 
-                            AND DATE_SUB(NOW(), INTERVAL " . $days . " DAY) < dErstellt
-                        ORDER BY RAND() LIMIT " . $limit,
+                            AND DATE_SUB(NOW(), INTERVAL " . $days . ' DAY) < dErstellt
+                        ORDER BY RAND() LIMIT ' . $limit,
                     ReturnType::ARRAY_OF_OBJECTS
                 );
                 $productIDs = \array_map(function ($e) {

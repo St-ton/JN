@@ -1076,10 +1076,10 @@ class WarenkorbHelper
                 WHERE cAktiv = 'Y'
                     AND dGueltigAb <= NOW()
                     AND (dGueltigBis IS NULL OR dGueltigBis > NOW())
-                    AND fMindestbestellwert <= " . \Session\Session::getCart()->gibGesamtsummeWaren(true, false) . "
+                    AND fMindestbestellwert <= " . \Session\Session::getCart()->gibGesamtsummeWaren(true, false) . '
                     AND (kKundengruppe = -1
                         OR kKundengruppe = 0
-                        OR kKundengruppe = " . \Session\Session::getCustomerGroup()->getID() . ")
+                        OR kKundengruppe = ' . \Session\Session::getCustomerGroup()->getID() . ")
                     AND (nVerwendungen = 0
                         OR nVerwendungen > nVerwendungenBisher)
                     AND (cArtikel = '' {$Artikel_qry})
@@ -1096,7 +1096,7 @@ class WarenkorbHelper
         ) {
             $oWKPosition->fPreisEinzelNetto -= ($oWKPosition->fPreisEinzelNetto / 100) * $Kupon->fWert;
             $oWKPosition->fPreis            -= ($oWKPosition->fPreis / 100) * $Kupon->fWert;
-            $oWKPosition->cHinweis          = $Kupon->cName .
+            $oWKPosition->cHinweis           = $Kupon->cName .
                 ' (' . str_replace('.', ',', $Kupon->fWert) .
                 '% ' . Shop::Lang()->get('discount') . ')';
 
@@ -1191,10 +1191,10 @@ class WarenkorbHelper
                 WHERE cAktiv = 'Y'
                     AND dGueltigAb <= NOW()
                     AND (dGueltigBis IS NULL OR dGueltigBis > NOW())
-                    AND fMindestbestellwert <= " . \Session\Session::getCart()->gibGesamtsummeWaren(true, false) . "
+                    AND fMindestbestellwert <= " . \Session\Session::getCart()->gibGesamtsummeWaren(true, false) . '
                     AND (kKundengruppe = -1
                         OR kKundengruppe = 0
-                        OR kKundengruppe = " . \Session\Session::getCustomerGroup()->getID() . ")
+                        OR kKundengruppe = ' . \Session\Session::getCustomerGroup()->getID() . ")
                     AND (nVerwendungen = 0 OR nVerwendungen > nVerwendungenBisher)
                     AND (cArtikel = '' {$Artikel_qry})
                     AND (cHersteller = '-1' {$Hersteller_qry})
@@ -1242,7 +1242,7 @@ class WarenkorbHelper
             }
             // Switch zwischen 1 Vari und 2
             if ($cKeys[0] === '_') { // 1
-                $cVariation0 = substr($cKeys, 1);
+                $cVariation0                             = substr($cKeys, 1);
                 list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
                 // In die Session einbauen
                 $oVariKombi                                 = new stdClass();
@@ -1749,9 +1749,9 @@ class WarenkorbHelper
         if ($kArtikelGratisgeschenk > 0) {
             // Prüfen, ob der Artikel wirklich ein Gratis Geschenk ist
             $oArtikelGeschenk = Shop::Container()->getDB()->query(
-                "SELECT kArtikel
+                'SELECT kArtikel
                     FROM tartikelattribut
-                    WHERE kArtikel = " . $kArtikelGratisgeschenk . "
+                    WHERE kArtikel = ' . $kArtikelGratisgeschenk . "
                         AND cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
                         AND CAST(cWert AS DECIMAL) <= " .
                 $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true),
@@ -1925,7 +1925,7 @@ class WarenkorbHelper
                         AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
                         AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
                 \Session\Session::getCart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true) .
-                $cSQLSort . " LIMIT 20",
+                $cSQLSort . ' LIMIT 20',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
@@ -1969,8 +1969,8 @@ class WarenkorbHelper
                     && $conf['global']['global_lieferverzoegerung_anzeigen'] === 'Y'
                     && $pos->nAnzahl > $pos->Artikel->fLagerbestand
                 ) {
-                    $bVorhanden   = true;
-                    $cName        = is_array($pos->cName) ? $pos->cName[$cISOSprache] : $pos->cName;
+                    $bVorhanden    = true;
+                    $cName         = is_array($pos->cName) ? $pos->cName[$cISOSprache] : $pos->cName;
                     $cArtikelName .= '<li>' . $cName . '</li>';
                 }
             }

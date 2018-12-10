@@ -192,7 +192,7 @@ class IpAnonymizer
             $iColonPos = \strpos($szReadableIp, '::');
             $iStrEnd   = \strlen($szReadableIp) - 2;
 
-            $iBlockCount = \count(
+            $iBlockCount   = \count(
                 \preg_split('/:/', \str_replace('::', ':', $szReadableIp), -1, \PREG_SPLIT_NO_EMPTY)
             );
             $szReplacement = '';
@@ -222,9 +222,9 @@ class IpAnonymizer
      */
     public function anonymizeLegacy(): string
     {
-        $vMaskParts = \preg_split('/[\.:]/', $this->szIpMask);
-        $vIpParts   = \preg_split('/[\.:]/', $this->szIP);
-        $nLen       = \count($vIpParts);
+        $vMaskParts             = \preg_split('/[\.:]/', $this->szIpMask);
+        $vIpParts               = \preg_split('/[\.:]/', $this->szIP);
+        $nLen                   = \count($vIpParts);
         (4 === $nLen) ? $szGlue = '.' : $szGlue = ':';
         for ($i = 0; $i < $nLen; $i++) {
             (\hexdec($vMaskParts[$i]) !== 0) ?: $vIpParts{$i} = '*';

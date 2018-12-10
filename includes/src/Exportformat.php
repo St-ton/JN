@@ -825,20 +825,20 @@ class Exportformat
         if ($countOnly === true) {
             $select = 'COUNT(*) AS nAnzahl';
         } else {
-            $select    = 'tartikel.kArtikel';
-            $limit     = ' ORDER BY tartikel.kArtikel LIMIT ' . $this->getQueue()->nLimitM;
+            $select     = 'tartikel.kArtikel';
+            $limit      = ' ORDER BY tartikel.kArtikel LIMIT ' . $this->getQueue()->nLimitM;
             $condition .= ' AND tartikel.kArtikel > ' . $this->getQueue()->nLastArticleID;
         }
 
-        return "SELECT " . $select . "
+        return 'SELECT ' . $select . "
             FROM tartikel
             LEFT JOIN tartikelattribut ON tartikelattribut.kArtikel = tartikel.kArtikel
                 AND tartikelattribut.cName = '" . FKT_ATTRIBUT_KEINE_PREISSUCHMASCHINEN . "'
-            " . $join . "
+            " . $join . '
             LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                AND tartikelsichtbarkeit.kKundengruppe = " . $this->getKundengruppe() . "
-            WHERE tartikelattribut.kArtikelAttribut IS NULL" . $where . "
-                AND tartikelsichtbarkeit.kArtikel IS NULL " . $condition . $limit;
+                AND tartikelsichtbarkeit.kKundengruppe = ' . $this->getKundengruppe() . '
+            WHERE tartikelattribut.kArtikelAttribut IS NULL' . $where . '
+                AND tartikelsichtbarkeit.kArtikel IS NULL ' . $condition . $limit;
     }
 
     /**
@@ -1260,7 +1260,7 @@ class Exportformat
                 }
                 // Kampagne URL
                 if (!empty($this->campaignParameter)) {
-                    $cSep          = (strpos($product->cURL, '.php') !== false) ? '&' : '?';
+                    $cSep           = (strpos($product->cURL, '.php') !== false) ? '&' : '?';
                     $product->cURL .= $cSep . $this->campaignParameter . '=' . $this->campaignValue;
                 }
 
@@ -1527,12 +1527,11 @@ class Exportformat
                 $product->Kategorie             = new Kategorie();
                 $product->Kategoriepfad         = '';
                 $product->Versandkosten         = -1;
-
             }
             $this->smarty->assign('Artikel', $product)
                          ->fetch('db:' . $this->kExportformat);
         } catch (Exception $e) {
-            $error = '<strong>Smarty-Syntaxfehler:</strong><br />';
+            $error  = '<strong>Smarty-Syntaxfehler:</strong><br />';
             $error .= '<pre>' . $e->getMessage() . '</pre>';
         }
 

@@ -34,7 +34,7 @@ final class NewsCategory extends AbstractFactory
                     AND tseo.kKey = tnewskategorie.kNewsKategorie
                     AND tseo.kSprache = t.languageID
                 WHERE tnewskategorie.nAktiv = 1
-                    AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ")",
+                    AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ')',
             ReturnType::QUERYSINGLE
         );
         while (($nc = $res->fetch(\PDO::FETCH_OBJ)) !== false) {

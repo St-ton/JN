@@ -158,7 +158,7 @@ class Emailhistory
         if ($cSqlLimit === null) {
             $cSqlLimit = '';
         }
-        $oObj_arr = Shop::Container()->getDB()->query(
+        $oObj_arr          = Shop::Container()->getDB()->query(
             'SELECT * 
                 FROM temailhistory 
                 ORDER BY dSent DESC' . $cSqlLimit,
@@ -190,7 +190,9 @@ class Emailhistory
     public function deletePack(array $kEmailhistory_arr)
     {
         if (count($kEmailhistory_arr) > 0) {
-            $kEmailhistory_arr = array_map(function ($i) { return (int)$i; }, $kEmailhistory_arr);
+            $kEmailhistory_arr = array_map(function ($i) {
+                return (int)$i;
+            }, $kEmailhistory_arr);
 
             return Shop::Container()->getDB()->query(
                 'DELETE 

@@ -396,12 +396,12 @@ class Kunde
         $update = false;
         if ($passwordService->needsRehash($customer->cPasswort)) {
             $customer->cPasswort = $passwordService->hash($pass);
-            $update = true;
+            $update              = true;
         }
 
         if ($customer->nLoginversuche > 0) {
             $customer->nLoginversuche = 0;
-            $update = true;
+            $update                   = true;
         }
         if ($update) {
             $update = (array)$customer;
@@ -452,7 +452,7 @@ class Kunde
             $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
             $cDatum_arr               = DateHelper::getDateParts($this->dErstellt ?? '');
             if (count($cDatum_arr) > 0) {
-                $this->dErstellt_DE       = $cDatum_arr['cTag'] . '.' .
+                $this->dErstellt_DE = $cDatum_arr['cTag'] . '.' .
                     $cDatum_arr['cMonat'] . '.' .
                     $cDatum_arr['cJahr'];
             }

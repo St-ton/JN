@@ -416,9 +416,9 @@ class Controller
                         : '';
                 } elseif ($type === QuestionType::MATRIX_SINGLE || $type === QuestionType::MATRIX_MULTI) {
                     [$kUmfrageFrageAntwort, $kUmfrageMatrixOption] = \explode('_', $given);
-                    $data->kUmfrageFrageAntwort = $kUmfrageFrageAntwort;
-                    $data->kUmfrageMatrixOption = $kUmfrageMatrixOption;
-                    $data->cText                = '';
+                    $data->kUmfrageFrageAntwort                    = $kUmfrageFrageAntwort;
+                    $data->kUmfrageMatrixOption                    = $kUmfrageMatrixOption;
+                    $data->cText                                   = '';
                 } elseif ((int)$given === -1) {
                     $data->kUmfrageFrageAntwort = 0;
                     $data->kUmfrageMatrixOption = 0;

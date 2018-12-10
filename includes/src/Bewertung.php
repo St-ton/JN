@@ -81,11 +81,11 @@ class Bewertung
                 "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
                         DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum
                     FROM tbewertung
-                    WHERE kSprache = " . $kSprache . "
-                        AND kArtikel = " . $kArtikel . "
+                    WHERE kSprache = " . $kSprache . '
+                        AND kArtikel = ' . $kArtikel . '
                         AND nAktiv = 1
                     ORDER BY nHilfreich DESC
-                    LIMIT 1",
+                    LIMIT 1',
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if (!empty($oBewertungHilfreich)) {
@@ -148,7 +148,6 @@ class Bewertung
                 default:
                     $cOrderSQL = ' dDatum DESC';
                     break;
-
             }
             executeHook(HOOK_BEWERTUNG_CLASS_SWITCH_SORTIERUNG);
 
@@ -186,8 +185,8 @@ class Bewertung
                     "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
                             DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum
                         FROM tbewertung
-                        WHERE kArtikel = " . $kArtikel . $cSprachSQL . $cSQL . $cSQLFreischalten . "
-                        ORDER BY" . $cOrderSQL . $nLimit,
+                        WHERE kArtikel = " . $kArtikel . $cSprachSQL . $cSQL . $cSQLFreischalten . '
+                        ORDER BY' . $cOrderSQL . $nLimit,
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
             }

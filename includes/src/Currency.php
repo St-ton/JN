@@ -351,8 +351,8 @@ class Currency
         $res        = '';
         $currencies = \Session\Session::getCurrencies();
         if (count($currencies) > 0) {
-            $priceNet = (float)str_replace(',', '.', $priceNet ?? 0);
-            $priceGross = (float)str_replace(',', '.', $priceGross ?? 0);
+            $priceNet      = (float)str_replace(',', '.', $priceNet ?? 0);
+            $priceGross    = (float)str_replace(',', '.', $priceGross ?? 0);
             $oSteuerklasse = Shop::Container()->getDB()->select('tsteuerklasse', 'cStandard', 'Y');
             $taxClassID    = $oSteuerklasse !== null ? (int)$oSteuerklasse->kSteuerklasse : 1;
             if ((float)$priceNet > 0) {

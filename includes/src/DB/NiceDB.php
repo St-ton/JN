@@ -680,7 +680,7 @@ class NiceDB implements DbInterface
         $i       = 0;
         foreach ($keys as &$_key) {
             if ($_key !== null) {
-                $_key      .= '=?';
+                $_key     .= '=?';
                 $assigns[] = $values[$i];
             } else {
                 unset($keys[$i]);

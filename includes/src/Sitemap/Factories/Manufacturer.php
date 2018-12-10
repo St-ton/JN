@@ -30,8 +30,8 @@ final class Manufacturer extends AbstractFactory
                 JOIN tseo 
                     ON tseo.cKey = 'kHersteller'
                     AND tseo.kKey = thersteller.kHersteller
-                    AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ")
-                ORDER BY thersteller.kHersteller",
+                    AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ')
+                ORDER BY thersteller.kHersteller',
             ReturnType::QUERYSINGLE
         );
         while (($mf = $res->fetch(\PDO::FETCH_OBJ)) !== false) {

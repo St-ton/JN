@@ -147,10 +147,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public function jsonSerialize(): array
         {
             $cKurzBeschreibung = $this->getKurzBeschreibung();
-            $virtual = [
+            $virtual           = [
                 'bAktiv' => $this->bAktiv
             ];
-            $override = [
+            $override          = [
                 'kKonfigitem'       => $this->getKonfigitem(),
                 'cName'             => $this->getName(),
                 'kArtikel'          => $this->getArtikelKey(),
@@ -172,7 +172,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     Preise::getLocalizedPriceString($this->getPreis(true))
                 ]
             ];
-            $result = array_merge($override, $virtual);
+            $result            = array_merge($override, $virtual);
 
             return StringHandler::utf8_convert_recursive($result);
         }

@@ -50,8 +50,8 @@ final class SpecialOffers extends AbstractBox
                             AND tartikelsonderpreis.cAktiv = 'Y'
                             AND tartikelsonderpreis.dStart <= NOW()
                             AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE()) " .
-                            $stockFilterSQL . $parentSQL . "
-                        ORDER BY rand() LIMIT :lmt",
+                            $stockFilterSQL . $parentSQL . '
+                        ORDER BY rand() LIMIT :lmt',
                     ['lmt' => $limit, 'cgid' => $customerGroupID],
                     ReturnType::ARRAY_OF_OBJECTS
                 );

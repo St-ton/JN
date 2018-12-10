@@ -1066,7 +1066,7 @@ class Kupon
                 && $Kupon->cKuponTyp !== 'neukundenkupon'
             ) {
                 $Spezialpos->cName[$Sprache->cISO] .= ' ' . $Kupon->fWert . '% ';
-                $discountForArticle                = Shop::Container()->getDB()->select(
+                $discountForArticle                 = Shop::Container()->getDB()->select(
                     'tsprachwerte',
                     'cName',
                     'discountForArticle',

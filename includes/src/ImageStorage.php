@@ -102,7 +102,7 @@ class ImageStorage
 
         header("Content-Type: {$mimeType}");
         header("Content-Length: {$filesize}");
-        header("Cache-Control: public");
+        header('Cache-Control: public');
         header("Etag: {$tagHash}");
         header("Last-Modified: {$gmtDateTime}");
         header("X-Image-Hash: {$imageHash}");

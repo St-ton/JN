@@ -21,10 +21,10 @@ if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
 
 switch ($cAction) {
     case 'account_lock':
-        $cAction = benutzerverwaltungActionAccountLock($smarty, $messages);
+        $cAction = benutzerverwaltungActionAccountLock($messages);
         break;
     case 'account_unlock':
-        $cAction = benutzerverwaltungActionAccountUnLock($smarty, $messages);
+        $cAction = benutzerverwaltungActionAccountUnLock($messages);
         break;
     case 'account_edit':
         $cAction = benutzerverwaltungActionAccountEdit($smarty, $messages);

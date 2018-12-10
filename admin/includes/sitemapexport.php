@@ -12,7 +12,8 @@
 function baueSitemap($nDatei, $data)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    Shop::Container()->getLogService()->debug('Baue "' . PFAD_EXPORT . 'sitemap_' .
+    Shop::Container()->getLogService()->debug(
+        'Baue "' . PFAD_EXPORT . 'sitemap_' .
         $nDatei . '.xml", Datenlaenge ' . strlen($data)
     );
     $conf = Shop::getSettings([CONF_SITEMAP]);
@@ -54,14 +55,16 @@ function baueSitemapIndex($nDatei, $bGZ)
             $cIndex .= '<sitemap><loc>' .
                 StringHandler::htmlentities($shopURL . '/' . PFAD_EXPORT . 'sitemap_' . $i . '.xml.gz') .
                 '</loc>' .
-                ((!isset($conf['sitemap']['sitemap_insert_lastmod']) || $conf['sitemap']['sitemap_insert_lastmod'] === 'Y')
+                ((!isset($conf['sitemap']['sitemap_insert_lastmod'])
+                    || $conf['sitemap']['sitemap_insert_lastmod'] === 'Y')
                     ? ('<lastmod>' . StringHandler::htmlentities(date('Y-m-d')) . '</lastmod>') :
                     '') .
                 '</sitemap>' . "\n";
         } else {
             $cIndex .= '<sitemap><loc>' . StringHandler::htmlentities($shopURL . '/' .
                     PFAD_EXPORT . 'sitemap_' . $i . '.xml') . '</loc>' .
-                ((!isset($conf['sitemap']['sitemap_insert_lastmod']) || $conf['sitemap']['sitemap_insert_lastmod'] === 'Y')
+                ((!isset($conf['sitemap']['sitemap_insert_lastmod'])
+                    || $conf['sitemap']['sitemap_insert_lastmod'] === 'Y')
                     ? ('<lastmod>' . StringHandler::htmlentities(date('Y-m-d')) . '</lastmod>')
                     : '') .
                 '</sitemap>' . "\n";

@@ -105,8 +105,8 @@ function speicherCheckBox($post, $languages)
     }
     $checkBox->nSort     = (int)$post['nSort'];
     $checkBox->dErstellt = 'NOW()';
-    $texts                = [];
-    $descr                = [];
+    $texts               = [];
+    $descr               = [];
     foreach ($languages as $language) {
         $texts[$language->cISO] = str_replace('"', '&quot;', $post['cText_' . $language->cISO]);
         $descr[$language->cISO] = str_replace('"', '&quot;', $post['cBeschreibung_' . $language->cISO]);

@@ -554,17 +554,17 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
                 $order->oEstimatedDelivery->longestMax
             )->format('d.m.Y');
 
-            $customer->kSprache             = $Sprache->kSprache;
-            $NewsletterEmpfaenger->kSprache = $Sprache->kSprache;
-            $obj                            = new stdClass();
-            $obj->tkunde                    = $customer;
-            $obj->tkunde->cPasswortKlartext = 'superGeheim';
-            $obj->tkundengruppe             = $customerGroup;
-            $obj->tbestellung               = $order;
-            $obj->neues_passwort            = $Neues_Passwort;
-            $obj->passwordResetLink         = Shop::getURL() . '/pass.php?fpwh=ca68b243f0c1e7e57162055f248218fd';
-            $obj->tgutschein                = $gutschein;
-            $obj->AGB                       = $oAGBWRB;
+            $customer->kSprache                    = $Sprache->kSprache;
+            $NewsletterEmpfaenger->kSprache        = $Sprache->kSprache;
+            $obj                                   = new stdClass();
+            $obj->tkunde                           = $customer;
+            $obj->tkunde->cPasswortKlartext        = 'superGeheim';
+            $obj->tkundengruppe                    = $customerGroup;
+            $obj->tbestellung                      = $order;
+            $obj->neues_passwort                   = $Neues_Passwort;
+            $obj->passwordResetLink                = Shop::getURL() . '/pass.php?fpwh=ca68b243f0c1e7e57162055f248218fd';
+            $obj->tgutschein                       = $gutschein;
+            $obj->AGB                              = $oAGBWRB;
             $obj->WRB                              = $oAGBWRB;
             $obj->DSE                              = $oAGBWRB;
             $obj->tkupon                           = $coupon;
@@ -652,7 +652,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                             $cFehler .= 'Fehler: Ihr Dateiname "' .
                                 $_POST['dateiname_' . ($i + 1) . '_' . $Sprache->kSprache] .
                                 '" enthält unzulässige Zeichen (Erlaubt sind A-Z, a-z, 0-9, _ und -).<br />';
-                            $nFehler = 1;
+                            $nFehler  = 1;
                             break;
                         }
                     } else {
@@ -682,14 +682,15 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                             )) {
                                 $cFehler .= 'Fehler: Die Dateien konnten nicht geschrieben werden. ' .
                                     'Prüfen Sie bitte, ob das PDF Verzeichnis Schreibrechte besitzt.<br />';
-                                $nFehler = 1;
+                                $nFehler  = 1;
                                 break;
                             }
                             $filenames[] = $_POST['dateiname_' . $i . '_' . $Sprache->kSprache];
                             $pdfFiles[]  = $localized->kEmailvorlage . '_' .
                                 $Sprache->kSprache . '_' . $i . $cPlugin . '.pdf';
                         } else {
-                            $cFehler .= 'Fehler: Bitte geben Sie zu jeder Datei auch einen Dateinamen (Wunschnamen) ein.<br />';
+                            $cFehler .= 'Fehler: Bitte geben Sie zu jeder Datei ' .
+                                'auch einen Dateinamen (Wunschnamen) ein.<br />';
                             $nFehler  = 1;
                             break;
                         }
@@ -703,7 +704,8 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                     && strlen($_POST['dateiname_' . $i . '_' . $Sprache->kSprache]) === 0
                 ) {
                     $cFehlerAnhang_arr[$Sprache->kSprache][$i] = 1;
-                    $cFehler                                  .= 'Fehler: Sie haben zu einem PDF keinen Dateinamen angegeben.<br />';
+                    $cFehler                                  .= 'Fehler: Sie haben zu einem PDF keinen ' .
+                        'Dateinamen angegeben.<br />';
                     $nFehler                                   = 1;
                     break;
                 }

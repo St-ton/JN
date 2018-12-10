@@ -143,15 +143,13 @@ function erstelleTop10Graph($oGraphData_arr, $nYmax, $cGraphFilter)
 
         if (count($oGraphData_arr) > 0) {
             // Array sortieren
-            usort($oGraphData_arr, "Sortierung");
+            usort($oGraphData_arr, 'Sortierung');
 
             foreach ($oGraphData_arr as $i => $oGraphData) {
                 if ($i > 10) {
                     // Nach 10 Elemente stoppen (Top10)
-
                     break;
                 }
-
                 $CGraph->x_data[]          = $oGraphData->cName;
                 $CGraph->y_data['alpha'][] = $oGraphData->nWert;
             }

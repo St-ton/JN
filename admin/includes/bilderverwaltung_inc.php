@@ -187,10 +187,9 @@ function generateImageCache($type, int $index)
  */
 function getCorruptedImages($type, int $limit)
 {
-    static $offset = 0;
+    static $offset   = 0;
     $corruptedImages = [];
     $totalImages     = count(MediaImage::getImages($type));
-
     do {
         $images = MediaImage::getImages($type, false, $offset, $limit);
         foreach ($images as $image) {

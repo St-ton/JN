@@ -114,8 +114,7 @@ function versendeNewsletter(
 
         return $e->getMessage();
     }
-    //mail vorbereiten
-    $mail = new stdClass();
+    $mail          = new stdClass();
     $mail->toEmail = $oEmailempfaenger->cEmail;
     $mail->toName  = ($oEmailempfaenger->cVorname ?? '') . ' ' . ($oEmailempfaenger->cNachname ?? '');
     if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
@@ -223,8 +222,7 @@ function speicherVorlage($cPost_arr)
         $cArtikel           = ';' . $cArtikel . ';';
         $cHersteller        = ';' . $cHersteller . ';';
         $cKategorie         = ';' . $cKategorie . ';';
-
-        $oNewsletterVorlage                     = new stdClass();
+        $oNewsletterVorlage = new stdClass();
         if ($kNewsletterVorlage !== null) {
             $oNewsletterVorlage->kNewsletterVorlage = $kNewsletterVorlage;
         }
@@ -264,7 +262,7 @@ function speicherVorlage($cPost_arr)
             $GLOBALS['cHinweis'] .= 'Die Vorlage "' . $oNewsletterVorlage->cName .
                 '" wurde erfolgreich editiert.<br />';
         } else {
-            $kNewsletterVorlage = Shop::Container()->getDB()->insert('tnewslettervorlage', $oNewsletterVorlage);
+            $kNewsletterVorlage   = Shop::Container()->getDB()->insert('tnewslettervorlage', $oNewsletterVorlage);
             $GLOBALS['cHinweis'] .= 'Die Vorlage "' . $oNewsletterVorlage->cName .
                 '" wurde erfolgreich gespeichert.<br />';
         }
@@ -1314,10 +1312,9 @@ function gibArtikelObjekte($kArtikel_arr, $oKampagne = '', int $kKundengruppe = 
 
             if (!($oArtikel->kArtikel > 0)) {
                 Shop::Container()->getLogService()->notice(
-                    "Newsletter Cron konnte den Artikel ({$kArtikel}) für Kundengruppe " .
-                    "({$kKundengruppe}) und Sprache ({$kSprache}) nicht laden (Sichtbarkeit?)"
+                    'Newsletter Cron konnte den Artikel ' . $kArtikel . ' für Kundengruppe ' .
+                    $kKundengruppe . ' und Sprache ' . $kSprache . ' nicht laden (Sichtbarkeit?)'
                 );
-
                 continue;
             }
             $oArtikel->cURL = $shopURL . $oArtikel->cURL;

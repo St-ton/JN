@@ -7,8 +7,10 @@
 defined('PLZIMPORT_HOST') || define('PLZIMPORT_HOST', 'www.fa-technik.adfc.de');
 defined('PLZIMPORT_URL') || define('PLZIMPORT_URL', 'http://' . PLZIMPORT_HOST . '/code/opengeodb/');
 defined('PLZIMPORT_ISO_REGEX') || define('PLZIMPORT_ISO_REGEX', '/([A-Z]{2})\.tab/');
-defined('PLZIMPORT_REGEX') || define('PLZIMPORT_REGEX',
-    '/<td><a href="([A-Z]{2}\.tab)">([A-Z]{2})\.tab<\/a><\/td><td[^>]*>([0-9]{2}\-[A-Za-z]{3}\-[0-9]{4}[0-9: ]+?) *<\/td><td[^>]*> *([0-9MK\.]+)<\/td>/');
+defined('PLZIMPORT_REGEX') || define(
+    'PLZIMPORT_REGEX',
+    '/<td><a href="([A-Z]{2}\.tab)">([A-Z]{2})\.tab<\/a><\/td><td[^>]*>([0-9]{2}\-[A-Za-z]{3}\-[0-9]{4}[0-9: ]+?) *<\/td><td[^>]*> *([0-9MK\.]+)<\/td>/'
+);
 
 /**
  * @return array

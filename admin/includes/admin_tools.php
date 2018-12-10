@@ -75,7 +75,7 @@ function getAdminSectionSettings($configSectionID)
             );
             $conf->gesetzterWert = $oSetValue;
         } else {
-            $oSetValue = $db->select(
+            $oSetValue           = $db->select(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [$conf->kEinstellungenSektion, $conf->cWertName]

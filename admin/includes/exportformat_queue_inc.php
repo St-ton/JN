@@ -313,7 +313,7 @@ function exportformatQueueActionEditieren(Smarty\JTLSmarty $smarty, array &$mess
                ->assign('oExportformat_arr', holeAlleExportformate());
     } else {
         $messages['error'] .= 'Fehler: Bitte wählen Sie eine gültige Warteschlange aus.';
-        $step              = 'uebersicht';
+        $step               = 'uebersicht';
     }
 
     return $step;
@@ -411,35 +411,33 @@ function exportformatQueueActionErstellenEintragen(Smarty\JTLSmarty $smarty, arr
     if ($kExportformat > 0) {
         if (dStartPruefen($dStart)) {
             if ($nAlleXStunden >= 1) {
-                $kCron = (isset($_POST['kCron']) && (int)$_POST['kCron'] > 0)
+                $kCron   = (isset($_POST['kCron']) && (int)$_POST['kCron'] > 0)
                     ? (int)$_POST['kCron']
                     : null;
-                // Speicher Cron mit Exportformat in Datenbank
                 $nStatus = erstelleExportformatCron($kExportformat, $dStart, $nAlleXStunden, $kCron);
-
                 if ($nStatus === 1) {
                     $messages['notice'] .= 'Ihre neue Exportwarteschlange wurde erfolgreich angelegt.';
-                    $step               = 'erstellen_success';
+                    $step                = 'erstellen_success';
                 } elseif ($nStatus === -1) {
                     $messages['error'] .= 'Fehler: Das Exportformat ist bereits in der Warteschlange vorhanden.<br />';
-                    $step              = 'erstellen';
+                    $step               = 'erstellen';
                 } else {
                     $messages['error'] .= 'Fehler: Es ist ein unbekannter Fehler aufgetreten.<br />';
-                    $step              = 'erstellen';
+                    $step               = 'erstellen';
                 }
             } else { // Alle X Stunden ist entweder leer oder kleiner als 6
                 $messages['error'] .= 'Fehler: Bitte geben Sie einen Wert größer oder gleich 1 ein.<br />';
-                $step              = 'erstellen';
+                $step               = 'erstellen';
                 $smarty->assign('oFehler', $oValues);
             }
         } else { // Kein gueltiges Datum + Uhrzeit
             $messages['error'] .= 'Fehler: Bitte geben Sie ein gültiges Datum ein.<br />';
-            $step              = 'erstellen';
+            $step               = 'erstellen';
             $smarty->assign('oFehler', $oValues);
         }
     } else { // Kein gueltiges Exportformat
         $messages['error'] .= 'Fehler: Bitte wählen Sie ein gültiges Exportformat aus.<br />';
-        $step              = 'erstellen';
+        $step               = 'erstellen';
         $smarty->assign('oFehler', $oValues);
     }
 

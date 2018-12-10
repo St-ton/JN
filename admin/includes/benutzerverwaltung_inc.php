@@ -192,11 +192,10 @@ function benutzerverwaltungDeleteAttributes(stdClass $oAccount): bool
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
- * @param array            $messages
+ * @param array $messages
  * @return string
  */
-function benutzerverwaltungActionAccountLock(Smarty\JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungActionAccountLock(array &$messages)
 {
     $kAdminlogin = (int)$_POST['id'];
     $oAccount    = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $kAdminlogin);
@@ -228,15 +227,13 @@ function benutzerverwaltungActionAccountLock(Smarty\JTLSmarty $smarty, array &$m
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
- * @param array            $messages
+ * @param array $messages
  * @return string
  */
-function benutzerverwaltungActionAccountUnLock(Smarty\JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungActionAccountUnLock(array &$messages)
 {
     $kAdminlogin = (int)$_POST['id'];
     $oAccount    = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $kAdminlogin);
-
     if (is_object($oAccount)) {
         $result = true;
         Shop::Container()->getDB()->update('tadminlogin', 'kAdminlogin', $kAdminlogin, (object)['bAktiv' => 1]);
@@ -266,8 +263,7 @@ function benutzerverwaltungActionAccountEdit(Smarty\JTLSmarty $smarty, array &$m
 {
     $_SESSION['AdminAccount']->TwoFA_valid = true;
 
-    $kAdminlogin = (isset($_POST['id']) ? (int)$_POST['id'] : null);
-    // find out, if 2FA ist active and if there is a secret
+    $kAdminlogin    = (isset($_POST['id']) ? (int)$_POST['id'] : null);
     $szQRcodeString = '';
     $szKnownSecret  = '';
     if (null !== $kAdminlogin) {
@@ -279,10 +275,8 @@ function benutzerverwaltungActionAccountEdit(Smarty\JTLSmarty $smarty, array &$m
             $szKnownSecret  = $oTwoFA->getSecret();
         }
     }
-    // transfer via smarty-var (to prevent session-pollution)
-    $smarty->assign('QRcodeString', $szQRcodeString);
-    // not nice to "show" the secret, but needed to prevent empty creations
-    $smarty->assign('cKnownSecret', $szKnownSecret);
+    $smarty->assign('QRcodeString', $szQRcodeString)
+           ->assign('cKnownSecret', $szKnownSecret);
 
     if (isset($_POST['save'])) {
         $cError_arr           = [];
@@ -296,6 +290,7 @@ function benutzerverwaltungActionAccountEdit(Smarty\JTLSmarty $smarty, array &$m
         $oTmpAcc->cPass       = trim($_POST['cPass']);
         $oTmpAcc->b2FAauth    = (int)$_POST['b2FAauth'];
         $tmpAttribs           = $_POST['extAttribs'] ?? [];
+
         (0 < strlen($_POST['c2FAsecret'])) ? $oTmpAcc->c2FAauthSecret = trim($_POST['c2FAsecret']) : null;
 
         $dGueltigBisAktiv = (isset($_POST['dGueltigBisAktiv']) && ($_POST['dGueltigBisAktiv'] === '1'));

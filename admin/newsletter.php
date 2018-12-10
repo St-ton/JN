@@ -17,27 +17,24 @@ $cHinweis           = '';
 $cFehler            = '';
 $step               = 'uebersicht';
 $cOption            = '';
-// Suche
+
 $cInaktiveSucheSQL         = new stdClass();
 $cInaktiveSucheSQL->cJOIN  = '';
 $cInaktiveSucheSQL->cWHERE = '';
 $cAktiveSucheSQL           = new stdClass();
 $cAktiveSucheSQL->cJOIN    = '';
 $cAktiveSucheSQL->cWHERE   = '';
-// Standardkundengruppe Work Around
-$oKundengruppe            = $db->select('tkundengruppe', 'cStandard', 'Y');
-$_SESSION['Kundengruppe'] = new Kundengruppe($oKundengruppe->kKundengruppe);
+$oKundengruppe             = $db->select('tkundengruppe', 'cStandard', 'Y');
+$_SESSION['Kundengruppe']  = new Kundengruppe($oKundengruppe->kKundengruppe);
 
 setzeSprache();
-// Tabs
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
-// Einstellungen
 if (FormHelper::validateToken()) {
     if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
         if (isset($_POST['speichern'])) {
-            $step     = 'uebersicht';
+            $step      = 'uebersicht';
             $cHinweis .= saveAdminSectionSettings(CONF_NEWSLETTER, $_POST);
         }
     } elseif ((isset($_POST['newsletterabonnent_loeschen'])
@@ -86,12 +83,10 @@ if (FormHelper::validateToken()) {
             $smarty->assign('oNewsletter', $oNewsletter);
         }
     } elseif (isset($_POST['newsletterqueue']) && (int)$_POST['newsletterqueue'] === 1) { // Queue
-        // Loeschen
         if (isset($_POST['loeschen'])) {
             if (is_array($_POST['kNewsletterQueue'])) {
                 $cHinweis = 'Die Newsletterqueue "';
                 foreach ($_POST['kNewsletterQueue'] as $kNewsletterQueue) {
-                    // Queue Daten holen fuers spaetere Loeschen in anderen Tabellen
                     $oNewsletterQueue = $db->query(
                         'SELECT tnewsletterqueue.kNewsletter, tnewsletter.cBetreff
                             FROM tnewsletterqueue
@@ -100,17 +95,12 @@ if (FormHelper::validateToken()) {
                             WHERE tnewsletterqueue.kNewsletterQueue = ' . (int)$kNewsletterQueue,
                         \DB\ReturnType::SINGLE_OBJECT
                     );
-                    // tnewsletter loeoechen
                     $db->delete('tnewsletter', 'kNewsletter', (int)$oNewsletterQueue->kNewsletter);
-                    // tjobqueue loeschen
                     $db->delete('tjobqueue', ['cKey', 'kKey'], ['kNewsletter', (int)$oNewsletterQueue->kNewsletter]);
-                    // tnewsletterqueue loeschen
                     $db->delete('tnewsletterqueue', 'kNewsletterQueue', (int)$kNewsletterQueue);
-
                     $cHinweis .= $oNewsletterQueue->cBetreff . "\", ";
                 }
-
-                $cHinweis = substr($cHinweis, 0, -2);
+                $cHinweis  = substr($cHinweis, 0, -2);
                 $cHinweis .= ' wurden erfolgreich gelöscht.<br />';
             } else {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletter.<br />';
@@ -118,7 +108,7 @@ if (FormHelper::validateToken()) {
         }
     } elseif ((isset($_POST['newsletterhistory']) && (int)$_POST['newsletterhistory'] === 1)
         || (isset($_GET['newsletterhistory']) && (int)$_GET['newsletterhistory'] === 1)
-    ) { // History
+    ) {
         if (isset($_POST['loeschen'])) {
             if (is_array($_POST['kNewsletterHistory'])) {
                 $cHinweis = 'Die Newsletterhistory ';
@@ -126,7 +116,7 @@ if (FormHelper::validateToken()) {
                     $db->delete('tnewsletterhistory', 'kNewsletterHistory', (int)$kNewsletterHistory);
                     $cHinweis .= $kNewsletterHistory . ', ';
                 }
-                $cHinweis = substr($cHinweis, 0, -2);
+                $cHinweis  = substr($cHinweis, 0, -2);
                 $cHinweis .= ' wurden erfolgreich gelöscht.<br />';
             } else {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine History.<br />';
@@ -134,12 +124,13 @@ if (FormHelper::validateToken()) {
         } elseif (isset($_GET['anzeigen'])) {
             $step               = 'history_anzeigen';
             $kNewsletterHistory = (int)$_GET['anzeigen'];
-            $oNewsletterHistory = $db->query(
+            $oNewsletterHistory = $db->queryPrepared(
                 "SELECT kNewsletterHistory, cBetreff, cHTMLStatic, cKundengruppe, 
                     DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
                     FROM tnewsletterhistory
-                    WHERE kNewsletterHistory = " . $kNewsletterHistory . "
-                        AND kSprache = " . (int)$_SESSION['kSprache'],
+                    WHERE kNewsletterHistory = :hid
+                        AND kSprache = :lid",
+                ['hid' => $kNewsletterHistory, 'lid' => (int)$_SESSION['kSprache']],
                 \DB\ReturnType::SINGLE_OBJECT
             );
 
@@ -179,8 +170,10 @@ if (FormHelper::validateToken()) {
         $preview            = null;
         if (RequestHelper::verifyGPCDataInt('iframe') === 1) {
             $step = 'vorlage_vorschau_iframe';
-            $smarty->assign('cURL',
-                'newsletter.php?vorschau=' . $kNewsletterVorlage . '&token=' . $_SESSION['jtl_token']);
+            $smarty->assign(
+                'cURL',
+                'newsletter.php?vorschau=' . $kNewsletterVorlage . '&token=' . $_SESSION['jtl_token']
+            );
             $preview = baueNewsletterVorschau($oNewsletterVorlage);
         } elseif (isset($oNewsletterVorlage->kNewsletterVorlage) && $oNewsletterVorlage->kNewsletterVorlage > 0) {
             $step                      = 'vorlage_vorschau';
@@ -621,24 +614,25 @@ if ($step === 'uebersicht') {
             ORDER BY cStandard DESC',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    $queue                       = $db->query(
+    $queue                       = $db->queryPrepared(
         "SELECT tnewsletter.cBetreff, tnewsletterqueue.kNewsletterQueue, tnewsletterqueue.kNewsletter, 
             DATE_FORMAT(tnewsletterqueue.dStart, '%d.%m.%Y %H:%i') AS Datum
             FROM tnewsletterqueue
             JOIN tnewsletter 
                 ON tnewsletterqueue.kNewsletter = tnewsletter.kNewsletter
-            WHERE tnewsletter.kSprache = " . (int)$_SESSION['kSprache'] . "
+            WHERE tnewsletter.kSprache = :lid
             ORDER BY tnewsletterqueue.dStart DESC 
             LIMIT " . $oPagiWarteschlange->getLimitSQL(),
+        ['lid' => (int)$_SESSION['kSprache']],
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    // Hole JobQueue fortschritt fuer Newsletterqueue
     foreach ($queue as $oNewsletterQueue) {
-        $oJobQueue                           = $db->query(
+        $oJobQueue                           = $db->queryPrepared(
             "SELECT nLimitN
                 FROM tjobqueue
-                WHERE kKey = " . (int)$oNewsletterQueue->kNewsletter . "
+                WHERE kKey = :nlid
                     AND cKey = 'kNewsletter'",
+            ['nlid' => (int)$oNewsletterQueue->kNewsletter],
             \DB\ReturnType::SINGLE_OBJECT
         );
         $oNewsletterEmpfaenger               = getNewsletterEmpfaenger($oNewsletterQueue->kNewsletter);
@@ -689,14 +683,15 @@ if ($step === 'uebersicht') {
         $oNewsletterEmpfaenger->cNachname = $oKunde->cNachname;
     }
 
-    $history       = $db->query(
+    $history       = $db->queryPrepared(
         "SELECT kNewsletterHistory, nAnzahl, cBetreff, cKundengruppe,  
             DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
             FROM tnewsletterhistory
-            WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
+            WHERE kSprache = :lid
                 AND nAnzahl > 0
             ORDER BY dStart DESC 
             LIMIT " . $oPagiHistory->getLimitSQL(),
+        ['lid' => (int)$_SESSION['kSprache']],
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $kundengruppen = $db->query(

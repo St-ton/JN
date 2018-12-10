@@ -192,13 +192,11 @@ function processImport($fmt, $data)
     if ($recipient->cAnrede === 'm' || $recipient->cAnrede === 'h') {
         $recipient->cAnrede = 'Herr';
     }
-    $recipient->cOptCode    = create_NewsletterCode('cOptCode', $recipient->cEmail);
-    $recipient->cLoeschCode = create_NewsletterCode('cLoeschCode', $recipient->cEmail);
-    // Datum  des Eintrags setzen
+    $recipient->cOptCode     = create_NewsletterCode('cOptCode', $recipient->cEmail);
+    $recipient->cLoeschCode  = create_NewsletterCode('cLoeschCode', $recipient->cEmail);
     $recipient->dEingetragen = 'NOW()';
     $recipient->kSprache     = $_POST['kSprache'];
-    // Ist der Newsletterempfaenger registrierter Kunde?
-    $recipient->kKunde = 0;
+    $recipient->kKunde       = 0;
 
     $KundenDaten = Shop::Container()->getDB()->select('tkunde', 'cMail', $recipient->cEmail);
     if ($KundenDaten->kKunde > 0) {
@@ -228,7 +226,7 @@ function processImport($fmt, $data)
         $ins->cOptCode     = $recipient->cOptCode;
         $ins->cLoeschCode  = $recipient->cLoeschCode;
         $ins->cAktion      = 'Daten-Import';
-        $res                = Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $ins);
+        $res               = Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $ins);
         if ($res) {
             return 'Datensatz OK. Importiere: ' .
                 $recipient->cVorname . ' ' .

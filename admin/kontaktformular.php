@@ -68,7 +68,7 @@ if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && FormHelper::vali
         $kKontaktBetreff = 0;
         if ((int)$_POST['kKontaktBetreff'] === 0) {
             $kKontaktBetreff = Shop::Container()->getDB()->insert('tkontaktbetreff', $neuerBetreff);
-            $cHinweis .= 'Betreff wurde erfolgreich hinzugefügt.';
+            $cHinweis       .= 'Betreff wurde erfolgreich hinzugefügt.';
         } else {
             $kKontaktBetreff = (int)$_POST['kKontaktBetreff'];
             Shop::Container()->getDB()->update('tkontaktbetreff', 'kKontaktBetreff', $kKontaktBetreff, $neuerBetreff);

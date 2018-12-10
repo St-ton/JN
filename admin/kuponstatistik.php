@@ -122,7 +122,7 @@ array_multisort($date, SORT_DESC, $usedCouponsOrder);
 $nPercentCountUsedCoupons = (isset($nCountOrders_arr['nCount']) && (int)$nCountOrders_arr['nCount'] > 0)
     ? number_format(100 / (int)$nCountOrders_arr['nCount'] * $nCountUsedCouponsOrder, 2)
     : 0;
-$overview_arr = [
+$overview_arr             = [
     'nCountUsedCouponsOrder'   => $nCountUsedCouponsOrder,
     'nCountCustomers'          => $nCountCustomers,
     'nCountOrder'              => $nCountOrders_arr['nCount'],

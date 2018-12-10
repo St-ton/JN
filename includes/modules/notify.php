@@ -168,12 +168,12 @@ if (strlen($cPh) > 0) {
     if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
         $logger->debug('Notify request:' . print_r($_REQUEST, true));
     }
-    $paymentId   = Shop::Container()->getDB()->queryPrepared(
-        "SELECT ZID.kBestellung, ZA.cModulId
+    $paymentId = Shop::Container()->getDB()->queryPrepared(
+        'SELECT ZID.kBestellung, ZA.cModulId
             FROM tzahlungsid ZID
             LEFT JOIN tzahlungsart ZA
                 ON ZA.kZahlungsart = ZID.kZahlungsart
-            WHERE ZID.cId = :hash",
+            WHERE ZID.cId = :hash',
         ['hash' => StringHandler::htmlentities(StringHandler::filterXSS($cPh))],
         \DB\ReturnType::SINGLE_OBJECT
     );

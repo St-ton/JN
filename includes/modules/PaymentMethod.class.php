@@ -109,7 +109,7 @@ class PaymentMethod
     {
         $orderId = isset($order->kBestellung)
             ? Shop::Container()->getDB()->query(
-                "SELECT cId FROM tbestellid WHERE kBestellung = " . (int)$order->kBestellung,
+                'SELECT cId FROM tbestellid WHERE kBestellung = ' . (int)$order->kBestellung,
                 \DB\ReturnType::SINGLE_OBJECT
             )
             : null;
@@ -453,7 +453,7 @@ class PaymentMethod
     {
         if ($this->getSetting('min_bestellungen') > 0) {
             if (isset($customer->kKunde) && $customer->kKunde > 0) {
-                $res = Shop::Container()->getDB()->executeQueryPrepared(
+                $res   = Shop::Container()->getDB()->executeQueryPrepared(
                     'SELECT COUNT(*) AS cnt
                         FROM tbestellung
                         WHERE kKunde = :cid
@@ -467,7 +467,8 @@ class PaymentMethod
                 );
                 $count = (int)$res->cnt;
                 if ($count < $this->getSetting('min_bestellungen')) {
-                    ZahlungsLog::add($this->moduleID,
+                    ZahlungsLog::add(
+                        $this->moduleID,
                         'Bestellanzahl ' . $count . ' ist kleiner als die Mindestanzahl von ' .
                             $this->getSetting('min_bestellungen'),
                         null,
@@ -477,14 +478,15 @@ class PaymentMethod
                     return false;
                 }
             } else {
-                ZahlungsLog::add($this->moduleID, "Es ist kein kKunde vorhanden", null, LOGLEVEL_NOTICE);
+                ZahlungsLog::add($this->moduleID, 'Es ist kein kKunde vorhanden', null, LOGLEVEL_NOTICE);
 
                 return false;
             }
         }
 
         if ($this->getSetting('min') > 0 && $cart->gibGesamtsummeWaren(true) <= $this->getSetting('min')) {
-            ZahlungsLog::add($this->moduleID,
+            ZahlungsLog::add(
+                $this->moduleID,
                 'Bestellwert ' . $cart->gibGesamtsummeWaren(true) .
                     ' ist kleiner als der Mindestbestellwert von ' . $this->getSetting('min'),
                 null,
@@ -495,7 +497,8 @@ class PaymentMethod
         }
 
         if ($this->getSetting('max') > 0 && $cart->gibGesamtsummeWaren(true) >= $this->getSetting('max')) {
-            ZahlungsLog::add($this->moduleID,
+            ZahlungsLog::add(
+                $this->moduleID,
                 'Bestellwert ' . $cart->gibGesamtsummeWaren(true) .
                     ' ist groesser als der maximale Bestellwert von ' . $this->getSetting('max'),
                 null,

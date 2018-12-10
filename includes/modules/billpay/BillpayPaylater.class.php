@@ -33,8 +33,8 @@ class BillpayPaylater extends Billpay
         $oPaymentEx = $_SESSION['za_billpay_jtl']['oOrderEx'] ?? null;
 
         if ($oPaymentEx === null) {
-            BPHelper::log("canceled capture, invalid session information");
-            header("location: bestellvorgang.php?editZahlungsart=1");
+            BPHelper::log('canceled capture, invalid session information');
+            header('location: bestellvorgang.php?editZahlungsart=1');
         }
 
         $oCustomer = $_SESSION['Kunde'];
@@ -54,12 +54,12 @@ class BillpayPaylater extends Billpay
 
             // set order status to paid
             if ($this->getCoreSetting('aspaid') === 'Y') {
-                $oIncomingPayment = new stdClass();
+                $oIncomingPayment          = new stdClass();
                 $oIncomingPayment->fBetrag = $oBasketInfo->fTotal[AMT_GROSS] + $oBasket->gibGesamtsummeWarenExt([
                         C_WARENKORBPOS_TYP_ZINSAUFSCHLAG,
                         C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR
                     ], true);
-                $oIncomingPayment->cISO = $oBasketInfo->cCurrency->cISO;
+                $oIncomingPayment->cISO    = $oBasketInfo->cCurrency->cISO;
                 $this->addIncomingPayment($oOrder, $oIncomingPayment);
                 $this->setOrderStatusToPaid($oOrder);
             }

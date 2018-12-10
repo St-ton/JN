@@ -83,7 +83,7 @@ class ServerPaymentMethod extends PaymentMethod
         $header = "POST {$this->path} HTTP/1.1\r\n"
             . "Host: {$this->host}\r\n"
             . "Content-Type: application/x-www-form-urlencoded;charset={$cEncoding}\r\n"
-            . "Content-Length: " . strlen($request) . "\r\n"
+            . 'Content-Length: ' . strlen($request) . "\r\n"
             . "Connection: close\r\n\r\n";
         fwrite($socket, $header);
         fwrite($socket, $request);

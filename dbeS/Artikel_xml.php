@@ -35,9 +35,9 @@ if (auth()) {
             }
             if ($i === 0) {
                 Shop::Container()->getDB()->query(
-                    "UPDATE tsuchcache
-                        SET dGueltigBis = DATE_ADD(NOW(), INTERVAL " . SUCHCACHE_LEBENSDAUER . " MINUTE)
-                        WHERE dGueltigBis IS NULL",
+                    'UPDATE tsuchcache
+                        SET dGueltigBis = DATE_ADD(NOW(), INTERVAL ' . SUCHCACHE_LEBENSDAUER . ' MINUTE)
+                        WHERE dGueltigBis IS NULL',
                     \DB\ReturnType::AFFECTED_ROWS
                 );
             }
@@ -79,7 +79,7 @@ function bearbeiteDeletes($xml, array $conf)
             \DB\ReturnType::AFFECTED_ROWS
         );
         removeProductIdfromCoupons($kArtikel);
-        $res[] = loescheArtikel($kArtikel, $nIstVater, false, $conf);
+        $res[] = loescheArtikel($kArtikel, false, $conf);
         // Lösche Artikel aus tartikelkategorierabatt
         Shop::Container()->getDB()->delete('tartikelkategorierabatt', 'kArtikel', $kArtikel);
         // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
@@ -130,8 +130,6 @@ function bearbeiteInsert($xml, array $conf)
         'cSeo'
     );
     $oSeoAssoc_arr = getSeoFromDB($Artikel->kArtikel, 'kArtikel', null, 'kSprache');
-    $isParent      = isset($artikel_arr[0]->nIstVater) ? 1 : 0;
-
     if (isset($xml['tartikel']['tkategorieartikel'])
         && (int)$conf['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE
         && Shop::Container()->getCache()->isCacheGroupActive(CACHING_GROUP_CATEGORY)
@@ -163,11 +161,11 @@ function bearbeiteInsert($xml, array $conf)
             if (!in_array($newArticleCategory, $currentArticleCategories, true)) {
                 // the article was previously not associated with this category
                 $articleCount = Shop::Container()->getDB()->query(
-                    "SELECT COUNT(tkategorieartikel.kArtikel) AS cnt
+                    'SELECT COUNT(tkategorieartikel.kArtikel) AS cnt
                         FROM tkategorieartikel
                         LEFT JOIN tartikel
                             ON tartikel.kArtikel = tkategorieartikel.kArtikel
-                        WHERE tkategorieartikel.kKategorie = {$newArticleCategory} " . $stockFilter,
+                        WHERE tkategorieartikel.kKategorie = ' . $newArticleCategory . ' ' . $stockFilter,
                     \DB\ReturnType::SINGLE_OBJECT
                 );
                 if (isset($articleCount->cnt) && (int)$articleCount->cnt === 0) {
@@ -184,11 +182,11 @@ function bearbeiteInsert($xml, array $conf)
                 if (!in_array($category, $newArticleCategories, true)) {
                     // check if the article was the only one in at least one of these categories
                     $articleCount = Shop::Container()->getDB()->query(
-                        "SELECT COUNT(tkategorieartikel.kArtikel) AS cnt
+                        'SELECT COUNT(tkategorieartikel.kArtikel) AS cnt
                             FROM tkategorieartikel
                             LEFT JOIN tartikel
                                 ON tartikel.kArtikel = tkategorieartikel.kArtikel
-                            WHERE tkategorieartikel.kKategorie = {$category} " . $stockFilter,
+                            WHERE tkategorieartikel.kKategorie = ' . $category . ' ' . $stockFilter,
                         \DB\ReturnType::SINGLE_OBJECT
                     );
                     if (!isset($articleCount->cnt) || (int)$articleCount->cnt === 1) {
@@ -271,17 +269,17 @@ function bearbeiteInsert($xml, array $conf)
         }
     }
     $downloadKeys = getDownloadKeys($Artikel->kArtikel);
-    loescheArtikel($Artikel->kArtikel, $isParent, true, $conf);
+    loescheArtikel($Artikel->kArtikel, true, $conf);
     if ($artikel_arr[0]->kArtikel > 0) {
         if (!$artikel_arr[0]->cSeo) {
-            //get seo-path from productname, but replace slashes
+            // get seo path from productname, but replace slashes
             $artikel_arr[0]->cSeo = \JTL\SeoHelper::getFlatSeoPath($artikel_arr[0]->cName);
         }
         $artikel_arr[0]->cSeo = \JTL\SeoHelper::getSeo($artikel_arr[0]->cSeo);
         $artikel_arr[0]->cSeo = \JTL\SeoHelper::checkSeo($artikel_arr[0]->cSeo);
-        //persistente werte
+        // persistente werte
         $artikel_arr[0]->dLetzteAktualisierung = 'NOW()';
-        //mysql strict fixes
+        // mysql strict fixes
         if (empty($artikel_arr[0]->dMHD)) {
             $artikel_arr[0]->dMHD = '_DBNULL_';
         }
@@ -309,12 +307,11 @@ function bearbeiteInsert($xml, array $conf)
         } elseif (!isset($artikel_arr[0]->fLieferzeit)) {
             $artikel_arr[0]->fLieferzeit = 0;
         }
-        //temp. fix for syncing with wawi 1.0
+        // temp. fix for syncing with wawi 1.0
         if (isset($artikel_arr[0]->kVPEEinheit) && is_array($artikel_arr[0]->kVPEEinheit)) {
             $artikel_arr[0]->kVPEEinheit = $artikel_arr[0]->kVPEEinheit[0];
         }
-
-        //any new orders since last wawi-sync? see https://gitlab.jtl-software.de/jtlshop/jtl-shop/issues/304
+        // any new orders since last wawi-sync? see https://gitlab.jtl-software.de/jtlshop/jtl-shop/issues/304
         if (isset($artikel_arr[0]->fLagerbestand) && $artikel_arr[0]->fLagerbestand > 0) {
             $delta = Shop::Container()->getDB()->query(
                 "SELECT SUM(pos.nAnzahl) AS totalquantity
@@ -330,9 +327,9 @@ function bearbeiteInsert($xml, array $conf)
                 $artikel_arr[0]->fLagerbestand -= $delta->totalquantity;
                 if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
                     $logger->debug(
-                        "Artikel-Sync: Lagerbestand von kArtikel {$artikel_arr[0]->kArtikel} wurde " .
-                        "wegen nicht-abgeholter Bestellungen " .
-                        "um {$delta->totalquantity} auf {$artikel_arr[0]->fLagerbestand} reduziert."
+                        'Artikel-Sync: Lagerbestand von kArtikel ' . $artikel_arr[0]->kArtikel . ' wurde ' .
+                        'wegen nicht-abgeholter Bestellungen ' .
+                        'um ' . $delta->totalquantity . ' auf ' . $artikel_arr[0]->fLagerbestand . ' reduziert.'
                     );
                 }
             }
@@ -579,7 +576,13 @@ function bearbeiteInsert($xml, array $conf)
     updateXMLinDB($xml['tartikel'], 'tartikelsonderpreis', $GLOBALS['mArtikelSonderpreis'], 'kArtikelSonderpreis');
     updateXMLinDB($xml['tartikel'], 'tkategorieartikel', $GLOBALS['mKategorieArtikel'], 'kKategorieArtikel');
     updateXMLinDB($xml['tartikel'], 'tartikelattribut', $GLOBALS['mArtikelAttribut'], 'kArtikelAttribut');
-    updateXMLinDB($xml['tartikel'], 'tartikelsichtbarkeit', $GLOBALS['mArtikelSichtbarkeit'], 'kKundengruppe', 'kArtikel');
+    updateXMLinDB(
+        $xml['tartikel'],
+        'tartikelsichtbarkeit',
+        $GLOBALS['mArtikelSichtbarkeit'],
+        'kKundengruppe',
+        'kArtikel'
+    );
     updateXMLinDB($xml['tartikel'], 'txsell', $GLOBALS['mXSell'], 'kXSell');
     updateXMLinDB($xml['tartikel'], 'tartikelmerkmal', $GLOBALS['mArtikelSichtbarkeit'], 'kMermalWert');
     if ((int)$artikel_arr[0]->nIstVater === 1) {
@@ -600,14 +603,14 @@ function bearbeiteInsert($xml, array $conf)
         );
     } elseif (isset($artikel_arr[0]->kVaterArtikel) && $artikel_arr[0]->kVaterArtikel > 0) {
         Shop::Container()->getDB()->query(
-            "UPDATE tartikel SET fLagerbestand =
+            'UPDATE tartikel SET fLagerbestand =
                 (SELECT * FROM
                     (SELECT SUM(fLagerbestand) 
                         FROM tartikel 
-                        WHERE kVaterartikel = " . (int)$artikel_arr[0]->kVaterArtikel . "
+                        WHERE kVaterartikel = ' . (int)$artikel_arr[0]->kVaterArtikel . '
                     ) AS x
                 )
-                WHERE kArtikel = " . (int)$artikel_arr[0]->kVaterArtikel,
+                WHERE kArtikel = ' . (int)$artikel_arr[0]->kVaterArtikel,
             \DB\ReturnType::AFFECTED_ROWS
         );
         // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
@@ -786,7 +789,9 @@ function bearbeiteInsert($xml, array $conf)
                 $ewCount             = count($EigenschaftWert_arr);
                 for ($o = 0; $o < $ewCount; ++$o) {
                     if ($ewCount < 2) {
-                        loescheEigenschaftWert($xml['tartikel']['teigenschaft']['teigenschaftwert attr']['kEigenschaftWert']);
+                        loescheEigenschaftWert(
+                            $xml['tartikel']['teigenschaft']['teigenschaftwert attr']['kEigenschaftWert']
+                        );
                         updateXMLinDB(
                             $xml['tartikel']['teigenschaft']['teigenschaftwert'],
                             'teigenschaftwertsprache',
@@ -816,7 +821,9 @@ function bearbeiteInsert($xml, array $conf)
                             'kEigenschaftWertZiel'
                         );
                     } else {
-                        loescheEigenschaftWert($xml['tartikel']['teigenschaft']['teigenschaftwert'][$o . ' attr']['kEigenschaftWert']);
+                        loescheEigenschaftWert(
+                            $xml['tartikel']['teigenschaft']['teigenschaftwert'][$o . ' attr']['kEigenschaftWert']
+                        );
                         updateXMLinDB(
                             $xml['tartikel']['teigenschaft']['teigenschaftwert'][$o],
                             'teigenschaftwertsprache',
@@ -968,12 +975,28 @@ function bearbeiteInsert($xml, array $conf)
 function removeProductIdfromCoupons(int $kArtikel)
 {
     $product = Shop::Container()->getDB()->select(
-        'tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'cArtNr'
+        'tartikel',
+        'kArtikel',
+        $kArtikel,
+        null,
+        null,
+        null,
+        null,
+        false,
+        'cArtNr'
     );
 
     if (isset($product->cArtNr) && is_string($product->cArtNr) && strlen($product->cArtNr) > 0) {
         $cArtNr = Shop::Container()->getDB()->select(
-            'tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'cArtNr'
+            'tartikel',
+            'kArtikel',
+            $kArtikel,
+            null,
+            null,
+            null,
+            null,
+            false,
+            'cArtNr'
         )->cArtNr;
 
         Shop::Container()->getDB()->query(
@@ -990,12 +1013,11 @@ function removeProductIdfromCoupons(int $kArtikel)
 
 /**
  * @param int   $kArtikel
- * @param int   $nIstVater
  * @param bool  $bForce
  * @param array $conf
  * @return array
  */
-function loescheArtikel(int $kArtikel, int $nIstVater = 0, bool $bForce = false, array $conf = null)
+function loescheArtikel(int $kArtikel, bool $bForce = false, array $conf = null)
 {
     $db = Shop::Container()->getDB();
     // get list of all categories the article was associated with

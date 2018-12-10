@@ -150,7 +150,7 @@ class Billpay extends PaymentMethod
 
             try {
                 $oCapture->send();
-                $this->log("send capture request", LOGLEVEL_DEBUG);
+                $this->log('send capture request', LOGLEVEL_DEBUG);
 
                 if (!$oCapture->has_error()) {
                     $oOrder = finalisiereBestellung($cOrderNumber, false);
@@ -232,7 +232,7 @@ class Billpay extends PaymentMethod
                             $oPaymentInfo->cBIC        = $oData->cSortcode;
                             $oPaymentInfo->cKontoNr    = $oPaymentInfo->cIBAN;
                             $oPaymentInfo->cBLZ        = $oPaymentInfo->cBIC;
-                            
+
                             // save payment information
                             if (isset($oPaymentInfo->kZahlungsInfo)) {
                                 $oPaymentInfo->updateInDB();
@@ -282,8 +282,8 @@ class Billpay extends PaymentMethod
                 $this->log($e->getMessage());
             }
         } else {
-            $this->log("canceled capture, invalid session information");
-            header("location: bestellvorgang.php?editZahlungsart=1");
+            $this->log('canceled capture, invalid session information');
+            header('location: bestellvorgang.php?editZahlungsart=1');
         }
     }
 
@@ -664,14 +664,14 @@ class Billpay extends PaymentMethod
         $cClassFile = PFAD_ROOT . PFAD_INCLUDES_MODULES . 'billpay/api/' . $cClass . '.php';
 
         if (!file_exists($cClassFile)) {
-            $this->log("file " . $cClassFile . " could not be found");
+            $this->log('file ' . $cClassFile . ' could not be found');
 
             return false;
         }
         require_once $cClassFile;
 
         if (!class_exists($cClass)) {
-            $this->log("class " . $cClass . " could not be found");
+            $this->log('class ' . $cClass . ' could not be found');
 
             return false;
         }
@@ -687,7 +687,7 @@ class Billpay extends PaymentMethod
         $oReq->set_default_params($cMID, $cPID, $cSecure);
 
         if (!is_object($oReq)) {
-            $this->log("error while initializing api function");
+            $this->log('error while initializing api function');
 
             return false;
         }
@@ -724,7 +724,7 @@ class Billpay extends PaymentMethod
             BPHelper::strEncode($oCustomer->cNachname, 50),    // lastname
             BPHelper::strEncode($oCustomer->cStrasse, 50),     // street
             BPHelper::strEncode($oCustomer->cHausnummer, 50),  // streetno
-            BPHelper::strEncode($oCustomer->cAdressZusatz, 50),// addressaddition
+            BPHelper::strEncode($oCustomer->cAdressZusatz, 50), // addressaddition
             BPHelper::strEncode($oCustomer->cPLZ, 10),         // zip
             BPHelper::strEncode($oCustomer->cOrt, 50),         // city
             BPHelper::mapCountryCode($oCustomer->cLand),       // country
@@ -812,11 +812,13 @@ class Billpay extends PaymentMethod
             $shippingName,                                                 // shippingname
             BPHelper::fmtAmount(
                 $oBasketInfo->fShipping[AMT_NET] +
-                $oBasketInfo->fSurcharge[AMT_NET], true
+                $oBasketInfo->fSurcharge[AMT_NET],
+                true
             ),                                                             // shippingprice
             BPHelper::fmtAmount(
                 $oBasketInfo->fShipping[AMT_GROSS] +
-                $oBasketInfo->fSurcharge[AMT_GROSS], true
+                $oBasketInfo->fSurcharge[AMT_GROSS],
+                true
             ),                                                             // shippingpricegross
             BPHelper::fmtAmount($oBasketInfo->fTotal[AMT_NET], true),      // carttotalprice
             BPHelper::fmtAmount($oBasketInfo->fTotal[AMT_GROSS], true),    // carttotalpricegross
@@ -872,13 +874,14 @@ class Billpay extends PaymentMethod
         // order history
         if ($eCustomerType == 'e') {
             $oOrder_arr = Shop::Container()->getDB()->query(
-                "SELECT tbestellung.dErstellt, tbestellung.fGesamtsumme, twaehrung.cISO, tbestellung.kBestellung
+                'SELECT tbestellung.dErstellt, tbestellung.fGesamtsumme, twaehrung.cISO, tbestellung.kBestellung
                     FROM tbestellung
                     LEFT JOIN twaehrung
                         ON tbestellung.kWaehrung = twaehrung.kWaehrung
-                    WHERE kKunde = " . (int)$oCustomer->kKunde . "
+                    WHERE kKunde = ' . (int)$oCustomer->kKunde . '
                     ORDER BY dErstellt DESC 
-                    LIMIT 20", 2
+                    LIMIT 20',
+                2
             );
             if (is_array($oOrder_arr) && count($oOrder_arr) > 0) {
                 foreach ($oOrder_arr as $oOrder) {
@@ -943,7 +946,7 @@ class Billpay extends PaymentMethod
                     $_SESSION['za_billpay_jtl']['cMessage'] = utf8_decode($oPreAuth->get_customer_error_message());
 
                     $this->logEx($oPreAuth->get_merchant_error_message(), $oCustomer);
-                    header("location: bestellvorgang.php?editZahlungsart=1");
+                    header('location: bestellvorgang.php?editZahlungsart=1');
                     exit;
                     break;
                 }
@@ -994,7 +997,7 @@ class Billpay extends PaymentMethod
             $fAmount = $oBasket->gibGesamtsummeWarenOhne(
                 [C_WARENKORBPOS_TYP_ZINSAUFSCHLAG, C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR],
                 true
-                ) * $oBasket->Waehrung->fFaktor;
+            ) * $oBasket->Waehrung->fFaktor;
         }
 
         if ($oOrder) {
@@ -1014,7 +1017,7 @@ class Billpay extends PaymentMethod
             );
             try {
                 $oInvoice->send();
-                $this->log("send invoice create", LOGLEVEL_DEBUG);
+                $this->log('send invoice create', LOGLEVEL_DEBUG);
 
                 if (!$oInvoice->has_error()) {
                     $oInv->nType = 1;
@@ -1022,45 +1025,45 @@ class Billpay extends PaymentMethod
                         case 'za_billpay_jtl':
                         case 'za_billpay_invoice_jtl': {
                             $cInvoiceDueDate = BPHelper::fmtDate(BPHelper::strDecode($oInvoice->get_invoice_duedate()));
-                            $oInv->cInfo     = "Bitte &uuml;berweisen Sie den Gesamtbetrag bis zum " . $cInvoiceDueDate . " auf folgendes Konto:\r\n";
-                            $oInv->cInfo .= "Kontoinhaber: " . BPHelper::strDecode($oInvoice->get_account_holder()) . "\r\n";
-                            $oInv->cInfo .= "IBAN: " . BPHelper::strDecode($oInvoice->get_account_number()) . "\r\n";
-                            $oInv->cInfo .= "BIC: " . BPHelper::strDecode($oInvoice->get_bank_code()) . "\r\n";
-                            $oInv->cInfo .= "Geldinstitut: " . BPHelper::strDecode($oInvoice->get_bank_name()) . "\r\n";
-                            $oInv->cInfo .= "Verwendungszweck: " . BPHelper::strDecode($oInvoice->get_invoice_reference()) . "\r\n";
-                            $oInv->cInfo .= "F&auml;lligkeit: " . $cInvoiceDueDate;
+                            $oInv->cInfo     = 'Bitte &uuml;berweisen Sie den Gesamtbetrag bis zum ' . $cInvoiceDueDate . " auf folgendes Konto:\r\n";
+                            $oInv->cInfo    .= 'Kontoinhaber: ' . BPHelper::strDecode($oInvoice->get_account_holder()) . "\r\n";
+                            $oInv->cInfo    .= 'IBAN: ' . BPHelper::strDecode($oInvoice->get_account_number()) . "\r\n";
+                            $oInv->cInfo    .= 'BIC: ' . BPHelper::strDecode($oInvoice->get_bank_code()) . "\r\n";
+                            $oInv->cInfo    .= 'Geldinstitut: ' . BPHelper::strDecode($oInvoice->get_bank_name()) . "\r\n";
+                            $oInv->cInfo    .= 'Verwendungszweck: ' . BPHelper::strDecode($oInvoice->get_invoice_reference()) . "\r\n";
+                            $oInv->cInfo    .= 'F&auml;lligkeit: ' . $cInvoiceDueDate;
                             break;
                         }
 
                         case 'za_billpay_direct_debit_jtl': {
-                            $oInv->cInfo = "Vielen Dank, dass Sie sich f&uuml;r die Zahlung per Lastschrift mit Billpay entschieden haben.\r\n";
-                            $oInv->cInfo .= "Wir buchen den f&auml;lligen Betrag in den n&auml;chsten Tagen von dem bei der Bestellung angegebenen Konto ab.";
+                            $oInv->cInfo  = "Vielen Dank, dass Sie sich f&uuml;r die Zahlung per Lastschrift mit Billpay entschieden haben.\r\n";
+                            $oInv->cInfo .= 'Wir buchen den f&auml;lligen Betrag in den n&auml;chsten Tagen von dem bei der Bestellung angegebenen Konto ab.';
                             break;
                         }
 
                         case 'za_billpay_rate_payment_jtl': {
-                            $oInv->cInfo = "Vielen Dank, dass Sie sich f&uuml;r die Zahlart Ratenkauf entschieden haben.\r\n";
+                            $oInv->cInfo  = "Vielen Dank, dass Sie sich f&uuml;r die Zahlart Ratenkauf entschieden haben.\r\n";
                             $oInv->cInfo .= "Die f&auml;lligen Betr&auml;ge werden monatlich von dem bei der Bestellung angegebenen Konto abgebucht.\r\n\r\n";
 
                             foreach ($oInvoice->get_dues() as $i => $aDue) {
-                                $oInv->cInfo .= ($i + 1) . ". Rate: " . BPHelper::fmtAmountX($aDue['value'], true, false) .
-                                    " (f&auml;llig am " . BPHelper::fmtDate(BPHelper::strDecode($aDue['date'])) . ")\r\n";
+                                $oInv->cInfo .= ($i + 1) . '. Rate: ' . BPHelper::fmtAmountX($aDue['value'], true, false) .
+                                    ' (f&auml;llig am ' . BPHelper::fmtDate(BPHelper::strDecode($aDue['date'])) . ")\r\n";
                             }
 
                             break;
                         }
 
                         case 'za_billpay_paylater_jtl': {
-                            $oInv->cInfo = "Sie haben sich f&uuml;r die Zahlungsweise PayLater entschieden.\r\n";
+                            $oInv->cInfo  = "Sie haben sich f&uuml;r die Zahlungsweise PayLater entschieden.\r\n";
                             $oInv->cInfo .= "Bitte beachten Sie, dass zus&auml;tzlich zu dem auf dieser Rechnung genannten Rechnungsbetrag weitere Kosten im Zusammenhang mit dem Teilzahlungsgesch&auml;ft entstehen.\r\n";
                             $oInv->cInfo .= "Diese Kosten wurden Ihnen vor Abschluss der Bestellung und auf der Bestellbest&auml;tigung angezeigt.\r\n";
-                            $oInv->cInfo .= "Die vollst&auml;ndige Berechnung der zu leistenden Betr&auml;ge im Zusammenhang mit dem Teilzahlungsgesch&auml;ft, sowie s&auml;mtliche dazugeh&ouml;rige Informationen haben Sie direkt per E-Mail von der BillPay GmbH erhalten.";
+                            $oInv->cInfo .= 'Die vollst&auml;ndige Berechnung der zu leistenden Betr&auml;ge im Zusammenhang mit dem Teilzahlungsgesch&auml;ft, sowie s&auml;mtliche dazugeh&ouml;rige Informationen haben Sie direkt per E-Mail von der BillPay GmbH erhalten.';
                             break;
                         }
 
                         default: {
                             $oInv->nType = 0;
-                            $oInv->cInfo = "Bestellung ist ung&uuml;ltig";
+                            $oInv->cInfo = 'Bestellung ist ung&uuml;ltig';
                             break;
                         }
                     }
@@ -1101,9 +1104,9 @@ class Billpay extends PaymentMethod
             }
             TaxHelper::setTaxRates($deliveryCountry);
             $fAmount = $oBasket->gibGesamtsummeWarenOhne(
-                    [C_WARENKORBPOS_TYP_ZINSAUFSCHLAG, C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR],
-                    true
-                ) * $oBasket->Waehrung->fFaktor;
+                [C_WARENKORBPOS_TYP_ZINSAUFSCHLAG, C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR],
+                true
+            ) * $oBasket->Waehrung->fFaktor;
         }
         if ($oOrder) {
             $oCancel = $this->getApi('cancel');
@@ -1114,7 +1117,7 @@ class Billpay extends PaymentMethod
             );
             try {
                 $oCancel->send();
-                $this->log("send cancel request, order number: " . $oOrder->cBestellNr . ", amount: " . $oOrder->fGesamtsumme, LOGLEVEL_DEBUG);
+                $this->log('send cancel request, order number: ' . $oOrder->cBestellNr . ', amount: ' . $oOrder->fGesamtsumme, LOGLEVEL_DEBUG);
                 if ($oCancel->has_error()) {
                     $this->log($oCancel->get_merchant_error_message());
                 } else {
@@ -1125,7 +1128,7 @@ class Billpay extends PaymentMethod
             }
         } else {
             // order not found
-            $this->log("Order " . $kBestellung . " not found");
+            $this->log('Order ' . $kBestellung . ' not found');
         }
 
         return false;
@@ -1163,7 +1166,7 @@ class Billpay extends PaymentMethod
             switch ($oPosition->nPosTyp) {
                 /*case C_WARENKORBPOS_TYP_GRATISGESCHENK:*/
                 case C_WARENKORBPOS_TYP_ARTIKEL: {
-                    $oBasketInfo->fArticle[AMT_NET] += $fAmount * $oPosition->nAnzahl;
+                    $oBasketInfo->fArticle[AMT_NET]   += $fAmount * $oPosition->nAnzahl;
                     $oBasketInfo->fArticle[AMT_GROSS] += $fAmountGross * $oPosition->nAnzahl;
                     break;
                 }
@@ -1172,7 +1175,7 @@ class Billpay extends PaymentMethod
                 case C_WARENKORBPOS_TYP_VERSANDZUSCHLAG:
                 case C_WARENKORBPOS_TYP_VERPACKUNG:
                 case C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG: {
-                    $oBasketInfo->fShipping[AMT_NET] += $fAmount * $oPosition->nAnzahl;
+                    $oBasketInfo->fShipping[AMT_NET]   += $fAmount * $oPosition->nAnzahl;
                     $oBasketInfo->fShipping[AMT_GROSS] += $fAmountGross * $oPosition->nAnzahl;
                     break;
                 }
@@ -1180,21 +1183,21 @@ class Billpay extends PaymentMethod
                 case C_WARENKORBPOS_TYP_KUPON:
                 case C_WARENKORBPOS_TYP_GUTSCHEIN:
                 case C_WARENKORBPOS_TYP_NEUKUNDENKUPON: {
-                    $oBasketInfo->fRebate[AMT_NET] += $fAmount * $oPosition->nAnzahl;
+                    $oBasketInfo->fRebate[AMT_NET]   += $fAmount * $oPosition->nAnzahl;
                     $oBasketInfo->fRebate[AMT_GROSS] += $fAmountGross * $oPosition->nAnzahl;
                     break;
                 }
 
                 case C_WARENKORBPOS_TYP_ZAHLUNGSART:
                 case C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR: {
-                    $oBasketInfo->fSurcharge[AMT_NET] += $fAmount * $oPosition->nAnzahl;
+                    $oBasketInfo->fSurcharge[AMT_NET]   += $fAmount * $oPosition->nAnzahl;
                     $oBasketInfo->fSurcharge[AMT_GROSS] += $fAmountGross * $oPosition->nAnzahl;
                     break;
                 }
             }
         }
         // rabate fix (only positive amounts)
-        $oBasketInfo->fRebate[AMT_NET] *= -1;
+        $oBasketInfo->fRebate[AMT_NET]   *= -1;
         $oBasketInfo->fRebate[AMT_GROSS] *= -1;
         // total
         $oBasketInfo->fTotal[AMT_NET] = $oBasketInfo->fArticle[AMT_NET] + $oBasketInfo->fShipping[AMT_NET] -

@@ -78,15 +78,15 @@ class ipl_get_installment_request extends ipl_xml_request
             'orderCurrency'     => $this->orderCurrency,
             'lang'              => $this->lang,
         ];
-        $a = [];
+        $a    = [];
         foreach ($data as $key => $val) {
             $a[] = implode('=', [$key, $val]);
         }
         $method = '/getInstallmentOptions';
-        $query  = $method . "?" . implode('&', $a);
+        $query  = $method . '?' . implode('&', $a);
         $url    = $this->_ipl_request_url . $query;
         # this could have used ipl_core_send, but it's designed to communicate in a very rigid format
-        if (false && IPL_CORE_HTTP_CLIENT === "fake") {
+        if (false && IPL_CORE_HTTP_CLIENT === 'fake') {
             $response = ipl_fake_send_request($this->_ipl_request_url . $method, $data);
         } else {
             $response = file_get_contents($url);

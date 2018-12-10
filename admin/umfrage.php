@@ -524,10 +524,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 FROM tumfrage
                 LEFT JOIN tumfragefrage 
                     ON tumfragefrage.kUmfrage = tumfrage.kUmfrage
-                WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
+                WHERE kSprache = " . (int)$_SESSION['kSprache'] . '
                 GROUP BY tumfrage.kUmfrage
                 ORDER BY dGueltigVon DESC
-                LIMIT " . $oPagination->getLimitSQL(),
+                LIMIT ' . $oPagination->getLimitSQL(),
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oUmfrage_arr as $i => $oUmfrage) {

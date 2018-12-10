@@ -98,7 +98,7 @@ if (FormHelper::validateToken()) {
                     $db->delete('tnewsletter', 'kNewsletter', (int)$oNewsletterQueue->kNewsletter);
                     $db->delete('tjobqueue', ['cKey', 'kKey'], ['kNewsletter', (int)$oNewsletterQueue->kNewsletter]);
                     $db->delete('tnewsletterqueue', 'kNewsletterQueue', (int)$kNewsletterQueue);
-                    $cHinweis .= $oNewsletterQueue->cBetreff . "\", ";
+                    $cHinweis .= $oNewsletterQueue->cBetreff . '", ';
                 }
                 $cHinweis  = substr($cHinweis, 0, -2);
                 $cHinweis .= ' wurden erfolgreich gelöscht.<br />';
@@ -673,9 +673,9 @@ if ($step === 'uebersicht') {
             LEFT JOIN tkundengruppe 
                 ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
             WHERE tnewsletterempfaenger.nAktiv = 0
-            " . $cInaktiveSucheSQL->cWHERE . "
+            " . $cInaktiveSucheSQL->cWHERE . '
             ORDER BY tnewsletterempfaenger.dEingetragen DESC 
-            LIMIT " . $oPagiInaktiveAbos->getLimitSQL(),
+            LIMIT ' . $oPagiInaktiveAbos->getLimitSQL(),
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($inactiveRecipients as $oNewsletterEmpfaenger) {

@@ -29,11 +29,11 @@ if (isset($_POST['zeitfilter']) && (int)$_POST['zeitfilter'] === 1) {
 
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && FormHelper::validateToken()) {
     $oConfig_arr = Shop::Container()->getDB()->query(
-        "SELECT *
+        'SELECT *
             FROM teinstellungenconf
             WHERE (
-                kEinstellungenConf IN " . $cSetting . " 
-                OR kEinstellungenSektion = " . CONF_VERGLEICHSLISTE . "
+                kEinstellungenConf IN ' . $cSetting . ' 
+                OR kEinstellungenSektion = ' . CONF_VERGLEICHSLISTE . "
                 )
                 AND cConf = 'Y'
             ORDER BY nSort",

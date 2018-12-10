@@ -77,10 +77,10 @@ $customers = Shop::Container()->getDB()->query(
             ON tkunde.kKunde = twarenkorbpers.kKunde
         JOIN twarenkorbperspos 
             ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
-        " . $searchSQL->cWHERE . "
+        " . $searchSQL->cWHERE . '
         GROUP BY tkunde.kKunde
         ORDER BY twarenkorbpers.dErstellt DESC
-        LIMIT " . $oPagiKunden->getLimitSQL(),
+        LIMIT ' . $oPagiKunden->getLimitSQL(),
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 
@@ -120,8 +120,8 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
                 ON tkunde.kKunde = twarenkorbpers.kKunde
             JOIN twarenkorbperspos 
                 ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
-            WHERE twarenkorbpers.kKunde = " . $kKunde . "
-            LIMIT " . $oPagiWarenkorb->getLimitSQL(),
+            WHERE twarenkorbpers.kKunde = " . $kKunde . '
+            LIMIT ' . $oPagiWarenkorb->getLimitSQL(),
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($carts as $cart) {

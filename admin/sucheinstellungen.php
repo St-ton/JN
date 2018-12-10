@@ -87,7 +87,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
             );
             $res = Shop::Container()->getDB()->executeQuery(
                 "ALTER TABLE $index
-                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $cSpalten_arr) . ")",
+                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $cSpalten_arr) . ')',
                 \DB\ReturnType::QUERYSINGLE
             );
         } catch (Exception $e) {

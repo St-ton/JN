@@ -87,7 +87,7 @@ function plzimportDoImport($target, array $sessData, $result): void
 
         while (!feof($fHandle)) {
             $read += strlen(implode(',', $data));
-            $data = fgetcsv($fHandle, 0, "\t");
+            $data  = fgetcsv($fHandle, 0, "\t");
 
             if (isset($data[13]) && in_array($data[13], [6, 8])) {
                 $plz_arr       = explode(',', $data[7]);
@@ -196,7 +196,7 @@ function plzimportDoDownload($target, array $sessData, $result): void
     }
 
     fwrite($ioHandle, "GET {$ioFile} HTTP/1.1\r\n" .
-        "Host: " . PLZIMPORT_HOST . "\r\n" .
+        'Host: ' . PLZIMPORT_HOST . "\r\n" .
         "User-Agent: Mozilla/5.0\r\n" .
         "Keep-Alive: 115\r\n" .
         "Connection: keep-alive\r\n" .

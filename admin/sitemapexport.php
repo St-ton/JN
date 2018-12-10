@@ -110,9 +110,9 @@ $oSitemapDownload_arr       = Shop::Container()->getDB()->query(
         FROM tsitemaptracker
         LEFT JOIN tbesucherbot 
             ON tbesucherbot.kBesucherBot = tsitemaptracker.kBesucherBot
-        WHERE YEAR(tsitemaptracker.dErstellt) = " . $nYearDownloads . "
+        WHERE YEAR(tsitemaptracker.dErstellt) = " . $nYearDownloads . '
         ORDER BY tsitemaptracker.dErstellt DESC
-        LIMIT " . $oSitemapDownloadPagination->getLimitSQL(),
+        LIMIT ' . $oSitemapDownloadPagination->getLimitSQL(),
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 
@@ -141,9 +141,9 @@ $oSitemapReportPagination = (new Pagination('SitemapReport'))
 $oSitemapReport_arr       = Shop::Container()->getDB()->query(
     "SELECT tsitemapreport.*, DATE_FORMAT(tsitemapreport.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_DE
         FROM tsitemapreport
-        WHERE YEAR(tsitemapreport.dErstellt) = " . $nYearReports . "
+        WHERE YEAR(tsitemapreport.dErstellt) = " . $nYearReports . '
         ORDER BY tsitemapreport.dErstellt DESC
-        LIMIT " . $oSitemapReportPagination->getLimitSQL(),
+        LIMIT ' . $oSitemapReportPagination->getLimitSQL(),
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 foreach ($oSitemapReport_arr as $i => $oSitemapReport) {

@@ -172,8 +172,8 @@ function benutzerverwaltungSaveAttributes(stdClass $oAccount, array $extAttribs,
         }
         // nicht (mehr) vorhandene Attribute löschen
         $db->query(
-            "DELETE FROM tadminloginattribut
-                WHERE kAdminlogin = " . (int)$oAccount->kAdminlogin . "
+            'DELETE FROM tadminloginattribut
+                WHERE kAdminlogin = ' . (int)$oAccount->kAdminlogin . "
                     AND cName NOT IN ('" . implode("', '", $handledKeys) . "')",
             \DB\ReturnType::DEFAULT
         );

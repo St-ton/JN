@@ -989,8 +989,8 @@ function holeAbonnenten($cSQL, $cAktiveSucheSQL): array
                 ON tnewsletterempfaengerhistory.cEmail = tnewsletterempfaenger.cEmail
                   AND tnewsletterempfaengerhistory.cAktion = 'Eingetragen'
             WHERE tnewsletterempfaenger.kSprache = " . (int)$_SESSION['kSprache'] .
-        $cAktiveSucheSQL->cWHERE . "
-            ORDER BY tnewsletterempfaenger.dEingetragen DESC" . $cSQL,
+        $cAktiveSucheSQL->cWHERE . '
+            ORDER BY tnewsletterempfaenger.dEingetragen DESC' . $cSQL,
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }
@@ -1155,8 +1155,8 @@ function gibAbonnent($cPost_arr)
                 ON tkunde.kKunde = tnewsletterempfaenger.kKunde
             JOIN tkundengruppe 
                 ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
-            WHERE " . $cSQL . "
-            ORDER BY tnewsletterempfaenger.dEingetragen DESC",
+            WHERE " . $cSQL . '
+            ORDER BY tnewsletterempfaenger.dEingetragen DESC',
         \DB\ReturnType::SINGLE_OBJECT
     );
     if (isset($oAbonnent->kNewsletterEmpfaenger) && $oAbonnent->kNewsletterEmpfaenger > 0) {

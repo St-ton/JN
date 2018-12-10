@@ -479,12 +479,12 @@ $Suchanfragen = $db->query(
         FROM tsuchanfrage
         LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage'
             AND tseo.kKey = tsuchanfrage.kSuchanfrage
-            AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
-        WHERE tsuchanfrage.kSprache = " . (int)$_SESSION['kSprache'] . "
-            " . $cLivesucheSQL->cWhere . "
+            AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . '
+        WHERE tsuchanfrage.kSprache = ' . (int)$_SESSION['kSprache'] . '
+            ' . $cLivesucheSQL->cWhere . '
         GROUP BY tsuchanfrage.kSuchanfrage
-        ORDER BY " . $cLivesucheSQL->cOrder . "
-        LIMIT " . $oPagiSuchanfragen->getLimitSQL(),
+        ORDER BY ' . $cLivesucheSQL->cOrder . '
+        LIMIT ' . $oPagiSuchanfragen->getLimitSQL(),
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 

@@ -728,7 +728,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                     }
                 } else {
                     $cFehler .= 'Fehler: Sie haben zu einem PDF keinen Dateinamen angegeben.<br />';
-                    $nFehler = 1;
+                    $nFehler  = 1;
                     break;
                 }
             }
@@ -898,8 +898,8 @@ if (((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $con
             'kSprache',
             (int)$Sprache->kSprache
         );
-        $pdfFiles  = [];
-        $filenames = [];
+        $pdfFiles                      = [];
+        $filenames                     = [];
         if (!empty($localized[$Sprache->kSprache]->cPDFS)) {
             $cPDFSTMP_arr = bauePDFArray($localized[$Sprache->kSprache]->cPDFS);
             foreach ($cPDFSTMP_arr as $cPDFSTMP) {

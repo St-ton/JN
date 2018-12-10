@@ -89,9 +89,9 @@ if (isset($_POST['einstellungen_bearbeiten'])
     } else {
         $section = Shop::Container()->getDB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
         $Conf    = Shop::Container()->getDB()->query(
-            "SELECT *
+            'SELECT *
                 FROM teinstellungenconf
-                WHERE kEinstellungenSektion = " . (int)$section->kEinstellungenSektion . "
+                WHERE kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . "
                     AND cConf = 'Y'
                     AND nModul = 0
                     AND nStandardanzeigen = 1

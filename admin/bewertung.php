@@ -153,10 +153,10 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
             FROM tbewertung
             LEFT JOIN tartikel 
                 ON tbewertung.kArtikel = tartikel.kArtikel
-            WHERE tbewertung.kSprache = " . (int)$_SESSION['kSprache'] . "
+            WHERE tbewertung.kSprache = " . (int)$_SESSION['kSprache'] . '
                 AND tbewertung.nAktiv = 0
             ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC
-            LIMIT " . $oPagiInaktiv->getLimitSQL(),
+            LIMIT ' . $oPagiInaktiv->getLimitSQL(),
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $last50ratings = Shop::Container()->getDB()->query(
@@ -164,10 +164,10 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
             FROM tbewertung
             LEFT JOIN tartikel 
                 ON tbewertung.kArtikel = tartikel.kArtikel
-            WHERE tbewertung.kSprache = " . (int)$_SESSION['kSprache'] . "
+            WHERE tbewertung.kSprache = " . (int)$_SESSION['kSprache'] . '
                 AND tbewertung.nAktiv = 1
             ORDER BY tbewertung.dDatum DESC
-            LIMIT " . $oPageAktiv->getLimitSQL(),
+            LIMIT ' . $oPageAktiv->getLimitSQL(),
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 

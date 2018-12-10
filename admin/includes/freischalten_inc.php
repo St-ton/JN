@@ -21,9 +21,9 @@ function gibBewertungFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true):
             FROM tbewertung
             LEFT JOIN tartikel 
                 ON tbewertung.kArtikel = tartikel.kArtikel
-            WHERE " . $cond . "tbewertung.nAktiv = 0
-                " . $cSuchSQL->cWhere . "
-            ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC" . $cSQL,
+            WHERE " . $cond . 'tbewertung.nAktiv = 0
+                ' . $cSuchSQL->cWhere . '
+            ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC' . $cSQL,
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }
@@ -43,8 +43,8 @@ function gibSuchanfrageFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true
     return Shop::Container()->getDB()->query(
         "SELECT *, DATE_FORMAT(dZuletztGesucht, '%d.%m.%Y %H:%i') AS dZuletztGesucht_de
             FROM tsuchanfrage
-            WHERE nAktiv = 0 " . $cond . $cSuchSQL->cWhere . "
-            ORDER BY " . $cSuchSQL->cOrder . $cSQL,
+            WHERE nAktiv = 0 " . $cond . $cSuchSQL->cWhere . '
+            ORDER BY ' . $cSuchSQL->cOrder . $cSQL,
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }
@@ -128,7 +128,7 @@ function gibNewsletterEmpfaengerFreischalten($cSQL, $cSuchSQL, bool $checkLangua
             FROM tnewsletterempfaenger
             WHERE nAktiv = 0
                 " . $cSuchSQL->cWhere . $cond .
-        " ORDER BY " . $cSuchSQL->cOrder . $cSQL,
+        ' ORDER BY ' . $cSuchSQL->cOrder . $cSQL,
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }
@@ -346,7 +346,7 @@ function loescheSuchanfragen($kSuchanfrage_arr): bool
     Shop::Container()->getDB()->query(
         "DELETE FROM tseo
             WHERE cKey = 'kSuchanfrage'
-                AND kKey IN (" . implode(',', $kSuchanfrage_arr) . ")",
+                AND kKey IN (" . implode(',', $kSuchanfrage_arr) . ')',
         \DB\ReturnType::AFFECTED_ROWS
     );
 

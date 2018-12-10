@@ -282,7 +282,7 @@ function generateSitemapXML()
         ? ', tartikel.dLetzteAktualisierung'
         : '';
     $res          = Shop::Container()->getDB()->queryPrepared(
-        "SELECT tartikel.kArtikel, tartikel.cName, tseo.cSeo, tartikel.cArtNr" .
+        'SELECT tartikel.kArtikel, tartikel.cName, tseo.cSeo, tartikel.cArtNr' .
         $modification . "
             FROM tartikel
                 LEFT JOIN tartikelsichtbarkeit 

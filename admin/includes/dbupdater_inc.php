@@ -145,7 +145,7 @@ function updateZeilenBis($cDatei)
         while ($cData = fgets($dir_handle)) {
             $nRow++;
         }
-        Shop::Container()->getDB()->query("UPDATE tversion SET nZeileBis = " . $nRow, \DB\ReturnType::DEFAULT);
+        Shop::Container()->getDB()->query('UPDATE tversion SET nZeileBis = ' . $nRow, \DB\ReturnType::DEFAULT);
 
         if (!Shop::Container()->getDB()->getErrorCode()) {
             return true;
@@ -160,7 +160,7 @@ function updateZeilenBis($cDatei)
  */
 function gibShopVersion()
 {
-    return Shop::Container()->getDB()->query("SELECT * FROM tversion", \DB\ReturnType::SINGLE_OBJECT);
+    return Shop::Container()->getDB()->query('SELECT * FROM tversion', \DB\ReturnType::SINGLE_OBJECT);
 }
 
 /**
@@ -215,8 +215,8 @@ function mappeFehlerCode(int $nFehlerCode)
 function updateFertig(int $nVersion)
 {
     Shop::Container()->getDB()->query(
-        "UPDATE tversion
-            SET nVersion = " . $nVersion . ",
+        'UPDATE tversion
+            SET nVersion = ' . $nVersion . ",
             nZeileVon = 1,
             nZeileBis = 0,
             nFehler = 0,
@@ -238,12 +238,12 @@ function updateFertig(int $nVersion)
 function naechsterUpdateStep(int $nTyp, int $nZeileBis = 1)
 {
     Shop::Container()->getDB()->query(
-        "UPDATE tversion
+        'UPDATE tversion
             SET nZeileVon = 1,
-            nZeileBis = " . $nZeileBis . ",
+            nZeileBis = ' . $nZeileBis . ',
             nFehler = 0,
             nInArbeit = 0,
-            nTyp = " . $nTyp . ",
+            nTyp = ' . $nTyp . ",
             cFehlerSQL = ''",
         \DB\ReturnType::DEFAULT
     );

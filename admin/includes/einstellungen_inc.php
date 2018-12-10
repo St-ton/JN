@@ -108,8 +108,8 @@ function holeEinstellungen($oSQL, $bSpeichern)
     $oSQL->oEinstellung_arr = Shop::Container()->getDB()->query(
         "SELECT *
             FROM teinstellungenconf
-            WHERE (cModulId IS NULL OR cModulId = '') " . $oSQL->cWHERE . "
-            ORDER BY kEinstellungenSektion, nSort",
+            WHERE (cModulId IS NULL OR cModulId = '') " . $oSQL->cWHERE . '
+            ORDER BY kEinstellungenSektion, nSort',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($oSQL->oEinstellung_arr as $j => $oEinstellung) {

@@ -186,8 +186,8 @@ if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
         Shop::Container()->getDB()->query(
             "DELETE FROM tseo
                 WHERE cKey = 'suchspecial'
-                    AND kSprache = " . (int)$_SESSION['kSprache'] . "
-                    AND kKey IN (" . $cSQL . ")",
+                    AND kSprache = " . (int)$_SESSION['kSprache'] . '
+                    AND kKey IN (' . $cSQL . ')',
             \DB\ReturnType::AFFECTED_ROWS
         );
         foreach ($oSuchSpecialsTMP_arr as $oSuchSpecialsTMP) {
@@ -213,8 +213,8 @@ if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
         Shop::Container()->getDB()->query(
             "DELETE FROM tseo
                 WHERE cKey = 'suchspecial'
-                    AND kSprache = " . (int)$_SESSION['kSprache'] . "
-                    AND kKey IN (" . $cSQL . ")",
+                    AND kSprache = " . (int)$_SESSION['kSprache'] . '
+                    AND kKey IN (' . $cSQL . ')',
             \DB\ReturnType::AFFECTED_ROWS
         );
     }

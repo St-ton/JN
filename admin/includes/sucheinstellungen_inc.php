@@ -74,7 +74,7 @@ function createSearchIndex($index, $create)
             );
             $res = Shop::Container()->getDB()->executeQuery(
                 "ALTER TABLE $index
-                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $rows) . ")",
+                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $rows) . ')',
                 \DB\ReturnType::QUERYSINGLE
             );
         } catch (Exception $e) {

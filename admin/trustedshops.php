@@ -32,8 +32,8 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
                 $cHinweis = 'Ihr Zertifikat wurde erfolgreich für die aktuelle Sprache gelöscht.';
 
                 Shop::Container()->getDB()->query(
-                    "DELETE FROM teinstellungen
-                        WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
+                    'DELETE FROM teinstellungen
+                        WHERE kEinstellungenSektion = ' . CONF_TRUSTEDSHOPS . "
                             AND cName = 'trustedshops_nutzen'",
                     \DB\ReturnType::DEFAULT
                 );
@@ -52,9 +52,9 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
     } else {
         $cPreStatus  = $Einstellungen['trustedshops']['trustedshops_nutzen'];
         $oConfig_arr = Shop::Container()->getDB()->query(
-            "SELECT *
+            'SELECT *
                 FROM teinstellungenconf
-                WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
+                WHERE kEinstellungenSektion = ' . CONF_TRUSTEDSHOPS . "
                     AND cConf = 'Y'
                     AND cWertName != 'trustedshops_kundenbewertung_anzeigen'
                 ORDER BY nSort",
@@ -282,19 +282,19 @@ if ($step === 'uebersicht') {
         }
 
         if ($oConfig_arr[$i]->cInputTyp === 'listbox') {
-            $oSetValue = Shop::Container()->getDB()->query(
-                "SELECT cWert
+            $oSetValue                      = Shop::Container()->getDB()->query(
+                'SELECT cWert
                     FROM teinstellungen
-                    WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
+                    WHERE kEinstellungenSektion = ' . CONF_TRUSTEDSHOPS . "
                         AND cName = '" . $oConfig_arr[$i]->cWertName . "'",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $oConfig_arr[$i]->gesetzterWert = $oSetValue;
         } else {
-            $oSetValue = Shop::Container()->getDB()->query(
-                "SELECT cWert
+            $oSetValue                      = Shop::Container()->getDB()->query(
+                'SELECT cWert
                     FROM teinstellungen
-                    WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
+                    WHERE kEinstellungenSektion = ' . CONF_TRUSTEDSHOPS . "
                         AND cName = '" . $oConfig_arr[$i]->cWertName . "'",
                 \DB\ReturnType::SINGLE_OBJECT
             );
@@ -376,7 +376,7 @@ if ($step === 'uebersicht') {
         ];
     }
 
-    $oSprach_arr = [
+    $oSprach_arr   = [
         'de' => 'Deutsch',
         'en' => 'Englisch',
         'fr' => 'Französisch',

@@ -229,8 +229,8 @@ if (isset($_POST['neu_linkgruppe']) && (int)$_POST['neu_linkgruppe'] === 1 && Fo
                 $linkAdmin->createOrUpdateLinkGroup(0, $_POST);
                 $hinweis .= 'Linkgruppe wurde erfolgreich hinzugefügt.';
             } else {
-                $linkgruppe  = $linkAdmin->createOrUpdateLinkGroup((int)$_POST['kLinkgruppe'], $_POST);
-                $hinweis    .= 'Die Linkgruppe <strong>' .
+                $linkgruppe = $linkAdmin->createOrUpdateLinkGroup((int)$_POST['kLinkgruppe'], $_POST);
+                $hinweis   .= 'Die Linkgruppe <strong>' .
                     $linkgruppe->cName .
                     '</strong> wurde erfolgreich geändert.';
             }

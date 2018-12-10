@@ -329,7 +329,7 @@ function holeUmfrageStatistik(int $surveyID)
                 $answer                       = new stdClass();
                 $answer->cName                = $oUmfrageFrageAntwortTMP->cName;
                 $answer->kUmfrageFrageAntwort = $oUmfrageFrageAntwortTMP->kUmfrageFrageAntwort;
-                $answers[]                                  = $answer;
+                $answers[]                    = $answer;
             }
             $matrixOptTMP_arr = Shop::Container()->getDB()->query(
                 'SELECT tumfragematrixoption.kUmfrageMatrixOption, tumfragematrixoption.cName, 
@@ -414,9 +414,9 @@ function holeUmfrageStatistik(int $surveyID)
             || $question->cTyp === \Survey\QuestionType::TEXT_BIG
         ) {
             $answers = Shop::Container()->getDB()->query(
-                "SELECT cText AS cName, COUNT(cText) AS nAnzahlAntwort
+                'SELECT cText AS cName, COUNT(cText) AS nAnzahlAntwort
                     FROM tumfragedurchfuehrungantwort
-                    WHERE kUmfrageFrage = " . (int)$question->kUmfrageFrage . "
+                    WHERE kUmfrageFrage = ' . (int)$question->kUmfrageFrage . "
                         AND TRIM(cText) !=''
                     GROUP BY cText
                     ORDER BY nAnzahlAntwort DESC
@@ -446,12 +446,12 @@ function holeUmfrageStatistik(int $surveyID)
             );
             if (isset($oUmfrageFrageAntwortTMP->nAnzahlAntwort) && (int)$oUmfrageFrageAntwortTMP->nAnzahlAntwort > 0) {
                 $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten += (int)$oUmfrageFrageAntwortTMP->nAnzahlAntwort;
-                $oTMP                                           = new stdClass();
-                $oTMP->cName                                    = '<a href="umfrage.php?umfrage=1&uf=' .
+                $oTMP                                            = new stdClass();
+                $oTMP->cName                                     = '<a href="umfrage.php?umfrage=1&uf=' .
                     $question->kUmfrageFrage . '&aa=' . $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten .
                     '&ma=' . count($answers) . '&a=zeige_sonstige">Sonstige</a>';
-                $oTMP->nAnzahlAntwort                           = $oUmfrageFrageAntwortTMP->nAnzahlAntwort;
-                $oTMP->fProzent                                 = round(
+                $oTMP->nAnzahlAntwort                            = $oUmfrageFrageAntwortTMP->nAnzahlAntwort;
+                $oTMP->fProzent                                  = round(
                     ($oUmfrageFrageAntwortTMP->nAnzahlAntwort / $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten) * 100,
                     1
                 );
@@ -495,9 +495,9 @@ function holeUmfrageStatistik(int $surveyID)
             $freeTextAnswers = [];
             if ($stats->oUmfrageFrage_arr[$i]->nFreifeld == 1) {
                 $freeTextAnswers = Shop::Container()->getDB()->query(
-                    "SELECT cText AS cName, COUNT(cText) AS nAnzahlAntwort
+                    'SELECT cText AS cName, COUNT(cText) AS nAnzahlAntwort
                         FROM tumfragedurchfuehrungantwort
-                        WHERE kUmfrageFrage = " . (int)$question->kUmfrageFrage . "
+                        WHERE kUmfrageFrage = ' . (int)$question->kUmfrageFrage . "
                             AND kUmfrageFrageAntwort = 0
                             AND kUmfrageMatrixOption = 0
                             AND TRIM(cText) !=''
@@ -555,13 +555,13 @@ function holeSonstigeTextAntworten(int $surveyID, int $maxAnswers, int $limit)
 
         return $question;
     }
-    $question = Shop::Container()->getDB()->query(
+    $question                = Shop::Container()->getDB()->query(
         'SELECT kUmfrage, cName, cTyp
             FROM tumfragefrage
             WHERE kUmfrageFrage = ' . $surveyID,
         \DB\ReturnType::SINGLE_OBJECT
     );
-    $answers = Shop::Container()->getDB()->query(
+    $answers                 = Shop::Container()->getDB()->query(
         'SELECT cText AS cName, COUNT(cText) AS nAnzahlAntwort
             FROM tumfragedurchfuehrungantwort
             WHERE kUmfrageFrage = ' . $surveyID . '

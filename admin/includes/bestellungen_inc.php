@@ -72,9 +72,9 @@ function setzeAbgeholtZurueck(array $orderIDs): int
         $orderIDs
     );
     $customers = Shop::Container()->getDB()->query(
-        "SELECT kKunde
+        'SELECT kKunde
             FROM tbestellung
-            WHERE kBestellung IN(" . implode(',', $orderIDs) . ")
+            WHERE kBestellung IN(' . implode(',', $orderIDs) . ")
                 AND cAbgeholt = 'Y'",
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
@@ -89,7 +89,7 @@ function setzeAbgeholtZurueck(array $orderIDs): int
         Shop::Container()->getDB()->query(
             "UPDATE tkunde
                 SET cAbgeholt = 'N'
-                WHERE kKunde IN(" . implode(',', $kKunde_arr) . ")",
+                WHERE kKunde IN(" . implode(',', $kKunde_arr) . ')',
             \DB\ReturnType::AFFECTED_ROWS
         );
     }

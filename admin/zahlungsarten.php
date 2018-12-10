@@ -310,7 +310,7 @@ if ($step === 'einstellen') {
         $db->query(
             "UPDATE tzahlungseingang
                 SET cAbgeholt = 'N'
-                WHERE kZahlungseingang IN (" . implode(',', $kEingang_arr) . ")",
+                WHERE kZahlungseingang IN (" . implode(',', $kEingang_arr) . ')',
             \DB\ReturnType::QUERYSINGLE
         );
     }

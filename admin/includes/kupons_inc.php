@@ -138,10 +138,10 @@ function getRawCoupons($cKuponTyp = 'standard', $cWhereSQL = '', $cOrderSQL = ''
             FROM tkupon AS k
             LEFT JOIN tkuponkunde AS kk ON kk.kKupon = k.kKupon
             WHERE cKuponTyp = '" . Shop::Container()->getDB()->escape($cKuponTyp) . "' " .
-            ($cWhereSQL !== '' ? " AND " . $cWhereSQL : '') .
-            "GROUP BY k.kKupon" .
-            ($cOrderSQL !== '' ? " ORDER BY " . $cOrderSQL : '') .
-            ($cLimitSQL !== '' ? " LIMIT " . $cLimitSQL : ''),
+            ($cWhereSQL !== '' ? ' AND ' . $cWhereSQL : '') .
+            'GROUP BY k.kKupon' .
+            ($cOrderSQL !== '' ? ' ORDER BY ' . $cOrderSQL : '') .
+            ($cLimitSQL !== '' ? ' LIMIT ' . $cLimitSQL : ''),
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }
@@ -413,7 +413,7 @@ function getCouponCount($cKuponTyp = 'standard', $cWhereSQL = '')
         "SELECT COUNT(kKupon) AS count
             FROM tkupon
             WHERE cKuponTyp = '" . $cKuponTyp . "'" .
-            ($cWhereSQL !== '' ? " AND " . $cWhereSQL : ""),
+            ($cWhereSQL !== '' ? ' AND ' . $cWhereSQL : ''),
         \DB\ReturnType::SINGLE_OBJECT
     );
 

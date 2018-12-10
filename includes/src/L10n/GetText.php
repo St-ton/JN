@@ -34,10 +34,12 @@ class GetText
         $this->translator = new \Gettext\Translator();
         $this->translator->register();
 
-        if (isset($_SESSION['AdminAccount']->kSprache) && (int)$_SESSION['AdminAccount']->kSprache > 0) {
-            $this->setLangIso(\Shop::Lang()->getIsoFromLangID($_SESSION['AdminAccount']->kSprache)->cISO)
-                 ->loadAdminLocale('base');
+        if (empty($_SESSION['AdminAccount']->kSprache)) {
+            $_SESSION['AdminAccount']->kSprache = \Shop::getLanguage();
         }
+
+        $this->setLangIso(\Shop::Lang()->getIsoFromLangID($_SESSION['AdminAccount']->kSprache)->cISO)
+             ->loadAdminLocale('base');
     }
 
     /**

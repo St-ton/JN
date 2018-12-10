@@ -246,6 +246,10 @@ class AdminAccount
                 }
             }
 
+            if (!isset($oAdmin->kSprache)) {
+                $oAdmin->kSprache = Shop::getLanguage();
+            }
+
             $this->toSession($oAdmin);
             //check password hash and update if necessary
             $this->checkAndUpdateHash($cPass);

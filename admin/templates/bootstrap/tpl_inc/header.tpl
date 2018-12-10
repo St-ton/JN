@@ -88,6 +88,21 @@
                     {/if}
                     <li class="dropdown" id="favs-drop">{include file="tpl_inc/favs_drop.tpl"}</li>
                     <li class="dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle parent btn-toggle" data-toggle="dropdown">
+                            <i class="fa fa-language"></i>
+                            {$language->cNameEnglisch}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            {foreach $languages as $olang}
+                                {if $olang->kSprache !== (int)$language->kSprache}
+                                    <li>
+                                        <a>{$olang->cNameEnglisch}</a>
+                                    </li>
+                                {/if}
+                            {/foreach}
+                        </ul>
+                    </li>
                     <li class="dropdown avatar">
                         <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
                             <img src="{gravatarImage email=$account->cMail}" title="{$account->cMail}" class="img-circle">

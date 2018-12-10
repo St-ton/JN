@@ -156,6 +156,13 @@ foreach ($adminMenu as $rootName => $rootEntry) {
     $rootKey++;
 }
 
+if (isset($_SESSION['AdminAccount']->kSprache)) {
+    $smarty->assign(
+        'language',
+        Shop::Container()->getDB()->select('tsprache', 'kSprache', $_SESSION['AdminAccount']->kSprache)
+    );
+}
+
 $smarty->assign('URL_SHOP', $shopURL)
        ->assign('jtl_token', FormHelper::getTokenInput())
        ->assign('shopURL', $shopURL)
@@ -177,4 +184,5 @@ $smarty->assign('URL_SHOP', $shopURL)
        ->assign('SektionenEinstellungen', $configSections)
        ->assign('notifications', Notification::getInstance())
        ->assign('favorites', $oAccount->favorites())
+       ->assign('languages', Shop::Lang()->getInstalled())
        ->assign('faviconAdminURL', Shop::getFaviconURL(true));

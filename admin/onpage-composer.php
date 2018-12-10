@@ -12,6 +12,8 @@
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
+\L10n\GetText::getInstance()->loadAdminLocale('opc');
+
 $pageKey      = RequestHelper::verifyGPCDataInt('pageKey');
 $pageId       = RequestHelper::verifyGPDataString('pageId');
 $pageUrl      = RequestHelper::verifyGPDataString('pageUrl');

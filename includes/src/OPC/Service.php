@@ -40,8 +40,6 @@ class Service
     public function __construct(DB $db)
     {
         $this->db = $db;
-
-        \L10n\GetText::getInstance()->loadAdminLocale('opc');
     }
 
     /**

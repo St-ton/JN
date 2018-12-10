@@ -908,7 +908,7 @@ function KuponVerwendungen($oBestellung): void
                 'email' => Kupon::hash($_SESSION['Kunde']->cMail),
                 'used' => 1
             ],
-            \DB\ReturnType::AFFECTED_ROWS
+            \DB\ReturnType::DEFAULT
         );
 
         Shop::Container()->getDB()->insert('tkuponflag', (object)[

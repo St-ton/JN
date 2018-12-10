@@ -990,11 +990,9 @@ function plausiNeukundenKupon()
         //not for already registered customers with order(s)
         if (!empty($_SESSION['Kunde']->kKunde)) {
             $oBestellung  = Shop::Container()->getDB()->executeQueryPrepared('
-              SELECT tbestellung.kBestellung
-                FROM tkunde
-                JOIN tbestellung
-                    ON tbestellung.kKunde = tkunde.kKunde
-                WHERE tkunde.kKunde = :customerID
+              SELECT kBestellung
+                FROM tbestellung
+                WHERE kKunde = :customerID
                 LIMIT 1',
                 ['customerID' => $_SESSION['Kunde']->kKunde],
                 \DB\ReturnType::SINGLE_OBJECT
@@ -2495,31 +2493,24 @@ function warenkorbKuponFaehigHersteller($Kupon, array $cartPositions): bool
 function warenkorbKuponFaehigKategorien($Kupon, array $cartPositions): bool
 {
     if (!empty($Kupon->cKategorien) && (int)$Kupon->cKategorien !== -1) {
-        $categories = [];
+        $products = [];
         foreach ($cartPositions as $Pos) {
             if (empty($Pos->Artikel)) {
                 continue;
             }
-            $kArtikel = $Pos->Artikel->kArtikel;
-            // Kind?
-            if (ArtikelHelper::isVariChild($kArtikel)) {
-                $kArtikel = ArtikelHelper::getParent($kArtikel);
-            }
-            $catData = Shop::Container()->getDB()->selectAll('tkategorieartikel', 'kArtikel', $kArtikel, 'kKategorie');
-            foreach ($catData as $category) {
-                $category->kKategorie = (int)$category->kKategorie;
-                if (!in_array($category->kKategorie, $categories, true)) {
-                    $categories[] = $category->kKategorie;
-                }
-            }
+            $products[] = $Pos->Artikel->kVaterArtikel !== 0 ? $Pos->Artikel->kVaterArtikel : $Pos->Artikel->kArtikel;
         }
-        foreach ($categories as $category) {
-            if (preg_match('/;' . preg_quote($category, '/') . ';/i', $Kupon->cKategorien)) {
-                return true;
-            }
-        }
+        //check if at least one product is in at least one category valid for this coupon
+        $category = Shop::Container()->getDB()->query(
+            'SELECT kKategorie 
+                FROM tkategorieartikel
+                  WHERE kArtikel IN (' . \implode(',', $products) . ')
+                    AND kKategorie IN (' . str_replace(';', ',', trim($Kupon->cKategorien, ';')) . ')
+                    LIMIT 1',
+            \DB\ReturnType::SINGLE_OBJECT
+        );
 
-        return false;
+        return !empty($category);
     }
 
     return true;

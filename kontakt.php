@@ -51,8 +51,8 @@ if (FormHelper::checkSubject()) {
             }
         }
     }
-    $lang     = $_SESSION['cISOSprache'];
-    $Contents = Shop::Container()->getDB()->selectAll(
+    $lang           = $_SESSION['cISOSprache'];
+    $Contents       = Shop::Container()->getDB()->selectAll(
         'tspezialcontentsprache',
         ['nSpezialContent', 'cISOSprache'],
         [(int)SC_KONTAKTFORMULAR, $lang]
@@ -72,7 +72,7 @@ if (FormHelper::checkSubject()) {
     );
     foreach ($subjects as $subject) {
         if ($subject->kKontaktBetreff > 0) {
-            $localization = Shop::Container()->getDB()->select(
+            $localization             = Shop::Container()->getDB()->select(
                 'tkontaktbetreffsprache',
                 'kKontaktBetreff',
                 (int)$subject->kKontaktBetreff,

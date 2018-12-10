@@ -37,14 +37,14 @@ if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {
 }
 
 if ($oVergleichsliste !== null) {
-    $oArtikel_arr     = [];
-    $defaultOptions   = Artikel::getDefaultOptions();
-    $linkHelper       = Shop::Container()->getLinkService();
-    $kLink            = $linkHelper->getSpecialPageLinkKey(LINKTYP_VERGLEICHSLISTE);
-    $link             = $linkHelper->getPageLink($kLink);
-    $baseURL          = $linkHelper->getStaticRoute('vergleichsliste.php');
+    $oArtikel_arr   = [];
+    $defaultOptions = Artikel::getDefaultOptions();
+    $linkHelper     = Shop::Container()->getLinkService();
+    $kLink          = $linkHelper->getSpecialPageLinkKey(LINKTYP_VERGLEICHSLISTE);
+    $link           = $linkHelper->getPageLink($kLink);
+    $baseURL        = $linkHelper->getStaticRoute('vergleichsliste.php');
     foreach ($oVergleichsliste->oArtikel_arr as $oArtikel) {
-        $artikel = (new Artikel())->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
+        $artikel          = (new Artikel())->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
         $artikel->cURLDEL = $baseURL . '?vlplo=' . $oArtikel->kArtikel;
         if (isset($oArtikel->oVariationen_arr) && count($oArtikel->oVariationen_arr) > 0) {
             $artikel->Variationen = $oArtikel->oVariationen_arr;
@@ -58,7 +58,7 @@ if ($oVergleichsliste !== null) {
 $nBreiteAttribut = ($conf['vergleichsliste']['vergleichsliste_spaltengroesseattribut'] > 0)
     ? (int)$conf['vergleichsliste']['vergleichsliste_spaltengroesseattribut']
     : 100;
-$nBreiteArtikel = ($conf['vergleichsliste']['vergleichsliste_spaltengroesse'] > 0)
+$nBreiteArtikel  = ($conf['vergleichsliste']['vergleichsliste_spaltengroesse'] > 0)
     ? (int)$conf['vergleichsliste']['vergleichsliste_spaltengroesse']
     : 200;
 Shop::Smarty()->assign('nBreiteTabelle', $nBreiteArtikel * count($oVergleichsliste->oArtikel_arr) + $nBreiteAttribut)

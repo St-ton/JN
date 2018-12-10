@@ -948,7 +948,7 @@ class Kupon
             } elseif (!empty($Kupon->nVerwendungenProKunde) && $Kupon->nVerwendungenProKunde > 0) {
                 //check if max usage of coupon is reached for cutomer
                 $countCouponUsed= Shop::Container()->getDB()->executeQueryPrepared(
-                    'SELECT SUM(nVerwendungen) AS nVerwendungen
+                    'SELECT nVerwendungen
                       FROM tkuponkunde
                       WHERE kKupon = :coupon
                         AND cMail = :email',

@@ -85,12 +85,12 @@ if (isset($_POST['gratis_geschenk'], $_POST['gratisgeschenk']) && (int)$_POST['g
     $kArtikelGeschenk = (int)$_POST['gratisgeschenk'];
     // Pruefen ob der Artikel wirklich ein Gratis Geschenk ist
     $oArtikelGeschenk = Shop::Container()->getDB()->query(
-        "SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
+        'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
             tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
             FROM tartikelattribut
                 JOIN tartikel 
                     ON tartikel.kArtikel = tartikelattribut.kArtikel
-                WHERE tartikelattribut.kArtikel = " . $kArtikelGeschenk . "
+                WHERE tartikelattribut.kArtikel = ' . $kArtikelGeschenk . "
                 AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
                 AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
         $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true),

@@ -35,7 +35,9 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
         exit();
     }
     $smarty->assign('StartseiteBoxen', CMSHelper::getHomeBoxes())
-           ->assign('oNews_arr', ($Einstellungen['news']['news_benutzen'] === 'Y') ? CMSHelper::getHomeNews($Einstellungen) : []);
+           ->assign('oNews_arr', $Einstellungen['news']['news_benutzen'] === 'Y'
+               ? CMSHelper::getHomeNews($Einstellungen)
+               : []);
     AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguage(), $smarty);
 } elseif ($link->getLinkType() === LINKTYP_AGB) {
     $smarty->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
@@ -51,7 +53,12 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     if (isset($_POST['land'], $_POST['plz']) && !VersandartHelper::getShippingCosts($_POST['land'], $_POST['plz'])) {
         $smarty->assign('fehler', Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'));
     }
-    $smarty->assign('laender', VersandartHelper::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID()));
+    $smarty->assign(
+        'laender',
+        VersandartHelper::getPossibleShippingCountries(
+            \Session\Session::getCustomerGroup()->getID()
+        )
+    );
 } elseif ($link->getLinkType() === LINKTYP_LIVESUCHE) {
     $smarty->assign('LivesucheTop', CMSHelper::getLiveSearchTop($Einstellungen))
            ->assign('LivesucheLast', CMSHelper::getLiveSearchLast($Einstellungen));

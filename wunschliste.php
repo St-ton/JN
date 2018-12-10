@@ -78,7 +78,7 @@ if ($action !== null && FormHelper::validateToken()) {
                     if (isset($_POST['send']) && (int)$_POST['send'] === 1) {
                         if ($Einstellungen['global']['global_wunschliste_anzeigen'] === 'Y') {
                             $cEmail_arr = explode(' ', StringHandler::filterXSS($_POST['email']));
-                            $cHinweis   .= Wunschliste::send($cEmail_arr, $kWunschliste);
+                            $cHinweis  .= Wunschliste::send($cEmail_arr, $kWunschliste);
                             // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
                             $wishlist = Wunschliste::buildPrice(new Wunschliste($kWunschliste));
                         }
@@ -152,7 +152,7 @@ if ($action !== null && FormHelper::validateToken()) {
                     && $customerID > 0
                     && (int)$oWunschliste->kKunde === $customerID
                 ) {
-                    $cHinweis                .= Wunschliste::update($kWunschliste);
+                    $cHinweis               .= Wunschliste::update($kWunschliste);
                     $wishlist                = new Wunschliste($_SESSION['Wunschliste']->kWunschliste ?? $kWunschliste);
                     $_SESSION['Wunschliste'] = $wishlist;
                 }
@@ -174,7 +174,7 @@ if ($action !== null && FormHelper::validateToken()) {
 
             case 'createNew':
                 $CWunschlisteName = StringHandler::htmlentities(StringHandler::filterXSS($_POST['cWunschlisteName']));
-                $cHinweis         .= Wunschliste::save($CWunschlisteName);
+                $cHinweis        .= Wunschliste::save($CWunschlisteName);
                 break;
 
             case 'delete':
@@ -208,7 +208,7 @@ if ($action !== null && FormHelper::validateToken()) {
 
             case 'setAsDefault':
                 if ($userOK === true && $wishlistTargetID !== 0) {
-                    $cHinweis     .= Wunschliste::setDefault($wishlistTargetID);
+                    $cHinweis    .= Wunschliste::setDefault($wishlistTargetID);
                     $kWunschliste = $wishlistTargetID;
                 }
                 break;

@@ -82,7 +82,7 @@ if ($conf['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y'
         (int)$conf['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'],
         (int)$conf['global']['global_bestseller_minanzahl']
     );
-    $products = $oSuchergebnisse->getProducts()->all();
+    $products    = $oSuchergebnisse->getProducts()->all();
     Bestseller::ignoreProducts($products, $bestsellers);
 }
 if (RequestHelper::verifyGPCDataInt('zahl') > 0) {

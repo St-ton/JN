@@ -63,10 +63,10 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
         // Pruefen, ob mittlerweile ein Kundenkonto existiert
         // und wenn ja, dann kKunde in tnewsletterempfänger aktualisieren
         Shop::Container()->getDB()->query(
-            "UPDATE tnewsletterempfaenger, tkunde
+            'UPDATE tnewsletterempfaenger, tkunde
                 SET tnewsletterempfaenger.kKunde = tkunde.kKunde
                 WHERE tkunde.cMail = tnewsletterempfaenger.cEmail
-                    AND tnewsletterempfaenger.kKunde = 0",
+                    AND tnewsletterempfaenger.kKunde = 0',
             \DB\ReturnType::DEFAULT
         );
         // Protokollieren (freigeschaltet)

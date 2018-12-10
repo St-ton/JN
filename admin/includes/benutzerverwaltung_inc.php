@@ -98,6 +98,22 @@ function getInfoInUse($cRow, $cValue)
 }
 
 /**
+ * @param int $kSprache
+ */
+function changeAdminUserLanguage(int $kSprache)
+{
+    $_SESSION['AdminAccount']->kSprache = $kSprache;
+    $_SESSION['AdminAccount']->kAdminlogin;
+
+    Shop::Container()->getDB()->update(
+        'tadminlogin',
+        'kAdminlogin',
+        $_SESSION['AdminAccount']->kAdminlogin,
+        (object)['kSprache' => $kSprache]
+    );
+}
+
+/**
  * @param int $kAdminlogin
  * @return array
  */
@@ -653,6 +669,18 @@ function benutzerverwaltungActionGroupDelete(Smarty\JTLSmarty $smarty, array &$m
     }
 
     return 'group_redirect';
+}
+
+/**
+ * @param Smarty\JTLSmarty $smarty
+ * @param array            $messages
+ */
+function benutzerverwaltungActionQuickChangeLanguage(Smarty\JTLSmarty $smarty, array &$messages)
+{
+    $kSprache = RequestHelper::verifyGPCDataInt('kSprache');
+    changeAdminUserLanguage($kSprache);
+
+    header('Location: ' . $_SERVER['HTTP_REFERER']);
 }
 
 /**

@@ -97,7 +97,12 @@
                             {foreach $languages as $olang}
                                 {if $olang->kSprache !== (int)$language->kSprache}
                                     <li>
-                                        <a>{$olang->cNameEnglisch}</a>
+                                        <a href="{strip}benutzerverwaltung.php
+                                                ?token={$smarty.session.jtl_token}
+                                                &action=quick_change_language
+                                                &kSprache={$olang->kSprache}{/strip}">
+                                            {$olang->cNameEnglisch}
+                                        </a>
                                     </li>
                                 {/if}
                             {/foreach}

@@ -31,7 +31,7 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
             case AdminLoginStatus::ERROR_LOCKED:
             case AdminLoginStatus::ERROR_INVALID_PASSWORD_LOCKED:
                 $lockTime = $oAccount->getLockedMinutes();
-                $cFehler = 'Gesperrt für ' . $lockTime . ' Minute' . ($lockTime !== 1 ? 'n' : '');
+                $cFehler  = 'Gesperrt für ' . $lockTime . ' Minute' . ($lockTime !== 1 ? 'n' : '');
                 break;
 
             case AdminLoginStatus::ERROR_USER_NOT_FOUND:

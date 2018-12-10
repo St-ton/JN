@@ -42,7 +42,7 @@ if (FormHelper::validateToken()) {
         // https://github.com/Studio-42/elFinder/wiki/Connector-configuration-options
         // run elFinder
         $connector = new elFinderConnector(new elFinder([
-            'bind' => [
+            'bind'  => [
                 'rm rename' => function ($cmd, &$result, $args, $elfinder, $volume) use ($mediafilesSubdir) {
                     $sizes = ['xs', 'sm', 'md', 'lg', 'xl'];
 
@@ -86,12 +86,11 @@ if (FormHelper::validateToken()) {
 
         $connector->run();
     } else {
-        $smarty
-            ->assign('mediafilesType', $mediafilesType)
-            ->assign('mediafilesSubdir', $mediafilesSubdir)
-            ->assign('isCKEditor', $isCKEditor)
-            ->assign('CKEditorFuncNum', $CKEditorFuncNum)
-            ->assign('templateUrl', Shop::getURL() . '/' . PFAD_ADMIN . $currentTemplateDir)
-            ->display('elfinder.tpl');
+        $smarty->assign('mediafilesType', $mediafilesType)
+               ->assign('mediafilesSubdir', $mediafilesSubdir)
+               ->assign('isCKEditor', $isCKEditor)
+               ->assign('CKEditorFuncNum', $CKEditorFuncNum)
+               ->assign('templateUrl', Shop::getURL() . '/' . PFAD_ADMIN . $currentTemplateDir)
+               ->display('elfinder.tpl');
     }
 }

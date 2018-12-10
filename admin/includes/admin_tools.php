@@ -68,7 +68,7 @@ function getAdminSectionSettings($configSectionID)
 
             $conf->gesetzterWert = $oSetValue;
         } elseif ($conf->cInputTyp === 'selectkdngrp') {
-            $oSetValue = $db->selectAll(
+            $oSetValue           = $db->selectAll(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [$conf->kEinstellungenSektion, $conf->cWertName]
@@ -452,11 +452,10 @@ function ermittleDatumWoche(string $cDatum)
         $daysPerMonth = date('t', mktime(0, 0, 0, $nMonat, 1, $nJahr));
         $nTag         = $daysPerMonth - $nWochentag + $nTagOld;
     }
-    $nStampStart = mktime(0, 0, 0, $nMonat, $nTag, $nJahr);
-    // Wochenende ermitteln
+    $nStampStart  = mktime(0, 0, 0, $nMonat, $nTag, $nJahr);
     $nTage        = 6;
     $daysPerMonth = date('t', mktime(0, 0, 0, $nMonat, 1, $nJahr));
-    $nTag         += $nTage;
+    $nTag        += $nTage;
     if ($nTag > $daysPerMonth) {
         $nTag -= $daysPerMonth;
         ++$nMonat;

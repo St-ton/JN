@@ -9,14 +9,14 @@ $oAccount->permission('CHECKBOXES_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'checkbox_inc.php';
 /** @global Smarty\JTLSmarty $smarty */
-$Einstellungen     = Shop::getSettings([CONF_CHECKBOX]);
-$cHinweis          = '';
-$cFehler           = '';
-$cStep             = 'uebersicht';
-$nAnzahlProSeite   = 15;
-$oSprach_arr       = Sprache::getAllLanguages();
-$oCheckBox         = new CheckBox();
-$cTab              = $cStep;
+$Einstellungen   = Shop::getSettings([CONF_CHECKBOX]);
+$cHinweis        = '';
+$cFehler         = '';
+$cStep           = 'uebersicht';
+$nAnzahlProSeite = 15;
+$oSprach_arr     = Sprache::getAllLanguages();
+$oCheckBox       = new CheckBox();
+$cTab            = $cStep;
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $cTab = RequestHelper::verifyGPDataString('tab');
 }
@@ -58,7 +58,7 @@ if (isset($_POST['erstellenShowButton'])) {
     $cTab = $cStep;
 }
 
-$oPagination = (new Pagination())
+$oPagination   = (new Pagination())
     ->setItemCount($oCheckBox->getAllCheckBoxCount())
     ->assemble();
 $oCheckBox_arr = $oCheckBox->getAllCheckBox('LIMIT ' . $oPagination->getLimitSQL());
@@ -73,15 +73,15 @@ $smarty->assign('oCheckBox_arr', $oCheckBox_arr)
        ->assign('CHECKBOX_ORT_KONTAKT', CHECKBOX_ORT_KONTAKT)
        ->assign('oSprache_arr', $oSprach_arr)
        ->assign('oKundengruppe_arr', Shop::Container()->getDB()->query(
-           "SELECT * 
+           'SELECT * 
                 FROM tkundengruppe 
-                ORDER BY cName",
+                ORDER BY cName',
            \DB\ReturnType::ARRAY_OF_OBJECTS
        ))
        ->assign('oLink_arr', Shop::Container()->getDB()->query(
-           "SELECT * 
+           'SELECT * 
               FROM tlink 
-              ORDER BY cName",
+              ORDER BY cName',
            \DB\ReturnType::ARRAY_OF_OBJECTS
        ))
        ->assign('oCheckBoxFunktion_arr', $oCheckBox->getCheckBoxFunctions())

@@ -212,7 +212,7 @@ function plzimportDoDownload($target, array $sessData, $result): void
     $written = 0;
     while (!feof($ioHandle) && $buf !== false) {
         $written += fwrite($fHandle, $buf);
-        $buf     = fread($ioHandle, $partSize);
+        $buf      = fread($ioHandle, $partSize);
         if ($buf === false) {
             fclose($fHandle);
             fclose($ioHandle);
@@ -549,11 +549,10 @@ function plzimportActionRestoreBackup($target = ''): stdClass
 }
 
 /**
- * @param string           $step
  * @param Smarty\JTLSmarty $smarty
  * @param array            $messages
  */
-function plzimportFinalize($step, Smarty\JTLSmarty $smarty, array &$messages): void
+function plzimportFinalize(Smarty\JTLSmarty $smarty, array &$messages): void
 {
     if (isset($_SESSION['plzimport.notice'])) {
         $messages['notice'] = $_SESSION['plzimport.notice'];
@@ -575,7 +574,7 @@ function plzimportFinalize($step, Smarty\JTLSmarty $smarty, array &$messages): v
  */
 function plzimportOpenSession($sessID): bool
 {
-    $dbSess = Shop::Container()->getDB()->select('tadminsession', 'cSessionId', "plzimport.{$sessID}");
+    $dbSess = Shop::Container()->getDB()->select('tadminsession', 'cSessionId', 'plzimport.' . $sessID);
 
     if (!isset($dbSess->nSessionExpires) || $dbSess->nSessionExpires < time()) {
         Shop::Container()->getDB()->query(
@@ -598,7 +597,7 @@ function plzimportOpenSession($sessID): bool
  */
 function plzimportCloseSession($sessID): void
 {
-    Shop::Container()->getDB()->delete('tadminsession', 'cSessionId', "plzimport.{$sessID}");
+    Shop::Container()->getDB()->delete('tadminsession', 'cSessionId', 'plzimport.' . $sessID);
 }
 
 /**
@@ -607,7 +606,7 @@ function plzimportCloseSession($sessID): void
  */
 function plzimportWriteSession($sessID, array $data): void
 {
-    Shop::Container()->getDB()->update('tadminsession', 'cSessionId', "plzimport.{$sessID}", (object)[
+    Shop::Container()->getDB()->update('tadminsession', 'cSessionId', 'plzimport.' . $sessID, (object)[
         'cSessionData'    => serialize($data),
         'nSessionExpires' => time() + 2 * 60
     ]);
@@ -619,7 +618,7 @@ function plzimportWriteSession($sessID, array $data): void
  */
 function plzimportReadSession($sessID)
 {
-    $dbSess = Shop::Container()->getDB()->select('tadminsession', 'cSessionId', "plzimport.{$sessID}");
+    $dbSess = Shop::Container()->getDB()->select('tadminsession', 'cSessionId', 'plzimport.' . $sessID);
 
     return !empty($dbSess->cSessionData)
         ? unserialize($dbSess->cSessionData)

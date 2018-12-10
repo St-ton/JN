@@ -13,44 +13,44 @@ use JTLShop\SemVer\Version;
  */
 function resetteUpdateDB()
 {
-    $oColumns_arr = Shop::Container()->getDB()->query("SHOW COLUMNS FROM tversion", \DB\ReturnType::ARRAY_OF_OBJECTS);
-    if (is_array($oColumns_arr) && count($oColumns_arr) > 0) {
-        $cColumns_arr = [];
-        foreach ($oColumns_arr as $oColumns) {
-            $cColumns_arr[] = $oColumns->Field;
+    $columns = Shop::Container()->getDB()->query('SHOW COLUMNS FROM tversion', \DB\ReturnType::ARRAY_OF_OBJECTS);
+    if (is_array($columns) && count($columns) > 0) {
+        $colNames = [];
+        foreach ($columns as $col) {
+            $colNames[] = $col->Field;
         }
-        if (count($cColumns_arr) > 0) {
-            if (!in_array('nZeileVon', $cColumns_arr, true)) {
+        if (count($colNames) > 0) {
+            if (!in_array('nZeileVon', $colNames, true)) {
                 Shop::Container()->getDB()->query(
                     'ALTER TABLE tversion ADD nZeileVon INT UNSIGNED NOT NULL AFTER nVersion',
                     \DB\ReturnType::DEFAULT
                 );
             }
-            if (!in_array('nZeileBis', $cColumns_arr, true)) {
+            if (!in_array('nZeileBis', $colNames, true)) {
                 Shop::Container()->getDB()->query(
                     'ALTER TABLE tversion ADD nZeileBis INT UNSIGNED NOT NULL AFTER nZeileVon',
                     \DB\ReturnType::DEFAULT
                 );
             }
-            if (!in_array('nInArbeit', $cColumns_arr, true)) {
+            if (!in_array('nInArbeit', $colNames, true)) {
                 Shop::Container()->getDB()->query(
                     'ALTER TABLE tversion ADD nInArbeit TINYINT NOT NULL AFTER nZeileBis',
                     \DB\ReturnType::DEFAULT
                 );
             }
-            if (!in_array('nFehler', $cColumns_arr, true)) {
+            if (!in_array('nFehler', $colNames, true)) {
                 Shop::Container()->getDB()->query(
                     'ALTER TABLE tversion ADD nFehler TINYINT UNSIGNED NOT NULL AFTER nInArbeit',
                     \DB\ReturnType::DEFAULT
                 );
             }
-            if (!in_array('nTyp', $cColumns_arr, true)) {
+            if (!in_array('nTyp', $colNames, true)) {
                 Shop::Container()->getDB()->query(
                     'ALTER TABLE tversion ADD nTyp TINYINT UNSIGNED NOT NULL AFTER nFehler',
                     \DB\ReturnType::DEFAULT
                 );
             }
-            if (!in_array('cFehlerSQL', $cColumns_arr, true)) {
+            if (!in_array('cFehlerSQL', $colNames, true)) {
                 Shop::Container()->getDB()->query(
                     'ALTER TABLE tversion ADD cFehlerSQL VARCHAR(255) NOT NULL AFTER nTyp',
                     \DB\ReturnType::DEFAULT
@@ -369,7 +369,8 @@ function dbupdaterStatusTpl()
         ->assign('updatesAvailable', $updatesAvailable)
         ->assign('currentFileVersion', $currentFileVersion)
         ->assign('currentDatabaseVersion', $currentDatabaseVersion)
-        ->assign('hasDifferentVersions', !Version::parse($currentDatabaseVersion)->equals(Version::parse($currentFileVersion)))
+        ->assign('hasDifferentVersions', !Version::parse($currentDatabaseVersion)
+                                                 ->equals(Version::parse($currentFileVersion)))
         ->assign('version', $version)
         ->assign('updateError', $updateError)
         ->assign('currentTemplateFileVersion', $template->xmlData->cVersion)

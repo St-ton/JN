@@ -50,7 +50,7 @@ $cSearchString     = $oSearchfield->getValue();
 $nSelectedLevel    = $oLevelSelect->getSelectedOption()->getValue();
 $nTotalLogCount    = Jtllog::getLogCount();
 $nFilteredLogCount = Jtllog::getLogCount($cSearchString, $nSelectedLevel);
-$oPagination = (new Pagination('syslog'))
+$oPagination       = (new Pagination('syslog'))
     ->setItemsPerPageOptions([10, 20, 50, 100, -1])
     ->setItemCount($nFilteredLogCount)
     ->assemble();

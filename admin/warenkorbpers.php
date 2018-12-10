@@ -12,17 +12,16 @@ $cHinweis          = '';
 $cFehler           = '';
 $step              = 'uebersicht';
 $settingsIDs       = [540];
-$cSucheSQL         = new stdClass();
-$cSucheSQL->cJOIN  = '';
-$cSucheSQL->cWHERE = '';
+$searchSQL         = new stdClass();
+$searchSQL->cJOIN  = '';
+$searchSQL->cWHERE = '';
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 if (strlen(RequestHelper::verifyGPDataString('cSuche')) > 0) {
     $cSuche = Shop::Container()->getDB()->escape(StringHandler::filterXSS(RequestHelper::verifyGPDataString('cSuche')));
-
     if (strlen($cSuche) > 0) {
-        $cSucheSQL->cWHERE = " WHERE (tkunde.cKundenNr LIKE '%" . $cSuche . "%'
+        $searchSQL->cWHERE = " WHERE (tkunde.cKundenNr LIKE '%" . $cSuche . "%'
             OR tkunde.cVorname LIKE '%" . $cSuche . "%' 
             OR tkunde.cMail LIKE '%" . $cSuche . "%')";
     }
@@ -34,7 +33,7 @@ if (isset($_POST['einstellungen'])
     && (isset($_POST['speichern']) || (isset($_POST['a']) && $_POST['a'] === 'speichern'))
     && FormHelper::validateToken()
 ) {
-    $step = 'uebersicht';
+    $step      = 'uebersicht';
     $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
     $smarty->assign('tab', 'einstellungen');
 }
@@ -49,10 +48,8 @@ if (isset($_GET['l']) && (int)$_GET['l'] > 0 && FormHelper::validateToken()) {
 
     unset($oWarenkorbPers);
 }
-
-// Anzahl Kunden mit Warenkorb
-$oKundeAnzahl = Shop::Container()->getDB()->query(
-    'SELECT COUNT(*) AS nAnzahl
+$customerCount = (int)Shop::Container()->getDB()->query(
+    'SELECT COUNT(*) AS count
         FROM
         (
             SELECT tkunde.kKunde
@@ -61,18 +58,17 @@ $oKundeAnzahl = Shop::Container()->getDB()->query(
                 ON tkunde.kKunde = twarenkorbpers.kKunde
             JOIN twarenkorbperspos 
                 ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
-            ' . $cSucheSQL->cWHERE . '
+            ' . $searchSQL->cWHERE . '
             GROUP BY tkunde.kKunde
         ) AS tAnzahl',
     \DB\ReturnType::SINGLE_OBJECT
-);
+)->count;
 
 $oPagiKunden = (new Pagination('kunden'))
-    ->setItemCount($oKundeAnzahl->nAnzahl)
+    ->setItemCount($customerCount)
     ->assemble();
 
-// Gespeicherte Warenkoerbe
-$oKunde_arr = Shop::Container()->getDB()->query(
+$customers = Shop::Container()->getDB()->query(
     "SELECT tkunde.kKunde, tkunde.cFirma, tkunde.cVorname, tkunde.cNachname, 
         DATE_FORMAT(twarenkorbpers.dErstellt, '%d.%m.%Y  %H:%i') AS Datum, 
         COUNT(twarenkorbperspos.kWarenkorbPersPos) AS nAnzahl
@@ -81,21 +77,21 @@ $oKunde_arr = Shop::Container()->getDB()->query(
             ON tkunde.kKunde = twarenkorbpers.kKunde
         JOIN twarenkorbperspos 
             ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
-        " . $cSucheSQL->cWHERE . "
+        " . $searchSQL->cWHERE . "
         GROUP BY tkunde.kKunde
         ORDER BY twarenkorbpers.dErstellt DESC
         LIMIT " . $oPagiKunden->getLimitSQL(),
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 
-foreach ($oKunde_arr as $i => $oKunde) {
-    $oKundeTMP = new Kunde($oKunde->kKunde);
+foreach ($customers as $item) {
+    $customer = new Kunde($item->kKunde);
 
-    $oKunde_arr[$i]->cNachname = $oKundeTMP->cNachname;
-    $oKunde_arr[$i]->cFirma    = $oKundeTMP->cFirma;
+    $item->cNachname = $customer->cNachname;
+    $item->cFirma    = $customer->cFirma;
 }
 
-$smarty->assign('oKunde_arr', $oKunde_arr)
+$smarty->assign('oKunde_arr', $customers)
        ->assign('oPagiKunden', $oPagiKunden);
 
 if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
@@ -115,7 +111,7 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
         ->setItemCount($oWarenkorbPers->nAnzahl)
         ->assemble();
 
-    $oWarenkorbPersPos_arr = Shop::Container()->getDB()->query(
+    $carts = Shop::Container()->getDB()->query(
         "SELECT tkunde.kKunde AS kKundeTMP, tkunde.cVorname, tkunde.cNachname, twarenkorbperspos.kArtikel, 
             twarenkorbperspos.cArtikelName, twarenkorbpers.kKunde, twarenkorbperspos.fAnzahl, 
             DATE_FORMAT(twarenkorbperspos.dHinzugefuegt, '%d.%m.%Y  %H:%i') AS Datum
@@ -128,14 +124,14 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
             LIMIT " . $oPagiWarenkorb->getLimitSQL(),
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    foreach ($oWarenkorbPersPos_arr as $i => $oWarenkorbPersPos) {
-        $oKundeTMP = new Kunde($oWarenkorbPersPos->kKundeTMP);
+    foreach ($carts as $cart) {
+        $customer = new Kunde($cart->kKundeTMP);
 
-        $oWarenkorbPersPos_arr[$i]->cNachname = $oKundeTMP->cNachname;
-        $oWarenkorbPersPos_arr[$i]->cFirma    = $oKundeTMP->cFirma;
+        $cart->cNachname = $customer->cNachname;
+        $cart->cFirma    = $customer->cFirma;
     }
 
-    $smarty->assign('oWarenkorbPersPos_arr', $oWarenkorbPersPos_arr)
+    $smarty->assign('oWarenkorbPersPos_arr', $carts)
            ->assign('kKunde', $kKunde)
            ->assign('oPagiWarenkorb', $oPagiWarenkorb);
 }

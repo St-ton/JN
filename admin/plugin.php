@@ -100,8 +100,8 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
         }
         foreach ($oPlugin->getAdminMenu()->getItems() as $menu) {
             if ($menu->isMarkdown === true) {
-                $parseDown = new Parsedown();
-                $content   = $parseDown->text(StringHandler::convertUTF8(file_get_contents($menu->file)));
+                $parseDown  = new Parsedown();
+                $content    = $parseDown->text(StringHandler::convertUTF8(file_get_contents($menu->file)));
                 $menu->html = $smarty->assign('content', $content)->fetch($menu->tpl);
             } elseif ($menu->configurable === false
                 && $menu->file !== ''

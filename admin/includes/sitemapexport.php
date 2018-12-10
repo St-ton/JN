@@ -48,7 +48,7 @@ function baueSitemapIndex($nDatei, $bGZ)
     $shopURL = Shop::getURL();
     $conf    = Shop::getSettings([CONF_SITEMAP]);
     $cIndex  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-    $cIndex  .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+    $cIndex .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
     for ($i = 0; $i <= $nDatei; ++$i) {
         if ($bGZ) {
             $cIndex .= '<sitemap><loc>' .
@@ -990,10 +990,14 @@ function generateSitemapXML()
         // ping sitemap to Google and Bing
         if ($conf['sitemap']['sitemap_google_ping'] === 'Y') {
             $encodedSitemapIndexURL = urlencode(Shop::getURL() . '/sitemap_index.xml');
-            if (200 !== ($httpStatus = RequestHelper::http_get_status('http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL))) {
+            if (200 !== ($httpStatus = RequestHelper::http_get_status(
+                'http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL
+            ))) {
                 Shop::Container()->getLogService()->notice('Sitemap ping to Google failed with status ' . $httpStatus);
             }
-            if (200 !== ($httpStatus = RequestHelper::http_get_status('http://www.bing.com/ping?sitemap=' . $encodedSitemapIndexURL))) {
+            if (200 !== ($httpStatus = RequestHelper::http_get_status(
+                'http://www.bing.com/ping?sitemap=' . $encodedSitemapIndexURL
+            ))) {
                 Shop::Container()->getLogService()->notice('Sitemap ping to Bing failed with status ' . $httpStatus);
             }
         }

@@ -251,7 +251,8 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                                         $cMapping . '" gemappt.';
                                 }
                             } else {
-                                $fehler = 'Fehler: Sie haben versucht auf eine nicht existierende Suchanfrage zu mappen.';
+                                $fehler = 'Fehler: Sie haben versucht auf eine nicht ' .
+                                    'existierende Suchanfrage zu mappen.';
                                 break;
                             }
                         } else {

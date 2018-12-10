@@ -30,13 +30,13 @@ switch ($cAction) {
         $cAction = benutzerverwaltungActionAccountEdit($smarty, $messages);
         break;
     case 'account_delete':
-        $cAction = benutzerverwaltungActionAccountDelete($smarty, $messages);
+        $cAction = benutzerverwaltungActionAccountDelete($messages);
         break;
     case 'group_edit':
         $cAction = benutzerverwaltungActionGroupEdit($smarty, $messages);
         break;
     case 'group_delete':
-        $cAction = benutzerverwaltungActionGroupDelete($smarty, $messages);
+        $cAction = benutzerverwaltungActionGroupDelete($messages);
         break;
 }
 

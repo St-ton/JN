@@ -12,11 +12,11 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'tagging_inc.php';
 /** @global Smarty\JTLSmarty $smarty */
 setzeSprache();
 
-$cHinweis          = '';
-$cFehler           = '';
-$step              = 'uebersicht';
-$settingsIDs       = [427, 428, 431, 433, 434, 435, 430];
-$db                = Shop::Container()->getDB();
+$cHinweis    = '';
+$cFehler     = '';
+$step        = 'uebersicht';
+$settingsIDs = [427, 428, 431, 433, 434, 435, 430];
+$db          = Shop::Container()->getDB();
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
@@ -28,7 +28,6 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::vali
                 $upd         = new stdClass();
                 $upd->nAktiv = 0;
                 $db->update('ttag', 'kTag', (int)$kTagAll, $upd);
-                // Loeschequery vorbereiten
                 if ($i > 0) {
                     $cSQLDel .= ', ' . (int)$kTagAll;
                 } else {
@@ -59,7 +58,6 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::vali
                         ['cKey', 'kKey', 'kSprache'],
                         ['kTag', (int)$nAktiv, (int)$_SESSION['kSprache']]
                     );
-                    // Aktivierten Tag in tseo eintragen
                     $oSeo           = new stdClass();
                     $oSeo->cSeo     = isset($oTag->cName)
                         ? \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($oTag->cName))
@@ -78,7 +76,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::vali
             flushAffectedArticleCache($_POST['kTagAll']);
         }
         // Eintragen in die Mapping Tabelle
-        $Tags = $db->query(
+        $tags = $db->query(
             'SELECT ttag.kTag, ttag.cName, ttag.nAktiv, sum(ttagartikel.nAnzahlTagging) AS Anzahl 
                 FROM ttag
                 JOIN ttagartikel 
@@ -88,7 +86,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::vali
                 ORDER BY Anzahl DESC',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($Tags as $tag) {
+        foreach ($tags as $tag) {
             if ($tag->cName !== $_POST['mapping_' . $tag->kTag]) {
                 if (strlen($_POST['mapping_' . $tag->kTag]) > 0) {
                     $tagmapping_obj           = new stdClass();
@@ -101,7 +99,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::vali
                     if (isset($Neuertag->kTag) && $Neuertag->kTag > 0) {
                         $db->insert('ttagmapping', $tagmapping_obj);
                         $db->delete('ttag', 'kTag', $tag->kTag);
-                        $upd = new stdClass();
+                        $upd       = new stdClass();
                         $upd->kKey = (int)$Neuertag->kTag;
                         $db->update('tseo', ['cKey', 'kKey'], ['kTag', (int)$tag->kTag], $upd);
                         $tagmappings = $db->selectAll('ttagartikel', 'ktag', (int)$tag->kTag);
@@ -110,9 +108,9 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::vali
                             //update tab amount, delete product tagging with old tag ID
                             if ($db->query(
                                 'UPDATE ttagartikel 
-                                    SET nAnzahlTagging = nAnzahlTagging + ' . $tagmapping->nAnzahlTagging . '
-                                    WHERE kTag = ' . (int)$Neuertag->kTag . ' 
-                                        AND kArtikel = ' . (int)$tagmapping->kArtikel,
+                                SET nAnzahlTagging = nAnzahlTagging + ' . $tagmapping->nAnzahlTagging . '
+                                WHERE kTag = ' . (int)$Neuertag->kTag . ' 
+                                    AND kArtikel = ' . (int)$tagmapping->kArtikel,
                                 \DB\ReturnType::AFFECTED_ROWS
                             ) > 0) {
                                 $db->delete(
@@ -121,7 +119,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::vali
                                     [(int)$tag->kTag, (int)$tagmapping->kArtikel]
                                 );
                             } else {
-                                $upd = new stdClass();
+                                $upd       = new stdClass();
                                 $upd->kTag = (int)$Neuertag->kTag;
                                 $db->update(
                                     'ttagartikel',
@@ -144,7 +142,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::vali
         $cHinweis .= 'Die Tags wurden erfolgreich aktualisiert.<br />';
     } elseif (isset($_POST['delete'])) { // Auswahl loeschen
         if (is_array($_POST['kTag'])) {
-            //flush cache before deleting the tags, since they will be removed from ttagartikel
+            // flush cache before deleting the tags, since they will be removed from ttagartikel
             flushAffectedArticleCache($_POST['kTag']);
             foreach ($_POST['kTag'] as $kTag) {
                 $kTag = (int)$kTag;
@@ -159,7 +157,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::vali
                             WHERE ttag.kTag = " . $kTag,
                         \DB\ReturnType::DEFAULT
                     );
-                    //also delete possible mappings TO this tag
+                    // also delete possible mappings TO this tag
                     $db->delete('ttagmapping', 'cNameNeu', $oTag->cName);
                     $db->delete('ttagartikel', 'kTag', $kTag);
                     $cHinweis .= 'Der Tag "' . $oTag->cName . '" wurde erfolgreich gelöscht.<br />';
@@ -193,10 +191,8 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::vali
     (isset($_POST['tagging']) && (int)$_POST['tagging'] === 3)) { // Einstellungen
     $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
 }
-// Tagdetail
 if (RequestHelper::verifyGPCDataInt('kTag') > 0 && RequestHelper::verifyGPCDataInt('tagdetail') === 1) {
-    $step = 'detail';
-
+    $step             = 'detail';
     $nTagDetailAnzahl = holeTagDetailAnzahl(RequestHelper::verifyGPCDataInt('kTag'), $_SESSION['kSprache']);
     $oPagiTagDetail   = (new Pagination('detail'))
         ->setItemCount($nTagDetailAnzahl)
@@ -211,38 +207,38 @@ if (RequestHelper::verifyGPCDataInt('kTag') > 0 && RequestHelper::verifyGPCDataI
             $cFehler = 'Fehler: Ihre markierten Artikel zum Produkttag konnten nicht gelöscht werden.';
         }
     }
-    $oTagArtikel_arr = holeTagDetail(
+    $tagProducts = holeTagDetail(
         RequestHelper::verifyGPCDataInt('kTag'),
         (int)$_SESSION['kSprache'],
         ' LIMIT ' . $oPagiTagDetail->getLimitSQL()
     );
-    $smarty->assign('oTagArtikel_arr', $oTagArtikel_arr)
-        ->assign('oPagiTagDetail', $oPagiTagDetail)
-        ->assign('kTag', RequestHelper::verifyGPCDataInt('kTag'))
-        ->assign('cTagName', $oTagArtikel_arr[0]->cName ?? '');
+    $smarty->assign('oTagArtikel_arr', $tagProducts)
+           ->assign('oPagiTagDetail', $oPagiTagDetail)
+           ->assign('kTag', RequestHelper::verifyGPCDataInt('kTag'))
+           ->assign('cTagName', $tagProducts[0]->cName ?? '');
 } else {
-    $nAnzahlTags        = $db->query(
-        'SELECT COUNT(*) AS nAnzahl
+    $tagCount        = (int)$db->query(
+        'SELECT COUNT(*) AS count
             FROM ttag
             WHERE kSprache = ' . (int)$_SESSION['kSprache'],
         \DB\ReturnType::SINGLE_OBJECT
-    );
-    $nAnzahlTagMappings = $db->query(
-        'SELECT COUNT(*) AS nAnzahl
+    )->count;
+    $tagMappingCount = (int)$db->query(
+        'SELECT COUNT(*) AS count
             FROM ttagmapping
             WHERE kSprache = ' . (int)$_SESSION['kSprache'],
         \DB\ReturnType::SINGLE_OBJECT
-    );
+    )->count;
 
-    $oPagiTags = (new Pagination('tags'))
-        ->setItemCount($nAnzahlTags->nAnzahl)
+    $oPagiTags        = (new Pagination('tags'))
+        ->setItemCount($tagCount)
         ->assemble();
     $oPagiTagMappings = (new Pagination('mappings'))
-        ->setItemCount($nAnzahlTagMappings->nAnzahl)
+        ->setItemCount($tagMappingCount)
         ->assemble();
 
-    $Sprachen = Sprache::getAllLanguages();
-    $Tags     = $db->query(
+    $languages = Sprache::getAllLanguages();
+    $tags      = $db->query(
         'SELECT ttag.kTag, ttag.cName, ttag.nAktiv, sum(ttagartikel.nAnzahlTagging) AS Anzahl 
             FROM ttag
             JOIN ttagartikel 
@@ -253,7 +249,7 @@ if (RequestHelper::verifyGPCDataInt('kTag') > 0 && RequestHelper::verifyGPCDataI
             LIMIT ' . $oPagiTags->getLimitSQL(),
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    $Tagmapping = $db->query(
+    $mapping   = $db->query(
         'SELECT *
             FROM ttagmapping
             WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
@@ -264,9 +260,9 @@ if (RequestHelper::verifyGPCDataInt('kTag') > 0 && RequestHelper::verifyGPCDataI
     $smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
            ->assign('oPagiTags', $oPagiTags)
            ->assign('oPagiTagMappings', $oPagiTagMappings)
-           ->assign('Sprachen', $Sprachen)
-           ->assign('Tags', $Tags)
-           ->assign('Tagmapping', $Tagmapping);
+           ->assign('Sprachen', $languages)
+           ->assign('Tags', $tags)
+           ->assign('Tagmapping', $mapping);
 }
 $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)

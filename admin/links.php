@@ -76,7 +76,7 @@ if (((isset($_POST['dellinkgruppe']) && (int)$_POST['dellinkgruppe'] > 0)
         $linkGroupID = (int)$_POST['kLinkgruppe'];
     }
     if ($linkAdmin->deleteLinkGroup($linkGroupID) > 0) {
-        $hinweis    .= 'Linkgruppe erfolgreich gelöscht!';
+        $hinweis   .= 'Linkgruppe erfolgreich gelöscht!';
         $clearCache = true;
         $step       = 'uebersicht';
         $_POST      = [];
@@ -213,7 +213,7 @@ if (isset($_POST['neu_linkgruppe']) && (int)$_POST['neu_linkgruppe'] === 1 && Fo
     $oPlausiCMS->doPlausi('grp');
 
     if (count($oPlausiCMS->getPlausiVar()) === 0) {
-        $kLinkgruppe = 0;
+        $kLinkgruppe             = 0;
         $linkGroupTemplateExists = Shop::Container()->getDB()->select(
             'tlinkgruppe',
             'cTemplatename',
@@ -230,7 +230,9 @@ if (isset($_POST['neu_linkgruppe']) && (int)$_POST['neu_linkgruppe'] === 1 && Fo
                 $hinweis .= 'Linkgruppe wurde erfolgreich hinzugefügt.';
             } else {
                 $linkgruppe  = $linkAdmin->createOrUpdateLinkGroup((int)$_POST['kLinkgruppe'], $_POST);
-                $hinweis    .= 'Die Linkgruppe <strong>' . $linkgruppe->cName . '</strong> wurde erfolgreich geändert.';
+                $hinweis    .= 'Die Linkgruppe <strong>' .
+                    $linkgruppe->cName .
+                    '</strong> wurde erfolgreich geändert.';
             }
             $step = 'uebersicht';
         }
@@ -258,7 +260,7 @@ if (isset($_POST['aender_linkgruppe']) && (int)$_POST['aender_linkgruppe'] === 1
         } elseif ($res === \Link\Admin\LinkAdmin::ERROR_LINK_GROUP_NOT_FOUND) {
             $fehler .= 'Fehler: Es konnte keine Linkgruppe mit Ihrem Key gefunden werden.';
         } elseif ($res instanceof \Link\LinkInterface) {
-            $hinweis    .= 'Sie haben den Link "' . $link->getDisplayName() . '" erfolgreich verschoben.';
+            $hinweis   .= 'Sie haben den Link "' . $link->getDisplayName() . '" erfolgreich verschoben.';
             $step       = 'uebersicht';
             $clearCache = true;
         } else {
@@ -281,7 +283,7 @@ if (isset($_POST['kopiere_in_linkgruppe'])
     } elseif ($res === \Link\Admin\LinkAdmin::ERROR_LINK_GROUP_NOT_FOUND) {
         $fehler .= 'Fehler: Es konnte keine Linkgruppe mit Ihrem Key gefunden werden.';
     } elseif ($res instanceof \Link\LinkInterface) {
-        $hinweis    .= 'Sie haben den Link "' . $link->getDisplayName() . '" erfolgreich kopiert.';
+        $hinweis   .= 'Sie haben den Link "' . $link->getDisplayName() . '" erfolgreich kopiert.';
         $step       = 'uebersicht';
         $clearCache = true;
     } else {
@@ -295,7 +297,7 @@ if (isset($_POST['aender_linkvater']) && (int)$_POST['aender_linkvater'] === 1 &
         && (int)$_POST['kLinkgruppe'] > 0
         && ($oLink = $linkAdmin->updateParentID((int)$_POST['kLink'], (int)$_POST['kVaterLink'])) !== false
     ) {
-        $hinweis    .= "Sie haben den Link '" . $oLink->cName . "' erfolgreich verschoben.";
+        $hinweis   .= "Sie haben den Link '" . $oLink->cName . "' erfolgreich verschoben.";
         $step       = 'uebersicht';
         $clearCache = true;
     } else {

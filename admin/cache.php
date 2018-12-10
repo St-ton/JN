@@ -203,7 +203,7 @@ switch ($action) {
         $cache->flushAll();
         $cache->setJtlCacheConfig();
         $notice .= 'Ihre Einstellungen wurden übernommen.<br />';
-        $tab    = 'settings';
+        $tab     = 'settings';
         break;
     case 'benchmark':
         //do benchmarks

@@ -23,29 +23,29 @@ function holeExportformatCron()
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($exports as $export) {
-        $export->cAlleXStdToDays      = rechneUmAlleXStunden($export->nAlleXStd);
-        $export->Sprache              = $db->select(
+        $export->cAlleXStdToDays = rechneUmAlleXStunden($export->nAlleXStd);
+        $export->Sprache         = $db->select(
             'tsprache',
             'kSprache',
             (int)$export->kSprache
         );
-        $export->Waehrung             = $db->select(
+        $export->Waehrung        = $db->select(
             'twaehrung',
             'kWaehrung',
             (int)$export->kWaehrung
         );
-        $export->Kundengruppe         = $db->select(
+        $export->Kundengruppe    = $db->select(
             'tkundengruppe',
             'kKundengruppe',
             (int)$export->kKundengruppe
         );
-        $export->oJobQueue            = $db->query(
+        $export->oJobQueue       = $db->query(
             "SELECT *, DATE_FORMAT(dZuletztGelaufen, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_de 
                 FROM tjobqueue 
                 WHERE kCron = " . (int)$export->kCron,
             \DB\ReturnType::SINGLE_OBJECT
         );
-        $export->nAnzahlArtikel       = holeMaxExportArtikelAnzahl($export);
+        $export->nAnzahlArtikel  = holeMaxExportArtikelAnzahl($export);
     }
 
     return $exports;
@@ -113,24 +113,24 @@ function rechneUmAlleXStunden($nAlleXStd)
  */
 function holeAlleExportformate()
 {
-    $oExportformat_arr = Shop::Container()->getDB()->selectAll(
+    $formats = Shop::Container()->getDB()->selectAll(
         'texportformat',
         [],
         [],
         '*',
         'cName, kSprache, kKundengruppe, kWaehrung'
     );
-    foreach ($oExportformat_arr as $oExportformat) {
-        $oExportformat->Sprache      = Shop::Container()->getDB()->select(
+    foreach ($formats as $format) {
+        $format->Sprache      = Shop::Container()->getDB()->select(
             'tsprache',
             'kSprache',
-            (int)$oExportformat->kSprache
+            (int)$format->kSprache
         );
-        $oExportformat->Waehrung     = new Currency((int)$oExportformat->kWaehrung);
-        $oExportformat->Kundengruppe = new Kundengruppe((int)$oExportformat->kKundengruppe);
+        $format->Waehrung     = new Currency((int)$format->kWaehrung);
+        $format->Kundengruppe = new Kundengruppe((int)$format->kKundengruppe);
     }
 
-    return $oExportformat_arr;
+    return $formats;
 }
 
 /**
@@ -212,20 +212,16 @@ function dStartPruefen($dStart)
 }
 
 /**
- * @param string $dStart
- * @param int    $bZeit
+ * @param string $dateStart
+ * @param bool   $asTime
  * @return string
  */
-function baueENGDate($dStart, $bZeit = 0)
+function baueENGDate($dateStart, $asTime = false)
 {
-    list($dDatum, $dZeit)        = explode(' ', $dStart);
-    list($nTag, $nMonat, $nJahr) = explode('.', $dDatum);
+    [$date, $time]        = explode(' ', $dateStart);
+    [$day, $month, $year] = explode('.', $date);
 
-    if ($bZeit) {
-        return $dZeit;
-    }
-
-    return $nJahr . '-' . $nMonat . '-' . $nTag . ' ' . $dZeit;
+    return $asTime ? $time : $year . '-' . $month . '-' . $day . ' ' . $time;
 }
 
 /**
@@ -248,15 +244,15 @@ function loescheExportformatCron($kCron_arr)
 }
 
 /**
- * @param int $nStunden
+ * @param int $hours
  * @return array|bool
  */
-function holeExportformatQueueBearbeitet($nStunden)
+function holeExportformatQueueBearbeitet($hours)
 {
-    if (!$nStunden) {
-        $nStunden = 24;
+    if (!$hours) {
+        $hours = 24;
     } else {
-        $nStunden = (int)$nStunden;
+        $hours = (int)$hours;
     }
     $kSprache = isset($_SESSION['kSprache']) ? (int)$_SESSION['kSprache'] : null;
     if (!$kSprache) {
@@ -268,7 +264,7 @@ function holeExportformatQueueBearbeitet($nStunden)
         }
     }
 
-    $oExportformatQueueBearbeitet = Shop::Container()->getDB()->query(
+    return Shop::Container()->getDB()->queryPrepared(
         "SELECT texportformat.cName, texportformat.cDateiname, texportformatqueuebearbeitet.*, 
             DATE_FORMAT(texportformatqueuebearbeitet.dZuletztGelaufen, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_DE, 
             tsprache.cNameDeutsch AS cNameSprache, tkundengruppe.cName AS cNameKundengruppe, 
@@ -276,27 +272,25 @@ function holeExportformatQueueBearbeitet($nStunden)
             FROM texportformatqueuebearbeitet
             JOIN texportformat 
                 ON texportformat.kExportformat = texportformatqueuebearbeitet.kExportformat
-                AND texportformat.kSprache = " . $kSprache . "
+                AND texportformat.kSprache = :lid
             JOIN tsprache 
                     ON tsprache.kSprache = texportformat.kSprache
             JOIN tkundengruppe 
                     ON tkundengruppe.kKundengruppe = texportformat.kKundengruppe
             JOIN twaehrung 
                     ON twaehrung.kWaehrung = texportformat.kWaehrung
-            WHERE DATE_SUB(NOW(), INTERVAL " . $nStunden . " HOUR) < texportformatqueuebearbeitet.dZuletztGelaufen
+            WHERE DATE_SUB(NOW(), INTERVAL :hrs HOUR) < texportformatqueuebearbeitet.dZuletztGelaufen
             ORDER BY texportformatqueuebearbeitet.dZuletztGelaufen DESC",
+        ['lid' => $kSprache, 'hrs' => $hours],
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-
-    return $oExportformatQueueBearbeitet;
 }
 
 /**
  * @param Smarty\JTLSmarty $smarty
- * @param array            $messages
  * @return string
  */
-function exportformatQueueActionErstellen(Smarty\JTLSmarty $smarty, array &$messages)
+function exportformatQueueActionErstellen(Smarty\JTLSmarty $smarty)
 {
     $smarty->assign('oExportformat_arr', holeAlleExportformate());
 
@@ -319,18 +313,17 @@ function exportformatQueueActionEditieren(Smarty\JTLSmarty $smarty, array &$mess
                ->assign('oExportformat_arr', holeAlleExportformate());
     } else {
         $messages['error'] .= 'Fehler: Bitte wählen Sie eine gültige Warteschlange aus.';
-        $step               = 'uebersicht';
+        $step              = 'uebersicht';
     }
 
     return $step;
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
- * @param array            $messages
+ * @param array $messages
  * @return string
  */
-function exportformatQueueActionLoeschen(Smarty\JTLSmarty $smarty, array &$messages)
+function exportformatQueueActionLoeschen(array &$messages)
 {
     $kCron_arr = $_POST['kCron'];
 
@@ -348,11 +341,10 @@ function exportformatQueueActionLoeschen(Smarty\JTLSmarty $smarty, array &$messa
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
- * @param array            $messages
+ * @param array $messages
  * @return string
  */
-function exportformatQueueActionTriggern(Smarty\JTLSmarty $smarty, array &$messages)
+function exportformatQueueActionTriggern(array &$messages)
 {
     global $bCronManuell, $oCron_arr, $oJobQueue_arr;
     $bCronManuell = true;
@@ -383,10 +375,9 @@ function exportformatQueueActionTriggern(Smarty\JTLSmarty $smarty, array &$messa
 
 /**
  * @param Smarty\JTLSmarty $smarty
- * @param array            $messages
  * @return string
  */
-function exportformatQueueActionFertiggestellt(Smarty\JTLSmarty $smarty, array &$messages)
+function exportformatQueueActionFertiggestellt(Smarty\JTLSmarty $smarty)
 {
     $nStunden = RequestHelper::verifyGPCDataInt('nStunden');
     if ($nStunden <= 0) {
@@ -428,27 +419,27 @@ function exportformatQueueActionErstellenEintragen(Smarty\JTLSmarty $smarty, arr
 
                 if ($nStatus === 1) {
                     $messages['notice'] .= 'Ihre neue Exportwarteschlange wurde erfolgreich angelegt.';
-                    $step                = 'erstellen_success';
+                    $step               = 'erstellen_success';
                 } elseif ($nStatus === -1) {
                     $messages['error'] .= 'Fehler: Das Exportformat ist bereits in der Warteschlange vorhanden.<br />';
-                    $step               = 'erstellen';
+                    $step              = 'erstellen';
                 } else {
                     $messages['error'] .= 'Fehler: Es ist ein unbekannter Fehler aufgetreten.<br />';
-                    $step               = 'erstellen';
+                    $step              = 'erstellen';
                 }
             } else { // Alle X Stunden ist entweder leer oder kleiner als 6
                 $messages['error'] .= 'Fehler: Bitte geben Sie einen Wert größer oder gleich 1 ein.<br />';
-                $step               = 'erstellen';
+                $step              = 'erstellen';
                 $smarty->assign('oFehler', $oValues);
             }
         } else { // Kein gueltiges Datum + Uhrzeit
             $messages['error'] .= 'Fehler: Bitte geben Sie ein gültiges Datum ein.<br />';
-            $step               = 'erstellen';
+            $step              = 'erstellen';
             $smarty->assign('oFehler', $oValues);
         }
     } else { // Kein gueltiges Exportformat
         $messages['error'] .= 'Fehler: Bitte wählen Sie ein gültiges Exportformat aus.<br />';
-        $step               = 'erstellen';
+        $step              = 'erstellen';
         $smarty->assign('oFehler', $oValues);
     }
 

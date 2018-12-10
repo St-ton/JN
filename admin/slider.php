@@ -108,7 +108,6 @@ switch ($action) {
         }
         break;
 }
-// Daten anzeigen
 switch ($action) {
     case 'slides':
         $slider = new Slider();
@@ -126,10 +125,9 @@ switch ($action) {
         }
         $slider = new Slider();
         $slider->load($kSlider, false);
-        $oExtension = holeExtension($kSlider);
         $smarty->assign('oSprachen_arr', Sprache::getInstance(false)->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
-               ->assign('oExtension', $oExtension);
+               ->assign('oExtension', holeExtension($kSlider));
 
         if ($slider->getEffects() !== 'random') {
             $cEffects_arr = explode(';', $slider->getEffects());
@@ -142,7 +140,6 @@ switch ($action) {
             $smarty->assign('checked', 'checked="checked"')
                    ->assign('disabled', 'disabled="true"');
         }
-
         $smarty->assign('oSlider', $slider);
 
         if (!is_object($slider)) {
@@ -153,18 +150,16 @@ switch ($action) {
         break;
 
     case 'new':
-        $slider = new Slider();
         $smarty->assign('checked', 'checked="checked"')
                ->assign('oSprachen_arr', Sprache::getInstance(false)->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
-               ->assign('oSlider', $slider);
+               ->assign('oSlider', new Slider());
         break;
 
     case 'delete':
-        $slider   = new Slider();
+        $slider = new Slider();
         $slider->load($kSlider, false);
-        $bSuccess = $slider->delete();
-        if ($bSuccess === true) {
+        if ($slider->delete() === true) {
             header('Location: ' . $redirectUrl);
             exit;
         }

@@ -10,9 +10,9 @@ $oAccount->permission('EMAIL_REPORTS_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statusemail_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
-$cHinweis = '';
-$cFehler  = '';
-$step     = 'statusemail_uebersicht';
+$cHinweis   = '';
+$cFehler    = '';
+$step       = 'statusemail_uebersicht';
 $statusMail = new Statusmail(Shop::Container()->getDB());
 
 if (FormHelper::validateToken()) {

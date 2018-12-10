@@ -54,7 +54,10 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         $customerField = (object)[
             'kKundenfeld' => (int)$_POST['kKundenfeld'],
             'kSprache'    => (int)$_SESSION['kSprache'],
-            'cName'       => StringHandler::htmlspecialchars(StringHandler::filterXSS($_POST['cName']), ENT_COMPAT | ENT_HTML401),
+            'cName'       => StringHandler::htmlspecialchars(
+                StringHandler::filterXSS($_POST['cName']),
+                ENT_COMPAT | ENT_HTML401
+            ),
             'cWawi'       => StringHandler::filterXSS(str_replace(['"',"'"], '', $_POST['cWawi'])),
             'cTyp'        => StringHandler::filterXSS($_POST['cTyp']),
             'nSort'       => (int)$_POST['nSort'],

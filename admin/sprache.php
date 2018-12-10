@@ -113,8 +113,12 @@ if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
 
             if (count($oVariable->bOverwrite_arr) !== count($oWertDB_arr)) {
                 $cFehler_arr[] = 'Die Variable existiert bereits für folgende Sprachen: ' .
-                    implode(' und ', array_map(function ($oWertDB) { return $oWertDB->cSpracheName; }, $oWertDB_arr)) .
-                    '. Bitte wählen Sie aus, welche Versionen sie überschreiben möchten!';
+                    implode(
+                        ' und ',
+                        array_map(function ($oWertDB) {
+                            return $oWertDB->cSpracheName;
+                        }, $oWertDB_arr)
+                    ) . '. Bitte wählen Sie aus, welche Versionen sie überschreiben möchten!';
             }
 
             if (count($cFehler_arr) > 0) {

@@ -40,16 +40,14 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && FormHelper
     if ($checkResult === true) {
         $kExportformat = $ef->getExportformat();
         if ($kExportformat > 0) {
-            //update
             $kExportformat = (int)$_POST['kExportformat'];
-            $revision = new Revision();
+            $revision      = new Revision();
             $revision->addRevision('export', $kExportformat);
             $ef->update();
             $hinweis .= 'Das Exportformat <strong>' . $ef->getName() . '</strong> wurde erfolgreich geändert.';
         } else {
-            //insert
             $kExportformat = $ef->save();
-            $hinweis .= 'Das Exportformat <strong>' . $ef->getName() . '</strong> wurde erfolgreich erstellt.';
+            $hinweis      .= 'Das Exportformat <strong>' . $ef->getName() . '</strong> wurde erfolgreich erstellt.';
         }
 
         Shop::Container()->getDB()->delete('texportformateinstellungen', 'kExportformat', $kExportformat);
@@ -243,9 +241,9 @@ if ($step === 'neuer Export') {
             'kExportformat',
             (int)$_POST['kExportformat']
         );
-        $exportformat->cKopfzeile = str_replace("\t", "<tab>", $exportformat->cKopfzeile);
-        $exportformat->cContent   = str_replace("\t", "<tab>", $exportformat->cContent);
-        $exportformat->cFusszeile = str_replace("\t", "<tab>", $exportformat->cFusszeile);
+        $exportformat->cKopfzeile = str_replace("\t", '<tab>', $exportformat->cKopfzeile);
+        $exportformat->cContent   = str_replace("\t", '<tab>', $exportformat->cContent);
+        $exportformat->cFusszeile = str_replace("\t", '<tab>', $exportformat->cFusszeile);
         if ($exportformat->kPlugin > 0 && strpos($exportformat->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
             $exportformat->bPluginContentFile = true;
         }

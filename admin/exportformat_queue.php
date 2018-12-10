@@ -21,19 +21,19 @@ $messages = [
     'error'  => '',
 ];
 if (isset($action['erstellen']) && (int)$action['erstellen'] === 1 && FormHelper::validateToken()) {
-    $step = exportformatQueueActionErstellen($smarty, $messages);
+    $step = exportformatQueueActionErstellen($smarty);
 }
 if (isset($action['editieren']) && (int)$action['editieren'] === 1 && FormHelper::validateToken()) {
     $step = exportformatQueueActionEditieren($smarty, $messages);
 }
 if (isset($action['loeschen']) && (int)$action['loeschen'] === 1 && FormHelper::validateToken()) {
-    $step = exportformatQueueActionLoeschen($smarty, $messages);
+    $step = exportformatQueueActionLoeschen($messages);
 }
 if (isset($action['triggern']) && (int)$action['triggern'] === 1 && FormHelper::validateToken()) {
-    $step = exportformatQueueActionTriggern($smarty, $messages);
+    $step = exportformatQueueActionTriggern($messages);
 }
 if (isset($action['fertiggestellt']) && (int)$action['fertiggestellt'] === 1 && FormHelper::validateToken()) {
-    $step = exportformatQueueActionFertiggestellt($smarty, $messages);
+    $step = exportformatQueueActionFertiggestellt($smarty);
 }
 if (isset($action['erstellen_eintragen']) && (int)$action['erstellen_eintragen'] === 1 && FormHelper::validateToken()) {
     $step = exportformatQueueActionErstellenEintragen($smarty, $messages);

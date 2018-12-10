@@ -217,7 +217,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
         $res     = $updater->update($kPlugin);
         if ($res === \Plugin\InstallCode::OK) {
             $cHinweis .= 'Ihr Plugin wurde erfolgreich geupdated.';
-            $reload   = true;
+            $reload    = true;
             $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
         } else {
             $cFehler = 'Fehler: Beim Update ist ein Fehler aufgetreten. Fehlercode: ' . $res;

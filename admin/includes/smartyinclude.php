@@ -15,7 +15,7 @@ $oAccount           = new AdminAccount();
 $adminLoginGruppe   = !empty($oAccount->account()->oGroup->kAdminlogingruppe)
     ? (int)$oAccount->account()->oGroup->kAdminlogingruppe
     : -1;
-$configSections = Shop::Container()->getDB()->query(
+$configSections     = Shop::Container()->getDB()->query(
     "SELECT teinstellungensektion.*, COUNT(teinstellungenconf.kEinstellungenSektion) AS anz
         FROM teinstellungensektion 
         LEFT JOIN teinstellungenconf
@@ -25,13 +25,13 @@ $configSections = Shop::Container()->getDB()->query(
         ORDER BY teinstellungensektion.cName",
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
-foreach ($configSections as $configSection) {
-    $configSection->kEinstellungenSektion = (int)$configSection->kEinstellungenSektion;
-    $configSection->kAdminmenueGruppe     = (int)$configSection->kAdminmenueGruppe;
-    $configSection->nSort                 = (int)$configSection->nSort;
-    $configSection->anz                   = (int)$configSection->anz;
-    $configSection->cLinkname             = $configSection->cName;
-    $configSection->cURL                  = 'einstellungen.php?kSektion=' . $configSection->kEinstellungenSektion;
+foreach ($configSections as $section) {
+    $section->kEinstellungenSektion = (int)$section->kEinstellungenSektion;
+    $section->kAdminmenueGruppe     = (int)$section->kAdminmenueGruppe;
+    $section->nSort                 = (int)$section->nSort;
+    $section->anz                   = (int)$section->anz;
+    $section->cLinkname             = $section->cName;
+    $section->cURL                  = 'einstellungen.php?kSektion=' . $section->kEinstellungenSektion;
 }
 $mainGroups = Shop::Container()->getDB()->selectAll(
     'tadminmenugruppe',
@@ -74,8 +74,11 @@ foreach ($mainGroups as $mainGroup) {
         $link->key                   = $mainGroup->key . '.' . $link->kAdminmenueGruppe;
         $link->kAdminmenueOberGruppe = (int)$link->kAdminmenueOberGruppe;
         $link->nSort                 = (int)$link->nSort;
-        $link->oLink_arr             = $oAccount->getVisibleMenu($adminLoginGruppe, $link->kAdminmenueGruppe, $link->key);
-
+        $link->oLink_arr             = $oAccount->getVisibleMenu(
+            $adminLoginGruppe,
+            $link->kAdminmenueGruppe,
+            $link->key
+        );
         foreach ($configSections as $_k => $_configSection) {
             $_configSection->kEinstellungenSektion = (int)$_configSection->kEinstellungenSektion;
             $_configSection->key                   = $link->key . '.e' . $_configSection->kEinstellungenSektion;
@@ -210,8 +213,11 @@ foreach ($mainGroups as $mainGroup) {
             ObjectHelper::sortBy($mainGroup->oLink_arr, 'cLinkname');
         }
     } else {
-        $mainGroup->oLink_arr = $oAccount->getVisibleMenu($adminLoginGruppe, $mainGroup->kAdminmenueGruppe, $mainGroup->key);
-
+        $mainGroup->oLink_arr = $oAccount->getVisibleMenu(
+            $adminLoginGruppe,
+            $mainGroup->kAdminmenueGruppe,
+            $mainGroup->key
+        );
         foreach ($mainGroup->oLink_arr as $link) {
             if ($link->cURL === $curScriptFileName) {
                 $currentToplevel    = $mainGroup->key;

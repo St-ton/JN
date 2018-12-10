@@ -194,13 +194,13 @@ if ($step === 'einstellungen bearbeiten') {
                ->assign('cSuche', $oSQL->cSuche);
     } else {
         $Conf = Shop::Container()->getDB()->query(
-            "SELECT *
+            'SELECT *
                 FROM teinstellungenconf
                 WHERE nModul = 0 
                     AND nStandardAnzeigen = 1
-                    AND kEinstellungenSektion = " . (int)$section->kEinstellungenSektion . "
-                {$oSQL->cWHERE}
-                ORDER BY nSort",
+                    AND kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . ' ' .
+                $oSQL->cWHERE . '
+                ORDER BY nSort',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
@@ -230,14 +230,14 @@ if ($step === 'einstellungen bearbeiten') {
             );
         }
         if ($config->cInputTyp === 'listbox') {
-            $setValue                = Shop::Container()->getDB()->selectAll(
+            $setValue              = Shop::Container()->getDB()->selectAll(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [(int)$config->kEinstellungenSektion, $config->cWertName]
             );
             $config->gesetzterWert = $setValue;
         } else {
-            $setValue                = Shop::Container()->getDB()->select(
+            $setValue              = Shop::Container()->getDB()->select(
                 'teinstellungen',
                 'kEinstellungenSektion',
                 (int)$config->kEinstellungenSektion,

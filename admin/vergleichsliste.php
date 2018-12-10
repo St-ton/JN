@@ -90,7 +90,7 @@ for ($i = 0; $i < $configCount; $i++) {
             'nSort'
         );
     }
-    $oSetValue = Shop::Container()->getDB()->select(
+    $oSetValue                      = Shop::Container()->getDB()->select(
         'teinstellungen',
         'kEinstellungenSektion',
         (int)$oConfig_arr[$i]->kEinstellungenSektion,
@@ -100,19 +100,15 @@ for ($i = 0; $i < $configCount; $i++) {
     $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
 }
 
-$smarty->assign('oConfig_arr', $oConfig_arr);
-// Max Anzahl Vergleiche
 $oVergleichAnzahl = Shop::Container()->getDB()->query(
     'SELECT COUNT(*) AS nAnzahl
         FROM tvergleichsliste',
     \DB\ReturnType::SINGLE_OBJECT
 );
-// Pagination
-$oPagination = (new Pagination())
+$oPagination      = (new Pagination())
     ->setItemCount($oVergleichAnzahl->nAnzahl)
     ->assemble();
-// Letzten 20 Vergleiche
-$oLetzten20Vergleichsliste_arr = Shop::Container()->getDB()->query(
+$last20           = Shop::Container()->getDB()->query(
     "SELECT kVergleichsliste, DATE_FORMAT(dDate, '%d.%m.%Y  %H:%i') AS Datum
         FROM tvergleichsliste
         ORDER BY dDate DESC
@@ -120,20 +116,19 @@ $oLetzten20Vergleichsliste_arr = Shop::Container()->getDB()->query(
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 
-if (is_array($oLetzten20Vergleichsliste_arr) && count($oLetzten20Vergleichsliste_arr) > 0) {
-    $oLetzten20VergleichslistePos_arr = [];
-    foreach ($oLetzten20Vergleichsliste_arr as $oLetzten20Vergleichsliste) {
-        $oLetzten20VergleichslistePos_arr = Shop::Container()->getDB()->selectAll(
+if (is_array($last20) && count($last20) > 0) {
+    $positions = [];
+    foreach ($last20 as $oLetzten20Vergleichsliste) {
+        $positions                                                   = Shop::Container()->getDB()->selectAll(
             'tvergleichslistepos',
             'kVergleichsliste',
             (int)$oLetzten20Vergleichsliste->kVergleichsliste,
             'kArtikel, cArtikelName'
         );
-        $oLetzten20Vergleichsliste->oLetzten20VergleichslistePos_arr = $oLetzten20VergleichslistePos_arr;
+        $oLetzten20Vergleichsliste->oLetzten20VergleichslistePos_arr = $positions;
     }
 }
-// Top Vergleiche
-$oTopVergleichsliste_arr = Shop::Container()->getDB()->query(
+$topComparisons = Shop::Container()->getDB()->query(
     'SELECT tvergleichsliste.dDate, tvergleichslistepos.kArtikel, 
         tvergleichslistepos.cArtikelName, COUNT(tvergleichslistepos.kArtikel) AS nAnzahl
         FROM tvergleichsliste
@@ -146,18 +141,18 @@ $oTopVergleichsliste_arr = Shop::Container()->getDB()->query(
         LIMIT ' . (int)$_SESSION['Vergleichsliste']->nAnzahl,
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
-// Top Vergleiche Graph
-if (is_array($oTopVergleichsliste_arr) && count($oTopVergleichsliste_arr) > 0) {
-    erstelleDiagrammTopVergleiche($oTopVergleichsliste_arr);
+if (is_array($topComparisons) && count($topComparisons) > 0) {
+    erstelleDiagrammTopVergleiche($topComparisons);
 }
 
-$smarty->assign('Letzten20Vergleiche', $oLetzten20Vergleichsliste_arr)
-    ->assign('TopVergleiche', $oTopVergleichsliste_arr)
-    ->assign('oPagination', $oPagination)
-    ->assign('sprachen', Sprache::getAllLanguages())
-    ->assign('hinweis', $cHinweis)
-    ->assign('fehler', $cFehler)
-    ->display('vergleichsliste.tpl');
+$smarty->assign('Letzten20Vergleiche', $last20)
+       ->assign('TopVergleiche', $topComparisons)
+       ->assign('oPagination', $oPagination)
+       ->assign('sprachen', Sprache::getAllLanguages())
+       ->assign('hinweis', $cHinweis)
+       ->assign('fehler', $cFehler)
+       ->assign('oConfig_arr', $oConfig_arr)
+       ->display('vergleichsliste.tpl');
 
 /**
  * @param array $oTopVergleichsliste_arr

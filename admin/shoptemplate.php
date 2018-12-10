@@ -22,14 +22,14 @@ $admin          = (isset($_GET['admin']) && $_GET['admin'] === 'true');
 $templateHelper = TemplateHelper::getInstance(true);
 $templateHelper->disableCaching();
 if (isset($_POST['key'], $_POST['upload'])) {
-    $file     = PFAD_ROOT . PFAD_TEMPLATES . $_POST['upload'];
-    $response = new stdClass();
+    $file             = PFAD_ROOT . PFAD_TEMPLATES . $_POST['upload'];
+    $response         = new stdClass();
     $response->status = 'FAILED';
     if (file_exists($file) && is_file($file)) {
         $delete = unlink($file);
         if ($delete === true) {
             $response->status = 'OK';
-            $upload = explode('/', $_POST['upload']);
+            $upload           = explode('/', $_POST['upload']);
             $oTemplate->setConfig($upload[0], 'theme', $_POST['cName'], '');
         }
     }
@@ -204,7 +204,7 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::val
                                 $_theme->cValue . '/preview.png'
                                 : PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/themes/' . $_theme->cValue . '/preview.png';
                             if (file_exists($previewImage)) {
-                                $base = $shopURL . PFAD_TEMPLATES;
+                                $base                     = $shopURL . PFAD_TEMPLATES;
                                 $preview[$_theme->cValue] = isset($_theme->cOrdner)
                                     ? $base . $_theme->cOrdner . '/themes/' . $_theme->cValue . '/preview.png'
                                     : $base . $cOrdner . '/themes/' . $_theme->cValue . '/preview.png';

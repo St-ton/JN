@@ -194,16 +194,19 @@ function getCorruptedImages($type, int $limit)
     do {
         $images = MediaImage::getImages($type, false, $offset, $limit);
         foreach ($images as $image) {
-            $raw = $image->getRaw(true);
             $fallback = $image->getFallbackThumb(Image::SIZE_XS);
-            if (!file_exists($raw) && !file_exists(PFAD_ROOT . $fallback)) {
-                $corruptedImage  = (object) [
+            if (!file_exists($image->getRaw(true)) && !file_exists(PFAD_ROOT . $fallback)) {
+                $corruptedImage            = (object)[
                     'article' => [],
                     'picture' => ''
                 ];
-                $articleDB           = Shop::Container()->getDB()->select('tartikel', 'kArtikel', $image->getId());
-                $articleDB->cURLFull = UrlHelper::buildURL($articleDB, URLART_ARTIKEL, true);
-                $article             = (object) [
+                $articleDB                 = Shop::Container()->getDB()->select(
+                    'tartikel',
+                    'kArtikel',
+                    $image->getId()
+                );
+                $articleDB->cURLFull       = UrlHelper::buildURL($articleDB, URLART_ARTIKEL, true);
+                $article                   = (object)[
                     'articleNr'      => $articleDB->cArtNr,
                     'articleURLFull' => $articleDB->cURLFull
                 ];

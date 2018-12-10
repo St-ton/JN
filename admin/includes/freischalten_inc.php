@@ -418,16 +418,16 @@ function loescheNewsletterempfaenger($kNewsletterEmpfaenger_arr): bool
 }
 
 /**
- * @param array  $kSuchanfrage_arr
+ * @param array  $queryIDs
  * @param string $cMapping
  * @return int
  */
-function mappeLiveSuche($kSuchanfrage_arr, $cMapping): int
+function mappeLiveSuche($queryIDs, $cMapping): int
 {
-    if (!is_array($kSuchanfrage_arr) || count($kSuchanfrage_arr) === 0 || strlen($cMapping) === 0) {
+    if (!is_array($queryIDs) || count($queryIDs) === 0 || strlen($cMapping) === 0) {
         return 2; // Leere Übergabe
     }
-    foreach ($kSuchanfrage_arr as $kSuchanfrage) {
+    foreach ($queryIDs as $kSuchanfrage) {
         $oSuchanfrage = Shop::Container()->getDB()->select('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage);
         if ($oSuchanfrage === null || empty($oSuchanfrage->kSuchanfrage)) {
             return 3; // Mindestens eine Suchanfrage wurde nicht in der Datenbank gefunden.
@@ -439,13 +439,13 @@ function mappeLiveSuche($kSuchanfrage_arr, $cMapping): int
         if ($oSuchanfrageNeu === null || empty($oSuchanfrageNeu->kSuchanfrage)) {
             return 5; // Sie haben versucht auf eine nicht existierende Suchanfrage zu mappen
         }
-        $oSuchanfrageMapping                 = new stdClass();
-        $oSuchanfrageMapping->kSprache       = $_SESSION['kSprache'];
-        $oSuchanfrageMapping->cSuche         = $oSuchanfrage->cSuche;
-        $oSuchanfrageMapping->cSucheNeu      = $cMapping;
-        $oSuchanfrageMapping->nAnzahlGesuche = $oSuchanfrage->nAnzahlGesuche;
+        $mapping                 = new stdClass();
+        $mapping->kSprache       = $_SESSION['kSprache'];
+        $mapping->cSuche         = $oSuchanfrage->cSuche;
+        $mapping->cSucheNeu      = $cMapping;
+        $mapping->nAnzahlGesuche = $oSuchanfrage->nAnzahlGesuche;
 
-        $kSuchanfrageMapping = Shop::Container()->getDB()->insert('tsuchanfragemapping', $oSuchanfrageMapping);
+        $kSuchanfrageMapping = Shop::Container()->getDB()->insert('tsuchanfragemapping', $mapping);
 
         if (empty($kSuchanfrageMapping)) {
             return 4; // Mapping konnte nicht gespeichert werden
@@ -463,16 +463,17 @@ function mappeLiveSuche($kSuchanfrage_arr, $cMapping): int
             \DB\ReturnType::DEFAULT
         );
         Shop::Container()->getDB()->delete('tsuchanfrage', 'kSuchanfrage', (int)$oSuchanfrage->kSuchanfrage);
-        Shop::Container()->getDB()->query(
+        Shop::Container()->getDB()->queryPrepared(
             "UPDATE tseo
-                SET kKey = " . (int)$oSuchanfrageNeu->kSuchanfrage . "
+                SET kKey = :sqid
                 WHERE cKey = 'kSuchanfrage'
-                    AND kKey = " . (int)$oSuchanfrage->kSuchanfrage,
+                    AND kKey = :sqid",
+            ['sqid' => (int)$oSuchanfrage->kSuchanfrage],
             \DB\ReturnType::DEFAULT
         );
     }
 
-    return 1; // Alles O.K.
+    return 1;
 }
 
 /**

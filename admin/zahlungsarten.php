@@ -25,20 +25,18 @@ if (($action = RequestHelper::verifyGPDataString('a')) !== ''
     && ($kZahlungsart = RequestHelper::verifyGPCDataInt('kZahlungsart')) > 0
     && FormHelper::validateToken()
 ) {
-    $oZahlungsart = $db->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
+    $method = $db->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
 
-    if (isset($oZahlungsart->cModulId) && strlen($oZahlungsart->cModulId) > 0) {
-        (new ZahlungsLog($oZahlungsart->cModulId))->loeschen();
-        $hinweis = 'Der Fehlerlog von ' . $oZahlungsart->cName . ' wurde erfolgreich zurückgesetzt.';
+    if (isset($method->cModulId) && strlen($method->cModulId) > 0) {
+        (new ZahlungsLog($method->cModulId))->loeschen();
+        $hinweis = 'Der Fehlerlog von ' . $method->cName . ' wurde erfolgreich zurückgesetzt.';
     }
 }
 if ($action !== 'logreset' && RequestHelper::verifyGPCDataInt('kZahlungsart') > 0 && FormHelper::validateToken()) {
     $step = 'einstellen';
     if ($action === 'payments') {
-        // Zahlungseingaenge
         $step = 'payments';
     } elseif ($action === 'log') {
-        // Log einsehen
         $step = 'log';
     }
 }
@@ -167,14 +165,14 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
         if ($_POST['cName_' . $sprache->cISO]) {
             $zahlungsartSprache->cName = $_POST['cName_' . $sprache->cISO];
         }
-        $zahlungsartSprache->cGebuehrname      = $_POST['cGebuehrname_' . $sprache->cISO];
-        $zahlungsartSprache->cHinweisText      = $_POST['cHinweisText_' . $sprache->cISO];
-        $zahlungsartSprache->cHinweisTextShop  = $_POST['cHinweisTextShop_' . $sprache->cISO];
+        $zahlungsartSprache->cGebuehrname     = $_POST['cGebuehrname_' . $sprache->cISO];
+        $zahlungsartSprache->cHinweisText     = $_POST['cHinweisText_' . $sprache->cISO];
+        $zahlungsartSprache->cHinweisTextShop = $_POST['cHinweisTextShop_' . $sprache->cISO];
 
         $db->delete(
             'tzahlungsartsprache',
             ['kZahlungsart', 'cISOSprache'],
-            [(int)$_POST['kZahlungsart'],$sprache->cISO]
+            [(int)$_POST['kZahlungsart'], $sprache->cISO]
         );
         $db->insert('tzahlungsartsprache', $zahlungsartSprache);
     }
@@ -220,7 +218,7 @@ if ($step === 'einstellen') {
                         'nSort'
                     );
                 }
-                $setValue = $db->select(
+                $setValue                = $db->select(
                     'tplugineinstellungen',
                     'kPlugin',
                     (int)$Conf[$i]->kPlugin,
@@ -248,7 +246,7 @@ if ($step === 'einstellen') {
                         'nSort'
                     );
                 }
-                $setValue = $db->select(
+                $setValue                = $db->select(
                     'teinstellungen',
                     'kEinstellungenSektion',
                     CONF_ZAHLUNGSARTEN,
@@ -279,24 +277,24 @@ if ($step === 'einstellen') {
     }
 } elseif ($step === 'log') {
     $kZahlungsart = RequestHelper::verifyGPCDataInt('kZahlungsart');
-    $oZahlungsart = $db->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
+    $method       = $db->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
 
     $filterStandard = new Filter('standard');
     $filterStandard->addDaterangefield('Zeitraum', 'dDatum');
     $filterStandard->assemble();
 
-    if (isset($oZahlungsart->cModulId) && strlen($oZahlungsart->cModulId) > 0) {
+    if (isset($method->cModulId) && strlen($method->cModulId) > 0) {
         $paginationPaymentLog = (new Pagination('standard'))
-            ->setItemCount(ZahlungsLog::count($oZahlungsart->cModulId, -1, $filterStandard->getWhereSQL()))
+            ->setItemCount(ZahlungsLog::count($method->cModulId, -1, $filterStandard->getWhereSQL()))
             ->assemble();
-        $paymentLogs = (new ZahlungsLog($oZahlungsart->cModulId))->holeLog(
+        $paymentLogs          = (new ZahlungsLog($method->cModulId))->holeLog(
             $paginationPaymentLog->getLimitSQL(),
             -1,
             $filterStandard->getWhereSQL()
         );
 
         $smarty->assign('paymentLogs', $paymentLogs)
-               ->assign('paymentData', $oZahlungsart)
+               ->assign('paymentData', $method)
                ->assign('filterStandard', $filterStandard)
                ->assign('paginationPaymentLog', $paginationPaymentLog);
     }
@@ -327,8 +325,8 @@ if ($step === 'einstellen') {
     $oFilter->addDaterangefield('Zeitraum', 'dZeit');
     $oFilter->assemble();
 
-    $oZahlungsart        = $db->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
-    $oZahlunseingang_arr = $db->query(
+    $method        = $db->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
+    $incoming      = $db->query(
         'SELECT ze.*, b.kZahlungsart, b.cBestellNr, k.kKunde, k.cVorname, k.cNachname, k.cMail
             FROM tzahlungseingang AS ze
                 JOIN tbestellung AS b
@@ -340,43 +338,41 @@ if ($step === 'einstellen') {
             ORDER BY dZeit DESC',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    $oPagination         = (new Pagination('payments' . $kZahlungsart))
-        ->setItemArray($oZahlunseingang_arr)
+    $oPagination   = (new Pagination('payments' . $kZahlungsart))
+        ->setItemArray($incoming)
         ->assemble();
     $cryptoService = Shop::Container()->getCryptoService();
-    foreach ($oZahlunseingang_arr as &$oZahlunseingang) {
-        $oZahlunseingang->cNachname = $cryptoService->decryptXTEA($oZahlunseingang->cNachname);
-        $oZahlunseingang->dZeit     = date_create($oZahlunseingang->dZeit)->format('d.m.Y\<\b\r\>H:i');
+    foreach ($incoming as $item) {
+        $item->cNachname = $cryptoService->decryptXTEA($item->cNachname);
+        $item->dZeit     = date_create($item->dZeit)->format('d.m.Y\<\b\r\>H:i');
     }
-    unset($oZahlunseingang);
-    $smarty->assign('oZahlungsart', $oZahlungsart)
+    $smarty->assign('oZahlungsart', $method)
            ->assign('oZahlunseingang_arr', $oPagination->getPageItems())
            ->assign('oPagination', $oPagination)
            ->assign('oFilter', $oFilter);
 }
 
 if ($step === 'uebersicht') {
-    $oZahlungsart_arr = $db->selectAll(
+    $methods = $db->selectAll(
         'tzahlungsart',
         ['nActive', 'nNutzbar'],
         [1, 1],
         '*',
         'cAnbieter, cName, nSort, kZahlungsart'
     );
-    foreach ($oZahlungsart_arr as $oZahlungsart) {
-        $oZahlungsart->nEingangAnzahl = (int)$db->executeQueryPrepared(
+    foreach ($methods as $method) {
+        $method->nEingangAnzahl = (int)$db->executeQueryPrepared(
             'SELECT COUNT(*) AS `nAnzahl`
             FROM `tzahlungseingang` AS ze
                 JOIN `tbestellung` AS b ON ze.`kBestellung` = b.`kBestellung`
             WHERE b.`kZahlungsart` = :kzahlungsart',
-            ['kzahlungsart' => $oZahlungsart->kZahlungsart],
+            ['kzahlungsart' => $method->kZahlungsart],
             \DB\ReturnType::SINGLE_OBJECT
         )->nAnzahl;
-        $oZahlungsart->nLogCount = ZahlungsLog::count($oZahlungsart->cModulId);
-        // jtl-shop/issues#288
-        $oZahlungsart->nErrorLogCount = ZahlungsLog::count($oZahlungsart->cModulId, JTLLOG_LEVEL_ERROR);
+        $method->nLogCount      = ZahlungsLog::count($method->cModulId);
+        $method->nErrorLogCount = ZahlungsLog::count($method->cModulId, JTLLOG_LEVEL_ERROR);
     }
-    $smarty->assign('zahlungsarten', $oZahlungsart_arr);
+    $smarty->assign('zahlungsarten', $methods);
 }
 $smarty->assign('step', $step)
        ->assign('waehrung', $standardwaehrung->cName)

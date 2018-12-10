@@ -32,17 +32,15 @@ function getWidgets(bool $bActive = true)
             $widget->bActive    = (int)$widget->bActive;
             $widget->bExtension = (int)$widget->bExtension;
             $widget->cContent   = '';
-
             $className          = '\Widgets\\' . $widget->cClass;
-            $classFile          = null;
             $classPath          = null;
             $widget->cNiceTitle = str_replace(['--', ' '], '-', $widget->cTitle);
             $widget->cNiceTitle = strtolower(preg_replace('/[äüöß\(\)\/\\\]/iu', '', $widget->cNiceTitle));
             $plugin             = null;
             if ($widget->kPlugin > 0) {
-                $loader      = \Plugin\Helper::getLoader($widget->bExtension === 1, $db, $cache);
-                $plugin      = $loader->init($widget->kPlugin);
-                $hit         = $plugin->getWidgets()->getWidgetByID($widget->kWidget);
+                $loader = \Plugin\Helper::getLoader($widget->bExtension === 1, $db, $cache);
+                $plugin = $loader->init($widget->kPlugin);
+                $hit    = $plugin->getWidgets()->getWidgetByID($widget->kWidget);
                 if ($hit === null) {
                     continue;
                 }
@@ -99,7 +97,7 @@ function addWidget(int $kWidget)
  */
 function expandWidget(int $kWidget, int $bExpand)
 {
-    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', $kWidget,  (object)['bExpand' => $bExpand]);
+    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', $kWidget, (object)['bExpand' => $bExpand]);
 }
 
 /**
@@ -167,8 +165,8 @@ function getRemoteDataIO($url, $dataName, $tpl, $wrapperID, $post = null, $callb
         $data = json_decode($cData);
     }
     $data    = $decodeUTF8 ? StringHandler::utf8_convert_recursive($data) : $data;
-    $cWrapper = Shop::Smarty()->assign($dataName, $data)->fetch('tpl_inc/' . $tpl);
-    $response->assign($wrapperID, 'innerHTML', $cWrapper);
+    $wrapper = Shop::Smarty()->assign($dataName, $data)->fetch('tpl_inc/' . $tpl);
+    $response->assign($wrapperID, 'innerHTML', $wrapper);
 
     if ($callback !== null) {
         $response->script("if(typeof {$callback} === 'function') {$callback}({$cData});");

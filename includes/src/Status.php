@@ -263,7 +263,7 @@ class Status
         $lines = explode('  ', $stats);
 
         $lines = array_map(function ($v) {
-            list($key, $value) = explode(':', $v, 2);
+            [$key, $value] = explode(':', $v, 2);
 
             return ['key' => trim($key), 'value' => trim($value)];
         }, $lines);

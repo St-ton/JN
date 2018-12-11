@@ -222,7 +222,8 @@ class Hersteller
                                 AND NOT EXISTS (
                                 SELECT 1 FROM tartikelsichtbarkeit
                                 WHERE tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                                    AND tartikelsichtbarkeit.kKundengruppe = '. \Session\Session::getCustomerGroup()->getID() .
+                                    AND tartikelsichtbarkeit.kKundengruppe = '.
+                                \Session\Session::getCustomerGroup()->getID() .
                             ')
                         )';
         }

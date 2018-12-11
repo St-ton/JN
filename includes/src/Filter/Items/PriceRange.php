@@ -21,7 +21,7 @@ use Session\Session;
  */
 class PriceRange extends AbstractFilter
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var float

@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\MagicCompatibilityTrait;
+
 /**
  * Class Currency
  */
@@ -101,7 +103,7 @@ class Currency
     /**
      * @return int|null
      */
-    public function getID()
+    public function getID(): ?int
     {
         return $this->id;
     }
@@ -120,7 +122,7 @@ class Currency
     /**
      * @return string|null
      */
-    public function getCode()
+    public function getCode(): ?string
     {
         return $this->code;
     }
@@ -139,7 +141,7 @@ class Currency
     /**
      * @return string|null
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -158,7 +160,7 @@ class Currency
     /**
      * @return string|null
      */
-    public function getHtmlEntity()
+    public function getHtmlEntity(): ?string
     {
         return $this->htmlEntity;
     }
@@ -177,7 +179,7 @@ class Currency
     /**
      * @return float|null
      */
-    public function getConversionFactor()
+    public function getConversionFactor(): ?float
     {
         return $this->conversionFactor;
     }
@@ -240,7 +242,7 @@ class Currency
     /**
      * @return string|null
      */
-    public function getDecimalSeparator()
+    public function getDecimalSeparator(): ?string
     {
         return $this->decimalSeparator;
     }
@@ -259,7 +261,7 @@ class Currency
     /**
      * @return string|null
      */
-    public function getThousandsSeparator()
+    public function getThousandsSeparator(): ?string
     {
         return $this->thousandsSeparator;
     }
@@ -278,7 +280,7 @@ class Currency
     /**
      * @return string|null
      */
-    public function getURL()
+    public function getURL(): ?string
     {
         return $this->cURL;
     }
@@ -297,7 +299,7 @@ class Currency
     /**
      * @return string|null
      */
-    public function getURLFull()
+    public function getURLFull(): ?string
     {
         return $this->cURLFull;
     }
@@ -416,11 +418,16 @@ class Currency
      * @param int    $precision
      * @return float|bool
      */
-    public static function convertCurrency($price, string $iso = null, $id = null, bool $round = true, int $precision = 2)
-    {
+    public static function convertCurrency(
+        $price,
+        string $iso = null,
+        $id = null,
+        bool $round = true,
+        int $precision = 2
+    ) {
         self::setCurrencies();
 
-        foreach (Session::getCurrencies() as $currency) {
+        foreach (\Session\Session::getCurrencies() as $currency) {
             if (($iso !== null && $currency->getCode() === $iso) || ($id !== null && $currency->getID() === (int)$id)) {
                 $newprice = $price * $currency->getConversionFactor();
 
@@ -432,17 +439,18 @@ class Currency
     }
 
     /**
-     * @param bool  $update
+     * @param bool $update
      * @return void
      */
-    public static function setCurrencies($update = false): void
+    public static function setCurrencies(bool $update = false): void
     {
-        if ($update || count(Session::getCurrencies()) === 0) {
-            $_SESSION['Waehrungen'] = [];
-            $allCurrencies          = Shop::Container()->getDB()->selectAll('twaehrung', [], [], 'kWaehrung');
+        if ($update || count(\Session\Session::getCurrencies()) === 0) {
+            $currencies    = [];
+            $allCurrencies = Shop::Container()->getDB()->selectAll('twaehrung', [], [], 'kWaehrung');
             foreach ($allCurrencies as $currency) {
-                $_SESSION['Waehrungen'][] = new self((int)$currency->kWaehrung);
+                $currencies[] = new self((int)$currency->kWaehrung);
             }
+            $_SESSION['Waehrungen'] = $currencies;
         }
     }
 }

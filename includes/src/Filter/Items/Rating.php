@@ -8,11 +8,11 @@ namespace Filter\Items;
 
 use DB\ReturnType;
 use Filter\AbstractFilter;
+use Filter\FilterInterface;
 use Filter\Join;
 use Filter\Option;
-use Filter\FilterInterface;
-use Filter\StateSQL;
 use Filter\ProductFilter;
+use Filter\StateSQL;
 
 /**
  * Class Rating
@@ -20,7 +20,7 @@ use Filter\ProductFilter;
  */
 class Rating extends AbstractFilter
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array

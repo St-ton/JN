@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace JTL;
+
 /**
  * Trait MagicCompatibilityTrait
  *
@@ -33,18 +35,16 @@ trait MagicCompatibilityTrait
      */
     public function __get($name)
     {
-        $bt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
-        if (\strpos($bt[0]['file'], PFAD_ROOT . PFAD_PLUGIN) === false) {
-            trigger_error(__CLASS__ . ': getter should be used to get ' . $name, E_USER_DEPRECATED);
-        }
-        if (property_exists($this, $name)) {
+        \trigger_error(__CLASS__ . ': getter should be used to get ' . $name, \E_USER_DEPRECATED);
+        if (\property_exists($this, $name)) {
             return $this->$name;
         }
         if (($mapped = self::getMapping($name)) !== null) {
-            if (is_array($mapped) && count($mapped) === 2) {
+            if (\is_array($mapped) && \count($mapped) === 2) {
                 $method1 = $mapped[0];
                 $method2 = 'get' . $mapped[1];
-                return call_user_func([$this->$method1(), $method2]);
+
+                return \call_user_func([$this->$method1(), $method2]);
             }
             $method = 'get' . $mapped;
 
@@ -61,24 +61,24 @@ trait MagicCompatibilityTrait
      */
     public function __set($name, $value)
     {
-        trigger_error(__CLASS__ . ': setter should be used to set ' . $name, E_USER_DEPRECATED);
-        if (property_exists($this, $name)) {
+        \trigger_error(__CLASS__ . ': setter should be used to set ' . $name, \E_USER_DEPRECATED);
+        if (\property_exists($this, $name)) {
             $this->$name = $value;
 
             return $this;
         }
         if (($mapped = self::getMapping($name)) !== null) {
-            if (is_array($mapped) && count($mapped) === 2) {
+            if (\is_array($mapped) && \count($mapped) === 2) {
                 $method1 = $mapped[0];
                 $method2 = 'set' . $mapped[1];
 
-                return call_user_func([$this->$method1(), $method2], $value);
+                return \call_user_func([$this->$method1(), $method2], $value);
             }
             $method = 'set' . $mapped;
 
             return $this->$method($value);
         }
-        trigger_error(__CLASS__ . ': setter could not find property ' . $name, E_USER_DEPRECATED);
+        \trigger_error(__CLASS__ . ': setter could not find property ' . $name, \E_USER_DEPRECATED);
         $this->data[$name] = $value;
 
         return $this;
@@ -90,6 +90,6 @@ trait MagicCompatibilityTrait
      */
     public function __isset($name)
     {
-        return property_exists($this, $name) || self::getMapping($name) !== null;
+        return \property_exists($this, $name) || self::getMapping($name) !== null;
     }
 }

@@ -894,7 +894,10 @@ class Kupon
         if (date_create($Kupon->dGueltigAb) > date_create()) {
             $ret['ungueltig'] = 3;
         }
-        if ($Kupon->fMindestbestellwert > \Session\Session::getCart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)) {
+        if ($Kupon->fMindestbestellwert > \Session\Session::getCart()->gibGesamtsummeWarenExt(
+            [C_WARENKORBPOS_TYP_ARTIKEL],
+            true
+        )) {
             $ret['ungueltig'] = 4;
         }
         if ($Kupon->cWertTyp === 'festpreis'
@@ -936,7 +939,7 @@ class Kupon
         }
         // Neukundenkupon
         if ($Kupon->cKuponTyp === 'neukundenkupon') {
-            $Hash = Kuponneukunde::Hash(
+            $Hash = Kuponneukunde::hash(
                 null,
                 trim($_SESSION['Kunde']->cNachname),
                 trim($_SESSION['Kunde']->cStrasse),
@@ -946,7 +949,7 @@ class Kupon
                 trim($_SESSION['Kunde']->cLand)
             );
 
-            $Kuponneukunde = Kuponneukunde::Load($_SESSION['Kunde']->cMail, $Hash);
+            $Kuponneukunde = Kuponneukunde::load($_SESSION['Kunde']->cMail, $Hash);
             if ($Kuponneukunde !== null && $Kuponneukunde->cVerwendet === 'Y') {
                 $ret['ungueltig'] = 11;
             }
@@ -1134,7 +1137,7 @@ class Kupon
     public static function resetNewCustomerCoupon(): void
     {
         if (\Session\Session::getCustomer()->isLoggedIn()) {
-            $hash = Kuponneukunde::Hash(
+            $hash = Kuponneukunde::hash(
                 null,
                 trim($_SESSION['Kunde']->cNachname),
                 trim($_SESSION['Kunde']->cStrasse),

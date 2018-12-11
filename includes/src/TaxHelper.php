@@ -38,7 +38,7 @@ class TaxHelper
      * @param string $steuerland
      * @since since 5.0.0
      */
-    public static function setTaxRates($steuerland = null)
+    public static function setTaxRates($steuerland = null): void
     {
         $_SESSION['Steuersatz'] = [];
         $billingCountryCode     = null;

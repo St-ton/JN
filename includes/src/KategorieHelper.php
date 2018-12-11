@@ -305,7 +305,11 @@ class KategorieHelper
             }
             executeHook(HOOK_GET_ALL_CATEGORIES, ['categories' => &$fullCats]);
 
-            if (Shop::Container()->getCache()->set(self::$cacheID, $fullCats, [CACHING_GROUP_CATEGORY, 'jtl_category_tree']) === false) {
+            if (Shop::Container()->getCache()->set(
+                self::$cacheID,
+                $fullCats,
+                [CACHING_GROUP_CATEGORY, 'jtl_category_tree']
+            ) === false) {
                 $_SESSION['oKategorie_arr_new'] = $fullCats;
             }
         }

@@ -8,8 +8,8 @@ namespace Survey;
 
 use DB\DbInterface;
 use DB\ReturnType;
-use function Functional\group;
 use Tightenco\Collect\Support\Collection;
+use function Functional\group;
 
 /**
  * Class Survey
@@ -17,7 +17,7 @@ use Tightenco\Collect\Support\Collection;
  */
 class Survey
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var int

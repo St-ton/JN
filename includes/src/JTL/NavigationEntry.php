@@ -12,7 +12,7 @@ namespace JTL;
  */
 class NavigationEntry
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array

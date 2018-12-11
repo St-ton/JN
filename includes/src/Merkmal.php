@@ -114,9 +114,8 @@ class Merkmal
      */
     public function loadFromDB(int $kMerkmal, bool $bMMW = false, int $kSprache = 0): self
     {
-        $kSprache = $kSprache === 0 ? Shop::getLanguageID() : $kSprache;
-        $id       = 'mm_' . $kMerkmal . '_' . $kSprache;
-
+        $kSprache       = $kSprache === 0 ? Shop::getLanguageID() : $kSprache;
+        $id             = 'mm_' . $kMerkmal . '_' . $this->kSprache;
         $this->kSprache = $kSprache;
         if ($bMMW === false && Shop::has($id)) {
             foreach (get_object_vars(Shop::get($id)) as $k => $v) {
@@ -149,8 +148,7 @@ class Merkmal
             \DB\ReturnType::SINGLE_OBJECT
         );
         if (isset($oMerkmal->kMerkmal) && $oMerkmal->kMerkmal > 0) {
-            $cMember_arr = array_keys(get_object_vars($oMerkmal));
-            foreach ($cMember_arr as $cMember) {
+            foreach (array_keys(get_object_vars($oMerkmal)) as $cMember) {
                 $this->$cMember = $oMerkmal->$cMember;
             }
         }
@@ -209,7 +207,7 @@ class Merkmal
         $this->kSprache            = (int)$this->kSprache;
         $this->nGlobal             = (int)$this->nGlobal;
 
-        executeHook(HOOK_MERKMAL_CLASS_LOADFROMDB);
+        executeHook(HOOK_MERKMAL_CLASS_LOADFROMDB, ['instance' => $this]);
         Shop::set($id, $this);
 
         return $this;

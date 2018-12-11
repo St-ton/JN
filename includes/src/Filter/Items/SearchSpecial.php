@@ -22,7 +22,7 @@ use Session\Session;
  */
 class SearchSpecial extends AbstractFilter
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array

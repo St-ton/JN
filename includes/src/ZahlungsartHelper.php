@@ -148,15 +148,12 @@ class ZahlungsartHelper
         if ($paymentMethod->kZahlungsart > 0) {
             $kZahlungsart = (int)$paymentMethod->kZahlungsart;
             $nNutzbar     = 0;
-            // SOAP
             if (!empty($paymentMethod->nSOAP)) {
                 $nNutzbar = PHPSettingsHelper::checkSOAP() ? 1 : 0;
             }
-            // CURL
             if (!empty($paymentMethod->nCURL)) {
                 $nNutzbar = PHPSettingsHelper::checkCURL() ? 1 : 0;
             }
-            // SOCKETS
             if (!empty($paymentMethod->nSOCKETS)) {
                 $nNutzbar = PHPSettingsHelper::checkSockets() ? 1 : 0;
             }

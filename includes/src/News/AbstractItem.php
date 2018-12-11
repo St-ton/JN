@@ -12,7 +12,7 @@ namespace News;
  */
 abstract class AbstractItem implements ItemInterface
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array

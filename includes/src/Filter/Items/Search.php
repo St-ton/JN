@@ -21,7 +21,7 @@ use Filter\StateSQL;
  */
 class Search extends AbstractFilter
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var int

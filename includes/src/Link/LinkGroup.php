@@ -18,7 +18,7 @@ use function Functional\map;
  */
 final class LinkGroup implements LinkGroupInterface
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array

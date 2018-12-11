@@ -12,7 +12,7 @@ namespace Plugin;
  */
 class ExtensionBC extends AbstractExtension
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array

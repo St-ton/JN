@@ -119,10 +119,6 @@ class BestellungHelper extends WarenkorbHelper
         $info->discount[self::NET]   *= -1;
         $info->discount[self::GROSS] *= -1;
 
-        // total
-        // $info->total[self::NET]   = $info->article[self::NET] + $info->shipping[self::NET] - $info->discount[self::NET] + $info->surcharge[self::NET];
-        // $info->total[self::GROSS] = $info->article[self::GROSS] + $info->shipping[self::GROSS] - $info->discount[self::GROSS] + $info->surcharge[self::GROSS];
-
         $info->total[self::NET]   = $order->fGesamtsummeNetto;
         $info->total[self::GROSS] = $order->fGesamtsumme;
 

@@ -101,6 +101,30 @@ class Bewertung
     }
 
     /**
+     * @param int $nOption
+     * @return string
+     */
+    private function getOrderSQL(int $nOption): string
+    {
+        switch ($nOption) {
+            case 2:
+                return ' dDatum DESC';
+            case 3:
+                return ' dDatum ASC';
+            case 4:
+                return ' nSterne DESC';
+            case 5:
+                return ' nSterne ASC';
+            case 6:
+                return ' nHilfreich DESC';
+            case 7:
+                return ' nHilfreich ASC';
+            default:
+                return ' dDatum DESC';
+        }
+    }
+
+    /**
      * @param int    $kArtikel
      * @param int    $kSprache
      * @param int    $nAnzahlSeite
@@ -125,33 +149,10 @@ class Bewertung
         if ($kArtikel > 0 && $kSprache > 0) {
             $oBewertungAnzahl_arr = [];
             $cSQL                 = '';
-            // Sortierung beachten
-            switch ($nOption) {
-                case 2:
-                    $cOrderSQL = ' dDatum DESC';
-                    break;
-                case 3:
-                    $cOrderSQL = ' dDatum ASC';
-                    break;
-                case 4:
-                    $cOrderSQL = ' nSterne DESC';
-                    break;
-                case 5:
-                    $cOrderSQL = ' nSterne ASC';
-                    break;
-                case 6:
-                    $cOrderSQL = ' nHilfreich DESC';
-                    break;
-                case 7:
-                    $cOrderSQL = ' nHilfreich ASC';
-                    break;
-                default:
-                    $cOrderSQL = ' dDatum DESC';
-                    break;
-            }
+            $cOrderSQL            = $this->getOrderSQL($nOption);
             executeHook(HOOK_BEWERTUNG_CLASS_SWITCH_SORTIERUNG);
 
-            $cSQLFreischalten = ($cFreischalten === 'Y')
+            $cSQLFreischalten = $cFreischalten === 'Y'
                 ? ' AND nAktiv = 1'
                 : '';
             // Bewertungen nur in einer bestimmten Sprache oder in allen Sprachen?
@@ -159,8 +160,7 @@ class Bewertung
             if ($bAlleSprachen) {
                 $cSprachSQL = '';
             }
-            // Anzahl Bewertungen für jeden Stern
-            // unabhängig von Sprache SHOP-2313
+            // Anzahl Bewertungen für jeden Stern unabhängig von Sprache SHOP-2313
             if ($nSterne !== -1) {
                 if ($nSterne > 0) {
                     $cSQL = ' AND nSterne = ' . $nSterne;
@@ -219,10 +219,8 @@ class Bewertung
             $this->nAnzahlSprache = ((int)$oBewertungGesamtSprache->nAnzahlSprache > 0)
                 ? (int)$oBewertungGesamtSprache->nAnzahlSprache
                 : 0;
-            if (is_array($this->oBewertung_arr) && count($this->oBewertung_arr) > 0) {
-                foreach ($this->oBewertung_arr as $i => $oBewertung) {
-                    $this->oBewertung_arr[$i]->nAnzahlHilfreich = $oBewertung->nHilfreich + $oBewertung->nNichtHilfreich;
-                }
+            foreach ($this->oBewertung_arr as $i => $oBewertung) {
+                $this->oBewertung_arr[$i]->nAnzahlHilfreich = $oBewertung->nHilfreich + $oBewertung->nNichtHilfreich;
             }
             $nSterne_arr = [0, 0, 0, 0, 0];
             foreach ($oBewertungAnzahl_arr as $oBewertungAnzahl) {

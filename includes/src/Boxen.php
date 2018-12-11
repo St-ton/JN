@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\MagicCompatibilityTrait;
+
 /**
  * Class Boxen
  * @deprecated since 5.0.0

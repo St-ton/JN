@@ -21,7 +21,7 @@ use function Functional\filter;
  */
 class BaseSearchQuery extends AbstractFilter
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array

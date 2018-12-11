@@ -159,15 +159,20 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function update(): int
         {
-            $_upd             = new stdClass();
-            $_upd->cBildPfad  = $this->cBildPfad;
-            $_upd->nMin       = $this->nMin;
-            $_upd->nMax       = $this->nMax;
-            $_upd->nTyp       = $this->nTyp;
-            $_upd->nSort      = $this->nSort;
-            $_upd->cKommentar = $this->cKommentar;
+            $upd             = new stdClass();
+            $upd->cBildPfad  = $this->cBildPfad;
+            $upd->nMin       = $this->nMin;
+            $upd->nMax       = $this->nMax;
+            $upd->nTyp       = $this->nTyp;
+            $upd->nSort      = $this->nSort;
+            $upd->cKommentar = $this->cKommentar;
 
-            return Shop::Container()->getDB()->update('tkonfiggruppe', 'kKonfiggruppe', (int)$this->kKonfiggruppe, $_upd);
+            return Shop::Container()->getDB()->update(
+                'tkonfiggruppe',
+                'kKonfiggruppe',
+                (int)$this->kKonfiggruppe,
+                $upd
+            );
         }
 
         /**

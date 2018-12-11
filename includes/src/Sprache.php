@@ -1124,7 +1124,7 @@ class Sprache
                 }
             }
         }
-        if (count(Session::getCurrencies()) > 1) {
+        if (count(\Session\Session::getCurrencies()) > 1) {
             if ($AktuellerArtikel !== null
                 && $AktuellerArtikel->kArtikel > 0
                 && empty($AktuellerArtikel->cSprachURL_arr)
@@ -1132,7 +1132,7 @@ class Sprache
                 $AktuellerArtikel->baueArtikelSprachURL(false);
             }
             $currentCurrencyCode = Session\Session::getCurrency()->getID();
-            foreach (Session::getCurrencies() as $currency) {
+            foreach (\Session\Session::getCurrencies() as $currency) {
                 if (isset($AktuellerArtikel->cSprachURL_arr[Shop::getLanguageCode()])) {
                     $url = $AktuellerArtikel->cSprachURL_arr[Shop::getLanguageCode()];
                 } elseif ($specialPage !== null) {

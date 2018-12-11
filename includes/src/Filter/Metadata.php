@@ -18,7 +18,7 @@ use function Functional\reindex;
  */
 class Metadata implements MetadataInterface
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var ProductFilter

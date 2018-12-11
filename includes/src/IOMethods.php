@@ -298,7 +298,7 @@ class IOMethods
         $oResponse->cNavBadge = $smarty->assign('Einstellungen', $conf)
                                        ->fetch('layout/header_shop_nav_compare.tpl');
 
-        foreach (Shop::Container()->getBoxService()->buildList() as $_position => $boxes) {
+        foreach (Shop::Container()->getBoxService()->buildList() as $boxes) {
             /** @var \Boxes\Items\BoxInterface[] $boxes */
             if (!is_array($boxes)) {
                 continue;
@@ -307,13 +307,15 @@ class IOMethods
                 if ($box->getType() === \Boxes\Type::CONTAINER) {
                     foreach ($box->getChildren() as $childBox) {
                         if (get_class($childBox) === \Boxes\Items\CompareList::class) {
-                            $renderer                                     = new \Boxes\Renderer\DefaultRenderer($smarty, $childBox);
+                            $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $childBox);
+
                             $oResponse->cBoxContainer[$childBox->getID()] = $renderer->render();
                         }
                     }
                 }
                 if (get_class($box) === \Boxes\Items\CompareList::class) {
-                    $renderer                                = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
+                    $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
+
                     $oResponse->cBoxContainer[$box->getID()] = $renderer->render();
                 }
             }
@@ -346,7 +348,7 @@ class IOMethods
         $oResponse->cNavBadge = $smarty->assign('Einstellungen', $conf)
                                        ->fetch('layout/header_shop_nav_compare.tpl');
 
-        foreach (Shop::Container()->getBoxService()->buildList() as $_position => $boxes) {
+        foreach (Shop::Container()->getBoxService()->buildList() as $boxes) {
             if (!is_array($boxes)) {
                 continue;
             }
@@ -362,7 +364,8 @@ class IOMethods
                         }
                     }
                 } elseif (get_class($box) === \Boxes\Items\CompareList::class) {
-                    $renderer                                = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
+                    $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
+
                     $oResponse->cBoxContainer[$box->getID()] = $renderer->render();
                 }
             }
@@ -443,7 +446,7 @@ class IOMethods
 
         $oResponse->cNotification = $smarty->fetch('snippets/notification.tpl');
         $oResponse->cNavBadge     = $smarty->fetch('layout/header_shop_nav_wish.tpl');
-        foreach (Shop::Container()->getBoxService()->buildList() as $_position => $boxes) {
+        foreach (Shop::Container()->getBoxService()->buildList() as $boxes) {
             if (!is_array($boxes)) {
                 continue;
             }
@@ -452,12 +455,14 @@ class IOMethods
                 if ($box->getType() === \Boxes\Type::CONTAINER) {
                     foreach ($box->getChildren() as $childBox) {
                         if (get_class($childBox) === \Boxes\Items\Wishlist::class) {
-                            $renderer                                     = new \Boxes\Renderer\DefaultRenderer($smarty, $childBox);
+                            $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $childBox);
+
                             $oResponse->cBoxContainer[$childBox->getID()] = $renderer->render();
                         }
                     }
                 } elseif (get_class($box) === \Boxes\Items\Wishlist::class) {
-                    $renderer                                = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
+                    $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
+
                     $oResponse->cBoxContainer[$box->getID()] = $renderer->render();
                 }
             }
@@ -491,7 +496,7 @@ class IOMethods
         $oResponse->cNavBadge = $smarty->assign('Einstellungen', $conf)
                                        ->fetch('layout/header_shop_nav_wish.tpl');
 
-        foreach (Shop::Container()->getBoxService()->buildList() as $_position => $boxes) {
+        foreach (Shop::Container()->getBoxService()->buildList() as $boxes) {
             if (!is_array($boxes)) {
                 continue;
             }
@@ -500,12 +505,14 @@ class IOMethods
                 if ($box->getType() === \Boxes\Type::CONTAINER) {
                     foreach ($box->getChildren() as $childBox) {
                         if ($childBox->getType() === \Boxes\Items\Wishlist::class) {
-                            $renderer                                     = new \Boxes\Renderer\DefaultRenderer($smarty, $childBox);
+                            $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $childBox);
+
                             $oResponse->cBoxContainer[$childBox->getID()] = $renderer->render();
                         }
                     }
                 } elseif (get_class($box) === \Boxes\Items\Wishlist::class) {
-                    $renderer                                = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
+                    $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
+
                     $oResponse->cBoxContainer[$box->getID()] = $renderer->render();
                 }
             }
@@ -1140,7 +1147,12 @@ class IOMethods
         $response = new IOResponse();
 
         if (strlen($country) === 2) {
-            $deliveryCountries = VersandartHelper::getPossibleShippingCountries(Session::getCustomerGroup()->getID(), false, false, [$country]);
+            $deliveryCountries = VersandartHelper::getPossibleShippingCountries(
+                Session::getCustomerGroup()->getID(),
+                false,
+                false,
+                [$country]
+            );
             $response->script('this.response = ' . (count($deliveryCountries) === 1 ? 'true' : 'false') . ';');
         }
 

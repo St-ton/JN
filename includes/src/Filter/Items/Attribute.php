@@ -26,7 +26,7 @@ use function Functional\map;
  */
 class Attribute extends BaseAttribute
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var int

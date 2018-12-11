@@ -48,7 +48,7 @@ class AdminAccount
         $this->messageMapper = new \Mapper\AdminLoginStatusMessageMapper();
         $this->levelMapper   = new \Mapper\AdminLoginStatusToLogLevel();
         if ($init) {
-            AdminSession::getInstance();
+            \Session\AdminSession::getInstance();
             $this->validateSession();
         }
     }
@@ -81,23 +81,21 @@ class AdminAccount
     {
         $user = Shop::Container()->getDB()->select('tadminlogin', 'cMail', $mail);
         if ($user !== null) {
-            //there should be a string <created_timestamp>:<hash> in the DB
+            // there should be a string <created_timestamp>:<hash> in the DB
             $timestampAndHash = explode(':', $user->cResetPasswordHash);
             if (count($timestampAndHash) === 2) {
-                $timeStamp    = $timestampAndHash[0];
-                $originalHash = $timestampAndHash[1];
-                //check if the link is not expired (=24 hours valid)
+                [$timeStamp, $originalHash] = $timestampAndHash;
+                // check if the link is not expired (=24 hours valid)
                 $createdAt = (new DateTime())->setTimestamp((int)$timeStamp);
                 $now       = new DateTime();
                 $diff      = $now->diff($createdAt);
-                $secs      = ($diff->format('%a') * (60 * 60 * 24)); //total days
-                $secs     += (int)$diff->format('%h') * (60 * 60); //hours
-                $secs     += (int)$diff->format('%i') * 60; //minutes
-                $secs     += (int)$diff->format('%s'); //seconds
+                $secs      = ($diff->format('%a') * (60 * 60 * 24)); // total days
+                $secs     += (int)$diff->format('%h') * (60 * 60); // hours
+                $secs     += (int)$diff->format('%i') * 60; // minutes
+                $secs     += (int)$diff->format('%s'); // seconds
                 if ($secs > (60 * 60 * 24)) {
                     return false;
                 }
-
                 // check the submitted hash against the saved one
                 return Shop::Container()->getPasswordService()->verify($hash, $originalHash);
             }
@@ -241,7 +239,7 @@ class AdminAccount
             // Wartungsmodus aktiv? Nein => loesche Session
             $settings = Shop::getSettings(CONF_GLOBAL);
             if (is_array($_SESSION) && $settings['global']['wartungsmodus_aktiviert'] === 'N' && count($_SESSION) > 0) {
-                foreach ($_SESSION as $i => $xSession) {
+                foreach (array_keys($_SESSION) as $i) {
                     unset($_SESSION[$i]);
                 }
             }

@@ -42,7 +42,7 @@ use function Functional\select;
  */
 class ProductFilter
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var BaseCategory

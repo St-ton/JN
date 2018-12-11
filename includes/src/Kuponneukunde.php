@@ -79,7 +79,7 @@ class Kuponneukunde
     /**
      * @return bool
      */
-    public function Save(): bool
+    public function save(): bool
     {
         if ($this->kKuponNeukunde > 0) {
             Shop::Container()->getDB()->delete('tkuponneukunde', 'kKuponNeukunde', (int)$this->kKuponNeukunde);
@@ -93,7 +93,7 @@ class Kuponneukunde
     /**
      * @return bool
      */
-    public function Delete(): bool
+    public function delete(): bool
     {
         return Shop::Container()->getDB()->delete('tkuponneukunde', 'kKuponNeukunde', (int)$this->kKuponNeukunde) === 1;
     }
@@ -169,7 +169,7 @@ class Kuponneukunde
     /**
      * @return int|null
      */
-    public function getKuponNeukunde()
+    public function getKuponNeukunde(): ?int
     {
         return $this->kKuponNeukunde;
     }
@@ -177,7 +177,7 @@ class Kuponneukunde
     /**
      * @return int|null
      */
-    public function getKupon()
+    public function getKupon(): ?int
     {
         return $this->kKupon;
     }
@@ -211,7 +211,7 @@ class Kuponneukunde
      * @param string $hash
      * @return Kuponneukunde|null
      */
-    public static function Load($email, $hash)
+    public static function load(string $email, string $hash): ?self
     {
         if (strlen($email) > 0 && strlen($hash) > 0) {
             $Obj = Shop::Container()->getDB()->executeQueryPrepared(
@@ -220,8 +220,8 @@ class Kuponneukunde
                     WHERE cEmail = :email
                     OR cDatenHash = :hash',
                 [
-                    'email' => StringHandler::filterXSS($email),
-                    'hash'  => StringHandler::filterXSS($hash)
+                    'email' => $email,
+                    'hash'  => $hash
                 ],
                 \DB\ReturnType::SINGLE_OBJECT
             );
@@ -244,7 +244,7 @@ class Kuponneukunde
      * @param string|null $country
      * @return string
      */
-    public static function Hash(
+    public static function hash(
         $firstname = null,
         $lastname = null,
         $street = null,

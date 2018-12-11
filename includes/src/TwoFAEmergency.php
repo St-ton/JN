@@ -88,7 +88,9 @@ class TwoFAEmergency
             $oUserTuple->kAdminlogin
         );
         if ($this->iCodeCount !== $iEffectedRows) {
-            Shop::Container()->getLogService()->error('2FA-Notfall-Codes für diesen Account konnten nicht entfernt werden.');
+            Shop::Container()->getLogService()->error(
+                '2FA-Notfall-Codes für diesen Account konnten nicht entfernt werden.'
+            );
         }
     }
 

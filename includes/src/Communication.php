@@ -22,7 +22,11 @@ final class Communication
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_POST, $bPost);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $xPostData_arr);
-            curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 5.1; rv:1.7.3) Gecko/20041001 Firefox/0.10.1');
+            curl_setopt(
+                $ch,
+                CURLOPT_USERAGENT,
+                'Mozilla/5.0 (Windows; U; Windows NT 5.1; rv:1.7.3) Gecko/20041001 Firefox/0.10.1'
+            );
             curl_setopt($ch, CURLOPT_URL, $cURL);
             curl_setopt($ch, CURLOPT_ENCODING, 'UTF-8');
             curl_setopt($ch, CURLOPT_AUTOREFERER, true);

@@ -22,7 +22,7 @@ use Filter\Type;
  */
 class BaseTag extends AbstractFilter
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array

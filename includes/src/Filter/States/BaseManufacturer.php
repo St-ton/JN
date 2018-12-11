@@ -21,7 +21,7 @@ use Filter\Type;
  */
 class BaseManufacturer extends AbstractFilter
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array

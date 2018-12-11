@@ -41,7 +41,7 @@ if (isset($_POST['erstellenShowButton'])) {
     $kCheckBox = RequestHelper::verifyGPCDataInt('edit');
     $cStep     = 'erstellen';
     $cTab      = $cStep;
-    $smarty->assign('oCheckBox', new CheckBox($kCheckBox, true));
+    $smarty->assign('oCheckBox', new CheckBox($kCheckBox));
 } elseif (RequestHelper::verifyGPCDataInt('erstellen') === 1 && FormHelper::validateToken()) {
     $cStep       = 'erstellen';
     $kCheckBox   = RequestHelper::verifyGPCDataInt('kCheckBox');

@@ -180,12 +180,12 @@ class Bestseller
     }
 
     /**
-     * @param iterable $products
-     * @param int      $customergrp
-     * @param bool     $viewallowed
-     * @param bool     $onlykeys
-     * @param int      $limit
-     * @param int      $minsells
+     * @param Countable $products
+     * @param int       $customergrp
+     * @param bool      $viewallowed
+     * @param bool      $onlykeys
+     * @param int       $limit
+     * @param int       $minsells
      * @return array
      */
     public static function buildBestsellers(

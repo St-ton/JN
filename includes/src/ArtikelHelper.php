@@ -979,7 +979,9 @@ class ArtikelHelper
             executeHook(HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT_PLAUSI);
 
             if ($resultCode) {
-                if (!self::checkProductQuestionFloodProtection((int)$conf['artikeldetails']['produktfrage_sperre_minuten'])) {
+                if (!self::checkProductQuestionFloodProtection(
+                    (int)$conf['artikeldetails']['produktfrage_sperre_minuten']
+                )) {
                     $checkBox      = new CheckBox();
                     $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
                     $oAnfrage      = self::getProductQuestionFormDefaults();

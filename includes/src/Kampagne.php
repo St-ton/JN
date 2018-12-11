@@ -170,13 +170,14 @@ class Kampagne
             $setRes        = Shop::Container()->getCache()->set($cacheID, $oKampagne_arr, [CACHING_GROUP_CORE]);
             if ($setRes === false) {
                 // could not save to cache - use session instead
-                $_SESSION['Kampagnen'] = [];
+                $campaigns = [];
                 if (is_array($oKampagne_arr) && count($oKampagne_arr) > 0) {
                     // save to session
                     foreach ($oKampagne_arr as $oKampagne) {
-                        $_SESSION['Kampagnen'][] = $oKampagne;
+                        $campaigns[] = $oKampagne;
                     }
                 }
+                $_SESSION['Kampagnen'] = $campaigns;
 
                 return $_SESSION['Kampagnen'];
             }

@@ -17,7 +17,7 @@ use function Functional\first;
  */
 abstract class AbstractBox implements BoxInterface
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array

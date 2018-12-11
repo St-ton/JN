@@ -385,13 +385,11 @@ class Wunschliste
         $this->cURLID       = $oWunschliste->cURLID;
         $this->dErstellt    = $oWunschliste->dErstellt;
         $this->dErstellt_DE = $oWunschliste->dErstellt_DE;
-        // Kunde holen
         if ((int)$this->kKunde > 0) {
             $this->oKunde = new Kunde($this->kKunde);
             unset($this->oKunde->cPasswort, $this->oKunde->fRabatt, $this->oKunde->fGuthaben, $this->oKunde->cUSTID);
         }
-        $langID = Shop::getLanguageID();
-        // Hole alle Positionen für eine Wunschliste
+        $langID         = Shop::getLanguageID();
         $wlPositions    = Shop::Container()->getDB()->selectAll(
             'twunschlistepos',
             'kWunschliste',

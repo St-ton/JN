@@ -150,26 +150,23 @@ class Emailhistory
     }
 
     /**
-     * @param string $cSqlLimit
+     * @param string $limitSQL
      * @return array
      */
-    public function getAll($cSqlLimit = ''): array
+    public function getAll(string $limitSQL = ''): array
     {
-        if ($cSqlLimit === null) {
-            $cSqlLimit = '';
-        }
-        $oObj_arr          = Shop::Container()->getDB()->query(
+        $historyData = Shop::Container()->getDB()->query(
             'SELECT * 
                 FROM temailhistory 
-                ORDER BY dSent DESC' . $cSqlLimit,
+                ORDER BY dSent DESC' . $limitSQL,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        $oEmailhistory_arr = [];
-        foreach ($oObj_arr as $oObj) {
-            $oEmailhistory_arr[] = new self(null, $oObj);
+        $history     = [];
+        foreach ($historyData as $item) {
+            $history[] = new self(null, $item);
         }
 
-        return $oEmailhistory_arr;
+        return $history;
     }
 
     /**
@@ -184,20 +181,20 @@ class Emailhistory
     }
 
     /**
-     * @param array $kEmailhistory_arr
+     * @param array $ids
      * @return bool|int
      */
-    public function deletePack(array $kEmailhistory_arr)
+    public function deletePack(array $ids)
     {
-        if (count($kEmailhistory_arr) > 0) {
-            $kEmailhistory_arr = array_map(function ($i) {
+        if (count($ids) > 0) {
+            $ids = array_map(function ($i) {
                 return (int)$i;
-            }, $kEmailhistory_arr);
+            }, $ids);
 
             return Shop::Container()->getDB()->query(
                 'DELETE 
                     FROM temailhistory 
-                    WHERE kEmailhistory IN (' . implode(',', $kEmailhistory_arr) . ')',
+                    WHERE kEmailhistory IN (' . implode(',', $ids) . ')',
                 \DB\ReturnType::AFFECTED_ROWS
             );
         }

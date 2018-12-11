@@ -18,7 +18,7 @@ use function Functional\map;
  */
 class SurveyQuestion
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var int

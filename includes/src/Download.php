@@ -254,7 +254,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                                    JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                                         AND twarenkorbpos.nPosTyp = ' . C_WARENKORBPOS_TYP_ARTIKEL;
                 } elseif ($kKunde > 0) {
-                    $cSQLSelect = 'MAX(tbestellung.kBestellung) AS kBestellung, tbestellung.kKunde, tartikeldownload.kDownload';
+                    $cSQLSelect = 'MAX(tbestellung.kBestellung) AS kBestellung, tbestellung.kKunde, 
+                        tartikeldownload.kDownload';
                     $cSQLWhere  = 'tartikeldownload.kArtikel = twarenkorbpos.kArtikel';
                     $cSQLJoin   = 'JOIN tbestellung ON tbestellung.kKunde = ' . $kKunde . '
                                    JOIN tdownload ON tdownload.kDownload = tartikeldownload.kDownload

@@ -21,6 +21,7 @@ $AktuelleKategorie  = new Kategorie();
 $expandedCategories = new KategorieListe();
 $hasError           = false;
 $cParameter_arr     = Shop::getParameters();
+/** @var \Filter\ProductFilter $NaviFilter */
 if ($NaviFilter->hasCategory()) {
     $kKategorie                  = $NaviFilter->getCategory()->getValue();
     $_SESSION['LetzteKategorie'] = $kKategorie;

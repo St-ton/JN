@@ -8,11 +8,11 @@ namespace Filter;
 
 use Boxes\Items\AbstractBox;
 use Filter\Pagination\Info;
+use Tightenco\Collect\Support\Collection;
 use function Functional\every;
 use function Functional\filter;
 use function Functional\invoke;
 use function Functional\map;
-use Tightenco\Collect\Support\Collection;
 
 /**
  * Class SearchResults
@@ -20,7 +20,7 @@ use Tightenco\Collect\Support\Collection;
  */
 class SearchResults implements SearchResultsInterface
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var \Tightenco\Collect\Support\Collection()

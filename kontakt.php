@@ -9,11 +9,11 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'kontakt_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_KONTAKT);
-$Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
-$linkHelper    = Shop::Container()->getLinkService();
-$kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
-$link          = $linkHelper->getPageLink($kLink);
-//hole alle OberKategorien
+$smarty                 = Shop::Smarty();
+$Einstellungen          = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
+$linkHelper             = Shop::Container()->getLinkService();
+$kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
+$link                   = $linkHelper->getPageLink($kLink);
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $cCanonicalURL          = '';
@@ -24,14 +24,13 @@ if (FormHelper::checkSubject()) {
     if (isset($_POST['kontakt']) && (int)$_POST['kontakt'] === 1) {
         $fehlendeAngaben = FormHelper::getMissingContactFormData();
         $kKundengruppe   = \Session\Session::getCustomerGroup()->getID();
-        // CheckBox Plausi
         $oCheckBox       = new CheckBox();
         $fehlendeAngaben = array_merge(
             $fehlendeAngaben,
             $oCheckBox->validateCheckBox(CHECKBOX_ORT_KONTAKT, $kKundengruppe, $_POST, true)
         );
         $nReturnValue    = FormHelper::eingabenKorrekt($fehlendeAngaben);
-        Shop::Smarty()->assign('cPost_arr', StringHandler::filterXSS($_POST));
+        $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST));
         executeHook(HOOK_KONTAKT_PAGE_PLAUSI);
 
         if ($nReturnValue) {
@@ -58,15 +57,15 @@ if (FormHelper::checkSubject()) {
         [(int)SC_KONTAKTFORMULAR, $lang]
     );
     $SpezialContent = new stdClass();
-    foreach ($Contents as $Content) {
-        $SpezialContent->{$Content->cTyp} = $Content->cContent;
+    foreach ($Contents as $content) {
+        $SpezialContent->{$content->cTyp} = $content->cContent;
     }
     $subjects = Shop::Container()->getDB()->query(
         "SELECT *
             FROM tkontaktbetreff
             WHERE (cKundengruppen = 0 
             OR FIND_IN_SET('" . \Session\Session::getCustomerGroup()->getID()
-                . "', REPLACE(cKundengruppen, ';', ',')) > 0) 
+        . "', REPLACE(cKundengruppen, ';', ',')) > 0) 
             ORDER BY nSort",
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
@@ -82,33 +81,30 @@ if (FormHelper::checkSubject()) {
             $subject->AngezeigterName = $localization->cName;
         }
     }
-    $Vorgaben = FormHelper::baueKontaktFormularVorgaben();
-    // Canonical
-    $cCanonicalURL = $linkHelper->getStaticRoute('kontakt.php');
-    // Metaangaben
+    $cCanonicalURL    = $linkHelper->getStaticRoute('kontakt.php');
     $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_KONTAKT, $lang);
     $cMetaTitle       = $oMeta->cTitle;
     $cMetaDescription = $oMeta->cDesc;
     $cMetaKeywords    = $oMeta->cKeywords;
-    Shop::Smarty()->assign('step', $step)
-        ->assign('code', false)
-        ->assign('betreffs', $subjects)
-        ->assign('hinweis', $hinweis ?? null)
-        ->assign('Vorgaben', $Vorgaben)
-        ->assign('fehlendeAngaben', $fehlendeAngaben)
-        ->assign('nAnzeigeOrt', CHECKBOX_ORT_KONTAKT);
+    $smarty->assign('step', $step)
+           ->assign('code', false)
+           ->assign('betreffs', $subjects)
+           ->assign('hinweis', $hinweis ?? null)
+           ->assign('Vorgaben', FormHelper::baueKontaktFormularVorgaben())
+           ->assign('fehlendeAngaben', $fehlendeAngaben)
+           ->assign('nAnzeigeOrt', CHECKBOX_ORT_KONTAKT);
 } else {
     Shop::Container()->getLogService()->error('Kein Kontaktbetreff vorhanden! Bitte im Backend unter ' .
         'Einstellungen -> Kontaktformular -> Betreffs einen Betreff hinzuf&uuml;gen.');
-    Shop::Smarty()->assign('hinweis', Shop::Lang()->get('noSubjectAvailable', 'contact'));
+    $smarty->assign('hinweis', Shop::Lang()->get('noSubjectAvailable', 'contact'));
     $SpezialContent = new stdClass();
 }
 
-Shop::Smarty()->assign('Link', $link)
-              ->assign('Spezialcontent', $SpezialContent);
+$smarty->assign('Link', $link)
+       ->assign('Spezialcontent', $SpezialContent);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_KONTAKT_PAGE);
-Shop::Smarty()->display('contact/index.tpl');
+$smarty->display('contact/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

@@ -10,13 +10,11 @@ Shop::run();
 Shop::setPageType(PAGE_BEWERTUNG);
 $cParameter_arr = Shop::getParameters();
 $Einstellungen  = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_BEWERTUNG]);
-
-// Bewertung in die Datenbank speichern
 if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     speicherBewertung(
         $cParameter_arr['kArtikel'],
         \Session\Session::getCustomer()->getID(),
-        Shop::getLanguage(),
+        Shop::getLanguageID(),
         RequestHelper::verifyGPDataString('cTitel'),
         RequestHelper::verifyGPDataString('cText'),
         $cParameter_arr['nSterne']
@@ -25,13 +23,12 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     speicherHilfreich(
         $cParameter_arr['kArtikel'],
         \Session\Session::getCustomer()->getID(),
-        Shop::getLanguage(),
+        Shop::getLanguageID(),
         RequestHelper::verifyGPCDataInt('btgseite'),
         RequestHelper::verifyGPCDataInt('btgsterne')
     );
 } elseif (RequestHelper::verifyGPCDataInt('bfa') === 1) {
-    // Prüfe, ob Kunde eingeloggt
-    if (empty($_SESSION['Kunde']->kKunde)) {
+    if (\Session\Session::getCustomer()->getID() <= 0) {
         $helper = Shop::Container()->getLinkService();
         header(
             'Location: ' . $helper->getStaticRoute('jtl.php') .
@@ -42,10 +39,8 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
         );
         exit();
     }
-    // hole aktuellen Artikel
     $AktuellerArtikel = new Artikel();
     $AktuellerArtikel->fuelleArtikel($cParameter_arr['kArtikel'], Artikel::getDefaultOptions());
-    //falls kein Artikel vorhanden, zurück zum Shop
     if (!$AktuellerArtikel->kArtikel) {
         header('Location: ' . Shop::getURL() . '/', true, 303);
         exit;
@@ -53,14 +48,14 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     $AufgeklappteKategorien = new KategorieListe();
     if ($AktuellerArtikel->Bewertungen === null) {
         $AktuellerArtikel->holeBewertung(
-            Shop::getLanguage(),
+            Shop::getLanguageID(),
             $Einstellungen['bewertung']['bewertung_anzahlseite'],
             0,
             -1,
             $Einstellungen['bewertung']['bewertung_freischalten'],
             $cParameter_arr['nSortierung']
         );
-        $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguage());
+        $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguageID());
     }
 
     if ($Einstellungen['bewertung']['bewertung_artikel_gekauft'] === 'Y') {

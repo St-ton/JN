@@ -9,19 +9,17 @@
  */
 function gibAlleSuchspecialOverlays()
 {
-    return Shop::Container()->getDB()->query(
-        'SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache, 
-            tsuchspecialoverlaysprache.cBildPfad, tsuchspecialoverlaysprache.nAktiv,
-            tsuchspecialoverlaysprache.nPrio, tsuchspecialoverlaysprache.nMargin,
-            tsuchspecialoverlaysprache.nTransparenz,
-            tsuchspecialoverlaysprache.nGroesse, tsuchspecialoverlaysprache.nPosition
-            FROM tsuchspecialoverlay
-            LEFT JOIN tsuchspecialoverlaysprache 
-                ON tsuchspecialoverlaysprache.kSuchspecialOverlay = tsuchspecialoverlay.kSuchspecialOverlay
-                AND tsuchspecialoverlaysprache.kSprache = ' . (int)$_SESSION['kSprache'] . '
-            ORDER BY tsuchspecialoverlay.cSuchspecial',
+    $overlays = [];
+    $searchspecialOverlayTypes = Shop::Container()->getDB()->query('
+        SELECT kSuchspecialOverlay
+            FROM tsuchspecialoverlay',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
+    foreach ($searchspecialOverlayTypes as $searchspecialOverlayType) {
+        $overlays[] = Overlay::getInstance($searchspecialOverlayType->kSuchspecialOverlay, (int)$_SESSION['kSprache']);
+    }
+
+    return $overlays;
 }
 
 /**
@@ -30,18 +28,7 @@ function gibAlleSuchspecialOverlays()
  */
 function gibSuchspecialOverlay(int $kSuchspecialOverlay)
 {
-    return Shop::Container()->getDB()->query(
-        'SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache, tsuchspecialoverlaysprache.cBildPfad, 
-            tsuchspecialoverlaysprache.nAktiv, tsuchspecialoverlaysprache.nPrio, tsuchspecialoverlaysprache.nMargin, 
-            tsuchspecialoverlaysprache.nTransparenz, tsuchspecialoverlaysprache.nGroesse, 
-            tsuchspecialoverlaysprache.nPosition
-            FROM tsuchspecialoverlay
-            LEFT JOIN tsuchspecialoverlaysprache 
-                ON tsuchspecialoverlaysprache.kSuchspecialOverlay = tsuchspecialoverlay.kSuchspecialOverlay
-                AND tsuchspecialoverlaysprache.kSprache = ' . (int)$_SESSION['kSprache'] . '
-            WHERE tsuchspecialoverlay.kSuchspecialOverlay = ' . $kSuchspecialOverlay,
-        \DB\ReturnType::SINGLE_OBJECT
-    );
+    return Overlay::getInstance($kSuchspecialOverlay, (int)$_SESSION['kSprache']);
 }
 
 /**
@@ -52,50 +39,26 @@ function gibSuchspecialOverlay(int $kSuchspecialOverlay)
  */
 function speicherEinstellung(int $kSuchspecialOverlay, $cPost_arr, $cFiles_arr)
 {
-    $oSuchspecialoverlaySprache                      = new stdClass();
-    $oSuchspecialoverlaySprache->kSuchspecialOverlay = $kSuchspecialOverlay;
-    $oSuchspecialoverlaySprache->kSprache            = $_SESSION['kSprache'];
-    $oSuchspecialoverlaySprache->nAktiv              = (int)$cPost_arr['nAktiv'];
-    $oSuchspecialoverlaySprache->nTransparenz        = (int)$cPost_arr['nTransparenz'];
-    $oSuchspecialoverlaySprache->nGroesse            = (int)$cPost_arr['nGroesse'];
-    $oSuchspecialoverlaySprache->nPosition           = isset($cPost_arr['nPosition'])
-        ? (int)$cPost_arr['nPosition']
-        : 0;
+    $overlay = new Overlay($kSuchspecialOverlay, (int)$_SESSION['kSprache']);
 
-    if (!isset($cPost_arr['nPrio']) || (int)$cPost_arr['nPrio'] === -1) {
+    $overlay->setActive((int)$cPost_arr['nAktiv'])
+            ->setTransparence((int)$cPost_arr['nTransparenz'])
+            ->setSize((int)$cPost_arr['nGroesse'])
+            ->setPosition(isset($cPost_arr['nPosition']) ? (int)$cPost_arr['nPosition']: 0)
+            ->setPriority((int)$cPost_arr['nPrio'])
+            ->setImageName('overlay_' . $overlay->getLanguage() . '_' . $overlay->getType()
+                . mappeFileTyp($cFiles_arr['cSuchspecialOverlayBild']['type']));
+
+    if ($overlay->getPriority() === -1) {
         return false;
     }
 
-    $oSuchspecialoverlaySprache->nPrio     = (int)$cPost_arr['nPrio'];
-    $oSuchspecialoverlaySprache->cBildPfad = '';
-
-    if (strlen($cFiles_arr['cSuchspecialOverlayBild']['name']) > 0) {
-        $oSuchspecialoverlaySprache->cBildPfad = 'kSuchspecialOverlay_' . $_SESSION['kSprache'] . '_' .
-            $kSuchspecialOverlay . mappeFileTyp($cFiles_arr['cSuchspecialOverlayBild']['type']);
-    } else {
-        $oSuchspecialoverlaySpracheTMP = Shop::Container()->getDB()->select(
-            'tsuchspecialoverlaysprache',
-            'kSuchspecialOverlay',
-            $kSuchspecialOverlay,
-            'kSprache',
-            (int)$_SESSION['kSprache']
-        );
-        if (isset($oSuchspecialoverlaySpracheTMP->cBildPfad) && strlen($oSuchspecialoverlaySpracheTMP->cBildPfad)) {
-            $oSuchspecialoverlaySprache->cBildPfad = $oSuchspecialoverlaySpracheTMP->cBildPfad;
-        }
-    }
-
-    if ($oSuchspecialoverlaySprache->kSuchspecialOverlay > 0) {
+    if ($overlay->getType() > 0) {
         if (strlen($cFiles_arr['cSuchspecialOverlayBild']['name']) > 0) {
-            loescheBild($oSuchspecialoverlaySprache);
-            speicherBild($cFiles_arr, $oSuchspecialoverlaySprache);
+            loescheBild($overlay);
+            speicherBild($cFiles_arr, $overlay);
         }
-        Shop::Container()->getDB()->delete(
-            'tsuchspecialoverlaysprache',
-            ['kSuchspecialOverlay', 'kSprache'],
-            [(int)$kSuchspecialOverlay, (int)$_SESSION['kSprache']]
-        );
-        Shop::Container()->getDB()->insert('tsuchspecialoverlaysprache', $oSuchspecialoverlaySprache);
+        $overlay->save();
 
         return true;
     }
@@ -332,11 +295,11 @@ function erstelleFixedOverlay($cBild, $nGroesse, $nTransparenz, $cFormat, $cPfad
 
 
 /**
- * @param array  $cFiles_arr
- * @param object $oSuchspecialoverlaySprache
+ * @param $cFiles_arr
+ * @param Overlay $overlay
  * @return bool
  */
-function speicherBild($cFiles_arr, $oSuchspecialoverlaySprache)
+function speicherBild($cFiles_arr, Overlay $overlay)
 {
     if ($cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/jpeg'
         || $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/pjpeg'
@@ -348,38 +311,27 @@ function speicherBild($cFiles_arr, $oSuchspecialoverlaySprache)
     ) {
         if (empty($cFiles_arr['cSuchspecialOverlayBild']['error'])) {
             $cFormat   = mappeFileTyp($cFiles_arr['cSuchspecialOverlayBild']['type']);
-            $cName     = 'kSuchspecialOverlay_' . $oSuchspecialoverlaySprache->kSprache . '_' .
-                $oSuchspecialoverlaySprache->kSuchspecialOverlay . $cFormat;
             $cOriginal = $cFiles_arr['cSuchspecialOverlayBild']['tmp_name'];
 
-            erstelleFixedOverlay(
-                $cOriginal,
-                $oSuchspecialoverlaySprache->nGroesse * 4,
-                $oSuchspecialoverlaySprache->nTransparenz,
-                $cFormat,
-                PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_RETINA . $cName
-            );
-            erstelleFixedOverlay(
-                $cOriginal,
-                $oSuchspecialoverlaySprache->nGroesse * 3,
-                $oSuchspecialoverlaySprache->nTransparenz,
-                $cFormat,
-                PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_GROSS . $cName
-            );
-            erstelleFixedOverlay(
-                $cOriginal,
-                $oSuchspecialoverlaySprache->nGroesse * 2,
-                $oSuchspecialoverlaySprache->nTransparenz,
-                $cFormat,
-                PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_NORMAL . $cName
-            );
-            erstelleFixedOverlay(
-                $cOriginal,
-                $oSuchspecialoverlaySprache->nGroesse,
-                $oSuchspecialoverlaySprache->nTransparenz,
-                $cFormat,
-                PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_KLEIN . $cName
-            );
+            $sizesToCreate = [
+                ['size' => 'klein',  'factor' => 1],
+                ['size' => 'normal', 'factor' => 2],
+                ['size' => 'gross',  'factor' => 3],
+                ['size' => 'retina', 'factor' => 4],
+            ];
+
+            foreach ($sizesToCreate as $sizeToCreate) {
+                if (!is_dir(PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']))) {
+                    mkdir(PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']), 0755, true);
+                }
+                erstelleFixedOverlay(
+                    $cOriginal,
+                    $overlay->getSize() * $sizeToCreate['factor'],
+                    $overlay->getTransparance(),
+                    $cFormat,
+                    PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']) . $overlay->getImageName()
+                );
+            }
 
             return true;
         }
@@ -389,26 +341,20 @@ function speicherBild($cFiles_arr, $oSuchspecialoverlaySprache)
 }
 
 /**
- * @param object $oSuchspecialoverlaySprache
+ * @param Overlay $overlay
  */
-function loescheBild($oSuchspecialoverlaySprache)
+function loescheBild(Overlay $overlay)
 {
-    if (file_exists(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY . 'kSuchspecialOverlay_' .
-        $oSuchspecialoverlaySprache->kSprache . '_' . $oSuchspecialoverlaySprache->kSuchspecialOverlay . '.jpg')) {
-        @unlink(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY . 'kSuchspecialOverlay_' .
-            $oSuchspecialoverlaySprache->kSprache . '_' . $oSuchspecialoverlaySprache->kSuchspecialOverlay . '.jpg');
-    } elseif (file_exists(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY . 'kSuchspecialOverlay_' .
-        $oSuchspecialoverlaySprache->kSprache . '_' . $oSuchspecialoverlaySprache->kSuchspecialOverlay . '.png')) {
-        @unlink(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY . 'kSuchspecialOverlay_' .
-            $oSuchspecialoverlaySprache->kSprache . '_' . $oSuchspecialoverlaySprache->kSuchspecialOverlay . '.png');
-    } elseif (file_exists(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY . 'kSuchspecialOverlay_' .
-        $oSuchspecialoverlaySprache->kSprache . '_' . $oSuchspecialoverlaySprache->kSuchspecialOverlay . '.gif')) {
-        @unlink(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY . 'kSuchspecialOverlay_' .
-            $oSuchspecialoverlaySprache->kSprache . '_' . $oSuchspecialoverlaySprache->kSuchspecialOverlay . '.gif');
-    } elseif (file_exists(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY . 'kSuchspecialOverlay_' .
-        $oSuchspecialoverlaySprache->kSprache . '_' . $oSuchspecialoverlaySprache->kSuchspecialOverlay . '.bmp')) {
-        @unlink(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY . 'kSuchspecialOverlay_' .
-            $oSuchspecialoverlaySprache->kSprache . '_' . $oSuchspecialoverlaySprache->kSuchspecialOverlay . '.bmp');
+    $path = PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY . 'kSuchspecialOverlay_' .
+        $overlay->getLanguage() . '_' . $overlay->getType();
+    if (file_exists($path . '.jpg')) {
+        @unlink($path . '.jpg');
+    } elseif (file_exists($path . '.png')) {
+        @unlink($path . '.png');
+    } elseif (file_exists($path . '.gif')) {
+        @unlink($path . '.gif');
+    } elseif (file_exists($path . '.bmp')) {
+        @unlink($path . '.bmp');
     }
 }
 

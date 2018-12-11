@@ -10,10 +10,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 $kSektion = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
 $bSuche   = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
 
-L10n\GetText::getInstance()->loadAdminLocale('configs')
-                           ->loadAdminLocale('confgroups')
-                           ->loadAdminLocale('confvalues')
-                           ->loadAdminLocale('confsections');
+loadConfigLocalizations(true, true);
 
 if ($bSuche) {
     $oAccount->permission('SETTINGS_SEARCH_VIEW', true, true);

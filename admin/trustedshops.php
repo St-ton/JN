@@ -6,10 +6,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 
-L10n\GetText::getInstance()->loadAdminLocale('configs')
-                            ->loadAdminLocale('confgroups')
-                            ->loadAdminLocale('confvalues')
-                            ->loadAdminLocale('confsections');
+loadConfigLocalizations(true, true);
 
 define('PARTNER_PACKAGE', 'JTL');
 define('SHOP_SOFTWARE', 'JTL');

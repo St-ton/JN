@@ -12,10 +12,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'zahlungsarten_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
-L10n\GetText::getInstance()->loadAdminLocale('configs')
-                           ->loadAdminLocale('confgroups')
-                           ->loadAdminLocale('confvalues')
-                           ->loadAdminLocale('confsections');
+loadConfigLocalizations(true, true);
 
 /** @global Smarty\JTLSmarty $smarty */
 $db               = Shop::Container()->getDB();

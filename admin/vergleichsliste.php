@@ -6,10 +6,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 
-L10n\GetText::getInstance()->loadAdminLocale('configs')
-    ->loadAdminLocale('confgroups')
-    ->loadAdminLocale('confvalues')
-    ->loadAdminLocale('confsections');
+loadConfigLocalizations(true, true);
 
 $oAccount->permission('MODULE_COMPARELIST_VIEW', true, true);
 /** @global Smarty\JTLSmarty $smarty */

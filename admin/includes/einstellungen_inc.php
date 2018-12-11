@@ -322,6 +322,24 @@ function sortiereEinstellungen($oEinstellung_arr)
 }
 
 /**
+ * @param bool $withGroups
+ * @param bool $withSections
+ */
+function loadConfigLocalizations($withGroups = false, $withSections = false)
+{
+    L10n\GetText::getInstance()->loadAdminLocale('configs/configs')
+                               ->loadAdminLocale('configs/values');
+
+    if ($withGroups) {
+        L10n\GetText::getInstance()->loadAdminLocale('configs/groups');
+    }
+
+    if ($withSections) {
+        L10n\GetText::getInstance()->loadAdminLocale('configs/sections');
+    }
+}
+
+/**
  * @param object $config
  */
 function localizeConfig($config)

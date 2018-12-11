@@ -17,8 +17,7 @@ $action       = (isset($_POST['a']) && FormHelper::validateToken()) ? $_POST['a'
 $cache        = null;
 $opcacheStats = null;
 
-L10n\GetText::getInstance()->loadAdminLocale('configs')
-                           ->loadAdminLocale('confvalues');
+loadConfigLocalizations();
 
 if (0 < strlen(RequestHelper::verifyGPDataString('tab'))) {
     $smarty->assign('tab', RequestHelper::verifyGPDataString('tab'));

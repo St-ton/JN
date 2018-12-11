@@ -7,8 +7,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 
-L10n\GetText::getInstance()->loadAdminLocale('configs')
-                           ->loadAdminLocale('confvalues');
+loadConfigLocalizations(true, true);
 
 $oAccount->permission('EXPORT_FORMATS_VIEW', true, true);
 /** @global Smarty\JTLSmarty $smarty */

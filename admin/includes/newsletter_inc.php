@@ -3,6 +3,8 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 /**
@@ -11,13 +13,13 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
  */
 function bereiteNewsletterVor($Einstellungen)
 {
-    //Smarty Objekt bauen
+    $db         = Shop::Container()->getDB();
     $mailSmarty = new \Smarty\JTLSmarty(true, \Smarty\ContextType::NEWSLETTER);
     $mailSmarty->setCaching(0)
                ->setDebugging(0)
                ->setCompileDir(PFAD_ROOT . PFAD_COMPILEDIR)
-               ->registerResource('db', new SmartyResourceNiceDB(\Smarty\ContextType::NEWSLETTER))
-               ->assign('Firma', Shop::Container()->getDB()->query(
+               ->registerResource('db', new \Smarty\SmartyResourceNiceDB($db, \Smarty\ContextType::NEWSLETTER))
+               ->assign('Firma', $db->query(
                    'SELECT *  FROM tfirma',
                    \DB\ReturnType::SINGLE_OBJECT
                ))

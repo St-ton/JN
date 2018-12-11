@@ -4,8 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Smarty;
+
+use DB\DbInterface;
+use DB\ReturnType;
+use Smarty_Resource_Custom;
+
 /**
  * Class SmartyResourceNiceDB
+ * @package Smarty
  */
 class SmartyResourceNiceDB extends Smarty_Resource_Custom
 {
@@ -15,11 +22,18 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
     private $type;
 
     /**
-     * SmartyResourceNiceDB constructor.
-     * @param string $type
+     * @var DbInterface
      */
-    public function __construct(string $type = 'export')
+    private $db;
+
+    /**
+     * SmartyResourceNiceDB constructor.
+     * @param DbInterface $db
+     * @param string      $type
+     */
+    public function __construct(DbInterface $db, string $type = 'export')
     {
+        $this->db   = $db;
         $this->type = $type;
     }
 
@@ -32,18 +46,16 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
     public function fetch($name, &$source, &$mtime)
     {
         if ($this->type === 'export') {
-            $exportformat = Shop::Container()->getDB()->select('texportformat', 'kExportformat', (int)$name);
+            $exportformat = $this->db->select('texportformat', 'kExportformat', (int)$name);
             if (empty($exportformat->kExportformat) || $exportformat->kExportformat <= 0) {
                 return false;
             }
             $source = $exportformat->cContent;
         } elseif ($this->type === 'mail') {
-            $pcs = explode('_', $name);
-            if (isset($pcs[0], $pcs[1], $pcs[2], $pcs[3])
-                && $pcs[3] === 'anbieterkennzeichnung'
-            ) {
+            $pcs = \explode('_', $name);
+            if (isset($pcs[0], $pcs[1], $pcs[2], $pcs[3]) && $pcs[3] === 'anbieterkennzeichnung') {
                 // Anbieterkennzeichnungsvorlage holen
-                $vl = Shop::Container()->getDB()->queryPrepared(
+                $vl = $this->db->queryPrepared(
                     "SELECT tevs.cContentHtml, tevs.cContentText
                         FROM temailvorlageoriginal tevo
                         JOIN temailvorlagesprache tevs
@@ -51,7 +63,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
                             AND tevs.kSprache = :langID
                         WHERE tevo.cModulId = 'core_jtl_anbieterkennzeichnung'",
                     ['langID' => (int)$pcs[4]],
-                    \DB\ReturnType::SINGLE_OBJECT
+                    ReturnType::SINGLE_OBJECT
                 );
             } else {
                 // Plugin Emailvorlage?
@@ -59,7 +71,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
                 if (isset($pcs[3]) && (int)$pcs[3] > 0) {
                     $cTableSprache = 'tpluginemailvorlagesprache';
                 }
-                $vl = Shop::Container()->getDB()->select(
+                $vl = $this->db->select(
                     $cTableSprache,
                     ['kEmailvorlage', 'kSprache'],
                     [(int)$pcs[1], (int)$pcs[2]]
@@ -72,24 +84,24 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
                     $source = $vl->cContentText;
                 } else {
                     $source = '';
-                    Shop::Container()->getLogService()->notice('Ungueltiger Emailvorlagen-Typ: ' . $pcs[0]);
+                    \Shop::Container()->getLogService()->notice('Ungueltiger Emailvorlagen-Typ: ' . $pcs[0]);
                 }
             } else {
                 $source = '';
-                Shop::Container()->getLogService()->notice(
+                \Shop::Container()->getLogService()->notice(
                     'Emailvorlage mit der ID ' . (int)$pcs[1] .
                     ' in der Sprache ' . (int)$pcs[2] . ' wurde nicht gefunden'
                 );
             }
         } elseif ($this->type === 'newsletter') {
-            $cTeile_arr = explode('_', $name);
+            $cTeile_arr = \explode('_', $name);
             $cTabelle   = 'tnewslettervorlage';
             $cFeld      = 'kNewsletterVorlage';
             if ($cTeile_arr[0] === 'NL') {
                 $cTabelle = 'tnewsletter';
                 $cFeld    = 'kNewsletter';
             }
-            $oNewsletter = Shop::Container()->getDB()->select($cTabelle, $cFeld, $cTeile_arr[1]);
+            $oNewsletter = $this->db->select($cTabelle, $cFeld, $cTeile_arr[1]);
 
             if ($cTeile_arr[2] === 'html') {
                 $source = $oNewsletter->cInhaltHTML;
@@ -98,7 +110,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
             }
         } else {
             $source = '';
-            Shop::Container()->getLogService()->notice('Template-Typ ' . $this->type . ' wurde nicht gefunden');
+            \Shop::Container()->getLogService()->notice('Template-Typ ' . $this->type . ' wurde nicht gefunden');
         }
     }
 
@@ -108,6 +120,6 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
      */
     protected function fetchTimestamp($name): int
     {
-        return time();
+        return \time();
     }
 }

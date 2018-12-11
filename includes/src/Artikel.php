@@ -2156,7 +2156,7 @@ class Artikel
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
             } else {
-                $variations = Shop::DB()->query(
+                $variations = Shop::Container()->getDB()->query(
                     $baseQuery .
                     " AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                         GROUP BY teigenschaftkombiwert.kEigenschaftWert

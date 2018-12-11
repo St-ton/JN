@@ -1432,7 +1432,7 @@ class VersandartHelper
         $colName = Sprache::getInstance()->gibISO() === 'ger' ? 'cDeutsch' : 'cEnglisch';
 
         if (!$force && ($conf['kunden']['kundenregistrierung_nur_lieferlaender'] === 'Y' || $ignoreConf)) {
-            $countries = Shop::DB()->query(
+            $countries = Shop::Container()->getDB()->query(
                 "SELECT DISTINCT tland.cISO, $colName AS cName
                     FROM tland
                     INNER JOIN tversandart ON FIND_IN_SET(tland.cISO, REPLACE(tversandart.cLaender, ' ', ','))
@@ -1443,7 +1443,7 @@ class VersandartHelper
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         } else {
-            $countries = Shop::DB()->query(
+            $countries = Shop::Container()->getDB()->query(
                 "SELECT cISO, $colName AS cName
                     FROM tland
                     " . (count($filterISO) > 0 ? "WHERE tland.cISO IN ('" . implode("','", $filterISO) . "')" : '') . "

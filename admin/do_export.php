@@ -11,12 +11,12 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 if (!isset($_GET['e']) || !((int)$_GET['e'] > 0) || !FormHelper::validateToken()) {
     die('0');
 }
-
-$queue = Shop::Container()->getDB()->select('texportqueue', 'kExportqueue', (int)$_GET['e']);
+$db    = Shop::Container()->getDB();
+$queue = $db->select('texportqueue', 'kExportqueue', (int)$_GET['e']);
 if (!isset($queue->kExportformat) || !$queue->kExportformat || !$queue->nLimit_m) {
     die('1');
 }
-$ef = new Exportformat($queue->kExportformat);
+$ef = new Exportformat($queue->kExportformat, $db);
 if (!$ef->isOK()) {
     die('2');
 }

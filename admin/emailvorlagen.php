@@ -3,6 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('CONTENT_EMAIL_TEMPLATE_VIEW', true, true);
@@ -763,9 +764,8 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                 ]
             );
             $db->insert($cTableSprache, $localized);
-            //Smarty Objekt bauen
             $mailSmarty = new Smarty\JTLSmarty(true, \Smarty\ContextType::MAIL);
-            $mailSmarty->registerResource('db', new SmartyResourceNiceDB(\Smarty\ContextType::MAIL))
+            $mailSmarty->registerResource('db', new \Smarty\SmartyResourceNiceDB($db, \Smarty\ContextType::MAIL))
                        ->registerPlugin('function', 'includeMailTemplate', 'includeMailTemplate')
                        ->setCaching(Smarty::CACHING_OFF)
                        ->setDebugging(Smarty::DEBUG_OFF)

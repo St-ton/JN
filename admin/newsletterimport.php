@@ -15,8 +15,8 @@ $format  = ['cAnrede', 'cVorname', 'cNachname', 'cEmail'];
 $hinweis = '';
 $fehler  = '';
 
-if ((int)$_POST['newsletterimport'] === 1
-    && isset($_POST['newsletterimport'], $_FILES['csv']['tmp_name'])
+if (isset($_POST['newsletterimport'], $_FILES['csv']['tmp_name'])
+    && (int)$_POST['newsletterimport'] === 1
     && FormHelper::validateToken()
     && strlen($_FILES['csv']['tmp_name']) > 0
 ) {

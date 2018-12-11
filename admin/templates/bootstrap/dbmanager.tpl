@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="dbcheck"}
-{include file='tpl_inc/seite_header.tpl' cTitel="Datenbank-Manager" cBeschreibung="<kbd>Tabellen und Views ({$tables|@count})</kbd>" cDokuURL=#dbcheckURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel="Datenbank-Manager" cBeschreibung="<kbd>Tabellen und Views ({$tables|@count})</kbd>" cDokuURL=__("dbcheckURL")}
 
 {function table_scope_header table=null}
     <h2>Tabelle: {$table}

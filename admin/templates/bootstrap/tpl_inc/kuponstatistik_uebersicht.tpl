@@ -1,11 +1,11 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#couponStatistic# cDokuURL=#couponstatisticsURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__("couponStatistic") cDokuURL=__("couponstatisticsURL")}
 <div id="content">
     <div class="form-group">
         <form method="post" action="kuponstatistik.php" class="form-inline">
             {$jtl_token}
             <div class="form-group">
                 <input type="hidden" name="formFilter" value="1" class="form-control"/>
-                <label for="SelectFromDay">{#fromUntilDate#}:</label>
+                <label for="SelectFromDay">{__("fromUntilDate")}:</label>
                 <input type="text" size="21" name="daterange" class="form-control"/>
                 <script type="text/javascript">
                     {literal}
@@ -36,30 +36,30 @@
                     {/foreach}
                 </select>
             </div>
-            <button name="btnSubmit" type="submit" value="Filtern" class="btn btn-primary">{#filtering#}</button>
+            <button name="btnSubmit" type="submit" value="Filtern" class="btn btn-primary">{__("filtering")}</button>
         </form>
     </div>
 
     <div class="table-responsive">
         <table class="table">
             <tr>
-                <td>{#countUsedCoupons#}:</td>
+                <td>{__("countUsedCoupons")}:</td>
                 <td><strong>{$overview_arr.nCountUsedCouponsOrder} ({$overview_arr.nPercentCountUsedCoupons}%)</strong></td>
             </tr>
             <tr>
-                <td>{#countOrders#}:</td>
+                <td>{__("countOrders")}:</td>
                 <td><strong>{$overview_arr.nCountOrder}</strong></td>
             </tr>
             <tr>
-                <td>{#countCustomers#}:</td>
+                <td>{__("countCustomers")}:</td>
                 <td><strong>{$overview_arr.nCountCustomers}</strong></td>
             </tr>
             <tr>
-                <td>{#couponAmountAll#}:</td>
+                <td>{__("couponAmountAll")}:</td>
                 <td><strong>{$overview_arr.nCouponAmountAll}</strong></td>
             </tr>
             <tr>
-                <td>{#shoppingCartAmountAll#}:</td>
+                <td>{__("shoppingCartAmountAll")}:</td>
                 <td><strong>{$overview_arr.nShoppingCartAmountAll}</strong></td>
             </tr>
         </table>
@@ -69,12 +69,12 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>{#couponName#}</th>
-                        <th>{#customerName#}</th>
-                        <th>{#orderNumber#}</th>
-                        <th>{#couponValue#}</th>
-                        <th>{#orderValue#}</th>
-                        <th>{#date#}</th>
+                        <th>{__("couponName")}</th>
+                        <th>{__("customerName")}</th>
+                        <th>{__("orderNumber")}</th>
+                        <th>{__("couponValue")}</th>
+                        <th>{__("orderValue")}</th>
+                        <th>{__("date")}</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -99,17 +99,17 @@
                                     <div class="modal-dialog modal-lg" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <strong>{#order#}: </strong><span class="value">{$usedCouponOrder.cBestellNr} ({$usedCouponOrder.cUserName})</span>
+                                                <strong>{__("order")}: </strong><span class="value">{$usedCouponOrder.cBestellNr} ({$usedCouponOrder.cUserName})</span>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
                                             </div>
                                             <div class="modal-body">
                                                 <table class="table table-striped">
                                                     <thead>
                                                     <tr>
-                                                        <th>{#orderPosition#}</th>
-                                                        <th>{#amount#}</th>
-                                                        <th>{#unitPrice#}</th>
-                                                        <th>{#totalPrice#}</th>
+                                                        <th>{__("orderPosition")}</th>
+                                                        <th>{__("amount")}</th>
+                                                        <th>{__("unitPrice")}</th>
+                                                        <th>{__("totalPrice")}</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
@@ -124,7 +124,7 @@
                                                     </tbody>
                                                     <tfoot>
                                                     <tr>
-                                                        <td>{#totalAmount#}:</td>
+                                                        <td>{__("totalAmount")}:</td>
                                                         <td></td>
                                                         <td></td>
                                                         <td>{$usedCouponOrder.nShoppingCartAmount}</td>
@@ -143,6 +143,6 @@
             </table>
         </div>
     {else}
-        <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+        <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
     {/if}
 </div>

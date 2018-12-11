@@ -1,6 +1,8 @@
-{assign var="template" value=#template#}
-{assign var="modify" value=#modify#}
-{include file='tpl_inc/seite_header.tpl' cTitel=$template|cat: " "|cat:$Emailvorlage->cName|cat: " "|cat:$modify cBeschreibung=#emailTemplateModifyHint#}
+{assign var="template" value=__("template")}
+{assign var="modify" value=__("modify")}
+{include file='tpl_inc/seite_header.tpl'
+    cTitel=$template|cat: " "|cat:$Emailvorlage->cName|cat: " "|cat:$modify
+    cBeschreibung=__("emailTemplateModifyHint")}
 <div id="content" class="container-fluid">
     <form name="vorlagen_aendern" method="post" action="emailvorlagen.php" enctype="multipart/form-data">
         {$jtl_token}
@@ -18,7 +20,7 @@
                     <div class="panel-body">
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cEmailActive">{#emailActive#}</label>
+                                <label for="cEmailActive">{__("emailActive")}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select name="cEmailActive" id="cEmailActive" class="form-control">
@@ -33,26 +35,26 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cEmailOut">{#emailOut#}</label>
+                                <label for="cEmailOut">{__("emailOut")}</label>
                             </span>
                             <input class="form-control" id="cEmailOut" name="cEmailOut" type="text" value="{if isset($oEmailEinstellungAssoc_arr.cEmailOut)}{$oEmailEinstellungAssoc_arr.cEmailOut|escape}{/if}" />
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cEmailSenderName">{#emailSenderName#}</label>
+                                <label for="cEmailSenderName">{__("emailSenderName")}</label>
                             </span>
                             <input class="form-control" id="cEmailSenderName" name="cEmailSenderName" type="text" value="{if isset($oEmailEinstellungAssoc_arr.cEmailSenderName)}{$oEmailEinstellungAssoc_arr.cEmailSenderName|escape}{/if}" />
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cEmailCopyTo">{#emailCopyTo#} </label>
+                                <label for="cEmailCopyTo">{__("emailCopyTo")} </label>
                             </span>
                             <input class="form-control" id="cEmailCopyTo" name="cEmailCopyTo" type="text" value="{if isset($oEmailEinstellungAssoc_arr.cEmailCopyTo)}{$oEmailEinstellungAssoc_arr.cEmailCopyTo|escape}{/if}" />
                             <span class="input-group-addon">(mehrere durch Semikolon getrennt) </span>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cMailTyp">{#mailType#}</label>
+                                <label for="cMailTyp">{__("mailType")}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select name="cMailTyp" id="cMailTyp" class="form-control">
@@ -66,56 +68,56 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="nAKZ">{#emailAddAKZ#}</label>
+                                <label for="nAKZ">{__("emailAddAKZ")}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select id="nAKZ" name="nAKZ" class="form-control">
-                                    <option value="0"{if $Emailvorlage->nAKZ == '0'} selected{/if}>{#no#}</option>
-                                    <option value="1"{if $Emailvorlage->nAKZ == '1'} selected{/if}>{#yes#}</option>
+                                    <option value="0"{if $Emailvorlage->nAKZ == '0'} selected{/if}>{__("no")}</option>
+                                    <option value="1"{if $Emailvorlage->nAKZ == '1'} selected{/if}>{__("yes")}</option>
                                 </select>
                             </span>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="nAFK">{#emailAddAGB#}</label>
+                                <label for="nAFK">{__("emailAddAGB")}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select id="nAFK" name="nAGB" class="form-control">
-                                    <option value="0"{if $Emailvorlage->nAGB == '0'} selected{/if}>{#no#}</option>
-                                    <option value="1"{if $Emailvorlage->nAGB == '1'} selected{/if}>{#yes#}</option>
+                                    <option value="0"{if $Emailvorlage->nAGB == '0'} selected{/if}>{__("no")}</option>
+                                    <option value="1"{if $Emailvorlage->nAGB == '1'} selected{/if}>{__("yes")}</option>
                                 </select>
                             </span>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="nWRB">{#emailAddWRB#}</label>
+                                <label for="nWRB">{__("emailAddWRB")}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select id="nWRB" name="nWRB" class="form-control">
-                                    <option value="0"{if $Emailvorlage->nWRB == "0"} selected{/if}>{#no#}</option>
-                                    <option value="1"{if $Emailvorlage->nWRB == "1"} selected{/if}>{#yes#}</option>
+                                    <option value="0"{if $Emailvorlage->nWRB == "0"} selected{/if}>{__("no")}</option>
+                                    <option value="1"{if $Emailvorlage->nWRB == "1"} selected{/if}>{__("yes")}</option>
                                 </select>
                             </span>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="nWRBForm">{#emailAddWRBForm#}</label>
+                                <label for="nWRBForm">{__("emailAddWRBForm")}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select id="nWRBForm" name="nWRBForm" class="form-control">
-                                    <option value="0"{if $Emailvorlage->nWRBForm == "0"} selected{/if}>{#no#}</option>
-                                    <option value="1"{if $Emailvorlage->nWRBForm == "1"} selected{/if}>{#yes#}</option>
+                                    <option value="0"{if $Emailvorlage->nWRBForm == "0"} selected{/if}>{__("no")}</option>
+                                    <option value="1"{if $Emailvorlage->nWRBForm == "1"} selected{/if}>{__("yes")}</option>
                                 </select>
                             </span>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="nDSE">{#emailAddDSE#}</label>
+                                <label for="nDSE">{__("emailAddDSE")}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select id="nDSE" name="nDSE" class="form-control">
-                                    <option value="0"{if $Emailvorlage->nDSE == "0"} selected{/if}>{#no#}</option>
-                                    <option value="1"{if $Emailvorlage->nDSE == "1"} selected{/if}>{#yes#}</option>
+                                    <option value="0"{if $Emailvorlage->nDSE == "0"} selected{/if}>{__("no")}</option>
+                                    <option value="1"{if $Emailvorlage->nDSE == "1"} selected{/if}>{__("yes")}</option>
                                 </select>
                             </span>
                         </div>
@@ -163,7 +165,7 @@
                     <div class="panel-body">
                         {if $Emailvorlage->cModulId !== 'core_jtl_anbieterkennzeichnung'}
                             <div class="item well">
-                                <div class="name"><label for="cBetreff_{$kSprache}">{#subject#}</label></div>
+                                <div class="name"><label for="cBetreff_{$kSprache}">{__("subject")}</label></div>
                                 <div class="for">
                                     <input class="form-control" style="width:400px" type="text" name="cBetreff_{$kSprache}" id="cBetreff_{$kSprache}"
                                            value="{if isset($Emailvorlagesprache[$kSprache]->cBetreff)}{$Emailvorlagesprache[$kSprache]->cBetreff|escape}{/if}" tabindex="1" />
@@ -171,14 +173,14 @@
                             </div>
                         {/if}
                         <div class="item well">
-                            <div class="name"><label for="cContentHtml_{$kSprache}">{#mailHtml#}</label></div>
+                            <div class="name"><label for="cContentHtml_{$kSprache}">{__("mailHtml")}</label></div>
                             <div class="for">
                                 <textarea class="codemirror smarty" id="cContentHtml_{$kSprache}" name="cContentHtml_{$kSprache}"
                                           style="width:99%" rows="20">{if isset($Emailvorlagesprache[$kSprache]->cContentHtml)}{$Emailvorlagesprache[$kSprache]->cContentHtml|escape:"html"}{/if}</textarea>
                             </div>
                         </div>
                         <div class="item well">
-                            <div class="name"><label for="cContentText_{$kSprache}">{#mailText#}</label></div>
+                            <div class="name"><label for="cContentText_{$kSprache}">{__("mailText")}</label></div>
                             <div class="for">
                                 <textarea class="codemirror smarty" id="cContentText_{$kSprache}" name="cContentText_{$kSprache}"
                                           style="width:99%" rows="20">{if isset($Emailvorlagesprache[$kSprache]->cContentText)}{$Emailvorlagesprache[$kSprache]->cContentText|escape:"html"}{/if}</textarea>
@@ -187,8 +189,8 @@
                         {if isset($Emailvorlagesprache[$kSprache]->cPDFS_arr) && $Emailvorlagesprache[$kSprache]->cPDFS_arr|@count > 0}
                             <div class="item">
                                 <div class="name">
-                                    {#currentFiles#}
-                                    (<a href="emailvorlagen.php?kEmailvorlage={$Emailvorlage->kEmailvorlage}&kS={$kSprache}&a=pdfloeschen&token={$smarty.session.jtl_token}{if isset($kPlugin) && $kPlugin > 0}&kPlugin={$kPlugin}{/if}">{#deleteAll#}</a>)
+                                    {__("currentFiles")}
+                                    (<a href="emailvorlagen.php?kEmailvorlage={$Emailvorlage->kEmailvorlage}&kS={$kSprache}&a=pdfloeschen&token={$smarty.session.jtl_token}{if isset($kPlugin) && $kPlugin > 0}&kPlugin={$kPlugin}{/if}">{__("deleteAll")}</a>)
                                 </div>
                                 <div class="for">
                                     {foreach name=pdfs from=$Emailvorlagesprache[$kSprache]->cPDFS_arr item=cPDF}
@@ -204,11 +206,11 @@
                             {section name=anhaenge loop=4 start=1 step=1}
                                 <div class="item well">
                                     <div class="name">
-                                        <label for="pdf_{$smarty.section.anhaenge.index}_{$kSprache}">{#pdf#} {$smarty.section.anhaenge.index}</label>
+                                        <label for="pdf_{$smarty.section.anhaenge.index}_{$kSprache}">{__("pdf")} {$smarty.section.anhaenge.index}</label>
                                     </div>
                                     <div class="for">
                                         {math equation="x-y" x=$smarty.section.anhaenge.index y=1 assign=loopdekr}
-                                        <label for="dateiname_{$smarty.section.anhaenge.index}_{$kSprache}">{#filename#}</label>
+                                        <label for="dateiname_{$smarty.section.anhaenge.index}_{$kSprache}">{__("filename")}</label>
                                         <input id="dateiname_{$smarty.section.anhaenge.index}_{$kSprache}"
                                            name="dateiname_{$smarty.section.anhaenge.index}_{$kSprache}"
                                            type="text"
@@ -223,9 +225,9 @@
                     </div>
             {/foreach}
             <div class="btn-group">
-                <button type="submit" name="continue" value="0" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
-                <button type="submit" name="continue" value="1" class="btn btn-default">{#saveAndContinue#}</button>
-                <a href="emailvorlagen.php" value="{#cancel#}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {#cancel#}</a>
+                <button type="submit" name="continue" value="0" class="btn btn-primary"><i class="fa fa-save"></i> {__("save")}</button>
+                <button type="submit" name="continue" value="1" class="btn btn-default">{__("saveAndContinue")}</button>
+                <a href="emailvorlagen.php" value="{__("cancel")}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {__("cancel")}</a>
             </div>
         </div>
     </form>

@@ -1,16 +1,16 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='shoptemplate'}
-{assign var="cBeschreibung" value=#shoptemplatesDesc#}
+{assign var="cBeschreibung" value=__("shoptemplatesDesc")}
 {if isset($oEinstellungenXML) && $oEinstellungenXML}
     {assign var="cTitel" value="Einstellungen: "|cat:$oTemplate->cName}
     {if !empty($oTemplate->cDokuURL)}
         {assign var="cDokuURL" value=$oTemplate->cDokuURL}
     {else}
-        {assign var="cDokuURL" value=#shoptemplateURL#}
+        {assign var="cDokuURL" value=__("shoptemplateURL")}
     {/if}
 {else}
-    {assign var="cTitel" value=#shoptemplates#}
-    {assign var="cDokuURL" value=#shoptemplateURL#}
+    {assign var="cTitel" value=__("shoptemplates")}
+    {assign var="cDokuURL" value=__("shoptemplateURL")}
 {/if}
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=$cBeschreibung cDokuURL=$cDokuURL}
 {*workaround: no async uploads (the fileinput option uploadAsync does not work correctly... *}
@@ -29,7 +29,7 @@
                     </div>
                     <div class="panel-body">
                         {if $oTemplate->eTyp === 'mobil' && $oTemplate->bResponsive}
-                            <div class="alert alert-warning">{#warning_responsive_mobile#}</div>
+                            <div class="alert alert-warning">{__("warning_responsive_mobile")}</div>
                         {/if}
                         <div class="item input-group">
                             <span class="input-group-addon">

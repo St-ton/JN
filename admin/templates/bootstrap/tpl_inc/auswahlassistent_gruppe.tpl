@@ -1,10 +1,10 @@
 {if (isset($oGruppe->kAuswahlAssistentGruppe) && $oGruppe->kAuswahlAssistentGruppe > 0) || (isset($kAuswahlAssistentGruppe) && $kAuswahlAssistentGruppe > 0)}
-    {assign var="cTitel" value=#auswahlassistent#|cat:' - '|cat:#aaGroupEdit#}
+    {assign var="cTitel" value=__("auswahlassistent")|cat:' - '|cat:__("aaGroupEdit")}
 {else}
-    {assign var="cTitel" value=#auswahlassistent#|cat:' - '|cat:#aaGroup#}
+    {assign var="cTitel" value=__("auswahlassistent")|cat:' - '|cat:__("aaGroup")}
 {/if}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=#auswahlassistentDesc# cDokuURL=#auswahlassistentURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__("auswahlassistentDesc") cDokuURL=__("auswahlassistentURL")}
 
 <div id="content">
     {if !isset($noModule) || !$noModule}
@@ -21,7 +21,7 @@
                 <div class="panel-body">
                     <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="cName">{#aaName#}{if isset($cPlausi_arr.cName)} <span class="fillout">{#FillOut#}</span>{/if}</label>
+                        <label for="cName">{__("aaName")}{if isset($cPlausi_arr.cName)} <span class="fillout">{__("FillOut")}</span>{/if}</label>
                     </span>
                         <input name="cName" id="cName" type="text"
                                class="form-control{if isset($cPlausi_arr.cName)} fieldfillout{/if}"
@@ -31,7 +31,7 @@
 
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="cBeschreibung">{#aaDesc#}</label>
+                            <label for="cBeschreibung">{__("aaDesc")}</label>
                         </span>
                         <textarea id="cBeschreibung" name="cBeschreibung"
                                   class="form-control description">{if isset($cPost_arr.cBeschreibung)}{$cPost_arr.cBeschreibung}{elseif isset($oGruppe->cBeschreibung)}{$oGruppe->cBeschreibung}{/if}</textarea>
@@ -66,9 +66,9 @@
 
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="assign_categories_list">{#aaKat#}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{#FillOut#}</span>{/if}
-                                {if isset($cPlausi_arr.cKategorie) && $cPlausi_arr.cKategorie != 3} <span class="fillout">{#aaKatSyntax#}</span>{/if}
-                                {if isset($cPlausi_arr.cKategorie) && $cPlausi_arr.cKategorie == 3} <span class="fillout">{#aaKatTaken#}</span>{/if}
+                            <label for="assign_categories_list">{__("aaKat")}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{__("FillOut")}</span>{/if}
+                                {if isset($cPlausi_arr.cKategorie) && $cPlausi_arr.cKategorie != 3} <span class="fillout">{__("aaKatSyntax")}</span>{/if}
+                                {if isset($cPlausi_arr.cKategorie) && $cPlausi_arr.cKategorie == 3} <span class="fillout">{__("aaKatTaken")}</span>{/if}
                             </label>
                         </span>
                         <span class="input-group-wrap">
@@ -87,8 +87,8 @@
 
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="kLink_arr">{#aaSpecialSite#}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{#FillOut#}</span>{/if}
-                                {if isset($cPlausi_arr.kLink_arr)} <span class="fillout">{#aaLinkTaken#}</span>{/if}
+                            <label for="kLink_arr">{__("aaSpecialSite")}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{__("FillOut")}</span>{/if}
+                                {if isset($cPlausi_arr.kLink_arr)} <span class="fillout">{__("aaLinkTaken")}</span>{/if}
                             </label>
                         </span>
                         <span class="input-group-wrap">
@@ -123,8 +123,8 @@
 
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="nStartseite">{#aaStartSite#}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{#FillOut#}</span>{/if}
-                                {if isset($cPlausi_arr.nStartseite)} <span class="fillout">{#aaStartseiteTaken#}</span>{/if}
+                            <label for="nStartseite">{__("aaStartSite")}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{__("FillOut")}</span>{/if}
+                                {if isset($cPlausi_arr.nStartseite)} <span class="fillout">{__("aaStartseiteTaken")}</span>{/if}
                             </label>
                         </span>
                         <span class="input-group-wrap">
@@ -142,7 +142,7 @@
 
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="nAktiv">{#aaActive#}</label>
+                            <label for="nAktiv">{__("aaActive")}</label>
                         </span>
                         <span class="input-group-wrap">
                             <select id="nAktiv" class="form-control" name="nAktiv">
@@ -161,15 +161,15 @@
                 </div>
                 <div class="panel-footer">
                     <div class="btn-group">
-                        <button name="speicherGruppe" type="submit" value="save" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
-                        <a href="auswahlassistent.php" class="btn btn-danger">{#goBack#}</a>
+                        <button name="speicherGruppe" type="submit" value="save" class="btn btn-primary"><i class="fa fa-save"></i> {__("save")}</button>
+                        <a href="auswahlassistent.php" class="btn btn-danger">{__("goBack")}</a>
                     </div>
                 </div>
             </div>
             <div id="ajax_list_picker" class="ajax_list_picker categories">{include file="tpl_inc/popup_kategoriesuche.tpl"}</div>
         </form>
     {else}
-        <div class="alert alert-danger">{#noModuleAvailable#}</div>
+        <div class="alert alert-danger">{__("noModuleAvailable")}</div>
     {/if}
 </div>
 

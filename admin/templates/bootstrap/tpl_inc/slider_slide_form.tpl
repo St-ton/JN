@@ -23,7 +23,7 @@
     <div id="settings">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">{#slider#}</h3>
+                <h3 class="panel-title">{__("slider")}</h3>
             </div>
             <div class="table-responsive">
                 <table id="tableSlide" class="table">

@@ -1,14 +1,14 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#configureContactform# cBeschreibung=#contanctformDesc# cDokuURL=#cURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__("configureContactform") cBeschreibung=__("contanctformDesc") cDokuURL=__("cURL")}
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'config'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#config">{#config#}</a>
+            <a data-toggle="tab" role="tab" href="#config">{__("config")}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'subjects'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#subjects">{#subjects#}</a>
+            <a data-toggle="tab" role="tab" href="#subjects">{__("subjects")}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'content'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#contents">{#contents#}</a>
+            <a data-toggle="tab" role="tab" href="#contents">{__("contents")}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -18,7 +18,7 @@
                 <input type="hidden" name="einstellungen" value="1" />
                 <div class="settings panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{#settings#}</h3>
+                        <h3 class="panel-title">{__("settings")}</h3>
                     </div>
                     <div class="panel-body">
                         {foreach name=conf from=$Conf item=cnf}
@@ -46,24 +46,24 @@
                         {/foreach}
                     </div>
                     <div class="panel-footer">
-                        <button type="submit" value="{#save#}" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
+                        <button type="submit" value="{__("save")}" class="btn btn-primary"><i class="fa fa-save"></i> {__("save")}</button>
                     </div>
                 </div>
             </form>
         </div>
         <div id="subjects" class="tab-pane fade {if isset($cTab) && $cTab === 'subjects'} active in{/if}">
-            <div class="alert alert-info">{#contanctformSubjectDesc#}</div>
+            <div class="alert alert-info">{__("contanctformSubjectDesc")}</div>
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{#subjects#}</h3>
+                    <h3 class="panel-title">{__("subjects")}</h3>
                 </div>
                 <div class="table-responsive">
                     <table class="list table">
                         <thead>
                         <tr>
-                            <th class="tleft">{#subject#}</th>
-                            <th class="tleft">{#mail#}</th>
-                            <th>{#custgrp#}</th>
+                            <th class="tleft">{__("subject")}</th>
+                            <th class="tleft">{__("mail")}</th>
+                            <th>{__("custgrp")}</th>
                             <th>Aktionen</th>
                         </tr>
                         </thead>
@@ -78,9 +78,9 @@
                                 <td class="tcenter">
                                     <span class="btn-group">
                                         <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}"
-                                           class="btn btn-default" title="{#modify#}"><i class="fa fa-edit"></i>
+                                           class="btn btn-default" title="{__("modify")}"><i class="fa fa-edit"></i>
                                         </a>
-                                        <a href="kontaktformular.php?del={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}" class="btn btn-danger" title="{#delete#}"><i class="fa fa-trash"></i></a>
+                                        <a href="kontaktformular.php?del={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}" class="btn btn-danger" title="{__("delete")}"><i class="fa fa-trash"></i></a>
                                     </span>
                                 </td>
                             </tr>
@@ -89,7 +89,7 @@
                     </table>
                 </div>
                 <div class="panel-footer">
-                    <a class="btn btn-primary" href="kontaktformular.php?neu=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {#newSubject#}</a>
+                    <a class="btn btn-primary" href="kontaktformular.php?neu=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__("newSubject")}</a>
                 </div>
             </div>
         </div>
@@ -99,7 +99,7 @@
                 <input type="hidden" name="content" value="1" />
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{#contents#}</h3>
+                        <h3 class="panel-title">{__("contents")}</h3>
                     </div>
                     <div class="panel-body">
                         <div class="settings">
@@ -108,7 +108,7 @@
                                 {assign var="cISO" value=$sprache->cISO}
                                 <div class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cTitle_{$cISO}">{#title#} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cTitle_{$cISO}">{__("title")} ({$sprache->cNameDeutsch})</label>
                                     </span>
                                     <span class="input-group-wrap">
                                         <input class="form-control" type="text" name="cTitle_{$cISO}" id="cTitle_{$cISO}" value="{if !empty($Content[$cISOcat])}{$Content[$cISOcat]}{/if}" tabindex="1" />
@@ -118,19 +118,19 @@
                             {foreach name=sprachen from=$sprachen item=sprache}
                                 {assign var="cISOcat" value=$sprache->cISO|cat:"_oben"}
                                 {assign var="cISO" value=$sprache->cISO}
-                                <div class="category">{#topContent#} ({$sprache->cNameDeutsch})</div>
+                                <div class="category">{__("topContent")} ({$sprache->cNameDeutsch})</div>
                                 <textarea class="ckeditor form-control" name="cContentTop_{$cISO}" id="cContentTop_{$cISO}">{if !empty($Content[$cISOcat])}{$Content[$cISOcat]}{/if}</textarea>
                             {/foreach}
                             {foreach name=sprachen from=$sprachen item=sprache}
                                 {assign var="cISOcat" value=$sprache->cISO|cat:"_unten"}
                                 {assign var="cISO" value=$sprache->cISO}
-                                <div class="category">{#bottomContent#} ({$sprache->cNameDeutsch})</div>
+                                <div class="category">{__("bottomContent")} ({$sprache->cNameDeutsch})</div>
                                 <textarea class="ckeditor form-control" name="cContentBottom_{$cISO}" id="cContentBottom_{$cISO}">{if !empty($Content[$cISOcat])}{$Content[$cISOcat]}{/if}</textarea>
                             {/foreach}
                         </div>
                     </div>
                     <div class="panel-footer">
-                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__("save")}</button>
                     </div>
                 </div>
             </form>

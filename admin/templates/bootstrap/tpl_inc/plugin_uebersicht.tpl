@@ -1,4 +1,4 @@
-{assign var=cPlugin value=#plugin#}
+{assign var=cPlugin value=__("plugin")}
 {include file='tpl_inc/seite_header.tpl' cTitel=$cPlugin|cat:": "|cat:$oPlugin->cName oPlugin=$oPlugin}
 <div id="content" class="container-fluid">
     <div class="container2">
@@ -20,7 +20,7 @@
                 {/foreach}
             </div>
         {else}
-            <div class="alert alert-info" role="alert"><i class="fa fa-info-circle"></i> {#noPluginDataAvailable#}</div>
+            <div class="alert alert-info" role="alert"><i class="fa fa-info-circle"></i> {__("noPluginDataAvailable")}</div>
         {/if}
     </div>
 </div>

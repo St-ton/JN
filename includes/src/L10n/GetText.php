@@ -27,12 +27,21 @@ class GetText
     private $translator;
 
     /**
+     * @var array locale-path => true
+     */
+    private $loadedPoFiles = [];
+
+    /**
      * GetText constructor.
      */
     private function __construct()
     {
         $this->translator = new \Gettext\Translator();
         $this->translator->register();
+
+        if (!isset($_SESSION['AdminAccount'])) {
+            $_SESSION['AdminAccount'] = new \stdClass();
+        }
 
         if (empty($_SESSION['AdminAccount']->kSprache)) {
             $_SESSION['AdminAccount']->kSprache = \Shop::getLanguage();
@@ -88,9 +97,14 @@ class GetText
     {
         $path = "{$dir}locale/{$this->langIso}/{$domain}.mo";
 
+        if (array_key_exists($path, $this->loadedPoFiles)) {
+            return $this;
+        }
+
         if (file_exists($path)) {
             $translations = \Gettext\Translations::fromMoFile($path);
             $this->translator->loadTranslations($translations);
+            $this->loadedPoFiles[$path] = true;
         }
 
         return $this;

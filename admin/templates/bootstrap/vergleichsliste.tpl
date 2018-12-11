@@ -1,17 +1,17 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="vergleichsliste"}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#configureComparelist# cBeschreibung=#configureComparelistDesc# cDokuURL=#configureComparelistURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__("configureComparelist") cBeschreibung=__("configureComparelistDesc") cDokuURL=__("configureComparelistURL")}
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'letztenvergleiche'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#letztenvergleiche">{#last20Compares#}</a>
+            <a data-toggle="tab" role="tab" href="#letztenvergleiche">{__("last20Compares")}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'topartikel'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#topartikel">{#topCompareProducts#}</a>
+            <a data-toggle="tab" role="tab" href="#topartikel">{__("topCompareProducts")}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einstellungen">{#compareSettings#}</a>
+            <a data-toggle="tab" role="tab" href="#einstellungen">{__("compareSettings")}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -21,9 +21,9 @@
                 <div class="settings panel panel-default table-responsive">
                     <table  class="table table-striped">
                         <tr>
-                            <th class="th-1">{#compareID#}</th>
-                            <th class="tleft">{#compareProducts#}</th>
-                            <th class="th-3">{#compareDate#}</th>
+                            <th class="th-1">{__("compareID")}</th>
+                            <th class="tleft">{__("compareProducts")}</th>
+                            <th class="th-3">{__("compareDate")}</th>
                         </tr>
                         {foreach name=letzten20 from=$Letzten20Vergleiche item=oVergleichsliste20}
                             <tr>
@@ -40,7 +40,7 @@
                     </table>
                 </div>
             {else}
-                <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
             {/if}
         </div>
         <div id="topartikel" class="tab-pane fade {if isset($cTab) && $cTab === 'topartikel'} active in{/if}">
@@ -51,7 +51,7 @@
                 <div class="block">
                     <div class="input-group p25 left" style="margin-right: 20px;">
                         <span class="input-group-addon">
-                            <label for="nZeitFilter">{#compareTimeFilter#}:</label>
+                            <label for="nZeitFilter">{__("compareTimeFilter")}:</label>
                         </span>
                         <span class="input-group-wrap">
                             <select class="form-control" id="nZeitFilter" name="nZeitFilter" onchange="document.postzeitfilter.submit();">
@@ -73,7 +73,7 @@
 
                     <div class="input-group p25 left">
                         <span class="input-group-addon">
-                            <label for="nAnzahl">{#compareTopCount#}:</label>
+                            <label for="nAnzahl">{__("compareTopCount")}:</label>
                         </span>
                         <span class="input-group-wrap">
                             <select class="form-control" id="nAnzahl" name="nAnzahl" onchange="document.postzeitfilter.submit();">
@@ -99,8 +99,8 @@
                 <div class="settings panel panel-default table-responsive">
                     <table class="bottom table table-striped">
                         <tr>
-                            <th class="tleft">{#compareProduct#}</th>
-                            <th class="th-2">{#compareCount#}</th>
+                            <th class="tleft">{__("compareProduct")}</th>
+                            <th class="th-2">{__("compareCount")}</th>
                         </tr>
                         {foreach name=top from=$TopVergleiche item=oVergleichslistePosTop}
                             <tr>
@@ -113,11 +113,11 @@
                     </table>
                 </div>
             {else}
-                <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
             {/if}
         </div>
         <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
-            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='vergleichsliste.php' buttonCaption=#save# title='Einstellungen' tab='einstellungen'}
+            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='vergleichsliste.php' buttonCaption=__("save") title='Einstellungen' tab='einstellungen'}
         </div>
     </div>
 </div>

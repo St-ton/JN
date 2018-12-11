@@ -1,5 +1,5 @@
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#trustedshops# cBeschreibung=#tsWhatIs#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__("trustedshops") cBeschreibung=__("tsWhatIs")}
 <div id="content" class="container-fluid">
     {if !empty($hinweis)}
         <div class="alert alert-info">
@@ -64,5 +64,5 @@
     </div>
     
     <br />
-    <strong><a href="trustedshops.php">{#tsBack#}</a></strong>
+    <strong><a href="trustedshops.php">{__("tsBack")}</a></strong>
 </div>

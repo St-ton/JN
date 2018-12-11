@@ -18,7 +18,7 @@ function ackCheck(kPlugin, hash)
 {/if}
 </script>
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#pluginverwaltung# cBeschreibung=#pluginverwaltungDesc# cDokuURL=#pluginverwaltungURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__("pluginverwaltung") cBeschreibung=__("pluginverwaltungDesc") cDokuURL=__("pluginverwaltungURL")}
 <div id="content" class="container-fluid">
     <div id="settings">
         {if $PluginInstalliertByStatus_arr|@count > 0}

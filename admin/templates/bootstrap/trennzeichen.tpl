@@ -1,7 +1,7 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="trennzeichen"}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#Trennzeichen# cBeschreibung=#trennzeichenDesc# cDokuURL=#trennzeichenURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__("Trennzeichen") cBeschreibung=__("trennzeichenDesc") cDokuURL=__("trennzeichenURL")}
 <div id="content" class="container-fluid">
     <div class="block">
         {if isset($Sprachen) && $Sprachen|@count > 1}
@@ -10,10 +10,10 @@
                 <input type="hidden" name="sprachwechsel" value="1" />
                 <div class="input-group p25 left">
                     <span class="input-group-addon">
-                        <label for="{#changeLanguage#}">{#changeLanguage#}</label>
+                        <label for="{__("changeLanguage")}">{__("changeLanguage")}</label>
                     </span>
                     <span class="input-group-wrap last">
-                        <select id="{#changeLanguage#}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
+                        <select id="{__("changeLanguage")}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
                             {foreach name=sprachen from=$Sprachen item=sprache}
                                 <option value="{$sprache->kSprache}" {if $sprache->kSprache==$smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
                             {/foreach}
@@ -99,7 +99,7 @@
                 </table>
                 </div>
                 <div class="panel-footer">
-                    <button name="speichern" type="submit" value="{#trennzeichenSave#}" class="btn btn-primary"><i class="fa fa-save"></i> {#trennzeichenSave#}</button>
+                    <button name="speichern" type="submit" value="{__("trennzeichenSave")}" class="btn btn-primary"><i class="fa fa-save"></i> {__("trennzeichenSave")}</button>
                 </div>
             </div>
         </div>

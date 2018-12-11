@@ -4,16 +4,16 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4>{#plz_ort_import_select#}</h4>
+                <h4>{__("plz_ort_import_select")}</h4>
             </div>
             <div class="modal-body">
                 {if isset($oLand_arr) && count($oLand_arr) > 0}
                 <ul class="list-group">
                     <li class="boxRow panel-heading">
-                        <div class="col-xs-1"><strong>{#plz_ort_iso#}</strong></div>
-                        <div class="col-xs-4"><strong>{#plz_ort_country#}</strong></div>
-                        <div class="col-xs-3"><strong>{#plz_ort_date#}</strong></div>
-                        <div class="col-xs-3"><strong>{#plz_ort_size#}</strong></div>
+                        <div class="col-xs-1"><strong>{__("plz_ort_iso")}</strong></div>
+                        <div class="col-xs-4"><strong>{__("plz_ort_country")}</strong></div>
+                        <div class="col-xs-3"><strong>{__("plz_ort_date")}</strong></div>
+                        <div class="col-xs-3"><strong>{__("plz_ort_size")}</strong></div>
                         <div class="col-xs-1"></div>
                     </li>
                     {foreach from=$oLand_arr item="oLand"}
@@ -27,11 +27,11 @@
                     {/foreach}
                 </ul>
                 {else}
-                <div class="alert alert-warning"><i class="fa fa-warning"></i> {#plz_ort_import_select_failed#}</div>
+                <div class="alert alert-warning"><i class="fa fa-warning"></i> {__("plz_ort_import_select_failed")}</div>
                 {/if}
             </div>
             <div class="modal-footer">
-                <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-close"></i> {#plz_ort_import_cancel#}</a>
+                <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-close"></i> {__("plz_ort_import_cancel")}</a>
             </div>
         </div>
     </div>

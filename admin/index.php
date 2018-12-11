@@ -180,6 +180,7 @@ if ($oAccount->getIsAuthenticated()) {
         } else {
             $_SESSION['AdminAccount']->TwoFA_expired = true;
         }
+        L10n\GetText::getInstance()->loadAdminLocale('pages/login');
         // "redirect" to the "login not valid"
         // (we've received a wrong code and give the user the chance to retry)
         $oAccount->redirectOnUrl();
@@ -199,6 +200,7 @@ if ($oAccount->getIsAuthenticated()) {
                 break;
         }
     }
+    L10n\GetText::getInstance()->loadAdminLocale('pages/login');
     $smarty->assign('uri', isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0
         ? trim($_REQUEST['uri'])
         : '')

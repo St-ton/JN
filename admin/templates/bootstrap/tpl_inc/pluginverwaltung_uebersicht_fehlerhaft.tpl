@@ -5,16 +5,16 @@
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{#pluginListNotInstalledAndError#}</h3>
+                    <h3 class="panel-title">{__("pluginListNotInstalledAndError")}</h3>
                 </div>
                 <div class="table-responsive">
                     <table class="list table">
                         <thead>
                         <tr>
-                            <th class="tleft">{#pluginName#}</th>
-                            <th class="tleft">{#pluginErrorCode#}</th>
-                            <th>{#pluginVersion#}</th>
-                            <th>{#pluginFolder#}</th>
+                            <th class="tleft">{__("pluginName")}</th>
+                            <th class="tleft">{__("pluginErrorCode")}</th>
+                            <th>{__("pluginVersion")}</th>
+                            <th>{__("pluginFolder")}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -40,6 +40,6 @@
             </div>
         </form>
     {else}
-        <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+        <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
     {/if}
 </div>

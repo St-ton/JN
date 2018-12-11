@@ -31,7 +31,7 @@
                         <div class="alert alert-success" role="alert"><i class="fa fa-info-circle"></i> Passwort wurde erfolgreich ge&auml;ndert.</div>
                     {else}
                         {if !isset($smarty.session.AdminAccount->TwoFA_active) || false === $smarty.session.AdminAccount->TwoFA_active }  {* added for 2FA *}
-                            <p class="text-muted">{#login#}</p>
+                            <p class="text-muted">{__("login")}</p>
                         {else}
                         {/if}
                     {/if}
@@ -49,7 +49,7 @@
                             <input type="hidden" name="benutzer" value="">
                             <input type="hidden" name="passwort" value="">
 
-                            <p class="text-muted">{#TwoFALogin#}</p>
+                            <p class="text-muted">{__("TwoFALogin")}</p>
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-user"></i></span>
                                 <input class="form-control" type="text" placeholder="2fa-code" name="TwoFA_code" id="inputTwoFA" value="" size="20" tabindex="10" />
@@ -105,11 +105,11 @@
                             {* BEGIN regular authentication (additionaly active once before 2fa) *}
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                                <input class="form-control" type="text" placeholder="{#username#}" name="benutzer" id="user_login" value="" size="20" tabindex="10" />
+                                <input class="form-control" type="text" placeholder="{__("username")}" name="benutzer" id="user_login" value="" size="20" tabindex="10" />
                             </div>
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-                                <input class="form-control" type="password" placeholder="{#password#}" name="passwort" id="user_pass" value="" size="20" tabindex="20" />
+                                <input class="form-control" type="password" placeholder="{__("password")}" name="passwort" id="user_pass" value="" size="20" tabindex="20" />
                             </div>
                             {if isset($code_adminlogin) && $code_adminlogin}
                                 {captchaMarkup getBody=true}

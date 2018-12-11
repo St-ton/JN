@@ -11,11 +11,8 @@
  */
 function getItems(bool $filesize = false)
 {
-    $smarty = \Smarty\JTLSmarty::getInstance(false, true);
-    $smarty->configLoad('german.conf', 'bilderverwaltung');
-
-    $item = (object) [
-        'name'  => $smarty->config_vars['typeProduct'],
+    $item = (object)[
+        'name'  => __('typeProduct'),
         'type'  => Image::TYPE_PRODUCT,
         'stats' => MediaImage::getStats(Image::TYPE_PRODUCT, $filesize)
     ];

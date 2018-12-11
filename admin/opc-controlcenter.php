@@ -12,8 +12,6 @@
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
-\L10n\GetText::getInstance()->loadAdminLocale('opc-controlcenter');
-
 $notice = '';
 $error  = '';
 $action = RequestHelper::verifyGPDataString('action');
@@ -30,11 +28,11 @@ if (FormHelper::validateToken()) {
     if ($action === 'restore') {
         $pageId = RequestHelper::verifyGPDataString('pageId');
         $opcPage->deletePage($pageId);
-        $notice = __('The OPC content for this page has been reset.');
+        $notice = __('opcNoticePageReset');
     } elseif ($action === 'discard') {
         $pageKey = RequestHelper::verifyGPCDataInt('pageKey');
         $opcPage->deleteDraft($pageKey);
-        $notice = __('The draft has been deleted.');
+        $notice = __('opcNoticeDraftDelete');
     }
 }
 

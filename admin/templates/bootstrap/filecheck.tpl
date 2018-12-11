@@ -1,17 +1,17 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="filecheck"}
-{include file='tpl_inc/seite_header.tpl' cTitel=#filecheck# cBeschreibung=#filecheckDesc# cDokuURL=#filecheckURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__("filecheck") cBeschreibung=__("filecheckDesc") cDokuURL=__("filecheckURL")}
 {$modifiedFilesCheck = !empty($modifiedFilesError) || isset($modifiedFiles) && $modifiedFiles|@count > 0}
 {$orphanedFilesCheck = !empty($orphanedFilesError) || isset($orphanedFiles) && $orphanedFiles|@count > 0}
 
 {if !$modifiedFilesCheck && !$orphanedFilesCheck}
-    <div class="alert alert-info">{#fileCheckNoneModifiedOrphanedFiles#}</div>
+    <div class="alert alert-info">{__("fileCheckNoneModifiedOrphanedFiles")}</div>
 {/if}
 {if $modifiedFilesCheck}
     <div class="panel panel-collapse">
         <div class="panel-heading">
-            {#fileCheckModifiedFilesHeadline#}
-            <p class="small text-muted">{#fileCheckModifiedFilesNote#}</p>
+            {__("fileCheckModifiedFilesHeadline")}
+            <p class="small text-muted">{__("fileCheckModifiedFilesNote")}</p>
         </div>
         <div class="panel-body">
             <div id="content" class="container-fluid">
@@ -22,12 +22,12 @@
                         {if isset($modifiedFiles) && $modifiedFiles|@count > 0}
                             <div id="contentModifiedFilesCheck">
                                 <div class="alert alert-info">
-                                    <strong>{#fileCheckNumberModifiedFiles#}:</strong> {$errorsCounModifiedFiles}
+                                    <strong>{__("fileCheckNumberModifiedFiles")}:</strong> {$errorsCounModifiedFiles}
                                 </div>
                                 <table class="table req">
                                     <thead>
                                     <tr>
-                                        <th>{#fileCheckFile#}</th>
+                                        <th>{__("fileCheckFile")}</th>
                                     </tr>
                                     </thead>
                                     {foreach name=datei from=$modifiedFiles item=file}
@@ -48,8 +48,8 @@
 {if $orphanedFilesCheck}
     <div class="panel panel-collapse">
         <div class="panel-heading">
-            {#fileCheckOrphanedFilesHeadline#}
-            <p class="small text-muted">{#fileCheckOrphanedFilesNote#}</p>
+            {__("fileCheckOrphanedFilesHeadline")}
+            <p class="small text-muted">{__("fileCheckOrphanedFilesNote")}</p>
         </div>
         <div class="panel-body">
             <div id="content" class="container-fluid">
@@ -60,12 +60,12 @@
                         {if isset($orphanedFiles) && $orphanedFiles|@count > 0}
                             <div id="contentOrphanedFilesCheck">
                                 <div class="alert alert-info">
-                                    <strong>{#fileCheckNumberOrphanedFiles#}:</strong> {$errorsCountOrphanedFiles}
+                                    <strong>{__("fileCheckNumberOrphanedFiles")}:</strong> {$errorsCountOrphanedFiles}
                                 </div>
                                 <table class="table req">
                                     <thead>
                                         <tr>
-                                            <th>{#fileCheckFile#}</th>
+                                            <th>{__("fileCheckFile")}</th>
                                         </tr>
                                     </thead>
                                     {foreach name=datei from=$orphanedFiles item=file}

@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#exportformats# cBeschreibung=#exportformatsDesc# cDokuURL=#exportformatsURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__("exportformats") cBeschreibung=__("exportformatsDesc") cDokuURL=__("exportformatsURL")}
 <div id="content" class="container-fluid">
     <script type="text/javascript" src="{$currentTemplateDir}js/jquery.progressbar.js"></script>
     <script type="text/javascript">
@@ -79,13 +79,13 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th class="tleft">{#name#}</th>
-                    <th class="tleft" style="width:320px">{#filename#}</th>
-                    <th class="tcenter">{#language#}</th>
-                    <th class="tcenter">{#currency#}</th>
-                    <th class="tcenter">{#customerGroup#}</th>
-                    <th class="tcenter">{#lastModified#}</th>
-                    <th class="tcenter" width="200">{#actions#}</th>
+                    <th class="tleft">{__("name")}</th>
+                    <th class="tleft" style="width:320px">{__("filename")}</th>
+                    <th class="tcenter">{__("language")}</th>
+                    <th class="tcenter">{__("currency")}</th>
+                    <th class="tcenter">{__("customerGroup")}</th>
+                    <th class="tcenter">{__("lastModified")}</th>
+                    <th class="tcenter" width="200">{__("actions")}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -107,13 +107,13 @@
                                     {$jtl_token}
                                     <input type="hidden" name="kExportformat" value="{$exportformat->kExportformat}" />
                                     <div class="btn-group">
-                                        <button name="action" value="export" class="btn btn-default btn-sm extract notext" title="{#createExportFile#}"><i class="fa fa-plus"></i></button>
+                                        <button name="action" value="export" class="btn btn-default btn-sm extract notext" title="{__("createExportFile")}"><i class="fa fa-plus"></i></button>
                                         {if !$exportformat->bPluginContentExtern}
-                                            <a href="#" onclick="return init_export('{$exportformat->kExportformat}');" class="btn btn-primary btn-sm extract_async notext" title="{#createExportFileAsync#}"><i class="fa fa-plus-square"></i></a>
+                                            <a href="#" onclick="return init_export('{$exportformat->kExportformat}');" class="btn btn-primary btn-sm extract_async notext" title="{__("createExportFileAsync")}"><i class="fa fa-plus-square"></i></a>
                                         {/if}
-                                        <button name="action" value="download" class="btn btn-default btn-sm download notext" title="{#download#}"><i class="fa fa-download"></i></button>
-                                        <button name="action" value="edit" class="btn btn-default btn-sm edit notext" title="{#edit#}"><i class="fa fa-edit"></i></button>
-                                        <button name="action" value="delete" class="btn btn-danger btn-sm remove notext" title="{#delete#}" onclick="return confirm('Exportformat l&ouml;schen?');"><i class="fa fa-trash"></i></button>
+                                        <button name="action" value="download" class="btn btn-default btn-sm download notext" title="{__("download")}"><i class="fa fa-download"></i></button>
+                                        <button name="action" value="edit" class="btn btn-default btn-sm edit notext" title="{__("edit")}"><i class="fa fa-edit"></i></button>
+                                        <button name="action" value="delete" class="btn btn-danger btn-sm remove notext" title="{__("delete")}" onclick="return confirm('Exportformat l&ouml;schen?');"><i class="fa fa-trash"></i></button>
                                     </div>
                                 </form>
                             </td>
@@ -125,7 +125,7 @@
         </div>
         <div class="panel-footer">
             <div class="submit-wrap btn-group">
-                <a class="btn btn-primary" href="exportformate.php?neuerExport=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {#newExportformat#}</a>
+                <a class="btn btn-primary" href="exportformate.php?neuerExport=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__("newExportformat")}</a>
                 <a class="btn btn-default" href="#" id="exportall">Alle exportieren</a>
             </div>
         </div>

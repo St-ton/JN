@@ -21,16 +21,16 @@
             <input name="a" type="hidden" value="update" />
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{#warenlager#}</h3>
+                    <h3 class="panel-title">{__("warenlager")}</h3>
                 </div>
                 <div class="table-responsive">
                     <table class="list table">
                         <thead>
                         <tr>
-                            <th class="checkext">{#watenlagerActive#}</th>
-                            <th>{#warenlagerIntern#}</th>
-                            <th>{#warenlagerDescInt#}</th>
-                            <th>{#warenlagerOption#}</th>
+                            <th class="checkext">{__("watenlagerActive")}</th>
+                            <th>{__("warenlagerIntern")}</th>
+                            <th>{__("warenlagerDescInt")}</th>
+                            <th>{__("warenlagerOption")}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -42,7 +42,7 @@
                                 <td class="tcenter large">{$oWarenlager->cName}</td>
                                 <td class="tcenter">{$oWarenlager->cBeschreibung}</td>
                                 <td class="tcenter">
-                                    <a class="btn btn-default" data-toggle="collapse" href="#collapse-{$oWarenlager->kWarenlager}" title="{#edit#}"><i class="fa fa-edit"></i></a>
+                                    <a class="btn btn-default" data-toggle="collapse" href="#collapse-{$oWarenlager->kWarenlager}" title="{__("edit")}"><i class="fa fa-edit"></i></a>
                                 </td>
                             </tr>
                             <tr class="collapse" id="collapse-{$oWarenlager->kWarenlager}">
@@ -63,11 +63,11 @@
                     </table>
                 </div>
                 <div class="panel-footer">
-                    <button name="update" type="submit" title="{#warenlagerUpdate#}" class="btn btn-primary"><i class="fa fa-refresh"></i> {#warenlagerUpdate#}</button>
+                    <button name="update" type="submit" title="{__("warenlagerUpdate")}" class="btn btn-primary"><i class="fa fa-refresh"></i> {__("warenlagerUpdate")}</button>
                 </div>
             </div>
         </form>
     {else}
-        <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+        <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
     {/if}
 </div>

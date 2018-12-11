@@ -36,6 +36,10 @@ $adminMenu = [
     ],
     __('Contents') => [
         __('Item') => [
+            __('Selection wizard') => (object)[
+                'link' => 'auswahlassistent.php',
+                'rights' => 'EXTENSION_SELECTIONWIZARD_VIEW',
+            ],
             __('Item details') => (object)[
                 'link' => 'einstellungen.php?kSektion=5',
                 'rights' => 'SETTINGS_ARTICLEDETAILS_VIEW',
@@ -268,6 +272,10 @@ $adminMenu = [
             __('Import newsletter recipient') => (object)[
                 'link' => 'newsletterimport.php',
                 'rights' => 'IMPORT_NEWSLETTER_RECEIVER_VIEW',
+            ],
+            __('Zip code import') => (object)[
+                'link' => 'plz_ort_import.php',
+                'rights' => 'PLZ_ORT_IMPORT_VIEW',
             ],
         ],
         __('Export') => [

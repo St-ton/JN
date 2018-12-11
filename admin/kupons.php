@@ -104,7 +104,7 @@ if ($action === 'bearbeiten') {
     $cFehler_arr = validateCoupon($oKupon);
     if (count($cFehler_arr) > 0) {
         // Es gab Fehler bei der Validierung => weiter bearbeiten
-        $cFehler = 'Bitte überprüfen Sie folgende Eingaben:<ul>';
+        $cFehler = __('checkInput') . ':<ul>';
 
         foreach ($cFehler_arr as $fehler) {
             $cFehler .= '<li>' . $fehler . '</li>';

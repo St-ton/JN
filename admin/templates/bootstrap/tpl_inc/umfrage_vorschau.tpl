@@ -3,24 +3,24 @@
         <h2 class="txtBlack">{$oUmfrage->cName}</h2>
         <div class="row">
             <div class="col-md-3">
-                <strong>{#umfrageValidation#}:</strong><br/>
+                <strong>{__("umfrageValidation")}:</strong><br/>
                 {$oUmfrage->dGueltigVon_de}<br/>
-                -{if $oUmfrage->dGueltigBis === null}{#umfrageInfinite#}{else}{$oUmfrage->dGueltigBis_de}{/if}
+                -{if $oUmfrage->dGueltigBis === null}{__("umfrageInfinite")}{else}{$oUmfrage->dGueltigBis_de}{/if}
             </div>
             <div class="col-md-3">
-                <strong>{#umfrageCustomerGrp#}:</strong><br/>
+                <strong>{__("umfrageCustomerGrp")}:</strong><br/>
                 {foreach name=kundengruppen from=$oUmfrage->cKundengruppe_arr item=cKundengruppe}
                     {$cKundengruppe}{if !$smarty.foreach.kundengruppen.last},{/if}
                 {/foreach}
             </div>
             <div class="col-md-3">
-                <strong>{#umfrageActive#}:</strong><br/>
+                <strong>{__("umfrageActive")}:</strong><br/>
                 {$oUmfrage->nAktiv}
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-                <strong>{#umfrageText#}:</strong><br/>
+                <strong>{__("umfrageText")}:</strong><br/>
                 {$oUmfrage->cBeschreibung}
             </div>
         </div>
@@ -31,7 +31,7 @@
                 <input type="hidden" name="umfrage" value="1" />
                 <input type="hidden" name="kUmfrage" value="{$oUmfrage->kUmfrage}" />
                 <input type="hidden" name="umfrage_frage_hinzufuegen" value="1" />
-                <button class="btn btn-primary" name="umfragefragehinzufuegen" type="submit" value="{#umfrageQAdd#}"><i class="fa fa-share"></i> {#umfrageQAdd#}</button>
+                <button class="btn btn-primary" name="umfragefragehinzufuegen" type="submit" value="{__("umfrageQAdd")}"><i class="fa fa-share"></i> {__("umfrageQAdd")}</button>
             </form>
 
             <form method="post" action="umfrage.php" class="left">
@@ -39,7 +39,7 @@
                 <input type="hidden" name="umfrage" value="1" />
                 <input type="hidden" name="kUmfrage" value="{$oUmfrage->kUmfrage}" />
                 <input type="hidden" name="umfrage_statistik" value="1" />
-                <button class="btn btn-default" name="umfragestatistik" type="submit" value="{#umfrageStatsView#}"><i class="fa fa-bar-chart"></i> {#umfrageStatsView#}</button>
+                <button class="btn btn-default" name="umfragestatistik" type="submit" value="{__("umfrageStatsView")}"><i class="fa fa-bar-chart"></i> {__("umfrageStatsView")}</button>
             </form>
         </div>
 
@@ -50,13 +50,13 @@
             <input type="hidden" name="kUmfrage" value="{$oUmfrage->kUmfrage}" />
             <input type="hidden" name="umfrage_frage_loeschen" value="1" />
             <br />
-            <p><strong>{#umfrageQs#}:</strong></p>
+            <p><strong>{__("umfrageQs")}:</strong></p>
             {foreach name=umfragefrage from=$oUmfrage->oUmfrageFrage_arr item=oUmfrageFrage}
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <strong>{$smarty.foreach.umfragefrage.iteration}.</strong>
                         <input id="question-{$smarty.foreach.umfragefrage.iteration}" name="kUmfrageFrage[]" type="checkbox" value="{$oUmfrageFrage->kUmfrageFrage}">
-                        <label for="question-{$smarty.foreach.umfragefrage.iteration}">{$oUmfrageFrage->cName}</label> [<a href="umfrage.php?umfrage=1&kUmfrage={$oUmfrage->kUmfrage}&kUmfrageFrage={$oUmfrageFrage->kUmfrageFrage}&fe=1&token={$smarty.session.jtl_token}">{#umfrageEdit#}</a>]
+                        <label for="question-{$smarty.foreach.umfragefrage.iteration}">{$oUmfrageFrage->cName}</label> [<a href="umfrage.php?umfrage=1&kUmfrage={$oUmfrage->kUmfrage}&kUmfrageFrage={$oUmfrageFrage->kUmfrageFrage}&fe=1&token={$smarty.session.jtl_token}">{__("umfrageEdit")}</a>]
                     </div>
                     <div class="panel-body">
                         <strong>{$oUmfrageFrage->cTypMapped}: </strong>
@@ -66,7 +66,7 @@
                             <hr/>
                             <div class="row">
                                 <div class="col-md-{if $oUmfrageFrage->oUmfrageMatrixOption_arr|@count > 0}4{else}8{/if} col-md-offset-1">
-                                    <strong>{#umfrageQA#}:</strong>
+                                    <strong>{__("umfrageQA")}:</strong>
                                     <table  class="table">
                                         {foreach name=umfragefrageantwort from=$oUmfrageFrage->oUmfrageFrageAntwort_arr item=oUmfrageFrageAntwort}
                                             <tr>
@@ -77,7 +77,7 @@
                                     </table>
                                 </div>
                                 {if $oUmfrageFrage->oUmfrageMatrixOption_arr|@count > 0 && $oUmfrageFrage->oUmfrageMatrixOption_arr}
-                                    <div class="col-md-4"><strong>{#umfrageQO#}:</strong>
+                                    <div class="col-md-4"><strong>{__("umfrageQO")}:</strong>
                                         <table  class="table">
                                             {foreach name=umfragemaxtrixoption from=$oUmfrageFrage->oUmfrageMatrixOption_arr item=oUmfrageMatrixOption}
                                                 <tr>
@@ -94,12 +94,12 @@
                 </div>
             {/foreach}
                 <p class="btn-group">
-                    <a class="btn btn-default" href="umfrage.php"><i class="fa fa-angle-double-left"></i> {#umfrageBack#}</a>
-                    <button class="btn btn-danger" name="umfragefrageloeschen" type="submit" value="{#delete#}"><i class="fa fa-trash"></i> {#delete#}</button>
+                    <a class="btn btn-default" href="umfrage.php"><i class="fa fa-angle-double-left"></i> {__("umfrageBack")}</a>
+                    <button class="btn btn-danger" name="umfragefrageloeschen" type="submit" value="{__("delete")}"><i class="fa fa-trash"></i> {__("delete")}</button>
                 </p>
             </form>
         {else}
-            <a class="btn btn-default" href="umfrage.php"><i class="fa fa-angle-double-left"></i> {#umfrageBack#}</a>
+            <a class="btn btn-default" href="umfrage.php"><i class="fa fa-angle-double-left"></i> {__("umfrageBack")}</a>
         {/if}
     </div>
 </div>

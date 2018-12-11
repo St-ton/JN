@@ -1,7 +1,7 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="bilder"}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#bilder# cBeschreibung=#bilderDesc# cDokuURL=#bilderURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__("bilder") cBeschreibung=__("bilderDesc") cDokuURL=__("bilderURL")}
 <div id="content">
     <form method="post" action="bilder.php">
         {$jtl_token}
@@ -204,7 +204,7 @@
                             <h3 class="panel-title">{$cnf->cName}
                             <span class="pull-right">{getHelpDesc cID=$cnf->kEinstellungenConf}</span>
                             {if isset($cnf->cSektionsPfad) && $cnf->cSektionsPfad|strlen > 0}
-                                <span class="path"><strong>{#settingspath#}:</strong> {$cnf->cSektionsPfad}</span>
+                                <span class="path"><strong>{__("settingspath")}:</strong> {$cnf->cSektionsPfad}</span>
                             {/if}
                             </h3>
                         </div>
@@ -218,7 +218,7 @@
             </div><!-- /.panel -->
             {/if}
             <p class="submit">
-                <button name="speichern" type="submit" value="{#bilderSave#}" class="btn btn-primary"><i class="fa fa-save"></i> {#bilderSave#}</button>
+                <button name="speichern" type="submit" value="{__("bilderSave")}" class="btn btn-primary"><i class="fa fa-save"></i> {__("bilderSave")}</button>
             </p>
         </div>
     </form>

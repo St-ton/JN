@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#emailhistory# cBeschreibung=#emailhistoryDesc# cDokuURL=#emailhistoryURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__("emailhistory") cBeschreibung=__("emailhistoryDesc") cDokuURL=__("emailhistoryURL")}
 <div id="content" class="container-fluid">
     {if $oEmailhistory_arr|@count > 0 && $oEmailhistory_arr}
         {include file='tpl_inc/pagination.tpl' oPagination=$oPagination}
@@ -42,19 +42,19 @@
             <input name="a" type="hidden" value="delete" />
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{#emailhistory#}</h3>
+                    <h3 class="panel-title">{__("emailhistory")}</h3>
                 </div>
                 <div class="table-responsive">
                     <table class="list table table-striped">
                         <thead>
                         <tr>
                             <th></th>
-                            <th class="tleft">{#subject#}</th>
-                            <th class="tleft">{#fromname#}</th>
-                            <th class="tleft">{#fromemail#}</th>
-                            <th class="tleft">{#toname#}</th>
-                            <th class="tleft">{#toemail#}</th>
-                            <th class="tleft">{#date#}</th>
+                            <th class="tleft">{__("subject")}</th>
+                            <th class="tleft">{__("fromname")}</th>
+                            <th class="tleft">{__("fromemail")}</th>
+                            <th class="tleft">{__("toname")}</th>
+                            <th class="tleft">{__("toemail")}</th>
+                            <th class="tleft">{__("date")}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -83,13 +83,13 @@
                 </div>
                 <div class="panel-footer">
                     <div class="btn-group">
-                        <button name="zuruecksetzenBTN" type="submit" class="btn btn-warning"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
-                        <button name="remove_all" type="button" class="btn btn-danger" data-target="#confirmModal" data-toggle="modal"><i class="fa fa-trash"></i> {#deleteAll#}</button>
+                        <button name="zuruecksetzenBTN" type="submit" class="btn btn-warning"><i class="fa fa-trash"></i> {__("deleteSelected")}</button>
+                        <button name="remove_all" type="button" class="btn btn-danger" data-target="#confirmModal" data-toggle="modal"><i class="fa fa-trash"></i> {__("deleteAll")}</button>
                     </div>
                 </div>
             </div>
         </form>
     {else}
-        <div class="alert alert-info">{#nodata#}</div>
+        <div class="alert alert-info">{__("nodata")}</div>
     {/if}
 </div>

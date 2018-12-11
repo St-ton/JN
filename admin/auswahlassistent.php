@@ -11,6 +11,9 @@ $cHinweis = '';
 $step     = '';
 $oNice    = Nice::getInstance();
 $cTab     = 'uebersicht';
+
+loadConfigLocalizations();
+
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     $step = 'uebersicht';
     setzeSprache();

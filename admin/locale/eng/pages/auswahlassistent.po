@@ -2,7 +2,7 @@ msgid "auswahlassistent"
 msgstr "Auswahlassistent"
 
 msgid "auswahlassistentDesc"
-msgstr ""
+msgstr " "
 
 msgid "auswahlassistentURL"
 msgstr "https://jtl-url.de/usgio"

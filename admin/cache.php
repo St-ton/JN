@@ -4,7 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 /** @global Smarty\JTLSmarty $smarty */
 setzeSprache();
 $oAccount->permission('OBJECTCACHE_VIEW', true, true);

@@ -1,155 +1,143 @@
-msgid "Image"
-msgstr "Bild"
-
-msgid "Cancel"
-msgstr "Abbrechen"
-
-msgid "Save"
-msgstr "Speichern"
-
-msgid "Wrong XSRF token."
-msgstr "Falsches XSRF token."
-
 msgid "dashboard"
 msgstr "Dashboard"
 
 msgid "settingspath"
-msgstr "Pfad"
+msgstr "Path"
 
 msgid "add"
-msgstr "Hinzufügen"
+msgstr "Add"
 
 msgid "add_force"
-msgstr "Hinzufügen erzwingen"
+msgstr "Force add"
 
 msgid "modify"
-msgstr "Bearbeiten"
+msgstr "Modify"
 
 msgid "edit"
-msgstr "Bearbeiten"
+msgstr "Edit"
 
 msgid "delete"
-msgstr "Löschen"
+msgstr "Delete"
 
 msgid "deleteSelected"
-msgstr "Markierte löschen"
+msgstr "Delete selected"
 
 msgid "refresh"
-msgstr "Aktualisieren"
+msgstr "Refresh"
 
 msgid "deleteAll"
-msgstr "Alles löschen"
+msgstr "Delete all"
 
 msgid "showedName"
-msgstr "Angezeigter Name"
+msgstr "Display name"
 
 msgid "multipleChoice"
-msgstr "Mehrfachauswahl möglich mit gedrückter STRG/SHIFT-Taste"
+msgstr "Multiple choice possible with hold CTRL/SHIFT key"
 
 msgid "save"
-msgstr "Speichern"
+msgstr "Save"
 
 msgid "saveAndContinue"
-msgstr "Speichern und weiter bearbeiten"
+msgstr "Save and continue editing"
 
 msgid "settings"
-msgstr "Einstellungen"
+msgstr "Settings"
 
 msgid "logout"
-msgstr "Abmelden"
+msgstr "Logout"
 
 msgid "docu"
-msgstr "Dokumentation"
+msgstr "Documentation"
 
 msgid "sortNo"
-msgstr "Sortiernummer"
+msgstr "Sort number"
 
 msgid "allCustomerGroups"
-msgstr "Alle Kundengruppen"
+msgstr "All customer groups"
 
 msgid "goShop"
-msgstr "Zum Shop"
+msgstr "Go to Shop"
 
 msgid "help"
-msgstr "Hilfe"
+msgstr "help"
 
 msgid "start"
-msgstr "Startseite"
+msgstr "Home page"
 
 msgid "backendSitemapTitle"
 msgstr "Sitemap"
 
 msgid "yes"
-msgstr "Ja"
+msgstr "Yes"
 
 msgid "no"
-msgstr "Nein"
+msgstr "No"
 
 msgid "update"
-msgstr "Aktualisieren"
+msgstr "Update"
 
 msgid "from"
-msgstr "von"
+msgstr "From"
 
 msgid "next"
-msgstr "Nächste"
+msgstr "Next"
 
 msgid "back"
-msgstr "Vorherige"
+msgstr "Previous"
 
 msgid "changeLanguage"
-msgstr "Sprache"
+msgstr "Language"
 
 msgid "goBack"
-msgstr "« Zurück"
+msgstr "« Go back"
 
 msgid "enterResult"
-msgstr "Lösung eingeben"
+msgstr "Enter result"
 
 msgid "invalidCode"
-msgstr "Ungültiger Code"
+msgstr "Invalid code"
 
 msgid "invalidResult"
-msgstr "Falsche Lösung"
+msgstr "Wrong result"
 
 msgid "enterCode"
-msgstr "Code eingeben"
+msgstr "Enter code"
 
 msgid "code"
 msgstr "Code"
 
 msgid "globalSelectAll"
-msgstr "Alle auswählen"
+msgstr "Select all"
 
 msgid "noDataAvailable"
-msgstr "Zurzeit liegen keine Daten vor."
+msgstr "Currently there is no data available."
 
 msgid "noFilterResults"
-msgstr "Die Filterung ergab keine Treffer."
+msgstr "The filter yields no results."
 
 msgid "noPluginDataAvailable"
-msgstr "Dieses Plugin hat keine Einstellungsmöglichkeiten."
+msgstr "This plugin doesn't have any configuration options."
 
 msgid "confSearch"
-msgstr "Suchen"
+msgstr "Search"
 
 msgid "confSearchWord"
-msgstr "Einstellungssuche"
+msgstr "Configuration search"
 
 msgid "searchHeadline"
-msgstr "Einstellung"
+msgstr "Configuration"
 
 msgid "noSearchResult"
-msgstr "Leider wurde zu Ihrem Suchbegriff keine Einstellung gefunden."
+msgstr "We're sorry! There are no results for your search term."
 
 msgid "NotAvailable"
-msgstr "n.v."
+msgstr "n.a."
 
 msgid "page"
-msgstr "Seite"
+msgstr "Page"
 
 msgid "FillOut"
-msgstr "Bitte ausfüllen"
+msgstr "Please fill out"
 
 msgid "nofopenError"
 msgstr "Leider steht die PHP Stream Konfigurationsoption \"<b>allow_url_fopen</b>\" nicht auf aktiv. Bitte wenden Sie sich an den Serveradministrator und setzen Sie diese auf 1."
@@ -167,58 +155,58 @@ msgid "noModuleAvailable"
 msgstr "Es wurde keine gültige Lizenz für dieses Modul gefunden. Eine passende Lizenz können Sie unter <a href=\"https://www.jtl-software.de/JTL-Shop-Onlineshop-und-Erweiterungen\">jtl-software.de erwerben</a>."
 
 msgid "pageBack"
-msgstr "zurück"
+msgstr "Back"
 
 msgid "submit"
-msgstr "absenden"
+msgstr "Submit"
 
 msgid "cancel"
-msgstr "Abbrechen"
+msgstr "Cancel"
 
 msgid "apply"
-msgstr "Übernehmen"
+msgstr "Apply"
 
 msgid "exportCsv"
-msgstr "Exportiere Einträge"
+msgstr "Export entries"
 
 msgid "importCsv"
-msgstr "Importiere Einträge"
+msgstr "Import entries"
 
 msgid "importCsvChooseType"
-msgstr "Wie soll importiert werden?"
+msgstr "How should the CSV be imported?"
 
 msgid "importCsvType0"
-msgstr "Vorhandene Einträge löschen, dann importieren"
+msgstr "Delete existing entries, then import"
 
 msgid "importCsvType1"
-msgstr "Vorhandene Einträge überschreiben und neue importieren"
+msgstr "Override existing entries and import new ones"
 
 msgid "importCsvType2"
-msgstr "Vorhandene Einträge beibehalten und neue importieren"
+msgstr "Keep existing entries and import new ones"
 
 msgid "selectAllShown"
-msgstr "Alle auswählen"
+msgstr "Select all"
 
 msgid "unselectAllShown"
-msgstr "Alle abwählen"
+msgstr "Unselect all"
 
 msgid "file"
-msgstr "Datei"
+msgstr "File"
 
 msgid "import"
-msgstr "Importieren"
+msgstr "Import"
 
 msgid "noAccount"
-msgstr "- Kein Kundenkonto -"
+msgstr "- No account -"
 
 msgid "confirm"
-msgstr "Bestätigen"
+msgstr "Confirm"
 
 msgid "wantToConfirm"
-msgstr "Möchten Sie fortfahren?"
+msgstr "Would you like to proceed?"
 
 msgid "reloadCaptcha"
-msgstr "Captcha neu laden"
+msgstr "Reload Captcha"
 
 msgid "invalidToken"
-msgstr "Ungültiger Sicherheitscode übermittelt"
+msgstr "Invalid security token received"

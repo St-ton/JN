@@ -18,11 +18,11 @@ use Smarty\JTLSmarty;
 interface WidgetInterface
 {
     /**
-     * @param \Smarty\JTLSmarty $smarty
+     * @param JTLSmarty $smarty
      * @param DbInterface  $db
      * @param \Plugin|\Plugin\Extension $oPlugin
      */
-    public function __construct($smarty = null, DbInterface $db = null, $oPlugin = null);
+    public function __construct(JTLSmarty $smarty = null, DbInterface $db = null, $oPlugin = null);
 
     /**
      * @return JTLSmarty

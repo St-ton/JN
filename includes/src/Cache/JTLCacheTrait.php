@@ -377,7 +377,7 @@ trait JTLCacheTrait
     /**
      * @inheritdoc
      */
-    public function setError(string $error): JTLCacheInterface
+    public function setError(string $error)
     {
         $this->error = $error;
 

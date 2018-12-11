@@ -155,6 +155,7 @@ interface ICachingMethod
 
     /**
      * @param string $error
+     * @return JTLCacheInterface
      */
     public function setError(string $error);
 }

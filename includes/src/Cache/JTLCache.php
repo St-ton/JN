@@ -234,7 +234,7 @@ final class JTLCache implements JTLCacheInterface
     /**
      * @inheritdoc
      */
-    public function setError(string $error): JTLCacheInterface
+    public function setError(string $error)
     {
         $this->error = $error;
 

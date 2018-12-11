@@ -82,5 +82,4 @@ if ($oAccount->logged()) {
 
 $pageName = basename($_SERVER['PHP_SELF'], '.php');
 
-L10n\GetText::getInstance()->loadAdminLocale("pages/global")
-                           ->loadAdminLocale("pages/$pageName");
+L10n\GetText::getInstance()->loadAdminLocale("pages/$pageName");

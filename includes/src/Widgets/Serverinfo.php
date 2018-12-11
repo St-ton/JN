@@ -23,8 +23,8 @@ class Serverinfo extends AbstractWidget
                       ->assign('phpVersion', \StringHandler::htmlentities(\PHP_VERSION))
                       ->assign('serverAddress', \StringHandler::htmlentities($_SERVER['SERVER_ADDR']))
                       ->assign('serverHTTPHost', \StringHandler::htmlentities($_SERVER['HTTP_HOST']))
-                      ->assign('mySQLVersion', \StringHandler::htmlentities($this->oDB->info()))
-                      ->assign('mySQLStats', \StringHandler::htmlentities($this->oDB->stats()))
+                      ->assign('mySQLVersion', \StringHandler::htmlentities($this->oDB->getServerInfo()))
+                      ->assign('mySQLStats', \StringHandler::htmlentities($this->oDB->getServerStats()))
                       ->assign('cShopHost', $cUrl['scheme'] . '://' . $cUrl['host']);
     }
 

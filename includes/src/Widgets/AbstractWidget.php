@@ -6,7 +6,9 @@
 
 namespace Widgets;
 
+use DB\DbInterface;
 use Plugin\AbstractExtension;
+use Smarty\ContextType;
 use Smarty\JTLSmarty;
 
 /**
@@ -38,12 +40,12 @@ abstract class AbstractWidget implements WidgetInterface
 
     /**
      * @param \Smarty\JTLSmarty $smarty
-     * @param \DB\DbInterface  $db
+     * @param DbInterface  $db
      * @param \Plugin|\Plugin\Extension $oPlugin
      */
-    public function __construct($smarty = null, $db = null, $oPlugin = null)
+    public function __construct($smarty = null, DbInterface $db = null, $oPlugin = null)
     {
-        $this->oSmarty = $smarty ?? \Shop::Smarty();
+        $this->oSmarty = $smarty ?? \Shop::Smarty(false, ContextType::BACKEND);
         $this->oDB     = $db ?? \Shop::Container()->getDB();
         $this->oPlugin = $oPlugin;
         $this->init();
@@ -66,17 +68,17 @@ abstract class AbstractWidget implements WidgetInterface
     }
 
     /**
-     * @return \DB\DbInterface
+     * @return DbInterface
      */
-    public function getDB(): \DB\DbInterface
+    public function getDB(): DbInterface
     {
         return $this->oDB;
     }
 
     /**
-     * @param \DB\DbInterface $oDB
+     * @param DbInterface $oDB
      */
-    public function setDB(\DB\DbInterface $oDB): void
+    public function setDB(DbInterface $oDB): void
     {
         $this->oDB = $oDB;
     }

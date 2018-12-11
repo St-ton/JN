@@ -1,13 +1,12 @@
 <?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: MO
- * Date: 2018-12-05
- * Time: 15:30
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
  */
 
 namespace Widgets;
 
+use DB\DbInterface;
 use Plugin\AbstractExtension;
 use Smarty\JTLSmarty;
 
@@ -20,10 +19,10 @@ interface WidgetInterface
 {
     /**
      * @param \Smarty\JTLSmarty $smarty
-     * @param \DB\DbInterface  $db
+     * @param DbInterface  $db
      * @param \Plugin|\Plugin\Extension $oPlugin
      */
-    public function __construct($smarty = null, $db = null, $oPlugin = null);
+    public function __construct($smarty = null, DbInterface $db = null, $oPlugin = null);
 
     /**
      * @return JTLSmarty
@@ -36,14 +35,14 @@ interface WidgetInterface
     public function setSmarty(JTLSmarty $oSmarty): void;
 
     /**
-     * @return \DB\DbInterface
+     * @return DbInterface
      */
-    public function getDB(): \DB\DbInterface;
+    public function getDB(): DbInterface;
 
     /**
-     * @param \DB\DbInterface $oDB
+     * @param DbInterface $oDB
      */
-    public function setDB(\DB\DbInterface $oDB): void;
+    public function setDB(DbInterface $oDB): void;
 
     /**
      * @return AbstractExtension

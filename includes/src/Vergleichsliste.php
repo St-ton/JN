@@ -44,7 +44,28 @@ class Vergleichsliste
 
             executeHook(HOOK_VERGLEICHSLISTE_CLASS_EINFUEGEN);
         } elseif (isset($_SESSION['Vergleichsliste'])) {
-            $this->oArtikel_arr = $_SESSION['Vergleichsliste']->oArtikel_arr;
+            $this->loadFromSession();
+        }
+    }
+
+    /**
+     * load comparelist from session
+     */
+    public function loadFromSession(): void
+    {
+        $compareList = \Session::get('Vergleichsliste');
+        if ($compareList !== null) {
+            $defaultOptions = Artikel::getDefaultOptions();
+            $linkHelper     = Shop::Container()->getLinkService();
+            $baseURL        = $linkHelper->getStaticRoute('vergleichsliste.php');
+            foreach ($compareList->oArtikel_arr as $oArtikel) {
+                $product = (new Artikel())->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
+                $product->cURLDEL = $baseURL . '?vlplo=' . $oArtikel->kArtikel;
+                if (isset($oArtikel->oVariationen_arr) && count($oArtikel->oVariationen_arr) > 0) {
+                    $product->Variationen = $oArtikel->oVariationen_arr;
+                }
+                $this->oArtikel_arr[] = $product;
+            }
         }
     }
 
@@ -123,12 +144,11 @@ class Vergleichsliste
      */
     public static function buildAttributeAndVariation(Vergleichsliste $compareList): array
     {
-        $res        = [];
         $attributes = [];
         $variations = [];
         foreach ($compareList->oArtikel_arr as $oArtikel) {
-            /** @var Artikel|stdClass $oArtikel */
-            if (isset($oArtikel->oMerkmale_arr) && count($oArtikel->oMerkmale_arr) > 0) {
+            /** @var Artikel $oArtikel */
+            if (count($oArtikel->oMerkmale_arr) > 0) {
                 // Falls das Merkmal Array nicht leer ist
                 if (count($attributes) > 0) {
                     foreach ($oArtikel->oMerkmale_arr as $oMerkmale) {
@@ -141,7 +161,7 @@ class Vergleichsliste
                 }
             }
             // Falls ein Artikel min. eine Variation enthält
-            if (isset($oArtikel->Variationen) && count($oArtikel->Variationen) > 0) {
+            if (count($oArtikel->Variationen) > 0) {
                 if (count($variations) > 0) {
                     foreach ($oArtikel->Variationen as $oVariationen) {
                         if (!self::containsVariation($variations, $oVariationen->cName)) {
@@ -153,10 +173,11 @@ class Vergleichsliste
                 }
             }
         }
-        $res[0] = $attributes;
-        $res[1] = $variations;
 
-        return $res;
+        return [
+            $attributes,
+            $variations
+        ];
     }
 
     /**

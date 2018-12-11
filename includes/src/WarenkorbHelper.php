@@ -583,10 +583,6 @@ class WarenkorbHelper
                     $kArtikel         = ArtikelHelper::getArticleForParent($kArtikel);
                     $oVariationen_arr = ArtikelHelper::getSelectedPropertiesForVarCombiArticle($kArtikel, 1);
                 }
-                // Prüfe auf Vater Artikel
-                if (ArtikelHelper::isParent($kArtikel)) {
-                    $kArtikel = ArtikelHelper::getArticleForParent($kArtikel);
-                }
                 $oVergleichsliste = new Vergleichsliste($kArtikel, $oVariationen_arr);
                 // Falls es eine Vergleichsliste in der Session gibt
                 if (isset($_SESSION['Vergleichsliste'])) {

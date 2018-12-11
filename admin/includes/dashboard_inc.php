@@ -24,6 +24,7 @@ function getWidgets(bool $bActive = true)
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     if ($bActive) {
+        $smarty = \Smarty\JTLSmarty::getInstance(false, \Smarty\ContextType::BACKEND);
         foreach ($widgets as $widget) {
             $widget->kWidget    = (int)$widget->kWidget;
             $widget->kPlugin    = (int)$widget->kPlugin;
@@ -51,8 +52,8 @@ function getWidgets(bool $bActive = true)
                 require_once $classPath;
             }
             if (class_exists($className)) {
-                /** @var \Widgets\WidgetBase $instance */
-                $instance         = new $className(null, $db, $plugin);
+                /** @var \Widgets\AbstractWidget $instance */
+                $instance         = new $className($smarty, $db, $plugin);
                 $widget->cContent = $instance->getContent();
                 $widget->hasBody  = $instance->hasBody;
             }

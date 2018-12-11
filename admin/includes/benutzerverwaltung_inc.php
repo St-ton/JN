@@ -35,7 +35,7 @@ function getAdminGroups(): array
     return Shop::Container()->getDB()->query(
         'SELECT tadminlogingruppe.*, COUNT(tadminlogin.kAdminlogingruppe) AS nCount
             FROM tadminlogingruppe
-            JOIN tadminlogin
+            LEFT JOIN tadminlogin
                 ON tadminlogin.kAdminlogingruppe = tadminlogingruppe.kAdminlogingruppe
             GROUP BY tadminlogingruppe.kAdminlogingruppe',
         \DB\ReturnType::ARRAY_OF_OBJECTS

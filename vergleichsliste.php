@@ -11,6 +11,9 @@ $oVergleichsliste = null;
 $conf             = Shop::getSettings([CONF_VERGLEICHSLISTE, CONF_ARTIKELDETAILS]);
 $cExclude         = [];
 $oMerkVaria_arr   = [[], []];
+$linkHelper       = Shop::Container()->getLinkService();
+$kLink            = $linkHelper->getSpecialPageLinkKey(LINKTYP_VERGLEICHSLISTE);
+$link             = $linkHelper->getPageLink($kLink);
 //hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
@@ -36,24 +39,6 @@ if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {
     }
 }
 
-if ($oVergleichsliste !== null) {
-    $oArtikel_arr     = [];
-    $defaultOptions   = Artikel::getDefaultOptions();
-    $linkHelper       = Shop::Container()->getLinkService();
-    $kLink            = $linkHelper->getSpecialPageLinkKey(LINKTYP_VERGLEICHSLISTE);
-    $link             = $linkHelper->getPageLink($kLink);
-    $baseURL          = $linkHelper->getStaticRoute('vergleichsliste.php');
-    foreach ($oVergleichsliste->oArtikel_arr as $oArtikel) {
-        $artikel = (new Artikel())->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
-        $artikel->cURLDEL = $baseURL . '?vlplo=' . $oArtikel->kArtikel;
-        if (isset($oArtikel->oVariationen_arr) && count($oArtikel->oVariationen_arr) > 0) {
-            $artikel->Variationen = $oArtikel->oVariationen_arr;
-        }
-        $oArtikel_arr[] = $artikel;
-    }
-    $oVergleichsliste               = new stdClass();
-    $oVergleichsliste->oArtikel_arr = $oArtikel_arr;
-}
 // Spaltenbreite
 $nBreiteAttribut = ($conf['vergleichsliste']['vergleichsliste_spaltengroesseattribut'] > 0)
     ? (int)$conf['vergleichsliste']['vergleichsliste_spaltengroesseattribut']

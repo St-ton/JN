@@ -150,7 +150,7 @@ switch (true) {
                ->assign('query', $query)
                ->assign('count', $count)
                ->assign('pages', $pages)
-               ->assign('Pagination\Filter', $filter)
+               ->assign('filter', $filter)
                ->assign('columns', $columns)
                ->assign('info', $info)
                ->assign('sub', 'select')

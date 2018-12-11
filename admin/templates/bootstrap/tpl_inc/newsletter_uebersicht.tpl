@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=__("newsletteroverview") cBeschreibung=__("newsletterdesc") cDokuURL=__("newsletterURL")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('newsletteroverview') cBeschreibung=__('newsletterdesc') cDokuURL=__('newsletterURL')}
 <div id="content" class="container-fluid">
     <div class="block">
         <form name="sprache" method="post" action="newsletter.php">
@@ -6,10 +6,10 @@
             <input type="hidden" name="sprachwechsel" value="1" />
             <div class="input-group p25 left">
                 <span class="input-group-addon">
-                    <label for="{__("changeLanguage")}">{__("changeLanguage")}:</label>
+                    <label for="{__('changeLanguage')}">{__('changeLanguage')}:</label>
                 </span>
                 <span class="input-group-wrap last">
-                    <select id="{__("changeLanguage")}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
+                    <select id="{__('changeLanguage')}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
                         {foreach $Sprachen as $sprache}
                             <option value="{$sprache->kSprache}" {if $sprache->kSprache==$smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
                         {/foreach}
@@ -20,28 +20,28 @@
     </div>
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'inaktiveabonnenten'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#inaktiveabonnenten">{__("newsletterSubscripterNotActive")}</a>
+            <a data-toggle="tab" role="tab" href="#inaktiveabonnenten">{__('newsletterSubscripterNotActive')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'alleabonnenten'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#alleabonnenten">{__("newsletterAllSubscriber")}</a>
+            <a data-toggle="tab" role="tab" href="#alleabonnenten">{__('newsletterAllSubscriber')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'neuerabonnenten'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#neuerabonnenten">{__("newsletterNewSubscriber")}</a>
+            <a data-toggle="tab" role="tab" href="#neuerabonnenten">{__('newsletterNewSubscriber')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'newsletterqueue'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#newsletterqueue">{__("newsletterqueue")}</a>
+            <a data-toggle="tab" role="tab" href="#newsletterqueue">{__('newsletterqueue')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'newslettervorlagen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#newslettervorlagen">{__("newsletterdraft")}</a>
+            <a data-toggle="tab" role="tab" href="#newslettervorlagen">{__('newsletterdraft')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'newslettervorlagenstd'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#newslettervorlagenstd">{__("newsletterdraftStd")}</a>
+            <a data-toggle="tab" role="tab" href="#newslettervorlagenstd">{__('newsletterdraftStd')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'newsletterhistory'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#newsletterhistory">{__("newsletterhistory")}</a>
+            <a data-toggle="tab" role="tab" href="#newsletterhistory">{__('newsletterhistory')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einstellungen">{__("newsletterconfig")}</a>
+            <a data-toggle="tab" role="tab" href="#einstellungen">{__('newsletterconfig')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -56,12 +56,12 @@
                     {/if}
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="cSucheInaktiv">{__("newslettersubscriberSearch")}:</label>
+                            <label for="cSucheInaktiv">{__('newslettersubscriberSearch')}:</label>
                         </span>
                         <input class="form-control" id="cSucheInaktiv" name="cSucheInaktiv" type="text" value="{if isset($cSucheInaktiv) && $cSucheInaktiv|strlen > 0}{$cSucheInaktiv}{/if}" />
                         <span class="input-group-btn">
-                            <button name="submitInaktiveAbonnentenSuche" type="submit" class="btn btn-primary" value="{__("newsletterSearchBTN")}">
-                                <i class="fa fa-search"></i> {__("newsletterSearchBTN")}
+                            <button name="submitInaktiveAbonnentenSuche" type="submit" class="btn btn-primary" value="{__('newsletterSearchBTN')}">
+                                <i class="fa fa-search"></i> {__('newsletterSearchBTN')}
                             </button>
                         </span>
                     </div>
@@ -80,11 +80,11 @@
                                 <table class="table table-striped">
                                     <tr>
                                         <th class="th-1">&nbsp;</th>
-                                        <th class="tleft">{__("newslettersubscriberfirstname")}</th>
-                                        <th class="tleft">{__("newslettersubscriberlastname")}</th>
-                                        <th class="tleft">{__("newslettersubscriberCustomerGrp")}</th>
-                                        <th class="tleft">{__("newslettersubscriberemail")}</th>
-                                        <th class="tcenter">{__("newslettersubscriberdate")}</th>
+                                        <th class="tleft">{__('newslettersubscriberfirstname')}</th>
+                                        <th class="tleft">{__('newslettersubscriberlastname')}</th>
+                                        <th class="tleft">{__('newslettersubscriberCustomerGrp')}</th>
+                                        <th class="tleft">{__('newslettersubscriberemail')}</th>
+                                        <th class="tcenter">{__('newslettersubscriberdate')}</th>
                                     </tr>
                                     {foreach $oNewsletterEmpfaenger_arr as $oNewsletterEmpfaenger}
                                         <tr>
@@ -93,7 +93,7 @@
                                             </td>
                                             <td class="tleft">{if $oNewsletterEmpfaenger->cVorname != ""}{$oNewsletterEmpfaenger->cVorname}{else}{$oNewsletterEmpfaenger->newsVorname}{/if}</td>
                                             <td class="tleft">{if $oNewsletterEmpfaenger->cNachname != ""}{$oNewsletterEmpfaenger->cNachname}{else}{$oNewsletterEmpfaenger->newsNachname}{/if}</td>
-                                            <td class="tleft">{if isset($oNewsletterEmpfaenger->cName) && $oNewsletterEmpfaenger->cName|strlen > 0}{$oNewsletterEmpfaenger->cName}{else}{__("NotAvailable")}{/if}</td>
+                                            <td class="tleft">{if isset($oNewsletterEmpfaenger->cName) && $oNewsletterEmpfaenger->cName|strlen > 0}{$oNewsletterEmpfaenger->cName}{else}{__('NotAvailable')}{/if}</td>
                                             <td class="tleft">{$oNewsletterEmpfaenger->cEmail}{if $oNewsletterEmpfaenger->nAktiv == 0} *{/if}</td>
                                             <td class="tcenter">{$oNewsletterEmpfaenger->Datum}</td>
                                         </tr>
@@ -102,21 +102,21 @@
                                         <td>
                                             <input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
                                         </td>
-                                        <td colspan="6"><label for="ALLMSGS2">{__("globalSelectAll")}</label></td>
+                                        <td colspan="6"><label for="ALLMSGS2">{__('globalSelectAll')}</label></td>
                                     </tr>
                                 </table>
                             </div>
                             <div class="panel-footer">
                                 <div class="btn-group">
-                                    <button name="abonnentfreischaltenSubmit" type="submit" value="{__("newsletterUnlock")}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__("newsletterUnlock")}</button>
-                                    <button class="btn btn-danger" name="abonnentloeschenSubmit" type="submit" value="{__("newsletterdelete")}"><i class="fa fa-trash"></i> markierte {__("newsletterdelete")}</button>
+                                    <button name="abonnentfreischaltenSubmit" type="submit" value="{__('newsletterUnlock')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('newsletterUnlock')}</button>
+                                    <button class="btn btn-danger" name="abonnentloeschenSubmit" type="submit" value="{__('newsletterdelete')}"><i class="fa fa-trash"></i> markierte {__('newsletterdelete')}</button>
                                 </div>
                             </div>
                         </div>
                     </form>
                 </div>
             {else}
-                <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="alleabonnenten" class="tab-pane fade{if isset($cTab) && $cTab === 'alleabonnenten'} active in{/if}">
@@ -131,12 +131,12 @@
                     <div id="newsletter-all-search">
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cSucheAktiv">{__("newslettersubscriberSearch")}</label>
+                                <label for="cSucheAktiv">{__('newslettersubscriberSearch')}</label>
                             </span>
                             <input id="cSucheAktiv" name="cSucheAktiv" class="form-control" type="text" value="{if isset($cSucheAktiv) && $cSucheAktiv|strlen > 0}{$cSucheAktiv}{/if}" />
                             <span class="input-group-btn">
-                                <button name="submitSuche" type="submit" value="{__("newsletterSearchBTN")}" class="btn btn-primary">
-                                    <i class="fa fa-search"></i> {__("newsletterSearchBTN")}
+                                <button name="submitSuche" type="submit" value="{__('newsletterSearchBTN')}" class="btn btn-primary">
+                                    <i class="fa fa-search"></i> {__('newsletterSearchBTN')}
                                 </button>
                             </span>
                         </div>
@@ -151,19 +151,19 @@
                     <div id="newsletter-all-content">
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h3 class="panel-title">{__("newsletterAllSubscriber")}</h3>
+                                <h3 class="panel-title">{__('newsletterAllSubscriber')}</h3>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-striped">
                                     <tr>
                                         <th class="th-1">&nbsp;</th>
-                                        <th class="tleft">{__("newslettersubscribername")}</th>
-                                        <th class="tleft">{__("newslettersubscriberCustomerGrp")}</th>
-                                        <th class="tleft">{__("newslettersubscriberemail")}</th>
-                                        <th class="tcenter">{__("newslettersubscriberdate")}</th>
-                                        <th class="tcenter">{__("newslettersubscriberLastNewsletter")}</th>
-                                        <th class="tleft">{__("newsletterOptInIp")}</th>
-                                        <th class="tcenter">{__("newsletterOptInDate")}</th>
+                                        <th class="tleft">{__('newslettersubscribername')}</th>
+                                        <th class="tleft">{__('newslettersubscriberCustomerGrp')}</th>
+                                        <th class="tleft">{__('newslettersubscriberemail')}</th>
+                                        <th class="tcenter">{__('newslettersubscriberdate')}</th>
+                                        <th class="tcenter">{__('newslettersubscriberLastNewsletter')}</th>
+                                        <th class="tleft">{__('newsletterOptInIp')}</th>
+                                        <th class="tcenter">{__('newsletterOptInDate')}</th>
                                     </tr>
                                     {foreach $oAbonnenten_arr as $oAbonnenten}
                                         <tr>
@@ -183,23 +183,23 @@
                                         <td>
                                             <input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);">
                                         </td>
-                                        <td colspan="7"><label for="ALLMSGS3">{__("globalSelectAll")}</label></td>
+                                        <td colspan="7"><label for="ALLMSGS3">{__('globalSelectAll')}</label></td>
                                     </tr>
                                 </table>
                             </div>
                             <div class="panel-footer">
-                                <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__("deleteSelected")}</button>
+                                <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
                             </div>
                         </div>
                     </div>
                 </form>
             {else}
-                <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {if isset($cSucheAktiv) && $cSucheAktiv|strlen > 0}
                     <form method="post" action="newsletter.php">
                         {$jtl_token}
                         <input name="tab" type="hidden" value="alleabonnenten" />
-                        <input name="submitAbo" type="submit" value="{__("newsletterNewSearch")}" class="btn btn-primary" />
+                        <input name="submitAbo" type="submit" value="{__('newsletterNewSearch')}" class="btn btn-primary" />
                     </form>
                 {/if}
             {/if}
@@ -211,12 +211,12 @@
                 <input name="tab" type="hidden" value="neuerabonnenten">
                 <div class="panel panel-default settings">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{__("newsletterNewSubscriber")}</h3>
+                        <h3 class="panel-title">{__('newsletterNewSubscriber')}</h3>
                     </div>
                     <div class="panel-body">
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cAnrede">{__("newslettersubscriberanrede")}</label>
+                                <label for="cAnrede">{__('newslettersubscriberanrede')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select class="form-control" name="cAnrede" id="cAnrede">
@@ -227,28 +227,28 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cVorname">{__("newslettersubscriberfirstname")}</label>
+                                <label for="cVorname">{__('newslettersubscriberfirstname')}</label>
                             </span>
                             <input class="form-control" type="text" name="cVorname" id="cVorname" value="{if isset($oNewsletter->cVorname)}{$oNewsletter->cVorname}{/if}" />
                         </div>
 
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cNachname">{__("newslettersubscriberlastname")}</label>
+                                <label for="cNachname">{__('newslettersubscriberlastname')}</label>
                             </span>
                             <input class="form-control" type="text" name="cNachname" id="cNachname" value="{if isset($oNewsletter->cNachname)}{$oNewsletter->cNachname}{/if}" />
                         </div>
 
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cEmail">{__("newslettersubscriberemail")}</label>
+                                <label for="cEmail">{__('newslettersubscriberemail')}</label>
                             </span>
                             <input class="form-control" type="text" name="cEmail" id="cEmail" value="{if isset($oNewsletter->cEmail)}{$oNewsletter->cEmail}{/if}" />
                         </div>
 
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="kSprache">{__("newslettersubscriberlang")}</label>
+                                <label for="kSprache">{__('newslettersubscriberlang')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select class="form-control" name="kSprache" id="kSprache">
@@ -260,7 +260,7 @@
                         </div>
                     </div>
                     <div class="panel-footer">
-                        <button name="speichern" type="submit" value="{__("save")}" class="btn btn-primary"><i class="fa fa-save"></i> {__("save")}</button>
+                        <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </div>
             </form>
@@ -275,17 +275,17 @@
                     <div id="newsletter-queue-content">
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h3 class="panel-title">{__("newsletterqueue")}</h3>
+                                <h3 class="panel-title">{__('newsletterqueue')}</h3>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-striped">
                                     <tr>
                                         <th class="th-1" style="width: 4%;">&nbsp;</th>
-                                        <th class="th-2" style="width: 40%;">{__("newsletterqueuesubject")}</th>
-                                        <th class="th-3" style="width: 30%;">{__("newsletterqueuedate")}</th>
-                                        <th class="th-4" style="width: 26%;">{__("newsletterqueueimprovement")}</th>
-                                        <th class="th-5" style="width: 26%;">{__("newsletterqueuecount")}</th>
-                                        <th class="th-6" style="width: 26%;">{__("newsletterqueuecustomergrp")}</th>
+                                        <th class="th-2" style="width: 40%;">{__('newsletterqueuesubject')}</th>
+                                        <th class="th-3" style="width: 30%;">{__('newsletterqueuedate')}</th>
+                                        <th class="th-4" style="width: 26%;">{__('newsletterqueueimprovement')}</th>
+                                        <th class="th-5" style="width: 26%;">{__('newsletterqueuecount')}</th>
+                                        <th class="th-6" style="width: 26%;">{__('newsletterqueuecustomergrp')}</th>
                                     </tr>
                                     {foreach $oNewsletterQueue_arr as $oNewsletterQueue}
                                         {if isset($oNewsletterQueue->nAnzahlEmpfaenger) && $oNewsletterQueue->nAnzahlEmpfaenger > 0}
@@ -312,18 +312,18 @@
                                         <td>
                                             <input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessages(this.form);">
                                         </td>
-                                        <td colspan="6"><label for="ALLMSGS4">{__("globalSelectAll")}</label></td>
+                                        <td colspan="6"><label for="ALLMSGS4">{__('globalSelectAll')}</label></td>
                                     </tr>
                                 </table>
                             </div>
                             <div class="panel-footer">
-                                <button name="loeschen" type="submit" value="{__("newsletterdelete")}" class="btn btn-danger"><i class="fa fa-trash"></i> {__("newsletterdelete")}</button>
+                                <button name="loeschen" type="submit" value="{__('newsletterdelete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('newsletterdelete')}</button>
                             </div>
                         </div>
                     </div>
                 </form>
             {else}
-                <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="newslettervorlagen" class="tab-pane fade{if isset($cTab) && $cTab == 'newslettervorlagen'} active in{/if}">
@@ -342,10 +342,10 @@
                                 <table class="table table-striped">
                                     <tr>
                                         <th class="th-1">&nbsp;</th>
-                                        <th class="th-2">{__("newsletterdraftname")}</th>
-                                        <th class="th-3">{__("newsletterdraftsubject")}</th>
-                                        <th class="th-4">{__("newsletterdraftStdShort")}</th>
-                                        <th class="th-5" style="width: 385px;">{__("newsletterdraftoptions")}</th>
+                                        <th class="th-2">{__('newsletterdraftname')}</th>
+                                        <th class="th-3">{__('newsletterdraftsubject')}</th>
+                                        <th class="th-4">{__('newsletterdraftStdShort')}</th>
+                                        <th class="th-5" style="width: 385px;">{__('newsletterdraftoptions')}</th>
                                     </tr>
                                     {foreach $oNewsletterVorlage_arr as $oNewsletterVorlage}
                                         <tr>
@@ -356,28 +356,28 @@
                                             <td>{$oNewsletterVorlage->cBetreff}</td>
                                             <td>
                                                 {if $oNewsletterVorlage->kNewslettervorlageStd > 0}
-                                                    {__("yes")}
+                                                    {__('yes')}
                                                 {else}
-                                                    {__("no")}
+                                                    {__('no')}
                                                 {/if}
                                             </td>
                                             <td>
                                                 <div class="btn-group">
                                                     <a class="btn btn-default"
                                                        href="newsletter.php?&vorschau={$oNewsletterVorlage->kNewsletterVorlage}&iframe=1&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
-                                                       title="{__("newsletterPreview")}"><i class="fa fa-eye"></i></a>
+                                                       title="{__('newsletterPreview')}"><i class="fa fa-eye"></i></a>
                                                     {if $oNewsletterVorlage->kNewslettervorlageStd > 0}
                                                         <a class="btn btn-default"
                                                            href="newsletter.php?newslettervorlagenstd=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
-                                                           title="{__("modify")}"><i class="fa fa-edit"></i></a>
+                                                           title="{__('modify')}"><i class="fa fa-edit"></i></a>
                                                     {else}
                                                         <a class="btn btn-default"
                                                            href="newsletter.php?newslettervorlagen=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
-                                                           title="{__("modify")}"><i class="fa fa-edit"></i></a>
+                                                           title="{__('modify')}"><i class="fa fa-edit"></i></a>
                                                     {/if}
                                                     <a class="btn btn-default"
                                                        href="newsletter.php?newslettervorlagen=1&vorbereiten={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
-                                                       title="{__("newsletterprepare")}">{__("newsletterprepare")}</a>
+                                                       title="{__('newsletterprepare')}">{__('newsletterprepare')}</a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -386,15 +386,15 @@
                                         <td>
                                             <input name="ALLMSGS" id="ALLMSGS5" type="checkbox" onclick="AllMessages(this.form);">
                                         </td>
-                                        <td colspan="6"><label for="ALLMSGS5">{__("globalSelectAll")}</label></td>
+                                        <td colspan="6"><label for="ALLMSGS5">{__('globalSelectAll')}</label></td>
                                     </tr>
                                 </table>
                             </div>
                             <div class="panel-footer">
                                 <div class="{if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}btn-group{/if}">
-                                    <button name="vorlage_erstellen" class="btn btn-primary" type="submit">{__("newsletterdraftcreate")}</button>
+                                    <button name="vorlage_erstellen" class="btn btn-primary" type="submit">{__('newsletterdraftcreate')}</button>
                                     {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
-                                        <button class="btn btn-danger" name="loeschen" type="submit" value="{__("newsletterdelete")}"><i class="fa fa-trash"></i> {__("newsletterdelete")}</button>
+                                        <button class="btn btn-danger" name="loeschen" type="submit" value="{__('newsletterdelete')}"><i class="fa fa-trash"></i> {__('newsletterdelete')}</button>
                                     {/if}
                                 </div>
                             </div>
@@ -406,11 +406,11 @@
                     {$jtl_token}
                     <input name="newslettervorlagen" type="hidden" value="1">
                     <input name="tab" type="hidden" value="newslettervorlagen">
-                        <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                        <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                         <div class="submit {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}btn-group{/if}">
-                            <button name="vorlage_erstellen" class="btn btn-primary" type="submit">{__("newsletterdraftcreate")}</button>
+                            <button name="vorlage_erstellen" class="btn btn-primary" type="submit">{__('newsletterdraftcreate')}</button>
                             {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
-                                <button class="btn btn-danger" name="loeschen" type="submit" value="{__("newsletterdelete")}"><i class="fa fa-trash"></i> {__("newsletterdelete")}</button>
+                                <button class="btn btn-danger" name="loeschen" type="submit" value="{__('newsletterdelete')}"><i class="fa fa-trash"></i> {__('newsletterdelete')}</button>
                             {/if}
                         </div>
                 </form>
@@ -427,13 +427,13 @@
                     <div id="newsletter-vorlage-std-content">
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h3 class="panel-title">{__("newsletterdraftStd")}</h3>
+                                <h3 class="panel-title">{__('newsletterdraftStd')}</h3>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-striped">
                                     <tr>
-                                        <th class="th-1">{__("newsletterdraftname")}</th>
-                                        <th class="th-2">{__("newsletterdraftStdPicture")}</th>
+                                        <th class="th-1">{__('newsletterdraftname')}</th>
+                                        <th class="th-2">{__('newsletterdraftStdPicture')}</th>
                                     </tr>
                                     {foreach $oNewslettervorlageStd_arr as $oNewslettervorlageStd}
                                         <tr>
@@ -446,13 +446,13 @@
                                 </table>
                             </div>
                             <div class="panel-footer">
-                                <button name="submitVorlageStd" type="submit" value="{__("newsletterdraftStdUse")}" class="btn btn-primary"><i class="fa fa-share"></i> {__("newsletterdraftStdUse")}</button>
+                                <button name="submitVorlageStd" type="submit" value="{__('newsletterdraftStdUse')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('newsletterdraftStdUse')}</button>
                             </div>
                         </div>
                     </div>
                 </form>
             {else}
-                <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="newsletterhistory" class="tab-pane fade{if isset($cTab) && $cTab === 'newsletterhistory'} active in{/if}">
@@ -465,16 +465,16 @@
                     <div id="newsletter-history-content">
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h3 class="panel-title">{__("newsletterhistory")}</h3>
+                                <h3 class="panel-title">{__('newsletterhistory')}</h3>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-striped">
                                     <tr>
                                         <th class="th-1">&nbsp;</th>
-                                        <th class="tleft">{__("newsletterhistorysubject")}</th>
-                                        <th class="tleft">{__("newsletterhistorycount")}</th>
-                                        <th class="tleft">{__("newsletterqueuecustomergrp")}</th>
-                                        <th class="tcenter">{__("newsletterhistorydate")}</th>
+                                        <th class="tleft">{__('newsletterhistorysubject')}</th>
+                                        <th class="tleft">{__('newsletterhistorycount')}</th>
+                                        <th class="tleft">{__('newsletterqueuecustomergrp')}</th>
+                                        <th class="tcenter">{__('newsletterhistorydate')}</th>
                                     </tr>
                                     {foreach $oNewsletterHistory_arr as $oNewsletterHistory}
                                         <tr>
@@ -493,22 +493,22 @@
                                         <td>
                                             <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
                                         </td>
-                                        <td colspan="6"><label for="ALLMSGS">{__("globalSelectAll")}</label></td>
+                                        <td colspan="6"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
                                     </tr>
                                 </table>
                             </div>
                             <div class="panel-footer">
-                                <button name="loeschen" type="submit" class="btn btn-danger" value="{__("newsletterdelete")}"><i class="fa fa-trash"></i> {__("newsletterdelete")}</button>
+                                <button name="loeschen" type="submit" class="btn btn-danger" value="{__('newsletterdelete')}"><i class="fa fa-trash"></i> {__('newsletterdelete')}</button>
                             </div>
                         </div>
                     </div>
                 </form>
             {else}
-                <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="einstellungen" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
-            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='newsletter.php' buttonCaption=__("save") title='Einstellungen' tab='einstellungen'}
+            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='newsletter.php' buttonCaption=__('save') title='Einstellungen' tab='einstellungen'}
         </div>
     </div><!-- .tab-content-->
 </div><!-- #content -->

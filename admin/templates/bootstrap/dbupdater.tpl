@@ -2,17 +2,17 @@
 {config_load file="$lang.conf" section="shopupdate"}
 {include file='tpl_inc/header.tpl'}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=__("dbupdater") cBeschreibung=__("dbupdaterDesc") cDokuURL=__("dbupdaterURL")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('dbupdater') cBeschreibung=__('dbupdaterDesc') cDokuURL=__('dbupdaterURL')}
 <div id="content" class="container-fluid">
     <div class="container-fluid2">
         <div id="resultLog" {if !$updatesAvailable}style="display: none;"{/if}>
             <h4>Ereignisprotokoll</h4>
             <pre id="debug">
-{__("currentShopVersion")}
+{__('currentShopVersion')}
      System: {$currentFileVersion}
      Datenbank: {$currentDatabaseVersion}
 {if $currentTemplateFileVersion != $currentTemplateDatabaseVersion}
-    {__("currentTemplateVersion")}
+    {__('currentTemplateVersion')}
          System: {$currentTemplateFileVersion}
          Datenbank: {$currentTemplateDatabaseVersion}
 {/if}</pre>

@@ -28,7 +28,7 @@
     {rdelim}
 </script>
 
-{include file='tpl_inc/seite_header.tpl' cTitel=__("kampagneDetailStats")|cat:' '|cat:$oKampagne->cName}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('kampagneDetailStats')|cat:' '|cat:$oKampagne->cName}
 
 <div id="content" class="panel panel-default container-fluid">
 
@@ -44,14 +44,14 @@
                 <div class="col-sm-6">
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="nAnsicht">{__("kampagneDetailView")}</label>
+                            <label for="nAnsicht">{__('kampagneDetailView')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <select id="nAnsicht" name="nAnsicht" class="form-control combo" onChange="changeSelect(this);">
-                                <option value="1"{if $smarty.session.Kampagne->nDetailAnsicht == 1} selected{/if}>{__("kampagneStatYear")}</option>
-                                <option value="2"{if $smarty.session.Kampagne->nDetailAnsicht == 2} selected{/if}>{__("kampagneStatMonth")}</option>
-                                <option value="3"{if $smarty.session.Kampagne->nDetailAnsicht == 3} selected{/if}>{__("kampagneStatWeek")}</option>
-                                <option value="4"{if $smarty.session.Kampagne->nDetailAnsicht == 4} selected{/if}>{__("kampagneStatDay")}</option>
+                                <option value="1"{if $smarty.session.Kampagne->nDetailAnsicht == 1} selected{/if}>{__('kampagneStatYear')}</option>
+                                <option value="2"{if $smarty.session.Kampagne->nDetailAnsicht == 2} selected{/if}>{__('kampagneStatMonth')}</option>
+                                <option value="3"{if $smarty.session.Kampagne->nDetailAnsicht == 3} selected{/if}>{__('kampagneStatWeek')}</option>
+                                <option value="4"{if $smarty.session.Kampagne->nDetailAnsicht == 4} selected{/if}>{__('kampagneStatDay')}</option>
                             </select>
                         </span>
                     </div>
@@ -59,7 +59,7 @@
                 <div class="col-sm-6">
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="kKampagne">{__("kampagneSingle")}</label>
+                            <label for="kKampagne">{__('kampagneSingle')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <select id="kKampagne" name="kKampagne" class="form-control combo" onChange="selectSubmit(this);">
@@ -75,7 +75,7 @@
                 <div class="col-sm-5">
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="SelectFromDay">{__("kampagneDateFrom")}</label>
+                            <label for="SelectFromDay">{__('kampagneDateFrom')}</label>
                         </span>
 
                         <select name="cFromDay" class="form-control combo" id="SelectFromDay">
@@ -119,7 +119,7 @@
                 <div class="col-sm-5 col-xs-10">
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="SelectToDay">{__("kampagneDateTill")}</label>
+                            <label for="SelectToDay">{__('kampagneDateTill')}</label>
                         </span>
                         <select name="cToDay" class="form-control combo" id="SelectToDay">
                             {section name=toDay loop=32 start=1 step=1}
@@ -159,8 +159,8 @@
                     </div>
                 </div>
                 <div class="col-sm-2 col-xs-2">
-                    <button name="submitZeitraum" type="submit" value="{__("kampagneDetailStatsBTN")}" class="btn btn-info"
-                            title="{__("kampagneDetailStatsBTN")}">
+                    <button name="submitZeitraum" type="submit" value="{__('kampagneDetailStatsBTN')}" class="btn btn-info"
+                            title="{__('kampagneDetailStatsBTN')}">
                         <i class="fa fa-refresh"></i>
                     </button>
                 </div>
@@ -169,10 +169,10 @@
         </form>
         <ul class="nav nav-tabs" role="tablist">
             <li class="tab{if !isset($cTab) || $cTab === 'detailansicht'} active{/if}">
-                <a data-toggle="tab" role="tab" href="#detailansicht">{__("kampagneDetailStats")}</a>
+                <a data-toggle="tab" role="tab" href="#detailansicht">{__('kampagneDetailStats')}</a>
             </li>
             <li class="tab{if isset($cTab) && $cTab === 'detailgraphen'} active{/if}">
-                <a data-toggle="tab" role="tab" href="#detailgraphen">{__("kampagneDetailGraph")}</a>
+                <a data-toggle="tab" role="tab" href="#detailgraphen">{__('kampagneDetailGraph')}</a>
             </li>
         </ul>
         <div class="tab-content">
@@ -206,7 +206,7 @@
                                 {/if}
                             {/foreach}
                             <tr>
-                                <td>{__("kampagneOverall")}</td>
+                                <td>{__('kampagneOverall')}</td>
                                 {foreach name="kampagnendefs" from=$oKampagneStatDef_arr key=kKampagneDef item=oKampagneStatDef_arrItem}
                                     <td style="text-align: center;">
                                         {$oKampagneStat_arr.Gesamt[$kKampagneDef]}
@@ -216,7 +216,7 @@
                         </table>
                     </div>
                 {else}
-                    <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                    <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
             <div id="detailgraphen" class="tab-pane fade{if isset($cTab) && $cTab === 'detailgraphen'} active in{/if}">
@@ -236,14 +236,14 @@
                         {include file='tpl_inc/linechart_inc.tpl' linechart=$Chart headline=$hl id=$key width='100%' height='400px' ylabel=$ylabel href=false legend=false ymin='0'}
                     {/foreach}
                 {else}
-                    <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                    <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
         </div>
         
     </div>
     <div class="panel-footer">
-        <a href="kampagne.php?tab=globalestats&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {__("kampagneBackBTN")}</a>
+        <a href="kampagne.php?tab=globalestats&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {__('kampagneBackBTN')}</a>
     </div>
 </div>
 

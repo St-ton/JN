@@ -1,9 +1,9 @@
-{assign var="cTitel" value=__("gruppeNeu")}
+{assign var="cTitel" value=__('gruppeNeu')}
 {if isset($oAdminGroup) && $oAdminGroup->kAdminlogingruppe > 0}
-    {assign var="cTitel" value=__("gruppeBearbeiten")}
+    {assign var="cTitel" value=__('gruppeBearbeiten')}
 {/if}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__("benutzerDesc")}
+{include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__('benutzerDesc')}
 <div id="content" class="container-fluid">
     <form class="settings navbar-form" action="benutzerverwaltung.php" method="post">
         {$jtl_token}

@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='slider'}
-{include file='tpl_inc/seite_header.tpl' cTitel=__("slider") cBeschreibung=__("sliderDesc") cDokuURL=__("sliderURL")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('slider') cBeschreibung=__('sliderDesc') cDokuURL=__('sliderURL')}
 
 <script src="{$currentTemplateDir}js/slider.js" type="text/javascript"></script>
 <div id="content" class="container-fluid">
@@ -12,11 +12,11 @@
         <div id="settings">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{__("slider")}</h3>
+                    <h3 class="panel-title">{__('slider')}</h3>
                 </div>
                 {if $oSlider_arr|@count == 0}
                     <div class="panel-body">
-                        <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                        <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                     </div>
                 {else}
                     <table class="table">
@@ -43,7 +43,7 @@
                                 <td>
                                     <div class="btn-group">
                                         <a class="btn btn-default add" href="slider.php?action=slides&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="Slides"><i class="fa fa-image"></i></a>
-                                        <a class="btn btn-default" href="slider.php?action=edit&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__("modify")}"><i class="fa fa-edit"></i></a>
+                                        <a class="btn btn-default" href="slider.php?action=edit&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('modify')}"><i class="fa fa-edit"></i></a>
                                         <a class="btn btn-danger" href="slider.php?action=delete&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="L&ouml;schen"><i class="fa fa-trash"></i></a>
                                     </div>
                                 </td>

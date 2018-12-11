@@ -1,0 +1,57 @@
+msgid "mbIntro"
+msgstr "Skrill ist bei JTL vorinstalliert und ganz einfach für den Checkout-Prozess im Shop zu aktivieren. Dabei vereint Skrill eine große Zahl an länderspezifischen Zahlungsarten und bietet überdies ein für Händler interessantes Preismodell an, welches einen reibungslosen Onlinehandel in vielen Ländern ermöglicht.<br />Zuverlässig, schnell und einfach erhalten Sie Zugang zu den relevanten Zahlungsmöglichkeiten Ihrer Kunden. Eine aktive Registrierung Ihrer Kunden im Bezahlprozess ist dabei nicht nötig."
+
+msgid "mbValidateEmail"
+msgstr "E-Mail-Adresse validieren"
+
+msgid "mbValidateSecretWord"
+msgstr "Geheimwort validieren"
+
+msgid "mbDelete"
+msgstr "Löschen"
+
+msgid "mbEmailAddress"
+msgstr "E-Mail-Adresse des Skrill-Kontos"
+
+msgid "mbActivationText"
+msgstr "Mit Skrill Quick Checkout können Sie aus einer Hand Kreditkarten, Lastschriften, Banktransfers sowie alle weiteren lokalen Bezahloptionen in Ihrem Shop direkt akzeptieren. Nutzen Sie jetzt die Möglichkeit, Zahlungen aus aller Welt zu erhalten: sicher, schnell und kostensparend. <br />Nachdem Sie sich bei <a href=\"https://www.skrill.com/de/ecommerce-solutions/jtl/\" title=\"Skrill\"><i class=\"fa fa-external-link\"></i> Skrill</a> registriert haben und der Verifizierungsprozess abgeschlossen ist, klicken Sie in Ihrem Skrill-Konto <strong>Einstellungen > Entwickler > Geheimwort erstellen</strong> und wählen ein Geheimwort. Beachten Sie bitte auch die Kurzanleitung. <br />Geben Sie Ihr Skrill-Geheimwort bitte im folgenden Abschnitt ein, um sich mit Skrill zu verbinden. Das Geheimwort ist der letzte Schritt Ihrer Aktivierung und verschlüsselt Ihre Zahlungen sicher. Dann können Sie alle Zahlungsoptionen von Skrill nutzen."
+
+msgid "mbActivate"
+msgstr "Skrill Quick Checkout aktivieren"
+
+msgid "mbActivationRequestText"
+msgstr "Sie haben am <b>%s</b> eine Anfrage für die Aktivierung gesendet. Bitte beachten Sie, dass die Verifizierung, um Skrill Quick Checkout verwenden zu können, bis zu 2 Werktage dauern kann. Sie werden von Skrill kontaktiert, sobald die Prüfung abgeschlossen ist."
+
+msgid "mbActivationDescription"
+msgstr "Geben Sie Ihr Skrill-Geheimwort bitte im folgenden Abschnitt ein, um sich mit Skrill zu verbinden. Das Geheimwort ist der letzte Schritt Ihrer Aktivierung und verschlüsselt Ihre Zahlungen sicher. Dann können Sie alle Zahlungsoptionen von Skrill nutzen."
+
+msgid "mbSecretWord"
+msgstr "Geheimwort"
+
+msgid "mbEmailValidationError"
+msgstr "E-Mail konnte nicht validiert werden."
+
+msgid "mbSecretWordVeloctiyCheckExceeded"
+msgstr "Die maximale Anzahl der Kontrollen für einen bestimmten Benutzer wurde erreicht (derzeit 3 pro Benutzer pro Stunde). Überprüfen Sie Ihr Passwort und versuchen Sie es in einer Stunde erneut."
+
+msgid "mbSecretWordValidationError"
+msgstr "Geheimwort konnte nicht validiert werden. Das Geheimwort sollte klein geschrieben, nicht länger als 10 Zeichen und ohne Sonderzeichen sein."
+
+msgid "mbEmailValidationSuccess"
+msgstr "Ihre E-Mail-Adresse <b>%s</b> wurde <font color=\"red\">erfolgreich validiert</font>. Ihre Händler-ID von Skrill lautet <b>%s</b>."
+
+msgid "mbSecretWordValidationSuccess"
+msgstr "Ihr Geheimwort wurde <font color=\"red\">erfolgreich validiert</font>. Unter dem Menüpunkt Zahlungsarten stehen Ihnen nun weitere Zahlungsarten von Skrill zur Verfügung."
+
+msgid "mbHeaderEmail"
+msgstr "E-Mail"
+
+msgid "mbHeaderActivation"
+msgstr "Quick Checkout Aktivierung"
+
+msgid "mbHeaderSupport"
+msgstr "Support"
+
+msgid "mbSupportText"
+msgstr "Haben Sie Fragen?<br />Kontakieren Sie Skrill per <a href=\"mailto:newbusiness@skrill.com\">E-Mail (newbusiness@skrill.com)</a> oder per Telefon unter +49 302 2403 0293."
+

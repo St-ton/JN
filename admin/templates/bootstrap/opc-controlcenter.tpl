@@ -1,16 +1,16 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='opc'}
-{include file='tpl_inc/seite_header.tpl' cTitel=__("opc") cBeschreibung=__("opcDesc") cDokuURL=__("opcUrl")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('opc') cBeschreibung=__('opcDesc') cDokuURL=__('opcUrl')}
 
 <ul class="nav nav-tabs">
     <li class="active">
-        <a data-toggle="tab" href="#pages">{__("opcPages")}</a>
+        <a data-toggle="tab" href="#pages">{__('opcPages')}</a>
     </li>
     <li>
-        <a data-toggle="tab" href="#portlets">{__("opcPortlets")}</a>
+        <a data-toggle="tab" href="#portlets">{__('opcPortlets')}</a>
     </li>
     <li>
-        <a data-toggle="tab" href="#blueprints">{__("opcBlueprints")}</a>
+        <a data-toggle="tab" href="#blueprints">{__('opcBlueprints')}</a>
     </li>
 </ul>
 
@@ -135,7 +135,7 @@
                 </div>
             {else}
                 <div class="alert alert-info" role="alert">
-                    {__("noDataAvailable")}
+                    {__('noDataAvailable')}
                 </div>
             {/if}
         </div>
@@ -194,7 +194,7 @@
                 </div>
             {else}
                 <div class="alert alert-info" role="alert">
-                    {__("noDataAvailable")}
+                    {__('noDataAvailable')}
                 </div>
             {/if}
         </div>

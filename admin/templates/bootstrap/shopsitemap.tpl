@@ -1,7 +1,7 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='shopsitemap'}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=__("shopsitemap") cBeschreibung=__("shopsitemapDesc") cDokuURL=__("shopsitemapURL")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('shopsitemap') cBeschreibung=__('shopsitemapDesc') cDokuURL=__('shopsitemapURL')}
 <div id="content" class="container-fluid">
     <form name="einstellen" method="post" action="shopsitemap.php" id="einstellen">
         {$jtl_token}
@@ -9,7 +9,7 @@
         <div id="settings">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{__("settings")}</h3>
+                    <h3 class="panel-title">{__('settings')}</h3>
                 </div>
                 <div class="panel-body">
                     {foreach name=conf from=$oConfig_arr item=cnf}
@@ -41,7 +41,7 @@
                     {/foreach}
                 </div>
                 <div class="panel-footer">
-                    <button name="speichern" type="submit" value="{__("shopsitemapSave")}" class="btn btn-primary"><i class="fa fa-save"></i> {__("shopsitemapSave")}</button>
+                    <button name="speichern" type="submit" value="{__('shopsitemapSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('shopsitemapSave')}</button>
                 </div>
             </div>
         </div>

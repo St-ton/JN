@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl' bForceFluid=($cAction === 'area')}
 {config_load file="$lang.conf" section="banner"}
-{include file='tpl_inc/seite_header.tpl' cTitel=__("banner") cBeschreibung=__("bannerDesc") cDokuURL=__("bannerURL")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('banner') cBeschreibung=__('bannerDesc') cDokuURL=__('bannerURL')}
 
 <div id="content">
     {if $cFehler}
@@ -472,7 +472,7 @@
 
                 {if $oBanner_arr|@count === 0}
                    <div class="panel-body">
-                       <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                       <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                    </div>
                 {/if}
                 <div class="panel-footer">

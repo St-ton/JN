@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=__("objectcache") cBeschreibung=__("objectcacheDesc") cDokuURL=__("objectcacheURL")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('objectcache') cBeschreibung=__('objectcacheDesc') cDokuURL=__('objectcacheURL')}
 
 <div id="content" class="container-fluid">
     <div class="tabber">
@@ -59,7 +59,7 @@
             {/foreach}
                 </div>
 
-                <p class="submit"><button name="speichern" type="submit" value="{__("save")}" class="btn btn-primary">{__("save")}</p>
+                <p class="submit"><button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary">{__('save')}</p>
             </form>
         </div>
     </div>

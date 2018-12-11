@@ -8,5 +8,5 @@
     }
 </script>
 <button type="button" class="btn btn-default" onclick="onClickCsvExport_{$exporterId}()">
-    <i class="fa fa-download"></i> {__("exportCsv")}
+    <i class="fa fa-download"></i> {__('exportCsv')}
 </button>

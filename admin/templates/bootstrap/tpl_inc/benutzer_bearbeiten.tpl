@@ -71,12 +71,12 @@ $(document).ready(function() {
 </style>
 {/literal}
 
-{assign var="cTitel" value=__("benutzerNeu")}
+{assign var="cTitel" value=__('benutzerNeu')}
 {if isset($oAccount->kAdminlogin) && $oAccount->kAdminlogin > 0}
-    {assign var="cTitel" value=__("benutzerBearbeiten")}
+    {assign var="cTitel" value=__('benutzerBearbeiten')}
 {/if}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__("benutzerDesc")}
+{include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__('benutzerDesc')}
 <div id="content" class="container-fluid">
     <form class="navbar-form" action="benutzerverwaltung.php" method="post">
         {$jtl_token}
@@ -349,7 +349,7 @@ $(document).ready(function() {
                     <input type="hidden" name="kAdminlogin" value="{$oAccount->kAdminlogin}" />
                 {/if}
                 <input type="hidden" name="save" value="1" />
-                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__("save")}</button>
+                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 <a class="btn btn-danger" href="benutzerverwaltung.php"><i class="fa fa-exclamation"></i> Abbrechen</a>
             </div>
         </div>

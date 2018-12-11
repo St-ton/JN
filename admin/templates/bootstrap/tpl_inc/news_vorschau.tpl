@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=__("news") cBeschreibung=__("newsDesc")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('news') cBeschreibung=__('newsDesc')}
 <div id="content" class="container-fluid">
     <div class="category first clearall">
         <div class="left">{$oNews->getTitle()}</div>
@@ -20,7 +20,7 @@
                 <input type="hidden" name="s2" value="{$cSeite}" />
             {/if}
             <input type="hidden" name="nd" value="1" />
-            <div class="category">{__("newsComments")}</div>
+            <div class="category">{__('newsComments')}</div>
             {foreach name=kommentare from=$oNewsKommentar_arr item=oNewsKommentar}
                 <table width="100%" cellpadding="5" cellspacing="5" class="kundenfeld">
                     <tr>
@@ -37,7 +37,7 @@
                                             {*{else}*}
                                                 <label for="nk-{$oNewsKommentar->getID()}">{$oNewsKommentar->getName()}, {$oNewsKommentar->getDateCreated()->format('d.m.Y H:i')}</label>
                                             {*{/if}*}
-                                            <a href="news.php?news=1&kNews={$oNews->getID()}&kNewsKommentar={$oNewsKommentar->getID()}{if isset($cBackPage)}&{$cBackPage}{elseif isset($cTab)}&tab={$cTab}{/if}&nkedit=1&token={$smarty.session.jtl_token}" class="btn btn-default" title="{__("modify")}"><i class="fa fa-edit"></i></a>
+                                            <a href="news.php?news=1&kNews={$oNews->getID()}&kNewsKommentar={$oNewsKommentar->getID()}{if isset($cBackPage)}&{$cBackPage}{elseif isset($cTab)}&tab={$cTab}{/if}&nkedit=1&token={$smarty.session.jtl_token}" class="btn btn-default" title="{__('modify')}"><i class="fa fa-edit"></i></a>
                                         </strong>
                                     </td>
                                 </tr>
@@ -52,7 +52,7 @@
             {/foreach}
             <div class="btn-group">
                 <a class="btn btn-primary" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-angle-double-left"></i> zurück</a>
-                <button name="kommentar_loeschen" type="submit" value="{__("delete")}" class="btn btn-danger"><i class="fa fa-trash"></i> {__("delete")}</button>
+                <button name="kommentar_loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
             </div>
         </form>
     {else}

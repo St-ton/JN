@@ -4,12 +4,12 @@
     {rdelim}
 </script>
 
-{include file='tpl_inc/seite_header.tpl' cTitel=__("links") cBeschreibung=__("linksDesc") cDokuURL=__("linksUrl")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('links') cBeschreibung=__('linksDesc') cDokuURL=__('linksUrl')}
 <div id="content" class="container-fluid">
     <div class="block container2">
         <form action="links.php" method="post">
             {$jtl_token}
-            <button class="btn btn-primary add" name="neuelinkgruppe" value="1"><i class="fa fa-share"></i> {__("newLinkGroup")}</button>
+            <button class="btn btn-primary add" name="neuelinkgruppe" value="1"><i class="fa fa-share"></i> {__('newLinkGroup')}</button>
         </form>
     </div>
     <div class="panel-group accordion" id="accordion2" role="tablist" aria-multiselectable="true">
@@ -26,7 +26,7 @@
                             <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{$lgName}"{if $missingTranslations|count > 0} title="Fehlende Übersetzungen: {$missingTranslations|count}"{/if}>
                                 <span class="accordion-toggle-icon"><i class="fa fa-plus"></i></span>
                                 {if $linkgruppe->getID() > 0}
-                                    {$linkgruppe->getName()} ({__("linkGroupTemplatename")}: {$linkgruppe->getTemplate()})
+                                    {$linkgruppe->getName()} ({__('linkGroupTemplatename')}: {$linkgruppe->getTemplate()})
                                 {else}
                                     Links ohne Linkgruppe
                                 {/if}
@@ -38,9 +38,9 @@
                         {$jtl_token}
                         <span class="btn-group pull-right">
                             {if $linkgruppe->getID() > 0}
-                                <button name="kLinkgruppe" value="{$linkgruppe->getID()}" class="btn btn-primary" title="{__("modify")}"><i class="fa fa-edit"></i></button>
-                                <button name="addlink" value="{$linkgruppe->getID()}" class="btn btn-default add" title="{__("addLink")}">{__("addLink")}</button>
-                                <button name="delconfirmlinkgruppe" value="{$linkgruppe->getID()}" class="btn btn-danger" title="{__("linkGroup")} {__("delete")}"><i class="fa fa-trash"></i></button>
+                                <button name="kLinkgruppe" value="{$linkgruppe->getID()}" class="btn btn-primary" title="{__('modify')}"><i class="fa fa-edit"></i></button>
+                                <button name="addlink" value="{$linkgruppe->getID()}" class="btn btn-default add" title="{__('addLink')}">{__('addLink')}</button>
+                                <button name="delconfirmlinkgruppe" value="{$linkgruppe->getID()}" class="btn btn-danger" title="{__('linkGroup')} {__('delete')}"><i class="fa fa-trash"></i></button>
                             {/if}
                         </span>
                     </form>
@@ -61,7 +61,7 @@
                             {include file="tpl_inc/links_uebersicht_item.tpl" list=$linkgruppe->getLinks() id=$linkgruppe->getID()}
                         </table>
                     {else}
-                        <p class="alert alert-info" style="margin:10px;"><i class="fa fa-info-circle"></i> {__("noData")}</p>
+                        <p class="alert alert-info" style="margin:10px;"><i class="fa fa-info-circle"></i> {__('noData')}</p>
                     {/if}
                 </div>
             </div>
@@ -70,7 +70,7 @@
     <div class="block container2">
         <form action="links.php" method="post">
             {$jtl_token}
-            <button class="btn btn-primary add" name="neuelinkgruppe" value="1"><i class="fa fa-share"></i> {__("newLinkGroup")}</button>
+            <button class="btn btn-primary add" name="neuelinkgruppe" value="1"><i class="fa fa-share"></i> {__('newLinkGroup')}</button>
         </form>
     </div>
 </div>

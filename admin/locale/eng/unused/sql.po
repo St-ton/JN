@@ -1,0 +1,9 @@
+msgid "executeSql"
+msgstr "SQL ausführen"
+
+msgid "executeSqlDesc"
+msgstr "Hier können Sie SQL-Dateien ausführen, um die Shop-Datenbank zu erweitern. Bitte nur durchführen, wenn Sie ein Modul installieren oder wenn Sie einen triftigen Grund dafür haben!"
+
+msgid "sqlFile"
+msgstr "SQL Datei"
+

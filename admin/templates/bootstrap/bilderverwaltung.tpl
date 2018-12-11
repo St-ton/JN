@@ -2,7 +2,7 @@
 {$corruptedPicsTypes = []}
 {$corruptedPics = false}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=__("bilderverwaltung") cBeschreibung=__("bilderverwaltungDesc") cDokuURL=__("bilderverwaltungURL")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('bilderverwaltung') cBeschreibung=__('bilderverwaltungDesc') cDokuURL=__('bilderverwaltungURL')}
 <div id="content">
     {if isset($success)}
         <div class="alert alert-success"><i class="fa fa-info-circle"></i> {$success}</div>
@@ -11,12 +11,12 @@
         <table class="list table" id="cache-items">
             <thead>
             <tr>
-                <th class="tleft">{__("headlineTyp")}</th>
-                <th class="text-center">{__("headlineTotal")}</th>
-                <th class="text-center abbr">{__("headlineCache")}</th>
-                <th class="text-center">{__("headlineCorrupted")}</th>
-                <th class="text-center" width="125">{__("headlineSize")}</th>
-                <th class="text-center" width="200">{__("headlineAction")}</th>
+                <th class="tleft">{__('headlineTyp')}</th>
+                <th class="text-center">{__('headlineTotal')}</th>
+                <th class="text-center abbr">{__('headlineCache')}</th>
+                <th class="text-center">{__('headlineCorrupted')}</th>
+                <th class="text-center" width="125">{__('headlineSize')}</th>
+                <th class="text-center" width="200">{__('headlineAction')}</th>
             </tr>
             </thead>
             <tbody>
@@ -47,8 +47,8 @@
                     </td>
                     <td class="text-center action-buttons">
                         <div class="btn-group btn-group-xs" role="group">
-                            <a class="btn btn-default" href="#" data-callback="flush" data-type="{$item->type}"><i class="fa fa-trash-o"></i>{__("deleteCachedPics")}</a>
-                            <a class="btn btn-default" href="#" data-callback="generate"><i class="fa fa-cog"></i>{__("generatePics")}</a>
+                            <a class="btn btn-default" href="#" data-callback="flush" data-type="{$item->type}"><i class="fa fa-trash-o"></i>{__('deleteCachedPics')}</a>
+                            <a class="btn btn-default" href="#" data-callback="generate"><i class="fa fa-cog"></i>{__('generatePics')}</a>
                         </div>
                     </td>
                 </tr>
@@ -58,7 +58,7 @@
     </div>
 
     <div class="footnote small text-muted">
-        <p>{__("fallbackNote")}</p>
+        <p>{__('fallbackNote')}</p>
     </div>
 
     {foreach $corruptedPicsTypes as $corruptedPicsType}
@@ -69,15 +69,15 @@
 
     {if $corruptedPics}
         <h3 class="top40">
-            {__("currentCorruptedPics")}
+            {__('currentCorruptedPics')}
         </h3>
-        <p class="small text-muted">{__("corruptedPicsNote")}</p>
+        <p class="small text-muted">{__('corruptedPicsNote')}</p>
         <table class="list table table-condensed">
             {foreach $corruptedImagesByType as $corruptedImages}
                 <thead>
                 <tr>
-                    <th>{__("articlePic")}</th>
-                    <th>{__("articlenr")}</th>
+                    <th>{__('articlePic')}</th>
+                    <th>{__('articlenr')}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -104,7 +104,7 @@
                                     <a class="btn btn-default btn-xs" data-toggle="collapse"
                                         href="#dropdownCorruptedImages-{$moreCorruptedImage}"
                                         aria-controls="dropdownCorruptedImages-{$moreCorruptedImage}">
-                                        {__("more")} <span class="caret"></span>
+                                        {__('more')} <span class="caret"></span>
                                     </a>
                                     <div class="collapse" id="dropdownCorruptedImages-{$moreCorruptedImage}">
                                         {foreach name='corruptedImageArticle' from=$corruptedImage->article item="article"}

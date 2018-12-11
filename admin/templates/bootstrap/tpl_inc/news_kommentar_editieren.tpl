@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=__("newsCommentEdit")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('newsCommentEdit')}
 <div id="content" class="container-fluid2">
     <form name="umfrage" method="post" action="news.php" class="navbar-form">
         {$jtl_token}
@@ -17,16 +17,16 @@
         <input type="hidden" name="kNewsKommentar" value="{$oNewsKommentar->getID()}" />
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">{$oNewsKommentar->getName()} - {__("newsCommentEdit")}</h3>
+                <h3 class="panel-title">{$oNewsKommentar->getName()} - {__('newsCommentEdit')}</h3>
             </div>
             <div class="table-responsive">
                 <table class="list table" id="formtable">
                     <tr>
-                        <td><label for="cName">{__("newsHeadline")}</label></td>
+                        <td><label for="cName">{__('newsHeadline')}</label></td>
                         <td><input id="cName" name="cName" class="form-control" type="text" value="{$oNewsKommentar->getName()}" /></td>
                     </tr>
                     <tr>
-                        <td><label for="cKommentar">{__("newsText")}</label></td>
+                        <td><label for="cKommentar">{__('newsText')}</label></td>
                         <td>
                             <textarea id="cKommentar" class="ckeditor form-control" name="cKommentar" rows="15" cols="60">{$oNewsKommentar->getText()}</textarea>
                         </td>
@@ -35,7 +35,7 @@
             </div>
             <div class="panel-footer">
                 <span class="btn-group">
-                    <button name="newskommentarsavesubmit" type="submit" value="{__("newsSave")}" class="btn btn-primary"><i class="fa fa-save"></i> {__("newsSave")}</button>
+                    <button name="newskommentarsavesubmit" type="submit" value="{__('newsSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('newsSave')}</button>
                     <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> Abbrechen</a>
                 </span>
             </div>

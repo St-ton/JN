@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=__("statusemail") cBeschreibung=__("statusemailDesc") cDokuURL=__("statusemailURL")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('statusemail') cBeschreibung=__('statusemailDesc') cDokuURL=__('statusemailURL')}
 <div id="content" class="container-fluid">
     <form name="einstellen" method="post" action="statusemail.php">
         {$jtl_token}
@@ -6,12 +6,12 @@
         <div id="settings">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{__("settings")}</h3>
+                    <h3 class="panel-title">{__('settings')}</h3>
                 </div>
                 <div class="panel-body">
                     <div class="item input-group">
                         <span class="input-group-addon">
-                            <label for="nAktiv">{__("statusemailUse")}</label>
+                            <label for="nAktiv">{__('statusemailUse')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <select class="form-control" name="nAktiv" id="nAktiv">
@@ -20,13 +20,13 @@
                             </select>
                         </span>
                         <span class="input-group-addon">
-                            {getHelpDesc cDesc=__("statusemailUseDesc")}
+                            {getHelpDesc cDesc=__('statusemailUseDesc')}
                         </span>
                     </div>
 
                     <div class="item input-group">
                         <span class="input-group-addon">
-                            <label for="cEmail">{__("statusemailEmail")}</label>
+                            <label for="cEmail">{__('statusemailEmail')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <input class="form-control" type="text" name="cEmail" id="cEmail"
@@ -34,13 +34,13 @@
                                    tabindex="1">
                         </span>
                         <span class="input-group-addon">
-                            {getHelpDesc cDesc=__("statusemailEmailDesc")}
+                            {getHelpDesc cDesc=__('statusemailEmailDesc')}
                         </span>
                     </div>
 
                     <div class="item input-group">
                         <span class="input-group-addon">
-                            <label for="cIntervall">{__("statusemailIntervall")}</label>
+                            <label for="cIntervall">{__('statusemailIntervall')}</label>
                         </span>
                         <select name="cIntervall_arr[]" id="cIntervall" multiple="multiple" class="form-control multiple"
                                 size="3">
@@ -52,13 +52,13 @@
                             {/foreach}
                         </select>
                         <span class="input-group-addon">
-                            {getHelpDesc cDesc=__("statusemailIntervallDesc")}
+                            {getHelpDesc cDesc=__('statusemailIntervallDesc')}
                         </span>
                     </div>
 
                     <div class="item input-group">
                         <span class="input-group-addon">
-                            <label for="cInhalt">{__("statusemailContent")}</label>
+                            <label for="cInhalt">{__('statusemailContent')}</label>
                         </span>
                         <select name="cInhalt_arr[]" id="cInhalt" multiple="multiple" class="form-control multiple"
                                 size="15">
@@ -70,13 +70,13 @@
                             {/foreach}
                         </select>
                         <span class="input-group-addon">
-                            {getHelpDesc cDesc=__("statusemailContentDesc")}
+                            {getHelpDesc cDesc=__('statusemailContentDesc')}
                         </span>
                     </div>
                 </div>
                 <div class="panel-footer">
                     <div class="btn-group">
-                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__("statusemailSave")}</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('statusemailSave')}</button>
                         <button type="submit" class="btn btn-default" name="action" value="sendnow">
                             <i class="fa fa-envelope-o"></i> E-Mail-Berichte jetzt senden</button>
                     </div>

@@ -1,9 +1,9 @@
 <div id="page">
     <div id="content" class="container-fluid">
         <div id="welcome" class="post">
-            <h2 class="title"><span>{__("trustedshops")}</span></h2>
+            <h2 class="title"><span>{__('trustedshops')}</span></h2>
             <br />
-            <strong>{__("tsWhatIsRating")}</strong>
+            <strong>{__('tsWhatIsRating')}</strong>
         </div>
         
         {if $hinweis}
@@ -55,7 +55,7 @@
                 <tr>
                     <td colspan="2">
                         <p class="submit btn-group">
-                            <a class="btn btn-default" href="trustedshops.php"><i class="fa fa-angle-double-left"></i> {__("tsBack")}</a>
+                            <a class="btn btn-default" href="trustedshops.php"><i class="fa fa-angle-double-left"></i> {__('tsBack')}</a>
                             <a class="btn btn-primary" href="https://www.trustedshops.de/shopbetreiber/kundenbewertung_anmeldung.html?partnerPackage=JTL" target="_blank"><i class="fa fa-external-link"></i> Jetzt kostenlos registrieren!</a>
                         </p>
                     </td>

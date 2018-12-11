@@ -374,7 +374,7 @@
         </div>
 
         <div class="save_wrapper btn-group">
-            <button type="submit" class="btn btn-primary" value="{__("save")}"><i class="fa fa-save"></i> {__("save")}</button>
+            <button type="submit" class="btn btn-primary" value="{__('save')}"><i class="fa fa-save"></i> {__('save')}</button>
             <button type="button" class="btn btn-default" onclick="window.location.href = 'slider.php';" value="zurück"><i class="fa fa-angle-double-left"></i> zurück</button>
         </div>
     </form>

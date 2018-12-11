@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=__("cache") cBeschreibung=__("objectcacheDesc") cDokuURL=__("cacheURL")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('cache') cBeschreibung=__('objectcacheDesc') cDokuURL=__('cacheURL')}
 <script type="text/javascript">
     var disabledMethods      = {$non_available_methods},
         disFunctionalMethods = {$disfunctional_methods};
@@ -11,7 +11,7 @@
                 if (disabledMethods.indexOf(elem.val()) >= 0) {ldelim}
                     elem.attr('disabled', 'disabled');
                 {rdelim} else if (disFunctionalMethods.indexOf(elem.val()) >= 0) {ldelim}
-                    elem.text(elem.text() + ' {__("configurationError")}');
+                    elem.text(elem.text() + ' {__('configurationError')}');
                 {rdelim}
             {rdelim});
         {rdelim}
@@ -29,16 +29,16 @@
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($tab) || $tab === 'massaction' || $tab === 'uebersicht'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#massaction">{__("management")}</a>
+            <a data-toggle="tab" role="tab" href="#massaction">{__('management')}</a>
         </li>
         <li class="tab{if isset($tab) && $tab === 'stats'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#stats">{__("stats")}</a>
+            <a data-toggle="tab" role="tab" href="#stats">{__('stats')}</a>
         </li>
         <li class="tab{if isset($tab) && $tab === 'benchmark'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#benchmark">{__("benchmark")}</a>
+            <a data-toggle="tab" role="tab" href="#benchmark">{__('benchmark')}</a>
         </li>
         <li class="tab{if isset($tab) && $tab === 'settings'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#settings">{__("settings")}</a>
+            <a data-toggle="tab" role="tab" href="#settings">{__('settings')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -47,7 +47,7 @@
                 {$jtl_token}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{__("management")}</h3>
+                        <h3 class="panel-title">{__('management')}</h3>
                     </div>
                     <div class="table-responsive">
                     <table id="cache-type-status" class="table list">
@@ -56,10 +56,10 @@
                             <th class="tleft">
                                 <input type="checkbox" class="massaction-checkbox" id="massaction-main-switch" />
                             </th>
-                            <th class="tleft"><label style="margin-bottom:0;" for="massaction-main-switch">{__("type")}</label></th>
-                            <th class="tleft">{__("description")}</th>
-                            <th class="tleft">{__("entries")}</th>
-                            <th class="tleft">{__("status")}</th>
+                            <th class="tleft"><label style="margin-bottom:0;" for="massaction-main-switch">{__('type')}</label></th>
+                            <th class="tleft">{__('description')}</th>
+                            <th class="tleft">{__('entries')}</th>
+                            <th class="tleft">{__('status')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -80,9 +80,9 @@
                                 <td>
                                     <h4 class="label-wrap">
                                         {if $cache_enabled === false || $cg.value|in_array:$disabled_caches}
-                                            <span class="label label-danger inactive">{__("inactive")}</span>
+                                            <span class="label label-danger inactive">{__('inactive')}</span>
                                         {else}
-                                            <span class="label label-success active">{__("active")}</span>
+                                            <span class="label label-success active">{__('active')}</span>
                                         {/if}
                                     </h4>
                                 </td>
@@ -99,13 +99,13 @@
                                 </span>
                                 <span class="input-group-wrap">
                                     <select class="form-control" name="cache-action" id="cache-action">
-                                        <option name="flush" value="flush">{__("empty")}</option>
-                                        <option name="deaktivieren" value="deactivate">{__("deactivate")}</option>
-                                        <option name="aktivieren" value="activate">{__("activate")}</option>
+                                        <option name="flush" value="flush">{__('empty')}</option>
+                                        <option name="deaktivieren" value="deactivate">{__('deactivate')}</option>
+                                        <option name="aktivieren" value="activate">{__('activate')}</option>
                                     </select>
                                 </span>
                                 <span class="input-group-btn">
-                                    <button type="submit" value="{__("submit")}" class="btn btn-primary">{__("submit")}</button>
+                                    <button type="submit" value="{__('submit')}" class="btn btn-primary">{__('submit')}</button>
                                 </span>
                             </div>
                             <input name="a" type="hidden" value="cacheMassAction" />
@@ -114,8 +114,8 @@
                             <form method="post" action="cache.php" class="submit-form">
                                 {$jtl_token}
                                 <span class="submit_wrap btn-group">
-                                    <button name="a" type="submit" value="flush_object_cache" class="btn btn-default delete"{if !$cache_enabled} disabled="disabled"{/if}><i class="fa fa-trash"></i>&nbsp;{__("clearObjectCache")}</button>
-                                    <button name="a" type="submit" value="flush_template_cache" class="btn btn-default delete"><i class="fa fa-trash"></i>&nbsp;{__("clearTemplateCache")}</button>
+                                    <button name="a" type="submit" value="flush_object_cache" class="btn btn-default delete"{if !$cache_enabled} disabled="disabled"{/if}><i class="fa fa-trash"></i>&nbsp;{__('clearObjectCache')}</button>
+                                    <button name="a" type="submit" value="flush_template_cache" class="btn btn-default delete"><i class="fa fa-trash"></i>&nbsp;{__('clearTemplateCache')}</button>
                                 </span>
                             </form>
                         </div>
@@ -128,7 +128,7 @@
             {if is_array($stats) && $stats|@count > 0}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{__("objectcache")}</h3>
+                        <h3 class="panel-title">{__('objectcache')}</h3>
                     </div>
                     <table class="table">
                         {if isset($stats.uptime_h) && $stats.uptime_h !== null}
@@ -193,13 +193,13 @@
                             </table>
                         {else}
                             <div class="panel-body">
-                                <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                             </div>
                         {/if}
                     </div>
                 {/if}
             {else}
-                <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
             {if $opcache_stats !== null}
                 <div class="panel panel-default">
@@ -308,7 +308,7 @@
             {if !empty($all_methods) && $all_methods|@count > 0}
                 <div class="panel panel-default settings">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{__("config")}</h3>
+                        <h3 class="panel-title">{__('config')}</h3>
                     </div>
                     <form method="post" action="cache.php">
                         {$jtl_token}
@@ -350,7 +350,7 @@
                             <input name="a" type="hidden" value="benchmark" />
                         </div>
                         <div class="panel-footer">
-                            <button name="submit" type="submit" value="Benchmark starten" class="btn btn-primary">{__("startBenchmark")}</button>
+                            <button name="submit" type="submit" value="Benchmark starten" class="btn btn-primary">{__('startBenchmark')}</button>
                         </div>
                     </form>
                 </div>
@@ -433,7 +433,7 @@
                         {/foreach}
                     </div>
                 </div>
-                <a id="btn_toggle_cache" class="btn btn-default down" style="margin: 10px 0;">{__("showAdvanced")}</a>
+                <a id="btn_toggle_cache" class="btn btn-default down" style="margin: 10px 0;">{__('showAdvanced')}</a>
 
                 <div id="row_toggle_cache" style="display: none;">
                     <div class="panel panel-default">
@@ -472,7 +472,7 @@
                     </div>
                 </div>
                 <p class="submit">
-                    <button name="speichern" type="submit" value="{__("save")}" class="btn btn-primary"><i class="fa fa-save"></i> {__("save")}</button>
+                    <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 </p>
             </form>
         </div>

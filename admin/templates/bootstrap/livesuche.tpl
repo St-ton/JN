@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="livesuche"}
-{include file='tpl_inc/seite_header.tpl' cTitel=__("livesearch") cBeschreibung=__("livesucheDesc") cDokuURL=__("livesucheURL")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('livesearch') cBeschreibung=__('livesucheDesc') cDokuURL=__('livesucheURL')}
 <div id="content" class="container-fluid">
     <form name="sprache" method="post" action="livesuche.php">
         {$jtl_token}
@@ -8,10 +8,10 @@
         <div class="block">
             <div class="input-group p25 left">
                 <span class="input-group-addon">
-                    <label for="{__("changeLanguage")}">{__("changeLanguage")}</label>
+                    <label for="{__('changeLanguage')}">{__('changeLanguage')}</label>
                 </span>
                 <span class="input-group-wrap last">
-                    <select id="{__("changeLanguage")}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
+                    <select id="{__('changeLanguage')}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
                         {foreach name=sprachen from=$Sprachen item=sprache}
                             <option value="{$sprache->kSprache}" {if $sprache->kSprache==$smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
                         {/foreach}
@@ -22,19 +22,19 @@
     </form>
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($tab) || $tab === 'suchanfrage'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#suchanfrage">{__("searchrequest")}</a>
+            <a data-toggle="tab" role="tab" href="#suchanfrage">{__('searchrequest')}</a>
         </li>
         <li class="tab{if isset($tab) && $tab === 'erfolglos'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#erfolglos">{__("searchmiss")}</a>
+            <a data-toggle="tab" role="tab" href="#erfolglos">{__('searchmiss')}</a>
         </li>
         <li class="tab{if isset($tab) && $tab === 'mapping'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#mapping">{__("mapping")}</a>
+            <a data-toggle="tab" role="tab" href="#mapping">{__('mapping')}</a>
         </li>
         <li class="tab{if isset($tab) && $tab === 'blacklist'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#blacklist">{__("blacklist")}</a>
+            <a data-toggle="tab" role="tab" href="#blacklist">{__('blacklist')}</a>
         </li>
         <li class="tab{if isset($tab) && $tab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einstellungen">{__("livesucheSettings")}</a>
+            <a data-toggle="tab" role="tab" href="#einstellungen">{__('livesucheSettings')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -52,11 +52,11 @@
                     <div class="block">
                         <div class="input-group p25">
                             <span class="input-group-addon">
-                                <label for="cSuche">{__("livesucheSearchItem")}:</label>
+                                <label for="cSuche">{__('livesucheSearchItem')}:</label>
                             </span>
                             <input class="form-control" id="cSuche" name="cSuche" type="text" value="{if isset($cSuche) && $cSuche|strlen > 0}{$cSuche}{/if}" />
                             <span class="input-group-btn">
-                                <button name="submitSuche" type="submit" value="{__("livesucheSearchBTN")}" class="btn btn-primary"><i class="fa fa-search"></i> {__("livesucheSearchBTN")}</button>
+                                <button name="submitSuche" type="submit" value="{__('livesucheSearchBTN')}" class="btn btn-primary"><i class="fa fa-search"></i> {__('livesucheSearchBTN')}</button>
                             </span>
                         </div>
                     </div>
@@ -79,22 +79,22 @@
                     {/if}
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">{__("searchrequest")}</h3>
+                            <h3 class="panel-title">{__('searchrequest')}</h3>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <tr>
                                     <th class="th-1"></th>
                                     <th class="tleft">
-                                        (<a href="livesuche.php?{$cSuchStr}nSort=1{if $nSort == 1}1{/if}&tab=suchanfrage">{if $nSort == 1}Z...A{else}A...Z{/if}</a>) {__("search")}
+                                        (<a href="livesuche.php?{$cSuchStr}nSort=1{if $nSort == 1}1{/if}&tab=suchanfrage">{if $nSort == 1}Z...A{else}A...Z{/if}</a>) {__('search')}
                                     </th>
                                     <th class="tleft">
-                                        (<a href="livesuche.php?{$cSuchStr}nSort=2{if $nSort == 2 || $nSort == -1}2{/if}&tab=suchanfrage">{if $nSort == 2 || $nSort == -1}1...9{else}9...1{/if}</a>) {__("searchcount")}
+                                        (<a href="livesuche.php?{$cSuchStr}nSort=2{if $nSort == 2 || $nSort == -1}2{/if}&tab=suchanfrage">{if $nSort == 2 || $nSort == -1}1...9{else}9...1{/if}</a>) {__('searchcount')}
                                     </th>
                                     <th class="th-4">
-                                        (<a href="livesuche.php?{$cSuchStr}nSort=3{if $nSort == 3 || $nSort == -1}3{/if}&tab=suchanfrage">{if $nSort == 3 || $nSort == -1}0...1{else}1...0{/if}</a>) {__("active")}
+                                        (<a href="livesuche.php?{$cSuchStr}nSort=3{if $nSort == 3 || $nSort == -1}3{/if}&tab=suchanfrage">{if $nSort == 3 || $nSort == -1}0...1{else}1...0{/if}</a>) {__('active')}
                                     </th>
-                                    <th class="th-5">{__("mapping")}</th>
+                                    <th class="th-5">{__('mapping')}</th>
                                 </tr>
 
                                 {foreach name=suchanfragen from=$Suchanfragen item=suchanfrage}
@@ -119,29 +119,29 @@
                                     <td>
                                         <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessagesExcept(this.form, 'nAktiv_');" />
                                     </td>
-                                    <td colspan="5"><label for="ALLMSGS">{__("livesucheSelectAll")}</label></td>
+                                    <td colspan="5"><label for="ALLMSGS">{__('livesucheSelectAll')}</label></td>
                                 </tr>
                             </table>
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group p50">
-                                <button name="suchanfragenUpdate" type="submit" value="{__("update")}" class="btn btn-default reset"><i class="fa fa-refresh"></i> {__("update")}</button>
-                                <button name="delete" type="submit" value="{__("delete")}" class="btn btn-danger"><i class="fa fa-trash"></i> {__("deleteSelected")}</button>
+                                <button name="suchanfragenUpdate" type="submit" value="{__('update')}" class="btn btn-default reset"><i class="fa fa-refresh"></i> {__('update')}</button>
+                                <button name="delete" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
                             </div>
                             <div class="input-group right p50">
                                 <span class="input-group-addon">
-                                    <label for="cMapping">{__("livesucheMappingOn")}</label>
+                                    <label for="cMapping">{__('livesucheMappingOn')}</label>
                                 </span>
                                 <input class="form-control" name="cMapping" type="text">
                                 <span class="input-group-btn">
-                                    <button name="submitMapping" type="submit" value="{__("livesucheMappingOnBTN")}" class="btn btn-primary">{__("livesucheMappingOnBTN")}</button>
+                                    <button name="submitMapping" type="submit" value="{__('livesucheMappingOnBTN')}" class="btn btn-primary">{__('livesucheMappingOnBTN')}</button>
                                 </span>
                             </div>
                         </div>
                     </div>
                 </form>
             {else}
-                <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="erfolglos" class="tab-pane fade {if isset($tab) && $tab === 'erfolglos'} active in{/if}">
@@ -154,16 +154,16 @@
                     <input type="hidden" name="nErfolglosEditieren" value="{if isset($nErfolglosEditieren)}{$nErfolglosEditieren}{/if}">
                     <div class="panel panel-default settings">
                         <div class="panel-heading">
-                            <h3 class="panel-title">{__("searchmiss")}</h3>
+                            <h3 class="panel-title">{__('searchmiss')}</h3>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <tr>
                                     <th class="th-1" style="width: 40px;">&nbsp;</th>
-                                    <th class="th-1" align="left">{__("search")}</th>
-                                    <th class="th-2" align="left">{__("searchcount")}</th>
-                                    <th class="th-3" align="left">{__("lastsearch")}</th>
-                                    <th class="th-4" align="left">{__("mapping")}</th>
+                                    <th class="th-1" align="left">{__('search')}</th>
+                                    <th class="th-2" align="left">{__('searchcount')}</th>
+                                    <th class="th-3" align="left">{__('lastsearch')}</th>
+                                    <th class="th-4" align="left">{__('mapping')}</th>
                                 </tr>
                                 {foreach name=suchanfragenerfolglos from=$Suchanfragenerfolglos item=Suchanfrageerfolglos}
                                     <tr>
@@ -190,21 +190,21 @@
                                     <td>
                                         <input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessagesExcept(this.form, 'nAktiv_');" />
                                     </td>
-                                    <td colspan="4"><label for="ALLMSGS2">{__("livesucheSelectAll")}</label></td>
+                                    <td colspan="4"><label for="ALLMSGS2">{__('livesucheSelectAll')}</label></td>
                                 </tr>
                             </table>
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group">
-                                <button class="btn btn-primary" name="erfolglosUpdate" type="submit"><i class="fa fa-refresh"></i> {__("update")}</button>
-                                <button class="btn btn-default" name="erfolglosEdit" type="submit"><i class="fa fa-edit"></i> {__("livesucheEdit")}</button>
-                                <button class="btn btn-danger" name="erfolglosDelete" type="submit"><i class="fa fa-trash"></i> {__("delete")}</button>
+                                <button class="btn btn-primary" name="erfolglosUpdate" type="submit"><i class="fa fa-refresh"></i> {__('update')}</button>
+                                <button class="btn btn-default" name="erfolglosEdit" type="submit"><i class="fa fa-edit"></i> {__('livesucheEdit')}</button>
+                                <button class="btn btn-danger" name="erfolglosDelete" type="submit"><i class="fa fa-trash"></i> {__('delete')}</button>
                             </div>
                         </div>
                     </div>
                 </form>
             {else}
-                <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="mapping" class="tab-pane fade {if isset($tab) && $tab === 'mapping'} active in{/if}">
@@ -216,15 +216,15 @@
                     <input type="hidden" name="tab" value="mapping" />
                     <div class="panel panel-default settings">
                         <div class="panel-heading">
-                            <h3 class="panel-title">{__("mapping")}</h3>
+                            <h3 class="panel-title">{__('mapping')}</h3>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <tr>
                                     <th class="th-1"></th>
-                                    <th class="th-2">{__("search")}</th>
-                                    <th class="th-3">{__("searchnew")}</th>
-                                    <th class="th-4">{__("searchcount")}</th>
+                                    <th class="th-2">{__('search')}</th>
+                                    <th class="th-3">{__('searchnew')}</th>
+                                    <th class="th-4">{__('searchcount')}</th>
                                 </tr>
                                 {foreach name=suchanfragenmapping from=$Suchanfragenmapping item=sfm}
                                     <tr>
@@ -239,12 +239,12 @@
                             </table>
                         </div>
                         <div class="panel-footer">
-                            <button name="delete" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__("mappingDelete")}</button>
+                            <button name="delete" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('mappingDelete')}</button>
                         </div>
                     </div>
                 </form>
             {else}
-                <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="blacklist" class="tab-pane fade {if isset($tab) && $tab === 'blacklist'} active in{/if}">
@@ -255,12 +255,12 @@
 
                 <div class="panel panel-default settings">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{__("blacklist")}</h3>
+                        <h3 class="panel-title">{__('blacklist')}</h3>
                     </div>
                     <div class="table-responsive">
                         <table class="table">
                             <tr>
-                                <th class="th-1">{__("blacklistDescription")}</th>
+                                <th class="th-1">{__('blacklistDescription')}</th>
                             </tr>
                             <tr class="tab-1_bg">
                                 <td>
@@ -270,13 +270,13 @@
                         </table>
                     </div>
                     <div class="panel-footer">
-                        <button type="submit" class="btn btn-primary"><i class="fa fa-refresh"></i> {__("update")}</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('update')}</button>
                     </div>
                 </div>
             </form>
         </div>
         <div id="einstellungen" class="tab-pane fade {if isset($tab) && $tab === 'einstellungen'} active in{/if}">
-            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings' action='livesuche.php' buttonCaption=__("save") title='Einstellungen' tab='einstellungen'}
+            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings' action='livesuche.php' buttonCaption=__('save') title='Einstellungen' tab='einstellungen'}
         </div>
     </div>
 </div>

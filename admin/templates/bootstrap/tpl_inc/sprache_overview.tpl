@@ -3,12 +3,12 @@
         {if $oWert_arr|@count > 0}
             <button type="submit" class="btn btn-primary" name="action" value="saveall">
                 <i class="fa fa-save"></i>
-                {__("save")}
+                {__('save')}
             </button>
         {/if}
         <a class="btn btn-default" href="sprache.php?token={$smarty.session.jtl_token}&action=newvar">
             <i class="fa fa-share"></i>
-            {__("btnAddVar")}
+            {__('btnAddVar')}
         </a>
         {if $oWert_arr|@count > 0}
             {include file='tpl_inc/csv_export_btn.tpl' exporterId="langvars"}
@@ -16,7 +16,7 @@
         {include file='tpl_inc/csv_import_btn.tpl' importerId="langvars" bCustomStrategy=true}
     </div>
 {/function}
-{include file='tpl_inc/seite_header.tpl' cTitel=__("lang") cBeschreibung=__("langDesc") cDokuURL=__("langURL")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('lang') cBeschreibung=__('langDesc') cDokuURL=__('langURL')}
 {assign var="cSearchString" value=$oFilter->getField(1)->getValue()}
 {assign var="bAllSections" value=((int)$oFilter->getField(0)->getValue() === 0)}
 <script>
@@ -56,10 +56,10 @@
     </div>
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab {if $tab === 'variables'}active{/if}">
-            <a data-toggle="tab" href="#variables">{__("langVars")}</a>
+            <a data-toggle="tab" href="#variables">{__('langVars')}</a>
         </li>
         <li class="tab {if $tab === 'notfound'}active{/if}">
-            <a data-toggle="tab" href="#notfound">{__("notFoundVars")}</a>
+            <a data-toggle="tab" href="#notfound">{__('notFoundVars')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -76,9 +76,9 @@
                             <table class="list table">
                                 <thead>
                                     <tr>
-                                        {if $bAllSections}<th>{__("section")}</th>{/if}
-                                        <th>{__("variableName")}</th>
-                                        <th>{__("variableContent")}</th>
+                                        {if $bAllSections}<th>{__('section')}</th>{/if}
+                                        <th>{__('variableName')}</th>
+                                        <th>{__('variableContent')}</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -135,9 +135,9 @@
                             </table>
                         </div>
                     {elseif $bSpracheAktiv}
-                        <div class="alert alert-info" role="alert">{__("noFilterResults")}</div>
+                        <div class="alert alert-info" role="alert">{__('noFilterResults')}</div>
                     {else}
-                        <div class="alert alert-info" role="alert">{__("notImportedYet")}</div>
+                        <div class="alert alert-info" role="alert">{__('notImportedYet')}</div>
                     {/if}
                     <div class="panel-footer">
                         {sprache_buttons}
@@ -151,8 +151,8 @@
                     <table class="list table">
                         <thead>
                             <tr>
-                                <th>{__("section")}</th>
-                                <th>{__("variableName")}</th>
+                                <th>{__('section')}</th>
+                                <th>{__('variableName')}</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -174,13 +174,13 @@
                         </tbody>
                     </table>
                 {else}
-                    <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                    <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
                 <div class="panel-footer">
                     <div class="btn-group">
                         <a href="sprache.php?token={$smarty.session.jtl_token}&action=clearlog&tab=notfound" class="btn btn-danger">
                             <i class="fa fa-refresh"></i>
-                            {__("btnResetLog")}
+                            {__('btnResetLog')}
                         </a>
                     </div>
                 </div>

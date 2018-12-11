@@ -22,10 +22,10 @@
         </div>
     </div>
     {if isset($oPlugin)}
-        <p><strong>{__("pluginAuthor")}:</strong> {$oPlugin->cAutor}</p>
-        <p><strong>{__("pluginHomepage")}:</strong> <a href="{$oPlugin->cURL}" target="_blank" rel="noopener"><i class="fa fa-external-link"></i> {$oPlugin->cURL}</a></p>
-        <p><strong>{__("pluginVersion")}:</strong> {$oPlugin->nVersion}</p>
-        <p><strong>{__("pluginDesc")}:</strong> {$oPlugin->cBeschreibung}</p>
+        <p><strong>{__('pluginAuthor')}:</strong> {$oPlugin->cAutor}</p>
+        <p><strong>{__('pluginHomepage')}:</strong> <a href="{$oPlugin->cURL}" target="_blank" rel="noopener"><i class="fa fa-external-link"></i> {$oPlugin->cURL}</a></p>
+        <p><strong>{__('pluginVersion')}:</strong> {$oPlugin->nVersion}</p>
+        <p><strong>{__('pluginDesc')}:</strong> {$oPlugin->cBeschreibung}</p>
     {/if}
 </div>
 {if isset($cHinweis) && $cHinweis|strlen > 0}

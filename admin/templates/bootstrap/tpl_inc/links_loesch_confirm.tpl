@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=__("deleteLinkGroup")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('deleteLinkGroup')}
 <div id="content">
     <form method="post" action="links.php">
         {$jtl_token}
@@ -18,8 +18,8 @@
             <p>Wollen Sie die Linkgruppe "<strong>{$oLinkgruppe->cName}</strong>" wirklich l&ouml;schen?</p>
         </div>
         <div class="btn-group">
-            <input name="loeschConfirmJaSubmit" type="submit" value="{__("loeschlinkgruppeYes")}" class="btn btn-danger" />
-            <input name="loeschConfirmNeinSubmit" type="submit" value="{__("loeschlinkgruppeNo")}" class="btn btn-default" />
+            <input name="loeschConfirmJaSubmit" type="submit" value="{__('loeschlinkgruppeYes')}" class="btn btn-danger" />
+            <input name="loeschConfirmNeinSubmit" type="submit" value="{__('loeschlinkgruppeNo')}" class="btn btn-default" />
         </div>
     </form>
 </div>

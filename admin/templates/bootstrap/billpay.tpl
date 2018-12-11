@@ -7,17 +7,17 @@
 {config_load file="$lang.conf" section='einstellungen'}
 {config_load file="$lang.conf" section="billpay"}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=__("billpay") cBeschreibung=__("billpayDesc") cDokuURL=__("billpayURL")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('billpay') cBeschreibung=__('billpayDesc') cDokuURL=__('billpayURL')}
 <div id="content">
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'uebersicht'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#overview">{__("billpayOverview")}</a>
+            <a data-toggle="tab" role="tab" href="#overview">{__('billpayOverview')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'log'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#log">{__("billpayLog")}</a>
+            <a data-toggle="tab" role="tab" href="#log">{__('billpayLog')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'config'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#config">{__("billpayConfig")}</a>
+            <a data-toggle="tab" role="tab" href="#config">{__('billpayConfig')}</a>
         </li>
     </ul>
     <div class="container-fluid2">
@@ -50,7 +50,7 @@
             </div>
             <div id="log" class="tab-pane fade{if isset($cTab) && $cTab === 'log'} active in{/if}">
                 {if !isset($oLog_arr) || $oLog_arr|@count === 0}
-                    <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                    <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {else}
                     {include file='tpl_inc/pagination.tpl' oPagination=$oPagiLog cAnchor='log'}
                     <div class="container-fluid2 table-responsive">
@@ -70,11 +70,11 @@
                                     <td class="text-center">
                                         <h4 class="label-wrap">
                                         {if $oLog->nLevel == 1}
-                                            <span class="label label-danger logError">{__("logError")}</span>
+                                            <span class="label label-danger logError">{__('logError')}</span>
                                         {elseif $oLog->nLevel == 2}
-                                            <span class="label label-info logNotice">{__("logNotice")}</span>
+                                            <span class="label label-info logNotice">{__('logNotice')}</span>
                                         {else}
-                                            <span class="label label-default logDebug">{__("logDebug")}</span>
+                                            <span class="label label-default logDebug">{__('logDebug')}</span>
                                         {/if}
                                         </h4>
                                     </td>
@@ -107,7 +107,7 @@
             </div>
             <div id="config" class="tab-pane fade{if isset($cTab) && $cTab === 'config'} active in{/if}">
                 {if isset($saved) && $saved}
-                    <div class="alert alert-success"><i class="fa fa-info-circle"></i> {__("settingsSaved")}</div>
+                    <div class="alert alert-success"><i class="fa fa-info-circle"></i> {__('settingsSaved')}</div>
                 {/if}
                 {include file='tpl_inc/einstellungen_bearbeiten.tpl' action='billpay.php?tab=config'}
             </div>

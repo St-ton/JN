@@ -47,7 +47,7 @@
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{__("pluginListNotInstalled")}</h3>
+                    <h3 class="panel-title">{__('pluginListNotInstalled')}</h3>
                 </div>
                 <div class="table-responsive">
 
@@ -78,9 +78,9 @@
                         <thead>
                         <tr>
                             <th></th>
-                            <th class="tleft">{__("pluginName")}</th>
-                            <th>{__("pluginVersion")}</th>
-                            <th>{__("pluginFolder")}</th>
+                            <th class="tleft">{__('pluginName')}</th>
+                            <th>{__('pluginVersion')}</th>
+                            <th>{__('pluginFolder')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -103,17 +103,17 @@
                         <tr>
                             {*<td class="check"><input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessages(this.form);" /></td>*}
                             <td class="check"><input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessagesExcept(this.form, vLicenses);" /></td>
-                            <td colspan="5"><label for="ALLMSGS4">{__("pluginSelectAll")}</label></td>
+                            <td colspan="5"><label for="ALLMSGS4">{__('pluginSelectAll')}</label></td>
                         </tr>
                         </tfoot>
                     </table>
                 </div>
                 <div class="panel-footer">
-                    <button name="installieren" type="submit" class="btn btn-primary"><i class="fa fa-share"></i> {__("pluginBtnInstall")}</button>
+                    <button name="installieren" type="submit" class="btn btn-primary"><i class="fa fa-share"></i> {__('pluginBtnInstall')}</button>
                 </div>
             </div>
         </form>
     {else}
-        <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+        <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
     {/if}
 </div>

@@ -118,8 +118,8 @@
                                     <i class="fa fa-shopping-cart"></i> Zum Shop
                                 </a>
                                 <a class="link-logout" href="logout.php?token={$smarty.session.jtl_token}"
-                                   title="{__("logout")}">
-                                    <i class="fa fa-sign-out"></i> {__("logout")}
+                                   title="{__('logout')}">
+                                    <i class="fa fa-sign-out"></i> {__('logout')}
                                 </a>
                             </li>
                         </ul>

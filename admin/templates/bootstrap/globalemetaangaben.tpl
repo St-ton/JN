@@ -1,6 +1,6 @@
 {config_load file="$lang.conf" section="globalemetaangaben"}
 {include file='tpl_inc/header.tpl'}
-{include file='tpl_inc/seite_header.tpl' cTitel=__("globalemetaangaben") cBeschreibung=__("globalemetaangabenDesc") cDokuURL=__("globalemetaangabenUrl")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('globalemetaangaben') cBeschreibung=__('globalemetaangabenDesc') cDokuURL=__('globalemetaangabenUrl')}
 {assign var=currentLanguage value=''}
 <div id="content" class="container-fluid">
     <div class="block">
@@ -9,10 +9,10 @@
             <input type="hidden" name="sprachwechsel" value="1" />
             <div class="input-group p25 left">
                 <span class="input-group-addon">
-                    <label for="{__("changeLanguage")}">{__("changeLanguage")}</label>
+                    <label for="{__('changeLanguage')}">{__('changeLanguage')}</label>
                 </span>
                 <span class="input-group-wrap last">
-                    <select id="{__("changeLanguage")}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
+                    <select id="{__('changeLanguage')}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
                         {foreach name=sprachen from=$Sprachen item=sprache}
                             <option value="{$sprache->kSprache}" {if $sprache->kSprache==$smarty.session.kSprache}{assign var=currentLanguage value=$sprache->cNameDeutsch}selected{/if}>{$sprache->cNameDeutsch}</option>
                         {/foreach}
@@ -30,34 +30,34 @@
                 <div class="panel-body">
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="Title">{__("globalemetaangabenTitle")}</label>
+                            <label for="Title">{__('globalemetaangabenTitle')}</label>
                         </span>
                         <input type="text" class="form-control" id="Title" name="Title" value="{if isset($oMetaangaben_arr.Title)}{$oMetaangaben_arr.Title}{/if}" tabindex="1" />
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="Meta_Description">{__("globalemetaangabenMetaDesc")}</label>
+                            <label for="Meta_Description">{__('globalemetaangabenMetaDesc')}</label>
                         </span>
                         <input type="text" class="form-control" id="Meta_Description" name="Meta_Description" value="{if isset($oMetaangaben_arr.Meta_Description)}{$oMetaangaben_arr.Meta_Description}{/if}" tabindex="1" />
                     </div>
 
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="Meta_Keywords">{__("globalemetaangabenKeywords")}</label>
+                            <label for="Meta_Keywords">{__('globalemetaangabenKeywords')}</label>
                         </span>
                         <input type="text" class="form-control" id="Meta_Keywords" name="Meta_Keywords" value="{if isset($oMetaangaben_arr.Meta_Keywords)}{$oMetaangaben_arr.Meta_Keywords}{/if}" tabindex="1" />
                     </div>
 
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="Meta_Description_Praefix">{__("globalemetaangabenMetaDescPraefix")}</label>
+                            <label for="Meta_Description_Praefix">{__('globalemetaangabenMetaDescPraefix')}</label>
                         </span>
                         <input type="text" class="form-control" id="Meta_Description_Praefix" name="Meta_Description_Praefix" value="{if isset($oMetaangaben_arr.Meta_Description_Praefix)}{$oMetaangaben_arr.Meta_Description_Praefix}{/if}" tabindex="1" />
                     </div>
 
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="keywords">{__("excludeKeywords")} ({__("spaceSeparated")})</label>
+                            <label for="keywords">{__('excludeKeywords')} ({__('spaceSeparated')})</label>
                         </span>
                         <textarea class="form-control" id="keywords" name="keywords">{if isset($keywords->cKeywords)}{$keywords->cKeywords}{/if}</textarea>
                     </div>
@@ -105,7 +105,7 @@
         </div>
 
         <div class="submit">
-            <button name="speichern" type="submit" value="{__("globalemetaangabenSave")}" class="btn btn-primary"><i class="fa fa-save"></i> {__("globalemetaangabenSave")}</button>
+            <button name="speichern" type="submit" value="{__('globalemetaangabenSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('globalemetaangabenSave')}</button>
         </div>
     </form>
 </div>

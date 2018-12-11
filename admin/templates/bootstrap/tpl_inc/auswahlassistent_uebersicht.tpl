@@ -1,15 +1,15 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=__("auswahlassistent") cBeschreibung=__("auswahlassistentDesc")
-         cDokuURL=__("auswahlassistentURL")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('auswahlassistent') cBeschreibung=__('auswahlassistentDesc')
+         cDokuURL=__('auswahlassistentURL')}
 
 <div id="content">
     {if !isset($noModule) || !$noModule}
         <div class="block">
             <form name="sprache" method="post" action="auswahlassistent.php">
                 {$jtl_token}
-                <input id="{__("changeLanguage")}" type="hidden" name="sprachwechsel" value="1" />
+                <input id="{__('changeLanguage')}" type="hidden" name="sprachwechsel" value="1" />
                 <div class="input-group p25 left">
                 <span class="input-group-addon">
-                    <label for="lang-changer">{__("changeLanguage")}:</strong></label>
+                    <label for="lang-changer">{__('changeLanguage')}:</strong></label>
                 </span>
                     <span class="input-group-wrap last">
                     <select id="lang-changer" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
@@ -23,10 +23,10 @@
         </div>
         <ul class="nav nav-tabs" role="tablist">
             <li class="tab{if !isset($cTab) || $cTab === 'uebersicht'} active{/if}">
-                <a data-toggle="tab" role="tab" href="#overview">{__("aaOverview")}</a>
+                <a data-toggle="tab" role="tab" href="#overview">{__('aaOverview')}</a>
             </li>
             <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-                <a data-toggle="tab" role="tab" href="#config">{__("aaConfig")}</a>
+                <a data-toggle="tab" role="tab" href="#config">{__('aaConfig')}</a>
             </li>
         </ul>
         <div class="tab-content">
@@ -42,8 +42,8 @@
                                         <tr>
                                             <th class="tcenter"></th>
                                             <th class="check">&nbsp;</th>
-                                            <th class="tleft">{__("aaName")}</th>
-                                            <th class="tcenter">{__("aaLocation")}</th>
+                                            <th class="tleft">{__('aaName')}</th>
+                                            <th class="tcenter">{__('aaLocation')}</th>
                                             <th class="tright">&nbsp;</th>
                                         </tr>
                                     </thead>
@@ -78,7 +78,7 @@
                                                         <div>
                                                     {/if}
                                                             <a href="auswahlassistent.php?a=editGrp&g={$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}&token={$smarty.session.jtl_token}"
-                                                               class="btn btn-default edit" title="{__("modify")}">
+                                                               class="btn btn-default edit" title="{__('modify')}">
                                                                 <i class="fa fa-edit"></i>
                                                             </a>
                                                         </div>
@@ -94,9 +94,9 @@
                                                             <table class="list table">
                                                                 <tr>
                                                                     <th class="tcenter"></th>
-                                                                    <th class="tleft">{__("aaQuestionName")}</th>
-                                                                    <th class="tcenter">{__("aaMerkmal")}</th>
-                                                                    <th class="tcenter">{__("aaSort")}</th>
+                                                                    <th class="tleft">{__('aaQuestionName')}</th>
+                                                                    <th class="tcenter">{__('aaMerkmal')}</th>
+                                                                    <th class="tcenter">{__('aaSort')}</th>
                                                                     <th class="tright">&nbsp;</th>
                                                                 </tr>
                                                                 {foreach name=auswahlfragen from=$oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr item=oAuswahlAssistentFrage}
@@ -136,26 +136,26 @@
                                             <td class="check">
                                                 <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
                                             </td>
-                                            <td colspan="3" class="tleft"><label for="ALLMSGS">{__("globalSelectAll")}</label></td>
+                                            <td colspan="3" class="tleft"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
                                         </tr>
                                     </tfoot>
                                 </table>
                             </div>
                         {else}
-                            <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                            <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                         {/if}
                         <div class="panel-footer">
                             <div class="btn-group">
                                 {if isset($oAuswahlAssistentGruppe_arr) && $oAuswahlAssistentGruppe_arr|@count > 0}
                                     <button type="submit" name="a" value="delGrp" class="btn btn-danger">
-                                        <i class="fa fa-trash"></i> {__("aaDelete")}
+                                        <i class="fa fa-trash"></i> {__('aaDelete')}
                                     </button>
                                 {/if}
                                 <button type="submit" name="a" value="newGrp" class="btn btn-primary">
-                                    <i class="fa fa-share"></i> {__("aaGroup")}
+                                    <i class="fa fa-share"></i> {__('aaGroup')}
                                 </button>
                                 <button type="submit" name="a" value="newQuest" class="btn btn-default">
-                                    <i class="fa fa-share"></i> {__("aaQuestion")}
+                                    <i class="fa fa-share"></i> {__('aaQuestion')}
                                 </button>
                             </div>
                         </div>
@@ -164,13 +164,13 @@
             </div>
             <!-- #overview -->
             <div id="config" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
-                {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings' action='auswahlassistent.php' buttonCaption=__("save") tab='einstellungen'}
+                {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings' action='auswahlassistent.php' buttonCaption=__('save') tab='einstellungen'}
             </div>
             <!-- #config -->
         </div>
         <!-- .tab-content -->
     {else}
-        <div class="alert alert-danger">{__("noModuleAvailable")}</div>
+        <div class="alert alert-danger">{__('noModuleAvailable')}</div>
     {/if}
 </div><!-- #content -->
 

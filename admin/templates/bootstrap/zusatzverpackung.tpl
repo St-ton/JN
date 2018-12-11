@@ -1,7 +1,7 @@
 {config_load file="$lang.conf" section="zusatzverpackung"}
 {include file='tpl_inc/header.tpl'}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=__("zusatzverpackung") cBeschreibung=__("zusatzverpackungDesc") cDokuURL=__("zusatzverpackungURL")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('zusatzverpackung') cBeschreibung=__('zusatzverpackungDesc') cDokuURL=__('zusatzverpackungURL')}
 <div id="content" class="container-fluid">
     {if $action === 'edit'}
         {include file='tpl_inc/zusatzverpackung_bearbeiten.tpl'}

@@ -1,0 +1,51 @@
+msgid "updateShop"
+msgstr "Shop updaten"
+
+msgid "updateShopContains"
+msgstr "Ein Shopupdate besteht aus den folgenden zwei Schritten"
+
+msgid "updateShopStep1"
+msgstr "Update der Shopdateien über FTP.<br />Laden Sie hierzu das aktuelle Downloadpaket des Shops aus der <a href=\"http://www.jtl-software.de/filebase\" rel=\"external\">Filebase von JTL-Software</a> und folgen Sie den Anweisungen in der <a href=\"https://jtl-url.de/rcq2z\" rel=\"external\">Updateanleitung</a>"
+
+msgid "updateShopStep2"
+msgstr "Loggen Sie sich wieder in den Adminbereich des Shops und drücken Sie den DB aktualisieren Knopf. Ihre Shopdatenbank wird dadurch auf die neuste Version gebracht. Beachten Sie, dass der zweite Schritt nur dann durchgeführt werden kann, wenn der Erste erfolgreich durchgeführt wurde.<br />Ob ein Update des Shops oder der Datenbank notwendig ist, wird hier automatisch angezeigt."
+
+msgid "updateDBError"
+msgstr "Beim letzten Datenbank-Update ist ein Fehler aufgetreten. Es wurde ein Fehlerbericht generiert und zu JTL-Software geschickt. Bitte probieren Sie das Update später noch einmal, wir bemühen uns den Fehler so schnell wie möglich zu beheben<br />Fehlermeldung: "
+
+msgid "updateFileError"
+msgstr "Es ist ein Fehler beim Update aufgetreten. Stellen Sie bitte sicher, dass alle aktuellen Dateien vorhanden sind."
+
+msgid "updateShopAllowURLOpen"
+msgstr "Die Einstellung 'allow_url_fopen' ist auf diesem Server in der php.ini deaktiviert. Dadurch kann auf dem JTL-Update-Server nicht automatisch überprüft werden, ob es eine neue Version gibt."
+
+msgid "update"
+msgstr "Update ausführen"
+
+msgid "updateDB"
+msgstr "Datenbank updaten"
+
+msgid "UpdateFile"
+msgstr "Updatedatei"
+
+msgid "currentShopVersion"
+msgstr "Ihre aktuelle Shopversion"
+
+msgid "currentTemplateVersion"
+msgstr "Ihre aktuelle Templateversion"
+
+msgid "currentDBVersion"
+msgstr "Ihre aktuelle Datenbankversion"
+
+msgid "currentLiveVersion"
+msgstr "Aktuellste Version vom Shop"
+
+msgid "lastUpdate"
+msgstr "Datenbank zuletzt aktualisiert am"
+
+msgid "changelogVersion"
+msgstr "Changelog der Version"
+
+msgid "changelogLastVersion"
+msgstr "Changelogs der letzten Versionen"
+

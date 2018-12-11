@@ -3,20 +3,20 @@
 
 {assign var=cFunAttrib value=$ART_ATTRIBUT_GRATISGESCHENKAB}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=__("ggHeader") cDokuURL=__("ggURL")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('ggHeader') cDokuURL=__('ggURL')}
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'aktivegeschenke'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#aktivegeschenke">{__("ggActiveProducts")}</a>
+            <a data-toggle="tab" role="tab" href="#aktivegeschenke">{__('ggActiveProducts')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'haeufigegeschenke'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#haeufigegeschenke">{__("ggCommonBuyedProducts")}</a>
+            <a data-toggle="tab" role="tab" href="#haeufigegeschenke">{__('ggCommonBuyedProducts')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'letzten100geschenke'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#letzten100geschenke">{__("ggLast100Products")}</a>
+            <a data-toggle="tab" role="tab" href="#letzten100geschenke">{__('ggLast100Products')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einstellungen">{__("ggSettings")}</a>
+            <a data-toggle="tab" role="tab" href="#einstellungen">{__('ggSettings')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -27,9 +27,9 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
-                            <th class="tleft">{__("ggProductName")}</th>
-                            <th class="th-2">{__("ggOrderValueMin")}</th>
-                            <th class="th-3">{__("ggDate")}</th>
+                            <th class="tleft">{__('ggProductName')}</th>
+                            <th class="th-2">{__('ggOrderValueMin')}</th>
+                            <th class="th-3">{__('ggDate')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -46,7 +46,7 @@
                     </table>
                 </div>
             {else}
-                <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="haeufigegeschenke" class="tab-pane fade {if isset($cTab) && $cTab === 'haeufigegeschenke'} active in{/if}">
@@ -56,11 +56,11 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
-                            <th class="tleft">{__("ggProductName")}</th>
-                            <th class="th-2">{__("ggOrderValueMin")}</th>
-                            <th class="th-3">{__("ggCount")}</th>
-                            <th class="th-3">{__("ggOrderValueAverage")}</th>
-                            <th class="th-4">{__("gglastOrdered")}</th>
+                            <th class="tleft">{__('ggProductName')}</th>
+                            <th class="th-2">{__('ggOrderValueMin')}</th>
+                            <th class="th-3">{__('ggCount')}</th>
+                            <th class="th-3">{__('ggOrderValueAverage')}</th>
+                            <th class="th-4">{__('gglastOrdered')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -79,7 +79,7 @@
                     </table>
                 </div>
             {else}
-                <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="letzten100geschenke" class="tab-pane fade {if isset($cTab) && $cTab === 'letzten100geschenke'} active in{/if}">
@@ -89,10 +89,10 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
-                            <th class="tleft">{__("ggProductName")}</th>
-                            <th class="th-2">{__("ggOrderValueMin")}</th>
-                            <th class="th-4">{__("ggOrderValue")}</th>
-                            <th class="th-4">{__("ggOrdered")}</th>
+                            <th class="tleft">{__('ggProductName')}</th>
+                            <th class="th-2">{__('ggOrderValueMin')}</th>
+                            <th class="th-4">{__('ggOrderValue')}</th>
+                            <th class="th-4">{__('ggOrdered')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -110,11 +110,11 @@
                     </table>
                 </div>
             {else}
-                <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
-            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='gratisgeschenk.php' buttonCaption=__("save") title=__("ggSettings") tab='einstellungen'}
+            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='gratisgeschenk.php' buttonCaption=__('save') title=__('ggSettings') tab='einstellungen'}
         </div>
     </div>
 </div>

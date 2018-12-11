@@ -4,22 +4,22 @@
     {rdelim}
 </script>
 {if $nTyp == $STATS_ADMIN_TYPE_BESUCHER}
-    {assign var="cTitel" value=__("statisticTitle")|cat:": "|cat:__("statisticBesucher")}
-    {assign var="cURL" value=__("statisticBesucherURL")}
+    {assign var="cTitel" value=__('statisticTitle')|cat:": "|cat:__('statisticBesucher')}
+    {assign var="cURL" value=__('statisticBesucherURL')}
 {elseif $nTyp == $STATS_ADMIN_TYPE_KUNDENHERKUNFT}
-    {assign var="cTitel" value=__("statisticTitle")|cat:": "|cat:__("statisticKundenherkunft")}
-    {assign var="cURL" value=__("statisticKundenherkunftURL")}
+    {assign var="cTitel" value=__('statisticTitle')|cat:": "|cat:__('statisticKundenherkunft')}
+    {assign var="cURL" value=__('statisticKundenherkunftURL')}
 {elseif $nTyp == $STATS_ADMIN_TYPE_SUCHMASCHINE}
-    {assign var="cTitel" value=__("statisticTitle")|cat:": "|cat:__("statisticSuchmaschine")}
-    {assign var="cURL" value=__("statisticSuchmaschineURL")}
+    {assign var="cTitel" value=__('statisticTitle')|cat:": "|cat:__('statisticSuchmaschine')}
+    {assign var="cURL" value=__('statisticSuchmaschineURL')}
 {elseif $nTyp == $STATS_ADMIN_TYPE_UMSATZ}
-    {assign var="cTitel" value=__("statisticTitle")|cat:": "|cat:__("statisticUmsatz")}
-    {assign var="cURL" value=__("statisticUmsatzURL")}
+    {assign var="cTitel" value=__('statisticTitle')|cat:": "|cat:__('statisticUmsatz')}
+    {assign var="cURL" value=__('statisticUmsatzURL')}
 {else $nTyp == $STATS_ADMIN_TYPE_EINSTIEGSSEITEN}
-    {assign var="cTitel" value=__("statisticTitle")|cat:": "|cat:__("statisticEinstiegsseite")}
-    {assign var="cURL" value=__("statisticEinstiegsseiteURL")}
+    {assign var="cTitel" value=__('statisticTitle')|cat:": "|cat:__('statisticEinstiegsseite')}
+    {assign var="cURL" value=__('statisticEinstiegsseiteURL')}
 {/if}
-{include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__("statisticDesc") cDokuURL=$cURL}
+{include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__('statisticDesc') cDokuURL=$cURL}
 <div id="content" class="container-fluid">
     <div class="block">
         <div class="input-group p25">

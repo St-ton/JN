@@ -1,6 +1,6 @@
 {config_load file="$lang.conf" section="emailblacklist"}
 {include file='tpl_inc/header.tpl'}
-{include file='tpl_inc/seite_header.tpl' cTitel=__("emailblacklist") cBeschreibung=__("emailblacklistDesc") cDokuURL=__("emailblacklistURL")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('emailblacklist') cBeschreibung=__('emailblacklistDesc') cDokuURL=__('emailblacklistURL')}
 <div id="content" class="container-fluid">
     <form method="post" action="emailblacklist.php">
         {$jtl_token}
@@ -49,20 +49,20 @@
 
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">{__("emailblacklistEmail")} {__("emailblacklistSeperator")}</h3>
+                <h3 class="panel-title">{__('emailblacklistEmail')} {__('emailblacklistSeperator')}</h3>
             </div>
             <div class="panel-body">
                 <textarea class="form-control" name="cEmail" cols="50" rows="10">{if isset($oEmailBlacklist_arr)}{foreach name=emailblacklist from=$oEmailBlacklist_arr item=oEmailBlacklist}{$oEmailBlacklist->cEmail}{if !$smarty.foreach.emailblacklist.last};{/if}{/foreach}{/if}</textarea>
             </div>
         </div>
         <div class="save_wrapper">
-            <button name="speichern" type="submit" value="{__("emailblacklistSave")}" class="btn btn-primary"><i class="fa fa-save"></i> {__("emailblacklistSave")}</button>
+            <button name="speichern" type="submit" value="{__('emailblacklistSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('emailblacklistSave')}</button>
         </div>
     </form>
     {if isset($oEmailBlacklistBlock_arr) && $oEmailBlacklistBlock_arr|@count > 0}
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">{__("emailblacklistBlockedEmails")}</h3>
+                <h3 class="panel-title">{__('emailblacklistBlockedEmails')}</h3>
             </div>
             <div class="panel-body">
                 {foreach name=blocked from=$oEmailBlacklistBlock_arr item=entry}

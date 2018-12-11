@@ -6,21 +6,21 @@
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{__("pluginListInstalled")}</h3>
+                    <h3 class="panel-title">{__('pluginListInstalled')}</h3>
                 </div>
                 <div class="table-responsive">
                     <table class="list table">
                         <thead>
                         <tr>
                             <th></th>
-                            <th class="tleft">{__("pluginName")}</th>
-                            <th>{__("status")}</th>
-                            <th>{__("pluginVersion")}</th>
-                            <th>{__("pluginInstalled")}</th>
-                            <th>{__("pluginFolder")}</th>
-                            <th>{__("pluginEditLocales")}</th>
-                            <th>{__("pluginEditLinkgrps")}</th>
-                            <th>{__("pluginBtnLicence")}</th>
+                            <th class="tleft">{__('pluginName')}</th>
+                            <th>{__('status')}</th>
+                            <th>{__('pluginVersion')}</th>
+                            <th>{__('pluginInstalled')}</th>
+                            <th>{__('pluginFolder')}</th>
+                            <th>{__('pluginEditLocales')}</th>
+                            <th>{__('pluginEditLinkgrps')}</th>
+                            <th>{__('pluginBtnLicence')}</th>
                             <th>Aktionen</th>
                         </tr>
                         </thead>
@@ -35,9 +35,9 @@
                                     {if $PluginInstalliert->updateAvailable === true || (isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0)}
                                         <p>
                                             {if $PluginInstalliert->cFehler === ''}
-                                                {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0}{$PluginInstalliert->cInfo}<br />{/if}{__("pluginUpdateExists")}
+                                                {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0}{$PluginInstalliert->cInfo}<br />{/if}{__('pluginUpdateExists')}
                                             {else}
-                                                {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0}{$PluginInstalliert->cInfo}<br />{/if}{__("pluginUpdateExists")}. <br />{__("pluginUpdateExistsError")}: <br />{$PluginInstalliert->cFehler}
+                                                {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0}{$PluginInstalliert->cInfo}<br />{/if}{__('pluginUpdateExists')}. <br />{__('pluginUpdateExistsError')}: <br />{$PluginInstalliert->cFehler}
                                             {/if}
                                         </p>
                                     {/if}
@@ -58,18 +58,18 @@
                                 <td class="tcenter plugin-lang-vars">
                                     {if isset($PluginInstalliert->oPluginSprachvariableAssoc_arr) && $PluginInstalliert->oPluginSprachvariableAssoc_arr|@count > 0}
                                         <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$PluginInstalliert->kPlugin}&token={$smarty.session.jtl_token}"
-                                           class="btn btn-default btn-sm" title="{__("modify")}"><i class="fa fa-edit"></i></a>
+                                           class="btn btn-default btn-sm" title="{__('modify')}"><i class="fa fa-edit"></i></a>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-frontend-links">
                                     {if isset($PluginInstalliert->oPluginFrontendLink_arr) && $PluginInstalliert->oPluginFrontendLink_arr|@count > 0}
                                         <a href="links.php?kPlugin={$PluginInstalliert->kPlugin}"
-                                           class="btn btn-default btn-sm" title="{__("modify")}"><i class="fa fa-edit"></i></a>
+                                           class="btn btn-default btn-sm" title="{__('modify')}"><i class="fa fa-edit"></i></a>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-license">
                                     {if isset($PluginInstalliert->cLizenzKlasse) && $PluginInstalliert->cLizenzKlasse|strlen > 0}
-                                        <button name="lizenzkey" type="submit" title="{__("modify")}"
+                                        <button name="lizenzkey" type="submit" title="{__('modify')}"
                                                 class="btn {if $PluginInstalliert->cLizenz && $PluginInstalliert->cLizenz|strlen > 0}btn-default{else}btn-primary{/if} btn-sm" value="{$PluginInstalliert->kPlugin}">
                                         <i class="fa fa-edit"></i></button>
                                     {/if}
@@ -92,7 +92,7 @@
                                             {/if}
                                         {/if}
                                         {if $PluginInstalliert->updateAvailable === true && $PluginInstalliert->cFehler === ''}
-                                            <a onclick="ackCheck({$PluginInstalliert->kPlugin});return false;" class="btn btn-success btn-sm" title="{__("pluginBtnUpdate")}"><i class="fa fa-refresh"></i></a>
+                                            <a onclick="ackCheck({$PluginInstalliert->kPlugin});return false;" class="btn btn-success btn-sm" title="{__('pluginBtnUpdate')}"><i class="fa fa-refresh"></i></a>
                                         {/if}
                                         {if $btnGroup}
                                     </div>
@@ -104,20 +104,20 @@
                         <tfoot>
                         <tr>
                             <td class="check"><input name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                            <td colspan="10"><label for="ALLMSGS1">{__("pluginSelectAll")}</label></td>
+                            <td colspan="10"><label for="ALLMSGS1">{__('pluginSelectAll')}</label></td>
                         </tr>
                         </tfoot>
                     </table>
                 </div>
                 <div class="panel-footer">
                     <div class="save btn-group">
-                        <button name="deaktivieren" type="submit" class="btn btn-warning"><i class="fa fa-close"></i> {__("pluginBtnDeActivate")}</button>
-                        <button name="deinstallieren" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__("pluginBtnDeInstall")}</button>
+                        <button name="deaktivieren" type="submit" class="btn btn-warning"><i class="fa fa-close"></i> {__('pluginBtnDeActivate')}</button>
+                        <button name="deinstallieren" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('pluginBtnDeInstall')}</button>
                     </div>
                 </div>
             </div>
         </form>
     {else}
-        <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+        <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
     {/if}
 </div>

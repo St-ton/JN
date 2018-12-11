@@ -1,7 +1,7 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="navigationsfilter"}
-{include file='tpl_inc/seite_header.tpl' cTitel=__("navigationsfilter") cBeschreibung=__("navigationsfilterDesc")
-         cDokuURL=__("navigationsfilterUrl")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('navigationsfilter') cBeschreibung=__('navigationsfilterDesc')
+         cDokuURL=__('navigationsfilterUrl')}
 
 <script>
     var bManuell = false;
@@ -30,9 +30,9 @@
             '<div class="price-row">' +
                 '<button type="button" class="btn-remove-range btn btn-danger btn-sm">' +
                     '<i class="fa fa-trash"></i></button> ' +
-                '<label for="nVon_' + n + '">{__("navigationsfilterFrom")}:</label> ' +
+                '<label for="nVon_' + n + '">{__('navigationsfilterFrom')}:</label> ' +
                 '<input id="nVon_' + n + '" class="form-control" name="nVon[]" type="text" value="' + nVon + '"> ' +
-                '<label for="nBis_' + n + '">{__("navigationsfilterTo")}:</label> ' +
+                '<label for="nBis_' + n + '">{__('navigationsfilterTo')}:</label> ' +
                 '<input id="nBis_' + n + '" class="form-control" name="nBis[]" type="text" value="' + nBis + '">' +
             '</div>'
         );
@@ -189,8 +189,8 @@
             {/if}
         </div>
         <p class="submit">
-            <button name="speichern" class="btn btn-primary" type="submit" value="{__("navigationsfilterSave")}">
-                <i class="fa fa-save"></i> {__("navigationsfilterSave")}
+            <button name="speichern" class="btn btn-primary" type="submit" value="{__('navigationsfilterSave')}">
+                <i class="fa fa-save"></i> {__('navigationsfilterSave')}
             </button>
         </p>
     </form>

@@ -12,10 +12,10 @@
             </div>
             <div class="modal-body">{if isset($modalBody)}{$modalBody}{/if}</div>
             <div class="modal-footer">
-                <p>{__("wantToConfirm")}</p>
+                <p>{__('wantToConfirm')}</p>
                 <div class="btn-group">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-times"></i> {__("cancel")}</button>
-                    <button id="{$modalID}-confirm" type="button" class="btn btn-primary"><i class="fa fa-check"></i> {__("confirm")}</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-times"></i> {__('cancel')}</button>
+                    <button id="{$modalID}-confirm" type="button" class="btn btn-primary"><i class="fa fa-check"></i> {__('confirm')}</button>
                 </div>
             </div>
         </div>

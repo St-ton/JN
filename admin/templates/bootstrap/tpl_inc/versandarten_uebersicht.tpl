@@ -6,7 +6,7 @@
     {/literal}
 </script>
 
-{include file='tpl_inc/seite_header.tpl' cTitel=__("shippingmethods") cBeschreibung=__("isleListsHint") cDokuURL=__("shippingmethodsURL")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('shippingmethods') cBeschreibung=__('isleListsHint') cDokuURL=__('shippingmethodsURL')}
 <div id="content" class="container-fluid">
     {foreach name=versandarten from=$versandarten item=versandart}
         <div class="panel panel-default">
@@ -16,7 +16,7 @@
             <table class="table table-list">
                 <tbody>
                     <tr>
-                        <td style="width:160px">{__("shippingTypeName")}</td>
+                        <td style="width:160px">{__('shippingTypeName')}</td>
                         <td>
                             {foreach name=versandartsprache from=$versandart->oVersandartSprachen_arr item=oVersandartSprachen}
                                     {$oVersandartSprachen->cName}{if !$smarty.foreach.versandartsprache.last}, {/if}
@@ -24,7 +24,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>{__("countries")}</td>
+                        <td>{__('countries')}</td>
                         <td>
                             {foreach name=laender from=$versandart->land_arr item=land}
                                 <a href="versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$land}&token={$smarty.session.jtl_token}"><span class="label label-{if isset($versandart->zuschlag_arr[$land])}success{else}default{/if}">{$land}</span></a>
@@ -32,7 +32,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>{__("shippingclasses")}</td>
+                        <td>{__('shippingclasses')}</td>
                         <td>
                             {if $versandart->versandklassen|@count == 1 && $versandart->versandklassen[0] === 'Alle'}
                                 {$versandart->versandklassen[0]}
@@ -44,7 +44,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>{__("customerclass")}</td>
+                        <td>{__('customerclass')}</td>
                         <td>
                             {foreach name=versandklassen from=$versandart->cKundengruppenName_arr item=cKundengruppenName}
                                 {$cKundengruppenName}
@@ -52,15 +52,15 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>{__("taxshippingcosts")}</td>
-                        <td>{if $versandart->eSteuer === 'netto'}{__("net")}{else}{__("gross")}{/if}</td>
+                        <td>{__('taxshippingcosts')}</td>
+                        <td>{if $versandart->eSteuer === 'netto'}{__('net')}{else}{__('gross')}{/if}</td>
                     </tr>
                     <tr>
-                        <td>{__("shippingtime")}</td>
+                        <td>{__('shippingtime')}</td>
                         <td>{$versandart->nMinLiefertage} - {$versandart->nMaxLiefertage} Tage</td>
                     </tr>
                     <tr>
-                        <td>{__("paymentMethods")}</td>
+                        <td>{__('paymentMethods')}</td>
                         <td>
                             {foreach name=zahlungsarten from=$versandart->versandartzahlungsarten item=zahlungsart}
                                 {$zahlungsart->zahlungsart->cName}{if isset($zahlungsart->zahlungsart->cAnbieter) &&
@@ -72,16 +72,16 @@
                     <tr>
                         <td>
                             {if $versandart->versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl' || $versandart->versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl' || $versandart->versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'}
-                                {__("priceScale")}
+                                {__('priceScale')}
                             {elseif $versandart->versandberechnung->cModulId === 'vm_versandkosten_pauschale_jtl'}
-                                {__("shippingPrice")}
+                                {__('shippingPrice')}
                             {/if}
                         </td>
                         <td>
                             {if $versandart->versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl' || $versandart->versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl' || $versandart->versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'}
                                 {foreach name=preisstaffel from=$versandart->versandartstaffeln item=versandartstaffel}
                                     {if $versandartstaffel->fBis != 999999999}
-                                        {__("upTo")} {$versandartstaffel->fBis} {$versandart->einheit} {getCurrencyConversionSmarty fPreisBrutto=$versandartstaffel->fPreis bSteuer=false}
+                                        {__('upTo')} {$versandartstaffel->fBis} {$versandart->einheit} {getCurrencyConversionSmarty fPreisBrutto=$versandartstaffel->fPreis bSteuer=false}
                                         <br />
                                     {/if}
                                 {/foreach}
@@ -92,13 +92,13 @@
                     </tr>
                     {if $versandart->fVersandkostenfreiAbX>0}
                         <tr>
-                            <td>{__("freeFrom")}</td>
-                            <td>{getCurrencyConversionSmarty fPreisBrutto=$versandart->fVersandkostenfreiAbX bSteuer=false} ({if $versandart->eSteuer === 'netto'}{__("net")}{else}{__("gross")}{/if})</td>
+                            <td>{__('freeFrom')}</td>
+                            <td>{getCurrencyConversionSmarty fPreisBrutto=$versandart->fVersandkostenfreiAbX bSteuer=false} ({if $versandart->eSteuer === 'netto'}{__('net')}{else}{__('gross')}{/if})</td>
                         </tr>
                     {/if}
                     {if $versandart->fDeckelung>0}
                         <tr>
-                            <td>{__("maxCostsUpTo")}</td>
+                            <td>{__('maxCostsUpTo')}</td>
                             <td>{getCurrencyConversionSmarty fPreisBrutto=$versandart->fDeckelung bSteuer=false}</td>
                         </tr>
                     {/if}
@@ -120,7 +120,7 @@
     <div id="settings">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">{__("createShippingMethod")}</h3>
+                <h3 class="panel-title">{__('createShippingMethod')}</h3>
             </div>
             <form name="versandart_neu" method="post" action="versandarten.php">
                 {$jtl_token}
@@ -136,7 +136,7 @@
                     {/foreach}
                 </div>
                 <div class="panel-footer">
-                    <button type="submit" value="{__("createShippingMethod")}" class="btn btn-primary"><i class="fa fa-share"></i> {__("createShippingMethod")}</button>
+                    <button type="submit" value="{__('createShippingMethod')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('createShippingMethod')}</button>
                 </div>
             </form>
         </div>

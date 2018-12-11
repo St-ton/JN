@@ -5,29 +5,29 @@
     {rdelim}
 </script>
 
-{include file='tpl_inc/seite_header.tpl' cTitel=__("kampagne") cBeschreibung=__("kampagneDesc") cDokuURL=__("kampagneURL")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('kampagne') cBeschreibung=__('kampagneDesc') cDokuURL=__('kampagneURL')}
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'uebersicht'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#uebersicht">{__("kampagneOverview")}</a>
+            <a data-toggle="tab" role="tab" href="#uebersicht">{__('kampagneOverview')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'globalestats'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#globalestats">{__("kampagneGlobalStats")}</a>
+            <a data-toggle="tab" role="tab" href="#globalestats">{__('kampagneGlobalStats')}</a>
         </li>
     </ul>
     <div class="tab-content">
         <div id="uebersicht" class="tab-pane fade {if !isset($cTab) || $cTab === 'uebersicht'} active in{/if}">
             <div class="panel panel-default">
-                <div class="panel-heading"><h3 class="panel-title">{__("kampagneIntern")}</h3></div>
+                <div class="panel-heading"><h3 class="panel-title">{__('kampagneIntern')}</h3></div>
                 {if $oKampagne_arr|count > 0}
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <tr>
-                                <th class="tleft">{__("kampagneName")}</th>
-                                <th class="tleft">{__("kampagneParam")}</th>
-                                <th class="tleft">{__("kampagneValue")}</th>
-                                <th class="th-4">{__("kampagnenActive")}</th>
-                                <th class="th-5">{__("kampagnenDate")}</th>
+                                <th class="tleft">{__('kampagneName')}</th>
+                                <th class="tleft">{__('kampagneParam')}</th>
+                                <th class="tleft">{__('kampagneValue')}</th>
+                                <th class="th-4">{__('kampagnenActive')}</th>
+                                <th class="th-5">{__('kampagnenDate')}</th>
                                 <th class="th-6"></th>
                             </tr>
 
@@ -40,18 +40,18 @@
                                         <td>{$oKampagne->cParameter}</td>
                                         <td>
                                             {if isset($oKampagne->nDynamisch) && $oKampagne->nDynamisch == 1}
-                                                {__("kampagneDynamic")}
+                                                {__('kampagneDynamic')}
                                             {else}
-                                                {__("kampagneStatic")}
+                                                {__('kampagneStatic')}
                                                 <br />
-                                                <strong>{__("kampagneValueStatic")}:</strong>
+                                                <strong>{__('kampagneValueStatic')}:</strong>
                                                 {$oKampagne->cWert}
                                             {/if}
                                         </td>
-                                        <td class="tcenter">{if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 1}{__("yes")}{else}{__("no")}{/if}</td>
+                                        <td class="tcenter">{if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 1}{__('yes')}{else}{__('no')}{/if}</td>
                                         <td class="tcenter">{$oKampagne->dErstellt_DE}</td>
                                         <td class="tcenter">
-                                            <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}" title="{__("modify")}" class="btn btn-default"><i class="fa fa-edit"></i></a>
+                                            <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}" title="{__('modify')}" class="btn btn-default"><i class="fa fa-edit"></i></a>
                                         </td>
                                     </tr>
                                 {/if}
@@ -59,11 +59,11 @@
                         </table>
                     </div>
                 {else}
-                    <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                    <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
             <div class="panel panel-default">
-                <div class="panel-heading"><h3 class="panel-title">{__("kampagneExtern")}</h3></div>
+                <div class="panel-heading"><h3 class="panel-title">{__('kampagneExtern')}</h3></div>
                 <form name="kampagnen" method="post" action="kampagne.php">
                     {if isset($nGroessterKey) && $nGroessterKey >= 1000}
                         {$jtl_token}
@@ -73,11 +73,11 @@
                             <table class="table table-striped">
                                 <tr>
                                     <th class="check"></th>
-                                    <th class="tleft">{__("kampagneName")}</th>
-                                    <th class="tleft">{__("kampagneParam")}</th>
-                                    <th class="tleft">{__("kampagneValue")}</th>
-                                    <th class="th-4">{__("kampagnenActive")}</th>
-                                    <th class="th-5">{__("kampagnenDate")}</th>
+                                    <th class="tleft">{__('kampagneName')}</th>
+                                    <th class="tleft">{__('kampagneParam')}</th>
+                                    <th class="tleft">{__('kampagneValue')}</th>
+                                    <th class="th-4">{__('kampagnenActive')}</th>
+                                    <th class="th-5">{__('kampagnenDate')}</th>
                                     <th class="th-6"></th>
                                 </tr>
 
@@ -93,19 +93,19 @@
                                             <td>{$oKampagne->cParameter}</td>
                                             <td>
                                                 {if isset($oKampagne->nDynamisch) && $oKampagne->nDynamisch == 1}
-                                                    {__("kampagneDynamic")}
+                                                    {__('kampagneDynamic')}
                                                 {else}
-                                                    {__("kampagneStatic")}
+                                                    {__('kampagneStatic')}
                                                     <br />
-                                                    <strong>{__("kampagneValueStatic")}:</strong>
+                                                    <strong>{__('kampagneValueStatic')}:</strong>
                                                     {$oKampagne->cWert}
                                                 {/if}
                                             </td>
-                                            <td class="tcenter">{if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 1}{__("yes")}{else}{__("no")}{/if}</td>
+                                            <td class="tcenter">{if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 1}{__('yes')}{else}{__('no')}{/if}</td>
                                             <td class="tcenter">{$oKampagne->dErstellt_DE}</td>
                                             <td class="tcenter">
                                                 <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-default" title="{__("modify")}">
+                                                   class="btn btn-default" title="{__('modify')}">
                                                     <i class="fa fa-edit"></i>
                                                 </a>
                                             </td>
@@ -116,19 +116,19 @@
                                     <td class="check">
                                         <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
                                     </td>
-                                    <td colspan="6"><label for="ALLMSGS">{__("globalSelectAll")}</label></td>
+                                    <td colspan="6"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
                                 </tr>
                             </table>
                         </div>
                     {else}
-                        <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                        <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                     {/if}
                     <div class="panel-footer">
                         <div class="btn-group">
                             {if isset($nGroessterKey) && $nGroessterKey >= 1000}
-                                <button name="submitDelete" type="submit" value="{__("delete")}" class="btn btn-danger"><i class="fa fa-trash"></i> {__("deleteSelected")}</button>
+                                <button name="submitDelete" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
                             {/if}
-                            <a href="kampagne.php?neu=1&token={$smarty.session.jtl_token}" class="btn btn-primary">{__("kampagneNewBTN")}</a>
+                            <a href="kampagne.php?neu=1&token={$smarty.session.jtl_token}" class="btn btn-primary">{__('kampagneNewBTN')}</a>
                         </div>
                     </div>
                 </form>
@@ -138,16 +138,16 @@
             <div class="block">
                 <div class="input-group p25" style="min-width: 435px;">
                         <span class="input-group-addon">
-                            <label for="nAnsicht">{__("kampagneView")}:</label>
+                            <label for="nAnsicht">{__('kampagneView')}:</label>
                         </span>
                     <select id="nAnsicht" name="nAnsicht" class="form-control combo" onchange="changeZeitSelect(this);">
                         <option value="-1"></option>
-                        <option value="1"{if $smarty.session.Kampagne->nAnsicht == 1} selected{/if}>{__("kampagneStatMonth")}</option>
-                        <option value="2"{if $smarty.session.Kampagne->nAnsicht == 2} selected{/if}>{__("kampagneStatWeek")}</option>
-                        <option value="3"{if $smarty.session.Kampagne->nAnsicht == 3} selected{/if}>{__("kampagneStatDay")}</option>
+                        <option value="1"{if $smarty.session.Kampagne->nAnsicht == 1} selected{/if}>{__('kampagneStatMonth')}</option>
+                        <option value="2"{if $smarty.session.Kampagne->nAnsicht == 2} selected{/if}>{__('kampagneStatWeek')}</option>
+                        <option value="3"{if $smarty.session.Kampagne->nAnsicht == 3} selected{/if}>{__('kampagneStatDay')}</option>
                     </select>
                     <span class="input-group-addon">
-                            <strong>{__("kampagnePeriod")}:</strong> {$cZeitraum}
+                            <strong>{__('kampagnePeriod')}:</strong> {$cZeitraum}
                         </span>
                 </div>
             </div>
@@ -165,7 +165,7 @@
                                                 <label type="button" class="label label-default label-sm"
                                                        data-toggle="tooltip"
                                                        data-placement="left"
-                                                       title="{__("kampagnenNLInfo")}">
+                                                       title="{__('kampagnenNLInfo')}">
                                                     ?
                                                 </label>
                                             {/if}
@@ -190,7 +190,7 @@
                             {/foreach}
                             <tfoot>
                                 <tr>
-                                    <td>{__("kampagneOverall")}</td>
+                                    <td>{__('kampagneOverall')}</td>
                                     {foreach name="kampagnendefs" from=$oKampagneDef_arr key=kKampagneDef item=oKampagneDef}
                                         <td>
                                             {$oKampagneStat_arr.Gesamt[$kKampagneDef]}
@@ -209,7 +209,7 @@
                         </div>
                     </div>
                 {else}
-                    <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                    <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
         </div>

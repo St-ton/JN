@@ -1,0 +1,144 @@
+msgid "shopinfoExport"
+msgstr "Shopinfo Export"
+
+msgid "shopinfoExportURL"
+msgstr "https://jtl-url.de/mpex0"
+
+msgid "shopinfoExportDesc"
+msgstr "Hier können Sie die zum Shop gehörende Shopinfo herunterladen. Diese können Sie bei Suchmaschinen hochladen, die diesen Standard unterstützen.<br />Durch das Aktualisieren und auch durch das Herunterladen der Shopinfo wird die Datei <strong>shopinfo.xml</strong> im root-Verzeichnis Ihres Shops geupdated, so dass auch externe Dienste darauf zugreifen können.<br />So können Sie auch die URL zu Ihrer Shopinfo auslesen lassen:"
+
+msgid "priceSearchEngines"
+msgstr "Unter anderem unterstützen auch <a class=\"externURL\" href=\"http://elektronischer-markt.de\" rel=\"external\">Elm@r</a> diesen Standard."
+
+msgid "shopinfoExportSubmit"
+msgstr "Shopinfo Export speichern"
+
+msgid "download"
+msgstr "Download-Link:"
+
+msgid "xml"
+msgstr "shopinfo.xml"
+
+msgid "options"
+msgstr "Einstellungen"
+
+msgid "optionsIntervall"
+msgstr "Shopupdate Intervall"
+
+msgid "optionsIntervallHelp"
+msgstr "Geben Sie hier an, an welchem Wochentag die shopinfo.xml ausgelesen werden soll.<br /><strong>Erlaubte Werte:</strong><br />mon,tue,wed,thu,fri,sat,sun für die Wochentage und \"daily\" für eine tägliche Aktualisierung (default)"
+
+msgid "logoURL"
+msgstr "Logo URL"
+
+msgid "logoURLHelp"
+msgstr "Geben Sie hier eine URL zu Ihrem Shoplogo an. Das Logo sollte nicht größer als 90x40 Pixel sein."
+
+msgid "email"
+msgstr "Öffentliche E-Mail-Adresse"
+
+msgid "emailHelp"
+msgstr "Eine E-Mail-Adresse, die vom elektronischen Markt angezeigt werden soll und Nutzern dazu dient, Kontakt mit dem Shop aufzunehmen."
+
+msgid "privateEmail"
+msgstr "Private E-Mail-Adresse"
+
+msgid "privateEmailHelp"
+msgstr "Eine E-Mail-Adresse, die ausschließlich der Kommunikation zwischen Marktbetreiber und Shop dienen und nicht angezeigt werden soll."
+
+msgid "telephone"
+msgstr "Telefonnummer Bestellungen"
+
+msgid "telephoneHelp"
+msgstr "Angaben zu telefonischen Bestellungen."
+
+msgid "fax"
+msgstr "Faxnummer Bestellungen"
+
+msgid "faxHelp"
+msgstr "Angaben zu Bestellungen per Fax."
+
+msgid "hotline"
+msgstr "Telefonnummer Hotline"
+
+msgid "hotlineHelp"
+msgstr " "
+
+msgid "minHotlinePrice"
+msgstr "Kosten pro Minute (Hotline)"
+
+msgid "minHotlinePriceHelp"
+msgstr "Die Kosten pro Minute. Das Fehlen dieses und des folgenden Elements CostPerCall bedeutet, dass normale, i. A. entfernungsabhängige Gebühren anfallen (d. h. es handelt sich z. B. nicht um eine 0180- oder 0900-Nummer).<br />Attribut currency: Währungscode nach ISO 4217:1995, bspw.<br />EUR. Es sind vier Nachkommastellen erlaubt, z. B. 0.0149 für 1,49 Cent pro Minute."
+
+msgid "telHotlinePrice"
+msgstr "Kosten pro Anruf (Hotline)"
+
+msgid "telHotlinePriceHelp"
+msgstr " "
+
+msgid "installment"
+msgstr "Möglichkeit der Ratenzahlung"
+
+msgid "installmentHelp"
+msgstr " "
+
+msgid "payitem"
+msgstr "Akzeptierte Zahlungsarten"
+
+msgid "payitemHelp"
+msgstr "Geben Sie hier alle Zahlungsarten ein, die Sie akzeptieren. Trennen Sie die Werte mit einem Komma.<br />(Bsp.: debit,e-cash,...)<br /><strong>Übersetzung der Begriffe, die Sie verwenden können:</strong><br />debit: Bankeinzug, Lastschrift<br />e-cash: E-Cash<br />on delivery: Nachnahme<br />paypal: Paypal<br />invoice: Rechnung<br />cheque: Scheck<br />pre-payment: Vorauskasse<br />money transfer: Überweisung<br /><strong>Und die Kreditkarten:</strong><br />amex: American Express<br />diners: Diners<br />eurocard: Eurocard<br />visa: Visa"
+
+msgid "repairService"
+msgstr "Reparaturdienstleistungen (mit/ohne Zusatzkosten)"
+
+msgid "repairServiceHelp"
+msgstr " "
+
+msgid "presentService"
+msgstr "Geschenkservice (mit/ohne Zusatzkosten)"
+
+msgid "presentServiceHelp"
+msgstr " "
+
+msgid "trackBack"
+msgstr "Möglichkeit der Bestellverfolgung"
+
+msgid "trackBackHelp"
+msgstr " "
+
+msgid "deliverTrackBack"
+msgstr "Möglichkeit der Lieferverfolgung"
+
+msgid "deliverTrackBackHelp"
+msgstr " "
+
+msgid "installationAssistance"
+msgstr "Unterstützung bei der Inbetriebnahme/Installation des Produkts (mit/ohne Zusatzkosten)"
+
+msgid "installationAssistanceHelp"
+msgstr " "
+
+msgid "certificationItems"
+msgstr "Angabe von Zertifizierungen"
+
+msgid "certificationItemsHelp"
+msgstr "Geben Sie hier alle Zertifizierungsstellen ein, bei denen Sie angemeldet sind. Trennen Sie die Werte mit einem Komma<br />(Bsp.: BoniCert, Bonitrus, CHIP Online, Euro-Label, Eurocard Safe'n Easy, EuroSHOPPING24, faircommerce, gütezeichen.at, MSP-Info, s@fer shopping, Shoplupe, Trusted Shops, TrustLogo)"
+
+msgid "trusteesItems"
+msgstr "Angabe von Treuhandmodellen"
+
+msgid "trusteesItemsHelp"
+msgstr "Geben Sie hier alle Treuhandmodelle ein, bei denen Sie angemeldet sind. Trennen Sie die Werte mit einem Komma<br />(Bsp.: iclear, iloxx SAFETRADE, S-ITT)"
+
+msgid "mapping"
+msgstr "Kategorie-Mapping"
+
+msgid "mappingHelp"
+msgstr "Damit die \"Shopinfo\" die Hauptkategorien des Shops seinen eigenen Kategorien zuweisen kann, müssen diese Kategorien an dieser Stelle zugeordnet werden."
+
+msgid "without"
+msgstr "(ohne)"
+
+msgid "with"
+msgstr "(mit)"
+

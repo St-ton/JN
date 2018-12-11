@@ -11,12 +11,12 @@
                 <thead>
                 <tr>
                     <th class="th-1"></th>
-                    <th class="th-2">{__("zusatzverpackungName")}</th>
-                    <th class="th-3">{__("zusatzverpackungPrice")}</th>
-                    <th class="th-4">{__("zusatzverpackungMinValue")}</th>
-                    <th class="th-5">{__("zusatzverpackungExemptFromCharge")}</th>
-                    <th class="th-6">{__("zusatzverpackungCustomerGrp")}</th>
-                    <th class="th-7">{__("zusatzverpackungActive")}</th>
+                    <th class="th-2">{__('zusatzverpackungName')}</th>
+                    <th class="th-3">{__('zusatzverpackungPrice')}</th>
+                    <th class="th-4">{__('zusatzverpackungMinValue')}</th>
+                    <th class="th-5">{__('zusatzverpackungExemptFromCharge')}</th>
+                    <th class="th-6">{__('zusatzverpackungCustomerGrp')}</th>
+                    <th class="th-7">{__('zusatzverpackungActive')}</th>
                     <th class="th-8">&nbsp;</th>
                 </tr>
                 </thead>
@@ -41,7 +41,7 @@
                         </td>
                         <td>
                             <a href="zusatzverpackung.php?kVerpackung={$oVerpackung->kVerpackung}&token={$smarty.session.jtl_token}"
-                               class="btn btn-default" title="{__("modify")}"><i class="fa fa-edit"></i></a>
+                               class="btn btn-default" title="{__('modify')}"><i class="fa fa-edit"></i></a>
                         </td>
                     </tr>
                 {/foreach}
@@ -49,17 +49,17 @@
             </table>
         </div>
         {else}
-        <div class="alert alert-info">{__("zusatzverpackungAddedNone")}</div>
+        <div class="alert alert-info">{__('zusatzverpackungAddedNone')}</div>
         {/if}
         <div class="panel-footer">
             <div class="btn-group">
                 <a href="zusatzverpackung.php?kVerpackung=0&token={$smarty.session.jtl_token}"
-                   class="btn btn-primary" title="{__("modify")}">
-                    <i class="fa fa-share"></i> {__("zusatzverpackungAdd")}
+                   class="btn btn-primary" title="{__('modify')}">
+                    <i class="fa fa-share"></i> {__('zusatzverpackungAdd')}
                 </a>
                 {if isset($oVerpackung_arr) && $oVerpackung_arr|@count > 0}
-                    <button type="submit" name="action" value="delete" class="btn btn-danger"><i class="fa fa-trash"></i> {__("zusatzverpackungDelete")}</button>
-                    <button name="action" type="submit" value="refresh" class="btn btn-default"><i class="fa fa-refresh"></i> {__("zusatzverpackungUpdate")}</button>
+                    <button type="submit" name="action" value="delete" class="btn btn-danger"><i class="fa fa-trash"></i> {__('zusatzverpackungDelete')}</button>
+                    <button name="action" type="submit" value="refresh" class="btn btn-default"><i class="fa fa-refresh"></i> {__('zusatzverpackungUpdate')}</button>
                 {/if}
             </div>
         </div>

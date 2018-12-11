@@ -1,19 +1,19 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="wunschliste"}
-{include file='tpl_inc/seite_header.tpl' cTitel=__("wishlistName") cBeschreibung=__("wishlistDesc") cDokuURL=__("wishlistURL")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('wishlistName') cBeschreibung=__('wishlistDesc') cDokuURL=__('wishlistURL')}
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'wunschlistepos'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#wunschlistepos">{__("wishlistTop100")}</a>
+            <a data-toggle="tab" role="tab" href="#wunschlistepos">{__('wishlistTop100')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'wunschlisteartikel'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#wunschlisteartikel">{__("wishlistPosTop100")}</a>
+            <a data-toggle="tab" role="tab" href="#wunschlisteartikel">{__('wishlistPosTop100')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'wunschlistefreunde'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#wunschlistefreunde">{__("wishlistSend")}</a>
+            <a data-toggle="tab" role="tab" href="#wunschlistefreunde">{__('wishlistSend')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einstellungen">{__("wishlistSettings")}</a>
+            <a data-toggle="tab" role="tab" href="#einstellungen">{__('wishlistSettings')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -23,10 +23,10 @@
                 <div class="panel panel-default table-responsive">
                     <table class="table table-striped">
                         <tr>
-                            <th class="tleft">{__("wishlistName")}</th>
-                            <th class="tleft">{__("wishlistAccount")}</th>
-                            <th class="th-3">{__("wishlistPosCount")}</th>
-                            <th class="th-4">{__("wishlistDate")}</th>
+                            <th class="tleft">{__('wishlistName')}</th>
+                            <th class="tleft">{__('wishlistAccount')}</th>
+                            <th class="th-3">{__('wishlistPosCount')}</th>
+                            <th class="th-4">{__('wishlistDate')}</th>
                         </tr>
                         {foreach name=wunschliste from=$CWunschliste_arr item=CWunschliste}
                             <tr>
@@ -45,7 +45,7 @@
                     </table>
                 </div>
             {else}
-                <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="wunschlisteartikel" class="tab-pane fade {if isset($cTab) && $cTab === 'wunschlisteartikel'} active in{/if}">
@@ -54,9 +54,9 @@
                 <div class="panel panel-default table-responsive">
                     <table class="table table-striped">
                         <tr>
-                            <th class="tleft">{__("wishlistPosName")}</th>
-                            <th class="th-2">{__("wishlistPosCount")}</th>
-                            <th class="th-3">{__("wishlistLastAdded")}</th>
+                            <th class="tleft">{__('wishlistPosName')}</th>
+                            <th class="th-2">{__('wishlistPosCount')}</th>
+                            <th class="th-3">{__('wishlistLastAdded')}</th>
                         </tr>
                         {foreach name=wunschlistepos from=$CWunschlistePos_arr item=CWunschlistePos}
                             <tr>
@@ -70,7 +70,7 @@
                     </table>
                 </div>
             {else}
-                <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="wunschlistefreunde" class="tab-pane fade {if isset($cTab) && $cTab === 'wunschlistefreunde'} active in{/if}">
@@ -79,11 +79,11 @@
                 <div class="panel panel-default table-responsive">
                     <table class="table table-striped">
                         <tr>
-                            <th class="tleft">{__("wishlistName")}</th>
-                            <th class="tleft">{__("wishlistAccount")}</th>
-                            <th class="th-3">{__("wishlistReceiverCount")}</th>
-                            <th class="th-4">{__("wishlistPosCount")}</th>
-                            <th class="th-5">{__("wishlistDate")}</th>
+                            <th class="tleft">{__('wishlistName')}</th>
+                            <th class="tleft">{__('wishlistAccount')}</th>
+                            <th class="th-3">{__('wishlistReceiverCount')}</th>
+                            <th class="th-4">{__('wishlistPosCount')}</th>
+                            <th class="th-5">{__('wishlistDate')}</th>
                         </tr>
                         {foreach name=wunschlisteversand from=$CWunschlisteVersand_arr item=CWunschlisteVersand}
                             <tr>
@@ -99,11 +99,11 @@
                     </table>
                 </div>
             {else}
-                <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
-            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='wunschliste.php' buttonCaption=__("save") title='Einstellungen' tab='einstellungen'}
+            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='wunschliste.php' buttonCaption=__('save') title='Einstellungen' tab='einstellungen'}
         </div>
     </div>
 </div>

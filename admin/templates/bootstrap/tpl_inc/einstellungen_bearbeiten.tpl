@@ -1,5 +1,5 @@
 {if isset($Sektion) && $Sektion}
-    {assign var="cTitel" value=__("preferences")|cat:": "|cat:$Sektion->cName}
+    {assign var="cTitel" value=__('preferences')|cat:": "|cat:$Sektion->cName}
     {if isset($cSearch) && $cSearch|strlen  > 0}
         {assign var="cTitel" value=$cSearch}
     {/if}
@@ -90,7 +90,7 @@
                                     <span class="pull-right">{getHelpDesc cID=$cnf->kEinstellungenConf}</span>
                                     {if !empty($cnf->cSektionsPfad)}
                                         <span class="path right">
-                                            <strong>{__("settingspath")}:</strong> {$cnf->cSektionsPfad}
+                                            <strong>{__('settingspath')}:</strong> {$cnf->cSektionsPfad}
                                         </span>
                                     {/if}
                                 </h3>
@@ -105,10 +105,10 @@
                     </div>
                 </div>
                 <div class="save_wrapper">
-                    <button type="submit" value="{__("savePreferences")}" class="btn btn-primary"><i class="fa fa-save"></i> Speichern</button>
+                    <button type="submit" value="{__('savePreferences')}" class="btn btn-primary"><i class="fa fa-save"></i> Speichern</button>
                 </div>
             {else}
-                <p class="alert alert-info">{__("noSearchResult")}</p>
+                <p class="alert alert-info">{__('noSearchResult')}</p>
             {/if}
         </form>
     </div>

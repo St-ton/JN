@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=__("order") cBeschreibung=__("orderDesc") cDokuURL=__("orderURL")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('order') cBeschreibung=__('orderDesc') cDokuURL=__('orderURL')}
 <div id="content" class="container-fluid">
     {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cParam_arr=['cSuche'=>$cSuche]}
     <div class=" block clearall">
@@ -8,7 +8,7 @@
                 <input type="hidden" name="Suche" value="1" />
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="orderSearch">{__("orderSearchItem")}:</label>
+                        <label for="orderSearch">{__('orderSearchItem')}:</label>
                     </span>
                     <input class="form-control" name="cSuche" type="text" value="{if isset($cSuche)}{$cSuche}{/if}" id="orderSearch" />
                     <span class="input-group-btn">
@@ -27,23 +27,23 @@
             {/if}
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{__("order")}</h3>
+                    <h3 class="panel-title">{__('order')}</h3>
                 </div>
                 <div class="table-responsive">
                     <table class="list table table-striped">
                         <thead>
                         <tr>
                             <th></th>
-                            <th class="tleft">{__("orderNumber")}</th>
-                            <th class="tleft">{__("orderCostumer")}</th>
-                            <th class="tleft">{__("orderCostumerRegistered")}</th>
-                            <th class="tleft">{__("orderShippingName")}</th>
-                            <th class="tleft">{__("orderPaymentName")}</th>
-                            <th>{__("orderWawiPickedUp")}</th>
-                            <th>{__("orderStatus")}</th>
-                            <th>{__("orderSum")}</th>
-                            <th class="tright">{__("orderDate")}</th>
-                            <th class="tright">{__("orderIpAddress")}</th>
+                            <th class="tleft">{__('orderNumber')}</th>
+                            <th class="tleft">{__('orderCostumer')}</th>
+                            <th class="tleft">{__('orderCostumerRegistered')}</th>
+                            <th class="tleft">{__('orderShippingName')}</th>
+                            <th class="tleft">{__('orderPaymentName')}</th>
+                            <th>{__('orderWawiPickedUp')}</th>
+                            <th>{__('orderStatus')}</th>
+                            <th>{__('orderSum')}</th>
+                            <th class="tright">{__('orderDate')}</th>
+                            <th class="tright">{__('orderIpAddress')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -60,26 +60,26 @@
                                             ({$oBestellung->oKunde->cFirma})
                                         {/if}
                                     {else}
-                                        {__("noAccount")}
+                                        {__('noAccount')}
                                     {/if}
                                 </td>
-                                <td>{if isset($oBestellung->oKunde) && $oBestellung->oKunde->nRegistriert === 1}{__("yes")}{else}{__("no")}{/if}</td>
+                                <td>{if isset($oBestellung->oKunde) && $oBestellung->oKunde->nRegistriert === 1}{__('yes')}{else}{__('no')}{/if}</td>
                                 <td>{$oBestellung->cVersandartName}</td>
                                 <td>{$oBestellung->cZahlungsartName}</td>
-                                <td class="tcenter">{if $oBestellung->cAbgeholt === 'Y'}{__("yes")}{else}{__("no")}{/if}</td>
+                                <td class="tcenter">{if $oBestellung->cAbgeholt === 'Y'}{__('yes')}{else}{__('no')}{/if}</td>
                                 <td class="tcenter">
                                     {if $oBestellung->cStatus == 1}
-                                        {__("orderNew")}
+                                        {__('orderNew')}
                                     {elseif $oBestellung->cStatus == 2}
-                                        {__("orderInProgress")}
+                                        {__('orderInProgress')}
                                     {elseif $oBestellung->cStatus == 3}
-                                        {__("orderPayed")}
+                                        {__('orderPayed')}
                                     {elseif $oBestellung->cStatus == 4}
-                                        {__("orderShipped")}
+                                        {__('orderShipped')}
                                     {elseif $oBestellung->cStatus == 5}
-                                        {__("orderPartlyShipped")}
+                                        {__('orderPartlyShipped')}
                                     {elseif $oBestellung->cStatus == -1}
-                                        {__("orderCanceled")}
+                                        {__('orderCanceled')}
                                     {/if}
                                 </td>
                                 <td class="tcenter">{$oBestellung->WarensummeLocalized[0]}</td>
@@ -99,7 +99,7 @@
                     </table>
                 </div>
                 <div class="panel-footer">
-                    <button name="zuruecksetzenBTN" type="submit" class="btn btn-danger"><i class="fa fa-refresh"></i> {__("orderPickedUpResetBTN")}</button>
+                    <button name="zuruecksetzenBTN" type="submit" class="btn btn-danger"><i class="fa fa-refresh"></i> {__('orderPickedUpResetBTN')}</button>
                 </div>
             </div>
         </form>

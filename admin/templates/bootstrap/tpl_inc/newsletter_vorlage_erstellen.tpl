@@ -14,7 +14,7 @@ function neu() {ldelim}
 {rdelim}
 
 function checkNewsletterSend() {ldelim}
-    var bCheck = confirm("{__("newsletterSendAuthentication")}");
+    var bCheck = confirm("{__('newsletterSendAuthentication')}");
     if(bCheck) {ldelim}
         var input1 = document.createElement('input');
         input1.type = 'hidden';
@@ -27,7 +27,7 @@ function checkNewsletterSend() {ldelim}
 </script>
 
 <div id="page">
-   {include file='tpl_inc/seite_header.tpl' cTitel=__("newsletterdraft") cBeschreibung=__("newsletterdraftdesc")}
+   {include file='tpl_inc/seite_header.tpl' cTitel=__('newsletterdraft') cBeschreibung=__('newsletterdraftdesc')}
     <div id="content" class="container-fluid">
         <form name="formnewslettervorlage" id="formnewslettervorlage" method="post" action="newsletter.php">
             {$jtl_token}
@@ -44,21 +44,21 @@ function checkNewsletterSend() {ldelim}
                 <div class="panel-body">
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="cName">{__("newsletterdraftname")}</label>
+                            <label for="cName">{__('newsletterdraftname')}</label>
                         </span>
                         <input id="cName" name="cName" type="text" class="form-control {if isset($cPlausiValue_arr.cName)}fieldfillout{else}field{/if}" value="{if isset($cPostVar_arr.cName)}{$cPostVar_arr.cName}{elseif isset($oNewsletterVorlage->cName)}{$oNewsletterVorlage->cName}{/if}">
-                        {if isset($cPlausiValue_arr.cName)}<font class="fillout">{__("newsletterdraftFillOut")}</font>{/if}
+                        {if isset($cPlausiValue_arr.cName)}<font class="fillout">{__('newsletterdraftFillOut')}</font>{/if}
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="cBetreff">{__("newsletterdraftsubject")}</label>
+                            <label for="cBetreff">{__('newsletterdraftsubject')}</label>
                         </span>
                         <input id="cBetreff" name="cBetreff" type="text" class="form-control {if isset($cPlausiValue_arr.cBetreff)}fieldfillout{else}field{/if}" value="{if isset($cPostVar_arr.cBetreff)}{$cPostVar_arr.cBetreff}{elseif isset($oNewsletterVorlage->cBetreff)}{$oNewsletterVorlage->cBetreff}{/if}">
-                        {if isset($cPlausiValue_arr.cBetreff)}<font class="fillout">{__("newsletterdraftFillOut")}</font>{/if}
+                        {if isset($cPlausiValue_arr.cBetreff)}<font class="fillout">{__('newsletterdraftFillOut')}</font>{/if}
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="kKundengruppe">{__("newslettercustomergrp")}</label>
+                            <label for="kKundengruppe">{__('newslettercustomergrp')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <select id="kKundengruppe" name="kKundengruppe[]" multiple="multiple" class="form-control {if isset($cPlausiValue_arr.kKundengruppe_arr)}fieldfillout{else}combo{/if}">
@@ -88,11 +88,11 @@ function checkNewsletterSend() {ldelim}
                                 {/foreach}
                             </select>
                         </span>
-                        {if isset($cPlausiValue_arr.kKundengruppe_arr)}<font class="fillout">{__("newsletterdraftFillOut")}</font>{/if}
+                        {if isset($cPlausiValue_arr.kKundengruppe_arr)}<font class="fillout">{__('newsletterdraftFillOut')}</font>{/if}
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="cArt">{__("newsletterdraftcharacter")}</label>
+                            <label for="cArt">{__('newsletterdraftcharacter')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <select id="cArt" name="cArt" class="form-control combo">
@@ -103,7 +103,7 @@ function checkNewsletterSend() {ldelim}
                     </div>
                     <div class="input-group input-group-select">
                         <span class="input-group-addon">
-                            <label for="cArt">{__("newsletterdraftdate")}</label>
+                            <label for="cArt">{__('newsletterdraftdate')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <select name="dTag" class="form-control combo" style="width:100%;">
@@ -157,11 +157,11 @@ function checkNewsletterSend() {ldelim}
                                 {/section}
                             </select>
                         </span>
-                        <span class="input-group-addon">{__("newsletterdraftformat")}</span>
+                        <span class="input-group-addon">{__('newsletterdraftformat')}</span>
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="kKampagne">{__("newslettercampaign")}</label>
+                            <label for="kKampagne">{__('newslettercampaign')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <select class="form-control " id="kKampagne" name="kKampagne">
@@ -199,7 +199,7 @@ function checkNewsletterSend() {ldelim}
                     </script>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="articleSelectionInfo">{__("newsletterartnr")}</label>
+                            <label for="articleSelectionInfo">{__('newsletterartnr')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <input type="text" class="form-control" readonly="readonly" id="articleSelectionInfo">
@@ -240,7 +240,7 @@ function checkNewsletterSend() {ldelim}
                     </script>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="manufacturerSelectionInfo">{__("newslettermanufacturer")}</label>
+                            <label for="manufacturerSelectionInfo">{__('newslettermanufacturer')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <input type="text" class="form-control" readonly="readonly" id="manufacturerSelectionInfo">
@@ -281,7 +281,7 @@ function checkNewsletterSend() {ldelim}
                     </script>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="categorySelectionInfo">{__("newslettercategory")}</label>
+                            <label for="categorySelectionInfo">{__('newslettercategory')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <input type="text" class="form-control" readonly="readonly" id="categorySelectionInfo">
@@ -297,24 +297,24 @@ function checkNewsletterSend() {ldelim}
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="cHtml">{__("newsletterHtml")}</label>
+                            <label for="cHtml">{__('newsletterHtml')}</label>
                         </span>
                         <textarea class="codemirror smarty form-control" id="cHtml" name="cHtml" style="width: 750px; height: 400px;">{if isset($cPostVar_arr.cHtml)}{$cPostVar_arr.cHtml}{elseif isset($oNewsletterVorlage->cInhaltHTML)}{$oNewsletterVorlage->cInhaltHTML}{/if}</textarea>
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="cText">{__("newsletterText")}</label>
+                            <label for="cText">{__('newsletterText')}</label>
                         </span>
                         <textarea class="codemirror smarty form-control" id="cText" name="cText" style="width: 750px; height: 400px;">{if isset($cPostVar_arr.cText)}{$cPostVar_arr.cText}{elseif isset($oNewsletterVorlage->cInhaltText)}{$oNewsletterVorlage->cInhaltText}{/if}</textarea>
                     </div>
                 </div>
                 <div class="panel-footer">
                     <div class="btn-group">
-                        <button class="btn btn-primary" name="speichern" type="submit" value="{__("newsletterdraftsave")}"><i class="fa fa-save"></i> {__("newsletterdraftsave")}</button>
+                        <button class="btn btn-primary" name="speichern" type="submit" value="{__('newsletterdraftsave')}"><i class="fa fa-save"></i> {__('newsletterdraftsave')}</button>
                         {if $cOption !== 'editieren'}
-                            <button class="btn btn-warning" name="speichern_und_senden" type="button" value="{__("newsletterdraftsaveandsend")}" onclick="checkNewsletterSend();">{__("newsletterdraftsaveandsend")}</button>
+                            <button class="btn btn-warning" name="speichern_und_senden" type="button" value="{__('newsletterdraftsaveandsend')}" onclick="checkNewsletterSend();">{__('newsletterdraftsaveandsend')}</button>
                         {/if}
-                        <button class="btn btn-default" name="speichern_und_testen" type="submit" value="{__("newsletterdraftsaveandtest")}">{__("newsletterdraftsaveandtest")}</button>
+                        <button class="btn btn-default" name="speichern_und_testen" type="submit" value="{__('newsletterdraftsaveandtest')}">{__('newsletterdraftsaveandtest')}</button>
                     </div>
                 </div>
             </div>
@@ -323,7 +323,7 @@ function checkNewsletterSend() {ldelim}
             {$jtl_token}
             <input name="tab" type="hidden" value="newslettervorlagen" />
             <p>
-                <button class="btn btn-default" name="back" type="submit" value="{__("newsletterback")}"><i class="fa fa-angle-double-left"></i> {__("newsletterback")}</button>
+                <button class="btn btn-default" name="back" type="submit" value="{__('newsletterback')}"><i class="fa fa-angle-double-left"></i> {__('newsletterback')}</button>
             </p>
         </form>
         {if !empty($oNewsletterVorlage->kNewsletterVorlage)}

@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="sitemapExport"}
-{include file='tpl_inc/seite_header.tpl' cTitel=__("sitemapExport") cBeschreibung=__("sitemapExportDesc") cDokuURL=__("sitemapExportURL")}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('sitemapExport') cBeschreibung=__('sitemapExportDesc') cDokuURL=__('sitemapExportURL')}
 <div id="content" class="container-fluid">
     <div id="confirmModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
@@ -23,16 +23,16 @@
     </div>
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'export'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#export">{__("sitemapExport")}</a>
+            <a data-toggle="tab" role="tab" href="#export">{__('sitemapExport')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'downloads'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#downloads">{__("sitemapDownload")}</a>
+            <a data-toggle="tab" role="tab" href="#downloads">{__('sitemapDownload')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'report'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#report">{__("sitemapReport")}</a>
+            <a data-toggle="tab" role="tab" href="#report">{__('sitemapReport')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einstellungen">{__("sitemapSettings")}</a>
+            <a data-toggle="tab" role="tab" href="#einstellungen">{__('sitemapSettings')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -44,8 +44,8 @@
             <p><input type="text" readonly="readonly" value="{$URL}" class="form-control" /></p>
 
             <div class="alert alert-info">
-                <p>{__("searchEngines")}</p>
-                <p>{__("download")} <a href="{$URL}">{__("xml")}</a></p>
+                <p>{__('searchEngines')}</p>
+                <p>{__('download')} <a href="{$URL}">{__('xml')}</a></p>
             </div>
 
             <form action="sitemap.php" method="post">
@@ -54,7 +54,7 @@
                 <input type="hidden" name="tab" value="export" />
 
                 <p class="submit">
-                    <button type="submit" value="{__("sitemapExportSubmit")}" class="btn btn-primary"><i class="fa fa-share"></i> {__("sitemapExportSubmit")}</button>
+                    <button type="submit" value="{__('sitemapExportSubmit')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('sitemapExportSubmit')}</button>
                 </p>
             </form>
         </div>
@@ -77,7 +77,7 @@
                         <div class="btn-group">
                             <button name="action[year_downloads]" type="submit" value="1" class="btn btn-info"><i class="fa fa-search"></i>&nbsp;Zeigen</button>
                             <button type="button" class="btn btn-danger"
-                                    data-form="#formDeleteSitemapExport" data-action="year_downloads_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__("sitemapDownload")} l&ouml;schen"><i class="fa fa-trash"></i>&nbsp;L&ouml;schen</button>
+                                    data-form="#formDeleteSitemapExport" data-action="year_downloads_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapDownload')} l&ouml;schen"><i class="fa fa-trash"></i>&nbsp;L&ouml;schen</button>
                         </div>
                     </form>
                 </div>
@@ -95,9 +95,9 @@
                                 <table class="table table-striped">
                                     <tr>
                                         <th>&nbsp;</th>
-                                        <th>{__("sitemapName")}</th>
-                                        <th>{__("sitemapBot")}</th>
-                                        <th class="text-right">{__("sitemapDate")}</th>
+                                        <th>{__('sitemapName')}</th>
+                                        <th>{__('sitemapBot')}</th>
+                                        <th class="text-right">{__('sitemapDate')}</th>
                                     </tr>
                                     {foreach name=sitemapdownloads from=$oSitemapDownload_arr item=oSitemapDownload}
                                         <tr>
@@ -106,11 +106,11 @@
                                             </td>
                                             <td><a href="{Shop::getURL()}/{$oSitemapDownload->cSitemap}" target="_blank">{$oSitemapDownload->cSitemap}</a></td>
                                             <td>
-                                                <strong>{__("sitemapIP")}</strong>: {$oSitemapDownload->cIP}<br />
+                                                <strong>{__('sitemapIP')}</strong>: {$oSitemapDownload->cIP}<br />
                                                 {if $oSitemapDownload->cBot|strlen > 0}
-                                                    <strong>{__("sitemapBot")}</strong>: {$oSitemapDownload->cBot}
+                                                    <strong>{__('sitemapBot')}</strong>: {$oSitemapDownload->cBot}
                                                 {else}
-                                                    <strong>{__("sitemapUserAgent")}</strong>: <abbr title="{$oSitemapDownload->cUserAgent}">{$oSitemapDownload->cUserAgent|truncate:60}</abbr>
+                                                    <strong>{__('sitemapUserAgent')}</strong>: <abbr title="{$oSitemapDownload->cUserAgent}">{$oSitemapDownload->cUserAgent|truncate:60}</abbr>
                                                 {/if}
                                             </td>
                                             <td class="text-right" width="130">{$oSitemapDownload->dErstellt_DE}</td>
@@ -120,20 +120,20 @@
                                         <td>
                                             <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
                                         </td>
-                                        <td colspan="6"><label for="ALLMSGS">{__("sitemapSelectAll")}</label></td>
+                                        <td colspan="6"><label for="ALLMSGS">{__('sitemapSelectAll')}</label></td>
                                     </tr>
                                 </table>
                             </div>
                             <div class="panel-footer">
                                 <div class="button-group">
-                                    <button class="btn btn-danger" name="loeschen" type="submit" value="{__("sitemapDelete")}"><i class="fa fa-trash"></i> {__("deleteSelected")}</button>
+                                    <button class="btn btn-danger" name="loeschen" type="submit" value="{__('sitemapDelete')}"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
                                 </div>
                             </div>
                         </div>
                     </form>
                 </div>
             {else}
-                <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="report" class="tab-pane fade {if isset($cTab) && $cTab === 'report'} active in{/if}">
@@ -155,7 +155,7 @@
                         <div class="btn-group">
                             <button name="action[year_reports]" type="submit" value="1" class="btn btn-info"><i class="fa fa-search"></i>&nbsp;Zeigen</button>
                             <button type="button" class="btn btn-danger"
-                                    data-form="#formDeleteSitemapReport" data-action="year_reports_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__("sitemapReport")} l&ouml;schen"><i class="fa fa-trash"></i>&nbsp;L&ouml;schen</button>
+                                    data-form="#formDeleteSitemapReport" data-action="year_reports_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapReport')} l&ouml;schen"><i class="fa fa-trash"></i>&nbsp;L&ouml;schen</button>
                         </div>
                     </form>
                 </div>
@@ -173,9 +173,9 @@
                                 <tr>
                                     <th class="check"></th>
                                     <th class="th-1"></th>
-                                    <th class="tleft">{__("sitemapProcessTime")}</th>
-                                    <th class="th-3">{__("sitemapTotalURL")}</th>
-                                    <th class="th-5">{__("sitemapDate")}</th>
+                                    <th class="tleft">{__('sitemapProcessTime')}</th>
+                                    <th class="th-3">{__('sitemapTotalURL')}</th>
+                                    <th class="th-5">{__('sitemapDate')}</th>
                                 </tr>
                                 {foreach name=sitemapreports from=$oSitemapReport_arr item=oSitemapReport}
                                     <tr>
@@ -200,9 +200,9 @@
 
                                                 <table class="table-striped" border="0" cellspacing="1" cellpadding="0" width="100%">
                                                     <tr>
-                                                        <th class="tleft">{__("sitemapName")}</th>
-                                                        <th class="th-2">{__("sitemapCountURL")}</th>
-                                                        <th class="th-3">{__("sitemapSize")}</th>
+                                                        <th class="tleft">{__('sitemapName')}</th>
+                                                        <th class="th-2">{__('sitemapCountURL')}</th>
+                                                        <th class="th-3">{__('sitemapSize')}</th>
                                                     </tr>
 
                                                     {foreach name=sitemapreportfiles from=$oSitemapReport->oSitemapReportFile_arr item=oSitemapReportFile}
@@ -222,23 +222,23 @@
                                     <td class="check">
                                         <input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
                                     </td>
-                                    <td colspan="4"><label for="ALLMSGS2">{__("sitemapSelectAll")}</label></td>
+                                    <td colspan="4"><label for="ALLMSGS2">{__('sitemapSelectAll')}</label></td>
                                 </tr>
                             </table>
                         </div>
                         <div class="panel-footer">
                             <div class="button-group">
-                                <button name="loeschen" type="submit" value="{__("sitemapDelete")}" class="btn btn-danger"><i class="fa fa-trash"></i> {__("deleteSelected")}</button>
+                                <button name="loeschen" type="submit" value="{__('sitemapDelete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
                             </div>
                         </div>
                     </form>
                 </div>
             {else}
-                <div class="alert alert-info" role="alert">{__("noDataAvailable")}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
-            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='sitemapexport.php' buttonCaption=__("save") title='Einstellungen' tab='einstellungen'}
+            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='sitemapexport.php' buttonCaption=__('save') title='Einstellungen' tab='einstellungen'}
         </div>
     </div>
 </div>

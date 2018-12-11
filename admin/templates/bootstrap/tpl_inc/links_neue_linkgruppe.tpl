@@ -1,6 +1,6 @@
-{assign var=cTitel value=__("newLinkGroup")}
+{assign var=cTitel value=__('newLinkGroup')}
 {if isset($Linkgruppe->kLinkgruppe) && $Linkgruppe->kLinkgruppe > 0}
-    {assign var=cTitel value=__("saveLinkGroup")}
+    {assign var=cTitel value=__('saveLinkGroup')}
 {/if}
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel}
 
@@ -13,14 +13,14 @@
         <div class="settings">
             <div class="input-group{if isset($xPlausiVar_arr.cName)} error{/if}">
                 <span class="input-group-addon">
-                    <label for="cName">{__("linkGroup")}{if isset($xPlausiVar_arr.cName)} <span class="fillout">{__("FillOut")}</span>{/if}</label>
+                    <label for="cName">{__('linkGroup')}{if isset($xPlausiVar_arr.cName)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                 </span>
                 <input type="text" name="cName" id="cName"  class="form-control{if isset($xPlausiVar_arr.cName)} fieldfillout{/if}" value="{if isset($xPostVar_arr.cName)}{$xPostVar_arr.cName}{elseif isset($Linkgruppe->cName)}{$Linkgruppe->cName}{/if}" />
             </div>
 
             <div class="input-group{if isset($xPlausiVar_arr.cTemplatename)} error{/if}">
                 <span class="input-group-addon">
-                    <label for="cTemplatename">{__("linkGroupTemplatename")}{if isset($xPlausiVar_arr.cTemplatename)} <span class="fillout">{__("FillOut")}</span>{/if}</label>
+                    <label for="cTemplatename">{__('linkGroupTemplatename')}{if isset($xPlausiVar_arr.cTemplatename)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                 </span>
                 <input type="text" name="cTemplatename" id="cTemplatename" class="form-control{if isset($xPlausiVar_arr.cTemplatename)} fieldfillout{/if}" value="{if isset($xPostVar_arr.cTemplatename)}{$xPostVar_arr.cTemplatename}{elseif isset($Linkgruppe->cTemplatename)}{$Linkgruppe->cTemplatename}{/if}" />
             </div>
@@ -28,7 +28,7 @@
                 {assign var="cISO" value=$sprache->cISO}
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="cName_{$cISO}">{__("showedName")} ({$sprache->cNameDeutsch})</label>
+                        <label for="cName_{$cISO}">{__('showedName')} ({$sprache->cNameDeutsch})</label>
                     </span>
                     <input class="form-control" type="text" name="cName_{$cISO}" id="cName_{$cISO}" value="{if isset($Linkgruppenname[$cISO])}{$Linkgruppenname[$cISO]}{/if}" />
                 </div>

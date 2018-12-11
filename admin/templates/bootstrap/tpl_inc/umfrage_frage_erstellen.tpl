@@ -31,7 +31,7 @@ function addInputRow() {ldelim}
 
     label2 = document.createElement('label');
     label2.setAttribute('for', 'nSortAntwort_' + i);
-    label2.innerHTML = '  {__("umfrageQSort")}';
+    label2.innerHTML = '  {__('umfrageQSort')}';
     label2.style.paddingLeft = '5px';
     label2.style.paddingRight = '5px';
 
@@ -76,7 +76,7 @@ function addInputRowOption() {ldelim}
     input2.style.width = '40px';
 
     myText1 = document.createTextNode('Option ' + im);
-    myText2 = document.createTextNode('  {__("umfrageQSort")}');
+    myText2 = document.createTextNode('  {__('umfrageQSort')}');
 
     label1.appendChild(myText1);
     label2.appendChild(myText2);
@@ -153,7 +153,7 @@ function checkSelect(selectBox) {ldelim}
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortAntwort_' + i);
-            label2.innerHTML = '  {__("umfrageQSort")}';
+            label2.innerHTML = '  {__('umfrageQSort')}';
             label2.style.paddingLeft = '5px';
             label2.style.paddingRight = '5px';
 
@@ -205,7 +205,7 @@ function checkSelect(selectBox) {ldelim}
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortAntwort_' + i);
-            label2.innerHTML = '  {__("umfrageQSort")}';
+            label2.innerHTML = '  {__('umfrageQSort')}';
             label2.style.paddingLeft = '5px';
             label2.style.paddingRight = '5px';
 
@@ -258,7 +258,7 @@ function checkSelect(selectBox) {ldelim}
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortAntwort_' + i);
-            label2.innerHTML = '  {__("umfrageQSort")}';
+            label2.innerHTML = '  {__('umfrageQSort')}';
             label2.style.paddingLeft = '5px';
             label2.style.paddingRight = '5px';
 
@@ -310,7 +310,7 @@ function checkSelect(selectBox) {ldelim}
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortAntwort_' + i);
-            label2.innerHTML = '  {__("umfrageQSort")}';
+            label2.innerHTML = '  {__('umfrageQSort')}';
             label2.style.paddingLeft = '5px';
             label2.style.paddingRight = '5px';
 
@@ -362,7 +362,7 @@ function checkSelect(selectBox) {ldelim}
             input2.style.width = '40px';
 
             myText1 = document.createTextNode('Option ' + im);
-            myText2 = document.createTextNode('  {__("umfrageQSort")}');
+            myText2 = document.createTextNode('  {__('umfrageQSort')}');
 
             label1 = document.createElement('label');
             label1.setAttribute('for', 'cNameOption_' + im);
@@ -371,7 +371,7 @@ function checkSelect(selectBox) {ldelim}
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortOption_' + im);
-            label2.innerHTML = '  {__("umfrageQSort")}';
+            label2.innerHTML = '  {__('umfrageQSort')}';
             label2.style.paddingLeft = '5px';
             label2.style.paddingRight = '5px';
 
@@ -422,7 +422,7 @@ function checkSelect(selectBox) {ldelim}
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortAntwort_' + i);
-            label2.innerHTML = '  {__("umfrageQSort")}';
+            label2.innerHTML = '  {__('umfrageQSort')}';
             label2.style.paddingLeft = '5px';
             label2.style.paddingRight = '5px';
 
@@ -474,7 +474,7 @@ function checkSelect(selectBox) {ldelim}
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortOption_' + im);
-            label2.innerHTML = '  {__("umfrageQSort")}';
+            label2.innerHTML = '  {__('umfrageQSort')}';
             label2.style.paddingLeft = '5px';
             label2.style.paddingRight = '5px';
 
@@ -524,7 +524,7 @@ function checkSelect(selectBox) {ldelim}
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortAntwort_' + i);
-            label2.innerHTML = '  {__("umfrageQSort")}';
+            label2.innerHTML = '  {__('umfrageQSort')}';
             label2.style.paddingLeft = '5px';
             label2.style.paddingRight = '5px';
 
@@ -560,16 +560,16 @@ function checkSelect(selectBox) {ldelim}
 <div id="page">
     <div id="content" class="container-fluid">
         {*<div id="welcome" class="post">*}
-            {*<h2 class="title"><span>{__("umfrageEnterQ")}</span></h2>*}
+            {*<h2 class="title"><span>{__('umfrageEnterQ')}</span></h2>*}
         {*</div>*}
         {if isset($oUmfrageFrage_arr) && $oUmfrageFrage_arr|@count > 0}
         <div id="payment">
             <div id="tabellenLivesuche">
             <table class="table table-striped">
                 <tr>
-                    <th class="th-1">{__("umfrageQ")}</th>
-                    <th class="th-2">{__("umfrageQType")}</th>
-                    <th class="th-3">{__("umfrageSort")}</th>
+                    <th class="th-1">{__('umfrageQ')}</th>
+                    <th class="th-2">{__('umfrageQType')}</th>
+                    <th class="th-3">{__('umfrageSort')}</th>
                 </tr>
             {foreach name=umfragefrage from=$oUmfrageFrage_arr item=oUmfrageFrageTMP}
                 <tr>
@@ -596,16 +596,16 @@ function checkSelect(selectBox) {ldelim}
                 {/if}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{__("umfrageEnterQ")}</h3>
+                        <h3 class="panel-title">{__('umfrageEnterQ')}</h3>
                     </div>
                     <table class="kundenfeld table">
                         <tr>
-                            <td><label for="cName">{__("umfrageQ")}</label></td>
+                            <td><label for="cName">{__('umfrageQ')}</label></td>
                             <td><input class="form-control" id="cName" name="cName" type="text"  value="{if isset($oUmfrageFrage->cName)}{$oUmfrageFrage->cName}{/if}" /></td>
                         </tr>
 
                         <tr>
-                            <td><label for="cTypSelect">{__("umfrageType")}</label></td>
+                            <td><label for="cTypSelect">{__('umfrageType')}</label></td>
                             <td>
                                 <span class="input-group-wrap">
                                     <select name="cTyp" id="cTypSelect" class="form-control combo" onchange="checkSelect(this);">
@@ -626,12 +626,12 @@ function checkSelect(selectBox) {ldelim}
                         </tr>
 
                         <tr>
-                            <td><label for="nSort">{__("umfrageSort")}</label></td>
+                            <td><label for="nSort">{__('umfrageSort')}</label></td>
                             <td><input class="form-control" id="nSort" name="nSort" type="text"  value="{if isset($oUmfrageFrage->nSort)}{$oUmfrageFrage->nSort}{/if}" /></td>
                         </tr>
 
                         <tr>
-                            <td><label for="nFreifeld">{__("umfrageQFreeField")}</label></td>
+                            <td><label for="nFreifeld">{__('umfrageQFreeField')}</label></td>
                             <td>
                                 <select id="nFreifeld" name="nFreifeld" class="form-control combo">
                                     <option value="1"{if isset($oUmfrageFrage->nFreifeld) && $oUmfrageFrage->nFreifeld == 1}selected{/if}>Ja</option>
@@ -641,7 +641,7 @@ function checkSelect(selectBox) {ldelim}
                         </tr>
 
                         <tr>
-                            <td><label for="nNotwendig">{__("umfrageQEssential")}</label></td>
+                            <td><label for="nNotwendig">{__('umfrageQEssential')}</label></td>
                             <td>
                                 <select id="nNotwendig" name="nNotwendig" class="form-control combo">
                                     <option value="1"{if isset($oUmfrageFrage->nNotwendig) && $oUmfrageFrage->nNotwendig == 1}selected{/if}>Ja</option>
@@ -651,7 +651,7 @@ function checkSelect(selectBox) {ldelim}
                         </tr>
 
                         <tr>
-                            <td><label for="cBeschreibung">{__("umfrageText")}</label></td>
+                            <td><label for="cBeschreibung">{__('umfrageText')}</label></td>
                             <td><textarea id="cBeschreibung" class="ckeditor" name="cBeschreibung" rows="15" cols="60">{if isset($oUmfrageFrage->cBeschreibung)}{$oUmfrageFrage->cBeschreibung}{/if}</textarea></td>
                         </tr>
                     </table>
@@ -669,7 +669,7 @@ function checkSelect(selectBox) {ldelim}
                                 {foreach name=umfragematrixoption from=$oUmfrageFrage->oUmfrageMatrixOption_arr item=oUmfrageMatrixOption}
                                     <input name="kUmfrageMatrixOption[]" type="hidden" value="{$oUmfrageMatrixOption->kUmfrageMatrixOption}" />
                                     <tr>
-                                        <td>Option {$smarty.foreach.umfragematrixoption.iteration}<input name="cNameOption[]" class="form-control" type="text" value="{$oUmfrageMatrixOption->cName}" /> {__("umfrageQSort")} <input name="nSortOption[]" class="form-control"  type="text" value="{$oUmfrageMatrixOption->nSort}" style="width: 40px;"></td>
+                                        <td>Option {$smarty.foreach.umfragematrixoption.iteration}<input name="cNameOption[]" class="form-control" type="text" value="{$oUmfrageMatrixOption->cName}" /> {__('umfrageQSort')} <input name="nSortOption[]" class="form-control"  type="text" value="{$oUmfrageMatrixOption->nSort}" style="width: 40px;"></td>
                                     </tr>
                                 {/foreach}
                             {/if}
@@ -693,7 +693,7 @@ function checkSelect(selectBox) {ldelim}
                                             <input name="kUmfrageFrageAntwort[]" type="hidden" value="{$oUmfrageFrageAntwort->kUmfrageFrageAntwort}" />
                                             <label for="cNameAntwort-{$smarty.foreach.umfragefrageantwort.index}">Antwort {$smarty.foreach.umfragefrageantwort.iteration}</label>
                                             <input class="form-control" id="cNameAntwort-{$smarty.foreach.umfragefrageantwort.index}" name="cNameAntwort[]"  type="text" value="{$oUmfrageFrageAntwort->cName}" />
-                                            <label for="nSortAntwort-{$smarty.foreach.umfragefrageantwort.index}">{__("umfrageQSort")}</label>
+                                            <label for="nSortAntwort-{$smarty.foreach.umfragefrageantwort.index}">{__('umfrageQSort')}</label>
                                             <input id="nSortAntwort-{$smarty.foreach.umfragefrageantwort.index}" name="nSortAntwort[]"  type="text" class="form-control" value="{$oUmfrageFrageAntwort->nSort}" style="width: 40px;" />
                                         </p>
                                     </td>
@@ -704,11 +704,11 @@ function checkSelect(selectBox) {ldelim}
                     </div>
                     <div class="panel-footer">
                         {if isset($oUmfrageFrage->kUmfrageFrage) && $oUmfrageFrage->kUmfrageFrage > 0}
-                            <button class="btn btn-primary" name="speichern" type="submit" value="{__("umfrageSave")}"><i class="fa fa-save"></i> {__("umfrageSave")}</button>
+                            <button class="btn btn-primary" name="speichern" type="submit" value="{__('umfrageSave')}"><i class="fa fa-save"></i> {__('umfrageSave')}</button>
                         {else}
                             <div class="btn-group">
-                                <button class="btn btn-success" name="nocheinefrage" type="submit" value="{__("umfrageAnotherQ")}"><i class="fa fa-share"></i> {__("umfrageAnotherQ")}</button>
-                                <button class="btn btn-primary" name="speichern" type="submit" value="{__("umfrageSaveQ")}"><i class="fa fa-save"></i> {__("umfrageSaveQ")}</button>
+                                <button class="btn btn-success" name="nocheinefrage" type="submit" value="{__('umfrageAnotherQ')}"><i class="fa fa-share"></i> {__('umfrageAnotherQ')}</button>
+                                <button class="btn btn-primary" name="speichern" type="submit" value="{__('umfrageSaveQ')}"><i class="fa fa-save"></i> {__('umfrageSaveQ')}</button>
                             </div>
                         {/if}
                     </div>

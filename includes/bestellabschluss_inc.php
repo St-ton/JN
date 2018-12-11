@@ -1196,7 +1196,7 @@ function finalisiereBestellung($orderNo = '', bool $sendMail = true): Bestellung
     $order->machGoogleAnalyticsReady();
 
     if ($order->oRechnungsadresse !== null) {
-        $hash = Kuponneukunde::Hash(
+        $hash = Kuponneukunde::hash(
             null,
             trim($order->oRechnungsadresse->cNachname),
             trim($order->oRechnungsadresse->cStrasse),

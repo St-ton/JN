@@ -1022,7 +1022,7 @@ function plausiNeukundenKupon()
                 if ((empty($verwendet) || $verwendet === 'N') && angabenKorrekt(Kupon::checkCoupon($NeukundenKupon))) {
                     Kupon::acceptCoupon($NeukundenKupon);
                     if (empty($verwendet)) {
-                        $hash    = Kuponneukunde::Hash(
+                        $hash    = Kuponneukunde::hash(
                             null,
                             trim($_SESSION['Kunde']->cNachname),
                             trim($_SESSION['Kunde']->cStrasse),
@@ -1041,7 +1041,7 @@ function plausiNeukundenKupon()
 
                         $Kuponneukunde = new Kuponneukunde();
                         $Kuponneukunde->setOptions($Options);
-                        $Kuponneukunde->Save();
+                        $Kuponneukunde->save();
                     }
                     break;
                 }

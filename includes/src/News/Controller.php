@@ -8,6 +8,7 @@ namespace News;
 
 use DB\DbInterface;
 use DB\ReturnType;
+use Pagination\Pagination;
 use Session\Session;
 use Smarty\JTLSmarty;
 use Tightenco\Collect\Support\Collection;
@@ -143,10 +144,10 @@ class Controller
     }
 
     /**
-     * @param Item        $newsItem
-     * @param \Pagination $pagination
+     * @param Item       $newsItem
+     * @param Pagination $pagination
      */
-    public function displayItem(Item $newsItem, \Pagination $pagination): void
+    public function displayItem(Item $newsItem, Pagination $pagination): void
     {
         $newsCategories = $this->getNewsCategories($newsItem->getID());
         foreach ($newsCategories as $category) {
@@ -177,14 +178,14 @@ class Controller
     }
 
     /**
-     * @param \Pagination $pagination
-     * @param int         $categoryID
-     * @param int         $monthOverviewID
-     * @param int         $customerGroupID
+     * @param Pagination $pagination
+     * @param int        $categoryID
+     * @param int        $monthOverviewID
+     * @param int        $customerGroupID
      * @return Category
      */
     public function displayOverview(
-        \Pagination $pagination,
+        Pagination $pagination,
         int $categoryID = 0,
         int $monthOverviewID = 0,
         $customerGroupID = 0
@@ -483,7 +484,7 @@ class Controller
             $date = \explode('-', $_SESSION['NewsNaviFilter']->cDatum);
             if (\count($date) > 1) {
                 [$nMonat, $nJahr] = $date;
-                $sql->cDatumSQL   = " AND MONTH(tnews.dGueltigVon) = '" . (int)$nMonat . "' 
+                $sql->cDatumSQL = " AND MONTH(tnews.dGueltigVon) = '" . (int)$nMonat . "' 
                                       AND YEAR(tnews.dGueltigVon) = '" . (int)$nJahr . "'";
             } else { //invalid date given/xss -> reset to -1
                 $_SESSION['NewsNaviFilter']->cDatum = -1;
@@ -520,7 +521,7 @@ class Controller
                     AND tnews.dGueltigVon <= NOW()
                     AND (tnews.cKundengruppe LIKE '%;-1;%' 
                         OR FIND_IN_SET('" . Session::getCustomerGroup()->getID() .
-                    "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
+            "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     AND tnewssprache.languageID = " . \Shop::getLanguageID() . '
                 GROUP BY nJahr, nMonat
                 ORDER BY dGueltigVon DESC',

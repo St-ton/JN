@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Pagination\Pagination;
+
 if (!defined('PFAD_ROOT')) {
     http_response_code(400);
     exit();

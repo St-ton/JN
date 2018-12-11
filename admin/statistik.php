@@ -3,12 +3,16 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Pagination\Filter;
+use Pagination\Pagination;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
 
-$nStatsType = RequestHelper::verifyGPCDataInt('s');
+$statsType = RequestHelper::verifyGPCDataInt('s');
 
-switch ($nStatsType) {
+switch ($statsType) {
     case 1:
         $oAccount->permission('STATS_VISITOR_VIEW', true, true);
         break;
@@ -32,55 +36,54 @@ switch ($nStatsType) {
 $cHinweis          = '';
 $cFehler           = '';
 $nAnzeigeIntervall = 0;
-
-$oFilter    = new Filter('statistics');
-$oDateRange = $oFilter->addDaterangefield(
+$filter            = new Filter('statistics');
+$dateRange         = $filter->addDaterangefield(
     'Zeitraum',
     '',
     date_create()->modify('-1 year')->modify('+1 day')->format('d.m.Y') . ' - ' . date('d.m.Y')
 );
-$oFilter->assemble();
-$nDateStampVon = strtotime($oDateRange->getStart());
-$nDateStampBis = strtotime($oDateRange->getEnd());
+$filter->assemble();
+$nDateStampVon = strtotime($dateRange->getStart());
+$nDateStampBis = strtotime($dateRange->getEnd());
 
-$oStat_arr = gibBackendStatistik($nStatsType, $nDateStampVon, $nDateStampBis, $nAnzeigeIntervall);
+$stats = gibBackendStatistik($statsType, $nDateStampVon, $nDateStampBis, $nAnzeigeIntervall);
 
-$statsTypeName = GetTypeNameStats($nStatsType);
-$axisNames     = getAxisNames($nStatsType);
+$statsTypeName = GetTypeNameStats($statsType);
+$axisNames     = getAxisNames($statsType);
 
-if ($nStatsType === STATS_ADMIN_TYPE_KUNDENHERKUNFT
-    || $nStatsType === STATS_ADMIN_TYPE_SUCHMASCHINE
-    || $nStatsType === STATS_ADMIN_TYPE_EINSTIEGSSEITEN
+if ($statsType === STATS_ADMIN_TYPE_KUNDENHERKUNFT
+    || $statsType === STATS_ADMIN_TYPE_SUCHMASCHINE
+    || $statsType === STATS_ADMIN_TYPE_EINSTIEGSSEITEN
 ) {
-    $smarty->assign('piechart', preparePieChartStats($oStat_arr, $statsTypeName, $axisNames));
+    $smarty->assign('piechart', preparePieChartStats($stats, $statsTypeName, $axisNames));
 } else {
-    $smarty->assign('linechart', prepareLineChartStats($oStat_arr, $statsTypeName, $axisNames));
-    $member_arr = gibMappingDaten($nStatsType);
+    $smarty->assign('linechart', prepareLineChartStats($stats, $statsTypeName, $axisNames));
+    $member_arr = gibMappingDaten($statsType);
     $smarty->assign('ylabel', $member_arr['nCount']);
 }
-$cMember_arr = [];
-foreach ($oStat_arr as $oStat) {
-    $cMember_arr[] = array_keys(get_object_vars($oStat));
+$members = [];
+foreach ($stats as $stat) {
+    $members[] = array_keys(get_object_vars($stat));
 }
 
-$oPagination = (new Pagination())
-    ->setItemCount(count($oStat_arr))
+$pagination = (new Pagination())
+    ->setItemCount(count($stats))
     ->assemble();
 
 $smarty->assign('headline', $statsTypeName)
        ->assign('cHinweis', $cHinweis)
        ->assign('cFehler', $cFehler)
-       ->assign('nTyp', $nStatsType)
-       ->assign('oStat_arr', $oStat_arr)
-       ->assign('oStatJSON', getJSON($oStat_arr, $nAnzeigeIntervall, $nStatsType))
-       ->assign('cMember_arr', mappeDatenMember($cMember_arr, gibMappingDaten($nStatsType)))
+       ->assign('nTyp', $statsType)
+       ->assign('oStat_arr', $stats)
+       ->assign('oStatJSON', getJSON($stats, $nAnzeigeIntervall, $statsType))
+       ->assign('cMember_arr', mappeDatenMember($members, gibMappingDaten($statsType)))
        ->assign('STATS_ADMIN_TYPE_BESUCHER', STATS_ADMIN_TYPE_BESUCHER)
        ->assign('STATS_ADMIN_TYPE_KUNDENHERKUNFT', STATS_ADMIN_TYPE_KUNDENHERKUNFT)
        ->assign('STATS_ADMIN_TYPE_SUCHMASCHINE', STATS_ADMIN_TYPE_SUCHMASCHINE)
        ->assign('STATS_ADMIN_TYPE_UMSATZ', STATS_ADMIN_TYPE_UMSATZ)
        ->assign('STATS_ADMIN_TYPE_EINSTIEGSSEITEN', STATS_ADMIN_TYPE_EINSTIEGSSEITEN)
-       ->assign('nPosAb', $oPagination->getFirstPageItem())
-       ->assign('nPosBis', $oPagination->getFirstPageItem() + $oPagination->getPageItemCount())
-       ->assign('oPagination', $oPagination)
-       ->assign('oFilter', $oFilter)
+       ->assign('nPosAb', $pagination->getFirstPageItem())
+       ->assign('nPosBis', $pagination->getFirstPageItem() + $pagination->getPageItemCount())
+       ->assign('oPagination', $pagination)
+       ->assign('oFilter', $filter)
        ->display('statistik.tpl');

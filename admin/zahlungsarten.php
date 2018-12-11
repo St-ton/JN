@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Pagination\Filter;
+use Pagination\Pagination;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_PAYMENT_VIEW', true, true);

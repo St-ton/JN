@@ -4,8 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Pagination;
+
 /**
  * Class Pagination
+ * @package Pagination
  */
 class Pagination
 {
@@ -212,7 +215,7 @@ class Pagination
     public function setItemArray($items): self
     {
         $this->items = $items;
-        $this->setItemCount(count($items));
+        $this->setItemCount(\count($items));
 
         return $this;
     }
@@ -306,23 +309,23 @@ class Pagination
             $nItemsPerPage        = $this->defaultItemsPerPage > 0
                 ? $this->defaultItemsPerPage
                 : $this->itemsPerPageOptions[0];
-            $this->pageCount      = $nItemsPerPage > 0 ? (int)ceil($this->itemCount / $nItemsPerPage) : 1;
-            $this->page           = max(0, min($this->pageCount - 1, $this->page));
-            $this->prevPage       = max(0, min($this->pageCount - 1, $this->page - 1));
-            $this->nextPage       = max(0, min($this->pageCount - 1, $this->page + 1));
-            $this->leftRangePage  = max(0, $this->page - $this->dispPagesRadius);
-            $this->rightRangePage = min($this->pageCount - 1, $this->page + $this->dispPagesRadius);
+            $this->pageCount      = $nItemsPerPage > 0 ? (int)\ceil($this->itemCount / $nItemsPerPage) : 1;
+            $this->page           = \max(0, \min($this->pageCount - 1, $this->page));
+            $this->prevPage       = \max(0, \min($this->pageCount - 1, $this->page - 1));
+            $this->nextPage       = \max(0, \min($this->pageCount - 1, $this->page + 1));
+            $this->leftRangePage  = \max(0, $this->page - $this->dispPagesRadius);
+            $this->rightRangePage = \min($this->pageCount - 1, $this->page + $this->dispPagesRadius);
             $this->firstPageItem  = $this->page * $nItemsPerPage;
-            $this->pageItemCount  = min($nItemsPerPage, $this->itemCount - $this->firstPageItem);
+            $this->pageItemCount  = \min($nItemsPerPage, $this->itemCount - $this->firstPageItem);
         } else {
-            $this->pageCount      = $this->itemsPerPage > 0 ? (int)ceil($this->itemCount / $this->itemsPerPage) : 1;
-            $this->page           = max(0, min($this->pageCount - 1, $this->page));
-            $this->prevPage       = max(0, min($this->pageCount - 1, $this->page - 1));
-            $this->nextPage       = max(0, min($this->pageCount - 1, $this->page + 1));
-            $this->leftRangePage  = max(0, $this->page - $this->dispPagesRadius);
-            $this->rightRangePage = min($this->pageCount - 1, $this->page + $this->dispPagesRadius);
+            $this->pageCount      = $this->itemsPerPage > 0 ? (int)\ceil($this->itemCount / $this->itemsPerPage) : 1;
+            $this->page           = \max(0, \min($this->pageCount - 1, $this->page));
+            $this->prevPage       = \max(0, \min($this->pageCount - 1, $this->page - 1));
+            $this->nextPage       = \max(0, \min($this->pageCount - 1, $this->page + 1));
+            $this->leftRangePage  = \max(0, $this->page - $this->dispPagesRadius);
+            $this->rightRangePage = \min($this->pageCount - 1, $this->page + $this->dispPagesRadius);
             $this->firstPageItem  = $this->page * $this->itemsPerPage;
-            $this->pageItemCount  = min($this->itemsPerPage, $this->itemCount - $this->firstPageItem);
+            $this->pageItemCount  = \min($this->itemsPerPage, $this->itemCount - $this->firstPageItem);
         }
 
         $this->sortBy  = (int)($this->sortByDir / 2);
@@ -337,10 +340,10 @@ class Pagination
             $cSortBy          = $this->sortBySQL;
 
             // Sort array if exists
-            if (is_array($this->items)) {
-                usort($this->items, function ($a, $b) use ($cSortBy, $nSortFac) {
-                    $valueA = is_string($a->$cSortBy) ? strtolower($a->$cSortBy) : $a->$cSortBy;
-                    $valueB = is_string($b->$cSortBy) ? strtolower($b->$cSortBy) : $b->$cSortBy;
+            if (\is_array($this->items)) {
+                \usort($this->items, function ($a, $b) use ($cSortBy, $nSortFac) {
+                    $valueA = \is_string($a->$cSortBy) ? \strtolower($a->$cSortBy) : $a->$cSortBy;
+                    $valueB = \is_string($b->$cSortBy) ? \strtolower($b->$cSortBy) : $b->$cSortBy;
 
                     return $valueA == $valueB ? 0 : ($valueA < $valueB ? -$nSortFac : +$nSortFac);
                 });
@@ -348,10 +351,9 @@ class Pagination
         }
 
         $this->limitSQL = $this->firstPageItem . ',' . $this->pageItemCount;
-
         // Slice array if exists
-        if (is_array($this->items)) {
-            $this->pageItems = array_slice($this->items, $this->firstPageItem, $this->pageItemCount);
+        if (\is_array($this->items)) {
+            $this->pageItems = \array_slice($this->items, $this->firstPageItem, $this->pageItemCount);
         } elseif ($this->items instanceof \Tightenco\Collect\Support\Collection) {
             $this->pageItems = $this->items->slice($this->firstPageItem, $this->pageItemCount);
         }

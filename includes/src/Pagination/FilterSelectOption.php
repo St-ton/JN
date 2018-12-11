@@ -4,38 +4,41 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Pagination;
+
 /**
  * Class FilterSelectOption
+ * @package Pagination
  */
 class FilterSelectOption
 {
     /**
      * @var string
      */
-    protected $cTitle = '';
+    protected $title = '';
 
     /**
      * @var string
      */
-    protected $cValue = '';
+    protected $value = '';
 
     /**
      * @var int
      */
-    protected $nTestOp = 0;
+    protected $testOp = Operation::CUSTOM;
 
     /**
      * FilterSelectOption constructor.
      *
-     * @param string $cTitle
-     * @param string $cValue
-     * @param int    $nTestOp
+     * @param string $title
+     * @param string $value
+     * @param int    $testOp
      */
-    public function __construct($cTitle, $cValue, $nTestOp)
+    public function __construct($title, $value, $testOp)
     {
-        $this->cTitle  = $cTitle;
-        $this->cValue  = $cValue;
-        $this->nTestOp = $nTestOp;
+        $this->title  = $title;
+        $this->value  = $value;
+        $this->testOp = $testOp;
     }
 
     /**
@@ -43,7 +46,7 @@ class FilterSelectOption
      */
     public function getTitle(): string
     {
-        return $this->cTitle;
+        return $this->title;
     }
 
     /**
@@ -51,7 +54,7 @@ class FilterSelectOption
      */
     public function getValue(): string
     {
-        return $this->cValue;
+        return $this->value;
     }
 
     /**
@@ -59,6 +62,6 @@ class FilterSelectOption
      */
     public function getTestOp(): int
     {
-        return (int)$this->nTestOp;
+        return (int)$this->testOp;
     }
 }

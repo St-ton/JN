@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Pagination\Filter;
+use Pagination\Pagination;
+
 /**
  * @global Smarty\JTLSmarty $smarty
  * @global AdminAccount $oAccount
@@ -84,21 +87,21 @@ if (FormHelper::validateToken()) {
     }
 }
 
-$oFilter = new Filter();
-$oFilter->addTextfield('URL', 'cFromUrl', 1);
-$oFilter->addTextfield('Ziel-URL', 'cToUrl', 1);
-$oSelect = $oFilter->addSelectfield('Umleitung', 'cToUrl');
-$oSelect->addSelectOption('alle', '');
-$oSelect->addSelectOption('vorhanden', '', 9);
-$oSelect->addSelectOption('fehlend', '', 4);
-$oFilter->addTextfield('Aufrufe', 'nCount', 0, 1);
-$oFilter->assemble();
+$filter = new Filter();
+$filter->addTextfield('URL', 'cFromUrl', \Pagination\Operation::CONTAINS);
+$filter->addTextfield('Ziel-URL', 'cToUrl', \Pagination\Operation::CONTAINS);
+$select = $filter->addSelectfield('Umleitung', 'cToUrl');
+$select->addSelectOption('alle', '');
+$select->addSelectOption('vorhanden', '', \Pagination\Operation::NOT_EQUAL);
+$select->addSelectOption('fehlend', '', \Pagination\Operation::EQUALS);
+$filter->addTextfield('Aufrufe', 'nCount', \Pagination\Operation::CUSTOM, \Pagination\DataType::NUMBER);
+$filter->assemble();
 
-$nRedirectCount = Redirect::getRedirectCount($oFilter->getWhereSQL());
+$redirectCount = Redirect::getRedirectCount($filter->getWhereSQL());
 
-$oPagination = new Pagination();
-$oPagination
-    ->setItemCount($nRedirectCount)
+$pagination = new Pagination();
+$pagination
+    ->setItemCount($redirectCount)
     ->setSortByOptions([
         ['cFromUrl', 'URL'],
         ['cToUrl', 'Ziel-URL'],
@@ -107,20 +110,21 @@ $oPagination
     ->assemble();
 
 $oRedirect_arr = Redirect::getRedirects(
-    $oFilter->getWhereSQL(),
-    $oPagination->getOrderSQL(),
-    $oPagination->getLimitSQL()
+    $filter->getWhereSQL(),
+    $pagination->getOrderSQL(),
+    $pagination->getLimitSQL()
 );
 
 handleCsvExportAction(
     'redirects',
     'redirects.csv',
-    function () use ($oFilter, $oPagination, $nRedirectCount) {
-        $cWhereSQL = $oFilter->getWhereSQL();
-        $cOrderSQL = $oPagination->getOrderSQL();
+    function () use ($filter, $pagination, $redirectCount) {
+        $db        = Shop::Container()->getDB();
+        $cWhereSQL = $filter->getWhereSQL();
+        $cOrderSQL = $pagination->getOrderSQL();
 
-        for ($i = 0; $i < $nRedirectCount; $i += 1000) {
-            $oRedirectIter = Shop::Container()->getDB()->query(
+        for ($i = 0; $i < $redirectCount; $i += 1000) {
+            $oRedirectIter = $db->query(
                 'SELECT cFromUrl, cToUrl
                     FROM tredirect' .
                     ($cWhereSQL !== '' ? ' WHERE ' . $cWhereSQL : '') .
@@ -139,8 +143,8 @@ handleCsvExportAction(
 $smarty
     ->assign('cHinweis', $cHinweis)
     ->assign('cFehler', $cFehler)
-    ->assign('oFilter', $oFilter)
-    ->assign('oPagination', $oPagination)
+    ->assign('oFilter', $filter)
+    ->assign('oPagination', $pagination)
     ->assign('oRedirect_arr', $oRedirect_arr)
     ->assign('nTotalRedirectCount', Redirect::getRedirectCount())
     ->display('redirect.tpl');

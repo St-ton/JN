@@ -229,7 +229,7 @@ define('HOOK_NAVI_PAGE', 31);
  *
  * @file news.php
  * @param \News\Item newsItem - since 5.0.0
- * @param Pagination pagination - since 5.0.0
+ * @param \Pagination\Pagination pagination - since 5.0.0
  */
 define('HOOK_NEWS_PAGE_DETAILANSICHT', 32);
 

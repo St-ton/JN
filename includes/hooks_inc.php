@@ -903,6 +903,7 @@ define('HOOK_LIEFERADRESSE_CLASS_LOADFROMDB', 122);
 
 /**
  * @file Merkmal.php
+ * @param Merkmal instance - since 5.0.0
  */
 define('HOOK_MERKMAL_CLASS_LOADFROMDB', 123);
 

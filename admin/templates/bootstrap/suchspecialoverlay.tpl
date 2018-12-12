@@ -50,7 +50,7 @@
             <div class="clearall">
                 <div class="no_overflow panel panel-default" id="settings">
                     <div class="panel-body">
-                        <img src="{$shopURL}/{$oSuchspecialOverlay->getPathSize('normal')}{$oSuchspecialOverlay->getImageName()}?rnd={$cRnd}" style="margin-bottom: 15px;" />
+                        <img src="{$oSuchspecialOverlay->getURL('normal')}?rnd={$cRnd}" style="margin-bottom: 15px;" />
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <label for="nAktiv">{#suchspecialoverlayActive#}</label>

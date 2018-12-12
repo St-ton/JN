@@ -79,15 +79,10 @@ class Overlay
      */
     private $templateName;
 
-    public const BESTSELLER       = 1;
-    public const SPECIALOFFERS    = 2;
-    public const NEWPRODUCTS      = 3;
-    public const TOPOFFERS        = 4;
-    public const UPCOMINGPRODUCTS = 5;
-    public const TOPREVIEWS       = 6;
-    public const OUTOFSTOCK       = 7;
-    public const ONSTOCK          = 8;
-    public const PREORDER         = 9;
+    /**
+     * @var array
+     */
+    private $urlSizes;
 
     public function __construct(int $type, int $language)
     {
@@ -142,8 +137,10 @@ class Overlay
                  ->setName($overlay->cSuchspecial);
 
             if ($overlay->cTemplate === 'default') {
-                $this->setPath(PFAD_SUCHSPECIALOVERLAY)->setPathSizes();
+                $this->setPath(PFAD_SUCHSPECIALOVERLAY)
+                     ->setPathSizes();
             }
+            $this->setURLSizes();
         }
 
         return $this;
@@ -154,18 +151,18 @@ class Overlay
      */
     public function save(): void
     {
-        $overlayData =(object)[
+        $db          = Shop::Container()->getDB();
+        $overlayData = (object)[
             'nAktiv'       => $this->getActive(),
             'nPrio'        => $this->getPriority(),
             'nTransparenz' => $this->getTransparance(),
             'nGroesse'     => $this->getSize(),
             'nPosition'    => 1,
-            'cTemplate'    => $this->getTemplateName(),
             'cBildPfad'    => $this->getImageName(),
             'nMargin'      => 5
         ];
 
-        $check = Shop::Container()->getDB()->queryPrepared('
+        $check = $db->queryPrepared('
             SELECT * FROM tsuchspecialoverlaysprache
               WHERE kSprache = :languageID
                 AND kSuchspecialOverlay = :overlayID
@@ -178,7 +175,7 @@ class Overlay
             \DB\ReturnType::SINGLE_OBJECT
         );
         if ($check) {
-            Shop::Container()->getDB()->update(
+            $db->update(
                 'tsuchspecialoverlaysprache',
                 ['kSuchspecialOverlay', 'kSprache', 'cTemplate'],
                 [$this->getType(), $this->getLanguage(), $this->getTemplateName()],
@@ -187,7 +184,8 @@ class Overlay
         } else {
             $overlayData->kSuchspecialOverlay = $this->getType();
             $overlayData->kSprache            = $this->getLanguage();
-            Shop::Container()->getDB()->insert('tsuchspecialoverlaysprache', $overlayData);
+            $overlayData->cTemplate           = $this->getTemplateName();
+            $db->insert('tsuchspecialoverlaysprache', $overlayData);
         }
     }
 
@@ -234,8 +232,7 @@ class Overlay
      */
     public function setTemplateName(): self
     {
-        $template           = Template::getInstance();
-        $this->templateName = $template->getName();
+        $this->templateName = Template::getInstance()->getName();
 
         return $this;
     }
@@ -275,6 +272,31 @@ class Overlay
             'normal' => $this->getPath() . 'normal/',
             'gross'  => $this->getPath() . 'gross/',
             'retina' => $this->getPath() . 'retina/',
+        ];
+
+        return $this;
+    }
+
+    /**
+     * @param string $size
+     * @return string
+     */
+    public function getURL(string $size): string
+    {
+        return $this->urlSizes[$size];
+    }
+
+    /**
+     * @return Overlay
+     */
+    public function setURLSizes(): self
+    {
+        $shopURL = Shop::getURL() . '/';
+        $this->urlSizes = [
+            'klein'  => $shopURL . $this->getPathSize('klein') . $this->getImageName(),
+            'normal' => $shopURL . $this->getPathSize('normal') . $this->getImageName(),
+            'gross'  => $shopURL . $this->getPathSize('gross') . $this->getImageName(),
+            'retina' => $shopURL . $this->getPathSize('retina') . $this->getImageName(),
         ];
 
         return $this;

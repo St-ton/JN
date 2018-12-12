@@ -4398,7 +4398,7 @@ class Artikel
         $searchSpecial_arr = SearchSpecialHelper::getAll($languageID);
         // Suchspecialbildoverlay
         // Kleinste Prio und somit die Wichtigste, steht immer im Element 0 vom Array (nPrio ASC)
-        if (!empty($searchSpecial_arr) && is_array($searchSpecial_arr) && count($searchSpecial_arr) > 0) {
+        if (!empty($searchSpecial_arr)) {
             $bSuchspecial_arr = [
                 SEARCHSPECIALS_BESTSELLER       => $this->istBestseller(),
                 SEARCHSPECIALS_SPECIALOFFERS    => $this->Preise !== null && $this->Preise->Sonderpreis_aktiv === 1,
@@ -4469,28 +4469,11 @@ class Artikel
             }
             $this->bSuchspecial_arr = $bSuchspecial_arr;
             // SuchspecialBild anhand der höchsten Prio und des gesetzten Suchspecials festlegen
-            $imageBaseURL = Shop::getImageBaseURL();
             foreach ($searchSpecial_arr as $overlay) {
-                if (!isset($overlay->kSuchspecialOverlay)
-                    || empty($this->bSuchspecial_arr[$overlay->kSuchspecialOverlay])
-                ) {
+                if (empty($this->bSuchspecial_arr[$overlay->getType()])) {
                     continue;
                 }
-                $this->oSuchspecialBild = new stdClass();
-                $this->oSuchspecialBild->cPfadRetina  = PFAD_SUCHSPECIALOVERLAY_RETINA . $overlay->cBildPfad;
-                $this->oSuchspecialBild->cPfadGross   = PFAD_SUCHSPECIALOVERLAY_GROSS . $overlay->cBildPfad;
-                $this->oSuchspecialBild->cPfadNormal  = PFAD_SUCHSPECIALOVERLAY_NORMAL . $overlay->cBildPfad;
-                $this->oSuchspecialBild->cPfadKlein   = PFAD_SUCHSPECIALOVERLAY_KLEIN . $overlay->cBildPfad;
-                $this->oSuchspecialBild->cSuchspecial = $overlay->cSuchspecial;
-                $this->oSuchspecialBild->nMargin      = $overlay->nMargin;
-                $this->oSuchspecialBild->nTransparenz = $overlay->nTransparenz;
-                $this->oSuchspecialBild->nGroesse     = $overlay->nGroesse;
-                $this->oSuchspecialBild->nPosition    = $overlay->nPosition;
-                $this->oSuchspecialBild->cURLRetina   = $imageBaseURL . $this->oSuchspecialBild->cPfadRetina;
-                $this->oSuchspecialBild->cURLGross    = $imageBaseURL . $this->oSuchspecialBild->cPfadGross;
-                $this->oSuchspecialBild->cURLNormal   = $imageBaseURL . $this->oSuchspecialBild->cPfadNormal;
-                $this->oSuchspecialBild->cURLKlein    = $imageBaseURL . $this->oSuchspecialBild->cPfadKlein;
-                break;
+                $this->oSuchspecialBild = $overlay;
             }
         }
 

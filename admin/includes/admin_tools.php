@@ -62,9 +62,9 @@ function getAdminSectionSettings($configSectionID)
                 '*',
                 'nSort'
             );
-        }
 
-        localizeConfigValues($conf, $conf->ConfWerte);
+            localizeConfigValues($conf, $conf->ConfWerte);
+        }
 
         if ($conf->cInputTyp === 'listbox') {
             $oSetValue = $db->selectAll(
@@ -634,7 +634,8 @@ function getCsvDelimiter(string $filename)
 function loadConfigLocalizations($withGroups = false, $withSections = false)
 {
     L10n\GetText::getInstance()->loadAdminLocale('configs/configs')
-        ->loadAdminLocale('configs/values');
+                               ->loadAdminLocale('configs/values')
+                               ->loadAdminLocale('configs/groups');
 
     if ($withGroups) {
         L10n\GetText::getInstance()->loadAdminLocale('configs/groups');

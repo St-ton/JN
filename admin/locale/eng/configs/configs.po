@@ -3089,7 +3089,7 @@ msgid "trustedshops_kundenbewertung_anzeigen_desc"
 msgstr "Soll die Kundenbewertung in einer Box angezeigt werden?"
 
 msgid "suchspecials_sortierung_bestseller_name"
-msgstr "Bestseller sortierung"
+msgstr "Bestseller sorting"
 
 msgid "suchspecials_sortierung_bestseller_desc"
 msgstr "Wie sollen die Artikel bei den Bestsellern standardm&auml;&szlig;ig sortiert werden?"

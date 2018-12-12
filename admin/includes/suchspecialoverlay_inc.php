@@ -32,14 +32,15 @@ function gibSuchspecialOverlay(int $kSuchspecialOverlay)
 }
 
 /**
- * @param int   $kSuchspecialOverlay
+ * @param int $kSuchspecialOverlay
  * @param array $cPost_arr
  * @param array $cFiles_arr
+ * @param int|null $lang
  * @return bool
  */
-function speicherEinstellung(int $kSuchspecialOverlay, $cPost_arr, $cFiles_arr)
+function speicherEinstellung(int $kSuchspecialOverlay, array $cPost_arr, array $cFiles_arr, int $lang = null): bool
 {
-    $overlay = new Overlay($kSuchspecialOverlay, (int)$_SESSION['kSprache']);
+    $overlay = new Overlay($kSuchspecialOverlay, $lang ?? (int)$_SESSION['kSprache']);
 
     $overlay->setActive((int)$cPost_arr['nAktiv'])
             ->setTransparence((int)$cPost_arr['nTransparenz'])
@@ -47,14 +48,14 @@ function speicherEinstellung(int $kSuchspecialOverlay, $cPost_arr, $cFiles_arr)
             ->setPosition(isset($cPost_arr['nPosition']) ? (int)$cPost_arr['nPosition']: 0)
             ->setPriority((int)$cPost_arr['nPrio'])
             ->setImageName('overlay_' . $overlay->getLanguage() . '_' . $overlay->getType()
-                . mappeFileTyp($cFiles_arr['cSuchspecialOverlayBild']['type']));
+                . mappeFileTyp($cFiles_arr['type']));
 
     if ($overlay->getPriority() === -1) {
         return false;
     }
 
     if ($overlay->getType() > 0) {
-        if (strlen($cFiles_arr['cSuchspecialOverlayBild']['name']) > 0) {
+        if (strlen($cFiles_arr['name']) > 0) {
             loescheBild($overlay);
             speicherBild($cFiles_arr, $overlay);
         }
@@ -281,7 +282,7 @@ function erstelleOverlay($cBild, $cBreite, $cHoehe, $nGroesse, $nTransparenz, $c
  * @param string $cFormat
  * @param string $cPfad
  */
-function erstelleFixedOverlay($cBild, $nGroesse, $nTransparenz, $cFormat, $cPfad)
+function erstelleFixedOverlay(string $cBild, int $nGroesse, int $nTransparenz, string $cFormat, string $cPfad): void
 {
     $Einstellungen = Shop::getSettings([CONF_BILDER]);
     $bSkalieren    = !($Einstellungen['bilder']['bilder_skalieren'] === 'N'); //@todo noch beachten
@@ -295,23 +296,23 @@ function erstelleFixedOverlay($cBild, $nGroesse, $nTransparenz, $cFormat, $cPfad
 
 
 /**
- * @param $cFiles_arr
+ * @param array $cFiles_arr
  * @param Overlay $overlay
  * @return bool
  */
-function speicherBild($cFiles_arr, Overlay $overlay)
+function speicherBild(array $cFiles_arr, Overlay $overlay): bool
 {
-    if ($cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/jpeg'
-        || $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/pjpeg'
-        || $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/jpg'
-        || $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/gif'
-        || $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/png'
-        || $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/bmp'
-        || $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/x-png'
+    if ($cFiles_arr['type'] === 'image/jpeg'
+        || $cFiles_arr['type'] === 'image/pjpeg'
+        || $cFiles_arr['type'] === 'image/jpg'
+        || $cFiles_arr['type'] === 'image/gif'
+        || $cFiles_arr['type'] === 'image/png'
+        || $cFiles_arr['type'] === 'image/bmp'
+        || $cFiles_arr['type'] === 'image/x-png'
     ) {
-        if (empty($cFiles_arr['cSuchspecialOverlayBild']['error'])) {
-            $cFormat   = mappeFileTyp($cFiles_arr['cSuchspecialOverlayBild']['type']);
-            $cOriginal = $cFiles_arr['cSuchspecialOverlayBild']['tmp_name'];
+        if (empty($cFiles_arr['error'])) {
+            $cFormat   = mappeFileTyp($cFiles_arr['type']);
+            $cOriginal = $cFiles_arr['tmp_name'];
 
             $sizesToCreate = [
                 ['size' => 'klein',  'factor' => 1],
@@ -343,7 +344,7 @@ function speicherBild($cFiles_arr, Overlay $overlay)
 /**
  * @param Overlay $overlay
  */
-function loescheBild(Overlay $overlay)
+function loescheBild(Overlay $overlay): void
 {
     $path = PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY . 'kSuchspecialOverlay_' .
         $overlay->getLanguage() . '_' . $overlay->getType();

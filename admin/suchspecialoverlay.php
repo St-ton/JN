@@ -22,7 +22,7 @@ if (RequestHelper::verifyGPCDataInt('suchspecialoverlay') === 1) {
         && (int)$_POST['speicher_einstellung'] === 1
         && FormHelper::validateToken()
     ) {
-        if (speicherEinstellung($oID, $_POST, $_FILES)) {
+        if (speicherEinstellung($oID, $_POST, $_FILES['cSuchspecialOverlayBild'])) {
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
             $cHinweis .= 'Ihre Einstellung wurde erfolgreich gespeichert.<br />';
         } else {

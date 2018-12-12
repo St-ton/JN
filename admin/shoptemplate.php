@@ -143,6 +143,11 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && FormHelper::valida
     } else {
         $cFehler = 'Template bzw. Einstellungen konnten nicht geändert werden.';
     }
+
+    if (RequestHelper::verifyGPCDataInt('activate') === 1) {
+        OverlayHelper::loadOverlaysFromTemplateFolder();
+    }
+
     Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
     //re-init smarty with new template - problematic because of re-including functions.php
     header('Location: ' . Shop::getURL() . '/' .

@@ -297,11 +297,13 @@ class Warenkorb
         $pos->cName               = [];
         $pos->cLieferstatus       = [];
 
+        $db = Shop::Container()->getDB();
+
         foreach (\Session\Session::getLanguages() as $lang) {
             $pos->cName[$lang->cISO]         = $pos->Artikel->cName;
             $pos->cLieferstatus[$lang->cISO] = $cLieferstatus_StdSprache;
             if ($lang->cStandard === 'Y') {
-                $localized = Shop::Container()->getDB()->select(
+                $localized = $db->select(
                     'tartikel',
                     'kArtikel',
                     (int)$pos->kArtikel,
@@ -313,7 +315,7 @@ class Warenkorb
                     'cName'
                 );
             } else {
-                $localized = Shop::Container()->getDB()->select(
+                $localized = $db->select(
                     'tartikelsprache',
                     'kArtikel',
                     (int)$pos->kArtikel,
@@ -329,7 +331,7 @@ class Warenkorb
             $pos->cName[$lang->cISO] = (isset($localized->cName) && strlen(trim($localized->cName)) > 0)
                 ? $localized->cName
                 : $pos->Artikel->cName;
-            $lieferstatus_spr        = Shop::Container()->getDB()->select(
+            $lieferstatus_spr        = $db->select(
                 'tlieferstatus',
                 'kLieferstatus',
                 (int)($pos->Artikel->kLieferstatus ?? 0),
@@ -715,7 +717,7 @@ class Warenkorb
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if ($cnt->anz > 0) {
-                $min                = pow(2, $cnt->anz);
+                $min                = 2 ** $cnt->anz;
                 $min                = min([$min, 1440]);
                 $bestellungMoeglich = Shop::Container()->getDB()->executeQueryPrepared(
                     'SELECT dErstellt+INTERVAL ' . $min . ' MINUTE < NOW() AS moeglich

@@ -21,7 +21,7 @@ use Services\JTL\Validation\ValidationServiceInterface;
  * Class Shop
  * @method static \Cache\JTLCacheInterface Cache()
  * @method static Sprache Lang()
- * @method static \Smarty\JTLSmarty Smarty(bool $fast_init = false, bool $isAdmin = false)
+ * @method static \Smarty\JTLSmarty Smarty(bool $fast_init = false, string $context = \Smarty\ContextType::FRONTEND)
  * @method static Media Media()
  * @method static \Events\Dispatcher Event()
  * @method static bool has(string $key)

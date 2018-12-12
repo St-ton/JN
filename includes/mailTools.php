@@ -758,8 +758,10 @@ function verschickeMail($mail)
     }
     if ($bSent) {
         $oEmailhistory = new Emailhistory();
-        $oEmailhistory->setEmailvorlage($kEmailvorlage)
-                      ->setSubject($mail->subject)
+        if ($kEmailvorlage !== null) {
+            $oEmailhistory->setEmailvorlage($kEmailvorlage);
+        }
+        $oEmailhistory->setSubject($mail->subject)
                       ->setFromName($mail->fromName)
                       ->setFromEmail($mail->fromEmail)
                       ->setToName($mail->toName ?? '')

@@ -8,7 +8,6 @@ namespace Widgets;
 
 /**
  * Class Duk
- *
  * @package Widgets
  */
 class Duk extends AbstractWidget

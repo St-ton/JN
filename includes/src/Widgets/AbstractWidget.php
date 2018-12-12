@@ -13,7 +13,6 @@ use Smarty\JTLSmarty;
 
 /**
  * Class AbstractWidget
- *
  * @package Widgets
  */
 abstract class AbstractWidget implements WidgetInterface
@@ -39,11 +38,9 @@ abstract class AbstractWidget implements WidgetInterface
     public $hasBody = true;
 
     /**
-     * @param \Smarty\JTLSmarty $smarty
-     * @param DbInterface  $db
-     * @param \Plugin|\Plugin\Extension $oPlugin
+     * @inheritdoc
      */
-    public function __construct($smarty = null, DbInterface $db = null, $oPlugin = null)
+    public function __construct(JTLSmarty $smarty = null, DbInterface $db = null, $oPlugin = null)
     {
         $this->oSmarty = $smarty ?? \Shop::Smarty(false, ContextType::BACKEND);
         $this->oDB     = $db ?? \Shop::Container()->getDB();

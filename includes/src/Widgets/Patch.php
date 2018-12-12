@@ -8,7 +8,6 @@ namespace Widgets;
 
 /**
  * Class Patch
- *
  * @package Widgets
  */
 class Patch extends AbstractWidget

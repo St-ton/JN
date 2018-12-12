@@ -8,7 +8,6 @@ namespace Widgets;
 
 /**
  * Class SalesVolume
- *
  * @package Widgets
  */
 class SalesVolume extends AbstractWidget

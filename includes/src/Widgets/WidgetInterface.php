@@ -12,7 +12,6 @@ use Smarty\JTLSmarty;
 
 /**
  * Class AbstractWidget
- *
  * @package Widgets
  */
 interface WidgetInterface

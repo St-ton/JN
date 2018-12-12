@@ -8,7 +8,6 @@ namespace Widgets;
 
 /**
  * Class Clock
- *
  * @package Widgets
  */
 class Clock extends AbstractWidget

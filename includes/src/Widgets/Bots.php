@@ -8,7 +8,6 @@ namespace Widgets;
 
 /**
  * Class Bots
- *
  * @package Widgets
  */
 class Bots extends AbstractWidget

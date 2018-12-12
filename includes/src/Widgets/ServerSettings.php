@@ -8,7 +8,6 @@ namespace Widgets;
 
 /**
  * Class ServerSettings
- *
  * @package Widgets
  */
 class ServerSettings extends AbstractWidget

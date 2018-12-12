@@ -8,7 +8,6 @@ namespace Widgets;
 
 /**
  * Class News
- *
  * @package Widgets
  */
 class News extends AbstractWidget

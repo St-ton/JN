@@ -8,7 +8,6 @@ namespace Widgets;
 
 /**
  * Class Visitors
- *
  * @package Widgets
  */
 class Visitors extends AbstractWidget

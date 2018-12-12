@@ -13,7 +13,7 @@ use function Functional\group;
 
 /**
  * Class Survey
- * @package JTL
+ * @package Survey
  */
 class Survey
 {

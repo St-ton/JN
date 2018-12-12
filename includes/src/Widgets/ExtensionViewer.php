@@ -8,7 +8,6 @@ namespace Widgets;
 
 /**
  * Class ExtensionViewer
- *
  * @package Widgets
  */
 class ExtensionViewer extends AbstractWidget

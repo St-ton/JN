@@ -14,7 +14,7 @@ use function Functional\map;
 
 /**
  * Class SurveyQuestion
- * @package JTL
+ * @package Survey
  */
 class SurveyQuestion
 {

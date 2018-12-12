@@ -8,7 +8,6 @@ namespace Widgets;
 
 /**
  * Class Help
- *
  * @package Widgets
  */
 class Help extends AbstractWidget

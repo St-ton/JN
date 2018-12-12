@@ -8,7 +8,6 @@ namespace Widgets;
 
 /**
  * Class Shopinfo
- *
  * @package Widgets
  */
 class Shopinfo extends AbstractWidget

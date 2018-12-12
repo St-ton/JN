@@ -7,14 +7,14 @@ stages:
   - cleanUp
 
 .testingScript: &testingScript |
-  export CI_CONTAINER_NAME=ci_job_testing_$CI_COMMIT_SHA
+  export CI_CONTAINER_NAME=ci_job_testing_$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
 
   function testing() {
     echo "Testing projekt in PHP $PHP_VERSION_TEST_STEP docker image..."
 
     docker run \
       --volume $(pwd):/dockerBuild \
-      --name="$CI_CONTAINER_NAME-php$PHP_VERSION_TEST_STEP" \
+      --name="$CI_CONTAINER_NAME" \
       $CI_REGISTRY_IMAGE/testing-php$PHP_VERSION_TEST_STEP \
       sh -c "cp -r /dockerBuild/. /build; bash build/scripts/tests.sh"
 
@@ -26,7 +26,7 @@ stages:
 
 .cleanUpTesting: &cleanUpTesting |
   function failedTesting() {
-    export CI_CONTAINER_NAME=ci_job_build_deploy_$CI_COMMIT_SHA-testing-php$PHP_VERSION_TEST_STEP
+    export CI_CONTAINER_NAME=ci_job_testing_$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
     export running=$(docker inspect -f '{{.State.Running}}' $CI_CONTAINER_NAME)
 
     if [[ ! -z "$running" ]]; then

@@ -10,7 +10,7 @@ use Boxes\FactoryInterface;
 use Boxes\Items\BoxInterface;
 use Boxes\Items\Extension;
 use Boxes\Items\Plugin;
-use Boxes\Renderer\DefaultRenderer;
+use Boxes\Renderer\RendererInterface;
 use Boxes\Type;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
@@ -20,10 +20,12 @@ use Filter\Visibility;
 use Plugin\ExtensionLoader;
 use Plugin\State;
 use Session\Session;
+use Smarty\JTLSmarty;
 use function Functional\tail;
 
 /**
  * Class BoxService
+ * @package Services\JTL
  */
 class BoxService implements BoxServiceInterface
 {
@@ -65,40 +67,53 @@ class BoxService implements BoxServiceInterface
     private $cache;
 
     /**
+     * @var JTLSmarty
+     */
+    private $smarty;
+
+    /**
+     * @var RendererInterface
+     */
+    private $renderer;
+
+    /**
      * @var BoxServiceInterface
      */
     private static $instance;
 
     /**
-     * @param array             $config
-     * @param FactoryInterface  $factory
-     * @param DbInterface       $db
-     * @param JTLCacheInterface $cache
-     * @return BoxServiceInterface
+     * @inheritdoc
      */
     public static function getInstance(
         array $config,
         FactoryInterface $factory,
         DbInterface $db,
-        JTLCacheInterface $cache
+        JTLCacheInterface $cache,
+        JTLSmarty $smarty,
+        RendererInterface $renderer
     ): BoxServiceInterface {
-        return self::$instance ?? new self($config, $factory, $db, $cache);
+        return self::$instance ?? new self($config, $factory, $db, $cache, $smarty, $renderer);
     }
 
     /**
      * BoxService constructor.
      *
-     * @param array             $config
-     * @param FactoryInterface  $factory
-     * @param DbInterface       $db
-     * @param JTLCacheInterface $cache
+     * @inheritdoc
      */
-    public function __construct(array $config, FactoryInterface $factory, DbInterface $db, JTLCacheInterface $cache)
-    {
+    public function __construct(
+        array $config,
+        FactoryInterface $factory,
+        DbInterface $db,
+        JTLCacheInterface $cache,
+        JTLSmarty $smarty,
+        RendererInterface $renderer
+    ) {
         $this->config   = $config;
         $this->factory  = $factory;
         $this->db       = $db;
         $this->cache    = $cache;
+        $this->smarty   = $smarty;
+        $this->renderer = $renderer;
         self::$instance = $this;
     }
 
@@ -265,26 +280,24 @@ class BoxService implements BoxServiceInterface
 
     /**
      * @param array $positionedBoxes
+     * @param int   $pageType
      * @return array
      * @throws \Exception
      * @throws \SmartyException
      */
-    public function render(array $positionedBoxes): array
+    public function render(array $positionedBoxes, int $pageType): array
     {
-        $smarty    = \Shop::Smarty();
-        $renderer  = new DefaultRenderer($smarty);
-        $pageType  = \Shop::getPageType();
         $pageID    = $this->getCurrentPageID($pageType);
-        $product   = $smarty->getTemplateVars('Artikel');
+        $product   = $this->smarty->getTemplateVars('Artikel');
         $htmlArray = [
             'top'    => null,
             'right'  => null,
             'bottom' => null,
             'left'   => null
         ];
-        $smarty->assign('BoxenEinstellungen', $this->config)
-               ->assign('bBoxenFilterNach', $this->showBoxes(\Shop::getProductFilter()))
-               ->assign('NettoPreise', Session::getCustomerGroup()->getIsMerchant());
+        $this->smarty->assign('BoxenEinstellungen', $this->config)
+                     ->assign('bBoxenFilterNach', $this->showBoxes(\Shop::getProductFilter()))
+                     ->assign('NettoPreise', Session::getCustomerGroup()->getIsMerchant());
         foreach ($positionedBoxes as $_position => $boxes) {
             if (!\is_array($boxes)) {
                 $boxes = [];
@@ -294,11 +307,11 @@ class BoxService implements BoxServiceInterface
             foreach ($boxes as $box) {
                 /** @var BoxInterface $box */
                 $renderClass = $box->getRenderer();
-                if ($renderClass !== \get_class($renderer)) {
-                    $renderer = new $renderClass($smarty);
+                if ($renderClass !== \get_class($this->renderer)) {
+                    $this->renderer = new $renderClass($this->smarty);
                 }
-                $renderer->setBox($box);
-                $html = \trim($renderer->render($pageType, $pageID));
+                $this->renderer->setBox($box);
+                $html = \trim($this->renderer->render($pageType, $pageID));
                 $box->setRenderedContent($html);
                 $htmlArray[$_position]      .= $html;
                 $this->rawData[$_position][] = [
@@ -307,10 +320,10 @@ class BoxService implements BoxServiceInterface
                 ];
             }
         }
-        $smarty->clearAssign('BoxenEinstellungen');
+        $this->smarty->clearAssign('BoxenEinstellungen');
         // avoid modification of article object on render loop
         if ($product !== null) {
-            $smarty->assign('Artikel', $product);
+            $this->smarty->assign('Artikel', $product);
         }
 
         return $htmlArray;

@@ -20,6 +20,7 @@ use Filter\Visibility;
 use Plugin\ExtensionLoader;
 use Plugin\State;
 use Session\Session;
+use function Functional\tail;
 
 /**
  * Class BoxService
@@ -113,33 +114,21 @@ class BoxService implements BoxServiceInterface
         if ($limit === null) {
             $limit = (int)$this->config['boxen']['box_zuletztangesehen_anzahl'];
         }
-        if (!isset($_SESSION['ZuletztBesuchteArtikel']) || !\is_array($_SESSION['ZuletztBesuchteArtikel'])) {
-            $_SESSION['ZuletztBesuchteArtikel'] = [];
-        }
-        $oArtikel           = new \stdClass();
-        $oArtikel->kArtikel = $productID;
-        if (isset($_SESSION['ZuletztBesuchteArtikel']) && \count($_SESSION['ZuletztBesuchteArtikel']) > 0) {
-            $alreadyPresent = false;
-            foreach ($_SESSION['ZuletztBesuchteArtikel'] as $product) {
-                if (isset($product->kArtikel) && $product->kArtikel === $oArtikel->kArtikel) {
-                    $alreadyPresent = true;
-                    break;
-                }
+        $lastVisited    = $_SESSION['ZuletztBesuchteArtikel'] ?? [];
+        $alreadyPresent = false;
+        foreach ($lastVisited as $product) {
+            if ($product->kArtikel === $productID) {
+                $alreadyPresent = true;
+                break;
             }
-            if ($alreadyPresent === false) {
-                if (\count($_SESSION['ZuletztBesuchteArtikel']) < $limit) {
-                    $_SESSION['ZuletztBesuchteArtikel'][] = $oArtikel;
-                } else {
-                    $oTMP_arr = \array_reverse($_SESSION['ZuletztBesuchteArtikel']);
-                    \array_pop($oTMP_arr);
-                    $oTMP_arr                           = \array_reverse($oTMP_arr);
-                    $oTMP_arr[]                         = $oArtikel;
-                    $_SESSION['ZuletztBesuchteArtikel'] = $oTMP_arr;
-                }
-            }
-        } else {
-            $_SESSION['ZuletztBesuchteArtikel'][] = $oArtikel;
         }
+        if ($alreadyPresent === false) {
+            if (\count($lastVisited) >= $limit) {
+                $lastVisited = tail($lastVisited);
+            }
+            $lastVisited[] = (object)['kArtikel' => $productID];
+        }
+        $_SESSION['ZuletztBesuchteArtikel'] = $lastVisited;
         \executeHook(\HOOK_ARTIKEL_INC_ZULETZTANGESEHEN);
     }
 
@@ -153,15 +142,14 @@ class BoxService implements BoxServiceInterface
         if ($this->visibility !== null) {
             return $this->visibility;
         }
-        $visibility = [];
-        $boxes      = $this->db->selectAll('tboxenanzeige', 'nSeite', $pageType);
+        $this->visibility = [];
+        $boxes            = $this->db->selectAll('tboxenanzeige', 'nSeite', $pageType);
         if (\count($boxes) > 0) {
             foreach ($boxes as $box) {
-                $visibility[$box->ePosition] = (boolean)$box->bAnzeigen;
+                $this->visibility[$box->ePosition] = (bool)$box->bAnzeigen;
             }
-            $this->visibility = $visibility;
 
-            return $visibility;
+            return $this->visibility;
         }
 
         return $pageType !== 0 && $global

@@ -18,8 +18,8 @@ stages:
       $CI_REGISTRY_IMAGE/testing-php$PHP_VERSION_TEST_STEP \
       sh -c "cp -r /dockerBuild/. /build; bash build/scripts/tests.sh"
 
-    docker stop "$CI_CONTAINER_NAME-php$PHP_VERSION_TEST_STEP"
-    docker rm -fv "$CI_CONTAINER_NAME-php$PHP_VERSION_TEST_STEP" >/dev/null
+    docker stop "$CI_CONTAINER_NAME"
+    docker rm -fv "$CI_CONTAINER_NAME" >/dev/null
 
     echo "Tests finished"
   }

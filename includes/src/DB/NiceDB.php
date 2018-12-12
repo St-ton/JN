@@ -13,8 +13,7 @@ use Shop;
 
 /**
  * Class NiceDB
- * Class for handling mysql DB
- * @todo validate $limit, $orderBy & $select in some methods
+ * @package DB
  */
 class NiceDB implements DbInterface
 {

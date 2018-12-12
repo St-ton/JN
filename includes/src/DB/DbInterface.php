@@ -7,12 +7,11 @@
 namespace DB;
 
 /**
- * Class NiceDB
- * Class for handling mysql DB
+ * Interface DbInterface
+ * @package DB
  */
 interface DbInterface extends \Serializable
 {
-
     /**
      * Database configuration
      *

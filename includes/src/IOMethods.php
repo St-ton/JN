@@ -196,8 +196,9 @@ class IOMethods
         if (!isset($_POST['login'])) {
             WarenkorbPers::addToCheck($kArtikel, $amount, $properties);
         }
+        $pageType      = Shop::getPageType();
         $boxes         = Shop::Container()->getBoxService();
-        $boxesToShow   = $boxes->render($boxes->buildList(Shop::getPageType()));
+        $boxesToShow   = $boxes->render($boxes->buildList($pageType), $pageType);
         $warensumme[0] = Preise::getLocalizedPriceString(
             $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
         );

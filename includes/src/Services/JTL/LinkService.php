@@ -20,8 +20,7 @@ use Tightenco\Collect\Support\Collection;
 
 /**
  * Class LinkService
- * @package Link
- * @since 5.0.0
+ * @package Services\JTL
  */
 final class LinkService implements LinkServiceInterface
 {

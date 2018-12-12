@@ -7,12 +7,15 @@
 namespace Services\JTL;
 
 use Boxes\FactoryInterface;
+use Boxes\Renderer\RendererInterface;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use Filter\ProductFilter;
+use Smarty\JTLSmarty;
 
 /**
- * Class BoxService
+ * Interface BoxServiceInterface
+ * @package Services\JTL
  */
 interface BoxServiceInterface
 {
@@ -21,24 +24,36 @@ interface BoxServiceInterface
      * @param FactoryInterface  $factory
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
+     * @param JTLSmarty         $smarty
+     * @param RendererInterface $renderer
      * @return BoxServiceInterface
      */
     public static function getInstance(
         array $config,
         FactoryInterface $factory,
         DbInterface $db,
-        JTLCacheInterface $cache
+        JTLCacheInterface $cache,
+        JTLSmarty $smarty,
+        RendererInterface $renderer
     ): BoxServiceInterface;
 
     /**
-     * BoxService constructor.
-     *
+     * BoxServiceInterface constructor.
      * @param array             $config
      * @param FactoryInterface  $factory
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
+     * @param JTLSmarty         $smarty
+     * @param RendererInterface $renderer
      */
-    public function __construct(array $config, FactoryInterface $factory, DbInterface $db, JTLCacheInterface $cache);
+    public function __construct(
+        array $config,
+        FactoryInterface $factory,
+        DbInterface $db,
+        JTLCacheInterface $cache,
+        JTLSmarty $smarty,
+        RendererInterface $renderer
+    );
 
     /**
      * @param int $productID
@@ -89,11 +104,12 @@ interface BoxServiceInterface
 
     /**
      * @param array $positionedBoxes
+     * @param int   $pageType
      * @return array
      * @throws \Exception
      * @throws \SmartyException
      */
-    public function render(array $positionedBoxes): array;
+    public function render(array $positionedBoxes, int $pageType): array;
 
     /**
      * @param int  $pageType

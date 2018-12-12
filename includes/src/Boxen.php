@@ -215,7 +215,7 @@ class Boxen
             E_USER_DEPRECATED
         );
 
-        return $this->boxService->render($this->boxService->getBoxes());
+        return $this->boxService->render($this->boxService->getBoxes(), Shop::getPageType());
     }
 
     /**

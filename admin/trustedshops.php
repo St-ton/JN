@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\FormHelper;
+use Helpers\PHPSettingsHelper;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 define('PARTNER_PACKAGE', 'JTL');

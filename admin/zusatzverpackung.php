@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\FormHelper;
+use Helpers\RequestHelper;
 use Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';

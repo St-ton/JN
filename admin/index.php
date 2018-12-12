@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\FormHelper;
 use JTLShop\SemVer\Version;
 
 require_once __DIR__ . '/includes/admininclude.php';

@@ -11,6 +11,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\FormHelper;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->redirectOnFailure();

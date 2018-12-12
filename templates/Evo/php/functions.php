@@ -5,6 +5,11 @@
  *
  * @global Smarty\JTLSmarty $smarty
  */
+
+use Helpers\HerstellerHelper;
+use Helpers\KategorieHelper;
+use Helpers\TaxHelper;
+
 $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisStringLocalizedSmarty')
        ->registerPlugin('function', 'getBoxesByPosition', 'getBoxesByPosition')
        ->registerPlugin('function', 'has_boxes', 'has_boxes')

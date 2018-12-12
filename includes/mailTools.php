@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\ObjectHelper;
+use Helpers\RequestHelper;
+
 /**
  * @param array            $params
  * @param Smarty\JTLSmarty $smarty

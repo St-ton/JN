@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\PHPSettingsHelper;
 use JTLShop\SemVer\Version;
 
 $nStartzeit = microtime(true);

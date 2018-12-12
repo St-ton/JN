@@ -3,6 +3,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\FormHelper;
+use Helpers\ObjectHelper;
+use Helpers\RequestHelper;
+
 $smarty             = \Smarty\JTLSmarty::getInstance(false, \Smarty\ContextType::BACKEND);
 $templateDir        = $smarty->getTemplateDir($smarty->context);
 $template           = AdminTemplate::getInstance();

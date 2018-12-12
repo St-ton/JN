@@ -4,6 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\ArtikelHelper;
+use Helpers\DateHelper;
+use Helpers\RequestHelper;
+use Helpers\TaxHelper;
+
 /**
  * @return int
  */

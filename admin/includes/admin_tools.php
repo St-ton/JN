@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\FormHelper;
+use Helpers\RequestHelper;
+
 /**
  * @param int|array $configSectionID
  * @return array

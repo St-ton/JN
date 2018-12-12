@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\RequestHelper;
+use Helpers\TaxHelper;
+
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'billpay/BillpayData.class.php';
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'billpay/api/ipl_xml_api.php';

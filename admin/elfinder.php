@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\FormHelper;
+use Helpers\RequestHelper;
+
 /**
  * @global JTLSmarty    $smarty
  * @global AdminAccount $oAccount

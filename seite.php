@@ -3,6 +3,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\RequestHelper;
+use Helpers\UrlHelper;
+use Helpers\VersandartHelper;
+
 if (!defined('PFAD_ROOT')) {
     http_response_code(400);
     exit();

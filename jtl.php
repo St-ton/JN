@@ -6,6 +6,13 @@
  * @global Session $session
  */
 
+use Helpers\ArtikelHelper;
+use Helpers\DateHelper;
+use Helpers\FormHelper;
+use Helpers\RequestHelper;
+use Helpers\TaxHelper;
+use Helpers\VersandartHelper;
+use Helpers\WarenkorbHelper;
 use Pagination\Pagination;
 
 require_once __DIR__ . '/includes/globalinclude.php';

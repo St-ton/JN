@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\DateHelper;
+use Helpers\RequestHelper;
+
 /**
  * @return array
  */

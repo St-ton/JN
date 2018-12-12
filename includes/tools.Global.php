@@ -4,6 +4,21 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\ArtikelHelper;
+use Helpers\DateHelper;
+use Helpers\FileSystemHelper;
+use Helpers\FormHelper;
+use Helpers\KategorieHelper;
+use Helpers\ObjectHelper;
+use Helpers\PHPSettingsHelper;
+use Helpers\RequestHelper;
+use Helpers\SearchSpecialHelper;
+use Helpers\TaxHelper;
+use Helpers\UrlHelper;
+use Helpers\VersandartHelper;
+use Helpers\WarenkorbHelper;
+use Helpers\ZahlungsartHelper;
+
 /**
  * @param float  $fPreisNetto
  * @param float  $fPreisBrutto

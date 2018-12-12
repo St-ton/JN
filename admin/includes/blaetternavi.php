@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\RequestHelper;
+
 /**
  * This pagination implementation is deprecated. Use the Pagination admin class instead!
  */

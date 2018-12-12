@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\FormHelper;
+use Helpers\RequestHelper;
+
 /**
  * If the "Export CSV" button was clicked with the id $exporterId, offer a CSV download and stop execution of current
  * script. Call this function as soon as you can provide data to be exported but before any page output has been done!

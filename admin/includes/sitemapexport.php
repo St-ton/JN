@@ -4,6 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\RequestHelper;
+use Helpers\TaxHelper;
+use Helpers\UrlHelper;
+
 /**
  * @param string $nDatei
  * @param mixed  $data

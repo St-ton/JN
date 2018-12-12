@@ -6,6 +6,8 @@
  * @global smarty
  */
 
+use Helpers\FormHelper;
+use Helpers\RequestHelper;
 use Pagination\Filter;
 use Pagination\Pagination;
 

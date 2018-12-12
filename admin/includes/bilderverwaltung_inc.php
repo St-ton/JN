@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\UrlHelper;
+
 /**
  * @param bool $filesize
  * @return array

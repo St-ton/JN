@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\RequestHelper;
 use Pagination\Filter;
 use Pagination\Pagination;
 

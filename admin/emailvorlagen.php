@@ -4,6 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\DateHelper;
+use Helpers\FormHelper;
+use Helpers\RequestHelper;
+use Helpers\VersandartHelper;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('CONTENT_EMAIL_TEMPLATE_VIEW', true, true);

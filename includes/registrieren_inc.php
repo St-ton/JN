@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\TaxHelper;
+use Helpers\VersandartHelper;
+
 /**
  * @param array $cPost_arr
  * @return array|int

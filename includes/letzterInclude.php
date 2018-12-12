@@ -4,6 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\FormHelper;
+use Helpers\HerstellerHelper;
+use Helpers\KategorieHelper;
+use Helpers\RequestHelper;
+use Helpers\VersandartHelper;
+
 $smarty        = Shop::Smarty();
 $oTemplate     = Template::getInstance();
 $tplDir        = PFAD_TEMPLATES . $oTemplate->getDir() . '/';

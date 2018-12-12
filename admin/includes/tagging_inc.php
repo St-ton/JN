@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\UrlHelper;
+
 /**
  * @param int $kTag
  * @param int $kSprache

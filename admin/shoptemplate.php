@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\FormHelper;
+use Helpers\TemplateHelper;
+
 /**
  * @global Smarty\JTLSmarty $smarty
  */

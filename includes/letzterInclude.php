@@ -120,7 +120,8 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
        ->assign('FavourableShipping', $cart->getFavourableShipping())
        ->assign('Einstellungen', $Einstellungen)
-       ->assign('isFluidTemplate', isset($Einstellungen['template']['theme']['pagelayout']) && $Einstellungen['template']['theme']['pagelayout'] === 'fluid')
+       ->assign('isFluidTemplate', isset($Einstellungen['template']['theme']['pagelayout'])
+           && $Einstellungen['template']['theme']['pagelayout'] === 'fluid')
        ->assign('deletedPositions', Warenkorb::$deletedPositions)
        ->assign('updatedPositions', Warenkorb::$updatedPositions)
        ->assign('cCanonicalURL', $cCanonicalURL ?? null)
@@ -169,7 +170,10 @@ if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
 }
 $visitorCount = $Einstellungen['global']['global_zaehler_anzeigen'] === 'Y'
-    ? (int)Shop::Container()->getDB()->query('SELECT nZaehler FROM tbesucherzaehler', \DB\ReturnType::SINGLE_OBJECT)->nZaehler
+    ? (int)Shop::Container()->getDB()->query(
+        'SELECT nZaehler FROM tbesucherzaehler',
+        \DB\ReturnType::SINGLE_OBJECT
+    )->nZaehler
     : 0;
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('Brotnavi', $nav->createNavigation())

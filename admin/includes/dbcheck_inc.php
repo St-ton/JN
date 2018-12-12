@@ -345,21 +345,21 @@ function doEngineUpdateScript(string $fileName, array $shopTables)
         }
 
         if (count($fulltextSQL) > 0) {
-            $result .= implode(";$nl", $fulltextSQL) . ";$nl";
+            $result .= implode(';' . $nl, $fulltextSQL) . ';' . $nl;
         }
 
         $sql = DBMigrationHelper::sqlMoveToInnoDB($oTable);
         if (!empty($sql)) {
-            $result .= "--$nl";
-            $result .= "$sql;$nl";
+            $result .= '--' . $nl;
+            $result .= $sql . ';' . $nl;
         }
 
         $sql = DBMigrationHelper::sqlConvertUTF8($oTable, $nl);
         if (!empty($sql)) {
-            $result .= "--$nl";
-            $result .= "-- migrate collation and / or datatype for columns in {$oTable->TABLE_NAME}$nl";
-            $result .= "--$nl";
-            $result .= "$sql;$nl";
+            $result .= '--' . $nl;
+            $result .= '-- migrate collation and / or datatype for columns in ' . $oTable->TABLE_NAME . $nl;
+            $result .= '--' . $nl;
+            $result .= $sql . ';' . $nl;
         }
     }
 
@@ -367,10 +367,10 @@ function doEngineUpdateScript(string $fileName, array $shopTables)
 
     if (version_compare($mysqlVer->innodb->version, '5.6', '<')) {
         // Fulltext search is not available on MySQL < 5.6
-        $result .= "--$nl";
-        $result .= "-- Fulltext search is not available on MySQL < 5.6$nl";
-        $result .= "--$nl";
-        $result .= "UPDATE `teinstellungen` SET `cWert` = 'N' WHERE `cName` = 'suche_fulltext';$nl";
+        $result .= '--' . $nl;
+        $result .= '-- Fulltext search is not available on MySQL < 5.6' . $nl;
+        $result .= '--' . $nl;
+        $result .= "UPDATE `teinstellungen` SET `cWert` = 'N' WHERE `cName` = 'suche_fulltext';" . $nl;
         $result .= $nl;
     }
 

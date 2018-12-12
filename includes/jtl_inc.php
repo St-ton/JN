@@ -104,7 +104,13 @@ function pruefeKategorieSichtbarkeit(int $customerGroupID)
     if (!$customerGroupID) {
         return false;
     }
-    $cacheID      = 'catlist_p_' . Shop::Container()->getCache()->getBaseID(false, false, $customerGroupID, true, false);
+    $cacheID      = 'catlist_p_' . Shop::Container()->getCache()->getBaseID(
+        false,
+        false,
+        $customerGroupID,
+        true,
+        false
+    );
     $save         = false;
     $categoryList = Shop::Container()->getCache()->get($cacheID);
     $useCache     = true;
@@ -170,16 +176,20 @@ function setzeWarenkorbPersInWarenkorb(int $customerID): bool
         if ($oWarenkorbPos->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
             $kArtikelGeschenk = (int)$oWarenkorbPos->kArtikel;
             // Pruefen ob der Artikel wirklich ein Gratis Geschenk ist
-            $oArtikelGeschenk = Shop::Container()->getDB()->query(
-                "SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand,
+            $oArtikelGeschenk = Shop::Container()->getDB()->queryPrepared(
+                'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand,
                        tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
                     FROM tartikelattribut
                     JOIN tartikel 
                         ON tartikel.kArtikel = tartikelattribut.kArtikel
-                    WHERE tartikelattribut.kArtikel = " . $kArtikelGeschenk . "
-                        AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
-                        AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
-                $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true),
+                    WHERE tartikelattribut.kArtikel = :pid
+                        AND tartikelattribut.cName = :atr
+                        AND CAST(tartikelattribut.cWert AS DECIMAL) <= :sum',
+                [
+                    'pid' => $kArtikelGeschenk,
+                    'atr' => FKT_ATTRIBUT_GRATISGESCHENK,
+                    'sum' => $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
+                ],
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0) {
@@ -212,16 +222,20 @@ function setzeWarenkorbPersInWarenkorb(int $customerID): bool
         if ($oWarenkorbPersPos->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
             $kArtikelGeschenk = (int)$oWarenkorbPersPos->kArtikel;
             // Pruefen ob der Artikel wirklich ein Gratis Geschenk ist
-            $oArtikelGeschenk = Shop::Container()->getDB()->query(
-                "SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand,
+            $oArtikelGeschenk = Shop::Container()->getDB()->queryPrepared(
+                'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand,
                        tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
                     FROM tartikelattribut
                     JOIN tartikel 
                         ON tartikel.kArtikel = tartikelattribut.kArtikel
-                    WHERE tartikelattribut.kArtikel = " . $kArtikelGeschenk . "
-                        AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
-                        AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
-                $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true),
+                    WHERE tartikelattribut.kArtikel = :pid
+                        AND tartikelattribut.cName = :atr
+                        AND CAST(tartikelattribut.cWert AS DECIMAL) <= :sum',
+                [
+                    'pid' => $kArtikelGeschenk,
+                    'atr' => FKT_ATTRIBUT_GRATISGESCHENK,
+                    'sum' => $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
+                ],
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0) {
@@ -385,16 +399,20 @@ function fuehreLoginAus($userLogin, $passLogin): void
                             // Gratisgeschenk in Warenkorb legen
                             if ((int)$oWarenkorbPersPos->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                                 $kArtikelGeschenk = (int)$oWarenkorbPersPos->kArtikel;
-                                $oArtikelGeschenk = Shop::Container()->getDB()->query(
-                                    "SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
+                                $oArtikelGeschenk = Shop::Container()->getDB()->queryPrepared(
+                                    'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
                                         tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
                                         FROM tartikelattribut
                                         JOIN tartikel 
                                             ON tartikel.kArtikel = tartikelattribut.kArtikel
-                                        WHERE tartikelattribut.kArtikel = " . $kArtikelGeschenk . "
-                                            AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
-                                            AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
-                                    $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true),
+                                        WHERE tartikelattribut.kArtikel = :pid
+                                            AND tartikelattribut.cName = :atr
+                                            AND CAST(tartikelattribut.cWert AS DECIMAL) <= :sum',
+                                    [
+                                        'pid' => $kArtikelGeschenk,
+                                        'atr' => FKT_ATTRIBUT_GRATISGESCHENK,
+                                        'sum' => $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
+                                    ],
                                     \DB\ReturnType::SINGLE_OBJECT
                                 );
                                 if ((isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0)

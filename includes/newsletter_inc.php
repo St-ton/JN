@@ -165,9 +165,9 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false): stdClass
                     $oNewsletterEmpfaenger->cFreischaltURL = Shop::getURL() .
                         '/newsletter.php?lang=' . $_SESSION['cISOSprache'] . '&fc=' .
                         $oNewsletterEmpfaenger->cOptCode;
-                    $oObjekt = new stdClass();
-                    $oObjekt->tkunde               = $_SESSION['Kunde'] ?? null;
-                    $oObjekt->NewsletterEmpfaenger = $oNewsletterEmpfaenger;
+                    $oObjekt                               = new stdClass();
+                    $oObjekt->tkunde                       = $_SESSION['Kunde'] ?? null;
+                    $oObjekt->NewsletterEmpfaenger         = $oNewsletterEmpfaenger;
 
                     $mail = sendeMail(MAILTEMPLATE_NEWSLETTERANMELDEN, $oObjekt);
                     Shop::Container()->getDB()->update(
@@ -196,7 +196,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false): stdClass
  */
 function newsletterAnmeldungPlausi(): array
 {
-    $res   = [];
+    $res = [];
     if (Shop::getConfigValue(CONF_NEWSLETTER, 'newsletter_sicherheitscode') !== 'N'
         && !FormHelper::validateCaptcha($_POST)
     ) {

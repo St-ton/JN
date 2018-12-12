@@ -38,8 +38,7 @@ class ipl_get_installment_request extends ipl_xml_request
     /**
      * @var
      */
-    public $plans; // installment plans
-    # http://de20:8092/rest/getInstallmentOptions?apiKey=5194d0e447cbad07584238b5dae63287&cartTotalGross=33388&baseAmount=32388&billingCountry=DEU&orderCurrency=EUR&lang=de
+    public $plans;
 
     /**
      * @param $baseAmount
@@ -116,7 +115,9 @@ class ipl_get_installment_request extends ipl_xml_request
     {
         # apiKey = md5(mid + pid + substr(0,10, md5(securityKey)))
         # bpsecure is already md5'ed
-        $apiKey = md5($this->_default_params['pid'] . '+' . $this->_default_params['mid'] . '+' . substr($this->_default_params['bpsecure'], 0, 10));
+        $apiKey = md5($this->_default_params['pid'] .
+            '+' . $this->_default_params['mid'] .
+            '+' . substr($this->_default_params['bpsecure'], 0, 10));
 
         return $apiKey;
     }

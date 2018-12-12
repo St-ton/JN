@@ -255,7 +255,10 @@ function gibFormularDaten(int $nCheckout = 0)
     Shop::Smarty()->assign('herkunfte', $herkunfte)
         ->assign('Kunde', $Kunde)
         ->assign('cKundenattribut_arr', $cKundenattribut_arr)
-        ->assign('laender', VersandartHelper::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID(), false, true))
+        ->assign(
+            'laender',
+            VersandartHelper::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID(), false, true)
+        )
         ->assign(
             'warning_passwortlaenge',
             lang_passwortlaenge(Shop::getSettingValue(CONF_KUNDEN, 'kundenregistrierung_passwortlaenge'))

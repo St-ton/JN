@@ -193,7 +193,11 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
         } else {
             $controller->setErrorMsg('Fehler: Bitte markieren Sie mindestens einen Newskommentar.');
         }
-    } elseif (isset($_POST['newskommentar_freischalten'], $_POST['kNewsKommentar'], $_POST['kommentareloeschenSubmit'])) {
+    } elseif (isset(
+        $_POST['newskommentar_freischalten'],
+        $_POST['kNewsKommentar'],
+        $_POST['kommentareloeschenSubmit']
+    )) {
         $controller->deleteComments($_POST['kNewsKommentar']);
     }
     if ((isset($_GET['news_editieren']) && (int)$_GET['news_editieren'] === 1) || $controller->getContinueWith() > 0) {

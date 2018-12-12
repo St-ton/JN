@@ -84,8 +84,7 @@ class PaymentMethod
      */
     public function init($nAgainCheckout = 0)
     {
-        $this->name = '';
-        // Fetch Caption/Name and Image from DB
+        $this->name           = '';
         $result               = Shop::Container()->getDB()->select('tzahlungsart', 'cModulId', $this->moduleID);
         $this->caption        = $result->cName ?? null;
         $this->duringCheckout = isset($result->nWaehrendBestellung)
@@ -125,11 +124,12 @@ class PaymentMethod
      */
     public function getReturnURL($order)
     {
-        if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung) && (int)$_SESSION['Zahlungsart']->nWaehrendBestellung > 0) {
+        if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung)
+            && (int)$_SESSION['Zahlungsart']->nWaehrendBestellung > 0
+        ) {
             return Shop::getURL() . '/bestellvorgang.php';
         }
-        global $Einstellungen;
-        if ($Einstellungen['kaufabwicklung']['bestellabschluss_abschlussseite'] === 'A') {
+        if (Shop::getSettings([CONF_KAUFABWICKLUNG])['kaufabwicklung']['bestellabschluss_abschlussseite'] === 'A') {
             // Abschlussseite
             $oZahlungsID = Shop::Container()->getDB()->query(
                 'SELECT cId
@@ -243,7 +243,7 @@ class PaymentMethod
     public function generateHash($order, $length = 40)
     {
         $hash = null;
-        if ($this->duringCheckout == 1) {
+        if ((int)$this->duringCheckout === 1) {
             if (!isset($_SESSION['IP'])) {
                 $_SESSION['IP'] = new stdClass();
             }
@@ -251,7 +251,11 @@ class PaymentMethod
         }
 
         if ($order->kBestellung !== null) {
-            $oBestellID                = Shop::Container()->getDB()->select('tbestellid', 'kBestellung', (int)$order->kBestellung);
+            $oBestellID                = Shop::Container()->getDB()->select(
+                'tbestellid',
+                'kBestellung',
+                (int)$order->kBestellung
+            );
             $hash                      = $oBestellID->cId;
             $oZahlungsID               = new stdClass();
             $oZahlungsID->kBestellung  = $order->kBestellung;

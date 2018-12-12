@@ -698,13 +698,14 @@ function aktualisiereStuecklistenLagerbestand($partListProduct, $amount)
         return $bestandNeu;
     }
     // Gibt es lagerrelevante Komponenten in der Stückliste?
-    $oKomponente_arr = Shop::Container()->getDB()->query(
+    $oKomponente_arr = Shop::Container()->getDB()->queryPrepared(
         "SELECT tstueckliste.kArtikel, tstueckliste.fAnzahl
             FROM tstueckliste
             JOIN tartikel
               ON tartikel.kArtikel = tstueckliste.kArtikel
-            WHERE tstueckliste.kStueckliste = {$kStueckListe}
+            WHERE tstueckliste.kStueckliste = :slid
                 AND tartikel.cLagerBeachten = 'Y'",
+        ['slid' => $kStueckListe],
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 

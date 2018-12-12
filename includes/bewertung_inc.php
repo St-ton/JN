@@ -411,7 +411,6 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
                 ],
                 \DB\ReturnType::SINGLE_OBJECT
             );
-
         } else {
             Shop::Container()->getDB()->insert('tbewertungguthabenbonus', $ratingBonus);
         }

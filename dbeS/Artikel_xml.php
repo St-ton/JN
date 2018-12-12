@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\ArtikelHelper;
+
 require_once __DIR__ . '/syncinclude.php';
 
 $return  = 3;

@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\RequestHelper;
+
 require_once __DIR__ . '/syncinclude.php';
 
 $Einstellungen = Shop::getSettings([CONF_BILDER]);

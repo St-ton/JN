@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\ArtikelHelper;
+use Helpers\RequestHelper;
 use Pagination\Pagination;
 
 if (!defined('PFAD_ROOT')) {

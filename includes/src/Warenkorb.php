@@ -97,7 +97,10 @@ class Warenkorb
                 continue;
             }
 
-            if (!empty($pos->Artikel) && (!$onlyStockRelevant || ($pos->Artikel->cLagerBeachten === 'Y' && $pos->Artikel->cLagerKleinerNull !== 'Y'))) {
+            if (!empty($pos->Artikel)
+                && (!$onlyStockRelevant
+                    || ($pos->Artikel->cLagerBeachten === 'Y' && $pos->Artikel->cLagerKleinerNull !== 'Y'))
+            ) {
                 $depProducts = $pos->Artikel->getAllDependentProducts($onlyStockRelevant);
 
                 foreach ($depProducts as $productID => $item) {
@@ -1314,8 +1317,11 @@ class Warenkorb
                 foreach ($depStock as $productStock) {
                     $productID = (int)$productStock->kArtikel;
 
-                    if ($depProducts[$productID]->product->fPackeinheit * $depAmount[$productID] > $productStock->fLagerbestand) {
-                        $newAmount = floor(($productStock->fLagerbestand - (isset($reservedStock[$productID]) ? $reservedStock[$productID] : 0))
+                    if ($depProducts[$productID]->product->fPackeinheit * $depAmount[$productID]
+                        > $productStock->fLagerbestand
+                    ) {
+                        $newAmount = floor(($productStock->fLagerbestand
+                                - ($reservedStock[$productID] ?? 0))
                             / $depProducts[$productID]->product->fPackeinheit
                             / $depProducts[$productID]->stockFactor);
 
@@ -1325,8 +1331,9 @@ class Warenkorb
                             unset($this->PositionenArr[$i]);
                         }
 
-                        $reservedStock[$productID] = (isset($reservedStock[$productID]) ? $reservedStock[$productID] : 0)
-                            + $newAmount * $depProducts[$productID]->product->fPackeinheit * $depProducts[$productID]->stockFactor;
+                        $reservedStock[$productID] = ($reservedStock[$productID] ?? 0)
+                            + $newAmount
+                            * $depProducts[$productID]->product->fPackeinheit * $depProducts[$productID]->stockFactor;
 
                         $depAmount = $this->getAllDependentAmount(true);
                         $bRedirect = true;

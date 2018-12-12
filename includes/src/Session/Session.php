@@ -466,6 +466,22 @@ class Session
     }
 
     /**
+     * @return \Lieferadresse
+     */
+    public static function getDeliveryAddress(): \Lieferadresse
+    {
+        return $_SESSION['Lieferadresse'] ?? new \Lieferadresse();
+    }
+
+    /**
+     * @param \Lieferadresse $address
+     */
+    public static function setDeliveryAddress(\Lieferadresse $address): void
+    {
+        $_SESSION['Lieferadresse'] = $address;
+    }
+
+    /**
      * @param \Kunde $customer
      * @return $this
      */

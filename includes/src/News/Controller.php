@@ -484,7 +484,7 @@ class Controller
             $date = \explode('-', $_SESSION['NewsNaviFilter']->cDatum);
             if (\count($date) > 1) {
                 [$nMonat, $nJahr] = $date;
-                $sql->cDatumSQL = " AND MONTH(tnews.dGueltigVon) = '" . (int)$nMonat . "' 
+                $sql->cDatumSQL   = " AND MONTH(tnews.dGueltigVon) = '" . (int)$nMonat . "' 
                                       AND YEAR(tnews.dGueltigVon) = '" . (int)$nJahr . "'";
             } else { //invalid date given/xss -> reset to -1
                 $_SESSION['NewsNaviFilter']->cDatum = -1;

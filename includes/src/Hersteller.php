@@ -214,7 +214,7 @@ class Hersteller
         $sqlWhere = '';
         $kSprache = Shop::getLanguageID();
         if ($productLookup) {
-            $sqlWhere = 'WHERE EXISTS (
+            $sqlWhere = ' WHERE EXISTS (
                             SELECT 1
                             FROM tartikel
                             WHERE tartikel.kHersteller = thersteller.kHersteller
@@ -234,12 +234,11 @@ class Hersteller
                 FROM thersteller
                 LEFT JOIN therstellersprache 
                     ON therstellersprache.kHersteller = thersteller.kHersteller
-                    AND therstellersprache.kSprache = {$kSprache}
+                    AND therstellersprache.kSprache = " . $kSprache . "
                 LEFT JOIN tseo 
                     ON tseo.kKey = thersteller.kHersteller
                     AND tseo.cKey = 'kHersteller'
-                    AND tseo.kSprache = {$kSprache}
-                {$sqlWhere}
+                    AND tseo.kSprache = " . $kSprache . $sqlWhere . "
                 ORDER BY thersteller.nSortNr, thersteller.cName",
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );

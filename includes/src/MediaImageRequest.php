@@ -244,7 +244,7 @@ class MediaImageRequest
      */
     public function getPathById(): ?string
     {
-        $id     = $this->getId();
+        $id = $this->getId();
 //        $type   = $this->getType();
         $number = $this->getNumber();
 

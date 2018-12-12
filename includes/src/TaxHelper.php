@@ -111,7 +111,11 @@ class TaxHelper
                 $link->setTitle(Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'));
 
                 Shop::Smarty()
-                    ->assign('cFehler', Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country))
+                    ->assign('cFehler', Shop::Lang()->get(
+                        'missingTaxZoneForDeliveryCountry',
+                        'errorMessages',
+                        $country
+                    ))
                     ->assign('Link', $link)
                     ->display('layout/index.tpl');
                 exit;

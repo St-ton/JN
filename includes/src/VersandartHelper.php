@@ -1140,7 +1140,10 @@ class VersandartHelper
                 );
             }
             if (isset($_SESSION['Warenkorb'])) {
-                $fGesamtsummeWaren = \Session\Session::getCart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
+                $fGesamtsummeWaren = \Session\Session::getCart()->gibGesamtsummeWarenExt(
+                    [C_WARENKORBPOS_TYP_ARTIKEL],
+                    true
+                );
             }
         }
 
@@ -1438,7 +1441,9 @@ class VersandartHelper
                     INNER JOIN tversandart ON FIND_IN_SET(tland.cISO, REPLACE(tversandart.cLaender, ' ', ','))
                     WHERE (tversandart.cKundengruppen = '-1'
                         OR FIND_IN_SET('{$customerGroupID}', REPLACE(cKundengruppen, ';', ',')) > 0)
-                        " . (count($filterISO) > 0 ? "AND tland.cISO IN ('" . implode("','", $filterISO) . "')" : '') . "
+                        " . (count($filterISO) > 0
+                            ? "AND tland.cISO IN ('" . implode("','", $filterISO) . "')"
+                            : '') . "
                     ORDER BY CONVERT($colName USING utf8) COLLATE utf8_german2_ci",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );

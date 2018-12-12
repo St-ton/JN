@@ -134,7 +134,7 @@ class Emailhistory
                 }
             }
             $cQuery .= implode(', ', $cSet_arr);
-            $cQuery .= " WHERE kEmailhistory = {$this->getEmailhistory()}";
+            $cQuery .= ' WHERE kEmailhistory = ' . $this->getEmailhistory();
 
             return Shop::Container()->getDB()->query($cQuery, \DB\ReturnType::AFFECTED_ROWS);
         }

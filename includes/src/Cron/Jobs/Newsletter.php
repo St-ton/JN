@@ -72,7 +72,7 @@ class Newsletter extends Job
         if (\in_array(0, $customerGroups, true)) {
             $cgSQL .= ' OR tkunde.kKundengruppe IS NULL';
         }
-        $cgSQL          .= ')';
+        $cgSQL        .= ')';
         $manufacturers = \gibHerstellerObjekte($manufacturerIDs, $campaign, $oNewsletter->kSprache);
         $recipients    = $this->db->query(
             'SELECT tkunde.kKundengruppe, tkunde.kKunde, tsprache.cISO, tnewsletterempfaenger.kNewsletterEmpfaenger, 

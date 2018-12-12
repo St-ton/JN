@@ -722,69 +722,79 @@ class BaseSearchQuery extends AbstractFilter
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($cols, $col, $nonAllowed)) {
                             ++$brackets;
-                            $sql .= 'IF(' . $col . " LIKE '%" . $tmp[0] . ' % ' . $tmp[1] . ' % ' . $tmp[2] . "%', " . ++$prio . ', ';
+                            $sql .= 'IF(' . $col . " LIKE '%" . $tmp[0] . ' % ' .
+                                $tmp[1] . ' % ' . $tmp[2] . "%', " . ++$prio . ', ';
                         }
                         // "%_A_% AND %_B_% AND %_C_%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($cols, $col, $nonAllowed)) {
                             ++$brackets;
                             $sql .= 'IF((' . $col . " LIKE '% " . $tmp[0] . " %') AND (" . $col .
-                                " LIKE '% " . $tmp[1] . " %') AND (" . $col . " LIKE '% " . $tmp[2] . " %'), " . ++$prio . ', ';
+                                " LIKE '% " . $tmp[1] . " %') AND (" . $col .
+                                " LIKE '% " . $tmp[2] . " %'), " . ++$prio . ', ';
                         }
                         // "%_A_% AND %_B_% AND %C%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($cols, $col, $nonAllowed)) {
                             ++$brackets;
                             $sql .= 'IF((' . $col . " LIKE '" . $tmp[0] . "') AND (" . $col .
-                                " LIKE '" . $tmp[1] . "') AND (" . $col . " LIKE '%" . $tmp[2] . "%'), " . ++$prio . ', ';
+                                " LIKE '" . $tmp[1] . "') AND (" . $col .
+                                " LIKE '%" . $tmp[2] . "%'), " . ++$prio . ', ';
                         }
                         // "%_A_% AND %B% AND %_C_%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($cols, $col, $nonAllowed)) {
                             ++$brackets;
                             $sql .= 'IF((' . $col . " LIKE '% " . $tmp[0] . " %') AND (" . $col .
-                                " LIKE '%" . $tmp[1] . "%') AND (" . $col . " LIKE '% " . $tmp[2] . " %'), " . ++$prio . ', ';
+                                " LIKE '%" . $tmp[1] . "%') AND (" . $col .
+                                " LIKE '% " . $tmp[2] . " %'), " . ++$prio . ', ';
                         }
                         // "%_A_% AND %B% AND %C%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($cols, $col, $nonAllowed)) {
                             ++$brackets;
                             $sql .= 'IF((' . $col . " LIKE '% " . $tmp[0] . " %') AND (" . $col .
-                                " LIKE '%" . $tmp[1] . "%') AND (" . $col . " LIKE '%" . $tmp[2] . "%'), " . ++$prio . ', ';
+                                " LIKE '%" . $tmp[1] . "%') AND (" . $col .
+                                " LIKE '%" . $tmp[2] . "%'), " . ++$prio . ', ';
                         }
                         // "%A% AND %_B_% AND %_C_%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($cols, $col, $nonAllowed)) {
                             ++$brackets;
                             $sql .= 'IF((' . $col . " LIKE '%" . $tmp[0] . "%') AND (" . $col .
-                                " LIKE '% " . $tmp[1] . " %') AND (" . $col . " LIKE '% " . $tmp[2] . " %'), " . ++$prio . ', ';
+                                " LIKE '% " . $tmp[1] . " %') AND (" . $col .
+                                " LIKE '% " . $tmp[2] . " %'), " . ++$prio . ', ';
                         }
                         // "%A% AND %_B_% AND %C%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($cols, $col, $nonAllowed)) {
                             ++$brackets;
                             $sql .= 'IF((' . $col . " LIKE '%" . $tmp[0] . "%') AND (" . $col .
-                                " LIKE '% " . $tmp[1] . " %') AND (" . $col . " LIKE '%" . $tmp[2] . "%'), " . ++$prio . ', ';
+                                " LIKE '% " . $tmp[1] . " %') AND (" . $col .
+                                " LIKE '%" . $tmp[2] . "%'), " . ++$prio . ', ';
                         }
                         // "%A% AND %B% AND %_C_%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($cols, $col, $nonAllowed)) {
                             ++$brackets;
                             $sql .= 'IF((' . $col . " LIKE '%" . $tmp[0] . "%') AND (" . $col .
-                                " LIKE '%" . $tmp[1] . "%') AND (" . $col . " LIKE '% " . $tmp[2] . " %'), " . ++$prio . ', ';
+                                " LIKE '%" . $tmp[1] . "%') AND (" . $col .
+                                " LIKE '% " . $tmp[2] . " %'), " . ++$prio . ', ';
                         }
                         // "%A%B%C%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($cols, $col, $nonAllowed)) {
                             ++$brackets;
-                            $sql .= 'IF(' . $col . " LIKE '%" . $tmp[0] . '%' . $tmp[1] . '%' . $tmp[2] . "%', " . ++$prio . ', ';
+                            $sql .= 'IF(' . $col . " LIKE '%" . $tmp[0] . '%' .
+                                $tmp[1] . '%' . $tmp[2] . "%', " . ++$prio . ', ';
                         }
                         // "%A% AND %B% AND %C%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($cols, $col, $nonAllowed)) {
                             ++$brackets;
                             $sql .= 'IF((' . $col . " LIKE '%" . $tmp[0] . "%') AND (" . $col .
-                                " LIKE '%" . $tmp[1] . "%') AND (" . $col . " LIKE '%" . $tmp[2] . "%'), " . ++$prio . ', ';
+                                " LIKE '%" . $tmp[1] . "%') AND (" . $col .
+                                " LIKE '%" . $tmp[2] . "%'), " . ++$prio . ', ';
                         }
                         break;
                 }
@@ -935,7 +945,7 @@ class BaseSearchQuery extends AbstractFilter
                             ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
                             AND tartikelsichtbarkeit.kKundengruppe = " . \Session::getCustomerGroup()->getID() . '
                         WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
-                        GROUP BY kSuchCache, kArtikelTMP' . ($nLimit > 0 ? " LIMIT $nLimit" : '');
+                        GROUP BY kSuchCache, kArtikelTMP' . ($nLimit > 0 ? ' LIMIT ' . $nLimit : '');
 
             $this->productFilter->getDB()->query($cISQL, ReturnType::AFFECTED_ROWS);
         }

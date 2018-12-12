@@ -763,6 +763,16 @@ class SearchResults implements SearchResultsInterface
                 return $e;
             }
         );
+        $json                = AbstractBox::getJSONString(
+            \array_map(
+                function ($e) {
+                    $e->cURL = \StringHandler::htmlentitydecode($e->cURL);
+
+                    return $e;
+                },
+                $searchFilterOptions
+            )
+        );
 
         $this->setManufacturerFilterOptions($manufacturerOptions)
              ->setSortingOptions($productFilter->getSorting()->getOptions())
@@ -775,14 +785,7 @@ class SearchResults implements SearchResultsInterface
              ->setSearchSpecialFilterOptions($searchSpecialFilters)
              ->setAttributeFilterOptions($attribtuteFilterOptions)
              ->setCustomFilterOptions($customFilterOptions)
-             ->setSearchFilterJSON(AbstractBox::getJSONString(\array_map(
-                    function ($e) {
-                        $e->cURL = \StringHandler::htmlentitydecode($e->cURL);
-
-                        return $e;
-                    },
-                 $searchFilterOptions
-             )));
+             ->setSearchFilterJSON($json);
 
         if ($productFilter->getFilterConfig()->getConfig('navigationsfilter')['allgemein_tagfilter_benutzen'] !== 'N') {
             $this->setTagFilterJSON(AbstractBox::getJSONString(\array_map(

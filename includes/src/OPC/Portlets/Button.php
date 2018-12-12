@@ -54,7 +54,7 @@ class Button extends Portlet
                 $previewButton .= $text . ' <i class="' . $icon . '" style="top:2px"></i></a>';
             }
         } else {
-            $previewButton .= "$text</a>";
+            $previewButton .= $text . '</a>';
         }
 
         return '<div class="' . $wrapperClass . '" ' . $dataAttribute . '>' . $previewButton . '</div>';

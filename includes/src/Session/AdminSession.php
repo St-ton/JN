@@ -16,7 +16,7 @@ use Session\Handler\SessionHandlerJTL;
  */
 class AdminSession
 {
-    public const DEFAULT_SESSION  = 'JTLSHOP';
+    public const DEFAULT_SESSION = 'JTLSHOP';
 
     public const SESSION_HASH_KEY = 'session.hash';
 

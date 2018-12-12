@@ -769,8 +769,8 @@ class ProductFilter
                 'nArtikelProSeite'           => &$limit,
                 'nSeite'                     => &$this->nSeite,
                 'nSortierung'                => $_SESSION['Usersortierung'] ?? null,
-                'bLagerbeachten'             => (int)$this->getFilterConfig()->getConfig('global')['artikel_artikelanzeigefilter'] ===
-                    \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+                'bLagerbeachten'             => (int)$this->getFilterConfig()->getConfig('global')
+                    ['artikel_artikelanzeigefilter'] === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
             ]);
         }
         $this->nSeite = \max(1, \RequestHelper::verifyGPCDataInt('seite'));
@@ -1543,10 +1543,12 @@ class ProductFilter
         if (!isset($_SESSION['Usersortierung'])) {
             unset($_SESSION['nUsersortierungWahl']);
 
-            $_SESSION['Usersortierung'] = (int)$this->getFilterConfig()->getConfig('artikeluebersicht')['artikeluebersicht_artikelsortierung'];
+            $_SESSION['Usersortierung'] = (int)$this->getFilterConfig()->getConfig('artikeluebersicht')
+            ['artikeluebersicht_artikelsortierung'];
         }
         if (!isset($_SESSION['nUsersortierungWahl'])) {
-            $_SESSION['Usersortierung'] = (int)$this->getFilterConfig()->getConfig('artikeluebersicht')['artikeluebersicht_artikelsortierung'];
+            $_SESSION['Usersortierung'] = (int)$this->getFilterConfig()->getConfig('artikeluebersicht')
+            ['artikeluebersicht_artikelsortierung'];
         }
         if (!isset($_SESSION['nUsersortierungWahl']) && $this->getSearch()->getSearchCacheID() > 0) {
             // nur bei initialsuche Sortierung zurücksetzen
@@ -1680,7 +1682,8 @@ class ProductFilter
     ): SearchResultsInterface {
         $productsPerPage        = $limit ?? $this->limits->getProductsPerPageLimit();
         $nLimitN                = $productsPerPage * ($this->nSeite - 1);
-        $maxPaginationPageCount = (int)$this->getFilterConfig()->getConfig('artikeluebersicht')['artikeluebersicht_max_seitenzahl'];
+        $maxPaginationPageCount = (int)$this->getFilterConfig()->getConfig('artikeluebersicht')
+        ['artikeluebersicht_max_seitenzahl'];
         $error                  = false;
         if ($this->searchResults === null) {
             $productList         = new Collection();
@@ -1753,7 +1756,8 @@ class ProductFilter
             $opt->nVariationKombiKinder = 1;
             $opt->nWarenlager           = 1;
             $opt->nRatings              = \PRODUCT_LIST_SHOW_RATINGS === true ? 1 : 0;
-            $opt->nVariationDetailPreis = (int)$this->getFilterConfig()->getConfig('artikeldetails')['artikel_variationspreisanzeige'] !== 0
+            $opt->nVariationDetailPreis = (int)$this->getFilterConfig()->getConfig('artikeldetails')
+            ['artikel_variationspreisanzeige'] !== 0
                 ? 1
                 : 0;
             if ($productsPerPage < 0) {

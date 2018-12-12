@@ -69,7 +69,7 @@ class ImageMap implements IExtensionPoint
      */
     public function fetch(int $kImageMap, bool $fetchAll = false, bool $fill = true)
     {
-        $cSQL      = 'SELECT *
+        $cSQL = 'SELECT *
                         FROM timagemap
                         WHERE kImageMap = ' . $kImageMap;
         if (!$fetchAll) {

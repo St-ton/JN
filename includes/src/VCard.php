@@ -87,7 +87,8 @@ class VCard
         'email' => ['internet', 'x400', 'pref', 'work', 'home'],
         'adr'   => ['dom', 'intl', 'postal', 'parcel', 'home', 'work', 'pref'],
         'label' => ['dom', 'intl', 'postal', 'parcel', 'home', 'work', 'pref'],
-        'tel'   => ['home', 'msg', 'work', 'pref', 'voice', 'fax', 'cell', 'video', 'pager', 'bbs', 'modem', 'car', 'isdn', 'pcs'],
+        'tel'   => ['home', 'msg', 'work', 'pref', 'voice', 'fax',
+                    'cell', 'video', 'pager', 'bbs', 'modem', 'car', 'isdn', 'pcs'],
         'impp'  => ['personal', 'business', 'home', 'work', 'mobile', 'pref']
     ];
     /**
@@ -261,8 +262,7 @@ class VCard
      */
     protected function parseVCardLine($line)
     {
-        // Jede Zeile in zwei Teile trennen. key enthält den Elementnamen und ggfs. weitere Parameter, value ist der Wert
-        list($key, $rawValue) = explode(':', $line, 2);
+        [$key, $rawValue] = explode(':', $line, 2);
 
         $key = strtolower(trim(self::unescape($key)));
         if (in_array($key, ['begin', 'end'], true)) {
@@ -640,7 +640,12 @@ class VCard
         }
         if (isset($this->TEL)) {
             $Kunde->cMobil = self::getValue($this->TEL, ['cell'], '', false);
-            $Kunde->cFax   = self::getValue($this->TEL, ['fax', 'home_fax', 'fax_home', 'work_fax', 'fax_work'], '', false);
+            $Kunde->cFax   = self::getValue(
+                $this->TEL,
+                ['fax', 'home_fax', 'fax_home', 'work_fax', 'fax_work'],
+                '',
+                false
+            );
             $Kunde->cTel   = self::getValue($this->TEL, ['home', 'work', '*'], '');
         }
         if (isset($this->EMAIL)) {

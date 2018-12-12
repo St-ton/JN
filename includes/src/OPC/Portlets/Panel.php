@@ -22,7 +22,9 @@ class Panel extends Portlet
      */
     public function getPreviewHtml(PortletInstance $instance): string
     {
-        $instance->addClass('panel')->addClass('panel-' . $instance->getProperty('panel-state'))->addClass($instance->getProperty('panel-class'));
+        $instance->addClass('panel')
+                 ->addClass('panel-' . $instance->getProperty('panel-state'))
+                 ->addClass($instance->getProperty('panel-class'));
 
         $ret  = '<div ' . $instance->getAttributeString() . ' ' . $instance->getDataAttributeString() . '>';
         $ret .= !empty($instance->getProperty('title-flag'))

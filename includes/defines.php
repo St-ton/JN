@@ -203,6 +203,8 @@ ifndef('REDIS_CONNECT_TIMEOUT', 3);
 ifndef('SAVE_BOT_SESSION', 0);
 ifndef('ES_SESSIONS', 0);
 
+ifndef('MAX_REVISIONS', 5);
+
 // security
 ifndef('NEWSLETTER_USE_SECURITY', true);
 ifndef('MAILTEMPLATE_USE_SECURITY', true);

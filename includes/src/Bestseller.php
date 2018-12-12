@@ -12,22 +12,22 @@ class Bestseller
     /**
      * @var array
      */
-    protected $_products = [];
+    protected $products = [];
 
     /**
      * @var int
      */
-    protected $_customergrp;
+    protected $customergrp;
 
     /**
      * @var int
      */
-    protected $_limit = 3;
+    protected $limit = 3;
 
     /**
      * @var int
      */
-    protected $_minsales = 10;
+    protected $minsales = 10;
 
     /**
      * @param array $options
@@ -61,7 +61,7 @@ class Bestseller
      */
     public function getProducts(): array
     {
-        return $this->_products;
+        return $this->products;
     }
 
     /**
@@ -70,7 +70,7 @@ class Bestseller
      */
     public function setProducts(array $products): self
     {
-        $this->_products = $products;
+        $this->products = $products;
 
         return $this;
     }
@@ -80,7 +80,7 @@ class Bestseller
      */
     public function getCustomergroup()
     {
-        return $this->_customergrp;
+        return $this->customergrp;
     }
 
     /**
@@ -89,7 +89,7 @@ class Bestseller
      */
     public function setCustomergroup(int $customergroup): self
     {
-        $this->_customergrp = $customergroup;
+        $this->customergrp = $customergroup;
 
         return $this;
     }
@@ -99,7 +99,7 @@ class Bestseller
      */
     public function getLimit(): int
     {
-        return $this->_limit;
+        return $this->limit;
     }
 
     /**
@@ -108,7 +108,7 @@ class Bestseller
      */
     public function setLimit(int $limit): self
     {
-        $this->_limit = $limit;
+        $this->limit = $limit;
 
         return $this;
     }
@@ -118,7 +118,7 @@ class Bestseller
      */
     public function getMinSales(): int
     {
-        return $this->_minsales;
+        return $this->minsales;
     }
 
     /**
@@ -127,7 +127,7 @@ class Bestseller
      */
     public function setMinSales(int $minsales): self
     {
-        $this->_minsales = $minsales;
+        $this->minsales = $minsales;
 
         return $this;
     }
@@ -138,12 +138,12 @@ class Bestseller
     public function fetch(): array
     {
         $products = [];
-        if ($this->_customergrp !== null) {
+        if ($this->customergrp !== null) {
             // Product SQL
             $productsql = '';
-            if ($this->_products !== null && is_array($this->_products) && count($this->_products) > 0) {
+            if ($this->products !== null && is_array($this->products) && count($this->products) > 0) {
                 $productsql = ' AND tartikel.kArtikel IN (';
-                foreach ($this->_products as $i => $product) {
+                foreach ($this->products as $i => $product) {
                     if ($i > 0) {
                         $productsql .= ", {$product}";
                     } else {
@@ -155,20 +155,19 @@ class Bestseller
             // Storage SQL
             $storagesql = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $obj_arr    = Shop::Container()->getDB()->query(
-                "SELECT tartikel.kArtikel
+                'SELECT tartikel.kArtikel
                     FROM tartikel
                     JOIN tbestseller
                         ON tbestseller.kArtikel = tartikel.kArtikel
                     LEFT JOIN tartikelsichtbarkeit
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = {$this->_customergrp}
+                        AND tartikelsichtbarkeit.kKundengruppe = ' . $this->customergrp . '
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                        AND round(tbestseller.fAnzahl) >= {$this->_minsales}
-                        {$storagesql}
-                        {$productsql}
+                        AND ROUND(tbestseller.fAnzahl) >= ' . $this->minsales . ' ' .
+                        $storagesql . ' ' . $productsql . '
                     GROUP BY tartikel.kArtikel
                     ORDER BY tbestseller.fAnzahl DESC
-                    LIMIT {$this->_limit}",
+                    LIMIT ' . $this->limit,
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($obj_arr as $obj) {

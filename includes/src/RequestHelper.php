@@ -274,8 +274,13 @@ class RequestHelper
      * @param bool   $skipStatusCheck
      * @return mixed
      */
-    public static function make_http_request($url, int $timeout = 5, $post = null, $state = false, $skipStatusCheck = false)
-    {
+    public static function make_http_request(
+        $url,
+        int $timeout = 5,
+        $post = null,
+        $state = false,
+        $skipStatusCheck = false
+    ) {
         $nCode = 0;
         $cData = '';
 
@@ -351,7 +356,7 @@ class RequestHelper
             for ($i = 1; $i < $cnt; $i++) {
                 $keyValue = explode('=', $oSeo_arr[$i]);
                 if (count($keyValue) > 1) {
-                    list($cName, $cWert)                = $keyValue;
+                    [$cName, $cWert]                    = $keyValue;
                     $_SESSION['FremdParameter'][$cName] = $cWert;
                 }
             }

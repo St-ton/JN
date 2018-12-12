@@ -1076,7 +1076,8 @@ class Exportformat
                 ' with caching ' . ((Shop::Container()->getCache()->isActive() && $this->useCache())
                     ? 'enabled'
                     : 'disabled'));
-            $oPlugin = new \Plugin\Plugin($this->getPlugin());
+            $loader  = \Plugin\Helper::getLoaderByPluginID($this->getPlugin());
+            $oPlugin = $loader->init($this->getPlugin());
             if ($isCron === true) {
                 global $oJobQueue;
                 $oJobQueue = $queueObject;

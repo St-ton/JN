@@ -1496,16 +1496,18 @@ function getPaymentSurchageDiscount($Zahlungsart)
 }
 
 /**
- * @param string $cModulId
- * @return bool|\Plugin\Plugin
+ * @param string $moduleID
+ * @return bool|\Plugin\AbstractExtension
  */
-function gibPluginZahlungsart($cModulId)
+function gibPluginZahlungsart($moduleID)
 {
-    $kPlugin = \Plugin\Helper::getIDByModuleID($cModulId);
-    if ($kPlugin > 0) {
-        $oPlugin = new \Plugin\Plugin($kPlugin);
-        if ($oPlugin->kPlugin > 0) {
-            return $oPlugin;
+    $pluginID = \Plugin\Helper::getIDByModuleID($moduleID);
+    if ($pluginID > 0) {
+        $loader = \Plugin\Helper::getLoaderByPluginID($pluginID);
+        try {
+            return $loader->init($pluginID);
+        } catch (InvalidArgumentException $e) {
+            return false;
         }
     }
 

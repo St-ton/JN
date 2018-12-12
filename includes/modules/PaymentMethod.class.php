@@ -738,16 +738,18 @@ class PaymentMethod
         global $oPlugin;
         $oTmpPlugin    = $oPlugin;
         $paymentMethod = null;
-        // Zahlungsart als Plugin
-        $kPlugin = \Plugin\Helper::getIDByModuleID($moduleId);
-        if ($kPlugin > 0) {
-            $oPlugin            = new \Plugin\Plugin($kPlugin);
+        $pluginID      = \Plugin\Helper::getIDByModuleID($moduleId);
+        if ($pluginID > 0) {
+            $loader = \Plugin\Helper::getLoaderByPluginID($pluginID);
+            try {
+                $oPlugin = $loader->init($pluginID);
+            } catch (InvalidArgumentException $e) {
+                $oPlugin = null;
+            }
             $GLOBALS['oPlugin'] = $oPlugin;
 
-            if ($oPlugin->kPlugin > 0 && isset($oPlugin->oPluginZahlungsKlasseAssoc_arr[$moduleId]->cClassPfad)) {
-                $classFile = PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
-                    PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' .
-                    PFAD_PLUGIN_PAYMENTMETHOD .
+            if ($oPlugin !== null && isset($oPlugin->oPluginZahlungsKlasseAssoc_arr[$moduleId]->cClassPfad)) {
+                $classFile = $oPlugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD .
                     $oPlugin->oPluginZahlungsKlasseAssoc_arr[$moduleId]->cClassPfad;
                 if (file_exists($classFile)) {
                     require_once $classFile;

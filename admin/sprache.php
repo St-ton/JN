@@ -91,8 +91,11 @@ if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
             $oVariable->bOverwrite_arr = $_REQUEST['bOverwrite_arr'] ?? [];
             $cFehler_arr               = [];
             $oVariable->cSprachsektion = Shop::Container()->getDB()
-                                             ->select('tsprachsektion', 'kSprachsektion',
-                                                 (int)$oVariable->kSprachsektion)
+                                             ->select(
+                                                 'tsprachsektion',
+                                                 'kSprachsektion',
+                                                 (int)$oVariable->kSprachsektion
+                                             )
                 ->cName;
 
             $oWertDB_arr = Shop::Container()->getDB()->queryPrepared(

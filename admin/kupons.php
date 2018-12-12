@@ -69,7 +69,7 @@ $res              = handleCsvImportAction('kupon', function ($obj, $importType =
 });
 
 if ($res > 0) {
-    $cFehler = 'Konnte CSV-Datei nicht vollständig importieren. ';
+    $cFehler  = 'Konnte CSV-Datei nicht vollständig importieren. ';
     $cFehler .= ($res === 1 ? '1 Zeile ist' : $res . ' Zeilen sind') . ' nicht importierbar.';
 } elseif ($res === 0) {
     $cHinweis = 'CSV-Datei wurde erfolgreich importiert.';
@@ -113,7 +113,7 @@ if ($action === 'bearbeiten') {
         }
 
         $cFehler .= '</ul>';
-        $action  = 'bearbeiten';
+        $action   = 'bearbeiten';
         augmentCoupon($oKupon);
     } elseif (saveCoupon($oKupon, $oSprache_arr) > 0) {// Validierung erfolgreich => Kupon speichern
         // erfolgreich gespeichert => evtl. Emails versenden

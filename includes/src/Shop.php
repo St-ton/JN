@@ -1941,11 +1941,14 @@ final class Shop
             return new \Boxes\Factory(Shopsetting::getInstance()->getAll());
         });
         $container->setSingleton(\Services\JTL\BoxServiceInterface::class, function (Container $container) {
+            $smarty = self::Smarty();
             return new \Services\JTL\BoxService(
                 Shopsetting::getInstance()->getAll(),
                 $container->getBoxFactory(),
                 $container->getDB(),
-                $container->getCache()
+                $container->getCache(),
+                $smarty,
+                new \Boxes\Renderer\DefaultRenderer($smarty)
             );
         });
         // Captcha

@@ -20,7 +20,6 @@ $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {
     $kArtikel = RequestHelper::verifyGPCDataInt('a');
     if ($kArtikel > 0) {
-        //redirekt zum artikel, um variation/en zu wählen / MBM beachten
         header('Location: ' . Shop::getURL() . '/?a=' . $kArtikel);
         exit();
     }

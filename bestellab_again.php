@@ -115,7 +115,7 @@ if ($kPlugin > 0) {
     $loader  = \Plugin\Helper::getLoaderByPluginID($kPlugin);
     $oPlugin = $loader->init($kPlugin);
     if ($oPlugin !== null) {
-        require_once $oPlugin->getPaths()->getVersionedPath() . '/' . PFAD_PLUGIN_PAYMENTMETHOD .
+        require_once $oPlugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD .
             $oPlugin->oPluginZahlungsKlasseAssoc_arr[$moduleID]->cClassPfad;
         /** @var PaymentMethod $paymentMethod */
         $pluginName              = $oPlugin->oPluginZahlungsKlasseAssoc_arr[$moduleID]->cClassName;
@@ -125,7 +125,6 @@ if ($kPlugin > 0) {
         Shop::Smarty()->assign('oPlugin', $oPlugin);
     }
 } elseif ($moduleID === 'za_lastschrift_jtl') {
-    // Wenn Zahlungsart = Lastschrift ist => versuche Kundenkontodaten zu holen
     $oKundenKontodaten = gibKundenKontodaten($_SESSION['Kunde']->kKunde);
     if ($oKundenKontodaten->kKunde > 0) {
         Shop::Smarty()->assign('oKundenKontodaten', $oKundenKontodaten);

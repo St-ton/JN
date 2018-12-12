@@ -7,6 +7,7 @@
 namespace Smarty;
 
 use Events\Dispatcher;
+use Plugin\Helper;
 
 /**
  * Class JTLSmarty
@@ -419,11 +420,11 @@ class JTLSmarty extends \SmartyBC
             && \file_exists($this->getTemplateDir(ContextType::FRONTEND) . $resource_cfb_name)
         ) {
             $pluginTemplateExtends = [];
-            foreach (\Plugin\Helper::getTemplatePaths() as $moduleId => $pluginTemplatePath) {
+            foreach (Helper::getTemplatePaths() as $moduleId => $pluginTemplatePath) {
                 $templateKey = 'plugin_' . $moduleId;
                 $templateVar = 'oPlugin_' . $moduleId;
                 if ($this->getTemplateVars($templateVar) === null) {
-                    $oPlugin = \Plugin\Helper::getPluginById($moduleId);
+                    $oPlugin = Helper::getPluginById($moduleId);
                     $this->assign($templateVar, $oPlugin);
                 }
                 if (\file_exists($this->_realpath($pluginTemplatePath . $resource_cfb_name, true))) {

@@ -107,23 +107,29 @@ class Helper
 
     /**
      * @param string $pluginID
-     * @return null|Plugin
+     * @return null|AbstractExtension
      */
-    public static function getPluginById(string $pluginID): ?Plugin
+    public static function getPluginById(string $pluginID)
     {
+        $db      = \Shop::Container()->getDB();
+        $cache   = \Shop::Container()->getCache();
         $cacheID = 'plugin_id_list';
-        if (($plugins = \Shop::Container()->getCache()->get($cacheID)) === false) {
-            $plugins = \Shop::Container()->getDB()->query(
-                'SELECT kPlugin, cPluginID 
-                    FROM tplugin',
+        if (($plugins = $cache->get($cacheID)) === false) {
+            $plugins = $db->query(
+                'SELECT kPlugin, cPluginID, bExtension FROM tplugin',
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            \Shop::Container()->getCache()->set($cacheID, $plugins, [\CACHING_GROUP_PLUGIN]);
+            $cache->set($cacheID, $plugins, [\CACHING_GROUP_PLUGIN]);
         }
         foreach ($plugins as $plugin) {
-            if ($plugin->cPluginID === $pluginID) {
-                return new Plugin((int)$plugin->kPlugin);
+            if ($plugin->cPluginID !== $pluginID) {
+                continue;
             }
+            $loader = (int)$plugin->bExtension === 1
+                ? new ExtensionLoader($db, $cache)
+                : new PluginLoader($db, $cache);
+
+            return $loader->init((int)$plugin->kPlugin);
         }
 
         return null;

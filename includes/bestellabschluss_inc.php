@@ -89,21 +89,18 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
         }
         $_SESSION['Warenkorb']->kKunde = $_SESSION['Kunde']->insertInDB();
         $_SESSION['Kunde']->kKunde     = $_SESSION['Warenkorb']->kKunde;
-        $_SESSION['Kunde']->cLand = $_SESSION['Kunde']->pruefeLandISO($_SESSION['Kunde']->cLand);
+        $_SESSION['Kunde']->cLand      = $_SESSION['Kunde']->pruefeLandISO($_SESSION['Kunde']->cLand);
         // Kundenattribute in DB setzen
         if (is_array($cKundenattribut_arr)) {
             $nKundenattributKey_arr = array_keys($cKundenattribut_arr);
+            foreach ($nKundenattributKey_arr as $kKundenfeld) {
+                $oKundenattribut              = new stdClass();
+                $oKundenattribut->kKunde      = $_SESSION['Warenkorb']->kKunde;
+                $oKundenattribut->kKundenfeld = $cKundenattribut_arr[$kKundenfeld]->kKundenfeld;
+                $oKundenattribut->cName       = $cKundenattribut_arr[$kKundenfeld]->cWawi;
+                $oKundenattribut->cWert       = $cKundenattribut_arr[$kKundenfeld]->cWert;
 
-            if (is_array($nKundenattributKey_arr) && count($nKundenattributKey_arr) > 0) {
-                foreach ($nKundenattributKey_arr as $kKundenfeld) {
-                    $oKundenattribut              = new stdClass();
-                    $oKundenattribut->kKunde      = $_SESSION['Warenkorb']->kKunde;
-                    $oKundenattribut->kKundenfeld = $cKundenattribut_arr[$kKundenfeld]->kKundenfeld;
-                    $oKundenattribut->cName       = $cKundenattribut_arr[$kKundenfeld]->cWawi;
-                    $oKundenattribut->cWert       = $cKundenattribut_arr[$kKundenfeld]->cWert;
-
-                    Shop::Container()->getDB()->insert('tkundenattribut', $oKundenattribut);
-                }
+                Shop::Container()->getDB()->insert('tkundenattribut', $oKundenattribut);
             }
         }
 
@@ -1002,11 +999,11 @@ function setzeSmartyWeiterleitung(Bestellung $bestellung): void
     }
     $kPlugin = \Plugin\Helper::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
     if ($kPlugin > 0) {
-        $oPlugin            = new \Plugin\Plugin($kPlugin);
+        $loader             = \Plugin\Helper::getLoaderByPluginID($kPlugin);
+        $oPlugin            = $loader->init($kPlugin);
         $GLOBALS['oPlugin'] = $oPlugin;
-        if ($oPlugin->kPlugin > 0) {
-            require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION .
-                $oPlugin->nVersion . '/' . PFAD_PLUGIN_PAYMENTMETHOD .
+        if ($oPlugin !== null) {
+            require_once $oPlugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD .
                 $oPlugin->oPluginZahlungsKlasseAssoc_arr[$_SESSION['Zahlungsart']->cModulId]->cClassPfad;
             $pluginClass = $oPlugin->oPluginZahlungsKlasseAssoc_arr[$_SESSION['Zahlungsart']->cModulId]->cClassName;
             /** @var PaymentMethod $paymentMethod */
@@ -1050,7 +1047,7 @@ function fakeBestellung()
     $order->kLieferadresse   = $_SESSION['Warenkorb']->kLieferadresse;
     $order->kZahlungsart     = $_SESSION['Zahlungsart']->kZahlungsart;
     $order->kVersandart      = $_SESSION['Versandart']->kVersandart;
-    $order->kSprache         = Shop::getLanguage();
+    $order->kSprache         = Shop::getLanguageID();
     $order->kWaehrung        = \Session\Session::getCurrency()->getID();
     $order->fGesamtsumme     = \Session\Session::getCart()->gibGesamtsummeWaren(true);
     $order->fWarensumme      = $order->fGesamtsumme;
@@ -1208,10 +1205,10 @@ function finalisiereBestellung($orderNo = '', bool $sendMail = true): Bestellung
         Shop::Container()->getDB()->update('tkuponneukunde', 'cDatenHash', $hash, (object)['cVerwendet' => 'Y']);
     }
 
-    $_upd              = new stdClass();
-    $_upd->kKunde      = (int)$_SESSION['Warenkorb']->kKunde;
-    $_upd->kBestellung = (int)$order->kBestellung;
-    Shop::Container()->getDB()->update('tbesucher', 'kKunde', $_upd->kKunde, $_upd);
+    $upd              = new stdClass();
+    $upd->kKunde      = (int)$_SESSION['Warenkorb']->kKunde;
+    $upd->kBestellung = (int)$order->kBestellung;
+    Shop::Container()->getDB()->update('tbesucher', 'kKunde', $upd->kKunde, $upd);
     $obj->tkunde      = $_SESSION['Kunde'];
     $obj->tbestellung = $order;
 

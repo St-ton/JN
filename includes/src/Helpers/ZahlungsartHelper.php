@@ -1,7 +1,19 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license       http://jtl-url.de/jtlshoplicense
+ */
+
+namespace Helpers;
+
+use PaymentMethod;
+use Session\Session;
+use Shop;
+use Zahlungsart;
 
 /**
  * Class ZahlungsartHelper
+ * @package Helpers
  */
 class ZahlungsartHelper
 {
@@ -14,81 +26,81 @@ class ZahlungsartHelper
         if (!isset($paymentMethod->cModulId)) {
             return false;
         }
-        require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
-        $conf                         = Shop::getSettings([CONF_ZAHLUNGSARTEN])['zahlungsarten'];
+        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
+        $conf                         = Shop::getSettings([\CONF_ZAHLUNGSARTEN])['zahlungsarten'];
         $paymentMethod->einstellungen = $conf;
         switch ($paymentMethod->cModulId) {
             case 'za_ueberweisung_jtl':
-                if (!pruefeZahlungsartMinBestellungen($conf['zahlungsart_ueberweisung_min_bestellungen'])) {
+                if (!\pruefeZahlungsartMinBestellungen($conf['zahlungsart_ueberweisung_min_bestellungen'])) {
                     return false;
                 }
-                if (!pruefeZahlungsartMinBestellwert($conf['zahlungsart_ueberweisung_min'])) {
+                if (!\pruefeZahlungsartMinBestellwert($conf['zahlungsart_ueberweisung_min'])) {
                     return false;
                 }
-                if (!pruefeZahlungsartMaxBestellwert($conf['zahlungsart_ueberweisung_max'])) {
+                if (!\pruefeZahlungsartMaxBestellwert($conf['zahlungsart_ueberweisung_max'])) {
                     return false;
                 }
                 break;
             case 'za_nachnahme_jtl':
-                if (!pruefeZahlungsartMinBestellungen($conf['zahlungsart_nachnahme_min_bestellungen'])) {
+                if (!\pruefeZahlungsartMinBestellungen($conf['zahlungsart_nachnahme_min_bestellungen'])) {
                     return false;
                 }
-                if (!pruefeZahlungsartMinBestellwert($conf['zahlungsart_nachnahme_min'])) {
+                if (!\pruefeZahlungsartMinBestellwert($conf['zahlungsart_nachnahme_min'])) {
                     return false;
                 }
-                if (!pruefeZahlungsartMaxBestellwert($conf['zahlungsart_nachnahme_max'])) {
+                if (!\pruefeZahlungsartMaxBestellwert($conf['zahlungsart_nachnahme_max'])) {
                     return false;
                 }
                 break;
             case 'za_kreditkarte_jtl':
-                if (!pruefeZahlungsartMinBestellungen($conf['zahlungsart_kreditkarte_min_bestellungen'])) {
+                if (!\pruefeZahlungsartMinBestellungen($conf['zahlungsart_kreditkarte_min_bestellungen'])) {
                     return false;
                 }
-                if (!pruefeZahlungsartMinBestellwert($conf['zahlungsart_kreditkarte_min'])) {
+                if (!\pruefeZahlungsartMinBestellwert($conf['zahlungsart_kreditkarte_min'])) {
                     return false;
                 }
-                if (!pruefeZahlungsartMaxBestellwert($conf['zahlungsart_kreditkarte_max'])) {
+                if (!\pruefeZahlungsartMaxBestellwert($conf['zahlungsart_kreditkarte_max'])) {
                     return false;
                 }
                 break;
             case 'za_rechnung_jtl':
-                if (!pruefeZahlungsartMinBestellungen($conf['zahlungsart_rechnung_min_bestellungen'])) {
+                if (!\pruefeZahlungsartMinBestellungen($conf['zahlungsart_rechnung_min_bestellungen'])) {
                     return false;
                 }
-                if (!pruefeZahlungsartMinBestellwert($conf['zahlungsart_rechnung_min'])) {
+                if (!\pruefeZahlungsartMinBestellwert($conf['zahlungsart_rechnung_min'])) {
                     return false;
                 }
-                if (!pruefeZahlungsartMaxBestellwert($conf['zahlungsart_rechnung_max'])) {
+                if (!\pruefeZahlungsartMaxBestellwert($conf['zahlungsart_rechnung_max'])) {
                     return false;
                 }
                 break;
             case 'za_lastschrift_jtl':
-                if (!pruefeZahlungsartMinBestellungen($conf['zahlungsart_lastschrift_min_bestellungen'])) {
+                if (!\pruefeZahlungsartMinBestellungen($conf['zahlungsart_lastschrift_min_bestellungen'])) {
                     return false;
                 }
 
-                if (!pruefeZahlungsartMinBestellwert($conf['zahlungsart_lastschrift_min'])) {
+                if (!\pruefeZahlungsartMinBestellwert($conf['zahlungsart_lastschrift_min'])) {
                     return false;
                 }
 
-                if (!pruefeZahlungsartMaxBestellwert($conf['zahlungsart_lastschrift_max'])) {
+                if (!\pruefeZahlungsartMaxBestellwert($conf['zahlungsart_lastschrift_max'])) {
                     return false;
                 }
                 break;
             case 'za_barzahlung_jtl':
-                if (!pruefeZahlungsartMinBestellungen(!empty($conf['zahlungsart_barzahlung_min_bestellungen'])
+                if (!\pruefeZahlungsartMinBestellungen(!empty($conf['zahlungsart_barzahlung_min_bestellungen'])
                     ? $conf['zahlungsart_barzahlung_min_bestellungen']
                     : 0)
                 ) {
                     return false;
                 }
-                if (!pruefeZahlungsartMinBestellwert(!empty($conf['zahlungsart_barzahlung_min'])
+                if (!\pruefeZahlungsartMinBestellwert(!empty($conf['zahlungsart_barzahlung_min'])
                     ? $conf['zahlungsart_barzahlung_min']
                     : 0)
                 ) {
                     return false;
                 }
-                if (!pruefeZahlungsartMaxBestellwert(!empty($conf['zahlungsart_barzahlung_max'])
+                if (!\pruefeZahlungsartMaxBestellwert(!empty($conf['zahlungsart_barzahlung_max'])
                     ? $conf['zahlungsart_barzahlung_max']
                     : 0)
                 ) {
@@ -96,23 +108,22 @@ class ZahlungsartHelper
                 }
                 break;
             case 'za_null_jtl':
-                // each shipping is valid, because the order-sum can always go to 0.0
                 break;
             case 'za_billpay_jtl':
             case 'za_billpay_invoice_jtl':
             case 'za_billpay_direct_debit_jtl':
             case 'za_billpay_rate_payment_jtl':
             case 'za_billpay_paylater_jtl':
-                require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
+                require_once \PFAD_ROOT . \PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
                 $paymentMethod = PaymentMethod::create($paymentMethod->cModulId);
 
-                return $paymentMethod->isValid($_SESSION['Kunde'] ?? null, \Session\Session::getCart());
+                return $paymentMethod->isValid($_SESSION['Kunde'] ?? null, Session::getCart());
                 break;
             default:
-                require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
+                require_once \PFAD_ROOT . \PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
                 $paymentMethod = PaymentMethod::create($paymentMethod->cModulId);
                 if ($paymentMethod !== null) {
-                    return $paymentMethod->isValid($_SESSION['Kunde'] ?? null, \Session\Session::getCart());
+                    return $paymentMethod->isValid($_SESSION['Kunde'] ?? null, Session::getCart());
                 }
                 break;
         }

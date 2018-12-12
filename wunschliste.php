@@ -3,6 +3,12 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\ArtikelHelper;
+use Helpers\FormHelper;
+use Helpers\RequestHelper;
+use Helpers\WarenkorbHelper;
+
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 

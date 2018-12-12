@@ -4,8 +4,19 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+namespace Helpers;
+
+use DB\ReturnType;
+use Kategorie;
+use KategorieListe;
+use Session\Session;
+use Shop;
+use Sprache;
+use StringHandler;
+
 /**
- * Class KategorielisteHelper
+ * Class KategorieHelper
+ * @package Helpers
  */
 class KategorieHelper
 {
@@ -68,9 +79,9 @@ class KategorieHelper
             ? Shop::getLanguageID()
             : $kSprache;
         $kKundengruppe = $kKundengruppe === 0
-            ? \Session\Session::getCustomerGroup()->getID()
+            ? Session::getCustomerGroup()->getID()
             : $kKundengruppe;
-        $config        = Shop::getSettings([CONF_GLOBAL, CONF_TEMPLATE]);
+        $config        = Shop::getSettings([\CONF_GLOBAL, \CONF_TEMPLATE]);
         if (self::$instance !== null && self::$kSprache !== $kSprache) {
             //reset cached categories when language or depth was changed
             self::$fullCategories = null;
@@ -95,7 +106,7 @@ class KategorieHelper
             return self::$fullCategories;
         }
         $filterEmpty = (int)self::$config['global']['kategorien_anzeigefilter'] ===
-            EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
+            \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
         $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $stockJoin   = '';
         $extended    = !empty($stockFilter);
@@ -106,9 +117,8 @@ class KategorieHelper
                 return $_SESSION['oKategorie_arr_new'];
             }
             $categoryCountObj    = Shop::Container()->getDB()->query(
-                'SELECT COUNT(*) AS cnt 
-                    FROM tkategorie',
-                \DB\ReturnType::SINGLE_OBJECT
+                'SELECT COUNT(*) AS cnt FROM tkategorie',
+                ReturnType::SINGLE_OBJECT
             );
             $categoryCount       = (int)$categoryCountObj->cnt;
             $categoryLimit       = CATEGORY_FULL_LOAD_LIMIT;
@@ -133,7 +143,7 @@ class KategorieHelper
                     // otherwise check template config
                     && isset(self::$config['template']['megamenu']['show_categories'])
                     && (self::$config['template']['megamenu']['show_categories'] === 'N'
-                    || self::$config['template']['megamenu']['show_maincategory_info'] === 'N')));
+                        || self::$config['template']['megamenu']['show_maincategory_info'] === 'N')));
 
             if ($getDescription === true) {
                 $descriptionSelect = $isDefaultLang === true
@@ -205,7 +215,7 @@ class KategorieHelper
                     
                 GROUP BY node.kKategorie
                 ORDER BY node.lft',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             $_catAttribut_arr = Shop::Container()->getDB()->query(
                 'SELECT tkategorieattribut.kKategorie, 
@@ -218,14 +228,14 @@ class KategorieHelper
                         AND tkategorieattributsprache.kSprache = ' . self::$kSprache . '
                     ORDER BY tkategorieattribut.kKategorie, tkategorieattribut.bIstFunktionsAttribut DESC, 
                     tkategorieattribut.nSort',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($_catAttribut_arr as $_catAttribut) {
                 $catID = (int)$_catAttribut->kKategorie;
                 if ($_catAttribut->bIstFunktionsAttribut) {
-                    $functionAttributes[$catID][strtolower($_catAttribut->cName)] = $_catAttribut->cWert;
+                    $functionAttributes[$catID][\strtolower($_catAttribut->cName)] = $_catAttribut->cWert;
                 } else {
-                    $localizedAttributes[$catID][strtolower($_catAttribut->cName)] = $_catAttribut;
+                    $localizedAttributes[$catID][\strtolower($_catAttribut->cName)] = $_catAttribut;
                 }
             }
             foreach ($nodes as &$_cat) {
@@ -233,10 +243,10 @@ class KategorieHelper
                 $_cat->kOberKategorie = (int)$_cat->kOberKategorie;
                 $_cat->cnt            = (int)$_cat->cnt;
                 $_cat->cBildURL       = empty($_cat->cPfad)
-                    ? BILD_KEIN_KATEGORIEBILD_VORHANDEN
-                    : PFAD_KATEGORIEBILDER . $_cat->cPfad;
+                    ? \BILD_KEIN_KATEGORIEBILD_VORHANDEN
+                    : \PFAD_KATEGORIEBILDER . $_cat->cPfad;
                 $_cat->cBildURLFull   = $imageBaseURL . $_cat->cBildURL;
-                $_cat->cURL           = UrlHelper::buildURL($_cat, URLART_KATEGORIE);
+                $_cat->cURL           = UrlHelper::buildURL($_cat, \URLART_KATEGORIE);
                 $_cat->cURLFull       = $shopURL . '/' . $_cat->cURL;
                 if (self::$kSprache > 0 && !$isDefaultLang) {
                     if (!empty($_cat->cName_spr)) {
@@ -257,8 +267,8 @@ class KategorieHelper
                 $_cat->bUnterKategorien = 0;
                 $_cat->Unterkategorien  = [];
                 // Kurzbezeichnung
-                $_cat->cKurzbezeichnung = isset($_cat->categoryAttributes[ART_ATTRIBUT_SHORTNAME])
-                    ? $_cat->categoryAttributes[ART_ATTRIBUT_SHORTNAME]->cWert
+                $_cat->cKurzbezeichnung = isset($_cat->categoryAttributes[\ART_ATTRIBUT_SHORTNAME])
+                    ? $_cat->categoryAttributes[\ART_ATTRIBUT_SHORTNAME]->cWert
                     : $_cat->cName;
                 if ($_cat->kOberKategorie === 0) {
                     $fullCats[$_cat->kKategorie] = $_cat;
@@ -273,7 +283,7 @@ class KategorieHelper
                     $current->Unterkategorien[$_cat->kKategorie] = $_cat;
                     $current                                     = $_cat;
                     $hierarchy[]                                 = $_cat->kOberKategorie;
-                    $hierarchy                                   = array_unique($hierarchy);
+                    $hierarchy                                   = \array_unique($hierarchy);
                 } elseif ($currentParent !== null && $_cat->kOberKategorie === $currentParent->kKategorie) {
                     $currentParent->bUnterKategorien                   = 1;
                     $currentParent->Unterkategorien[$_cat->kKategorie] = $_cat;
@@ -287,10 +297,10 @@ class KategorieHelper
                             $current                                     = $newCurrent[$_i];
                             $current->bUnterKategorien                   = 1;
                             $current->Unterkategorien[$_cat->kKategorie] = $_cat;
-                            array_splice($hierarchy, $i);
+                            \array_splice($hierarchy, $i);
                             $hierarchy[] = $_cat->kOberKategorie;
                             $hierarchy[] = $_cat->kKategorie;
-                            $hierarchy   = array_unique($hierarchy);
+                            $hierarchy   = \array_unique($hierarchy);
                             $current     = $_cat;
                             break;
                         }
@@ -303,12 +313,12 @@ class KategorieHelper
             if ($filterEmpty) {
                 $this->filterEmpty($fullCats)->removeRelicts($fullCats);
             }
-            executeHook(HOOK_GET_ALL_CATEGORIES, ['categories' => &$fullCats]);
+            \executeHook(\HOOK_GET_ALL_CATEGORIES, ['categories' => &$fullCats]);
 
             if (Shop::Container()->getCache()->set(
                 self::$cacheID,
                 $fullCats,
-                [CACHING_GROUP_CATEGORY, 'jtl_category_tree']
+                [\CACHING_GROUP_CATEGORY, 'jtl_category_tree']
             ) === false) {
                 $_SESSION['oKategorie_arr_new'] = $fullCats;
             }
@@ -330,7 +340,7 @@ class KategorieHelper
     public function getFallBackFlatTree(int $categoryID): array
     {
         $filterEmpty         = (int)self::$config['global']['kategorien_anzeigefilter'] ===
-            EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
+            \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
         $stockFilter         = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $stockJoin           = '';
         $extended            = !empty($stockFilter);
@@ -398,19 +408,19 @@ class KategorieHelper
         }
         $nodes            = Shop::Container()->getDB()->query(
             'SELECT parent.kKategorie, parent.kOberKategorie' . $nameSelect .
-                $descriptionSelect . $imageSelect . $seoSelect . $countSelect . '
+            $descriptionSelect . $imageSelect . $seoSelect . $countSelect . '
                 FROM tkategorie AS node INNER JOIN tkategorie AS parent ' . $langJoin . '                    
                 LEFT JOIN tkategoriesichtbarkeit
                     ON node.kKategorie = tkategoriesichtbarkeit.kKategorie
                     AND tkategoriesichtbarkeit.kKundengruppe = ' . self::$kKundengruppe . $seoJoin . $imageJoin .
-                $hasArticlesCheckJoin . $stockJoin . $visibilityJoin . '                     
+            $hasArticlesCheckJoin . $stockJoin . $visibilityJoin . '                     
                 WHERE node.nLevel > 0 AND parent.nLevel > 0
                     AND tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght
                     AND node.kKategorie = ' . $categoryID . $visibilityWhere . '
                     
                 GROUP BY parent.kKategorie
                 ORDER BY parent.lft',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         $_catAttribut_arr = Shop::Container()->getDB()->query(
             'SELECT tkategorieattribut.kKategorie, 
@@ -424,15 +434,15 @@ class KategorieHelper
                 WHERE tkategorieattribut.kKategorie = ' . $categoryID . '
                 ORDER BY tkategorieattribut.kKategorie, tkategorieattribut.bIstFunktionsAttribut DESC, 
                 tkategorieattribut.nSort',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
-        if (is_array($_catAttribut_arr)) {
+        if (\is_array($_catAttribut_arr)) {
             foreach ($_catAttribut_arr as $_catAttribut) {
                 $catID = (int)$_catAttribut->kKategorie;
                 if ($_catAttribut->bIstFunktionsAttribut) {
-                    $functionAttributes[$catID][strtolower($_catAttribut->cName)] = $_catAttribut->cWert;
+                    $functionAttributes[$catID][\strtolower($_catAttribut->cName)] = $_catAttribut->cWert;
                 } else {
-                    $localizedAttributes[$catID][strtolower($_catAttribut->cName)] = $_catAttribut;
+                    $localizedAttributes[$catID][\strtolower($_catAttribut->cName)] = $_catAttribut;
                 }
             }
         }
@@ -441,10 +451,10 @@ class KategorieHelper
             $_cat->kOberKategorie = (int)$_cat->kOberKategorie;
             $_cat->cnt            = (int)$_cat->cnt;
             $_cat->cBildURL       = empty($_cat->cPfad)
-                ? BILD_KEIN_KATEGORIEBILD_VORHANDEN
-                : PFAD_KATEGORIEBILDER . $_cat->cPfad;
+                ? \BILD_KEIN_KATEGORIEBILD_VORHANDEN
+                : \PFAD_KATEGORIEBILDER . $_cat->cPfad;
             $_cat->cBildURLFull   = $imageBaseURL . $_cat->cBildURL;
-            $_cat->cURL           = UrlHelper::buildURL($_cat, URLART_KATEGORIE);
+            $_cat->cURL           = UrlHelper::buildURL($_cat, \URLART_KATEGORIE);
             $_cat->cURLFull       = $shopURL . '/' . $_cat->cURL;
             // lokalisieren
             if (self::$kSprache > 0 && !$isDefaultLang) {
@@ -505,7 +515,7 @@ class KategorieHelper
     {
         foreach ($catList as $i => $_cat) {
             if ($_cat->bUnterKategorien === 1) {
-                if ($_cat->cnt === 0 && count($_cat->Unterkategorien) === 0) {
+                if ($_cat->cnt === 0 && \count($_cat->Unterkategorien) === 0) {
                     unset($catList[$i]);
                 } else {
                     $this->removeRelicts($_cat->Unterkategorien);
@@ -552,7 +562,7 @@ class KategorieHelper
         $current = $this->getCategoryById($id);
 
         return $current !== null && isset($current->Unterkategorien)
-            ? array_values($current->Unterkategorien)
+            ? \array_values($current->Unterkategorien)
             : [];
     }
 
@@ -597,7 +607,7 @@ class KategorieHelper
             }
         }
 
-        return array_reverse($tree);
+        return \array_reverse($tree);
     }
 
     /**
@@ -613,7 +623,7 @@ class KategorieHelper
         if (isset($haystack->Unterkategorien)) {
             return $this->findCategoryInList($id, $haystack->Unterkategorien);
         }
-        if (is_array($haystack)) {
+        if (\is_array($haystack)) {
             foreach ($haystack as $obj) {
                 if (($result = $this->findCategoryInList($id, $obj)) !== false) {
                     return $result;
@@ -635,7 +645,7 @@ class KategorieHelper
     {
         $res = Shop::Container()->getDB()->select('tkategorie', $attribute, $value);
 
-        return is_callable($callback)
+        return \is_callable($callback)
             ? $callback($res)
             : $res;
     }
@@ -653,7 +663,7 @@ class KategorieHelper
             ? new Kategorie($res->kKategorie)
             : null;
 
-        return is_callable($callback)
+        return \is_callable($callback)
             ? $callback($cat)
             : $cat;
     }
@@ -682,7 +692,7 @@ class KategorieHelper
             $names = $Kategorie->cKategoriePfad_arr;
         }
 
-        return $bString ? implode(' > ', $names) : $names;
+        return $bString ? \implode(' > ', $names) : $names;
     }
 
     /**
@@ -710,7 +720,7 @@ class KategorieHelper
     public static function buildCategoryListHTML($startCat, $expanded, $currentCategory): void
     {
         $categories = [];
-        if (function_exists('gibKategorienHTML')) {
+        if (\function_exists('gibKategorienHTML')) {
             $cacheID = 'jtl_clh_' .
                 $startCat->kKategorie . '_' .
                 (isset($currentCategory->kKategorie)
@@ -724,7 +734,7 @@ class KategorieHelper
                     }
                 }
             }
-            $conf = Shop::getSettings([CONF_TEMPLATE]);
+            $conf = Shop::getSettings([\CONF_TEMPLATE]);
             if ((!isset($conf['template']['categories']['sidebox_categories_full_category_tree'])
                     || $conf['template']['categories']['sidebox_categories_full_category_tree'] !== 'Y')
                 && (($categories = Shop::Container()->getCache()->get($cacheID)) === false
@@ -732,8 +742,8 @@ class KategorieHelper
             ) {
                 $categories = [];
                 //globale Liste
-                $categories[0] = function_exists('gibKategorienHTML')
-                    ? gibKategorienHTML(
+                $categories[0] = \function_exists('gibKategorienHTML')
+                    ? \gibKategorienHTML(
                         $startCat,
                         $expanded->elemente ?? null,
                         0,
@@ -746,14 +756,14 @@ class KategorieHelper
                 $dist_kategorieboxen = Shop::Container()->getDB()->query(
                     "SELECT DISTINCT(cWert) 
                         FROM tkategorieattribut 
-                        WHERE cName = '" . KAT_ATTRIBUT_KATEGORIEBOX . "'",
-                    \DB\ReturnType::ARRAY_OF_OBJECTS
+                        WHERE cName = '" . \KAT_ATTRIBUT_KATEGORIEBOX . "'",
+                    ReturnType::ARRAY_OF_OBJECTS
                 );
                 foreach ($dist_kategorieboxen as $katboxNr) {
                     $nr = (int)$katboxNr->cWert;
                     if ($nr > 0) {
-                        $categories[$nr] = function_exists('gibKategorienHTML')
-                            ? gibKategorienHTML(
+                        $categories[$nr] = \function_exists('gibKategorienHTML')
+                            ? \gibKategorienHTML(
                                 $startCat,
                                 $expanded->elemente,
                                 0,
@@ -763,7 +773,7 @@ class KategorieHelper
                             : '';
                     }
                 }
-                Shop::Container()->getCache()->set($cacheID, $categories, [CACHING_GROUP_CATEGORY]);
+                Shop::Container()->getCache()->set($cacheID, $categories, [\CACHING_GROUP_CATEGORY]);
             }
         }
 

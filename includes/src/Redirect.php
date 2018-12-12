@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\RequestHelper;
+use Helpers\UrlHelper;
+
 /**
  * Class Redirect
  */

@@ -4,27 +4,35 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+namespace Helpers;
+
+use DateInterval;
+use DateTime;
+use Exception;
+use Shop;
+
 /**
  * Class DateHelper
+ * @package Helpers
  * @since 5.0.0
  */
 class DateHelper
 {
     /**
      * @param DateTime|string|int $date
-     * @param int $weekdays
+     * @param int                 $weekdays
      * @return DateTime
      * @since 5.0.0
      */
     public static function dateAddWeekday($date, $weekdays): DateTime
     {
         try {
-            if (is_string($date)) {
+            if (\is_string($date)) {
                 $resDate = new DateTime($date);
-            } elseif (is_numeric($date)) {
+            } elseif (\is_numeric($date)) {
                 $resDate = new DateTime();
                 $resDate->setTimestamp($date);
-            } elseif (is_object($date) && is_a($date, 'DateTime')) {
+            } elseif (\is_object($date) && \is_a($date, 'DateTime')) {
                 /** @var DateTime $date */
                 $resDate = new DateTime($date->format(DateTime::ATOM));
             } else {
@@ -62,8 +70,8 @@ class DateHelper
     public static function getDateParts(string $cDatum): array
     {
         $date_arr = [];
-        if (strlen($cDatum) > 0) {
-            if (strtolower($cDatum) === 'now()') {
+        if (\strlen($cDatum) > 0) {
+            if (\strtolower($cDatum) === 'now()') {
                 $cDatum = 'now';
             }
             try {
@@ -105,9 +113,9 @@ class DateHelper
     {
         if ($date === null) {
             $convertedDate = '_DBNULL_';
-        } elseif (preg_match('/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/', $date)) {
+        } elseif (\preg_match('/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/', $date)) {
             $convertedDate = DateTime::createFromFormat('d.m.Y', $date)->format('Y-m-d');
-        } elseif (preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $date)) {
+        } elseif (\preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $date)) {
             $convertedDate = $date;
         } else {
             $convertedDate = '_DBNULL_';

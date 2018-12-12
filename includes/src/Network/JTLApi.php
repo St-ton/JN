@@ -114,7 +114,7 @@ final class JTLApi
      */
     private function call($uri, $data = null)
     {
-        $content = \RequestHelper::http_get_contents($uri, 10, $data);
+        $content = \Helpers\RequestHelper::http_get_contents($uri, 10, $data);
 
         return empty($content) ? null : \json_decode($content);
     }

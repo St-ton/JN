@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\ArtikelHelper;
+use Helpers\WarenkorbHelper;
+
 /**
  * Class Kupon
  */

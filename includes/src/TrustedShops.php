@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\PHPSettingsHelper;
+
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 
 define('SOAP_ERROR', -1);
@@ -237,7 +240,10 @@ class TrustedShops
             }
         }
 
-        if (isset($this->oZertifikat->kTrustedShopsZertifikat) && $this->oZertifikat->kTrustedShopsZertifikat > 0 && $this->oZertifikat->nAktiv == 1) {
+        if (isset($this->oZertifikat->kTrustedShopsZertifikat)
+            && $this->oZertifikat->kTrustedShopsZertifikat > 0
+            && $this->oZertifikat->nAktiv == 1
+        ) {
             $this->holeKaeuferschutzProdukteDB($this->oZertifikat->cISOSprache);
 
             $cShopName = 'JTL-Shop';
@@ -245,11 +251,16 @@ class TrustedShops
                 $cShopName = $conf['global']['global_shopname'];
             }
 
-            $this->cLogoURL                = 'https://www.trustedshops.com/shop/certificate.php?shop_id=' . $this->tsId;
-            $this->cSpeicherungURL         = 'https://www.trustedshops.com/shop/data_privacy.php?shop_id=' . $this->tsId;
-            $this->cBedingungURL           = 'https://www.trustedshops.com/shop/protection_conditions.php?shop_id=' . $this->tsId;
-            $this->cLogoSiegelBoxURL['de'] = 'https://www.trustedshops.de/profil/' . urlencode($cShopName) . '_' . $this->tsId . '.html';
-            $this->cLogoSiegelBoxURL['en'] = 'https://www.trustedshops.com/profile/' . urlencode($cShopName) . '_' . $this->tsId . '.html';
+            $this->cLogoURL                = 'https://www.trustedshops.com/shop/certificate.php?shop_id=' .
+                $this->tsId;
+            $this->cSpeicherungURL         = 'https://www.trustedshops.com/shop/data_privacy.php?shop_id=' .
+                $this->tsId;
+            $this->cBedingungURL           = 'https://www.trustedshops.com/shop/protection_conditions.php?shop_id=' .
+                $this->tsId;
+            $this->cLogoSiegelBoxURL['de'] = 'https://www.trustedshops.de/profil/' . urlencode($cShopName) . '_' .
+                $this->tsId . '.html';
+            $this->cLogoSiegelBoxURL['en'] = 'https://www.trustedshops.com/profile/' . urlencode($cShopName) . '_' .
+                $this->tsId . '.html';
             $this->cLogoSiegelBoxURL['nl'] = 'https://www.trustedshops.nl/shop/certificate.php?shop_id=' . $this->tsId;
             $this->cLogoSiegelBoxURL['it'] = 'https://www.trustedshops.it/shop/certificate.php?shop_id=' . $this->tsId;
 
@@ -305,7 +316,8 @@ class TrustedShops
                 $this->wsPassword
             );
             if (is_soap_fault($returnValue)) {
-                $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";
+                $errorText = 'SOAP Fault: (faultcode: ' . $returnValue->faultcode .
+                    ', faultstring: ' . $returnValue->faultstring . ')';
                 Shop::Container()->getLogService()->error('TS Soap error: ' . $errorText);
             }
         } else {
@@ -345,14 +357,13 @@ class TrustedShops
             $client      = new SoapClient($wsdlUrl, ['exceptions' => 0]);
             $returnValue = $client->getRequestState($this->tsId);
             if (is_soap_fault($returnValue)) {
-                $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";
+                $errorText = 'SOAP Fault: (faultcode: ' . $returnValue->faultcode .
+                    ', faultstring: ' . $returnValue->faultstring . ')';
                 Shop::Container()->getLogService()->error($errorText);
             }
         } else {
             Shop::Container()->getLogService()->error('SOAP could not be loaded.');
         }
-        // Geaendert aufgrund Mail von Herrn van der Wielen
-        // Quote: 'Tatsächlich jedoch sollten Zertifikate mit den Status 'PRODUCTION', 'INTEGRATION' (und 'TEST') akzeptiert werden.'
         $languageIso = StringHandler::convertISO2ISO639(Shop::getLanguageCode());
         return (($returnValue->stateEnum === 'PRODUCTION'
                 || $returnValue->stateEnum === 'TEST'
@@ -377,7 +388,8 @@ class TrustedShops
             $client      = new SoapClient($wsdlUrl, ['exceptions' => 0]);
             $returnValue = $client->getProtectionItems($this->tsId);
             if (is_soap_fault($returnValue)) {
-                $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";
+                $errorText = 'SOAP Fault: (faultcode: ' . $returnValue->faultcode .
+                    ', faultstring: ' . $returnValue->faultstring . ')';
                 Shop::Container()->getLogService()->error($errorText);
             }
         } else {
@@ -508,7 +520,9 @@ class TrustedShops
                     $this->oKaeuferschutzProdukte->item[$i]->protectedAmountDecimal          = $oItem->nWert;
                     $this->oKaeuferschutzProdukte->item[$i]->tsProductID                     = $oItem->cProduktID;
 
-                    if (!\Session\Session::getCustomerGroup()->isMerchant() && isset($_SESSION['Warenkorb'], $_SESSION['Steuersatz'])) {
+                    if (!\Session\Session::getCustomerGroup()->isMerchant()
+                        && isset($_SESSION['Warenkorb'], $_SESSION['Steuersatz'])
+                    ) {
                         $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = Preise::getLocalizedPriceString(
                             $fPreis *
                             ((100 + (float)$_SESSION['Steuersatz'][\Session\Session::getCart()->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
@@ -590,7 +604,8 @@ class TrustedShops
                 $client      = new SoapClient($wsdlUrl, ['exceptions' => 0]);
                 $returnValue = $client->checkCertificate($cTSID);
                 if (is_soap_fault($returnValue)) {
-                    $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";
+                    $errorText = 'SOAP Fault: (faultcode: ' . $returnValue->faultcode .
+                        ', faultstring: ' . $returnValue->faultstring . ')';
                     Shop::Container()->getLogService()->error(
                         'Bei der Zertifikatsprüfung von TrustedShops ist ein Fehler aufgetreten! Error: ' .
                         $errorText
@@ -613,7 +628,9 @@ class TrustedShops
                     );
                 }
             } else {
-                Shop::Container()->getLogService()->error('Es ist kein SOAP möglich um eine Zertifikatsprüfung von TrustedShops durchzuführen!');
+                Shop::Container()->getLogService()->error(
+                    'Es ist kein SOAP möglich um eine Zertifikatsprüfung von TrustedShops durchzuführen!'
+                );
 
                 return 11; // SOAP Fehler
             }
@@ -621,8 +638,6 @@ class TrustedShops
             return 1;
         } // keine Prüfung, OK zurückgeben
 
-        // Geaendert aufgrund Mail von Herrn van der Wielen
-        // Quote: 'Tatsächlich jedoch sollten Zertifikate mit den Status 'PRODUCTION', 'INTEGRATION' (und 'TEST') akzeptiert werden.'
         if (($returnValue->stateEnum === 'PRODUCTION'
                 || $returnValue->stateEnum === 'TEST'
                 || $returnValue->stateEnum === 'INTEGRATION')
@@ -661,7 +676,9 @@ class TrustedShops
             return 7; // Falsche Sprache
         }
         if ($returnValue->typeEnum !== $this->eType) {
-            Shop::Container()->getLogService()->error("TrustedShops Zertifikat {$cTSID} deaktiviert. (falsche TS-Variante)!");
+            Shop::Container()->getLogService()->error(
+                'TrustedShops Zertifikat ' . $cTSID . ' deaktiviert. (falsche TS-Variante)!'
+            );
             $this->deaktiviereZertifikat($cTSID, $cISOSprache);
 
             return 10; // Falsche Variante
@@ -688,7 +705,8 @@ class TrustedShops
             $returnValue = $client->checkLogin($this->tsId, $this->wsUser, $this->wsPassword);
 
             if (is_soap_fault($returnValue)) {
-                $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";
+                $errorText = 'SOAP Fault: (faultcode: ' . $returnValue->faultcode .
+                    ', faultstring: ' . $returnValue->faultstring . ')';
                 Shop::Container()->getLogService()->error($errorText);
             }
         } else {
@@ -699,8 +717,8 @@ class TrustedShops
             return true;
         }
         Shop::Container()->getLogService()->error(
-            "TrustedShops Fehler {$returnValue} bei Client Authentifizierung mit tsId={$this->tsId}, " .
-            "wsUser={$this->wsUser}, wsPasswort={$this->wsPassword}"
+            'TrustedShops Fehler ' . $returnValue . ' bei Client Authentifizierung mit tsId=' . $this->tsId . ', ' .
+            'wsUser=' . $this->wsUser . ', wsPasswort=' . $this->wsPassword
         );
 
         return false;
@@ -848,7 +866,8 @@ class TrustedShops
                 'DELETE ttrustedshopszertifikat, ttrustedeshopsprodukt 
                     FROM ttrustedshopszertifikat
                     LEFT JOIN ttrustedeshopsprodukt 
-                        ON ttrustedeshopsprodukt.kTrustedShopsZertifikat = ttrustedshopszertifikat.kTrustedShopsZertifikat
+                        ON ttrustedeshopsprodukt.kTrustedShopsZertifikat = 
+                           ttrustedshopszertifikat.kTrustedShopsZertifikat
                         WHERE ttrustedshopszertifikat.cISOSprache = :lng',
                 ['lng' => $oZertifikat->cISOSprache],
                 \DB\ReturnType::DEFAULT
@@ -1057,7 +1076,8 @@ class TrustedShops
             //call WS method
             $returnValue = $client->updateRatingWidgetState($cTSID, $nStatus, 'jtl-software', 'eKgxL2vm', 'JTL');
             if (is_soap_fault($returnValue)) {
-                $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";
+                $errorText = 'SOAP Fault: (faultcode: ' . $returnValue->faultcode .
+                    ', faultstring: ' . $returnValue->faultstring . ')';
                 Shop::Container()->getLogService()->error($errorText);
             } else {
                 Shop::Container()->getLogService()->error(

@@ -25,7 +25,7 @@ final class Manufacturer extends AbstractBox
     {
         parent::__construct($config);
         parent::addMapping('manufacturers', 'Manufacturers');
-        $this->setManufacturers(\HerstellerHelper::getInstance()->getManufacturers());
+        $this->setManufacturers(\Helpers\HerstellerHelper::getInstance()->getManufacturers());
         $this->setShow(\count($this->manufacturerList) > 0);
     }
 

@@ -73,9 +73,9 @@ class Controller
         if (!isset($_SESSION['NewsNaviFilter'])) {
             $_SESSION['NewsNaviFilter'] = new \stdClass();
         }
-        if (\RequestHelper::verifyGPCDataInt('nSort') > 0) {
-            $_SESSION['NewsNaviFilter']->nSort = \RequestHelper::verifyGPCDataInt('nSort');
-        } elseif (\RequestHelper::verifyGPCDataInt('nSort') === -1) {
+        if (\Helpers\RequestHelper::verifyGPCDataInt('nSort') > 0) {
+            $_SESSION['NewsNaviFilter']->nSort = \Helpers\RequestHelper::verifyGPCDataInt('nSort');
+        } elseif (\Helpers\RequestHelper::verifyGPCDataInt('nSort') === -1) {
             $_SESSION['NewsNaviFilter']->nSort = -1;
         } elseif (!isset($_SESSION['NewsNaviFilter']->nSort)) {
             $_SESSION['NewsNaviFilter']->nSort = 1;
@@ -151,8 +151,8 @@ class Controller
     {
         $newsCategories = $this->getNewsCategories($newsItem->getID());
         foreach ($newsCategories as $category) {
-            $category->cURL     = \UrlHelper::buildURL($category, \URLART_NEWSKATEGORIE);
-            $category->cURLFull = \UrlHelper::buildURL($category, \URLART_NEWSKATEGORIE, true);
+            $category->cURL     = \Helpers\UrlHelper::buildURL($category, \URLART_NEWSKATEGORIE);
+            $category->cURLFull = \Helpers\UrlHelper::buildURL($category, \URLART_NEWSKATEGORIE, true);
         }
         $comments            = $newsItem->getComments()->getItems();
         $itemsPerPageOptions = ($perPage = (int)$this->config['news']['news_kommentare_anzahlproseite']) > 0
@@ -403,7 +403,7 @@ class Controller
             if (empty($post['cEmail']) || \StringHandler::filterEmailAddress($post['cEmail']) === false) {
                 $checks['cEmail'] = 1;
             }
-            if ($config['news']['news_sicherheitscode'] !== 'N' && !\FormHelper::validateCaptcha($post)) {
+            if ($config['news']['news_sicherheitscode'] !== 'N' && !\Helpers\FormHelper::validateCaptcha($post)) {
                 $checks['captcha'] = 2;
             }
         }

@@ -205,7 +205,7 @@ class Category extends BaseCategory
         $langID           = $this->getLanguageID();
         $customerGroupID  = $this->getCustomerGroupID();
         $additionalFilter = new self($this->productFilter);
-        $helper           = \KategorieHelper::getInstance($langID, $customerGroupID);
+        $helper           = \Helpers\KategorieHelper::getInstance($langID, $customerGroupID);
         foreach ($categories as $category) {
             $category->kKategorie = (int)$category->kKategorie;
             if ($categoryFilterType === 'KP') { // category path

@@ -6,6 +6,10 @@
 
 use DB\Services as DbService;
 use Filter\ProductFilter;
+use Helpers\ArtikelHelper;
+use Helpers\PHPSettingsHelper;
+use Helpers\RequestHelper;
+use Helpers\TaxHelper;
 use JTL\ProcessingHandler\NiceDBHandler;
 use JTLShop\SemVer\Version;
 use Monolog\Formatter\LineFormatter;

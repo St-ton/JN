@@ -66,7 +66,7 @@ final class SpecialOffers extends AbstractBox
                 $products = new \ArtikelListe();
                 $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
                 $this->setProducts($products);
-                $this->setURL(\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_SPECIALOFFERS));
+                $this->setURL(\Helpers\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_SPECIALOFFERS));
                 \executeHook(\HOOK_BOXEN_INC_SONDERANGEBOTE, [
                     'box'        => &$this,
                     'cache_tags' => &$cacheTags,

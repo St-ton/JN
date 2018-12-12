@@ -55,8 +55,8 @@ final class TagCloud extends AbstractBox
                         $tagwolke->Klasse   = ($prio_step < 1) ?
                             \rand(1, 10) :
                             (\round(($tagwolke->Anzahl - $tags[$count - 1]->Anzahl) / $prio_step) + 1);
-                        $tagwolke->cURL     = \UrlHelper::buildURL($tagwolke, \URLART_TAG);
-                        $tagwolke->cURLFull = \UrlHelper::buildURL($tagwolke, \URLART_TAG, true);
+                        $tagwolke->cURL     = \Helpers\UrlHelper::buildURL($tagwolke, \URLART_TAG);
+                        $tagwolke->cURLFull = \Helpers\UrlHelper::buildURL($tagwolke, \URLART_TAG, true);
                         $tagCloud[]         = $tagwolke;
                     }
                 }

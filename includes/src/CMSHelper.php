@@ -4,6 +4,9 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\SearchSpecialHelper;
+use Helpers\UrlHelper;
+
 /**
  * Class CMSHelper
  */

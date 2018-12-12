@@ -4,8 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+namespace Helpers;
+
+use Shop;
+
 /**
  * Class RequestHelper
+ * @package Helpers
  * @since 5.0.0
  */
 class RequestHelper
@@ -30,9 +35,9 @@ class RequestHelper
         if (isset($_REQUEST[$var])) {
             $val = $_REQUEST[$var];
 
-            return is_numeric($val)
+            return \is_numeric($val)
                 ? [(int)$val]
-                : array_map(function ($e) {
+                : \array_map(function ($e) {
                     return (int)$e;
                 }, $val);
         }
@@ -48,17 +53,7 @@ class RequestHelper
      */
     public static function verifyGPCDataInt($var): int
     {
-        if (isset($_GET[$var]) && is_numeric($_GET[$var])) {
-            return (int)$_GET[$var];
-        }
-        if (isset($_POST[$var]) && is_numeric($_POST[$var])) {
-            return (int)$_POST[$var];
-        }
-        if (isset($_COOKIE[$var]) && is_numeric($_COOKIE[$var])) {
-            return (int)$_COOKIE[$var];
-        }
-
-        return 0;
+        return (int)($_GET[$var] ?? $_POST[$var] ?? $_COOKIE[$var] ?? 0);
     }
 
     /**
@@ -68,14 +63,7 @@ class RequestHelper
      */
     public static function verifyGPDataString($var)
     {
-        if (isset($_POST[$var])) {
-            return $_POST[$var];
-        }
-        if (isset($_GET[$var])) {
-            return $_GET[$var];
-        }
-
-        return '';
+        return $_POST[$var] ?? $_GET[$var] ?? '';
     }
 
     /**
@@ -87,7 +75,7 @@ class RequestHelper
     {
         $ip = null;
         if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $list = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+            $list = \explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
             $ip   = $list[0];
         } elseif (!empty($_SERVER['HTTP_X_REAL_IP'])) {
             $ip = $_SERVER['HTTP_X_REAL_IP'];
@@ -96,7 +84,7 @@ class RequestHelper
         }
 
         // if the given IP is not valid, we return placeholders (note: placeholders are the "legacy way")
-        if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6)) {
+        if (!\filter_var($ip, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV4 | \FILTER_FLAG_IPV6)) {
             return (new \GeneralDataProtection\IpAnonymizer($ip))->getPlaceholder();
         }
 
@@ -172,13 +160,13 @@ class RequestHelper
      */
     public static function checkSSL(): int
     {
-        $conf       = Shop::getSettings([CONF_GLOBAL]);
+        $conf       = Shop::getSettings([\CONF_GLOBAL]);
         $cSSLNutzen = $conf['global']['kaufabwicklung_ssl_nutzen'];
         if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
             $_SERVER['HTTPS'] = 'on';
         }
         // Ist im Server SSL aktiv?
-        if (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) === 'on' || $_SERVER['HTTPS'] === '1')) {
+        if (isset($_SERVER['HTTPS']) && (\strtolower($_SERVER['HTTPS']) === 'on' || $_SERVER['HTTPS'] === '1')) {
             if ($cSSLNutzen === 'P') { // SSL durch Einstellung erlaubt?
                 return 2;
             }
@@ -194,54 +182,56 @@ class RequestHelper
 
     /**
      * @param Resource $ch
-     * @param int $maxredirect
+     * @param int      $maxredirect
      * @return bool|mixed
      */
     public static function curl_exec_follow($ch, int $maxredirect = 5)
     {
         $mr = $maxredirect <= 0 ? 5 : $maxredirect;
-        if (ini_get('open_basedir') === '') {
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, $mr > 0);
-            curl_setopt($ch, CURLOPT_MAXREDIRS, $mr);
+        if (\ini_get('open_basedir') === '') {
+            \curl_setopt($ch, \CURLOPT_FOLLOWLOCATION, $mr > 0);
+            \curl_setopt($ch, \CURLOPT_MAXREDIRS, $mr);
         } else {
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+            \curl_setopt($ch, \CURLOPT_FOLLOWLOCATION, false);
             if ($mr > 0) {
-                $newurl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+                $newurl = \curl_getinfo($ch, \CURLINFO_EFFECTIVE_URL);
 
-                $rch = curl_copy_handle($ch);
-                curl_setopt($rch, CURLOPT_HEADER, true);
-                curl_setopt($rch, CURLOPT_NOBODY, true);
-                curl_setopt($rch, CURLOPT_FORBID_REUSE, false);
-                curl_setopt($rch, CURLOPT_RETURNTRANSFER, true);
+                $rch = \curl_copy_handle($ch);
+                \curl_setopt($rch, \CURLOPT_HEADER, true);
+                \curl_setopt($rch, \CURLOPT_NOBODY, true);
+                \curl_setopt($rch, \CURLOPT_FORBID_REUSE, false);
+                \curl_setopt($rch, \CURLOPT_RETURNTRANSFER, true);
                 do {
-                    curl_setopt($rch, CURLOPT_URL, $newurl);
-                    $header = curl_exec($rch);
-                    if (curl_errno($rch)) {
+                    \curl_setopt($rch, \CURLOPT_URL, $newurl);
+                    $header = \curl_exec($rch);
+                    if (\curl_errno($rch)) {
                         $code = 0;
                     } else {
-                        $code = curl_getinfo($rch, CURLINFO_HTTP_CODE);
+                        $code = \curl_getinfo($rch, \CURLINFO_HTTP_CODE);
                         if ($code === 301 || $code === 302) {
-                            preg_match('/Location:(.*?)\n/', $header, $matches);
-                            $newurl = trim(array_pop($matches));
+                            \preg_match('/Location:(.*?)\n/', $header, $matches);
+                            $newurl = \trim(\array_pop($matches));
                         } else {
                             $code = 0;
                         }
                     }
                 } while ($code && --$mr);
-                curl_close($rch);
+                \curl_close($rch);
                 if (!$mr) {
                     if ($maxredirect === null) {
-                        trigger_error('Too many redirects. When following redirects, ' .
-                            'libcurl hit the maximum amount.', E_USER_WARNING);
+                        \trigger_error(
+                            'Too many redirects. When following redirects, libcurl hit the maximum amount.',
+                            \E_USER_WARNING
+                        );
                     }
 
                     return false;
                 }
-                curl_setopt($ch, CURLOPT_URL, $newurl);
+                \curl_setopt($ch, \CURLOPT_URL, $newurl);
             }
         }
 
-        return curl_exec($ch);
+        return \curl_exec($ch);
     }
 
     /**
@@ -284,41 +274,41 @@ class RequestHelper
         $nCode = 0;
         $cData = '';
 
-        if (function_exists('curl_init')) {
-            $curl = curl_init();
+        if (\function_exists('curl_init')) {
+            $curl = \curl_init();
 
-            curl_setopt($curl, CURLOPT_URL, $url);
-            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $timeout);
-            curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, DEFAULT_CURL_OPT_VERIFYPEER);
-            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, DEFAULT_CURL_OPT_VERIFYHOST);
-            curl_setopt($curl, CURLOPT_REFERER, Shop::getURL());
+            \curl_setopt($curl, \CURLOPT_URL, $url);
+            \curl_setopt($curl, \CURLOPT_CONNECTTIMEOUT, $timeout);
+            \curl_setopt($curl, \CURLOPT_TIMEOUT, $timeout);
+            \curl_setopt($curl, \CURLOPT_RETURNTRANSFER, true);
+            \curl_setopt($curl, \CURLOPT_SSL_VERIFYPEER, \DEFAULT_CURL_OPT_VERIFYPEER);
+            \curl_setopt($curl, \CURLOPT_SSL_VERIFYHOST, \DEFAULT_CURL_OPT_VERIFYHOST);
+            \curl_setopt($curl, \CURLOPT_REFERER, Shop::getURL());
 
             if ($post !== null) {
-                curl_setopt($curl, CURLOPT_POST, true);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
+                \curl_setopt($curl, \CURLOPT_POST, true);
+                \curl_setopt($curl, \CURLOPT_POSTFIELDS, $post);
             }
 
             $cData     = self::curl_exec_follow($curl);
-            $cInfo_arr = curl_getinfo($curl);
+            $cInfo_arr = \curl_getinfo($curl);
             $nCode     = (int)$cInfo_arr['http_code'];
 
-            curl_close($curl);
-        } elseif (ini_get('allow_url_fopen')) {
-            @ini_set('default_socket_timeout', $timeout);
-            $fileHandle = @fopen($url, 'r');
+            \curl_close($curl);
+        } elseif (\ini_get('allow_url_fopen')) {
+            @\ini_set('default_socket_timeout', $timeout);
+            $fileHandle = @\fopen($url, 'r');
             if ($fileHandle) {
-                @stream_set_timeout($fileHandle, $timeout);
+                @\stream_set_timeout($fileHandle, $timeout);
 
                 $cData = '';
-                while (($buffer = fgets($fileHandle)) !== false) {
+                while (($buffer = \fgets($fileHandle)) !== false) {
                     $cData .= $buffer;
                 }
-                if (preg_match('|HTTP/\d\.\d\s+(\d+)\s+.*|', $http_response_header[0], $match)) {
+                if (\preg_match('|HTTP/\d\.\d\s+(\d+)\s+.*|', $http_response_header[0], $match)) {
                     $nCode = (int)$match[1];
                 }
-                fclose($fileHandle);
+                \fclose($fileHandle);
             }
         }
         if ($skipStatusCheck === false && !($nCode >= 200 && $nCode < 300)) {
@@ -336,7 +326,7 @@ class RequestHelper
     {
         return isset($_REQUEST['isAjax'])
             || (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-                && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
+                && \strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
     }
 
     /**
@@ -349,14 +339,14 @@ class RequestHelper
      */
     public static function extractExternalParams($seo)
     {
-        $oSeo_arr = preg_split('/[' . EXT_PARAMS_SEPERATORS_REGEX . ']+/', $seo);
-        if (is_array($oSeo_arr) && count($oSeo_arr) > 1) {
-            $seo = $oSeo_arr[0];
-            $cnt = count($oSeo_arr);
+        $seoData = \preg_split('/[' . \EXT_PARAMS_SEPERATORS_REGEX . ']+/', $seo);
+        if (\is_array($seoData) && \count($seoData) > 1) {
+            $seo = $seoData[0];
+            $cnt = \count($seoData);
             for ($i = 1; $i < $cnt; $i++) {
-                $keyValue = explode('=', $oSeo_arr[$i]);
-                if (count($keyValue) > 1) {
-                    [$cName, $cWert]                    = $keyValue;
+                $keyValue = \explode('=', $seoData[$i]);
+                if (\count($keyValue) > 1) {
+                    [$cName, $cWert] = $keyValue;
                     $_SESSION['FremdParameter'][$cName] = $cWert;
                 }
             }

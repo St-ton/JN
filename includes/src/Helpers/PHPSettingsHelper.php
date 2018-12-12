@@ -4,20 +4,25 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Helpers;
+
+use SingletonTrait;
+
 /**
  * Class PHPSettingsHelper
+ * @package Helpers
  */
 class PHPSettingsHelper
 {
     use SingletonTrait;
-    
+
     /**
      * @param string $shorthand
      * @return int
      */
     private function shortHandToInt($shorthand): int
     {
-        switch (substr($shorthand, -1)) {
+        switch (\substr($shorthand, -1)) {
             case 'M':
             case 'm':
                 return (int)$shorthand * 1048576;
@@ -31,29 +36,29 @@ class PHPSettingsHelper
                 return (int)$shorthand;
         }
     }
-    
+
     /**
      * @return int
      */
     public function limit(): int
     {
-        return $this->shortHandToInt(ini_get('memory_limit'));
+        return $this->shortHandToInt(\ini_get('memory_limit'));
     }
-    
+
     /**
      * @return string
      */
     public function version(): string
     {
-        return PHP_VERSION;
+        return \PHP_VERSION;
     }
-    
+
     /**
      * @return int
      */
     public function executionTime(): int
     {
-        return (int)ini_get('max_execution_time');
+        return (int)\ini_get('max_execution_time');
     }
 
     /**
@@ -61,7 +66,7 @@ class PHPSettingsHelper
      */
     public function postMaxSize(): int
     {
-        return $this->shortHandToInt(ini_get('post_max_size'));
+        return $this->shortHandToInt(\ini_get('post_max_size'));
     }
 
     /**
@@ -69,7 +74,7 @@ class PHPSettingsHelper
      */
     public function uploadMaxFileSize(): int
     {
-        return $this->shortHandToInt(ini_get('upload_max_filesize'));
+        return $this->shortHandToInt(\ini_get('upload_max_filesize'));
     }
 
     /**
@@ -79,23 +84,23 @@ class PHPSettingsHelper
     {
         return false;
     }
-    
+
     /**
      * @return string
      */
     public function tempDir(): string
     {
-        return sys_get_temp_dir();
+        return \sys_get_temp_dir();
     }
-    
+
     /**
      * @return bool
      */
     public function fopenWrapper(): bool
     {
-        return (bool)ini_get('allow_url_fopen');
+        return (bool)\ini_get('allow_url_fopen');
     }
-    
+
     /**
      * @param int $limit - in bytes
      * @return bool
@@ -106,7 +111,7 @@ class PHPSettingsHelper
 
         return $value === -1 || $value === 0 || $value >= $limit;
     }
-    
+
     /**
      * @param int $limit - in S
      * @return bool
@@ -115,7 +120,7 @@ class PHPSettingsHelper
     {
         return ($this->executionTime() >= $limit || $this->executionTime() === 0);
     }
-    
+
     /**
      * @param int $limit - in bytes
      * @return bool
@@ -124,7 +129,7 @@ class PHPSettingsHelper
     {
         return $this->postMaxSize() >= $limit;
     }
-    
+
     /**
      * @param int $limit - in bytes
      * @return bool
@@ -133,14 +138,15 @@ class PHPSettingsHelper
     {
         return $this->uploadMaxFileSize() >= $limit;
     }
-    
+
     /**
      * @return bool
      */
     public function isTempWriteable(): bool
     {
-        return is_writable($this->tempDir());
+        return \is_writable($this->tempDir());
     }
+
     /**
      * @param string $cURL
      * @return bool
@@ -149,7 +155,7 @@ class PHPSettingsHelper
      */
     public static function checkSOAP(string $cURL = ''): bool
     {
-        return !(strlen($cURL) > 0 && !self::phpLinkCheck($cURL)) && class_exists('SoapClient');
+        return !(\strlen($cURL) > 0 && !self::phpLinkCheck($cURL)) && \class_exists('SoapClient');
     }
 
     /**
@@ -160,7 +166,7 @@ class PHPSettingsHelper
      */
     public static function checkCURL(string $cURL = ''): bool
     {
-        return !(strlen($cURL) > 0 && !self::phpLinkCheck($cURL)) && function_exists('curl_init');
+        return !(\strlen($cURL) > 0 && !self::phpLinkCheck($cURL)) && \function_exists('curl_init');
     }
 
     /**
@@ -170,7 +176,7 @@ class PHPSettingsHelper
      */
     public static function checkAllowFopen(): bool
     {
-        return (int)ini_get('allow_url_fopen') === 1;
+        return (int)\ini_get('allow_url_fopen') === 1;
     }
 
     /**
@@ -181,7 +187,7 @@ class PHPSettingsHelper
      */
     public static function checkSockets(string $cSOCKETS = ''): bool
     {
-        return !(strlen($cSOCKETS) > 0 && !self::phpLinkCheck($cSOCKETS)) && function_exists('fsockopen');
+        return !(\strlen($cSOCKETS) > 0 && !self::phpLinkCheck($cSOCKETS)) && \function_exists('fsockopen');
     }
 
     /**
@@ -194,8 +200,8 @@ class PHPSettingsHelper
     {
         $errno  = null;
         $errstr = null;
-        $url    = parse_url(trim($url));
-        $scheme = strtolower($url['scheme']);
+        $url    = \parse_url(\trim($url));
+        $scheme = \strtolower($url['scheme']);
         if ($scheme !== 'http' && $scheme !== 'https') {
             return false;
         }
@@ -206,7 +212,7 @@ class PHPSettingsHelper
             $url['path'] = '/';
         }
 
-        return !fsockopen($url['host'], $url['port'], $errno, $errstr, 30)
+        return !\fsockopen($url['host'], $url['port'], $errno, $errstr, 30)
             ? false
             : true;
     }

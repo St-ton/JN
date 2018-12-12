@@ -4,8 +4,19 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+namespace Helpers;
+
+use DB\ReturnType;
+use Exception;
+use Kundengruppe;
+use Session\Session;
+use Shop;
+use SimpleMail;
+use StringHandler;
+
 /**
  * Class FormHelper
+ * @package Helpers
  * @since 5.0.0
  */
 class FormHelper
@@ -88,7 +99,7 @@ class FormHelper
     public static function getMissingContactFormData(): array
     {
         $ret  = [];
-        $conf = Shop::getSettings([CONF_KONTAKTFORMULAR, CONF_GLOBAL]);
+        $conf = Shop::getSettings([\CONF_KONTAKTFORMULAR, \CONF_GLOBAL]);
         if (!$_POST['nachricht']) {
             $ret['nachricht'] = 1;
         }
@@ -130,12 +141,12 @@ class FormHelper
     }
 
     /**
-     * @return stdClass
+     * @return \stdClass
      * @since 5.0.0
      */
-    public static function baueKontaktFormularVorgaben(): stdClass
+    public static function baueKontaktFormularVorgaben(): \stdClass
     {
-        $msg = new stdClass();
+        $msg = new \stdClass();
         if (isset($_SESSION['Kunde'])) {
             $msg->cAnrede   = $_SESSION['Kunde']->cAnrede;
             $msg->cVorname  = $_SESSION['Kunde']->cVorname;
@@ -183,7 +194,7 @@ class FormHelper
         if (isset($_POST['nachricht']) && $_POST['nachricht']) {
             $msg->cNachricht = StringHandler::filterXSS($_POST['nachricht']);
         }
-        if (isset($msg->cAnrede) && strlen($msg->cAnrede) === 1) {
+        if (isset($msg->cAnrede) && \strlen($msg->cAnrede) === 1) {
             if ($msg->cAnrede === 'm') {
                 $msg->cAnredeLocalized = Shop::Lang()->get('salutationM');
             } elseif ($msg->cAnrede === 'w') {
@@ -225,7 +236,7 @@ class FormHelper
      */
     public static function checkSubject(): bool
     {
-        $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+        $kKundengruppe = Session::getCustomerGroup()->getID();
         if (!$kKundengruppe) {
             $kKundengruppe = (int)$_SESSION['Kunde']->kKundengruppe;
             if (!$kKundengruppe) {
@@ -238,10 +249,10 @@ class FormHelper
                 FROM tkontaktbetreff
                 WHERE FIND_IN_SET('" . $kKundengruppe . "', REPLACE(cKundengruppen, ';', ',')) > 0
                     OR cKundengruppen = '0'",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
 
-        return is_array($subjects) && count($subjects) > 0;
+        return \is_array($subjects) && \count($subjects) > 0;
     }
 
     /**
@@ -264,15 +275,15 @@ class FormHelper
             'cISOSprache',
             Shop::getLanguageCode()
         );
-        $Objekt                       = new stdClass();
+        $Objekt                       = new \stdClass();
         $Objekt->tnachricht           = self::baueKontaktFormularVorgaben();
         $Objekt->tnachricht->cBetreff = $betreffSprache->cName;
 
-        $conf     = Shop::getSettings([CONF_KONTAKTFORMULAR, CONF_GLOBAL]);
-        $from     = new stdClass();
+        $conf     = Shop::getSettings([\CONF_KONTAKTFORMULAR, \CONF_GLOBAL]);
+        $from     = new \stdClass();
         $from_arr = Shop::Container()->getDB()->selectAll('temailvorlageeinstellungen', 'kEmailvorlage', 11);
-        $mail     = new stdClass();
-        if (is_array($from_arr) && count($from_arr)) {
+        $mail     = new \stdClass();
+        if (\is_array($from_arr) && \count($from_arr)) {
             foreach ($from_arr as $f) {
                 $from->{$f->cKey} = $f->cValue;
             }
@@ -295,11 +306,11 @@ class FormHelper
         $Objekt->mail = $mail;
         if (isset($_SESSION['kSprache']) && !isset($Objekt->tkunde)) {
             if (!isset($Objekt->tkunde)) {
-                $Objekt->tkunde = new stdClass();
+                $Objekt->tkunde = new \stdClass();
             }
             $Objekt->tkunde->kSprache = $_SESSION['kSprache'];
         }
-        sendeMail(MAILTEMPLATE_KONTAKTFORMULAR, $Objekt);
+        \sendeMail(\MAILTEMPLATE_KONTAKTFORMULAR, $Objekt);
 
         if ($conf['kontakt']['kontakt_kopiekunde'] === 'Y') {
             $mail->toEmail = $Objekt->tnachricht->cMail;
@@ -322,9 +333,9 @@ class FormHelper
             $mail->replyToEmail = $Objekt->tnachricht->cMail;
             $mail->replyToName  = $mail->toName;
             $Objekt->mail       = $mail;
-            sendeMail(MAILTEMPLATE_KONTAKTFORMULAR, $Objekt);
+            \sendeMail(\MAILTEMPLATE_KONTAKTFORMULAR, $Objekt);
         }
-        $KontaktHistory                  = new stdClass();
+        $KontaktHistory                  = new \stdClass();
         $KontaktHistory->kKontaktBetreff = $betreff->kKontaktBetreff;
         $KontaktHistory->kSprache        = $_SESSION['kSprache'];
         $KontaktHistory->cAnrede         = $Objekt->tnachricht->cAnrede ?? null;
@@ -359,17 +370,17 @@ class FormHelper
                 WHERE cIP = :ip
                     AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
             ['ip' => RequestHelper::getRealIP(), 'min' => $min],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return isset($history->kKontaktHistory) && $history->kKontaktHistory > 0;
     }
 
     /**
-     * @return stdClass
+     * @return \stdClass
      * @since 5.0.0
      */
-    public static function baueFormularVorgaben(): stdClass
+    public static function baueFormularVorgaben(): \stdClass
     {
         return self::baueKontaktFormularVorgaben();
     }

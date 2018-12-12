@@ -4,8 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Helpers;
+
+use Link\LinkInterface;
+use News\Item;
+use Shop;
+use Sprache;
+
 /**
  * Class UrlHelper
+ * @package Helpers
  */
 class UrlHelper
 {
@@ -57,7 +65,7 @@ class UrlHelper
     /**
      * @var array
      */
-    private $default_scheme_ports = ['http' => 80, 'https' => 443];
+    private $defaultPorts = ['http' => 80, 'https' => 443];
 
     /**
      * @param string|null $url
@@ -85,13 +93,13 @@ class UrlHelper
     {
         $this->url = $url;
         // parse URL into respective parts
-        $url_components = parse_url($this->url);
+        $url_components = \parse_url($this->url);
 
         if (!$url_components) {
             return false;
         }
         foreach ($url_components as $key => $value) {
-            if (property_exists($this, $key)) {
+            if (\property_exists($this, $key)) {
                 $this->$key = $value;
             }
         }
@@ -114,10 +122,10 @@ class UrlHelper
     {
         if ($this->path) {
             // case normalization
-            $this->path = preg_replace_callback(
+            $this->path = \preg_replace_callback(
                 '/(%([0-9abcdef][0-9abcdef]))/x',
                 function ($x) {
-                    return '%' . strtoupper($x[2]);
+                    return '%' . \strtoupper($x[2]);
                 },
                 $this->path
             );
@@ -129,12 +137,12 @@ class UrlHelper
 
         $scheme = '';
         if ($this->scheme) {
-            $this->scheme = strtolower($this->scheme);
+            $this->scheme = \strtolower($this->scheme);
             $scheme       = $this->scheme . '://';
         }
 
         if ($this->host) {
-            $this->host = strtolower($this->host);
+            $this->host = \strtolower($this->host);
         }
 
         $this->schemeBasedNormalization();
@@ -174,27 +182,27 @@ class UrlHelper
     {
         $unreserved = [];
         for ($octet = 65; $octet <= 90; $octet++) {
-            $unreserved[] = dechex($octet);
+            $unreserved[] = \dechex($octet);
         }
         for ($octet = 97; $octet <= 122; $octet++) {
-            $unreserved[] = dechex($octet);
+            $unreserved[] = \dechex($octet);
         }
         for ($octet = 48; $octet <= 57; $octet++) {
-            $unreserved[] = dechex($octet);
+            $unreserved[] = \dechex($octet);
         }
 
-        $unreserved[] = dechex(ord('-'));
-        $unreserved[] = dechex(ord('.'));
-        $unreserved[] = dechex(ord('_'));
-        $unreserved[] = dechex(ord('~'));
+        $unreserved[] = \dechex(\ord('-'));
+        $unreserved[] = \dechex(\ord('.'));
+        $unreserved[] = \dechex(\ord('_'));
+        $unreserved[] = \dechex(\ord('~'));
 
-        return preg_replace_callback(array_map(
+        return \preg_replace_callback(\array_map(
             function ($str) {
-                return '/%' . strtoupper($str) . '/x';
+                return '/%' . \strtoupper($str) . '/x';
             },
             $unreserved
         ), function ($matches) {
-            return chr(hexdec($matches[0]));
+            return \chr(\hexdec($matches[0]));
         }, $string);
     }
 
@@ -217,21 +225,21 @@ class UrlHelper
             $pattern_d   = '!^(\.|\.\.)$!x';
             $pattern_e   = '!(/*[^/]*)!x';
 
-            if (preg_match($pattern_a, $path)) {
+            if (\preg_match($pattern_a, $path)) {
                 // remove prefix from $path
-                $path = preg_replace($pattern_a, '', $path);
-            } elseif (preg_match($pattern_b_1, $path, $matches) || preg_match($pattern_b_2, $path, $matches)) {
-                $path = preg_replace('!^' . $matches[1] . '!', '/', $path);
-            } elseif (preg_match($pattern_c, $path, $matches)) {
-                $path = preg_replace('!^' . preg_quote($matches[1], '!') . '!x', '/', $path);
+                $path = \preg_replace($pattern_a, '', $path);
+            } elseif (\preg_match($pattern_b_1, $path, $matches) || \preg_match($pattern_b_2, $path, $matches)) {
+                $path = \preg_replace('!^' . $matches[1] . '!', '/', $path);
+            } elseif (\preg_match($pattern_c, $path, $matches)) {
+                $path = \preg_replace('!^' . \preg_quote($matches[1], '!') . '!x', '/', $path);
                 // remove the last segment and its preceding "/" (if any) from output buffer
-                $new_path = preg_replace('!/([^/]+)$!x', '', $new_path);
-            } elseif (preg_match($pattern_d, $path)) {
-                $path = preg_replace($pattern_d, '', $path);
-            } elseif (preg_match($pattern_e, $path, $matches)) {
+                $new_path = \preg_replace('!/([^/]+)$!x', '', $new_path);
+            } elseif (\preg_match($pattern_d, $path)) {
+                $path = \preg_replace($pattern_d, '', $path);
+            } elseif (\preg_match($pattern_e, $path, $matches)) {
                 $first_path_segment = $matches[1];
 
-                $path = preg_replace('/^' . preg_quote($first_path_segment, '/') . '/', '', $path, 1);
+                $path = \preg_replace('/^' . \preg_quote($first_path_segment, '/') . '/', '', $path, 1);
 
                 $new_path .= $first_path_segment;
             }
@@ -245,9 +253,7 @@ class UrlHelper
      */
     private function schemeBasedNormalization(): self
     {
-        if (isset($this->default_scheme_ports[$this->scheme])
-            && $this->default_scheme_ports[$this->scheme] == $this->port
-        ) {
+        if (isset($this->defaultPorts[$this->scheme]) && $this->defaultPorts[$this->scheme] == $this->port) {
             $this->port = '';
         }
 
@@ -264,7 +270,7 @@ class UrlHelper
      */
     public static function buildURL($obj, int $type, bool $full = false): string
     {
-        if ($obj instanceof \Link\LinkInterface) {
+        if ($obj instanceof LinkInterface) {
             return $obj->getURL();
         }
         $lang   = !Sprache::isDefaultLanguageActive(true)
@@ -273,20 +279,20 @@ class UrlHelper
         $prefix = $full === false ? '' : Shop::getURL() . '/';
 
         if ($type && $obj) {
-            executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_BAUEURL, ['obj' => &$obj, 'art' => &$type]);
+            \executeHook(\HOOK_TOOLSGLOBAL_INC_SWITCH_BAUEURL, ['obj' => &$obj, 'art' => &$type]);
             switch ($type) {
-                case URLART_ARTIKEL:
+                case \URLART_ARTIKEL:
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
                         : $prefix . '?a=' . $obj->kArtikel . $lang;
 
-                case URLART_KATEGORIE:
+                case \URLART_KATEGORIE:
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
                         : $prefix . '?k=' . $obj->kKategorie . $lang;
-                case URLART_SEITE:
+                case \URLART_SEITE:
                     if (isset($_SESSION['cISOSprache'], $obj->cLocalizedSeo[$_SESSION['cISOSprache']])
-                        && strlen($obj->cLocalizedSeo[$_SESSION['cISOSprache']])
+                        && \strlen($obj->cLocalizedSeo[$_SESSION['cISOSprache']])
                     ) {
                         return $prefix . $obj->cLocalizedSeo[$_SESSION['cISOSprache']];
                     }
@@ -301,53 +307,54 @@ class UrlHelper
                         ? $prefix . $oSpezialseite->cDateiname
                         : $prefix . '?s=' . $obj->kLink . $lang;
 
-                case URLART_HERSTELLER:
+                case \URLART_HERSTELLER:
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
                         : $prefix . '?h=' . $obj->kHersteller . $lang;
 
-                case URLART_LIVESUCHE:
+                case \URLART_LIVESUCHE:
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
                         : $prefix . '?l=' . $obj->kSuchanfrage . $lang;
 
-                case URLART_TAG:
+                case \URLART_TAG:
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
                         : $prefix . '?t=' . $obj->kTag . $lang;
 
-                case URLART_MERKMAL:
+                case \URLART_MERKMAL:
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
                         : $prefix . '?m=' . $obj->kMerkmalWert . $lang;
 
-                case URLART_NEWS:
-                    if ($obj instanceof \News\Item) {
-                        /** @var \News\Item $obj */
+                case \URLART_NEWS:
+                    if ($obj instanceof Item) {
+                        /** @var Item $obj */
                         return !empty($obj->getSEO())
                             ? $obj->getURL()
                             : $prefix . '?n=' . $obj->getID() . $lang;
                     }
+
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
                         : $prefix . '?n=' . $obj->kNews . $lang;
 
-                case URLART_NEWSMONAT:
+                case \URLART_NEWSMONAT:
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
                         : $prefix . '?nm=' . $obj->kNewsMonatsUebersicht . $lang;
 
-                case URLART_NEWSKATEGORIE:
+                case \URLART_NEWSKATEGORIE:
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
                         : $prefix . '?nk=' . $obj->kNewsKategorie . $lang;
 
-                case URLART_UMFRAGE:
+                case \URLART_UMFRAGE:
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
                         : $prefix . '?u=' . $obj->kUmfrage . $lang;
 
-                case URLART_SEARCHSPECIALS:
+                case \URLART_SEARCHSPECIALS:
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
                         : $prefix . '?q=' . $obj->kSuchspecial . $lang;

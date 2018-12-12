@@ -4,8 +4,33 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Helpers;
+
+use Artikel;
+use CheckBox;
+use DB\ReturnType;
+use JTL\SeoHelper;
+use Kampagne;
+use Konfiggruppe;
+use Konfigitem;
+use Konfigurator;
+use Kundengruppe;
+use Preise;
+use Session\Session;
+use Shop;
+use SimpleMail;
+use Smarty;
+use Sprache;
+use stdClass;
+use StringHandler;
+use Tag;
+use TagArticle;
+use UnitsOfMeasure;
+use WarenkorbPos;
+
 /**
  * Class ArtikelHelper
+ * @package Helpers
  */
 class ArtikelHelper
 {
@@ -68,7 +93,7 @@ class ArtikelHelper
      */
     public static function getArticleForParent(int $productID): int
     {
-        $customerGroupID = \Session\Session::getCustomerGroup()->getID();
+        $customerGroupID = Session::getCustomerGroup()->getID();
         $properties      = self::getChildPropertiesForParent($productID, $customerGroupID);
         $combinations    = [];
         $valid           = true;
@@ -82,7 +107,7 @@ class ArtikelHelper
         if ($valid) {
             $attributes      = [];
             $attributeValues = [];
-            if (count($combinations) > 0) {
+            if (\count($combinations) > 0) {
                 foreach ($combinations as $i => $kVariationKombi) {
                     $attributes[]      = $i;
                     $attributeValues[] = (int)$kVariationKombi;
@@ -95,23 +120,23 @@ class ArtikelHelper
                         LEFT JOIN tartikelsichtbarkeit
                             ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                             AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
-                        WHERE teigenschaftkombiwert.kEigenschaft IN (' . implode(',', $attributes) . ')
-                            AND teigenschaftkombiwert.kEigenschaftWert IN (' . implode(',', $attributeValues) . ')
+                        WHERE teigenschaftkombiwert.kEigenschaft IN (' . \implode(',', $attributes) . ')
+                            AND teigenschaftkombiwert.kEigenschaftWert IN (' . \implode(',', $attributeValues) . ')
                             AND tartikelsichtbarkeit.kArtikel IS NULL
                             AND tartikel.kVaterArtikel = ' . $productID . '
                         GROUP BY tartikel.kArtikel
-                        HAVING COUNT(*) = ' . count($combinations),
-                    \DB\ReturnType::SINGLE_OBJECT
+                        HAVING COUNT(*) = ' . \count($combinations),
+                    ReturnType::SINGLE_OBJECT
                 );
                 if (isset($product->kArtikel) && $product->kArtikel > 0) {
                     return (int)$product->kArtikel;
                 }
             }
             if (!isset($_SESSION['variBoxAnzahl_arr'])) {
-                header('Location: ' . Shop::getURL() .
+                \header('Location: ' . Shop::getURL() .
                     '/?a=' . $productID .
                     '&n=' . $_POST['anzahl'] .
-                    '&r=' . R_VARWAEHLEN, true, 302);
+                    '&r=' . \R_VARWAEHLEN, true, 302);
                 exit();
             }
         }
@@ -133,11 +158,11 @@ class ArtikelHelper
         $varCombinations = self::getPossibleVariationCombinations($kArtikel, $kKundengruppe);
         $properties      = [];
         foreach ($varCombinations as $comb) {
-            if (!isset($properties[$comb->kEigenschaft]) || !is_array($properties[$comb->kEigenschaft])) {
+            if (!isset($properties[$comb->kEigenschaft]) || !\is_array($properties[$comb->kEigenschaft])) {
                 $properties[$comb->kEigenschaft] = [];
             }
             if (!isset($comb->kEigenschaftWert, $properties[$comb->kEigenschaft])
-                || !in_array($comb->kEigenschaftWert, $properties[$comb->kEigenschaft], true)
+                || !\in_array($comb->kEigenschaftWert, $properties[$comb->kEigenschaft], true)
             ) {
                 $properties[$comb->kEigenschaft][] = $comb->kEigenschaftWert;
             }
@@ -162,7 +187,7 @@ class ArtikelHelper
         }
         $cGroupBy = $group ? 'GROUP BY teigenschaftkombiwert.kEigenschaftWert ' : '';
 
-        return array_map(
+        return \array_map(
             function ($e) {
                 $e->kEigenschaft      = (int)$e->kEigenschaft;
                 $e->kEigenschaftKombi = (int)$e->kEigenschaftKombi;
@@ -181,7 +206,7 @@ class ArtikelHelper
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL ' . $cGroupBy .
                 'ORDER BY teigenschaftkombiwert.kEigenschaftWert',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             )
         );
     }
@@ -197,7 +222,7 @@ class ArtikelHelper
         if ($productID <= 0) {
             return [];
         }
-        $customerGroup  = \Session\Session::getCustomerGroup()->getID();
+        $customerGroup  = Session::getCustomerGroup()->getID();
         $properties     = [];
         $propertyValues = [];
         $exists         = true;
@@ -213,15 +238,15 @@ class ArtikelHelper
                     AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroup . '
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 ORDER BY tartikel.kArtikel',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
-        if (count($oVariationKombiKind_arr) === 0) {
+        if (\count($oVariationKombiKind_arr) === 0) {
             return [];
         }
         $parentID = (int)$oVariationKombiKind_arr[0]->kVaterArtikel;
         foreach ($oVariationKombiKind_arr as $oVariationKombiKind) {
             if (!isset($propertyValues[$oVariationKombiKind->kEigenschaft])
-                || !is_array($propertyValues[$oVariationKombiKind->kEigenschaft])
+                || !\is_array($propertyValues[$oVariationKombiKind->kEigenschaft])
             ) {
                 $propertyValues[(int)$oVariationKombiKind->kEigenschaft] = (int)$oVariationKombiKind->kEigenschaftWert;
             }
@@ -266,9 +291,9 @@ class ArtikelHelper
                 ' . $attrVal->cJOIN . '
                 WHERE teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                     AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
-                    AND teigenschaftwert.kEigenschaft IN (' . implode(',', $attributes) . ')
-                    AND teigenschaftwert.kEigenschaftWert IN (' . implode(',', $attributeValues) . ')',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+                    AND teigenschaftwert.kEigenschaft IN (' . \implode(',', $attributes) . ')
+                    AND teigenschaftwert.kEigenschaftWert IN (' . \implode(',', $attributeValues) . ')',
+            ReturnType::ARRAY_OF_OBJECTS
         );
 
         $oEigenschaftTMP_arr = Shop::Container()->getDB()->query(
@@ -282,11 +307,11 @@ class ArtikelHelper
                     AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                     AND (teigenschaft.cTyp = 'FREIFELD'
                     OR teigenschaft.cTyp = 'PFLICHT-FREIFELD')",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
 
-        if (is_array($oEigenschaftTMP_arr)) {
-            $oEigenschaft_arr = array_merge($oEigenschaft_arr, $oEigenschaftTMP_arr);
+        if (\is_array($oEigenschaftTMP_arr)) {
+            $oEigenschaft_arr = \array_merge($oEigenschaft_arr, $oEigenschaftTMP_arr);
         }
 
         foreach ($oEigenschaft_arr as $oEigenschaft) {
@@ -305,7 +330,7 @@ class ArtikelHelper
                             WHERE teigenschaftwert.kEigenschaftWert = ' . $oEigenschaft->kEigenschaftWert . '
                                 AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                                 AND teigenschaftwert.kEigenschaft = ' . $oEigenschaft->kEigenschaft,
-                        \DB\ReturnType::SINGLE_OBJECT
+                        ReturnType::SINGLE_OBJECT
                     );
 
                     if ($oEigenschaftWertVorhanden->kEigenschaftWert) {
@@ -328,22 +353,22 @@ class ArtikelHelper
                         break;
                     }
                 } elseif (!isset($_SESSION['variBoxAnzahl_arr'])) {
-                    header('Location: ' . Shop::getURL() .
+                    \header('Location: ' . Shop::getURL() .
                         '/?a=' . $productID .
                         '&n=' . (int)$_POST['anzahl'] .
-                        '&r=' . R_VARWAEHLEN, true, 302);
+                        '&r=' . \R_VARWAEHLEN, true, 302);
                     exit();
                 }
             } else {
                 unset($propValue);
                 if ($oEigenschaft->cTyp === 'PFLICHT-FREIFELD'
                     && self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)
-                    && strlen(self::getSelectedVariationValue($oEigenschaft->kEigenschaft)) === 0
+                    && \strlen(self::getSelectedVariationValue($oEigenschaft->kEigenschaft)) === 0
                 ) {
-                    header('Location: ' . Shop::getURL() .
+                    \header('Location: ' . Shop::getURL() .
                         '/?a=' . $productID .
                         '&n=' . (int)$_POST['anzahl'] .
-                        '&r=' . R_VARWAEHLEN, true, 302);
+                        '&r=' . \R_VARWAEHLEN, true, 302);
                     exit();
                 }
                 $propValue                = new stdClass();
@@ -357,10 +382,10 @@ class ArtikelHelper
         }
 
         if (!$exists && !isset($_SESSION['variBoxAnzahl_arr'])) {
-            header('Location: ' . Shop::getURL() .
+            \header('Location: ' . Shop::getURL() .
                 '/?a=' . $productID .
                 '&n=' . (int)$_POST['anzahl'] .
-                '&r=' . R_VARWAEHLEN, true, 301);
+                '&r=' . \R_VARWAEHLEN, true, 301);
             exit();
         }
         if ($nArtikelVariAufbau > 0) {
@@ -399,7 +424,7 @@ class ArtikelHelper
      */
     public static function getSelectedPropertiesForArticle(int $productID, bool $redirect = true): array
     {
-        $customerGroupID = \Session\Session::getCustomerGroup()->getID();
+        $customerGroupID = Session::getCustomerGroup()->getID();
         $propData        = Shop::Container()->getDB()->queryPrepared(
             'SELECT teigenschaft.kEigenschaft,teigenschaft.cName,teigenschaft.cTyp
                 FROM teigenschaft
@@ -409,11 +434,11 @@ class ArtikelHelper
                 WHERE teigenschaft.kArtikel = :articleid
                     AND teigenschaftsichtbarkeit.kEigenschaft IS NULL',
             ['cgroupid' => $customerGroupID, 'articleid' => $productID],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         $properties      = [];
         $exists          = true;
-        if (!is_array($propData) || count($propData) === 0) {
+        if (!\is_array($propData) || \count($propData) === 0) {
             return [];
         }
         foreach ($propData as $prop) {
@@ -435,7 +460,7 @@ class ArtikelHelper
                             'attribvalueid' => self::getSelectedVariationValue($prop->kEigenschaft),
                             'attribid'      => $prop->kEigenschaft
                         ],
-                        \DB\ReturnType::SINGLE_OBJECT
+                        ReturnType::SINGLE_OBJECT
                     );
 
                     if ($propExists->kEigenschaftWert) {
@@ -451,22 +476,22 @@ class ArtikelHelper
                         break;
                     }
                 } elseif (!isset($_SESSION['variBoxAnzahl_arr']) && $redirect) {
-                    header('Location: ' . Shop::getURL() .
+                    \header('Location: ' . Shop::getURL() .
                         '/?a=' . $productID .
                         '&n=' . (int)$_POST['anzahl'] .
-                        '&r=' . R_VARWAEHLEN, true, 302);
+                        '&r=' . \R_VARWAEHLEN, true, 302);
                     exit();
                 }
             } else {
                 if ($prop->cTyp === 'PFLICHT-FREIFELD'
                     && $redirect
                     && self::hasSelectedVariationValue($prop->kEigenschaft)
-                    && strlen(self::getSelectedVariationValue($prop->kEigenschaft)) === 0
+                    && \strlen(self::getSelectedVariationValue($prop->kEigenschaft)) === 0
                 ) {
-                    header('Location: ' . Shop::getURL() .
+                    \header('Location: ' . Shop::getURL() .
                         '/?a=' . $productID .
                         '&n=' . (int)$_POST['anzahl'] .
-                        '&r=' . R_VARWAEHLEN, true, 302);
+                        '&r=' . \R_VARWAEHLEN, true, 302);
                     exit();
                 }
                 $val                = new stdClass();
@@ -480,10 +505,10 @@ class ArtikelHelper
         }
 
         if (!$exists && $redirect && !isset($_SESSION['variBoxAnzahl_arr'])) {
-            header('Location: ' . Shop::getURL() .
+            \header('Location: ' . Shop::getURL() .
                 '/?a=' . $productID .
                 '&n=' . (int)$_POST['anzahl'] .
-                '&r=' . R_VARWAEHLEN, true, 302);
+                '&r=' . \R_VARWAEHLEN, true, 302);
             exit();
         }
 
@@ -580,18 +605,18 @@ class ArtikelHelper
      */
     public static function addVariationPictures(Artikel $product, $variationPicturesArr): void
     {
-        if (is_array($variationPicturesArr) && count($variationPicturesArr) > 0) {
-            $product->Bilder = array_filter($product->Bilder, function ($item) {
+        if (\is_array($variationPicturesArr) && \count($variationPicturesArr) > 0) {
+            $product->Bilder = \array_filter($product->Bilder, function ($item) {
                 return !(isset($item->isVariation) && $item->isVariation);
             });
-            if (count($variationPicturesArr) === 1) {
-                array_unshift($product->Bilder, $variationPicturesArr[0]);
+            if (\count($variationPicturesArr) === 1) {
+                \array_unshift($product->Bilder, $variationPicturesArr[0]);
             } else {
-                $product->Bilder = array_merge($product->Bilder, $variationPicturesArr);
+                $product->Bilder = \array_merge($product->Bilder, $variationPicturesArr);
             }
 
             $nNr = 1;
-            foreach (array_keys($product->Bilder) as $key) {
+            foreach (\array_keys($product->Bilder) as $key) {
                 $product->Bilder[$key]->nNr = $nNr++;
             }
 
@@ -635,7 +660,7 @@ class ArtikelHelper
 
             if ($threshold > 0 && $result->fMassMenge > $threshold) {
                 $result->fGrundpreisMenge = $nAmount;
-                $result->fMassMenge      /= $fFactor;
+                $result->fMassMenge       /= $fFactor;
                 $result->fVPEWert         = $result->fMassMenge / $amount / $result->fGrundpreisMenge;
                 $result->fBasePreis       = $price / $result->fVPEWert;
                 $result->cVPEEinheit      = $result->fGrundpreisMenge . ' ' .
@@ -657,7 +682,7 @@ class ArtikelHelper
     {
         $res = Shop::Container()->getDB()->select('tartikel', $attribute, $value);
 
-        return is_callable($callback)
+        return \is_callable($callback)
             ? $callback($res)
             : $res;
     }
@@ -675,7 +700,7 @@ class ArtikelHelper
             ? (new Artikel())->fuelleArtikel($res->kArtikel, Artikel::getDefaultOptions())
             : null;
 
-        return is_callable($callback)
+        return \is_callable($callback)
             ? $callback($art)
             : $art;
     }
@@ -719,9 +744,9 @@ class ArtikelHelper
                     FROM tartikel' . $cSQLJoin . '
                     WHERE tartikel.kVaterArtikel = ' . $productID . '
                     GROUP BY teigenschaftkombiwert.kEigenschaftKombi' . $cSQLHaving,
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
-            if (isset($product->kArtikel) && count($product->kArtikel) > 0) {
+            if (isset($product->kArtikel) && \count($product->kArtikel) > 0) {
                 return (int)$product->kArtikel;
             }
         }
@@ -755,8 +780,8 @@ class ArtikelHelper
         $product->fuelleArtikel($productID, $productOptions);
 
         if ($product->oVariationenNurKind_arr !== null
-            && is_array($product->oVariationenNurKind_arr)
-            && count($product->oVariationenNurKind_arr) > 0
+            && \is_array($product->oVariationenNurKind_arr)
+            && \count($product->oVariationenNurKind_arr) > 0
         ) {
             foreach ($product->oVariationenNurKind_arr as $child) {
                 $attributeValue                       = new stdClass();
@@ -786,8 +811,8 @@ class ArtikelHelper
             $oVariation->kEigenschaft = (int)$oVariation->kEigenschaft;
             if ($oVariation->kEigenschaft === $kEigenschaft
                 && isset($oVariation->Werte)
-                && is_array($oVariation->Werte)
-                && count($oVariation->Werte) > 0
+                && \is_array($oVariation->Werte)
+                && \count($oVariation->Werte) > 0
             ) {
                 foreach ($oVariation->Werte as $oWert) {
                     $oWert->kEigenschaftWert = (int)$oWert->kEigenschaftWert;
@@ -811,8 +836,8 @@ class ArtikelHelper
     public static function showAvailabilityForm(Artikel $product, string $config): int
     {
         if ($config !== 'N'
-            && ((int)$product->inWarenkorbLegbar === INWKNICHTLEGBAR_LAGER
-                || (int)$product->inWarenkorbLegbar === INWKNICHTLEGBAR_LAGERVAR
+            && ((int)$product->inWarenkorbLegbar === \INWKNICHTLEGBAR_LAGER
+                || (int)$product->inWarenkorbLegbar === \INWKNICHTLEGBAR_LAGERVAR
                 || ($product->fLagerbestand <= 0 && $product->cLagerKleinerNull === 'Y'))
         ) {
             switch ($config) {
@@ -842,7 +867,7 @@ class ArtikelHelper
             return null;
         }
         $xSelling = new stdClass();
-        $config   = Shop::getSettings([CONF_ARTIKELDETAILS])['artikeldetails'];
+        $config   = Shop::getSettings([\CONF_ARTIKELDETAILS])['artikeldetails'];
         if ($config['artikeldetails_xselling_standard_anzeigen'] === 'Y') {
             $xSelling->Standard = new stdClass();
             $stockFilterSQL     = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
@@ -857,9 +882,9 @@ class ArtikelHelper
                     WHERE txsell.kArtikel = :aid' . $stockFilterSQL . '
                     ORDER BY tartikel.cName',
                 ['lid' => Shop::getLanguageID(), 'aid' => $productID],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
-            if (count($xsell) > 0) {
+            if (\count($xsell) > 0) {
                 $xsellgruppen                     = \Functional\group($xsell, function ($e) {
                     return $e->kXSellGruppe;
                 });
@@ -909,7 +934,7 @@ class ArtikelHelper
                         GROUP BY 1, 2
                         ORDER BY SUM(txsellkauf.nAnzahl) DESC
                         LIMIT {$anzahl}",
-                    \DB\ReturnType::ARRAY_OF_OBJECTS
+                    ReturnType::ARRAY_OF_OBJECTS
                 );
             } elseif ($config['artikeldetails_xselling_kauf_parent'] === 'Y') {
                 $xsell = Shop::Container()->getDB()->query(
@@ -928,7 +953,7 @@ class ArtikelHelper
                         GROUP BY 1, 2
                         ORDER BY SUM(txsellkauf.nAnzahl) DESC
                         LIMIT {$anzahl}",
-                    \DB\ReturnType::ARRAY_OF_OBJECTS
+                    ReturnType::ARRAY_OF_OBJECTS
                 );
             } else {
                 $xsell = Shop::Container()->getDB()->selectAll(
@@ -940,7 +965,7 @@ class ArtikelHelper
                     $anzahl
                 );
             }
-            $xsellCount2 = is_array($xsell) ? count($xsell) : 0;
+            $xsellCount2 = \is_array($xsell) ? \count($xsell) : 0;
             if ($xsellCount2 > 0) {
                 if (!isset($xSelling->Kauf)) {
                     $xSelling->Kauf = new stdClass();
@@ -956,7 +981,7 @@ class ArtikelHelper
                 }
             }
         }
-        executeHook(HOOK_ARTIKEL_INC_XSELLING, [
+        \executeHook(\HOOK_ARTIKEL_INC_XSELLING, [
             'kArtikel' => $productID,
             'xSelling' => &$xSelling
         ]);
@@ -970,23 +995,23 @@ class ArtikelHelper
      */
     public static function checkProductQuestion(): void
     {
-        $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
+        $conf = Shop::getSettings([\CONF_ARTIKELDETAILS]);
         if ($conf['artikeldetails']['artikeldetails_fragezumprodukt_anzeigen'] !== 'N') {
             $missingData = self::getMissingProductQuestionFormData();
             Shop::Smarty()->assign('fehlendeAngaben_fragezumprodukt', $missingData);
             $resultCode = FormHelper::eingabenKorrekt($missingData);
 
-            executeHook(HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT_PLAUSI);
+            \executeHook(\HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT_PLAUSI);
 
             if ($resultCode) {
                 if (!self::checkProductQuestionFloodProtection(
                     (int)$conf['artikeldetails']['produktfrage_sperre_minuten']
                 )) {
                     $checkBox      = new CheckBox();
-                    $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+                    $kKundengruppe = Session::getCustomerGroup()->getID();
                     $oAnfrage      = self::getProductQuestionFormDefaults();
 
-                    executeHook(HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT);
+                    \executeHook(\HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT);
                     if (empty($oAnfrage->cNachname)) {
                         $oAnfrage->cNachname = '';
                     }
@@ -994,12 +1019,12 @@ class ArtikelHelper
                         $oAnfrage->cVorname = '';
                     }
                     $checkBox->triggerSpecialFunction(
-                        CHECKBOX_ORT_FRAGE_ZUM_PRODUKT,
+                        \CHECKBOX_ORT_FRAGE_ZUM_PRODUKT,
                         $kKundengruppe,
                         true,
                         $_POST,
                         ['oKunde' => $oAnfrage, 'oNachricht' => $oAnfrage]
-                    )->checkLogging(CHECKBOX_ORT_FRAGE_ZUM_PRODUKT, $kKundengruppe, $_POST, true);
+                    )->checkLogging(\CHECKBOX_ORT_FRAGE_ZUM_PRODUKT, $kKundengruppe, $_POST, true);
                     self::sendProductQuestion();
                 } else {
                     $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('questionNotPossible', 'messages');
@@ -1023,7 +1048,7 @@ class ArtikelHelper
     public static function getMissingProductQuestionFormData(): array
     {
         $ret  = [];
-        $conf = Shop::getSettings([CONF_ARTIKELDETAILS, CONF_GLOBAL]);
+        $conf = Shop::getSettings([\CONF_ARTIKELDETAILS, \CONF_GLOBAL]);
         if (!$_POST['nachricht']) {
             $ret['nachricht'] = 1;
         }
@@ -1058,11 +1083,11 @@ class ArtikelHelper
             $ret['captcha'] = 2;
         }
         $checkBox = new CheckBox();
-        $ret      = array_merge(
+        $ret      = \array_merge(
             $ret,
             $checkBox->validateCheckBox(
-                CHECKBOX_ORT_FRAGE_ZUM_PRODUKT,
-                \Session\Session::getCustomerGroup()->getID(),
+                \CHECKBOX_ORT_FRAGE_ZUM_PRODUKT,
+                Session::getCustomerGroup()->getID(),
                 $_POST,
                 true
             )
@@ -1088,7 +1113,7 @@ class ArtikelHelper
         $msg->cFax       = isset($_POST['fax']) ? StringHandler::filterXSS($_POST['fax']) : null;
         $msg->cTel       = isset($_POST['tel']) ? StringHandler::filterXSS($_POST['tel']) : null;
         $msg->cMobil     = isset($_POST['mobil']) ? StringHandler::filterXSS($_POST['mobil']) : null;
-        if (strlen($msg->cAnrede) === 1) {
+        if (\strlen($msg->cAnrede) === 1) {
             if ($msg->cAnrede === 'm') {
                 $msg->cAnredeLocalized = Shop::Lang()->get('salutationM');
             } elseif ($msg->cAnrede === 'w') {
@@ -1105,9 +1130,9 @@ class ArtikelHelper
      */
     public static function sendProductQuestion(): void
     {
-        require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
+        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
 
-        $conf             = Shop::getSettings([CONF_EMAILS, CONF_ARTIKELDETAILS, CONF_GLOBAL]);
+        $conf             = Shop::getSettings([\CONF_EMAILS, \CONF_ARTIKELDETAILS, \CONF_GLOBAL]);
         $data             = new stdClass();
         $data->tartikel   = $GLOBALS['AktuellerArtikel'];
         $data->tnachricht = self::getProductQuestionFormDefaults();
@@ -1136,7 +1161,7 @@ class ArtikelHelper
         $mail->replyToName  = $empfaengerName;
         $data->mail         = $mail;
 
-        sendeMail(MAILTEMPLATE_PRODUKTANFRAGE, $data);
+        \sendeMail(\MAILTEMPLATE_PRODUKTANFRAGE, $data);
 
         if ($conf['artikeldetails']['produktfrage_kopiekunde'] === 'Y') {
             $mail->toEmail      = $data->tnachricht->cMail;
@@ -1144,7 +1169,7 @@ class ArtikelHelper
             $mail->replyToEmail = $data->tnachricht->cMail;
             $mail->replyToName  = $empfaengerName;
             $data->mail         = $mail;
-            sendeMail(MAILTEMPLATE_PRODUKTANFRAGE, $data);
+            \sendeMail(\MAILTEMPLATE_PRODUKTANFRAGE, $data);
         }
         $history             = new stdClass();
         $history->kSprache   = Shop::getLanguage();
@@ -1164,7 +1189,7 @@ class ArtikelHelper
         $inquiryID                     = Shop::Container()->getDB()->insert('tproduktanfragehistory', $history);
         $GLOBALS['PositiveFeedback'][] = Shop::Lang()->get('thankYouForQuestion', 'messages');
         if (isset($_SESSION['Kampagnenbesucher'])) {
-            Kampagne::setCampaignAction(KAMPAGNE_DEF_FRAGEZUMPRODUKT, $inquiryID, 1.0);
+            Kampagne::setCampaignAction(\KAMPAGNE_DEF_FRAGEZUMPRODUKT, $inquiryID, 1.0);
         }
     }
 
@@ -1185,7 +1210,7 @@ class ArtikelHelper
                 WHERE cIP = :ip
                     AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
             ['ip' => RequestHelper::getRealIP(), 'min' => $min],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return isset($history->kProduktanfrageHistory) && $history->kProduktanfrageHistory > 0;
@@ -1197,7 +1222,7 @@ class ArtikelHelper
      */
     public static function checkAvailabilityMessage(): void
     {
-        $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
+        $conf = Shop::getSettings([\CONF_ARTIKELDETAILS]);
         if (!isset($_POST['a'], $conf['artikeldetails']['benachrichtigung_nutzen'])
             || (int)$_POST['a'] <= 0
             || $conf['artikeldetails']['benachrichtigung_nutzen'] === 'N'
@@ -1208,7 +1233,7 @@ class ArtikelHelper
         Shop::Smarty()->assign('fehlendeAngaben_benachrichtigung', $missingData);
         $resultCode = FormHelper::eingabenKorrekt($missingData);
 
-        executeHook(HOOK_ARTIKEL_INC_BENACHRICHTIGUNG_PLAUSI);
+        \executeHook(\HOOK_ARTIKEL_INC_BENACHRICHTIGUNG_PLAUSI);
         if ($resultCode) {
             if (!self::checkAvailibityFormFloodProtection($conf['artikeldetails']['benachrichtigung_sperre_minuten'])) {
                 $inquiry            = self::getAvailabilityFormDefaults();
@@ -1218,21 +1243,21 @@ class ArtikelHelper
                 $inquiry->dErstellt = 'NOW()';
                 $inquiry->nStatus   = 0;
                 $checkBox           = new CheckBox();
-                $customerGroupID    = \Session\Session::getCustomerGroup()->getID();
+                $customerGroupID    = Session::getCustomerGroup()->getID();
                 if (empty($inquiry->cNachname)) {
                     $inquiry->cNachname = '';
                 }
                 if (empty($inquiry->cVorname)) {
                     $inquiry->cVorname = '';
                 }
-                executeHook(HOOK_ARTIKEL_INC_BENACHRICHTIGUNG, ['Benachrichtigung' => $inquiry]);
+                \executeHook(\HOOK_ARTIKEL_INC_BENACHRICHTIGUNG, ['Benachrichtigung' => $inquiry]);
                 $checkBox->triggerSpecialFunction(
-                    CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT,
+                    \CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT,
                     $customerGroupID,
                     true,
                     $_POST,
                     ['oKunde' => $inquiry, 'oNachricht' => $inquiry]
-                )->checkLogging(CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $customerGroupID, $_POST, true);
+                )->checkLogging(\CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $customerGroupID, $_POST, true);
 
                 $inquiryID = Shop::Container()->getDB()->queryPrepared(
                     'INSERT INTO tverfuegbarkeitsbenachrichtigung
@@ -1242,11 +1267,11 @@ class ArtikelHelper
                         ON DUPLICATE KEY UPDATE
                             cVorname = :cVorname, cNachname = :cNachname, ksprache = :kSprache,
                             cIP = :cIP, dErstellt = NOW(), nStatus = :nStatus',
-                    get_object_vars($inquiry),
-                    \DB\ReturnType::LAST_INSERTED_ID
+                    \get_object_vars($inquiry),
+                    ReturnType::LAST_INSERTED_ID
                 );
                 if (isset($_SESSION['Kampagnenbesucher'])) {
-                    Kampagne::setCampaignAction(KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE, $inquiryID, 1.0);
+                    Kampagne::setCampaignAction(\KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE, $inquiryID, 1.0);
                 }
                 $GLOBALS['PositiveFeedback'][] = Shop::Lang()->get(
                     'thankYouForNotificationSubscription',
@@ -1271,7 +1296,7 @@ class ArtikelHelper
     public static function getMissingAvailibilityFormData(): array
     {
         $ret  = [];
-        $conf = Shop::getSettings([CONF_ARTIKELDETAILS, CONF_GLOBAL]);
+        $conf = Shop::getSettings([\CONF_ARTIKELDETAILS, \CONF_GLOBAL]);
         if (!$_POST['email']) {
             $ret['email'] = 1;
         } elseif (StringHandler::filterEmailAddress($_POST['email']) === false) {
@@ -1293,10 +1318,10 @@ class ArtikelHelper
         }
         // CheckBox Plausi
         $oCheckBox     = new CheckBox();
-        $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
-        $ret           = array_merge(
+        $kKundengruppe = Session::getCustomerGroup()->getID();
+        $ret           = \array_merge(
             $ret,
-            $oCheckBox->validateCheckBox(CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $kKundengruppe, $_POST, true)
+            $oCheckBox->validateCheckBox(\CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $kKundengruppe, $_POST, true)
         );
 
         return $ret;
@@ -1310,7 +1335,7 @@ class ArtikelHelper
     public static function getAvailabilityFormDefaults(): stdClass
     {
         $msg  = new stdClass();
-        $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
+        $conf = Shop::getSettings([\CONF_ARTIKELDETAILS]);
         if (!empty($_POST['vorname']) && $conf['artikeldetails']['benachrichtigung_abfragen_vorname'] !== 'N') {
             $msg->cVorname = StringHandler::filterXSS($_POST['vorname']);
         }
@@ -1341,7 +1366,7 @@ class ArtikelHelper
                 WHERE cIP = :ip
                 AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
             ['ip' => RequestHelper::getRealIP(), 'min' => $min],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return isset($history->kVerfuegbarkeitsbenachrichtigung) && $history->kVerfuegbarkeitsbenachrichtigung > 0;
@@ -1357,11 +1382,11 @@ class ArtikelHelper
     public static function getProductNavigation(int $productID, int $categoryID): stdClass
     {
         $nav             = new stdClass();
-        $customerGroupID = \Session\Session::getCustomerGroup()->getID();
+        $customerGroupID = Session::getCustomerGroup()->getID();
         // Wurde der Artikel von der Artikelübersicht aus angeklickt?
         if ($productID > 0
             && isset($_SESSION['oArtikelUebersichtKey_arr'])
-            && count($_SESSION['oArtikelUebersichtKey_arr']) > 0
+            && \count($_SESSION['oArtikelUebersichtKey_arr']) > 0
         ) {
             $collection = $_SESSION['oArtikelUebersichtKey_arr'];
             if (!($collection instanceof \Tightenco\Collect\Support\Collection)) {
@@ -1414,7 +1439,7 @@ class ArtikelHelper
                         AND tpreise.kKundengruppe = ' . $customerGroupID . ' ' . $stockFilter . '
                     ORDER BY tartikel.kArtikel DESC
                     LIMIT 1',
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
             $next        = Shop::Container()->getDB()->query(
                 'SELECT tartikel.kArtikel
@@ -1431,7 +1456,7 @@ class ArtikelHelper
                         AND tpreise.kKundengruppe = ' . $customerGroupID . ' ' . $stockFilter . '
                     ORDER BY tartikel.kArtikel
                     LIMIT 1',
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
 
             if (!empty($prev->kArtikel)) {
@@ -1468,7 +1493,7 @@ class ArtikelHelper
             'kEigenschaftWert AS EigenschaftWert'
         );
 
-        return array_merge($nonAllowed, $nonAllowed2);
+        return \array_merge($nonAllowed, $nonAllowed2);
     }
 
     /**
@@ -1491,65 +1516,65 @@ class ArtikelHelper
         if ($redirectParam === null && isset($_GET['r'])) {
             $redirectParam = $_GET['r'];
         }
-        if ($renew || !isset($GLOBALS['Artikelhinweise']) || !is_array($GLOBALS['Artikelhinweise'])) {
+        if ($renew || !isset($GLOBALS['Artikelhinweise']) || !\is_array($GLOBALS['Artikelhinweise'])) {
             $GLOBALS['Artikelhinweise'] = [];
         }
-        if ($renew || !isset($GLOBALS['PositiveFeedback']) || !is_array($GLOBALS['PositiveFeedback'])) {
+        if ($renew || !isset($GLOBALS['PositiveFeedback']) || !\is_array($GLOBALS['PositiveFeedback'])) {
             $GLOBALS['PositiveFeedback'] = [];
         }
         if ($redirectParam) {
-            $messages = is_array($redirectParam) ? $redirectParam : explode(',', $redirectParam);
-            $messages = array_unique($messages);
+            $messages = \is_array($redirectParam) ? $redirectParam : \explode(',', $redirectParam);
+            $messages = \array_unique($messages);
 
             foreach ($messages as $message) {
                 switch ($message) {
-                    case R_LAGERVAR:
+                    case \R_LAGERVAR:
                         $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('quantityNotAvailableVar', 'messages');
                         break;
-                    case R_VARWAEHLEN:
+                    case \R_VARWAEHLEN:
                         $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('chooseVariations', 'messages');
                         break;
-                    case R_VORBESTELLUNG:
+                    case \R_VORBESTELLUNG:
                         $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('preorderNotPossible', 'messages');
                         break;
-                    case R_LOGIN:
+                    case \R_LOGIN:
                         $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('pleaseLogin', 'messages');
                         break;
-                    case R_LAGER:
+                    case \R_LAGER:
                         $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('quantityNotAvailable', 'messages');
                         break;
-                    case R_MINDESTMENGE:
-                        $GLOBALS['Artikelhinweise'][] = lang_mindestbestellmenge(
+                    case \R_MINDESTMENGE:
+                        $GLOBALS['Artikelhinweise'][] = \lang_mindestbestellmenge(
                             $product ?? $GLOBALS['AktuellerArtikel'],
                             $amount ?? $_GET['n'],
                             $configItemID
                         );
                         break;
-                    case R_LOGIN_WUNSCHLISTE:
+                    case \R_LOGIN_WUNSCHLISTE:
                         $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('loginWishlist', 'messages');
                         break;
-                    case R_MAXBESTELLMENGE:
+                    case \R_MAXBESTELLMENGE:
                         $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('wkMaxorderlimit', 'messages');
                         break;
-                    case R_ARTIKELABNAHMEINTERVALL:
+                    case \R_ARTIKELABNAHMEINTERVALL:
                         $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('wkPurchaseintervall', 'messages');
                         break;
-                    case R_UNVERKAEUFLICH:
+                    case \R_UNVERKAEUFLICH:
                         $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('wkUnsalable', 'messages');
                         break;
-                    case R_AUFANFRAGE:
+                    case \R_AUFANFRAGE:
                         $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('wkOnrequest', 'messages');
                         break;
-                    case R_EMPTY_TAG:
+                    case \R_EMPTY_TAG:
                         $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('tagArtikelEmpty', 'messages');
                         break;
-                    case R_EMPTY_VARIBOX:
+                    case \R_EMPTY_VARIBOX:
                         $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('artikelVariBoxEmpty', 'messages');
                         break;
                     default:
                         break;
                 }
-                executeHook(HOOK_ARTIKEL_INC_ARTIKELHINWEISSWITCH);
+                \executeHook(\HOOK_ARTIKEL_INC_ARTIKELHINWEISSWITCH);
             }
         }
 
@@ -1569,21 +1594,21 @@ class ArtikelHelper
         }
         $tag             = StringHandler::filterXSS(RequestHelper::verifyGPDataString('tag'));
         $variKindArtikel = RequestHelper::verifyGPDataString('variKindArtikel');
-        if (strlen($tag) > 0) {
-            $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
+        if (\strlen($tag) > 0) {
+            $conf = Shop::getSettings([\CONF_ARTIKELDETAILS]);
             // Pruefe ob Kunde eingeloggt
             if (empty($_SESSION['Kunde']->kKunde) && $conf['artikeldetails']['tagging_freischaltung'] === 'Y') {
                 $linkHelper = Shop::Container()->getLinkService();
-                header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) .
+                \header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) .
                     '?a=' . (int)$_POST['a'] . '&tag=' .
                     StringHandler::htmlentities(StringHandler::filterXSS($_POST['tag'])) .
-                    '&r=' . R_LOGIN_TAG . '&produktTag=1', true, 303);
+                    '&r=' . \R_LOGIN_TAG . '&produktTag=1', true, 303);
                 exit();
             }
             Shop::Container()->getDB()->query(
                 'DELETE FROM ttagkunde
                     WHERE dZeit < DATE_SUB(NOW(),INTERVAL 1 MONTH)',
-                \DB\ReturnType::DEFAULT
+                ReturnType::DEFAULT
             );
             if (($conf['artikeldetails']['tagging_freischaltung'] === 'Y'
                     && isset($_SESSION['Kunde']->kKunde)
@@ -1598,7 +1623,7 @@ class ArtikelHelper
                             WHERE dZeit > DATE_SUB(NOW(),INTERVAL 1 DAY)
                                 AND kKunde = :kKunde',
                         ['kKunde' => (int)$_SESSION['Kunde']->kKunde],
-                        \DB\ReturnType::SINGLE_OBJECT
+                        ReturnType::SINGLE_OBJECT
                     );
                     $kKunde      = (int)$_SESSION['Kunde']->kKunde;
                 } else {
@@ -1608,7 +1633,7 @@ class ArtikelHelper
                                 AND cIP = :ip
                                 AND kKunde = 0',
                         ['ip' => $ip],
-                        \DB\ReturnType::SINGLE_OBJECT
+                        ReturnType::SINGLE_OBJECT
                     );
                     $kKunde      = 0;
                 }
@@ -1626,7 +1651,7 @@ class ArtikelHelper
                         Shop::Container()->getDB()->escape($tag)
                     );
                     $tagmapping_obj    = $tagmapping_objTMP;
-                    if (isset($tagmapping_obj->cNameNeu) && strlen($tagmapping_obj->cNameNeu) > 0) {
+                    if (isset($tagmapping_obj->cNameNeu) && \strlen($tagmapping_obj->cNameNeu) > 0) {
                         $tag = $tagmapping_obj->cNameNeu;
                     }
                     // Prüfe ob der Tag bereits vorhanden ist
@@ -1659,12 +1684,12 @@ class ArtikelHelper
                             }
                         }
                     } else {
-                        require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
+                        require_once \PFAD_ROOT . \PFAD_DBES . 'seo.php';
                         $neuerTag           = new Tag();
                         $neuerTag->kSprache = Shop::getLanguage();
                         $neuerTag->cName    = $tag;
-                        $neuerTag->cSeo     = \JTL\SeoHelper::getSeo($tag);
-                        $neuerTag->cSeo     = \JTL\SeoHelper::checkSeo($neuerTag->cSeo);
+                        $neuerTag->cSeo     = SeoHelper::getSeo($tag);
+                        $neuerTag->cSeo     = SeoHelper::checkSeo($neuerTag->cSeo);
                         $neuerTag->nAktiv   = 0;
                         $kTag               = $neuerTag->insertInDB();
                         if ($kTag > 0) {
@@ -1700,14 +1725,14 @@ class ArtikelHelper
                 return Shop::Lang()->get('maxTagsExceeded', 'messages');
             }
         } elseif (isset($_POST['einloggen'])) {
-            header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('jtl.php', true) .
-                '?a=' . (int)$_POST['a'] . '&r=' . R_LOGIN_TAG, true, 303);
+            \header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('jtl.php', true) .
+                '?a=' . (int)$_POST['a'] . '&r=' . \R_LOGIN_TAG, true, 303);
             exit();
         } else {
             $url = empty($product->cURLFull)
                 ? (Shop::getURL() . '/?a=' . (int)$_POST['a'] . '&')
                 : ($product->cURLFull . '?');
-            header('Location: ' . $url . 'r=' . R_EMPTY_TAG, true, 303);
+            \header('Location: ' . $url . 'r=' . \R_EMPTY_TAG, true, 303);
             exit();
         }
 
@@ -1741,7 +1766,7 @@ class ArtikelHelper
         if ($ratingCount > $pageCount) {
             $nBlaetterAnzahl_arr = [];
             // Anzahl an Seiten
-            $nSeiten     = ceil($ratingCount / $pageCount);
+            $nSeiten     = \ceil($ratingCount / $pageCount);
             $nMaxAnzeige = 5; // Zeige in der Navigation nur maximal X Seiten an
             $nAnfang     = 0; // Wenn die aktuelle Seite - $nMaxAnzeige größer 0 ist, wird nAnfang gesetzt
             $nEnde       = 0; // Wenn die aktuelle Seite + $nMaxAnzeige <= $nSeitenist, wird nEnde gesetzt
@@ -1836,7 +1861,7 @@ class ArtikelHelper
                 $error = Shop::Lang()->get('bewertungHilfchange', 'messages');
                 break;
             case 'h04':
-                $error = sprintf(Shop::Lang()->get('bewertungBewaddCredits', 'messages'), (string)$fGuthaben);
+                $error = \sprintf(Shop::Lang()->get('bewertungBewaddCredits', 'messages'), (string)$fGuthaben);
                 break;
             case 'h05':
                 $error = Shop::Lang()->get('bewertungBewaddacitvate', 'messages');
@@ -1844,7 +1869,7 @@ class ArtikelHelper
             default:
                 $error = '';
         }
-        executeHook(HOOK_ARTIKEL_INC_BEWERTUNGHINWEISSWITCH, ['error' => $error]);
+        \executeHook(\HOOK_ARTIKEL_INC_BEWERTUNGHINWEISSWITCH, ['error' => $error]);
 
         return $error;
     }
@@ -1876,7 +1901,7 @@ class ArtikelHelper
         $product->cVaterURL                        = $parent->cURL;
         $product->VaterFunktionsAttribute          = $parent->FunktionsAttribute;
 
-        executeHook(HOOK_ARTIKEL_INC_FASSEVARIVATERUNDKINDZUSAMMEN, ['article' => $product]);
+        \executeHook(\HOOK_ARTIKEL_INC_FASSEVARIVATERUNDKINDZUSAMMEN, ['article' => $product]);
 
         return $product;
     }
@@ -1891,18 +1916,18 @@ class ArtikelHelper
     {
         $products        = [];
         $cLimit          = ' LIMIT 3';
-        $conf            = Shop::getSettings([CONF_ARTIKELDETAILS]);
+        $conf            = Shop::getSettings([\CONF_ARTIKELDETAILS]);
         $oXSeller        = self::getXSelling($productID);
         $xsellProductIDs = [];
         if (isset($oXSeller->Standard->XSellGruppen)
-            && is_array($oXSeller->Standard->XSellGruppen)
-            && count($oXSeller->Standard->XSellGruppen) > 0
+            && \is_array($oXSeller->Standard->XSellGruppen)
+            && \count($oXSeller->Standard->XSellGruppen) > 0
         ) {
             foreach ($oXSeller->Standard->XSellGruppen as $oXSeller) {
-                if (is_array($oXSeller->Artikel) && count($oXSeller->Artikel) > 0) {
+                if (\is_array($oXSeller->Artikel) && \count($oXSeller->Artikel) > 0) {
                     foreach ($oXSeller->Artikel as $product) {
                         $product->kArtikel = (int)$product->kArtikel;
-                        if (!in_array($product->kArtikel, $xsellProductIDs, true)) {
+                        if (!\in_array($product->kArtikel, $xsellProductIDs, true)) {
                             $xsellProductIDs[] = $product->kArtikel;
                         }
                     }
@@ -1910,14 +1935,14 @@ class ArtikelHelper
             }
         }
         if (isset($oXSeller->Kauf->XSellGruppen)
-            && is_array($oXSeller->Kauf->XSellGruppen)
-            && count($oXSeller->Kauf->XSellGruppen) > 0
+            && \is_array($oXSeller->Kauf->XSellGruppen)
+            && \count($oXSeller->Kauf->XSellGruppen) > 0
         ) {
             foreach ($oXSeller->Kauf->XSellGruppen as $oXSeller) {
-                if (is_array($oXSeller->Artikel) && count($oXSeller->Artikel) > 0) {
+                if (\is_array($oXSeller->Artikel) && \count($oXSeller->Artikel) > 0) {
                     foreach ($oXSeller->Artikel as $product) {
                         $product->kArtikel = (int)$product->kArtikel;
-                        if (!in_array($product->kArtikel, $xsellProductIDs, true)) {
+                        if (!\in_array($product->kArtikel, $xsellProductIDs, true)) {
                             $xsellProductIDs[] = $product->kArtikel;
                         }
                     }
@@ -1925,8 +1950,8 @@ class ArtikelHelper
             }
         }
 
-        $xsellSQL = count($xsellProductIDs) > 0
-            ? ' AND tartikel.kArtikel NOT IN (' . implode(',', $xsellProductIDs) . ') '
+        $xsellSQL = \count($xsellProductIDs) > 0
+            ? ' AND tartikel.kArtikel NOT IN (' . \implode(',', $xsellProductIDs) . ') '
             : '';
 
         if ($productID > 0) {
@@ -1934,7 +1959,7 @@ class ArtikelHelper
                 $cLimit = ' LIMIT ' . (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
             }
             $stockFilterSQL    = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $customerGroupID   = \Session\Session::getCustomerGroup()->getID();
+            $customerGroupID   = Session::getCustomerGroup()->getID();
             $productAttributes = Shop::Container()->getDB()->queryPrepared(
                 'SELECT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel
                     FROM tartikelmerkmal
@@ -1955,9 +1980,9 @@ class ArtikelHelper
                     'kArtikel'        => $productID,
                     'customerGroupID' => $customerGroupID
                 ],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
-            if (is_array($productAttributes) && count($productAttributes) > 0) {
+            if (\is_array($productAttributes) && \count($productAttributes) > 0) {
                 $defaultOptions = Artikel::getDefaultOptions();
                 foreach ($productAttributes as $oArtikelMerkmal) {
                     $product = new Artikel();
@@ -1991,9 +2016,9 @@ class ArtikelHelper
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL ' . $stockFilterSQL . ' ' . $xsellSQL . '
                         GROUP BY tsuchcachetreffer.kArtikel
                         ORDER BY COUNT(*) DESC' . $cLimit,
-                    \DB\ReturnType::ARRAY_OF_OBJECTS
+                    ReturnType::ARRAY_OF_OBJECTS
                 );
-                if (count($searchCacheHits) > 0) {
+                if (\count($searchCacheHits) > 0) {
                     $defaultOptions = Artikel::getDefaultOptions();
                     foreach ($searchCacheHits as $oArtikelSuchcacheTreffer) {
                         $product = new Artikel();
@@ -2026,7 +2051,7 @@ class ArtikelHelper
                             WHERE tartikelsichtbarkeit.kArtikel IS NULL ' . $stockFilterSQL . ' ' . $xsellSQL . '
                             GROUP BY ttagartikel.kArtikel
                             ORDER BY COUNT(*) DESC' . $cLimit,
-                        \DB\ReturnType::ARRAY_OF_OBJECTS
+                        ReturnType::ARRAY_OF_OBJECTS
                     );
                     $defaultOptions = Artikel::getDefaultOptions();
                     foreach ($taggedProducts as $taggedProduct) {
@@ -2042,7 +2067,7 @@ class ArtikelHelper
                 }
             }
         }
-        executeHook(HOOK_ARTIKEL_INC_AEHNLICHEARTIKEL, ['oArtikel_arr' => &$products]);
+        \executeHook(\HOOK_ARTIKEL_INC_AEHNLICHEARTIKEL, ['oArtikel_arr' => &$products]);
 
         foreach ($products as $i => $product) {
             foreach ($xsellProductIDs as $kArtikelXSellerKey) {
@@ -2099,7 +2124,7 @@ class ArtikelHelper
         $config->cPreisLocalized = [];
         $config->cPreisString    = Shop::Lang()->get('priceAsConfigured', 'productDetails');
 
-        if (!class_exists('Konfigurator') || !Konfigurator::validateKonfig($productID)) {
+        if (!\class_exists('Konfigurator') || !Konfigurator::validateKonfig($productID)) {
             return null;
         }
         foreach ($variations as $i => $nVariation) {
@@ -2127,7 +2152,7 @@ class ArtikelHelper
         $config->Lageranzeige          = new stdClass();
         $config->Lageranzeige->nStatus = $product->Lageranzeige->nStatus;
 
-        $amount = max($amount, 1);
+        $amount = \max($amount, 1);
         if ($product->cTeilbar !== 'Y' && (int)$amount != $amount) {
             $amount = (int)$amount;
         }
@@ -2168,12 +2193,12 @@ class ArtikelHelper
                 if (!$configItem->ignoreMultiplier()) {
                     $configItem->fAnzahlWK *= $amount;
                 }
-                $configItem->bAktiv = in_array($configItemID, $configItems);
+                $configItem->bAktiv = \in_array($configItemID, $configItems);
 
                 if ($configItem->bAktiv) {
                     $config->fGesamtpreis[0] += $configItem->getPreis() * $configItem->fAnzahlWK;
                     $config->fGesamtpreis[1] += $configItem->getPreis(true) * $configItem->fAnzahlWK;
-                    $configGroup->bAktiv      = true;
+                    $configGroup->bAktiv     = true;
                     if ($configItem->getArtikel() !== null
                         && $configItem->getArtikel()->cLagerBeachten === 'Y'
                         && $config->nMinDeliveryDays < $configItem->getArtikel()->nMinDeliveryDays
@@ -2186,10 +2211,10 @@ class ArtikelHelper
                 }
             }
             unset($configItem);
-            $configGroup->oItem_arr = array_values($configGroup->oItem_arr);
+            $configGroup->oItem_arr = \array_values($configGroup->oItem_arr);
         }
         unset($configGroup);
-        if (\Session\Session::getCustomerGroup()->mayViewPrices()) {
+        if (Session::getCustomerGroup()->mayViewPrices()) {
             $config->cPreisLocalized = [
                 Preise::getLocalizedPriceString($config->fGesamtpreis[0]),
                 Preise::getLocalizedPriceString($config->fGesamtpreis[1])
@@ -2197,7 +2222,7 @@ class ArtikelHelper
         } else {
             $config->cPreisLocalized = [Shop::Lang()->get('priceHidden')];
         }
-        $config->nNettoPreise = \Session\Session::getCustomerGroup()->getIsMerchant();
+        $config->nNettoPreise = Session::getCustomerGroup()->getIsMerchant();
 
         return $config;
     }
@@ -2210,8 +2235,8 @@ class ArtikelHelper
      */
     public static function getEditConfigMode($configID, $smarty): void
     {
-        $cart = \Session\Session::getCart();
-        if (!isset($cart->PositionenArr[$configID]) || !class_exists('Konfigitem')) {
+        $cart = Session::getCart();
+        if (!isset($cart->PositionenArr[$configID]) || !\class_exists('Konfigitem')) {
             return;
         }
         /** @var WarenkorbPos $basePosition */
@@ -2253,7 +2278,7 @@ class ArtikelHelper
                 ];
             }
 
-            if (count($attrValues) > 0) {
+            if (\count($attrValues) > 0) {
                 $smarty->assign('oEigenschaftWertEdit_arr', $attrValues);
             }
         }
@@ -2266,7 +2291,7 @@ class ArtikelHelper
      */
     public static function getRatedByCurrentCustomer(int $productID, int $parentProductID = 0): bool
     {
-        $customerID = \Session\Session::getCustomer()->getID();
+        $customerID = Session::getCustomer()->getID();
         $productID  = !empty($parentProductID) ? $parentProductID : $productID;
         if ($customerID <= 0) {
             return false;

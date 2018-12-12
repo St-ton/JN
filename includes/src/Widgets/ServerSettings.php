@@ -13,7 +13,7 @@ namespace Widgets;
 class ServerSettings extends AbstractWidget
 {
     /**
-     * @var \PHPSettingsHelper
+     * @var \Helpers\PHPSettingsHelper
      */
     private $helper;
 
@@ -22,7 +22,7 @@ class ServerSettings extends AbstractWidget
      */
     public function init()
     {
-        $this->helper = \PHPSettingsHelper::getInstance();
+        $this->helper = \Helpers\PHPSettingsHelper::getInstance();
         $this->oSmarty->assign('maxExecutionTime', \ini_get('max_execution_time'))
                       ->assign('bMaxExecutionTime', $this->checkMaxExecutionTime())
                       ->assign('maxFilesize', \ini_get('upload_max_filesize'))

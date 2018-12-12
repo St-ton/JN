@@ -812,7 +812,7 @@ final class JTLCache implements JTLCacheInterface
         }
         // add current SSL status
         if ($sslStatus === true) {
-            $baseID .= '_ssl' . \RequestHelper::checkSSL();
+            $baseID .= '_ssl' . \Helpers\RequestHelper::checkSSL();
         }
 
         if ($this->options['debug'] === true && $this->options['debug_method'] === 'echo') {

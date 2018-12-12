@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\TaxHelper;
 use JTL\MagicCompatibilityTrait;
 
 /**

@@ -4,8 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+namespace Helpers;
+
+use stdClass;
+
 /**
  * Class ObjectHelper
+ * @package Helpers
  * @since 5.0.0
  */
 class ObjectHelper
@@ -19,15 +24,15 @@ class ObjectHelper
      */
     public static function sortBy(&$data, $key, $bStringToLower = false): void
     {
-        $dataCount = count($data);
+        $dataCount = \count($data);
         for ($i = $dataCount - 1; $i >= 0; $i--) {
             $swapped = false;
             for ($j = 0; $j < $i; $j++) {
                 $dataJ  = $data[$j]->$key;
                 $dataJ1 = $data[$j + 1]->$key;
                 if ($bStringToLower) {
-                    $dataJ  = strtolower($dataJ);
-                    $dataJ1 = strtolower($dataJ1);
+                    $dataJ  = \strtolower($dataJ);
+                    $dataJ1 = \strtolower($dataJ1);
                 }
                 if ($dataJ > $dataJ1) {
                     $tmp          = $data[$j];
@@ -44,17 +49,17 @@ class ObjectHelper
 
     /**
      * @param object $originalObj
-     * @return stdClass
+     * @return stdClass|object
      * @former kopiereMembers()
      * @since 5.0.0
      */
     public static function copyMembers($originalObj)
     {
-        if (!is_object($originalObj)) {
+        if (!\is_object($originalObj)) {
             return $originalObj;
         }
         $obj = new stdClass();
-        foreach (array_keys(get_object_vars($originalObj)) as $member) {
+        foreach (\array_keys(\get_object_vars($originalObj)) as $member) {
             $obj->$member = $originalObj->$member;
         }
 
@@ -66,13 +71,13 @@ class ObjectHelper
      * @param stdClass|object $dest
      * @since 5.0.0
      */
-    public static function memberCopy($src, &$dest)
+    public static function memberCopy($src, &$dest): void
     {
         if ($dest === null) {
             $dest = new stdClass();
         }
-        foreach (array_keys(get_object_vars($src)) as $key) {
-            if (!is_object($src->$key) && !is_array($src->$key)) {
+        foreach (\array_keys(\get_object_vars($src)) as $key) {
+            if (!\is_object($src->$key) && !\is_array($src->$key)) {
                 $dest->$key = $src->$key;
             }
         }
@@ -85,6 +90,6 @@ class ObjectHelper
      */
     public static function deepCopy($oObj)
     {
-        return unserialize(serialize($oObj));
+        return \unserialize(\serialize($oObj));
     }
 }

@@ -4,6 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\KategorieHelper;
+use Helpers\RequestHelper;
+use Helpers\UrlHelper;
+
 /**
  * Class Kategorie
  */

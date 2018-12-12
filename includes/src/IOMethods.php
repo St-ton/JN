@@ -4,6 +4,12 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\ArtikelHelper;
+use Helpers\TaxHelper;
+use Helpers\UrlHelper;
+use Helpers\VersandartHelper;
+use Helpers\WarenkorbHelper;
+
 require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
 
 /**

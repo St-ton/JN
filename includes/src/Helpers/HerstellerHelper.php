@@ -4,8 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Helpers;
+
+use DB\ReturnType;
+use Hersteller;
+use Kundengruppe;
+use Shop;
+use Sprache;
+
 /**
  * Class HerstellerHelper
+ * @package Helpers
  */
 class HerstellerHelper
 {
@@ -30,13 +39,13 @@ class HerstellerHelper
     private static $langID;
 
     /**
-     *
+     * HerstellerHelper constructor.
      */
     public function __construct()
     {
         $lagerfilter   = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $this->cacheID = 'manuf_' . Shop::Container()->getCache()->getBaseID() .
-            ($lagerfilter !== '' ? md5($lagerfilter) : '');
+            ($lagerfilter !== '' ? \md5($lagerfilter) : '');
         self::$langID  = Shop::getLanguage();
         if (self::$langID <= 0) {
             if (Shop::getLanguage() > 0) {
@@ -95,17 +104,17 @@ class HerstellerHelper
                                 )
                         )
                     ORDER BY thersteller.nSortNr, thersteller.cName',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             $shopURL       = Shop::getURL() . '/';
             $imageBaseURL  = Shop::getImageBaseURL();
             foreach ($manufacturers as &$manufacturer) {
                 if (!empty($manufacturer->cBildpfad)) {
-                    $manufacturer->cBildpfadKlein  = PFAD_HERSTELLERBILDER_KLEIN . $manufacturer->cBildpfad;
-                    $manufacturer->cBildpfadNormal = PFAD_HERSTELLERBILDER_NORMAL . $manufacturer->cBildpfad;
+                    $manufacturer->cBildpfadKlein  = \PFAD_HERSTELLERBILDER_KLEIN . $manufacturer->cBildpfad;
+                    $manufacturer->cBildpfadNormal = \PFAD_HERSTELLERBILDER_NORMAL . $manufacturer->cBildpfad;
                 } else {
-                    $manufacturer->cBildpfadKlein  = BILD_KEIN_HERSTELLERBILD_VORHANDEN;
-                    $manufacturer->cBildpfadNormal = BILD_KEIN_HERSTELLERBILD_VORHANDEN;
+                    $manufacturer->cBildpfadKlein  = \BILD_KEIN_HERSTELLERBILD_VORHANDEN;
+                    $manufacturer->cBildpfadNormal = \BILD_KEIN_HERSTELLERBILD_VORHANDEN;
                 }
                 $manufacturer->cBildURLKlein  = $imageBaseURL . $manufacturer->cBildpfadKlein;
                 $manufacturer->cBildURLNormal = $imageBaseURL . $manufacturer->cBildpfadKlein;
@@ -114,15 +123,15 @@ class HerstellerHelper
                 $manufacturer                 = $instance->loadFromObject($manufacturer);
             }
             unset($manufacturer);
-            $cacheTags = [CACHING_GROUP_MANUFACTURER, CACHING_GROUP_CORE];
-            executeHook(HOOK_GET_MANUFACTURERS, [
+            $cacheTags = [\CACHING_GROUP_MANUFACTURER, \CACHING_GROUP_CORE];
+            \executeHook(\HOOK_GET_MANUFACTURERS, [
                 'cached'        => false,
                 'cacheTags'     => &$cacheTags,
                 'manufacturers' => &$manufacturers
             ]);
             Shop::Container()->getCache()->set($this->cacheID, $manufacturers, $cacheTags);
         } else {
-            executeHook(HOOK_GET_MANUFACTURERS, [
+            \executeHook(\HOOK_GET_MANUFACTURERS, [
                 'cached'        => true,
                 'cacheTags'     => [],
                 'manufacturers' => &$manufacturers
@@ -138,13 +147,13 @@ class HerstellerHelper
      * @param string|int    $value
      * @param callable|null $callback
      * @return mixed
-     * @since 5.0
+     * @since 5.0.0
      */
     public static function getDataByAttribute(string $attribute, $value, callable $callback = null)
     {
         $res = Shop::Container()->getDB()->select('thersteller', $attribute, $value);
 
-        return is_callable($callback)
+        return \is_callable($callback)
             ? $callback($res)
             : $res;
     }
@@ -154,7 +163,7 @@ class HerstellerHelper
      * @param string|int    $value
      * @param callable|null $callback
      * @return mixed
-     * @since 5.0
+     * @since 5.0.0
      */
     public static function getManufacturerByAttribute(string $attribute, $value, callable $callback = null)
     {
@@ -162,7 +171,7 @@ class HerstellerHelper
             ? new Hersteller($res->kHersteller)
             : null;
 
-        return is_callable($callback)
+        return \is_callable($callback)
             ? $callback($mf)
             : $mf;
     }

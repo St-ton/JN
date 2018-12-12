@@ -4,9 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Smarty\SmartyResourceNiceDB;
-use DB\ReturnType;
 use DB\DbInterface;
+use DB\ReturnType;
+use Helpers\KategorieHelper;
+use Helpers\RequestHelper;
+use Helpers\TaxHelper;
+use Helpers\VersandartHelper;
+use Smarty\SmartyResourceNiceDB;
 
 /**
  * Class Exportformat

@@ -6,6 +6,8 @@
  * @since 5.0
  */
 
+use Helpers\ObjectHelper;
+
 /**
  * Class CustomerFields
  */

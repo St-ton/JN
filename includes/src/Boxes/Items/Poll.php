@@ -59,8 +59,8 @@ final class Poll extends AbstractBox
             \Shop::Container()->getCache()->set($cacheID, $polls, $cacheTags);
         }
         foreach ($polls as $poll) {
-            $poll->cURL     = \UrlHelper::buildURL($poll, \URLART_UMFRAGE);
-            $poll->cURLFull = \UrlHelper::buildURL($poll, \URLART_UMFRAGE, true);
+            $poll->cURL     = \Helpers\UrlHelper::buildURL($poll, \URLART_UMFRAGE);
+            $poll->cURLFull = \Helpers\UrlHelper::buildURL($poll, \URLART_UMFRAGE, true);
         }
         $this->setItems($polls);
         $this->setShow(\count($polls) > 0);

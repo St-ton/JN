@@ -4,6 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\TaxHelper;
+use Helpers\VersandartHelper;
+use Helpers\WarenkorbHelper;
+
 /**
  * Class Bestellung
  */

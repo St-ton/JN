@@ -4,8 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+namespace Helpers;
+
+use DB\ReturnType;
+use Kundengruppe;
+use Shop;
+use stdClass;
+
 /**
  * Class SearchSpecialHelper
+ * @package Helpers
+ * @since 5.0.0
  */
 class SearchSpecialHelper
 {
@@ -33,7 +42,7 @@ class SearchSpecialHelper
                     WHERE tsuchspecialoverlaysprache.nAktiv = 1
                         AND tsuchspecialoverlaysprache.nPrio > 0
                     ORDER BY tsuchspecialoverlaysprache.nPrio DESC',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
 
             $overlays = [];
@@ -46,18 +55,18 @@ class SearchSpecialHelper
                 $sso->nGroesse            = (int)$sso->nGroesse;
                 $sso->nPosition           = (int)$sso->nPosition;
 
-                $idx                         = strtolower(str_replace([' ', '-', '_'], '', $sso->cSuchspecial));
-                $idx                         = preg_replace(
+                $idx                         = \strtolower(\str_replace([' ', '-', '_'], '', $sso->cSuchspecial));
+                $idx                         = \preg_replace(
                     ['/Ä/', '/Ö/', '/Ü/', '/ä/', '/ö/', '/ü/', '/ß/'],
                     ['ae', 'oe', 'ue', 'ae', 'oe', 'ue', 'ss'],
                     $idx
                 );
                 $overlays[$idx]              = $sso;
-                $overlays[$idx]->cPfadKlein  = PFAD_SUCHSPECIALOVERLAY_KLEIN . $overlays[$idx]->cBildPfad;
-                $overlays[$idx]->cPfadNormal = PFAD_SUCHSPECIALOVERLAY_NORMAL . $overlays[$idx]->cBildPfad;
-                $overlays[$idx]->cPfadGross  = PFAD_SUCHSPECIALOVERLAY_GROSS . $overlays[$idx]->cBildPfad;
+                $overlays[$idx]->cPfadKlein  = \PFAD_SUCHSPECIALOVERLAY_KLEIN . $overlays[$idx]->cBildPfad;
+                $overlays[$idx]->cPfadNormal = \PFAD_SUCHSPECIALOVERLAY_NORMAL . $overlays[$idx]->cBildPfad;
+                $overlays[$idx]->cPfadGross  = \PFAD_SUCHSPECIALOVERLAY_GROSS . $overlays[$idx]->cBildPfad;
             }
-            Shop::Container()->getCache()->set($cacheID, $overlays, [CACHING_GROUP_OPTION]);
+            Shop::Container()->getCache()->set($cacheID, $overlays, [\CACHING_GROUP_OPTION]);
         }
 
         return $overlays;
@@ -72,29 +81,29 @@ class SearchSpecialHelper
     {
         $overlays = [];
 
-        $overlays[SEARCHSPECIALS_BESTSELLER]        = new stdClass();
-        $overlays[SEARCHSPECIALS_BESTSELLER]->cName = Shop::Lang()->get('bestseller');
-        $overlays[SEARCHSPECIALS_BESTSELLER]->cURL  = self::buildURL(SEARCHSPECIALS_BESTSELLER);
+        $overlays[\SEARCHSPECIALS_BESTSELLER]        = new stdClass();
+        $overlays[\SEARCHSPECIALS_BESTSELLER]->cName = Shop::Lang()->get('bestseller');
+        $overlays[\SEARCHSPECIALS_BESTSELLER]->cURL  = self::buildURL(\SEARCHSPECIALS_BESTSELLER);
 
-        $overlays[SEARCHSPECIALS_SPECIALOFFERS]        = new stdClass();
-        $overlays[SEARCHSPECIALS_SPECIALOFFERS]->cName = Shop::Lang()->get('specialOffers');
-        $overlays[SEARCHSPECIALS_SPECIALOFFERS]->cURL  = self::buildURL(SEARCHSPECIALS_SPECIALOFFERS);
+        $overlays[\SEARCHSPECIALS_SPECIALOFFERS]        = new stdClass();
+        $overlays[\SEARCHSPECIALS_SPECIALOFFERS]->cName = Shop::Lang()->get('specialOffers');
+        $overlays[\SEARCHSPECIALS_SPECIALOFFERS]->cURL  = self::buildURL(\SEARCHSPECIALS_SPECIALOFFERS);
 
-        $overlays[SEARCHSPECIALS_NEWPRODUCTS]        = new stdClass();
-        $overlays[SEARCHSPECIALS_NEWPRODUCTS]->cName = Shop::Lang()->get('newProducts');
-        $overlays[SEARCHSPECIALS_NEWPRODUCTS]->cURL  = self::buildURL(SEARCHSPECIALS_NEWPRODUCTS);
+        $overlays[\SEARCHSPECIALS_NEWPRODUCTS]        = new stdClass();
+        $overlays[\SEARCHSPECIALS_NEWPRODUCTS]->cName = Shop::Lang()->get('newProducts');
+        $overlays[\SEARCHSPECIALS_NEWPRODUCTS]->cURL  = self::buildURL(\SEARCHSPECIALS_NEWPRODUCTS);
 
-        $overlays[SEARCHSPECIALS_TOPOFFERS]        = new stdClass();
-        $overlays[SEARCHSPECIALS_TOPOFFERS]->cName = Shop::Lang()->get('topOffers');
-        $overlays[SEARCHSPECIALS_TOPOFFERS]->cURL  = self::buildURL(SEARCHSPECIALS_TOPOFFERS);
+        $overlays[\SEARCHSPECIALS_TOPOFFERS]        = new stdClass();
+        $overlays[\SEARCHSPECIALS_TOPOFFERS]->cName = Shop::Lang()->get('topOffers');
+        $overlays[\SEARCHSPECIALS_TOPOFFERS]->cURL  = self::buildURL(\SEARCHSPECIALS_TOPOFFERS);
 
-        $overlays[SEARCHSPECIALS_UPCOMINGPRODUCTS]        = new stdClass();
-        $overlays[SEARCHSPECIALS_UPCOMINGPRODUCTS]->cName = Shop::Lang()->get('upcomingProducts');
-        $overlays[SEARCHSPECIALS_UPCOMINGPRODUCTS]->cURL  = self::buildURL(SEARCHSPECIALS_UPCOMINGPRODUCTS);
+        $overlays[\SEARCHSPECIALS_UPCOMINGPRODUCTS]        = new stdClass();
+        $overlays[\SEARCHSPECIALS_UPCOMINGPRODUCTS]->cName = Shop::Lang()->get('upcomingProducts');
+        $overlays[\SEARCHSPECIALS_UPCOMINGPRODUCTS]->cURL  = self::buildURL(\SEARCHSPECIALS_UPCOMINGPRODUCTS);
 
-        $overlays[SEARCHSPECIALS_TOPREVIEWS]        = new stdClass();
-        $overlays[SEARCHSPECIALS_TOPREVIEWS]->cName = Shop::Lang()->get('topReviews');
-        $overlays[SEARCHSPECIALS_TOPREVIEWS]->cURL  = self::buildURL(SEARCHSPECIALS_TOPREVIEWS);
+        $overlays[\SEARCHSPECIALS_TOPREVIEWS]        = new stdClass();
+        $overlays[\SEARCHSPECIALS_TOPREVIEWS]->cName = Shop::Lang()->get('topReviews');
+        $overlays[\SEARCHSPECIALS_TOPREVIEWS]->cURL  = self::buildURL(\SEARCHSPECIALS_TOPREVIEWS);
 
         return $overlays;
     }
@@ -109,7 +118,7 @@ class SearchSpecialHelper
     {
         $cacheID = 'bsurl_' . $kKey . '_' . Shop::getLanguageID();
         if (($url = Shop::Container()->getCache()->get($cacheID)) !== false) {
-            executeHook(HOOK_BOXEN_INC_SUCHSPECIALURL);
+            \executeHook(\HOOK_BOXEN_INC_SUCHSPECIALURL);
 
             return $url;
         }
@@ -126,9 +135,9 @@ class SearchSpecialHelper
         ) ?? new stdClass();
 
         $oSeo->kSuchspecial = $kKey;
-        executeHook(HOOK_BOXEN_INC_SUCHSPECIALURL);
-        $url = UrlHelper::buildURL($oSeo, URLART_SEARCHSPECIALS);
-        Shop::Container()->getCache()->set($cacheID, $url, [CACHING_GROUP_CATEGORY]);
+        \executeHook(\HOOK_BOXEN_INC_SUCHSPECIALURL);
+        $url = UrlHelper::buildURL($oSeo, \URLART_SEARCHSPECIALS);
+        Shop::Container()->getCache()->set($cacheID, $url, [\CACHING_GROUP_CATEGORY]);
 
         return $url;
     }
@@ -152,19 +161,19 @@ class SearchSpecialHelper
      */
     public static function randomizeAndLimit(array $arr, int $limit = 1): array
     {
-        shuffle($arr);
+        \shuffle($arr);
 
-        return array_slice($arr, 0, $limit);
+        return \array_slice($arr, 0, $limit);
     }
 
     /**
-     * @param int $nLimit
+     * @param int $limit
      * @param int $kKundengruppe
      * @return array
      * @former gibTopAngebote()
      * @since 5.0.0
      */
-    public static function getTopOffers(int $nLimit = 20, int $kKundengruppe = 0): array
+    public static function getTopOffers(int $limit = 20, int $kKundengruppe = 0): array
     {
         if (!$kKundengruppe) {
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
@@ -179,29 +188,29 @@ class SearchSpecialHelper
                     AND tartikel.cTopArtikel = 'Y'
                     " . self::getParentSQL() . '
                     ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
 
-        return self::randomizeAndLimit($topArticles, min(count($topArticles), $nLimit));
+        return self::randomizeAndLimit($topArticles, \min(\count($topArticles), $limit));
     }
 
     /**
-     * @param int $nLimit
+     * @param int $limit
      * @param int $kKundengruppe
      * @return array
      * @former gibBestseller()
      * @since 5.0.0
      */
-    public static function getBestsellers(int $nLimit = 20, int $kKundengruppe = 0): array
+    public static function getBestsellers(int $limit = 20, int $kKundengruppe = 0): array
     {
         if (!$kKundengruppe) {
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
         }
-        $oGlobalnEinstellung_arr = Shop::getSettings([CONF_GLOBAL]);
-        $nSchwelleBestseller     = isset($oGlobalnEinstellung_arr['global']['global_bestseller_minanzahl'])
-            ? (float)$oGlobalnEinstellung_arr['global']['global_bestseller_minanzahl']
+        $config      = Shop::getSettings([\CONF_GLOBAL]);
+        $minAmount   = isset($config['global']['global_bestseller_minanzahl'])
+            ? (float)$config['global']['global_bestseller_minanzahl']
             : 10;
-        $bestsellers             = Shop::Container()->getDB()->query(
+        $bestsellers = Shop::Container()->getDB()->query(
             'SELECT tartikel.kArtikel, tbestseller.fAnzahl
                 FROM tbestseller, tartikel
                 LEFT JOIN tartikelsichtbarkeit 
@@ -209,24 +218,24 @@ class SearchSpecialHelper
                     AND tartikelsichtbarkeit.kKundengruppe = ' . $kKundengruppe . '
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tbestseller.kArtikel = tartikel.kArtikel
-                    AND round(tbestseller.fAnzahl) >= ' . $nSchwelleBestseller . '
+                    AND round(tbestseller.fAnzahl) >= ' . $minAmount . '
                     ' . self::getParentSQL() . '
                     ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
                 ORDER BY fAnzahl DESC',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
 
-        return self::randomizeAndLimit($bestsellers, min(count($bestsellers), $nLimit));
+        return self::randomizeAndLimit($bestsellers, \min(\count($bestsellers), $limit));
     }
 
     /**
-     * @param int $nLimit
+     * @param int $limit
      * @param int $kKundengruppe
      * @return array
      * @former gibSonderangebote()
      * @since 5.0.0
      */
-    public static function getSpecialOffers(int $nLimit = 20, int $kKundengruppe = 0): array
+    public static function getSpecialOffers(int $limit = 20, int $kKundengruppe = 0): array
     {
         if (!$kKundengruppe) {
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
@@ -250,28 +259,28 @@ class SearchSpecialHelper
                     AND (tartikelsonderpreis.nAnzahl < tartikel.fLagerbestand OR tartikelsonderpreis.nIstAnzahl = 0)
                     " . self::getParentSQL() . '
                     ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
 
-        return self::randomizeAndLimit($specialOffers, min(count($specialOffers), $nLimit));
+        return self::randomizeAndLimit($specialOffers, \min(\count($specialOffers), $limit));
     }
 
     /**
-     * @param int $nLimit
+     * @param int $limit
      * @param int $kKundengruppe
      * @return array
      * @former gibNeuImSortiment()
      * @since 5.0.0
      */
-    public static function getNewProducts(int $nLimit, int $kKundengruppe = 0): array
+    public static function getNewProducts(int $limit, int $kKundengruppe = 0): array
     {
-        if (!$nLimit) {
-            $nLimit = 20;
+        if (!$limit) {
+            $limit = 20;
         }
         if (!$kKundengruppe) {
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
         }
-        $config = Shop::getSettings([CONF_BOXEN]);
+        $config = Shop::getSettings([\CONF_BOXEN]);
         $days   = ($config['boxen']['box_neuimsortiment_alter_tage'] > 0)
             ? (int)$config['boxen']['box_neuimsortiment_alter_tage']
             : 30;
@@ -287,9 +296,9 @@ class SearchSpecialHelper
                     AND DATE_SUB(NOW(), INTERVAL " . $days . ' DAY) < tartikel.dErstellt
                     ' . self::getParentSQL() . '
                     ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
 
-        return self::randomizeAndLimit($new, min(count($new), $nLimit));
+        return self::randomizeAndLimit($new, \min(\count($new), $limit));
     }
 }

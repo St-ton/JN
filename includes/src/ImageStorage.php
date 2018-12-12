@@ -3,6 +3,8 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\RequestHelper;
 use Imanee\Imanee;
 
 /**

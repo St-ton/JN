@@ -3,6 +3,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\DateHelper;
+use Helpers\FormHelper;
+use Helpers\ObjectHelper;
+
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 
 /**

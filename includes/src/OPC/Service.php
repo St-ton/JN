@@ -8,9 +8,9 @@ namespace OPC;
 
 use Filter\AbstractFilter;
 use Filter\Config;
+use Filter\Items\Attribute;
 use Filter\Items\PriceRange;
 use Filter\Option;
-use Filter\Items\Attribute;
 use Filter\ProductFilter;
 use Filter\Type;
 use L10n\GetText;
@@ -221,7 +221,7 @@ class Service
      */
     public function isEditMode(): bool
     {
-        return \RequestHelper::verifyGPDataString('opcEditMode') === 'yes';
+        return \Helpers\RequestHelper::verifyGPDataString('opcEditMode') === 'yes';
     }
 
     /**
@@ -237,7 +237,7 @@ class Service
      */
     public function getEditedPageKey(): int
     {
-        return \RequestHelper::verifyGPCDataInt('opcEditedPageKey');
+        return \Helpers\RequestHelper::verifyGPCDataInt('opcEditedPageKey');
     }
 
     /**
@@ -246,7 +246,7 @@ class Service
      */
     public function getFilterOptions(array $enabledFilters = []): array
     {
-        \TaxHelper::setTaxRates();
+        \Helpers\TaxHelper::setTaxRates();
 
         $productFilter    = new ProductFilter(
             Config::getDefault(),

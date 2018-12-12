@@ -4,8 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Helpers;
+
+use Bestellung;
+use Kunde;
+use Lieferadresse;
+use Rechnungsadresse;
+use Shop;
+use stdClass;
+
 /**
  * Class BestellungHelper
+ * @package Helpers
  */
 class BestellungHelper extends WarenkorbHelper
 {
@@ -28,8 +38,7 @@ class BestellungHelper extends WarenkorbHelper
      */
     public function getTotal(int $decimals = 0): stdClass
     {
-        $order = $this->getObject();
-
+        $order           = $this->getObject();
         $info            = new stdClass();
         $info->type      = self::GROSS;
         $info->currency  = null;
@@ -39,9 +48,7 @@ class BestellungHelper extends WarenkorbHelper
         $info->surcharge = [0, 0];
         $info->total     = [0, 0];
         $info->items     = [];
-
-        $info->currency = $order->Waehrung;
-
+        $info->currency  = $order->Waehrung;
         foreach ($order->Positionen as $oPosition) {
             $amountItem  = $oPosition->fPreisEinzelNetto;
             $amount      = $amountItem; /* $order->fWaehrungsFaktor;*/
@@ -50,14 +57,14 @@ class BestellungHelper extends WarenkorbHelper
             $amountGross = (float)(string)$amountGross;
 
             switch ((int)$oPosition->nPosTyp) {
-                case C_WARENKORBPOS_TYP_ARTIKEL:
+                case \C_WARENKORBPOS_TYP_ARTIKEL:
                     $item = (object)[
                         'name'     => '',
                         'quantity' => 1,
                         'amount'   => []
                     ];
 
-                    $item->name = html_entity_decode($oPosition->cName);
+                    $item->name = \html_entity_decode($oPosition->cName);
 
                     $item->amount = [
                         self::NET   => $amount,
@@ -68,7 +75,7 @@ class BestellungHelper extends WarenkorbHelper
                         $item->amount[self::NET]   *= $oPosition->nAnzahl;
                         $item->amount[self::GROSS] *= $oPosition->nAnzahl;
 
-                        $item->name = sprintf(
+                        $item->name = \sprintf(
                             '%g %s %s',
                             (float)$oPosition->nAnzahl,
                             $oPosition->Artikel->cEinheit ?: 'x',
@@ -84,23 +91,23 @@ class BestellungHelper extends WarenkorbHelper
                     $info->items[] = $item;
                     break;
 
-                case C_WARENKORBPOS_TYP_VERSANDPOS:
-                case C_WARENKORBPOS_TYP_VERSANDZUSCHLAG:
-                case C_WARENKORBPOS_TYP_VERPACKUNG:
-                case C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG:
+                case \C_WARENKORBPOS_TYP_VERSANDPOS:
+                case \C_WARENKORBPOS_TYP_VERSANDZUSCHLAG:
+                case \C_WARENKORBPOS_TYP_VERPACKUNG:
+                case \C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG:
                     $info->shipping[self::NET]   += $amount * $oPosition->nAnzahl;
                     $info->shipping[self::GROSS] += $amountGross * $oPosition->nAnzahl;
                     break;
 
-                case C_WARENKORBPOS_TYP_KUPON:
-                case C_WARENKORBPOS_TYP_GUTSCHEIN:
-                case C_WARENKORBPOS_TYP_NEUKUNDENKUPON:
+                case \C_WARENKORBPOS_TYP_KUPON:
+                case \C_WARENKORBPOS_TYP_GUTSCHEIN:
+                case \C_WARENKORBPOS_TYP_NEUKUNDENKUPON:
                     $info->discount[self::NET]   += $amount * $oPosition->nAnzahl;
                     $info->discount[self::GROSS] += $amountGross * $oPosition->nAnzahl;
                     break;
 
-                case C_WARENKORBPOS_TYP_ZAHLUNGSART:
-                case C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR:
+                case \C_WARENKORBPOS_TYP_ZAHLUNGSART:
+                case \C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR:
                     $info->surcharge[self::NET]   += $amount * $oPosition->nAnzahl;
                     $info->surcharge[self::GROSS] += $amountGross * $oPosition->nAnzahl;
                     break;
@@ -124,8 +131,8 @@ class BestellungHelper extends WarenkorbHelper
 
         $formatter = function ($prop) use ($decimals) {
             return [
-                self::NET   => number_format($prop[self::NET], $decimals, '.', ''),
-                self::GROSS => number_format($prop[self::GROSS], $decimals, '.', ''),
+                self::NET   => \number_format($prop[self::NET], $decimals, '.', ''),
+                self::GROSS => \number_format($prop[self::GROSS], $decimals, '.', ''),
             ];
         };
 
@@ -145,7 +152,7 @@ class BestellungHelper extends WarenkorbHelper
     }
 
     /**
-     * @return Bestellung|null
+     * @return Bestellung
      */
     public function getObject()
     {
@@ -157,7 +164,7 @@ class BestellungHelper extends WarenkorbHelper
      */
     public function getShippingAddress()
     {
-        if ((int)$this->object->kLieferadresse > 0 && is_object($this->object->Lieferadresse)) {
+        if ((int)$this->object->kLieferadresse > 0 && \is_object($this->object->Lieferadresse)) {
             return $this->object->Lieferadresse;
         }
 
@@ -167,7 +174,7 @@ class BestellungHelper extends WarenkorbHelper
     /**
      * @return Rechnungsadresse|null
      */
-    public function getBillingAddress()
+    public function getBillingAddress(): ?Rechnungsadresse
     {
         return $this->object->oRechnungsadresse;
     }
@@ -175,15 +182,15 @@ class BestellungHelper extends WarenkorbHelper
     /**
      * @return Kunde
      */
-    public function getCustomer()
+    public function getCustomer(): ?Kunde
     {
         return $this->object->oKunde;
     }
 
     /**
-     * @return object
+     * @return \Currency
      */
-    public function getCurrency()
+    public function getCurrency(): \Currency
     {
         return $this->object->Waehrung;
     }

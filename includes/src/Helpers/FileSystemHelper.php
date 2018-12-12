@@ -4,8 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+namespace Helpers;
+
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+
 /**
  * Class FileSystemHelper
+ * @package Helpers
  * @since 5.0.0
  */
 class FileSystemHelper

@@ -4,7 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 /**
@@ -785,7 +784,6 @@ function explodecArtikel($cArtikel): stdClass
  */
 function explodecKundengruppe($cKundengruppe): array
 {
-    // cKundengruppe exploden
     $cKundengruppeTMP_arr = explode(';', $cKundengruppe);
     $kKundengruppe_arr    = [];
     if (is_array($cKundengruppeTMP_arr) && count($cKundengruppeTMP_arr) > 0) {
@@ -797,62 +795,6 @@ function explodecKundengruppe($cKundengruppe): array
     }
 
     return $kKundengruppe_arr;
-}
-
-/**
- * @param array $cArtNr_arr
- * @return array
- */
-function holeArtikel($cArtNr_arr)
-{
-    // Artikel holen
-    $oArtikel_arr = [];
-    if (!is_array($cArtNr_arr) || count($cArtNr_arr) === 0) {
-        return $oArtikel_arr;
-    }
-    $defaultOptions = Artikel::getDefaultOptions();
-    foreach ($cArtNr_arr as $cArtNr) {
-        if ($cArtNr !== '') {
-            $oArtikel_tmp = Shop::Container()->getDB()->select('tartikel', 'cArtNr', $cArtNr);
-            // Artikel mit cArtNr vorhanden?
-            if (isset($oArtikel_tmp->kArtikel) && $oArtikel_tmp->kArtikel > 0) {
-                // Artikelsichtbarkeit pruefen
-//                    $oSichtbarkeit_arr = Shop::Container()->getDB()->query(
-//                        "SELECT *
-//                            FROM tartikelsichtbarkeit
-//                            WHERE kArtikel=" . $oArtikel_tmp->kArtikel, 2
-//                    );
-                $nSichtbar = 1;
-//                    if (is_array($oSichtbarkeit_arr) && count($oSichtbarkeit_arr) > 0) {
-//                        foreach ($oSichtbarkeit_arr as $oSichtbarkeit) {
-                        //@todo: $kKundengruppe_arr undefined
-//                            if (in_array($oSichtbarkeit->kKundengruppe, $kKundengruppe_arr)) {
-//                                $nSichtbar = 0;
-//                                break;
-//                            }
-//                        }
-//                    }
-                // Wenn der Artikel fuer diese Kundengruppen sichtbar ist
-                if ($nSichtbar) {
-                    $_SESSION['Kundengruppe']->setMayViewPrices(1);
-                    $oArtikel = new Artikel();
-                    $oArtikel->fuelleArtikel($oArtikel_tmp->kArtikel, $defaultOptions);
-
-                    $oArtikel_arr[] = $oArtikel;
-                } else {
-                    $GLOBALS['step']     = 'versand_vorbereiten';
-                    $GLOBALS['cFehler'] .= 'Fehler, der Artikel ' . $cArtNr .
-                        ' ist für einige Kundengruppen nicht sichtbar.<br>';
-                }
-            } else {
-                $GLOBALS['step']     = 'versand_vorbereiten';
-                $GLOBALS['cFehler'] .= 'Fehler, der Artikel ' . $cArtNr .
-                    ' konnte nicht in der Datenbank gefunden werden.<br>';
-            }
-        }
-    }
-
-    return $oArtikel_arr;
 }
 
 /**

@@ -9,6 +9,7 @@ namespace Cron\Jobs;
 use Cron\Job;
 use Cron\JobInterface;
 use Cron\QueueEntry;
+use GeneralDataProtection\TableCleaner;
 
 /**
  * Class GeneralDataProtect
@@ -21,7 +22,7 @@ class GeneralDataProtect extends Job
      */
     public function start(QueueEntry $queueEntry): JobInterface
     {
-        $oTableCleaner = new \GeneralDataProtection\TableCleaner();
+        $oTableCleaner = new TableCleaner();
         $oTableCleaner->execute();
 
         return $this;

@@ -649,7 +649,7 @@ class Bestellung
                     foreach ($this->Positionen as $nPos => $_pos) {
                         if ($position->cUnique === $_pos->cUnique) {
                             $fPreisNetto  += $_pos->fPreis * $_pos->nAnzahl;
-                            $ust           = TaxHelper::getSalesTax($_pos->kSteuerklasse ?? null);
+                            $ust           = TaxHelper::getSalesTax($_pos->kSteuerklasse ?? 0);
                             $fPreisBrutto += TaxHelper::getGross($_pos->fPreis * $_pos->nAnzahl, $ust);
                             if ((int)$_pos->kKonfigitem === 0 &&
                                 is_string($_pos->cUnique) &&

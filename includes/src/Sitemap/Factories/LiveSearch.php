@@ -11,7 +11,7 @@ use function Functional\map;
 
 /**
  * Class LiveSearch
- * @package Sitemap\Generators
+ * @package Sitemap\Factories
  */
 final class LiveSearch extends AbstractFactory
 {

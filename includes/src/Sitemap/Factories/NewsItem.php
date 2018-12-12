@@ -12,7 +12,7 @@ use function Functional\map;
 
 /**
  * Class NewsItem
- * @package Sitemap\Generators
+ * @package Sitemap\Factories
  */
 final class NewsItem extends AbstractFactory
 {

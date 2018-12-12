@@ -7,11 +7,10 @@
 namespace Session\Handler;
 
 /**
- * Class SessionHandler
- *
- * @package JTL\Session
+ * Class SessionHandlerJTL
+ * @package Session\Handler
  */
-class SessionHandlerJTL extends \SessionHandler implements \SessionHandlerInterface
+class SessionHandlerJTL extends \SessionHandler
 {
     /**
      * @var array|null

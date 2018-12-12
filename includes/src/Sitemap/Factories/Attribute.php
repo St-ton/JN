@@ -11,7 +11,7 @@ use function Functional\map;
 
 /**
  * Class Attribute
- * @package Sitemap\Generators
+ * @package Sitemap\Factories
  */
 final class Attribute extends AbstractFactory
 {

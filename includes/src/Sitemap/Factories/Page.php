@@ -14,7 +14,7 @@ use function Functional\map;
 
 /**
  * Class Page
- * @package Sitemap\Generators
+ * @package Sitemap\Factories
  */
 final class Page extends AbstractFactory
 {

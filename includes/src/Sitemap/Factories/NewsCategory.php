@@ -11,7 +11,7 @@ use function Functional\map;
 
 /**
  * Class NewsCategory
- * @package Sitemap\Generators
+ * @package Sitemap\Factories
  */
 final class NewsCategory extends AbstractFactory
 {

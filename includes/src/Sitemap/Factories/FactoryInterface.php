@@ -10,7 +10,7 @@ use DB\DbInterface;
 
 /**
  * Interface FactoryInterface
- * @package Sitemap\Generators
+ * @package Sitemap\Factories
  */
 interface FactoryInterface
 {

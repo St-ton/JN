@@ -14,6 +14,7 @@ use Session\Handler\SessionHandlerJTL;
 
 /**
  * Class Session
+ * @package Session
  */
 class Session
 {

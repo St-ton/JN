@@ -8,7 +8,7 @@ namespace Sitemap\Factories;
 
 /**
  * Class Base
- * @package Sitemap\Generators
+ * @package Sitemap\Factories
  */
 final class Base extends AbstractFactory
 {

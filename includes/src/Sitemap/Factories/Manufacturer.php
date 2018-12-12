@@ -11,7 +11,7 @@ use function Functional\map;
 
 /**
  * Class Manufacturer
- * @package Sitemap\Generators
+ * @package Sitemap\Factories
  */
 final class Manufacturer extends AbstractFactory
 {

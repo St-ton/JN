@@ -11,7 +11,7 @@ use function Functional\map;
 
 /**
  * Class Tag
- * @package Sitemap\Generators
+ * @package Sitemap\Factories
  */
 final class Tag extends AbstractFactory
 {

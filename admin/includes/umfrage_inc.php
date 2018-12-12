@@ -314,7 +314,7 @@ function holeUmfrageStatistik(int $surveyID)
         ) {
             $answers       = [];
             $matrixOptions = [];
-            $resultMatrix  = [];
+            $resMatrix     = [];
 
             $answerData = Shop::Container()->getDB()->query(
                 'SELECT cName, kUmfrageFrageAntwort
@@ -323,9 +323,7 @@ function holeUmfrageStatistik(int $surveyID)
                     ORDER BY nSort',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            //Hilfarray basteln für die Anzeige mit Antworten der Matrix
             foreach ($answerData as $oUmfrageFrageAntwortTMP) {
-                unset($answer);
                 $answer                       = new stdClass();
                 $answer->cName                = $oUmfrageFrageAntwortTMP->cName;
                 $answer->kUmfrageFrageAntwort = $oUmfrageFrageAntwortTMP->kUmfrageFrageAntwort;
@@ -342,74 +340,75 @@ function holeUmfrageStatistik(int $surveyID)
                     ORDER BY tumfragematrixoption.nSort',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            //Hilfarray basteln für die Anzeige mit Optionen der Matrix
             foreach ($matrixOptTMP_arr as $matrixOptTMP) {
-                unset($matrixOpt);
-                $matrixOpt                       = new stdClass();
-                $matrixOpt->nAnzahlOption        = $matrixOptTMP->nAnzahlOption;
-                $matrixOpt->cName                = $matrixOptTMP->cName;
-                $matrixOpt->kUmfrageMatrixOption = $matrixOptTMP->kUmfrageMatrixOption;
-                $matrixOptions[]                 = $matrixOpt;
+                unset($opt);
+                $opt                       = new stdClass();
+                $opt->nAnzahlOption        = $matrixOptTMP->nAnzahlOption;
+                $opt->cName                = $matrixOptTMP->cName;
+                $opt->kUmfrageMatrixOption = $matrixOptTMP->kUmfrageMatrixOption;
+                $matrixOptions[]                 = $opt;
             }
             //Leereinträge in die Matrix einfügen
             foreach ($answers as $answer) {
-                foreach ($matrixOptions as $matrixOpt) {
+                foreach ($matrixOptions as $opt) {
                     $res                = new stdClass();
                     $res->nAnzahl       = 0;
-                    $res->nGesamtAnzahl = $matrixOpt->nAnzahlOption;
+                    $res->nGesamtAnzahl = $opt->nAnzahlOption;
                     $res->fProzent      = 0;
                     $res->nBold         = 0;
 
-                    $resultMatrix[$answer->kUmfrageFrageAntwort][$matrixOpt->kUmfrageMatrixOption] = $res;
+                    $resMatrix[$answer->kUmfrageFrageAntwort][$opt->kUmfrageMatrixOption] = $res;
                 }
             }
             //der gesamten umfrage hinzufügen
             $stats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = $answers;
             $stats->oUmfrageFrage_arr[$i]->oUmfrageMatrixOption_arr = $matrixOptions;
             //hole pro Option die Anzahl raus
-            foreach ($matrixOptions as $matrixOpt) {
+            foreach ($matrixOptions as $opt) {
                 $matrixOptAnzahlSpalte_arr = Shop::Container()->getDB()->query(
                     'SELECT COUNT(*) AS nAnzahlOptionProAntwort, kUmfrageFrageAntwort
                         FROM  tumfragedurchfuehrungantwort
-                        WHERE kUmfrageMatrixOption = ' . (int)$matrixOpt->kUmfrageMatrixOption . '
+                        WHERE kUmfrageMatrixOption = ' . (int)$opt->kUmfrageMatrixOption . '
                             AND kUmfrageFrage = ' . (int)$question->kUmfrageFrage . '
                         GROUP BY kUmfrageFrageAntwort ',
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 //setze jeder Antwort den entsprechenden Matrixeintrag
                 foreach ($matrixOptAnzahlSpalte_arr as $col) {
-                    $resultMatrix[$col->kUmfrageFrageAntwort][$matrixOpt->kUmfrageMatrixOption]->nAnzahl  =
+                    $resMatrix[$col->kUmfrageFrageAntwort][$opt->kUmfrageMatrixOption]->nAnzahl  =
                         $col->nAnzahlOptionProAntwort;
-                    $resultMatrix[$col->kUmfrageFrageAntwort][$matrixOpt->kUmfrageMatrixOption]->fProzent =
+                    $resMatrix[$col->kUmfrageFrageAntwort][$opt->kUmfrageMatrixOption]->fProzent =
                         round(
                             (
                                 $col->nAnzahlOptionProAntwort /
-                                $resultMatrix[$col->kUmfrageFrageAntwort][$matrixOpt->kUmfrageMatrixOption]->nGesamtAnzahl
+                                $resMatrix[$col->kUmfrageFrageAntwort][$opt->kUmfrageMatrixOption]->nGesamtAnzahl
                             ) * 100,
                             1
                         );
                 }
             }
             //ermittele die maximalen Werte und setze nBold=1
-            foreach ($matrixOptions as $matrixOpt) {
+            foreach ($matrixOptions as $opt) {
                 $maxAnswers = 0;
-                if (is_array($answers)) {
-                    //max ermitteln
-                    foreach ($answers as $answer) {
-                        if ($resultMatrix[$answer->kUmfrageFrageAntwort][$matrixOpt->kUmfrageMatrixOption]->nAnzahl > $maxAnswers) {
-                            $maxAnswers = $resultMatrix[$answer->kUmfrageFrageAntwort][$matrixOpt->kUmfrageMatrixOption]->nAnzahl;
-                        }
+                if (!is_array($answers)) {
+                    continue;
+                }
+                //max ermitteln
+                foreach ($answers as $answer) {
+                    if ($resMatrix[$answer->kUmfrageFrageAntwort][$opt->kUmfrageMatrixOption]->nAnzahl > $maxAnswers) {
+                        $maxAnswers = $resMatrix[$answer->kUmfrageFrageAntwort][$opt->kUmfrageMatrixOption]->nAnzahl;
                     }
-                    //bold setzen
-                    foreach ($answers as $answer) {
-                        if ($resultMatrix[$answer->kUmfrageFrageAntwort][$matrixOpt->kUmfrageMatrixOption]->nAnzahl == $maxAnswers) {
-                            $resultMatrix[$answer->kUmfrageFrageAntwort][$matrixOpt->kUmfrageMatrixOption]->nBold = 1;
-                        }
+                }
+                //bold setzen
+                foreach ($answers as $answer) {
+                    if ($resMatrix[$answer->kUmfrageFrageAntwort][$opt->kUmfrageMatrixOption]->nAnzahl == $maxAnswers
+                    ) {
+                        $resMatrix[$answer->kUmfrageFrageAntwort][$opt->kUmfrageMatrixOption]->nBold = 1;
                     }
                 }
             }
             //Ergebnismatrix für die Frage setzen
-            $stats->oUmfrageFrage_arr[$i]->oErgebnisMatrix_arr = $resultMatrix;
+            $stats->oUmfrageFrage_arr[$i]->oErgebnisMatrix_arr = $resMatrix;
         } elseif ($question->cTyp === \Survey\QuestionType::TEXT_SMALL
             || $question->cTyp === \Survey\QuestionType::TEXT_BIG
         ) {

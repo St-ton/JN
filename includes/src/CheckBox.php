@@ -170,7 +170,12 @@ class CheckBox
         }
         if ($this->kLink > 0) {
             $this->oLink = new \Link\Link($db);
-            $this->oLink->load($this->kLink);
+            try {
+                $this->oLink->load($this->kLink);
+            } catch (InvalidArgumentException $e) {
+                $logger = Shop::Container()->getLogService();
+                $logger->error('Checkbox cannot link to link ID ' . $this->kLink);
+            }
         } else {
             $this->cLink = 'kein interner Link';
         }

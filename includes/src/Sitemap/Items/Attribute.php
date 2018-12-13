@@ -31,7 +31,7 @@ final class Attribute extends AbstractItem
      */
     public function generateLocation(): void
     {
-        $this->setLocation(\UrlHelper::buildURL($this->data, \URLART_SEITE));
+        $this->setLocation(\Helpers\UrlHelper::buildURL($this->data, \URLART_SEITE));
     }
 
     /**

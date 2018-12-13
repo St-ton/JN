@@ -7,6 +7,7 @@
 namespace DB\Services;
 
 use DB\DbInterface;
+use DB\ReturnType;
 
 /**
  * Class GcService
@@ -115,13 +116,13 @@ class GcService implements GcServiceInterface
                     "DELETE {$cFrom} 
                         FROM {$cTable} {$cJoin} 
                         WHERE DATE_SUB(NOW(), INTERVAL {$cInterval} DAY) >= {$cTable}.{$cDateField}",
-                    \DB\ReturnType::AFFECTED_ROWS
+                    ReturnType::AFFECTED_ROWS
                 );
             } else {
                 $this->db->query(
                     "DELETE FROM {$cTable} 
                         WHERE DATE_SUB(NOW(), INTERVAL {$cInterval} DAY) >= {$cDateField}",
-                    \DB\ReturnType::AFFECTED_ROWS
+                    ReturnType::AFFECTED_ROWS
                 );
             }
         }

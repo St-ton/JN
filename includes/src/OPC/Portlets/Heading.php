@@ -6,13 +6,14 @@
 
 namespace OPC\Portlets;
 
+use OPC\Portlet;
 use OPC\PortletInstance;
 
 /**
  * Class Heading
  * @package OPC\Portlets
  */
-class Heading extends \OPC\Portlet
+class Heading extends Portlet
 {
     /**
      * @param PortletInstance $instance
@@ -20,7 +21,11 @@ class Heading extends \OPC\Portlet
      */
     public function getPreviewHtml(PortletInstance $instance): string
     {
-        return $this->getPreviewRootHtml($instance, 'h' . $instance->getProperty('level'), $instance->getProperty('text'));
+        return $this->getPreviewRootHtml(
+            $instance,
+            'h' . $instance->getProperty('level'),
+            $instance->getProperty('text')
+        );
     }
 
     /**
@@ -29,7 +34,11 @@ class Heading extends \OPC\Portlet
      */
     public function getFinalHtml(PortletInstance $instance): string
     {
-        return $this->getFinalRootHtml($instance, 'h' . $instance->getProperty('level'), $instance->getProperty('text'));
+        return $this->getFinalRootHtml(
+            $instance,
+            'h' . $instance->getProperty('level'),
+            $instance->getProperty('text')
+        );
     }
 
     /**

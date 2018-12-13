@@ -362,19 +362,19 @@ class PreisverlaufGraph
         $this->nInnenRahmenUnten    = 0;
         $this->nInnenRahmenRechts   = 0;
 
-        $this->nHoehe          = 0;
-        $this->nBreite         = 0;
-        $this->nAnzahlPreise   = 0;
-        $this->nAnzahlTage     = 0;
-        $this->nStepX          = 0;
-        $this->nStepY          = 0;
-        $this->nMaxTimestamp   = 0;
-        $this->nMinTimestamp   = 0;
-        $this->fMaxPreis       = 0.0;
-        $this->fMinPreis       = 0.0;
-        $this->fDiffPreis      = 0.0;
-        $this->nStep           = 0;
-        $this->fStepWert_arr   = [
+        $this->nHoehe              = 0;
+        $this->nBreite             = 0;
+        $this->nAnzahlPreise       = 0;
+        $this->nAnzahlTage         = 0;
+        $this->nStepX              = 0;
+        $this->nStepY              = 0;
+        $this->nMaxTimestamp       = 0;
+        $this->nMinTimestamp       = 0;
+        $this->fMaxPreis           = 0.0;
+        $this->fMinPreis           = 0.0;
+        $this->fDiffPreis          = 0.0;
+        $this->nStep               = 0;
+        $this->fStepWert_arr       = [
             0.25,
             0.5,
             1.0,
@@ -391,12 +391,12 @@ class PreisverlaufGraph
             2500.0,
             25000.0
         ];
-        $this->ColorBackground = [255, 255, 255];
-        $this->ColorGrid       = [255, 255, 255];
-        $this->ColorGraph      = [255, 255, 255];
-        $this->ColorBox        = [255, 255, 255];
-        $this->ColorText       = [255, 255, 255];
-        $this->nSchriftgroesse = 8;
+        $this->ColorBackground     = [255, 255, 255];
+        $this->ColorGrid           = [255, 255, 255];
+        $this->ColorGraph          = [255, 255, 255];
+        $this->ColorBox            = [255, 255, 255];
+        $this->ColorText           = [255, 255, 255];
+        $this->nSchriftgroesse     = 8;
         $this->cSchriftart         = 'GeosansLight.ttf';
         $this->cSchriftverzeichnis = PFAD_ROOT . PFAD_FONTS . '/';
 
@@ -828,7 +828,7 @@ class PreisverlaufGraph
             return;
         }
         foreach ($this->oConfig_arr as $i => $oConfig) {
-            if (preg_match("/#[A-Fa-f0-9]{6}/", $oConfig->cWert) == 1) {
+            if (preg_match('/#[A-Fa-f0-9]{6}/', $oConfig->cWert) == 1) {
                 $nDecZahl_arr = [];
 
                 $cWertSub       = substr($oConfig->cWert, 1);

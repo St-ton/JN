@@ -7,7 +7,8 @@
 namespace Cache;
 
 /**
- * Class JTLCacheTrait
+ * Trait JTLCacheTrait
+ * @package Cache
  */
 trait JTLCacheTrait
 {
@@ -64,7 +65,7 @@ trait JTLCacheTrait
     /**
      * @return string|null
      */
-    public function getJournalID()
+    public function getJournalID(): ?string
     {
         return $this->journalID;
     }
@@ -72,7 +73,7 @@ trait JTLCacheTrait
     /**
      * @param string $id
      */
-    public function setJournalID($id)
+    public function setJournalID($id): void
     {
         $this->journalID = $id;
     }
@@ -119,16 +120,16 @@ trait JTLCacheTrait
             return false;
         }
         switch ($badions[1]) {
-            case 'a' :
-            case 'O' :
-            case 's' :
+            case 'a':
+            case 'O':
+            case 's':
                 if (\preg_match("/^{$badions[1]}:[0-9]+:.*[;}]\$/s", $data)) {
                     return true;
                 }
                 break;
-            case 'b' :
-            case 'i' :
-            case 'd' :
+            case 'b':
+            case 'i':
+            case 'd':
                 if (\preg_match("/^{$badions[1]}:[0-9.E-]+;\$/", $data)) {
                     return true;
                 }
@@ -351,8 +352,8 @@ trait JTLCacheTrait
      */
     protected function secondsToTime($seconds): string
     {
-        $dtF = new \DateTime("@0");
-        $dtT = new \DateTime("@$seconds");
+        $dtF = new \DateTime('@0');
+        $dtT = new \DateTime('@' . $seconds);
 
         return $dtF->diff($dtT)->format('%a Tage, %h Stunden, %i Minuten und %s Sekunden');
     }
@@ -379,5 +380,7 @@ trait JTLCacheTrait
     public function setError(string $error)
     {
         $this->error = $error;
+
+        return $this;
     }
 }

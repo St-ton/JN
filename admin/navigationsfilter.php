@@ -4,15 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\FormHelper;
+
 /**
  * @global Smarty\JTLSmarty $smarty
- * @global AdminAccount $oAccount
+ * @global AdminAccount     $oAccount
  */
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SETTINGS_NAVIGATION_FILTER_VIEW', true, true);
 
-$cHinweis      = '';
-$cFehler       = '';
+$cHinweis = '';
+$cFehler  = '';
 setzeSprache();
 if (isset($_POST['speichern']) && FormHelper::validateToken()) {
     $cHinweis .= saveAdminSectionSettings(CONF_NAVIGATIONSFILTER, $_POST);

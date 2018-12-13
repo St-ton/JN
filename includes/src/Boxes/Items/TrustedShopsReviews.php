@@ -8,7 +8,7 @@ namespace Boxes\Items;
 
 /**
  * Class TrustedShopsReviews
- * @package Boxes
+ * @package Boxes\Items
  */
 final class TrustedShopsReviews extends AbstractBox
 {
@@ -28,7 +28,7 @@ final class TrustedShopsReviews extends AbstractBox
     private $imageURL = '';
 
     /**
-     * DirectPurchase constructor.
+     * TrustedShopsReviews constructor.
      * @param array $config
      */
     public function __construct(array $config)
@@ -39,7 +39,7 @@ final class TrustedShopsReviews extends AbstractBox
         parent::addMapping('cBildPfad', 'ImagePath');
         $this->setShow(false);
         $validISOCodes = ['de', 'en', 'fr', 'es', 'pl'];
-        $langCode            = \StringHandler::convertISO2ISO639(\Shop::getLanguageCode());
+        $langCode      = \StringHandler::convertISO2ISO639(\Shop::getLanguageCode());
         if ($config['trustedshops']['trustedshops_nutzen'] === 'Y' && \in_array($langCode, $validISOCodes, true)) {
             $ts       = new \TrustedShops(-1, $langCode);
             $tsRating = $ts->holeKundenbewertungsstatus($langCode);

@@ -10,12 +10,12 @@ use DB\ReturnType;
 
 /**
  * Class NewsCurrentMonth
- * @package Boxes
+ * @package Boxes\Items
  */
 final class NewsCurrentMonth extends AbstractBox
 {
     /**
-     * Wishlist constructor.
+     * NewsCurrentMonth constructor.
      * @param array $config
      */
     public function __construct(array $config)
@@ -49,8 +49,8 @@ final class NewsCurrentMonth extends AbstractBox
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($newsOverview as $item) {
-            $item->cURL     = \UrlHelper::buildURL($item, \URLART_NEWSMONAT);
-            $item->cURLFull = \UrlHelper::buildURL($item, \URLART_NEWSMONAT, true);
+            $item->cURL     = \Helpers\UrlHelper::buildURL($item, \URLART_NEWSMONAT);
+            $item->cURLFull = \Helpers\UrlHelper::buildURL($item, \URLART_NEWSMONAT, true);
         }
         $this->setShow(\count($newsOverview) > 0);
         $this->setItems($newsOverview);

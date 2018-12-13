@@ -11,6 +11,7 @@ use Exceptions\ServiceNotFoundException;
 
 /**
  * Class ContainerBase
+ * @package Services
  */
 class ContainerBase implements ContainerInterface
 {

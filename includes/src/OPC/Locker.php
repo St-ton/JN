@@ -63,7 +63,7 @@ class Locker
      * @param Page $page
      * @throws \Exception
      */
-    public function unlock(Page $page)
+    public function unlock(Page $page): void
     {
         $page->setLockedBy('');
         $this->pageDB->saveDraftLockStatus($page);

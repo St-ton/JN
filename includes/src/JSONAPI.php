@@ -165,7 +165,7 @@ class JSONAPI
             $searchIn = $keyName;
         }
 
-        $items = $this->getItems(
+        $items         = $this->getItems(
             'tkunde',
             ['kKunde', 'cVorname', 'cNachname', 'cStrasse', 'cHausnummer', 'cPLZ', 'cOrt', 'cMail'],
             null,
@@ -271,10 +271,10 @@ class JSONAPI
             }
 
             $result = Shop::Container()->getDB()->query(
-                "SELECT " . implode(',', $columns) . "
-                    FROM " . $table . "
-                    WHERE " . implode(' OR ', $conditions) . "
-                    " . ($limit > 0 ? "LIMIT " . $limit : ""),
+                'SELECT ' . implode(',', $columns) . '
+                    FROM ' . $table . '
+                    WHERE ' . implode(' OR ', $conditions) . '
+                    ' . ($limit > 0 ? 'LIMIT ' . $limit : ''),
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         } elseif (is_string($searchIn) && is_array($searchFor)) {
@@ -286,18 +286,18 @@ class JSONAPI
             }
 
             $result = Shop::Container()->getDB()->query(
-                "SELECT " . implode(',', $columns) . "
-                    FROM " . $table . "
-                    WHERE " . $searchIn . " IN (" . implode(',', $searchFor) . ")
-                    " . ($limit > 0 ? "LIMIT " . $limit : ""),
+                'SELECT ' . implode(',', $columns) . '
+                    FROM ' . $table . '
+                    WHERE ' . $searchIn . ' IN (' . implode(',', $searchFor) . ')
+                    ' . ($limit > 0 ? 'LIMIT ' . $limit : ''),
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         } elseif ($searchIn === null && $searchFor === null) {
             // select all
             $result = Shop::Container()->getDB()->query(
-                "SELECT " . implode(',', $columns) . "
-                    FROM " . $table . "
-                    " . ($limit > 0 ? "LIMIT " . $limit : ""),
+                'SELECT ' . implode(',', $columns) . '
+                    FROM ' . $table . '
+                    ' . ($limit > 0 ? 'LIMIT ' . $limit : ''),
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         } else {

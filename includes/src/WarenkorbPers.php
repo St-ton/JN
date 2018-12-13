@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\TaxHelper;
+
 /**
  * Class WarenkorbPers
  */
@@ -285,7 +287,7 @@ class WarenkorbPers
             $posData->kArtikel          = (int)$posData->kArtikel;
             $posData->kKonfigitem       = (int)$posData->kKonfigitem;
             $posData->nPosTyp           = (int)$posData->nPosTyp;
-            $cartPos = new WarenkorbPersPos(
+            $cartPos                    = new WarenkorbPersPos(
                 $posData->kArtikel,
                 $posData->cArtikelName,
                 $posData->fAnzahl,
@@ -307,7 +309,7 @@ class WarenkorbPers
                 (int)$posData->kWarenkorbPersPos
             );
             foreach ($attributes as $attribute) {
-                $oWarenkorbPersPosEigenschaft = new WarenkorbPersPosEigenschaft(
+                $oWarenkorbPersPosEigenschaft                = new WarenkorbPersPosEigenschaft(
                     (int)$attribute->kEigenschaft,
                     (int)$attribute->kEigenschaftWert,
                     $attribute->cFreifeldWert ?? null,
@@ -324,7 +326,7 @@ class WarenkorbPers
 
                 $fWarenwert += $cartPos->Artikel->Preise->fVK[$cartPos->Artikel->kSteuerklasse];
             }
-            $cartPos->fAnzahl = (float)$cartPos->fAnzahl;
+            $cartPos->fAnzahl              = (float)$cartPos->fAnzahl;
             $this->oWarenkorbPersPos_arr[] = $cartPos;
         }
         $this->cWarenwertLocalized = Preise::getLocalizedPriceString($fWarenwert);
@@ -397,7 +399,7 @@ class WarenkorbPers
                                                 $cartPos->kWarenkorbPersPos
                                             );
                                             $productNames[] = $cartPos->cArtikelName;
-                                            $msg            .= '<br />' .
+                                            $msg           .= '<br />' .
                                                 Shop::Lang()->get('noProductWishlist', 'messages');
                                         }
                                     }

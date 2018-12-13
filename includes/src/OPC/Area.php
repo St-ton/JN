@@ -25,7 +25,7 @@ class Area implements \JsonSerializable
     /**
      * @return string
      */
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
@@ -33,7 +33,7 @@ class Area implements \JsonSerializable
     /**
      * Clear the contents
      */
-    public function clear()
+    public function clear(): void
     {
         $this->content = [];
     }
@@ -41,7 +41,7 @@ class Area implements \JsonSerializable
     /**
      * @param PortletInstance $portlet
      */
-    public function addPortlet(PortletInstance $portlet)
+    public function addPortlet(PortletInstance $portlet): void
     {
         $this->content[] = $portlet;
     }
@@ -85,7 +85,7 @@ class Area implements \JsonSerializable
      * @return $this
      * @throws \Exception
      */
-    public function deserialize($data)
+    public function deserialize(array $data): self
     {
         $this->id = $data['id'];
 

@@ -4,6 +4,12 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\ArtikelHelper;
+use Helpers\TaxHelper;
+use Helpers\UrlHelper;
+use Helpers\VersandartHelper;
+use Helpers\WarenkorbHelper;
+
 require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
 
 /**
@@ -196,8 +202,9 @@ class IOMethods
         if (!isset($_POST['login'])) {
             WarenkorbPers::addToCheck($kArtikel, $amount, $properties);
         }
+        $pageType      = Shop::getPageType();
         $boxes         = Shop::Container()->getBoxService();
-        $boxesToShow   = $boxes->render($boxes->buildList(Shop::getPageType()));
+        $boxesToShow   = $boxes->render($boxes->buildList($pageType), $pageType);
         $warensumme[0] = Preise::getLocalizedPriceString(
             $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
         );
@@ -298,7 +305,7 @@ class IOMethods
         $oResponse->cNavBadge = $smarty->assign('Einstellungen', $conf)
                                        ->fetch('layout/header_shop_nav_compare.tpl');
 
-        foreach (Shop::Container()->getBoxService()->buildList() as $_position => $boxes) {
+        foreach (Shop::Container()->getBoxService()->buildList() as $boxes) {
             /** @var \Boxes\Items\BoxInterface[] $boxes */
             if (!is_array($boxes)) {
                 continue;
@@ -308,12 +315,14 @@ class IOMethods
                     foreach ($box->getChildren() as $childBox) {
                         if (get_class($childBox) === \Boxes\Items\CompareList::class) {
                             $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $childBox);
+
                             $oResponse->cBoxContainer[$childBox->getID()] = $renderer->render();
                         }
                     }
                 }
                 if (get_class($box) === \Boxes\Items\CompareList::class) {
                     $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
+
                     $oResponse->cBoxContainer[$box->getID()] = $renderer->render();
                 }
             }
@@ -346,7 +355,7 @@ class IOMethods
         $oResponse->cNavBadge = $smarty->assign('Einstellungen', $conf)
                                        ->fetch('layout/header_shop_nav_compare.tpl');
 
-        foreach (Shop::Container()->getBoxService()->buildList() as $_position => $boxes) {
+        foreach (Shop::Container()->getBoxService()->buildList() as $boxes) {
             if (!is_array($boxes)) {
                 continue;
             }
@@ -363,6 +372,7 @@ class IOMethods
                     }
                 } elseif (get_class($box) === \Boxes\Items\CompareList::class) {
                     $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
+
                     $oResponse->cBoxContainer[$box->getID()] = $renderer->render();
                 }
             }
@@ -443,7 +453,7 @@ class IOMethods
 
         $oResponse->cNotification = $smarty->fetch('snippets/notification.tpl');
         $oResponse->cNavBadge     = $smarty->fetch('layout/header_shop_nav_wish.tpl');
-        foreach (Shop::Container()->getBoxService()->buildList() as $_position => $boxes) {
+        foreach (Shop::Container()->getBoxService()->buildList() as $boxes) {
             if (!is_array($boxes)) {
                 continue;
             }
@@ -453,11 +463,13 @@ class IOMethods
                     foreach ($box->getChildren() as $childBox) {
                         if (get_class($childBox) === \Boxes\Items\Wishlist::class) {
                             $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $childBox);
+
                             $oResponse->cBoxContainer[$childBox->getID()] = $renderer->render();
                         }
                     }
                 } elseif (get_class($box) === \Boxes\Items\Wishlist::class) {
                     $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
+
                     $oResponse->cBoxContainer[$box->getID()] = $renderer->render();
                 }
             }
@@ -491,7 +503,7 @@ class IOMethods
         $oResponse->cNavBadge = $smarty->assign('Einstellungen', $conf)
                                        ->fetch('layout/header_shop_nav_wish.tpl');
 
-        foreach (Shop::Container()->getBoxService()->buildList() as $_position => $boxes) {
+        foreach (Shop::Container()->getBoxService()->buildList() as $boxes) {
             if (!is_array($boxes)) {
                 continue;
             }
@@ -501,11 +513,13 @@ class IOMethods
                     foreach ($box->getChildren() as $childBox) {
                         if ($childBox->getType() === \Boxes\Items\Wishlist::class) {
                             $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $childBox);
+
                             $oResponse->cBoxContainer[$childBox->getID()] = $renderer->render();
                         }
                     }
                 } elseif (get_class($box) === \Boxes\Items\Wishlist::class) {
                     $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
+
                     $oResponse->cBoxContainer[$box->getID()] = $renderer->render();
                 }
             }
@@ -704,7 +718,7 @@ class IOMethods
         $newProductNr = '';
         foreach ($valueID_arr as $valueID) {
             $currentValue = new EigenschaftWert($valueID);
-            $weightDiff   += $currentValue->fGewichtDiff;
+            $weightDiff  += $currentValue->fGewichtDiff;
             $newProductNr = (!empty($currentValue->cArtNr) && $oArtikel->cArtNr !== $currentValue->cArtNr)
                 ? $currentValue->cArtNr
                 : $oArtikel->cArtNr;
@@ -1008,7 +1022,7 @@ class IOMethods
         } else {
             $objResponse->jsfunc('$.evo.error', 'Article not found', $kVaterArtikel);
         }
-        $objResponse->jsfunc("$.evo.article().variationRefreshAll", $wrapper);
+        $objResponse->jsfunc('$.evo.article().variationRefreshAll', $wrapper);
 
         return $objResponse;
     }
@@ -1140,7 +1154,12 @@ class IOMethods
         $response = new IOResponse();
 
         if (strlen($country) === 2) {
-            $deliveryCountries = VersandartHelper::getPossibleShippingCountries(Session::getCustomerGroup()->getID(), false, false, [$country]);
+            $deliveryCountries = VersandartHelper::getPossibleShippingCountries(
+                Session::getCustomerGroup()->getID(),
+                false,
+                false,
+                [$country]
+            );
             $response->script('this.response = ' . (count($deliveryCountries) === 1 ? 'true' : 'false') . ';');
         }
 

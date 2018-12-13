@@ -297,7 +297,7 @@ class Profiler
                         if ($_run['file'] === $_fileRun['file']) {
                             ++$_run['runcount'];
                             $_run['runtime'] += $_fileRun['runtime'];
-                            $foundInList     = true;
+                            $foundInList      = true;
                             break;
                         }
                     }

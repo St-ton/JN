@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\FormHelper;
+use Helpers\RequestHelper;
+
 /**
  * If the "Import CSV" button was clicked with the id $importerId, try to insert entries from the CSV file uploaded
  * into to the table $target or call a function for each row to be imported. Call this function before you read the
@@ -50,7 +53,7 @@ function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = nul
             }
 
             if ($importType === 0 && is_string($target)) {
-                Shop::Container()->getDB()->query("TRUNCATE $target", \DB\ReturnType::AFFECTED_ROWS);
+                Shop::Container()->getDB()->query('TRUNCATE ' . $target, \DB\ReturnType::AFFECTED_ROWS);
             }
 
             while (($row = fgetcsv($fs, 0, $cDelim)) !== false) {

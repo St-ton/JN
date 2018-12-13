@@ -10,8 +10,9 @@ use Session\Session;
 
 /**
  * Class SessionHandlerBot
+ * @package Session\Handler
  */
-class SessionHandlerBot extends SessionHandlerJTL implements \SessionHandlerInterface
+class SessionHandlerBot extends SessionHandlerJTL
 {
     /**
      * @var string

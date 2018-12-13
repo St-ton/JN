@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\FormHelper;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 /** @global Smarty\JTLSmarty $smarty */
@@ -89,9 +92,9 @@ if (isset($_POST['einstellungen_bearbeiten'])
     } else {
         $section = Shop::Container()->getDB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
         $Conf    = Shop::Container()->getDB()->query(
-            "SELECT *
+            'SELECT *
                 FROM teinstellungenconf
-                WHERE kEinstellungenSektion = " . (int)$section->kEinstellungenSektion . "
+                WHERE kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . "
                     AND cConf = 'Y'
                     AND nModul = 0
                     AND nStandardanzeigen = 1
@@ -163,13 +166,14 @@ if ($step === 'uebersicht') {
     );
     $sectionCount = count($sections);
     for ($i = 0; $i < $sectionCount; $i++) {
-        $anz_einstellunen = Shop::Container()->getDB()->query(
+        $anz_einstellunen = Shop::Container()->getDB()->queryPrepared(
             "SELECT COUNT(*) AS anz
                 FROM teinstellungenconf
-                WHERE kEinstellungenSektion = " . (int)$sections[$i]->kEinstellungenSektion . "
+                WHERE kEinstellungenSektion = :sid
                     AND cConf = 'Y'
                     AND nStandardAnzeigen = 1
                     AND nModul = 0",
+            ['sid' => (int)$sections[$i]->kEinstellungenSektion],
             \DB\ReturnType::SINGLE_OBJECT
         );
 
@@ -178,7 +182,6 @@ if ($step === 'uebersicht') {
     $smarty->assign('Sektionen', $sections);
 }
 if ($step === 'einstellungen bearbeiten') {
-    // Einstellungssuche
     $Conf = [];
     $oSQL = new stdClass();
     if ($bSuche) {
@@ -194,13 +197,13 @@ if ($step === 'einstellungen bearbeiten') {
                ->assign('cSuche', $oSQL->cSuche);
     } else {
         $Conf = Shop::Container()->getDB()->query(
-            "SELECT *
+            'SELECT *
                 FROM teinstellungenconf
                 WHERE nModul = 0 
                     AND nStandardAnzeigen = 1
-                    AND kEinstellungenSektion = " . (int)$section->kEinstellungenSektion . "
-                {$oSQL->cWHERE}
-                ORDER BY nSort",
+                    AND kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . ' ' .
+                $oSQL->cWHERE . '
+                ORDER BY nSort',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
@@ -210,7 +213,7 @@ if ($step === 'einstellungen bearbeiten') {
         $config->nStandardAnzeigen     = (int)$config->nStandardAnzeigen;
         $config->nSort                 = (int)$config->nSort;
         $config->nModul                = (int)$config->nModul;
-        $oSection = SettingSection::getInstance((int)$config->kEinstellungenSektion);
+        $oSection                      = SettingSection::getInstance((int)$config->kEinstellungenSektion);
         //@ToDo: Setting 492 is the only one listbox at the moment.
         //But In special case of setting 492 values come from kKundengruppe instead of teinstellungenconfwerte
         if ($config->cInputTyp === 'listbox' && $config->kEinstellungenConf === 492) {
@@ -230,14 +233,14 @@ if ($step === 'einstellungen bearbeiten') {
             );
         }
         if ($config->cInputTyp === 'listbox') {
-            $setValue                = Shop::Container()->getDB()->selectAll(
+            $setValue              = Shop::Container()->getDB()->selectAll(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [(int)$config->kEinstellungenSektion, $config->cWertName]
             );
             $config->gesetzterWert = $setValue;
         } else {
-            $setValue                = Shop::Container()->getDB()->select(
+            $setValue              = Shop::Container()->getDB()->select(
                 'teinstellungen',
                 'kEinstellungenSektion',
                 (int)$config->kEinstellungenSektion,

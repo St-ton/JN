@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\UrlHelper;
+
 /**
  * Class News
  */
@@ -543,8 +545,8 @@ class News extends MainModel
                     FROM tnewskategorie
                     JOIN tnewskategoriesprache t 
                         ON tnewskategorie.kNewsKategorie = t.kNewsKategorie
-                    WHERE t.languageID = " . $kSprache . ($showOnlyActive ? ' AND nAktiv = 1 ' : '') . "
-                    ORDER BY nSort ASC",
+                    WHERE t.languageID = " . $kSprache . ($showOnlyActive ? ' AND nAktiv = 1 ' : '') . '
+                    ORDER BY nSort ASC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $oNewsCategories     = is_array($oNewsCategories) ? $oNewsCategories : [];

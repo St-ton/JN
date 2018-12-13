@@ -5,6 +5,16 @@
  *
  * @global Session $session
  */
+
+use Helpers\ArtikelHelper;
+use Helpers\DateHelper;
+use Helpers\FormHelper;
+use Helpers\RequestHelper;
+use Helpers\TaxHelper;
+use Helpers\VersandartHelper;
+use Helpers\WarenkorbHelper;
+use Pagination\Pagination;
+
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
@@ -237,7 +247,9 @@ if ($customerID > 0) {
         if ($kWunschliste) {
             // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
             $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
-            if (!empty($oWunschliste->kKunde) && (int)$oWunschliste->kKunde === \Session\Session::getCustomer()->getID()) {
+            if (!empty($oWunschliste->kKunde)
+                && (int)$oWunschliste->kKunde === \Session\Session::getCustomer()->getID()
+            ) {
                 $step                    = 'wunschliste anzeigen';
                 $cHinweis               .= Wunschliste::update($kWunschliste);
                 $_SESSION['Wunschliste'] = new Wunschliste($_SESSION['Wunschliste']->kWunschliste ?? $kWunschliste);
@@ -272,7 +284,7 @@ if ($customerID > 0) {
             // Soll die Wunschliste nun an die Emailempfaenger geschickt werden?
             if (isset($_POST['send']) && (int)$_POST['send'] === 1) {
                 if ($Einstellungen['global']['global_wunschliste_anzeigen'] === 'Y') {
-                    $mails    = explode(' ', StringHandler::htmlentities(StringHandler::filterXSS($_POST['email'])));
+                    $mails     = explode(' ', StringHandler::htmlentities(StringHandler::filterXSS($_POST['email'])));
                     $cHinweis .= Wunschliste::send($mails, $kWunschliste);
                     // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
                     $CWunschliste = Wunschliste::buildPrice(new Wunschliste($kWunschliste));
@@ -309,7 +321,7 @@ if ($customerID > 0) {
         if ($kWunschliste) {
             $oWunschliste = new Wunschliste($kWunschliste);
             if ($oWunschliste->kKunde && $oWunschliste->kKunde === \Session\Session::getCustomer()->getID()) {
-                $step = 'wunschliste anzeigen';
+                $step                              = 'wunschliste anzeigen';
                 $oWunschlistePosSuche_arr          = $oWunschliste->sucheInWunschliste($cSuche);
                 $oWunschliste->CWunschlistePos_arr = $oWunschlistePosSuche_arr;
                 Shop::Smarty()->assign('wlsearch', $cSuche)
@@ -322,7 +334,9 @@ if ($customerID > 0) {
         if ($kWunschliste > 0) {
             // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
             $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
-            if (isset($oWunschliste->kKunde) && (int)$oWunschliste->kKunde === \Session\Session::getCustomer()->getID()) {
+            if (isset($oWunschliste->kKunde)
+                && (int)$oWunschliste->kKunde === \Session\Session::getCustomer()->getID()
+            ) {
                 if (isset($_REQUEST['wlAction']) && FormHelper::validateToken()) {
                     $wlAction = RequestHelper::verifyGPDataString('wlAction');
                     if ($wlAction === 'setPrivate') {
@@ -337,7 +351,7 @@ if ($customerID > 0) {
                 $CWunschliste = Wunschliste::buildPrice(new Wunschliste($oWunschliste->kWunschliste));
 
                 Shop::Smarty()->assign('CWunschliste', $CWunschliste);
-                $step      = 'wunschliste anzeigen';
+                $step = 'wunschliste anzeigen';
             }
         }
     }
@@ -669,7 +683,11 @@ if ($customerID > 0) {
 
         Shop::Smarty()->assign('Kunde', $knd)
             ->assign('cKundenattribut_arr', $cKundenattribut_arr)
-            ->assign('laender', VersandartHelper::getPossibleShippingCountries($_SESSION['Kunde']->kKundengruppe, false, true));
+            ->assign('laender', VersandartHelper::getPossibleShippingCountries(
+                $_SESSION['Kunde']->kKundengruppe,
+                false,
+                true
+            ));
         $oKundenfeld_arr = Shop::Container()->getDB()->selectAll(
             'tkundenfeld',
             'kSprache',

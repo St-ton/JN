@@ -4,6 +4,8 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\UrlHelper;
+
 /**
  * Class StringHandler
  */
@@ -688,7 +690,7 @@ class StringHandler
                     );
 
                     if (isset($oArtikel->kArtikel) && $oArtikel->kArtikel > 0) {
-                        $exists     = true;
+                        $exists         = true;
                         $oObjekt->cSeo  = $oArtikel->cSeo;
                         $oObjekt->cName = !empty($oArtikel->cName) ? $oArtikel->cName : 'Link';
                     }
@@ -715,7 +717,7 @@ class StringHandler
                     );
 
                     if (isset($oKategorie->kKategorie) && $oKategorie->kKategorie > 0) {
-                        $exists     = true;
+                        $exists         = true;
                         $oObjekt->cSeo  = $oKategorie->cSeo;
                         $oObjekt->cName = !empty($oKategorie->cName) ? $oKategorie->cName : 'Link';
                     }
@@ -737,7 +739,7 @@ class StringHandler
                     );
 
                     if (isset($oHersteller->kHersteller) && $oHersteller->kHersteller > 0) {
-                        $exists     = true;
+                        $exists         = true;
                         $oObjekt->cSeo  = $oHersteller->cSeo;
                         $oObjekt->cName = !empty($oHersteller->cName) ? $oHersteller->cName : 'Link';
                     }
@@ -753,13 +755,13 @@ class StringHandler
                                 ON tseo.cKey = 'kMerkmalWert'
                                 AND tseo.kKey = tmerkmalwertsprache.kMerkmalWert
                                 AND tseo.kSprache = {$kSprache}
-                            WHERE tmerkmalwertsprache.kMerkmalWert = " . (int)$cKey . "
-                                AND tmerkmalwertsprache.kSprache = " . $kSprache,
+                            WHERE tmerkmalwertsprache.kMerkmalWert = " . (int)$cKey . '
+                                AND tmerkmalwertsprache.kSprache = ' . $kSprache,
                         \DB\ReturnType::SINGLE_OBJECT
                     );
 
                     if (isset($oMerkmalWert->kMerkmalWert) && $oMerkmalWert->kMerkmalWert > 0) {
-                        $exists     = true;
+                        $exists         = true;
                         $oObjekt->cSeo  = $oMerkmalWert->cSeo;
                         $oObjekt->cName = !empty($oMerkmalWert->cWert) ? $oMerkmalWert->cWert : 'Link';
                     }
@@ -782,7 +784,7 @@ class StringHandler
                     );
 
                     if (isset($oNews->kNews) && $oNews->kNews > 0) {
-                        $exists     = true;
+                        $exists         = true;
                         $oObjekt->cSeo  = $oNews->cSeo;
                         $oObjekt->cName = empty($oNews->title) ? 'Link' : $oNews->title;
                     }
@@ -803,7 +805,7 @@ class StringHandler
                     );
 
                     if (isset($oUmfrage->kUmfrage) && $oUmfrage->kUmfrage > 0) {
-                        $exists     = true;
+                        $exists         = true;
                         $oObjekt->cSeo  = $oUmfrage->cSeo;
                         $oObjekt->cName = !empty($oUmfrage->cName) ? $oUmfrage->cName : 'Link';
                     }
@@ -824,7 +826,7 @@ class StringHandler
                     );
 
                     if (isset($oTag->kTag) && $oTag->kTag > 0) {
-                        $exists     = true;
+                        $exists         = true;
                         $oObjekt->cSeo  = $oTag->cSeo;
                         $oObjekt->cName = !empty($oTag->cName) ? $oTag->cName : 'Link';
                     }
@@ -845,7 +847,7 @@ class StringHandler
                     );
 
                     if (isset($oSuchanfrage->kSuchanfrage) && $oSuchanfrage->kSuchanfrage > 0) {
-                        $exists     = true;
+                        $exists         = true;
                         $oObjekt->cSeo  = $oSuchanfrage->cSeo;
                         $oObjekt->cName = !empty($oSuchanfrage->cSuche) ? $oSuchanfrage->cSuche : 'Link';
                     }

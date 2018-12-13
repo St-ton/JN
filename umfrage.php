@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\RequestHelper;
+
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'umfrage_inc.php';
 
@@ -38,7 +41,7 @@ if ($surveyID > 0) {
     if ($survey->getID() > 0 && $controller->checkAlreadyVoted($customerID, $_SESSION['oBesucher']->cID ?? null)) {
         $breadCrumbName = $survey->getName();
         $breadCrumbURL  = Shop::getURL() . '/'. $survey->getURL();
-        $step = 'umfrage_durchfuehren';
+        $step           = 'umfrage_durchfuehren';
         if (isset($_POST['end'])) {
             $controller->saveAnswers($_POST);
             if ($controller->checkInputData($_POST) > 0) {

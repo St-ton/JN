@@ -3,6 +3,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\FormHelper;
+use Helpers\RequestHelper;
+use Helpers\TaxHelper;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_SHIPMENT_VIEW', true, true);
@@ -216,11 +221,12 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
         if (0 < strlen($szOverlap)) {
             $cFehler = '&nbsp;';
             if (!empty($ZuschlagPLZ->cPLZ)) {
-                $cFehler .= "Die PLZ $ZuschlagPLZ->cPLZ";
+                $cFehler .= 'Die PLZ ' . $ZuschlagPLZ->cPLZ;
             } else {
-                $cFehler .= "Der PLZ-Bereich $ZuschlagPLZ->cPLZAb-$ZuschlagPLZ->cPLZBis";
+                $cFehler .= 'Der PLZ-Bereich ' . $ZuschlagPLZ->cPLZAb . '-' . $ZuschlagPLZ->cPLZBis;
             }
-            $cFehler .= " überschneidet sich mit $szOverlap.<br>Bitte geben Sie eine andere PLZ / PLZ Bereich an.";
+            $cFehler .= ' überschneidet sich mit ' . $szOverlap .
+                '.<br>Bitte geben Sie eine andere PLZ / PLZ Bereich an.';
         } elseif ($db->insert('tversandzuschlagplz', $ZuschlagPLZ)) {
             $cHinweis .= 'PLZ wurde erfolgreich hinzugefügt.';
         }
@@ -396,20 +402,23 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
         ? ' ' . $_POST['kVersandklasse'] . ' '
         : '-1');
 
-    if (count($_POST['land']) >= 1 && count($_POST['kZahlungsart']) >= 1
-        && $Versandart->cName && $staffelDa && $bVersandkostenfreiGueltig
+    if (count($_POST['land']) >= 1
+        && count($_POST['kZahlungsart']) >= 1
+        && $Versandart->cName
+        && $staffelDa
+        && $bVersandkostenfreiGueltig
     ) {
         $kVersandart = 0;
         if ((int)$_POST['kVersandart'] === 0) {
             $kVersandart = $db->insert('tversandart', $Versandart);
-            $cHinweis   .= "Die Versandart <strong>$Versandart->cName</strong> wurde erfolgreich hinzugefügt. ";
+            $cHinweis   .= 'Die Versandart <strong>' . $Versandart->cName . '</strong> wurde erfolgreich hinzugefügt.';
         } else {
             //updaten
             $kVersandart = (int)$_POST['kVersandart'];
             $db->update('tversandart', 'kVersandart', $kVersandart, $Versandart);
             $db->delete('tversandartzahlungsart', 'kVersandart', $kVersandart);
             $db->delete('tversandartstaffel', 'kVersandart', $kVersandart);
-            $cHinweis .= "Die Versandart <strong>$Versandart->cName</strong> wurde erfolgreich geändert.";
+            $cHinweis .= 'Die Versandart <strong>' . $Versandart->cName . '</strong> wurde erfolgreich geändert.';
         }
         if ($kVersandart > 0) {
             foreach ($VersandartZahlungsarten as $versandartzahlungsart) {
@@ -501,7 +510,7 @@ if ($step === 'neue Versandart') {
         $smarty->assign('einheit', 'Stück');
     }
     // prevent "unusable" payment methods from displaying them in the config section (mainly the null-payment)
-    $zahlungsarten = $db->selectAll(
+    $zahlungsarten      = $db->selectAll(
         'tzahlungsart',
         ['nActive', 'nNutzbar'],
         [1, 1],
@@ -559,7 +568,7 @@ if ($step === 'uebersicht') {
         );
 
         foreach ($method->versandartzahlungsarten as $smp) {
-            $smp->zahlungsart = $db->select(
+            $smp->zahlungsart  = $db->select(
                 'tzahlungsart',
                 'kZahlungsart',
                 (int)$smp->kZahlungsart,
@@ -568,7 +577,7 @@ if ($step === 'uebersicht') {
             );
             $smp->cAufpreisTyp = $smp->cAufpreisTyp === 'prozent' ? '%' : '';
         }
-        $method->versandartstaffeln = $db->selectAll(
+        $method->versandartstaffeln         = $db->selectAll(
             'tversandartstaffel',
             'kVersandart',
             (int)$method->kVersandart,
@@ -671,7 +680,7 @@ if ($step === 'Zuschlagsliste') {
     $Zuschlaege = $db->selectAll(
         'tversandzuschlag',
         ['kVersandart', 'cISO'],
-        [(int)$Versandart->kVersandart , $cISO],
+        [(int)$Versandart->kVersandart, $cISO],
         '*',
         'fZuschlag'
     );

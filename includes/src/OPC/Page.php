@@ -121,7 +121,7 @@ class Page implements \JsonSerializable
     /**
      * @return null|string
      */
-    public function getPublishFrom()
+    public function getPublishFrom(): ?string
     {
         return $this->publishFrom;
     }
@@ -140,7 +140,7 @@ class Page implements \JsonSerializable
     /**
      * @return null|string
      */
-    public function getPublishTo()
+    public function getPublishTo(): ?string
     {
         return $this->publishTo;
     }
@@ -216,7 +216,7 @@ class Page implements \JsonSerializable
     /**
      * @return null|string
      */
-    public function getLastModified()
+    public function getLastModified(): ?string
     {
         return $this->lastModified;
     }
@@ -254,7 +254,7 @@ class Page implements \JsonSerializable
     /**
      * @return null|string
      */
-    public function getLockedAt()
+    public function getLockedAt(): ?string
     {
         return $this->lockedAt;
     }
@@ -301,7 +301,7 @@ class Page implements \JsonSerializable
      * @param AreaList $newList
      * @return $this
      */
-    public function setAreaList(AreaList $newList)
+    public function setAreaList(AreaList $newList): self
     {
         $this->areaList = $newList;
 
@@ -312,7 +312,7 @@ class Page implements \JsonSerializable
      * @param string $json
      * @return $this
      */
-    public function fromJson($json)
+    public function fromJson($json): self
     {
         $this->deserialize(\json_decode($json, true));
 
@@ -323,7 +323,7 @@ class Page implements \JsonSerializable
      * @param array $data
      * @return $this
      */
-    public function deserialize($data)
+    public function deserialize($data): self
     {
         $this->setKey($data['key'] ?? $this->getKey());
         $this->setId($data['id'] ?? $this->getId());

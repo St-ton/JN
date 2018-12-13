@@ -155,23 +155,23 @@ class GrafikFont
                     $strFileName = 'Dollar.' . $this->m_strFile;
                     if (!is_file($this->m_strFontDir . $strFileName)) {
                         $bMakeHTML = false;
-                        $strHTML .= '<img style="border:none; margin-right:0px;" src="' .
+                        $strHTML  .= '<img style="border:none; margin-right:0px;" src="' .
                             $this->m_strFontDir . 'U.' . $this->m_strFile . '" alt="' . $c . '" />';
-                        $strHTML .= '<img style="border:none; margin-right:0px;" src="' .
+                        $strHTML  .= '<img style="border:none; margin-right:0px;" src="' .
                             $this->m_strFontDir . 'S.' . $this->m_strFile . '" alt="' . $c . '" />';
-                        $strHTML .= '<img style="border:none; margin-right:0px;" src="' .
+                        $strHTML  .= '<img style="border:none; margin-right:0px;" src="' .
                             $this->m_strFontDir . 'D.' . $this->m_strFile . ' alt="' . $c . '" />';
                     }
                     break;
                 case '':
-                    $strFileName = "Euro." . $this->m_strFile;
+                    $strFileName = 'Euro.' . $this->m_strFile;
                     if (!is_file($this->m_strFontDir . $strFileName)) {
                         $bMakeHTML = false;
-                        $strHTML .= '<img style="border:none; margin-right:0px;" src="' .
+                        $strHTML  .= '<img style="border:none; margin-right:0px;" src="' .
                             $this->m_strFontDir . 'E.' . $this->m_strFile . '" alt="' . $c . '" />';
-                        $strHTML .= '<img style="border:none; margin-right:0px;" src="' .
+                        $strHTML  .= '<img style="border:none; margin-right:0px;" src="' .
                             $this->m_strFontDir . 'U.' . $this->m_strFile . '" alt="' . $c . '" />';
-                        $strHTML .= '<img style="border:none; margin-right:0px;" src="' .
+                        $strHTML  .= '<img style="border:none; margin-right:0px;" src="' .
                             $this->m_strFontDir . 'R.' . $this->m_strFile . '" alt="' . $c . '" />';
                     }
                     break;
@@ -206,12 +206,12 @@ class GrafikFont
                     } elseif ($bCent && $bNull && $c != '0') {
                         if (is_numeric($c)) {
                             $strFileName = '0' . $strKlein . '.' . $this->m_strFile;
-                            $strHTML .= '<img style="border:none; margin-right:0px;" src="' .
+                            $strHTML    .= '<img style="border:none; margin-right:0px;" src="' .
                                 $this->m_strFontDir . $strFileName . '" alt="' . $c . '" />';
                             $strFileName = $c . $strKlein . '.' . $this->m_strFile;
-                            $strHTML .= '<img style="border:none; margin-right:0px;" src="' .
+                            $strHTML    .= '<img style="border:none; margin-right:0px;" src="' .
                                 $this->m_strFontDir . $strFileName . '" alt="' . $c . '" />';
-                            $bMakeHTML = false;
+                            $bMakeHTML   = false;
                         } else {
                             $strFileName = $c . '.' . $this->m_strFile;
                         }
@@ -240,7 +240,7 @@ class GrafikFont
             }
         }
 
-        $strHTML .= '</div>';
+        $strHTML        .= '</div>';
         $this->m_strHTML = $strHTML;
 
         return $bReturn;

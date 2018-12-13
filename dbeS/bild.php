@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\RequestHelper;
+
 require_once __DIR__ . '/syncinclude.php';
 
 $Einstellungen = Shop::getSettings([CONF_BILDER]);
@@ -27,7 +29,7 @@ if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
     $shopURL          = Shop::getURL() . '/';
     $qry_bildNr       = $kArtikel === $nBildNummer
         ? ''
-        : " AND tartikelpict.nNr = " . $nBildNummer;
+        : ' AND tartikelpict.nNr = ' . $nBildNummer;
     $oArtikelPict_arr = Shop::Container()->getDB()->query(
         'SELECT tartikelpict.cPfad, tartikelpict.kArtikel, tartikel.cSeo, tartikelpict.nNr
                 FROM tartikelpict
@@ -170,7 +172,6 @@ function ladeBild(string $cBildPfad)
                 }
             }
             break;
-
     }
 
     return false;

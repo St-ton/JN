@@ -173,7 +173,11 @@ class ProductFilterURL
                         $filterSeoData->seo   = [];
                         foreach ($activeValues as $activeValue) {
                             $val = $activeValue->getValue();
-                            if ($ignore === null || $ignore !== $urlParam || $ignoreValue === 0 || $ignoreValue !== $val) {
+                            if ($ignore === null
+                                || $ignore !== $urlParam
+                                || $ignoreValue === 0
+                                || $ignoreValue !== $val
+                            ) {
                                 $filterSeoData->value[] = $activeValue->getValue();
                                 $filterSeoData->seo[]   = $activeValue->getURL();
                             }
@@ -197,7 +201,7 @@ class ProductFilterURL
             }
         }
         if (empty($seoFilterParams) && $languageID !== \Shop::getLanguageID()) {
-            $language = first(\Session\Session::getLanguages(), function ($l) use ($languageID) {
+            $language = first(Session::getLanguages(), function ($l) use ($languageID) {
                 return $l->kSprache === $languageID;
             });
             if ($language !== null) {

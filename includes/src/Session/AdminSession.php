@@ -12,11 +12,13 @@ use Session\Handler\SessionHandlerJTL;
 
 /**
  * Class AdminSession
+ * @package Session
  */
 class AdminSession
 {
-    const DEFAULT_SESSION  = 'JTLSHOP';
-    const SESSION_HASH_KEY = 'session.hash';
+    public const DEFAULT_SESSION = 'JTLSHOP';
+
+    public const SESSION_HASH_KEY = 'session.hash';
 
     /**
      * @var int
@@ -36,14 +38,14 @@ class AdminSession
     /**
      * @var AdminSession
      */
-    private static $_instance;
+    private static $instance;
 
     /**
      * @return AdminSession
      */
     public static function getInstance(): self
     {
-        return self::$_instance ?? new self();
+        return self::$instance ?? new self();
     }
 
     /**
@@ -51,10 +53,10 @@ class AdminSession
      */
     public function __construct()
     {
-        self::$_instance = $this;
+        self::$instance = $this;
         \session_name('eSIdAdm');
 
-        self::$handler = \ES_SESSIONS === 1
+        self::$handler  = \ES_SESSIONS === 1
             ? new SessionHandlerDB(\Shop::Container()->getDB(), 'tadminsession')
             : new SessionHandlerJTL();
         $conf           = \Shop::getSettings([\CONF_GLOBAL])['global'];
@@ -77,7 +79,7 @@ class AdminSession
             $set    = true;
             $domain = $conf['global_cookie_domain'];
         }
-        if (isset($conf['global_cookie_lifetime']) 
+        if (isset($conf['global_cookie_lifetime'])
             && \is_numeric($conf['global_cookie_lifetime'])
             && (int)$conf['global_cookie_lifetime'] > 0
         ) {
@@ -151,15 +153,15 @@ class AdminSession
     /**
      * @return string
      */
-    public static function createHash()
+    public static function createHash(): string
     {
-        return mhash(MHASH_SHA1, \Shop::getApplicationVersion());
+        return \mhash(\MHASH_SHA1, \Shop::getApplicationVersion());
     }
 
     /**
-     * @return static
+     * @return $this
      */
-    public function reHash()
+    public function reHash(): self
     {
         self::set(self::SESSION_HASH_KEY, self::createHash());
 
@@ -169,7 +171,7 @@ class AdminSession
     /**
      * @return bool
      */
-    public function isValid()
+    public function isValid(): bool
     {
         return self::get(self::SESSION_HASH_KEY, '') === self::createHash();
     }

@@ -4,9 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\FormHelper;
+use Helpers\RequestHelper;
+use Pagination\Filter;
+use Pagination\Pagination;
+
 /**
  * @global Smarty\JTLSmarty $smarty
- * @global AdminAccount $oAccount
+ * @global AdminAccount     $oAccount
  */
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SYSTEMLOG_VIEW', true, true);
@@ -36,53 +41,52 @@ if (FormHelper::validateToken()) {
     }
 }
 
-$oFilter      = new Filter('syslog');
-$oLevelSelect = $oFilter->addSelectfield('Loglevel', 'nLevel');
-$oLevelSelect->addSelectOption('alle', 0);
-$oLevelSelect->addSelectOption('Debug', \Monolog\Logger::DEBUG, 4);
-$oLevelSelect->addSelectOption('Hinweis', \Monolog\Logger::INFO, 4);
-$oLevelSelect->addSelectOption('Fehler', \Monolog\Logger::ERROR, 8);
-$oFilter->addDaterangefield('Zeitraum', 'dErstellt');
-$oSearchfield = $oFilter->addTextfield('Suchtext', 'cLog', 1);
-$oFilter->assemble();
+$filter      = new Filter('syslog');
+$levelSelect = $filter->addSelectfield('Loglevel', 'nLevel');
+$levelSelect->addSelectOption('alle', \Pagination\Operation::CUSTOM);
+$levelSelect->addSelectOption('Debug', \Monolog\Logger::DEBUG, \Pagination\Operation::EQUALS);
+$levelSelect->addSelectOption('Hinweis', \Monolog\Logger::INFO, \Pagination\Operation::EQUALS);
+$levelSelect->addSelectOption('Fehler', \Monolog\Logger::ERROR, \Pagination\Operation::GREATER_THAN_EQUAL);
+$filter->addDaterangefield('Zeitraum', 'dErstellt');
+$searchfield = $filter->addTextfield('Suchtext', 'cLog', \Pagination\Operation::CONTAINS);
+$filter->assemble();
 
-$cSearchString     = $oSearchfield->getValue();
-$nSelectedLevel    = $oLevelSelect->getSelectedOption()->getValue();
-$nTotalLogCount    = Jtllog::getLogCount();
-$nFilteredLogCount = Jtllog::getLogCount($cSearchString, $nSelectedLevel);
-$oPagination = (new Pagination('syslog'))
+$searchString     = $searchfield->getValue();
+$selectedLevel    = $levelSelect->getSelectedOption()->getValue();
+$totalLogCount    = Jtllog::getLogCount();
+$filteredLogCount = Jtllog::getLogCount($searchString, $selectedLevel);
+$pagination       = (new Pagination('syslog'))
     ->setItemsPerPageOptions([10, 20, 50, 100, -1])
-    ->setItemCount($nFilteredLogCount)
+    ->setItemCount($filteredLogCount)
     ->assemble();
 
-$oLog_arr       = Jtllog::getLogWhere($oFilter->getWhereSQL(), $oPagination->getLimitSQL());
-$nSystemlogFlag = Jtllog::getSytemlogFlag(false);
-foreach ($oLog_arr as $oLog) {
-    $oLog->kLog   = (int)$oLog->kLog;
-    $oLog->nLevel = (int)$oLog->nLevel;
-    $oLog->cLog   = preg_replace(
+$logData       = Jtllog::getLogWhere($filter->getWhereSQL(), $pagination->getLimitSQL());
+$systemlogFlag = Jtllog::getSytemlogFlag(false);
+foreach ($logData as $log) {
+    $log->kLog   = (int)$log->kLog;
+    $log->nLevel = (int)$log->nLevel;
+    $log->cLog   = preg_replace(
         '/\[(.*)\] => (.*)/',
         '<span class="text-primary">$1</span>: <span class="text-success">$2</span>',
-        $oLog->cLog
+        $log->cLog
     );
 
-    if ($oSearchfield->getValue()) {
-        $oLog->cLog = preg_replace(
-            '/(' . preg_quote($oSearchfield->getValue(), '/') . ')/i',
+    if ($searchfield->getValue()) {
+        $log->cLog = preg_replace(
+            '/(' . preg_quote($searchfield->getValue(), '/') . ')/i',
             '<mark>$1</mark>',
-            $oLog->cLog
+            $log->cLog
         );
     }
 }
-$smarty
-    ->assign('cHinweis', $cHinweis)
-    ->assign('cFehler', $cFehler)
-    ->assign('oFilter', $oFilter)
-    ->assign('oPagination', $oPagination)
-    ->assign('oLog_arr', $oLog_arr)
-    ->assign('minLogLevel', $minLogLevel)
-    ->assign('nTotalLogCount', $nTotalLogCount)
-    ->assign('JTLLOG_LEVEL_ERROR', JTLLOG_LEVEL_ERROR)
-    ->assign('JTLLOG_LEVEL_NOTICE', JTLLOG_LEVEL_NOTICE)
-    ->assign('JTLLOG_LEVEL_DEBUG', JTLLOG_LEVEL_DEBUG)
-    ->display('systemlog.tpl');
+$smarty->assign('cHinweis', $cHinweis)
+       ->assign('cFehler', $cFehler)
+       ->assign('oFilter', $filter)
+       ->assign('oPagination', $pagination)
+       ->assign('oLog_arr', $logData)
+       ->assign('minLogLevel', $minLogLevel)
+       ->assign('nTotalLogCount', $totalLogCount)
+       ->assign('JTLLOG_LEVEL_ERROR', JTLLOG_LEVEL_ERROR)
+       ->assign('JTLLOG_LEVEL_NOTICE', JTLLOG_LEVEL_NOTICE)
+       ->assign('JTLLOG_LEVEL_DEBUG', JTLLOG_LEVEL_DEBUG)
+       ->display('systemlog.tpl');

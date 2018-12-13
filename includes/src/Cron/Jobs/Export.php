@@ -61,7 +61,7 @@ class Export extends Job
     public function start(QueueEntry $queueEntry): JobInterface
     {
         parent::start($queueEntry);
-        $ef = new \Exportformat($this->getForeignKeyID());
+        $ef = new \Exportformat($this->getForeignKeyID(), $this->db);
         $ef->setLogger($this->logger);
         $finished = $ef->startExport($queueEntry, false, false, true);
         $this->updateExportformatQueueBearbeitet($queueEntry);

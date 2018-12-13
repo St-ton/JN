@@ -8,7 +8,7 @@ namespace Boxes\Items;
 
 /**
  * Class Cart
- * @package Boxes
+ * @package Boxes\Items
  */
 final class Cart extends AbstractBox
 {

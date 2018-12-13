@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\FormHelper;
+use Helpers\RequestHelper;
+
 /**
  * If the "Export CSV" button was clicked with the id $exporterId, offer a CSV download and stop execution of current
  * script. Call this function as soon as you can provide data to be exported but before any page output has been done!
@@ -20,9 +23,15 @@
  * @param bool   $bHead
  * @return bool - false = failure or exporter-id-mismatch
  */
-function handleCsvExportAction($exporterId, $csvFilename, $source, $fields = [], $excluded = [], $delim = ',',
-    $bHead = true)
-{
+function handleCsvExportAction(
+    $exporterId,
+    $csvFilename,
+    $source,
+    $fields = [],
+    $excluded = [],
+    $delim = ',',
+    $bHead = true
+) {
     if (FormHelper::validateToken() && RequestHelper::verifyGPDataString('exportcsv') === $exporterId) {
         if (is_callable($source)) {
             $arr = $source();
@@ -35,14 +44,14 @@ function handleCsvExportAction($exporterId, $csvFilename, $source, $fields = [],
         if (count($fields) === 0) {
             if ($arr instanceof Iterator) {
                 /** @var Iterator $arr **/
-                $first  = $arr->current();
+                $first = $arr->current();
             } else {
-                $first  = $arr[0];
+                $first = $arr[0];
             }
             $assoc  = get_object_vars($first);
             $fields = array_keys($assoc);
             $fields = array_diff($fields, $excluded);
-            $fields = array_filter($fields, 'is_string');
+            $fields = array_filter($fields, '\is_string');
         }
 
         header('Content-Disposition: attachment; filename=' . $csvFilename);

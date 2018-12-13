@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\WarenkorbHelper;
+
 $oNice = Nice::getInstance();
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
     /**
@@ -104,14 +107,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                         }
                         // Konfiguration validieren
                         if (self::validateBasket($oPosition->kArtikel, $oKonfigitem_arr) !== true) {
-                            $bDeleted = true;
+                            $bDeleted            = true;
                             $beDeletednPos_arr[] = $nPos;
                             //loescheWarenkorbPosition($nPos);
                         }
                     } elseif (!$oPosition->cUnique) {
                         // Konfiguration vorhanden -> löschen
                         if (self::hasKonfig($oPosition->kArtikel)) {
-                            $bDeleted = true;
+                            $bDeleted            = true;
                             $beDeletednPos_arr[] = $nPos;
                             //loescheWarenkorbPosition($nPos);
                         }
@@ -137,7 +140,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public static function validateBasket(int $kArtikel, $oKonfigitem_arr)
         {
             if ($kArtikel === 0 || !is_array($oKonfigitem_arr)) {
-                Shop::Container()->getLogService()->error('Validierung der Konfiguration fehlgeschlagen - Ungültige Daten');
+                Shop::Container()->getLogService()->error(
+                    'Validierung der Konfiguration fehlgeschlagen - Ungültige Daten'
+                );
 
                 return false;
             }

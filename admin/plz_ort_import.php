@@ -18,4 +18,4 @@ $messages = [
 ];
 
 plzimportActionIndex($smarty, $messages);
-plzimportFinalize($cAction, $smarty, $messages);
+plzimportFinalize(smarty, $messages);

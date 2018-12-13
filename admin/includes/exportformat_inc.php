@@ -303,11 +303,10 @@ function holeMaxExportArtikelAnzahl(&$oExportformat)
                 AND tartikelattribut.cName = '" . FKT_ATTRIBUT_KEINE_PREISSUCHMASCHINEN . "'
             LEFT JOIN tartikelsichtbarkeit 
                 ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                AND tartikelsichtbarkeit.kKundengruppe = " . (int)$oExportformat->kKundengruppe . "
-            " . $cSQL_arr['Join'] . "
-            WHERE tartikelattribut.kArtikelAttribut IS NULL" . $cSQL_arr['Where'] . "
-                AND tartikelsichtbarkeit.kArtikel IS NULL
-                {$sql}",
+                AND tartikelsichtbarkeit.kKundengruppe = " . (int)$oExportformat->kKundengruppe . '
+            ' . $cSQL_arr['Join'] . '
+            WHERE tartikelattribut.kArtikelAttribut IS NULL' . $cSQL_arr['Where'] . "
+                AND tartikelsichtbarkeit.kArtikel IS NULL " . $sql,
         \DB\ReturnType::SINGLE_OBJECT
     );
     Shop::Container()->getCache()->set($cid, $count, [CACHING_GROUP_CORE], 120);

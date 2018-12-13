@@ -3,22 +3,26 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\FormHelper;
+use Helpers\RequestHelper;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('STATS_COUPON_VIEW', true, true);
 /** @global Smarty\JTLSmarty $smarty */
-$step        = 'kuponstatistik_uebersicht';
-$cWhere      = '';
-$coupons_arr = Shop::Container()->getDB()->query(
+$step      = 'kuponstatistik_uebersicht';
+$cWhere    = '';
+$coupons   = Shop::Container()->getDB()->query(
     'SELECT kKupon, cName FROM tkupon ORDER BY cName DESC',
     \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
 );
-$oDateShop   = Shop::Container()->getDB()->query(
+$oDateShop = Shop::Container()->getDB()->query(
     'SELECT MIN(DATE(dZeit)) AS startDate FROM tbesucherarchiv',
     \DB\ReturnType::SINGLE_OBJECT
 );
-$startDate   = DateTime::createFromFormat('Y-m-j', $oDateShop->startDate);
-$endDate     = DateTime::createFromFormat('Y-m-j', date('Y-m-j'));
+$startDate = DateTime::createFromFormat('Y-m-j', $oDateShop->startDate);
+$endDate   = DateTime::createFromFormat('Y-m-j', date('Y-m-j'));
 
 if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && FormHelper::validateToken()) {
     if ((int)$_POST['kKupon'] > -1) {
@@ -27,25 +31,25 @@ if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && FormHelper::valid
                         WHERE tkuponbestellung.kBestellung = tbestellung.kBestellung 
                         LIMIT 0, 1
                     ) = ' . (int)$_POST['kKupon'] . ' AND';
-        foreach ($coupons_arr as $key => $value) {
+        foreach ($coupons as $key => $value) {
             if ($value['kKupon'] == (int)$_POST['kKupon']) {
-                $coupons_arr[$key]['aktiv'] = 1;
+                $coupons[$key]['aktiv'] = 1;
                 break;
             }
         }
     }
 
-    $dateRange_arr = explode(' - ', $_POST['daterange']);
-    $endDate       = (DateTime::createFromFormat('Y-m-j', $dateRange_arr[1])
-        && (DateTime::createFromFormat('Y-m-j', $dateRange_arr[1]) > $startDate)
-        && (DateTime::createFromFormat('Y-m-j', $dateRange_arr[1]) < DateTime::createFromFormat('Y-m-j', date('Y-m-j'))))
-        ? DateTime::createFromFormat('Y-m-j', $dateRange_arr[1])
+    $dateRanges = explode(' - ', $_POST['daterange']);
+    $endDate    = (DateTime::createFromFormat('Y-m-j', $dateRanges[1])
+        && (DateTime::createFromFormat('Y-m-j', $dateRanges[1]) > $startDate)
+        && (DateTime::createFromFormat('Y-m-j', $dateRanges[1]) < DateTime::createFromFormat('Y-m-j', date('Y-m-j'))))
+        ? DateTime::createFromFormat('Y-m-j', $dateRanges[1])
         : DateTime::createFromFormat('Y-m-j', date('Y-m-j'));
 
-    if (DateTime::createFromFormat('Y-m-j', $dateRange_arr[0])
-        && (DateTime::createFromFormat('Y-m-j', $dateRange_arr[0]) < $endDate)
-        && (DateTime::createFromFormat('Y-m-j', $dateRange_arr[0]) >= $startDate)) {
-        $startDate = DateTime::createFromFormat('Y-m-j', $dateRange_arr[0]);
+    if (DateTime::createFromFormat('Y-m-j', $dateRanges[0])
+        && (DateTime::createFromFormat('Y-m-j', $dateRanges[0]) < $endDate)
+        && (DateTime::createFromFormat('Y-m-j', $dateRanges[0]) >= $startDate)) {
+        $startDate = DateTime::createFromFormat('Y-m-j', $dateRanges[0]);
     } else {
         $oneMonth  = clone $endDate;
         $oneMonth  = $oneMonth->modify('-1month');
@@ -110,7 +114,7 @@ foreach ($usedCouponsOrder as $key => $usedCouponOrder) {
 
     $nCountUsedCouponsOrder++;
     $nShoppingCartAmountAll += $usedCouponOrder['fGesamtsummeBrutto'];
-    $nCouponAmountAll += (float)$usedCouponOrder['fKuponwertBrutto'];
+    $nCouponAmountAll       += (float)$usedCouponOrder['fKuponwertBrutto'];
     if (!in_array($usedCouponOrder['kKunde'], $tmpUser)) {
         $nCountCustomers++;
         $tmpUser[] = $usedCouponOrder['kKunde'];
@@ -122,7 +126,7 @@ array_multisort($date, SORT_DESC, $usedCouponsOrder);
 $nPercentCountUsedCoupons = (isset($nCountOrders_arr['nCount']) && (int)$nCountOrders_arr['nCount'] > 0)
     ? number_format(100 / (int)$nCountOrders_arr['nCount'] * $nCountUsedCouponsOrder, 2)
     : 0;
-$overview_arr                  = [
+$overview_arr             = [
     'nCountUsedCouponsOrder'   => $nCountUsedCouponsOrder,
     'nCountCustomers'          => $nCountCustomers,
     'nCountOrder'              => $nCountOrders_arr['nCount'],
@@ -132,10 +136,10 @@ $overview_arr                  = [
 ];
 
 $smarty->assign('overview_arr', $overview_arr)
-    ->assign('usedCouponsOrder', $usedCouponsOrder)
-    ->assign('startDateShop', $oDateShop->startDate)
-    ->assign('startDate', $startDate->format('Y-m-d'))
-    ->assign('endDate', $endDate->format('Y-m-d'))
-    ->assign('coupons_arr', $coupons_arr)
-    ->assign('step', $step)
-    ->display('kuponstatistik.tpl');
+       ->assign('usedCouponsOrder', $usedCouponsOrder)
+       ->assign('startDateShop', $oDateShop->startDate)
+       ->assign('startDate', $startDate->format('Y-m-d'))
+       ->assign('endDate', $endDate->format('Y-m-d'))
+       ->assign('coupons_arr', $coupons)
+       ->assign('step', $step)
+       ->display('kuponstatistik.tpl');

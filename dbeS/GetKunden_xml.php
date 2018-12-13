@@ -30,10 +30,16 @@ if (auth()) {
                 $xml_obj['kunden']['tkunde'][$i]['cAnrede'],
                 $xml_obj['kunden']['tkunde'][$i]['kSprache']
             );
-            $xml_obj['kunden']['tkunde'][$i]['cNachname'] = trim($cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][$i]['cNachname']));
-            $xml_obj['kunden']['tkunde'][$i]['cFirma']    = trim($cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][$i]['cFirma']));
-            $xml_obj['kunden']['tkunde'][$i]['cStrasse']  = trim($cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][$i]['cStrasse']));
-            //Strasse und Hausnummer zusammenfuehren
+            $xml_obj['kunden']['tkunde'][$i]['cNachname'] = trim(
+                $cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][$i]['cNachname'])
+            );
+            $xml_obj['kunden']['tkunde'][$i]['cFirma']    = trim(
+                $cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][$i]['cFirma'])
+            );
+            $xml_obj['kunden']['tkunde'][$i]['cStrasse']  = trim(
+                $cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][$i]['cStrasse'])
+            );
+            // Strasse und Hausnummer zusammenfuehren
             $xml_obj['kunden']['tkunde'][$i]['cStrasse'] .= ' ' . trim($xml_obj['kunden']['tkunde'][$i]['cHausnummer']);
             unset($xml_obj['kunden']['tkunde'][$i]['cHausnummer'], $xml_obj['kunden']['tkunde'][$i]['cPasswort']);
             $xml_obj['kunden']['tkunde'][$i . ' attr'] = buildAttributes($xml_obj['kunden']['tkunde'][$i]);
@@ -41,9 +47,9 @@ if (auth()) {
             unset($xml_obj['kunden']['tkunde'][$i]['cZusatz']);
             $xml_obj['kunden']['tkunde'][$i]['cZusatz']         = trim($cryptoService->decryptXTEA($cZusatz));
             $xml_obj['kunden']['tkunde'][$i]['tkundenattribut'] = $db->query(
-                "SELECT * 
+                'SELECT * 
                     FROM tkundenattribut 
-                    WHERE kKunde = " . (int)$xml_obj['kunden']['tkunde'][$i . ' attr']['kKunde'],
+                    WHERE kKunde = ' . (int)$xml_obj['kunden']['tkunde'][$i . ' attr']['kKunde'],
                 \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
             );
 

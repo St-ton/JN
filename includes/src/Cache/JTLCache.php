@@ -8,7 +8,7 @@ namespace Cache;
 
 use Cache\Methods\cache_null;
 
-\define('CACHING_ROOT_DIR', __DIR__ . 'JTLCache.php/');
+\define('CACHING_ROOT_DIR', __DIR__ . '/');
 \define('CACHING_METHODS_DIR', \CACHING_ROOT_DIR . 'CachingMethods/');
 \define('CACHING_GROUP_ARTICLE', 'art');
 \define('CACHING_GROUP_CATEGORY', 'cat');
@@ -33,49 +33,49 @@ final class JTLCache implements JTLCacheInterface
     /**
      * default port for redis caching method
      */
-    const DEFAULT_REDIS_PORT = 6379;
+    public const DEFAULT_REDIS_PORT = 6379;
 
     /**
      * default host name for redis caching method
      */
-    const DEFAULT_REDIS_HOST = 'localhost';
+    public const DEFAULT_REDIS_HOST = 'localhost';
 
     /**
      * default memcache(d) port
      */
-    const DEFAULT_MEMCACHE_PORT = 11211;
+    public const DEFAULT_MEMCACHE_PORT = 11211;
 
     /**
      * default memcache(d) host name
      */
-    const DEFAULT_MEMCACHE_HOST = 'localhost';
+    public const DEFAULT_MEMCACHE_HOST = 'localhost';
 
     /**
      * default cache life time in seconds (86400 = 1 day)
      */
-    const DEFAULT_LIFETIME = 86400;
+    public const DEFAULT_LIFETIME = 86400;
 
     /**
      * result code for successful getting result from cache
      */
-    const RES_SUCCESS = 1;
+    public const RES_SUCCESS = 1;
 
     /**
      * result code for cache miss
      */
-    const RES_FAIL = 2;
+    public const RES_FAIL = 2;
 
     /**
      * result code when getting multiple values at once
      */
-    const RES_UNDEF = 3;
+    public const RES_UNDEF = 3;
 
     /**
      * currently active caching method
      *
      * @var ICachingMethod
      */
-    private $_method;
+    private $method;
 
     /**
      * caching options
@@ -234,7 +234,7 @@ final class JTLCache implements JTLCacheInterface
     /**
      * @inheritdoc
      */
-    public function setError(string $error): JTLCacheInterface
+    public function setError(string $error)
     {
         $this->error = $error;
 
@@ -337,7 +337,7 @@ final class JTLCache implements JTLCacheInterface
      */
     private function setMethod($method): JTLCacheInterface
     {
-        $this->_method = $method;
+        $this->method = $method;
 
         return $this;
     }
@@ -457,9 +457,9 @@ final class JTLCache implements JTLCacheInterface
     public function get($cacheID, $callback = null, $customData = null)
     {
         $res              = $this->options['activated'] === true
-            ? $this->_method->load($cacheID)
+            ? $this->method->load($cacheID)
             : false;
-        $this->resultCode = ($res !== false || $this->_method->keyExists($cacheID))
+        $this->resultCode = ($res !== false || $this->method->keyExists($cacheID))
             ? self::RES_SUCCESS
             : self::RES_FAIL;
         if ($this->options['debug'] === true) {
@@ -496,7 +496,7 @@ final class JTLCache implements JTLCacheInterface
     {
         $res = false;
         if ($this->options['activated'] === true && $this->isCacheGroupActive($tags) === true) {
-            $res = $this->_method->store($cacheID, $content, $expiration);
+            $res = $this->method->store($cacheID, $content, $expiration);
             if ($res === true && $tags !== null) {
                 $this->setCacheTag($tags, $cacheID);
             }
@@ -519,7 +519,7 @@ final class JTLCache implements JTLCacheInterface
     public function setMulti($keyValue, $tags = null, $expiration = null): bool
     {
         if ($this->options['activated'] === true && $this->isCacheGroupActive($tags) === true) {
-            $res = $this->_method->storeMulti($keyValue, $expiration);
+            $res = $this->method->storeMulti($keyValue, $expiration);
             if ($res === true && $tags !== null) {
                 foreach (\array_keys($keyValue) as $_cacheID) {
                     $this->setCacheTag($tags, $_cacheID);
@@ -541,7 +541,7 @@ final class JTLCache implements JTLCacheInterface
     {
         $this->resultCode = self::RES_UNDEF; // for now, let's not check every part of the result
 
-        return $this->_method->loadMulti($cacheIDs);
+        return $this->method->loadMulti($cacheIDs);
     }
 
     /**
@@ -575,7 +575,7 @@ final class JTLCache implements JTLCacheInterface
      */
     public function getKeysByTag($tags): array
     {
-        return $this->_method->getKeysByTag($tags);
+        return $this->method->getKeysByTag($tags);
     }
 
     /**
@@ -584,7 +584,7 @@ final class JTLCache implements JTLCacheInterface
     public function setCacheTag($tags, $cacheID): bool
     {
         return $this->options['activated'] === true
-            ? $this->_method->setCacheTag($tags, $cacheID)
+            ? $this->method->setCacheTag($tags, $cacheID)
             : false;
     }
 
@@ -615,7 +615,7 @@ final class JTLCache implements JTLCacheInterface
      */
     public function getActiveMethod(): ICachingMethod
     {
-        return $this->_method;
+        return $this->method;
     }
 
     /**
@@ -626,7 +626,7 @@ final class JTLCache implements JTLCacheInterface
         $res = false;
         if ($cacheID !== null && $tags === null) {
             $res = ($this->options['activated'] === true)
-                ? $this->_method->flush($cacheID)
+                ? $this->method->flush($cacheID)
                 : false;
         } elseif ($tags !== null) {
             $res = $this->flushTags($tags, $hookInfo);
@@ -651,7 +651,7 @@ final class JTLCache implements JTLCacheInterface
      */
     public function flushTags($tags, $hookInfo = null): int
     {
-        $deleted = $this->_method->flushTags($tags);
+        $deleted = $this->method->flushTags($tags);
         if ($hookInfo !== null && \defined('HOOK_CACHE_FLUSH_AFTER') && \function_exists('executeHook')) {
             \executeHook(\HOOK_CACHE_FLUSH_AFTER, $hookInfo);
         }
@@ -664,9 +664,9 @@ final class JTLCache implements JTLCacheInterface
      */
     public function flushAll(): bool
     {
-        $this->_method->flush($this->_method->getJournalID());
+        $this->method->flush($this->method->getJournalID());
 
-        return $this->_method->flushAll();
+        return $this->method->flushAll();
     }
 
     /**
@@ -682,7 +682,7 @@ final class JTLCache implements JTLCacheInterface
      */
     public function getJournal(): array
     {
-        return $this->_method->getJournal();
+        return $this->method->getJournal();
     }
 
     /**
@@ -690,7 +690,7 @@ final class JTLCache implements JTLCacheInterface
      */
     public function getStats(): array
     {
-        return $this->_method->getStats();
+        return $this->method->getStats();
     }
 
     /**
@@ -698,7 +698,7 @@ final class JTLCache implements JTLCacheInterface
      */
     public function testMethod(): bool
     {
-        return $this->_method->test();
+        return $this->method->test();
     }
 
     /**
@@ -706,7 +706,7 @@ final class JTLCache implements JTLCacheInterface
      */
     public function isAvailable(): bool
     {
-        return $this->_method->isAvailable();
+        return $this->method->isAvailable();
     }
 
     /**
@@ -793,7 +793,7 @@ final class JTLCache implements JTLCacheInterface
         // add language ID
         if ($languageID === true) {
             $baseID .= '_lid';
-            $lang   = \Shop::getLanguage();
+            $lang    = \Shop::getLanguage();
             if ($lang > 0) {
                 $baseID .= $lang;
             } elseif (\Shop::getLanguage() > 0) {
@@ -812,7 +812,7 @@ final class JTLCache implements JTLCacheInterface
         }
         // add current SSL status
         if ($sslStatus === true) {
-            $baseID .= '_ssl' . \RequestHelper::checkSSL();
+            $baseID .= '_ssl' . \Helpers\RequestHelper::checkSSL();
         }
 
         if ($this->options['debug'] === true && $this->options['debug_method'] === 'echo') {
@@ -875,7 +875,7 @@ final class JTLCache implements JTLCacheInterface
                     }
                     $end          = \microtime(true);
                     $runTimingSet = ($end - $start);
-                    $timesSet     += $runTimingSet;
+                    $timesSet    += $runTimingSet;
                     // get testing
                     $start = \microtime(true);
                     for ($j = 0; $j < $runCount; ++$j) {
@@ -887,7 +887,7 @@ final class JTLCache implements JTLCacheInterface
                     }
                     $end          = \microtime(true);
                     $runTimingGet = ($end - $start);
-                    $timesGet     += $runTimingGet;
+                    $timesGet    += $runTimingGet;
                 }
             } else {
                 if ($echo === true) {
@@ -899,8 +899,8 @@ final class JTLCache implements JTLCacheInterface
             }
             if ($timesSet > 0.0 && $timesGet > 0.0 && $validResults !== false) {
                 // calculate averages
-                $rpsGet   = ($runCount * $repeat / $timesGet);
-                $rpsSet   = ($runCount * $repeat / $timesSet);
+                $rpsGet    = ($runCount * $repeat / $timesGet);
+                $rpsSet    = ($runCount * $repeat / $timesSet);
                 $timesSet /= $repeat;
                 $timesGet /= $repeat;
                 if ($format === true) {

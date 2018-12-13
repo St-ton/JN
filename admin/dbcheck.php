@@ -5,6 +5,9 @@
  * @global AdminAccount $oAccount
  * @global JTLSmarty $smarty
  */
+
+use Helpers\FormHelper;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('DBCHECK_VIEW', true, true);

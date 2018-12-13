@@ -6,11 +6,12 @@
 
 namespace Sitemap\Factories;
 
+use DB\ReturnType;
 use function Functional\map;
 
 /**
  * Class Manufacturer
- * @package Sitemap\Generators
+ * @package Sitemap\Factories
  */
 final class Manufacturer extends AbstractFactory
 {
@@ -29,9 +30,9 @@ final class Manufacturer extends AbstractFactory
                 JOIN tseo 
                     ON tseo.cKey = 'kHersteller'
                     AND tseo.kKey = thersteller.kHersteller
-                    AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ")
-                ORDER BY thersteller.kHersteller",
-            \DB\ReturnType::QUERYSINGLE
+                    AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ')
+                ORDER BY thersteller.kHersteller',
+            ReturnType::QUERYSINGLE
         );
         while (($mf = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
             $mf->kHersteller = (int)$mf->kHersteller;

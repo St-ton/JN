@@ -51,7 +51,7 @@ class AreaList implements \JsonSerializable
      * @param string $id
      * @return Area
      */
-    public function getArea($id)
+    public function getArea($id): Area
     {
         return $this->areas[$id];
     }
@@ -93,7 +93,7 @@ class AreaList implements \JsonSerializable
     /**
      * @param array $data
      */
-    public function deserialize($data)
+    public function deserialize($data): void
     {
         $this->clear();
 

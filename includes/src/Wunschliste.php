@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\ArtikelHelper;
+use Helpers\RequestHelper;
+
 /**
  * Class Wunschliste
  */
@@ -385,13 +388,11 @@ class Wunschliste
         $this->cURLID       = $oWunschliste->cURLID;
         $this->dErstellt    = $oWunschliste->dErstellt;
         $this->dErstellt_DE = $oWunschliste->dErstellt_DE;
-        // Kunde holen
         if ((int)$this->kKunde > 0) {
             $this->oKunde = new Kunde($this->kKunde);
             unset($this->oKunde->cPasswort, $this->oKunde->fRabatt, $this->oKunde->fGuthaben, $this->oKunde->cUSTID);
         }
-        $langID = Shop::getLanguageID();
-        // Hole alle Positionen für eine Wunschliste
+        $langID         = Shop::getLanguageID();
         $wlPositions    = Shop::Container()->getDB()->selectAll(
             'twunschlistepos',
             'kWunschliste',
@@ -524,7 +525,7 @@ class Wunschliste
                                 );
                                 if (empty($oEigenschaftWertVorhanden->kEigenschaftKombi)) {
                                     $cArtikel_arr[] = $wlPosition->cArtikelName;
-                                    $hinweis        .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
+                                    $hinweis       .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
                                     $this->delWunschlistePosSess($wlPosition->kArtikel);
                                     break;
                                 }
@@ -559,7 +560,7 @@ class Wunschliste
                                         && empty($oEigenschaftWertVorhanden->cFreifeldWert)
                                     ) {
                                         $cArtikel_arr[] = $wlPosition->cArtikelName;
-                                        $hinweis        .= '<br />' .
+                                        $hinweis       .= '<br />' .
                                             Shop::Lang()->get('noProductWishlist', 'messages');
 
                                         $this->delWunschlistePosSess($wlPosition->kArtikel);
@@ -573,12 +574,12 @@ class Wunschliste
                     }
                 } else {
                     $cArtikel_arr[] = $wlPosition->cArtikelName;
-                    $hinweis        .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
+                    $hinweis       .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
                     $this->delWunschlistePosSess($wlPosition->kArtikel);
                 }
             } else {
                 $cArtikel_arr[] = $wlPosition->cArtikelName;
-                $hinweis        .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
+                $hinweis       .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
                 $this->delWunschlistePosSess($wlPosition->kArtikel);
             }
         }
@@ -906,7 +907,7 @@ class Wunschliste
         // Hat der benutzer mehr Emails angegeben als erlaubt sind?
         if (count($recipients) > (int)$conf['global']['global_wunschliste_max_email']) {
             $nZuviel = count($recipients) - (int)$conf['global']['global_wunschliste_max_email'];
-            $msg .= '<br />';
+            $msg    .= '<br />';
 
             if (strpos($msg, Shop::Lang()->get('novalidEmail', 'messages')) === false) {
                 $msg = Shop::Lang()->get('novalidEmail', 'messages');

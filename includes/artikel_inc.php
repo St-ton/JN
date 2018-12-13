@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\ArtikelHelper;
+
 /**
  * @param int       $kArtikel
  * @param bool|null $isParent

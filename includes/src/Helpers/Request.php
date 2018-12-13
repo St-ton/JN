@@ -9,11 +9,11 @@ namespace Helpers;
 use Shop;
 
 /**
- * Class RequestHelper
+ * Class Request
  * @package Helpers
  * @since 5.0.0
  */
-class RequestHelper
+class Request
 {
     /**
      * @param string $var

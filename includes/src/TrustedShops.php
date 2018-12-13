@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\PHPSettingsHelper;
+use Helpers\PHPSettings;
 
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 
@@ -299,7 +299,7 @@ class TrustedShops
         ini_set('soap.wsdl_cache_enabled', 1);
         $returnValue = '';
         $wsdlUrl     = TS_SERVER_PROTECTION;
-        if (PHPSettingsHelper::checkSOAP($wsdlUrl)) {
+        if (PHPSettings::checkSOAP($wsdlUrl)) {
             $client      = new SoapClient($wsdlUrl, ['exceptions' => 0]);
             $returnValue = $client->requestForProtectionV2(
                 $this->tsId,
@@ -353,7 +353,7 @@ class TrustedShops
         //call TS protection web service
         ini_set('soap.wsdl_cache_enabled', 1);
 
-        if (PHPSettingsHelper::checkSOAP($wsdlUrl)) {
+        if (PHPSettings::checkSOAP($wsdlUrl)) {
             $client      = new SoapClient($wsdlUrl, ['exceptions' => 0]);
             $returnValue = $client->getRequestState($this->tsId);
             if (is_soap_fault($returnValue)) {
@@ -384,7 +384,7 @@ class TrustedShops
         //call TS protection web service
         ini_set('soap.wsdl_cache_enabled', 1);
         $wsdlUrl = TS_SERVER;
-        if (PHPSettingsHelper::checkSOAP($wsdlUrl)) {
+        if (PHPSettings::checkSOAP($wsdlUrl)) {
             $client      = new SoapClient($wsdlUrl, ['exceptions' => 0]);
             $returnValue = $client->getProtectionItems($this->tsId);
             if (is_soap_fault($returnValue)) {
@@ -600,7 +600,7 @@ class TrustedShops
             $wsdlUrl = TS_SERVER;
             $cTSID   = $this->tsId;
 
-            if (PHPSettingsHelper::checkSOAP($wsdlUrl)) {
+            if (PHPSettings::checkSOAP($wsdlUrl)) {
                 $client      = new SoapClient($wsdlUrl, ['exceptions' => 0]);
                 $returnValue = $client->checkCertificate($cTSID);
                 if (is_soap_fault($returnValue)) {
@@ -699,7 +699,7 @@ class TrustedShops
         //call TS protection web service
         ini_set('soap.wsdl_cache_enabled', 1);
 
-        if (PHPSettingsHelper::checkSOAP($wsdlUrl)) {
+        if (PHPSettings::checkSOAP($wsdlUrl)) {
             $client = new SoapClient($wsdlUrl, ['exceptions' => 0]);
             //call WS method
             $returnValue = $client->checkLogin($this->tsId, $this->wsUser, $this->wsPassword);
@@ -1069,7 +1069,7 @@ class TrustedShops
         ini_set('soap.wsdl_cache_enabled', 1);
         $wsdlUrl = TS_RATING_SERVER;
 
-        if (PHPSettingsHelper::checkSOAP($wsdlUrl)) {
+        if (PHPSettings::checkSOAP($wsdlUrl)) {
             $client = new SoapClient($wsdlUrl, ['exceptions' => 0]);
             //set return value for the case if a SOAP exception occurs
             $returnValue = SOAP_ERROR;
@@ -1157,12 +1157,12 @@ class TrustedShops
         if (TS_MODUS > 0) {
             $cURL = 'https://www.trustedshops.com/bewertung/widget/widgets/' . $filename; // Produktiv
 
-            if (PHPSettingsHelper::checkAllowFopen()) {
+            if (PHPSettings::checkAllowFopen()) {
                 $current = @file_get_contents($cURL); // Produktiv
                 if ($current) {
                     $bMoeglich = true;
                 }
-            } elseif (PHPSettingsHelper::checkCURL()) {
+            } elseif (PHPSettings::checkCURL()) {
                 $curl = curl_init();
 
                 curl_setopt($curl, CURLOPT_URL, $cURL);
@@ -1181,12 +1181,12 @@ class TrustedShops
         } else {
             $cURL = 'https://qa.trustedshops.com/bewertung/widget/widgets/' . $filename; // Test
 
-            if (PHPSettingsHelper::checkAllowFopen()) {
+            if (PHPSettings::checkAllowFopen()) {
                 $current = @file_get_contents($cURL); // Test
                 if ($current) {
                     $bMoeglich = true;
                 }
-            } elseif (PHPSettingsHelper::checkCURL()) {
+            } elseif (PHPSettings::checkCURL()) {
                 $curl = curl_init();
 
                 curl_setopt($curl, CURLOPT_URL, $cURL);
@@ -1224,9 +1224,9 @@ class TrustedShops
             trim($this->tsId)
         );
 
-        if (PHPSettingsHelper::checkAllowFopen()) {
+        if (PHPSettings::checkAllowFopen()) {
             $content = @file_get_contents($url); // Test
-        } elseif (PHPSettingsHelper::checkCURL()) {
+        } elseif (PHPSettings::checkCURL()) {
             $curl = curl_init();
 
             curl_setopt($curl, CURLOPT_URL, $url);

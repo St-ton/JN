@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\UrlHelper;
+use Helpers\URL;
 
 /**
  * Class MerkmalWert
@@ -171,8 +171,8 @@ class MerkmalWert
             foreach ($cMember_arr as $cMember) {
                 $this->$cMember = $oMerkmalWert->$cMember;
             }
-            $this->cURL     = UrlHelper::buildURL($this, URLART_MERKMAL);
-            $this->cURLFull = UrlHelper::buildURL($this, URLART_MERKMAL, true);
+            $this->cURL     = URL::buildURL($this, URLART_MERKMAL);
+            $this->cURLFull = URL::buildURL($this, URLART_MERKMAL, true);
             executeHook(HOOK_MERKMALWERT_CLASS_LOADFROMDB, ['oMerkmalWert' => &$this]);
         }
         $imageBaseURL = Shop::getImageBaseURL();
@@ -250,8 +250,8 @@ class MerkmalWert
         );
         $imageBaseURL = Shop::getImageBaseURL();
         foreach ($data as $value) {
-            $value->cURL     = UrlHelper::buildURL($value, URLART_MERKMAL);
-            $value->cURLFull = UrlHelper::buildURL($value, URLART_MERKMAL, true);
+            $value->cURL     = URL::buildURL($value, URLART_MERKMAL);
+            $value->cURLFull = URL::buildURL($value, URLART_MERKMAL, true);
             if (isset($value->cBildpfad) && strlen($value->cBildpfad) > 0) {
                 $value->cBildpfadKlein  = PFAD_MERKMALWERTBILDER_KLEIN . $value->cBildpfad;
                 $value->cBildpfadNormal = PFAD_MERKMALWERTBILDER_NORMAL . $value->cBildpfad;

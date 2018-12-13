@@ -5,8 +5,8 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\ObjectHelper;
-use Helpers\RequestHelper;
+use Helpers\GeneralObject;
+use Helpers\Request;
 
 $smarty             = \Smarty\JTLSmarty::getInstance(false, \Smarty\ContextType::BACKEND);
 $templateDir        = $smarty->getTemplateDir($smarty->context);
@@ -116,11 +116,11 @@ foreach ($mainGroups as $mainGroup) {
             if ($grandchildLink->cURL === $curScriptFileName
                 || $curScriptFileName === 'einstellungen.php'
                 && $urlParts['basename'] === 'einstellungen.php'
-                && RequestHelper::verifyGPCDataInt('kSektion') === $grandchildLink->kEinstellungenSektion
+                && Request::verifyGPCDataInt('kSektion') === $grandchildLink->kEinstellungenSektion
                 || $curScriptFileName === 'statistik.php'
                 && $urlParts['basename'] === 'statistik.php'
                 && isset($urlParts['query']['s'])
-                && RequestHelper::verifyGPCDataInt('s') === (int)$urlParts['query']['s']
+                && Request::verifyGPCDataInt('s') === (int)$urlParts['query']['s']
             ) {
                 $currentToplevel    = $mainGroup->key;
                 $currentSecondLevel = $link->key;
@@ -193,7 +193,7 @@ foreach ($mainGroups as $mainGroup) {
 
             foreach ($pluginList->oLink_arr as $link) {
                 if ($curScriptFileName === 'plugin.php'
-                    && RequestHelper::verifyGPCDataInt('kPlugin') === $link->kPlugin
+                    && Request::verifyGPCDataInt('kPlugin') === $link->kPlugin
                 ) {
                     $currentToplevel    = $mainGroup->key;
                     $currentSecondLevel = $pluginList->key;
@@ -215,7 +215,7 @@ foreach ($mainGroups as $mainGroup) {
 
             $nI                     = count($mainGroup->oLink_arr);
             $mainGroup->oLink_arr[] = $oPluginSearch;
-            ObjectHelper::sortBy($mainGroup->oLink_arr, 'cLinkname');
+            GeneralObject::sortBy($mainGroup->oLink_arr, 'cLinkname');
         }
     } else {
         $mainGroup->oLink_arr = $oAccount->getVisibleMenu(

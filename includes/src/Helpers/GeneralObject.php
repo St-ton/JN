@@ -9,11 +9,11 @@ namespace Helpers;
 use stdClass;
 
 /**
- * Class ObjectHelper
+ * Class GeneralObject
  * @package Helpers
  * @since 5.0.0
  */
-class ObjectHelper
+class GeneralObject
 {
     /**
      * @param array  $data
@@ -48,8 +48,8 @@ class ObjectHelper
     }
 
     /**
-     * @param object $originalObj
-     * @return stdClass|object
+     * @param GeneralObject $originalObj
+     * @return stdClass|GeneralObject
      * @former kopiereMembers()
      * @since 5.0.0
      */
@@ -67,8 +67,8 @@ class ObjectHelper
     }
 
     /**
-     * @param stdClass|object $src
-     * @param stdClass|object $dest
+     * @param stdClass|GeneralObject $src
+     * @param stdClass|GeneralObject $dest
      * @since 5.0.0
      */
     public static function memberCopy($src, &$dest): void
@@ -84,7 +84,7 @@ class ObjectHelper
     }
 
     /**
-     * @param object $oObj
+     * @param GeneralObject $oObj
      * @return mixed
      * @since 5.0.0
      */

@@ -5,7 +5,7 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
@@ -35,7 +35,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
     $index = strtolower(StringHandler::xssClean($_GET['index']));
 
     if (!in_array($index, ['tartikel', 'tartikelsprache'], true)) {
-        header(RequestHelper::makeHTTPHeader(403), true);
+        header(Request::makeHTTPHeader(403), true);
         echo json_encode((object)['error' => 'Ungültiger Index angegeben']);
         exit;
     }
@@ -79,7 +79,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
                 );
                 break;
             default:
-                header(RequestHelper::makeHTTPHeader(403), true);
+                header(Request::makeHTTPHeader(403), true);
                 echo json_encode((object)['error' => 'Ungültiger Index angegeben']);
                 exit;
         }
@@ -123,7 +123,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
         $cHinweis = 'Der Volltextindex für ' . $index . ' wurde gelöscht!';
     }
 
-    header(RequestHelper::makeHTTPHeader(200), true);
+    header(Request::makeHTTPHeader(200), true);
     echo json_encode((object)['error' => $cFehler, 'hinweis' => $cHinweis]);
     exit;
 }

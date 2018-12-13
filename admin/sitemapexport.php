@@ -5,7 +5,7 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Request;
 use Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -28,13 +28,13 @@ if (!is_writable(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml')) {
     $cHinweis = '<i>' . PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml</i> wurde erfolgreich aktualisiert.';
 }
 // Tabs
-if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
+if (strlen(Request::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_SITEMAP, $_POST);
-} elseif (RequestHelper::verifyGPCDataInt('download_edit') === 1) {
+} elseif (Request::verifyGPCDataInt('download_edit') === 1) {
     $trackers = isset($_POST['kSitemapTracker'])
         ? array_map('\intval', $_POST['kSitemapTracker'])
         : [];
@@ -48,7 +48,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     }
 
     $cHinweis = 'Ihre markierten Sitemap Downloads wurden erfolgreich gelöscht.';
-} elseif (RequestHelper::verifyGPCDataInt('report_edit') === 1) {
+} elseif (Request::verifyGPCDataInt('report_edit') === 1) {
     $reports = isset($_POST['kSitemapReport'])
         ? array_map('\intval', $_POST['kSitemapReport'])
         : [];
@@ -64,8 +64,8 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis = 'Ihre markierten Sitemap Reports wurden erfolgreich gelöscht.';
 }
 
-$nYearDownloads = RequestHelper::verifyGPCDataInt('nYear_downloads');
-$nYearReports   = RequestHelper::verifyGPCDataInt('nYear_reports');
+$nYearDownloads = Request::verifyGPCDataInt('nYear_downloads');
+$nYearReports   = Request::verifyGPCDataInt('nYear_reports');
 
 if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && FormHelper::validateToken()) {
     Shop::Container()->getDB()->query(

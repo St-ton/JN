@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\ObjectHelper;
+use Helpers\GeneralObject;
 
 /**
  * Class Kuponneukunde
@@ -44,7 +44,7 @@ class Kuponneukunde
     /**
      * Constructor
      *
-     * @param object $oObj
+     * @param GeneralObject $oObj
      */
     public function __construct($oObj = null)
     {
@@ -86,7 +86,7 @@ class Kuponneukunde
         if ($this->kKuponNeukunde > 0) {
             Shop::Container()->getDB()->delete('tkuponneukunde', 'kKuponNeukunde', (int)$this->kKuponNeukunde);
         }
-        $obj = ObjectHelper::copyMembers($this);
+        $obj = GeneralObject::copyMembers($this);
         unset($obj->kKuponNeukunde);
 
         return Shop::Container()->getDB()->insert('tkuponneukunde', $obj) > 0;

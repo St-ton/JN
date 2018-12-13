@@ -5,7 +5,7 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Request;
 use Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -20,7 +20,7 @@ $cSuchFilter     = '';
 $nAnzahlProSeite = 15;
 
 // Bestellung Wawi Abholung zuruecksetzen
-if (RequestHelper::verifyGPCDataInt('zuruecksetzen') === 1 && FormHelper::validateToken()) {
+if (Request::verifyGPCDataInt('zuruecksetzen') === 1 && FormHelper::validateToken()) {
     if (isset($_POST['kBestellung'])) {
         switch (setzeAbgeholtZurueck($_POST['kBestellung'])) {
             case -1: // Alles O.K.
@@ -33,8 +33,8 @@ if (RequestHelper::verifyGPCDataInt('zuruecksetzen') === 1 && FormHelper::valida
     } else {
         $cFehler = 'Fehler: Bitte markieren Sie mindestens eine Bestellung.';
     }
-} elseif (RequestHelper::verifyGPCDataInt('Suche') === 1) { // Bestellnummer gesucht
-    $cSuche = StringHandler::filterXSS(RequestHelper::verifyGPDataString('cSuche'));
+} elseif (Request::verifyGPCDataInt('Suche') === 1) { // Bestellnummer gesucht
+    $cSuche = StringHandler::filterXSS(Request::verifyGPDataString('cSuche'));
     if (strlen($cSuche) > 0) {
         $cSuchFilter = $cSuche;
     } else {

@@ -5,7 +5,7 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Request;
 use Pagination\Filter;
 use Pagination\Pagination;
 
@@ -20,10 +20,10 @@ $cHinweis    = '';
 $cFehler     = '';
 $minLogLevel = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
 if (FormHelper::validateToken()) {
-    if (RequestHelper::verifyGPDataString('action') === 'clearsyslog') {
+    if (Request::verifyGPDataString('action') === 'clearsyslog') {
         Jtllog::deleteAll();
         $cHinweis = 'Ihr Systemlog wurde erfolgreich gelöscht.';
-    } elseif (RequestHelper::verifyGPDataString('action') === 'save') {
+    } elseif (Request::verifyGPDataString('action') === 'save') {
         $minLogLevel = (int)($_POST['minLogLevel'] ?? 0);
         Shop::Container()->getDB()->update(
             'teinstellungen',
@@ -34,7 +34,7 @@ if (FormHelper::validateToken()) {
         Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
         $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
         $smarty->assign('cTab', 'config');
-    } elseif (RequestHelper::verifyGPDataString('action') === 'delselected') {
+    } elseif (Request::verifyGPDataString('action') === 'delselected') {
         if (isset($_REQUEST['selected'])) {
             $cHinweis = Jtllog::deleteIDs($_REQUEST['selected']) . ' markierte Log-Einträge wurden gelöscht.';
         }

@@ -5,8 +5,8 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\RequestHelper;
-use Helpers\TaxHelper;
+use Helpers\Request;
+use Helpers\Tax;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -15,7 +15,7 @@ $oAccount->permission('ORDER_SHIPMENT_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'versandarten_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 /** @global Smarty\JTLSmarty $smarty */
-TaxHelper::setTaxRates();
+Tax::setTaxRates();
 $db                 = Shop::Container()->getDB();
 $standardwaehrung   = $db->select('twaehrung', 'cStandard', 'Y');
 $versandberechnung  = null;
@@ -110,9 +110,9 @@ if (isset($_GET['delzus']) && (int)$_GET['delzus'] > 0 && FormHelper::validateTo
     $cHinweis .= 'Zuschlagsliste erfolgreich gelöscht!';
 }
 // Zuschlagliste editieren
-if (RequestHelper::verifyGPCDataInt('editzus') > 0 && FormHelper::validateToken()) {
-    $kVersandzuschlag = RequestHelper::verifyGPCDataInt('editzus');
-    $cISO             = StringHandler::convertISO6392ISO(RequestHelper::verifyGPDataString('cISO'));
+if (Request::verifyGPCDataInt('editzus') > 0 && FormHelper::validateToken()) {
+    $kVersandzuschlag = Request::verifyGPCDataInt('editzus');
+    $cISO             = StringHandler::convertISO6392ISO(Request::verifyGPDataString('cISO'));
     if ($kVersandzuschlag > 0 && (strlen($cISO) > 0 && $cISO !== 'noISO')) {
         $step = 'Zuschlagsliste';
         $fee  = $db->select('tversandzuschlag', 'kVersandzuschlag', $kVersandzuschlag);
@@ -244,8 +244,8 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
 if (isset($_POST['neuerZuschlag']) && (int)$_POST['neuerZuschlag'] === 1 && FormHelper::validateToken()) {
     $step     = 'Zuschlagsliste';
     $Zuschlag = new stdClass();
-    if (RequestHelper::verifyGPCDataInt('kVersandzuschlag') > 0) {
-        $Zuschlag->kVersandzuschlag = RequestHelper::verifyGPCDataInt('kVersandzuschlag');
+    if (Request::verifyGPCDataInt('kVersandzuschlag') > 0) {
+        $Zuschlag->kVersandzuschlag = Request::verifyGPCDataInt('kVersandzuschlag');
     }
 
     $Zuschlag->kVersandart = (int)$_POST['kVersandart'];

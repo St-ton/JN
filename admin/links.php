@@ -5,7 +5,7 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -175,11 +175,11 @@ if ($continue
     && FormHelper::validateToken()
 ) {
     $step = 'neuer Link';
-    $link = (new \Link\Link($db))->load(RequestHelper::verifyGPCDataInt('kLink'));
+    $link = (new \Link\Link($db))->load(Request::verifyGPCDataInt('kLink'));
     $smarty->assign('Link', $link);
     // Bild loeschen?
-    if (RequestHelper::verifyGPCDataInt('delpic') === 1) {
-        @unlink($cUploadVerzeichnis . $link->getID() . '/' . RequestHelper::verifyGPDataString('cName'));
+    if (Request::verifyGPCDataInt('delpic') === 1) {
+        @unlink($cUploadVerzeichnis . $link->getID() . '/' . Request::verifyGPDataString('cName'));
     }
     $cDatei_arr = [];
     if (is_dir($cUploadVerzeichnis . $link->getID())) {
@@ -312,7 +312,7 @@ if ($clearCache === true) {
     $linkAdmin->clearCache();
 }
 if ($step === 'uebersicht') {
-    $smarty->assign('kPlugin', RequestHelper::verifyGPCDataInt('kPlugin'))
+    $smarty->assign('kPlugin', Request::verifyGPCDataInt('kPlugin'))
            ->assign('linkGroupCountByLinkID', $linkAdmin->getLinkGroupCountForLinkIDs())
            ->assign('linkgruppen', $linkAdmin->getLinkGroups());
 }

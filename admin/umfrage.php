@@ -5,7 +5,7 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Request;
 use Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -20,12 +20,12 @@ $cHinweis      = '';
 $cFehler       = '';
 $step          = 'umfrage_uebersicht';
 $kUmfrage      = 0;
-$kUmfrageTMP   = RequestHelper::verifyGPCDataInt('kUmfrage') > 0
-    ? RequestHelper::verifyGPCDataInt('kUmfrage')
-    : RequestHelper::verifyGPCDataInt('kU');
+$kUmfrageTMP   = Request::verifyGPCDataInt('kUmfrage') > 0
+    ? Request::verifyGPCDataInt('kUmfrage')
+    : Request::verifyGPCDataInt('kU');
 setzeSprache();
-if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
+if (strlen(Request::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 $Sprachen    = Sprache::getAllLanguages();
 $oSpracheTMP = $db->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
@@ -34,7 +34,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
     if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         $cHinweis .= saveAdminSectionSettings(CONF_UMFRAGE, $_POST);
     }
-    if (RequestHelper::verifyGPCDataInt('umfrage') === 1 && FormHelper::validateToken()) {
+    if (Request::verifyGPCDataInt('umfrage') === 1 && FormHelper::validateToken()) {
         if (isset($_POST['umfrage_erstellen']) && (int)$_POST['umfrage_erstellen'] === 1) {
             $step = 'umfrage_erstellen';
         } elseif (isset($_GET['umfrage_editieren']) && (int)$_GET['umfrage_editieren'] === 1) {
@@ -52,7 +52,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $oUmfrage->kKundengruppe_arr = StringHandler::parseSSK($oUmfrage->cKundengruppe);
 
                 $smarty->assign('oUmfrage', $oUmfrage)
-                       ->assign('s1', RequestHelper::verifyGPCDataInt('s1'));
+                       ->assign('s1', Request::verifyGPCDataInt('s1'));
             } else {
                 $cFehler .= 'Fehler: Ihre Umfrage konnte nicht gefunden werden.<br />';
                 $step     = 'umfrage_uebersicht';
@@ -370,7 +370,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         ) {
             $step = 'umfrage_frage_erstellen';
             $smarty->assign('kUmfrageTMP', $kUmfrageTMP);
-        } elseif (RequestHelper::verifyGPCDataInt('umfrage_statistik') === 1) {
+        } elseif (Request::verifyGPCDataInt('umfrage_statistik') === 1) {
             $oUmfrageDurchfuehrung_arr = $db->query(
                 'SELECT kUmfrageDurchfuehrung
                     FROM tumfragedurchfuehrung
@@ -405,10 +405,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         ) { // Frage bearbeiten
             $step = 'umfrage_frage_erstellen';
 
-            if (RequestHelper::verifyGPCDataInt('kUmfrageFrage') > 0) {
-                $kUmfrageFrage = RequestHelper::verifyGPCDataInt('kUmfrageFrage');
+            if (Request::verifyGPCDataInt('kUmfrageFrage') > 0) {
+                $kUmfrageFrage = Request::verifyGPCDataInt('kUmfrageFrage');
             } else {
-                $kUmfrageFrage = RequestHelper::verifyGPCDataInt('kUF');
+                $kUmfrageFrage = Request::verifyGPCDataInt('kUF');
             }
             $oUmfrageFrage = $db->select('tumfragefrage', 'kUmfrageFrage', $kUmfrageFrage);
             if (isset($oUmfrageFrage->kUmfrageFrage) && $oUmfrageFrage->kUmfrageFrage > 0) {
@@ -433,7 +433,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         }
         // Umfrage Detail
         if ((isset($_GET['ud']) && (int)$_GET['ud'] === 1) || $step === 'umfrage_vorschau') {
-            $kUmfrage = RequestHelper::verifyGPCDataInt('kUmfrage');
+            $kUmfrage = Request::verifyGPCDataInt('kUmfrage');
 
             if ($kUmfrage > 0) {
                 $step     = 'umfrage_vorschau';

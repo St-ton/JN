@@ -5,7 +5,7 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -50,8 +50,8 @@ $pluginsErroneous = $pluginsAll->filter(function (\Plugin\Admin\ListingItem $ite
 if (isset($_SESSION['plugin_msg'])) {
     $cHinweis = $_SESSION['plugin_msg'];
     unset($_SESSION['plugin_msg']);
-} elseif (strlen(RequestHelper::verifyGPDataString('h')) > 0) {
-    $cHinweis = StringHandler::filterXSS(base64_decode(RequestHelper::verifyGPDataString('h')));
+} elseif (strlen(Request::verifyGPDataString('h')) > 0) {
+    $cHinweis = StringHandler::filterXSS(base64_decode(Request::verifyGPDataString('h')));
 }
 if (!empty($_FILES['file_data'])) {
     $response                = $extractor->extractPlugin($_FILES['file_data']['tmp_name']);
@@ -86,7 +86,7 @@ if (!empty($_FILES['file_data'])) {
     die(json_encode($response));
 }
 
-if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && FormHelper::validateToken()) {
+if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && FormHelper::validateToken()) {
     // Eine Aktion wurde von der Uebersicht aus gestartet
     $kPlugin_arr = $_POST['kPlugin'] ?? [];
     // Lizenzkey eingeben
@@ -216,8 +216,8 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
             }
         }
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN, CACHING_GROUP_BOX]);
-    } elseif (RequestHelper::verifyGPCDataInt('updaten') === 1) { // Updaten
-        $kPlugin = RequestHelper::verifyGPCDataInt('kPlugin');
+    } elseif (Request::verifyGPCDataInt('updaten') === 1) { // Updaten
+        $kPlugin = Request::verifyGPCDataInt('kPlugin');
         $res     = $updater->update($kPlugin);
         if ($res === \Plugin\InstallCode::OK) {
             $cHinweis .= 'Ihr Plugin wurde erfolgreich geupdated.';
@@ -226,7 +226,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
         } else {
             $cFehler = 'Fehler: Beim Update ist ein Fehler aufgetreten. Fehlercode: ' . $res;
         }
-    } elseif (RequestHelper::verifyGPCDataInt('sprachvariablen') === 1) { // Sprachvariablen editieren
+    } elseif (Request::verifyGPCDataInt('sprachvariablen') === 1) { // Sprachvariablen editieren
         $step = 'pluginverwaltung_sprachvariablen';
     } elseif (isset($_POST['installieren'])) {
         $dirs = $_POST['cVerzeichnis'];
@@ -247,18 +247,18 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
     } else {
         $cFehler = 'Fehler: Bitte wählen Sie mindestens ein Plugin aus.';
     }
-} elseif (RequestHelper::verifyGPCDataInt('pluginverwaltung_sprachvariable') === 1 && FormHelper::validateToken()) {
+} elseif (Request::verifyGPCDataInt('pluginverwaltung_sprachvariable') === 1 && FormHelper::validateToken()) {
     $step = 'pluginverwaltung_sprachvariablen';
-    if (RequestHelper::verifyGPCDataInt('kPlugin') > 0) {
-        $kPlugin = RequestHelper::verifyGPCDataInt('kPlugin');
+    if (Request::verifyGPCDataInt('kPlugin') > 0) {
+        $kPlugin = Request::verifyGPCDataInt('kPlugin');
         // Zuruecksetzen
-        if (RequestHelper::verifyGPCDataInt('kPluginSprachvariable') > 0) {
+        if (Request::verifyGPCDataInt('kPluginSprachvariable') > 0) {
             $langVar = $db->select(
                 'tpluginsprachvariable',
                 'kPlugin',
                 $kPlugin,
                 'kPluginSprachvariable',
-                RequestHelper::verifyGPCDataInt('kPluginSprachvariable')
+                Request::verifyGPCDataInt('kPluginSprachvariable')
             );
             if (isset($langVar->kPluginSprachvariable) && $langVar->kPluginSprachvariable > 0) {
                 $nRow = $db->delete(
@@ -347,7 +347,7 @@ if ($step === 'pluginverwaltung_uebersicht') {
         + count($pluginsInstalledByState['status_5'])
         + count($pluginsInstalledByState['status_6']);
 } elseif ($step === 'pluginverwaltung_sprachvariablen') {
-    $kPlugin   = RequestHelper::verifyGPCDataInt('kPlugin');
+    $kPlugin   = Request::verifyGPCDataInt('kPlugin');
     $loader    = \Plugin\Helper::getLoaderByPluginID($kPlugin);
     $languages = $db->query(
         'SELECT * FROM tsprache',

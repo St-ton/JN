@@ -5,7 +5,7 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Request;
 use Pagination\Pagination;
 
 /**
@@ -20,7 +20,7 @@ $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
 $notice = '';
 $error  = '';
-$action = RequestHelper::verifyGPDataString('action');
+$action = Request::verifyGPDataString('action');
 
 $opc       = Shop::Container()->getOPC();
 $opcPage   = Shop::Container()->getOPCPageService();
@@ -32,11 +32,11 @@ $pagesPagi = (new Pagination('pages'))
 
 if (FormHelper::validateToken()) {
     if ($action === 'restore') {
-        $pageId = RequestHelper::verifyGPDataString('pageId');
+        $pageId = Request::verifyGPDataString('pageId');
         $opcPage->deletePage($pageId);
         $notice = __('The OPC content for this page has been reset.');
     } elseif ($action === 'discard') {
-        $pageKey = RequestHelper::verifyGPCDataInt('pageKey');
+        $pageKey = Request::verifyGPCDataInt('pageKey');
         $opcPage->deleteDraft($pageKey);
         $notice = __('The draft has been deleted.');
     }

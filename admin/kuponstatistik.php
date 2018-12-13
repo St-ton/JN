@@ -5,7 +5,7 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -68,7 +68,7 @@ $dEnd   = $endDate->format('Y-m-d 23:59:59');
 $usedCouponsOrder = KuponBestellung::getOrdersWithUsedCoupons(
     $dStart,
     $dEnd,
-    (int)RequestHelper::verifyGPDataString('kKupon')
+    (int)Request::verifyGPDataString('kKupon')
 );
 
 $nCountOrders_arr = Shop::Container()->getDB()->query(

@@ -5,7 +5,7 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 /**
  * If the "Import CSV" button was clicked with the id $importerId, try to insert entries from the CSV file uploaded
@@ -26,7 +26,7 @@ use Helpers\RequestHelper;
  */
 function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = null, $importType = 2)
 {
-    if (FormHelper::validateToken() && RequestHelper::verifyGPDataString('importcsv') === $importerId) {
+    if (FormHelper::validateToken() && Request::verifyGPDataString('importcsv') === $importerId) {
         if (isset($_FILES['csvfile']['type']) &&
             (
                 $_FILES['csvfile']['type'] === 'application/vnd.ms-excel' ||
@@ -49,7 +49,7 @@ function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = nul
             }
 
             if (isset($_REQUEST['importType'])) {
-                $importType = RequestHelper::verifyGPCDataInt('importType');
+                $importType = Request::verifyGPCDataInt('importType');
             }
 
             if ($importType === 0 && is_string($target)) {

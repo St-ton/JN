@@ -6,19 +6,18 @@
 
 namespace Helpers;
 
-use PaymentMethod;
 use Session\Session;
 use Shop;
 use Zahlungsart;
 
 /**
- * Class ZahlungsartHelper
+ * Class PaymentMethod
  * @package Helpers
  */
-class ZahlungsartHelper
+class PaymentMethod
 {
     /**
-     * @param PaymentMethod|Zahlungsart $paymentMethod
+     * @param \PaymentMethod|Zahlungsart $paymentMethod
      * @return bool
      */
     public static function shippingMethodWithValidPaymentMethod($paymentMethod): bool
@@ -115,13 +114,13 @@ class ZahlungsartHelper
             case 'za_billpay_rate_payment_jtl':
             case 'za_billpay_paylater_jtl':
                 require_once \PFAD_ROOT . \PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-                $paymentMethod = PaymentMethod::create($paymentMethod->cModulId);
+                $paymentMethod = \PaymentMethod::create($paymentMethod->cModulId);
 
                 return $paymentMethod->isValid($_SESSION['Kunde'] ?? null, Session::getCart());
                 break;
             default:
                 require_once \PFAD_ROOT . \PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-                $paymentMethod = PaymentMethod::create($paymentMethod->cModulId);
+                $paymentMethod = \PaymentMethod::create($paymentMethod->cModulId);
                 if ($paymentMethod !== null) {
                     return $paymentMethod->isValid($_SESSION['Kunde'] ?? null, Session::getCart());
                 }
@@ -150,7 +149,7 @@ class ZahlungsartHelper
     /**
      * Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
      *
-     * @param Zahlungsart|PaymentMethod|object $paymentMethod
+     * @param Zahlungsart|PaymentMethod|GeneralObject $paymentMethod
      * @return bool
      * @former aktiviereZahlungsart()
      */
@@ -160,13 +159,13 @@ class ZahlungsartHelper
             $kZahlungsart = (int)$paymentMethod->kZahlungsart;
             $nNutzbar     = 0;
             if (!empty($paymentMethod->nSOAP)) {
-                $nNutzbar = PHPSettingsHelper::checkSOAP() ? 1 : 0;
+                $nNutzbar = PHPSettings::checkSOAP() ? 1 : 0;
             }
             if (!empty($paymentMethod->nCURL)) {
-                $nNutzbar = PHPSettingsHelper::checkCURL() ? 1 : 0;
+                $nNutzbar = PHPSettings::checkCURL() ? 1 : 0;
             }
             if (!empty($paymentMethod->nSOCKETS)) {
-                $nNutzbar = PHPSettingsHelper::checkSockets() ? 1 : 0;
+                $nNutzbar = PHPSettings::checkSockets() ? 1 : 0;
             }
             Shop::Container()->getDB()->update(
                 'tzahlungsart',

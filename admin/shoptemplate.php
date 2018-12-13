@@ -5,7 +5,7 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\TemplateHelper;
+use Helpers\Template;
 
 /**
  * @global Smarty\JTLSmarty $smarty
@@ -23,7 +23,7 @@ $lessColors_arr = [];
 $lessColorsSkin = [];
 $oTemplate      = Template::getInstance();
 $admin          = (isset($_GET['admin']) && $_GET['admin'] === 'true');
-$templateHelper = TemplateHelper::getInstance(true);
+$templateHelper = Template::getInstance(true);
 $templateHelper->disableCaching();
 if (isset($_POST['key'], $_POST['upload'])) {
     $file             = PFAD_ROOT . PFAD_TEMPLATES . $_POST['upload'];

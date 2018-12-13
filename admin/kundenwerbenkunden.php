@@ -5,7 +5,7 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Request;
 use Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -20,14 +20,14 @@ $cFehler       = '';
 $step          = 'kwk_uebersicht';
 
 setzeSprache();
-if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
+if (strlen(Request::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_KUNDENWERBENKUNDEN, $_POST);
 }
-if (RequestHelper::verifyGPCDataInt('KwK') === 1
-    && RequestHelper::verifyGPCDataInt('nichtreggt_loeschen') === 1
+if (Request::verifyGPCDataInt('KwK') === 1
+    && Request::verifyGPCDataInt('nichtreggt_loeschen') === 1
     && FormHelper::validateToken()
 ) {
     $kKundenWerbenKunden_arr = $_POST['kKundenWerbenKunden'];

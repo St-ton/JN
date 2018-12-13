@@ -5,10 +5,10 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\HerstellerHelper;
-use Helpers\KategorieHelper;
-use Helpers\RequestHelper;
-use Helpers\VersandartHelper;
+use Helpers\Manufacturer;
+use Helpers\Category;
+use Helpers\Request;
+use Helpers\ShippingMethod;
 
 $smarty        = Shop::Smarty();
 $oTemplate     = Template::getInstance();
@@ -46,7 +46,7 @@ $warensumme[1]   = Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt
 $gesamtsumme[0]  = Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren(true, true));
 $gesamtsumme[1]  = Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren(false, true));
 
-$oVersandartKostenfrei = VersandartHelper::getFreeShippingMinimum($kKundengruppe, $cKundenherkunft);
+$oVersandartKostenfrei = ShippingMethod::getFreeShippingMinimum($kKundengruppe, $cKundenherkunft);
 $oGlobaleMetaAngaben   = $oGlobaleMetaAngabenAssoc_arr[Shop::getLanguageID()] ?? null;
 $pagetType             = Shop::getPageType();
 
@@ -71,9 +71,9 @@ $linkHelper->activate($pagetType);
 
 $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('NaviFilter', $NaviFilter)
-       ->assign('manufacturers', HerstellerHelper::getInstance()->getManufacturers())
+       ->assign('manufacturers', Manufacturer::getInstance()->getManufacturers())
        ->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
-       ->assign('oUnterKategorien_arr', KategorieHelper::getSubcategoryList($AktuelleKategorie->kKategorie ?? -1))
+       ->assign('oUnterKategorien_arr', Category::getSubcategoryList($AktuelleKategorie->kKategorie ?? -1))
        ->assign('cPluginJsHead_arr', $cMinify_arr['plugin_js_head'])
        ->assign('cPluginJsBody_arr', $cMinify_arr['plugin_js_body'])
        ->assign('cCSS_arr', $cCSS_arr)
@@ -102,7 +102,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
        ->assign(
            'WarenkorbVersandkostenfreiHinweis',
-           VersandartHelper::getShippingFreeString(
+           ShippingMethod::getShippingFreeString(
                $oVersandartKostenfrei,
                $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
            )
@@ -115,7 +115,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('meta_language', StringHandler::convertISO2ISO639($_SESSION['cISOSprache']))
        ->assign('oSpezialseiten_arr', $linkHelper->getSpecialPages())
        ->assign('bNoIndex', $NaviFilter->getMetaData()->checkNoIndex())
-       ->assign('bAjaxRequest', RequestHelper::isAjaxRequest())
+       ->assign('bAjaxRequest', Request::isAjaxRequest())
        ->assign('jtl_token', FormHelper::getTokenInput())
        ->assign('ShopLogoURL', $shopLogo)
        ->assign('ShopLogoURL_abs', $shopLogo === '' ? '' : ($shopURL . $shopLogo))
@@ -183,7 +183,7 @@ $visitorCount = $Einstellungen['global']['global_zaehler_anzeigen'] === 'Y'
     : 0;
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('Brotnavi', $nav->createNavigation())
-       ->assign('nIsSSL', RequestHelper::checkSSL())
+       ->assign('nIsSSL', Request::checkSSL())
        ->assign('boxes', $boxesToShow)
        ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
        ->assign('Besucherzaehler', $visitorCount);

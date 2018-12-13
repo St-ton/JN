@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 include_once __DIR__ . '/Billpay.class.php';
 
@@ -76,7 +76,7 @@ class BillpayPaylater extends Billpay
         Shop::Smarty()->assign('oOrder', $oOrder)
             ->assign('oPaymentEx', $oPaymentEx)
             ->assign('nPaymentType', IPL_CORE_PAYMENT_TYPE_PAY_LATER)
-            ->assign('nSSL', RequestHelper::checkSSL())
+            ->assign('nSSL', Request::checkSSL())
             ->assign('nState', $nState);
     }
 

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\SearchSpecialHelper;
+use Helpers\SearchSpecial;
 
 /**
  * @return string
@@ -13,7 +13,7 @@ use Helpers\SearchSpecialHelper;
 function gibVaterSQL()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return SearchSpecialHelper::getParentSQL();
+    return SearchSpecial::getParentSQL();
 }
 
 /**
@@ -25,7 +25,7 @@ function gibVaterSQL()
 function gibTopAngebote(int $limit = 20, int $customerGroupID = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return SearchSpecialHelper::getTopOffers($limit, $customerGroupID);
+    return SearchSpecial::getTopOffers($limit, $customerGroupID);
 }
 
 /**
@@ -37,7 +37,7 @@ function gibTopAngebote(int $limit = 20, int $customerGroupID = 0)
 function randomizeAndLimit(array $arr, int $limit = 1)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return SearchSpecialHelper::randomizeAndLimit($arr, $limit);
+    return SearchSpecial::randomizeAndLimit($arr, $limit);
 }
 
 /**
@@ -49,7 +49,7 @@ function randomizeAndLimit(array $arr, int $limit = 1)
 function gibBestseller(int $limit = 20, int $customerGroupID = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return SearchSpecialHelper::getBestsellers($limit, $customerGroupID);
+    return SearchSpecial::getBestsellers($limit, $customerGroupID);
 }
 
 /**
@@ -61,7 +61,7 @@ function gibBestseller(int $limit = 20, int $customerGroupID = 0)
 function gibSonderangebote(int $limit = 20, int $customerGroupID = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return SearchSpecialHelper::getSpecialOffers($limit, $customerGroupID);
+    return SearchSpecial::getSpecialOffers($limit, $customerGroupID);
 }
 
 /**
@@ -73,5 +73,5 @@ function gibSonderangebote(int $limit = 20, int $customerGroupID = 0)
 function gibNeuImSortiment(int $limit, int $customerGroupID = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return SearchSpecialHelper::getNewProducts($limit, $customerGroupID);
+    return SearchSpecial::getNewProducts($limit, $customerGroupID);
 }

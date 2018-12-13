@@ -5,7 +5,7 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \Smarty\JTLSmarty $smarty */
@@ -19,8 +19,8 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     $step = 'uebersicht';
     setzeSprache();
 
-    if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-        $tab = RequestHelper::verifyGPDataString('tab');
+    if (strlen(Request::verifyGPDataString('tab')) > 0) {
+        $tab = Request::verifyGPDataString('tab');
     }
     if (isset($_POST['a']) && FormHelper::validateToken()) {
         if ($_POST['a'] === 'newGrp') {

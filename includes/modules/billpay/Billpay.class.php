@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
-use Helpers\TaxHelper;
+use Helpers\Request;
+use Helpers\Tax;
 
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'billpay/BillpayData.class.php';
@@ -99,7 +99,7 @@ class Billpay extends PaymentMethod
         if (isset($_SESSION['za_billpay_jtl']['oOptions_arr'][$cOptionsHash])) {
             return $_SESSION['za_billpay_jtl']['oOptions_arr'][$cOptionsHash];
         }
-        $jsonResults = RequestHelper::http_get_contents($cOptionsUrl);
+        $jsonResults = Request::http_get_contents($cOptionsUrl);
 
         if (empty($jsonResults)) {
             return null;
@@ -281,7 +281,7 @@ class Billpay extends PaymentMethod
                     Shop::Smarty()->assign('oOrder', $oOrder)
                         ->assign('oPaymentInfo', $oPaymentInfo)
                         ->assign('nPaymentType', $nPaymentType)
-                        ->assign('nSSL', RequestHelper::checkSSL())
+                        ->assign('nSSL', Request::checkSSL())
                         ->assign('nState', 1)
                         ->assign('abschlussseite', 1);
 
@@ -758,7 +758,7 @@ class Billpay extends PaymentMethod
             BPHelper::strEncode($oCustomer->cMobil, 50),       // cellphone
             BPHelper::fmtDate($oCustomer->dGeburtstag, true),  // birthday
             BPHelper::toISO6391(BPHelper::getLanguage()),      // language
-            BPHelper::strEncode(RequestHelper::getRealIP()),                  // ip address
+            BPHelper::strEncode(Request::getRealIP()),                  // ip address
             BPHelper::strEncode($eCustomerGroup, 1)            // customerGroup
         );
 
@@ -811,9 +811,9 @@ class Billpay extends PaymentMethod
 
             $fAmount[AMT_NET]   = BPHelper::fmtAmount($fNet);
             $fAmount[AMT_GROSS] = BPHelper::fmtAmount(
-                TaxHelper::getGross(
+                Tax::getGross(
                     $fNet,
-                    TaxHelper::getSalesTax($oPosition->kSteuerklasse)
+                    Tax::getSalesTax($oPosition->kSteuerklasse)
                 )
             );
 
@@ -1031,7 +1031,7 @@ class Billpay extends PaymentMethod
             } elseif (isset($oOrder->oRechnungsadresse, $oOrder->oRechnungsadresse->cLand)) {
                 $deliveryCountry = $oOrder->oRechnungsadresse->cLand;
             }
-            TaxHelper::setTaxRates($deliveryCountry);
+            Tax::setTaxRates($deliveryCountry);
             $fAmount = $oBasket->gibGesamtsummeWarenOhne(
                 [C_WARENKORBPOS_TYP_ZINSAUFSCHLAG, C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR],
                 true
@@ -1155,7 +1155,7 @@ class Billpay extends PaymentMethod
             } elseif (isset($oOrder->oRechnungsadresse, $oOrder->oRechnungsadresse->cLand)) {
                 $deliveryCountry = $oOrder->oRechnungsadresse->cLand;
             }
-            TaxHelper::setTaxRates($deliveryCountry);
+            Tax::setTaxRates($deliveryCountry);
             $fAmount = $oBasket->gibGesamtsummeWarenOhne(
                 [C_WARENKORBPOS_TYP_ZINSAUFSCHLAG, C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR],
                 true
@@ -1215,7 +1215,7 @@ class Billpay extends PaymentMethod
                 }
             }
             $fAmount      = $fPreisEinzelNetto * $oBasketInfo->cCurrency->getConversionFactor();
-            $fAmountGross = $fAmount * ((100 + TaxHelper::getSalesTax($oPosition->kSteuerklasse)) / 100);
+            $fAmountGross = $fAmount * ((100 + Tax::getSalesTax($oPosition->kSteuerklasse)) / 100);
 
             switch ($oPosition->nPosTyp) {
                 /*case C_WARENKORBPOS_TYP_GRATISGESCHENK:*/

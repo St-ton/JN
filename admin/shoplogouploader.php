@@ -5,7 +5,7 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('DISPLAY_OWN_LOGO_VIEW', true, true);
@@ -41,7 +41,7 @@ if (!empty($_FILES) && FormHelper::validateToken()) {
     echo json_encode($response);
     die();
 }
-if (RequestHelper::verifyGPCDataInt('upload') === 1 && FormHelper::validateToken()) {
+if (Request::verifyGPCDataInt('upload') === 1 && FormHelper::validateToken()) {
     if (isset($_POST['delete'])) {
         $delete = deleteShopLogo(Shop::getLogo());
         if ($delete === true) {

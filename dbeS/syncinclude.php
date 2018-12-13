@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FileSystemHelper;
+use Helpers\FileSystem;
 
 define('DEFINES_PFAD', '../includes/');
 define('FREIDEFINIERBARER_FEHLER', 8);
@@ -311,7 +311,7 @@ function removeTemporaryFiles(string $file, bool $isDir = false)
 {
     return KEEP_SYNC_FILES
         ? false
-        : ($isDir ? FileSystemHelper::delDirRecursively($file) : unlink($file));
+        : ($isDir ? FileSystem::delDirRecursively($file) : unlink($file));
 }
 
 /**

@@ -6,7 +6,7 @@
  * @since 5.0
  */
 
-use Helpers\ObjectHelper;
+use Helpers\GeneralObject;
 
 /**
  * Class CustomerFields
@@ -19,7 +19,7 @@ class CustomerFields
     private static $instances;
 
     /**
-     * @var object[]
+     * @var GeneralObject[]
      */
     protected $customerFields = [];
 
@@ -78,8 +78,8 @@ class CustomerFields
     }
 
     /**
-     * @param object $customerField
-     * @return object
+     * @param GeneralObject $customerField
+     * @return GeneralObject
      */
     protected function prepare($customerField)
     {
@@ -93,16 +93,16 @@ class CustomerFields
     }
 
     /**
-     * @return object[]
+     * @return GeneralObject[]
      */
     public function getCustomerFields(): array
     {
-        return ObjectHelper::deepCopy($this->customerFields);
+        return GeneralObject::deepCopy($this->customerFields);
     }
 
     /**
      * @param int $kCustomerField
-     * @return null|object
+     * @return null|GeneralObject
      */
     public function getCustomerField(int $kCustomerField)
     {
@@ -110,8 +110,8 @@ class CustomerFields
     }
 
     /**
-     * @param object $customerField
-     * @return null|object[]
+     * @param GeneralObject $customerField
+     * @return null|GeneralObject[]
      */
     public function getCustomerFieldValues($customerField): ?array
     {
@@ -189,8 +189,8 @@ class CustomerFields
     }
 
     /**
-     * @param object $customerField
-     * @param null|array $customerFieldValues
+     * @param GeneralObject $customerField
+     * @param null|array    $customerFieldValues
      * @return bool
      */
     public function save($customerField, $customerFieldValues = null): bool

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 /**
  * @return array|bool
@@ -306,7 +306,7 @@ function exportformatQueueActionErstellen(Smarty\JTLSmarty $smarty)
  */
 function exportformatQueueActionEditieren(Smarty\JTLSmarty $smarty, array &$messages)
 {
-    $kCron = RequestHelper::verifyGPCDataInt('kCron');
+    $kCron = Request::verifyGPCDataInt('kCron');
     $oCron = $kCron > 0 ? holeCron($kCron) : 0;
 
     if (is_object($oCron) && $oCron->kCron > 0) {
@@ -381,7 +381,7 @@ function exportformatQueueActionTriggern(array &$messages)
  */
 function exportformatQueueActionFertiggestellt(Smarty\JTLSmarty $smarty)
 {
-    $nStunden = RequestHelper::verifyGPCDataInt('nStunden');
+    $nStunden = Request::verifyGPCDataInt('nStunden');
     if ($nStunden <= 0) {
         $nStunden = 24;
     }
@@ -522,6 +522,6 @@ function exportformatQueueFinalize($step, Smarty\JTLSmarty $smarty, array &$mess
     $smarty->assign('hinweis', $messages['notice'])
            ->assign('fehler', $messages['error'])
            ->assign('step', $step)
-           ->assign('cTab', RequestHelper::verifyGPDataString('tab'))
+           ->assign('cTab', Request::verifyGPDataString('tab'))
            ->display('exportformat_queue.tpl');
 }

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 defined('PLZIMPORT_HOST') || define('PLZIMPORT_HOST', 'www.fa-technik.adfc.de');
 defined('PLZIMPORT_URL') || define('PLZIMPORT_URL', 'http://' . PLZIMPORT_HOST . '/code/opengeodb/');
@@ -645,7 +645,7 @@ function plzimportMakeResponse($data, $error = null)
     header('Content-type: application/json');
 
     if ($error !== null) {
-        header(RequestHelper::makeHTTPHeader(500), true, $error);
+        header(Request::makeHTTPHeader(500), true, $error);
     }
 
     $result = (object)[

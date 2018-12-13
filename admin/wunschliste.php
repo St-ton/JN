@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
+use Helpers\Request;
 use Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -13,10 +13,10 @@ $oAccount->permission('MODULE_WISHLIST_VIEW', true, true);
 /** @global Smarty\JTLSmarty $smarty */
 $cHinweis    = '';
 $settingsIDs = [442, 443, 440, 439, 445, 446, 1460];
-if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
+if (strlen(Request::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
-if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
+if (Request::verifyGPCDataInt('einstellungen') === 1) {
     $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
 }
 $oWunschlistePos     = Shop::Container()->getDB()->query(

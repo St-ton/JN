@@ -4,10 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\DateHelper;
+use Helpers\Date;
 use Helpers\FormHelper;
-use Helpers\RequestHelper;
-use Helpers\VersandartHelper;
+use Helpers\Request;
+use Helpers\ShippingMethod;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -34,7 +34,7 @@ $cTableSpracheOriginal = 'temailvorlagespracheoriginal';
 $cTableSetting         = 'temailvorlageeinstellungen';
 $cTablePluginSetting   = 'tpluginemailvorlageeinstellungen';
 $db                    = Shop::Container()->getDB();
-if (RequestHelper::verifyGPCDataInt('kPlugin') > 0) {
+if (Request::verifyGPCDataInt('kPlugin') > 0) {
     $cTable                = 'tpluginemailvorlage';
     $cTableSprache         = 'tpluginemailvorlagesprache';
     $cTableSpracheOriginal = 'tpluginemailvorlagespracheoriginal';
@@ -68,7 +68,7 @@ if (isset($_POST['resetEmailvorlage'])
     $oEmailvorlage = $db->select($cTable, 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
     if ($oEmailvorlage->kEmailvorlage > 0 && isset($_POST['resetConfirmJaSubmit'])) {
         // Resetten
-        if (RequestHelper::verifyGPCDataInt('kPlugin') > 0) {
+        if (Request::verifyGPCDataInt('kPlugin') > 0) {
             $db->delete(
                 'tpluginemailvorlagesprache',
                 'kEmailvorlage',
@@ -99,7 +99,7 @@ if (isset($_POST['resetEmailvorlage'])
             \DB\ReturnType::DEFAULT
         );
         $languages = Sprache::getAllLanguages();
-        if (RequestHelper::verifyGPCDataInt('kPlugin') === 0) {
+        if (Request::verifyGPCDataInt('kPlugin') === 0) {
             $vorlage = $db->select(
                 'temailvorlageoriginal',
                 'kEmailvorlage',
@@ -544,18 +544,18 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
         );
         if (!empty($localized[$Sprache->kSprache])) {
             $cModulId = $mailTpl->cModulId;
-            if (RequestHelper::verifyGPCDataInt('kPlugin') > 0) {
-                $cModulId = 'kPlugin_' . RequestHelper::verifyGPCDataInt('kPlugin') . '_' . $cModulId;
+            if (Request::verifyGPCDataInt('kPlugin') > 0) {
+                $cModulId = 'kPlugin_' . Request::verifyGPCDataInt('kPlugin') . '_' . $cModulId;
             }
-            $order->oEstimatedDelivery->localized = VersandartHelper::getDeliverytimeEstimationText(
+            $order->oEstimatedDelivery->localized = ShippingMethod::getDeliverytimeEstimationText(
                 $order->oEstimatedDelivery->longestMin,
                 $order->oEstimatedDelivery->longestMax
             );
-            $order->cEstimatedDeliveryEx          = DateHelper::dateAddWeekday(
+            $order->cEstimatedDeliveryEx          = Date::dateAddWeekday(
                 $order->dErstellt,
                 $order->oEstimatedDelivery->longestMin
             )->format('d.m.Y') . ' - ' .
-            DateHelper::dateAddWeekday(
+            Date::dateAddWeekday(
                 $order->dErstellt,
                 $order->oEstimatedDelivery->longestMax
             )->format('d.m.Y');
@@ -677,8 +677,8 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                             && !strrpos($_POST['dateiname_' . $i . '_' . $Sprache->kSprache], ';')
                         ) {
                             $cPlugin = '';
-                            if (RequestHelper::verifyGPCDataInt('kPlugin') > 0) {
-                                $cPlugin = '_' . RequestHelper::verifyGPCDataInt('kPlugin');
+                            if (Request::verifyGPCDataInt('kPlugin') > 0) {
+                                $cPlugin = '_' . Request::verifyGPCDataInt('kPlugin');
                             }
                             $cUploadDatei = $cUploadVerzeichnis . $localized->kEmailvorlage .
                                 '_' . $Sprache->kSprache . '_' . $i . $cPlugin . '.pdf';
@@ -936,7 +936,7 @@ if ($step === 'bearbeiten') {
     $smarty->assign('Emailvorlage', $mailTpl)
            ->assign('Emailvorlagesprache', $localized);
 }
-$smarty->assign('kPlugin', RequestHelper::verifyGPCDataInt('kPlugin'))
+$smarty->assign('kPlugin', Request::verifyGPCDataInt('kPlugin'))
        ->assign('cFehlerAnhang_arr', $cFehlerAnhang_arr)
        ->assign('step', $step)
        ->assign('hinweis', $cHinweis)

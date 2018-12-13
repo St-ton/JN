@@ -5,7 +5,7 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\PHPSettingsHelper;
+use Helpers\PHPSettings;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -408,9 +408,9 @@ if ($step === 'uebersicht') {
 }
 $smarty->assign('TS_BUYERPROT_CLASSIC', TS_BUYERPROT_CLASSIC)
        ->assign('TS_BUYERPROT_EXCELLENCE', TS_BUYERPROT_EXCELLENCE)
-       ->assign('bAllowfopen', PHPSettingsHelper::checkAllowFopen())
-       ->assign('bSOAP', PHPSettingsHelper::checkSOAP())
-       ->assign('bCURL', PHPSettingsHelper::checkCURL())
+       ->assign('bAllowfopen', PHPSettings::checkAllowFopen())
+       ->assign('bSOAP', PHPSettings::checkSOAP())
+       ->assign('bCURL', PHPSettings::checkCURL())
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)

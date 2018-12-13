@@ -29,10 +29,10 @@ use UnitsOfMeasure;
 use WarenkorbPos;
 
 /**
- * Class ArtikelHelper
+ * Class Product
  * @package Helpers
  */
-class ArtikelHelper
+class Product
 {
     /**
      * @param int $kArtikel
@@ -600,8 +600,8 @@ class ArtikelHelper
     }
 
     /**
-     * @param Artikel  $product
-     * @param object[] $variationPicturesArr
+     * @param Artikel         $product
+     * @param GeneralObject[] $variationPicturesArr
      */
     public static function addVariationPictures(Artikel $product, $variationPicturesArr): void
     {
@@ -801,7 +801,7 @@ class ArtikelHelper
      * @param array $variations
      * @param int   $kEigenschaft
      * @param int   $kEigenschaftWert
-     * @return bool|object
+     * @return bool|GeneralObject
      * @former findeVariation()
      * @since 5.0.0
      */
@@ -1183,7 +1183,7 @@ class ArtikelHelper
         $history->cFax       = $data->tnachricht->cFax;
         $history->cMail      = $data->tnachricht->cMail;
         $history->cNachricht = $data->tnachricht->cNachricht;
-        $history->cIP        = RequestHelper::getRealIP();
+        $history->cIP        = Request::getRealIP();
         $history->dErstellt  = 'NOW()';
 
         $inquiryID                     = Shop::Container()->getDB()->insert('tproduktanfragehistory', $history);
@@ -1209,7 +1209,7 @@ class ArtikelHelper
                 FROM tproduktanfragehistory
                 WHERE cIP = :ip
                     AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
-            ['ip' => RequestHelper::getRealIP(), 'min' => $min],
+            ['ip' => Request::getRealIP(), 'min' => $min],
             ReturnType::SINGLE_OBJECT
         );
 
@@ -1239,7 +1239,7 @@ class ArtikelHelper
                 $inquiry            = self::getAvailabilityFormDefaults();
                 $inquiry->kSprache  = Shop::getLanguage();
                 $inquiry->kArtikel  = (int)$_POST['a'];
-                $inquiry->cIP       = RequestHelper::getRealIP();
+                $inquiry->cIP       = Request::getRealIP();
                 $inquiry->dErstellt = 'NOW()';
                 $inquiry->nStatus   = 0;
                 $checkBox           = new CheckBox();
@@ -1365,7 +1365,7 @@ class ArtikelHelper
                 FROM tverfuegbarkeitsbenachrichtigung
                 WHERE cIP = :ip
                 AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
-            ['ip' => RequestHelper::getRealIP(), 'min' => $min],
+            ['ip' => Request::getRealIP(), 'min' => $min],
             ReturnType::SINGLE_OBJECT
         );
 
@@ -1589,11 +1589,11 @@ class ArtikelHelper
      */
     public static function editProductTags($product)
     {
-        if (RequestHelper::verifyGPCDataInt('produktTag') !== 1) {
+        if (Request::verifyGPCDataInt('produktTag') !== 1) {
             return null;
         }
-        $tag             = StringHandler::filterXSS(RequestHelper::verifyGPDataString('tag'));
-        $variKindArtikel = RequestHelper::verifyGPDataString('variKindArtikel');
+        $tag             = StringHandler::filterXSS(Request::verifyGPDataString('tag'));
+        $variKindArtikel = Request::verifyGPDataString('variKindArtikel');
         if (\strlen($tag) > 0) {
             $conf = Shop::getSettings([\CONF_ARTIKELDETAILS]);
             // Pruefe ob Kunde eingeloggt
@@ -1615,7 +1615,7 @@ class ArtikelHelper
                     && $_SESSION['Kunde']->kKunde > 0)
                 || $conf['artikeldetails']['tagging_freischaltung'] === 'O'
             ) {
-                $ip = RequestHelper::getRealIP();
+                $ip = Request::getRealIP();
                 if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                     $tagPostings = Shop::Container()->getDB()->queryPrepared(
                         'SELECT COUNT(kTagKunde) AS Anzahl
@@ -2097,7 +2097,7 @@ class ArtikelHelper
         $options->nArtikelAttribute          = 1;
         $options->nKeineSichtbarkeitBeachten = 1;
 
-        return WarenkorbHelper::addProductIDToCart($productID, 1, [], 0, false, 0, $options);
+        return Cart::addProductIDToCart($productID, 1, [], 0, false, 0, $options);
     }
 
     /**
@@ -2158,9 +2158,9 @@ class ArtikelHelper
         }
 
         $config->fGesamtpreis = [
-            TaxHelper::getGross(
+            Tax::getGross(
                 $product->gibPreis($amount, $selectedProperties),
-                TaxHelper::getSalesTax($product->kSteuerklasse)
+                Tax::getSalesTax($product->kSteuerklasse)
             ) * $amount,
             $product->gibPreis($amount, $selectedProperties) * $amount
         ];

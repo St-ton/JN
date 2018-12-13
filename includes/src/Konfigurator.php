@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\WarenkorbHelper;
+use Helpers\Cart;
 
 $oNice = Nice::getInstance();
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
@@ -129,7 +129,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     }
                 }
             }
-            WarenkorbHelper::deleteCartPositions($beDeletednPos_arr);
+            Cart::deleteCartPositions($beDeletednPos_arr);
         }
 
         /**

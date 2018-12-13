@@ -5,8 +5,8 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\RequestHelper;
-use Helpers\WarenkorbHelper;
+use Helpers\Request;
+use Helpers\Cart;
 
 /**
  * Redirect - Falls jemand eine Aktion durchführt die ein Kundenkonto beansprucht und der Gast nicht einloggt ist,
@@ -25,11 +25,11 @@ function gibRedirect(int $code)
             $redirect->oParameter_arr   = [];
             $oTMP                       = new stdClass();
             $oTMP->Name                 = 'a';
-            $oTMP->Wert                 = RequestHelper::verifyGPCDataInt('a');
+            $oTMP->Wert                 = Request::verifyGPCDataInt('a');
             $redirect->oParameter_arr[] = $oTMP;
             $oTMP                       = new stdClass();
             $oTMP->Name                 = 'n';
-            $oTMP->Wert                 = RequestHelper::verifyGPCDataInt('n');
+            $oTMP->Wert                 = Request::verifyGPCDataInt('n');
             $redirect->oParameter_arr[] = $oTMP;
             $oTMP                       = new stdClass();
             $oTMP->Name                 = 'Wunschliste';
@@ -43,49 +43,49 @@ function gibRedirect(int $code)
             $redirect->oParameter_arr   = [];
             $oTMP                       = new stdClass();
             $oTMP->Name                 = 'a';
-            $oTMP->Wert                 = RequestHelper::verifyGPCDataInt('a');
+            $oTMP->Wert                 = Request::verifyGPCDataInt('a');
             $redirect->oParameter_arr[] = $oTMP;
             $oTMP                       = new stdClass();
             $oTMP->Name                 = 'bfa';
             $oTMP->Wert                 = 1;
             $redirect->oParameter_arr[] = $oTMP;
             $redirect->nRedirect        = R_LOGIN_BEWERTUNG;
-            $redirect->cURL             = 'bewertung.php?a=' . RequestHelper::verifyGPCDataInt('a') . '&bfa=1';
+            $redirect->cURL             = 'bewertung.php?a=' . Request::verifyGPCDataInt('a') . '&bfa=1';
             $redirect->cName            = Shop::Lang()->get('review', 'redirect');
             break;
         case R_LOGIN_TAG:
             $redirect->oParameter_arr   = [];
             $oTMP                       = new stdClass();
             $oTMP->Name                 = 'a';
-            $oTMP->Wert                 = RequestHelper::verifyGPCDataInt('a');
+            $oTMP->Wert                 = Request::verifyGPCDataInt('a');
             $redirect->oParameter_arr[] = $oTMP;
             $redirect->nRedirect        = R_LOGIN_TAG;
-            $redirect->cURL             = '?a=' . RequestHelper::verifyGPCDataInt('a');
+            $redirect->cURL             = '?a=' . Request::verifyGPCDataInt('a');
             $redirect->cName            = Shop::Lang()->get('tag', 'redirect');
             break;
         case R_LOGIN_NEWSCOMMENT:
             $redirect->oParameter_arr   = [];
             $oTMP                       = new stdClass();
             $oTMP->Name                 = 's';
-            $oTMP->Wert                 = RequestHelper::verifyGPCDataInt('s');
+            $oTMP->Wert                 = Request::verifyGPCDataInt('s');
             $redirect->oParameter_arr[] = $oTMP;
             $oTMP                       = new stdClass();
             $oTMP->Name                 = 'n';
-            $oTMP->Wert                 = RequestHelper::verifyGPCDataInt('n');
+            $oTMP->Wert                 = Request::verifyGPCDataInt('n');
             $redirect->oParameter_arr[] = $oTMP;
             $redirect->nRedirect        = R_LOGIN_NEWSCOMMENT;
-            $redirect->cURL             = '?s=' . RequestHelper::verifyGPCDataInt('s') .
-                '&n=' . RequestHelper::verifyGPCDataInt('n');
+            $redirect->cURL             = '?s=' . Request::verifyGPCDataInt('s') .
+                '&n=' . Request::verifyGPCDataInt('n');
             $redirect->cName            = Shop::Lang()->get('news', 'redirect');
             break;
         case R_LOGIN_UMFRAGE:
             $redirect->oParameter_arr   = [];
             $oTMP                       = new stdClass();
             $oTMP->Name                 = 'u';
-            $oTMP->Wert                 = RequestHelper::verifyGPCDataInt('u');
+            $oTMP->Wert                 = Request::verifyGPCDataInt('u');
             $redirect->oParameter_arr[] = $oTMP;
             $redirect->nRedirect        = R_LOGIN_UMFRAGE;
-            $redirect->cURL             = '?u=' . RequestHelper::verifyGPCDataInt('u');
+            $redirect->cURL             = '?u=' . Request::verifyGPCDataInt('u');
             $redirect->cName            = Shop::Lang()->get('poll', 'redirect');
             break;
         default:
@@ -257,12 +257,12 @@ function setzeWarenkorbPersInWarenkorb(int $customerID): bool
             $tmpProduct = new Artikel();
             $tmpProduct->fuelleArtikel($oWarenkorbPersPos->kArtikel, Artikel::getDefaultOptions());
 
-            if ((int)$tmpProduct->kArtikel > 0 && count(WarenkorbHelper::addToCartCheck(
+            if ((int)$tmpProduct->kArtikel > 0 && count(Cart::addToCartCheck(
                 $tmpProduct,
                 $oWarenkorbPersPos->fAnzahl,
                 $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr
             )) === 0) {
-                WarenkorbHelper::addProductIDToCart(
+                Cart::addProductIDToCart(
                     $oWarenkorbPersPos->kArtikel,
                     $oWarenkorbPersPos->fAnzahl,
                     $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr,
@@ -387,7 +387,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
                 // Setzt aktuelle Wunschliste (falls vorhanden) vom Kunden in die Session
                 Wunschliste::persistInSession();
                 // Redirect URL
-                $cURL = StringHandler::filterXSS(RequestHelper::verifyGPDataString('cURL'));
+                $cURL = StringHandler::filterXSS(Request::verifyGPDataString('cURL'));
                 // Lade WarenkorbPers
                 $bPersWarenkorbGeladen = false;
                 if ($config['global']['warenkorbpers_nutzen'] === 'Y'
@@ -446,7 +446,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
                                 );
                                 //Artikel in den Warenkorb einfügen
                             } else {
-                                WarenkorbHelper::addProductIDToCart(
+                                Cart::addProductIDToCart(
                                     $oWarenkorbPersPos->kArtikel,
                                     $oWarenkorbPersPos->fAnzahl,
                                     $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr,
@@ -467,7 +467,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
                 // welche für den aktuellen Kunden nicht mehr sichtbar sein duerfen
                 pruefeWarenkorbArtikelSichtbarkeit($_SESSION['Kunde']->kKundengruppe);
                 executeHook(HOOK_JTL_PAGE_REDIRECT);
-                WarenkorbHelper::checkAdditions();
+                Cart::checkAdditions();
                 if (strlen($cURL) > 0) {
                     if (strpos($cURL, 'http') !== 0) {
                         $cURL = Shop::getURL() . '/' . ltrim($cURL, '/');

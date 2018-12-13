@@ -347,7 +347,7 @@ class FormHelper
         $KontaktHistory->cFax            = $Objekt->tnachricht->cFax ?? null;
         $KontaktHistory->cMail           = $Objekt->tnachricht->cMail ?? null;
         $KontaktHistory->cNachricht      = $Objekt->tnachricht->cNachricht ?? null;
-        $KontaktHistory->cIP             = RequestHelper::getRealIP();
+        $KontaktHistory->cIP             = Request::getRealIP();
         $KontaktHistory->dErstellt       = 'NOW()';
 
         return Shop::Container()->getDB()->insert('tkontakthistory', $KontaktHistory);
@@ -369,7 +369,7 @@ class FormHelper
                 FROM tkontakthistory
                 WHERE cIP = :ip
                     AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
-            ['ip' => RequestHelper::getRealIP(), 'min' => $min],
+            ['ip' => Request::getRealIP(), 'min' => $min],
             ReturnType::SINGLE_OBJECT
         );
 

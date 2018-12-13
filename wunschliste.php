@@ -4,23 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\ArtikelHelper;
+use Helpers\Product;
 use Helpers\FormHelper;
-use Helpers\RequestHelper;
-use Helpers\WarenkorbHelper;
+use Helpers\Request;
+use Helpers\Cart;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 
 Shop::run();
 $cParameter_arr   = Shop::getParameters();
-$cURLID           = StringHandler::filterXSS(RequestHelper::verifyGPDataString('wlid'));
+$cURLID           = StringHandler::filterXSS(Request::verifyGPDataString('wlid'));
 $Einstellungen    = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
-$kWunschliste     = (RequestHelper::verifyGPCDataInt('wl') > 0 && RequestHelper::verifyGPCDataInt('wlvm') === 0)
-    ? RequestHelper::verifyGPCDataInt('wl') //one of multiple customer wishlists
+$kWunschliste     = (Request::verifyGPCDataInt('wl') > 0 && Request::verifyGPCDataInt('wlvm') === 0)
+    ? Request::verifyGPCDataInt('wl') //one of multiple customer wishlists
     : ($cParameter_arr['kWunschliste'] //default wishlist from Shop class
         ?? $cURLID); //public link
-$wishlistTargetID = RequestHelper::verifyGPCDataInt('kWunschlisteTarget');
+$wishlistTargetID = Request::verifyGPCDataInt('kWunschlisteTarget');
 $cHinweis         = '';
 $cFehler          = '';
 $cSuche           = null;
@@ -58,11 +58,11 @@ if ($action !== null && FormHelper::validateToken()) {
             case 'addToCart':
                 $oWunschlistePos = Wunschliste::getWishListPositionDataByID($kWunschlistePos);
                 if (isset($oWunschlistePos->kArtikel) && $oWunschlistePos->kArtikel > 0) {
-                    $oEigenschaftwerte_arr = ArtikelHelper::isVariChild($oWunschlistePos->kArtikel)
-                        ? ArtikelHelper::getVarCombiAttributeValues($oWunschlistePos->kArtikel)
+                    $oEigenschaftwerte_arr = Product::isVariChild($oWunschlistePos->kArtikel)
+                        ? Product::getVarCombiAttributeValues($oWunschlistePos->kArtikel)
                         : Wunschliste::getAttributesByID($kWunschliste, $oWunschlistePos->kWunschlistePos);
                     if (!$oWunschlistePos->bKonfig) {
-                        WarenkorbHelper::addProductIDToCart(
+                        Cart::addProductIDToCart(
                             $oWunschlistePos->kArtikel,
                             $oWunschlistePos->fAnzahl,
                             $oEigenschaftwerte_arr
@@ -100,14 +100,14 @@ if ($action !== null && FormHelper::validateToken()) {
                 $oWunschliste = new Wunschliste($kWunschliste);
                 if (count($oWunschliste->CWunschlistePos_arr) > 0) {
                     foreach ($oWunschliste->CWunschlistePos_arr as $oWunschlistePos) {
-                        $oEigenschaftwerte_arr = ArtikelHelper::isVariChild($oWunschlistePos->kArtikel)
-                            ? ArtikelHelper::getVarCombiAttributeValues($oWunschlistePos->kArtikel)
+                        $oEigenschaftwerte_arr = Product::isVariChild($oWunschlistePos->kArtikel)
+                            ? Product::getVarCombiAttributeValues($oWunschlistePos->kArtikel)
                             : Wunschliste::getAttributesByID($kWunschliste, $oWunschlistePos->kWunschlistePos);
                         if (!$oWunschlistePos->Artikel->bHasKonfig && empty($oWunschlistePos->bKonfig)
                             && isset($oWunschlistePos->Artikel->inWarenkorbLegbar)
                             && $oWunschlistePos->Artikel->inWarenkorbLegbar > 0
                         ) {
-                            WarenkorbHelper::addProductIDToCart(
+                            Cart::addProductIDToCart(
                                 $oWunschlistePos->kArtikel,
                                 $oWunschlistePos->fAnzahl,
                                 $oEigenschaftwerte_arr
@@ -220,7 +220,7 @@ if ($action !== null && FormHelper::validateToken()) {
                 break;
 
             case 'search':
-                $cSuche = StringHandler::filterXSS(RequestHelper::verifyGPDataString('cSuche'));
+                $cSuche = StringHandler::filterXSS(Request::verifyGPDataString('cSuche'));
                 if ($userOK === true && strlen($cSuche) > 0) {
                     $wishlist                      = new Wunschliste($kWunschliste);
                     $wishlist->CWunschlistePos_arr = $wishlist->sucheInWunschliste($cSuche);
@@ -231,7 +231,7 @@ if ($action !== null && FormHelper::validateToken()) {
                 break;
         }
     } elseif ($action === 'search' && $kWunschliste > 0) {
-        $cSuche = StringHandler::filterXSS(RequestHelper::verifyGPDataString('cSuche'));
+        $cSuche = StringHandler::filterXSS(Request::verifyGPDataString('cSuche'));
         if (strlen($cSuche) > 0) {
             $wishlist                      = new Wunschliste($kWunschliste);
             $wishlist->CWunschlistePos_arr = $wishlist->sucheInWunschliste($cSuche);
@@ -239,10 +239,10 @@ if ($action !== null && FormHelper::validateToken()) {
     }
 }
 
-if (RequestHelper::verifyGPCDataInt('wlidmsg') > 0) {
-    $cHinweis .= Wunschliste::mapMessage(RequestHelper::verifyGPCDataInt('wlidmsg'));
+if (Request::verifyGPCDataInt('wlidmsg') > 0) {
+    $cHinweis .= Wunschliste::mapMessage(Request::verifyGPCDataInt('wlidmsg'));
 }
-if (RequestHelper::verifyGPCDataInt('error') === 1) {
+if (Request::verifyGPCDataInt('error') === 1) {
     if (strlen($cURLID) > 0) {
         $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'cURLID', $cURLID);
         if (!isset($oWunschliste->kWunschliste, $oWunschliste->nOeffentlich)
@@ -313,7 +313,7 @@ if (isset($wishlist->kWunschliste) && $wishlist->kWunschliste > 0) {
     $campaign = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
 
     if (isset($campaign->kKampagne, $campaign->cWert)
-        && strtolower($campaign->cWert) === strtolower(RequestHelper::verifyGPDataString($campaign->cParameter))
+        && strtolower($campaign->cWert) === strtolower(Request::verifyGPDataString($campaign->cParameter))
     ) {
         $event               = new stdClass();
         $event->kKampagne    = $campaign->kKampagne;

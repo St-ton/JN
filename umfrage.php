@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'umfrage_inc.php';
@@ -16,13 +16,13 @@ $cParameter_arr         = Shop::getParameters();
 $cHinweis               = '';
 $cCanonicalURL          = '';
 $step                   = 'umfrage_uebersicht';
-$nAktuelleSeite         = max(1, RequestHelper::verifyGPCDataInt('s'));
+$nAktuelleSeite         = max(1, Request::verifyGPCDataInt('s'));
 $sourveys               = [];
 $linkHelper             = Shop::Container()->getLinkService();
 $kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_UMFRAGE);
 $link                   = (new \Link\Link(Shop::Container()->getDB()))->load($kLink);
 $AufgeklappteKategorien = new KategorieListe();
-$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
+$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $db                     = Shop::Container()->getDB();
 $controller             = new \Survey\Controller($db, $smarty);
 $surveyID               = $cParameter_arr['kUmfrage'];

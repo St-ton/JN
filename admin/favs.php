@@ -5,7 +5,7 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 /**
  * @global Smarty\JTLSmarty $smarty
@@ -18,7 +18,7 @@ $oAccount->redirectOnFailure();
 $kAdminlogin = (int)$_SESSION['AdminAccount']->kAdminlogin;
 if (isset($_POST['title'], $_POST['url'])
     && FormHelper::validateToken()
-    && RequestHelper::verifyGPDataString('action') === 'save'
+    && Request::verifyGPDataString('action') === 'save'
 ) {
     $titles = $_POST['title'];
     $urls   = $_POST['url'];

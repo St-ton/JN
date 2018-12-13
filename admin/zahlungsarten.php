@@ -5,8 +5,8 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\RequestHelper;
-use Helpers\ZahlungsartHelper;
+use Helpers\Request;
+use Helpers\PaymentMethod;
 use Pagination\Filter;
 use Pagination\Pagination;
 
@@ -22,14 +22,14 @@ $db               = Shop::Container()->getDB();
 $standardwaehrung = $db->select('twaehrung', 'cStandard', 'Y');
 $hinweis          = '';
 $step             = 'uebersicht';
-if (RequestHelper::verifyGPCDataInt('checkNutzbar') === 1) {
-    ZahlungsartHelper::checkPaymentMethodAvailability();
+if (Request::verifyGPCDataInt('checkNutzbar') === 1) {
+    PaymentMethod::checkPaymentMethodAvailability();
     $hinweis = 'Ihre Zahlungsarten wurden auf Nutzbarkeit geprüft.';
 }
 // reset log
-if (($action = RequestHelper::verifyGPDataString('a')) !== ''
+if (($action = Request::verifyGPDataString('a')) !== ''
     && $action === 'logreset'
-    && ($kZahlungsart = RequestHelper::verifyGPCDataInt('kZahlungsart')) > 0
+    && ($kZahlungsart = Request::verifyGPCDataInt('kZahlungsart')) > 0
     && FormHelper::validateToken()
 ) {
     $method = $db->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
@@ -39,7 +39,7 @@ if (($action = RequestHelper::verifyGPDataString('a')) !== ''
         $hinweis = 'Der Fehlerlog von ' . $method->cName . ' wurde erfolgreich zurückgesetzt.';
     }
 }
-if ($action !== 'logreset' && RequestHelper::verifyGPCDataInt('kZahlungsart') > 0 && FormHelper::validateToken()) {
+if ($action !== 'logreset' && Request::verifyGPCDataInt('kZahlungsart') > 0 && FormHelper::validateToken()) {
     $step = 'einstellen';
     if ($action === 'payments') {
         $step = 'payments';
@@ -193,7 +193,7 @@ if ($step === 'einstellen') {
     $zahlungsart = $db->select(
         'tzahlungsart',
         'kZahlungsart',
-        RequestHelper::verifyGPCDataInt('kZahlungsart')
+        Request::verifyGPCDataInt('kZahlungsart')
     );
     if ($zahlungsart === null) {
         $step    = 'uebersicht';
@@ -201,7 +201,7 @@ if ($step === 'einstellen') {
     } else {
         // Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
         if ((int)$zahlungsart->nSOAP === 1 || (int)$zahlungsart->nCURL === 1 || (int)$zahlungsart->nSOCKETS === 1) {
-            ZahlungsartHelper::activatePaymentMethod($zahlungsart);
+            PaymentMethod::activatePaymentMethod($zahlungsart);
         }
         // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
         if (strpos($zahlungsart->cModulId, 'kPlugin_') !== false) {
@@ -283,7 +283,7 @@ if ($step === 'einstellen') {
                ->assign('ZAHLUNGSART_MAIL_STORNO', ZAHLUNGSART_MAIL_STORNO);
     }
 } elseif ($step === 'log') {
-    $kZahlungsart = RequestHelper::verifyGPCDataInt('kZahlungsart');
+    $kZahlungsart = Request::verifyGPCDataInt('kZahlungsart');
     $method       = $db->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
 
     $filterStandard = new Filter('standard');
@@ -322,7 +322,7 @@ if ($step === 'einstellen') {
         );
     }
 
-    $kZahlungsart = RequestHelper::verifyGPCDataInt('kZahlungsart');
+    $kZahlungsart = Request::verifyGPCDataInt('kZahlungsart');
 
     $oFilter = new Filter('payments-' . $kZahlungsart);
     $oFilter->addTextfield(

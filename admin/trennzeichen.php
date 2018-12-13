@@ -5,7 +5,7 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -18,7 +18,7 @@ setzeSprache();
 $cHinweis = '';
 $cFehler  = '';
 $step     = 'trennzeichen_uebersicht';
-if (RequestHelper::verifyGPCDataInt('save') === 1 && FormHelper::validateToken()) {
+if (Request::verifyGPCDataInt('save') === 1 && FormHelper::validateToken()) {
     $oPlausiTrennzeichen = new PlausiTrennzeichen();
     $oPlausiTrennzeichen->setPostVar($_POST);
     $oPlausiTrennzeichen->doPlausi();

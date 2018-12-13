@@ -7,7 +7,7 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Request;
 use Pagination\Filter;
 use Pagination\Pagination;
 
@@ -29,10 +29,10 @@ $cISOSprache = $_SESSION['cISOSprache'];
 
 if (isset($_FILES['csvfile']['tmp_name'])
     && FormHelper::validateToken()
-    && RequestHelper::verifyGPDataString('importcsv') === 'langvars'
+    && Request::verifyGPDataString('importcsv') === 'langvars'
 ) {
     $csvFilename = $_FILES['csvfile']['tmp_name'];
-    $importType  = RequestHelper::verifyGPCDataInt('importType');
+    $importType  = Request::verifyGPCDataInt('importType');
     $res         = $lang->import($csvFilename, $cISOSprache, $importType);
 
     if ($res === false) {

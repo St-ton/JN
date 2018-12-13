@@ -12,10 +12,10 @@ use Shop;
 use Sprache;
 
 /**
- * Class UrlHelper
+ * Class URL
  * @package Helpers
  */
-class UrlHelper
+class URL
 {
     /**
      * @var string
@@ -261,9 +261,9 @@ class UrlHelper
     }
 
     /**
-     * @param object $obj
-     * @param int    $type
-     * @param bool   $full
+     * @param GeneralObject $obj
+     * @param int           $type
+     * @param bool          $full
      * @return string
      * @former baueURL()
      * @since 5.0.0

@@ -13,13 +13,13 @@ use Shop;
 use Sprache;
 
 /**
- * Class HerstellerHelper
+ * Class Manufacturer
  * @package Helpers
  */
-class HerstellerHelper
+class Manufacturer
 {
     /**
-     * @var HerstellerHelper
+     * @var Manufacturer
      */
     private static $instance;
 
@@ -60,7 +60,7 @@ class HerstellerHelper
     }
 
     /**
-     * @return HerstellerHelper
+     * @return Manufacturer
      */
     public static function getInstance(): self
     {

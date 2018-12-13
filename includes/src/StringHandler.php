@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\UrlHelper;
+use Helpers\URL;
 
 /**
  * Class StringHandler
@@ -860,7 +860,7 @@ class StringHandler
                 $cName          = ':' . $cName;
             }
             if ($exists) {
-                $cURL = UrlHelper::buildURL($oObjekt, $params[$cParameter]);
+                $cURL = URL::buildURL($oObjekt, $params[$cParameter]);
                 $text = str_replace(
                     '$#' . $cParameter . ':' . $cKey . $cName . '#$',
                     '<a href="' . Shop::getURL() . '/' . $cURL . '">' . $oObjekt->cName . '</a>',

@@ -5,7 +5,7 @@
  */
 
 use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -21,8 +21,8 @@ $step           = 'uebersicht';
 setzeSprache();
 
 $smarty->assign('cTab', $cStep ?? null);
-if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
+if (strlen(Request::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
@@ -95,8 +95,8 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
                    ->assign('kKundenfeld', $customerField->kKundenfeld);
         }
     }
-} elseif (RequestHelper::verifyGPDataString('a') === 'edit') { // Editieren
-    $kKundenfeld = RequestHelper::verifyGPCDataInt('kKundenfeld');
+} elseif (Request::verifyGPDataString('a') === 'edit') { // Editieren
+    $kKundenfeld = Request::verifyGPCDataInt('kKundenfeld');
 
     if ($kKundenfeld > 0) {
         $customerField = $customerFields->getCustomerField($kKundenfeld);

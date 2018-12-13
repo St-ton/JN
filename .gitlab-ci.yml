@@ -1,16 +1,39 @@
 stages:
   #  - codeclimate
   - test
+  - cleanUpTest
   - build
   - deploy
   - cleanUp
 
 .testingScript: &testingScript |
+  export CI_CONTAINER_NAME=ci_job_testing_$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
+
   function testing() {
     echo "Testing projekt in PHP $PHP_VERSION_TEST_STEP docker image..."
-    bash build/scripts/tests.sh
+
+    docker run \
+      --volume $(pwd):/dockerBuild \
+      --name="$CI_CONTAINER_NAME" \
+      $CI_REGISTRY_IMAGE/testing-php$PHP_VERSION_TEST_STEP \
+      sh -c "cp -r /dockerBuild/. /build; bash build/scripts/tests.sh"
+
+    docker stop "$CI_CONTAINER_NAME"
+    docker rm -fv "$CI_CONTAINER_NAME" >/dev/null
+
     echo "Tests finished"
   }
+
+.cleanUpTesting: &cleanUpTesting |
+  function failedTesting() {
+    export CI_CONTAINER_NAME=ci_job_testing_$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
+    export running=$(docker inspect -f '{{.State.Running}}' $CI_CONTAINER_NAME)
+
+    if [[ ! -z "$running" ]]; then
+      docker stop $CI_CONTAINER_NAME && docker rm -fv $CI_CONTAINER_NAME
+    fi
+  }
+
 .preBuildDeployScripts: &preBuildDeployScripts |
   export CI_APPLICATION_REPOSITORY=$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG
   export CI_APPLICATION_TAG=$CI_COMMIT_SHA
@@ -64,7 +87,7 @@ stages:
 
     docker cp $CI_CONTAINER_NAME:/archive/. $CI_BUILD_SERVER_ARCHIVE_PATH
     docker stop "$CI_CONTAINER_NAME"
-    docker rm "$CI_CONTAINER_NAME" >/dev/null
+    docker rm -fv "$CI_CONTAINER_NAME" >/dev/null
   }
 
 .postBuildDeployScripts: &postBuildDeployScripts |
@@ -81,7 +104,7 @@ stages:
     export running=$(docker inspect -f '{{.State.Running}}' ci_job_build_deploy_$CI_COMMIT_SHA)
 
     if [[ ! -z "$running" ]]; then
-      docker stop ci_job_build_deploy_$CI_COMMIT_SHA && docker rm ci_job_build_deploy_$CI_COMMIT_SHA
+      docker stop ci_job_build_deploy_$CI_COMMIT_SHA && docker rm -fv ci_job_build_deploy_$CI_COMMIT_SHA
     fi
   }
 
@@ -101,7 +124,6 @@ stages:
 #    - building_testing_docker
 
 test_PHP_5.6:
-  image: $CI_REGISTRY_IMAGE/testing-php5.6
   stage: test
   variables:
     PHP_VERSION_TEST_STEP: '5.6'
@@ -114,10 +136,9 @@ test_PHP_5.6:
     - master
     - /^release\/.*$/
   tags:
-    - building_testing_docker
+    - build
 
 test_PHP_7.1:
-  image: $CI_REGISTRY_IMAGE/testing-php7.1
   stage: test
   variables:
     PHP_VERSION_TEST_STEP: '7.1'
@@ -130,10 +151,9 @@ test_PHP_7.1:
     - master
     - /^release\/.*$/
   tags:
-    - building_testing_docker
+    - build
 
 test_PHP_7.2:
-  image: $CI_REGISTRY_IMAGE/testing-php7.2
   stage: test
   variables:
     PHP_VERSION_TEST_STEP: '7.2'
@@ -146,10 +166,9 @@ test_PHP_7.2:
     - master
     - /^release\/.*$/
   tags:
-    - building_testing_docker
+    - build
 
 test_PHP_7.3:
-  image: $CI_REGISTRY_IMAGE/testing-php7.3
   stage: test
   variables:
     PHP_VERSION_TEST_STEP: '7.3'
@@ -162,7 +181,71 @@ test_PHP_7.3:
     - master
     - /^release\/.*$/
   tags:
-    - building_testing_docker
+    - build
+
+removeContainerPHP5.6:
+  stage: cleanUpTest
+  variables:
+    PHP_VERSION_TEST_STEP: '5.6'
+  script:
+    - *cleanUpTesting
+    - failedTesting
+  only:
+    - branches
+  except:
+    - master
+    - /^release\/.*$/
+  when: on_failure
+  tags:
+    - build
+
+removeContainerPHP7.1:
+  stage: cleanUpTest
+  variables:
+    PHP_VERSION_TEST_STEP: '7.1'
+  script:
+    - *cleanUpTesting
+    - failedTesting
+  only:
+    - branches
+  except:
+    - master
+    - /^release\/.*$/
+  when: on_failure
+  tags:
+    - build
+
+removeContainerPHP7.2:
+  stage: cleanUpTest
+  variables:
+    PHP_VERSION_TEST_STEP: '7.2'
+  script:
+    - *cleanUpTesting
+    - failedTesting
+  only:
+    - branches
+  except:
+    - master
+    - /^release\/.*$/
+  when: on_failure
+  tags:
+    - build
+
+removeContainerPHP7.3:
+  stage: cleanUpTest
+  variables:
+    PHP_VERSION_TEST_STEP: '7.3'
+  script:
+    - *cleanUpTesting
+    - failedTesting
+  only:
+    - branches
+  except:
+    - master
+    - /^release\/.*$/
+  when: on_failure
+  tags:
+    - build
 
 build:
   stage: build

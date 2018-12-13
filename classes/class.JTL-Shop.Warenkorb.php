@@ -1285,6 +1285,10 @@ class Warenkorb
                                 / $depProducts[$productID]->product->fPackeinheit
                                 / $depProducts[$productID]->stockFactor);
 
+                            if ($newAmount > $this->PositionenArr[$i]->nAnzahl) {
+                                $newAmount = $this->PositionenArr[$i]->nAnzahl;
+                            }
+
                             if ($newAmount > 0) {
                                 $this->PositionenArr[$i]->nAnzahl = $newAmount;
                             } else {

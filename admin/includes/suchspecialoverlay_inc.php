@@ -36,11 +36,17 @@ function gibSuchspecialOverlay(int $kSuchspecialOverlay)
  * @param array $cPost_arr
  * @param array $cFiles_arr
  * @param int|null $lang
+ * @param string|null $template
  * @return bool
  */
-function speicherEinstellung(int $kSuchspecialOverlay, array $cPost_arr, array $cFiles_arr, int $lang = null): bool
-{
-    $overlay = new Overlay($kSuchspecialOverlay, $lang ?? (int)$_SESSION['kSprache']);
+function speicherEinstellung(
+    int $kSuchspecialOverlay,
+    array $cPost_arr,
+    array $cFiles_arr,
+    int $lang = null,
+    string $template = null
+): bool {
+    $overlay = new Overlay($kSuchspecialOverlay, $lang ?? (int)$_SESSION['kSprache'], $template);
 
     $overlay->setActive((int)$cPost_arr['nAktiv'])
             ->setTransparence((int)$cPost_arr['nTransparenz'])

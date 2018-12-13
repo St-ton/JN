@@ -148,8 +148,8 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && FormHelper::valida
         $cFehler = 'Template bzw. Einstellungen konnten nicht geändert werden.';
     }
 
-    if (RequestHelper::verifyGPCDataInt('activate') === 1) {
-        OverlayHelper::loadOverlaysFromTemplateFolder();
+    if (\Helpers\RequestHelper::verifyGPCDataInt('activate') === 1) {
+        OverlayHelper::loadOverlaysFromTemplateFolder($_POST['ordner']);
     }
 
     Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);

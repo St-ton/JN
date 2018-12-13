@@ -84,11 +84,11 @@ class Overlay
      */
     private $urlSizes;
 
-    public function __construct(int $type, int $language)
+    public function __construct(int $type, int $language, string $template = null)
     {
         $this->setType($type)
              ->setLanguage($language)
-             ->setTemplateName()
+             ->setTemplateName($template)
              ->setPath(PFAD_TEMPLATES . $this->getTemplateName() . PFAD_OVERLAY_TEMPLATE)
              ->setPathSizes();
     }
@@ -96,11 +96,12 @@ class Overlay
     /**
      * @param int $type
      * @param int $language
+     * @param string|null $template
      * @return Overlay
      */
-    public static function getInstance(int $type, int $language): self
+    public static function getInstance(int $type, int $language, string $template = null): self
     {
-        return self::$instance ?? (new self($type, $language))->loadFromDB();
+        return self::$instance ?? (new self($type, $language, $template))->loadFromDB();
     }
 
     /**
@@ -228,11 +229,12 @@ class Overlay
     }
 
     /**
+     * @param string|null $template
      * @return Overlay
      */
-    public function setTemplateName(): self
+    public function setTemplateName(string $template = null): self
     {
-        $this->templateName = Template::getInstance()->getName();
+        $this->templateName = $template ?: Template::getInstance()->getName();
 
         return $this;
     }
@@ -291,7 +293,7 @@ class Overlay
      */
     public function setURLSizes(): self
     {
-        $shopURL = Shop::getURL() . '/';
+        $shopURL        = Shop::getURL() . '/';
         $this->urlSizes = [
             'klein'  => $shopURL . $this->getPathSize('klein') . $this->getImageName(),
             'normal' => $shopURL . $this->getPathSize('normal') . $this->getImageName(),

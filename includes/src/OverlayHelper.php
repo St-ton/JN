@@ -39,43 +39,31 @@ class OverlayHelper
                 $defaultOverlay = $db->queryPrepared("
                     SELECT *
                       FROM tsuchspecialoverlaysprache
-                      WHERE cTemplate = 'default'
-                        AND kSprache = :lang
-                        AND kSuchspecialOverlay = :type",
+                      WHERE kSprache = :lang
+                        AND kSuchspecialOverlay = :type
+                        AND cTemplate IN (:templateName, 'default')
+                      ORDER BY FIELD(cTemplate, :templateName, 'default')
+                      LIMIT 1",
                         [
-                            'lang' => $lang,
-                            'type' => $type
+                            'lang'         => $lang,
+                            'type'         => $type,
+                            'templateName' => $template
                         ],
                         \DB\ReturnType::SINGLE_OBJECT
                 );
-                if (!empty($defaultOverlay)) {
-                    $overlayExists = $db->queryPrepared('
-                        SELECT kSuchspecialOverlay
-                          FROM tsuchspecialoverlaysprache
-                          WHERE cTemplate = :template
-                            AND kSprache = :lang
-                            AND kSuchspecialOverlay = :type',
-                            [
-                                'lang'     => $lang,
-                                'type'     => $type,
-                                'template' => $template
-                            ],
-                            \DB\ReturnType::SINGLE_OBJECT
+                //use default settings for new overlays
+                if (!empty($defaultOverlay) && $defaultOverlay->cTemplate !== $template) {
+                    speicherEinstellung(
+                        $type,
+                        (array)$defaultOverlay,
+                        [
+                            'type'     => mime_content_type($filePath),
+                            'tmp_name' => $filePath,
+                            'name'     => $overlay
+                        ],
+                        $lang,
+                        $template
                     );
-                    if (empty($overlayExists)) {
-                        //use default settings for new overlays
-                        speicherEinstellung(
-                            $type,
-                            (array)$defaultOverlay,
-                            [
-                                'type'     => mime_content_type($filePath),
-                                'tmp_name' => $filePath,
-                                'name'     => $overlay
-                            ],
-                            $lang,
-                            $template
-                        );
-                    }
                 }
             }
         }

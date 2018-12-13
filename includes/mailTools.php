@@ -644,7 +644,7 @@ function pruefeGlobaleEmailBlacklist($cEmail)
 }
 
 /**
- * @param GeneralObject $mail
+ * @param object $mail
  */
 function verschickeMail($mail)
 {
@@ -777,7 +777,7 @@ function verschickeMail($mail)
 }
 
 /**
- * @param GeneralObject $Object
+ * @param object $Object
  * @param string        $subject
  * @return mixed
  */
@@ -810,7 +810,7 @@ function injectSubject($Object, $subject)
 }
 
 /**
- * @param GeneralObject $Object
+ * @param object $Object
  * @return mixed
  */
 function lokalisiereInhalt($Object)
@@ -823,8 +823,8 @@ function lokalisiereInhalt($Object)
 }
 
 /**
- * @param GeneralObject $sprache
- * @param Kunde         $kunde
+ * @param object $sprache
+ * @param Kunde  $kunde
  * @return mixed
  */
 function lokalisiereKunde($sprache, $kunde)
@@ -872,9 +872,9 @@ function lokalisiereKunde($sprache, $kunde)
 }
 
 /**
- * @param GeneralObject $oSprache
+ * @param object        $oSprache
  * @param Lieferadresse $oLieferadresse
- * @return GeneralObject
+ * @return object
  */
 function lokalisiereLieferadresse($oSprache, $oLieferadresse)
 {

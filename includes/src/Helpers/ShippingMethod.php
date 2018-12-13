@@ -686,11 +686,11 @@ class ShippingMethod
     }
 
     /**
-     * @param string                $deliveryCountry
-     * @param string                $shippingClasses
-     * @param int                   $customerGroupID
-     * @param Artikel|GeneralObject $article
-     * @param bool                  $checkProductDepedency
+     * @param string         $deliveryCountry
+     * @param string         $shippingClasses
+     * @param int            $customerGroupID
+     * @param Artikel|object $article
+     * @param bool           $checkProductDepedency
      * @return mixed
      * @former gibGuenstigsteVersandart()
      */
@@ -970,9 +970,9 @@ class ShippingMethod
     }
 
     /**
-     * @param Versandart|GeneralObject $versandart
-     * @param string                   $cISO
-     * @param string                   $plz
+     * @param Versandart|object $versandart
+     * @param string            $cISO
+     * @param string            $plz
      * @return stdClass|null
      * @former gibVersandZuschlag()
      */
@@ -1021,10 +1021,10 @@ class ShippingMethod
     /**
      * @todo Hier gilt noch zu beachten, dass fWarenwertNetto vom Zusatzartikel
      *       darf kein Netto sein, sondern der Preis muss in Brutto angegeben werden.
-     * @param Versandart|GeneralObject $versandart
-     * @param String                   $cISO
-     * @param Artikel|stdClass         $oZusatzArtikel
-     * @param Artikel|int              $Artikel
+     * @param Versandart|object $versandart
+     * @param String            $cISO
+     * @param Artikel|stdClass  $oZusatzArtikel
+     * @param Artikel|int       $Artikel
      * @return int|string
      * @former berechneVersandpreis()
      */
@@ -1261,8 +1261,8 @@ class ShippingMethod
     }
 
     /**
-     * @param Versandart|GeneralObject $oVersandart
-     * @param float                    $fWarenkorbSumme
+     * @param Versandart|object $oVersandart
+     * @param float             $fWarenkorbSumme
      * @return string
      * @former baueVersandkostenfreiString()
      */

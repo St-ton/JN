@@ -5,7 +5,7 @@
  */
 
 use Helpers\Date;
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Helpers\ShippingMethod;
 
@@ -63,7 +63,7 @@ if (isset($_POST['resetConfirm']) && (int)$_POST['resetConfirm'] > 0) {
 if (isset($_POST['resetEmailvorlage'])
     && (int)$_POST['resetEmailvorlage'] === 1
     && (int)$_POST['kEmailvorlage'] > 0
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     $oEmailvorlage = $db->select($cTable, 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
     if ($oEmailvorlage->kEmailvorlage > 0 && isset($_POST['resetConfirmJaSubmit'])) {
@@ -596,7 +596,7 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
 }
 if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
     && (int)$_POST['Aendern'] === 1
-    && (int)$_POST['kEmailvorlage'] > 0 && FormHelper::validateToken()
+    && (int)$_POST['kEmailvorlage'] > 0 && Form::validateToken()
 ) {
     $step                        = 'uebersicht';
     $kEmailvorlage               = (int)$_POST['kEmailvorlage'];
@@ -832,7 +832,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
 if (((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $continue === true)
         || $step === 'prebearbeiten'
         || (isset($_GET['a']) && $_GET['a'] === 'pdfloeschen')
-    ) && FormHelper::validateToken()
+    ) && Form::validateToken()
 ) {
     $cUploadVerzeichnis = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
     $localized          = [];

@@ -48,8 +48,8 @@ class GeneralObject
     }
 
     /**
-     * @param GeneralObject $originalObj
-     * @return stdClass|GeneralObject
+     * @param object $originalObj
+     * @return stdClass|object
      * @former kopiereMembers()
      * @since 5.0.0
      */
@@ -67,8 +67,8 @@ class GeneralObject
     }
 
     /**
-     * @param stdClass|GeneralObject $src
-     * @param stdClass|GeneralObject $dest
+     * @param stdClass|object $src
+     * @param stdClass|object $dest
      * @since 5.0.0
      */
     public static function memberCopy($src, &$dest): void
@@ -84,7 +84,7 @@ class GeneralObject
     }
 
     /**
-     * @param GeneralObject $oObj
+     * @param object $oObj
      * @return mixed
      * @since 5.0.0
      */

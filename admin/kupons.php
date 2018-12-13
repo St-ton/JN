@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Pagination\Filter;
 use Pagination\Pagination;
@@ -78,7 +78,7 @@ if ($res > 0) {
 }
 
 // Aktion ausgeloest?
-if (FormHelper::validateToken()) {
+if (Form::validateToken()) {
     if (isset($_POST['action'])) {
         if ($_POST['action'] === 'speichern') {
             // Kupon speichern

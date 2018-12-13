@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Pagination\Pagination;
 
@@ -30,7 +30,7 @@ $pagesPagi = (new Pagination('pages'))
     ->setItemCount($opcPageDB->getPageCount())
     ->assemble();
 
-if (FormHelper::validateToken()) {
+if (Form::validateToken()) {
     if ($action === 'restore') {
         $pageId = Request::verifyGPDataString('pageId');
         $opcPage->deletePage($pageId);

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -86,7 +86,7 @@ if (!empty($_FILES['file_data'])) {
     die(json_encode($response));
 }
 
-if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && FormHelper::validateToken()) {
+if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::validateToken()) {
     // Eine Aktion wurde von der Uebersicht aus gestartet
     $kPlugin_arr = $_POST['kPlugin'] ?? [];
     // Lizenzkey eingeben
@@ -247,7 +247,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && FormHelper
     } else {
         $cFehler = 'Fehler: Bitte wählen Sie mindestens ein Plugin aus.';
     }
-} elseif (Request::verifyGPCDataInt('pluginverwaltung_sprachvariable') === 1 && FormHelper::validateToken()) {
+} elseif (Request::verifyGPCDataInt('pluginverwaltung_sprachvariable') === 1 && Form::validateToken()) {
     $step = 'pluginverwaltung_sprachvariablen';
     if (Request::verifyGPCDataInt('kPlugin') > 0) {
         $kPlugin = Request::verifyGPCDataInt('kPlugin');

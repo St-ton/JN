@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Pagination\Pagination;
 
@@ -36,14 +36,14 @@ if (strlen(Request::verifyGPDataString('cSuche')) > 0) {
 if (isset($_POST['einstellungen'])
     && (int)$_POST['einstellungen'] === 1
     && (isset($_POST['speichern']) || (isset($_POST['a']) && $_POST['a'] === 'speichern'))
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     $step      = 'uebersicht';
     $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
     $smarty->assign('tab', 'einstellungen');
 }
 
-if (isset($_GET['l']) && (int)$_GET['l'] > 0 && FormHelper::validateToken()) {
+if (isset($_GET['l']) && (int)$_GET['l'] > 0 && Form::validateToken()) {
     $kKunde         = (int)$_GET['l'];
     $oWarenkorbPers = new WarenkorbPers($kKunde);
 

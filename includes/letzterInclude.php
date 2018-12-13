@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Manufacturer;
 use Helpers\Category;
 use Helpers\Request;
@@ -116,7 +116,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('oSpezialseiten_arr', $linkHelper->getSpecialPages())
        ->assign('bNoIndex', $NaviFilter->getMetaData()->checkNoIndex())
        ->assign('bAjaxRequest', Request::isAjaxRequest())
-       ->assign('jtl_token', FormHelper::getTokenInput())
+       ->assign('jtl_token', Form::getTokenInput())
        ->assign('ShopLogoURL', $shopLogo)
        ->assign('ShopLogoURL_abs', $shopLogo === '' ? '' : ($shopURL . $shopLogo))
        ->assign('nSeitenTyp', $pagetType)

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 
 require_once __DIR__ . '/includes/globalinclude.php';
@@ -22,25 +22,25 @@ $AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $cCanonicalURL          = '';
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-if (FormHelper::checkSubject()) {
+if (Form::checkSubject()) {
     $step            = 'formular';
     $fehlendeAngaben = [];
     if (isset($_POST['kontakt']) && (int)$_POST['kontakt'] === 1) {
-        $fehlendeAngaben = FormHelper::getMissingContactFormData();
+        $fehlendeAngaben = Form::getMissingContactFormData();
         $kKundengruppe   = \Session\Session::getCustomerGroup()->getID();
         $oCheckBox       = new CheckBox();
         $fehlendeAngaben = array_merge(
             $fehlendeAngaben,
             $oCheckBox->validateCheckBox(CHECKBOX_ORT_KONTAKT, $kKundengruppe, $_POST, true)
         );
-        $nReturnValue    = FormHelper::eingabenKorrekt($fehlendeAngaben);
+        $nReturnValue    = Form::eingabenKorrekt($fehlendeAngaben);
         $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST));
         executeHook(HOOK_KONTAKT_PAGE_PLAUSI);
 
         if ($nReturnValue) {
             $step = 'floodschutz';
-            if (!FormHelper::checkFloodProtection($Einstellungen['kontakt']['kontakt_sperre_minuten'])) {
-                $oNachricht = FormHelper::baueKontaktFormularVorgaben();
+            if (!Form::checkFloodProtection($Einstellungen['kontakt']['kontakt_sperre_minuten'])) {
+                $oNachricht = Form::baueKontaktFormularVorgaben();
                 // CheckBox Spezialfunktion ausfuehren
                 $oCheckBox->triggerSpecialFunction(
                     CHECKBOX_ORT_KONTAKT,
@@ -49,7 +49,7 @@ if (FormHelper::checkSubject()) {
                     $_POST,
                     ['oKunde' => $oNachricht, 'oNachricht' => $oNachricht]
                 )->checkLogging(CHECKBOX_ORT_KONTAKT, $kKundengruppe, $_POST, true);
-                FormHelper::editMessage();
+                Form::editMessage();
                 $step = 'nachricht versendet';
             }
         }
@@ -94,7 +94,7 @@ if (FormHelper::checkSubject()) {
            ->assign('code', false)
            ->assign('betreffs', $subjects)
            ->assign('hinweis', $hinweis ?? null)
-           ->assign('Vorgaben', FormHelper::baueKontaktFormularVorgaben())
+           ->assign('Vorgaben', Form::baueKontaktFormularVorgaben())
            ->assign('fehlendeAngaben', $fehlendeAngaben)
            ->assign('nAnzeigeOrt', CHECKBOX_ORT_KONTAKT);
 } else {

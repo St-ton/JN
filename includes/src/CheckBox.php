@@ -535,7 +535,7 @@ class CheckBox
     }
 
     /**
-     * @param GeneralObject $knd
+     * @param object $knd
      * @return bool
      */
     private function sfCheckBoxNewsletter($knd): bool
@@ -557,9 +557,9 @@ class CheckBox
     }
 
     /**
-     * @param GeneralObject $oKunde
-     * @param GeneralObject $oCheckBox
-     * @param int           $nAnzeigeOrt
+     * @param object $oKunde
+     * @param object $oCheckBox
+     * @param int    $nAnzeigeOrt
      * @return bool
      */
     public function sfCheckBoxMailToAdmin($oKunde, $oCheckBox, int $nAnzeigeOrt): bool

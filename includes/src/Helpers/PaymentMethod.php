@@ -149,7 +149,7 @@ class PaymentMethod
     /**
      * Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
      *
-     * @param Zahlungsart|PaymentMethod|GeneralObject $paymentMethod
+     * @param Zahlungsart|PaymentMethod|object $paymentMethod
      * @return bool
      * @former aktiviereZahlungsart()
      */

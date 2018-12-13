@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Pagination\Pagination;
 
@@ -25,7 +25,7 @@ $db          = Shop::Container()->getDB();
 if (strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
-if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateToken()) {
     if (!isset($_POST['delete'])) {
         if (is_array($_POST['kTagAll']) && count($_POST['kTagAll']) > 0) {
             $cSQLDel = ' IN (';
@@ -174,7 +174,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::vali
             $cFehler .= 'Bitte wählen Sie mindestens einen Tag aus.<br />';
         }
     }
-} elseif (isset($_POST['tagging']) && (int)$_POST['tagging'] === 2 && FormHelper::validateToken()) { // Mappinglist
+} elseif (isset($_POST['tagging']) && (int)$_POST['tagging'] === 2 && Form::validateToken()) { // Mappinglist
     if (isset($_POST['delete'])) {
         if (is_array($_POST['kTagMapping'])) {
             foreach ($_POST['kTagMapping'] as $kTagMapping) {

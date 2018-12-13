@@ -15,11 +15,11 @@ use SimpleMail;
 use StringHandler;
 
 /**
- * Class FormHelper
+ * Class Form
  * @package Helpers
  * @since 5.0.0
  */
-class FormHelper
+class Form
 {
     /**
      * @param array $requestData

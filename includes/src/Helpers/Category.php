@@ -542,7 +542,7 @@ class Category
 
     /**
      * @param int $id
-     * @return false|GeneralObject
+     * @return false|object
      */
     public function getCategoryById(int $id)
     {
@@ -611,9 +611,9 @@ class Category
     }
 
     /**
-     * @param int                 $id
-     * @param array|GeneralObject $haystack
-     * @return GeneralObject|bool
+     * @param int          $id
+     * @param array|object $haystack
+     * @return object|bool
      */
     private function findCategoryInList(int $id, $haystack)
     {

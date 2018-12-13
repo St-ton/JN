@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Pagination\Pagination;
 
@@ -36,7 +36,7 @@ setzeSprache();
 if (strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
-if (FormHelper::validateToken()) {
+if (Form::validateToken()) {
     if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
         if (isset($_POST['speichern'])) {
             $step      = 'uebersicht';

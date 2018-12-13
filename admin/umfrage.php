@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Pagination\Pagination;
 
@@ -34,7 +34,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
     if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         $cHinweis .= saveAdminSectionSettings(CONF_UMFRAGE, $_POST);
     }
-    if (Request::verifyGPCDataInt('umfrage') === 1 && FormHelper::validateToken()) {
+    if (Request::verifyGPCDataInt('umfrage') === 1 && Form::validateToken()) {
         if (isset($_POST['umfrage_erstellen']) && (int)$_POST['umfrage_erstellen'] === 1) {
             $step = 'umfrage_erstellen';
         } elseif (isset($_GET['umfrage_editieren']) && (int)$_GET['umfrage_editieren'] === 1) {
@@ -401,7 +401,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 ));
             }
         } elseif ((isset($_GET['fe']) && (int)$_GET['fe'] === 1) ||
-            ($step === 'umfrage_frage_bearbeiten' && FormHelper::validateToken())
+            ($step === 'umfrage_frage_bearbeiten' && Form::validateToken())
         ) { // Frage bearbeiten
             $step = 'umfrage_frage_erstellen';
 

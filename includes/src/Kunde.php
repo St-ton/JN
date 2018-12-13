@@ -5,7 +5,7 @@
  */
 
 use Helpers\Date;
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\GeneralObject;
 
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
@@ -297,7 +297,7 @@ class Kunde
                 && isset($attempts->nLoginversuche)
                 && (int)$attempts->nLoginversuche >= (int)$conf['kunden']['kundenlogin_max_loginversuche']
             ) {
-                if (FormHelper::validateCaptcha($_POST)) {
+                if (Form::validateCaptcha($_POST)) {
                     return true;
                 }
 

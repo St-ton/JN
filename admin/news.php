@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Pagination\Pagination;
 
@@ -51,7 +51,7 @@ if (strlen(Request::verifyGPDataString('tab')) > 0) {
             break;
     }
 }
-if (Request::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()) {
+if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
     if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         $controller->setMsg(saveAdminSectionSettings(CONF_NEWS, $_POST, [CACHING_GROUP_OPTION, CACHING_GROUP_NEWS]));
         if (count($languages) > 0) {

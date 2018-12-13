@@ -4,20 +4,20 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Product;
+use Helpers\Cart;
+use Helpers\Category;
 use Helpers\Date;
 use Helpers\FileSystem;
-use Helpers\FormHelper;
-use Helpers\Category;
+use Helpers\Form;
 use Helpers\GeneralObject;
+use Helpers\PaymentMethod;
 use Helpers\PHPSettings;
+use Helpers\Product;
 use Helpers\Request;
 use Helpers\SearchSpecial;
+use Helpers\ShippingMethod;
 use Helpers\Tax;
 use Helpers\URL;
-use Helpers\ShippingMethod;
-use Helpers\Cart;
-use Helpers\PaymentMethod;
 
 /**
  * @param float  $fPreisNetto
@@ -234,10 +234,10 @@ function checkeWarenkorbEingang()
 }
 
 /**
- * @param Artikel|GeneralObject $Artikel
- * @param int                   $anzahl
- * @param array                 $oEigenschaftwerte_arr
- * @param int                   $precision
+ * @param Artikel|object $Artikel
+ * @param int            $anzahl
+ * @param array          $oEigenschaftwerte_arr
+ * @param int            $precision
  * @return array
  * @deprecated since 5.0.0
  */
@@ -248,11 +248,11 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $p
 }
 
 /**
- * @param string                $lieferland
- * @param string                $versandklassen
- * @param int                   $kKundengruppe
- * @param Artikel|GeneralObject $product
- * @param bool                  $checkDepedency
+ * @param string         $lieferland
+ * @param string         $versandklassen
+ * @param int            $kKundengruppe
+ * @param Artikel|object $product
+ * @param bool           $checkDepedency
  * @return mixed
  * @deprecated since 5.0.0
  */
@@ -567,9 +567,9 @@ function getSytemlogFlag($cache = true)
 }
 
 /**
- * @param GeneralObject $startKat
- * @param GeneralObject $AufgeklappteKategorien
- * @param GeneralObject $AktuelleKategorie
+ * @param object $startKat
+ * @param object $AufgeklappteKategorien
+ * @param object $AktuelleKategorie
  * @deprecated since 5.0.0
  */
 function baueKategorieListenHTML($startKat, $AufgeklappteKategorien, $AktuelleKategorie)
@@ -755,7 +755,7 @@ function mappeKundenanrede($cAnrede, int $kSprache, int $kKunde = 0)
 /**
  * Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
  *
- * @param Zahlungsart|GeneralObject $oZahlungsart
+ * @param Zahlungsart|object $oZahlungsart
  * @return bool
  * @deprecated since 5.0.0
  */
@@ -825,10 +825,10 @@ function checkeWunschlisteParameter()
 }
 
 /**
- * @param Versandart|GeneralObject $versandart
- * @param string                   $cISO
- * @param string                   $plz
- * @return GeneralObject|null
+ * @param Versandart|object $versandart
+ * @param string            $cISO
+ * @param string            $plz
+ * @return object|null
  * @deprecated since 5.0.0
  */
 function gibVersandZuschlag($versandart, $cISO, $plz)
@@ -841,10 +841,10 @@ function gibVersandZuschlag($versandart, $cISO, $plz)
 }
 
 /**
- * @param Versandart|GeneralObject $versandart
- * @param String                   $cISO
- * @param Artikel|stdClass         $oZusatzArtikel
- * @param Artikel|int              $Artikel
+ * @param Versandart|object $versandart
+ * @param String            $cISO
+ * @param Artikel|stdClass  $oZusatzArtikel
+ * @param Artikel|int       $Artikel
  * @return int|string
  * @deprecated since 5.0.0
  */
@@ -978,9 +978,9 @@ function gibStuecklistenKomponente(int $kStueckliste, $bAssoc = false)
 }
 
 /**
- * @param GeneralObject $NaviFilter
- * @param int           $nAnzahl
- * @param bool          $bSeo
+ * @param object $NaviFilter
+ * @param int    $nAnzahl
+ * @param bool   $bSeo
  * @deprecated since 5.0.0
  */
 function doMainwordRedirect($NaviFilter, $nAnzahl, $bSeo = false)
@@ -1038,8 +1038,8 @@ function altenKuponNeuBerechnen()
 }
 
 /**
- * @param GeneralObject $oWKPosition
- * @param GeneralObject $Kupon
+ * @param object $oWKPosition
+ * @param object $Kupon
  * @return mixed
  * @deprecated since 5.0.0
  */
@@ -1053,8 +1053,8 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
 }
 
 /**
- * @param GeneralObject $oWKPosition
- * @param GeneralObject $Kupon
+ * @param object $oWKPosition
+ * @param object $Kupon
  * @return mixed
  * @deprecated since 5.0.0
  */
@@ -1103,8 +1103,8 @@ function gibAlteSteuerpositionen($Positionen, $Nettopreise = -1, $htmlWaehrung =
 }
 
 /**
- * @param Versandart|GeneralObject $oVersandart
- * @param float                    $fWarenkorbSumme
+ * @param Versandart|object $oVersandart
+ * @param float             $fWarenkorbSumme
  * @return string
  * @deprecated since 5.0.0
  */
@@ -1279,10 +1279,10 @@ function gibPreisLocalizedOhneFaktor($preis, $waehrung = 0, $html = true)
 }
 
 /**
- * @param float             $price
- * @param GeneralObject|int $currency
- * @param int               $html
- * @param int               $decimals
+ * @param float      $price
+ * @param object|int $currency
+ * @param int        $html
+ * @param int        $decimals
  * @return string
  * @deprecated since 5.0.0
  */
@@ -1467,7 +1467,7 @@ function fuegeEinInWarenkorb(
  * @param array $oVariation_arr
  * @param int   $kEigenschaft
  * @param int   $kEigenschaftWert
- * @return bool|GeneralObject
+ * @return bool|object
  * @deprecated since 5.0.0
  */
 function findeVariation($oVariation_arr, $kEigenschaft, $kEigenschaftWert)
@@ -1840,7 +1840,7 @@ function setzeTagFilter($nFilter_arr = [])
 /**
  * @param int $kSprache
  * @param int $kKundengruppe
- * @return GeneralObject|bool
+ * @return object|bool
  * @deprecated since 5.0.0
  */
 function gibAGBWRB(int $kSprache, int $kKundengruppe)
@@ -1872,11 +1872,11 @@ function entschluesselXTEA($cText)
 }
 
 /**
- * @param GeneralObject $obj
- * @param int           $art
- * @param int           $row
- * @param bool          $bForceNonSeo
- * @param bool          $bFull
+ * @param object $obj
+ * @param int    $art
+ * @param int    $row
+ * @param bool   $bForceNonSeo
+ * @param bool   $bFull
  * @return string
  * @deprecated since 5.0.0
  */
@@ -1887,8 +1887,8 @@ function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
 }
 
 /**
- * @param GeneralObject $obj
- * @param int           $art
+ * @param object $obj
+ * @param int    $art
  * @return array
  * @deprecated since 5.0.0
  */
@@ -2006,10 +2006,10 @@ function setzeSpracheUndWaehrungLink()
 }
 
 /**
- * @param string|array|GeneralObject $data the string, array or object to convert recursively
- * @param bool                       $encode true if data should be utf-8-encoded or false if data should be utf-8-decoded
- * @param bool                       $copy false if objects should be changed, true if they should be cloned first
- * @return string|array|GeneralObject converted data
+ * @param string|array|object $data the string, array or object to convert recursively
+ * @param bool                $encode true if data should be utf-8-encoded or false if data should be utf-8-decoded
+ * @param bool                $copy false if objects should be changed, true if they should be cloned first
+ * @return string|array|object converted data
  * @deprecated since 5.0.0
  */
 function utf8_convert_recursive($data, $encode = true, $copy = false)
@@ -2160,7 +2160,7 @@ function objectSort(&$data, $key, $bStringToLower = false)
 }
 
 /**
- * @param GeneralObject $originalObj
+ * @param object $originalObj
  * @return stdClass
  * @deprecated since 5.0.0
  */
@@ -2171,8 +2171,8 @@ function kopiereMembers($originalObj)
 }
 
 /**
- * @param stdClass|GeneralObject $src
- * @param stdClass|GeneralObject $dest
+ * @param stdClass|object $src
+ * @param stdClass|object $dest
  * @deprecated since 5.0.0
  */
 function memberCopy($src, &$dest)
@@ -2182,7 +2182,7 @@ function memberCopy($src, &$dest)
 }
 
 /**
- * @param GeneralObject $oObj
+ * @param object $oObj
  * @return mixed
  * @deprecated since 5.0.0
  */
@@ -2200,7 +2200,7 @@ function deepCopy($oObj)
 function validateCaptcha(array $requestData)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use FormHelper::validateCaptcha() instead.', E_USER_DEPRECATED);
-    return FormHelper::validateCaptcha($requestData);
+    return Form::validateCaptcha($requestData);
 }
 
 /**
@@ -2212,7 +2212,7 @@ function validateCaptcha(array $requestData)
 function getTokenInput()
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use FormHelper::getTokenInput() instead.', E_USER_DEPRECATED);
-    return FormHelper::getTokenInput();
+    return Form::getTokenInput();
 }
 
 /**
@@ -2223,7 +2223,7 @@ function getTokenInput()
 function validateToken()
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use FormHelper::validateToken() instead.', E_USER_DEPRECATED);
-    return FormHelper::validateToken();
+    return Form::validateToken();
 }
 
 /**
@@ -2234,7 +2234,7 @@ function validateToken()
 function eingabenKorrekt($fehlendeAngaben)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use FormHelper::eingabenKorrekt() instead.', E_USER_DEPRECATED);
-    return FormHelper::eingabenKorrekt($fehlendeAngaben);
+    return Form::eingabenKorrekt($fehlendeAngaben);
 }
 
 /**

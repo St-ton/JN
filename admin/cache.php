@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -16,7 +16,7 @@ $error        = '';
 $cacheAction  = '';
 $step         = 'uebersicht';
 $tab          = 'uebersicht';
-$action       = (isset($_POST['a']) && FormHelper::validateToken()) ? $_POST['a'] : null;
+$action       = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : null;
 $cache        = null;
 $opcacheStats = null;
 if (0 < strlen(Request::verifyGPDataString('tab'))) {

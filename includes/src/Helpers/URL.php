@@ -261,9 +261,9 @@ class URL
     }
 
     /**
-     * @param GeneralObject $obj
-     * @param int           $type
-     * @param bool          $full
+     * @param object $obj
+     * @param int    $type
+     * @param bool   $full
      * @return string
      * @former baueURL()
      * @since 5.0.0

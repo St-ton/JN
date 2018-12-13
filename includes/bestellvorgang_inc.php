@@ -6,7 +6,7 @@
 
 use Helpers\Product;
 use Helpers\Date;
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Tax;
 use Helpers\ShippingMethod;
 use Helpers\PaymentMethod as Helper;
@@ -2385,7 +2385,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
 
     if (isset($conf['kunden']['registrieren_captcha'])
         && $conf['kunden']['registrieren_captcha'] !== 'N'
-        && !FormHelper::validateCaptcha($data)
+        && !Form::validateCaptcha($data)
     ) {
         $ret['captcha'] = 2;
     }

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Pagination\Pagination;
 
@@ -27,7 +27,7 @@ if (strlen(Request::verifyGPDataString('tab')) > 0) {
 }
 if (isset($_POST['erstellenShowButton'])) {
     $cTab = 'erstellen';
-} elseif (Request::verifyGPCDataInt('uebersicht') === 1 && FormHelper::validateToken()) {
+} elseif (Request::verifyGPCDataInt('uebersicht') === 1 && Form::validateToken()) {
     $kCheckBox_arr = $_POST['kCheckBox'];
     if (isset($_POST['checkboxAktivierenSubmit'])) {
         $oCheckBox->aktivateCheckBox($kCheckBox_arr);
@@ -44,7 +44,7 @@ if (isset($_POST['erstellenShowButton'])) {
     $cStep     = 'erstellen';
     $cTab      = $cStep;
     $smarty->assign('oCheckBox', new CheckBox($kCheckBox));
-} elseif (Request::verifyGPCDataInt('erstellen') === 1 && FormHelper::validateToken()) {
+} elseif (Request::verifyGPCDataInt('erstellen') === 1 && Form::validateToken()) {
     $cStep       = 'erstellen';
     $kCheckBox   = Request::verifyGPCDataInt('kCheckBox');
     $cPlausi_arr = plausiCheckBox($_POST, $oSprach_arr);

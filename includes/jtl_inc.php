@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Helpers\Cart;
 
@@ -333,7 +333,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
     global $cHinweis;
     $oKupons  = [];
     $Kunde    = new Kunde();
-    $csrfTest = FormHelper::validateToken();
+    $csrfTest = Form::validateToken();
     if ($csrfTest === false) {
         $cHinweis .= Shop::Lang()->get('csrfValidationFailed');
         Shop::Container()->getLogService()->warning('CSRF-Warnung für Login: ' . $_POST['login']);

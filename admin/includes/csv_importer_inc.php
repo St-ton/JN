@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 
 /**
@@ -26,7 +26,7 @@ use Helpers\Request;
  */
 function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = null, $importType = 2)
 {
-    if (FormHelper::validateToken() && Request::verifyGPDataString('importcsv') === $importerId) {
+    if (Form::validateToken() && Request::verifyGPDataString('importcsv') === $importerId) {
         if (isset($_FILES['csvfile']['type']) &&
             (
                 $_FILES['csvfile']['type'] === 'application/vnd.ms-excel' ||

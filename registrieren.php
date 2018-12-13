@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 
 require_once __DIR__ . '/includes/globalinclude.php';
@@ -54,7 +54,7 @@ if ($step === 'formular') {
 }
 if (isset($_FILES['vcard'])
     && $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y'
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     gibKundeFromVCard($_FILES['vcard']['tmp_name']);
 }

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Template;
 
 /**
@@ -49,7 +49,7 @@ if (isset($_GET['check'])) {
 if (isset($_GET['uploadError'])) {
     $cFehler .= 'Datei-Upload konnte nicht ausgeführt werden - bitte Schreibrechte &uumlberprüfen.';
 }
-if (isset($_POST['type']) && $_POST['type'] === 'layout' && FormHelper::validateToken()) {
+if (isset($_POST['type']) && $_POST['type'] === 'layout' && Form::validateToken()) {
     $oCSS           = new SimpleCSS();
     $cOrdner        = basename($_POST['ordner']);
     $cCustomCSSFile = $oCSS->getCustomCSSFile($cOrdner);
@@ -83,7 +83,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'layout' && FormHelper::validate
         }
     }
 }
-if (isset($_POST['type']) && $_POST['type'] === 'settings' && FormHelper::validateToken()) {
+if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToken()) {
     $cOrdner      = Shop::Container()->getDB()->escape($_POST['ordner']);
     $parentFolder = null;
     $tplXML       = $oTemplate->leseXML($cOrdner);
@@ -153,7 +153,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && FormHelper::valida
         PFAD_ADMIN . 'shoptemplate.php?check=' .
         ($bCheck ? 'true' : 'false') . $uploadError, true, 301);
 }
-if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::validateToken()) {
+if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && Form::validateToken()) {
     $cOrdner      = Shop::Container()->getDB()->escape($_GET['settings']);
     $oTpl         = $templateHelper->getData($cOrdner, $admin);
     $tplXML       = $templateHelper->getXML($cOrdner, false);

@@ -600,8 +600,8 @@ class Product
     }
 
     /**
-     * @param Artikel         $product
-     * @param GeneralObject[] $variationPicturesArr
+     * @param Artikel  $product
+     * @param object[] $variationPicturesArr
      */
     public static function addVariationPictures(Artikel $product, $variationPicturesArr): void
     {
@@ -801,7 +801,7 @@ class Product
      * @param array $variations
      * @param int   $kEigenschaft
      * @param int   $kEigenschaftWert
-     * @return bool|GeneralObject
+     * @return bool|object
      * @former findeVariation()
      * @since 5.0.0
      */
@@ -999,7 +999,7 @@ class Product
         if ($conf['artikeldetails']['artikeldetails_fragezumprodukt_anzeigen'] !== 'N') {
             $missingData = self::getMissingProductQuestionFormData();
             Shop::Smarty()->assign('fehlendeAngaben_fragezumprodukt', $missingData);
-            $resultCode = FormHelper::eingabenKorrekt($missingData);
+            $resultCode = Form::eingabenKorrekt($missingData);
 
             \executeHook(\HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT_PLAUSI);
 
@@ -1079,7 +1079,7 @@ class Product
         if ($conf['artikeldetails']['produktfrage_abfragen_mobil'] === 'Y' && !$_POST['mobil']) {
             $ret['mobil'] = 1;
         }
-        if ($conf['artikeldetails']['produktfrage_abfragen_captcha'] !== 'N' && !FormHelper::validateCaptcha($_POST)) {
+        if ($conf['artikeldetails']['produktfrage_abfragen_captcha'] !== 'N' && !Form::validateCaptcha($_POST)) {
             $ret['captcha'] = 2;
         }
         $checkBox = new CheckBox();
@@ -1231,7 +1231,7 @@ class Product
         }
         $missingData = self::getMissingAvailibilityFormData();
         Shop::Smarty()->assign('fehlendeAngaben_benachrichtigung', $missingData);
-        $resultCode = FormHelper::eingabenKorrekt($missingData);
+        $resultCode = Form::eingabenKorrekt($missingData);
 
         \executeHook(\HOOK_ARTIKEL_INC_BENACHRICHTIGUNG_PLAUSI);
         if ($resultCode) {
@@ -1312,7 +1312,7 @@ class Product
             $ret['nachname'] = 1;
         }
         if ($conf['artikeldetails']['benachrichtigung_abfragen_captcha'] !== 'N'
-            && !FormHelper::validateCaptcha($_POST)
+            && !Form::validateCaptcha($_POST)
         ) {
             $ret['captcha'] = 2;
         }

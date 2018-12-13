@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 
 /**
@@ -16,7 +16,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'elfinder_inc.php';
 
-if (FormHelper::validateToken()) {
+if (Form::validateToken()) {
     $mediafilesSubdir = 'Bilder';
     $mediafilesType   = Request::verifyGPDataString('mediafilesType');
     $elfinderCommand  = Request::verifyGPDataString('cmd');

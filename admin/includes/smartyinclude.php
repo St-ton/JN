@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\GeneralObject;
 use Helpers\Request;
 
@@ -244,7 +244,7 @@ if (empty($template->version)) {
     $adminTplVersion = $template->version;
 }
 $smarty->assign('URL_SHOP', $shopURL)
-       ->assign('jtl_token', FormHelper::getTokenInput())
+       ->assign('jtl_token', Form::getTokenInput())
        ->assign('shopURL', $shopURL)
        ->assign('adminTplVersion', $adminTplVersion)
        ->assign('PFAD_ADMIN', PFAD_ADMIN)

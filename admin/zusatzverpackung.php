@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Pagination\Pagination;
 
@@ -20,7 +20,7 @@ $step         = 'zusatzverpackung';
 $oSprache_arr = Sprache::getAllLanguages();
 $action       = '';
 
-if (FormHelper::validateToken()) {
+if (Form::validateToken()) {
     if (isset($_POST['action'])) {
         $action = $_POST['action'];
     } elseif (isset($_GET['kVerpackung']) && Request::verifyGPCDataInt('kVerpackung') >= 0) {

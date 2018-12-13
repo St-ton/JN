@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 
 /**
@@ -49,7 +49,7 @@ if ($opc->isOPCInstalled() === false) {
 
     $smarty->assign('error', $error)
            ->display('onpage-composer.tpl');
-} elseif ($action !== '' && FormHelper::validateToken() === false) {
+} elseif ($action !== '' && Form::validateToken() === false) {
     // OPC action while XSRF validation failed
     $error = __('Wrong XSRF token.');
 } elseif ($action === 'replace' || $action === 'extend') {

@@ -5,7 +5,7 @@
  */
 
 use Helpers\Product;
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Helpers\Cart;
 
@@ -48,7 +48,7 @@ if (!empty($_POST['addToCart'])) {
 } elseif (isset($_POST['action'])) {
     $action = $_POST['action'];
 }
-if ($action !== null && FormHelper::validateToken()) {
+if ($action !== null && Form::validateToken()) {
     if (isset($_POST['kWunschliste'])) {
         $kWunschliste = (int)$_POST['kWunschliste'];
         $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);

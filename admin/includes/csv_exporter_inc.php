@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 
 /**
@@ -32,7 +32,7 @@ function handleCsvExportAction(
     $delim = ',',
     $bHead = true
 ) {
-    if (FormHelper::validateToken() && Request::verifyGPDataString('exportcsv') === $exporterId) {
+    if (Form::validateToken() && Request::verifyGPDataString('exportcsv') === $exporterId) {
         if (is_callable($source)) {
             $arr = $source();
         } elseif (is_array($source)) {

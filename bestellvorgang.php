@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Helpers\ShippingMethod;
 use Helpers\Cart;
@@ -69,7 +69,7 @@ if (Request::verifyGPCDataInt('wk') === 1) {
 }
 if (isset($_FILES['vcard'])
     && $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y'
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     gibKundeFromVCard($_FILES['vcard']['tmp_name']);
 }

@@ -260,8 +260,8 @@ class Cart
     }
 
     /**
-     * @param WarenkorbPos  $wkPos
-     * @param GeneralObject $variation
+     * @param WarenkorbPos $wkPos
+     * @param object       $variation
      * @return void
      */
     public static function setVariationPicture(WarenkorbPos $wkPos, $variation): void
@@ -764,10 +764,10 @@ class Cart
     }
 
     /**
-     * @param Artikel|GeneralObject $product
-     * @param int                   $qty
-     * @param array                 $attributes
-     * @param int                   $accuracy
+     * @param Artikel|object $product
+     * @param int            $qty
+     * @param array          $attributes
+     * @param int            $accuracy
      * @return array
      * @former pruefeFuegeEinInWarenkorb()
      */
@@ -1064,8 +1064,8 @@ class Cart
     }
 
     /**
-     * @param GeneralObject $oWKPosition
-     * @param GeneralObject $Kupon
+     * @param object $oWKPosition
+     * @param object $Kupon
      * @return mixed
      * @former checkeKuponWKPos()
      * @since 5.0.0
@@ -1171,8 +1171,8 @@ class Cart
     }
 
     /**
-     * @param GeneralObject $oWKPosition
-     * @param GeneralObject $Kupon
+     * @param object $oWKPosition
+     * @param object $Kupon
      * @return mixed
      * @former checkSetPercentCouponWKPos()
      * @since 5.0.0

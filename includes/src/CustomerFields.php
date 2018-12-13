@@ -19,7 +19,7 @@ class CustomerFields
     private static $instances;
 
     /**
-     * @var GeneralObject[]
+     * @var object[]
      */
     protected $customerFields = [];
 
@@ -78,8 +78,8 @@ class CustomerFields
     }
 
     /**
-     * @param GeneralObject $customerField
-     * @return GeneralObject
+     * @param object $customerField
+     * @return object
      */
     protected function prepare($customerField)
     {
@@ -93,7 +93,7 @@ class CustomerFields
     }
 
     /**
-     * @return GeneralObject[]
+     * @return object[]
      */
     public function getCustomerFields(): array
     {
@@ -102,7 +102,7 @@ class CustomerFields
 
     /**
      * @param int $kCustomerField
-     * @return null|GeneralObject
+     * @return null|object
      */
     public function getCustomerField(int $kCustomerField)
     {
@@ -110,8 +110,8 @@ class CustomerFields
     }
 
     /**
-     * @param GeneralObject $customerField
-     * @return null|GeneralObject[]
+     * @param object $customerField
+     * @return null|object[]
      */
     public function getCustomerFieldValues($customerField): ?array
     {
@@ -189,8 +189,8 @@ class CustomerFields
     }
 
     /**
-     * @param GeneralObject $customerField
-     * @param null|array    $customerFieldValues
+     * @param object     $customerField
+     * @param null|array $customerFieldValues
      * @return bool
      */
     public function save($customerField, $customerFieldValues = null): bool

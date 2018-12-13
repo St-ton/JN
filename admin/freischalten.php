@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Pagination\Pagination;
 
@@ -118,7 +118,7 @@ if (Request::verifyGPCDataInt('nSort') > 0) {
 }
 
 // Freischalten
-if (Request::verifyGPCDataInt('freischalten') === 1 && FormHelper::validateToken()) {
+if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
     // Bewertungen
     if (Request::verifyGPCDataInt('bewertungen') === 1) {
         if (isset($_POST['freischaltensubmit'])) {
@@ -196,7 +196,7 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && FormHelper::validateToken
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Suchanfrage.<br />';
             }
         }
-    } elseif (Request::verifyGPCDataInt('tags') === 1 && FormHelper::validateToken()) { // Tags
+    } elseif (Request::verifyGPCDataInt('tags') === 1 && Form::validateToken()) { // Tags
         if (isset($_POST['freischaltensubmit'])) {
             if (isset($_POST['kTag']) && schalteTagsFrei($_POST['kTag'])) {
                 $cHinweis .= 'Ihre markierten Tags wurden erfolgreich freigeschaltet.<br />';
@@ -210,7 +210,7 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && FormHelper::validateToken
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Tag.<br />';
             }
         }
-    } elseif (Request::verifyGPCDataInt('newskommentare') === 1 && FormHelper::validateToken()) {
+    } elseif (Request::verifyGPCDataInt('newskommentare') === 1 && Form::validateToken()) {
         if (isset($_POST['freischaltensubmit'])) {
             if (isset($_POST['kNewsKommentar']) && schalteNewskommentareFrei($_POST['kNewsKommentar'])) {
                 $cHinweis .= 'Ihre markierten Newskommentare wurden erfolgreich freigeschaltet.<br />';
@@ -224,7 +224,7 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && FormHelper::validateToken
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newskommentar.<br />';
             }
         }
-    } elseif (Request::verifyGPCDataInt('newsletterempfaenger') === 1 && FormHelper::validateToken()) {
+    } elseif (Request::verifyGPCDataInt('newsletterempfaenger') === 1 && Form::validateToken()) {
         if (isset($_POST['freischaltensubmit'])) {
             if (isset($_POST['kNewsletterEmpfaenger'])
                 && schalteNewsletterempfaengerFrei($_POST['kNewsletterEmpfaenger'])

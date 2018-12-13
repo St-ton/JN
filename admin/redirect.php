@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Pagination\Filter;
 use Pagination\Pagination;
@@ -25,7 +25,7 @@ $cHinweis  = '';
 $cFehler   = '';
 $redirects = $_POST['redirects'] ?? [];
 
-if (FormHelper::validateToken()) {
+if (Form::validateToken()) {
     switch (Request::verifyGPDataString('action')) {
         case 'save':
             foreach ($redirects as $kRedirect => $redirect) {

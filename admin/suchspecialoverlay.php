@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -23,7 +23,7 @@ if (Request::verifyGPCDataInt('suchspecialoverlay') === 1) {
     $oID  = Request::verifyGPCDataInt('kSuchspecialOverlay');
     if (isset($_POST['speicher_einstellung'])
         && (int)$_POST['speicher_einstellung'] === 1
-        && FormHelper::validateToken()
+        && Form::validateToken()
     ) {
         if (speicherEinstellung($oID, $_POST, $_FILES)) {
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);

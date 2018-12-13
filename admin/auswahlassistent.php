@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -22,7 +22,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     if (strlen(Request::verifyGPDataString('tab')) > 0) {
         $tab = Request::verifyGPDataString('tab');
     }
-    if (isset($_POST['a']) && FormHelper::validateToken()) {
+    if (isset($_POST['a']) && Form::validateToken()) {
         if ($_POST['a'] === 'newGrp') {
             $step = 'edit-group';
         } elseif ($_POST['a'] === 'newQuest') {
@@ -60,19 +60,19 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     } elseif (isset($_GET['a'], $_GET['q'])
         && $_GET['a'] === 'delQuest'
         && (int)$_GET['q'] > 0
-        && FormHelper::validateToken()
+        && Form::validateToken()
     ) {
         if (AuswahlAssistentFrage::deleteQuestion(['kAuswahlAssistentFrage_arr' => [$_GET['q']]])) {
             $cHinweis = 'Ihre ausgewählte Frage wurden erfolgreich gelöscht.';
         } else {
             $cFehler = 'Fehler: Ihre ausgewählte Frage konnten nicht gelöscht werden.';
         }
-    } elseif (isset($_GET['a']) && $_GET['a'] === 'editQuest' && (int)$_GET['q'] > 0 && FormHelper::validateToken()) {
+    } elseif (isset($_GET['a']) && $_GET['a'] === 'editQuest' && (int)$_GET['q'] > 0 && Form::validateToken()) {
         $step = 'edit-question';
         $smarty->assign('oFrage', new AuswahlAssistentFrage((int)$_GET['q'], false));
     }
 
-    if (isset($_POST['a']) && FormHelper::validateToken()) {
+    if (isset($_POST['a']) && Form::validateToken()) {
         if ($_POST['a'] === 'addGrp') {
             $group                = new AuswahlAssistentGruppe();
             $group->kSprache      = (int)$_SESSION['kSprache'];
@@ -117,7 +117,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     } elseif (isset($_GET['a'], $_GET['g'])
         && $_GET['a'] === 'editGrp'
         && (int)$_GET['g'] > 0
-        && FormHelper::validateToken()
+        && Form::validateToken()
     ) {
         $step = 'edit-group';
         $smarty->assign('oGruppe', new AuswahlAssistentGruppe($_GET['g'], false, false, true));

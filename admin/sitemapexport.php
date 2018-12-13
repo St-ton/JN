@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Pagination\Pagination;
 
@@ -67,7 +67,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
 $nYearDownloads = Request::verifyGPCDataInt('nYear_downloads');
 $nYearReports   = Request::verifyGPCDataInt('nYear_reports');
 
-if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && FormHelper::validateToken()) {
+if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && Form::validateToken()) {
     Shop::Container()->getDB()->query(
         'DELETE FROM tsitemaptracker
             WHERE YEAR(tsitemaptracker.dErstellt) = ' . $nYearDownloads,
@@ -77,7 +77,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && F
     $nYearDownloads = 0;
 }
 
-if (isset($_POST['action']) && $_POST['action'] === 'year_reports_delete' && FormHelper::validateToken()) {
+if (isset($_POST['action']) && $_POST['action'] === 'year_reports_delete' && Form::validateToken()) {
     Shop::Container()->getDB()->query(
         'DELETE FROM tsitemapreport
             WHERE YEAR(tsitemapreport.dErstellt) = ' . $nYearReports,

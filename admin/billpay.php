@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Pagination\Pagination;
 
@@ -118,7 +118,7 @@ $Conf = Shop::Container()->getDB()->selectAll(
     'nSort'
 );
 
-if (isset($_POST['einstellungen_bearbeiten']) && FormHelper::validateToken()) {
+if (isset($_POST['einstellungen_bearbeiten']) && Form::validateToken()) {
     foreach ($Conf as $i => $oConfig) {
         unset($aktWert);
         $aktWert = new stdClass();

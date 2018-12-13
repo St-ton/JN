@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -27,7 +27,7 @@ if (strlen(Request::verifyGPDataString('tab')) > 0) {
 
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_KUNDENFELD, $_POST);
-} elseif (isset($_POST['kundenfelder']) && (int)$_POST['kundenfelder'] === 1 && FormHelper::validateToken()) {
+} elseif (isset($_POST['kundenfelder']) && (int)$_POST['kundenfelder'] === 1 && Form::validateToken()) {
     $success = true;
     if (isset($_POST['loeschen'])) {
         $kKundenfeld_arr = $_POST['kKundenfeld'];

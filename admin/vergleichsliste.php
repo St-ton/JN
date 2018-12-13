@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Pagination\Pagination;
 
@@ -32,7 +32,7 @@ if (isset($_POST['zeitfilter']) && (int)$_POST['zeitfilter'] === 1) {
         : 0;
 }
 
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form::validateToken()) {
     $oConfig_arr = Shop::Container()->getDB()->query(
         'SELECT *
             FROM teinstellungenconf

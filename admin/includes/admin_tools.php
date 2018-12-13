@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 
 /**
@@ -193,7 +193,7 @@ function bearbeiteListBox($listBoxes, $cWertName, int $configSectionID)
  */
 function saveAdminSectionSettings(int $configSectionID, array &$cPost_arr, $tags = [CACHING_GROUP_OPTION])
 {
-    if (!FormHelper::validateToken()) {
+    if (!Form::validateToken()) {
         return 'Fehler: Cross site request forgery.';
     }
     $confData = Shop::Container()->getDB()->selectAll(
@@ -325,7 +325,7 @@ function holeBewertungserinnerungSettings()
  */
 function setzeSprache()
 {
-    if (FormHelper::validateToken() && Request::verifyGPCDataInt('sprachwechsel') === 1) {
+    if (Form::validateToken() && Request::verifyGPCDataInt('sprachwechsel') === 1) {
         // Wähle explizit gesetzte Sprache als aktuelle Sprache
         $oSprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_POST['kSprache']);
 

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Pagination\Pagination;
 
@@ -28,7 +28,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
 }
 if (Request::verifyGPCDataInt('KwK') === 1
     && Request::verifyGPCDataInt('nichtreggt_loeschen') === 1
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     $kKundenWerbenKunden_arr = $_POST['kKundenWerbenKunden'];
     if (is_array($kKundenWerbenKunden_arr) && count($kKundenWerbenKunden_arr) > 0) {

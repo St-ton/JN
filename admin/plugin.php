@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -27,7 +27,7 @@ $oPlugin         = null;
 if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
     if (Request::verifyGPCDataInt('Setting') === 1) {
         $updated = true;
-        if (!FormHelper::validateToken()) {
+        if (!Form::validateToken()) {
             $bError = true;
         } else {
             $plgnConf = isset($_POST['kPluginAdminMenu'])

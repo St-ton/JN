@@ -403,7 +403,7 @@ class Controller
             if (empty($post['cEmail']) || \StringHandler::filterEmailAddress($post['cEmail']) === false) {
                 $checks['cEmail'] = 1;
             }
-            if ($config['news']['news_sicherheitscode'] !== 'N' && !\Helpers\FormHelper::validateCaptcha($post)) {
+            if ($config['news']['news_sicherheitscode'] !== 'N' && !\Helpers\Form::validateCaptcha($post)) {
                 $checks['captcha'] = 2;
             }
         }

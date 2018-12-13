@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -18,7 +18,7 @@ $step     = 'agbwrb_uebersicht';
 
 setzeSprache();
 
-if (Request::verifyGPCDataInt('agbwrb') === 1 && FormHelper::validateToken()) {
+if (Request::verifyGPCDataInt('agbwrb') === 1 && Form::validateToken()) {
     // Editieren
     if (Request::verifyGPCDataInt('agbwrb_edit') === 1) {
         if (Request::verifyGPCDataInt('kKundengruppe') > 0) {

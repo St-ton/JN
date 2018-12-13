@@ -5,7 +5,7 @@
  */
 
 use Helpers\Date;
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Pagination\Pagination;
 
@@ -47,18 +47,18 @@ $cDatumNow_arr = Date::getDateParts(date('Y-m-d H:i:s'));
 if (strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
-if (Request::verifyGPCDataInt('neu') === 1 && FormHelper::validateToken()) {
+if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
     $step = 'kampagne_erstellen';
 } elseif (Request::verifyGPCDataInt('editieren') === 1
     && Request::verifyGPCDataInt('kKampagne') > 0
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     // Editieren
     $step      = 'kampagne_erstellen';
     $kKampagne = Request::verifyGPCDataInt('kKampagne');
 } elseif (Request::verifyGPCDataInt('detail') === 1
     && Request::verifyGPCDataInt('kKampagne') > 0
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     // Detail
     $step      = 'kampagne_detail';
@@ -68,13 +68,13 @@ if (Request::verifyGPCDataInt('neu') === 1 && FormHelper::validateToken()) {
 } elseif (Request::verifyGPCDataInt('defdetail') === 1
     && Request::verifyGPCDataInt('kKampagne') > 0
     && Request::verifyGPCDataInt('kKampagneDef') > 0
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) { // Def Detail
     $step         = 'kampagne_defdetail';
     $kKampagne    = Request::verifyGPCDataInt('kKampagne');
     $kKampagneDef = Request::verifyGPCDataInt('kKampagneDef');
     $cStamp       = Request::verifyGPDataString('cStamp');
-} elseif (Request::verifyGPCDataInt('erstellen_speichern') === 1 && FormHelper::validateToken()) {
+} elseif (Request::verifyGPCDataInt('erstellen_speichern') === 1 && Form::validateToken()) {
     // Speichern / Editieren
     $oKampagne             = new Kampagne();
     $oKampagne->cName      = $_POST['cName'];
@@ -98,7 +98,7 @@ if (Request::verifyGPCDataInt('neu') === 1 && FormHelper::validateToken()) {
         $smarty->assign('oKampagne', $oKampagne);
         $step = 'kampagne_erstellen';
     }
-} elseif (Request::verifyGPCDataInt('delete') === 1 && FormHelper::validateToken()) {
+} elseif (Request::verifyGPCDataInt('delete') === 1 && Form::validateToken()) {
     // Loeschen
     if (isset($_POST['kKampagne']) && is_array($_POST['kKampagne']) && count($_POST['kKampagne']) > 0) {
         $nReturnValue = loescheGewaehlteKampagnen($_POST['kKampagne']);

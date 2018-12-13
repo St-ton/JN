@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Helpers\PaymentMethod;
 use Pagination\Filter;
@@ -30,7 +30,7 @@ if (Request::verifyGPCDataInt('checkNutzbar') === 1) {
 if (($action = Request::verifyGPDataString('a')) !== ''
     && $action === 'logreset'
     && ($kZahlungsart = Request::verifyGPCDataInt('kZahlungsart')) > 0
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     $method = $db->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
 
@@ -39,7 +39,7 @@ if (($action = Request::verifyGPDataString('a')) !== ''
         $hinweis = 'Der Fehlerlog von ' . $method->cName . ' wurde erfolgreich zurückgesetzt.';
     }
 }
-if ($action !== 'logreset' && Request::verifyGPCDataInt('kZahlungsart') > 0 && FormHelper::validateToken()) {
+if ($action !== 'logreset' && Request::verifyGPCDataInt('kZahlungsart') > 0 && Form::validateToken()) {
     $step = 'einstellen';
     if ($action === 'payments') {
         $step = 'payments';
@@ -49,7 +49,7 @@ if ($action !== 'logreset' && Request::verifyGPCDataInt('kZahlungsart') > 0 && F
 }
 
 if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
-    && (int)$_POST['einstellungen_bearbeiten'] === 1 && (int)$_POST['kZahlungsart'] > 0 && FormHelper::validateToken()
+    && (int)$_POST['einstellungen_bearbeiten'] === 1 && (int)$_POST['kZahlungsart'] > 0 && Form::validateToken()
 ) {
     $step              = 'uebersicht';
     $zahlungsart       = $db->select(
@@ -308,7 +308,7 @@ if ($step === 'einstellen') {
 } elseif ($step === 'payments') {
     if (isset($_POST['action'], $_POST['kEingang_arr'])
         && $_POST['action'] === 'paymentwawireset'
-        && FormHelper::validateToken()
+        && Form::validateToken()
     ) {
         $kEingang_arr = $_POST['kEingang_arr'];
         array_walk($kEingang_arr, function (&$i) {

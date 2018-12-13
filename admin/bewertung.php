@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Pagination\Pagination;
 
@@ -28,7 +28,7 @@ setzeSprache();
 if (strlen(Request::verifyGPDataString('tab')) > 0) {
     $cTab = Request::verifyGPDataString('tab');
 }
-if (FormHelper::validateToken()) {
+if (Form::validateToken()) {
     if (Request::verifyGPCDataInt('bewertung_editieren') === 1) {
         if (editiereBewertung($_POST)) {
             $cHinweis .= 'Ihre Bewertung wurde erfolgreich editiert. ';
@@ -127,7 +127,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
         $smarty->assign('nFZ', 1);
     }
 } elseif ($step === 'bewertung_uebersicht') {
-    if (isset($_GET['a']) && $_GET['a'] === 'delreply' && FormHelper::validateToken()) {
+    if (isset($_GET['a']) && $_GET['a'] === 'delreply' && Form::validateToken()) {
         removeReply(Request::verifyGPCDataInt('kBewertung'));
         $cHinweis = 'Antwort zu einer Bewertung wurde entfernt.';
     }

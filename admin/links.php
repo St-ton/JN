@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -33,7 +33,7 @@ if (isset($_POST['addlink']) && (int)$_POST['addlink'] > 0) {
 
 if (isset($_POST['removefromlinkgroup'], $_POST['kLinkgruppe'])
     && (int)$_POST['removefromlinkgroup'] > 0
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     $res = $linkAdmin->removeLinkFromLinkGroup((int)$_POST['removefromlinkgroup'], (int)$_POST['kLinkgruppe']);
     if ($res > 0) {
@@ -46,7 +46,7 @@ if (isset($_POST['removefromlinkgroup'], $_POST['kLinkgruppe'])
     $clearCache = true;
 }
 
-if (isset($_POST['dellink']) && (int)$_POST['dellink'] > 0 && FormHelper::validateToken()) {
+if (isset($_POST['dellink']) && (int)$_POST['dellink'] > 0 && Form::validateToken()) {
     $res = $linkAdmin->deleteLink((int)$_POST['dellink']);
     if ($res > 0) {
         $hinweis .= 'Link erfolgreich gelöscht!';
@@ -58,7 +58,7 @@ if (isset($_POST['dellink']) && (int)$_POST['dellink'] > 0 && FormHelper::valida
     $_POST      = [];
 }
 
-if (isset($_POST['loesch_linkgruppe']) && (int)$_POST['loesch_linkgruppe'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['loesch_linkgruppe']) && (int)$_POST['loesch_linkgruppe'] === 1 && Form::validateToken()) {
     if (isset($_POST['loeschConfirmJaSubmit'])) {
         $step = 'loesch_linkgruppe';
     } else {
@@ -69,7 +69,7 @@ if (isset($_POST['loesch_linkgruppe']) && (int)$_POST['loesch_linkgruppe'] === 1
 
 if (((isset($_POST['dellinkgruppe']) && (int)$_POST['dellinkgruppe'] > 0)
         || $step === 'loesch_linkgruppe')
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     $step        = 'uebersicht';
     $linkGroupID = 0;
@@ -89,14 +89,14 @@ if (((isset($_POST['dellinkgruppe']) && (int)$_POST['dellinkgruppe'] > 0)
     }
 }
 
-if (isset($_POST['delconfirmlinkgruppe']) && (int)$_POST['delconfirmlinkgruppe'] > 0 && FormHelper::validateToken()) {
+if (isset($_POST['delconfirmlinkgruppe']) && (int)$_POST['delconfirmlinkgruppe'] > 0 && Form::validateToken()) {
     $step = 'linkgruppe_loeschen_confirm';
 
     $smarty->assign('oLinkgruppe', holeLinkgruppe((int)$_POST['delconfirmlinkgruppe']))
            ->assign('affectedLinkNames', $linkAdmin->getPreDeletionLinks((int)$_POST['delconfirmlinkgruppe'], true));
 }
 
-if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && Form::validateToken()) {
     $sprachen    = Sprache::getAllLanguages();
     $hasHTML_arr = [];
 
@@ -160,7 +160,7 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && FormHelper::va
     }
 } elseif (((isset($_POST['neuelinkgruppe']) && (int)$_POST['neuelinkgruppe'] === 1)
         || (isset($_POST['kLinkgruppe']) && (int)$_POST['kLinkgruppe'] > 0))
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     $step = 'neue Linkgruppe';
     if (isset($_POST['kLinkgruppe']) && (int)$_POST['kLinkgruppe'] > 0) {
@@ -172,7 +172,7 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && FormHelper::va
 if ($continue
     && ((isset($_POST['kLink']) && (int)$_POST['kLink'] > 0)
         || (isset($_GET['kLink'], $_GET['delpic']) && (int)$_GET['kLink']))
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     $step = 'neuer Link';
     $link = (new \Link\Link($db))->load(Request::verifyGPCDataInt('kLink'));
@@ -210,7 +210,7 @@ if ($continue
     }
 }
 
-if (isset($_POST['neu_linkgruppe']) && (int)$_POST['neu_linkgruppe'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['neu_linkgruppe']) && (int)$_POST['neu_linkgruppe'] === 1 && Form::validateToken()) {
     // Plausi
     $oPlausiCMS = new PlausiCMS();
     $oPlausiCMS->setPostVar($_POST);
@@ -250,7 +250,7 @@ if (isset($_POST['neu_linkgruppe']) && (int)$_POST['neu_linkgruppe'] === 1 && Fo
     }
 }
 // Verschiebt einen Link in eine andere Linkgruppe
-if (isset($_POST['aender_linkgruppe']) && (int)$_POST['aender_linkgruppe'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['aender_linkgruppe']) && (int)$_POST['aender_linkgruppe'] === 1 && Form::validateToken()) {
     if ((int)$_POST['kLink'] > 0 && (int)$_POST['kLinkgruppe'] > 0 && (int)$_POST['kLinkgruppeAlt'] >= -1) {
         $res = $linkAdmin->updateLinkGroup(
             (int)$_POST['kLink'],
@@ -277,7 +277,7 @@ if (isset($_POST['kopiere_in_linkgruppe'])
     && (int)$_POST['kopiere_in_linkgruppe'] === 1
     && (int)$_POST['kLink'] > 0
     && (int)$_POST['kLinkgruppe'] > 0
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     $res = $linkAdmin->copyLinkToLinkGroup((int)$_POST['kLink'], (int)$_POST['kLinkgruppe']);
     if ($res === \Link\Admin\LinkAdmin::ERROR_LINK_ALREADY_EXISTS) {
@@ -295,7 +295,7 @@ if (isset($_POST['kopiere_in_linkgruppe'])
     }
 }
 // Ordnet einen Link neu an
-if (isset($_POST['aender_linkvater']) && (int)$_POST['aender_linkvater'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['aender_linkvater']) && (int)$_POST['aender_linkvater'] === 1 && Form::validateToken()) {
     if ((int)$_POST['kLink'] > 0
         && (int)$_POST['kVaterLink'] >= 0
         && (int)$_POST['kLinkgruppe'] > 0

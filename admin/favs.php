@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 
 /**
@@ -17,7 +17,7 @@ $oAccount->redirectOnFailure();
 
 $kAdminlogin = (int)$_SESSION['AdminAccount']->kAdminlogin;
 if (isset($_POST['title'], $_POST['url'])
-    && FormHelper::validateToken()
+    && Form::validateToken()
     && Request::verifyGPDataString('action') === 'save'
 ) {
     $titles = $_POST['title'];

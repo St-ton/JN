@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'rss_inc.php';
@@ -14,7 +14,7 @@ $oAccount->permission('EXPORT_RSSFEED_VIEW', true, true);
 $cHinweis = '';
 $cFehler  = '';
 
-if (isset($_GET['f']) && (int)$_GET['f'] === 1 && FormHelper::validateToken()) {
+if (isset($_GET['f']) && (int)$_GET['f'] === 1 && Form::validateToken()) {
     if (generiereRSSXML()) {
         $cHinweis = 'RSS Feed wurde erstellt!';
     } else {

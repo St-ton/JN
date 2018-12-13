@@ -11,13 +11,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->redirectOnFailure();
 
-if (isset($_POST['path']) && FormHelper::validateToken()) {
+if (isset($_POST['path']) && Form::validateToken()) {
     $path = realpath($_POST['path']);
     if ($path !== false
         && (strpos($path . DIRECTORY_SEPARATOR, PFAD_ROOT . PFAD_EXTENSIONS) === 0

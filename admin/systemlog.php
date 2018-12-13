@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Pagination\Filter;
 use Pagination\Pagination;
@@ -19,7 +19,7 @@ $oAccount->permission('SYSTEMLOG_VIEW', true, true);
 $cHinweis    = '';
 $cFehler     = '';
 $minLogLevel = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
-if (FormHelper::validateToken()) {
+if (Form::validateToken()) {
     if (Request::verifyGPDataString('action') === 'clearsyslog') {
         Jtllog::deleteAll();
         $cHinweis = 'Ihr Systemlog wurde erfolgreich gelöscht.';

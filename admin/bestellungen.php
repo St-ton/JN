@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use Helpers\Request;
 use Pagination\Pagination;
 
@@ -20,7 +20,7 @@ $cSuchFilter     = '';
 $nAnzahlProSeite = 15;
 
 // Bestellung Wawi Abholung zuruecksetzen
-if (Request::verifyGPCDataInt('zuruecksetzen') === 1 && FormHelper::validateToken()) {
+if (Request::verifyGPCDataInt('zuruecksetzen') === 1 && Form::validateToken()) {
     if (isset($_POST['kBestellung'])) {
         switch (setzeAbgeholtZurueck($_POST['kBestellung'])) {
             case -1: // Alles O.K.

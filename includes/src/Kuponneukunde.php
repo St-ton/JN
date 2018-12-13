@@ -44,7 +44,7 @@ class Kuponneukunde
     /**
      * Constructor
      *
-     * @param GeneralObject $oObj
+     * @param object $oObj
      */
     public function __construct($oObj = null)
     {

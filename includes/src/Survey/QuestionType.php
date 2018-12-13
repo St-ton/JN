@@ -11,7 +11,7 @@ use MyCLabs\Enum\Enum;
 /**
  * Class ComponentPropertyType
  *
- * @package Filter
+ * @package Survey
  * @method static QuestionType MULTI()
  * @method static QuestionType MULTI_SINGLE()
  * @method static QuestionType SELECT_SINGLE()

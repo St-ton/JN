@@ -10,12 +10,12 @@ use DB\ReturnType;
 
 /**
  * Class TopRatedProducts
- * @package Boxes
+ * @package Boxes\Items
  */
 final class TopRatedProducts extends AbstractBox
 {
     /**
-     * Wishlist constructor.
+     * TopRatedProducts constructor.
      * @param array $config
      */
     public function __construct(array $config)
@@ -30,14 +30,13 @@ final class TopRatedProducts extends AbstractBox
         if (($topRated = \Shop::Container()->getCache()->get($cacheID)) === false) {
             $cached   = false;
             $topRated = \Shop::Container()->getDB()->query(
-                "SELECT tartikel.kArtikel, tartikelext.fDurchschnittsBewertung
+                'SELECT tartikel.kArtikel, tartikelext.fDurchschnittsBewertung
                     FROM tartikel
                     JOIN tartikelext 
                         ON tartikel.kArtikel = tartikelext.kArtikel
-                    WHERE round(fDurchschnittsBewertung) >= " . (int)$config['boxen']['boxen_topbewertet_minsterne'] . "
-                    $parentSQL
-                    ORDER BY tartikelext.fDurchschnittsBewertung DESC
-                    LIMIT " . (int)$config['boxen']['boxen_topbewertet_basisanzahl'],
+                    WHERE ROUND(fDurchschnittsBewertung) >= ' . (int)$config['boxen']['boxen_topbewertet_minsterne'] .
+                    ' ' . $parentSQL . ' ORDER BY tartikelext.fDurchschnittsBewertung DESC
+                    LIMIT ' . (int)$config['boxen']['boxen_topbewertet_basisanzahl'],
                 ReturnType::ARRAY_OF_OBJECTS
             );
             \Shop::Container()->getCache()->set($cacheID, $topRated, $cacheTags);
@@ -54,7 +53,7 @@ final class TopRatedProducts extends AbstractBox
                     $max = \count($topRated);
                 }
                 $defaultOptions = \Artikel::getDefaultOptions();
-                foreach (\array_rand($productIDs, $max) as $i => $id) {
+                foreach (\array_rand($productIDs, $max) as $id) {
                     $this->products[] = (new \Artikel())->fuelleArtikel($productIDs[$id], $defaultOptions);
                 }
                 foreach ($topRated as $product) {
@@ -68,7 +67,7 @@ final class TopRatedProducts extends AbstractBox
             }
             $this->setShow(true);
             $this->setProducts($this->products);
-            $this->setURL(\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_TOPREVIEWS));
+            $this->setURL(\Helpers\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_TOPREVIEWS));
 
             \executeHook(\HOOK_BOXEN_INC_TOPBEWERTET, [
                 'box'        => &$this,

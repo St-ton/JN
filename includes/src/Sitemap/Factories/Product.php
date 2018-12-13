@@ -6,12 +6,13 @@
 
 namespace Sitemap\Factories;
 
+use DB\ReturnType;
 use function Functional\first;
 use function Functional\map;
 
 /**
  * Class Product
- * @package Sitemap\Generators
+ * @package Sitemap\Factories
  */
 final class Product extends AbstractFactory
 {
@@ -48,14 +49,14 @@ final class Product extends AbstractFactory
                 JOIN tseo 
                     ON tseo.cKey = 'kArtikel'
                     AND tseo.kKey = tartikel.kArtikel
-                    AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ")
+                    AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ')
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = :kGrpID
-                WHERE tartikelsichtbarkeit.kArtikel IS NULL" . $andWhere . "
-                ORDER BY tartikel.kArtikel",
+                WHERE tartikelsichtbarkeit.kArtikel IS NULL' . $andWhere . '
+                ORDER BY tartikel.kArtikel',
             ['kGrpID' => $defaultCustomerGroupID],
-            \DB\ReturnType::QUERYSINGLE
+            ReturnType::QUERYSINGLE
         );
 
         while (($product = $res->fetch(\PDO::FETCH_OBJ)) !== false) {

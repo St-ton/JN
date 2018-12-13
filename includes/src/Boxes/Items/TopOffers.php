@@ -7,23 +7,24 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
+use Session\Session;
 
 /**
  * Class TopOffers
- * @package Boxes
+ * @package Boxes\Items
  */
 final class TopOffers extends AbstractBox
 {
     /**
-     * Cart constructor.
+     * TopOffers constructor.
      * @param array $config
      */
     public function __construct(array $config)
     {
         parent::__construct($config);
         $this->setShow(false);
-        $customerGroupID = \Session\Session::getCustomerGroup()->getID();
-        if ($customerGroupID > 0 && \Session\Session::getCustomerGroup()->mayViewCategories()) {
+        $customerGroupID = Session::getCustomerGroup()->getID();
+        if ($customerGroupID > 0 && Session::getCustomerGroup()->mayViewCategories()) {
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $cached         = true;
             $limit          = $config['boxen']['box_topangebot_anzahl_anzeige'];
@@ -40,10 +41,10 @@ final class TopOffers extends AbstractBox
                             ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
                             AND tartikelsichtbarkeit.kKundengruppe = :cid
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                            AND tartikel.cTopArtikel = 'Y'
-                            $stockFilterSQL
-                            $parentSQL
-                        ORDER BY rand() LIMIT " . $limit,
+                            AND tartikel.cTopArtikel = 'Y' " .
+                        $stockFilterSQL .
+                        $parentSQL . '
+                        ORDER BY RAND() LIMIT ' . $limit,
                     ['cid' => $customerGroupID],
                     ReturnType::ARRAY_OF_OBJECTS
                 );
@@ -57,7 +58,7 @@ final class TopOffers extends AbstractBox
                 $products = new \ArtikelListe();
                 $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
                 $this->setProducts($products);
-                $this->setURL(\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_TOPOFFERS));
+                $this->setURL(\Helpers\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_TOPOFFERS));
                 \executeHook(\HOOK_BOXEN_INC_TOPANGEBOTE, [
                     'box'        => &$this,
                     'cache_tags' => &$cacheTags,

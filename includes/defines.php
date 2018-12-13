@@ -26,7 +26,7 @@ ifndef('PROFILE_SHOP', false);
 /**
  * Lieferschwellen-Option: Gleichbleibende Bruttopreise (SHOP-2633)
  * @since 5.0.0
- */ 
+ */
 ifndef('CONSISTENT_GROSS_PRICES', true);
 
 ifndef('DB_DEFAULT_SQL_MODE', false);
@@ -52,6 +52,7 @@ ifndef('DEBUG_FRAME', false);
 ifndef('SMARTY_DEBUG_CONSOLE', false);
 ifndef('SMARTY_SHOW_LANGKEY', false);
 ifndef('SMARTY_FORCE_COMPILE', false);
+ifndef('SMARTY_USE_SUB_DIRS', false);
 ifndef('JTL_INCLUDE_ONLY_DB', 0);
 ifndef('SOCKET_TIMEOUT', 30);
 ifndef('ARTICLES_PER_PAGE_HARD_LIMIT', 100);
@@ -202,6 +203,8 @@ ifndef('REDIS_CONNECT_TIMEOUT', 3);
 
 ifndef('SAVE_BOT_SESSION', 0);
 ifndef('ES_SESSIONS', 0);
+
+ifndef('MAX_REVISIONS', 5);
 
 // security
 ifndef('NEWSLETTER_USE_SECURITY', true);

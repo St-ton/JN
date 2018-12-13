@@ -17,7 +17,7 @@ final class Tag extends AbstractItem
      */
     public function generateLocation(): void
     {
-        $this->setLocation(\UrlHelper::buildURL($this->data, \URLART_TAG, true));
+        $this->setLocation(\Helpers\UrlHelper::buildURL($this->data, \URLART_TAG, true));
     }
 
     /**

@@ -10,7 +10,7 @@ use Boxes\Renderer\ContainerRenderer;
 
 /**
  * Class Container
- * @package Boxes
+ * @package Boxes\Items
  */
 class Container extends AbstractBox
 {

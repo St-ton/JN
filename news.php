@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\UrlHelper;
+use Pagination\Pagination;
+
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'news_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';

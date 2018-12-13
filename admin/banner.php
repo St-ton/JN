@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\FormHelper;
+
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('DISPLAY_BANNER_VIEW', true, true);
 /** @global \Smarty\JTLSmarty $smarty */
@@ -73,7 +76,6 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
             $cKeyValue = 'article_key';
             $cValue    = $_POST[$cKeyValue] ?? null;
         } elseif ($nSeite === PAGE_ARTIKELLISTE) {
-            // data mapping
             $aFilter_arr = [
                 'kTag'         => 'tag_key',
                 'kMerkmalWert' => 'attribute_key',
@@ -81,8 +83,8 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
                 'kHersteller'  => 'manufacturer_key',
                 'cSuche'       => 'keycSuche'
             ];
-            $cKeyValue = $aFilter_arr[$cKey];
-            $cValue    = $_POST[$cKeyValue] ?? null;
+            $cKeyValue   = $aFilter_arr[$cKey];
+            $cValue      = $_POST[$cKeyValue] ?? null;
         } elseif ($nSeite === PAGE_EIGENE) {
             $cKey      = 'kLink';
             $cKeyValue = 'link_key';
@@ -90,7 +92,6 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
         }
 
         Shop::Container()->getDB()->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $kImageMap]);
-        // save extensionpoint
         $oExtension                = new stdClass();
         $oExtension->kSprache      = $kSprache;
         $oExtension->kKundengruppe = $kKundengruppe;
@@ -101,7 +102,6 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
         $oExtension->kInitial      = $kImageMap;
 
         $ins = Shop::Container()->getDB()->insert('textensionpoint', $oExtension);
-        // saved?
         if ($kImageMap && $ins > 0) {
             $cAction  = 'view';
             $cHinweis = 'Banner wurde erfolgreich gespeichert.';
@@ -127,8 +127,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
 }
 switch ($cAction) {
     case 'area':
-        $id      = (int)$_POST['id'];
-        $oBanner = holeBanner($id, false);
+        $oBanner = holeBanner((int)$_POST['id'], false);
         if (!is_object($oBanner)) {
             $cFehler = 'Banner wurde nicht gefunden';
             $cAction = 'view';
@@ -140,20 +139,14 @@ switch ($cAction) {
         break;
 
     case 'edit':
-        $id = isset($_POST['id'])
-            ? (int)$_POST['id']
-            : (int)$_POST['kImageMap'];
-        $oBanner       = holeBanner($id);
-        $oExtension    = holeExtension($id);
-        $oSprache      = Sprache::getInstance(false);
-        $oSprachen_arr = $oSprache->gibInstallierteSprachen();
-        $nMaxFileSize  = getMaxFileSize(ini_get('upload_max_filesize'));
+        $id      = (int)($_POST['id'] ?? $_POST['kImageMap']);
+        $oBanner = holeBanner($id);
 
-        $smarty->assign('oExtension', $oExtension)
+        $smarty->assign('oExtension', holeExtension($id))
                ->assign('cBannerFile_arr', holeBannerDateien())
-               ->assign('oSprachen_arr', $oSprachen_arr)
+               ->assign('oSprachen_arr', Sprache::getInstance(false)->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
-               ->assign('nMaxFileSize', $nMaxFileSize)
+               ->assign('nMaxFileSize', getMaxFileSize(ini_get('upload_max_filesize')))
                ->assign('oBanner', $oBanner);
 
         if (!is_object($oBanner)) {
@@ -163,21 +156,16 @@ switch ($cAction) {
         break;
 
     case 'new':
-        $oSprache      = Sprache::getInstance(false);
-        $oSprachen_arr = $oSprache->gibInstallierteSprachen();
-        $nMaxFileSize  = getMaxFileSize(ini_get('upload_max_filesize'));
         $smarty->assign('oBanner', $oBanner ?? null)
-               ->assign('oSprachen_arr', $oSprachen_arr)
+               ->assign('oSprachen_arr', Sprache::getInstance(false)->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
                ->assign('cBannerLocation', PFAD_BILDER_BANNER)
-               ->assign('nMaxFileSize', $nMaxFileSize)
+               ->assign('nMaxFileSize', getMaxFileSize(ini_get('upload_max_filesize')))
                ->assign('cBannerFile_arr', holeBannerDateien());
         break;
 
     case 'delete':
-        $id  = (int)$_POST['id'];
-        $bOk = entferneBanner($id);
-        if ($bOk) {
+        if (entferneBanner((int)$_POST['id'])) {
             $cHinweis = 'Erfolgreich entfernt.';
         } else {
             $cFehler = 'Banner konnte nicht entfernt werden.';

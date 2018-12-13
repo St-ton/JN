@@ -4,6 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\FormHelper;
+use Helpers\HerstellerHelper;
+use Helpers\KategorieHelper;
+use Helpers\RequestHelper;
+use Helpers\VersandartHelper;
+
 $smarty        = Shop::Smarty();
 $oTemplate     = Template::getInstance();
 $tplDir        = PFAD_TEMPLATES . $oTemplate->getDir() . '/';
@@ -120,7 +126,8 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
        ->assign('FavourableShipping', $cart->getFavourableShipping())
        ->assign('Einstellungen', $Einstellungen)
-       ->assign('isFluidTemplate', isset($Einstellungen['template']['theme']['pagelayout']) && $Einstellungen['template']['theme']['pagelayout'] === 'fluid')
+       ->assign('isFluidTemplate', isset($Einstellungen['template']['theme']['pagelayout'])
+           && $Einstellungen['template']['theme']['pagelayout'] === 'fluid')
        ->assign('deletedPositions', Warenkorb::$deletedPositions)
        ->assign('updatedPositions', Warenkorb::$updatedPositions)
        ->assign('cCanonicalURL', $cCanonicalURL ?? null)
@@ -163,13 +170,16 @@ Sprache::generateLanguageAndCurrencyLinks();
 $oExtension = (new ExtensionPoint($pagetType, Shop::getParameters(), Shop::getLanguageID(), $kKundengruppe))->load();
 executeHook(HOOK_LETZTERINCLUDE_INC);
 $boxes       = Shop::Container()->getBoxService();
-$boxesToShow = $boxes->render($boxes->buildList($pagetType));
+$boxesToShow = $boxes->render($boxes->buildList($pagetType), $pagetType);
 /* @global null|Artikel $AktuellerArtikel */
 if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
 }
 $visitorCount = $Einstellungen['global']['global_zaehler_anzeigen'] === 'Y'
-    ? (int)Shop::Container()->getDB()->query('SELECT nZaehler FROM tbesucherzaehler', \DB\ReturnType::SINGLE_OBJECT)->nZaehler
+    ? (int)Shop::Container()->getDB()->query(
+        'SELECT nZaehler FROM tbesucherzaehler',
+        \DB\ReturnType::SINGLE_OBJECT
+    )->nZaehler
     : 0;
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('Brotnavi', $nav->createNavigation())

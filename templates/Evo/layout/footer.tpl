@@ -53,22 +53,6 @@
                     {/foreach}
                 </div>
             {/if}
-            {*{load_boxes_raw type='bottom' assign='arrBoxBottom' array=true}*}
-            {*{if isset($arrBoxBottom) && count($arrBoxBottom) > 0}*}
-                {*<div class="row" id="footer-boxes">*}
-                    {*{foreach $arrBoxBottom as $box}*}
-                        {*{if ($box.obj->getBaseType() !== 0 && $box.obj->show())*}
-                        {*|| ($box.obj->getBaseType() === 0 && !empty($box.obj->getChildren()))}*}
-                            {*<div class="{block name='footer-boxes-class'}col-xs-12 col-sm-6 col-md-3{/block}">*}
-                                {*{if isset($box.obj) && isset($box.tpl)}*}
-                                    {*{assign var=oBox value=$box.obj}*}
-                                    {*{include file=$box.tpl}*}
-                                {*{/if}*}
-                            {*</div>*}
-                        {*{/if}*}
-                    {*{/foreach}*}
-                {*</div>*}
-            {*{/if}*}
             {/block}
 
             {block name='footer-additional'}

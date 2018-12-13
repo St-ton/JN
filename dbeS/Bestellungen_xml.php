@@ -16,7 +16,9 @@ if (auth()) {
     $return  = 2;
     $zipFile = $_FILES['data']['tmp_name'];
     if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP, __FILE__)) === false) {
-        Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile . ' to ' . PFAD_SYNC_TMP);
+        Shop::Container()->getLogService()->error(
+            'Error: Cannot extract zip file ' . $zipFile . ' to ' . PFAD_SYNC_TMP
+        );
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
@@ -285,7 +287,7 @@ function bearbeiteUpdate($xml)
         // deshalb immer Abfrage auf tzahlungsart.cName
         $cZahlungsartName = $xml['tbestellung']['cZahlungsartName'];
         $oZahlungsart     = $db->executeQueryPrepared(
-            "SELECT tzahlungsart.kZahlungsart, IFNULL(tzahlungsartsprache.cName, tzahlungsart.cName) AS cName
+            'SELECT tzahlungsart.kZahlungsart, IFNULL(tzahlungsartsprache.cName, tzahlungsart.cName) AS cName
                 FROM tzahlungsart
                 LEFT JOIN tzahlungsartsprache
                     ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
@@ -295,20 +297,20 @@ function bearbeiteUpdate($xml)
                     WHEN tzahlungsart.cName = :name1 THEN 1
                     WHEN tzahlungsart.cName LIKE :name2 THEN 2
                     WHEN tzahlungsart.cName LIKE :name3 THEN 3
-                    END, kZahlungsart",
+                    END, kZahlungsart',
             [
                 'iso'    => Sprache::getLanguageDataByType('', (int)$oBestellung->kSprache),
-                'search' => "%{$cZahlungsartName}%",
+                'search' => '%' . $cZahlungsartName. '%',
                 'name1'  => $cZahlungsartName,
-                'name2'  => "{$cZahlungsartName}%",
-                'name3'  => "%{$cZahlungsartName}%",
+                'name2'  => $cZahlungsartName . '%',
+                'name3'  => '%' . $cZahlungsartName . '%',
             ],
             \DB\ReturnType::SINGLE_OBJECT
         );
     }
     $cZAUpdateSQL = '';
     if (isset($oZahlungsart->kZahlungsart) && $oZahlungsart->kZahlungsart > 0) {
-        $cZAUpdateSQL = " , kZahlungsart = " . (int)$oZahlungsart->kZahlungsart .
+        $cZAUpdateSQL = ' , kZahlungsart = ' . (int)$oZahlungsart->kZahlungsart .
             ", cZahlungsartName = '" . $oZahlungsart->cName . "' ";
     }
     $correctionFactor = 1.0;
@@ -316,7 +318,7 @@ function bearbeiteUpdate($xml)
         $currentCurrency = $db->select('twaehrung', 'kWaehrung', $oBestellung->kWaehrung);
         $defaultCurrency = $db->select('twaehrung', 'cStandard', 'Y');
         if (isset($currentCurrency->kWaehrung, $defaultCurrency->kWaehrung)) {
-            $correctionFactor          = (float)$currentCurrency->fFaktor;
+            $correctionFactor           = (float)$currentCurrency->fFaktor;
             $oBestellung->fGesamtsumme /= $correctionFactor;
             $oBestellung->fGuthaben    /= $correctionFactor;
         }
@@ -325,13 +327,18 @@ function bearbeiteUpdate($xml)
     // der Shop erwartet hier aber tatsächlich eine Gesamtsumme oder auch den Zahlungsbetrag
     // (Rechnungssumme abzgl. evtl. Guthaben)
     $oBestellung->fGesamtsumme -= $oBestellung->fGuthaben;
-    $db->query(
-        "UPDATE tbestellung SET
-            fGuthaben = '" . $db->escape($oBestellung->fGuthaben) . "',
-            fGesamtsumme = '" . $db->escape($oBestellung->fGesamtsumme) . "',
-            cKommentar = '" . $db->escape($oBestellung->cKommentar) . "'
-            {$cZAUpdateSQL}
-            WHERE kBestellung = " . (int)$oBestellungAlt->kBestellung,
+    $db->queryPrepared(
+        'UPDATE tbestellung SET
+            fGuthaben = :fg,
+            fGesamtsumme = :total,
+            cKommentar = :cmt ' . $cZAUpdateSQL . '
+            WHERE kBestellung = :oid',
+        [
+            'fg'    => $oBestellung->fGuthaben,
+            'total' => $oBestellung->fGesamtsumme,
+            'cmt'   => $oBestellung->cKommentar,
+            'oid'   => (int)$oBestellungAlt->kBestellung
+        ],
         \DB\ReturnType::DEFAULT
     );
     $oLieferadresse = new Lieferadresse($oBestellungAlt->kLieferadresse);
@@ -356,9 +363,9 @@ function bearbeiteUpdate($xml)
             $oLieferadresse->kKunde         = $oBestellungAlt->kKunde;
             $oLieferadresse->kLieferadresse = $oLieferadresse->insertInDB();
             $db->query(
-                "UPDATE tbestellung
-                    SET kLieferadresse = " . (int)$oLieferadresse->kLieferadresse . "
-                    WHERE kBestellung = " . (int)$oBestellungAlt->kBestellung,
+                'UPDATE tbestellung
+                    SET kLieferadresse = ' . (int)$oLieferadresse->kLieferadresse . '
+                    WHERE kBestellung = ' . (int)$oBestellungAlt->kBestellung,
                 \DB\ReturnType::DEFAULT
             );
         }
@@ -395,7 +402,7 @@ function bearbeiteUpdate($xml)
             ? $WarenkorbposAlt_arr[$WarenkorbposAlt_map[$Warenkorbpos_arr[$i]->kArtikel]]
             : null;
         unset($Warenkorbpos_arr[$i]->kWarenkorbPos);
-        $Warenkorbpos_arr[$i]->kWarenkorb        = $oBestellungAlt->kWarenkorb;
+        $Warenkorbpos_arr[$i]->kWarenkorb         = $oBestellungAlt->kWarenkorb;
         $Warenkorbpos_arr[$i]->fPreis            /= $correctionFactor;
         $Warenkorbpos_arr[$i]->fPreisEinzelNetto /= $correctionFactor;
         // persistiere nLongestMin/MaxDelivery wenn nicht von Wawi übetragen
@@ -607,7 +614,9 @@ function bearbeiteSet($xml)
             } else {
                 $kunde              = $kunde ?? new Kunde((int)$shopOrder->kKunde);
                 $oBestellungUpdated = new Bestellung((int)$shopOrder->kBestellung, true);
-                if (($oBestellungUpdated->Zahlungsart->nMailSenden & ZAHLUNGSART_MAIL_EINGANG) && strlen($kunde->cMail) > 0) {
+                if (($oBestellungUpdated->Zahlungsart->nMailSenden & ZAHLUNGSART_MAIL_EINGANG)
+                    && strlen($kunde->cMail) > 0
+                ) {
                     $oMail              = new stdClass();
                     $oMail->tkunde      = $kunde;
                     $oMail->tbestellung = $oBestellungUpdated;

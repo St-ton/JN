@@ -51,16 +51,16 @@ function baueBewertungsErinnerung()
     if ($nVersandTage == 1) {
         $nMaxTage = 4;
     }
-    $cQuery            = "SELECT kBestellung
+    $cQuery            = 'SELECT kBestellung
             FROM tbestellung
             JOIN tkunde 
                 ON tkunde.kKunde = tbestellung.kKunde
             WHERE dVersandDatum IS NOT NULL
-                AND DATE_ADD(dVersandDatum, INTERVAL " . $nVersandTage . " DAY) <= NOW()
-                AND DATE_ADD(dVersandDatum, INTERVAL " . $nMaxTage . " DAY) > NOW()
+                AND DATE_ADD(dVersandDatum, INTERVAL ' . $nVersandTage . ' DAY) <= NOW()
+                AND DATE_ADD(dVersandDatum, INTERVAL ' . $nMaxTage . ' DAY) > NOW()
                 AND cStatus = 4
-                AND (" . $cSQL . ")
-                AND dBewertungErinnerung IS NULL";
+                AND (' . $cSQL . ')
+                AND dBewertungErinnerung IS NULL';
     $oBestellungen_arr = Shop::Container()->getDB()->query($cQuery, \DB\ReturnType::ARRAY_OF_OBJECTS);
     if (count($oBestellungen_arr) === 0) {
         Shop::Container()->getLogService()->debug('Keine Bestellungen für Bewertungserinnerungen gefunden.');

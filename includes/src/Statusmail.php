@@ -304,11 +304,11 @@ class Statusmail
     private function getIncomingPaymentsCount(): int
     {
         $orderData = $this->db->queryPrepared(
-            "SELECT COUNT(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tbestellung
                 WHERE tbestellung.dErstellt >= :from
                     AND tbestellung.dErstellt < :to
-                    AND tbestellung.dBezahltDatum IS NOT NULL",
+                    AND tbestellung.dBezahltDatum IS NOT NULL',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd

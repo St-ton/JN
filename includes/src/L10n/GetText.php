@@ -6,8 +6,13 @@
 
 namespace L10n;
 
+use Gettext\Translations;
+use Gettext\Translator;
+use Plugin\AbstractExtension;
+
 /**
  * Class GetText
+ * @package L10n
  */
 class GetText
 {
@@ -31,10 +36,10 @@ class GetText
      */
     private function __construct()
     {
-        $this->translator = new \Gettext\Translator();
+        $this->translator = new Translator();
         $this->translator->register();
 
-        $this->setLangIso(\Shop::getLanguage(true))
+        $this->setLangIso(\Shop::getLanguageCode())
              ->loadAdminLocale();
     }
 
@@ -67,25 +72,26 @@ class GetText
     }
 
     /**
-     * @param string $domain
-     * @param \Plugin $plugin
+     * @param string            $domain
+     * @param AbstractExtension $plugin
      * @return GetText
      */
-    public function loadPluginLocale(string $domain, \Plugin $plugin): self
+    public function loadPluginLocale(string $domain, AbstractExtension $plugin): self
     {
-        return $this->addLocale($plugin->cAdminmenuPfad, $domain);
+        return $this->addLocale($plugin->getPaths()->getBasePath(), $domain);
     }
 
     /**
-     * @param string $path
+     * @param string $dir
+     * @param string $domain
      * @return GetText
      */
     public function addLocale(string $dir, string $domain): self
     {
-        $path = "{$dir}locale/{$this->langIso}/{$domain}.mo";
+        $path = $dir . 'locale/' . $this->langIso . '/' . $domain . 'mo';
 
-        if (file_exists($path)) {
-            $translations = \Gettext\Translations::fromMoFile($path);
+        if (\file_exists($path)) {
+            $translations = Translations::fromMoFile($path);
             $this->translator->loadTranslations($translations);
         }
 

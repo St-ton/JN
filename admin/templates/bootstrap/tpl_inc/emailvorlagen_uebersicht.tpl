@@ -25,7 +25,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {foreach name=emailvorlagen from=$emailvorlagen item=emailvorlage}
+                {foreach $emailvorlagen as $emailvorlage}
                     <tr>
                         <td>{$emailvorlage->cName}</td>
                         <td class="tcenter">{$emailvorlage->cMailTyp}</td>
@@ -74,7 +74,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {foreach name=emailvorlagen from=$oPluginEmailvorlage_arr item=oPluginEmailvorlage}
+                {foreach $oPluginEmailvorlage_arr as $oPluginEmailvorlage}
                     <tr>
                         <td>{$oPluginEmailvorlage->cName}</td>
                         <td class="tcenter">{$oPluginEmailvorlage->cMailTyp}</td>

@@ -153,9 +153,9 @@ class Jtllog
      */
     public static function getLog(string $cFilter = '', int $nLevel = 0, int $nLimitN = 0, int $nLimitM = 1000): array
     {
-        $logs        = [];
-        $conditions  = [];
-        $values      = ['limitfrom' => $nLimitN, 'limitto' => $nLimitM];
+        $logs       = [];
+        $conditions = [];
+        $values     = ['limitfrom' => $nLimitN, 'limitto' => $nLimitM];
         if (strlen($cFilter) > 0) {
             $conditions[]   = 'cLog LIKE :clog';
             $values['clog'] = '%' . $cFilter . '%';

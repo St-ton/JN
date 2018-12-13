@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -9,13 +9,13 @@ namespace Link;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\ReturnType;
-use function Functional\group;
 use Session\Session;
 use Tightenco\Collect\Support\Collection;
+use function Functional\group;
 
 /**
  * Class LinkGroupList
- * @package Filter
+ * @package Link
  */
 final class LinkGroupList implements LinkGroupListInterface
 {

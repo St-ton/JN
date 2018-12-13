@@ -4,26 +4,30 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTLShop\SemVer\Version;
-use Services\Container;
 use DB\Services as DbService;
+use Filter\ProductFilter;
+use Helpers\ArtikelHelper;
+use Helpers\PHPSettingsHelper;
+use Helpers\RequestHelper;
+use Helpers\TaxHelper;
 use JTL\ProcessingHandler\NiceDBHandler;
-use Monolog\Handler\StreamHandler;
+use JTLShop\SemVer\Version;
 use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
-use \Services\JTL\Validation\ValidationServiceInterface;
-use \Services\JTL\Validation\ValidationService;
+use Services\Container;
 use Services\JTL\Validation\RuleSet;
-use Filter\ProductFilter;
+use Services\JTL\Validation\ValidationService;
+use Services\JTL\Validation\ValidationServiceInterface;
 
 /**
  * Class Shop
  * @method static \Cache\JTLCacheInterface Cache()
  * @method static Sprache Lang()
- * @method static \Smarty\JTLSmarty Smarty(bool $fast_init = false, bool $isAdmin = false)
+ * @method static \Smarty\JTLSmarty Smarty(bool $fast_init = false, string $context = \Smarty\ContextType::FRONTEND)
  * @method static Media Media()
- * @method static EventDispatcher Event()
+ * @method static \Events\Dispatcher Event()
  * @method static bool has(string $key)
  * @method static Shop set(string $key, mixed $value)
  * @method static null|mixed get($key)
@@ -578,20 +582,18 @@ final class Shop
      */
     public function _Cache(): \Cache\JTLCacheInterface
     {
-        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+//        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         return self::Container()->getCache();
     }
 
     /**
-     * get template engine instance
-     *
-     * @param bool $fast_init
-     * @param bool $isAdmin
+     * @param bool   $fast
+     * @param string $context
      * @return \Smarty\JTLSmarty
      */
-    public function _Smarty(bool $fast_init = false, bool $isAdmin = false): \Smarty\JTLSmarty
+    public function _Smarty(bool $fast = false, string $context = \Smarty\ContextType::FRONTEND): \Smarty\JTLSmarty
     {
-        return \Smarty\JTLSmarty::getInstance($fast_init, $isAdmin);
+        return \Smarty\JTLSmarty::getInstance($fast, $context);
     }
 
     /**
@@ -609,13 +611,13 @@ final class Shop
     /**
      * get event instance
      *
-     * @return EventDispatcher
+     * @return \Events\Dispatcher
      * @deprecated since 5.0.0
      */
-    public function _Event(): EventDispatcher
+    public function _Event(): \Events\Dispatcher
     {
         trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-        return EventDispatcher::getInstance();
+        return \Events\Dispatcher::getInstance();
     }
 
     /**
@@ -624,7 +626,7 @@ final class Shop
      */
     public static function fire(string $eventName, $arguments = []): void
     {
-        EventDispatcher::getInstance()->fire($eventName, $arguments);
+        \Events\Dispatcher::getInstance()->fire($eventName, $arguments);
     }
 
     /**
@@ -751,22 +753,28 @@ final class Shop
      */
     public static function bootstrap(): void
     {
+        $db      = self::Container()->getDB();
+        $cache   = self::Container()->getCache();
         $cacheID = 'plgnbtsrp';
-        if (($plugins = self::Container()->getCache()->get($cacheID)) === false) {
-            $plugins = self::Container()->getDB()->queryPrepared(
-                'SELECT kPlugin 
+        if (($plugins = $cache->get($cacheID)) === false) {
+            $plugins = $db->queryPrepared(
+                'SELECT kPlugin, bBootstrap, bExtension 
                     FROM tplugin 
                     WHERE nStatus = :state
                       AND bBootstrap = 1 
                     ORDER BY nPrio ASC',
-                ['state' => \Plugin\Plugin::PLUGIN_ACTIVATED],
+                ['state' => \Plugin\State::ACTIVATED],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             ) ?: [];
-            self::Container()->getCache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
+            $cache->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
         }
+        $dispatcher      = \Events\Dispatcher::getInstance();
+        $extensionLoader = new \Plugin\ExtensionLoader($db, $cache);
+        $pluginLoader    = new \Plugin\PluginLoader($db, $cache);
         foreach ($plugins as $plugin) {
-            if (($p = \Plugin\Plugin::bootstrapper($plugin->kPlugin)) !== null) {
-                $p->boot(EventDispatcher::getInstance());
+            $loader = isset($plugin->bExtension) && (int)$plugin->bExtension === 1 ? $extensionLoader : $pluginLoader;
+            if (($p = \Plugin\Helper::bootstrap($plugin->kPlugin, $loader)) !== null) {
+                $p->boot($dispatcher);
             }
         }
     }
@@ -887,7 +895,7 @@ final class Shop
         self::$productFilter = new ProductFilter($conf, self::Container()->getDB(), self::Container()->getCache());
         self::seoCheck();
         self::setImageBaseURL(defined('IMAGE_BASE_URL') ? IMAGE_BASE_URL : self::getURL());
-        EventDispatcher::getInstance()->fire('shop.run');
+        \Events\Dispatcher::getInstance()->fire(\Events\Event::RUN);
 
         self::$productFilter->initStates(self::getParameters());
 
@@ -994,29 +1002,29 @@ final class Shop
                     if (strpos($customFilterSeo, SEP_HST) !== false) {
                         $arr             = explode(SEP_HST, $customFilterSeo);
                         $customFilterSeo = $arr[0];
-                        $seo             .= SEP_HST . $arr[1];
+                        $seo            .= SEP_HST . $arr[1];
                     }
                     if (($idx = strpos($customFilterSeo, SEP_KAT)) !== false
                         && $idx !== strpos($customFilterSeo, SEP_HST)
                     ) {
                         $manufacturers   = explode(SEP_KAT, $customFilterSeo);
                         $customFilterSeo = $manufacturers[0];
-                        $seo             .= SEP_KAT . $manufacturers[1];
+                        $seo            .= SEP_KAT . $manufacturers[1];
                     }
                     if (strpos($customFilterSeo, SEP_MERKMAL) !== false) {
                         $arr             = explode(SEP_MERKMAL, $customFilterSeo);
                         $customFilterSeo = $arr[0];
-                        $seo             .= SEP_MERKMAL . $arr[1];
+                        $seo            .= SEP_MERKMAL . $arr[1];
                     }
                     if (strpos($customFilterSeo, SEP_MM_MMW) !== false) {
                         $arr             = explode(SEP_MM_MMW, $customFilterSeo);
                         $customFilterSeo = $arr[0];
-                        $seo             .= SEP_MM_MMW . $arr[1];
+                        $seo            .= SEP_MM_MMW . $arr[1];
                     }
                     if (strpos($customFilterSeo, SEP_SEITE) !== false) {
                         $arr             = explode(SEP_SEITE, $customFilterSeo);
                         $customFilterSeo = $arr[0];
-                        $seo             .= SEP_SEITE . $arr[1];
+                        $seo            .= SEP_SEITE . $arr[1];
                     }
 
                     $customSeo[$customFilter->getClassName()] = [
@@ -1049,22 +1057,22 @@ final class Shop
                 if (($idx = strpos($merkmal, SEP_KAT)) !== false && $idx !== strpos($merkmal, SEP_HST)) {
                     $arr     = explode(SEP_KAT, $merkmal);
                     $merkmal = $arr[0];
-                    $seo     .= SEP_KAT . $arr[1];
+                    $seo    .= SEP_KAT . $arr[1];
                 }
                 if (strpos($merkmal, SEP_HST) !== false) {
                     $arr     = explode(SEP_HST, $merkmal);
                     $merkmal = $arr[0];
-                    $seo     .= SEP_HST . $arr[1];
+                    $seo    .= SEP_HST . $arr[1];
                 }
                 if (strpos($merkmal, SEP_MM_MMW) !== false) {
                     $arr     = explode(SEP_MM_MMW, $merkmal);
                     $merkmal = $arr[0];
-                    $seo     .= SEP_MM_MMW . $arr[1];
+                    $seo    .= SEP_MM_MMW . $arr[1];
                 }
                 if (strpos($merkmal, SEP_SEITE) !== false) {
                     $arr     = explode(SEP_SEITE, $merkmal);
                     $merkmal = $arr[0];
-                    $seo     .= SEP_SEITE . $arr[1];
+                    $seo    .= SEP_SEITE . $arr[1];
                 }
             }
             unset($merkmal);
@@ -1081,22 +1089,22 @@ final class Shop
                     if (($idx = strpos($hstseo, SEP_KAT)) !== false && $idx !== strpos($hstseo, SEP_HST)) {
                         $manufacturers[] = explode(SEP_KAT, $hstseo);
                         $manufSeo[$i]    = $manufacturers[0];
-                        $seo             .= SEP_KAT . $manufacturers[1];
+                        $seo            .= SEP_KAT . $manufacturers[1];
                     }
                     if (strpos($hstseo, SEP_MERKMAL) !== false) {
                         $arr          = explode(SEP_MERKMAL, $hstseo);
                         $manufSeo[$i] = $arr[0];
-                        $seo          .= SEP_MERKMAL . $arr[1];
+                        $seo         .= SEP_MERKMAL . $arr[1];
                     }
                     if (strpos($hstseo, SEP_MM_MMW) !== false) {
                         $arr          = explode(SEP_MM_MMW, $hstseo);
                         $manufSeo[$i] = $arr[0];
-                        $seo          .= SEP_MM_MMW . $arr[1];
+                        $seo         .= SEP_MM_MMW . $arr[1];
                     }
                     if (strpos($hstseo, SEP_SEITE) !== false) {
                         $arr          = explode(SEP_SEITE, $hstseo);
                         $manufSeo[$i] = $arr[0];
-                        $seo          .= SEP_SEITE . $arr[1];
+                        $seo         .= SEP_SEITE . $arr[1];
                     }
                 }
             } else {
@@ -1108,22 +1116,22 @@ final class Shop
                 if (strpos($katseo, SEP_HST) !== false) {
                     $arr    = explode(SEP_HST, $katseo);
                     $katseo = $arr[0];
-                    $seo    .= SEP_HST . $arr[1];
+                    $seo   .= SEP_HST . $arr[1];
                 }
                 if (strpos($katseo, SEP_MERKMAL) !== false) {
                     $arr    = explode(SEP_MERKMAL, $katseo);
                     $katseo = $arr[0];
-                    $seo    .= SEP_MERKMAL . $arr[1];
+                    $seo   .= SEP_MERKMAL . $arr[1];
                 }
                 if (strpos($katseo, SEP_MM_MMW) !== false) {
                     $arr    = explode(SEP_MM_MMW, $katseo);
                     $katseo = $arr[0];
-                    $seo    .= SEP_MM_MMW . $arr[1];
+                    $seo   .= SEP_MM_MMW . $arr[1];
                 }
                 if (strpos($katseo, SEP_SEITE) !== false) {
                     $arr    = explode(SEP_SEITE, $katseo);
                     $katseo = $arr[0];
-                    $seo    .= SEP_SEITE . $arr[1];
+                    $seo   .= SEP_SEITE . $arr[1];
                 }
             } else {
                 $seo = $categories[0];
@@ -1178,7 +1186,7 @@ final class Shop
                         "SELECT kKey 
                             FROM tseo 
                             WHERE cKey = 'kHersteller' 
-                            AND cSeo IN (" . implode(',', array_fill(0, $seoCount, '?')) . ")",
+                            AND cSeo IN (" . implode(',', array_fill(0, $seoCount, '?')) . ')',
                         $bindValues,
                         \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
@@ -1335,9 +1343,8 @@ final class Shop
                 //save data from child article POST and add to redirect
                 $cRP = '';
                 if (is_array($_POST) && count($_POST) > 0) {
-                    $cMember_arr = array_keys($_POST);
-                    foreach ($cMember_arr as $cMember) {
-                        $cRP .= '&' . $cMember . '=' . $_POST[$cMember];
+                    foreach (array_keys($_POST) as $key) {
+                        $cRP .= '&' . $key . '=' . $_POST[$key];
                     }
                     // Redirect POST
                     $cRP = '&cRP=' . base64_encode($cRP);
@@ -1384,14 +1391,14 @@ final class Shop
             self::setPageType(PAGE_ARTIKELLISTE);
         } elseif (!self::$kLink) {
             //check path
-            $cPath        = self::getRequestUri();
-            $cRequestFile = '/' . ltrim($cPath, '/');
-            if ($cRequestFile === '/index.php') {
+            $path        = self::getRequestUri();
+            $requestFile = '/' . ltrim($path, '/');
+            if ($requestFile === '/index.php') {
                 // special case: /index.php shall be redirected to Shop-URL
                 header('Location: ' . self::getURL(), true, 301);
                 exit;
             }
-            if ($cRequestFile === '/') {
+            if ($requestFile === '/') {
                 // special case: home page is accessible without seo url
                 $link = null;
                 self::setPageType(PAGE_STARTSEITE);
@@ -1412,8 +1419,8 @@ final class Shop
                 self::$kLink = isset($link->kLink)
                     ? (int)$link->kLink
                     : self::Container()->getLinkService()->getSpecialPageLinkKey(LINKTYP_STARTSEITE);
-            } elseif (self::Media()->isValidRequest($cPath)) {
-                self::Media()->handleRequest($cPath);
+            } elseif (self::Media()->isValidRequest($path)) {
+                self::Media()->handleRequest($path);
             } else {
                 self::$is404    = true;
                 self::$fileName = null;
@@ -1650,14 +1657,6 @@ final class Shop
     }
 
     /**
-     * @return string
-     */
-    public function _getVersion(): string
-    {
-        return APPLICATION_VERSION;
-    }
-
-    /**
      * get logo from db, fallback to first file in logo dir
      *
      * @var bool $fullURL - prepend shop url if set to true
@@ -1803,7 +1802,7 @@ final class Shop
      * @return string|null
      * @throws Exception
      */
-    public static function getAdminSessionToken(): ? string
+    public static function getAdminSessionToken(): ?string
     {
         if (!self::isAdmin()) {
             return null;
@@ -1910,7 +1909,7 @@ final class Shop
         });
         // NETWORK & API
         $container->setFactory(\Network\JTLApi::class, function () {
-            return new \Network\JTLApi($_SESSION, Nice::getInstance(), self::getInstance());
+            return new \Network\JTLApi($_SESSION, Nice::getInstance());
         });
         // DB SERVICES
         $container->setSingleton(DbService\GcServiceInterface::class, function (Container $container) {
@@ -1946,10 +1945,14 @@ final class Shop
             return new \Boxes\Factory(Shopsetting::getInstance()->getAll());
         });
         $container->setSingleton(\Services\JTL\BoxServiceInterface::class, function (Container $container) {
+            $smarty = self::Smarty();
             return new \Services\JTL\BoxService(
                 Shopsetting::getInstance()->getAll(),
                 $container->getBoxFactory(),
-                $container->getDB()
+                $container->getDB(),
+                $container->getCache(),
+                $smarty,
+                new \Boxes\Renderer\DefaultRenderer($smarty)
             );
         });
         // Captcha

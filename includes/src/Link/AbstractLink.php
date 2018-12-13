@@ -12,7 +12,7 @@ namespace Link;
  */
 abstract class AbstractLink implements LinkInterface
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array

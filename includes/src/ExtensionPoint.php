@@ -177,7 +177,6 @@ class ExtensionPoint
             case PAGE_VERGLEICHSLISTE:
             default:
                 break;
-
         }
 
         return $oKey;

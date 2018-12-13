@@ -12,8 +12,8 @@ use Link\LinkInterface;
 use Tightenco\Collect\Support\Collection;
 
 /**
- * Class LinkService
- * @package Link
+ * Interface LinkServiceInterface
+ * @package Services\JTL
  */
 interface LinkServiceInterface
 {

@@ -305,12 +305,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/erusev/parsedown.git",
-                "reference": "2bd7113c55fc413b2ea3bb9f9629cbeeffa4c3d1"
+                "reference": "e124572b600830facd7b1d7f04b269b6d0b3b4ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erusev/parsedown/zipball/2bd7113c55fc413b2ea3bb9f9629cbeeffa4c3d1",
-                "reference": "2bd7113c55fc413b2ea3bb9f9629cbeeffa4c3d1",
+                "url": "https://api.github.com/repos/erusev/parsedown/zipball/e124572b600830facd7b1d7f04b269b6d0b3b4ed",
+                "reference": "e124572b600830facd7b1d7f04b269b6d0b3b4ed",
                 "shasum": ""
             },
             "require": {
@@ -343,7 +343,7 @@
                 "markdown",
                 "parser"
             ],
-            "time": "2018-11-06T21:49:46+00:00"
+            "time": "2018-11-16T07:45:32+00:00"
         },
         {
             "name": "gettext/gettext",
@@ -409,16 +409,16 @@
         },
         {
             "name": "gettext/languages",
-            "version": "2.4.0",
+            "version": "2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mlocati/cldr-to-gettext-plural-rules.git",
-                "reference": "1b74377bd0c4cd87e8d72b948f5d8867e23505a5"
+                "reference": "78db2d17933f0765a102f368a6663f057162ddbd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mlocati/cldr-to-gettext-plural-rules/zipball/1b74377bd0c4cd87e8d72b948f5d8867e23505a5",
-                "reference": "1b74377bd0c4cd87e8d72b948f5d8867e23505a5",
+                "url": "https://api.github.com/repos/mlocati/cldr-to-gettext-plural-rules/zipball/78db2d17933f0765a102f368a6663f057162ddbd",
+                "reference": "78db2d17933f0765a102f368a6663f057162ddbd",
                 "shasum": ""
             },
             "require": {
@@ -466,7 +466,7 @@
                 "translations",
                 "unicode"
             ],
-            "time": "2018-06-21T15:58:36+00:00"
+            "time": "2018-11-13T22:06:07+00:00"
         },
         {
             "name": "icecave/isolator",
@@ -940,7 +940,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.jtl-software.de/jtlshop/scc.git",
-                "reference": "962eec6cfe8be2955605d92c8398196873425ac4"
+                "reference": "25d47003c35e4c71e8cdcce577997f5e9d4e5102"
             },
             "require": {
                 "myclabs/php-enum": "^1.5",
@@ -967,7 +967,7 @@
             "keywords": [
                 "jtl-shop"
             ],
-            "time": "2018-11-07T11:11:53+00:00"
+            "time": "2018-11-20T10:34:47+00:00"
         },
         {
             "name": "jtlshop/semver",
@@ -1545,16 +1545,16 @@
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v6.0.5",
+            "version": "v6.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "cb3ea134d4d3729e7857737d5f320cce9caf4d32"
+                "reference": "8190d73eb5def11a43cfb020b7f36db65330698c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/cb3ea134d4d3729e7857737d5f320cce9caf4d32",
-                "reference": "cb3ea134d4d3729e7857737d5f320cce9caf4d32",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/8190d73eb5def11a43cfb020b7f36db65330698c",
+                "reference": "8190d73eb5def11a43cfb020b7f36db65330698c",
                 "shasum": ""
             },
             "require": {
@@ -1607,7 +1607,7 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2018-03-27T13:49:45+00:00"
+            "time": "2018-11-16T00:41:32+00:00"
         },
         {
             "name": "phpmyadmin/sql-parser",
@@ -1813,16 +1813,16 @@
         },
         {
             "name": "psr/log",
-            "version": "1.0.2",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d"
+                "reference": "6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
-                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd",
+                "reference": "6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd",
                 "shasum": ""
             },
             "require": {
@@ -1856,7 +1856,7 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2016-10-10T12:19:37+00:00"
+            "time": "2018-11-20T15:27:04+00:00"
         },
         {
             "name": "smarty/smarty",
@@ -1913,16 +1913,16 @@
         },
         {
             "name": "studio-42/elfinder",
-            "version": "2.1.42",
+            "version": "2.1.43",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Studio-42/elFinder.git",
-                "reference": "83f4b3102bafd4393cb51ff41af4edd34f8132f4"
+                "reference": "878daf75321c5c81d1ae308298241d94b383ea62"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Studio-42/elFinder/zipball/83f4b3102bafd4393cb51ff41af4edd34f8132f4",
-                "reference": "83f4b3102bafd4393cb51ff41af4edd34f8132f4",
+                "url": "https://api.github.com/repos/Studio-42/elFinder/zipball/878daf75321c5c81d1ae308298241d94b383ea62",
+                "reference": "878daf75321c5c81d1ae308298241d94b383ea62",
                 "shasum": ""
             },
             "require": {
@@ -1967,7 +1967,7 @@
             ],
             "description": "File manager for web",
             "homepage": "http://elfinder.org",
-            "time": "2018-08-29T06:44:30+00:00"
+            "time": "2018-11-24T01:37:42+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -2099,16 +2099,16 @@
         },
         {
             "name": "tightenco/collect",
-            "version": "v5.7.12",
+            "version": "v5.7.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tightenco/collect.git",
-                "reference": "0d89929f10a495ebafc15fb6bff5581d10c38abb"
+                "reference": "5172ad96c54560352b79386b293375da40280fdc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tightenco/collect/zipball/0d89929f10a495ebafc15fb6bff5581d10c38abb",
-                "reference": "0d89929f10a495ebafc15fb6bff5581d10c38abb",
+                "url": "https://api.github.com/repos/tightenco/collect/zipball/5172ad96c54560352b79386b293375da40280fdc",
+                "reference": "5172ad96c54560352b79386b293375da40280fdc",
                 "shasum": ""
             },
             "require": {
@@ -2145,7 +2145,7 @@
                 "collection",
                 "laravel"
             ],
-            "time": "2018-10-30T21:09:13+00:00"
+            "time": "2018-11-09T19:12:42+00:00"
         },
         {
             "name": "tubalmartin/cssmin",
@@ -3032,16 +3032,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.4.3",
+            "version": "7.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "c151651fb6ed264038d486ea262e243af72e5e64"
+                "reference": "b1be2c8530c4c29c3519a052c9fb6cee55053bbd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c151651fb6ed264038d486ea262e243af72e5e64",
-                "reference": "c151651fb6ed264038d486ea262e243af72e5e64",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/b1be2c8530c4c29c3519a052c9fb6cee55053bbd",
+                "reference": "b1be2c8530c4c29c3519a052c9fb6cee55053bbd",
                 "shasum": ""
             },
             "require": {
@@ -3112,7 +3112,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-10-23T05:57:41+00:00"
+            "time": "2018-11-14T16:52:02+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -3281,28 +3281,28 @@
         },
         {
             "name": "sebastian/environment",
-            "version": "3.1.0",
+            "version": "4.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/environment.git",
-                "reference": "cd0871b3975fb7fc44d11314fd1ee20925fce4f5"
+                "reference": "febd209a219cea7b56ad799b30ebbea34b71eb8f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/cd0871b3975fb7fc44d11314fd1ee20925fce4f5",
-                "reference": "cd0871b3975fb7fc44d11314fd1ee20925fce4f5",
+                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/febd209a219cea7b56ad799b30ebbea34b71eb8f",
+                "reference": "febd209a219cea7b56ad799b30ebbea34b71eb8f",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.0"
+                "php": "^7.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "^6.1"
+                "phpunit/phpunit": "^7.4"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.1.x-dev"
+                    "dev-master": "4.0-dev"
                 }
             },
             "autoload": {
@@ -3327,7 +3327,7 @@
                 "environment",
                 "hhvm"
             ],
-            "time": "2017-07-01T08:51:00+00:00"
+            "time": "2018-11-25T09:31:21+00:00"
         },
         {
             "name": "sebastian/exporter",

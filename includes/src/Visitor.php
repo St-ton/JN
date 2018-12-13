@@ -4,6 +4,8 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\RequestHelper;
+
 /**
  * Class Visitor
  * @since 5.0.0

@@ -317,10 +317,10 @@ class KuponBestellung
                     ON kbs.kKupon = kp.kKupon
                 WHERE kbs.dErstellt BETWEEN '" . $dStart . "'
                     AND '" . $dEnd . "'
-                    AND bs.cStatus != " . BESTELLUNG_STATUS_STORNO . "
-                    AND (wkp.nPosTyp = 3 OR wkp.nPosTyp = 7) " .
-                ($kKupon > 0 ? " AND kp.kKupon = " . $kKupon : '') . "
-                ORDER BY kbs.dErstellt DESC",
+                    AND bs.cStatus != " . BESTELLUNG_STATUS_STORNO . '
+                    AND (wkp.nPosTyp = 3 OR wkp.nPosTyp = 7) ' .
+                ($kKupon > 0 ? ' AND kp.kKupon = ' . $kKupon : '') . '
+                ORDER BY kbs.dErstellt DESC',
             \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
     }

@@ -301,5 +301,5 @@ interface JTLCacheInterface
      * @param string $error
      * @return JTLCacheInterface
      */
-    public function setError(string $error): JTLCacheInterface;
+    public function setError(string $error);
 }

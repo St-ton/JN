@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\FormHelper;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ACCOUNT_VIEW', true, true);
@@ -21,22 +24,22 @@ if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
 
 switch ($cAction) {
     case 'account_lock':
-        $cAction = benutzerverwaltungActionAccountLock($smarty, $messages);
+        $cAction = benutzerverwaltungActionAccountLock($messages);
         break;
     case 'account_unlock':
-        $cAction = benutzerverwaltungActionAccountUnLock($smarty, $messages);
+        $cAction = benutzerverwaltungActionAccountUnLock($messages);
         break;
     case 'account_edit':
         $cAction = benutzerverwaltungActionAccountEdit($smarty, $messages);
         break;
     case 'account_delete':
-        $cAction = benutzerverwaltungActionAccountDelete($smarty, $messages);
+        $cAction = benutzerverwaltungActionAccountDelete($messages);
         break;
     case 'group_edit':
         $cAction = benutzerverwaltungActionGroupEdit($smarty, $messages);
         break;
     case 'group_delete':
-        $cAction = benutzerverwaltungActionGroupDelete($smarty, $messages);
+        $cAction = benutzerverwaltungActionGroupDelete($messages);
         break;
 }
 

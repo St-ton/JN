@@ -9,7 +9,7 @@ namespace Boxes;
 use MyCLabs\Enum\Enum;
 
 /**
- * Class ComponentPropertyType
+ * Class Type
  *
  * @package Boxes
  * @method Type DEFAULT()
@@ -33,4 +33,6 @@ class Type extends Enum
     public const TPL = 'tpl';
 
     public const CONTAINER = 'container';
+
+    public const EXTENSION = 'extension';
 }

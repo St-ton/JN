@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\RequestHelper;
+use Helpers\WarenkorbHelper;
+
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
@@ -27,7 +31,7 @@ if (isset($_GET['i'])) {
         Shop::Container()->getDB()->delete('tbestellid', 'kBestellung', (int)$bestellid->kBestellung);
     }
     Shop::Container()->getDB()->query(
-        'DELETE FROM tbestellid WHERE dDatum < DATE_SUB(NOW(),INTERVAL 30 DAY)',
+        'DELETE FROM tbestellid WHERE dDatum < DATE_SUB(NOW(), INTERVAL 30 DAY)',
         \DB\ReturnType::DEFAULT
     );
     $smarty->assign('abschlussseite', 1);
@@ -47,15 +51,12 @@ if (isset($_GET['i'])) {
             '?fillOut=' . gibFehlendeEingabe(), true, 303);
         exit;
     }
-    //pruefen, ob von jedem Artikel im WK genug auf Lager sind. Wenn nicht, WK verkleinern und Redirect zum WK
     $cart->pruefeLagerbestaende();
-
     if ($cart->checkIfCouponIsStillValid() === false) {
         $_SESSION['checkCouponResult']['ungueltig'] = 3;
         header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);
         exit;
     }
-
     if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung)) {
         $cart->loescheDeaktiviertePositionen();
         $wkChecksum = Warenkorb::getChecksum($cart);
@@ -89,14 +90,12 @@ if (isset($_GET['i'])) {
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-// Trusted Shops Kaeuferschutz Classic
 if ($Einstellungen['trustedshops']['trustedshops_nutzen'] === 'Y') {
     $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
     if ((int)$oTrustedShops->nAktiv === 1 && strlen($oTrustedShops->tsId) > 0) {
         $smarty->assign('oTrustedShops', $oTrustedShops);
     }
 }
-
 $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
        ->assign('Bestellung', $bestellung)
        ->assign('Link', $link)
@@ -105,13 +104,12 @@ $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
        ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
        ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);
 
-// Plugin Zahlungsmethode beachten
 $kPlugin = isset($bestellung->Zahlungsart->cModulId)
-    ? \Plugin\Plugin::getIDByModuleID($bestellung->Zahlungsart->cModulId)
+    ? \Plugin\Helper::getIDByModuleID($bestellung->Zahlungsart->cModulId)
     : 0;
 if ($kPlugin > 0) {
-    $oPlugin = new \Plugin\Plugin($kPlugin);
-    $smarty->assign('oPlugin', $oPlugin);
+    $loader = \Plugin\Helper::getLoaderByPluginID($kPlugin);
+    $smarty->assign('oPlugin', $loader->init($kPlugin));
 }
 if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung) || isset($_GET['i'])) {
     if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {

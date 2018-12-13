@@ -11,8 +11,9 @@ use DB\ReturnType;
 
 /**
  * Class SessionHandlerDB
+ * @package Session\Handler
  */
-class SessionHandlerDB extends SessionHandlerJTL implements \SessionHandlerInterface
+class SessionHandlerDB extends SessionHandlerJTL
 {
     /**
      * @var int

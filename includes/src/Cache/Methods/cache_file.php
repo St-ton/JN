@@ -182,7 +182,7 @@ class cache_file implements ICachingMethod
                     while ($subDir && ($f = \readdir($subDir)) !== false) {
                         if ($f !== '.' && $f !== '..') {
                             $filePath = $this->options['cache_dir'] . $file . '/' . $f;
-                            $total    += \filesize($filePath);
+                            $total   += \filesize($filePath);
                             ++$num;
                         }
                     }

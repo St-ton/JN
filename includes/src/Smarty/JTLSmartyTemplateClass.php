@@ -8,6 +8,7 @@ namespace Smarty;
 
 /**
  * Class JTLSmartyTemplateClass
+ * @package Smarty
  */
 class JTLSmartyTemplateClass extends \Smarty_Internal_Template
 {

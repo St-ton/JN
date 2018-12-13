@@ -7,6 +7,7 @@
 namespace Cron;
 
 use DB\DbInterface;
+use DB\ReturnType;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -58,7 +59,7 @@ class Queue
                 FROM tjobqueue 
                 WHERE nInArbeit = 0 
                     AND dStartZeit < NOW()',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($queueData as $entry) {
             $this->queueEntries[] = new QueueEntry($entry);
@@ -113,12 +114,20 @@ class Queue
                 $this->logger->notice('Job ' . $job->getID() . ' successfully finished.');
                 $this->db->delete('tjobqueue', 'kCron', $job->getCronID());
             } else {
-                $update                   = new \stdClass();
-                $update->dZuletztgelaufen = 'NOW()';
-                $update->nLimitN          = $queueEntry->nLimitN;
-                $update->nlimitM          = $queueEntry->nLimitM;
-                $update->nLastArticleID   = $queueEntry->nLastArticleID;
-                $this->db->update('tjobqueue', 'kCron', $job->getCronID(), $update);
+                $this->db->queryPrepared(
+                    'UPDATE tjobqueue SET 
+                        nLimitN = :ln,
+                        nLimitM = :lm,
+                        nLastArticleID = :lp,
+                        dZuletztgelaufen = NOW()
+                     WHERE kCron = 0',
+                    [
+                        'ln' => $queueEntry->nLimitN,
+                        'lm' => $queueEntry->nLimitM,
+                        'lp' => $queueEntry->nLastArticleID
+                    ],
+                    ReturnType::DEFAULT
+                );
             }
             \executeHook(\HOOK_JOBQUEUE_INC_BEHIND_SWITCH, [
                 'oJobQueue' => $queueEntry,

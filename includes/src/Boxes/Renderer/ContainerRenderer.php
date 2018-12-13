@@ -8,8 +8,7 @@ namespace Boxes\Renderer;
 
 /**
  * Class ContainerRenderer
- *
- * @package Boxes
+ * @package Boxes\Renderer
  */
 class ContainerRenderer extends DefaultRenderer
 {

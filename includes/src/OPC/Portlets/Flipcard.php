@@ -6,13 +6,14 @@
 
 namespace OPC\Portlets;
 
+use OPC\Portlet;
 use OPC\PortletInstance;
 
 /**
  * Class Flipcard
  * @package OPC\Portlets
  */
-class Flipcard extends \OPC\Portlet
+class Flipcard extends Portlet
 {
     /**
      * @param PortletInstance $instance

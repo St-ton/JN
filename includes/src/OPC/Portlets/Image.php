@@ -6,13 +6,14 @@
 
 namespace OPC\Portlets;
 
+use OPC\Portlet;
 use OPC\PortletInstance;
 
 /**
  * Class Image
  * @package OPC\Portlets
  */
-class Image extends \OPC\Portlet
+class Image extends Portlet
 {
     /**
      * @param PortletInstance $instance

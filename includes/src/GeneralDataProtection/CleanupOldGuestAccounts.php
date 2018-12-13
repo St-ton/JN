@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -6,8 +6,13 @@
 
 namespace GeneralDataProtection;
 
+use DB\ReturnType;
+
 /**
- * Remove guest accounts fetched by JTL-Wawi and older than x days
+ * Class CleanupOldGuestAccounts
+ * @package GeneralDataProtection
+ *
+ * Remove guest accounts fetched by JTL Wawi and older than x days
  * (interval former "interval_delete_guest_accounts" = 365 days)
  *
  * names of the tables, we manipulate:
@@ -17,17 +22,17 @@ namespace GeneralDataProtection;
 class CleanupOldGuestAccounts extends Method implements MethodInterface
 {
     /**
-     * runs all anonymize-routines
+     * runs all anonymize routines
      */
-    public function execute()
+    public function execute(): void
     {
-        $this->clean_tkunde();
+        $this->cleanupCustomers();
     }
 
     /**
      * delete old guest accounts
      */
-    private function clean_tkunde()
+    private function cleanupCustomers(): void
     {
         \Shop::Container()->getDB()->queryPrepared(
             "DELETE FROM tkunde
@@ -38,10 +43,10 @@ class CleanupOldGuestAccounts extends Method implements MethodInterface
             ORDER BY dErstellt ASC
             LIMIT :pLimit",
             [
-                'pDateLimit' => $this->szDateLimit,
-                'pLimit'     => $this->iWorkLimit
+                'pDateLimit' => $this->dateLimit,
+                'pLimit'     => $this->workLimit
             ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
     }
 }

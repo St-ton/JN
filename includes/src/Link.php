@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\FileSystemHelper;
+
 /**
  * Class Link
  */
@@ -616,7 +618,7 @@ class Link extends MainModel
      * @param int $kVaterLinkgruppe
      * @return null|array
      */
-    public static function getSub(int $kVaterLink, int $kVaterLinkgruppe = null)
+    public static function getSub(int $kVaterLink, int $kVaterLinkgruppe = null): ?array
     {
         if ($kVaterLink > 0) {
             if (!empty($kVaterLinkgruppe)) {

@@ -59,10 +59,10 @@ class TwoFAEmergency
             // we build a values-string (like this: "(:a, :b), (:c, :d), ... " )
             // and an according array
             $vAnalogyArray[$iValCount] = $oUserTuple->kAdminlogin;
-            $szSqlRowValues            .= '(:' . $iValCount . ',';
+            $szSqlRowValues           .= '(:' . $iValCount . ',';
             $iValCount++;
             $vAnalogyArray[$iValCount] = $szEmergeCode;
-            $szSqlRowValues            .= ' :' . $iValCount . ')';
+            $szSqlRowValues           .= ' :' . $iValCount . ')';
             $iValCount++;
         }
         // now write into the DB what we got till now
@@ -88,7 +88,9 @@ class TwoFAEmergency
             $oUserTuple->kAdminlogin
         );
         if ($this->iCodeCount !== $iEffectedRows) {
-            Shop::Container()->getLogService()->error('2FA-Notfall-Codes für diesen Account konnten nicht entfernt werden.');
+            Shop::Container()->getLogService()->error(
+                '2FA-Notfall-Codes für diesen Account konnten nicht entfernt werden.'
+            );
         }
     }
 

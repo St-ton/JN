@@ -8,7 +8,7 @@ namespace Boxes\Items;
 
 /**
  * Class Manufacturer
- * @package Boxes
+ * @package Boxes\Items
  */
 final class Manufacturer extends AbstractBox
 {
@@ -25,7 +25,7 @@ final class Manufacturer extends AbstractBox
     {
         parent::__construct($config);
         parent::addMapping('manufacturers', 'Manufacturers');
-        $this->setManufacturers(\HerstellerHelper::getInstance()->getManufacturers());
+        $this->setManufacturers(\Helpers\HerstellerHelper::getInstance()->getManufacturers());
         $this->setShow(\count($this->manufacturerList) > 0);
     }
 

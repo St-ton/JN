@@ -263,6 +263,16 @@ class IpAnonymizer
     }
 
     /**
+     * return a corresponding placeholder for "do not save any IP"
+     *
+     * @return string
+     */
+    public function getPlaceholder(): string
+    {
+        return $this->szPlaceholderIP;
+    }
+
+    /**
      * remove leading zeros from the ip-string
      * (by converting each part to integer)
      *

@@ -39,51 +39,45 @@ class Migration_20181129151242 extends Migration implements IMigration
                         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci');
 
         //add flags for already used new customer coupons
-        $newCustomerCouponEmails = $this->fetchAll(
-            "SELECT tkuponkunde.cMail,
-                  MAX(tkuponkunde.dErstellt) as dErstellt
-                FROM tkuponkunde
+        $this->execute(
+            "INSERT INTO tkuponflag (cEmailHash, dErstellt, cKuponTyp)
+              SELECT SHA2(tkuponkunde.cMail, 256) AS cEmailHash,
+                MAX(tkuponkunde.dErstellt) AS dErstellt,
+                tkupon.cKuponTyp
+              FROM tkuponkunde
                 LEFT JOIN tkupon
                   ON tkupon.kKupon = tkuponkunde.kKupon
-                WHERE tkupon.cKuponTyp = 'neukundenkupon'
-                GROUP BY tkuponkunde.cMail"
+              WHERE tkupon.cKuponTyp = 'neukundenkupon'
+              GROUP BY tkuponkunde.cMail"
         );
-        foreach ($newCustomerCouponEmails as $email) {
-            Shop::Container()->getDB()->insert('tkuponflag', (object)[
-                'cEmailHash' => Kupon::hash($email->cMail),
-                'cKuponTyp'  => 'neukundenkupon',
-                'dErstellt'  => $email->dErstellt
-            ]);
-        }
 
+        $this->execute('DELETE FROM `tkuponbestellung` WHERE `cKuponTyp` IS NULL');
         $this->execute('ALTER TABLE `tkuponbestellung` CHANGE COLUMN `cKuponTyp` `cKuponTyp` VARCHAR(255) NOT NULL');
 
         //fix nVerwendungen -> remove kKunde, allow only unique entries for each cMail + kKupon
-        $oldCustomerCoupons = $this->fetchAll('
-          SELECT tkuponkunde.cMail,
-                tkuponkunde.kKupon,
-                COUNT(tkuponkunde.cMail) as nVerwendungen,
-                MAX(tkuponkunde.dErstellt) as dErstellt
-            FROM tkuponkunde
-            LEFT JOIN tkupon
-                ON tkupon.kKupon = tkuponkunde.kKupon
-            GROUP BY tkuponkunde.cMail, tkuponkunde.kKupon'
-        );
-
+        $this->execute('CREATE TABLE tkuponkunde_backup LIKE tkuponkunde');
+        $this->execute('INSERT INTO tkuponkunde_backup SELECT * FROM tkuponkunde');
         $this->execute('TRUNCATE TABLE tkuponkunde');
+
         $this->execute('ALTER TABLE `tkuponkunde`
                           DROP KEY `kKupon`,
                           DROP KEY `kKunde`,
                           DROP COLUMN `kKunde`,
                           ADD UNIQUE KEY `kKupon_cMail` (`kKupon`, `cMail`)');
 
-        foreach ($oldCustomerCoupons as $oldCoupon) {
-            Shop::Container()->getDB()->insert('tkuponkunde', (object)[
-                'cMail'         => Kupon::hash($oldCoupon->cMail),
-                'kKupon'        => $oldCoupon->kKupon,
-                'nVerwendungen' => $oldCoupon->nVerwendungen,
-                'dErstellt'     => $oldCoupon->dErstellt
-            ]);
+        $check = $this->execute('
+          INSERT INTO tkuponkunde (kKupon, cMail, nVerwendungen, dErstellt)
+              SELECT tkuponkunde_backup.kKupon,
+                    SHA2(tkuponkunde_backup.cMail, 256) AS cMail,
+                    COUNT(tkuponkunde_backup.cMail) AS nVerwendungen,
+                    MAX(tkuponkunde_backup.dErstellt) AS dErstellt
+                FROM tkuponkunde_backup
+                LEFT JOIN tkupon
+                    ON tkupon.kKupon = tkuponkunde_backup.kKupon
+                GROUP BY tkuponkunde_backup.cMail, tkuponkunde_backup.kKupon'
+        );
+        if ($check !== 0) {
+            $this->execute('DROP TABLE IF EXISTS `tkuponkunde_backup`');
         }
 
         $this->setLocalization('ger', 'global', 'couponErr6', 'Fehler: Maximale Verwendungen für den Kupon erreicht.');

@@ -660,7 +660,7 @@ class Product
 
             if ($threshold > 0 && $result->fMassMenge > $threshold) {
                 $result->fGrundpreisMenge = $nAmount;
-                $result->fMassMenge       /= $fFactor;
+                $result->fMassMenge      /= $fFactor;
                 $result->fVPEWert         = $result->fMassMenge / $amount / $result->fGrundpreisMenge;
                 $result->fBasePreis       = $price / $result->fVPEWert;
                 $result->cVPEEinheit      = $result->fGrundpreisMenge . ' ' .
@@ -913,8 +913,10 @@ class Product
             }
             if ($isParent === true) {
                 if ($config['artikeldetails_xselling_kauf_parent'] === 'Y') {
-                    $selectorXSellArtikel     = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
-                    $filterXSellParentArtikel = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
+                    $selectorXSellArtikel     =
+                        'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
+                    $filterXSellParentArtikel =
+                        'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
                 } else {
                     $selectorXSellArtikel     = 'txsellkauf.kXSellArtikel';
                     $filterXSellParentArtikel = 'tartikel.kVaterArtikel';
@@ -937,22 +939,23 @@ class Product
                     ReturnType::ARRAY_OF_OBJECTS
                 );
             } elseif ($config['artikeldetails_xselling_kauf_parent'] === 'Y') {
-                $xsell = Shop::Container()->getDB()->query(
-                    "SELECT txsellkauf.kArtikel,
+                $xsell = Shop::Container()->getDB()->queryPrepared(
+                    'SELECT txsellkauf.kArtikel,
                     IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel) AS kXSellArtikel,
                     SUM(txsellkauf.nAnzahl) nAnzahl
                         FROM txsellkauf
                         JOIN tartikel
                             ON tartikel.kArtikel = txsellkauf.kXSellArtikel
-                        WHERE txsellkauf.kArtikel = {$productID}
+                        WHERE txsellkauf.kArtikel = :pid
                             AND (tartikel.kVaterArtikel != (
                                 SELECT tartikel.kVaterArtikel
                                 FROM tartikel
-                                WHERE tartikel.kArtikel = {$productID}
+                                WHERE tartikel.kArtikel = :pid
                             ) OR tartikel.kVaterArtikel = 0)
                         GROUP BY 1, 2
                         ORDER BY SUM(txsellkauf.nAnzahl) DESC
-                        LIMIT {$anzahl}",
+                        LIMIT :lmt',
+                    ['pid' => $productID, 'lmt' => $anzahl],
                     ReturnType::ARRAY_OF_OBJECTS
                 );
             } else {
@@ -2198,7 +2201,7 @@ class Product
                 if ($configItem->bAktiv) {
                     $config->fGesamtpreis[0] += $configItem->getPreis() * $configItem->fAnzahlWK;
                     $config->fGesamtpreis[1] += $configItem->getPreis(true) * $configItem->fAnzahlWK;
-                    $configGroup->bAktiv     = true;
+                    $configGroup->bAktiv      = true;
                     if ($configItem->getArtikel() !== null
                         && $configItem->getArtikel()->cLagerBeachten === 'Y'
                         && $config->nMinDeliveryDays < $configItem->getArtikel()->nMinDeliveryDays

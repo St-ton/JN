@@ -159,7 +159,7 @@ class Tax
 
         if ($qry !== '') {
             foreach ($steuerklassen as $steuerklasse) {
-                $steuersatz = Shop::Container()->getDB()->query(
+                $steuersatz                                           = Shop::Container()->getDB()->query(
                     'SELECT fSteuersatz
                         FROM tsteuersatz
                         WHERE kSteuerklasse = ' . (int)$steuerklasse->kSteuerklasse . '
@@ -215,7 +215,7 @@ class Tax
                 $taxPos[$i]->fBetrag         = ($position->fPreis * $position->nAnzahl * $position->fMwSt) / 100.0;
                 $taxPos[$i]->cPreisLocalized = Preise::getLocalizedPriceString($taxPos[$i]->fBetrag, $currency, $html);
             } else {
-                $taxPos[$i]->fBetrag         += ($position->fPreis * $position->nAnzahl * $position->fMwSt) / 100.0;
+                $taxPos[$i]->fBetrag        += ($position->fPreis * $position->nAnzahl * $position->fMwSt) / 100.0;
                 $taxPos[$i]->cPreisLocalized = Preise::getLocalizedPriceString($taxPos[$i]->fBetrag, $currency, $html);
             }
         }

@@ -662,9 +662,7 @@ class Cart
     private static function checkWishlist(int $productID, $qty, $redirect): bool
     {
         $linkHelper = Shop::Container()->getLinkService();
-        // Prüfe ob Kunde eingeloggt
-        if (!isset($_SESSION['Kunde']->kKunde) && !isset($_POST['login'])) {
-            //redirekt zum artikel, um variation/en zu wählen / MBM beachten
+        if (!isset($_POST['login']) && Session::getCustomer()->getID() < 1) {
             if ($qty <= 0) {
                 $qty = 1;
             }
@@ -676,7 +674,6 @@ class Cart
         }
 
         if ($productID > 0 && Session::getCustomer()->getID() > 0) {
-            // Prüfe auf kArtikel
             $productExists = Shop::Container()->getDB()->select(
                 'tartikel',
                 'kArtikel',
@@ -688,9 +685,7 @@ class Cart
                 false,
                 'kArtikel, cName'
             );
-            // Falls Artikel vorhanden
             if ($productExists !== null && $productExists->kArtikel > 0) {
-                // Sichtbarkeit Prüfen
                 $vis = Shop::Container()->getDB()->select(
                     'tartikelsichtbarkeit',
                     'kArtikel',
@@ -703,7 +698,6 @@ class Cart
                     'kArtikel'
                 );
                 if ($vis === null || !$vis->kArtikel) {
-                    // Prüfe auf Vater Artikel
                     if (Product::isParent($productID)) {
                         // Falls die Wunschliste aus der Artikelübersicht ausgewählt wurde,
                         // muss zum Artikel weitergeleitet werden um Variationen zu wählen
@@ -721,7 +715,6 @@ class Cart
                     } else {
                         $attributes = Product::getSelectedPropertiesForArticle($productID);
                     }
-                    // Prüfe ob die Session ein Wunschlisten Objekt hat
                     if ($productID > 0) {
                         if (empty($_SESSION['Wunschliste']->kWunschliste)) {
                             $_SESSION['Wunschliste'] = new Wunschliste();
@@ -734,7 +727,6 @@ class Cart
                             $attributes,
                             $qty
                         );
-                        // Kampagne
                         if (isset($_SESSION['Kampagnenbesucher'])) {
                             Kampagne::setCampaignAction(\KAMPAGNE_DEF_WUNSCHLISTE, $kWunschlistePos, $qty);
                         }
@@ -748,7 +740,6 @@ class Cart
                         ]);
 
                         Shop::Smarty()->assign('hinweis', Shop::Lang()->get('wishlistProductadded', 'messages'));
-                        // Weiterleiten?
                         if ($redirect === true) {
                             \header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php'), true, 302);
                             exit;
@@ -814,7 +805,6 @@ class Cart
                 }
             }
         }
-        // darf preise sehen und somit einkaufen?
         if (!Session::getCustomerGroup()->mayViewPrices() || !Session::getCustomerGroup()->mayViewCategories()) {
             $redirectParam[] = \R_LOGIN;
         }
@@ -859,14 +849,12 @@ class Cart
         }
         // fehlen zu einer Variation werte?
         foreach ($product->Variationen as $var) {
-            //min. 1 Problem?
             if (\count($redirectParam) > 0) {
                 break;
             }
             if ($var->cTyp === 'FREIFELD') {
                 continue;
             }
-            //schau, ob diese Eigenschaft auch gewählt wurde
             $bEigenschaftWertDa = false;
             foreach ($attributes as $oEigenschaftwerte) {
                 $oEigenschaftwerte->kEigenschaft = (int)$oEigenschaftwerte->kEigenschaft;
@@ -1003,8 +991,6 @@ class Cart
             if ($oPosition->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL) {
                 continue;
             }
-            // Komponente soll hinzugefügt werden aber die Stückliste ist bereits im Warenkorb
-            // => Prüfen ob der Lagebestand nicht unterschritten wird
             if ($isComponent
                 && isset($oPosition->Artikel->kStueckliste)
                 && $oPosition->Artikel->kStueckliste > 0
@@ -1013,7 +999,6 @@ class Cart
                 return \R_LAGER;
             }
             if (!$isComponent && \count($components) > 0) {
-                //Test auf Stücklistenkomponenten in der aktuellen Position
                 if (!empty($oPosition->Artikel->kStueckliste)) {
                     $oPositionKomponenten_arr = self::getPartComponent($oPosition->Artikel->kStueckliste, true);
                     foreach ($oPositionKomponenten_arr as $oKomponente) {
@@ -1045,18 +1030,18 @@ class Cart
     public static function getPartComponent(int $kStueckliste, bool $bAssoc = false): array
     {
         if ($kStueckliste > 0) {
-            $oObj_arr = Shop::Container()->getDB()->selectAll('tstueckliste', 'kStueckliste', $kStueckliste);
-            if (\count($oObj_arr) > 0) {
+            $data = Shop::Container()->getDB()->selectAll('tstueckliste', 'kStueckliste', $kStueckliste);
+            if (\count($data) > 0) {
                 if ($bAssoc) {
-                    $oArtikelAssoc_arr = [];
-                    foreach ($oObj_arr as $oObj) {
-                        $oArtikelAssoc_arr[$oObj->kArtikel] = $oObj;
+                    $res = [];
+                    foreach ($data as $item) {
+                        $res[$item->kArtikel] = $item;
                     }
 
-                    return $oArtikelAssoc_arr;
+                    return $res;
                 }
 
-                return $oObj_arr;
+                return $data;
             }
         }
 
@@ -1064,190 +1049,189 @@ class Cart
     }
 
     /**
-     * @param object $oWKPosition
-     * @param object $Kupon
+     * @param object $cartPosition
+     * @param object $coupon
      * @return mixed
      * @former checkeKuponWKPos()
      * @since 5.0.0
      */
-    public static function checkCouponCartPositions($oWKPosition, $Kupon)
+    public static function checkCouponCartPositions($cartPosition, $coupon)
     {
-        $oWKPosition->nPosTyp = (int)$oWKPosition->nPosTyp;
-        if ($oWKPosition->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL) {
-            return $oWKPosition;
+        $cartPosition->nPosTyp = (int)$cartPosition->nPosTyp;
+        if ($cartPosition->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL) {
+            return $cartPosition;
         }
-        $Artikel_qry    = " OR FIND_IN_SET('" .
-            \str_replace('%', '\%', Shop::Container()->getDB()->escape($oWKPosition->Artikel->cArtNr))
-            . "', REPLACE(cArtikel, ';', ',')) > 0";
-        $Hersteller_qry = " OR FIND_IN_SET('" .
-            \str_replace('%', '\%', Shop::Container()->getDB()->escape($oWKPosition->Artikel->kHersteller))
-            . "', REPLACE(cHersteller, ';', ',')) > 0";
-        $Kategorie_qry  = '';
-        $Kunden_qry     = '';
-        $kKategorie_arr = [];
-
-        if ($oWKPosition->Artikel->kArtikel > 0 && $oWKPosition->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
-            $kArtikel = (int)$oWKPosition->Artikel->kArtikel;
-            // Kind?
-            if (Product::isVariChild($kArtikel)) {
-                $kArtikel = Product::getParent($kArtikel);
+        $categoryQRY = '';
+        $customerQRY = '';
+        $categoryIDs = [];
+        if ($cartPosition->Artikel->kArtikel > 0 && $cartPosition->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
+            $productID = (int)$cartPosition->Artikel->kArtikel;
+            if (Product::isVariChild($productID)) {
+                $productID = Product::getParent($productID);
             }
-            $oKategorie_arr = Shop::Container()->getDB()->selectAll('tkategorieartikel', 'kArtikel', $kArtikel);
-            foreach ($oKategorie_arr as $oKategorie) {
-                $oKategorie->kKategorie = (int)$oKategorie->kKategorie;
-                if (!\in_array($oKategorie->kKategorie, $kKategorie_arr, true)) {
-                    $kKategorie_arr[] = $oKategorie->kKategorie;
+            $categories = Shop::Container()->getDB()->selectAll('tkategorieartikel', 'kArtikel', $productID);
+            foreach ($categories as $category) {
+                $category->kKategorie = (int)$category->kKategorie;
+                if (!\in_array($category->kKategorie, $categoryIDs, true)) {
+                    $categoryIDs[] = $category->kKategorie;
                 }
             }
         }
-        foreach ($kKategorie_arr as $kKategorie) {
-            $Kategorie_qry .= " OR FIND_IN_SET('" . $kKategorie . "', REPLACE(cKategorien, ';', ',')) > 0";
+        foreach ($categoryIDs as $id) {
+            $categoryQRY .= " OR FIND_IN_SET('" . $id . "', REPLACE(cKategorien, ';', ',')) > 0";
         }
         if (Session::getCustomer()->isLoggedIn()) {
-            $Kunden_qry = " OR FIND_IN_SET('" . Session::getCustomer()->getID() . "', REPLACE(cKunden, ';', ',')) > 0";
+            $customerQRY = " OR FIND_IN_SET('" . Session::getCustomer()->getID() . "', REPLACE(cKunden, ';', ',')) > 0";
         }
-        $kupons_mgl = Shop::Container()->getDB()->query(
+        $couponsOK = Shop::Container()->getDB()->queryPrepared(
             "SELECT *
                 FROM tkupon
                 WHERE cAktiv = 'Y'
                     AND dGueltigAb <= NOW()
                     AND (dGueltigBis IS NULL OR dGueltigBis > NOW())
-                    AND fMindestbestellwert <= " . Session::getCart()->gibGesamtsummeWaren(true, false) . '
+                    AND fMindestbestellwert <= :minAmount
                     AND (kKundengruppe = -1
                         OR kKundengruppe = 0
-                        OR kKundengruppe = ' . Session::getCustomerGroup()->getID() . ")
+                        OR kKundengruppe = :cgid)
                     AND (nVerwendungen = 0
                         OR nVerwendungen > nVerwendungenBisher)
-                    AND (cArtikel = '' {$Artikel_qry})
-                    AND (cHersteller = '-1' {$Hersteller_qry})
-                    AND (cKategorien = '' OR cKategorien = '-1' {$Kategorie_qry})
-                    AND (cKunden = '' OR cKunden = '-1' {$Kunden_qry})
-                    AND kKupon = " . (int)$Kupon->kKupon,
+                    AND (cArtikel = '' OR FIND_IN_SET(:artNO, REPLACE(cArtikel, ';', ',')) > 0)
+                    AND (cHersteller = '-1' OR FIND_IN_SET(:manuf, REPLACE(cHersteller, ';', ',')) > 0)
+                    AND (cKategorien = '' OR cKategorien = '-1' " . $categoryQRY . ")
+                    AND (cKunden = '' OR cKunden = '-1' " . $customerQRY . ')
+                    AND kKupon = :couponID',
+            [
+                'minAmount' => Session::getCart()->gibGesamtsummeWaren(true, false),
+                'cgID'      => Session::getCustomerGroup()->getID(),
+                'artNO'     => \str_replace('%', '\%', $cartPosition->Artikel->cArtNr),
+                'manuf'     => \str_replace('%', '\%', $cartPosition->Artikel->kHersteller),
+                'couponID'  => (int)$coupon->kKupon
+            ],
             ReturnType::SINGLE_OBJECT
         );
-        if (isset($kupons_mgl->kKupon)
-            && $kupons_mgl->kKupon > 0
-            && $kupons_mgl->cWertTyp === 'prozent'
+        if (isset($couponsOK->kKupon)
+            && $couponsOK->kKupon > 0
+            && $couponsOK->cWertTyp === 'prozent'
             && !Session::getCart()->posTypEnthalten(\C_WARENKORBPOS_TYP_KUPON)
         ) {
-            $oWKPosition->fPreisEinzelNetto -= ($oWKPosition->fPreisEinzelNetto / 100) * $Kupon->fWert;
-            $oWKPosition->fPreis            -= ($oWKPosition->fPreis / 100) * $Kupon->fWert;
-            $oWKPosition->cHinweis          = $Kupon->cName .
-                ' (' . \str_replace('.', ',', $Kupon->fWert) .
+            $cartPosition->fPreisEinzelNetto -= ($cartPosition->fPreisEinzelNetto / 100) * $coupon->fWert;
+            $cartPosition->fPreis            -= ($cartPosition->fPreis / 100) * $coupon->fWert;
+            $cartPosition->cHinweis           = $coupon->cName .
+                ' (' . \str_replace('.', ',', $coupon->fWert) .
                 '% ' . Shop::Lang()->get('discount') . ')';
 
-            if (\is_array($oWKPosition->WarenkorbPosEigenschaftArr)) {
-                foreach ($oWKPosition->WarenkorbPosEigenschaftArr as $attribute) {
+            if (\is_array($cartPosition->WarenkorbPosEigenschaftArr)) {
+                foreach ($cartPosition->WarenkorbPosEigenschaftArr as $attribute) {
                     if (isset($attribute->fAufpreis) && (float)$attribute->fAufpreis > 0) {
-                        $attribute->fAufpreis -= ((float)$attribute->fAufpreis / 100) * $Kupon->fWert;
+                        $attribute->fAufpreis -= ((float)$attribute->fAufpreis / 100) * $coupon->fWert;
                     }
                 }
             }
             foreach (Session::getCurrencies() as $currency) {
-                $currencyName                                         = $currency->getName();
-                $oWKPosition->cGesamtpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
+                $currencyName                                          = $currency->getName();
+                $cartPosition->cGesamtpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
                     Tax::getGross(
-                        $oWKPosition->fPreis * $oWKPosition->nAnzahl,
-                        Tax::getSalesTax($oWKPosition->kSteuerklasse)
+                        $cartPosition->fPreis * $cartPosition->nAnzahl,
+                        Tax::getSalesTax($cartPosition->kSteuerklasse)
                     ),
                     $currency
                 );
-                $oWKPosition->cGesamtpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString(
-                    $oWKPosition->fPreis * $oWKPosition->nAnzahl,
+                $cartPosition->cGesamtpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString(
+                    $cartPosition->fPreis * $cartPosition->nAnzahl,
                     $currency
                 );
-                $oWKPosition->cEinzelpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
-                    Tax::getGross($oWKPosition->fPreis, Tax::getSalesTax($oWKPosition->kSteuerklasse)),
+                $cartPosition->cEinzelpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
+                    Tax::getGross($cartPosition->fPreis, Tax::getSalesTax($cartPosition->kSteuerklasse)),
                     $currency
                 );
-                $oWKPosition->cEinzelpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString(
-                    $oWKPosition->fPreis,
+                $cartPosition->cEinzelpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString(
+                    $cartPosition->fPreis,
                     $currency
                 );
             }
         }
 
-        return $oWKPosition;
+        return $cartPosition;
     }
 
     /**
-     * @param object $oWKPosition
-     * @param object $Kupon
+     * @param object $cartPosition
+     * @param object $coupon
      * @return mixed
      * @former checkSetPercentCouponWKPos()
      * @since 5.0.0
      */
-    public static function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
+    public static function checkSetPercentCouponWKPos($cartPosition, $coupon)
     {
-        $wkPos                = new stdClass();
-        $wkPos->fPreis        = (float)0;
-        $wkPos->cName         = '';
-        $oWKPosition->nPosTyp = (int)$oWKPosition->nPosTyp;
-        if ($oWKPosition->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL) {
-            return $wkPos;
+        $position              = new stdClass();
+        $position->fPreis      = (float)0;
+        $position->cName       = '';
+        $cartPosition->nPosTyp = (int)$cartPosition->nPosTyp;
+        if ($cartPosition->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL) {
+            return $position;
         }
-        $Artikel_qry    = " OR FIND_IN_SET('" .
-            \str_replace('%', '\%', Shop::Container()->getDB()->escape($oWKPosition->Artikel->cArtNr))
-            . "', REPLACE(cArtikel, ';', ',')) > 0";
-        $Hersteller_qry = " OR FIND_IN_SET('" .
-            \str_replace('%', '\%', Shop::Container()->getDB()->escape($oWKPosition->Artikel->kHersteller))
-            . "', REPLACE(cHersteller, ';', ',')) > 0";
-        $Kategorie_qry  = '';
-        $Kunden_qry     = '';
-        $kKategorie_arr = [];
-
-        if ($oWKPosition->Artikel->kArtikel > 0 && $oWKPosition->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
-            $kArtikel = (int)$oWKPosition->Artikel->kArtikel;
-            // Kind?
-            if (Product::isVariChild($kArtikel)) {
-                $kArtikel = Product::getParent($kArtikel);
+        $categoryQRY = '';
+        $customerQRY = '';
+        $categoryIDs = [];
+        if ($cartPosition->Artikel->kArtikel > 0 && $cartPosition->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
+            $productID = (int)$cartPosition->Artikel->kArtikel;
+            if (Product::isVariChild($productID)) {
+                $productID = Product::getParent($productID);
             }
             $categories = Shop::Container()->getDB()->selectAll(
                 'tkategorieartikel',
                 'kArtikel',
-                $kArtikel,
+                $productID,
                 'kKategorie'
             );
             foreach ($categories as $category) {
                 $category->kKategorie = (int)$category->kKategorie;
-                if (!\in_array($category->kKategorie, $kKategorie_arr, true)) {
-                    $kKategorie_arr[] = $category->kKategorie;
+                if (!\in_array($category->kKategorie, $categoryIDs, true)) {
+                    $categoryIDs[] = $category->kKategorie;
                 }
             }
         }
-        foreach ($kKategorie_arr as $kKategorie) {
-            $Kategorie_qry .= " OR FIND_IN_SET('" . $kKategorie . "', REPLACE(cKategorien, ';', ',')) > 0";
+        foreach ($categoryIDs as $id) {
+            $categoryQRY .= " OR FIND_IN_SET('" . $id . "', REPLACE(cKategorien, ';', ',')) > 0";
         }
         if (Session::getCustomer()->isLoggedIn()) {
-            $Kunden_qry = " OR FIND_IN_SET('" . Session::getCustomer()->getID() . "', REPLACE(cKunden, ';', ',')) > 0";
+            $customerQRY = " OR FIND_IN_SET('" . Session::getCustomer()->getID() . "', REPLACE(cKunden, ';', ',')) > 0";
         }
-        $kupons_mgl = Shop::Container()->getDB()->query(
+        $couponOK = Shop::Container()->getDB()->queryPrepared(
             "SELECT *
                 FROM tkupon
                 WHERE cAktiv = 'Y'
                     AND dGueltigAb <= NOW()
                     AND (dGueltigBis IS NULL OR dGueltigBis > NOW())
-                    AND fMindestbestellwert <= " . Session::getCart()->gibGesamtsummeWaren(true, false) . '
+                    AND fMindestbestellwert <= :minAmount
                     AND (kKundengruppe = -1
                         OR kKundengruppe = 0
-                        OR kKundengruppe = ' . Session::getCustomerGroup()->getID() . ")
+                        OR kKundengruppe = :cgid)
                     AND (nVerwendungen = 0 OR nVerwendungen > nVerwendungenBisher)
-                    AND (cArtikel = '' {$Artikel_qry})
-                    AND (cHersteller = '-1' {$Hersteller_qry})
-                    AND (cKategorien = '' OR cKategorien = '-1' {$Kategorie_qry})
-                    AND (cKunden = '' OR cKunden = '-1' {$Kunden_qry})
-                    AND kKupon = " . (int)$Kupon->kKupon,
+                    AND (cArtikel = '' OR FIND_IN_SET(:artNo, REPLACE(cArtikel, ';', ',')) > 0)
+                    AND (cHersteller = '-1' OR FIND_IN_SET(:manuf, REPLACE(cHersteller, ';', ',')) > 0)
+                    AND (cKategorien = '' OR cKategorien = '-1' " . $categoryQRY . ")
+                    AND (cKunden = '' OR cKunden = '-1' " . $customerQRY . ')
+                    AND kKupon = :couponID',
+            [
+                'minAmount' => Session::getCart()->gibGesamtsummeWaren(true, false),
+                'cgID'      => Session::getCustomerGroup()->getID(),
+                'artNo'     => \str_replace('%', '\%', $cartPosition->Artikel->cArtNr),
+                'manuf'     => \str_replace('%', '\%', $cartPosition->Artikel->kHersteller),
+                'couponID'  => $coupon->kKupon
+
+            ],
             ReturnType::SINGLE_OBJECT
         );
-        if (isset($kupons_mgl->kKupon) && $kupons_mgl->kKupon > 0 && $kupons_mgl->cWertTyp === 'prozent') {
-            $wkPos->fPreis = $oWKPosition->fPreis *
+        if (isset($couponOK->kKupon) && $couponOK->kKupon > 0 && $couponOK->cWertTyp === 'prozent') {
+            $position->fPreis = $cartPosition->fPreis *
                 Session::getCurrency()->getConversionFactor() *
-                $oWKPosition->nAnzahl *
-                ((100 + Tax::getSalesTax($oWKPosition->kSteuerklasse)) / 100);
-            $wkPos->cName  = $oWKPosition->cName;
+                $cartPosition->nAnzahl *
+                ((100 + Tax::getSalesTax($cartPosition->kSteuerklasse)) / 100);
+            $position->cName  = $cartPosition->cName;
         }
 
-        return $wkPos;
+        return $position;
     }
 
     /**
@@ -1278,7 +1262,7 @@ class Cart
             }
             // Switch zwischen 1 Vari und 2
             if ($cKeys[0] === '_') { // 1
-                $cVariation0 = \substr($cKeys, 1);
+                $cVariation0                         = \substr($cKeys, 1);
                 [$kEigenschaft0, $kEigenschaftWert0] = \explode(':', $cVariation0);
                 // In die Session einbauen
                 $oVariKombi                                 = new stdClass();
@@ -1848,10 +1832,10 @@ class Cart
         if (isset($product->kArtikel) && $product->kArtikel > 0) {
             $oArtikel = (new Artikel())->fuelleArtikel($product->kArtikel, Artikel::getDefaultOptions());
             if ($oArtikel !== null && $oArtikel->kArtikel > 0 && self::addProductIDToCart(
-                    $product->kArtikel,
-                    1,
-                    Product::getSelectedPropertiesForArticle($product->kArtikel)
-                )) {
+                $product->kArtikel,
+                1,
+                Product::getSelectedPropertiesForArticle($product->kArtikel)
+            )) {
                 $msg = $product->cName . ' ' . Shop::Lang()->get('productAddedToCart');
             }
         }
@@ -1899,14 +1883,14 @@ class Cart
      */
     public static function getXSelling(): stdClass
     {
-        $oXselling     = new stdClass();
+        $xSelling      = new stdClass();
         $conf          = Shop::getSettings([\CONF_KAUFABWICKLUNG]);
         $cartPositions = Session::getCart()->PositionenArr;
         if ($conf['kaufabwicklung']['warenkorb_xselling_anzeigen'] !== 'Y'
             || !\is_array($cartPositions)
             || \count($cartPositions) === 0
         ) {
-            return $oXselling;
+            return $xSelling;
         }
         $productIDs = \Functional\map(
             \Functional\filter($cartPositions, function ($p) {
@@ -1917,34 +1901,33 @@ class Cart
             }
         );
         if (\count($productIDs) > 0) {
-            $cArtikel_str   = \implode(', ', $productIDs);
-            $oXsellkauf_arr = Shop::Container()->getDB()->query(
-                "SELECT *
+            $productIDs = \implode(', ', $productIDs);
+            $xsellData  = Shop::Container()->getDB()->query(
+                'SELECT *
                     FROM txsellkauf
-                    WHERE kArtikel IN ({$cArtikel_str})
-                        AND kXSellArtikel NOT IN ({$cArtikel_str})
+                    WHERE kArtikel IN (' . $productIDs . ')
+                        AND kXSellArtikel NOT IN (' . $productIDs .')
                     GROUP BY kXSellArtikel
                     ORDER BY nAnzahl DESC
-                    LIMIT " . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl'],
+                    LIMIT ' . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl'],
                 ReturnType::ARRAY_OF_OBJECTS
             );
-
-            if (\count($oXsellkauf_arr) > 0) {
-                if (!isset($oXselling->Kauf)) {
-                    $oXselling->Kauf = new stdClass();
+            if (\count($xsellData) > 0) {
+                if (!isset($xSelling->Kauf)) {
+                    $xSelling->Kauf = new stdClass();
                 }
-                $oXselling->Kauf->Artikel = [];
-                $defaultOptions           = Artikel::getDefaultOptions();
-                foreach ($oXsellkauf_arr as $oXsellkauf) {
+                $xSelling->Kauf->Artikel = [];
+                $defaultOptions          = Artikel::getDefaultOptions();
+                foreach ($xsellData as $oXsellkauf) {
                     $oArtikel = (new Artikel())->fuelleArtikel((int)$oXsellkauf->kXSellArtikel, $defaultOptions);
                     if ($oArtikel !== null && $oArtikel->kArtikel > 0 && $oArtikel->aufLagerSichtbarkeit()) {
-                        $oXselling->Kauf->Artikel[] = $oArtikel;
+                        $xSelling->Kauf->Artikel[] = $oArtikel;
                     }
                 }
             }
         }
 
-        return $oXselling;
+        return $xSelling;
     }
 
     /**
@@ -2019,8 +2002,8 @@ class Cart
                     && $conf['global']['global_lieferverzoegerung_anzeigen'] === 'Y'
                     && $pos->nAnzahl > $pos->Artikel->fLagerbestand
                 ) {
-                    $bVorhanden   = true;
-                    $cName        = \is_array($pos->cName) ? $pos->cName[$cISOSprache] : $pos->cName;
+                    $bVorhanden    = true;
+                    $cName         = \is_array($pos->cName) ? $pos->cName[$cISOSprache] : $pos->cName;
                     $cArtikelName .= '<li>' . $cName . '</li>';
                 }
             }

@@ -78,32 +78,35 @@ class Manufacturer
             return $this->manufacturers;
         }
         if (($manufacturers = Shop::Container()->getCache()->get($this->cacheID)) === false) {
-            $lagerfilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            // fixes for admin backend
-            $manufacturers = Shop::Container()->getDB()->query(
+            $lagerfilter   = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
+            $manufacturers = Shop::Container()->getDB()->queryPrepared(
                 'SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                         thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                         therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
                     FROM thersteller
                     LEFT JOIN therstellersprache 
                         ON therstellersprache.kHersteller = thersteller.kHersteller
-                        AND therstellersprache.kSprache = ' . self::$langID . "
+                        AND therstellersprache.kSprache = :lid
                     LEFT JOIN tseo 
                         ON tseo.kKey = thersteller.kHersteller
-                        AND tseo.cKey = 'kHersteller'
-                        AND tseo.kSprache = " . self::$langID . "
+                        AND tseo.cKey = :skey
+                        AND tseo.kSprache = :lid
                     WHERE EXISTS (
                         SELECT 1
                         FROM tartikel
-                        WHERE tartikel.kHersteller = thersteller.kHersteller
-                            {$lagerfilter}
+                        WHERE tartikel.kHersteller = thersteller.kHersteller ' . $lagerfilter . '
                             AND NOT EXISTS (
                                 SELECT 1 FROM tartikelsichtbarkeit
                                 WHERE tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                                    AND tartikelsichtbarkeit.kKundengruppe = " . Kundengruppe::getDefaultGroupID() . '
+                                    AND tartikelsichtbarkeit.kKundengruppe = :cgid
                                 )
                         )
                     ORDER BY thersteller.nSortNr, thersteller.cName',
+                [
+                    'skey' => 'kHersteller',
+                    'lid'  => self::$langID,
+                    'cgid' => Kundengruppe::getDefaultGroupID()
+                ],
                 ReturnType::ARRAY_OF_OBJECTS
             );
             $shopURL       = Shop::getURL() . '/';

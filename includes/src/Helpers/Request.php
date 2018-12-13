@@ -346,7 +346,7 @@ class Request
             for ($i = 1; $i < $cnt; $i++) {
                 $keyValue = \explode('=', $seoData[$i]);
                 if (\count($keyValue) > 1) {
-                    [$cName, $cWert] = $keyValue;
+                    [$cName, $cWert]                    = $keyValue;
                     $_SESSION['FremdParameter'][$cName] = $cWert;
                 }
             }

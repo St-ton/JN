@@ -24,13 +24,13 @@ class ArticleDownloads extends NetSyncHandler
     protected function request($eRequest)
     {
         switch ($eRequest) {
-            case NetSyncRequest::DownloadFolders:
+            case NetSyncRequest::DOWNLOADFOLDERS:
                 $bPreview            = (int)$_POST['bPreview'];
                 $oDownloadFolder_arr = getFolderStruct($bPreview ? PFAD_DOWNLOADS_PREVIEW : PFAD_DOWNLOADS);
-                self::throwResponse(NetSyncResponse::Ok, $oDownloadFolder_arr);
+                self::throwResponse(NetSyncResponse::OK, $oDownloadFolder_arr);
                 break;
 
-            case NetSyncRequest::DownloadFilesInFolder:
+            case NetSyncRequest::DOWNLOADFILESINFOLDER:
                 $bPreview = (int)$_POST['bPreview'];
                 if (!isset($_POST['cBasePath']) || empty($_POST['cBasePath'])) {
                     $_POST['cBasePath'] = $bPreview ? PFAD_DOWNLOADS_PREVIEW : PFAD_DOWNLOADS;
@@ -38,12 +38,11 @@ class ArticleDownloads extends NetSyncHandler
                 $cBasePath = $_POST['cBasePath'];
                 if (is_dir($cBasePath)) {
                     $oFiles_arr = getFilesStruct($cBasePath, $bPreview);
-                    self::throwResponse(NetSyncResponse::Ok, $oFiles_arr);
+                    self::throwResponse(NetSyncResponse::OK, $oFiles_arr);
                 } else {
-                    self::throwResponse(NetSyncResponse::FolderNotExists);
+                    self::throwResponse(NetSyncResponse::FOLDERNOTEXISTS);
                 }
                 break;
-
         }
     }
 }

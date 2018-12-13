@@ -7,6 +7,7 @@
 namespace Cron;
 
 use DB\DbInterface;
+use DB\ReturnType;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -32,8 +33,8 @@ class Checker
      */
     public function __construct(DbInterface $db, LoggerInterface $logger)
     {
-        $this->db      = $db;
-        $this->logger  = $logger;
+        $this->db     = $db;
+        $this->logger = $logger;
     }
 
     /**
@@ -50,7 +51,7 @@ class Checker
                     OR (NOW() > ADDDATE(tcron.dLetzterStart, INTERVAL tcron.nAlleXStd HOUR)))
                     AND tcron.dStart < NOW()
                     AND tjobqueue.kJobQueue IS NULL',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         $this->logger->debug('Found ' . \count($jobs) . ' new cron jobs.');
 

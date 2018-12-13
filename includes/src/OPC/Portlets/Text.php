@@ -6,13 +6,14 @@
 
 namespace OPC\Portlets;
 
+use OPC\Portlet;
 use OPC\PortletInstance;
 
 /**
  * Class Text
  * @package OPC\Portlets
  */
-class Text extends \OPC\Portlet
+class Text extends Portlet
 {
     /**
      * @param PortletInstance $instance

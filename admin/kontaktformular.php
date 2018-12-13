@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\FormHelper;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_CONTACTFORM_VIEW', true, true);
@@ -47,7 +50,7 @@ if (isset($_POST['content']) && (int)$_POST['content'] === 1 && FormHelper::vali
         unset($spezialContent1, $spezialContent2, $spezialContent3);
     }
     $cHinweis .= 'Inhalt wurde erfolgreich gespeichert.';
-    $cTab = 'content';
+    $cTab      = 'content';
 }
 
 if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && FormHelper::validateToken()) {
@@ -65,21 +68,17 @@ if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && FormHelper::vali
         if ((int)$_POST['nSort'] > 0) {
             $neuerBetreff->nSort = (int)$_POST['nSort'];
         }
-
         $kKontaktBetreff = 0;
-
         if ((int)$_POST['kKontaktBetreff'] === 0) {
-            //einfuegen
             $kKontaktBetreff = Shop::Container()->getDB()->insert('tkontaktbetreff', $neuerBetreff);
-            $cHinweis .= 'Betreff wurde erfolgreich hinzugefügt.';
+            $cHinweis       .= 'Betreff wurde erfolgreich hinzugefügt.';
         } else {
-            //updaten
             $kKontaktBetreff = (int)$_POST['kKontaktBetreff'];
             Shop::Container()->getDB()->update('tkontaktbetreff', 'kKontaktBetreff', $kKontaktBetreff, $neuerBetreff);
-            $cHinweis .= "Der Betreff <strong>$neuerBetreff->cName</strong> wurde erfolgreich geändert.";
+            $cHinweis .= 'Der Betreff <strong>' . $neuerBetreff->cName . '</strong> wurde erfolgreich geändert.';
         }
-        $sprachen            = Sprache::getAllLanguages();
-        $neuerBetreffSprache = new stdClass();
+        $sprachen                             = Sprache::getAllLanguages();
+        $neuerBetreffSprache                  = new stdClass();
         $neuerBetreffSprache->kKontaktBetreff = $kKontaktBetreff;
         foreach ($sprachen as $sprache) {
             $neuerBetreffSprache->cISOSprache = $sprache->cISO;
@@ -110,7 +109,7 @@ if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && FormHelper::vali
 
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
     $cHinweis .= saveAdminSectionSettings(CONF_KONTAKTFORMULAR, $_POST);
-    $cTab = 'config';
+    $cTab      = 'config';
 }
 
 if (((isset($_GET['kKontaktBetreff']) && (int)$_GET['kKontaktBetreff'] > 0) ||
@@ -132,10 +131,11 @@ if ($step === 'uebersicht') {
         } else {
             $kKundengruppen = explode(';', $neuerBetreffs[$i]->cKundengruppen);
             foreach ($kKundengruppen as $kKundengruppe) {
-                if (is_numeric($kKundengruppe)) {
-                    $kndgrp = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
-                    $kunden .= ' ' . $kndgrp->cName;
+                if (!is_numeric($kKundengruppe)) {
+                    continue;
                 }
+                $kndgrp  = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
+                $kunden .= ' ' . $kndgrp->cName;
             }
         }
         $neuerBetreffs[$i]->Kundengruppen = $kunden;

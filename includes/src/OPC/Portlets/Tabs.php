@@ -6,13 +6,14 @@
 
 namespace OPC\Portlets;
 
+use OPC\Portlet;
 use OPC\PortletInstance;
 
 /**
  * Class Tabs
  * @package OPC\Portlets
  */
-class Tabs extends \OPC\Portlet
+class Tabs extends Portlet
 {
     /**
      * @param PortletInstance $instance
@@ -39,7 +40,7 @@ class Tabs extends \OPC\Portlet
      */
     public function getButtonHtml(): string
     {
-        return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Tabs';
+        return '<img alt="" class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Tabs';
     }
 
     /**
@@ -55,7 +56,7 @@ class Tabs extends \OPC\Portlet
             ],
             'uniqid' => [
                 'type'    => 'hidden',
-                'default' => uniqid('', false),
+                'default' => \uniqid('', false),
             ]
         ];
     }

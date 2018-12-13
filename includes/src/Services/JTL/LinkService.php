@@ -20,8 +20,7 @@ use Tightenco\Collect\Support\Collection;
 
 /**
  * Class LinkService
- * @package Link
- * @since 5.0.0
+ * @package Services\JTL
  */
 final class LinkService implements LinkServiceInterface
 {
@@ -407,7 +406,6 @@ final class LinkService implements LinkServiceInterface
         $oMeta->cTitle    = '';
         $oMeta->cDesc     = '';
         $oMeta->cKeywords = '';
-
         if ($first !== null) {
             /** @var LinkInterface $first */
             $oMeta->cTitle    = $first->getMetaTitle();
@@ -523,8 +521,8 @@ final class LinkService implements LinkServiceInterface
         if ($langID <= 0 || $customerGroupID <= 0) {
             return false;
         }
-        $oLinkAGB   = null;
-        $oLinkWRB   = null;
+        $oLinkAGB = null;
+        $oLinkWRB = null;
         // kLink für AGB und WRB suchen
         foreach ($this->getSpecialPages() as $sp) {
             /** @var \Link\LinkInterface $sp */
@@ -536,8 +534,10 @@ final class LinkService implements LinkServiceInterface
         }
         $oAGBWRB = $this->db->select(
             'ttext',
-            'kKundengruppe', $customerGroupID,
-            'kSprache', $langID
+            'kKundengruppe',
+            $customerGroupID,
+            'kSprache',
+            $langID
         );
         if (empty($oAGBWRB->kText)) {
             $oAGBWRB = $this->db->select('ttext', 'nStandard', 1);

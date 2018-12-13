@@ -18,7 +18,7 @@ use Filter\ProductFilter;
  */
 class BaseAttribute extends AbstractFilter
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array

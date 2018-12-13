@@ -10,9 +10,9 @@ namespace News;
  * Class AbstractItem
  * @package News
  */
-abstract class AbstractItem implements ItemInterFace
+abstract class AbstractItem implements ItemInterface
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array

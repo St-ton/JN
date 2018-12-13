@@ -128,7 +128,11 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
             }
         }
         if (Shop::Container()->getCache()->isActive()) {
-            Shop::Container()->getCache()->set($cacheID, $cDBStruct_arr, [CACHING_GROUP_CORE, CACHING_GROUP_CORE . '_getDBStruct']);
+            Shop::Container()->getCache()->set(
+                $cacheID,
+                $cDBStruct_arr,
+                [CACHING_GROUP_CORE, CACHING_GROUP_CORE . '_getDBStruct']
+            );
         } else {
             AdminSession::set($cacheID, $cDBStruct_arr);
         }
@@ -341,21 +345,21 @@ function doEngineUpdateScript(string $fileName, array $shopTables)
         }
 
         if (count($fulltextSQL) > 0) {
-            $result .= implode(";$nl", $fulltextSQL) . ";$nl";
+            $result .= implode(';' . $nl, $fulltextSQL) . ';' . $nl;
         }
 
         $sql = DBMigrationHelper::sqlMoveToInnoDB($oTable);
         if (!empty($sql)) {
-            $result .= "--$nl";
-            $result .= "$sql;$nl";
+            $result .= '--' . $nl;
+            $result .= $sql . ';' . $nl;
         }
 
         $sql = DBMigrationHelper::sqlConvertUTF8($oTable, $nl);
         if (!empty($sql)) {
-            $result .= "--$nl";
-            $result .= "-- migrate collation and / or datatype for columns in {$oTable->TABLE_NAME}$nl";
-            $result .= "--$nl";
-            $result .= "$sql;$nl";
+            $result .= '--' . $nl;
+            $result .= '-- migrate collation and / or datatype for columns in ' . $oTable->TABLE_NAME . $nl;
+            $result .= '--' . $nl;
+            $result .= $sql . ';' . $nl;
         }
     }
 
@@ -363,10 +367,10 @@ function doEngineUpdateScript(string $fileName, array $shopTables)
 
     if (version_compare($mysqlVer->innodb->version, '5.6', '<')) {
         // Fulltext search is not available on MySQL < 5.6
-        $result .= "--$nl";
-        $result .= "-- Fulltext search is not available on MySQL < 5.6$nl";
-        $result .= "--$nl";
-        $result .= "UPDATE `teinstellungen` SET `cWert` = 'N' WHERE `cName` = 'suche_fulltext';$nl";
+        $result .= '--' . $nl;
+        $result .= '-- Fulltext search is not available on MySQL < 5.6' . $nl;
+        $result .= '--' . $nl;
+        $result .= "UPDATE `teinstellungen` SET `cWert` = 'N' WHERE `cName` = 'suche_fulltext';" . $nl;
         $result .= $nl;
     }
 
@@ -489,7 +493,6 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
             // Objektcache leeren
             try {
                 $cache = Shop::Container()->getCache();
-
                 if ($cache !== null) {
                     $cache->setJtlCacheConfig();
                     $cache->flushAll();
@@ -499,9 +502,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
                     'Leeren des Objektcache fehlgeschlagen! (' . $e->getMessage() . ')'
                 );
             }
-
-            // Templatecache leeren
-            $callback = function (array $pParameters) {
+            $callback    = function (array $pParameters) {
                 if (!$pParameters['isdir']) {
                     @unlink($pParameters['path'] . $pParameters['filename']);
                 } else {
@@ -513,10 +514,8 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
             $dirMan      = new DirManager();
             $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $templateDir, $callback);
             $dirMan->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback);
-
             // Clear special category session array
             unset($_SESSION['oKategorie_arr_new']);
-
             // Reset Fulltext search if version is lower than 5.6
             if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
                 Shop::Container()->getDB()->executeQuery(
@@ -526,7 +525,6 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
                     \DB\ReturnType::QUERYSINGLE
                 );
             }
-
             $result->nextTable = '';
             $result->status    = 'finished';
             break;

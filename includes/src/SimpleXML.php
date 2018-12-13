@@ -52,7 +52,7 @@ class SimpleXML
                 }
             }
         }
-        $this->evalCode .= '$this->result' . $temp . "=\"" . addslashes($value) . "\";//(" . $type . ")\n";
+        $this->evalCode .= '$this->result' . $temp . '="' . addslashes($value) . '";//(' . $type . ")\n";
     }
 
     /**
@@ -176,7 +176,7 @@ class SimpleXML
                     }
                     if (isset($array[$i]['value']) && ($array[$i]['value'] || !$this->skip_empty_values)) {
                         $tags[] = '@content';
-                        $this->array_insert(count($tags), $tags, $array[$i]['value'], "open");
+                        $this->array_insert(count($tags), $tags, $array[$i]['value'], 'open');
                         array_pop($tags);
                     }
 
@@ -193,7 +193,7 @@ class SimpleXML
                         $tags[] = '@attributes';
                         foreach ($array[$i]['attributes'] as $attrkey => $attr) {
                             $tags[] = $attrkey;
-                            $this->array_insert(count($tags), $tags, $attr, "open");
+                            $this->array_insert(count($tags), $tags, $attr, 'open');
                             array_pop($tags);
                         }
                         array_pop($tags);
@@ -226,10 +226,10 @@ class SimpleXML
                     if (isset($array[$i]['value']) && ($array[$i]['value'] || !$this->skip_empty_values)) {
                         if (!empty($array[$i]['attributes'])) {
                             $tags[] = '@content';
-                            $this->array_insert(count($tags), $tags, $array[$i]['value'], "complete");
+                            $this->array_insert(count($tags), $tags, $array[$i]['value'], 'complete');
                             array_pop($tags);
                         } else {
-                            $this->array_insert(count($tags), $tags, $array[$i]['value'], "complete");
+                            $this->array_insert(count($tags), $tags, $array[$i]['value'], 'complete');
                         }
                     }
 
@@ -237,7 +237,7 @@ class SimpleXML
                         $tags[] = '@attributes';
                         foreach ($array[$i]['attributes'] as $attrkey => $attr) {
                             $tags[] = $attrkey;
-                            $this->array_insert(count($tags), $tags, $attr, "complete");
+                            $this->array_insert(count($tags), $tags, $attr, 'complete');
                             array_pop($tags);
                         }
                         array_pop($tags);

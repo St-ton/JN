@@ -7,23 +7,24 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
+use Session\Session;
 
 /**
  * Class UpcomingProducts
- * @package Boxes
+ * @package Boxes\Items
  */
 final class UpcomingProducts extends AbstractBox
 {
     /**
-     * Cart constructor.
+     * UpcomingProducts constructor.
      * @param array $config
      */
     public function __construct(array $config)
     {
         parent::__construct($config);
         $this->setShow(false);
-        $customerGroupID = \Session\Session::getCustomerGroup()->getID();
-        if ($customerGroupID > 0 && \Session\Session::getCustomerGroup()->mayViewCategories()) {
+        $customerGroupID = Session::getCustomerGroup()->getID();
+        if ($customerGroupID > 0 && Session::getCustomerGroup()->mayViewCategories()) {
             $cached         = true;
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
@@ -55,7 +56,7 @@ final class UpcomingProducts extends AbstractBox
                 $products = new \ArtikelListe();
                 $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
                 $this->setProducts($products);
-                $this->setURL(\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_UPCOMINGPRODUCTS));
+                $this->setURL(\Helpers\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_UPCOMINGPRODUCTS));
                 \executeHook(\HOOK_BOXEN_INC_ERSCHEINENDEPRODUKTE, [
                     'box'        => &$this,
                     'cache_tags' => &$cacheTags,

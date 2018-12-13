@@ -3,6 +3,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\ArtikelHelper;
+use Helpers\KategorieHelper;
+use Helpers\RequestHelper;
+
 if (!defined('PFAD_ROOT')) {
     http_response_code(400);
     exit();
@@ -21,6 +26,7 @@ $AktuelleKategorie  = new Kategorie();
 $expandedCategories = new KategorieListe();
 $hasError           = false;
 $cParameter_arr     = Shop::getParameters();
+/** @var \Filter\ProductFilter $NaviFilter */
 if ($NaviFilter->hasCategory()) {
     $kKategorie                  = $NaviFilter->getCategory()->getValue();
     $_SESSION['LetzteKategorie'] = $kKategorie;
@@ -82,7 +88,7 @@ if ($conf['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y'
         (int)$conf['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'],
         (int)$conf['global']['global_bestseller_minanzahl']
     );
-    $products = $oSuchergebnisse->getProducts()->all();
+    $products    = $oSuchergebnisse->getProducts()->all();
     Bestseller::ignoreProducts($products, $bestsellers);
 }
 if (RequestHelper::verifyGPCDataInt('zahl') > 0) {

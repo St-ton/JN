@@ -34,7 +34,7 @@ Gültig vom {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} bis {$Kupon->c
 
 {foreach name=art from=$Kupon->Artikel item=Artikel}
 {$Artikel->cName} >
-{$Artikel->cURL}
+{$Artikel->cURLFull}
 {/foreach}{/if}
 
 

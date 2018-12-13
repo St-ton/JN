@@ -773,13 +773,13 @@ function gibSortierliste($conf = null, $bExtendedJTLSearch = false)
     $sortingOptions = [];
     $search         = [];
     if ($bExtendedJTLSearch !== false) {
-        static $names = [
+        static $names     = [
             'suche_sortierprio_name',
             'suche_sortierprio_name_ab',
             'suche_sortierprio_preis',
             'suche_sortierprio_preis_ab'
         ];
-        static $values = [
+        static $values    = [
             SEARCH_SORT_NAME_ASC,
             SEARCH_SORT_NAME_DESC,
             SEARCH_SORT_PRICE_ASC,
@@ -937,7 +937,7 @@ function gibNextSortPrio($search, $conf = null)
 function bauFilterSQL($NaviFilter)
 {
     trigger_error(__FUNCTION__ . ' is deprecated and will do nothing.', E_USER_DEPRECATED);
-    $FilterSQL = new stdClass();
+    $FilterSQL                            = new stdClass();
     $FilterSQL->oHerstellerFilterSQL      = new stdClass();
     $FilterSQL->oKategorieFilterSQL       = new stdClass();
     $FilterSQL->oMerkmalFilterSQL         = new stdClass();
@@ -1035,6 +1035,6 @@ function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20
     if ($oSuchergebnisse->Seitenzahlen->maxSeite > $oSuchergebnisse->Seitenzahlen->MaxSeiten) {
         $oSuchergebnisse->Seitenzahlen->maxSeite = $oSuchergebnisse->Seitenzahlen->MaxSeiten;
     }
-    $sr = new \Filter\SearchResults();
+    $sr              = new \Filter\SearchResults();
     $oSuchergebnisse = $sr->convert($oSuchergebnisse);
 }

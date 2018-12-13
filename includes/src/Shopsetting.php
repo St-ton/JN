@@ -154,7 +154,11 @@ final class Shopsetting implements ArrayAccess
                 if (($templateSettings = Shop::Container()->getCache()->get($cacheID)) === false) {
                     $template         = Template::getInstance();
                     $templateSettings = $template->getConfig();
-                    Shop::Container()->getCache()->set($cacheID, $templateSettings, [CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION]);
+                    Shop::Container()->getCache()->set(
+                        $cacheID,
+                        $templateSettings,
+                        [CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION]
+                    );
                 }
                 if (is_array($templateSettings)) {
                     foreach ($templateSettings as $templateSection => $templateSetting) {
@@ -287,7 +291,7 @@ final class Shopsetting implements ArrayAccess
                 ORDER BY kEinstellungenSektion',
             \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
-        $result = [];
+        $result   = [];
         foreach (self::$mapping as $mappingID => $sectionName) {
             foreach ($settings as $setting) {
                 $kEinstellungenSektion = (int)$setting['kEinstellungenSektion'];
@@ -326,7 +330,11 @@ final class Shopsetting implements ArrayAccess
         $cacheID = 'settings_all_preload';
         if (($result = Shop::Container()->getCache()->get($cacheID)) === false) {
             $result = $this->getAll();
-            Shop::Container()->getCache()->set($cacheID, $result, [CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION, CACHING_GROUP_CORE]);
+            Shop::Container()->getCache()->set(
+                $cacheID,
+                $result,
+                [CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION, CACHING_GROUP_CORE]
+            );
         }
         $this->container   = $result;
         $this->allSettings = $result;

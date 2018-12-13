@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\RequestHelper;
+use Pagination\Pagination;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_LIVESEARCH_VIEW', true, true);
@@ -251,7 +255,8 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                                         $cMapping . '" gemappt.';
                                 }
                             } else {
-                                $fehler = 'Fehler: Sie haben versucht auf eine nicht existierende Suchanfrage zu mappen.';
+                                $fehler = 'Fehler: Sie haben versucht auf eine nicht ' .
+                                    'existierende Suchanfrage zu mappen.';
                                 break;
                             }
                         } else {
@@ -478,12 +483,12 @@ $Suchanfragen = $db->query(
         FROM tsuchanfrage
         LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage'
             AND tseo.kKey = tsuchanfrage.kSuchanfrage
-            AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
-        WHERE tsuchanfrage.kSprache = " . (int)$_SESSION['kSprache'] . "
-            " . $cLivesucheSQL->cWhere . "
+            AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . '
+        WHERE tsuchanfrage.kSprache = ' . (int)$_SESSION['kSprache'] . '
+            ' . $cLivesucheSQL->cWhere . '
         GROUP BY tsuchanfrage.kSuchanfrage
-        ORDER BY " . $cLivesucheSQL->cOrder . "
-        LIMIT " . $oPagiSuchanfragen->getLimitSQL(),
+        ORDER BY ' . $cLivesucheSQL->cOrder . '
+        LIMIT ' . $oPagiSuchanfragen->getLimitSQL(),
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 

@@ -30,7 +30,7 @@ class PluginCollection
     public function __construct(array $config, \Sprache $lang)
     {
         $this->config = $config;
-        $this->lang = $lang;
+        $this->lang   = $lang;
     }
 
     /**

@@ -10,11 +10,10 @@ use Filter\FilterInterface;
 
 /**
  * Interface BoxInterface
- * @package Boxes
+ * @package Boxes\Items
  */
 interface BoxInterface
 {
-
     /**
      * BoxInterface constructor.
      *
@@ -80,7 +79,17 @@ interface BoxInterface
     /**
      * @param null|\Plugin\Plugin $plugin
      */
-    public function setPlugin(\Plugin\Plugin $plugin): void;
+    public function setPlugin(?\Plugin\Plugin $plugin): void;
+
+    /**
+     * @return null|\Plugin\Extension
+     */
+    public function getExtension(): ?\Plugin\Extension;
+
+    /**
+     * @param null|\Plugin\Extension $extension
+     */
+    public function setExtension(?\Plugin\Extension $extension): void;
 
     /**
      * @return int

@@ -34,7 +34,7 @@ Valid from {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} until {$Kupon->
 
     {foreach name=art from=$Kupon->Artikel item=Artikel}
         {$Artikel->cName} >
-        {$Artikel->cURL}
+        {$Artikel->cURLFull}
     {/foreach}{/if}
 
 You need to type in the coupon code in the checkout process to use it.

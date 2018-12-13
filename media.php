@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\RequestHelper;
+
 require_once __DIR__ . '/includes/globalinclude.php';
 set_exception_handler(function ($e) {
     header(RequestHelper::makeHTTPHeader(404));

@@ -320,11 +320,11 @@ function erstelleOverlay($cBild, $cBreite, $cHoehe, $nGroesse, $nTransparenz, $c
  */
 function erstelleFixedOverlay($cBild, $nGroesse, $nTransparenz, $cFormat, $cPfad)
 {
-    $Einstellungen = Shop::getSettings([CONF_BILDER]);
-    $bSkalieren    = !($Einstellungen['bilder']['bilder_skalieren'] === 'N'); //@todo noch beachten
+//    $Einstellungen = Shop::getSettings([CONF_BILDER]);
+//    $bSkalieren    = !($Einstellungen['bilder']['bilder_skalieren'] === 'N'); //@todo noch beachten
 
-    list($nBreite, $nHoehe) = getimagesize($cBild);
-    $factor = $nGroesse/$nBreite;
+    [$nBreite, $nHoehe] = getimagesize($cBild);
+    $factor             = $nGroesse/$nBreite;
 
     $im = ladeOverlay($cBild, $nGroesse, $nHoehe*$factor, $nTransparenz);
     speicherOverlay($im, $cFormat, $cPfad);

@@ -3,20 +3,26 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\DateHelper;
+use Helpers\FormHelper;
+use Helpers\RequestHelper;
+use Helpers\VersandartHelper;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('CONTENT_EMAIL_TEMPLATE_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 /** @global Smarty\JTLSmarty $smarty */
-$Emailvorlage          = null;
+$mailTpl               = null;
 $hinweis               = '';
 $cHinweis              = '';
 $cFehler               = '';
 $nFehler               = 0;
 $continue              = true;
 $oEmailvorlage         = null;
-$Emailvorlagesprache   = [];
+$localized             = [];
 $cFehlerAnhang_arr     = [];
 $step                  = 'uebersicht';
 $Einstellungen         = Shop::getSettings([CONF_EMAILS]);
@@ -27,6 +33,7 @@ $cTableSprache         = 'temailvorlagesprache';
 $cTableSpracheOriginal = 'temailvorlagespracheoriginal';
 $cTableSetting         = 'temailvorlageeinstellungen';
 $cTablePluginSetting   = 'tpluginemailvorlageeinstellungen';
+$db                    = Shop::Container()->getDB();
 if (RequestHelper::verifyGPCDataInt('kPlugin') > 0) {
     $cTable                = 'tpluginemailvorlage';
     $cTableSprache         = 'tpluginemailvorlagesprache';
@@ -44,7 +51,7 @@ if (isset($_GET['err'])) {
 }
 // Emailvorlage zuruecksetzen
 if (isset($_POST['resetConfirm']) && (int)$_POST['resetConfirm'] > 0) {
-    $oEmailvorlage = Shop::Container()->getDB()->select($cTable, 'kEmailvorlage', (int)$_POST['resetConfirm']);
+    $oEmailvorlage = $db->select($cTable, 'kEmailvorlage', (int)$_POST['resetConfirm']);
 
     if (isset($oEmailvorlage->kEmailvorlage) && $oEmailvorlage->kEmailvorlage > 0) {
         $step = 'zuruecksetzen';
@@ -58,17 +65,17 @@ if (isset($_POST['resetEmailvorlage'])
     && (int)$_POST['kEmailvorlage'] > 0
     && FormHelper::validateToken()
 ) {
-    $oEmailvorlage = Shop::Container()->getDB()->select($cTable, 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
+    $oEmailvorlage = $db->select($cTable, 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
     if ($oEmailvorlage->kEmailvorlage > 0 && isset($_POST['resetConfirmJaSubmit'])) {
         // Resetten
         if (RequestHelper::verifyGPCDataInt('kPlugin') > 0) {
-            Shop::Container()->getDB()->delete(
+            $db->delete(
                 'tpluginemailvorlagesprache',
                 'kEmailvorlage',
                 (int)$_POST['kEmailvorlage']
             );
         } else {
-            Shop::Container()->getDB()->query(
+            $db->query(
                 'DELETE temailvorlage, temailvorlagesprache
                     FROM temailvorlage
                     LEFT JOIN temailvorlagesprache
@@ -76,7 +83,7 @@ if (isset($_POST['resetEmailvorlage'])
                     WHERE temailvorlage.kEmailvorlage = ' . (int)$_POST['kEmailvorlage'],
                 \DB\ReturnType::DEFAULT
             );
-            Shop::Container()->getDB()->query(
+            $db->query(
                 'INSERT INTO temailvorlage
                     SELECT *
                     FROM temailvorlageoriginal
@@ -84,7 +91,7 @@ if (isset($_POST['resetEmailvorlage'])
                 \DB\ReturnType::DEFAULT
             );
         }
-        Shop::Container()->getDB()->query(
+        $db->query(
             'INSERT INTO ' . $cTableSprache . '
                 SELECT *
                 FROM ' . $cTableSpracheOriginal . '
@@ -93,14 +100,14 @@ if (isset($_POST['resetEmailvorlage'])
         );
         $languages = Sprache::getAllLanguages();
         if (RequestHelper::verifyGPCDataInt('kPlugin') === 0) {
-            $vorlage   = Shop::Container()->getDB()->select(
+            $vorlage = $db->select(
                 'temailvorlageoriginal',
                 'kEmailvorlage',
                 (int)$_POST['kEmailvorlage']
             );
             if (isset($vorlage->cDateiname) && strlen($vorlage->cDateiname) > 0) {
                 foreach ($languages as $_lang) {
-                    $path = PFAD_ROOT . PFAD_EMAILVORLAGEN . $_lang->cISO;
+                    $path      = PFAD_ROOT . PFAD_EMAILVORLAGEN . $_lang->cISO;
                     $fileHtml  = $path . '/' . $vorlage->cDateiname . '_html.tpl';
                     $filePlain = $path . '/' . $vorlage->cDateiname . '_plain.tpl';
                     if (!isset($_lang->cISO)
@@ -121,7 +128,7 @@ if (isset($_POST['resetEmailvorlage'])
                         : (StringHandler::is_utf8($text) === 1);
                     $upd->cContentHtml = $doDecodeHtml === true ? StringHandler::convertUTF8($html) : $html;
                     $upd->cContentText = $doDecodeText === true ? StringHandler::convertUTF8($text) : $text;
-                    Shop::Container()->getDB()->update(
+                    $db->update(
                         $cTableSprache,
                         ['kEmailVorlage', 'kSprache'],
                         [(int)$_POST['kEmailvorlage'], (int)$_lang->kSprache],
@@ -134,324 +141,324 @@ if (isset($_POST['resetEmailvorlage'])
     }
 }
 if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
-    $Sprachen                     = Shop::Container()->getDB()->query(
+    $Sprachen                = $db->query(
         'SELECT * 
             FROM tsprache 
             ORDER BY cShopStandard DESC, cNameDeutsch',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    $Emailvorlage                 = Shop::Container()->getDB()->select(
+    $mailTpl                 = $db->select(
         $cTable,
         'kEmailvorlage',
         (int)$_POST['preview']
     );
-    $bestellung                   = new stdClass();
-    $bestellung->kWaehrung        = 1;
-    $bestellung->kSprache         = 1;
-    $bestellung->fGuthaben        = 5;
-    $bestellung->fGesamtsumme     = 433;
-    $bestellung->cBestellNr       = 'Prefix-3432-Suffix';
-    $bestellung->cVersandInfo     = 'Optionale Information zum Versand';
-    $bestellung->cTracking        = 'Track232837';
-    $bestellung->cKommentar       = 'Kundenkommentar zur Bestellung';
-    $bestellung->cVersandartName  = 'DHL bis 10kg';
-    $bestellung->cZahlungsartName = 'Nachnahme';
-    $bestellung->cStatus          = 1;
-    $bestellung->dVersandDatum    = '2010-10-21';
-    $bestellung->dErstellt        = '2010-10-12 09:28:38';
-    $bestellung->dBezahltDatum    = '2010-10-20';
+    $order                   = new stdClass();
+    $order->kWaehrung        = 1;
+    $order->kSprache         = 1;
+    $order->fGuthaben        = 5;
+    $order->fGesamtsumme     = 433;
+    $order->cBestellNr       = 'Prefix-3432-Suffix';
+    $order->cVersandInfo     = 'Optionale Information zum Versand';
+    $order->cTracking        = 'Track232837';
+    $order->cKommentar       = 'Kundenkommentar zur Bestellung';
+    $order->cVersandartName  = 'DHL bis 10kg';
+    $order->cZahlungsartName = 'Nachnahme';
+    $order->cStatus          = 1;
+    $order->dVersandDatum    = '2010-10-21';
+    $order->dErstellt        = '2010-10-12 09:28:38';
+    $order->dBezahltDatum    = '2010-10-20';
 
-    $bestellung->cLogistiker            = 'DHL';
-    $bestellung->cTrackingURL           = 'http://dhl.de/linkzudhl.php';
-    $bestellung->dVersanddatum_de       = '21.10.2007';
-    $bestellung->dBezahldatum_de        = '20.10.2007';
-    $bestellung->dErstelldatum_de       = '12.10.2007';
-    $bestellung->dVersanddatum_en       = '21st October 2010';
-    $bestellung->dBezahldatum_en        = '20th October 2010';
-    $bestellung->dErstelldatum_en       = '12th October 2010';
-    $bestellung->cBestellwertLocalized  = '511,00 EUR';
-    $bestellung->GuthabenNutzen         = 1;
-    $bestellung->GutscheinLocalized     = '5,00 EUR';
-    $bestellung->fWarensumme            = 433.004004;
-    $bestellung->fVersand               = 0;
-    $bestellung->nZahlungsTyp           = 0;
-    $bestellung->WarensummeLocalized[0] = '511,00 EUR';
-    $bestellung->WarensummeLocalized[1] = '429,41 EUR';
-    $bestellung->oEstimatedDelivery     = (object)[
+    $order->cLogistiker            = 'DHL';
+    $order->cTrackingURL           = 'http://dhl.de/linkzudhl.php';
+    $order->dVersanddatum_de       = '21.10.2007';
+    $order->dBezahldatum_de        = '20.10.2007';
+    $order->dErstelldatum_de       = '12.10.2007';
+    $order->dVersanddatum_en       = '21st October 2010';
+    $order->dBezahldatum_en        = '20th October 2010';
+    $order->dErstelldatum_en       = '12th October 2010';
+    $order->cBestellwertLocalized  = '511,00 EUR';
+    $order->GuthabenNutzen         = 1;
+    $order->GutscheinLocalized     = '5,00 EUR';
+    $order->fWarensumme            = 433.004004;
+    $order->fVersand               = 0;
+    $order->nZahlungsTyp           = 0;
+    $order->WarensummeLocalized[0] = '511,00 EUR';
+    $order->WarensummeLocalized[1] = '429,41 EUR';
+    $order->oEstimatedDelivery     = (object)[
         'localized'  => '',
         'longestMin' => 3,
         'longestMax' => 6,
     ];
-    $bestellung->cEstimatedDelivery     = &$bestellung->oEstimatedDelivery->localized;
+    $order->cEstimatedDelivery     = &$order->oEstimatedDelivery->localized;
 
-    $bestellung->Positionen                              = [];
-    $bestellung->Positionen[0]                           = new stdClass();
-    $bestellung->Positionen[0]->cName                    = 'LAN Festplatte IPDrive';
-    $bestellung->Positionen[0]->cArtNr                   = 'AF8374';
-    $bestellung->Positionen[0]->cEinheit                 = 'Stck.';
-    $bestellung->Positionen[0]->cLieferstatus            = '3-4 Tage';
-    $bestellung->Positionen[0]->fPreisEinzelNetto        = 111.2069;
-    $bestellung->Positionen[0]->fPreis                   = 368.1069;
-    $bestellung->Positionen[0]->fMwSt                    = 19;
-    $bestellung->Positionen[0]->nAnzahl                  = 2;
-    $bestellung->Positionen[0]->nPosTyp                  = 1;
-    $bestellung->Positionen[0]->cHinweis                 = 'Hinweistext zum Artikel';
-    $bestellung->Positionen[0]->cGesamtpreisLocalized[0] = '278,00 EUR';
-    $bestellung->Positionen[0]->cGesamtpreisLocalized[1] = '239,66 EUR';
-    $bestellung->Positionen[0]->cEinzelpreisLocalized[0] = '139,00 EUR';
-    $bestellung->Positionen[0]->cEinzelpreisLocalized[1] = '119,83 EUR';
+    $order->Positionen                              = [];
+    $order->Positionen[0]                           = new stdClass();
+    $order->Positionen[0]->cName                    = 'LAN Festplatte IPDrive';
+    $order->Positionen[0]->cArtNr                   = 'AF8374';
+    $order->Positionen[0]->cEinheit                 = 'Stck.';
+    $order->Positionen[0]->cLieferstatus            = '3-4 Tage';
+    $order->Positionen[0]->fPreisEinzelNetto        = 111.2069;
+    $order->Positionen[0]->fPreis                   = 368.1069;
+    $order->Positionen[0]->fMwSt                    = 19;
+    $order->Positionen[0]->nAnzahl                  = 2;
+    $order->Positionen[0]->nPosTyp                  = 1;
+    $order->Positionen[0]->cHinweis                 = 'Hinweistext zum Artikel';
+    $order->Positionen[0]->cGesamtpreisLocalized[0] = '278,00 EUR';
+    $order->Positionen[0]->cGesamtpreisLocalized[1] = '239,66 EUR';
+    $order->Positionen[0]->cEinzelpreisLocalized[0] = '139,00 EUR';
+    $order->Positionen[0]->cEinzelpreisLocalized[1] = '119,83 EUR';
 
-    $bestellung->Positionen[0]->WarenkorbPosEigenschaftArr                           = [];
-    $bestellung->Positionen[0]->WarenkorbPosEigenschaftArr[0]                        = new stdClass();
-    $bestellung->Positionen[0]->WarenkorbPosEigenschaftArr[0]->cEigenschaftName      = 'Kapazität';
-    $bestellung->Positionen[0]->WarenkorbPosEigenschaftArr[0]->cEigenschaftWertName  = '400GB';
-    $bestellung->Positionen[0]->WarenkorbPosEigenschaftArr[0]->fAufpreis             = 128.45;
-    $bestellung->Positionen[0]->WarenkorbPosEigenschaftArr[0]->cAufpreisLocalized[0] = '149,00 EUR';
-    $bestellung->Positionen[0]->WarenkorbPosEigenschaftArr[0]->cAufpreisLocalized[1] = '128,45 EUR';
+    $order->Positionen[0]->WarenkorbPosEigenschaftArr                           = [];
+    $order->Positionen[0]->WarenkorbPosEigenschaftArr[0]                        = new stdClass();
+    $order->Positionen[0]->WarenkorbPosEigenschaftArr[0]->cEigenschaftName      = 'Kapazität';
+    $order->Positionen[0]->WarenkorbPosEigenschaftArr[0]->cEigenschaftWertName  = '400GB';
+    $order->Positionen[0]->WarenkorbPosEigenschaftArr[0]->fAufpreis             = 128.45;
+    $order->Positionen[0]->WarenkorbPosEigenschaftArr[0]->cAufpreisLocalized[0] = '149,00 EUR';
+    $order->Positionen[0]->WarenkorbPosEigenschaftArr[0]->cAufpreisLocalized[1] = '128,45 EUR';
 
-    $bestellung->Positionen[0]->nAusgeliefert       = 1;
-    $bestellung->Positionen[0]->nAusgeliefertGesamt = 1;
-    $bestellung->Positionen[0]->nOffenGesamt        = 1;
-    $bestellung->Positionen[0]->dMHD                = '2025-01-01';
-    $bestellung->Positionen[0]->dMHD_de             = '01.01.2025';
-    $bestellung->Positionen[0]->cChargeNr           = 'A2100698.b12';
-    $bestellung->Positionen[0]->cSeriennummer       = '465798132756';
+    $order->Positionen[0]->nAusgeliefert       = 1;
+    $order->Positionen[0]->nAusgeliefertGesamt = 1;
+    $order->Positionen[0]->nOffenGesamt        = 1;
+    $order->Positionen[0]->dMHD                = '2025-01-01';
+    $order->Positionen[0]->dMHD_de             = '01.01.2025';
+    $order->Positionen[0]->cChargeNr           = 'A2100698.b12';
+    $order->Positionen[0]->cSeriennummer       = '465798132756';
 
-    $bestellung->Positionen[1]                           = new stdClass();
-    $bestellung->Positionen[1]->cName                    = 'Klappstuhl';
-    $bestellung->Positionen[1]->cArtNr                   = 'KS332';
-    $bestellung->Positionen[1]->cEinheit                 = 'Stck.';
-    $bestellung->Positionen[1]->cLieferstatus            = '1 Woche';
-    $bestellung->Positionen[1]->fPreisEinzelNetto        = 100;
-    $bestellung->Positionen[1]->fPreis                   = 200;
-    $bestellung->Positionen[1]->fMwSt                    = 19;
-    $bestellung->Positionen[1]->nAnzahl                  = 1;
-    $bestellung->Positionen[1]->nPosTyp                  = 2;
-    $bestellung->Positionen[1]->cHinweis                 = 'Hinweistext zum Artikel';
-    $bestellung->Positionen[1]->cGesamtpreisLocalized[0] = '238,00 EUR';
-    $bestellung->Positionen[1]->cGesamtpreisLocalized[1] = '200,00 EUR';
-    $bestellung->Positionen[1]->cEinzelpreisLocalized[0] = '238,00 EUR';
-    $bestellung->Positionen[1]->cEinzelpreisLocalized[1] = '200,00 EUR';
+    $order->Positionen[1]                           = new stdClass();
+    $order->Positionen[1]->cName                    = 'Klappstuhl';
+    $order->Positionen[1]->cArtNr                   = 'KS332';
+    $order->Positionen[1]->cEinheit                 = 'Stck.';
+    $order->Positionen[1]->cLieferstatus            = '1 Woche';
+    $order->Positionen[1]->fPreisEinzelNetto        = 100;
+    $order->Positionen[1]->fPreis                   = 200;
+    $order->Positionen[1]->fMwSt                    = 19;
+    $order->Positionen[1]->nAnzahl                  = 1;
+    $order->Positionen[1]->nPosTyp                  = 2;
+    $order->Positionen[1]->cHinweis                 = 'Hinweistext zum Artikel';
+    $order->Positionen[1]->cGesamtpreisLocalized[0] = '238,00 EUR';
+    $order->Positionen[1]->cGesamtpreisLocalized[1] = '200,00 EUR';
+    $order->Positionen[1]->cEinzelpreisLocalized[0] = '238,00 EUR';
+    $order->Positionen[1]->cEinzelpreisLocalized[1] = '200,00 EUR';
 
-    $bestellung->Positionen[1]->nAusgeliefert       = 1;
-    $bestellung->Positionen[1]->nAusgeliefertGesamt = 1;
-    $bestellung->Positionen[1]->nOffenGesamt        = 0;
+    $order->Positionen[1]->nAusgeliefert       = 1;
+    $order->Positionen[1]->nAusgeliefertGesamt = 1;
+    $order->Positionen[1]->nOffenGesamt        = 0;
 
-    $bestellung->Steuerpositionen                     = [];
-    $bestellung->Steuerpositionen[0]                  = new stdClass();
-    $bestellung->Steuerpositionen[0]->cName           = 'inkl. 19% USt.';
-    $bestellung->Steuerpositionen[0]->fUst            = 19;
-    $bestellung->Steuerpositionen[0]->fBetrag         = 98.04;
-    $bestellung->Steuerpositionen[0]->cPreisLocalized = '98,04 EUR';
+    $order->Steuerpositionen                     = [];
+    $order->Steuerpositionen[0]                  = new stdClass();
+    $order->Steuerpositionen[0]->cName           = 'inkl. 19% USt.';
+    $order->Steuerpositionen[0]->fUst            = 19;
+    $order->Steuerpositionen[0]->fBetrag         = 98.04;
+    $order->Steuerpositionen[0]->cPreisLocalized = '98,04 EUR';
 
-    $bestellung->Waehrung                       = new stdClass();
-    $bestellung->Waehrung->cISO                 = 'EUR';
-    $bestellung->Waehrung->cName                = 'EUR';
-    $bestellung->Waehrung->cNameHTML            = '&euro;';
-    $bestellung->Waehrung->fFaktor              = 1;
-    $bestellung->Waehrung->cStandard            = 'Y';
-    $bestellung->Waehrung->cVorBetrag           = 'N';
-    $bestellung->Waehrung->cTrennzeichenCent    = ',';
-    $bestellung->Waehrung->cTrennzeichenTausend = '.';
+    $order->Waehrung                       = new stdClass();
+    $order->Waehrung->cISO                 = 'EUR';
+    $order->Waehrung->cName                = 'EUR';
+    $order->Waehrung->cNameHTML            = '&euro;';
+    $order->Waehrung->fFaktor              = 1;
+    $order->Waehrung->cStandard            = 'Y';
+    $order->Waehrung->cVorBetrag           = 'N';
+    $order->Waehrung->cTrennzeichenCent    = ',';
+    $order->Waehrung->cTrennzeichenTausend = '.';
 
-    $bestellung->Zahlungsart           = new stdClass();
-    $bestellung->Zahlungsart->cName    = 'Billpay';
-    $bestellung->Zahlungsart->cModulId = 'za_billpay_jtl';
+    $order->Zahlungsart           = new stdClass();
+    $order->Zahlungsart->cName    = 'Billpay';
+    $order->Zahlungsart->cModulId = 'za_billpay_jtl';
 
-    $bestellung->Zahlungsinfo               = new stdClass();
-    $bestellung->Zahlungsinfo->cBankName    = 'Bankname';
-    $bestellung->Zahlungsinfo->cBLZ         = '3443234';
-    $bestellung->Zahlungsinfo->cKontoNr     = 'Kto12345';
-    $bestellung->Zahlungsinfo->cIBAN        = 'IB239293';
-    $bestellung->Zahlungsinfo->cBIC         = 'BIC3478';
-    $bestellung->Zahlungsinfo->cKartenNr    = 'KNR4834';
-    $bestellung->Zahlungsinfo->cGueltigkeit = '20.10.2010';
-    $bestellung->Zahlungsinfo->cCVV         = '1234';
-    $bestellung->Zahlungsinfo->cKartenTyp   = 'VISA';
-    $bestellung->Zahlungsinfo->cInhaber     = 'Max Mustermann';
+    $order->Zahlungsinfo               = new stdClass();
+    $order->Zahlungsinfo->cBankName    = 'Bankname';
+    $order->Zahlungsinfo->cBLZ         = '3443234';
+    $order->Zahlungsinfo->cKontoNr     = 'Kto12345';
+    $order->Zahlungsinfo->cIBAN        = 'IB239293';
+    $order->Zahlungsinfo->cBIC         = 'BIC3478';
+    $order->Zahlungsinfo->cKartenNr    = 'KNR4834';
+    $order->Zahlungsinfo->cGueltigkeit = '20.10.2010';
+    $order->Zahlungsinfo->cCVV         = '1234';
+    $order->Zahlungsinfo->cKartenTyp   = 'VISA';
+    $order->Zahlungsinfo->cInhaber     = 'Max Mustermann';
 
-    $bestellung->Lieferadresse                   = new stdClass();
-    $bestellung->Lieferadresse->kLieferadresse   = 1;
-    $bestellung->Lieferadresse->cAnrede          = 'm';
-    $bestellung->Lieferadresse->cAnredeLocalized = 'Herr';
-    $bestellung->Lieferadresse->cVorname         = 'John';
-    $bestellung->Lieferadresse->cNachname        = 'Doe';
-    $bestellung->Lieferadresse->cStrasse         = 'Musterlieferstr.';
-    $bestellung->Lieferadresse->cHausnummer      = '77';
-    $bestellung->Lieferadresse->cAdressZusatz    = '2. Etage';
-    $bestellung->Lieferadresse->cPLZ             = '12345';
-    $bestellung->Lieferadresse->cOrt             = 'Musterlieferstadt';
-    $bestellung->Lieferadresse->cBundesland      = 'Lieferbundesland';
-    $bestellung->Lieferadresse->cLand            = 'Lieferland';
-    $bestellung->Lieferadresse->cTel             = '112345678';
-    $bestellung->Lieferadresse->cMobil           = '123456789';
-    $bestellung->Lieferadresse->cFax             = '12345678909';
-    $bestellung->Lieferadresse->cMail            = 'john.doe@example.com';
+    $order->Lieferadresse                   = new stdClass();
+    $order->Lieferadresse->kLieferadresse   = 1;
+    $order->Lieferadresse->cAnrede          = 'm';
+    $order->Lieferadresse->cAnredeLocalized = 'Herr';
+    $order->Lieferadresse->cVorname         = 'John';
+    $order->Lieferadresse->cNachname        = 'Doe';
+    $order->Lieferadresse->cStrasse         = 'Musterlieferstr.';
+    $order->Lieferadresse->cHausnummer      = '77';
+    $order->Lieferadresse->cAdressZusatz    = '2. Etage';
+    $order->Lieferadresse->cPLZ             = '12345';
+    $order->Lieferadresse->cOrt             = 'Musterlieferstadt';
+    $order->Lieferadresse->cBundesland      = 'Lieferbundesland';
+    $order->Lieferadresse->cLand            = 'Lieferland';
+    $order->Lieferadresse->cTel             = '112345678';
+    $order->Lieferadresse->cMobil           = '123456789';
+    $order->Lieferadresse->cFax             = '12345678909';
+    $order->Lieferadresse->cMail            = 'john.doe@example.com';
 
-    $bestellung->fWaehrungsFaktor = 1;
+    $order->fWaehrungsFaktor = 1;
 
     //Lieferschein
-    $bestellung->oLieferschein_arr = [];
+    $order->oLieferschein_arr = [];
 
     $oLieferschein = new Lieferschein();
     $oLieferschein->setEmailVerschickt(false);
     $oLieferschein->oVersand_arr = [];
     $oVersand                    = new Versand();
-    $oVersand->setLogistikURL('http://nolp.dhl.de/nextt-online-public/report_popup.jsp?lang=de&zip=#PLZ#&idc=#IdentCode#');
+    $oVersand->setLogistikURL('http://nolp.dhl.de/nextt-online-public/' .
+        'report_popup.jsp?lang=de&zip=#PLZ#&idc=#IdentCode#');
     $oVersand->setIdentCode('123456');
     $oLieferschein->oVersand_arr[]  = $oVersand;
     $oLieferschein->oPosition_arr   = [];
-    $oLieferschein->oPosition_arr[] = $bestellung->Positionen[0];
-    $oLieferschein->oPosition_arr[] = $bestellung->Positionen[1];
+    $oLieferschein->oPosition_arr[] = $order->Positionen[0];
+    $oLieferschein->oPosition_arr[] = $order->Positionen[1];
 
-    $bestellung->oLieferschein_arr[] = $oLieferschein;
+    $order->oLieferschein_arr[] = $oLieferschein;
 
-    $kunde                   = new stdClass();
-    $kunde->fRabatt          = 0.00;
-    $kunde->fGuthaben        = 0.00;
-    $kunde->cAnrede          = 'm';
-    $kunde->Anrede           = 'Herr';
-    $kunde->cAnredeLocalized = 'Herr';
-    $kunde->cTitel           = 'Dr.';
-    $kunde->cVorname         = 'Max';
-    $kunde->cNachname        = 'Mustermann';
-    $kunde->cFirma           = 'Musterfirma';
-    $kunde->cStrasse         = 'Musterstrasse';
-    $kunde->cHausnummer      = '123';
-    $kunde->cPLZ             = '12345';
-    $kunde->cOrt             = 'Musterstadt';
-    $kunde->cLand            = 'Musterland';
-    $kunde->cTel             = '12345678';
-    $kunde->cFax             = '98765432';
-    $kunde->cMail            = $Einstellungen['emails']['email_master_absender'];
-    $kunde->cUSTID           = 'ust234';
-    $kunde->cBundesland      = 'NRW';
-    $kunde->cAdressZusatz    = 'Linker Hof';
-    $kunde->cMobil           = '01772322234';
-    $kunde->dGeburtstag      = '1981-10-10';
-    $kunde->cWWW             = 'http://max.de';
-    $kunde->kKundengruppe    = 1;
+    $customer                   = new stdClass();
+    $customer->fRabatt          = 0.00;
+    $customer->fGuthaben        = 0.00;
+    $customer->cAnrede          = 'm';
+    $customer->Anrede           = 'Herr';
+    $customer->cAnredeLocalized = 'Herr';
+    $customer->cTitel           = 'Dr.';
+    $customer->cVorname         = 'Max';
+    $customer->cNachname        = 'Mustermann';
+    $customer->cFirma           = 'Musterfirma';
+    $customer->cStrasse         = 'Musterstrasse';
+    $customer->cHausnummer      = '123';
+    $customer->cPLZ             = '12345';
+    $customer->cOrt             = 'Musterstadt';
+    $customer->cLand            = 'Musterland';
+    $customer->cTel             = '12345678';
+    $customer->cFax             = '98765432';
+    $customer->cMail            = $Einstellungen['emails']['email_master_absender'];
+    $customer->cUSTID           = 'ust234';
+    $customer->cBundesland      = 'NRW';
+    $customer->cAdressZusatz    = 'Linker Hof';
+    $customer->cMobil           = '01772322234';
+    $customer->dGeburtstag      = '1981-10-10';
+    $customer->cWWW             = 'http://max.de';
+    $customer->kKundengruppe    = 1;
 
-    $Kundengruppe                = new stdClass();
-    $Kundengruppe->kKundengruppe = 1;
-    $Kundengruppe->cName         = 'Endkunden';
-    $Kundengruppe->nNettoPreise  = 0;
+    $customerGroup                = new stdClass();
+    $customerGroup->kKundengruppe = 1;
+    $customerGroup->cName         = 'Endkunden';
+    $customerGroup->nNettoPreise  = 0;
 
     $gutschein                 = new stdClass();
     $gutschein->cLocalizedWert = '5,00 EUR';
     $gutschein->cGrund         = 'Geburtstag';
 
-    $Kupon                        = new stdClass();
-    $Kupon->cName                 = 'Kuponname';
-    $Kupon->fWert                 = 5;
-    $Kupon->cWertTyp              = 'festpreis';
-    $Kupon->dGueltigAb            = '2007-11-07 17:05:00';
-    $Kupon->dGueltigBis           = '2008-11-07 17:05:00';
-    $Kupon->cCode                 = 'geheimcode';
-    $Kupon->nVerwendungenProKunde = 2;
-    $Kupon->AngezeigterName       = 'lokalisierter Name des Kupons';
-    $Kupon->cKuponTyp             = Kupon::TYPE_STANDARD;
-    $Kupon->cLocalizedWert        = '5 EUR';
-    $Kupon->cLocalizedMBW         = '100,00 EUR';
-    $Kupon->fMindestbestellwert   = 100;
-    $Kupon->Artikel               = [];
-    $Kupon->Artikel[0]            = new stdClass();
-    $Kupon->Artikel[1]            = new stdClass();
-    $Kupon->Artikel[0]->cName     = 'Artikel eins';
-    $Kupon->Artikel[0]->cURL      = 'http://meinshop.de/artikel=1';
-    $Kupon->Artikel[1]->cName     = 'Artikel zwei';
-    $Kupon->Artikel[1]->cURL      = 'http://meinshop.de/artikel=2';
+    $coupon                        = new stdClass();
+    $coupon->cName                 = 'Kuponname';
+    $coupon->fWert                 = 5;
+    $coupon->cWertTyp              = 'festpreis';
+    $coupon->dGueltigAb            = '2007-11-07 17:05:00';
+    $coupon->dGueltigBis           = '2008-11-07 17:05:00';
+    $coupon->cCode                 = 'geheimcode';
+    $coupon->nVerwendungenProKunde = 2;
+    $coupon->AngezeigterName       = 'lokalisierter Name des Kupons';
+    $coupon->cKuponTyp             = Kupon::TYPE_STANDARD;
+    $coupon->cLocalizedWert        = '5 EUR';
+    $coupon->cLocalizedMBW         = '100,00 EUR';
+    $coupon->fMindestbestellwert   = 100;
+    $coupon->Artikel               = [];
+    $coupon->Artikel[0]            = new stdClass();
+    $coupon->Artikel[1]            = new stdClass();
+    $coupon->Artikel[0]->cName     = 'Artikel eins';
+    $coupon->Artikel[0]->cURL      = 'http://meinshop.de/artikel=1';
+    $coupon->Artikel[1]->cName     = 'Artikel zwei';
+    $coupon->Artikel[1]->cURL      = 'http://meinshop.de/artikel=2';
+    $coupon->Kategorien            = [];
+    $coupon->Kategorien[0]         = new stdClass();
+    $coupon->Kategorien[1]         = new stdClass();
+    $coupon->Kategorien[0]->cName  = 'Kategorie eins';
+    $coupon->Kategorien[0]->cURL   = 'http://meinshop.de/kat=1';
+    $coupon->Kategorien[1]->cName  = 'Kategorie zwei';
+    $coupon->Kategorien[1]->cURL   = 'http://meinshop.de/kat=2';
 
-    $Kupon->Kategorien           = [];
-    $Kupon->Kategorien[0]        = new stdClass();
-    $Kupon->Kategorien[1]        = new stdClass();
-    $Kupon->Kategorien[0]->cName = 'Kategorie eins';
-    $Kupon->Kategorien[0]->cURL  = 'http://meinshop.de/kat=1';
-    $Kupon->Kategorien[1]->cName = 'Kategorie zwei';
-    $Kupon->Kategorien[1]->cURL  = 'http://meinshop.de/kat=2';
+    $msg             = new stdClass();
+    $msg->cNachricht = 'Anfragetext...';
+    $msg->cAnrede    = 'm';
+    $msg->cVorname   = 'Max';
+    $msg->cNachname  = 'Mustermann';
+    $msg->cFirma     = 'Musterfirma';
+    $msg->cMail      = 'max@musterman.de';
+    $msg->cFax       = '34782034';
+    $msg->cTel       = '34782035';
+    $msg->cMobil     = '34782036';
+    $msg->cBetreff   = 'Allgemeine Anfrage';
 
-    $Nachricht             = new stdClass();
-    $Nachricht->cNachricht = 'Anfragetext...';
-    $Nachricht->cAnrede    = 'm';
-    $Nachricht->cVorname   = 'Max';
-    $Nachricht->cNachname  = 'Mustermann';
-    $Nachricht->cFirma     = 'Musterfirma';
-    $Nachricht->cMail      = 'max@musterman.de';
-    $Nachricht->cFax       = '34782034';
-    $Nachricht->cTel       = '34782035';
-    $Nachricht->cMobil     = '34782036';
-    $Nachricht->cBetreff   = 'Allgemeine Anfrage';
+    $product                    = new stdClass();
+    $product->cName             = 'LAN Festplatte IPDrive';
+    $product->cArtNr            = 'AF8374';
+    $product->cEinheit          = 'Stck.';
+    $product->cLieferstatus     = '3-4 Tage';
+    $product->fPreisEinzelNetto = 111.2069;
+    $product->fPreis            = 368.1069;
+    $product->fMwSt             = 19;
+    $product->nAnzahl           = 1;
+    $product->cURL              = 'LAN-Festplatte-IPDrive';
 
-    $Artikel                    = new stdClass();
-    $Artikel->cName             = 'LAN Festplatte IPDrive';
-    $Artikel->cArtNr            = 'AF8374';
-    $Artikel->cEinheit          = 'Stck.';
-    $Artikel->cLieferstatus     = '3-4 Tage';
-    $Artikel->fPreisEinzelNetto = 111.2069;
-    $Artikel->fPreis            = 368.1069;
-    $Artikel->fMwSt             = 19;
-    $Artikel->nAnzahl           = 1;
-    $Artikel->cURL              = 'LAN-Festplatte-IPDrive';
+    $wishlist               = new stdClass();
+    $wishlist->kWunschlsite = 5;
+    $wishlist->kKunde       = 1480;
+    $wishlist->cName        = 'Wunschzettel';
+    $wishlist->nStandard    = 1;
+    $wishlist->nOeffentlich = 0;
+    $wishlist->cURLID       = '5686f6vv6c86v65nv6m8';
+    $wishlist->dErstellt    = '2009-07-12 13:55:10';
 
-    $CWunschliste               = new stdClass();
-    $CWunschliste->kWunschlsite = 5;
-    $CWunschliste->kKunde       = 1480;
-    $CWunschliste->cName        = 'Wunschzettel';
-    $CWunschliste->nStandard    = 1;
-    $CWunschliste->nOeffentlich = 0;
-    $CWunschliste->cURLID       = '5686f6vv6c86v65nv6m8';
-    $CWunschliste->dErstellt    = '2009-07-12 13:55:10';
+    $wishlist->CWunschlistePos_arr                     = [];
+    $wishlist->CWunschlistePos_arr[0]                  = new stdClass();
+    $wishlist->CWunschlistePos_arr[0]->kWunschlistePos = 3;
+    $wishlist->CWunschlistePos_arr[0]->kWunschliste    = 5;
+    $wishlist->CWunschlistePos_arr[0]->kArtikel        = 261;
+    $wishlist->CWunschlistePos_arr[0]->cArtikelName    = 'Hansu Televsion';
+    $wishlist->CWunschlistePos_arr[0]->fAnzahl         = 2;
+    $wishlist->CWunschlistePos_arr[0]->cKommentar      = 'Television';
+    $wishlist->CWunschlistePos_arr[0]->dHinzugefuegt   = '2009-07-12 13:55:11';
 
-    $CWunschliste->CWunschlistePos_arr                     = [];
-    $CWunschliste->CWunschlistePos_arr[0]                  = new stdClass();
-    $CWunschliste->CWunschlistePos_arr[0]->kWunschlistePos = 3;
-    $CWunschliste->CWunschlistePos_arr[0]->kWunschliste    = 5;
-    $CWunschliste->CWunschlistePos_arr[0]->kArtikel        = 261;
-    $CWunschliste->CWunschlistePos_arr[0]->cArtikelName    = 'Hansu Televsion';
-    $CWunschliste->CWunschlistePos_arr[0]->fAnzahl         = 2;
-    $CWunschliste->CWunschlistePos_arr[0]->cKommentar      = 'Television';
-    $CWunschliste->CWunschlistePos_arr[0]->dHinzugefuegt   = '2009-07-12 13:55:11';
+    $wishlist->CWunschlistePos_arr[0]->Artikel                        = new stdClass();
+    $wishlist->CWunschlistePos_arr[0]->Artikel->cName                 = 'LAN Festplatte IPDrive';
+    $wishlist->CWunschlistePos_arr[0]->Artikel->cEinheit              = 'Stck.';
+    $wishlist->CWunschlistePos_arr[0]->Artikel->fPreis                = 368.1069;
+    $wishlist->CWunschlistePos_arr[0]->Artikel->fMwSt                 = 19;
+    $wishlist->CWunschlistePos_arr[0]->Artikel->nAnzahl               = 1;
+    $wishlist->CWunschlistePos_arr[0]->Artikel->cURL                  = 'LAN-Festplatte-IPDrive';
+    $wishlist->CWunschlistePos_arr[0]->Artikel->Bilder                = [];
+    $wishlist->CWunschlistePos_arr[0]->Artikel->Bilder[0]             = new stdClass();
+    $wishlist->CWunschlistePos_arr[0]->Artikel->Bilder[0]->cPfadKlein = BILD_KEIN_ARTIKELBILD_VORHANDEN;
 
-    $CWunschliste->CWunschlistePos_arr[0]->Artikel                        = new stdClass();
-    $CWunschliste->CWunschlistePos_arr[0]->Artikel->cName                 = 'LAN Festplatte IPDrive';
-    $CWunschliste->CWunschlistePos_arr[0]->Artikel->cEinheit              = 'Stck.';
-    $CWunschliste->CWunschlistePos_arr[0]->Artikel->fPreis                = 368.1069;
-    $CWunschliste->CWunschlistePos_arr[0]->Artikel->fMwSt                 = 19;
-    $CWunschliste->CWunschlistePos_arr[0]->Artikel->nAnzahl               = 1;
-    $CWunschliste->CWunschlistePos_arr[0]->Artikel->cURL                  = 'LAN-Festplatte-IPDrive';
-    $CWunschliste->CWunschlistePos_arr[0]->Artikel->Bilder                = [];
-    $CWunschliste->CWunschlistePos_arr[0]->Artikel->Bilder[0]             = new stdClass();
-    $CWunschliste->CWunschlistePos_arr[0]->Artikel->Bilder[0]->cPfadKlein = BILD_KEIN_ARTIKELBILD_VORHANDEN;
+    $wishlist->CWunschlistePos_arr[1]                  = new stdClass();
+    $wishlist->CWunschlistePos_arr[1]->kWunschlistePos = 4;
+    $wishlist->CWunschlistePos_arr[1]->kWunschliste    = 5;
+    $wishlist->CWunschlistePos_arr[1]->kArtikel        = 262;
+    $wishlist->CWunschlistePos_arr[1]->cArtikelName    = 'Hansu Phone';
+    $wishlist->CWunschlistePos_arr[1]->fAnzahl         = 1;
+    $wishlist->CWunschlistePos_arr[1]->cKommentar      = 'Phone';
+    $wishlist->CWunschlistePos_arr[1]->dHinzugefuegt   = '2009-07-12 13:55:18';
 
-    $CWunschliste->CWunschlistePos_arr[1]                  = new stdClass();
-    $CWunschliste->CWunschlistePos_arr[1]->kWunschlistePos = 4;
-    $CWunschliste->CWunschlistePos_arr[1]->kWunschliste    = 5;
-    $CWunschliste->CWunschlistePos_arr[1]->kArtikel        = 262;
-    $CWunschliste->CWunschlistePos_arr[1]->cArtikelName    = 'Hansu Phone';
-    $CWunschliste->CWunschlistePos_arr[1]->fAnzahl         = 1;
-    $CWunschliste->CWunschlistePos_arr[1]->cKommentar      = 'Phone';
-    $CWunschliste->CWunschlistePos_arr[1]->dHinzugefuegt   = '2009-07-12 13:55:18';
+    $wishlist->CWunschlistePos_arr[1]->Artikel                        = new stdClass();
+    $wishlist->CWunschlistePos_arr[1]->Artikel->cName                 = 'USB Connector';
+    $wishlist->CWunschlistePos_arr[1]->Artikel->cEinheit              = 'Stck.';
+    $wishlist->CWunschlistePos_arr[1]->Artikel->fPreis                = 89.90;
+    $wishlist->CWunschlistePos_arr[1]->Artikel->fMwSt                 = 19;
+    $wishlist->CWunschlistePos_arr[1]->Artikel->nAnzahl               = 1;
+    $wishlist->CWunschlistePos_arr[1]->Artikel->cURL                  = 'USB-Connector';
+    $wishlist->CWunschlistePos_arr[1]->Artikel->Bilder                = [];
+    $wishlist->CWunschlistePos_arr[1]->Artikel->Bilder[0]             = new stdClass();
+    $wishlist->CWunschlistePos_arr[1]->Artikel->Bilder[0]->cPfadKlein = BILD_KEIN_ARTIKELBILD_VORHANDEN;
 
-    $CWunschliste->CWunschlistePos_arr[1]->Artikel                        = new stdClass();
-    $CWunschliste->CWunschlistePos_arr[1]->Artikel->cName                 = 'USB Connector';
-    $CWunschliste->CWunschlistePos_arr[1]->Artikel->cEinheit              = 'Stck.';
-    $CWunschliste->CWunschlistePos_arr[1]->Artikel->fPreis                = 89.90;
-    $CWunschliste->CWunschlistePos_arr[1]->Artikel->fMwSt                 = 19;
-    $CWunschliste->CWunschlistePos_arr[1]->Artikel->nAnzahl               = 1;
-    $CWunschliste->CWunschlistePos_arr[1]->Artikel->cURL                  = 'USB-Connector';
-    $CWunschliste->CWunschlistePos_arr[1]->Artikel->Bilder                = [];
-    $CWunschliste->CWunschlistePos_arr[1]->Artikel->Bilder[0]             = new stdClass();
-    $CWunschliste->CWunschlistePos_arr[1]->Artikel->Bilder[0]->cPfadKlein = BILD_KEIN_ARTIKELBILD_VORHANDEN;
-
-    $CWunschliste->CWunschlistePos_arr[1]->CWunschlistePosEigenschaft_arr                                = [];
-    $CWunschliste->CWunschlistePos_arr[1]->CWunschlistePosEigenschaft_arr[0]                             = new stdClass();
-    $CWunschliste->CWunschlistePos_arr[1]->CWunschlistePosEigenschaft_arr[0]->kWunschlistePosEigenschaft = 2;
-    $CWunschliste->CWunschlistePos_arr[1]->CWunschlistePosEigenschaft_arr[0]->kWunschlistePos            = 4;
-    $CWunschliste->CWunschlistePos_arr[1]->CWunschlistePosEigenschaft_arr[0]->kEigenschaft               = 2;
-    $CWunschliste->CWunschlistePos_arr[1]->CWunschlistePosEigenschaft_arr[0]->kEigenschaftWert           = 3;
-    $CWunschliste->CWunschlistePos_arr[1]->CWunschlistePosEigenschaft_arr[0]->cFreifeldWert              = '';
-    $CWunschliste->CWunschlistePos_arr[1]->CWunschlistePosEigenschaft_arr[0]->cEigenschaftName           = 'Farbe';
-    $CWunschliste->CWunschlistePos_arr[1]->CWunschlistePosEigenschaft_arr[0]->cEigenschaftWertName       = 'rot';
+    $wishlist->CWunschlistePos_arr[1]->CWunschlistePosEigenschaft_arr                                = [];
+    $wishlist->CWunschlistePos_arr[1]->CWunschlistePosEigenschaft_arr[0]                             = new stdClass();
+    $wishlist->CWunschlistePos_arr[1]->CWunschlistePosEigenschaft_arr[0]->kWunschlistePosEigenschaft = 2;
+    $wishlist->CWunschlistePos_arr[1]->CWunschlistePosEigenschaft_arr[0]->kWunschlistePos            = 4;
+    $wishlist->CWunschlistePos_arr[1]->CWunschlistePosEigenschaft_arr[0]->kEigenschaft               = 2;
+    $wishlist->CWunschlistePos_arr[1]->CWunschlistePosEigenschaft_arr[0]->kEigenschaftWert           = 3;
+    $wishlist->CWunschlistePos_arr[1]->CWunschlistePosEigenschaft_arr[0]->cFreifeldWert              = '';
+    $wishlist->CWunschlistePos_arr[1]->CWunschlistePosEigenschaft_arr[0]->cEigenschaftName           = 'Farbe';
+    $wishlist->CWunschlistePos_arr[1]->CWunschlistePosEigenschaft_arr[0]->cEigenschaftWertName       = 'rot';
 
     $NewsletterEmpfaenger                     = new stdClass();
     $NewsletterEmpfaenger->kSprache           = 1;
@@ -465,8 +472,10 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
     $NewsletterEmpfaenger->cLoeschCode        = 'a14a986321ff6a4998e81b84056933d3';
     $NewsletterEmpfaenger->dEingetragen       = 'NOW()';
     $NewsletterEmpfaenger->dLetzterNewsletter = '_DBNULL_';
-    $NewsletterEmpfaenger->cLoeschURL         = Shop::getURL() . '/newsletter.php?lang=ger&lc=a14a986321ff6a4998e81b84056933d3';
-    $NewsletterEmpfaenger->cFreischaltURL     = Shop::getURL() . '/newsletter.php?lang=ger&fc=88abd18fe51be05d775a2151fbb74bf7';
+    $NewsletterEmpfaenger->cLoeschURL         = Shop::getURL() .
+        '/newsletter.php?lang=ger&lc=a14a986321ff6a4998e81b84056933d3';
+    $NewsletterEmpfaenger->cFreischaltURL     = Shop::getURL() .
+        '/newsletter.php?lang=ger&fc=88abd18fe51be05d775a2151fbb74bf7';
 
     $Bestandskunde                = new stdClass();
     $Bestandskunde->kKunde        = 1379;
@@ -513,59 +522,61 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
     $Neues_Passwort = 'geheim007';
 
     $Benachrichtigung            = new stdClass();
-    $Benachrichtigung->cVorname  = $kunde->cVorname;
-    $Benachrichtigung->cNachname = $kunde->cNachname;
+    $Benachrichtigung->cVorname  = $customer->cVorname;
+    $Benachrichtigung->cNachname = $customer->cNachname;
 
     $sendStatus = true;
 
     foreach ($Sprachen as $Sprache) {
         $Sprache->kSprache = (int)$Sprache->kSprache;
-        $oAGBWRB = new stdClass();
-        if ($kunde->kKundengruppe > 0) {
-            $oAGBWRB = Shop::Container()->getDB()->select(
+        $oAGBWRB           = new stdClass();
+        if ($customer->kKundengruppe > 0) {
+            $oAGBWRB = $db->select(
                 'ttext',
                 ['kKundengruppe', 'kSprache'],
-                [$kunde->kKundengruppe, $Sprache->kSprache]
+                [$customer->kKundengruppe, $Sprache->kSprache]
             );
         }
-        $Emailvorlagesprache[$Sprache->kSprache] = Shop::Container()->getDB()->select(
+        $localized[$Sprache->kSprache] = $db->select(
             $cTableSprache,
             ['kEmailvorlage', 'kSprache'],
-            [(int)$Emailvorlage->kEmailvorlage, (int)$Sprache->kSprache]
+            [(int)$mailTpl->kEmailvorlage, (int)$Sprache->kSprache]
         );
-        if (!empty($Emailvorlagesprache[$Sprache->kSprache])) {
-            $cModulId = $Emailvorlage->cModulId;
+        if (!empty($localized[$Sprache->kSprache])) {
+            $cModulId = $mailTpl->cModulId;
             if (RequestHelper::verifyGPCDataInt('kPlugin') > 0) {
                 $cModulId = 'kPlugin_' . RequestHelper::verifyGPCDataInt('kPlugin') . '_' . $cModulId;
             }
-
-            $bestellung->oEstimatedDelivery->localized = VersandartHelper::getDeliverytimeEstimationText(
-                $bestellung->oEstimatedDelivery->longestMin,
-                $bestellung->oEstimatedDelivery->longestMax
+            $order->oEstimatedDelivery->localized = VersandartHelper::getDeliverytimeEstimationText(
+                $order->oEstimatedDelivery->longestMin,
+                $order->oEstimatedDelivery->longestMax
             );
-            $bestellung->cEstimatedDeliveryEx          = DateHelper::dateAddWeekday(
-                $bestellung->dErstellt,
-                $bestellung->oEstimatedDelivery->longestMin
+            $order->cEstimatedDeliveryEx          = DateHelper::dateAddWeekday(
+                $order->dErstellt,
+                $order->oEstimatedDelivery->longestMin
             )->format('d.m.Y') . ' - ' .
-                DateHelper::dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMax)->format('d.m.Y');
+            DateHelper::dateAddWeekday(
+                $order->dErstellt,
+                $order->oEstimatedDelivery->longestMax
+            )->format('d.m.Y');
 
-            $kunde->kSprache                       = $Sprache->kSprache;
+            $customer->kSprache                    = $Sprache->kSprache;
             $NewsletterEmpfaenger->kSprache        = $Sprache->kSprache;
             $obj                                   = new stdClass();
-            $obj->tkunde                           = $kunde;
+            $obj->tkunde                           = $customer;
             $obj->tkunde->cPasswortKlartext        = 'superGeheim';
-            $obj->tkundengruppe                    = $Kundengruppe;
-            $obj->tbestellung                      = $bestellung;
+            $obj->tkundengruppe                    = $customerGroup;
+            $obj->tbestellung                      = $order;
             $obj->neues_passwort                   = $Neues_Passwort;
             $obj->passwordResetLink                = Shop::getURL() . '/pass.php?fpwh=ca68b243f0c1e7e57162055f248218fd';
             $obj->tgutschein                       = $gutschein;
             $obj->AGB                              = $oAGBWRB;
             $obj->WRB                              = $oAGBWRB;
             $obj->DSE                              = $oAGBWRB;
-            $obj->tkupon                           = $Kupon;
-            $obj->tnachricht                       = $Nachricht;
-            $obj->tartikel                         = $Artikel;
-            $obj->twunschliste                     = $CWunschliste;
+            $obj->tkupon                           = $coupon;
+            $obj->tnachricht                       = $msg;
+            $obj->tartikel                         = $product;
+            $obj->twunschliste                     = $wishlist;
             $obj->tvonkunde                        = $obj->tkunde;
             $obj->tverfuegbarkeitsbenachrichtigung = $Benachrichtigung;
             $obj->NewsletterEmpfaenger             = $NewsletterEmpfaenger;
@@ -590,35 +601,35 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
     $step                        = 'uebersicht';
     $kEmailvorlage               = (int)$_POST['kEmailvorlage'];
     $cUploadVerzeichnis          = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
-    $oEmailvorlageSpracheTMP_arr = Shop::Container()->getDB()->selectAll(
+    $oEmailvorlageSpracheTMP_arr = $db->selectAll(
         $cTableSprache,
         'kEmailvorlage',
         (int)$_POST['kEmailvorlage'],
         'cPDFS, cDateiname, kSprache'
     );
-    $oEmailvorlageSprache_arr = [];
+    $oEmailvorlageSprache_arr    = [];
     foreach ($oEmailvorlageSpracheTMP_arr as $oEmailvorlageSpracheTMP) {
         $oEmailvorlageSprache_arr[$oEmailvorlageSpracheTMP->kSprache] = $oEmailvorlageSpracheTMP;
     }
-    $Sprachen = Shop::Container()->getDB()->query(
+    $Sprachen = $db->query(
         'SELECT * 
             FROM tsprache 
             ORDER BY cShopStandard DESC, cNameDeutsch',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    if (!isset($Emailvorlagesprache) || is_array($Emailvorlagesprache)) {
-        $Emailvorlagesprache = new stdClass();
+    if (!isset($localized) || is_array($localized)) {
+        $localized = new stdClass();
     }
-    $Emailvorlagesprache->kEmailvorlage = (int)$_POST['kEmailvorlage'];
-    $cAnhangError_arr                   = [];
+    $localized->kEmailvorlage = (int)$_POST['kEmailvorlage'];
+    $cAnhangError_arr         = [];
 
     $revision = new Revision();
     $revision->addRevision('mail', (int)$_POST['kEmailvorlage'], true);
 
     foreach ($Sprachen as $Sprache) {
         // PDFs hochladen
-        $cDateiname_arr    = [];
-        $cPDFS_arr         = [];
+        $filenames         = [];
+        $pdfFiles          = [];
         $cPDFSTMP_arr      = isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS)
             ? bauePDFArray($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS)
             : [];
@@ -631,22 +642,27 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
         ) {
             if (count($cPDFSTMP_arr) < 3) {
                 foreach ($cPDFSTMP_arr as $i => $cPDFSTMP) {
-                    $cPDFS_arr[] = $cPDFSTMP;
+                    $pdfFiles[] = $cPDFSTMP;
 
                     if (strlen($_POST['dateiname_' . ($i + 1) . '_' . $Sprache->kSprache]) > 0) {
                         $regs = [];
-                        preg_match('/[A-Za-z0-9_-]+/', $_POST['dateiname_' . ($i + 1) . '_' . $Sprache->kSprache], $regs);
+                        preg_match(
+                            '/[A-Za-z0-9_-]+/',
+                            $_POST['dateiname_' . ($i + 1) . '_' . $Sprache->kSprache],
+                            $regs
+                        );
                         if (strlen($regs[0]) === strlen($_POST['dateiname_' . ($i + 1) . '_' . $Sprache->kSprache])) {
-                            $cDateiname_arr[] = $_POST['dateiname_' . ($i + 1) . '_' . $Sprache->kSprache];
+                            $filenames[] = $_POST['dateiname_' . ($i + 1) . '_' . $Sprache->kSprache];
                             unset($_POST['dateiname_' . ($i + 1) . '_' . $Sprache->kSprache]);
                         } else {
-                            $cFehler .= 'Fehler: Ihr Dateiname "' . $_POST['dateiname_' . ($i + 1) . '_' . $Sprache->kSprache] .
+                            $cFehler .= 'Fehler: Ihr Dateiname "' .
+                                $_POST['dateiname_' . ($i + 1) . '_' . $Sprache->kSprache] .
                                 '" enthält unzulässige Zeichen (Erlaubt sind A-Z, a-z, 0-9, _ und -).<br />';
-                            $nFehler = 1;
+                            $nFehler  = 1;
                             break;
                         }
                     } else {
-                        $cDateiname_arr[] = $cDateinameTMP_arr[$i];
+                        $filenames[] = $cDateinameTMP_arr[$i];
                     }
                 }
             }
@@ -664,25 +680,29 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                             if (RequestHelper::verifyGPCDataInt('kPlugin') > 0) {
                                 $cPlugin = '_' . RequestHelper::verifyGPCDataInt('kPlugin');
                             }
-                            $cUploadDatei = $cUploadVerzeichnis . $Emailvorlagesprache->kEmailvorlage .
+                            $cUploadDatei = $cUploadVerzeichnis . $localized->kEmailvorlage .
                                 '_' . $Sprache->kSprache . '_' . $i . $cPlugin . '.pdf';
-                            if (!move_uploaded_file($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['tmp_name'], $cUploadDatei)) {
+                            if (!move_uploaded_file(
+                                $_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['tmp_name'],
+                                $cUploadDatei
+                            )) {
                                 $cFehler .= 'Fehler: Die Dateien konnten nicht geschrieben werden. ' .
                                     'Prüfen Sie bitte, ob das PDF Verzeichnis Schreibrechte besitzt.<br />';
-                                $nFehler = 1;
+                                $nFehler  = 1;
                                 break;
                             }
-                            $cDateiname_arr[] = $_POST['dateiname_' . $i . '_' . $Sprache->kSprache];
-                            $cPDFS_arr[]      = $Emailvorlagesprache->kEmailvorlage . '_' .
+                            $filenames[] = $_POST['dateiname_' . $i . '_' . $Sprache->kSprache];
+                            $pdfFiles[]  = $localized->kEmailvorlage . '_' .
                                 $Sprache->kSprache . '_' . $i . $cPlugin . '.pdf';
                         } else {
-                            $cFehler .= 'Fehler: Bitte geben Sie zu jeder Datei auch einen Dateinamen (Wunschnamen) ein.<br />';
-                            $nFehler = 1;
+                            $cFehler .= 'Fehler: Bitte geben Sie zu jeder Datei ' .
+                                'auch einen Dateinamen (Wunschnamen) ein.<br />';
+                            $nFehler  = 1;
                             break;
                         }
                     } else {
                         $cFehler .= 'Fehler: Die Datei muss ein PDF sein und darf maximal 2MB groß sein.<br />';
-                        $nFehler = 1;
+                        $nFehler  = 1;
                         break;
                     }
                 } elseif (isset($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['name'], $_POST['dateiname_' . $i . '_' . $Sprache->kSprache])
@@ -690,66 +710,67 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                     && strlen($_POST['dateiname_' . $i . '_' . $Sprache->kSprache]) === 0
                 ) {
                     $cFehlerAnhang_arr[$Sprache->kSprache][$i] = 1;
-                    $cFehler .= 'Fehler: Sie haben zu einem PDF keinen Dateinamen angegeben.<br />';
-                    $nFehler = 1;
+                    $cFehler                                  .= 'Fehler: Sie haben zu einem PDF keinen ' .
+                        'Dateinamen angegeben.<br />';
+                    $nFehler                                   = 1;
                     break;
                 }
             }
         } else {
-            $cPDFS_arr = bauePDFArray($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS);
-
-            foreach ($cPDFS_arr as $i => $cPDFS) {
-                $j = $i + 1;
-                if (strlen($_POST['dateiname_' . $j . '_' . $Sprache->kSprache]) > 0 && strlen($cPDFS_arr[$j - 1]) > 0) {
+            $pdfFiles = bauePDFArray($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS);
+            foreach ($pdfFiles as $i => $pdf) {
+                $j   = $i + 1;
+                $idx = 'dateiname_' . $j . '_' . $Sprache->kSprache;
+                if (strlen($_POST['dateiname_' . $j . '_' . $Sprache->kSprache]) > 0 && strlen($pdfFiles[$j - 1]) > 0) {
                     $regs = [];
-                    preg_match('/[A-Za-z0-9_-]+/', $_POST['dateiname_' . $j . '_' . $Sprache->kSprache], $regs);
-                    if (strlen($regs[0]) === strlen($_POST['dateiname_' . $j . '_' . $Sprache->kSprache])) {
-                        $cDateiname_arr[] = $_POST['dateiname_' . $j . '_' . $Sprache->kSprache];
+                    preg_match('/[A-Za-z0-9_-]+/', $_POST[$idx], $regs);
+                    if (strlen($regs[0]) === strlen($_POST[$idx])) {
+                        $filenames[] = $_POST[$idx];
                     } else {
-                        $cFehler .= 'Fehler: Ihr Dateiname "' . $_POST['dateiname_' . $j . '_' . $Sprache->kSprache] .
+                        $cFehler .= 'Fehler: Ihr Dateiname "' . $_POST[$idx] .
                             '" enthält unzulässige Zeichen (Erlaubt sind A-Z, a-z, 0-9, _ und -).<br />';
-                        $nFehler = 1;
+                        $nFehler  = 1;
                         break;
                     }
                 } else {
                     $cFehler .= 'Fehler: Sie haben zu einem PDF keinen Dateinamen angegeben.<br />';
-                    $nFehler = 1;
+                    $nFehler  = 1;
                     break;
                 }
             }
         }
-        $Emailvorlagesprache->cDateiname   = '';
-        $Emailvorlagesprache->kSprache     = $Sprache->kSprache;
-        $Emailvorlagesprache->cBetreff     = $_POST['cBetreff_' . $Sprache->kSprache] ?? null;
-        $Emailvorlagesprache->cContentHtml = $_POST['cContentHtml_' . $Sprache->kSprache] ?? null;
-        $Emailvorlagesprache->cContentText = $_POST['cContentText_' . $Sprache->kSprache] ?? null;
-
-        $Emailvorlagesprache->cPDFS = '';
-        if (count($cPDFS_arr) > 0) {
-            $Emailvorlagesprache->cPDFS = ';' . implode(';', $cPDFS_arr) . ';';
+        $localized->cDateiname   = '';
+        $localized->kSprache     = $Sprache->kSprache;
+        $localized->cBetreff     = $_POST['cBetreff_' . $Sprache->kSprache] ?? null;
+        $localized->cContentHtml = $_POST['cContentHtml_' . $Sprache->kSprache] ?? null;
+        $localized->cContentText = $_POST['cContentText_' . $Sprache->kSprache] ?? null;
+        $localized->cPDFS        = '';
+        if (count($pdfFiles) > 0) {
+            $localized->cPDFS = ';' . implode(';', $pdfFiles) . ';';
         } elseif (isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS)
             && strlen($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS) > 0
         ) {
-            $Emailvorlagesprache->cPDFS = $oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS;
+            $localized->cPDFS = $oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS;
         }
-        if (count($cDateiname_arr) > 0) {
-            $Emailvorlagesprache->cDateiname = ';' . implode(';', $cDateiname_arr) . ';';
+        if (count($filenames) > 0) {
+            $localized->cDateiname = ';' . implode(';', $filenames) . ';';
         } elseif (isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname)
             && strlen($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname) > 0
         ) {
-            $Emailvorlagesprache->cDateiname = $oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname;
+            $localized->cDateiname = $oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname;
         }
         if ($nFehler === 0) {
-            Shop::Container()->getDB()->delete(
+            $db->delete(
                 $cTableSprache,
                 ['kSprache', 'kEmailvorlage'],
-                [(int)$Sprache->kSprache,
-                 (int)$_POST['kEmailvorlage']]
+                [
+                    (int)$Sprache->kSprache,
+                    (int)$_POST['kEmailvorlage']
+                ]
             );
-            Shop::Container()->getDB()->insert($cTableSprache, $Emailvorlagesprache);
-            //Smarty Objekt bauen
-            $mailSmarty = new Smarty\JTLSmarty(true, false, false, 'mail');
-            $mailSmarty->registerResource('db', new SmartyResourceNiceDB('mail'))
+            $db->insert($cTableSprache, $localized);
+            $mailSmarty = new Smarty\JTLSmarty(true, \Smarty\ContextType::MAIL);
+            $mailSmarty->registerResource('db', new \Smarty\SmartyResourceNiceDB($db, \Smarty\ContextType::MAIL))
                        ->registerPlugin('function', 'includeMailTemplate', 'includeMailTemplate')
                        ->setCaching(Smarty::CACHING_OFF)
                        ->setDebugging(Smarty::DEBUG_OFF)
@@ -758,9 +779,9 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                 $mailSmarty->activateBackendSecurityMode();
             }
             try {
-                $mailSmarty->fetch('db:html_' . $Emailvorlagesprache->kEmailvorlage .
+                $mailSmarty->fetch('db:html_' . $localized->kEmailvorlage .
                     '_' . $Sprache->kSprache . '_' . $cTableSprache);
-                $mailSmarty->fetch('db:text_' . $Emailvorlagesprache->kEmailvorlage .
+                $mailSmarty->fetch('db:text_' . $localized->kEmailvorlage .
                     '_' . $Sprache->kSprache . '_' . $cTableSprache);
             } catch (Exception $e) {
                 $oSmartyError->cText = $e->getMessage();
@@ -777,10 +798,10 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
     $_upd->nWRB     = isset($_POST['nWRB']) ? (int)$_POST['nWRB'] : 0;
     $_upd->nWRBForm = isset($_POST['nWRBForm']) ? (int)$_POST['nWRBForm'] : 0;
     $_upd->nDSE     = isset($_POST['nDSE']) ? (int)$_POST['nDSE'] : 0;
-    Shop::Container()->getDB()->update($cTable, 'kEmailvorlage', $kEmailvorlage, $_upd);
+    $db->update($cTable, 'kEmailvorlage', $kEmailvorlage, $_upd);
 
     // Einstellungen
-    Shop::Container()->getDB()->delete($cTableSetting, 'kEmailvorlage', $kEmailvorlage);
+    $db->delete($cTableSetting, 'kEmailvorlage', $kEmailvorlage);
     // Email Ausgangsadresse
     if (isset($_POST['cEmailOut']) && strlen($_POST['cEmailOut']) > 0) {
         saveEmailSetting($cTableSetting, $kEmailvorlage, 'cEmailOut', $_POST['cEmailOut']);
@@ -813,8 +834,8 @@ if (((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $con
         || (isset($_GET['a']) && $_GET['a'] === 'pdfloeschen')
     ) && FormHelper::validateToken()
 ) {
-    $cUploadVerzeichnis  = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
-    $Emailvorlagesprache = [];
+    $cUploadVerzeichnis = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
+    $localized          = [];
 
     if (empty($_POST['kEmailvorlage']) || (int)$_POST['kEmailvorlage'] === 0) {
         $_POST['kEmailvorlage'] = (isset($_GET['a'], $_GET['kEmailvorlage']) && $_GET['a'] === 'pdfloeschen')
@@ -828,7 +849,7 @@ if (((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $con
     ) {
         $_POST['kEmailvorlage'] = $_GET['kEmailvorlage'];
         $_POST['kS']            = $_GET['kS'];
-        $oEmailvorlageSprache   = Shop::Container()->getDB()->select(
+        $oEmailvorlageSprache   = $db->select(
             $cTableSprache,
             'kEmailvorlage',
             (int)$_POST['kEmailvorlage'],
@@ -839,23 +860,25 @@ if (((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $con
             false,
             'cPDFS, cDateiname'
         );
-        $cPDFS_arr = bauePDFArray($oEmailvorlageSprache->cPDFS);
+        $pdfFiles               = bauePDFArray($oEmailvorlageSprache->cPDFS);
 
-        if (is_array($cPDFS_arr) && count($cPDFS_arr) > 0) {
-            foreach ($cPDFS_arr as $cPDFS) {
-                if (file_exists($cUploadVerzeichnis . $cPDFS)) {
-                    @unlink($cUploadVerzeichnis . $cPDFS);
+        if (is_array($pdfFiles) && count($pdfFiles) > 0) {
+            foreach ($pdfFiles as $pdf) {
+                if (file_exists($cUploadVerzeichnis . $pdf)) {
+                    @unlink($cUploadVerzeichnis . $pdf);
                 }
             }
         }
         $upd             = new stdClass();
         $upd->cPDFS      = '';
         $upd->cDateiname = '';
-        Shop::Container()->getDB()->update(
+        $db->update(
             $cTableSprache,
             ['kEmailvorlage', 'kSprache'],
-            [(int)$_POST['kEmailvorlage'],
-             (int)$_POST['kS']],
+            [
+                (int)$_POST['kEmailvorlage'],
+                (int)$_POST['kS']
+            ],
             $upd
         );
         $cHinweis .= 'Ihre Dateianhänge für Ihre gewählte Sprache, wurden erfolgreich gelöscht.<br />';
@@ -864,55 +887,54 @@ if (((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $con
     $step       = 'bearbeiten';
     $cFromTable = isset($_REQUEST['kPlugin']) ? $cTablePluginSetting : $cTableSetting;
 
-    $Sprachen                   = Sprache::getAllLanguages();
-    $Emailvorlage               = Shop::Container()->getDB()->select($cTable, 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
-    $oEmailEinstellung_arr      = Shop::Container()->getDB()->selectAll($cFromTable, 'kEmailvorlage', (int)$Emailvorlage->kEmailvorlage);
-    $oEmailEinstellungAssoc_arr = [];
-    foreach ($oEmailEinstellung_arr as $oEmailEinstellung) {
-        $oEmailEinstellungAssoc_arr[$oEmailEinstellung->cKey] = $oEmailEinstellung->cValue;
+    $Sprachen    = Sprache::getAllLanguages();
+    $mailTpl     = $db->select($cTable, 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
+    $config      = $db->selectAll($cFromTable, 'kEmailvorlage', (int)$mailTpl->kEmailvorlage);
+    $configAssoc = [];
+    foreach ($config as $oEmailEinstellung) {
+        $configAssoc[$oEmailEinstellung->cKey] = $oEmailEinstellung->cValue;
     }
 
     foreach ($Sprachen as $Sprache) {
-        $Emailvorlagesprache[$Sprache->kSprache] = Shop::Container()->getDB()->select(
+        $localized[$Sprache->kSprache] = $db->select(
             $cTableSprache,
             'kEmailvorlage',
             (int)$_POST['kEmailvorlage'],
             'kSprache',
             (int)$Sprache->kSprache
         );
-        // PDF Name und Dateiname vorbereiten
-        $cPDFS_arr      = [];
-        $cDateiname_arr = [];
-        if (!empty($Emailvorlagesprache[$Sprache->kSprache]->cPDFS)) {
-            $cPDFSTMP_arr = bauePDFArray($Emailvorlagesprache[$Sprache->kSprache]->cPDFS);
+        $pdfFiles                      = [];
+        $filenames                     = [];
+        if (!empty($localized[$Sprache->kSprache]->cPDFS)) {
+            $cPDFSTMP_arr = bauePDFArray($localized[$Sprache->kSprache]->cPDFS);
             foreach ($cPDFSTMP_arr as $cPDFSTMP) {
-                $cPDFS_arr[] = $cPDFSTMP;
+                $pdfFiles[] = $cPDFSTMP;
             }
-            $cDateinameTMP_arr = baueDateinameArray($Emailvorlagesprache[$Sprache->kSprache]->cDateiname);
+            $cDateinameTMP_arr = baueDateinameArray($localized[$Sprache->kSprache]->cDateiname);
             foreach ($cDateinameTMP_arr as $cDateinameTMP) {
-                $cDateiname_arr[] = $cDateinameTMP;
+                $filenames[] = $cDateinameTMP;
             }
         }
-        if (!isset($Emailvorlagesprache[$Sprache->kSprache]) ||
-            $Emailvorlagesprache[$Sprache->kSprache] === false) {
-            $Emailvorlagesprache[$Sprache->kSprache] = new stdClass();
+        if (!isset($localized[$Sprache->kSprache]) ||
+            $localized[$Sprache->kSprache] === false) {
+            $localized[$Sprache->kSprache] = new stdClass();
         }
-        $Emailvorlagesprache[$Sprache->kSprache]->cPDFS_arr      = $cPDFS_arr;
-        $Emailvorlagesprache[$Sprache->kSprache]->cDateiname_arr = $cDateiname_arr;
+        $localized[$Sprache->kSprache]->cPDFS_arr      = $pdfFiles;
+        $localized[$Sprache->kSprache]->cDateiname_arr = $filenames;
     }
     $smarty->assign('Sprachen', $Sprachen)
-           ->assign('oEmailEinstellungAssoc_arr', $oEmailEinstellungAssoc_arr)
+           ->assign('oEmailEinstellungAssoc_arr', $configAssoc)
            ->assign('cUploadVerzeichnis', $cUploadVerzeichnis);
 }
 
 if ($step === 'uebersicht') {
-    $smarty->assign('emailvorlagen', Shop::Container()->getDB()->selectAll('temailvorlage', [], [], '*', 'cModulId'))
-           ->assign('oPluginEmailvorlage_arr', Shop::Container()->getDB()->selectAll('tpluginemailvorlage', [], [], '*', 'cModulId'));
+    $smarty->assign('emailvorlagen', $db->selectAll('temailvorlage', [], [], '*', 'cModulId'))
+           ->assign('oPluginEmailvorlage_arr', $db->selectAll('tpluginemailvorlage', [], [], '*', 'cModulId'));
 }
 
 if ($step === 'bearbeiten') {
-    $smarty->assign('Emailvorlage', $Emailvorlage)
-           ->assign('Emailvorlagesprache', $Emailvorlagesprache);
+    $smarty->assign('Emailvorlage', $mailTpl)
+           ->assign('Emailvorlagesprache', $localized);
 }
 $smarty->assign('kPlugin', RequestHelper::verifyGPCDataInt('kPlugin'))
        ->assign('cFehlerAnhang_arr', $cFehlerAnhang_arr)

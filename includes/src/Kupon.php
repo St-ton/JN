@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\ArtikelHelper;
+use Helpers\WarenkorbHelper;
+
 /**
  * Class Kupon
  */
@@ -898,7 +901,10 @@ class Kupon
         } elseif (date_create($Kupon->dGueltigAb) > date_create()) {
             //invalid at the moment
             $ret['ungueltig'] = 3;
-        } elseif ($Kupon->fMindestbestellwert > \Session\Session::getCart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
+        } elseif ($Kupon->fMindestbestellwert > \Session\Session::getCart()->gibGesamtsummeWarenExt(
+                [C_WARENKORBPOS_TYP_ARTIKEL],
+                true
+            )
             || ($Kupon->cWertTyp === 'festpreis'
                 && $Kupon->nGanzenWKRabattieren === '0'
                 && $Kupon->fMindestbestellwert > gibGesamtsummeKuponartikelImWarenkorb(
@@ -1050,7 +1056,7 @@ class Kupon
                 && $Kupon->cKuponTyp !== self::TYPE_NEWCUSTOMER
             ) {
                 $Spezialpos->cName[$Sprache->cISO] .= ' ' . $Kupon->fWert . '% ';
-                $discountForArticle                = Shop::Container()->getDB()->select(
+                $discountForArticle                 = Shop::Container()->getDB()->select(
                     'tsprachwerte',
                     'cName',
                     'discountForArticle',

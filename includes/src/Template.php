@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\TemplateHelper;
+
 /**
  * Template
  */
@@ -94,50 +96,50 @@ class Template
     public function init(): self
     {
         if (isset($_SESSION['template']->cTemplate)) {
-            self::$cTemplate   = $_SESSION['template']->cTemplate;
-            self::$parent      = $_SESSION['template']->parent;
-            $this->name        = $_SESSION['template']->name;
-            $this->author      = $_SESSION['template']->author;
-            $this->url         = $_SESSION['template']->url;
-            $this->version     = $_SESSION['template']->version;
-            $this->preview     = $_SESSION['template']->preview;
+            self::$cTemplate = $_SESSION['template']->cTemplate;
+            self::$parent    = $_SESSION['template']->parent;
+            $this->name      = $_SESSION['template']->name;
+            $this->author    = $_SESSION['template']->author;
+            $this->url       = $_SESSION['template']->url;
+            $this->version   = $_SESSION['template']->version;
+            $this->preview   = $_SESSION['template']->preview;
 
             return $this;
         }
         $cacheID = 'current_template_' .
             (self::$isAdmin === true ? '_admin' : '');
         if (($oTemplate = Shop::Container()->getCache()->get($cacheID)) !== false) {
-            self::$cTemplate   = $oTemplate->cTemplate;
-            self::$parent      = $oTemplate->parent;
-            $this->name        = $oTemplate->name;
-            $this->author      = $oTemplate->author;
-            $this->url         = $oTemplate->url;
-            $this->version     = $oTemplate->version;
-            $this->preview     = $oTemplate->preview;
+            self::$cTemplate = $oTemplate->cTemplate;
+            self::$parent    = $oTemplate->parent;
+            $this->name      = $oTemplate->name;
+            $this->author    = $oTemplate->author;
+            $this->url       = $oTemplate->url;
+            $this->version   = $oTemplate->version;
+            $this->preview   = $oTemplate->preview;
 
             return $this;
         }
         $oTemplate = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
         if (!empty($oTemplate)) {
-            self::$cTemplate   = $oTemplate->cTemplate;
-            self::$parent      = !empty($oTemplate->parent) ? $oTemplate->parent : null;
-            $this->name        = $oTemplate->name;
-            $this->author      = $oTemplate->author;
-            $this->url         = $oTemplate->url;
-            $this->version     = $oTemplate->version;
-            $this->preview     = $oTemplate->preview;
+            self::$cTemplate = $oTemplate->cTemplate;
+            self::$parent    = !empty($oTemplate->parent) ? $oTemplate->parent : null;
+            $this->name      = $oTemplate->name;
+            $this->author    = $oTemplate->author;
+            $this->url       = $oTemplate->url;
+            $this->version   = $oTemplate->version;
+            $this->preview   = $oTemplate->preview;
 
-            $tplObject              = new stdClass();
-            $tplObject->cTemplate   = self::$cTemplate;
-            $tplObject->isMobile    = false;
-            $tplObject->parent      = self::$parent;
-            $tplObject->name        = $this->name;
-            $tplObject->version     = $this->version;
-            $tplObject->author      = $this->author;
-            $tplObject->url         = $this->url;
-            $tplObject->preview     = $this->preview;
-            $_SESSION['template']   = $tplObject;
-            $_SESSION['cTemplate']  = self::$cTemplate;
+            $tplObject             = new stdClass();
+            $tplObject->cTemplate  = self::$cTemplate;
+            $tplObject->isMobile   = false;
+            $tplObject->parent     = self::$parent;
+            $tplObject->name       = $this->name;
+            $tplObject->version    = $this->version;
+            $tplObject->author     = $this->author;
+            $tplObject->url        = $this->url;
+            $tplObject->preview    = $this->preview;
+            $_SESSION['template']  = $tplObject;
+            $_SESSION['cTemplate'] = self::$cTemplate;
 
             Shop::Container()->getCache()->set($cacheID, $oTemplate, [CACHING_GROUP_TEMPLATE]);
         }
@@ -176,12 +178,13 @@ class Template
     public function getPluginResources(): array
     {
         $resourcesc = Shop::Container()->getDB()->queryPrepared(
-            'SELECT * FROM tplugin_resources
+            'SELECT * 
+                FROM tplugin_resources AS res
                 JOIN tplugin
-                    ON tplugin.kPlugin = tplugin_resources.kPlugin
+                    ON tplugin.kPlugin = res.kPlugin
                 WHERE tplugin.nStatus = :state
-                ORDER BY tplugin_resources.priority DESC',
-            ['state' => \Plugin\Plugin::PLUGIN_ACTIVATED],
+                ORDER BY res.priority DESC',
+            ['state' => \Plugin\State::ACTIVATED],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $grouped    = \Functional\group($resourcesc, function ($e) {
@@ -208,13 +211,16 @@ class Template
      */
     private function getPluginResourcesPath(array $items): array
     {
-        foreach ($items as &$item) {
-            $item->abs = PFAD_ROOT . PFAD_PLUGIN . $item->cVerzeichnis . '/' .
-                PFAD_PLUGIN_VERSION . $item->nVersion . '/' .
-                PFAD_PLUGIN_FRONTEND . $item->type . '/' . $item->path;
-            $item->rel = PFAD_PLUGIN . $item->cVerzeichnis . '/' .
-                PFAD_PLUGIN_VERSION . $item->nVersion . '/' .
-                PFAD_PLUGIN_FRONTEND . $item->type . '/' . $item->path;
+        foreach ($items as $item) {
+            $frontend = PFAD_PLUGIN_FRONTEND . $item->type . '/' . $item->path;
+            if ((int)$item->bExtension === 1) {
+                $item->rel = PFAD_EXTENSIONS . $item->cVerzeichnis . '/';
+            } else {
+                $item->rel = PFAD_PLUGIN . $item->cVerzeichnis . '/';
+                $frontend  = PFAD_PLUGIN_VERSION . $item->nVersion . '/' . $frontend;
+            }
+            $item->rel .= $frontend;
+            $item->abs  = PFAD_ROOT . $item->rel;
         }
 
         return $items;
@@ -316,7 +322,7 @@ class Template
                             $_file           = PFAD_TEMPLATES . $dir . '/' . (string)$oFile->attributes()->Path;
                             $cCustomFilePath = str_replace('.css', '_custom.css', $cFilePath);
                             if (file_exists($cCustomFilePath)) { //add _custom file if existing
-                                $_file                  = str_replace(
+                                $_file              = str_replace(
                                     '.css',
                                     '_custom.css',
                                     PFAD_TEMPLATES . $dir . '/' . (string)$oFile->attributes()->Path
@@ -361,7 +367,7 @@ class Template
                             for ($i = 0; $i < $max; $i++) {
                                 if ($tplGroups[$name][$i]['idx'] === $idxToOverride) {
                                     $tplGroups[$name][$i] = $newEntry;
-                                    $found                    = true;
+                                    $found                = true;
                                     break;
                                 }
                             }
@@ -699,20 +705,20 @@ class Template
             $parentConfig = false;
         }
 
-        $tplObject              = new stdClass();
-        $tplObject->cTemplate   = $dir;
-        $tplObject->eTyp        = $eTyp;
-        $tplObject->parent      = !empty($tplConfig->Parent)
+        $tplObject            = new stdClass();
+        $tplObject->cTemplate = $dir;
+        $tplObject->eTyp      = $eTyp;
+        $tplObject->parent    = !empty($tplConfig->Parent)
             ? (string)$tplConfig->Parent
             : '_DBNULL_';
-        $tplObject->name        = (string)$tplConfig->Name;
-        $tplObject->author      = (string)$tplConfig->Author;
-        $tplObject->url         = (string)$tplConfig->URL;
-        $tplObject->version     = empty($tplConfig->Version) && $parentConfig
+        $tplObject->name      = (string)$tplConfig->Name;
+        $tplObject->author    = (string)$tplConfig->Author;
+        $tplObject->url       = (string)$tplConfig->URL;
+        $tplObject->version   = empty($tplConfig->Version) && $parentConfig
             ? $parentConfig->Version
             : $tplConfig->Version;
-        $tplObject->preview     = (string)$tplConfig->Preview;
-        $inserted               = Shop::Container()->getDB()->insert('ttemplate', $tplObject);
+        $tplObject->preview   = (string)$tplConfig->Preview;
+        $inserted             = Shop::Container()->getDB()->insert('ttemplate', $tplObject);
         if ($inserted > 0) {
             if (!$dh = opendir(PFAD_ROOT . PFAD_COMPILEDIR)) {
                 return false;

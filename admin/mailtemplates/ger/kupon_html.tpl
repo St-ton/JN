@@ -110,7 +110,7 @@ Gültig vom {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} bis {$Kupon->c
 <br>
 {if count($Kupon->Artikel)>0}Der Kupon gilt für folgende Artikel:<br>
     {foreach name=art from=$Kupon->Artikel item=Artikel}
-        <a href="{$Artikel->cURL}">{$Artikel->cName}</a><br>
+        <a href="{$Artikel->cURLFull}">{$Artikel->cName}</a><br>
     {/foreach}
 {/if}<br>
 <br>

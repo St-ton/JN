@@ -16,7 +16,7 @@ use DB\ReturnType;
 class Comment implements CommentInterface
 {
 
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array

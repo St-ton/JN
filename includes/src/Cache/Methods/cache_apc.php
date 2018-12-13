@@ -11,6 +11,7 @@ use Cache\JTLCacheTrait;
 
 /**
  * Class cache_apc
+ *
  * implements the APC Opcode Cache
  * @package Cache\Methods
  */

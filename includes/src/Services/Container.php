@@ -11,6 +11,11 @@ use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
 use Monolog\Logger;
+use OPC\DB;
+use OPC\Locker;
+use OPC\PageDB;
+use OPC\PageService;
+use OPC\Service;
 use Services\JTL\BoxServiceInterface;
 use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
@@ -120,41 +125,41 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getOPC(): \OPC\Service
+    public function getOPC(): Service
     {
-        return $this->get(\OPC\Service::class);
+        return $this->get(Service::class);
     }
 
     /**
      * @inheritdoc
      */
-    public function getOPCPageService(): \OPC\PageService
+    public function getOPCPageService(): PageService
     {
-        return $this->get(\OPC\PageService::class);
+        return $this->get(PageService::class);
     }
 
     /**
      * @inheritdoc
      */
-    public function getOPCDB(): \OPC\DB
+    public function getOPCDB(): DB
     {
-        return $this->get(\OPC\DB::class);
+        return $this->get(DB::class);
     }
 
     /**
      * @inheritdoc
      */
-    public function getOPCPageDB(): \OPC\PageDB
+    public function getOPCPageDB(): PageDB
     {
-        return $this->get(\OPC\PageDB::class);
+        return $this->get(PageDB::class);
     }
 
     /**
      * @inheritdoc
      */
-    public function getOPCLocker(): \OPC\Locker
+    public function getOPCLocker(): Locker
     {
-        return $this->get(\OPC\Locker::class);
+        return $this->get(Locker::class);
     }
 
     /**

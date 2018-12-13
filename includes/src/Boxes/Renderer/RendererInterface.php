@@ -9,17 +9,15 @@ namespace Boxes\Renderer;
 use \Boxes\Items\BoxInterface;
 
 /**
- * Interface BoxRendererInterface
- *
- * @package Boxes
+ * Interface RendererInterface
+ * @package Boxes\Renderer
  */
 interface RendererInterface
 {
     /**
-     * BoxRendererInterface constructor.
-     *
+     * RendererInterface constructor.
      * @param \Smarty\JTLSmartyTemplateClass $smarty
-     * @param BoxInterface $box
+     * @param BoxInterface|null              $box
      */
     public function __construct($smarty, BoxInterface $box = null);
 

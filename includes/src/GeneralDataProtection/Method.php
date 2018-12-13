@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -6,6 +6,10 @@
 
 namespace GeneralDataProtection;
 
+/**
+ * Class Method
+ * @package GeneralDataProtection
+ */
 class Method
 {
     /**
@@ -13,23 +17,23 @@ class Method
      *
      * @var object DateTime
      */
-    protected $oNow;
+    protected $now;
 
     /**
      * interval in "number of days"
      *
      * @var int
      */
-    protected $iInterval = 0;
+    protected $interval = 0;
 
     /**
      * select the maximum of 10,000 rows for one step!
      * (if the scripts are running each day, we need some days
      * to anonymize more than 10,000 data sets)
      *
-     * @var
+     * @var int
      */
-    protected $iWorkLimit = 10000;
+    protected $workLimit = 10000;
 
     /**
      * the last date we keep
@@ -37,29 +41,38 @@ class Method
      *
      * @var string
      */
-    protected $szDateLimit;
+    protected $dateLimit;
 
     /**
      * main shop logger
      *
      * @var \Monolog\Logger
      */
-    protected $oLogger;
+    protected $logger;
 
-
-    public function __construct(\DateTime $oObjNow, int $iInterval)
+    /**
+     * Method constructor.
+     * @param \DateTime $oObjNow
+     * @param int       $interval
+     */
+    public function __construct(\DateTime $oObjNow, int $interval)
     {
         try {
-            $this->oLogger = \Shop::Container()->getLogService();
+            $this->logger = \Shop::Container()->getLogService();
         } catch (\Exception $e) {
-            $this->oLogger = null;
+            $this->logger = null;
         }
-        $this->oNow      = clone $oObjNow;
-        $this->iInterval = $iInterval;
+        $this->now      = clone $oObjNow;
+        $this->interval = $interval;
         try {
-            $this->szDateLimit = $this->oNow->sub(new \DateInterval('P' . $this->iInterval . 'D'))->format('Y-m-d H:i:s');
+            $this->dateLimit = $this->now->sub(
+                new \DateInterval('P' . $this->interval . 'D')
+            )->format('Y-m-d H:i:s');
         } catch (\Exception $e) {
-            ($this->oLogger === null) ?: $this->oLogger->log(JTLLOG_LEVEL_WARNING, 'Wrong Interval given: ' . $this->iInterval);
+            ($this->logger === null) ?: $this->logger->log(
+                \JTLLOG_LEVEL_WARNING,
+                'Wrong Interval given: ' . $this->interval
+            );
         }
     }
 }

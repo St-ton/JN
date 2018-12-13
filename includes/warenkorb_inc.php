@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\WarenkorbHelper;
+
 /**
  * @param array $nPos_arr
  * @deprecated since 5.0.0

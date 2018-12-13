@@ -3,20 +3,23 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\RequestHelper;
+use Pagination\Pagination;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_WISHLIST_VIEW', true, true);
 /** @global Smarty\JTLSmarty $smarty */
-$cHinweis          = '';
-$settingsIDs       = [442, 443, 440, 439, 445, 446, 1460];
+$cHinweis    = '';
+$settingsIDs = [442, 443, 440, 439, 445, 446, 1460];
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
     $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
 }
-// Anzahl Wunschzettel, gewünschte Artikel, versendete Wunschzettel
-$oWunschlistePos = Shop::Container()->getDB()->query(
+$oWunschlistePos     = Shop::Container()->getDB()->query(
     'SELECT COUNT(tWunsch.kWunschliste) AS nAnzahl
         FROM
         (
@@ -40,18 +43,16 @@ $oWunschlisteFreunde = Shop::Container()->getDB()->query(
             ON twunschliste.kWunschliste = twunschlisteversand.kWunschliste',
     \DB\ReturnType::SINGLE_OBJECT
 );
-// Paginationen
-$oPagiPos = (new Pagination('pos'))
+$oPagiPos            = (new Pagination('pos'))
     ->setItemCount($oWunschlistePos->nAnzahl)
     ->assemble();
-$oPagiArtikel = (new Pagination('artikel'))
+$oPagiArtikel        = (new Pagination('artikel'))
     ->setItemCount($oWunschlisteArtikel->nAnzahl)
     ->assemble();
-$oPagiFreunde = (new Pagination('freunde'))
+$oPagiFreunde        = (new Pagination('freunde'))
     ->setItemCount($oWunschlisteFreunde->nAnzahl)
     ->assemble();
-// An Freunde versendete Wunschzettel
-$CWunschlisteVersand_arr = Shop::Container()->getDB()->query(
+$sentWishLists       = Shop::Container()->getDB()->query(
     "SELECT tkunde.kKunde, tkunde.cNachname, tkunde.cVorname, twunschlisteversand.nAnzahlArtikel, 
         twunschliste.kWunschliste, twunschliste.cName, twunschliste.cURLID, 
         twunschlisteversand.nAnzahlEmpfaenger, DATE_FORMAT(twunschlisteversand.dZeit, '%d.%m.%Y  %H:%i') AS Datum
@@ -64,13 +65,13 @@ $CWunschlisteVersand_arr = Shop::Container()->getDB()->query(
         LIMIT " . $oPagiFreunde->getLimitSQL(),
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
-foreach ($CWunschlisteVersand_arr as $i => $CWunschlisteVersand) {
-    if ($CWunschlisteVersand->kKunde !== null) {
-        $oKunde = new Kunde($CWunschlisteVersand->kKunde);
-        $CWunschlisteVersand_arr[$i]->cNachname = $oKunde->cNachname;
+foreach ($sentWishLists as $wishList) {
+    if ($wishList->kKunde !== null) {
+        $customer            = new Kunde($wishList->kKunde);
+        $wishList->cNachname = $customer->cNachname;
     }
 }
-$CWunschliste_arr = Shop::Container()->getDB()->query(
+$wishLists = Shop::Container()->getDB()->query(
     "SELECT tkunde.kKunde, tkunde.cNachname, tkunde.cVorname, twunschliste.kWunschliste, twunschliste.cName,
         twunschliste.cURLID, DATE_FORMAT(twunschliste.dErstellt, '%d.%m.%Y %H:%i') AS Datum, 
         twunschliste.nOeffentlich, COUNT(twunschlistepos.kWunschliste) AS Anzahl
@@ -84,13 +85,13 @@ $CWunschliste_arr = Shop::Container()->getDB()->query(
         LIMIT " . $oPagiPos->getLimitSQL(),
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
-foreach ($CWunschliste_arr as $i => $CWunschliste) {
-    if ($CWunschliste->kKunde !== null) {
-        $oKunde = new Kunde($CWunschliste->kKunde);
-        $CWunschliste_arr[$i]->cNachname = $oKunde->cNachname;
+foreach ($wishLists as $wishList) {
+    if ($wishList->kKunde !== null) {
+        $customer            = new Kunde($wishList->kKunde);
+        $wishList->cNachname = $customer->cNachname;
     }
 }
-$CWunschlistePos_arr = Shop::Container()->getDB()->query(
+$wishListPositions = Shop::Container()->getDB()->query(
     "SELECT kArtikel, cArtikelName, count(kArtikel) AS Anzahl,
         DATE_FORMAT(dHinzugefuegt, '%d.%m.%Y %H:%i') AS Datum
         FROM twunschlistepos
@@ -104,8 +105,8 @@ $smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
        ->assign('oPagiPos', $oPagiPos)
        ->assign('oPagiArtikel', $oPagiArtikel)
        ->assign('oPagiFreunde', $oPagiFreunde)
-       ->assign('CWunschlisteVersand_arr', $CWunschlisteVersand_arr)
-       ->assign('CWunschliste_arr', $CWunschliste_arr)
-       ->assign('CWunschlistePos_arr', $CWunschlistePos_arr)
+       ->assign('CWunschlisteVersand_arr', $sentWishLists)
+       ->assign('CWunschliste_arr', $wishLists)
+       ->assign('CWunschlistePos_arr', $wishListPositions)
        ->assign('hinweis', $cHinweis)
        ->display('wunschliste.tpl');

@@ -9,9 +9,8 @@ namespace Boxes\Renderer;
 use Boxes\Items\BoxInterface;
 
 /**
- * Class BoxRenderer
- *
- * @package Boxes
+ * Class DefaultRenderer
+ * @package Boxes\Renderer
  */
 class DefaultRenderer implements RendererInterface
 {

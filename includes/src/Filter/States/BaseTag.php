@@ -22,7 +22,7 @@ use Filter\Type;
  */
 class BaseTag extends AbstractFilter
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -178,14 +178,14 @@ class BaseTag extends AbstractFilter
             return $this->options;
         }
         $tags             = $this->productFilter->getDB()->query(
-            "SELECT tseo.cSeo, ssMerkmal.kTag, ssMerkmal.cName, 
+            'SELECT tseo.cSeo, ssMerkmal.kTag, ssMerkmal.cName, 
                 COUNT(*) AS nAnzahl, SUM(ssMerkmal.nAnzahlTagging) AS nAnzahlTagging
-                    FROM (" . $baseQuery . ") AS ssMerkmal
+                    FROM (' . $baseQuery . ") AS ssMerkmal
                 LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kTag
                     AND tseo.cKey = 'kTag'
-                    AND tseo.kSprache = " . $this->getLanguageID() . "
+                    AND tseo.kSprache = " . $this->getLanguageID() . '
                 GROUP BY ssMerkmal.kTag
-                ORDER BY nAnzahl DESC LIMIT 0, " .
+                ORDER BY nAnzahl DESC LIMIT 0, ' .
             (int)$this->getConfig('navigationsfilter')['tagfilter_max_anzeige'],
             ReturnType::ARRAY_OF_OBJECTS
         );

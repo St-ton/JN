@@ -12,7 +12,7 @@ namespace Filter\Pagination;
  */
 class Info
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var int

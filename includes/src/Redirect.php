@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\RequestHelper;
+use Helpers\UrlHelper;
+
 /**
  * Class Redirect
  */
@@ -227,7 +230,7 @@ class Redirect
         if (isset($xParse_arr['query'])) {
             $cFromUrl .= '?' . $xParse_arr['query'];
         }
-        $options = ['cFromUrl' => $cFromUrl];
+        $options           = ['cFromUrl' => $cFromUrl];
         $options['cArtNr'] = null;
         if (isset($csv[$cMapping_arr['articlenumber']])) {
             $options['cArtNr'] = $csv[$cMapping_arr['articlenumber']];
@@ -480,7 +483,7 @@ class Redirect
         $oUrl = new UrlHelper();
         $oUrl->setUrl($cUrl);
 
-        return '/' . trim($oUrl->normalize(), "\\/");
+        return '/' . trim($oUrl->normalize(), '\\/');
     }
 
     /**
@@ -503,7 +506,7 @@ class Redirect
             $qry .= ' AND ';
         }
         if (!empty($cSuchbegriff)) {
-            $qry  .= 'cFromUrl LIKE :search';
+            $qry .= 'cFromUrl LIKE :search';
             $prep = ['search' => '%' . $cSuchbegriff . '%'];
         }
         $oCount = Shop::Container()->getDB()->executeQueryPrepared($qry, $prep, \DB\ReturnType::SINGLE_OBJECT);

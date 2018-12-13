@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\UrlHelper;
+
 /**
  * @return bool
  */
@@ -12,7 +14,9 @@ function generiereRSSXML()
     Shop::Container()->getLogService()->debug('RSS wird erstellt');
     $shopURL = Shop::getURL();
     if (!is_writable(PFAD_ROOT . FILE_RSS_FEED)) {
-        Shop::Container()->getLogService()->error('RSS Verzeichnis ' . PFAD_ROOT . FILE_RSS_FEED . 'nicht beschreibbar!');
+        Shop::Container()->getLogService()->error(
+            'RSS Verzeichnis ' . PFAD_ROOT . FILE_RSS_FEED . 'nicht beschreibbar!'
+        );
 
         return false;
     }
@@ -48,7 +52,7 @@ function generiereRSSXML()
     }
     // Artikel beachten?
     if ($Einstellungen['rss']['rss_artikel_beachten'] === 'Y') {
-        $artikelarr = Shop::Container()->getDB()->query(
+        $products = Shop::Container()->getDB()->query(
             "SELECT tartikel.kArtikel, tartikel.cName, tartikel.cKurzBeschreibung, tseo.cSeo, 
                 tartikel.dLetzteAktualisierung, tartikel.dErstellt, 
                 DATE_FORMAT(tartikel.dErstellt, \"%a, %d %b %Y %H:%i:%s UTC\") AS erstellt
@@ -64,12 +68,12 @@ function generiereRSSXML()
                     AND tartikel.cNeu = 'Y'
                     $lagerfilter
                     AND cNeu = 'Y' 
-                    AND DATE_SUB(now(), INTERVAL " . $alter_tage . " DAY) < dErstellt
-                ORDER BY dLetzteAktualisierung DESC",
+                    AND DATE_SUB(now(), INTERVAL " . $alter_tage . ' DAY) < dErstellt
+                ORDER BY dLetzteAktualisierung DESC',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($artikelarr as $artikel) {
-            $url = UrlHelper::buildURL($artikel, URLART_ARTIKEL, true);
+        foreach ($products as $artikel) {
+            $url  = UrlHelper::buildURL($artikel, URLART_ARTIKEL, true);
             $xml .= '
         <item>
             <title>' . wandelXMLEntitiesUm($artikel->cName) . '</title>
@@ -82,26 +86,26 @@ function generiereRSSXML()
     }
     // News beachten?
     if ($Einstellungen['rss']['rss_news_beachten'] === 'Y') {
-        $oNews_arr = Shop::Container()->getDB()->query(
+        $news = Shop::Container()->getDB()->query(
             "SELECT tnews.*, t.title, t.preview, DATE_FORMAT(dGueltigVon, '%a, %d %b %Y %H:%i:%s UTC') AS dErstellt_RSS
                 FROM tnews
                 JOIN tnewssprache t 
                     ON tnews.kNews = t.kNews
-                WHERE DATE_SUB(now(), INTERVAL " . $alter_tage . " DAY) < dGueltigVon
+                WHERE DATE_SUB(now(), INTERVAL " . $alter_tage . ' DAY) < dGueltigVon
                     AND nAktiv = 1
                     AND dGueltigVon <= now()
-                ORDER BY dGueltigVon DESC",
+                ORDER BY dGueltigVon DESC',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($oNews_arr as $oNews) {
-            $url = UrlHelper::buildURL($oNews, URLART_NEWS);
+        foreach ($news as $item) {
+            $url  = UrlHelper::buildURL($item, URLART_NEWS);
             $xml .= '
         <item>
-            <title>' . wandelXMLEntitiesUm($oNews->title) . '</title>
-            <description>' . wandelXMLEntitiesUm($oNews->preview) . '</description>
+            <title>' . wandelXMLEntitiesUm($item->title) . '</title>
+            <description>' . wandelXMLEntitiesUm($item->preview) . '</description>
             <link>' . $url . '</link>
             <guid>' . $url . '</guid>
-            <pubDate>' . bauerfc2822datum($oNews->dGueltigVon) . '</pubDate>
+            <pubDate>' . bauerfc2822datum($item->dGueltigVon) . '</pubDate>
         </item>';
         }
     }
@@ -110,15 +114,16 @@ function generiereRSSXML()
         $oBewertung_arr = Shop::Container()->getDB()->query(
             "SELECT *, dDatum, DATE_FORMAT(dDatum, '%a, %d %b %y %h:%i:%s +0100') AS dErstellt_RSS
                 FROM tbewertung
-                WHERE DATE_SUB(NOW(), INTERVAL " . $alter_tage . " DAY) < dDatum
-                    AND nAktiv = 1",
+                WHERE DATE_SUB(NOW(), INTERVAL " . $alter_tage . ' DAY) < dDatum
+                    AND nAktiv = 1',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oBewertung_arr as $oBewertung) {
-            $url = UrlHelper::buildURL($oBewertung, URLART_ARTIKEL, true);
+            $url  = UrlHelper::buildURL($oBewertung, URLART_ARTIKEL, true);
             $xml .= '
         <item>
-            <title>Bewertung ' . wandelXMLEntitiesUm($oBewertung->cTitel) . ' von ' . wandelXMLEntitiesUm($oBewertung->cName) . '</title>
+            <title>Bewertung ' . wandelXMLEntitiesUm($oBewertung->cTitel) . ' von ' .
+                wandelXMLEntitiesUm($oBewertung->cName) . '</title>
             <description>' . wandelXMLEntitiesUm($oBewertung->cText) . '</description>
             <link>' . $url . '</link>
             <guid>' . $url . '</guid>

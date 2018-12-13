@@ -225,7 +225,7 @@ class ZipValidator
     public function validateZip($szZipCode): string
     {
         if (array_key_exists($this->cISO, self::$vPatternHashList)) {
-            if (!preg_match("/^" . self::$vPatternHashList[$this->cISO] . "$/", $szZipCode)) {
+            if (!preg_match('/^' . self::$vPatternHashList[$this->cISO] . '$/', $szZipCode)) {
                 $this->szErrorString = $this->beautifyErrorString($szZipCode, self::$vPatternHashList[$this->cISO]);
                 Shop::Container()->getLogService()->error(
                     'Postleitzahl stimmt nicht mit Landesvorgabe überein! ' . $szZipCode .

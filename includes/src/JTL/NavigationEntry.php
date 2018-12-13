@@ -12,8 +12,11 @@ namespace JTL;
  */
 class NavigationEntry
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
+    /**
+     * @var array
+     */
     protected static $mapping = [
         'name'     => 'Name',
         'url'      => 'URL',

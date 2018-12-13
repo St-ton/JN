@@ -487,8 +487,8 @@ class ipl_prescore_request extends ipl_xml_request
      */
     public function set_payment_info_params($showhtmlinfo, $showplaininfo)
     {
-        $this->_payment_info_params['htmlinfo']  = $showhtmlinfo ? "1" : "0";
-        $this->_payment_info_params['plaininfo'] = $showplaininfo ? "1" : "0";
+        $this->_payment_info_params['htmlinfo']  = $showhtmlinfo ? '1' : '0';
+        $this->_payment_info_params['plaininfo'] = $showplaininfo ? '1' : '0';
     }
 
     /**

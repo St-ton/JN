@@ -8,7 +8,7 @@ msgid "configgroup_121"
 msgstr "Allgemein"
 
 msgid "configgroup_222"
-msgstr "UST Ausweisung (z.B. wegen Kleinunternehmerregelung)"
+msgstr "Umsatzsteuer-Ausweisung (z. B. wegen Kleinunternehmerregelung)"
 
 msgid "configgroup_539"
 msgstr "Gespeicherter Warenkorb"
@@ -20,10 +20,10 @@ msgid "configgroup_173"
 msgstr "Wartungsmodus"
 
 msgid "configgroup_1289"
-msgstr "Versand Seite"
+msgstr "Spezialseite „Versand“"
 
 msgid "configgroup_1443"
-msgstr "Adminbereich"
+msgstr "Admin-Bereich"
 
 msgid "configgroup_1567"
 msgstr "Cookie-Einstellungen (Achtung: nur ändern, wenn Sie genau wissen, was Sie tun!)"
@@ -32,58 +32,58 @@ msgid "configgroup_123"
 msgstr "Allgemein"
 
 msgid "configgroup_144"
-msgstr "Emaileinstellungen"
+msgstr "E-Mail-Einstellungen"
 
 msgid "configgroup_56"
 msgstr "Suche"
 
 msgid "configgroup_421"
-msgstr "Livesuche"
+msgstr "Live-Suche"
 
 msgid "configgroup_1312"
 msgstr "Erweiterte Darstellung"
 
 msgid "configgroup_84"
-msgstr "X-Selling (Standard)"
+msgstr "Cross-Selling (Standard)"
 
 msgid "configgroup_86"
-msgstr "X-Selling (Kunden, die X gekauft haben, haben auch Y gekauft)"
+msgstr "Cross-Selling (Kunden kauften dazu folgende Artikel)"
 
 msgid "configgroup_89"
 msgstr "Allgemeines"
 
 msgid "configgroup_301"
-msgstr "Frage zum Produkt"
+msgstr "Frage zum Artikel"
 
 msgid "configgroup_314"
-msgstr "Mailbenachrichtigung, wenn Produkt wieder verf&uuml;gbar"
+msgstr "E-Mail-Benachrichtigung, wenn Artikel wieder verfügbar"
 
 msgid "configgroup_516"
 msgstr "Vergleichsliste"
 
 msgid "configgroup_626"
-msgstr "Produkttagging"
+msgstr "Artikel-Tagging"
 
 msgid "configgroup_638"
-msgstr "MedienModul"
+msgstr "Mediendateien"
 
 msgid "configgroup_1122"
 msgstr "Ähnliche Artikel"
 
 msgid "configgroup_1295"
-msgstr "St&uuml;ckliste"
+msgstr "Stückliste"
 
 msgid "configgroup_1650"
 msgstr "Beschreibungs-Tab"
 
 msgid "configgroup_1"
-msgstr "Kundenaccounterstellung / Unregistriert bestellen"
+msgstr "Kundenkontoerstellung / Unregistriert bestellen"
 
 msgid "configgroup_14"
 msgstr "Lieferadresse"
 
 msgid "configgroup_556"
-msgstr "Umsatzsteuer Identifikationsnummer"
+msgstr "Umsatzsteuer-Identifikationsnummer"
 
 msgid "configgroup_283"
 msgstr "Warenkorb"
@@ -104,7 +104,7 @@ msgid "configgroup_72"
 msgstr "Box: Neu im Sortiment"
 
 msgid "configgroup_75"
-msgstr "Box: Top Angebot"
+msgstr "Box: Top-Angebot"
 
 msgid "configgroup_78"
 msgstr "Box: Zuletzt angesehen"
@@ -116,7 +116,7 @@ msgid "configgroup_424"
 msgstr "Suchwolke"
 
 msgid "configgroup_426"
-msgstr "Tagwolke"
+msgstr "Tag-Wolke"
 
 msgid "configgroup_441"
 msgstr "Wunschzettel"
@@ -128,16 +128,16 @@ msgid "configgroup_542"
 msgstr "Box: Top Bewertet"
 
 msgid "configgroup_1517"
-msgstr "Box: Preisradar"
+msgstr "Box: Top Bewertet"
 
 msgid "configgroup_161"
 msgstr "Bildeinstellungen"
 
 msgid "configgroup_432"
-msgstr "Tagging Übersicht"
+msgstr "Tagging-Übersicht"
 
 msgid "configgroup_436"
-msgstr "Livesuche Übersicht"
+msgstr "Livesuche-Übersicht"
 
 msgid "configgroup_1143"
 msgstr "Gratisgeschenk"
@@ -155,7 +155,7 @@ msgid "configgroup_36"
 msgstr "Rechnung"
 
 msgid "configgroup_1450"
-msgstr "Billpay"
+msgstr "BillPay"
 
 msgid "configgroup_40"
 msgstr "Lastschrift"
@@ -164,13 +164,13 @@ msgid "configgroup_44"
 msgstr "Barzahlung"
 
 msgid "configgroup_250"
-msgstr "Sofort&uuml;berweisung"
+msgstr "Sofort"
 
 msgid "configgroup_288"
 msgstr "Einstellungen"
 
 msgid "configgroup_396"
-msgstr "RSS-Feed Einstellungen"
+msgstr "Einstellungen für RSS-Feed"
 
 msgid "configgroup_452"
 msgstr "Preisverlauf"
@@ -188,7 +188,7 @@ msgid "configgroup_504"
 msgstr "Newsletter"
 
 msgid "configgroup_518"
-msgstr "Kundenfeld"
+msgstr "Formularfeld"
 
 msgid "configgroup_520"
 msgstr "Allgemein"
@@ -200,7 +200,7 @@ msgid "configgroup_535"
 msgstr "Bewertungsfilter"
 
 msgid "configgroup_529"
-msgstr "Tagfilter"
+msgstr "Tag-Filter"
 
 msgid "configgroup_635"
 msgstr "Suchtrefferfilter"
@@ -221,29 +221,28 @@ msgid "configgroup_623"
 msgstr "Aktuelle Kategorie"
 
 msgid "configgroup_548"
-msgstr "Email Blacklist"
+msgstr "E-Mail-Blacklist"
 
 msgid "configgroup_134"
-msgstr "Meta Angaben"
+msgstr "Metadaten"
 
 msgid "configgroup_568"
-msgstr "Newssystem"
+msgstr "News-System"
 
 msgid "configgroup_579"
-msgstr "Shop Sitemap Einstellungen"
+msgstr "Sitemap-Einstellungen"
 
 msgid "configgroup_586"
-msgstr "Umfragesystem Einstellungen"
+msgstr "Einstellungen für Umfragesystem"
 
 msgid "configgroup_593"
-msgstr "Kunden werben Kunden Einstellungen"
+msgstr "Einstellungen für Kunden werben Kunden"
 
 msgid "configgroup_1291"
-msgstr "Trusted Shops K&auml;uferschutz Einstellungen"
+msgstr "Einstellungen für Trusted Shops Käuferschutz"
 
 msgid "configgroup_1392"
-msgstr "Suchspecial Standardsortierung"
+msgstr "Standardsortierung für Besondere Artikel"
 
 msgid "configgroup_1491"
 msgstr "Warenrücksendung"
-

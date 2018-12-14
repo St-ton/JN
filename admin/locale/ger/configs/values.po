@@ -2,16 +2,16 @@ msgid "artikel_artikelanzeigefilter_value(1)"
 msgstr "Alle Artikel anzeigen"
 
 msgid "artikel_artikelanzeigefilter_value(2)"
-msgstr "Nur Artikel mit Lagerbestand>0 anzeigen"
+msgstr "Nur Artikel mit verfügbarem Lagerbestand anzeigen"
 
 msgid "artikel_artikelanzeigefilter_value(3)"
-msgstr "Nur Artikel mit Lagerbestand>0 oder deren Lagerbestand<0 werden darf"
+msgstr "Nur Artikel mit verfügbarem Lagerbestand oder Option „Überverkäufe möglich“ anzeigen"
 
 msgid "artikel_artikelanzeigefilter_seo_value(404)"
-msgstr "Seite nicht gefunden (404 Not Found)"
+msgstr "Seite nicht gefunden (404 - Not Found)"
 
 msgid "artikel_artikelanzeigefilter_seo_value(seo)"
-msgstr "Artikel-Detailseite bleibt erreichbar"
+msgstr "Artikeldetailseite bleibt erreichbar"
 
 msgid "artikel_ampel_lagernull_gruen_value(N)"
 msgstr "Nein"
@@ -20,16 +20,16 @@ msgid "artikel_ampel_lagernull_gruen_value(Y)"
 msgstr "Ja"
 
 msgid "global_preis0_value(Y)"
-msgstr "Preis anzeigen und Produkt k&auml;uflich"
+msgstr "Preis anzeigen und Artikel käuflich"
 
 msgid "global_preis0_value(N)"
-msgstr "Preis auf Anfrage und Produkt nicht k&auml;uflich"
+msgstr "Preis auf Anfrage und Artikel nicht käuflich"
 
 msgid "artikeldetails_variationswertlager_value(1)"
 msgstr "Zur Auswahl stellen"
 
 msgid "artikeldetails_variationswertlager_value(2)"
-msgstr "(ausverkauft) anh&auml;ngen"
+msgstr "(ausverkauft) anhängen"
 
 msgid "artikeldetails_variationswertlager_value(3)"
 msgstr "Nicht zur Auswahl stellen"
@@ -62,7 +62,7 @@ msgid "global_versandkostenfrei_darstellung_value(M)"
 msgstr "Mouseover zeigt Länder"
 
 msgid "global_versandkostenfrei_darstellung_value(D)"
-msgstr "Länder direkt Sichtbar"
+msgstr "Länder direkt sichtbar"
 
 msgid "global_artikelname_htmlentities_value(Y)"
 msgstr "Ja"
@@ -89,16 +89,16 @@ msgid "global_sichtbarkeit_value(1)"
 msgstr "Alles ist sichtbar"
 
 msgid "global_sichtbarkeit_value(2)"
-msgstr "Preise erst nach Login sichtbar"
+msgstr "Preise erst nach Anmeldung sichtbar"
 
 msgid "global_sichtbarkeit_value(3)"
-msgstr "Artikel/Kategorien erst nach Login sichtbar"
+msgstr "Artikel / Kategorien erst nach Anmeldung sichtbar"
 
 msgid "global_kundenkonto_aktiv_value(S)"
 msgstr "Sofort aktiv und nutzbar"
 
 msgid "global_kundenkonto_aktiv_value(A)"
-msgstr "muss in JTL Wawi aktiviert werden"
+msgstr "Muss in JTL-Wawi aktiviert werden"
 
 msgid "global_google_ecommerce_value(0)"
 msgstr "Nein"
@@ -113,19 +113,19 @@ msgid "kaufabwicklung_ssl_nutzen_value(P)"
 msgstr "Automatischer Wechsel zu https"
 
 msgid "global_versandhinweis_value(zzgl)"
-msgstr "zzgl. Versand"
+msgstr "Zzgl. Versand"
 
 msgid "global_versandhinweis_value(inkl)"
-msgstr "inkl. Versand"
+msgstr "Inkl. Versand"
 
 msgid "global_versandhinweis_value(kein)"
-msgstr "kein Hinweis auf Versand"
+msgstr "Kein Hinweis auf Versand"
 
 msgid "global_erscheinende_kaeuflich_value(Y)"
-msgstr "sind k&auml;uflich"
+msgstr "Sind käuflich"
 
 msgid "global_erscheinende_kaeuflich_value(N)"
-msgstr "sind nicht k&auml;uflich"
+msgstr "Sind nicht käuflich"
 
 msgid "global_zaehler_anzeigen_value(Y)"
 msgstr "Ja"
@@ -158,10 +158,10 @@ msgid "redirect_save_404_value(N)"
 msgstr "Nein"
 
 msgid "global_ust_auszeichnung_value(auto)"
-msgstr "autom. inkl. / exkl. USt einfügen"
+msgstr "automatisch „inkl. / exkl. USt“ einfügen"
 
 msgid "global_ust_auszeichnung_value(endpreis)"
-msgstr "Endpreis* einfügen"
+msgstr "„Endpreis*“ einfügen"
 
 msgid "global_steuerpos_anzeigen_value(Y)"
 msgstr "Ja"
@@ -248,13 +248,13 @@ msgid "global_cookie_httponly_value(Y)"
 msgstr "Ja"
 
 msgid "email_methode_value(mail)"
-msgstr "PHP Mail()"
+msgstr "PHP mail()"
 
 msgid "email_methode_value(sendmail)"
 msgstr "Sendmail"
 
 msgid "email_methode_value(qmail)"
-msgstr "QMail"
+msgstr "qmail"
 
 msgid "email_methode_value(smtp)"
 msgstr "SMTP"
@@ -284,16 +284,16 @@ msgid "suche_fulltext_value(B)"
 msgstr "Volltextsuche (Boolean Mode)"
 
 msgid "artikeluebersicht_lagerbestandsanzeige_value(verfuegbarkeit)"
-msgstr "nur anzeigen, ob verfügbar oder nicht"
+msgstr "nur anzeigen, ob verfügbar "
 
 msgid "artikeluebersicht_lagerbestandsanzeige_value(genau)"
-msgstr "genauen Lagerbestand anzeigen"
+msgstr "Genauen Lagerbestand anzeigen"
 
 msgid "artikeluebersicht_lagerbestandsanzeige_value(ampel)"
 msgstr "Lagerbestandsampel verwenden"
 
 msgid "artikeluebersicht_lagerbestandsanzeige_value(nichts)"
-msgstr "keine Lagerbestandsanzeige"
+msgstr "Keine Lagerbestandsanzeige"
 
 msgid "artikeluebersicht_kurzbeschreibung_anzeigen_value(Y)"
 msgstr "Ja"
@@ -305,10 +305,10 @@ msgid "artikeluebersicht_lagerbestandanzeige_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "artikeluebersicht_lagerbestandanzeige_anzeigen_value(U)"
-msgstr "Ja, wenn Artikel ausverkauft und Überverkäufe möglich sind"
+msgstr "Ja, wenn Artikel ausverkauft und Überverkäufe möglich sind."
 
 msgid "artikeluebersicht_lagerbestandanzeige_anzeigen_value(I)"
-msgstr "Ja, wenn Artikel ausverkauft und keine Überverkäufe möglich sind"
+msgstr "Ja, wenn Artikel ausverkauft und keine Überverkäufe möglich sind."
 
 msgid "artikeluebersicht_hersteller_anzeigen_value(Y)"
 msgstr "Ja, als Text"
@@ -326,22 +326,22 @@ msgid "artikeluebersicht_artikelsortierung_value(100)"
 msgstr "Standard"
 
 msgid "artikeluebersicht_artikelsortierung_value(1)"
-msgstr "Name A-Z"
+msgstr "Artikelname von A bis Z"
 
 msgid "artikeluebersicht_artikelsortierung_value(2)"
-msgstr "Name Z-A"
+msgstr "Name absteigend"
 
 msgid "artikeluebersicht_artikelsortierung_value(3)"
-msgstr "Preis 1..9"
+msgstr "Preis aufsteigend"
 
 msgid "artikeluebersicht_artikelsortierung_value(4)"
-msgstr "Preis 9..1"
+msgstr "Preis absteigend"
 
 msgid "artikeluebersicht_artikelsortierung_value(5)"
 msgstr "EAN"
 
 msgid "artikeluebersicht_artikelsortierung_value(6)"
-msgstr "neuste zuerst"
+msgstr "Neueste zuerst"
 
 msgid "artikeluebersicht_artikelsortierung_value(7)"
 msgstr "Artikelnummer"
@@ -386,19 +386,19 @@ msgid "artikeluebersicht_rabattanzeige_value(1)"
 msgstr "Nur Endpreis anzeigen"
 
 msgid "artikeluebersicht_rabattanzeige_value(2)"
-msgstr "Rabatt zus&auml;tzlich anzeigen"
+msgstr "Rabatt zusätzlich anzeigen"
 
 msgid "artikeluebersicht_rabattanzeige_value(3)"
-msgstr "Alten Preis zus&auml;tzlich anzeigen"
+msgstr "Alten Preis zusätzlich anzeigen"
 
 msgid "artikeluebersicht_rabattanzeige_value(4)"
-msgstr "Alten Preis und Rabatt zus&auml;tzlich anzeigen"
+msgstr "Alten Preis und Rabatt zusätzlich anzeigen"
 
 msgid "artikeluebersicht_sonderpreisanzeige_value(1)"
 msgstr "Nur den Sonderpreis anzeigen"
 
 msgid "artikeluebersicht_sonderpreisanzeige_value(2)"
-msgstr "Zus&auml;tzlich den alten Preis anzeigen"
+msgstr "Zusätzlich den alten Preis anzeigen"
 
 msgid "topbest_anzeigen_value(Top)"
 msgstr "Nur Top-Artikel anzeigen"
@@ -500,31 +500,31 @@ msgid "artikel_variationspreisanzeige_value(1)"
 msgstr "Aufpreise / Rabatte anzeigen"
 
 msgid "artikel_variationspreisanzeige_value(2)"
-msgstr "Artikelpreis inkl. Aufpreis/Rabatt"
+msgstr "Artikelpreis inkl. Aufpreis / Rabatt"
 
 msgid "artikel_variationspreisanzeige_value(0)"
 msgstr "Keine Variationsaufpreise anzeigen"
 
 msgid "artikel_lagerbestandsanzeige_value(verfuegbarkeit)"
-msgstr "nur anzeigen, ob verfügbar oder nicht"
+msgstr "nur anzeigen, ob verfügbar "
 
 msgid "artikel_lagerbestandsanzeige_value(genau)"
-msgstr "genauen Lagerbestand anzeigen"
+msgstr "Genauen Lagerbestand anzeigen"
 
 msgid "artikel_lagerbestandsanzeige_value(ampel)"
 msgstr "Lagerbestandsampel verwenden"
 
 msgid "artikel_lagerbestandsanzeige_value(nichts)"
-msgstr "keine Lagerbestandsanzeige"
+msgstr "Keine Lagerbestandsanzeige"
 
 msgid "artikeldetails_lieferantenbestand_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "artikeldetails_lieferantenbestand_anzeigen_value(U)"
-msgstr "Ja, wenn Artikel ausverkauft und Überverkäufe möglich sind"
+msgstr "Ja, wenn Artikel ausverkauft und Überverkäufe möglich sind."
 
 msgid "artikeldetails_lieferantenbestand_anzeigen_value(I)"
-msgstr "Ja, wenn Artikel ausverkauft und keine Überverkäufe möglich sind"
+msgstr "Ja, wenn Artikel ausverkauft und keine Überverkäufe möglich sind."
 
 msgid "artikeldetails_kurzbeschreibung_anzeigen_value(Y)"
 msgstr "Ja"
@@ -542,7 +542,7 @@ msgid "artikeldetails_hersteller_anzeigen_value(Y)"
 msgstr "Ja, als Text"
 
 msgid "artikeldetails_lieferstatus_anzeigen_value(L)"
-msgstr "Nur, wenn Lager gleich 0"
+msgstr "Nur, wenn Lagerbestand 0 ist"
 
 msgid "artikeldetails_hersteller_anzeigen_value(BT)"
 msgstr "Ja, als Text und Bild"
@@ -560,7 +560,7 @@ msgid "artikeldetails_hersteller_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "artikeldetails_lieferstatus_anzeigen_value(A)"
-msgstr "Ja, aber ausblenden bei nicht lagernden Artikeln"
+msgstr "Ja, aber ausblenden bei nicht verfügbaren Artikeln"
 
 msgid "artikeldetails_artikelintervall_anzeigen_value(Y)"
 msgstr "Ja"
@@ -578,19 +578,19 @@ msgid "artikeldetails_rabattanzeige_value(1)"
 msgstr "Nur Endpreis anzeigen"
 
 msgid "artikeldetails_rabattanzeige_value(2)"
-msgstr "Rabatt zus&auml;tzlich anzeigen"
+msgstr "Rabatt zusätzlich anzeigen"
 
 msgid "artikeldetails_rabattanzeige_value(3)"
-msgstr "Alten Preis zus&auml;tzlich anzeigen"
+msgstr "Alten Preis zusätzlich anzeigen"
 
 msgid "artikeldetails_rabattanzeige_value(4)"
-msgstr "Alten Preis und Rabatt zus&auml;tzlich anzeigen"
+msgstr "Alten Preis und Rabatt zusätzlich anzeigen"
 
 msgid "artikeldetails_sonderpreisanzeige_value(1)"
 msgstr "Nur den Sonderpreis anzeigen"
 
 msgid "artikeldetails_sonderpreisanzeige_value(2)"
-msgstr "Zus&auml;tzlich den alten Preis anzeigen"
+msgstr "Zusätzlich den alten Preis anzeigen"
 
 msgid "artikeldetails_kategorie_anzeigen_value(Y)"
 msgstr "Ja"
@@ -668,13 +668,13 @@ msgid "adr_hazard_display_value(N)"
 msgstr "Nein"
 
 msgid "isbn_display_value(D)"
-msgstr "Ja, in den Artikeldetails"
+msgstr "Ja, auf der Artikeldetailseite"
 
 msgid "artikeldetails_variationskombikind_bildvorschau_value(N)"
 msgstr "Nein"
 
 msgid "adr_hazard_display_value(D)"
-msgstr "Ja, in den Artikeldetails"
+msgstr "Ja, auf der Artikeldetailseite"
 
 msgid "isbn_display_value(L)"
 msgstr "Ja, in Listen"
@@ -683,10 +683,10 @@ msgid "adr_hazard_display_value(L)"
 msgstr "Ja, in Listen"
 
 msgid "isbn_display_value(DL)"
-msgstr "Ja, in den Details und den Listen"
+msgstr "Ja, auf der Artikeldetailseite und in den Listen"
 
 msgid "adr_hazard_display_value(DL)"
-msgstr "Ja, in den Details und den Listen"
+msgstr "Ja, auf der Artikeldetailseite und in den Listen"
 
 msgid "artikeldetails_fragezumprodukt_anzeigen_value(Y)"
 msgstr "Ja"
@@ -695,7 +695,7 @@ msgid "artikeldetails_fragezumprodukt_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "artikeldetails_fragezumprodukt_anzeigen_value(P)"
-msgstr "Ja, als PopUp"
+msgstr "Ja, als Pop-up"
 
 msgid "produktfrage_abfragen_anrede_value(Y)"
 msgstr "Ja"
@@ -776,10 +776,10 @@ msgid "benachrichtigung_nutzen_value(N)"
 msgstr "Nein"
 
 msgid "benachrichtigung_nutzen_value(P)"
-msgstr "Ja, als PopUp"
+msgstr "Ja, als Pop-up"
 
 msgid "benachrichtigung_nutzen_value(L)"
-msgstr "Ja, als PopUp (und in allen Listansichten)"
+msgstr "Ja, als Pop-up (und in allen Listenansichten)"
 
 msgid "benachrichtigung_abfragen_vorname_value(O)"
 msgstr "Ja, optionale Angabe"
@@ -812,7 +812,7 @@ msgid "artikeldetails_vergleichsliste_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "tagging_freischaltung_value(Y)"
-msgstr "Ja, nur für eingeloggte Kunden"
+msgstr "Ja, nur für angemeldete Kunden"
 
 msgid "tagging_freischaltung_value(O)"
 msgstr "Ja, für alle Besucher"
@@ -827,7 +827,7 @@ msgid "tagging_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "mediendatei_anzeigen_value(YM)"
-msgstr "Ja, als neue Reiter pro Mediengruppe"
+msgstr "Ja, als neue Registerkarten pro Mediengruppe"
 
 msgid "mediendatei_anzeigen_value(YA)"
 msgstr "Ja, unter der Artikelbeschreibung"
@@ -1163,13 +1163,13 @@ msgid "warenkorb_warenkorb2pers_merge_value(N)"
 msgstr "Nein"
 
 msgid "warenkorb_warenkorb2pers_merge_value(P)"
-msgstr "Kunde entscheidet via Popup"
+msgstr "Kunde entscheidet via Pop-up"
 
 msgid "bestellvorgang_kaufabwicklungsmethode_value(N)"
 msgstr "Normale Kaufabwicklung"
 
 msgid "bestellvorgang_kaufabwicklungsmethode_value(NO)"
-msgstr "Normale Kaufabwicklung, Ein-Klick Methode wenn möglich"
+msgstr "Normale Kaufabwicklung, Ein-Klick-Methode wenn möglich"
 
 msgid "bestellvorgang_wrb_anzeigen_value(1)"
 msgstr "Ja"
@@ -1241,7 +1241,7 @@ msgid "bestellabschluss_abschlussseite_value(S)"
 msgstr "Statusseite"
 
 msgid "bestellabschluss_abschlussseite_value(A)"
-msgstr "Abschlussseite"
+msgstr "Abschluss-Seite"
 
 msgid "box_bestseller_scrollen_value(0)"
 msgstr "Nein"
@@ -1331,31 +1331,31 @@ msgid "boxen_preisradar_scrollbar_value(2)"
 msgstr "Ja, von unten nach oben"
 
 msgid "bilder_artikel_namen_value(0)"
-msgstr "Prim&auml;rschl&uuml;ssel (Vorgabe von JTL-Wawi)"
+msgstr "Primärschlüssel (Vorgabe von JTL-Wawi)"
 
 msgid "bilder_artikel_namen_value(1)"
 msgstr "Artikelnummer"
 
 msgid "bilder_artikel_namen_value(2)"
-msgstr "Artikelname (SEO-Name)"
+msgstr "Artikelname (URL-Pfad)"
 
 msgid "bilder_artikel_namen_value(3)"
-msgstr "Artikelnummer_Artikelname (SEO-Name)"
+msgstr "Artikelnummer_Artikelname (URL-Pfad)"
 
 msgid "bilder_artikel_namen_value(4)"
 msgstr "EAN"
 
 msgid "bilder_kategorie_namen_value(0)"
-msgstr "Prim&auml;rschl&uuml;ssel (Vorgabe von JTL-Wawi)"
+msgstr "Primärschlüssel (Vorgabe von JTL-Wawi)"
 
 msgid "bilder_kategorie_namen_value(1)"
-msgstr "Kategoriename (SEO-Name)"
+msgstr "Kategoriename (URL-Pfad)"
 
 msgid "bilder_variation_namen_value(0)"
-msgstr "Prim&auml;rschl&uuml;ssel (Vorgabe von JTL-Wawi)"
+msgstr "Primärschlüssel (Vorgabe von JTL-Wawi)"
 
 msgid "bilder_variation_namen_value(1)"
-msgstr "Artikelnummer (falls nicht vorhanden, Prim&auml;rschl&uuml;ssel)"
+msgstr "Artikelnummer (falls nicht vorhanden, Primärschlüssel)"
 
 msgid "bilder_variation_namen_value(2)"
 msgstr "Artikelnummer(Artikel)_Artikelnummer(Variationswert)"
@@ -1367,13 +1367,13 @@ msgid "bilder_externe_bildschnittstelle_value(A)"
 msgstr "Jeder hat Zugriff"
 
 msgid "bilder_externe_bildschnittstelle_value(W)"
-msgstr "Nur Ihre JTL-Wawi hat Zugriff"
+msgstr "Nur JTL-Wawi hat Zugriff"
 
 msgid "bilder_externe_bildschnittstelle_value(N)"
 msgstr "Deaktivieren"
 
 msgid "bilder_dateiformat_value(JPG)"
-msgstr "JPG"
+msgstr "JPEG"
 
 msgid "bilder_skalieren_value(Y)"
 msgstr "Ja"
@@ -1454,7 +1454,7 @@ msgid "zahlungsart_sofortueberweisung_reason_1_value(3)"
 msgstr "Bestellnummer + Firma"
 
 msgid "zahlungsart_sofortueberweisung_reason_1_value(4)"
-msgstr "Bestellnummer + Shopname"
+msgstr "Bestellnummer + Name des Onlineshops"
 
 msgid "zahlungsart_sofortueberweisung_reason_1_value(5)"
 msgstr "Bestellnummer + Nachname"
@@ -1469,7 +1469,7 @@ msgid "zahlungsart_sofortueberweisung_reason_2_value(3)"
 msgstr "Bestellnummer + Firma"
 
 msgid "zahlungsart_sofortueberweisung_reason_2_value(4)"
-msgstr "Bestellnummer + Shopname"
+msgstr "Bestellnummer + Name des Onlineshops"
 
 msgid "zahlungsart_sofortueberweisung_reason_2_value(5)"
 msgstr "Bestellnummer + Nachname"
@@ -1481,7 +1481,7 @@ msgid "zahlungsart_sofortueberweisung_reason_2_value(7)"
 msgstr "Firma"
 
 msgid "zahlungsart_sofortueberweisung_reason_2_value(8)"
-msgstr "Shopname"
+msgstr "Name des Onlineshops"
 
 msgid "zahlungsart_sofortueberweisung_user_variable_2_value(1)"
 msgstr ""
@@ -1493,7 +1493,7 @@ msgid "zahlungsart_sofortueberweisung_user_variable_2_value(3)"
 msgstr "Vorname + Nachname"
 
 msgid "zahlungsart_sofortueberweisung_user_variable_2_value(4)"
-msgstr "Strasse + Hausnummer"
+msgstr "Straße + Hausnummer"
 
 msgid "zahlungsart_sofortueberweisung_user_variable_2_value(5)"
 msgstr "PLZ + Ort"
@@ -1502,7 +1502,7 @@ msgid "zahlungsart_sofortueberweisung_user_variable_2_value(6)"
 msgstr "Land"
 
 msgid "zahlungsart_sofortueberweisung_user_variable_2_value(7)"
-msgstr "E-mail"
+msgstr "E-Mail"
 
 msgid "zahlungsart_sofortueberweisung_user_variable_2_value(8)"
 msgstr "Telefon"
@@ -1520,7 +1520,7 @@ msgid "zahlungsart_sofortueberweisung_user_variable_3_value(3)"
 msgstr "Vorname + Nachname"
 
 msgid "zahlungsart_sofortueberweisung_user_variable_3_value(4)"
-msgstr "Strasse + Hausnummer"
+msgstr "Straße + Hausnummer"
 
 msgid "zahlungsart_sofortueberweisung_user_variable_3_value(5)"
 msgstr "PLZ + Ort"
@@ -1529,7 +1529,7 @@ msgid "zahlungsart_sofortueberweisung_user_variable_3_value(6)"
 msgstr "Land"
 
 msgid "zahlungsart_sofortueberweisung_user_variable_3_value(7)"
-msgstr "E-mail"
+msgstr "E-Mail"
 
 msgid "zahlungsart_sofortueberweisung_user_variable_3_value(8)"
 msgstr "Telefon"
@@ -1547,7 +1547,7 @@ msgid "zahlungsart_sofortueberweisung_user_variable_4_value(3)"
 msgstr "Vorname + Nachname"
 
 msgid "zahlungsart_sofortueberweisung_user_variable_4_value(4)"
-msgstr "Strasse + Hausnummer"
+msgstr "Straße + Hausnummer"
 
 msgid "zahlungsart_sofortueberweisung_user_variable_4_value(5)"
 msgstr "PLZ + Ort"
@@ -1556,7 +1556,7 @@ msgid "zahlungsart_sofortueberweisung_user_variable_4_value(6)"
 msgstr "Land"
 
 msgid "zahlungsart_sofortueberweisung_user_variable_4_value(7)"
-msgstr "E-mail"
+msgstr "E-Mail"
 
 msgid "zahlungsart_sofortueberweisung_user_variable_4_value(8)"
 msgstr "Telefon"
@@ -1592,43 +1592,43 @@ msgid "exportformate_beschreibung_value(Y)"
 msgstr "Ja"
 
 msgid "exportformate_quot_value(N)"
-msgstr "nicht maskieren"
+msgstr "Nicht maskieren"
 
 msgid "exportformate_quot_value( )"
-msgstr "maskieren zu Leerzeichen"
+msgstr "Mit Leerzeichen maskieren"
 
 msgid "exportformate_quot_value(qq)"
-msgstr "maskieren zu &quot;&quot;"
+msgstr "Mit "" maskieren"
 
 msgid "exportformate_quot_value(q)"
 msgstr "maskieren zu \\\""
 
 msgid "exportformate_quot_value(')"
-msgstr "maskieren zu '"
+msgstr "Mit ' maskieren"
 
 msgid "exportformate_equot_value(N)"
-msgstr "nicht maskieren"
+msgstr "Nicht maskieren"
 
 msgid "exportformate_equot_value(\\')"
 msgstr "maskieren zu \\'"
 
 msgid "exportformate_equot_value(bq)"
-msgstr "maskieren zu &quot;"
+msgstr "Mit \" maskieren"
 
 msgid "exportformate_equot_value( )"
-msgstr "maskieren zu Leerzeichen"
+msgstr "Mit Leerzeichen maskieren"
 
 msgid "exportformate_equot_value('')"
-msgstr "maskieren zu ''"
+msgstr "Mit '' maskieren"
 
 msgid "exportformate_semikolon_value(N)"
-msgstr "nicht maskieren"
+msgstr "Nicht maskieren"
 
 msgid "exportformate_semikolon_value(,)"
-msgstr "maskieren zu Komma"
+msgstr "Mit Komma maskieren"
 
 msgid "exportformate_semikolon_value( )"
-msgstr "maskieren zu Leerzeichen"
+msgstr "Mit Leerzeichen maskieren"
 
 msgid "kontakt_abfragen_anrede_value(Y)"
 msgstr "Ja"
@@ -1739,13 +1739,13 @@ msgid "preisverlauf_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "vergleichsliste_target_value(parent)"
-msgstr "Im gleichen Fenster"
+msgstr "Im selben Fenster"
 
 msgid "vergleichsliste_target_value(blank)"
 msgstr "In einem neuen Fenster"
 
 msgid "vergleichsliste_target_value(popup)"
-msgstr "Als Popup"
+msgstr "Als Pop-up"
 
 msgid "bewertung_anzeigen_value(Y)"
 msgstr "Ja"
@@ -1784,13 +1784,13 @@ msgid "bewertung_artikel_gekauft_value(N)"
 msgstr "Nein"
 
 msgid "newsletter_emailmethode_value(mail)"
-msgstr "PHP Mail()"
+msgstr "PHP mail()"
 
 msgid "newsletter_emailmethode_value(sendmail)"
 msgstr "Sendmail"
 
 msgid "newsletter_emailmethode_value(qmail)"
-msgstr "QMail"
+msgstr "qmail"
 
 msgid "newsletter_emailmethode_value(smtp)"
 msgstr "SMTP"
@@ -1814,7 +1814,7 @@ msgid "newsletter_doubleopt_value(A)"
 msgstr "Alle"
 
 msgid "newsletter_doubleopt_value(U)"
-msgstr "Nur unregistrierte"
+msgstr "Nur nicht registrierte"
 
 msgid "newsletter_sicherheitscode_value(Y)"
 msgstr "Ja"
@@ -1835,49 +1835,49 @@ msgid "allgemein_weiterleitung_value(N)"
 msgstr "Nein"
 
 msgid "allgemein_herstellerfilter_benutzen_value(content)"
-msgstr "Ja, im Contentbereich"
+msgstr "Ja, im Content-Bereich"
 
 msgid "allgemein_herstellerfilter_benutzen_value(box)"
 msgstr "Ja, in Navigationsbox"
 
 msgid "allgemein_herstellerfilter_benutzen_value(Y)"
-msgstr "Ja, im Contentbereich und der Navigationsbox"
+msgstr "Ja, im Content-Bereich und der Navigationsbox"
 
 msgid "allgemein_herstellerfilter_benutzen_value(N)"
 msgstr "Nein"
 
 msgid "manufacturer_filter_type_value(A)"
-msgstr "Verundung"
+msgstr "Keine Mehrfachauswahl (nur Einschränkung der Ergebnisse)"
 
 msgid "manufacturer_filter_type_value(O)"
-msgstr "Veroderung"
+msgstr "Mehrfachauswahl"
 
 msgid "allgemein_suchspecialfilter_benutzen_value(content)"
-msgstr "Ja, im Contentbereich"
+msgstr "Ja, im Content-Bereich"
 
 msgid "allgemein_suchspecialfilter_benutzen_value(box)"
 msgstr "Ja, in Navigationsbox"
 
 msgid "allgemein_suchspecialfilter_benutzen_value(Y)"
-msgstr "Ja, im Contentbereich und der Navigationsbox"
+msgstr "Ja, im Content-Bereich und der Navigationsbox"
 
 msgid "allgemein_suchspecialfilter_benutzen_value(N)"
 msgstr "Nein"
 
 msgid "search_special_filter_type_value(A)"
-msgstr "Verundung"
+msgstr "Keine Mehrfachauswahl (nur Einschränkung der Ergebnisse)"
 
 msgid "search_special_filter_type_value(O)"
-msgstr "Veroderung"
+msgstr "Mehrfachauswahl"
 
 msgid "allgemein_kategoriefilter_benutzen_value(content)"
-msgstr "Ja, im Contentbereich"
+msgstr "Ja, im Content-Bereich"
 
 msgid "allgemein_kategoriefilter_benutzen_value(box)"
 msgstr "Ja, in Navigationsbox"
 
 msgid "allgemein_kategoriefilter_benutzen_value(Y)"
-msgstr "Ja, im Contentbereich und der Navigationsbox"
+msgstr "Ja, im Content-Bereich und der Navigationsbox"
 
 msgid "allgemein_kategoriefilter_benutzen_value(N)"
 msgstr "Nein"
@@ -1892,40 +1892,40 @@ msgid "kategoriefilter_anzeigen_als_value(HF)"
 msgstr "Hierarchische Filterung"
 
 msgid "category_filter_type_value(A)"
-msgstr "Verundung"
+msgstr "Keine Mehrfachauswahl (nur Einschränkung der Ergebnisse)"
 
 msgid "category_filter_type_value(O)"
-msgstr "Veroderung"
+msgstr "Mehrfachauswahl"
 
 msgid "bewertungsfilter_benutzen_value(content)"
-msgstr "Ja, im Contentbereich"
+msgstr "Ja, im Content-Bereich"
 
 msgid "bewertungsfilter_benutzen_value(box)"
 msgstr "Ja, in Navigationsbox"
 
 msgid "bewertungsfilter_benutzen_value(Y)"
-msgstr "Ja, im Contentbereich und der Navigationsbox"
+msgstr "Ja, im Content-Bereich und der Navigationsbox"
 
 msgid "bewertungsfilter_benutzen_value(N)"
 msgstr "Nein"
 
 msgid "allgemein_tagfilter_benutzen_value(content)"
-msgstr "Ja, im Contentbereich"
+msgstr "Ja, im Content-Bereich"
 
 msgid "allgemein_tagfilter_benutzen_value(box)"
 msgstr "Ja, in Navigationsbox"
 
 msgid "allgemein_tagfilter_benutzen_value(Y)"
-msgstr "Ja, im Contentbereich und der Navigationsbox"
+msgstr "Ja, im Content-Bereich und der Navigationsbox"
 
 msgid "allgemein_tagfilter_benutzen_value(N)"
 msgstr "Nein"
 
 msgid "tag_filter_type_value(A)"
-msgstr "Verundung"
+msgstr "Keine Mehrfachauswahl (nur Einschränkung der Ergebnisse)"
 
 msgid "tag_filter_type_value(O)"
-msgstr "Veroderung"
+msgstr "Mehrfachauswahl"
 
 msgid "suchtrefferfilter_nutzen_value(Y)"
 msgstr "Ja"
@@ -1934,13 +1934,13 @@ msgid "suchtrefferfilter_nutzen_value(N)"
 msgstr "Nein"
 
 msgid "merkmalfilter_verwenden_value(content)"
-msgstr "Ja, im Contentbereich"
+msgstr "Ja, im Content-Bereich"
 
 msgid "merkmalfilter_verwenden_value(box)"
 msgstr "Ja, in Navigationsbox"
 
 msgid "merkmalfilter_verwenden_value(Y)"
-msgstr "Ja, im Contentbereich und der Navigationsbox"
+msgstr "Ja, im Content-Bereich und der Navigationsbox"
 
 msgid "merkmalfilter_verwenden_value(N)"
 msgstr "Nein"
@@ -1949,19 +1949,19 @@ msgid "merkmal_anzeigen_als_value(T)"
 msgstr "Text"
 
 msgid "merkmal_anzeigen_als_value(BT)"
-msgstr "Bild + Text"
+msgstr "Bild und Text"
 
 msgid "merkmal_anzeigen_als_value(B)"
 msgstr "Bild"
 
 msgid "preisspannenfilter_benutzen_value(content)"
-msgstr "Ja, im Contentbereich"
+msgstr "Ja, im Content-Bereich"
 
 msgid "preisspannenfilter_benutzen_value(box)"
 msgstr "Ja, in Navigationsbox"
 
 msgid "preisspannenfilter_benutzen_value(Y)"
-msgstr "Ja, im Contentbereich und der Navigationsbox"
+msgstr "Ja, im Content-Bereich und der Navigationsbox"
 
 msgid "preisspannenfilter_benutzen_value(N)"
 msgstr "Nein"
@@ -2018,13 +2018,13 @@ msgid "kategorie_bild_anzeigen_value(Y)"
 msgstr "Ja, als Text"
 
 msgid "kategorie_bild_anzeigen_value(BT)"
-msgstr "Ja, als Bild und Text"
+msgstr "Ja, als Text und Bild"
 
 msgid "kategorie_bild_anzeigen_value(B)"
 msgstr "Ja, als Bild"
 
 msgid "kategorie_bild_anzeigen_value(N)"
-msgstr "Kein Kategoriebild, Keine Kategoriebeschreibung"
+msgstr "Kein Kategoriebild, keine Kategoriebeschreibung"
 
 msgid "kategorie_beschreibung_anzeigen_value(Y)"
 msgstr "Ja"
@@ -2276,22 +2276,22 @@ msgid "suchspecials_sortierung_bestseller_value(-1)"
 msgstr "Keine spezielle Sortierung nutzen"
 
 msgid "suchspecials_sortierung_bestseller_value(1)"
-msgstr "Name A-Z"
+msgstr "Name von A bis Z"
 
 msgid "suchspecials_sortierung_bestseller_value(2)"
-msgstr "Name Z-A"
+msgstr "Name absteigend"
 
 msgid "suchspecials_sortierung_bestseller_value(3)"
-msgstr "Preis 1..9"
+msgstr "Preis aufsteigend"
 
 msgid "suchspecials_sortierung_bestseller_value(4)"
-msgstr "Preis 9..1"
+msgstr "Preis absteigend"
 
 msgid "suchspecials_sortierung_bestseller_value(5)"
 msgstr "EAN"
 
 msgid "suchspecials_sortierung_bestseller_value(6)"
-msgstr "neuste zuerst"
+msgstr "Neueste zuerst"
 
 msgid "suchspecials_sortierung_bestseller_value(7)"
 msgstr "Artikelnummer"
@@ -2315,22 +2315,22 @@ msgid "suchspecials_sortierung_sonderangebote_value(-1)"
 msgstr "Keine spezielle Sortierung nutzen"
 
 msgid "suchspecials_sortierung_sonderangebote_value(1)"
-msgstr "Name A-Z"
+msgstr "Name von A bis Z"
 
 msgid "suchspecials_sortierung_sonderangebote_value(2)"
-msgstr "Name Z-A"
+msgstr "Name absteigend"
 
 msgid "suchspecials_sortierung_sonderangebote_value(3)"
-msgstr "Preis 1..9"
+msgstr "Preis aufsteigend"
 
 msgid "suchspecials_sortierung_sonderangebote_value(4)"
-msgstr "Preis 9..1"
+msgstr "Preis absteigend"
 
 msgid "suchspecials_sortierung_sonderangebote_value(5)"
 msgstr "EAN"
 
 msgid "suchspecials_sortierung_sonderangebote_value(6)"
-msgstr "neuste zuerst"
+msgstr "Neueste zuerst"
 
 msgid "suchspecials_sortierung_sonderangebote_value(7)"
 msgstr "Artikelnummer"
@@ -2354,22 +2354,22 @@ msgid "suchspecials_sortierung_neuimsortiment_value(-1)"
 msgstr "Keine spezielle Sortierung nutzen"
 
 msgid "suchspecials_sortierung_neuimsortiment_value(1)"
-msgstr "Name A-Z"
+msgstr "Name von A bis Z"
 
 msgid "suchspecials_sortierung_neuimsortiment_value(2)"
-msgstr "Name Z-A"
+msgstr "Name absteigend"
 
 msgid "suchspecials_sortierung_neuimsortiment_value(3)"
-msgstr "Preis 1..9"
+msgstr "Preis aufsteigend"
 
 msgid "suchspecials_sortierung_neuimsortiment_value(4)"
-msgstr "Preis 9..1"
+msgstr "Preis absteigend"
 
 msgid "suchspecials_sortierung_neuimsortiment_value(5)"
 msgstr "EAN"
 
 msgid "suchspecials_sortierung_neuimsortiment_value(6)"
-msgstr "neuste zuerst"
+msgstr "Neueste zuerst"
 
 msgid "suchspecials_sortierung_neuimsortiment_value(7)"
 msgstr "Artikelnummer"
@@ -2393,22 +2393,22 @@ msgid "suchspecials_sortierung_topangebote_value(-1)"
 msgstr "Keine spezielle Sortierung nutzen"
 
 msgid "suchspecials_sortierung_topangebote_value(1)"
-msgstr "Name A-Z"
+msgstr "Name von A bis Z"
 
 msgid "suchspecials_sortierung_topangebote_value(2)"
-msgstr "Name Z-A"
+msgstr "Name absteigend"
 
 msgid "suchspecials_sortierung_topangebote_value(3)"
-msgstr "Preis 1..9"
+msgstr "Preis aufsteigend"
 
 msgid "suchspecials_sortierung_topangebote_value(4)"
-msgstr "Preis 9..1"
+msgstr "Preis absteigend"
 
 msgid "suchspecials_sortierung_topangebote_value(5)"
 msgstr "EAN"
 
 msgid "suchspecials_sortierung_topangebote_value(6)"
-msgstr "neuste zuerst"
+msgstr "Neueste zuerst"
 
 msgid "suchspecials_sortierung_topangebote_value(7)"
 msgstr "Artikelnummer"
@@ -2432,22 +2432,22 @@ msgid "suchspecials_sortierung_inkuerzeverfuegbar_value(-1)"
 msgstr "Keine spezielle Sortierung nutzen"
 
 msgid "suchspecials_sortierung_inkuerzeverfuegbar_value(1)"
-msgstr "Name A-Z"
+msgstr "Name von A bis Z"
 
 msgid "suchspecials_sortierung_inkuerzeverfuegbar_value(2)"
-msgstr "Name Z-A"
+msgstr "Name absteigend"
 
 msgid "suchspecials_sortierung_inkuerzeverfuegbar_value(3)"
-msgstr "Preis 1..9"
+msgstr "Preis aufsteigend"
 
 msgid "suchspecials_sortierung_inkuerzeverfuegbar_value(4)"
-msgstr "Preis 9..1"
+msgstr "Preis absteigend"
 
 msgid "suchspecials_sortierung_inkuerzeverfuegbar_value(5)"
 msgstr "EAN"
 
 msgid "suchspecials_sortierung_inkuerzeverfuegbar_value(6)"
-msgstr "neuste zuerst"
+msgstr "Neueste zuerst"
 
 msgid "suchspecials_sortierung_inkuerzeverfuegbar_value(7)"
 msgstr "Artikelnummer"
@@ -2471,22 +2471,22 @@ msgid "suchspecials_sortierung_topbewertet_value(-1)"
 msgstr "Keine spezielle Sortierung nutzen"
 
 msgid "suchspecials_sortierung_topbewertet_value(1)"
-msgstr "Name A-Z"
+msgstr "Name von A bis Z"
 
 msgid "suchspecials_sortierung_topbewertet_value(2)"
-msgstr "Name Z-A"
+msgstr "Name absteigend"
 
 msgid "suchspecials_sortierung_topbewertet_value(3)"
-msgstr "Preis 1..9"
+msgstr "Preis aufsteigend"
 
 msgid "suchspecials_sortierung_topbewertet_value(4)"
-msgstr "Preis 9..1"
+msgstr "Preis absteigend"
 
 msgid "suchspecials_sortierung_topbewertet_value(5)"
 msgstr "EAN"
 
 msgid "suchspecials_sortierung_topbewertet_value(6)"
-msgstr "neuste zuerst"
+msgstr "Neueste zuerst"
 
 msgid "suchspecials_sortierung_topbewertet_value(7)"
 msgstr "Artikelnummer"
@@ -2519,10 +2519,10 @@ msgid "auswahlassistent_anzeigeformat_value(B)"
 msgstr "Bild"
 
 msgid "auswahlassistent_anzeigeformat_value(BT)"
-msgstr "Bild + Text"
+msgstr "Bild und Text"
 
 msgid "auswahlassistent_anzeigeformat_value(S)"
-msgstr "SelectBox"
+msgstr "Dropdown"
 
 msgid "auswahlassistent_allefragen_value(Y)"
 msgstr "Ja"
@@ -2616,4 +2616,3 @@ msgstr "Ja"
 
 msgid "compile_check_value(N)"
 msgstr "Nein"
-

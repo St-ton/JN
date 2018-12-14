@@ -14,7 +14,7 @@ msgstr ""
 
 # Titles
 msgid "JTL Shop Administration"
-msgstr "JTL Shop Administration"
+msgstr "Administration von JTL-Shop"
 
 msgid "Toggle navigation"
 msgstr "Navigation umschalten"
@@ -28,7 +28,7 @@ msgstr "Darstellung"
 
 # Mid Menu
 msgid "Template"
-msgstr "Template"
+msgstr "Templates"
 
 # Menu Item
 msgid "Evo-Template settings"
@@ -40,13 +40,13 @@ msgstr "Bilder"
 
 # Menu Items
 msgid "Image settings"
-msgstr "Bild-Einstellungen"
+msgstr "Bildeinstellungen"
 
 msgid "Watermark"
 msgstr "Wasserzeichen"
 
 msgid "Shop logo"
-msgstr "Shop-logo"
+msgstr "Shop-Logo"
 
 msgid "Item overlays"
 msgstr "Artikel-Overlays"
@@ -60,6 +60,9 @@ msgid "Item"
 msgstr "Artikel"
 
 # Menu Items
+msgid "Selection wizard"
+msgstr "Auswahlassistent"
+
 msgid "Item details"
 msgstr "Artikeldetails"
 
@@ -131,7 +134,7 @@ msgstr "E-Mails"
 
 # Menu Items
 msgid "Email settings"
-msgstr "Emaileinstellungen"
+msgstr "E-Mail-Einstellungen"
 
 msgid "Templates"
 msgstr "Vorlagen"
@@ -250,7 +253,7 @@ msgid "Start pages"
 msgstr "Einstiegsseiten"
 
 msgid "Coupon statistics"
-msgstr "Coupon - Statistiken"
+msgstr "Coupon-Statistiken"
 
 # Top Menu
 msgid "Import / Export"
@@ -265,7 +268,7 @@ msgid "Customer data import"
 msgstr "Kundenimport"
 
 msgid "Import newsletter recipient"
-msgstr "Newsletterempfänger-Import"
+msgstr "Newsletter-Empfänger importieren"
 
 # Mid Menu
 msgid "Export"
@@ -282,7 +285,7 @@ msgid "Sitemap export"
 msgstr "Sitemap-Export"
 
 msgid "RSS feed"
-msgstr "RSS Feed"
+msgstr "RSS-Feed"
 
 # Top Menu
 msgid "Administration"
@@ -370,13 +373,13 @@ msgstr "Übersicht"
 
 # Menu Items
 msgid "Plug-in marketplace"
-msgstr "Plug-in Marktplatz"
+msgstr "Plug-in-Marktplatz"
 
 msgid "Plug-in administration"
-msgstr "Plug-in Verwaltung"
+msgstr "Plug-in-Verwaltung"
 
 msgid "Plug-in profiler"
-msgstr "Plug-in Profiler"
+msgstr "Plug-in-Profiler"
 
 # Mid Menu
 # This is redundant, but could be used in the future.
@@ -398,7 +401,7 @@ msgid "Help"
 msgstr "Hilfe"
 
 msgid "System check"
-msgstr "Systemcheck"
+msgstr "System-Check"
 
 msgid "Rating system"
 msgstr "Bewertungssystem"
@@ -410,10 +413,10 @@ msgid "First steps"
 msgstr "Erste Schritte"
 
 msgid "JTL guide"
-msgstr "JTL Guide"
+msgstr "JTL-Guide"
 
 msgid "JTL forum"
-msgstr "JTL Forum"
+msgstr "JTL-Forum"
 
 msgid "Training"
 msgstr "Training"
@@ -422,17 +425,17 @@ msgid "Service partner"
 msgstr "Servicepartner"
 
 msgid "To the shop"
-msgstr "Zum Shop"
+msgstr "Zum Onlineshop"
 
 msgid "Logout"
 msgstr "Abmelden"
 
 # Notfications
 msgid "System update"
-msgstr "Systemupate"
+msgstr "System-Update"
 
 msgid "A database update is mandatory"
-msgstr "Ein Datenbank-Update ist zwingend notwendig"
+msgstr "Ein Datenbank-Update ist zwingend notwendig."
 
 msgid "Data system"
 msgstr "Dateisystem"
@@ -441,7 +444,7 @@ msgid "Some directories are not writeable."
 msgstr "Es sind Verzeichnisse nicht beschreibbar."
 
 msgid "Please delete the installation directory '/install' in the root directory."
-msgstr "Bitte l&ouml;schen Sie das Installationsverzeichnis '/install/' im Shop-Wurzelverzeichnis."
+msgstr "Bitte löschen Sie das Installationsverzeichnis '/install/' im Wurzelverzeichnis Ihres JTL-Shops."
 
 msgid "Database"
 msgstr "Datenbank"
@@ -450,31 +453,31 @@ msgid "There are errors within the database structure."
 msgstr "Es liegen Fehler in der Datenbankstruktur vor."
 
 msgid "Your template version differs from your shop version.<br />For additional help about template updates go to <i class='fa fa-external-link'></i> Wiki"
-msgstr "Ihre Template-Version unterscheidet sich von Ihrer Shop-Version.<br />Weitere Hilfe zu Template-Updates finden Sie im <i class='fa fa-external-link'></i> Wiki"
+msgstr "Ihre Template-Version unterscheidet sich von Ihrer Shop-Version.<br/>Weitere Hilfe zu Template-Anpassungen finden Sie im <i class=\"fa fa-external-link\"></i> JTL-Guide."
 
 msgid "You are using a full responsive template. The activation of a separate mobile template is not necessary in this case."
 msgstr "Sie nutzen ein Full-Responsive-Template. Die Aktivierung eines separaten Mobile-Templates ist in diesem Fall nicht notwendig."
 
 msgid "You have activated a non-standard template!"
-msgstr "Sie haben kein Standard-Template aktiviert!"
+msgstr "Sie haben kein Standard-Template aktiviert."
 
 msgid "The profiler is active. This can cause strong power loss in the shop."
-msgstr "Der Profiler ist aktiv. Dies kann zu starken Leistungseinbu&szlig;en im Shop f&uuml;hren."
+msgstr "Der Plug-in-Profiler ist aktiv. Dies kann zu starken Leistungseinbußen im Onlineshop führen."
 
 msgid "New plugin versions are available."
-msgstr "Es sind neue Plugin-Versionen vorhanden."
+msgstr "Es sind neue Plug-in-Versionen vorhanden."
 
 msgid "Configuration"
 msgstr "Konfiguration"
 
 msgid "You've selected Google reCaptcha as spam protection method, but homepage and or secrect key have not been added."
-msgstr "Sie haben Google reCaptcha als Spamschutz-Methode gew&auml;hlt, aber Website- und/oder Geheimer Schl&uuml;ssel nicht angegeben."
+msgstr "Sie haben Google reCaptcha als Spamschutz-Methode gewählt, aber Websiteschlüssel und/oder Geheimen Schlüssel nicht angegeben."
 
 msgid "A coupon being used in a survey is not active or does not exist anylonger."
-msgstr "In einer Umfrage wird ein Coupon verwendet, welcher inaktiv ist oder nicht mehr existiert."
+msgstr "In einer Umfrage wird ein Coupon verwendet, der inaktiv ist oder nicht mehr existiert."
 
 msgid "The full-text index does not exist!"
-msgstr "Der Volltextindex ist nicht vorhanden!"
+msgstr "Der Volltextindex ist nicht vorhanden."
 
 msgid "E-mail template broken"
 msgstr "E-Mail-Vorlage defekt"
@@ -486,10 +489,10 @@ msgid "Insecure SMTP connection"
 msgstr "Unsichere SMTP-Verbindung"
 
 msgid "You have selected SMTP as mail-method, but no encryption method has been chosen. We recommend you urgently to adjust your mail settings. You can find these options at 'System > E-Mails > Emaileinstellungen > SMTP Security'"
-msgstr "Sie haben SMTP als Mail-Methode gewählt, allerdings keine Verschlüsselungsmethode ausgewählt. Wir empfehlen Ihnen dringen, Ihre Mail-Einstellungen anzupassen. Sie finden die Optionen unter 'System > E-Mails > Emaileinstellungen > SMTP Security.'"
+msgstr "Sie haben SMTP gewählt, allerdings keine SMTP-Security-Methode. Wir empfehlen Ihnen dringend, Ihre E-Mail-Einstellungen anzupassen. Sie finden die Option unter 'System &gt; E-Mails &gt; E-Mail-Einstellungen &gt; SMTP-Security.'"
 
 msgid "User management"
 msgstr "Benutzerverwaltung"
 
 msgid "The algorithm for saving passwords has changed. <br/>Please generate a new emergency code for the 2 factor authentication."
-msgstr "Der Algorithmus zur Passwortspeicherung hat sich ge&auml;ndert.<br/>Bitte erzeugen Sie neue Notfall-Codes f&uuml;r die Zwei-Faktor-Authentifizierung."
+msgstr "Der Algorithmus zur Passwortspeicherung hat sich geändert.<br/>Bitte erzeugen Sie neue Notfall-Codes für die Zwei-Faktor-Authentifizierung."

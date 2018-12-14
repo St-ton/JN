@@ -4,10 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Helpers;
+
+use DB\ReturnType;
+use Shop;
+
 /**
- * Class OverlayHelper
+ * Class Overlay
+ * @package Helpers
+ * @since 5.0.0
  */
-class OverlayHelper
+class Overlay
 {
     /**
      *  get overlays (images) from template folder (original) and create for each valid image the corresponding files
@@ -44,12 +51,12 @@ class OverlayHelper
                         AND cTemplate IN (:templateName, 'default')
                       ORDER BY FIELD(cTemplate, :templateName, 'default')
                       LIMIT 1",
-                        [
-                            'lang'         => $lang,
-                            'type'         => $type,
-                            'templateName' => $template
-                        ],
-                        \DB\ReturnType::SINGLE_OBJECT
+                    [
+                        'lang'         => $lang,
+                        'type'         => $type,
+                        'templateName' => $template
+                    ],
+                    ReturnType::SINGLE_OBJECT
                 );
                 //use default settings for new overlays
                 if (!empty($defaultOverlay) && $defaultOverlay->cTemplate !== $template) {

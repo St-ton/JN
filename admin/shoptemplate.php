@@ -6,6 +6,8 @@
 
 use Helpers\Form;
 use Helpers\Template;
+use Helpers\Overlay;
+use Helpers\Request;
 
 /**
  * @global Smarty\JTLSmarty $smarty
@@ -21,7 +23,7 @@ $lessVars_arr   = [];
 $lessVarsSkin   = [];
 $lessColors_arr = [];
 $lessColorsSkin = [];
-$oTemplate      = Template::getInstance();
+$oTemplate      = \Template::getInstance();
 $admin          = (isset($_GET['admin']) && $_GET['admin'] === 'true');
 $templateHelper = Template::getInstance(true);
 $templateHelper->disableCaching();
@@ -148,8 +150,8 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
         $cFehler = 'Template bzw. Einstellungen konnten nicht geändert werden.';
     }
 
-    if (\Helpers\RequestHelper::verifyGPCDataInt('activate') === 1) {
-        OverlayHelper::loadOverlaysFromTemplateFolder($_POST['ordner']);
+    if (Request::verifyGPCDataInt('activate') === 1) {
+        Overlay::loadOverlaysFromTemplateFolder($_POST['ordner']);
     }
 
     Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);

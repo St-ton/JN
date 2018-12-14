@@ -9,11 +9,11 @@ namespace Helpers;
 use Shop;
 
 /**
- * Class RequestHelper
+ * Class Request
  * @package Helpers
  * @since 5.0.0
  */
-class RequestHelper
+class Request
 {
     /**
      * @param string $var
@@ -346,7 +346,7 @@ class RequestHelper
             for ($i = 1; $i < $cnt; $i++) {
                 $keyValue = \explode('=', $seoData[$i]);
                 if (\count($keyValue) > 1) {
-                    [$cName, $cWert] = $keyValue;
+                    [$cName, $cWert]                    = $keyValue;
                     $_SESSION['FremdParameter'][$cName] = $cWert;
                 }
             }

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\PHPSettingsHelper;
+use Helpers\PHPSettings;
 use JTLShop\SemVer\Version;
 
 $nStartzeit = microtime(true);
@@ -52,7 +52,7 @@ if (!function_exists('Shop')) {
     }
 }
 // PHP memory_limit work around
-if (!PHPSettingsHelper::getInstance()->hasMinLimit(64 * 1024 * 1024)) {
+if (!PHPSettings::getInstance()->hasMinLimit(64 * 1024 * 1024)) {
     ini_set('memory_limit', '64M');
 }
 

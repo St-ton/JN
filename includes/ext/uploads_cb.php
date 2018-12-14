@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 
 require_once __DIR__ . '/../globalinclude.php';
 
@@ -18,7 +18,7 @@ function retCode($bOk)
     die(json_encode(['status' => $bOk ? 'ok' : 'error']));
 }
 $session = \Session\Session::getInstance();
-if (!FormHelper::validateToken()) {
+if (!Form::validateToken()) {
     retCode(0);
 }
 // upload file

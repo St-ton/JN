@@ -221,7 +221,7 @@ class Service
      */
     public function isEditMode(): bool
     {
-        return \Helpers\RequestHelper::verifyGPDataString('opcEditMode') === 'yes';
+        return \Helpers\Request::verifyGPDataString('opcEditMode') === 'yes';
     }
 
     /**
@@ -237,7 +237,7 @@ class Service
      */
     public function getEditedPageKey(): int
     {
-        return \Helpers\RequestHelper::verifyGPCDataInt('opcEditedPageKey');
+        return \Helpers\Request::verifyGPCDataInt('opcEditedPageKey');
     }
 
     /**
@@ -246,7 +246,7 @@ class Service
      */
     public function getFilterOptions(array $enabledFilters = []): array
     {
-        \Helpers\TaxHelper::setTaxRates();
+        \Helpers\Tax::setTaxRates();
 
         $productFilter    = new ProductFilter(
             Config::getDefault(),

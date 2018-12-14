@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 /**
  * Class IO
@@ -106,7 +106,7 @@ class IO
         // respond with an error?
         if (is_object($data)) {
             if ($data instanceof IOError) {
-                header(RequestHelper::makeHTTPHeader($data->code), true, $data->code);
+                header(Request::makeHTTPHeader($data->code), true, $data->code);
             } elseif ($data instanceof IOFile) {
                 $this->pushFile($data->filename, $data->mimetype);
             }

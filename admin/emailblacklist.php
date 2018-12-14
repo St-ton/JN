@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -16,7 +16,7 @@ $step     = 'emailblacklist';
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_EMAILBLACKLIST, $_POST);
 }
-if (isset($_POST['emailblacklist']) && (int)$_POST['emailblacklist'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['emailblacklist']) && (int)$_POST['emailblacklist'] === 1 && Form::validateToken()) {
     $addresses = explode(';', $_POST['cEmail']);
     if (is_array($addresses) && count($addresses) > 0) {
         Shop::Container()->getDB()->query('TRUNCATE temailblacklist', \DB\ReturnType::AFFECTED_ROWS);

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\UrlHelper;
+use Helpers\URL;
 
 /**
  * Class KategorieListe
@@ -351,8 +351,8 @@ class KategorieListe
                 //EXPERIMENTAL_MULTILANG_SHOP END
 
                 // URL bauen
-                $oKategorie->cURL     = UrlHelper::buildURL($oKategorie, URLART_KATEGORIE);
-                $oKategorie->cURLFull = UrlHelper::buildURL($oKategorie, URLART_KATEGORIE, true);
+                $oKategorie->cURL     = URL::buildURL($oKategorie, URLART_KATEGORIE);
+                $oKategorie->cURLFull = URL::buildURL($oKategorie, URLART_KATEGORIE, true);
                 // lokalisieren
                 if ($kSprache > 0 && !Sprache::isDefaultLanguageActive() && strlen($oKategorie->cName_spr) > 0) {
                     $oKategorie->cName         = $oKategorie->cName_spr;

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -18,7 +18,7 @@ $cFehler    = '';
 $step       = 'statusemail_uebersicht';
 $statusMail = new Statusmail(Shop::Container()->getDB());
 
-if (FormHelper::validateToken()) {
+if (Form::validateToken()) {
     if (isset($_POST['action']) && $_POST['action'] === 'sendnow') {
         $statusMail->sendAllActiveStatusMails();
     } elseif (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {

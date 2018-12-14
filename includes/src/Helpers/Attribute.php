@@ -10,11 +10,11 @@ use Merkmal;
 use Shop;
 
 /**
- * Class AttributeHelper
+ * Class Attribute
  * @package Helpers
  * @since 5.0.0
  */
-class AttributeHelper
+class Attribute
 {
     /**
      * @param string        $attribute

@@ -10,11 +10,11 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
 /**
- * Class FileSystemHelper
+ * Class FileSystem
  * @package Helpers
  * @since 5.0.0
  */
-class FileSystemHelper
+class FileSystem
 {
     /**
      * @param string $dir

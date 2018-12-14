@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\WarenkorbHelper;
+use Helpers\Cart;
 
 /**
  * @param array $nPos_arr
@@ -13,7 +13,7 @@ use Helpers\WarenkorbHelper;
 function loescheWarenkorbPositionen($nPos_arr)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    WarenkorbHelper::deleteCartPositions($nPos_arr);
+    Cart::deleteCartPositions($nPos_arr);
 }
 
 /**
@@ -23,7 +23,7 @@ function loescheWarenkorbPositionen($nPos_arr)
 function loescheWarenkorbPosition($nPos)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    WarenkorbHelper::deleteCartPositions([$nPos]);
+    Cart::deleteCartPositions([$nPos]);
 }
 
 /**
@@ -32,7 +32,7 @@ function loescheWarenkorbPosition($nPos)
 function uebernehmeWarenkorbAenderungen()
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    WarenkorbHelper::applyCartChanges();
+    Cart::applyCartChanges();
 }
 
 /**
@@ -42,7 +42,7 @@ function uebernehmeWarenkorbAenderungen()
 function checkeSchnellkauf()
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return WarenkorbHelper::checkQuickBuy();
+    return Cart::checkQuickBuy();
 }
 
 /**
@@ -51,7 +51,7 @@ function checkeSchnellkauf()
 function loescheAlleSpezialPos()
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    WarenkorbHelper::deleteAllSpecialPositions();
+    Cart::deleteAllSpecialPositions();
 }
 
 /**
@@ -61,7 +61,7 @@ function loescheAlleSpezialPos()
 function gibXSelling()
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return WarenkorbHelper::getXSelling();
+    return Cart::getXSelling();
 }
 
 /**
@@ -72,7 +72,7 @@ function gibXSelling()
 function gibGratisGeschenke(array $Einstellungen)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return WarenkorbHelper::getFreeGifts($Einstellungen);
+    return Cart::getFreeGifts($Einstellungen);
 }
 
 /**
@@ -85,7 +85,7 @@ function gibGratisGeschenke(array $Einstellungen)
 function pruefeBestellMengeUndLagerbestand($Einstellungen = [])
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return WarenkorbHelper::checkOrderAmountAndStock($Einstellungen);
+    return Cart::checkOrderAmountAndStock($Einstellungen);
 }
 
 /**
@@ -95,5 +95,5 @@ function pruefeBestellMengeUndLagerbestand($Einstellungen = [])
 function validiereWarenkorbKonfig()
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    WarenkorbHelper::validateCartConfig();
+    Cart::validateCartConfig();
 }

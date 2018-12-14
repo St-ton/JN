@@ -9,11 +9,11 @@ namespace Helpers;
 use stdClass;
 
 /**
- * Class ObjectHelper
+ * Class GeneralObject
  * @package Helpers
  * @since 5.0.0
  */
-class ObjectHelper
+class GeneralObject
 {
     /**
      * @param array  $data

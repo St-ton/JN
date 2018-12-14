@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\ArtikelHelper;
+use Helpers\Product;
 
 require_once __DIR__ . '/syncinclude.php';
 
@@ -67,7 +67,7 @@ function bearbeiteDeletes($xml, array $conf)
     }
     foreach ($xml['del_artikel']['kArtikel'] as $kArtikel) {
         $kArtikel      = (int)$kArtikel;
-        $kVaterArtikel = ArtikelHelper::getParent($kArtikel);
+        $kVaterArtikel = Product::getParent($kArtikel);
         $nIstVater     = $kVaterArtikel > 0 ? 0 : 1;
         checkArtikelBildLoeschung($kArtikel);
 

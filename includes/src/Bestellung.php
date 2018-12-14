@@ -4,9 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\TaxHelper;
-use Helpers\VersandartHelper;
-use Helpers\WarenkorbHelper;
+use Helpers\Tax;
+use Helpers\ShippingMethod;
+use Helpers\Cart;
 
 /**
  * Class Bestellung
@@ -499,7 +499,7 @@ class Bestellung
             if ($disableFactor === true) {
                 $this->Waehrung->fFaktor = 1;
             }
-            $this->Steuerpositionen = TaxHelper::getOldTaxPositions(
+            $this->Steuerpositionen = Tax::getOldTaxPositions(
                 $this->Positionen,
                 $nNettoPreis,
                 $htmlWaehrung,
@@ -587,7 +587,7 @@ class Bestellung
                     foreach ($position->WarenkorbPosEigenschaftArr as $attribute) {
                         if ($attribute->fAufpreis) {
                             $attribute->cAufpreisLocalized[0] = Preise::getLocalizedPriceString(
-                                TaxHelper::getGross(
+                                Tax::getGross(
                                     $attribute->fAufpreis,
                                     $position->fMwSt
                                 ),
@@ -618,7 +618,7 @@ class Bestellung
             $summe += $position->fPreis * $position->nAnzahl;
             if ($this->kWarenkorb > 0) {
                 $position->cGesamtpreisLocalized[0] = Preise::getLocalizedPriceString(
-                    TaxHelper::getGross(
+                    Tax::getGross(
                         $position->fPreis * $position->nAnzahl,
                         $position->fMwSt
                     ),
@@ -631,7 +631,7 @@ class Bestellung
                     $htmlWaehrung
                 );
                 $position->cEinzelpreisLocalized[0] = Preise::getLocalizedPriceString(
-                    TaxHelper::getGross($position->fPreis, $position->fMwSt),
+                    Tax::getGross($position->fPreis, $position->fMwSt),
                     $this->Waehrung,
                     $htmlWaehrung
                 );
@@ -653,8 +653,8 @@ class Bestellung
                     foreach ($this->Positionen as $nPos => $_pos) {
                         if ($position->cUnique === $_pos->cUnique) {
                             $fPreisNetto  += $_pos->fPreis * $_pos->nAnzahl;
-                            $ust           = TaxHelper::getSalesTax($_pos->kSteuerklasse ?? 0);
-                            $fPreisBrutto += TaxHelper::getGross($_pos->fPreis * $_pos->nAnzahl, $ust);
+                            $ust           = Tax::getSalesTax($_pos->kSteuerklasse ?? 0);
+                            $fPreisBrutto += Tax::getGross($_pos->fPreis * $_pos->nAnzahl, $ust);
                             if ((int)$_pos->kKonfigitem === 0 &&
                                 is_string($_pos->cUnique) &&
                                 !empty($_pos->cUnique)
@@ -708,7 +708,7 @@ class Bestellung
         $this->fWarensummeKundenwaehrung  = ($this->fWarensumme + $this->fGuthaben) * $this->fWaehrungsFaktor;
         $this->fVersandKundenwaehrung     = $this->fVersand * $this->fWaehrungsFaktor;
         $this->fSteuern                   = $this->fGesamtsumme - $this->fGesamtsummeNetto;
-        $this->fGesamtsummeKundenwaehrung = WarenkorbHelper::roundOptional(
+        $this->fGesamtsummeKundenwaehrung = Cart::roundOptional(
             $this->fWarensummeKundenwaehrung + $this->fVersandKundenwaehrung
         );
 
@@ -1025,7 +1025,7 @@ class Bestellung
 
             $this->oEstimatedDelivery->localized = (!empty($this->oEstimatedDelivery->longestMin)
                 && !empty($this->oEstimatedDelivery->longestMax))
-                ? VersandartHelper::getDeliverytimeEstimationText(
+                ? ShippingMethod::getDeliverytimeEstimationText(
                     $this->oEstimatedDelivery->longestMin,
                     $this->oEstimatedDelivery->longestMax
                 )

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'news_inc.php';
@@ -14,7 +14,7 @@ $oAccount->permission('RESET_SHOP_VIEW', true, true);
 $cHinweis = '';
 $cFehler  = '';
 $db       = Shop::Container()->getDB();
-if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && Form::validateToken()) {
     $cOption_arr = $_POST['cOption_arr'];
     if (is_array($cOption_arr) && count($cOption_arr) > 0) {
         foreach ($cOption_arr as $cOption) {

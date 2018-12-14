@@ -6,7 +6,7 @@
  * @since 5.0
  */
 
-use Helpers\ObjectHelper;
+use Helpers\GeneralObject;
 
 /**
  * Class CustomerFields
@@ -97,7 +97,7 @@ class CustomerFields
      */
     public function getCustomerFields(): array
     {
-        return ObjectHelper::deepCopy($this->customerFields);
+        return GeneralObject::deepCopy($this->customerFields);
     }
 
     /**
@@ -189,7 +189,7 @@ class CustomerFields
     }
 
     /**
-     * @param object $customerField
+     * @param object     $customerField
      * @param null|array $customerFieldValues
      * @return bool
      */

@@ -4,15 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Form;
+use Helpers\Request;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 
 $linkHelper = Shop::Container()->getLinkService();
 if (isset($_SESSION['Kunde']->kKunde)
     && $_SESSION['Kunde']->kKunde > 0
-    && RequestHelper::verifyGPCDataInt('editRechnungsadresse') === 0
+    && Request::verifyGPCDataInt('editRechnungsadresse') === 0
 ) {
     header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 301);
 }
@@ -50,15 +50,15 @@ if (isset($_GET['editRechnungsadresse']) && (int)$_GET['editRechnungsadresse'] =
     gibKunde();
 }
 if ($step === 'formular') {
-    gibFormularDaten(RequestHelper::verifyGPCDataInt('checkout'));
+    gibFormularDaten(Request::verifyGPCDataInt('checkout'));
 }
 if (isset($_FILES['vcard'])
     && $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y'
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     gibKundeFromVCard($_FILES['vcard']['tmp_name']);
 }
-$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
+$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 Shop::Smarty()->assign('editRechnungsadresse', $editRechnungsadresse)

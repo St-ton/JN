@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\ObjectHelper;
+use Helpers\GeneralObject;
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
@@ -114,7 +114,7 @@ class KundenwerbenKunden
      */
     public function insertDB(bool $bLoadDB = false): self
     {
-        $oObj = ObjectHelper::copyMembers($this);
+        $oObj = GeneralObject::copyMembers($this);
         unset($oObj->fGuthabenLocalized, $oObj->oNeukunde, $oObj->oBestandskunde);
 
         $this->kKundenWerbenKunden = Shop::Container()->getDB()->insert('tkundenwerbenkunden', $oObj);

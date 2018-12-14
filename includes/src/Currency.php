@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\TaxHelper;
+use Helpers\Tax;
 use JTL\MagicCompatibilityTrait;
 
 /**
@@ -360,9 +360,9 @@ class Currency
             $taxClassID    = $oSteuerklasse !== null ? (int)$oSteuerklasse->kSteuerklasse : 1;
             if ((float)$priceNet > 0) {
                 $priceNet   = (float)$priceNet;
-                $priceGross = TaxHelper::getGross((float)$priceNet, TaxHelper::getSalesTax($taxClassID));
+                $priceGross = Tax::getGross((float)$priceNet, Tax::getSalesTax($taxClassID));
             } elseif ((float)$priceGross > 0) {
-                $priceNet   = TaxHelper::getNet((float)$priceGross, TaxHelper::getSalesTax($taxClassID));
+                $priceNet   = Tax::getNet((float)$priceGross, Tax::getSalesTax($taxClassID));
                 $priceGross = (float)$priceGross;
             }
 

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\ObjectHelper;
+use Helpers\GeneralObject;
 
 /**
  * Class CheckBox
@@ -304,12 +304,12 @@ class CheckBox
                 // Festdefinierte Shopfunktionen
                 switch ($oCheckBox->oCheckBoxFunktion->cID) {
                     case 'jtl_newsletter': // Newsletteranmeldung
-                        $xParamas_arr['oKunde'] = ObjectHelper::copyMembers($xParamas_arr['oKunde']);
+                        $xParamas_arr['oKunde'] = GeneralObject::copyMembers($xParamas_arr['oKunde']);
                         $this->sfCheckBoxNewsletter($xParamas_arr['oKunde']);
                         break;
 
                     case 'jtl_adminmail': // CheckBoxMail
-                        $xParamas_arr['oKunde'] = ObjectHelper::copyMembers($xParamas_arr['oKunde']);
+                        $xParamas_arr['oKunde'] = GeneralObject::copyMembers($xParamas_arr['oKunde']);
                         $this->sfCheckBoxMailToAdmin($xParamas_arr['oKunde'], $oCheckBox, $nAnzeigeOrt);
                         break;
 
@@ -469,7 +469,7 @@ class CheckBox
     public function insertDB($texts, $descriptions): self
     {
         if (is_array($texts) && count($texts) > 0) {
-            $oCheckBox = ObjectHelper::copyMembers($this);
+            $oCheckBox = GeneralObject::copyMembers($this);
             unset(
                 $oCheckBox->kCheckBox,
                 $oCheckBox->cID,

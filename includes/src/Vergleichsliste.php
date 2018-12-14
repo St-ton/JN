@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 /**
  * Class Vergleichsliste
@@ -272,13 +272,13 @@ class Vergleichsliste
                 FROM tvergleichsliste
                 WHERE cIP = :ip
                     AND dDate > DATE_SUB(NOW(),INTERVAL 1 DAY)',
-            ['ip' => RequestHelper::getRealIP()],
+            ['ip' => Request::getRealIP()],
             \DB\ReturnType::SINGLE_OBJECT
         );
 
         if ($oVergleiche->nVergleiche < 3) {
             $compareListTable        = new stdClass();
-            $compareListTable->cIP   = RequestHelper::getRealIP();
+            $compareListTable->cIP   = Request::getRealIP();
             $compareListTable->dDate = date('Y-m-d H:i:s');
             $kVergleichsliste        = Shop::Container()->getDB()->insert('tvergleichsliste', $compareListTable);
             foreach ($compareList->oArtikel_arr as $oArtikel) {

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use JTLShop\SemVer\Version;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -19,7 +19,7 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
     if (Shop::getShopDatabaseVersion()->equals(Version::parse('4.0.0'))
         || Shop::getShopDatabaseVersion()->greaterThan(Version::parse('4.0.0'))
     ) {
-        $csrfOK = FormHelper::validateToken();
+        $csrfOK = Form::validateToken();
     }
     $loginName = isset($_POST['benutzer'])
         ? StringHandler::filterXSS(Shop::Container()->getDB()->escape($_POST['benutzer']))

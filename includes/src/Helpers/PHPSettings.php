@@ -9,10 +9,10 @@ namespace Helpers;
 use SingletonTrait;
 
 /**
- * Class PHPSettingsHelper
+ * Class PHPSettings
  * @package Helpers
  */
-class PHPSettingsHelper
+class PHPSettings
 {
     use SingletonTrait;
 

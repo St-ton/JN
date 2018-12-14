@@ -4,9 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
-use Helpers\RequestHelper;
-use Helpers\TaxHelper;
+use Helpers\Form;
+use Helpers\Request;
+use Helpers\Tax;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -15,7 +15,7 @@ $oAccount->permission('ORDER_SHIPMENT_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'versandarten_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 /** @global Smarty\JTLSmarty $smarty */
-TaxHelper::setTaxRates();
+Tax::setTaxRates();
 $db                 = Shop::Container()->getDB();
 $standardwaehrung   = $db->select('twaehrung', 'cStandard', 'Y');
 $versandberechnung  = null;
@@ -31,23 +31,23 @@ $smarty->assign('missingShippingClassCombis', $missingShippingClassCombis);
 if (isset($_POST['neu'], $_POST['kVersandberechnung'])
     && (int)$_POST['neu'] === 1
     && (int)$_POST['kVersandberechnung'] > 0
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     $step = 'neue Versandart';
 }
-if (isset($_POST['kVersandberechnung']) && (int)$_POST['kVersandberechnung'] > 0 && FormHelper::validateToken()) {
+if (isset($_POST['kVersandberechnung']) && (int)$_POST['kVersandberechnung'] > 0 && Form::validateToken()) {
     $versandberechnung = $db->select('tversandberechnung', 'kVersandberechnung', (int)$_POST['kVersandberechnung']);
 }
 
 if (isset($_POST['del'])
     && (int)$_POST['del'] > 0
-    && FormHelper::validateToken()
+    && Form::validateToken()
     && Versandart::deleteInDB($_POST['del'])
 ) {
     $cHinweis .= 'Versandart erfolgreich gelöscht!';
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
 }
-if (isset($_POST['edit']) && (int)$_POST['edit'] > 0 && FormHelper::validateToken()) {
+if (isset($_POST['edit']) && (int)$_POST['edit'] > 0 && Form::validateToken()) {
     $step                        = 'neue Versandart';
     $Versandart                  = $db->select('tversandart', 'kVersandart', (int)$_POST['edit']);
     $VersandartZahlungsarten     = $db->selectAll(
@@ -77,7 +77,7 @@ if (isset($_POST['edit']) && (int)$_POST['edit'] > 0 && FormHelper::validateToke
            ->assign('gewaehlteLaender', explode(' ', $Versandart->cLaender));
 }
 
-if (isset($_POST['clone']) && (int)$_POST['clone'] > 0 && FormHelper::validateToken()) {
+if (isset($_POST['clone']) && (int)$_POST['clone'] > 0 && Form::validateToken()) {
     $step = 'uebersicht';
     if (Versandart::cloneShipping($_POST['clone'])) {
         $cHinweis .= 'Versandart wurde erfolgreich dupliziert';
@@ -89,12 +89,12 @@ if (isset($_POST['clone']) && (int)$_POST['clone'] > 0 && FormHelper::validateTo
 
 if (isset($_GET['cISO'], $_GET['zuschlag'], $_GET['kVersandart'])
     && (int)$_GET['zuschlag'] === 1
-    && (int)$_GET['kVersandart'] > 0 && FormHelper::validateToken()
+    && (int)$_GET['kVersandart'] > 0 && Form::validateToken()
 ) {
     $step = 'Zuschlagsliste';
 }
 
-if (isset($_GET['delzus']) && (int)$_GET['delzus'] > 0 && FormHelper::validateToken()) {
+if (isset($_GET['delzus']) && (int)$_GET['delzus'] > 0 && Form::validateToken()) {
     $step = 'Zuschlagsliste';
     $db->queryPrepared(
         'DELETE tversandzuschlag, tversandzuschlagsprache
@@ -110,9 +110,9 @@ if (isset($_GET['delzus']) && (int)$_GET['delzus'] > 0 && FormHelper::validateTo
     $cHinweis .= 'Zuschlagsliste erfolgreich gelöscht!';
 }
 // Zuschlagliste editieren
-if (RequestHelper::verifyGPCDataInt('editzus') > 0 && FormHelper::validateToken()) {
-    $kVersandzuschlag = RequestHelper::verifyGPCDataInt('editzus');
-    $cISO             = StringHandler::convertISO6392ISO(RequestHelper::verifyGPDataString('cISO'));
+if (Request::verifyGPCDataInt('editzus') > 0 && Form::validateToken()) {
+    $kVersandzuschlag = Request::verifyGPCDataInt('editzus');
+    $cISO             = StringHandler::convertISO6392ISO(Request::verifyGPDataString('cISO'));
     if ($kVersandzuschlag > 0 && (strlen($cISO) > 0 && $cISO !== 'noISO')) {
         $step = 'Zuschlagsliste';
         $fee  = $db->select('tversandzuschlag', 'kVersandzuschlag', $kVersandzuschlag);
@@ -131,14 +131,14 @@ if (RequestHelper::verifyGPCDataInt('editzus') > 0 && FormHelper::validateToken(
     }
 }
 
-if (isset($_GET['delplz']) && (int)$_GET['delplz'] > 0 && FormHelper::validateToken()) {
+if (isset($_GET['delplz']) && (int)$_GET['delplz'] > 0 && Form::validateToken()) {
     $step = 'Zuschlagsliste';
     $db->delete('tversandzuschlagplz', 'kVersandzuschlagPlz', (int)$_GET['delplz']);
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
     $cHinweis .= 'PLZ/PLZ-Bereich erfolgreich gelöscht.';
 }
 
-if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && Form::validateToken()) {
     $step          = 'Zuschlagsliste';
     $oZipValidator = new ZipValidator($_POST['cISO']);
     $ZuschlagPLZ   = new stdClass();
@@ -241,11 +241,11 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
     }
 }
 
-if (isset($_POST['neuerZuschlag']) && (int)$_POST['neuerZuschlag'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['neuerZuschlag']) && (int)$_POST['neuerZuschlag'] === 1 && Form::validateToken()) {
     $step     = 'Zuschlagsliste';
     $Zuschlag = new stdClass();
-    if (RequestHelper::verifyGPCDataInt('kVersandzuschlag') > 0) {
-        $Zuschlag->kVersandzuschlag = RequestHelper::verifyGPCDataInt('kVersandzuschlag');
+    if (Request::verifyGPCDataInt('kVersandzuschlag') > 0) {
+        $Zuschlag->kVersandzuschlag = Request::verifyGPCDataInt('kVersandzuschlag');
     }
 
     $Zuschlag->kVersandart = (int)$_POST['kVersandart'];
@@ -292,7 +292,7 @@ if (isset($_POST['neuerZuschlag']) && (int)$_POST['neuerZuschlag'] === 1 && Form
     }
 }
 
-if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && FormHelper::validateToken()) {
+if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form::validateToken()) {
     $Versandart                           = new stdClass();
     $Versandart->cName                    = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
     $Versandart->kVersandberechnung       = (int)$_POST['kVersandberechnung'];

@@ -14,10 +14,10 @@ use Shop;
 use stdClass;
 
 /**
- * Class BestellungHelper
+ * Class Order
  * @package Helpers
  */
-class BestellungHelper extends WarenkorbHelper
+class Order extends Cart
 {
     /**
      * @var Bestellung

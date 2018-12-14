@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
@@ -44,7 +44,7 @@ $cHinweis               = '';
 $cFehler                = '';
 $cCanonicalURL          = '';
 $Einstellungen          = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_NEWSLETTER]);
-$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
+$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $option                 = 'eintragen';
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
@@ -69,7 +69,7 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
         );
         $upd           = new stdClass();
         $upd->dOptCode = 'NOW()';
-        $upd->cOptIp   = RequestHelper::getRealIP();
+        $upd->cOptIp   = Request::getRealIP();
         $db->update(
             'tnewsletterempfaengerhistory',
             ['cOptCode', 'cAktion'],
@@ -104,7 +104,7 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
         $hist->dEingetragen = $recicpient->dEingetragen;
         $hist->dAusgetragen = 'NOW()';
         $hist->dOptCode     = '_DBNULL_';
-        $hist->cRegIp       = RequestHelper::getRealIP();
+        $hist->cRegIp       = Request::getRealIP();
         $db->insert('tnewsletterempfaengerhistory', $hist);
 
         executeHook(HOOK_NEWSLETTER_PAGE_HISTORYEMPFAENGEREINTRAGEN, [
@@ -136,7 +136,7 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
     $customer->cEmail    = isset($_POST['cEmail'])
         ? StringHandler::filterXSS($db->escape(strip_tags($_POST['cEmail'])))
         : null;
-    $customer->cRegIp    = RequestHelper::getRealIP();
+    $customer->cRegIp    = Request::getRealIP();
     if (!SimpleMail::checkBlacklist($customer->cEmail)) {
         $smarty->assign('oPlausi', fuegeNewsletterEmpfaengerEin($customer, true));
         $db->delete('tnewsletterempfaengerblacklist', 'cMail', $customer->cEmail);
@@ -182,7 +182,7 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
             $hist->dEingetragen = $recicpient->dEingetragen;
             $hist->dAusgetragen = 'NOW()';
             $hist->dOptCode     = '_DBNULL_';
-            $hist->cRegIp       = RequestHelper::getRealIP();
+            $hist->cRegIp       = Request::getRealIP();
             $db->insert('tnewsletterempfaengerhistory', $hist);
 
             executeHook(

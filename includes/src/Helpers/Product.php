@@ -29,10 +29,10 @@ use UnitsOfMeasure;
 use WarenkorbPos;
 
 /**
- * Class ArtikelHelper
+ * Class Product
  * @package Helpers
  */
-class ArtikelHelper
+class Product
 {
     /**
      * @param int $kArtikel
@@ -660,7 +660,7 @@ class ArtikelHelper
 
             if ($threshold > 0 && $result->fMassMenge > $threshold) {
                 $result->fGrundpreisMenge = $nAmount;
-                $result->fMassMenge       /= $fFactor;
+                $result->fMassMenge      /= $fFactor;
                 $result->fVPEWert         = $result->fMassMenge / $amount / $result->fGrundpreisMenge;
                 $result->fBasePreis       = $price / $result->fVPEWert;
                 $result->cVPEEinheit      = $result->fGrundpreisMenge . ' ' .
@@ -913,8 +913,10 @@ class ArtikelHelper
             }
             if ($isParent === true) {
                 if ($config['artikeldetails_xselling_kauf_parent'] === 'Y') {
-                    $selectorXSellArtikel     = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
-                    $filterXSellParentArtikel = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
+                    $selectorXSellArtikel     =
+                        'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
+                    $filterXSellParentArtikel =
+                        'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
                 } else {
                     $selectorXSellArtikel     = 'txsellkauf.kXSellArtikel';
                     $filterXSellParentArtikel = 'tartikel.kVaterArtikel';
@@ -937,22 +939,23 @@ class ArtikelHelper
                     ReturnType::ARRAY_OF_OBJECTS
                 );
             } elseif ($config['artikeldetails_xselling_kauf_parent'] === 'Y') {
-                $xsell = Shop::Container()->getDB()->query(
-                    "SELECT txsellkauf.kArtikel,
+                $xsell = Shop::Container()->getDB()->queryPrepared(
+                    'SELECT txsellkauf.kArtikel,
                     IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel) AS kXSellArtikel,
                     SUM(txsellkauf.nAnzahl) nAnzahl
                         FROM txsellkauf
                         JOIN tartikel
                             ON tartikel.kArtikel = txsellkauf.kXSellArtikel
-                        WHERE txsellkauf.kArtikel = {$productID}
+                        WHERE txsellkauf.kArtikel = :pid
                             AND (tartikel.kVaterArtikel != (
                                 SELECT tartikel.kVaterArtikel
                                 FROM tartikel
-                                WHERE tartikel.kArtikel = {$productID}
+                                WHERE tartikel.kArtikel = :pid
                             ) OR tartikel.kVaterArtikel = 0)
                         GROUP BY 1, 2
                         ORDER BY SUM(txsellkauf.nAnzahl) DESC
-                        LIMIT {$anzahl}",
+                        LIMIT :lmt',
+                    ['pid' => $productID, 'lmt' => $anzahl],
                     ReturnType::ARRAY_OF_OBJECTS
                 );
             } else {
@@ -999,7 +1002,7 @@ class ArtikelHelper
         if ($conf['artikeldetails']['artikeldetails_fragezumprodukt_anzeigen'] !== 'N') {
             $missingData = self::getMissingProductQuestionFormData();
             Shop::Smarty()->assign('fehlendeAngaben_fragezumprodukt', $missingData);
-            $resultCode = FormHelper::eingabenKorrekt($missingData);
+            $resultCode = Form::eingabenKorrekt($missingData);
 
             \executeHook(\HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT_PLAUSI);
 
@@ -1079,7 +1082,7 @@ class ArtikelHelper
         if ($conf['artikeldetails']['produktfrage_abfragen_mobil'] === 'Y' && !$_POST['mobil']) {
             $ret['mobil'] = 1;
         }
-        if ($conf['artikeldetails']['produktfrage_abfragen_captcha'] !== 'N' && !FormHelper::validateCaptcha($_POST)) {
+        if ($conf['artikeldetails']['produktfrage_abfragen_captcha'] !== 'N' && !Form::validateCaptcha($_POST)) {
             $ret['captcha'] = 2;
         }
         $checkBox = new CheckBox();
@@ -1183,7 +1186,7 @@ class ArtikelHelper
         $history->cFax       = $data->tnachricht->cFax;
         $history->cMail      = $data->tnachricht->cMail;
         $history->cNachricht = $data->tnachricht->cNachricht;
-        $history->cIP        = RequestHelper::getRealIP();
+        $history->cIP        = Request::getRealIP();
         $history->dErstellt  = 'NOW()';
 
         $inquiryID                     = Shop::Container()->getDB()->insert('tproduktanfragehistory', $history);
@@ -1209,7 +1212,7 @@ class ArtikelHelper
                 FROM tproduktanfragehistory
                 WHERE cIP = :ip
                     AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
-            ['ip' => RequestHelper::getRealIP(), 'min' => $min],
+            ['ip' => Request::getRealIP(), 'min' => $min],
             ReturnType::SINGLE_OBJECT
         );
 
@@ -1231,7 +1234,7 @@ class ArtikelHelper
         }
         $missingData = self::getMissingAvailibilityFormData();
         Shop::Smarty()->assign('fehlendeAngaben_benachrichtigung', $missingData);
-        $resultCode = FormHelper::eingabenKorrekt($missingData);
+        $resultCode = Form::eingabenKorrekt($missingData);
 
         \executeHook(\HOOK_ARTIKEL_INC_BENACHRICHTIGUNG_PLAUSI);
         if ($resultCode) {
@@ -1239,7 +1242,7 @@ class ArtikelHelper
                 $inquiry            = self::getAvailabilityFormDefaults();
                 $inquiry->kSprache  = Shop::getLanguage();
                 $inquiry->kArtikel  = (int)$_POST['a'];
-                $inquiry->cIP       = RequestHelper::getRealIP();
+                $inquiry->cIP       = Request::getRealIP();
                 $inquiry->dErstellt = 'NOW()';
                 $inquiry->nStatus   = 0;
                 $checkBox           = new CheckBox();
@@ -1312,7 +1315,7 @@ class ArtikelHelper
             $ret['nachname'] = 1;
         }
         if ($conf['artikeldetails']['benachrichtigung_abfragen_captcha'] !== 'N'
-            && !FormHelper::validateCaptcha($_POST)
+            && !Form::validateCaptcha($_POST)
         ) {
             $ret['captcha'] = 2;
         }
@@ -1365,7 +1368,7 @@ class ArtikelHelper
                 FROM tverfuegbarkeitsbenachrichtigung
                 WHERE cIP = :ip
                 AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
-            ['ip' => RequestHelper::getRealIP(), 'min' => $min],
+            ['ip' => Request::getRealIP(), 'min' => $min],
             ReturnType::SINGLE_OBJECT
         );
 
@@ -1589,11 +1592,11 @@ class ArtikelHelper
      */
     public static function editProductTags($product)
     {
-        if (RequestHelper::verifyGPCDataInt('produktTag') !== 1) {
+        if (Request::verifyGPCDataInt('produktTag') !== 1) {
             return null;
         }
-        $tag             = StringHandler::filterXSS(RequestHelper::verifyGPDataString('tag'));
-        $variKindArtikel = RequestHelper::verifyGPDataString('variKindArtikel');
+        $tag             = StringHandler::filterXSS(Request::verifyGPDataString('tag'));
+        $variKindArtikel = Request::verifyGPDataString('variKindArtikel');
         if (\strlen($tag) > 0) {
             $conf = Shop::getSettings([\CONF_ARTIKELDETAILS]);
             // Pruefe ob Kunde eingeloggt
@@ -1615,7 +1618,7 @@ class ArtikelHelper
                     && $_SESSION['Kunde']->kKunde > 0)
                 || $conf['artikeldetails']['tagging_freischaltung'] === 'O'
             ) {
-                $ip = RequestHelper::getRealIP();
+                $ip = Request::getRealIP();
                 if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                     $tagPostings = Shop::Container()->getDB()->queryPrepared(
                         'SELECT COUNT(kTagKunde) AS Anzahl
@@ -2097,7 +2100,7 @@ class ArtikelHelper
         $options->nArtikelAttribute          = 1;
         $options->nKeineSichtbarkeitBeachten = 1;
 
-        return WarenkorbHelper::addProductIDToCart($productID, 1, [], 0, false, 0, $options);
+        return Cart::addProductIDToCart($productID, 1, [], 0, false, 0, $options);
     }
 
     /**
@@ -2158,9 +2161,9 @@ class ArtikelHelper
         }
 
         $config->fGesamtpreis = [
-            TaxHelper::getGross(
+            Tax::getGross(
                 $product->gibPreis($amount, $selectedProperties),
-                TaxHelper::getSalesTax($product->kSteuerklasse)
+                Tax::getSalesTax($product->kSteuerklasse)
             ) * $amount,
             $product->gibPreis($amount, $selectedProperties) * $amount
         ];
@@ -2198,7 +2201,7 @@ class ArtikelHelper
                 if ($configItem->bAktiv) {
                     $config->fGesamtpreis[0] += $configItem->getPreis() * $configItem->fAnzahlWK;
                     $config->fGesamtpreis[1] += $configItem->getPreis(true) * $configItem->fAnzahlWK;
-                    $configGroup->bAktiv     = true;
+                    $configGroup->bAktiv      = true;
                     if ($configItem->getArtikel() !== null
                         && $configItem->getArtikel()->cLagerBeachten === 'Y'
                         && $config->nMinDeliveryDays < $configItem->getArtikel()->nMinDeliveryDays

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\ObjectHelper;
+use Helpers\GeneralObject;
 
 /**
  * Class JobQueue
@@ -364,7 +364,7 @@ class JobQueue
             && strlen($this->cTabelle) > 0
             && strlen($this->dStartZeit) > 0
         ) {
-            $queue = ObjectHelper::copyMembers($this);
+            $queue = GeneralObject::copyMembers($this);
             unset($queue->kJobQueue);
 
             return Shop::Container()->getDB()->insert('tjobqueue', $queue);

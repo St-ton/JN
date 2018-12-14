@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\TaxHelper;
+use Helpers\Tax;
 
 /**
  * Class Preise
@@ -213,7 +213,7 @@ class Preise
                     );
                 $kSteuerklasse = (int)$tax->kSteuerklasse;
             }
-            $this->fUst        = TaxHelper::getSalesTax($kSteuerklasse);
+            $this->fUst        = Tax::getSalesTax($kSteuerklasse);
             $tmp               = Shop::Container()->getDB()->select(
                 'tartikel',
                 'kArtikel',
@@ -386,7 +386,7 @@ class Preise
                     WHERE kArtikel = ' . $kArtikel,
                 \DB\ReturnType::SINGLE_OBJECT
             );
-            $this->fUst = TaxHelper::getSalesTax($ust_obj->kSteuerklasse);
+            $this->fUst = Tax::getSalesTax($ust_obj->kSteuerklasse);
             //hat dieser Artikel fuer diese Kundengruppe einen Sonderpreis?
             $sonderpreis = Shop::Container()->getDB()->query(
                 'SELECT tsonderpreise.fNettoPreis
@@ -470,22 +470,22 @@ class Preise
         $this->cPreisLocalized_arr = [];
         foreach ($this->fPreis_arr as $fPreis) {
             $this->cPreisLocalized_arr[] = [
-                self::getLocalizedPriceString(TaxHelper::getGross($fPreis, $this->fUst, 4), $currency),
+                self::getLocalizedPriceString(Tax::getGross($fPreis, $this->fUst, 4), $currency),
                 self::getLocalizedPriceString($fPreis, $currency)
             ];
         }
 
         $this->cVKLocalized[0] = self::getLocalizedPriceString(
-            TaxHelper::getGross($this->fVKNetto, $this->fUst, 4),
+            Tax::getGross($this->fVKNetto, $this->fUst, 4),
             $currency
         );
         $this->cVKLocalized[1] = self::getLocalizedPriceString($this->fVKNetto, $currency);
 
-        $this->fVKBrutto = TaxHelper::getGross($this->fVKNetto, $this->fUst);
+        $this->fVKBrutto = Tax::getGross($this->fVKNetto, $this->fUst);
 
         if ($this->alterVKNetto) {
             $this->alterVKLocalized[0] = self::getLocalizedPriceString(
-                TaxHelper::getGross($this->alterVKNetto, $this->fUst, 4),
+                Tax::getGross($this->alterVKNetto, $this->fUst, 4),
                 $currency
             );
             $this->alterVKLocalized[1] = self::getLocalizedPriceString($this->alterVKNetto, $currency);
@@ -501,18 +501,18 @@ class Preise
     {
         $factor = \Session\Session::getCurrency()->getConversionFactor();
 
-        $this->fVKBrutto = TaxHelper::getGross($this->fVKNetto, $this->fUst);
+        $this->fVKBrutto = Tax::getGross($this->fVKNetto, $this->fUst);
 
-        $this->fVK[0] = TaxHelper::getGross($this->fVKNetto * $factor, $this->fUst);
+        $this->fVK[0] = Tax::getGross($this->fVKNetto * $factor, $this->fUst);
         $this->fVK[1] = $this->fVKNetto * $factor;
 
-        $this->alterVK[0] = TaxHelper::getGross($this->alterVKNetto * $factor, $this->fUst);
+        $this->alterVK[0] = Tax::getGross($this->alterVKNetto * $factor, $this->fUst);
         $this->alterVK[1] = $this->alterVKNetto * $factor;
 
         $this->fStaffelpreis_arr = [];
         foreach ($this->fPreis_arr as $fPreis) {
             $this->fStaffelpreis_arr[] = [
-                TaxHelper::getGross($fPreis * $factor, $this->fUst),
+                Tax::getGross($fPreis * $factor, $this->fUst),
                 $fPreis * $factor
             ];
         }

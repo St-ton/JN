@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\ObjectHelper;
+use Helpers\GeneralObject;
 
 /**
  * Class Kundendatenhistory
@@ -265,8 +265,8 @@ class Kundendatenhistory extends MainModel
             return true;
         }
         $cryptoService = Shop::Container()->getCryptoService();
-        $oKundeOld     = ObjectHelper::deepCopy($oKundeOld);
-        $oKundeNew     = ObjectHelper::deepCopy($oKundeNew);
+        $oKundeOld     = GeneralObject::deepCopy($oKundeOld);
+        $oKundeNew     = GeneralObject::deepCopy($oKundeNew);
         // Encrypt Old
         $oKundeOld->cNachname = $cryptoService->encryptXTEA(trim($oKundeOld->cNachname));
         $oKundeOld->cFirma    = $cryptoService->encryptXTEA(trim($oKundeOld->cFirma));

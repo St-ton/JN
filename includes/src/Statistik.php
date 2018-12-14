@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\DateHelper;
+use Helpers\Date;
 
 /**
  * Class Statistik
@@ -57,8 +57,8 @@ class Statistik
         $this->nStampBis         = 0;
 
         if (strlen($cDatumVon) > 0 && strlen($cDatumBis) > 0) {
-            $this->cDatumVon_arr = DateHelper::getDateParts($cDatumVon);
-            $this->cDatumBis_arr = DateHelper::getDateParts($cDatumBis);
+            $this->cDatumVon_arr = Date::getDateParts($cDatumVon);
+            $this->cDatumBis_arr = Date::getDateParts($cDatumBis);
         } elseif ((int)$nStampVon > 0 && (int)$nStampBis > 0) {
             $this->nStampVon = (int)$nStampVon;
             $this->nStampBis = (int)$nStampBis;
@@ -594,7 +594,7 @@ class Statistik
      */
     public function setDatumVon($cDatumVon): self
     {
-        $this->cDatumVon_arr = DateHelper::getDateParts($cDatumVon);
+        $this->cDatumVon_arr = Date::getDateParts($cDatumVon);
 
         return $this;
     }
@@ -605,7 +605,7 @@ class Statistik
      */
     public function setDatumBis($cDatumBis): self
     {
-        $this->cDatumBis_arr = DateHelper::getDateParts($cDatumBis);
+        $this->cDatumBis_arr = Date::getDateParts($cDatumBis);
 
         return $this;
     }

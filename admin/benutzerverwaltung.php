@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -18,7 +18,7 @@ $messages = [
     'error'  => '',
 ];
 
-if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
+if (isset($_REQUEST['action']) && Form::validateToken()) {
     $cAction = StringHandler::filterXSS($_REQUEST['action']);
 }
 

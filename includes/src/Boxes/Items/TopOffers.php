@@ -58,7 +58,7 @@ final class TopOffers extends AbstractBox
                 $products = new \ArtikelListe();
                 $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
                 $this->setProducts($products);
-                $this->setURL(\Helpers\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_TOPOFFERS));
+                $this->setURL(\Helpers\SearchSpecial::buildURL(\SEARCHSPECIALS_TOPOFFERS));
                 \executeHook(\HOOK_BOXEN_INC_TOPANGEBOTE, [
                     'box'        => &$this,
                     'cache_tags' => &$cacheTags,

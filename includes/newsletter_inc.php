@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
@@ -201,7 +201,7 @@ function newsletterAnmeldungPlausi(): array
 {
     $res = [];
     if (Shop::getConfigValue(CONF_NEWSLETTER, 'newsletter_sicherheitscode') !== 'N'
-        && !FormHelper::validateCaptcha($_POST)
+        && !Form::validateCaptcha($_POST)
     ) {
         $res['captcha'] = 2;
     }

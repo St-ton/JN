@@ -4,14 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
+use Helpers\Request;
 use Pagination\Filter;
 use Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
 
-$statsType = RequestHelper::verifyGPCDataInt('s');
+$statsType = Request::verifyGPCDataInt('s');
 
 switch ($statsType) {
     case 1:

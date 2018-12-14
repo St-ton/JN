@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Form;
+use Helpers\Request;
 use Pagination\Filter;
 use Pagination\Pagination;
 
@@ -78,7 +78,7 @@ if ($res > 0) {
 }
 
 // Aktion ausgeloest?
-if (FormHelper::validateToken()) {
+if (Form::validateToken()) {
     if (isset($_POST['action'])) {
         if ($_POST['action'] === 'speichern') {
             // Kupon speichern
@@ -87,7 +87,7 @@ if (FormHelper::validateToken()) {
             // Kupons loeschen
             $action = 'loeschen';
         }
-    } elseif (isset($_GET['kKupon']) && RequestHelper::verifyGPCDataInt('kKupon') >= 0) {
+    } elseif (isset($_GET['kKupon']) && Request::verifyGPCDataInt('kKupon') >= 0) {
         // Kupon bearbeiten
         $action = 'bearbeiten';
     }
@@ -185,10 +185,10 @@ if ($action === 'bearbeiten') {
            ->assign('oKupon', $oKupon);
 } else {
     // Seite: Uebersicht
-    if (RequestHelper::hasGPCData('tab')) {
-        $tab = RequestHelper::verifyGPDataString('tab');
-    } elseif (RequestHelper::hasGPCData('cKuponTyp')) {
-        $tab = RequestHelper::verifyGPDataString('cKuponTyp');
+    if (Request::hasGPCData('tab')) {
+        $tab = Request::verifyGPDataString('tab');
+    } elseif (Request::hasGPCData('cKuponTyp')) {
+        $tab = Request::verifyGPDataString('cKuponTyp');
     }
 
     deactivateOutdatedCoupons();

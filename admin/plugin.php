@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Form;
+use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -20,14 +20,14 @@ $step            = 'plugin_uebersicht';
 $invalidateCache = false;
 $bError          = false;
 $updated         = false;
-$kPlugin         = RequestHelper::verifyGPCDataInt('kPlugin');
+$kPlugin         = Request::verifyGPCDataInt('kPlugin');
 $db              = Shop::Container()->getDB();
 $cache           = Shop::Container()->getCache();
 $oPlugin         = null;
 if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
-    if (RequestHelper::verifyGPCDataInt('Setting') === 1) {
+    if (Request::verifyGPCDataInt('Setting') === 1) {
         $updated = true;
-        if (!FormHelper::validateToken()) {
+        if (!Form::validateToken()) {
             $bError = true;
         } else {
             $plgnConf = isset($_POST['kPluginAdminMenu'])
@@ -80,11 +80,11 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
             $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert';
         }
     }
-    if (RequestHelper::verifyGPCDataInt('kPluginAdminMenu') > 0) {
-        $smarty->assign('defaultTabbertab', RequestHelper::verifyGPCDataInt('kPluginAdminMenu'));
+    if (Request::verifyGPCDataInt('kPluginAdminMenu') > 0) {
+        $smarty->assign('defaultTabbertab', Request::verifyGPCDataInt('kPluginAdminMenu'));
     }
-    if (strlen(RequestHelper::verifyGPDataString('cPluginTab')) > 0) {
-        $smarty->assign('defaultTabbertab', RequestHelper::verifyGPDataString('cPluginTab'));
+    if (strlen(Request::verifyGPDataString('cPluginTab')) > 0) {
+        $smarty->assign('defaultTabbertab', Request::verifyGPDataString('cPluginTab'));
     }
     $data = $db->select('tplugin', 'kPlugin', $kPlugin);
     if ($data !== null) {

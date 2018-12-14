@@ -6,8 +6,8 @@
  * @global smarty
  */
 
-use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Form;
+use Helpers\Request;
 use Pagination\Filter;
 use Pagination\Pagination;
 
@@ -28,11 +28,11 @@ $kSprache    = (int)$_SESSION['kSprache'];
 $cISOSprache = $_SESSION['cISOSprache'];
 
 if (isset($_FILES['csvfile']['tmp_name'])
-    && FormHelper::validateToken()
-    && RequestHelper::verifyGPDataString('importcsv') === 'langvars'
+    && Form::validateToken()
+    && Request::verifyGPDataString('importcsv') === 'langvars'
 ) {
     $csvFilename = $_FILES['csvfile']['tmp_name'];
-    $importType  = RequestHelper::verifyGPCDataInt('importType');
+    $importType  = Request::verifyGPCDataInt('importType');
     $res         = $lang->import($csvFilename, $cISOSprache, $importType);
 
     if ($res === false) {
@@ -64,7 +64,7 @@ foreach ($availableLanguages as $oSprache) {
     $oSprache->bImported = in_array($oSprache, $installedLanguages);
 }
 
-if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
+if (isset($_REQUEST['action']) && Form::validateToken()) {
     $action = $_REQUEST['action'];
 
     switch ($action) {

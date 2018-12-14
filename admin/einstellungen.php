@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
@@ -78,7 +78,7 @@ if ($bSuche) {
 if (isset($_POST['einstellungen_bearbeiten'])
     && (int)$_POST['einstellungen_bearbeiten'] === 1
     && $kSektion > 0
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     // Einstellungssuche
     $oSQL = new stdClass();

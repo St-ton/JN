@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\UrlHelper;
+use Helpers\URL;
 
 /**
  * @return bool
@@ -73,7 +73,7 @@ function generiereRSSXML()
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($products as $artikel) {
-            $url  = UrlHelper::buildURL($artikel, URLART_ARTIKEL, true);
+            $url  = URL::buildURL($artikel, URLART_ARTIKEL, true);
             $xml .= '
         <item>
             <title>' . wandelXMLEntitiesUm($artikel->cName) . '</title>
@@ -98,7 +98,7 @@ function generiereRSSXML()
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($news as $item) {
-            $url  = UrlHelper::buildURL($item, URLART_NEWS);
+            $url  = URL::buildURL($item, URLART_NEWS);
             $xml .= '
         <item>
             <title>' . wandelXMLEntitiesUm($item->title) . '</title>
@@ -119,7 +119,7 @@ function generiereRSSXML()
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oBewertung_arr as $oBewertung) {
-            $url  = UrlHelper::buildURL($oBewertung, URLART_ARTIKEL, true);
+            $url  = URL::buildURL($oBewertung, URLART_ARTIKEL, true);
             $xml .= '
         <item>
             <title>Bewertung ' . wandelXMLEntitiesUm($oBewertung->cTitel) . ' von ' .

@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\ObjectHelper;
-use Helpers\TaxHelper;
+use Helpers\GeneralObject;
+use Helpers\Tax;
 
 /**
  * Class Preisverlauf
@@ -77,7 +77,7 @@ class Preisverlauf
                     $_pv->date     = $dt->format('d.m.');
                     $_pv->fPreis   = \Session\Session::getCustomerGroup()->isMerchant()
                         ? round($_pv->fVKNetto * $_currency->getConversionFactor(), 2)
-                        : TaxHelper::getGross($_pv->fVKNetto * $_currency->getConversionFactor(), $_pv->fMwst);
+                        : Tax::getGross($_pv->fVKNetto * $_currency->getConversionFactor(), $_pv->fMwst);
                     $_pv->currency = $_currency->getCode();
                 }
             }
@@ -118,7 +118,7 @@ class Preisverlauf
      */
     public function insertInDB(): int
     {
-        $obj = ObjectHelper::copyMembers($this);
+        $obj = GeneralObject::copyMembers($this);
         unset($obj->kPreisverlauf);
         $this->kPreisverlauf = Shop::Container()->getDB()->insert('tpreisverlauf', $obj);
 
@@ -132,7 +132,7 @@ class Preisverlauf
      */
     public function updateInDB(): int
     {
-        $obj = ObjectHelper::copyMembers($this);
+        $obj = GeneralObject::copyMembers($this);
 
         return Shop::Container()->getDB()->update('tpreisverlauf', 'kPreisverlauf', $obj->kPreisverlauf, $obj);
     }

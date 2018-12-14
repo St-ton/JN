@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Form;
+use Helpers\Request;
 use Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -20,10 +20,10 @@ $step         = 'zusatzverpackung';
 $oSprache_arr = Sprache::getAllLanguages();
 $action       = '';
 
-if (FormHelper::validateToken()) {
+if (Form::validateToken()) {
     if (isset($_POST['action'])) {
         $action = $_POST['action'];
-    } elseif (isset($_GET['kVerpackung']) && RequestHelper::verifyGPCDataInt('kVerpackung') >= 0) {
+    } elseif (isset($_GET['kVerpackung']) && Request::verifyGPCDataInt('kVerpackung') >= 0) {
         $action = 'edit';
     }
 }
@@ -94,8 +94,8 @@ if ($action === 'save') {
         $cHinweis .= 'Die Verpackung "' . $_POST['cName_' .
             $oSprache_arr[0]->cISO] . '" wurde erfolgreich gespeichert.<br />';
     }
-} elseif ($action === 'edit' && RequestHelper::verifyGPCDataInt('kVerpackung') > 0) { // Editieren
-    $kVerpackung = RequestHelper::verifyGPCDataInt('kVerpackung');
+} elseif ($action === 'edit' && Request::verifyGPCDataInt('kVerpackung') > 0) { // Editieren
+    $kVerpackung = Request::verifyGPCDataInt('kVerpackung');
     $oVerpackung = Shop::Container()->getDB()->select('tverpackung', 'kVerpackung', $kVerpackung);
 
     if (isset($oVerpackung->kVerpackung) && $oVerpackung->kVerpackung > 0) {

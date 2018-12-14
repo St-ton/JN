@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\TaxHelper;
+use Helpers\Tax;
 
 $oNice = Nice::getInstance();
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
@@ -539,7 +539,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $fVKPreis *= \Session\Session::getCurrency()->getConversionFactor();
             }
             if (!$bForceNetto && !\Session\Session::getCustomerGroup()->isMerchant()) {
-                $fVKPreis = TaxHelper::getGross($fVKPreis, TaxHelper::getSalesTax($this->getSteuerklasse()), 4);
+                $fVKPreis = Tax::getGross($fVKPreis, Tax::getSalesTax($this->getSteuerklasse()), 4);
             }
 
             return $fVKPreis;
@@ -581,7 +581,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $fVKPreis *= (float)$waehrung->fFaktor;
             }
             if (!$bForceNetto && !\Session\Session::getCustomerGroup()->getIsMerchant()) {
-                $fVKPreis = TaxHelper::getGross($fVKPreis, TaxHelper::getSalesTax($this->getSteuerklasse()), 4);
+                $fVKPreis = Tax::getGross($fVKPreis, Tax::getSalesTax($this->getSteuerklasse()), 4);
             }
 
             return $fVKPreis * $this->fAnzahl * $totalAmount;
@@ -614,7 +614,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 if ($fTmp < 0) {
                     $fRabatt = $fTmp * -1;
                     if ($this->oPreis->getTyp() == 0 && !\Session\Session::getCustomerGroup()->isMerchant()) {
-                        $fRabatt = TaxHelper::getGross($fRabatt, TaxHelper::getSalesTax($this->getSteuerklasse()));
+                        $fRabatt = Tax::getGross($fRabatt, Tax::getSalesTax($this->getSteuerklasse()));
                     }
                 }
             }
@@ -641,7 +641,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 if ($fTmp > 0) {
                     $fZuschlag = $fTmp;
                     if ($this->oPreis->getTyp() == 0 && !\Session\Session::getCustomerGroup()->isMerchant()) {
-                        $fZuschlag = TaxHelper::getGross($fZuschlag, TaxHelper::getSalesTax($this->getSteuerklasse()));
+                        $fZuschlag = Tax::getGross($fZuschlag, Tax::getSalesTax($this->getSteuerklasse()));
                     }
                 }
             }

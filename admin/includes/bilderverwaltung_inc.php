@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\UrlHelper;
+use Helpers\URL;
 
 /**
  * @param bool $filesize
@@ -203,7 +203,7 @@ function getCorruptedImages($type, int $limit)
                     'kArtikel',
                     $image->getId()
                 );
-                $articleDB->cURLFull       = UrlHelper::buildURL($articleDB, URLART_ARTIKEL, true);
+                $articleDB->cURLFull       = URL::buildURL($articleDB, URLART_ARTIKEL, true);
                 $article                   = (object)[
                     'articleNr'      => $articleDB->cArtNr,
                     'articleURLFull' => $articleDB->cURLFull

@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Form;
+use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
@@ -18,12 +18,12 @@ $cFehler       = '';
 $step          = 'suchspecials';
 
 setzeSprache();
-if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
+if (strlen(Request::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
-if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
+if (Request::verifyGPCDataInt('einstellungen') === 1) {
     $cHinweis .= saveAdminSectionSettings(CONF_SUCHSPECIAL, $_POST);
-} elseif (isset($_POST['suchspecials']) && (int)$_POST['suchspecials'] === 1 && FormHelper::validateToken()) {
+} elseif (isset($_POST['suchspecials']) && (int)$_POST['suchspecials'] === 1 && Form::validateToken()) {
     // Suchspecials aus der DB holen und in smarty assignen
     $oSuchSpecials_arr       = Shop::Container()->getDB()->selectAll(
         'tseo',

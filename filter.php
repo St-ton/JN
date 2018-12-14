@@ -4,9 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\ArtikelHelper;
-use Helpers\KategorieHelper;
-use Helpers\RequestHelper;
+use Helpers\Product;
+use Helpers\Category;
+use Helpers\Request;
 
 if (!defined('PFAD_ROOT')) {
     http_response_code(400);
@@ -32,7 +32,7 @@ if ($NaviFilter->hasCategory()) {
     $_SESSION['LetzteKategorie'] = $kKategorie;
     if ($AktuelleKategorie->kKategorie === null) {
         // temp. workaround: do not return 404 when non-localized existing category is loaded
-        if (KategorieHelper::categoryExists($kKategorie)) {
+        if (Category::categoryExists($kKategorie)) {
             $AktuelleKategorie->loadFromDB($kKategorie);
         } else {
             Shop::$is404             = true;
@@ -91,8 +91,8 @@ if ($conf['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y'
     $products    = $oSuchergebnisse->getProducts()->all();
     Bestseller::ignoreProducts($products, $bestsellers);
 }
-if (RequestHelper::verifyGPCDataInt('zahl') > 0) {
-    $_SESSION['ArtikelProSeite'] = RequestHelper::verifyGPCDataInt('zahl');
+if (Request::verifyGPCDataInt('zahl') > 0) {
+    $_SESSION['ArtikelProSeite'] = Request::verifyGPCDataInt('zahl');
 }
 if (!isset($_SESSION['ArtikelProSeite'])
     && $conf['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'N'
@@ -103,7 +103,7 @@ if (!isset($_SESSION['ArtikelProSeite'])
     );
 }
 $oSuchergebnisse->getProducts()->transform(function ($product) use ($conf) {
-    $product->verfuegbarkeitsBenachrichtigung = ArtikelHelper::showAvailabilityForm(
+    $product->verfuegbarkeitsBenachrichtigung = Product::showAvailabilityForm(
         $product,
         $conf['artikeldetails']['benachrichtigung_nutzen']
     );
@@ -114,7 +114,7 @@ if ($oSuchergebnisse->getProducts()->count() === 0) {
     if ($NaviFilter->hasCategory()) {
         $KategorieInhalt                  = new stdClass();
         $KategorieInhalt->Unterkategorien = new KategorieListe();
-        $h                                = KategorieHelper::getInstance();
+        $h                                = Category::getInstance();
         $children                         = $h->getCategoryById($NaviFilter->getCategory()->getValue());
         if ($children !== false && isset($children->Unterkategorien)) {
             $KategorieInhalt->Unterkategorien->elemente = $children->Unterkategorien;

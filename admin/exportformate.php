@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
@@ -20,13 +20,13 @@ $oSmartyError        = new stdClass();
 $oSmartyError->nCode = 0;
 $link                = null;
 $db                  = Shop::Container()->getDB();
-if (isset($_GET['neuerExport']) && (int)$_GET['neuerExport'] === 1 && FormHelper::validateToken()) {
+if (isset($_GET['neuerExport']) && (int)$_GET['neuerExport'] === 1 && Form::validateToken()) {
     $step = 'neuer Export';
 }
 if (isset($_GET['kExportformat'])
     && (int)$_GET['kExportformat'] > 0
     && !isset($_GET['action'])
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     $step                   = 'neuer Export';
     $_POST['kExportformat'] = (int)$_GET['kExportformat'];
@@ -40,7 +40,7 @@ if (isset($_GET['kExportformat'])
         }
     }
 }
-if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::validateToken()) {
     $ef          = new Exportformat(0, $db);
     $checkResult = $ef->check($_POST);
     if ($checkResult === true) {
@@ -110,7 +110,7 @@ if (isset($_POST['action']) && strlen($_POST['action']) > 0 && (int)$_POST['kExp
     $cAction       = $_GET['action'];
     $kExportformat = (int)$_GET['kExportformat'];
 }
-if ($cAction !== null && $kExportformat !== null && FormHelper::validateToken()) {
+if ($cAction !== null && $kExportformat !== null && Form::validateToken()) {
     switch ($cAction) {
         case 'export':
             $bAsync                = isset($_GET['ajax']);

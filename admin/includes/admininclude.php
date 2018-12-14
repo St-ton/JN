@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 use JTLShop\SemVer\Version;
 
 if (!isset($bExtern) || !$bExtern) {
@@ -66,7 +66,7 @@ if ($oAccount->logged()) {
 
     Shop::fire('backend.notification', Notification::getInstance()->buildDefault());
     if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id'])
-        && FormHelper::validateToken()
+        && Form::validateToken()
     ) {
         $revision = new Revision();
         if ($_POST['revision-action'] === 'restore') {

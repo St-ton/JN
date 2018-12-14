@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Form;
+use Helpers\Request;
 use Pagination\Filter;
 use Pagination\Pagination;
 
@@ -25,8 +25,8 @@ $cHinweis  = '';
 $cFehler   = '';
 $redirects = $_POST['redirects'] ?? [];
 
-if (FormHelper::validateToken()) {
-    switch (RequestHelper::verifyGPDataString('action')) {
+if (Form::validateToken()) {
+    switch (Request::verifyGPDataString('action')) {
         case 'save':
             foreach ($redirects as $kRedirect => $redirect) {
                 $oRedirect = new Redirect($kRedirect);
@@ -56,16 +56,16 @@ if (FormHelper::validateToken()) {
         case 'new':
             $oRedirect = new Redirect();
             if ($oRedirect->saveExt(
-                RequestHelper::verifyGPDataString('cFromUrl'),
-                RequestHelper::verifyGPDataString('cToUrl')
+                Request::verifyGPDataString('cFromUrl'),
+                Request::verifyGPDataString('cToUrl')
             )) {
                 $cHinweis = 'Ihre Weiterleitung wurde erfolgreich gespeichert';
             } else {
                 $cFehler = 'Fehler: Bitte prüfen Sie Ihre Eingaben';
                 $smarty
                     ->assign('cTab', 'new_redirect')
-                    ->assign('cFromUrl', RequestHelper::verifyGPDataString('cFromUrl'))
-                    ->assign('cToUrl', RequestHelper::verifyGPDataString('cToUrl'));
+                    ->assign('cFromUrl', Request::verifyGPDataString('cFromUrl'))
+                    ->assign('cToUrl', Request::verifyGPDataString('cToUrl'));
             }
             break;
         case 'csvimport':

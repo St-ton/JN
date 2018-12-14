@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Form;
+use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global Smarty\JTLSmarty $smarty */
@@ -16,14 +16,14 @@ $error        = '';
 $cacheAction  = '';
 $step         = 'uebersicht';
 $tab          = 'uebersicht';
-$action       = (isset($_POST['a']) && FormHelper::validateToken()) ? $_POST['a'] : null;
+$action       = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : null;
 $cache        = null;
 $opcacheStats = null;
 
 loadConfigLocalizations();
 
-if (0 < strlen(RequestHelper::verifyGPDataString('tab'))) {
-    $smarty->assign('tab', RequestHelper::verifyGPDataString('tab'));
+if (0 < strlen(Request::verifyGPDataString('tab'))) {
+    $smarty->assign('tab', Request::verifyGPDataString('tab'));
 }
 try {
     $cache = Shop::Container()->getCache();

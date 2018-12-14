@@ -773,7 +773,7 @@ class ProductFilter
                     ['artikel_artikelanzeigefilter'] === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
             ]);
         }
-        $this->nSeite = \max(1, \Helpers\RequestHelper::verifyGPCDataInt('seite'));
+        $this->nSeite = \max(1, \Helpers\Request::verifyGPCDataInt('seite'));
         foreach ($this->getCustomFilters() as $filter) {
             $filterParam = $filter->getUrlParam();
             $filterClass = $filter->getClassName();
@@ -785,8 +785,8 @@ class ProductFilter
                 // escape all input values
                 if (($filter->getType() === Type::OR && \is_array($_GET[$filterParam]))
                     || ($filter->getType() === Type::AND
-                        && (\Helpers\RequestHelper::verifyGPCDataInt($filterParam) > 0
-                            || \Helpers\RequestHelper::verifyGPDataString($filterParam) !== ''))
+                        && (\Helpers\Request::verifyGPCDataInt($filterParam) > 0
+                            || \Helpers\Request::verifyGPDataString($filterParam) !== ''))
                 ) {
                     $filterValue = \is_array($_GET[$filterParam])
                         ? \array_map([$this->db, 'realEscape'], $_GET[$filterParam])
@@ -1534,7 +1534,7 @@ class ProductFilter
      */
     public function setUserSort(\Kategorie $category = null): self
     {
-        $gpcSort = \Helpers\RequestHelper::verifyGPCDataInt('Sortierung');
+        $gpcSort = \Helpers\Request::verifyGPCDataInt('Sortierung');
         // user wants to reset default sorting
         if ($gpcSort === \SEARCH_SORT_STANDARD) {
             unset($_SESSION['Usersortierung'], $_SESSION['nUsersortierungWahl'], $_SESSION['UsersortierungVorSuche']);
@@ -1987,8 +1987,8 @@ class ProductFilter
         } else {
             $i = 1;
             while ($i < 20) {
-                if (\Helpers\RequestHelper::verifyGPCDataInt('sf' . $i) > 0) {
-                    $filter[] = \Helpers\RequestHelper::verifyGPCDataInt('sf' . $i);
+                if (\Helpers\Request::verifyGPCDataInt('sf' . $i) > 0) {
+                    $filter[] = \Helpers\Request::verifyGPCDataInt('sf' . $i);
                 }
                 ++$i;
             }
@@ -2029,8 +2029,8 @@ class ProductFilter
         } else {
             $i = 1;
             while ($i < 20) {
-                if (\Helpers\RequestHelper::verifyGPCDataInt('tf' . $i) > 0) {
-                    $filter[] = \Helpers\RequestHelper::verifyGPCDataInt('tf' . $i);
+                if (\Helpers\Request::verifyGPCDataInt('tf' . $i) > 0) {
+                    $filter[] = \Helpers\Request::verifyGPCDataInt('tf' . $i);
                 }
                 ++$i;
             }

@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
-use Helpers\UrlHelper;
+use Helpers\Request;
+use Helpers\URL;
 
 /**
  * Class Redirect
@@ -290,7 +290,7 @@ class Redirect
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return UrlHelper::buildURL($oObj, URLART_ARTIKEL);
+        return URL::buildURL($oObj, URLART_ARTIKEL);
     }
 
     /**
@@ -406,7 +406,7 @@ class Redirect
             if (strlen($cReferer) > 0) {
                 $cReferer = $this->normalize($cReferer);
             }
-            $cIP = RequestHelper::getRealIP();
+            $cIP = Request::getRealIP();
             // Eintrag für diese IP bereits vorhanden?
             $oEntry = Shop::Container()->getDB()->queryPrepared(
                 'SELECT *
@@ -480,7 +480,7 @@ class Redirect
      */
     public function normalize(string $cUrl): string
     {
-        $oUrl = new UrlHelper();
+        $oUrl = new URL();
         $oUrl->setUrl($cUrl);
 
         return '/' . trim($oUrl->normalize(), '\\/');

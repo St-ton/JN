@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Form;
+use Helpers\Request;
 
 /**
  * @global JTLSmarty    $smarty
@@ -16,12 +16,12 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'elfinder_inc.php';
 
-if (FormHelper::validateToken()) {
+if (Form::validateToken()) {
     $mediafilesSubdir = 'Bilder';
-    $mediafilesType   = RequestHelper::verifyGPDataString('mediafilesType');
-    $elfinderCommand  = RequestHelper::verifyGPDataString('cmd');
-    $isCKEditor       = RequestHelper::verifyGPDataString('ckeditor') === '1';
-    $CKEditorFuncNum  = RequestHelper::verifyGPDataString('CKEditorFuncNum');
+    $mediafilesType   = Request::verifyGPDataString('mediafilesType');
+    $elfinderCommand  = Request::verifyGPDataString('cmd');
+    $isCKEditor       = Request::verifyGPDataString('ckeditor') === '1';
+    $CKEditorFuncNum  = Request::verifyGPDataString('CKEditorFuncNum');
 
     switch ($mediafilesType) {
         case 'image':

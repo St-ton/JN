@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Form;
+use Helpers\Request;
 
 /**
  * If the "Export CSV" button was clicked with the id $exporterId, offer a CSV download and stop execution of current
@@ -32,7 +32,7 @@ function handleCsvExportAction(
     $delim = ',',
     $bHead = true
 ) {
-    if (FormHelper::validateToken() && RequestHelper::verifyGPDataString('exportcsv') === $exporterId) {
+    if (Form::validateToken() && Request::verifyGPDataString('exportcsv') === $exporterId) {
         if (is_callable($source)) {
             $arr = $source();
         } elseif (is_array($source)) {

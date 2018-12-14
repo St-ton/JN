@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 /**
  * @param bool $bActive
@@ -155,11 +155,11 @@ function getRemoteDataIO($url, $dataName, $tpl, $wrapperID, $post = null, $callb
     if (in_array($dataName, $urlsToCache, true)) {
         $cacheID = str_replace('/', '_', $dataName . '_' . $tpl . '_' . md5($wrapperID . $url));
         if (($cData = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $cData = RequestHelper::http_get_contents($url, 15, $post);
+            $cData = Request::http_get_contents($url, 15, $post);
             Shop::Container()->getCache()->set($cacheID, $cData, [CACHING_GROUP_OBJECT], 3600);
         }
     } else {
-        $cData = RequestHelper::http_get_contents($url, 15, $post);
+        $cData = Request::http_get_contents($url, 15, $post);
     }
 
     if (strpos($cData, '<?xml') === 0) {

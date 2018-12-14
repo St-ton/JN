@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\ArtikelHelper;
+use Helpers\Product;
 
 /**
  * @param int       $kArtikel
@@ -15,7 +15,7 @@ use Helpers\ArtikelHelper;
 function gibArtikelXSelling(int $kArtikel, $isParent = null)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return ArtikelHelper::getXSelling($kArtikel, $isParent);
+    return Product::getXSelling($kArtikel, $isParent);
 }
 
 /**
@@ -24,7 +24,7 @@ function gibArtikelXSelling(int $kArtikel, $isParent = null)
 function bearbeiteFrageZumProdukt()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    ArtikelHelper::checkProductQuestion();
+    Product::checkProductQuestion();
 }
 
 /**
@@ -34,7 +34,7 @@ function bearbeiteFrageZumProdukt()
 function gibFehlendeEingabenProduktanfrageformular()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return ArtikelHelper::getMissingProductQuestionFormData();
+    return Product::getMissingProductQuestionFormData();
 }
 
 /**
@@ -44,7 +44,7 @@ function gibFehlendeEingabenProduktanfrageformular()
 function baueProduktanfrageFormularVorgaben()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return ArtikelHelper::getProductQuestionFormDefaults();
+    return Product::getProductQuestionFormDefaults();
 }
 
 /**
@@ -53,7 +53,7 @@ function baueProduktanfrageFormularVorgaben()
 function sendeProduktanfrage()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    ArtikelHelper::sendProductQuestion();
+    Product::sendProductQuestion();
 }
 
 /**
@@ -64,7 +64,7 @@ function sendeProduktanfrage()
 function floodSchutzProduktanfrage(int $min = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return ArtikelHelper::checkProductQuestionFloodProtection($min);
+    return Product::checkProductQuestionFloodProtection($min);
 }
 
 /**
@@ -73,7 +73,7 @@ function floodSchutzProduktanfrage(int $min = 0)
 function bearbeiteBenachrichtigung()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    ArtikelHelper::checkAvailabilityMessage();
+    Product::checkAvailabilityMessage();
 }
 
 /**
@@ -83,7 +83,7 @@ function bearbeiteBenachrichtigung()
 function gibFehlendeEingabenBenachrichtigungsformular()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return ArtikelHelper::getMissingAvailibilityFormData();
+    return Product::getMissingAvailibilityFormData();
 }
 
 /**
@@ -93,7 +93,7 @@ function gibFehlendeEingabenBenachrichtigungsformular()
 function baueFormularVorgabenBenachrichtigung()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return ArtikelHelper::getAvailabilityFormDefaults();
+    return Product::getAvailabilityFormDefaults();
 }
 
 /**
@@ -104,7 +104,7 @@ function baueFormularVorgabenBenachrichtigung()
 function floodSchutzBenachrichtigung(int $min)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return ArtikelHelper::checkAvailibityFormFloodProtection($min);
+    return Product::checkAvailibityFormFloodProtection($min);
 }
 
 /**
@@ -116,7 +116,7 @@ function floodSchutzBenachrichtigung(int $min)
 function gibNaviBlaettern(int $kArtikel, int $kKategorie)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return ArtikelHelper::getProductNavigation($kArtikel, $kKategorie);
+    return Product::getProductNavigation($kArtikel, $kKategorie);
 }
 
 /**
@@ -127,7 +127,7 @@ function gibNaviBlaettern(int $kArtikel, int $kKategorie)
 function gibNichtErlaubteEigenschaftswerte(int $nEigenschaftWert)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return ArtikelHelper::getNonAllowedAttributeValues($nEigenschaftWert);
+    return Product::getNonAllowedAttributeValues($nEigenschaftWert);
 }
 
 /**
@@ -142,7 +142,7 @@ function gibNichtErlaubteEigenschaftswerte(int $nEigenschaftWert)
 function baueArtikelhinweise($redirectParam = null, $renew = false, $oArtikel = null, $fAnzahl = null, $kKonfigitem = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return ArtikelHelper::getProductMessages($redirectParam, $renew, $oArtikel, $fAnzahl, $kKonfigitem);
+    return Product::getProductMessages($redirectParam, $renew, $oArtikel, $fAnzahl, $kKonfigitem);
 }
 
 /**
@@ -153,7 +153,7 @@ function baueArtikelhinweise($redirectParam = null, $renew = false, $oArtikel = 
 function bearbeiteProdukttags($AktuellerArtikel)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return ArtikelHelper::editProductTags($AktuellerArtikel);
+    return Product::editProductTags($AktuellerArtikel);
 }
 
 /**
@@ -169,7 +169,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
 function baueBewertungNavi($bewertung_seite, $bewertung_sterne, $nAnzahlBewertungen, $nAnzahlSeiten = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return ArtikelHelper::getRatingNavigation($bewertung_seite, $bewertung_sterne, $nAnzahlBewertungen, $nAnzahlSeiten);
+    return Product::getRatingNavigation($bewertung_seite, $bewertung_sterne, $nAnzahlBewertungen, $nAnzahlSeiten);
 }
 
 /**
@@ -183,7 +183,7 @@ function baueBewertungNavi($bewertung_seite, $bewertung_sterne, $nAnzahlBewertun
 function mappingFehlerCode($cCode, $fGuthaben = 0.0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return ArtikelHelper::mapErrorCode($cCode, $fGuthaben);
+    return Product::mapErrorCode($cCode, $fGuthaben);
 }
 
 /**
@@ -195,7 +195,7 @@ function mappingFehlerCode($cCode, $fGuthaben = 0.0)
 function fasseVariVaterUndKindZusammen($oVaterArtikel, $oKindArtikel)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return ArtikelHelper::combineParentAndChild($oVaterArtikel, $oKindArtikel);
+    return Product::combineParentAndChild($oVaterArtikel, $oKindArtikel);
 }
 
 /**
@@ -207,7 +207,7 @@ function holeAehnlicheArtikel(int $kArtikel)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 
-    return ArtikelHelper::getSimilarProductsByID($kArtikel);
+    return Product::getSimilarProductsByID($kArtikel);
 }
 
 /**
@@ -218,7 +218,7 @@ function holeAehnlicheArtikel(int $kArtikel)
 function ProductBundleWK(int $productID)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return ArtikelHelper::addProductBundleToCart($productID);
+    return Product::addProductBundleToCart($productID);
 }
 
 /**
@@ -234,7 +234,7 @@ function ProductBundleWK(int $productID)
 function buildConfig($kArtikel, $fAnzahl, $variations, $configGroups, $configGroupAmounts, $configItemAmounts)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return ArtikelHelper::buildConfig(
+    return Product::buildConfig(
         $kArtikel,
         $fAnzahl,
         $variations,
@@ -252,7 +252,7 @@ function buildConfig($kArtikel, $fAnzahl, $variations, $configGroups, $configGro
 function holeKonfigBearbeitenModus($kKonfig, $smarty)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    ArtikelHelper::getEditConfigMode($kKonfig, $smarty);
+    Product::getEditConfigMode($kKonfig, $smarty);
 }
 
 
@@ -264,6 +264,6 @@ if (!function_exists('baueFormularVorgaben')) {
     function baueFormularVorgaben()
     {
         trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-        return ArtikelHelper::getProductQuestionFormDefaults();
+        return Product::getProductQuestionFormDefaults();
     }
 }

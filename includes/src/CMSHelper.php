@@ -4,8 +4,8 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\SearchSpecialHelper;
-use Helpers\UrlHelper;
+use Helpers\SearchSpecial;
+use Helpers\URL;
 
 /**
  * Class CMSHelper
@@ -29,22 +29,22 @@ class CMSHelper
             $products = [];
             switch ($box->name) {
                 case 'TopAngebot':
-                    $products = SearchSpecialHelper::getTopOffers($box->anzahl, $customerGroupID);
+                    $products = SearchSpecial::getTopOffers($box->anzahl, $customerGroupID);
                     $url      = SEARCHSPECIALS_TOPOFFERS;
                     break;
 
                 case 'Bestseller':
-                    $products = SearchSpecialHelper::getBestsellers($box->anzahl, $customerGroupID);
+                    $products = SearchSpecial::getBestsellers($box->anzahl, $customerGroupID);
                     $url      = SEARCHSPECIALS_BESTSELLER;
                     break;
 
                 case 'Sonderangebote':
-                    $products = SearchSpecialHelper::getSpecialOffers($box->anzahl, $customerGroupID);
+                    $products = SearchSpecial::getSpecialOffers($box->anzahl, $customerGroupID);
                     $url      = SEARCHSPECIALS_SPECIALOFFERS;
                     break;
 
                 case 'NeuImSortiment':
-                    $products = SearchSpecialHelper::getNewProducts($box->anzahl, $customerGroupID);
+                    $products = SearchSpecial::getNewProducts($box->anzahl, $customerGroupID);
                     $url      = SEARCHSPECIALS_NEWPRODUCTS;
                     break;
             }
@@ -53,7 +53,7 @@ class CMSHelper
             });
             if (count($productIDs) > 0) {
                 shuffle($productIDs);
-                $box->cURL    = SearchSpecialHelper::buildURL($url);
+                $box->cURL    = SearchSpecial::buildURL($url);
                 $box->Artikel = new ArtikelListe();
                 $box->Artikel->getArtikelByKeys($productIDs, 0, count($productIDs));
             }
@@ -205,8 +205,8 @@ class CMSHelper
             $item->Klasse   = $priority < 1
                 ? rand(1, 10)
                 : (round(($item->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / $priority) + 1);
-            $item->cURL     = UrlHelper::buildURL($item, URLART_LIVESUCHE);
-            $item->cURLFull = UrlHelper::buildURL($item, URLART_LIVESUCHE, true);
+            $item->cURL     = URL::buildURL($item, URLART_LIVESUCHE);
+            $item->cURLFull = URL::buildURL($item, URLART_LIVESUCHE, true);
             $search[]       = $item;
         }
 
@@ -250,8 +250,8 @@ class CMSHelper
             $item->Klasse   = $priority < 1
                 ? rand(1, 10)
                 : round(($item->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / $priority) + 1;
-            $item->cURL     = UrlHelper::buildURL($item, URLART_LIVESUCHE);
-            $item->cURLFull = UrlHelper::buildURL($item, URLART_LIVESUCHE, true);
+            $item->cURL     = URL::buildURL($item, URLART_LIVESUCHE);
+            $item->cURLFull = URL::buildURL($item, URLART_LIVESUCHE, true);
             $search[]       = $item;
         }
 
@@ -295,8 +295,8 @@ class CMSHelper
             $tag->Klasse   = ($priority < 1) ?
                 rand(1, 10) :
                 (round(($tag->Anzahl - $tagData[$count - 1]->Anzahl) / $priority) + 1);
-            $tag->cURL     = UrlHelper::buildURL($tag, URLART_TAG);
-            $tag->cURLFull = UrlHelper::buildURL($tag, URLART_TAG, true);
+            $tag->cURL     = URL::buildURL($tag, URLART_TAG);
+            $tag->cURLFull = URL::buildURL($tag, URLART_TAG, true);
             $tags[]        = $tag;
         }
         shuffle($tags);
@@ -319,8 +319,8 @@ class CMSHelper
             'dStart DESC'
         );
         foreach ($history as $item) {
-            $item->cURL     = UrlHelper::buildURL($item, URLART_NEWS);
-            $item->cURLFull = UrlHelper::buildURL($item, URLART_NEWS, true);
+            $item->cURL     = URL::buildURL($item, URLART_NEWS);
+            $item->cURLFull = URL::buildURL($item, URLART_NEWS, true);
         }
 
         return $history;

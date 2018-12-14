@@ -4,9 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
-use Helpers\ObjectHelper;
-use Helpers\RequestHelper;
+use Helpers\Form;
+use Helpers\GeneralObject;
+use Helpers\Request;
 
 require_once __DIR__ . '/admin_menu.php';
 
@@ -122,11 +122,11 @@ foreach ($adminMenu as $rootName => $rootEntry) {
                 if ($link->cURL === $curScriptFileName
                     || $curScriptFileName === 'einstellungen.php'
                     && $urlParts['basename'] === 'einstellungen.php'
-                    && RequestHelper::verifyGPCDataInt('kSektion') === (int)$urlParts['query']['kSektion']
+                    && Request::verifyGPCDataInt('kSektion') === (int)$urlParts['query']['kSektion']
                     || $curScriptFileName === 'statistik.php'
                     && $urlParts['basename'] === 'statistik.php'
                     && isset($urlParts['query']['s'])
-                    && RequestHelper::verifyGPCDataInt('s') === (int)$urlParts['query']['s']
+                    && Request::verifyGPCDataInt('s') === (int)$urlParts['query']['s']
                 ) {
                     $currentToplevel    = $mainGroup->key;
                     $currentSecondLevel = $linkGruppe->key;
@@ -162,7 +162,7 @@ if (empty($template->version)) {
     $adminTplVersion = $template->version;
 }
 $smarty->assign('URL_SHOP', $shopURL)
-       ->assign('jtl_token', FormHelper::getTokenInput())
+       ->assign('jtl_token', Form::getTokenInput())
        ->assign('shopURL', $shopURL)
        ->assign('adminTplVersion', $adminTplVersion)
        ->assign('PFAD_ADMIN', PFAD_ADMIN)

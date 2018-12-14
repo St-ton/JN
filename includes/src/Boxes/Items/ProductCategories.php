@@ -36,7 +36,7 @@ final class ProductCategories extends AbstractBox
      */
     private function getCategories(): array
     {
-        $categories = \Helpers\KategorieHelper::getInstance();
+        $categories = \Helpers\Category::getInstance();
         $list       = $categories->combinedGetAll();
         $boxID      = $this->getCustomID();
         if ($boxID > 0) {

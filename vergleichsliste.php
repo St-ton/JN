@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'vergleichsliste_inc.php';
@@ -17,11 +17,11 @@ $oMerkVaria_arr         = [[], []];
 $linkHelper             = Shop::Container()->getLinkService();
 $kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_VERGLEICHSLISTE);
 $link                   = $linkHelper->getPageLink($kLink);
-$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
+$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {
-    $kArtikel = RequestHelper::verifyGPCDataInt('a');
+    $kArtikel = Request::verifyGPCDataInt('a');
     if ($kArtikel > 0) {
         header('Location: ' . Shop::getURL() . '/?a=' . $kArtikel);
         exit();

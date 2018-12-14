@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\PHPSettingsHelper;
+use Helpers\PHPSettings;
 
 $oNice = Nice::getInstance();
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
@@ -194,7 +194,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public static function uploadMax()
         {
-            $helper = PHPSettingsHelper::getInstance();
+            $helper = PHPSettings::getInstance();
 
             return min(
                 $helper->uploadMaxFileSize(),

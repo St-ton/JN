@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\ObjectHelper;
+use Helpers\GeneralObject;
 
 /**
  * Class WarenkorbPersPosEigenschaft
@@ -75,7 +75,7 @@ class WarenkorbPersPosEigenschaft
      */
     public function schreibeDB(): self
     {
-        $obj = ObjectHelper::copyMembers($this);
+        $obj = GeneralObject::copyMembers($this);
         unset($obj->kWarenkorbPersPosEigenschaft);
         $this->kWarenkorbPersPosEigenschaft = Shop::Container()->getDB()->insert('twarenkorbpersposeigenschaft', $obj);
 

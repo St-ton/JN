@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -20,7 +20,7 @@ $fehler  = '';
 
 if (isset($_POST['newsletterimport'], $_FILES['csv']['tmp_name'])
     && (int)$_POST['newsletterimport'] === 1
-    && FormHelper::validateToken()
+    && Form::validateToken()
     && strlen($_FILES['csv']['tmp_name']) > 0
 ) {
     $file = fopen($_FILES['csv']['tmp_name'], 'r');

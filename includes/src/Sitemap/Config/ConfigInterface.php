@@ -10,7 +10,7 @@ use Sitemap\Factories\FactoryInterface;
 
 /**
  * Interface ConfigInterface
- * @package Sitemap
+ * @package Sitemap\Config
  */
 interface ConfigInterface
 {

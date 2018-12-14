@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\FormHelper;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 
@@ -16,6 +19,7 @@ $step                = 'uebersicht';
 $oSmartyError        = new stdClass();
 $oSmartyError->nCode = 0;
 $link                = null;
+$db                  = Shop::Container()->getDB();
 if (isset($_GET['neuerExport']) && (int)$_GET['neuerExport'] === 1 && FormHelper::validateToken()) {
     $step = 'neuer Export';
 }
@@ -37,25 +41,23 @@ if (isset($_GET['kExportformat'])
     }
 }
 if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && FormHelper::validateToken()) {
-    $ef          = new Exportformat();
+    $ef          = new Exportformat(0, $db);
     $checkResult = $ef->check($_POST);
     if ($checkResult === true) {
         $kExportformat = $ef->getExportformat();
         if ($kExportformat > 0) {
-            //update
             $kExportformat = (int)$_POST['kExportformat'];
-            $revision = new Revision();
+            $revision      = new Revision();
             $revision->addRevision('export', $kExportformat);
             $ef->update();
             $hinweis .= 'Das Exportformat <strong>' . $ef->getName() . '</strong> wurde erfolgreich geändert.';
         } else {
-            //insert
             $kExportformat = $ef->save();
-            $hinweis .= 'Das Exportformat <strong>' . $ef->getName() . '</strong> wurde erfolgreich erstellt.';
+            $hinweis      .= 'Das Exportformat <strong>' . $ef->getName() . '</strong> wurde erfolgreich erstellt.';
         }
 
-        Shop::Container()->getDB()->delete('texportformateinstellungen', 'kExportformat', $kExportformat);
-        $Conf        = Shop::Container()->getDB()->selectAll(
+        $db->delete('texportformateinstellungen', 'kExportformat', $kExportformat);
+        $Conf        = $db->selectAll(
             'teinstellungenconf',
             'kEinstellungenSektion',
             CONF_EXPORTFORMATE,
@@ -81,7 +83,7 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && FormHelper
                     $aktWert->cWert = substr($aktWert->cWert, 0, 255);
                     break;
             }
-            Shop::Container()->getDB()->insert('texportformateinstellungen', $aktWert);
+            $db->insert('texportformateinstellungen', $aktWert);
         }
         $step  = 'uebersicht';
         $error = $ef->checkSyntax();
@@ -120,7 +122,7 @@ if ($cAction !== null && $kExportformat !== null && FormHelper::validateToken())
             $queue->dErstellt      = 'NOW()';
             $queue->dZuBearbeiten  = 'NOW()';
 
-            $kExportqueue = Shop::Container()->getDB()->insert('texportqueue', $queue);
+            $kExportqueue = $db->insert('texportqueue', $queue);
 
             $cURL = 'do_export.php?&back=admin&token=' . $_SESSION['jtl_token'] . '&e=' . $kExportqueue;
             if ($bAsync) {
@@ -129,7 +131,7 @@ if ($cAction !== null && $kExportformat !== null && FormHelper::validateToken())
             header('Location: ' . $cURL);
             exit;
         case 'download':
-            $exportformat = Shop::Container()->getDB()->select('texportformat', 'kExportformat', $kExportformat);
+            $exportformat = $db->select('texportformat', 'kExportformat', $kExportformat);
             if ($exportformat->cDateiname && file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname)) {
                 header('Content-type: text/plain');
                 header('Content-Disposition: attachment; filename=' . $exportformat->cDateiname);
@@ -143,7 +145,7 @@ if ($cAction !== null && $kExportformat !== null && FormHelper::validateToken())
             $_POST['kExportformat'] = $kExportformat;
             break;
         case 'delete':
-            $bDeleted = Shop::Container()->getDB()->query(
+            $bDeleted = $db->query(
                 "DELETE tcron, texportformat, tjobqueue, texportqueue
                    FROM texportformat
                    LEFT JOIN tcron 
@@ -168,7 +170,7 @@ if ($cAction !== null && $kExportformat !== null && FormHelper::validateToken())
             }
             break;
         case 'exported':
-            $exportformat = Shop::Container()->getDB()->select('texportformat', 'kExportformat', $kExportformat);
+            $exportformat = $db->select('texportformat', 'kExportformat', $kExportformat);
             if ($exportformat->cDateiname
                 && (file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname)
                     || file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname . '.zip')
@@ -190,7 +192,7 @@ if ($cAction !== null && $kExportformat !== null && FormHelper::validateToken())
 }
 
 if ($step === 'uebersicht') {
-    $exportformate = Shop::Container()->getDB()->query(
+    $exportformate = $db->query(
         'SELECT * 
             FROM texportformat 
             ORDER BY cName',
@@ -198,17 +200,17 @@ if ($step === 'uebersicht') {
     );
     $eCount        = count($exportformate);
     for ($i = 0; $i < $eCount; $i++) {
-        $exportformate[$i]->Sprache              = Shop::Container()->getDB()->select(
+        $exportformate[$i]->Sprache              = $db->select(
             'tsprache',
             'kSprache',
             (int)$exportformate[$i]->kSprache
         );
-        $exportformate[$i]->Waehrung             = Shop::Container()->getDB()->select(
+        $exportformate[$i]->Waehrung             = $db->select(
             'twaehrung',
             'kWaehrung',
             (int)$exportformate[$i]->kWaehrung
         );
-        $exportformate[$i]->Kundengruppe         = Shop::Container()->getDB()->select(
+        $exportformate[$i]->Kundengruppe         = $db->select(
             'tkundengruppe',
             'kKundengruppe',
             (int)$exportformate[$i]->kKundengruppe
@@ -225,13 +227,13 @@ if ($step === 'uebersicht') {
 
 if ($step === 'neuer Export') {
     $smarty->assign('sprachen', Sprache::getAllLanguages())
-           ->assign('kundengruppen', Shop::Container()->getDB()->query(
+           ->assign('kundengruppen', $db->query(
                'SELECT * 
                     FROM tkundengruppe 
                     ORDER BY cName',
                \DB\ReturnType::ARRAY_OF_OBJECTS
            ))
-           ->assign('waehrungen', Shop::Container()->getDB()->query(
+           ->assign('waehrungen', $db->query(
                'SELECT * 
                     FROM twaehrung 
                     ORDER BY cStandard DESC',
@@ -241,14 +243,14 @@ if ($step === 'neuer Export') {
 
     $exportformat = null;
     if (isset($_POST['kExportformat']) && (int)$_POST['kExportformat'] > 0) {
-        $exportformat             = Shop::Container()->getDB()->select(
+        $exportformat             = $db->select(
             'texportformat',
             'kExportformat',
             (int)$_POST['kExportformat']
         );
-        $exportformat->cKopfzeile = str_replace("\t", "<tab>", $exportformat->cKopfzeile);
-        $exportformat->cContent   = str_replace("\t", "<tab>", $exportformat->cContent);
-        $exportformat->cFusszeile = str_replace("\t", "<tab>", $exportformat->cFusszeile);
+        $exportformat->cKopfzeile = str_replace("\t", '<tab>', $exportformat->cKopfzeile);
+        $exportformat->cContent   = str_replace("\t", '<tab>', $exportformat->cContent);
+        $exportformat->cFusszeile = str_replace("\t", '<tab>', $exportformat->cFusszeile);
         if ($exportformat->kPlugin > 0 && strpos($exportformat->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
             $exportformat->bPluginContentFile = true;
         }

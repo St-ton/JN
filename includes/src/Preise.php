@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\TaxHelper;
+
 /**
  * Class Preise
  */
@@ -174,7 +176,7 @@ class Preise
      */
     public function __construct(int $kKundengruppe, int $kArtikel, int $kKunde = 0, int $kSteuerklasse = 0)
     {
-        $filterKunde = "AND p.kKundengruppe = {$kKundengruppe}";
+        $filterKunde = 'AND p.kKundengruppe = ' . $kKundengruppe;
         if ($kKunde > 0 && $this->hasCustomPrice($kKunde)) {
             $filterKunde = "AND (p.kKundengruppe, COALESCE(p.kKunde, 0)) = (
                             SELECT min(IFNULL(p1.kKundengruppe, {$kKundengruppe})), max(IFNULL(p1.kKunde, 0))
@@ -188,12 +190,11 @@ class Preise
         $this->kKunde        = $kKunde;
 
         $prices = Shop::Container()->getDB()->query(
-            "SELECT *
+            'SELECT *
                 FROM tpreis AS p
                 JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
-                WHERE p.kArtikel = {$kArtikel}
-                    {$filterKunde}
-                ORDER BY d.nAnzahlAb",
+                WHERE p.kArtikel = ' . $kArtikel . ' ' . $filterKunde . '
+                ORDER BY d.nAnzahlAb',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (count($prices) > 0) {
@@ -213,7 +214,7 @@ class Preise
                 $kSteuerklasse = (int)$tax->kSteuerklasse;
             }
             $this->fUst        = TaxHelper::getSalesTax($kSteuerklasse);
-            $tmp = Shop::Container()->getDB()->select(
+            $tmp               = Shop::Container()->getDB()->select(
                 'tartikel',
                 'kArtikel',
                 $kArtikel,
@@ -240,10 +241,10 @@ class Preise
                             DATE_FORMAT(tartikelsonderpreis.dEnde, '%d.%m.%Y') AS dEnde_de
                             FROM tsonderpreise
                             JOIN tartikel 
-                                ON tartikel.kArtikel = " . $kArtikel . "
+                                ON tartikel.kArtikel = " . $kArtikel . '
                             JOIN tartikelsonderpreis 
                                 ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
-                                AND tartikelsonderpreis.kArtikel = " . $kArtikel . "
+                                AND tartikelsonderpreis.kArtikel = ' . $kArtikel . "
                                 AND tartikelsonderpreis.cAktiv = 'Y'
                                 AND tartikelsonderpreis.dStart <= CURDATE()
                                 AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE()) 
@@ -268,8 +269,8 @@ class Preise
                 } else {
                     // Alte Preisstaffeln
                     if ($i <= 5) {
-                        $scaleGetter = "nAnzahl{$i}";
-                        $priceGetter = "fPreis{$i}";
+                        $scaleGetter = 'nAnzahl' . $i;
+                        $priceGetter = 'fPreis' . $i;
 
                         $this->{$scaleGetter} = (int)$price->nAnzahlAb;
                         $this->{$priceGetter} = $specialPriceValue ?? $this->getRecalculatedNetPrice(
@@ -333,9 +334,9 @@ class Preise
             $cacheID = 'custprice_' . $kKunde;
             if (($oCustomPrice = Shop::Container()->getCache()->get($cacheID)) === false) {
                 $oCustomPrice = Shop::Container()->getDB()->query(
-                    "SELECT count(kPreis) AS nAnzahl 
+                    'SELECT COUNT(kPreis) AS nAnzahl 
                         FROM tpreis
-                        WHERE kKunde = {$kKunde}",
+                        WHERE kKunde = ' . $kKunde,
                     \DB\ReturnType::SINGLE_OBJECT
                 );
                 if (is_object($oCustomPrice)) {
@@ -388,13 +389,13 @@ class Preise
             $this->fUst = TaxHelper::getSalesTax($ust_obj->kSteuerklasse);
             //hat dieser Artikel fuer diese Kundengruppe einen Sonderpreis?
             $sonderpreis = Shop::Container()->getDB()->query(
-                "SELECT tsonderpreise.fNettoPreis
+                'SELECT tsonderpreise.fNettoPreis
                     FROM tsonderpreise
                     JOIN tartikel 
-                        ON tartikel.kArtikel = " . $kArtikel . "
+                        ON tartikel.kArtikel = ' . $kArtikel . '
                     JOIN tartikelsonderpreis 
                         ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
-                        AND tartikelsonderpreis.kArtikel = " . $kArtikel . "
+                        AND tartikelsonderpreis.kArtikel = ' . $kArtikel . "
                         AND tartikelsonderpreis.cAktiv = 'Y'
                         AND tartikelsonderpreis.dStart <= CURDATE()
                         AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())
@@ -631,8 +632,12 @@ class Preise
      * @return string
      * @former self::getLocalizedPriceString()
      */
-    public static function getLocalizedPriceString($price, $currency = null, bool $html = true, int $decimals = 2): string
-    {
+    public static function getLocalizedPriceString(
+        $price,
+        $currency = null,
+        bool $html = true,
+        int $decimals = 2
+    ): string {
         if ($currency === null || is_numeric($currency) || is_bool($currency)) {
             $currency = \Session\Session::getCurrency();
         } elseif (is_object($currency) && get_class($currency) === 'stdClass') {

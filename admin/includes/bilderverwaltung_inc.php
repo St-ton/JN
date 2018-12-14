@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\UrlHelper;
+
 /**
  * @param bool $filesize
  * @return array
@@ -11,7 +13,7 @@
  */
 function getItems(bool $filesize = false)
 {
-    $item = (object)[
+    $item = (object) [
         'name'  => __('typeProduct'),
         'type'  => Image::TYPE_PRODUCT,
         'stats' => MediaImage::getStats(Image::TYPE_PRODUCT, $filesize)
@@ -184,23 +186,25 @@ function generateImageCache($type, int $index)
  */
 function getCorruptedImages($type, int $limit)
 {
-    static $offset = 0;
+    static $offset   = 0;
     $corruptedImages = [];
     $totalImages     = count(MediaImage::getImages($type));
-
     do {
         $images = MediaImage::getImages($type, false, $offset, $limit);
         foreach ($images as $image) {
-            $raw = $image->getRaw(true);
             $fallback = $image->getFallbackThumb(Image::SIZE_XS);
-            if (!file_exists($raw) && !file_exists(PFAD_ROOT . $fallback)) {
-                $corruptedImage  = (object) [
+            if (!file_exists($image->getRaw(true)) && !file_exists(PFAD_ROOT . $fallback)) {
+                $corruptedImage            = (object)[
                     'article' => [],
                     'picture' => ''
                 ];
-                $articleDB           = Shop::Container()->getDB()->select('tartikel', 'kArtikel', $image->getId());
-                $articleDB->cURLFull = UrlHelper::buildURL($articleDB, URLART_ARTIKEL, true);
-                $article             = (object) [
+                $articleDB                 = Shop::Container()->getDB()->select(
+                    'tartikel',
+                    'kArtikel',
+                    $image->getId()
+                );
+                $articleDB->cURLFull       = UrlHelper::buildURL($articleDB, URLART_ARTIKEL, true);
+                $article                   = (object)[
                     'articleNr'      => $articleDB->cArtNr,
                     'articleURLFull' => $articleDB->cURLFull
                 ];

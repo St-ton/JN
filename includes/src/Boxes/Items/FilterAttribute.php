@@ -10,7 +10,7 @@ use Filter\Visibility;
 
 /**
  * Class FilterAttribute
- * @package Boxes
+ * @package Boxes\Items
  */
 final class FilterAttribute extends AbstractBox
 {

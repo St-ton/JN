@@ -11,6 +11,7 @@ use Cache\JTLCacheTrait;
 
 /**
  * Class cache_null
+ *
  * emergency fallback caching method
  * @package Cache\Methods
  */

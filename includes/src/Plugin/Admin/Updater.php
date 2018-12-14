@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -7,6 +7,8 @@
 namespace Plugin\Admin;
 
 use DB\DbInterface;
+use Plugin\Admin\Installation\Installer;
+use Plugin\Helper;
 use Plugin\InstallCode;
 use Plugin\Plugin;
 
@@ -47,13 +49,13 @@ class Updater
         if ($pluginID <= 0) {
             return InstallCode::WRONG_PARAM;
         }
-        $tmp = $this->db->select('tplugin', 'kPlugin', $pluginID);
-        if (isset($tmp->kPlugin) && $tmp->kPlugin > 0) {
-            $plugin = new Plugin($tmp->kPlugin);
+        $loader = Helper::getLoaderByPluginID($pluginID, $this->db);
+        if ($loader !== null) {
+            $plugin = $loader->init($pluginID, true);
             $this->installer->setPlugin($plugin);
-            $this->installer->setDir($plugin->cVerzeichnis);
+            $this->installer->setDir($plugin->getPaths()->getBaseDir());
 
-            return $this->installer->installierePluginVorbereitung();
+            return $this->installer->prepare();
         }
 
         return InstallCode::NO_PLUGIN_FOUND;

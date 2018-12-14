@@ -3,6 +3,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\FormHelper;
+use Helpers\RequestHelper;
+use Pagination\Pagination;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_PACKAGE_VIEW', true, true);
@@ -26,7 +31,7 @@ if (FormHelper::validateToken()) {
 if ($action === 'save') {
     $kVerpackung                      = (int)$_POST['kVerpackung'];
     $kKundengruppe_arr                = $_POST['kKundengruppe'] ?? null;
-    $oVerpackung = new stdClass();
+    $oVerpackung                      = new stdClass();
     $oVerpackung->fBrutto             = (float)str_replace(',', '.', $_POST['fBrutto'] ?? 0);
     $oVerpackung->fMindestbestellwert = (float)str_replace(',', '.', $_POST['fMindestbestellwert'] ?? 0);
     $oVerpackung->fKostenfrei         = (float)str_replace(',', '.', $_POST['fKostenfrei'] ?? 0);
@@ -79,7 +84,11 @@ if ($action === 'save') {
                 : htmlspecialchars($_POST['cName_' . $oSprache_arr[0]->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $oVerpackungSprache->cBeschreibung = !empty($_POST['cBeschreibung_' . $oSprache->cISO])
                 ? htmlspecialchars($_POST['cBeschreibung_' . $oSprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
-                : htmlspecialchars($_POST['cBeschreibung_' . $oSprache_arr[0]->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+                : htmlspecialchars(
+                    $_POST['cBeschreibung_' . $oSprache_arr[0]->cISO],
+                    ENT_COMPAT | ENT_HTML401,
+                    JTL_CHARSET
+                );
             Shop::Container()->getDB()->insert('tverpackungsprache', $oVerpackungSprache);
         }
         $cHinweis .= 'Die Verpackung "' . $_POST['cName_' .
@@ -144,15 +153,15 @@ $oVerpackungCount = Shop::Container()->getDB()->query(
             FROM tverpackung',
     \DB\ReturnType::SINGLE_OBJECT
 );
-$itemsPerPage=10;
-$oPagination  = (new Pagination('standard'))
-    ->setItemsPerPageOptions([$itemsPerPage, $itemsPerPage*2, $itemsPerPage*5])
+$itemsPerPage     = 10;
+$oPagination      = (new Pagination('standard'))
+    ->setItemsPerPageOptions([$itemsPerPage, $itemsPerPage * 2, $itemsPerPage * 5])
     ->setItemCount($oVerpackungCount->count)
     ->assemble();
-$oVerpackung_arr = Shop::Container()->getDB()->query(
+$oVerpackung_arr  = Shop::Container()->getDB()->query(
     'SELECT * FROM tverpackung 
        ORDER BY cName' .
-      ($oPagination->getLimitSQL() !== '' ? ' LIMIT ' . $oPagination->getLimitSQL() : ''),
+    ($oPagination->getLimitSQL() !== '' ? ' LIMIT ' . $oPagination->getLimitSQL() : ''),
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 
@@ -218,8 +227,8 @@ function gibKundengruppeObj($cKundengruppe)
 
 /**
  * @param object $oVerpackung
- * @param array $kKundengruppe_arr
- * @param int $kVerpackung
+ * @param array  $kKundengruppe_arr
+ * @param int    $kVerpackung
  * @param object $smarty
  * @return void
  */
@@ -228,17 +237,18 @@ function holdInputOnError($oVerpackung, $kKundengruppe_arr, $kVerpackung, &$smar
     $oVerpackung->oSprach_arr = [];
     foreach ($_POST as $key => $value) {
         if (strpos($key, 'cName') !== false) {
-            $cISO = explode('cName_', $key)[1];
+            $cISO                                   = explode('cName_', $key)[1];
+            $idx                                    = 'cBeschreibung_' . $cISO;
             $oVerpackung->oSprach_arr[$cISO]        = new stdClass();
             $oVerpackung->oSprach_arr[$cISO]->cName = $value;
-            if (isset($_POST['cBeschreibung_'.$cISO])) {
-                $oVerpackung->oSprach_arr[$cISO]->cBeschreibung = $_POST['cBeschreibung_'.$cISO];
+            if (isset($_POST[$idx])) {
+                $oVerpackung->oSprach_arr[$cISO]->cBeschreibung = $_POST[$idx];
             }
         }
     }
 
     if ($kKundengruppe_arr && $kKundengruppe_arr[0] !== '-1') {
-        $oVerpackung->cKundengruppe = ';' . implode(';', $kKundengruppe_arr) . ';';
+        $oVerpackung->cKundengruppe     = ';' . implode(';', $kKundengruppe_arr) . ';';
         $oKundengruppe                  = gibKundengruppeObj($oVerpackung->cKundengruppe);
         $oVerpackung->kKundengruppe_arr = $oKundengruppe->kKundengruppe_arr;
         $oVerpackung->cKundengruppe_arr = $oKundengruppe->cKundengruppe_arr;

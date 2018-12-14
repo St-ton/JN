@@ -48,7 +48,7 @@ class PasswordService implements PasswordServiceInterface
          */
         $result = '';
         for ($x = 0; $x < $length; $x++) {
-            $no     = $this->cryptoService->randomInt(self::ASCII_MIN, self::ASCII_MAX);
+            $no      = $this->cryptoService->randomInt(self::ASCII_MIN, self::ASCII_MAX);
             $result .= \chr($no);
         }
 

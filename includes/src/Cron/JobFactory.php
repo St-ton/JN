@@ -44,8 +44,8 @@ class JobFactory
     public function create(QueueEntry $data): JobInterface
     {
         $mapper = new JobTypeToJob();
-        $class = $mapper->map($data->cJobArt);
-        $job   = new $class($this->db, $this->logger);
+        $class  = $mapper->map($data->cJobArt);
+        $job    = new $class($this->db, $this->logger);
         /** @var JobInterface $job */
         $job->setType($data->cJobArt);
         $job->setTable($data->cTabelle);

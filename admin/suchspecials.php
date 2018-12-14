@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\FormHelper;
+use Helpers\RequestHelper;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 
@@ -186,12 +190,12 @@ if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
         Shop::Container()->getDB()->query(
             "DELETE FROM tseo
                 WHERE cKey = 'suchspecial'
-                    AND kSprache = " . (int)$_SESSION['kSprache'] . "
-                    AND kKey IN (" . $cSQL . ")",
+                    AND kSprache = " . (int)$_SESSION['kSprache'] . '
+                    AND kKey IN (' . $cSQL . ')',
             \DB\ReturnType::AFFECTED_ROWS
         );
         foreach ($oSuchSpecialsTMP_arr as $oSuchSpecialsTMP) {
-            $oSeo = new stdClass();
+            $oSeo           = new stdClass();
             $oSeo->cSeo     = $oSuchSpecialsTMP->cSeo;
             $oSeo->cKey     = 'suchspecial';
             $oSeo->kKey     = $oSuchSpecialsTMP->kKey;
@@ -213,8 +217,8 @@ if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
         Shop::Container()->getDB()->query(
             "DELETE FROM tseo
                 WHERE cKey = 'suchspecial'
-                    AND kSprache = " . (int)$_SESSION['kSprache'] . "
-                    AND kKey IN (" . $cSQL . ")",
+                    AND kSprache = " . (int)$_SESSION['kSprache'] . '
+                    AND kKey IN (' . $cSQL . ')',
             \DB\ReturnType::AFFECTED_ROWS
         );
     }
@@ -222,7 +226,6 @@ if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
     $cHinweis .= 'Ihre Seos wurden erfolgreich gespeichert bzw. aktualisiert.<br />';
 }
 
-// Suchspecials aus der DB holen und in smarty assignen
 $oSuchSpecials_arrTMP = Shop::Container()->getDB()->selectAll(
     'tseo',
     ['cKey', 'kSprache'],

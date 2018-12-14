@@ -7,10 +7,11 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
+use Session\Session;
 
 /**
- * Class BoxSurvey
- * @package Boxes
+ * Class Poll
+ * @package Boxes\Items
  */
 final class Poll extends AbstractBox
 {
@@ -26,7 +27,7 @@ final class Poll extends AbstractBox
             ? ' LIMIT ' . (int)$conf
             : '';
         $langID    = \Shop::getLanguageID();
-        $cacheID   = 'bu_' . $langID . '_' . \Session\Session::getCustomerGroup()->getID() . \md5($cSQL);
+        $cacheID   = 'bu_' . $langID . '_' . Session::getCustomerGroup()->getID() . \md5($cSQL);
         $cacheTags = [\CACHING_GROUP_BOX, \CACHING_GROUP_CORE];
         $cached    = true;
         if (($polls = \Shop::Container()->getCache()->get($cacheID)) === false) {
@@ -52,14 +53,14 @@ final class Poll extends AbstractBox
                         AND NOW() BETWEEN dGueltigVon AND COALESCE(dGueltigBis, NOW())
                     GROUP BY tumfrage.kUmfrage
                     ORDER BY tumfrage.dGueltigVon DESC" . $cSQL,
-                ['lid' => $langID, 'cid' => \Session\Session::getCustomerGroup()->getID()],
+                ['lid' => $langID, 'cid' => Session::getCustomerGroup()->getID()],
                 ReturnType::ARRAY_OF_OBJECTS
             );
             \Shop::Container()->getCache()->set($cacheID, $polls, $cacheTags);
         }
         foreach ($polls as $poll) {
-            $poll->cURL     = \UrlHelper::buildURL($poll, \URLART_UMFRAGE);
-            $poll->cURLFull = \UrlHelper::buildURL($poll, \URLART_UMFRAGE, true);
+            $poll->cURL     = \Helpers\UrlHelper::buildURL($poll, \URLART_UMFRAGE);
+            $poll->cURLFull = \Helpers\UrlHelper::buildURL($poll, \URLART_UMFRAGE, true);
         }
         $this->setItems($polls);
         $this->setShow(\count($polls) > 0);

@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\FormHelper;
+use Helpers\RequestHelper;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
@@ -10,24 +14,39 @@ $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'pluginverwaltung_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 
-$reload       = false;
-$cHinweis     = '';
-$cFehler      = '';
-$step         = 'pluginverwaltung_uebersicht';
-$db           = Shop::Container()->getDB();
-$cache        = Shop::Container()->getCache();
-$uninstaller  = new \Plugin\Admin\Uninstaller($db);
-$validator    = new \Plugin\Admin\Validator($db);
-$listing      = new \Plugin\Admin\Listing($db, $validator);
-$installer    = new \Plugin\Admin\Installer($db, $uninstaller, $validator);
-$updater      = new \Plugin\Admin\Updater($db, $installer);
-$extractor    = new \Plugin\Admin\Extractor();
-$stateChanger = new \Plugin\Admin\StateChanger(
+$errorCount      = 0;
+$reload          = false;
+$cHinweis        = '';
+$cFehler         = '';
+$step            = 'pluginverwaltung_uebersicht';
+$db              = Shop::Container()->getDB();
+$cache           = Shop::Container()->getCache();
+$parser          = new \JTL\XMLParser();
+$uninstaller     = new \Plugin\Admin\Installation\Uninstaller($db, $cache);
+$validator       = new \Plugin\Admin\Validation\PluginValidator($db, $parser);
+$modernValidator = new \Plugin\Admin\Validation\ExtensionValidator($db, $parser);
+$listing         = new \Plugin\Admin\Listing($db, $cache, $validator, $modernValidator);
+$installer       = new \Plugin\Admin\Installation\Installer($db, $uninstaller, $validator, $modernValidator);
+$updater         = new \Plugin\Admin\Updater($db, $installer);
+$extractor       = new \Plugin\Admin\Installation\Extractor();
+$stateChanger    = new \Plugin\Admin\StateChanger(
     $db,
     $cache,
-    $validator
+    $validator,
+    $modernValidator
 );
 
+$pluginsInstalled = $listing->getInstalled();
+$pluginsAll       = $listing->getAll($pluginsInstalled);
+foreach ($pluginsInstalled as $_plugin) {
+    $pluginsInstalledByState['status_' . $_plugin->getState()][] = $_plugin;
+}
+$pluginsAvailable = $pluginsAll->filter(function (\Plugin\Admin\ListingItem $item) {
+    return $item->isAvailable() === true && $item->isInstalled() === false;
+});
+$pluginsErroneous = $pluginsAll->filter(function (\Plugin\Admin\ListingItem $item) {
+    return $item->isHasError() === true && $item->isInstalled() === false;
+});
 if (isset($_SESSION['plugin_msg'])) {
     $cHinweis = $_SESSION['plugin_msg'];
     unset($_SESSION['plugin_msg']);
@@ -44,31 +63,26 @@ if (!empty($_FILES['file_data'])) {
         'status_5' => [],
         'status_6' => []
     ];
-    $pluginsInstalled        = $listing->getInstalled();
-    $pluginsAll              = $listing->getAll($pluginsInstalled);
     foreach ($pluginsInstalled as $_plugin) {
-        $pluginsInstalledByState['status_' . $_plugin->nStatus][] = $_plugin;
+        $pluginsInstalledByState['status_' . $_plugin->getState()][] = $_plugin;
     }
-    $pluginsAvailable = $pluginsAll->verfuegbar;
-    $pluginsErroneous = $pluginsAll->fehlerhaft;
-
-    $errorCount = count($pluginsInstalledByState['status_3']) +
-        count($pluginsInstalledByState['status_4']) +
-        count($pluginsInstalledByState['status_5']) +
-        count($pluginsInstalledByState['status_6']);
+    $errorCount = count($pluginsInstalledByState['status_3'])
+        + count($pluginsInstalledByState['status_4'])
+        + count($pluginsInstalledByState['status_5'])
+        + count($pluginsInstalledByState['status_6']);
 
     $smarty->configLoad('german.conf', 'pluginverwaltung')
-           ->assign('PluginInstalliertByStatus_arr', $pluginsInstalledByState)
+           ->assign('pluginsByState', $pluginsInstalledByState)
            ->assign('PluginErrorCount', $errorCount)
            ->assign('PluginInstalliert_arr', $pluginsInstalled)
-           ->assign('PluginVerfuebar_arr', $pluginsAvailable)
-           ->assign('PluginFehlerhaft_arr', $pluginsErroneous);
+           ->assign('pluginsAvailable', $pluginsAvailable)
+           ->assign('pluginsErroneous', $pluginsErroneous);
 
     $response->html                   = new stdClass();
     $response->html->verfuegbar       = $smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_verfuegbar.tpl');
     $response->html->verfuegbar_count = count($pluginsAvailable);
     $response->html->fehlerhaft       = $smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_fehlerhaft.tpl');
-    $response->html->fehlerhaft_count = count($pluginsErroneous);
+    $response->html->fehlerhaft_count = $pluginsErroneous->count();
     die(json_encode($response));
 }
 
@@ -89,22 +103,23 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
     ) { // Lizenzkey eingeben
         $step    = 'pluginverwaltung_lizenzkey';
         $kPlugin = (int)$_POST['kPlugin'];
-        $oPlugin = $db->select('tplugin', 'kPlugin', $kPlugin);
-        if (isset($oPlugin->kPlugin) && $oPlugin->kPlugin > 0) {
-            $oPlugin = new \Plugin\Plugin($kPlugin, true);
-            require_once $oPlugin->cLicencePfad . $oPlugin->cLizenzKlasseName;
-            $oPluginLicence = new $oPlugin->cLizenzKlasse();
+        $data    = $db->select('tplugin', 'kPlugin', $kPlugin);
+        if (isset($data->kPlugin) && $data->kPlugin > 0) {
+            $loader  = \Plugin\Helper::getLoader((int)$data->bExtension === 1, $db, $cache);
+            $oPlugin = $loader->init($kPlugin, true);
+            require_once $oPlugin->getPaths()->getLicencePath() . $oPlugin->getLicense()->getClassName();
+            $class          = $oPlugin->getLicense()->getClass();
+            $oPluginLicence = new $class();
             $cLicenceMethod = PLUGIN_LICENCE_METHODE;
             if ($oPluginLicence->$cLicenceMethod(StringHandler::filterXSS($_POST['cKey']))) {
-                $oPlugin->cFehler = '';
-                $oPlugin->nStatus = \Plugin\Plugin::PLUGIN_ACTIVATED;
-                $oPlugin->cLizenz = StringHandler::filterXSS($_POST['cKey']);
+                $oPlugin->setState(\Plugin\State::ACTIVATED);
+                $oPlugin->getLicense()->setKey(StringHandler::filterXSS($_POST['cKey']));
                 $oPlugin->updateInDB();
                 $cHinweis = 'Ihr Plugin-Lizenzschlüssel wurde gespeichert.';
                 $step     = 'pluginverwaltung_uebersicht';
                 $reload   = true;
                 // Lizenzpruefung bestanden => aktiviere alle Zahlungsarten (falls vorhanden)
-                \Plugin\Plugin::updatePaymentMethodState($oPlugin, 1);
+                \Plugin\Helper::updatePaymentMethodState($oPlugin, 1);
             } else {
                 $cFehler = 'Fehler: Ihr Lizenzschlüssel ist ungültig.';
             }
@@ -117,10 +132,8 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
     } elseif (is_array($kPlugin_arr) && count($kPlugin_arr) > 0) {
         foreach ($kPlugin_arr as $kPlugin) {
             $kPlugin = (int)$kPlugin;
-            // Aktivieren
             if (isset($_POST['aktivieren'])) {
                 $res = $stateChanger->activate($kPlugin);
-
                 switch ($res) {
                     case \Plugin\InstallCode::OK:
                         if ($cHinweis !== 'Ihre ausgewählten Plugins wurden erfolgreich aktiviert.') {
@@ -134,6 +147,8 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
                     case \Plugin\InstallCode::NO_PLUGIN_FOUND:
                         $cFehler = 'Fehler: Ihr ausgewähltes Plugin konnte nicht in der Datenbank ' .
                             'gefunden werden oder ist schon aktiv.';
+                        break;
+                    default:
                         break;
                 }
 
@@ -206,7 +221,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
         $res     = $updater->update($kPlugin);
         if ($res === \Plugin\InstallCode::OK) {
             $cHinweis .= 'Ihr Plugin wurde erfolgreich geupdated.';
-            $reload   = true;
+            $reload    = true;
             $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
         } else {
             $cFehler = 'Fehler: Beim Update ist ein Fehler aufgetreten. Fehlercode: ' . $res;
@@ -218,7 +233,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
         if (is_array($dirs)) {
             foreach ($dirs as $dir) {
                 $installer->setDir(basename($dir));
-                $res = $installer->installierePluginVorbereitung();
+                $res = $installer->prepare();
                 if ($res === \Plugin\InstallCode::OK || $res === \Plugin\InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE) {
                     $cHinweis = 'Ihre ausgewählten Plugins wurden erfolgreich installiert.';
                     $reload   = true;
@@ -266,7 +281,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($oSprache_arr as $oSprache) {
-                foreach (\Plugin\Plugin::getLanguageVariables($kPlugin) as $langVar) {
+                foreach (\Plugin\Helper::getLanguageVariables($kPlugin) as $langVar) {
                     $kPluginSprachvariable = $langVar->kPluginSprachvariable;
                     $cSprachvariable       = $langVar->cName;
                     $cISO                  = strtoupper($oSprache->cISO);
@@ -306,56 +321,41 @@ if ($step === 'pluginverwaltung_uebersicht') {
         'status_5' => [],
         'status_6' => []
     ];
-    $pluginsInstalled        = $listing->getInstalled();
-    $pluginsAll              = $listing->getAll($pluginsInstalled);
     foreach ($pluginsInstalled as $_plugin) {
-        $pluginsInstalledByState['status_' . $_plugin->nStatus][] = $_plugin;
+        $pluginsInstalledByState['status_' . $_plugin->getState()][] = $_plugin;
     }
-    $pluginsAvailable = $pluginsAll->verfuegbar;
-    $pluginsErroneous = $pluginsAll->fehlerhaft;
-    if (count($pluginsAvailable) > 0) {
-        foreach ($pluginsAvailable as $i => $PluginVerfuebar) {
-            // searching for multiple names of license files (e.g. LICENSE.md or License.md and so on)
-            $szFolder              = PFAD_ROOT . PFAD_PLUGIN . $pluginsAvailable[$i]->cVerzeichnis . '/';
-            $vPossibleLicenseNames = [
-                '',
-                'license.md',
-                'License.md',
-                'LICENSE.md'
-            ];
-            $j                     = count($vPossibleLicenseNames) - 1;
-            for (; $j !== 0 && !file_exists($szFolder . $vPossibleLicenseNames[$j]); $j--) {
-                // we're only counting up to our find
-            }
-            // only if we found something, we add it to our array
-            if ('' !== $vPossibleLicenseNames[$j]) {
-                $vLicenseFiles[$pluginsAvailable[$i]->cVerzeichnis] = $szFolder . $vPossibleLicenseNames[$j];
+    foreach ($pluginsAvailable as $available) {
+        /** @var \Plugin\Admin\ListingItem $available */
+        $szFolder = $available->getPath() . '/';
+        $files    = [
+            'license.md',
+            'License.md',
+            'LICENSE.md'
+        ];
+        foreach ($files as $file) {
+            if (file_exists($szFolder . $file)) {
+                $vLicenseFiles[$available->getDir()] = $szFolder . $file;
+                break;
             }
         }
-        if (!empty($vLicenseFiles)) {
-            $smarty->assign('szLicenses', json_encode($vLicenseFiles));
-        }
     }
-    $errorCount = count($pluginsInstalledByState['status_3']) +
-        count($pluginsInstalledByState['status_4']) +
-        count($pluginsInstalledByState['status_5']) +
-        count($pluginsInstalledByState['status_6']);
-
-    $smarty->assign('PluginInstalliertByStatus_arr', $pluginsInstalledByState)
-           ->assign('PluginErrorCount', $errorCount)
-           ->assign('PluginInstalliert_arr', $pluginsInstalled)
-           ->assign('PluginVerfuebar_arr', $pluginsAvailable)
-           ->assign('PluginFehlerhaft_arr', $pluginsErroneous)
-           ->assign('PluginIndex_arr', $pluginsAll->index);
-} elseif ($step === 'pluginverwaltung_sprachvariablen') { // Sprachvariablen
-    $kPlugin      = RequestHelper::verifyGPCDataInt('kPlugin');
-    $oSprache_arr = $db->query(
+    if (!empty($vLicenseFiles)) {
+        $smarty->assign('szLicenses', json_encode($vLicenseFiles));
+    }
+    $errorCount = count($pluginsInstalledByState['status_3'])
+        + count($pluginsInstalledByState['status_4'])
+        + count($pluginsInstalledByState['status_5'])
+        + count($pluginsInstalledByState['status_6']);
+} elseif ($step === 'pluginverwaltung_sprachvariablen') {
+    $kPlugin   = RequestHelper::verifyGPCDataInt('kPlugin');
+    $loader    = \Plugin\Helper::getLoaderByPluginID($kPlugin);
+    $languages = $db->query(
         'SELECT * FROM tsprache',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    $smarty->assign('oSprache_arr', $oSprache_arr)
-           ->assign('kPlugin', $kPlugin)
-           ->assign('oPluginSprachvariable_arr', \Plugin\Plugin::getLanguageVariables($kPlugin));
+    $smarty->assign('languages', $languages)
+           ->assign('plugin', $loader->init($kPlugin))
+           ->assign('kPlugin', $kPlugin);
 }
 
 if ($reload === true) {
@@ -363,17 +363,15 @@ if ($reload === true) {
     header('Location: ' . Shop::getURL() . '/' . PFAD_ADMIN . 'pluginverwaltung.php', true, 303);
     exit();
 }
-if (defined('PLUGIN_DEV_MODE') && PLUGIN_DEV_MODE === true) {
-    $pluginDevNotice = 'Ihr Shop befindet sich im Plugin-Entwicklungsmodus. ' .
-        'Änderungen an der XML-Datei eines aktivierten Plugins bewirken ein automatisches Update.';
-    $cHinweis        = empty($cHinweis)
-        ? $pluginDevNotice
-        : $pluginDevNotice . '<br>' . $cHinweis;
-}
-
 $smarty->assign('hinweis', $cHinweis)
        ->assign('hinweis64', base64_encode($cHinweis))
        ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->assign('mapper', new \Mapper\PluginState())
+       ->assign('pluginsByState', $pluginsInstalledByState)
+       ->assign('PluginErrorCount', $errorCount)
+       ->assign('PluginInstalliert_arr', $pluginsInstalled)
+       ->assign('pluginsAvailable', $pluginsAvailable)
+       ->assign('pluginsErroneous', $pluginsErroneous)
+       ->assign('allPluginItems', $pluginsAll)
        ->display('pluginverwaltung.tpl');

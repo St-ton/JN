@@ -437,21 +437,22 @@ class Warenlager extends MainModel
     /**
      * @param int         $kKey
      * @param null|object $oObj
-     * @param int|null    $xOption
+     * @param int|null    $config
      */
-    public function load($kKey, $oObj = null, $xOption = null): void
+    public function load($kKey, $oObj = null, $config = null): void
     {
         if ($kKey !== null) {
             $kKey = (int)$kKey;
             if ($kKey > 0) {
                 $cSqlSelect = '';
                 $cSqlJoin   = '';
-                if ($xOption !== null && (int)$xOption > 0) {
-                    $xOption    = (int)$xOption;
-                    $cSqlSelect = ', IF (twarenlagersprache.cName IS NOT NULL, twarenlagersprache.cName, twarenlager.cName) AS cName';
+                if ($config !== null && (int)$config > 0) {
+                    $config     = (int)$config;
+                    $cSqlSelect = ', IF (twarenlagersprache.cName IS NOT NULL, 
+                    twarenlagersprache.cName, twarenlager.cName) AS cName';
                     $cSqlJoin   = 'LEFT JOIN twarenlagersprache 
                                         ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
-                                        AND twarenlagersprache.kSprache = ' . $xOption;
+                                        AND twarenlagersprache.kSprache = ' . $config;
                 }
 
                 $oObj = Shop::Container()->getDB()->query(
@@ -500,25 +501,25 @@ class Warenlager extends MainModel
      */
     public function update(): int
     {
-        $cQuery      = 'UPDATE twarenlager SET ';
-        $cSet_arr    = [];
-        $cMember_arr = array_keys(get_object_vars($this));
-        if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-            foreach ($cMember_arr as $cMember) {
+        $sql     = 'UPDATE twarenlager SET ';
+        $set     = [];
+        $members = array_keys(get_object_vars($this));
+        if (is_array($members) && count($members) > 0) {
+            foreach ($members as $cMember) {
                 $cMethod = 'get' . substr($cMember, 1);
                 if (method_exists($this, $cMethod)) {
-                    $val        = $this->$cMethod();
-                    $mValue     = $val === null
+                    $val    = $this->$cMethod();
+                    $mValue = $val === null
                         ? 'NULL'
                         : ("'" . Shop::Container()->getDB()->escape($val) . "'");
-                    $cSet_arr[] = "{$cMember} = {$mValue}";
+                    $set[]  = "{$cMember} = {$mValue}";
                 }
             }
 
-            $cQuery .= implode(', ', $cSet_arr);
-            $cQuery .= " WHERE kWarenlager = {$this->kWarenlager}";
+            $sql .= implode(', ', $set);
+            $sql .= ' WHERE kWarenlager = ' . $this->kWarenlager;
 
-            return Shop::Container()->getDB()->query($cQuery, \DB\ReturnType::AFFECTED_ROWS);
+            return Shop::Container()->getDB()->query($sql, \DB\ReturnType::AFFECTED_ROWS);
         }
         throw new Exception('ERROR: Object has no members!');
     }
@@ -548,8 +549,8 @@ class Warenlager extends MainModel
             $data = Shop::Container()->getDB()->selectAll('twarenlagersprache', 'kWarenlager', $this->getWarenlager());
             if (count($data) > 0) {
                 $this->cSpracheAssoc_arr = [];
-                foreach ($data as $oObj) {
-                    $this->cSpracheAssoc_arr[(int)$oObj->kSprache] = $oObj->cName;
+                foreach ($data as $item) {
+                    $this->cSpracheAssoc_arr[(int)$item->kSprache] = $item->cName;
                 }
 
                 return true;
@@ -566,87 +567,87 @@ class Warenlager extends MainModel
      */
     public static function getAll(bool $bActive = true, bool $bLoadLanguages = false): array
     {
-        $oWarenlager_arr = [];
-        $cSql            = $bActive ? ' WHERE nAktiv = 1' : '';
-        $oObj_arr = Shop::Container()->getDB()->query(
+        $warehouses = [];
+        $sql        = $bActive ? ' WHERE nAktiv = 1' : '';
+        $data       = Shop::Container()->getDB()->query(
             "SELECT *
                FROM twarenlager
-               {$cSql}",
+               {$sql}",
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($oObj_arr as $oObj) {
-            $oWarenlager = new self(null, $oObj);
+        foreach ($data as $item) {
+            $warehouse = new self(null, $item);
             if ($bLoadLanguages) {
-                $oWarenlager->loadLanguages();
+                $warehouse->loadLanguages();
             }
-            $oWarenlager_arr[] = $oWarenlager;
+            $warehouses[] = $warehouse;
         }
 
-        return $oWarenlager_arr;
+        return $warehouses;
     }
 
     /**
      * @param int        $kArtikel
      * @param int|null   $kSprache
-     * @param null|array $xOption_arr
+     * @param null|array $config
      * @param bool       $bActive
      * @return array
      */
     public static function getByProduct(
         int $kArtikel,
         int $kSprache = null,
-        $xOption_arr = null,
+        $config = null,
         bool $bActive = true
     ): array {
-        $oWarenlager_arr = [];
+        $warehouses = [];
         if ($kArtikel > 0) {
-            $cSql     = $bActive ? ' AND twarenlager.nAktiv = 1' : '';
-            $oObj_arr = Shop::Container()->getDB()->queryPrepared(
+            $sql  = $bActive ? ' AND twarenlager.nAktiv = 1' : '';
+            $data = Shop::Container()->getDB()->queryPrepared(
                 "SELECT tartikelwarenlager.*
                     FROM tartikelwarenlager
                     JOIN twarenlager 
                         ON twarenlager.kWarenlager = tartikelwarenlager.kWarenlager
-                       {$cSql}
+                       {$sql}
                     WHERE tartikelwarenlager.kArtikel = :articleID",
                 ['articleID' => $kArtikel],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            foreach ($oObj_arr as $oObj) {
-                $oWarenlager               = new self($oObj->kWarenlager, null, $kSprache);
-                $oWarenlager->fBestand     = $oObj->fBestand;
-                $oWarenlager->fZulauf      = $oObj->fZulauf;
-                $oWarenlager->dZulaufDatum = $oObj->dZulaufDatum;
-                if (strlen($oWarenlager->dZulaufDatum) > 1) {
+            foreach ($data as $item) {
+                $warehouse               = new self($item->kWarenlager, null, $kSprache);
+                $warehouse->fBestand     = $item->fBestand;
+                $warehouse->fZulauf      = $item->fZulauf;
+                $warehouse->dZulaufDatum = $item->dZulaufDatum;
+                if (strlen($warehouse->dZulaufDatum) > 1) {
                     try {
-                        $oWarenlager->dZulaufDatum_de = (new DateTime($oObj->dZulaufDatum))->format('d.m.Y');
+                        $warehouse->dZulaufDatum_de = (new DateTime($item->dZulaufDatum))->format('d.m.Y');
                     } catch (Exception $exc) {
-                        $oWarenlager->dZulaufDatum_de = '00.00.0000';
+                        $warehouse->dZulaufDatum_de = '00.00.0000';
                     }
                 }
-                if (is_array($xOption_arr)) {
-                    $oWarenlager->buildWarehouseInfo($oWarenlager->fBestand, $xOption_arr);
+                if (is_array($config)) {
+                    $warehouse->buildWarehouseInfo($warehouse->fBestand, $config);
                 }
-                $oWarenlager_arr[] = $oWarenlager;
+                $warehouses[] = $warehouse;
             }
         }
 
-        return $oWarenlager_arr;
+        return $warehouses;
     }
 
     /**
      * @param float $fBestand
-     * @param array $xOption_arr
+     * @param array $config
      * @return $this
      */
-    public function buildWarehouseInfo($fBestand, array $xOption_arr): self
+    public function buildWarehouseInfo($fBestand, array $config): self
     {
         $this->oLageranzeige                = new stdClass();
         $this->oLageranzeige->cLagerhinweis = [];
         $conf                               = Shop::getSettings([CONF_GLOBAL, CONF_ARTIKELDETAILS]);
-        if ($xOption_arr['cLagerBeachten'] === 'Y') {
+        if ($config['cLagerBeachten'] === 'Y') {
             if ($fBestand > 0) {
                 $this->oLageranzeige->cLagerhinweis['genau']          = $fBestand . ' '
-                    . (!empty($xOption_arr['cEinheit']) ? ($xOption_arr['cEinheit'] . ' ') : '')
+                    . (!empty($config['cEinheit']) ? ($config['cEinheit'] . ' ') : '')
                     . Shop::Lang()->get('inStock');
                 $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productAvailable');
                 if (isset($conf['artikeldetails']['artikel_lagerbestandsanzeige'])
@@ -654,7 +655,7 @@ class Warenlager extends MainModel
                 ) {
                     $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen');
                 }
-            } elseif ($xOption_arr['cLagerKleinerNull'] === 'Y') {
+            } elseif ($config['cLagerKleinerNull'] === 'Y') {
                 $this->oLageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('ampelGruen');
                 $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen');
             } else {
@@ -665,35 +666,35 @@ class Warenlager extends MainModel
             $this->oLageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('ampelGruen');
             $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen');
         }
-        if ($xOption_arr['cLagerBeachten'] === 'Y') {
+        if ($config['cLagerBeachten'] === 'Y') {
             $this->oLageranzeige->nStatus   = 1;
-            $this->oLageranzeige->AmpelText = $xOption_arr['attribut_ampeltext_gelb'];
+            $this->oLageranzeige->AmpelText = $config['attribut_ampeltext_gelb'];
             if ($fBestand <= (int)$conf['global']['artikel_lagerampel_rot']) {
                 $this->oLageranzeige->nStatus   = 0;
-                $this->oLageranzeige->AmpelText = $xOption_arr['attribut_ampeltext_rot'];
+                $this->oLageranzeige->AmpelText = $config['attribut_ampeltext_rot'];
             }
-            if ($xOption_arr['cLagerBeachten'] !== 'Y'
+            if ($config['cLagerBeachten'] !== 'Y'
                 || $fBestand >= (int)$conf['global']['artikel_lagerampel_gruen']
-                || ($xOption_arr['cLagerBeachten'] === 'Y'
-                    && $xOption_arr['cLagerKleinerNull'] === 'Y'
+                || ($config['cLagerBeachten'] === 'Y'
+                    && $config['cLagerKleinerNull'] === 'Y'
                     && $conf['global']['artikel_ampel_lagernull_gruen'] === 'Y')
             ) {
                 $this->oLageranzeige->nStatus   = 2;
-                $this->oLageranzeige->AmpelText = $xOption_arr['attribut_ampeltext_gruen'];
+                $this->oLageranzeige->AmpelText = $config['attribut_ampeltext_gruen'];
             }
         } else {
             $this->oLageranzeige->nStatus = (int)$conf['global']['artikel_lagerampel_keinlager'];
 
             switch ($this->oLageranzeige->nStatus) {
                 case 1:
-                    $this->oLageranzeige->AmpelText = $xOption_arr['attribut_ampeltext_gelb'];
+                    $this->oLageranzeige->AmpelText = $config['attribut_ampeltext_gelb'];
                     break;
                 case 0:
-                    $this->oLageranzeige->AmpelText = $xOption_arr['attribut_ampeltext_rot'];
+                    $this->oLageranzeige->AmpelText = $config['attribut_ampeltext_rot'];
                     break;
                 default:
-                    $this->oLageranzeige->nStatus = 2;
-                    $this->oLageranzeige->AmpelText = $xOption_arr['attribut_ampeltext_gruen'];
+                    $this->oLageranzeige->nStatus   = 2;
+                    $this->oLageranzeige->AmpelText = $config['attribut_ampeltext_gruen'];
                     break;
             }
         }

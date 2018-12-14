@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\FormHelper;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
 
@@ -77,7 +79,8 @@ if (count($pluginProfilerData) > 0) {
             $hookData->color                 = $colors[$idx];
             foreach ($_hook as $_file) {
                 $hookData->y += ((float)$_file->runtime * 1000);
-                $runtime += $hookData->y;
+                $runtime     += $hookData->y;
+
                 $hookData->drilldown->categories[] = $_file->filename;
                 $hookData->drilldown->data[]       = ((float)$_file->runtime * 1000);
                 $hookData->drilldown->runcount[]   = $_file->runcount;

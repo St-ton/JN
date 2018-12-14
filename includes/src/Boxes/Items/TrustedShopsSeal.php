@@ -8,7 +8,7 @@ namespace Boxes\Items;
 
 /**
  * Class TrustedShopsSeal
- * @package Boxes
+ * @package Boxes\Items
  */
 final class TrustedShopsSeal extends AbstractBox
 {
@@ -33,7 +33,7 @@ final class TrustedShopsSeal extends AbstractBox
     private $backGroundImageURL = '';
 
     /**
-     * DirectPurchase constructor.
+     * TrustedShopsSeal constructor.
      * @param array $config
      */
     public function __construct(array $config)

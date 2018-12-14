@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\RequestHelper;
+
 require_once __DIR__ . '/../../includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
@@ -93,10 +96,10 @@ if (strlen($cSh) > 0) {
             if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
                 $logger->debug('Session Hash: ' . $cSh . ' ergab Methode: ' . print_r($paymentMethod, true));
             }
-
-            $kPlugin = \Plugin\Plugin::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
+            $kPlugin = \Plugin\Helper::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
             if ($kPlugin > 0) {
-                $oPlugin            = new \Plugin\Plugin($kPlugin);
+                $loader             = \Plugin\Helper::getLoaderByPluginID($kPlugin);
+                $oPlugin            = $loader->init($kPlugin);
                 $GLOBALS['oPlugin'] = $oPlugin;
             }
 
@@ -168,12 +171,12 @@ if (strlen($cPh) > 0) {
     if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
         $logger->debug('Notify request:' . print_r($_REQUEST, true));
     }
-    $paymentId   = Shop::Container()->getDB()->queryPrepared(
-        "SELECT ZID.kBestellung, ZA.cModulId
+    $paymentId = Shop::Container()->getDB()->queryPrepared(
+        'SELECT ZID.kBestellung, ZA.cModulId
             FROM tzahlungsid ZID
             LEFT JOIN tzahlungsart ZA
                 ON ZA.kZahlungsart = ZID.kZahlungsart
-            WHERE ZID.cId = :hash",
+            WHERE ZID.cId = :hash',
         ['hash' => StringHandler::htmlentities(StringHandler::filterXSS($cPh))],
         \DB\ReturnType::SINGLE_OBJECT
     );

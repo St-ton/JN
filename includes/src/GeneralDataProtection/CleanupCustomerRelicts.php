@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -6,7 +6,12 @@
 
 namespace GeneralDataProtection;
 
+use DB\ReturnType;
+
 /**
+ * Class CleanupCustomerRelicts
+ * @package GeneralDataProtection
+ *
  * clean up multiple tables at each run
  * (normaly one times a day)
  *
@@ -28,22 +33,22 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
     /**
      * runs all anonymize-routines
      */
-    public function execute()
+    public function execute(): void
     {
-        $this->del_tbesucherarchiv();
-        $this->del_tkundenwerbenkunden();
-        $this->del_tkundenattribut();
-        $this->del_tzahlungsinfo();
-        $this->del_tkundenkontodaten();
-        $this->del_tlieferadresse();
-        $this->del_trechnungsadresse();
+        $this->cleanupVisitorArchive();
+        $this->cleanupCustomerRecruitings();
+        $this->cleanupCustomerAttributes();
+        $this->cleanupPaymentInformation();
+        $this->cleanupCustomerAccountData();
+        $this->cleanupDeliveryAddresses();
+        $this->cleanupBillingAddresses();
     }
 
     /**
-     * delete visitors in the visitors-archive immediately (at each run of the cron),
-     * without a valid customer-account
+     * delete visitors in the visitors archive immediately (at each run of the cron),
+     * without a valid customer account
      */
-    private function del_tbesucherarchiv()
+    private function cleanupVisitorArchive(): void
     {
         \Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tbesucherarchiv
@@ -51,18 +56,16 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
                 kKunde > 0
                 AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = tbesucherarchiv.kKunde)
                 LIMIT :pLimit',
-            [
-                'pLimit' => $this->iWorkLimit
-            ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ['pLimit' => $this->workLimit],
+            ReturnType::DEFAULT
         );
     }
 
     /**
-     * delete customer-recruitings
-     * where no valid customer-accounts exists
+     * delete customer recruitings
+     * where no valid customer accounts exist
      */
-    private function del_tkundenwerbenkunden()
+    private function cleanupCustomerRecruitings()
     {
         \Shop::Container()->getDB()->queryPrepared(
             'DELETE k, b
@@ -73,33 +76,31 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
                 k.kKunde > 0
                 AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = k.kKunde)',
             [],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
     }
 
     /**
-     * delete customer-attributes
-     * for which there are no valid customer-accounts
+     * delete customer attributes
+     * for which there are no valid customer accounts
      */
-    private function del_tkundenattribut()
+    private function cleanupCustomerAttributes(): void
     {
         \Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tkundenattribut
             WHERE
                 NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = tkundenattribut.kKunde)
             LIMIT :pLimit',
-            [
-                'pLimit' => $this->iWorkLimit
-            ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ['pLimit' => $this->workLimit],
+            ReturnType::DEFAULT
         );
     }
 
     /**
-     * delete orphaned payment-data of customers,
+     * delete orphaned payment information about customers
      * which have no valid account
      */
-    private function del_tzahlungsinfo()
+    private function cleanupPaymentInformation(): void
     {
         \Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tzahlungsinfo
@@ -107,18 +108,16 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
                 kKunde > 0
                 AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = tzahlungsinfo.kKunde)
             LIMIT :pLimit',
-            [
-                'pLimit' => $this->iWorkLimit
-            ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ['pLimit' => $this->workLimit],
+            ReturnType::DEFAULT
         );
     }
 
     /**
-     * delete orphaned bank-account-information of customers,
+     * delete orphaned bank account information of customers
      * which have no valid account
      */
-    private function del_tkundenkontodaten()
+    private function cleanupCustomerAccountData(): void
     {
         \Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tkundenkontodaten
@@ -126,52 +125,47 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
                 kKunde > 0
                 AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = tkundenkontodaten.kKunde)
             LIMIT :pLimit',
-            [
-                'pLimit' => $this->iWorkLimit
-            ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ['pLimit' => $this->workLimit],
+            ReturnType::DEFAULT
         );
     }
 
     /**
-     * delete delivery-addresses
-     * which assigned to no valid customer-account
+     * delete delivery addresses
+     * which assigned to no valid customer account
      *
-     * (ATTENTION: no work-limit possible here)
+     * (ATTENTION: no work limit possible here)
      */
-    private function del_tlieferadresse()
+    private function cleanupDeliveryAddresses(): void
     {
-        \Shop::Container()->getDB()->queryPrepared(
+        \Shop::Container()->getDB()->query(
             "DELETE k
             FROM tlieferadresse k
                 JOIN tbestellung b ON b.kKunde = k.kKunde
             WHERE
                 b.cAbgeholt = 'Y'
-                AND b.cStatus IN (" . BESTELLUNG_STATUS_VERSANDT . ", " . BESTELLUNG_STATUS_STORNO . ")
-                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = k.kKunde)",
-            [],
-            \DB\ReturnType::AFFECTED_ROWS
+                AND b.cStatus IN (" . \BESTELLUNG_STATUS_VERSANDT . ', ' . \BESTELLUNG_STATUS_STORNO . ')
+                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = k.kKunde)',
+            ReturnType::DEFAULT
         );
     }
 
     /**
-     * delete billing-addresses
-     * which assigned to no valid customer-account
+     * delete billing addresses witout valid customer accounts
      *
-     * (ATTENTION: no work-limit possible here)
+     * (ATTENTION: no work limit possible here)
      */
-    private function del_trechnungsadresse()
+    private function cleanupBillingAddresses(): void
     {
-        \Shop::Container()->getDB()->queryPrepared(
+        \Shop::Container()->getDB()->query(
             "DELETE k
             FROM trechnungsadresse k
                 JOIN tbestellung b ON b.kKunde = k.kKunde
             WHERE
                 b.cAbgeholt = 'Y'
-                AND b.cStatus IN (" . BESTELLUNG_STATUS_VERSANDT . ", " . BESTELLUNG_STATUS_STORNO . ")
-                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = k.kKunde)",
-            [],
-            \DB\ReturnType::AFFECTED_ROWS
+                AND b.cStatus IN (" . \BESTELLUNG_STATUS_VERSANDT . ', ' . \BESTELLUNG_STATUS_STORNO . ')
+                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = k.kKunde)',
+            ReturnType::DEFAULT
         );
     }
 }

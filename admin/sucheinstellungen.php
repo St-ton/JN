@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\FormHelper;
+use Helpers\RequestHelper;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 
@@ -89,7 +93,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
             );
             $res = Shop::Container()->getDB()->executeQuery(
                 "ALTER TABLE $index
-                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $cSpalten_arr) . ")",
+                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $cSpalten_arr) . ')',
                 \DB\ReturnType::QUERYSINGLE
             );
         } catch (Exception $e) {

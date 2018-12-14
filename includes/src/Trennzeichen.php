@@ -213,7 +213,7 @@ class Trennzeichen
      */
     public static function getAll(int $kSprache): array
     {
-        $cacheID  = 'units_all_' . $kSprache;
+        $cacheID = 'units_all_' . $kSprache;
         if (($all = Shop::Container()->getCache()->get($cacheID)) === false) {
             $all = [];
             if ($kSprache > 0) {

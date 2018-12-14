@@ -9,7 +9,7 @@ namespace Boxes;
 use MyCLabs\Enum\Enum;
 
 /**
- * Class ComponentPropertyType
+ * Class Position
  *
  * @package Boxes
  * @method Position LEFT()

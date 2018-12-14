@@ -8,6 +8,7 @@ namespace Mapper;
 
 /**
  * Class AdminLoginStatusMessageMapper
+ * @package Mapper
  */
 class AdminLoginStatusMessageMapper
 {

@@ -31,7 +31,7 @@ final class NewsCategory extends AbstractItem
      */
     public function generateLocation(): void
     {
-        $this->setLocation(\UrlHelper::buildURL($this->data, \URLART_NEWSKATEGORIE, true));
+        $this->setLocation(\Helpers\UrlHelper::buildURL($this->data, \URLART_NEWSKATEGORIE, true));
     }
 
     /**

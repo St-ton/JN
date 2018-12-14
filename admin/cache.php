@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\FormHelper;
+use Helpers\RequestHelper;
+
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global Smarty\JTLSmarty $smarty */
 setzeSprache();
@@ -207,7 +211,7 @@ switch ($action) {
         $cache->flushAll();
         $cache->setJtlCacheConfig();
         $notice .= 'Ihre Einstellungen wurden übernommen.<br />';
-        $tab    = 'settings';
+        $tab     = 'settings';
         break;
     case 'benchmark':
         //do benchmarks

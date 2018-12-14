@@ -13,8 +13,7 @@ use Shop;
 
 /**
  * Class NiceDB
- * Class for handling mysql DB
- * @todo validate $limit, $orderBy & $select in some methods
+ * @package DB
  */
 class NiceDB implements DbInterface
 {
@@ -680,7 +679,7 @@ class NiceDB implements DbInterface
         $i       = 0;
         foreach ($keys as &$_key) {
             if ($_key !== null) {
-                $_key      .= '=?';
+                $_key     .= '=?';
                 $assigns[] = $values[$i];
             } else {
                 unset($keys[$i]);

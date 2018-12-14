@@ -8,16 +8,16 @@ namespace Survey;
 
 use DB\DbInterface;
 use DB\ReturnType;
-use function Functional\group;
 use Tightenco\Collect\Support\Collection;
+use function Functional\group;
 
 /**
  * Class Survey
- * @package JTL
+ * @package Survey
  */
 class Survey
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var int
@@ -155,9 +155,10 @@ class Survey
             return $this;
         }
         $survey = $this->db->queryPrepared(
-            "SELECT tumfrage.kUmfrage, tumfrage.kSprache, tumfrage.kKupon, tumfrage.cKundengruppe, tumfrage.cName, 
-                tumfrage.cBeschreibung, tumfrage.fGuthaben, tumfrage.nBonuspunkte, tumfrage.nAktiv, tumfrage.dGueltigVon, 
-                tumfrage.dGueltigBis, tumfrage.dErstellt, tseo.cSeo, COUNT(tumfragefrage.kUmfrageFrage) AS nAnzahlFragen
+            "SELECT tumfrage.kUmfrage, tumfrage.kSprache, tumfrage.kKupon, tumfrage.cKundengruppe,
+                tumfrage.cName, tumfrage.cBeschreibung, tumfrage.fGuthaben, tumfrage.nBonuspunkte, 
+                tumfrage.nAktiv, tumfrage.dGueltigVon, tumfrage.dGueltigBis, tumfrage.dErstellt, 
+                tseo.cSeo, COUNT(tumfragefrage.kUmfrageFrage) AS nAnzahlFragen
                 FROM tumfrage
                 JOIN tumfragefrage 
                     ON tumfragefrage.kUmfrage = tumfrage.kUmfrage

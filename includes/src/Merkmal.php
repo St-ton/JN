@@ -114,9 +114,8 @@ class Merkmal
      */
     public function loadFromDB(int $kMerkmal, bool $bMMW = false, int $kSprache = 0): self
     {
-        $kSprache = $kSprache === 0 ? Shop::getLanguageID() : $kSprache;
-        $id       = 'mm_' . $kMerkmal . '_' . $kSprache;
-
+        $kSprache       = $kSprache === 0 ? Shop::getLanguageID() : $kSprache;
+        $id             = 'mm_' . $kMerkmal . '_' . $this->kSprache;
         $this->kSprache = $kSprache;
         if ($bMMW === false && Shop::has($id)) {
             foreach (get_object_vars(Shop::get($id)) as $k => $v) {
@@ -127,7 +126,7 @@ class Merkmal
         }
         $kStandardSprache = Sprache::getDefaultLanguage()->kSprache;
         if ($kSprache !== $kStandardSprache) {
-            $cSelect = "COALESCE(fremdSprache.cName, standardSprache.cName) AS cName";
+            $cSelect = 'COALESCE(fremdSprache.cName, standardSprache.cName) AS cName';
             $cJoin   = "INNER JOIN tmerkmalsprache AS standardSprache 
                             ON standardSprache.kMerkmal = tmerkmal.kMerkmal
                             AND standardSprache.kSprache = {$kStandardSprache}
@@ -135,7 +134,7 @@ class Merkmal
                             ON fremdSprache.kMerkmal = tmerkmal.kMerkmal
                             AND fremdSprache.kSprache = {$kSprache}";
         } else {
-            $cSelect = "tmerkmalsprache.cName";
+            $cSelect = 'tmerkmalsprache.cName';
             $cJoin   = "INNER JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
                             AND tmerkmalsprache.kSprache = {$kSprache}";
         }
@@ -149,8 +148,7 @@ class Merkmal
             \DB\ReturnType::SINGLE_OBJECT
         );
         if (isset($oMerkmal->kMerkmal) && $oMerkmal->kMerkmal > 0) {
-            $cMember_arr = array_keys(get_object_vars($oMerkmal));
-            foreach ($cMember_arr as $cMember) {
+            foreach (array_keys(get_object_vars($oMerkmal)) as $cMember) {
                 $this->$cMember = $oMerkmal->$cMember;
             }
         }
@@ -162,14 +160,14 @@ class Merkmal
                                     LEFT JOIN tmerkmalwertsprache AS fremdSprache 
                                         ON fremdSprache.kMerkmalWert = tmw.kMerkmalWert
                                         AND fremdSprache.kSprache = {$kSprache}";
-                $cOrderBy         = "ORDER BY tmw.nSort, COALESCE(fremdSprache.cWert, standardSprache.cWert)";
+                $cOrderBy         = 'ORDER BY tmw.nSort, COALESCE(fremdSprache.cWert, standardSprache.cWert)';
             } else {
                 $cJoinMerkmalwert = "INNER JOIN tmerkmalwertsprache AS standardSprache
                                         ON standardSprache.kMerkmalWert = tmw.kMerkmalWert
                                         AND standardSprache.kSprache = {$kSprache}";
-                $cOrderBy         = "ORDER BY tmw.nSort, standardSprache.cWert";
+                $cOrderBy         = 'ORDER BY tmw.nSort, standardSprache.cWert';
             }
-            $oMerkmalWertTMP_arr = Shop::Container()->getDB()->query(
+            $oMerkmalWertTMP_arr    = Shop::Container()->getDB()->query(
                 "SELECT tmw.kMerkmalWert
                     FROM tmerkmalwert tmw
                     {$cJoinMerkmalwert}
@@ -209,7 +207,7 @@ class Merkmal
         $this->kSprache            = (int)$this->kSprache;
         $this->nGlobal             = (int)$this->nGlobal;
 
-        executeHook(HOOK_MERKMAL_CLASS_LOADFROMDB);
+        executeHook(HOOK_MERKMAL_CLASS_LOADFROMDB, ['instance' => $this]);
         Shop::set($id, $this);
 
         return $this;
@@ -236,7 +234,7 @@ class Merkmal
         $kSprache         = (int)$kSprache;
         $kStandardSprache = (int)Sprache::getDefaultLanguage()->kSprache;
         if ($kSprache !== $kStandardSprache) {
-            $select = "COALESCE(fremdSprache.cName, standardSprache.cName) AS cName";
+            $select = 'COALESCE(fremdSprache.cName, standardSprache.cName) AS cName';
             $join   = "INNER JOIN tmerkmalsprache AS standardSprache 
                             ON standardSprache.kMerkmal = tmerkmal.kMerkmal
                             AND standardSprache.kSprache = {$kStandardSprache}
@@ -244,7 +242,7 @@ class Merkmal
                             ON fremdSprache.kMerkmal = tmerkmal.kMerkmal
                             AND fremdSprache.kSprache = {$kSprache}";
         } else {
-            $select = "tmerkmalsprache.cName";
+            $select = 'tmerkmalsprache.cName';
             $join   = "INNER JOIN tmerkmalsprache 
                             ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
                             AND tmerkmalsprache.kSprache = {$kSprache}";
@@ -265,7 +263,7 @@ class Merkmal
         if ($bMMW && is_array($attributes) && count($attributes) > 0) {
             $imageBaseURL = Shop::getImageBaseURL();
             foreach ($attributes as $i => $oMerkmal) {
-                $oMerkmalWert                       = new MerkmalWert(0, $this->kSprache);
+                $oMerkmalWert                     = new MerkmalWert(0, $this->kSprache);
                 $attributes[$i]->oMerkmalWert_arr = $oMerkmalWert->holeAlleMerkmalWerte($oMerkmal->kMerkmal);
 
                 if (strlen($oMerkmal->cBildpfad) > 0) {

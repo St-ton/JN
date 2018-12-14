@@ -28,7 +28,7 @@ class AdminIO extends IO
     /**
      * @return AdminAccount|null
      */
-    public function getAccount()
+    public function getAccount(): ?AdminAccount
     {
         return $this->oAccount;
     }

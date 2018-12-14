@@ -14,16 +14,16 @@ define('UMFRAGE_MAXANZAHLANZEIGEN', 20);
  */
 function convertDate($string)
 {
-    list($dDatum, $dZeit) = explode(' ', $string);
-    $exploded             = explode(':', $dZeit);
+    [$date, $time] = explode(' ', $string);
+    $exploded      = explode(':', $time);
     if (count($exploded) === 2) {
-        list($nStunde, $nMinute) = $exploded;
+        [$hour, $minute] = $exploded;
     } else {
-        list($nStunde, $nMinute, $nSekunde) = $exploded;
+        [$hour, $minute] = $exploded;
     }
-    list($nTag, $nMonat, $nJahr) = explode('.', $dDatum);
+    [$day, $month, $year] = explode('.', $date);
 
-    return $nJahr . '-' . $nMonat . '-' . $nTag . ' ' . $nStunde . ':' . $nMinute . ':00';
+    return $year . '-' . $month . '-' . $day . ' ' . $hour . ':' . $minute . ':00';
 }
 
 /**
@@ -33,16 +33,15 @@ function convertDate($string)
  */
 function gibJahrMonatVonDateTime($cDateTimeStr)
 {
-    list($dDatum, $dUhrzeit)     = explode(' ', $cDateTimeStr);
-    list($dJahr, $dMonat, $dTag) = explode('-', $dDatum);
+    [$dDatum, $dUhrzeit]     = explode(' ', $cDateTimeStr);
+    [$dJahr, $dMonat, $dTag] = explode('-', $dDatum);
 
-    unset($oDatum);
-    $oDatum        = new stdClass();
-    $oDatum->Jahr  = $dJahr;
-    $oDatum->Monat = $dMonat;
-    $oDatum->Tag   = $dTag;
+    $date        = new stdClass();
+    $date->Jahr  = $dJahr;
+    $date->Monat = $dMonat;
+    $date->Tag   = $dTag;
 
-    return $oDatum;
+    return $date;
 }
 
 /**
@@ -107,121 +106,121 @@ function updateAntwortUndOption(
 /**
  * @param int          $questionID
  * @param string       $type
- * @param string|array $cNameOption
- * @param string|array $cNameAntwort
- * @param array        $nSortAntwort_arr
- * @param array        $nSortOption_arr
- * @param object       $oAnzahlAUndOVorhanden
+ * @param string|array $optionName
+ * @param string|array $answerName
+ * @param array        $answerSort
+ * @param array        $sortOptions
+ * @param object       $data
  */
 function speicherAntwortZuFrage(
     int $questionID,
     $type,
-    $cNameOption,
-    $cNameAntwort,
-    $nSortAntwort_arr,
-    $nSortOption_arr,
-    $oAnzahlAUndOVorhanden
+    $optionName,
+    $answerName,
+    $answerSort,
+    $sortOptions,
+    $data
 ) {
     switch ($type) {
         case \Survey\QuestionType::MULTI_SINGLE:
-            if (is_array($cNameAntwort) && count($cNameAntwort) > 0) {
-                $count = count($cNameAntwort);
-                for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < $count; $i++) {
+            if (is_array($answerName) && count($answerName) > 0) {
+                $count = count($answerName);
+                for ($i = $data->nAnzahlAntworten; $i < $count; $i++) {
                     unset($answer);
                     $answer                = new stdClass();
                     $answer->kUmfrageFrage = $questionID;
-                    $answer->cName         = $cNameAntwort[$i];
-                    $answer->nSort         = $nSortAntwort_arr[$i];
+                    $answer->cName         = $answerName[$i];
+                    $answer->nSort         = $answerSort[$i];
 
                     Shop::Container()->getDB()->insert('tumfragefrageantwort', $answer);
                 }
             }
             break;
         case \Survey\QuestionType::MULTI:
-            if (is_array($cNameAntwort) && count($cNameAntwort) > 0) {
-                $count = count($cNameAntwort);
-                for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < $count; $i++) {
+            if (is_array($answerName) && count($answerName) > 0) {
+                $count = count($answerName);
+                for ($i = $data->nAnzahlAntworten; $i < $count; $i++) {
                     unset($answer);
                     $answer                = new stdClass();
                     $answer->kUmfrageFrage = $questionID;
-                    $answer->cName         = $cNameAntwort[$i];
-                    $answer->nSort         = $nSortAntwort_arr[$i];
+                    $answer->cName         = $answerName[$i];
+                    $answer->nSort         = $answerSort[$i];
 
                     Shop::Container()->getDB()->insert('tumfragefrageantwort', $answer);
                 }
             }
             break;
         case \Survey\QuestionType::SELECT_SINGLE:
-            if (is_array($cNameAntwort) && count($cNameAntwort) > 0) {
-                $count = count($cNameAntwort);
-                for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < $count; $i++) {
+            if (is_array($answerName) && count($answerName) > 0) {
+                $count = count($answerName);
+                for ($i = $data->nAnzahlAntworten; $i < $count; $i++) {
                     unset($answer);
                     $answer                = new stdClass();
                     $answer->kUmfrageFrage = $questionID;
-                    $answer->cName         = $cNameAntwort[$i];
-                    $answer->nSort         = $nSortAntwort_arr[$i];
+                    $answer->cName         = $answerName[$i];
+                    $answer->nSort         = $answerSort[$i];
 
                     Shop::Container()->getDB()->insert('tumfragefrageantwort', $answer);
                 }
             }
             break;
         case \Survey\QuestionType::SELECT_MULTI:
-            if (is_array($cNameAntwort) && count($cNameAntwort) > 0) {
-                $count = count($cNameAntwort);
-                for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < $count; $i++) {
+            if (is_array($answerName) && count($answerName) > 0) {
+                $count = count($answerName);
+                for ($i = $data->nAnzahlAntworten; $i < $count; $i++) {
                     unset($answer);
                     $answer                = new stdClass();
                     $answer->kUmfrageFrage = $questionID;
-                    $answer->cName         = $cNameAntwort[$i];
-                    $answer->nSort         = $nSortAntwort_arr[$i];
+                    $answer->cName         = $answerName[$i];
+                    $answer->nSort         = $answerSort[$i];
 
                     Shop::Container()->getDB()->insert('tumfragefrageantwort', $answer);
                 }
             }
             break;
         case \Survey\QuestionType::MATRIX_SINGLE:
-            if (is_array($cNameAntwort) && is_array($cNameOption) && count($cNameAntwort) > 0 && count($cNameOption) > 0) {
-                $count = count($cNameAntwort);
-                for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < $count; $i++) {
+            if (is_array($answerName) && is_array($optionName) && count($answerName) > 0 && count($optionName) > 0) {
+                $count = count($answerName);
+                for ($i = $data->nAnzahlAntworten; $i < $count; $i++) {
                     unset($answer);
                     $answer                = new stdClass();
                     $answer->kUmfrageFrage = $questionID;
-                    $answer->cName         = $cNameAntwort[$i];
-                    $answer->nSort         = $nSortAntwort_arr[$i];
+                    $answer->cName         = $answerName[$i];
+                    $answer->nSort         = $answerSort[$i];
 
                     Shop::Container()->getDB()->insert('tumfragefrageantwort', $answer);
                 }
-                $count = count($cNameOption);
-                for ($i = $oAnzahlAUndOVorhanden->nAnzahlOptionen; $i < $count; $i++) {
+                $count = count($optionName);
+                for ($i = $data->nAnzahlOptionen; $i < $count; $i++) {
                     unset($matrixOpt);
                     $matrixOpt                = new stdClass();
                     $matrixOpt->kUmfrageFrage = $questionID;
-                    $matrixOpt->cName         = $cNameOption[$i];
-                    $matrixOpt->nSort         = $nSortOption_arr[$i];
+                    $matrixOpt->cName         = $optionName[$i];
+                    $matrixOpt->nSort         = $sortOptions[$i];
 
                     Shop::Container()->getDB()->insert('tumfragematrixoption', $matrixOpt);
                 }
             }
             break;
         case \Survey\QuestionType::MATRIX_MULTI:
-            if (is_array($cNameAntwort) && is_array($cNameOption) && count($cNameAntwort) > 0 && count($cNameOption) > 0) {
-                $count = count($cNameAntwort);
-                for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < $count; $i++) {
+            if (is_array($answerName) && is_array($optionName) && count($answerName) > 0 && count($optionName) > 0) {
+                $count = count($answerName);
+                for ($i = $data->nAnzahlAntworten; $i < $count; $i++) {
                     unset($answer);
                     $answer                = new stdClass();
                     $answer->kUmfrageFrage = $questionID;
-                    $answer->cName         = $cNameAntwort[$i];
-                    $answer->nSort         = $nSortAntwort_arr[$i];
+                    $answer->cName         = $answerName[$i];
+                    $answer->nSort         = $answerSort[$i];
 
                     Shop::Container()->getDB()->insert('tumfragefrageantwort', $answer);
                 }
-                $count = count($cNameOption);
-                for ($i = $oAnzahlAUndOVorhanden->nAnzahlOptionen; $i < $count; $i++) {
+                $count = count($optionName);
+                for ($i = $data->nAnzahlOptionen; $i < $count; $i++) {
                     unset($matrixOpt);
                     $matrixOpt                = new stdClass();
                     $matrixOpt->kUmfrageFrage = $questionID;
-                    $matrixOpt->cName         = $cNameOption[$i];
-                    $matrixOpt->nSort         = $nSortOption_arr[$i];
+                    $matrixOpt->cName         = $optionName[$i];
+                    $matrixOpt->nSort         = $sortOptions[$i];
 
                     Shop::Container()->getDB()->insert('tumfragematrixoption', $matrixOpt);
                 }
@@ -315,7 +314,7 @@ function holeUmfrageStatistik(int $surveyID)
         ) {
             $answers       = [];
             $matrixOptions = [];
-            $resultMatrix  = [];
+            $resMatrix     = [];
 
             $answerData = Shop::Container()->getDB()->query(
                 'SELECT cName, kUmfrageFrageAntwort
@@ -324,13 +323,11 @@ function holeUmfrageStatistik(int $surveyID)
                     ORDER BY nSort',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            //Hilfarray basteln für die Anzeige mit Antworten der Matrix
             foreach ($answerData as $oUmfrageFrageAntwortTMP) {
-                unset($oUmfrageFrageAntwort);
-                $oUmfrageFrageAntwort                       = new stdClass();
-                $oUmfrageFrageAntwort->cName                = $oUmfrageFrageAntwortTMP->cName;
-                $oUmfrageFrageAntwort->kUmfrageFrageAntwort = $oUmfrageFrageAntwortTMP->kUmfrageFrageAntwort;
-                $answers[]                                  = $oUmfrageFrageAntwort;
+                $answer                       = new stdClass();
+                $answer->cName                = $oUmfrageFrageAntwortTMP->cName;
+                $answer->kUmfrageFrageAntwort = $oUmfrageFrageAntwortTMP->kUmfrageFrageAntwort;
+                $answers[]                    = $answer;
             }
             $matrixOptTMP_arr = Shop::Container()->getDB()->query(
                 'SELECT tumfragematrixoption.kUmfrageMatrixOption, tumfragematrixoption.cName, 
@@ -343,81 +340,82 @@ function holeUmfrageStatistik(int $surveyID)
                     ORDER BY tumfragematrixoption.nSort',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            //Hilfarray basteln für die Anzeige mit Optionen der Matrix
             foreach ($matrixOptTMP_arr as $matrixOptTMP) {
-                unset($matrixOpt);
-                $matrixOpt                       = new stdClass();
-                $matrixOpt->nAnzahlOption        = $matrixOptTMP->nAnzahlOption;
-                $matrixOpt->cName                = $matrixOptTMP->cName;
-                $matrixOpt->kUmfrageMatrixOption = $matrixOptTMP->kUmfrageMatrixOption;
-                $matrixOptions[]                 = $matrixOpt;
+                unset($opt);
+                $opt                       = new stdClass();
+                $opt->nAnzahlOption        = $matrixOptTMP->nAnzahlOption;
+                $opt->cName                = $matrixOptTMP->cName;
+                $opt->kUmfrageMatrixOption = $matrixOptTMP->kUmfrageMatrixOption;
+                $matrixOptions[]                 = $opt;
             }
             //Leereinträge in die Matrix einfügen
-            foreach ($answers as $oUmfrageFrageAntwort) {
-                foreach ($matrixOptions as $matrixOpt) {
+            foreach ($answers as $answer) {
+                foreach ($matrixOptions as $opt) {
                     $res                = new stdClass();
                     $res->nAnzahl       = 0;
-                    $res->nGesamtAnzahl = $matrixOpt->nAnzahlOption;
+                    $res->nGesamtAnzahl = $opt->nAnzahlOption;
                     $res->fProzent      = 0;
                     $res->nBold         = 0;
 
-                    $resultMatrix[$oUmfrageFrageAntwort->kUmfrageFrageAntwort][$matrixOpt->kUmfrageMatrixOption] = $res;
+                    $resMatrix[$answer->kUmfrageFrageAntwort][$opt->kUmfrageMatrixOption] = $res;
                 }
             }
             //der gesamten umfrage hinzufügen
             $stats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = $answers;
             $stats->oUmfrageFrage_arr[$i]->oUmfrageMatrixOption_arr = $matrixOptions;
             //hole pro Option die Anzahl raus
-            foreach ($matrixOptions as $matrixOpt) {
+            foreach ($matrixOptions as $opt) {
                 $matrixOptAnzahlSpalte_arr = Shop::Container()->getDB()->query(
                     'SELECT COUNT(*) AS nAnzahlOptionProAntwort, kUmfrageFrageAntwort
                         FROM  tumfragedurchfuehrungantwort
-                        WHERE kUmfrageMatrixOption = ' . (int)$matrixOpt->kUmfrageMatrixOption . '
+                        WHERE kUmfrageMatrixOption = ' . (int)$opt->kUmfrageMatrixOption . '
                             AND kUmfrageFrage = ' . (int)$question->kUmfrageFrage . '
                         GROUP BY kUmfrageFrageAntwort ',
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 //setze jeder Antwort den entsprechenden Matrixeintrag
-                foreach ($matrixOptAnzahlSpalte_arr as $matrixOptAnzahlSpalte) {
-                    $resultMatrix[$matrixOptAnzahlSpalte->kUmfrageFrageAntwort][$matrixOpt->kUmfrageMatrixOption]->nAnzahl  =
-                        $matrixOptAnzahlSpalte->nAnzahlOptionProAntwort;
-                    $resultMatrix[$matrixOptAnzahlSpalte->kUmfrageFrageAntwort][$matrixOpt->kUmfrageMatrixOption]->fProzent =
+                foreach ($matrixOptAnzahlSpalte_arr as $col) {
+                    $resMatrix[$col->kUmfrageFrageAntwort][$opt->kUmfrageMatrixOption]->nAnzahl  =
+                        $col->nAnzahlOptionProAntwort;
+                    $resMatrix[$col->kUmfrageFrageAntwort][$opt->kUmfrageMatrixOption]->fProzent =
                         round(
                             (
-                                $matrixOptAnzahlSpalte->nAnzahlOptionProAntwort /
-                                $resultMatrix[$matrixOptAnzahlSpalte->kUmfrageFrageAntwort][$matrixOpt->kUmfrageMatrixOption]->nGesamtAnzahl
+                                $col->nAnzahlOptionProAntwort /
+                                $resMatrix[$col->kUmfrageFrageAntwort][$opt->kUmfrageMatrixOption]->nGesamtAnzahl
                             ) * 100,
                             1
                         );
                 }
             }
             //ermittele die maximalen Werte und setze nBold=1
-            foreach ($matrixOptions as $matrixOpt) {
+            foreach ($matrixOptions as $opt) {
                 $maxAnswers = 0;
-                if (is_array($answers)) {
-                    //max ermitteln
-                    foreach ($answers as $oUmfrageFrageAntwort) {
-                        if ($resultMatrix[$oUmfrageFrageAntwort->kUmfrageFrageAntwort][$matrixOpt->kUmfrageMatrixOption]->nAnzahl > $maxAnswers) {
-                            $maxAnswers = $resultMatrix[$oUmfrageFrageAntwort->kUmfrageFrageAntwort][$matrixOpt->kUmfrageMatrixOption]->nAnzahl;
-                        }
+                if (!is_array($answers)) {
+                    continue;
+                }
+                //max ermitteln
+                foreach ($answers as $answer) {
+                    if ($resMatrix[$answer->kUmfrageFrageAntwort][$opt->kUmfrageMatrixOption]->nAnzahl > $maxAnswers) {
+                        $maxAnswers = $resMatrix[$answer->kUmfrageFrageAntwort][$opt->kUmfrageMatrixOption]->nAnzahl;
                     }
-                    //bold setzen
-                    foreach ($answers as $oUmfrageFrageAntwort) {
-                        if ($resultMatrix[$oUmfrageFrageAntwort->kUmfrageFrageAntwort][$matrixOpt->kUmfrageMatrixOption]->nAnzahl == $maxAnswers) {
-                            $resultMatrix[$oUmfrageFrageAntwort->kUmfrageFrageAntwort][$matrixOpt->kUmfrageMatrixOption]->nBold = 1;
-                        }
+                }
+                //bold setzen
+                foreach ($answers as $answer) {
+                    if ($resMatrix[$answer->kUmfrageFrageAntwort][$opt->kUmfrageMatrixOption]->nAnzahl == $maxAnswers
+                    ) {
+                        $resMatrix[$answer->kUmfrageFrageAntwort][$opt->kUmfrageMatrixOption]->nBold = 1;
                     }
                 }
             }
             //Ergebnismatrix für die Frage setzen
-            $stats->oUmfrageFrage_arr[$i]->oErgebnisMatrix_arr = $resultMatrix;
+            $stats->oUmfrageFrage_arr[$i]->oErgebnisMatrix_arr = $resMatrix;
         } elseif ($question->cTyp === \Survey\QuestionType::TEXT_SMALL
             || $question->cTyp === \Survey\QuestionType::TEXT_BIG
         ) {
             $answers = Shop::Container()->getDB()->query(
-                "SELECT cText AS cName, COUNT(cText) AS nAnzahlAntwort
+                'SELECT cText AS cName, COUNT(cText) AS nAnzahlAntwort
                     FROM tumfragedurchfuehrungantwort
-                    WHERE kUmfrageFrage = " . (int)$question->kUmfrageFrage . "
+                    WHERE kUmfrageFrage = ' . (int)$question->kUmfrageFrage . "
                         AND TRIM(cText) !=''
                     GROUP BY cText
                     ORDER BY nAnzahlAntwort DESC
@@ -425,11 +423,11 @@ function holeUmfrageStatistik(int $surveyID)
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             // Anzahl Antworten
-            foreach ($answers as $j => $oUmfrageFrageAntwort) {
+            foreach ($answers as $j => $answer) {
                 if (!isset($stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten)) {
                     $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten = 0;
                 }
-                $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten += $oUmfrageFrageAntwort->nAnzahlAntwort;
+                $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten += $answer->nAnzahlAntwort;
             }
             // Anzahl Sonstiger Antworten
             $oUmfrageFrageAntwortTMP = Shop::Container()->getDB()->query(
@@ -447,12 +445,12 @@ function holeUmfrageStatistik(int $surveyID)
             );
             if (isset($oUmfrageFrageAntwortTMP->nAnzahlAntwort) && (int)$oUmfrageFrageAntwortTMP->nAnzahlAntwort > 0) {
                 $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten += (int)$oUmfrageFrageAntwortTMP->nAnzahlAntwort;
-                $oTMP                                           = new stdClass();
-                $oTMP->cName                                    = '<a href="umfrage.php?umfrage=1&uf=' .
+                $oTMP                                            = new stdClass();
+                $oTMP->cName                                     = '<a href="umfrage.php?umfrage=1&uf=' .
                     $question->kUmfrageFrage . '&aa=' . $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten .
                     '&ma=' . count($answers) . '&a=zeige_sonstige">Sonstige</a>';
-                $oTMP->nAnzahlAntwort                           = $oUmfrageFrageAntwortTMP->nAnzahlAntwort;
-                $oTMP->fProzent                                 = round(
+                $oTMP->nAnzahlAntwort                            = $oUmfrageFrageAntwortTMP->nAnzahlAntwort;
+                $oTMP->fProzent                                  = round(
                     ($oUmfrageFrageAntwortTMP->nAnzahlAntwort / $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten) * 100,
                     1
                 );
@@ -462,10 +460,10 @@ function holeUmfrageStatistik(int $surveyID)
             if (is_array($answers) && count($answers) > 0) {
                 $stats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = $answers;
 
-                foreach ($answers as $j => $oUmfrageFrageAntwort) {
+                foreach ($answers as $j => $answer) {
                     $stats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr[$j]->fProzent =
                         round(
-                            ($oUmfrageFrageAntwort->nAnzahlAntwort / $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten) * 100,
+                            ($answer->nAnzahlAntwort / $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten) * 100,
                             1
                         );
                 }
@@ -496,9 +494,9 @@ function holeUmfrageStatistik(int $surveyID)
             $freeTextAnswers = [];
             if ($stats->oUmfrageFrage_arr[$i]->nFreifeld == 1) {
                 $freeTextAnswers = Shop::Container()->getDB()->query(
-                    "SELECT cText AS cName, COUNT(cText) AS nAnzahlAntwort
+                    'SELECT cText AS cName, COUNT(cText) AS nAnzahlAntwort
                         FROM tumfragedurchfuehrungantwort
-                        WHERE kUmfrageFrage = " . (int)$question->kUmfrageFrage . "
+                        WHERE kUmfrageFrage = ' . (int)$question->kUmfrageFrage . "
                             AND kUmfrageFrageAntwort = 0
                             AND kUmfrageMatrixOption = 0
                             AND TRIM(cText) !=''
@@ -513,12 +511,12 @@ function holeUmfrageStatistik(int $surveyID)
             if (is_array($stats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr)
                 && count($stats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr) > 0
             ) {
-                foreach ($stats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr as $j => $oUmfrageFrageAntwort) {
+                foreach ($stats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr as $j => $answer) {
                     $stats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr[$j]->fProzent = 0.0;
                     if ($stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten > 0) {
                         $stats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr[$j]->fProzent =
                             round(
-                                ($oUmfrageFrageAntwort->nAnzahlAntwort / $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten) * 100,
+                                ($answer->nAnzahlAntwort / $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten) * 100,
                                 1
                             );
                     }
@@ -556,13 +554,13 @@ function holeSonstigeTextAntworten(int $surveyID, int $maxAnswers, int $limit)
 
         return $question;
     }
-    $question = Shop::Container()->getDB()->query(
+    $question                = Shop::Container()->getDB()->query(
         'SELECT kUmfrage, cName, cTyp
             FROM tumfragefrage
             WHERE kUmfrageFrage = ' . $surveyID,
         \DB\ReturnType::SINGLE_OBJECT
     );
-    $answers = Shop::Container()->getDB()->query(
+    $answers                 = Shop::Container()->getDB()->query(
         'SELECT cText AS cName, COUNT(cText) AS nAnzahlAntwort
             FROM tumfragedurchfuehrungantwort
             WHERE kUmfrageFrage = ' . $surveyID . '

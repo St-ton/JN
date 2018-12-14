@@ -21,22 +21,22 @@ function ackCheck(kPlugin, hash)
 {include file='tpl_inc/seite_header.tpl' cTitel=__('pluginverwaltung') cBeschreibung=__('pluginverwaltungDesc') cDokuURL=__('pluginverwaltungURL')}
 <div id="content" class="container-fluid">
     <div id="settings">
-        {if $PluginInstalliertByStatus_arr|@count > 0}
+        {if $pluginsByState|@count > 0}
             <ul class="nav nav-tabs" role="tablist">
                 <li class="tab{if !isset($cTab) || $cTab === 'aktiviert'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#aktiviert">Aktiviert <span class="badge">{$PluginInstalliertByStatus_arr.status_2|@count}</span></a>
+                    <a data-toggle="tab" role="tab" href="#aktiviert">Aktiviert <span class="badge">{$pluginsByState.status_2|@count}</span></a>
                 </li>
                 <li class="tab{if isset($cTab) && $cTab === 'deaktiviert'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#deaktiviert">Deaktiviert <span class="badge">{$PluginInstalliertByStatus_arr.status_1|@count}</span></a>
+                    <a data-toggle="tab" role="tab" href="#deaktiviert">Deaktiviert <span class="badge">{$pluginsByState.status_1|@count}</span></a>
                 </li>
                 <li class="tab{if isset($cTab) && $cTab === 'probleme'} active{/if}">
                     <a data-toggle="tab" role="tab" href="#probleme">Probleme <span class="badge">{$PluginErrorCount}</span></a>
                 </li>
                 <li class="tab{if isset($cTab) && $cTab === 'verfuegbar'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#verfuegbar">Verf&uuml;gbar <span class="badge">{if isset($PluginVerfuebar_arr)}{$PluginVerfuebar_arr|@count}{else}0{/if}</span></a>
+                    <a data-toggle="tab" role="tab" href="#verfuegbar">Verfügbar <span class="badge">{$pluginsAvailable->count()}</span></a>
                 </li>
                 <li class="tab{if isset($cTab) && $cTab === 'fehlerhaft'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#fehlerhaft">Fehlerhaft <span class="badge">{if isset($PluginFehlerhaft_arr)}{$PluginFehlerhaft_arr|@count}{else}0{/if}</span></a>
+                    <a data-toggle="tab" role="tab" href="#fehlerhaft">Fehlerhaft <span class="badge">{$pluginsErroneous->count()}</span></a>
                 </li>
                 <li class="tab{if isset($cTab) && $cTab === 'upload'} active{/if}">
                     <a data-toggle="tab" role="tab" href="#upload">Upload</a>

@@ -21,7 +21,7 @@ use Filter\Type;
  */
 class BaseManufacturer extends AbstractFilter
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -69,14 +69,14 @@ class BaseManufacturer extends AbstractFilter
                     JOIN thersteller
                         ON thersteller.kHersteller = tseo.kKey
                     WHERE cKey = 'kHersteller' 
-                        AND kKey IN (" . \implode(', ', $val) . ")",
+                        AND kKey IN (" . \implode(', ', $val) . ')',
                 ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
                 foreach ($seoData as $oSeo) {
                     if ($language->kSprache === (int)$oSeo->kSprache) {
-                        $sep                             = $this->cSeo[$language->kSprache] === '' ? '' : \SEP_HST;
+                        $sep                              = $this->cSeo[$language->kSprache] === '' ? '' : \SEP_HST;
                         $this->cSeo[$language->kSprache] .= $sep . $oSeo->cSeo;
                     }
                 }
@@ -176,14 +176,14 @@ class BaseManufacturer extends AbstractFilter
             return $this->options;
         }
         $manufacturers    = $this->productFilter->getDB()->query(
-            "SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
-                FROM (" . $baseQuery . ") AS ssMerkmal
+            'SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
+                FROM (' . $baseQuery . ") AS ssMerkmal
                     LEFT JOIN tseo 
                         ON tseo.kKey = ssMerkmal.kHersteller
                         AND tseo.cKey = 'kHersteller'
-                        AND tseo.kSprache = " . $this->getLanguageID() . "
+                        AND tseo.kSprache = " . $this->getLanguageID() . '
                     GROUP BY ssMerkmal.kHersteller
-                    ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName",
+                    ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $additionalFilter = new Manufacturer($this->productFilter);

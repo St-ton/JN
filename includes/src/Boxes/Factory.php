@@ -6,42 +6,43 @@
 
 namespace Boxes;
 
-use Boxes\Items\{BestsellingProducts,
-    BoxInterface,
-    Cart,
-    CompareList,
-    Container,
-    DirectPurchase,
-    FilterAttribute,
-    FilterCategory,
-    FilterItem,
-    FilterManufacturer,
-    FilterPricerange,
-    FilterRating,
-    FilterSearch,
-    FilterTag,
-    GlobalAttributes,
-    LinkGroup,
-    Login,
-    Manufacturer,
-    NewProducts,
-    NewsCategories,
-    NewsCurrentMonth,
-    Plain,
-    Plugin,
-    Poll,
-    ProductCategories,
-    RecentlyViewedProducts,
-    SearchCloud,
-    SpecialOffers,
-    TagCloud,
-    TopOffers,
-    TopRatedProducts,
-    TrustedShopsReviews,
-    TrustedShopsSeal,
-    UpcomingProducts,
-    Wishlist
-};
+use Boxes\Items\BestsellingProducts;
+use Boxes\Items\BoxDefault;
+use Boxes\Items\BoxInterface;
+use Boxes\Items\Cart;
+use Boxes\Items\CompareList;
+use Boxes\Items\Container;
+use Boxes\Items\DirectPurchase;
+use Boxes\Items\Extension;
+use Boxes\Items\FilterAttribute;
+use Boxes\Items\FilterCategory;
+use Boxes\Items\FilterItem;
+use Boxes\Items\FilterManufacturer;
+use Boxes\Items\FilterPricerange;
+use Boxes\Items\FilterRating;
+use Boxes\Items\FilterSearch;
+use Boxes\Items\FilterTag;
+use Boxes\Items\GlobalAttributes;
+use Boxes\Items\LinkGroup;
+use Boxes\Items\Login;
+use Boxes\Items\Manufacturer;
+use Boxes\Items\NewProducts;
+use Boxes\Items\NewsCategories;
+use Boxes\Items\NewsCurrentMonth;
+use Boxes\Items\Plain;
+use Boxes\Items\Plugin;
+use Boxes\Items\Poll;
+use Boxes\Items\ProductCategories;
+use Boxes\Items\RecentlyViewedProducts;
+use Boxes\Items\SearchCloud;
+use Boxes\Items\SpecialOffers;
+use Boxes\Items\TagCloud;
+use Boxes\Items\TopOffers;
+use Boxes\Items\TopRatedProducts;
+use Boxes\Items\TrustedShopsReviews;
+use Boxes\Items\TrustedShopsSeal;
+use Boxes\Items\UpcomingProducts;
+use Boxes\Items\Wishlist;
 
 /**
  * Class Factory
@@ -68,7 +69,7 @@ class Factory implements FactoryInterface
     /**
      * @inheritdoc
      */
-    public function getBoxByBaseType(int $baseType, bool $isPlugin): BoxInterface
+    public function getBoxByBaseType(int $baseType, string $type = null): BoxInterface
     {
         switch ($baseType) {
             case \BOX_BESTSELLER:
@@ -139,7 +140,14 @@ class Factory implements FactoryInterface
             case \BOX_SUCHWOLKE:
                 return new SearchCloud($this->config);
             default:
-                return $isPlugin ? new Plugin($this->config) : new Items\BoxDefault($this->config);
+                if ($type === Type::PLUGIN) {
+                    return new Plugin($this->config);
+                }
+                if ($type === Type::EXTENSION) {
+                    return new Extension($this->config);
+                }
+
+                return new BoxDefault($this->config);
         }
     }
 }

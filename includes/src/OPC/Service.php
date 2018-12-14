@@ -8,9 +8,12 @@ namespace OPC;
 
 use Filter\AbstractFilter;
 use Filter\Config;
-use Filter\Option;
 use Filter\Items\Attribute;
+use Filter\Items\PriceRange;
+use Filter\Option;
+use Filter\ProductFilter;
 use Filter\Type;
+use L10n\GetText;
 
 /**
  * Class Service
@@ -67,7 +70,7 @@ class Service
      * @param \AdminIO $io
      * @throws \Exception
      */
-    public function registerAdminIOFunctions(\AdminIO $io)
+    public function registerAdminIOFunctions(\AdminIO $io): void
     {
         $adminAccount = $io->getAccount();
 
@@ -87,7 +90,7 @@ class Service
      * @return null|string
      * @throws \Exception
      */
-    public function getAdminSessionToken()
+    public function getAdminSessionToken(): ?string
     {
         return \Shop::getAdminSessionToken();
     }
@@ -124,9 +127,7 @@ class Service
      */
     public function getBlueprint(int $id): Blueprint
     {
-        $blueprint = (new Blueprint())
-            ->setId($id);
-
+        $blueprint = (new Blueprint())->setId($id);
         $this->db->loadBlueprint($blueprint);
 
         return $blueprint;
@@ -157,22 +158,18 @@ class Service
      * @param array $data
      * @throws \Exception
      */
-    public function saveBlueprint($name, $data)
+    public function saveBlueprint($name, $data): void
     {
-        $blueprint = (new Blueprint())
-            ->deserialize(['name' => $name, 'content' => $data]);
-
+        $blueprint = (new Blueprint())->deserialize(['name' => $name, 'content' => $data]);
         $this->db->saveBlueprint($blueprint);
     }
 
     /**
      * @param int $id
      */
-    public function deleteBlueprint($id)
+    public function deleteBlueprint($id): void
     {
-        $blueprint = (new Blueprint())
-            ->setId($id);
-
+        $blueprint = (new Blueprint())->setId($id);
         $this->db->deleteBlueprint($blueprint);
     }
 
@@ -223,7 +220,7 @@ class Service
      */
     public function isEditMode(): bool
     {
-        return \RequestHelper::verifyGPDataString('opcEditMode') === 'yes';
+        return \Helpers\RequestHelper::verifyGPDataString('opcEditMode') === 'yes';
     }
 
     /**
@@ -239,7 +236,7 @@ class Service
      */
     public function getEditedPageKey(): int
     {
-        return \RequestHelper::verifyGPCDataInt('opcEditedPageKey');
+        return \Helpers\RequestHelper::verifyGPCDataInt('opcEditedPageKey');
     }
 
     /**
@@ -248,9 +245,9 @@ class Service
      */
     public function getFilterOptions(array $enabledFilters = []): array
     {
-        \TaxHelper::setTaxRates();
+        \Helpers\TaxHelper::setTaxRates();
 
-        $productFilter    = new \Filter\ProductFilter(
+        $productFilter    = new ProductFilter(
             Config::getDefault(),
             \Shop::Container()->getDB(),
             \Shop::Container()->getCache()
@@ -263,7 +260,7 @@ class Service
             /** @var AbstractFilter $newFilter **/
             $newFilter = new $enabledFilter['class']($productFilter);
             $newFilter->setType(Type::AND);
-            if ($newFilter instanceof \Filter\Items\PriceRange) {
+            if ($newFilter instanceof PriceRange) {
                 $productFilter->addActiveFilter($newFilter, (string)$enabledFilter['value']);
             } else {
                 $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);

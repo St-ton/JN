@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -6,7 +6,12 @@
 
 namespace GeneralDataProtection;
 
+use DB\ReturnType;
+
 /**
+ * Class AnonymizeIps
+ * @package GeneralDataProtection
+ *
  * anonymize IPs in various tables.
  *
  * names of the tables, we manipulate:
@@ -28,56 +33,56 @@ class AnonymizeIps extends Method implements MethodInterface
     /**
      * @var array
      */
-    private $vTablesUpdate = [
-        'tbestellung' => [
+    private $tablesToUpdate = [
+        'tbestellung'                      => [
             'ColKey'     => 'kBestellung',
             'ColIp'      => 'cIP',
             'ColCreated' => 'dErstellt',
             'ColType'    => 'DATETIME'
         ],
-        'tbesucherarchiv' => [
+        'tbesucherarchiv'                  => [
             'ColKey'     => 'kBesucher',
             'ColIp'      => 'cIP',
             'ColCreated' => 'dZeit',
             'ColType'    => 'DATETIME'
         ],
-        'tkontakthistory' => [
+        'tkontakthistory'                  => [
             'ColKey'     => 'kKontaktHistory',
             'ColIp'      => 'cIP',
             'ColCreated' => 'dErstellt',
             'ColType'    => 'DATETIME'
         ],
-        'tproduktanfragehistory' => [
+        'tproduktanfragehistory'           => [
             'ColKey'     => 'kProduktanfrageHistory',
             'ColIp'      => 'cIP',
             'ColCreated' => 'dErstellt',
             'ColType'    => 'DATETIME'
         ],
-        'tredirectreferer' => [
+        'tredirectreferer'                 => [
             'ColKey'     => 'kRedirectReferer',
             'ColIp'      => 'cIP',
             'ColCreated' => 'dDate',
             'ColType'    => 'TIMESTAMP'
         ],
-        'tsitemaptracker' => [
+        'tsitemaptracker'                  => [
             'ColKey'     => 'kSitemapTracker',
             'ColIp'      => 'cIP',
             'ColCreated' => 'dErstellt',
             'ColType'    => 'DATETIME'
         ],
-        'tsuchanfragencache' => [
+        'tsuchanfragencache'               => [
             'ColKey'     => 'kSuchanfrageCache',
             'ColIp'      => 'cIP',
             'ColCreated' => 'dZeit',
             'ColType'    => 'DATETIME'
         ],
-        'ttagkunde' => [
+        'ttagkunde'                        => [
             'ColKey'     => 'kTagKunde',
             'ColIp'      => 'cIP',
             'ColCreated' => 'dZeit',
             'ColType'    => 'DATETIME'
         ],
-        'tumfragedurchfuehrung' => [
+        'tumfragedurchfuehrung'            => [
             'ColKey'     => 'kUmfrageDurchfuehrung',
             'ColIp'      => 'cIP',
             'ColCreated' => 'dDurchgefuehrt',
@@ -89,7 +94,7 @@ class AnonymizeIps extends Method implements MethodInterface
             'ColCreated' => 'dErstellt',
             'ColType'    => 'DATETIME'
         ],
-        'tvergleichsliste' => [
+        'tvergleichsliste'                 => [
             'ColKey'     => 'kVergleichsliste',
             'ColIp'      => 'cIP',
             'ColCreated' => 'dDate',
@@ -97,62 +102,64 @@ class AnonymizeIps extends Method implements MethodInterface
         ]
     ];
 
-
     /**
      * run all anonymize processes
      */
     public function execute(): void
     {
-        $this->anon_all_ips();
+        $this->anonymizeAllIPs();
     }
 
     /**
      * anonymize IPs in various tables
      */
-    public function anon_all_ips()
+    public function anonymizeAllIPs(): void
     {
-        $oAnonymizer = new IpAnonymizer('', true); // anonymize "beautified"
-        $szIpMaskV4  = $oAnonymizer->getMaskV4();
-        $szIpMaskV6  = $oAnonymizer->getMaskV6();
-        $szIpMaskV4  = substr($szIpMaskV4, strpos($szIpMaskV4, '.0'), \strlen($szIpMaskV4) - 1);
-        $szIpMaskV6  = substr($szIpMaskV6, strpos($szIpMaskV6, ':0000'), \strlen($szIpMaskV6) - 1);
-        $szObjectNow = $this->oNow->format('Y-m-d H:i:s');
-
-        foreach ($this->vTablesUpdate as $szTableName => $vTable) {
-            $szSql = "SELECT
-                    {$vTable['ColKey']},
-                    {$vTable['ColIp']},
-                    {$vTable['ColCreated']}
+        $anonymizer = new IpAnonymizer('', true); // anonymize "beautified"
+        $ipMaskV4   = $anonymizer->getMaskV4();
+        $ipMaskV6   = $anonymizer->getMaskV6();
+        $ipMaskV4   = \substr($ipMaskV4, \strpos($ipMaskV4, '.0'), \strlen($ipMaskV4) - 1);
+        $ipMaskV6   = \substr($ipMaskV6, \strpos($ipMaskV6, ':0000'), \strlen($ipMaskV6) - 1);
+        $dtNow      = $this->now->format('Y-m-d H:i:s');
+        foreach ($this->tablesToUpdate as $tableName => $colData) {
+            $sql = "SELECT
+                    {$colData['ColKey']},
+                    {$colData['ColIp']},
+                    {$colData['ColCreated']}
                 FROM
-                    {$szTableName}
+                    {$tableName}
                 WHERE
                     NOT INSTR(cIP, '.*') > 0
-                    AND NOT INSTR(cIP, '{$szIpMaskV4}') > 0
-                    AND NOT INSTR(cIP, '{$szIpMaskV6}') > 0";
+                    AND NOT INSTR(cIP, '{$ipMaskV4}') > 0
+                    AND NOT INSTR(cIP, '{$ipMaskV6}') > 0";
 
-            if ($vTable['ColType'] !== 'TIMESTAMP') {
-                $szSql .= " AND {$vTable['ColCreated']} <= '{$szObjectNow}' - INTERVAL {$this->iInterval} DAY";
+            if ($colData['ColType'] !== 'TIMESTAMP') {
+                $sql .= " AND {$colData['ColCreated']} <= '{$dtNow}' - INTERVAL {$this->interval} DAY";
             } else {
-                $szSql .= " AND FROM_UNIXTIME({$vTable['ColCreated']}) <= '{$szObjectNow}' - INTERVAL {$this->iInterval} DAY";
+                $sql .= " AND FROM_UNIXTIME({$colData['ColCreated']}) <=
+                 '{$dtNow}' - INTERVAL {$this->interval} DAY";
             }
 
-            $szSql .= " ORDER BY {$vTable['ColCreated']} ASC
-                LIMIT {$this->iWorkLimit}";
+            $sql .= " ORDER BY {$colData['ColCreated']} ASC
+                LIMIT {$this->workLimit}";
 
-            $vResult = \Shop::Container()->getDB()->query(
-                $szSql,
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+            $res = \Shop::Container()->getDB()->query(
+                $sql,
+                ReturnType::ARRAY_OF_OBJECTS
             );
-            if (\is_array($vResult) && 0 < $iRowCount = \count($vResult)) {
-                foreach ($vResult as $oRow) {
-                    try {
-                        $oRow->cIP = $oAnonymizer->setIp($oRow->cIP)->anonymize();
-                    } catch (\Exception $e) {
-                        ($this->oLogger === null) ?: $this->oLogger->log(JTLLOG_LEVEL_WARNING, $e->getMessage());
-                    }
-                    $szKeyColName = $vTable['ColKey'];
-                    \Shop::Container()->getDB()->update($szTableName, $vTable['ColKey'], (int)$oRow->$szKeyColName, $oRow);
+            foreach ($res as $row) {
+                try {
+                    $row->cIP = $anonymizer->setIp($row->cIP)->anonymize();
+                } catch (\Exception $e) {
+                    ($this->logger === null) ?: $this->logger->log(\JTLLOG_LEVEL_WARNING, $e->getMessage());
                 }
+                $szKeyColName = $colData['ColKey'];
+                \Shop::Container()->getDB()->update(
+                    $tableName,
+                    $colData['ColKey'],
+                    (int)$row->$szKeyColName,
+                    $row
+                );
             }
         }
     }

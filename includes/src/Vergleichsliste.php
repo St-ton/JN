@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\RequestHelper;
+
 /**
  * Class Vergleichsliste
  */
@@ -59,7 +61,7 @@ class Vergleichsliste
             $linkHelper     = Shop::Container()->getLinkService();
             $baseURL        = $linkHelper->getStaticRoute('vergleichsliste.php');
             foreach ($compareList->oArtikel_arr as $oArtikel) {
-                $product = (new Artikel())->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
+                $product          = (new Artikel())->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
                 $product->cURLDEL = $baseURL . '?vlplo=' . $oArtikel->kArtikel;
                 if (isset($oArtikel->oVariationen_arr) && count($oArtikel->oVariationen_arr) > 0) {
                     $product->Variationen = $oArtikel->oVariationen_arr;
@@ -77,8 +79,8 @@ class Vergleichsliste
     public function umgebungsWechsel(): self
     {
         foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $oArtikel) {
-            $tmpProduct           = new stdClass();
-            $tmpProduct->kArtikel = $oArtikel->kArtikel;
+            $tmpProduct                                    = new stdClass();
+            $tmpProduct->kArtikel                          = $oArtikel->kArtikel;
             $_SESSION['Vergleichsliste']->oArtikel_arr[$i] = $tmpProduct;
         }
 
@@ -96,7 +98,7 @@ class Vergleichsliste
         // Existiert der Key und ist er noch nicht vorhanden?
         if ($kArtikel > 0 && !$this->artikelVorhanden($kArtikel)) {
             //new slim variant for compare list
-            $product = new Artikel();
+            $product           = new Artikel();
             $product->kArtikel = $kArtikel;
             if ($kKonfigitem > 0 && class_exists('Konfigitem')) {
                 // Falls Konfigitem gesetzt Preise + Name überschreiben
@@ -278,7 +280,7 @@ class Vergleichsliste
             $compareListTable        = new stdClass();
             $compareListTable->cIP   = RequestHelper::getRealIP();
             $compareListTable->dDate = date('Y-m-d H:i:s');
-            $kVergleichsliste = Shop::Container()->getDB()->insert('tvergleichsliste', $compareListTable);
+            $kVergleichsliste        = Shop::Container()->getDB()->insert('tvergleichsliste', $compareListTable);
             foreach ($compareList->oArtikel_arr as $oArtikel) {
                 $compareListPosTable                   = new stdClass();
                 $compareListPosTable->kVergleichsliste = $kVergleichsliste;

@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\RequestHelper;
+
 /**
  * @param int $kAdminlogin
  * @return null|stdClass
@@ -132,9 +134,9 @@ function benutzerverwaltungGetAttributes(int $kAdminlogin)
 
 /**
  * @param stdClass $oAccount
- * @param array $extAttribs
- * @param array $messages
- * @param array $errorMap
+ * @param array    $extAttribs
+ * @param array    $messages
+ * @param array    $errorMap
  * @return bool
  */
 function benutzerverwaltungSaveAttributes(stdClass $oAccount, array $extAttribs, array &$messages, array &$errorMap)
@@ -163,7 +165,7 @@ function benutzerverwaltungSaveAttributes(stdClass $oAccount, array $extAttribs,
             if (is_array($value) && count($value) > 0) {
                 $shortText = StringHandler::filterXSS($value[0]);
                 if (count($value) > 1) {
-                    $longText  = $value[1];
+                    $longText = $value[1];
                 }
             } else {
                 $shortText = StringHandler::filterXSS($value);
@@ -188,8 +190,8 @@ function benutzerverwaltungSaveAttributes(stdClass $oAccount, array $extAttribs,
         }
         // nicht (mehr) vorhandene Attribute löschen
         $db->query(
-            "DELETE FROM tadminloginattribut
-                WHERE kAdminlogin = " . (int)$oAccount->kAdminlogin . "
+            'DELETE FROM tadminloginattribut
+                WHERE kAdminlogin = ' . (int)$oAccount->kAdminlogin . "
                     AND cName NOT IN ('" . implode("', '", $handledKeys) . "')",
             \DB\ReturnType::DEFAULT
         );
@@ -208,11 +210,10 @@ function benutzerverwaltungDeleteAttributes(stdClass $oAccount): bool
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
- * @param array            $messages
+ * @param array $messages
  * @return string
  */
-function benutzerverwaltungActionAccountLock(Smarty\JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungActionAccountLock(array &$messages)
 {
     $kAdminlogin = (int)$_POST['id'];
     $oAccount    = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $kAdminlogin);
@@ -244,15 +245,13 @@ function benutzerverwaltungActionAccountLock(Smarty\JTLSmarty $smarty, array &$m
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
- * @param array            $messages
+ * @param array $messages
  * @return string
  */
-function benutzerverwaltungActionAccountUnLock(Smarty\JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungActionAccountUnLock(array &$messages)
 {
     $kAdminlogin = (int)$_POST['id'];
     $oAccount    = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $kAdminlogin);
-
     if (is_object($oAccount)) {
         $result = true;
         Shop::Container()->getDB()->update('tadminlogin', 'kAdminlogin', $kAdminlogin, (object)['bAktiv' => 1]);
@@ -282,8 +281,7 @@ function benutzerverwaltungActionAccountEdit(Smarty\JTLSmarty $smarty, array &$m
 {
     $_SESSION['AdminAccount']->TwoFA_valid = true;
 
-    $kAdminlogin = (isset($_POST['id']) ? (int)$_POST['id'] : null);
-    // find out, if 2FA ist active and if there is a secret
+    $kAdminlogin    = (isset($_POST['id']) ? (int)$_POST['id'] : null);
     $szQRcodeString = '';
     $szKnownSecret  = '';
     if (null !== $kAdminlogin) {
@@ -295,10 +293,8 @@ function benutzerverwaltungActionAccountEdit(Smarty\JTLSmarty $smarty, array &$m
             $szKnownSecret  = $oTwoFA->getSecret();
         }
     }
-    // transfer via smarty-var (to prevent session-pollution)
-    $smarty->assign('QRcodeString', $szQRcodeString);
-    // not nice to "show" the secret, but needed to prevent empty creations
-    $smarty->assign('cKnownSecret', $szKnownSecret);
+    $smarty->assign('QRcodeString', $szQRcodeString)
+           ->assign('cKnownSecret', $szKnownSecret);
 
     if (isset($_POST['save'])) {
         $cError_arr           = [];
@@ -487,11 +483,10 @@ function benutzerverwaltungActionAccountEdit(Smarty\JTLSmarty $smarty, array &$m
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
- * @param array            $messages
+ * @param array $messages
  * @return string
  */
-function benutzerverwaltungActionAccountDelete(Smarty\JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungActionAccountDelete(array &$messages)
 {
     $kAdminlogin = (int)$_POST['id'];
     $oCount      = Shop::Container()->getDB()->query(
@@ -637,7 +632,7 @@ function benutzerverwaltungActionGroupEdit(Smarty\JTLSmarty $smarty, array &$mes
  * @param array            $messages
  * @return string
  */
-function benutzerverwaltungActionGroupDelete(Smarty\JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungActionGroupDelete(array &$messages)
 {
     $kAdminlogingruppe = (int)$_POST['id'];
     $oResult           = Shop::Container()->getDB()->query(
@@ -649,13 +644,13 @@ function benutzerverwaltungActionGroupDelete(Smarty\JTLSmarty $smarty, array &$m
     // stop the deletion with a message, if there are accounts in this group
     if (0 !== (int)$oResult->member_count) {
         $messages['error'] .= 'Die Gruppe kann nicht entfernt werden, da sich noch '
-                            . (2 > $oResult->member_count ? 'ein' : $oResult->member_count)
-                            . ' Mitglied' . (2 > $oResult->member_count ? '' : 'er' )
-                            . ' in dieser Gruppe befind' . (2 > $oResult->member_count ? 'et' : 'en') . '.<br>'
-                            . 'Bitte entfernen Sie dies' . (2 > $oResult->member_count ? 'es' : 'e')
-                            . ' Gruppenmitglied'  . (2 > $oResult->member_count ? '' : 'er')
-                            . ' oder weisen Sie ' . (2 > $oResult->member_count ? 'es' : 'sie')
-                            . ' einer anderen Gruppe zu, bevor Sie die Gruppe löschen!';
+            . (2 > $oResult->member_count ? 'ein' : $oResult->member_count)
+            . ' Mitglied' . (2 > $oResult->member_count ? '' : 'er')
+            . ' in dieser Gruppe befind' . (2 > $oResult->member_count ? 'et' : 'en') . '.<br>'
+            . 'Bitte entfernen Sie dies' . (2 > $oResult->member_count ? 'es' : 'e')
+            . ' Gruppenmitglied' . (2 > $oResult->member_count ? '' : 'er')
+            . ' oder weisen Sie ' . (2 > $oResult->member_count ? 'es' : 'sie')
+            . ' einer anderen Gruppe zu, bevor Sie die Gruppe löschen!';
 
         return 'group_redirect';
     }
@@ -684,7 +679,7 @@ function benutzerverwaltungActionQuickChangeLanguage(Smarty\JTLSmarty $smarty, a
 }
 
 /**
- * @param string $cTab
+ * @param string     $cTab
  * @param array|null $messages
  */
 function benutzerverwaltungRedirect($cTab = '', array &$messages = null)
@@ -712,9 +707,10 @@ function benutzerverwaltungRedirect($cTab = '', array &$messages = null)
 }
 
 /**
- * @param string           $step
- * @param Smarty\JTLSmarty $smarty
- * @param array            $messages
+ * @param                   $step
+ * @param \Smarty\JTLSmarty $smarty
+ * @param array             $messages
+ * @throws SmartyException
  */
 function benutzerverwaltungFinalize($step, Smarty\JTLSmarty $smarty, array &$messages)
 {

@@ -29,7 +29,6 @@ if (auth()) {
                 case 'del_konfig.xml':
                     bearbeiteDeletes($oXml);
                     break;
-
             }
             removeTemporaryFiles($xmlFile);
         }

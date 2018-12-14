@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\RequestHelper;
+
 require_once __DIR__ . '/includes/globalinclude.php';
 
 $Einstellungen = Shop::getSettings([CONF_GLOBAL]);

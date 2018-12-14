@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\ObjectHelper;
+use Helpers\UrlHelper;
+
 /**
  * Class AdminFavorite
  */

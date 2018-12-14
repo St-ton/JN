@@ -133,7 +133,7 @@ class MediaImage implements IMedia
                         ++$result->generated[$size];
                         if ($filesize === true) {
                             $result->generatedSize[$size] = filesize($thumb);
-                            $result->totalSize += $result->generatedSize[$size];
+                            $result->totalSize           += $result->generatedSize[$size];
                         }
                     }
                 }

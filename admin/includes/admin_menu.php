@@ -379,6 +379,7 @@ $adminMenu = [
                 'link' => 'livesuche.php',
                 'rights' => 'MODULE_LIVESEARCH_VIEW',
             ],
+            __('JTL Search') => 'DYNAMIC_JTL_SEARCH',
         ],
     ],
     __('Plugins') => [

@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\UrlHelper;
+
 /**
  * @param int $kTag
  * @param int $kSprache
@@ -38,23 +40,24 @@ function holeTagDetail(int $kTag, int $kSprache, $cLimit)
         $kSprache = $_SESSION['kSprache'];
     }
     if ($kTag > 0 && $kSprache > 0) {
-        $oTagArtikel_arr = Shop::Container()->getDB()->query(
+        $oTagArtikel_arr = Shop::Container()->getDB()->queryPrepared(
             "SELECT ttagartikel.kTag, ttag.cName, tartikel.cName AS acName, 
                 tartikel.kArtikel AS kArtikel, tseo.cSeo
                 FROM ttagartikel
                 JOIN ttag 
                     ON ttag.kTag = ttagartikel.kTag
-                    AND ttag.kSprache = " . $kSprache . "
+                    AND ttag.kSprache = :lid
                 JOIN tartikel 
                         ON tartikel.kArtikel = ttagartikel.kArtikel
                 LEFT JOIN tseo 
                     ON tseo.cKey = 'kArtikel'
                     AND tseo.kKey = tartikel.kArtikel
-                    AND tseo.kSprache = " . $kSprache . "
-                WHERE ttagartikel.kTag = " . $kTag . "
-                    AND ttag.kSprache = " . $kSprache . "
+                    AND tseo.kSprache = :lid
+                WHERE ttagartikel.kTag = :tid
+                    AND ttag.kSprache = :lid
                 GROUP BY tartikel.kArtikel
                 ORDER BY tartikel.cName" . $cLimit,
+            ['lid' => $kSprache, 'tid' => $kTag],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oTagArtikel_arr as $i => $oTagArtikel) {

@@ -16,10 +16,10 @@ class PluginValidation
 {
     /**
      * @param int     $code
-     * @param \Plugin\Plugin|\stdClass|null $plugin
+     * @param string|null $plugin
      * @return string
      */
-    public function map($code, $plugin): string
+    public function map($code, $pluginID): string
     {
         if ($code === 0) {
             return '';
@@ -412,7 +412,7 @@ class PluginValidation
                 $return .= 'Bootstrap-Klasse "%cPluginID%\\Bootstrap" existiert nicht';
                 break;
             case InstallCode::INVALID_BOOTSTRAP_IMPLEMENTATION:
-                $return .= 'Bootstrap-Klasse "%cPluginID%\\Bootstrap" muss das Interface "IPlugin" implementieren';
+                $return .= 'Bootstrap-Klasse "%cPluginID%\\Bootstrap" muss das PlugInterface implementieren';
                 break;
             case InstallCode::INVALID_AUTHOR:
                 $return .= 'Autor entspricht nicht der Konvention.';
@@ -444,11 +444,14 @@ class PluginValidation
             case InstallCode::INVALID_BLUEPRINT_FILE:
                 $return = 'Fehler: Die Datei für das Blueprint existiert nicht';
                 break;
+            case InstallCode::EXT_MUST_NOT_HAVE_UNINSTALLER:
+                $return = 'Fehler: Extension darf keinen Uninstaller definieren';
+                break;
             default:
                 $return = 'Unbekannter Fehler.';
                 break;
         }
 
-        return \str_replace('%cPluginID%', $plugin->cPluginID ?? '', $return);
+        return \str_replace('%cPluginID%', $pluginID ?? '', $return);
     }
 }

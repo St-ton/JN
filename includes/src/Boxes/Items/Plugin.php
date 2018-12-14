@@ -8,7 +8,7 @@ namespace Boxes\Items;
 
 /**
  * Class Plugin
- * @package Boxes
+ * @package Boxes\Items
  */
 class Plugin extends AbstractBox
 {

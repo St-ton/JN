@@ -4,6 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\ArtikelHelper;
+use Helpers\RequestHelper;
+use Helpers\TaxHelper;
+use Helpers\VersandartHelper;
+use Helpers\WarenkorbHelper;
+
 /**
  * Class Warenkorb
  */
@@ -97,7 +103,10 @@ class Warenkorb
                 continue;
             }
 
-            if (!empty($pos->Artikel) && (!$onlyStockRelevant || ($pos->Artikel->cLagerBeachten === 'Y' && $pos->Artikel->cLagerKleinerNull !== 'Y'))) {
+            if (!empty($pos->Artikel)
+                && (!$onlyStockRelevant
+                    || ($pos->Artikel->cLagerBeachten === 'Y' && $pos->Artikel->cLagerKleinerNull !== 'Y'))
+            ) {
                 $depProducts = $pos->Artikel->getAllDependentProducts($onlyStockRelevant);
 
                 foreach ($depProducts as $productID => $item) {
@@ -259,7 +268,7 @@ class Warenkorb
             if (!$neuePos && !$cUnique) {
                 //erhoehe Anzahl dieser Position
                 $this->PositionenArr[$i]->nZeitLetzteAenderung = time();
-                $this->PositionenArr[$i]->nAnzahl              += $anzahl;
+                $this->PositionenArr[$i]->nAnzahl             += $anzahl;
                 if ($setzePositionsPreise === true) {
                     $this->setzePositionsPreise();
                 }
@@ -297,11 +306,13 @@ class Warenkorb
         $pos->cName               = [];
         $pos->cLieferstatus       = [];
 
+        $db = Shop::Container()->getDB();
+
         foreach (\Session\Session::getLanguages() as $lang) {
             $pos->cName[$lang->cISO]         = $pos->Artikel->cName;
             $pos->cLieferstatus[$lang->cISO] = $cLieferstatus_StdSprache;
             if ($lang->cStandard === 'Y') {
-                $localized = Shop::Container()->getDB()->select(
+                $localized = $db->select(
                     'tartikel',
                     'kArtikel',
                     (int)$pos->kArtikel,
@@ -313,7 +324,7 @@ class Warenkorb
                     'cName'
                 );
             } else {
-                $localized = Shop::Container()->getDB()->select(
+                $localized = $db->select(
                     'tartikelsprache',
                     'kArtikel',
                     (int)$pos->kArtikel,
@@ -329,7 +340,7 @@ class Warenkorb
             $pos->cName[$lang->cISO] = (isset($localized->cName) && strlen(trim($localized->cName)) > 0)
                 ? $localized->cName
                 : $pos->Artikel->cName;
-            $lieferstatus_spr                    = Shop::Container()->getDB()->select(
+            $lieferstatus_spr        = $db->select(
                 'tlieferstatus',
                 'kLieferstatus',
                 (int)($pos->Artikel->kLieferstatus ?? 0),
@@ -611,7 +622,7 @@ class Warenkorb
         }
         $pos->nPosTyp  = $typ;
         $pos->cHinweis = $hinweis;
-        $nOffset                = array_push($this->PositionenArr, $pos);
+        $nOffset       = array_push($this->PositionenArr, $pos);
         $pos           = $this->PositionenArr[$nOffset - 1];
         foreach (Session::getCurrencies() as $currency) {
             $currencyName = $currency->getName();
@@ -665,7 +676,7 @@ class Warenkorb
                 if ($nVaterPos !== null) {
                     $parent = $this->PositionenArr[$nVaterPos];
                     if (is_object($parent)) {
-                        $pos->nAnzahlEinzel                        = $pos->nAnzahl / $parent->nAnzahl;
+                        $pos->nAnzahlEinzel                              = $pos->nAnzahl / $parent->nAnzahl;
                         $parent->cKonfigpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
                             $fPreisBrutto,
                             $currency
@@ -715,7 +726,7 @@ class Warenkorb
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if ($cnt->anz > 0) {
-                $min                = pow(2, $cnt->anz);
+                $min                = 2 ** $cnt->anz;
                 $min                = min([$min, 1440]);
                 $bestellungMoeglich = Shop::Container()->getDB()->executeQueryPrepared(
                     'SELECT dErstellt+INTERVAL ' . $min . ' MINUTE < NOW() AS moeglich
@@ -1054,7 +1065,7 @@ class Warenkorb
                 $_SESSION['Kunde']->fGuthaben,
                 \Session\Session::getCart()->gibGesamtsummeWaren(true, false)
             );
-            $gesamtsumme -= $_SESSION['Bestellung']->fGuthabenGenutzt * $conversionFactor;
+            $gesamtsumme                             -= $_SESSION['Bestellung']->fGuthabenGenutzt * $conversionFactor;
         }
         // Lokalisierung aufheben
         $gesamtsumme /= $conversionFactor;
@@ -1225,7 +1236,7 @@ class Warenkorb
                     $steuerpos[$idx]->fBetrag         = ($position->fPreis * $position->nAnzahl * $ust) / 100.0;
                     $steuerpos[$idx]->cPreisLocalized = Preise::getLocalizedPriceString($steuerpos[$idx]->fBetrag);
                 } else {
-                    $steuerpos[$idx]->fBetrag         += ($position->fPreis * $position->nAnzahl * $ust) / 100.0;
+                    $steuerpos[$idx]->fBetrag        += ($position->fPreis * $position->nAnzahl * $ust) / 100.0;
                     $steuerpos[$idx]->cPreisLocalized = Preise::getLocalizedPriceString($steuerpos[$idx]->fBetrag);
                 }
             }
@@ -1312,8 +1323,11 @@ class Warenkorb
                 foreach ($depStock as $productStock) {
                     $productID = (int)$productStock->kArtikel;
 
-                    if ($depProducts[$productID]->product->fPackeinheit * $depAmount[$productID] > $productStock->fLagerbestand) {
-                        $newAmount = floor(($productStock->fLagerbestand - (isset($reservedStock[$productID]) ? $reservedStock[$productID] : 0))
+                    if ($depProducts[$productID]->product->fPackeinheit * $depAmount[$productID]
+                        > $productStock->fLagerbestand
+                    ) {
+                        $newAmount = floor(($productStock->fLagerbestand
+                                - ($reservedStock[$productID] ?? 0))
                             / $depProducts[$productID]->product->fPackeinheit
                             / $depProducts[$productID]->stockFactor);
 
@@ -1323,8 +1337,9 @@ class Warenkorb
                             unset($this->PositionenArr[$i]);
                         }
 
-                        $reservedStock[$productID] = (isset($reservedStock[$productID]) ? $reservedStock[$productID] : 0)
-                            + $newAmount * $depProducts[$productID]->product->fPackeinheit * $depProducts[$productID]->stockFactor;
+                        $reservedStock[$productID] = ($reservedStock[$productID] ?? 0)
+                            + $newAmount
+                            * $depProducts[$productID]->product->fPackeinheit * $depProducts[$productID]->stockFactor;
 
                         $depAmount = $this->getAllDependentAmount(true);
                         $bRedirect = true;
@@ -1725,9 +1740,9 @@ class Warenkorb
         $shippingClasses = [];
 
         foreach ($this->PositionenArr as $Position) {
-            $totalWeight       += $Position->fGesamtgewicht;
+            $totalWeight      += $Position->fGesamtgewicht;
             $shippingClasses[] = $Position->kVersandklasse;
-            $maxPrices         += $Position->Artikel->Preise->fVKNetto ?? 0;
+            $maxPrices        += $Position->Artikel->Preise->fVKNetto ?? 0;
         }
 
         // cheapest shipping except shippings that offer cash payment

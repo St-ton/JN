@@ -8,9 +8,9 @@ namespace Filter\States;
 
 use DB\ReturnType;
 use Filter\AbstractFilter;
-use Filter\Join;
 use Filter\FilterInterface;
 use Filter\Items\Category;
+use Filter\Join;
 use Filter\ProductFilter;
 
 /**
@@ -19,7 +19,7 @@ use Filter\ProductFilter;
  */
 class BaseCategory extends AbstractFilter
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array

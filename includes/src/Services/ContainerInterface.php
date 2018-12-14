@@ -8,6 +8,7 @@ namespace Services;
 
 /**
  * Interface ContainerInterface
+ * @package Services
  */
 interface ContainerInterface extends \Psr\Container\ContainerInterface
 {

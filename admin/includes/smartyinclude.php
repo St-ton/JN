@@ -69,7 +69,7 @@ foreach ($adminMenu as $rootName => $rootEntry) {
                         ON p.kPlugin = pam.kPlugin
                     WHERE p.nStatus = :state
                     ORDER BY p.nPrio, p.cName',
-                ['state' => \Plugin\Plugin::PLUGIN_ACTIVATED],
+                ['state' => \Plugin\State::ACTIVATED],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 

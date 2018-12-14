@@ -101,7 +101,7 @@ class GetText
      */
     public function addLocale(string $dir, string $domain): self
     {
-        $path = $dir . 'locale/' . $this->langIso . '/' . $domain . 'mo';
+        $path = $dir . 'locale/' . $this->langIso . '/' . $domain . '.mo';
 
         if (array_key_exists($path, $this->loadedPoFiles)) {
             return $this;

@@ -672,7 +672,7 @@ function benutzerverwaltungActionGroupDelete(array &$messages)
  */
 function benutzerverwaltungActionQuickChangeLanguage(Smarty\JTLSmarty $smarty, array &$messages)
 {
-    $kSprache = RequestHelper::verifyGPCDataInt('kSprache');
+    $kSprache = Request::verifyGPCDataInt('kSprache');
     changeAdminUserLanguage($kSprache);
 
     header('Location: ' . $_SERVER['HTTP_REFERER']);

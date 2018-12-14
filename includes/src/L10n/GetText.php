@@ -88,7 +88,7 @@ class GetText
      */
     public function addLocale(string $dir, string $domain): self
     {
-        $path = $dir . 'locale/' . $this->langIso . '/' . $domain . 'mo';
+        $path = $dir . 'locale/' . $this->langIso . '/' . $domain . '.mo';
 
         if (\file_exists($path)) {
             $translations = Translations::fromMoFile($path);

@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use DB\ReturnType;
+
 /**
  * Class Overlay
  */
@@ -157,22 +159,23 @@ class Overlay
      */
     private function getDataForLanguage(int $language)
     {
-        return Shop::Container()->getDB()->queryPrepared("
+        return Shop::Container()->getDB()->queryPrepared('
             SELECT ssos.*, sso.cSuchspecial
               FROM tsuchspecialoverlaysprache ssos
               LEFT JOIN tsuchspecialoverlay sso
                 ON ssos.kSuchspecialOverlay = sso.kSuchspecialOverlay
               WHERE ssos.kSprache = :languageID
                 AND ssos.kSuchspecialOverlay = :overlayID
-                AND ssos.cTemplate IN (:templateName, 'default')
-              ORDER BY FIELD(ssos.cTemplate, :templateName, 'default')
-              LIMIT 1",
+                AND ssos.cTemplate IN (:templateName, :defaultTemplate)
+              ORDER BY FIELD(ssos.cTemplate, :templateName, :defaultTemplate)
+              LIMIT 1',
             [
-                'languageID'   => $language,
-                'overlayID'    => $this->getType(),
-                'templateName' => $this->getTemplateName()
+                'languageID'      => $language,
+                'overlayID'       => $this->getType(),
+                'templateName'    => $this->getTemplateName(),
+                'defaultTemplate' => self::DEFAULT_TEMPLATE
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
     }
 
@@ -181,7 +184,7 @@ class Overlay
      */
     private function setFallbackPath($overlay): void
     {
-        if ($overlay->cTemplate === 'default'
+        if ($overlay->cTemplate === self::DEFAULT_TEMPLATE
             || !\file_exists(PFAD_ROOT . $this->getPathSize('normal') . $this->getImageName())
         ) {
             $defaultImageName                = self::IMAGE_DEFAULT['name'] . '_' . $this->getLanguage() . '_'
@@ -196,7 +199,7 @@ class Overlay
             } else {
                 $overlayDefaultLanguage = $this->getDataForLanguage(Sprache::getDefaultLanguage()->kSprache);
                 if (!empty($overlayDefaultLanguage)) {
-                    if ($overlayDefaultLanguage->cTemplate !== 'default'
+                    if ($overlayDefaultLanguage->cTemplate !== self::DEFAULT_TEMPLATE
                         && \file_exists(PFAD_ROOT . $this->getPathSize('normal') . $overlayDefaultLanguage->cBildPfad)
                     ) {
                         //fallback path for default language
@@ -245,7 +248,7 @@ class Overlay
                 'overlayID'    => $this->getType(),
                 'templateName' => $this->getTemplateName()
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
         if ($check) {
             $db->update(

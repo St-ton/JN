@@ -87,7 +87,7 @@ class Overlay
     private $urlSizes;
 
     public const IMAGENAME_TEMPLATE = 'overlay';
-    public const IMAGE_DEFAULT = [
+    public const IMAGE_DEFAULT      = [
         'name'      => 'std_kSuchspecialOverlay',
         'extension' => '.png'
     ];

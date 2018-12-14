@@ -22,7 +22,7 @@
  */
 class Migration_20181211120813 extends Migration implements IMigration
 {
-    protected $author = 'mh';
+    protected $author      = 'mh';
     protected $description = 'make overlays template specific';
 
     public function up()

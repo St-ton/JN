@@ -29,7 +29,7 @@ class SearchSpecial
         $langID  = $langID > 0 ? $langID : Shop::getLanguageID();
         $cacheID = 'haso_' . $langID;
         if (($overlays = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $overlays = [];
+            $overlays                  = [];
             $searchspecialOverlayTypes = Shop::Container()->getDB()->query('
                 SELECT kSuchspecialOverlay
                     FROM tsuchspecialoverlay',

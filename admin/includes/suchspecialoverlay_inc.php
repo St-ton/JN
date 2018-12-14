@@ -9,7 +9,7 @@
  */
 function gibAlleSuchspecialOverlays()
 {
-    $overlays = [];
+    $overlays                  = [];
     $searchspecialOverlayTypes = Shop::Container()->getDB()->query('
         SELECT kSuchspecialOverlay
             FROM tsuchspecialoverlay',

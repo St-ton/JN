@@ -8,6 +8,7 @@ namespace Plugin\Admin;
 
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
+use DB\ReturnType;
 use JTL\XMLParser;
 use Mapper\PluginValidation;
 use Plugin\AbstractExtension;
@@ -80,10 +81,20 @@ final class Listing
      */
     public function getInstalled(): Collection
     {
-        $plugins         = new Collection();
-        $mapper          = new PluginValidation();
+        $plugins = new Collection();
+        $mapper  = new PluginValidation();
+        try {
+            $all = $this->db->selectAll('tplugin', [], [], 'kPlugin, bExtension', 'cName, cAutor, nPrio');
+        } catch (\InvalidArgumentException $e) {
+            $all = \Shop::Container()->getDB()->query(
+                'SELECT kPlugin, 0 AS bExtension
+                    FROM tplugin
+                    ORDER BY cName, cAutor, nPrio',
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+        }
         $pluginIDs       = map(
-            $this->db->selectAll('tplugin', [], [], 'kPlugin, bExtension', 'cName, cAutor, nPrio'),
+            $all,
             function (\stdClass $e) {
                 $e->kPlugin    = (int)$e->kPlugin;
                 $e->bExtension = (int)$e->bExtension;

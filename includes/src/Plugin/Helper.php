@@ -152,14 +152,24 @@ class Helper
         }
 
         $templatePaths = [];
-        $plugins       = \Shop::Container()->getDB()->selectAll(
-            'tplugin',
-            'nStatus',
-            State::ACTIVATED,
-            'cPluginID, cVerzeichnis, nVersion, bExtension',
-            'nPrio'
-        );
-
+        try {
+            $plugins = \Shop::Container()->getDB()->selectAll(
+                'tplugin',
+                'nStatus',
+                State::ACTIVATED,
+                'cPluginID, cVerzeichnis, nVersion, bExtension',
+                'nPrio'
+            );
+        } catch (\InvalidArgumentException $e) {
+            $plugins = \Shop::Container()->getDB()->queryPrepared(
+                'SELECT cPluginID, cVerzeichnis, nVersion, 0 AS bExtension
+                    FROM tplugin
+                    WHERE nStatus = :stt
+                    ORDER BY nPrio',
+                ['stt' => State::ACTIVATED],
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+        }
         foreach ($plugins as $plugin) {
             $path = (int)$plugin->bExtension === 1
                 ? \PFAD_ROOT . \PFAD_EXTENSIONS . $plugin->cVerzeichnis . '/' .

@@ -26,3 +26,4 @@ class_alias(\Helpers\Category::class, 'KategorieHelper', true);
 class_alias(\Helpers\Template::class, 'TemplateHelper', true);
 class_alias(\Helpers\Product::class, 'ArtikelHelper', true);
 class_alias(\Helpers\URL::class, 'UrlHelper', true);
+class_alias(\Helpers\Manufacturer::class, 'HerstellerHelper', true);

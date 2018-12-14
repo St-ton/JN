@@ -84,6 +84,20 @@ class Overlay
      */
     private $urlSizes;
 
+    public const IMAGENAME_TEMPLATE = 'overlay';
+    public const IMAGE_DEFAULT = [
+        'name'      => 'std_kSuchspecialOverlay',
+        'extension' => '.png'
+    ];
+
+    public const DEFAULT_TEMPLATE = 'default';
+
+    /**
+     * Overlay constructor.
+     * @param int $type
+     * @param int $language
+     * @param string|null $template
+     */
     public function __construct(int $type, int $language, string $template = null)
     {
         $this->setType($type)
@@ -97,35 +111,26 @@ class Overlay
      * @param int $type
      * @param int $language
      * @param string|null $template
+     * @param bool|null $setFallbackPath
      * @return Overlay
      */
-    public static function getInstance(int $type, int $language, string $template = null): self
+    public static function getInstance(int $type, int $language, string $template = null, bool $setFallbackPath = true): self
     {
-        return self::$instance ?? (new self($type, $language, $template))->loadFromDB();
+        return self::$instance ?? (new self($type, $language, $template))->loadFromDB($setFallbackPath);
     }
 
     /**
+     * @param bool $setFallbackPath
      * @return Overlay
      */
-    public function loadFromDB(): self
+    public function loadFromDB(bool $setFallbackPath): self
     {
-        $overlay = Shop::Container()->getDB()->queryPrepared("
-            SELECT ssos.*, sso.cSuchspecial
-              FROM tsuchspecialoverlaysprache ssos
-              LEFT JOIN tsuchspecialoverlay sso
-                ON ssos.kSuchspecialOverlay = sso.kSuchspecialOverlay
-              WHERE ssos.kSprache = :languageID
-                AND ssos.kSuchspecialOverlay = :overlayID
-                AND ssos.cTemplate IN (:templateName, 'default')
-              ORDER BY FIELD(ssos.cTemplate, :templateName, 'default')
-              LIMIT 1",
-            [
-                'languageID'   => $this->getLanguage(),
-                'overlayID'    => $this->getType(),
-                'templateName' => $this->getTemplateName()
-            ],
-            \DB\ReturnType::SINGLE_OBJECT
-        );
+        $overlay = $this->getDataForLanguage($this->getLanguage());
+
+        //get overlay data for fallback language
+        if (empty($overlay)) {
+            $overlay = $this->getDataForLanguage(Sprache::getDefaultLanguage()->kSprache);
+        }
 
         if (!empty($overlay)) {
             $this->setActive($overlay->nAktiv)
@@ -137,14 +142,81 @@ class Overlay
                  ->setImageName($overlay->cBildPfad)
                  ->setName($overlay->cSuchspecial);
 
-            if ($overlay->cTemplate === 'default') {
-                $this->setPath(PFAD_SUCHSPECIALOVERLAY)
-                     ->setPathSizes();
+            if ($setFallbackPath) {
+                $this->setFallbackPath($overlay);
             }
             $this->setURLSizes();
         }
 
         return $this;
+    }
+
+    /**
+     * @param int $language
+     * @return array|int|object
+     */
+    private function getDataForLanguage(int $language)
+    {
+        return Shop::Container()->getDB()->queryPrepared("
+            SELECT ssos.*, sso.cSuchspecial
+              FROM tsuchspecialoverlaysprache ssos
+              LEFT JOIN tsuchspecialoverlay sso
+                ON ssos.kSuchspecialOverlay = sso.kSuchspecialOverlay
+              WHERE ssos.kSprache = :languageID
+                AND ssos.kSuchspecialOverlay = :overlayID
+                AND ssos.cTemplate IN (:templateName, 'default')
+              ORDER BY FIELD(ssos.cTemplate, :templateName, 'default')
+              LIMIT 1",
+            [
+                'languageID'   => $language,
+                'overlayID'    => $this->getType(),
+                'templateName' => $this->getTemplateName()
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
+        );
+    }
+
+    /**
+     * @param $overlay
+     */
+    private function setFallbackPath($overlay): void
+    {
+        if ($overlay->cTemplate === 'default'
+            || !\file_exists(PFAD_ROOT . $this->getPathSize('normal') . $this->getImageName())
+        ) {
+            $defaultImageName                = self::IMAGE_DEFAULT['name'] . '_' . $this->getLanguage() . '_'
+                . $this->getType() . self::IMAGE_DEFAULT['extension'];
+            $defaultImageNameDefaultLanguage = self::IMAGE_DEFAULT['name'] . '_' . Sprache::getDefaultLanguage()->kSprache
+                . '_' . $this->getType() . self::IMAGE_DEFAULT['extension'];
+
+            if (\file_exists(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_NORMAL . $defaultImageName)) {
+                //default fallback path
+                $fallbackImageName = $defaultImageName;
+                $fallbackImagePath = PFAD_SUCHSPECIALOVERLAY;
+            } else {
+                $overlayDefaultLanguage = $this->getDataForLanguage(Sprache::getDefaultLanguage()->kSprache);
+                if (!empty($overlayDefaultLanguage)) {
+                    if ($overlayDefaultLanguage->cTemplate !== 'default'
+                        && \file_exists(PFAD_ROOT . $this->getPathSize('normal') . $overlayDefaultLanguage->cBildPfad)
+                    ) {
+                        //fallback path for default language
+                        $fallbackImageName = $overlayDefaultLanguage->cBildPfad;
+                    } elseif (\file_exists(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_NORMAL . $defaultImageNameDefaultLanguage)) {
+                        //default fallback path for default language
+                        $fallbackImageName = $defaultImageNameDefaultLanguage;
+                        $fallbackImagePath = PFAD_SUCHSPECIALOVERLAY;
+                    }
+                }
+            }
+        }
+
+        if (isset($fallbackImagePath)) {
+            $this->setPath($fallbackImagePath)
+                 ->setPathSizes();
+        }
+        if (isset($fallbackImageName)) {
+            $this->setImageName($fallbackImageName);
+        }
     }
 
     /**

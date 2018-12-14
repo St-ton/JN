@@ -46,23 +46,19 @@ function speicherEinstellung(
     int $lang = null,
     string $template = null
 ): bool {
-    $overlay = new Overlay($kSuchspecialOverlay, $lang ?? (int)$_SESSION['kSprache'], $template);
-
-    $overlay->setActive((int)$cPost_arr['nAktiv'])
-            ->setTransparence((int)$cPost_arr['nTransparenz'])
-            ->setSize((int)$cPost_arr['nGroesse'])
-            ->setPosition(isset($cPost_arr['nPosition']) ? (int)$cPost_arr['nPosition']: 0)
-            ->setPriority((int)$cPost_arr['nPrio'])
-            ->setImageName('overlay_' . $overlay->getLanguage() . '_' . $overlay->getType()
-                . mappeFileTyp($cFiles_arr['type']));
-
-    if ($overlay->getPriority() === -1) {
-        return false;
-    }
+    $overlay = Overlay::getInstance($kSuchspecialOverlay, $lang ?? (int)$_SESSION['kSprache'], $template, false);
 
     if ($overlay->getType() > 0) {
+        $overlay->setActive((int)$cPost_arr['nAktiv'])
+                ->setTransparence((int)$cPost_arr['nTransparenz'])
+                ->setSize((int)$cPost_arr['nGroesse'])
+                ->setPosition(isset($cPost_arr['nPosition']) ? (int)$cPost_arr['nPosition'] : 0)
+                ->setPriority((int)$cPost_arr['nPrio']);
+
         if (strlen($cFiles_arr['name']) > 0) {
             loescheBild($overlay);
+            $overlay->setImageName(Overlay::IMAGENAME_TEMPLATE . '_' . $overlay->getLanguage() . '_' . $overlay->getType()
+                    . mappeFileTyp($cFiles_arr['type']));
             speicherBild($cFiles_arr, $overlay);
         }
         $overlay->save();
@@ -352,16 +348,11 @@ function speicherBild(array $cFiles_arr, Overlay $overlay): bool
  */
 function loescheBild(Overlay $overlay): void
 {
-    $path = PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY . 'kSuchspecialOverlay_' .
-        $overlay->getLanguage() . '_' . $overlay->getType();
-    if (file_exists($path . '.jpg')) {
-        @unlink($path . '.jpg');
-    } elseif (file_exists($path . '.png')) {
-        @unlink($path . '.png');
-    } elseif (file_exists($path . '.gif')) {
-        @unlink($path . '.gif');
-    } elseif (file_exists($path . '.bmp')) {
-        @unlink($path . '.bmp');
+    foreach ($overlay->getPathSizes() as $path) {
+        $path = PFAD_ROOT . $path . $overlay->getImageName();
+        if (file_exists($path)) {
+            @unlink($path);
+        }
     }
 }
 

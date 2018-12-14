@@ -21,18 +21,18 @@ class OverlayHelper
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'suchspecialoverlay_inc.php';
 
         $dir = PFAD_ROOT . PFAD_TEMPLATES . $template . PFAD_OVERLAY_TEMPLATE . 'original';
-        if (!is_dir($dir)) {
+        if (!\is_dir($dir)) {
             return false;
         }
-        $overlayInFolder = scandir($dir, 1);
+        $overlayInFolder = \scandir($dir, 1);
         $db              = Shop::Container()->getDB();
 
         foreach ($overlayInFolder as $overlay) {
-            $overlayParts = explode('_', $overlay);
-            if (count($overlayParts) === 3 && $overlayParts[0] === 'overlay') {
+            $overlayParts = \explode('_', $overlay);
+            if (\count($overlayParts) === 3 && $overlayParts[0] === 'overlay') {
                 $filePath = $dir . '/' . $overlay;
                 $lang     = (int)$overlayParts[1];
-                $type     = (int)substr($overlayParts[2], 0, strpos($overlayParts[2], '.'));
+                $type     = (int)\substr($overlayParts[2], 0, \strpos($overlayParts[2], '.'));
                 if ($lang === 0 || $type === 0) {
                     continue;
                 }
@@ -57,7 +57,7 @@ class OverlayHelper
                         $type,
                         (array)$defaultOverlay,
                         [
-                            'type'     => mime_content_type($filePath),
+                            'type'     => \mime_content_type($filePath),
                             'tmp_name' => $filePath,
                             'name'     => $overlay
                         ],

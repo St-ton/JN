@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
@@ -15,7 +15,7 @@ $tab      = 'uebersicht';
 $cFehler  = '';
 $cHinweis = '';
 $sqlData  = null;
-if (isset($_POST['delete-run-submit']) && FormHelper::validateToken()) {
+if (isset($_POST['delete-run-submit']) && Form::validateToken()) {
     if (isset($_POST['run-id']) && is_numeric($_POST['run-id'])) {
         $res = deleteProfileRun(false, (int)$_POST['run-id']);
         if (is_numeric($res) && $res > 0) {

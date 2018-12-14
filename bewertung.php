@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_INCLUDES . 'bewertung_inc.php';
@@ -18,8 +18,8 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
         $cParameter_arr['kArtikel'],
         \Session\Session::getCustomer()->getID(),
         Shop::getLanguageID(),
-        RequestHelper::verifyGPDataString('cTitel'),
-        RequestHelper::verifyGPDataString('cText'),
+        Request::verifyGPDataString('cTitel'),
+        Request::verifyGPDataString('cText'),
         $cParameter_arr['nSterne']
     );
 } elseif (isset($_POST['bhjn']) && (int)$_POST['bhjn'] === 1) {
@@ -27,15 +27,15 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
         $cParameter_arr['kArtikel'],
         \Session\Session::getCustomer()->getID(),
         Shop::getLanguageID(),
-        RequestHelper::verifyGPCDataInt('btgseite'),
-        RequestHelper::verifyGPCDataInt('btgsterne')
+        Request::verifyGPCDataInt('btgseite'),
+        Request::verifyGPCDataInt('btgsterne')
     );
-} elseif (RequestHelper::verifyGPCDataInt('bfa') === 1) {
+} elseif (Request::verifyGPCDataInt('bfa') === 1) {
     if (\Session\Session::getCustomer()->getID() <= 0) {
         $helper = Shop::Container()->getLinkService();
         header(
             'Location: ' . $helper->getStaticRoute('jtl.php') .
-                '?a=' . RequestHelper::verifyGPCDataInt('a') .
+                '?a=' . Request::verifyGPCDataInt('a') .
                 '&bfa=1&r=' . R_LOGIN_BEWERTUNG,
             true,
             303

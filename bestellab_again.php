@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
@@ -45,7 +45,7 @@ $obj->tbestellung = $bestellung;
 Shop::Smarty()->assign('Bestellung', $bestellung);
 
 $oZahlungsInfo = new stdClass();
-if (RequestHelper::verifyGPCDataInt('zusatzschritt') === 1) {
+if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
     $bZusatzangabenDa = false;
     $moduleID         = $bestellung->Zahlungsart->cModulId;
     switch ($moduleID) {
@@ -138,7 +138,7 @@ if ($kPlugin > 0) {
     $paymentMethod->cModulId = $moduleID;
     $paymentMethod->preparePaymentProcess($bestellung);
 }
-$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
+$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 

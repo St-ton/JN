@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 /**
  * @param int $kAdminlogin
@@ -713,7 +713,7 @@ function benutzerverwaltungFinalize($step, Smarty\JTLSmarty $smarty, array &$mes
     $smarty->assign('hinweis', $messages['notice'])
            ->assign('fehler', $messages['error'])
            ->assign('action', $step)
-           ->assign('cTab', StringHandler::filterXSS(RequestHelper::verifyGPDataString('tab')))
+           ->assign('cTab', StringHandler::filterXSS(Request::verifyGPDataString('tab')))
            ->display('benutzer.tpl');
 }
 

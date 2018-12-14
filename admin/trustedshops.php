@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
-use Helpers\PHPSettingsHelper;
+use Helpers\Form;
+use Helpers\PHPSettings;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -25,7 +25,7 @@ $Einstellungen = Shop::getSettings([CONF_TRUSTEDSHOPS]);
 
 if (isset($_POST['kaeuferschutzeinstellungen'])
     && (int)$_POST['kaeuferschutzeinstellungen'] === 1
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     // Lpesche das Zertifikat
     if (isset($_POST['delZertifikat'])) {
@@ -129,7 +129,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
     }
 } elseif (isset($_POST['kaeuferschutzupdate'])
     && (int)$_POST['kaeuferschutzupdate'] === 1
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     // Kaeuferprodukte updaten
     $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
@@ -143,7 +143,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
     }
 } elseif (isset($_POST['kundenbewertungeinstellungen'])
     && (int)$_POST['kundenbewertungeinstellungen'] === 1
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     // Kundenbewertung Einstellungen
     $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
@@ -408,9 +408,9 @@ if ($step === 'uebersicht') {
 }
 $smarty->assign('TS_BUYERPROT_CLASSIC', TS_BUYERPROT_CLASSIC)
        ->assign('TS_BUYERPROT_EXCELLENCE', TS_BUYERPROT_EXCELLENCE)
-       ->assign('bAllowfopen', PHPSettingsHelper::checkAllowFopen())
-       ->assign('bSOAP', PHPSettingsHelper::checkSOAP())
-       ->assign('bCURL', PHPSettingsHelper::checkCURL())
+       ->assign('bAllowfopen', PHPSettings::checkAllowFopen())
+       ->assign('bSOAP', PHPSettings::checkSOAP())
+       ->assign('bCURL', PHPSettings::checkCURL())
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)

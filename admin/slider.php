@@ -5,7 +5,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . 'toolsajax.server.php';
@@ -16,7 +16,7 @@ $cFehler     = '';
 $cHinweis    = '';
 $_kSlider    = 0;
 $redirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'slider.php';
-$action      = isset($_REQUEST['action']) && FormHelper::validateToken()
+$action      = isset($_REQUEST['action']) && Form::validateToken()
     ? $_REQUEST['action']
     : 'view';
 $kSlider     = isset($_REQUEST['id'])
@@ -48,7 +48,7 @@ switch ($action) {
         break;
     default:
         $smarty->assign('disabled', '');
-        if (!empty($_POST) && FormHelper::validateToken()) {
+        if (!empty($_POST) && Form::validateToken()) {
             $slider   = new Slider();
             $_kSlider = (int)$_POST['kSlider'];
             $slider->load($kSlider, false);

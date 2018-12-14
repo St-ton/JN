@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Form;
+use Helpers\Request;
 use Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -15,8 +15,8 @@ $oAccount->permission('MODULE_COMPARELIST_VIEW', true, true);
 $cHinweis = '';
 $cFehler  = '';
 $cSetting = '(469, 470)';
-if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
+if (strlen(Request::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 if (!isset($_SESSION['Vergleichsliste'])) {
     $_SESSION['Vergleichsliste'] = new stdClass();
@@ -32,7 +32,7 @@ if (isset($_POST['zeitfilter']) && (int)$_POST['zeitfilter'] === 1) {
         : 0;
 }
 
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form::validateToken()) {
     $oConfig_arr = Shop::Container()->getDB()->query(
         'SELECT *
             FROM teinstellungenconf

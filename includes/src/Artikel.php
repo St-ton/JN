@@ -4,12 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\ArtikelHelper;
-use Helpers\RequestHelper;
-use Helpers\SearchSpecialHelper;
-use Helpers\TaxHelper;
-use Helpers\UrlHelper;
-use Helpers\VersandartHelper;
+use Helpers\Product;
+use Helpers\Request;
+use Helpers\SearchSpecial;
+use Helpers\Tax;
+use Helpers\URL;
+use Helpers\ShippingMethod;
 
 /**
  * Class Artikel
@@ -1173,11 +1173,11 @@ class Artikel
         // Ticket #1247
         $preis = $nettopreise
             ? round($preis, 4)
-            : TaxHelper::getGross(
+            : Tax::getGross(
                 $preis,
-                TaxHelper::getSalesTax($this->kSteuerklasse),
+                Tax::getSalesTax($this->kSteuerklasse),
                 4
-            ) / ((100 + TaxHelper::getSalesTax($this->kSteuerklasse)) / 100);
+            ) / ((100 + Tax::getSalesTax($this->kSteuerklasse)) / 100);
         // Falls es sich um eine Variationskombination handelt, spielen Variationsaufpreise keine Rolle,
         // da Vakombis Ihre Aufpreise direkt im Artikelpreis definieren.
         if ($this->nIstVater === 1 || $this->kVaterArtikel > 0) {
@@ -1218,11 +1218,11 @@ class Artikel
             // Ticket #1247
             $aufpreis = $nettopreise
                 ? round($aufpreis, 4)
-                : TaxHelper::getGross(
+                : Tax::getGross(
                     $aufpreis,
-                    TaxHelper::getSalesTax($this->kSteuerklasse),
+                    Tax::getSalesTax($this->kSteuerklasse),
                     4
-                ) / ((100 + TaxHelper::getSalesTax($this->kSteuerklasse)) / 100);
+                ) / ((100 + Tax::getSalesTax($this->kSteuerklasse)) / 100);
 
             $preis += $aufpreis;
         }
@@ -1629,7 +1629,7 @@ class Artikel
             $this->oProduktBundlePrice->fVKNetto           = $this->oProduktBundleMain->Preise->fVKNetto ?? 0;
             $this->oProduktBundlePrice->cPriceLocalized    = [];
             $this->oProduktBundlePrice->cPriceLocalized[0] = Preise::getLocalizedPriceString(
-                TaxHelper::getGross(
+                Tax::getGross(
                     $this->oProduktBundlePrice->fVKNetto,
                     $_SESSION['Steuersatz'][$this->oProduktBundleMain->kSteuerklasse] ?? null
                 ),
@@ -1642,7 +1642,7 @@ class Artikel
             );
             $this->oProduktBundlePrice->cPriceDiffLocalized    = [];
             $this->oProduktBundlePrice->cPriceDiffLocalized[0] = Preise::getLocalizedPriceString(
-                TaxHelper::getGross(
+                Tax::getGross(
                     $this->oProduktBundlePrice->fPriceDiff,
                     $_SESSION['Steuersatz'][$this->oProduktBundleMain->kSteuerklasse] ?? null
                 ),
@@ -2461,7 +2461,7 @@ class Artikel
             } elseif (isset($value->fVPEWert) && $value->fVPEWert > 0) {
                 $base                            = $value->fAufpreisNetto / $value->fVPEWert;
                 $value->cPreisVPEWertAufpreis[0] = Preise::getLocalizedPriceString(
-                    TaxHelper::getGross($base, $taxRate),
+                    Tax::getGross($base, $taxRate),
                     $currency,
                     true,
                     $nGenauigkeit
@@ -2477,7 +2477,7 @@ class Artikel
                 $base = ($value->fAufpreisNetto + $this->Preise->fVKNetto) / $value->fVPEWert;
 
                 $value->cPreisVPEWertInklAufpreis[0] = Preise::getLocalizedPriceString(
-                    TaxHelper::getGross($base, $taxRate),
+                    Tax::getGross($base, $taxRate),
                     $currency,
                     true,
                     $nGenauigkeit
@@ -2493,20 +2493,20 @@ class Artikel
             if (isset($value->fAufpreisNetto) && $value->fAufpreisNetto != 0) {
                 $surcharge                    = $value->fAufpreisNetto;
                 $value->cAufpreisLocalized[0] = Preise::getLocalizedPriceString(
-                    TaxHelper::getGross($surcharge, $taxRate, 4),
+                    Tax::getGross($surcharge, $taxRate, 4),
                     $currency
                 );
                 $value->cAufpreisLocalized[1] = Preise::getLocalizedPriceString($surcharge, $currency);
                 // Wenn der Artikel ein VarikombiKind ist, rechne nicht nochmal die Variationsaufpreise drauf
                 if ($this->kVaterArtikel > 0) {
                     $value->cPreisInklAufpreis[0] = Preise::getLocalizedPriceString(
-                        TaxHelper::getGross($this->Preise->fVKNetto, $taxRate),
+                        Tax::getGross($this->Preise->fVKNetto, $taxRate),
                         $currency
                     );
                     $value->cPreisInklAufpreis[1] = Preise::getLocalizedPriceString($this->Preise->fVKNetto, $currency);
                 } else {
                     $value->cPreisInklAufpreis[0] = Preise::getLocalizedPriceString(
-                        TaxHelper::getGross($surcharge + $this->Preise->fVKNetto, $taxRate),
+                        Tax::getGross($surcharge + $this->Preise->fVKNetto, $taxRate),
                         $currency
                     );
                     $value->cPreisInklAufpreis[1] = Preise::getLocalizedPriceString(
@@ -2524,7 +2524,7 @@ class Artikel
                 }
                 $surcharge = $value->fAufpreisNetto;
 
-                $value->fAufpreis[0] = TaxHelper::getGross($surcharge * $currencyFactor, $taxRate);
+                $value->fAufpreis[0] = Tax::getGross($surcharge * $currencyFactor, $taxRate);
                 $value->fAufpreis[1] = $surcharge * $currencyFactor;
 
                 if ($surcharge > 0) {
@@ -3029,7 +3029,7 @@ class Artikel
                         : 2;
 
                     $varCombChildren[$i]->Preise->cPreisVPEWertInklAufpreis[0] = Preise::getLocalizedPriceString(
-                        TaxHelper::getGross(
+                        Tax::getGross(
                             $varCombChildren[$i]->Preise->fVKNetto / $varCombChildren[$i]->fVPEWert,
                             $taxRate
                         ),
@@ -3277,8 +3277,8 @@ class Artikel
                 );
                 if (!in_array($rawForHash, $imageHashes, true)) {
                     $varKombiPreview                           = new stdClass();
-                    $varKombiPreview->cURL                     = UrlHelper::buildURL($preview, URLART_ARTIKEL);
-                    $varKombiPreview->cURLFull                 = UrlHelper::buildURL($preview, URLART_ARTIKEL, true);
+                    $varKombiPreview->cURL                     = URL::buildURL($preview, URLART_ARTIKEL);
+                    $varKombiPreview->cURLFull                 = URL::buildURL($preview, URLART_ARTIKEL, true);
                     $varKombiPreview->cName                    = $preview->cName;
                     $varKombiPreview->cLagerBeachten           = $preview->cLagerBeachten;
                     $varKombiPreview->cLagerKleinerNull        = $preview->cLagerKleinerNull;
@@ -3351,7 +3351,7 @@ class Artikel
             }
             $this->oVariationDetailPreisKind_arr[$vk->kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[0] =
                 Preise::getLocalizedPriceString(
-                    TaxHelper::getGross($this->Preise->fVKNetto / $this->fVPEWert, $taxRate),
+                    Tax::getGross($this->Preise->fVKNetto / $this->fVPEWert, $taxRate),
                     $currency,
                     true,
                     $precision
@@ -3466,7 +3466,7 @@ class Artikel
             ) {
                 $this->oVariationDetailPreis_arr[$idx]->Preise->PreisecPreisVPEWertInklAufpreis[0] =
                     Preise::getLocalizedPriceString(
-                        TaxHelper::getGross(
+                        Tax::getGross(
                             $oArtikelTMP->Preise->fVKNetto / $oArtikelTMP->fVPEWert,
                             $taxRate
                         ),
@@ -4141,8 +4141,8 @@ class Artikel
         $this->holPreise($kKundengruppe, $oArtikelTMP);
         //globale Einstellung
         $this->setzeSprache($kSprache);
-        $this->cURL     = UrlHelper::buildURL($this, URLART_ARTIKEL);
-        $this->cURLFull = UrlHelper::buildURL($this, URLART_ARTIKEL, true);
+        $this->cURL     = URL::buildURL($this, URLART_ARTIKEL);
+        $this->cURLFull = URL::buildURL($this, URLART_ARTIKEL, true);
         if ($this->getOption('nArtikelAttribute', 0) === 1) {
             $this->holArtikelAttribute();
         }
@@ -4256,7 +4256,7 @@ class Artikel
 
             $this->cHersteller         = $oArtikelTMP->cName_thersteller;
             $this->cHerstellerSeo      = $oHersteller->cSeo;
-            $this->cHerstellerURL      = UrlHelper::buildURL($oHersteller, URLART_HERSTELLER);
+            $this->cHerstellerURL      = URL::buildURL($oHersteller, URLART_HERSTELLER);
             $this->cHerstellerHomepage = $oArtikelTMP->cHomepage;
             if (filter_var($this->cHerstellerHomepage, FILTER_VALIDATE_URL) === false) {
                 $this->cHerstellerHomepage = 'http://' . $oArtikelTMP->cHomepage;
@@ -4442,7 +4442,7 @@ class Artikel
     public function baueSuchspecialBildoverlay(int $kSprache = 0): self
     {
         $languageID        = $kSprache > 0 ? $kSprache : Shop::getLanguageID();
-        $searchSpecial_arr = SearchSpecialHelper::getAll($languageID);
+        $searchSpecial_arr = SearchSpecial::getAll($languageID);
         // Suchspecialbildoverlay
         // Kleinste Prio und somit die Wichtigste, steht immer im Element 0 vom Array (nPrio ASC)
         if (!empty($searchSpecial_arr) && is_array($searchSpecial_arr) && count($searchSpecial_arr) > 0) {
@@ -4752,7 +4752,7 @@ class Artikel
         $fPreis        = ($fPreisStaffel > 0) ? $fPreisStaffel : $this->Preise->fVKNetto;
         $currency      = \Session\Session::getCurrency();
         $per           = ' ' . Shop::Lang()->get('vpePer') . ' ' . $basepriceUnit;
-        $ust           = TaxHelper::getSalesTax($this->kSteuerklasse);
+        $ust           = Tax::getSalesTax($this->kSteuerklasse);
 
         if (Shop::getPageType() === PAGE_ARTIKELLISTE
             && $this->Preise->oPriceRange !== null
@@ -4762,7 +4762,7 @@ class Artikel
                 $this->conf['artikeluebersicht']['articleoverview_pricerange_width']
             ) {
                 $this->cLocalizedVPE[0] = Preise::getLocalizedPriceString(
-                    TaxHelper::getGross(
+                    Tax::getGross(
                         $this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert,
                         $ust,
                         $precision
@@ -4772,7 +4772,7 @@ class Artikel
                     $precision
                 ) . ' - '
                 . Preise::getLocalizedPriceString(
-                    TaxHelper::getGross(
+                    Tax::getGross(
                         $this->Preise->oPriceRange->maxNettoPrice / $this->fVPEWert,
                         $ust,
                         $precision
@@ -4796,7 +4796,7 @@ class Artikel
             } else {
                 $this->cLocalizedVPE[0] = Shop::Lang()->get('priceStarting') . ' ' .
                     Preise::getLocalizedPriceString(
-                        TaxHelper::getGross(
+                        Tax::getGross(
                             $this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert,
                             $ust,
                             $precision
@@ -4815,7 +4815,7 @@ class Artikel
             }
         } else {
             $this->cLocalizedVPE[0] = Preise::getLocalizedPriceString(
-                TaxHelper::getGross($fPreis / $this->fVPEWert, $ust, $precision),
+                Tax::getGross($fPreis / $this->fVPEWert, $ust, $precision),
                 $currency,
                 true,
                 $precision
@@ -4859,12 +4859,12 @@ class Artikel
             ? (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
             : 2;
         $per           = ' ' . Shop::Lang()->get('vpePer') . ' ';
-        $basePriceUnit = ArtikelHelper::getBasePriceUnit($this, $this->Preise->fPreis1, $this->Preise->nAnzahl1);
+        $basePriceUnit = Product::getBasePriceUnit($this, $this->Preise->fPreis1, $this->Preise->nAnzahl1);
 
         $this->cStaffelpreisLocalizedVPE1[0] = Preise::getLocalizedPriceString(
-            TaxHelper::getGross(
+            Tax::getGross(
                 $basePriceUnit->fBasePreis,
-                TaxHelper::getSalesTax($this->kSteuerklasse),
+                Tax::getSalesTax($this->kSteuerklasse),
                 $precision
             ),
             $currency,
@@ -4877,19 +4877,19 @@ class Artikel
             true,
             $precision
         ) . $per . $basePriceUnit->cVPEEinheit;
-        $this->fStaffelpreisVPE1[0]          = TaxHelper::getGross(
+        $this->fStaffelpreisVPE1[0]          = Tax::getGross(
             $basePriceUnit->fBasePreis,
-            TaxHelper::getSalesTax($this->kSteuerklasse),
+            Tax::getSalesTax($this->kSteuerklasse),
             $precision
         );
         $this->fStaffelpreisVPE1[1]          = $basePriceUnit->fBasePreis;
 
-        $basePriceUnit = ArtikelHelper::getBasePriceUnit($this, $this->Preise->fPreis2, $this->Preise->nAnzahl2);
+        $basePriceUnit = Product::getBasePriceUnit($this, $this->Preise->fPreis2, $this->Preise->nAnzahl2);
 
         $this->cStaffelpreisLocalizedVPE2[0] = Preise::getLocalizedPriceString(
-            TaxHelper::getGross(
+            Tax::getGross(
                 $basePriceUnit->fBasePreis,
-                TaxHelper::getSalesTax($this->kSteuerklasse),
+                Tax::getSalesTax($this->kSteuerklasse),
                 $precision
             ),
             $currency,
@@ -4902,19 +4902,19 @@ class Artikel
             true,
             $precision
         ) . $per . $basePriceUnit->cVPEEinheit;
-        $this->fStaffelpreisVPE2[0]          = TaxHelper::getGross(
+        $this->fStaffelpreisVPE2[0]          = Tax::getGross(
             $basePriceUnit->fBasePreis,
-            TaxHelper::getSalesTax($this->kSteuerklasse),
+            Tax::getSalesTax($this->kSteuerklasse),
             $precision
         );
         $this->fStaffelpreisVPE2[1]          = $basePriceUnit->fBasePreis;
 
-        $basePriceUnit = ArtikelHelper::getBasePriceUnit($this, $this->Preise->fPreis3, $this->Preise->nAnzahl3);
+        $basePriceUnit = Product::getBasePriceUnit($this, $this->Preise->fPreis3, $this->Preise->nAnzahl3);
 
         $this->cStaffelpreisLocalizedVPE3[0] = Preise::getLocalizedPriceString(
-            TaxHelper::getGross(
+            Tax::getGross(
                 $basePriceUnit->fBasePreis,
-                TaxHelper::getSalesTax($this->kSteuerklasse),
+                Tax::getSalesTax($this->kSteuerklasse),
                 $precision
             ),
             $currency,
@@ -4927,19 +4927,19 @@ class Artikel
             true,
             $precision
         ) . $per . $basePriceUnit->cVPEEinheit;
-        $this->fStaffelpreisVPE3[0]          = TaxHelper::getGross(
+        $this->fStaffelpreisVPE3[0]          = Tax::getGross(
             $basePriceUnit->fBasePreis,
-            TaxHelper::getSalesTax($this->kSteuerklasse),
+            Tax::getSalesTax($this->kSteuerklasse),
             $precision
         );
         $this->fStaffelpreisVPE3[1]          = $basePriceUnit->fBasePreis;
 
-        $basePriceUnit = ArtikelHelper::getBasePriceUnit($this, $this->Preise->fPreis4, $this->Preise->nAnzahl4);
+        $basePriceUnit = Product::getBasePriceUnit($this, $this->Preise->fPreis4, $this->Preise->nAnzahl4);
 
         $this->cStaffelpreisLocalizedVPE4[0] = Preise::getLocalizedPriceString(
-            TaxHelper::getGross(
+            Tax::getGross(
                 $basePriceUnit->fBasePreis,
-                TaxHelper::getSalesTax($this->kSteuerklasse),
+                Tax::getSalesTax($this->kSteuerklasse),
                 $precision
             ),
             $currency,
@@ -4952,19 +4952,19 @@ class Artikel
             true,
             $precision
         ) . $per . $basePriceUnit->cVPEEinheit;
-        $this->fStaffelpreisVPE4[0]          = TaxHelper::getGross(
+        $this->fStaffelpreisVPE4[0]          = Tax::getGross(
             $basePriceUnit->fBasePreis,
-            TaxHelper::getSalesTax($this->kSteuerklasse),
+            Tax::getSalesTax($this->kSteuerklasse),
             $precision
         );
         $this->fStaffelpreisVPE4[1]          = $basePriceUnit->fBasePreis;
 
-        $basePriceUnit = ArtikelHelper::getBasePriceUnit($this, $this->Preise->fPreis5, $this->Preise->nAnzahl5);
+        $basePriceUnit = Product::getBasePriceUnit($this, $this->Preise->fPreis5, $this->Preise->nAnzahl5);
 
         $this->cStaffelpreisLocalizedVPE5[0] = Preise::getLocalizedPriceString(
-            TaxHelper::getGross(
+            Tax::getGross(
                 $basePriceUnit->fBasePreis,
-                TaxHelper::getSalesTax($this->kSteuerklasse),
+                Tax::getSalesTax($this->kSteuerklasse),
                 $precision
             ),
             $currency,
@@ -4977,21 +4977,21 @@ class Artikel
             true,
             $precision
         ) . $per . $basePriceUnit->cVPEEinheit;
-        $this->fStaffelpreisVPE5[0]          = TaxHelper::getGross(
+        $this->fStaffelpreisVPE5[0]          = Tax::getGross(
             $basePriceUnit->fBasePreis,
-            TaxHelper::getSalesTax($this->kSteuerklasse),
+            Tax::getSalesTax($this->kSteuerklasse),
             $precision
         );
         $this->fStaffelpreisVPE5[1]          = $basePriceUnit->fBasePreis;
 
         foreach ($this->Preise->fPreis_arr as $key => $fPreis) {
-            $basePriceUnit = ArtikelHelper::getBasePriceUnit($this, $fPreis, $this->Preise->nAnzahl_arr[$key]);
+            $basePriceUnit = Product::getBasePriceUnit($this, $fPreis, $this->Preise->nAnzahl_arr[$key]);
 
             $this->cStaffelpreisLocalizedVPE_arr[] = [
                 Preise::getLocalizedPriceString(
-                    TaxHelper::getGross(
+                    Tax::getGross(
                         $basePriceUnit->fBasePreis,
-                        TaxHelper::getSalesTax($this->kSteuerklasse),
+                        Tax::getSalesTax($this->kSteuerklasse),
                         $precision
                     ),
                     $currency,
@@ -5007,9 +5007,9 @@ class Artikel
             ];
 
             $this->fStaffelpreisVPE_arr[] = [
-                TaxHelper::getGross(
+                Tax::getGross(
                     $basePriceUnit->fBasePreis,
-                    TaxHelper::getSalesTax($this->kSteuerklasse),
+                    Tax::getSalesTax($this->kSteuerklasse),
                     $precision
                 ),
                 $basePriceUnit->fBasePreis,
@@ -5347,7 +5347,7 @@ class Artikel
             return $this;
         }
         if (\Session\Session::getCustomerGroup()->isMerchant()) {
-            $this->fUVP                             /= (1 + TaxHelper::getSalesTax($this->kSteuerklasse) / 100);
+            $this->fUVP                             /= (1 + Tax::getSalesTax($this->kSteuerklasse) / 100);
             $this->SieSparenX->anzeigen             = $anzeigen;
             $this->SieSparenX->nProzent             = round(
                 (($this->fUVP - $this->Preise->fVKNetto) * 100) / $this->fUVP,
@@ -5358,16 +5358,16 @@ class Artikel
         } else {
             $this->SieSparenX->anzeigen             = $anzeigen;
             $this->SieSparenX->nProzent             = round(
-                (($this->fUVP - TaxHelper::getGross(
+                (($this->fUVP - Tax::getGross(
                     $this->Preise->fVKNetto,
-                    TaxHelper::getSalesTax($this->kSteuerklasse)
+                    Tax::getSalesTax($this->kSteuerklasse)
                 )) * 100)
                 / $this->fUVP,
                 2
             );
-            $this->SieSparenX->fSparbetrag          = $this->fUVP - TaxHelper::getGross(
+            $this->SieSparenX->fSparbetrag          = $this->fUVP - Tax::getGross(
                 $this->Preise->fVKNetto,
-                TaxHelper::getSalesTax($this->kSteuerklasse)
+                Tax::getSalesTax($this->kSteuerklasse)
             );
             $this->SieSparenX->cLocalizedSparbetrag = Preise::getLocalizedPriceString($this->SieSparenX->fSparbetrag);
         }
@@ -5632,7 +5632,7 @@ class Artikel
             }
         }
         // set estimatedDeliverytime text
-        $estimatedDelivery      = VersandartHelper::getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays);
+        $estimatedDelivery      = ShippingMethod::getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays);
         $this->nMinDeliveryDays = $minDeliveryDays;
         $this->nMaxDeliveryDays = $maxDeliveryDays;
 
@@ -5795,7 +5795,7 @@ class Artikel
         $return   = ['kArtikelXSellerKey_arr', 'oArtikelArr'];
         $cLimit   = ' LIMIT 3';
         // Gibt es X-Seller? Aus der Artikelmenge der änhlichen Artikel, dann alle X-Seller rausfiltern
-        $oXSeller               = ArtikelHelper::getXSelling($kArtikel, $this->nIstVater > 0);
+        $oXSeller               = Product::getXSelling($kArtikel, $this->nIstVater > 0);
         $kArtikelXSellerKey_arr = [];
         if ($oXSeller !== null
             && isset($oXSeller->Standard->XSellGruppen)
@@ -6084,7 +6084,7 @@ class Artikel
         }
         $NettoPreise = (bool)$NettoPreise;
         $inklexkl    = Shop::Lang()->get($NettoPreise === true ? 'excl' : 'incl', 'productDetails');
-        $mwst        = $this->mwstFormat(TaxHelper::getSalesTax($this->kSteuerklasse));
+        $mwst        = $this->mwstFormat(Tax::getSalesTax($this->kSteuerklasse));
         $ust         = '';
         $versand     = '';
         if ($this->conf['global']['global_versandhinweis'] === 'zzgl') {
@@ -6163,7 +6163,7 @@ class Artikel
         if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
             $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
         }
-        $helper              = VersandartHelper::getInstance();
+        $helper              = ShippingMethod::getInstance();
         $versandfreielaender = isset($this->Preise->fVK[0])
             ? $helper->getFreeShippingCountries($this->Preise->fVK[0], $kKundengruppe, $this->kVersandklasse)
             : '';
@@ -6526,8 +6526,8 @@ class Artikel
         foreach ($tags as $tag) {
             $tag->kTag     = (int)$tag->kTag;
             $tag->Anzahl   = (int)$tag->Anzahl;
-            $tag->cURL     = UrlHelper::buildURL($tag, URLART_TAG);
-            $tag->cURLFull = UrlHelper::buildURL($tag, URLART_TAG, true);
+            $tag->cURL     = URL::buildURL($tag, URLART_TAG);
+            $tag->cURLFull = URL::buildURL($tag, URLART_TAG, true);
         }
         executeHook(
             HOOK_ARTIKEL_INC_PRODUKTTAGGING,
@@ -6588,7 +6588,7 @@ class Artikel
         return [
             'net'                   => $net,
             'text'                  => $taxText,
-            'tax'                   => $this->mwstFormat(TaxHelper::getSalesTax($this->kSteuerklasse)),
+            'tax'                   => $this->mwstFormat(Tax::getSalesTax($this->kSteuerklasse)),
             'shippingFreeCountries' => $this->gibMwStVersandLaenderString(),
             'countries'             => $this->gibMwStVersandLaenderString(false),
             'shippingClass'         => $this->cVersandklasse
@@ -6600,7 +6600,7 @@ class Artikel
      */
     public function showMatrix(): bool
     {
-        if (RequestHelper::verifyGPCDataInt('quickView') === 0
+        if (Request::verifyGPCDataInt('quickView') === 0
             && !$this->kArtikelVariKombi
             && !$this->kVariKindArtikel
             && !$this->nErscheinendesProdukt

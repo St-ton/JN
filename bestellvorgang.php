@@ -4,10 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
-use Helpers\RequestHelper;
-use Helpers\VersandartHelper;
-use Helpers\WarenkorbHelper;
+use Helpers\Form;
+use Helpers\Request;
+use Helpers\ShippingMethod;
+use Helpers\Cart;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
@@ -27,7 +27,7 @@ unset($_SESSION['ajaxcheckout']);
 if (isset($_POST['login']) && (int)$_POST['login'] === 1) {
     fuehreLoginAus($_POST['email'], $_POST['passwort']);
 }
-if (RequestHelper::verifyGPCDataInt('basket2Pers') === 1) {
+if (Request::verifyGPCDataInt('basket2Pers') === 1) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 
     setzeWarenkorbPersInWarenkorb($_SESSION['Kunde']->kKunde);
@@ -49,7 +49,7 @@ if (class_exists('Download') && Download::hasDownloads($cart)) {
 }
 // oneClick? Darf nur einmal ausgeführt werden und nur dann, wenn man vom Warenkorb kommt.
 if ($Einstellungen['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
-    && RequestHelper::verifyGPCDataInt('wk') === 1
+    && Request::verifyGPCDataInt('wk') === 1
 ) {
     $kKunde = 0;
     if (isset($_SESSION['Kunde']->kKunde)) {
@@ -64,12 +64,12 @@ if ($Einstellungen['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] ==
         pruefeAjaxEinKlick();
     }
 }
-if (RequestHelper::verifyGPCDataInt('wk') === 1) {
+if (Request::verifyGPCDataInt('wk') === 1) {
     Kupon::resetNewCustomerCoupon();
 }
 if (isset($_FILES['vcard'])
     && $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y'
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     gibKundeFromVCard($_FILES['vcard']['tmp_name']);
 }
@@ -120,17 +120,17 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
         $plz           = $_SESSION['Lieferadresse']->cPLZ ?? $_SESSION['Kunde']->cPLZ;
         $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
 
-        $oVersandart_arr  = VersandartHelper::getPossibleShippingMethods(
+        $oVersandart_arr  = ShippingMethod::getPossibleShippingMethods(
             $land,
             $plz,
-            VersandartHelper::getShippingClasses($cart),
+            ShippingMethod::getShippingClasses($cart),
             $kKundengruppe
         );
         $activeVersandart = gibAktiveVersandart($oVersandart_arr);
 
         pruefeVersandartWahl(
             $activeVersandart,
-            ['kVerpackung' => array_keys(gibAktiveVerpackung(VersandartHelper::getPossiblePackagings($kKundengruppe)))]
+            ['kVerpackung' => array_keys(gibAktiveVerpackung(ShippingMethod::getPossiblePackagings($kKundengruppe)))]
         );
     }
 }
@@ -232,13 +232,13 @@ if ($step === 'Bestaetigung'
     Warenkorb::refreshChecksum($cart);
     $_SESSION['AktiveZahlungsart'] = $savedPayment;
 }
-$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
+$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 $linkHelper = Shop::Container()->getLinkService();
 $kLink      = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLVORGANG);
 $link       = $linkHelper->getPageLink($kLink);
-WarenkorbHelper::addVariationPictures($cart);
+Cart::addVariationPictures($cart);
 Shop::Smarty()->assign(
     'AGB',
     Shop::Container()->getLinkService()->getAGBWRB(
@@ -251,14 +251,14 @@ Shop::Smarty()->assign(
     ->assign('Link', $link)
     ->assign('hinweis', $cHinweis)
     ->assign('step', $step)
-    ->assign('editRechnungsadresse', RequestHelper::verifyGPCDataInt('editRechnungsadresse'))
+    ->assign('editRechnungsadresse', Request::verifyGPCDataInt('editRechnungsadresse'))
     ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
     ->assign('Warensumme', $cart->gibGesamtsummeWaren())
     ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
     ->assign('bestellschritt', gibBestellschritt($step))
     ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
     ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
-    ->assign('unregForm', RequestHelper::verifyGPCDataInt('unreg_form'));
+    ->assign('unregForm', Request::verifyGPCDataInt('unreg_form'));
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_BESTELLVORGANG_PAGE);

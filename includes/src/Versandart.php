@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\ObjectHelper;
+use Helpers\GeneralObject;
 
 /**
  * Class Versandart
@@ -177,7 +177,7 @@ class Versandart
      */
     public function insertInDB(): int
     {
-        $obj = ObjectHelper::copyMembers($this);
+        $obj = GeneralObject::copyMembers($this);
         unset(
             $obj->oVersandartSprache_arr,
             $obj->oVersandartStaffel_arr,
@@ -195,7 +195,7 @@ class Versandart
      */
     public function updateInDB(): int
     {
-        $obj = ObjectHelper::copyMembers($this);
+        $obj = GeneralObject::copyMembers($this);
         unset(
             $obj->oVersandartSprache_arr,
             $obj->oVersandartStaffel_arr,

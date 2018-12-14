@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\ObjectHelper;
-use Helpers\RequestHelper;
+use Helpers\GeneralObject;
+use Helpers\Request;
 
 /**
  * @param array            $params
@@ -163,7 +163,7 @@ function sendeMail($ModulId, $Object, $mail = null)
                ->assign('WRB', $WRB)
                ->assign('DSE', $DSE)
                ->assign('WRBForm', $WRBForm)
-               ->assign('IP', StringHandler::htmlentities(StringHandler::filterXSS(RequestHelper::getRealIP())));
+               ->assign('IP', StringHandler::htmlentities(StringHandler::filterXSS(Request::getRealIP())));
 
     $Object = lokalisiereInhalt($Object);
     // ModulId von einer Plugin Emailvorlage vorhanden?
@@ -778,7 +778,7 @@ function verschickeMail($mail)
 
 /**
  * @param object $Object
- * @param string $subject
+ * @param string        $subject
  * @return mixed
  */
 function injectSubject($Object, $subject)
@@ -842,7 +842,7 @@ function lokalisiereKunde($sprache, $kunde)
             $kunde->cAnredeLocalized = Shop::Lang()->get('salutationGeneral');
         }
     }
-    $kunde = ObjectHelper::deepCopy($kunde);
+    $kunde = GeneralObject::deepCopy($kunde);
     if (isset($kunde->cLand)) {
         $cISOLand = $kunde->cLand;
         $sel_var  = 'cDeutsch';

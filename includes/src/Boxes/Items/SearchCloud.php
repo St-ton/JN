@@ -57,8 +57,8 @@ final class SearchCloud extends AbstractBox
                 $cloudEntry->Klasse   = ($prio_step < 1) ?
                     \rand(1, 10) :
                     (\round(($cloudEntry->nAnzahlGesuche - $items[$count - 1]->nAnzahlGesuche) / $prio_step) + 1);
-                $cloudEntry->cURL     = \Helpers\UrlHelper::buildURL($cloudEntry, \URLART_LIVESUCHE);
-                $cloudEntry->cURLFull = \Helpers\UrlHelper::buildURL($cloudEntry, \URLART_LIVESUCHE, true);
+                $cloudEntry->cURL     = \Helpers\URL::buildURL($cloudEntry, \URLART_LIVESUCHE);
+                $cloudEntry->cURLFull = \Helpers\URL::buildURL($cloudEntry, \URLART_LIVESUCHE, true);
             }
             $this->setShow(true);
             \shuffle($items);

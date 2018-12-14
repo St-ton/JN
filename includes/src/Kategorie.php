@@ -4,9 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\KategorieHelper;
-use Helpers\RequestHelper;
-use Helpers\UrlHelper;
+use Helpers\Category;
+use Helpers\Request;
+use Helpers\URL;
 
 /**
  * Class Kategorie
@@ -178,7 +178,7 @@ class Kategorie
         $cacheID = CACHING_GROUP_CATEGORY . '_' . $kKategorie .
             '_' . $kSprache .
             '_cg_' . $kKundengruppe .
-            '_ssl_' . RequestHelper::checkSSL();
+            '_ssl_' . Request::checkSSL();
         if (!$noCache && ($category = Shop::Container()->getCache()->get($cacheID)) !== false) {
             foreach (get_object_vars($category) as $k => $v) {
                 $this->$k = $v;
@@ -231,7 +231,7 @@ class Kategorie
                     if ($kDefaultLang !== $kSprache) {
                         return $this->loadFromDB($kKategorie, $kDefaultLang, $kKundengruppe, true);
                     }
-                } elseif (KategorieHelper::categoryExists($kKategorie)) {
+                } elseif (Category::categoryExists($kKategorie)) {
                     return $this->loadFromDB($kKategorie, $kSprache, $kKundengruppe, true);
                 }
             }
@@ -265,9 +265,9 @@ class Kategorie
             $this->mapData($oKategorie);
         }
         $imageBaseURL             = Shop::getImageBaseURL();
-        $helper                   = KategorieHelper::getInstance($kSprache, $kKundengruppe);
-        $this->cURL               = UrlHelper::buildURL($this, URLART_KATEGORIE);
-        $this->cURLFull           = UrlHelper::buildURL($this, URLART_KATEGORIE, true);
+        $helper                   = Category::getInstance($kSprache, $kKundengruppe);
+        $this->cURL               = URL::buildURL($this, URLART_KATEGORIE);
+        $this->cURLFull           = URL::buildURL($this, URLART_KATEGORIE, true);
         $this->cKategoriePfad_arr = $helper->getPath($this, false);
         $this->cKategoriePfad     = implode(' > ', $this->cKategoriePfad_arr);
         $this->cBildURL           = BILD_KEIN_KATEGORIEBILD_VORHANDEN;

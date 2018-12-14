@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\ObjectHelper;
+use Helpers\GeneralObject;
 
 /**
  * Class Tag
@@ -88,7 +88,7 @@ class Tag
      */
     public function insertInDB(): int
     {
-        $obj = ObjectHelper::copyMembers($this);
+        $obj = GeneralObject::copyMembers($this);
         unset($obj->kTag);
 
         return Shop::Container()->getDB()->insert('ttag', $obj);
@@ -99,7 +99,7 @@ class Tag
      */
     public function updateInDB(): int
     {
-        $obj = ObjectHelper::copyMembers($this);
+        $obj = GeneralObject::copyMembers($this);
 
         return Shop::Container()->getDB()->update('ttag', 'kTag', $obj->kTag, $obj);
     }

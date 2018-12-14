@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
-use Helpers\WarenkorbHelper;
+use Helpers\Request;
+use Helpers\Cart;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
@@ -64,7 +64,7 @@ if (isset($_GET['i'])) {
             && $wkChecksum !== $cart->cChecksumme
         ) {
             if (!$cart->posTypEnthalten(C_WARENKORBPOS_TYP_ARTIKEL)) {
-                WarenkorbHelper::deleteAllSpecialPositions();
+                Cart::deleteAllSpecialPositions();
             }
             $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('yourbasketismutating', 'checkout');
             header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);
@@ -87,7 +87,7 @@ if (isset($_GET['i'])) {
     }
     setzeSmartyWeiterleitung($bestellung);
 }
-$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
+$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 if ($Einstellungen['trustedshops']['trustedshops_nutzen'] === 'Y') {

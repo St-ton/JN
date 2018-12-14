@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 /**
  * Class PaymentMethod
@@ -249,7 +249,7 @@ class PaymentMethod
             if (!isset($_SESSION['IP'])) {
                 $_SESSION['IP'] = new stdClass();
             }
-            $_SESSION['IP']->cIP = RequestHelper::getRealIP();
+            $_SESSION['IP']->cIP = Request::getRealIP();
         }
 
         if ($order->kBestellung !== null) {

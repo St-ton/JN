@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\UrlHelper;
+use Helpers\URL;
 
 /**
  * @param int $kTag
@@ -61,7 +61,7 @@ function holeTagDetail(int $kTag, int $kSprache, $cLimit)
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oTagArtikel_arr as $i => $oTagArtikel) {
-            $oTagArtikel_arr[$i]->cURL = UrlHelper::buildURL($oTagArtikel, URLART_ARTIKEL, true);
+            $oTagArtikel_arr[$i]->cURL = URL::buildURL($oTagArtikel, URLART_ARTIKEL, true);
         }
 
         return $oTagArtikel_arr;

@@ -4,9 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
-use Helpers\UrlHelper;
-use Helpers\VersandartHelper;
+use Helpers\Request;
+use Helpers\URL;
+use Helpers\ShippingMethod;
 
 if (!defined('PFAD_ROOT')) {
     http_response_code(400);
@@ -15,7 +15,7 @@ if (!defined('PFAD_ROOT')) {
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 $smarty                 = Shop::Smarty();
 $Einstellungen          = Shopsetting::getInstance()->getAll();
-$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
+$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $linkHelper             = Shop::Container()->getLinkService();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
@@ -27,7 +27,7 @@ if ($link === null || !$link->isVisible()) {
     $link = $linkHelper->getSpecialPage(LINKTYP_STARTSEITE);
     $link->setRedirectCode(301);
 }
-$requestURL = UrlHelper::buildURL($link, URLART_SEITE);
+$requestURL = URL::buildURL($link, URLART_SEITE);
 if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     $cCanonicalURL = Shop::getURL() . '/';
 } elseif (strpos($requestURL, '.php') === false) {
@@ -55,12 +55,12 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
         \Session\Session::getCustomerGroup()->getID()
     ));
 } elseif ($link->getLinkType() === LINKTYP_VERSAND) {
-    if (isset($_POST['land'], $_POST['plz']) && !VersandartHelper::getShippingCosts($_POST['land'], $_POST['plz'])) {
+    if (isset($_POST['land'], $_POST['plz']) && !ShippingMethod::getShippingCosts($_POST['land'], $_POST['plz'])) {
         $smarty->assign('fehler', Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'));
     }
     $smarty->assign(
         'laender',
-        VersandartHelper::getPossibleShippingCountries(
+        ShippingMethod::getPossibleShippingCountries(
             \Session\Session::getCustomerGroup()->getID()
         )
     );

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\TemplateHelper;
+use Helpers\Template;
 
 /**
  * Class AdminTemplate
@@ -32,7 +32,7 @@ class AdminTemplate
     private static $isAdmin = true;
 
     /**
-     * @var TemplateHelper
+     * @var Template
      */
     private static $helper;
 
@@ -66,7 +66,7 @@ class AdminTemplate
      */
     public function __construct()
     {
-        self::$helper = TemplateHelper::getInstance(true);
+        self::$helper = Template::getInstance(true);
         $this->init();
         self::$instance = $this;
     }

@@ -238,7 +238,7 @@ class Search extends AbstractFilter
                 FROM tsuchanfragencache
                 WHERE kSprache = :lang
                 AND cIP = :ip',
-            ['lang' => $languageID, 'ip' => \Helpers\RequestHelper::getRealIP()],
+            ['lang' => $languageID, 'ip' => \Helpers\Request::getRealIP()],
             ReturnType::SINGLE_OBJECT
         );
         $ipUsed       = $this->productFilter->getDB()->select(
@@ -248,7 +248,7 @@ class Search extends AbstractFilter
             'cSuche',
             $Suchausdruck,
             'cIP',
-            \Helpers\RequestHelper::getRealIP(),
+            \Helpers\Request::getRealIP(),
             false,
             'kSuchanfrageCache'
         );
@@ -259,7 +259,7 @@ class Search extends AbstractFilter
             // Fülle Suchanfragencache
             $searchQueryCache           = new \stdClass();
             $searchQueryCache->kSprache = $languageID;
-            $searchQueryCache->cIP      = \Helpers\RequestHelper::getRealIP();
+            $searchQueryCache->cIP      = \Helpers\Request::getRealIP();
             $searchQueryCache->cSuche   = $Suchausdruck;
             $searchQueryCache->dZeit    = 'NOW()';
             $this->productFilter->getDB()->insert('tsuchanfragencache', $searchQueryCache);

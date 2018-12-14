@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
+use Helpers\Request;
 use Imanee\Imanee;
 
 /**
@@ -118,7 +118,7 @@ class ImageStorage
             : null;
 
         if ($httpModifiedSince === $lastModifiedDate || $httpNoneMatch === $tagHash) {
-            header(RequestHelper::makeHTTPHeader(304));
+            header(Request::makeHTTPHeader(304));
             exit;
         }
     }

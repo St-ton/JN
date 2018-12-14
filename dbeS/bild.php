@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 require_once __DIR__ . '/syncinclude.php';
 
@@ -16,10 +16,10 @@ if ($Einstellungen['bilder']['bilder_externe_bildschnittstelle'] === 'W' && !aut
     exit();
 }
 
-$kArtikel    = RequestHelper::verifyGPCDataInt('a'); // Angeforderter Artikel
-$nBildNummer = RequestHelper::verifyGPCDataInt('n'); // Bildnummer
-$nURL        = RequestHelper::verifyGPCDataInt('url'); // Soll die URL zum Bild oder das Bild direkt ausgegeben werden
-$nSize       = RequestHelper::verifyGPCDataInt('s'); // Bildgröße
+$kArtikel    = Request::verifyGPCDataInt('a'); // Angeforderter Artikel
+$nBildNummer = Request::verifyGPCDataInt('n'); // Bildnummer
+$nURL        = Request::verifyGPCDataInt('url'); // Soll die URL zum Bild oder das Bild direkt ausgegeben werden
+$nSize       = Request::verifyGPCDataInt('s'); // Bildgröße
 
 if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
     $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');

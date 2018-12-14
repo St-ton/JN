@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -14,7 +14,7 @@ $cHinweis = '';
 $cFehler  = '';
 setzeSprache();
 
-if (isset($_POST['speichern']) && FormHelper::validateToken()) {
+if (isset($_POST['speichern']) && Form::validateToken()) {
     $cHinweis .= saveAdminSectionSettings(CONF_SITEMAP, $_POST);
     if (isset($_POST['nVon'])
         && is_array($_POST['nVon'])

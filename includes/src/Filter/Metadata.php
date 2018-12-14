@@ -434,7 +434,7 @@ class Metadata implements MetadataInterface
                 $catDescription = \strip_tags(\str_replace(['<br>', '<br />'], [' ', ' '], $category->cBeschreibung));
             } elseif ($category->bUnterKategorien) {
                 // Hat die aktuelle Kategorie Unterkategorien?
-                $helper = \Helpers\KategorieHelper::getInstance();
+                $helper = \Helpers\Category::getInstance();
                 $sub    = $helper->getCategoryById($category->kKategorie);
                 if ($sub !== false && !empty($sub->Unterkategorien) && \count($sub->Unterkategorien) > 0) {
                     $catNames       = map($sub->Unterkategorien, function ($e) {
@@ -577,7 +577,7 @@ class Metadata implements MetadataInterface
         } elseif (!empty($category->kKategorie)) {
             // Hat die aktuelle Kategorie Unterkategorien?
             if ($category->bUnterKategorien) {
-                $helper = \Helpers\KategorieHelper::getInstance();
+                $helper = \Helpers\Category::getInstance();
                 $sub    = $helper->getCategoryById($category->kKategorie);
                 if ($sub !== false && !empty($sub->Unterkategorien) && \count($sub->Unterkategorien) > 0) {
                     $catNames     = map($sub->Unterkategorien, function ($e) {

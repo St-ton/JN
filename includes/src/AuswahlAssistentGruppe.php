@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\ObjectHelper;
+use Helpers\GeneralObject;
 
 /**
  * Class AuswahlAssistentGruppe
@@ -171,7 +171,7 @@ class AuswahlAssistentGruppe
     {
         $cPlausi_arr = $this->checkGroup($params);
         if (count($cPlausi_arr) === 0) {
-            $oObj = ObjectHelper::copyMembers($this);
+            $oObj = GeneralObject::copyMembers($this);
 
             $this->nAktiv                  = (int)$this->nAktiv;
             $this->kSprache                = (int)$this->kSprache;

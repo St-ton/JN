@@ -4,12 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\ArtikelHelper;
-use Helpers\DateHelper;
-use Helpers\FormHelper;
-use Helpers\TaxHelper;
-use Helpers\VersandartHelper;
-use Helpers\ZahlungsartHelper;
+use Helpers\Product;
+use Helpers\Date;
+use Helpers\Form;
+use Helpers\Tax;
+use Helpers\ShippingMethod;
+use Helpers\PaymentMethod as Helper;
 
 /**
  *
@@ -113,7 +113,7 @@ function pruefeUnregistriertBestellen($cPost_arr): int
             if (isset($_SESSION['Lieferadresse']) && $_SESSION['Bestellung']->kLieferadresse == 0) {
                 setzeLieferadresseAusRechnungsadresse();
             }
-            TaxHelper::setTaxRates();
+            Tax::setTaxRates();
             $cart->gibGesamtsummeWarenLocalized();
         }
         executeHook(HOOK_BESTELLVORGANG_INC_UNREGISTRIERTBESTELLEN);
@@ -194,7 +194,7 @@ function pruefeLieferdaten($cPost_arr, &$fehlendeAngaben = null): void
 
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_RECHNUNGLIEFERADRESSE);
     }
-    TaxHelper::setTaxRates();
+    Tax::setTaxRates();
     // lieferland hat sich geändert und versandart schon gewählt?
     if (isset($_SESSION['Lieferadresse'], $_SESSION['Versandart'])
         && $_SESSION['Lieferadresse']
@@ -257,7 +257,7 @@ function pruefeVersandkostenStep(): void
     if (isset($_SESSION['Kunde'], $_SESSION['Lieferadresse'])) {
         $cart = \Session\Session::getCart();
         $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG);
-        $arrArtikelabhaengigeVersandkosten = VersandartHelper::gibArtikelabhaengigeVersandkostenImWK(
+        $arrArtikelabhaengigeVersandkosten = ShippingMethod::gibArtikelabhaengigeVersandkostenImWK(
             $_SESSION['Lieferadresse']->cLand,
             $cart->PositionenArr
         );
@@ -322,7 +322,7 @@ function pruefeRechnungsadresseStep($cGet_arr): void
     }
 
     if (!empty(\Session\Session::getCustomer()->cOrt)
-        && count(VersandartHelper::getPossibleShippingCountries(
+        && count(ShippingMethod::getPossibleShippingCountries(
             \Session\Session::getCustomerGroup()->getID(),
             false,
             false,
@@ -332,7 +332,7 @@ function pruefeRechnungsadresseStep($cGet_arr): void
         Shop::Smarty()->assign('forceDeliveryAddress', 1);
 
         if (!isset($_SESSION['Lieferadresse'])
-            || count(VersandartHelper::getPossibleShippingCountries(
+            || count(ShippingMethod::getPossibleShippingCountries(
                 \Session\Session::getCustomerGroup()->getID(),
                 false,
                 false,
@@ -590,8 +590,8 @@ function gibStepUnregistriertBestellen(): void
     Shop::Smarty()->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
         ->assign('herkunfte', $herkunfte)
         ->assign('Kunde', $Kunde ?? null)
-        ->assign('laender', VersandartHelper::getPossibleShippingCountries($customerGroupID, false, true))
-        ->assign('LieferLaender', VersandartHelper::getPossibleShippingCountries($customerGroupID))
+        ->assign('laender', ShippingMethod::getPossibleShippingCountries($customerGroupID, false, true))
+        ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($customerGroupID))
         ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder())
         ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
         ->assign('code_registrieren', false);
@@ -642,8 +642,8 @@ function gibStepLieferadresse()
         Shop::Smarty()->assign('Lieferadressen', $Lieferadressen);
         $kKundengruppe = \Session\Session::getCustomer()->kKundengruppe;
     }
-    Shop::Smarty()->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe, false, true))
-        ->assign('LieferLaender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
+    Shop::Smarty()->assign('laender', ShippingMethod::getPossibleShippingCountries($kKundengruppe, false, true))
+        ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($kKundengruppe))
         ->assign('Kunde', $_SESSION['Kunde'] ?? null)
         ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse ?? null);
     if (isset($_SESSION['Bestellung']->kLieferadresse) && $_SESSION['Bestellung']->kLieferadresse == -1) {
@@ -696,13 +696,13 @@ function gibStepZahlung()
     if (!$kKundengruppe) {
         $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
     }
-    $shippingMethods = VersandartHelper::getPossibleShippingMethods(
+    $shippingMethods = ShippingMethod::getPossibleShippingMethods(
         $lieferland,
         $plz,
-        VersandartHelper::getShippingClasses(\Session\Session::getCart()),
+        ShippingMethod::getShippingClasses(\Session\Session::getCart()),
         $kKundengruppe
     );
-    $packagings      = VersandartHelper::getPossiblePackagings($kKundengruppe);
+    $packagings      = ShippingMethod::getPossiblePackagings($kKundengruppe);
     if (!empty($packagings) && $cart->posTypEnthalten(C_WARENKORBPOS_TYP_VERPACKUNG)) {
         foreach ($cart->PositionenArr as $oPos) {
             if ($oPos->nPosTyp === C_WARENKORBPOS_TYP_VERPACKUNG) {
@@ -894,10 +894,10 @@ function gibStepVersand(): void
     if (!$kKundengruppe) {
         $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
     }
-    $oVersandart_arr  = VersandartHelper::getPossibleShippingMethods(
+    $oVersandart_arr  = ShippingMethod::getPossibleShippingMethods(
         $lieferland,
         $plz,
-        VersandartHelper::getShippingClasses($cart),
+        ShippingMethod::getShippingClasses($cart),
         $kKundengruppe
     );
     $oZahlungsart_arr = [];
@@ -907,7 +907,7 @@ function gibStepVersand(): void
             $oZahlungsart_arr[$oTmp->kZahlungsart] = $oTmp;
         }
     }
-    $packagings = VersandartHelper::getPossiblePackagings($kKundengruppe);
+    $packagings = ShippingMethod::getPossiblePackagings($kKundengruppe);
     if ($cart->posTypEnthalten(C_WARENKORBPOS_TYP_VERPACKUNG) && !empty($packagings)) {
         foreach ($cart->PositionenArr as $oPos) {
             if ($oPos->nPosTyp === C_WARENKORBPOS_TYP_VERPACKUNG) {
@@ -932,7 +932,7 @@ function gibStepVersand(): void
     } elseif (!is_array($oVersandart_arr) || count($oVersandart_arr) === 0) {
         Shop::Container()->getLogService()->error(
             'Es konnte keine Versandart für folgende Daten gefunden werden: Lieferland: ' . $lieferland .
-            ', PLZ: ' . $plz . ', Versandklasse: ' . VersandartHelper::getShippingClasses(\Session\Session::getCart()) .
+            ', PLZ: ' . $plz . ', Versandklasse: ' . ShippingMethod::getShippingClasses(\Session\Session::getCart()) .
             ', Kundengruppe: ' . $kKundengruppe
         );
     }
@@ -1823,7 +1823,7 @@ function zahlungsartGueltig($paymentMethod): bool
             return false;
         }
 
-        return ZahlungsartHelper::shippingMethodWithValidPaymentMethod($paymentMethod);
+        return Helper::shippingMethodWithValidPaymentMethod($paymentMethod);
     }
 
     return false;
@@ -1992,9 +1992,9 @@ function versandartKorrekt(int $kVersandart, $aFormValues = 0)
     if (!$plz) {
         $plz = \Session\Session::getCustomer()->cPLZ;
     }
-    $versandklassen           = VersandartHelper::getShippingClasses(\Session\Session::getCart());
+    $versandklassen           = ShippingMethod::getShippingClasses(\Session\Session::getCart());
     $cNurAbhaengigeVersandart = 'N';
-    if (VersandartHelper::normalerArtikelversand($lieferland) === false) {
+    if (ShippingMethod::normalerArtikelversand($lieferland) === false) {
         $cNurAbhaengigeVersandart = 'Y';
     }
     $cISO       = $lieferland;
@@ -2017,8 +2017,8 @@ function versandartKorrekt(int $kVersandart, $aFormValues = 0)
     if (!isset($versandart->kVersandart) || $versandart->kVersandart <= 0) {
         return false;
     }
-    $versandart->Zuschlag  = VersandartHelper::getAdditionalFees($versandart, $cISO, $plz);
-    $versandart->fEndpreis = VersandartHelper::calculateShippingFees($versandart, $cISO, null);
+    $versandart->Zuschlag  = ShippingMethod::getAdditionalFees($versandart, $cISO, $plz);
+    $versandart->fEndpreis = ShippingMethod::calculateShippingFees($versandart, $cISO, null);
     if ($versandart->fEndpreis == -1) {
         return false;
     }
@@ -2385,7 +2385,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
 
     if (isset($conf['kunden']['registrieren_captcha'])
         && $conf['kunden']['registrieren_captcha'] !== 'N'
-        && !FormHelper::validateCaptcha($data)
+        && !Form::validateCaptcha($data)
     ) {
         $ret['captcha'] = 2;
     }
@@ -2523,7 +2523,7 @@ function gibGesamtsummeKuponartikelImWarenkorb($Kupon, array $cartPositions)
         ) {
             $gesamtsumme += $Position->fPreis *
                 $Position->nAnzahl *
-                ((100 + TaxHelper::getSalesTax($Position->kSteuerklasse)) / 100);
+                ((100 + Tax::getSalesTax($Position->kSteuerklasse)) / 100);
         }
     }
 
@@ -2580,8 +2580,8 @@ function warenkorbKuponFaehigKategorien($Kupon, array $cartPositions): bool
         }
         $kArtikel = $Pos->Artikel->kArtikel;
         // Kind?
-        if (ArtikelHelper::isVariChild($kArtikel)) {
-            $kArtikel = ArtikelHelper::getParent($kArtikel);
+        if (Product::isVariChild($kArtikel)) {
+            $kArtikel = Product::getParent($kArtikel);
         }
         $catData = Shop::Container()->getDB()->selectAll('tkategorieartikel', 'kArtikel', $kArtikel, 'kKategorie');
         foreach ($catData as $category) {
@@ -2647,7 +2647,7 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
         }
     }
 
-    $customer->dGeburtstag           = DateHelper::convertDateToMysqlStandard($customer->dGeburtstag ?? '');
+    $customer->dGeburtstag           = Date::convertDateToMysqlStandard($customer->dGeburtstag ?? '');
     $customer->dGeburtstag_formatted = $customer->dGeburtstag === '_DBNULL_'
         ? ''
         : DateTime::createFromFormat('Y-m-d', $customer->dGeburtstag)->format('d.m.Y');
@@ -3056,7 +3056,7 @@ function pruefeAjaxEinKlick(): int
         Shop::Smarty()->assign('Lieferadresse', setzeLieferadresseAusRechnungsadresse());
     }
     pruefeVersandkostenfreiKuponVorgemerkt();
-    TaxHelper::setTaxRates();
+    Tax::setTaxRates();
     // Prüfe Versandart, falls korrekt --> laden
     if (empty($oLetzteBestellung->kVersandart)) {
         return 3;
@@ -3211,7 +3211,7 @@ function setzeSessionRechnungsadresse(array $cPost_arr, $cFehlendeEingaben_arr)
         if ($_SESSION['Bestellung']->kLieferadresse == 0 && $_SESSION['Lieferadresse']) {
             setzeLieferadresseAusRechnungsadresse();
         }
-        TaxHelper::setTaxRates();
+        Tax::setTaxRates();
         \Session\Session::getCart()->gibGesamtsummeWarenLocalized();
     }
 
@@ -3245,7 +3245,7 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0): void
         ->assign('Kunde', \Session\Session::getCustomer())
         ->assign(
             'laender',
-            VersandartHelper::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID(), false, true)
+            ShippingMethod::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID(), false, true)
         )
         ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder());
     if (is_array(\Session\Session::getCustomer()->cKundenattribut_arr)) {
@@ -3285,11 +3285,11 @@ function setzeFehlerSmartyRechnungsadresse($cFehlendeEingaben_arr, $nUnreg = 0, 
         ->assign('Kunde', $oKunde_tmp)
         ->assign(
             'laender',
-            VersandartHelper::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID(), false, true)
+            ShippingMethod::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID(), false, true)
         )
         ->assign(
             'LieferLaender',
-            VersandartHelper::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID())
+            ShippingMethod::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID())
         )
         ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder())
         ->assign('warning_passwortlaenge', lang_passwortlaenge($conf['kunden']['kundenregistrierung_passwortlaenge']));
@@ -3338,7 +3338,7 @@ function plausiLieferadresse(array $cPost_arr): array
         //lieferadresse gleich rechnungsadresse
         setzeLieferadresseAusRechnungsadresse();
     }
-    TaxHelper::setTaxRates();
+    Tax::setTaxRates();
     //lieferland hat sich geändert und versandart schon gewählt?
     if ($_SESSION['Lieferadresse'] && $_SESSION['Versandart']) {
         $delVersand = (stripos($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand) === false);
@@ -3403,7 +3403,7 @@ function setzeSessionLieferadresse(array $cPost_arr): void
     } elseif ($kLieferadresse === 0) { //lieferadresse gleich rechnungsadresse
         setzeLieferadresseAusRechnungsadresse();
     }
-    TaxHelper::setTaxRates();
+    Tax::setTaxRates();
     if ((int)$cPost_arr['guthabenVerrechnen'] === 1) {
         $_SESSION['Bestellung']->GuthabenNutzen   = 1;
         $_SESSION['Bestellung']->fGuthabenGenutzt = min(
@@ -3438,7 +3438,7 @@ function setzeSmartyLieferadresse(): void
         Shop::Smarty()->assign('Lieferadressen', $Lieferadressen)
             ->assign('GuthabenLocalized', \Session\Session::getCustomer()->gibGuthabenLocalized());
     }
-    Shop::Smarty()->assign('LieferLaender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
+    Shop::Smarty()->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($kKundengruppe))
         ->assign('Kunde', \Session\Session::getCustomer())
         ->assign('KuponMoeglich', Kupon::couponsAvailable())
         ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse);
@@ -3473,8 +3473,8 @@ function setzeFehlerSmartyLieferadresse($missingData, array $cPost_arr): void
             ->assign('GuthabenLocalized', \Session\Session::getCustomer()->gibGuthabenLocalized());
     }
     setzeFehlendeAngaben($missingData, 'shipping_address');
-    Shop::Smarty()->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe, false, true))
-        ->assign('LieferLaender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
+    Shop::Smarty()->assign('laender', ShippingMethod::getPossibleShippingCountries($kKundengruppe, false, true))
+        ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($kKundengruppe))
         ->assign('Kunde', \Session\Session::getCustomer())
         ->assign('KuponMoeglich', Kupon::couponsAvailable())
         ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse)

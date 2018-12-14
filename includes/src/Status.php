@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\TemplateHelper;
+use Helpers\Template;
 use function Functional\some;
 
 /**
@@ -200,7 +200,7 @@ class Status
     {
         $oTemplate = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
         if ($oTemplate !== null && isset($oTemplate->cTemplate)) {
-            $oTplData = TemplateHelper::getInstance()->getData($oTemplate->cTemplate);
+            $oTplData = Template::getInstance()->getData($oTemplate->cTemplate);
             if ($oTplData->bResponsive) {
                 $oMobileTpl = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'mobil');
                 if ($oMobileTpl !== null) {

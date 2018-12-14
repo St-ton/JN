@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 ob_start();
 
@@ -25,7 +25,7 @@ Shop::Smarty()->setCaching(false)
 Shop::setPageType(PAGE_IO);
 
 if (!isset($_REQUEST['io'])) {
-    header(RequestHelper::makeHTTPHeader(400));
+    header(Request::makeHTTPHeader(400));
     exit;
 }
 
@@ -40,7 +40,7 @@ try {
     $data = $io->handleRequest($request);
 } catch (Exception $e) {
     $data = $e->getMessage();
-    header(RequestHelper::makeHTTPHeader(500));
+    header(Request::makeHTTPHeader(500));
 }
 
 ob_end_clean();

@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\DateHelper;
-use Helpers\RequestHelper;
+use Helpers\Date;
+use Helpers\Request;
 
 /**
  * @return array
@@ -57,7 +57,7 @@ function holeKampagneGesamtStats($oKampagne_arr, $oKampagneDef_arr)
 {
     $oKampagneStat_arr = [];
     $cSQL              = '';
-    $cDatum_arr        = DateHelper::getDateParts($_SESSION['Kampagne']->cStamp);
+    $cDatum_arr        = Date::getDateParts($_SESSION['Kampagne']->cStamp);
     switch ((int)$_SESSION['Kampagne']->nAnsicht) {
         case 1:    // Monat
             $cSQL = "WHERE '" . $cDatum_arr['cJahr'] . '-' .
@@ -1094,7 +1094,7 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
                     return date('Y-m-d');
                 }
 
-                $cDatum_arr = DateHelper::getDateParts($oDate->cStampNew);
+                $cDatum_arr = Date::getDateParts($oDate->cStampNew);
 
                 return $cDatum_arr['cJahr'] . '-' . $cDatum_arr['cMonat'] . '-' . $cDatum_arr['cTag'];
                 break;
@@ -1110,7 +1110,7 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
                     return date('Y-m-d');
                 }
 
-                $cDatum_arr = DateHelper::getDateParts($oDate->cStampNew);
+                $cDatum_arr = Date::getDateParts($oDate->cStampNew);
 
                 return $cDatum_arr['cJahr'] . '-' . $cDatum_arr['cMonat'] . '-' . $cDatum_arr['cTag'];
                 break;
@@ -1126,7 +1126,7 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
                     return date('Y-m-d');
                 }
 
-                $cDatum_arr = DateHelper::getDateParts($oDate->cStampNew);
+                $cDatum_arr = Date::getDateParts($oDate->cStampNew);
 
                 return $cDatum_arr['cJahr'] . '-' . $cDatum_arr['cMonat'] . '-' . $cDatum_arr['cTag'];
                 break;
@@ -1308,7 +1308,7 @@ function setzeDetailZeitraum($cDatumNow_arr)
             (int)$cDatumNow_arr['cMonat'] . '-' . (int)$cDatumNow_arr['cTag'];
     }
     // Ansicht und Zeitraum
-    if (RequestHelper::verifyGPCDataInt('zeitraum') === 1) {
+    if (Request::verifyGPCDataInt('zeitraum') === 1) {
         // Ansicht
         if (isset($_POST['nAnsicht']) && (int)$_POST['nAnsicht'] > 0) {
             $_SESSION['Kampagne']->nDetailAnsicht = $_POST['nAnsicht'];
@@ -1348,8 +1348,8 @@ function setzeDetailZeitraum($cDatumNow_arr)
 function checkGesamtStatZeitParam()
 {
     $cStamp = '';
-    if (strlen(RequestHelper::verifyGPDataString('cZeitParam')) > 0) {
-        $span      = base64_decode(RequestHelper::verifyGPDataString('cZeitParam'));
+    if (strlen(Request::verifyGPDataString('cZeitParam')) > 0) {
+        $span      = base64_decode(Request::verifyGPDataString('cZeitParam'));
         $spanParts = explode(' - ', $span);
         $dateStart = $spanParts[0] ?? '';
         $dateEnd   = $spanParts[1] ?? '';

@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
-use Helpers\TemplateHelper;
+use Helpers\Form;
+use Helpers\Template;
 
 /**
  * @global Smarty\JTLSmarty $smarty
@@ -23,7 +23,7 @@ $lessColors_arr = [];
 $lessColorsSkin = [];
 $oTemplate      = Template::getInstance();
 $admin          = (isset($_GET['admin']) && $_GET['admin'] === 'true');
-$templateHelper = TemplateHelper::getInstance(true);
+$templateHelper = Template::getInstance(true);
 $templateHelper->disableCaching();
 if (isset($_POST['key'], $_POST['upload'])) {
     $file             = PFAD_ROOT . PFAD_TEMPLATES . $_POST['upload'];
@@ -49,7 +49,7 @@ if (isset($_GET['check'])) {
 if (isset($_GET['uploadError'])) {
     $cFehler .= 'Datei-Upload konnte nicht ausgeführt werden - bitte Schreibrechte &uumlberprüfen.';
 }
-if (isset($_POST['type']) && $_POST['type'] === 'layout' && FormHelper::validateToken()) {
+if (isset($_POST['type']) && $_POST['type'] === 'layout' && Form::validateToken()) {
     $oCSS           = new SimpleCSS();
     $cOrdner        = basename($_POST['ordner']);
     $cCustomCSSFile = $oCSS->getCustomCSSFile($cOrdner);
@@ -83,7 +83,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'layout' && FormHelper::validate
         }
     }
 }
-if (isset($_POST['type']) && $_POST['type'] === 'settings' && FormHelper::validateToken()) {
+if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToken()) {
     $cOrdner      = Shop::Container()->getDB()->escape($_POST['ordner']);
     $parentFolder = null;
     $tplXML       = $oTemplate->leseXML($cOrdner);
@@ -153,7 +153,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && FormHelper::valida
         PFAD_ADMIN . 'shoptemplate.php?check=' .
         ($bCheck ? 'true' : 'false') . $uploadError, true, 301);
 }
-if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::validateToken()) {
+if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && Form::validateToken()) {
     $cOrdner      = Shop::Container()->getDB()->escape($_GET['settings']);
     $oTpl         = $templateHelper->getData($cOrdner, $admin);
     $tplXML       = $templateHelper->getXML($cOrdner, false);

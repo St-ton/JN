@@ -4,10 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\ArtikelHelper;
-use Helpers\DateHelper;
-use Helpers\RequestHelper;
-use Helpers\TaxHelper;
+use Helpers\Product;
+use Helpers\Date;
+use Helpers\Request;
+use Helpers\Tax;
 
 /**
  * @return int
@@ -28,7 +28,7 @@ function bestellungKomplett(): int
         && $_SESSION['Lieferadresse']
         && (int)$_SESSION['Versandart']->kVersandart > 0
         && (int)$_SESSION['Zahlungsart']->kZahlungsart > 0
-        && RequestHelper::verifyGPCDataInt('abschluss') === 1
+        && Request::verifyGPCDataInt('abschluss') === 1
         && count($_SESSION['cPlausi_arr']) === 0
     ) ? 1 : 0;
 }
@@ -158,7 +158,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
                 ? StringHandler::unhtmlentities($position->cLieferstatus[$_SESSION['cISOSprache']])
                 : '';
             $position->kWarenkorb    = $cart->kWarenkorb;
-            $position->fMwSt         = TaxHelper::getSalesTax($position->kSteuerklasse);
+            $position->fMwSt         = Tax::getSalesTax($position->kSteuerklasse);
             $position->kWarenkorbPos = $position->insertInDB();
             if (is_array($position->WarenkorbPosEigenschaftArr) && count($position->WarenkorbPosEigenschaftArr) > 0) {
                 $idx = Shop::getLanguageCode();
@@ -296,7 +296,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
         $order->cZahlungsartName = Shop::Lang()->get('paymentNotNecessary', 'checkout');
     }
     // no anonymization is done here anymore, cause we got a contract
-    $order->cIP = $_SESSION['IP']->cIP ?? RequestHelper::getRealIP();
+    $order->cIP = $_SESSION['IP']->cIP ?? Request::getRealIP();
     //#8544
     $order->fWaehrungsFaktor = \Session\Session::getCurrency()->getConversionFactor();
 
@@ -573,8 +573,8 @@ function aktualisiereBestseller(int $kArtikel, $amount): void
         $Bestseller->fAnzahl  = $amount;
         Shop::Container()->getDB()->insert('tbestseller', $Bestseller);
     }
-    if (ArtikelHelper::isVariCombiChild($kArtikel)) {
-        aktualisiereBestseller(ArtikelHelper::getParent($kArtikel), $amount);
+    if (Product::isVariCombiChild($kArtikel)) {
+        aktualisiereBestseller(Product::getParent($kArtikel), $amount);
     }
 }
 
@@ -669,7 +669,7 @@ function aktualisiereLagerbestand(Artikel $product, $amount, $attributeValues, i
                 $artikelBestand = (float)$tmpArtikel->fLagerbestand;
             }
             // Stücklisten Komponente
-            if (ArtikelHelper::isStuecklisteKomponente($product->kArtikel)) {
+            if (Product::isStuecklisteKomponente($product->kArtikel)) {
                 aktualisiereKomponenteLagerbestand(
                     $product->kArtikel,
                     $artikelBestand,
@@ -893,9 +893,9 @@ function KuponVerwendungen($oBestellung): void
             && ($Position->nPosTyp === C_WARENKORBPOS_TYP_KUPON
                 || $Position->nPosTyp === C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
         ) {
-            $fKuponwertBrutto = TaxHelper::getGross(
+            $fKuponwertBrutto = Tax::getGross(
                 $Position->fPreisEinzelNetto,
-                TaxHelper::getSalesTax($Position->kSteuerklasse)
+                Tax::getSalesTax($Position->kSteuerklasse)
             ) * (-1);
         }
     }
@@ -1108,7 +1108,7 @@ function fakeBestellung()
             }
 
             $order->Positionen[$i]->cName = $order->Positionen[$i]->cName[$_SESSION['cISOSprache']];
-            $order->Positionen[$i]->fMwSt = TaxHelper::getSalesTax($position->kSteuerklasse);
+            $order->Positionen[$i]->fMwSt = Tax::getSalesTax($position->kSteuerklasse);
             $order->Positionen[$i]->setzeGesamtpreisLocalized();
         }
     }
@@ -1118,7 +1118,7 @@ function fakeBestellung()
     $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
     if ($conf['kaufabwicklung']['bestellabschluss_ip_speichern'] === 'Y') {
         // non-anonymized IP (! we got a contract)
-        $order->cIP = RequestHelper::getRealIP();
+        $order->cIP = Request::getRealIP();
     }
 
     return $order->fuelleBestellung(false, true);
@@ -1222,11 +1222,11 @@ function finalisiereBestellung($orderNo = '', bool $sendMail = true): Bestellung
     $obj->tbestellung = $order;
 
     if (isset($order->oEstimatedDelivery->longestMin, $order->oEstimatedDelivery->longestMax)) {
-        $obj->tbestellung->cEstimatedDeliveryEx = DateHelper::dateAddWeekday(
+        $obj->tbestellung->cEstimatedDeliveryEx = Date::dateAddWeekday(
             $order->dErstellt,
             $order->oEstimatedDelivery->longestMin
         )->format('d.m.Y') . ' - ' .
-        DateHelper::dateAddWeekday($order->dErstellt, $order->oEstimatedDelivery->longestMax)->format('d.m.Y');
+        Date::dateAddWeekday($order->dErstellt, $order->oEstimatedDelivery->longestMax)->format('d.m.Y');
     }
     $oKunde = new Kunde();
     $oKunde->kopiereSession();

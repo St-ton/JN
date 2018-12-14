@@ -12,11 +12,11 @@ use Exception;
 use Shop;
 
 /**
- * Class DateHelper
+ * Class Date
  * @package Helpers
  * @since 5.0.0
  */
-class DateHelper
+class Date
 {
     /**
      * @param DateTime|string|int $date

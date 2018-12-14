@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\TaxHelper;
-use Helpers\VersandartHelper;
+use Helpers\Tax;
+use Helpers\ShippingMethod;
 
 /**
  * Class WarenkorbPos
@@ -364,7 +364,7 @@ class WarenkorbPos
             $currencyName = $currency->getName();
             // Standardartikel
             $this->cGesamtpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
-                TaxHelper::getGross($this->fPreis * $this->nAnzahl, TaxHelper::getSalesTax($this->kSteuerklasse), 4),
+                Tax::getGross($this->fPreis * $this->nAnzahl, Tax::getSalesTax($this->kSteuerklasse), 4),
                 $currency
             );
             $this->cGesamtpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString(
@@ -372,7 +372,7 @@ class WarenkorbPos
                 $currency
             );
             $this->cEinzelpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
-                TaxHelper::getGross($this->fPreis, TaxHelper::getSalesTax($this->kSteuerklasse), 4),
+                Tax::getGross($this->fPreis, Tax::getSalesTax($this->kSteuerklasse), 4),
                 $currency
             );
             $this->cEinzelpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString($this->fPreis, $currency);
@@ -385,7 +385,7 @@ class WarenkorbPos
             }
             if ($this->istKonfigVater()) {
                 $this->cKonfigpreisLocalized[0][$currencyName]       = Preise::getLocalizedPriceString(
-                    TaxHelper::getGross($this->fPreis * $this->nAnzahl, TaxHelper::getSalesTax($this->kSteuerklasse), 4),
+                    Tax::getGross($this->fPreis * $this->nAnzahl, Tax::getSalesTax($this->kSteuerklasse), 4),
                     $currency
                 );
                 $this->cKonfigpreisLocalized[1][$currencyName]       = Preise::getLocalizedPriceString(
@@ -393,7 +393,7 @@ class WarenkorbPos
                     $currency
                 );
                 $this->cKonfigeinzelpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
-                    TaxHelper::getGross($this->fPreis, TaxHelper::getSalesTax($this->kSteuerklasse), 4),
+                    Tax::getGross($this->fPreis, Tax::getSalesTax($this->kSteuerklasse), 4),
                     $currency
                 );
                 $this->cKonfigeinzelpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString(
@@ -409,9 +409,9 @@ class WarenkorbPos
                 foreach (\Session\Session::getCart()->PositionenArr as $nPos => $oPosition) {
                     if ($this->cUnique === $oPosition->cUnique) {
                         $fPreisNetto  += $oPosition->fPreis * $oPosition->nAnzahl;
-                        $fPreisBrutto += TaxHelper::getGross(
+                        $fPreisBrutto += Tax::getGross(
                             $oPosition->fPreis * $oPosition->nAnzahl,
-                            TaxHelper::getSalesTax($oPosition->kSteuerklasse),
+                            Tax::getSalesTax($oPosition->kSteuerklasse),
                             4
                         );
 
@@ -558,7 +558,7 @@ class WarenkorbPos
 
             $cartPos->oEstimatedDelivery->localized = (!empty($cartPos->oEstimatedDelivery->longestMin)
                 && !empty($cartPos->oEstimatedDelivery->longestMax))
-                ? VersandartHelper::getDeliverytimeEstimationText(
+                ? ShippingMethod::getDeliverytimeEstimationText(
                     $cartPos->oEstimatedDelivery->longestMin,
                     $cartPos->oEstimatedDelivery->longestMax
                 )

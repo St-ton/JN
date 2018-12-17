@@ -13,6 +13,7 @@ use Plugin\Admin\Validation\Items\Checkboxes;
 use Plugin\Admin\Validation\Items\DateCreated;
 use Plugin\Admin\Validation\Items\Exports;
 use Plugin\Admin\Validation\Items\ExtendedTemplates;
+use Plugin\Admin\Validation\Items\ExtensionDir;
 use Plugin\Admin\Validation\Items\FrontendLinks;
 use Plugin\Admin\Validation\Items\Hooks;
 use Plugin\Admin\Validation\Items\Installation;
@@ -44,9 +45,9 @@ class ExtensionValidationFactory
      */
     public function getValidations($node, $dir, $version, $pluginID): array
     {
-        $validation = [];
-//        $validation[] = new Bootstrapper($node, $dir, $version, $pluginID);
+        $validation   = [];
         $validation[] = new Name($node, $dir, $version, $pluginID);
+        $validation[] = new ExtensionDir($node, $dir, $version, $pluginID);
         $validation[] = new XMLVersion($node, $dir, $version, $pluginID);
         $validation[] = new DateCreated($node, $dir, $version, $pluginID);
         $validation[] = new PluginID($node, $dir, $version, $pluginID);

@@ -145,10 +145,11 @@ final class BoxAdmin
                 FROM tboxensichtbar
                 LEFT JOIN tboxen
                     ON tboxensichtbar.kBox = tboxen.kBox
-                    WHERE tboxensichtbar.kSeite = :pageid
-                        AND tboxen.ePosition = :position
-                        AND tboxen.kContainer = :containerid
-                ORDER BY tboxensichtbar.nSort DESC LIMIT 1',
+                WHERE tboxensichtbar.kSeite = :pageid
+                    AND tboxen.ePosition = :position
+                    AND tboxen.kContainer = :containerid
+                ORDER BY tboxensichtbar.nSort DESC
+                LIMIT 1',
             [
                 'pageid'      => $pageID,
                 'position'    => $position,
@@ -323,8 +324,8 @@ final class BoxAdmin
                 ON DUPLICATE KEY UPDATE
                   bAnzeigen = :show',
             [
-                'show' => $show,
-                'page' => $pageID,
+                'show'     => $show,
+                'page'     => $pageID,
                 'position' => $position
             ],
             ReturnType::DEFAULT
@@ -355,10 +356,10 @@ final class BoxAdmin
                         ON DUPLICATE KEY UPDATE
                           nSort = :sort, bAktiv = :active',
                     [
-                        'boxID' => $boxID,
+                        'boxID'         => $boxID,
                         'validPageType' => $validPageType,
-                        'sort' => $nSort,
-                        'active' => $active
+                        'sort'          => $nSort,
+                        'active'        => $active
                     ],
                     ReturnType::DEFAULT
                 );
@@ -373,10 +374,10 @@ final class BoxAdmin
                     ON DUPLICATE KEY UPDATE
                       nSort = :sort, bAktiv = :active',
                 [
-                    'boxID' => $boxID,
+                    'boxID'         => $boxID,
                     'validPageType' => $pageID,
-                    'sort' => $nSort,
-                    'active' => $active
+                    'sort'          => $nSort,
+                    'active'        => $active
                 ],
                 ReturnType::DEFAULT
             ) !== 0;
@@ -640,7 +641,7 @@ final class BoxAdmin
     {
         return \Functional\map($this->getValidPageTypes(), function ($pageID) {
             return [
-                'pageID' => $pageID,
+                'pageID'   => $pageID,
                 'pageName' => $this->mapPageTypeToPageName($pageID)
             ];
         });

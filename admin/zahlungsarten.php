@@ -18,7 +18,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'zahlungsarten_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
-loadConfigLocalizations(true, true);
+\L10n\GetText::getInstance()->loadConfigLocales(true, true);
 
 /** @global Smarty\JTLSmarty $smarty */
 $db               = Shop::Container()->getDB();
@@ -161,7 +161,7 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
                 [CONF_ZAHLUNGSARTEN, $Conf[$i]->cWertName]
             );
             $db->insert('teinstellungen', $aktWert);
-            localizeConfig($Conf[$i]);
+            \L10n\GetText::getInstance()->localizeConfig($Conf[$i]);
         }
     }
 
@@ -256,7 +256,7 @@ if ($step === 'einstellen') {
                         '*',
                         'nSort'
                     );
-                    localizeConfigValues($Conf[$i], $Conf[$i]->ConfWerte);
+                    \L10n\GetText::getInstance()->localizeConfigValues($Conf[$i], $Conf[$i]->ConfWerte);
                 }
                 $setValue                = $db->select(
                     'teinstellungen',
@@ -266,7 +266,7 @@ if ($step === 'einstellen') {
                     $Conf[$i]->cWertName
                 );
                 $Conf[$i]->gesetzterWert = $setValue->cWert ?? null;
-                localizeConfig($Conf[$i]);
+                \L10n\GetText::getInstance()->localizeConfig($Conf[$i]);
             }
         }
 

@@ -13,7 +13,7 @@ use Helpers\Request;
  */
 function getAdminSectionSettings($configSectionID)
 {
-    loadConfigLocalizations();
+    \L10n\GetText::getInstance()->loadConfigLocales();
 
     $db = Shop::Container()->getDB();
     if (is_array($configSectionID)) {
@@ -40,7 +40,7 @@ function getAdminSectionSettings($configSectionID)
         $conf->nStandardAnzeigen     = (int)$conf->nStandardAnzeigen;
         $conf->nModul                = (int)$conf->nModul;
 
-        localizeConfig($conf);
+        \L10n\GetText::getInstance()->localizeConfig($conf);
 
         if ($conf->cInputTyp === 'listbox') {
             $conf->ConfWerte = $db->selectAll(
@@ -66,7 +66,7 @@ function getAdminSectionSettings($configSectionID)
                 'nSort'
             );
 
-            localizeConfigValues($conf, $conf->ConfWerte);
+            \L10n\GetText::getInstance()->localizeConfigValues($conf, $conf->ConfWerte);
         }
 
         if ($conf->cInputTyp === 'listbox') {
@@ -627,88 +627,4 @@ function getCsvDelimiter(string $filename)
     fclose($file);
 
     return ';';
-}
-
-/**
- * @param bool $withGroups
- * @param bool $withSections
- */
-function loadConfigLocalizations($withGroups = false, $withSections = false)
-{
-    L10n\GetText::getInstance()->loadAdminLocale('configs/configs')
-                               ->loadAdminLocale('configs/values')
-                               ->loadAdminLocale('configs/groups');
-
-    if ($withGroups) {
-        L10n\GetText::getInstance()->loadAdminLocale('configs/groups');
-    }
-
-    if ($withSections) {
-        L10n\GetText::getInstance()->loadAdminLocale('configs/sections');
-    }
-}
-
-/**
- * @param object $config
- */
-function localizeConfig($config)
-{
-    if ($config->cConf === 'Y') {
-        $config->cName         = __("{$config->cWertName}_name");
-        $config->cBeschreibung = __("{$config->cWertName}_desc");
-
-        if ($config->cBeschreibung === "{$config->cWertName}_desc") {
-            $config->cBeschreibung = '';
-        }
-    } elseif ($config->cConf === 'N') {
-        $config->cName = __("configgroup_{$config->kEinstellungenConf}");
-    }
-}
-
-/**
- * @param object[] $configs
- */
-function localizeConfigs($configs)
-{
-    foreach ($configs as $config) {
-        localizeConfig($config);
-    }
-}
-
-/**
- * @param object $config
- * @param object $value
- */
-function localizeConfigValue($config, $value)
-{
-    $value->cName = __("{$config->cWertName}_value({$value->cWert})");
-}
-
-/**
- * @param object $config
- * @param object[] $values
- */
-function localizeConfigValues($config, $values)
-{
-    foreach ($values as $value) {
-        localizeConfigValue($config, $value);
-    }
-}
-
-/**
- * @param object $section
- */
-function localizeConfigSection($section)
-{
-    $section->cName = __("configsection_{$section->kEinstellungenSektion}");
-}
-
-/**
- * @param object[] $sections
- */
-function localizeConfigSections($sections)
-{
-    foreach ($sections as $section) {
-        localizeConfigSection($section);
-    }
 }

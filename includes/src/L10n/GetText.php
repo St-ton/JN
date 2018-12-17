@@ -135,4 +135,87 @@ class GetText
 
         return $this;
     }
+    /**
+     * @param bool $withGroups
+     * @param bool $withSections
+     */
+    public function loadConfigLocales(bool $withGroups = false, bool $withSections = false)
+    {
+        $this->loadAdminLocale('configs/configs')
+             ->loadAdminLocale('configs/values')
+             ->loadAdminLocale('configs/groups');
+
+        if ($withGroups) {
+            $this->loadAdminLocale('configs/groups');
+        }
+
+        if ($withSections) {
+            $this->loadAdminLocale('configs/sections');
+        }
+    }
+
+    /**
+     * @param object $config
+     */
+    public function localizeConfig($config)
+    {
+        if ($config->cConf === 'Y') {
+            $config->cName         = __($config->cWertName . '_name');
+            $config->cBeschreibung = __($config->cWertName . '_desc');
+
+            if ($config->cBeschreibung === $config->cWertName . '_desc') {
+                $config->cBeschreibung = '';
+            }
+        } elseif ($config->cConf === 'N') {
+            $config->cName = __('configgroup_' . $config->kEinstellungenConf);
+        }
+    }
+
+    /**
+     * @param object[] $configs
+     */
+    public function localizeConfigs(array $configs)
+    {
+        foreach ($configs as $config) {
+            $this->localizeConfig($config);
+        }
+    }
+
+    /**
+     * @param object $config
+     * @param object $value
+     */
+    public function localizeConfigValue($config, $value)
+    {
+        $value->cName = __($config->cWertName . '_value(' . $value->cWert . ')');
+    }
+
+    /**
+     * @param object $config
+     * @param object[] $values
+     */
+    public function localizeConfigValues($config, $values)
+    {
+        foreach ($values as $value) {
+            $this->localizeConfigValue($config, $value);
+        }
+    }
+
+    /**
+     * @param object $section
+     */
+    public function localizeConfigSection($section)
+    {
+        $section->cName = __('configsection_' . $section->kEinstellungenSektion);
+    }
+
+    /**
+     * @param object[] $sections
+     */
+    public function localizeConfigSections($sections)
+    {
+        foreach ($sections as $section) {
+            $this->localizeConfigSection($section);
+        }
+    }
 }

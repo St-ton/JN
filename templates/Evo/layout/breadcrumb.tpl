@@ -13,7 +13,7 @@
                         {if $oItem@first}
                             {block name='breadcrumb-first-item'}
                                 <li class="breadcrumb-item first" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
-                                    <a itemprop="item" itemscope itemtype="http://schema.org/Thing" href="{$oItem->getURLFull()}" title="{$oItem->getName()|escape:'html'}">
+                                    <a itemprop="item" href="{$oItem->getURLFull()}" title="{$oItem->getName()|escape:'html'}">
                                         <span class="fa fa-home"></span>
                                         <span itemprop="name" class="hidden">{$oItem->getName()|escape:'html'}</span>
                                     </a>
@@ -23,25 +23,24 @@
                             {/block}
                         {elseif $oItem@last}
                             {block name='breadcrumb-last-item'}
-                                <li class="breadcrumb-item last" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
-                                    <span itemprop="name">
-                                        {if $oItem->getName() !== null}
-                                            {if $oItem->getHasChild() === true}
-                                                <a href="{$oItem->getURLFull()}" title="{$oItem->getName()|escape:'html'}">{$oItem->getName()}</a>
-                                            {else}
-                                                {$oItem->getName()}
-                                            {/if}
-                                        {elseif !empty($Suchergebnisse->getSearchTermWrite())}
-                                            {$Suchergebnisse->getSearchTermWrite()}
-                                        {/if}
-                                    </span>
-                                    <meta itemprop="position" content="{$oItem@iteration}" />
-                                </li>
+                                {$oItem|@var_dump}
+                                {if $oItem->getName() !== null}
+                                    <li class="breadcrumb-item last" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+                                        <span itemprop="name">
+                                            <a href="{$oItem->getURLFull()}" title="{$oItem->getName()|escape:'html'}">{$oItem->getName()}</a>
+                                        </span>
+                                        <meta itemprop="position" content="{$oItem@iteration}" />
+                                    </li>
+                                {elseif !empty($Suchergebnisse->getSearchTermWrite())}
+                                    <li class="breadcrumb-item last">
+                                        {$Suchergebnisse->getSearchTermWrite()}
+                                    </li>
+                                {/if}
                             {/block}
                         {else}
                             {block name='breadcrumb-item'}
                                 <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
-                                    <a itemprop="item" itemscope itemtype="http://schema.org/Thing" href="{$oItem->getURLFull()}" title="{$oItem->getName()|escape:'html'}">
+                                    <a itemprop="item" href="{$oItem->getURLFull()}" title="{$oItem->getName()|escape:'html'}">
                                         <span itemprop="name">{$oItem->getName()}</span>
                                     </a>
                                     <meta itemprop="url" content="{$oItem->getURLFull()}" />

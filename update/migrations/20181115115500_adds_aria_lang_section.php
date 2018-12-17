@@ -38,7 +38,7 @@ class Migration_20181115115500 extends Migration implements IMigration
         $this->setLocalization('ger', 'aria', 'success', 'Kontext: Erfolg');
         $this->setLocalization('eng', 'aria', 'success', 'success context');
 
-        $this->setLocalization('ger', 'aria', 'danger', 'Kontext: Gefahr');
+        $this->setLocalization('ger', 'aria', 'danger', 'Kontext: Achtung');
         $this->setLocalization('eng', 'aria', 'danger', 'danger context');
 
         $this->setLocalization('ger', 'aria', 'warning', 'Kontext: Warnung');

@@ -6,13 +6,14 @@
 
 namespace OPC\Portlets;
 
+use OPC\Portlet;
 use OPC\PortletInstance;
 
 /**
  * Class Accordion
  * @package OPC\Portlets
  */
-class Accordion extends \OPC\Portlet
+class Accordion extends Portlet
 {
     /**
      * @param PortletInstance $instance
@@ -37,27 +38,19 @@ class Accordion extends \OPC\Portlet
     }
 
     /**
-     * @return string
-     */
-    public function getButtonHtml(): string
-    {
-        return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Akkordeon';
-    }
-
-    /**
      * @return array
      */
     public function getPropertyDesc(): array
     {
         return [
             'cllps-initial-state' => [
-                'label'      => 'initial als ausgeklappt anzeigen',
+                'label'      => __('initially expanded'),
                 'type'       => 'checkbox',
-                'help'       => 'In der Vorschau und beim Bearbeiten ist wird der Bereich immer angezeigt.',
+                'help'       => __('In the preview and while editing the area is always visible.'),
                 'dspl_width' => 50,
             ],
             'layout'              => [
-                'label'      => 'Anzeigen als',
+                'label'      => __('Display as'),
                 'type'       => 'radio',
                 'options'    => [
                     'button' => 'Button',
@@ -79,21 +72,21 @@ class Accordion extends \OPC\Portlet
                 'required'             => true,
             ],
             'cllps-button-type'   => [
-                'label'      => 'Typ',
+                'label'      => __('Type'),
                 'type'       => 'select',
                 'options'    => [
-                    'default' => 'Standard',
-                    'primary' => 'Primär',
-                    'success' => 'Erfolg',
-                    'info'    => 'Info',
-                    'warning' => 'Warnung',
-                    'danger'  => 'Gefahr',
+                    'default' => __('default'),
+                    'primary' => __('primary'),
+                    'success' => __('success'),
+                    'info'    => __('info'),
+                    'warning' => __('warning'),
+                    'danger'  => __('danger'),
                 ],
                 'default'    => 'default',
                 'dspl_width' => 50,
             ],
             'cllps-button-size'   => [
-                'label'              => 'Größe',
+                'label'              => __('Size'),
                 'type'               => 'select',
                 'options'            => [
                     'xs' => 'XS',
@@ -114,7 +107,7 @@ class Accordion extends \OPC\Portlet
     public function getPropertyTabs(): array
     {
         return [
-            'Styles' => 'styles',
+            __('Styles') => 'styles',
         ];
     }
 }

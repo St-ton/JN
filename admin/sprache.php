@@ -5,6 +5,12 @@
  *
  * @global smarty
  */
+
+use Helpers\Form;
+use Helpers\Request;
+use Pagination\Filter;
+use Pagination\Pagination;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('LANGUAGE_VIEW', true, true);
@@ -22,11 +28,11 @@ $kSprache    = (int)$_SESSION['kSprache'];
 $cISOSprache = $_SESSION['cISOSprache'];
 
 if (isset($_FILES['csvfile']['tmp_name'])
-    && FormHelper::validateToken()
-    && RequestHelper::verifyGPDataString('importcsv') === 'langvars'
+    && Form::validateToken()
+    && Request::verifyGPDataString('importcsv') === 'langvars'
 ) {
     $csvFilename = $_FILES['csvfile']['tmp_name'];
-    $importType  = RequestHelper::verifyGPCDataInt('importType');
+    $importType  = Request::verifyGPCDataInt('importType');
     $res         = $lang->import($csvFilename, $cISOSprache, $importType);
 
     if ($res === false) {
@@ -58,7 +64,7 @@ foreach ($availableLanguages as $oSprache) {
     $oSprache->bImported = in_array($oSprache, $installedLanguages);
 }
 
-if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
+if (isset($_REQUEST['action']) && Form::validateToken()) {
     $action = $_REQUEST['action'];
 
     switch ($action) {
@@ -87,7 +93,11 @@ if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
             $oVariable->bOverwrite_arr = $_REQUEST['bOverwrite_arr'] ?? [];
             $cFehler_arr               = [];
             $oVariable->cSprachsektion = Shop::Container()->getDB()
-                ->select('tsprachsektion', 'kSprachsektion', (int)$oVariable->kSprachsektion)
+                                             ->select(
+                                                 'tsprachsektion',
+                                                 'kSprachsektion',
+                                                 (int)$oVariable->kSprachsektion
+                                             )
                 ->cName;
 
             $oWertDB_arr = Shop::Container()->getDB()->queryPrepared(
@@ -113,8 +123,12 @@ if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
 
             if (count($oVariable->bOverwrite_arr) !== count($oWertDB_arr)) {
                 $cFehler_arr[] = 'Die Variable existiert bereits für folgende Sprachen: ' .
-                    implode(' und ', array_map(function ($oWertDB) { return $oWertDB->cSpracheName; }, $oWertDB_arr)) .
-                    '. Bitte wählen Sie aus, welche Versionen sie überschreiben möchten!';
+                    implode(
+                        ' und ',
+                        array_map(function ($oWertDB) {
+                            return $oWertDB->cSpracheName;
+                        }, $oWertDB_arr)
+                    ) . '. Bitte wählen Sie aus, welche Versionen sie überschreiben möchten!';
             }
 
             if (count($cFehler_arr) > 0) {
@@ -192,37 +206,41 @@ if ($step === 'newvar') {
         ->assign('oVariable', $oVariable)
         ->assign('oSprache_arr', $availableLanguages);
 } elseif ($step === 'overview') {
-    $oFilter                       = new Filter('langvars');
-    $oSelectfield                  = $oFilter->addSelectfield('Sektion', 'sw.kSprachsektion', 0);
-    $oSelectfield->bReloadOnChange = true;
-    $oSelectfield->addSelectOption('(alle)', '', 0);
+    $filter                      = new Filter('langvars');
+    $selectField                 = $filter->addSelectfield('Sektion', 'sw.kSprachsektion', 0);
+    $selectField->reloadOnChange = true;
+    $selectField->addSelectOption('(alle)', '', \Pagination\Operation::CUSTOM);
 
     foreach ($oSektion_arr as $oSektion) {
-        $oSelectfield->addSelectOption($oSektion->cName, $oSektion->kSprachsektion, 4);
+        $selectField->addSelectOption($oSektion->cName, $oSektion->kSprachsektion, \Pagination\Operation::EQUALS);
     }
 
-    $oFilter->addTextfield(['Suche', 'Suchen im Variablennamen und im Inhalt'], ['sw.cName', 'sw.cWert'], 1);
-    $oSelectfield = $oFilter->addSelectfield('System/eigene', 'bSystem', 0);
-    $oSelectfield->addSelectOption('beide', '', 0);
-    $oSelectfield->addSelectOption('nur System', '1', 4);
-    $oSelectfield->addSelectOption('nur eigene', '0', 4);
-    $oFilter->assemble();
-    $cFilterSQL = $oFilter->getWhereSQL();
+    $filter->addTextfield(
+        ['Suche', 'Suchen im Variablennamen und im Inhalt'],
+        ['sw.cName', 'sw.cWert'],
+        \Pagination\Operation::CONTAINS
+    );
+    $selectField = $filter->addSelectfield('System/eigene', 'bSystem', 0);
+    $selectField->addSelectOption('beide', '', \Pagination\Operation::CUSTOM);
+    $selectField->addSelectOption('nur System', '1', \Pagination\Operation::EQUALS);
+    $selectField->addSelectOption('nur eigene', '0', \Pagination\Operation::EQUALS);
+    $filter->assemble();
+    $filterSQL = $filter->getWhereSQL();
 
-    $oWert_arr = Shop::Container()->getDB()->query(
+    $values = Shop::Container()->getDB()->query(
         'SELECT sw.cName, sw.cWert, sw.cStandard, sw.bSystem, ss.kSprachsektion, ss.cName AS cSektionName
             FROM tsprachwerte AS sw
                 JOIN tsprachsektion AS ss
                     ON ss.kSprachsektion = sw.kSprachsektion
             WHERE sw.kSprachISO = ' . (int)$kSprachISO . '
-                ' . ($cFilterSQL !== '' ? 'AND ' . $cFilterSQL : ''),
+                ' . ($filterSQL !== '' ? 'AND ' . $filterSQL : ''),
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
     handleCsvExportAction(
         'langvars',
         $cISOSprache . '_' . date('YmdHis') . '.slf',
-        $oWert_arr,
+        $values,
         ['cSektionName', 'cName', 'cWert', 'bSystem'],
         [],
         ';',
@@ -231,7 +249,7 @@ if ($step === 'newvar') {
 
     $oPagination = (new Pagination('langvars'))
         ->setRange(4)
-        ->setItemArray($oWert_arr)
+        ->setItemArray($values)
         ->assemble();
 
     $oNotFound_arr = Shop::Container()->getDB()->query(
@@ -244,7 +262,7 @@ if ($step === 'newvar') {
     );
 
     $smarty
-        ->assign('oFilter', $oFilter)
+        ->assign('oFilter', $filter)
         ->assign('oPagination', $oPagination)
         ->assign('oWert_arr', $oPagination->getPageItems())
         ->assign('bSpracheAktiv', $bSpracheAktiv)

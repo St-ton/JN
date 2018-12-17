@@ -10,6 +10,7 @@ use Cron\JobInterface;
 use Cron\Jobs\Export;
 use Cron\Jobs\Newsletter;
 use Cron\Jobs\Statusmail;
+use Cron\Jobs\GeneralDataProtect;
 use Cron\Type;
 
 /**
@@ -31,9 +32,11 @@ class JobTypeToJob
                 return Statusmail::class;
             case Type::NEWSLETTER:
                 return Newsletter::class;
+            case Type::DATAPROTECTION:
+                return GeneralDataProtect::class;
             default:
                 $mapping = null;
-                \Shop::Event()->fire('mapCronJobType', ['type' => $type, 'mapping' => &$mapping]);
+                \Shop::Event()->fire(\Events\Event::MAP_CRONJOB_TYPE, ['type' => $type, 'mapping' => &$mapping]);
                 if ($mapping === null) {
                     throw new \InvalidArgumentException('Invalid job type: ' . $type);
                 }

@@ -6,12 +6,13 @@
 
 namespace Sitemap\Factories;
 
+use DB\ReturnType;
 use function Functional\first;
 use function Functional\map;
 
 /**
  * Class NewsItem
- * @package Sitemap\Generators
+ * @package Sitemap\Factories
  */
 final class NewsItem extends AbstractFactory
 {
@@ -39,7 +40,7 @@ final class NewsItem extends AbstractFactory
                     AND (tnews.cKundengruppe LIKE '%;-1;%'
                     OR FIND_IN_SET('" . first($customerGroups) . "', REPLACE(tnews.cKundengruppe, ';',',')) > 0) 
                     ORDER BY tnews.dErstellt",
-            \DB\ReturnType::QUERYSINGLE
+            ReturnType::QUERYSINGLE
         );
         while (($ni = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
             $ni->langID = (int)$ni->langID;

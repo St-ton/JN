@@ -52,4 +52,3 @@ class FallBackPayment extends PaymentMethod
         return false;
     }
 }
-

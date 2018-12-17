@@ -3,6 +3,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+use Helpers\Request;
+use Pagination\Pagination;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
@@ -15,15 +20,15 @@ $cFehler       = '';
 $step          = 'kwk_uebersicht';
 
 setzeSprache();
-if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
+if (strlen(Request::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_KUNDENWERBENKUNDEN, $_POST);
 }
-if (RequestHelper::verifyGPCDataInt('KwK') === 1
-    && RequestHelper::verifyGPCDataInt('nichtreggt_loeschen') === 1
-    && FormHelper::validateToken()
+if (Request::verifyGPCDataInt('KwK') === 1
+    && Request::verifyGPCDataInt('nichtreggt_loeschen') === 1
+    && Form::validateToken()
 ) {
     $kKundenWerbenKunden_arr = $_POST['kKundenWerbenKunden'];
     if (is_array($kKundenWerbenKunden_arr) && count($kKundenWerbenKunden_arr) > 0) {
@@ -57,10 +62,10 @@ if ($step === 'kwk_uebersicht') {
     $oPagiNichtReg = (new Pagination('nichtreg'))
         ->setItemCount($oAnzahlReg->nAnzahl)
         ->assemble();
-    $oPagiReg = (new Pagination('reg'))
+    $oPagiReg      = (new Pagination('reg'))
         ->setItemCount($oAnzahlNichtReg->nAnzahl)
         ->assemble();
-    $oPagiPraemie = (new Pagination('praemie'))
+    $oPagiPraemie  = (new Pagination('praemie'))
         ->setItemCount($oAnzahlPraemie->nAnzahl)
         ->assemble();
 
@@ -81,7 +86,7 @@ if ($step === 'kwk_uebersicht') {
 
         $oKwKNichtReg_arr[$i]->cBestandNachname = $oKunde->cNachname;
     }
-    $oKwKReg_arr = Shop::Container()->getDB()->query(
+    $registered = Shop::Container()->getDB()->query(
         "SELECT tkundenwerbenkunden.*, 
             DATE_FORMAT(tkundenwerbenkunden.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de,
             DATE_FORMAT(tkunde.dErstellt, '%d.%m.%Y') AS dBestandErstellt_de
@@ -93,12 +98,12 @@ if ($step === 'kwk_uebersicht') {
             LIMIT " . $oPagiReg->getLimitSQL(),
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    foreach ($oKwKReg_arr as $i => $oKwKReg) {
-        $oBestandsKunde = new Kunde($oKwKReg->kKunde ?? 0);
+    foreach ($registered as $customer) {
+        $oBestandsKunde = new Kunde($customer->kKunde ?? 0);
 
-        $oKwKReg_arr[$i]->cBestandVorname  = $oBestandsKunde->cVorname;
-        $oKwKReg_arr[$i]->cBestandNachname = $oBestandsKunde->cNachname;
-        $oKwKReg_arr[$i]->cMail            = $oBestandsKunde->cMail;
+        $customer->cBestandVorname  = $oBestandsKunde->cVorname;
+        $customer->cBestandNachname = $oBestandsKunde->cNachname;
+        $customer->cMail            = $oBestandsKunde->cMail;
     }
     // letzten 100 Bestandskunden die Guthaben erhalten haben
     $oKwKBestandBonus_arr = Shop::Container()->getDB()->query(
@@ -118,12 +123,12 @@ if ($step === 'kwk_uebersicht') {
         $oKwKBestandBonus_arr[$i]->cBestandNachname = $oKunde->cNachname;
     }
     $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_KUNDENWERBENKUNDEN))
-        ->assign('oKwKNichtReg_arr', $oKwKNichtReg_arr)
-        ->assign('oKwKReg_arr', $oKwKReg_arr)
-        ->assign('oKwKBestandBonus_arr', $oKwKBestandBonus_arr)
-        ->assign('oPagiNichtReg', $oPagiNichtReg)
-        ->assign('oPagiReg', $oPagiReg)
-        ->assign('oPagiPraemie', $oPagiPraemie);
+           ->assign('oKwKNichtReg_arr', $oKwKNichtReg_arr)
+           ->assign('oKwKReg_arr', $registered)
+           ->assign('oKwKBestandBonus_arr', $oKwKBestandBonus_arr)
+           ->assign('oPagiNichtReg', $oPagiNichtReg)
+           ->assign('oPagiReg', $oPagiReg)
+           ->assign('oPagiPraemie', $oPagiPraemie);
 }
 $smarty->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('kSprache', $_SESSION['kSprache'])

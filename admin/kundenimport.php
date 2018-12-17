@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('IMPORT_CUSTOMER_VIEW', true, true);
@@ -11,7 +14,6 @@ require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 
-//jtl2
 $format = [
     'cPasswort', 'cAnrede', 'cTitel', 'cVorname', 'cNachname', 'cFirma',
     'cStrasse', 'cHausnummer', 'cAdressZusatz', 'cPLZ', 'cOrt', 'cBundesland',
@@ -22,11 +24,11 @@ $format = [
 if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
     && (int)$_POST['kundenimport'] === 1
     && $_FILES['csv']
-    && FormHelper::validateToken()
+    && Form::validateToken()
     && strlen($_FILES['csv']['tmp_name']) > 0
 ) {
     $delimiter = getCsvDelimiter($_FILES['csv']['tmp_name']);
-    $file = fopen($_FILES['csv']['tmp_name'], 'r');
+    $file      = fopen($_FILES['csv']['tmp_name'], 'r');
     if ($file !== false) {
         $row      = 0;
         $fmt      = [];
@@ -35,7 +37,7 @@ if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
         while ($data = fgetcsv($file, 2000, $delimiter, '"')) {
             if ($row === 0) {
                 $hinweis .= 'Checke Kopfzeile ...';
-                $fmt = checkformat($data);
+                $fmt      = checkformat($data);
                 if ($fmt === -1) {
                     $hinweis .= ' - Format nicht erkannt!';
                     break;
@@ -142,7 +144,7 @@ function processImport($fmt, $data)
 
     $old_mail = Shop::Container()->getDB()->select('tkunde', 'cMail', $kunde->cMail);
     if (isset($old_mail->kKunde) && $old_mail->kKunde > 0) {
-        return "Kunde mit dieser Emailadresse bereits vorhanden: ($kunde->cMail)! Übergehe Datensatz.";
+        return 'Kunde mit dieser Emailadresse bereits vorhanden: ' . $kunde->cMail . '! Übergehe Datensatz.';
     }
     if ($kunde->cAnrede === 'f' || strtolower($kunde->cAnrede) === 'frau') {
         $kunde->cAnrede = 'w';

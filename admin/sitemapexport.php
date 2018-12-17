@@ -3,6 +3,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+use Helpers\Request;
+use Pagination\Pagination;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('EXPORT_SITEMAP_VIEW', true, true);
@@ -23,13 +28,13 @@ if (!is_writable(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml')) {
     $cHinweis = '<i>' . PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml</i> wurde erfolgreich aktualisiert.';
 }
 // Tabs
-if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
+if (strlen(Request::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_SITEMAP, $_POST);
-} elseif (RequestHelper::verifyGPCDataInt('download_edit') === 1) {
+} elseif (Request::verifyGPCDataInt('download_edit') === 1) {
     $trackers = isset($_POST['kSitemapTracker'])
         ? array_map('\intval', $_POST['kSitemapTracker'])
         : [];
@@ -43,7 +48,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     }
 
     $cHinweis = 'Ihre markierten Sitemap Downloads wurden erfolgreich gelöscht.';
-} elseif (RequestHelper::verifyGPCDataInt('report_edit') === 1) {
+} elseif (Request::verifyGPCDataInt('report_edit') === 1) {
     $reports = isset($_POST['kSitemapReport'])
         ? array_map('\intval', $_POST['kSitemapReport'])
         : [];
@@ -59,10 +64,10 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis = 'Ihre markierten Sitemap Reports wurden erfolgreich gelöscht.';
 }
 
-$nYearDownloads = RequestHelper::verifyGPCDataInt('nYear_downloads');
-$nYearReports   = RequestHelper::verifyGPCDataInt('nYear_reports');
+$nYearDownloads = Request::verifyGPCDataInt('nYear_downloads');
+$nYearReports   = Request::verifyGPCDataInt('nYear_reports');
 
-if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && FormHelper::validateToken()) {
+if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && Form::validateToken()) {
     Shop::Container()->getDB()->query(
         'DELETE FROM tsitemaptracker
             WHERE YEAR(tsitemaptracker.dErstellt) = ' . $nYearDownloads,
@@ -72,7 +77,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && F
     $nYearDownloads = 0;
 }
 
-if (isset($_POST['action']) && $_POST['action'] === 'year_reports_delete' && FormHelper::validateToken()) {
+if (isset($_POST['action']) && $_POST['action'] === 'year_reports_delete' && Form::validateToken()) {
     Shop::Container()->getDB()->query(
         'DELETE FROM tsitemapreport
             WHERE YEAR(tsitemapreport.dErstellt) = ' . $nYearReports,
@@ -110,9 +115,9 @@ $oSitemapDownload_arr       = Shop::Container()->getDB()->query(
         FROM tsitemaptracker
         LEFT JOIN tbesucherbot 
             ON tbesucherbot.kBesucherBot = tsitemaptracker.kBesucherBot
-        WHERE YEAR(tsitemaptracker.dErstellt) = " . $nYearDownloads . "
+        WHERE YEAR(tsitemaptracker.dErstellt) = " . $nYearDownloads . '
         ORDER BY tsitemaptracker.dErstellt DESC
-        LIMIT " . $oSitemapDownloadPagination->getLimitSQL(),
+        LIMIT ' . $oSitemapDownloadPagination->getLimitSQL(),
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 
@@ -141,9 +146,9 @@ $oSitemapReportPagination = (new Pagination('SitemapReport'))
 $oSitemapReport_arr       = Shop::Container()->getDB()->query(
     "SELECT tsitemapreport.*, DATE_FORMAT(tsitemapreport.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_DE
         FROM tsitemapreport
-        WHERE YEAR(tsitemapreport.dErstellt) = " . $nYearReports . "
+        WHERE YEAR(tsitemapreport.dErstellt) = " . $nYearReports . '
         ORDER BY tsitemapreport.dErstellt DESC
-        LIMIT " . $oSitemapReportPagination->getLimitSQL(),
+        LIMIT ' . $oSitemapReportPagination->getLimitSQL(),
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 foreach ($oSitemapReport_arr as $i => $oSitemapReport) {

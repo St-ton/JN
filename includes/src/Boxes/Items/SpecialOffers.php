@@ -7,23 +7,24 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
+use Session\Session;
 
 /**
  * Class SpecialOffers
- * @package Boxes
+ * @package Boxes\Items
  */
 final class SpecialOffers extends AbstractBox
 {
     /**
-     * Cart constructor.
+     * SpecialOffers constructor.
      * @param array $config
      */
     public function __construct(array $config)
     {
         parent::__construct($config);
         $this->setShow(false);
-        $customerGroupID = \Session\Session::getCustomerGroup()->getID();
-        if ($customerGroupID && \Session\Session::getCustomerGroup()->mayViewCategories()) {
+        $customerGroupID = Session::getCustomerGroup()->getID();
+        if ($customerGroupID && Session::getCustomerGroup()->mayViewCategories()) {
             $cached         = true;
             $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
@@ -41,17 +42,16 @@ final class SpecialOffers extends AbstractBox
                         JOIN tsonderpreise 
                             ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
                         LEFT JOIN tartikelsichtbarkeit 
-                            ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
+                            ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                             AND tartikelsichtbarkeit.kKundengruppe = :cgid
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             AND tartikelsonderpreis.kArtikel = tartikel.kArtikel
                             AND tsonderpreise.kKundengruppe = :cgid
                             AND tartikelsonderpreis.cAktiv = 'Y'
                             AND tartikelsonderpreis.dStart <= NOW()
-                            AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())
-                            $stockFilterSQL
-                            $parentSQL
-                        ORDER BY rand() LIMIT :lmt",
+                            AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE()) " .
+                            $stockFilterSQL . $parentSQL . '
+                        ORDER BY rand() LIMIT :lmt',
                     ['lmt' => $limit, 'cgid' => $customerGroupID],
                     ReturnType::ARRAY_OF_OBJECTS
                 );
@@ -66,7 +66,7 @@ final class SpecialOffers extends AbstractBox
                 $products = new \ArtikelListe();
                 $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
                 $this->setProducts($products);
-                $this->setURL(\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_SPECIALOFFERS));
+                $this->setURL(\Helpers\SearchSpecial::buildURL(\SEARCHSPECIALS_SPECIALOFFERS));
                 \executeHook(\HOOK_BOXEN_INC_SONDERANGEBOTE, [
                     'box'        => &$this,
                     'cache_tags' => &$cacheTags,

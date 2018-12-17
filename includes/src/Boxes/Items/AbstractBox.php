@@ -13,11 +13,11 @@ use function Functional\first;
 
 /**
  * Class AbstractBox
- * @package Boxes
+ * @package Boxes\Items
  */
 abstract class AbstractBox implements BoxInterface
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -113,9 +113,14 @@ abstract class AbstractBox implements BoxInterface
     protected $templateFile = '';
 
     /**
-     * @var \Plugin|null
+     * @var \Plugin\Plugin|null
      */
     protected $plugin;
+
+    /**
+     * @var \Plugin\Extension|null
+     */
+    protected $extension;
 
     /**
      * @var int
@@ -416,19 +421,35 @@ abstract class AbstractBox implements BoxInterface
     }
 
     /**
-     * @return null|\Plugin
+     * @return null|\Plugin\Plugin
      */
-    public function getPlugin(): \Plugin
+    public function getPlugin(): ?\Plugin\Plugin
     {
         return $this->plugin;
     }
 
     /**
-     * @param null|\Plugin $plugin
+     * @param null|\Plugin\Plugin $plugin
      */
-    public function setPlugin(\Plugin $plugin): void
+    public function setPlugin(?\Plugin\Plugin $plugin): void
     {
         $this->plugin = $plugin;
+    }
+
+    /**
+     * @return null|\Plugin\Extension
+     */
+    public function getExtension(): ?\Plugin\Extension
+    {
+        return $this->extension;
+    }
+
+    /**
+     * @param null|\Plugin\Extension $extension
+     */
+    public function setExtension(?\Plugin\Extension $extension): void
+    {
+        $this->extension = $extension;
     }
 
     /**
@@ -808,10 +829,10 @@ abstract class AbstractBox implements BoxInterface
             if ($iCur++ >= $iMax) {
                 break;
             }
-            $cName               = $oCloud->cName ?? $oCloud->cSuche;
-            $cRandomColor        = (!$cColor || !$cColorHover) ? $gibTagFarbe() : '';
-            $cName               = \urlencode($cName);
-            $cName               = \str_replace('+', ' ', $cName); /* fix :) */
+            $cName          = $oCloud->cName ?? $oCloud->cSuche;
+            $cRandomColor   = (!$cColor || !$cColorHover) ? $gibTagFarbe() : '';
+            $cName          = \urlencode($cName);
+            $cName          = \str_replace('+', ' ', $cName); /* fix :) */
             $tags['tags'][] = [
                 'name'  => $cName,
                 'url'   => $oCloud->cURL,

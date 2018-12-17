@@ -4,17 +4,17 @@ require_once __DIR__. '/ipl_xml_request.php';
 
 /**
  * class ipl_module_config_request
- * 
+ *
  * @author Jan Wehrs (jan.wehrs@billpay.de)
  * @copyright Copyright 2010 Billpay GmbH
- * @license commercial 
+ * @license commercial
  */
 class ipl_module_config_request extends ipl_xml_request
 {
     /**
      * @var int
      */
-    private $invoicestatic         = 0;
+    private $invoicestatic = 0;
 
     /**
      * @var int
@@ -24,17 +24,17 @@ class ipl_module_config_request extends ipl_xml_request
     /**
      * @var int
      */
-    private $directdebitstatic     = 0;
+    private $directdebitstatic = 0;
 
     /**
      * @var int
      */
-    private $hirepurchasestatic    = 0;
+    private $hirepurchasestatic = 0;
 
     /**
      * @var int
      */
-    private $invoicemin         = 0;
+    private $invoicemin = 0;
 
     /**
      * @var int
@@ -44,22 +44,22 @@ class ipl_module_config_request extends ipl_xml_request
     /**
      * @var int
      */
-    private $directdebitmin     = 0;
+    private $directdebitmin = 0;
 
     /**
      * @var int
      */
-    private $hirepurchasemin    = 0;
+    private $hirepurchasemin = 0;
 
     /**
      * @var bool
      */
-    private $active                 = false;
+    private $active = false;
 
     /**
      * @var bool
      */
-    private $invoiceallowed         = false;
+    private $invoiceallowed = false;
 
     /**
      * @var bool
@@ -69,12 +69,12 @@ class ipl_module_config_request extends ipl_xml_request
     /**
      * @var bool
      */
-    private $directdebitallowed     = false;
+    private $directdebitallowed = false;
 
     /**
      * @var bool
      */
-    private $hirepurchaseallowed    = false;
+    private $hirepurchaseallowed = false;
 
     /**
      * @var array

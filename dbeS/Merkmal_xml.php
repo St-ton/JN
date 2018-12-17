@@ -473,10 +473,10 @@ function fuelleFehlendeMMWInSeo($oMM_arr)
                     "DELETE tmerkmalwertsprache, tseo FROM tmerkmalwertsprache
                         LEFT JOIN tseo
                             ON tseo.cKey = 'kMerkmalWert'
-                                AND tseo.kKey = " . (int)$oMMW->kMerkmalWert . "
-                                AND tseo.kSprache = " . (int)$oSprache->kSprache . "
-                        WHERE tmerkmalwertsprache.kMerkmalWert = " . (int)$oMMW->kMerkmalWert . "
-                            AND tmerkmalwertsprache.kSprache = " . (int)$oSprache->kSprache,
+                                AND tseo.kKey = " . (int)$oMMW->kMerkmalWert . '
+                                AND tseo.kSprache = ' . (int)$oSprache->kSprache . '
+                        WHERE tmerkmalwertsprache.kMerkmalWert = ' . (int)$oMMW->kMerkmalWert . '
+                            AND tmerkmalwertsprache.kSprache = ' . (int)$oSprache->kSprache,
                     \DB\ReturnType::DEFAULT
                 );
                 //@todo: 1062: Duplicate entry '' for key 'PRIMARY'

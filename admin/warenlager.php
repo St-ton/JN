@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('WAREHOUSE_VIEW', true, true);
@@ -10,7 +13,7 @@ $oAccount->permission('WAREHOUSE_VIEW', true, true);
 $cStep    = 'uebersicht';
 $cHinweis = '';
 $cFehler  = '';
-$cAction  = (isset($_POST['a']) && FormHelper::validateToken()) ? $_POST['a'] : null;
+$cAction  = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : null;
 
 if ($cAction === 'update') {
     Shop::Container()->getDB()->query('UPDATE twarenlager SET nAktiv = 0', \DB\ReturnType::AFFECTED_ROWS);

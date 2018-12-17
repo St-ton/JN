@@ -141,9 +141,9 @@ class Item extends AbstractItem
 
     /**
      * @param int $id
-     * @return ItemInterFace
+     * @return ItemInterface
      */
-    public function load(int $id): ItemInterFace
+    public function load(int $id): ItemInterface
     {
         $this->id = $id;
         $item     = $this->db->queryPrepared(
@@ -208,7 +208,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function map(array $localizedItems): ItemInterFace
+    public function map(array $localizedItems): ItemInterface
     {
         $baseURL = \Shop::getURL(true) . '/';
         foreach ($localizedItems as $item) {

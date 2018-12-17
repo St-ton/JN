@@ -14,6 +14,7 @@ use Session\Handler\SessionHandlerJTL;
 
 /**
  * Class Session
+ * @package Session
  */
 class Session
 {
@@ -84,24 +85,24 @@ class Session
     {
         self::$instance    = $this;
         self::$sessionName = $sessionName;
-        $bot               = SAVE_BOT_SESSION !== 0 && isset($_SERVER['HTTP_USER_AGENT'])
+        $bot               = \SAVE_BOT_SESSION !== 0 && isset($_SERVER['HTTP_USER_AGENT'])
             ? self::getIsCrawler($_SERVER['HTTP_USER_AGENT'])
             : false;
         \session_name(self::$sessionName);
-        if ($bot === false || SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NORMAL) {
+        if ($bot === false || \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NORMAL) {
             self::$handler = \ES_SESSIONS === 1
                 ? new SessionHandlerDB(\Shop::Container()->getDB())
                 : new SessionHandlerJTL();
         } else {
-            if (SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_COMBINED
-                || SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
+            if (\SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_COMBINED
+                || \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
             ) {
                 \session_id('jtl-bot');
             }
-            if (SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
-                || SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NEVER
+            if (\SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
+                || \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NEVER
             ) {
-                $save = SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
+                $save = \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
                     && \Shop::Container()->getCache()->isAvailable()
                     && \Shop::Container()->getCache()->isActive();
 
@@ -275,7 +276,7 @@ class Session
         foreach ($_SESSION['Sprachen'] as $oSprache) {
             $cISO              = \StringHandler::convertISO2ISO639($oSprache->cISO);
             $oSprache->cISO639 = $cISO;
-            $allowed[]    = $cISO;
+            $allowed[]         = $cISO;
             if ($oSprache->cShopStandard === 'Y') {
                 $defaultLang = $cISO;
             }
@@ -337,10 +338,10 @@ class Session
         }
         if (\Shop::Container()->getCache()->isCacheGroupActive(\CACHING_GROUP_CORE) === false) {
             $_SESSION['Linkgruppen'] = \Shop::Container()->getLinkService()->getLinkGroups();
-            $_SESSION['Hersteller']  = \HerstellerHelper::getInstance()->getManufacturers();
+            $_SESSION['Hersteller']  = \Helpers\Manufacturer::getInstance()->getManufacturers();
         }
         self::getCart()->loescheDeaktiviertePositionen();
-        \TaxHelper::setTaxRates();
+        \Helpers\Tax::setTaxRates();
         \Shop::Lang()->reset();
     }
 
@@ -349,7 +350,7 @@ class Session
      */
     private function checkWishlistDeletes(): self
     {
-        $index = \RequestHelper::verifyGPCDataInt('wlplo');
+        $index = \Helpers\Request::verifyGPCDataInt('wlplo');
         if ($index !== 0) {
             $wl = new \Wunschliste();
             $wl->entfernePos($index);
@@ -363,7 +364,7 @@ class Session
      */
     private function checkComparelistDeletes(): self
     {
-        $kVergleichlistePos = \RequestHelper::verifyGPCDataInt('vlplo');
+        $kVergleichlistePos = \Helpers\Request::verifyGPCDataInt('vlplo');
         if ($kVergleichlistePos !== 0
             && isset($_SESSION['Vergleichsliste']->oArtikel_arr)
             && \is_array($_SESSION['Vergleichsliste']->oArtikel_arr)
@@ -466,6 +467,22 @@ class Session
     }
 
     /**
+     * @return \Lieferadresse
+     */
+    public static function getDeliveryAddress(): \Lieferadresse
+    {
+        return $_SESSION['Lieferadresse'] ?? new \Lieferadresse();
+    }
+
+    /**
+     * @param \Lieferadresse $address
+     */
+    public static function setDeliveryAddress(\Lieferadresse $address): void
+    {
+        $_SESSION['Lieferadresse'] = $address;
+    }
+
+    /**
      * @param \Kunde $customer
      * @return $this
      */
@@ -478,7 +495,7 @@ class Session
                                  ->setMayViewPrices(1)
                                  ->initAttributes();
         self::getCart()->setzePositionsPreise();
-        \TaxHelper::setTaxRates();
+        \Helpers\Tax::setTaxRates();
         self::setSpecialLinks();
 
         return $this;
@@ -720,19 +737,19 @@ class Session
                 $_SESSION['currentLanguage'] = clone $lang;
                 unset($_SESSION['currentLanguage']->cURL);
             } else {
-                $kArtikel              = \RequestHelper::verifyGPCDataInt('a');
-                $kKategorie            = \RequestHelper::verifyGPCDataInt('k');
-                $kSeite                = \RequestHelper::verifyGPCDataInt('s');
-                $kVariKindArtikel      = \RequestHelper::verifyGPCDataInt('a2');
-                $kHersteller           = \RequestHelper::verifyGPCDataInt('h');
-                $kSuchanfrage          = \RequestHelper::verifyGPCDataInt('l');
-                $kMerkmalWert          = \RequestHelper::verifyGPCDataInt('m');
-                $kTag                  = \RequestHelper::verifyGPCDataInt('t');
-                $kSuchspecial          = \RequestHelper::verifyGPCDataInt('q');
-                $kNews                 = \RequestHelper::verifyGPCDataInt('n');
-                $kNewsMonatsUebersicht = \RequestHelper::verifyGPCDataInt('nm');
-                $kNewsKategorie        = \RequestHelper::verifyGPCDataInt('nk');
-                $kUmfrage              = \RequestHelper::verifyGPCDataInt('u');
+                $kArtikel              = \Helpers\Request::verifyGPCDataInt('a');
+                $kKategorie            = \Helpers\Request::verifyGPCDataInt('k');
+                $kSeite                = \Helpers\Request::verifyGPCDataInt('s');
+                $kVariKindArtikel      = \Helpers\Request::verifyGPCDataInt('a2');
+                $kHersteller           = \Helpers\Request::verifyGPCDataInt('h');
+                $kSuchanfrage          = \Helpers\Request::verifyGPCDataInt('l');
+                $kMerkmalWert          = \Helpers\Request::verifyGPCDataInt('m');
+                $kTag                  = \Helpers\Request::verifyGPCDataInt('t');
+                $kSuchspecial          = \Helpers\Request::verifyGPCDataInt('q');
+                $kNews                 = \Helpers\Request::verifyGPCDataInt('n');
+                $kNewsMonatsUebersicht = \Helpers\Request::verifyGPCDataInt('nm');
+                $kNewsKategorie        = \Helpers\Request::verifyGPCDataInt('nk');
+                $kUmfrage              = \Helpers\Request::verifyGPCDataInt('u');
                 $seo                   = '';
                 \http_response_code(301);
                 if ($kArtikel > 0) {
@@ -745,7 +762,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kKategorie > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -756,7 +773,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kSeite > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -767,7 +784,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kVariKindArtikel > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -778,7 +795,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kHersteller > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -789,7 +806,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kSuchanfrage > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -800,7 +817,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kMerkmalWert > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -811,7 +828,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kTag > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -822,7 +839,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kSuchspecial > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -833,7 +850,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kNews > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -844,7 +861,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kNewsMonatsUebersicht > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -855,7 +872,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kNewsKategorie > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -866,7 +883,7 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kUmfrage > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -877,14 +894,14 @@ class Session
                         'kSprache',
                         \Shop::getLanguageID()
                     );
-                    $seo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 }
                 \header('Location: ' . \Shop::getURL() . '/' . $seo, true, 301);
                 exit;
             }
         }
 
-        $currencyCode = \RequestHelper::verifyGPDataString('curr');
+        $currencyCode = \Helpers\Request::verifyGPDataString('curr');
         if ($currencyCode) {
             $cart     = self::getCart();
             $currency = \Functional\first(self::getCurrencies(), function (\Currency $c) use ($currencyCode) {
@@ -918,7 +935,7 @@ class Session
      */
     public static function setSpecialLinks(): LinkGroupCollection
     {
-        $linkGroups = \Shop::Container()->getLinkService()->getLinkGroups();
+        $linkGroups                    = \Shop::Container()->getLinkService()->getLinkGroups();
         $_SESSION['Link_Datenschutz']  = $linkGroups->Link_Datenschutz;
         $_SESSION['Link_AGB']          = $linkGroups->Link_AGB;
         $_SESSION['Link_Versandseite'] = $linkGroups->Link_Versandseite;

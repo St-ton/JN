@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Request;
+
 require_once __DIR__ . '/includes/globalinclude.php';
 
 $Einstellungen = Shop::getSettings([CONF_GLOBAL]);
@@ -11,7 +14,7 @@ if ($Einstellungen['global']['wartungsmodus_aktiviert'] === 'N') {
     exit;
 }
 Shop::setPageType(PAGE_WARTUNG);
-$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
+$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 

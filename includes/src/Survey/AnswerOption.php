@@ -12,7 +12,7 @@ namespace Survey;
  */
 class AnswerOption
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var int

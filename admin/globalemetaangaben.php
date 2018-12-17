@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_GLOBAL_META_VIEW', true, true);
@@ -11,7 +14,7 @@ $Einstellungen = Shop::getSettings([CONF_METAANGABEN]);
 $chinweis      = '';
 $cfehler       = '';
 setzeSprache();
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form::validateToken()) {
     saveAdminSectionSettings(CONF_METAANGABEN, $_POST);
 
     $cTitle           = $_POST['Title'];

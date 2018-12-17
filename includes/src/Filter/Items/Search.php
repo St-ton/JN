@@ -21,7 +21,7 @@ use Filter\StateSQL;
  */
 class Search extends AbstractFilter
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var int
@@ -134,7 +134,7 @@ class Search extends AbstractFilter
                 LEFT JOIN tsuchanfrage
                     ON tsuchanfrage.kSuchanfrage = tseo.kKey
                     AND tsuchanfrage.kSprache = tseo.kSprache
-                WHERE cKey = 'kSuchanfrage' 
+                WHERE cKey = 'kSuchanfrage'
                     AND kKey = :kkey",
             ['kkey' => $this->getValue()],
             ReturnType::SINGLE_OBJECT
@@ -217,7 +217,7 @@ class Search extends AbstractFilter
         if (empty($query)) {
             return false;
         }
-        $Suchausdruck = \str_replace(["'", "\\", "*", "%"], '', $query);
+        $Suchausdruck = \str_replace(["'", '\\', '*', '%'], '', $query);
         $languageID   = $languageIDExt > 0 ? $languageIDExt : $this->getLanguageID();
         // db füllen für auswertugnen / suggest, dabei Blacklist beachten
         $tempQueries = \explode(';', $Suchausdruck);
@@ -238,7 +238,7 @@ class Search extends AbstractFilter
                 FROM tsuchanfragencache
                 WHERE kSprache = :lang
                 AND cIP = :ip',
-            ['lang' => $languageID, 'ip' => \RequestHelper::getIP()],
+            ['lang' => $languageID, 'ip' => \Helpers\Request::getRealIP()],
             ReturnType::SINGLE_OBJECT
         );
         $ipUsed       = $this->productFilter->getDB()->select(
@@ -248,7 +248,7 @@ class Search extends AbstractFilter
             'cSuche',
             $Suchausdruck,
             'cIP',
-            \RequestHelper::getIP(),
+            \Helpers\Request::getRealIP(),
             false,
             'kSuchanfrageCache'
         );
@@ -259,14 +259,14 @@ class Search extends AbstractFilter
             // Fülle Suchanfragencache
             $searchQueryCache           = new \stdClass();
             $searchQueryCache->kSprache = $languageID;
-            $searchQueryCache->cIP      = \RequestHelper::getIP();
+            $searchQueryCache->cIP      = \Helpers\Request::getRealIP();
             $searchQueryCache->cSuche   = $Suchausdruck;
             $searchQueryCache->dZeit    = 'NOW()';
             $this->productFilter->getDB()->insert('tsuchanfragencache', $searchQueryCache);
             // Cacheeinträge die > 1 Stunde sind, löschen
             $this->productFilter->getDB()->query(
-                'DELETE 
-                    FROM tsuchanfragencache 
+                'DELETE
+                    FROM tsuchanfragencache
                     WHERE dZeit < DATE_SUB(NOW(),INTERVAL 1 HOUR)',
                 ReturnType::AFFECTED_ROWS
             );
@@ -295,7 +295,7 @@ class Search extends AbstractFilter
                     $this->productFilter->getDB()->query(
                         'UPDATE tsuchanfrage
                             SET nAnzahlTreffer = ' . (int)$searchQuery->nAnzahlTreffer . ',
-                                nAnzahlGesuche = nAnzahlGesuche + 1, 
+                                nAnzahlGesuche = nAnzahlGesuche + 1,
                                 dZuletztGesucht = NOW()
                             WHERE kSuchanfrage = ' . (int)$previuousQuery->kSuchanfrage,
                         ReturnType::AFFECTED_ROWS
@@ -332,7 +332,7 @@ class Search extends AbstractFilter
                 ) {
                     $this->productFilter->getDB()->query(
                         'UPDATE tsuchanfrageerfolglos
-                            SET nAnzahlGesuche = nAnzahlGesuche + 1, 
+                            SET nAnzahlGesuche = nAnzahlGesuche + 1,
                                 dZuletztGesucht = NOW()
                             WHERE kSuchanfrageErfolglos = ' .
                         (int)$queryMiss_old->kSuchanfrageErfolglos,
@@ -376,14 +376,14 @@ class Search extends AbstractFilter
 
         return (new Join())
             ->setType('JOIN')
-            ->setTable('(SELECT tsuchcachetreffer.kArtikel, tsuchcachetreffer.kSuchCache, 
+            ->setTable('(SELECT tsuchcachetreffer.kArtikel, tsuchcachetreffer.kSuchCache,
                             MIN(tsuchcachetreffer.nSort) AS nSort
                               FROM tsuchcachetreffer
                               JOIN tsuchcache
                                   ON tsuchcachetreffer.kSuchCache = tsuchcache.kSuchCache
                               JOIN tsuchanfrage
                                   ON tsuchanfrage.cSuche = tsuchcache.cSuche
-                                  AND tsuchanfrage.kSuchanfrage IN (' . \implode(',', $searchCache) . ') 
+                                  AND tsuchanfrage.kSuchanfrage IN (' . \implode(',', $searchCache) . ')
                               GROUP BY tsuchcachetreffer.kArtikel
                               HAVING COUNT(*) = ' . $count . '
                         ) AS jfSuche')
@@ -399,10 +399,10 @@ class Search extends AbstractFilter
     private function generateSearchCaches(): self
     {
         $allQueries = $this->productFilter->getDB()->query(
-            'SELECT tsuchanfrage.cSuche FROM tsuchanfrage 
+            'SELECT tsuchanfrage.cSuche FROM tsuchanfrage
                 LEFT JOIN tsuchcache
                     ON tsuchcache.cSuche = tsuchanfrage.cSuche
-                WHERE tsuchanfrage.nAktiv = 1 
+                WHERE tsuchanfrage.nAktiv = 1
                     AND tsuchcache.kSuchCache IS NULL',
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -459,7 +459,7 @@ class Search extends AbstractFilter
             ->setComment('JOIN3 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tsuchanfrage')
-            ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche 
+            ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche
                         AND tsuchanfrage.kSprache = ' . $this->getLanguageID())
             ->setOrigin(__CLASS__));
         $sql->addCondition('tsuchanfrage.nAktiv = 1');

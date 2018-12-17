@@ -327,4 +327,3 @@ class UstIDviesVatParser
         return $this->nErrorPos;
     }
 }
-

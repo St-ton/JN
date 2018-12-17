@@ -3,6 +3,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+use Helpers\Request;
+use Pagination\Pagination;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'umfrage_inc.php';
@@ -15,21 +20,21 @@ $cHinweis      = '';
 $cFehler       = '';
 $step          = 'umfrage_uebersicht';
 $kUmfrage      = 0;
-$kUmfrageTMP   = RequestHelper::verifyGPCDataInt('kUmfrage') > 0
-    ? RequestHelper::verifyGPCDataInt('kUmfrage')
-    : RequestHelper::verifyGPCDataInt('kU');
+$kUmfrageTMP   = Request::verifyGPCDataInt('kUmfrage') > 0
+    ? Request::verifyGPCDataInt('kUmfrage')
+    : Request::verifyGPCDataInt('kU');
 setzeSprache();
-if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
+if (strlen(Request::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 $Sprachen    = Sprache::getAllLanguages();
 $oSpracheTMP = $db->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
-$oNice = Nice::getInstance();
+$oNice       = Nice::getInstance();
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
     if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         $cHinweis .= saveAdminSectionSettings(CONF_UMFRAGE, $_POST);
     }
-    if (RequestHelper::verifyGPCDataInt('umfrage') === 1 && FormHelper::validateToken()) {
+    if (Request::verifyGPCDataInt('umfrage') === 1 && Form::validateToken()) {
         if (isset($_POST['umfrage_erstellen']) && (int)$_POST['umfrage_erstellen'] === 1) {
             $step = 'umfrage_erstellen';
         } elseif (isset($_GET['umfrage_editieren']) && (int)$_GET['umfrage_editieren'] === 1) {
@@ -37,7 +42,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             $kUmfrage = (int)$_GET['kUmfrage'];
 
             if ($kUmfrage > 0) {
-                $oUmfrage = $db->query(
+                $oUmfrage                    = $db->query(
                     "SELECT *, DATE_FORMAT(dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de, 
                         DATE_FORMAT(dGueltigBis, '%d.%m.%Y %H:%i') AS dGueltigBis_de
                         FROM tumfrage
@@ -47,10 +52,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $oUmfrage->kKundengruppe_arr = StringHandler::parseSSK($oUmfrage->cKundengruppe);
 
                 $smarty->assign('oUmfrage', $oUmfrage)
-                       ->assign('s1', RequestHelper::verifyGPCDataInt('s1'));
+                       ->assign('s1', Request::verifyGPCDataInt('s1'));
             } else {
                 $cFehler .= 'Fehler: Ihre Umfrage konnte nicht gefunden werden.<br />';
-                $step = 'umfrage_uebersicht';
+                $step     = 'umfrage_uebersicht';
             }
         }
         if (isset($_GET['a']) && $_GET['a'] === 'a_loeschen') {
@@ -156,7 +161,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         $db->delete('tumfrage', 'kUmfrage', $kUmfrage);
                         $db->delete('tseo', ['cKey', 'kKey'], ['kUmfrage', $kUmfrage]);
                     }
-                    $oUmfrage->cSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo(strlen($cSeo) > 0 ? $cSeo : $cName));
+                    $oUmfrage->cSeo = \JTL\SeoHelper::checkSeo(
+                        \JTL\SeoHelper::getSeo(strlen($cSeo) > 0 ? $cSeo : $cName)
+                    );
                     if (isset($kUmfrage) && $kUmfrage > 0) {
                         $oUmfrage->kUmfrage = $kUmfrage;
                         $db->insert('tumfrage', $oUmfrage);
@@ -229,7 +236,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     if (!pruefeTyp($cTyp, $kUmfrageFrage)) {
                         $cFehler .= 'Fehler: Ihr Fragentyp ist leider nicht kompatibel mit dem voherigen. ' .
                             'Um den Fragetyp zu ändern, resetten Sie bitte die Frage.';
-                        $step = 'umfrage_frage_bearbeiten';
+                        $step     = 'umfrage_frage_bearbeiten';
                     }
                     $db->delete('tumfragefrage', 'kUmfrageFrage', $kUmfrageFrage);
                 }
@@ -240,7 +247,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 if ($kUmfrageFrage > 0 && $step !== 'umfrage_frage_bearbeiten') {
                     $oUmfrageFrage->kUmfrageFrage = $kUmfrageFrage;
                     $db->insert('tumfragefrage', $oUmfrageFrage);
-                    // Update vorhandene Antworten bzw. Optionen
                     $oAnzahlAUndOVorhanden = updateAntwortUndOption(
                         $kUmfrageFrage,
                         $cTyp,
@@ -267,7 +273,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $cHinweis .= 'Ihr Frage wurde erfolgreich gespeichert.<br />';
                 Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
             } else {
-                $step = 'umfrage_frage_erstellen';
+                $step     = 'umfrage_frage_erstellen';
                 $cFehler .= 'Fehler: Bitte tragen Sie mindestens einen Namen und einen Typ ein.<br />';
             }
         } elseif (isset($_POST['umfrage_loeschen']) && (int)$_POST['umfrage_loeschen'] === 1) {
@@ -361,11 +367,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
         } elseif (isset($_POST['umfrage_frage_hinzufuegen'])
             && (int)$_POST['umfrage_frage_hinzufuegen'] === 1
-        ) { // Frage hinzufuegen
+        ) {
             $step = 'umfrage_frage_erstellen';
             $smarty->assign('kUmfrageTMP', $kUmfrageTMP);
-        } elseif (RequestHelper::verifyGPCDataInt('umfrage_statistik') === 1) {
-            // Umfragestatistik anschauen
+        } elseif (Request::verifyGPCDataInt('umfrage_statistik') === 1) {
             $oUmfrageDurchfuehrung_arr = $db->query(
                 'SELECT kUmfrageDurchfuehrung
                     FROM tumfragedurchfuehrung
@@ -377,7 +382,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $step = 'umfrage_statistik';
                 $smarty->assign('oUmfrageStats', holeUmfrageStatistik($kUmfrageTMP));
             } else {
-                $step = 'umfrage_vorschau';
+                $step     = 'umfrage_vorschau';
                 $cFehler .= 'Fehler: Für diese Umfrage gibt es noch keine Stastistik.';
             }
         } elseif (isset($_GET['a']) && $_GET['a'] === 'zeige_sonstige') {
@@ -396,14 +401,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 ));
             }
         } elseif ((isset($_GET['fe']) && (int)$_GET['fe'] === 1) ||
-            ($step === 'umfrage_frage_bearbeiten' && FormHelper::validateToken())
+            ($step === 'umfrage_frage_bearbeiten' && Form::validateToken())
         ) { // Frage bearbeiten
             $step = 'umfrage_frage_erstellen';
 
-            if (RequestHelper::verifyGPCDataInt('kUmfrageFrage') > 0) {
-                $kUmfrageFrage = RequestHelper::verifyGPCDataInt('kUmfrageFrage');
+            if (Request::verifyGPCDataInt('kUmfrageFrage') > 0) {
+                $kUmfrageFrage = Request::verifyGPCDataInt('kUmfrageFrage');
             } else {
-                $kUmfrageFrage = RequestHelper::verifyGPCDataInt('kUF');
+                $kUmfrageFrage = Request::verifyGPCDataInt('kUF');
             }
             $oUmfrageFrage = $db->select('tumfragefrage', 'kUmfrageFrage', $kUmfrageFrage);
             if (isset($oUmfrageFrage->kUmfrageFrage) && $oUmfrageFrage->kUmfrageFrage > 0) {
@@ -428,7 +433,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         }
         // Umfrage Detail
         if ((isset($_GET['ud']) && (int)$_GET['ud'] === 1) || $step === 'umfrage_vorschau') {
-            $kUmfrage = RequestHelper::verifyGPCDataInt('kUmfrage');
+            $kUmfrage = Request::verifyGPCDataInt('kUmfrage');
 
             if ($kUmfrage > 0) {
                 $step     = 'umfrage_vorschau';
@@ -506,7 +511,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             )->assign('kUmfrageTMP', $kUmfrageTMP);
         }
     }
-    // Hole Umfrage aus DB
     if ($step === 'umfrage_uebersicht') {
         $oUmfrageAnzahl = $db->query(
             'SELECT COUNT(*) AS nAnzahl
@@ -514,11 +518,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 WHERE kSprache = ' . (int)$_SESSION['kSprache'],
             \DB\ReturnType::SINGLE_OBJECT
         );
-        // Pagination
-        $oPagination = (new Pagination())
+        $oPagination    = (new Pagination())
             ->setItemCount((int)$oUmfrageAnzahl->nAnzahl)
             ->assemble();
-        $oUmfrage_arr = $db->query(
+        $oUmfrage_arr   = $db->query(
             "SELECT tumfrage.*, DATE_FORMAT(tumfrage.dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de, 
                 DATE_FORMAT(tumfrage.dGueltigBis, '%d.%m.%Y %H:%i') AS dGueltigBis_de,
                 DATE_FORMAT(tumfrage.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de, 
@@ -526,10 +529,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 FROM tumfrage
                 LEFT JOIN tumfragefrage 
                     ON tumfragefrage.kUmfrage = tumfrage.kUmfrage
-                WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
+                WHERE kSprache = " . (int)$_SESSION['kSprache'] . '
                 GROUP BY tumfrage.kUmfrage
                 ORDER BY dGueltigVon DESC
-                LIMIT " . $oPagination->getLimitSQL(),
+                LIMIT ' . $oPagination->getLimitSQL(),
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oUmfrage_arr as $i => $oUmfrage) {
@@ -563,7 +566,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             ORDER BY cStandard DESC',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    $coupons = $db->query(
+    $coupons        = $db->query(
         "SELECT tkupon.kKupon, tkuponsprache.cName
             FROM tkupon
             LEFT JOIN tkuponsprache 

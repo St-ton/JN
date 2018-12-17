@@ -10,12 +10,12 @@ use Filter\Visibility;
 
 /**
  * Class FilterPricerange
- * @package Boxes
+ * @package Boxes\Items
  */
 final class FilterPricerange extends AbstractBox
 {
     /**
-     * FilterAttribute constructor.
+     * FilterPricerange constructor.
      * @param array $config
      */
     public function __construct(array $config)

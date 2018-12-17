@@ -121,10 +121,10 @@ if (auth()) {
     $cSQL     = '';
     if (!$oSprache->kSprache) {
         $oSprache->kSprache = $_SESSION['kSprache'];
-        $cSQL               = "AND tseo.kSprache = " . $oSprache->kSprache;
+        $cSQL               = 'AND tseo.kSprache = ' . $oSprache->kSprache;
     }
     if ($oSprache->kSprache > 0) {
-        $cSQL = " AND tseo.kSprache = " . $oSprache->kSprache;
+        $cSQL = ' AND tseo.kSprache = ' . $oSprache->kSprache;
     }
     $return    = 2;
     $zipFile   = $_FILES['data']['tmp_name'];
@@ -165,7 +165,6 @@ if (auth()) {
                     bearbeiteDeletes($xml);
                     removeTemporaryFiles($xmlFile);
                     break;
-
             }
         }
         removeTemporaryFiles(substr($unzipPath, 0, -1), true);
@@ -356,13 +355,13 @@ function bearbeite($xml, string $unzipPath)
                 continue;
             }
             $Hersteller = $db->query(
-                "SELECT cSeo
+                'SELECT cSeo
                     FROM thersteller
-                    WHERE kHersteller = " . (int)$Herstellerbild->kHersteller,
+                    WHERE kHersteller = ' . (int)$Herstellerbild->kHersteller,
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($Hersteller->cSeo) && strlen($Hersteller->cSeo) > 0) {
-                $Herstellerbild->cPfad = str_replace("/", "_", $Hersteller->cSeo . '.' . $Bildformat);
+                $Herstellerbild->cPfad = str_replace('/', '_', $Hersteller->cSeo . '.' . $Bildformat);
             } elseif (stripos(strrev($Herstellerbild->cPfad), strrev($Bildformat)) !== 0) {
                 $Herstellerbild->cPfad .= '.' . $Bildformat;
             }
@@ -420,7 +419,7 @@ function bearbeite($xml, string $unzipPath)
                 continue;
             }
             $Merkmalbild->cPfad .= '.' . $Bildformat;
-            $Merkmalbild->cPfad = neuerDateiname($Merkmalbild->cPfad);
+            $Merkmalbild->cPfad  = neuerDateiname($Merkmalbild->cPfad);
             erstelleThumbnail(
                 $GLOBALS['oBranding_arr']['Merkmale'],
                 $unzipPath . $imgFilename,
@@ -463,7 +462,7 @@ function bearbeite($xml, string $unzipPath)
                 continue;
             }
             $Merkmalwertbild->cPfad .= '.' . $Bildformat;
-            $Merkmalwertbild->cPfad = neuerDateiname($Merkmalwertbild->cPfad);
+            $Merkmalwertbild->cPfad  = neuerDateiname($Merkmalwertbild->cPfad);
             erstelleThumbnail(
                 $GLOBALS['oBranding_arr']['Merkmalwerte'],
                 $unzipPath . $imgFilename,
@@ -642,10 +641,10 @@ function gibEigenschaftwertbildname($Eigenschaftwertbild, $Bildformat)
                         LEFT JOIN tseo
                             ON tseo.cKey = 'kArtikel'
                             AND tseo.kKey = tartikel.kArtikel
-                            " . $cSQL . "
+                            " . $cSQL . '
                         WHERE teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
                             AND teigenschaft.kArtikel = tartikel.kArtikel
-                            AND teigenschaftwert.kEigenschaftWert = " . (int)$Eigenschaftwertbild->kEigenschaftWert,
+                            AND teigenschaftwert.kEigenschaftWert = ' . (int)$Eigenschaftwertbild->kEigenschaftWert,
                     \DB\ReturnType::SINGLE_OBJECT
                 );
                 if (!empty($Artikel->cArtNr) && !empty($Eigenschaftwert->cArtNr)) {
@@ -662,10 +661,10 @@ function gibEigenschaftwertbildname($Eigenschaftwertbild, $Bildformat)
                         LEFT JOIN tseo
                             ON tseo.cKey = 'kArtikel'
                             AND tseo.kKey = tartikel.kArtikel
-                            " . $cSQL . "
+                            " . $cSQL . '
                         WHERE teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
                             AND teigenschaft.kArtikel = tartikel.kArtikel
-                            AND teigenschaftwert.kEigenschaftWert = " . $Eigenschaftwertbild->kEigenschaftWert,
+                            AND teigenschaftwert.kEigenschaftWert = ' . $Eigenschaftwertbild->kEigenschaftWert,
                     \DB\ReturnType::SINGLE_OBJECT
                 );
 
@@ -729,8 +728,8 @@ function gibKategoriebildname($Kategoriebild, $Bildformat)
             LEFT JOIN tseo
                 ON tseo.cKey = 'kKategorie'
                 AND tseo.kKey = tkategorie.kKategorie
-                " . $cSQL . "
-            WHERE tkategorie.kKategorie = " . (int)$Kategoriebild->kKategorie,
+                " . $cSQL . '
+            WHERE tkategorie.kKategorie = ' . (int)$Kategoriebild->kKategorie,
         \DB\ReturnType::SINGLE_OBJECT
     );
     $Bildname  = $Kategoriebild->cPfad;
@@ -748,7 +747,6 @@ function gibKategoriebildname($Kategoriebild, $Bildformat)
             default:
                 return $Kategoriebild->cPfad . '.' . $Bildformat;
                 break;
-
         }
     }
 
@@ -794,8 +792,8 @@ function gibArtikelbildname($img, $Bildformat)
             LEFT JOIN tseo
                 ON tseo.cKey = 'kArtikel'
                 AND tseo.kKey = tartikel.kArtikel
-                " . $cSQL . "
-            WHERE tartikel.kArtikel = " . (int)$img->kArtikel,
+                " . $cSQL . '
+            WHERE tartikel.kArtikel = ' . (int)$img->kArtikel,
         \DB\ReturnType::SINGLE_OBJECT
     );
     $Bildname = $img->cPfad;
@@ -834,7 +832,6 @@ function gibArtikelbildname($img, $Bildformat)
             default:
                 return $img->cPfad . '.' . $Bildformat;
                 break;
-
         }
     } else {
         return $img->cPfad . '.' . $Bildformat;
@@ -890,8 +887,8 @@ function erstelleThumbnailBranded($imgFilename, $zielbild, $breite, $hoehe, int 
     if ($GLOBALS['Einstellungen']['bilder']['bilder_skalieren'] === 'Y') {
         $vergroessern = 1;
     }
-    $ret        = 0;
-    $Bildformat = $GLOBALS['Einstellungen']['bilder']['bilder_dateiformat'];//gibBildformat($imgFilename);
+    $ret                         = 0;
+    $Bildformat                  = $GLOBALS['Einstellungen']['bilder']['bilder_dateiformat'];//gibBildformat($imgFilename);
     list($width, $height, $type) = getimagesize($imgFilename);
     if ($width > 0 && $height > 0) {
         if (!$vergroessern && $width < $breite && $height < $hoehe) {
@@ -994,7 +991,9 @@ function erstelleThumbnail(
             Shop::Container()->getLogService()->error('Fehler beim Speichern des Bildes: ' . $zielbild);
         }
     } else {
-        Shop::Container()->getLogService()->error('Bild konnte nicht erstellt werden. Datei kein Bild?: ' . $imgFilename);
+        Shop::Container()->getLogService()->error(
+            'Bild konnte nicht erstellt werden. Datei kein Bild?: ' . $imgFilename
+        );
     }
 
     return $ret;
@@ -1031,7 +1030,7 @@ function bearbeiteDeletes($xml)
     if (isset($xml['del_bilder']['tArtikelPict'])) {
         if (count($xml['del_bilder']['tArtikelPict']) > 1) {
             for ($i = 0; $i < (count($xml['del_bilder']['tArtikelPict']) / 2); $i++) {
-                $index        = "{$i} attr";
+                $index        = $i . ' attr';
                 $oArtikelPict = (object)$xml['del_bilder']['tArtikelPict'][$index];
                 loescheArtikelPict($oArtikelPict->kArtikel, $oArtikelPict->nNr);
             }
@@ -1316,7 +1315,6 @@ function brandImage($im, $brand, $oBranding)
                 $brandingPosX = $bildBreite / 2 - $brandingNeueBreite / 2;
                 $brandingPosY = $bildHoehe / 2 - $brandingNeueHoehe / 2;
                 break;
-
         }
         $brandingPosX = round($brandingPosX);
         $brandingPosY = round($brandingPosY);
@@ -1495,7 +1493,6 @@ function imageload_container($img, int $nWidth, int $nHeight, $nContainerWidth, 
         default:
             $im = imagecreatefromjpeg($img);
             break;
-
     }
 
     if ($nWidth === 0 && $nHeight === 0) {
@@ -1548,7 +1545,6 @@ function imageload_alpha($img, int $nWidth = 0, int $nHeight = 0, bool $branding
         case 3:
             $im = imagecreatefrompng($img);
             break;
-
     }
 
     if ($nWidth === 0 && $nHeight === 0) {
@@ -1594,7 +1590,7 @@ function neuerDateiname(string $path): string
 {
     $format = strtolower($GLOBALS['Einstellungen']['bilder']['bilder_dateiformat']);
     $path   = substr($path, 0, -3);
-    $path   .= $format;
+    $path  .= $format;
 
     return $path;
 }

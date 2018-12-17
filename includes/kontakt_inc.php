@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Form;
+
 /**
  * @return array
  * @deprecated since 5.0.0
@@ -11,7 +13,7 @@
 function gibFehlendeEingabenKontaktformular()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return FormHelper::getMissingContactFormData();
+    return Form::getMissingContactFormData();
 }
 
 /**
@@ -21,7 +23,7 @@ function gibFehlendeEingabenKontaktformular()
 function baueKontaktFormularVorgaben()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return FormHelper::baueKontaktFormularVorgaben();
+    return Form::baueKontaktFormularVorgaben();
 }
 
 /**
@@ -31,7 +33,7 @@ function baueKontaktFormularVorgaben()
 function pruefeBetreffVorhanden()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return FormHelper::checkSubject();
+    return Form::checkSubject();
 }
 
 /**
@@ -41,7 +43,7 @@ function pruefeBetreffVorhanden()
 function bearbeiteNachricht()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return FormHelper::editMessage();
+    return Form::editMessage();
 }
 
 /**
@@ -52,7 +54,7 @@ function bearbeiteNachricht()
 function floodSchutz($min)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return FormHelper::checkFloodProtection($min);
+    return Form::checkFloodProtection($min);
 }
 
 if (!function_exists('baueFormularVorgaben')) {
@@ -63,6 +65,6 @@ if (!function_exists('baueFormularVorgaben')) {
     function baueFormularVorgaben()
     {
         trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-        return FormHelper::baueKontaktFormularVorgaben();
+        return Form::baueKontaktFormularVorgaben();
     }
 }

@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\URL;
+
 /**
  * Class KategorieListe
  */
@@ -280,27 +282,27 @@ class KategorieListe
             if (!$kKategorie) {
                 $kKategorie = 0;
             }
-            $categorySQL    = "SELECT tkategorie.kKategorie, tkategorie.cName, tkategorie.cBeschreibung, 
+            $categorySQL    = 'SELECT tkategorie.kKategorie, tkategorie.cName, tkategorie.cBeschreibung, 
                     tkategorie.kOberKategorie, tkategorie.nSort, tkategorie.dLetzteAktualisierung, 
                     tkategoriesprache.cName AS cName_spr, tkategoriesprache.cBeschreibung AS cBeschreibung_spr, 
                     tseo.cSeo, tkategoriepict.cPfad
                     FROM tkategorie
                     LEFT JOIN tkategoriesprache 
                         ON tkategoriesprache.kKategorie = tkategorie.kKategorie
-                        AND tkategoriesprache.kSprache = " . $kSprache . "
+                        AND tkategoriesprache.kSprache = ' . $kSprache . '
                     LEFT JOIN tkategoriesichtbarkeit 
                         ON tkategorie.kKategorie = tkategoriesichtbarkeit.kKategorie
-                    AND tkategoriesichtbarkeit.kKundengruppe = " . $kKundengruppe . "
+                    AND tkategoriesichtbarkeit.kKundengruppe = ' . $kKundengruppe . "
                     LEFT JOIN tseo 
                         ON tseo.cKey = 'kKategorie'
                         AND tseo.kKey = tkategorie.kKategorie
-                        AND tseo.kSprache = " . $kSprache . "
+                        AND tseo.kSprache = " . $kSprache . '
                     LEFT JOIN tkategoriepict 
                         ON tkategoriepict.kKategorie = tkategorie.kKategorie
                     WHERE tkategoriesichtbarkeit.kKategorie IS NULL
-                        AND tkategorie.kOberKategorie = " . $kKategorie . "
+                        AND tkategorie.kOberKategorie = ' . $kKategorie . '
                     GROUP BY tkategorie.kKategorie
-                    ORDER BY tkategorie.nSort, " . $cSortSQLName . "tkategorie.cName";
+                    ORDER BY tkategorie.nSort, ' . $cSortSQLName . 'tkategorie.cName';
             $oKategorie_arr = Shop::Container()->getDB()->query($categorySQL, \DB\ReturnType::ARRAY_OF_OBJECTS);
 
             $categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie] = [];
@@ -349,8 +351,8 @@ class KategorieListe
                 //EXPERIMENTAL_MULTILANG_SHOP END
 
                 // URL bauen
-                $oKategorie->cURL     = UrlHelper::buildURL($oKategorie, URLART_KATEGORIE);
-                $oKategorie->cURLFull = UrlHelper::buildURL($oKategorie, URLART_KATEGORIE, true);
+                $oKategorie->cURL     = URL::buildURL($oKategorie, URLART_KATEGORIE);
+                $oKategorie->cURLFull = URL::buildURL($oKategorie, URLART_KATEGORIE, true);
                 // lokalisieren
                 if ($kSprache > 0 && !Sprache::isDefaultLanguageActive() && strlen($oKategorie->cName_spr) > 0) {
                     $oKategorie->cName         = $oKategorie->cName_spr;

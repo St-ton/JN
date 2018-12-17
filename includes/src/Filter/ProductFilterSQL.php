@@ -152,7 +152,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
         if ($filterType === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
             || $filterType === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
         ) {
-            $or = $filterType === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+            $or        = $filterType === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
                 ? " OR tartikel.cLagerKleinerNull = 'Y'"
                 : '';
             $filterSQL = ($withAnd === true ? ' AND ' : ' ') .
@@ -166,7 +166,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
                             WHERE teigenschaft.kArtikel = tartikel.kArtikel
                         ) > 0
                     )" . $or .
-                ")";
+                ')';
         }
         \executeHook(\HOOK_STOCK_FILTER, [
             'conf'      => $filterType,

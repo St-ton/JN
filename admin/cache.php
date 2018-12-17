@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+use Helpers\Request;
+
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global Smarty\JTLSmarty $smarty */
 setzeSprache();
@@ -12,11 +16,11 @@ $error        = '';
 $cacheAction  = '';
 $step         = 'uebersicht';
 $tab          = 'uebersicht';
-$action       = (isset($_POST['a']) && FormHelper::validateToken()) ? $_POST['a'] : null;
+$action       = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : null;
 $cache        = null;
 $opcacheStats = null;
-if (0 < strlen(RequestHelper::verifyGPDataString('tab'))) {
-    $smarty->assign('tab', RequestHelper::verifyGPDataString('tab'));
+if (0 < strlen(Request::verifyGPDataString('tab'))) {
+    $smarty->assign('tab', Request::verifyGPDataString('tab'));
 }
 try {
     $cache = Shop::Container()->getCache();
@@ -203,7 +207,7 @@ switch ($action) {
         $cache->flushAll();
         $cache->setJtlCacheConfig();
         $notice .= 'Ihre Einstellungen wurden übernommen.<br />';
-        $tab    = 'settings';
+        $tab     = 'settings';
         break;
     case 'benchmark':
         //do benchmarks

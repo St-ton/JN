@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+use Helpers\Request;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 
@@ -31,7 +35,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
     $index = strtolower(StringHandler::xssClean($_GET['index']));
 
     if (!in_array($index, ['tartikel', 'tartikelsprache'], true)) {
-        header(RequestHelper::makeHTTPHeader(403), true);
+        header(Request::makeHTTPHeader(403), true);
         echo json_encode((object)['error' => 'Ungültiger Index angegeben']);
         exit;
     }
@@ -75,7 +79,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
                 );
                 break;
             default:
-                header(RequestHelper::makeHTTPHeader(403), true);
+                header(Request::makeHTTPHeader(403), true);
                 echo json_encode((object)['error' => 'Ungültiger Index angegeben']);
                 exit;
         }
@@ -87,7 +91,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
             );
             $res = Shop::Container()->getDB()->executeQuery(
                 "ALTER TABLE $index
-                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $cSpalten_arr) . ")",
+                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $cSpalten_arr) . ')',
                 \DB\ReturnType::QUERYSINGLE
             );
         } catch (Exception $e) {
@@ -119,7 +123,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
         $cHinweis = 'Der Volltextindex für ' . $index . ' wurde gelöscht!';
     }
 
-    header(RequestHelper::makeHTTPHeader(200), true);
+    header(Request::makeHTTPHeader(200), true);
     echo json_encode((object)['error' => $cFehler, 'hinweis' => $cHinweis]);
     exit;
 }
@@ -127,7 +131,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
 if (isset($_POST['einstellungen_bearbeiten'])
     && (int)$_POST['einstellungen_bearbeiten'] === 1
     && $kSektion > 0
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     $sucheFulltext = isset($_POST['suche_fulltext']) ? in_array($_POST['suche_fulltext'], ['Y', 'B'], true) : false;
 

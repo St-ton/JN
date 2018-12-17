@@ -6,13 +6,14 @@
 
 namespace OPC\Portlets;
 
+use OPC\Portlet;
 use OPC\PortletInstance;
 
 /**
  * Class Countdown
  * @package OPC\Portlets
  */
-class Countdown extends \OPC\Portlet
+class Countdown extends Portlet
 {
     /**
      * @param PortletInstance $instance

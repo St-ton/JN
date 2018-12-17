@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+use Helpers\Request;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('DISPLAY_BRANDING_VIEW', true, true);
@@ -11,21 +15,21 @@ $cHinweis = '';
 $cFehler  = '';
 $step     = 'branding_uebersicht';
 
-if (RequestHelper::verifyGPCDataInt('branding') === 1) {
+if (Request::verifyGPCDataInt('branding') === 1) {
     $step = 'branding_detail';
     if (isset($_POST['speicher_einstellung'])
         && (int)$_POST['speicher_einstellung'] === 1
-        && FormHelper::validateToken()
+        && Form::validateToken()
     ) {
-        if (speicherEinstellung(RequestHelper::verifyGPCDataInt('kBranding'), $_POST, $_FILES)) {
+        if (speicherEinstellung(Request::verifyGPCDataInt('kBranding'), $_POST, $_FILES)) {
             $cHinweis .= 'Ihre Einstellung wurde erfolgreich gespeichert.<br />';
         } else {
             $cFehler .= 'Fehler: Bitte füllen Sie alle Felder komplett aus.<br />';
         }
     }
     // Hole bestimmtes branding
-    if (RequestHelper::verifyGPCDataInt('kBranding') > 0) {
-        $smarty->assign('oBranding', gibBranding(RequestHelper::verifyGPCDataInt('kBranding')));
+    if (Request::verifyGPCDataInt('kBranding') > 0) {
+        $smarty->assign('oBranding', gibBranding(Request::verifyGPCDataInt('kBranding')));
     }
 } else {
     $smarty->assign('oBranding', gibBranding(1));

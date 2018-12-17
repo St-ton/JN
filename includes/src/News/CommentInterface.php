@@ -7,7 +7,7 @@
 namespace News;
 
 /**
- * Class Comment
+ * Interface CommentInterface
  * @package News
  */
 interface CommentInterface

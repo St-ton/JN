@@ -3,6 +3,12 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Date;
+use Helpers\Form;
+use Helpers\Request;
+use Pagination\Pagination;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('STATS_CAMPAIGN_VIEW', true, true);
@@ -36,39 +42,39 @@ if (!isset($_SESSION['Kampagne']->cSort)) {
     $_SESSION['Kampagne']->cSort = 'DESC';
 }
 
-$cDatumNow_arr = DateHelper::getDateParts(date('Y-m-d H:i:s'));
+$cDatumNow_arr = Date::getDateParts(date('Y-m-d H:i:s'));
 // Tab
-if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
+if (strlen(Request::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
-if (RequestHelper::verifyGPCDataInt('neu') === 1 && FormHelper::validateToken()) {
+if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
     $step = 'kampagne_erstellen';
-} elseif (RequestHelper::verifyGPCDataInt('editieren') === 1
-    && RequestHelper::verifyGPCDataInt('kKampagne') > 0
-    && FormHelper::validateToken()
+} elseif (Request::verifyGPCDataInt('editieren') === 1
+    && Request::verifyGPCDataInt('kKampagne') > 0
+    && Form::validateToken()
 ) {
     // Editieren
     $step      = 'kampagne_erstellen';
-    $kKampagne = RequestHelper::verifyGPCDataInt('kKampagne');
-} elseif (RequestHelper::verifyGPCDataInt('detail') === 1
-    && RequestHelper::verifyGPCDataInt('kKampagne') > 0
-    && FormHelper::validateToken()
+    $kKampagne = Request::verifyGPCDataInt('kKampagne');
+} elseif (Request::verifyGPCDataInt('detail') === 1
+    && Request::verifyGPCDataInt('kKampagne') > 0
+    && Form::validateToken()
 ) {
     // Detail
     $step      = 'kampagne_detail';
-    $kKampagne = RequestHelper::verifyGPCDataInt('kKampagne');
+    $kKampagne = Request::verifyGPCDataInt('kKampagne');
     // Zeitraum / Ansicht
     setzeDetailZeitraum($cDatumNow_arr);
-} elseif (RequestHelper::verifyGPCDataInt('defdetail') === 1
-    && RequestHelper::verifyGPCDataInt('kKampagne') > 0
-    && RequestHelper::verifyGPCDataInt('kKampagneDef') > 0
-    && FormHelper::validateToken()
+} elseif (Request::verifyGPCDataInt('defdetail') === 1
+    && Request::verifyGPCDataInt('kKampagne') > 0
+    && Request::verifyGPCDataInt('kKampagneDef') > 0
+    && Form::validateToken()
 ) { // Def Detail
     $step         = 'kampagne_defdetail';
-    $kKampagne    = RequestHelper::verifyGPCDataInt('kKampagne');
-    $kKampagneDef = RequestHelper::verifyGPCDataInt('kKampagneDef');
-    $cStamp       = RequestHelper::verifyGPDataString('cStamp');
-} elseif (RequestHelper::verifyGPCDataInt('erstellen_speichern') === 1 && FormHelper::validateToken()) {
+    $kKampagne    = Request::verifyGPCDataInt('kKampagne');
+    $kKampagneDef = Request::verifyGPCDataInt('kKampagneDef');
+    $cStamp       = Request::verifyGPDataString('cStamp');
+} elseif (Request::verifyGPCDataInt('erstellen_speichern') === 1 && Form::validateToken()) {
     // Speichern / Editieren
     $oKampagne             = new Kampagne();
     $oKampagne->cName      = $_POST['cName'];
@@ -79,8 +85,8 @@ if (RequestHelper::verifyGPCDataInt('neu') === 1 && FormHelper::validateToken())
     $oKampagne->dErstellt  = 'NOW()';
 
     // Editieren
-    if (RequestHelper::verifyGPCDataInt('kKampagne') > 0) {
-        $oKampagne->kKampagne = RequestHelper::verifyGPCDataInt('kKampagne');
+    if (Request::verifyGPCDataInt('kKampagne') > 0) {
+        $oKampagne->kKampagne = Request::verifyGPCDataInt('kKampagne');
     }
 
     $nReturnValue = speicherKampagne($oKampagne);
@@ -92,7 +98,7 @@ if (RequestHelper::verifyGPCDataInt('neu') === 1 && FormHelper::validateToken())
         $smarty->assign('oKampagne', $oKampagne);
         $step = 'kampagne_erstellen';
     }
-} elseif (RequestHelper::verifyGPCDataInt('delete') === 1 && FormHelper::validateToken()) {
+} elseif (Request::verifyGPCDataInt('delete') === 1 && Form::validateToken()) {
     // Loeschen
     if (isset($_POST['kKampagne']) && is_array($_POST['kKampagne']) && count($_POST['kKampagne']) > 0) {
         $nReturnValue = loescheGewaehlteKampagnen($_POST['kKampagne']);
@@ -103,19 +109,19 @@ if (RequestHelper::verifyGPCDataInt('neu') === 1 && FormHelper::validateToken())
     } else {
         $cFehler = 'Fehler: Bitte markieren Sie mindestens eine Kampagne.';
     }
-} elseif (RequestHelper::verifyGPCDataInt('nAnsicht') > 0) { // Ansicht
-    $_SESSION['Kampagne']->nAnsicht = RequestHelper::verifyGPCDataInt('nAnsicht');
-} elseif (RequestHelper::verifyGPCDataInt('nStamp') === -1 || RequestHelper::verifyGPCDataInt('nStamp') === 1) {
+} elseif (Request::verifyGPCDataInt('nAnsicht') > 0) { // Ansicht
+    $_SESSION['Kampagne']->nAnsicht = Request::verifyGPCDataInt('nAnsicht');
+} elseif (Request::verifyGPCDataInt('nStamp') === -1 || Request::verifyGPCDataInt('nStamp') === 1) {
     // Vergangenheit
-    if (RequestHelper::verifyGPCDataInt('nStamp') === -1) {
+    if (Request::verifyGPCDataInt('nStamp') === -1) {
         $_SESSION['Kampagne']->cStamp = gibStamp($_SESSION['Kampagne']->cStamp, -1, $_SESSION['Kampagne']->nAnsicht);
-    } elseif (RequestHelper::verifyGPCDataInt('nStamp') === 1) {
+    } elseif (Request::verifyGPCDataInt('nStamp') === 1) {
         // Zukunft
         $_SESSION['Kampagne']->cStamp = gibStamp($_SESSION['Kampagne']->cStamp, 1, $_SESSION['Kampagne']->nAnsicht);
     }
-} elseif (RequestHelper::verifyGPCDataInt('nSort') > 0) { // Sortierung
+} elseif (Request::verifyGPCDataInt('nSort') > 0) { // Sortierung
     // ASC / DESC
-    if ($_SESSION['Kampagne']->nSort == RequestHelper::verifyGPCDataInt('nSort')) {
+    if ($_SESSION['Kampagne']->nSort == Request::verifyGPCDataInt('nSort')) {
         if ($_SESSION['Kampagne']->cSort === 'ASC') {
             $_SESSION['Kampagne']->cSort = 'DESC';
         } else {
@@ -123,7 +129,7 @@ if (RequestHelper::verifyGPCDataInt('neu') === 1 && FormHelper::validateToken())
         }
     }
 
-    $_SESSION['Kampagne']->nSort = RequestHelper::verifyGPCDataInt('nSort');
+    $_SESSION['Kampagne']->nSort = Request::verifyGPCDataInt('nSort');
 }
 if ($step === 'kampagne_uebersicht') {
     $oKampagne_arr    = holeAlleKampagnen(true, false);
@@ -213,7 +219,7 @@ if ($step === 'kampagne_uebersicht') {
     }
 }
 
-$dates = DateHelper::getDateParts($_SESSION['Kampagne']->cStamp);
+$dates = Date::getDateParts($_SESSION['Kampagne']->cStamp);
 switch ((int)$_SESSION['Kampagne']->nAnsicht) {
     case 1:    // Monat
         $cZeitraum   = '01.' . $dates['cMonat'] . '.' . $dates['cJahr'] . ' - ' .

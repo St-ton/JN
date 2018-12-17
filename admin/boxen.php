@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('BOXES_VIEW', true, true);
 /** @global Smarty\JTLSmarty $smarty */
@@ -13,7 +16,7 @@ $nPage      = isset($_REQUEST['page']) ? (int)$_REQUEST['page'] : 0;
 $boxService = Shop::Container()->getBoxService();
 $boxAdmin   = new \Boxes\Admin\BoxAdmin(Shop::Container()->getDB());
 $bOk        = false;
-if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && FormHelper::validateToken()) {
+if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::validateToken()) {
     switch ($_REQUEST['action']) {
         case 'delete-invisible':
             if (!empty($_POST['kInvisibleBox']) && count($_POST['kInvisibleBox']) > 0) {

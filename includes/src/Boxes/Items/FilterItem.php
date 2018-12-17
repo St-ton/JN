@@ -8,7 +8,7 @@ namespace Boxes\Items;
 
 /**
  * Class FilterItem
- * @package Boxes
+ * @package Boxes\Items
  */
 final class FilterItem extends AbstractBox
 {

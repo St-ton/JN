@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
-ifndef('MAX_REVISIONS', 5);
 
 /**
  * Class Revision

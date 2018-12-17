@@ -34,7 +34,7 @@ class PageDB
      */
     public function getPageCount(): int
     {
-        return $this->shopDB->query(
+        return (int)$this->shopDB->query(
             'SELECT COUNT(DISTINCT cPageId) AS count FROM topcpage',
             ReturnType::SINGLE_OBJECT
         )->count;
@@ -43,7 +43,7 @@ class PageDB
     /**
      * @return array
      */
-    public function getPages()
+    public function getPages(): array
     {
         return $this->shopDB->query(
             'SELECT cPageId, cPageUrl FROM topcpage GROUP BY cPageId, cPageUrl',
@@ -75,10 +75,10 @@ class PageDB
 
     /**
      * @param int $key
-     * @return object
+     * @return \stdClass
      * @throws \Exception
      */
-    public function getDraftRow(int $key)
+    public function getDraftRow(int $key): \stdClass
     {
         $draftRow = $this->shopDB->select('topcpage', 'kPage', $key);
 
@@ -110,7 +110,7 @@ class PageDB
      * @param string $id
      * @return null|\stdClass
      */
-    public function getPublicPageRow(string $id)
+    public function getPublicPageRow(string $id): ?\stdClass
     {
         $publicRow = $this->shopDB->queryPrepared(
             'SELECT * FROM topcpage
@@ -142,6 +142,27 @@ class PageDB
     }
 
     /**
+     * @param string $id
+     * @return array
+     */
+    public function getOtherLanguageDraftRows(string $id): array
+    {
+        $pageIdFields       = \explode(';', $id);
+        $langField          = \array_pop($pageIdFields);
+        $languageKey        = \explode(':', $langField);
+        $languageKey        = (int)$languageKey[1];
+        $pageIdSearchPrefix = \implode(';', $pageIdFields) . ';lang:';
+
+        return $this->shopDB->query(
+            "SELECT o.*, s.kSprache, s.cNameEnglisch
+                FROM topcpage AS o
+                    JOIN tsprache AS s ON CONCAT('$pageIdSearchPrefix', s.kSprache) = o.cPageId
+                WHERE kSprache != $languageKey",
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+    }
+
+    /**
      * @param int $key
      * @return Page
      * @throws \Exception
@@ -158,7 +179,7 @@ class PageDB
      * @return Page
      * @throws \Exception
      */
-    public function getRevision(int $revId) : Page
+    public function getRevision(int $revId): Page
     {
         $revisionRow = $this->getRevisionRow($revId);
 
@@ -180,7 +201,7 @@ class PageDB
      * @param string $id
      * @return null|Page
      */
-    public function getPublicPage(string $id)
+    public function getPublicPage(string $id): ?Page
     {
         $publicRow = $this->getPublicPageRow($id);
 
@@ -201,7 +222,7 @@ class PageDB
         if ($page->getUrl() === ''
             || $page->getLastModified() === ''
             || $page->getLockedAt() === ''
-            || \strlen($page->getId()) !== 32
+            || $page->getId() === ''
         ) {
             throw new \Exception('The OPC page data to be saved is incomplete or invalid.');
         }
@@ -312,7 +333,7 @@ class PageDB
      * @param object $row
      * @return Page
      */
-    protected function getPageFromRow($row) : Page
+    protected function getPageFromRow($row): Page
     {
         $page = (new Page())
             ->setKey($row->kPage)

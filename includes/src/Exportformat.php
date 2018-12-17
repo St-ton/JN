@@ -4,6 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use DB\DbInterface;
+use DB\ReturnType;
+use Helpers\Category;
+use Helpers\Request;
+use Helpers\Tax;
+use Helpers\ShippingMethod;
+use Smarty\SmartyResourceNiceDB;
+
 /**
  * Class Exportformat
  */
@@ -145,15 +153,37 @@ class Exportformat
     private $logger;
 
     /**
-     * Exportformat constructor.
-     *
-     * @param int $kExportformat
+     * @var DbInterface
      */
-    public function __construct(int $kExportformat = 0)
+    private $db;
+
+    /**
+     * Exportformat constructor.
+     * @param int              $kExportformat
+     * @param DbInterface|null $db
+     */
+    public function __construct(int $kExportformat = 0, DbInterface $db = null)
     {
+        $this->db = $db ?? Shop::Container()->getDB();
         if ($kExportformat > 0) {
             $this->loadFromDB($kExportformat);
         }
+    }
+
+    /**
+     * @return DbInterface
+     */
+    public function getDB(): DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @param DbInterface $db
+     */
+    public function setDB(DbInterface $db): void
+    {
+        $this->db = $db;
     }
 
     /**
@@ -183,14 +213,14 @@ class Exportformat
      */
     private function loadFromDB(int $kExportformat = 0): self
     {
-        $oObj = Shop::Container()->getDB()->query(
+        $oObj = $this->db->query(
             'SELECT texportformat.*, tkampagne.cParameter AS campaignParameter, tkampagne.cWert AS campaignValue
                FROM texportformat
                LEFT JOIN tkampagne 
                   ON tkampagne.kKampagne = texportformat.kKampagne
                   AND tkampagne.nAktiv = 1
                WHERE texportformat.kExportformat = ' . $kExportformat,
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
         if (isset($oObj->kExportformat) && $oObj->kExportformat > 0) {
             foreach (get_object_vars($oObj) as $k => $v) {
@@ -212,7 +242,7 @@ class Exportformat
      */
     private function setConfig(int $kExportformat): void
     {
-        $confObj = Shop::Container()->getDB()->selectAll(
+        $confObj = $this->db->selectAll(
             'texportformateinstellungen',
             'kExportformat',
             $kExportformat
@@ -272,7 +302,7 @@ class Exportformat
         $ins->dZuletztErstellt = empty($this->dZuletztErstellt) ? '_DBNULL_' : $this->dZuletztErstellt;
         $ins->nUseCache        = $this->nUseCache;
 
-        $this->kExportformat = Shop::Container()->getDB()->insert('texportformat', $ins);
+        $this->kExportformat = $this->db->insert('texportformat', $ins);
         if ($this->kExportformat > 0) {
             return $bPrim ? $this->kExportformat : true;
         }
@@ -303,7 +333,7 @@ class Exportformat
         $upd->dZuletztErstellt = empty($this->dZuletztErstellt) ? '_DBNULL_' : $this->dZuletztErstellt;
         $upd->nUseCache        = $this->nUseCache;
 
-        return Shop::Container()->getDB()->update('texportformat', 'kExportformat', $this->getExportformat(), $upd);
+        return $this->db->update('texportformat', 'kExportformat', $this->getExportformat(), $upd);
     }
 
     /**
@@ -322,7 +352,7 @@ class Exportformat
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->delete('texportformat', 'kExportformat', $this->getExportformat());
+        return $this->db->delete('texportformat', 'kExportformat', $this->getExportformat());
     }
 
     /**
@@ -654,7 +684,7 @@ class Exportformat
                 }
                 $oObj->kExportformat = $this->getExportformat();
             }
-            $ok = $ok && (Shop::Container()->getDB()->insert('texportformateinstellungen', $oObj) > 0);
+            $ok = $ok && ($this->db->insert('texportformateinstellungen', $oObj) > 0);
         }
 
         return $ok;
@@ -677,7 +707,7 @@ class Exportformat
             if (in_array($conf['cName'], $import, true)) {
                 $_upd        = new stdClass();
                 $_upd->cWert = $conf['cWert'];
-                $ok          = $ok && (Shop::Container()->getDB()->update(
+                $ok          = $ok && ($this->db->update(
                     'tboxensichtbar',
                     ['kExportformat', 'cName'],
                     [$this->getExportformat(), $conf['cName']],
@@ -695,11 +725,11 @@ class Exportformat
      */
     private function initSmarty(): self
     {
-        $this->smarty = (new \Smarty\JTLSmarty(true, false, false, 'export'))
+        $this->smarty = (new \Smarty\JTLSmarty(true, \Smarty\ContextType::EXPORT))
             ->setCaching(0)
             ->setTemplateDir(PFAD_TEMPLATES)
             ->setCompileDir(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR)
-            ->registerResource('db', new SmartyResourceNiceDB('export'))
+            ->registerResource('db', new SmartyResourceNiceDB($this->db, \Smarty\ContextType::EXPORT))
             ->assign('URL_SHOP', Shop::getURL())
             ->assign('Waehrung', \Session\Session::getCurrency())
             ->assign('Einstellungen', $this->getConfig());
@@ -726,11 +756,11 @@ class Exportformat
         $this->currency = $this->kWaehrung > 0
             ? new Currency($this->kWaehrung)
             : (new Currency())->getDefault();
-        TaxHelper::setTaxRates();
-        $net       = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
-        $languages = \Functional\map(Shop::Container()->getDB()->query(
+        Tax::setTaxRates();
+        $net       = $this->db->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
+        $languages = \Functional\map($this->db->query(
             'SELECT *  FROM tsprache',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         ), function ($lang) {
             $lang->kSprache = (int)$lang->kSprache;
 
@@ -825,20 +855,20 @@ class Exportformat
         if ($countOnly === true) {
             $select = 'COUNT(*) AS nAnzahl';
         } else {
-            $select    = 'tartikel.kArtikel';
-            $limit     = ' ORDER BY tartikel.kArtikel LIMIT ' . $this->getQueue()->nLimitM;
+            $select     = 'tartikel.kArtikel';
+            $limit      = ' ORDER BY tartikel.kArtikel LIMIT ' . $this->getQueue()->nLimitM;
             $condition .= ' AND tartikel.kArtikel > ' . $this->getQueue()->nLastArticleID;
         }
 
-        return "SELECT " . $select . "
+        return 'SELECT ' . $select . "
             FROM tartikel
             LEFT JOIN tartikelattribut ON tartikelattribut.kArtikel = tartikel.kArtikel
                 AND tartikelattribut.cName = '" . FKT_ATTRIBUT_KEINE_PREISSUCHMASCHINEN . "'
-            " . $join . "
+            " . $join . '
             LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                AND tartikelsichtbarkeit.kKundengruppe = " . $this->getKundengruppe() . "
-            WHERE tartikelattribut.kArtikelAttribut IS NULL" . $where . "
-                AND tartikelsichtbarkeit.kArtikel IS NULL " . $condition . $limit;
+                AND tartikelsichtbarkeit.kKundengruppe = ' . $this->getKundengruppe() . '
+            WHERE tartikelattribut.kArtikelAttribut IS NULL' . $where . '
+                AND tartikelsichtbarkeit.kArtikel IS NULL ' . $condition . $limit;
     }
 
     /**
@@ -1050,7 +1080,8 @@ class Exportformat
                 ' with caching ' . ((Shop::Container()->getCache()->isActive() && $this->useCache())
                     ? 'enabled'
                     : 'disabled'));
-            $oPlugin = new \Plugin\Plugin($this->getPlugin());
+            $loader  = \Plugin\Helper::getLoaderByPluginID($this->getPlugin());
+            $oPlugin = $loader->init($this->getPlugin());
             if ($isCron === true) {
                 global $oJobQueue;
                 $oJobQueue = $queueObject;
@@ -1082,11 +1113,11 @@ class Exportformat
             $exportformat->tkampagne_cWert      = $this->campaignValue;
             // needed for plugin exports
             $ExportEinstellungen = $this->getConfig();
-            include $oPlugin->cAdminmenuPfad . PFAD_PLUGIN_EXPORTFORMAT .
+            include $oPlugin->getPaths()->getExportPath() .
                 str_replace(PLUGIN_EXPORTFORMAT_CONTENTFILE, '', $this->getContent());
 
             if (isset($queueObject->kExportqueue)) {
-                Shop::Container()->getDB()->delete('texportqueue', 'kExportqueue', (int)$queueObject->kExportqueue);
+                $this->db->delete('texportqueue', 'kExportqueue', (int)$queueObject->kExportqueue);
             }
             if (isset($_GET['back']) && $_GET['back'] === 'admin') {
                 header('Location: exportformate.php?action=exported&token=' .
@@ -1107,16 +1138,18 @@ class Exportformat
         }
         $datei = fopen(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName, 'a');
         if ($max === null) {
-            $maxObj = Shop::Container()->getDB()->executeQuery(
+            $maxObj = $this->db->executeQuery(
                 $this->getExportSQL(true),
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
             $max    = (int)$maxObj->nAnzahl;
         }
 
         $this->log('Starting exportformat "' . StringHandler::convertUTF8($this->getName()) .
             '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
-            ' with caching ' . ((Shop::Container()->getCache()->isActive() && $this->useCache()) ? 'enabled' : 'disabled') .
+            ' with caching ' . ((Shop::Container()->getCache()->isActive() && $this->useCache())
+                ? 'enabled'
+                : 'disabled') .
             ' - ' . $queueObject->nLimitN . '/' . $max . ' products exported');
         // Kopfzeile schreiben
         if ((int)$this->queue->nLimitN === 0) {
@@ -1125,7 +1158,7 @@ class Exportformat
         $content          = $this->getContent();
         $categoryFallback = (strpos($content, '->oKategorie_arr') !== false);
         $options          = Artikel::getExportOptions();
-        $helper           = KategorieHelper::getInstance($this->getSprache(), $this->getKundengruppe());
+        $helper           = Category::getInstance($this->getSprache(), $this->getKundengruppe());
         $shopURL          = Shop::getURL();
         $imageBaseURL     = Shop::getImageBaseURL();
         $find             = ['<br />', '<br>', '</'];
@@ -1155,9 +1188,9 @@ class Exportformat
             $findTwo[]    = ';';
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
-        foreach (Shop::Container()->getDB()->query(
+        foreach ($this->db->query(
             $this->getExportSQL(),
-            \DB\ReturnType::QUERYSINGLE
+            ReturnType::QUERYSINGLE
         ) as $productData) {
             $product = new Artikel();
             $product->fuelleArtikel(
@@ -1231,8 +1264,8 @@ class Exportformat
                         )
                     )
                 );
-                $product->fUst                  = TaxHelper::getSalesTax($product->kSteuerklasse);
-                $product->Preise->fVKBrutto     = TaxHelper::getGross(
+                $product->fUst                  = Tax::getSalesTax($product->kSteuerklasse);
+                $product->Preise->fVKBrutto     = Tax::getGross(
                     $product->Preise->fVKNetto * $this->currency->getConversionFactor(),
                     $product->fUst
                 );
@@ -1246,7 +1279,7 @@ class Exportformat
                 // calling gibKategoriepfad() should not be necessary
                 // since it has already been called in Kategorie::loadFromDB()
                 $product->Kategoriepfad = $product->Kategorie->cKategoriePfad ?? $helper->getPath($product->Kategorie);
-                $product->Versandkosten = VersandartHelper::getLowestShippingFees(
+                $product->Versandkosten = ShippingMethod::getLowestShippingFees(
                     $this->config['exportformate_lieferland'] ?? '',
                     $product,
                     0,
@@ -1260,7 +1293,7 @@ class Exportformat
                 }
                 // Kampagne URL
                 if (!empty($this->campaignParameter)) {
-                    $cSep          = (strpos($product->cURL, '.php') !== false) ? '&' : '?';
+                    $cSep           = (strpos($product->cURL, '.php') !== false) ? '&' : '?';
                     $product->cURL .= $cSep . $this->campaignParameter . '=' . $this->campaignValue;
                 }
 
@@ -1294,7 +1327,7 @@ class Exportformat
             if ($started === true) {
                 // One or more products have been exported
                 fclose($datei);
-                Shop::Container()->getDB()->queryPrepared(
+                $this->db->queryPrepared(
                     'UPDATE texportqueue SET
                         nLimit_n       = nLimit_n + :nLimitM,
                         nLastArticleID = :nLastArticleID
@@ -1304,10 +1337,10 @@ class Exportformat
                         'nLastArticleID' => $this->queue->nLastArticleID,
                         'kExportqueue'   => (int)$this->queue->kExportqueue,
                     ],
-                    \DB\ReturnType::DEFAULT
+                    ReturnType::DEFAULT
                 );
                 $protocol = ((isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) === 'on')
-                    || RequestHelper::checkSSL() === 2)
+                    || Request::checkSSL() === 2)
                     ? 'https://'
                     : 'http://';
                 if ($isAsync) {
@@ -1331,13 +1364,13 @@ class Exportformat
                 }
             } else {
                 // There are no more articles to export
-                Shop::Container()->getDB()->query(
+                $this->db->query(
                     'UPDATE texportformat 
                         SET dZuletztErstellt = NOW() 
                         WHERE kExportformat = ' . $this->getExportformat(),
-                    \DB\ReturnType::DEFAULT
+                    ReturnType::DEFAULT
                 );
-                Shop::Container()->getDB()->delete('texportqueue', 'kExportqueue', (int)$this->queue->kExportqueue);
+                $this->db->delete('texportqueue', 'kExportqueue', (int)$this->queue->kExportqueue);
 
                 $this->writeFooter($datei);
                 fclose($datei);
@@ -1378,7 +1411,7 @@ class Exportformat
             //finalize job when there are no more products to export
             if ($started === false) {
                 $this->log('Finalizing job...');
-                Shop::Container()->getDB()->update(
+                $this->db->update(
                     'texportformat',
                     'kExportformat',
                     (int)$queueObject->kKey,
@@ -1498,12 +1531,12 @@ class Exportformat
         $error = false;
         try {
             $product     = null;
-            $productData = Shop::Container()->getDB()->query(
+            $productData = $this->db->query(
                 "SELECT * 
                     FROM tartikel 
                     WHERE kVaterArtikel = 0 
                     AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1",
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
             if (!empty($productData->kArtikel)) {
                 $options                            = new stdClass();
@@ -1527,12 +1560,11 @@ class Exportformat
                 $product->Kategorie             = new Kategorie();
                 $product->Kategoriepfad         = '';
                 $product->Versandkosten         = -1;
-
             }
             $this->smarty->assign('Artikel', $product)
                          ->fetch('db:' . $this->kExportformat);
         } catch (Exception $e) {
-            $error = '<strong>Smarty-Syntaxfehler:</strong><br />';
+            $error  = '<strong>Smarty-Syntaxfehler:</strong><br />';
             $error .= '<pre>' . $e->getMessage() . '</pre>';
         }
 

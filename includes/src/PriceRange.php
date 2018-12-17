@@ -7,6 +7,7 @@
  */
 
 use DB\ReturnType;
+use Helpers\Tax;
 
 /**
  * Class PriceRange
@@ -69,10 +70,10 @@ class PriceRange
             $customerID = \Session\Session::getCustomer()->kKunde ?? 0;
         }
 
-        $this->customerGroupID = $customerGroupID;
-        $this->customerID      = $customerID;
-        $this->discount        = 0;
-        $this->articleData     = Shop::Container()->getDB()->select(
+        $this->customerGroupID            = $customerGroupID;
+        $this->customerID                 = $customerID;
+        $this->discount                   = 0;
+        $this->articleData                = Shop::Container()->getDB()->select(
             'tartikel',
             'kArtikel',
             $articleID,
@@ -131,10 +132,10 @@ class PriceRange
             $this->loadConfiguratorRange();
         }
 
-        $ust = TaxHelper::getSalesTax($this->articleData->kSteuerklasse);
+        $ust = Tax::getSalesTax($this->articleData->kSteuerklasse);
 
-        $this->minBruttoPrice = \TaxHelper::getGross($this->minNettoPrice, $ust);
-        $this->maxBruttoPrice = \TaxHelper::getGross($this->maxNettoPrice, $ust);
+        $this->minBruttoPrice = Helpers\Tax::getGross($this->minNettoPrice, $ust);
+        $this->maxBruttoPrice = Helpers\Tax::getGross($this->maxNettoPrice, $ust);
     }
 
     public function loadConfiguratorRange(): void
@@ -190,20 +191,20 @@ class PriceRange
                 ];
             }
 
-            $ust = TaxHelper::getSalesTax($configItem->kSteuerklasse);
+            $ust = Tax::getSalesTax($configItem->kSteuerklasse);
 
             if ((int)$configItem->bPreis === 0) {
                 $configGroups[$configItemID]->prices->min[] =
-                    (float)$configItem->fMin * \TaxHelper::getGross((float)$configItem->fMinPreis, $ust, 4);
+                    (float)$configItem->fMin * Helpers\Tax::getGross((float)$configItem->fMinPreis, $ust, 4);
                 $configGroups[$configItemID]->prices->max[] =
-                    (float)$configItem->fMax * \TaxHelper::getGross((float)$configItem->fMaxPreis, $ust, 4);
+                    (float)$configItem->fMax * Helpers\Tax::getGross((float)$configItem->fMaxPreis, $ust, 4);
             } else {
                 $priceRange = new PriceRange((int)$configItem->kKindArtikel, $this->customerGroupID, $this->customerID);
                 // Es wird immer maxNettoPrice verwendet, da im Konfigurator keine Staffelpreise berücksichtigt werden
                 $configGroups[$configItemID]->prices->min[] =
-                    (float)$configItem->fMin * \TaxHelper::getGross($priceRange->maxNettoPrice, $ust, 4);
+                    (float)$configItem->fMin * Helpers\Tax::getGross($priceRange->maxNettoPrice, $ust, 4);
                 $configGroups[$configItemID]->prices->max[] =
-                    (float)$configItem->fMax * \TaxHelper::getGross($priceRange->maxNettoPrice, $ust, 4);
+                    (float)$configItem->fMax * Helpers\Tax::getGross($priceRange->maxNettoPrice, $ust, 4);
             }
         }
 
@@ -250,11 +251,11 @@ class PriceRange
             $maxPrices[] = $maxPrice;
         }
 
-        $ust = TaxHelper::getSalesTax($this->articleData->kSteuerklasse);
+        $ust = Tax::getSalesTax($this->articleData->kSteuerklasse);
 
         // Die jeweiligen Min- und Maxpreise sind die Summen aus allen Konfig-Gruppen
-        $this->minNettoPrice += TaxHelper::getNet(array_sum($minPrices), $ust, 4);
-        $this->maxNettoPrice += TaxHelper::getNet(array_sum($maxPrices), $ust, 4);
+        $this->minNettoPrice += Tax::getNet(array_sum($minPrices), $ust, 4);
+        $this->maxNettoPrice += Tax::getNet(array_sum($maxPrices), $ust, 4);
     }
 
     /**
@@ -270,12 +271,12 @@ class PriceRange
 
             $this->discount = $discount;
 
-            $ust = TaxHelper::getSalesTax($this->articleData->kSteuerklasse);
+            $ust = Tax::getSalesTax($this->articleData->kSteuerklasse);
 
-            $this->minNettoPrice  *= (1 - $this->discount);
-            $this->maxNettoPrice  *= (1 - $this->discount);
-            $this->minBruttoPrice = \TaxHelper::getGross($this->minNettoPrice, $ust);
-            $this->maxBruttoPrice = \TaxHelper::getGross($this->maxNettoPrice, $ust);
+            $this->minNettoPrice *= (1 - $this->discount);
+            $this->maxNettoPrice *= (1 - $this->discount);
+            $this->minBruttoPrice = Helpers\Tax::getGross($this->minNettoPrice, $ust);
+            $this->maxBruttoPrice = Helpers\Tax::getGross($this->maxNettoPrice, $ust);
         }
     }
 

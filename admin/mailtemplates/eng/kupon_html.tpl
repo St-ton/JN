@@ -110,7 +110,7 @@ Valid from {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} until {$Kupon->
 <br>
 {if count($Kupon->Artikel)>0}This coupon can be used for the following products:<br>
     {foreach name=art from=$Kupon->Artikel item=Artikel}
-        <a href="{$Artikel->cURL}">{$Artikel->cName}</a><br>
+        <a href="{$Artikel->cURLFull}">{$Artikel->cName}</a><br>
     {/foreach}
 {/if}<br>
 <br>

@@ -54,7 +54,9 @@ function bildercheck_xml(SimpleXMLElement $xml)
         foreach ($images as $image) {
             $storage = PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $image->hash;
             if (!file_exists($storage)) {
-                Shop::Container()->getLogService()->debug("Dropping orphan {$image->id} -> {$image->hash}: no such file");
+                Shop::Container()->getLogService()->debug(
+                    'Dropping orphan ' . $image->id . ' -> ' . $image->hash . ': no such file'
+                );
                 $db->delete('tbild', 'kBild', $image->id);
                 $db->delete('tartikelpict', 'kBild', $image->id);
             }
@@ -85,7 +87,7 @@ function bildercheck_xml(SimpleXMLElement $xml)
     }, $missing);
 
     $idlist = implode(';', $ids);
-    push_response("0;\n<bildcheck><notfound>{$idlist}</notfound></bildcheck>");
+    push_response("0;\n<bildcheck><notfound>" . $idlist . '</notfound></bildcheck>');
 }
 
 /**

@@ -464,6 +464,9 @@ final class BoxAdmin
             } elseif ($oVorlage->eTyp === Type::CATBOX) {
                 $nID   = 4;
                 $cName = 'Kategorie';
+            } elseif ($oVorlage->eTyp === Type::EXTENSION) {
+                $nID   = 5;
+                $cName = 'Extension';
             }
 
             if (!isset($templates[$nID])) {

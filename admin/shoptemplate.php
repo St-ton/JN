@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+use Helpers\Template;
+
 /**
  * @global Smarty\JTLSmarty $smarty
  */
@@ -19,17 +23,17 @@ $lessColors_arr = [];
 $lessColorsSkin = [];
 $oTemplate      = Template::getInstance();
 $admin          = (isset($_GET['admin']) && $_GET['admin'] === 'true');
-$templateHelper = TemplateHelper::getInstance(true);
+$templateHelper = Template::getInstance(true);
 $templateHelper->disableCaching();
 if (isset($_POST['key'], $_POST['upload'])) {
-    $file     = PFAD_ROOT . PFAD_TEMPLATES . $_POST['upload'];
-    $response = new stdClass();
+    $file             = PFAD_ROOT . PFAD_TEMPLATES . $_POST['upload'];
+    $response         = new stdClass();
     $response->status = 'FAILED';
     if (file_exists($file) && is_file($file)) {
         $delete = unlink($file);
         if ($delete === true) {
             $response->status = 'OK';
-            $upload = explode('/', $_POST['upload']);
+            $upload           = explode('/', $_POST['upload']);
             $oTemplate->setConfig($upload[0], 'theme', $_POST['cName'], '');
         }
     }
@@ -45,7 +49,7 @@ if (isset($_GET['check'])) {
 if (isset($_GET['uploadError'])) {
     $cFehler .= 'Datei-Upload konnte nicht ausgeführt werden - bitte Schreibrechte &uumlberprüfen.';
 }
-if (isset($_POST['type']) && $_POST['type'] === 'layout' && FormHelper::validateToken()) {
+if (isset($_POST['type']) && $_POST['type'] === 'layout' && Form::validateToken()) {
     $oCSS           = new SimpleCSS();
     $cOrdner        = basename($_POST['ordner']);
     $cCustomCSSFile = $oCSS->getCustomCSSFile($cOrdner);
@@ -79,7 +83,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'layout' && FormHelper::validate
         }
     }
 }
-if (isset($_POST['type']) && $_POST['type'] === 'settings' && FormHelper::validateToken()) {
+if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToken()) {
     $cOrdner      = Shop::Container()->getDB()->escape($_POST['ordner']);
     $parentFolder = null;
     $tplXML       = $oTemplate->leseXML($cOrdner);
@@ -149,7 +153,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && FormHelper::valida
         PFAD_ADMIN . 'shoptemplate.php?check=' .
         ($bCheck ? 'true' : 'false') . $uploadError, true, 301);
 }
-if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::validateToken()) {
+if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && Form::validateToken()) {
     $cOrdner      = Shop::Container()->getDB()->escape($_GET['settings']);
     $oTpl         = $templateHelper->getData($cOrdner, $admin);
     $tplXML       = $templateHelper->getXML($cOrdner, false);
@@ -204,7 +208,7 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::val
                                 $_theme->cValue . '/preview.png'
                                 : PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/themes/' . $_theme->cValue . '/preview.png';
                             if (file_exists($previewImage)) {
-                                $base = $shopURL . PFAD_TEMPLATES;
+                                $base                     = $shopURL . PFAD_TEMPLATES;
                                 $preview[$_theme->cValue] = isset($_theme->cOrdner)
                                     ? $base . $_theme->cOrdner . '/themes/' . $_theme->cValue . '/preview.png'
                                     : $base . $cOrdner . '/themes/' . $_theme->cValue . '/preview.png';

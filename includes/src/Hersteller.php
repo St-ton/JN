@@ -132,9 +132,9 @@ class Hersteller
             $oSprache = Sprache::getDefaultLanguage();
             $kSprache = (int)$oSprache->kSprache;
         }
-        $cacheID     = 'manuf_' . $kHersteller . '_' . $kSprache . Shop::Container()->getCache()->getBaseID();
-        $cacheTags   = [CACHING_GROUP_MANUFACTURER];
-        $cached      = true;
+        $cacheID   = 'manuf_' . $kHersteller . '_' . $kSprache . Shop::Container()->getCache()->getBaseID();
+        $cacheTags = [CACHING_GROUP_MANUFACTURER];
+        $cached    = true;
         if ($noCache === true || ($oHersteller = Shop::Container()->getCache()->get($cacheID)) === false) {
             $oHersteller = Shop::Container()->getDB()->queryPrepared(
                 "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
@@ -155,7 +155,7 @@ class Hersteller
                 ],
                 \DB\ReturnType::SINGLE_OBJECT
             );
-            $cached = false;
+            $cached      = false;
             executeHook(HOOK_HERSTELLER_CLASS_LOADFROMDB, [
                 'oHersteller' => &$oHersteller,
                 'cached'      => false,
@@ -187,7 +187,7 @@ class Hersteller
         $imageBaseURL = Shop::getImageBaseURL();
         if (isset($obj->kHersteller) && $obj->kHersteller > 0) {
             // URL bauen
-            $this->cURL = (isset($obj->cSeo) && strlen($obj->cSeo) > 0)
+            $this->cURL          = (isset($obj->cSeo) && strlen($obj->cSeo) > 0)
                 ? $shopURL . $obj->cSeo
                 : $shopURL . '?h=' . $obj->kHersteller;
             $this->cBeschreibung = StringHandler::parseNewsText($this->cBeschreibung);
@@ -214,7 +214,7 @@ class Hersteller
         $sqlWhere = '';
         $kSprache = Shop::getLanguageID();
         if ($productLookup) {
-            $sqlWhere = 'WHERE EXISTS (
+            $sqlWhere = ' WHERE EXISTS (
                             SELECT 1
                             FROM tartikel
                             WHERE tartikel.kHersteller = thersteller.kHersteller
@@ -222,23 +222,23 @@ class Hersteller
                                 AND NOT EXISTS (
                                 SELECT 1 FROM tartikelsichtbarkeit
                                 WHERE tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                                    AND tartikelsichtbarkeit.kKundengruppe = '. \Session\Session::getCustomerGroup()->getID() .
+                                    AND tartikelsichtbarkeit.kKundengruppe = '.
+                                \Session\Session::getCustomerGroup()->getID() .
                             ')
                         )';
         }
-        $objs = Shop::Container()->getDB()->query(
+        $objs    = Shop::Container()->getDB()->query(
             "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                 thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                 therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
                 FROM thersteller
                 LEFT JOIN therstellersprache 
                     ON therstellersprache.kHersteller = thersteller.kHersteller
-                    AND therstellersprache.kSprache = {$kSprache}
+                    AND therstellersprache.kSprache = " . $kSprache . "
                 LEFT JOIN tseo 
                     ON tseo.kKey = thersteller.kHersteller
                     AND tseo.cKey = 'kHersteller'
-                    AND tseo.kSprache = {$kSprache}
-                {$sqlWhere}
+                    AND tseo.kSprache = " . $kSprache . $sqlWhere . "
                 ORDER BY thersteller.nSortNr, thersteller.cName",
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );

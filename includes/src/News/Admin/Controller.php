@@ -255,7 +255,7 @@ class Controller
                 $this->step         = 'news_editieren';
                 $this->continueWith = $newsItemID;
             } else {
-                $tab = \RequestHelper::verifyGPDataString('tab');
+                $tab = \Helpers\Request::verifyGPDataString('tab');
                 $this->newsRedirect(empty($tab) ? 'aktiv' : $tab, $this->msg);
             }
         } else {
@@ -776,7 +776,7 @@ class Controller
             }
             $this->flushCache();
             $this->setMsg('Ihre markierten Kommentare wurden erfolgreich gelöscht.');
-            $tab    = \RequestHelper::verifyGPDataString('tab');
+            $tab    = \Helpers\Request::verifyGPDataString('tab');
             $params = [
                 'news'  => '1',
                 'nd'    => '1',
@@ -870,10 +870,10 @@ class Controller
             }
             $urlParams['tab'] = $tab;
             if (isset($tabPageMapping[$tab])
-                && \RequestHelper::verifyGPCDataInt($tabPageMapping[$tab]) > 1
+                && \Helpers\Request::verifyGPCDataInt($tabPageMapping[$tab]) > 1
                 && !\array_key_exists($tabPageMapping[$tab], $urlParams)
             ) {
-                $urlParams[$tabPageMapping[$tab]] = \RequestHelper::verifyGPCDataInt($tabPageMapping[$tab]);
+                $urlParams[$tabPageMapping[$tab]] = \Helpers\Request::verifyGPCDataInt($tabPageMapping[$tab]);
             }
         }
 

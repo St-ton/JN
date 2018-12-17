@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+use Helpers\Request;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_SEPARATOR_VIEW', true, true);
@@ -14,7 +18,7 @@ setzeSprache();
 $cHinweis = '';
 $cFehler  = '';
 $step     = 'trennzeichen_uebersicht';
-if (RequestHelper::verifyGPCDataInt('save') === 1 && FormHelper::validateToken()) {
+if (Request::verifyGPCDataInt('save') === 1 && Form::validateToken()) {
     $oPlausiTrennzeichen = new PlausiTrennzeichen();
     $oPlausiTrennzeichen->setPostVar($_POST);
     $oPlausiTrennzeichen->doPlausi();

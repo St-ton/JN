@@ -7,13 +7,14 @@
 namespace OPC\Portlets;
 
 use function Couchbase\defaultDecoder;
+use OPC\Portlet;
 use OPC\PortletInstance;
 
 /**
  * Class PList
  * @package OPC\Portlets
  */
-class PList extends \OPC\Portlet
+class PList extends Portlet
 {
     /**
      * @param PortletInstance $instance

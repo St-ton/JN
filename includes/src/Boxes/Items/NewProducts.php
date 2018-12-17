@@ -7,23 +7,24 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
+use Session\Session;
 
 /**
  * Class NewProducts
- * @package Boxes
+ * @package Boxes\Items
  */
 final class NewProducts extends AbstractBox
 {
     /**
-     * Cart constructor.
+     * NewProducts constructor.
      * @param array $config
      */
     public function __construct(array $config)
     {
         parent::__construct($config);
         $this->setShow(false);
-        $customerGroupID = \Session\Session::getCustomerGroup()->getID();
-        if ($customerGroupID && \Session\Session::getCustomerGroup()->mayViewCategories()) {
+        $customerGroupID = Session::getCustomerGroup()->getID();
+        if ($customerGroupID && Session::getCustomerGroup()->mayViewCategories()) {
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $cached         = true;
             $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
@@ -44,12 +45,10 @@ final class NewProducts extends AbstractBox
                             ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
                             AND tartikelsichtbarkeit.kKundengruppe = $customerGroupID
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                            AND tartikel.cNeu = 'Y'
-                            $stockFilterSQL
-                            $parentSQL
+                            AND tartikel.cNeu = 'Y' " . $stockFilterSQL . $parentSQL . "
                             AND cNeu = 'Y' 
-                            AND DATE_SUB(NOW(),INTERVAL $days DAY) < dErstellt
-                        ORDER BY RAND() LIMIT " . $limit,
+                            AND DATE_SUB(NOW(), INTERVAL " . $days . ' DAY) < dErstellt
+                        ORDER BY RAND() LIMIT ' . $limit,
                     ReturnType::ARRAY_OF_OBJECTS
                 );
                 $productIDs = \array_map(function ($e) {
@@ -62,7 +61,7 @@ final class NewProducts extends AbstractBox
                 $products = new \ArtikelListe();
                 $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
                 $this->setProducts($products);
-                $this->setURL(\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_NEWPRODUCTS));
+                $this->setURL(\Helpers\SearchSpecial::buildURL(\SEARCHSPECIALS_NEWPRODUCTS));
                 \executeHook(\HOOK_BOXEN_INC_NEUIMSORTIMENT, [
                     'box'        => &$this,
                     'cache_tags' => &$cacheTags,

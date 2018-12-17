@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
 
@@ -34,7 +37,12 @@ function exec_query($query)
 $jsTypo = (object)['tables' => []];
 foreach ($tables as $table => $info) {
     $columns                = DBManager::getColumns($table);
-    $columns                = array_map(function($n) { return null; }, $columns);
+    $columns                = array_map(
+        function ($n) {
+            return null;
+        },
+        $columns
+    );
     $jsTypo->tables[$table] = $columns;
 }
 $smarty->assign('jsTypo', $jsTypo);
@@ -57,7 +65,7 @@ switch (true) {
     case isset($_GET['select']):
         $table = $_GET['select'];
 
-        if (!preg_match('/^\w+$/i', $table, $m) || !FormHelper::validateToken()) {
+        if (!preg_match('/^\w+$/i', $table, $m) || !Form::validateToken()) {
             die('Not allowed.');
         }
 
@@ -88,7 +96,7 @@ switch (true) {
 
         $filter['offset'] = ($page - 1) * $filter['limit'];
 
-        $baseQuery = "SELECT * FROM " . $table;
+        $baseQuery = 'SELECT * FROM ' . $table;
 
         // query parts
         $queryParams = [];
@@ -96,7 +104,7 @@ switch (true) {
 
         // where
         if (isset($filter['where']['col'])) {
-            $whereParts = [];
+            $whereParts  = [];
             $columnCount = count($filter['where']['col']);
             for ($i = 0; $i < $columnCount; $i++) {
                 if (!empty($filter['where']['col'][$i]) && !empty($filter['where']['op'][$i])) {
@@ -161,7 +169,7 @@ switch (true) {
             $query = $_POST['sql_query_edit'];
         }
 
-        if ($query !== null && FormHelper::validateToken()) {
+        if ($query !== null && Form::validateToken()) {
             try {
                 $parser = new SqlParser\Parser($query);
 

@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\GeneralObject;
+
 /**
  * Class KategorieArtikel
  */
@@ -59,7 +61,7 @@ class KategorieArtikel
      */
     public function insertInDB(): int
     {
-        return Shop::Container()->getDB()->insert('tkategorieartikel', ObjectHelper::copyMembers($this));
+        return Shop::Container()->getDB()->insert('tkategorieartikel', GeneralObject::copyMembers($this));
     }
 
     /**
@@ -69,7 +71,7 @@ class KategorieArtikel
      */
     public function updateInDB(): int
     {
-        $obj = ObjectHelper::copyMembers($this);
+        $obj = GeneralObject::copyMembers($this);
 
         return Shop::Container()->getDB()->update(
             'tkategorieartikel',

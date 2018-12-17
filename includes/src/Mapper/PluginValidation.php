@@ -447,6 +447,9 @@ class PluginValidation
             case InstallCode::EXT_MUST_NOT_HAVE_UNINSTALLER:
                 $return = 'Fehler: Extension darf keinen Uninstaller definieren';
                 break;
+            case InstallCode::WRONG_EXT_DIR:
+                $return = 'Fehler: Extension in falschem Ordner installiert';
+                break;
             default:
                 $return = 'Unbekannter Fehler.';
                 break;

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 
 /** @global AdminAccount $oAccount */
 
@@ -13,7 +13,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 if (!$oAccount->getIsAuthenticated()) {
     AdminIO::getInstance()->respondAndExit(new IOError('Not authenticated as admin.', 401));
 }
-if (!FormHelper::validateToken()) {
+if (!Form::validateToken()) {
     AdminIO::getInstance()->respondAndExit(new IOError('CSRF validation failed.', 403));
 }
 

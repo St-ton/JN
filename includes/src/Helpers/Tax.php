@@ -16,10 +16,10 @@ use stdClass;
 use Warenkorb;
 
 /**
- * Class TaxHelper
+ * Class Tax
  * @since since 5.0.0
  */
-class TaxHelper
+class Tax
 {
     /**
      * @param int $taxID
@@ -111,12 +111,12 @@ class TaxHelper
             // Keine Steuerzone für $deliveryCountryCode hinterlegt - das ist fatal!
             $redirURL  = Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php') .
                 '?editRechnungsadresse=1';
-            $urlHelper = new UrlHelper(Shop::getURL() . $_SERVER['REQUEST_URI']);
+            $urlHelper = new URL(Shop::getURL() . $_SERVER['REQUEST_URI']);
             $country   = Sprache::getCountryCodeByCountryName($deliveryCountryCode);
 
             Shop::Container()->getLogService()->error('Keine Steuerzone für "' . $country . '" hinterlegt!');
 
-            if (RequestHelper::isAjaxRequest()) {
+            if (Request::isAjaxRequest()) {
                 $link = new Link(Shop::Container()->getDB());
                 $link->setLinkType(\LINKTYP_STARTSEITE);
                 $link->setTitle(Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'));
@@ -159,7 +159,7 @@ class TaxHelper
 
         if ($qry !== '') {
             foreach ($steuerklassen as $steuerklasse) {
-                $steuersatz = Shop::Container()->getDB()->query(
+                $steuersatz                                           = Shop::Container()->getDB()->query(
                     'SELECT fSteuersatz
                         FROM tsteuersatz
                         WHERE kSteuerklasse = ' . (int)$steuerklasse->kSteuerklasse . '
@@ -215,7 +215,7 @@ class TaxHelper
                 $taxPos[$i]->fBetrag         = ($position->fPreis * $position->nAnzahl * $position->fMwSt) / 100.0;
                 $taxPos[$i]->cPreisLocalized = Preise::getLocalizedPriceString($taxPos[$i]->fBetrag, $currency, $html);
             } else {
-                $taxPos[$i]->fBetrag         += ($position->fPreis * $position->nAnzahl * $position->fMwSt) / 100.0;
+                $taxPos[$i]->fBetrag        += ($position->fPreis * $position->nAnzahl * $position->fMwSt) / 100.0;
                 $taxPos[$i]->cPreisLocalized = Preise::getLocalizedPriceString($taxPos[$i]->fBetrag, $currency, $html);
             }
         }

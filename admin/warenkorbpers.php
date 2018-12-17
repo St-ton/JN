@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Form;
+use Helpers\Request;
 use Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -20,11 +20,11 @@ $settingsIDs       = [540];
 $searchSQL         = new stdClass();
 $searchSQL->cJOIN  = '';
 $searchSQL->cWHERE = '';
-if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
+if (strlen(Request::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
-if (strlen(RequestHelper::verifyGPDataString('cSuche')) > 0) {
-    $cSuche = Shop::Container()->getDB()->escape(StringHandler::filterXSS(RequestHelper::verifyGPDataString('cSuche')));
+if (strlen(Request::verifyGPDataString('cSuche')) > 0) {
+    $cSuche = Shop::Container()->getDB()->escape(StringHandler::filterXSS(Request::verifyGPDataString('cSuche')));
     if (strlen($cSuche) > 0) {
         $searchSQL->cWHERE = " WHERE (tkunde.cKundenNr LIKE '%" . $cSuche . "%'
             OR tkunde.cVorname LIKE '%" . $cSuche . "%' 
@@ -36,14 +36,14 @@ if (strlen(RequestHelper::verifyGPDataString('cSuche')) > 0) {
 if (isset($_POST['einstellungen'])
     && (int)$_POST['einstellungen'] === 1
     && (isset($_POST['speichern']) || (isset($_POST['a']) && $_POST['a'] === 'speichern'))
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     $step      = 'uebersicht';
     $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
     $smarty->assign('tab', 'einstellungen');
 }
 
-if (isset($_GET['l']) && (int)$_GET['l'] > 0 && FormHelper::validateToken()) {
+if (isset($_GET['l']) && (int)$_GET['l'] > 0 && Form::validateToken()) {
     $kKunde         = (int)$_GET['l'];
     $oWarenkorbPers = new WarenkorbPers($kKunde);
 

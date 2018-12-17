@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FileSystemHelper;
+use Helpers\FileSystem;
 
 require_once __DIR__ . '/syncinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
@@ -13,7 +13,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 if (auth()) {
     Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
     if (!KEEP_SYNC_FILES) {
-        FileSystemHelper::delDirRecursively(PFAD_ROOT . PFAD_DBES_TMP);
+        FileSystem::delDirRecursively(PFAD_ROOT . PFAD_DBES_TMP);
     }
 
     LastJob::getInstance()->finishStdJobs();

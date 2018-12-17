@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Form;
+use Helpers\Request;
 use Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -25,15 +25,15 @@ $cacheTags     = [];
 
 setzeSprache();
 
-if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-    $cTab = RequestHelper::verifyGPDataString('tab');
+if (strlen(Request::verifyGPDataString('tab')) > 0) {
+    $cTab = Request::verifyGPDataString('tab');
 }
-if (FormHelper::validateToken()) {
-    if (RequestHelper::verifyGPCDataInt('bewertung_editieren') === 1) {
+if (Form::validateToken()) {
+    if (Request::verifyGPCDataInt('bewertung_editieren') === 1) {
         if (editiereBewertung($_POST)) {
             $cHinweis .= 'Ihre Bewertung wurde erfolgreich editiert. ';
 
-            if (RequestHelper::verifyGPCDataInt('nFZ') === 1) {
+            if (Request::verifyGPCDataInt('nFZ') === 1) {
                 header('Location: freischalten.php');
                 exit();
             }
@@ -42,8 +42,8 @@ if (FormHelper::validateToken()) {
             $cFehler .= 'Fehler: Bitte überprüfen Sie Ihre Eingaben. ';
         }
     } elseif (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
-        if (RequestHelper::verifyGPDataString('bewertung_guthaben_nutzen') === 'Y'
-            && RequestHelper::verifyGPDataString('bewertung_freischalten') !== 'Y'
+        if (Request::verifyGPDataString('bewertung_guthaben_nutzen') === 'Y'
+            && Request::verifyGPDataString('bewertung_freischalten') !== 'Y'
         ) {
             $cFehler = 'Guthabenbonus kann nur mit "Bewertung freischalten" verwendet werden.';
         } else {
@@ -122,13 +122,13 @@ if (FormHelper::validateToken()) {
 
 if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_editieren') {
     $step = 'bewertung_editieren';
-    $smarty->assign('oBewertung', holeBewertung(RequestHelper::verifyGPCDataInt('kBewertung')));
-    if (RequestHelper::verifyGPCDataInt('nFZ') === 1) {
+    $smarty->assign('oBewertung', holeBewertung(Request::verifyGPCDataInt('kBewertung')));
+    if (Request::verifyGPCDataInt('nFZ') === 1) {
         $smarty->assign('nFZ', 1);
     }
 } elseif ($step === 'bewertung_uebersicht') {
-    if (isset($_GET['a']) && $_GET['a'] === 'delreply' && FormHelper::validateToken()) {
-        removeReply(RequestHelper::verifyGPCDataInt('kBewertung'));
+    if (isset($_GET['a']) && $_GET['a'] === 'delreply' && Form::validateToken()) {
+        removeReply(Request::verifyGPCDataInt('kBewertung'));
         $cHinweis = 'Antwort zu einer Bewertung wurde entfernt.';
     }
     $nBewertungen      = (int)Shop::Container()->getDB()->query(

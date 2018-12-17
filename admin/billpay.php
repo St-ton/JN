@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Form;
+use Helpers\Request;
 use Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -19,8 +19,8 @@ $cFehler = null;
 $cStep   = 'uebersicht';
 /** @global Smarty\JTLSmarty $smarty */
 $smarty->assign('cTab', $cStep);
-if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
+if (strlen(Request::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 /** @var Billpay $oBillpay */
 $oBillpay = PaymentMethod::create('za_billpay_jtl');
@@ -118,7 +118,7 @@ $Conf = Shop::Container()->getDB()->selectAll(
     'nSort'
 );
 
-if (isset($_POST['einstellungen_bearbeiten']) && FormHelper::validateToken()) {
+if (isset($_POST['einstellungen_bearbeiten']) && Form::validateToken()) {
     foreach ($Conf as $i => $oConfig) {
         unset($aktWert);
         $aktWert = new stdClass();

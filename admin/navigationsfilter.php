@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 
 /**
  * @global Smarty\JTLSmarty $smarty
@@ -16,7 +16,7 @@ $oAccount->permission('SETTINGS_NAVIGATION_FILTER_VIEW', true, true);
 $cHinweis = '';
 $cFehler  = '';
 setzeSprache();
-if (isset($_POST['speichern']) && FormHelper::validateToken()) {
+if (isset($_POST['speichern']) && Form::validateToken()) {
     $cHinweis .= saveAdminSectionSettings(CONF_NAVIGATIONSFILTER, $_POST);
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_CATEGORY]);
     if (is_array($_POST['nVon'])

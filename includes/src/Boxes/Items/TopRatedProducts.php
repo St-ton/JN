@@ -67,7 +67,7 @@ final class TopRatedProducts extends AbstractBox
             }
             $this->setShow(true);
             $this->setProducts($this->products);
-            $this->setURL(\Helpers\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_TOPREVIEWS));
+            $this->setURL(\Helpers\SearchSpecial::buildURL(\SEARCHSPECIALS_TOPREVIEWS));
 
             \executeHook(\HOOK_BOXEN_INC_TOPBEWERTET, [
                 'box'        => &$this,

@@ -12,10 +12,10 @@ use Shop;
 use Sprache;
 
 /**
- * Class UrlHelper
+ * Class URL
  * @package Helpers
  */
-class UrlHelper
+class URL
 {
     /**
      * @var string

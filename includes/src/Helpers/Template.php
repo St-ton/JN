@@ -15,10 +15,10 @@ use stdClass;
 use StringHandler;
 
 /**
- * Class TemplateHelper
+ * Class Template
  * @package Helpers
  */
-class TemplateHelper
+class Template
 {
     /**
      * @var string
@@ -31,7 +31,7 @@ class TemplateHelper
     public $isAdmin = false;
 
     /**
-     * @var TemplateHelper[]
+     * @var Template[]
      */
     public static $instances = [];
 
@@ -52,7 +52,7 @@ class TemplateHelper
 
     /**
      * @param bool $isAdmin
-     * @return TemplateHelper
+     * @return Template
      */
     public static function getInstance(bool $isAdmin = false): self
     {

@@ -6,10 +6,10 @@
 
 use DB\DbInterface;
 use DB\ReturnType;
-use Helpers\KategorieHelper;
-use Helpers\RequestHelper;
-use Helpers\TaxHelper;
-use Helpers\VersandartHelper;
+use Helpers\Category;
+use Helpers\Request;
+use Helpers\Tax;
+use Helpers\ShippingMethod;
 use Smarty\SmartyResourceNiceDB;
 
 /**
@@ -756,7 +756,7 @@ class Exportformat
         $this->currency = $this->kWaehrung > 0
             ? new Currency($this->kWaehrung)
             : (new Currency())->getDefault();
-        TaxHelper::setTaxRates();
+        Tax::setTaxRates();
         $net       = $this->db->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
         $languages = \Functional\map($this->db->query(
             'SELECT *  FROM tsprache',
@@ -1158,7 +1158,7 @@ class Exportformat
         $content          = $this->getContent();
         $categoryFallback = (strpos($content, '->oKategorie_arr') !== false);
         $options          = Artikel::getExportOptions();
-        $helper           = KategorieHelper::getInstance($this->getSprache(), $this->getKundengruppe());
+        $helper           = Category::getInstance($this->getSprache(), $this->getKundengruppe());
         $shopURL          = Shop::getURL();
         $imageBaseURL     = Shop::getImageBaseURL();
         $find             = ['<br />', '<br>', '</'];
@@ -1264,8 +1264,8 @@ class Exportformat
                         )
                     )
                 );
-                $product->fUst                  = TaxHelper::getSalesTax($product->kSteuerklasse);
-                $product->Preise->fVKBrutto     = TaxHelper::getGross(
+                $product->fUst                  = Tax::getSalesTax($product->kSteuerklasse);
+                $product->Preise->fVKBrutto     = Tax::getGross(
                     $product->Preise->fVKNetto * $this->currency->getConversionFactor(),
                     $product->fUst
                 );
@@ -1279,7 +1279,7 @@ class Exportformat
                 // calling gibKategoriepfad() should not be necessary
                 // since it has already been called in Kategorie::loadFromDB()
                 $product->Kategoriepfad = $product->Kategorie->cKategoriePfad ?? $helper->getPath($product->Kategorie);
-                $product->Versandkosten = VersandartHelper::getLowestShippingFees(
+                $product->Versandkosten = ShippingMethod::getLowestShippingFees(
                     $this->config['exportformate_lieferland'] ?? '',
                     $product,
                     0,
@@ -1340,7 +1340,7 @@ class Exportformat
                     ReturnType::DEFAULT
                 );
                 $protocol = ((isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) === 'on')
-                    || RequestHelper::checkSSL() === 2)
+                    || Request::checkSSL() === 2)
                     ? 'https://'
                     : 'http://';
                 if ($isAsync) {

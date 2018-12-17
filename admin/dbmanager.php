@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
@@ -65,7 +65,7 @@ switch (true) {
     case isset($_GET['select']):
         $table = $_GET['select'];
 
-        if (!preg_match('/^\w+$/i', $table, $m) || !FormHelper::validateToken()) {
+        if (!preg_match('/^\w+$/i', $table, $m) || !Form::validateToken()) {
             die('Not allowed.');
         }
 
@@ -169,7 +169,7 @@ switch (true) {
             $query = $_POST['sql_query_edit'];
         }
 
-        if ($query !== null && FormHelper::validateToken()) {
+        if ($query !== null && Form::validateToken()) {
             try {
                 $parser = new SqlParser\Parser($query);
 

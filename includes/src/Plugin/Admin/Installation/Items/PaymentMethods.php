@@ -74,7 +74,7 @@ class PaymentMethods extends AbstractItem
             $methodID             = $this->db->insert('tzahlungsart', $method);
             $method->kZahlungsart = $methodID;
             if ($method->nNutzbar === 0) {
-                \Helpers\ZahlungsartHelper::activatePaymentMethod($method);
+                \Helpers\PaymentMethod::activatePaymentMethod($method);
             }
             $moduleID = $method->cModulId;
             if (!$methodID) {

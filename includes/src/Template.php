@@ -4,8 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\TemplateHelper;
-
 /**
  * Template
  */
@@ -37,7 +35,7 @@ class Template
     private static $parent;
 
     /**
-     * @var TemplateHelper
+     * @var \Helpers\Template
      */
     private static $helper;
 
@@ -76,7 +74,7 @@ class Template
      */
     public function __construct()
     {
-        self::$helper = TemplateHelper::getInstance(false);
+        self::$helper = \Helpers\Template::getInstance(false);
         $this->init();
         $this->xmlData          = self::$helper->getData(self::$cTemplate, false);
         self::$frontEndInstance = $this;
@@ -220,7 +218,7 @@ class Template
                 $frontend  = PFAD_PLUGIN_VERSION . $item->nVersion . '/' . $frontend;
             }
             $item->rel .= $frontend;
-            $item->abs  = PFAD_ROOT . $item->rel;
+            $item->abs = PFAD_ROOT . $item->rel;
         }
 
         return $items;
@@ -846,9 +844,9 @@ class Template
     }
 
     /**
-     * @return TemplateHelper
+     * @return \Helpers\Template
      */
-    public function getHelper(): TemplateHelper
+    public function getHelper(): \Helpers\Template
     {
         return self::$helper;
     }

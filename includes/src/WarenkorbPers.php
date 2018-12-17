@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\TaxHelper;
+use Helpers\Tax;
 
 /**
  * Class WarenkorbPers
@@ -278,7 +278,7 @@ class WarenkorbPers
         $fWarenwert     = 0.0;
         $defaultOptions = Artikel::getDefaultOptions();
         if (!isset($_SESSION['Steuersatz'])) {
-            TaxHelper::setTaxRates();
+            Tax::setTaxRates();
         }
         // Hole alle Eigenschaften für eine Position
         foreach ($cartPositions as $posData) {

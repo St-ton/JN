@@ -6,9 +6,9 @@
  * @global Smarty\JTLSmarty $smarty
  */
 
-use Helpers\HerstellerHelper;
-use Helpers\KategorieHelper;
-use Helpers\TaxHelper;
+use Helpers\Manufacturer;
+use Helpers\Category;
+use Helpers\Tax;
 
 $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisStringLocalizedSmarty')
        ->registerPlugin('function', 'getBoxesByPosition', 'getBoxesByPosition')
@@ -139,7 +139,7 @@ function get_static_route($params, $smarty)
  */
 function get_manufacturers($params, $smarty)
 {
-    $manufacturers = HerstellerHelper::getInstance()->getManufacturers();
+    $manufacturers = Manufacturer::getInstance()->getManufacturers();
     if (isset($params['assign'])) {
         $smarty->assign($params['assign'], $manufacturers);
 
@@ -176,7 +176,7 @@ function get_category_array($params, $smarty)
 {
     $id = isset($params['categoryId']) ? (int)$params['categoryId'] : 0;
     if ($id === 0) {
-        $categories = KategorieHelper::getInstance();
+        $categories = Category::getInstance();
         $list       = $categories->combinedGetAll();
     } else {
         $categories = new KategorieListe();
@@ -332,10 +332,10 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
             }
         } else {
             $oAufpreis->cAufpreisLocalized = Preise::getLocalizedPriceString(
-                TaxHelper::getGross($fAufpreisNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4)
+                Tax::getGross($fAufpreisNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4)
             );
             $oAufpreis->cPreisInklAufpreis = Preise::getLocalizedPriceString(
-                TaxHelper::getGross($fAufpreisNetto + $fVKNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4)
+                Tax::getGross($fAufpreisNetto + $fVKNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4)
             );
             $oAufpreis->cAufpreisLocalized = ($fAufpreisNetto > 0)
                 ? ('+ ' . $oAufpreis->cAufpreisLocalized)
@@ -343,13 +343,13 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
 
             if ($fVPEWert > 0) {
                 $oAufpreis->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
-                    TaxHelper::getGross($fAufpreisNetto / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
+                    Tax::getGross($fAufpreisNetto / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
                     \Session\Session::getCurrency()->getCode(),
                     true,
                     $nGenauigkeit
                 ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
                 $oAufpreis->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
-                    TaxHelper::getGross(
+                    Tax::getGross(
                         ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
                         $_SESSION['Steuersatz'][$kSteuerklasse]
                     ),

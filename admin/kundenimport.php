@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -24,7 +24,7 @@ $format = [
 if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
     && (int)$_POST['kundenimport'] === 1
     && $_FILES['csv']
-    && FormHelper::validateToken()
+    && Form::validateToken()
     && strlen($_FILES['csv']['tmp_name']) > 0
 ) {
     $delimiter = getCsvDelimiter($_FILES['csv']['tmp_name']);

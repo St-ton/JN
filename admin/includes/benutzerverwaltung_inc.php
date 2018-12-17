@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 /**
  * @param int $kAdminlogin
@@ -154,7 +154,7 @@ function benutzerverwaltungSaveAttributes(stdClass $oAccount, array $extAttribs,
             } else {
                 $shortText = StringHandler::filterXSS($value);
             }
-            if (!$db->queryPrepared(
+            if ($db->queryPrepared(
                 'INSERT INTO tadminloginattribut (kAdminlogin, cName, cAttribValue, cAttribText)
                     VALUES (:loginID, :loginName, :attribVal, :attribText)
                     ON DUPLICATE KEY UPDATE
@@ -166,8 +166,8 @@ function benutzerverwaltungSaveAttributes(stdClass $oAccount, array $extAttribs,
                     'attribVal'  => $shortText,
                     'attribText' => $longText ?? 'NULL'
                 ],
-                \DB\ReturnType::AFFECTED_ROWS
-            )) {
+                \DB\ReturnType::DEFAULT
+            ) === 0) {
                 $messages['error'] .= $key . ' konnte nicht geändert werden!';
             }
             $handledKeys[] = $key;
@@ -713,7 +713,7 @@ function benutzerverwaltungFinalize($step, Smarty\JTLSmarty $smarty, array &$mes
     $smarty->assign('hinweis', $messages['notice'])
            ->assign('fehler', $messages['error'])
            ->assign('action', $step)
-           ->assign('cTab', StringHandler::filterXSS(RequestHelper::verifyGPDataString('tab')))
+           ->assign('cTab', StringHandler::filterXSS(Request::verifyGPDataString('tab')))
            ->display('benutzer.tpl');
 }
 

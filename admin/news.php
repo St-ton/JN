@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Form;
+use Helpers\Request;
 use Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -26,32 +26,32 @@ $languages      = Sprache::getAllLanguages();
 $defaultLang    = Sprache::getDefaultLanguage();
 
 $_SESSION['kSprache'] = $defaultLang->kSprache;
-if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-    $backTab = RequestHelper::verifyGPDataString('tab');
+if (strlen(Request::verifyGPDataString('tab')) > 0) {
+    $backTab = Request::verifyGPDataString('tab');
     $smarty->assign('cTab', $backTab);
 
     switch ($backTab) {
         case 'inaktiv':
-            if (RequestHelper::verifyGPCDataInt('s1') > 1) {
-                $smarty->assign('cBackPage', 'tab=inaktiv&s1=' . RequestHelper::verifyGPCDataInt('s1'))
-                       ->assign('cSeite', RequestHelper::verifyGPCDataInt('s1'));
+            if (Request::verifyGPCDataInt('s1') > 1) {
+                $smarty->assign('cBackPage', 'tab=inaktiv&s1=' . Request::verifyGPCDataInt('s1'))
+                       ->assign('cSeite', Request::verifyGPCDataInt('s1'));
             }
             break;
         case 'aktiv':
-            if (RequestHelper::verifyGPCDataInt('s2') > 1) {
-                $smarty->assign('cBackPage', 'tab=aktiv&s2=' . RequestHelper::verifyGPCDataInt('s2'))
-                       ->assign('cSeite', RequestHelper::verifyGPCDataInt('s2'));
+            if (Request::verifyGPCDataInt('s2') > 1) {
+                $smarty->assign('cBackPage', 'tab=aktiv&s2=' . Request::verifyGPCDataInt('s2'))
+                       ->assign('cSeite', Request::verifyGPCDataInt('s2'));
             }
             break;
         case 'kategorien':
-            if (RequestHelper::verifyGPCDataInt('s3') > 1) {
-                $smarty->assign('cBackPage', 'tab=kategorien&s3=' . RequestHelper::verifyGPCDataInt('s3'))
-                       ->assign('cSeite', RequestHelper::verifyGPCDataInt('s3'));
+            if (Request::verifyGPCDataInt('s3') > 1) {
+                $smarty->assign('cBackPage', 'tab=kategorien&s3=' . Request::verifyGPCDataInt('s3'))
+                       ->assign('cSeite', Request::verifyGPCDataInt('s3'));
             }
             break;
     }
 }
-if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()) {
+if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
     if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         $controller->setMsg(saveAdminSectionSettings(CONF_NEWS, $_POST, [CACHING_GROUP_OPTION, CACHING_GROUP_NEWS]));
         if (count($languages) > 0) {
@@ -91,22 +91,22 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
         || (isset($_POST['news_kategorie_erstellen']) && (int)$_POST['news_kategorie_erstellen'] === 1)
     ) {
         $controller->setStep('news_kategorie_erstellen');
-    } elseif (RequestHelper::verifyGPCDataInt('nkedit') === 1 && RequestHelper::verifyGPCDataInt('kNews') > 0) {
+    } elseif (Request::verifyGPCDataInt('nkedit') === 1 && Request::verifyGPCDataInt('kNews') > 0) {
         if (isset($_POST['newskommentarsavesubmit'])) {
-            if ($controller->saveComment(RequestHelper::verifyGPCDataInt('kNewsKommentar'), $_POST)) {
+            if ($controller->saveComment(Request::verifyGPCDataInt('kNewsKommentar'), $_POST)) {
                 $controller->setStep('news_vorschau');
                 $controller->setMsg('Der Newskommentar wurde erfolgreich editiert.');
 
-                if (RequestHelper::verifyGPCDataInt('nFZ') === 1) {
+                if (Request::verifyGPCDataInt('nFZ') === 1) {
                     header('Location: freischalten.php');
                     exit();
                 }
-                $tab = RequestHelper::verifyGPDataString('tab');
+                $tab = Request::verifyGPDataString('tab');
                 if ($tab === 'aktiv') {
                     $controller->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $controller->getMsg(), [
                         'news'  => '1',
                         'nd'    => '1',
-                        'kNews' => RequestHelper::verifyGPCDataInt('kNews'),
+                        'kNews' => Request::verifyGPCDataInt('kNews'),
                         'token' => $_SESSION['jtl_token'],
                     ]);
                 } else {
@@ -125,9 +125,9 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
         } else {
             $controller->setStep('news_kommentar_editieren');
             $comment = new \News\Comment($db);
-            $comment->load(RequestHelper::verifyGPCDataInt('kNewsKommentar'));
+            $comment->load(Request::verifyGPCDataInt('kNewsKommentar'));
             $smarty->assign('oNewsKommentar', $comment);
-            if (RequestHelper::verifyGPCDataInt('nFZ') === 1) {
+            if (Request::verifyGPCDataInt('nFZ') === 1) {
                 $smarty->assign('nFZ', 1);
             }
         }
@@ -153,9 +153,9 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
             $controller->setErrorMsg('Fehler: Bitte markieren Sie mindestens eine Newskategorie.');
         }
     } elseif (isset($_GET['newskategorie_editieren']) && (int)$_GET['newskategorie_editieren'] === 1) {
-        if (strlen(RequestHelper::verifyGPDataString('delpic')) > 0) {
+        if (strlen(Request::verifyGPDataString('delpic')) > 0) {
             if ($controller->deleteNewsImage(
-                RequestHelper::verifyGPDataString('delpic'),
+                Request::verifyGPDataString('delpic'),
                 (int)$_GET['kNewsKategorie'],
                 $uploadDirCat
             )) {
@@ -190,7 +190,7 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
                 $db->update('tnewskommentar', 'kNewsKommentar', (int)$id, (object)['nAktiv' => 1]);
             }
             $controller->setMsg('Ihre markierten Newskommentare wurden erfolgreich freigeschaltet.');
-            $tab = RequestHelper::verifyGPDataString('tab');
+            $tab = Request::verifyGPDataString('tab');
             $controller->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $controller->getMsg());
         } else {
             $controller->setErrorMsg('Fehler: Bitte markieren Sie mindestens einen Newskommentar.');
@@ -207,8 +207,8 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
         $newsItemID     = $controller->getContinueWith() > 0
             ? $controller->getContinueWith()
             : (int)$_GET['kNews'];
-        if (strlen(RequestHelper::verifyGPDataString('delpic')) > 0) {
-            if ($controller->deleteNewsImage(RequestHelper::verifyGPDataString('delpic'), $newsItemID, $uploadDir)) {
+        if (strlen(Request::verifyGPDataString('delpic')) > 0) {
+            if ($controller->deleteNewsImage(Request::verifyGPDataString('delpic'), $newsItemID, $uploadDir)) {
                 $controller->setMsg('Ihr ausgewähltes Newsbild wurde erfolgreich gelöscht.');
             } else {
                 $controller->setErrorMsg('Fehler: Ihr ausgewähltes Newsbild konnte nicht gelöscht werden.');
@@ -234,9 +234,9 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
             $controller->setErrorMsg('Fehler: Bitte legen Sie zuerst eine Newskategorie an.');
             $controller->setStep('news_uebersicht');
         }
-    } elseif ($controller->getStep() === 'news_vorschau' || RequestHelper::verifyGPCDataInt('nd') === 1) {
+    } elseif ($controller->getStep() === 'news_vorschau' || Request::verifyGPCDataInt('nd') === 1) {
         $controller->setStep('news_vorschau');
-        $newsItemID = RequestHelper::verifyGPCDataInt('kNews');
+        $newsItemID = Request::verifyGPCDataInt('kNews');
         $newsItem   = new \News\Item($db);
         $newsItem->load($newsItemID);
 

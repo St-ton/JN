@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\UrlHelper;
+use Helpers\URL;
 use Pagination\Pagination;
 
 require_once __DIR__ . '/includes/globalinclude.php';
@@ -46,7 +46,7 @@ switch ($controller->getPageType($cParameter_arr)) {
         $controller->displayItem($newsItem, $pagination);
 
         $breadCrumbName = $newsItem->getTitle() ?? Shop::Lang()->get('news', 'breadcrumb');
-        $breadCrumbURL  = UrlHelper::buildURL($newsItem, URLART_NEWS);
+        $breadCrumbURL  = URL::buildURL($newsItem, URLART_NEWS);
 
         executeHook(HOOK_NEWS_PAGE_DETAILANSICHT, [
             'newsItem'   => $newsItem,

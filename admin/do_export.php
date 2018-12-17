@@ -4,14 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 
 @ini_set('max_execution_time', 0);
 
-if (!isset($_GET['e']) || !((int)$_GET['e'] > 0) || !FormHelper::validateToken()) {
+if (!isset($_GET['e']) || !((int)$_GET['e'] > 0) || !Form::validateToken()) {
     die('0');
 }
 $db    = Shop::Container()->getDB();

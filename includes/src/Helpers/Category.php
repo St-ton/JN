@@ -15,13 +15,13 @@ use Sprache;
 use StringHandler;
 
 /**
- * Class KategorieHelper
+ * Class Category
  * @package Helpers
  */
-class KategorieHelper
+class Category
 {
     /**
-     * @var KategorieHelper
+     * @var Category
      */
     private static $instance;
 
@@ -71,7 +71,7 @@ class KategorieHelper
     /**
      * @param int $kSprache
      * @param int $kKundengruppe
-     * @return KategorieHelper
+     * @return Category
      */
     public static function getInstance(int $kSprache = 0, int $kKundengruppe = 0): self
     {
@@ -246,7 +246,7 @@ class KategorieHelper
                     ? \BILD_KEIN_KATEGORIEBILD_VORHANDEN
                     : \PFAD_KATEGORIEBILDER . $_cat->cPfad;
                 $_cat->cBildURLFull   = $imageBaseURL . $_cat->cBildURL;
-                $_cat->cURL           = UrlHelper::buildURL($_cat, \URLART_KATEGORIE);
+                $_cat->cURL           = URL::buildURL($_cat, \URLART_KATEGORIE);
                 $_cat->cURLFull       = $shopURL . '/' . $_cat->cURL;
                 if (self::$kSprache > 0 && !$isDefaultLang) {
                     if (!empty($_cat->cName_spr)) {
@@ -454,7 +454,7 @@ class KategorieHelper
                 ? \BILD_KEIN_KATEGORIEBILD_VORHANDEN
                 : \PFAD_KATEGORIEBILDER . $_cat->cPfad;
             $_cat->cBildURLFull   = $imageBaseURL . $_cat->cBildURL;
-            $_cat->cURL           = UrlHelper::buildURL($_cat, \URLART_KATEGORIE);
+            $_cat->cURL           = URL::buildURL($_cat, \URLART_KATEGORIE);
             $_cat->cURLFull       = $shopURL . '/' . $_cat->cURL;
             // lokalisieren
             if (self::$kSprache > 0 && !$isDefaultLang) {

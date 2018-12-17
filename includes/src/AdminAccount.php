@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 /**
  * Class AdminAccount
@@ -149,7 +149,7 @@ class AdminAccount
     {
         $log = new \Model\AuthLogEntry();
 
-        $log->setIP(RequestHelper::getRealIP());
+        $log->setIP(Request::getRealIP());
         $log->setCode($code);
         $log->setUser($user);
 

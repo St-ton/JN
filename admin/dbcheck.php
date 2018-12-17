@@ -6,7 +6,7 @@
  * @global JTLSmarty $smarty
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -22,7 +22,7 @@ $maintenanceResult = null;
 $engineUpdate      = null;
 $fulltextIndizes   = null;
 
-if (isset($_POST['update']) && StringHandler::filterXSS($_POST['update']) === 'script' && FormHelper::validateToken()) {
+if (isset($_POST['update']) && StringHandler::filterXSS($_POST['update']) === 'script' && Form::validateToken()) {
     $scriptName = 'innodb_and_utf8_update_'
         . str_replace('.', '_', Shop::Container()->getDB()->getConfig()['host']) . '_'
         . Shop::Container()->getDB()->getConfig()['database'] . '_'

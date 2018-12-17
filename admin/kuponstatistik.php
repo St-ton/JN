@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Form;
+use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -24,7 +24,7 @@ $oDateShop = Shop::Container()->getDB()->query(
 $startDate = DateTime::createFromFormat('Y-m-j', $oDateShop->startDate);
 $endDate   = DateTime::createFromFormat('Y-m-j', date('Y-m-j'));
 
-if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && FormHelper::validateToken()) {
+if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && Form::validateToken()) {
     if ((int)$_POST['kKupon'] > -1) {
         $cWhere = '(SELECT kKupon 
                         FROM tkuponbestellung 
@@ -68,7 +68,7 @@ $dEnd   = $endDate->format('Y-m-d 23:59:59');
 $usedCouponsOrder = KuponBestellung::getOrdersWithUsedCoupons(
     $dStart,
     $dEnd,
-    (int)RequestHelper::verifyGPDataString('kKupon')
+    (int)Request::verifyGPDataString('kKupon')
 );
 
 $nCountOrders_arr = Shop::Container()->getDB()->query(

@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Form;
+use Helpers\Request;
 
 /**
  * @global Smarty\JTLSmarty $smarty
@@ -15,11 +15,11 @@ use Helpers\RequestHelper;
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
-$pageKey      = RequestHelper::verifyGPCDataInt('pageKey');
-$pageId       = RequestHelper::verifyGPDataString('pageId');
-$pageUrl      = RequestHelper::verifyGPDataString('pageUrl');
-$adoptFromKey = RequestHelper::verifyGPCDataInt('adoptFromKey');
-$action       = RequestHelper::verifyGPDataString('action');
+$pageKey      = Request::verifyGPCDataInt('pageKey');
+$pageId       = Request::verifyGPDataString('pageId');
+$pageUrl      = Request::verifyGPDataString('pageUrl');
+$adoptFromKey = Request::verifyGPCDataInt('adoptFromKey');
+$action       = Request::verifyGPDataString('action');
 $shopUrl      = Shop::getURL();
 $error        = null;
 
@@ -49,7 +49,7 @@ if ($opc->isOPCInstalled() === false) {
 
     $smarty->assign('error', $error)
            ->display('onpage-composer.tpl');
-} elseif ($action !== '' && FormHelper::validateToken() === false) {
+} elseif ($action !== '' && Form::validateToken() === false) {
     // OPC action while XSRF validation failed
     $error = __('Wrong XSRF token.');
 } elseif ($action === 'replace' || $action === 'extend') {

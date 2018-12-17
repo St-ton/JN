@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
+use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('DISPLAY_BANNER_VIEW', true, true);
@@ -13,9 +13,9 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'banner_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 $cFehler  = '';
 $cHinweis = '';
-$cAction  = (isset($_REQUEST['action']) && FormHelper::validateToken()) ? $_REQUEST['action'] : 'view';
+$cAction  = (isset($_REQUEST['action']) && Form::validateToken()) ? $_REQUEST['action'] : 'view';
 
-if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && FormHelper::validateToken()) {
+if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && Form::validateToken()) {
     $cPlausi_arr = [];
     $oBanner     = new ImageMap();
     $kImageMap   = (isset($_POST['kImageMap']) ? (int)$_POST['kImageMap'] : null);

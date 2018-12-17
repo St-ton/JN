@@ -276,7 +276,7 @@ class AuswahlAssistent
      */
     public function getDescription(): string
     {
-        return $this->cBeschreibung;
+        return preg_replace('/\s+/', ' ', trim($this->cBeschreibung));
     }
 
     /**

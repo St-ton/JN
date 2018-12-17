@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FormHelper;
-use Helpers\RequestHelper;
+use Helpers\Form;
+use Helpers\Request;
 use Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -22,10 +22,10 @@ $cFehler     = '';
 $step        = 'uebersicht';
 $settingsIDs = [427, 428, 431, 433, 434, 435, 430];
 $db          = Shop::Container()->getDB();
-if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
+if (strlen(Request::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
-if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateToken()) {
     if (!isset($_POST['delete'])) {
         if (is_array($_POST['kTagAll']) && count($_POST['kTagAll']) > 0) {
             $cSQLDel = ' IN (';
@@ -174,7 +174,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::vali
             $cFehler .= 'Bitte wählen Sie mindestens einen Tag aus.<br />';
         }
     }
-} elseif (isset($_POST['tagging']) && (int)$_POST['tagging'] === 2 && FormHelper::validateToken()) { // Mappinglist
+} elseif (isset($_POST['tagging']) && (int)$_POST['tagging'] === 2 && Form::validateToken()) { // Mappinglist
     if (isset($_POST['delete'])) {
         if (is_array($_POST['kTagMapping'])) {
             foreach ($_POST['kTagMapping'] as $kTagMapping) {
@@ -196,16 +196,16 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::vali
     (isset($_POST['tagging']) && (int)$_POST['tagging'] === 3)) { // Einstellungen
     $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
 }
-if (RequestHelper::verifyGPCDataInt('kTag') > 0 && RequestHelper::verifyGPCDataInt('tagdetail') === 1) {
+if (Request::verifyGPCDataInt('kTag') > 0 && Request::verifyGPCDataInt('tagdetail') === 1) {
     $step             = 'detail';
-    $nTagDetailAnzahl = holeTagDetailAnzahl(RequestHelper::verifyGPCDataInt('kTag'), $_SESSION['kSprache']);
+    $nTagDetailAnzahl = holeTagDetailAnzahl(Request::verifyGPCDataInt('kTag'), $_SESSION['kSprache']);
     $oPagiTagDetail   = (new Pagination('detail'))
         ->setItemCount($nTagDetailAnzahl)
         ->assemble();
     // Tag von einem odere mehreren Artikeln loesen
     if (!empty($_POST['kArtikel_arr']) && is_array($_POST['kArtikel_arr']) &&
-        count($_POST['kArtikel_arr']) && RequestHelper::verifyGPCDataInt('detailloeschen') === 1) {
-        if (loescheTagsVomArtikel($_POST['kArtikel_arr'], RequestHelper::verifyGPCDataInt('kTag'))) {
+        count($_POST['kArtikel_arr']) && Request::verifyGPCDataInt('detailloeschen') === 1) {
+        if (loescheTagsVomArtikel($_POST['kArtikel_arr'], Request::verifyGPCDataInt('kTag'))) {
             $cHinweis = 'Der Tag wurde erfolgreich bei Ihren markierten Artikeln gelöscht.';
         } else {
             $step    = 'detail';
@@ -213,13 +213,13 @@ if (RequestHelper::verifyGPCDataInt('kTag') > 0 && RequestHelper::verifyGPCDataI
         }
     }
     $tagProducts = holeTagDetail(
-        RequestHelper::verifyGPCDataInt('kTag'),
+        Request::verifyGPCDataInt('kTag'),
         (int)$_SESSION['kSprache'],
         ' LIMIT ' . $oPagiTagDetail->getLimitSQL()
     );
     $smarty->assign('oTagArtikel_arr', $tagProducts)
            ->assign('oPagiTagDetail', $oPagiTagDetail)
-           ->assign('kTag', RequestHelper::verifyGPCDataInt('kTag'))
+           ->assign('kTag', Request::verifyGPCDataInt('kTag'))
            ->assign('cTagName', $tagProducts[0]->cName ?? '');
 } else {
     $tagCount        = (int)$db->query(

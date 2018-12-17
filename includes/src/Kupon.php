@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\ArtikelHelper;
-use Helpers\WarenkorbHelper;
+use Helpers\Product;
+use Helpers\Cart;
 
 /**
  * Class Kupon
@@ -833,8 +833,8 @@ class Kupon
             ) {
                 $kArtikel = (int)$Pos->Artikel->kArtikel;
                 // Kind?
-                if (ArtikelHelper::isVariChild($kArtikel)) {
-                    $kArtikel = ArtikelHelper::getParent($kArtikel);
+                if (Product::isVariChild($kArtikel)) {
+                    $kArtikel = Product::getParent($kArtikel);
                 }
                 $categoryIDs = Shop::Container()->getDB()->selectAll(
                     'tkategorieartikel',
@@ -1031,9 +1031,9 @@ class Kupon
                 if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
                     $articlePrice = 0;
                     foreach ($cart->PositionenArr as $oWKPosition) {
-                        $articlePrice += WarenkorbHelper::checkSetPercentCouponWKPos($oWKPosition, $Kupon)->fPreis;
-                        if (!empty(WarenkorbHelper::checkSetPercentCouponWKPos($oWKPosition, $Kupon)->cName)) {
-                            $articleName_arr[] = WarenkorbHelper::checkSetPercentCouponWKPos(
+                        $articlePrice += Cart::checkSetPercentCouponWKPos($oWKPosition, $Kupon)->fPreis;
+                        if (!empty(Cart::checkSetPercentCouponWKPos($oWKPosition, $Kupon)->cName)) {
+                            $articleName_arr[] = Cart::checkSetPercentCouponWKPos(
                                 $oWKPosition,
                                 $Kupon
                             )->cName;

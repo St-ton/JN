@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\ArtikelHelper;
-use Helpers\RequestHelper;
+use Helpers\Product;
+use Helpers\Request;
 
 /**
  * Class Wunschliste
@@ -510,7 +510,7 @@ class Wunschliste
                 );
                 if ($oSichtbarkeit === null || empty($oSichtbarkeit->kArtikel)) {
                     if (count($wlPosition->CWunschlistePosEigenschaft_arr) > 0) {
-                        if (ArtikelHelper::isVariChild($wlPosition->kArtikel)) {
+                        if (Product::isVariChild($wlPosition->kArtikel)) {
                             foreach ($wlPosition->CWunschlistePosEigenschaft_arr as $wlAttribute) {
                                 $oEigenschaftWertVorhanden = Shop::Container()->getDB()->select(
                                     'teigenschaftkombiwert',
@@ -646,7 +646,7 @@ class Wunschliste
      */
     public static function checkeParameters(): int
     {
-        $cURLID = StringHandler::filterXSS(RequestHelper::verifyGPDataString('wlid'));
+        $cURLID = StringHandler::filterXSS(Request::verifyGPDataString('wlid'));
 
         if (strlen($cURLID) > 0) {
             $campaing = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);

@@ -12,11 +12,11 @@ use Shop;
 use stdClass;
 
 /**
- * Class SearchSpecialHelper
+ * Class SearchSpecial
  * @package Helpers
  * @since 5.0.0
  */
-class SearchSpecialHelper
+class SearchSpecial
 {
     /**
      * @param int $langID
@@ -136,7 +136,7 @@ class SearchSpecialHelper
 
         $oSeo->kSuchspecial = $kKey;
         \executeHook(\HOOK_BOXEN_INC_SUCHSPECIALURL);
-        $url = UrlHelper::buildURL($oSeo, \URLART_SEARCHSPECIALS);
+        $url = URL::buildURL($oSeo, \URLART_SEARCHSPECIALS);
         Shop::Container()->getCache()->set($cacheID, $url, [\CACHING_GROUP_CATEGORY]);
 
         return $url;

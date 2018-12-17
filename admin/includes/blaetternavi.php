@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\RequestHelper;
+use Helpers\Request;
 
 /**
  * This pagination implementation is deprecated. Use the Pagination admin class instead!
@@ -110,8 +110,8 @@ function baueBlaetterNaviGetterSetter(int $count, int $perPage)
         $conf->$nAktuelleSeite = 1;
         $conf->$cLimit         = 0;
         // GET || POST
-        if (RequestHelper::verifyGPCDataInt('s' . $i) > 0) {
-            $page                  = RequestHelper::verifyGPCDataInt('s' . $i);
+        if (Request::verifyGPCDataInt('s' . $i) > 0) {
+            $page                  = Request::verifyGPCDataInt('s' . $i);
             $conf->$cOffset        = (($page - 1) * $perPage);
             $conf->$cSQL           = ' LIMIT ' . (($page - 1) * $perPage) . ', ' . $perPage;
             $conf->$nAktuelleSeite = $page;

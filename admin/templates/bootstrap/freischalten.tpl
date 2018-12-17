@@ -223,7 +223,7 @@
             {/if}
         </div>
         <div id="tags" class="tab-pane fade {if isset($cTab) && $cTab === 'tags'} active in{/if}">
-            {if $oTag_arr|@count > 0 && $oTag_arr}
+            {if $oTag_arr|@count > 0}
                 {include file='tpl_inc/pagination.tpl' oPagination=$oPagiTags cAnchor='tags'}
                 <div class="panel panel-default">
                     <form method="post" action="freischalten.php">
@@ -283,26 +283,28 @@
                         <input type="hidden" name="newskommentare" value="1" />
                         <input type="hidden" name="tab" value="newscomments" />
                         <div class="table-responsive">
-                            <table class="list table">
+                            <table class="list table table-striped">
                                 <thead>
                                     <tr>
                                         <th class="check">&nbsp;</th>
                                         <th class="tleft">{#freischaltenNewsCommentsVisitor#}</th>
-                                        <th class="tleft">{#freischaltenNewsCommentsHeadline#}</th>
+                                        <th class="tleft">{#freischaltenNewsCommentsText#}</th>
                                         <th>{#freischaltenNewsCommentsDate#}</th>
                                         <th>Aktionen</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {foreach name=newskommentare from=$oNewsKommentar_arr item=oNewsKommentar}
+                                    {foreach $oNewsKommentar_arr as $oNewsKommentar}
                                         <tr>
-                                            <td class="check"><input type="checkbox" name="kNewsKommentar[]" value="{$oNewsKommentar->kNewsKommentar}" /></td>
+                                            <td class="check"><input type="checkbox" name="kNewsKommentar[]" id="ncid-{$oNewsKommentar->kNewsKommentar}" value="{$oNewsKommentar->kNewsKommentar}" /></td>
                                             <td>
-                                                {if $oNewsKommentar->cVorname|strlen > 0}
-                                                    {$oNewsKommentar->cVorname} {$oNewsKommentar->cNachname}
-                                                {else}
-                                                    {$oNewsKommentar->cName}
-                                                {/if}
+                                                <label for="ncid-{$oNewsKommentar->kNewsKommentar}">
+                                                    {if $oNewsKommentar->cVorname|strlen > 0}
+                                                        {$oNewsKommentar->cVorname} {$oNewsKommentar->cNachname}
+                                                    {else}
+                                                        {$oNewsKommentar->cName}
+                                                    {/if}
+                                                </label>
                                             </td>
                                             <td>{$oNewsKommentar->cBetreff|truncate:50:'...'}</td>
                                             <td class="tcenter">{$oNewsKommentar->dErstellt_de}</td>
@@ -312,10 +314,6 @@
                                                     <i class="fa fa-edit"></i>
                                                 </a>
                                             </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="check">&nbsp;</td>
-                                            <td char="TD8" colspan="4"><b>{$oNewsKommentar->cBetreff}</b><br />{$oNewsKommentar->cKommentar}</td>
                                         </tr>
                                     {/foreach}
                                 </tbody>

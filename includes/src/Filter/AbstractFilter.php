@@ -797,8 +797,7 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function setValueCompat($value): FilterInterface
     {
-        $value = (int)$value;
-        $this->value = $value;
+        $this->value = (int)$value;
         if ($this->value > 0) {
             $this->productFilter->enableFilter($this);
         }

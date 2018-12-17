@@ -15,7 +15,7 @@ trait MigrationTableTrait
     public function getLocaleSections(): array
     {
         $result = [];
-        $items  = $this->fetchAll("SELECT kSprachsektion AS id, cName AS name FROM tsprachsektion");
+        $items  = $this->fetchAll('SELECT kSprachsektion AS id, cName AS name FROM tsprachsektion');
         foreach ($items as $item) {
             $result[$item->name] = $item->id;
         }
@@ -29,7 +29,7 @@ trait MigrationTableTrait
     public function getLocales(): array
     {
         $result = [];
-        $items  = $this->fetchAll("SELECT kSprachISO AS id, cISO AS name FROM tsprachiso");
+        $items  = $this->fetchAll('SELECT kSprachISO AS id, cISO AS name FROM tsprachiso');
         foreach ($items as $item) {
             $result[$item->name] = $item->id;
         }
@@ -250,7 +250,7 @@ trait MigrationTableTrait
         $einstellungen->cName                 = $configName;
         $einstellungen->cWert                 = $configValue;
         $einstellungen->cModulId              = $cModulId;
-        Shop::Container()->getDB()->insertRow('teinstellungen', $einstellungen, true);
+        Shop::Container()->getDB()->insertRow('teinstellungen', $einstellungen);
         unset($einstellungen);
 
         $einstellungenConf                        = new stdClass();
@@ -265,7 +265,7 @@ trait MigrationTableTrait
         $einstellungenConf->nStandardAnzeigen     = $nStandardAnzeigen;
         $einstellungenConf->nModul                = $nModul;
         $einstellungenConf->cConf                 = $cConf;
-        Shop::Container()->getDB()->insertRow('teinstellungenconf', $einstellungenConf, true);
+        Shop::Container()->getDB()->insertRow('teinstellungenconf', $einstellungenConf);
         unset($einstellungenConf);
 
         if (is_object($additionalProperties) &&
@@ -279,7 +279,7 @@ trait MigrationTableTrait
                 $einstellungenConfWerte->cName              = $optionValue;
                 $einstellungenConfWerte->cWert              = $optionKey;
                 $einstellungenConfWerte->nSort              = $sortIndex;
-                Shop::Container()->getDB()->insertRow('teinstellungenconfwerte', $einstellungenConfWerte, true);
+                Shop::Container()->getDB()->insertRow('teinstellungenconfwerte', $einstellungenConfWerte);
                 $sortIndex++;
             }
             unset($einstellungenConfWerte);

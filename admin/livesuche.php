@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Request;
+use Pagination\Pagination;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_LIVESEARCH_VIEW', true, true);
@@ -15,14 +19,14 @@ $hinweis     = '';
 $fehler      = '';
 $settingsIDs = [423, 425, 422, 437, 438];
 $db          = Shop::Container()->getDB();
-if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
+if (strlen(Request::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 $cLivesucheSQL         = new stdClass();
 $cLivesucheSQL->cWhere = '';
 $cLivesucheSQL->cOrder = ' tsuchanfrage.nAnzahlGesuche DESC ';
-if (strlen(RequestHelper::verifyGPDataString('cSuche')) > 0) {
-    $cSuche = $db->escape(StringHandler::filterXSS(RequestHelper::verifyGPDataString('cSuche')));
+if (strlen(Request::verifyGPDataString('cSuche')) > 0) {
+    $cSuche = $db->escape(StringHandler::filterXSS(Request::verifyGPDataString('cSuche')));
 
     if (strlen($cSuche) > 0) {
         $cLivesucheSQL->cWhere = " AND tsuchanfrage.cSuche LIKE '%" . $cSuche . "%'";
@@ -31,15 +35,15 @@ if (strlen(RequestHelper::verifyGPDataString('cSuche')) > 0) {
         $fehler = 'Fehler: Bitte geben Sie einen Suchbegriff ein.';
     }
 }
-if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
+if (Request::verifyGPCDataInt('einstellungen') === 1) {
     $hinweis .= saveAdminSettings($settingsIDs, $_POST);
     $smarty->assign('tab', 'einstellungen');
 }
 
-if (RequestHelper::verifyGPCDataInt('nSort') > 0) {
-    $smarty->assign('nSort', RequestHelper::verifyGPCDataInt('nSort'));
+if (Request::verifyGPCDataInt('nSort') > 0) {
+    $smarty->assign('nSort', Request::verifyGPCDataInt('nSort'));
 
-    switch (RequestHelper::verifyGPCDataInt('nSort')) {
+    switch (Request::verifyGPCDataInt('nSort')) {
         case 1:
             $cLivesucheSQL->cOrder = ' tsuchanfrage.cSuche ASC ';
             break;
@@ -196,7 +200,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
 
         $hinweis .= 'Die Suchanfragen wurden erfolgreich aktualisiert.<br />';
     } elseif (isset($_POST['submitMapping'])) { // Auswahl mappen
-        $cMapping = RequestHelper::verifyGPDataString('cMapping');
+        $cMapping = Request::verifyGPDataString('cMapping');
 
         if (strlen($cMapping) > 0) {
             if (is_array($_POST['kSuchanfrage']) && count($_POST['kSuchanfrage']) > 0) {
@@ -251,7 +255,8 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                                         $cMapping . '" gemappt.';
                                 }
                             } else {
-                                $fehler = 'Fehler: Sie haben versucht auf eine nicht existierende Suchanfrage zu mappen.';
+                                $fehler = 'Fehler: Sie haben versucht auf eine nicht ' .
+                                    'existierende Suchanfrage zu mappen.';
                                 break;
                             }
                         } else {
@@ -478,12 +483,12 @@ $Suchanfragen = $db->query(
         FROM tsuchanfrage
         LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage'
             AND tseo.kKey = tsuchanfrage.kSuchanfrage
-            AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
-        WHERE tsuchanfrage.kSprache = " . (int)$_SESSION['kSprache'] . "
-            " . $cLivesucheSQL->cWhere . "
+            AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . '
+        WHERE tsuchanfrage.kSprache = ' . (int)$_SESSION['kSprache'] . '
+            ' . $cLivesucheSQL->cWhere . '
         GROUP BY tsuchanfrage.kSuchanfrage
-        ORDER BY " . $cLivesucheSQL->cOrder . "
-        LIMIT " . $oPagiSuchanfragen->getLimitSQL(),
+        ORDER BY ' . $cLivesucheSQL->cOrder . '
+        LIMIT ' . $oPagiSuchanfragen->getLimitSQL(),
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 

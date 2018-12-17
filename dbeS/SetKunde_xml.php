@@ -24,8 +24,8 @@ if (auth()) {
         $return = 0;
         if (count($syncFiles) === 1) {
             $xmlFile = array_shift($syncFiles);
-            $d   = file_get_contents($xmlFile);
-            $res = bearbeite(XML_unserialize($d));
+            $d       = file_get_contents($xmlFile);
+            $res     = bearbeite(XML_unserialize($d));
         } else {
             $errMsg = 'Error : Es kann nur ein Kunde pro Aufruf verarbeitet werden!';
             syncException($errMsg);
@@ -187,10 +187,18 @@ function bearbeite($xml)
             );
             $xml_obj['kunden attr']['anzahl'] = 1;
 
-            $xml_obj['kunden']['tkunde'][0]['cNachname'] = trim($cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][0]['cNachname']));
-            $xml_obj['kunden']['tkunde'][0]['cFirma']    = trim($cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][0]['cFirma']));
-            $xml_obj['kunden']['tkunde'][0]['cZusatz']   = trim($cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][0]['cZusatz']));
-            $xml_obj['kunden']['tkunde'][0]['cStrasse']  = trim($cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][0]['cStrasse']));
+            $xml_obj['kunden']['tkunde'][0]['cNachname'] = trim(
+                $cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][0]['cNachname'])
+            );
+            $xml_obj['kunden']['tkunde'][0]['cFirma']    = trim(
+                $cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][0]['cFirma'])
+            );
+            $xml_obj['kunden']['tkunde'][0]['cZusatz']   = trim(
+                $cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][0]['cZusatz'])
+            );
+            $xml_obj['kunden']['tkunde'][0]['cStrasse']  = trim(
+                $cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][0]['cStrasse'])
+            );
             $xml_obj['kunden']['tkunde'][0]['cAnrede']   = Kunde::mapSalutation(
                 $xml_obj['kunden']['tkunde'][0]['cAnrede'],
                 $xml_obj['kunden']['tkunde'][0]['kSprache']
@@ -199,7 +207,9 @@ function bearbeite($xml)
             $xml_obj['kunden']['tkunde'][0]['cStrasse'] .= ' ' . $xml_obj['kunden']['tkunde'][0]['cHausnummer'];
             unset($xml_obj['kunden']['tkunde'][0]['cHausnummer']);
             //Land ausgeschrieben der Wawi geben
-            $xml_obj['kunden']['tkunde'][0]['cLand'] = Sprache::getCountryCodeByCountryName($xml_obj['kunden']['tkunde'][0]['cLand']);
+            $xml_obj['kunden']['tkunde'][0]['cLand'] = Sprache::getCountryCodeByCountryName(
+                $xml_obj['kunden']['tkunde'][0]['cLand']
+            );
 
             unset($xml_obj['kunden']['tkunde'][0]['cPasswort']);
             $xml_obj['kunden']['tkunde']['0 attr']             = buildAttributes($xml_obj['kunden']['tkunde'][0]);
@@ -209,8 +219,9 @@ function bearbeite($xml)
                      WHERE kKunde = ' . (int)$xml_obj['kunden']['tkunde']['0 attr']['kKunde'],
                 \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
             );
-            $kundenattribute_anz                               = count($xml_obj['kunden']['tkunde'][0]['tkundenattribut']);
-            for ($o = 0; $o < $kundenattribute_anz; $o++) {
+
+            $attributeCount = count($xml_obj['kunden']['tkunde'][0]['tkundenattribut']);
+            for ($o = 0; $o < $attributeCount; $o++) {
                 $xml_obj['kunden']['tkunde'][0]['tkundenattribut'][$o . ' attr'] =
                     buildAttributes($xml_obj['kunden']['tkunde'][0]['tkundenattribut'][$o]);
             }

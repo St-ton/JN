@@ -4,6 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Request;
+use Helpers\Tax;
+use Helpers\URL;
+
 /**
  * @param string $nDatei
  * @param mixed  $data
@@ -12,7 +16,8 @@
 function baueSitemap($nDatei, $data)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    Shop::Container()->getLogService()->debug('Baue "' . PFAD_EXPORT . 'sitemap_' .
+    Shop::Container()->getLogService()->debug(
+        'Baue "' . PFAD_EXPORT . 'sitemap_' .
         $nDatei . '.xml", Datenlaenge ' . strlen($data)
     );
     $conf = Shop::getSettings([CONF_SITEMAP]);
@@ -48,20 +53,22 @@ function baueSitemapIndex($nDatei, $bGZ)
     $shopURL = Shop::getURL();
     $conf    = Shop::getSettings([CONF_SITEMAP]);
     $cIndex  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-    $cIndex  .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+    $cIndex .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
     for ($i = 0; $i <= $nDatei; ++$i) {
         if ($bGZ) {
             $cIndex .= '<sitemap><loc>' .
                 StringHandler::htmlentities($shopURL . '/' . PFAD_EXPORT . 'sitemap_' . $i . '.xml.gz') .
                 '</loc>' .
-                ((!isset($conf['sitemap']['sitemap_insert_lastmod']) || $conf['sitemap']['sitemap_insert_lastmod'] === 'Y')
+                ((!isset($conf['sitemap']['sitemap_insert_lastmod'])
+                    || $conf['sitemap']['sitemap_insert_lastmod'] === 'Y')
                     ? ('<lastmod>' . StringHandler::htmlentities(date('Y-m-d')) . '</lastmod>') :
                     '') .
                 '</sitemap>' . "\n";
         } else {
             $cIndex .= '<sitemap><loc>' . StringHandler::htmlentities($shopURL . '/' .
                     PFAD_EXPORT . 'sitemap_' . $i . '.xml') . '</loc>' .
-                ((!isset($conf['sitemap']['sitemap_insert_lastmod']) || $conf['sitemap']['sitemap_insert_lastmod'] === 'Y')
+                ((!isset($conf['sitemap']['sitemap_insert_lastmod'])
+                    || $conf['sitemap']['sitemap_insert_lastmod'] === 'Y')
                     ? ('<lastmod>' . StringHandler::htmlentities(date('Y-m-d')) . '</lastmod>')
                     : '') .
                 '</sitemap>' . "\n";
@@ -204,7 +211,7 @@ function generateSitemapXML()
     $defaultLangID           = (int)$defaultLang->kSprache;
     $_SESSION['kSprache']    = $defaultLangID;
     $_SESSION['cISOSprache'] = $defaultLang->cISO;
-    TaxHelper::setTaxRates();
+    Tax::setTaxRates();
     if (!isset($_SESSION['Kundengruppe'])) {
         $_SESSION['Kundengruppe'] = new Kundengruppe();
     }
@@ -279,7 +286,7 @@ function generateSitemapXML()
         ? ', tartikel.dLetzteAktualisierung'
         : '';
     $res          = Shop::Container()->getDB()->queryPrepared(
-        "SELECT tartikel.kArtikel, tartikel.cName, tseo.cSeo, tartikel.cArtNr" .
+        'SELECT tartikel.kArtikel, tartikel.cName, tseo.cSeo, tartikel.cArtNr' .
         $modification . "
             FROM tartikel
                 LEFT JOIN tartikelsichtbarkeit 
@@ -320,7 +327,7 @@ function generateSitemapXML()
                 $cGoogleImage = $imageBaseURL . $cGoogleImage;
             }
         }
-        $cUrl = UrlHelper::buildURL($oArtikel, URLART_ARTIKEL);
+        $cUrl = URL::buildURL($oArtikel, URLART_ARTIKEL);
 
         if (!isSitemapBlocked($cUrl)) {
             $sitemap_data .= makeURL(
@@ -389,7 +396,7 @@ function generateSitemapXML()
                     $cGoogleImage = $imageBaseURL . $cGoogleImage;
                 }
             }
-            $cUrl = UrlHelper::buildURL($oArtikel, URLART_ARTIKEL);
+            $cUrl = URL::buildURL($oArtikel, URLART_ARTIKEL);
             if (!isSitemapBlocked($cUrl)) {
                 $sitemap_data .= makeURL(
                     $cUrl,
@@ -455,7 +462,7 @@ function generateSitemapXML()
                     }
 
                     $tlink->cLocalizedSeo[$tlink->cISOSprache] = $tlink->cSeo ?? null;
-                    $link                                      = UrlHelper::buildURL($tlink, URLART_SEITE);
+                    $link                                      = URL::buildURL($tlink, URLART_SEITE);
                     if (strlen($tlink->cSeo) > 0) {
                         $link = $tlink->cSeo;
                     } elseif ($_SESSION['cISOSprache'] !== $tlink->cISOSprache) {
@@ -917,7 +924,7 @@ function generateSitemapXML()
         );
         while (($oNews = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $cURL = makeURL(
-                UrlHelper::buildURL($oNews, URLART_NEWS),
+                URL::buildURL($oNews, URLART_NEWS),
                 date_format(date_create($oNews->dGueltigVon), 'c'),
                 $addChangeFreq ? FREQ_DAILY : null,
                 $addPriority ? PRIO_HIGH : null
@@ -953,7 +960,7 @@ function generateSitemapXML()
 
         while (($oNewsKategorie = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $cURL = makeURL(
-                UrlHelper::buildURL($oNewsKategorie, URLART_NEWSKATEGORIE),
+                URL::buildURL($oNewsKategorie, URLART_NEWSKATEGORIE),
                 date_format(date_create($oNewsKategorie->dLetzteAktualisierung), 'c'),
                 $addChangeFreq ? FREQ_DAILY : null,
                 $addPriority ? PRIO_HIGH : null
@@ -990,10 +997,14 @@ function generateSitemapXML()
         // ping sitemap to Google and Bing
         if ($conf['sitemap']['sitemap_google_ping'] === 'Y') {
             $encodedSitemapIndexURL = urlencode(Shop::getURL() . '/sitemap_index.xml');
-            if (200 !== ($httpStatus = RequestHelper::http_get_status('http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL))) {
+            if (200 !== ($httpStatus = Request::http_get_status(
+                'http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL
+            ))) {
                 Shop::Container()->getLogService()->notice('Sitemap ping to Google failed with status ' . $httpStatus);
             }
-            if (200 !== ($httpStatus = RequestHelper::http_get_status('http://www.bing.com/ping?sitemap=' . $encodedSitemapIndexURL))) {
+            if (200 !== ($httpStatus = Request::http_get_status(
+                'http://www.bing.com/ping?sitemap=' . $encodedSitemapIndexURL
+            ))) {
                 Shop::Container()->getLogService()->notice('Sitemap ping to Bing failed with status ' . $httpStatus);
             }
         }

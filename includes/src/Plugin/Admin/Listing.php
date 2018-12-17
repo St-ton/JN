@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -6,11 +6,17 @@
 
 namespace Plugin\Admin;
 
+use Cache\JTLCacheInterface;
 use DB\DbInterface;
+use DB\ReturnType;
 use JTL\XMLParser;
 use Mapper\PluginValidation;
+use Plugin\AbstractExtension;
+use Plugin\Admin\Validation\ValidatorInterface;
+use Plugin\ExtensionLoader;
 use Plugin\InstallCode;
 use Plugin\Plugin;
+use Plugin\PluginLoader;
 use Tightenco\Collect\Support\Collection;
 use function Functional\map;
 
@@ -22,25 +28,51 @@ final class Listing
 {
     private const PLUGINS_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
 
+    private const EXTENSIONS_DIR = \PFAD_ROOT . \PFAD_EXTENSIONS;
+
     /**
      * @var DbInterface
      */
     private $db;
 
     /**
-     * @var Validator
+     * @var JTLCacheInterface
+     */
+    private $cache;
+
+    /**
+     * @var ValidatorInterface
      */
     private $validator;
 
     /**
-     * Listing constructor.
-     * @param DbInterface $db
-     * @param Validator   $validator
+     * @var ValidatorInterface
      */
-    public function __construct(DbInterface $db, Validator $validator)
-    {
-        $this->db        = $db;
-        $this->validator = $validator;
+    private $modernValidator;
+
+    /**
+     * @var Collection
+     */
+    private $plugins;
+
+    /**
+     * Listing constructor.
+     * @param DbInterface        $db
+     * @param JTLCacheInterface  $cache
+     * @param ValidatorInterface $validator
+     * @param ValidatorInterface $modernValidator
+     */
+    public function __construct(
+        DbInterface $db,
+        JTLCacheInterface $cache,
+        ValidatorInterface $validator,
+        ValidatorInterface $modernValidator
+    ) {
+        $this->db              = $db;
+        $this->cache           = $cache;
+        $this->validator       = $validator;
+        $this->modernValidator = $modernValidator;
+        $this->plugins         = new Collection();
     }
 
     /**
@@ -49,24 +81,46 @@ final class Listing
      */
     public function getInstalled(): Collection
     {
-        $mapper    = new PluginValidation();
-        $plugins   = new Collection();
-        $pluginIDs = map(
-            $this->db->selectAll('tplugin', [], [], 'kPlugin', 'cName, cAutor, nPrio'),
+        $plugins = new Collection();
+        $mapper  = new PluginValidation();
+        try {
+            $all = $this->db->selectAll('tplugin', [], [], 'kPlugin, bExtension', 'cName, cAutor, nPrio');
+        } catch (\InvalidArgumentException $e) {
+            $all = \Shop::Container()->getDB()->query(
+                'SELECT kPlugin, 0 AS bExtension
+                    FROM tplugin
+                    ORDER BY cName, cAutor, nPrio',
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+        }
+        $pluginIDs       = map(
+            $all,
             function (\stdClass $e) {
-                return (int)$e->kPlugin;
+                $e->kPlugin    = (int)$e->kPlugin;
+                $e->bExtension = (int)$e->bExtension;
+
+                return $e;
             }
         );
+        $pluginLoader    = new PluginLoader($this->db, $this->cache);
+        $extensionLoader = new ExtensionLoader($this->db, $this->cache);
         foreach ($pluginIDs as $pluginID) {
-            $plugin                  = new Plugin($pluginID, true);
-            $plugin->updateAvailable = $plugin->nVersion < $plugin->getCurrentVersion();
-            if ($plugin->updateAvailable === true) {
-                $code = $this->validator->validateByPluginID($pluginID, true);
+            if ($pluginID->bExtension === 1) {
+                $plugin = $extensionLoader->init($pluginID->kPlugin, true);
+            } else {
+                $pluginLoader->setPlugin(new Plugin());
+                $plugin = $pluginLoader->init($pluginID->kPlugin, true);
+            }
+            $plugin->getMeta()->setUpdateAvailable($plugin->getMeta()->getVersion() < $plugin->getCurrentVersion());
+            if ($plugin->getMeta()->isUpdateAvailable()) {
+                $code = $this->validator->validateByPluginID($pluginID->kPlugin, true);
                 if ($code !== InstallCode::OK) {
-                    $plugin->cFehler = $mapper->map($code, $plugin);
+                    // @todo
+                    $plugin->cFehler = $mapper->map($code, $plugin->getPluginID());
                 }
             }
             $plugins->push($plugin);
+            unset($plugin);
         }
 
         return $plugins;
@@ -74,22 +128,34 @@ final class Listing
 
     /**
      * @param Collection $installed
-     * @return \stdClass - {installiert[], verfuegbar[], fehlerhaft[]}
+     * @return Collection
      * @former gibAllePlugins()
      */
-    public function getAll(Collection $installed): \stdClass
+    public function getAll(Collection $installed): Collection
     {
-        $plugins          = (object)[
-            'index'       => [],
-            'installiert' => [],
-            'verfuegbar'  => [],
-            'fehlerhaft'  => [],
-        ];
-        $installedPlugins = $installed->map(function ($item) {
-            return $item->cVerzeichnis;
+        $installedPlugins = $installed->map(function (AbstractExtension $item) {
+            return $item->getPaths()->getBaseDir();
         });
-        $parser = new XMLParser();
-        foreach (new \DirectoryIterator(self::PLUGINS_DIR) as $fileinfo) {
+        $parser           = new XMLParser();
+        $this->parsePluginsDir($parser, self::PLUGINS_DIR, $installedPlugins);
+        $this->parsePluginsDir($parser, self::EXTENSIONS_DIR, $installedPlugins);
+        $this->sort();
+
+        return $this->plugins;
+    }
+
+    /**
+     * @param XMLParser  $parser
+     * @param string     $pluginDir
+     * @param Collection $installedPlugins
+     * @return Collection
+     */
+    private function parsePluginsDir(XMLParser $parser, string $pluginDir, $installedPlugins): Collection
+    {
+        $validator = $pluginDir === self::EXTENSIONS_DIR
+            ? $this->modernValidator
+            : $this->validator;
+        foreach (new \DirectoryIterator($pluginDir) as $fileinfo) {
             if ($fileinfo->isDot() || !$fileinfo->isDir()) {
                 continue;
             }
@@ -98,94 +164,35 @@ final class Listing
             if (!\file_exists($info)) {
                 continue;
             }
-            $xml  = $parser->parse($info);
-            $code = $this->validator->validateByPath(self::PLUGINS_DIR . $dir);
+            $xml                 = $parser->parse($info);
+            $code                = $validator->validateByPath($pluginDir . $dir);
+            $xml['cVerzeichnis'] = $dir;
+            $xml['cFehlercode']  = $code;
+            $item                = new ListingItem();
+            $plugin              = $item->parseXML($xml);
+            $plugin->setPath($pluginDir . $dir);
             if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $installedPlugins->contains($dir)) {
-                $xml['cVerzeichnis']    = $dir;
-                $xml['shop4compatible'] = isset($xml['jtlshop3plugin'][0]['Shop4Version']);
-                $plugins->index[$dir]   = $this->makeXMLToObj($xml);
-                $plugins->installiert[] = &$plugins->index[$dir];
+                $plugin->setInstalled(true);
+                $plugin->setHasError(false);
+                $plugin->setIsShop4Compatible(true);
             } elseif ($code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE || $code === InstallCode::OK) {
-                $xml['cVerzeichnis']    = $dir;
-                $xml['shop4compatible'] = ($code === 1);
-                $plugins->index[$dir]   = $this->makeXMLToObj($xml);
-                $plugins->verfuegbar[]  = &$plugins->index[$dir];
-            } else {
-                $xml['cVerzeichnis']   = $dir;
-                $xml['cFehlercode']    = $code;
-                $plugins->index[$dir]  = $this->makeXMLToObj($xml);
-                $plugins->fehlerhaft[] = &$plugins->index[$dir];
+                $plugin->setAvailable(true);
+                $plugin->setHasError(false);
+                $plugin->setIsShop4Compatible($code === InstallCode::OK);
             }
+            $this->plugins[] = $plugin;
         }
 
-        return $this->sort($plugins);
+        return $this->plugins;
     }
 
     /**
-     * @param \stdClass $plugins
-     * @return \stdClass
-     */
-    private function sort(\stdClass $plugins): \stdClass
-    {
-        \usort($plugins->installiert, function ($left, $right) {
-            return \strcasecmp($left->cName, $right->cName);
-        });
-        \usort($plugins->verfuegbar, function ($left, $right) {
-            return \strcasecmp($left->cName, $right->cName);
-        });
-        \usort($plugins->fehlerhaft, function ($left, $right) {
-            return \strcasecmp($left->cName, $right->cName);
-        });
-
-        return $plugins;
-    }
-
-    /**
-     * Baut aus einer XML ein Objekt
      *
-     * @param array $XML
-     * @return \stdClass
      */
-    private function makeXMLToObj($XML): \stdClass
+    private function sort(): void
     {
-        $res = new \stdClass();
-        if (isset($XML['jtlshop3plugin']) && \is_array($XML['jtlshop3plugin'])) {
-            if (!isset($XML['jtlshop3plugin'][0]['Install'][0]['Version'])) {
-                return $res;
-            }
-            if (!isset($XML['jtlshop3plugin'][0]['Name'])) {
-                return $res;
-            }
-            $node        = $XML['jtlshop3plugin'][0];
-            $lastVersion = \count($node['Install'][0]['Version']) / 2 - 1;
-
-            $res->cName           = $node['Name'];
-            $res->cDescription    = $node['Description'] ?? '';
-            $res->cAuthor         = $node['Author'] ?? '';
-            $res->cPluginID       = $node['PluginID'];
-            $res->cIcon           = $node['Icon'] ?? null;
-            $res->cVerzeichnis    = $XML['cVerzeichnis'];
-            $res->shop4compatible = !empty($XML['shop4compatible'])
-                ? $XML['shop4compatible']
-                : false;
-            $res->nVersion        = $lastVersion >= 0
-            && isset($node['Install'][0]['Version'][$lastVersion . ' attr']['nr'])
-                ? (int)$node['Install'][0]['Version'][$lastVersion . ' attr']['nr']
-                : 0;
-            $res->cVersion        = \number_format($res->nVersion / 100, 2);
-        }
-
-        if (empty($res->cName) && empty($res->cDescription) && !empty($XML['cVerzeichnis'])) {
-            $res->cName        = $XML['cVerzeichnis'];
-            $res->cDescription = '';
-            $res->cVerzeichnis = $XML['cVerzeichnis'];
-        }
-        if (isset($XML['cFehlercode']) && \strlen($XML['cFehlercode']) > 0) {
-            $mapper                   = new PluginValidation();
-            $res->cFehlercode         = $XML['cFehlercode'];
-            $res->cFehlerBeschreibung = $mapper->map($XML['cFehlercode'], $res);
-        }
-
-        return $res;
+        $this->plugins->sortBy(function (ListingItem $item) {
+            return \strtolower($item->getName());
+        });
     }
 }

@@ -75,8 +75,5 @@
 !/mediafiles/Bilder/.lg/.gitkeep
 !/mediafiles/Bilder/.xl/.gitkeep
 bootstrap/*
-includes/vendor/*
 node_modules/
-/tools/bin/*
-/tools/dist/*
 /uploads/*

@@ -12,7 +12,7 @@ use Monolog\Logger;
 
 /**
  * Class NiceDBHandler
- * @package Services\JTL
+ * @package JTL\ProcessingHandler
  */
 class NiceDBHandler extends AbstractProcessingHandler
 {

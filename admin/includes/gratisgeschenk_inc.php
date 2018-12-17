@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Date;
+
 /**
  * @param string $cSQL
  * @return array
@@ -65,7 +67,7 @@ function holeHaeufigeGeschenke($cSQL): array
             $product->fuelleArtikel($oHaeufigGeschenkTMP->kArtikel, $articleOptions, 0, 0, true);
             if ($product->kArtikel > 0) {
                 $product->nGGAnzahl = $oHaeufigGeschenkTMP->nAnzahl;
-                $dateParts          = DateHelper::getDateParts($oHaeufigGeschenkTMP->lastOrdered);
+                $dateParts          = Date::getDateParts($oHaeufigGeschenkTMP->lastOrdered);
                 $lastOrdered        = $dateParts['cTag'] . '.' . $dateParts['cMonat'] . '.' .
                     $dateParts['cJahr'] . ' ' .
                     $dateParts['cStunde'] . ':' . $dateParts['cMinute'] . ':' . $dateParts['cSekunde'];
@@ -108,7 +110,7 @@ function holeLetzten100Geschenke($cSQL): array
             $product->fuelleArtikel($oLetzten100GeschenkTMP->kArtikel, $articleOptions, 0, 0, true);
             if ($product->kArtikel > 0) {
                 $product->nGGAnzahl = $oLetzten100GeschenkTMP->nAnzahl;
-                $dateParts          = DateHelper::getDateParts($oLetzten100GeschenkTMP->orderCreated);
+                $dateParts          = Date::getDateParts($oLetzten100GeschenkTMP->orderCreated);
                 $orderCreated       = $dateParts['cTag'] . '.' . $dateParts['cMonat'] . '.' .
                     $dateParts['cJahr'] . ' ' .
                     $dateParts['cStunde'] . ':' . $dateParts['cMinute'] . ':' . $dateParts['cSekunde'];

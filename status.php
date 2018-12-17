@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Request;
+
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
@@ -17,7 +20,7 @@ $Einstellungen = Shop::getSettings([
 $hinweis       = '';
 $linkHelper    = Shop::Container()->getLinkService();
 
-if (strlen($_GET['uid']) === 40) {
+if (isset($_GET['uid'])) {
     $status = Shop::Container()->getDB()->queryPrepared(
         'SELECT kBestellung 
             FROM tbestellstatus 
@@ -33,14 +36,16 @@ if (strlen($_GET['uid']) === 40) {
     $bestellung = new Bestellung($status->kBestellung, true);
     $smarty->assign('Bestellung', $bestellung)
            ->assign('Kunde', new Kunde($bestellung->kKunde))
-           ->assign('Lieferadresse', $bestellung->Lieferadresse);
+           ->assign('Lieferadresse', $bestellung->Lieferadresse)
+           ->assign('showLoginPanel', \Session\Session::getCustomer()->isLoggedIn())
+           ->assign('billingAddress', $bestellung->oRechnungsadresse);
 } else {
     header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
     exit;
 }
 
 $step                   = 'bestellung';
-$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
+$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 

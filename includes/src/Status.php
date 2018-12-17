@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Template;
 use function Functional\some;
 
 /**
@@ -147,7 +148,7 @@ class Status
                         AND tplugin.nStatus = :state',
                 [
                     'hook'  => $hookID,
-                    'state' => \Plugin\Plugin::PLUGIN_ACTIVATED
+                    'state' => \Plugin\State::ACTIVATED
                 ],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
@@ -199,7 +200,7 @@ class Status
     {
         $oTemplate = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
         if ($oTemplate !== null && isset($oTemplate->cTemplate)) {
-            $oTplData = TemplateHelper::getInstance()->getData($oTemplate->cTemplate);
+            $oTplData = Template::getInstance()->getData($oTemplate->cTemplate);
             if ($oTplData->bResponsive) {
                 $oMobileTpl = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'mobil');
                 if ($oMobileTpl !== null) {
@@ -263,7 +264,7 @@ class Status
         $lines = explode('  ', $stats);
 
         $lines = array_map(function ($v) {
-            list($key, $value) = explode(':', $v, 2);
+            [$key, $value] = explode(':', $v, 2);
 
             return ['key' => trim($key), 'value' => trim($value)];
         }, $lines);

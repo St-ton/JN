@@ -74,7 +74,7 @@ function createSearchIndex($index, $create)
             );
             $res = Shop::Container()->getDB()->executeQuery(
                 "ALTER TABLE $index
-                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $rows) . ")",
+                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $rows) . ')',
                 \DB\ReturnType::QUERYSINGLE
             );
         } catch (Exception $e) {
@@ -82,7 +82,8 @@ function createSearchIndex($index, $create)
         }
 
         if ($res === 0) {
-            $cFehler      = 'Der Index für die Volltextsuche konnte nicht angelegt werden! Die Volltextsuche wird deaktiviert.';
+            $cFehler      = 'Der Index für die Volltextsuche konnte nicht angelegt werden! ' .
+                'Die Volltextsuche wird deaktiviert.';
             $shopSettings = Shopsetting::getInstance();
             $settings     = $shopSettings[Shopsetting::mapSettingName(CONF_ARTIKELUEBERSICHT)];
 

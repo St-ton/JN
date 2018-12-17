@@ -21,11 +21,11 @@
             </div>
         </div>
     </div>
-    {if isset($oPlugin)}
-        <p><strong>{#pluginAuthor#}:</strong> {$oPlugin->cAutor}</p>
-        <p><strong>{#pluginHomepage#}:</strong> <a href="{$oPlugin->cURL}" target="_blank" rel="noopener"><i class="fa fa-external-link"></i> {$oPlugin->cURL}</a></p>
-        <p><strong>{#pluginVersion#}:</strong> {$oPlugin->nVersion}</p>
-        <p><strong>{#pluginDesc#}:</strong> {$oPlugin->cBeschreibung}</p>
+    {if isset($pluginMeta)}
+        <p><strong>{#pluginAuthor#}:</strong> {$pluginMeta->getAuthor()}</p>
+        <p><strong>{#pluginHomepage#}:</strong> <a href="{$pluginMeta->getURL()}" target="_blank" rel="noopener"><i class="fa fa-external-link"></i> {$pluginMeta->getURL()}</a></p>
+        <p><strong>{#pluginVersion#}:</strong> {$pluginMeta->getVersion()}</p>
+        <p><strong>{#pluginDesc#}:</strong> {$pluginMeta->getDescription()}</p>
     {/if}
 </div>
 {if isset($cHinweis) && $cHinweis|strlen > 0}

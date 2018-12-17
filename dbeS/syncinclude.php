@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\FileSystem;
+
 define('DEFINES_PFAD', '../includes/');
 define('FREIDEFINIERBARER_FEHLER', 8);
 
@@ -56,7 +59,7 @@ $DB    = new \DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 $cache = Shop::Container()->getCache()->setJtlCacheConfig();
 
 $GLOBALS['bSeo']      = true; //compatibility!
-$oPluginHookListe_arr = \Plugin\Plugin::getHookList();
+$oPluginHookListe_arr = \Plugin\Helper::getHookList();
 $oSprache             = Sprache::getInstance(true);
 
 /**
@@ -190,7 +193,7 @@ function DBDelInsert($tablename, $object_arr, $del)
     if (is_array($object_arr)) {
         $db = Shop::Container()->getDB();
         if ($del) {
-            $db->query("DELETE FROM $tablename", \DB\ReturnType::DEFAULT);
+            $db->query('DELETE FROM ' . $tablename, \DB\ReturnType::DEFAULT);
         }
         foreach ($object_arr as $object) {
             //hack? unset arrays/objects that would result in nicedb exceptions
@@ -308,7 +311,7 @@ function removeTemporaryFiles(string $file, bool $isDir = false)
 {
     return KEEP_SYNC_FILES
         ? false
-        : ($isDir ? FileSystemHelper::delDirRecursively($file) : unlink($file));
+        : ($isDir ? FileSystem::delDirRecursively($file) : unlink($file));
 }
 
 /**
@@ -399,9 +402,9 @@ function is_assoc(array $array): bool
 }
 
 /**
- * @param stdClass $obj
- * @param array    $xml
- * @param array    $map
+ * @param stdClass|object $obj
+ * @param array           $xml
+ * @param array           $map
  */
 function mappe(&$obj, $xml, $map)
 {
@@ -585,7 +588,7 @@ function versendeVerfuegbarkeitsbenachrichtigung($product)
     }
     $oKampagne = new Kampagne(KAMPAGNE_INTERN_VERFUEGBARKEIT);
     if ($oKampagne->kKampagne > 0) {
-        $cSep          = strpos($Artikel->cURL, '.php') === false ? '?' : '&';
+        $cSep           = strpos($Artikel->cURL, '.php') === false ? '?' : '&';
         $Artikel->cURL .= $cSep . $oKampagne->cParameter . '=' . $oKampagne->cWert;
     }
     foreach ($Benachrichtigungen as $Benachrichtigung) {
@@ -695,10 +698,10 @@ function translateError($cMessage)
 {
     if (preg_match('/Maximum execution time of (\d+) second.? exceeded/', $cMessage, $cMatch_arr)) {
         $nSeconds = (int)$cMatch_arr[1];
-        $cMessage = "Maximale Ausführungszeit von $nSeconds Sekunden überschritten";
-    } elseif (preg_match("/Allowed memory size of (\d+) bytes exhausted/", $cMessage, $cMatch_arr)) {
+        $cMessage = 'Maximale Ausführungszeit von ' . $nSeconds . ' Sekunden überschritten';
+    } elseif (preg_match('/Allowed memory size of (\d+) bytes exhausted/', $cMessage, $cMatch_arr)) {
         $nLimit   = (int)$cMatch_arr[1];
-        $cMessage = "Erlaubte Speichergröße von $nLimit Bytes erschöpft";
+        $cMessage = 'Erlaubte Speichergröße von ' . $nLimit . ' Bytes erschöpft';
     }
 
     return $cMessage;
@@ -712,7 +715,7 @@ function handleError($output)
 {
     $error = error_get_last();
     if ($error['type'] === 1) {
-        $cError = translateError($error['message']) . "\n";
+        $cError  = translateError($error['message']) . "\n";
         $cError .= 'Datei: ' . $error['file'];
         Shop::Container()->getLogService()->error($cError);
 
@@ -1077,8 +1080,10 @@ function handlePriceRange(int $kArtikel)
                 COALESCE(baseprice.kKundengruppe, 0) AS kKundengruppe,
                 COALESCE(baseprice.kKunde, 0) AS kKunde,
                 baseprice.nRangeType,
-                MIN(IF(varaufpreis.fMinAufpreisNetto IS NULL, baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMinAufpreisNetto)) fVKNettoMin,
-                MAX(IF(varaufpreis.fMaxAufpreisNetto IS NULL, baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMaxAufpreisNetto)) fVKNettoMax,
+                MIN(IF(varaufpreis.fMinAufpreisNetto IS NULL,
+                    baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMinAufpreisNetto)) fVKNettoMin,
+                MAX(IF(varaufpreis.fMaxAufpreisNetto IS NULL,
+                    baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMaxAufpreisNetto)) fVKNettoMax,
                 baseprice.nLagerAnzahlMax,
                 baseprice.dStart,
                 baseprice.dEnde
@@ -1093,8 +1098,10 @@ function handlePriceRange(int $kArtikel)
                     tpreisdetail.fVKNetto,
                     null dStart, null dEnde
                 FROM tartikel
-                INNER JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
-                INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
+                INNER JOIN tpreis 
+                    ON tpreis.kArtikel = tartikel.kArtikel
+                INNER JOIN tpreisdetail 
+                    ON tpreisdetail.kPreis = tpreis.kPreis
 
                 UNION ALL
 
@@ -1105,14 +1112,19 @@ function handlePriceRange(int $kArtikel)
                     null kKunde,
                     IF(tartikelsonderpreis.nIstAnzahl = 0 AND tartikelsonderpreis.nIstDatum = 0, 5, 3) nRangeType,
                     IF(tartikelsonderpreis.nIstAnzahl = 0, null, tartikelsonderpreis.nAnzahl) nLagerAnzahlMax,
-                    IF(tsonderpreise.fNettoPreis < tpreisdetail.fVKNetto, tsonderpreise.fNettoPreis, tpreisdetail.fVKNetto) fVKNetto,
+                    IF(tsonderpreise.fNettoPreis < tpreisdetail.fVKNetto, 
+                        tsonderpreise.fNettoPreis, tpreisdetail.fVKNetto) fVKNetto,
                     tartikelsonderpreis.dStart dStart,
                     IF(tartikelsonderpreis.nIstDatum = 0, null, tartikelsonderpreis.dEnde) dEnde
                 FROM tartikel
-                INNER JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
-	            INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
-                INNER JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
-                INNER JOIN tsonderpreise ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
+                INNER JOIN tpreis 
+                    ON tpreis.kArtikel = tartikel.kArtikel
+	            INNER JOIN tpreisdetail 
+	                ON tpreisdetail.kPreis = tpreis.kPreis
+                INNER JOIN tartikelsonderpreis 
+                    ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
+                INNER JOIN tsonderpreise 
+                    ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
                 WHERE tartikelsonderpreis.cAktiv = 'Y'
             ) baseprice
             LEFT JOIN (
@@ -1123,17 +1135,22 @@ function handlePriceRange(int $kArtikel)
                     SELECT teigenschaft.kArtikel,
                         tkundengruppe.kKundengruppe,
                         teigenschaft.kEigenschaft,
-                        MIN(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto, teigenschaftwert.fAufpreisNetto)) fMinAufpreisNetto,
-                        MAX(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto, teigenschaftwert.fAufpreisNetto)) fMaxAufpreisNetto
+                        MIN(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto, 
+                            teigenschaftwert.fAufpreisNetto)) fMinAufpreisNetto,
+                        MAX(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto, 
+                            teigenschaftwert.fAufpreisNetto)) fMaxAufpreisNetto
                     FROM teigenschaft
                     INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
                     JOIN tkundengruppe
-                    LEFT JOIN teigenschaftwertaufpreis ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
+                    LEFT JOIN teigenschaftwertaufpreis 
+                        ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                         AND teigenschaftwertaufpreis.kKundengruppe = tkundengruppe.kKundengruppe
                     GROUP BY teigenschaft.kArtikel, tkundengruppe.kKundengruppe, teigenschaft.kEigenschaft
                 ) variations
                 GROUP BY variations.kArtikel, variations.kKundengruppe
-            ) varaufpreis ON varaufpreis.kArtikel = baseprice.kKindArtikel AND baseprice.nIstVater = 0
+            ) varaufpreis 
+                ON varaufpreis.kArtikel = baseprice.kKindArtikel 
+                AND baseprice.nIstVater = 0
             WHERE baseprice.kArtikel = :kArtikel
             GROUP BY baseprice.kArtikel,
                 baseprice.kKundengruppe,
@@ -1149,8 +1166,10 @@ function handlePriceRange(int $kArtikel)
     $updated = [];
     foreach ($priceRangeArr as $priceRange) {
         $db->queryPrepared(
-            'INSERT INTO tpricerange (kArtikel, kKundengruppe, kKunde, nRangeType, fVKNettoMin, fVKNettoMax, nLagerAnzahlMax, dStart, dEnde)
-                VALUES (:kArtikel, :kKundengruppe, :kKunde, :nRangeType, :fVKNettoMin, :fVKNettoMax, :nLagerAnzahlMax, :dStart, :dEnde)
+            'INSERT INTO tpricerange 
+            (kArtikel, kKundengruppe, kKunde, nRangeType, fVKNettoMin, fVKNettoMax, nLagerAnzahlMax, dStart, dEnde)
+                VALUES (:kArtikel, :kKundengruppe, :kKunde, :nRangeType, :fVKNettoMin,
+                        :fVKNettoMax, :nLagerAnzahlMax, :dStart, :dEnde)
                 ON DUPLICATE KEY UPDATE
                     fVKNettoMin = :fVKNettoMin,
                     fVKNettoMax = :fVKNettoMax,
@@ -1187,8 +1206,8 @@ function handlePriceRange(int $kArtikel)
  */
 function insertPriceDetail($obj, $index, $priceId)
 {
-    $count = "nAnzahl{$index}";
-    $price = "fPreis{$index}";
+    $count = 'nAnzahl' . $index;
+    $price = 'fPreis' . $index;
 
     if ((isset($obj->{$count}) && (int)$obj->{$count} > 0) || $index === 0) {
         $o            = new stdClass();

@@ -26,7 +26,7 @@ use function Functional\map;
  */
 class Attribute extends BaseAttribute
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var int
@@ -149,7 +149,6 @@ class Attribute extends BaseAttribute
 
             return $this->setType($this->isMultiSelect() ? Type::OR : Type::AND)
                         ->setSeo($this->getAvailableLanguages());
-
         }
 
         return $this->setValue($value)->setSeo($this->getAvailableLanguages());
@@ -447,12 +446,12 @@ class Attribute extends BaseAttribute
             return $this->options;
         }
         $qryRes                    = $this->productFilter->getDB()->executeQuery(
-            "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
+            'SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
             ssMerkmal.nMehrfachauswahl, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, 
             ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl
-                FROM (" . $baseQry . ") AS ssMerkmal
+                FROM (' . $baseQry . ') AS ssMerkmal
                 GROUP BY ssMerkmal.kMerkmalWert
-                ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert",
+                ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $currentAttributeValue     = $this->productFilter->getAttributeValue()->getValue();
@@ -606,7 +605,7 @@ class Attribute extends BaseAttribute
      * @param Option $option
      * @param int    $attributeValueLimit
      */
-    protected function applyOptionLimit(Option $option, int $attributeValueLimit)
+    protected function applyOptionLimit(Option $option, int $attributeValueLimit): void
     {
         if ($attributeValueLimit <= 0 || $attributeValueLimit >= \count($option->getOptions())) {
             return;
@@ -628,12 +627,12 @@ class Attribute extends BaseAttribute
             return (int)$row->kMerkmalWert;
         }, $attributeValues));
         $queryResult       = $this->productFilter->getDB()->query(
-            "SELECT tmerkmalwertsprache.cWert, tmerkmalwertsprache.kMerkmalWert, 
+            'SELECT tmerkmalwertsprache.cWert, tmerkmalwertsprache.kMerkmalWert, 
             tmerkmalwertsprache.cSeo, tmerkmalwert.kMerkmal, tmerkmalwertsprache.kSprache
                 FROM tmerkmalwertsprache
                 JOIN tmerkmalwert 
                     ON tmerkmalwert.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
-                WHERE tmerkmalwertsprache.kMerkmalWert IN (" . $attributeValueIDs . ")",
+                WHERE tmerkmalwertsprache.kMerkmalWert IN (' . $attributeValueIDs . ')',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $result            = [];

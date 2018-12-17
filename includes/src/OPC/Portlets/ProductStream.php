@@ -7,6 +7,7 @@
 namespace OPC\Portlets;
 
 use Filter\Config;
+use Filter\ProductFilter;
 use Filter\Type;
 use OPC\PortletInstance;
 use Tightenco\Collect\Support\Collection;
@@ -33,7 +34,7 @@ class ProductStream extends \OPC\Portlet
             . "style='width:98%;filter:grayscale(50%) opacity(60%)'>"
             . "<div style='color:#5cbcf6;font-size:40px;font-weight:bold;margin:0;margin-top:-1em;line-height:1em;'>
                 Produktliste</div>"
-            . "</div>";
+            . '</div>';
     }
 
     /**
@@ -51,7 +52,7 @@ class ProductStream extends \OPC\Portlet
      */
     public function getButtonHtml(): string
     {
-        return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Product<br>Stream';
+        return '<img alt="" class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Product<br>Stream';
     }
 
     /**
@@ -110,7 +111,7 @@ class ProductStream extends \OPC\Portlet
     public function getFilteredProductIds(PortletInstance $instance): Collection
     {
         $enabledFilters = $instance->getProperty('filters');
-        $productFilter  = new \Filter\ProductFilter(
+        $productFilter  = new ProductFilter(
             Config::getDefault(),
             \Shop::Container()->getDB(),
             \Shop::Container()->getCache()

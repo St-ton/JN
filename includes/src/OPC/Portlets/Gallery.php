@@ -6,13 +6,14 @@
 
 namespace OPC\Portlets;
 
+use OPC\Portlet;
 use OPC\PortletInstance;
 
 /**
  * Class Gallery
  * @package OPC\Portlets
  */
-class Gallery extends \OPC\Portlet
+class Gallery extends Portlet
 {
     /**
      * @param PortletInstance $instance
@@ -104,7 +105,7 @@ class Gallery extends \OPC\Portlet
      */
     public function getButtonHtml(): string
     {
-        return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Gallery';
+        return '<img alt="" class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Gallery';
     }
 
     /**

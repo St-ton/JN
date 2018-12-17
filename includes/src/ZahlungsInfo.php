@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\GeneralObject;
+
 /**
  * Class ZahlungsInfo
  */
@@ -174,7 +176,7 @@ class ZahlungsInfo
     {
         $this->cAbgeholt = 'N';
         $this->verschluesselZahlungsinfo();
-        $obj = ObjectHelper::copyMembers($this);
+        $obj = GeneralObject::copyMembers($this);
         unset($obj->kZahlungsInfo);
         $this->kZahlungsInfo = Shop::Container()->getDB()->insert('tzahlungsinfo', $obj);
         $this->entschluesselZahlungsinfo();
@@ -190,7 +192,7 @@ class ZahlungsInfo
     public function updateInDB(): int
     {
         $this->verschluesselZahlungsinfo();
-        $obj     = ObjectHelper::copyMembers($this);
+        $obj     = GeneralObject::copyMembers($this);
         $cReturn = Shop::Container()->getDB()->update('tzahlungsinfo', 'kZahlungsInfo', $obj->kZahlungsInfo, $obj);
         $this->entschluesselZahlungsinfo();
 

@@ -49,7 +49,10 @@ function pruefeKundenKommentar($cKommentar, $cName, $cEmail, $kNews, $Einstellun
  */
 function gibNewskommentarFehler($nPlausiValue_arr)
 {
-    trigger_error(__FUNCTION__ . ' is deprecated. Use \News\Controller::getCommentErrors() instead.', E_USER_DEPRECATED);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use \News\Controller::getCommentErrors() instead.',
+        E_USER_DEPRECATED
+    );
     return \News\Controller::getCommentErrors($nPlausiValue_arr);
 }
 
@@ -106,10 +109,10 @@ function baueDatum($dates)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $res = [];
     foreach ($dates as $oDatum) {
-        $oTMP            = new stdClass();
-        $oTMP->cWert     = $oDatum->nMonat . '-' . $oDatum->nJahr;
-        $oTMP->cName     = mappeDatumName((string)$oDatum->nMonat, (int)$oDatum->nJahr, Shop::getLanguageCode());
-        $res[] = $oTMP;
+        $oTMP        = new stdClass();
+        $oTMP->cWert = $oDatum->nMonat . '-' . $oDatum->nJahr;
+        $oTMP->cName = mappeDatumName((string)$oDatum->nMonat, (int)$oDatum->nJahr, Shop::getLanguageCode());
+        $res[]       = $oTMP;
     }
 
     return $res;

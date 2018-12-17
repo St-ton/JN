@@ -30,7 +30,7 @@ final class Category extends AbstractItem
      */
     public function generateLocation(): void
     {
-        $this->setLocation(\UrlHelper::buildURL($this->data, \URLART_KATEGORIE, true));
+        $this->setLocation(\Helpers\URL::buildURL($this->data, \URLART_KATEGORIE, true));
     }
 
     /**

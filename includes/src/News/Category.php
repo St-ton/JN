@@ -18,7 +18,7 @@ use function Functional\map;
  */
 class Category implements CategoryInterface
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array

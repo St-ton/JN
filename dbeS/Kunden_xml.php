@@ -101,14 +101,8 @@ function bearbeiteDeletes($xml)
     if (!is_array($xml['del_kunden']['kKunde'])) {
         $xml['del_kunden']['kKunde'] = [$xml['del_kunden']['kKunde']];
     }
-    $db = Shop::Container()->getDB();
     foreach ($xml['del_kunden']['kKunde'] as $kKunde) {
-        $kKunde = (int)$kKunde;
-        if ($kKunde > 0) {
-            $db->delete('tkunde', 'kKunde', $kKunde);
-            $db->delete('tlieferadresse', 'kKunde', $kKunde);
-            $db->delete('tkundenattribut', 'kKunde', $kKunde);
-        }
+        (new Kunde((int)$kKunde))->deleteAccount(GeneralDataProtection\Journal::ISSUER_TYPE_DBES, 0, true);
     }
 }
 

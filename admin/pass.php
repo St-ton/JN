@@ -3,17 +3,20 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global Smarty\JTLSmarty $smarty */
 $step     = 'prepare';
 $cFehler  = '';
 $cHinweis = '';
-if (isset($_POST['mail']) && FormHelper::validateToken()) {
+if (isset($_POST['mail']) && Form::validateToken()) {
     $account = new AdminAccount(false);
     $account->prepareResetPassword(StringHandler::filterXSS($_POST['mail']));
     $cHinweis = 'Eine E-Mail mit weiteren Anweisung wurde an die hinterlegte Adresse gesendet, sofern vorhanden.';
 } elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpm'], $_POST['fpwh'])
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
         $account  = new AdminAccount(false);

@@ -25,4 +25,6 @@ class Type extends Enum
     public const NEWSLETTER = 'newsletter';
 
     public const PLUGIN = 'plugin';
+
+    public const DATAPROTECTION = 'dataprotection';
 }

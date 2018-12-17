@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\FileSystem;
+
 /**
  * Class Link
  */
@@ -616,7 +618,7 @@ class Link extends MainModel
      * @param int $kVaterLinkgruppe
      * @return null|array
      */
-    public static function getSub(int $kVaterLink, int $kVaterLinkgruppe = null)
+    public static function getSub(int $kVaterLink, int $kVaterLinkgruppe = null): ?array
     {
         if ($kVaterLink > 0) {
             if (!empty($kVaterLinkgruppe)) {
@@ -736,7 +738,7 @@ class Link extends MainModel
                 Shop::Container()->getDB()->delete('tseo', ['kKey', 'cKey'], [$this->getLink(), 'kLink']);
 
                 $cDir = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER . $this->getLink();
-                if (is_dir($cDir) && $this->getLink() > 0 && FileSystemHelper::delDirRecursively($cDir)) {
+                if (is_dir($cDir) && $this->getLink() > 0 && FileSystem::delDirRecursively($cDir)) {
                     rmdir($cDir);
                 }
             }

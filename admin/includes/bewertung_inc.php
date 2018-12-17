@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Request;
+
 /**
  * @param int $kBewertung
  * @return stdClass|null
@@ -21,7 +23,7 @@ function editiereBewertung($cPost_arr): bool
 {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 
-    $kBewertung = RequestHelper::verifyGPCDataInt('kBewertung');
+    $kBewertung = Request::verifyGPCDataInt('kBewertung');
     $conf       = Shop::getSettings([CONF_BEWERTUNG]);
     if (!empty($cPost_arr['cName'])
         && !empty($cPost_arr['cTitel'])

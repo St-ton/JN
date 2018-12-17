@@ -3,9 +3,12 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Request;
+
 require_once __DIR__ . '/includes/globalinclude.php';
 set_exception_handler(function ($e) {
-    header(RequestHelper::makeHTTPHeader(404));
+    header(Request::makeHTTPHeader(404));
     echo $e->getMessage();
     exit;
 });

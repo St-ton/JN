@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -469,7 +469,6 @@ final class LinkAdmin
             $assoc->linkID      = $kLink;
             $assoc->linkGroupID = (int)$post['kLinkgruppe'];
             $this->db->insert('tlinkgroupassociations', $assoc);
-
         } else {
             $kLink    = (int)$post['kLink'];
             $revision = new \Revision();
@@ -525,7 +524,7 @@ final class LinkAdmin
                 \JTL_CHARSET
             );
             $this->db->delete('tlinksprache', ['kLink', 'cISOSprache'], [$kLink, $sprache->cISO]);
-            $linkSprache->cSeo = $link->nLinkart === 2
+            $linkSprache->cSeo = $link->nLinkart === \LINKTYP_EXTERNE_URL
                 ? $linkSprache->cSeo
                 : \JTL\SeoHelper::getSeo($linkSprache->cSeo);
             $this->db->insert('tlinksprache', $linkSprache);

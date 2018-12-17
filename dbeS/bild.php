@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Request;
+
 require_once __DIR__ . '/syncinclude.php';
 
 $Einstellungen = Shop::getSettings([CONF_BILDER]);
@@ -14,10 +16,10 @@ if ($Einstellungen['bilder']['bilder_externe_bildschnittstelle'] === 'W' && !aut
     exit();
 }
 
-$kArtikel    = RequestHelper::verifyGPCDataInt('a'); // Angeforderter Artikel
-$nBildNummer = RequestHelper::verifyGPCDataInt('n'); // Bildnummer
-$nURL        = RequestHelper::verifyGPCDataInt('url'); // Soll die URL zum Bild oder das Bild direkt ausgegeben werden
-$nSize       = RequestHelper::verifyGPCDataInt('s'); // Bildgröße
+$kArtikel    = Request::verifyGPCDataInt('a'); // Angeforderter Artikel
+$nBildNummer = Request::verifyGPCDataInt('n'); // Bildnummer
+$nURL        = Request::verifyGPCDataInt('url'); // Soll die URL zum Bild oder das Bild direkt ausgegeben werden
+$nSize       = Request::verifyGPCDataInt('s'); // Bildgröße
 
 if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
     $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
@@ -27,7 +29,7 @@ if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
     $shopURL          = Shop::getURL() . '/';
     $qry_bildNr       = $kArtikel === $nBildNummer
         ? ''
-        : " AND tartikelpict.nNr = " . $nBildNummer;
+        : ' AND tartikelpict.nNr = ' . $nBildNummer;
     $oArtikelPict_arr = Shop::Container()->getDB()->query(
         'SELECT tartikelpict.cPfad, tartikelpict.kArtikel, tartikel.cSeo, tartikelpict.nNr
                 FROM tartikelpict
@@ -170,7 +172,6 @@ function ladeBild(string $cBildPfad)
                 }
             }
             break;
-
     }
 
     return false;

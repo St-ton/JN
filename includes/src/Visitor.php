@@ -4,6 +4,8 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Request;
+
 /**
  * Class Visitor
  * @since 5.0.0
@@ -26,7 +28,7 @@ class Visitor
             );
         }
         self::archive();
-        $oVisitor = self::dbLookup($userAgent, RequestHelper::getIP());
+        $oVisitor = self::dbLookup($userAgent, Request::getRealIP());
         if ($oVisitor === null) {
             if (isset($_SESSION['oBesucher'])) {
                 $oVisitor = self::updateVisitorObject($_SESSION['oBesucher'], 0, $userAgent, $kBesucherBot);
@@ -116,10 +118,10 @@ class Visitor
      */
     public static function updateVisitorObject($vis, int $visId, $szUserAgent, int $kBesucherBot)
     {
-        $vis->kBesucher         = $visId;
-        $vis->cIP               = RequestHelper::getIP();
+        $vis->kBesucher         = (int)$visId;
+        $vis->cIP               = (new \GeneralDataProtection\IpAnonymizer(Request::getRealIP()))->anonymize(); // anonymize immediately
         $vis->cSessID           = session_id();
-        $vis->cID               = md5($szUserAgent . RequestHelper::getIP());
+        $vis->cID               = md5($szUserAgent . Request::getRealIP());
         $vis->kKunde            = \Session\Session::getCustomer()->getID();
         $vis->kBestellung       = $vis->kKunde > 0 ? self::refreshCustomerOrderId((int)$vis->kKunde) : 0;
         $vis->cReferer          = self::getReferer();
@@ -142,9 +144,9 @@ class Visitor
     {
         $vis                    = new stdClass();
         $vis->kBesucher         = 0;
-        $vis->cIP               = RequestHelper::getIP();
+        $vis->cIP               = (new \GeneralDataProtection\IpAnonymizer(Request::getRealIP()))->anonymize(); // anonymize immediately
         $vis->cSessID           = session_id();
-        $vis->cID               = md5($szUserAgent . RequestHelper::getIP());
+        $vis->cID               = md5($szUserAgent . Request::getRealIP());
         $vis->kKunde            = \Session\Session::getCustomer()->getID();
         $vis->kBestellung       = $vis->kKunde > 0 ? self::refreshCustomerOrderId((int)$vis->kKunde) : 0;
         $vis->cEinstiegsseite   = $_SERVER['REQUEST_URI'];
@@ -192,8 +194,8 @@ class Visitor
     public static function refreshCustomerOrderId(int $nCustomerId): int
     {
         $oOrder = Shop::Container()->getDB()->queryPrepared(
-            'SELECT `kBestellung` 
-                FROM `tbestellung` 
+            'SELECT `kBestellung`
+                FROM `tbestellung`
                 WHERE `kKunde` = :_nCustomerId
                 ORDER BY `dErstellt` DESC LIMIT 1',
             ['_nCustomerId' => $nCustomerId],

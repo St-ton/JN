@@ -6,13 +6,14 @@
 
 namespace OPC\Portlets;
 
+use OPC\Portlet;
 use OPC\PortletInstance;
 
 /**
  * Class Row
  * @package OPC\Portlets
  */
-class Row extends \OPC\Portlet
+class Row extends Portlet
 {
     /**
      * @param PortletInstance $instance
@@ -129,7 +130,6 @@ class Row extends \OPC\Portlet
                     'lg' => $sumLG === 0 ? false : ($sumLG % 12 === 0),
                 ],
             ];
-
         }
 
         return $colLayouts;

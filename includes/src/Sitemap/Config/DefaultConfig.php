@@ -20,7 +20,7 @@ use Sitemap\Factories\Tag;
 
 /**
  * Class DefaultConfig
- * @package Sitemap
+ * @package Sitemap\Config
  */
 final class DefaultConfig implements ConfigInterface
 {

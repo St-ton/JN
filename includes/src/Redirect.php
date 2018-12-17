@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Request;
+use Helpers\URL;
+
 /**
  * Class Redirect
  */
@@ -227,7 +230,7 @@ class Redirect
         if (isset($xParse_arr['query'])) {
             $cFromUrl .= '?' . $xParse_arr['query'];
         }
-        $options = ['cFromUrl' => $cFromUrl];
+        $options           = ['cFromUrl' => $cFromUrl];
         $options['cArtNr'] = null;
         if (isset($csv[$cMapping_arr['articlenumber']])) {
             $options['cArtNr'] = $csv[$cMapping_arr['articlenumber']];
@@ -287,7 +290,7 @@ class Redirect
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return UrlHelper::buildURL($oObj, URLART_ARTIKEL);
+        return URL::buildURL($oObj, URLART_ARTIKEL);
     }
 
     /**
@@ -403,7 +406,7 @@ class Redirect
             if (strlen($cReferer) > 0) {
                 $cReferer = $this->normalize($cReferer);
             }
-            $cIP = RequestHelper::getRealIP();
+            $cIP = Request::getRealIP();
             // Eintrag für diese IP bereits vorhanden?
             $oEntry = Shop::Container()->getDB()->queryPrepared(
                 'SELECT *
@@ -477,10 +480,10 @@ class Redirect
      */
     public function normalize(string $cUrl): string
     {
-        $oUrl = new UrlHelper();
+        $oUrl = new URL();
         $oUrl->setUrl($cUrl);
 
-        return '/' . trim($oUrl->normalize(), "\\/");
+        return '/' . trim($oUrl->normalize(), '\\/');
     }
 
     /**
@@ -503,7 +506,7 @@ class Redirect
             $qry .= ' AND ';
         }
         if (!empty($cSuchbegriff)) {
-            $qry  .= 'cFromUrl LIKE :search';
+            $qry .= 'cFromUrl LIKE :search';
             $prep = ['search' => '%' . $cSuchbegriff . '%'];
         }
         $oCount = Shop::Container()->getDB()->executeQueryPrepared($qry, $prep, \DB\ReturnType::SINGLE_OBJECT);

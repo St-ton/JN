@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Form;
+use Helpers\Request;
+
 /**
  * @param int|array $configSectionID
  * @return array
@@ -68,14 +71,14 @@ function getAdminSectionSettings($configSectionID)
 
             $conf->gesetzterWert = $oSetValue;
         } elseif ($conf->cInputTyp === 'selectkdngrp') {
-            $oSetValue = $db->selectAll(
+            $oSetValue           = $db->selectAll(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [$conf->kEinstellungenSektion, $conf->cWertName]
             );
             $conf->gesetzterWert = $oSetValue;
         } else {
-            $oSetValue = $db->select(
+            $oSetValue           = $db->select(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [$conf->kEinstellungenSektion, $conf->cWertName]
@@ -190,7 +193,7 @@ function bearbeiteListBox($listBoxes, $cWertName, int $configSectionID)
  */
 function saveAdminSectionSettings(int $configSectionID, array &$cPost_arr, $tags = [CACHING_GROUP_OPTION])
 {
-    if (!FormHelper::validateToken()) {
+    if (!Form::validateToken()) {
         return 'Fehler: Cross site request forgery.';
     }
     $confData = Shop::Container()->getDB()->selectAll(
@@ -322,7 +325,7 @@ function holeBewertungserinnerungSettings()
  */
 function setzeSprache()
 {
-    if (FormHelper::validateToken() && RequestHelper::verifyGPCDataInt('sprachwechsel') === 1) {
+    if (Form::validateToken() && Request::verifyGPCDataInt('sprachwechsel') === 1) {
         // Wähle explizit gesetzte Sprache als aktuelle Sprache
         $oSprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_POST['kSprache']);
 
@@ -452,11 +455,10 @@ function ermittleDatumWoche(string $cDatum)
         $daysPerMonth = date('t', mktime(0, 0, 0, $nMonat, 1, $nJahr));
         $nTag         = $daysPerMonth - $nWochentag + $nTagOld;
     }
-    $nStampStart = mktime(0, 0, 0, $nMonat, $nTag, $nJahr);
-    // Wochenende ermitteln
+    $nStampStart  = mktime(0, 0, 0, $nMonat, $nTag, $nJahr);
     $nTage        = 6;
     $daysPerMonth = date('t', mktime(0, 0, 0, $nMonat, 1, $nJahr));
-    $nTag         += $nTage;
+    $nTag        += $nTage;
     if ($nTag > $daysPerMonth) {
         $nTag -= $daysPerMonth;
         ++$nMonat;

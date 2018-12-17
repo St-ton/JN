@@ -46,7 +46,7 @@
                         <td class="tcenter">{$plugin->getDateInstalled()->format('d.m.Y H:i')}</td>
                         <td class="tcenter">{$plugin->getPaths()->getBaseDir()}</td>
                         <td class="tcenter">
-                            {if isset($plugin->oPluginSprachvariableAssoc_arr) && $plugin->oPluginSprachvariableAssoc_arr|@count > 0}
+                            {if $plugin->getLocalization()->getTranslations()|@count > 0}
                                 <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
                                    class="btn btn-default" title="{#modify#}">
                                     <i class="fa fa-edit"></i></a>
@@ -99,7 +99,7 @@
                         <td class="tcenter">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
                         <td class="tcenter">{$plugin->getPaths()->getBaseDir()}</td>
                         <td class="tcenter">
-                            {if isset($plugin->oPluginSprachvariableAssoc_arr) && $plugin->oPluginSprachvariableAssoc_arr|@count > 0}
+                            {if $plugin->getLocalization()->getTranslations()|@count > 0}
                                 <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}" class="btn btn-default">{#modify#}</a>
                             {/if}
                         </td>
@@ -154,7 +154,7 @@
                         <td class="tcenter">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
                         <td class="tcenter">{$plugin->getPaths()->getBaseDir()}</td>
                         <td class="tcenter">
-                            {if isset($plugin->oPluginSprachvariableAssoc_arr) && $plugin->oPluginSprachvariableAssoc_arr|@count > 0}
+                            {if $plugin->getLocalization()->getTranslations()|@count > 0}
                                 <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
                                    class="btn btn-default" title="{#modify#}">
                                     <i class="fa fa-edit"></i>
@@ -213,7 +213,7 @@
                         <td class="tcenter plugin-install-date">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
                         <td class="tcenter plugin-folder">{$plugin->getPaths()->getBaseDir()}</td>
                         <td class="tcenter plugin-lang-vars">
-                            {if isset($plugin->oPluginSprachvariableAssoc_arr) && $plugin->oPluginSprachvariableAssoc_arr|@count > 0}
+                            {if $plugin->getLocalization()->getTranslations()|@count > 0}
                                 <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
                                    class="btn btn-default" title="{#modify#}">
                                     <i class="fa fa-edit"></i>

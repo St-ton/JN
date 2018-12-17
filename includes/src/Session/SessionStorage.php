@@ -25,8 +25,9 @@ class SessionStorage
     public $sessionData = [];
 
     /**
+     * SessionStorage constructor.
      * @param \SessionHandlerInterface $handler
-     * @param bool                     $start - call session_start()?
+     * @param bool                     $start
      */
     public function __construct(\SessionHandlerInterface $handler, bool $start = true)
     {
@@ -36,8 +37,8 @@ class SessionStorage
 
     /**
      * @param \SessionHandlerInterface $handler
-     * @param bool                     $start - call session_start()?
-     * @return $this
+     * @param bool                     $start
+     * @return SessionStorage
      */
     public function setHandler(\SessionHandlerInterface $handler, bool $start = true): self
     {
@@ -50,22 +51,18 @@ class SessionStorage
         }
         $conf           = \Shop::getSettings([\CONF_GLOBAL])['global'];
         $cookieDefaults = \session_get_cookie_params();
-        $set            = false;
         $lifetime       = $cookieDefaults['lifetime'] ?? 0;
         $path           = $cookieDefaults['path'] ?? '';
         $domain         = $cookieDefaults['domain'] ?? '';
         $secure         = $cookieDefaults['secure'] ?? false;
         $httpOnly       = $cookieDefaults['httponly'] ?? false;
         if (isset($conf['global_cookie_secure']) && $conf['global_cookie_secure'] !== 'S') {
-            $set    = true;
             $secure = $conf['global_cookie_secure'] === 'Y';
         }
         if (isset($conf['global_cookie_httponly']) && $conf['global_cookie_httponly'] !== 'S') {
-            $set      = true;
             $httpOnly = $conf['global_cookie_httponly'] === 'Y';
         }
         if (isset($conf['global_cookie_domain']) && $conf['global_cookie_domain'] !== '') {
-            $set    = true;
             $domain = $conf['global_cookie_domain'];
             //EXPERIMENTAL_MULTILANG_SHOP
             if (\defined('EXPERIMENTAL_MULTILANG_SHOP')) {
@@ -88,18 +85,12 @@ class SessionStorage
             && \is_numeric($conf['global_cookie_lifetime'])
             && (int)$conf['global_cookie_lifetime'] > 0
         ) {
-            $set      = true;
             $lifetime = (int)$conf['global_cookie_lifetime'];
         }
         if (!empty($conf['global_cookie_path'])) {
-            $set  = true;
             $path = $conf['global_cookie_path'];
         }
-        // only set secure if SSL is enabled
-        if ($set === true) {
-            $secure = $secure
-                && ($conf['kaufabwicklung_ssl_nutzen'] === 'P' || \strpos(URL_SHOP, 'https://') === 0);
-        }
+        $secure = $secure && ($conf['kaufabwicklung_ssl_nutzen'] === 'P' || \strpos(URL_SHOP, 'https://') === 0);
         if ($start) {
             \session_start([
                 'use_cookies'     => '1',
@@ -109,10 +100,6 @@ class SessionStorage
                 'cookie_path'     => $path,
                 'cookie_httponly' => $httpOnly
             ]);
-//        } elseif ($set === true) {
-//            \session_set_cookie_params($lifetime, $path, $domain, $secure, $httpOnly);
-//            $exp = ($lifetime === 0) ? 0 : \time() + $lifetime;
-//            \setcookie(\session_name(), \session_id(), $exp, $path, $domain, $secure, $httpOnly);
         }
 
         $this->handler->sessionData = &$_SESSION;

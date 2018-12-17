@@ -6,6 +6,7 @@
 
 namespace Helpers;
 
+use DB\DbInterface;
 use DB\ReturnType;
 use Shop;
 
@@ -17,24 +18,35 @@ use Shop;
 class Overlay
 {
     /**
+     * @var DbInterface
+     */
+    private $db;
+
+    /**
+     * Overlay constructor.
+     * @param DbInterface $db
+     */
+    public function __construct(DbInterface $db)
+    {
+        $this->db = $db;
+    }
+
+    /**
      *  get overlays (images) from template folder (original) and create for each valid image the corresponding files
      * (sizes) and data (default settings in tsuchspecialoverlaysprache)
      * example filename: overlay_1_7.jpg | 1 -> overlay language, 7 -> overlay type
      * @param string $template
      * @return bool
      */
-    public static function loadOverlaysFromTemplateFolder(string $template): bool
+    public function loadOverlaysFromTemplateFolder(string $template): bool
     {
-        require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'suchspecialoverlay_inc.php';
+        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'suchspecialoverlay_inc.php';
 
-        $dir = PFAD_ROOT . PFAD_TEMPLATES . $template . PFAD_OVERLAY_TEMPLATE . 'original';
+        $dir = \PFAD_ROOT . \PFAD_TEMPLATES . $template . \PFAD_OVERLAY_TEMPLATE . 'original';
         if (!\is_dir($dir)) {
             return false;
         }
-        $overlayInFolder = \scandir($dir, 1);
-        $db              = Shop::Container()->getDB();
-
-        foreach ($overlayInFolder as $overlay) {
+        foreach (\scandir($dir, \SORT_NUMERIC) as $overlay) {
             $overlayParts = \explode('_', $overlay);
             if (\count($overlayParts) === 3 && $overlayParts[0] === 'overlay') {
                 $filePath = $dir . '/' . $overlay;
@@ -43,8 +55,8 @@ class Overlay
                 if ($lang === 0 || $type === 0) {
                     continue;
                 }
-                $defaultOverlay = $db->queryPrepared("
-                    SELECT *
+                $defaultOverlay = $this->db->queryPrepared(
+                    "SELECT *
                       FROM tsuchspecialoverlaysprache
                       WHERE kSprache = :lang
                         AND kSuchspecialOverlay = :type
@@ -58,7 +70,7 @@ class Overlay
                     ],
                     ReturnType::SINGLE_OBJECT
                 );
-                //use default settings for new overlays
+                // use default settings for new overlays
                 if (!empty($defaultOverlay) && $defaultOverlay->cTemplate !== $template) {
                     speicherEinstellung(
                         $type,

@@ -20,7 +20,7 @@ class SearchSpecial
 {
     /**
      * @param int $langID
-     * @return array|mixed
+     * @return \Overlay[]
      * @former holeAlleSuchspecialOverlays()
      * @since 5.0.0
      */
@@ -30,8 +30,8 @@ class SearchSpecial
         $cacheID = 'haso_' . $langID;
         if (($overlays = Shop::Container()->getCache()->get($cacheID)) === false) {
             $overlays                  = [];
-            $searchspecialOverlayTypes = Shop::Container()->getDB()->query('
-                SELECT kSuchspecialOverlay
+            $searchspecialOverlayTypes = Shop::Container()->getDB()->query(
+                'SELECT kSuchspecialOverlay
                     FROM tsuchspecialoverlay',
                 ReturnType::ARRAY_OF_OBJECTS
             );
@@ -41,7 +41,7 @@ class SearchSpecial
                     $overlays[] = $overlay;
                 }
             }
-            $overlays = \Functional\sort($overlays, function($left, $right) {
+            $overlays = \Functional\sort($overlays, function (\Overlay $left, \Overlay $right) {
                 return $left->getPriority() > $right->getPriority();
             });
             Shop::Container()->getCache()->set($cacheID, $overlays, [\CACHING_GROUP_OPTION]);

@@ -38,18 +38,18 @@ if (Request::verifyGPCDataInt('suchspecialoverlay') === 1) {
 } else {
     $smarty->assign('oSuchspecialOverlay', gibSuchspecialOverlay(1));
 }
-$searchSpecialOverlays = gibAlleSuchspecialOverlays();
-$maxFileSize           = getMaxFileSize(ini_get('upload_max_filesize'));
-$template              = Template::getInstance();
+$overlays    = gibAlleSuchspecialOverlays();
+$maxFileSize = getMaxFileSize(ini_get('upload_max_filesize'));
+$template    = Template::getInstance();
 if ($template->name === 'Evo' && $template->author === 'JTL-Software-GmbH' && (int)$template->version >= 4) {
-    $smarty->assign('isDeprecated', true);
+    $smarty->assign('isDeprecated', false);
 }
 
 $smarty->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('cRnd', time())
        ->assign('nMaxFileSize', $maxFileSize)
-       ->assign('oSuchspecialOverlay_arr', $searchSpecialOverlays)
-       ->assign('nSuchspecialOverlayAnzahl', count($searchSpecialOverlays) + 1)
+       ->assign('oSuchspecialOverlay_arr', $overlays)
+       ->assign('nSuchspecialOverlayAnzahl', count($overlays) + 1)
        ->assign('PFAD_SUCHSPECIALOVERLAY', PFAD_SUCHSPECIALOVERLAY_NORMAL)
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)

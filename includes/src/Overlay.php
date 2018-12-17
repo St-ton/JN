@@ -87,6 +87,7 @@ class Overlay
     private $urlSizes;
 
     public const IMAGENAME_TEMPLATE = 'overlay';
+
     public const IMAGE_DEFAULT      = [
         'name'      => 'std_kSuchspecialOverlay',
         'extension' => '.png'
@@ -105,7 +106,7 @@ class Overlay
         $this->setType($type)
              ->setLanguage($language)
              ->setTemplateName($template)
-             ->setPath(PFAD_TEMPLATES . $this->getTemplateName() . PFAD_OVERLAY_TEMPLATE)
+             ->setPath(PFAD_TEMPLATES . $this->getTemplateName() . \PFAD_OVERLAY_TEMPLATE)
              ->setPathSizes();
     }
 
@@ -116,8 +117,12 @@ class Overlay
      * @param bool|null $setFallbackPath
      * @return Overlay
      */
-    public static function getInstance(int $type, int $language, string $template = null, bool $setFallbackPath = true): self
-    {
+    public static function getInstance(
+        int $type,
+        int $language,
+        string $template = null,
+        bool $setFallbackPath = true
+    ): self {
         return self::$instance ?? (new self($type, $language, $template))->loadFromDB($setFallbackPath);
     }
 
@@ -128,12 +133,8 @@ class Overlay
     public function loadFromDB(bool $setFallbackPath): self
     {
         $overlay = $this->getDataForLanguage($this->getLanguage());
-
-        //get overlay data for fallback language
-        if (empty($overlay)) {
-            $overlay = $this->getDataForLanguage(Sprache::getDefaultLanguage()->kSprache);
-        }
-
+        // get overlay data for fallback language
+        $overlay = $overlay ?? $this->getDataForLanguage(Sprache::getDefaultLanguage()->kSprache);
         if (!empty($overlay)) {
             $this->setActive($overlay->nAktiv)
                  ->setMargin($overlay->nMargin)
@@ -145,7 +146,7 @@ class Overlay
                  ->setName($overlay->cSuchspecial);
 
             if ($setFallbackPath) {
-                $this->setFallbackPath($overlay);
+                $this->setFallbackPath($overlay->cTemplate);
             }
             $this->setURLSizes();
         }
@@ -155,12 +156,12 @@ class Overlay
 
     /**
      * @param int $language
-     * @return array|int|object
+     * @return stdClass|null
      */
-    private function getDataForLanguage(int $language)
+    private function getDataForLanguage(int $language): ?stdClass
     {
-        return Shop::Container()->getDB()->queryPrepared('
-            SELECT ssos.*, sso.cSuchspecial
+        $overlay = Shop::Container()->getDB()->queryPrepared(
+            'SELECT ssos.*, sso.cSuchspecial
               FROM tsuchspecialoverlaysprache ssos
               LEFT JOIN tsuchspecialoverlay sso
                 ON ssos.kSuchspecialOverlay = sso.kSuchspecialOverlay
@@ -177,24 +178,27 @@ class Overlay
             ],
             ReturnType::SINGLE_OBJECT
         );
+
+        return $overlay === false ? null : $overlay;
     }
 
     /**
-     * @param $overlay
+     * @param string $templateName
      */
-    private function setFallbackPath($overlay): void
+    private function setFallbackPath(string $templateName): void
     {
-        if ($overlay->cTemplate === self::DEFAULT_TEMPLATE
+        if ($templateName === self::DEFAULT_TEMPLATE
             || !\file_exists(PFAD_ROOT . $this->getPathSize('normal') . $this->getImageName())
         ) {
-            $defaultImageName                = self::IMAGE_DEFAULT['name'] . '_' . $this->getLanguage() . '_'
+            $defaultImgName = self::IMAGE_DEFAULT['name'] . '_' . $this->getLanguage() . '_'
                 . $this->getType() . self::IMAGE_DEFAULT['extension'];
-            $defaultImageNameDefaultLanguage = self::IMAGE_DEFAULT['name'] . '_' . Sprache::getDefaultLanguage()->kSprache
-                . '_' . $this->getType() . self::IMAGE_DEFAULT['extension'];
+            $imgName        = self::IMAGE_DEFAULT['name'] . '_' .
+                Sprache::getDefaultLanguage()->kSprache . '_' .
+                $this->getType() . self::IMAGE_DEFAULT['extension'];
 
-            if (\file_exists(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_NORMAL . $defaultImageName)) {
-                //default fallback path
-                $fallbackImageName = $defaultImageName;
+            if (\file_exists(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_NORMAL . $defaultImgName)) {
+                // default fallback path
+                $fallbackImageName = $defaultImgName;
                 $fallbackImagePath = PFAD_SUCHSPECIALOVERLAY;
             } else {
                 $overlayDefaultLanguage = $this->getDataForLanguage(Sprache::getDefaultLanguage()->kSprache);
@@ -202,11 +206,11 @@ class Overlay
                     if ($overlayDefaultLanguage->cTemplate !== self::DEFAULT_TEMPLATE
                         && \file_exists(PFAD_ROOT . $this->getPathSize('normal') . $overlayDefaultLanguage->cBildPfad)
                     ) {
-                        //fallback path for default language
+                        // fallback path for default language
                         $fallbackImageName = $overlayDefaultLanguage->cBildPfad;
-                    } elseif (\file_exists(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_NORMAL . $defaultImageNameDefaultLanguage)) {
+                    } elseif (\file_exists(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_NORMAL . $imgName)) {
                         //default fallback path for default language
-                        $fallbackImageName = $defaultImageNameDefaultLanguage;
+                        $fallbackImageName = $imgName;
                         $fallbackImagePath = PFAD_SUCHSPECIALOVERLAY;
                     }
                 }
@@ -233,13 +237,13 @@ class Overlay
             'nPrio'        => $this->getPriority(),
             'nTransparenz' => $this->getTransparance(),
             'nGroesse'     => $this->getSize(),
-            'nPosition'    => 1,
+            'nPosition'    => $this->getPosition(),
             'cBildPfad'    => $this->getImageName(),
             'nMargin'      => 5
         ];
 
-        $check = $db->queryPrepared('
-            SELECT * FROM tsuchspecialoverlaysprache
+        $check = $db->queryPrepared(
+            'SELECT * FROM tsuchspecialoverlaysprache
               WHERE kSprache = :languageID
                 AND kSuchspecialOverlay = :overlayID
                 AND cTemplate = :templateName',

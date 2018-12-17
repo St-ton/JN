@@ -4441,11 +4441,11 @@ class Artikel
      */
     public function baueSuchspecialBildoverlay(int $kSprache = 0): self
     {
-        $languageID        = $kSprache > 0 ? $kSprache : Shop::getLanguageID();
-        $searchSpecial_arr = SearchSpecial::getAll($languageID);
+        $languageID    = $kSprache > 0 ? $kSprache : Shop::getLanguageID();
+        $searchSpecias = SearchSpecial::getAll($languageID);
         // Suchspecialbildoverlay
         // Kleinste Prio und somit die Wichtigste, steht immer im Element 0 vom Array (nPrio ASC)
-        if (!empty($searchSpecial_arr)) {
+        if (!empty($searchSpecias)) {
             $bSuchspecial_arr = [
                 SEARCHSPECIALS_BESTSELLER       => $this->istBestseller(),
                 SEARCHSPECIALS_SPECIALOFFERS    => $this->Preise !== null && $this->Preise->Sonderpreis_aktiv === 1,
@@ -4516,7 +4516,7 @@ class Artikel
             }
             $this->bSuchspecial_arr = $bSuchspecial_arr;
             // SuchspecialBild anhand der höchsten Prio und des gesetzten Suchspecials festlegen
-            foreach ($searchSpecial_arr as $overlay) {
+            foreach ($searchSpecias as $overlay) {
                 if (empty($this->bSuchspecial_arr[$overlay->getType()])) {
                     continue;
                 }

@@ -127,31 +127,31 @@
                             </span>
                             <span class="input-group-wrap">
                                 <select name="nPosition" id="nPosition" class="combo form-control"{if !empty($isDeprecated)} disabled="disabled"{/if}>
-                                    <option value="1"{if $oSuchspecialOverlay->getPosition() === '1'} selected{/if}>
+                                    <option value="1"{if $oSuchspecialOverlay->getPosition() === 1} selected{/if}>
                                         oben-links
                                     </option>
-                                    <option value="2"{if $oSuchspecialOverlay->getPosition() === '2'} selected{/if}>
+                                    <option value="2"{if $oSuchspecialOverlay->getPosition() === 2} selected{/if}>
                                         oben
                                     </option>
-                                    <option value="3"{if $oSuchspecialOverlay->getPosition() === '3'} selected{/if}>
+                                    <option value="3"{if $oSuchspecialOverlay->getPosition() === 3} selected{/if}>
                                         oben-rechts
                                     </option>
-                                    <option value="4"{if $oSuchspecialOverlay->getPosition() === '4'} selected{/if}>
+                                    <option value="4"{if $oSuchspecialOverlay->getPosition() === 4} selected{/if}>
                                         rechts
                                     </option>
-                                    <option value="5"{if $oSuchspecialOverlay->getPosition() === '5'} selected{/if}>
+                                    <option value="5"{if $oSuchspecialOverlay->getPosition() === 5} selected{/if}>
                                         unten-rechts
                                     </option>
-                                    <option value="6"{if $oSuchspecialOverlay->getPosition() === '6'} selected{/if}>
+                                    <option value="6"{if $oSuchspecialOverlay->getPosition() === 6} selected{/if}>
                                         unten
                                     </option>
-                                    <option value="7"{if $oSuchspecialOverlay->getPosition() === '7'} selected{/if}>
+                                    <option value="7"{if $oSuchspecialOverlay->getPosition() === 7} selected{/if}>
                                         unten-links
                                     </option>
-                                    <option value="8"{if $oSuchspecialOverlay->getPosition() === '8'} selected{/if}>
+                                    <option value="8"{if $oSuchspecialOverlay->getPosition() === 8} selected{/if}>
                                         links
                                     </option>
-                                    <option value="9"{if $oSuchspecialOverlay->getPosition() === '9'} selected{/if}>
+                                    <option value="9"{if $oSuchspecialOverlay->getPosition() === 9} selected{/if}>
                                         zentriert
                                     </option>
                                 </select>

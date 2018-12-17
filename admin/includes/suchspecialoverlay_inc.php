@@ -5,13 +5,13 @@
  */
 
 /**
- * @return mixed
+ * @return array
  */
 function gibAlleSuchspecialOverlays()
 {
     $overlays                  = [];
-    $searchspecialOverlayTypes = Shop::Container()->getDB()->query('
-        SELECT kSuchspecialOverlay
+    $searchspecialOverlayTypes = Shop::Container()->getDB()->query(
+        'SELECT kSuchspecialOverlay
             FROM tsuchspecialoverlay',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
@@ -48,25 +48,25 @@ function speicherEinstellung(
 ): bool {
     $overlay = Overlay::getInstance($kSuchspecialOverlay, $lang ?? (int)$_SESSION['kSprache'], $template, false);
 
-    if ($overlay->getType() > 0) {
-        $overlay->setActive((int)$cPost_arr['nAktiv'])
-                ->setTransparence((int)$cPost_arr['nTransparenz'])
-                ->setSize((int)$cPost_arr['nGroesse'])
-                ->setPosition(isset($cPost_arr['nPosition']) ? (int)$cPost_arr['nPosition'] : 0)
-                ->setPriority((int)$cPost_arr['nPrio']);
-
-        if (strlen($cFiles_arr['name']) > 0) {
-            loescheBild($overlay);
-            $overlay->setImageName(Overlay::IMAGENAME_TEMPLATE . '_' . $overlay->getLanguage() . '_' . $overlay->getType()
-                    . mappeFileTyp($cFiles_arr['type']));
-            speicherBild($cFiles_arr, $overlay);
-        }
-        $overlay->save();
-
-        return true;
+    if ($overlay->getType() <= 0) {
+        return false;
     }
+    $overlay->setActive((int)$cPost_arr['nAktiv'])
+            ->setTransparence((int)$cPost_arr['nTransparenz'])
+            ->setSize((int)$cPost_arr['nGroesse'])
+            ->setPosition((int)($cPost_arr['nPosition'] ?? 0))
+            ->setPriority((int)$cPost_arr['nPrio']);
 
-    return false;
+    if (strlen($cFiles_arr['name']) > 0) {
+        loescheBild($overlay);
+        $overlay->setImageName(Overlay::IMAGENAME_TEMPLATE . '_' .
+            $overlay->getLanguage() . '_' . $overlay->getType()
+                . mappeFileTyp($cFiles_arr['type']));
+        speicherBild($cFiles_arr, $overlay);
+    }
+    $overlay->save();
+
+    return true;
 }
 
 /**
@@ -95,19 +95,19 @@ function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, 
 
     $minalpha = 0;
 
-    //loop through image pixels and modify alpha for each
+    // loop through image pixels and modify alpha for each
     for ($x = 0; $x < $w; $x++) {
         for ($y = 0; $y < $h; $y++) {
-            //get current alpha value (represents the TANSPARENCY!)
+            // get current alpha value (represents the TANSPARENCY!)
             $colorxy = imagecolorat($src_im, $x, $y);
             $alpha   = ($colorxy >> 24) & 0xFF;
-            //calculate new alpha
+            // calculate new alpha
             if ($minalpha !== 127) {
                 $alpha = 127 + 127 * $pct * ($alpha - 127) / (127 - $minalpha);
             } else {
                 $alpha += 127 * $pct;
             }
-            //get the color index with new alpha
+            // get the color index with new alpha
             $alphacolorxy = imagecolorallocatealpha(
                 $src_im,
                 ($colorxy >> 16) & 0xFF,
@@ -115,7 +115,7 @@ function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, 
                 $colorxy & 0xFF,
                 $alpha
             );
-            //set pixel with the new color + opacity
+            // set pixel with the new color + opacity
             if (!imagesetpixel($src_im, $x, $y, $alphacolorxy)) {
                 return false;
             }

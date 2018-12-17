@@ -25,9 +25,10 @@
                             {block name='breadcrumb-last-item'}
                                 {if $oItem->getName() !== null}
                                     <li class="breadcrumb-item last" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
-                                        <span itemprop="name">
-                                            <a href="{$oItem->getURLFull()}" title="{$oItem->getName()|escape:'html'}">{$oItem->getName()}</a>
-                                        </span>
+                                        <a itemprop="item" href="{$oItem->getURLFull()}" title="{$oItem->getName()|escape:'html'}">
+                                            <span itemprop="name">{$oItem->getName()}</span>
+                                        </a>
+                                        <meta itemprop="url" content="{$oItem->getURLFull()}" />
                                         <meta itemprop="position" content="{$oItem@iteration}" />
                                     </li>
                                 {elseif !empty($Suchergebnisse->getSearchTermWrite())}

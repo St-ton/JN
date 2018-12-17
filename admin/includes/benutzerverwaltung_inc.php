@@ -170,7 +170,7 @@ function benutzerverwaltungSaveAttributes(stdClass $oAccount, array $extAttribs,
             } else {
                 $shortText = StringHandler::filterXSS($value);
             }
-            if (!$db->queryPrepared(
+            if ($db->queryPrepared(
                 'INSERT INTO tadminloginattribut (kAdminlogin, cName, cAttribValue, cAttribText)
                     VALUES (:loginID, :loginName, :attribVal, :attribText)
                     ON DUPLICATE KEY UPDATE
@@ -182,8 +182,8 @@ function benutzerverwaltungSaveAttributes(stdClass $oAccount, array $extAttribs,
                     'attribVal'  => $shortText,
                     'attribText' => $longText ?? 'NULL'
                 ],
-                \DB\ReturnType::AFFECTED_ROWS
-            )) {
+                \DB\ReturnType::DEFAULT
+            ) === 0) {
                 $messages['error'] .= $key . ' konnte nicht geändert werden!';
             }
             $handledKeys[] = $key;

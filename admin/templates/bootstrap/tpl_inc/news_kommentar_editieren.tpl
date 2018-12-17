@@ -11,7 +11,7 @@
             <input name="nFZ" type="hidden" value="1">
         {/if}
         {if isset($cSeite)}
-            <input type="hidden" name="{if isset($cTab) && $cTab == 'aktiv'}s2{else}s1{/if}" value="{$cSeite}" />
+            <input type="hidden" name="{if isset($cTab) && $cTab === 'aktiv'}s2{else}s1{/if}" value="{$cSeite}" />
         {/if}
         <input type="hidden" name="kNews" value="{$oNewsKommentar->getNewsID()}" />
         <input type="hidden" name="kNewsKommentar" value="{$oNewsKommentar->getID()}" />
@@ -22,8 +22,13 @@
             <div class="table-responsive">
                 <table class="list table" id="formtable">
                     <tr>
-                        <td><label for="cName">{__('newsHeadline')}</label></td>
-                        <td><input id="cName" name="cName" class="form-control" type="text" value="{$oNewsKommentar->getName()}" /></td>
+                        <td><label for="cName">{__('newsUser')}</label></td>
+                        <td>
+                            <input id="cName" name="cName" class="form-control" type="text" value="{$oNewsKommentar->getName()}" />
+                            {if $oNewsKommentar->getCustomerID() === 0}
+                                &nbsp;({$oNewsKommentar->getMail()})
+                            {/if}
+                        </td>
                     </tr>
                     <tr>
                         <td><label for="cKommentar">{__('newsText')}</label></td>

@@ -75,19 +75,7 @@
                             <p itemprop="comment">
                                 {$oNewsKommentar->getText()}
                             </p>
-                            <small>
-                                {*{if !empty($oNewsKommentar->cVorname)}*}
-                                    {*{$oNewsKommentar->cVorname} {$oNewsKommentar->cNachname|truncate:1:''}.,*}
-                                {*{else}*}
-                                    {$oNewsKommentar->getName()},
-                                {*{/if}*}
-                                {*{if $smarty.session.cISOSprache === 'ger'}*}
-                                    {*{$oNewsKommentar->dErstellt_de}*}
-                                {*{else}*}
-                                    {*{$oNewsKommentar->dErstellt}*}
-                                {*{/if}*}
-                                {$oNewsKommentar->getDateCreated()->format('d.m.y H:i')}
-                            </small>
+                            <small>{$oNewsKommentar->getName()}, {$oNewsKommentar->getDateCreated()->format('d.m.y H:i')}</small>
                         </blockquote>
                     {/foreach}
                 </div>

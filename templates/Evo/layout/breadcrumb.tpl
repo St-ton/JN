@@ -23,7 +23,6 @@
                             {/block}
                         {elseif $oItem@last}
                             {block name='breadcrumb-last-item'}
-                                {$oItem|@var_dump}
                                 {if $oItem->getName() !== null}
                                     <li class="breadcrumb-item last" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
                                         <span itemprop="name">

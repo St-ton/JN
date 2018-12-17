@@ -42,12 +42,9 @@ class SessionStorage
     public function setHandler(\SessionHandlerInterface $handler, bool $start = true): self
     {
         $this->handler = $handler;
-        if (\get_class($this->handler) === SessionHandlerJTL::class) {
-            // native php session handler
-            $res = true;
-        } else {
-            $res = session_set_save_handler($this->handler, true);
-        }
+        $res = \get_class($this->handler) === SessionHandlerJTL::class
+            ? true
+            : session_set_save_handler($this->handler, true);
         if ($res !== true) {
             throw new \RuntimeException('Failed to set session handler');
         }

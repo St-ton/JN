@@ -18,12 +18,10 @@ require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 /** @global Smarty\JTLSmarty $smarty */
 setzeSprache();
 
-$cHinweis = '';
-$cFehler  = '';
-$step     = 'freischalten_uebersicht';
-
-$Einstellungen = Shop::getSettings([CONF_BEWERTUNG]);
-
+$cHinweis              = '';
+$cFehler               = '';
+$step                  = 'freischalten_uebersicht';
+$Einstellungen         = Shop::getSettings([CONF_BEWERTUNG]);
 $ratingsSQL            = new stdClass();
 $liveSearchSQL         = new stdClass();
 $tagsSQL               = new stdClass();

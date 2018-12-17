@@ -7,6 +7,9 @@
 namespace Session;
 
 use DB\ReturnType;
+use Helpers\Manufacturer;
+use Helpers\Request;
+use Helpers\Tax;
 use Link\LinkGroupCollection;
 use Session\Handler\SessionHandlerBot;
 use Session\Handler\SessionHandlerDB;
@@ -338,10 +341,10 @@ class Session
         }
         if (\Shop::Container()->getCache()->isCacheGroupActive(\CACHING_GROUP_CORE) === false) {
             $_SESSION['Linkgruppen'] = \Shop::Container()->getLinkService()->getLinkGroups();
-            $_SESSION['Hersteller']  = \Helpers\Manufacturer::getInstance()->getManufacturers();
+            $_SESSION['Hersteller']  = Manufacturer::getInstance()->getManufacturers();
         }
         self::getCart()->loescheDeaktiviertePositionen();
-        \Helpers\Tax::setTaxRates();
+        Tax::setTaxRates();
         \Shop::Lang()->reset();
     }
 
@@ -350,7 +353,7 @@ class Session
      */
     private function checkWishlistDeletes(): self
     {
-        $index = \Helpers\Request::verifyGPCDataInt('wlplo');
+        $index = Request::verifyGPCDataInt('wlplo');
         if ($index !== 0) {
             $wl = new \Wunschliste();
             $wl->entfernePos($index);
@@ -364,7 +367,7 @@ class Session
      */
     private function checkComparelistDeletes(): self
     {
-        $kVergleichlistePos = \Helpers\Request::verifyGPCDataInt('vlplo');
+        $kVergleichlistePos = Request::verifyGPCDataInt('vlplo');
         if ($kVergleichlistePos !== 0
             && isset($_SESSION['Vergleichsliste']->oArtikel_arr)
             && \is_array($_SESSION['Vergleichsliste']->oArtikel_arr)
@@ -495,7 +498,7 @@ class Session
                                  ->setMayViewPrices(1)
                                  ->initAttributes();
         self::getCart()->setzePositionsPreise();
-        \Helpers\Tax::setTaxRates();
+        Tax::setTaxRates();
         self::setSpecialLinks();
 
         return $this;
@@ -737,19 +740,19 @@ class Session
                 $_SESSION['currentLanguage'] = clone $lang;
                 unset($_SESSION['currentLanguage']->cURL);
             } else {
-                $kArtikel              = \Helpers\Request::verifyGPCDataInt('a');
-                $kKategorie            = \Helpers\Request::verifyGPCDataInt('k');
-                $kSeite                = \Helpers\Request::verifyGPCDataInt('s');
-                $kVariKindArtikel      = \Helpers\Request::verifyGPCDataInt('a2');
-                $kHersteller           = \Helpers\Request::verifyGPCDataInt('h');
-                $kSuchanfrage          = \Helpers\Request::verifyGPCDataInt('l');
-                $kMerkmalWert          = \Helpers\Request::verifyGPCDataInt('m');
-                $kTag                  = \Helpers\Request::verifyGPCDataInt('t');
-                $kSuchspecial          = \Helpers\Request::verifyGPCDataInt('q');
-                $kNews                 = \Helpers\Request::verifyGPCDataInt('n');
-                $kNewsMonatsUebersicht = \Helpers\Request::verifyGPCDataInt('nm');
-                $kNewsKategorie        = \Helpers\Request::verifyGPCDataInt('nk');
-                $kUmfrage              = \Helpers\Request::verifyGPCDataInt('u');
+                $kArtikel              = Request::verifyGPCDataInt('a');
+                $kKategorie            = Request::verifyGPCDataInt('k');
+                $kSeite                = Request::verifyGPCDataInt('s');
+                $kVariKindArtikel      = Request::verifyGPCDataInt('a2');
+                $kHersteller           = Request::verifyGPCDataInt('h');
+                $kSuchanfrage          = Request::verifyGPCDataInt('l');
+                $kMerkmalWert          = Request::verifyGPCDataInt('m');
+                $kTag                  = Request::verifyGPCDataInt('t');
+                $kSuchspecial          = Request::verifyGPCDataInt('q');
+                $kNews                 = Request::verifyGPCDataInt('n');
+                $kNewsMonatsUebersicht = Request::verifyGPCDataInt('nm');
+                $kNewsKategorie        = Request::verifyGPCDataInt('nk');
+                $kUmfrage              = Request::verifyGPCDataInt('u');
                 $seo                   = '';
                 \http_response_code(301);
                 if ($kArtikel > 0) {
@@ -901,7 +904,7 @@ class Session
             }
         }
 
-        $currencyCode = \Helpers\Request::verifyGPDataString('curr');
+        $currencyCode = Request::verifyGPDataString('curr');
         if ($currencyCode) {
             $cart     = self::getCart();
             $currency = \Functional\first(self::getCurrencies(), function (\Currency $c) use ($currencyCode) {

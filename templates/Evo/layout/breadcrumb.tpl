@@ -8,12 +8,12 @@
     <div class="breadcrumb-wrapper hidden-xs">
         <div class="row">
             <div class="col-xs-12">
-                <ul id="breadcrumb" class="breadcrumb" itemprop="breadcrumb" itemscope itemtype="http://schema.org/BreadcrumbList">
+                <ol id="breadcrumb" class="breadcrumb" itemprop="breadcrumb" itemscope itemtype="http://schema.org/BreadcrumbList">
                     {foreach $Brotnavi as $oItem}
                         {if $oItem@first}
                             {block name='breadcrumb-first-item'}
                                 <li class="breadcrumb-item first" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
-                                    <a itemprop="item" href="{$oItem->getURLFull()}" title="{$oItem->getName()|escape:'html'}">
+                                    <a itemprop="item" itemscope itemtype="http://schema.org/Thing" href="{$oItem->getURLFull()}" title="{$oItem->getName()|escape:'html'}">
                                         <span class="fa fa-home"></span>
                                         <span itemprop="name" class="hidden">{$oItem->getName()|escape:'html'}</span>
                                     </a>
@@ -41,7 +41,7 @@
                         {else}
                             {block name='breadcrumb-item'}
                                 <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
-                                    <a itemprop="item" href="{$oItem->getURLFull()}" title="{$oItem->getName()|escape:'html'}">
+                                    <a itemprop="item" itemscope itemtype="http://schema.org/Thing" href="{$oItem->getURLFull()}" title="{$oItem->getName()|escape:'html'}">
                                         <span itemprop="name">{$oItem->getName()}</span>
                                     </a>
                                     <meta itemprop="url" content="{$oItem->getURLFull()}" />
@@ -50,7 +50,7 @@
                             {/block}
                         {/if}
                     {/foreach}
-                </ul>
+                </ol>
             </div>
         </div>
     </div>

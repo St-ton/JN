@@ -2041,7 +2041,7 @@ function json_safe_encode($data)
  */
 function checkeSpracheWaehrung($langISO = '')
 {
-    trigger_error(__FUNCTION__ . ' is deprecated. Use Session::checkReset() instead.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated. Use \Session\Frontend::checkReset() instead.', E_USER_DEPRECATED);
     Session\Frontend::checkReset($langISO);
 }
 /**
@@ -2075,7 +2075,10 @@ function landISO($cLand)
  */
 function setzeLinks()
 {
-    trigger_error(__FUNCTION__ . ' is deprecated. Use Session::setSpecialLinks() instead.', E_USER_DEPRECATED);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use \Session\Frontend::setSpecialLinks() instead.',
+        E_USER_DEPRECATED
+    );
     return Session\Frontend::setSpecialLinks();
 }
 /**

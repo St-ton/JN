@@ -48,7 +48,7 @@ class Config implements ConfigInterface
         $config->setLanguageID(\Shop::getLanguageID());
         $config->setLanguages(\Sprache::getInstance()->getLangArray());
         $config->setConfig(\Shopsetting::getInstance()->getAll());
-        $config->setCustomerGroupID(\Session::getCustomerGroup()->getID());
+        $config->setCustomerGroupID(Frontend::getCustomerGroup()->getID());
         $config->setBaseURL(\Shop::getURL() . '/');
 
         return $config;

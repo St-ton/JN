@@ -624,7 +624,7 @@ class Warenkorb
         $pos->cHinweis = $hinweis;
         $nOffset       = array_push($this->PositionenArr, $pos);
         $pos           = $this->PositionenArr[$nOffset - 1];
-        foreach (Session::getCurrencies() as $currency) {
+        foreach (\Session\Frontend::getCurrencies() as $currency) {
             $currencyName = $currency->getName();
             // Standardartikel
             $pos->cGesamtpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
@@ -1623,7 +1623,7 @@ class Warenkorb
     {
         $cumulatedDelta    = 0;
         $cumulatedDeltaNet = 0;
-        foreach (Session::getCurrencies() as $currency) {
+        foreach (\Session\Frontend::getCurrencies() as $currency) {
             $currencyName = $currency->getName();
             foreach ($this->PositionenArr as $i => $position) {
                 $grossAmount        = Tax::getGross(

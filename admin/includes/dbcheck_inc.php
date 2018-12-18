@@ -24,8 +24,8 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
         if (Shop::Container()->getCache()->isActive()) {
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE . '_getDBStruct']);
         } else {
-            AdminSession::set('getDBStruct_extended', false);
-            AdminSession::set('getDBStruct_normal', false);
+            \Session\Backend::set('getDBStruct_extended', false);
+            \Session\Backend::set('getDBStruct_normal', false);
         }
         $dbStruct['extended'] = null;
         $dbStruct['normal']   = null;
@@ -36,7 +36,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
         if ($dbStruct['extended'] === null) {
             $dbStruct['extended'] = Shop::Container()->getCache()->isActive()
                 ? Shop::Container()->getCache()->get($cacheID)
-                : AdminSession::get($cacheID, false);
+                : \Session\Backend::get($cacheID, false);
         }
         $cDBStruct_arr =& $dbStruct['extended'];
 
@@ -60,7 +60,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
         if ($dbStruct['normal'] === null) {
             $dbStruct['normal'] = Shop::Container()->getCache()->isActive()
                 ? Shop::Container()->getCache()->get($cacheID)
-                : AdminSession::get($cacheID);
+                : \Session\Backend::get($cacheID);
         }
         $cDBStruct_arr =& $dbStruct['normal'];
     }
@@ -134,7 +134,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                 [CACHING_GROUP_CORE, CACHING_GROUP_CORE . '_getDBStruct']
             );
         } else {
-            AdminSession::set($cacheID, $cDBStruct_arr);
+            \Session\Backend::set($cacheID, $cDBStruct_arr);
         }
     } elseif ($extended) {
         foreach (array_keys($cDBStruct_arr) as $cTable) {

@@ -1155,7 +1155,7 @@ class IOMethods
 
         if (strlen($country) === 2) {
             $deliveryCountries = ShippingMethod::getPossibleShippingCountries(
-                Session::getCustomerGroup()->getID(),
+                \Session\Frontend::getCustomerGroup()->getID(),
                 false,
                 false,
                 [$country]

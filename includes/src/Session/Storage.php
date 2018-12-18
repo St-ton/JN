@@ -18,26 +18,6 @@ use Session\Handler\JTLHandlerInterface;
 class Storage
 {
     /**
-     * handle bot like normal visitor
-     */
-    public const SAVE_BOT_SESSIONS_NORMAL = 0;
-
-    /**
-     * use single session ID for all bot visits
-     */
-    public const SAVE_BOT_SESSIONS_COMBINED = 1;
-
-    /**
-     * save combined bot session to cache
-     */
-    public const SAVE_BOT_SESSIONS_CACHE = 2;
-
-    /**
-     * never save bot sessions
-     */
-    public const SAVE_BOT_SESSIONS_NEVER = 3;
-
-    /**
      * @var \SessionHandlerInterface
      */
     protected $handler;
@@ -77,33 +57,43 @@ class Storage
      */
     private function initHandler(): JTLHandlerInterface
     {
-        $bot = \SAVE_BOT_SESSION !== 0 && isset($_SERVER['HTTP_USER_AGENT'])
+        $bot           = \SAVE_BOT_SESSION !== 0 && isset($_SERVER['HTTP_USER_AGENT'])
             ? self::getIsCrawler($_SERVER['HTTP_USER_AGENT'])
             : false;
-        if ($bot === false || \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NORMAL) {
-            $this->handler = \ES_SESSIONS === 1
-                ? new DB(\Shop::Container()->getDB())
-                : new JTLDefault();
-        } else {
-            if (\SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_COMBINED
-                || \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
-            ) {
-                \session_id('jtl-bot');
-            }
-            if (\SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
-                || \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NEVER
-            ) {
-                $save = \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
-                    && \Shop::Container()->getCache()->isAvailable()
-                    && \Shop::Container()->getCache()->isActive();
-
-                $this->handler = new Bot($save);
-            } else {
-                $this->handler = new JTLDefault();
-            }
-        }
+        $this->handler = $bot === false || \SAVE_BOT_SESSION === Behaviour::DEFAULT
+            ? $this->initDefaultHandler()
+            : $this->initBotHandler();
 
         return $this->handler;
+    }
+
+    /**
+     * @return JTLHandlerInterface
+     */
+    private function initDefaultHandler(): JTLHandlerInterface
+    {
+        return \ES_SESSIONS === 1
+            ? new DB(\Shop::Container()->getDB())
+            : new JTLDefault();
+    }
+
+    /**
+     * @return JTLHandlerInterface
+     */
+    private function initBotHandler(): JTLHandlerInterface
+    {
+        if (\SAVE_BOT_SESSION === Behaviour::COMBINE || \SAVE_BOT_SESSION === Behaviour::CACHE) {
+            \session_id('jtl-bot');
+        }
+        if (\SAVE_BOT_SESSION === Behaviour::CACHE || \SAVE_BOT_SESSION === Behaviour::NO_SAVE) {
+            $save = \SAVE_BOT_SESSION === Behaviour::CACHE
+                && \Shop::Container()->getCache()->isAvailable()
+                && \Shop::Container()->getCache()->isActive();
+
+            return new Bot($save);
+        }
+
+        return new JTLDefault();
     }
 
     /**

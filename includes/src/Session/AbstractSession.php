@@ -117,4 +117,24 @@ abstract class AbstractSession
 
         return $domain;
     }
+
+    /**
+     * @param string     $key
+     * @param null|mixed $default
+     * @return mixed
+     */
+    public static function get($key, $default = null)
+    {
+        return self::$handler->get($key, $default);
+    }
+
+    /**
+     * @param string $key
+     * @param mixed  $value
+     * @return mixed
+     */
+    public static function set($key, $value)
+    {
+        return self::$handler->set($key, $value);
+    }
 }

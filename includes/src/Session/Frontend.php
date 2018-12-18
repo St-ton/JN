@@ -55,26 +55,6 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @param string     $key
-     * @param null|mixed $default
-     * @return mixed
-     */
-    public static function get($key, $default = null)
-    {
-        return self::$handler->get($key, $default);
-    }
-
-    /**
-     * @param string $key
-     * @param mixed  $value
-     * @return mixed
-     */
-    public static function set($key, $value)
-    {
-        return self::$handler->set($key, $value);
-    }
-
-    /**
      * setzt Sessionvariablen beim ersten Sessionaufbau oder wenn globale Daten aktualisiert werden müssen
      *
      * @return $this

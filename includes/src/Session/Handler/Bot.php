@@ -53,7 +53,8 @@ class Bot extends JTLDefault
 
     /**
      * @param string $sessID
-     * @return string
+     * @return mixed|string
+     * @throws \Exception
      */
     public function read($sessID)
     {

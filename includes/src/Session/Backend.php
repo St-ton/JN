@@ -6,41 +6,24 @@
 
 namespace Session;
 
-use Session\Handler\DB;
-use Session\Handler\JTLDefault;
-
 /**
- * Class AdminSession
+ * Class Backend
  * @package Session
  */
-class Backend
+class Backend extends AbstractSession
 {
     public const DEFAULT_SESSION = 'eSIdAdm';
 
     public const SESSION_HASH_KEY = 'session.hash';
 
     /**
-     * @var int
-     */
-    public $lifeTime;
-
-    /**
-     * @var \SessionHandlerInterface
-     */
-    private static $handler;
-
-    /**
-     * @var Storage
-     */
-    private static $storage;
-
-    /**
      * @var Backend
      */
-    private static $instance;
+    protected static $instance;
 
     /**
      * @return Backend
+     * @throws \Exception
      */
     public static function getInstance(): self
     {
@@ -48,17 +31,13 @@ class Backend
     }
 
     /**
-     * AdminSession constructor.
+     * Backend constructor.
      * @throws \Exception
      */
     public function __construct()
     {
-        \session_name(self::DEFAULT_SESSION);
+        parent::__construct(true, self::DEFAULT_SESSION);
         self::$instance = $this;
-        self::$handler  = \ES_SESSIONS === 1
-            ? new DB(\Shop::Container()->getDB(), 'tadminsession')
-            : new JTLDefault();
-        self::$storage  = new Storage(self::$handler);
 
         $_SESSION['jtl_token'] = $_SESSION['jtl_token'] ?? \Shop::Container()->getCryptoService()->randomString(32);
         if (!isset($_SESSION['kSprache'], $_SESSION['cISOSprache'])) {

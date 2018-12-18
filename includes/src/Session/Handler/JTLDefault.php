@@ -28,7 +28,7 @@ class JTLDefault extends \SessionHandler implements JTLHandlerInterface
     /**
      * @inheritdoc
      */
-    public function getSessionData()
+    public function getSessionData(): ?array
     {
         return $this->sessionData;
     }
@@ -36,7 +36,7 @@ class JTLDefault extends \SessionHandler implements JTLHandlerInterface
     /**
      * @inheritdoc
      */
-    public function getAll()
+    public function getAll(): ?array
     {
         return $this->getSessionData();
     }

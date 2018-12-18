@@ -20,17 +20,17 @@ interface JTLHandlerInterface extends \SessionHandlerInterface
     /**
      * @return array|null
      */
-    public function getSessionData();
+    public function getSessionData(): ?array;
 
     /**
      * @return array|null
      */
-    public function getAll();
+    public function getAll(): ?array;
 
     /**
      * @param string $key
      * @param null $default
-     * @return array|null
+     * @return mixed
      */
     public function get($key, $default = null);
 

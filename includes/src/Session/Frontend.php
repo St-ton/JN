@@ -11,58 +11,17 @@ use Helpers\Manufacturer;
 use Helpers\Request;
 use Helpers\Tax;
 use Link\LinkGroupCollection;
-use Session\Handler\Bot;
-use Session\Handler\DB;
-use Session\Handler\JTLDefault;
-use Session\Handler\JTLHandlerInterface;
 
 /**
- * Class Session
- * @package Session
+ * Class Frontend
+ * @package Session,
  */
-class Frontend
+class Frontend extends AbstractSession
 {
-    public const DEFAULT_SESSION = 'JTLSHOP';
-
-    /**
-     * handle bot like normal visitor
-     */
-    public const SAVE_BOT_SESSIONS_NORMAL = 0;
-
-    /**
-     * use single session ID for all bot visits
-     */
-    public const SAVE_BOT_SESSIONS_COMBINED = 1;
-
-    /**
-     * save combined bot session to cache
-     */
-    public const SAVE_BOT_SESSIONS_CACHE = 2;
-
-    /**
-     * never save bot sessions
-     */
-    public const SAVE_BOT_SESSIONS_NEVER = 3;
-
-    /**
-     * @var string
-     */
-    protected static $sessionName = self::DEFAULT_SESSION;
-
     /**
      * @var Frontend
      */
-    private static $instance;
-
-    /**
-     * @var \SessionHandlerInterface
-     */
-    protected static $handler;
-
-    /**
-     * @var Storage
-     */
-    protected static $storage;
+    protected static $instance;
 
     /**
      * @param bool   $start       - call session_start()?
@@ -79,153 +38,20 @@ class Frontend
     }
 
     /**
-     * Session constructor.
-     *
+     * Frontend constructor.
      * @param bool   $start
      * @param string $sessionName
      * @throws \Exception
      */
     public function __construct(bool $start = true, string $sessionName = self::DEFAULT_SESSION)
     {
-        self::$instance    = $this;
-        self::$sessionName = $sessionName;
-        \session_name(self::$sessionName);
-        $this->initCookie(\Shop::getSettings([\CONF_GLOBAL])['global'], $start);
+        parent::__construct($start, $sessionName);
+        self::$instance = $this;
 
-        self::$storage = new Storage($this->getHandler());
         $this->setStandardSessionVars();
         \Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
 
         \executeHook(\HOOK_CORE_SESSION_CONSTRUCTOR);
-    }
-
-    /**
-     * @param array $conf
-     * @param bool  $start
-     * @return bool
-     */
-    private function initCookie(array $conf, bool $start): bool
-    {
-        $cookieDefaults                 = \session_get_cookie_params();
-        $lifetime                       = $cookieDefaults['lifetime'] ?? 0;
-        $path                           = $cookieDefaults['path'] ?? '';
-        $domain                         = $cookieDefaults['domain'] ?? '';
-        $secure                         = $cookieDefaults['secure'] ?? false;
-        $httpOnly                       = $cookieDefaults['httponly'] ?? false;
-        $conf['global_cookie_secure']   = $conf['global_cookie_secure'] ?? 'S';
-        $conf['global_cookie_httponly'] = $conf['global_cookie_httponly'] ?? 'S';
-        $conf['global_cookie_domain']   = $conf['global_cookie_domain'] ?? '';
-        $conf['global_cookie_lifetime'] = $conf['global_cookie_lifetime'] ?? 0;
-        if ($conf['global_cookie_secure'] !== 'S') {
-            $secure = $conf['global_cookie_secure'] === 'Y';
-        }
-        if ($conf['global_cookie_httponly'] !== 'S') {
-            $httpOnly = $conf['global_cookie_httponly'] === 'Y';
-        }
-        if ($conf['global_cookie_domain'] !== '') {
-            $domain = $this->experimentalMultiLangDomain($conf['global_cookie_domain']);
-        }
-        if (\is_numeric($conf['global_cookie_lifetime']) && (int)$conf['global_cookie_lifetime'] > 0) {
-            $lifetime = (int)$conf['global_cookie_lifetime'];
-        }
-        if (!empty($conf['global_cookie_path'])) {
-            $path = $conf['global_cookie_path'];
-        }
-        $secure = $secure && ($conf['kaufabwicklung_ssl_nutzen'] === 'P' || \strpos(URL_SHOP, 'https://') === 0);
-
-        if ($start) {
-            \session_start([
-                'use_cookies'     => '1',
-                'cookie_domain'   => $domain,
-                'cookie_secure'   => $secure,
-                'cookie_lifetime' => $lifetime,
-                'cookie_path'     => $path,
-                'cookie_httponly' => $httpOnly
-            ]);
-        }
-        \setcookie(
-            \session_name(),
-            \session_id(),
-            ($lifetime === 0) ? 0 : \time() + $lifetime,
-            $path,
-            $domain,
-            $secure,
-            $httpOnly
-        );
-
-        return true;
-    }
-
-    /**
-     * @param string $domain
-     * @return mixed|string
-     */
-    private function experimentalMultiLangDomain(string $domain)
-    {
-        if (!\defined('EXPERIMENTAL_MULTILANG_SHOP')) {
-            return $domain;
-        }
-        foreach (\Sprache::getAllLanguages() as $Sprache) {
-            if (!\defined('URL_SHOP_' . \strtoupper($Sprache->cISO))) {
-                continue;
-            }
-            $shopLangURL = \constant('URL_SHOP_' . \strtoupper($Sprache->cISO));
-            if (\strpos($shopLangURL, $_SERVER['HTTP_HOST']) !== false
-                && \defined('COOKIE_DOMAIN_' . \strtoupper($Sprache->cISO))
-            ) {
-                return \constant('COOKIE_DOMAIN_' . \strtoupper($Sprache->cISO));
-            }
-        }
-
-        return $domain;
-    }
-
-    /**
-     * @return JTLHandlerInterface
-     */
-    private function getHandler(): JTLHandlerInterface
-    {
-        $bot = \SAVE_BOT_SESSION !== 0 && isset($_SERVER['HTTP_USER_AGENT'])
-            ? self::getIsCrawler($_SERVER['HTTP_USER_AGENT'])
-            : false;
-        if ($bot === false || \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NORMAL) {
-            self::$handler = \ES_SESSIONS === 1
-                ? new DB(\Shop::Container()->getDB())
-                : new JTLDefault();
-        } else {
-            if (\SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_COMBINED
-                || \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
-            ) {
-                \session_id('jtl-bot');
-            }
-            if (\SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
-                || \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NEVER
-            ) {
-                $save = \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
-                    && \Shop::Container()->getCache()->isAvailable()
-                    && \Shop::Container()->getCache()->isActive();
-
-                self::$handler = new Bot($save);
-            } else {
-                self::$handler = new JTLDefault();
-            }
-        }
-
-        return self::$handler;
-    }
-
-    /**
-     * @param string $userAgent
-     * @return bool
-     */
-    public static function getIsCrawler(string $userAgent): bool
-    {
-        return \preg_match(
-            '/Google|ApacheBench|sqlmap|loader.io|bot|Rambler|Yahoo|AbachoBOT|accoona' .
-            '|spider|AcioRobot|ASPSeek|CocoCrawler|Dumbot|FAST-WebCrawler|GeonaBot' .
-            '|Gigabot|Lycos|alexa|AltaVista|IDBot|Scrubby/',
-            $userAgent
-        ) > 0;
     }
 
     /**
@@ -808,8 +634,7 @@ class Frontend
      */
     public static function checkReset($langISO = ''): void
     {
-        if (\strlen($langISO) > 0) {
-            //Kategorien zurücksetzen, da sie lokalisiert abgelegt wurden
+        if ($langISO !== '') {
             if ($langISO !== \Shop::getLanguageCode()) {
                 $_SESSION['oKategorie_arr']     = [];
                 $_SESSION['oKategorie_arr_new'] = [];

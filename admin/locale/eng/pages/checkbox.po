@@ -1,0 +1,59 @@
+msgid "checkbox"
+msgstr "Checkboxverwaltung"
+
+msgid "checkboxDesc"
+msgstr " "
+
+msgid "checkboxURL"
+msgstr "https://jtl-url.de/daufo"
+
+msgid "checkboxOverview"
+msgstr "Übersicht"
+
+msgid "checkboxCreate"
+msgstr "Erstellen"
+
+msgid "checkboxSettings"
+msgstr "Einstellungen"
+
+msgid "checkboxActivate"
+msgstr "Aktivieren"
+
+msgid "checkboxDeactivate"
+msgstr "Deaktivieren"
+
+msgid "checkboxDelete"
+msgstr "Löschen"
+
+msgid "checkboxName"
+msgstr "Name"
+
+msgid "checkboxLink"
+msgstr "Link"
+
+msgid "checkboxLocation"
+msgstr "Anzeigeort"
+
+msgid "checkboxRequired"
+msgstr "Pflichtangabe"
+
+msgid "checkboxActive"
+msgstr "Aktiv"
+
+msgid "checkboxSort"
+msgstr "Sortierung"
+
+msgid "checkboxGroup"
+msgstr "Kundengruppe"
+
+msgid "checkboxDate"
+msgstr "Erstellt am"
+
+msgid "checkboxEdit"
+msgstr "Editieren"
+
+msgid "checkboxLogging"
+msgstr "Logging"
+
+msgid "checkboxFunction"
+msgstr "Spezialfunktion"

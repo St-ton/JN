@@ -12,6 +12,7 @@ use DB\DbInterface;
 use DB\Services\GcServiceInterface;
 use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
+use L10n\GetText;
 use Monolog\Logger;
 use OPC\DB;
 use OPC\Locker;
@@ -124,4 +125,9 @@ interface DefaultServicesInterface extends ContainerInterface
      * @return NewsServiceInterface
      */
     public function getNewsService() : NewsServiceInterface;
+
+    /**
+     * @return GetText
+     */
+    public function getGetText() : GetText;
 }

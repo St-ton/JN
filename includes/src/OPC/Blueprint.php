@@ -68,7 +68,7 @@ class Blueprint implements \JsonSerializable
     /**
      * @return PortletInstance|null
      */
-    public function getInstance(): ?self
+    public function getInstance(): ?PortletInstance
     {
         return $this->instance;
     }

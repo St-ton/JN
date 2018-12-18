@@ -102,6 +102,7 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @return string
+     * @throws \Exception
      */
     public function getConfigPanelHtml(): string
     {

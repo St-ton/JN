@@ -246,6 +246,10 @@ class AdminAccount
                 }
             }
 
+            if (!isset($oAdmin->kSprache)) {
+                $oAdmin->kSprache = Shop::getLanguage();
+            }
+
             $this->toSession($oAdmin);
             //check password hash and update if necessary
             $this->checkAndUpdateHash($cPass);
@@ -363,6 +367,7 @@ class AdminAccount
      * @param int $nAdminMenuGroup
      * @param string $keyPrefix
      * @return array
+     * @deprecated since 5.0.0
      */
     public function getVisibleMenu(int $nAdminLoginGroup, int $nAdminMenuGroup, string $keyPrefix): array
     {
@@ -487,6 +492,7 @@ class AdminAccount
             $_SESSION['AdminAccount']->cLogin      = $oAdmin->cLogin;
             $_SESSION['AdminAccount']->cMail       = $oAdmin->cMail;
             $_SESSION['AdminAccount']->cPass       = $oAdmin->cPass;
+            $_SESSION['AdminAccount']->kSprache    = (int)$oAdmin->kSprache;
 
             if (!is_object($oGroup)) {
                 $oGroup                    = new stdClass();

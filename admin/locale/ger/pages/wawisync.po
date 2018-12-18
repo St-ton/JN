@@ -1,0 +1,9 @@
+msgid "wawisync"
+msgstr "Wawi-Syncdaten"
+
+msgid "wawisyncDesc"
+msgstr "Hinterlegen Sie hier Benutzernamen und Passwort für Ihren JTL-Wawi-Abgleich."
+
+msgid "wawisyncURL"
+msgstr "https://jtl-url.de/gvca6"
+

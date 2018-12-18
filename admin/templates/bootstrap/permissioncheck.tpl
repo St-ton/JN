@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="permissioncheck"}
-{include file='tpl_inc/seite_header.tpl' cTitel=#permissioncheck# cBeschreibung=#permissioncheckDesc# cDokuURL=#permissioncheckURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('permissioncheck') cBeschreibung=__('permissioncheckDesc') cDokuURL=__('permissioncheckURL')}
 
 <div id="content" class="container-fluid">
     <div id="pageCheck">

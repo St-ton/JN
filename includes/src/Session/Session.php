@@ -11,9 +11,10 @@ use Helpers\Manufacturer;
 use Helpers\Request;
 use Helpers\Tax;
 use Link\LinkGroupCollection;
-use Session\Handler\SessionHandlerBot;
-use Session\Handler\SessionHandlerDB;
-use Session\Handler\SessionHandlerJTL;
+use Session\Handler\Bot;
+use Session\Handler\DB;
+use Session\Handler\JTLDefault;
+use Session\Handler\JTLHandlerInterface;
 
 /**
  * Class Session
@@ -59,7 +60,7 @@ class Session
     protected static $handler;
 
     /**
-     * @var SessionStorage
+     * @var Storage
      */
     protected static $storage;
 
@@ -84,18 +85,113 @@ class Session
      * @param string $sessionName
      * @throws \Exception
      */
-    public function __construct(bool $start = true, $sessionName = self::DEFAULT_SESSION)
+    public function __construct(bool $start = true, string $sessionName = self::DEFAULT_SESSION)
     {
         self::$instance    = $this;
         self::$sessionName = $sessionName;
-        $bot               = \SAVE_BOT_SESSION !== 0 && isset($_SERVER['HTTP_USER_AGENT'])
+        \session_name(self::$sessionName);
+        $this->initCookie(\Shop::getSettings([\CONF_GLOBAL])['global'], $start);
+
+        self::$storage = new Storage($this->getHandler());
+        $this->setStandardSessionVars();
+        \Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
+
+        \executeHook(\HOOK_CORE_SESSION_CONSTRUCTOR);
+    }
+
+    /**
+     * @param array $conf
+     * @param bool  $start
+     * @return bool
+     */
+    private function initCookie(array $conf, bool $start): bool
+    {
+        $cookieDefaults                 = \session_get_cookie_params();
+        $lifetime                       = $cookieDefaults['lifetime'] ?? 0;
+        $path                           = $cookieDefaults['path'] ?? '';
+        $domain                         = $cookieDefaults['domain'] ?? '';
+        $secure                         = $cookieDefaults['secure'] ?? false;
+        $httpOnly                       = $cookieDefaults['httponly'] ?? false;
+        $conf['global_cookie_secure']   = $conf['global_cookie_secure'] ?? 'S';
+        $conf['global_cookie_httponly'] = $conf['global_cookie_httponly'] ?? 'S';
+        $conf['global_cookie_domain']   = $conf['global_cookie_domain'] ?? '';
+        $conf['global_cookie_lifetime'] = $conf['global_cookie_lifetime'] ?? 0;
+        if ($conf['global_cookie_secure'] !== 'S') {
+            $secure = $conf['global_cookie_secure'] === 'Y';
+        }
+        if ($conf['global_cookie_httponly'] !== 'S') {
+            $httpOnly = $conf['global_cookie_httponly'] === 'Y';
+        }
+        if ($conf['global_cookie_domain'] !== '') {
+            $domain = $this->experimentalMultiLangDomain($conf['global_cookie_domain']);
+        }
+        if (\is_numeric($conf['global_cookie_lifetime']) && (int)$conf['global_cookie_lifetime'] > 0) {
+            $lifetime = (int)$conf['global_cookie_lifetime'];
+        }
+        if (!empty($conf['global_cookie_path'])) {
+            $path = $conf['global_cookie_path'];
+        }
+        $secure = $secure && ($conf['kaufabwicklung_ssl_nutzen'] === 'P' || \strpos(URL_SHOP, 'https://') === 0);
+
+        if ($start) {
+            \session_start([
+                'use_cookies'     => '1',
+                'cookie_domain'   => $domain,
+                'cookie_secure'   => $secure,
+                'cookie_lifetime' => $lifetime,
+                'cookie_path'     => $path,
+                'cookie_httponly' => $httpOnly
+            ]);
+        }
+        \setcookie(
+            \session_name(),
+            \session_id(),
+            ($lifetime === 0) ? 0 : \time() + $lifetime,
+            $path,
+            $domain,
+            $secure,
+            $httpOnly
+        );
+
+        return true;
+    }
+
+    /**
+     * @param string $domain
+     * @return mixed|string
+     */
+    private function experimentalMultiLangDomain(string $domain)
+    {
+        if (!\defined('EXPERIMENTAL_MULTILANG_SHOP')) {
+            return $domain;
+        }
+        foreach (\Sprache::getAllLanguages() as $Sprache) {
+            if (!\defined('URL_SHOP_' . \strtoupper($Sprache->cISO))) {
+                continue;
+            }
+            $shopLangURL = \constant('URL_SHOP_' . \strtoupper($Sprache->cISO));
+            if (\strpos($shopLangURL, $_SERVER['HTTP_HOST']) !== false
+                && \defined('COOKIE_DOMAIN_' . \strtoupper($Sprache->cISO))
+            ) {
+                return \constant('COOKIE_DOMAIN_' . \strtoupper($Sprache->cISO));
+            }
+        }
+
+        return $domain;
+    }
+
+    /**
+     * @return JTLHandlerInterface
+     */
+    private function getHandler(): JTLHandlerInterface
+    {
+        $bot = \SAVE_BOT_SESSION !== 0 && isset($_SERVER['HTTP_USER_AGENT'])
             ? self::getIsCrawler($_SERVER['HTTP_USER_AGENT'])
             : false;
-        \session_name(self::$sessionName);
         if ($bot === false || \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NORMAL) {
             self::$handler = \ES_SESSIONS === 1
-                ? new SessionHandlerDB(\Shop::Container()->getDB())
-                : new SessionHandlerJTL();
+                ? new DB(\Shop::Container()->getDB())
+                : new JTLDefault();
         } else {
             if (\SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_COMBINED
                 || \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
@@ -109,16 +205,13 @@ class Session
                     && \Shop::Container()->getCache()->isAvailable()
                     && \Shop::Container()->getCache()->isActive();
 
-                self::$handler = new SessionHandlerBot($save);
+                self::$handler = new Bot($save);
             } else {
-                self::$handler = new SessionHandlerJTL();
+                self::$handler = new JTLDefault();
             }
         }
-        self::$storage = new SessionStorage(self::$handler, $start);
-        $this->setStandardSessionVars();
-        \Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
 
-        \executeHook(\HOOK_CORE_SESSION_CONSTRUCTOR);
+        return self::$handler;
     }
 
     /**
@@ -371,7 +464,6 @@ class Session
         if ($kVergleichlistePos !== 0
             && isset($_SESSION['Vergleichsliste']->oArtikel_arr)
             && \is_array($_SESSION['Vergleichsliste']->oArtikel_arr)
-            && \count($_SESSION['Vergleichsliste']->oArtikel_arr) > 0
         ) {
             // Wunschliste Position aus der Session löschen
             foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $oArtikel) {
@@ -401,7 +493,7 @@ class Session
      * @param string $default
      * @return string
      */
-    public function getBrowserLanguage(array $allowed, string $default): string
+    private function getBrowserLanguage(array $allowed, string $default): string
     {
         $acceptLanguage = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null;
         if (empty($acceptLanguage)) {

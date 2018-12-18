@@ -15,7 +15,7 @@ $oAccount->permission('ORDER_BILLPAY_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'billpay_inc.php';
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
-\L10n\GetText::getInstance()->loadConfigLocales();
+\Shop::Container()->getGetText()->loadConfigLocales();
 
 $cFehler = null;
 $cStep   = 'uebersicht';
@@ -121,7 +121,7 @@ $Conf = Shop::Container()->getDB()->selectAll(
     'nSort'
 );
 
-\L10n\GetText::getInstance()->localizeConfigs($Conf);
+\Shop::Container()->getGetText()->localizeConfigs($Conf);
 
 if (isset($_POST['einstellungen_bearbeiten']) && Form::validateToken()) {
     foreach ($Conf as $i => $oConfig) {
@@ -171,7 +171,7 @@ for ($i = 0; $i < $configCount; $i++) {
             'nSort'
         );
 
-        \L10n\GetText::getInstance()->localizeConfigValues($Conf[$i], $Conf[$i]->ConfWerte);
+        \Shop::Container()->getGetText()->localizeConfigValues($Conf[$i], $Conf[$i]->ConfWerte);
     }
     $setValue                = Shop::Container()->getDB()->select(
         'teinstellungen',

@@ -10,7 +10,7 @@ use Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
-\L10n\GetText::getInstance()->loadConfigLocales(true, true);
+\Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 $oAccount->permission('MODULE_COMPARELIST_VIEW', true, true);
 /** @global Smarty\JTLSmarty $smarty */
@@ -96,7 +96,7 @@ for ($i = 0; $i < $configCount; $i++) {
             '*',
             'nSort'
         );
-        \L10n\GetText::getInstance()->localizeConfigValues($oConfig_arr[$i], $oConfig_arr[$i]->ConfWerte);
+        \Shop::Container()->getGetText()->localizeConfigValues($oConfig_arr[$i], $oConfig_arr[$i]->ConfWerte);
     }
     $oSetValue                      = Shop::Container()->getDB()->select(
         'teinstellungen',
@@ -106,7 +106,7 @@ for ($i = 0; $i < $configCount; $i++) {
         $oConfig_arr[$i]->cWertName
     );
     $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
-    \L10n\GetText::getInstance()->localizeConfig($oConfig_arr[$i]);
+    \Shop::Container()->getGetText()->localizeConfig($oConfig_arr[$i]);
 }
 
 $oVergleichAnzahl = Shop::Container()->getDB()->query(

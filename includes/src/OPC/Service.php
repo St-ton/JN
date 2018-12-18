@@ -13,7 +13,6 @@ use Filter\Items\PriceRange;
 use Filter\Option;
 use Filter\ProductFilter;
 use Filter\Type;
-use L10n\GetText;
 
 /**
  * Class Service

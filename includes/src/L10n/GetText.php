@@ -6,6 +6,7 @@
 
 namespace L10n;
 
+use DB\DbInterface;
 use Gettext\Translations;
 use Gettext\Translator;
 use Plugin\AbstractExtension;
@@ -16,11 +17,6 @@ use Plugin\AbstractExtension;
  */
 class GetText
 {
-    /**
-     * @var null|self
-     */
-    private static $instance;
-
     /**
      * @var null|string
      */
@@ -38,8 +34,9 @@ class GetText
 
     /**
      * GetText constructor.
+     * @param DbInterface $shopDB
      */
-    private function __construct()
+    public function __construct()
     {
         $this->translator = new Translator();
         $this->translator->register();
@@ -54,14 +51,6 @@ class GetText
 
         $this->setLangIso(\Shop::Lang()->getIsoFromLangID($_SESSION['AdminAccount']->kSprache)->cISO)
              ->loadAdminLocale('base');
-    }
-
-    /**
-     * @return GetText
-     */
-    public static function getInstance(): self
-    {
-        return self::$instance ?? (self::$instance = new self());
     }
 
     /**

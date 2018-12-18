@@ -9,7 +9,7 @@ use Helpers\Form;
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 
-\L10n\GetText::getInstance()->loadConfigLocales(true, true);
+\Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 $oAccount->permission('EXPORT_FORMATS_VIEW', true, true);
 /** @global Smarty\JTLSmarty $smarty */
@@ -64,7 +64,7 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
             '*',
             'nSort'
         );
-        \L10n\GetText::getInstance()->localizeConfigs($Conf);
+        \Shop::Container()->getGetText()->localizeConfigs($Conf);
         $configCount = count($Conf);
         for ($i = 0; $i < $configCount; $i++) {
             $aktWert                = new stdClass();
@@ -257,10 +257,10 @@ if ($step === 'neuer Export') {
         $smarty->assign('Exportformat', $exportformat);
     }
     $configs = getAdminSectionSettings(CONF_EXPORTFORMATE);
-    \L10n\GetText::getInstance()->localizeConfigs($configs);
+    \Shop::Container()->getGetText()->localizeConfigs($configs);
 
     foreach ($configs as $config) {
-        \L10n\GetText::getInstance()->localizeConfigValues($config, $config->ConfWerte);
+        \Shop::Container()->getGetText()->localizeConfigValues($config, $config->ConfWerte);
     }
 
     $smarty->assign('Conf', $configs);

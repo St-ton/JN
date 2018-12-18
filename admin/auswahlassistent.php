@@ -16,7 +16,7 @@ $step     = '';
 $nice     = Nice::getInstance();
 $tab      = 'uebersicht';
 
-\L10n\GetText::getInstance()->loadConfigLocales();
+\Shop::Container()->getGetText()->loadConfigLocales();
 
 if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     $step = 'uebersicht';

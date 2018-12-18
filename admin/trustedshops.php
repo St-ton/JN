@@ -9,7 +9,7 @@ use Helpers\PHPSettings;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
-\L10n\GetText::getInstance()->loadConfigLocales(true, true);
+\Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 define('PARTNER_PACKAGE', 'JTL');
 define('SHOP_SOFTWARE', 'JTL');
@@ -270,7 +270,7 @@ if ($step === 'uebersicht') {
     );
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
-        \L10n\GetText::getInstance()->localizeConfig($oConfig_arr[$i]);
+        \Shop::Container()->getGetText()->localizeConfig($oConfig_arr[$i]);
 
         if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
             $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->query(
@@ -280,7 +280,7 @@ if ($step === 'uebersicht') {
                     ORDER BY nSort',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            \L10n\GetText::getInstance()->localizeConfigValues($oConfig_arr[$i], $oConfig_arr[$i]->ConfWerte);
+            \Shop::Container()->getGetText()->localizeConfigValues($oConfig_arr[$i], $oConfig_arr[$i]->ConfWerte);
         } elseif ($oConfig_arr[$i]->cInputTyp === 'listbox') {
             $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->query(
                 'SELECT kKundengruppe, cName

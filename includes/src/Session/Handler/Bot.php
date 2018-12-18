@@ -9,10 +9,10 @@ namespace Session\Handler;
 use Session\Session;
 
 /**
- * Class SessionHandlerBot
+ * Class Bot
  * @package Session\Handler
  */
-class SessionHandlerBot extends SessionHandlerJTL
+class Bot extends JTLDefault
 {
     /**
      * @var string

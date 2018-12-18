@@ -8,7 +8,6 @@ use Helpers\Form;
 use Helpers\Request;
 
 require_once __DIR__ . '/includes/globalinclude.php';
-$session = \Session\Session::getInstance();
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kontakt_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 

@@ -42,13 +42,13 @@ class Overlay
     {
         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'suchspecialoverlay_inc.php';
 
-        $dir = \PFAD_ROOT . \PFAD_TEMPLATES . $template . \PFAD_OVERLAY_TEMPLATE . 'original';
+        $dir = \PFAD_ROOT . \PFAD_TEMPLATES . $template . \PFAD_OVERLAY_TEMPLATE . \Overlay::ORIGINAL_FOLDER_NAME;
         if (!\is_dir($dir)) {
             return false;
         }
         foreach (\scandir($dir, \SORT_NUMERIC) as $overlay) {
             $overlayParts = \explode('_', $overlay);
-            if (\count($overlayParts) === 3 && $overlayParts[0] === 'overlay') {
+            if (\count($overlayParts) === 3 && $overlayParts[0] === \Overlay::IMAGENAME_TEMPLATE) {
                 $filePath = $dir . '/' . $overlay;
                 $lang     = (int)$overlayParts[1];
                 $type     = (int)\substr($overlayParts[2], 0, \strpos($overlayParts[2], '.'));
@@ -56,17 +56,18 @@ class Overlay
                     continue;
                 }
                 $defaultOverlay = $this->db->queryPrepared(
-                    "SELECT *
+                    'SELECT *
                       FROM tsuchspecialoverlaysprache
                       WHERE kSprache = :lang
                         AND kSuchspecialOverlay = :type
-                        AND cTemplate IN (:templateName, 'default')
-                      ORDER BY FIELD(cTemplate, :templateName, 'default')
-                      LIMIT 1",
+                        AND cTemplate IN (:templateName, :defaultName)
+                      ORDER BY FIELD(cTemplate, :templateName, :defaultName)
+                      LIMIT 1',
                     [
                         'lang'         => $lang,
                         'type'         => $type,
-                        'templateName' => $template
+                        'templateName' => $template,
+                        'defaultName'  => \Overlay::DEFAULT_TEMPLATE
                     ],
                     ReturnType::SINGLE_OBJECT
                 );
@@ -86,6 +87,7 @@ class Overlay
                 }
             }
         }
+        Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE]);
 
         return true;
     }

@@ -42,7 +42,7 @@ $overlays    = gibAlleSuchspecialOverlays();
 $maxFileSize = getMaxFileSize(ini_get('upload_max_filesize'));
 $template    = Template::getInstance();
 if ($template->name === 'Evo' && $template->author === 'JTL-Software-GmbH' && (int)$template->version >= 4) {
-    $smarty->assign('isDeprecated', false);
+    $smarty->assign('isDeprecated', true);
 }
 
 $smarty->assign('Sprachen', Sprache::getAllLanguages())

@@ -88,12 +88,14 @@ class Overlay
 
     public const IMAGENAME_TEMPLATE = 'overlay';
 
-    public const IMAGE_DEFAULT      = [
+    public const IMAGE_DEFAULT = [
         'name'      => 'std_kSuchspecialOverlay',
         'extension' => '.png'
     ];
 
     public const DEFAULT_TEMPLATE = 'default';
+
+    public const ORIGINAL_FOLDER_NAME = 'original';
 
     /**
      * Overlay constructor.
@@ -106,7 +108,7 @@ class Overlay
         $this->setType($type)
              ->setLanguage($language)
              ->setTemplateName($template)
-             ->setPath(PFAD_TEMPLATES . $this->getTemplateName() . \PFAD_OVERLAY_TEMPLATE)
+             ->setPath(\PFAD_TEMPLATES . $this->getTemplateName() . \PFAD_OVERLAY_TEMPLATE)
              ->setPathSizes();
     }
 
@@ -188,7 +190,7 @@ class Overlay
     private function setFallbackPath(string $templateName): void
     {
         if ($templateName === self::DEFAULT_TEMPLATE
-            || !\file_exists(PFAD_ROOT . $this->getPathSize('normal') . $this->getImageName())
+            || !\file_exists(PFAD_ROOT . $this->getPathSize(IMAGE_SIZE_SM) . $this->getImageName())
         ) {
             $defaultImgName = self::IMAGE_DEFAULT['name'] . '_' . $this->getLanguage() . '_'
                 . $this->getType() . self::IMAGE_DEFAULT['extension'];
@@ -199,27 +201,27 @@ class Overlay
             if (\file_exists(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_NORMAL . $defaultImgName)) {
                 // default fallback path
                 $fallbackImageName = $defaultImgName;
-                $fallbackImagePath = PFAD_SUCHSPECIALOVERLAY;
+                $fallbackPath      = true;
             } else {
                 $overlayDefaultLanguage = $this->getDataForLanguage(Sprache::getDefaultLanguage()->kSprache);
                 if (!empty($overlayDefaultLanguage)) {
                     if ($overlayDefaultLanguage->cTemplate !== self::DEFAULT_TEMPLATE
-                        && \file_exists(PFAD_ROOT . $this->getPathSize('normal') . $overlayDefaultLanguage->cBildPfad)
+                        && \file_exists(PFAD_ROOT . $this->getPathSize(IMAGE_SIZE_SM) . $overlayDefaultLanguage->cBildPfad)
                     ) {
                         // fallback path for default language
                         $fallbackImageName = $overlayDefaultLanguage->cBildPfad;
                     } elseif (\file_exists(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_NORMAL . $imgName)) {
                         //default fallback path for default language
                         $fallbackImageName = $imgName;
-                        $fallbackImagePath = PFAD_SUCHSPECIALOVERLAY;
+                        $fallbackPath      = true;
                     }
                 }
             }
         }
 
-        if (isset($fallbackImagePath)) {
-            $this->setPath($fallbackImagePath)
-                 ->setPathSizes();
+        if (isset($fallbackPath)) {
+            $this->setPath(PFAD_SUCHSPECIALOVERLAY)
+                 ->setPathSizes(true);
         }
         if (isset($fallbackImageName)) {
             $this->setImageName($fallbackImageName);
@@ -336,23 +338,24 @@ class Overlay
 
     /**
      * @param string $size
-     * @return string
+     * @return null|string
      */
-    public function getPathSize(string $size): string
+    public function getPathSize(string $size): ?string
     {
-        return $this->pathSizes[$size];
+        return $this->pathSizes[$size] ?? null;
     }
 
     /**
+     * @param bool $default
      * @return Overlay
      */
-    public function setPathSizes(): self
+    public function setPathSizes(bool $default = false): self
     {
         $this->pathSizes = [
-            'klein'  => $this->getPath() . 'klein/',
-            'normal' => $this->getPath() . 'normal/',
-            'gross'  => $this->getPath() . 'gross/',
-            'retina' => $this->getPath() . 'retina/',
+            IMAGE_SIZE_XS => $default ? PFAD_SUCHSPECIALOVERLAY_KLEIN : $this->getPath() . IMAGE_SIZE_XS . '/',
+            IMAGE_SIZE_SM => $default ? PFAD_SUCHSPECIALOVERLAY_NORMAL : $this->getPath() . IMAGE_SIZE_SM . '/',
+            IMAGE_SIZE_MD => $default ? PFAD_SUCHSPECIALOVERLAY_GROSS : $this->getPath() . IMAGE_SIZE_MD . '/',
+            IMAGE_SIZE_LG => $default ? PFAD_SUCHSPECIALOVERLAY_RETINA : $this->getPath() . IMAGE_SIZE_LG . '/',
         ];
 
         return $this;
@@ -360,11 +363,11 @@ class Overlay
 
     /**
      * @param string $size
-     * @return string
+     * @return null|string
      */
-    public function getURL(string $size): string
+    public function getURL(string $size): ?string
     {
-        return $this->urlSizes[$size];
+        return $this->urlSizes[$size] ?? null;
     }
 
     /**
@@ -374,10 +377,10 @@ class Overlay
     {
         $shopURL        = Shop::getURL() . '/';
         $this->urlSizes = [
-            'klein'  => $shopURL . $this->getPathSize('klein') . $this->getImageName(),
-            'normal' => $shopURL . $this->getPathSize('normal') . $this->getImageName(),
-            'gross'  => $shopURL . $this->getPathSize('gross') . $this->getImageName(),
-            'retina' => $shopURL . $this->getPathSize('retina') . $this->getImageName(),
+            IMAGE_SIZE_XS  => $shopURL . $this->getPathSize(IMAGE_SIZE_XS) . $this->getImageName(),
+            IMAGE_SIZE_SM => $shopURL . $this->getPathSize(IMAGE_SIZE_SM) . $this->getImageName(),
+            IMAGE_SIZE_MD  => $shopURL . $this->getPathSize(IMAGE_SIZE_MD) . $this->getImageName(),
+            IMAGE_SIZE_LG => $shopURL . $this->getPathSize(IMAGE_SIZE_LG) . $this->getImageName(),
         ];
 
         return $this;

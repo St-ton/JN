@@ -317,10 +317,10 @@ function speicherBild(array $cFiles_arr, Overlay $overlay): bool
             $cOriginal = $cFiles_arr['tmp_name'];
 
             $sizesToCreate = [
-                ['size' => 'klein',  'factor' => 1],
-                ['size' => 'normal', 'factor' => 2],
-                ['size' => 'gross',  'factor' => 3],
-                ['size' => 'retina', 'factor' => 4],
+                ['size' => IMAGE_SIZE_XS,  'factor' => 1],
+                ['size' => IMAGE_SIZE_SM, 'factor' => 2],
+                ['size' => IMAGE_SIZE_MD,  'factor' => 3],
+                ['size' => IMAGE_SIZE_LG, 'factor' => 4],
             ];
 
             foreach ($sizesToCreate as $sizeToCreate) {

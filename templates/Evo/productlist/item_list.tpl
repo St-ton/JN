@@ -22,7 +22,7 @@
 
                     {block name='searchspecial-overlay'}
                         {if isset($Artikel->oSuchspecialBild)}
-                            {include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->getURL('klein') alt=$alt}
+                            {include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_SM) alt=$alt}
                         {/if}
                     {/block}
 

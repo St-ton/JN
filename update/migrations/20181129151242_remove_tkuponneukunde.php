@@ -45,9 +45,10 @@ class Migration_20181129151242 extends Migration implements IMigration
                 MAX(tkuponkunde.dErstellt) AS dErstellt,
                 tkupon.cKuponTyp
               FROM tkuponkunde
-                LEFT JOIN tkupon
+                INNER JOIN tkupon
                   ON tkupon.kKupon = tkuponkunde.kKupon
               WHERE tkupon.cKuponTyp = 'neukundenkupon'
+                AND tkuponkunde.cMail != ''
               GROUP BY tkuponkunde.cMail"
         );
 
@@ -65,16 +66,17 @@ class Migration_20181129151242 extends Migration implements IMigration
                           DROP COLUMN `kKunde`,
                           ADD UNIQUE KEY `kKupon_cMail` (`kKupon`, `cMail`)');
 
-        $check = $this->execute('
-          INSERT INTO tkuponkunde (kKupon, cMail, nVerwendungen, dErstellt)
-              SELECT tkuponkunde_backup.kKupon,
-                    SHA2(tkuponkunde_backup.cMail, 256) AS cMail,
-                    COUNT(tkuponkunde_backup.cMail) AS nVerwendungen,
-                    MAX(tkuponkunde_backup.dErstellt) AS dErstellt
-                FROM tkuponkunde_backup
-                LEFT JOIN tkupon
-                    ON tkupon.kKupon = tkuponkunde_backup.kKupon
-                GROUP BY tkuponkunde_backup.cMail, tkuponkunde_backup.kKupon'
+        $check = $this->execute(
+            "INSERT INTO tkuponkunde (kKupon, cMail, nVerwendungen, dErstellt)
+                SELECT tkuponkunde_backup.kKupon,
+                       SHA2(tkuponkunde_backup.cMail, 256) AS cMail,
+                       COUNT(tkuponkunde_backup.cMail) AS nVerwendungen,
+                       MAX(tkuponkunde_backup.dErstellt) AS dErstellt
+                    FROM tkuponkunde_backup
+                    INNER JOIN tkupon
+                        ON tkupon.kKupon = tkuponkunde_backup.kKupon
+                    WHERE tkuponkunde_backup.cMail != ''
+                    GROUP BY tkuponkunde_backup.cMail, tkuponkunde_backup.kKupon"
         );
         if ($check !== 0) {
             $this->execute('DROP TABLE IF EXISTS `tkuponkunde_backup`');

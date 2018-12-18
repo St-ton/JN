@@ -15,6 +15,7 @@ use function Functional\reindex;
 
 /**
  * Class Metadata
+ * @package Filter
  */
 class Metadata implements MetadataInterface
 {

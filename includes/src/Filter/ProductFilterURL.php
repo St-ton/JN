@@ -20,6 +20,7 @@ use function Functional\first;
 
 /**
  * Class ProductFilterURL
+ * @package Filter
  */
 class ProductFilterURL
 {

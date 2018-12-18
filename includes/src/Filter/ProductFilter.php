@@ -39,6 +39,7 @@ use function Functional\select;
 
 /**
  * Class ProductFilter
+ * @package Filter
  */
 class ProductFilter
 {

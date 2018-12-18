@@ -10,7 +10,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ACCOUNT_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 /** @global \Smarty\JTLSmarty $smarty */
 $cAction  = 'account_view';
 $messages = [
@@ -40,6 +39,9 @@ switch ($cAction) {
         break;
     case 'group_delete':
         $cAction = benutzerverwaltungActionGroupDelete($messages);
+        break;
+    case 'quick_change_language':
+        benutzerverwaltungActionQuickChangeLanguage($smarty, $messages);
         break;
 }
 

@@ -1,0 +1,18 @@
+msgid "shoplogouploader"
+msgstr "Shoplogo-Uploader"
+
+msgid "shoplogouploaderURL"
+msgstr "https://jtl-url.de/5f7iy"
+
+msgid "shoplogouploaderDesc"
+msgstr "Laden Sie hier Ihr Shoplogo hoch, es steht dann im Template als Variable zur Verfügung ( {$ShopLogoURL} ). Empfehlung für die Größe des Logos: Breite 180px, Höhe 50px."
+
+msgid "shoplogouploaderBack"
+msgstr "zurück"
+
+msgid "shoplogouploaderSave"
+msgstr "Aktualisieren"
+
+msgid "shoplogouploaderPicture"
+msgstr "Shoplogo"
+

@@ -31,7 +31,7 @@
                 {else}
                     {if $open === 0 && $confItem@index === 0}
                         <div class="panel panel-default first">
-                        <div class="panel-heading"><h3 class="panel-title">{#settings#}</h3></div>
+                        <div class="panel-heading"><h3 class="panel-title">{__('settings')}</h3></div>
                         <div class="panel-body">
                         {assign var=open value=1}
                     {/if}
@@ -108,7 +108,9 @@
                 </div><!-- .panel-body -->
                 </div><!-- .panel -->
             {/if}
-            <button name="speichern" type="submit" value="{#pluginSettingSave#}" class="btn btn-primary"><i class="fa fa-save"></i> {#pluginSettingSave#}</button>
+            <button name="speichern" type="submit" value="{__('pluginSettingSave')}" class="btn btn-primary">
+                <i class="fa fa-save"></i> {__('pluginSettingSave')}
+            </button>
         </form>
     </div>
 {/if}

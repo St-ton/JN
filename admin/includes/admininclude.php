@@ -80,3 +80,7 @@ if ($oAccount->logged()) {
         }
     }
 }
+
+$pageName = basename($_SERVER['PHP_SELF'], '.php');
+
+\Shop::Container()->getGetText()->loadAdminLocale("pages/$pageName");

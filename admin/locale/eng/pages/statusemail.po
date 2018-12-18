@@ -1,0 +1,35 @@
+msgid "statusemail"
+msgstr "E-Mail-Berichte"
+
+msgid "statusemailURL"
+msgstr "https://jtl-url.de/b15ip"
+
+msgid "statusemailDesc"
+msgstr "Mithilfe von E-Mail-Berichten erhalten Sie automatisch eine Übersicht aller Aktivitäten im Shop. Der E-Mail-Bericht kann 1x am Tag, 1x in der Woche und/oder 1x im Monat an Sie verschickt werden."
+
+msgid "statusemailSave"
+msgstr "Speichern"
+
+msgid "statusemailUse"
+msgstr "E-Mail-Berichte nutzen"
+
+msgid "statusemailUseDesc"
+msgstr "Möchten Sie das E-Mail-Berichte Modul nutzen?"
+
+msgid "statusemailEmail"
+msgstr "Empfänger E-Mail-Adresse"
+
+msgid "statusemailEmailDesc"
+msgstr "An diese E-Mail-Adresse wird der E-Mail-Bericht gesendet."
+
+msgid "statusemailIntervall"
+msgstr "Berichtintervall"
+
+msgid "statusemailIntervallDesc"
+msgstr "&Uumlber welchen Zeitraum möchten Sie Informationen im E-Mail-Bericht erhalten? Mehrfachauswahl möglich."
+
+msgid "statusemailContent"
+msgstr "Berichtsinhalt"
+
+msgid "statusemailContentDesc"
+msgstr "Welchen Inhalt soll der E-Mail-Bericht enthalten? Mehrfachauswahl möglich."

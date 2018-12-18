@@ -347,4 +347,6 @@ class InstallCode extends Enum
     public const SQL_CANNOT_SAVE_EXPORT = 319;
 
     public const EXT_MUST_NOT_HAVE_UNINSTALLER = 400;
+
+    public const WRONG_EXT_DIR = 401;
 }

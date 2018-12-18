@@ -1,0 +1,24 @@
+msgid "opcNoticePageReset"
+msgstr "Der Composer-Inhalt für die Seite wurde zurückgesetzt."
+
+msgid "opcNoticeDraftDelete"
+msgstr "Der Entwurf wurde gelöscht."
+
+msgid "opc"
+msgstr "OnPage Composer Control Center"
+
+msgid "opcDesc"
+msgstr "Hier finden Sie die mittels dem OnPage Composer bearbeiteten Seiten und verfügbaren Portlets"
+
+msgid "opcUrl"
+msgstr "http://guide.jtl-software.de/index.php?title=Inhalt:CMS"
+
+msgid "opcPages"
+msgstr "Bearbeitete Seiten"
+
+msgid "opcPortlets"
+msgstr "Verfügbare Portlets"
+
+msgid "opcBlueprints"
+msgstr "Verfügbare Vorlagen"
+

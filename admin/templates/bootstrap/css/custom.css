@@ -213,19 +213,25 @@
   color: #0b6aa2;
   font-weight: bold;
 }
-.backend-wrapper > .backend-sidebar > .backend-navigation .backend-root-menu-icon-system:before {
-  content: "\f013";
-}
-.backend-wrapper > .backend-sidebar > .backend-navigation .backend-root-menu-icon-storefront:before {
-  content: "\f07a";
-}
-.backend-wrapper > .backend-sidebar > .backend-navigation .backend-root-menu-icon-templates:before {
+.backend-wrapper > .backend-sidebar > .backend-navigation .backend-root-menu-icon-0:before {
   content: "\f1c9";
 }
-.backend-wrapper > .backend-sidebar > .backend-navigation .backend-root-menu-icon-inhalte:before {
+.backend-wrapper > .backend-sidebar > .backend-navigation .backend-root-menu-icon-1:before {
   content: "\f03e";
 }
-.backend-wrapper > .backend-sidebar > .backend-navigation .backend-root-menu-icon-plugins:before {
+.backend-wrapper > .backend-sidebar > .backend-navigation .backend-root-menu-icon-2:before {
+  content: "\f07a";
+}
+.backend-wrapper > .backend-sidebar > .backend-navigation .backend-root-menu-icon-3:before {
+  content: "\f013";
+}
+.backend-wrapper > .backend-sidebar > .backend-navigation .backend-root-menu-icon-4:before {
+  content: "\f1e6";
+}
+.backend-wrapper > .backend-sidebar > .backend-navigation .backend-root-menu-icon-5:before {
+  content: "\f1e6";
+}
+.backend-wrapper > .backend-sidebar > .backend-navigation .backend-root-menu-icon-6:before {
   content: "\f1e6";
 }
 .backend-wrapper > .backend-sidebar.collapsed {

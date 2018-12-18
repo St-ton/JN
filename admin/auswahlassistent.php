@@ -15,6 +15,9 @@ $cHinweis = '';
 $step     = '';
 $nice     = Nice::getInstance();
 $tab      = 'uebersicht';
+
+\Shop::Container()->getGetText()->loadConfigLocales();
+
 if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     $step = 'uebersicht';
     setzeSprache();

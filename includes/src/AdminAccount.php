@@ -5,6 +5,9 @@
  */
 
 use Helpers\Request;
+use Mapper\AdminLoginStatusMessageMapper;
+use Mapper\AdminLoginStatusToLogLevel;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class AdminAccount
@@ -42,16 +45,48 @@ class AdminAccount
     private $lockedMinutes = 0;
 
     /**
-     * @param bool $init
+     * @var \DB\DbInterface
      */
-    public function __construct(bool $init = true)
+    private $db;
+
+    /**
+     * AdminAccount constructor.
+     * @param \DB\DbInterface               $db
+     * @param LoggerInterface               $logger
+     * @param AdminLoginStatusMessageMapper $statusMessageMapper
+     * @param AdminLoginStatusToLogLevel    $levelMapper
+     */
+    public function __construct(
+        \DB\DbInterface $db,
+        LoggerInterface $logger,
+        AdminLoginStatusMessageMapper $statusMessageMapper,
+        AdminLoginStatusToLogLevel $levelMapper
+    ) {
+        $this->db            = $db;
+        $this->authLogger    = $logger;
+        $this->messageMapper = $statusMessageMapper;
+        $this->levelMapper   = $levelMapper;
+        \Session\Backend::getInstance();
+        $this->initDefaults();
+        $this->validateSession();
+    }
+
+    /**
+     *
+     */
+    private function initDefaults(): void
     {
-        $this->authLogger    = Shop::Container()->getBackendLogService();
-        $this->messageMapper = new \Mapper\AdminLoginStatusMessageMapper();
-        $this->levelMapper   = new \Mapper\AdminLoginStatusToLogLevel();
-        if ($init) {
-            \Session\Backend::getInstance();
-            $this->validateSession();
+        if (!isset($_SESSION['AdminAccount'])) {
+            $default                   = Sprache::getDefaultLanguage();
+            $adminAccount              = new stdClass();
+            $adminAccount->kSprache    = $default->kSprache;
+            $adminAccount->cISO        = $default->cISO;
+            $adminAccount->kAdminlogin = null;
+            $adminAccount->oGroup      = null;
+            $adminAccount->cLogin      = null;
+            $adminAccount->cMail       = null;
+            $adminAccount->cPass       = null;
+            $_SESSION['AdminAccount']  = $adminAccount;
         }
     }
 
@@ -81,7 +116,7 @@ class AdminAccount
      */
     public function verifyResetPasswordHash(string $hash, string $mail): bool
     {
-        $user = Shop::Container()->getDB()->select('tadminlogin', 'cMail', $mail);
+        $user = $this->db->select('tadminlogin', 'cMail', $mail);
         if ($user !== null) {
             // there should be a string <created_timestamp>:<hash> in the DB
             $timestampAndHash = explode(':', $user->cResetPasswordHash);
@@ -166,7 +201,7 @@ class AdminAccount
      */
     public function login(string $cLogin, string $cPass): int
     {
-        $oAdmin = Shop::Container()->getDB()->select(
+        $oAdmin = $this->db->select(
             'tadminlogin',
             'cLogin',
             $cLogin,
@@ -214,7 +249,7 @@ class AdminAccount
             $_SESSION['AdminAccount']->cLogin = $cLogin;
             $verified                         = true;
             if ($this->checkAndUpdateHash($cPass) === true) {
-                $oAdmin = Shop::Container()->getDB()->select(
+                $oAdmin = $this->db->select(
                     'tadminlogin',
                     'cLogin',
                     $cLogin,
@@ -245,6 +280,7 @@ class AdminAccount
             if (!isset($oAdmin->kSprache)) {
                 $oAdmin->kSprache = Shop::getLanguage();
             }
+            $oAdmin->cISO = Shop::Lang()->getIsoFromLangID($oAdmin->kSprache)->cISO;
 
             $this->toSession($oAdmin);
             //check password hash and update if necessary
@@ -368,7 +404,7 @@ class AdminAccount
     public function getVisibleMenu(int $nAdminLoginGroup, int $nAdminMenuGroup, string $keyPrefix): array
     {
         if ($nAdminLoginGroup === ADMINGROUP) {
-            $links = Shop::Container()->getDB()->selectAll(
+            $links = $this->db->selectAll(
                 'tadminmenu',
                 'kAdminmenueGruppe',
                 $nAdminMenuGroup,
@@ -376,7 +412,7 @@ class AdminAccount
                 'cLinkname, nSort'
             );
         } else {
-            $links = Shop::Container()->getDB()->queryPrepared(
+            $links = $this->db->queryPrepared(
                 'SELECT tadminmenu.* 
                     FROM tadminmenu 
                     JOIN tadminrechtegruppe 
@@ -416,7 +452,7 @@ class AdminAccount
         }
 
         if (isset($_SERVER['HTTP_HOST']) && $cHost !== $_SERVER['HTTP_HOST'] && strlen($_SERVER['HTTP_HOST']) > 0) {
-            header("Location: {$cUrl}");
+            header('Location: ' . $cUrl);
             exit;
         }
     }
@@ -430,7 +466,7 @@ class AdminAccount
         if (isset($_SESSION['AdminAccount']->cLogin, $_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cURL)
             && $_SESSION['AdminAccount']->cURL === Shop::getURL()
         ) {
-            $oAccount                 = Shop::Container()->getDB()->select(
+            $oAccount                 = $this->db->select(
                 'tadminlogin',
                 'cLogin',
                 $_SESSION['AdminAccount']->cLogin,
@@ -489,6 +525,7 @@ class AdminAccount
             $_SESSION['AdminAccount']->cMail       = $oAdmin->cMail;
             $_SESSION['AdminAccount']->cPass       = $oAdmin->cPass;
             $_SESSION['AdminAccount']->kSprache    = (int)$oAdmin->kSprache;
+            $_SESSION['AdminAccount']->cISO        = $oAdmin->cISO;
 
             if (!is_object($oGroup)) {
                 $oGroup                    = new stdClass();
@@ -511,7 +548,7 @@ class AdminAccount
      */
     private function setLastLogin($cLogin): self
     {
-        Shop::Container()->getDB()->update('tadminlogin', 'cLogin', $cLogin, (object)['dLetzterLogin' => 'NOW()']);
+        $this->db->update('tadminlogin', 'cLogin', $cLogin, (object)['dLetzterLogin' => 'NOW()']);
 
         return $this;
     }
@@ -523,9 +560,8 @@ class AdminAccount
      */
     private function setRetryCount(string $cLogin, bool $bReset = false): self
     {
-        $db = Shop::Container()->getDB();
         if ($bReset) {
-            $db->update(
+            $this->db->update(
                 'tadminlogin',
                 'cLogin',
                 $cLogin,
@@ -534,17 +570,17 @@ class AdminAccount
 
             return $this;
         }
-        $db->queryPrepared(
+        $this->db->queryPrepared(
             'UPDATE tadminlogin
                 SET nLoginVersuch = nLoginVersuch+1
                 WHERE cLogin = :login',
             ['login' => $cLogin],
             \DB\ReturnType::AFFECTED_ROWS
         );
-        $data   = $db->select('tadminlogin', 'cLogin', $cLogin);
+        $data   = $this->db->select('tadminlogin', 'cLogin', $cLogin);
         $locked = (int)$data->nLoginVersuch >= MAX_LOGIN_ATTEMPTS;
         if ($locked === true && array_key_exists('locked_at', (array)$data)) {
-            $db->update('tadminlogin', 'cLogin', $cLogin, (object)['locked_at' => 'NOW()']);
+            $this->db->update('tadminlogin', 'cLogin', $cLogin, (object)['locked_at' => 'NOW()']);
         }
 
         return $this;
@@ -556,14 +592,14 @@ class AdminAccount
      */
     private function getPermissionsByGroup(int $groupID)
     {
-        $group = Shop::Container()->getDB()->select(
+        $group = $this->db->select(
             'tadminlogingruppe',
             'kAdminlogingruppe',
             $groupID
         );
         if ($group !== null && isset($group->kAdminlogingruppe)) {
             $group->kAdminlogingruppe = (int)$group->kAdminlogingruppe;
-            $oPermission_arr          = Shop::Container()->getDB()->selectAll(
+            $oPermission_arr          = $this->db->selectAll(
                 'tadminrechtegruppe',
                 'kAdminlogingruppe',
                 $groupID,
@@ -607,7 +643,7 @@ class AdminAccount
         ) {
             $_upd        = new stdClass();
             $_upd->cPass = $passwordService->hash($password);
-            Shop::Container()->getDB()->update('tadminlogin', 'cLogin', $_SESSION['AdminAccount']->cLogin, $_upd);
+            $this->db->update('tadminlogin', 'cLogin', $_SESSION['AdminAccount']->cLogin, $_upd);
 
             return true;
         }

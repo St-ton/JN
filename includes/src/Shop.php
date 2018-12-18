@@ -1778,7 +1778,7 @@ final class Shop
         }
         $result   = false;
         $isLogged = function () {
-            return (new AdminAccount(true))->logged();
+            return self::Container()->getAdminAccount()->logged();
         };
         if (isset($_COOKIE['eSIdAdm'])) {
             if (session_name() !== 'eSIdAdm') {
@@ -1968,6 +1968,14 @@ final class Shop
         // GetText
         $container->setSingleton(\L10n\GetText::class, function (Container $container) {
             return new \L10n\GetText();
+        });
+        $container->setSingleton(\AdminAccount::class, function (Container $container) {
+            return new AdminAccount(
+                $container->getDB(),
+                $container->getBackendLogService(),
+                new \Mapper\AdminLoginStatusMessageMapper(),
+                new \Mapper\AdminLoginStatusToLogLevel()
+            );
         });
     }
 

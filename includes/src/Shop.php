@@ -1419,8 +1419,8 @@ final class Shop
                 self::$kLink = isset($link->kLink)
                     ? (int)$link->kLink
                     : self::Container()->getLinkService()->getSpecialPageLinkKey(LINKTYP_STARTSEITE);
-            } elseif (self::Media()->isValidRequest($path)) {
-                self::Media()->handleRequest($path);
+            } elseif (Media::getInstance()->isValidRequest($path)) {
+                Media::getInstance()->handleRequest($path);
             } else {
                 self::$is404    = true;
                 self::$fileName = null;

@@ -88,7 +88,7 @@ if (Shop::$kVariKindArtikel > 0) {
     $cCanonicalURL = $AktuellerArtikel->baueVariKombiKindCanonicalURL(SHOP_SEO, $AktuellerArtikel, $bCanonicalURL);
 }
 if ($Einstellungen['preisverlauf']['preisverlauf_anzeigen'] === 'Y'
-    && \Session\Session::getCustomerGroup()->mayViewPrices()
+    && \Session\Frontend::getCustomerGroup()->mayViewPrices()
 ) {
     Shop::$kArtikel = Shop::$kVariKindArtikel > 0
         ? Shop::$kVariKindArtikel
@@ -151,7 +151,7 @@ if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreic
 } else {
     $ratings = $AktuellerArtikel->Bewertungen->oBewertung_arr;
 }
-if (\Session\Session::getCustomer()->getID() > 0) {
+if (\Session\Frontend::getCustomer()->getID() > 0) {
     $bereitsBewertet = Product::getRatedByCurrentCustomer(
         (int)$AktuellerArtikel->kArtikel,
         (int)$AktuellerArtikel->kVaterArtikel

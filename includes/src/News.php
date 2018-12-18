@@ -481,7 +481,7 @@ class News extends MainModel
         }
         $kKundengruppe = null;
         if (isset($_SESSION['Kundengruppe']->kKundengruppe)) {
-            $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+            $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
         } else {
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
         }

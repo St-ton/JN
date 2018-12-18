@@ -20,7 +20,7 @@ use Session\Handler\JTLHandlerInterface;
  * Class Session
  * @package Session
  */
-class Session
+class Frontend
 {
     public const DEFAULT_SESSION = 'JTLSHOP';
 
@@ -50,7 +50,7 @@ class Session
     protected static $sessionName = self::DEFAULT_SESSION;
 
     /**
-     * @var Session
+     * @var Frontend
      */
     private static $instance;
 
@@ -68,7 +68,7 @@ class Session
      * @param bool   $start       - call session_start()?
      * @param bool   $force       - force new instance?
      * @param string $sessionName - if null, then default to current session name
-     * @return Session
+     * @return Frontend
      * @throws \Exception
      */
     public static function getInstance(bool $start = true, $force = false, $sessionName = self::DEFAULT_SESSION): self

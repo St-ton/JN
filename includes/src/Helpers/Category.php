@@ -9,7 +9,7 @@ namespace Helpers;
 use DB\ReturnType;
 use Kategorie;
 use KategorieListe;
-use Session\Session;
+use Session\Frontend;
 use Shop;
 use Sprache;
 use StringHandler;
@@ -79,7 +79,7 @@ class Category
             ? Shop::getLanguageID()
             : $kSprache;
         $kKundengruppe = $kKundengruppe === 0
-            ? Session::getCustomerGroup()->getID()
+            ? Frontend::getCustomerGroup()->getID()
             : $kKundengruppe;
         $config        = Shop::getSettings([\CONF_GLOBAL, \CONF_TEMPLATE]);
         if (self::$instance !== null && self::$kSprache !== $kSprache) {

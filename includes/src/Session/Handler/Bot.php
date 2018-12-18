@@ -6,7 +6,7 @@
 
 namespace Session\Handler;
 
-use Session\Session;
+use Session\Frontend;
 
 /**
  * Class Bot
@@ -64,7 +64,7 @@ class Bot extends JTLDefault
                 : '';
         }
         if ($sessionData === '') {
-            Session::getInstance()->setStandardSessionVars();
+            Frontend::getInstance()->setStandardSessionVars();
         }
 
         return $sessionData;

@@ -7,7 +7,7 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
-use Session\Session;
+use Session\Frontend;
 
 /**
  * Class BestsellingProducts
@@ -23,8 +23,8 @@ final class BestsellingProducts extends AbstractBox
     {
         parent::__construct($config);
         $this->setShow(false);
-        $customerGroupID = Session::getCustomerGroup()->getID();
-        if ($customerGroupID && Session::getCustomerGroup()->mayViewCategories()) {
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
+        if ($customerGroupID && Frontend::getCustomerGroup()->mayViewCategories()) {
             $res            = [];
             $cached         = true;
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];

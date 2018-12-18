@@ -50,7 +50,7 @@ class AdminAccount
         $this->messageMapper = new \Mapper\AdminLoginStatusMessageMapper();
         $this->levelMapper   = new \Mapper\AdminLoginStatusToLogLevel();
         if ($init) {
-            \Session\AdminSession::getInstance();
+            \Session\Backend::getInstance();
             $this->validateSession();
         }
     }

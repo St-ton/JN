@@ -211,7 +211,7 @@ class WarenkorbPos
             'kEigenschaftWert',
             (int)$newAttributes->kEigenschaftWert,
             'kKundengruppe',
-            \Session\Session::getCustomerGroup()->getID()
+            \Session\Frontend::getCustomerGroup()->getID()
         );
         if (!empty($Aufpreis_obj->fAufpreisNetto)) {
             if ($this->Artikel->Preise->rabatt > 0) {
@@ -329,7 +329,7 @@ class WarenkorbPos
         $weight = $this->Artikel->fGewicht * $this->nAnzahl;
 
         if ($this->kKonfigitem === 0 && !empty($this->cUnique)) {
-            foreach (\Session\Session::getCart()->PositionenArr as $pos) {
+            foreach (\Session\Frontend::getCart()->PositionenArr as $pos) {
                 if ($pos->istKonfigKind() && $pos->cUnique === $this->cUnique) {
                     $weight += $pos->fGesamtgewicht;
                 }
@@ -360,7 +360,7 @@ class WarenkorbPos
         if (!is_array($_SESSION['Waehrungen'])) {
             return $this;
         }
-        foreach (\Session\Session::getCurrencies() as $currency) {
+        foreach (\Session\Frontend::getCurrencies() as $currency) {
             $currencyName = $currency->getName();
             // Standardartikel
             $this->cGesamtpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
@@ -406,7 +406,7 @@ class WarenkorbPos
                 $fPreisBrutto = 0;
                 $nVaterPos    = null;
                 /** @var WarenkorbPos $oPosition */
-                foreach (\Session\Session::getCart()->PositionenArr as $nPos => $oPosition) {
+                foreach (\Session\Frontend::getCart()->PositionenArr as $nPos => $oPosition) {
                     if ($this->cUnique === $oPosition->cUnique) {
                         $fPreisNetto  += $oPosition->fPreis * $oPosition->nAnzahl;
                         $fPreisBrutto += Tax::getGross(
@@ -421,7 +421,7 @@ class WarenkorbPos
                     }
                 }
                 if ($nVaterPos !== null) {
-                    $oVaterPos = \Session\Session::getCart()->PositionenArr[$nVaterPos];
+                    $oVaterPos = \Session\Frontend::getCart()->PositionenArr[$nVaterPos];
                     if (is_object($oVaterPos)) {
                         $this->nAnzahlEinzel = $this->isIgnoreMultiplier()
                             ? $this->nAnzahl

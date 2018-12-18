@@ -201,7 +201,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     $kSprache = Shop::getLanguageID() ?? Sprache::getDefaultLanguage(true)->kSprache;
                 }
                 if (!$kKundengruppe) {
-                    $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+                    $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
                 }
                 $this->kKonfiggruppe     = (int)$this->kKonfiggruppe;
                 $this->kKonfigitem       = (int)$this->kKonfigitem;
@@ -536,9 +536,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $isConverted = true;
             }
             if ($bConvertCurrency && !$isConverted) {
-                $fVKPreis *= \Session\Session::getCurrency()->getConversionFactor();
+                $fVKPreis *= \Session\Frontend::getCurrency()->getConversionFactor();
             }
-            if (!$bForceNetto && !\Session\Session::getCustomerGroup()->isMerchant()) {
+            if (!$bForceNetto && !\Session\Frontend::getCustomerGroup()->isMerchant()) {
                 $fVKPreis = Tax::getGross($fVKPreis, Tax::getSalesTax($this->getSteuerklasse()), 4);
             }
 
@@ -580,7 +580,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 }
                 $fVKPreis *= (float)$waehrung->fFaktor;
             }
-            if (!$bForceNetto && !\Session\Session::getCustomerGroup()->getIsMerchant()) {
+            if (!$bForceNetto && !\Session\Frontend::getCustomerGroup()->getIsMerchant()) {
                 $fVKPreis = Tax::getGross($fVKPreis, Tax::getSalesTax($this->getSteuerklasse()), 4);
             }
 
@@ -613,7 +613,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $fTmp = $this->oPreis->getPreis();
                 if ($fTmp < 0) {
                     $fRabatt = $fTmp * -1;
-                    if ($this->oPreis->getTyp() == 0 && !\Session\Session::getCustomerGroup()->isMerchant()) {
+                    if ($this->oPreis->getTyp() == 0 && !\Session\Frontend::getCustomerGroup()->isMerchant()) {
                         $fRabatt = Tax::getGross($fRabatt, Tax::getSalesTax($this->getSteuerklasse()));
                     }
                 }
@@ -640,7 +640,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $fTmp = $this->oPreis->getPreis();
                 if ($fTmp > 0) {
                     $fZuschlag = $fTmp;
-                    if ($this->oPreis->getTyp() == 0 && !\Session\Session::getCustomerGroup()->isMerchant()) {
+                    if ($this->oPreis->getTyp() == 0 && !\Session\Frontend::getCustomerGroup()->isMerchant()) {
                         $fZuschlag = Tax::getGross($fZuschlag, Tax::getSalesTax($this->getSteuerklasse()));
                     }
                 }

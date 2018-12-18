@@ -800,7 +800,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 if (is_array($data) && count($data) > 0) {
-                    Session\Session::getCustomerGroup()->setMayViewPrices(1);
+                    Session\Frontend::getCustomerGroup()->setMayViewPrices(1);
                     $count = count($data);
                     for ($i = 0; $i < $count; $i++) {
                         if (isset($data[$i]->fVKNetto) && $data[$i]->fVKNetto > 0) {

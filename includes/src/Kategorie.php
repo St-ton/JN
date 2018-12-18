@@ -157,7 +157,7 @@ class Kategorie
         $oSpracheTmp   = null;
         $catAttributes = null;
         if (!$kKundengruppe) {
-            $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+            $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
         }
         if (!$kKundengruppe) {
             $kKundengruppe = Kundengruppe::getDefaultGroupID();

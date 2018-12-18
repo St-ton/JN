@@ -6,7 +6,7 @@
 
 namespace Filter;
 
-use Session\Session;
+use Session\Frontend;
 
 /**
  * Class Config

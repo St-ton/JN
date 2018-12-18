@@ -16,7 +16,7 @@ use Konfigitem;
 use Konfigurator;
 use Kundengruppe;
 use Preise;
-use Session\Session;
+use Session\Frontend;
 use Shop;
 use SimpleMail;
 use Smarty;
@@ -93,7 +93,7 @@ class Product
      */
     public static function getArticleForParent(int $productID): int
     {
-        $customerGroupID = Session::getCustomerGroup()->getID();
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
         $properties      = self::getChildPropertiesForParent($productID, $customerGroupID);
         $combinations    = [];
         $valid           = true;
@@ -222,7 +222,7 @@ class Product
         if ($productID <= 0) {
             return [];
         }
-        $customerGroup  = Session::getCustomerGroup()->getID();
+        $customerGroup  = Frontend::getCustomerGroup()->getID();
         $properties     = [];
         $propertyValues = [];
         $exists         = true;
@@ -424,7 +424,7 @@ class Product
      */
     public static function getSelectedPropertiesForArticle(int $productID, bool $redirect = true): array
     {
-        $customerGroupID = Session::getCustomerGroup()->getID();
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
         $propData        = Shop::Container()->getDB()->queryPrepared(
             'SELECT teigenschaft.kEigenschaft,teigenschaft.cName,teigenschaft.cTyp
                 FROM teigenschaft
@@ -1011,7 +1011,7 @@ class Product
                     (int)$conf['artikeldetails']['produktfrage_sperre_minuten']
                 )) {
                     $checkBox      = new CheckBox();
-                    $kKundengruppe = Session::getCustomerGroup()->getID();
+                    $kKundengruppe = Frontend::getCustomerGroup()->getID();
                     $oAnfrage      = self::getProductQuestionFormDefaults();
 
                     \executeHook(\HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT);
@@ -1090,7 +1090,7 @@ class Product
             $ret,
             $checkBox->validateCheckBox(
                 \CHECKBOX_ORT_FRAGE_ZUM_PRODUKT,
-                Session::getCustomerGroup()->getID(),
+                Frontend::getCustomerGroup()->getID(),
                 $_POST,
                 true
             )
@@ -1246,7 +1246,7 @@ class Product
                 $inquiry->dErstellt = 'NOW()';
                 $inquiry->nStatus   = 0;
                 $checkBox           = new CheckBox();
-                $customerGroupID    = Session::getCustomerGroup()->getID();
+                $customerGroupID    = Frontend::getCustomerGroup()->getID();
                 if (empty($inquiry->cNachname)) {
                     $inquiry->cNachname = '';
                 }
@@ -1321,7 +1321,7 @@ class Product
         }
         // CheckBox Plausi
         $oCheckBox     = new CheckBox();
-        $kKundengruppe = Session::getCustomerGroup()->getID();
+        $kKundengruppe = Frontend::getCustomerGroup()->getID();
         $ret           = \array_merge(
             $ret,
             $oCheckBox->validateCheckBox(\CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $kKundengruppe, $_POST, true)
@@ -1385,7 +1385,7 @@ class Product
     public static function getProductNavigation(int $productID, int $categoryID): stdClass
     {
         $nav             = new stdClass();
-        $customerGroupID = Session::getCustomerGroup()->getID();
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
         // Wurde der Artikel von der Artikelübersicht aus angeklickt?
         if ($productID > 0
             && isset($_SESSION['oArtikelUebersichtKey_arr'])
@@ -1962,7 +1962,7 @@ class Product
                 $cLimit = ' LIMIT ' . (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
             }
             $stockFilterSQL    = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $customerGroupID   = Session::getCustomerGroup()->getID();
+            $customerGroupID   = Frontend::getCustomerGroup()->getID();
             $productAttributes = Shop::Container()->getDB()->queryPrepared(
                 'SELECT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel
                     FROM tartikelmerkmal
@@ -2217,7 +2217,7 @@ class Product
             $configGroup->oItem_arr = \array_values($configGroup->oItem_arr);
         }
         unset($configGroup);
-        if (Session::getCustomerGroup()->mayViewPrices()) {
+        if (Frontend::getCustomerGroup()->mayViewPrices()) {
             $config->cPreisLocalized = [
                 Preise::getLocalizedPriceString($config->fGesamtpreis[0]),
                 Preise::getLocalizedPriceString($config->fGesamtpreis[1])
@@ -2225,7 +2225,7 @@ class Product
         } else {
             $config->cPreisLocalized = [Shop::Lang()->get('priceHidden')];
         }
-        $config->nNettoPreise = Session::getCustomerGroup()->getIsMerchant();
+        $config->nNettoPreise = Frontend::getCustomerGroup()->getIsMerchant();
 
         return $config;
     }
@@ -2238,7 +2238,7 @@ class Product
      */
     public static function getEditConfigMode($configID, $smarty): void
     {
-        $cart = Session::getCart();
+        $cart = Frontend::getCart();
         if (!isset($cart->PositionenArr[$configID]) || !\class_exists('Konfigitem')) {
             return;
         }
@@ -2294,7 +2294,7 @@ class Product
      */
     public static function getRatedByCurrentCustomer(int $productID, int $parentProductID = 0): bool
     {
-        $customerID = Session::getCustomer()->getID();
+        $customerID = Frontend::getCustomer()->getID();
         $productID  = !empty($parentProductID) ? $parentProductID : $productID;
         if ($customerID <= 0) {
             return false;

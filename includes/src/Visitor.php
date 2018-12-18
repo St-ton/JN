@@ -122,7 +122,7 @@ class Visitor
         $vis->cIP               = (new \GeneralDataProtection\IpAnonymizer(Request::getRealIP()))->anonymize(); // anonymize immediately
         $vis->cSessID           = session_id();
         $vis->cID               = md5($szUserAgent . Request::getRealIP());
-        $vis->kKunde            = \Session\Session::getCustomer()->getID();
+        $vis->kKunde            = \Session\Frontend::getCustomer()->getID();
         $vis->kBestellung       = $vis->kKunde > 0 ? self::refreshCustomerOrderId((int)$vis->kKunde) : 0;
         $vis->cReferer          = self::getReferer();
         $vis->cUserAgent        = StringHandler::filterXSS($_SERVER['HTTP_USER_AGENT']);
@@ -147,7 +147,7 @@ class Visitor
         $vis->cIP               = (new \GeneralDataProtection\IpAnonymizer(Request::getRealIP()))->anonymize(); // anonymize immediately
         $vis->cSessID           = session_id();
         $vis->cID               = md5($szUserAgent . Request::getRealIP());
-        $vis->kKunde            = \Session\Session::getCustomer()->getID();
+        $vis->kKunde            = \Session\Frontend::getCustomer()->getID();
         $vis->kBestellung       = $vis->kKunde > 0 ? self::refreshCustomerOrderId((int)$vis->kKunde) : 0;
         $vis->cEinstiegsseite   = $_SERVER['REQUEST_URI'];
         $vis->cReferer          = self::getReferer();

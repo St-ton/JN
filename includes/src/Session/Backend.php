@@ -13,7 +13,7 @@ use Session\Handler\JTLDefault;
  * Class AdminSession
  * @package Session
  */
-class AdminSession
+class Backend
 {
     public const DEFAULT_SESSION = 'eSIdAdm';
 
@@ -35,12 +35,12 @@ class AdminSession
     private static $storage;
 
     /**
-     * @var AdminSession
+     * @var Backend
      */
     private static $instance;
 
     /**
-     * @return AdminSession
+     * @return Backend
      */
     public static function getInstance(): self
     {

@@ -1065,7 +1065,7 @@ class Artikel
                     FROM tkategorieartikel
                     LEFT JOIN tkategoriesichtbarkeit 
                         ON tkategoriesichtbarkeit.kKategorie = tkategorieartikel.kKategorie
-                        AND tkategoriesichtbarkeit.kKundengruppe = ' . \Session\Session::getCustomerGroup()->getID() . '
+                        AND tkategoriesichtbarkeit.kKundengruppe = ' . \Session\Frontend::getCustomerGroup()->getID() . '
                     JOIN tkategorie 
                         ON tkategorie.kKategorie = tkategorieartikel.kKategorie
                     WHERE tkategoriesichtbarkeit.kKategorie IS NULL
@@ -1089,7 +1089,7 @@ class Artikel
     public function holPreise(int $kKundengruppe, $oArtikelTMP): self
     {
         if (!$kKundengruppe) {
-            $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+            $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
         }
         $kKunde       = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
         $this->Preise = new Preise(
@@ -1098,7 +1098,7 @@ class Artikel
             $kKunde,
             (int)$oArtikelTMP->kSteuerklasse
         );
-        if ($this->getOption('nHidePrices', 0) === 1 || !\Session\Session::getCustomerGroup()->mayViewPrices()) {
+        if ($this->getOption('nHidePrices', 0) === 1 || !\Session\Frontend::getCustomerGroup()->mayViewPrices()) {
             $this->Preise->setPricesToZero();
         }
         $this->Preise->localizePreise();
@@ -1114,7 +1114,7 @@ class Artikel
     {
         if ($this->Preise !== null && method_exists($this->Preise, 'rabbatierePreise')) {
             if (!$kKundengruppe) {
-                $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+                $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
             }
             $discount = $this->getDiscount($kKundengruppe, $this->kArtikel);
             if ($discount !== 0) {
@@ -1146,7 +1146,7 @@ class Artikel
      */
     public function gibPreis($anzahl, array $Eigenschaft_arr, $kKundengruppe = 0)
     {
-        if (!\Session\Session::getCustomerGroup()->mayViewPrices()) {
+        if (!\Session\Frontend::getCustomerGroup()->mayViewPrices()) {
             return null;
         }
         if ($this->kArtikel === null) {
@@ -1154,9 +1154,9 @@ class Artikel
         }
         $kKundengruppe = (int)$kKundengruppe;
         if (!$kKundengruppe) {
-            $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+            $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
         }
-        $kKunde       = \Session\Session::getCustomer()->getID();
+        $kKunde       = \Session\Frontend::getCustomer()->getID();
         $this->Preise = new Preise($kKundengruppe, $this->kArtikel, $kKunde, (int)$this->kSteuerklasse);
         // Varkombi Kind?
         $articleID = ($this->kEigenschaftKombi > 0 && $this->kVaterArtikel > 0)
@@ -1169,7 +1169,7 @@ class Artikel
                 $preis = $fPreis;
             }
         }
-        $nettopreise = \Session\Session::getCustomerGroup()->isMerchant();
+        $nettopreise = \Session\Frontend::getCustomerGroup()->isMerchant();
         // Ticket #1247
         $preis = $nettopreise
             ? round($preis, 4)
@@ -1608,7 +1608,7 @@ class Artikel
             $oOption->nKeineSichtbarkeitBeachten = 1;
             $this->oProduktBundleMain->fuelleArtikel((int)$main->kArtikel, $oOption);
 
-            $currency = \Session\Session::getCurrency();
+            $currency = \Session\Frontend::getCurrency();
             $bundles  = Shop::Container()->getDB()->selectAll(
                 'tstueckliste',
                 'kStueckliste',
@@ -2072,7 +2072,7 @@ class Artikel
                             INNER JOIN tartikel ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
                             LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
                                 AND tartikelsichtbarkeit.kKundengruppe = " .
-                    \Session\Session::getCustomerGroup()->getID() . "
+                    \Session\Frontend::getCustomerGroup()->getID() . "
                             WHERE kEigenschaftWert IN (
                                 SELECT kEigenschaftWert 
                                     FROM teigenschaftkombiwert 
@@ -2142,7 +2142,7 @@ class Artikel
                             LEFT JOIN tartikelsichtbarkeit 
                                 ON tartikelsichtbarkeit.kArtikel = art.kArtikel
                                 AND tartikelsichtbarkeit.kKundengruppe = " .
-                                    \Session\Session::getCustomerGroup()->getID() . "
+                                    \Session\Frontend::getCustomerGroup()->getID() . "
                             WHERE tartikel.kVaterArtikel = " . (int)$this->kVaterArtikel . "
                                 AND tartikelsichtbarkeit.kArtikel IS NULL
                             GROUP BY teigenschaftkombiwert.kEigenschaftKombi, teigenschaftkombiwert.kEigenschaftWert
@@ -2276,7 +2276,7 @@ class Artikel
             return $this;
         }
         if (!$kKundengruppe) {
-            $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+            $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
         }
         if (!$kSprache) {
             $kSprache = Shop::getLanguageID();
@@ -2286,11 +2286,11 @@ class Artikel
         $this->VariationenOhneFreifeld      = [];
         $this->oVariationenNurKind_arr      = [];
 
-        $currency       = \Session\Session::getCurrency();
+        $currency       = \Session\Frontend::getCurrency();
         $currencyFactor = $currency->getConversionFactor();
         $imageBaseURL   = Shop::getImageBaseURL();
         $isDefaultLang  = Sprache::isDefaultLanguageActive();
-        $mayViewPrices  = \Session\Session::getCustomerGroup()->mayViewPrices();
+        $mayViewPrices  = \Session\Frontend::getCustomerGroup()->mayViewPrices();
 
         $variations = $this->execVariationSQL($kSprache, $kKundengruppe, $exportWorkaround);
 
@@ -3007,7 +3007,7 @@ class Artikel
             $oTMP_arr = [];
             $per      = ' ' . Shop::Lang()->get('vpePer') . ' ';
             $taxRate  = $_SESSION['Steuersatz'][$this->kSteuerklasse];
-            $currency = \Session\Session::getCurrency();
+            $currency = \Session\Frontend::getCurrency();
             foreach ($varCombChildren as $i => $kArtikel) {
                 if (!isset($oTMP_arr[$kArtikel])) {
                     $oArtikelOptionen                            = new stdClass();
@@ -3335,7 +3335,7 @@ class Artikel
     {
         $this->oVariationDetailPreisKind_arr = [];
 
-        $currency  = \Session\Session::getCurrency();
+        $currency  = \Session\Frontend::getCurrency();
         $per       = ' ' . Shop::Lang()->get('vpePer') . ' ' . $this->cVPEEinheit;
         $taxRate   = $_SESSION['Steuersatz'][$this->kSteuerklasse];
         $precision = isset($this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
@@ -3399,7 +3399,7 @@ class Artikel
         if ($this->nIstVater === 1) {
             $this->cVaterVKLocalized = $this->Preise->cVKLocalized;
         }
-        $currency      = \Session\Session::getCurrency();
+        $currency      = \Session\Frontend::getCurrency();
         $nLastkArtikel = 0;
         $per           = ' ' . Shop::Lang()->get('vpePer') . ' ';
         $taxRate       = $_SESSION['Steuersatz'][$this->kSteuerklasse];
@@ -3435,7 +3435,7 @@ class Artikel
             }
 
             if (!$kKundengruppe) {
-                $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+                $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
             }
             $discount = $this->Preise->isDiscountable() ? $this->getDiscount($kKundengruppe, $this->kArtikel) : 0;
 
@@ -3515,7 +3515,7 @@ class Artikel
      */
     public function baueArtikelSprachURL($bSeo = true): self
     {
-        foreach (\Session\Session::getLanguages() as $oSprache) {
+        foreach (\Session\Frontend::getLanguages() as $oSprache) {
             $oSprache->kSprache                    = (int)$oSprache->kSprache;
             $this->cSprachURL_arr[$oSprache->cISO] = '?a=' . $this->kArtikel .
                 '&amp;lang=' . $oSprache->cISO;
@@ -3535,7 +3535,7 @@ class Artikel
 
         $bSprachSeo    = true;
         $oSeoAssoc_arr = [];
-        foreach (\Session\Session::getLanguages() as $oSprache) {
+        foreach (\Session\Frontend::getLanguages() as $oSprache) {
             foreach ($oSeo_arr as $oSeo) {
                 $oSeo->kSprache = (int)$oSeo->kSprache;
                 if ($oSprache->kSprache === $oSeo->kSprache) {
@@ -3700,7 +3700,7 @@ class Artikel
             $oArtikelOptionen = self::getDefaultOptions();
         }
         if (!$kKundengruppe) {
-            if (!isset($_SESSION['Kundengruppe']) || \Session\Session::getCustomerGroup()->getID() === 0) {
+            if (!isset($_SESSION['Kundengruppe']) || \Session\Frontend::getCustomerGroup()->getID() === 0) {
                 $customerGroup = (new Kundengruppe())
                     ->loadDefaultGroup()
                     ->setMayViewPrices(1)
@@ -3714,7 +3714,7 @@ class Artikel
                 $customerGroup->initAttributes();
                 $_SESSION['Kundengruppe'] = $customerGroup;
             }
-            $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+            $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
         } else {
             // Holt eine neue Kundengruppe und setzt diese auch gleichzeitig in die Session
             // (falls keine Kundengruppe in der Session existiert)
@@ -4227,7 +4227,7 @@ class Artikel
             $this->oVariationKombiKinderAssoc_arr = $this->holeVariationKombiKinderAssoc($kKundengruppe, $kSprache);
         }
         $this->cMwstVersandText = $this->gibMwStVersandString(
-            isset($_SESSION['Kundengruppe']->nNettoPreise) ? \Session\Session::getCustomerGroup()->isMerchant() : false
+            isset($_SESSION['Kundengruppe']->nNettoPreise) ? \Session\Frontend::getCustomerGroup()->isMerchant() : false
         );
         // Download Dateien
         $this->oDownload_arr = [];
@@ -4415,7 +4415,7 @@ class Artikel
     private function getCategories(int $kArtikel = 0, int $kKundengruppe = 0): array
     {
         $kArtikelKey = $kArtikel > 0 ? $kArtikel : (int)$this->kArtikel;
-        $kKdgKey     = $kKundengruppe > 0 ? $kKundengruppe : \Session\Session::getCustomerGroup()->getID();
+        $kKdgKey     = $kKundengruppe > 0 ? $kKundengruppe : \Session\Frontend::getCustomerGroup()->getID();
         $categories  = Shop::Container()->getDB()->query(
             'SELECT tkategorieartikel.kKategorie
                 FROM tkategorieartikel
@@ -4750,7 +4750,7 @@ class Artikel
             ? (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
             : 2;
         $fPreis        = ($fPreisStaffel > 0) ? $fPreisStaffel : $this->Preise->fVKNetto;
-        $currency      = \Session\Session::getCurrency();
+        $currency      = \Session\Frontend::getCurrency();
         $per           = ' ' . Shop::Lang()->get('vpePer') . ' ' . $basepriceUnit;
         $ust           = Tax::getSalesTax($this->kSteuerklasse);
 
@@ -4853,7 +4853,7 @@ class Artikel
      */
     public function baueStaffelgrundpreis(): self
     {
-        $currency      = \Session\Session::getCurrency();
+        $currency      = \Session\Frontend::getCurrency();
         $precision     = isset($this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
         && (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0
             ? (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
@@ -5343,10 +5343,10 @@ class Artikel
         if (!isset($this->SieSparenX)) {
             $this->SieSparenX = new stdClass();
         }
-        if (!\Session\Session::getCustomerGroup()->mayViewPrices()) {
+        if (!\Session\Frontend::getCustomerGroup()->mayViewPrices()) {
             return $this;
         }
-        if (\Session\Session::getCustomerGroup()->isMerchant()) {
+        if (\Session\Frontend::getCustomerGroup()->isMerchant()) {
             $this->fUVP                             /= (1 + Tax::getSalesTax($this->kSteuerklasse) / 100);
             $this->SieSparenX->anzeigen             = $anzeigen;
             $this->SieSparenX->nProzent             = round(
@@ -5415,7 +5415,7 @@ class Artikel
         if ($this->fGewicht === null) {
             $this->fGewicht = 0;
         }
-        $customerGroupID = \Session\Session::getCustomerGroup()->getID();
+        $customerGroupID = \Session\Frontend::getCustomerGroup()->getID();
         // cheapest shipping except shippings that offer cash payment
         $shipping = Shop::Container()->getDB()->query(
             "SELECT va.kVersandart, IF(vas.fPreis IS NOT NULL, vas.fPreis, va.fPreis) AS minPrice, va.nSort
@@ -5506,7 +5506,7 @@ class Artikel
             $resetArray           = true;
             $tmp_oStueckliste_arr = $this->oStueckliste_arr;
             unset($this->oStueckliste_arr);
-            $this->holeStueckliste(\Session\Session::getCustomerGroup()->getID(), true);
+            $this->holeStueckliste(\Session\Frontend::getCustomerGroup()->getID(), true);
         }
         $isPartsList = !empty($this->oStueckliste_arr) && !empty($this->kStueckliste);
         if ($isPartsList) {
@@ -5647,7 +5647,7 @@ class Artikel
     public function getPurchaseQuantityFromCart()
     {
         $purchaseQuantity = 0;
-        $cart             = \Session\Session::getCart();
+        $cart             = \Session\Frontend::getCart();
         if ($cart !== null && is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
             foreach ($cart->PositionenArr as $i => $oPosition) {
                 if ((int)$oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
@@ -5834,7 +5834,7 @@ class Artikel
         }
         $return['kArtikelXSellerKey_arr'] = $kArtikelXSellerKey_arr;
         if ($kArtikel > 0) {
-            $customerGroupID = \Session\Session::getCustomerGroup()->getID();
+            $customerGroupID = \Session\Frontend::getCustomerGroup()->getID();
             if ((int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0) {
                 $cLimit = ' LIMIT ' . (int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
             }
@@ -5982,7 +5982,7 @@ class Artikel
             $kArtikel = (int)$this->kArtikel;
         }
         if (!$kKundengruppe) {
-            $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+            $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
         }
         $Rabatt_arr = [];
         $maxRabatt  = 0;
@@ -6024,7 +6024,7 @@ class Artikel
         }
         // Existiert für diese Kundengruppe ein Rabatt?
         $kdgrp = (isset($_SESSION['Kundengruppe']->fRabatt)
-            && \Session\Session::getCustomerGroup()->getID() === $kKundengruppe)
+            && \Session\Frontend::getCustomerGroup()->getID() === $kKundengruppe)
             ? $_SESSION['Kundengruppe']
             : new Kundengruppe($kKundengruppe);
         if ($kdgrp->getDiscount() != 0) {
@@ -6077,10 +6077,10 @@ class Artikel
     {
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = (new Kundengruppe())->loadDefaultGroup();
-            $NettoPreise              = \Session\Session::getCustomerGroup()->isMerchant();
+            $NettoPreise              = \Session\Frontend::getCustomerGroup()->isMerchant();
         }
         if (!isset($_SESSION['Link_Versandseite'])) {
-            Session\Session::setSpecialLinks();
+            Session\Frontend::setSpecialLinks();
         }
         $NettoPreise = (bool)$NettoPreise;
         $inklexkl    = Shop::Lang()->get($NettoPreise === true ? 'excl' : 'incl', 'productDetails');
@@ -6159,7 +6159,7 @@ class Artikel
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = (new Kundengruppe())->loadDefaultGroup();
         }
-        $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+        $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
         if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
             $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
         }
@@ -6365,11 +6365,11 @@ class Artikel
                 $cGlobalMetaTitle = ' - ' . $oGlobaleMetaAngabenAssoc_arr[Shop::getLanguageID()]->Title;
             }
         }
-        $idx = \Session\Session::getCustomerGroup()->getIsMerchant();
+        $idx = \Session\Frontend::getCustomerGroup()->getIsMerchant();
         if (isset(
             $_SESSION['Kundengruppe']->nNettoPreise,
             $this->Preise->fVK[$idx],
-            $this->Preise->cVKLocalized[\Session\Session::getCustomerGroup()->isMerchant()]
+            $this->Preise->cVKLocalized[\Session\Frontend::getCustomerGroup()->isMerchant()]
         )
             && $this->Preise->fVK[$idx] > 0
             && $this->conf['metaangaben']['global_meta_title_preis'] === 'Y'
@@ -6569,15 +6569,15 @@ class Artikel
     public function getShippingAndTaxData(): array
     {
         $net = isset($_SESSION['Kundengruppe']->nNettoPreise)
-            ? \Session\Session::getCustomerGroup()->isMerchant()
+            ? \Session\Frontend::getCustomerGroup()->isMerchant()
             : false;
         // Standards
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = (new Kundengruppe())->loadDefaultGroup();
-            $net                      = \Session\Session::getCustomerGroup()->isMerchant();
+            $net                      = \Session\Frontend::getCustomerGroup()->isMerchant();
         }
         if (!isset($_SESSION['Link_Versandseite'])) {
-            Session\Session::setSpecialLinks();
+            Session\Frontend::setSpecialLinks();
         }
         $taxText = $this->AttributeAssoc[ART_ATTRIBUT_STEUERTEXT] ?? false;
 
@@ -6683,7 +6683,7 @@ class Artikel
             $cSQL         = [];
             $kEigenschaft = (int)$kEigenschaft;
             $prepvalues   = [
-                'customerGroupID' => \Session\Session::getCustomerGroup()->getID(),
+                'customerGroupID' => \Session\Frontend::getCustomerGroup()->getID(),
                 'where'           => $kEigenschaft
             ];
             foreach ($kGesetzteEigeschaftWert_arr as $kGesetzteEigenschaft => $kEigenschaftWert) {

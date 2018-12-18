@@ -1168,8 +1168,8 @@ function gibStandardWaehrung($bISO = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Session directly instead.', E_USER_DEPRECATED);
     return $bISO === true
-        ? \Session\Session::getCurrency()->getCode()
-        : \Session\Session::getCurrency()->getID();
+        ? \Session\Frontend::getCurrency()->getCode()
+        : \Session\Frontend::getCurrency()->getID();
 }
 
 /**
@@ -2042,7 +2042,7 @@ function json_safe_encode($data)
 function checkeSpracheWaehrung($langISO = '')
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Session::checkReset() instead.', E_USER_DEPRECATED);
-    Session\Session::checkReset($langISO);
+    Session\Frontend::checkReset($langISO);
 }
 /**
  * @param string $cISO
@@ -2076,7 +2076,7 @@ function landISO($cLand)
 function setzeLinks()
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Session::setSpecialLinks() instead.', E_USER_DEPRECATED);
-    return Session\Session::setSpecialLinks();
+    return Session\Frontend::setSpecialLinks();
 }
 /**
  * @param string $url

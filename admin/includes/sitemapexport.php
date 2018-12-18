@@ -917,7 +917,7 @@ function generateSitemapXML()
                 WHERE tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= NOW()
                     AND (tnews.cKundengruppe LIKE '%;-1;%'
-                    OR FIND_IN_SET('" . \Session\Session::getCustomerGroup()->getID() .
+                    OR FIND_IN_SET('" . \Session\Frontend::getCustomerGroup()->getID() .
                         "', REPLACE(tnews.cKundengruppe, ';',',')) > 0) 
                     ORDER BY tnews.dErstellt",
             \DB\ReturnType::QUERYSINGLE
@@ -1164,7 +1164,7 @@ function baueExportURL(int $kKey, $cKey, $lastUpdate, $languages, $langID, $prod
     $filterConfig->setLanguageID($langID);
     $filterConfig->setLanguages($languages);
     $filterConfig->setConfig($config);
-    $filterConfig->setCustomerGroupID(\Session\Session::getCustomerGroup()->getID());
+    $filterConfig->setCustomerGroupID(\Session\Frontend::getCustomerGroup()->getID());
     $filterConfig->setBaseURL(Shop::getURL() . '/');
     $naviFilter = new \Filter\ProductFilter($filterConfig, Shop::Container()->getDB(), Shop::Container()->getCache());
     switch ($cKey) {

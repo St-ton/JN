@@ -174,7 +174,7 @@ class IOMethods
 
             return $objResponse;
         }
-        $cart = \Session\Session::getCart();
+        $cart = \Session\Frontend::getCart();
         Cart::addVariationPictures($cart);
         /** @var Warenkorb $cart */
         $cart->fuegeEin($kArtikel, $amount, $properties)
@@ -216,7 +216,7 @@ class IOMethods
 
         $kKundengruppe = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
             ? $_SESSION['Kunde']->kKundengruppe
-            : \Session\Session::getCustomerGroup()->getID();
+            : \Session\Frontend::getCustomerGroup()->getID();
         $oXSelling     = Product::getXSelling($kArtikel, $Artikel->nIstVater > 0);
 
         $smarty->assign(
@@ -228,7 +228,7 @@ class IOMethods
         )
                ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
                ->assign('fAnzahl', $amount)
-               ->assign('NettoPreise', \Session\Session::getCustomerGroup()->getIsMerchant())
+               ->assign('NettoPreise', \Session\Frontend::getCustomerGroup()->getIsMerchant())
                ->assign('Einstellungen', $config)
                ->assign('Xselling', $oXSelling)
                ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
@@ -348,7 +348,7 @@ class IOMethods
         $_GET['Vergleichsliste'] = 1;
         $_GET['vlplo']           = $kArtikel;
 
-        \Session\Session::getInstance()->setStandardSessionVars();
+        \Session\Frontend::getInstance()->setStandardSessionVars();
         $oResponse->nType     = 2;
         $oResponse->nCount    = count($_SESSION['Vergleichsliste']->oArtikel_arr);
         $oResponse->cTitle    = Shop::Lang()->get('compare');
@@ -396,7 +396,7 @@ class IOMethods
         $objResponse = new IOResponse();
         $qty         = (int)$qty === 0 ? 1 : (int)$qty;
         $smarty      = Shop::Smarty();
-        if (\Session\Session::getCustomer()->getID() === 0) {
+        if (\Session\Frontend::getCustomer()->getID() === 0) {
             $oResponse->nType     = 1;
             $oResponse->cLocation = Shop::Container()->getLinkService()->getStaticRoute('jtl.php') .
                 '?a=' . $kArtikel .
@@ -495,7 +495,7 @@ class IOMethods
         $_GET['Wunschliste'] = 1;
         $_GET['wlplo']       = $kArtikel;
 
-        \Session\Session::getInstance()->setStandardSessionVars();
+        \Session\Frontend::getInstance()->setStandardSessionVars();
         $oResponse->nType  = 2;
         $oResponse->nCount = count($_SESSION['Wunschliste']->CWunschlistePos_arr);
         $oResponse->cTitle = Shop::Lang()->get('goToWishlist');
@@ -537,7 +537,7 @@ class IOMethods
     public function getBasketItems($nTyp = 0): IOResponse
     {
         require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-        $cart        = \Session\Session::getCart();
+        $cart        = \Session\Frontend::getCart();
         $oResponse   = new stdClass();
         $objResponse = new IOResponse();
 
@@ -546,7 +546,7 @@ class IOMethods
             default:
             case 0:
                 $smarty        = Shop::Smarty();
-                $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+                $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
                 $nAnzahl       = $cart->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]);
                 $cLand         = $_SESSION['cLieferlandISO'] ?? '';
                 $cPLZ          = '*';
@@ -567,7 +567,7 @@ class IOMethods
                        ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
                        ->assign('WarenkorbGesamtgewicht', $cart->getWeight())
                        ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($cart))
-                       ->assign('NettoPreise', \Session\Session::getCustomerGroup()->getIsMerchant())
+                       ->assign('NettoPreise', \Session\Frontend::getCustomerGroup()->getIsMerchant())
                        ->assign('FavourableShipping', $cart->getFavourableShipping())
                        ->assign('WarenkorbVersandkostenfreiHinweis', ShippingMethod::getShippingFreeString(
                            $versandkostenfreiAb,
@@ -613,7 +613,7 @@ class IOMethods
             $quantities,
             $itemQuantities
         );
-        $net             = \Session\Session::getCustomerGroup()->getIsMerchant();
+        $net             = \Session\Frontend::getCustomerGroup()->getIsMerchant();
         $Artikel->fuelleArtikel($productID, null);
         $Artikel->Preise->cVKLocalized[$net] =
             Preise::getLocalizedPriceString($Artikel->Preise->fVK[$net] * $amount, null, true);
@@ -713,7 +713,7 @@ class IOMethods
         $oArtikelOptionen->nMain                     = 1;
         $oArtikelOptionen->nWarenlager               = 1;
         $oArtikel                                    = new Artikel();
-        $oArtikel->fuelleArtikel($kVaterArtikel, $oArtikelOptionen, \Session\Session::getCustomerGroup()->getID());
+        $oArtikel->fuelleArtikel($kVaterArtikel, $oArtikelOptionen, \Session\Frontend::getCustomerGroup()->getID());
         $weightDiff   = 0;
         $newProductNr = '';
         foreach ($valueID_arr as $valueID) {
@@ -743,8 +743,8 @@ class IOMethods
             }
         }
 
-        $nNettoPreise = \Session\Session::getCustomerGroup()->getIsMerchant();
-        $fVKNetto     = $oArtikel->gibPreis($fAnzahl, $valueID_arr, \Session\Session::getCustomerGroup()->getID());
+        $nNettoPreise = \Session\Frontend::getCustomerGroup()->getIsMerchant();
+        $fVKNetto     = $oArtikel->gibPreis($fAnzahl, $valueID_arr, \Session\Frontend::getCustomerGroup()->getID());
         $fVK          = [
             Tax::getGross($fVKNetto, $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]),
             $fVKNetto
@@ -780,7 +780,7 @@ class IOMethods
                 $fStaffelVKNetto         = $oArtikel->gibPreis(
                     $nAnzahl,
                     $valueID_arr,
-                    \Session\Session::getCustomerGroup()->getID()
+                    \Session\Frontend::getCustomerGroup()->getID()
                 );
                 $fStaffelVK[0][$nAnzahl] = Tax::getGross(
                     $fStaffelVKNetto,
@@ -1086,7 +1086,7 @@ class IOMethods
                     AND tartikelsichtbarkeit.kArtikel IS NULL',
             [
                 'languageID'      => Shop::getLanguageID(),
-                'customergroupID' => \Session\Session::getCustomerGroup()->getID(),
+                'customergroupID' => \Session\Frontend::getCustomerGroup()->getID(),
                 'parentProductID' => $parentProductID,
                 'variationID'     => $variationID,
                 'variationValue'  => $variationValue,

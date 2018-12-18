@@ -187,7 +187,7 @@ if (Form::validateToken()) {
         }
         $smarty->assign('oNewsletterVorlage', $newsletterTPL)
                ->assign('cFehler', is_string($preview) ? $preview : null)
-               ->assign('NettoPreise', \Session\Session::getCustomerGroup()->getIsMerchant());
+               ->assign('NettoPreise', \Session\Frontend::getCustomerGroup()->getIsMerchant());
     } elseif (Request::verifyGPCDataInt('newslettervorlagenstd') === 1) { // Vorlagen Std
         $customerGroups    = $db->query(
             'SELECT kKundengruppe, cName

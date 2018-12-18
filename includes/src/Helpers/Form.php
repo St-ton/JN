@@ -9,7 +9,7 @@ namespace Helpers;
 use DB\ReturnType;
 use Exception;
 use Kundengruppe;
-use Session\Session;
+use Session\Frontend;
 use Shop;
 use SimpleMail;
 use StringHandler;
@@ -31,7 +31,7 @@ class Form
         $valid = Shop::Container()->getCaptchaService()->validate($requestData);
 
         if ($valid) {
-            Session::set('bAnti_spam_already_checked', true);
+            Frontend::set('bAnti_spam_already_checked', true);
         } else {
             Shop::Smarty()->assign('bAnti_spam_failed', true);
         }
@@ -236,7 +236,7 @@ class Form
      */
     public static function checkSubject(): bool
     {
-        $kKundengruppe = Session::getCustomerGroup()->getID();
+        $kKundengruppe = Frontend::getCustomerGroup()->getID();
         if (!$kKundengruppe) {
             $kKundengruppe = (int)$_SESSION['Kunde']->kKundengruppe;
             if (!$kKundengruppe) {

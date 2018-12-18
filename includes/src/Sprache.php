@@ -933,7 +933,7 @@ class Sprache
      */
     public static function getAllLanguages(int $nOption = 0)
     {
-        $languages = \Session\Session::getLanguages();
+        $languages = \Session\Frontend::getLanguages();
         if (count($languages) > 0) {
             switch ($nOption) {
                 case 2:
@@ -995,7 +995,7 @@ class Sprache
         }
         $langToCheckAgainst = $kSprache !== null ? (int)$kSprache : Shop::getLanguageID();
         if ($langToCheckAgainst > 0) {
-            foreach (\Session\Session::getLanguages() as $Sprache) {
+            foreach (\Session\Frontend::getLanguages() as $Sprache) {
                 if ($Sprache->cStandard === 'Y' && (int)$Sprache->kSprache === $langToCheckAgainst && !$bShop) {
                     return true;
                 }
@@ -1018,7 +1018,7 @@ class Sprache
      */
     public static function getDefaultLanguage($bShop = true)
     {
-        foreach (\Session\Session::getLanguages() as $Sprache) {
+        foreach (\Session\Frontend::getLanguages() as $Sprache) {
             if ($Sprache->cStandard === 'Y' && !$bShop) {
                 return $Sprache;
             }
@@ -1059,7 +1059,7 @@ class Sprache
         $mapped      = $mapper->map(Shop::getPageType());
         $specialPage = $mapped > 0 ? $ls->getSpecialPage($mapped) : null;
         $page        = $kLink > 0 ? $ls->getPageLink($kLink) : null;
-        if (count(\Session\Session::getLanguages()) > 1) {
+        if (count(\Session\Frontend::getLanguages()) > 1) {
             /** @var Artikel $AktuellerArtikel */
             if ($AktuellerArtikel !== null
                 && $AktuellerArtikel->kArtikel > 0
@@ -1067,7 +1067,7 @@ class Sprache
             ) {
                 $AktuellerArtikel->baueArtikelSprachURL();
             }
-            foreach (\Session\Session::getLanguages() as $lang) {
+            foreach (\Session\Frontend::getLanguages() as $lang) {
                 if (isset($AktuellerArtikel->cSprachURL_arr[$lang->cISO])) {
                     $lang->cURL     = $AktuellerArtikel->cSprachURL_arr[$lang->cISO];
                     $lang->cURLFull = $shopURL . $AktuellerArtikel->cSprachURL_arr[$lang->cISO];
@@ -1124,15 +1124,15 @@ class Sprache
                 }
             }
         }
-        if (count(\Session\Session::getCurrencies()) > 1) {
+        if (count(\Session\Frontend::getCurrencies()) > 1) {
             if ($AktuellerArtikel !== null
                 && $AktuellerArtikel->kArtikel > 0
                 && empty($AktuellerArtikel->cSprachURL_arr)
             ) {
                 $AktuellerArtikel->baueArtikelSprachURL(false);
             }
-            $currentCurrencyCode = Session\Session::getCurrency()->getID();
-            foreach (\Session\Session::getCurrencies() as $currency) {
+            $currentCurrencyCode = Session\Frontend::getCurrency()->getID();
+            foreach (\Session\Frontend::getCurrencies() as $currency) {
                 if (isset($AktuellerArtikel->cSprachURL_arr[Shop::getLanguageCode()])) {
                     $url = $AktuellerArtikel->cSprachURL_arr[Shop::getLanguageCode()];
                 } elseif ($specialPage !== null) {

@@ -9,7 +9,7 @@ namespace Helpers;
 use DB\ReturnType;
 use Link\Link;
 use Preise;
-use Session\Session;
+use Session\Frontend;
 use Shop;
 use Sprache;
 use stdClass;
@@ -68,9 +68,9 @@ class Tax
         if ($steuerland) {
             $deliveryCountryCode = $steuerland;
         }
-        if (!empty(Session::getCustomer()->cLand)) {
-            $deliveryCountryCode = Session::getCustomer()->cLand;
-            $billingCountryCode  = Session::getCustomer()->cLand;
+        if (!empty(Frontend::getCustomer()->cLand)) {
+            $deliveryCountryCode = Frontend::getCustomer()->cLand;
+            $billingCountryCode  = Frontend::getCustomer()->cLand;
         }
         if (!empty($_SESSION['Lieferadresse']->cLand)) {
             $deliveryCountryCode = $_SESSION['Lieferadresse']->cLand;
@@ -88,10 +88,10 @@ class Tax
         $UstBefreiungIGL = false;
         if ($merchantCountryCode !== $deliveryCountryCode
             && $merchantCountryCode !== $billingCountryCode
-            && !empty(Session::getCustomer()->cUSTID)
-            && (\strcasecmp($billingCountryCode, \substr(Session::getCustomer()->cUSTID, 0, 2)) === 0
+            && !empty(Frontend::getCustomer()->cUSTID)
+            && (\strcasecmp($billingCountryCode, \substr(Frontend::getCustomer()->cUSTID, 0, 2)) === 0
                 || (\strcasecmp($billingCountryCode, 'GR') === 0
-                    && \strcasecmp(\substr(Session::getCustomer()->cUSTID, 0, 2), 'EL') === 0))
+                    && \strcasecmp(\substr(Frontend::getCustomer()->cUSTID, 0, 2), 'EL') === 0))
         ) {
             $deliveryCountry = Shop::Container()->getDB()->select('tland', 'cISO', $deliveryCountryCode);
             $shopCountry     = Shop::Container()->getDB()->select('tland', 'cISO', $merchantCountryCode);
@@ -173,7 +173,7 @@ class Tax
             }
         }
         if (isset($_SESSION['Warenkorb']) && $_SESSION['Warenkorb'] instanceof Warenkorb) {
-            Session::getCart()->setzePositionsPreise();
+            Frontend::getCart()->setzePositionsPreise();
         }
     }
 
@@ -189,7 +189,7 @@ class Tax
     public static function getOldTaxPositions(array $positions, $net = -1, $html = true, $currency = 0): array
     {
         if ($net === -1) {
-            $net = Session::getCustomerGroup()->isMerchant();
+            $net = Frontend::getCustomerGroup()->isMerchant();
         }
         $taxRates = [];
         $taxPos   = [];

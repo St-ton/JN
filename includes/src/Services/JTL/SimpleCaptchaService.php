@@ -9,7 +9,7 @@
 namespace Services\JTL;
 
 use Exception;
-use Session\Session;
+use Session\Frontend;
 use Shop;
 use Smarty\JTLSmarty;
 
@@ -79,8 +79,8 @@ class SimpleCaptchaService implements CaptchaServiceInterface
             $code  = \rand() . ':' . \time();
         }
 
-        Session::set('simplecaptcha.token', $token);
-        Session::set('simplecaptcha.code', $code);
+        Frontend::set('simplecaptcha.token', $token);
+        Frontend::set('simplecaptcha.code', $code);
 
         return $smarty->assign('captchaToken', $token)
                       ->assign('captchaCode', \sha1($code))
@@ -97,15 +97,15 @@ class SimpleCaptchaService implements CaptchaServiceInterface
             return true;
         }
 
-        $token = Session::get('simplecaptcha.token');
-        $code  = Session::get('simplecaptcha.code');
+        $token = Frontend::get('simplecaptcha.token');
+        $code  = Frontend::get('simplecaptcha.code');
 
         if (!isset($token, $code)) {
             return false;
         }
 
-        Session::set('simplecaptcha.token', null);
-        Session::set('simplecaptcha.code', null);
+        Frontend::set('simplecaptcha.token', null);
+        Frontend::set('simplecaptcha.code', null);
 
         $time = \substr($code, \strpos($code, ':') + 1);
 

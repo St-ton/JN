@@ -19,6 +19,7 @@ use OPC\Locker;
 use OPC\PageDB;
 use OPC\PageService;
 use OPC\Service;
+use Services\JTL\AdminAccountService;
 use Services\JTL\BoxServiceInterface;
 use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
@@ -130,4 +131,9 @@ interface DefaultServicesInterface extends ContainerInterface
      * @return GetText
      */
     public function getGetText() : GetText;
+
+    /**
+     * @return \AdminAccount
+     */
+    public function getAdminAccount(): \AdminAccount;
 }

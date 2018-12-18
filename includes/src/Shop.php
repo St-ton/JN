@@ -1965,6 +1965,10 @@ final class Shop
                 )
             ));
         });
+        // GetText
+        $container->setSingleton(\L10n\GetText::class, function (Container $container) {
+            return new \L10n\GetText();
+        });
     }
 
     /**

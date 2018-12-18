@@ -5,21 +5,21 @@
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{#pluginListNotActivated#}</h3>
+                    <h3 class="panel-title">{__('pluginListNotActivated')}</h3>
                 </div>
                 <div class="table-responsive">
                     <table class="list table">
                         <thead>
                         <tr>
                             <th></th>
-                            <th class="tleft">{#pluginName#}</th>
-                            <th>{#status#}</th>
-                            <th>{#pluginVersion#}</th>
-                            <th>{#pluginInstalled#}</th>
-                            <th>{#pluginFolder#}</th>
-                            <th>{#pluginEditLocales#}</th>
-                            <th>{#pluginEditLinkgrps#}</th>
-                            <th>{#pluginBtnLicence#}</th>
+                            <th class="tleft">{__('pluginName')}</th>
+                            <th>{__('status')}</th>
+                            <th>{__('pluginVersion')}</th>
+                            <th>{__('pluginInstalled')}</th>
+                            <th>{__('pluginFolder')}</th>
+                            <th>{__('pluginEditLocales')}</th>
+                            <th>{__('pluginEditLinkgrps')}</th>
+                            <th>{__('pluginBtnLicence')}</th>
                             <th>&nbsp;</th>
                         </tr>
                         </thead>
@@ -32,7 +32,7 @@
                                 <td>
                                     <label for="plugin-check-{$plugin->getID()}">{$plugin->getMeta()->getName()}</label
                                     {if $plugin->getMeta()->isUpdateAvailable() || (isset($plugin->cInfo) && $plugin->cInfo|strlen > 0)}
-                                        <p>{#pluginUpdateExists#}</p>
+                                        <p>{__('pluginUpdateExists')}</p>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-status">
@@ -58,17 +58,17 @@
                                 <td class="tcenter plugin-lang-vars">
                                     {if $plugin->getLocalization()->getTranslations()|@count > 0}
                                         <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
-                                           class="btn btn-default btn-sm" title="{#modify#}"><i class="fa fa-edit"></i></a>
+                                           class="btn btn-default btn-sm" title="{__('modify')}"><i class="fa fa-edit"></i></a>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-frontend-links">
                                     {if $plugin->getLinks()->getLinks()->count() > 0}
-                                        <a href="links.php?kPlugin={$plugin->getID()}" class="btn btn-default btn-sm" title="{#modify#}"><i class="fa fa-edit"></i></a>
+                                        <a href="links.php?kPlugin={$plugin->getID()}" class="btn btn-default btn-sm" title="{__('modify')}"><i class="fa fa-edit"></i></a>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-license">
                                     {if $plugin->getLicense()->hasLicenseCheck()}
-                                        <button name="lizenzkey" type="submit" title="{#modify#}"
+                                        <button name="lizenzkey" type="submit" title="{__('modify')}"
                                                 class="btn {if $plugin->getLicense()->hasLicense()}btn-default{else}btn-primary{/if} btn-sm" value="{$plugin->getID()}">
                                             <i class="fa fa-edit"></i>
                                         </button>
@@ -76,7 +76,7 @@
                                 </td>
                                 <td class="tcenter">
                                     {if $plugin->getMeta()->isUpdateAvailable()}
-                                        <a onclick="ackCheck({$plugin->getID()}, 'deaktiviert'); return false;" class="btn btn-primary btn-sm" title="{#pluginBtnUpdate#}"><i class="fa fa-refresh"></i></a>
+                                        <a onclick="ackCheck({$plugin->getID()}, 'deaktiviert'); return false;" class="btn btn-primary btn-sm" title="{__('pluginBtnUpdate')}"><i class="fa fa-refresh"></i></a>
                                     {/if}
                                 </td>
                             </tr>
@@ -85,21 +85,21 @@
                         <tfoot>
                         <tr>
                             <td class="check"><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                            <td colspan="10"><label for="ALLMSGS2">{#pluginSelectAll#}</label></td>
+                            <td colspan="10"><label for="ALLMSGS2">{__('pluginSelectAll')}</label></td>
                         </tr>
                         </tfoot>
                     </table>
                 </div>
                 <div class="panel-footer">
                     <div class="save btn-group">
-                        <button name="aktivieren" type="submit" class="btn btn-primary"><i class="fa fa-share"></i> {#pluginBtnActivate#}</button>
-                        {*<button name="deaktivieren" type="submit" class="btn btn-warning">{#pluginBtnDeActivate#}</button>*}
-                        <button name="deinstallieren" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {#pluginBtnDeInstall#}</button>
+                        <button name="aktivieren" type="submit" class="btn btn-primary"><i class="fa fa-share"></i> {__('pluginBtnActivate')}</button>
+                        {*<button name="deaktivieren" type="submit" class="btn btn-warning">{__('pluginBtnDeActivate')}</button>*}
+                        <button name="deinstallieren" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('pluginBtnDeInstall')}</button>
                     </div>
                 </div>
             </div>
         </form>
     {else}
-        <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+        <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
     {/if}
 </div>

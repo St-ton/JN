@@ -1,0 +1,14 @@
+msgid "newsletterMail"
+msgstr "Newsletterempfänger importieren"
+
+msgid "newsletterMailDesc"
+msgstr "Hier haben Sie die Möglichkeit Newsletterempfänger in Form einer CSV-Datei zu importieren"
+
+msgid "newsletterURL"
+msgstr "https://jtl-url.de/686sr"
+
+msgid "language"
+msgstr "Kunden diese Sprache zuweisen"
+
+msgid "csvFile"
+msgstr "Kunden CSV - Datei"

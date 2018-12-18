@@ -1,0 +1,6 @@
+msgid "status"
+msgstr "Status"
+
+msgid "statusURL"
+msgstr "https://jtl-url.de/njc39"
+

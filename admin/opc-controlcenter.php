@@ -16,8 +16,6 @@ use Pagination\Pagination;
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
-\L10n\GetText::getInstance()->loadAdminLocale('opc-controlcenter');
-
 $notice = '';
 $error  = '';
 $action = Request::verifyGPDataString('action');
@@ -34,11 +32,11 @@ if (Form::validateToken()) {
     if ($action === 'restore') {
         $pageId = Request::verifyGPDataString('pageId');
         $opcPage->deletePage($pageId);
-        $notice = __('The OPC content for this page has been reset.');
+        $notice = __('opcNoticePageReset');
     } elseif ($action === 'discard') {
         $pageKey = Request::verifyGPCDataInt('pageKey');
         $opcPage->deleteDraft($pageKey);
-        $notice = __('The draft has been deleted.');
+        $notice = __('opcNoticeDraftDelete');
     }
 }
 

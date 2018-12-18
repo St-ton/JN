@@ -19,6 +19,9 @@ $tab          = 'uebersicht';
 $action       = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : null;
 $cache        = null;
 $opcacheStats = null;
+
+\Shop::Container()->getGetText()->loadConfigLocales();
+
 if (0 < strlen(Request::verifyGPDataString('tab'))) {
     $smarty->assign('tab', Request::verifyGPDataString('tab'));
 }
@@ -137,6 +140,7 @@ switch ($action) {
         );
         $i             = 0;
         $settingsCount = count($settings);
+
         while ($i < $settingsCount) {
             if (isset($_POST[$settings[$i]->cWertName])) {
                 $value                        = new stdClass();
@@ -292,6 +296,8 @@ $settings = Shop::Container()->getDB()->selectAll(
     '*',
     'nSort'
 );
+
+\Shop::Container()->getGetText()->localizeConfigs($settings);
 foreach ($settings as $i => $setting) {
     if ($setting->cName === 'caching_types_disabled') {
         unset($settings[$i]);
@@ -305,6 +311,7 @@ foreach ($settings as $i => $setting) {
             '*',
             'nSort'
         );
+        \Shop::Container()->getGetText()->localizeConfigValues($setting, $setting->ConfWerte);
     }
     $oSetValue              = Shop::Container()->getDB()->select(
         'teinstellungen',
@@ -321,7 +328,11 @@ $advancedSettings = Shop::Container()->getDB()->query(
         ORDER BY nSort',
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
-$settingsCount    = count($advancedSettings);
+
+\Shop::Container()->getGetText()->localizeConfigs($advancedSettings);
+
+$settingsCount = count($advancedSettings);
+
 for ($i = 0; $i < $settingsCount; ++$i) {
     if ($advancedSettings[$i]->cInputTyp === 'selectbox') {
         $advancedSettings[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
@@ -331,6 +342,7 @@ for ($i = 0; $i < $settingsCount; ++$i) {
             '*',
             'nSort'
         );
+        \Shop::Container()->getGetText()->localizeConfigValues($advancedSettings[$i], $advancedSettings[$i]->ConfWerte);
     }
     $oSetValue                           = Shop::Container()->getDB()->select(
         'teinstellungen',

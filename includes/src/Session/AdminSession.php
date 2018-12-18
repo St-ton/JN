@@ -6,8 +6,8 @@
 
 namespace Session;
 
-use Session\Handler\SessionHandlerDB;
-use Session\Handler\SessionHandlerJTL;
+use Session\Handler\DB;
+use Session\Handler\JTLDefault;
 
 /**
  * Class AdminSession
@@ -15,7 +15,7 @@ use Session\Handler\SessionHandlerJTL;
  */
 class AdminSession
 {
-    public const DEFAULT_SESSION = 'JTLSHOP';
+    public const DEFAULT_SESSION = 'eSIdAdm';
 
     public const SESSION_HASH_KEY = 'session.hash';
 
@@ -30,7 +30,7 @@ class AdminSession
     private static $handler;
 
     /**
-     * @var SessionStorage
+     * @var Storage
      */
     private static $storage;
 
@@ -53,12 +53,12 @@ class AdminSession
      */
     public function __construct()
     {
-        \session_name('eSIdAdm');
+        \session_name(self::DEFAULT_SESSION);
         self::$instance = $this;
         self::$handler  = \ES_SESSIONS === 1
-            ? new SessionHandlerDB(\Shop::Container()->getDB(), 'tadminsession')
-            : new SessionHandlerJTL();
-        self::$storage  = new SessionStorage(self::$handler);
+            ? new DB(\Shop::Container()->getDB(), 'tadminsession')
+            : new JTLDefault();
+        self::$storage  = new Storage(self::$handler);
 
         $_SESSION['jtl_token'] = $_SESSION['jtl_token'] ?? \Shop::Container()->getCryptoService()->randomString(32);
         if (!isset($_SESSION['kSprache'], $_SESSION['cISOSprache'])) {

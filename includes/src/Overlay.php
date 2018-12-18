@@ -151,6 +151,16 @@ class Overlay
                 $this->setFallbackPath($overlay->cTemplate);
             }
             $this->setURLSizes();
+        } else {
+            // fallback overlay is missing
+            $this->setActive(0)
+                 ->setMargin(0)
+                 ->setPosition(0)
+                 ->setPriority(0)
+                 ->setTransparence(0)
+                 ->setSize(0)
+                 ->setImageName('')
+                 ->setName('');
         }
 
         return $this;

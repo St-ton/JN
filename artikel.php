@@ -98,16 +98,25 @@ $similarArticles = (int)$Einstellungen['artikeldetails']['artikeldetails_aehnlic
     : [];
 // Lade VariationKombiKind
 if (Shop::$kVariKindArtikel > 0) {
-    $oVariKindArtikel                            = new Artikel();
-    $oArtikelOptionen                            = Artikel::getDetailOptions();
-    $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
-    $oVariKindArtikel->fuelleArtikel(Shop::$kVariKindArtikel, $oArtikelOptionen);
-    $oVariKindArtikel->verfuegbarkeitsBenachrichtigung = gibVerfuegbarkeitsformularAnzeigen(
-        $oVariKindArtikel,
-        $Einstellungen['artikeldetails']['benachrichtigung_nutzen']);
-    $AktuellerArtikel = fasseVariVaterUndKindZusammen($AktuellerArtikel, $oVariKindArtikel);
-    $bCanonicalURL    = ($Einstellungen['artikeldetails']['artikeldetails_canonicalurl_varkombikind'] !== 'N');
-    $cCanonicalURL    = $AktuellerArtikel->baueVariKombiKindCanonicalURL(SHOP_SEO, $AktuellerArtikel, $bCanonicalURL);
+    $oVariKindArtikel = new Artikel();
+    $oVariKindArtikel->fuelleArtikel(Shop::$kVariKindArtikel, Artikel::getDetailOptions());
+    if ($oVariKindArtikel !== null && $oVariKindArtikel->kArtikel > 0) {
+        $oVariKindArtikel->verfuegbarkeitsBenachrichtigung = gibVerfuegbarkeitsformularAnzeigen(
+            $oVariKindArtikel,
+            $Einstellungen['artikeldetails']['benachrichtigung_nutzen']
+        );
+
+        $AktuellerArtikel = fasseVariVaterUndKindZusammen($AktuellerArtikel, $oVariKindArtikel);
+    } else {
+        $cParameter_arr['is404'] = true;
+        Shop::$is404             = true;
+        Shop::$kLink             = 0;
+        Shop::$kArtikel          = 0;
+
+        return;
+    }
+    $bCanonicalURL = ($Einstellungen['artikeldetails']['artikeldetails_canonicalurl_varkombikind'] !== 'N');
+    $cCanonicalURL = $AktuellerArtikel->baueVariKombiKindCanonicalURL(SHOP_SEO, $AktuellerArtikel, $bCanonicalURL);
     $smarty->assign('a2', Shop::$kVariKindArtikel)
            ->assign('reset_button', '<ul><li><button type="button" ' .
                'class="btn submit reset_selection" onclick="location.href=\'' .

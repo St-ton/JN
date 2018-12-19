@@ -120,11 +120,12 @@ class Queue
                         nLimitM = :lm,
                         nLastArticleID = :lp,
                         dZuletztgelaufen = NOW()
-                     WHERE kCron = 0',
+                     WHERE kCron = :cid',
                     [
-                        'ln' => $queueEntry->nLimitN,
-                        'lm' => $queueEntry->nLimitM,
-                        'lp' => $queueEntry->nLastArticleID
+                        'ln'  => $queueEntry->nLimitN,
+                        'lm'  => $queueEntry->nLimitM,
+                        'lp'  => $queueEntry->nLastArticleID,
+                        'cid' => $job->getCronID()
                     ],
                     ReturnType::DEFAULT
                 );

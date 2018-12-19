@@ -16,7 +16,7 @@ stages:
       echo ""
     fi
       export DB_HOST_NET=$(docker network inspect -f '{{range .Containers}}{{if eq .Name "mariadb-10-2-container"}}{{.IPv4Address}}{{end}}{{end}}' mysql-php-network)
-      export DB_HOST="${DB_HOST_NET//[\/16]/}"
+      export DB_HOST="${DB_HOST_NET::-3}"
 
       echo "$DB_HOST";
 

@@ -20,5 +20,3 @@ $smarty->configLoad('german.conf', 'bilderverwaltung')
        ->assign('SIZE_MD', Image::SIZE_MD)
        ->assign('SIZE_LG', Image::SIZE_LG)
        ->display('bilderverwaltung.tpl');
-
-Shop::dbg(memory_get_peak_usage(true)/1024/1024);

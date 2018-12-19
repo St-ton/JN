@@ -78,7 +78,7 @@ stages:
       --name="$CI_CONTAINER_NAME" \
       --network mysql-php-network \
       $CI_REGISTRY_IMAGE/build-deploy \
-      sh -c "cp -r /dockerBuild/. /build; /etc/init.d/mysql start; bash $BUILD_SCRIPT_PATH '/build' $CI_COMMIT_REF_NAME $CI_COMMIT_SHA '$DB_HOST' 'root' '$DOCKER_MARIADB_PASSWORD' 'build_$DB_NAME'"
+      sh -c "cp -r /dockerBuild/. /build; bash $BUILD_SCRIPT_PATH '/build' $CI_COMMIT_REF_NAME $CI_COMMIT_SHA '$DB_HOST' 'root' '$DOCKER_MARIADB_PASSWORD' 'build_$DB_NAME'"
 
     echo "Build finished"
   }

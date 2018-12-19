@@ -34,30 +34,6 @@ class Statusmail extends Job
     }
 
     /**
-     * @param string $dateStart
-     * @param string $interval - one of 'hour', 'day', 'week', 'month', 'year'
-     * @return bool
-     */
-    public function isIntervalExceeded($dateStart, $interval): bool
-    {
-        if (empty($dateStart) || $dateStart === '0000-00-00 00:00:00') {
-            return true;
-        }
-        $oStartTime = \date_create($dateStart);
-
-        if ($oStartTime === false) {
-            return false;
-        }
-
-        $oEndTime = $oStartTime->modify('+1 ' . $interval);
-        if ($oEndTime === false) {
-            return false;
-        }
-
-        return \date_create()->format('YmdHis') >= $oEndTime->format('YmdHis');
-    }
-
-    /**
      * @inheritdoc
      */
     public function start(QueueEntry $queueEntry): JobInterface

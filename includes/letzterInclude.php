@@ -184,7 +184,7 @@ $visitorCount = $Einstellungen['global']['global_zaehler_anzeigen'] === 'Y'
         \DB\ReturnType::SINGLE_OBJECT
     )->nZaehler
     : 0;
-$debugbar['time']->stopMeasure('init');
+$debugbar->getTimer()->stopMeasure('init');
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('Brotnavi', $nav->createNavigation())
        ->assign('nIsSSL', Request::checkSSL())

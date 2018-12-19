@@ -10,7 +10,7 @@ use Boxes\FactoryInterface;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
-use DebugBar\DebugBar;
+use Debug\JTLDebugBar;
 use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
 use L10n\GetText;
@@ -20,7 +20,6 @@ use OPC\Locker;
 use OPC\PageDB;
 use OPC\PageService;
 use OPC\Service;
-use Services\JTL\AdminAccountService;
 use Services\JTL\BoxServiceInterface;
 use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
@@ -139,7 +138,7 @@ interface DefaultServicesInterface extends ContainerInterface
     public function getAdminAccount(): \AdminAccount;
 
     /**
-     * @return DebugBar
+     * @return JTLDebugBar
      */
-    public function getDebugBar(): DebugBar;
+    public function getDebugBar(): JTLDebugBar;
 }

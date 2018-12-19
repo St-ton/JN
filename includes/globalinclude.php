@@ -4,9 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Debug\DataCollector\Smarty;
 use Helpers\PHPSettings;
 use JTLShop\SemVer\Version;
-use Smarty\Collector;
 
 $nStartzeit = microtime(true);
 
@@ -117,5 +117,5 @@ if (!JTL_INCLUDE_ONLY_DB) {
     Sprache::getInstance();
     Shop::bootstrap();
     require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-    $debugbar->addCollector(new Collector(Shop::Smarty()));
+    $debugbar->addCollector(new Smarty(Shop::Smarty()));
 }

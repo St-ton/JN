@@ -4,16 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Smarty;
+namespace Debug\DataCollector;
 
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
+use Smarty\JTLSmarty;
 
 /**
- * Class Collector
- * @package Smarty
+ * Class Smarty
+ * @package Debug\DataCollector
  */
-class Collector extends DataCollector implements Renderable
+class Smarty extends DataCollector implements Renderable
 {
     /**
      * @var JTLSmarty

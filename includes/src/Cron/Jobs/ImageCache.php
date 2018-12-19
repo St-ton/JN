@@ -11,6 +11,7 @@ use Cron\JobInterface;
 use Cron\QueueEntry;
 use DB\DbInterface;
 use Psr\Log\LoggerInterface;
+use MediaImage;
 
 /**
  * Class ImageCache
@@ -32,22 +33,22 @@ class ImageCache extends Job
     /**
      * @param int    $index
      * @param string $type
-     * @return object
+     * @return \stdClass
      * @throws \Exception
      */
-    private function generateImageCache(int $index, string $type = \Image::TYPE_PRODUCT)
+    private function generateImageCache(int $index, string $type = \Image::TYPE_PRODUCT): \stdClass
     {
         $started  = \time();
         $rendered = 0;
-        $total    = \MediaImage::getUncachedProductImageCount();
-        $images   = \MediaImage::getImages($type, true, $index, $this->getLimit());
-        $totalAll = \MediaImage::getProductImageCount();
+        $total    = MediaImage::getUncachedProductImageCount();
+        $images   = MediaImage::getImages($type, true, $index, $this->getLimit());
+        $totalAll = MediaImage::getProductImageCount();
         while (\count($images) === 0 && $index < $totalAll) {
             $index  += $this->getLimit();
-            $images = \MediaImage::getImages($type, true, $index, $this->getLimit());
+            $images = MediaImage::getImages($type, true, $index, $this->getLimit());
         }
         foreach ($images as $image) {
-            \MediaImage::cacheImage($image);
+            MediaImage::cacheImage($image);
             ++$index;
             ++$rendered;
         }

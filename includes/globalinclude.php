@@ -6,6 +6,7 @@
 
 use Helpers\PHPSettings;
 use JTLShop\SemVer\Version;
+use Smarty\Collector;
 
 $nStartzeit = microtime(true);
 
@@ -19,8 +20,6 @@ if (defined('PFAD_ROOT')) {
     die('Die Konfigurationsdatei des Shops konnte nicht geladen werden! ' .
         'Bei einer Neuinstallation bitte <a href="install/">hier</a> klicken.');
 }
-
-use DebugBar\StandardDebugBar;
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'error_handler.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
@@ -62,7 +61,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 
 try {
-    $db = Shop::Container()->getDB();
+    Shop::Container()->getDB();
 } catch (Exception $exc) {
     die($exc->getMessage());
 }
@@ -118,5 +117,5 @@ if (!JTL_INCLUDE_ONLY_DB) {
     Sprache::getInstance();
     Shop::bootstrap();
     require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-    $debugbar->addCollector(new SmartyCollector(Shop::Smarty()));
+    $debugbar->addCollector(new Collector(Shop::Smarty()));
 }

@@ -1,12 +1,19 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
+
+namespace Smarty;
 
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
 
 /**
- * Class SmartyCollector
+ * Class Collector
+ * @package Smarty
  */
-class SmartyCollector extends DataCollector implements Renderable
+class Collector extends DataCollector implements Renderable
 {
     /**
      * @var JTLSmarty
@@ -15,9 +22,9 @@ class SmartyCollector extends DataCollector implements Renderable
 
     /**
      * SmartyCollector constructor.
-     * @param \Smarty\JTLSmarty $smarty
+     * @param JTLSmarty $smarty
      */
-    public function __construct(\Smarty\JTLSmarty $smarty)
+    public function __construct(JTLSmarty $smarty)
     {
         $this->smarty = $smarty;
     }
@@ -52,9 +59,9 @@ class SmartyCollector extends DataCollector implements Renderable
     {
         return [
             'smarty' => [
-                'icon' => 'tags',
-                'widget' => 'PhpDebugBar.Widgets.VariableListWidget',
-                'map' => 'smarty',
+                'icon'    => 'tags',
+                'widget'  => 'PhpDebugBar.Widgets.VariableListWidget',
+                'map'     => 'smarty',
                 'default' => '{}'
             ]
         ];

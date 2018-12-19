@@ -4,9 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Category;
 use Helpers\Form;
 use Helpers\Manufacturer;
+use Helpers\Category;
 use Helpers\Request;
 use Helpers\ShippingMethod;
 
@@ -191,5 +191,5 @@ $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('boxes', $boxesToShow)
        ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
        ->assign('Besucherzaehler', $visitorCount)
-    ->assign('dbgBarHead', $debugbarRenderer->renderHead())
-    ->assign('dbgBarBody', $debugbarRenderer->render());
+       ->assign('dbgBarHead', $debugbarRenderer->renderHead())
+       ->assign('dbgBarBody', $debugbarRenderer->render());

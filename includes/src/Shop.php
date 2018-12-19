@@ -6,8 +6,8 @@
 
 use DB\Services as DbService;
 use Filter\ProductFilter;
-use Helpers\PHPSettings;
 use Helpers\Product;
+use Helpers\PHPSettings;
 use Helpers\Request;
 use Helpers\Tax;
 use JTL\ProcessingHandler\NiceDBHandler;

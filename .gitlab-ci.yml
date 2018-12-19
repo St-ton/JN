@@ -15,10 +15,6 @@ stages:
       docker login -u "$CI_USER_VAR" -p "$CI_USER_PW_VAR" "$CI_REGISTRY"
       echo ""
     fi
-      export DB_HOST_NET=$(docker network inspect -f '{{range .Containers}}{{if eq .Name "mariadb-10-2-container"}}{{.IPv4Address}}{{end}}{{end}}' mysql-php-network)
-      export DB_HOST="${DB_HOST_NET::-3}"
-
-      echo "$DB_HOST";
 
     echo "Testing projekt in PHP $PHP_VERSION_TEST_STEP docker image..."
 
@@ -73,9 +69,7 @@ stages:
     export RAND_CHAR=$(date +%s|sha256sum|head -c 6)
     export DB_NAME="build_$RAND_CHAR"
     export DB_HOST_NET=$(docker network inspect -f '{{range .Containers}}{{if eq .Name "mariadb-10-2-container"}}{{.IPv4Address}}{{end}}{{end}}' mysql-php-network)
-    export DB_HOST="${DB_HOST_NET//[\/16]/}"
-
-    echo "$DB_HOST";
+    export DB_HOST="${DB_HOST_NET::-3}"
 
     echo "Building projekt in PHP 7.1 and mariadb server 10.2 docker image..."
     docker run \
@@ -95,6 +89,7 @@ stages:
       /bin/bash -c "bash $DEPLOY_SCRIPT_PATH $CI_PROJECT_NAME $CI_COMMIT_REF_NAME /archive"
 
     docker cp $CI_CONTAINER_NAME:/archive/. $CI_BUILD_SERVER_ARCHIVE_PATH
+    docker network disconnect mysql-php-network $CI_CONTAINER_NAME
     docker stop "$CI_CONTAINER_NAME"
     docker rm -fv "$CI_CONTAINER_NAME" >/dev/null
   }
@@ -113,6 +108,7 @@ stages:
     export running=$(docker inspect -f '{{.State.Running}}' ci_job_build_deploy_$CI_COMMIT_SHA)
 
     if [[ ! -z "$running" ]]; then
+      docker network disconnect mysql-php-network $CI_CONTAINER_NAME
       docker stop ci_job_build_deploy_$CI_COMMIT_SHA && docker rm -fv ci_job_build_deploy_$CI_COMMIT_SHA
     fi
   }

@@ -68,20 +68,16 @@ stages:
   function buildProcess() {
     export RAND_CHAR=$(date +%s|sha256sum|head -c 6)
     export DB_NAME="build_$RAND_CHAR"
+    export DB_HOST=$(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mariadb-10-2-container)
 
     echo "Building projekt in PHP 7.1 and mariadb server 10.2 docker image..."
     docker run \
       --volume $CI_PROJECT_DIR.tmp/CI_SERVER_TLS_CA_FILE:$CI_PROJECT_DIR.tmp/CI_SERVER_TLS_CA_FILE \
       --volume $(pwd):/dockerBuild \
       --name="$CI_CONTAINER_NAME" \
-      -d \
-      $CI_REGISTRY_IMAGE/build-deploy
-
-    docker exec \
-      -e MYSQL_ROOT_PASSWORD="$DOCKER_MARIADB_PASSWORD" \
-      -e MYSQL_DATABASE="build_$DB_NAME" \
-      "$CI_CONTAINER_NAME" \
-      sh -c "cp -r /dockerBuild/. /build; /etc/init.d/mysql start; bash $BUILD_SCRIPT_PATH '/build' $CI_COMMIT_REF_NAME $CI_COMMIT_SHA 'root' '$DOCKER_MARIADB_PASSWORD' 'build_$DB_NAME'"
+      --link mariadb-10-2-container:mysql
+      $CI_REGISTRY_IMAGE/build-deploy \
+      sh -c "cp -r /dockerBuild/. /build; /etc/init.d/mysql start; bash $BUILD_SCRIPT_PATH '/build' $CI_COMMIT_REF_NAME $CI_COMMIT_SHA '$DB_HOST' 'root' '$DOCKER_MARIADB_PASSWORD' 'build_$DB_NAME'"
 
     echo "Build finished"
   }

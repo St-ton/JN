@@ -15,9 +15,9 @@ class SmartyCollector extends DataCollector implements Renderable
 
     /**
      * SmartyCollector constructor.
-     * @param JTLSmarty $smarty
+     * @param \Smarty\JTLSmarty $smarty
      */
-    public function __construct($smarty)
+    public function __construct(\Smarty\JTLSmarty $smarty)
     {
         $this->smarty = $smarty;
     }

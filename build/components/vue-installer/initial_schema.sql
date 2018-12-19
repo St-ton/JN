@@ -874,6 +874,7 @@ CREATE TABLE `tboxsprache` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tboxsprache` DISABLE KEYS */;
+INSERT INTO `tboxsprache` (`kBox`, `cISO`, `cTitel`, `cInhalt`) VALUES (122,'ger','Gesetzliche Informationen',''),(122,'eng','Legal',''),(123,'ger','Informationen',''),(123,'eng','Information','');
 /*!40000 ALTER TABLE `tboxsprache` ENABLE KEYS */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;

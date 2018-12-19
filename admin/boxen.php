@@ -5,6 +5,7 @@
  */
 
 use Helpers\Form;
+use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('BOXES_VIEW', true, true);
@@ -16,6 +17,7 @@ $nPage      = isset($_REQUEST['page']) ? (int)$_REQUEST['page'] : 0;
 $boxService = Shop::Container()->getBoxService();
 $boxAdmin   = new \Boxes\Admin\BoxAdmin(Shop::Container()->getDB());
 $bOk        = false;
+$linkID     = Request::verifyGPCDataInt('linkID');
 if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::validateToken()) {
     switch ($_REQUEST['action']) {
         case 'delete-invisible':
@@ -78,7 +80,11 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
                    ->assign('revisionData', $revisionData)
                    ->assign(
                        'oLink_arr',
-                       Shop::Container()->getDB()->query('SELECT * FROM tlinkgruppe', \DB\ReturnType::ARRAY_OF_OBJECTS)
+                       Shop::Container()->getLinkService()->getAllLinkGroups()->filter(
+                            function (\Link\LinkGroupInterface $e) {
+                                return $e->isSpecial() === false;
+                            }
+                       )
                    );
             break;
 
@@ -102,14 +108,8 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
                         }
                     }
                 }
-            } elseif ($eTyp === \Boxes\Type::LINK) {
-                $linkID = (int)$_REQUEST['linkID'];
-                if ($linkID > 0) {
-                    $bOk = $boxAdmin->update($kBox, $cTitel, $linkID);
-                }
-            } elseif ($eTyp === \Boxes\Type::CATBOX) {
-                $linkID = (int)$_REQUEST['linkID'];
-                $bOk    = $boxAdmin->update($kBox, $cTitel, $linkID);
+            } elseif (($eTyp === \Boxes\Type::LINK && $linkID > 0) || $eTyp === \Boxes\Type::CATBOX) {
+                $bOk = $boxAdmin->update($kBox, $cTitel, $linkID);
                 if ($bOk) {
                     foreach ($_REQUEST['title'] as $cISO => $cTitel) {
                         $bOk = $boxAdmin->updateLanguage($kBox, $cISO, $cTitel, '');

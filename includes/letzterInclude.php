@@ -4,9 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Category;
 use Helpers\Form;
 use Helpers\Manufacturer;
-use Helpers\Category;
 use Helpers\Request;
 use Helpers\ShippingMethod;
 
@@ -34,10 +34,13 @@ executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
     'cPluginJsHead_arr' => &$cMinify_arr['plugin_js_head'],
     'cPluginJsBody_arr' => &$cMinify_arr['plugin_js_body']
 ]);
-$kKundengruppe = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
+
+$debugbar         = Shop::Container()->getDebugBar();
+$debugbarRenderer = $debugbar->getJavascriptRenderer();
+$kKundengruppe    = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
     ? $_SESSION['Kunde']->kKundengruppe
     : \Session\Session::getCustomerGroup()->getID();
-$cKundenherkunft = (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0)
+$cKundenherkunft  = (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0)
     ? $_SESSION['Kunde']->cLand
     : '';
 

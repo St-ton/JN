@@ -10,6 +10,7 @@ use Boxes\FactoryInterface;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
+use DebugBar\DebugBar;
 use L10n\GetText;
 use Monolog\Logger;
 use OPC\DB;
@@ -186,5 +187,13 @@ class Container extends ContainerBase implements DefaultServicesInterface
     public function getAdminAccount(): \AdminAccount
     {
         return $this->get(\AdminAccount::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDebugBar(): DebugBar
+    {
+        return $this->get(DebugBar::class);
     }
 }

@@ -91,14 +91,7 @@ if (PHP_SAPI !== 'cli'
 }
 
 if (!JTL_INCLUDE_ONLY_DB) {
-    $debugbar         = new StandardDebugBar();
-    $debugbarRenderer = $debugbar->getJavascriptRenderer();
-    $debugbarRenderer->setBaseUrl(URL_SHOP . '/' . rtrim(PFAD_INCLUDES, '/') . $debugbarRenderer->getBaseUrl());
-
-    $pdo = new DebugBar\DataCollector\PDO\TraceablePDO($db->getPDO());
-    $debugbar->addCollector(new DebugBar\DataCollector\PDO\PDOCollector($pdo));
-    $debugbar['time']->startMeasure('init', 'Shop start to end');
-    $debugbar->addCollector(new DebugBar\DataCollector\ConfigCollector(Shopsetting::getInstance()->getAll()));
+    $debugbar = Shop::Container()->getDebugBar();
 
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';

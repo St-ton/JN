@@ -10,6 +10,7 @@ use Boxes\FactoryInterface;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
+use DebugBar\DebugBar;
 use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
 use L10n\GetText;
@@ -136,4 +137,9 @@ interface DefaultServicesInterface extends ContainerInterface
      * @return \AdminAccount
      */
     public function getAdminAccount(): \AdminAccount;
+
+    /**
+     * @return DebugBar
+     */
+    public function getDebugBar(): DebugBar;
 }

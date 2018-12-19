@@ -6,8 +6,8 @@
 
 use DB\Services as DbService;
 use Filter\ProductFilter;
-use Helpers\Product;
 use Helpers\PHPSettings;
+use Helpers\Product;
 use Helpers\Request;
 use Helpers\Tax;
 use JTL\ProcessingHandler\NiceDBHandler;
@@ -1879,6 +1879,17 @@ final class Shop
 
         $container->setSingleton(\Services\JTL\PasswordServiceInterface::class, function (Container $container) {
             return new \Services\JTL\PasswordService($container->getCryptoService());
+        });
+        $container->setSingleton(\DebugBar\DebugBar::class, function (Container $container) {
+            $debugbar = new \DebugBar\StandardDebugBar();
+            $pdo      = new DebugBar\DataCollector\PDO\TraceablePDO($container->getDB()->getPDO());
+            $renderer = $debugbar->getJavascriptRenderer();
+            $renderer->setBaseUrl(URL_SHOP . '/' . rtrim(PFAD_INCLUDES, '/') . $renderer->getBaseUrl());
+            $debugbar->addCollector(new DebugBar\DataCollector\PDO\PDOCollector($pdo));
+            $debugbar->addCollector(new DebugBar\DataCollector\ConfigCollector(Shopsetting::getInstance()->getAll()));
+            $debugbar['time']->startMeasure('init', 'Shop start to end');
+
+            return $debugbar;
         });
         $container->setSingleton('BackendAuthLogger', function (Container $container) {
             $loggingConf = self::getConfig([CONF_GLOBAL])['global']['admin_login_logger_mode'] ?? [];

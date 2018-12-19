@@ -12,10 +12,6 @@ use Cron\QueueEntry;
 use DB\DbInterface;
 use Psr\Log\LoggerInterface;
 
-require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
-require_once \PFAD_ROOT . \PFAD_INCLUDES . 'smartyInclude.php';
-require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'statusemail_inc.php';
-
 /**
  * Class Statusmail
  * @package Cron\Jobs
@@ -43,6 +39,10 @@ class Statusmail extends Job
         if ($jobData === null) {
             return $this;
         }
+        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
+        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'smartyInclude.php';
+        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'statusemail_inc.php';
+
         $statusMail = new \Statusmail($this->db);
         $this->setFinished($statusMail->send($jobData));
 

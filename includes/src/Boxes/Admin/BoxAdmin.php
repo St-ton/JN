@@ -103,15 +103,11 @@ final class BoxAdmin
 
         return \count($affectedBoxes) > 0
             && $this->db->query(
-                'DELETE 
+                'DELETE tboxen, tboxensichtbar, tboxsprache
                     FROM tboxen
-                    WHERE kBox IN (' . \implode(',', $affectedBoxes) . ')',
-                ReturnType::AFFECTED_ROWS
-            ) > 0
-            && $this->db->query(
-                'DELETE 
-                    FROM tboxensichtbar
-                    WHERE kBox IN (' . \implode(',', $affectedBoxes) . ')',
+                    LEFT JOIN tboxensichtbar USING (kBox)
+                    LEFT JOIN tboxsprache USING (kBox)
+                    WHERE tboxen.kBox IN (' . \implode(',', $affectedBoxes) . ')',
                 ReturnType::AFFECTED_ROWS
             ) > 0;
     }

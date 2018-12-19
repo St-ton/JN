@@ -7,7 +7,7 @@ stages:
   - cleanUp
 
 .testingScript: &testingScript |
-  export CI_CONTAINER_NAME=ci_job_testing_$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
+  export CI_CONTAINER_NAME=ci_job_$CI_PROJECT_NAME_testing_$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
 
   function testing() {
     if [[ -n "$CI_USER_VAR" ]]; then
@@ -32,7 +32,7 @@ stages:
 
 .cleanUpTesting: &cleanUpTesting |
   function failedTesting() {
-    export CI_CONTAINER_NAME=ci_job_testing_$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
+    export CI_CONTAINER_NAME=ci_job_$CI_PROJECT_NAME_testing_$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
     export running=$(docker inspect -f '{{.State.Running}}' $CI_CONTAINER_NAME)
 
     if [[ ! -z "$running" ]]; then
@@ -41,9 +41,7 @@ stages:
   }
 
 .preBuildDeployScripts: &preBuildDeployScripts |
-  export CI_APPLICATION_REPOSITORY=$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG
-  export CI_APPLICATION_TAG=$CI_COMMIT_SHA
-  export CI_CONTAINER_NAME=ci_job_build_deploy_$CI_COMMIT_SHA
+  export CI_CONTAINER_NAME=ci_job_$CI_PROJECT_NAME_build_deploy_$CI_COMMIT_SHA
   export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
   export BUILD_SCRIPT_PATH=build/scripts/build.sh
   export DEPLOY_SCRIPT_PATH=build/scripts/deploy.sh
@@ -84,6 +82,8 @@ stages:
   }
   function deployProcess() {
     echo "Deploying archive to build server..."
+    docker start $CI_CONTAINER_NAME
+
     docker exec \
       $CI_CONTAINER_NAME \
       /bin/bash -c "bash $DEPLOY_SCRIPT_PATH $CI_PROJECT_NAME $CI_COMMIT_REF_NAME /archive"
@@ -105,11 +105,12 @@ stages:
 
 .cleanUpScript: &cleanUpScript |
   function failedScript() {
+    export CI_CONTAINER_NAME=ci_job_$CI_PROJECT_NAME_build_deploy_$CI_COMMIT_SHA
     export running=$(docker inspect -f '{{.State.Running}}' ci_job_build_deploy_$CI_COMMIT_SHA)
 
     if [[ ! -z "$running" ]]; then
       docker network disconnect mysql-php-network $CI_CONTAINER_NAME
-      docker stop ci_job_build_deploy_$CI_COMMIT_SHA && docker rm -fv ci_job_build_deploy_$CI_COMMIT_SHA
+      docker stop CI_CONTAINER_NAME && docker rm -fv CI_CONTAINER_NAME
     fi
   }
 

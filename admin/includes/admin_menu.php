@@ -263,7 +263,7 @@ $adminMenu = [
             ],
         ],
     ],
-    __('Import/Export') => [
+    __('Import-Export') => [
         __('Import') => [
             __('Customer data import') => (object)[
                 'link' => 'kundenimport.php',

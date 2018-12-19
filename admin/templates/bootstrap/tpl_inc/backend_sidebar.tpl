@@ -30,7 +30,8 @@
                         <div class="backend-root-label">
                             <a href="#" class="parent"
                                onclick="return expandRootItem($('#root-menu-entry-{$rootEntryName}'))">
-                                <i class="fa fa-2x fa-fw backend-root-menu-icon-{$oLinkOberGruppe->key}"></i>
+                                <img src="/shop4/admin/templates/bootstrap/tpl_inc/icons/{$oLinkOberGruppe->cName}.svg" width=25 height=25/>{*Neue Icons*}
+                                {*<i class="fa fa-2x fa-fw backend-root-menu-icon-{$oLinkOberGruppe->key}"></i>*} {*Alte Icons*}
                                 <span>{$oLinkOberGruppe->cName}</span>
                             </a>
                         </div>

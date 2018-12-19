@@ -15,6 +15,10 @@ stages:
       docker login -u "$CI_USER_VAR" -p "$CI_USER_PW_VAR" "$CI_REGISTRY"
       echo ""
     fi
+      export DB_HOST_NET=$(docker network inspect -f '{{range .Containers}}{{if eq .Name "mariadb-10-2-container"}}{{.IPv4Address}}{{end}}{{end}}' mysql-php-network)
+      export DB_HOST="${DB_HOST_NET//[\/16]/}"
+
+      echo "$DB_HOST";
 
     echo "Testing projekt in PHP $PHP_VERSION_TEST_STEP docker image..."
 
@@ -68,14 +72,17 @@ stages:
   function buildProcess() {
     export RAND_CHAR=$(date +%s|sha256sum|head -c 6)
     export DB_NAME="build_$RAND_CHAR"
-    export DB_HOST=$(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mariadb-10-2-container)
+    export DB_HOST_NET=$(docker network inspect -f '{{range .Containers}}{{if eq .Name "mariadb-10-2-container"}}{{.IPv4Address}}{{end}}{{end}}' mysql-php-network)
+    export DB_HOST="${DB_HOST_NET//[\/16]/}"
+
+    echo "$DB_HOST";
 
     echo "Building projekt in PHP 7.1 and mariadb server 10.2 docker image..."
     docker run \
       --volume $CI_PROJECT_DIR.tmp/CI_SERVER_TLS_CA_FILE:$CI_PROJECT_DIR.tmp/CI_SERVER_TLS_CA_FILE \
       --volume $(pwd):/dockerBuild \
       --name="$CI_CONTAINER_NAME" \
-      --link mariadb-10-2-container:mysql
+      --network mysql-php-network \
       $CI_REGISTRY_IMAGE/build-deploy \
       sh -c "cp -r /dockerBuild/. /build; /etc/init.d/mysql start; bash $BUILD_SCRIPT_PATH '/build' $CI_COMMIT_REF_NAME $CI_COMMIT_SHA '$DB_HOST' 'root' '$DOCKER_MARIADB_PASSWORD' 'build_$DB_NAME'"
 

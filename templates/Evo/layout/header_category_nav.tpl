@@ -1,10 +1,14 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 <div id="evo-main-nav-wrapper" class="nav-wrapper{if $Einstellungen.template.theme.static_header === 'Y'} do-affix{/if}">
     <nav id="evo-main-nav" class="navbar navbar-default">
         <div class="container{if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}-fluid{/if}">
             <div class="navbar-header">
                 <button type="button" class="btn btn-default navbar-toggle collapsed" data-toggle="collapse" data-target="#evo-navbar-collapse" aria-expanded="false">
                     <span class="sr-only">Toggle navigation</span>
-                    <i class="fa fa-bars"></i> {lang key="allCategories" section="global"}
+                    <i class="fa fa-bars"></i> {lang key='allCategories' section='global'}
                 </button>
                 <ul class="nav navbar-nav navbar-right force-float visible-xs visible-sm">
                     {if isset($smarty.session.Kunde) && isset($smarty.session.Kunde->kKunde) && $smarty.session.Kunde->kKunde > 0}
@@ -43,7 +47,7 @@
                         </li>
                     </ul>
                 {/if}
-            </div><!-- /.navbar-collapse -->
-        </div><!-- /.container(-fluid) -->
+            </div>
+        </div>
     </nav>
 </div>

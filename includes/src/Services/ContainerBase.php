@@ -11,6 +11,7 @@ use Exceptions\ServiceNotFoundException;
 
 /**
  * Class ContainerBase
+ * @package Services
  */
 class ContainerBase implements ContainerInterface
 {
@@ -22,10 +23,10 @@ class ContainerBase implements ContainerInterface
     /**
      * @inheritdoc
      */
-    public function setSingleton($id, $factory)
+    public function setSingleton($id, $factory): void
     {
-        if (!is_string($id) || !is_callable($factory)) {
-            throw new \InvalidArgumentException();
+        if (!\is_string($id) || !\is_callable($factory)) {
+            throw new \InvalidArgumentException('Invalid id or factory not callable');
         }
         $this->checkUninitialized($id);
         $this->checkOverrideMatchingType($id, ContainerEntry::TYPE_SINGLETON);
@@ -35,10 +36,10 @@ class ContainerBase implements ContainerInterface
     /**
      * @inheritdoc
      */
-    public function setFactory($id, $factory)
+    public function setFactory($id, $factory): void
     {
-        if (!is_string($id) || !is_callable($factory)) {
-            throw new \InvalidArgumentException();
+        if (!\is_string($id) || !\is_callable($factory)) {
+            throw new \InvalidArgumentException('Invalid id or factory not callable');
         }
         $this->checkOverrideMatchingType($id, ContainerEntry::TYPE_FACTORY);
         $this->entries[$id] = new ContainerEntry($factory, ContainerEntry::TYPE_FACTORY);
@@ -47,7 +48,7 @@ class ContainerBase implements ContainerInterface
     /**
      * @inheritdoc
      */
-    public function getFactoryMethod($id)
+    public function getFactoryMethod($id): ?callable
     {
         $this->checkExistence($id);
 
@@ -95,7 +96,7 @@ class ContainerBase implements ContainerInterface
      * @param string $id
      * @throws ServiceNotFoundException
      */
-    protected function checkExistence($id)
+    protected function checkExistence($id): void
     {
         if (!$this->has($id)) {
             throw new ServiceNotFoundException($id);
@@ -106,7 +107,7 @@ class ContainerBase implements ContainerInterface
      * @param string $id
      * @throws \Exception
      */
-    protected function checkUninitialized($id)
+    protected function checkUninitialized($id): void
     {
         if (isset($this->entries[$id]) && $this->entries[$id]->hasInstance()) {
             throw new \Exception('Singleton Service already used');
@@ -118,7 +119,7 @@ class ContainerBase implements ContainerInterface
      * @param int    $type
      * @throws \Exception
      */
-    protected function checkOverrideMatchingType($id, $type)
+    protected function checkOverrideMatchingType($id, $type): void
     {
         if ($this->has($id) && $this->entries[$id]->getType() !== $type) {
             $actual = $this->entries[$id]->getType();

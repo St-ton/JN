@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Cart;
+
 $oNice = Nice::getInstance();
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
     /**
@@ -42,7 +45,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $kSprache = Shop::getLanguageID();
             }
             foreach ($oGruppen_arr as &$oGruppe) {
-                $oGruppe = new Konfiggruppe($oGruppe->kKonfigGruppe, $kSprache);
+                $oGruppe = new Konfiggruppe((int)$oGruppe->kKonfigGruppe, $kSprache);
             }
             unset($oGruppe);
 
@@ -58,10 +61,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public static function hasKonfig(int $kArtikel): bool
         {
             $oGruppen_arr = Shop::Container()->getDB()->query(
-                "SELECT kArtikel, kKonfigGruppe
+                'SELECT kArtikel, kKonfigGruppe
                      FROM tartikelkonfiggruppe
-                     WHERE tartikelkonfiggruppe.kArtikel = " . $kArtikel . "
-                     ORDER BY tartikelkonfiggruppe.nSort ASC",
+                     WHERE tartikelkonfiggruppe.kArtikel = ' . $kArtikel . '
+                     ORDER BY tartikelkonfiggruppe.nSort ASC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
@@ -83,58 +86,50 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public static function postcheckBasket(&$oBasket)
         {
-            // TODO: bIgnoreLimits
-            // REF: $_POST['konfig_ignore_limits']
-
-            if (!function_exists('loescheWarenkorbPositionen')) {
-                require_once PFAD_INCLUDES . 'warenkorb_inc.php';
+            if (!is_array($oBasket->PositionenArr) || count($oBasket->PositionenArr) === 0) {
+                return;
             }
-
-            if (is_array($oBasket->PositionenArr) && count($oBasket->PositionenArr) > 0) {
-                $beDeletednPos_arr = [];
-                foreach ($oBasket->PositionenArr as $nPos => $oPosition) {
-                    $bDeleted = false;
-                    if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
-                        // Konfigvater
-                        if ($oPosition->cUnique && $oPosition->kKonfigitem == 0) {
-                            $oKonfigitem_arr = [];
-
-                            // Alle Kinder suchen
-                            foreach ($oBasket->PositionenArr as $oChildPosition) {
-                                if ($oChildPosition->cUnique &&
-                                    $oChildPosition->cUnique === $oPosition->cUnique
-                                    && $oChildPosition->kKonfigitem > 0
-                                ) {
-                                    $oKonfigitem_arr[] = new Konfigitem($oChildPosition->kKonfigitem);
-                                }
-                            }
-
-                            // Konfiguration validieren
-                            if (($aError_arr = self::validateBasket($oPosition->kArtikel, $oKonfigitem_arr)) !== true) {
-                                $bDeleted = true;
-                                $beDeletednPos_arr[] = $nPos;
-                                //loescheWarenkorbPosition($nPos);
-                            }
-                        } // Standardartikel ebenfalls auf eine mögliche Konfiguration prüfen
-                        elseif (!$oPosition->cUnique) {
-                            // Konfiguration vorhanden -> löschen
-                            if (self::hasKonfig($oPosition->kArtikel)) {
-                                $bDeleted = true;
-                                $beDeletednPos_arr[] = $nPos;
-                                //loescheWarenkorbPosition($nPos);
+            $beDeletednPos_arr = [];
+            foreach ($oBasket->PositionenArr as $nPos => $oPosition) {
+                $bDeleted = false;
+                if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
+                    // Konfigvater
+                    if ($oPosition->cUnique && $oPosition->kKonfigitem == 0) {
+                        $oKonfigitem_arr = [];
+                        // Alle Kinder suchen
+                        foreach ($oBasket->PositionenArr as $oChildPosition) {
+                            if ($oChildPosition->cUnique &&
+                                $oChildPosition->cUnique === $oPosition->cUnique
+                                && $oChildPosition->kKonfigitem > 0
+                            ) {
+                                $oKonfigitem_arr[] = new Konfigitem($oChildPosition->kKonfigitem);
                             }
                         }
-
-                        if ($bDeleted) {
-                            // $Warenkorbhinweise
-                            $cISO = $_SESSION['cISOSprache'];
-                            Jtllog::writeLog('Validierung der Konfiguration fehlgeschlagen - Warenkorbposition wurde entfernt: ' .
-                                $oPosition->cName[$cISO] . '(' . $oPosition->kArtikel . ')');
+                        // Konfiguration validieren
+                        if (self::validateBasket($oPosition->kArtikel, $oKonfigitem_arr) !== true) {
+                            $bDeleted            = true;
+                            $beDeletednPos_arr[] = $nPos;
+                            //loescheWarenkorbPosition($nPos);
+                        }
+                    } elseif (!$oPosition->cUnique) {
+                        // Konfiguration vorhanden -> löschen
+                        if (self::hasKonfig($oPosition->kArtikel)) {
+                            $bDeleted            = true;
+                            $beDeletednPos_arr[] = $nPos;
+                            //loescheWarenkorbPosition($nPos);
                         }
                     }
+
+                    if ($bDeleted) {
+                        $cISO = $_SESSION['cISOSprache'];
+                        Shop::Container()->getLogService()->error(
+                            'Validierung der Konfiguration fehlgeschlagen - Warenkorbposition wurde entfernt: ' .
+                            $oPosition->cName[$cISO] . '(' . $oPosition->kArtikel . ')'
+                        );
+                    }
                 }
-                loescheWarenkorbPositionen($beDeletednPos_arr);
             }
+            Cart::deleteCartPositions($beDeletednPos_arr);
         }
 
         /**
@@ -145,7 +140,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public static function validateBasket(int $kArtikel, $oKonfigitem_arr)
         {
             if ($kArtikel === 0 || !is_array($oKonfigitem_arr)) {
-                Jtllog::writeLog('Validierung der Konfiguration fehlgeschlagen - Ungültige Daten');
+                Shop::Container()->getLogService()->error(
+                    'Validierung der Konfiguration fehlgeschlagen - Ungültige Daten'
+                );
 
                 return false;
             }
@@ -201,10 +198,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
 
             if ($fFinalPrice < 0.0) {
                 $cError = sprintf(
-                    "Negative Konfigurationssumme für Artikel '%s' (Art.Nr.: %s, Netto: %s) - Vorgang wurde abgebrochen",
-                    $oArtikel->cName, $oArtikel->cArtNr, gibPreisStringLocalized($fFinalPrice)
+                    "Negative Konfigurationssumme für Artikel '%s' (Art.Nr.: %s, Netto: %s) - Vorgang abgebrochen",
+                    $oArtikel->cName,
+                    $oArtikel->cArtNr,
+                    Preise::getLocalizedPriceString($fFinalPrice)
                 );
-                Jtllog::writeLog($cError);
+                Shop::Container()->getLogService()->error($cError);
 
                 return false;
             }

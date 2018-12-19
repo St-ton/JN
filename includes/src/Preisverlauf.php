@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\GeneralObject;
+use Helpers\Tax;
+
 /**
  * Class Preisverlauf
  */
@@ -35,11 +38,10 @@ class Preisverlauf
     public $dDate;
 
     /**
-     * Konstruktor
-     *
-     * @param int $kPreisverlauf - Falls angegeben, wird der Preisverlauf mit angegebenem kPreisverlauf aus der DB geholt
+     * Preisverlauf constructor.
+     * @param int $kPreisverlauf
      */
-    public function __construct($kPreisverlauf = 0)
+    public function __construct(int $kPreisverlauf = 0)
     {
         if ($kPreisverlauf > 0) {
             $this->loadFromDB($kPreisverlauf);
@@ -55,32 +57,36 @@ class Preisverlauf
     public function gibPreisverlauf(int $kArtikel, int $kKundengruppe, int $nMonat)
     {
         $cacheID = 'gpv_' . $kArtikel . '_' . $kKundengruppe . '_' . $nMonat;
-        if (($obj_arr = Shop::Cache()->get($cacheID)) === false) {
-            $obj_arr = Shop::Container()->getDB()->query(
-                "SELECT tpreisverlauf.fVKNetto, tartikel.fMwst, UNIX_TIMESTAMP(tpreisverlauf.dDate) AS timestamp
+        if (($obj_arr = Shop::Container()->getCache()->get($cacheID)) === false) {
+            $obj_arr   = Shop::Container()->getDB()->query(
+                'SELECT tpreisverlauf.fVKNetto, tartikel.fMwst, UNIX_TIMESTAMP(tpreisverlauf.dDate) AS timestamp
                     FROM tpreisverlauf 
                     LEFT JOIN tartikel
                         ON tartikel.kArtikel = tpreisverlauf.kArtikel
-                    WHERE tpreisverlauf.kArtikel = " . $kArtikel . "
-                        AND tpreisverlauf.kKundengruppe = " . $kKundengruppe . "
-                        AND DATE_SUB(now(), INTERVAL " . $nMonat . " MONTH) < tpreisverlauf.dDate
-                    ORDER BY tpreisverlauf.dDate DESC",
+                    WHERE tpreisverlauf.kArtikel = ' . $kArtikel . '
+                        AND tpreisverlauf.kKundengruppe = ' . $kKundengruppe . '
+                        AND DATE_SUB(NOW(), INTERVAL ' . $nMonat . ' MONTH) < tpreisverlauf.dDate
+                    ORDER BY tpreisverlauf.dDate DESC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            $_currency = Session::Currency();
+            $_currency = \Session\Session::getCurrency();
             $dt        = new DateTime();
             foreach ($obj_arr as &$_pv) {
                 if (isset($_pv->timestamp)) {
-                    $dt->setTimestamp($_pv->timestamp);
-                    $_pv->date   = $dt->format('d.m.');
-                    $_pv->fPreis = Session::CustomerGroup()->isMerchant()
+                    $dt->setTimestamp((int)$_pv->timestamp);
+                    $_pv->date     = $dt->format('d.m.');
+                    $_pv->fPreis   = \Session\Session::getCustomerGroup()->isMerchant()
                         ? round($_pv->fVKNetto * $_currency->getConversionFactor(), 2)
-                        : berechneBrutto($_pv->fVKNetto * $_currency->getConversionFactor(), $_pv->fMwst);
+                        : Tax::getGross($_pv->fVKNetto * $_currency->getConversionFactor(), $_pv->fMwst);
                     $_pv->currency = $_currency->getCode();
                 }
             }
             unset($_pv);
-            Shop::Cache()->set($cacheID, $obj_arr, [CACHING_GROUP_ARTICLE, CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
+            Shop::Container()->getCache()->set(
+                $cacheID,
+                $obj_arr,
+                [CACHING_GROUP_ARTICLE, CACHING_GROUP_ARTICLE . '_' . $kArtikel]
+            );
         }
 
         return $obj_arr;
@@ -112,7 +118,7 @@ class Preisverlauf
      */
     public function insertInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = GeneralObject::copyMembers($this);
         unset($obj->kPreisverlauf);
         $this->kPreisverlauf = Shop::Container()->getDB()->insert('tpreisverlauf', $obj);
 
@@ -126,7 +132,7 @@ class Preisverlauf
      */
     public function updateInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = GeneralObject::copyMembers($this);
 
         return Shop::Container()->getDB()->update('tpreisverlauf', 'kPreisverlauf', $obj->kPreisverlauf, $obj);
     }

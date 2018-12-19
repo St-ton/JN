@@ -32,6 +32,7 @@ class Migration_20180109104608 extends Migration implements IMigration
 
     public function up()
     {
+        $cryptoService = Shop::Container()->getCryptoService();
         foreach ($this->properties as $tableName => $propNames) {
             $keyName = array_shift($propNames);
             $dataSet = $this->fetchAll(
@@ -41,11 +42,11 @@ class Migration_20180109104608 extends Migration implements IMigration
 
             foreach ($dataSet as $dataObj) {
                 foreach ($propNames as $propName) {
-                    $dataObj->$propName = entschluesselXTEA($dataObj->$propName);
+                    $dataObj->$propName = $cryptoService->decryptXTEA($dataObj->$propName);
                     if (!StringHandler::is_utf8($dataObj->$propName)) {
                         $dataObj->$propName = StringHandler::convertUTF8($dataObj->$propName);
                     }
-                    $dataObj->$propName = verschluesselXTEA($dataObj->$propName);
+                    $dataObj->$propName = $cryptoService->encryptXTEA($dataObj->$propName);
                 }
 
                 Shop::Container()->getDB()->update($tableName, $keyName, $dataObj->$keyName, $dataObj);
@@ -55,6 +56,7 @@ class Migration_20180109104608 extends Migration implements IMigration
 
     public function down()
     {
+        $cryptoService = Shop::Container()->getCryptoService();
         foreach ($this->properties as $tableName => $propNames) {
             $keyName = array_shift($propNames);
             $dataSet = $this->fetchAll(
@@ -64,11 +66,11 @@ class Migration_20180109104608 extends Migration implements IMigration
 
             foreach ($dataSet as $dataObj) {
                 foreach ($propNames as $propName) {
-                    $dataObj->$propName = entschluesselXTEA($dataObj->$propName);
+                    $dataObj->$propName = $cryptoService->decryptXTEA($dataObj->$propName);
                     if (StringHandler::is_utf8($dataObj->$propName)) {
                         $dataObj->$propName = StringHandler::convertISO($dataObj->$propName);
                     }
-                    $dataObj->$propName = verschluesselXTEA($dataObj->$propName);
+                    $dataObj->$propName = $cryptoService->encryptXTEA($dataObj->$propName);
                 }
 
                 Shop::Container()->getDB()->update($tableName, $keyName, $dataObj->$keyName, $dataObj);

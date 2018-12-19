@@ -111,10 +111,12 @@ function gibGesetzteVersandklassen($cVersandklassen)
         }
     }
     $PVersandklassen = P(Shop::Container()->getDB()->query(
-        "SELECT * 
+        'SELECT * 
             FROM tversandklasse
-            WHERE kVersandklasse IN (" . implode(',', $uniqueIDs) . ")  
-            ORDER BY kVersandklasse", 2));
+            WHERE kVersandklasse IN (' . implode(',', $uniqueIDs) . ')  
+            ORDER BY kVersandklasse',
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    ));
     foreach ($PVersandklassen as $vk) {
         $gesetzteVK[$vk->kVersandklasse] = in_array($vk->kVersandklasse, $cVKarr, true);
     }
@@ -142,11 +144,12 @@ function gibGesetzteVersandklassenUebersicht($cVersandklassen)
         }
     }
     $PVersandklassen = P(Shop::Container()->getDB()->query(
-        "SELECT * 
+        'SELECT * 
             FROM tversandklasse 
-            WHERE kVersandklasse IN (" . implode(',', $uniqueIDs) . ")
-            ORDER BY kVersandklasse", 2)
-    );
+            WHERE kVersandklasse IN (' . implode(',', $uniqueIDs) . ')
+            ORDER BY kVersandklasse',
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    ));
     foreach ($PVersandklassen as $vk) {
         if (in_array($vk->kVersandklasse, $cVKarr, true)) {
             $gesetzteVK[] = $vk->cName;
@@ -157,26 +160,25 @@ function gibGesetzteVersandklassenUebersicht($cVersandklassen)
 }
 
 /**
- * @param string $cKundengruppen
+ * @param string $customerGroupsString
  * @return array
  */
-function gibGesetzteKundengruppen($cKundengruppen)
+function gibGesetzteKundengruppen($customerGroupsString)
 {
-    $bGesetzteKG_arr   = [];
-    $cKG_arr           = explode(';', trim($cKundengruppen));
-    $oKundengruppe_arr = Shop::Container()->getDB()->query(
-        "SELECT kKundengruppe
+    $activeGroups = [];
+    $groups       = StringHandler::parseSSK($customerGroupsString);
+    $groupData    = Shop::Container()->getDB()->query(
+        'SELECT kKundengruppe
             FROM tkundengruppe
-            ORDER BY kKundengruppe", 2
+            ORDER BY kKundengruppe',
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    foreach ($oKundengruppe_arr as $oKundengruppe) {
-        $bGesetzteKG_arr[$oKundengruppe->kKundengruppe] = in_array($oKundengruppe->kKundengruppe, $cKG_arr);
+    foreach ($groupData as $group) {
+        $activeGroups[(int)$group->kKundengruppe] = in_array($group->kKundengruppe, $groups);
     }
-    if ($cKundengruppen === '-1') {
-        $bGesetzteKG_arr['alle'] = true;
-    }
+    $activeGroups['alle'] = $customerGroupsString === '-1';
 
-    return $bGesetzteKG_arr;
+    return $activeGroups;
 }
 
 /**
@@ -184,10 +186,14 @@ function gibGesetzteKundengruppen($cKundengruppen)
  * @param array $oSprache_arr
  * @return array
  */
-function getShippingLanguage($kVersandart = 0, $oSprache_arr)
+function getShippingLanguage(int $kVersandart, $oSprache_arr)
 {
     $oVersandartSpracheAssoc_arr = [];
-    $oVersandartSprache_arr      = Shop::Container()->getDB()->selectAll('tversandartsprache', 'kVersandart', (int)$kVersandart);
+    $oVersandartSprache_arr      = Shop::Container()->getDB()->selectAll(
+        'tversandartsprache',
+        'kVersandart',
+        $kVersandart
+    );
     if (is_array($oSprache_arr)) {
         foreach ($oSprache_arr as $oSprache) {
             $oVersandartSpracheAssoc_arr[$oSprache->cISO] = new stdClass();
@@ -206,13 +212,17 @@ function getShippingLanguage($kVersandart = 0, $oSprache_arr)
  * @param int $kVersandzuschlag
  * @return array
  */
-function getZuschlagNames($kVersandzuschlag)
+function getZuschlagNames(int $kVersandzuschlag)
 {
     $names = [];
     if (!$kVersandzuschlag) {
         return $names;
     }
-    $zuschlagnamen = Shop::Container()->getDB()->selectAll('tversandzuschlagsprache', 'kVersandzuschlag', (int)$kVersandzuschlag);
+    $zuschlagnamen = Shop::Container()->getDB()->selectAll(
+        'tversandzuschlagsprache',
+        'kVersandzuschlag',
+        $kVersandzuschlag
+    );
     foreach ($zuschlagnamen as $name) {
         $names[$name->cISOSprache] = $name->cName;
     }
@@ -222,24 +232,25 @@ function getZuschlagNames($kVersandzuschlag)
 
 /**
  * @param string $cSearch
- * @return array $allShippingsByName
+ * @return array
  */
-function getShippingByName($cSearch)
+function getShippingByName(string $cSearch)
 {
-    // Einstellungen Kommagetrennt?
     $cSearch_arr        = explode(',', $cSearch);
     $allShippingsByName = [];
     foreach ($cSearch_arr as $cSearchPos) {
-        trim($cSearchPos);
+        $cSearchPos = trim($cSearchPos);
         if (strlen($cSearchPos) > 2) {
-            $shippingByName_arr = Shop::Container()->getDB()->query(
-                "SELECT va.kVersandart, va.cName
+            $shippingByName_arr = Shop::Container()->getDB()->queryPrepared(
+                'SELECT va.kVersandart, va.cName
                     FROM tversandart AS va
                     LEFT JOIN tversandartsprache AS vs 
                         ON vs.kVersandart = va.kVersandart
-                        AND vs.cName LIKE '%" . Shop::Container()->getDB()->escape($cSearchPos) . "%'
-                    WHERE va.cName LIKE '%" . Shop::Container()->getDB()->escape($cSearchPos) . "%' 
-                    OR vs.cName LIKE '%" . Shop::Container()->getDB()->escape($cSearchPos) . "%'", 2
+                        AND vs.cName LIKE :search
+                    WHERE va.cName LIKE :search
+                    OR vs.cName LIKE :search',
+                ['search' => '%' . $cSearchPos . '%'],
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             if (!empty($shippingByName_arr)) {
                 if (count($shippingByName_arr) > 1) {
@@ -254,4 +265,104 @@ function getShippingByName($cSearch)
     }
 
     return $allShippingsByName;
+}
+
+/**
+ * @param array $shipClasses
+ * @param int   $length
+ * @return array
+ */
+function getCombinations(array $shipClasses, int $length)
+{
+    $baselen = count($shipClasses);
+    if ($baselen === 0) {
+        return [];
+    }
+    if ($length === 1) {
+        $return = [];
+        foreach ($shipClasses as $b) {
+            $return[] = [$b];
+        }
+
+        return $return;
+    }
+
+    // get one level lower combinations
+    $oneLevelLower = getCombinations($shipClasses, $length - 1);
+    // for every one level lower combinations add one element to them
+    // that the last element of a combination is preceeded by the element
+    // which follows it in base array if there is none, does not add
+    $newCombs = [];
+    foreach ($oneLevelLower as $oll) {
+        $lastEl = $oll[$length - 2];
+        $found  = false;
+        foreach ($shipClasses as $key => $b) {
+            if ($b === $lastEl) {
+                $found = true;
+                continue;
+                // last element found
+            }
+            if ($found === true && $key < $baselen) {
+                // add to combinations with last element
+                $tmp              = $oll;
+                $newCombination   = array_slice($tmp, 0);
+                $newCombination[] = $b;
+                $newCombs[]       = array_slice($newCombination, 0);
+            }
+        }
+    }
+
+    return $newCombs;
+}
+
+/**
+ * @return array|int -1 if too many shipping classes exist
+ */
+function getMissingShippingClassCombi()
+{
+    $shippingClasses         = Shop::Container()->getDB()->selectAll('tversandklasse', [], [], 'kVersandklasse');
+    $shipClasses             = [];
+    $combinationsInShippings = Shop::Container()->getDB()->selectAll('tversandart', [], [], 'cVersandklassen');
+    $combinationInUse        = [];
+
+    foreach ($shippingClasses as $sc) {
+        $shipClasses[] = $sc->kVersandklasse;
+    }
+
+    foreach ($combinationsInShippings as $com) {
+        $vk     = trim($com->cVersandklassen);
+        $vk_arr = explode(' ', $vk);
+        if (is_array($vk_arr)) {
+            foreach ($vk_arr as $_vk) {
+                $combinationInUse[] = trim($_vk);
+            }
+        } else {
+            $combinationInUse[] = trim($com->cVersandklassen);
+        }
+    }
+
+    // if a shipping method is valid for all classes return
+    if (in_array('-1', $combinationInUse, false)) {
+        return [];
+    }
+
+    $len = count($shipClasses);
+    if ($len > SHIPPING_CLASS_MAX_VALIDATION_COUNT) {
+        return -1;
+    }
+
+    $possibleShippingClassCombinations = [];
+    for ($i = 1; $i <= $len; $i++) {
+        $result = getCombinations($shipClasses, $i);
+        foreach ($result as $c) {
+            $possibleShippingClassCombinations[] = implode('-', $c);
+        }
+    }
+
+    $res = array_diff($possibleShippingClassCombinations, $combinationInUse);
+    foreach ($res as &$mscc) {
+        $mscc = gibGesetzteVersandklassenUebersicht($mscc)[0];
+    }
+
+    return $res;
 }

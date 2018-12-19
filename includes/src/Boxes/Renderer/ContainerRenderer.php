@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -8,8 +8,7 @@ namespace Boxes\Renderer;
 
 /**
  * Class ContainerRenderer
- *
- * @package Boxes
+ * @package Boxes\Renderer
  */
 class ContainerRenderer extends DefaultRenderer
 {
@@ -23,10 +22,10 @@ class ContainerRenderer extends DefaultRenderer
         foreach ($this->box->getChildren() as $child) {
             $boxRenderer->setBox($child);
             $rendererClass = $child->getRenderer();
-            if (get_class($boxRenderer) !== $rendererClass) {
+            if (\get_class($boxRenderer) !== $rendererClass) {
                 $boxRenderer = new $rendererClass($this->smarty);
             }
-            $html .= trim($boxRenderer->render($pageType, $pageID));
+            $html .= \trim($boxRenderer->render($pageType, $pageID));
         }
         $this->box->setHTML($html);
 

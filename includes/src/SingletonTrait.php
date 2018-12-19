@@ -12,18 +12,18 @@ trait SingletonTrait
     /**
      * @var static
      */
-    private static $_instance;
+    private static $instance;
 
     /**
      * @return static
      */
     final public static function getInstance()
     {
-        if (static::$_instance === null) {
-            static::$_instance = new static;
+        if (static::$instance === null) {
+            static::$instance = new static;
         }
 
-        return static::$_instance;
+        return static::$instance;
     }
 
     /**

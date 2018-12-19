@@ -3,7 +3,8 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
+
+use Helpers\GeneralObject;
 
 /**
  * Class Kundendatenhistory
@@ -40,11 +41,11 @@ class Kundendatenhistory extends MainModel
      */
     public $dErstellt;
 
-    const QUELLE_MEINKONTO = 'Mein Konto';
+    public const QUELLE_MEINKONTO = 'Mein Konto';
 
-    const QUELLE_BESTELLUNG = 'Bestellvorgang';
+    public const QUELLE_BESTELLUNG = 'Bestellvorgang';
 
-    const QUELLE_DBES = 'Wawi Abgleich';
+    public const QUELLE_DBES = 'Wawi Abgleich';
 
     /**
      * @return int
@@ -58,7 +59,7 @@ class Kundendatenhistory extends MainModel
      * @param int $kKundendatenHistory
      * @return $this
      */
-    public function setKundendatenHistory(int $kKundendatenHistory)
+    public function setKundendatenHistory(int $kKundendatenHistory): self
     {
         $this->kKundendatenHistory = $kKundendatenHistory;
 
@@ -77,7 +78,7 @@ class Kundendatenhistory extends MainModel
      * @param int $kKunde
      * @return $this
      */
-    public function setKunde(int $kKunde)
+    public function setKunde(int $kKunde): self
     {
         $this->kKunde = $kKunde;
 
@@ -85,9 +86,9 @@ class Kundendatenhistory extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getJsonAlt()
+    public function getJsonAlt(): ?string
     {
         return $this->cJsonAlt;
     }
@@ -96,7 +97,7 @@ class Kundendatenhistory extends MainModel
      * @param string $cJsonAlt
      * @return $this
      */
-    public function setJsonAlt($cJsonAlt)
+    public function setJsonAlt($cJsonAlt): self
     {
         $this->cJsonAlt = $cJsonAlt;
 
@@ -104,9 +105,9 @@ class Kundendatenhistory extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getJsonNeu()
+    public function getJsonNeu(): ?string
     {
         return $this->cJsonNeu;
     }
@@ -115,7 +116,7 @@ class Kundendatenhistory extends MainModel
      * @param string $cJsonNeu
      * @return $this
      */
-    public function setJsonNeu($cJsonNeu)
+    public function setJsonNeu($cJsonNeu): self
     {
         $this->cJsonNeu = $cJsonNeu;
 
@@ -123,9 +124,9 @@ class Kundendatenhistory extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getQuelle()
+    public function getQuelle(): ?string
     {
         return $this->cQuelle;
     }
@@ -134,7 +135,7 @@ class Kundendatenhistory extends MainModel
      * @param string $cQuelle
      * @return $this
      */
-    public function setQuelle($cQuelle)
+    public function setQuelle($cQuelle): self
     {
         $this->cQuelle = $cQuelle;
 
@@ -142,9 +143,9 @@ class Kundendatenhistory extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getErstellt()
+    public function getErstellt(): ?string
     {
         return $this->dErstellt;
     }
@@ -153,9 +154,9 @@ class Kundendatenhistory extends MainModel
      * @param string $dErstellt
      * @return $this
      */
-    public function setErstellt($dErstellt)
+    public function setErstellt($dErstellt): self
     {
-        $this->dErstellt = ($dErstellt === 'now()')
+        $this->dErstellt = (strtoupper($dErstellt) === 'NOW()')
             ? date('Y-m-d H:i:s')
             : $dErstellt;
 
@@ -233,7 +234,11 @@ class Kundendatenhistory extends MainModel
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->delete('tkundendatenhistory', 'kKundendatenHistory', $this->getKundendatenHistory());
+        return Shop::Container()->getDB()->delete(
+            'tkundendatenhistory',
+            'kKundendatenHistory',
+            $this->getKundendatenHistory()
+        );
     }
 
     /**
@@ -244,44 +249,40 @@ class Kundendatenhistory extends MainModel
      */
     public static function saveHistory($oKundeOld, $oKundeNew, $cQuelle): bool
     {
-        if (is_object($oKundeOld) && is_object($oKundeNew)) {
-            // Work Around
-            if ($oKundeOld->dGeburtstag === '0000-00-00' || $oKundeOld->dGeburtstag === '00.00.0000') {
-                $oKundeOld->dGeburtstag = '';
-            }
-            if ($oKundeNew->dGeburtstag === '0000-00-00' || $oKundeNew->dGeburtstag === '00.00.0000') {
-                $oKundeNew->dGeburtstag = '';
-            }
-
-            $oKundeNew->cPasswort = $oKundeOld->cPasswort;
-
-            if (!Kunde::isEqual($oKundeOld, $oKundeNew)) {
-                $oKundeOld = deepCopy($oKundeOld);
-                $oKundeNew = deepCopy($oKundeNew);
-                // Encrypt Old
-                $oKundeOld->cNachname = verschluesselXTEA(trim($oKundeOld->cNachname));
-                $oKundeOld->cFirma    = verschluesselXTEA(trim($oKundeOld->cFirma));
-                $oKundeOld->cStrasse  = verschluesselXTEA(trim($oKundeOld->cStrasse));
-                // Encrypt New
-                $oKundeNew->cNachname = verschluesselXTEA(trim($oKundeNew->cNachname));
-                $oKundeNew->cFirma    = verschluesselXTEA(trim($oKundeNew->cFirma));
-                $oKundeNew->cStrasse  = verschluesselXTEA(trim($oKundeNew->cStrasse));
-
-                $oKundendatenhistory = new self();
-                $oKundendatenhistory->setKunde($oKundeOld->kKunde)
-                                    ->setJsonAlt(json_encode($oKundeOld))
-                                    ->setJsonNeu(json_encode($oKundeNew))
-                                    ->setQuelle($cQuelle)
-                                    ->setErstellt('now()');
-
-                if ($oKundendatenhistory->save() > 0) {
-                    return true;
-                }
-            } else {
-                return true;
-            }
+        if (!is_object($oKundeOld) || !is_object($oKundeNew)) {
+            return false;
+        }
+        if ($oKundeOld->dGeburtstag === null) {
+            $oKundeOld->dGeburtstag = '';
+        }
+        if ($oKundeNew->dGeburtstag === null) {
+            $oKundeNew->dGeburtstag = '';
         }
 
-        return false;
+        $oKundeNew->cPasswort = $oKundeOld->cPasswort;
+
+        if (Kunde::isEqual($oKundeOld, $oKundeNew)) {
+            return true;
+        }
+        $cryptoService = Shop::Container()->getCryptoService();
+        $oKundeOld     = GeneralObject::deepCopy($oKundeOld);
+        $oKundeNew     = GeneralObject::deepCopy($oKundeNew);
+        // Encrypt Old
+        $oKundeOld->cNachname = $cryptoService->encryptXTEA(trim($oKundeOld->cNachname));
+        $oKundeOld->cFirma    = $cryptoService->encryptXTEA(trim($oKundeOld->cFirma));
+        $oKundeOld->cStrasse  = $cryptoService->encryptXTEA(trim($oKundeOld->cStrasse));
+        // Encrypt New
+        $oKundeNew->cNachname = $cryptoService->encryptXTEA(trim($oKundeNew->cNachname));
+        $oKundeNew->cFirma    = $cryptoService->encryptXTEA(trim($oKundeNew->cFirma));
+        $oKundeNew->cStrasse  = $cryptoService->encryptXTEA(trim($oKundeNew->cStrasse));
+
+        $oKundendatenhistory = new self();
+        $oKundendatenhistory->setKunde($oKundeOld->kKunde)
+                            ->setJsonAlt(json_encode($oKundeOld))
+                            ->setJsonNeu(json_encode($oKundeNew))
+                            ->setQuelle($cQuelle)
+                            ->setErstellt('NOW()');
+
+        return $oKundendatenhistory->save() > 0;
     }
 }

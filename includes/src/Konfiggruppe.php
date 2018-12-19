@@ -51,7 +51,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public $oSprache;
 
         /**
-         * @var array
+         * @var Konfigitem[]
          */
         public $oItem_arr = [];
 
@@ -82,7 +82,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public function jsonSerialize()
         {
             if ($this->oSprache === null) {
-                $this->oSprache  = new Konfiggruppesprache($this->kKonfiggruppe);
+                $this->oSprache = new Konfiggruppesprache($this->kKonfiggruppe);
             }
             $override = [
                 'kKonfiggruppe' => (int)$this->kKonfiggruppe,
@@ -91,14 +91,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 'nMax'          => (float)$this->nMax,
                 'nTyp'          => (int)$this->nTyp,
                 'fInitial'      => (float)$this->getInitQuantity(),
-                'bAnzahl'       => $this->getAnzeigeTyp() == KONFIG_ANZEIGE_TYP_RADIO || $this->getAnzeigeTyp() == KONFIG_ANZEIGE_TYP_DROPDOWN,
+                'bAnzahl'       => $this->getAnzeigeTyp() == KONFIG_ANZEIGE_TYP_RADIO
+                    || $this->getAnzeigeTyp() == KONFIG_ANZEIGE_TYP_DROPDOWN,
                 'cName'         => $this->oSprache->getName(),
                 'cBeschreibung' => $this->oSprache->getBeschreibung(),
                 'oItem_arr'     => $this->oItem_arr
             ];
-            $result = array_merge(get_object_vars($this), $override);
+            $result   = array_merge(get_object_vars($this), $override);
 
-            return utf8_convert_recursive($result);
+            return StringHandler::utf8_convert_recursive($result);
         }
 
         /**
@@ -108,7 +109,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kSprache
          * @return $this
          */
-        private function loadFromDB(int $kKonfiggruppe = 0, int $kSprache = 0)
+        private function loadFromDB(int $kKonfiggruppe = 0, int $kSprache = 0): self
         {
             $oObj = Shop::Container()->getDB()->select('tkonfiggruppe', 'kKonfiggruppe', $kKonfiggruppe);
             if (isset($oObj->kKonfiggruppe) && $oObj->kKonfiggruppe > 0) {
@@ -119,8 +120,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 if (!$kSprache) {
                     $kSprache = Shop::getLanguageID();
                 }
-                $this->oSprache  = new Konfiggruppesprache($this->kKonfiggruppe, $kSprache);
-                $this->oItem_arr = Konfigitem::fetchAll($this->kKonfiggruppe);
+                $this->kKonfiggruppe = (int)$this->kKonfiggruppe;
+                $this->nMin          = (int)$this->nMin;
+                $this->nMax          = (int)$this->nMax;
+                $this->nTyp          = (int)$this->nTyp;
+                $this->nSort         = (int)$this->nSort;
+                $this->oSprache      = new Konfiggruppesprache($this->kKonfiggruppe, $kSprache);
+                $this->oItem_arr     = Konfigitem::fetchAll($this->kKonfiggruppe);
             }
 
             return $this;
@@ -153,15 +159,20 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function update(): int
         {
-            $_upd             = new stdClass();
-            $_upd->cBildPfad  = $this->cBildPfad;
-            $_upd->nMin       = $this->nMin;
-            $_upd->nMax       = $this->nMax;
-            $_upd->nTyp       = $this->nTyp;
-            $_upd->nSort      = $this->nSort;
-            $_upd->cKommentar = $this->cKommentar;
+            $upd             = new stdClass();
+            $upd->cBildPfad  = $this->cBildPfad;
+            $upd->nMin       = $this->nMin;
+            $upd->nMax       = $this->nMax;
+            $upd->nTyp       = $this->nTyp;
+            $upd->nSort      = $this->nSort;
+            $upd->cKommentar = $this->cKommentar;
 
-            return Shop::Container()->getDB()->update('tkonfiggruppe', 'kKonfiggruppe', (int)$this->kKonfiggruppe, $_upd);
+            return Shop::Container()->getDB()->update(
+                'tkonfiggruppe',
+                'kKonfiggruppe',
+                (int)$this->kKonfiggruppe,
+                $upd
+            );
         }
 
         /**
@@ -217,7 +228,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return int
+         * @return int|null
          */
         public function getKonfiggruppe()
         {
@@ -235,7 +246,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return int
+         * @return int|null
          */
         public function getMin()
         {
@@ -243,7 +254,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return int
+         * @return int|null
          */
         public function getMax()
         {
@@ -253,13 +264,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return int
          */
-        public function getAuswahlTyp()
+        public function getAuswahlTyp(): int
         {
             return 0;
         }
 
         /**
-         * @return int
+         * @return int|null
          */
         public function getAnzeigeTyp()
         {
@@ -267,7 +278,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return int
+         * @return int|null
          */
         public function getSort()
         {
@@ -275,7 +286,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return mixed
+         * @return string|null
          */
         public function getKommentar()
         {
@@ -283,7 +294,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return mixed
+         * @return object|null
          */
         public function getSprache()
         {
@@ -295,16 +306,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function getItemCount(): int
         {
-            $oCount = Shop::Container()->getDB()->query("
-                SELECT COUNT(*) AS nCount 
+            return (int)Shop::Container()->getDB()->query(
+                'SELECT COUNT(*) AS nCount 
                     FROM tkonfigitem 
-                    WHERE kKonfiggruppe = " . (int)$this->kKonfiggruppe,
+                    WHERE kKonfiggruppe = ' . (int)$this->kKonfiggruppe,
                 \DB\ReturnType::SINGLE_OBJECT
-            );
-
-            return isset($oCount->nCount)
-                ? (int)$oCount->nCount
-                : 0;
+            )->nCount;
         }
 
         /**
@@ -330,7 +337,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return int
+         * @return int|float
          */
         public function getInitQuantity()
         {

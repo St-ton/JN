@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -8,9 +8,9 @@ namespace Link;
 
 use DB\DbInterface;
 use DB\ReturnType;
+use Tightenco\Collect\Support\Collection;
 use function Functional\flatten;
 use function Functional\map;
-use Tightenco\Collect\Support\Collection;
 
 /**
  * Class LinkGroup
@@ -18,12 +18,15 @@ use Tightenco\Collect\Support\Collection;
  */
 final class LinkGroup implements LinkGroupInterface
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array
      */
-    private static $mapping = ['cLocalizedName' => 'Name'];
+    public static $mapping = [
+        'cLocalizedName' => 'Name',
+        'Links'          => 'Links'
+    ];
 
     /**
      * @var array
@@ -92,7 +95,7 @@ final class LinkGroup implements LinkGroupInterface
             ['lgid' => $this->id],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        if (count($groupLanguages) === 0) {
+        if (\count($groupLanguages) === 0) {
             return $this;
         }
 
@@ -148,7 +151,7 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @inheritdoc
      */
-    public function setNames(array $names)
+    public function setNames(array $names): void
     {
         $this->names = $names;
     }
@@ -164,7 +167,7 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @inheritdoc
      */
-    public function setID(int $id)
+    public function setID(int $id): void
     {
         $this->id = $id;
     }
@@ -180,7 +183,7 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @inheritdoc
      */
-    public function setLinks(Collection $links)
+    public function setLinks(Collection $links): void
     {
         $this->links = $links;
     }
@@ -196,7 +199,7 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @inheritdoc
      */
-    public function setTemplate(string $template)
+    public function setTemplate(string $template): void
     {
         $this->template = $template;
     }
@@ -222,7 +225,7 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @inheritdoc
      */
-    public function setLanguageID(array $languageID)
+    public function setLanguageID(array $languageID): void
     {
         $this->languageID = $languageID;
     }
@@ -238,7 +241,7 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @inheritdoc
      */
-    public function setLanguageCode(array $languageCode)
+    public function setLanguageCode(array $languageCode): void
     {
         $this->languageCode = $languageCode;
     }
@@ -254,7 +257,7 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @inheritdoc
      */
-    public function setIsSpecial(bool $isSpecial)
+    public function setIsSpecial(bool $isSpecial): void
     {
         $this->isSpecial = $isSpecial;
     }
@@ -265,7 +268,7 @@ final class LinkGroup implements LinkGroupInterface
      */
     public function isAvailableInLanguage(int $langID): bool
     {
-        return in_array($langID, $this->languageID, true);
+        return \in_array($langID, $this->languageID, true);
     }
 
     /**
@@ -273,7 +276,7 @@ final class LinkGroup implements LinkGroupInterface
      */
     public function __debugInfo()
     {
-        $res       = get_object_vars($this);
+        $res       = \get_object_vars($this);
         $res['db'] = '*truncated*';
 
         return $res;

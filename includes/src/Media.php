@@ -12,7 +12,7 @@ class Media
     /**
      * @var Media
      */
-    private static $_instance;
+    private static $instance;
 
     /**
      * @var MediaImage[]|MediaImageCompatibility[]
@@ -22,9 +22,9 @@ class Media
     /**
      * @return Media
      */
-    public static function getInstance()
+    public static function getInstance(): self
     {
-        return self::$_instance ?? new self();
+        return self::$instance ?? new self();
     }
 
     /**
@@ -32,7 +32,7 @@ class Media
      */
     public function __construct()
     {
-        self::$_instance = $this;
+        self::$instance = $this;
         $this->register(new MediaImage())
              ->register(new MediaImageCompatibility());
     }
@@ -41,7 +41,7 @@ class Media
      * @param MediaImage|MediaImageCompatibility $media
      * @return $this
      */
-    public function register($media)
+    public function register($media): self
     {
         $this->types[] = $media;
 
@@ -65,7 +65,8 @@ class Media
 
     /**
      * @param string $requestUri
-     * @return bool
+     * @return bool|mixed
+     * @throws Exception
      */
     public function handleRequest($requestUri)
     {

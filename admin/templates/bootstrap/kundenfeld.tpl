@@ -2,7 +2,7 @@
 {include file='tpl_inc/header.tpl'}
 
 <script type="text/javascript">
-    var kundenfeldSortDesc = "{#kundenfeldSortDesc#}";
+    var kundenfeldSortDesc = "{__('kundenfeldSortDesc')}";
 {literal}
     function countKundenfeldwert() {
         return $('#formtable tr.kundenfeld_wert').length;
@@ -109,15 +109,15 @@
 {/literal}
 </script>
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#kundenfeld# cBeschreibung=#kundenfeldDesc# cDokuURL=#kundenfeldURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('kundenfeld') cBeschreibung=__('kundenfeldDesc') cDokuURL=__('kundenfeldURL')}
 <div id="content" class="container-fluid">
     <div class="block">
         <form name="sprache" method="post" action="kundenfeld.php">
             {$jtl_token}
-            <input id="{#changeLanguage#}" type="hidden" name="sprachwechsel" value="1" />
+            <input id="{__('changeLanguage')}" type="hidden" name="sprachwechsel" value="1" />
             <div class="p25 left input-group">
                 <span class="input-group-addon">
-                    <label for="kSprache">{#changeLanguage#}:</strong></label>
+                    <label for="kSprache">{__('changeLanguage')}:</strong></label>
                 </span>
                 <span class="input-group-wrap last">
                     <select id="kSprache" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
@@ -132,10 +132,10 @@
 
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'uebersicht'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#overview">{#kundenfeld#}</a>
+            <a data-toggle="tab" role="tab" href="#overview">{__('kundenfeld')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#config">{#kundenfeldSettings#}</a>
+            <a data-toggle="tab" role="tab" href="#config">{__('kundenfeldSettings')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -155,35 +155,35 @@
                 {/if}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{if isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0}{#kundenfeldEdit#}{else}{#kundenfeldCreate#}{/if}</h3>
+                        <h3 class="panel-title">{if isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0}{__('kundenfeldEdit')}{else}{__('kundenfeldCreate')}{/if}</h3>
                     </div>
                     <div class="table-responsive">
                         <table class="table list table-bordered" id="formtable">
                             <tr>
-                                <td><label for="cName">{#kundenfeldName#}</label></td>
+                                <td><label for="cName">{__('kundenfeldName')}</label></td>
                                 <td>
                                     <input id="cName" name="cName" type="text" class="{if isset($xPlausiVar_arr.cName)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.cName)}{$xPostVar_arr.cName}{elseif isset($oKundenfeld->cName)}{$oKundenfeld->cName}{/if}" />
                                 </td>
                             </tr>
                             <tr>
-                                <td><label for="cWawi">{#kundenfeldWawi#}</label></td>
+                                <td><label for="cWawi">{__('kundenfeldWawi')}</label></td>
                                 <td>
                                     <input id="cWawi" name="cWawi" type="text" class="{if isset($xPlausiVar_arr.cWawi)}fieldfillout{/if} form-control"{if $cfEdit} readonly="readonly"{/if} value="{if isset($xPostVar_arr.cWawi)}{$xPostVar_arr.cWawi}{elseif isset($oKundenfeld->cWawi)}{$oKundenfeld->cWawi}{/if}" />
                                 </td>
                             </tr>
                             <tr>
-                                <td><label for="nSort">{#kundenfeldSort#}</label></td>
+                                <td><label for="nSort">{__('kundenfeldSort')}</label></td>
                                 <td>
                                     {if !empty($nHighestSortValue)}
                                         {assign var="nNextHighestSort" value=$nHighestSortValue|intval + $nHighestSortDiff|intval}
                                         <input id="nSort" name="nSort" type="text" class="{if isset($xPlausiVar_arr.nSort)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.nSort)}{$xPostVar_arr.nSort}{elseif isset($oKundenfeld->nSort)}{$oKundenfeld->nSort}{else}{$nNextHighestSort}{/if}"/>
                                     {else}
-                                        <input id="nSort" name="nSort" type="text" class="{if isset($xPlausiVar_arr.nSort)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.nSort)}{$xPostVar_arr.nSort}{elseif isset($oKundenfeld->nSort)}{$oKundenfeld->nSort}{/if}" placeholder="{#kundenfeldSortDesc#}"/>
+                                        <input id="nSort" name="nSort" type="text" class="{if isset($xPlausiVar_arr.nSort)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.nSort)}{$xPostVar_arr.nSort}{elseif isset($oKundenfeld->nSort)}{$oKundenfeld->nSort}{/if}" placeholder="{__('kundenfeldSortDesc')}"/>
                                     {/if}
                                 </td>
                             </tr>
                             <tr>
-                                <td><label for="nPflicht">{#kundenfeldPflicht#}</label></td>
+                                <td><label for="nPflicht">{__('kundenfeldPflicht')}</label></td>
                                 <td>
                                     <select id="nPflicht" name="nPflicht" class="{if isset($xPlausiVar_arr.nPflicht)} fieldfillout {/if}form-control">
                                         <option value="1"{if (isset($xPostVar_arr.nPflicht) && $xPostVar_arr.nPflicht == 1) || (isset($oKundenfeld->nPflicht) && $oKundenfeld->nPflicht == 1)} selected{/if}>
@@ -196,7 +196,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td><label for="nEdit">{#kundenfeldEditable#}</label></td>
+                                <td><label for="nEdit">{__('kundenfeldEditable')}</label></td>
                                 <td>
                                     <select id="nEdit" name="nEdit" class="{if isset($xPlausiVar_arr.nEdit)} fieldfillout{/if} form-control">
                                         <option value="1"{if (isset($xPostVar_arr.nEdit) && $xPostVar_arr.nEdit == 1) || (isset($oKundenfeld->nEdit) && $oKundenfeld->nEdit == 1)} selected{/if}>
@@ -209,7 +209,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td><label for="cTyp">{#kundenfeldTyp#}</label></td>
+                                <td><label for="cTyp">{__('kundenfeldTyp')}</label></td>
                                 <td>
                                     <select id="cTyp" name="cTyp" onchange="selectCheck(this);" class="{if isset($xPlausiVar_arr.cTyp)} fieldfillout{/if} form-control">
                                         <option value="text"{if (isset($xPostVar_arr.cTyp) && $xPostVar_arr.cTyp === 'text') || (isset($oKundenfeld->cTyp) && $oKundenfeld->cTyp === 'text')} selected{/if}>
@@ -280,7 +280,7 @@
                         </table>
                     </div>
                     <div class="panel-footer">
-                        <button name="speichern" type="submit" class="btn btn-primary" value="{#kundenfeldSave#}"><i class="fa fa-save"></i> {#kundenfeldSave#}</button>
+                        <button name="speichern" type="submit" class="btn btn-primary" value="{__('kundenfeldSave')}"><i class="fa fa-save"></i> {__('kundenfeldSave')}</button>
                     </div>
                 </div>
 
@@ -289,7 +289,7 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{#kundenfeldExistingDesc#}</h3>
+                    <h3 class="panel-title">{__('kundenfeldExistingDesc')}</h3>
                 </div>
                 {if isset($oKundenfeld_arr) && $oKundenfeld_arr|@count > 0}
                     <form method="post" action="kundenfeld.php">
@@ -297,42 +297,42 @@
                         <input name="kundenfelder" type="hidden" value="1">
                         <input name="tab" type="hidden" value="uebersicht">
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <thead>
                                 <tr>
                                     <th class="check"></th>
-                                    <th class="tleft">{#kundenfeldNameShort#}</th>
-                                    <th class="tleft">{#kundenfeldWawiShort#}</th>
-                                    <th class="tleft">{#kundenfeldTyp#}</th>
-                                    <th class="tleft">{#kundenfeldValue#}</th>
-                                    <th class="th-6">{#kundenfeldEdit#}</th>
-                                    <th class="th-7">{#kundenfeldSort#}</th>
+                                    <th class="tleft">{__('kundenfeldNameShort')}</th>
+                                    <th class="tleft">{__('kundenfeldWawiShort')}</th>
+                                    <th class="tleft">{__('kundenfeldTyp')}</th>
+                                    <th class="tleft">{__('kundenfeldValue')}</th>
+                                    <th class="th-6">{__('kundenfeldEdit')}</th>
+                                    <th class="th-7">{__('kundenfeldSort')}</th>
                                     <th class="th-8"></th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {foreach name=kundenfeld from=$oKundenfeld_arr item=oKundenfeld}
-                                    <tr class="tab_bg{$smarty.foreach.kundenfeld.iteration%2}">
+                                    <tr>
                                         <td class="check">
                                             <input name="kKundenfeld[]" type="checkbox" value="{$oKundenfeld->kKundenfeld}" id="check-{$oKundenfeld->kKundenfeld}" />
                                         </td>
-                                        <td class="TD2"><label for="check-{$oKundenfeld->kKundenfeld}">{$oKundenfeld->cName}{if $oKundenfeld->nPflicht == 1} *{/if}</label></td>
-                                        <td class="TD3">{$oKundenfeld->cWawi}</td>
-                                        <td class="TD4">{$oKundenfeld->cTyp}</td>
-                                        <td class="TD5">
+                                        <td><label for="check-{$oKundenfeld->kKundenfeld}">{$oKundenfeld->cName}{if $oKundenfeld->nPflicht == 1} *{/if}</label></td>
+                                        <td>{$oKundenfeld->cWawi}</td>
+                                        <td>{$oKundenfeld->cTyp}</td>
+                                        <td>
                                             {if isset($oKundenfeld->oKundenfeldWert_arr)}
                                                 {foreach name=kundenfeldwert from=$oKundenfeld->oKundenfeldWert_arr item=oKundenfeldWert}
                                                     {$oKundenfeldWert->cWert}{if !$smarty.foreach.kundenfeldwert.last}, {/if}
                                                 {/foreach}
                                             {/if}
                                         </td>
-                                        <td class="tcenter">{if $oKundenfeld->nEditierbar == 1}{#kundenfeldYes#}{else}{#kundenfeldNo#}{/if}</td>
+                                        <td class="tcenter">{if $oKundenfeld->nEditierbar == 1}{__('kundenfeldYes')}{else}{__('kundenfeldNo')}{/if}</td>
                                         <td class="tcenter">
                                             <input class="form-control" name="nSort_{$oKundenfeld->kKundenfeld}" type="text" value="{$oKundenfeld->nSort}" size="5" />
                                         </td>
                                         <td class="tcenter">
                                             <a href="kundenfeld.php?a=edit&kKundenfeld={$oKundenfeld->kKundenfeld}&tab=uebersicht&token={$smarty.session.jtl_token}"
-                                               class="btn btn-default btn-sm" title="{#modify#}">
+                                               class="btn btn-default btn-sm" title="{__('modify')}">
                                                 <i class="fa fa-edit"></i>
                                             </a>
                                         </td>
@@ -342,26 +342,26 @@
                             </table>
                         </div>
                         <div class="panel-body">
-                            <div class="alert alert-info">{#kundenfeldPflichtDesc#}</div>
+                            <div class="alert alert-info">{__('kundenfeldPflichtDesc')}</div>
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group">
-                                <button name="aktualisieren" type="submit" value="{#kundenfeldUpdate#}" class="btn btn-primary"><i class="fa fa-refresh"></i> {#kundenfeldUpdate#}</button>
-                                <button name="loeschen" type="submit" value="{#kundenfeldDel#}" class="btn btn-danger">
-                                    <i class="fa fa-trash"></i> {#deleteSelected#}
+                                <button name="aktualisieren" type="submit" value="{__('kundenfeldUpdate')}" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('kundenfeldUpdate')}</button>
+                                <button name="loeschen" type="submit" value="{__('kundenfeldDel')}" class="btn btn-danger">
+                                    <i class="fa fa-trash"></i> {__('deleteSelected')}
                                 </button>
                             </div>
                         </div>
                     </form>
                 {else}
                     <div class="panel-body">
-                        <div class="alert alert-info"><i class="fa fa-info-circle"></i> {#noDataAvailable#}</div>
+                        <div class="alert alert-info"><i class="fa fa-info-circle"></i> {__('noDataAvailable')}</div>
                     </div>
                 {/if}
             </div>
         </div>
         <div id="config" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
-            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings' action='kundenfeld.php' buttonCaption=#save# title='Einstellungen' tab='einstellungen'}
+            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings' action='kundenfeld.php' buttonCaption=__('save') title='Einstellungen' tab='einstellungen'}
         </div>
     </div>
 </div>

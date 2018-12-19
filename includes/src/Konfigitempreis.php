@@ -200,20 +200,20 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
 
         /**
          * @param bool $bConvertCurrency
-         * @return float
+         * @return float|null
          */
         public function getPreis(bool $bConvertCurrency = false)
         {
             $fPreis = $this->fPreis;
             if ($bConvertCurrency && $fPreis > 0) {
-                $fPreis *= Session::Currency()->getConversionFactor();
+                $fPreis *= \Session\Session::getCurrency()->getConversionFactor();
             }
 
             return $fPreis;
         }
 
         /**
-         * @return int
+         * @return int|null
          */
         public function getTyp()
         {

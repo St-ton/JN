@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\GeneralObject;
+
 /**
  * Class KategorieArtikel
  */
@@ -42,7 +44,7 @@ class KategorieArtikel
      * @param int $kKategorieArtikel
      * @return $this
      */
-    public function loadFromDB(int $kKategorieArtikel)
+    public function loadFromDB(int $kKategorieArtikel): self
     {
         $obj = Shop::Container()->getDB()->select('tkategorieartikel', 'kKategorieArtikel', $kKategorieArtikel);
         foreach (get_object_vars($obj) as $k => $v) {
@@ -59,7 +61,7 @@ class KategorieArtikel
      */
     public function insertInDB(): int
     {
-        return Shop::Container()->getDB()->insert('tkategorieartikel', kopiereMembers($this));
+        return Shop::Container()->getDB()->insert('tkategorieartikel', GeneralObject::copyMembers($this));
     }
 
     /**
@@ -69,9 +71,14 @@ class KategorieArtikel
      */
     public function updateInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = GeneralObject::copyMembers($this);
 
-        return Shop::Container()->getDB()->update('tkategorieartikel', 'kKategorieArtikel', $obj->kKategorieArtikel, $obj);
+        return Shop::Container()->getDB()->update(
+            'tkategorieartikel',
+            'kKategorieArtikel',
+            $obj->kKategorieArtikel,
+            $obj
+        );
     }
 
     /**

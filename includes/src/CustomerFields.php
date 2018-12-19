@@ -6,6 +6,8 @@
  * @since 5.0
  */
 
+use Helpers\GeneralObject;
+
 /**
  * Class CustomerFields
  */
@@ -19,7 +21,7 @@ class CustomerFields
     /**
      * @var object[]
      */
-    protected $customerFields;
+    protected $customerFields = [];
 
     /**
      * @var int
@@ -37,10 +39,10 @@ class CustomerFields
     }
 
     /**
-     * @param null|int $langID
-     * @return static
+     * @param null $langID
+     * @return CustomerFields
      */
-    public static function getInstance($langID = null)
+    public static function getInstance($langID = null): self
     {
         if ($langID === null || (int)$langID === 0) {
             $langID = (int)$_SESSION['kSprache'];
@@ -58,10 +60,16 @@ class CustomerFields
     /**
      * @param int $langID
      */
-    protected function loadFields(int $langID)
+    protected function loadFields(int $langID): void
     {
         $this->customerFields = [];
-        $customerFields       = Shop::Container()->getDB()->selectAll('tkundenfeld', 'kSprache', $langID, '*', 'nSort ASC');
+        $customerFields       = Shop::Container()->getDB()->selectAll(
+            'tkundenfeld',
+            'kSprache',
+            $langID,
+            '*',
+            'nSort ASC'
+        );
 
         foreach ($customerFields as $item) {
             $this->prepare($item);
@@ -87,9 +95,9 @@ class CustomerFields
     /**
      * @return object[]
      */
-    public function getCustomerFields()
+    public function getCustomerFields(): array
     {
-        return deepCopy($this->customerFields);
+        return GeneralObject::deepCopy($this->customerFields);
     }
 
     /**
@@ -105,7 +113,7 @@ class CustomerFields
      * @param object $customerField
      * @return null|object[]
      */
-    public function getCustomerFieldValues($customerField)
+    public function getCustomerFieldValues($customerField): ?array
     {
         $this->prepare($customerField);
 
@@ -126,7 +134,7 @@ class CustomerFields
      * @param int $kCustomerField
      * @return bool
      */
-    public function delete(int $kCustomerField)
+    public function delete(int $kCustomerField): bool
     {
         if ($kCustomerField !== 0) {
             $ret = Shop::Container()->getDB()->delete('tkundenattribut', 'kKundenfeld', $kCustomerField) >= 0
@@ -149,7 +157,7 @@ class CustomerFields
      * @param int $kCustomerField
      * @param array $customerFieldValues
      */
-    protected function updateCustomerFieldValues($kCustomerField, $customerFieldValues)
+    protected function updateCustomerFieldValues(int $kCustomerField, array $customerFieldValues): void
     {
         Shop::Container()->getDB()->delete('tkundenfeldwert', 'kKundenfeld', $kCustomerField);
 
@@ -176,16 +184,16 @@ class CustomerFields
                                 AND tkundenfeldwert.cWert = tkundenattribut.cWert
                         )",
             ['kKundenfeld' => $kCustomerField],
-            \DB\ReturnType::AFFECTED_ROWS
+            \DB\ReturnType::DEFAULT
         );
     }
 
     /**
-     * @param object $customerField
+     * @param object     $customerField
      * @param null|array $customerFieldValues
      * @return bool
      */
-    public function save($customerField, $customerFieldValues = null)
+    public function save($customerField, $customerFieldValues = null): bool
     {
         $this->prepare($customerField);
         $key = $customerField->kKundenfeld ?? null;
@@ -216,9 +224,9 @@ class CustomerFields
                     case 'zahl':
                         // all customer values will be changed to numbers if possible
                         Shop::Container()->getDB()->executeQueryPrepared(
-                            "UPDATE tkundenattribut SET
+                            'UPDATE tkundenattribut SET
 	                            cWert =	CAST(CAST(cWert AS DOUBLE) AS CHAR)
-                                WHERE tkundenattribut.kKundenfeld = :kKundenfeld",
+                                WHERE tkundenattribut.kKundenfeld = :kKundenfeld',
                             ['kKundenfeld' => $key],
                             \DB\ReturnType::AFFECTED_ROWS
                         );
@@ -240,7 +248,6 @@ class CustomerFields
                 }
             }
         } else {
-            // insert...
             $key = Shop::Container()->getDB()->insert('tkundenfeld', $customerField);
 
             if ($key > 0) {

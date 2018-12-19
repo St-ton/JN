@@ -8,10 +8,15 @@ namespace Services;
 
 use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
+use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../bootstrap.php';
 
-class ContainerBaseTest extends \PHPUnit_Framework_TestCase
+/**
+ * Class ContainerBaseTest
+ * @package Services
+ */
+class ContainerBaseTest extends TestCase
 {
     public function test_singleton_happyPath()
     {

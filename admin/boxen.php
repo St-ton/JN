@@ -3,20 +3,20 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('BOXES_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 
 $cHinweis   = '';
 $cFehler    = '';
-$nPage      = 0;
+$nPage      = isset($_REQUEST['page']) ? (int)$_REQUEST['page'] : 0;
 $boxService = Shop::Container()->getBoxService();
-$boxAdmin   = new \Boxes\Admin\BoxAdmin(Shop::Container()->getDB(), $boxService);
+$boxAdmin   = new \Boxes\Admin\BoxAdmin(Shop::Container()->getDB());
 $bOk        = false;
-if (isset($_REQUEST['page'])) {
-    $nPage = (int)$_REQUEST['page'];
-}
-if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && validateToken()) {
+if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::validateToken()) {
     switch ($_REQUEST['action']) {
         case 'delete-invisible':
             if (!empty($_POST['kInvisibleBox']) && count($_POST['kInvisibleBox']) > 0) {
@@ -27,7 +27,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
                         ++$cnt;
                     }
                 }
-                $cHinweis = $cnt . ' Box(en) wurde(n) erfolgreich gel&ouml;scht.';
+                $cHinweis = $cnt . ' Box(en) wurde(n) erfolgreich gelöscht.';
             }
             break;
 
@@ -41,14 +41,14 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
                     // Neuer Container
                     $bOk = $boxAdmin->create(0, $nPage, $ePosition);
                     if ($bOk) {
-                        $cHinweis = 'Container wurde erfolgreich hinzugef&uuml;gt.';
+                        $cHinweis = 'Container wurde erfolgreich hinzugefügt.';
                     } else {
                         $cFehler = 'Container konnte nicht angelegt werden.';
                     }
                 } else {
                     $bOk = $boxAdmin->create($kBox, $nPage, $ePosition, $kContainer);
                     if ($bOk) {
-                        $cHinweis = 'Box wurde erfolgreich hinzugef&uuml;gt.';
+                        $cHinweis = 'Box wurde erfolgreich hinzugefügt.';
                     } else {
                         $cFehler = 'Box konnte nicht angelegt werden.';
                     }
@@ -76,8 +76,9 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
             }
             $smarty->assign('oEditBox', $oBox)
                    ->assign('revisionData', $revisionData)
-                   ->assign('oLink_arr',
-                       Shop::Container()->getDB()->query("SELECT * FROM tlinkgruppe", \DB\ReturnType::ARRAY_OF_OBJECTS)
+                   ->assign(
+                       'oLink_arr',
+                       Shop::Container()->getDB()->query('SELECT * FROM tlinkgruppe', \DB\ReturnType::ARRAY_OF_OBJECTS)
                    );
             break;
 
@@ -101,12 +102,12 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
                         }
                     }
                 }
-            } elseif ($eTyp === \Boxes\BoxType::LINK) {
+            } elseif ($eTyp === \Boxes\Type::LINK) {
                 $linkID = (int)$_REQUEST['linkID'];
                 if ($linkID > 0) {
                     $bOk = $boxAdmin->update($kBox, $cTitel, $linkID);
                 }
-            } elseif ($eTyp === \Boxes\BoxType::CATBOX) {
+            } elseif ($eTyp === \Boxes\Type::CATBOX) {
                 $linkID = (int)$_REQUEST['linkID'];
                 $bOk    = $boxAdmin->update($kBox, $cTitel, $linkID);
                 if ($bOk) {
@@ -129,8 +130,8 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
         case 'resort':
             $nPage     = (int)$_REQUEST['page'];
             $ePosition = $_REQUEST['position'];
-            $box_arr   = $_REQUEST['box'] ?? null;
-            $sort_arr  = $_REQUEST['sort'] ?? null;
+            $box_arr   = $_REQUEST['box'] ?? [];
+            $sort_arr  = $_REQUEST['sort'] ?? [];
             $aktiv_arr = $_REQUEST['aktiv'] ?? [];
             $boxCount  = count($box_arr);
             $bValue    = $_REQUEST['box_show'] ?? false;
@@ -155,7 +156,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
 
         case 'activate':
             $kBox    = (int)$_REQUEST['item'];
-            $bActive = (boolean)$_REQUEST['value'];
+            $bActive = (bool)$_REQUEST['value'];
             $bOk     = $boxAdmin->activate($kBox, 0, $bActive);
             if ($bOk) {
                 $cHinweis = 'Box wurde erfolgreich bearbeitet.';
@@ -166,7 +167,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
 
         case 'container':
             $ePosition = $_REQUEST['position'];
-            $bValue    = (boolean)$_GET['value'];
+            $bValue    = (bool)$_GET['value'];
             $bOk       = $boxAdmin->setVisibility(0, $ePosition, $bValue);
             if ($bOk) {
                 $cHinweis = 'Box wurde erfolgreich bearbeitet.';
@@ -178,46 +179,9 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
         default:
             break;
     }
-    $flushres = Shop::Cache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes']);
-    Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+    $flushres = Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes']);
+    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
 }
-$validPageTypes  = [
-    PAGE_UNBEKANNT,
-    PAGE_ARTIKEL,
-    PAGE_ARTIKELLISTE,
-    PAGE_WARENKORB,
-    PAGE_MEINKONTO,
-    PAGE_KONTAKT,
-    PAGE_UMFRAGE,
-    PAGE_NEWS,
-    PAGE_NEWSLETTER,
-    PAGE_LOGIN,
-    PAGE_REGISTRIERUNG,
-    PAGE_BESTELLVORGANG,
-    PAGE_BEWERTUNG,
-    PAGE_DRUCKANSICHT,
-    PAGE_PASSWORTVERGESSEN,
-    PAGE_WARTUNG,
-    PAGE_WUNSCHLISTE,
-    PAGE_VERGLEICHSLISTE,
-    PAGE_STARTSEITE,
-    PAGE_VERSAND,
-    PAGE_AGB,
-    PAGE_DATENSCHUTZ,
-    PAGE_TAGGING,
-    PAGE_LIVESUCHE,
-    PAGE_HERSTELLER,
-    PAGE_SITEMAP,
-    PAGE_GRATISGESCHENK,
-    PAGE_WRB,
-    PAGE_PLUGIN,
-    PAGE_NEWSLETTERARCHIV,
-    PAGE_NEWSARCHIV,
-    PAGE_EIGENE,
-    PAGE_AUSWAHLASSISTENT,
-    PAGE_BESTELLABSCHLUSS,
-    PAGE_RMA
-];
 $oBoxen_arr      = $boxService->buildList($nPage, false, true);
 $oVorlagen_arr   = $boxAdmin->getTemplates($nPage);
 $oBoxenContainer = Template::getInstance()->getBoxLayoutXML();
@@ -253,7 +217,7 @@ $filterMapping = \Functional\map($filterMapping, function ($e) {
 $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('filterMapping', $filterMapping)
-       ->assign('validPageTypes', $validPageTypes)
+       ->assign('validPageTypes', $boxAdmin->getValidPageTypes())
        ->assign('bBoxenAnzeigen', $boxAdmin->getVisibility($nPage))
        ->assign('oBoxenLeft_arr', $oBoxen_arr['left'] ?? [])
        ->assign('oBoxenTop_arr', $oBoxen_arr['top'] ?? [])

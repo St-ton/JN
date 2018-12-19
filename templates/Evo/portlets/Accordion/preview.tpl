@@ -1,0 +1,1 @@
+{include file="./accordion.tpl" isPreview=true}

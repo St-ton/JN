@@ -6,8 +6,13 @@
 
 namespace Services\JTL\Validation\Rules;
 
+use PHPUnit\Framework\TestCase;
 
-class EmailTest extends \PHPUnit_Framework_TestCase
+/**
+ * Class EmailTest
+ * @package Services\JTL\Validation\Rules
+ */
+class EmailTest extends TestCase
 {
     public function test()
     {

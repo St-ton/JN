@@ -116,7 +116,11 @@ class Emailvorlage
                 $this->$cMember = $oObj->$cMember;
             }
             // Settings
-            $this->oEinstellung_arr = Shop::Container()->getDB()->selectAll($cTableSetting, 'kEmailvorlage', $this->kEmailvorlage);
+            $this->oEinstellung_arr = Shop::Container()->getDB()->selectAll(
+                $cTableSetting,
+                'kEmailvorlage',
+                $this->kEmailvorlage
+            );
             // Assoc bauen
             if (is_array($this->oEinstellung_arr) && count($this->oEinstellung_arr) > 0) {
                 $this->oEinstellungAssoc_arr = [];
@@ -281,7 +285,7 @@ class Emailvorlage
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getName()
     {
@@ -289,7 +293,7 @@ class Emailvorlage
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getBeschreibung()
     {
@@ -297,7 +301,7 @@ class Emailvorlage
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getMailTyp()
     {
@@ -305,7 +309,7 @@ class Emailvorlage
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getModulId()
     {
@@ -313,7 +317,7 @@ class Emailvorlage
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getDateiname()
     {
@@ -321,7 +325,7 @@ class Emailvorlage
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getAktiv()
     {
@@ -329,7 +333,7 @@ class Emailvorlage
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getAKZ()
     {
@@ -337,7 +341,7 @@ class Emailvorlage
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getAGB()
     {
@@ -345,7 +349,7 @@ class Emailvorlage
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getWRB()
     {
@@ -353,7 +357,7 @@ class Emailvorlage
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getWRBForm()
     {
@@ -361,7 +365,7 @@ class Emailvorlage
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getDSE()
     {
@@ -369,7 +373,7 @@ class Emailvorlage
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getFehlerhaft()
     {
@@ -383,12 +387,15 @@ class Emailvorlage
      */
     public static function load(string $modulId, $isPlugin = false)
     {
-        $table   = $isPlugin ? 'tpluginemailvorlage' : 'temailvorlage';
-        $obj     = Shop::Container()->getDB()->select(
+        $table = $isPlugin ? 'tpluginemailvorlage' : 'temailvorlage';
+        $obj   = Shop::Container()->getDB()->select(
             $table,
-            'cModulId', $modulId,
-            null, null,
-            null, null,
+            'cModulId',
+            $modulId,
+            null,
+            null,
+            null,
+            null,
             false,
             'kEmailvorlage'
         );

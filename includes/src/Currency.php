@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Tax;
+use JTL\MagicCompatibilityTrait;
+
 /**
  * Class Currency
  */
@@ -39,12 +42,12 @@ class Currency
     /**
      * @var bool
      */
-    private $isDefault;
+    private $isDefault = false;
 
     /**
      * @var bool
      */
-    private $forcePlacementBeforeNumber;
+    private $forcePlacementBeforeNumber = false;
 
     /**
      * @var string
@@ -69,7 +72,7 @@ class Currency
     /**
      * @var array
      */
-    private static $mapping = [
+    protected static $mapping = [
         'kWaehrung'            => 'ID',
         'cISO'                 => 'Code',
         'cName'                => 'Name',
@@ -90,14 +93,18 @@ class Currency
     public function __construct(int $id = null)
     {
         if ($id > 0) {
-            $this->extract(Shop::Container()->getDB()->select('twaehrung', 'kWaehrung', $id));
+            $data = Shop::Container()->getDB()->select('twaehrung', 'kWaehrung', $id);
+            if ($data !== null) {
+                $data->kWaehrung = (int)$data->kWaehrung;
+                $this->extract($data);
+            }
         }
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getID()
+    public function getID(): ?int
     {
         return $this->id;
     }
@@ -114,9 +121,9 @@ class Currency
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getCode()
+    public function getCode(): ?string
     {
         return $this->code;
     }
@@ -133,9 +140,9 @@ class Currency
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -152,9 +159,9 @@ class Currency
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getHtmlEntity()
+    public function getHtmlEntity(): ?string
     {
         return $this->htmlEntity;
     }
@@ -171,9 +178,9 @@ class Currency
     }
 
     /**
-     * @return float
+     * @return float|null
      */
-    public function getConversionFactor()
+    public function getConversionFactor(): ?float
     {
         return $this->conversionFactor;
     }
@@ -192,7 +199,7 @@ class Currency
     /**
      * @return bool
      */
-    public function isDefault()
+    public function isDefault(): bool
     {
         return $this->isDefault;
     }
@@ -214,7 +221,7 @@ class Currency
     /**
      * @return bool
      */
-    public function getForcePlacementBeforeNumber()
+    public function getForcePlacementBeforeNumber(): bool
     {
         return $this->forcePlacementBeforeNumber;
     }
@@ -234,9 +241,9 @@ class Currency
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getDecimalSeparator()
+    public function getDecimalSeparator(): ?string
     {
         return $this->decimalSeparator;
     }
@@ -253,9 +260,9 @@ class Currency
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getThousandsSeparator()
+    public function getThousandsSeparator(): ?string
     {
         return $this->thousandsSeparator;
     }
@@ -274,7 +281,7 @@ class Currency
     /**
      * @return string|null
      */
-    public function getURL()
+    public function getURL(): ?string
     {
         return $this->cURL;
     }
@@ -293,7 +300,7 @@ class Currency
     /**
      * @return string|null
      */
-    public function getURLFull()
+    public function getURLFull(): ?string
     {
         return $this->cURLFull;
     }
@@ -331,5 +338,120 @@ class Currency
         }
 
         return $this;
+    }
+
+    /**
+     * @param float  $priceNet
+     * @param float  $priceGross
+     * @param string $class
+     * @param bool   $forceTax
+     * @return string
+     */
+    public static function getCurrencyConversion($priceNet, $priceGross, $class = '', bool $forceTax = true): string
+    {
+        self::setCurrencies();
+
+        $res        = '';
+        $currencies = \Session\Session::getCurrencies();
+        if (count($currencies) > 0) {
+            $priceNet      = (float)str_replace(',', '.', $priceNet ?? 0);
+            $priceGross    = (float)str_replace(',', '.', $priceGross ?? 0);
+            $oSteuerklasse = Shop::Container()->getDB()->select('tsteuerklasse', 'cStandard', 'Y');
+            $taxClassID    = $oSteuerklasse !== null ? (int)$oSteuerklasse->kSteuerklasse : 1;
+            if ((float)$priceNet > 0) {
+                $priceNet   = (float)$priceNet;
+                $priceGross = Tax::getGross((float)$priceNet, Tax::getSalesTax($taxClassID));
+            } elseif ((float)$priceGross > 0) {
+                $priceNet   = Tax::getNet((float)$priceGross, Tax::getSalesTax($taxClassID));
+                $priceGross = (float)$priceGross;
+            }
+
+            $res = '<span class="preisstring ' . $class . '">';
+            foreach ($currencies as $i => $currency) {
+                $cPreisLocalized       = number_format(
+                    $priceNet * $currency->getConversionFactor(),
+                    2,
+                    $currency->getDecimalSeparator(),
+                    $currency->getThousandsSeparator()
+                );
+                $cPreisBruttoLocalized = number_format(
+                    $priceGross * $currency->getConversionFactor(),
+                    2,
+                    $currency->getDecimalSeparator(),
+                    $currency->getThousandsSeparator()
+                );
+                if ($currency->getForcePlacementBeforeNumber() === true) {
+                    $cPreisLocalized       = $currency->getHtmlEntity() . ' ' . $cPreisLocalized;
+                    $cPreisBruttoLocalized = $currency->getHtmlEntity() . ' ' . $cPreisBruttoLocalized;
+                } else {
+                    $cPreisLocalized       = $cPreisLocalized . ' ' . $currency->getHtmlEntity();
+                    $cPreisBruttoLocalized = $cPreisBruttoLocalized . ' ' . $currency->getHtmlEntity();
+                }
+                // Wurde geändert weil der Preis nun als Betrag gesehen wird
+                // und die Steuer direkt in der Versandart als eSteuer Flag eingestellt wird
+                if ($i > 0) {
+                    $res .= $forceTax
+                        ? ('<br><strong>' . $cPreisBruttoLocalized . '</strong>' .
+                            ' (<em>' . $cPreisLocalized . ' ' .
+                            Shop::Lang()->get('net') . '</em>)')
+                        : ('<br> ' . $cPreisBruttoLocalized);
+                } else {
+                    $res .= $forceTax
+                        ? ('<strong>' . $cPreisBruttoLocalized . '</strong>' .
+                            ' (<em>' . $cPreisLocalized . ' ' .
+                            Shop::Lang()->get('net') . '</em>)')
+                        : '<strong>' . $cPreisBruttoLocalized . '</strong>';
+                }
+            }
+            $res .= '</span>';
+        }
+
+        return $res;
+    }
+
+    /**
+     * Converts price into given currency
+     *
+     * @param float  $price
+     * @param string $iso - EUR / USD
+     * @param int    $id - kWaehrung
+     * @param bool   $round
+     * @param int    $precision
+     * @return float|bool
+     */
+    public static function convertCurrency(
+        $price,
+        string $iso = null,
+        $id = null,
+        bool $round = true,
+        int $precision = 2
+    ) {
+        self::setCurrencies();
+
+        foreach (\Session\Session::getCurrencies() as $currency) {
+            if (($iso !== null && $currency->getCode() === $iso) || ($id !== null && $currency->getID() === (int)$id)) {
+                $newprice = $price * $currency->getConversionFactor();
+
+                return $round ? round($newprice, $precision) : $newprice;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param bool $update
+     * @return void
+     */
+    public static function setCurrencies(bool $update = false): void
+    {
+        if ($update || count(\Session\Session::getCurrencies()) === 0) {
+            $currencies    = [];
+            $allCurrencies = Shop::Container()->getDB()->selectAll('twaehrung', [], [], 'kWaehrung');
+            foreach ($allCurrencies as $currency) {
+                $currencies[] = new self((int)$currency->kWaehrung);
+            }
+            $_SESSION['Waehrungen'] = $currencies;
+        }
     }
 }

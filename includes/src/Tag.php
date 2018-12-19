@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\GeneralObject;
+
 /**
  * Class Tag
  */
@@ -35,9 +37,7 @@ class Tag
     public $nAktiv;
 
     /**
-     * Konstruktor
-     *
-     * @param int $kTag - Falls angegeben, wird Tag mit angegebenem kTag aus der DB geholt
+     * @param int $kTag
      */
     public function __construct(int $kTag = 0)
     {
@@ -47,9 +47,7 @@ class Tag
     }
 
     /**
-     * Setzt Tag mit Daten aus der DB mit spezifiziertem Primary Key
-     *
-     * @param int $kTag Primary Key
+     * @param int $kTag
      * @return $this|bool
      */
     private function loadFromDB(int $kTag)
@@ -67,8 +65,6 @@ class Tag
     }
 
     /**
-     * Gibt Tagobjekt anhand der Sprache und des Namens zurück
-     *
      * @param string $cName
      * @return mixed - returns Object if found in DB, else false
      */
@@ -88,26 +84,22 @@ class Tag
     }
 
     /**
-     * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
-     *
      * @return int
      */
     public function insertInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = GeneralObject::copyMembers($this);
         unset($obj->kTag);
 
         return Shop::Container()->getDB()->insert('ttag', $obj);
     }
 
     /**
-     * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
-     *
      * @return int
      */
     public function updateInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = GeneralObject::copyMembers($this);
 
         return Shop::Container()->getDB()->update('ttag', 'kTag', $obj->kTag, $obj);
     }

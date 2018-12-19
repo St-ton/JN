@@ -22,7 +22,7 @@ class SimpleCSS
      * @param string $cValue
      * @return $this
      */
-    public function addCSS($cSelector, $cAttribute, $cValue)
+    public function addCSS($cSelector, $cAttribute, $cValue): self
     {
         if (isset($this->cCSS_arr[$cSelector])) {
             $this->cCSS_arr[$cSelector] = array_merge($this->cCSS_arr[$cSelector], [$cAttribute => $cValue]);
@@ -37,7 +37,7 @@ class SimpleCSS
      * @param string $cFile
      * @return bool
      */
-    public function addFile($cFile)
+    public function addFile(string $cFile): bool
     {
         if (!file_exists($cFile)) {
             return false;
@@ -82,7 +82,7 @@ class SimpleCSS
      * @param array $cData_arr
      * @return array
      */
-    public function trimCSSData($cData_arr)
+    public function trimCSSData(array $cData_arr): array
     {
         $cCSS_arr = [];
         foreach ($cData_arr as $cData) {
@@ -97,7 +97,7 @@ class SimpleCSS
 
     /**
      * @param string $cSelector
-     * @return bool
+     * @return mixed|bool
      */
     public function getSelector($cSelector)
     {
@@ -111,7 +111,7 @@ class SimpleCSS
     /**
      * @param string $cSelector
      * @param string $cKey
-     * @return bool
+     * @return mixed|bool
      */
     public function getAttribute($cSelector, $cKey)
     {
@@ -130,19 +130,17 @@ class SimpleCSS
     /**
      * @return array
      */
-    public function getCSS()
+    public function getCSS(): array
     {
-        if (is_array($this->cCSS_arr) && count($this->cCSS_arr)) {
-            return $this->cCSS_arr;
-        }
-
-        return [];
+        return is_array($this->cCSS_arr) && count($this->cCSS_arr)
+            ? $this->cCSS_arr
+            : [];
     }
 
     /**
      * @return string
      */
-    public function renderCSS()
+    public function renderCSS(): string
     {
         $cOut = '';
         if (is_array($this->cCSS_arr) && count($this->cCSS_arr)) {
@@ -164,16 +162,16 @@ class SimpleCSS
      * @param string $cOrdner
      * @return string
      */
-    public function getTemplatePath($cOrdner)
+    public function getTemplatePath(string $cOrdner): string
     {
-        return realpath(PFAD_ROOT . 'templates/' . basename($cOrdner)) . '/';
+        return realpath(PFAD_ROOT . PFAD_TEMPLATES . basename($cOrdner)) . '/';
     }
 
     /**
      * @param string $cOrdner
      * @return string
      */
-    public function getCustomCSSFile($cOrdner)
+    public function getCustomCSSFile(string $cOrdner): string
     {
         return $this->getTemplatePath($cOrdner) . 'themes/custom.css';
     }
@@ -188,7 +186,7 @@ class SimpleCSS
         $cMatch_arr = [];
 
         switch ($cType) {
-            case 'color': {
+            case 'color':
                 // rgb(255,255,255)
                 if (preg_match('/rgb(\s*)\(([\d\s]+),([\d\s]+),([\d\s]+)\)/', $cValue, $cMatch_arr)) {
                     return $this->rgb2html((int)$cMatch_arr[2], (int)$cMatch_arr[3], (int)$cMatch_arr[4]);
@@ -197,9 +195,8 @@ class SimpleCSS
                     return trim($cMatch_arr[0]);
                 }
                 break;
-            }
 
-            case 'size': {
+            case 'size':
                 // 1.2em 15% '12 px'
                 if (preg_match('/([\d\.]+)(.*)/', $cValue, $cMatch_arr)) {
                     $cOut['numeric'] = (float)$cMatch_arr[1];
@@ -208,7 +205,6 @@ class SimpleCSS
                     return $cOut;
                 }
                 break;
-            }
 
             default:
                 break;
@@ -223,7 +219,7 @@ class SimpleCSS
      * @param int $b
      * @return string
      */
-    public function rgb2html($r, $g, $b)
+    public function rgb2html($r, $g, $b): string
     {
         if (is_array($r) && count($r) === 3) {
             list($r, $g, $b) = $r;
@@ -236,7 +232,7 @@ class SimpleCSS
         $g = dechex($g < 0 ? 0 : ($g > 255 ? 255 : $g));
         $b = dechex($b < 0 ? 0 : ($b > 255 ? 255 : $b));
 
-        $color = (strlen($r) < 2 ? '0' : '') . $r;
+        $color  = (strlen($r) < 2 ? '0' : '') . $r;
         $color .= (strlen($g) < 2 ? '0' : '') . $g;
         $color .= (strlen($b) < 2 ? '0' : '') . $b;
 
@@ -273,7 +269,7 @@ class SimpleCSS
     /**
      * @return array
      */
-    public function getUnits()
+    public function getUnits(): array
     {
         return ['em', 'px', '%'];
     }

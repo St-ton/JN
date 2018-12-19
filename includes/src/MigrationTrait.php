@@ -24,7 +24,7 @@ trait MigrationTrait
     protected function __execute($query, $return, $echo = false, $bExecuteHook = false)
     {
         if (JTL_CHARSET === 'iso-8859-1') {
-            $query = utf8_convert_recursive($query, false);
+            $query = StringHandler::utf8_convert_recursive($query, false);
         }
 
         return Shop::Container()->getDB()->executeQuery($query, $return, $echo, $bExecuteHook);

@@ -37,7 +37,7 @@ class Nice
     /**
      * @return Nice
      */
-    public static function getInstance()
+    public static function getInstance(): self
     {
         return self::$instance ?? new self();
     }
@@ -48,12 +48,12 @@ class Nice
      */
     protected function __construct()
     {
-        if (($this->cBrocken = Shop::Cache()->get('cbrocken')) === false) {
+        if (($this->cBrocken = Shop::Container()->getCache()->get('cbrocken')) === false) {
             // Hole Brocken
             $oBrocken = Shop::Container()->getDB()->query(
-                "SELECT cBrocken 
+                'SELECT cBrocken 
                     FROM tbrocken 
-                    LIMIT 1",
+                    LIMIT 1',
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if (!empty($oBrocken->cBrocken)) {
@@ -65,12 +65,14 @@ class Nice
                 );
                 $cBlowfishKey   = $cPassA . $cPassE;
                 $oXTEA          = new XTEA($cBlowfishKey);
-                $this->cBrocken = $oXTEA->decrypt(str_replace(
+                $this->cBrocken = $oXTEA->decrypt(
+                    str_replace(
                         [$cPassA, $cPassE],
                         ['', ''],
-                        base64_decode($oBrocken->cBrocken))
+                        base64_decode($oBrocken->cBrocken)
+                    )
                 );
-                Shop::Cache()->set('cbrocken', $this->cBrocken, [CACHING_GROUP_CORE]);
+                Shop::Container()->getCache()->set('cbrocken', $this->cBrocken, [CACHING_GROUP_CORE]);
             }
         }
         // Brocken zerlegen
@@ -100,7 +102,7 @@ class Nice
      * @param int $kShopModulCheck
      * @return bool
      */
-    public function checkErweiterung($kShopModulCheck)
+    public function checkErweiterung($kShopModulCheck): bool
     {
         return ($this->cAPIKey !== ''
             && strlen($this->cAPIKey) > 0
@@ -113,7 +115,7 @@ class Nice
     /**
      * @return $this
      */
-    private function ladeDefines()
+    private function ladeDefines(): self
     {
         // SEO Modul - Suchmaschinenoptimierung
         defined('SHOP_ERWEITERUNG_SEO') || define('SHOP_ERWEITERUNG_SEO', 8001);
@@ -138,9 +140,9 @@ class Nice
     /**
      * @return array
      */
-    public function gibAlleMoeglichenModule()
+    public function gibAlleMoeglichenModule(): array
     {
-        $oModul_arr = [];
+        $modules = [];
         if (!defined(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $this->ladeDefines();
         }
@@ -149,51 +151,51 @@ class Nice
         $oModul->kModulId = SHOP_ERWEITERUNG_UMFRAGE;
         $oModul->cName    = 'Umfragen Modul';
         $oModul->cDefine  = 'SHOP_ERWEITERUNG_UMFRAGE';
-        $oModul->cURL     = '';
-        $oModul_arr[]     = $oModul;
+        $oModul->cURL     = 'https://jtl-url.de/ykepb';
+        $modules[]        = $oModul;
         // Auswahlassistent Modul
         $oModul           = new stdClass();
         $oModul->kModulId = SHOP_ERWEITERUNG_AUSWAHLASSISTENT;
         $oModul->cName    = 'Auswahlassistent Modul';
         $oModul->cDefine  = 'SHOP_ERWEITERUNG_AUSWAHLASSISTENT';
-        $oModul->cURL     = '';
-        $oModul_arr[]     = $oModul;
+        $oModul->cURL     = 'https://jtl-url.de/q6tox';
+        $modules[]        = $oModul;
         // Upload Modul
         $oModul           = new stdClass();
         $oModul->kModulId = SHOP_ERWEITERUNG_UPLOADS;
         $oModul->cName    = 'Upload Modul';
         $oModul->cDefine  = 'SHOP_ERWEITERUNG_UPLOADS';
-        $oModul->cURL     = '';
-        $oModul_arr[]     = $oModul;
+        $oModul->cURL     = 'https://jtl-url.de/7-cop';
+        $modules[]        = $oModul;
         // Upload Modul
         $oModul           = new stdClass();
         $oModul->kModulId = SHOP_ERWEITERUNG_DOWNLOADS;
         $oModul->cName    = 'Download Modul';
         $oModul->cDefine  = 'SHOP_ERWEITERUNG_DOWNLOADS';
-        $oModul->cURL     = '';
-        $oModul_arr[]     = $oModul;
+        $oModul->cURL     = 'https://jtl-url.de/i0zvj';
+        $modules[]        = $oModul;
         // Konfigurator Modul
         $oModul           = new stdClass();
         $oModul->kModulId = SHOP_ERWEITERUNG_KONFIGURATOR;
         $oModul->cName    = 'Konfigurator Modul';
         $oModul->cDefine  = 'SHOP_ERWEITERUNG_KONFIGURATOR';
-        $oModul->cURL     = '';
-        $oModul_arr[]     = $oModul;
+        $oModul->cURL     = 'https://jtl-url.de/ni9f5';
+        $modules[]        = $oModul;
         // Brandfree Option
         $oModul           = new stdClass();
         $oModul->kModulId = SHOP_ERWEITERUNG_BRANDFREE;
         $oModul->cName    = 'Brandfree Option';
         $oModul->cDefine  = 'SHOP_ERWEITERUNG_BRANDFREE';
-        $oModul->cURL     = '';
-        $oModul_arr[]     = $oModul;
-        
-        return $oModul_arr;
+        $oModul->cURL     = 'https://jtl-url.de/t4egb';
+        $modules[]        = $oModul;
+
+        return $modules;
     }
 
     /**
      * @return string
      */
-    public function getBrocken()
+    public function getBrocken(): string
     {
         return $this->cBrocken;
     }
@@ -201,7 +203,7 @@ class Nice
     /**
      * @return string
      */
-    public function getAPIKey()
+    public function getAPIKey(): string
     {
         return $this->cAPIKey;
     }
@@ -209,7 +211,7 @@ class Nice
     /**
      * @return string
      */
-    public function getDomain()
+    public function getDomain(): string
     {
         return $this->cDomain;
     }
@@ -217,7 +219,7 @@ class Nice
     /**
      * @return array
      */
-    public function getShopModul()
+    public function getShopModul(): array
     {
         return $this->kShopModul_arr;
     }

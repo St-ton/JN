@@ -12,10 +12,10 @@ trait MigrationTableTrait
     /**
      * @return array
      */
-    public function getLocaleSections()
+    public function getLocaleSections(): array
     {
         $result = [];
-        $items  = $this->fetchAll("SELECT kSprachsektion AS id, cName AS name FROM tsprachsektion");
+        $items  = $this->fetchAll('SELECT kSprachsektion AS id, cName AS name FROM tsprachsektion');
         foreach ($items as $item) {
             $result[$item->name] = $item->id;
         }
@@ -26,10 +26,10 @@ trait MigrationTableTrait
     /**
      * @return array
      */
-    public function getLocales()
+    public function getLocales(): array
     {
         $result = [];
-        $items  = $this->fetchAll("SELECT kSprachISO AS id, cISO AS name FROM tsprachiso");
+        $items  = $this->fetchAll('SELECT kSprachISO AS id, cISO AS name FROM tsprachiso');
         foreach ($items as $item) {
             $result[$item->name] = $item->id;
         }
@@ -72,7 +72,8 @@ trait MigrationTableTrait
             throw new Exception("section name '{$section}' not found");
         }
 
-        $this->execute("INSERT INTO tsprachwerte SET
+        $this->execute(
+            "INSERT INTO tsprachwerte SET
             kSprachISO = '{$locales[$locale]}', 
             kSprachsektion = '{$sections[$section]}', 
             cName = '{$key}', 
@@ -95,11 +96,11 @@ trait MigrationTableTrait
     /**
      * @return array
      */
-    private function getAvailableInputTypes()
+    private function getAvailableInputTypes(): array
     {
         $result = [];
-        $items  = $this->fetchAll("
-            SELECT DISTINCT cInputTyp 
+        $items  = $this->fetchAll(
+            "SELECT DISTINCT cInputTyp 
                 FROM `teinstellungenconf` 
                 WHERE cInputTyp IS NOT NULL 
                     AND cInputTyp != ''"
@@ -173,25 +174,26 @@ trait MigrationTableTrait
         ) {
             throw new Exception('inputType has to be provided if additionalProperties->cConf is not set to "N"');
         }
-        if (in_array($inputType, $inputTypeNeedsOptions)
+        if (in_array($inputType, $inputTypeNeedsOptions, true)
             && (!is_object($additionalProperties)
                 || !isset($additionalProperties->inputOptions)
                 || !is_array($additionalProperties->inputOptions)
                 || count($additionalProperties->inputOptions) === 0)
         ) {
-            throw new Exception('additionalProperties->inputOptions has to be provided if inputType is "' . $inputType . '"');
+            throw new Exception('additionalProperties->inputOptions has to be provided if inputType is "' .
+                $inputType . '"');
         }
         if ($overwrite !== true) {
-            $count = $this->fetchOne("
-                SELECT COUNT(*) AS count 
+            $count = $this->fetchOne(
+                "SELECT COUNT(*) AS count 
                     FROM teinstellungen 
                     WHERE cName='{$configName}'"
             );
             if ((int)$count->count !== 0) {
                 throw new Exception('another entry already present in teinstellungen and overwrite is disabled');
             }
-            $count = $this->fetchOne("
-                SELECT COUNT(*) AS count 
+            $count = $this->fetchOne(
+                "SELECT COUNT(*) AS count 
                     FROM teinstellungenconf 
                     WHERE cWertName='{$configName}' 
                         OR kEinstellungenConf={$kEinstellungenConf}"
@@ -199,8 +201,8 @@ trait MigrationTableTrait
             if ((int)$count->count !== 0) {
                 throw new Exception('another entry already present in teinstellungenconf and overwrite is disabled');
             }
-            $count = $this->fetchOne("
-                SELECT COUNT(*) AS count 
+            $count = $this->fetchOne(
+                "SELECT COUNT(*) AS count 
                     FROM teinstellungenconfwerte 
                     WHERE kEinstellungenConf={$kEinstellungenConf}"
             );
@@ -211,7 +213,7 @@ trait MigrationTableTrait
             unset($count);
 
             // $overwrite has to be set to true in order to create a new inputType
-            if (!in_array($inputType, $availableInputTypes)
+            if (!in_array($inputType, $availableInputTypes, true)
                 && (!is_object($additionalProperties)
                     || !isset($additionalProperties->cConf)
                     || $additionalProperties->cConf !== 'N')
@@ -248,7 +250,7 @@ trait MigrationTableTrait
         $einstellungen->cName                 = $configName;
         $einstellungen->cWert                 = $configValue;
         $einstellungen->cModulId              = $cModulId;
-        Shop::Container()->getDB()->insertRow('teinstellungen', $einstellungen, true);
+        Shop::Container()->getDB()->insertRow('teinstellungen', $einstellungen);
         unset($einstellungen);
 
         $einstellungenConf                        = new stdClass();
@@ -263,7 +265,7 @@ trait MigrationTableTrait
         $einstellungenConf->nStandardAnzeigen     = $nStandardAnzeigen;
         $einstellungenConf->nModul                = $nModul;
         $einstellungenConf->cConf                 = $cConf;
-        Shop::Container()->getDB()->insertRow('teinstellungenconf', $einstellungenConf, true);
+        Shop::Container()->getDB()->insertRow('teinstellungenconf', $einstellungenConf);
         unset($einstellungenConf);
 
         if (is_object($additionalProperties) &&
@@ -277,7 +279,7 @@ trait MigrationTableTrait
                 $einstellungenConfWerte->cName              = $optionValue;
                 $einstellungenConfWerte->cWert              = $optionKey;
                 $einstellungenConfWerte->nSort              = $sortIndex;
-                Shop::Container()->getDB()->insertRow('teinstellungenconfwerte', $einstellungenConfWerte, true);
+                Shop::Container()->getDB()->insertRow('teinstellungenconfwerte', $einstellungenConfWerte);
                 $sortIndex++;
             }
             unset($einstellungenConfWerte);
@@ -290,8 +292,8 @@ trait MigrationTableTrait
     public function removeConfig($key)
     {
         $this->execute("DELETE FROM teinstellungen WHERE cName = '{$key}'");
-        $this->execute("
-            DELETE FROM teinstellungenconfwerte 
+        $this->execute(
+            "DELETE FROM teinstellungenconfwerte 
                 WHERE kEinstellungenConf = (
                     SELECT kEinstellungenConf 
                         FROM teinstellungenconf 

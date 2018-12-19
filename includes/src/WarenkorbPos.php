@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Tax;
+use Helpers\ShippingMethod;
+
 /**
  * Class WarenkorbPos
  */
@@ -100,7 +103,7 @@ class WarenkorbPos
     public $kKonfigitem;
 
     /**
-     * @var string
+     * @var array
      */
     public $cKonfigpreisLocalized;
 
@@ -155,7 +158,7 @@ class WarenkorbPos
     public $cEinzelpreisLocalized;
 
     /**
-     * @var string
+     * @var array
      */
     public $cKonfigeinzelpreisLocalized;
 
@@ -194,62 +197,68 @@ class WarenkorbPos
      * @param string $freifeld
      * @return bool
      */
-    public function setzeVariationsWert(int $kEigenschaft, int $kEigenschaftWert, $freifeld = '')
+    public function setzeVariationsWert(int $kEigenschaft, int $kEigenschaftWert, $freifeld = ''): bool
     {
-        $EigenschaftWert                                 = new EigenschaftWert($kEigenschaftWert);
-        $Eigenschaft                                     = new Eigenschaft($kEigenschaft);
-        $NeueWarenkorbPosEigenschaft                     = new WarenkorbPosEigenschaft();
-        $NeueWarenkorbPosEigenschaft->kEigenschaft       = $kEigenschaft;
-        $NeueWarenkorbPosEigenschaft->kEigenschaftWert   = $kEigenschaftWert;
-        $NeueWarenkorbPosEigenschaft->fGewichtsdifferenz = $EigenschaftWert->fGewichtDiff;
-        $NeueWarenkorbPosEigenschaft->fAufpreis          = $EigenschaftWert->fAufpreisNetto;
-        $Aufpreis_obj                                    = Shop::Container()->getDB()->select(
+        $attributeValue                    = new EigenschaftWert($kEigenschaftWert);
+        $attribute                         = new Eigenschaft($kEigenschaft);
+        $newAttributes                     = new WarenkorbPosEigenschaft();
+        $newAttributes->kEigenschaft       = $kEigenschaft;
+        $newAttributes->kEigenschaftWert   = $kEigenschaftWert;
+        $newAttributes->fGewichtsdifferenz = $attributeValue->fGewichtDiff;
+        $newAttributes->fAufpreis          = $attributeValue->fAufpreisNetto;
+        $Aufpreis_obj                      = Shop::Container()->getDB()->select(
             'teigenschaftwertaufpreis',
-            'kEigenschaftWert', (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert,
-            'kKundengruppe', Session::CustomerGroup()->getID()
+            'kEigenschaftWert',
+            (int)$newAttributes->kEigenschaftWert,
+            'kKundengruppe',
+            \Session\Session::getCustomerGroup()->getID()
         );
         if (!empty($Aufpreis_obj->fAufpreisNetto)) {
             if ($this->Artikel->Preise->rabatt > 0) {
-                $NeueWarenkorbPosEigenschaft->fAufpreis = $Aufpreis_obj->fAufpreisNetto -
+                $newAttributes->fAufpreis     = $Aufpreis_obj->fAufpreisNetto -
                     (($this->Artikel->Preise->rabatt / 100) * $Aufpreis_obj->fAufpreisNetto);
-                $Aufpreis_obj->fAufpreisNetto           = $NeueWarenkorbPosEigenschaft->fAufpreis;
+                $Aufpreis_obj->fAufpreisNetto = $newAttributes->fAufpreis;
             } else {
-                $NeueWarenkorbPosEigenschaft->fAufpreis = $Aufpreis_obj->fAufpreisNetto;
+                $newAttributes->fAufpreis = $Aufpreis_obj->fAufpreisNetto;
             }
         }
-        $NeueWarenkorbPosEigenschaft->cTyp               = $Eigenschaft->cTyp;
-        $NeueWarenkorbPosEigenschaft->cAufpreisLocalized = gibPreisStringLocalized($NeueWarenkorbPosEigenschaft->fAufpreis);
+        $newAttributes->cTyp               = $attribute->cTyp;
+        $newAttributes->cAufpreisLocalized = Preise::getLocalizedPriceString($newAttributes->fAufpreis);
         //posname lokalisiert ablegen
-        $NeueWarenkorbPosEigenschaft->cEigenschaftName     = [];
-        $NeueWarenkorbPosEigenschaft->cEigenschaftWertName = [];
+        $newAttributes->cEigenschaftName     = [];
+        $newAttributes->cEigenschaftWertName = [];
         foreach ($_SESSION['Sprachen'] as $Sprache) {
-            $NeueWarenkorbPosEigenschaft->cEigenschaftName[$Sprache->cISO]     = $Eigenschaft->cName;
-            $NeueWarenkorbPosEigenschaft->cEigenschaftWertName[$Sprache->cISO] = $EigenschaftWert->cName;
+            $newAttributes->cEigenschaftName[$Sprache->cISO]     = $attribute->cName;
+            $newAttributes->cEigenschaftWertName[$Sprache->cISO] = $attributeValue->cName;
 
             if ($Sprache->cStandard !== 'Y') {
                 $eigenschaft_spr = Shop::Container()->getDB()->select(
                     'teigenschaftsprache',
-                    'kEigenschaft', (int)$NeueWarenkorbPosEigenschaft->kEigenschaft,
-                    'kSprache', (int)$Sprache->kSprache
+                    'kEigenschaft',
+                    (int)$newAttributes->kEigenschaft,
+                    'kSprache',
+                    (int)$Sprache->kSprache
                 );
                 if (!empty($eigenschaft_spr->cName)) {
-                    $NeueWarenkorbPosEigenschaft->cEigenschaftName[$Sprache->cISO] = $eigenschaft_spr->cName;
+                    $newAttributes->cEigenschaftName[$Sprache->cISO] = $eigenschaft_spr->cName;
                 }
                 $eigenschaftwert_spr = Shop::Container()->getDB()->select(
                     'teigenschaftwertsprache',
-                    'kEigenschaftWert', (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert,
-                    'kSprache', (int)$Sprache->kSprache
+                    'kEigenschaftWert',
+                    (int)$newAttributes->kEigenschaftWert,
+                    'kSprache',
+                    (int)$Sprache->kSprache
                 );
                 if (!empty($eigenschaftwert_spr->cName)) {
-                    $NeueWarenkorbPosEigenschaft->cEigenschaftWertName[$Sprache->cISO] = $eigenschaftwert_spr->cName;
+                    $newAttributes->cEigenschaftWertName[$Sprache->cISO] = $eigenschaftwert_spr->cName;
                 }
             }
 
             if ($freifeld || strlen(trim($freifeld)) > 0) {
-                $NeueWarenkorbPosEigenschaft->cEigenschaftWertName[$Sprache->cISO] = Shop::Container()->getDB()->escape($freifeld);
+                $newAttributes->cEigenschaftWertName[$Sprache->cISO] = Shop::Container()->getDB()->escape($freifeld);
             }
         }
-        $this->WarenkorbPosEigenschaftArr[] = $NeueWarenkorbPosEigenschaft;
+        $this->WarenkorbPosEigenschaftArr[] = $newAttributes;
         $this->fGesamtgewicht               = $this->gibGesamtgewicht();
 
         return true;
@@ -261,12 +270,12 @@ class WarenkorbPos
      * @param int $kEigenschaft - Key der Eigenschaft
      * @return int - gesetzter Wert. Falls nicht gesetzt, wird 0 zurückgegeben
      */
-    public function gibGesetztenEigenschaftsWert(int $kEigenschaft)
+    public function gibGesetztenEigenschaftsWert(int $kEigenschaft): int
     {
         foreach ($this->WarenkorbPosEigenschaftArr as $WKPosEigenschaft) {
             $WKPosEigenschaft->kEigenschaft = (int)$WKPosEigenschaft->kEigenschaft;
             if ($WKPosEigenschaft->kEigenschaft === $kEigenschaft) {
-                return $WKPosEigenschaft->kEigenschaftWert;
+                return (int)$WKPosEigenschaft->kEigenschaftWert;
             }
         }
 
@@ -276,7 +285,7 @@ class WarenkorbPos
     /**
      * gibt Summe der Aufpreise der Variationen dieser Position zurück
      *
-     * @return float Gesamtaufpreis
+     * @return float
      */
     public function gibGesamtAufpreis()
     {
@@ -293,7 +302,7 @@ class WarenkorbPos
     /**
      * gibt Gewicht dieser Position zurück. Variationen und PosAnzahl berücksichtigt
      *
-     * @return float Gewicht
+     * @return float
      */
     public function gibGesamtgewicht()
     {
@@ -311,11 +320,31 @@ class WarenkorbPos
     }
 
     /**
+     * Calculate the total weight of a config item and his components.
+     *
+     * @return float|int
+     */
+    public function getTotalConfigWeight()
+    {
+        $weight = $this->Artikel->fGewicht * $this->nAnzahl;
+
+        if ($this->kKonfigitem === 0 && !empty($this->cUnique)) {
+            foreach (\Session\Session::getCart()->PositionenArr as $pos) {
+                if ($pos->istKonfigKind() && $pos->cUnique === $this->cUnique) {
+                    $weight += $pos->fGesamtgewicht;
+                }
+            }
+        }
+
+        return $weight;
+    }
+
+    /**
      * typo in function name - for compatibility reasons only
      * @deprecated since 4.05
      * @return $this
      */
-    public function setzeGesamtpreisLoacalized()
+    public function setzeGesamtpreisLoacalized(): self
     {
         return $this->setzeGesamtpreisLocalized();
     }
@@ -325,41 +354,66 @@ class WarenkorbPos
      *
      * @return $this
      */
-    public function setzeGesamtpreisLocalized()
+    public function setzeGesamtpreisLocalized(): self
     {
         /** @var array('Warenkorb' => Warenkorb) $_SESSION */
         if (!is_array($_SESSION['Waehrungen'])) {
             return $this;
         }
-        foreach (Session::Currencies() as $currency) {
+        foreach (\Session\Session::getCurrencies() as $currency) {
             $currencyName = $currency->getName();
             // Standardartikel
-            $this->cGesamtpreisLocalized[0][$currencyName] = gibPreisStringLocalized(berechneBrutto($this->fPreis * $this->nAnzahl, gibUst($this->kSteuerklasse), 4), $currency);
-            $this->cGesamtpreisLocalized[1][$currencyName] = gibPreisStringLocalized($this->fPreis * $this->nAnzahl, $currency);
-            $this->cEinzelpreisLocalized[0][$currencyName] = gibPreisStringLocalized(berechneBrutto($this->fPreis, gibUst($this->kSteuerklasse), 4), $currency);
-            $this->cEinzelpreisLocalized[1][$currencyName] = gibPreisStringLocalized($this->fPreis, $currency);
-
-            if (!empty($this->Artikel->cVPEEinheit) && isset($this->Artikel->cVPE) && $this->Artikel->cVPE === 'Y' && $this->Artikel->fVPEWert > 0) {
+            $this->cGesamtpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
+                Tax::getGross($this->fPreis * $this->nAnzahl, Tax::getSalesTax($this->kSteuerklasse), 4),
+                $currency
+            );
+            $this->cGesamtpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString(
+                $this->fPreis * $this->nAnzahl,
+                $currency
+            );
+            $this->cEinzelpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
+                Tax::getGross($this->fPreis, Tax::getSalesTax($this->kSteuerklasse), 4),
+                $currency
+            );
+            $this->cEinzelpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString($this->fPreis, $currency);
+            if (!empty($this->Artikel->cVPEEinheit)
+                && isset($this->Artikel->cVPE)
+                && $this->Artikel->cVPE === 'Y'
+                && $this->Artikel->fVPEWert > 0
+            ) {
                 $this->Artikel->baueVPE($this->fPreis);
             }
-
             if ($this->istKonfigVater()) {
-                $this->cKonfigpreisLocalized[0][$currencyName]       = gibPreisStringLocalized(berechneBrutto($this->fPreis * $this->nAnzahl, gibUst($this->kSteuerklasse), 4), $currency);
-                $this->cKonfigpreisLocalized[1][$currencyName]       = gibPreisStringLocalized($this->fPreis * $this->nAnzahl, $currency);
-                $this->cKonfigeinzelpreisLocalized[0][$currencyName] = gibPreisStringLocalized(berechneBrutto($this->fPreis, gibUst($this->kSteuerklasse), 4), $currency);
-                $this->cKonfigeinzelpreisLocalized[1][$currencyName] = gibPreisStringLocalized($this->fPreis, $currency);
+                $this->cKonfigpreisLocalized[0][$currencyName]       = Preise::getLocalizedPriceString(
+                    Tax::getGross($this->fPreis * $this->nAnzahl, Tax::getSalesTax($this->kSteuerklasse), 4),
+                    $currency
+                );
+                $this->cKonfigpreisLocalized[1][$currencyName]       = Preise::getLocalizedPriceString(
+                    $this->fPreis * $this->nAnzahl,
+                    $currency
+                );
+                $this->cKonfigeinzelpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
+                    Tax::getGross($this->fPreis, Tax::getSalesTax($this->kSteuerklasse), 4),
+                    $currency
+                );
+                $this->cKonfigeinzelpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString(
+                    $this->fPreis,
+                    $currency
+                );
             }
-
-            // Konfigurationsartikel
             if ($this->istKonfigKind()) {
                 $fPreisNetto  = 0;
                 $fPreisBrutto = 0;
                 $nVaterPos    = null;
                 /** @var WarenkorbPos $oPosition */
-                foreach (Session::Cart()->PositionenArr as $nPos => $oPosition) {
+                foreach (\Session\Session::getCart()->PositionenArr as $nPos => $oPosition) {
                     if ($this->cUnique === $oPosition->cUnique) {
                         $fPreisNetto  += $oPosition->fPreis * $oPosition->nAnzahl;
-                        $fPreisBrutto += berechneBrutto($oPosition->fPreis * $oPosition->nAnzahl, gibUst($oPosition->kSteuerklasse), 4);
+                        $fPreisBrutto += Tax::getGross(
+                            $oPosition->fPreis * $oPosition->nAnzahl,
+                            Tax::getSalesTax($oPosition->kSteuerklasse),
+                            4
+                        );
 
                         if ($oPosition->istKonfigVater()) {
                             $nVaterPos = $nPos;
@@ -367,17 +421,28 @@ class WarenkorbPos
                     }
                 }
                 if ($nVaterPos !== null) {
-                    $oVaterPos = Session::Cart()->PositionenArr[$nVaterPos];
+                    $oVaterPos = \Session\Session::getCart()->PositionenArr[$nVaterPos];
                     if (is_object($oVaterPos)) {
-                        if (!$this->isIgnoreMultiplier()) {
-                            $this->nAnzahlEinzel = $this->nAnzahl / $oVaterPos->nAnzahl;
-                        } else {
-                            $this->nAnzahlEinzel = $this->nAnzahl;
-                        }
-                        $oVaterPos->cKonfigpreisLocalized[0][$currencyName]       = gibPreisStringLocalized($fPreisBrutto, $currency);
-                        $oVaterPos->cKonfigpreisLocalized[1][$currencyName]       = gibPreisStringLocalized($fPreisNetto, $currency);
-                        $oVaterPos->cKonfigeinzelpreisLocalized[0][$currencyName] = gibPreisStringLocalized($fPreisBrutto / $oVaterPos->nAnzahl, $currency);
-                        $oVaterPos->cKonfigeinzelpreisLocalized[1][$currencyName] = gibPreisStringLocalized($fPreisNetto / $oVaterPos->nAnzahl, $currency);
+                        $this->nAnzahlEinzel = $this->isIgnoreMultiplier()
+                            ? $this->nAnzahl
+                            : $this->nAnzahl / $oVaterPos->nAnzahl;
+
+                        $oVaterPos->cKonfigpreisLocalized[0][$currencyName]       = Preise::getLocalizedPriceString(
+                            $fPreisBrutto,
+                            $currency
+                        );
+                        $oVaterPos->cKonfigpreisLocalized[1][$currencyName]       = Preise::getLocalizedPriceString(
+                            $fPreisNetto,
+                            $currency
+                        );
+                        $oVaterPos->cKonfigeinzelpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
+                            $fPreisBrutto / $oVaterPos->nAnzahl,
+                            $currency
+                        );
+                        $oVaterPos->cKonfigeinzelpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString(
+                            $fPreisNetto / $oVaterPos->nAnzahl,
+                            $currency
+                        );
                     }
                 }
             }
@@ -387,8 +452,6 @@ class WarenkorbPos
     }
 
     /**
-     * Setzt WarenkorbPos mit Daten aus der DB mit spezifiziertem Primary Key
-     *
      * @param int $kWarenkorbPos
      * @return $this
      */
@@ -410,9 +473,7 @@ class WarenkorbPos
     }
 
     /**
-     * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
-     *
-     * @return int - Key von eingefügter WarenkorbPos
+     * @return int
      */
     public function insertInDB(): int
     {
@@ -444,6 +505,14 @@ class WarenkorbPos
 
         $this->kWarenkorbPos = Shop::Container()->getDB()->insert('twarenkorbpos', $obj);
 
+        if ($this->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+            $oGift               = new stdClass();
+            $oGift->kWarenkorb   = $this->kWarenkorb;
+            $oGift->kArtikel     = $this->kArtikel;
+            $oGift->nAnzahl      = $this->nAnzahl;
+            $this->kWarenkorbPos = Shop::Container()->getDB()->insert('tgratisgeschenk', $oGift);
+        }
+
         return $this->kWarenkorbPos;
     }
 
@@ -472,30 +541,30 @@ class WarenkorbPos
     }
 
     /**
-     * @param WarenkorbPos $oWarenkorbPos
-     * @param int|null     $nMinDelivery
-     * @param int|null     $nMaxDelivery
+     * @param WarenkorbPos $cartPos
+     * @param int|null     $minDelivery
+     * @param int|null     $maxDelivery
      */
-    public static function setEstimatedDelivery($oWarenkorbPos, int $nMinDelivery = null, int $nMaxDelivery = null)
+    public static function setEstimatedDelivery($cartPos, int $minDelivery = null, int $maxDelivery = null): void
     {
-        $oWarenkorbPos->oEstimatedDelivery = (object)[
+        $cartPos->oEstimatedDelivery = (object)[
             'localized'  => '',
             'longestMin' => 0,
             'longestMax' => 0,
         ];
-        if ($nMinDelivery !== null && $nMaxDelivery !== null) {
-            $oWarenkorbPos->oEstimatedDelivery->longestMin = $nMinDelivery;
-            $oWarenkorbPos->oEstimatedDelivery->longestMax = $nMaxDelivery;
+        if ($minDelivery !== null && $maxDelivery !== null) {
+            $cartPos->oEstimatedDelivery->longestMin = $minDelivery;
+            $cartPos->oEstimatedDelivery->longestMax = $maxDelivery;
 
-            $oWarenkorbPos->oEstimatedDelivery->localized = (!empty($oWarenkorbPos->oEstimatedDelivery->longestMin)
-                && !empty($oWarenkorbPos->oEstimatedDelivery->longestMax))
-                ? getDeliverytimeEstimationText(
-                    $oWarenkorbPos->oEstimatedDelivery->longestMin,
-                    $oWarenkorbPos->oEstimatedDelivery->longestMax
+            $cartPos->oEstimatedDelivery->localized = (!empty($cartPos->oEstimatedDelivery->longestMin)
+                && !empty($cartPos->oEstimatedDelivery->longestMax))
+                ? ShippingMethod::getDeliverytimeEstimationText(
+                    $cartPos->oEstimatedDelivery->longestMin,
+                    $cartPos->oEstimatedDelivery->longestMax
                 )
                 : '';
         }
-        $oWarenkorbPos->cEstimatedDelivery = &$oWarenkorbPos->oEstimatedDelivery->localized;
+        $cartPos->cEstimatedDelivery = &$cartPos->oEstimatedDelivery->localized;
     }
 
     /**

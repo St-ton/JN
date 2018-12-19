@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyConversionSmarty')
        ->registerPlugin('function', 'getCurrencyConversionTooltipButton', 'getCurrencyConversionTooltipButton')
        ->registerPlugin('function', 'getCurrentPage', 'getCurrentPage')
@@ -11,17 +11,19 @@ $smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyC
        ->registerPlugin('function', 'getHelpDesc', 'getHelpDesc')
        ->registerPlugin('function', 'getExtensionCategory', 'getExtensionCategory')
        ->registerPlugin('function', 'formatVersion', 'formatVersion')
+       ->registerPlugin('modifier', 'formatByteSize', ['StringHandler', 'formatSize'])
        ->registerPlugin('function', 'gravatarImage', 'gravatarImage')
        ->registerPlugin('function', 'getRevisions', 'getRevisions')
        ->registerPlugin('function', 'captchaMarkup', 'captchaMarkup')
-       ->registerPlugin('modifier', 'permission', 'permission');
+       ->registerPlugin('modifier', 'permission', 'permission')
+       ->registerPlugin('function', '__', [\Shop::Container()->getGetText(), 'translate']);
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
- * @return mixed
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
+ * @return string
  */
-function getRevisions($params, $smarty)
+function getRevisions(array $params, $smarty): string
 {
     $secondary = $params['secondary'] ?? false;
     $data      = $params['data'] ?? null;
@@ -35,11 +37,11 @@ function getRevisions($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return string
  */
-function getCurrencyConversionSmarty($params, $smarty)
+function getCurrencyConversionSmarty(array $params, $smarty): string
 {
     $bForceSteuer = !(isset($params['bSteuer']) && $params['bSteuer'] === false);
     if (!isset($params['fPreisBrutto'])) {
@@ -52,35 +54,40 @@ function getCurrencyConversionSmarty($params, $smarty)
         $params['cClass'] = '';
     }
 
-    return getCurrencyConversion($params['fPreisNetto'], $params['fPreisBrutto'], $params['cClass'], $bForceSteuer);
+    return Currency::getCurrencyConversion(
+        $params['fPreisNetto'],
+        $params['fPreisBrutto'],
+        $params['cClass'],
+        $bForceSteuer
+    );
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return string
  */
-function getCurrencyConversionTooltipButton($params, $smarty)
+function getCurrencyConversionTooltipButton(array $params, $smarty): string
 {
     $placement = $params['placement'] ?? 'left';
 
-    if (isset($params['inputId'])) {
-        $inputId = $params['inputId'];
-        $button  = '<button type="button" class="btn btn-tooltip btn-info" id="' . $inputId . 'Tooltip" data-html="true"';
-        $button  .= ' data-toggle="tooltip" data-placement="' . $placement . '">';
-        $button  .= '<i class="fa fa-eur"></i></button>';
-
-        return $button;
+    if (!isset($params['inputId'])) {
+        return '';
     }
+    $inputId = $params['inputId'];
+    $button  = '<button type="button" class="btn btn-tooltip btn-info" id="' .
+        $inputId . 'Tooltip" data-html="true"';
+    $button  .= ' data-toggle="tooltip" data-placement="' . $placement . '">';
+    $button  .= '<i class="fa fa-eur"></i></button>';
 
-    return '';
+    return $button;
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  */
-function getCurrentPage($params, $smarty)
+function getCurrentPage($params, $smarty): void
 {
     $path = $_SERVER['SCRIPT_NAME'];
     $page = basename($path, '.php');
@@ -91,11 +98,11 @@ function getCurrentPage($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return string
  */
-function getHelpDesc($params, $smarty)
+function getHelpDesc(array $params, $smarty): string
 {
     $placement   = $params['placement'] ?? 'left';
     $cID         = !empty($params['cID']) ? $params['cID'] : null;
@@ -113,32 +120,32 @@ function getHelpDesc($params, $smarty)
  * @param mixed $cRecht
  * @return bool
  */
-function permission($cRecht)
+function permission($cRecht): bool
 {
-    $bOkay = false;
+    $ok = false;
     if (isset($_SESSION['AdminAccount'])) {
         if ((int)$_SESSION['AdminAccount']->oGroup->kAdminlogingruppe === ADMINGROUP) {
-            $bOkay = true;
+            $ok = true;
         } else {
             $orExpressions = explode('|', $cRecht);
             foreach ($orExpressions as $flag) {
-                $bOkay = in_array($flag, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true);
-                if ($bOkay) {
+                $ok = in_array($flag, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true);
+                if ($ok) {
                     break;
                 }
             }
         }
     }
 
-    return $bOkay;
+    return $ok;
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return string
  */
-function SmartyConvertDate($params, $smarty)
+function SmartyConvertDate(array $params, $smarty)
 {
     if (isset($params['date']) && strlen($params['date']) > 0) {
         $oDateTime = new DateTime($params['date']);
@@ -161,10 +168,10 @@ function SmartyConvertDate($params, $smarty)
 /**
  * Map marketplace categoryId to localized category name
  *
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  */
-function getExtensionCategory($params, $smarty)
+function getExtensionCategory(array $params, $smarty): void
 {
     if (!isset($params['cat'])) {
         return;
@@ -187,11 +194,11 @@ function getExtensionCategory($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return string|null
  */
-function formatVersion($params, $smarty)
+function formatVersion(array $params, $smarty): ?string
 {
     if (!isset($params['value'])) {
         return null;
@@ -203,18 +210,18 @@ function formatVersion($params, $smarty)
 /**
  * Get either a Gravatar URL or complete image tag for a specified email address.
  *
- * @param array $params
+ * @param array     $params
  *
  * array['email'] - The email address
  * array['s']     - Size in pixels, defaults to 80px [ 1 - 2048 ]
  * array['d']     - Default imageset to use [ 404 | mm | identicon | monsterid | wavatar ]
  * array['r']     - Maximum rating (inclusive) [ g | pg | r | x ]
  *
- * @param JTLSmarty $smarty
+ * @param Smarty\JTLSmarty $smarty
  * @source https://gravatar.com/site/implement/images/php/
  * @return string
  */
-function gravatarImage($params, $smarty)
+function gravatarImage(array $params, $smarty): string
 {
     $email = $params['email'] ?? null;
     if ($email === null) {
@@ -238,15 +245,15 @@ function gravatarImage($params, $smarty)
 }
 
 /**
- * @param array     $params
- * @param JTLSmarty $smarty
+ * @param array            $params
+ * @param Smarty\JTLSmarty $smarty
  * @return string
  */
-function captchaMarkup($params, $smarty)
+function captchaMarkup(array $params, $smarty): string
 {
     if (isset($params['getBody']) && $params['getBody']) {
         return Shop::Container()->getCaptchaService()->getBodyMarkup($smarty);
-    } else {
-        return Shop::Container()->getCaptchaService()->getHeadMarkup($smarty);
     }
+
+    return Shop::Container()->getCaptchaService()->getHeadMarkup($smarty);
 }

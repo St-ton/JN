@@ -41,7 +41,7 @@ class UnitsOfMeasure
     /**
      * @var array
      */
-    protected static $conversionTable = [
+    public static $conversionTable = [
         'mm'  => null,
         'cm'  => [10 => 'mm'],
         'dm'  => [10 => 'cm'],
@@ -99,7 +99,7 @@ class UnitsOfMeasure
      * @param int $kMassEinheit
      * @return stdClass|null
      */
-    public static function getUnit(int $kMassEinheit)
+    public static function getUnit(int $kMassEinheit): ?stdClass
     {
         $units = self::getUnits();
 
@@ -109,7 +109,7 @@ class UnitsOfMeasure
     /**
      * @param string $unitFrom
      * @param string $unitTo
-     * @return int
+     * @return int|null|string
      */
     private static function iGetConversionFaktor($unitFrom, $unitTo)
     {
@@ -131,7 +131,7 @@ class UnitsOfMeasure
     /**
      * @param string $unitFrom
      * @param string $unitTo
-     * @return int
+     * @return int|float|null
      */
     public static function getConversionFaktor($unitFrom, $unitTo)
     {

@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Tax;
+
 $oNice = Nice::getInstance();
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
     /**
@@ -147,10 +150,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public function jsonSerialize(): array
         {
             $cKurzBeschreibung = $this->getKurzBeschreibung();
-            $virtual = [
-                'bAktiv' => $this->{"bAktiv"}
+            $virtual           = [
+                'bAktiv' => $this->bAktiv
             ];
-            $override = [
+            $override          = [
+                'kKonfigitem'       => $this->getKonfigitem(),
                 'cName'             => $this->getName(),
                 'kArtikel'          => $this->getArtikelKey(),
                 'cBeschreibung'     => !empty($cKurzBeschreibung)
@@ -167,13 +171,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     (float)$this->getPreis(true)
                 ],
                 'fPreisLocalized' => [
-                    gibPreisStringLocalized($this->getPreis()),
-                    gibPreisStringLocalized($this->getPreis(true))
+                    Preise::getLocalizedPriceString($this->getPreis()),
+                    Preise::getLocalizedPriceString($this->getPreis(true))
                 ]
             ];
-            $result = array_merge($override, $virtual);
+            $result            = array_merge($override, $virtual);
 
-            return utf8_convert_recursive($result);
+            return StringHandler::utf8_convert_recursive($result);
         }
 
         /**
@@ -194,10 +198,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 }
 
                 if (!$kSprache) {
-                    $kSprache = Shop::getLanguageID() ?? getDefaultLanguageID();
+                    $kSprache = Shop::getLanguageID() ?? Sprache::getDefaultLanguage(true)->kSprache;
                 }
                 if (!$kKundengruppe) {
-                    $kKundengruppe = Session::CustomerGroup()->getID();
+                    $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
                 }
                 $this->kKonfiggruppe     = (int)$this->kKonfiggruppe;
                 $this->kKonfigitem       = (int)$this->kKonfigitem;
@@ -305,21 +309,21 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
 
         /**
          * @param int $kKonfiggruppe
-         * @return array
+         * @return Konfigitem[]
          */
         public static function fetchAll(int $kKonfiggruppe): array
         {
             $oItemEx_arr = [];
             $oItem_arr   = Shop::Container()->getDB()->queryPrepared(
-                "SELECT kKonfigitem 
+                'SELECT kKonfigitem 
                     FROM tkonfigitem 
                     WHERE kKonfiggruppe = :groupID 
-                    ORDER BY nSort ASC",
+                    ORDER BY nSort ASC',
                 ['groupID' => $kKonfiggruppe],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($oItem_arr as &$oItem) {
-                $kKonfigitem = $oItem->kKonfigitem;
+                $kKonfigitem = (int)$oItem->kKonfigitem;
                 $oItem       = new self($kKonfigitem);
                 if ($oItem->isValid()) {
                     $oItemEx_arr[] = $oItem;
@@ -532,10 +536,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $isConverted = true;
             }
             if ($bConvertCurrency && !$isConverted) {
-                $fVKPreis *= Session::Currency()->getConversionFactor();
+                $fVKPreis *= \Session\Session::getCurrency()->getConversionFactor();
             }
-            if (!$bForceNetto && !Session::CustomerGroup()->isMerchant()) {
-                $fVKPreis = berechneBrutto($fVKPreis, gibUst($this->getSteuerklasse()), 4);
+            if (!$bForceNetto && !\Session\Session::getCustomerGroup()->isMerchant()) {
+                $fVKPreis = Tax::getGross($fVKPreis, Tax::getSalesTax($this->getSteuerklasse()), 4);
             }
 
             return $fVKPreis;
@@ -576,8 +580,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 }
                 $fVKPreis *= (float)$waehrung->fFaktor;
             }
-            if (!$bForceNetto && !Session::CustomerGroup()->getIsMerchant()) {
-                $fVKPreis = berechneBrutto($fVKPreis, gibUst($this->getSteuerklasse()), 4);
+            if (!$bForceNetto && !\Session\Session::getCustomerGroup()->getIsMerchant()) {
+                $fVKPreis = Tax::getGross($fVKPreis, Tax::getSalesTax($this->getSteuerklasse()), 4);
             }
 
             return $fVKPreis * $this->fAnzahl * $totalAmount;
@@ -609,8 +613,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $fTmp = $this->oPreis->getPreis();
                 if ($fTmp < 0) {
                     $fRabatt = $fTmp * -1;
-                    if ($this->oPreis->getTyp() == 0 && !Session::CustomerGroup()->isMerchant()) {
-                        $fRabatt = berechneBrutto($fRabatt, gibUst($this->getSteuerklasse()));
+                    if ($this->oPreis->getTyp() == 0 && !\Session\Session::getCustomerGroup()->isMerchant()) {
+                        $fRabatt = Tax::getGross($fRabatt, Tax::getSalesTax($this->getSteuerklasse()));
                     }
                 }
             }
@@ -636,8 +640,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $fTmp = $this->oPreis->getPreis();
                 if ($fTmp > 0) {
                     $fZuschlag = $fTmp;
-                    if ($this->oPreis->getTyp() == 0 && !Session::CustomerGroup()->isMerchant()) {
-                        $fZuschlag = berechneBrutto($fZuschlag, gibUst($this->getSteuerklasse()));
+                    if ($this->oPreis->getTyp() == 0 && !\Session\Session::getCustomerGroup()->isMerchant()) {
+                        $fZuschlag = Tax::getGross($fZuschlag, Tax::getSalesTax($this->getSteuerklasse()));
                     }
                 }
             }
@@ -652,7 +656,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public function getRabattLocalized(bool $bHTML = true): string
         {
             if ($this->oPreis->getTyp() == 0) {
-                return gibPreisStringLocalized($this->getRabatt(), 0, $bHTML);
+                return Preise::getLocalizedPriceString($this->getRabatt(), null, $bHTML);
             }
 
             return $this->getRabatt() . '%';
@@ -665,7 +669,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public function getZuschlagLocalized(bool $bHTML = true): string
         {
             if ($this->oPreis->getTyp() == 0) {
-                return gibPreisStringLocalized($this->getZuschlag(), 0, $bHTML);
+                return Preise::getLocalizedPriceString($this->getZuschlag(), null, $bHTML);
             }
 
             return $this->getZuschlag() . '%';
@@ -694,7 +698,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function getPreisLocalized(bool $bHTML = true, bool $bSigned = true, bool $bForceNetto = false): string
         {
-            $cLocalized = gibPreisStringLocalized($this->getPreis($bForceNetto), 0, $bHTML);
+            $cLocalized = Preise::getLocalizedPriceString($this->getPreis($bForceNetto), false, $bHTML);
             if ($bSigned && $this->getPreis() > 0) {
                 $cLocalized = '+' . $cLocalized;
             }
@@ -710,7 +714,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function getFullPriceLocalized(bool $bHTML = true, bool $bForceNetto = false, $totalAmount = 1): string
         {
-            return gibPreisStringLocalized($this->getFullPrice($bForceNetto, false, $totalAmount), 0, $bHTML);
+            return Preise::getLocalizedPriceString($this->getFullPrice($bForceNetto, false, $totalAmount), 0, $bHTML);
         }
 
         /**

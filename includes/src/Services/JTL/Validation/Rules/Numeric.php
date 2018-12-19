@@ -6,7 +6,6 @@
 
 namespace Services\JTL\Validation\Rules;
 
-
 use Services\JTL\Validation\RuleInterface;
 use Services\JTL\Validation\RuleResult;
 
@@ -21,12 +20,11 @@ use Services\JTL\Validation\RuleResult;
 class Numeric implements RuleInterface
 {
     /**
-     * @param mixed $value
-     * @return RuleResult
+     * @inheritdoc
      */
-    public function validate($value)
+    public function validate($value): RuleResult
     {
-        return is_numeric($value)
+        return \is_numeric($value)
             ? new RuleResult(true, '', $value)
             : new RuleResult(false, 'not numeric', $value);
     }

@@ -43,10 +43,8 @@ class DirManager
             if (strpos(substr($path, strlen($path) - 1, 1), '/') === false) {
                 $path .= '/';
             }
-        } else {
-            if (strpos(substr($path, strlen($path) - 1, 1), '\\') === false) {
-                $path .= '\\';
-            }
+        } elseif (strpos(substr($path, strlen($path) - 1, 1), '\\') === false) {
+            $path .= '\\';
         }
         if (is_dir($path)) {
             $this->path = $path;

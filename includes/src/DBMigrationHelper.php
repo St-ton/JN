@@ -9,9 +9,17 @@
  */
 class DBMigrationHelper
 {
-    const IN_USE  = 'in_use';
-    const SUCCESS = 'success';
-    const FAILURE = 'failure';
+    public const IN_USE  = 'in_use';
+    public const SUCCESS = 'success';
+    public const FAILURE = 'failure';
+
+    public const MIGRATE_NONE   = 0x0000;
+    public const MIGRATE_INNODB = 0x0001;
+    public const MIGRATE_UTF8   = 0x0002;
+    public const MIGRATE_TEXT   = 0x0004;
+    public const MIGRATE_C_UTF8 = 0x00A0;
+    public const MIGRATE_TABLE  = self::MIGRATE_INNODB | self::MIGRATE_UTF8;
+    public const MIGRATE_COLUMN = self::MIGRATE_C_UTF8 | self::MIGRATE_TEXT;
 
     /**
      * @return stdClass
@@ -34,7 +42,10 @@ class DBMigrationHelper
                     WHERE `COLLATION_NAME` = 'utf8_unicode_ci'",
                 \DB\ReturnType::SINGLE_OBJECT
             );
-            $innodbPath    = Shop::Container()->getDB()->query('SELECT @@innodb_data_file_path AS path', \DB\ReturnType::SINGLE_OBJECT);
+            $innodbPath    = Shop::Container()->getDB()->query(
+                'SELECT @@innodb_data_file_path AS path',
+                \DB\ReturnType::SINGLE_OBJECT
+            );
             $innodbSize    = 'auto';
 
             if ($innodbPath && stripos($innodbPath->path, 'autoextend') === false) {
@@ -65,9 +76,11 @@ class DBMigrationHelper
             $versionInfo->server = Shop::Container()->getDB()->info();
             $versionInfo->innodb = new stdClass();
 
-            $versionInfo->innodb->support = $innodbSupport && in_array($innodbSupport->SUPPORT, ['YES', 'DEFAULT'], true);
+            $versionInfo->innodb->support = $innodbSupport
+                && in_array($innodbSupport->SUPPORT, ['YES', 'DEFAULT'], true);
             $versionInfo->innodb->version = Shop::Container()->getDB()->query(
-                "SHOW VARIABLES LIKE 'innodb_version'", \DB\ReturnType::SINGLE_OBJECT
+                "SHOW VARIABLES LIKE 'innodb_version'",
+                \DB\ReturnType::SINGLE_OBJECT
             )->Value;
             $versionInfo->innodb->size    = $innodbSize;
             $versionInfo->collation_utf8  = $utf8Support && strtolower($utf8Support->IS_COMPILED) === 'yes';
@@ -84,12 +97,22 @@ class DBMigrationHelper
         $database = Shop::Container()->getDB()->getConfig()['database'];
 
         return Shop::Container()->getDB()->queryPrepared(
-            "SELECT `TABLE_NAME`, `ENGINE`, `TABLE_COLLATION`, `TABLE_COMMENT`
-                FROM information_schema.TABLES
-                WHERE `TABLE_SCHEMA` = :schema
-                    AND `TABLE_NAME` NOT LIKE 'xplugin_%'
-                    AND (`ENGINE` != 'InnoDB' OR `TABLE_COLLATION` != 'utf8_unicode_ci')
-                ORDER BY `TABLE_NAME`",
+            "SELECT t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
+                , COUNT(c.COLUMN_NAME) TEXT_FIELDS
+                , COUNT(IF(c.COLLATION_NAME = 'utf8_unicode_ci', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
+                FROM information_schema.TABLES t
+                LEFT JOIN information_schema.COLUMNS c 
+                    ON c.TABLE_NAME = t.TABLE_NAME
+                    AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
+                    AND (c.COLUMN_TYPE = 'text' OR c.COLLATION_NAME != 'utf8_unicode_ci')
+                WHERE t.`TABLE_SCHEMA` = :schema
+                    AND t.`TABLE_NAME` NOT LIKE 'xplugin_%'
+                    AND (t.`ENGINE` != 'InnoDB' 
+                           OR t.`TABLE_COLLATION` != 'utf8_unicode_ci' 
+                           OR c.COLLATION_NAME != 'utf8_unicode_ci' 
+                           OR c.COLUMN_TYPE = 'text')
+                GROUP BY t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
+                ORDER BY t.`TABLE_NAME`;",
             ['schema' => $database],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -105,13 +128,23 @@ class DBMigrationHelper
         $excludeStr = implode("','", StringHandler::filterXSS($excludeTables));
 
         return Shop::Container()->getDB()->queryPrepared(
-            "SELECT `TABLE_NAME`, `ENGINE`, `TABLE_COLLATION`
-                FROM information_schema.TABLES
-                WHERE `TABLE_SCHEMA` = :schema
-                    AND `TABLE_NAME` NOT LIKE 'xplugin_%'
-                    " . (!empty($excludeStr) ? "AND TABLE_NAME NOT IN ('" . $excludeStr . "')" : '') . "
-                    AND (`ENGINE` != 'InnoDB' OR `TABLE_COLLATION` != 'utf8_unicode_ci')
-                ORDER BY `TABLE_NAME` LIMIT 1",
+            "SELECT t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
+                , COUNT(c.COLUMN_NAME) TEXT_FIELDS
+                , COUNT(IF(c.COLLATION_NAME = 'utf8_unicode_ci', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
+                FROM information_schema.TABLES t
+                LEFT JOIN information_schema.COLUMNS c 
+                    ON c.TABLE_NAME = t.TABLE_NAME
+                    AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
+                    AND (c.COLUMN_TYPE = 'text' OR c.COLLATION_NAME != 'utf8_unicode_ci')
+                WHERE t.`TABLE_SCHEMA` = :schema
+                    AND t.`TABLE_NAME` NOT LIKE 'xplugin_%'
+                    " . (!empty($excludeStr) ? "AND t.`TABLE_NAME` NOT IN ('" . $excludeStr . "')" : '') . "
+                    AND (t.`ENGINE` != 'InnoDB' 
+                        OR t.`TABLE_COLLATION` != 'utf8_unicode_ci' 
+                        OR c.COLLATION_NAME != 'utf8_unicode_ci' 
+                        OR c.COLUMN_TYPE = 'text')
+                GROUP BY t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`
+                ORDER BY t.`TABLE_NAME` LIMIT 1",
             ['schema' => $database],
             \DB\ReturnType::SINGLE_OBJECT
         );
@@ -126,11 +159,18 @@ class DBMigrationHelper
         $database = Shop::Container()->getDB()->getConfig()['database'];
 
         return Shop::Container()->getDB()->queryPrepared(
-            "SELECT `TABLE_NAME`, `ENGINE`, `TABLE_COLLATION`, `TABLE_COMMENT`
-                FROM information_schema.TABLES
-                WHERE `TABLE_SCHEMA` = :schema
-                    AND `TABLE_NAME` = :table
-                ORDER BY `TABLE_NAME` LIMIT 1",
+            'SELECT t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
+                , COUNT(c.COLUMN_NAME) TEXT_FIELDS
+                , COUNT(IF(c.COLLATION_NAME = \'utf8_unicode_ci\', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
+                FROM information_schema.TABLES t
+                LEFT JOIN information_schema.COLUMNS c 
+                    ON c.TABLE_NAME = t.TABLE_NAME
+                    AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
+                    AND (c.COLUMN_TYPE = \'text\' OR c.COLLATION_NAME != \'utf8_unicode_ci\')
+                WHERE t.`TABLE_SCHEMA` = :schema
+                    AND t.`TABLE_NAME` = :table
+                GROUP BY t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
+                ORDER BY t.`TABLE_NAME` LIMIT 1',
             ['schema' => $database, 'table'  => $cTable,],
             \DB\ReturnType::SINGLE_OBJECT
         );
@@ -147,7 +187,7 @@ class DBMigrationHelper
 
         if (!empty($cTable)) {
             $params['table'] = $cTable;
-            $filter          = "AND `TABLE_NAME` = :table";
+            $filter          = 'AND `TABLE_NAME` = :table';
         }
 
         return Shop::Container()->getDB()->queryPrepared(
@@ -155,23 +195,40 @@ class DBMigrationHelper
                 FROM information_schema.STATISTICS
                 WHERE `TABLE_SCHEMA` = :schema
                     {$filter}
-                    AND `INDEX_TYPE` = 'FULLTEXT'
-                    ", $params,
+                    AND `INDEX_TYPE` = 'FULLTEXT'",
+            $params,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
 
     /**
      * @param string|stdClass $oTable
-     * @return bool
+     * @return int
      */
-    public static function isTableNeedMigration($oTable): bool
+    public static function isTableNeedMigration($oTable): int
     {
+        $result = self::MIGRATE_NONE;
+
         if (is_string($oTable)) {
             $oTable = self::getTable($oTable);
         }
 
-        return (is_object($oTable) && ($oTable->ENGINE !== 'InnoDB' || $oTable->TABLE_COLLATION !== 'utf8_unicode_ci'));
+        if (is_object($oTable)) {
+            if ($oTable->ENGINE !== 'InnoDB') {
+                $result |= self::MIGRATE_INNODB;
+            }
+            if ($oTable->TABLE_COLLATION !== 'utf8_unicode_ci') {
+                $result |= self::MIGRATE_UTF8;
+            }
+            if (isset($oTable->TEXT_FIELDS) && (int)$oTable->TEXT_FIELDS > 0) {
+                $result |= self::MIGRATE_TEXT;
+            }
+            if (isset($oTable->FIELD_COLLATIONS) && (int)$oTable->FIELD_COLLATIONS > 0) {
+                $result |= self::MIGRATE_C_UTF8;
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -190,9 +247,9 @@ class DBMigrationHelper
         }
 
         $tableStatus = Shop::Container()->getDB()->queryPrepared(
-            "SHOW OPEN TABLES
+            'SHOW OPEN TABLES
                 WHERE `Database` LIKE :schema
-                    AND `Table` LIKE :table",
+                    AND `Table` LIKE :table',
             ['schema' => $database, 'table'  => $cTable,],
             \DB\ReturnType::SINGLE_OBJECT
         );
@@ -214,7 +271,9 @@ class DBMigrationHelper
                 WHERE `TABLE_SCHEMA` = :schema
                     AND `TABLE_NAME` = :table
                     AND `CHARACTER_SET_NAME` IS NOT NULL
-                    AND (`CHARACTER_SET_NAME` != 'utf8' OR `COLLATION_NAME` != 'utf8_unicode_ci')
+                    AND (`CHARACTER_SET_NAME` != 'utf8' 
+                       OR `COLLATION_NAME` != 'utf8_unicode_ci' 
+                       OR COLUMN_TYPE = 'text')
                 ORDER BY `ORDINAL_POSITION`",
             ['schema' => $database, 'table'  => $cTable],
             \DB\ReturnType::ARRAY_OF_OBJECTS
@@ -255,12 +314,18 @@ class DBMigrationHelper
     {
         $mysqlVersion = self::getMySQLVersion();
 
-        if ($oTable->ENGINE !== 'InnoDB' && $oTable->TABLE_COLLATION !== 'utf8_unicode_ci') {
+        if (!isset($oTable->Migration)) {
+            $oTable->Migration = self::isTableNeedMigration($oTable);
+        }
+
+        if (($oTable->Migration & self::MIGRATE_TABLE) === self::MIGRATE_TABLE) {
             $sql = "ALTER TABLE `{$oTable->TABLE_NAME}` CHARACTER SET='utf8' COLLATE='utf8_unicode_ci' ENGINE='InnoDB'";
-        } elseif ($oTable->ENGINE !== 'InnoDB') {
+        } elseif (($oTable->Migration & self::MIGRATE_INNODB) === self::MIGRATE_INNODB) {
             $sql = "ALTER TABLE `{$oTable->TABLE_NAME}` ENGINE='InnoDB'";
-        } else {
+        } elseif (($oTable->Migration & self::MIGRATE_UTF8) === self::MIGRATE_UTF8) {
             $sql = "ALTER TABLE `{$oTable->TABLE_NAME}` CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'";
+        } else {
+            return '';
         }
 
         return version_compare($mysqlVersion->innodb->version, '5.6', '<')
@@ -284,10 +349,22 @@ class DBMigrationHelper
 
             $columnChange = [];
             foreach ($oColumn_arr as $key => $oColumn) {
+                /* Workaround for quoted values in MariaDB >= 10.2.7 Fix: SHOP-2593 */
+                if ($oColumn->COLUMN_DEFAULT === 'NULL' || $oColumn->COLUMN_DEFAULT === "'NULL'") {
+                    $oColumn->COLUMN_DEFAULT = null;
+                }
+                if ($oColumn->COLUMN_DEFAULT !== null) {
+                    $oColumn->COLUMN_DEFAULT = trim($oColumn->COLUMN_DEFAULT, '\'');
+                }
+
+                if ($oColumn->COLUMN_TYPE === 'text') {
+                    $oColumn->COLUMN_TYPE = 'MEDIUMTEXT';
+                }
+
                 $columnChange[] = "    CHANGE COLUMN `{$oColumn->COLUMN_NAME}` `{$oColumn->COLUMN_NAME}` "
                     ."{$oColumn->COLUMN_TYPE} CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci'"
                     . ($oColumn->IS_NULLABLE === 'YES' ? ' NULL' : ' NOT NULL')
-                    . ($oColumn->IS_NULLABLE === 'NO' && $oColumn->COLUMN_DEFAULT === null ? '' : " DEFAULT "
+                    . ($oColumn->IS_NULLABLE === 'NO' && $oColumn->COLUMN_DEFAULT === null ? '' : ' DEFAULT '
                         . ($oColumn->COLUMN_DEFAULT === null ? 'NULL' : "'{$oColumn->COLUMN_DEFAULT}'"));
             }
 
@@ -312,21 +389,20 @@ class DBMigrationHelper
             return self::IN_USE;
         }
 
-        if (self::isTableNeedMigration($oTable)) {
+        $migration = self::isTableNeedMigration($oTable);
+        if (($migration & self::MIGRATE_TEXT) !== self::MIGRATE_NONE) {
             $sql = self::sqlMoveToInnoDB($oTable);
-            if (Shop::Container()->getDB()->executeQuery($sql, \DB\ReturnType::QUERYSINGLE)) {
-                $sql = self::sqlConvertUTF8($oTable);
-                if (empty($sql) || Shop::Container()->getDB()->executeQuery($sql, \DB\ReturnType::QUERYSINGLE)) {
-                    return self::SUCCESS;
-                }
+            if (!empty($sql) && !Shop::Container()->getDB()->executeQuery($sql, \DB\ReturnType::QUERYSINGLE)) {
+                return self::FAILURE;
             }
-        } else {
+        }
+        if (($migration & self::MIGRATE_COLUMN) !== self::MIGRATE_NONE) {
             $sql = self::sqlConvertUTF8($oTable);
-            if (empty($sql) || Shop::Container()->getDB()->executeQuery($sql, \DB\ReturnType::QUERYSINGLE)) {
-                return self::SUCCESS;
+            if (!empty($sql) && !Shop::Container()->getDB()->executeQuery($sql, \DB\ReturnType::QUERYSINGLE)) {
+                return self::FAILURE;
             }
         }
 
-        return self::FAILURE;
+        return self::SUCCESS;
     }
 }

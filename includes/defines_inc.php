@@ -5,9 +5,9 @@
  */
 
 // Version
-define('JTL_VERSION', 500);
+define('APPLICATION_VERSION', '5.0.0');
+define('APPLICATION_BUILD_SHA', '#DEV#');
 define('JTL_MIN_WAWI_VERSION', 100000);
-define('JTL_MINOR_VERSION', '#JTL_MINOR_VERSION#');
 // Einstellungssektionen
 define('CONF_GLOBAL', 1);
 define('CONF_STARTSEITE', 2);
@@ -42,7 +42,6 @@ define('CONF_TRUSTEDSHOPS', 117);
 define('CONF_SUCHSPECIAL', 119);
 define('CONF_CHECKBOX', 120);
 define('CONF_AUSWAHLASSISTENT', 121);
-define('CONF_RMA', 122);
 define('CONF_CACHING', 124);
 define('CONF_LOGO', 125);
 define('CONF_PLUGINZAHLUNGSARTEN', 126);
@@ -123,11 +122,11 @@ define('MAILTEMPLATE_KUNDENWERBENKUNDEN', 'core_jtl_kundenwerbenkunden');
 define('MAILTEMPLATE_KUNDENWERBENKUNDENBONI', 'core_jtl_kundenwerbenkundenboni');
 define('MAILTEMPLATE_STATUSEMAIL', 'core_jtl_statusemail');
 define('MAILTEMPLATE_CHECKBOX_SHOPBETREIBER', 'core_jtl_checkbox_shopbetreiber');
-define('MAILTEMPLATE_RMA_ABGESENDET', 'core_jtl_rma_submitted');
 define('MAILTEMPLATE_BEWERTUNG_GUTHABEN', 'core_jtl_bewertung_guthaben');
 define('MAILTEMPLATE_BESTELLUNG_TEILVERSANDT', 'core_jtl_bestellung_teilversandt');
 define('MAILTEMPLATE_ANBIETERKENNZEICHNUNG', 'core_jtl_anbieterkennzeichnung');
 // Suche
+define('SEARCH_SORT_NONE', -1);
 define('SEARCH_SORT_STANDARD', 100);
 define('SEARCH_SORT_NAME_ASC', 1);
 define('SEARCH_SORT_NAME_DESC', 2);
@@ -180,7 +179,6 @@ define('LINKTYP_HERSTELLER', 16);
 define('LINKTYP_NEWSLETTER', 17);
 define('LINKTYP_NEWSLETTERARCHIV', 18);
 define('LINKTYP_NEWS', 19);
-define('LINKTYP_NEWSARCHIV', 20);
 define('LINKTYP_SITEMAP', 21);
 define('LINKTYP_UMFRAGE', 22);
 define('LINKTYP_GRATISGESCHENK', 23);
@@ -188,7 +186,6 @@ define('LINKTYP_WRB', 24);
 define('LINKTYP_PLUGIN', 25);
 define('LINKTYP_AUSWAHLASSISTENT', 26);
 define('LINKTYP_IMPRESSUM', 27);
-define('LINKTYP_RMA', 28);
 define('LINKTYP_404', 29);
 define('LINKTYP_BATTERIEGESETZ_HINWEISE', 30);
 define('LINKTYP_WRB_FORMULAR', 31);
@@ -264,8 +261,12 @@ define('PFAD_PLUGIN_PAYMENTMETHOD', 'paymentmethod/');
 define('PFAD_PLUGIN_TEMPLATE', 'template/');
 define('PFAD_PLUGIN_BOXEN', 'boxen/');
 define('PFAD_PLUGIN_WIDGET', 'widget/');
+define('PFAD_PLUGIN_PORTLETS', 'portlets/');
+define('PFAD_PLUGIN_BLUEPRINTS', 'blueprints/');
 define('PFAD_PLUGIN_EXPORTFORMAT', 'exportformat/');
 define('PFAD_PLUGIN_UNINSTALL', 'uninstall/');
+define('PFAD_PLUGIN_MIGRATIONS', 'migrations/');
+define('PFAD_EXTENSIONS', 'extensions/');
 define('PLUGIN_INFO_FILE', 'info.xml');
 define('PLUGIN_LICENCE_METHODE', 'checkLicence');
 define('PLUGIN_LICENCE_CLASS', 'PluginLicence');
@@ -290,7 +291,6 @@ define('R_UNVERKAEUFLICH', 15);
 define('R_AUFANFRAGE', 16);
 define('R_EMPTY_TAG', 17);
 define('R_EMPTY_VARIBOX', 18);
-define('R_LOGIN_RMA', 19);
 // Kategorietiefe
 // 0 = Aus
 // 1 = Tiefe 0 (Hauptkategorien)
@@ -308,15 +308,14 @@ define('EXT_PARAMS_SEPERATORS_REGEX', '\&\?');
 // Updater
 define('U_FILE_PREFIX', 'jtl_update_');
 // JobQueue
-defined('JOBQUEUE_LIMIT_JOBS') || define('JOBQUEUE_LIMIT_JOBS', '5');
-defined('JOBQUEUE_LIMIT_M_EXPORTE') || define('JOBQUEUE_LIMIT_M_EXPORTE', '500');
-define('JOBQUEUE_LIMIT_M_NEWSLETTER', '100');
-define('JOBQUEUE_LIMIT_M_STATUSEMAIL', '1');
+defined('JOBQUEUE_LIMIT_JOBS') || define('JOBQUEUE_LIMIT_JOBS', 5);
+defined('JOBQUEUE_LIMIT_M_EXPORTE') || define('JOBQUEUE_LIMIT_M_EXPORTE', 500);
+define('JOBQUEUE_LIMIT_M_NEWSLETTER', 100);
+define('JOBQUEUE_LIMIT_M_STATUSEMAIL', 1);
 // Exportformate
 defined('EXPORTFORMAT_LIMIT_M') || define('EXPORTFORMAT_LIMIT_M', 2000);
 defined('EXPORTFORMAT_ASYNC_LIMIT_M') || define('EXPORTFORMAT_ASYNC_LIMIT_M', 15);
 // Special Exportformate
-define('SPECIAL_EXPORTFORMAT_YATEGO', 1);
 // Shop Template Logo Name
 define('SHOPLOGO_NAME', 'jtlshoplogo');
 // Erweiterte Artikelübersicht Darstellung
@@ -345,7 +344,6 @@ define('PAGE_LOGIN', 9); // Login
 define('PAGE_REGISTRIERUNG', 10); // Registrierung
 define('PAGE_BESTELLVORGANG', 11); // Bestellvorgang
 define('PAGE_BEWERTUNG', 12); // Bewertung [NEIN]
-define('PAGE_DRUCKANSICHT', 13); // Druckansicht
 define('PAGE_PASSWORTVERGESSEN', 14); // Passwort vergessen
 define('PAGE_WARTUNG', 15); // Wartung
 define('PAGE_WUNSCHLISTE', 16); // Wunschliste
@@ -362,15 +360,17 @@ define('PAGE_GRATISGESCHENK', 26); // Gratis Geschenk
 define('PAGE_WRB', 27); // WRB
 define('PAGE_PLUGIN', 28); // Plugin
 define('PAGE_NEWSLETTERARCHIV', 29); // Newsletterarchiv
-define('PAGE_NEWSARCHIV', 30); // Newsarchiv
 define('PAGE_EIGENE', 31); // Eigene Seite
 define('PAGE_AUSWAHLASSISTENT', 32); // Auswahlassistent
 define('PAGE_BESTELLABSCHLUSS', 33); // Bestellabschluss
-define('PAGE_RMA', 34); // Warenruecksendung
 define('PAGE_404', 36);
 define('PAGE_IO', 37);
 define('PAGE_BESTELLSTATUS', 38);
 define('PAGE_MEDIA', 39);
+define('PAGE_NEWSMONAT', 40);
+define('PAGE_NEWSDETAIL', 41);
+define('PAGE_NEWSKATEGORIE', 42);
+
 // Boxen
 define('BOX_CONTAINER', 0);
 define('BOX_BESTSELLER', 1);
@@ -408,7 +408,6 @@ define('BOX_EIGENE_BOX_OHNE_RAHMEN', 30);
 define('BOX_EIGENE_BOX_MIT_RAHMEN', 31);
 define('BOX_TAGWOLKE', 32);
 define('BOX_KONFIGURATOR', 33);
-define('BOX_PREISRADAR', 100);
 // Kampagnentypen
 define('KAMPAGNE_DEF_HIT', 1);
 define('KAMPAGNE_DEF_VERKAUF', 2);
@@ -459,18 +458,16 @@ define('JTLSEPARATER_AMOUNT', 3);
 define('JTL_SEPARATOR_WEIGHT', 1);
 define('JTL_SEPARATOR_LENGTH', 2);
 define('JTL_SEPARATOR_AMOUNT', 3);
-// Globale Arten von generierte Nummern (z.b. Bestellnummer)
-define('JTL_GENNUMBER_ORDERNUMBER', 1);
-define('JTL_GENNUMBER_RMANUMBER', 2);
 // JTL Support Email
 define('JTLSUPPORT_EMAIL', 'support@jtl-software.de');
+// Globale Arten von generierte Nummern (z.b. Bestellnummer)
+define('JTL_GENNUMBER_ORDERNUMBER', 1);
 // JTL URLS
 define('JTLURL_BASE', 'https://ext.jtl-software.de/');
 define('JTLURL_HP', 'https://www.jtl-software.de/');
 define('JTLURL_GET_DUK', JTLURL_BASE . 'json_duk.php');
-define('JTLURL_GET_SHOPNEWS', JTLURL_HP . 'news_json.php?notimeline=1&limit=5');
+define('JTLURL_GET_SHOPNEWS', 'https://feed.jtl-software.de/websitenews');
 define('JTLURL_GET_SHOPPATCH', JTLURL_BASE . 'json_patch.php');
-define('JTLURL_GET_SHOPMARKETPLACE', JTLURL_BASE . 'json_marketplace.php');
 define('JTLURL_GET_SHOPHELP', JTLURL_BASE . 'jtlhelp.php');
 define('JTLURL_GET_SHOPVERSION', JTLURL_BASE . 'json_version.php');
 // Log-Levels
@@ -493,3 +490,25 @@ define('SHOP_SEO', true);
 // Sessionspeicherung 1 => DB, sonst => Dateien
 // Max Anzahl an Variationswerten für Warenkorbmatrix
 define('ART_MATRIX_MAX', 250);
+
+define('BROWSER_UNKNOWN', 0);
+define('BROWSER_MSIE', 1);
+define('BROWSER_FIREFOX', 2);
+define('BROWSER_CHROME', 3);
+define('BROWSER_SAFARI', 4);
+define('BROWSER_OPERA', 5);
+define('BROWSER_NETSCAPE', 6);
+
+define('FREQ_ALWAYS', 'always');
+define('FREQ_HOURLY', 'hourly');
+define('FREQ_DAILY', 'daily');
+define('FREQ_WEEKLY', 'weekly');
+define('FREQ_MONTHLY', 'monthly');
+define('FREQ_YEARLY', 'yearly');
+define('FREQ_NEVER', 'never');
+
+define('PRIO_VERYHIGH', '1.0');
+define('PRIO_HIGH', '0.7');
+define('PRIO_NORMAL', '0.5');
+define('PRIO_LOW', '0.3');
+define('PRIO_VERYLOW', '0.0');

@@ -6,8 +6,13 @@
 
 namespace Services\JTL\Validation\Rules;
 
+use PHPUnit\Framework\TestCase;
 
-class BetweenTest extends \PHPUnit_Framework_TestCase
+/**
+ * Class BetweenTest
+ * @package Services\JTL\Validation\Rules
+ */
+class BetweenTest extends TestCase
 {
     public function test()
     {

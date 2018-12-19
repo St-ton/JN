@@ -1,0 +1,138 @@
+<?php declare(strict_types=1);
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license       http://jtl-url.de/jtlshoplicense
+ */
+
+namespace Cron;
+
+use DB\DbInterface;
+use DB\ReturnType;
+use Psr\Log\LoggerInterface;
+
+/**
+ * Class Queue
+ * @package Cron
+ */
+class Queue
+{
+    /**
+     * @var QueueEntry[]
+     */
+    private $queueEntries = [];
+
+    /**
+     * @var DbInterface
+     */
+    private $db;
+
+    /**
+     * @var JobFactory
+     */
+    private $factory;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * Queue constructor.
+     * @param DbInterface     $db
+     * @param LoggerInterface $logger
+     * @param JobFactory      $factory
+     */
+    public function __construct(DbInterface $db, LoggerInterface $logger, JobFactory $factory)
+    {
+        $this->db      = $db;
+        $this->logger  = $logger;
+        $this->factory = $factory;
+    }
+
+    /**
+     * @return QueueEntry[]
+     */
+    public function loadQueueFromDB(): array
+    {
+        $queueData = $this->db->query(
+            'SELECT * 
+                FROM tjobqueue 
+                WHERE nInArbeit = 0 
+                    AND dStartZeit < NOW()',
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        foreach ($queueData as $entry) {
+            $this->queueEntries[] = new QueueEntry($entry);
+        }
+        $this->logger->debug('Loaded ' . \count($this->queueEntries) . ' existing jobs.');
+
+        return $this->queueEntries;
+    }
+
+    /**
+     * @param \stdClass[] $jobs
+     */
+    public function enqueueCronJobs(array $jobs): void
+    {
+        foreach ($jobs as $job) {
+            $queueEntry             = new \stdClass();
+            $queueEntry->kCron      = $job->kCron;
+            $queueEntry->kKey       = $job->kKey;
+            $queueEntry->cKey       = $job->cKey;
+            $queueEntry->cTabelle   = $job->cTabelle;
+            $queueEntry->cJobArt    = $job->cJobArt;
+            $queueEntry->dStartZeit = $job->dStart;
+            $queueEntry->nLimitN    = 0;
+            $queueEntry->nLimitM    = 0;
+            $queueEntry->nInArbeit  = 0;
+
+            $this->db->insert('tjobqueue', $queueEntry);
+        }
+    }
+
+    public function run(): void
+    {
+        foreach ($this->queueEntries as $i => $queueEntry) {
+            if ($i >= \JOBQUEUE_LIMIT_JOBS) {
+                $this->logger->debug('Job limit reached after ' . \JOBQUEUE_LIMIT_JOBS . ' jobs.');
+                break;
+            }
+            $job                   = $this->factory->create($queueEntry);
+            $queueEntry->nLimitM   = $job->getLimit();
+            $queueEntry->nInArbeit = 1;
+            $this->logger->notice('Got job - ' . $job->getID() . ', type = ' . $job->getType() . ')');
+            $job->start($queueEntry);
+            $queueEntry->nInArbeit        = 0;
+            $queueEntry->dZuletztGelaufen = new \DateTime();
+            $this->db->update(
+                'tcron',
+                'kCron',
+                $job->getCronID(),
+                (object)['dLetzterStart' => $queueEntry->dZuletztGelaufen->format('Y-m-d H:i')]
+            );
+            if ($job->isFinished()) {
+                $this->logger->notice('Job ' . $job->getID() . ' successfully finished.');
+                $this->db->delete('tjobqueue', 'kCron', $job->getCronID());
+            } else {
+                $this->db->queryPrepared(
+                    'UPDATE tjobqueue SET 
+                        nLimitN = :ln,
+                        nLimitM = :lm,
+                        nLastArticleID = :lp,
+                        dZuletztgelaufen = NOW()
+                     WHERE kCron = 0',
+                    [
+                        'ln' => $queueEntry->nLimitN,
+                        'lm' => $queueEntry->nLimitM,
+                        'lp' => $queueEntry->nLastArticleID
+                    ],
+                    ReturnType::DEFAULT
+                );
+            }
+            \executeHook(\HOOK_JOBQUEUE_INC_BEHIND_SWITCH, [
+                'oJobQueue' => $queueEntry,
+                'job'       => $job
+            ]);
+        }
+    }
+}

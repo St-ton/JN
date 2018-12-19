@@ -3,6 +3,8 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Request;
 use Imanee\Imanee;
 
 /**
@@ -102,7 +104,7 @@ class ImageStorage
 
         header("Content-Type: {$mimeType}");
         header("Content-Length: {$filesize}");
-        header("Cache-Control: public");
+        header('Cache-Control: public');
         header("Etag: {$tagHash}");
         header("Last-Modified: {$gmtDateTime}");
         header("X-Image-Hash: {$imageHash}");
@@ -116,7 +118,7 @@ class ImageStorage
             : null;
 
         if ($httpModifiedSince === $lastModifiedDate || $httpNoneMatch === $tagHash) {
-            header(makeHTTPHeader(304));
+            header(Request::makeHTTPHeader(304));
             exit;
         }
     }

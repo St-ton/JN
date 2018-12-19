@@ -1,20 +1,20 @@
 {config_load file="$lang.conf" section="kundenwerbenkunden"}
 {include file='tpl_inc/header.tpl'}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#kundenwerbenkunden# cBeschreibung=#kundenwerbenkundenDesc# cDokuURL=#kundenwerbenkundenURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('kundenwerbenkunden') cBeschreibung=__('kundenwerbenkundenDesc') cDokuURL=__('kundenwerbenkundenURL')}
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'einladungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einladungen">{#kundenwerbenkundenNotReggt#}</a>
+            <a data-toggle="tab" role="tab" href="#einladungen">{__('kundenwerbenkundenNotReggt')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'registrierung'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#registrierung">{#kundenwerbenkundenReggt#}</a>
+            <a data-toggle="tab" role="tab" href="#registrierung">{__('kundenwerbenkundenReggt')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'praemie'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#praemie">{#kundenwerbenkundenBonis#}</a>
+            <a data-toggle="tab" role="tab" href="#praemie">{__('kundenwerbenkundenBonis')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einstellungen">{#kundenwerbenkundenSettings#}</a>
+            <a data-toggle="tab" role="tab" href="#einstellungen">{__('kundenwerbenkundenSettings')}</a>
         </li>
     </ul>
 
@@ -29,16 +29,16 @@
                     <input type="hidden" name="tab" value="einladungen" />
                     <div id="payment">
                         <div id="tabellenLivesuche" class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <tr>
                                     <th class="check"></th>
-                                    <th class="tleft">{#kundenwerbenkundenName#}</th>
-                                    <th class="tleft">{#kundenwerbenkundenFromReg#}</th>
-                                    <th class="tleft">{#kundenwerbenkundenCredit#}</th>
-                                    <th class="th-5">{#kundenwerbenkundenDateInvite#}</th>
+                                    <th class="tleft">{__('kundenwerbenkundenName')}</th>
+                                    <th class="tleft">{__('kundenwerbenkundenFromReg')}</th>
+                                    <th class="tleft">{__('kundenwerbenkundenCredit')}</th>
+                                    <th class="th-5">{__('kundenwerbenkundenDateInvite')}</th>
                                 </tr>
                                 {foreach name=nichtregkunden from=$oKwKNichtReg_arr item=oKwKNichtReg}
-                                    <tr class="tab_bg{$smarty.foreach.nichtregkunden.iteration%2}">
+                                    <tr>
                                         <td class="check">
                                             <input type="checkbox" name="kKundenWerbenKunden[]" value="{$oKwKNichtReg->kKundenWerbenKunden}">
                                         </td>
@@ -56,11 +56,11 @@
                         </div>
                     </div>
                     <p class="submit">
-                        <button name="loeschen" type="submit" value="{#kundenwerbenkundenDelete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#kundenwerbenkundenDelete#}</button>
+                        <button name="loeschen" type="submit" value="{__('kundenwerbenkundenDelete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('kundenwerbenkundenDelete')}</button>
                     </p>
                 </form>
             {else}
-                <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="registrierung" class="tab-pane fade {if isset($cTab) && $cTab === 'registrierung'} active in{/if}">
@@ -68,21 +68,21 @@
                 {include file='tpl_inc/pagination.tpl' oPagination=$oPagiReg cAnchor='registrierung'}
                 <div id="payment">
                     <div id="tabellenLivesuche" class="table-responsive">
-                        <table class="table">
+                        <table class="table table-striped">
                             <tr>
-                                <th class="tleft">{#kundenwerbenkundenRegName#}</th>
-                                <th class="tleft">{#kundenwerbenkundenFromReg#}</th>
-                                <th class="tleft">{#kundenwerbenkundenCredit#}</th>
-                                <th class="th-4">{#kundenwerbenkundenDateInvite#}</th>
-                                <th class="th-5">{#kundenwerbenkundenDateErstellt#}</th>
+                                <th class="tleft">{__('kundenwerbenkundenRegName')}</th>
+                                <th class="tleft">{__('kundenwerbenkundenFromReg')}</th>
+                                <th class="tleft">{__('kundenwerbenkundenCredit')}</th>
+                                <th class="th-4">{__('kundenwerbenkundenDateInvite')}</th>
+                                <th class="th-5">{__('kundenwerbenkundenDateErstellt')}</th>
                             </tr>
                             {foreach name=regkunden from=$oKwKReg_arr item=oKwKReg}
-                                <tr class="tab_bg{$smarty.foreach.regkunden.iteration%2}">
-                                    <td class="TD2"><b>{$oKwKReg->cVorname} {$oKwKReg->cNachname}</b><br />{$oKwKReg->cEmail}</td>
-                                    <td class="TD2">
+                                <tr>
+                                    <td><b>{$oKwKReg->cVorname} {$oKwKReg->cNachname}</b><br />{$oKwKReg->cEmail}</td>
+                                    <td>
                                         <b>{$oKwKReg->cBestandVorname} {$oKwKReg->cBestandNachname}</b><br />{$oKwKReg->cMail}
                                     </td>
-                                    <td class="TD3">{getCurrencyConversionSmarty fPreisBrutto=$oKwKReg->fGuthaben}</td>
+                                    <td>{getCurrencyConversionSmarty fPreisBrutto=$oKwKReg->fGuthaben}</td>
                                     <td class="tcenter">{$oKwKReg->dErstellt_de}</td>
                                     <td class="tcenter">{$oKwKReg->dBestandErstellt_de}</td>
                                 </tr>
@@ -91,7 +91,7 @@
                     </div>
                 </div>
             {else}
-                <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="praemie" class="tab-pane fade {if isset($cTab) && $cTab === 'praemie'} active in{/if}">
@@ -99,19 +99,19 @@
                 {include file='tpl_inc/pagination.tpl' oPagination=$oPagiPraemie cAnchor='praemie'}
                 <div id="payment">
                     <div id="tabellenLivesuche" class="table-responsive">
-                        <table class="table">
+                        <table class="table table-striped">
                             <tr>
-                                <th class="tleft">{#kundenwerbenkundenFromReg#}</th>
-                                <th class="tleft">{#kundenwerbenkundenCredit#}</th>
-                                <th class="">{#kundenwerbenkundenExtraPoints#}</th>
-                                <th class="th-4">{#kundenwerbenkundenDateBoni#}</th>
+                                <th class="tleft">{__('kundenwerbenkundenFromReg')}</th>
+                                <th class="tleft">{__('kundenwerbenkundenCredit')}</th>
+                                <th class="">{__('kundenwerbenkundenExtraPoints')}</th>
+                                <th class="th-4">{__('kundenwerbenkundenDateBoni')}</th>
                             </tr>
                             {foreach name=letzte100bonis from=$oKwKBestandBonus_arr item=oKwKBestandBonus}
-                                <tr class="tab_bg{$smarty.foreach.letzte100bonis.iteration%2}">
-                                    <td class="TD2">
+                                <tr>
+                                    <td>
                                         <b>{$oKwKBestandBonus->cBestandVorname} {$oKwKBestandBonus->cBestandNachname}</b><br />{$oKwKBestandBonus->cMail}
                                     </td>
-                                    <td class="TD2">{getCurrencyConversionSmarty fPreisBrutto=$oKwKBestandBonus->fGuthaben}</td>
+                                    <td>{getCurrencyConversionSmarty fPreisBrutto=$oKwKBestandBonus->fGuthaben}</td>
                                     <td class="tcenter">{$oKwKBestandBonus->nBonuspunkte}</td>
                                     <td class="tcenter">{$oKwKBestandBonus->dErhalten_de}</td>
                                 </tr>
@@ -120,11 +120,11 @@
                     </div>
                 </div>
             {else}
-                <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
-            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings' action='kundenwerbenkunden.php' buttonCaption=#save# title='Einstellungen' tab='einstellungen'}
+            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings' action='kundenwerbenkunden.php' buttonCaption=__('save') title='Einstellungen' tab='einstellungen'}
         </div>
     </div>
 </div>

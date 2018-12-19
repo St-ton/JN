@@ -17,7 +17,7 @@ class CryptoService implements CryptoServiceInterface
      */
     public function randomBytes($bytesAmount): string
     {
-        return random_bytes($bytesAmount);
+        return \random_bytes($bytesAmount);
     }
 
     /**
@@ -25,7 +25,7 @@ class CryptoService implements CryptoServiceInterface
      */
     public function randomString($bytesAmount): string
     {
-        return bin2hex($this->randomBytes($bytesAmount));
+        return \bin2hex($this->randomBytes($bytesAmount));
     }
 
     /**
@@ -33,7 +33,7 @@ class CryptoService implements CryptoServiceInterface
      */
     public function randomInt($min, $max): int
     {
-        return random_int($min, $max);
+        return \random_int($min, $max);
     }
 
     /**
@@ -41,6 +41,28 @@ class CryptoService implements CryptoServiceInterface
      */
     public function stableStringEquals(string $string1, string $string2): bool
     {
-        return hash_equals($string1, $string2);
+        return \hash_equals($string1, $string2);
+    }
+
+    /**
+     * @param string $text
+     * @return string
+     */
+    public function encryptXTEA(string $text): string
+    {
+        return \strlen($text) > 0
+            ? (new \XTEA(\BLOWFISH_KEY))->encrypt($text)
+            : $text;
+    }
+
+    /**
+     * @param string $text
+     * @return string
+     */
+    public function decryptXTEA(string $text): string
+    {
+        return \strlen($text) > 0
+            ? (new \XTEA(\BLOWFISH_KEY))->decrypt($text)
+            : $text;
     }
 }

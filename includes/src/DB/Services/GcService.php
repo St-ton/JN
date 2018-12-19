@@ -6,8 +6,8 @@
 
 namespace DB\Services;
 
-
 use DB\DbInterface;
+use DB\ReturnType;
 
 /**
  * Class GcService
@@ -106,26 +106,27 @@ class GcService implements GcServiceInterface
             $cInterval     = $cMainTable_arr['cInterval'];
 
             if ($cSubTable_arr !== null) {
-                $cFrom = "{$cTable}";
+                $cFrom = $cTable;
                 $cJoin = '';
                 foreach ($cSubTable_arr as $cSubTable => $cKey) {
                     $cFrom .= ", {$cSubTable}";
                     $cJoin .= " LEFT JOIN {$cSubTable} ON {$cSubTable}.{$cKey} = {$cTable}.{$cKey}";
                 }
-                $this->db->query("
-                    DELETE {$cFrom} 
+                $this->db->query(
+                    "DELETE {$cFrom} 
                         FROM {$cTable} {$cJoin} 
-                        WHERE DATE_SUB(now(), INTERVAL {$cInterval} DAY) >= {$cTable}.{$cDateField}", 3
+                        WHERE DATE_SUB(NOW(), INTERVAL {$cInterval} DAY) >= {$cTable}.{$cDateField}",
+                    ReturnType::AFFECTED_ROWS
                 );
             } else {
-                $this->db->query("
-                    DELETE FROM {$cTable} 
-                        WHERE DATE_SUB(now(), INTERVAL {$cInterval} DAY) >= {$cDateField}", 3
+                $this->db->query(
+                    "DELETE FROM {$cTable} 
+                        WHERE DATE_SUB(NOW(), INTERVAL {$cInterval} DAY) >= {$cDateField}",
+                    ReturnType::AFFECTED_ROWS
                 );
             }
         }
 
         return $this;
     }
-
 }

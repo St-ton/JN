@@ -7,15 +7,15 @@ möchten Sie Ihre Erfahrungen mit Ihren kürzlich bei uns erworbenen Produkten m
 Zur Abgabe einer Bewertung klicken Sie einfach auf eines Ihrer erworbenen Produkte:
 
 {foreach name=pos from=$Bestellung->Positionen item=Position}
-{if $Position->nPosTyp==1}
-{$Position->cName} ({$Position->cArtNr})
-{$ShopURL}/index.php?a={$Position->kArtikel}&bewertung_anzeigen=1
+    {if $Position->nPosTyp==1}
+        {$Position->cName} ({$Position->cArtNr})
+        {$ShopURL}/index.php?a={$Position->kArtikel}&bewertung_anzeigen=1#tab-votes
 
-{foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
+        {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
 
-{$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}
-{/foreach}
-{/if}
+            {$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}
+        {/foreach}
+    {/if}
 {/foreach}
 
 Vielen Dank für Ihre Mühe.

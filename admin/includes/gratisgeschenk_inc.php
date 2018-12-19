@@ -4,168 +4,164 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Date;
+
 /**
  * @param string $cSQL
  * @return array
  */
-function holeAktiveGeschenke($cSQL)
+function holeAktiveGeschenke($cSQL): array
 {
-    $oAktiveGeschenk_arr = [];
+    $data = [];
+    $res  = [];
     if (strlen($cSQL) > 0) {
-        $oAktiveGeschenkTMP_arr = Shop::Container()->getDB()->query(
+        $data = Shop::Container()->getDB()->query(
             "SELECT kArtikel
                 FROM tartikelattribut
                 WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'
-                ORDER BY CAST(cWert AS SIGNED) DESC" . $cSQL, 2
+                ORDER BY CAST(cWert AS SIGNED) DESC " . $cSQL,
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
-    if (isset($oAktiveGeschenkTMP_arr) && is_array($oAktiveGeschenkTMP_arr) && count($oAktiveGeschenkTMP_arr) > 0) {
-        $articleOptions = Artikel::getDefaultOptions();
+    if (count($data) > 0) {
+        $articleOptions                            = Artikel::getDefaultOptions();
         $articleOptions->nKeinLagerbestandBeachten = 1;
-        foreach ($oAktiveGeschenkTMP_arr as $oAktiveGeschenkTMP) {
-            $oArtikel = new Artikel();
-            $oArtikel->fuelleArtikel($oAktiveGeschenkTMP->kArtikel, $articleOptions, 0, 0, true);
-            if ($oArtikel->kArtikel > 0) {
-                $oAktiveGeschenk_arr[] = $oArtikel;
+        foreach ($data as $oAktiveGeschenkTMP) {
+            $product = new Artikel();
+            $product->fuelleArtikel($oAktiveGeschenkTMP->kArtikel, $articleOptions, 0, 0, true);
+            if ($product->kArtikel > 0) {
+                $res[] = $product;
             }
         }
     }
 
-    return $oAktiveGeschenk_arr;
+    return $res;
 }
 
 /**
  * @param string $cSQL
  * @return array
  */
-function holeHaeufigeGeschenke($cSQL)
+function holeHaeufigeGeschenke($cSQL): array
 {
-    $oHaeufigGeschenk_arr = [];
-
+    $res  = [];
+    $data = [];
     if (strlen($cSQL) > 0) {
-        $oHaeufigGeschenkTMP_arr = Shop::Container()->getDB()->query(
-            "SELECT kArtikel, count(*) AS nAnzahl
-                FROM twarenkorbpos
-                WHERE nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK . "
-                GROUP BY kArtikel
-                ORDER BY nAnzahl DESC, cName" . $cSQL, 2
+        $data = Shop::Container()->getDB()->query(
+            'SELECT tgratisgeschenk.kArtikel, COUNT(*) AS nAnzahl, 
+                MAX(tbestellung.dErstellt) AS lastOrdered, AVG(tbestellung.fGesamtsumme) AS avgOrderValue
+                FROM tgratisgeschenk
+                LEFT JOIN tbestellung
+                    ON tbestellung.kWarenkorb = tgratisgeschenk.kWarenkorb
+                GROUP BY tgratisgeschenk.kArtikel
+                ORDER BY nAnzahl DESC, lastOrdered DESC ' . $cSQL,
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
 
-    if (isset($oHaeufigGeschenkTMP_arr) && is_array($oHaeufigGeschenkTMP_arr) && count($oHaeufigGeschenkTMP_arr) > 0) {
-        $articleOptions = Artikel::getDefaultOptions();
+    if (count($data) > 0) {
+        $articleOptions                            = Artikel::getDefaultOptions();
         $articleOptions->nKeinLagerbestandBeachten = 1;
-        foreach ($oHaeufigGeschenkTMP_arr as $oHaeufigGeschenkTMP) {
-            $oArtikel = new Artikel();
-            $oArtikel->fuelleArtikel($oHaeufigGeschenkTMP->kArtikel, $articleOptions, 0, 0, true);
-            if ($oArtikel->kArtikel > 0) {
-                $oArtikel->nGGAnzahl = $oHaeufigGeschenkTMP->nAnzahl;
-                $oHaeufigGeschenk_arr[] = $oArtikel;
+        foreach ($data as $oHaeufigGeschenkTMP) {
+            $product = new Artikel();
+            $product->fuelleArtikel($oHaeufigGeschenkTMP->kArtikel, $articleOptions, 0, 0, true);
+            if ($product->kArtikel > 0) {
+                $product->nGGAnzahl = $oHaeufigGeschenkTMP->nAnzahl;
+                $dateParts          = Date::getDateParts($oHaeufigGeschenkTMP->lastOrdered);
+                $lastOrdered        = $dateParts['cTag'] . '.' . $dateParts['cMonat'] . '.' .
+                    $dateParts['cJahr'] . ' ' .
+                    $dateParts['cStunde'] . ':' . $dateParts['cMinute'] . ':' . $dateParts['cSekunde'];
+                $res[]              = (object)[
+                    'Artikel'       => $product,
+                    'lastOrdered'   => $lastOrdered,
+                    'avgOrderValue' => $oHaeufigGeschenkTMP->avgOrderValue
+                ];
             }
         }
     }
 
-    return $oHaeufigGeschenk_arr;
+    return $res;
 }
 
 /**
  * @param string $cSQL
  * @return array
  */
-function holeLetzten100Geschenke($cSQL)
+function holeLetzten100Geschenke($cSQL): array
 {
-    $oLetzten100Geschenk_arr = [];
-
+    $res  = [];
+    $data = [];
     if (strlen($cSQL) > 0) {
-        $oLetzten100GeschenkTMP_arr = Shop::Container()->getDB()->query(
-            "SELECT sub1.kArtikel, count(*) AS nAnzahl
-                FROM
-                    (
-                        SELECT kArtikel
-                        FROM twarenkorbpos
-                        WHERE nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK . "
-                        ORDER BY kWarenkorbPos DESC
-                        LIMIT 100
-                    ) AS sub1
-                GROUP BY sub1.kArtikel
-                ORDER BY nAnzahl DESC" . $cSQL, 2
+        $data = Shop::Container()->getDB()->query(
+            'SELECT tgratisgeschenk.*, tbestellung.dErstellt AS orderCreated, tbestellung.fGesamtsumme
+                FROM tgratisgeschenk
+                  LEFT JOIN tbestellung 
+                      ON tbestellung.kWarenkorb = tgratisgeschenk.kWarenkorb
+                ORDER BY tbestellung.dErstellt DESC ' . $cSQL,
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
-    if (isset($oLetzten100GeschenkTMP_arr) &&
-        is_array($oLetzten100GeschenkTMP_arr) &&
-        count($oLetzten100GeschenkTMP_arr) > 0) {
-        $articleOptions = Artikel::getDefaultOptions();
+
+    if (count($data) > 0) {
+        $articleOptions                            = Artikel::getDefaultOptions();
         $articleOptions->nKeinLagerbestandBeachten = 1;
-        foreach ($oLetzten100GeschenkTMP_arr as $oLetzten100GeschenkTMP) {
-            $oArtikel = new Artikel();
-            $oArtikel->fuelleArtikel($oLetzten100GeschenkTMP->kArtikel, $articleOptions, 0, 0, true);
-            if ($oArtikel->kArtikel > 0) {
-                $oArtikel->nGGAnzahl = $oLetzten100GeschenkTMP->nAnzahl;
-                $oLetzten100Geschenk_arr[] = $oArtikel;
+        foreach ($data as $oLetzten100GeschenkTMP) {
+            $product = new Artikel();
+            $product->fuelleArtikel($oLetzten100GeschenkTMP->kArtikel, $articleOptions, 0, 0, true);
+            if ($product->kArtikel > 0) {
+                $product->nGGAnzahl = $oLetzten100GeschenkTMP->nAnzahl;
+                $dateParts          = Date::getDateParts($oLetzten100GeschenkTMP->orderCreated);
+                $orderCreated       = $dateParts['cTag'] . '.' . $dateParts['cMonat'] . '.' .
+                    $dateParts['cJahr'] . ' ' .
+                    $dateParts['cStunde'] . ':' . $dateParts['cMinute'] . ':' . $dateParts['cSekunde'];
+                $res[]              = (object)[
+                    'Artikel'      => $product,
+                    'orderCreated' => $orderCreated,
+                    'orderValue'   => $oLetzten100GeschenkTMP->fGesamtsumme
+                ];
             }
         }
     }
 
-    return $oLetzten100Geschenk_arr;
+    return $res;
 }
 
 /**
  * @return int
  */
-function gibAnzahlAktiverGeschenke()
+function gibAnzahlAktiverGeschenke(): int
 {
-    $nAnzahlGeschenke = Shop::Container()->getDB()->query(
-        "SELECT count(*) AS nAnzahl
+    return (int)Shop::Container()->getDB()->query(
+        "SELECT COUNT(*) AS nAnzahl
             FROM tartikelattribut
-            WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'", 1
-    );
-
-    if (isset($nAnzahlGeschenke->nAnzahl) && $nAnzahlGeschenke->nAnzahl > 0) {
-        return $nAnzahlGeschenke->nAnzahl;
-    }
-
-    return 0;
+            WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'",
+        \DB\ReturnType::SINGLE_OBJECT
+    )->nAnzahl;
 }
 
 /**
  * @return int
  */
-function gibAnzahlHaeufigGekaufteGeschenke()
+function gibAnzahlHaeufigGekaufteGeschenke(): int
 {
-    $nAnzahlGeschenke = Shop::Container()->getDB()->query(
-        "SELECT count(DISTINCT(kArtikel)) AS nAnzahl
+    return (int)Shop::Container()->getDB()->query(
+        'SELECT COUNT(DISTINCT(kArtikel)) AS nAnzahl
             FROM twarenkorbpos
-            WHERE nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK, 1
-    );
-
-    if (isset($nAnzahlGeschenke->nAnzahl) && $nAnzahlGeschenke->nAnzahl > 0) {
-        return (int)$nAnzahlGeschenke->nAnzahl;
-    }
-
-    return 0;
+            WHERE nPosTyp = ' . C_WARENKORBPOS_TYP_GRATISGESCHENK,
+        \DB\ReturnType::SINGLE_OBJECT
+    )->nAnzahl;
 }
 
 /**
  * @return int
  */
-function gibAnzahlLetzten100Geschenke()
+function gibAnzahlLetzten100Geschenke(): int
 {
-    $nAnzahlGeschenke = Shop::Container()->getDB()->query(
-        "SELECT count(*) AS nAnzahl
-            FROM
-                (
-                    SELECT kArtikel
-                    FROM twarenkorbpos
-                    WHERE nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK . "
-                    ORDER BY kWarenkorbPos DESC
-                    LIMIT 100
-                ) AS sub1
-            GROUP BY sub1.kArtikel", 1
-    );
-
-    if (isset($nAnzahlGeschenke->nAnzahl) && $nAnzahlGeschenke->nAnzahl > 0) {
-        return $nAnzahlGeschenke->nAnzahl;
-    }
-
-    return 0;
+    return (int)Shop::Container()->getDB()->query(
+        'SELECT COUNT(*) AS nAnzahl
+            FROM twarenkorbpos
+            WHERE nPosTyp = ' . C_WARENKORBPOS_TYP_GRATISGESCHENK . '
+            LIMIT 100',
+        \DB\ReturnType::SINGLE_OBJECT
+    )->nAnzahl;
 }

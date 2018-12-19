@@ -25,13 +25,13 @@ interface CaptchaServiceInterface
     public function isEnabled(): bool;
 
     /**
-     * @param \JTLSmarty $smarty
+     * @param \Smarty\JTLSmarty $smarty
      * @return string
      */
     public function getHeadMarkup($smarty): string;
 
     /**
-     * @param \JTLSmarty $smarty
+     * @param \Smarty\JTLSmarty $smarty
      * @return string
      */
     public function getBodyMarkup($smarty): string;

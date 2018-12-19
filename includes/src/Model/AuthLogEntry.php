@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -51,7 +51,7 @@ class AuthLogEntry
     /**
      * @param string $ip
      */
-    public function setIP($ip)
+    public function setIP($ip): void
     {
         $this->ip = $ip;
     }
@@ -67,7 +67,7 @@ class AuthLogEntry
     /**
      * @param string $user
      */
-    public function setUser(string $user)
+    public function setUser(string $user): void
     {
         $this->user = $user;
     }
@@ -83,7 +83,7 @@ class AuthLogEntry
     /**
      * @param int $code
      */
-    public function setCode(int $code)
+    public function setCode(int $code): void
     {
         $this->code = $code;
     }

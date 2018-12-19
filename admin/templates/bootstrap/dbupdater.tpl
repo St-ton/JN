@@ -2,9 +2,22 @@
 {config_load file="$lang.conf" section="shopupdate"}
 {include file='tpl_inc/header.tpl'}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#dbupdater# cBeschreibung=#dbupdaterDesc# cDokuURL=#dbupdaterURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('dbupdater') cBeschreibung=__('dbupdaterDesc') cDokuURL=__('dbupdaterURL')}
 <div id="content" class="container-fluid">
     <div class="container-fluid2">
+        <div id="resultLog" {if !$updatesAvailable}style="display: none;"{/if}>
+            <h4>Ereignisprotokoll</h4>
+            <pre id="debug">
+{__('currentShopVersion')}
+     System: {$currentFileVersion}
+     Datenbank: {$currentDatabaseVersion}
+{if $currentTemplateFileVersion != $currentTemplateDatabaseVersion}
+    {__('currentTemplateVersion')}
+         System: {$currentTemplateFileVersion}
+         Datenbank: {$currentTemplateDatabaseVersion}
+{/if}</pre>
+            <br /><br />
+        </div>
         <div id="update-status">
             {include file='tpl_inc/dbupdater_status.tpl'}
         </div>
@@ -174,6 +187,13 @@
 
             if (!error) {
                 updateStatusTpl();
+                if (dir === 'up') {
+                    pushEvent('     Update auf ' + formatVersion(result.result) + ' erfolgreich');
+                }
+            }
+
+            if (dir === 'down') {
+                $('#resultLog').show();
             }
         });
     }
@@ -222,11 +242,13 @@
     {
         var $container = $('#btn-update-group'),
             $buttons = $('#btn-update-group a.btn'),
-            $ladda = Ladda.create($('#backup-button')[0]);
+            $ladda = Ladda.create($('#backup-button')[0]),
+            $resultLog = $('#resultLog');
 
         if (!!disable) {
             $ladda.start();
             $buttons.attr('disabled', true);
+            $resultLog.show();
         } else {
             $ladda.stop();
             $buttons.attr('disabled', false);

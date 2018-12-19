@@ -6,8 +6,13 @@
 
 namespace Services\JTL\Validation\Rules;
 
+use PHPUnit\Framework\TestCase;
 
-class EqualsLaxTest extends \PHPUnit_Framework_TestCase
+/**
+ * Class EqualsLaxTest
+ * @package Services\JTL\Validation\Rules
+ */
+class EqualsLaxTest extends TestCase
 {
     public function test()
     {

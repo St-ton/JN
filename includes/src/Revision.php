@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
-ifndef('MAX_REVISIONS', 5);
 
 /**
  * Class Revision
@@ -21,7 +20,7 @@ class Revision
     public function __construct()
     {
         $this->mapping = [
-            'link'       => [
+            'link'    => [
                 'table'         => 'tlink',
                 'id'            => 'kLink',
                 'reference'     => 'tlinksprache',
@@ -39,11 +38,18 @@ class Revision
                 'reference_id'  => 'kEmailvorlage',
                 'reference_key' => 'kSprache'
             ],
-            'news'       => [
-                'table' => 'tnews',
-                'id'    => 'kNews'
+            'opcpage'       => [
+                'table' => 'topcpage',
+                'id'    => 'kPage'
             ],
-            'box'        => [
+            'news'          => [
+                'table'         => 'tnews',
+                'id'            => 'kNews',
+                'reference'     => 'tnewssprache',
+                'reference_id'  => 'kNews',
+                'reference_key' => 'languageCode'
+            ],
+            'box'           => [
                 'table'         => 'tboxen',
                 'id'            => 'kBox',
                 'reference'     => 'tboxsprache',
@@ -57,18 +63,18 @@ class Revision
                 'reference_id'  => 'kNewslettervorlage',
                 'reference_key' => 'kNewslettervorlageStdVar'
             ],
-            'newsletter' => [
-                'table'         => 'tnewslettervorlage',
-                'id'            => 'kNewsletterVorlage'
+            'newsletter'    => [
+                'table' => 'tnewslettervorlage',
+                'id'    => 'kNewsletterVorlage'
             ]
         ];
     }
 
     /**
      * @param string $type
-     * @return string|null
+     * @return array|null
      */
-    private function getMapping($type)
+    private function getMapping(string $type): ?array
     {
         return $this->mapping[$type] ?? null;
     }
@@ -78,7 +84,7 @@ class Revision
      * @param array  $mapping
      * @return $this
      */
-    public function addMapping($name, $mapping)
+    public function addMapping(string $name, array $mapping): self
     {
         $this->mapping[$name] = $mapping;
 
@@ -89,9 +95,34 @@ class Revision
      * @param int $id
      * @return stdClass|null
      */
-    public function getRevision(int $id)
+    public function getRevision(int $id): ?stdClass
     {
         return Shop::Container()->getDB()->select('trevisions', 'id', $id);
+    }
+
+    /**
+     * @param string $type
+     * @param int $key
+     * @return stdClass|null
+     */
+    public function getLatestRevision($type, int $key): ?stdClass
+    {
+        $mapping = $this->getMapping($type);
+        if ($key === 0 || $mapping === null) {
+            throw new InvalidArgumentException("Invalid revision type $type");
+        }
+
+        $latestRevision = Shop::Container()->getDB()->queryPrepared(
+            'SELECT *
+                FROM trevisions
+                WHERE type = :tp
+                    AND reference_primary = :ref
+                ORDER BY timestamp DESC',
+            ['tp' => $type, 'ref' => $key],
+            \DB\ReturnType::SINGLE_OBJECT
+        );
+
+        return is_object($latestRevision) ? $latestRevision : null;
     }
 
     /**
@@ -99,11 +130,10 @@ class Revision
      * @param int         $key
      * @param bool        $secondary
      * @param null|string $author
-     * @param bool        $utf8 - @deprecated since 5.0
      * @return bool
      * @throws InvalidArgumentException
      */
-    public function addRevision($type, $key, bool $secondary = false, $author = null, $utf8 = true): bool
+    public function addRevision($type, $key, bool $secondary = false, $author = null): bool
     {
         if (MAX_REVISIONS <= 0) {
             return false;
@@ -127,11 +157,13 @@ class Revision
         $revision->author             = $author;
         $revision->custom_table       = $mapping['table'];
         $revision->custom_primary_key = $mapping['id'];
-
         if ($secondary !== false && !empty($mapping['reference'])) {
             $field               = $mapping['reference_key'];
-            $referencedRevisions = Shop::Container()->getDB()->selectAll($mapping['reference'],
-                $mapping['reference_id'], $key);
+            $referencedRevisions = Shop::Container()->getDB()->selectAll(
+                $mapping['reference'],
+                $mapping['reference_id'],
+                $key
+            );
             if (empty($referencedRevisions)) {
                 return false;
             }
@@ -139,6 +171,16 @@ class Revision
             foreach ($referencedRevisions as $referencedRevision) {
                 $revision->content->references[$referencedRevision->$field] = $referencedRevision;
             }
+            $revision->content = json_encode($revision->content);
+
+            $latestRevision = $this->getLatestRevision($type, $key);
+
+            if (empty($latestRevision) || $latestRevision->content !== $revision->content) {
+                $this->storeRevision($revision);
+                $this->housekeeping($type, $key);
+            }
+
+            return true;
         }
         $revision->content = json_encode($revision->content);
         $this->storeRevision($revision);
@@ -190,14 +232,17 @@ class Revision
      * @param string $type
      * @param int    $id
      * @param bool   $secondary
-     * @param bool   $utf8 - @deprecated since 5.0
      * @return bool
      */
-    public function restoreRevision($type, $id, $secondary = false, $utf8 = true): bool
+    public function restoreRevision($type, $id, bool $secondary = false): bool
     {
         $revision = $this->getRevision($id);
         $mapping  = $this->getMapping($type); // get static mapping from build in content types
-        if ($revision !== null && $mapping === null && !empty($revision->custom_table) && !empty($revision->custom_primary_key)) {
+        if ($revision !== null
+            && $mapping === null
+            && !empty($revision->custom_table)
+            && !empty($revision->custom_primary_key)
+        ) {
             // load dynamic mapping from DB
             $mapping = ['table' => $revision->custom_table, 'id' => $revision->custom_primary_key];
         }

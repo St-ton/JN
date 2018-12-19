@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -12,24 +12,24 @@ use MyCLabs\Enum\Enum;
  * Class ComponentPropertyType
  *
  * @package Filter
- * @method InputType SELECT()
- * @method InputType CHECKBOX()
- * @method InputType BUTTON()
+ * @method static InputType SELECT()
+ * @method static InputType CHECKBOX()
+ * @method static InputType BUTTON()
  */
 class InputType extends Enum
 {
     /**
      * filter type selectbox
      */
-    const SELECT = 1;
+    public const SELECT = 1;
 
     /**
      * filter type checkbox
      */
-    const CHECKBOX = 2;
+    public const CHECKBOX = 2;
 
     /**
      * filter type button
      */
-    const BUTTON = 3;
+    public const BUTTON = 3;
 }

@@ -3,34 +3,37 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+
 require_once __DIR__ . '/includes/admininclude.php';
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $step     = 'prepare';
 $cFehler  = '';
 $cHinweis = '';
-if (isset($_POST['mail']) && validateToken()) {
-    $account = new AdminAccount(false);
+if (isset($_POST['mail']) && Form::validateToken()) {
+    $account = Shop::Container()->getAdminAccount();
     $account->prepareResetPassword(StringHandler::filterXSS($_POST['mail']));
     $cHinweis = 'Eine E-Mail mit weiteren Anweisung wurde an die hinterlegte Adresse gesendet, sofern vorhanden.';
-} elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpm'], $_POST['fpwh']) && validateToken()) {
+} elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpm'], $_POST['fpwh']) && Form::validateToken()) {
     if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
-        $account  = new AdminAccount(false);
+        $account  = Shop::Container()->getAdminAccount();
         $verified = $account->verifyResetPasswordHash($_POST['fpwh'], $_POST['fpm']);
         if ($verified === true) {
-            $_upd                     = new stdClass();
-            $_upd->cPass              = Shop::Container()->getPasswordService()->hash($_POST['pw_new']);
-            $update                   = Shop::Container()->getDB()->update('tadminlogin', 'cMail', $_POST['fpm'], $_upd);
+            $upd        = new stdClass();
+            $upd->cPass = Shop::Container()->getPasswordService()->hash($_POST['pw_new']);
+            $update     = Shop::Container()->getDB()->update('tadminlogin', 'cMail', $_POST['fpm'], $upd);
             if ($update > 0) {
-                $cHinweis = 'Passwort wurde erfolgreich ge&auml;ndert.';
+                $cHinweis = 'Passwort wurde erfolgreich geändert.';
                 header('Location: index.php?pw_updated=true');
             } else {
-                $cFehler = 'Passwort konnte nicht ge&auml;ndert werden.';
+                $cFehler = 'Passwort konnte nicht geändert werden.';
             }
         } else {
-            $cFehler = 'Ung&uuml;tiger Hash &uuml;bergeben.';
+            $cFehler = 'Ungütiger Hash übergeben.';
         }
     } else {
-        $cFehler = 'Passw&ouml;rter stimmen nicht &uuml;berein.';
+        $cFehler = 'Passwörter stimmen nicht überein.';
     }
     $smarty->assign('fpwh', $_POST['fpwh'])
            ->assign('fpm', $_POST['fpm']);

@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 /**
  * Interface IMigration
@@ -8,12 +12,12 @@ interface IMigration
     /**
      * @var string
      */
-    const UP = 'up';
+    public const UP = 'up';
 
     /**
      * @var string
      */
-    const DOWN = 'down';
+    public const DOWN = 'down';
 
     /**
      * @return bool

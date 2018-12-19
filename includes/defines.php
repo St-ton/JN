@@ -10,6 +10,7 @@ ifndef('DB_CHARSET', 'utf8');
 ifndef('DB_COLLATE', 'utf8_unicode_ci');
 ini_set('default_charset', JTL_CHARSET);
 date_default_timezone_set('Europe/Berlin');
+ifndef('DS', DIRECTORY_SEPARATOR);
 // Log-Levels
 ifndef('SYNC_LOG_LEVEL', E_ERROR | E_PARSE);
 ifndef('ADMIN_LOG_LEVEL', E_ERROR | E_PARSE);
@@ -22,6 +23,13 @@ ifndef('IMAGE_COMPATIBILITY_LEVEL', 1);
 ifndef('KEEP_SYNC_FILES', false);
 ifndef('PROFILE_PLUGINS', false);
 ifndef('PROFILE_SHOP', false);
+/**
+ * Lieferschwellen-Option: Gleichbleibende Bruttopreise (SHOP-2633)
+ * @since 5.0.0
+ */
+ifndef('CONSISTENT_GROSS_PRICES', true);
+
+ifndef('DB_DEFAULT_SQL_MODE', false);
 
 /**
  * WARNING !!! DO NOT USE PROFILE_QUERIES IN PRODUCTION ENVIRONMENT OR PUBLIC AVAILABLE SITES. THE PROFILER CANNOT USE
@@ -44,6 +52,7 @@ ifndef('DEBUG_FRAME', false);
 ifndef('SMARTY_DEBUG_CONSOLE', false);
 ifndef('SMARTY_SHOW_LANGKEY', false);
 ifndef('SMARTY_FORCE_COMPILE', false);
+ifndef('SMARTY_USE_SUB_DIRS', false);
 ifndef('JTL_INCLUDE_ONLY_DB', 0);
 ifndef('SOCKET_TIMEOUT', 30);
 ifndef('ARTICLES_PER_PAGE_HARD_LIMIT', 100);
@@ -125,9 +134,9 @@ ifndef('PFAD_KONFIGURATOR_KLEIN', PFAD_BILDER . 'konfigurator/klein/');
 ifndef('PFAD_LOGFILES', PFAD_ROOT . 'jtllogs/');
 ifndef('PFAD_EXPORT', 'export/');
 ifndef('PFAD_EXPORT_BACKUP', PFAD_EXPORT . 'backup/');
-ifndef('PFAD_EXPORT_YATEGO', PFAD_EXPORT . 'yatego/');
 ifndef('PFAD_UPDATE', 'update/');
 ifndef('PFAD_WIDGETS', 'widgets/');
+ifndef('PFAD_PORTLETS', 'portlets/');
 ifndef('PFAD_INSTALL', 'install/');
 ifndef('PFAD_SHOPMD5', 'shopmd5files/');
 ifndef('PFAD_NUSOAP', 'nusoap/');
@@ -139,7 +148,6 @@ ifndef('PFAD_DOWNLOADS_PREVIEW', PFAD_ROOT . PFAD_DOWNLOADS_PREVIEW_REL);
 ifndef('PFAD_UPLOADIFY', PFAD_INCLUDES_LIBS . 'uploadify/');
 ifndef('PFAD_UPLOAD_CALLBACK', PFAD_INCLUDES_EXT . 'uploads_cb.php');
 ifndef('PFAD_IMAGEMAP', PFAD_BILDER . 'banner/');
-ifndef('PFAD_KCFINDER', PFAD_INCLUDES_LIBS . 'kcfinder-2.5.4/');
 ifndef('PFAD_EMAILTEMPLATES', 'templates_mail/');
 ifndef('PFAD_MEDIA_IMAGE', 'media/image/');
 ifndef('PFAD_MEDIA_IMAGE_STORAGE', PFAD_MEDIA_IMAGE . 'storage/');
@@ -179,6 +187,14 @@ ifndef('CATEGORY_FILTER_ITEM_LIMIT', -1);
 ifndef('PRODUCT_LIST_SHOW_RATINGS', false);
 ifndef('IMAGE_CLEANUP_LIMIT', 50);
 ifndef('OBJECT_CACHE_DIR', PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/');
+
+ifndef('SITEMAP_ITEMS_LIMIT', 25000);
+// CMS Image Widths
+ifndef('WIDTH_OPC_IMAGE_XS', '480');
+ifndef('WIDTH_OPC_IMAGE_SM', '720');
+ifndef('WIDTH_OPC_IMAGE_MD', '1080');
+ifndef('WIDTH_OPC_IMAGE_LG', '1440');
+ifndef('WIDTH_OPC_IMAGE_XL', '2040');
 // show child products in product listings? 0 - never, 1 - only when at least 1 filter is active, 2 - always
 ifndef('SHOW_CHILD_PRODUCTS', 0);
 // redis connect timeout in seconds
@@ -186,6 +202,8 @@ ifndef('REDIS_CONNECT_TIMEOUT', 3);
 
 ifndef('SAVE_BOT_SESSION', 0);
 ifndef('ES_SESSIONS', 0);
+
+ifndef('MAX_REVISIONS', 5);
 
 // security
 ifndef('NEWSLETTER_USE_SECURITY', true);
@@ -224,6 +242,9 @@ ifndef('SECURE_PHP_FUNCTIONS', "
     
     yaml_emit, yaml_parse,
 ");
+
+// 0 => off, 1 => html comments, 2 => static badges, 3 => scrolling badges with borders
+ifndef('SHOW_TEMPLATE_HINTS', 0);
 
 /**
  * @param string     $constant

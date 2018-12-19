@@ -38,23 +38,25 @@ class ZahlungsLog
     }
 
     /**
-     * @param int $nStart
-     * @param int $nLimit
+     * @param string $limit
      * @param int $nLevel
+     * @param string $whereSQL
      * @return array
      */
-    public function holeLog(int $nStart = 0, int $nLimit = 100, int $nLevel = -1): array
+    public function holeLog(string $limit, int $nLevel = -1, string $whereSQL = ''): array
     {
         $cSQLLevel = $nLevel >= 0 ? ('AND nLevel = ' . $nLevel) : '';
 
         return Shop::Container()->getDB()->query(
             "SELECT * FROM tzahlungslog
-                WHERE cModulId = '" . $this->cModulId . "' " . $cSQLLevel . "
+                WHERE cModulId = '" . $this->cModulId . "' " .
+                $cSQLLevel . ($whereSQL !== '' ? ' AND ' . $whereSQL : '') . '
                 ORDER BY dDatum DESC, kZahlunglog DESC 
-                LIMIT " . $nStart . ", " . $nLimit,
+                LIMIT ' . $limit,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
+
 
     /**
      * @return int
@@ -62,9 +64,9 @@ class ZahlungsLog
     public function logCount(): int
     {
         $oCount = Shop::Container()->getDB()->queryPrepared(
-            "SELECT COUNT(*) AS nCount 
+            'SELECT COUNT(*) AS nCount 
                 FROM tzahlungslog 
-                WHERE cModulId = :module",
+                WHERE cModulId = :module',
             ['module' => $this->cModulId],
             \DB\ReturnType::SINGLE_OBJECT
         );
@@ -82,11 +84,9 @@ class ZahlungsLog
 
     /**
      * @param string $cLog
-     * @param string $cLogData
-     * @param int    $nLevel
      * @return int
      */
-    public function log($cLog, $cLogData = '', $nLevel = LOGLEVEL_ERROR): int
+    public function log($cLog): int
     {
         return self::add($this->cModulId, $cLog);
     }
@@ -109,7 +109,7 @@ class ZahlungsLog
         $oZahlungsLog->cLog     = $cLog;
         $oZahlungsLog->cLogData = $cLogData;
         $oZahlungsLog->nLevel   = $nLevel;
-        $oZahlungsLog->dDatum   = 'now()';
+        $oZahlungsLog->dDatum   = 'NOW()';
 
         return Shop::Container()->getDB()->insert('tzahlungslog', $oZahlungsLog);
     }
@@ -126,17 +126,17 @@ class ZahlungsLog
         if (!is_array($cModulId_arr)) {
             $cModulId_arr = (array)$cModulId_arr;
         }
-        array_walk($cModulId_arr, function (&$value, $key) {
+        array_walk($cModulId_arr, function (&$value) {
             $value = sprintf("'%s'", $value);
         });
         $cSQLModulId = implode(',', $cModulId_arr);
         $cSQLLevel   = ($nLevel >= 0) ? ('AND nLevel = ' . $nLevel) : '';
 
         return Shop::Container()->getDB()->query(
-            "SELECT * FROM tzahlungslog
-                WHERE cModulId IN(" . $cSQLModulId . ") " . $cSQLLevel . "
+            'SELECT * FROM tzahlungslog
+                WHERE cModulId IN(' . $cSQLModulId . ') ' . $cSQLLevel . '
                 ORDER BY dDatum DESC, kZahlunglog DESC 
-                LIMIT " . $nStart . ", " . $nLimit,
+                LIMIT ' . $nStart . ', ' . $nLimit,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
@@ -144,19 +144,25 @@ class ZahlungsLog
     /**
      * @param string $cModulId
      * @param int    $nLevel
+     * @param string $whereSQL
      * @return int
      */
-    public static function count(string $cModulId, int $nLevel = -1): int
+    public static function count(string $cModulId, int $nLevel = -1, string $whereSQL = ''): int
     {
         if ($nLevel === -1) {
             $count = Shop::Container()->getDB()->queryPrepared(
-                "SELECT COUNT(*) AS count FROM tzahlungslog WHERE cModulId = :cModulId",
+                'SELECT COUNT(*) AS count 
+                    FROM tzahlungslog 
+                    WHERE cModulId = :cModulId '.($whereSQL !== '' ? ' AND ' . $whereSQL : ''),
                 ['cModulId' => $cModulId],
                 \DB\ReturnType::SINGLE_OBJECT
             )->count;
         } else {
             $count = Shop::Container()->getDB()->queryPrepared(
-                "SELECT COUNT(*) AS count FROM tzahlungslog WHERE cModulId = :cModulId AND nLevel = :nLevel",
+                'SELECT COUNT(*) AS count 
+                    FROM tzahlungslog 
+                    WHERE cModulId = :cModulId 
+                        AND nLevel = :nLevel '.($whereSQL !== '' ? ' AND ' . $whereSQL : ''),
                 ['nLevel' => $nLevel, 'cModulId' => $cModulId],
                 \DB\ReturnType::SINGLE_OBJECT
             )->count;

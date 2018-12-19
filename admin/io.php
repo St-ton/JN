@@ -3,21 +3,26 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+
 /** @global AdminAccount $oAccount */
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 if (!$oAccount->getIsAuthenticated()) {
-    header(makeHTTPHeader(401));
-    exit;
+    AdminIO::getInstance()->respondAndExit(new IOError('Not authenticated as admin.', 401));
 }
-if (!validateToken()) {
-    $io = IO::getInstance();
-    $io->respondAndExit(new IOError('CSRF validation failed.', 500));
+if (!Form::validateToken()) {
+    AdminIO::getInstance()->respondAndExit(new IOError('CSRF validation failed.', 403));
 }
 
-$jsonApi             = JSONAPI::getInstance();
-$io                  = AdminIO::getInstance()->setAccount($oAccount);
+$jsonApi = JSONAPI::getInstance();
+$io      = AdminIO::getInstance()->setAccount($oAccount);
+
+Shop::Container()->getOPC()->registerAdminIOFunctions($io);
+Shop::Container()->getOPCPageService()->registerAdminIOFunctions($io);
+
 $dashboardInc        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
 $accountInc          = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
 $bannerInc           = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'banner_inc.php';
@@ -77,8 +82,7 @@ $io
     ->register('saveBannerAreas', 'saveBannerAreasIO', $bannerInc, 'DISPLAY_BANNER_VIEW')
     ->register('createSearchIndex', 'createSearchIndex', $sucheinstellungInc, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
     ->register('clearSearchCache', 'clearSearchCache', $sucheinstellungInc, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
-    ->register('adminSearch', 'adminSearch', $sucheInc, 'SETTINGS_SEARCH_VIEW')
-;
+    ->register('adminSearch', 'adminSearch', $sucheInc, 'SETTINGS_SEARCH_VIEW');
 
 $data = $io->handleRequest($_REQUEST['io']);
 $io->respondAndExit($data);

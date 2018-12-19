@@ -3,9 +3,14 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+use Helpers\Request;
+use Pagination\Pagination;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bestellungen_inc.php';
-/** @global JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $oAccount->permission('ORDER_VIEW', true, true);
 
 $cHinweis        = '';
@@ -15,11 +20,11 @@ $cSuchFilter     = '';
 $nAnzahlProSeite = 15;
 
 // Bestellung Wawi Abholung zuruecksetzen
-if (verifyGPCDataInteger('zuruecksetzen') === 1 && validateToken()) {
+if (Request::verifyGPCDataInt('zuruecksetzen') === 1 && Form::validateToken()) {
     if (isset($_POST['kBestellung'])) {
         switch (setzeAbgeholtZurueck($_POST['kBestellung'])) {
             case -1: // Alles O.K.
-                $cHinweis = 'Ihr markierten Bestellungen wurden erfolgreich zur&uuml;ckgesetzt.';
+                $cHinweis = 'Ihr markierten Bestellungen wurden erfolgreich zurückgesetzt.';
                 break;
             case 1:  // Array mit Keys nicht vorhanden oder leer
                 $cFehler = 'Fehler: Bitte markieren Sie mindestens eine Bestellung.';
@@ -28,8 +33,8 @@ if (verifyGPCDataInteger('zuruecksetzen') === 1 && validateToken()) {
     } else {
         $cFehler = 'Fehler: Bitte markieren Sie mindestens eine Bestellung.';
     }
-} elseif (verifyGPCDataInteger('Suche') === 1) { // Bestellnummer gesucht
-    $cSuche = StringHandler::filterXSS(verifyGPDataString('cSuche'));
+} elseif (Request::verifyGPCDataInt('Suche') === 1) { // Bestellnummer gesucht
+    $cSuche = StringHandler::filterXSS(Request::verifyGPDataString('cSuche'));
     if (strlen($cSuche) > 0) {
         $cSuchFilter = $cSuche;
     } else {

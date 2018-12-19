@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\GeneralObject;
+
 /**
  * Class Versandart
  */
@@ -110,6 +112,21 @@ class Versandart
     public $nMaxLiefertage;
 
     /**
+     * @var ?string
+     */
+    public $eSteuer;
+
+    /**
+     * @var ?string
+     */
+    public $cCountryCode;
+
+    /**
+     * @var ?array
+     */
+    public $cPriceLocalized;
+
+    /**
      * Konstruktor
      *
      * @param int $kVersandart
@@ -122,12 +139,10 @@ class Versandart
     }
 
     /**
-     * Setzt Versandart mit Daten aus der DB mit spezifiziertem Primary Key
-     *
      * @param int $kVersandart
      * @return int
      */
-    public function loadFromDB(int $kVersandart)
+    public function loadFromDB(int $kVersandart): int
     {
         $obj = Shop::Container()->getDB()->select('tversandart', 'kVersandart', $kVersandart);
         if ($obj === null || !$obj->kVersandart) {
@@ -139,7 +154,11 @@ class Versandart
         }
         $this->kVersandart = (int)$this->kVersandart;
         // VersandartSprache
-        $oVersandartSprache_arr = Shop::Container()->getDB()->selectAll('tversandartsprache', 'kVersandart', $this->kVersandart);
+        $oVersandartSprache_arr = Shop::Container()->getDB()->selectAll(
+            'tversandartsprache',
+            'kVersandart',
+            $this->kVersandart
+        );
         foreach ($oVersandartSprache_arr as $oVersandartSprache) {
             $this->oVersandartSprache_arr[$oVersandartSprache->cISOSprache] = $oVersandartSprache;
         }
@@ -154,13 +173,11 @@ class Versandart
     }
 
     /**
-     * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
-     *
-     * @return int - Key von eingefügter Versandart
+     * @return int
      */
-    public function insertInDB()
+    public function insertInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = GeneralObject::copyMembers($this);
         unset(
             $obj->oVersandartSprache_arr,
             $obj->oVersandartStaffel_arr,
@@ -174,13 +191,11 @@ class Versandart
     }
 
     /**
-     * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
-     *
      * @return int
      */
-    public function updateInDB()
+    public function updateInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = GeneralObject::copyMembers($this);
         unset(
             $obj->oVersandartSprache_arr,
             $obj->oVersandartStaffel_arr,
@@ -196,28 +211,27 @@ class Versandart
      * @param int $kVersandart
      * @return bool
      */
-    public static function deleteInDB(int $kVersandart)
+    public static function deleteInDB(int $kVersandart): bool
     {
-        if ($kVersandart > 0) {
-            Shop::Container()->getDB()->delete('tversandart', 'kVersandart', $kVersandart);
-            Shop::Container()->getDB()->delete('tversandartsprache', 'kVersandart', $kVersandart);
-            Shop::Container()->getDB()->delete('tversandartzahlungsart', 'kVersandart', $kVersandart);
-            Shop::Container()->getDB()->delete('tversandartstaffel', 'kVersandart', $kVersandart);
-            Shop::Container()->getDB()->query(
-                "DELETE tversandzuschlag, tversandzuschlagplz, tversandzuschlagsprache
-                    FROM tversandzuschlag
-                    LEFT JOIN tversandzuschlagplz 
-                        ON tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
-                    LEFT JOIN tversandzuschlagsprache 
-                        ON tversandzuschlagsprache.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
-                    WHERE tversandzuschlag.kVersandart = {$kVersandart}",
-                \DB\ReturnType::DEFAULT
-            );
-
-            return true;
+        if ($kVersandart <= 0) {
+            return false;
         }
+        Shop::Container()->getDB()->delete('tversandart', 'kVersandart', $kVersandart);
+        Shop::Container()->getDB()->delete('tversandartsprache', 'kVersandart', $kVersandart);
+        Shop::Container()->getDB()->delete('tversandartzahlungsart', 'kVersandart', $kVersandart);
+        Shop::Container()->getDB()->delete('tversandartstaffel', 'kVersandart', $kVersandart);
+        Shop::Container()->getDB()->query(
+            "DELETE tversandzuschlag, tversandzuschlagplz, tversandzuschlagsprache
+                FROM tversandzuschlag
+                LEFT JOIN tversandzuschlagplz 
+                    ON tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
+                LEFT JOIN tversandzuschlagsprache 
+                    ON tversandzuschlagsprache.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
+                WHERE tversandzuschlag.kVersandart = {$kVersandart}",
+            \DB\ReturnType::DEFAULT
+        );
 
-        return false;
+        return true;
     }
 
     /**
@@ -258,10 +272,8 @@ class Versandart
      * @param int    $value
      * @return array
      */
-    private static function getShippingSection($table, $key, $value): array
+    private static function getShippingSection($table, $key, int $value): array
     {
-        $value = (int)$value;
-
         if ($value > 0 && strlen($table) > 0 && strlen($key) > 0) {
             $Objs = Shop::Container()->getDB()->selectAll($table, $key, $value);
 
@@ -280,10 +292,8 @@ class Versandart
      * @param mixed       $value
      * @param null|string $unsetKey
      */
-    private static function cloneShippingSection(array $objectArr = null, $table, $key, $value, $unsetKey = null)
+    private static function cloneShippingSection(array $objectArr, $table, $key, int $value, $unsetKey = null): void
     {
-        $value = (int)$value;
-
         if ($value > 0 && is_array($objectArr) && count($objectArr) > 0 && strlen($key) > 0) {
             foreach ($objectArr as $Obj) {
                 $kKeyPrim = $Obj->$unsetKey;
@@ -307,7 +317,7 @@ class Versandart
      * @param int $oldKey
      * @param int $newKey
      */
-    private static function cloneShippingSectionSpecial(int $oldKey, int $newKey)
+    private static function cloneShippingSectionSpecial(int $oldKey, int $newKey): void
     {
         if ($oldKey > 0 && $newKey > 0) {
             $cSectionSub_arr = [

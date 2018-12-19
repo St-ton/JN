@@ -6,7 +6,6 @@
 
 namespace Services\JTL\Validation\Rules;
 
-
 use Services\JTL\Validation\RuleInterface;
 use Services\JTL\Validation\RuleResult;
 
@@ -34,9 +33,9 @@ class Type implements RuleInterface
     /**
      * @inheritdoc
      */
-    public function validate($value)
+    public function validate($value): RuleResult
     {
-        return $this->expected === gettype($value)
+        return $this->expected === \gettype($value)
             ? new RuleResult(true, '', $value)
             : new RuleResult(false, 'invalid type', $value);
     }

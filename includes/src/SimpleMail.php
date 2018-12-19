@@ -218,7 +218,11 @@ class SimpleMail
                 case 'QMail':
                     break;
                 case 'smtp':
-                    if (empty($this->cSMTPAuth) || empty($this->cSMTPHost) || empty($this->cSMTPPass) || empty($this->cSMTPUser)) {
+                    if (empty($this->cSMTPAuth)
+                        || empty($this->cSMTPHost)
+                        || empty($this->cSMTPPass)
+                        || empty($this->cSMTPUser)
+                    ) {
                         $this->setErrorLog('SMTP', 'SMTP Daten nicht gesetzt!');
                     }
                     break;
@@ -323,7 +327,7 @@ class SimpleMail
     /**
      * @return string|null
      */
-    public function getVerfasserMail()
+    public function getVerfasserMail(): ?string
     {
         return $this->cVerfasserMail;
     }
@@ -332,7 +336,7 @@ class SimpleMail
      *
      * @return string|null
      */
-    public function getVerfasserName()
+    public function getVerfasserName(): ?string
     {
         return $this->cVerfasserName;
     }
@@ -341,7 +345,7 @@ class SimpleMail
      *
      * @return string|null
      */
-    public function getBetreff()
+    public function getBetreff(): ?string
     {
         return $this->cBetreff;
     }
@@ -350,7 +354,7 @@ class SimpleMail
      *
      * @return string|null
      */
-    public function getBodyHTML()
+    public function getBodyHTML(): ?string
     {
         return $this->cBodyHTML;
     }
@@ -359,7 +363,7 @@ class SimpleMail
      *
      * @return string|null
      */
-    public function getBodyText()
+    public function getBodyText(): ?string
     {
         return $this->cBodyText;
     }
@@ -443,7 +447,7 @@ class SimpleMail
      * @param string $cKey
      * @param mixed  $cValue
      */
-    public function setErrorLog($cKey, $cValue)
+    public function setErrorLog($cKey, $cValue): void
     {
         $this->cErrorLog[$cKey] = $cValue;
     }
@@ -451,7 +455,7 @@ class SimpleMail
     /**
      * @return string|null
      */
-    public function getMethod()
+    public function getMethod(): ?string
     {
         return $this->cMethod;
     }
@@ -466,6 +470,70 @@ class SimpleMail
             $this->cMethod = $cMethod;
 
             return true;
+        }
+
+        return false;
+    }
+    /**
+     * Prüft ob eine die angegebende Email in temailblacklist vorhanden ist
+     * Gibt true zurück, falls Email geblockt, ansonsten false
+     *
+     * @param string $mail
+     * @return bool
+     */
+    public static function checkBlacklist(?string $mail): bool
+    {
+        $mail = strtolower(StringHandler::filterXSS($mail));
+        if (StringHandler::filterEmailAddress($mail) === false) {
+            return true;
+        }
+        $conf = Shop::getSettings([CONF_EMAILBLACKLIST]);
+        if ($conf['emailblacklist']['blacklist_benutzen'] !== 'Y') {
+            return false;
+        }
+        $blacklist = Shop::Container()->getDB()->query(
+            'SELECT cEmail FROM temailblacklist',
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+        foreach ($blacklist as $item) {
+            if (strpos($item->cEmail, '*') !== false) {
+                preg_match('/' . str_replace('*', '[a-z0-9\-\_\.\@\+]*', $item->cEmail) . '/', $mail, $hits);
+                // Blocked
+                if (isset($hits[0]) && strlen($mail) === strlen($hits[0])) {
+                    // Email schonmal geblockt worden?
+                    $block = Shop::Container()->getDB()->select('temailblacklistblock', 'cEmail', $mail);
+                    if (!empty($block->cEmail)) {
+                        $_upd                = new stdClass();
+                        $_upd->dLetzterBlock = 'NOW()';
+                        Shop::Container()->getDB()->update('temailblacklistblock', 'cEmail', $mail, $_upd);
+                    } else {
+                        // temailblacklistblock Eintrag
+                        $block                = new stdClass();
+                        $block->cEmail        = $mail;
+                        $block->dLetzterBlock = 'NOW()';
+                        Shop::Container()->getDB()->insert('temailblacklistblock', $block);
+                    }
+
+                    return true;
+                }
+            } elseif (strtolower($item->cEmail) === strtolower($mail)) {
+                // Email schonmal geblockt worden?
+                $block = Shop::Container()->getDB()->select('temailblacklistblock', 'cEmail', $mail);
+
+                if (!empty($block->cEmail)) {
+                    $_upd                = new stdClass();
+                    $_upd->dLetzterBlock = 'NOW()';
+                    Shop::Container()->getDB()->update('temailblacklistblock', 'cEmail', $mail, $_upd);
+                } else {
+                    // temailblacklistblock Eintrag
+                    $block                = new stdClass();
+                    $block->cEmail        = $mail;
+                    $block->dLetzterBlock = 'NOW()';
+                    Shop::Container()->getDB()->insert('temailblacklistblock', $block);
+                }
+
+                return true;
+            }
         }
 
         return false;

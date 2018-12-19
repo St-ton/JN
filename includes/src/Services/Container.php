@@ -6,14 +6,23 @@
 
 namespace Services;
 
-use Boxes\BoxFactoryInterface;
+use Boxes\FactoryInterface;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
+use L10n\GetText;
+use Monolog\Logger;
+use OPC\DB;
+use OPC\Locker;
+use OPC\PageDB;
+use OPC\PageService;
+use OPC\Service;
+use Services\JTL\AdminAccountService;
 use Services\JTL\BoxServiceInterface;
 use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\LinkServiceInterface;
+use Services\JTL\NewsServiceInterface;
 use Services\JTL\PasswordServiceInterface;
 use Psr\Log\LoggerInterface;
 
@@ -62,6 +71,14 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
+    public function getLogService(): Logger
+    {
+        return $this->get('Logger');
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getDBServiceGC(): GcServiceInterface
     {
         return $this->get(GcServiceInterface::class);
@@ -86,9 +103,9 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getBoxFactory(): BoxFactoryInterface
+    public function getBoxFactory(): FactoryInterface
     {
-        return $this->get(BoxFactoryInterface::class);
+        return $this->get(FactoryInterface::class);
     }
 
     /**
@@ -105,5 +122,69 @@ class Container extends ContainerBase implements DefaultServicesInterface
     public function getCaptchaService(): CaptchaServiceInterface
     {
         return $this->get(CaptchaServiceInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOPC(): Service
+    {
+        return $this->get(Service::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOPCPageService(): PageService
+    {
+        return $this->get(PageService::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOPCDB(): DB
+    {
+        return $this->get(DB::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOPCPageDB(): PageDB
+    {
+        return $this->get(PageDB::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOPCLocker(): Locker
+    {
+        return $this->get(Locker::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getNewsService(): NewsServiceInterface
+    {
+        return $this->get(NewsServiceInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getGetText(): GetText
+    {
+        return $this->get(GetText::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAdminAccount(): \AdminAccount
+    {
+        return $this->get(\AdminAccount::class);
     }
 }

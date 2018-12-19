@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if $stars > 0}
     {assign var=filename1 value='rate'}
     {assign var=filename3 value='.png'}
@@ -6,7 +10,7 @@
     {else}
         {lang key='productRating' section='product rating' assign='ratingLabelText'}
     {/if}
-    {block name="productdetails-rating"}
+    {block name='productdetails-rating'}
     <span class="rating" title="{$ratingLabelText}: {$stars}/5">
     {strip}
         {if $stars >= 5}

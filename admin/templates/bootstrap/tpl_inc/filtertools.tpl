@@ -85,6 +85,7 @@
                                                 alwaysShowCalendars: true,
                                                 autoUpdateInput: false,
                                                 autoApply: false,
+                                                parentEl: 'html',
                                                 applyClass: 'btn btn-primary',
                                                 cancelClass: 'btn btn-danger',
                                                 ranges: {

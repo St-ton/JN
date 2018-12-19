@@ -6,16 +6,25 @@
 
 namespace Services;
 
-use Boxes\BoxFactoryInterface;
+use Boxes\FactoryInterface;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
 use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
+use L10n\GetText;
+use Monolog\Logger;
+use OPC\DB;
+use OPC\Locker;
+use OPC\PageDB;
+use OPC\PageService;
+use OPC\Service;
+use Services\JTL\AdminAccountService;
 use Services\JTL\BoxServiceInterface;
 use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\LinkServiceInterface;
+use Services\JTL\NewsServiceInterface;
 use Services\JTL\PasswordServiceInterface;
 use Psr\Log\LoggerInterface;
 
@@ -59,7 +68,39 @@ interface DefaultServicesInterface extends ContainerInterface
      * @throws ServiceNotFoundException
      * @throws CircularReferenceException
      */
-    public function getBackendLogService(): LoggerInterface;
+    public function getBackendLogService() : LoggerInterface;
+
+    /**
+     * @return Service
+     */
+    public function getOPC(): Service;
+
+    /**
+     * @return PageService
+     */
+    public function getOPCPageService(): PageService;
+
+    /**
+     * @return DB
+     */
+    public function getOPCDB(): DB;
+
+    /**
+     * @return PageDB
+     */
+    public function getOPCPageDB(): PageDB;
+
+    /**
+     * @return Locker
+     */
+    public function getOPCLocker(): Locker;
+
+    /**
+     * @return Logger
+     * @throws ServiceNotFoundException
+     * @throws CircularReferenceException
+     */
+    public function getLogService(): Logger;
 
     /**
      * @return LinkServiceInterface
@@ -67,9 +108,9 @@ interface DefaultServicesInterface extends ContainerInterface
     public function getLinkService(): LinkServiceInterface;
 
     /**
-     * @return BoxFactoryInterface
+     * @return FactoryInterface
      */
-    public function getBoxFactory(): BoxFactoryInterface;
+    public function getBoxFactory(): FactoryInterface;
 
     /**
      * @return BoxServiceInterface
@@ -79,5 +120,20 @@ interface DefaultServicesInterface extends ContainerInterface
     /**
      * @return CaptchaServiceInterface
      */
-    public function getCaptchaService(): CaptchaServiceInterface;
+    public function getCaptchaService() : CaptchaServiceInterface;
+
+    /**
+     * @return NewsServiceInterface
+     */
+    public function getNewsService() : NewsServiceInterface;
+
+    /**
+     * @return GetText
+     */
+    public function getGetText() : GetText;
+
+    /**
+     * @return \AdminAccount
+     */
+    public function getAdminAccount(): \AdminAccount;
 }

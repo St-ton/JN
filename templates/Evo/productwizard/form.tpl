@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if isset($oAuswahlAssistent->oAuswahlAssistentFrage_arr) && $oAuswahlAssistent->oAuswahlAssistentFrage_arr|@count > 0}
     <hr />
     <script type="text/javascript">
@@ -74,9 +78,9 @@
                         <span>
                             {if $Einstellungen.auswahlassistent.auswahlassistent_anzeigeformat === 'S'}
                             <select {if $smarty.session.AuswahlAssistent->nFrage != $nFrage && ($Einstellungen.auswahlassistent.auswahlassistent_allefragen === 'Y' || $smarty.session.AuswahlAssistent->nFrage > $nFrage)}disabled="disabled"{/if} class="suche_improve_search" name="kMerkmalWert" onChange="return setSelectionWizardAnswer(this.options[this.selectedIndex].value, {$oAuswahlAssistentFrage->kAuswahlAssistentFrage}, {$nFrage}, {$kKategorie});">
-                                <option value="-1">{lang key="pleaseChoose" section="global"}</option>
+                                <option value="-1">{lang key='pleaseChoose' section='global'}</option>
                             {/if}
-                            {foreach name=auswahlmerkmalwerte from=$oAuswahlAssistentFrage->oMerkmal->oMerkmalWert_arr item=oMerkmalWert}
+                            {foreach $oAuswahlAssistentFrage->oMerkmal->oMerkmalWert_arr as $oMerkmalWert}
                                 {if $Einstellungen.auswahlassistent.auswahlassistent_anzeigeformat === 'S'}
                                     <option value="{$oMerkmalWert->kMerkmalWert}">{$oMerkmalWert->cWert}{if $Einstellungen.auswahlassistent.auswahlassistent_anzahl_anzeigen === 'Y' && isset($oMerkmalWert->nAnzahl)} ({$oMerkmalWert->nAnzahl}){/if}</option>
                                 {else}
@@ -107,7 +111,7 @@
                             {/if}
                         </span>
                         {if $Einstellungen.auswahlassistent.auswahlassistent_anzeigeformat === 'S'}
-                            <button name="aaLosBTN" class="btn_select">{lang key="aaSelectBTN" section="global"}</button>
+                            <button name="aaLosBTN" class="btn_select">{lang key='aaSelectBTN' section='global'}</button>
                     </form>
                     {/if}
                 </div>

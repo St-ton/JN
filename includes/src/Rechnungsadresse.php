@@ -61,12 +61,12 @@ class Rechnungsadresse extends Adresse
         if ($obj === null || $obj->kRechnungsadresse < 1) {
             return 0;
         }
-
         $this->fromObject($obj);
+        $this->kKunde            = (int)$this->kKunde;
+        $this->kRechnungsadresse = (int)$this->kRechnungsadresse;
 
-        // Anrede mappen
-        $this->cAnredeLocalized = mappeKundenanrede($this->cAnrede, 0, $this->kKunde);
-        $this->angezeigtesLand  = ISO2land($this->cLand);
+        $this->cAnredeLocalized = Kunde::mapSalutation($this->cAnrede, 0, $this->kKunde);
+        $this->angezeigtesLand  = Sprache::getCountryCodeByCountryName($this->cLand);
         if ($this->kRechnungsadresse > 0) {
             $this->decrypt();
         }
@@ -108,7 +108,12 @@ class Rechnungsadresse extends Adresse
 
         unset($obj->angezeigtesLand, $obj->cAnredeLocalized);
 
-        $res = Shop::Container()->getDB()->update('trechnungsadresse', 'kRechnungsadresse', $obj->kRechnungsadresse, $obj);
+        $res = Shop::Container()->getDB()->update(
+            'trechnungsadresse',
+            'kRechnungsadresse',
+            $obj->kRechnungsadresse,
+            $obj
+        );
         $this->decrypt();
         // Anrede mappen
         $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);

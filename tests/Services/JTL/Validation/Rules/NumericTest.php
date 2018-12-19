@@ -6,8 +6,13 @@
 
 namespace Services\JTL\Validation\Rules;
 
+use PHPUnit\Framework\TestCase;
 
-class NumericTest extends \PHPUnit_Framework_TestCase
+/**
+ * Class NumericTest
+ * @package Services\JTL\Validation\Rules
+ */
+class NumericTest extends TestCase
 {
     public function test()
     {

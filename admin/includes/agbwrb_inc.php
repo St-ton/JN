@@ -25,7 +25,7 @@ function speicherAGBWRB($kKundengruppe, $kSprache, $cPost_arr, $kText = 0)
         // Soll Standard sein?
         if (isset($cPost_arr['nStandard']) && (int)$cPost_arr['nStandard'] > 0) {
             // Standard umsetzen
-            Shop::Container()->getDB()->query("UPDATE ttext SET nStandard = 0", 3);
+            Shop::Container()->getDB()->query('UPDATE ttext SET nStandard = 0', \DB\ReturnType::AFFECTED_ROWS);
         }
         $oAGBWRB->kSprache            = $kSprache;
         $oAGBWRB->kKundengruppe       = $kKundengruppe;

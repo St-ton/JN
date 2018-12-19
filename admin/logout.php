@@ -3,9 +3,12 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
-if (validateToken()) {
+if (Form::validateToken()) {
     $oAccount->logout();
 }
 $oAccount->redirectOnFailure();

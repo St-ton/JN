@@ -36,12 +36,10 @@ class Nummern
     }
 
     /**
-     * Loads database member into class member
-     *
      * @param int $nArt
      * @return $this
      */
-    private function loadFromDB(int $nArt = 0)
+    private function loadFromDB(int $nArt = 0): self
     {
         $oObj = Shop::Container()->getDB()->select('tnummern', 'nArt', $nArt);
         if ($oObj !== null && $oObj->nArt > 0) {
@@ -82,7 +80,7 @@ class Nummern
     public function update(bool $bDate = true): int
     {
         if ($bDate) {
-            $this->setAktualisiert('now()');
+            $this->setAktualisiert('NOW()');
         }
         $_upd                = new stdClass();
         $_upd->nNummer       = $this->nNummer;
@@ -103,7 +101,7 @@ class Nummern
      * @param int $nNummer
      * @return $this
      */
-    public function setNummer(int $nNummer)
+    public function setNummer(int $nNummer): self
     {
         $this->nNummer = $nNummer;
 
@@ -114,7 +112,7 @@ class Nummern
      * @param int $nArt
      * @return $this
      */
-    public function setArt(int $nArt)
+    public function setArt(int $nArt): self
     {
         $this->nArt = $nArt;
 
@@ -125,9 +123,9 @@ class Nummern
      * @param string $dAktualisiert
      * @return $this
      */
-    public function setAktualisiert($dAktualisiert)
+    public function setAktualisiert($dAktualisiert): self
     {
-        $this->dAktualisiert = $dAktualisiert === 'now()'
+        $this->dAktualisiert = strtoupper($dAktualisiert) === 'NOW()'
             ? date('Y-m-d H:i:s')
             : Shop::Container()->getDB()->escape($dAktualisiert);
 
@@ -135,25 +133,25 @@ class Nummern
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getNummer()
+    public function getNummer(): ?int
     {
         return $this->nNummer;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getArt()
+    public function getArt(): ?int
     {
         return $this->nArt;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getAktualisiert()
+    public function getAktualisiert(): ?string
     {
         return $this->dAktualisiert;
     }

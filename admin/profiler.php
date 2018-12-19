@@ -1,28 +1,34 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
+
+use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
 
 $oAccount->permission('PROFILER_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $tab      = 'uebersicht';
 $cFehler  = '';
 $cHinweis = '';
 $sqlData  = null;
-if (isset($_POST['delete-run-submit']) && validateToken()) {
+if (isset($_POST['delete-run-submit']) && Form::validateToken()) {
     if (isset($_POST['run-id']) && is_numeric($_POST['run-id'])) {
         $res = deleteProfileRun(false, (int)$_POST['run-id']);
         if (is_numeric($res) && $res > 0) {
-            $cHinweis = 'Eintrag erfolgreich gel&ouml;scht.';
+            $cHinweis = 'Eintrag erfolgreich gelöscht.';
         } else {
-            $cFehler = 'Eintrag konnte nicht gel&ouml;scht werden.';
+            $cFehler = 'Eintrag konnte nicht gelöscht werden.';
         }
     } elseif (isset($_POST['delete-all']) && $_POST['delete-all'] === 'y') {
         $res = deleteProfileRun(true);
         if (is_numeric($res) && $res > 0) {
-            $cHinweis = 'Eintr&auml;ge erfolgreich gel&ouml;scht. ';
+            $cHinweis = 'Einträge erfolgreich gelöscht. ';
         } else {
-            $cFehler = 'Eintr&auml;ge konnten nicht gel&ouml;scht werden. ';
+            $cFehler = 'Einträge konnten nicht gelöscht werden. ';
         }
     }
 }
@@ -73,7 +79,8 @@ if (count($pluginProfilerData) > 0) {
             $hookData->color                 = $colors[$idx];
             foreach ($_hook as $_file) {
                 $hookData->y += ((float)$_file->runtime * 1000);
-                $runtime += $hookData->y;
+                $runtime     += $hookData->y;
+
                 $hookData->drilldown->categories[] = $_file->filename;
                 $hookData->drilldown->data[]       = ((float)$_file->runtime * 1000);
                 $hookData->drilldown->runcount[]   = $_file->runcount;
@@ -103,12 +110,18 @@ $smarty->assign('pluginProfilerData', $pluginProfilerData)
  * @param int  $runID
  * @return mixed
  */
-function deleteProfileRun($all = false, $runID = 0)
+function deleteProfileRun(bool $all = false, $runID = 0)
 {
     if ($all === true) {
-        $count = Shop::Container()->getDB()->query("DELETE FROM tprofiler", 3);
-        Shop::Container()->getDB()->query("ALTER TABLE tprofiler AUTO_INCREMENT = 1", 3);
-        Shop::Container()->getDB()->query("ALTER TABLE tprofiler_runs AUTO_INCREMENT = 1", 3);
+        $count = Shop::Container()->getDB()->query('DELETE FROM tprofiler', \DB\ReturnType::AFFECTED_ROWS);
+        Shop::Container()->getDB()->query(
+            'ALTER TABLE tprofiler AUTO_INCREMENT = 1',
+            \DB\ReturnType::AFFECTED_ROWS
+        );
+        Shop::Container()->getDB()->query(
+            'ALTER TABLE tprofiler_runs AUTO_INCREMENT = 1',
+            \DB\ReturnType::AFFECTED_ROWS
+        );
 
         return $count;
     }

@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#plz_ort_import# cBeschreibung=#plz_ort_importDesc#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('plz_ort_import') cBeschreibung=__('plz_ort_importDesc')}
 <div id="content">
     <div class="boxWrapper row">
         <div class="boxLeft col-md-12">
@@ -6,13 +6,13 @@
                 <form id="importForm" action="/plz_ort_import.php">
                     {$jtl_token}
                     <div class="panel-heading">
-                        <h3>{#plz_ort_available#}</h3>
+                        <h3>{__('plz_ort_available')}</h3>
                     </div>
                     <div class="panel-body">
                         {include file='tpl_inc/plz_ort_import_index_list.tpl'}
                     </div>
                     <div class="boxOptionRow panel-footer">
-                        <a href="#" class="btn btn-primary" data-callback="plz_ort_import_new"><i class="fa fa-download"></i> {#plz_ort_import_new#}</a>
+                        <a href="#" class="btn btn-primary" data-callback="plz_ort_import_new"><i class="fa fa-download"></i> {__('plz_ort_import_new')}</a>
                     </div>
                 </form>
             </div>
@@ -23,7 +23,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4>{#plz_ort_import_load#} <img src="{$shopURL}/{$smarty.const.PFAD_ADMIN}/templates/bootstrap/gfx/widgets/ajax-loader.gif"></h4>
+                <h4>{__('plz_ort_import_load')} <img src="{$shopURL}/{$smarty.const.PFAD_ADMIN}/templates/bootstrap/gfx/widgets/ajax-loader.gif"></h4>
             </div>
         </div>
     </div>
@@ -33,14 +33,14 @@
         <div class="modal-content">
             <div class="modal-header alert-warning">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4><i class="fa fa-warning"></i> {#plz_ort_import#}</h4>
+                <h4><i class="fa fa-warning"></i> {__('plz_ort_import')}</h4>
             </div>
             <div class="modal-body">
-                {#plz_ort_import_tmp_exists#}
+                {__('plz_ort_import_tmp_exists')}
             </div>
             <div class="modal-footer">
-                <a href="#" class="btn btn-default" data-dismiss="modal"><i class="fa fa-exclamation"></i> {#plz_ort_import_delete_no#}</a>
-                <a href="#" class="btn btn-primary" data-callback="plz_ort_import_delete_temp" data-dismiss="modal"><i class="fa fa-trash"></i> {#plz_ort_import_delete_yes#}</a>
+                <a href="#" class="btn btn-default" data-dismiss="modal"><i class="fa fa-exclamation"></i> {__('plz_ort_import_delete_no')}</a>
+                <a href="#" class="btn btn-primary" data-callback="plz_ort_import_delete_temp" data-dismiss="modal"><i class="fa fa-trash"></i> {__('plz_ort_import_delete_yes')}</a>
             </div>
         </div>
     </div>
@@ -50,21 +50,20 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4><i class="fa fa-question-circle"></i> {#plz_ort_import#}</h4>
+                <h4><i class="fa fa-question-circle"></i> {__('plz_ort_import')}</h4>
             </div>
             <div class="modal-body">
-                {#plz_ort_import_help#|sprintf:$smarty.const.PLZIMPORT_URL}
+                {__('plz_ort_import_help')|sprintf:$smarty.const.PLZIMPORT_URL}
             </div>
             <div class="modal-footer">
-                <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-check"></i> {#plz_ort_import_ok#}</a>
+                <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-check"></i> {__('plz_ort_import_ok')}</a>
             </div>
         </div>
     </div>
 </div>
 <script type="application/javascript">{literal}
 
-    var jtlToken  = $('#importForm .jtl_token').val(),
-        running   = false,
+    var running   = false,
         notify    = null,
         startTick = null;
 

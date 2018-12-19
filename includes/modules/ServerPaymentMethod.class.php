@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
@@ -6,6 +10,8 @@ define('SPM_PORT', 443);
 define('SPM_TIMEOUT', 30);
 
 /**
+ * Class ServerPaymentMethod
+ *
  * Represents a Payment Module that needs a Server-Server-Communication
  */
 class ServerPaymentMethod extends PaymentMethod
@@ -70,33 +76,23 @@ class ServerPaymentMethod extends PaymentMethod
         $request   = '';
         $cEncoding = 'UTF-8';
         if ($bUTF8) {
-            $fields = array_map('urlencode', array_map('utf8_encode', $fields));
+            $fields = array_map('\urlencode', array_map('\utf8_encode', $fields));
         } else {
-            $fields    = array_map('urlencode', $fields);
+            $fields    = array_map('\urlencode', $fields);
             $cEncoding = 'ISO-8859-1';
         }
 
         foreach ($fields as $key => $value) {
             $request .= "&$key=$value";
         }
-
-        if ($bLogging && strlen($cLogPfad) > 0) {
-            writeLog($cLogPfad, "postRequest POST: " . $request, 1);
-        }
-
         // Send
         $header = "POST {$this->path} HTTP/1.1\r\n"
             . "Host: {$this->host}\r\n"
             . "Content-Type: application/x-www-form-urlencoded;charset={$cEncoding}\r\n"
-            . "Content-Length: " . strlen($request) . "\r\n"
+            . 'Content-Length: ' . strlen($request) . "\r\n"
             . "Connection: close\r\n\r\n";
         fwrite($socket, $header);
         fwrite($socket, $request);
-
-        if ($bLogging && strlen($cLogPfad) > 0) {
-            writeLog($cLogPfad, 'postRequest header: ' . $header, 1);
-        }
-
         // Recieve
         $reponseHeader = '';
         $reponseBody   = '';

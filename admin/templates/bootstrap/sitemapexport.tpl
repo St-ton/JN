@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="sitemapExport"}
-{include file='tpl_inc/seite_header.tpl' cTitel=#sitemapExport# cBeschreibung=#sitemapExportDesc# cDokuURL=#sitemapExportURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('sitemapExport') cBeschreibung=__('sitemapExportDesc') cDokuURL=__('sitemapExportURL')}
 <div id="content" class="container-fluid">
     <div id="confirmModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
@@ -23,16 +23,16 @@
     </div>
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'export'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#export">{#sitemapExport#}</a>
+            <a data-toggle="tab" role="tab" href="#export">{__('sitemapExport')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'downloads'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#downloads">{#sitemapDownload#}</a>
+            <a data-toggle="tab" role="tab" href="#downloads">{__('sitemapDownload')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'report'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#report">{#sitemapReport#}</a>
+            <a data-toggle="tab" role="tab" href="#report">{__('sitemapReport')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einstellungen">{#sitemapSettings#}</a>
+            <a data-toggle="tab" role="tab" href="#einstellungen">{__('sitemapSettings')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -44,8 +44,8 @@
             <p><input type="text" readonly="readonly" value="{$URL}" class="form-control" /></p>
 
             <div class="alert alert-info">
-                <p>{#searchEngines#}</p>
-                <p>{#download#} <a href="{$URL}">{#xml#}</a></p>
+                <p>{__('searchEngines')}</p>
+                <p>{__('download')} <a href="{$URL}">{__('xml')}</a></p>
             </div>
 
             <form action="sitemap.php" method="post">
@@ -54,7 +54,7 @@
                 <input type="hidden" name="tab" value="export" />
 
                 <p class="submit">
-                    <button type="submit" value="{#sitemapExportSubmit#}" class="btn btn-primary"><i class="fa fa-share"></i> {#sitemapExportSubmit#}</button>
+                    <button type="submit" value="{__('sitemapExportSubmit')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('sitemapExportSubmit')}</button>
                 </p>
             </form>
         </div>
@@ -77,7 +77,7 @@
                         <div class="btn-group">
                             <button name="action[year_downloads]" type="submit" value="1" class="btn btn-info"><i class="fa fa-search"></i>&nbsp;Zeigen</button>
                             <button type="button" class="btn btn-danger"
-                                    data-form="#formDeleteSitemapExport" data-action="year_downloads_delete" data-target="#confirmModal" data-toggle="modal" data-title="{#sitemapDownload#} l&ouml;schen"><i class="fa fa-trash"></i>&nbsp;L&ouml;schen</button>
+                                    data-form="#formDeleteSitemapExport" data-action="year_downloads_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapDownload')} l&ouml;schen"><i class="fa fa-trash"></i>&nbsp;L&ouml;schen</button>
                         </div>
                     </form>
                 </div>
@@ -92,48 +92,48 @@
                         <input type="hidden" name="nYear_downloads" value="{$nSitemapDownloadYear}" />
                         <div id="payment">
                             <div id="tabellenBewertung" class="table-responsive">
-                                <table class="table">
+                                <table class="table table-striped">
                                     <tr>
                                         <th>&nbsp;</th>
-                                        <th>{#sitemapName#}</th>
-                                        <th>{#sitemapBot#}</th>
-                                        <th class="text-right">{#sitemapDate#}</th>
+                                        <th>{__('sitemapName')}</th>
+                                        <th>{__('sitemapBot')}</th>
+                                        <th class="text-right">{__('sitemapDate')}</th>
                                     </tr>
                                     {foreach name=sitemapdownloads from=$oSitemapDownload_arr item=oSitemapDownload}
-                                        <tr class="tab_bg{$smarty.foreach.sitemapdownloads.iteration%2}">
+                                        <tr>
                                             <td width="20">
                                                 <input name="kSitemapTracker[]" type="checkbox" value="{$oSitemapDownload->kSitemapTracker}">
                                             </td>
                                             <td><a href="{Shop::getURL()}/{$oSitemapDownload->cSitemap}" target="_blank">{$oSitemapDownload->cSitemap}</a></td>
                                             <td>
-                                                <strong>{#sitemapIP#}</strong>: {$oSitemapDownload->cIP}<br />
+                                                <strong>{__('sitemapIP')}</strong>: {$oSitemapDownload->cIP}<br />
                                                 {if $oSitemapDownload->cBot|strlen > 0}
-                                                    <strong>{#sitemapBot#}</strong>: {$oSitemapDownload->cBot}
+                                                    <strong>{__('sitemapBot')}</strong>: {$oSitemapDownload->cBot}
                                                 {else}
-                                                    <strong>{#sitemapUserAgent#}</strong>: <abbr title="{$oSitemapDownload->cUserAgent}">{$oSitemapDownload->cUserAgent|truncate:60}</abbr>
+                                                    <strong>{__('sitemapUserAgent')}</strong>: <abbr title="{$oSitemapDownload->cUserAgent}">{$oSitemapDownload->cUserAgent|truncate:60}</abbr>
                                                 {/if}
                                             </td>
                                             <td class="text-right" width="130">{$oSitemapDownload->dErstellt_DE}</td>
-                                        </tr
+                                        </tr>
                                     {/foreach}
                                     <tr>
-                                        <td class="TD1">
+                                        <td>
                                             <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
                                         </td>
-                                        <td colspan="6" class="TD7"><label for="ALLMSGS">{#sitemapSelectAll#}</label></td>
+                                        <td colspan="6"><label for="ALLMSGS">{__('sitemapSelectAll')}</label></td>
                                     </tr>
                                 </table>
                             </div>
                             <div class="panel-footer">
                                 <div class="button-group">
-                                    <button class="btn btn-danger" name="loeschen" type="submit" value="{#sitemapDelete#}"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
+                                    <button class="btn btn-danger" name="loeschen" type="submit" value="{__('sitemapDelete')}"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
                                 </div>
                             </div>
                         </div>
                     </form>
                 </div>
             {else}
-                <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="report" class="tab-pane fade {if isset($cTab) && $cTab === 'report'} active in{/if}">
@@ -155,7 +155,7 @@
                         <div class="btn-group">
                             <button name="action[year_reports]" type="submit" value="1" class="btn btn-info"><i class="fa fa-search"></i>&nbsp;Zeigen</button>
                             <button type="button" class="btn btn-danger"
-                                    data-form="#formDeleteSitemapReport" data-action="year_reports_delete" data-target="#confirmModal" data-toggle="modal" data-title="{#sitemapReport#} l&ouml;schen"><i class="fa fa-trash"></i>&nbsp;L&ouml;schen</button>
+                                    data-form="#formDeleteSitemapReport" data-action="year_reports_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapReport')} l&ouml;schen"><i class="fa fa-trash"></i>&nbsp;L&ouml;schen</button>
                         </div>
                     </form>
                 </div>
@@ -169,16 +169,16 @@
                         <input type="hidden" name="tab" value="report">
                         <input type="hidden" name="nYear_reports" value="{$nSitemapReportYear}" />
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <tr>
                                     <th class="check"></th>
                                     <th class="th-1"></th>
-                                    <th class="tleft">{#sitemapProcessTime#}</th>
-                                    <th class="th-3">{#sitemapTotalURL#}</th>
-                                    <th class="th-5">{#sitemapDate#}</th>
+                                    <th class="tleft">{__('sitemapProcessTime')}</th>
+                                    <th class="th-3">{__('sitemapTotalURL')}</th>
+                                    <th class="th-5">{__('sitemapDate')}</th>
                                 </tr>
                                 {foreach name=sitemapreports from=$oSitemapReport_arr item=oSitemapReport}
-                                    <tr class="tab_bg{$smarty.foreach.sitemapreports.iteration%2}">
+                                    <tr>
                                         <td class="check">
                                             <input name="kSitemapReport[]" type="checkbox" value="{$oSitemapReport->kSitemapReport}">
                                         </td>
@@ -187,7 +187,7 @@
                                                 <a href="#" onclick="$('#info_{$oSitemapReport->kSitemapReport}').toggle();return false;"><i class="fa fa-plus-circle"></i></a>
                                             </td>
                                         {else}
-                                            <td class="TD1">&nbsp;</td>
+                                            <td>&nbsp;</td>
                                         {/if}
                                         <td class="tcenter">{$oSitemapReport->fVerarbeitungszeit}s</td>
                                         <td class="tcenter">{$oSitemapReport->nTotalURL}</td>
@@ -198,16 +198,16 @@
                                             <td>&nbsp;</td>
                                             <td colspan="4">
 
-                                                <table border="0" cellspacing="1" cellpadding="0" width="100%">
+                                                <table class="table-striped" border="0" cellspacing="1" cellpadding="0" width="100%">
                                                     <tr>
-                                                        <th class="tleft">{#sitemapName#}</th>
-                                                        <th class="th-2">{#sitemapCountURL#}</th>
-                                                        <th class="th-3">{#sitemapSize#}</th>
+                                                        <th class="tleft">{__('sitemapName')}</th>
+                                                        <th class="th-2">{__('sitemapCountURL')}</th>
+                                                        <th class="th-3">{__('sitemapSize')}</th>
                                                     </tr>
 
                                                     {foreach name=sitemapreportfiles from=$oSitemapReport->oSitemapReportFile_arr item=oSitemapReportFile}
-                                                        <tr class="tab_bg{$smarty.foreach.sitemapreports.iteration%2}">
-                                                            <td class="TD1">{$oSitemapReportFile->cDatei}</td>
+                                                        <tr>
+                                                            <td>{$oSitemapReportFile->cDatei}</td>
                                                             <td class="tcenter">{$oSitemapReportFile->nAnzahlURL}</td>
                                                             <td class="tcenter">{$oSitemapReportFile->fGroesse} KB</td>
                                                         </tr>
@@ -222,23 +222,23 @@
                                     <td class="check">
                                         <input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
                                     </td>
-                                    <td colspan="4" class="TD5"><label for="ALLMSGS2">{#sitemapSelectAll#}</label></td>
+                                    <td colspan="4"><label for="ALLMSGS2">{__('sitemapSelectAll')}</label></td>
                                 </tr>
                             </table>
                         </div>
                         <div class="panel-footer">
                             <div class="button-group">
-                                <button name="loeschen" type="submit" value="{#sitemapDelete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
+                                <button name="loeschen" type="submit" value="{__('sitemapDelete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
                             </div>
                         </div>
                     </form>
                 </div>
             {else}
-                <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
-            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='sitemapexport.php' buttonCaption=#save# title='Einstellungen' tab='einstellungen'}
+            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='sitemapexport.php' buttonCaption=__('save') title='Einstellungen' tab='einstellungen'}
         </div>
     </div>
 </div>

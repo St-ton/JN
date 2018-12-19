@@ -77,7 +77,7 @@
                             that.redirectTo(response);
                             break;
                         case 2: // added to basket
-                            that.updateCart();
+                            that.updateCart(0);
                             that.pushedToBasket(response);
                             break;
                     }
@@ -144,6 +144,6 @@
         event.preventDefault();
         $.evo.basket().addToBasket($(this));
     }).on('show.bs.dropdown', '[data-toggle="basket-items"]', function (event) {
-        $.evo.basket().updateCart();
+        $.evo.basket().updateCart(0);
     });
 })(jQuery);

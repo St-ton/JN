@@ -7,7 +7,7 @@ require_once __DIR__ . '/ipl_xml_api.php';
 function parse_async_capture($postdata = null)
 {
     if (empty($postdata)) {
-        $postdata = file_get_contents("php://input");
+        $postdata = file_get_contents('php://input');
     }
     if (!empty($postdata)) {
         $xml = ipl_core_load_xml($postdata);

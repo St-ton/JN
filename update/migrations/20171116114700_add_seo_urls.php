@@ -47,7 +47,7 @@ class Migration_20171116114700 extends Migration implements IMigration
         } else {
             $this->hiddenLinkGroupID = (int)$hiddenLinkGroup->kLinkgruppe;
         }
-        $this->languages = gibAlleSprachen();
+        $this->languages = Sprache::getAllLanguages();
 
         $this->createSeo(LINKTYP_WARENKORB, 'Warenkorb', 'Warenkorb', 'Cart');
         $this->createSeo(LINKTYP_BESTELLVORGANG, 'Bestellvorgang', 'Bestellvorgang', 'Checkout');
@@ -109,7 +109,7 @@ class Migration_20171116114700 extends Migration implements IMigration
                 foreach ($this->languages as $language) {
                     $seo->kSprache = $language->kSprache;
                     if ($language->cISO === 'ger') {
-                        $seo->cSeo = checkSeo(getSeo($seoGER));
+                        $seo->cSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($seoGER));
                         Shop::Container()->getDB()->insert('tseo', $seo);
                         if (empty($linkLanguage)) {
                             $langObj->kSprache    = $language->kSprache;
@@ -118,7 +118,7 @@ class Migration_20171116114700 extends Migration implements IMigration
                             Shop::Container()->getDB()->insert('tlinksprache', $langObj);
                         }
                     } elseif ($language->cISO === 'eng') {
-                        $seo->cSeo = checkSeo(getSeo($seoENG));
+                        $seo->cSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($seoENG));
                         Shop::Container()->getDB()->insert('tseo', $seo);
                         if (empty($linkLanguage)) {
                             $langObj->kSprache    = $language->kSprache;

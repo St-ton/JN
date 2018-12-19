@@ -1,5 +1,5 @@
 <div style="margin:10px 0;">
-   {lang key="postfinanceDesc" section="checkout"}
+   {lang key='postfinanceDesc' section='checkout'}
    {strip}
    <div>
       <form method="post" action="{$url}">

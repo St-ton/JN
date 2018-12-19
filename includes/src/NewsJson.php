@@ -32,13 +32,19 @@ class NewsJson
         if (count($oNews_arr) > 0) {
             $shopURL = Shop::getURL() . '/';
             foreach ($oNews_arr as $oNews) {
-                $oNewsItem = new NewsItem($oNews->cBetreff, $oNews->cText, $oNews->dGueltigVonJS, $shopURL . "{$oNews->cUrl}");
+                $oNewsItem = new NewsItem(
+                    $oNews->cBetreff,
+                    $oNews->cText,
+                    $oNews->dGueltigVonJS,
+                    $shopURL . $oNews->cUrl
+                );
 
                 if ($this->checkMedia($oNews->cVorschauText)) {
                     $oNewsItemAsset = new NewsItemAsset($oNews->cVorschauText);
                     $oNewsItem->addAsset($oNewsItemAsset);
                 } else {
-                    $oNewsItem->text = $oNews->cVorschauText . '<br /><a href="' . $oNews->cUrl . '" class="btn">Mehr...</a>';
+                    $oNewsItem->text = $oNews->cVorschauText .
+                        '<br /><a href="' . $oNews->cUrl . '" class="btn">Mehr...</a>';
                 }
 
                 $this->timeline->date[] = $oNewsItem;
@@ -49,16 +55,16 @@ class NewsJson
     /**
      * @return string
      */
-    public function toJson()
+    public function toJson(): string
     {
-        return json_encode(utf8_convert_recursive($this));
+        return json_encode(StringHandler::utf8_convert_recursive($this));
     }
 
     /**
      * @param string $cMediaLink
      * @return bool
      */
-    protected function checkMedia($cMediaLink)
+    protected function checkMedia($cMediaLink): bool
     {
         $cMedia_arr = [
             'youtube.com/watch?v=',
@@ -83,13 +89,13 @@ class NewsJson
     }
 
     /**
-     * @param array $cOptions_arr
+     * @param array $options
      */
-    public static function buildThumbnail($cOptions_arr)
+    public static function buildThumbnail($options): void
     {
-        if (isset($cOptions_arr['filename'], $cOptions_arr['path'], $cOptions_arr['isdir']) && !$cOptions_arr['isdir']) {
-            $cOptions_arr['thumb'] = Shop::getImageBaseURL() .
-                PFAD_NEWSBILDER . "{$cOptions_arr['news']}/{$cOptions_arr['filename']}";
+        if (isset($options['filename'], $options['path'], $options['isdir']) && !$options['isdir']) {
+            $options['thumb'] = Shop::getImageBaseURL() .
+                PFAD_NEWSBILDER . "{$options['news']}/{$options['filename']}";
         }
     }
 }

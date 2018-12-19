@@ -3,223 +3,221 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-$oNice = Nice::getInstance();
-if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
+
+/**
+ * Class Konfiggruppesprache
+ */
+class Konfiggruppesprache implements JsonSerializable
+{
     /**
-     * Class Konfiggruppesprache
+     * @var int
      */
-    class Konfiggruppesprache implements JsonSerializable
+    protected $kKonfiggruppe;
+
+    /**
+     * @var int
+     */
+    protected $kSprache;
+
+    /**
+     * @var string
+     */
+    protected $cName;
+
+    /**
+     * @var string
+     */
+    protected $cBeschreibung;
+
+    /**
+     * Constructor
+     *
+     * @param int $kKonfiggruppe
+     * @param int $kSprache
+     */
+    public function __construct(int $kKonfiggruppe = 0, int $kSprache = 0)
     {
-        /**
-         * @var int
-         */
-        protected $kKonfiggruppe;
+        if ($kKonfiggruppe > 0 && $kSprache > 0) {
+            $this->loadFromDB($kKonfiggruppe, $kSprache);
+        }
+    }
 
-        /**
-         * @var int
-         */
-        protected $kSprache;
+    /**
+     * Specify data which should be serialized to JSON
+     *
+     * @return array|object|string
+     */
+    public function jsonSerialize()
+    {
+        return StringHandler::utf8_convert_recursive([
+            'cName'         => $this->cName,
+            'cBeschreibung' => $this->cBeschreibung
+        ]);
+    }
 
-        /**
-         * @var string
-         */
-        protected $cName;
+    /**
+     * Loads database member into class member
+     *
+     * @param int $kKonfiggruppe primarykey
+     * @param int $kSprache primarykey
+     */
+    private function loadFromDB(int $kKonfiggruppe = 0, int $kSprache = 0): void
+    {
+        $oObj = Shop::Container()->getDB()->select(
+            'tkonfiggruppesprache',
+            'kKonfiggruppe',
+            $kKonfiggruppe,
+            'kSprache',
+            $kSprache
+        );
+        if (isset($oObj->kKonfiggruppe, $oObj->kSprache)
+            && $oObj->kKonfiggruppe > 0
+            && $oObj->kSprache > 0
+        ) {
+            $cMember_arr = array_keys(get_object_vars($oObj));
+            foreach ($cMember_arr as $cMember) {
+                $this->$cMember = $oObj->$cMember;
+            }
+            $this->kSprache      = (int)$this->kSprache;
+            $this->kKonfiggruppe = (int)$this->kKonfiggruppe;
+        }
+    }
 
-        /**
-         * @var string
-         */
-        protected $cBeschreibung;
-
-        /**
-         * Constructor
-         *
-         * @param int $kKonfiggruppe
-         * @param int $kSprache
-         */
-        public function __construct(int $kKonfiggruppe = 0, int $kSprache = 0)
-        {
-            if ($kKonfiggruppe > 0 && $kSprache > 0) {
-                $this->loadFromDB($kKonfiggruppe, $kSprache);
+    /**
+     * @param bool $bPrim
+     * @return bool|int
+     */
+    public function save(bool $bPrim = true)
+    {
+        $oObj        = new stdClass();
+        $cMember_arr = array_keys(get_object_vars($this));
+        if (is_array($cMember_arr) && count($cMember_arr) > 0) {
+            foreach ($cMember_arr as $cMember) {
+                $oObj->$cMember = $this->$cMember;
             }
         }
+        unset($oObj->kKonfiggruppe, $oObj->kSprache);
 
-        /**
-         * Specify data which should be serialized to JSON
-         *
-         * @return array|object|string
-         */
-        public function jsonSerialize()
-        {
-            return utf8_convert_recursive([
-                'cName'         => $this->cName,
-                'cBeschreibung' => $this->cBeschreibung
-            ]);
+        $kPrim = Shop::Container()->getDB()->insert('tkonfiggruppesprache', $oObj);
+
+        if ($kPrim > 0) {
+            return $bPrim ? $kPrim : true;
         }
 
-        /**
-         * Loads database member into class member
-         *
-         * @param int $kKonfiggruppe primarykey
-         * @param int $kSprache primarykey
-         */
-        private function loadFromDB(int $kKonfiggruppe = 0, int $kSprache = 0)
-        {
-            $oObj = Shop::Container()->getDB()->select(
-                'tkonfiggruppesprache',
-                'kKonfiggruppe',
-                $kKonfiggruppe,
-                'kSprache',
-                $kSprache
-            );
-            if (isset($oObj->kKonfiggruppe, $oObj->kSprache)
-                && $oObj->kKonfiggruppe > 0
-                && $oObj->kSprache > 0
-            ) {
-                $cMember_arr = array_keys(get_object_vars($oObj));
-                foreach ($cMember_arr as $cMember) {
-                    $this->$cMember = $oObj->$cMember;
-                }
-                $this->kSprache      = (int)$this->kSprache;
-                $this->kKonfiggruppe = (int)$this->kKonfiggruppe;
-            }
-        }
+        return false;
+    }
 
-        /**
-         * @param bool $bPrim
-         * @return bool|int
-         */
-        public function save(bool $bPrim = true)
-        {
-            $oObj        = new stdClass();
-            $cMember_arr = array_keys(get_object_vars($this));
-            if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-                foreach ($cMember_arr as $cMember) {
-                    $oObj->$cMember = $this->$cMember;
-                }
-            }
-            unset($oObj->kKonfiggruppe, $oObj->kSprache);
+    /**
+     * @return int
+     */
+    public function update(): int
+    {
+        $_upd                = new stdClass();
+        $_upd->kSprache      = $this->getSprache();
+        $_upd->cName         = $this->getName();
+        $_upd->cBeschreibung = $this->getBeschreibung();
 
-            $kPrim = Shop::Container()->getDB()->insert('tkonfiggruppesprache', $oObj);
+        return Shop::Container()->getDB()->update(
+            'tkonfiggruppesprache',
+            ['kKonfiggruppe', 'kSprache'],
+            [$this->getKonfiggruppe(), $this->getSprache()],
+            $_upd
+        );
+    }
 
-            if ($kPrim > 0) {
-                return $bPrim ? $kPrim : true;
-            }
+    /**
+     * @return int
+     */
+    public function delete(): int
+    {
+        return Shop::Container()->getDB()->delete(
+            'tkonfiggruppesprache',
+            ['kKonfiggruppe', 'kSprache'],
+            [(int)$this->kKonfiggruppe, (int)$this->kSprache]
+        );
+    }
 
-            return false;
-        }
+    /**
+     * @param int $kKonfiggruppe
+     * @return $this
+     */
+    public function setKonfiggruppe(int $kKonfiggruppe): self
+    {
+        $this->kKonfiggruppe = $kKonfiggruppe;
 
-        /**
-         * @return int
-         */
-        public function update(): int
-        {
-            $_upd                = new stdClass();
-            $_upd->kSprache      = $this->getSprache();
-            $_upd->cName         = $this->getName();
-            $_upd->cBeschreibung = $this->getBeschreibung();
+        return $this;
+    }
 
-            return Shop::Container()->getDB()->update(
-                'tkonfiggruppesprache',
-                ['kKonfiggruppe', 'kSprache'],
-                [$this->getKonfiggruppe(), $this->getSprache()],
-                $_upd
-            );
-        }
+    /**
+     * @param int $kSprache
+     * @return $this
+     */
+    public function setSprache(int $kSprache): self
+    {
+        $this->kSprache = $kSprache;
 
-        /**
-         * @return int
-         */
-        public function delete(): int
-        {
-            return Shop::Container()->getDB()->delete(
-                'tkonfiggruppesprache',
-                ['kKonfiggruppe', 'kSprache'],
-                [(int)$this->kKonfiggruppe, (int)$this->kSprache]
-            );
-        }
+        return $this;
+    }
 
-        /**
-         * @param int $kKonfiggruppe
-         * @return $this
-         */
-        public function setKonfiggruppe(int $kKonfiggruppe): self
-        {
-            $this->kKonfiggruppe = $kKonfiggruppe;
+    /**
+     * @param string $cName
+     * @return $this
+     */
+    public function setName($cName): self
+    {
+        $this->cName = Shop::Container()->getDB()->escape($cName);
 
-            return $this;
-        }
+        return $this;
+    }
 
-        /**
-         * @param int $kSprache
-         * @return $this
-         */
-        public function setSprache(int $kSprache): self
-        {
-            $this->kSprache = $kSprache;
+    /**
+     * @param string $cBeschreibung
+     * @return $this
+     */
+    public function setBeschreibung($cBeschreibung): self
+    {
+        $this->cBeschreibung = Shop::Container()->getDB()->escape($cBeschreibung);
 
-            return $this;
-        }
+        return $this;
+    }
 
-        /**
-         * @param string $cName
-         * @return $this
-         */
-        public function setName($cName): self
-        {
-            $this->cName = Shop::Container()->getDB()->escape($cName);
+    /**
+     * @return int
+     */
+    public function getKonfiggruppe(): int
+    {
+        return (int)$this->kKonfiggruppe;
+    }
 
-            return $this;
-        }
+    /**
+     * @return int
+     */
+    public function getSprache(): int
+    {
+        return (int)$this->kSprache;
+    }
 
-        /**
-         * @param string $cBeschreibung
-         * @return $this
-         */
-        public function setBeschreibung($cBeschreibung): self
-        {
-            $this->cBeschreibung = Shop::Container()->getDB()->escape($cBeschreibung);
+    /**
+     * @return string|null
+     */
+    public function getName(): ?string
+    {
+        return $this->cName;
+    }
 
-            return $this;
-        }
+    /**
+     * @return string|null
+     */
+    public function getBeschreibung(): ?string
+    {
+        return $this->cBeschreibung;
+    }
 
-        /**
-         * @return int
-         */
-        public function getKonfiggruppe(): int
-        {
-            return (int)$this->kKonfiggruppe;
-        }
-
-        /**
-         * @return int
-         */
-        public function getSprache(): int
-        {
-            return (int)$this->kSprache;
-        }
-
-        /**
-         * @return string
-         */
-        public function getName()
-        {
-            return $this->cName;
-        }
-
-        /**
-         * @return string
-         */
-        public function getBeschreibung()
-        {
-            return $this->cBeschreibung;
-        }
-
-        /**
-         * @return bool
-         */
-        public function hatBeschreibung(): bool
-        {
-            return strlen($this->cBeschreibung) > 0;
-        }
+    /**
+     * @return bool
+     */
+    public function hatBeschreibung(): bool
+    {
+        return strlen($this->cBeschreibung) > 0;
     }
 }

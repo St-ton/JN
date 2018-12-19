@@ -12,17 +12,17 @@ namespace Link;
  */
 abstract class AbstractLink implements LinkInterface
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array
      */
-    private static $mapping = [
+    protected static $mapping = [
         'cNoFollow'          => 'NoFollowCompat',
         'cURL'               => 'URL',
         'cURLFull'           => 'URL',
         'cURLFullSSL'        => 'URL',
-        'cLocalizedName'     => 'Name',
+        'cLocalizedName'     => 'NamesCompat',
         'cLocalizedTitle'    => 'Title',
         'kLink'              => 'ID',
         'kSprache'           => 'LanguageID',
@@ -60,8 +60,8 @@ abstract class AbstractLink implements LinkInterface
      */
     protected static function parseSSKAdvanced($ssk): array
     {
-        return is_string($ssk) && strtolower($ssk) !== 'null'
-            ? array_map('intval', array_map('trim', array_filter(explode(';', $ssk))))
+        return \is_string($ssk) && \strtolower($ssk) !== 'null'
+            ? \array_map('\intval', \array_map('\trim', \array_filter(\explode(';', $ssk))))
             : [];
     }
 
@@ -76,21 +76,21 @@ abstract class AbstractLink implements LinkInterface
     /**
      * @return string|null
      */
-    public function getCustomerGroupsCompat()
+    public function getCustomerGroupsCompat(): ?string
     {
         $groups = $this->getCustomerGroups();
 
-        return is_array($groups) && count($groups) > 0
-            ? implode(';', $groups) . ';'
+        return \is_array($groups) && \count($groups) > 0
+            ? \implode(';', $groups) . ';'
             : null;
     }
 
     /**
      * @param string|array $value
      */
-    public function setCustomerGroupsCompat($value)
+    public function setCustomerGroupsCompat($value): void
     {
-        $this->setCustomerGroups(!is_array($value) ? self::parseSSKAdvanced($value) : $value);
+        $this->setCustomerGroups(!\is_array($value) ? self::parseSSKAdvanced($value) : $value);
     }
 
     /**
@@ -104,7 +104,7 @@ abstract class AbstractLink implements LinkInterface
     /**
      * @param string|bool $value
      */
-    public function setPrintButtonCompat($value)
+    public function setPrintButtonCompat($value): void
     {
         $this->setPrintButton($value === 'Y' || $value === true);
     }
@@ -120,7 +120,7 @@ abstract class AbstractLink implements LinkInterface
     /**
      * @param string|bool $value
      */
-    public function setNoFollowCompat($value)
+    public function setNoFollowCompat($value): void
     {
         $this->setNoFollow($value === 'Y' || $value === true);
     }
@@ -136,8 +136,22 @@ abstract class AbstractLink implements LinkInterface
     /**
      * @param string|bool $value
      */
-    public function setVisibleLoggedInOnlyCompat($value)
+    public function setVisibleLoggedInOnlyCompat($value): void
     {
         $this->setVisibleLoggedInOnly($value === 'Y' || $value === true);
+    }
+
+    /**
+     * @return array
+     */
+    public function getNamesCompat(): array
+    {
+        $byCode    = [];
+        $languages = \Sprache::getAllLanguages(1);
+        foreach ($this->getNames() as $langID => $name) {
+            $byCode[$languages[$langID]->cISO] = $name;
+        }
+
+        return $byCode;
     }
 }

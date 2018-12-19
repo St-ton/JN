@@ -5,50 +5,38 @@
  */
 
 /**
- * @param int    $nTyp
- * @param string $nDateStampVon
- * @param string $nDateStampBis
- * @param int    $nAnzeigeIntervall
+ * @param int    $type
+ * @param string $from
+ * @param string $to
+ * @param int    $intervall
  * @return array|mixed
  */
-function gibBackendStatistik($nTyp, $nDateStampVon, $nDateStampBis, &$nAnzeigeIntervall)
+function gibBackendStatistik(int $type, $from, $to, &$intervall)
 {
-    if ($nTyp > 0 && $nDateStampVon > 0 && $nDateStampBis > 0) {
-        $oStatistik        = new Statistik($nDateStampVon, $nDateStampBis);
-        $nAnzeigeIntervall = $oStatistik->getAnzeigeIntervall();
-        $oStat_arr         = [];
-
-        switch ($nTyp) {
-            // Besucher Stats
+    $data = [];
+    if ($type > 0 && $from > 0 && $to > 0) {
+        $stats     = new Statistik($from, $to);
+        $intervall = $stats->getAnzeigeIntervall();
+        switch ($type) {
             case STATS_ADMIN_TYPE_BESUCHER:
-                $oStat_arr = $oStatistik->holeBesucherStats();
+                $data = $stats->holeBesucherStats();
                 break;
-
-            // Kundenherkunft
             case STATS_ADMIN_TYPE_KUNDENHERKUNFT:
-                $oStat_arr = $oStatistik->holeKundenherkunftStats();
+                $data = $stats->holeKundenherkunftStats();
                 break;
-
-            // Umsatz
             case STATS_ADMIN_TYPE_SUCHMASCHINE:
-                $oStat_arr = $oStatistik->holeBotStats();
+                $data = $stats->holeBotStats();
                 break;
-
-            // Top besuchte Seiten
             case STATS_ADMIN_TYPE_UMSATZ:
-                $oStat_arr = $oStatistik->holeUmsatzStats();
+                $data = $stats->holeUmsatzStats();
                 break;
-
-            // Suchbegriffe
             case STATS_ADMIN_TYPE_EINSTIEGSSEITEN:
-                $oStat_arr = $oStatistik->holeEinstiegsseiten();
+                $data = $stats->holeEinstiegsseiten();
                 break;
         }
-
-        return $oStat_arr;
     }
 
-    return [];
+    return $data;
 }
 
 /**
@@ -256,7 +244,8 @@ function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
             $oWaehrung = Shop::Container()->getDB()->query(
                 "SELECT *
                     FROM twaehrung
-                    WHERE cStandard = 'Y'", 1
+                    WHERE cStandard = 'Y'",
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             return setDot($data, $x_labels_arr, null, $fMin, $fMax, $fStep, $oWaehrung->cName);

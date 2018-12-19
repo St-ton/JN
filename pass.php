@@ -3,23 +3,21 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Request;
+
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_PASSWORTVERGESSEN);
-
-$AktuelleSeite                   = 'PASSWORT VERGESSEN';
-Shop::$AktuelleSeite             = 'PASSWORT VERGESSEN';
-$Einstellungen                   = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
-$linkHelper                      = Shop::Container()->getLinkService();
-$kLink                           = $linkHelper->getSpecialPageLinkKey(LINKTYP_PASSWORD_VERGESSEN);
-$AktuelleKategorie               = new Kategorie(verifyGPCDataInteger('kategorie'));
-$AufgeklappteKategorien          = new KategorieListe();
-$startKat                        = new Kategorie();
-$startKat->kKategorie            = 0;
-$step                            = 'formular';
-$hinweis                         = '';
-$cFehler                         = '';
+$Einstellungen          = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
+$linkHelper             = Shop::Container()->getLinkService();
+$kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_PASSWORD_VERGESSEN);
+$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
+$AufgeklappteKategorien = new KategorieListe();
+$step                   = 'formular';
+$hinweis                = '';
+$cFehler                = '';
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 //loginbenutzer?
 if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwort_vergessen'] === 1) {
@@ -57,9 +55,8 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
                     Shop::Container()->getDB()->delete('tpasswordreset', 'kKunde', $customer->kKunde);
                     header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '?updated_pw=true');
                     exit();
-                } else {
-                    $cFehler = Shop::Lang()->get('invalidCustomer', 'account data');
                 }
+                $cFehler = Shop::Lang()->get('invalidCustomer', 'account data');
             } else {
                 $cFehler = Shop::Lang()->get('invalidHash', 'account data');
             }
@@ -73,9 +70,9 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
     Shop::Smarty()->assign('fpwh', StringHandler::filterXSS($_POST['fpwh']));
 } elseif (isset($_GET['fpwh'])) {
     $resetItem = Shop::Container()->getDB()->select('tpasswordreset', 'cKey', $_GET['fpwh']);
-    if($resetItem) {
+    if ($resetItem) {
         $dateExpires = new DateTime($resetItem->dExpires);
-        if($dateExpires >= new DateTime()) {
+        if ($dateExpires >= new DateTime()) {
             Shop::Smarty()->assign('fpwh', StringHandler::filterXSS($_GET['fpwh']));
         } else {
             $cFehler = Shop::Lang()->get('invalidHash', 'account data');
@@ -87,13 +84,14 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
 }
 $cCanonicalURL    = $linkHelper->getStaticRoute('pass.php');
 $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_PASSWORD_VERGESSEN);
+$link             = $linkHelper->getPageLink($kLink);
 $cMetaTitle       = $oMeta->cTitle;
 $cMetaDescription = $oMeta->cDesc;
 $cMetaKeywords    = $oMeta->cKeywords;
 Shop::Smarty()->assign('step', $step)
     ->assign('hinweis', $hinweis)
-    ->assign('cFehler', $cFehler)
-    ->assign('Navigation', createNavigation($AktuelleSeite));
+    ->assign('Link', $link)
+    ->assign('cFehler', $cFehler);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 Shop::Smarty()->display('account/password.tpl');

@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\URL;
+
 /**
  * @param int $kTag
  * @param int $kSprache
@@ -12,18 +14,15 @@
 function holeTagDetailAnzahl($kTag, $kSprache)
 {
     if ((int)$kTag > 0 && (int)$kSprache > 0) {
-        $oTagArtikel = Shop::Container()->getDB()->query(
-            "SELECT count(*) AS nAnzahl
+        return (int)Shop::Container()->getDB()->query(
+            'SELECT COUNT(*) AS nAnzahl
                 FROM ttagartikel
                 JOIN ttag 
                     ON ttag.kTag = ttagartikel.kTag
-                    AND ttag.kSprache = " . (int)$kSprache . "
-                WHERE ttagartikel.kTag = " . (int)$kTag, 1
-        );
-
-        return isset($oTagArtikel->nAnzahl)
-            ? (int)$oTagArtikel->nAnzahl
-            : 0;
+                    AND ttag.kSprache = ' . (int)$kSprache . '
+                WHERE ttagartikel.kTag = ' . (int)$kTag,
+            \DB\ReturnType::SINGLE_OBJECT
+        )->nAnzahl;
     }
 
     return 0;
@@ -35,38 +34,34 @@ function holeTagDetailAnzahl($kTag, $kSprache)
  * @param string $cLimit
  * @return bool
  */
-function holeTagDetail($kTag, $kSprache, $cLimit)
+function holeTagDetail(int $kTag, int $kSprache, $cLimit)
 {
     if (!$kSprache) {
         $kSprache = $_SESSION['kSprache'];
     }
-    $kSprache = (int)$kSprache;
-    $kTag     = (int)$kTag;
     if ($kTag > 0 && $kSprache > 0) {
-        $oTagArtikel_arr = Shop::Container()->getDB()->query(
+        $oTagArtikel_arr = Shop::Container()->getDB()->queryPrepared(
             "SELECT ttagartikel.kTag, ttag.cName, tartikel.cName AS acName, 
                 tartikel.kArtikel AS kArtikel, tseo.cSeo
                 FROM ttagartikel
                 JOIN ttag 
                     ON ttag.kTag = ttagartikel.kTag
-                    AND ttag.kSprache = " . $kSprache . "
+                    AND ttag.kSprache = :lid
                 JOIN tartikel 
                         ON tartikel.kArtikel = ttagartikel.kArtikel
                 LEFT JOIN tseo 
                     ON tseo.cKey = 'kArtikel'
                     AND tseo.kKey = tartikel.kArtikel
-                    AND tseo.kSprache = " . $kSprache . "
-                WHERE ttagartikel.kTag = " . $kTag . "
-                    AND ttag.kSprache = " . $kSprache . "
+                    AND tseo.kSprache = :lid
+                WHERE ttagartikel.kTag = :tid
+                    AND ttag.kSprache = :lid
                 GROUP BY tartikel.kArtikel
-                ORDER BY tartikel.cName" . $cLimit, 2
+                ORDER BY tartikel.cName" . $cLimit,
+            ['lid' => $kSprache, 'tid' => $kTag],
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        // URL für die Artikel bauen
-        if (is_array($oTagArtikel_arr) && count($oTagArtikel_arr) > 0) {
-            $shopURL = Shop::getURL();
-            foreach ($oTagArtikel_arr as $i => $oTagArtikel) {
-                $oTagArtikel_arr[$i]->cURL = $shopURL . '/' . baueURL($oTagArtikel, URLART_ARTIKEL);
-            }
+        foreach ($oTagArtikel_arr as $i => $oTagArtikel) {
+            $oTagArtikel_arr[$i]->cURL = URL::buildURL($oTagArtikel, URLART_ARTIKEL, true);
         }
 
         return $oTagArtikel_arr;
@@ -80,9 +75,8 @@ function holeTagDetail($kTag, $kSprache, $cLimit)
  * @param int   $kTag
  * @return bool
  */
-function loescheTagsVomArtikel($kArtikel_arr, $kTag)
+function loescheTagsVomArtikel($kArtikel_arr, int $kTag)
 {
-    $kTag = (int)$kTag;
     if ($kTag > 0 && is_array($kArtikel_arr) && count($kArtikel_arr) > 0) {
         foreach ($kArtikel_arr as $kArtikel) {
             $kArtikel = (int)$kArtikel;
@@ -96,10 +90,11 @@ function loescheTagsVomArtikel($kArtikel_arr, $kTag)
                         LEFT JOIN tseo 
                             ON tseo.cKey = 'kTag'
                             AND tseo.kKey = ttag.kTag
-                        WHERE ttag.kTag = " . $kTag, 4
+                        WHERE ttag.kTag = " . $kTag,
+                    \DB\ReturnType::DEFAULT
                 );
             }
-            Shop::Cache()->flushTags(['CACHING_GROUP_ARTICLE_' . $kArtikel]);
+            Shop::Container()->getCache()->flushTags(['CACHING_GROUP_ARTICLE_' . $kArtikel]);
         }
 
         return true;
@@ -114,11 +109,12 @@ function loescheTagsVomArtikel($kArtikel_arr, $kTag)
  */
 function flushAffectedArticleCache(array $tagIDs)
 {
-    //get tagged article IDs to invalidate their cache
-    $_affectedArticles = Shop::Container()->getDB()->query("
-        SELECT DISTINCT kArtikel
+    // get tagged article IDs to invalidate their cache
+    $_affectedArticles = Shop::Container()->getDB()->query(
+        'SELECT DISTINCT kArtikel
             FROM ttagartikel
-            WHERE kTag IN (" . implode(', ', $tagIDs) . ")", 2
+            WHERE kTag IN (' . implode(', ', $tagIDs) . ')',
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     if (count($_affectedArticles) > 0) {
         $articleCacheIDs = [];
@@ -126,7 +122,7 @@ function flushAffectedArticleCache(array $tagIDs)
             $articleCacheIDs[] = CACHING_GROUP_ARTICLE . '_' . $_article->kArtikel;
         }
 
-        return Shop::Cache()->flushTags($articleCacheIDs);
+        return Shop::Container()->getCache()->flushTags($articleCacheIDs);
     }
 
     return 0;

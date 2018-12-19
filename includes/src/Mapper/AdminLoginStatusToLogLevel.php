@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -18,7 +18,7 @@ class AdminLoginStatusToLogLevel
      * @param int $code
      * @return int
      */
-    public function map($code): int
+    public function map(int $code): int
     {
         switch ($code) {
             case \AdminLoginStatus::LOGIN_OK:
@@ -41,12 +41,12 @@ class AdminLoginStatusToLogLevel
      * @param int $code
      * @return int
      */
-    public function mapToJTLLog($code): int
+    public function mapToJTLLog(int $code): int
     {
         switch ($code) {
             case \AdminLoginStatus::LOGIN_OK:
             case Logger::INFO:
-                return JTLLOG_LEVEL_NOTICE;
+                return \JTLLOG_LEVEL_NOTICE;
             case \AdminLoginStatus::ERROR_INVALID_PASSWORD_LOCKED:
             case Logger::ALERT:
             case \AdminLoginStatus::ERROR_NOT_AUTHORIZED:
@@ -58,7 +58,7 @@ class AdminLoginStatusToLogLevel
             case \AdminLoginStatus::ERROR_UNKNOWN:
             case Logger::WARNING:
             default:
-                return JTLLOG_LEVEL_ERROR;
+                return \JTLLOG_LEVEL_ERROR;
         }
     }
 }

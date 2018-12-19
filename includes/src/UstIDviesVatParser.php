@@ -180,6 +180,10 @@ class UstIDviesVatParser
      */
     private $szErrorInfo = '';
 
+    /**
+     * @var int
+     */
+    private $nErrorPos = -1;
 
     /**
      * @param string $szVATid
@@ -197,24 +201,24 @@ class UstIDviesVatParser
      * @param string $szPattern
      * @return int
      */
-    private function isIdPatternValid($szVATid, $szPattern)
+    private function isIdPatternValid($szVATid, $szPattern): int
     {
         $len = strlen($szVATid);
         for ($i = 0; $i < $len; $i++) {
             // each character and white-space is compared exactly, while digits can be [1..9]
             switch (true) {
-                case ctype_alpha($szPattern[$i]) :
-                case ctype_space($szPattern[$i]) :
+                case ctype_alpha($szPattern[$i]):
+                case ctype_space($szPattern[$i]):
                     if ($szPattern[$i] === $szVATid[$i]) {
                         continue 2; // check-space OK
                     }
                     break 2; // check-space FAIL
-                case is_numeric($szPattern[$i]) :
+                case is_numeric($szPattern[$i]):
                     if (is_numeric($szVATid[$i])) {
                         continue 2; // check-num OK
                     }
                     break 2; // check-num FAIL
-                default :
+                default:
                     if ('_' === $szPattern[$i]) {
                         continue 2;
                     }
@@ -239,7 +243,7 @@ class UstIDviesVatParser
      *
      * @return bool
      */
-    public function parseVatId()
+    public function parseVatId(): bool
     {
         // guess a country - the first 2 characters should allways be the country-code
         // (store the result-array in this object, $this->vIdParts)
@@ -266,7 +270,6 @@ class UstIDviesVatParser
             // checking the given pattern (return a possible interrupt-position)
             $nParseResult = $this->isIdPatternValid($this->szVATid, $szPattern);
             if (0 === $nParseResult) {
-
                 return true; // if we found a valid pattern-match, we've done our job here
             }
 
@@ -289,7 +292,7 @@ class UstIDviesVatParser
      *
      * @return array
      */
-    public function getIdAsParams()
+    public function getIdAsParams(): array
     {
         return [$this->vIdParts[1], $this->vIdParts[2]];
     }
@@ -299,7 +302,7 @@ class UstIDviesVatParser
      *
      * @return string
      */
-    public function getErrorCode()
+    public function getErrorCode(): int
     {
         return $this->nErrorCode;
     }
@@ -309,7 +312,7 @@ class UstIDviesVatParser
      *
      * @return string
      */
-    public function getErrorInfo()
+    public function getErrorInfo(): string
     {
         return $this->szErrorInfo;
     }
@@ -317,11 +320,10 @@ class UstIDviesVatParser
     /**
      * returns the position, in the VAT-ID-string, at which the last error was ocurred
      *
-     * @return string
+     * @return int
      */
-    public function getErrorPos()
+    public function getErrorPos(): int
     {
         return $this->nErrorPos;
     }
 }
-

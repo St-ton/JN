@@ -16,6 +16,7 @@ define('HOOK_ARTIKEL_PAGE', 1);
  * Falls nicht wahrend Bestellung bezahlt wird
  *
  * @file bestellabschluss.php
+ * @param Bestellung - oBestellung
  */
 define('HOOK_BESTELLABSCHLUSS_PAGE', 2);
 
@@ -23,6 +24,7 @@ define('HOOK_BESTELLABSCHLUSS_PAGE', 2);
  * Falls während Bestellung bezahlt wird
  *
  * @file bestellabschluss.php
+ * @param Bestellung - oBestellung
  */
 define('HOOK_BESTELLABSCHLUSS_PAGE_ZAHLUNGSVORGANG', 3);
 
@@ -226,6 +228,8 @@ define('HOOK_NAVI_PAGE', 31);
  * Kurz vor der Anzeige in der News Detailansicht
  *
  * @file news.php
+ * @param \News\Item newsItem - since 5.0.0
+ * @param \Pagination\Pagination pagination - since 5.0.0
  */
 define('HOOK_NEWS_PAGE_DETAILANSICHT', 32);
 
@@ -233,6 +237,8 @@ define('HOOK_NEWS_PAGE_DETAILANSICHT', 32);
  * Kurz vor der Anzeige in der News Übersicht
  *
  * @file news.php
+ * @param News\Category category - since 5.0.0
+ * @param Tightenco\Collect\Support\Collection items - since 5.0.0
  */
 define('HOOK_NEWS_PAGE_NEWSUEBERSICHT', 33);
 
@@ -426,25 +432,28 @@ define('HOOK_ARTIKEL_INC_XSELLING', 57);
 /**
  * Vor der Rückgabe des MetaTitle Artikel in den Artikeldetails
  *
- * @file class.JTL-Shop.Artikel.php (since 4.0)
- * @param cTitle
+ * @file Artikel.php
+ * @param string cTitle
+ * @since 4.0
  */
 define('HOOK_ARTIKEL_INC_METATITLE', 58);
 
 /**
  * Vor der Rückgabe der MetaDescription Artikel in den Artikeldetails
  *
- * @file class.JTL-Shop.Artikel.php (since 4.0)
- * @param cDesc
- * @param oArtikel
+ * @file Artikel.php
+ * @param string  cDesc
+ * @param Artikel oArtikel
+ * @since 4.0
  */
 define('HOOK_ARTIKEL_INC_METADESCRIPTION', 59);
 
 /**
  * Vor der Rückgabe der MetaKeywords Artikel in den Artikeldetails
  *
- * @file class.JTL-Shop.Artikel.php (since 4.0)
- * @param keywords
+ * @file Artikel.php
+ * @param string keywords
+ * @since 4.0
  */
 define('HOOK_ARTIKEL_INC_METAKEYWORDS', 60);
 
@@ -519,9 +528,9 @@ define('HOOK_ARTIKEL_INC_FASSEVARIVATERUNDKINDZUSAMMEN', 71);
 /**
  * Kurz vor der Rückgabe der ähnlichen Artikel in den Artikeldetails
  *
- * @file class.JTL-Shop.Artikel.php|artikel_inc.php
- * @param oArtikel_arr
- * @param kArtikel
+ * @file Artikel.php|artikel_inc.php
+ * @param array oArtikel_arr
+ * @param int   kArtikel
  */
 define('HOOK_ARTIKEL_INC_AEHNLICHEARTIKEL', 72);
 
@@ -582,74 +591,74 @@ define('HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNG', 78);
 define('HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNGHILFREICH', 79);
 
 /**
- * @file class.JTL-Shop.Boxen.php
+ * @file Boxen.php
  */
 define('HOOK_BOXEN_INC_SCHNELLKAUF', 80);
 
 /**
- * @file class.JTL-Shop.Boxen.php
- * @param box
+ * @file Boxen.php
+ * @param Box box
  */
 define('HOOK_BOXEN_INC_ZULETZTANGESEHEN', 81);
 
 /**
- * @file class.JTL-Shop.Boxen.php
- * @param box
- * @param cache_tags
+ * @file Boxen.php
+ * @param \Boxes\Items\BoxInterface box
+ * @param array                     cache_tags
  */
 define('HOOK_BOXEN_INC_TOPANGEBOTE', 82);
 
 /**
- * @file class.JTL-Shop.Boxen.php
- * @param box
- * @param cache_tags
+ * @file Boxen.php
+ * @param \Boxes\Items\BoxInterface box
+ * @param array                     cache_tags
  */
 define('HOOK_BOXEN_INC_NEUIMSORTIMENT', 83);
 
 /**
- * @file class.JTL-Shop.Boxen.php
- * @param box
- * @param cache_tags
+ * @file Boxen.php
+ * @param \Boxes\Items\BoxInterface box
+ * @param array                     cache_tags
  */
 define('HOOK_BOXEN_INC_SONDERANGEBOTE', 84);
 
 /**
- * @file class.JTL-Shop.Boxen.php
- * @param box
- * @param cache_tags
+ * @file Boxen.php
+ * @param \Boxes\Items\BoxInterface box
+ * @param array                     cache_tags
  */
 define('HOOK_BOXEN_INC_BESTSELLER', 85);
 
 /**
- * @file class.JTL-Shop.Boxen.php
- * @param box
- * @param cache_tags
+ * @file Boxen.php
+ * @param \Boxes\Items\BoxInterface box
+ * @param array                     cache_tags
  */
 define('HOOK_BOXEN_INC_ERSCHEINENDEPRODUKTE', 86);
 
 /**
- * @file class.JTL-Shop.Boxen.php
- * @param box
- * @param cache_tags
+ * @file Boxen.php
+ * @param \Boxes\Items\BoxInterface box
+ * @param array                     cache_tags
  */
 define('HOOK_BOXEN_INC_SUCHWOLKE', 87);
 
 /**
- * @file class.JTL-Shop.Boxen.php
- * @param box
- * @param cache_tags
+ * @file Boxen.php
+ * @param \Boxes\Items\BoxInterface box
+ * @param array                     cache_tags
  */
 define('HOOK_BOXEN_INC_TAGWOLKE', 88);
 
 /**
- * @file class.JTL-Shop.Boxen.php
- * @param box
+ * @file Boxen.php
+ * @param \Boxes\Items\BoxInterface box
  */
 define('HOOK_BOXEN_INC_WUNSCHZETTEL', 89);
 
 /**
- * @file class.JTL-Shop.Boxen.php
- * @param box
+ * @file Boxen.php
+ * @param \Boxes\Items\BoxInterface box
  */
 define('HOOK_BOXEN_INC_VERGLEICHSLISTE', 90);
 
@@ -659,28 +668,28 @@ define('HOOK_BOXEN_INC_VERGLEICHSLISTE', 90);
 define('HOOK_BOXEN_INC_SUCHSPECIALURL', 91);
 
 /**
- * @file class.JTL-Shop.Boxen.php
- * @param box
- * @param cache_tags
+ * @file Boxen.php
+ * @param \Boxes\Items\BoxInterface box
+ * @param array                     cache_tags
  */
 define('HOOK_BOXEN_INC_TOPBEWERTET', 92);
 
 /**
- * @file class.JTL-Shop.Boxen.php
+ * @file Boxen.php
  */
 define('HOOK_BOXEN_INC_NEWS', 93);
 
 /**
- * @file class.JTL-Shop.Boxen.php
- * @param box
- * @param cache_tags
+ * @file Boxen.php
+ * @param \Boxes\Items\BoxInterface box
+ * @param array                     cache_tags
  */
 define('HOOK_BOXEN_INC_NEWSKATEGORIE', 94);
 
 /**
- * @file class.JTL-Shop.Boxen.php
- * @param box
- * @param cache_tags
+ * @file Boxen.php
+ * @param \Boxes\Items\BoxInterface box
+ * @param array                     cache_tags
  */
 define('HOOK_BOXEN_INC_UMFRAGE', 95);
 
@@ -717,6 +726,12 @@ define('HOOK_LETZTERINCLUDE_INC', 99);
  * after template switch in sendeMail()
  *
  * @file mailTools.php
+ * @param Smarty\JTLSmarty  - mailsmarty
+ * @param mail
+ * @param kEmailvorlage
+ * @param kSprache
+ * @param cPluginBody
+ * @param Emailvorlage
  */
 define('HOOK_MAILTOOLS_INC_SWITCH', 100);
 
@@ -736,9 +751,10 @@ define('HOOK_TOOLSGLOBAL_INC_PREISSTRINGLOCALIZED', 102);
 /**
  * at the end of gibMwStVersandString() before returning the string
  *
- * @file class.JTL-Shop.Artikel.php (since 4.0)
+ * @file Artikel.php
  * @param string  - cVersandhinweis
  * @param Artikel - oArtikel
+ * @since 4.0
  */
 define('HOOK_TOOLSGLOBAL_INC_MWSTVERSANDSTRING', 103);
 
@@ -795,7 +811,7 @@ define('HOOK_TOOLSGLOBAL_INC_SETZESPRACHEUNDWAEHRUNG_WAEHRUNG', 109);
 /**
  * after loading an article
  *
- * @file class.JTL-Shop.Artikel.php
+ * @file Artikel.php
  * @param Artikel - oArtikel
  * @param array   - cacheTags - list of associated cache tags (since 4.0)
  * @param bool    - cached - true when fetched from object cache (since 4.0)
@@ -805,14 +821,14 @@ define('HOOK_ARTIKEL_CLASS_FUELLEARTIKEL', 110);
 /**
  * at the end of Attribut::loadFromDB()
  *
- * @file class.JTL-Shop.Attribut.php
+ * @file Attribut.php
  */
 define('HOOK_ATTRIBUT_CLASS_LOADFROMDB', 111);
 
 /**
  * at the end of Bestellung::fuelleBestellung()
  *
- * @file class.JTL-Shop.Bestellung.php
+ * @file Bestellung.php
  * @param Bestellung - oBestellung (@since 4.05)
  */
 define('HOOK_BESTELLUNG_CLASS_FUELLEBESTELLUNG', 112);
@@ -820,46 +836,47 @@ define('HOOK_BESTELLUNG_CLASS_FUELLEBESTELLUNG', 112);
 /**
  * at the end of holeHilfreichsteBewertung()
  *
- * @file class.JTL-Shop.Bewertung.php
+ * @file Bewertung.php
  */
 define('HOOK_BEWERTUNG_CLASS_HILFREICHSTEBEWERTUNG', 113);
 
 /**
  * in holeProduktBewertungen()
  *
- * @file class.JTL-Shop.Bewertung.php
+ * @file Bewertung.php
  */
 define('HOOK_BEWERTUNG_CLASS_SWITCH_SORTIERUNG', 114);
 
 /**
  * after loading a rating
  *
- * @file class.JTL-Shop.Bewertung.php
+ * @file Bewertung.php
  * @param Bewertung - oBewertung
  */
 define('HOOK_BEWERTUNG_CLASS_BEWERTUNG', 115);
 
 /**
- * @file class.JTL-Shop.Eigenschaft.php
+ * @file Eigenschaft.php
  */
 define('HOOK_EIGENSCHAFT_CLASS_LOADFROMDB', 116);
 
 /**
- * @file class.JTL-Shop.EigenschaftsWert.php
+ * @file EigenschaftsWert.php
  */
 define('HOOK_EIGENSCHAFTWERT_CLASS_LOADFROMDB', 117);
 
 /**
  * after loading a company from the database
  *
- * @file class.JTL-Shop.Firma.php
+ * @file Firma.php
+ * @param Firma instance - since 5.0.0
  */
 define('HOOK_FIRMA_CLASS_LOADFROMDB', 118);
 
 /**
  * after loading a manufacturer from the database
  *
- * @file class.JTL-Shop.Hersteller.php
+ * @file Hersteller.php
  * @param Hersteller - oHersteller
  * @param array      - cacheTags - list of associated cache tags (since 4.0)
  * @param bool       - cached - true if fetched from object cache (since 4.0)
@@ -867,7 +884,7 @@ define('HOOK_FIRMA_CLASS_LOADFROMDB', 118);
 define('HOOK_HERSTELLER_CLASS_LOADFROMDB', 119);
 
 /**
- * @file class.JTL-Shop.Kategorie.php
+ * @file Kategorie.php
  * @param Kategorie - oKategorie
  * @param array     - cacheTags - list of associated cache tags  (since 4.0)
  * @param bool      - cached - true if fetched from object cache  (since 4.0)
@@ -875,36 +892,37 @@ define('HOOK_HERSTELLER_CLASS_LOADFROMDB', 119);
 define('HOOK_KATEGORIE_CLASS_LOADFROMDB', 120);
 
 /**
- * @file class.JTL-Shop.Kunde.php
+ * @file Kunde.php
  */
 define('HOOK_KUNDE_CLASS_LOADFROMDB', 121);
 
 /**
- * @file class.JTL-Shop.Lieferadresse.php
+ * @file Lieferadresse.php
  */
 define('HOOK_LIEFERADRESSE_CLASS_LOADFROMDB', 122);
 
 /**
- * @file class.JTL-Shop.Merkmal.php
+ * @file Merkmal.php
+ * @param Merkmal instance - since 5.0.0
  */
 define('HOOK_MERKMAL_CLASS_LOADFROMDB', 123);
 
 /**
- * @file class.JTL-Shop.MerkmalWert.php
+ * @file MerkmalWert.php
  * @param MerkmalWert - oMerkmalWert
  */
 define('HOOK_MERKMALWERT_CLASS_LOADFROMDB', 124);
 
 /**
  * after loading a delivery address from the database
- * @file class.JTL-Shop.Rechnungsadresse.php
+ * @file Rechnungsadresse.php
  */
 define('HOOK_RECHNUNGSADRESSE_CLASS_LOADFROMDB', 125);
 
 /**
  * after adding an article to the cart
  *
- * @file class.JTL-Shop.Warenkorb.php
+ * @file Warenkorb.php
  * @param int   - kArtikel
  * @param array - oPosition_arr
  * @param float - nAnzahl
@@ -915,14 +933,14 @@ define('HOOK_WARENKORB_CLASS_FUEGEEIN', 126);
 /**
  * after adding an article to the wishlist
  *
- * @file class.JTL-Shop.Wunschliste.php
+ * @file Wunschliste.php
  */
 define('HOOK_WUNSCHLISTE_CLASS_FUEGEEIN', 127);
 
 /**
  * after adding an article to the compare list
  *
- * @file class.JTL-Shop.Vergleichsliste.php
+ * @file Vergleichsliste.php
  */
 define('HOOK_VERGLEICHSLISTE_CLASS_EINFUEGEN', 128);
 
@@ -958,6 +976,7 @@ define('HOOK_INDEX_NAVI_HEAD_POSTGET', 132);
  * after instanciating JTLSmarty
  *
  * @file smartyInclude.php
+ * @param \Smarty\JTLSmarty $smarty
  */
 define('HOOK_SMARTY_INC', 133);
 
@@ -1015,8 +1034,9 @@ define('HOOK_CRON_EXPORTFORMATE_OUTPUT_FETCHED', 139);
 /**
  * at the end of smarty outputfilter
  *
- * @file class.JTL-Shop.JTLSmarty.php
- * @param JTLSmarty smarty
+ * @file JTLSmarty.php
+ * @param Smarty\JTLSmarty smarty
+ * @param phpQueryObject document
  */
 define('HOOK_SMARTY_OUTPUTFILTER', 140);
 
@@ -1051,7 +1071,7 @@ define('HOOK_NOTIFY_HASHPARAMETER_DEFINITION', 144);
 /**
  * in holLoginKunde() after loading a customer, before decryption
  *
- * @file class.JTL-Shop.Kunde.php
+ * @file Kunde.php
  * @param oKunde
  * @param oUser
  * @param cBenutzername
@@ -1070,7 +1090,7 @@ define('HOOK_INDEX_SEO_404', 146);
 /**
  * triggered when checkbox has plugin special functions and is checked by a customer
  *
- * @file class.JTL-Shop.CheckBox.php
+ * @file CheckBox.php
  * @param Checkbox - oCheckBox
  */
 define('HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION', 147);
@@ -1116,7 +1136,7 @@ define('HOOK_ARTIKEL_XML_BEARBEITEDELETES', 152);
  * in sendeMail() before actually sending an email
  *
  * @file mailTools.php
- * @param JTLSmarty  - mailsmarty
+ * @param Smarty\JTLSmarty  - mailsmarty
  * @param mail
  * @param kEmailvorlage
  * @param kSprache
@@ -1369,7 +1389,7 @@ define('HOOK_BILDER_XML_BEARBEITE_ENDE', 179);
 /**
  * after getting all check boxes
  *
- * @file class.JTL-Shop.CheckBox.php
+ * @file CheckBox.php
  * @param nAnzeigeOrt
  * @param kKundengruppe
  * @param bAktiv
@@ -1423,7 +1443,7 @@ define('HOOK_FILTER_INC_BAUFILTERSQL', 184);
  * after flushing cache ID/tag
  *
  * @since 4.0
- * @file class.JTL-Shop.JTLCache.php
+ * @file JTLCache.php
  */
 define('HOOK_CACHE_FLUSH_AFTER', 200);
 
@@ -1431,8 +1451,8 @@ define('HOOK_CACHE_FLUSH_AFTER', 200);
  * after flushing cache ID/tag
  *
  * @since 4.0
- * @file class.JTL-Shop.JTLSmarty.php
- * @param smarty - JTLSmarty
+ * @file JTLSmarty.php
+ * @param smarty - Smarty\JTLSmarty
  */
 define('HOOK_SMARTY_OUTPUTFILTER_CACHE', 202);
 
@@ -1440,7 +1460,7 @@ define('HOOK_SMARTY_OUTPUTFILTER_CACHE', 202);
  * after generation of a cache ID via JTLSmarty::getCacheID()
  *
  * @since 4.0
- * @file class.JTL-Shop.JTLSmarty.php
+ * @file JTLSmarty.php
  * @param resource - the template name
  * @param conditions - the conditions used to generate the ID
  * @param cache_id - the generated ID
@@ -1451,7 +1471,7 @@ define('HOOK_SMARTY_GENERATE_CACHE_ID', 203);
  * List of all js/css groups to minify after generation via Template::getMinifyArray()
  *
  * @since 4.0
- * @file class.JTL-Shop.Template.php
+ * @file Template.php
  * @param groups - list of tpl groups
  * @param cache_tags - list of associated cache tags
  */
@@ -1494,7 +1514,7 @@ define('HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_ENDE', 207);
 
 /**
  * @since 4.0
- * @file class.JTL-Shop.JTLSmarty.php
+ * @file JTLSmarty.php
  * @param string - original
  * @param string - custom
  * @param string - fallback
@@ -1559,7 +1579,8 @@ define('HOOK_IO_HANDLE_REQUEST', 213);
  *
  * @since 4.0
  * @file class.core.Shop.php
- * @param int - pageType
+ * @param int    pageType
+ * @param string pageName
  */
 define('HOOK_SHOP_SET_PAGE_TYPE', 214);
 
@@ -1567,14 +1588,14 @@ define('HOOK_SHOP_SET_PAGE_TYPE', 214);
  * immediately before storing kunde in DB
  *
  * @since 4.03
- * @file class.JTL-Shop.Kunde.php
+ * @file Kunde.php
  * @param Kunde - oKunde
  */
 define('HOOK_KUNDE_DB_INSERT', 215);
 
 /**
  * @since 4.03
- * @file class.JTL-Shop.Image.php
+ * @file Image.php
  * @param Imanee - imanee
  * @param array  - settings
  * @param string - thumbnail
@@ -1608,7 +1629,7 @@ define('HOOK_GET_ALL_CATEGORIES', 219);
 /**
  * @since 4.04
  * @file seite_inc.php
- * @param array - oNews_arr
+ * @param \Tightenco\Collect\Support\Collection - oNews_arr
  * @param array - cacheTags
  * @param bool  - cached
  */
@@ -1637,7 +1658,7 @@ define('HOOK_BACKEND_ACCOUNT_EDIT', 222);
  * @since 4.05
  * @file admin/includes/benutzerverwaltung_inc.php
  * @param Account   - oAccount
- * @param JTLSmarty - smarty
+ * @param Smarty\JTLSmarty - smarty
  * @param array     - attribs - extended attributes
  * @param string    - &content
  */
@@ -1646,7 +1667,7 @@ define('HOOK_BACKEND_ACCOUNT_PREPARE_EDIT', 223);
 /**
  * @since 4.05
  * @file seite_inc.php
- * @param boxes - list of boxes for the home page
+ * @param array boxes - list of boxes for the home page
  */
 define('HOOK_BOXEN_HOME', 224);
 
@@ -1695,8 +1716,8 @@ define('HOOK_BACKEND_SHOP_RESET_AFTER', 229);
 /**
  * on removing a cart position that has been deactivated / deleted in the meantime
  *
- * @since 5.0
- * @file classes/class.JTL-Shop.Warenkorb.php
+ * @since 5.0.0
+ * @file classes/Warenkorb.php
  * @param WarenkorbPos - oPosition
  * @param bool         - &delete
  */
@@ -1705,18 +1726,18 @@ define('HOOK_WARENKORB_CLASS_LOESCHEDEAKTIVIERTEPOS', 230);
 /**
  * in ProductFilter::initBaseStates() after initializing the base filters
  *
- * @since 5.0
- * @file class.JTL-Shop.ProductFilter.php
- * @param ProductFilter productFilter
+ * @since 5.0.0
+ * @file includes/src/Filter/ProductFilter.php
+ * @param \Filter\ProductFilter productFilter
  */
 define('HOOK_PRODUCTFILTER_INIT', 250);
 
 /**
  * in ProductFilter::initStates() after initializing the active filters
  *
- * @since 5.0
- * @file class.JTL-Shop.ProductFilter.php
- * @param ProductFilter productFilter
+ * @since 5.0.0
+ * @file includes/src/Filter/ProductFilter.php
+ * @param \Filter\ProductFilter productFilter
  * @param array params
  */
 define('HOOK_PRODUCTFILTER_INIT_STATES', 251);
@@ -1724,17 +1745,17 @@ define('HOOK_PRODUCTFILTER_INIT_STATES', 251);
 /**
  * in ProductFilter::construct() when creating the instance
  *
- * @since 5.0
- * @file class.JTL-Shop.ProductFilter.php
- * @param ProductFilter productFilter
+ * @since 5.0.0
+ * @file includes/src/Filter/ProductFilter.php
+ * @param \Filter\ProductFilter productFilter
  */
 define('HOOK_PRODUCTFILTER_CREATE', 252);
 
 /**
  * in ProductFilter::construct() when creating the instance
  *
- * @since 5.0
- * @file class.JTL-Shop.ProductFilter.php
+ * @since 5.0.0
+ * @file Filter/ProductFilter.php
  * @param array select
  * @param array joins
  * @param array conditions
@@ -1742,15 +1763,22 @@ define('HOOK_PRODUCTFILTER_CREATE', 252);
  * @param array having
  * @param array order
  * @param array limit
- * @param ProductFilter productFilter
+ * @param \Filter\ProductFilter productFilter
  */
 define('HOOK_PRODUCTFILTER_GET_BASE_QUERY', 253);
 
 /**
+ * @since 5.0.0
+ * @param Filter\SortingOptions\Factory $factory
+ * @param \Filter\ProductFilter $productFilter
+ */
+define('HOOK_PRODUCTFILTER_REGISTER_SEARCH_OPTION', 254);
+
+/**
  * in Preise::__construct()
  *
- * @since 5.0
- * @file class.JTL-Shop.Preise.php
+ * @since 5.0.0
+ * @file Preise.php
  * @param int customerGroupID
  * @param int customerID
  * @param int productID
@@ -1762,8 +1790,8 @@ define('HOOK_PRICES_CONSTRUCT', 260);
 /**
  * in WarenkorbHelper::addToCartCheck()
  *
- * @since 5.0
- * @file class.helper.Warenkorb.php
+ * @since 5.0.0
+ * @file WarenkorbHelper.php
  * @param Artikel product
  * @param int     quantity
  * @param array   attributes
@@ -1773,9 +1801,19 @@ define('HOOK_PRICES_CONSTRUCT', 260);
 define('HOOK_ADD_TO_CART_CHECK', 261);
 
 /**
+ * in WarenkorbHelper::setzePositionsPreise()
+ *
+ * @since 5.0.0
+ * @file Warenkorb.php
+ * @param mixed position
+ * @param mixed oldPosition
+ */
+define('HOOK_SETZTE_POSITIONSPREISE', 262);
+
+/**
  * in CaptchaService::isConfigured
  *
- * @since 5.0
+ * @since 5.0.0
  * @file src/Services/CaptchaService.php
  * @param bool isConfigured
  */
@@ -1784,7 +1822,7 @@ define('HOOK_CAPTCHA_CONFIGURED', 270);
 /**
  * in CaptchaService::getHeadMarkup, CaptchaService::getBodyMarkup
  *
- * @since 5.0
+ * @since 5.0.0
  * @file src/Services/CaptchaService.php
  * @param bool   getBody
  * @param string markup
@@ -1794,9 +1832,29 @@ define('HOOK_CAPTCHA_MARKUP', 271);
 /**
  * in CaptchaService::validate
  *
- * @since 5.0
+ * @since 5.0.0
  * @file src/Services/CaptchaService.php
  * @param array requestData
  * @param bool  isValid
  */
 define('HOOK_CAPTCHA_VALIDATE', 272);
+
+/**
+ * @since 5.0.0
+ * @file admin/plugin.php
+ * @param Plugin plugin
+ * @param bool   hasError
+ * @param string msg
+ * @param string error
+ * @param array  options
+ */
+define('HOOK_PLUGIN_SAVE_OPTIONS', 280);
+
+
+/**
+ * @since 5.0.0
+ * @file includes/src/Sitemap/Export.php
+ * @param \Sitemap\Factories\FactoryInterface[] factories
+ * @param \Sitemap\Export exporter
+ */
+define('HOOK_SITEMAP_EXPORT_GET_FACTORIES', 285);

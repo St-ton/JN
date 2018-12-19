@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\PHPSettings;
+use JTLShop\SemVer\Version;
+
 $nStartzeit = microtime(true);
 
 if (file_exists(__DIR__ . '/config.JTL-Shop.ini.php')) {
@@ -13,7 +17,7 @@ if (defined('PFAD_ROOT')) {
     require_once PFAD_ROOT . 'includes/defines.php';
 } else {
     die('Die Konfigurationsdatei des Shops konnte nicht geladen werden! ' .
-        'Bei einer Neuinstallation bitte <a href="install/index.php">hier</a> klicken.');
+        'Bei einer Neuinstallation bitte <a href="install/">hier</a> klicken.');
 }
 
 use DebugBar\StandardDebugBar;
@@ -25,6 +29,16 @@ defined('DB_HOST') || die('Kein MySql-Datenbank Host angegeben. Bitte config.JTL
 defined('DB_NAME') || die('Kein MySql Datenbanknamen angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
 defined('DB_USER') || die('Kein MySql-Datenbank Benutzer angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
 defined('DB_PASS') || die('Kein MySql-Datenbank Passwort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+
+define(
+    'JTL_VERSION',
+    (int)sprintf(
+        '%d%02d',
+        Version::parse(APPLICATION_VERSION)->getMajor(),
+        Version::parse(APPLICATION_VERSION)->getMinor()
+    )
+); // DEPRECATED since 5.0.0
+define('JTL_MINOR_VERSION', (int) Version::parse(APPLICATION_VERSION)->getPatch()); // DEPRECATED since 5.0.0
 
 Profiler::start();
 
@@ -38,6 +52,10 @@ if (!function_exists('Shop')) {
     {
         return Shop::getInstance();
     }
+}
+// PHP memory_limit work around
+if (!PHPSettings::getInstance()->hasMinLimit(64 * 1024 * 1024)) {
+    ini_set('memory_limit', '64M');
 }
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
@@ -62,7 +80,7 @@ if (PHP_SAPI !== 'cli'
     );
     if (!$https) {
         $lang = '';
-        if (!standardspracheAktiv(true)) {
+        if (!Sprache::isDefaultLanguageActive(true)) {
             $lang = strpos($_SERVER['REQUEST_URI'], '?')
                 ? '&lang=' . $_SESSION['cISOSprache']
                 : '?lang=' . $_SESSION['cISOSprache'];
@@ -85,10 +103,8 @@ if (!JTL_INCLUDE_ONLY_DB) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
-    require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'auswahlassistent_ext_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikelsuchspecial_inc.php';
-
-    $oPluginHookListe_arr         = Plugin::getHookList();
+    $oPluginHookListe_arr         = \Plugin\Helper::getHookList();
     $nSystemlogFlag               = Jtllog::getSytemlogFlag();
     $template                     = Template::getInstance();
     $oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
@@ -107,7 +123,7 @@ if (!JTL_INCLUDE_ONLY_DB) {
         $bAdminWartungsmodus = true;
     }
     Sprache::getInstance();
+    Shop::bootstrap();
     require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
     $debugbar->addCollector(new SmartyCollector(Shop::Smarty()));
-    Shop::bootstrap();
 }

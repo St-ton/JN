@@ -6,8 +6,7 @@
 require_once __DIR__ . '/globalinclude.php';
 require_once PFAD_ROOT . PFAD_FLASHCHART . 'php-ofc-library/open-flash-chart.php';
 
-// kArtikel;kKundengruppe;kSteuerklasse;fMwSt
-list($_GET['kArtikel'], $_GET['kKundengruppe'], $_GET['kSteuerklasse'], $_GET['fMwSt']) = explode(';', $_GET['cOption']);
+[$_GET['kArtikel'], $_GET['kKundengruppe'], $_GET['kSteuerklasse'], $_GET['fMwSt']] = explode(';', $_GET['cOption']);
 
 if (!isset($_GET['kKundengruppe'])) {
     $_GET['kKundengruppe'] = 1;
@@ -20,9 +19,11 @@ if (!isset($_GET['kSteuerklasse'])) {
  * @param array $data
  * @param int   $max
  * @return mixed
+ * @deprecated since 5.0.0
  */
 function expandPriceArray($data, $max)
 {
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     for ($i = 1; $i <= $max; $i++) {
         if ($i > 1 && !isset($data[$i])) {
             $data[$i] = $data[$i - 1];
@@ -42,12 +43,12 @@ if (isset($_GET['kArtikel'])) {
 
     if (count($Einstellungen) > 0) {
         $oPreisConfig           = new stdClass();
-        $oPreisConfig->Waehrung = Session::Currency()->getName();
-        $oPreisConfig->Netto    = Session::CustomerGroup()->isMerchant()
+        $oPreisConfig->Waehrung = \Session\Session::getCurrency()->getName();
+        $oPreisConfig->Netto    = \Session\Session::getCustomerGroup()->isMerchant()
             ? 0
             : $_GET['fMwSt'];
+
         $oVerlauf_arr = (new Preisverlauf())->gibPreisverlauf($kArtikel, $kKundengruppe, $nMonat);
-        // Array drehen :D
         $oVerlauf_arr = array_reverse($oVerlauf_arr);
         $data         = [];
         foreach ($oVerlauf_arr as $oItem) {

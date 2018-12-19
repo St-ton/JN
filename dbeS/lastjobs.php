@@ -4,82 +4,73 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\FileSystem;
+
 require_once __DIR__ . '/syncinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 
 if (auth()) {
-    Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
-    $cError = '';
-    // TMP Verzeichnis leeren
+    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
     if (!KEEP_SYNC_FILES) {
-        delDirRecursively(PFAD_ROOT . PFAD_DBES_TMP);
+        FileSystem::delDirRecursively(PFAD_ROOT . PFAD_DBES_TMP);
     }
 
     LastJob::getInstance()->finishStdJobs();
 
-    $oLastJob_arr = getJobs();
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('LastJob Job Array: ' .
-            print_r($oLastJob_arr, true), JTLLOG_LEVEL_DEBUG, false, 'LastJob Job Array');
-    }
-
-    if (is_array($oLastJob_arr) && count($oLastJob_arr) > 0) {
-        $conf = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_SITEMAP]);
-
-        foreach ($oLastJob_arr as $oLastJob) {
-            if (isset($oLastJob->nJob) && (int)$oLastJob->nJob > 0) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('Lastjobs Job: ' .
-                        print_r($oLastJob, true), JTLLOG_LEVEL_DEBUG, false, 'nJob', $oLastJob->nJob);
+    $cError = '';
+    $jobs   = getJobs();
+    $conf   = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_SITEMAP]);
+    foreach ($jobs as $oLastJob) {
+        switch ((int)$oLastJob->nJob) {
+            case LASTJOBS_BEWERTUNGSERINNNERUNG:
+                require_once PFAD_ROOT . PFAD_ADMIN . 'includes/bewertungserinnerung.php';
+                baueBewertungsErinnerung();
+                updateJob(LASTJOBS_BEWERTUNGSERINNNERUNG);
+                break;
+            case LASTJOBS_SITEMAP:
+                if ($conf['sitemap']['sitemap_wawiabgleich'] === 'Y') {
+                    $db           = Shop::Container()->getDB();
+                    $config       = Shop::getSettings([CONF_GLOBAL, CONF_SITEMAP]);
+                    $exportConfig = new \Sitemap\Config\DefaultConfig(
+                        $db,
+                        $config,
+                        Shop::getURL() . '/',
+                        Shop::getImageBaseURL()
+                    );
+                    $exporter     = new \Sitemap\Export(
+                        $db,
+                        Shop::Container()->getLogService(),
+                        new \Sitemap\ItemRenderers\DefaultRenderer(),
+                        new \Sitemap\SchemaRenderers\DefaultSchemaRenderer(),
+                        $config
+                    );
+                    $exporter->generate(
+                        [Kundengruppe::getDefaultGroupID()],
+                        Sprache::getAllLanguages(),
+                        $exportConfig->getFactories()
+                    );
+                    updateJob(LASTJOBS_SITEMAP);
                 }
-                switch ((int)$oLastJob->nJob) {
-                    // Bewertungserinnerung
-                    case LASTJOBS_BEWERTUNGSERINNNERUNG:
-                        require_once PFAD_ROOT . PFAD_ADMIN . 'includes/bewertungserinnerung.php';
-                        baueBewertungsErinnerung();
-                        updateJob(LASTJOBS_BEWERTUNGSERINNNERUNG);
-                        break;
-
-                    // Sitemap
-                    case LASTJOBS_SITEMAP:
-                        if (isset($conf['sitemap']['sitemap_wawiabgleich']) &&
-                            $conf['sitemap']['sitemap_wawiabgleich'] === 'Y'
-                        ) {
-                            require_once PFAD_ROOT . PFAD_ADMIN . 'includes/sitemapexport.php';
-                            generateSitemapXML();
-                            updateJob(LASTJOBS_SITEMAP);
-                        }
-                        break;
-
-                    // RSS
-                    case LASTJOBS_RSS:
-                        if (isset($conf['rss']['rss_wawiabgleich']) &&
-                            $conf['rss']['rss_wawiabgleich'] === 'Y'
-                        ) {
-                            require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'rss_inc.php';
-                            generiereRSSXML();
-                            updateJob(LASTJOBS_RSS);
-                        }
-                        break;
-
-                    // GarbageCollector
-                    case LASTJOBS_GARBAGECOLLECTOR:
-                        if (isset($conf['global']['garbagecollector_wawiabgleich']) &&
-                            $conf['global']['garbagecollector_wawiabgleich'] === 'Y'
-                        ) {
-                            Shop::Container()->getDBServiceGC()->run();
-                            updateJob(LASTJOBS_GARBAGECOLLECTOR);
-                        }
-                        break;
+                break;
+            case LASTJOBS_RSS:
+                if ($conf['rss']['rss_wawiabgleich'] === 'Y') {
+                    require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'rss_inc.php';
+                    generiereRSSXML();
+                    updateJob(LASTJOBS_RSS);
                 }
-            }
+                break;
+            case LASTJOBS_GARBAGECOLLECTOR:
+                if ($conf['global']['garbagecollector_wawiabgleich'] === 'Y') {
+                    Shop::Container()->getDBServiceGC()->run();
+                    updateJob(LASTJOBS_GARBAGECOLLECTOR);
+                }
+                break;
+            default:
+                break;
         }
     }
     die('0');
-}
-if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-    Jtllog::writeLog('BEENDE: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'lastjobs');
 }
 die('3');
 

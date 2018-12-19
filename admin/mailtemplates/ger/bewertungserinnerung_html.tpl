@@ -11,7 +11,7 @@ Zur Abgabe einer Bewertung klicken Sie einfach auf eines Ihrer erworbenen Produk
         <tr>
             <td valign="top" style="padding-bottom:5px;">
                 {if $Position->nPosTyp==1}
-                    <a href="{$ShopURL}/index.php?a={$Position->kArtikel}&bewertung_anzeigen=1"><strong>{$Position->cName}</strong> ({$Position->cArtNr})</a>
+                    <a href="{$ShopURL}/index.php?a={$Position->kArtikel}&bewertung_anzeigen=1#tab-votes"><strong>{$Position->cName}</strong> ({$Position->cArtNr})</a>
                     {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
                         <br><strong>{$WKPosEigenschaft->cEigenschaftName}</strong>: {$WKPosEigenschaft->cEigenschaftWertName}
                     {/foreach}

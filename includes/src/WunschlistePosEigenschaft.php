@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\GeneralObject;
+
 /**
  * Class WunschlistePosEigenschaft
  */
@@ -71,11 +73,11 @@ class WunschlistePosEigenschaft
     /**
      * @return $this
      */
-    public function schreibeDB()
+    public function schreibeDB(): self
     {
         $this->kWunschlistePosEigenschaft = Shop::Container()->getDB()->insert(
             'twunschlisteposeigenschaft',
-            kopiereMembers($this)
+            GeneralObject::copyMembers($this)
         );
 
         return $this;

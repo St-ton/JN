@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 <ul class="{if isset($class)}{$class}{else}nav nav-list{/if}">
     {if $NaviFilter->hasPriceRangeFilter()}
         {if $NaviFilter->getPriceRangeFilter()->getOffsetStart() >= 0 && $NaviFilter->getPriceRangeFilter()->getOffsetEnd() > 0}
@@ -11,7 +15,7 @@
             </li>
         {/if}
     {else}
-        {foreach name=preisspannen from=$Suchergebnisse->Preisspanne item=oPreisspannenfilter}
+        {foreach $Suchergebnisse->Preisspanne as $oPreisspannenfilter}
             <li>
                 <a href="{$oPreisspannenfilter->cURL}" rel="nofollow">
                     <span class="badge pull-right">{$oPreisspannenfilter->nAnzahlArtikel}</span>

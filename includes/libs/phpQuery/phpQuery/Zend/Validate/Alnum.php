@@ -57,17 +57,17 @@ class Zend_Validate_Alnum extends Zend_Validate_Abstract
      *
      * @var Zend_Filter_Alnum
      */
-    protected static $_filter = null;
+    protected static $_filter;
 
     /**
      * Validation failure message template definitions
      *
      * @var array
      */
-    protected $_messageTemplates = array(
+    protected $_messageTemplates = [
         self::NOT_ALNUM    => "'%value%' has not only alphabetic and digit characters",
         self::STRING_EMPTY => "'%value%' is an empty string"
-    );
+    ];
 
     /**
      * Sets default option values for this instance

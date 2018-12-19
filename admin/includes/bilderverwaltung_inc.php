@@ -4,18 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\URL;
+
 /**
  * @param bool $filesize
  * @return array
  * @throws Exception
  */
-function getItems($filesize = false)
+function getItems(bool $filesize = false)
 {
-    $smarty = JTLSmarty::getInstance(false, true);
-    $smarty->configLoad('german.conf', 'bilderverwaltung');
-
     $item = (object) [
-        'name'  => $smarty->config_vars['typeProduct'],
+        'name'  => __('typeProduct'),
         'type'  => Image::TYPE_PRODUCT,
         'stats' => MediaImage::getStats(Image::TYPE_PRODUCT, $filesize)
     ];
@@ -39,11 +38,10 @@ function loadStats($type)
 
 /**
  * @param int $index
- * @return stdClass
+ * @return stdClass|IOError
  */
-function cleanupStorage($index)
+function cleanupStorage(int $index)
 {
-    $index      = (int)$index;
     $startIndex = $index;
 
     if ($index === null) {
@@ -113,16 +111,18 @@ function cleanupStorage($index)
  * @param bool   $isAjax
  * @return array
  */
-function clearImageCache($type, $isAjax = false)
+function clearImageCache($type, bool $isAjax = false)
 {
     if ($type !== null && preg_match('/[a-z]*/', $type)) {
         MediaImage::clearCache($type);
         unset($_SESSION['image_count'], $_SESSION['renderedImages']);
         if ($isAjax === true) {
-            return ['success' => 'Cache wurde erfolgreich zur&uuml;ckgesetzt'];
+            return ['success' => 'Cache wurde erfolgreich zurückgesetzt'];
         }
-        Shop::Smarty()->assign('success', 'Cache wurde erfolgreich zur&uuml;ckgesetzt');
+        Shop::Smarty()->assign('success', 'Cache wurde erfolgreich zurückgesetzt');
     }
+
+    return [];
 }
 
 /**
@@ -131,10 +131,8 @@ function clearImageCache($type, $isAjax = false)
  * @return IOError|object
  * @throws Exception
  */
-function generateImageCache($type, $index)
+function generateImageCache($type, int $index)
 {
-    $index = (int)$index;
-
     if ($type === null || $index === null) {
         return new IOError('Invalid argument request', 500);
     }
@@ -186,25 +184,27 @@ function generateImageCache($type, $index)
  * @return array
  * @throws Exception
  */
-function getCorruptedImages($type, $limit)
+function getCorruptedImages($type, int $limit)
 {
-    static $offset = 0;
+    static $offset   = 0;
     $corruptedImages = [];
     $totalImages     = count(MediaImage::getImages($type));
-
     do {
         $images = MediaImage::getImages($type, false, $offset, $limit);
         foreach ($images as $image) {
-            $raw = $image->getRaw(true);
             $fallback = $image->getFallbackThumb(Image::SIZE_XS);
-            if (!file_exists($raw) && !file_exists(PFAD_ROOT . $fallback)) {
-                $corruptedImage  = (object) [
+            if (!file_exists($image->getRaw(true)) && !file_exists(PFAD_ROOT . $fallback)) {
+                $corruptedImage            = (object)[
                     'article' => [],
                     'picture' => ''
                 ];
-                $articleDB           = Shop::Container()->getDB()->select('tartikel', 'kArtikel', $image->getId());
-                $articleDB->cURLFull = baueURL($articleDB, URLART_ARTIKEL, 0, false, true);
-                $article             = (object) [
+                $articleDB                 = Shop::Container()->getDB()->select(
+                    'tartikel',
+                    'kArtikel',
+                    $image->getId()
+                );
+                $articleDB->cURLFull       = URL::buildURL($articleDB, URLART_ARTIKEL, true);
+                $article                   = (object)[
                     'articleNr'      => $articleDB->cArtNr,
                     'articleURLFull' => $articleDB->cURLFull
                 ];
@@ -218,7 +218,7 @@ function getCorruptedImages($type, $limit)
             }
         }
         $offset += count($images);
-    } while(count($corruptedImages) < $limit && $offset < $totalImages);
+    } while (count($corruptedImages) < $limit && $offset < $totalImages);
 
     return [Image::TYPE_PRODUCT => array_slice($corruptedImages, 0, $limit)];
 }

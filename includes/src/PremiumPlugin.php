@@ -9,7 +9,7 @@
  */
 class PremiumPlugin
 {
-    const CERTIFICATION_LOGO = 'https://images.jtl-software.de/servicepartner/cert/jtl_certified_128.png';
+    public const CERTIFICATION_LOGO = 'https://images.jtl-software.de/servicepartner/cert/jtl_certified_128.png';
 
     /**
      * @var array
@@ -22,14 +22,14 @@ class PremiumPlugin
     private $howTos = [];
 
     /**
-     * @var string
+     * @var stdClass
      */
-    private $longDescription = '';
+    private $longDescription;
 
     /**
-     * @var string
+     * @var stdClass
      */
-    private $shortDescription = '';
+    private $shortDescription;
 
     /**
      * @var string
@@ -101,21 +101,21 @@ class PremiumPlugin
      *
      * @param string $pluginID
      */
-    public function __construct($pluginID)
+    public function __construct(string $pluginID)
     {
-        $plugin            = Plugin::getPluginById($pluginID);
+        $plugin            = \Plugin\Helper::getPluginById($pluginID);
         $this->pluginID    = $pluginID;
         $this->exists      = file_exists(PFAD_ROOT . PFAD_PLUGIN . $pluginID . '/info.xml');
         $this->isInstalled = $plugin !== null && $plugin->kPlugin > 0;
-        $this->isActivated = $this->isInstalled && (int)$plugin->nStatus === 2;
+        $this->isActivated = $this->isInstalled && (int)$plugin->nStatus === \Plugin\State::ACTIVATED;
         $this->kPlugin     = $this->isInstalled ? (int)$plugin->kPlugin : 0;
     }
 
     /**
-     * @param string $id
+     * @param null|string $id
      * @return $this
      */
-    public function setPluginID($id)
+    public function setPluginID(?string $id): self
     {
         $this->pluginID = $id;
 
@@ -126,7 +126,7 @@ class PremiumPlugin
      * @param string $link
      * @return $this
      */
-    public function setDownloadLink($link)
+    public function setDownloadLink(string $link): self
     {
         $this->downloadLink = $link;
 
@@ -136,7 +136,7 @@ class PremiumPlugin
     /**
      * @return null|string
      */
-    public function getDownloadLink()
+    public function getDownloadLink(): ?string
     {
         return $this->downloadLink;
     }
@@ -145,7 +145,7 @@ class PremiumPlugin
      * @param string $color
      * @return $this
      */
-    public function setHeaderColor($color)
+    public function setHeaderColor(string $color): self
     {
         $this->headerColor = $color;
 
@@ -155,7 +155,7 @@ class PremiumPlugin
     /**
      * @return string
      */
-    public function getHeaderColor()
+    public function getHeaderColor(): string
     {
         return $this->headerColor;
     }
@@ -163,7 +163,7 @@ class PremiumPlugin
     /**
      * @return int
      */
-    public function getKPlugin()
+    public function getKPlugin(): int
     {
         return $this->kPlugin;
     }
@@ -171,7 +171,7 @@ class PremiumPlugin
     /**
      * @return string|null
      */
-    public function getPluginID()
+    public function getPluginID(): ?string
     {
         return $this->pluginID;
     }
@@ -179,7 +179,7 @@ class PremiumPlugin
     /**
      * @return bool
      */
-    public function getExists()
+    public function getExists(): bool
     {
         return $this->exists;
     }
@@ -187,7 +187,7 @@ class PremiumPlugin
     /**
      * @return bool
      */
-    public function getIsActivated()
+    public function getIsActivated(): bool
     {
         return $this->isActivated;
     }
@@ -195,7 +195,7 @@ class PremiumPlugin
     /**
      * @return bool
      */
-    public function getIsInstalled()
+    public function getIsInstalled(): bool
     {
         return $this->isInstalled;
     }
@@ -204,7 +204,7 @@ class PremiumPlugin
      * @param stdClass $sp
      * @return $this
      */
-    public function setServicePartner($sp)
+    public function setServicePartner(stdClass $sp): self
     {
         $this->servicePartner = $sp;
 
@@ -214,7 +214,7 @@ class PremiumPlugin
     /**
      * @return null|stdClass
      */
-    public function getservicePartner()
+    public function getservicePartner(): ?stdClass
     {
         return $this->servicePartner;
     }
@@ -223,7 +223,7 @@ class PremiumPlugin
      * @param array $screenShots
      * @return $this
      */
-    public function setScreenshots(array $screenShots)
+    public function setScreenshots(array $screenShots): self
     {
         $this->screenShots = $screenShots;
 
@@ -234,7 +234,7 @@ class PremiumPlugin
      * @param stdClass $screenShot
      * @return $this
      */
-    public function addScreenShot(stdClass $screenShot)
+    public function addScreenShot(stdClass $screenShot): self
     {
         $this->screenShots[] = $screenShot;
 
@@ -244,15 +244,15 @@ class PremiumPlugin
     /**
      * @return array
      */
-    public function getScreenShots()
+    public function getScreenShots(): array
     {
         return $this->screenShots;
     }
 
     /**
-     * @return null
+     * @return null|string
      */
-    public function getAuthor()
+    public function getAuthor(): ?string
     {
         return $this->author;
     }
@@ -261,7 +261,7 @@ class PremiumPlugin
      * @param string $author
      * @return $this
      */
-    public function setAuthor($author)
+    public function setAuthor(string $author): self
     {
         $this->author = $author;
 
@@ -271,7 +271,7 @@ class PremiumPlugin
     /**
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -280,7 +280,7 @@ class PremiumPlugin
      * @param string $title
      * @return $this
      */
-    public function setTitle($title)
+    public function setTitle(string $title): self
     {
         $this->title = $title;
 
@@ -292,7 +292,7 @@ class PremiumPlugin
      * @param string $description
      * @return $this
      */
-    public function setLongDescription($title, $description)
+    public function setLongDescription(string $title, string $description): self
     {
         $this->longDescription        = new stdClass();
         $this->longDescription->title = $title;
@@ -302,9 +302,9 @@ class PremiumPlugin
     }
 
     /**
-     * @return string
+     * @return stdClass
      */
-    public function getLongDescription()
+    public function getLongDescription(): stdClass
     {
         return $this->longDescription;
     }
@@ -314,7 +314,7 @@ class PremiumPlugin
      * @param string $description
      * @return $this
      */
-    public function setShortDescription($title, $description)
+    public function setShortDescription(string $title, string $description): self
     {
         $this->shortDescription        = new stdClass();
         $this->shortDescription->title = $title;
@@ -324,9 +324,9 @@ class PremiumPlugin
     }
 
     /**
-     * @return string
+     * @return stdClass
      */
-    public function getShortDescription()
+    public function getShortDescription(): stdClass
     {
         return $this->shortDescription;
     }
@@ -335,7 +335,7 @@ class PremiumPlugin
      * @param string $advantage
      * @return $this
      */
-    public function addAdvantage($advantage)
+    public function addAdvantage(string $advantage): self
     {
         $this->advantages[] = $advantage;
 
@@ -346,7 +346,7 @@ class PremiumPlugin
      * @param array $advantages
      * @return $this
      */
-    public function setAdvantages(array $advantages)
+    public function setAdvantages(array $advantages): self
     {
         $this->advantages = $advantages;
 
@@ -356,7 +356,7 @@ class PremiumPlugin
     /**
      * @return array
      */
-    public function getAdvantages()
+    public function getAdvantages(): array
     {
         return $this->advantages;
     }
@@ -365,7 +365,7 @@ class PremiumPlugin
      * @param string $howTo
      * @return $this
      */
-    public function addHowTo($howTo)
+    public function addHowTo(string $howTo): self
     {
         $this->howTos[] = $howTo;
 
@@ -376,7 +376,7 @@ class PremiumPlugin
      * @param array $howTos
      * @return $this
      */
-    public function setHowTos(array $howTos)
+    public function setHowTos(array $howTos): self
     {
         $this->howTos = $howTos;
 
@@ -386,7 +386,7 @@ class PremiumPlugin
     /**
      * @return array
      */
-    public function getHowTos()
+    public function getHowTos(): array
     {
         return $this->howTos;
     }
@@ -396,7 +396,7 @@ class PremiumPlugin
      * @param bool   $relative
      * @return $this
      */
-    public function addBadge($url, $relative = true)
+    public function addBadge(string $url, bool $relative = true): self
     {
         $this->badges[] = $relative
             ? (Shop::getURL() . '/' . PFAD_ADMIN . PFAD_GFX . 'PremiumPlugins/' . $url)
@@ -409,7 +409,7 @@ class PremiumPlugin
      * @param array $badges
      * @return $this
      */
-    public function setBadges(array $badges)
+    public function setBadges(array $badges): self
     {
         $this->badges = $badges;
 
@@ -419,7 +419,7 @@ class PremiumPlugin
     /**
      * @return array
      */
-    public function getBadges()
+    public function getBadges(): array
     {
         return $this->badges;
     }
@@ -427,7 +427,7 @@ class PremiumPlugin
     /**
      * @return string
      */
-    public function getCertifcationLogo()
+    public function getCertifcationLogo(): string
     {
         return self::CERTIFICATION_LOGO;
     }
@@ -435,7 +435,7 @@ class PremiumPlugin
     /**
      * @return array
      */
-    public function getButtons()
+    public function getButtons(): array
     {
         return $this->buttons;
     }
@@ -448,8 +448,13 @@ class PremiumPlugin
      * @param bool        $external
      * @return $this
      */
-    public function addButton($caption, $link, $class = 'btn btn-default', $fa = null, bool $external = false)
-    {
+    public function addButton(
+        string $caption,
+        string $link,
+        string $class = 'btn btn-default',
+        string $fa = null,
+        bool $external = false
+    ): self {
         $btn           = new stdClass();
         $btn->link     = $link;
         $btn->caption  = $caption;
@@ -469,6 +474,7 @@ class PremiumPlugin
      */
     public function hasCertifcates(): bool
     {
-        return isset($this->servicePartner->oZertifizierungen_arr) && count($this->servicePartner->oZertifizierungen_arr) > 0;
+        return isset($this->servicePartner->oZertifizierungen_arr)
+            && count($this->servicePartner->oZertifizierungen_arr) > 0;
     }
 }

@@ -171,7 +171,7 @@ class Zend_Registry extends ArrayObject
      * or FALSE if $index was not found in the registry.
      *
      * @param  string $index
-     * @return boolean
+     * @return bool
      */
     public static function isRegistered($index)
     {
@@ -183,7 +183,7 @@ class Zend_Registry extends ArrayObject
 
     /**
      * @param string $index
-     * @returns mixed
+     * @return mixed
      *
      * Workaround for http://bugs.php.net/bug.php?id=40442 (ZF-960).
      */

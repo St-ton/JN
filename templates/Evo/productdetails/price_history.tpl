@@ -1,8 +1,7 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
-
 <div>
     <canvas id="priceHistoryChart" width="400" height="150"></canvas>
 </div>
@@ -26,7 +25,7 @@
         ]
     {rdelim};
 
-    {foreach from=$preisverlaufData|array_reverse item=pv}
+    {foreach $preisverlaufData|array_reverse as $pv}
     chartData.labels.push('{$pv->date}');
     chartData.datasets[0].data.push('{$pv->fPreis}');
     chartDataCurrency = '{$pv->currency}';

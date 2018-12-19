@@ -6,15 +6,19 @@
 
 namespace Session;
 
+use phpDocumentor\Reflection\Types\Self_;
 use Session\Handler\SessionHandlerDB;
 use Session\Handler\SessionHandlerJTL;
 
 /**
  * Class AdminSession
+ * @package Session
  */
 class AdminSession
 {
-    const DEFAULT_SESSION = 'JTLSHOP';
+    public const DEFAULT_SESSION = 'JTLSHOP';
+
+    public const SESSION_HASH_KEY = 'session.hash';
 
     /**
      * @var int
@@ -34,14 +38,14 @@ class AdminSession
     /**
      * @var AdminSession
      */
-    private static $_instance;
+    private static $instance;
 
     /**
      * @return AdminSession
      */
     public static function getInstance(): self
     {
-        return self::$_instance ?? new self();
+        return self::$instance ?? new self();
     }
 
     /**
@@ -49,14 +53,14 @@ class AdminSession
      */
     public function __construct()
     {
-        self::$_instance = $this;
-        session_name('eSIdAdm');
+        self::$instance = $this;
+        \session_name('eSIdAdm');
 
-        self::$handler = ES_SESSIONS === 1
+        self::$handler  = \ES_SESSIONS === 1
             ? new SessionHandlerDB(\Shop::Container()->getDB(), 'tadminsession')
             : new SessionHandlerJTL();
-        $conf           = \Shop::getSettings([CONF_GLOBAL])['global'];
-        $cookieDefaults = session_get_cookie_params();
+        $conf           = \Shop::getSettings([\CONF_GLOBAL])['global'];
+        $cookieDefaults = \session_get_cookie_params();
         $set            = false;
         $lifetime       = $cookieDefaults['lifetime'] ?? 0;
         $path           = $cookieDefaults['path'] ?? '';
@@ -75,8 +79,8 @@ class AdminSession
             $set    = true;
             $domain = $conf['global_cookie_domain'];
         }
-        if (isset($conf['global_cookie_lifetime']) 
-            && is_numeric($conf['global_cookie_lifetime']) 
+        if (isset($conf['global_cookie_lifetime'])
+            && \is_numeric($conf['global_cookie_lifetime'])
             && (int)$conf['global_cookie_lifetime'] > 0
         ) {
             $set      = true;
@@ -92,16 +96,16 @@ class AdminSession
             $httpOnly = $httpOnly === true && $conf['kaufabwicklung_ssl_nutzen'] === 'N';
         }
         if ($set === true) {
-            session_set_cookie_params($lifetime, $path, $domain, $secure, $httpOnly);
+            \session_set_cookie_params($lifetime, $path, $domain, $secure, $httpOnly);
         }
-        self::$storage = new SessionStorage(self::$handler, []);
+        self::$storage = new SessionStorage(self::$handler);
 
         if ($set === true) {
-            $exp = ($lifetime === 0) ? 0 : time() + $lifetime;
-            setcookie(session_name(), session_id(), $exp, $path, $domain, $secure, $httpOnly);
+            $exp = ($lifetime === 0) ? 0 : \time() + $lifetime;
+            \setcookie(\session_name(), \session_id(), $exp, $path, $domain, $secure, $httpOnly);
         }
         if (!isset($_SESSION['jtl_token'])) {
-            $_SESSION['jtl_token'] = generateCSRFToken();
+            $_SESSION['jtl_token'] = \Shop::Container()->getCryptoService()->randomString(32);
         }
         if (!isset($_SESSION['kSprache'])) {
             $lang                    = \Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
@@ -114,10 +118,10 @@ class AdminSession
             $_SESSION['cISOSprache'] = $lang->cISO ?? 'ger';
         }
         \Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
-        if (isset($_SESSION['Kundengruppe']) && get_class($_SESSION['Kundengruppe']) === 'stdClass') {
+        if (isset($_SESSION['Kundengruppe']) && \get_class($_SESSION['Kundengruppe']) === 'stdClass') {
             $_SESSION['Kundengruppe'] = new \Kundengruppe($_SESSION['Kundengruppe']->kKundengruppe);
         }
-        if (isset($_SESSION['Waehrung']) && get_class($_SESSION['Waehrung']) === 'stdClass') {
+        if (isset($_SESSION['Waehrung']) && \get_class($_SESSION['Waehrung']) === 'stdClass') {
             $_SESSION['Waehrung'] = new \Currency($_SESSION['Waehrung']->kWaehrung);
         }
         if (empty($_SESSION['Sprachen'])) {
@@ -144,5 +148,31 @@ class AdminSession
     public static function set($key, $value)
     {
         return self::$handler->set($key, $value);
+    }
+
+    /**
+     * @return string
+     */
+    public static function createHash(): string
+    {
+        return \mhash(\MHASH_SHA1, \Shop::getApplicationVersion());
+    }
+
+    /**
+     * @return $this
+     */
+    public function reHash(): self
+    {
+        self::set(self::SESSION_HASH_KEY, self::createHash());
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isValid(): bool
+    {
+        return self::get(self::SESSION_HASH_KEY, '') === self::createHash();
     }
 }

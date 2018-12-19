@@ -59,12 +59,11 @@ class IOResponse implements JsonSerializable
         $filtered = $arguments;
 
         array_walk($filtered, function (&$value, $key) {
-
             switch (gettype($value)) {
                 case 'array':
                 case 'object':
                 case 'string':
-                    $value = utf8_convert_recursive($value);
+                    $value = StringHandler::utf8_convert_recursive($value);
                     $value = json_encode($value);
                     break;
 
@@ -96,20 +95,20 @@ class IOResponse implements JsonSerializable
             $orange = 'background: #e86c00; color: #fff;';
             $grey   = 'background: #e8e8e8; color: #333;';
 
-            $args = json_encode(utf8_convert_recursive($arguments));
+            $args = json_encode(StringHandler::utf8_convert_recursive($arguments));
 
             $this->script("console.groupCollapsed('%c CALL %c {$function}()', '$orange', '$reset');");
             $this->script("console.log('%c METHOD %c {$function}()', '$grey', '$reset');");
-            $this->script("console.log('%c PARAMS %c', '$grey', '$reset', " . $args . ");");
+            $this->script("console.log('%c PARAMS %c', '$grey', '$reset', " . $args . ');');
 
             $this->script("console.groupCollapsed('%c TOGGLE DEBUG TRACE %c', '$grey', '$reset');");
 
             foreach ($this->generateCallTrace() as $trace) {
-                $this->script("console.log('%c TRACE %c', '$grey', '$reset', " . json_encode($trace) . ");");
+                $this->script("console.log('%c TRACE %c', '$grey', '$reset', " . json_encode($trace) . ');');
             }
 
-            $this->script("console.groupEnd();");
-            $this->script("console.groupEnd();");
+            $this->script('console.groupEnd();');
+            $this->script('console.groupEnd();');
         }
 
         return $this;

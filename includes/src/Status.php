@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Template;
 use function Functional\some;
 
 /**
@@ -35,7 +36,7 @@ class Status
     /**
      * @return \Cache\JTLCacheInterface
      */
-    protected function getObjectCache()
+    protected function getObjectCache(): \Cache\JTLCacheInterface
     {
         return Shop::Container()->getCache()->setJtlCacheConfig();
     }
@@ -44,7 +45,7 @@ class Status
      * @return stdClass
      * @throws Exception
      */
-    protected function getImageCache()
+    protected function getImageCache(): stdClass
     {
         return MediaImage::getStats(Image::TYPE_PRODUCT, false);
     }
@@ -52,7 +53,7 @@ class Status
     /**
      * @return stdClass
      */
-    protected function getSystemLogInfo()
+    protected function getSystemLogInfo(): stdClass
     {
         $conf = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
 
@@ -65,7 +66,6 @@ class Status
 
     /**
      * checks the db-structure against 'admin/includes/shopmd5files/dbstruct_[shop-version].json'
-     * (the 'shop-Version' is here needed without points)
      *
      * @return bool  true='no errors', false='something is wrong'
      */
@@ -81,18 +81,35 @@ class Status
 
     /**
      * checks the shop-filesystem-structure against 'admin/includes/shopmd5files/[shop-version].csv'
-     * (the 'shop-Version' is here needed without points)
      *
      * @return bool  true='no errors', false='something is wrong'
      */
-    protected function validFileStruct(): bool
+    protected function validModifiedFileStruct(): bool
     {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
 
-        $files = $stats = [];
+        $files = [];
+        $stats = 0;
 
-        return getAllFiles($files, $stats) === 1
-            ? end($stats) === 0
+        return getAllModifiedFiles($files, $stats) === 1
+            ? $stats === 0
+            : false;
+    }
+
+    /**
+     * checks the shop-filesystem-structure against 'admin/includes/shopmd5files/deleted_files_[shop-version].csv'
+     *
+     * @return bool  true='no errors', false='something is wrong'
+     */
+    protected function validOrphanedFilesStruct(): bool
+    {
+        require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
+
+        $files = [];
+        $stats = 0;
+
+        return getAllOrphanedFiles($files, $stats) === 1
+            ? $stats === 0
             : false;
     }
 
@@ -113,26 +130,30 @@ class Status
     {
         $sharedPlugins = [];
         $sharedHookIds = Shop::Container()->getDB()->query(
-            "SELECT nHook
+            'SELECT nHook
                 FROM tpluginhook
                 GROUP BY nHook
-                HAVING COUNT(DISTINCT kPlugin) > 1",
+                HAVING COUNT(DISTINCT kPlugin) > 1',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($sharedHookIds as $hookData) {
-            $hookId                 = (int)$hookData->nHook;
-            $sharedPlugins[$hookId] = [];
-            $plugins                = Shop::Container()->getDB()->query(
-                "SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID
+            $hookID                 = (int)$hookData->nHook;
+            $sharedPlugins[$hookID] = [];
+            $plugins                = Shop::Container()->getDB()->queryPrepared(
+                'SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID
                     FROM tpluginhook
                     INNER JOIN tplugin
                         ON tpluginhook.kPlugin = tplugin.kPlugin
-                    WHERE tpluginhook.nHook = " . $hookId . "
-                        AND tplugin.nStatus = 2",
+                    WHERE tpluginhook.nHook = :hook
+                        AND tplugin.nStatus = :state',
+                [
+                    'hook'  => $hookID,
+                    'state' => \Plugin\State::ACTIVATED
+                ],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($plugins as $plugin) {
-                $sharedPlugins[$hookId][$plugin->cPluginID] = $plugin;
+                $sharedPlugins[$hookID][$plugin->cPluginID] = $plugin;
             }
         }
 
@@ -141,6 +162,7 @@ class Status
 
     /**
      * @return bool
+     * @throws Exception
      */
     protected function hasPendingUpdates(): bool
     {
@@ -168,7 +190,7 @@ class Status
      */
     protected function hasDifferentTemplateVersion(): bool
     {
-        return JTL_VERSION != Template::getInstance()->getShopVersion();
+        return APPLICATION_VERSION !== Template::getInstance()->getVersion();
     }
 
     /**
@@ -178,7 +200,7 @@ class Status
     {
         $oTemplate = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
         if ($oTemplate !== null && isset($oTemplate->cTemplate)) {
-            $oTplData = TemplateHelper::getInstance()->getData($oTemplate->cTemplate);
+            $oTplData = Template::getInstance()->getData($oTemplate->cTemplate);
             if ($oTplData->bResponsive) {
                 $oMobileTpl = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'mobil');
                 if ($oMobileTpl !== null) {
@@ -219,7 +241,7 @@ class Status
     /**
      * @return array
      */
-    protected function getEnvironmentTests()
+    protected function getEnvironmentTests(): array
     {
         return (new Systemcheck_Environment())->executeTestGroup('Shop4');
     }
@@ -227,7 +249,7 @@ class Status
     /**
      * @return Systemcheck_Platform_Hosting
      */
-    protected function getPlatform()
+    protected function getPlatform(): Systemcheck_Platform_Hosting
     {
         return new Systemcheck_Platform_Hosting();
     }
@@ -242,7 +264,7 @@ class Status
         $lines = explode('  ', $stats);
 
         $lines = array_map(function ($v) {
-            list($key, $value) = explode(':', $v, 2);
+            [$key, $value] = explode(':', $v, 2);
 
             return ['key' => trim($key), 'value' => trim($value)];
         }, $lines);
@@ -308,10 +330,10 @@ class Status
     protected function getOrphanedCategories(bool $has = true)
     {
         $categories = Shop::Container()->getDB()->query(
-            "SELECT kKategorie, cName
+            'SELECT kKategorie, cName
                 FROM tkategorie
                 WHERE kOberkategorie > 0
-                    AND kOberkategorie NOT IN (SELECT DISTINCT kKategorie FROM tkategorie)",
+                    AND kOberkategorie NOT IN (SELECT DISTINCT kKategorie FROM tkategorie)',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
@@ -330,18 +352,17 @@ class Status
         return isset($conf['suche_fulltext'])
             && $conf['suche_fulltext'] !== 'N'
             && (!Shop::Container()->getDB()->query(
-                    "SHOW INDEX 
-                    FROM tartikel 
-                    WHERE KEY_NAME = 'idx_tartikel_fulltext'",
-                    \DB\ReturnType::SINGLE_OBJECT
-                )
-                || !Shop::Container()->getDB()->query(
-                    "SHOW INDEX 
-                        FROM tartikelsprache 
-                        WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
-                    \DB\ReturnType::SINGLE_OBJECT
-                )
-            );
+                "SHOW INDEX 
+                FROM tartikel 
+                WHERE KEY_NAME = 'idx_tartikel_fulltext'",
+                \DB\ReturnType::SINGLE_OBJECT
+            )
+            || !Shop::Container()->getDB()->query(
+                "SHOW INDEX 
+                    FROM tartikelsprache 
+                    WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
+                \DB\ReturnType::SINGLE_OBJECT
+            ));
     }
 
     /**
@@ -429,15 +450,28 @@ class Status
     protected function needPasswordRehash2FA(): bool
     {
         $passwordService = Shop::Container()->getPasswordService();
-        $hashes          = Shop::Container()->getDB()->query("
-            SELECT *
+        $hashes          = Shop::Container()->getDB()->query(
+            'SELECT *
                 FROM tadmin2facodes
-                GROUP BY kAdminlogin",
+                GROUP BY kAdminlogin',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
         return some($hashes, function ($hash) use ($passwordService) {
             return $passwordService->needsRehash($hash->cEmergencyCode);
         });
+    }
+
+    /**
+     * @return array
+     */
+    public function getDuplicateLinkGroupTemplateNames(): array
+    {
+        return Shop::Container()->getDB()->query(
+            'SELECT * FROM tlinkgruppe
+                GROUP BY cTemplatename
+                HAVING COUNT(*) > 1',
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
     }
 }

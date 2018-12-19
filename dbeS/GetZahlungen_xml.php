@@ -13,7 +13,8 @@ if (auth()) {
         "SELECT *, date_format(dZeit, '%d.%m.%Y') AS dZeit_formatted
             FROM tzahlungseingang
             WHERE cAbgeholt = 'N'
-            ORDER BY kZahlungseingang", 9
+            ORDER BY kZahlungseingang",
+        \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
     );
     $xml_obj['zahlungseingaenge attr']['anzahl']      = count($xml_obj['zahlungseingaenge']['tzahlungseingang']);
     for ($i = 0; $i < $xml_obj['zahlungseingaenge attr']['anzahl']; $i++) {

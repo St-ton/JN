@@ -3,220 +3,251 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'news_inc.php';
 
 $oAccount->permission('RESET_SHOP_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
-if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && validateToken()) {
+$db       = Shop::Container()->getDB();
+if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && Form::validateToken()) {
     $cOption_arr = $_POST['cOption_arr'];
     if (is_array($cOption_arr) && count($cOption_arr) > 0) {
         foreach ($cOption_arr as $cOption) {
             switch ($cOption) {
                 // JTL-Wawi Inhalte
                 case 'artikel':
-                    Shop::Container()->getDB()->query("TRUNCATE tartikel", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tartikelabnahme", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tartikelattribut", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tartikelkategorierabatt", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tartikelkonfiggruppe", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tartikelmerkmal", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tartikelpict", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tartikelsichtbarkeit", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tartikelsonderpreis", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tartikelsprache", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tartikelwarenlager", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tattribut", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tattributsprache", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tbild", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE teigenschaft", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE teigenschaftkombiwert", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE teigenschaftsichtbarkeit", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE teigenschaftsprache", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE teigenschaftwert", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE teigenschaftwertabhaengigkeit", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE teigenschaftwertaufpreis", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE teigenschaftwertpict", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE teigenschaftwertsichtbarkeit", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE teigenschaftwertsprache", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE teinheit", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkategorie", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkategorieartikel", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkategorieattribut", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkategorieattributsprache", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkategoriekundengruppe", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkategoriemapping", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkategoriepict", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkategoriesichtbarkeit", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkategoriesprache", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tmediendatei", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tmediendateiattribut", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tmediendateisprache", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tmerkmal", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tmerkmalsprache", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tmerkmalwert", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tmerkmalwertbild", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tmerkmalwertsprache", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tpreise", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tpreis", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tpreisdetail", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tsonderpreise", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE txsell", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE txsellgruppe", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE thersteller", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE therstellersprache", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tlieferstatus", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkonfiggruppe", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkonfigitem", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkonfiggruppesprache", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkonfigitempreis", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkonfigitemsprache", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE twarenlager", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE twarenlagersprache", 4);
+                    $db->query('TRUNCATE tartikel', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tartikelabnahme', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tartikelattribut', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tartikelkategorierabatt', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tartikelkonfiggruppe', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tartikelmerkmal', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tartikelpict', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tartikelsichtbarkeit', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tartikelsonderpreis', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tartikelsprache', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tartikelwarenlager', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tattribut', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tattributsprache', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tbild', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE teigenschaft', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE teigenschaftkombiwert', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE teigenschaftsichtbarkeit', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE teigenschaftsprache', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE teigenschaftwert', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE teigenschaftwertabhaengigkeit', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE teigenschaftwertaufpreis', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE teigenschaftwertpict', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE teigenschaftwertsichtbarkeit', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE teigenschaftwertsprache', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE teinheit', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkategorie', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkategorieartikel', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkategorieattribut', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkategorieattributsprache', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkategoriekundengruppe', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkategoriemapping', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkategoriepict', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkategoriesichtbarkeit', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkategoriesprache', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tmediendatei', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tmediendateiattribut', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tmediendateisprache', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tmerkmal', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tmerkmalsprache', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tmerkmalwert', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tmerkmalwertbild', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tmerkmalwertsprache', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tpreise', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tpreis', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tpreisdetail', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tsonderpreise', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE txsell', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE txsellgruppe', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE thersteller', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE therstellersprache', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tlieferstatus', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkonfiggruppe', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkonfigitem', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkonfiggruppesprache', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkonfigitempreis', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkonfigitemsprache', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE twarenlager', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE twarenlagersprache', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tuploadschema', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tuploadschemasprache', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tmasseinheit', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tmasseinheitsprache', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tsteuerklasse', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tsteuersatz', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tsteuerzone', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tsteuerzoneland', \DB\ReturnType::DEFAULT);
 
-                    Shop::Container()->getDB()->query(
+                    $db->query(
                         "DELETE FROM tseo
                             WHERE cKey = 'kArtikel'
                             OR cKey = 'kKategorie'
                             OR cKey = 'kMerkmalWert'
-                            OR cKey = 'kHersteller'", 4
+                            OR cKey = 'kHersteller'",
+                        \DB\ReturnType::DEFAULT
                     );
                     break;
 
                 case 'revisions':
-                    Shop::Container()->getDB()->query("TRUNCATE trevisions", 4);
+                    $db->query('TRUNCATE trevisions', \DB\ReturnType::DEFAULT);
                     break;
 
                 // Shopinhalte
                 case 'news':
-                    $_index = Shop::Container()->getDB()->query("SELECT kNews FROM tnews;", 2);
+                    $_index = $db->query(
+                        'SELECT kNews FROM tnews',
+                        \DB\ReturnType::ARRAY_OF_OBJECTS
+                    );
                     foreach ($_index as $i) {
                         loescheNewsBilderDir($i->kNews, PFAD_ROOT . PFAD_NEWSBILDER);
                     }
-                    Shop::Container()->getDB()->query("TRUNCATE tnews", 4);
-                    Shop::Container()->getDB()->delete('trevisions', 'type', 'news', 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tnewskategorie", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tnewskategorienews", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tnewskommentar", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tnewsmonatsuebersicht", 4);
+                    $db->query('TRUNCATE tnews', \DB\ReturnType::DEFAULT);
+                    $db->delete('trevisions', 'type', 'news');
+                    $db->query('TRUNCATE tnewskategorie', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tnewskategorienews', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tnewskommentar', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tnewsmonatsuebersicht', \DB\ReturnType::DEFAULT);
 
-                    Shop::Container()->getDB()->query(
+                    $db->query(
                         "DELETE FROM tseo
                             WHERE cKey = 'kNews'
                               OR cKey = 'kNewsKategorie'
-                              OR cKey = 'kNewsMonatsUebersicht'", 4
+                              OR cKey = 'kNewsMonatsUebersicht'",
+                        \DB\ReturnType::DEFAULT
                     );
                     break;
 
                 case 'bestseller':
-                    Shop::Container()->getDB()->query("TRUNCATE tbestseller", 4);
+                    $db->query('TRUNCATE tbestseller', \DB\ReturnType::DEFAULT);
                     break;
 
                 case 'besucherstatistiken':
-                    Shop::Container()->getDB()->query("TRUNCATE tbesucher", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tbesucherarchiv", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tbesuchteseiten", 4);
+                    $db->query('TRUNCATE tbesucher', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tbesucherarchiv', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tbesuchteseiten', \DB\ReturnType::DEFAULT);
                     break;
 
                 case 'preisverlaeufe':
-                    Shop::Container()->getDB()->query("TRUNCATE tpreisverlauf", 4);
+                    $db->query('TRUNCATE tpreisverlauf', \DB\ReturnType::DEFAULT);
                     break;
 
                 case 'umfragen':
-                    Shop::Container()->getDB()->query("TRUNCATE tumfrage", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tumfragedurchfuehrung", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tumfragedurchfuehrungantwort", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tumfragefrage", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tumfragefrageantwort", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tumfragematrixoption", 4);
+                    $db->query('TRUNCATE tumfrage', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tumfragedurchfuehrung', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tumfragedurchfuehrungantwort', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tumfragefrage', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tumfragefrageantwort', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tumfragematrixoption', \DB\ReturnType::DEFAULT);
 
-                    Shop::Container()->getDB()->delete('tseo', 'cKey', 'kUmfrage');
+                    $db->delete('tseo', 'cKey', 'kUmfrage');
                     break;
 
                 case 'verfuegbarkeitsbenachrichtigungen':
-                    Shop::Container()->getDB()->query("TRUNCATE tverfuegbarkeitsbenachrichtigung", 4);
+                    $db->query(
+                        'TRUNCATE tverfuegbarkeitsbenachrichtigung',
+                        \DB\ReturnType::DEFAULT
+                    );
                     break;
 
                 // Benutzergenerierte Inhalte
                 case 'suchanfragen':
-                    Shop::Container()->getDB()->query("TRUNCATE tsuchanfrage", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tsuchanfrageerfolglos", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tsuchanfragemapping", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tsuchanfragencache", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tsuchcache", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tsuchcachetreffer", 4);
+                    $db->query('TRUNCATE tsuchanfrage', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tsuchanfrageerfolglos', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tsuchanfragemapping', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tsuchanfragencache', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tsuchcache', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tsuchcachetreffer', \DB\ReturnType::DEFAULT);
 
-                    Shop::Container()->getDB()->delete('tseo', 'cKey', 'kSuchanfrage');
+                    $db->delete('tseo', 'cKey', 'kSuchanfrage');
                     break;
 
                 case 'tags':
-                    Shop::Container()->getDB()->query("TRUNCATE ttagmapping", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE ttag", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE ttagartikel", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE ttagkunde", 4);
+                    $db->query('TRUNCATE ttagmapping', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE ttag', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE ttagartikel', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE ttagkunde', \DB\ReturnType::DEFAULT);
 
-                    Shop::Container()->getDB()->delete('tseo', 'cKey', 'kTag');
+                    $db->delete('tseo', 'cKey', 'kTag');
                     break;
 
                 case 'bewertungen':
-                    Shop::Container()->getDB()->query("TRUNCATE tartikelext", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tbewertung", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tbewertungguthabenbonus", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tbewertunghilfreich", 4);
+                    $db->query('TRUNCATE tartikelext', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tbewertung', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tbewertungguthabenbonus', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tbewertunghilfreich', \DB\ReturnType::DEFAULT);
                     break;
 
                 // Shopkunden & Kunden werben Kunden & Bestellungen & Kupons
                 case 'shopkunden':
-                    Shop::Container()->getDB()->query("TRUNCATE tkunde", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkundenattribut", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkundendatenhistory", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkundenfeld", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkundenfeldwert", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkundenherkunft", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkundenkontodaten", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkundenwerbenkunden", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tlieferadresse", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE twarenkorbpers", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE twarenkorbperspos", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE twarenkorbpersposeigenschaft", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE twunschliste", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE twunschlistepos", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE twunschlisteposeigenschaft", 4);
+                    $db->query('TRUNCATE tkunde', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkundenattribut', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkundendatenhistory', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkundenfeld', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkundenfeldwert', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkundenherkunft', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkundenkontodaten', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkundenwerbenkunden', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tlieferadresse', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE twarenkorbpers', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE twarenkorbperspos', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE twarenkorbpersposeigenschaft', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE twunschliste', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE twunschlistepos', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE twunschlisteposeigenschaft', \DB\ReturnType::DEFAULT);
                     break;
                 case 'kwerbenk':
-                    Shop::Container()->getDB()->query("TRUNCATE tkundenwerbenkunden", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkundenwerbenkundenbonus", 4);
+                    $db->query('TRUNCATE tkundenwerbenkunden', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkundenwerbenkundenbonus', \DB\ReturnType::DEFAULT);
                     break;
                 case 'bestellungen':
-                    Shop::Container()->getDB()->query("TRUNCATE tbestellid", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tbestellstatus", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tbestellung", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tlieferschein", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tlieferscheinpos", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tlieferscheinposinfo", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE twarenkorb", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE twarenkorbpers", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE twarenkorbperspos", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE twarenkorbpersposeigenschaft", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE twarenkorbpos", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE twarenkorbposeigenschaft", 4);
+                    $db->query('TRUNCATE tbestellid', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tbestellstatus', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tbestellung', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tlieferschein', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tlieferscheinpos', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tlieferscheinposinfo', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE twarenkorb', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE twarenkorbpers', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE twarenkorbperspos', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE twarenkorbpersposeigenschaft', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE twarenkorbpos', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE twarenkorbposeigenschaft', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tuploaddatei', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tuploadqueue', \DB\ReturnType::DEFAULT);
+
+                    $uploadfiles = glob(PFAD_UPLOADS . '*');
+
+                    foreach ($uploadfiles as $file) {
+                        if (is_file($file) && strpos($file, '.') !== 0) {
+                            unlink($file);
+                        }
+                    }
+
                     break;
                 case 'kupons':
-                    Shop::Container()->getDB()->query("TRUNCATE tkupon", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkuponbestellung", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkuponkunde", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkuponneukunde", 4);
-                    Shop::Container()->getDB()->query("TRUNCATE tkuponsprache", 4);
+                    $db->query('TRUNCATE tkupon', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkuponbestellung', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkuponkunde', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkuponneukunde', \DB\ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tkuponsprache', \DB\ReturnType::DEFAULT);
                     break;
             }
         }
-        Shop::Cache()->flushAll();
-        Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
-        $cHinweis = 'Der Shop wurde mit Ihren gew&auml;hlten Optionen zur&uuml;ckgesetzt.';
+        Shop::Container()->getCache()->flushAll();
+        $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
+        $cHinweis = 'Der Shop wurde mit Ihren gewählten Optionen zurückgesetzt.';
     } else {
-        $cFehler = 'Bitte w&auml;hlen Sie mindestens eine Option aus.';
+        $cFehler = 'Bitte wählen Sie mindestens eine Option aus.';
     }
 
     executeHook(HOOK_BACKEND_SHOP_RESET_AFTER);

@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\GeneralObject;
+
 /**
  * Class EigenschaftWert
  */
@@ -57,7 +59,7 @@ class EigenschaftWert
     /**
      * Konstruktor
      *
-     * @param int $kEigenschaftWert - Falls angegeben, wird der EigenschaftWert mit angegebenem kEigenschaftWert aus der DB geholt
+     * @param int $kEigenschaftWert
      */
     public function __construct(int $kEigenschaftWert = 0)
     {
@@ -100,7 +102,7 @@ class EigenschaftWert
      */
     public function insertInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = GeneralObject::copyMembers($this);
         unset($obj->fAufpreis);
 
         return Shop::Container()->getDB()->insert('teigenschaftwert', $obj);
@@ -113,7 +115,7 @@ class EigenschaftWert
      */
     public function updateInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = GeneralObject::copyMembers($this);
         unset($obj->fAufpreis);
 
         return Shop::Container()->getDB()->update('teigenschaftwert', 'kEigenschaftWert', $obj->kEigenschaftWert, $obj);

@@ -84,7 +84,7 @@ class Lieferschein
      * @param object $oData
      * @return $this
      */
-    private function loadFromDB(int $kLieferschein = 0, $oData = null)
+    private function loadFromDB(int $kLieferschein = 0, $oData = null): self
     {
         $oObj = Shop::Container()->getDB()->select('tlieferschein', 'kLieferschein', $kLieferschein);
         if ($oObj !== null && $oObj->kLieferschein > 0) {
@@ -99,9 +99,9 @@ class Lieferschein
             }
 
             $kLieferscheinPos_arr = Shop::Container()->getDB()->selectAll(
-                'tlieferscheinpos', 
+                'tlieferscheinpos',
                 'kLieferschein',
-                $kLieferschein, 
+                $kLieferschein,
                 'kLieferscheinPos'
             );
             foreach ($kLieferscheinPos_arr as $oLieferscheinPos) {
@@ -181,14 +181,14 @@ class Lieferschein
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->delete('tlieferschein', 'kLieferschein', (int)$this->getLieferschein());
+        return Shop::Container()->getDB()->delete('tlieferschein', 'kLieferschein', $this->getLieferschein());
     }
 
     /**
      * @param int $kLieferschein
      * @return $this
      */
-    public function setLieferschein(int $kLieferschein)
+    public function setLieferschein(int $kLieferschein): self
     {
         $this->kLieferschein = $kLieferschein;
 
@@ -199,7 +199,7 @@ class Lieferschein
      * @param int $kInetBestellung
      * @return $this
      */
-    public function setInetBestellung(int $kInetBestellung)
+    public function setInetBestellung(int $kInetBestellung): self
     {
         $this->kInetBestellung = $kInetBestellung;
 
@@ -210,7 +210,7 @@ class Lieferschein
      * @param string $cLieferscheinNr
      * @return $this
      */
-    public function setLieferscheinNr($cLieferscheinNr)
+    public function setLieferscheinNr($cLieferscheinNr): self
     {
         $this->cLieferscheinNr = Shop::Container()->getDB()->escape($cLieferscheinNr);
 
@@ -221,7 +221,7 @@ class Lieferschein
      * @param string $cHinweis
      * @return $this
      */
-    public function setHinweis($cHinweis)
+    public function setHinweis($cHinweis): self
     {
         $this->cHinweis = Shop::Container()->getDB()->escape($cHinweis);
 
@@ -232,7 +232,7 @@ class Lieferschein
      * @param int $nFulfillment
      * @return $this
      */
-    public function setFulfillment(int $nFulfillment)
+    public function setFulfillment(int $nFulfillment): self
     {
         $this->nFulfillment = $nFulfillment;
 
@@ -243,7 +243,7 @@ class Lieferschein
      * @param int $nStatus
      * @return $this
      */
-    public function setStatus(int $nStatus)
+    public function setStatus(int $nStatus): self
     {
         $this->nStatus = $nStatus;
 
@@ -254,7 +254,7 @@ class Lieferschein
      * @param string $dErstellt
      * @return $this
      */
-    public function setErstellt($dErstellt)
+    public function setErstellt($dErstellt): self
     {
         $this->dErstellt = Shop::Container()->getDB()->escape($dErstellt);
 
@@ -265,7 +265,7 @@ class Lieferschein
      * @param bool $bEmailVerschickt
      * @return $this
      */
-    public function setEmailVerschickt($bEmailVerschickt)
+    public function setEmailVerschickt($bEmailVerschickt): self
     {
         $this->bEmailVerschickt = (bool)$bEmailVerschickt;
 
@@ -275,63 +275,63 @@ class Lieferschein
     /**
      * @return int
      */
-    public function getLieferschein()
+    public function getLieferschein(): int
     {
         return (int)$this->kLieferschein;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getInetBestellung()
+    public function getInetBestellung(): ?int
     {
         return $this->kInetBestellung;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getLieferscheinNr()
+    public function getLieferscheinNr(): ?string
     {
         return $this->cLieferscheinNr;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getHinweis()
+    public function getHinweis(): ?string
     {
         return $this->cHinweis;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getFulfillment()
+    public function getFulfillment(): ?int
     {
         return $this->nFulfillment;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getStatus()
+    public function getStatus(): ?int
     {
         return $this->nStatus;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getErstellt()
+    public function getErstellt(): ?string
     {
         return $this->dErstellt;
     }
 
     /**
-     * @return bool
+     * @return bool|null
      */
-    public function getEmailVerschickt()
+    public function getEmailVerschickt(): ?bool
     {
         return $this->bEmailVerschickt;
     }

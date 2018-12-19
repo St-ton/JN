@@ -48,13 +48,13 @@
         <div class="col-sm-2 col-xs-6 btn-group">
             <a href="boxen.php?action=del&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
                onclick="return confirmDelete('{if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}Container #{$oBox->getID()}{else}{$oBox->getTitle()}{/if}');"
-               title="{#remove#}"
+               title="{__('remove')}"
                class="btn btn-danger">
                 <i class="fa fa-trash"></i>
             </a>
             <a href="boxen.php?action=edit_mode&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
-               title="{#edit#}"
-               class="btn btn-default{if empty($oBox->getType()) || ($oBox->getType() !== \Boxes\BoxType::TEXT && $oBox->getType() !== \Boxes\BoxType::LINK && $oBox->getType() !== \Boxes\BoxType::CATBOX)} disabled{/if}">
+               title="{__('edit')}"
+               class="btn btn-default{if empty($oBox->getType()) || ($oBox->getType() !== \Boxes\Type::TEXT && $oBox->getType() !== \Boxes\Type::LINK && $oBox->getType() !== \Boxes\Type::CATBOX)} disabled{/if}">
                 <i class="fa fa-edit"></i>
             </a>
             {if $oBox->getContainerID() === 0}

@@ -1,14 +1,14 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="warenkorbpers"}
-{include file='tpl_inc/seite_header.tpl' cTitel=#warenkorbpers# cBeschreibung=#warenkorbpersDesc# cDokuURL=#warenkorbpersURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('warenkorbpers') cBeschreibung=__('warenkorbpersDesc') cDokuURL=__('warenkorbpersURL')}
 <div id="content" class="container-fluid">
     {if $step === 'uebersicht'}
         <ul class="nav nav-tabs" role="tablist">
             <li class="tab{if !isset($tab) || $tab === 'warenkorbpers'} active{/if}">
-                <a data-toggle="tab" role="tab" href="#massaction">{#warenkorbpers#}</a>
+                <a data-toggle="tab" role="tab" href="#massaction">{__('warenkorbpers')}</a>
             </li>
             <li class="tab{if isset($tab) && $tab === 'einstellungen'} active{/if}">
-                <a data-toggle="tab" role="tab" href="#settings">{#warenkorbpersSettings#}</a>
+                <a data-toggle="tab" role="tab" href="#settings">{__('warenkorbpersSettings')}</a>
             </li>
         </ul>
         <div class="tab-content">
@@ -23,11 +23,11 @@
 
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="cSuche">{#warenkorbpersClientName#}:</label>
+                            <label for="cSuche">{__('warenkorbpersClientName')}:</label>
                         </span>
                         <input class="form-control" id="cSuche" name="cSuche" type="text" value="{if isset($cSuche) && $cSuche|strlen > 0}{$cSuche}{/if}" />
                         <span class="input-group-btn">
-                            <button name="submitSuche" type="submit" value="{#warenkorbpersSearchBTN#}" class="btn btn-primary"><i class="fa fa-search"></i> {#warenkorbpersSearchBTN#}</button>
+                            <button name="submitSuche" type="submit" value="{__('warenkorbpersSearchBTN')}" class="btn btn-primary"><i class="fa fa-search"></i> {__('warenkorbpersSearchBTN')}</button>
                         </span>
                     </div>
                 </form>
@@ -40,29 +40,29 @@
                     {include file='tpl_inc/pagination.tpl' oPagination=$oPagiKunden cParam_arr=$cParam_arr cAnchor='massaction'}
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">{#warenkorbpers#}</h3>
+                            <h3 class="panel-title">{__('warenkorbpers')}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <thead>
                                 <tr>
-                                    <th class="tleft">{#warenkorbpersCompany#}</th>
-                                    <th class="tleft">{#warenkorbpersClientName#}</th>
-                                    <th class="th-3">{#warenkorbpersCount#}</th>
-                                    <th class="th-4">{#warenkorbpersDate#}</th>
-                                    <th class="th-5">{#warenkorbpersAction#}</th>
+                                    <th class="tleft">{__('warenkorbpersCompany')}</th>
+                                    <th class="tleft">{__('warenkorbpersClientName')}</th>
+                                    <th class="th-3">{__('warenkorbpersCount')}</th>
+                                    <th class="th-4">{__('warenkorbpersDate')}</th>
+                                    <th class="th-5">{__('warenkorbpersAction')}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {foreach name=warenkorbkunden from=$oKunde_arr item=oKunde}
-                                    <tr class="tab_bg{$smarty.foreach.warenkorbkunden.iteration%2}">
-                                        <td class="TD1">{$oKunde->cFirma}</td>
-                                        <td class="TD2">{$oKunde->cVorname} {$oKunde->cNachname}</td>
+                                    <tr>
+                                        <td>{$oKunde->cFirma}</td>
+                                        <td>{$oKunde->cVorname} {$oKunde->cNachname}</td>
                                         <td class="tcenter">{$oKunde->nAnzahl}</td>
                                         <td class="tcenter">{$oKunde->Datum}</td>
                                         <td class="tcenter">
                                             <div class="btn-group">
-                                                <a href="warenkorbpers.php?a={$oKunde->kKunde}&token={$smarty.session.jtl_token}" class="btn btn-default">{#warenkorbpersShow#}</a>
+                                                <a href="warenkorbpers.php?a={$oKunde->kKunde}&token={$smarty.session.jtl_token}" class="btn btn-default">{__('warenkorbpersShow')}</a>
                                                 <a href="warenkorbpers.php?l={$oKunde->kKunde}&token={$smarty.session.jtl_token}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
                                             </div>
                                         </td>
@@ -73,11 +73,11 @@
                         </div>
                     </div>
                 {else}
-                    <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                    <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
             <div id="settings" class="tab-pane fade {if isset($tab) && $tab === 'einstellungen'} active in{/if}">
-                {include file='tpl_inc/config_section.tpl' a='speichern' config=$oConfig_arr name='einstellen' action='warenkorbpers.php' buttonCaption=#save# title='Einstellungen' tab='einstellungen'}
+                {include file='tpl_inc/config_section.tpl' a='speichern' config=$oConfig_arr name='einstellen' action='warenkorbpers.php' buttonCaption=__('save') title='Einstellungen' tab='einstellungen'}
             </div>
         </div>
     {elseif $step === 'anzeigen'}
@@ -85,20 +85,20 @@
         {include file='tpl_inc/pagination.tpl' oPagination=$oPagiWarenkorb cParam_arr=['a'=>$kKunde]}
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">{#warenkorbpersClient#} {$oWarenkorbPersPos_arr[0]->cVorname} {$oWarenkorbPersPos_arr[0]->cNachname}</h3>
+                <h3 class="panel-title">{__('warenkorbpersClient')} {$oWarenkorbPersPos_arr[0]->cVorname} {$oWarenkorbPersPos_arr[0]->cNachname}</h3>
             </div>
             <div class="table-responsive">
-                <table class="table">
+                <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th class="tleft">{#warenkorbpersProduct#}</th>
-                        <th class="th-2">{#warenkorbpersCount#}</th>
-                        <th class="th-3">{#warenkorbpersDate#}</th>
+                        <th class="tleft">{__('warenkorbpersProduct')}</th>
+                        <th class="th-2">{__('warenkorbpersCount')}</th>
+                        <th class="th-3">{__('warenkorbpersDate')}</th>
                     </tr>
                     </thead>
                     <tbody>
                     {foreach name=warenkorbpers from=$oWarenkorbPersPos_arr item=oWarenkorbPersPos}
-                        <tr class="tab_bg{$smarty.foreach.warenkorbpers.iteration%2}">
+                        <tr>
                             <td class="tleft">
                                 <a href="{$shopURL}/index.php?a={$oWarenkorbPersPos->kArtikel}" target="_blank">{$oWarenkorbPersPos->cArtikelName}</a>
                             </td>

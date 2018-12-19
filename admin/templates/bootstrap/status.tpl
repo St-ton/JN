@@ -103,12 +103,11 @@
                 <div class="panel-body">
                     <table class="table table-hover table-striped table-blank text-x1 last-child">
                         <tbody>
-                            {render_item title='Datenbank-Struktur' val=$status->validDatabaseStruct() more='dbcheck.php'}
-                            {render_item title='Datei-Struktur' val=$status->validFileStruct() more='filecheck.php'}
+                            {render_item title='Datenbankstruktur' val=$status->validDatabaseStruct() more='dbcheck.php'}
+                            {render_item title='Dateistruktur' val=($status->validModifiedFileStruct()&&$status->validOrphanedFilesStruct()) more='filecheck.php'}
                             {render_item title='Verzeichnisrechte' val=$status->validFolderPermissions() more='permissioncheck.php'}
                             {render_item title='Ausstehende Updates' val=!$status->hasPendingUpdates() more='dbupdater.php'}
                             {render_item title='Installationsverzeichnis' val=!$status->hasInstallDir()}
-                            {render_item title='Template-Version' val=!$status->hasDifferentTemplateVersion()}
                             {render_item title='Profiler aktiv' val=!$status->hasActiveProfiler() more='profiler.php'}
                             {render_item title='Server' val=$status->hasValidEnvironment() more='systemcheck.php'}
                             {render_item title='Verwaiste Kategorien' val=$status->getOrphanedCategories() more='categorycheck.php'}
@@ -285,14 +284,10 @@
                             <p>Alle Vorraussetzungen wurden erf&uuml;llt</p>
                         </div>
                     {/if}
-                    {if isset($phpLT55) && $phpLT55}
-                        <div class="alert alert-warning">
-                            <p class="small">{#systemcheckPHPLT55#|sprintf:phpversion()}</p>
-                        </div>
-                    {/if}
                 </div>
             </div>
         </div>
 
     </div>
 </div>
+{include file='tpl_inc/footer.tpl'}

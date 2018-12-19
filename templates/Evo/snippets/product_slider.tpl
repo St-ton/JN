@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {strip}
 {if $productlist|@count > 0}
     {if !isset($tplscope)}
@@ -17,14 +21,14 @@
             {/if}
         </div>
         <div{if $title|strlen > 0} class="panel-body"{/if}>
-            <div class="{if $tplscope == 'box'}{block name="product-box-slider-class"}evo-box-slider{/block}{else}{block name="product-slider-class"}evo-slider{/block}{/if}">
-                {foreach name="sliderproducts" from=$productlist item='product'}
+            <div class="{if $tplscope === 'box'}{block name='product-box-slider-class'}evo-box-slider{/block}{else}{block name='product-slider-class'}evo-slider{/block}{/if}">
+                {foreach $productlist as $product}
                     <div class="product-wrapper{if isset($style)} {$style}{/if}" {if isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}itemprop="about"{else}itemprop="isRelatedTo"{/if} itemscope itemtype="http://schema.org/Product">
                         {include file='productlist/item_slider.tpl' Artikel=$product tplscope=$tplscope class=''}
                     </div>
                 {/foreach}
             </div>
         </div>
-    </section>{* /panel *}
+    </section>
 {/if}
 {/strip}

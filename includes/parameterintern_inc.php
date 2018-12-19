@@ -5,35 +5,37 @@
  */
 
 //mainword
-$kKonfigPos            = verifyGPCDataInteger('ek');
-$kKategorie            = verifyGPCDataInteger('k');
-$kArtikel              = verifyGPCDataInteger('a');
-$kVariKindArtikel      = verifyGPCDataInteger('a2');
-$kSeite                = verifyGPCDataInteger('s');
-$kLink                 = verifyGPCDataInteger('s');
-$kHersteller           = verifyGPCDataInteger('h');
-$kSuchanfrage          = verifyGPCDataInteger('l');
-$kMerkmalWert          = verifyGPCDataInteger('m');
-$kTag                  = verifyGPCDataInteger('t');
-$kSuchspecial          = verifyGPCDataInteger('q');
-$kNews                 = verifyGPCDataInteger('n');
-$kNewsMonatsUebersicht = verifyGPCDataInteger('nm');
-$kNewsKategorie        = verifyGPCDataInteger('nk');
-$kUmfrage              = verifyGPCDataInteger('u');
-//filter
-$nBewertungSterneFilter = verifyGPCDataInteger('bf');
-$cPreisspannenFilter    = verifyGPDataString('pf');
-$kHerstellerFilter      = verifyGPCDataInteger('hf');
-$kKategorieFilter       = verifyGPCDataInteger('kf');
-$kSuchspecialFilter     = verifyGPCDataInteger('qf');
-$kSuchFilter            = verifyGPCDataInteger('sf');
-// Erweiterte Artikelübersicht Darstellung
-$nDarstellung = verifyGPCDataInteger('ed');
-$nSortierung  = verifyGPCDataInteger('sortierreihenfolge');
-$nSort        = verifyGPCDataInteger('Sortierung');
+use Helpers\Request;
 
-$show            = verifyGPCDataInteger('show');
-$vergleichsliste = verifyGPCDataInteger('vla');
+$kKonfigPos       = Request::verifyGPCDataInt('ek');
+$kKategorie       = Request::verifyGPCDataInt('k');
+$kArtikel         = Request::verifyGPCDataInt('a');
+$kVariKindArtikel = Request::verifyGPCDataInt('a2');
+$kSeite           = Request::verifyGPCDataInt('s');
+$kLink            = Request::verifyGPCDataInt('s');
+$kHersteller      = Request::verifyGPCDataInt('h');
+$kSuchanfrage     = Request::verifyGPCDataInt('l');
+$kMerkmalWert          = Request::verifyGPCDataInt('m');
+$kTag                  = Request::verifyGPCDataInt('t');
+$kSuchspecial          = Request::verifyGPCDataInt('q');
+$kNews                 = Request::verifyGPCDataInt('n');
+$kNewsMonatsUebersicht = Request::verifyGPCDataInt('nm');
+$kNewsKategorie        = Request::verifyGPCDataInt('nk');
+$kUmfrage              = Request::verifyGPCDataInt('u');
+//filter
+$nBewertungSterneFilter = Request::verifyGPCDataInt('bf');
+$cPreisspannenFilter    = Request::verifyGPDataString('pf');
+$kHerstellerFilter      = Request::verifyGPCDataInt('hf');
+$kKategorieFilter       = Request::verifyGPCDataInt('kf');
+$kSuchspecialFilter     = Request::verifyGPCDataInt('qf');
+$kSuchFilter            = Request::verifyGPCDataInt('sf');
+// Erweiterte Artikelübersicht Darstellung
+$nDarstellung = Request::verifyGPCDataInt('ed');
+$nSortierung  = Request::verifyGPCDataInt('sortierreihenfolge');
+$nSort        = Request::verifyGPCDataInt('Sortierung');
+
+$show            = Request::verifyGPCDataInt('show');
+$vergleichsliste = Request::verifyGPCDataInt('vla');
 $bFileNotFound   = false;
 $cCanonicalURL   = '';
 $is404           = false;

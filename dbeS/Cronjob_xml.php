@@ -15,18 +15,17 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_queue_inc.ph
 class SyncCronjob extends NetSyncHandler
 {
     /**
-     *
-     */
-    protected function init()
-    {
-    }
-
-    /**
      * @param Exception $oException
      */
     public static function exception($oException)
     {
-        var_dump($oException);
+    }
+
+    /**
+     *
+     */
+    protected function init()
+    {
     }
 
     /**
@@ -35,7 +34,7 @@ class SyncCronjob extends NetSyncHandler
     protected function request($eRequest)
     {
         switch ($eRequest) {
-            case NetSyncRequest::CronjobStatus:
+            case NetSyncRequest::CRONJOBSTATUS:
                 $oExport_arr = holeExportformatCron();
                 if (is_array($oExport_arr)) {
                     foreach ($oExport_arr as &$oExport) {
@@ -50,12 +49,13 @@ class SyncCronjob extends NetSyncHandler
                             $oExport->dNaechsterStart_de
                         );
                     }
+                    unset($oExport);
                 }
 
-                self::throwResponse(NetSyncResponse::Ok, $oExport_arr);
+                self::throwResponse(NetSyncResponse::OK, $oExport_arr);
                 break;
 
-            case NetSyncRequest::CronjobHistory:
+            case NetSyncRequest::CRONJOBHISTORY:
                 $oExport_arr = holeExportformatQueueBearbeitet(24 * 7);
                 if (is_array($oExport_arr)) {
                     foreach ($oExport_arr as &$oExport) {
@@ -66,16 +66,17 @@ class SyncCronjob extends NetSyncHandler
                             $oExport->dZuletztGelaufen_DE
                         );
                     }
+                    unset($oExport);
                 }
 
-                self::throwResponse(NetSyncResponse::Ok, $oExport_arr);
+                self::throwResponse(NetSyncResponse::OK, $oExport_arr);
                 break;
 
-            case NetSyncRequest::CronjobTrigger:
+            case NetSyncRequest::CRONJOBTRIGGER:
                 $bCronManuell = true;
                 require_once PFAD_ROOT . PFAD_INCLUDES . 'cron_inc.php';
 
-                self::throwResponse(NetSyncResponse::Ok, true);
+                self::throwResponse(NetSyncResponse::OK, true);
                 break;
         }
     }

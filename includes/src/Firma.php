@@ -121,11 +121,13 @@ class Firma
      */
     public function loadFromDB(): self
     {
-        $obj = Shop::Container()->getDB()->query("SELECT * FROM tfirma LIMIT 1", \DB\ReturnType::SINGLE_OBJECT);
-        foreach (get_object_vars($obj) as $k => $v) {
-            $this->$k = $v;
+        $obj = Shop::Container()->getDB()->query('SELECT * FROM tfirma LIMIT 1', \DB\ReturnType::SINGLE_OBJECT);
+        if ($obj !== false) {
+            foreach (get_object_vars($obj) as $k => $v) {
+                $this->$k = $v;
+            }
         }
-        executeHook(HOOK_FIRMA_CLASS_LOADFROMDB);
+        executeHook(HOOK_FIRMA_CLASS_LOADFROMDB, ['instance' => $this]);
 
         return $this;
     }

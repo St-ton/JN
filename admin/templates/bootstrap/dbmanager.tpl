@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="dbcheck"}
-{include file='tpl_inc/seite_header.tpl' cTitel="Datenbank-Manager" cBeschreibung="<kbd>Tabellen und Views ({$tables|@count})</kbd>" cDokuURL=#dbcheckURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel="Datenbank-Manager" cBeschreibung="<kbd>Tabellen und Views ({$tables|@count})</kbd>" cDokuURL=__('dbcheckURL')}
 
 {function table_scope_header table=null}
     <h2>Tabelle: {$table}
@@ -620,7 +620,6 @@ $(function() {
                                             {$class = 'int'}
                                         {elseif $info->Name|in_array:['date', 'datetime', 'time', 'timestamp', 'year']}
                                             {$class = 'date'}
-                                            {*$default = ($value == '0000-00-00' || $value == '0000-00-00 00-00-00')*}
                                         {elseif $info->Name|in_array:['bit', 'char']}
                                             {$class = 'char'}
                                         {/if}

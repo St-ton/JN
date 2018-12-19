@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\GeneralObject;
+
 /**
  * Class Attribut
  */
@@ -70,7 +72,7 @@ class Attribut
      */
     public function insertInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = GeneralObject::copyMembers($this);
         unset($obj->kAttribut);
 
         return Shop::Container()->getDB()->insert('tattribut', $obj);
@@ -83,7 +85,7 @@ class Attribut
      */
     public function updateInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = GeneralObject::copyMembers($this);
 
         return Shop::Container()->getDB()->update('tattribut', 'kAttribut', $obj->kAttribut, $obj);
     }

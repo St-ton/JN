@@ -4,17 +4,17 @@ require_once __DIR__. '/ipl_xml_api.php';
 
 /**
  * class ipl_xml_request
- * 
+ *
  * @author Jan Wehrs (jan.wehrs@billpay.de)
  * @copyright Copyright 2010 Billpay GmbH
- * @license commercial 
+ * @license commercial
  */
 class ipl_xml_request
 {
     /**
      * @var string
      */
-    private $request_xml  = '';
+    private $request_xml = '';
 
     /**
      * @var string
@@ -24,17 +24,17 @@ class ipl_xml_request
     /**
      * @var string
      */
-    protected $_ipl_request_url   = '';
+    protected $_ipl_request_url = '';
 
     /**
      * @var array
      */
-    protected $_default_params    = [];
+    protected $_default_params = [];
 
     /**
      * @var array
      */
-    protected $_status_info       = [];
+    protected $_status_info = [];
 
     /**
      * @var array

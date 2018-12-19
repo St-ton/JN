@@ -13,7 +13,7 @@ class Path
      * @return string
      * @throws InvalidArgumentException
      */
-    public static function combine()
+    public static function combine(): string
     {
         $paths = func_get_args();
 
@@ -29,7 +29,7 @@ class Path
      * @param bool   $real
      * @return string
      */
-    public static function getDirectoryName($path, $real = true)
+    public static function getDirectoryName(string $path, bool $real = true): string
     {
         return ($real && is_dir($path)) ? realpath(dirname($path)) : dirname($path);
     }
@@ -38,26 +38,27 @@ class Path
      * @param string $path
      * @return mixed|string
      */
-    public static function getFileName($path)
+    public static function getFileName(string $path): string
     {
-        return self::hasExtension($path) ? self::getFileNameWithoutExtension($path) . '.'
-            . self::getExtension($path) : self::getFileNameWithoutExtension($path);
+        return self::hasExtension($path)
+            ? self::getFileNameWithoutExtension($path) . '.' . self::getExtension($path)
+            : self::getFileNameWithoutExtension($path);
     }
 
     /**
      * @param string $path
-     * @return mixed
+     * @return string
      */
-    public static function getFileNameWithoutExtension($path)
+    public static function getFileNameWithoutExtension($path): string
     {
         return pathinfo($path, PATHINFO_FILENAME);
     }
 
     /**
      * @param string $path
-     * @return mixed
+     * @return string
      */
-    public static function getExtension($path)
+    public static function getExtension(string $path): string
     {
         return pathinfo($path, PATHINFO_EXTENSION);
     }
@@ -66,7 +67,7 @@ class Path
      * @param string $path
      * @return bool
      */
-    public static function hasExtension($path)
+    public static function hasExtension(string $path): bool
     {
         return strlen(self::getExtension($path)) > 0;
     }

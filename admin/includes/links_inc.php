@@ -258,9 +258,9 @@ function holeLinkgruppe($kLinkgruppe)
 function holeSpezialseiten()
 {
     return Shop::Container()->getDB()->query(
-        "SELECT *
+        'SELECT *
             FROM tspezialseite
-            ORDER BY nSort",
+            ORDER BY nSort',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }

@@ -25,15 +25,15 @@
  */
 class VCard
 {
-    const NL             = "\n";
-    const OPT_ERR_IGNORE = 0x01;
-    const OPT_ERR_RAISE  = 0x02;
+    public const NL             = "\n";
+    public const OPT_ERR_IGNORE = 0x01;
+    public const OPT_ERR_RAISE  = 0x02;
 
-    const MODE_UNKNOWN   = 0x00;
-    const MODE_SINGLE    = 0x01;
-    const MODE_MULTIPLE  = 0x02;
+    public const MODE_UNKNOWN  = 0x00;
+    public const MODE_SINGLE   = 0x01;
+    public const MODE_MULTIPLE = 0x02;
 
-    const ERR_INVALID    = 0x01;
+    public const ERR_INVALID = 0x01;
 
     /**
      * @var string
@@ -43,17 +43,17 @@ class VCard
     /**
      * @var array
      */
-    private $data     = [];
+    private $data = [];
 
     /**
      * @var int
      */
-    private $mode     = self::MODE_UNKNOWN;
+    private $mode = self::MODE_UNKNOWN;
 
     /**
      * @var int
      */
-    private $iVCard   = 0;
+    private $iVCard = 0;
 
     /**
      * @var array
@@ -87,7 +87,8 @@ class VCard
         'email' => ['internet', 'x400', 'pref', 'work', 'home'],
         'adr'   => ['dom', 'intl', 'postal', 'parcel', 'home', 'work', 'pref'],
         'label' => ['dom', 'intl', 'postal', 'parcel', 'home', 'work', 'pref'],
-        'tel'   => ['home', 'msg', 'work', 'pref', 'voice', 'fax', 'cell', 'video', 'pager', 'bbs', 'modem', 'car', 'isdn', 'pcs'],
+        'tel'   => ['home', 'msg', 'work', 'pref', 'voice', 'fax',
+                    'cell', 'video', 'pager', 'bbs', 'modem', 'car', 'isdn', 'pcs'],
         'impp'  => ['personal', 'business', 'home', 'work', 'mobile', 'pref']
     ];
     /**
@@ -136,13 +137,10 @@ class VCard
     {
         // das erste BASE64 final = sign muss maskiert werden, damit es vom nachfolgenden replace nicht ersetzt wird
         $encodedStr = preg_replace('{(\n\s.+)=(\n)}', '$1-base64=-$2', $encodedStr);
-
         // verketten von Zeilen, die mit einem hard wrap getrennt sind (quoted-printable-encoded values in v2.1 vCards)
         $encodedStr = str_replace("=\n", '', $encodedStr);
-
         // verketten von Zeilen, die mit einem soft wrap getrennt sind (space oder tab am Anfang der nächsten Zeile
         $encodedStr = str_replace(["\n ", "\n\t"], '-wrap-', $encodedStr);
-
         // das erste BASE64 final = sign aus der Maskierung wiederherstellen
         $encodedStr = str_replace("-base64=-\n", "=\n", $encodedStr);
 
@@ -236,7 +234,7 @@ class VCard
      * @param string $rawValue
      * @return array
      */
-    protected static function parseStructuredValue($key, $rawValue)
+    protected static function parseStructuredValue($key, $rawValue): array
     {
         $result = [];
         $txtArr = array_map('trim', explode(';', $rawValue));
@@ -253,7 +251,7 @@ class VCard
      * @param string $rawValue
      * @return array
      */
-    protected static function parseMultipleTextValue($rawValue)
+    protected static function parseMultipleTextValue($rawValue): array
     {
         return explode(',', $rawValue);
     }
@@ -264,8 +262,7 @@ class VCard
      */
     protected function parseVCardLine($line)
     {
-        // Jede Zeile in zwei Teile trennen. key enthält den Elementnamen und ggfs. weitere Parameter, value ist der Wert
-        list($key, $rawValue) = explode(':', $line, 2);
+        [$key, $rawValue] = explode(':', $line, 2);
 
         $key = strtolower(trim(self::unescape($key)));
         if (in_array($key, ['begin', 'end'], true)) {
@@ -292,8 +289,8 @@ class VCard
         $params   = [];
 
         if (strpos($key, 'item') === 0) {
-            $tmpKey  = explode('.', $key, 2);
-            $key     = $tmpKey[1];
+            $tmpKey = explode('.', $key, 2);
+            $key    = $tmpKey[1];
         }
 
         if (count($keyParts) > 1) {
@@ -439,7 +436,9 @@ class VCard
                 return $propData[$property];
             }
             if ($property === 'bday') {
-                $bDay = is_array($propData[$property]) && count($propData[$property]) > 0 ? $propData[$property][0] : $propData[$property];
+                $bDay = is_array($propData[$property]) && count($propData[$property]) > 0
+                    ? $propData[$property][0]
+                    : $propData[$property];
                 if (is_numeric($bDay)) {
                     return DateTime::createFromFormat('YmdHis', (string)$bDay . '000000');
                 }
@@ -602,15 +601,12 @@ class VCard
                     } else {
                         $Kunde->cTitel = implode(' ', $this->N->Prefixes);
                     }
+                } elseif (Shop::Lang()->get('salutationM') === $this->N->Prefixes) {
+                    $Kunde->cAnrede = 'm';
+                } elseif (Shop::Lang()->get('salutationW') === $this->N->Prefixes) {
+                    $Kunde->cAnrede = 'w';
                 } else {
-                    // Workaround fals prefix für Anrede genutzt wird
-                    if (Shop::Lang()->get('salutationM') === $this->N->Prefixes) {
-                        $Kunde->cAnrede = 'm';
-                    } elseif (Shop::Lang()->get('salutationW') === $this->N->Prefixes) {
-                        $Kunde->cAnrede = 'w';
-                    } else {
-                        $Kunde->cTitel = $this->N->Prefixes;
-                    }
+                    $Kunde->cTitel = $this->N->Prefixes;
                 }
             }
 
@@ -628,11 +624,11 @@ class VCard
             $Kunde->cPLZ          = $adr->PostalCode ?? '';
             $Kunde->cOrt          = $adr->Locality ?? '';
             $Kunde->cBundesland   = $adr->Region ?? '';
-            $Kunde->cLand         = isset($adr->Country) ? landISO($adr->Country) : '';
+            $Kunde->cLand         = isset($adr->Country) ? Sprache::getIsoCodeByCountryName($adr->Country) : '';
             if (empty($adr->Country) && !empty($adr->Region)) {
-                $Kunde->cLand = landISO($adr->Region);
+                $Kunde->cLand = Sprache::getIsoCodeByCountryName($adr->Region);
             }
-            if ($Kunde->cLand == 'noISO') {
+            if ($Kunde->cLand === 'noISO') {
                 $Kunde->cLand = $Einstellungen['kunden']['kundenregistrierung_standardland'];
             }
             if (preg_match('/^(.*)[\. ]*([0-9]+[a-zA-Z]?)$/U', $Kunde->cStrasse, $hits)) {
@@ -644,7 +640,12 @@ class VCard
         }
         if (isset($this->TEL)) {
             $Kunde->cMobil = self::getValue($this->TEL, ['cell'], '', false);
-            $Kunde->cFax   = self::getValue($this->TEL, ['fax', 'home_fax', 'fax_home', 'work_fax', 'fax_work'], '', false);
+            $Kunde->cFax   = self::getValue(
+                $this->TEL,
+                ['fax', 'home_fax', 'fax_home', 'work_fax', 'fax_work'],
+                '',
+                false
+            );
             $Kunde->cTel   = self::getValue($this->TEL, ['home', 'work', '*'], '');
         }
         if (isset($this->EMAIL)) {

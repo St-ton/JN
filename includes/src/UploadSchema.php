@@ -58,17 +58,21 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         /**
          * @param int $kUploadSchema
          */
-        private function loadFromDB(int $kUploadSchema)
+        private function loadFromDB(int $kUploadSchema): void
         {
-            $oUpload = Shop::Container()->getDB()->query(
-                "SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, 
+            $oUpload = Shop::Container()->getDB()->queryPrepared(
+                'SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, 
                     tuploadschema.cDateiTyp, tuploadschema.nPflicht, tuploadschemasprache.cName, 
                     tuploadschemasprache.cBeschreibung
                     FROM tuploadschema
                     LEFT JOIN tuploadschemasprache
                         ON tuploadschemasprache.kArtikelUpload = tuploadschema.kUploadSchema
-                        AND tuploadschemasprache.kSprache = " . Shop::getLanguageID() . "
-                    WHERE kUploadSchema =  " . $kUploadSchema,
+                        AND tuploadschemasprache.kSprache = :lid
+                    WHERE kUploadSchema =  :uid',
+                [
+                    'lid' => Shop::getLanguageID(),
+                    'uid' => $kUploadSchema
+                ],
                 \DB\ReturnType::SINGLE_OBJECT
             );
 
@@ -101,7 +105,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         /**
          * @return int
          */
-        public function delete()
+        public function delete(): int
         {
             return Shop::Container()->getDB()->delete('tuploadschema', 'kUploadSchema', (int)$this->kUploadSchema);
         }
@@ -113,36 +117,35 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public static function fetchAll(int $kCustomID, int $nTyp): array
         {
-            $cSql = '';
-            if ($nTyp === UPLOAD_TYP_WARENKORBPOS) {
-                $cSql = " AND kCustomID = '" . $kCustomID . "'";
-            }
+            $cSql = $nTyp === UPLOAD_TYP_WARENKORBPOS
+                ? ' AND kCustomID = ' . $kCustomID
+                : '';
 
-            return Shop::Container()->getDB()->query(
-                "SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, 
+            return Shop::Container()->getDB()->queryPrepared(
+                'SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, 
                     tuploadschema.cDateiTyp, tuploadschema.nPflicht, 
                     IFNULL(tuploadschemasprache.cName,tuploadschema.cName ) cName,
                     IFNULL(tuploadschemasprache.cBeschreibung, tuploadschema.cBeschreibung) cBeschreibung
                     FROM tuploadschema
                     LEFT JOIN tuploadschemasprache
                         ON tuploadschemasprache.kArtikelUpload = tuploadschema.kUploadSchema
-                        AND tuploadschemasprache.kSprache = " . Shop::getLanguage() . "
-                    WHERE nTyp = " . $nTyp . $cSql,
+                        AND tuploadschemasprache.kSprache = :lid
+                    WHERE nTyp = :tpe' . $cSql,
+                ['tpe' => $nTyp, 'lid' => Shop::getLanguage()],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         }
 
         /**
-         * @param object        $objFrom
-         * @param stdClass|null $objTo
-         * @return null|stdClass
+         * @param object      $objFrom
+         * @param object|null $objTo
+         * @return null|object
          */
         private static function copyMembers($objFrom, &$objTo = null)
         {
             if (!is_object($objTo)) {
                 $objTo = new stdClass();
             }
-
             $cMember_arr = array_keys(get_object_vars($objFrom));
             if (is_array($cMember_arr) && count($cMember_arr) > 0) {
                 foreach ($cMember_arr as $cMember) {

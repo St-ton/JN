@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
 namespace Link\Admin;
-
 
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
@@ -22,12 +21,11 @@ use Link\LinkInterface;
  */
 final class LinkAdmin
 {
+    public const ERROR_LINK_ALREADY_EXISTS = 1;
 
-    const ERROR_LINK_ALREADY_EXISTS = 1;
+    public const ERROR_LINK_NOT_FOUND = 2;
 
-    const ERROR_LINK_NOT_FOUND = 2;
-
-    const ERROR_LINK_GROUP_NOT_FOUND = 3;
+    public const ERROR_LINK_GROUP_NOT_FOUND = 3;
 
     /**
      * @var DbInterface
@@ -62,7 +60,7 @@ final class LinkAdmin
         });
         foreach ($linkGroups as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
-            $filtered = build_navigation_subs_admin($linkGroup);
+            $filtered = \build_navigation_subs_admin($linkGroup);
             $linkGroup->setLinks($filtered);
         }
 
@@ -74,12 +72,12 @@ final class LinkAdmin
      * @param array $post
      * @return \stdClass
      */
-    public function createOrUpdateLinkGroup(int $id = 0, $post): \stdClass
+    public function createOrUpdateLinkGroup(int $id, $post): \stdClass
     {
         $linkGroup                = new \stdClass();
         $linkGroup->kLinkgruppe   = (int)$post['kLinkgruppe'];
-        $linkGroup->cName         = htmlspecialchars($post['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-        $linkGroup->cTemplatename = htmlspecialchars($post['cTemplatename'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+        $linkGroup->cName         = \htmlspecialchars($post['cName'], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
+        $linkGroup->cTemplatename = \htmlspecialchars($post['cTemplatename'], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
 
         if ($id === 0) {
             $kLinkgruppe = $this->db->insert('tlinkgruppe', $linkGroup);
@@ -87,15 +85,18 @@ final class LinkAdmin
             $kLinkgruppe = (int)$post['kLinkgruppe'];
             $this->db->update('tlinkgruppe', 'kLinkgruppe', $kLinkgruppe, $linkGroup);
         }
-        $sprachen                       = gibAlleSprachen();
+        $sprachen                       = \Sprache::getAllLanguages();
         $linkgruppeSprache              = new \stdClass();
         $linkgruppeSprache->kLinkgruppe = $kLinkgruppe;
         foreach ($sprachen as $sprache) {
             $linkgruppeSprache->cISOSprache = $sprache->cISO;
             $linkgruppeSprache->cName       = $linkGroup->cName;
             if ($post['cName_' . $sprache->cISO]) {
-                $linkgruppeSprache->cName = htmlspecialchars($post['cName_' . $sprache->cISO],
-                    ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+                $linkgruppeSprache->cName = \htmlspecialchars(
+                    $post['cName_' . $sprache->cISO],
+                    \ENT_COMPAT | \ENT_HTML401,
+                    \JTL_CHARSET
+                );
             }
 
             $this->db->delete(
@@ -222,7 +223,6 @@ final class LinkAdmin
                 return $l->cName;
             })
             : $links;
-
     }
 
     /**
@@ -371,7 +371,7 @@ final class LinkAdmin
      * @param int           $old
      * @param int           $new
      */
-    private function updateChildLinkGroups(LinkInterface $link, int $old, int $new)
+    private function updateChildLinkGroups(LinkInterface $link, int $old, int $new): void
     {
         $upd              = new \stdClass();
         $upd->linkGroupID = $new;
@@ -401,7 +401,7 @@ final class LinkAdmin
      * @param LinkInterface $link
      * @param int           $linkGroupID
      */
-    public function copyChildLinksToLinkGroup(LinkInterface $link, int $linkGroupID)
+    public function copyChildLinksToLinkGroup(LinkInterface $link, int $linkGroupID): void
     {
         $link->buildChildLinks();
         $ins              = new \stdClass();
@@ -418,16 +418,15 @@ final class LinkAdmin
 
     /**
      * @param array $post
-     * @return Link
+     * @return \stdClass
      */
-    public function createOrUpdateLink($post)
+    private function createLinkData(array $post): \stdClass
     {
         $link                     = new \stdClass();
         $link->kLink              = (int)$post['kLink'];
         $link->kPlugin            = (int)$post['kPlugin'];
-        $link->cName              = htmlspecialchars($post['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+        $link->cName              = \htmlspecialchars($post['cName'], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
         $link->nLinkart           = (int)$post['nLinkart'];
-        $link->cURL               = $post['cURL'] ?? null;
         $link->nSort              = !empty($post['nSort']) ? $post['nSort'] : 0;
         $link->bSSL               = (int)$post['bSSL'];
         $link->bIsActive          = 1;
@@ -435,11 +434,11 @@ final class LinkAdmin
         $link->cNoFollow          = 'N';
         $link->cIdentifier        = $post['cIdentifier'];
         $link->bIsFluid           = (isset($post['bIsFluid']) && $post['bIsFluid'] === '1') ? 1 : 0;
-        if (isset($post['cKundengruppen']) && is_array($post['cKundengruppen']) && count($post['cKundengruppen']) > 0) {
-            $link->cKundengruppen = implode(';', $post['cKundengruppen']) . ';';
-        }
-        if (is_array($post['cKundengruppen']) && in_array('-1', $post['cKundengruppen'])) {
-            $link->cKundengruppen = 'NULL';
+        if (isset($post['cKundengruppen']) && \is_array($post['cKundengruppen'])) {
+            $link->cKundengruppen = \implode(';', $post['cKundengruppen']) . ';';
+            if (\in_array('-1', $post['cKundengruppen'], true)) {
+                $link->cKundengruppen = 'NULL';
+            }
         }
         if (isset($post['bIsActive']) && (int)$post['bIsActive'] !== 1) {
             $link->bIsActive = 0;
@@ -452,26 +451,31 @@ final class LinkAdmin
         }
         if ($link->nLinkart > 2 && isset($post['nSpezialseite']) && (int)$post['nSpezialseite'] > 0) {
             $link->nLinkart = (int)$post['nSpezialseite'];
-            $link->cURL     = '';
         }
 
+        return $link;
+    }
+
+    /**
+     * @param array $post
+     * @return Link
+     */
+    public function createOrUpdateLink(array $post): Link
+    {
+        $link = $this->createLinkData($post);
         if ((int)$post['kLink'] === 0) {
-            // create new
             $kLink              = $this->db->insert('tlink', $link);
             $assoc              = new \stdClass();
             $assoc->linkID      = $kLink;
             $assoc->linkGroupID = (int)$post['kLinkgruppe'];
             $this->db->insert('tlinkgroupassociations', $assoc);
-
         } else {
-            // update existing
             $kLink    = (int)$post['kLink'];
             $revision = new \Revision();
             $revision->addRevision('link', (int)$post['kLink'], true);
             $this->db->update('tlink', 'kLink', $kLink, $link);
-
         }
-        $sprachen    = gibAlleSprachen();
+        $sprachen           = \Sprache::getAllLanguages();
         $linkSprache        = new \stdClass();
         $linkSprache->kLink = $kLink;
         foreach ($sprachen as $sprache) {
@@ -480,12 +484,18 @@ final class LinkAdmin
             $linkSprache->cTitle      = '';
             $linkSprache->cContent    = '';
             if (!empty($post['cName_' . $sprache->cISO])) {
-                $linkSprache->cName = htmlspecialchars($post['cName_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401,
-                    JTL_CHARSET);
+                $linkSprache->cName = \htmlspecialchars(
+                    $post['cName_' . $sprache->cISO],
+                    \ENT_COMPAT | \ENT_HTML401,
+                    \JTL_CHARSET
+                );
             }
             if (!empty($post['cTitle_' . $sprache->cISO])) {
-                $linkSprache->cTitle = htmlspecialchars($post['cTitle_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401,
-                    JTL_CHARSET);
+                $linkSprache->cTitle = \htmlspecialchars(
+                    $post['cTitle_' . $sprache->cISO],
+                    \ENT_COMPAT | \ENT_HTML401,
+                    \JTL_CHARSET
+                );
             }
             if (!empty($post['cContent_' . $sprache->cISO])) {
                 $linkSprache->cContent = parseText($post['cContent_' . $sprache->cISO], $kLink);
@@ -495,16 +505,28 @@ final class LinkAdmin
                 $linkSprache->cSeo = $post['cSeo_' . $sprache->cISO];
             }
             $linkSprache->cMetaTitle = $linkSprache->cTitle;
-            if (isset($post['cMetaTitle_' . $sprache->cISO])) {
-                $linkSprache->cMetaTitle = htmlspecialchars($post['cMetaTitle_' . $sprache->cISO],
-                    ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+            $idx                     = 'cMetaTitle_' . $sprache->cISO;
+            if (isset($post[$idx])) {
+                $linkSprache->cMetaTitle = \htmlspecialchars(
+                    $post[$idx],
+                    \ENT_COMPAT | \ENT_HTML401,
+                    \JTL_CHARSET
+                );
             }
-            $linkSprache->cMetaKeywords    = htmlspecialchars($post['cMetaKeywords_' . $sprache->cISO],
-                ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-            $linkSprache->cMetaDescription = htmlspecialchars($post['cMetaDescription_' . $sprache->cISO],
-                ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+            $linkSprache->cMetaKeywords    = \htmlspecialchars(
+                $post['cMetaKeywords_' . $sprache->cISO],
+                \ENT_COMPAT | \ENT_HTML401,
+                \JTL_CHARSET
+            );
+            $linkSprache->cMetaDescription = \htmlspecialchars(
+                $post['cMetaDescription_' . $sprache->cISO],
+                \ENT_COMPAT | \ENT_HTML401,
+                \JTL_CHARSET
+            );
             $this->db->delete('tlinksprache', ['kLink', 'cISOSprache'], [$kLink, $sprache->cISO]);
-            $linkSprache->cSeo = getSeo($linkSprache->cSeo);
+            $linkSprache->cSeo = $link->nLinkart === \LINKTYP_EXTERNE_URL
+                ? $linkSprache->cSeo
+                : \JTL\SeoHelper::getSeo($linkSprache->cSeo);
             $this->db->insert('tlinksprache', $linkSprache);
             $oSpracheTMP = $this->db->select('tsprache', 'cISO ', $linkSprache->cISOSprache);
             if (isset($oSpracheTMP->kSprache) && $oSpracheTMP->kSprache > 0) {
@@ -514,7 +536,7 @@ final class LinkAdmin
                     ['kLink', (int)$linkSprache->kLink, (int)$oSpracheTMP->kSprache]
                 );
                 $oSeo           = new \stdClass();
-                $oSeo->cSeo     = checkSeo($linkSprache->cSeo);
+                $oSeo->cSeo     = \JTL\SeoHelper::checkSeo($linkSprache->cSeo);
                 $oSeo->kKey     = $linkSprache->kLink;
                 $oSeo->cKey     = 'kLink';
                 $oSeo->kSprache = $oSpracheTMP->kSprache;
@@ -532,8 +554,8 @@ final class LinkAdmin
      */
     public function clearCache(): bool
     {
-        $this->cache->flushTags([CACHING_GROUP_CORE]);
-        $this->db->query('UPDATE tglobals SET dLetzteAenderung = now()', ReturnType::DEFAULT);
+        $this->cache->flushTags([\CACHING_GROUP_CORE]);
+        $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
 
         return true;
     }

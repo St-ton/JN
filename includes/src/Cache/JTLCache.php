@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -8,8 +8,8 @@ namespace Cache;
 
 use Cache\Methods\cache_null;
 
-\define('CACHING_ROOT_DIR', __DIR__ . 'JTLCache.php/');
-\define('CACHING_METHODS_DIR', CACHING_ROOT_DIR . 'CachingMethods/');
+\define('CACHING_ROOT_DIR', __DIR__ . '/');
+\define('CACHING_METHODS_DIR', \CACHING_ROOT_DIR . 'CachingMethods/');
 \define('CACHING_GROUP_ARTICLE', 'art');
 \define('CACHING_GROUP_CATEGORY', 'cat');
 \define('CACHING_GROUP_LANGUAGE', 'lang');
@@ -33,49 +33,49 @@ final class JTLCache implements JTLCacheInterface
     /**
      * default port for redis caching method
      */
-    const DEFAULT_REDIS_PORT = 6379;
+    public const DEFAULT_REDIS_PORT = 6379;
 
     /**
      * default host name for redis caching method
      */
-    const DEFAULT_REDIS_HOST = 'localhost';
+    public const DEFAULT_REDIS_HOST = 'localhost';
 
     /**
      * default memcache(d) port
      */
-    const DEFAULT_MEMCACHE_PORT = 11211;
+    public const DEFAULT_MEMCACHE_PORT = 11211;
 
     /**
      * default memcache(d) host name
      */
-    const DEFAULT_MEMCACHE_HOST = 'localhost';
+    public const DEFAULT_MEMCACHE_HOST = 'localhost';
 
     /**
      * default cache life time in seconds (86400 = 1 day)
      */
-    const DEFAULT_LIFETIME = 86400;
+    public const DEFAULT_LIFETIME = 86400;
 
     /**
      * result code for successful getting result from cache
      */
-    const RES_SUCCESS = 1;
+    public const RES_SUCCESS = 1;
 
     /**
      * result code for cache miss
      */
-    const RES_FAIL = 2;
+    public const RES_FAIL = 2;
 
     /**
      * result code when getting multiple values at once
      */
-    const RES_UNDEF = 3;
+    public const RES_UNDEF = 3;
 
     /**
      * currently active caching method
      *
      * @var ICachingMethod
      */
-    private $_method;
+    private $method;
 
     /**
      * caching options
@@ -104,6 +104,11 @@ final class JTLCache implements JTLCacheInterface
     private $cachingGroups = [];
 
     /**
+     * @var string
+     */
+    private $error = '';
+
+    /**
      * init cache and set default method
      *
      * @param array $options
@@ -130,79 +135,79 @@ final class JTLCache implements JTLCacheInterface
             [
                 'name'        => 'CACHING_GROUP_ARTICLE',
                 'nicename'    => 'cg_article_nicename',
-                'value'       => CACHING_GROUP_ARTICLE,
+                'value'       => \CACHING_GROUP_ARTICLE,
                 'description' => 'cg_article_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_CATEGORY',
                 'nicename'    => 'cg_category_nicename',
-                'value'       => CACHING_GROUP_CATEGORY,
+                'value'       => \CACHING_GROUP_CATEGORY,
                 'description' => 'cg_category_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_LANGUAGE',
                 'nicename'    => 'cg_language_nicename',
-                'value'       => CACHING_GROUP_LANGUAGE,
+                'value'       => \CACHING_GROUP_LANGUAGE,
                 'description' => 'cg_language_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_TEMPLATE',
                 'nicename'    => 'cg_template_nicename',
-                'value'       => CACHING_GROUP_TEMPLATE,
+                'value'       => \CACHING_GROUP_TEMPLATE,
                 'description' => 'cg_template_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_OPTION',
                 'nicename'    => 'cg_option_nicename',
-                'value'       => CACHING_GROUP_OPTION,
+                'value'       => \CACHING_GROUP_OPTION,
                 'description' => 'cg_option_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_PLUGIN',
                 'nicename'    => 'cg_plugin_nicename',
-                'value'       => CACHING_GROUP_PLUGIN,
+                'value'       => \CACHING_GROUP_PLUGIN,
                 'description' => 'cg_plugin_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_CORE',
                 'nicename'    => 'cg_core_nicename',
-                'value'       => CACHING_GROUP_CORE,
+                'value'       => \CACHING_GROUP_CORE,
                 'description' => 'cg_core_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_OBJECT',
                 'nicename'    => 'cg_object_nicename',
-                'value'       => CACHING_GROUP_OBJECT,
+                'value'       => \CACHING_GROUP_OBJECT,
                 'description' => 'cg_object_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_BOX',
                 'nicename'    => 'cg_box_nicename',
-                'value'       => CACHING_GROUP_BOX,
+                'value'       => \CACHING_GROUP_BOX,
                 'description' => 'cg_box_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_NEWS',
                 'nicename'    => 'cg_news_nicename',
-                'value'       => CACHING_GROUP_NEWS,
+                'value'       => \CACHING_GROUP_NEWS,
                 'description' => 'cg_news_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_ATTRIBUTE',
                 'nicename'    => 'cg_attribute_nicename',
-                'value'       => CACHING_GROUP_ATTRIBUTE,
+                'value'       => \CACHING_GROUP_ATTRIBUTE,
                 'description' => 'cg_attribute_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_MANUFACTURER',
                 'nicename'    => 'cg_manufacturer_nicename',
-                'value'       => CACHING_GROUP_MANUFACTURER,
+                'value'       => \CACHING_GROUP_MANUFACTURER,
                 'description' => 'cg_manufacturer_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_FILTER',
                 'nicename'    => 'cg_filter_nicename',
-                'value'       => CACHING_GROUP_FILTER,
+                'value'       => \CACHING_GROUP_FILTER,
                 'description' => 'cg_filter_description'
             ],
         ];
@@ -211,13 +216,29 @@ final class JTLCache implements JTLCacheInterface
     }
 
     /**
-     * get list of all caching groups
-     *
-     * @return array
+     * @inheritdoc
      */
     public function getCachingGroups(): array
     {
         return $this->cachingGroups;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getError(): string
+    {
+        return $this->error;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setError(string $error)
+    {
+        $this->error = $error;
+
+        return $this;
     }
 
     /**
@@ -254,7 +275,7 @@ final class JTLCache implements JTLCacheInterface
             // enable or disable collecting of debug data
             'debug_method'     => 'echo',
             // 'ssd'/'jtld' for SmarterSmartyDebug/JTLDebug, 'echo' for direct echo
-            'cache_dir'        => OBJECT_CACHE_DIR,
+            'cache_dir'        => \OBJECT_CACHE_DIR,
             //file cache directory
             'file_extension'   => '.fc',
             // file extension for file cache
@@ -264,9 +285,9 @@ final class JTLCache implements JTLCacheInterface
             // disabled cache groups
         ];
         // merge defaults with assigned options and set them
-        $this->options = array_merge($defaults, $options);
+        $this->options = \array_merge($defaults, $options);
         // always add trailing slash
-        if (substr($this->options['cache_dir'], \strlen($this->options['cache_dir']) - 1) !== '/') {
+        if (\substr($this->options['cache_dir'], \strlen($this->options['cache_dir']) - 1) !== '/') {
             $this->options['cache_dir'] .= '/';
         }
         if ($this->options['method'] !== 'redis' && (int)$this->options['lifetime'] < 0) {
@@ -294,12 +315,14 @@ final class JTLCache implements JTLCacheInterface
         $cache = null;
         /** @var ICachingMethod $className */
         $className = '\Cache\Methods\cache_' . $methodName;
-        $cache     = $className::getInstance($this->options);
-        // check method's health
-        if (!empty($cache) && $cache instanceof ICachingMethod && $cache->isInitialized() && $cache->isAvailable()) {
-            $this->setMethod($cache);
+        $cache     = new $className($this->options);
+        if (!empty($cache) && $cache instanceof ICachingMethod) {
+            $this->setError($cache->getError());
+            if ($cache->isInitialized() && $cache->isAvailable()) {
+                $this->setMethod($cache);
 
-            return true;
+                return true;
+            }
         }
         $this->setMethod(cache_null::getInstance($this->options));
 
@@ -314,7 +337,7 @@ final class JTLCache implements JTLCacheInterface
      */
     private function setMethod($method): JTLCacheInterface
     {
-        $this->_method = $method;
+        $this->method = $method;
 
         return $this;
     }
@@ -325,10 +348,10 @@ final class JTLCache implements JTLCacheInterface
     public function getJtlCacheConfig(): array
     {
         // the DB class is needed for this
-        if (!class_exists('Shop')) {
+        if (!\class_exists('Shop')) {
             return [];
         }
-        $cacheConfig = \Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING);
+        $cacheConfig = \Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING);
         $cacheInit   = [];
         if (!empty($cacheConfig)) {
             foreach ($cacheConfig as $_conf) {
@@ -338,13 +361,13 @@ final class JTLCache implements JTLCacheInterface
                     $value = false;
                 } elseif ($_conf->cWert === '') {
                     $value = null;
-                } elseif (is_numeric($_conf->cWert)) {
+                } elseif (\is_numeric($_conf->cWert)) {
                     $value = (int)$_conf->cWert;
                 } else {
                     $value = $_conf->cWert;
                 }
                 // naming convention is 'caching_'<var-name> for options saved in database
-                $cacheInit[str_replace('caching_', '', $_conf->cName)] = $value;
+                $cacheInit[\str_replace('caching_', '', $_conf->cName)] = $value;
             }
         }
         // disabled cache types are saved as serialized string in db
@@ -434,9 +457,9 @@ final class JTLCache implements JTLCacheInterface
     public function get($cacheID, $callback = null, $customData = null)
     {
         $res              = $this->options['activated'] === true
-            ? $this->_method->load($cacheID)
+            ? $this->method->load($cacheID)
             : false;
-        $this->resultCode = ($res !== false || $this->_method->keyExists($cacheID))
+        $this->resultCode = ($res !== false || $this->method->keyExists($cacheID))
             ? self::RES_SUCCESS
             : self::RES_FAIL;
         if ($this->options['debug'] === true) {
@@ -473,7 +496,7 @@ final class JTLCache implements JTLCacheInterface
     {
         $res = false;
         if ($this->options['activated'] === true && $this->isCacheGroupActive($tags) === true) {
-            $res = $this->_method->store($cacheID, $content, $expiration);
+            $res = $this->method->store($cacheID, $content, $expiration);
             if ($res === true && $tags !== null) {
                 $this->setCacheTag($tags, $cacheID);
             }
@@ -496,9 +519,9 @@ final class JTLCache implements JTLCacheInterface
     public function setMulti($keyValue, $tags = null, $expiration = null): bool
     {
         if ($this->options['activated'] === true && $this->isCacheGroupActive($tags) === true) {
-            $res = $this->_method->storeMulti($keyValue, $expiration);
+            $res = $this->method->storeMulti($keyValue, $expiration);
             if ($res === true && $tags !== null) {
-                foreach (array_keys($keyValue) as $_cacheID) {
+                foreach (\array_keys($keyValue) as $_cacheID) {
                     $this->setCacheTag($tags, $_cacheID);
                 }
             }
@@ -518,7 +541,7 @@ final class JTLCache implements JTLCacheInterface
     {
         $this->resultCode = self::RES_UNDEF; // for now, let's not check every part of the result
 
-        return $this->_method->loadMulti($cacheIDs);
+        return $this->method->loadMulti($cacheIDs);
     }
 
     /**
@@ -552,7 +575,7 @@ final class JTLCache implements JTLCacheInterface
      */
     public function getKeysByTag($tags): array
     {
-        return $this->_method->getKeysByTag($tags);
+        return $this->method->getKeysByTag($tags);
     }
 
     /**
@@ -561,7 +584,7 @@ final class JTLCache implements JTLCacheInterface
     public function setCacheTag($tags, $cacheID): bool
     {
         return $this->options['activated'] === true
-            ? $this->_method->setCacheTag($tags, $cacheID)
+            ? $this->method->setCacheTag($tags, $cacheID)
             : false;
     }
 
@@ -592,7 +615,7 @@ final class JTLCache implements JTLCacheInterface
      */
     public function getActiveMethod(): ICachingMethod
     {
-        return $this->_method;
+        return $this->method;
     }
 
     /**
@@ -603,7 +626,7 @@ final class JTLCache implements JTLCacheInterface
         $res = false;
         if ($cacheID !== null && $tags === null) {
             $res = ($this->options['activated'] === true)
-                ? $this->_method->flush($cacheID)
+                ? $this->method->flush($cacheID)
                 : false;
         } elseif ($tags !== null) {
             $res = $this->flushTags($tags, $hookInfo);
@@ -616,7 +639,7 @@ final class JTLCache implements JTLCacheInterface
             }
         }
         if ($hookInfo !== null && \defined('HOOK_CACHE_FLUSH_AFTER') && \function_exists('executeHook')) {
-            executeHook(HOOK_CACHE_FLUSH_AFTER, $hookInfo);
+            \executeHook(\HOOK_CACHE_FLUSH_AFTER, $hookInfo);
         }
         $this->resultCode = \is_int($res) ? self::RES_FAIL : self::RES_SUCCESS;
 
@@ -628,9 +651,9 @@ final class JTLCache implements JTLCacheInterface
      */
     public function flushTags($tags, $hookInfo = null): int
     {
-        $deleted = $this->_method->flushTags($tags);
+        $deleted = $this->method->flushTags($tags);
         if ($hookInfo !== null && \defined('HOOK_CACHE_FLUSH_AFTER') && \function_exists('executeHook')) {
-            executeHook(HOOK_CACHE_FLUSH_AFTER, $hookInfo);
+            \executeHook(\HOOK_CACHE_FLUSH_AFTER, $hookInfo);
         }
 
         return $deleted;
@@ -641,9 +664,9 @@ final class JTLCache implements JTLCacheInterface
      */
     public function flushAll(): bool
     {
-        $this->_method->flush($this->_method->getJournalID());
+        $this->method->flush($this->method->getJournalID());
 
-        return $this->_method->flushAll();
+        return $this->method->flushAll();
     }
 
     /**
@@ -659,7 +682,7 @@ final class JTLCache implements JTLCacheInterface
      */
     public function getJournal(): array
     {
-        return $this->_method->getJournal();
+        return $this->method->getJournal();
     }
 
     /**
@@ -667,7 +690,7 @@ final class JTLCache implements JTLCacheInterface
      */
     public function getStats(): array
     {
-        return $this->_method->getStats();
+        return $this->method->getStats();
     }
 
     /**
@@ -675,7 +698,7 @@ final class JTLCache implements JTLCacheInterface
      */
     public function testMethod(): bool
     {
-        return $this->_method->test();
+        return $this->method->test();
     }
 
     /**
@@ -683,7 +706,7 @@ final class JTLCache implements JTLCacheInterface
      */
     public function isAvailable(): bool
     {
-        return $this->_method->isAvailable();
+        return $this->method->isAvailable();
     }
 
     /**
@@ -711,14 +734,14 @@ final class JTLCache implements JTLCacheInterface
             'xcache'
         ];
 //        $files = scandir(CACHING_METHODS_DIR, SCANDIR_SORT_ASCENDING);
-//        if (!is_array($files)) {
+//        if (!\is_array($files)) {
 //            return [];
 //        }
 //
-//        return array_filter(array_map(
+//        return \array_filter(\array_map(
 //            function ($m) {
-//                return strpos($m, 'class.cachingMethod') !== false
-//                    ? str_replace(['class.cachingMethod.', '.php'], '', $m)
+//                return \strpos($m, 'class.cachingMethod') !== false
+//                    ? \str_replace(['class.cachingMethod.', '.php'], '', $m)
 //                    : false;
 //            },
 //            $files
@@ -763,14 +786,14 @@ final class JTLCache implements JTLCacheInterface
         }
         // add customer group
         if ($customerGroup === true) {
-            $baseID .= '_cgid' . \Session::CustomerGroup()->getID();
-        } elseif (is_numeric($customerGroup)) {
+            $baseID .= '_cgid' . \Session\Session::getCustomerGroup()->getID();
+        } elseif (\is_numeric($customerGroup)) {
             $baseID .= '_cgid' . (int)$customerGroup;
         }
         // add language ID
         if ($languageID === true) {
             $baseID .= '_lid';
-            $lang   = \Shop::getLanguage();
+            $lang    = \Shop::getLanguage();
             if ($lang > 0) {
                 $baseID .= $lang;
             } elseif (\Shop::getLanguage() > 0) {
@@ -778,25 +801,25 @@ final class JTLCache implements JTLCacheInterface
             } else {
                 $baseID .= '0';
             }
-        } elseif (is_numeric($languageID)) {
+        } elseif (\is_numeric($languageID)) {
             $baseID .= '_lid' . (int)$languageID;
         }
         // add currency ID
         if ($currencyID === true) {
-            $baseID .= '_curid' . \Session::Currency()->getID();
-        } elseif (is_numeric($currencyID)) {
+            $baseID .= '_curid' . \Session\Session::getCurrency()->getID();
+        } elseif (\is_numeric($currencyID)) {
             $baseID .= '_curid' . (int)$currencyID;
         }
         // add current SSL status
-        if ($sslStatus === true && \function_exists('pruefeSSL')) {
-            $baseID .= '_ssl' . pruefeSSL();
+        if ($sslStatus === true) {
+            $baseID .= '_ssl' . \Helpers\Request::checkSSL();
         }
 
         if ($this->options['debug'] === true && $this->options['debug_method'] === 'echo') {
             echo '<br>generated $baseID ' . $baseID;
         }
 
-        return $hash === true ? md5($baseID) : $baseID;
+        return $hash === true ? \md5($baseID) : $baseID;
     }
 
     /**
@@ -845,16 +868,16 @@ final class JTLCache implements JTLCacheInterface
             if ($cacheSetRes !== false) {
                 for ($i = 0; $i < $repeat; ++$i) {
                     // set testing
-                    $start = microtime(true);
+                    $start = \microtime(true);
                     for ($j = 0; $j < $runCount; ++$j) {
                         $cacheID = 'c_' . $j;
                         $this->set($cacheID, $testData);
                     }
-                    $end          = microtime(true);
+                    $end          = \microtime(true);
                     $runTimingSet = ($end - $start);
-                    $timesSet     += $runTimingSet;
+                    $timesSet    += $runTimingSet;
                     // get testing
-                    $start = microtime(true);
+                    $start = \microtime(true);
                     for ($j = 0; $j < $runCount; ++$j) {
                         $cacheID = 'c_' . $j;
                         $res     = $this->get($cacheID);
@@ -862,9 +885,9 @@ final class JTLCache implements JTLCacheInterface
                             $validResults = false;
                         }
                     }
-                    $end          = microtime(true);
+                    $end          = \microtime(true);
                     $runTimingGet = ($end - $start);
-                    $timesGet     += $runTimingGet;
+                    $timesGet    += $runTimingGet;
                 }
             } else {
                 if ($echo === true) {
@@ -876,15 +899,15 @@ final class JTLCache implements JTLCacheInterface
             }
             if ($timesSet > 0.0 && $timesGet > 0.0 && $validResults !== false) {
                 // calculate averages
-                $rpsGet   = ($runCount * $repeat / $timesGet);
-                $rpsSet   = ($runCount * $repeat / $timesSet);
+                $rpsGet    = ($runCount * $repeat / $timesGet);
+                $rpsSet    = ($runCount * $repeat / $timesSet);
                 $timesSet /= $repeat;
                 $timesGet /= $repeat;
                 if ($format === true) {
-                    $timesSet = number_format($timesSet, 4, ',', '.');
-                    $timesGet = number_format($timesGet, 4, ',', '.');
-                    $rpsSet   = number_format($rpsSet, 2, ',', '.');
-                    $rpsGet   = number_format($rpsGet, 2, ',', '.');
+                    $timesSet = \number_format($timesSet, 4, ',', '.');
+                    $timesGet = \number_format($timesGet, 4, ',', '.');
+                    $rpsSet   = \number_format($rpsSet, 2, ',', '.');
+                    $rpsGet   = \number_format($rpsGet, 2, ',', '.');
                 }
                 // output averages
                 if ($echo === true) {

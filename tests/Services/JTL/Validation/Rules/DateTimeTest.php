@@ -6,8 +6,13 @@
 
 namespace Services\JTL\Validation\Rules;
 
+use PHPUnit\Framework\TestCase;
 
-class DateTimeTest extends \PHPUnit_Framework_TestCase
+/**
+ * Class DateTimeTest
+ * @package Services\JTL\Validation\Rules
+ */
+class DateTimeTest extends TestCase
 {
     public function test()
     {

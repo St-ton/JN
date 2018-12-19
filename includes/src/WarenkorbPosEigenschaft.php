@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\GeneralObject;
+
 /**
  * Class WarenkorbPosEigenschaft
  */
@@ -88,7 +90,7 @@ class WarenkorbPosEigenschaft
      *
      * @return string - EigenschaftWertName
      */
-    public function gibEigenschaftWertName()
+    public function gibEigenschaftWertName(): string
     {
         $obj = Shop::Container()->getDB()->select('teigenschaftwert', 'kEigenschaftWert', $this->kEigenschaftWert);
 
@@ -103,7 +105,7 @@ class WarenkorbPosEigenschaft
      */
     public function loadFromDB(int $kWarenkorbPosEigenschaft): self
     {
-        $obj     = Shop::Container()->getDB()->select(
+        $obj = Shop::Container()->getDB()->select(
             'twarenkorbposeigenschaft',
             'kWarenkorbPosEigenschaft',
             $kWarenkorbPosEigenschaft
@@ -125,7 +127,7 @@ class WarenkorbPosEigenschaft
      */
     public function insertInDB(): self
     {
-        $obj = kopiereMembers($this);
+        $obj = GeneralObject::copyMembers($this);
         unset($obj->kWarenkorbPosEigenschaft, $obj->cAufpreisLocalized, $obj->fGewichtsdifferenz, $obj->cTyp);
         //sql strict mode
         if ($obj->fAufpreis === null || $obj->fAufpreis === '') {
@@ -143,7 +145,7 @@ class WarenkorbPosEigenschaft
      */
     public function updateInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = GeneralObject::copyMembers($this);
 
         return Shop::Container()->getDB()->update(
             'twarenkorbposeigenschaft',

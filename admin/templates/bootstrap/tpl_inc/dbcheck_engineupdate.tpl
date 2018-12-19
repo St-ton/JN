@@ -8,7 +8,7 @@
 <div class="alert alert-warning">
     <h3 class="panel-title">Struktur-Migration erforderlich!</h3>
     F&uuml;r {$engineUpdate->tableCount} Tabellen ist eine Verschiebung in den InnoDB-Tablespace und ggfs. die Konvertierung in einen UTF-8 Zeichensatz erforderlich.
-    Von dieser Migration sind ca.&nbsp;{$engineUpdate->dataSize|formatSize:"%.0f"|upper|strip:"&nbsp;"} an Daten betroffen.
+    Von dieser Migration sind ca.&nbsp;{$engineUpdate->dataSize|formatByteSize:"%.0f"|upper|strip:"&nbsp;"} an Daten betroffen.
 </div>
 {if $DB_Version->collation_utf8 && $DB_Version->innodb->support}
     {if $DB_Version->innodb->support && $DB_Version->innodb->version|version_compare:'5.6' < 0}
@@ -33,7 +33,7 @@
     {if $DB_Version->innodb->size !== 'auto' && $engineUpdate->dataSize > $DB_Version->innodb->size}
         <div class="alert alert-warning">
             <h3 class="panel-title">Nicht genügend Platz im InnoDB-Tablespace!</h3>
-            Im InnoDB-Tablespace Ihrer Datenbank stehen offensichtlich nur {$DB_Version->innodb->size|formatSize:"%.0f"|upper|strip:"&nbsp;"} für Daten zur Verfügung.
+            Im InnoDB-Tablespace Ihrer Datenbank stehen offensichtlich nur {$DB_Version->innodb->size|formatByteSize:"%.0f"|upper|strip:"&nbsp;"} für Daten zur Verfügung.
             Das wird für die zu migrierende Datenmenge u.U. nicht ausreichen! Bitte stellen Sie sicher, dass genügend Platz im InnoDB-Tablespace zur Verfügung steht.
         </div>
     {/if}
@@ -59,10 +59,10 @@
                 <div id="update_automatic" class="tab-pane fade{if $tab === 'update_automatic'} in active{/if}">
                     <h3>Automatisch</h3>
                     <p>Die automatische Migration wird empfohlen, wenn Ihre Shop-Datenbank komplett umgestellt werden mu&szlig; und sich die Datenmenge innerhalb der
-                        <a title="Softwarebeschr&auml;nkungen und Grenzen der JTL-Produkte" href="https://guide.jtl-software.de/Softwarebeschr%C3%A4nkungen_und_Grenzen_der_JTL-Produkte">Spezifikationen</a> f&uuml;r
+                        <a title="Softwarebeschr&auml;nkungen und Grenzen der JTL-Produkte" href="https://jtl-url.de/8qsat">Spezifikationen</a> f&uuml;r
                         JTL-Shop befindet.
                     </p>
-                    <p>Bitte haben Sie Geduld! Bei {$engineUpdate->tableCount} Tabellen und einer Datenmenge von ca.&nbsp;{$engineUpdate->dataSize|formatSize:"%.0f"|upper|strip:"&nbsp;"} kann die Migration
+                    <p>Bitte haben Sie Geduld! Bei {$engineUpdate->tableCount} Tabellen und einer Datenmenge von ca.&nbsp;{$engineUpdate->dataSize|formatByteSize:"%.0f"|upper|strip:"&nbsp;"} kann die Migration
                         {if $engineUpdate->estimated[0] < 60}
                             weniger als eine Minute
                         {elseif $engineUpdate->estimated[0] < 3600}
@@ -182,6 +182,8 @@
             }
             if (typeof table !== 'undefined' && table !== null && table !== '') {
                 updateModalWait('Migrieren von ' + table + ' - Schritt ' + step);
+            } else {
+                table = '';
             }
             if (typeof exclude === 'undefined' && exclude !== null) {
                 exclude = [];

@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#payments#|cat:$oZahlungsart->cName cBeschreibung=#paymentsDesc# cDokuURL=#paymentsURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('payments')|cat:$oZahlungsart->cName cBeschreibung=__('paymentsDesc') cDokuURL=__('paymentsURL')}
 <div id="content" class="container-fluid">
     {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['a'=>'payments',
         'token'=>$smarty.session.jtl_token, 'kZahlungsart'=>$oZahlungsart->kZahlungsart]}
@@ -67,7 +67,7 @@
                 </div>
             {else}
                 <div class="alert alert-info" role="alert">
-                    {#noDataAvailable#}
+                    {__('noDataAvailable')}
                 </div>
             {/if}
             <div class="panel-footer">
@@ -76,7 +76,7 @@
                         <i class="fa fa-refresh"></i>
                         Wawi-Abholung zur&uuml;cksetzen
                     </button>
-                    <a class="btn btn-primary" href="zahlungsarten.php">{#goBack#}</a>
+                    <a class="btn btn-primary" href="zahlungsarten.php">{__('goBack')}</a>
                 </div>
             </div>
         </div>

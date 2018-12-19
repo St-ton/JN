@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#votesystem# cBeschreibung=#votesystemDesc# cDokuURL=#votesystemURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('votesystem') cBeschreibung=__('votesystemDesc') cDokuURL=__('votesystemURL')}
 <div id="content" class="container-fluid">
     <div class="block">
         <form name="sprache" method="post" action="bewertung.php">
@@ -6,10 +6,10 @@
             <input type="hidden" name="sprachwechsel" value="1" />
             <div class="input-group col-xs-6">
                 <span class="input-group-addon">
-                    <label for="{#changeLanguage#}">{#changeLanguage#}</label>
+                    <label for="{__('changeLanguage')}">{__('changeLanguage')}</label>
                 </span>
                 <span class="input-group-wrap last">
-                    <select id="{#changeLanguage#}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
+                    <select id="{__('changeLanguage')}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
                         {foreach name=sprachen from=$Sprachen item=sprache}
                             <option value="{$sprache->kSprache}" {if $sprache->kSprache==$smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
                         {/foreach}
@@ -20,16 +20,16 @@
     </div>
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'freischalten'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#freischalten">{#ratingsInaktive#}</a>
+            <a data-toggle="tab" role="tab" href="#freischalten">{__('ratingsInaktive')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'letzten50'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#letzten50">{#ratingLast50#}</a>
+            <a data-toggle="tab" role="tab" href="#letzten50">{__('ratingLast50')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'artikelbewertung'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#artikelbewertung">{#ratingForProduct#}</a>
+            <a data-toggle="tab" role="tab" href="#artikelbewertung">{__('ratingForProduct')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einstellungen">{#ratingSettings#}</a>
+            <a data-toggle="tab" role="tab" href="#einstellungen">{__('ratingSettings')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -42,36 +42,36 @@
                     <input type="hidden" name="tab" value="freischalten" />
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">{#ratingsInaktive#}</h3>
+                            <h3 class="panel-title">{__('ratingsInaktive')}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table  class="table">
+                            <table  class="table table-striped">
                                 <thead>
                                 <tr>
                                     <th class="check">&nbsp;</th>
-                                    <th class="tleft">{#productName#}</th>
-                                    <th class="tleft">{#customerName#}</th>
-                                    <th class="tleft">{#ratingText#}</th>
-                                    <th class="th-5">{#ratingStars#}</th>
-                                    <th class="th-6">{#ratingDate#}</th>
+                                    <th class="tleft">{__('productName')}</th>
+                                    <th class="tleft">{__('customerName')}</th>
+                                    <th class="tleft">{__('ratingText')}</th>
+                                    <th class="th-5">{__('ratingStars')}</th>
+                                    <th class="th-6">{__('ratingDate')}</th>
                                     <th class="th-7">&nbsp;</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                     {foreach name=bewertung from=$oBewertung_arr item=oBewertung key=kKey}
-                                        <tr class="tab_bg{$smarty.foreach.bewertung.iteration%2}">
+                                        <tr>
                                             <td class="check">
                                                 <input type="hidden" name="kArtikel[{$kKey}]" value="{$oBewertung->kArtikel}" />
                                                 <input name="kBewertung[{$kKey}]" type="checkbox" value="{$oBewertung->kBewertung}" />
                                             </td>
-                                            <td class="TD2"><a href="../index.php?a={$oBewertung->kArtikel}" target="_blank">{$oBewertung->ArtikelName}</a></td>
-                                            <td class="TD3">{$oBewertung->cName}.</td>
-                                            <td class="TD4"><b>{$oBewertung->cTitel}</b><br />{$oBewertung->cText}</td>
+                                            <td><a href="../index.php?a={$oBewertung->kArtikel}" target="_blank">{$oBewertung->ArtikelName}</a></td>
+                                            <td>{$oBewertung->cName}.</td>
+                                            <td><b>{$oBewertung->cTitel}</b><br />{$oBewertung->cText}</td>
                                             <td class="tcenter">{$oBewertung->nSterne}</td>
                                             <td class="tcenter">{$oBewertung->Datum}</td>
                                             <td class="tcenter">
                                                 <a href="bewertung.php?a=editieren&kBewertung={$oBewertung->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-default" title="{#modify#}">
+                                                   class="btn btn-default" title="{__('modify')}">
                                                     <i class="fa fa-edit"></i>
                                                 </a>
                                             </td>
@@ -81,21 +81,21 @@
                                 <tfoot>
                                     <tr>
                                         <td class="check"><input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);"></td>
-                                        <td colspan="6" class="TD7"><label for="ALLMSGS">{#ratingSelectAll#}</label></td>
+                                        <td colspan="6"><label for="ALLMSGS">{__('ratingSelectAll')}</label></td>
                                     </tr>
                                 </tfoot>
                             </table>
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group">
-                                <button name="aktivieren" type="submit" value="{#ratingActive#}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {#ratingActive#}</button>
-                                <button name="loeschen" type="submit" value="{#ratingDelete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#ratingDelete#}</button>
+                                <button name="aktivieren" type="submit" value="{__('ratingActive')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('ratingActive')}</button>
+                                <button name="loeschen" type="submit" value="{__('ratingDelete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('ratingDelete')}</button>
                             </div>
                         </div>
                     </div>
                 </form>
             {else}
-                <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="letzten50" class="tab-pane fade {if isset($cTab) && $cTab === 'letzten50'} active in{/if}">
@@ -107,33 +107,33 @@
                     <input type="hidden" name="tab" value="letzten50" />
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">{#ratingLast50#}</h3>
+                            <h3 class="panel-title">{__('ratingLast50')}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <thead>
                                 <tr>
                                     <th class="check">&nbsp;</th>
-                                    <th class="tleft">{#productName#}</th>
-                                    <th class="tleft">{#customerName#}</th>
-                                    <th class="tleft">{#ratingText#}</th>
-                                    <th class="th-5">{#ratingStars#}</th>
-                                    <th class="th-6">{#ratingDate#}</th>
+                                    <th class="tleft">{__('productName')}</th>
+                                    <th class="tleft">{__('customerName')}</th>
+                                    <th class="tleft">{__('ratingText')}</th>
+                                    <th class="th-5">{__('ratingStars')}</th>
+                                    <th class="th-6">{__('ratingDate')}</th>
                                     <th class="th-7">&nbsp;</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {foreach name=bewertungletzten50 from=$oBewertungLetzten50_arr item=oBewertungLetzten50}
-                                    <tr class="tab_bg{$smarty.foreach.bewertungletzten50.iteration%2}">
+                                    <tr>
                                         <td class="check"><input name="kBewertung[]" type="checkbox" value="{$oBewertungLetzten50->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungLetzten50->kArtikel}"></td>
-                                        <td class="TD2"><a href="../index.php?a={$oBewertungLetzten50->kArtikel}" target="_blank">{$oBewertungLetzten50->ArtikelName}</a></td>
-                                        <td class="TD3">{$oBewertungLetzten50->cName}.</td>
-                                        <td class="TD4">
+                                        <td><a href="../index.php?a={$oBewertungLetzten50->kArtikel}" target="_blank">{$oBewertungLetzten50->ArtikelName}</a></td>
+                                        <td>{$oBewertungLetzten50->cName}.</td>
+                                        <td>
                                             <strong>{$oBewertungLetzten50->cTitel}</strong><br>
                                             {$oBewertungLetzten50->cText}
                                             {if !empty($oBewertungLetzten50->cAntwort)}
                                                 <blockquote class="review-reply">
-                                                    <strong>{#ratingReply#}:</strong><br>
+                                                    <strong>{__('ratingReply')}:</strong><br>
                                                     {$oBewertungLetzten50->cAntwort}
                                                 </blockquote>
                                             {/if}
@@ -144,12 +144,12 @@
                                             <div class="btn-group">
                                                 {if !empty($oBewertungLetzten50->cAntwort)}
                                                     <a href="bewertung.php?a=delreply&kBewertung={$oBewertungLetzten50->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-danger" title="{#removeReply#}">
+                                                       class="btn btn-danger" title="{__('removeReply')}">
                                                         <i class="fa fa-times-circle-o"></i>
                                                     </a>
                                                 {/if}
                                                 <a href="bewertung.php?a=editieren&kBewertung={$oBewertungLetzten50->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-default" title="{#modify#}">
+                                                   class="btn btn-default" title="{__('modify')}">
                                                     <i class="fa fa-edit"></i>
                                                 </a>
                                             </div>
@@ -160,19 +160,19 @@
                                 <tfoot>
                                 <tr>
                                     <td class="check"><input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);"></td>
-                                    <td colspan="6" class="TD7"><label for="ALLMSGS3">{#ratingSelectAll#}</label></td>
+                                    <td colspan="6"><label for="ALLMSGS3">{__('ratingSelectAll')}</label></td>
                                 </tr>
                                 </tfoot>
                             </table>
                         </div>
                         <div class="panel-footer">
-                            <button name="loeschen" type="submit" value="{#ratingDelete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
+                            <button name="loeschen" type="submit" value="{__('ratingDelete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
                         </div>
                     </div>
                 </form>
 
             {else}
-                <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="artikelbewertung" class="tab-pane fade {if isset($cTab) && $cTab === 'artikelbewertung'} active in{/if}">
@@ -180,48 +180,48 @@
                 {$jtl_token}
                 <div class="input-group col-xs-6" style="float: none;">
                     <span class="input-group-addon">
-                        <label for="content">{#ratingcArtNr#}</label>
+                        <label for="content">{__('ratingcArtNr')}</label>
                     </span>
                     <input type="hidden" name="bewertung_aktiv" value="1" />
                     <input type="hidden" name="tab" value="artikelbewertung" />
                     <input class="form-control" name="cArtNr" type="text" />
                     <span class="input-group-btn">
-                        <button name="submitSearch" type="submit" value="{#ratingSearch#}" class="btn btn-info"><i class="fa fa-search"></i> {#ratingSearch#}</button>
+                        <button name="submitSearch" type="submit" value="{__('ratingSearch')}" class="btn btn-info"><i class="fa fa-search"></i> {__('ratingSearch')}</button>
                     </span>
                 </div>
                 {if isset($cArtNr) && $cArtNr|strlen > 0}
-                    <div class="alert alert-info">{#ratingSearchedFor#}: {$cArtNr}</div>
+                    <div class="alert alert-info">{__('ratingSearchedFor')}: {$cArtNr}</div>
                 {/if}
                 {if $oBewertungAktiv_arr && $oBewertungAktiv_arr|@count > 0}
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">{#ratingsInaktive#}</h3>
+                            <h3 class="panel-title">{__('ratingsInaktive')}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <thead>
                                 <tr>
                                     <th class="th-1">&nbsp;</th>
-                                    <th class="tleft">{#productName#}</th>
-                                    <th class="tleft">{#customerName#}</th>
-                                    <th class="tleft">{#ratingText#}</th>
-                                    <th class="th-5">{#ratingStars#}</th>
-                                    <th class="th-6">{#ratingDate#}</th>
+                                    <th class="tleft">{__('productName')}</th>
+                                    <th class="tleft">{__('customerName')}</th>
+                                    <th class="tleft">{__('ratingText')}</th>
+                                    <th class="th-5">{__('ratingStars')}</th>
+                                    <th class="th-6">{__('ratingDate')}</th>
                                     <th class="th-7">&nbsp;</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {foreach name=bewertungaktiv from=$oBewertungAktiv_arr item=oBewertungAktiv}
-                                    <tr class="tab_bg{$smarty.foreach.bewertungaktiv.iteration%2}">
-                                        <td class="TD1"><input name="kBewertung[]" type="checkbox" value="{$oBewertungAktiv->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungAktiv->kArtikel}"></td>
-                                        <td class="TD2"><a href="../index.php?a={$oBewertungAktiv->kArtikel}" target="_blank">{$oBewertungAktiv->ArtikelName}</a></td>
-                                        <td class="TD3">{$oBewertungAktiv->cName}.</td>
-                                        <td class="TD4"><b>{$oBewertungAktiv->cTitel}</b><br />{$oBewertungAktiv->cText}</td>
+                                    <tr>
+                                        <td><input name="kBewertung[]" type="checkbox" value="{$oBewertungAktiv->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungAktiv->kArtikel}"></td>
+                                        <td><a href="../index.php?a={$oBewertungAktiv->kArtikel}" target="_blank">{$oBewertungAktiv->ArtikelName}</a></td>
+                                        <td>{$oBewertungAktiv->cName}.</td>
+                                        <td><b>{$oBewertungAktiv->cTitel}</b><br />{$oBewertungAktiv->cText}</td>
                                         <td class="tcenter">{$oBewertungAktiv->nSterne}</td>
                                         <td class="tcenter">{$oBewertungAktiv->Datum}</td>
                                         <td class="tcenter">
                                             <a href="bewertung.php?a=editieren&kBewertung={$oBewertungAktiv->kBewertung}&tab=artikelbewertung"
-                                               class="btn btn-default" title="{#modify#}">
+                                               class="btn btn-default" title="{__('modify')}">
                                                 <i class="fa fa-edit"></i>
                                             </a>
                                         </td>
@@ -230,18 +230,18 @@
                                 </tbody>
                                 <tfoot>
                                 <tr>
-                                    <td class="TD1"><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);"></td>
-                                    <td colspan="6" class="TD7"><label for="ALLMSGS2">{#ratingSelectAll#}</label></td>
+                                    <td><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);"></td>
+                                    <td colspan="6"><label for="ALLMSGS2">{__('ratingSelectAll')}</label></td>
                                 </tr>
                                 </tfoot>
                             </table>
                         </div>
                         <div class="panel-footer">
-                            <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {#ratingDelete#}</button>
+                            <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('ratingDelete')}</button>
                         </div>
                     </div>
                 {else}
-                    <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                    <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </form>
         </div>
@@ -252,7 +252,7 @@
                 <input type="hidden" name="tab" value="einstellungen" />
                 <div class="settings panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{#ratingSettings#}</h3>
+                        <h3 class="panel-title">{__('ratingSettings')}</h3>
                     </div>
                     <div class="panel-body">
                         {foreach name=conf from=$oConfig_arr item=oConfig}
@@ -294,7 +294,7 @@
                         {/foreach}
                     </div>
                     <div class="panel-footer">
-                        <button type="submit" value="{#ragingSave#}" class="btn btn-primary"><i class="fa fa-save"></i> Speichern</button>
+                        <button type="submit" value="{__('ragingSave')}" class="btn btn-primary"><i class="fa fa-save"></i> Speichern</button>
                     </div>
                 </div>
             </form>

@@ -129,13 +129,13 @@ class Hersteller
         //noCache param to avoid problem with de-serialization of class properties with jtl search
         $kSprache = $kSprache > 0 ? $kSprache : Shop::getLanguageID();
         if ($kSprache === 0) {
-            $oSprache = gibStandardsprache();
+            $oSprache = Sprache::getDefaultLanguage();
             $kSprache = (int)$oSprache->kSprache;
         }
-        $cacheID     = 'manuf_' . $kHersteller . '_' . $kSprache . Shop::Cache()->getBaseID();
-        $cacheTags   = [CACHING_GROUP_MANUFACTURER];
-        $cached      = true;
-        if ($noCache === true || ($oHersteller = Shop::Cache()->get($cacheID)) === false) {
+        $cacheID   = 'manuf_' . $kHersteller . '_' . $kSprache . Shop::Container()->getCache()->getBaseID();
+        $cacheTags = [CACHING_GROUP_MANUFACTURER];
+        $cached    = true;
+        if ($noCache === true || ($oHersteller = Shop::Container()->getCache()->get($cacheID)) === false) {
             $oHersteller = Shop::Container()->getDB()->queryPrepared(
                 "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                     thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
@@ -155,21 +155,20 @@ class Hersteller
                 ],
                 \DB\ReturnType::SINGLE_OBJECT
             );
-            $cached = false;
+            $cached      = false;
             executeHook(HOOK_HERSTELLER_CLASS_LOADFROMDB, [
                 'oHersteller' => &$oHersteller,
                 'cached'      => false,
                 'cacheTags'   => &$cacheTags
             ]);
-            Shop::Cache()->set($cacheID, $oHersteller, $cacheTags);
+            Shop::Container()->getCache()->set($cacheID, $oHersteller, $cacheTags);
         }
         if ($cached === true) {
             executeHook(HOOK_HERSTELLER_CLASS_LOADFROMDB, [
-                    'oHersteller' => &$oHersteller,
-                    'cached'      => true,
-                    'cacheTags'   => &$cacheTags
-                ]
-            );
+                'oHersteller' => &$oHersteller,
+                'cached'      => true,
+                'cacheTags'   => &$cacheTags
+            ]);
         }
         if ($oHersteller !== false) {
             $this->loadFromObject($oHersteller);
@@ -188,10 +187,10 @@ class Hersteller
         $imageBaseURL = Shop::getImageBaseURL();
         if (isset($obj->kHersteller) && $obj->kHersteller > 0) {
             // URL bauen
-            $this->cURL = (isset($obj->cSeo) && strlen($obj->cSeo) > 0)
+            $this->cURL          = (isset($obj->cSeo) && strlen($obj->cSeo) > 0)
                 ? $shopURL . $obj->cSeo
                 : $shopURL . '?h=' . $obj->kHersteller;
-            $this->cBeschreibung = parseNewsText($this->cBeschreibung);
+            $this->cBeschreibung = StringHandler::parseNewsText($this->cBeschreibung);
         }
         if (strlen($this->cBildpfad) > 0) {
             $this->cBildpfadKlein  = PFAD_HERSTELLERBILDER_KLEIN . $this->cBildpfad;
@@ -215,31 +214,31 @@ class Hersteller
         $sqlWhere = '';
         $kSprache = Shop::getLanguageID();
         if ($productLookup) {
-            $sqlWhere = "WHERE EXISTS (
+            $sqlWhere = ' WHERE EXISTS (
                             SELECT 1
                             FROM tartikel
                             WHERE tartikel.kHersteller = thersteller.kHersteller
-                                " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . "
+                                ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
                                 AND NOT EXISTS (
                                 SELECT 1 FROM tartikelsichtbarkeit
                                 WHERE tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                                    AND tartikelsichtbarkeit.kKundengruppe = ". Session::CustomerGroup()->getID() .
-                            ")
-                        )";
+                                    AND tartikelsichtbarkeit.kKundengruppe = '.
+                                \Session\Session::getCustomerGroup()->getID() .
+                            ')
+                        )';
         }
-        $objs = Shop::Container()->getDB()->query(
+        $objs    = Shop::Container()->getDB()->query(
             "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                 thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                 therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
                 FROM thersteller
                 LEFT JOIN therstellersprache 
                     ON therstellersprache.kHersteller = thersteller.kHersteller
-                    AND therstellersprache.kSprache = {$kSprache}
+                    AND therstellersprache.kSprache = " . $kSprache . "
                 LEFT JOIN tseo 
                     ON tseo.kKey = thersteller.kHersteller
                     AND tseo.cKey = 'kHersteller'
-                    AND tseo.kSprache = {$kSprache}
-                {$sqlWhere}
+                    AND tseo.kSprache = " . $kSprache . $sqlWhere . "
                 ORDER BY thersteller.nSortNr, thersteller.cName",
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -254,9 +253,9 @@ class Hersteller
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->cName;
     }

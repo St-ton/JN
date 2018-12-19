@@ -3,43 +3,53 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+use Helpers\Request;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('STATS_COUPON_VIEW', true, true);
-/** @global JTLSmarty $smarty */
-$step        = 'kuponstatistik_uebersicht';
-$cWhere      = '';
-$coupons_arr = Shop::Container()->getDB()->query("SELECT kKupon, cName FROM tkupon ORDER BY cName DESC", 9);
-$oDateShop   = Shop::Container()->getDB()->query("SELECT MIN(DATE(dZeit)) AS startDate FROM tbesucherarchiv", 1);
-$startDate   = DateTime::createFromFormat('Y-m-j', $oDateShop->startDate);
-$endDate     = DateTime::createFromFormat('Y-m-j', date('Y-m-j'));
+/** @global Smarty\JTLSmarty $smarty */
+$step      = 'kuponstatistik_uebersicht';
+$cWhere    = '';
+$coupons   = Shop::Container()->getDB()->query(
+    'SELECT kKupon, cName FROM tkupon ORDER BY cName DESC',
+    \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
+);
+$oDateShop = Shop::Container()->getDB()->query(
+    'SELECT MIN(DATE(dZeit)) AS startDate FROM tbesucherarchiv',
+    \DB\ReturnType::SINGLE_OBJECT
+);
+$startDate = DateTime::createFromFormat('Y-m-j', $oDateShop->startDate);
+$endDate   = DateTime::createFromFormat('Y-m-j', date('Y-m-j'));
 
-if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && validateToken()) {
+if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && Form::validateToken()) {
     if ((int)$_POST['kKupon'] > -1) {
-        $cWhere = "(SELECT kKupon 
+        $cWhere = '(SELECT kKupon 
                         FROM tkuponbestellung 
                         WHERE tkuponbestellung.kBestellung = tbestellung.kBestellung 
                         LIMIT 0, 1
-                    ) = " . (int)$_POST['kKupon'] . " AND";
-        foreach ($coupons_arr as $key => $value) {
+                    ) = ' . (int)$_POST['kKupon'] . ' AND';
+        foreach ($coupons as $key => $value) {
             if ($value['kKupon'] == (int)$_POST['kKupon']) {
-                $coupons_arr[$key]['aktiv'] = 1;
+                $coupons[$key]['aktiv'] = 1;
                 break;
             }
         }
     }
 
-    $dateRange_arr = explode(' - ', $_POST['daterange']);
-    $endDate       = (DateTime::createFromFormat('Y-m-j', $dateRange_arr[1])
-        && (DateTime::createFromFormat('Y-m-j', $dateRange_arr[1]) > $startDate)
-        && (DateTime::createFromFormat('Y-m-j', $dateRange_arr[1]) < DateTime::createFromFormat('Y-m-j', date('Y-m-j'))))
-        ? DateTime::createFromFormat('Y-m-j', $dateRange_arr[1])
+    $dateRanges = explode(' - ', $_POST['daterange']);
+    $endDate    = (DateTime::createFromFormat('Y-m-j', $dateRanges[1])
+        && (DateTime::createFromFormat('Y-m-j', $dateRanges[1]) > $startDate)
+        && (DateTime::createFromFormat('Y-m-j', $dateRanges[1]) < DateTime::createFromFormat('Y-m-j', date('Y-m-j'))))
+        ? DateTime::createFromFormat('Y-m-j', $dateRanges[1])
         : DateTime::createFromFormat('Y-m-j', date('Y-m-j'));
 
-    if (DateTime::createFromFormat('Y-m-j', $dateRange_arr[0])
-        && (DateTime::createFromFormat('Y-m-j', $dateRange_arr[0]) < $endDate)
-        && (DateTime::createFromFormat('Y-m-j', $dateRange_arr[0]) >= $startDate)) {
-        $startDate = DateTime::createFromFormat('Y-m-j', $dateRange_arr[0]);
+    if (DateTime::createFromFormat('Y-m-j', $dateRanges[0])
+        && (DateTime::createFromFormat('Y-m-j', $dateRanges[0]) < $endDate)
+        && (DateTime::createFromFormat('Y-m-j', $dateRanges[0]) >= $startDate)) {
+        $startDate = DateTime::createFromFormat('Y-m-j', $dateRanges[0]);
     } else {
         $oneMonth  = clone $endDate;
         $oneMonth  = $oneMonth->modify('-1month');
@@ -55,14 +65,19 @@ if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && validateToken()) 
 $dStart = $startDate->format('Y-m-d 00:00:00');
 $dEnd   = $endDate->format('Y-m-d 23:59:59');
 
-$usedCouponsOrder = KuponBestellung::getOrdersWithUsedCoupons($dStart, $dEnd, verifyGPDataString('kKupon'));
+$usedCouponsOrder = KuponBestellung::getOrdersWithUsedCoupons(
+    $dStart,
+    $dEnd,
+    (int)Request::verifyGPDataString('kKupon')
+);
 
 $nCountOrders_arr = Shop::Container()->getDB()->query(
-    "SELECT count(*) AS nCount
+    "SELECT COUNT(*) AS nCount
         FROM tbestellung
         WHERE dErstellt BETWEEN '" . $dStart . "'
             AND '" . $dEnd . "'
-            AND tbestellung.cStatus != " . BESTELLUNG_STATUS_STORNO, 8
+            AND tbestellung.cStatus != " . BESTELLUNG_STATUS_STORNO,
+    \DB\ReturnType::SINGLE_ASSOC_ARRAY
 );
 
 $nCountUsedCouponsOrder = 0;
@@ -71,61 +86,60 @@ $nShoppingCartAmountAll = 0;
 $nCouponAmountAll       = 0;
 $tmpUser                = [];
 $date                   = [];
-if (isset($usedCouponsOrder) && is_array($usedCouponsOrder)) {
-    foreach ($usedCouponsOrder as $key => $usedCouponOrder) {
-        $oKunde                              = new Kunde($usedCouponOrder['kKunde']);
-        $usedCouponsOrder[$key]['cUserName'] = $oKunde->cVorname . ' ' . $oKunde->cNachname;
-        unset($oKunde);
-        $usedCouponsOrder[$key]['nCouponValue']        =
-            gibPreisLocalizedOhneFaktor($usedCouponOrder['fKuponwertBrutto']);
-        $usedCouponsOrder[$key]['nShoppingCartAmount'] =
-            gibPreisLocalizedOhneFaktor($usedCouponOrder['fGesamtsummeBrutto']);
-        $usedCouponsOrder[$key]['cOrderPos_arr']       = Shop::Container()->getDB()->query("
-            SELECT CONCAT_WS(' ',wk.cName,wk.cHinweis) AS cName,
-                wk.fPreis+(wk.fPreis/100*wk.fMwSt) AS nPreis, wk.nAnzahl
-                FROM twarenkorbpos AS wk
-                LEFT JOIN tbestellung AS bs 
-                    ON wk.kWarenkorb = bs.kWarenkorb
-                WHERE bs.kBestellung = " . (int)$usedCouponOrder['kBestellung'], 9
-        );
-        foreach ($usedCouponsOrder[$key]['cOrderPos_arr'] as $posKey => $value) {
-            $usedCouponsOrder[$key]['cOrderPos_arr'][$posKey]['nAnzahl']      =
-                str_replace('.', ',', number_format($value['nAnzahl'], 2));
-            $usedCouponsOrder[$key]['cOrderPos_arr'][$posKey]['nPreis']       =
-                gibPreisLocalizedOhneFaktor($value['nPreis']);
-            $usedCouponsOrder[$key]['cOrderPos_arr'][$posKey]['nGesamtPreis'] =
-                gibPreisLocalizedOhneFaktor($value['nAnzahl'] * $value['nPreis']);
-        }
-
-        $nCountUsedCouponsOrder++;
-        $nShoppingCartAmountAll += $usedCouponOrder['fGesamtsummeBrutto'];
-        $nCouponAmountAll += (float)$usedCouponOrder['fKuponwertBrutto'];
-        if (!in_array($usedCouponOrder['kKunde'], $tmpUser)) {
-            $nCountCustomers++;
-            $tmpUser[] = $usedCouponOrder['kKunde'];
-        }
-        $date[$key] = $usedCouponOrder['dErstellt'];
+foreach ($usedCouponsOrder as $key => $usedCouponOrder) {
+    $oKunde                              = new Kunde($usedCouponOrder['kKunde'] ?? 0);
+    $usedCouponsOrder[$key]['cUserName'] = $oKunde->cVorname . ' ' . $oKunde->cNachname;
+    unset($oKunde);
+    $usedCouponsOrder[$key]['nCouponValue']        =
+        Preise::getLocalizedPriceWithoutFactor($usedCouponOrder['fKuponwertBrutto']);
+    $usedCouponsOrder[$key]['nShoppingCartAmount'] =
+        Preise::getLocalizedPriceWithoutFactor($usedCouponOrder['fGesamtsummeBrutto']);
+    $usedCouponsOrder[$key]['cOrderPos_arr']       = Shop::Container()->getDB()->query(
+        "SELECT CONCAT_WS(' ',wk.cName,wk.cHinweis) AS cName,
+            wk.fPreis+(wk.fPreis/100*wk.fMwSt) AS nPreis, wk.nAnzahl
+            FROM twarenkorbpos AS wk
+            LEFT JOIN tbestellung AS bs 
+                ON wk.kWarenkorb = bs.kWarenkorb
+            WHERE bs.kBestellung = " . (int)$usedCouponOrder['kBestellung'],
+        \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
+    );
+    foreach ($usedCouponsOrder[$key]['cOrderPos_arr'] as $posKey => $value) {
+        $usedCouponsOrder[$key]['cOrderPos_arr'][$posKey]['nAnzahl']      =
+            str_replace('.', ',', number_format($value['nAnzahl'], 2));
+        $usedCouponsOrder[$key]['cOrderPos_arr'][$posKey]['nPreis']       =
+            Preise::getLocalizedPriceWithoutFactor($value['nPreis']);
+        $usedCouponsOrder[$key]['cOrderPos_arr'][$posKey]['nGesamtPreis'] =
+            Preise::getLocalizedPriceWithoutFactor($value['nAnzahl'] * $value['nPreis']);
     }
-    array_multisort($date, SORT_DESC, $usedCouponsOrder);
+
+    $nCountUsedCouponsOrder++;
+    $nShoppingCartAmountAll += $usedCouponOrder['fGesamtsummeBrutto'];
+    $nCouponAmountAll       += (float)$usedCouponOrder['fKuponwertBrutto'];
+    if (!in_array($usedCouponOrder['kKunde'], $tmpUser)) {
+        $nCountCustomers++;
+        $tmpUser[] = $usedCouponOrder['kKunde'];
+    }
+    $date[$key] = $usedCouponOrder['dErstellt'];
 }
+array_multisort($date, SORT_DESC, $usedCouponsOrder);
 
 $nPercentCountUsedCoupons = (isset($nCountOrders_arr['nCount']) && (int)$nCountOrders_arr['nCount'] > 0)
     ? number_format(100 / (int)$nCountOrders_arr['nCount'] * $nCountUsedCouponsOrder, 2)
     : 0;
-$overview_arr                  = [
+$overview_arr             = [
     'nCountUsedCouponsOrder'   => $nCountUsedCouponsOrder,
     'nCountCustomers'          => $nCountCustomers,
     'nCountOrder'              => $nCountOrders_arr['nCount'],
     'nPercentCountUsedCoupons' => $nPercentCountUsedCoupons,
-    'nShoppingCartAmountAll'   => gibPreisLocalizedOhneFaktor($nShoppingCartAmountAll),
-    'nCouponAmountAll'         => gibPreisLocalizedOhneFaktor($nCouponAmountAll)
+    'nShoppingCartAmountAll'   => Preise::getLocalizedPriceWithoutFactor($nShoppingCartAmountAll),
+    'nCouponAmountAll'         => Preise::getLocalizedPriceWithoutFactor($nCouponAmountAll)
 ];
 
 $smarty->assign('overview_arr', $overview_arr)
-    ->assign('usedCouponsOrder', $usedCouponsOrder)
-    ->assign('startDateShop', $oDateShop->startDate)
-    ->assign('startDate', $startDate->format('Y-m-d'))
-    ->assign('endDate', $endDate->format('Y-m-d'))
-    ->assign('coupons_arr', $coupons_arr)
-    ->assign('step', $step)
-    ->display('kuponstatistik.tpl');
+       ->assign('usedCouponsOrder', $usedCouponsOrder)
+       ->assign('startDateShop', $oDateShop->startDate)
+       ->assign('startDate', $startDate->format('Y-m-d'))
+       ->assign('endDate', $endDate->format('Y-m-d'))
+       ->assign('coupons_arr', $coupons)
+       ->assign('step', $step)
+       ->display('kuponstatistik.tpl');

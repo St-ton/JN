@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -8,10 +8,9 @@ namespace Link;
 
 use Tightenco\Collect\Support\Collection;
 
-
 /**
- * Class LinkGroupList
- * @package Filter
+ * Interface LinkGroupListInterface
+ * @package Link
  */
 interface LinkGroupListInterface
 {
@@ -28,7 +27,7 @@ interface LinkGroupListInterface
     /**
      * @param Collection $linkGroups
      */
-    public function setLinkGroups(Collection $linkGroups);
+    public function setLinkGroups(Collection $linkGroups): void;
 
     /**
      * @return LinkGroupCollection
@@ -38,7 +37,7 @@ interface LinkGroupListInterface
     /**
      * @param LinkGroupCollection $linkGroups
      */
-    public function setVisibleLinkGroups(LinkGroupCollection $linkGroups);
+    public function setVisibleLinkGroups(LinkGroupCollection $linkGroups): void;
 
     /**
      * @param int $customerGroupID
@@ -52,12 +51,12 @@ interface LinkGroupListInterface
      * @param bool   $filtered
      * @return LinkGroupInterface|null
      */
-    public function getLinkgroupByTemplate(string $name, $filtered = true);
+    public function getLinkgroupByTemplate(string $name, $filtered = true): ?LinkGroupInterface;
 
     /**
      * @param int  $id
      * @param bool $filtered
      * @return LinkGroupInterface|null
      */
-    public function getLinkgroupByID(int $id, $filtered = true);
+    public function getLinkgroupByID(int $id, $filtered = true): ?LinkGroupInterface;
 }

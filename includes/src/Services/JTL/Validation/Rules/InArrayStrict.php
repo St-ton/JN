@@ -6,7 +6,6 @@
 
 namespace Services\JTL\Validation\Rules;
 
-
 use Services\JTL\Validation\RuleInterface;
 use Services\JTL\Validation\RuleResult;
 
@@ -18,6 +17,9 @@ use Services\JTL\Validation\RuleResult;
  */
 class InArrayStrict implements RuleInterface
 {
+    /**
+     * @var array|mixed[]
+     */
     protected $whitelist;
 
     /**
@@ -32,9 +34,9 @@ class InArrayStrict implements RuleInterface
     /**
      * @inheritdoc
      */
-    public function validate($value)
+    public function validate($value): RuleResult
     {
-        return in_array($value, $this->whitelist, true)
+        return \in_array($value, $this->whitelist, true)
             ? new RuleResult(true, '', $value)
             : new RuleResult(false, 'value not in whitelist', $value);
     }

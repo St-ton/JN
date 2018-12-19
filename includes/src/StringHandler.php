@@ -4,20 +4,22 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\URL;
+
 /**
  * Class StringHandler
  */
 class StringHandler
 {
     /**
-     * @param string $cString
-     * @param int    $cFlag
-     * @param string $cEncoding
+     * @param string $string
+     * @param int    $flag
+     * @param string $encoding
      * @return string
      */
-    public static function htmlentities($cString, $cFlag = ENT_COMPAT, $cEncoding = JTL_CHARSET)
+    public static function htmlentities(string $string, int $flag = ENT_COMPAT, string $encoding = JTL_CHARSET): string
     {
-        return htmlentities($cString, $cFlag, $cEncoding);
+        return htmlentities($string, $flag, $encoding);
     }
 
     /**
@@ -34,53 +36,58 @@ class StringHandler
             },
             $string
         );
-        $string = preg_replace_callback(
+
+        return self::htmlentitydecode(preg_replace_callback(
             '~&#([0-9]+);~',
             function ($x) {
                 return chr($x[1]);
             },
             $string
-        );
-
-        return self::htmlentitydecode($string);
+        ));
     }
 
     /**
-     * @param string $cString
-     * @param int    $cFlag
-     * @param string $cEncoding
+     * @param string $string
+     * @param int    $flag
+     * @param string $encoding
      * @return string
      */
-    public static function htmlspecialchars($cString, $cFlag = ENT_COMPAT, $cEncoding = JTL_CHARSET)
-    {
-        return htmlspecialchars($cString, $cFlag, $cEncoding);
+    public static function htmlspecialchars(
+        string $string,
+        int $flag = ENT_COMPAT,
+        string $encoding = JTL_CHARSET
+    ): string {
+        return htmlspecialchars($string, $flag, $encoding);
     }
 
     /**
-     * @param string $cString
-     * @param int    $cFlag
-     * @param string $cEncoding
+     * @param string $string
+     * @param int    $flag
+     * @param string $encoding
      * @return string
      */
-    public static function htmlentitydecode($cString, $cFlag = ENT_COMPAT, $cEncoding = JTL_CHARSET)
-    {
-        return html_entity_decode($cString, $cFlag, $cEncoding);
+    public static function htmlentitydecode(
+        string $string,
+        int $flag = ENT_COMPAT,
+        string $encoding = JTL_CHARSET
+    ): string {
+        return html_entity_decode($string, $flag, $encoding);
     }
 
     /**
-     * @param int    $cFlag
-     * @param string $cEncoding
+     * @param int    $flag
+     * @param string $encoding
      * @return array
      */
-    public static function gethtmltranslationtable($cFlag = ENT_QUOTES, $cEncoding = JTL_CHARSET)
+    public static function gethtmltranslationtable(int $flag = ENT_QUOTES, string $encoding = JTL_CHARSET): array
     {
-        return get_html_translation_table(HTML_ENTITIES, $cFlag, $cEncoding);
+        return get_html_translation_table(HTML_ENTITIES, $flag, $encoding);
     }
 
     /**
      * @param string|array $input
      * @param int          $nSuche
-     * @return mixed|string
+     * @return array|string|mixed
      */
     public static function filterXSS($input, $nSuche = 0)
     {
@@ -91,16 +98,16 @@ class StringHandler
 
             return $input;
         }
-        $cString = trim(strip_tags($input));
-        $cString = (int)$nSuche === 1
-            ? str_replace(['\\\'', '\\'], '', $cString)
-            : str_replace(['\"', '\\\'', '\\', '"', '\''], '', $cString);
+        $string = trim(strip_tags($input));
+        $string = (int)$nSuche === 1
+            ? str_replace(['\\\'', '\\'], '', $string)
+            : str_replace(['\"', '\\\'', '\\', '"', '\''], '', $string);
 
-        if ((int)$nSuche === 1 && strlen($cString) > 10) {
-            $cString = substr(str_replace(['(', ')', ';'], '', $cString), 0, 50);
+        if ((int)$nSuche === 1 && strlen($string) > 10) {
+            $string = substr(str_replace(['(', ')', ';'], '', $string), 0, 50);
         }
 
-        return $cString;
+        return $string;
     }
 
     /**
@@ -110,7 +117,7 @@ class StringHandler
      * @param string $string
      * @return int
      */
-    public static function is_utf8($string)
+    public static function is_utf8(string $string)
     {
         $res = preg_match(
             '%^(?:[\x09\x0A\x0D\x20-\x7E]  # ASCII
@@ -121,7 +128,8 @@ class StringHandler
                                 |  \xF0[\x90-\xBF][\x80-\xBF]{2}     # planes 1-3
                                 | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
                                 |  \xF4[\x80-\x8F][\x80-\xBF]{2}     # plane 16
-                            )*$%xs', $string
+                            )*$%xs',
+            $string
         );
         if ($res === false) {
             //some kind of pcre error happend - probably PREG_JIT_STACKLIMIT_ERROR.
@@ -138,7 +146,7 @@ class StringHandler
      * @param string $data
      * @return mixed|string
      */
-    public static function xssClean($data)
+    public static function xssClean(string $data)
     {
         $convert = false;
         if (!self::is_utf8($data)) {
@@ -154,26 +162,52 @@ class StringHandler
         // Remove any attribute starting with "on" or xmlns
         $data = preg_replace('#(<[^>]+?[\x00-\x20"\'])(?:on|xmlns)[^>]*+>#iu', '$1>', $data);
         // Remove javascript: and vbscript: protocols
-        $data = preg_replace('#([a-z]*)[\x00-\x20]*=[\x00-\x20]*([`\'"]*)[\x00-\x20]*j[\x00-\x20]*a[\x00-\x20]*v[\x00-\x20]*a[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iu',
-            '$1=$2nojavascript...', $data);
-        $data = preg_replace('#([a-z]*)[\x00-\x20]*=([\'"]*)[\x00-\x20]*v[\x00-\x20]*b[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iu',
-            '$1=$2novbscript...', $data);
-        $data = preg_replace('#([a-z]*)[\x00-\x20]*=([\'"]*)[\x00-\x20]*-moz-binding[\x00-\x20]*:#u',
-            '$1=$2nomozbinding...', $data);
+        $data = preg_replace(
+            '#([a-z]*)[\x00-\x20]*=[\x00-\x20]*([`\'"]*)[\x00-\x20]' .
+            '*j[\x00-\x20]*a[\x00-\x20]*v[\x00-\x20]*a[\x00-\x20]*s[\x00-\x20]' .
+            '*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iu',
+            '$1=$2nojavascript...',
+            $data
+        );
+        $data = preg_replace(
+            '#([a-z]*)[\x00-\x20]*=([\'"]*)[\x00-\x20]*v[\x00-\x20]*b[\x00-\x20]' .
+            '*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iu',
+            '$1=$2novbscript...',
+            $data
+        );
+        $data = preg_replace(
+            '#([a-z]*)[\x00-\x20]*=([\'"]*)[\x00-\x20]*-moz-binding[\x00-\x20]*:#u',
+            '$1=$2nomozbinding...',
+            $data
+        );
         // Only works in IE: <span style="width: expression(alert('Ping!'));"></span>
-        $data = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?expression[\x00-\x20]*\([^>]*+>#i',
-            '$1>', $data);
-        $data = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?behaviour[\x00-\x20]*\([^>]*+>#i',
-            '$1>', $data);
-        $data = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:*[^>]*+>#iu',
-            '$1>', $data);
+        $data = preg_replace(
+            '#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?expression[\x00-\x20]*\([^>]*+>#i',
+            '$1>',
+            $data
+        );
+        $data = preg_replace(
+            '#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?behaviour[\x00-\x20]*\([^>]*+>#i',
+            '$1>',
+            $data
+        );
+        $data = preg_replace(
+            '#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?s[\x00-\x20]' .
+            '*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:*[^>]*+>#iu',
+            '$1>',
+            $data
+        );
         // Remove namespaced elements (we do not need them)
         $data = preg_replace('#</*\w+:\w[^>]*+>#i', '', $data);
         do {
             // Remove really unwanted tags
             $old_data = $data;
-            $data     = preg_replace('#</*(?:applet|b(?:ase|gsound|link)|embed|frame(?:set)?|i(?:frame|layer)|l(?:ayer|ink)|meta|object|s(?:cript|tyle)|title|xml)[^>]*+>#i',
-                '', $data);
+            $data     = preg_replace(
+                '#</*(?:applet|b(?:ase|gsound|link)|embed|frame(?:set)' .
+                '?|i(?:frame|layer)|l(?:ayer|ink)|meta|object|s(?:cript|tyle)|title|xml)[^>]*+>#i',
+                '',
+                $data
+            );
         } while ($old_data !== $data);
 
         // we are done...
@@ -181,28 +215,32 @@ class StringHandler
     }
 
     /**
-     * @param string $cData
+     * @param string $data
      * @return string
      */
-    public static function convertUTF8($cData)
+    public static function convertUTF8(string $data): string
     {
-        return mb_convert_encoding($cData, 'UTF-8', mb_detect_encoding($cData, 'UTF-8, ISO-8859-1, ISO-8859-15', true));
+        return mb_convert_encoding($data, 'UTF-8', mb_detect_encoding($data, 'UTF-8, ISO-8859-1, ISO-8859-15', true));
     }
 
     /**
-     * @param string $cData
+     * @param string $data
      * @return string
      */
-    public static function convertISO($cData)
+    public static function convertISO(string $data): string
     {
-        return mb_convert_encoding($cData, 'ISO-8859-1', mb_detect_encoding($cData, 'UTF-8, ISO-8859-1, ISO-8859-15', true));
+        return mb_convert_encoding(
+            $data,
+            'ISO-8859-1',
+            mb_detect_encoding($data, 'UTF-8, ISO-8859-1, ISO-8859-15', true)
+        );
     }
 
     /**
      * @param string $ISO
      * @return mixed
      */
-    public static function convertISO2ISO639($ISO)
+    public static function convertISO2ISO639(string $ISO)
     {
         $cISO_arr = self::getISOMappings();
 
@@ -215,8 +253,8 @@ class StringHandler
      */
     public static function convertISO6392ISO(string $ISO)
     {
-        $cISO_arr = self::getISOMappings();
-        foreach ($cISO_arr as $cISO639 => $cISO) {
+        $mappings = self::getISOMappings();
+        foreach ($mappings as $cISO639 => $cISO) {
             if (strtolower($cISO) === strtolower($ISO)) {
                 return $cISO639;
             }
@@ -420,23 +458,18 @@ class StringHandler
 
     /**
      * @param string $string
-     * @return string|mixed
+     * @return string
      */
-    public static function removeDoubleSpaces($string)
+    public static function removeDoubleSpaces(string $string): string
     {
-        if (!is_string($string)) {
-            return $string;
-        }
-        $string = preg_quote($string, '|');
-
-        return preg_replace('|  +|', ' ', $string);
+        return preg_replace('|  +|', ' ', preg_quote($string, '|'));
     }
 
     /**
      * @param string $string
-     * @return mixed
+     * @return string
      */
-    public static function removeWhitespace($string)
+    public static function removeWhitespace(string $string): string
     {
         return preg_replace('/\s+/', ' ', $string);
     }
@@ -444,10 +477,10 @@ class StringHandler
     /**
      * Creating semicolon separated key string
      *
-     * @param array $keys
+     * @param array|mixed $keys
      * @return string
      */
-    public static function createSSK($keys)
+    public static function createSSK($keys): string
     {
         if (!is_array($keys) || count($keys) === 0) {
             return '';
@@ -459,13 +492,13 @@ class StringHandler
     /**
      * Parse a semicolon separated key string to an array
      *
-     * @param string $ssk
+     * @param string|mixed $ssk
      * @return array
      */
-    public static function parseSSK($ssk)
+    public static function parseSSK($ssk): array
     {
         return is_string($ssk)
-            ? array_map('trim', array_filter(explode(';', $ssk)))
+            ? array_map('\trim', array_filter(explode(';', $ssk)))
             : [];
     }
 
@@ -475,11 +508,16 @@ class StringHandler
      *
      * @param string $input
      * @param bool   $validate
-     * @return string|false - a filtered string or false if invalid
+     * @return string|bool - a filtered string or false if invalid
      */
-    public static function filterEmailAddress($input, $validate = true)
+    public static function filterEmailAddress($input, bool $validate = true)
     {
-        if ((function_exists('mb_detect_encoding') && mb_detect_encoding($input) !== 'UTF-8') || !self::is_utf8($input)) {
+        if (!is_string($input)) {
+            return $validate ? false : '';
+        }
+        if ((function_exists('mb_detect_encoding') && mb_detect_encoding($input) !== 'UTF-8')
+            || !self::is_utf8($input)
+        ) {
             $input = self::convertUTF8($input);
         }
         $input     = function_exists('idn_to_ascii') ? idn_to_ascii($input) : $input;
@@ -498,9 +536,11 @@ class StringHandler
      * @param bool   $validate
      * @return string|false - a filtered string or false if invalid
      */
-    public static function filterURL($input, $validate = true)
+    public static function filterURL($input, bool $validate = true)
     {
-        if ((function_exists('mb_detect_encoding') && mb_detect_encoding($input) !== 'UTF-8') || !self::is_utf8($input)) {
+        if ((function_exists('mb_detect_encoding') && mb_detect_encoding($input) !== 'UTF-8')
+            || !self::is_utf8($input)
+        ) {
             $input = self::convertUTF8($input);
         }
         $input     = function_exists('idn_to_ascii') ? idn_to_ascii($input) : $input;
@@ -517,7 +557,7 @@ class StringHandler
      * @param array $parts
      * @return string - the resulting URL
      */
-    public static function buildUrl($parts)
+    public static function buildUrl(array $parts)
     {
         return (isset($parts['scheme']) ? $parts['scheme'] . '://' : '') .
             (isset($parts['user']) ? $parts['user'] . (isset($parts['pass']) ? ':' . $parts['pass'] : '') . '@' : '') .
@@ -526,5 +566,411 @@ class StringHandler
             ($parts['path'] ?? '') .
             (isset($parts['query']) ? '?' . $parts['query'] : '') .
             (isset($parts['fragment']) ? '#' . $parts['fragment'] : '');
+    }
+
+    /**
+     * @param string $number
+     * @param bool $required
+     * @return int
+     * @former checkeTel()
+     */
+    public static function checkPhoneNumber(string $number, bool $required = true): int
+    {
+        if (!$number) {
+            if ($required) {
+                return 1;
+            }
+            return 0;
+        }
+        if (!preg_match('/^[0-9\-\(\)\/\+\s]{1,}$/', $number)) {
+            return 2;
+        }
+
+        return 0;
+    }
+
+    /**
+     * @param string $data
+     * @param bool $required
+     * @return int
+     */
+    public static function checkDate(string $data, bool $required = true): int
+    {
+        if (!$data) {
+            if ($required) {
+                return 1;
+            }
+            return 0;
+        }
+        if (!preg_match('/^\d{1,2}\.\d{1,2}\.(\d{4})$/', $data)) {
+            return 2;
+        }
+        list($tag, $monat, $jahr) = explode('.', $data);
+        if (!checkdate($monat, $tag, $jahr)) {
+            return 3;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Diese Funktion erhält einen Text als String und parsed ihn. Variablen die geparsed werden lauten wie folgt:
+     * $#a:ID:NAME#$ => ID = kArtikel NAME => Wunschname - wird in eine URL (evt. SEO) zum Artikel umgewandelt.
+     * $#k:ID:NAME#$ => ID = kKategorie NAME => Wunschname - wird in eine URL (evt. SEO) zur Kategorie umgewandelt.
+     * $#h:ID:NAME#$ => ID = kHersteller NAME => Wunschname - wird in eine URL (evt. SEO) zum Hersteller umgewandelt.
+     * $#m:ID:NAME#$ => ID = kMerkmalWert NAME => Wunschname - wird in eine URL (evt. SEO) zum MerkmalWert umgewandelt.
+     * $#n:ID:NAME#$ => ID = kNews NAME => Wunschname - wird in eine URL (evt. SEO) zur News umgewandelt.
+     * $#t:ID:NAME#$ => ID = kTag NAME => Wunschname - wird in eine URL (evt. SEO) zum Tag umgewandelt.
+     * $#l:ID:NAME#$ => ID = kSuchanfrage NAME => Wunschname - wird in eine URL (evt. SEO) zur Livesuche umgewandelt.
+     *
+     * @param string $text
+     * @return mixed
+     */
+    public static function parseNewsText($text)
+    {
+        preg_match_all(
+            '/\${1}\#{1}[akhmntl]{1}:[0-9]+\:{0,1}' .
+            '[a-zA-Z0-9äÄöÖüÜß\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\]\ ]{0,}\#{1}\${1}/',
+            $text,
+            $hits
+        );
+        if (!is_array($hits[0]) || count($hits[0]) === 0) {
+            return $text;
+        }
+        if (!isset($_SESSION['kSprache'])) {
+            $_lang    = Sprache::getDefaultLanguage();
+            $kSprache = (int)$_lang->kSprache;
+        } else {
+            $kSprache = Shop::getLanguageID();
+        }
+        $params = [
+            'a' => URLART_ARTIKEL,
+            'k' => URLART_KATEGORIE,
+            'h' => URLART_HERSTELLER,
+            'm' => URLART_MERKMAL,
+            'n' => URLART_NEWS,
+            't' => URLART_TAG,
+            'l' => URLART_LIVESUCHE
+        ];
+        foreach ($hits[0] as $hit) {
+            $cParameter = substr($hit, strpos($hit, '#') + 1, 1);
+            $nBis       = strpos($hit, ':', 4);
+            // Es wurde kein Name angegeben
+            if ($nBis === false) {
+                $nBis  = strpos($hit, ':', 3);
+                $nVon  = strpos($hit, '#', $nBis);
+                $cKey  = substr($hit, $nBis + 1, ($nVon - 1) - $nBis);
+                $cName = '';
+            } else {
+                $cKey  = substr($hit, 4, $nBis - 4);
+                $cName = substr($hit, $nBis + 1, strpos($hit, '#', $nBis) - ($nBis + 1));
+            }
+
+            $oObjekt = new stdClass();
+            $exists  = false;
+            switch ($params[$cParameter]) {
+                case URLART_ARTIKEL:
+                    $oObjekt->kArtikel = (int)$cKey;
+                    $oObjekt->cKey     = 'kArtikel';
+                    $cTabellenname     = 'tartikel';
+                    $cSpracheSQL       = '';
+                    if (Shop::getLanguageID() > 0 && !Sprache::isDefaultLanguageActive()) {
+                        $cTabellenname = 'tartikelsprache';
+                        $cSpracheSQL   = ' AND tartikelsprache.kSprache = ' . Shop::getLanguageID();
+                    }
+                    $oArtikel = Shop::Container()->getDB()->query(
+                        "SELECT {$cTabellenname}.kArtikel, {$cTabellenname}.cName, tseo.cSeo
+                            FROM {$cTabellenname}
+                            LEFT JOIN tseo
+                                ON tseo.cKey = 'kArtikel'
+                                AND tseo.kKey = {$cTabellenname}.kArtikel
+                                AND tseo.kSprache = {$kSprache}
+                            WHERE {$cTabellenname}.kArtikel = " . (int)$cKey . $cSpracheSQL,
+                        \DB\ReturnType::SINGLE_OBJECT
+                    );
+
+                    if (isset($oArtikel->kArtikel) && $oArtikel->kArtikel > 0) {
+                        $exists         = true;
+                        $oObjekt->cSeo  = $oArtikel->cSeo;
+                        $oObjekt->cName = !empty($oArtikel->cName) ? $oArtikel->cName : 'Link';
+                    }
+                    break;
+
+                case URLART_KATEGORIE:
+                    $oObjekt->kKategorie = (int)$cKey;
+                    $oObjekt->cKey       = 'kKategorie';
+                    $cTabellenname       = 'tkategorie';
+                    $cSpracheSQL         = '';
+                    if ($kSprache > 0 && !Sprache::isDefaultLanguageActive()) {
+                        $cTabellenname = 'tkategoriesprache';
+                        $cSpracheSQL   = ' AND tkategoriesprache.kSprache = ' . $kSprache;
+                    }
+                    $oKategorie = Shop::Container()->getDB()->query(
+                        "SELECT {$cTabellenname}.kKategorie, {$cTabellenname}.cName, tseo.cSeo
+                            FROM {$cTabellenname}
+                            LEFT JOIN tseo
+                                ON tseo.cKey = 'kKategorie'
+                                AND tseo.kKey = {$cTabellenname}.kKategorie
+                                AND tseo.kSprache = {$kSprache}
+                            WHERE {$cTabellenname}.kKategorie = " . (int)$cKey . $cSpracheSQL,
+                        \DB\ReturnType::SINGLE_OBJECT
+                    );
+
+                    if (isset($oKategorie->kKategorie) && $oKategorie->kKategorie > 0) {
+                        $exists         = true;
+                        $oObjekt->cSeo  = $oKategorie->cSeo;
+                        $oObjekt->cName = !empty($oKategorie->cName) ? $oKategorie->cName : 'Link';
+                    }
+                    break;
+
+                case URLART_HERSTELLER:
+                    $oObjekt->kHersteller = (int)$cKey;
+                    $oObjekt->cKey        = 'kHersteller';
+                    $cTabellenname        = 'thersteller';
+                    $oHersteller          = Shop::Container()->getDB()->query(
+                        "SELECT thersteller.kHersteller, thersteller.cName, tseo.cSeo
+                            FROM thersteller
+                            LEFT JOIN tseo
+                                ON tseo.cKey = 'kHersteller'
+                                AND tseo.kKey = {$cTabellenname}.kHersteller
+                                AND tseo.kSprache = {$kSprache}
+                            WHERE {$cTabellenname}.kHersteller = " . (int)$cKey,
+                        \DB\ReturnType::SINGLE_OBJECT
+                    );
+
+                    if (isset($oHersteller->kHersteller) && $oHersteller->kHersteller > 0) {
+                        $exists         = true;
+                        $oObjekt->cSeo  = $oHersteller->cSeo;
+                        $oObjekt->cName = !empty($oHersteller->cName) ? $oHersteller->cName : 'Link';
+                    }
+                    break;
+
+                case URLART_MERKMAL:
+                    $oObjekt->kMerkmalWert = (int)$cKey;
+                    $oObjekt->cKey         = 'kMerkmalWert';
+                    $oMerkmalWert          = Shop::Container()->getDB()->query(
+                        "SELECT tmerkmalwertsprache.kMerkmalWert, tmerkmalwertsprache.cWert, tseo.cSeo
+                            FROM tmerkmalwertsprache
+                            LEFT JOIN tseo
+                                ON tseo.cKey = 'kMerkmalWert'
+                                AND tseo.kKey = tmerkmalwertsprache.kMerkmalWert
+                                AND tseo.kSprache = {$kSprache}
+                            WHERE tmerkmalwertsprache.kMerkmalWert = " . (int)$cKey . '
+                                AND tmerkmalwertsprache.kSprache = ' . $kSprache,
+                        \DB\ReturnType::SINGLE_OBJECT
+                    );
+
+                    if (isset($oMerkmalWert->kMerkmalWert) && $oMerkmalWert->kMerkmalWert > 0) {
+                        $exists         = true;
+                        $oObjekt->cSeo  = $oMerkmalWert->cSeo;
+                        $oObjekt->cName = !empty($oMerkmalWert->cWert) ? $oMerkmalWert->cWert : 'Link';
+                    }
+                    break;
+
+                case URLART_NEWS:
+                    $oObjekt->kNews = (int)$cKey;
+                    $oObjekt->cKey  = 'kNews';
+                    $oNews          = Shop::Container()->getDB()->query(
+                        "SELECT tnews.kNews, tseo.cSeo, tnewssprache.title
+                            FROM tnews
+                            JOIN tnewssprache
+								ON tnewssprache.kNews = tnews.kNews
+                            LEFT JOIN tseo
+                                ON tseo.cKey = 'kNews'
+                                AND tseo.kKey = tnews.kNews
+                                AND tseo.kSprache = {$kSprache}
+                            WHERE tnews.kNews = " . (int)$cKey,
+                        \DB\ReturnType::SINGLE_OBJECT
+                    );
+
+                    if (isset($oNews->kNews) && $oNews->kNews > 0) {
+                        $exists         = true;
+                        $oObjekt->cSeo  = $oNews->cSeo;
+                        $oObjekt->cName = empty($oNews->title) ? 'Link' : $oNews->title;
+                    }
+                    break;
+
+                case URLART_UMFRAGE:
+                    $oObjekt->kNews = (int)$cKey;
+                    $oObjekt->cKey  = 'kUmfrage';
+                    $oUmfrage       = Shop::Container()->getDB()->query(
+                        "SELECT tumfrage.kUmfrage, tumfrage.cName, tseo.cSeo
+                            FROM tumfrage
+                            LEFT JOIN tseo
+                                ON tseo.cKey = 'kUmfrage'
+                                AND tseo.kKey = tumfrage.kUmfrage
+                                AND tseo.kSprache = {$kSprache}
+                            WHERE tumfrage.kUmfrage = " . (int)$cKey,
+                        \DB\ReturnType::SINGLE_OBJECT
+                    );
+
+                    if (isset($oUmfrage->kUmfrage) && $oUmfrage->kUmfrage > 0) {
+                        $exists         = true;
+                        $oObjekt->cSeo  = $oUmfrage->cSeo;
+                        $oObjekt->cName = !empty($oUmfrage->cName) ? $oUmfrage->cName : 'Link';
+                    }
+                    break;
+
+                case URLART_TAG:
+                    $oObjekt->kNews = (int)$cKey;
+                    $oObjekt->cKey  = 'kTag';
+                    $oTag           = Shop::Container()->getDB()->query(
+                        "SELECT ttag.kTag, ttag.cName, tseo.cSeo
+                            FROM ttag
+                            LEFT JOIN tseo
+                                ON tseo.cKey = 'kTag'
+                                AND tseo.kKey = ttag.kTag
+                                AND tseo.kSprache = {$kSprache}
+                            WHERE ttag.kTag = " . (int)$cKey,
+                        \DB\ReturnType::SINGLE_OBJECT
+                    );
+
+                    if (isset($oTag->kTag) && $oTag->kTag > 0) {
+                        $exists         = true;
+                        $oObjekt->cSeo  = $oTag->cSeo;
+                        $oObjekt->cName = !empty($oTag->cName) ? $oTag->cName : 'Link';
+                    }
+                    break;
+
+                case URLART_LIVESUCHE:
+                    $oObjekt->kNews = (int)$cKey;
+                    $oObjekt->cKey  = 'kSuchanfrage';
+                    $oSuchanfrage   = Shop::Container()->getDB()->query(
+                        "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.cSuche, tseo.cSeo
+                            FROM tsuchanfrage
+                            LEFT JOIN tseo
+                                ON tseo.cKey = 'kSuchanfrage'
+                                AND tseo.kKey = tsuchanfrage.kSuchanfrage
+                                AND tseo.kSprache = {$kSprache}
+                            WHERE tsuchanfrage.kSuchanfrage = " . (int)$cKey,
+                        \DB\ReturnType::SINGLE_OBJECT
+                    );
+
+                    if (isset($oSuchanfrage->kSuchanfrage) && $oSuchanfrage->kSuchanfrage > 0) {
+                        $exists         = true;
+                        $oObjekt->cSeo  = $oSuchanfrage->cSeo;
+                        $oObjekt->cName = !empty($oSuchanfrage->cSuche) ? $oSuchanfrage->cSuche : 'Link';
+                    }
+                    break;
+            }
+            executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_PARSENEWSTEXT);
+
+            if (strlen($cName) > 0) {
+                $oObjekt->cName = $cName;
+                $cName          = ':' . $cName;
+            }
+            if ($exists) {
+                $cURL = URL::buildURL($oObjekt, $params[$cParameter]);
+                $text = str_replace(
+                    '$#' . $cParameter . ':' . $cKey . $cName . '#$',
+                    '<a href="' . Shop::getURL() . '/' . $cURL . '">' . $oObjekt->cName . '</a>',
+                    $text
+                );
+            } else {
+                $text = str_replace(
+                    '$#' . $cParameter . ':' . $cKey . $cName . '#$',
+                    '<a href="' . Shop::getURL() . '/" >' . Shop::Lang()->get('parseTextNoLinkID') . '</a>',
+                    $text
+                );
+            }
+        }
+
+        return $text;
+    }
+
+    /**
+     * @param int $size
+     * @param string $format
+     * @return string
+     */
+    public static function formatSize($size, string $format = '%.2f'): string
+    {
+        $units = ['b', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb', 'Eb', 'Zb', 'Yb'];
+        $res   = '';
+        foreach ($units as $n => $unit) {
+            $div = 1024 ** $n;
+            if ($size > $div) {
+                $res = sprintf("$format %s", $size / $div, $unit);
+            }
+        }
+
+        return $res;
+    }
+
+    /**
+     * @param string|array|object $data the string, array or object to convert recursively
+     * @param bool                $encode true if data should be utf-8-encoded or false if data should be utf-8-decoded
+     * @param bool                $copy false if objects should be changed, true if they should be cloned first
+     * @return string|array|object converted data
+     */
+    public static function utf8_convert_recursive($data, $encode = true, $copy = false)
+    {
+        if (is_string($data)) {
+            $isUtf8 = mb_detect_encoding($data, 'UTF-8', true) !== false;
+
+            if ((!$isUtf8 && $encode) || ($isUtf8 && !$encode)) {
+                $data = $encode ? self::convertUTF8($data) : self::convertISO($data);
+            }
+        } elseif (is_array($data)) {
+            foreach ($data as $key => $val) {
+                $newKey = (string)self::utf8_convert_recursive($key, $encode);
+                $newVal = self::utf8_convert_recursive($val, $encode);
+                unset($data[$key]);
+                $data[$newKey] = $newVal;
+            }
+        } elseif (is_object($data)) {
+            if ($copy) {
+                $data = clone $data;
+            }
+
+            foreach (get_object_vars($data) as $key => $val) {
+                $newKey = (string)self::utf8_convert_recursive($key, $encode);
+                $newVal = self::utf8_convert_recursive($val, $encode);
+                unset($data->$key);
+                $data->$newKey = $newVal;
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * JSON-Encode $data only if it is not already encoded, meaning it avoids double encoding
+     *
+     * @param mixed $data
+     * @return string|bool - false when $data is not encodable
+     * @throws Exception
+     */
+    public static function json_safe_encode($data)
+    {
+        $data = self::utf8_convert_recursive($data);
+        // encode data if not already encoded
+        if (is_string($data)) {
+            // data is a string
+            json_decode($data);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                // it is not a JSON string yet
+                $data = json_encode($data);
+            }
+        } else {
+            $data = json_encode($data);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Mehrfach Leerzeichen entfernen
+     *
+     * @param string $string
+     * @return string
+     */
+    public static function removeNumerousWhitespaces($string): string
+    {
+        while (strpos($string, '  ')) {
+            $string = str_replace('  ', ' ', $string);
+        }
+
+        return $string;
     }
 }

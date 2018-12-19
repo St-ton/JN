@@ -59,7 +59,8 @@ class UstIDvies
      * @param string $szString
      * @return string
      */
-    public function condenseSpaces($szString) {
+    public function condenseSpaces($szString)
+    {
         return str_replace(' ', '', $szString);
     }
 
@@ -77,7 +78,7 @@ class UstIDvies
      * @param string $szUstID
      * @return array
      */
-    public function doCheckID($szUstID = '')
+    public function doCheckID($szUstID = ''): array
     {
         if ('' === $szUstID) {
             return [
@@ -107,12 +108,11 @@ class UstIDvies
             try {
                 $oViesResult = $oSoapClient->checkVat(['countryCode' => $szCountryCode, 'vatNumber' => $szVatNumber]);
             } catch (Exception $e) {
-                Jtllog::writeLog('MwStID Problem: '.$e->getMessage());
+                Shop::Container()->getLogService()->error('MwStID Exception: '.$e->getMessage());
             }
 
             if (null !== $oViesResult && true === $oViesResult->valid) {
-                Jtllog::writeLog('MwStID valid. (' . print_r($oViesResult, true) . ')',
-                    JTLLOG_LEVEL_NOTICE); // sometimes we get the address too
+                Shop::Container()->getLogService()->notice('MwStID valid. (' . print_r($oViesResult, true) . ')');
 
                 return [
                     'success'   => true,
@@ -120,17 +120,16 @@ class UstIDvies
                     'errorcode' => ''
                 ];
             }
-            Jtllog::writeLog('MwStID invalid! (' . print_r($oViesResult, true) . ')', JTLLOG_LEVEL_NOTICE);
+            Shop::Container()->getLogService()->notice('MwStID invalid! (' . print_r($oViesResult, true) . ')');
 
             return [
                 'success'   => false,
                 'errortype' => 'vies',
                 'errorcode' => 5 // error: ID is invalid according to the VIES-system
             ];
-
         }
         // inform the user:"The VAT-office in this country has closed this time."
-        Jtllog::writeLog('MIAS-Amt aktuell nicht erreichbar. (ID: '.$szUstID.')', JTLLOG_LEVEL_NOTICE);
+        Shop::Container()->getLogService()->notice('MIAS-Amt aktuell nicht erreichbar. (ID: '.$szUstID.')');
 
         return [
             'success'   => false,
@@ -139,5 +138,4 @@ class UstIDvies
             'errorinfo' => $this->oDownTimes->getDownInfo() // the time, till which the office has closed
         ];
     }
-
 }

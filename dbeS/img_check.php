@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTLShop\SemVer\Version;
+
 ob_start();
 require_once __DIR__ . '/syncinclude.php';
 
@@ -14,9 +16,7 @@ if (auth()) {
     $unzipPath = PFAD_SYNC_TMP . uniqid('check_') . '/';
     $return    = 2;
     if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
-        if (Jtllog::doLog()) {
-            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'img_upload_xml');
-        }
+        Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile . ' to ' . $unzipPath);
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
@@ -26,36 +26,39 @@ if (auth()) {
             }
             removeTemporaryFiles($xmlFile);
         }
-        removeTemporaryFiles($unzipPath);
+        removeTemporaryFiles($unzipPath, true);
     }
 }
 echo $return;
 
 /**
  * @param SimpleXMLElement $xml
+ *
+ * @throws \Exceptions\CircularReferenceException
+ * @throws \Exceptions\ServiceNotFoundException
  */
 function bildercheck_xml(SimpleXMLElement $xml)
 {
+    $db     = Shop::Container()->getDB();
     $found  = [];
     $sqls   = [];
     $object = get_object($xml);
     foreach ($object->items as $item) {
-        $hash   = Shop::Container()->getDB()->escape($item->hash);
+        $hash   = $db->escape($item->hash);
         $sqls[] = "(kBild={$item->id} && cPfad='{$hash}')";
     }
     $sqlOr  = implode(' || ', $sqls);
     $sql    = "SELECT kBild AS id, cPfad AS hash FROM tbild WHERE {$sqlOr}";
-    $images = Shop::Container()->getDB()->query($sql, 2);
+    $images = $db->query($sql, \DB\ReturnType::ARRAY_OF_OBJECTS);
     if ($images !== false) {
         foreach ($images as $image) {
             $storage = PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $image->hash;
             if (!file_exists($storage)) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog("Dropping orphan {$image->id} -> {$image->hash}: no such file",
-                        JTLLOG_LEVEL_DEBUG, false, 'img_check_xml');
-                }
-                Shop::Container()->getDB()->delete('tbild', 'kBild', $image->id);
-                Shop::Container()->getDB()->delete('tartikelpict', 'kBild', $image->id);
+                Shop::Container()->getLogService()->debug(
+                    'Dropping orphan ' . $image->id . ' -> ' . $image->hash . ': no such file'
+                );
+                $db->delete('tbild', 'kBild', $image->id);
+                $db->delete('tartikelpict', 'kBild', $image->id);
             }
             $found[] = $image->id;
         }
@@ -75,16 +78,6 @@ function bildercheck_xml(SimpleXMLElement $xml)
             }
         }
     }
-
-    if (!empty($found) && Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        $checkids = array_map(function ($item) {
-            return $item->id;
-        }, $object->items);
-
-        $checklist = implode(';', $checkids);
-        Jtllog::writeLog('Checking: ' . $checklist, JTLLOG_LEVEL_DEBUG, false, 'img_check_xml');
-    }
-
     $missing = array_filter($object->items, function ($item) use ($found) {
         return !in_array($item->id, $found);
     });
@@ -94,7 +87,7 @@ function bildercheck_xml(SimpleXMLElement $xml)
     }, $missing);
 
     $idlist = implode(';', $ids);
-    push_response("0;\n<bildcheck><notfound>{$idlist}</notfound></bildcheck>");
+    push_response("0;\n<bildcheck><notfound>" . $idlist . '</notfound></bildcheck>');
 }
 
 /**
@@ -102,10 +95,6 @@ function bildercheck_xml(SimpleXMLElement $xml)
  */
 function push_response($content)
 {
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Image check response: ' . htmlentities($content), JTLLOG_LEVEL_DEBUG, false, 'img_check_xml');
-    }
-
     ob_clean();
     echo $content;
     exit;
@@ -145,14 +134,14 @@ function cloud_download($hash)
     $imageData = download($url);
 
     if ($imageData !== null) {
-        $tmpFile = tempnam(sys_get_temp_dir(), 'jtl');
+        $tmpFile  = tempnam(sys_get_temp_dir(), 'jtl');
         $filename = PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $hash;
 
         file_put_contents($tmpFile, $imageData, FILE_BINARY);
 
         return rename($tmpFile, $filename);
     }
-    
+
     return false;
 }
 
@@ -162,14 +151,16 @@ function cloud_download($hash)
  */
 function download($url)
 {
-    $ch = curl_init($url);
+    $ch           = curl_init($url);
+    $version      = Version::parse(APPLICATION_VERSION);
+    $versionShort = sprintf('%d%02d', $version->getMajor(), $version->getMinor());
 
     curl_setopt($ch, CURLOPT_TIMEOUT, 1000);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, DEFAULT_CURL_OPT_VERIFYHOST);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, DEFAULT_CURL_OPT_VERIFYPEER);
-    curl_setopt($ch, CURLOPT_USERAGENT, 'JTL-Shop/' . JTL_VERSION);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'JTL-Shop/' . $versionShort);
 
     $data = curl_exec($ch);
     $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);

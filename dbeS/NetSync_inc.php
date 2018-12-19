@@ -7,13 +7,10 @@
 ob_start();
 
 require_once __DIR__ . '/syncinclude.php';
-// configuration
 require_once __DIR__ . '/../includes/config.JTL-Shop.ini.php';
 require_once __DIR__ . '/../includes/defines.php';
-error_reporting(SYNC_LOG_LEVEL);
-// basic classes
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
-// language
+error_reporting(SYNC_LOG_LEVEL);
 $oSprache = Sprache::getInstance(true);
 
 /**
@@ -21,14 +18,14 @@ $oSprache = Sprache::getInstance(true);
  */
 class NetSyncRequest
 {
-    const Unknown = 0;
-    const UploadFiles = 1;
-    const UploadFileData = 2;
-    const DownloadFolders = 3;
-    const DownloadFilesInFolder = 4;
-    const CronjobTrigger = 5;
-    const CronjobStatus = 6;
-    const CronjobHistory = 7;
+    public const UNKNOWN               = 0;
+    public const UPLOADFILES           = 1;
+    public const UPLOADFILEDATA        = 2;
+    public const DOWNLOADFOLDERS       = 3;
+    public const DOWNLOADFILESINFOLDER = 4;
+    public const CRONJOBTRIGGER        = 5;
+    public const CRONJOBSTATUS         = 6;
+    public const CRONJOBHISTORY        = 7;
 }
 
 /**
@@ -36,14 +33,14 @@ class NetSyncRequest
  */
 class NetSyncResponse
 {
-    const Unknown = -1;
-    const Ok = 0;
-    const ErrorLogin = 1;
-    const ErrorDeserialize = 2;
-    const ReceivingData = 3;
-    const FolderNotExists = 4;
-    const ErrorInternal = 5;
-    const ErrorNoLicense = 6;
+    public const UNKNOWN          = -1;
+    public const OK               = 0;
+    public const ERRORLOGIN       = 1;
+    public const ERRORDESERIALIZE = 2;
+    public const RECEIVINGDATA    = 3;
+    public const FOLDERNOTEXISTS  = 4;
+    public const ERRORINTERNAL    = 5;
+    public const ERRORNOLICENSE   = 6;
 }
 
 /**
@@ -101,8 +98,16 @@ class SystemFile
      * @param int    $nUploaded
      * @param int    $nBytes
      */
-    public function __construct($kFileID, $cFilepath, $cRelFilepath, $cFilename, $cDirname, $cExtension, $nUploaded, $nBytes)
-    {
+    public function __construct(
+        $kFileID,
+        $cFilepath,
+        $cRelFilepath,
+        $cFilename,
+        $cDirname,
+        $cExtension,
+        $nUploaded,
+        $nBytes
+    ) {
         $this->kFileID      = $kFileID;
         $this->cFilepath    = $cFilepath;
         $this->cRelFilepath = $cRelFilepath;
@@ -197,8 +202,16 @@ class CronjobStatus
      * @param string $cLastStartDate
      * @param string $cNextStartDate
      */
-    public function __construct($kCron, $cExportformat, $cStartDate, $nRepeat, $nDone, $nOverall, $cLastStartDate, $cNextStartDate)
-    {
+    public function __construct(
+        $kCron,
+        $cExportformat,
+        $cStartDate,
+        $nRepeat,
+        $nDone,
+        $nOverall,
+        $cLastStartDate,
+        $cNextStartDate
+    ) {
         $this->kCron          = $kCron;
         $this->cExportformat  = $cExportformat;
         $this->cStartDate     = $cStartDate;
@@ -261,27 +274,6 @@ class NetSyncHandler
     private static $oInstance;
 
     /**
-     *
-     */
-    protected function init()
-    {
-    }
-
-    /**
-     * @param $eRequest
-     */
-    protected function request($eRequest)
-    {
-    }
-
-    /**
-     * @param Exception $oException
-     */
-    public static function exception($oException)
-    {
-    }
-
-    /**
      * @throws Exception
      */
     public function __construct()
@@ -292,22 +284,16 @@ class NetSyncHandler
         self::$oInstance = $this;
         $this->init();
         if (!$this->isAuthed()) {
-            static::throwResponse(NetSyncResponse::ErrorLogin);
+            static::throwResponse(NetSyncResponse::ERRORLOGIN);
         }
         $this->request((int)$_REQUEST['e']);
     }
 
     /**
-     * @param string $cClass
+     *
      */
-    public static function create($cClass)
+    protected function init()
     {
-        if (self::$oInstance === null) {
-            if (class_exists($cClass)) {
-                new $cClass;
-                set_exception_handler([$cClass, 'exception']);
-            }
-        }
     }
 
     /**
@@ -355,15 +341,40 @@ class NetSyncHandler
     }
 
     /**
+     * @param $eRequest
+     */
+    protected function request($eRequest)
+    {
+    }
+
+    /**
+     * @param Exception $oException
+     */
+    public static function exception($oException)
+    {
+    }
+
+    /**
+     * @param string $cClass
+     */
+    public static function create($cClass)
+    {
+        if (self::$oInstance === null && class_exists($cClass)) {
+            new $cClass;
+            set_exception_handler([$cClass, 'exception']);
+        }
+    }
+
+    /**
      * @param string $filename
      * @param string $mimetype
      * @param string $outname
      */
     public function streamFile($filename, $mimetype, $outname = '')
     {
-        $HTTP_USER_AGENT = (!empty($_SERVER['HTTP_USER_AGENT']))
-            ? $_SERVER['HTTP_USER_AGENT']
-            : '';
+        $HTTP_USER_AGENT = empty($_SERVER['HTTP_USER_AGENT'])
+            ? ''
+            : $_SERVER['HTTP_USER_AGENT'];
         $browser_agent   = 'other';
         if (preg_match('/^Opera(\/| )([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT) === 1) {
             $browser_agent = 'opera';
@@ -403,7 +414,7 @@ class NetSyncHandler
         }
         $size = @filesize($filename);
         if ($size) {
-            header("Content-length: $size");
+            header('Content-length: ' . $size);
         }
         readfile($filename);
         unlink($filename);

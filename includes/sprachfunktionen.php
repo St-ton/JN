@@ -8,11 +8,8 @@
  * @param Warenkorb $warenkorb
  * @return string
  */
-function lang_warenkorb_warenkorbEnthaeltXArtikel($warenkorb)
+function lang_warenkorb_warenkorbEnthaeltXArtikel(Warenkorb $warenkorb): string
 {
-    if ($warenkorb === null) {
-        return '';
-    }
     if ($warenkorb->hatTeilbareArtikel()) {
         $nPositionen = $warenkorb->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]);
         $ret         = Shop::Lang()->get('yourbasketcontains', 'checkout') . ' ' . $nPositionen . ' ';
@@ -24,11 +21,9 @@ function lang_warenkorb_warenkorbEnthaeltXArtikel($warenkorb)
 
         return $ret;
     }
-    $nArtikel = get_class($warenkorb) === 'Warenkorb'
-        ? $warenkorb->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL])
-        : 0;
+    $nArtikel = $warenkorb->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]);
     $nArtikel = str_replace('.', ',', $nArtikel);
-    if ($nArtikel == 1) {
+    if ($nArtikel === 1) {
         return Shop::Lang()->get('yourbasketcontains', 'checkout') . ' ' .
             $nArtikel . ' ' . Shop::Lang()->get('product');
     }
@@ -36,7 +31,7 @@ function lang_warenkorb_warenkorbEnthaeltXArtikel($warenkorb)
         return Shop::Lang()->get('yourbasketcontains', 'checkout') . ' ' .
             $nArtikel . ' ' . Shop::Lang()->get('products');
     }
-    if ($nArtikel == 0) {
+    if ($nArtikel === 0) {
         return Shop::Lang()->get('emptybasket', 'checkout');
     }
 
@@ -47,25 +42,20 @@ function lang_warenkorb_warenkorbEnthaeltXArtikel($warenkorb)
  * @param Warenkorb $warenkorb
  * @return string,
  */
-function lang_warenkorb_warenkorbLabel($warenkorb)
+function lang_warenkorb_warenkorbLabel(Warenkorb $warenkorb)
 {
-    $cLabel = Shop::Lang()->get('basket', 'checkout');
-    if ($warenkorb !== null) {
-        $cLabel .= ' (' . gibPreisStringLocalized(
-            $warenkorb->gibGesamtsummeWarenExt(
-                [C_WARENKORBPOS_TYP_ARTIKEL],
-                !Session::CustomerGroup()->isMerchant()
-            )) . ')';
-    }
-
-    return $cLabel;
+    return Shop::Lang()->get('basket', 'checkout') .
+        ' (' .
+        Preise::getLocalizedPriceString(
+            $warenkorb->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], !\Session\Session::getCustomerGroup()->isMerchant())
+        ) . ')';
 }
 
 /**
  * @param Warenkorb $warenkorb
  * @return string
  */
-function lang_warenkorb_bestellungEnthaeltXArtikel($warenkorb)
+function lang_warenkorb_bestellungEnthaeltXArtikel(Warenkorb $warenkorb)
 {
     $ret = Shop::Lang()->get('yourordercontains', 'checkout') . ' ' . count($warenkorb->PositionenArr) . ' ';
     if (count($warenkorb->PositionenArr) === 1) {
@@ -130,9 +120,9 @@ function lang_suche_mindestanzahl($suchausdruck, $anzahl)
 
 /**
  * @param int $status
- * @return mixed
+ * @return string
  */
-function lang_bestellstatus($status)
+function lang_bestellstatus(int $status): string
 {
     switch ($status) {
         case BESTELLUNG_STATUS_OFFEN:
@@ -158,13 +148,13 @@ function lang_bestellstatus($status)
  * @param int       $kKonfigitem
  * @return string
  */
-function lang_mindestbestellmenge($Artikel, $beabsichtigteKaufmenge, $kKonfigitem = 0)
+function lang_mindestbestellmenge($Artikel, $beabsichtigteKaufmenge, int $kKonfigitem = 0)
 {
     if ($Artikel->cEinheit) {
         $Artikel->cEinheit = ' ' . $Artikel->cEinheit;
     }
     $cName = $Artikel->cName;
-    if ((int)$kKonfigitem > 0 && class_exists('Konfigitem')) {
+    if ($kKonfigitem > 0 && class_exists('Konfigitem')) {
         $cName = (new Konfigitem($kKonfigitem))->getName();
     }
 

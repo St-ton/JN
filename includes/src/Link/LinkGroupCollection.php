@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
 namespace Link;
-
 
 use Tightenco\Collect\Support\Collection;
 
@@ -38,7 +37,7 @@ final class LinkGroupCollection extends Collection
      * @param string $name
      * @return LinkGroupInterface|null
      */
-    public function getLinkgroupByTemplate(string $name)
+    public function getLinkgroupByTemplate(string $name): ?LinkGroupInterface
     {
         return $this->filter(function (LinkGroupInterface $e) use ($name) {
             return $e->getTemplate() === $name;
@@ -49,7 +48,7 @@ final class LinkGroupCollection extends Collection
      * @param int $id
      * @return LinkGroupInterface|null
      */
-    public function getLinkgroupByID(int $id)
+    public function getLinkgroupByID(int $id): ?LinkGroupInterface
     {
         return $this->filter(function (LinkGroupInterface $e) use ($id) {
             return $e->getID() === $id;
@@ -80,6 +79,6 @@ final class LinkGroupCollection extends Collection
      */
     public function __isset($name)
     {
-        return property_exists($this, $name) || $this->getLinkgroupByTemplate($name) !== null;
+        return \property_exists($this, $name) || $this->getLinkgroupByTemplate($name) !== null;
     }
 }

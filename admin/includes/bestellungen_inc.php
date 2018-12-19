@@ -9,26 +9,25 @@
  * @param string $cSuchFilter
  * @return array
  */
-function gibBestellungsUebersicht($cLimitSQL, $cSuchFilter)
+function gibBestellungsUebersicht($cLimitSQL, $cSuchFilter): array
 {
     $oBestellung_arr = [];
     $cSuchFilterSQL  = '';
     if (strlen($cSuchFilter)) {
-        $cSuchFilterSQL = " WHERE cBestellNr LIKE '%" . Shop::DB()->escape($cSuchFilter) . "%'";
+        $cSuchFilterSQL = " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($cSuchFilter) . "%'";
     }
     $oBestellungToday_arr = Shop::Container()->getDB()->query(
-        "SELECT kBestellung
+        'SELECT kBestellung
             FROM tbestellung
-            " . $cSuchFilterSQL . "
-            ORDER BY dErstellt DESC" . $cLimitSQL, 2
+            ' . $cSuchFilterSQL . '
+            ORDER BY dErstellt DESC' . $cLimitSQL,
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    if (is_array($oBestellungToday_arr) && count($oBestellungToday_arr) > 0) {
-        foreach ($oBestellungToday_arr as $oBestellungToday) {
-            if (isset($oBestellungToday->kBestellung) && $oBestellungToday->kBestellung > 0) {
-                $oBestellung = new Bestellung($oBestellungToday->kBestellung);
-                $oBestellung->fuelleBestellung(1, 0, false);
-                $oBestellung_arr[] = $oBestellung;
-            }
+    foreach ($oBestellungToday_arr as $oBestellungToday) {
+        if (isset($oBestellungToday->kBestellung) && $oBestellungToday->kBestellung > 0) {
+            $oBestellung = new Bestellung($oBestellungToday->kBestellung);
+            $oBestellung->fuelleBestellung(true, 0, false);
+            $oBestellung_arr[] = $oBestellung;
         }
     }
 
@@ -39,69 +38,75 @@ function gibBestellungsUebersicht($cLimitSQL, $cSuchFilter)
  * @param string $cSuchFilter
  * @return int
  */
-function gibAnzahlBestellungen($cSuchFilter)
+function gibAnzahlBestellungen($cSuchFilter): int
 {
     $cSuchFilterSQL = (strlen($cSuchFilter) > 0)
-        ? " WHERE cBestellNr LIKE '%" . Shop::DB()->escape($cSuchFilter) . "%'"
+        ? " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($cSuchFilter) . "%'"
         : '';
-    $oBestellung = Shop::Container()->getDB()->query(
-        "SELECT count(*) AS nAnzahl
-            FROM tbestellung" . $cSuchFilterSQL, 1
+    $order          = Shop::Container()->getDB()->query(
+        'SELECT COUNT(*) AS nAnzahl
+            FROM tbestellung' . $cSuchFilterSQL,
+        \DB\ReturnType::SINGLE_OBJECT
     );
-    if (isset($oBestellung->nAnzahl) && $oBestellung->nAnzahl > 0) {
-        return (int)$oBestellung->nAnzahl;
+    if (isset($order->nAnzahl) && $order->nAnzahl > 0) {
+        return (int)$order->nAnzahl;
     }
 
     return 0;
 }
 
 /**
- * @param array $kBestellung_arr
+ * @param array $orderIDs
  * @return int
  */
-function setzeAbgeholtZurueck($kBestellung_arr)
+function setzeAbgeholtZurueck(array $orderIDs): int
 {
-    if (is_array($kBestellung_arr) && count($kBestellung_arr) > 0) {
-        $kBestellung_arr = array_map(function ($i) { return (int)$i; }, $kBestellung_arr);
-        // Kunden cAbgeholt zurücksetzen
-        $oKunde_arr = Shop::Container()->getDB()->query(
-            "SELECT kKunde
-                FROM tbestellung
-                WHERE kBestellung IN(" . implode(',', $kBestellung_arr) . ")
-                    AND cAbgeholt = 'Y'", 2
-        );
-        if (is_array($oKunde_arr) && count($oKunde_arr) > 0) {
-            $kKunde_arr = [];
-            foreach ($oKunde_arr as $oKunde) {
-                $oKunde->kKunde = (int)$oKunde->kKunde;
-                if (!in_array($oKunde->kKunde, $kKunde_arr, true)) {
-                    $kKunde_arr[] = $oKunde->kKunde;
-                }
-            }
-            Shop::Container()->getDB()->query(
-                "UPDATE tkunde
-                    SET cAbgeholt = 'N'
-                    WHERE kKunde IN(" . implode(',', $kKunde_arr) . ")", 3
-            );
-        }
-        // Bestellungen cAbgeholt zurücksetzen
-        Shop::Container()->getDB()->query(
-            "UPDATE tbestellung
-                SET cAbgeholt = 'N'
-                WHERE kBestellung IN(" . implode(',', $kBestellung_arr) . ")
-                    AND cAbgeholt = 'Y'", 3
-        );
-
-        // Zahlungsinfo cAbgeholt zurücksetzen
-        Shop::Container()->getDB()->query(
-            "UPDATE tzahlungsinfo
-                SET cAbgeholt = 'N'
-                WHERE kBestellung IN(" . implode(',', $kBestellung_arr) . ")
-                    AND cAbgeholt = 'Y'", 3
-        );
-
-        return -1;
+    if (!is_array($orderIDs) || count($orderIDs) === 0) {
+        return 1;
     }
 
-    return 1; // Array mit Keys nicht vorhanden oder leer
+    $orderIDs  = array_map(
+        function ($i) {
+            return (int)$i;
+        },
+        $orderIDs
+    );
+    $customers = Shop::Container()->getDB()->query(
+        'SELECT kKunde
+            FROM tbestellung
+            WHERE kBestellung IN(' . implode(',', $orderIDs) . ")
+                AND cAbgeholt = 'Y'",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+    if (is_array($customers) && count($customers) > 0) {
+        $kKunde_arr = [];
+        foreach ($customers as $oKunde) {
+            $oKunde->kKunde = (int)$oKunde->kKunde;
+            if (!in_array($oKunde->kKunde, $kKunde_arr, true)) {
+                $kKunde_arr[] = $oKunde->kKunde;
+            }
+        }
+        Shop::Container()->getDB()->query(
+            "UPDATE tkunde
+                SET cAbgeholt = 'N'
+                WHERE kKunde IN(" . implode(',', $kKunde_arr) . ')',
+            \DB\ReturnType::AFFECTED_ROWS
+        );
+    }
+    Shop::Container()->getDB()->query(
+        "UPDATE tbestellung
+            SET cAbgeholt = 'N'
+            WHERE kBestellung IN(" . implode(',', $orderIDs) . ")
+                AND cAbgeholt = 'Y'",
+        \DB\ReturnType::AFFECTED_ROWS
+    );
+    Shop::Container()->getDB()->query(
+        "UPDATE tzahlungsinfo
+            SET cAbgeholt = 'N'
+            WHERE kBestellung IN(" . implode(',', $orderIDs) . ")
+                AND cAbgeholt = 'Y'",
+        \DB\ReturnType::AFFECTED_ROWS
+    );
+
+    return -1;
 }

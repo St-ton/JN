@@ -8,6 +8,8 @@
 
 namespace Services\JTL;
 
+use Smarty\JTLSmarty;
+
 /**
  * Class CaptchaService
  * @package Services\JTL
@@ -39,7 +41,7 @@ class CaptchaService implements CaptchaServiceInterface
         }
 
         $result = false;
-        executeHook(HOOK_CAPTCHA_CONFIGURED, [
+        \executeHook(\HOOK_CAPTCHA_CONFIGURED, [
             'isConfigured' => &$result,
         ]);
 
@@ -55,7 +57,7 @@ class CaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param \JTLSmarty $smarty
+     * @param JTLSmarty $smarty
      * @return string
      */
     public function getHeadMarkup($smarty): string
@@ -66,7 +68,7 @@ class CaptchaService implements CaptchaServiceInterface
 
         if ($this->isConfigured()) {
             $result = '';
-            executeHook(HOOK_CAPTCHA_MARKUP, [
+            \executeHook(\HOOK_CAPTCHA_MARKUP, [
                 'getBody' => false,
                 'markup'  => &$result,
             ]);
@@ -78,7 +80,7 @@ class CaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param \JTLSmarty $smarty
+     * @param JTLSmarty $smarty
      * @return string
      */
     public function getBodyMarkup($smarty): string
@@ -89,7 +91,7 @@ class CaptchaService implements CaptchaServiceInterface
 
         if ($this->isConfigured()) {
             $result = '';
-            executeHook(HOOK_CAPTCHA_MARKUP, [
+            \executeHook(\HOOK_CAPTCHA_MARKUP, [
                 'getBody' => true,
                 'markup'  => &$result,
             ]);
@@ -112,7 +114,7 @@ class CaptchaService implements CaptchaServiceInterface
 
         if ($this->isConfigured()) {
             $result = false;
-            executeHook(HOOK_CAPTCHA_VALIDATE, [
+            \executeHook(\HOOK_CAPTCHA_VALIDATE, [
                 'requestData' => $requestData,
                 'isValid'     => &$result,
             ]);

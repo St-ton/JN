@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -8,9 +8,9 @@ namespace Filter\States;
 
 use DB\ReturnType;
 use Filter\AbstractFilter;
-use Filter\FilterJoin;
 use Filter\FilterInterface;
-use Filter\Items\ItemCategory;
+use Filter\Items\Category;
+use Filter\Join;
 use Filter\ProductFilter;
 
 /**
@@ -19,12 +19,12 @@ use Filter\ProductFilter;
  */
 class BaseCategory extends AbstractFilter
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'kKategorie' => 'ValueCompat',
         'cName'      => 'Name'
     ];
@@ -44,7 +44,7 @@ class BaseCategory extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('k')
-             ->setUrlParamSEO(SEP_KAT);
+             ->setUrlParamSEO(\SEP_KAT);
     }
 
     /**
@@ -57,7 +57,7 @@ class BaseCategory extends AbstractFilter
 
     /**
      * @param bool $includeSubCategories
-     * @return ItemCategory
+     * @return Category
      */
     public function setIncludeSubCategories($includeSubCategories): self
     {
@@ -83,7 +83,7 @@ class BaseCategory extends AbstractFilter
     public function setSeo(array $languages): FilterInterface
     {
         if ($this->getValue() > 0) {
-            $oSeo_arr = \Shop::Container()->getDB()->queryPrepared(
+            $seoData = $this->productFilter->getDB()->queryPrepared(
                 "SELECT tseo.cSeo, tseo.kSprache, tkategorie.cName AS cKatName, tkategoriesprache.cName
                     FROM tseo
                         LEFT JOIN tkategorie
@@ -99,13 +99,13 @@ class BaseCategory extends AbstractFilter
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
-                foreach ($oSeo_arr as $oSeo) {
+                foreach ($seoData as $oSeo) {
                     if ($language->kSprache === (int)$oSeo->kSprache) {
                         $this->cSeo[$language->kSprache] = $oSeo->cSeo;
                     }
                 }
             }
-            foreach ($oSeo_arr as $item) {
+            foreach ($seoData as $item) {
                 if ((int)$item->kSprache === \Shop::getLanguage()) {
                     if (!empty($item->cName)) {
                         $this->setName($item->cName);
@@ -155,7 +155,7 @@ class BaseCategory extends AbstractFilter
      */
     public function getSQLJoin()
     {
-        return (new FilterJoin())
+        return (new Join())
             ->setType('JOIN')
             ->setOrigin(__CLASS__)
             ->setTable('tkategorieartikel')

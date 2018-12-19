@@ -1,5 +1,5 @@
 <div style="margin:10px 0;">
-    {lang key="postfinanceDesc" section=""}
+    {lang key='postfinanceDesc' section=''}
     {strip}
     <div>
         {if $cFehler}

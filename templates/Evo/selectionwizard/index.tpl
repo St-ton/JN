@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if isset($AWA)}
     <script>
         var nSelection_arr = [{$AWA->getSelections()|implode:','}];
@@ -23,6 +27,6 @@
         }
     </script>
     <div id="selectionwizard">
-        {include file="selectionwizard/form.tpl" AWA=$AWA}
+        {include file='selectionwizard/form.tpl' AWA=$AWA}
     </div>
 {/if}

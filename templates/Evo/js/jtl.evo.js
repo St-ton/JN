@@ -29,6 +29,34 @@
                 slidesToShow: 1
             });
 
+            $('.evo-box-vertical:not(.slick-initialized)').slick({
+                //dots: true,
+                arrows:          true,
+                vertical:        true,
+                adaptiveHeight:  true,
+                verticalSwiping: true,
+                prevArrow:       '<button class="slick-up" aria-label="Previous" type="button"></button>',
+                nextArrow:       '<button class="slick-down" aria-label="Next" type="button"></button>',
+                lazyLoad:        'progressive',
+                slidesToShow:    1,
+            }).on('afterChange', function () {
+                var heights = [];
+                $('.evo-box-vertical:not(.eq-height) .product-wrapper').each(function (i, element) {
+                    var $element       = $(element);
+                    var elementHeight;
+                    // Should we include the elements padding in it's height?
+                    var includePadding = ($element.css('box-sizing') === 'border-box') || ($element.css('-moz-box-sizing') === 'border-box');
+                    if (includePadding) {
+                        elementHeight = $element.innerHeight();
+                    } else {
+                        elementHeight = $element.height();
+                    }
+                    heights.push(elementHeight);
+                });
+                $('.evo-box-vertical.evo-box-vertical:not(.eq-height) .product-wrapper').css('height', Math.max.apply(window, heights) + 'px');
+                $('.evo-box-vertical.evo-box-vertical:not(.eq-height)').addClass('eq-height');
+            });
+
             /*
              * responsive slider (content)
              */
@@ -121,10 +149,10 @@
                 $(e).children('[class*="col-"]').children().responsiveEqualHeightGrid();
             });
             $('.row-eq-height.gallery > [class*="col-"], #product-list .product-wrapper').each(function(i, e) {
-                $(e).height($('div', $(e)).outerHeight());
+                $(e).height($('div', $(e)).outerHeight()).addClass('setHeight');
             });
         },
-        
+
         tooltips: function() {
             $('[data-toggle="tooltip"]').tooltip();
         },
@@ -180,12 +208,12 @@
                 document.body.appendChild(s);
             })();
         },
-        
+
         showNotify: function(options) {
             eModal.alert({
                 size: 'lg',
                 buttons: false,
-                title: options.title, 
+                title: options.title,
                 message: options.text,
                 keyboard: true,
                 tabindex: -1,
@@ -194,11 +222,11 @@
                 }
             });
         },
-        
+
         renderCaptcha: function(parameters) {
             this.trigger('captcha.render', parameters);
         },
-        
+
         popupDep: function() {
             var that  = this;
             $('#main-wrapper').on('click', '.popup-dep', function(e) {
@@ -222,7 +250,7 @@
         popover: function() {
             /*
              * <a data-toggle="popover" data-ref="#popover-content123">Click me</a>
-             * <div id="popover-content123" class="popover">content here</div> 
+             * <div id="popover-content123" class="popover">content here</div>
              */
             $('[data-toggle="popover"]').popover({
                 trigger: 'hover',
@@ -298,20 +326,41 @@
             $submits.first().removeClass('hidden');
 
             $('input[name="Versandart"]', '#checkout-shipping-payment').change(function() {
-                var id    = parseInt($(this).val());
+                var shipmentid = parseInt($(this).val());
+                var paymentid  = $("input[id^='payment']:checked ").val();
                 var $form = $(this).closest('form');
 
-                if (isNaN(id)) {
+                if (isNaN(shipmentid)) {
                     return;
                 }
 
                 $form.find('fieldset, input[type="submit"]')
                     .attr('disabled', true);
 
-                var url = 'bestellvorgang.php?kVersandart=' + id;
+                var url = 'bestellvorgang.php?kVersandart=' + shipmentid + '&kZahlungsart=' + paymentid;
                 $.evo.loadContent(url, function() {
                     $.evo.checkout();
                 }, null, true);
+            });
+
+            $('#country').on('change', function (e) {
+                var val = $(this).find(':selected').val();
+
+                $.evo.io().call('checkDeliveryCountry', [val], {}, function (error, data) {
+                    var $shippingSwitch = $('#checkout_register_shipping_address');
+
+                    if (data.response) {
+                        $shippingSwitch.removeAttr('disabled');
+                        $shippingSwitch.parent().removeClass('hidden');
+                    } else {
+                        $shippingSwitch.attr('disabled', true);
+                        $shippingSwitch.parent().addClass('hidden');
+                        if ($shippingSwitch.prop('checked')) {
+                            $shippingSwitch.prop('checked', false);
+                            $('#select_shipping_address').collapse('show');
+                        }
+                    }
+                });
             });
         },
 
@@ -347,7 +396,7 @@
                 that.trigger('loaded.evo.content', { url: url });
             });
         },
-        
+
         spinner: function(target) {
             var opts = {
               lines: 12             // The number of lines to draw

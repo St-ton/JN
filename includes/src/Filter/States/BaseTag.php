@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -8,12 +8,13 @@ namespace Filter\States;
 
 use DB\ReturnType;
 use Filter\AbstractFilter;
-use Filter\FilterJoin;
-use Filter\FilterOption;
 use Filter\FilterInterface;
-use Filter\Type;
-use Filter\Items\ItemTag;
+use Filter\Items\Tag;
+use Filter\Join;
+use Filter\Option;
 use Filter\ProductFilter;
+use Filter\StateSQL;
+use Filter\Type;
 
 /**
  * Class BaseTag
@@ -21,12 +22,12 @@ use Filter\ProductFilter;
  */
 class BaseTag extends AbstractFilter
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'kTag'  => 'ValueCompat',
         'cName' => 'Name'
     ];
@@ -58,7 +59,7 @@ class BaseTag extends AbstractFilter
      */
     public function setSeo(array $languages): FilterInterface
     {
-        $oSeo_obj = \Shop::Container()->getDB()->queryPrepared(
+        $oSeo_obj = $this->productFilter->getDB()->queryPrepared(
             "SELECT tseo.cSeo, tseo.kSprache, ttag.cName
                 FROM tseo
                 LEFT JOIN ttag
@@ -111,13 +112,13 @@ class BaseTag extends AbstractFilter
     public function getSQLJoin()
     {
         return [
-            (new FilterJoin())
+            (new Join())
                 ->setType('JOIN')
                 ->setTable('ttagartikel')
                 ->setOn('tartikel.kArtikel = ttagartikel.kArtikel')
                 ->setComment('JOIN1 from ' . __METHOD__)
                 ->setOrigin(__CLASS__),
-            (new FilterJoin())
+            (new Join())
                 ->setType('JOIN')
                 ->setTable('ttag')
                 ->setOn('ttagartikel.kTag = ttag.kTag')
@@ -128,7 +129,7 @@ class BaseTag extends AbstractFilter
 
     /**
      * @param null $data
-     * @return FilterOption[]
+     * @return Option[]
      */
     public function getOptions($data = null): array
     {
@@ -136,70 +137,75 @@ class BaseTag extends AbstractFilter
             return $this->options;
         }
         $options = [];
-        if ($this->getConfig()['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'N') {
+        if ($this->getConfig('navigationsfilter')['allgemein_tagfilter_benutzen'] === 'N') {
             return $options;
         }
-        $state = $this->productFilter->getCurrentStateData($this->getType()->equals(Type::OR())
+        $state = $this->productFilter->getCurrentStateData(
+            $this->getType() === Type::OR
             ? $this->getClassName()
             : null
         );
-        $state->addJoin((new FilterJoin())
+        $sql   = (new StateSQL())->from($state);
+        $sql->setSelect([
+            'ttag.kTag',
+            'ttag.cName',
+            'ttagartikel.nAnzahlTagging',
+            'tartikel.kArtikel'
+        ]);
+        $sql->setOrderBy(null);
+        $sql->setLimit('');
+        $sql->setGroupBy(['ttag.kTag', 'tartikel.kArtikel']);
+
+        $sql->addJoin((new Join())
             ->setComment('join1 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('ttagartikel')
             ->setOn('ttagartikel.kArtikel = tartikel.kArtikel')
             ->setOrigin(__CLASS__));
-        $state->addJoin((new FilterJoin())
+        $sql->addJoin((new Join())
             ->setComment('join2 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('ttag')
             ->setOn('ttagartikel.kTag = ttag.kTag')
             ->setOrigin(__CLASS__));
-        $state->addCondition('ttag.nAktiv = 1');
-        $state->addCondition('ttag.kSprache = ' . $this->getLanguageID());
-        $query               = $this->productFilter->getFilterSQL()->getBaseQuery(
-            [
-                'ttag.kTag',
-                'ttag.cName',
-                'ttagartikel.nAnzahlTagging',
-                'tartikel.kArtikel'
-            ],
-            $state->getDeduplicatedJoins(),
-            $state->getConditions(),
-            $state->getHaving(),
-            null,
-            '',
-            ['ttag.kTag', 'tartikel.kArtikel']
-        );
-        $tags                = \Shop::Container()->getDB()->query(
-            "SELECT tseo.cSeo, ssMerkmal.kTag, ssMerkmal.cName, 
+        $sql->addCondition('ttag.nAktiv = 1');
+        $sql->addCondition('ttag.kSprache = ' . $this->getLanguageID());
+        $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
+        $cacheID   = 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($baseQuery);
+        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
+            $this->options = $cached;
+
+            return $this->options;
+        }
+        $tags             = $this->productFilter->getDB()->query(
+            'SELECT tseo.cSeo, ssMerkmal.kTag, ssMerkmal.cName, 
                 COUNT(*) AS nAnzahl, SUM(ssMerkmal.nAnzahlTagging) AS nAnzahlTagging
-                    FROM (" . $query . ") AS ssMerkmal
+                    FROM (' . $baseQuery . ") AS ssMerkmal
                 LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kTag
                     AND tseo.cKey = 'kTag'
-                    AND tseo.kSprache = " . $this->getLanguageID() . "
+                    AND tseo.kSprache = " . $this->getLanguageID() . '
                 GROUP BY ssMerkmal.kTag
-                ORDER BY nAnzahl DESC LIMIT 0, " .
-            (int)$this->getConfig()['navigationsfilter']['tagfilter_max_anzeige'],
+                ORDER BY nAnzahl DESC LIMIT 0, ' .
+            (int)$this->getConfig('navigationsfilter')['tagfilter_max_anzeige'],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $additionalFilter    = new ItemTag($this->productFilter);
+        $additionalFilter = new Tag($this->productFilter);
         // Priorität berechnen
         $nPrioStep = 0;
-        $nCount    = count($tags);
+        $nCount    = \count($tags);
         if ($nCount > 0) {
             $nPrioStep = ($tags[0]->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) / 9;
         }
         foreach ($tags as $tag) {
             $tag->nAnzahlTagging = (int)$tag->nAnzahlTagging;
             $class               = $nPrioStep < 1
-                ? rand(1, 10)
-                : round(
+                ? \rand(1, 10)
+                : \round(
                     ($tag->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) /
                     $nPrioStep
                 ) + 1;
-            $options[]           = (new FilterOption())
-                ->setClass($class)
+            $options[]           = (new Option())
+                ->setClass((string)$class)
                 ->setURL($this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init((int)$tag->kTag)
                 ))
@@ -212,6 +218,7 @@ class BaseTag extends AbstractFilter
                 ->setCount((int)$tag->nAnzahl);
         }
         $this->options = $options;
+        $this->productFilter->getCache()->set($cacheID, $options, [\CACHING_GROUP_FILTER]);
 
         return $options;
     }

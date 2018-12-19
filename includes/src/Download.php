@@ -10,19 +10,19 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
      */
     class Download
     {
-        const ERROR_NONE = 1;
+        public const ERROR_NONE = 1;
 
-        const ERROR_ORDER_NOT_FOUND = 2;
-        
-        const ERROR_INVALID_CUSTOMER = 3;
-        
-        const ERROR_PRODUCT_NOT_FOUND = 4;
+        public const ERROR_ORDER_NOT_FOUND = 2;
 
-        const ERROR_DOWNLOAD_LIMIT_REACHED = 5;
+        public const ERROR_INVALID_CUSTOMER = 3;
 
-        const ERROR_DOWNLOAD_EXPIRED = 6;
+        public const ERROR_PRODUCT_NOT_FOUND = 4;
 
-        const ERROR_MISSING_PARAMS = 7;
+        public const ERROR_DOWNLOAD_LIMIT_REACHED = 5;
+
+        public const ERROR_DOWNLOAD_EXPIRED = 6;
+
+        public const ERROR_MISSING_PARAMS = 7;
 
         /**
          * @var int
@@ -147,7 +147,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                     );
                     if ($oBestellung !== null
                         && $oBestellung->kBestellung > 0
-                        && $oBestellung->dBezahltDatum !== '0000-00-00'
+                        && $oBestellung->dBezahltDatum !== null
                         && $this->getTage() > 0
                     ) {
                         $paymentDate = new DateTime($oBestellung->dBezahltDatum);
@@ -159,12 +159,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
 
                 // Artikel
                 $this->oArtikelDownload_arr = Shop::Container()->getDB()->queryPrepared(
-                    "SELECT tartikeldownload.*
+                    'SELECT tartikeldownload.*
                         FROM tartikeldownload
                         JOIN tdownload 
                             ON tdownload.kDownload = tartikeldownload.kDownload
                         WHERE tartikeldownload.kDownload = :dlid
-                        ORDER BY tdownload.nSort",
+                        ORDER BY tdownload.nSort',
                     ['dlid' => $this->kDownload],
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
@@ -217,7 +217,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         public function delete(): int
         {
             return Shop::Container()->getDB()->queryPrepared(
-                "DELETE tdownload, tdownloadhistory, tdownloadsprache, tartikeldownload
+                'DELETE tdownload, tdownloadhistory, tdownloadsprache, tartikeldownload
                     FROM tdownload
                     JOIN tdownloadsprache 
                         ON tdownloadsprache.kDownload = tdownload.kDownload
@@ -225,7 +225,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                         ON tartikeldownload.kDownload = tdownload.kDownload
                     LEFT JOIN tdownloadhistory 
                         ON tdownloadhistory.kDownload = tdownload.kDownload
-                    WHERE tdownload.kDownload = :dlid",
+                    WHERE tdownload.kDownload = :dlid',
                 ['dlid' => $this->kDownload],
                 \DB\ReturnType::AFFECTED_ROWS
             );
@@ -254,7 +254,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                                    JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                                         AND twarenkorbpos.nPosTyp = ' . C_WARENKORBPOS_TYP_ARTIKEL;
                 } elseif ($kKunde > 0) {
-                    $cSQLSelect = 'MAX(tbestellung.kBestellung) AS kBestellung, tbestellung.kKunde, tartikeldownload.kDownload';
+                    $cSQLSelect = 'MAX(tbestellung.kBestellung) AS kBestellung, tbestellung.kKunde, 
+                        tartikeldownload.kDownload';
                     $cSQLWhere  = 'tartikeldownload.kArtikel = twarenkorbpos.kArtikel';
                     $cSQLJoin   = 'JOIN tbestellung ON tbestellung.kKunde = ' . $kKunde . '
                                    JOIN tdownload ON tdownload.kDownload = tartikeldownload.kDownload
@@ -271,18 +272,24 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 foreach ($oDown_arr as $i => &$oDown) {
+                    $oDown->kDownload  = (int)$oDown->kDownload;
                     $oDownload_arr[$i] = new self(
                         $oDown->kDownload,
                         $kSprache,
                         true,
-                        $oDown->kBestellung ?? 0
+                        (int)($oDown->kBestellung ?? 0)
                     );
                     if (($kBestellung > 0 || $kKunde > 0) && $oDownload_arr[$i]->getAnzahl() > 0) {
-                        $oDownloadHistory_arr           = DownloadHistory::getOrderHistory($oDown->kKunde,
-                            $oDown->kBestellung);
+                        $oDown->kKunde      = (int)$oDown->kKunde;
+                        $oDown->kBestellung = (int)$oDown->kBestellung;
+
+                        $history                        = DownloadHistory::getOrderHistory(
+                            $oDown->kKunde,
+                            $oDown->kBestellung
+                        );
                         $kDownload                      = $oDownload_arr[$i]->getDownload();
-                        $count                          = isset($oDownloadHistory_arr[$kDownload])
-                            ? count($oDownloadHistory_arr[$kDownload])
+                        $count                          = isset($history[$kDownload])
+                            ? count($history[$kDownload])
                             : 0;
                         $oDownload_arr[$i]->cLimit      = $count . ' / ' . $oDownload_arr[$i]->getAnzahl();
                         $oDownload_arr[$i]->kBestellung = $oDown->kBestellung;
@@ -327,7 +334,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                         ->setDownload($kDownload)
                         ->setKunde($kKunde)
                         ->setBestellung($kBestellung)
-                        ->setErstellt('now()')
+                        ->setErstellt('NOW()')
                         ->save();
 
                     self::send_file_to_browser(
@@ -366,7 +373,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                 // Existiert die Bestellung und wurde Sie bezahlt?
                 if ($oBestellung->kBestellung <= 0
                     || empty($oBestellung->dBezahltDatum)
-                    || $oBestellung->dBezahltDatum === '0000-00-00'
+                    || $oBestellung->dBezahltDatum === null
                 ) {
                     return self::ERROR_ORDER_NOT_FOUND;
                 }
@@ -387,11 +394,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                         }
                         // Check Anzahl
                         if ($oDownload->getAnzahl() > 0) {
-                            $oDownloadHistory_arr = DownloadHistory::getOrderHistory(
-                                $kKunde,
-                                $kBestellung
-                            );
-                            if (count($oDownloadHistory_arr[$oDownload->kDownload]) >= $oDownload->getAnzahl()) {
+                            $history = DownloadHistory::getOrderHistory($kKunde, $kBestellung);
+                            if (count($history[$oDownload->kDownload]) >= $oDownload->getAnzahl()) {
                                 return self::ERROR_DOWNLOAD_LIMIT_REACHED;
                             }
                         }
@@ -532,7 +536,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          * @param string $dErstellt
          * @return $this
          */
-        public function setErstellt($dErstellt)
+        public function setErstellt($dErstellt): self
         {
             $this->dErstellt = $dErstellt;
 
@@ -540,7 +544,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         }
 
         /**
-         * @return int
+         * @return int|null
          */
         public function getDownload()
         {
@@ -548,7 +552,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         }
 
         /**
-         * @return string
+         * @return string|null
          */
         public function getID()
         {
@@ -556,7 +560,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         }
 
         /**
-         * @return string
+         * @return string|null
          */
         public function getPfad()
         {
@@ -642,7 +646,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         }
 
         /**
-         * @return int
+         * @return int|null
          */
         public function getAnzahl()
         {
@@ -650,7 +654,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         }
 
         /**
-         * @return int
+         * @return int|null
          */
         public function getTage()
         {
@@ -658,7 +662,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         }
 
         /**
-         * @return int
+         * @return int|null
          */
         public function getSort()
         {
@@ -666,7 +670,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         }
 
         /**
-         * @return string
+         * @return string|null
          */
         public function getErstellt()
         {
@@ -674,7 +678,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         }
 
         /**
-         * @return stdClass
+         * @return mixed
          */
         private function kopiereMembers()
         {

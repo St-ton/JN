@@ -1,0 +1,248 @@
+msgid "configgroup_108"
+msgstr "Artikel"
+
+msgid "configgroup_114"
+msgstr "Kategorien"
+
+msgid "configgroup_121"
+msgstr "Allgemein"
+
+msgid "configgroup_222"
+msgstr "Umsatzsteuer-Ausweisung (z. B. wegen Kleinunternehmerregelung)"
+
+msgid "configgroup_539"
+msgstr "Gespeicherter Warenkorb"
+
+msgid "configgroup_444"
+msgstr "Wunschzettel"
+
+msgid "configgroup_173"
+msgstr "Wartungsmodus"
+
+msgid "configgroup_1289"
+msgstr "Spezialseite „Versand“"
+
+msgid "configgroup_1443"
+msgstr "Admin-Bereich"
+
+msgid "configgroup_1567"
+msgstr "Cookie-Einstellungen (Achtung: nur ändern, wenn Sie genau wissen, was Sie tun!)"
+
+msgid "configgroup_123"
+msgstr "Allgemein"
+
+msgid "configgroup_144"
+msgstr "E-Mail-Einstellungen"
+
+msgid "configgroup_56"
+msgstr "Suche"
+
+msgid "configgroup_421"
+msgstr "Live-Suche"
+
+msgid "configgroup_1312"
+msgstr "Erweiterte Darstellung"
+
+msgid "configgroup_84"
+msgstr "Cross-Selling (Standard)"
+
+msgid "configgroup_86"
+msgstr "Cross-Selling (Kunden kauften dazu folgende Artikel)"
+
+msgid "configgroup_89"
+msgstr "Allgemeines"
+
+msgid "configgroup_301"
+msgstr "Frage zum Artikel"
+
+msgid "configgroup_314"
+msgstr "E-Mail-Benachrichtigung, wenn Artikel wieder verfügbar"
+
+msgid "configgroup_516"
+msgstr "Vergleichsliste"
+
+msgid "configgroup_626"
+msgstr "Artikel-Tagging"
+
+msgid "configgroup_638"
+msgstr "Mediendateien"
+
+msgid "configgroup_1122"
+msgstr "Ähnliche Artikel"
+
+msgid "configgroup_1295"
+msgstr "Stückliste"
+
+msgid "configgroup_1650"
+msgstr "Beschreibungs-Tab"
+
+msgid "configgroup_1"
+msgstr "Kundenkontoerstellung / Unregistriert bestellen"
+
+msgid "configgroup_14"
+msgstr "Lieferadresse"
+
+msgid "configgroup_556"
+msgstr "Umsatzsteuer-Identifikationsnummer"
+
+msgid "configgroup_283"
+msgstr "Warenkorb"
+
+msgid "configgroup_132"
+msgstr "Bestellvorgang"
+
+msgid "configgroup_92"
+msgstr "Bestellabschluss"
+
+msgid "configgroup_65"
+msgstr "Box: Bestseller"
+
+msgid "configgroup_69"
+msgstr "Box: Sonderangebote"
+
+msgid "configgroup_72"
+msgstr "Box: Neu im Sortiment"
+
+msgid "configgroup_75"
+msgstr "Box: Top-Angebot"
+
+msgid "configgroup_78"
+msgstr "Box: Zuletzt angesehen"
+
+msgid "configgroup_278"
+msgstr "Box: Bald erscheinende Produkte"
+
+msgid "configgroup_424"
+msgstr "Suchwolke"
+
+msgid "configgroup_426"
+msgstr "Tag-Wolke"
+
+msgid "configgroup_441"
+msgstr "Wunschzettel"
+
+msgid "configgroup_468"
+msgstr "Vergleichsliste"
+
+msgid "configgroup_542"
+msgstr "Box: Top Bewertet"
+
+msgid "configgroup_1517"
+msgstr "Box: Top Bewertet"
+
+msgid "configgroup_161"
+msgstr "Bildeinstellungen"
+
+msgid "configgroup_432"
+msgstr "Tagging-Übersicht"
+
+msgid "configgroup_436"
+msgstr "Livesuche-Übersicht"
+
+msgid "configgroup_1143"
+msgstr "Gratisgeschenk"
+
+msgid "configgroup_24"
+msgstr "Vorkasse Überweisung"
+
+msgid "configgroup_28"
+msgstr "Nachnahme"
+
+msgid "configgroup_32"
+msgstr "Kreditkarte"
+
+msgid "configgroup_36"
+msgstr "Rechnung"
+
+msgid "configgroup_1450"
+msgstr "BillPay"
+
+msgid "configgroup_40"
+msgstr "Lastschrift"
+
+msgid "configgroup_44"
+msgstr "Barzahlung"
+
+msgid "configgroup_250"
+msgstr "Sofort"
+
+msgid "configgroup_288"
+msgstr "Einstellungen"
+
+msgid "configgroup_396"
+msgstr "Einstellungen für RSS-Feed"
+
+msgid "configgroup_452"
+msgstr "Preisverlauf"
+
+msgid "configgroup_471"
+msgstr "Vergleichsliste"
+
+msgid "configgroup_486"
+msgstr "Bewertung"
+
+msgid "configgroup_491"
+msgstr "Bewertungserinnerung an Kunden"
+
+msgid "configgroup_504"
+msgstr "Newsletter"
+
+msgid "configgroup_518"
+msgstr "Formularfeld"
+
+msgid "configgroup_520"
+msgstr "Allgemein"
+
+msgid "configgroup_1320"
+msgstr "Kategoriefilter"
+
+msgid "configgroup_535"
+msgstr "Bewertungsfilter"
+
+msgid "configgroup_529"
+msgstr "Tag-Filter"
+
+msgid "configgroup_635"
+msgstr "Suchtrefferfilter"
+
+msgid "configgroup_531"
+msgstr "Merkmalfilter"
+
+msgid "configgroup_527"
+msgstr "Preisspannenfilter"
+
+msgid "configgroup_616"
+msgstr "Aktueller Hersteller"
+
+msgid "configgroup_621"
+msgstr "Aktueller Merkmalwert"
+
+msgid "configgroup_623"
+msgstr "Aktuelle Kategorie"
+
+msgid "configgroup_548"
+msgstr "E-Mail-Blacklist"
+
+msgid "configgroup_134"
+msgstr "Metadaten"
+
+msgid "configgroup_568"
+msgstr "News-System"
+
+msgid "configgroup_579"
+msgstr "Sitemap-Einstellungen"
+
+msgid "configgroup_586"
+msgstr "Einstellungen für Umfragesystem"
+
+msgid "configgroup_593"
+msgstr "Einstellungen für Kunden werben Kunden"
+
+msgid "configgroup_1291"
+msgstr "Einstellungen für Trusted Shops Käuferschutz"
+
+msgid "configgroup_1392"
+msgstr "Standardsortierung für Besondere Artikel"
+
+msgid "configgroup_1491"
+msgstr "Warenrücksendung"

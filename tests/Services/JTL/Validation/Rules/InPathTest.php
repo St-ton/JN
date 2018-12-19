@@ -8,8 +8,13 @@ namespace Services\JTL\Validation\Rules;
 
 
 use Eloquent\Pathogen\Path;
+use PHPUnit\Framework\TestCase;
 
-class InPathTest extends \PHPUnit_Framework_TestCase
+/**
+ * Class InPathTest
+ * @package Services\JTL\Validation\Rules
+ */
+class InPathTest extends TestCase
 {
     public function test()
     {

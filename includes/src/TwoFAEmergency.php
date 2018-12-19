@@ -40,7 +40,7 @@ class TwoFAEmergency
      * @return array - new created emergency-codes (as written into the DB)
      * @throws Exception
      */
-    public function createNewCodes($oUserTuple)
+    public function createNewCodes($oUserTuple): array
     {
         $passwordService = Shop::Container()->getPasswordService();
         $vAnalogyArray   = [];
@@ -59,10 +59,10 @@ class TwoFAEmergency
             // we build a values-string (like this: "(:a, :b), (:c, :d), ... " )
             // and an according array
             $vAnalogyArray[$iValCount] = $oUserTuple->kAdminlogin;
-            $szSqlRowValues            .= '(:' . $iValCount . ',';
+            $szSqlRowValues           .= '(:' . $iValCount . ',';
             $iValCount++;
             $vAnalogyArray[$iValCount] = $szEmergeCode;
-            $szSqlRowValues            .= ' :' . $iValCount . ')';
+            $szSqlRowValues           .= ' :' . $iValCount . ')';
             $iValCount++;
         }
         // now write into the DB what we got till now
@@ -82,11 +82,15 @@ class TwoFAEmergency
      */
     public function removeExistingCodes($oUserTuple)
     {
-        $iEffectedRows = Shop::Container()->getDB()->deleteRow('tadmin2facodes', 'kAdminlogin',
-            $oUserTuple->kAdminlogin);
+        $iEffectedRows = Shop::Container()->getDB()->deleteRow(
+            'tadmin2facodes',
+            'kAdminlogin',
+            $oUserTuple->kAdminlogin
+        );
         if ($this->iCodeCount !== $iEffectedRows) {
-            // write this error into shop-system-log
-            Jtllog::writeLog('2FA-Notfall-Codes für diesen Account konnten nicht entfernt werden.');
+            Shop::Container()->getLogService()->error(
+                '2FA-Notfall-Codes für diesen Account konnten nicht entfernt werden.'
+            );
         }
     }
 
@@ -102,7 +106,6 @@ class TwoFAEmergency
     {
         $voHashes = Shop::Container()->getDB()->selectArray('tadmin2facodes', 'kAdminlogin', $iAdminID);
         if (1 > count($voHashes)) {
-
             return false; // no emergency-codes are there
         }
 
@@ -116,7 +119,7 @@ class TwoFAEmergency
                     \DB\ReturnType::AFFECTED_ROWS
                 );
                 if (1 !== $iEffectedRows) {
-                    Jtllog::writeLog('2FA-Notfall-Code konnte nicht gelöscht werden.');
+                    Shop::Container()->getLogService()->error('2FA-Notfall-Code konnte nicht gelöscht werden.');
                 }
 
                 return true;

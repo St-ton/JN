@@ -3,14 +3,17 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+
 require_once __DIR__ . '/includes/admininclude.php';
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $oAccount->permission('WAWI_SYNC_VIEW', true, true);
 
 $cFehler  = '';
 $cHinweis = '';
 
-if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && validateToken()) {
+if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && Form::validateToken()) {
     $passwordService = Shop::Container()->getPasswordService();
     $passInfo        = $passwordService->getInfo($_POST['wawi-pass']);
     $upd             = new stdClass();
@@ -20,11 +23,11 @@ if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && validateToken()) {
         : $passwordService->hash($_POST['wawi-pass']); // new clear text password was given
 
     Shop::Container()->getDB()->queryPrepared(
-        "INSERT INTO `tsynclogin` (kSynclogin, cName, cPass)
+        'INSERT INTO `tsynclogin` (kSynclogin, cName, cPass)
             VALUES (1, :cName, :cPass)
             ON DUPLICATE KEY UPDATE
             cName = :cName,
-            cPass = :cPass",
+            cPass = :cPass',
         ['cName' => $upd->cName, 'cPass' => $upd->cPass],
         \DB\ReturnType::AFFECTED_ROWS
     );

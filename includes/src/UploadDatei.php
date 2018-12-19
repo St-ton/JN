@@ -43,9 +43,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         /**
          * @param int $kUpload
          */
-        public function __construct($kUpload = 0)
+        public function __construct(int $kUpload = 0)
         {
-            if ((int)$kUpload > 0) {
+            if ($kUpload > 0) {
                 $this->loadFromDB($kUpload);
             }
         }
@@ -54,9 +54,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          * @param int $kUpload
          * @return bool
          */
-        public function loadFromDB($kUpload)
+        public function loadFromDB(int $kUpload): bool
         {
-            $oUpload = Shop::Container()->getDB()->select('tuploaddatei', 'kUpload', (int)$kUpload);
+            $oUpload = Shop::Container()->getDB()->select('tuploaddatei', 'kUpload', $kUpload);
             if (isset($oUpload->kUpload) && (int)$oUpload->kUpload > 0) {
                 self::copyMembers($oUpload, $this);
 
@@ -69,7 +69,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         /**
          * @return int
          */
-        public function save()
+        public function save(): int
         {
             return Shop::Container()->getDB()->insert('tuploaddatei', self::copyMembers($this));
         }
@@ -77,15 +77,20 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         /**
          * @return int
          */
-        public function update()
+        public function update(): int
         {
-            return Shop::Container()->getDB()->update('tuploaddatei', 'kUpload', (int)$this->kUpload, self::copyMembers($this));
+            return Shop::Container()->getDB()->update(
+                'tuploaddatei',
+                'kUpload',
+                (int)$this->kUpload,
+                self::copyMembers($this)
+            );
         }
 
         /**
          * @return int
          */
-        public function delete()
+        public function delete(): int
         {
             return Shop::Container()->getDB()->delete('tuploaddatei', 'kUpload', (int)$this->kUpload);
         }
@@ -93,38 +98,35 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         /**
          * @param int $kCustomID
          * @param int $nTyp
-         * @return mixed
+         * @return array
          */
-        public static function fetchAll($kCustomID, $nTyp)
+        public static function fetchAll(int $kCustomID, int $nTyp): array
         {
-            $oUploadDatei_arr = Shop::Container()->getDB()->selectAll(
+            $files = Shop::Container()->getDB()->selectAll(
                 'tuploaddatei',
                 ['kCustomID', 'nTyp'],
-                [(int)$kCustomID, (int)$nTyp]
+                [$kCustomID, $nTyp]
             );
-
-            if (is_array($oUploadDatei_arr)) {
-                foreach ($oUploadDatei_arr as &$oUpload) {
-                    $oUpload->cGroesse   = Upload::formatGroesse($oUpload->nBytes);
-                    $oUpload->bVorhanden = is_file(PFAD_UPLOADS . $oUpload->cPfad);
-                    $oUpload->bVorschau  = Upload::vorschauTyp($oUpload->cName);
-                    $oUpload->cBildpfad  = sprintf(
-                        '%s/%s?action=preview&secret=%s&sid=%s',
-                        Shop::getURL(),
-                        PFAD_UPLOAD_CALLBACK,
-                        rawurlencode(verschluesselXTEA($oUpload->kUpload)),
-                        session_id()
-                    );
-                }
+            foreach ($files as &$oUpload) {
+                $oUpload->cGroesse   = Upload::formatGroesse($oUpload->nBytes);
+                $oUpload->bVorhanden = is_file(PFAD_UPLOADS . $oUpload->cPfad);
+                $oUpload->bVorschau  = Upload::vorschauTyp($oUpload->cName);
+                $oUpload->cBildpfad  = sprintf(
+                    '%s/%s?action=preview&secret=%s&sid=%s',
+                    Shop::getURL(),
+                    PFAD_UPLOAD_CALLBACK,
+                    rawurlencode(Shop::Container()->getCryptoService()->encryptXTEA($oUpload->kUpload)),
+                    session_id()
+                );
             }
 
-            return $oUploadDatei_arr;
+            return $files;
         }
 
         /**
-         * @param object        $objFrom
-         * @param null|stdClass $objTo
-         * @return null|stdClass
+         * @param object      $objFrom
+         * @param null|object $objTo
+         * @return null|object
          */
         private static function copyMembers($objFrom, &$objTo = null)
         {
@@ -146,7 +148,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          * @param string $mimetype
          * @param string $downloadName
          */
-        public static function send_file_to_browser($filename, $mimetype, $downloadName)
+        public static function send_file_to_browser(string $filename, string $mimetype, string $downloadName)
         {
             $browser_agent   = 'other';
             $HTTP_USER_AGENT = !empty($_SERVER['HTTP_USER_AGENT'])

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -11,6 +11,7 @@ use Cache\JTLCacheTrait;
 
 /**
  * Class cache_apc
+ *
  * implements the APC Opcode Cache
  * @package Cache\Methods
  */
@@ -88,7 +89,7 @@ class cache_apc implements ICachingMethod
         $res = $this->dePrefixArray($func($prefixedKeys));
 
         // fill up with false values
-        return array_merge(array_fill_keys($cacheIDs, false), $res);
+        return \array_merge(\array_fill_keys($cacheIDs, false), $res);
     }
 
     /**
@@ -115,7 +116,7 @@ class cache_apc implements ICachingMethod
      */
     public function flushAll(): bool
     {
-        return $this->u ? apcu_clear_cache() : apc_clear_cache('user');
+        return $this->u ? \apcu_clear_cache() : \apc_clear_cache('user');
     }
 
     /**
@@ -134,7 +135,7 @@ class cache_apc implements ICachingMethod
     public function getStats(): array
     {
         try {
-            $tmp   = $this->u ? apcu_cache_info() : apc_cache_info('user');
+            $tmp   = $this->u ? \apcu_cache_info() : \apc_cache_info('user');
             $stats = [
                 'entries' => $tmp['num_entries'] ?? 0,
                 'hits'    => $tmp['num_hits'] ?? 0,

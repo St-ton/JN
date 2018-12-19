@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTLShop\SemVer\Version;
+
 /**
  * Stellt alle Werte die fuer das Update in der DB wichtig sind zurueck
  *
@@ -11,30 +13,48 @@
  */
 function resetteUpdateDB()
 {
-    $oColumns_arr = Shop::Container()->getDB()->query("SHOW COLUMNS FROM tversion", 2);
-    if (is_array($oColumns_arr) && count($oColumns_arr) > 0) {
-        $cColumns_arr = [];
-        foreach ($oColumns_arr as $oColumns) {
-            $cColumns_arr[] = $oColumns->Field;
+    $columns = Shop::Container()->getDB()->query('SHOW COLUMNS FROM tversion', \DB\ReturnType::ARRAY_OF_OBJECTS);
+    if (is_array($columns) && count($columns) > 0) {
+        $colNames = [];
+        foreach ($columns as $col) {
+            $colNames[] = $col->Field;
         }
-        if (count($cColumns_arr) > 0) {
-            if (!in_array('nZeileVon', $cColumns_arr, true)) {
-                Shop::Container()->getDB()->query("ALTER TABLE tversion ADD nZeileVon INT UNSIGNED NOT NULL AFTER nVersion", 4);
+        if (count($colNames) > 0) {
+            if (!in_array('nZeileVon', $colNames, true)) {
+                Shop::Container()->getDB()->query(
+                    'ALTER TABLE tversion ADD nZeileVon INT UNSIGNED NOT NULL AFTER nVersion',
+                    \DB\ReturnType::DEFAULT
+                );
             }
-            if (!in_array('nZeileBis', $cColumns_arr, true)) {
-                Shop::Container()->getDB()->query("ALTER TABLE tversion ADD nZeileBis INT UNSIGNED NOT NULL AFTER nZeileVon", 4);
+            if (!in_array('nZeileBis', $colNames, true)) {
+                Shop::Container()->getDB()->query(
+                    'ALTER TABLE tversion ADD nZeileBis INT UNSIGNED NOT NULL AFTER nZeileVon',
+                    \DB\ReturnType::DEFAULT
+                );
             }
-            if (!in_array('nInArbeit', $cColumns_arr, true)) {
-                Shop::Container()->getDB()->query("ALTER TABLE tversion ADD nInArbeit TINYINT NOT NULL AFTER nZeileBis", 4);
+            if (!in_array('nInArbeit', $colNames, true)) {
+                Shop::Container()->getDB()->query(
+                    'ALTER TABLE tversion ADD nInArbeit TINYINT NOT NULL AFTER nZeileBis',
+                    \DB\ReturnType::DEFAULT
+                );
             }
-            if (!in_array('nFehler', $cColumns_arr, true)) {
-                Shop::Container()->getDB()->query("ALTER TABLE tversion ADD nFehler TINYINT UNSIGNED NOT NULL AFTER nInArbeit", 4);
+            if (!in_array('nFehler', $colNames, true)) {
+                Shop::Container()->getDB()->query(
+                    'ALTER TABLE tversion ADD nFehler TINYINT UNSIGNED NOT NULL AFTER nInArbeit',
+                    \DB\ReturnType::DEFAULT
+                );
             }
-            if (!in_array('nTyp', $cColumns_arr, true)) {
-                Shop::Container()->getDB()->query("ALTER TABLE tversion ADD nTyp TINYINT UNSIGNED NOT NULL AFTER nFehler", 4);
+            if (!in_array('nTyp', $colNames, true)) {
+                Shop::Container()->getDB()->query(
+                    'ALTER TABLE tversion ADD nTyp TINYINT UNSIGNED NOT NULL AFTER nFehler',
+                    \DB\ReturnType::DEFAULT
+                );
             }
-            if (!in_array('cFehlerSQL', $cColumns_arr, true)) {
-                Shop::Container()->getDB()->query("ALTER TABLE tversion ADD cFehlerSQL VARCHAR(255) NOT NULL AFTER nTyp", 4);
+            if (!in_array('cFehlerSQL', $colNames, true)) {
+                Shop::Container()->getDB()->query(
+                    'ALTER TABLE tversion ADD cFehlerSQL VARCHAR(255) NOT NULL AFTER nTyp',
+                    \DB\ReturnType::DEFAULT
+                );
             }
         }
         Shop::Container()->getDB()->query(
@@ -44,10 +64,10 @@ function resetteUpdateDB()
                 nFehler = 0,
                 nInArbeit = 0,
                 nTyp = 1,
-                cFehlerSQL = ''", 4
+                cFehlerSQL = ''",
+            \DB\ReturnType::DEFAULT
         );
     }
-    // Template Cache leeren
     loescheTPLCacheUpdater();
 
     if (!Shop::Container()->getDB()->getErrorCode()) {
@@ -62,8 +82,8 @@ function resetteUpdateDB()
  */
 function loescheTPLCacheUpdater()
 {
-    return (loescheVerzeichnisUpdater(PFAD_ROOT . PFAD_COMPILEDIR) &&
-        loescheVerzeichnisUpdater(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR)
+    return (loescheVerzeichnisUpdater(PFAD_ROOT . PFAD_COMPILEDIR)
+        && loescheVerzeichnisUpdater(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR)
     );
 }
 
@@ -125,7 +145,7 @@ function updateZeilenBis($cDatei)
         while ($cData = fgets($dir_handle)) {
             $nRow++;
         }
-        Shop::Container()->getDB()->query("UPDATE tversion SET nZeileBis = " . (int)$nRow, 4);
+        Shop::Container()->getDB()->query('UPDATE tversion SET nZeileBis = ' . $nRow, \DB\ReturnType::DEFAULT);
 
         if (!Shop::Container()->getDB()->getErrorCode()) {
             return true;
@@ -136,21 +156,19 @@ function updateZeilenBis($cDatei)
 }
 
 /**
- * @return mixed,
+ * @return stdClass
  */
 function gibShopVersion()
 {
-    return Shop::Container()->getDB()->query("SELECT * FROM tversion", 1);
+    return Shop::Container()->getDB()->query('SELECT * FROM tversion', \DB\ReturnType::SINGLE_OBJECT);
 }
 
 /**
  * @param int $nVersion
- * @return mixed
+ * @return int
  */
-function gibZielVersion($nVersion)
+function gibZielVersion(int $nVersion)
 {
-    $nVersion = (int)$nVersion;
-
     $nMajor_arr = [
         219 => 300,
         320 => 400
@@ -167,12 +185,12 @@ function gibZielVersion($nVersion)
  * @param int $nFehlerCode
  * @return string
  */
-function mappeFehlerCode($nFehlerCode)
+function mappeFehlerCode(int $nFehlerCode)
 {
-    if ((int)$nFehlerCode > 0) {
-        switch ((int)$nFehlerCode) {
+    if ($nFehlerCode > 0) {
+        switch ($nFehlerCode) {
             case 1:
-                return 'Fehler: Ein SQL-Befehl im Update konnte nicht ausgef&uuml;hrt werden. ' .
+                return 'Fehler: Ein SQL-Befehl im Update konnte nicht ausgeführt werden. ' .
                     'Bitte versuchen Sie es erneut.';
                 break;
             case 100:
@@ -194,20 +212,21 @@ function mappeFehlerCode($nFehlerCode)
 /**
  * @param int $nVersion
  */
-function updateFertig($nVersion)
+function updateFertig(int $nVersion)
 {
     Shop::Container()->getDB()->query(
-        "UPDATE tversion
-            SET nVersion = " . (int)$nVersion . ",
+        'UPDATE tversion
+            SET nVersion = ' . $nVersion . ",
             nZeileVon = 1,
             nZeileBis = 0,
             nFehler = 0,
             nInArbeit = 0,
             nTyp = 1,
             cFehlerSQL = '',
-            dAktualisiert = now()", 4
+            dAktualisiert = NOW()",
+        \DB\ReturnType::DEFAULT
     );
-    Shop::Cache()->flushAll();
+    Shop::Container()->getCache()->flushAll();
     header('Location: ' . Shop::getURL() . '/' . PFAD_ADMIN . 'dbupdater.php?nErrorCode=100');
     exit();
 }
@@ -216,25 +235,27 @@ function updateFertig($nVersion)
  * @param int $nTyp
  * @param int $nZeileBis
  */
-function naechsterUpdateStep($nTyp, $nZeileBis = 1)
+function naechsterUpdateStep(int $nTyp, int $nZeileBis = 1)
 {
     Shop::Container()->getDB()->query(
-        "UPDATE tversion
+        'UPDATE tversion
             SET nZeileVon = 1,
-            nZeileBis = " . (int)$nZeileBis . ",
+            nZeileBis = ' . $nZeileBis . ',
             nFehler = 0,
             nInArbeit = 0,
-            nTyp = " . (int)$nTyp . ",
-            cFehlerSQL = ''", 4
+            nTyp = ' . $nTyp . ",
+            cFehlerSQL = ''",
+        \DB\ReturnType::DEFAULT
     );
 
-    Shop::Container()->getDB()->query("UPDATE tversion SET nInArbeit = 0", 4);
+    Shop::Container()->getDB()->query('UPDATE tversion SET nInArbeit = 0', \DB\ReturnType::DEFAULT);
     header('Location: ' . Shop::getURL() . '/' . PFAD_ADMIN . 'dbupdater.php?nErrorCode=-1');
     exit();
 }
 
 /**
  * @return array|IOError
+ * @throws Exception
  */
 function dbUpdateIO()
 {
@@ -242,22 +263,30 @@ function dbUpdateIO()
     $updater  = new Updater();
 
     try {
-        if ($template->xmlData->cShopVersion != $template->shopVersion) {
-            if ($template->setTemplate($template->xmlData->cName, $template->xmlData->eTyp)) {
-                unset($_SESSION['cTemplate'], $_SESSION['template']);
-            }
+        if ((int)$template->version === 5) {
+            $templateVersion = '5.0.0';
+        } elseif ((int)$template->version === 4) {
+            $templateVersion = '4.0.0';
+        } else {
+            $templateVersion = $template->version;
+        }
+
+        if (!Version::parse($template->xmlData->cVersion)->equals($templateVersion)
+            && $template->setTemplate($template->xmlData->cName, $template->xmlData->eTyp)
+        ) {
+            unset($_SESSION['cTemplate'], $_SESSION['template']);
         }
 
         $dbVersion       = $updater->getCurrentDatabaseVersion();
         $updateResult    = $updater->update();
         $availableUpdate = $updater->hasPendingUpdates();
-
         if ($updateResult instanceof IMigration) {
             $updateResult = sprintf('Migration: %s', $updateResult->getDescription());
+        } elseif ($updateResult instanceof Version) {
+            $updateResult = sprintf('Version: %d.%02d', $updateResult->getMajor(), $updateResult->getMinor());
         } else {
             $updateResult = sprintf('Version: %.2f', $updateResult / 100);
         }
-
         return [
             'result'          => $updateResult,
             'currentVersion'  => $dbVersion,
@@ -272,6 +301,7 @@ function dbUpdateIO()
 
 /**
  * @return array|IOError
+ * @throws Exception
  */
 function dbupdaterBackup()
 {
@@ -316,6 +346,8 @@ function dbupdaterDownload($file)
 
 /**
  * @return array
+ * @throws SmartyException
+ * @throws Exception
  */
 function dbupdaterStatusTpl()
 {
@@ -337,10 +369,12 @@ function dbupdaterStatusTpl()
         ->assign('updatesAvailable', $updatesAvailable)
         ->assign('currentFileVersion', $currentFileVersion)
         ->assign('currentDatabaseVersion', $currentDatabaseVersion)
+        ->assign('hasDifferentVersions', !Version::parse($currentDatabaseVersion)
+                                                 ->equals(Version::parse($currentFileVersion)))
         ->assign('version', $version)
         ->assign('updateError', $updateError)
-        ->assign('currentTemplateFileVersion', $template->xmlData->cShopVersion)
-        ->assign('currentTemplateDatabaseVersion', $template->shopVersion);
+        ->assign('currentTemplateFileVersion', $template->xmlData->cVersion)
+        ->assign('currentTemplateDatabaseVersion', $template->version);
 
     return [
         'tpl'  => $smarty->fetch('tpl_inc/dbupdater_status.tpl'),
@@ -357,12 +391,15 @@ function dbupdaterStatusTpl()
 function dbupdaterMigration($id = null, $version = null, $dir = null)
 {
     try {
-        $migration = new MigrationManager($version);
+        $manager = new MigrationManager();
 
         if ($id !== null && in_array($dir, [IMigration::UP, IMigration::DOWN], true)) {
-            $migration->executeMigrationById($id, $dir);
+            $manager->executeMigrationById($id, $dir);
         }
-        $result = ['id' => $id, 'type' => 'migration'];
+
+        $migration    = $manager->getMigrationById($id);
+        $updateResult = sprintf('Migration: %s', $migration->getDescription());
+        $result       = ['id' => $id, 'type' => 'migration', 'result' => $updateResult];
     } catch (Exception $e) {
         $result = new IOError($e->getMessage());
     }

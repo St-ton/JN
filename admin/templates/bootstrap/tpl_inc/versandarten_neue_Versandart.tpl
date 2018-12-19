@@ -2,12 +2,12 @@
     {assign var=addOne value=1}
     var i = {if isset($VersandartStaffeln) && $VersandartStaffeln|@count > 0}Number({$VersandartStaffeln|@count}) + 1{else}2{/if};
     function addInputRow() {ldelim}
-        $('#price_range tbody').append('<tr><td><div class="input-group"><span class="input-group-addon"><label>{#upTo#}</label></span><input type="text" name="bis[]"  id="bis' + i + '" class="form-control kilogram"><span class="input-group-addon"><label>{if isset($einheit)}{$einheit}{/if}</label></span></div></td><td class="tcenter"><div class="input-group"><span class="input-group-addon"><label>{#amount#}</label></span><input type="text" name="preis[]"  id="preis' + i + '" class="form-control price_large"></div></td></tr>');
+        $('#price_range tbody').append('<tr><td><div class="input-group"><span class="input-group-addon"><label>{__('upTo')}</label></span><input type="text" name="bis[]"  id="bis' + i + '" class="form-control kilogram"><span class="input-group-addon"><label>{if isset($einheit)}{$einheit}{/if}</label></span></div></td><td class="tcenter"><div class="input-group"><span class="input-group-addon"><label>{__('amount')}</label></span><input type="text" name="preis[]"  id="preis' + i + '" class="form-control price_large"></div></td></tr>');
         i += 1;
     {rdelim}
 
     function confirmAllCombi() {ldelim}
-        return confirm('{#shippingConfirm#}');
+        return confirm('{__('shippingConfirm')}');
     {rdelim}
 
     {literal}
@@ -69,11 +69,11 @@
     {/literal}
 </script>
 
-{assign var=cTitel value=#createShippingMethod#}
-{assign var=cBeschreibung value=#createShippingMethodDesc#}
+{assign var=cTitel value=__('createShippingMethod')}
+{assign var=cBeschreibung value=__('createShippingMethodDesc')}
 
 {if isset($Versandart->kVersandart) && $Versandart->kVersandart > 0}
-    {assign var=cTitel value=#modifyedShippingType#}
+    {assign var=cTitel value=__('modifyedShippingType')}
     {assign var=cBeschreibung value=""}
 {/if}
 
@@ -94,7 +94,7 @@
                     <ul class="jtl-list-group">
                         <li class="input-group">
                             <span class="input-group-addon">
-                                <label for="cName">{#shippingMethodName#}</label>
+                                <label for="cName">{__('shippingMethodName')}</label>
                             </span>
                             <input class="form-control" type="text" id="cName" name="cName" value="{if isset($Versandart->cName)}{$Versandart->cName}{/if}" />
                         </li>
@@ -103,7 +103,7 @@
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cName_{$cISO}">{#showedName#} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cName_{$cISO}">{__('showedName')} ({$sprache->cNameDeutsch})</label>
                                     </span>
                                     <input class="form-control" type="text" id="cName_{$cISO}" name="cName_{$cISO}" value="{if isset($oVersandartSpracheAssoc_arr[$cISO]->cName)}{$oVersandartSpracheAssoc_arr[$cISO]->cName}{/if}" />
                                 </li>
@@ -111,17 +111,17 @@
                         {/foreach}
                         <li class="input-group">
                             <span class="input-group-addon">
-                                <label for="cBild">{#pictureURL#}</label>
+                                <label for="cBild">{__('pictureURL')}</label>
                             </span>
                             <input class="form-control" type="text" id="cBild" name="cBild" value="{if isset($Versandart->cBild)}{$Versandart->cBild}{/if}" />
-                            <span class="input-group-addon">{getHelpDesc cDesc=#pictureDesc#}</span>
+                            <span class="input-group-addon">{getHelpDesc cDesc=__('pictureDesc')}</span>
                         </li>
                         {foreach name=sprachen from=$sprachen item=sprache}
                             {assign var="cISO" value=$sprache->cISO}
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cLieferdauer_{$cISO}">{#shippingTime#} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cLieferdauer_{$cISO}">{__('shippingTime')} ({$sprache->cNameDeutsch})</label>
                                     </span>
                                     <input class="form-control" type="text" id="cLieferdauer_{$cISO}" name="cLieferdauer_{$cISO}" value="{if isset($oVersandartSpracheAssoc_arr[$cISO]->cLieferdauer)}{$oVersandartSpracheAssoc_arr[$cISO]->cLieferdauer}{/if}" />
                                 </li>
@@ -130,67 +130,67 @@
 
                         <li class="input-group">
                             <span class="input-group-addon">
-                                <label for="nMinLiefertage">{#minLiefertage#}</label>
+                                <label for="nMinLiefertage">{__('minLiefertage')}</label>
                             </span>
                             <input class="form-control" type="text" id="nMinLiefertage" name="nMinLiefertage" value="{if isset($Versandart->nMinLiefertage)}{$Versandart->nMinLiefertage}{/if}" />
                         </li>
 
                         <li class="input-group">
                             <span class="input-group-addon">
-                                <label for="nMaxLiefertage">{#maxLiefertage#}</label>
+                                <label for="nMaxLiefertage">{__('maxLiefertage')}</label>
                             </span>
                             <input class="form-control" type="text" id="nMaxLiefertage" name="nMaxLiefertage" value="{if isset($Versandart->nMaxLiefertage)}{$Versandart->nMaxLiefertage}{/if}" />
                         </li>
 
                         <li class="input-group">
                             <span class="input-group-addon">
-                                <label for="cAnzeigen">{#showShippingMethod#}</label>
+                                <label for="cAnzeigen">{__('showShippingMethod')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select name="cAnzeigen" id="cAnzeigen" class="form-control combo">
-                                    <option value="immer" {if isset($Versandart->cAnzeigen) && $Versandart->cAnzeigen === 'immer'}selected{/if}>{#always#}</option>
-                                    <option value="guenstigste" {if isset($Versandart->cAnzeigen) && $Versandart->cAnzeigen === 'guenstigste'}selected{/if}>{#lowest#}</option>
+                                    <option value="immer" {if isset($Versandart->cAnzeigen) && $Versandart->cAnzeigen === 'immer'}selected{/if}>{__('always')}</option>
+                                    <option value="guenstigste" {if isset($Versandart->cAnzeigen) && $Versandart->cAnzeigen === 'guenstigste'}selected{/if}>{__('lowest')}</option>
                                 </select>
                             </span>
                         </li>
 
                         <li class="input-group">
                             <span class="input-group-addon">
-                                <label for="cIgnoreShippingProposal">{#excludeShippingProposal#}</label>
+                                <label for="cIgnoreShippingProposal">{__('excludeShippingProposal')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select name="cIgnoreShippingProposal" id="cIgnoreShippingProposal" class="form-control combo">
-                                    <option value="N" {if isset($Versandart->cIgnoreShippingProposal) && $Versandart->cIgnoreShippingProposal === 'N'}selected{/if}>{#no#}</option>
-                                    <option value="Y" {if isset($Versandart->cIgnoreShippingProposal) && $Versandart->cIgnoreShippingProposal === 'Y'}selected{/if}>{#yes#}</option>
+                                    <option value="N" {if isset($Versandart->cIgnoreShippingProposal) && $Versandart->cIgnoreShippingProposal === 'N'}selected{/if}>{__('no')}</option>
+                                    <option value="Y" {if isset($Versandart->cIgnoreShippingProposal) && $Versandart->cIgnoreShippingProposal === 'Y'}selected{/if}>{__('yes')}</option>
                                 </select>
                             </span>
-                            <span class="input-group-addon">{getHelpDesc cDesc=#excludeShippingProposalDesc#}</span>
+                            <span class="input-group-addon">{getHelpDesc cDesc=__('excludeShippingProposalDesc')}</span>
                         </li>
 
                         <li class="input-group">
                             <span class="input-group-addon">
-                                <label for="cNurAbhaengigeVersandart">{#onlyForOwnShippingPrices#}</label>
+                                <label for="cNurAbhaengigeVersandart">{__('onlyForOwnShippingPrices')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select name="cNurAbhaengigeVersandart" id="cNurAbhaengigeVersandart" class="combo form-control">
-                                    <option value="N" {if isset($Versandart->cNurAbhaengigeVersandart) && $Versandart->cNurAbhaengigeVersandart === 'N'}selected{/if}>{#no#}</option>
-                                    <option value="Y" {if isset($Versandart->cNurAbhaengigeVersandart) && $Versandart->cNurAbhaengigeVersandart === 'Y'}selected{/if}>{#yes#}</option>
+                                    <option value="N" {if isset($Versandart->cNurAbhaengigeVersandart) && $Versandart->cNurAbhaengigeVersandart === 'N'}selected{/if}>{__('no')}</option>
+                                    <option value="Y" {if isset($Versandart->cNurAbhaengigeVersandart) && $Versandart->cNurAbhaengigeVersandart === 'Y'}selected{/if}>{__('yes')}</option>
                                 </select>
                             </span>
-                            <span class="input-group-addon">{getHelpDesc cDesc=#ownShippingPricesDesc#}</span>
+                            <span class="input-group-addon">{getHelpDesc cDesc=__('ownShippingPricesDesc')}</span>
                         </li>
 
                         <li class="input-group">
                             <span class="input-group-addon">
-                                <label for="eSteuer">{#taxshippingcosts#}</label>
+                                <label for="eSteuer">{__('taxshippingcosts')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select name="eSteuer" id="eSteuer" class="combo form-control">
-                                    <option value="brutto" {if isset($Versandart->eSteuer) && $Versandart->eSteuer === 'brutto'}selected{/if}>{#gross#}</option>
-                                    <option value="netto" {if isset($Versandart->eSteuer) && $Versandart->eSteuer === 'netto'}selected{/if}>{#net#}</option>
+                                    <option value="brutto" {if isset($Versandart->eSteuer) && $Versandart->eSteuer === 'brutto'}selected{/if}>{__('gross')}</option>
+                                    <option value="netto" {if isset($Versandart->eSteuer) && $Versandart->eSteuer === 'netto'}selected{/if}>{__('net')}</option>
                                 </select>
                             </span>
-                            <span class="input-group-addon">{getHelpDesc cDesc=#taxshippingcostsDesc#}</span>
+                            <span class="input-group-addon">{getHelpDesc cDesc=__('taxshippingcostsDesc')}</span>
                         </li>
 
                         <li class="input-group">
@@ -199,8 +199,8 @@
                             </span>
                             <span class="input-group-wrap">
                                 <select name="cSendConfirmationMail" id="cSendConfirmationMail" class="combo form-control">
-                                    <option value="Y" {if isset($Versandart->cSendConfirmationMail) && $Versandart->cSendConfirmationMail === 'Y'}selected{/if}>{#yes#}</option>
-                                    <option value="N" {if isset($Versandart->cSendConfirmationMail) && $Versandart->cSendConfirmationMail === 'N'}selected{/if}>{#no#}</option>
+                                    <option value="Y" {if isset($Versandart->cSendConfirmationMail) && $Versandart->cSendConfirmationMail === 'Y'}selected{/if}>{__('yes')}</option>
+                                    <option value="N" {if isset($Versandart->cSendConfirmationMail) && $Versandart->cSendConfirmationMail === 'N'}selected{/if}>{__('no')}</option>
                                 </select>
                             </span>
                             {*<span class="input-group-addon">{getHelpDesc cDesc=''}</span>*}
@@ -208,25 +208,26 @@
 
                         <li class="input-group">
                             <span class="input-group-addon">
-                                <label for="nSort">{#sortnr#}</label>
+                                <label for="nSort">{__('sortnr')}</label>
                             </span>
                             <input class="form-control" type="text" id="nSort" name="nSort" value="{if isset($Versandart->nSort)}{$Versandart->nSort}{/if}" />
+                            <span class="input-group-addon">{getHelpDesc cDesc=__('versandartenSortDesc')}</span>
                         </li>
 
                         <li class="input-group">
                             <span class="input-group-addon">
-                                <label for="kKundengruppe">{#customerclass#}</label>
+                                <label for="kKundengruppe">{__('customerclass')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select name="kKundengruppe[]" id="kKundengruppe" multiple="multiple" class="combo form-control">
-                                    <option value="-1" {if $gesetzteKundengruppen.alle}selected{/if}>{#all#}</option>
+                                    <option value="-1" {if $gesetzteKundengruppen.alle}selected{/if}>{__('all')}</option>
                                     {foreach name=kundengruppen from=$kundengruppen item=oKundengruppe}
                                         {assign var="klasse" value=$oKundengruppe->kKundengruppe}
                                         <option value="{$oKundengruppe->kKundengruppe}" {if isset($gesetzteKundengruppen.$klasse) && $gesetzteKundengruppen.$klasse}selected{/if}>{$oKundengruppe->cName}</option>
                                     {/foreach}
                                 </select>
                             </span>
-                            <span class="input-group-addon">{getHelpDesc cDesc=#customerclassDesc#}</span>
+                            <span class="input-group-addon">{getHelpDesc cDesc=__('customerclassDesc')}</span>
                         </li>
 
                         {foreach name=sprachen from=$sprachen item=sprache}
@@ -234,7 +235,7 @@
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cHinweistextShop_{$cISO}">{#shippingNoteShop#} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cHinweistextShop_{$cISO}">{__('shippingNoteShop')} ({$sprache->cNameDeutsch})</label>
                                     </span>
                                     <textarea id="cHinweistextShop_{$cISO}" class="form-control combo" name="cHinweistextShop_{$cISO}">{if isset($oVersandartSpracheAssoc_arr[$cISO]->cHinweistextShop)}{$oVersandartSpracheAssoc_arr[$cISO]->cHinweistextShop}{/if}</textarea>
                                 </li>
@@ -246,7 +247,7 @@
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cHinweistext_{$cISO}">{#shippingNoteEmail#} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cHinweistext_{$cISO}">{__('shippingNoteEmail')} ({$sprache->cNameDeutsch})</label>
                                     </span>
                                     <textarea id="cHinweistext_{$cISO}" class="form-control combo" name="cHinweistext_{$cISO}">{if isset($oVersandartSpracheAssoc_arr[$cISO]->cHinweistext)}{$oVersandartSpracheAssoc_arr[$cISO]->cHinweistext}{/if}</textarea>
                                 </li>
@@ -258,7 +259,7 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{#validOnShippingClasses#}</h3>
+                    <h3 class="panel-title">{__('validOnShippingClasses')}</h3>
                 </div>
                 <div class="panel-body">
                     <input name="kVersandklasse" type="hidden" value="{if !empty($Versandart->cVersandklassen)}{$Versandart->cVersandklassen}{else}-1{/if}">
@@ -268,13 +269,13 @@
                                 <selectX class="selectX2 form-control" name="Versandklassen"
                                          onchange="checkCombination();updateVK();"
                                          multiple>
-                                    <option value="-1">{#allCombinations#}</option>
+                                    <option value="-1">{__('allCombinations')}</option>
                                     {foreach from=$versandKlassen item=vk}
                                         <option value="{$vk->kVersandklasse}">{$vk->cName}</option>
                                     {/foreach}
                                 </selectX>
                             </span>
-                            <span class="input-group-addon">{getHelpDesc cDesc=#shippingclassDesc#}</span>
+                            <span class="input-group-addon">{getHelpDesc cDesc=__('shippingclassDesc')}</span>
                             <div class="input-group-btn">
                                 <button class="btn btn-danger" type="button"
                                         onclick="$(this).parent().parent().detach(); updateVK();"><span
@@ -288,7 +289,7 @@
                                     <span class="input-group-wrap">
                                         <select class="select2 form-control" name="Versandklassen"
                                                 onchange="checkCombination();updateVK();" multiple="multiple">
-                                            <option value="-1"{if $smarty.foreach.vKombi.iteration >1} disabled="disabled"{/if}{if $VK === '-1'} selected{/if}>{#allCombinations#}</option>
+                                            <option value="-1"{if $smarty.foreach.vKombi.iteration >1} disabled="disabled"{/if}{if $VK === '-1'} selected{/if}>{__('allCombinations')}</option>
                                             {if $VK === '-1'}
                                                 {foreach from=$versandKlassen item=vk}
                                                     <option value="{$vk->kVersandklasse}">{$vk->cName}</option>
@@ -302,7 +303,7 @@
                                             {/if}
                                         </select>
                                     </span>
-                                    <span class="input-group-addon">{getHelpDesc cDesc=#shippingclassDesc#}</span>
+                                    <span class="input-group-addon">{getHelpDesc cDesc=__('shippingclassDesc')}</span>
                                     {if  $smarty.foreach.vKombi.iteration != 1}
                                     <div class="input-group-btn">
                                         <button class="btn btn-danger" type="button"
@@ -317,28 +318,51 @@
                                         <span class="input-group-wrap">
                                             <select class="select2 form-control" name="Versandklassen"
                                                     onchange="checkCombination();updateVK();" multiple="multiple">
-                                                <option value="-1"{if $smarty.foreach.vKombi.iteration >1} disabled="disabled"{/if} selected>{#allCombinations#}</option>
+                                                <option value="-1"{if $smarty.foreach.vKombi.iteration >1} disabled="disabled"{/if} selected>{__('allCombinations')}</option>
                                                 {foreach from=$versandKlassen item=vk}
                                                     <option value="{$vk->kVersandklasse}">{$vk->cName}</option>
                                                 {/foreach}
                                             </select>
                                         </span>
-                                <span class="input-group-addon">{getHelpDesc cDesc=#shippingclassDesc#}</span>
+                                <span class="input-group-addon">{getHelpDesc cDesc=__('shippingclassDesc')}</span>
                             </li>
                         {/if}
                     </ul>
                 </div>
                 <div class="panel-footer">
-                    <button id="addNewShippingClassCombi" class="btn btn-success" type="button"
-                            onclick="addShippingCombination();$('.select2').select2();">
-                        <span class="glyphicon glyphicon-plus"></span> {#addShippingClass#}
-                    </button>
+                    <div class="btn-group" role="group">
+                        <button id="addNewShippingClassCombi" class="btn btn-success" type="button"
+                                onclick="addShippingCombination();$('.select2').select2();">
+                            <span class="glyphicon glyphicon-plus"></span> {__('addShippingClass')}
+                        </button>
+                        {if !empty($missingShippingClassCombis)}
+                        <button class="btn btn-warning" type="button" data-toggle="collapse" data-target="#collapseShippingClasses" aria-expanded="false" aria-controls="collapseShippingClasses">
+                            {__('showMissingCombinations')}
+                        </button>
+                        {/if}
+                    </div>
+                    {if !empty($missingShippingClassCombis)}
+                    <div class="collapse" id="collapseShippingClasses">
+                        <div class="row">
+                            {if $missingShippingClassCombis === -1}
+                                <div class="col-xs-12">
+                                    {__('coverageShippingClassCombination')}
+                                    {__('noShipClassCombiValidation')|replace:'%s':$smarty.const.SHIPPING_CLASS_MAX_VALIDATION_COUNT}
+                                </div>
+                            {else}
+                                {foreach $missingShippingClassCombis as $mscc}
+                                    <div class="col-xs-12 col-sm-6">[{$mscc}]</div>
+                                {/foreach}
+                            {/if}
+                        </div>
+                    </div>
+                    {/if}
                 </div>
             </div>
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{#acceptedPaymentMethods#}</h3>
+                    <h3 class="panel-title">{__('acceptedPaymentMethods')}</h3>
                 </div>
                 <div class="panel-body">
                     <ul class="jtl-list-group">
@@ -350,7 +374,7 @@
                                     <th class="check"></th>
                                     <th class="tleft">Zahlungsart</th>
                                     <th></th>
-                                    <th>{#amount#}</th>
+                                    <th>{__('amount')}</th>
                                     <th></th>
                                 </tr>
                                 </thead>
@@ -366,7 +390,7 @@
                                                 {$zahlungsart->cName}{if isset($zahlungsart->cAnbieter) && $zahlungsart->cAnbieter|strlen > 0} ({$zahlungsart->cAnbieter}){/if}
                                             </label>
                                         </td>
-                                        <td>{#discount#}</td>
+                                        <td>{__('discount')}</td>
                                         <td class="tcenter">
                                             <input type="text" id="Netto_{$kZahlungsart}" name="fAufpreis_{$kZahlungsart}" value="{if isset($VersandartZahlungsarten[$kZahlungsart]->fAufpreis)}{$VersandartZahlungsarten[$kZahlungsart]->fAufpreis}{/if}" class="form-control price_large"{* onKeyUp="setzePreisAjax(false, 'ZahlungsartAufpreis_{$zahlungsart->kZahlungsart}', this)"*} />
                                         </td>
@@ -391,21 +415,21 @@
             </div>
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{#freeShipping#}</h3>
+                    <h3 class="panel-title">{__('freeShipping')}</h3>
                 </div>
                 <div class="panel-body">
                     <ul class="jtl-list-group">
                         <li class="input-group">
-                            <span class="input-group-addon"><label for="versandkostenfreiAktiv">{#activate#}</label></span>
+                            <span class="input-group-addon"><label for="versandkostenfreiAktiv">{__('activate')}</label></span>
                             <span class="input-group-wrap">
                                 <select id="versandkostenfreiAktiv" name="versandkostenfreiAktiv" class="combo form-control">
-                                    <option value="0">{#no#}</option>
-                                    <option value="1" {if isset($Versandart->fVersandkostenfreiAbX) && $Versandart->fVersandkostenfreiAbX > 0}selected{/if}>{#yes#}</option>
+                                    <option value="0">{__('no')}</option>
+                                    <option value="1" {if isset($Versandart->fVersandkostenfreiAbX) && $Versandart->fVersandkostenfreiAbX > 0}selected{/if}>{__('yes')}</option>
                                 </select>
                             </span>
                         </li>
                         <li class="input-group">
-                            <span class="input-group-addon"><label>{#amount#}</label></span>
+                            <span class="input-group-addon"><label>{__('amount')}</label></span>
                             <input type="text" id="fVersandkostenfreiAbX" name="fVersandkostenfreiAbX" class="form-control price_large" value="{if isset($Versandart->fVersandkostenfreiAbX)}{$Versandart->fVersandkostenfreiAbX}{/if}">{* onKeyUp="setzePreisAjax(false, 'ajaxversandkostenfrei', this)" /> <span id="ajaxversandkostenfrei"></span>*}
                         </li>
                     </ul>
@@ -413,7 +437,7 @@
             </div>
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{#maxCosts#}</h3>
+                    <h3 class="panel-title">{__('maxCosts')}</h3>
                 </div>
                 <div class="panel-body">
                     <ul class="jtl-list-group">
@@ -423,7 +447,7 @@
                                 <tr>
                                     <th class="check"></th>
                                     <th></th>
-                                    <th>{#amount#}</th>
+                                    <th>{__('amount')}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -431,7 +455,7 @@
                                     <td class="check">
                                         <input type="checkbox" id="versanddeckelungAktiv" name="versanddeckelungAktiv" class="boxen" value="1" {if isset($Versandart->fDeckelung) && $Versandart->fDeckelung > 0}checked{/if} />
                                     </td>
-                                    <td><label for="versanddeckelungAktiv">{#activate#}</label></td>
+                                    <td><label for="versanddeckelungAktiv">{__('activate')}</label></td>
                                     <td class="tcenter">
                                         <input type="text" id="fDeckelung" name="fDeckelung" value="{if isset($Versandart->fDeckelung)}{$Versandart->fDeckelung}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxdeckelung', this)" /> <span id="ajaxdeckelung"></span>*}
                                     </td>
@@ -445,7 +469,7 @@
             {if $versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl' || $versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl' || $versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'}
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{#priceScale#}</h3>
+                    <h3 class="panel-title">{__('priceScale')}</h3>
                 </div>
                 <div class="panel-body">
                     <ul class="jtl-list-group">
@@ -454,7 +478,7 @@
                                 <thead>
                                 <tr>
                                     <th class="p50"></th>
-                                    <th>{#amount#}</th>
+                                    <th>{__('amount')}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -465,14 +489,14 @@
                                             <tr>
                                                 <td>
                                                     <div class="input-group">
-                                                        <span class="input-group-addon"><label>{#upTo#}</label></span>
+                                                        <span class="input-group-addon"><label>{__('upTo')}</label></span>
                                                         <input type="text" id="bis{$smarty.foreach.preisstaffel.index}" name="bis[]" value="{if isset($VersandartStaffeln[$smarty.foreach.preisstaffel.index]->fBis)}{$VersandartStaffeln[$smarty.foreach.preisstaffel.index]->fBis}{/if}" class="form-control kilogram" />
                                                         <span class="input-group-addon"><label>{$einheit}</label></span>
                                                    </div>
                                                 </td>
                                                 <td>
                                                     <div class="input-group">
-                                                        <span class="input-group-addon"><label>{#amount#}:</label></span>
+                                                        <span class="input-group-addon"><label>{__('amount')}:</label></span>
                                                         <input type="text" id="preis{$smarty.foreach.preisstaffel.index}" name="preis[]" value="{if isset($VersandartStaffeln[$smarty.foreach.preisstaffel.index]->fPreis)}{$VersandartStaffeln[$smarty.foreach.preisstaffel.index]->fPreis}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxpreisstaffel{$smarty.foreach.preisstaffel.index}', this)" /> <span id="ajaxpreisstaffel{$smarty.foreach.preisstaffel.index}"></span>*}
                                                     </div>
                                                 </td>
@@ -483,14 +507,14 @@
                                     <tr>
                                         <td>
                                             <div class="input-group">
-                                                <span class="input-group-addon"><label>{#upTo#}</label></span>
+                                                <span class="input-group-addon"><label>{__('upTo')}</label></span>
                                                 <input type="text" id="bis1" name="bis[]" value="" class="form-control kilogram" />
                                                 <span class="input-group-addon"><label>{$einheit}</label></span>
                                             </div>
                                         </td>
                                         <td class="tcenter">
                                             <div class="input-group">
-                                                <span class="input-group-addon"><label>{#amount#}:</label></span>
+                                                <span class="input-group-addon"><label>{__('amount')}:</label></span>
                                                 <input type="text" id="preis1" name="preis[]" value="" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxpreis1', this)" /> <span id="ajaxpreis1"></span>*}
                                             </div>
                                         </td>
@@ -500,8 +524,8 @@
                                 </tbody>
                             </table>
                             <div class="btn-group">
-                                <button name="addRow" type="button" value="{#addPriceScale#}" onclick="addInputRow();" class="btn btn-primary"><i class="fa fa-share"></i> {#addPriceScale#}</button>
-                                <button name="delRow" type="button" value="{#delPriceScale#}" onclick="delInputRow();" class="btn btn-danger"><i class="fa fa-trash"></i> {#delPriceScale#}</button>
+                                <button name="addRow" type="button" value="{__('addPriceScale')}" onclick="addInputRow();" class="btn btn-primary"><i class="fa fa-share"></i> {__('addPriceScale')}</button>
+                                <button name="delRow" type="button" value="{__('delPriceScale')}" onclick="delInputRow();" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delPriceScale')}</button>
                             </div>
                         </li>
                     </ul>
@@ -510,7 +534,7 @@
             {elseif $versandberechnung->cModulId === 'vm_versandkosten_pauschale_jtl'}
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{#shippingPrice#}</h3>
+                    <h3 class="panel-title">{__('shippingPrice')}</h3>
                 </div>
                 <div class="panel-body">
                     <ul class="jtl-list-group">
@@ -520,7 +544,7 @@
                                 <tr>
                                     <th class="check"></th>
                                     <th></th>
-                                    <th>{#amount#}</th>
+                                    <th>{__('amount')}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -620,17 +644,17 @@
             {/literal}
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{#shipToCountries#}</h3>
+                    <h3 class="panel-title">{__('shipToCountries')}</h3>
                 </div>
                 <div class="panel-body">
                     <div class="btn-group">
-                        <a onclick="toggle('Europa_EU');" class="btn btn-default">{#checkEU#}</a>
-                        <a onclick="toggle('Europa_nichtEU');" class="btn btn-default">{#checkNonEU#}</a>
-                        <a onclick="toggle('Europa');" class="btn btn-default">{#checkEurope#}</a>
-                        <a onclick="toggle('Nordamerika');" class="btn btn-default">{#checkNA#}</a>
-                        <a onclick="toggle('Asien');" class="btn btn-default">{#checkAsia#}</a>
-                        <a onclick="toggle('allesAus');" class="btn btn-danger">{#checkAllOff#}</a>
-                        <a onclick="toggle('allesAn');" class="btn btn-primary">{#checkAllOn#}</a>
+                        <a onclick="toggle('Europa_EU');" class="btn btn-default">{__('checkEU')}</a>
+                        <a onclick="toggle('Europa_nichtEU');" class="btn btn-default">{__('checkNonEU')}</a>
+                        <a onclick="toggle('Europa');" class="btn btn-default">{__('checkEurope')}</a>
+                        <a onclick="toggle('Nordamerika');" class="btn btn-default">{__('checkNA')}</a>
+                        <a onclick="toggle('Asien');" class="btn btn-default">{__('checkAsia')}</a>
+                        <a onclick="toggle('allesAus');" class="btn btn-danger">{__('checkAllOff')}</a>
+                        <a onclick="toggle('allesAn');" class="btn btn-primary">{__('checkAllOn')}</a>
                     </div>
                     <table class="table" style="margin-top: 10px;">
                         <tbody>
@@ -651,15 +675,16 @@
                     </table>
                 </div>
             </div>
-            <div class="save_wrapper">
-                <button type="submit" value="{if !isset($Versandart->kVersandart) || !$Versandart->kVersandart}{#createShippingType#}{else}{#modifyedShippingType#}{/if}"
+            <div class="save_wrapper btn-group">
+                <button type="submit" value="{if !isset($Versandart->kVersandart) || !$Versandart->kVersandart}{__('createShippingType')}{else}{__('modifyedShippingType')}{/if}"
                         class="btn btn-primary">
                     {if !isset($Versandart->kVersandart) || !$Versandart->kVersandart}
-                        <i class="fa fa-share"></i> {#createShippingType#}
+                        <i class="fa fa-share"></i> {__('createShippingType')}
                     {else}
-                        <i class="fa fa-edit"></i> {#modifyedShippingType#}
+                        <i class="fa fa-edit"></i> {__('modifyedShippingType')}
                     {/if}
                 </button>
+                <a href="versandarten.php" value="{__('cancel')}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
             </div>
         </div>
     </form>

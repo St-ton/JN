@@ -4,22 +4,24 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Tax;
+use Helpers\ShippingMethod;
+
 /**
  * @param array $cPost_arr
  * @return array|int
  */
-function kundeSpeichern($cPost_arr)
+function kundeSpeichern(array $cPost_arr)
 {
     global $Kunde,
-           $GlobaleEinstellungen,
-           $Einstellungen,
            $step,
            $editRechnungsadresse,
            $knd,
            $cKundenattribut_arr;
 
     unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart']);
-    $cart = Session::Cart();
+    $conf = Shop::getSettings([CONF_GLOBAL, CONF_KUNDENWERBENKUNDEN]);
+    $cart = \Session\Session::getCart();
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
 
@@ -31,14 +33,28 @@ function kundeSpeichern($cPost_arr)
         : checkKundenFormular(1, 0);
     $knd                 = getKundendaten($cPost_arr, 1, 0);
     $cKundenattribut_arr = getKundenattribute($cPost_arr);
-    $kKundengruppe       = Session::CustomerGroup()->getID();
-    // CheckBox Plausi
-    $oCheckBox       = new CheckBox();
-    $fehlendeAngaben = array_merge(
+    $kKundengruppe       = \Session\Session::getCustomerGroup()->getID();
+    $oCheckBox           = new CheckBox();
+    $fehlendeAngaben     = array_merge(
         $fehlendeAngaben,
         $oCheckBox->validateCheckBox(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $cPost_arr, true)
     );
-    $nReturnValue    = angabenKorrekt($fehlendeAngaben);
+
+    if (isset($cPost_arr['shipping_address'])) {
+        if ((int)$cPost_arr['shipping_address'] === 0) {
+            $cPost_arr['kLieferadresse'] = 0;
+            $cPost_arr['lieferdaten']    = 1;
+            pruefeLieferdaten($cPost_arr);
+        } elseif (isset($cPost_arr['kLieferadresse']) && (int)$cPost_arr['kLieferadresse'] > 0) {
+            pruefeLieferdaten($cPost_arr);
+        } elseif (isset($cPost_arr['register']['shipping_address'])) {
+            pruefeLieferdaten($cPost_arr['register']['shipping_address'], $fehlendeAngaben);
+        }
+    } elseif (isset($cPost_arr['lieferdaten']) && (int)$cPost_arr['lieferdaten'] === 1) {
+        // compatibility with older template
+        pruefeLieferdaten($cPost_arr, $fehlendeAngaben);
+    }
+    $nReturnValue = angabenKorrekt($fehlendeAngaben);
 
     executeHook(HOOK_REGISTRIEREN_PAGE_REGISTRIEREN_PLAUSI, [
         'nReturnValue'    => &$nReturnValue,
@@ -70,7 +86,7 @@ function kundeSpeichern($cPost_arr)
                 if (is_array($oKundenfeldNichtEditierbar_arr) && count($oKundenfeldNichtEditierbar_arr) > 0) {
                     $cSQL .= ' AND (';
                     foreach ($oKundenfeldNichtEditierbar_arr as $i => $oKundenfeldNichtEditierbar) {
-                        if ($i == 0) {
+                        if ($i === 0) {
                             $cSQL .= 'kKundenfeld != ' . (int)$oKundenfeldNichtEditierbar->kKundenfeld;
                         } else {
                             $cSQL .= ' AND kKundenfeld != ' . (int)$oKundenfeldNichtEditierbar->kKundenfeld;
@@ -79,7 +95,10 @@ function kundeSpeichern($cPost_arr)
                     $cSQL .= ')';
                 }
 
-                Shop::Container()->getDB()->query("DELETE FROM tkundenattribut WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . $cSQL, 3);
+                Shop::Container()->getDB()->query(
+                    'DELETE FROM tkundenattribut WHERE kKunde = ' . (int)$_SESSION['Kunde']->kKunde . $cSQL,
+                    \DB\ReturnType::AFFECTED_ROWS
+                );
                 $nKundenattributKey_arr = array_keys($cKundenattribut_arr);
                 foreach ($nKundenattributKey_arr as $kKundenfeld) {
                     $oKundenattribut              = new stdClass();
@@ -96,32 +115,34 @@ function kundeSpeichern($cPost_arr)
             $_SESSION['Kunde']->cKundenattribut_arr = $cKundenattribut_arr;
         } else {
             // Guthaben des Neukunden aufstocken insofern er geworben wurde
-            $oNeukunde     = Shop::Container()->getDB()->select('tkundenwerbenkunden', 'cEmail', $knd->cMail, 'nRegistriert', 0);
-            $kKundengruppe = Session::CustomerGroup()->getID();
-            if (isset($oNeukunde->kKundenWerbenKunden, $Einstellungen['kundenwerbenkunden']['kwk_kundengruppen'])
+            $oNeukunde     = Shop::Container()->getDB()->select(
+                'tkundenwerbenkunden',
+                'cEmail',
+                $knd->cMail,
+                'nRegistriert',
+                0
+            );
+            $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+            if (isset($oNeukunde->kKundenWerbenKunden, $conf['kundenwerbenkunden']['kwk_kundengruppen'])
                 && $oNeukunde->kKundenWerbenKunden > 0
-                && (int)$Einstellungen['kundenwerbenkunden']['kwk_kundengruppen'] > 0
+                && (int)$conf['kundenwerbenkunden']['kwk_kundengruppen'] > 0
             ) {
-                $kKundengruppe = (int)$Einstellungen['kundenwerbenkunden']['kwk_kundengruppen'];
+                $kKundengruppe = (int)$conf['kundenwerbenkunden']['kwk_kundengruppen'];
             }
 
-            $knd->kKundengruppe = $kKundengruppe;
-            $knd->kSprache      = Shop::getLanguage();
-            $knd->cAbgeholt     = 'N';
-            $knd->cSperre       = 'N';
-            //konto sofort aktiv?
-            $knd->cAktiv = $GlobaleEinstellungen['global']['global_kundenkonto_aktiv'] === 'A'
+            $knd->kKundengruppe     = $kKundengruppe;
+            $knd->kSprache          = Shop::getLanguage();
+            $knd->cAbgeholt         = 'N';
+            $knd->cSperre           = 'N';
+            $knd->cAktiv            = $conf['global']['global_kundenkonto_aktiv'] === 'A'
                 ? 'N'
                 : 'Y';
-            $customer             = new Kunde();
-            $cPasswortKlartext    = $knd->cPasswort;
-            $knd->cPasswort       = $customer->generatePasswordHash($cPasswortKlartext);
-            $knd->dErstellt       = 'now()';
-            $knd->nRegistriert    = 1;
-            $knd->angezeigtesLand = ISO2land($knd->cLand);
-            // Work Around Mail zerhaut cLand
-            $cLand = $knd->cLand;
-            //mail
+            $cPasswortKlartext      = $knd->cPasswort;
+            $knd->cPasswort         = Shop::Container()->getPasswordService()->hash($cPasswortKlartext);
+            $knd->dErstellt         = 'NOW()';
+            $knd->nRegistriert      = 1;
+            $knd->angezeigtesLand   = Sprache::getCountryCodeByCountryName($knd->cLand);
+            $cLand                  = $knd->cLand;
             $knd->cPasswortKlartext = $cPasswortKlartext;
             $obj                    = new stdClass();
             $obj->tkunde            = $knd;
@@ -133,7 +154,7 @@ function kundeSpeichern($cPost_arr)
             $knd->kKunde = $knd->insertInDB();
             // Kampagne
             if (isset($_SESSION['Kampagnenbesucher'])) {
-                setzeKampagnenVorgang(KAMPAGNE_DEF_ANMELDUNG, $knd->kKunde, 1.0); // Anmeldung
+                Kampagne::setCampaignAction(KAMPAGNE_DEF_ANMELDUNG, $knd->kKunde, 1.0); // Anmeldung
             }
             // Insert Kundenattribute
             if (is_array($cKundenattribut_arr) && count($cKundenattribut_arr) > 0) {
@@ -149,7 +170,7 @@ function kundeSpeichern($cPost_arr)
                     Shop::Container()->getDB()->insert('tkundenattribut', $oKundenattribut);
                 }
             }
-            if ($Einstellungen['global']['global_kundenkonto_aktiv'] !== 'A') {
+            if ($conf['global']['global_kundenkonto_aktiv'] !== 'A') {
                 $_SESSION['Kunde']                      = new Kunde($knd->kKunde);
                 $_SESSION['Kunde']->cKundenattribut_arr = $cKundenattribut_arr;
             } else {
@@ -157,10 +178,15 @@ function kundeSpeichern($cPost_arr)
             }
             // Guthaben des Neukunden aufstocken insofern er geworben wurde
             if (isset($oNeukunde->kKundenWerbenKunden) && $oNeukunde->kKundenWerbenKunden > 0) {
-                Shop::Container()->getDB()->query(
-                    "UPDATE tkunde
-                        SET fGuthaben = fGuthaben + " . (float)$Einstellungen['kundenwerbenkunden']['kwk_neukundenguthaben'] . "
-                        WHERE kKunde = " . (int)$knd->kKunde, 3
+                Shop::Container()->getDB()->queryPrepared(
+                    'UPDATE tkunde
+                        SET fGuthaben = fGuthaben + :amount
+                        WHERE kKunde = :cid',
+                    [
+                        'cid'    => (int)$knd->kKunde,
+                        'amount' => (float)$conf['kundenwerbenkunden']['kwk_neukundenguthaben']
+                    ],
+                    \DB\ReturnType::AFFECTED_ROWS
                 );
                 $_upd               = new stdClass();
                 $_upd->nRegistriert = 1;
@@ -168,36 +194,22 @@ function kundeSpeichern($cPost_arr)
             }
         }
         if (isset($cart->kWarenkorb) && $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
-            setzeSteuersaetze();
+            Tax::setTaxRates();
             $cart->gibGesamtsummeWarenLocalized();
-        }
-        if (isset($cPost_arr['shipping_address'])) {
-            if ((int)$cPost_arr['shipping_address'] === 0) {
-                $cPost_arr['kLieferadresse'] = 0;
-                $cPost_arr['lieferdaten']    = 1;
-                pruefeLieferdaten($cPost_arr);
-            } elseif (isset($cPost_arr['kLieferadresse']) && (int)$cPost_arr['kLieferadresse'] > 0) {
-                pruefeLieferdaten($cPost_arr);
-            } elseif (isset($cPost_arr['register']['shipping_address'])) {
-                pruefeLieferdaten($cPost_arr['register']['shipping_address'], $fehlendeAngaben);
-            }
-        } elseif (isset($cPost_arr['lieferdaten']) && (int)$cPost_arr['lieferdaten'] === 1) {
-            // compatibility with older template
-            pruefeLieferdaten($cPost_arr, $fehlendeAngaben);
         }
         if ((int)$cPost_arr['checkout'] === 1) {
             //weiterleitung zum chekout
             header('Location: ' . Shop::Container()->getLinkService()
-                                                   ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
+                                      ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
             exit;
         }
         if (isset($cPost_arr['ajaxcheckout_return']) && (int)$cPost_arr['ajaxcheckout_return'] === 1) {
             return 1;
         }
-        if ($GlobaleEinstellungen['global']['global_kundenkonto_aktiv'] !== 'A') {
+        if ($conf['global']['global_kundenkonto_aktiv'] !== 'A') {
             //weiterleitung zu mein Konto
             header('Location: ' . Shop::Container()->getLinkService()
-                                                   ->getStaticRoute('jtl.php', true) . '?reg=1', true, 303);
+                                      ->getStaticRoute('jtl.php', true) . '?reg=1', true, 303);
             exit;
         }
     } else {
@@ -207,8 +219,13 @@ function kundeSpeichern($cPost_arr)
             $_SESSION['checkout.fehlendeAngaben'] = $fehlendeAngaben;
             $_SESSION['checkout.cPost_arr']       = $cPost_arr;
 
+            //keep shipping address on error
+            if (isset($cPost_arr['register']['shipping_address'])) {
+                $_SESSION['Lieferadresse'] = getLieferdaten($cPost_arr['register']['shipping_address']);
+            }
+
             header('Location: ' . Shop::Container()->getLinkService()
-                                                   ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
+                                      ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
             exit;
         }
         Shop::Smarty()->assign('fehlendeAngaben', $fehlendeAngaben);
@@ -223,7 +240,7 @@ function kundeSpeichern($cPost_arr)
 /**
  * @param int $nCheckout
  */
-function gibFormularDaten($nCheckout = 0)
+function gibFormularDaten(int $nCheckout = 0)
 {
     global $cKundenattribut_arr, $Kunde;
 
@@ -231,10 +248,6 @@ function gibFormularDaten($nCheckout = 0)
         $cKundenattribut_arr = $_SESSION['Kunde']->cKundenattribut_arr ?? [];
     }
 
-    if (isset($Kunde->dGeburtstag) && preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $Kunde->dGeburtstag)) {
-        list($jahr, $monat, $tag) = explode('-', $Kunde->dGeburtstag);
-        $Kunde->dGeburtstag       = $tag . '.' . $monat . '.' . $jahr;
-    }
     $herkunfte = Shop::Container()->getDB()->query(
         'SELECT * 
             FROM tkundenherkunft 
@@ -245,12 +258,17 @@ function gibFormularDaten($nCheckout = 0)
     Shop::Smarty()->assign('herkunfte', $herkunfte)
         ->assign('Kunde', $Kunde)
         ->assign('cKundenattribut_arr', $cKundenattribut_arr)
-        ->assign('laender', gibBelieferbareLaender(Session::CustomerGroup()->getID()))
-        ->assign('warning_passwortlaenge',
-            lang_passwortlaenge(Shop::getSettingValue(CONF_KUNDEN, 'kundenregistrierung_passwortlaenge')))
+        ->assign(
+            'laender',
+            ShippingMethod::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID(), false, true)
+        )
+        ->assign(
+            'warning_passwortlaenge',
+            lang_passwortlaenge(Shop::getSettingValue(CONF_KUNDEN, 'kundenregistrierung_passwortlaenge'))
+        )
         ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder());
 
-    if ((int)$nCheckout === 1) {
+    if ($nCheckout === 1) {
         Shop::Smarty()->assign('checkout', 1)
             ->assign('bestellschritt', [1 => 1, 2 => 3, 3 => 3, 4 => 3, 5 => 3]); // Rechnungsadresse ändern
     }
@@ -264,11 +282,6 @@ function gibKunde()
     global $Kunde, $titel;
 
     $Kunde = $_SESSION['Kunde'];
-
-    if (preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $Kunde->dGeburtstag)) {
-        list($jahr, $monat, $tag) = explode('-', $Kunde->dGeburtstag);
-        $Kunde->dGeburtstag       = $tag . '.' . $monat . '.' . $jahr;
-    }
     $titel = Shop::Lang()->get('editData', 'login');
 }
 

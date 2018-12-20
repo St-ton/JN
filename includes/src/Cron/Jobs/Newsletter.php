@@ -60,12 +60,7 @@ class Newsletter extends Job
         $products   = [];
         $categories = [];
         foreach ($customerGroups as $groupID) {
-            $products[$groupID]   = \gibArtikelObjekte(
-                $productIDs,
-                $campaign,
-                $groupID,
-                (int)$oNewsletter->kSprache
-            );
+            $products[$groupID]   = \gibArtikelObjekte($productIDs, $campaign, $groupID, (int)$oNewsletter->kSprache);
             $categories[$groupID] = \gibKategorieObjekte($categoryIDs, $campaign);
         }
         $cgSQL = 'AND (tkunde.kKundengruppe IN (' . \implode(',', $customerGroups) . ') ';

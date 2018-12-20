@@ -74,9 +74,9 @@ class QueueEntry
 
     /**
      * QueueEntry constructor.
-     * @param $data
+     * @param \stdClass $data
      */
-    public function __construct($data)
+    public function __construct(\stdClass $data)
     {
         $this->kJobQueue        = (int)$data->kJobQueue;
         $this->kCron            = (int)$data->kCron;

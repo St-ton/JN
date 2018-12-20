@@ -110,7 +110,7 @@ stages:
 
     if [[ ! -z "$running" ]]; then
       docker network disconnect mysql-php-network $CI_CONTAINER_NAME
-      docker stop CI_CONTAINER_NAME && docker rm -fv CI_CONTAINER_NAME
+      docker stop $CI_CONTAINER_NAME && docker rm -fv $CI_CONTAINER_NAME
     fi
   }
 

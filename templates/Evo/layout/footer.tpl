@@ -258,35 +258,6 @@
         </script>
     {/if}
 
-    {if !empty($Einstellungen.global.global_google_analytics_id)}
-        <script type="text/javascript">
-            function gaOptout() {
-              document.cookie = disableStr + '=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/';
-              window[disableStr] = true;
-            }
-
-            var gaProperty = '{$Einstellungen.global.global_google_analytics_id}',
-                disableStr = 'ga-disable-' + gaProperty;
-            if (document.cookie.indexOf(disableStr + '=true') > -1) {
-              window[disableStr] = true;
-            } else {
-                var _gaq = _gaq || [];
-                _gaq.push(['_setAccount', '{$Einstellungen.global.global_google_analytics_id}']);
-                _gaq.push(['_gat._anonymizeIp']);
-                _gaq.push(['_trackPageview']);
-                (function () {ldelim}
-                    var ga = document.createElement('script'),
-                        s;
-                    ga.type = 'text/javascript';
-                    ga.async = true;
-                    ga.src = ('https:' === document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-                    s = document.getElementsByTagName('script')[0];
-                    s.parentNode.insertBefore(ga, s);
-                {rdelim})();
-            }
-        </script>
-    {/if}
-
     <script>
         jtl.load({strip}[
             {* evo js *}

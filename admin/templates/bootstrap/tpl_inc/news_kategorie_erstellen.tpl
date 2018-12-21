@@ -35,7 +35,7 @@
     {/literal}
 </script>
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#newsCat#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('newsCat')}
 <div id="content">
     <form name="news" method="post" action="news.php" enctype="multipart/form-data">
         {$jtl_token}
@@ -52,13 +52,13 @@
         <div class="settings">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{if $oNewsKategorie->getID() > 0}{#newsCatNew#} (ID {$oNewsKategorie->getID()}){else}{#newsCatAdd#}{/if}</h3>
+                    <h3 class="panel-title">{if $oNewsKategorie->getID() > 0}{__('newsCatNew')} (ID {$oNewsKategorie->getID()}){else}{__('newsCatAdd')}{/if}</h3>
                 </div>
                 <div class="table-responsive">
                     <div class="panel-body" id="formtable">
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="kParent">{#newsCatParent#}</label>
+                                <label for="kParent">{__('newsCatParent')}</label>
                             </span>
                             <select class="form-control" id="kParent" name="kParent">
                                 <option value="0"> - Hauptkategorie - </option>
@@ -72,26 +72,26 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="nSort">{#newsCatSort#}</label>
+                                <label for="nSort">{__('newsCatSort')}</label>
                             </span>
                             <input class="form-control{if !empty($cPlausiValue_arr.nSort)} error{/if}" id="nSort" name="nSort" type="text" value="{$oNewsKategorie->getSort()}" />
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="nAktiv">{#newsActive#}</label>
+                                <label for="nAktiv">{__('newsActive')}</label>
                             </span>
                             <select class="form-control" id="nAktiv" name="nAktiv">
                                 <option value="1"{if $oNewsKategorie->getIsActive() === true} selected{/if}>
-                                    {#yes#}
+                                    {__('yes')}
                                 </option>
                                 <option value="0"{if $oNewsKategorie->getIsActive() === false} selected{/if}>
-                                    {#no#}
+                                    {__('no')}
                                 </option>
                             </select>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="previewImage">{#newsPreview#}</label>
+                                <label for="previewImage">{__('newsPreview')}</label>
                             </span>
                             <div class="input-group-wrap">
                                 {if !empty($oNewsKategorie->getPreviewImage())}
@@ -104,7 +104,7 @@
                         {if isset($oDatei_arr) && $oDatei_arr|@count > 0}
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label>{#newsPics#}</label>
+                                    <label>{__('newsPics')}</label>
                                 </span>
                                 <div>
                                     {foreach $oDatei_arr as $oDatei}
@@ -114,7 +114,7 @@
                                             <div class="input-group">
                                                 <input class="form-control" type="text" disabled="disabled" value="$#{$oDatei->cName}#$">
                                                 <div class="input-group-addon">
-                                                    <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&delpic={$oDatei->cName}&token={$smarty.session.jtl_token}" title="{#delete#}"><i class="fa fa-trash"></i></a>
+                                                    <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&delpic={$oDatei->cName}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fa fa-trash"></i></a>
                                                 </div>
                                             </div>
                                         </div>
@@ -150,31 +150,31 @@
                             <div class="panel-body" id="formtable">
                                 <div class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cName_{$cISO}">{#newsCatName#}</label>
+                                        <label for="cName_{$cISO}">{__('newsCatName')}</label>
                                     </span>
-                                    <input class="form-control{if !empty($cPlausiValue_arr.cName)} error{/if}" id="cName_{$cISO}" name="cName_{$cISO}" type="text" value="{if $oNewsKategorie->getName($langID) !== ''}{$oNewsKategorie->getName($langID)}{/if}" />{if isset($cPlausiValue_arr.cName) && $cPlausiValue_arr.cName == 2} {#newsAlreadyExists#}{/if}
+                                    <input class="form-control{if !empty($cPlausiValue_arr.cName)} error{/if}" id="cName_{$cISO}" name="cName_{$cISO}" type="text" value="{if $oNewsKategorie->getName($langID) !== ''}{$oNewsKategorie->getName($langID)}{/if}" />{if isset($cPlausiValue_arr.cName) && $cPlausiValue_arr.cName == 2} {__('newsAlreadyExists')}{/if}
                                 </div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cSeo_{$cISO}">{#newsSeo#}</label>
+                                        <label for="cSeo_{$cISO}">{__('newsSeo')}</label>
                                     </span>
                                     <input class="form-control{if !empty($cPlausiValue_arr.cSeo)} error{/if}" id="cSeo_{$cISO}" name="cSeo_{$cISO}" type="text" value="{if $oNewsKategorie->getSEO($langID) !== ''}{$oNewsKategorie->getSEO($langID)}{/if}" />
                                 </div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cMetaTitle_{$cISO}">{#newsMetaTitle#}</label>
+                                        <label for="cMetaTitle_{$cISO}">{__('newsMetaTitle')}</label>
                                     </span>
                                     <input class="form-control{if !empty($cPlausiValue_arr.cMetaTitle)} error{/if}" id="cMetaTitle_{$cISO}" name="cMetaTitle_{$cISO}" type="text" value="{$oNewsKategorie->getMetaTitle($langID)}" />
                                 </div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cMetaDescription_{$cISO}">{#newsMetaDescription#}</label>
+                                        <label for="cMetaDescription_{$cISO}">{__('newsMetaDescription')}</label>
                                     </span>
                                     <input class="form-control{if !empty($cPlausiValue_arr.cMetaDescription)} error{/if}" id="cMetaDescription_{$cISO}" name="cMetaDescription_{$cISO}" type="text" value="{$oNewsKategorie->getMetaDescription($langID)}" />
                                 </div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cBeschreibung_{$cISO}">{#newsCatDesc#}</label>
+                                        <label for="cBeschreibung_{$cISO}">{__('newsCatDesc')}</label>
                                     </span>
                                     <textarea id="cBeschreibung_{$cISO}" class="ckeditor" name="cBeschreibung_{$cISO}" rows="15" cols="60">{$oNewsKategorie->getDescription($langID)}</textarea>
                                 </div>
@@ -182,7 +182,7 @@
                         </div>
                         <div class="panel-footer">
                             <span class="btn-group">
-                                <button name="speichern" type="button" value="{#newsSave#}" onclick="document.news.submit();" class="btn btn-primary"><i class="fa fa-save"></i> {#newsSave#}</button>
+                                <button name="speichern" type="button" value="{__('newsSave')}" onclick="document.news.submit();" class="btn btn-primary"><i class="fa fa-save"></i> {__('newsSave')}</button>
                                 <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> Abbrechen</a>
                             </span>
                         </div>

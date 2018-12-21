@@ -1,7 +1,7 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#taggingdetail# cBeschreibung=#taggingdetailDesc#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('taggingdetail') cBeschreibung=__('taggingdetailDesc')}
 <div id="content">
     {if !empty($cTagName)}
-        <p>{#taggingdetailTag#} <strong>{$cTagName}</strong></p>
+        <p>{__('taggingdetailTag')} <strong>{$cTagName}</strong></p>
     {else}
         <p class="alert alert-info">Keine Daten vorhanden.</p>
     {/if}
@@ -19,7 +19,7 @@
                     <table class="table table-striped">
                         <tr>
                             <th class="check">&nbsp;</th>
-                            <th class="th-2">{#taggingProduct#}</th>
+                            <th class="th-2">{__('taggingProduct')}</th>
                         </tr>
                         {foreach name=tagdetail from=$oTagArtikel_arr item=oTagArtikel}
                             <tr>
@@ -33,13 +33,13 @@
                             <td class="check">
                                 <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
                             </td>
-                            <td colspan="5"><label for="ALLMSGS">{#taggingSelectAll#}</label></td>
+                            <td colspan="5"><label for="ALLMSGS">{__('taggingSelectAll')}</label></td>
                         </tr>
                     </table>
                 </div>
             </div>
             <p class="submit">
-                <button name="loeschen" type="submit" value="{#taggingdelete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#taggingdelete#}</button>
+                <button name="loeschen" type="submit" value="{__('taggingdelete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('taggingdelete')}</button>
             </p>
         </form>
     {/if}

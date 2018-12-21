@@ -1,0 +1,147 @@
+msgid "cache"
+msgstr "Cache"
+
+msgid "objectcache"
+msgstr "Object Cache"
+
+msgid "objectcacheDesc"
+msgstr "Der Object Cache puffert Daten, sodass sie schneller geladen werden"
+
+msgid "cacheURL"
+msgstr "https://jtl-url.de/lt1ec"
+
+msgid "cg_article_description"
+msgstr "Enthält Produktdaten"
+
+msgid "cg_category_description"
+msgstr "Enthält Kategoriedaten"
+
+msgid "cg_language_description"
+msgstr "Enthält Sprachvariablen und Übersetzungen"
+
+msgid "cg_template_description"
+msgstr "Enthält Templateeinstellungen"
+
+msgid "cg_option_description"
+msgstr "Enthält allgemeine Einstellungen"
+
+msgid "cg_plugin_description"
+msgstr "Enthält Plugindaten"
+
+msgid "cg_core_description"
+msgstr "Enthält JTL-eigene Daten"
+
+msgid "cg_object_description"
+msgstr "Enthält allgemeine Objekte"
+
+msgid "cg_box_description"
+msgstr "Enthält Boxen und deren Einstellungen"
+
+msgid "cg_news_description"
+msgstr "Enthält Newseinträge und -kategorien"
+
+msgid "cg_attribute_description"
+msgstr "Enthält Attributdaten"
+
+msgid "cg_manufacturer_description"
+msgstr "Enthält Herstellerdaten"
+
+msgid "cg_filter_description"
+msgstr "Enthält Filterdaten"
+
+msgid "cg_article_nicename"
+msgstr "Artikel"
+
+msgid "cg_category_nicename"
+msgstr "Kategorien"
+
+msgid "cg_language_nicename"
+msgstr "Sprache"
+
+msgid "cg_template_nicename"
+msgstr "Template"
+
+msgid "cg_option_nicename"
+msgstr "Optionen"
+
+msgid "cg_plugin_nicename"
+msgstr "Plugins"
+
+msgid "cg_core_nicename"
+msgstr "Core"
+
+msgid "cg_object_nicename"
+msgstr "Objekte"
+
+msgid "cg_box_nicename"
+msgstr "Boxen"
+
+msgid "cg_news_nicename"
+msgstr "News"
+
+msgid "cg_attribute_nicename"
+msgstr "Attribute"
+
+msgid "cg_manufacturer_nicename"
+msgstr "Hersteller"
+
+msgid "cg_filter_nicename"
+msgstr "Produktfilter"
+
+msgid "entries"
+msgstr "Einträge"
+
+msgid "management"
+msgstr "Verwaltung"
+
+msgid "stats"
+msgstr "Statistik"
+
+msgid "benchmark"
+msgstr "Benchmark"
+
+msgid "status"
+msgstr "Status"
+
+msgid "type"
+msgstr "Typ"
+
+msgid "description"
+msgstr "Beschreibung"
+
+msgid "active"
+msgstr "aktiv"
+
+msgid "inactive"
+msgstr "inaktiv"
+
+msgid "activate"
+msgstr "aktivieren"
+
+msgid "deactivate"
+msgstr "deaktivieren"
+
+msgid "empty"
+msgstr "leeren"
+
+msgid "clearObjectCache"
+msgstr "Gesamten Objektcache leeren"
+
+msgid "clearPageCache"
+msgstr "Gesamten Seitencache leeren"
+
+msgid "clearTemplateCache"
+msgstr "Gesamten Templatecache leeren"
+
+msgid "config"
+msgstr "Konfiguration"
+
+msgid "startBenchmark"
+msgstr "Benchmark starten"
+
+msgid "showAdvanced"
+msgstr "Erweiterte Optionen anzeigen"
+
+msgid "configurationError"
+msgstr "(fehlerhaft konfiguriert)"
+

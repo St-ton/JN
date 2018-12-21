@@ -12,12 +12,14 @@ use DB\DbInterface;
 use DB\Services\GcServiceInterface;
 use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
+use L10n\GetText;
 use Monolog\Logger;
 use OPC\DB;
 use OPC\Locker;
 use OPC\PageDB;
 use OPC\PageService;
 use OPC\Service;
+use Services\JTL\AdminAccountService;
 use Services\JTL\BoxServiceInterface;
 use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
@@ -124,4 +126,14 @@ interface DefaultServicesInterface extends ContainerInterface
      * @return NewsServiceInterface
      */
     public function getNewsService() : NewsServiceInterface;
+
+    /**
+     * @return GetText
+     */
+    public function getGetText() : GetText;
+
+    /**
+     * @return \AdminAccount
+     */
+    public function getAdminAccount(): \AdminAccount;
 }

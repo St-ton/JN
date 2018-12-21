@@ -10,12 +10,14 @@ use Boxes\FactoryInterface;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
+use L10n\GetText;
 use Monolog\Logger;
 use OPC\DB;
 use OPC\Locker;
 use OPC\PageDB;
 use OPC\PageService;
 use OPC\Service;
+use Services\JTL\AdminAccountService;
 use Services\JTL\BoxServiceInterface;
 use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
@@ -168,5 +170,21 @@ class Container extends ContainerBase implements DefaultServicesInterface
     public function getNewsService(): NewsServiceInterface
     {
         return $this->get(NewsServiceInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getGetText(): GetText
+    {
+        return $this->get(GetText::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAdminAccount(): \AdminAccount
+    {
+        return $this->get(\AdminAccount::class);
     }
 }

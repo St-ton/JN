@@ -55,7 +55,7 @@
             {/foreach}
         </div>
         <div class="panel-footer">
-            <button name="speichern" type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {if !empty($buttonCaption)}{$buttonCaption}{else}{#save#}{/if}</button>
+            <button name="speichern" type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {if !empty($buttonCaption)}{$buttonCaption}{else}{__('save')}{/if}</button>
         </div>
     </div>
 </form>

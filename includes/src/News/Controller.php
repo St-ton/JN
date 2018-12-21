@@ -8,6 +8,7 @@ namespace News;
 
 use DB\DbInterface;
 use DB\ReturnType;
+use Helpers\URL;
 use Pagination\Pagination;
 use Session\Session;
 use Smarty\JTLSmarty;
@@ -151,10 +152,10 @@ class Controller
     {
         $newsCategories = $this->getNewsCategories($newsItem->getID());
         foreach ($newsCategories as $category) {
-            $category->cURL     = \Helpers\URL::buildURL($category, \URLART_NEWSKATEGORIE);
-            $category->cURLFull = \Helpers\URL::buildURL($category, \URLART_NEWSKATEGORIE, true);
+            $category->cURL     = URL::buildURL($category, \URLART_NEWSKATEGORIE);
+            $category->cURLFull = URL::buildURL($category, \URLART_NEWSKATEGORIE, true);
         }
-        $comments            = $newsItem->getComments()->getItems();
+        $comments            = $newsItem->getComments()->filter(true);
         $itemsPerPageOptions = ($perPage = (int)$this->config['news']['news_kommentare_anzahlproseite']) > 0
             ? [$perPage, $perPage * 2, $perPage * 5]
             : [10, 20, 50];

@@ -6,6 +6,7 @@
 
 namespace L10n;
 
+use DB\DbInterface;
 use Gettext\Translations;
 use Gettext\Translator;
 use Plugin\AbstractExtension;
@@ -17,11 +18,6 @@ use Plugin\AbstractExtension;
 class GetText
 {
     /**
-     * @var null|self
-     */
-    private static $instance;
-
-    /**
      * @var null|string
      */
     private $langIso;
@@ -32,23 +28,19 @@ class GetText
     private $translator;
 
     /**
+     * @var array locale-path => true
+     */
+    private $loadedPoFiles = [];
+
+    /**
      * GetText constructor.
      */
-    private function __construct()
+    public function __construct()
     {
         $this->translator = new Translator();
         $this->translator->register();
-
-        $this->setLangIso(\Shop::getLanguageCode())
-             ->loadAdminLocale();
-    }
-
-    /**
-     * @return GetText
-     */
-    public static function getInstance(): self
-    {
-        return self::$instance ?? (self::$instance = new self());
+        $this->setLangIso($_SESSION['AdminAccount']->cISO ?? 'ger')
+             ->loadAdminLocale('base');
     }
 
     /**
@@ -89,10 +81,13 @@ class GetText
     public function addLocale(string $dir, string $domain): self
     {
         $path = $dir . 'locale/' . $this->langIso . '/' . $domain . '.mo';
-
+        if (\array_key_exists($path, $this->loadedPoFiles)) {
+            return $this;
+        }
         if (\file_exists($path)) {
             $translations = Translations::fromMoFile($path);
             $this->translator->loadTranslations($translations);
+            $this->loadedPoFiles[$path] = true;
         }
 
         return $this;
@@ -116,5 +111,88 @@ class GetText
         $this->translator->defaultDomain($domain);
 
         return $this;
+    }
+    /**
+     * @param bool $withGroups
+     * @param bool $withSections
+     */
+    public function loadConfigLocales(bool $withGroups = false, bool $withSections = false): void
+    {
+        $this->loadAdminLocale('configs/configs')
+             ->loadAdminLocale('configs/values')
+             ->loadAdminLocale('configs/groups');
+
+        if ($withGroups) {
+            $this->loadAdminLocale('configs/groups');
+        }
+
+        if ($withSections) {
+            $this->loadAdminLocale('configs/sections');
+        }
+    }
+
+    /**
+     * @param object $config
+     */
+    public function localizeConfig($config): void
+    {
+        if ($config->cConf === 'Y') {
+            $config->cName         = __($config->cWertName . '_name');
+            $config->cBeschreibung = __($config->cWertName . '_desc');
+
+            if ($config->cBeschreibung === $config->cWertName . '_desc') {
+                $config->cBeschreibung = '';
+            }
+        } elseif ($config->cConf === 'N') {
+            $config->cName = __('configgroup_' . $config->kEinstellungenConf);
+        }
+    }
+
+    /**
+     * @param object[] $configs
+     */
+    public function localizeConfigs(array $configs): void
+    {
+        foreach ($configs as $config) {
+            $this->localizeConfig($config);
+        }
+    }
+
+    /**
+     * @param object $config
+     * @param object $value
+     */
+    public function localizeConfigValue($config, $value): void
+    {
+        $value->cName = __($config->cWertName . '_value(' . $value->cWert . ')');
+    }
+
+    /**
+     * @param object $config
+     * @param object[] $values
+     */
+    public function localizeConfigValues($config, $values): void
+    {
+        foreach ($values as $value) {
+            $this->localizeConfigValue($config, $value);
+        }
+    }
+
+    /**
+     * @param object $section
+     */
+    public function localizeConfigSection($section): void
+    {
+        $section->cName = __('configsection_' . $section->kEinstellungenSektion);
+    }
+
+    /**
+     * @param object[] $sections
+     */
+    public function localizeConfigSections($sections): void
+    {
+        foreach ($sections as $section) {
+            $this->localizeConfigSection($section);
+        }
     }
 }

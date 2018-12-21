@@ -13,11 +13,8 @@ use Helpers\URL;
  */
 function getItems(bool $filesize = false)
 {
-    $smarty = \Smarty\JTLSmarty::getInstance(false, \Smarty\ContextType::BACKEND);
-    $smarty->configLoad('german.conf', 'bilderverwaltung');
-
     $item = (object) [
-        'name'  => $smarty->config_vars['typeProduct'],
+        'name'  => __('typeProduct'),
         'type'  => Image::TYPE_PRODUCT,
         'stats' => MediaImage::getStats(Image::TYPE_PRODUCT, $filesize)
     ];

@@ -13,6 +13,8 @@ use Helpers\Request;
  */
 function getAdminSectionSettings($configSectionID)
 {
+    \Shop::Container()->getGetText()->loadConfigLocales();
+
     $db = Shop::Container()->getDB();
     if (is_array($configSectionID)) {
         $confData = $db->query(
@@ -37,6 +39,9 @@ function getAdminSectionSettings($configSectionID)
         $conf->nSort                 = (int)$conf->nSort;
         $conf->nStandardAnzeigen     = (int)$conf->nStandardAnzeigen;
         $conf->nModul                = (int)$conf->nModul;
+
+        \Shop::Container()->getGetText()->localizeConfig($conf);
+
         if ($conf->cInputTyp === 'listbox') {
             $conf->ConfWerte = $db->selectAll(
                 'tkundengruppe',
@@ -60,7 +65,10 @@ function getAdminSectionSettings($configSectionID)
                 '*',
                 'nSort'
             );
+
+            \Shop::Container()->getGetText()->localizeConfigValues($conf, $conf->ConfWerte);
         }
+
         if ($conf->cInputTyp === 'listbox') {
             $oSetValue = $db->selectAll(
                 'teinstellungen',

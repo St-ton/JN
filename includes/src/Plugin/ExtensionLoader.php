@@ -8,6 +8,7 @@ namespace Plugin;
 
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
+use DB\NiceDB;
 use L10n\GetText;
 
 /**
@@ -75,7 +76,7 @@ class ExtensionLoader extends AbstractLoader
         $extension->setPriority((int)$obj->nPrio);
         $extension->setLicense($this->loadLicense($obj));
         $extension->setCache($this->loadCacheData($extension));
-        GetText::getInstance()->loadPluginLocale($obj->cPluginID, $extension);
+        \Shop::Container()->getGetText()->loadPluginLocale($obj->cPluginID, $extension);
         $extension->setConfig($this->loadConfig($paths->getAdminPath(), $extension->getID()));
         $extension->setLocalization($this->loadLocalization($id));
         $extension->setWidgets($this->loadWidgets($extension));

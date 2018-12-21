@@ -13,6 +13,8 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 $kSektion = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
 $bSuche   = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
 
+\Shop::Container()->getGetText()->loadConfigLocales(true, true);
+
 if ($bSuche) {
     $oAccount->permission('SETTINGS_SEARCH_VIEW', true, true);
 }
@@ -67,6 +69,8 @@ if ($kSektion > 0) {
     $section = Shop::Container()->getDB()->select('teinstellungensektion', 'kEinstellungenSektion', CONF_GLOBAL);
     $smarty->assign('kEinstellungenSektion', CONF_GLOBAL);
 }
+
+\Shop::Container()->getGetText()->localizeConfigSection($section);
 
 if ($bSuche) {
     $step = 'einstellungen bearbeiten';
@@ -178,6 +182,7 @@ if ($step === 'uebersicht') {
         );
 
         $sections[$i]->anz = $anz_einstellunen->anz;
+        \Shop::Container()->getGetText()->localizeConfigSection($sections[$i]);
     }
     $smarty->assign('Sektionen', $sections);
 }
@@ -214,6 +219,7 @@ if ($step === 'einstellungen bearbeiten') {
         $config->nSort                 = (int)$config->nSort;
         $config->nModul                = (int)$config->nModul;
         $oSection                      = SettingSection::getInstance((int)$config->kEinstellungenSektion);
+        \Shop::Container()->getGetText()->localizeConfig($config);
         //@ToDo: Setting 492 is the only one listbox at the moment.
         //But In special case of setting 492 values come from kKundengruppe instead of teinstellungenconfwerte
         if ($config->cInputTyp === 'listbox' && $config->kEinstellungenConf === 492) {
@@ -231,6 +237,8 @@ if ($step === 'einstellungen bearbeiten') {
                 '*',
                 'nSort'
             );
+
+            \Shop::Container()->getGetText()->localizeConfigValues($config, $config->ConfWerte);
         }
         if ($config->cInputTyp === 'listbox') {
             $setValue              = Shop::Container()->getDB()->selectAll(

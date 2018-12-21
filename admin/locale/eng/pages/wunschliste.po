@@ -1,0 +1,51 @@
+msgid "wishlistName"
+msgstr "Wunschzettel"
+
+msgid "wishlistURL"
+msgstr "https://jtl-url.de/rj0qk"
+
+msgid "wishlistReceiverCount"
+msgstr "Anzahl Empfänger"
+
+msgid "wishlistPosCount"
+msgstr "Anzahl Artikel"
+
+msgid "wishlistDate"
+msgstr "Datum"
+
+msgid "wishlistDesc"
+msgstr "Hier erhalten Sie einen Überblick über die Nutzung der Wunzettelfunktion. Einstellungen zur Wunschliste finden Sie unter Einstellungen -> Globale Einstellungen."
+
+msgid "wishlistSend"
+msgstr "An Freunde versendete Wunschzettel"
+
+msgid "wishlistTop100"
+msgstr "Wunschzettel mit mindestens einer Position"
+
+msgid "wishlistAccount"
+msgstr "Kunde"
+
+msgid "wishlistPosTop100"
+msgstr "Gewünschte Artikel"
+
+msgid "wishlistPosName"
+msgstr "Artikel"
+
+msgid "wishlistSettings"
+msgstr "Einstellungen"
+
+msgid "wishlisteSave"
+msgstr "Speichern"
+
+msgid "wishlistFrom"
+msgstr "von"
+
+msgid "wishlistPrevious"
+msgstr "Vorherige"
+
+msgid "wishlistNext"
+msgstr "Nächster"
+
+msgid "wishlistLastAdded"
+msgstr "Zuletzt hinzugefügt"
+

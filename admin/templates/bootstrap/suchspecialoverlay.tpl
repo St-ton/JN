@@ -1,7 +1,7 @@
 {config_load file="$lang.conf" section="suchspecialoverlay"}
 {include file='tpl_inc/header.tpl'}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#suchspecialoverlay# cBeschreibung=#suchspecialoverlayDesc# cDokuURL=#suchspecialoverlayUrl#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('suchspecialoverlay') cBeschreibung=__('suchspecialoverlayDesc') cDokuURL=__('suchspecialoverlayUrl')}
 <div id="content" class="container-fluid">
     <div class="block">
         {if isset($Sprachen) && $Sprachen|@count > 1}
@@ -10,10 +10,10 @@
                 <input type="hidden" name="sprachwechsel" value="1" />
                 <div class="input-group p25 left" style="margin-right: 20px;">
                     <span class="input-group-addon">
-                        <label for="{#changeLanguage#}">{#changeLanguage#}</label>
+                        <label for="{__('changeLanguage')}">{__('changeLanguage')}</label>
                     </span>
                     <span class="input-group-wrap last">
-                        <select id="{#changeLanguage#}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
+                        <select id="{__('changeLanguage')}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
                             {foreach name=sprachen from=$Sprachen item=sprache}
                                 <option value="{$sprache->kSprache}" {if $sprache->kSprache==$smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
                             {/foreach}
@@ -26,11 +26,11 @@
             {$jtl_token}
             <div class="p25 input-group">
                 <span class="input-group-addon">
-                    <label for="{#suchspecial#}">{#suchspecial#}</label>
+                    <label for="{__('suchspecial')}">{__('suchspecial')}</label>
                 </span>
                 <input type="hidden" name="suchspecialoverlay" value="1" />
                 <span class="input-group-wrap last">
-                    <select name="kSuchspecialOverlay" class="form-control selectBox" id="{#suchspecial#}" onchange="document.suchspecialoverlay.submit();">
+                    <select name="kSuchspecialOverlay" class="form-control selectBox" id="{__('suchspecial')}" onchange="document.suchspecialoverlay.submit();">
                         {foreach name=suchspecialoverlay from=$oSuchspecialOverlay_arr item=oSuchspecialOverlayTMP}
                             <option value="{$oSuchspecialOverlayTMP->kSuchspecialOverlay}" {if $oSuchspecialOverlayTMP->kSuchspecialOverlay == $oSuchspecialOverlay->kSuchspecialOverlay}selected{/if}>{$oSuchspecialOverlayTMP->cSuchspecial}</option>
                         {/foreach}
@@ -55,7 +55,7 @@
                         {/if}
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="nAktiv">{#suchspecialoverlayActive#}</label>
+                                <label for="nAktiv">{__('suchspecialoverlayActive')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select name="nAktiv" id="nAktiv" class="form-control combo">
@@ -66,24 +66,24 @@
                                 </select>
                             </span>
                             <span class="input-group-addon">
-                                {getHelpDesc cDesc=#suchspecialoverlayActiveDesc#}
+                                {getHelpDesc cDesc=__('suchspecialoverlayActiveDesc')}
                             </span>
                         </div>
 
                         <div class="input-group file-input">
                             <span class="input-group-addon">
-                                <label for="cSuchspecialOverlayBild">{#suchspecialoverlayFileName#}</label>
+                                <label for="cSuchspecialOverlayBild">{__('suchspecialoverlayFileName')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <input class="form-control" type="file" name="cSuchspecialOverlayBild" accept="image/jpeg,image/gif,image/png,image/bmp" id="cSuchspecialOverlayBild" value="" tabindex="1" />
                             </span>
                             <span class="input-group-addon">
-                                {getHelpDesc cDesc=#suchspecialoverlayFileNameDesc#}
+                                {getHelpDesc cDesc=__('suchspecialoverlayFileNameDesc')}
                             </span>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="nPrio">{#suchspecialoverlayPrio#}</label>
+                                <label for="nPrio">{__('suchspecialoverlayPrio')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select id="nPrio" name="nPrio" class="form-control combo">
@@ -94,12 +94,12 @@
                                 </select>
                             </span>
                             <span class="input-group-addon">
-                                {getHelpDesc cDesc=#suchspecialoverlayPrioDesc#}
+                                {getHelpDesc cDesc=__('suchspecialoverlayPrioDesc')}
                             </span>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="nTransparenz">{#suchspecialoverlayClarity#}</label>
+                                <label for="nTransparenz">{__('suchspecialoverlayClarity')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select name="nTransparenz" class="form-control combo" id="nTransparenz">
@@ -109,23 +109,23 @@
                                 </select>
                             </span>
                             <span class="input-group-addon">
-                                {getHelpDesc cDesc=#suchspecialoverlayClarityDesc#}
+                                {getHelpDesc cDesc=__('suchspecialoverlayClarityDesc')}
                             </span>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="nGroesse">{#suchspecialoverlaySize#}</label>
+                                <label for="nGroesse">{__('suchspecialoverlaySize')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <input id="nGroesse" class="form-control" name="nGroesse" type="number" value="{$oSuchspecialOverlay->nGroesse}" />
                             </span>
                             <span class="input-group-addon">
-                                {getHelpDesc cDesc=#suchspecialoverlaySizeDesc#}
+                                {getHelpDesc cDesc=__('suchspecialoverlaySizeDesc')}
                             </span>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="nPosition">{#suchspecialoverlayPosition#}</label>
+                                <label for="nPosition">{__('suchspecialoverlayPosition')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select name="nPosition" id="nPosition" class="combo form-control"{if !empty($isDeprecated)} disabled="disabled"{/if}>
@@ -159,12 +159,12 @@
                                 </select>
                             </span>
                             <span class="input-group-addon">
-                                {getHelpDesc cDesc=#suchspecialoverlayPositionDesc#}
+                                {getHelpDesc cDesc=__('suchspecialoverlayPositionDesc')}
                             </span>
                         </div>
                     </div>
                     <div class="panel-footer">
-                        <button type="submit" value="{#save#}" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
+                        <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </div>
             </div>

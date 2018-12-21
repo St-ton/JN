@@ -222,3 +222,6 @@ msgstr "Captcha neu laden"
 
 msgid "invalidToken"
 msgstr "Ungültiger Sicherheitscode übermittelt"
+
+msgid "allPages"
+msgstr "Alle Seiten"

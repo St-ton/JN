@@ -210,3 +210,6 @@ msgstr "Reload Captcha"
 
 msgid "invalidToken"
 msgstr "Invalid security token received"
+
+msgid "allPages"
+msgstr "All pages"

@@ -47,9 +47,10 @@ if (!function_exists('Shop')) {
         return Shop::getInstance();
     }
 }
-$DB      = new \DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
-$cache   = Shop::Container()->getCache()->setJtlCacheConfig();
-$session = \Session\AdminSession::getInstance();
+$DB       = new \DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
+$cache    = Shop::Container()->getCache()->setJtlCacheConfig();
+$session  = \Session\AdminSession::getInstance();
+$oAccount = Shop::Container()->getAdminAccount();
 
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
 

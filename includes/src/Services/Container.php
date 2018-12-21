@@ -17,6 +17,7 @@ use OPC\Locker;
 use OPC\PageDB;
 use OPC\PageService;
 use OPC\Service;
+use Services\JTL\AdminAccountService;
 use Services\JTL\BoxServiceInterface;
 use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
@@ -177,5 +178,13 @@ class Container extends ContainerBase implements DefaultServicesInterface
     public function getGetText(): GetText
     {
         return $this->get(GetText::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAdminAccount(): \AdminAccount
+    {
+        return $this->get(\AdminAccount::class);
     }
 }

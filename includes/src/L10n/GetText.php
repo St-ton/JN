@@ -34,22 +34,12 @@ class GetText
 
     /**
      * GetText constructor.
-     * @param DbInterface $shopDB
      */
     public function __construct()
     {
         $this->translator = new Translator();
         $this->translator->register();
-
-        if (!isset($_SESSION['AdminAccount'])) {
-            $_SESSION['AdminAccount'] = new \stdClass();
-        }
-
-        if (empty($_SESSION['AdminAccount']->kSprache)) {
-            $_SESSION['AdminAccount']->kSprache = \Shop::getLanguage();
-        }
-
-        $this->setLangIso(\Shop::Lang()->getIsoFromLangID($_SESSION['AdminAccount']->kSprache)->cISO)
+        $this->setLangIso($_SESSION['AdminAccount']->cISO ?? 'ger')
              ->loadAdminLocale('base');
     }
 
@@ -91,12 +81,10 @@ class GetText
     public function addLocale(string $dir, string $domain): self
     {
         $path = $dir . 'locale/' . $this->langIso . '/' . $domain . '.mo';
-
-        if (array_key_exists($path, $this->loadedPoFiles)) {
+        if (\array_key_exists($path, $this->loadedPoFiles)) {
             return $this;
         }
-
-        if (file_exists($path)) {
+        if (\file_exists($path)) {
             $translations = Translations::fromMoFile($path);
             $this->translator->loadTranslations($translations);
             $this->loadedPoFiles[$path] = true;
@@ -128,7 +116,7 @@ class GetText
      * @param bool $withGroups
      * @param bool $withSections
      */
-    public function loadConfigLocales(bool $withGroups = false, bool $withSections = false)
+    public function loadConfigLocales(bool $withGroups = false, bool $withSections = false): void
     {
         $this->loadAdminLocale('configs/configs')
              ->loadAdminLocale('configs/values')
@@ -146,7 +134,7 @@ class GetText
     /**
      * @param object $config
      */
-    public function localizeConfig($config)
+    public function localizeConfig($config): void
     {
         if ($config->cConf === 'Y') {
             $config->cName         = __($config->cWertName . '_name');
@@ -163,7 +151,7 @@ class GetText
     /**
      * @param object[] $configs
      */
-    public function localizeConfigs(array $configs)
+    public function localizeConfigs(array $configs): void
     {
         foreach ($configs as $config) {
             $this->localizeConfig($config);
@@ -174,7 +162,7 @@ class GetText
      * @param object $config
      * @param object $value
      */
-    public function localizeConfigValue($config, $value)
+    public function localizeConfigValue($config, $value): void
     {
         $value->cName = __($config->cWertName . '_value(' . $value->cWert . ')');
     }
@@ -183,7 +171,7 @@ class GetText
      * @param object $config
      * @param object[] $values
      */
-    public function localizeConfigValues($config, $values)
+    public function localizeConfigValues($config, $values): void
     {
         foreach ($values as $value) {
             $this->localizeConfigValue($config, $value);
@@ -193,7 +181,7 @@ class GetText
     /**
      * @param object $section
      */
-    public function localizeConfigSection($section)
+    public function localizeConfigSection($section): void
     {
         $section->cName = __('configsection_' . $section->kEinstellungenSektion);
     }
@@ -201,7 +189,7 @@ class GetText
     /**
      * @param object[] $sections
      */
-    public function localizeConfigSections($sections)
+    public function localizeConfigSections($sections): void
     {
         foreach ($sections as $section) {
             $this->localizeConfigSection($section);

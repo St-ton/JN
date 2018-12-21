@@ -1,0 +1,8 @@
+msgid "systemcheck"
+msgstr "Systemcheck"
+
+msgid "systemcheckURL"
+msgstr "https://jtl-url.de/njc39"
+
+msgid "systemcheckDesc"
+msgstr "Überprüft relevante serverseitige Einstellungen"

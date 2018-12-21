@@ -8,12 +8,14 @@ build_create()
     export APPLICATION_VERSION=$2;
     # $3 last commit sha
     local APPLICATION_BUILD_SHA=$3;
-    # $4 database user
-    export DB_USER=$4;
-    # $5 database password
-    export DB_PASSWORD=$5;
-    # $6 database name
-    export DB_NAME=$6;
+    # $4 database host
+    export DB_HOST=$4;
+    # $5 database user
+    export DB_USER=$5;
+    # $6 database password
+    export DB_PASSWORD=$6;
+    # $7 database name
+    export DB_NAME=$7;
 
     local SCRIPT_DIR="${REPOSITORY_DIR}/build/scripts";
     local VERSION_REGEX="v?([0-9]{1,})\\.([0-9]{1,})\\.([0-9]{1,})(-(alpha|beta|rc)(\\.([0-9]{1,}))?)?";
@@ -28,10 +30,10 @@ build_create()
 
     if [[ "$APPLICATION_VERSION"  == "master" ]]; then
         if [[ ! -z "${NEW_VERSION}" ]]; then
-            APPLICATION_VERSION_STR=${NEW_VERSION};
+            export APPLICATION_VERSION_STR=${NEW_VERSION};
         fi
     else
-        APPLICATION_VERSION_STR=${APPLICATION_VERSION};
+        export APPLICATION_VERSION_STR=${APPLICATION_VERSION};
     fi
 
     echo "Executing composer";
@@ -53,7 +55,7 @@ build_create()
     build_create_shop_installer;
 
     echo "Creating md5 hashfile";
-    build_create_md5_hashfile ${APPLICATION_VERSION_STR};
+    build_create_md5_hashfile;
 
     echo "Importing initial schema";
     build_import_initial_schema;
@@ -141,13 +143,13 @@ build_create_shop_installer() {
 
 build_create_md5_hashfile()
 {
-    local VERSION="${1//[\/\.]/-}";
+    local VERSION="${APPLICATION_VERSION_STR//[\/\.]/-}";
     local VERSION="${VERSION//[v]/}";
     local CUR_PWD=$(pwd);
     local MD5_HASH_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/${VERSION}.csv";
 
     cd ${REPOSITORY_DIR};
-    find -type f ! \( -name ".git*" -o -name ".idea*" -o -name ".htaccess" -o -name ".php_cs" -o -name "config.JTL-Shop.ini.initial.php" -o -name "robots.txt" -o -name "rss.xml" -o -name "shopinfo.xml" -o -name "sitemap_index.xml" -o -name "*.md" \) -printf "'%P'\n" | grep -vE "admin/gfx/|admin/includes/emailpdfs/|admin/includes/shopmd5files/|admin/templates_c/|bilder/|build/|docs/|downloads/|export/|gfx/|includes/plugins/|includes/vendor/|install/|jtllogs/|mediafiles/|templates_c/|tests/|uploads/" | xargs md5sum | awk '{ print $1";"$2; }' | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
+    find -type f ! \( -name ".asset_cs" -or -name ".git*" -or -name ".idea*" -or -name ".htaccess" -or -name ".php_cs" -or -name ".travis.yml" -or -name "composer.lock" -or -name "config.JTL-Shop.ini.initial.php" -or -name "phpunit.xml" -or -name "robots.txt" -or -name "rss.xml" -or -name "shopinfo.xml" -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" | grep -vE ".git/|admin/gfx/|admin/includes/emailpdfs/|admin/includes/shopmd5files/|admin/templates_c/|bilder/|build/|docs/|downloads/|export/|gfx/|includes/plugins/|includes/vendor/|install/|jtllogs/|mediafiles/|templates_c/|tests/|uploads/" | xargs md5sum | awk '{ print $1";"$2; }' | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
     cd ${CUR_PWD};
 
     echo "  File checksums admin/includes/shopmd5files/${VERSION}.csv";
@@ -157,21 +159,21 @@ build_import_initial_schema()
 {
     local INITIALSCHEMA=${REPOSITORY_DIR}/install/initial_schema.sql
 
-    mysql -u${DB_USER} -p${DB_PASSWORD} -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}" || $(echo "failed to create database" && exit 1);
+    mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}";
 
     while read -r table;
     do
-        mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "DROP TABLE IF EXISTS ${table}" || $(echo "failed to delete table ${table}" && exit 1);
-    done< <(mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | sed 1d);
+        mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "DROP TABLE IF EXISTS ${table}";
+    done< <(mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | sed 1d);
 
-    mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} < ${INITIALSCHEMA} || $(echo "failed to import initial schema to database" && exit 1);
+    mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} < ${INITIALSCHEMA};
 }
 
 build_create_config_file()
 {
     echo "<?php define('PFAD_ROOT', '${REPOSITORY_DIR}/'); \
         define('URL_SHOP', 'http://build'); \
-        define('DB_HOST', 'localhost'); \
+        define('DB_HOST', '${DB_HOST}'); \
         define('DB_USER', '${DB_USER}'); \
         define('DB_PASS', '${DB_PASSWORD}'); \
         define('DB_NAME', '${DB_NAME}'); \
@@ -194,29 +196,26 @@ build_migrate()
         }
     ";
 
-    echo 'TRUNCATE tmigration' | mysql -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
-    echo 'TRUNCATE tmigrationlog' | mysql -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
-    echo 'TRUNCATE tversion' | mysql -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
-
-    echo "INSERT INTO tversion (nVersion, nZeileVon, nZeileBis, nInArbeit, nFehler, nTyp, cFehlerSQL, dAktualisiert) VALUES ('${APPLICATION_VERSION}', 1, 0, 0, 0, 0, '', NOW())" | mysql -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
+    echo 'TRUNCATE tversion' | mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
+    echo "INSERT INTO tversion (nVersion, nZeileVon, nZeileBis, nInArbeit, nFehler, nTyp, cFehlerSQL, dAktualisiert) VALUES ('${APPLICATION_VERSION_STR}', 1, 0, 0, 0, 0, '', NOW())" | mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
 }
 
 build_create_db_struct()
 {
     local i=0;
     local DB_STRUCTURE='{';
-    local TABLE_COUNT=$(mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | wc -l)-1;
+    local TABLE_COUNT=$(($(mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | wc -l)-1));
     local SCHEMAJSON_PATH=${REPOSITORY_DIR}/admin/includes/shopmd5files/dbstruct_${APPLICATION_VERSION_STR}.json;
 
     while ((i++)); read -r table;
     do
         DB_STRUCTURE+='"'${table}'":[';
         local j=0;
-        local COLUMN_COUNT=$(mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show keys from ${table};" | wc -l)-1;
+        local COLUMN_COUNT=$(($(mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "SHOW COLUMNS FROM ${table};" | wc -l)-1));
 
         while ((j++)); read -r column;
         do
-            local value=$(echo "${column}" | awk -F'\t' '{print $5}');
+            local value=$(echo "${column}" | awk -F'\t' '{print $1}');
             DB_STRUCTURE+='"'${value}'"';
 
             if [[ ${j} -lt ${COLUMN_COUNT} ]]; then
@@ -224,14 +223,14 @@ build_create_db_struct()
             else
                 DB_STRUCTURE+=']';
             fi
-        done< <(mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show keys from ${table};" | sed 1d);
+        done< <(mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "SHOW COLUMNS FROM ${table};" | sed 1d);
 
         if [[ ${i} -lt ${TABLE_COUNT} ]]; then
             DB_STRUCTURE+=',';
         else
             DB_STRUCTURE+='}';
         fi
-    done< <(mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | sed 1d);
+    done< <(mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | sed 1d);
 
     echo "${DB_STRUCTURE}" > ${SCHEMAJSON_PATH};
 }
@@ -239,7 +238,7 @@ build_create_db_struct()
 build_create_initial_schema()
 {
     local INITIAL_SCHEMA_PATH=${REPOSITORY_DIR}/install/initial_schema.sql;
-    local MYSQL_CONN="-u${DB_USER} -p${DB_PASSWORD}";
+    local MYSQL_CONN="-h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD}";
     local ORDER_BY="table_name ASC";
     local SQL="SET group_concat_max_len = 1048576;";
           SQL="${SQL} SELECT GROUP_CONCAT(table_name ORDER BY ${ORDER_BY} SEPARATOR ' ')";
@@ -247,14 +246,14 @@ build_create_initial_schema()
           SQL="${SQL} WHERE table_schema='${DB_NAME}'";
     local TABLES=$(mysql ${MYSQL_CONN} -ANe"${SQL}");
 
-    mysqldump -u${DB_USER} -p${DB_PASSWORD} --default-character-set=utf8 --skip-comments=true --skip-dump-date=true \
+    mysqldump -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} --default-character-set=utf8 --skip-comments=true --skip-dump-date=true \
         --add-locks=false --add-drop-table=false --no-autocommit=false ${DB_NAME} ${TABLES} > ${INITIAL_SCHEMA_PATH};
 }
 
 build_clean_up()
 {
     #Delete created database
-    mysql -u${DB_USER} -p${DB_PASSWORD} -e "DROP DATABASE IF EXISTS ${DB_NAME}";
+    mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} -e "DROP DATABASE IF EXISTS ${DB_NAME}";
     #Delete created config file
     rm ${REPOSITORY_DIR}/includes/config.JTL-Shop.ini.php;
 }
@@ -312,8 +311,15 @@ build_add_files_to_patch_dir()
         if [[ ! -z "${rename_path}" ]]; then
             path=${rename_path};
         fi
-        rsync -R ${path} ${PATCH_DIR};
+        if [[ -f ${path} ]]; then
+            rsync -R ${path} ${PATCH_DIR};
+        fi
     done< <(git diff --name-status --diff-filter=d ${PATCH_VERSION} ${APPLICATION_VERSION});
+
+    # Rsync shopmd5files
+    rsync -R admin/includes/shopmd5files/dbstruct_${APPLICATION_VERSION_STR}.json ${PATCH_DIR};
+    rsync -R admin/includes/shopmd5files/${APPLICATION_VERSION_STR}.csv ${PATCH_DIR};
+    rsync -R includes/defines_inc.php ${PATCH_DIR};
 
     if [[ -f "${PATCH_DIR}/includes/composer.json" ]]; then
         mkdir /tmp_composer;

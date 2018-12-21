@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+use Helpers\Request;
+
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('DISPLAY_OWN_LOGO_VIEW', true, true);
 /** @global Smarty\JTLSmarty $smarty */
@@ -30,14 +34,14 @@ $cHinweis = '';
 $cFehler  = '';
 $step     = 'shoplogouploader_uebersicht';
 // Upload
-if (!empty($_FILES) && FormHelper::validateToken()) {
+if (!empty($_FILES) && Form::validateToken()) {
     $status           = saveShopLogo($_FILES);
     $response         = new stdClass();
     $response->status = ($status === 1) ? 'OK' : 'FAILED';
     echo json_encode($response);
     die();
 }
-if (RequestHelper::verifyGPCDataInt('upload') === 1 && FormHelper::validateToken()) {
+if (Request::verifyGPCDataInt('upload') === 1 && Form::validateToken()) {
     if (isset($_POST['delete'])) {
         $delete = deleteShopLogo(Shop::getLogo());
         if ($delete === true) {

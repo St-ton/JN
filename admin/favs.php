@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Form;
+use Helpers\Request;
+
 /**
  * @global Smarty\JTLSmarty $smarty
  * @global AdminAccount $oAccount
@@ -14,8 +17,8 @@ $oAccount->redirectOnFailure();
 
 $kAdminlogin = (int)$_SESSION['AdminAccount']->kAdminlogin;
 if (isset($_POST['title'], $_POST['url'])
-    && FormHelper::validateToken()
-    && RequestHelper::verifyGPDataString('action') === 'save'
+    && Form::validateToken()
+    && Request::verifyGPDataString('action') === 'save'
 ) {
     $titles = $_POST['title'];
     $urls   = $_POST['url'];

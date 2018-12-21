@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#emailTemplates#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('emailTemplates')}
 <div id="content" class="container-fluid">
     <form method="post" action="emailvorlagen.php">
         {$jtl_token}
@@ -14,8 +14,8 @@
             <p>Wollen Sie die Emailvorlage "<b>{$oEmailvorlage->cName}</b>" wirklich zur&uuml;cksetzen?</p>
         </div>
         <div class="btn-group">
-            <button name="resetConfirmJaSubmit" type="submit" value="{#resetEmailvorlageYes#}" class="btn btn-danger"><i class="fa fa-check"></i> {#resetEmailvorlageYes#}</button>
-            <button name="resetConfirmNeinSubmit" type="submit" value="{#resetEmailvorlageNo#}" class="btn btn-info"><i class="fa fa-close"></i> {#resetEmailvorlageNo#}</button>
+            <button name="resetConfirmJaSubmit" type="submit" value="{__('resetEmailvorlageYes')}" class="btn btn-danger"><i class="fa fa-check"></i> {__('resetEmailvorlageYes')}</button>
+            <button name="resetConfirmNeinSubmit" type="submit" value="{__('resetEmailvorlageNo')}" class="btn btn-info"><i class="fa fa-close"></i> {__('resetEmailvorlageNo')}</button>
         </div>
     </form>
 </div>

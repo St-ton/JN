@@ -18,7 +18,7 @@ final class GroupedSchemaRenderer extends AbstractSchemaRenderer
      */
     public function buildIndex(array $sitemapFiles): string
     {
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+        $xml  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         $xml .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
         foreach ($sitemapFiles as $url) {
             $xml .= "<sitemap>\n<loc>" . $url . "</loc>\n";
@@ -36,7 +36,7 @@ final class GroupedSchemaRenderer extends AbstractSchemaRenderer
      */
     public function buildHeader(): string
     {
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+        $xml  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"';
         if ($this->config['sitemap']['sitemap_googleimage_anzeigen'] === 'Y') {
             $xml .= ' xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"';

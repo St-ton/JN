@@ -7,8 +7,8 @@
 namespace Boxes\Items;
 
 /**
- * Class CompareList
- * @package Boxes
+ * Class Plain
+ * @package Boxes\Items
  */
 final class Plain extends AbstractBox
 {

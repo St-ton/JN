@@ -265,6 +265,8 @@ define('PFAD_PLUGIN_PORTLETS', 'portlets/');
 define('PFAD_PLUGIN_BLUEPRINTS', 'blueprints/');
 define('PFAD_PLUGIN_EXPORTFORMAT', 'exportformat/');
 define('PFAD_PLUGIN_UNINSTALL', 'uninstall/');
+define('PFAD_PLUGIN_MIGRATIONS', 'migrations/');
+define('PFAD_EXTENSIONS', 'extensions/');
 define('PLUGIN_INFO_FILE', 'info.xml');
 define('PLUGIN_LICENCE_METHODE', 'checkLicence');
 define('PLUGIN_LICENCE_CLASS', 'PluginLicence');

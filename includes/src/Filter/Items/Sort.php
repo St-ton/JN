@@ -128,8 +128,7 @@ class Sort extends AbstractFilter
         if ($this->factory === null) {
             throw new \LogicException('Factory has to be set first.');
         }
-        $sortingOptions = $this->factory->getAll();
-        $this->sortingOptions = $sortingOptions->sortByDesc(function (SortingOptionInterface $i) {
+        $this->sortingOptions = $this->factory->getAll()->sortByDesc(function (SortingOptionInterface $i) {
             return $i->getPriority();
         });
     }

@@ -6,6 +6,8 @@
  * @since 5.0
  */
 
+use Helpers\GeneralObject;
+
 /**
  * Class CustomerFields
  */
@@ -19,7 +21,7 @@ class CustomerFields
     /**
      * @var object[]
      */
-    protected $customerFields;
+    protected $customerFields = [];
 
     /**
      * @var int
@@ -37,10 +39,10 @@ class CustomerFields
     }
 
     /**
-     * @param null|int $langID
-     * @return static
+     * @param null $langID
+     * @return CustomerFields
      */
-    public static function getInstance($langID = null)
+    public static function getInstance($langID = null): self
     {
         if ($langID === null || (int)$langID === 0) {
             $langID = (int)$_SESSION['kSprache'];
@@ -58,7 +60,7 @@ class CustomerFields
     /**
      * @param int $langID
      */
-    protected function loadFields(int $langID)
+    protected function loadFields(int $langID): void
     {
         $this->customerFields = [];
         $customerFields       = Shop::Container()->getDB()->selectAll(
@@ -93,9 +95,9 @@ class CustomerFields
     /**
      * @return object[]
      */
-    public function getCustomerFields()
+    public function getCustomerFields(): array
     {
-        return ObjectHelper::deepCopy($this->customerFields);
+        return GeneralObject::deepCopy($this->customerFields);
     }
 
     /**
@@ -182,12 +184,12 @@ class CustomerFields
                                 AND tkundenfeldwert.cWert = tkundenattribut.cWert
                         )",
             ['kKundenfeld' => $kCustomerField],
-            \DB\ReturnType::AFFECTED_ROWS
+            \DB\ReturnType::DEFAULT
         );
     }
 
     /**
-     * @param object $customerField
+     * @param object     $customerField
      * @param null|array $customerFieldValues
      * @return bool
      */

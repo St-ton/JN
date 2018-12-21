@@ -10,7 +10,7 @@ use DB\DbInterface;
 
 /**
  * Class AbstractFactory
- * @package Sitemap\Generators
+ * @package Sitemap\Factories
  */
 abstract class AbstractFactory implements FactoryInterface
 {

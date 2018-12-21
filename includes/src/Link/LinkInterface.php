@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -9,7 +9,7 @@ namespace Link;
 use Tightenco\Collect\Support\Collection;
 
 /**
- * Class Link
+ * Interface LinkInterface
  * @package Link
  */
 interface LinkInterface

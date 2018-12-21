@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Form;
 use JTLShop\SemVer\Version;
 
 if (!isset($bExtern) || !$bExtern) {
@@ -46,9 +47,10 @@ if (!function_exists('Shop')) {
         return Shop::getInstance();
     }
 }
-$DB      = new \DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
-$cache   = Shop::Container()->getCache()->setJtlCacheConfig();
-$session = \Session\AdminSession::getInstance();
+$DB       = new \DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
+$cache    = Shop::Container()->getCache()->setJtlCacheConfig();
+$session  = \Session\AdminSession::getInstance();
+$oAccount = Shop::Container()->getAdminAccount();
 
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
 
@@ -65,7 +67,7 @@ if ($oAccount->logged()) {
 
     Shop::fire('backend.notification', Notification::getInstance()->buildDefault());
     if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id'])
-        && FormHelper::validateToken()
+        && Form::validateToken()
     ) {
         $revision = new Revision();
         if ($_POST['revision-action'] === 'restore') {
@@ -79,3 +81,7 @@ if ($oAccount->logged()) {
         }
     }
 }
+
+$pageName = basename($_SERVER['PHP_SELF'], '.php');
+
+\Shop::Container()->getGetText()->loadAdminLocale("pages/$pageName");

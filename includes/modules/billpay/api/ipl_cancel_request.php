@@ -7,7 +7,7 @@ require_once __DIR__. '/ipl_xml_request.php';
  *
  * @author Jan Wehrs (jan.wehrs@billpay.de)
  * @copyright Copyright 2010 Billpay GmbH
- * @license commercial 
+ * @license commercial
  */
 class ipl_cancel_request extends ipl_xml_request
 {

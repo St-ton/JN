@@ -6,14 +6,16 @@
 
 namespace Boxes\Items;
 
+use Session\Session;
+
 /**
  * Class GlobalAttributes
- * @package Boxes
+ * @package Boxes\Items
  */
 final class GlobalAttributes extends AbstractBox
 {
     /**
-     * DirectPurchase constructor.
+     * GlobalAttributes constructor.
      * @param array $config
      */
     public function __construct(array $config)
@@ -21,7 +23,7 @@ final class GlobalAttributes extends AbstractBox
         parent::__construct($config);
         parent::addMapping('globaleMerkmale', 'Items');
         $this->setShow(true);
-        $attributes = \Session\Session::getCustomerGroup()->mayViewCategories()
+        $attributes = Session::getCustomerGroup()->mayViewCategories()
             ? $this->getGlobalAttributes()
             : [];
         $this->setItems($attributes);

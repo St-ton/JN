@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Request;
+
 require_once __DIR__ . '/../../includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
@@ -21,26 +24,26 @@ $Einstellungen       = Shop::getSettings([
 ]);
 $cEditZahlungHinweis = '';
 //Session Hash
-$cPh = RequestHelper::verifyGPDataString('ph');
-$cSh = RequestHelper::verifyGPDataString('sh');
+$cPh = Request::verifyGPDataString('ph');
+$cSh = Request::verifyGPDataString('sh');
 
 executeHook(HOOK_NOTIFY_HASHPARAMETER_DEFINITION);
 
-if (strlen(RequestHelper::verifyGPDataString('ph')) === 0
-    && strlen(RequestHelper::verifyGPDataString('externalBDRID')) > 0
+if (strlen(Request::verifyGPDataString('ph')) === 0
+    && strlen(Request::verifyGPDataString('externalBDRID')) > 0
 ) {
-    $cPh = RequestHelper::verifyGPDataString('externalBDRID');
+    $cPh = Request::verifyGPDataString('externalBDRID');
     if ($cPh[0] === '_') {
         $cPh = '';
-        $cSh = RequestHelper::verifyGPDataString('externalBDRID');
+        $cSh = Request::verifyGPDataString('externalBDRID');
     }
 }
 // Work around Sofortüberweisung
-if (strlen(RequestHelper::verifyGPDataString('key')) > 0 && strlen(RequestHelper::verifyGPDataString('sid')) > 0) {
-    $cPh = RequestHelper::verifyGPDataString('sid');
-    if (RequestHelper::verifyGPDataString('key') === 'sh') {
+if (strlen(Request::verifyGPDataString('key')) > 0 && strlen(Request::verifyGPDataString('sid')) > 0) {
+    $cPh = Request::verifyGPDataString('sid');
+    if (Request::verifyGPDataString('key') === 'sh') {
         $cPh = '';
-        $cSh = RequestHelper::verifyGPDataString('sid');
+        $cSh = Request::verifyGPDataString('sid');
     }
 }
 
@@ -93,10 +96,10 @@ if (strlen($cSh) > 0) {
             if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
                 $logger->debug('Session Hash: ' . $cSh . ' ergab Methode: ' . print_r($paymentMethod, true));
             }
-
-            $kPlugin = \Plugin\Plugin::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
+            $kPlugin = \Plugin\Helper::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
             if ($kPlugin > 0) {
-                $oPlugin            = new \Plugin\Plugin($kPlugin);
+                $loader             = \Plugin\Helper::getLoaderByPluginID($kPlugin);
+                $oPlugin            = $loader->init($kPlugin);
                 $GLOBALS['oPlugin'] = $oPlugin;
             }
 
@@ -168,12 +171,12 @@ if (strlen($cPh) > 0) {
     if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
         $logger->debug('Notify request:' . print_r($_REQUEST, true));
     }
-    $paymentId   = Shop::Container()->getDB()->queryPrepared(
-        "SELECT ZID.kBestellung, ZA.cModulId
+    $paymentId = Shop::Container()->getDB()->queryPrepared(
+        'SELECT ZID.kBestellung, ZA.cModulId
             FROM tzahlungsid ZID
             LEFT JOIN tzahlungsart ZA
                 ON ZA.kZahlungsart = ZID.kZahlungsart
-            WHERE ZID.cId = :hash",
+            WHERE ZID.cId = :hash',
         ['hash' => StringHandler::htmlentities(StringHandler::filterXSS($cPh))],
         \DB\ReturnType::SINGLE_OBJECT
     );

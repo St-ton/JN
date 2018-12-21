@@ -8,6 +8,8 @@ namespace News;
 
 use DB\DbInterface;
 use DB\ReturnType;
+use Helpers\URL;
+use Pagination\Pagination;
 use Session\Session;
 use Smarty\JTLSmarty;
 use Tightenco\Collect\Support\Collection;
@@ -72,9 +74,9 @@ class Controller
         if (!isset($_SESSION['NewsNaviFilter'])) {
             $_SESSION['NewsNaviFilter'] = new \stdClass();
         }
-        if (\RequestHelper::verifyGPCDataInt('nSort') > 0) {
-            $_SESSION['NewsNaviFilter']->nSort = \RequestHelper::verifyGPCDataInt('nSort');
-        } elseif (\RequestHelper::verifyGPCDataInt('nSort') === -1) {
+        if (\Helpers\Request::verifyGPCDataInt('nSort') > 0) {
+            $_SESSION['NewsNaviFilter']->nSort = \Helpers\Request::verifyGPCDataInt('nSort');
+        } elseif (\Helpers\Request::verifyGPCDataInt('nSort') === -1) {
             $_SESSION['NewsNaviFilter']->nSort = -1;
         } elseif (!isset($_SESSION['NewsNaviFilter']->nSort)) {
             $_SESSION['NewsNaviFilter']->nSort = 1;
@@ -143,17 +145,17 @@ class Controller
     }
 
     /**
-     * @param Item        $newsItem
-     * @param \Pagination $pagination
+     * @param Item       $newsItem
+     * @param Pagination $pagination
      */
-    public function displayItem(Item $newsItem, \Pagination $pagination): void
+    public function displayItem(Item $newsItem, Pagination $pagination): void
     {
         $newsCategories = $this->getNewsCategories($newsItem->getID());
         foreach ($newsCategories as $category) {
-            $category->cURL     = \UrlHelper::buildURL($category, \URLART_NEWSKATEGORIE);
-            $category->cURLFull = \UrlHelper::buildURL($category, \URLART_NEWSKATEGORIE, true);
+            $category->cURL     = URL::buildURL($category, \URLART_NEWSKATEGORIE);
+            $category->cURLFull = URL::buildURL($category, \URLART_NEWSKATEGORIE, true);
         }
-        $comments            = $newsItem->getComments()->getItems();
+        $comments            = $newsItem->getComments()->filter(true);
         $itemsPerPageOptions = ($perPage = (int)$this->config['news']['news_kommentare_anzahlproseite']) > 0
             ? [$perPage, $perPage * 2, $perPage * 5]
             : [10, 20, 50];
@@ -177,14 +179,14 @@ class Controller
     }
 
     /**
-     * @param \Pagination $pagination
-     * @param int         $categoryID
-     * @param int         $monthOverviewID
-     * @param int         $customerGroupID
+     * @param Pagination $pagination
+     * @param int        $categoryID
+     * @param int        $monthOverviewID
+     * @param int        $customerGroupID
      * @return Category
      */
     public function displayOverview(
-        \Pagination $pagination,
+        Pagination $pagination,
         int $categoryID = 0,
         int $monthOverviewID = 0,
         $customerGroupID = 0
@@ -402,7 +404,7 @@ class Controller
             if (empty($post['cEmail']) || \StringHandler::filterEmailAddress($post['cEmail']) === false) {
                 $checks['cEmail'] = 1;
             }
-            if ($config['news']['news_sicherheitscode'] !== 'N' && !\FormHelper::validateCaptcha($post)) {
+            if ($config['news']['news_sicherheitscode'] !== 'N' && !\Helpers\Form::validateCaptcha($post)) {
                 $checks['captcha'] = 2;
             }
         }
@@ -451,56 +453,56 @@ class Controller
      */
     public static function getFilterSQL(bool $bActiveOnly = false): \stdClass
     {
-        $oSQL              = new \stdClass();
-        $oSQL->cSortSQL    = '';
-        $oSQL->cDatumSQL   = '';
-        $oSQL->cNewsKatSQL = '';
+        $sql              = new \stdClass();
+        $sql->cSortSQL    = '';
+        $sql->cDatumSQL   = '';
+        $sql->cNewsKatSQL = '';
         switch ($_SESSION['NewsNaviFilter']->nSort) {
             case -1:
             default:
-                $oSQL->cSortSQL = ' ORDER BY tnews.dGueltigVon DESC, tnews.dErstellt DESC';
+                $sql->cSortSQL = ' ORDER BY tnews.dGueltigVon DESC, tnews.dErstellt DESC';
                 break;
             case 1: // Datum absteigend
-                $oSQL->cSortSQL = ' ORDER BY tnews.dGueltigVon DESC, tnews.dErstellt DESC';
+                $sql->cSortSQL = ' ORDER BY tnews.dGueltigVon DESC, tnews.dErstellt DESC';
                 break;
             case 2: // Datum aufsteigend
-                $oSQL->cSortSQL = ' ORDER BY tnews.dGueltigVon';
+                $sql->cSortSQL = ' ORDER BY tnews.dGueltigVon';
                 break;
             case 3: // Name a ... z
-                $oSQL->cSortSQL = ' ORDER BY tnewssprache.title';
+                $sql->cSortSQL = ' ORDER BY tnewssprache.title';
                 break;
             case 4: // Name z ... a
-                $oSQL->cSortSQL = ' ORDER BY tnewssprache.title DESC';
+                $sql->cSortSQL = ' ORDER BY tnewssprache.title DESC';
                 break;
             case 5: // Anzahl Kommentare absteigend
-                $oSQL->cSortSQL = ' ORDER BY nNewsKommentarAnzahl DESC';
+                $sql->cSortSQL = ' ORDER BY nNewsKommentarAnzahl DESC';
                 break;
             case 6: // Anzahl Kommentare aufsteigend
-                $oSQL->cSortSQL = ' ORDER BY nNewsKommentarAnzahl';
+                $sql->cSortSQL = ' ORDER BY nNewsKommentarAnzahl';
                 break;
         }
         if ($_SESSION['NewsNaviFilter']->cDatum !== -1 && \strlen($_SESSION['NewsNaviFilter']->cDatum) > 0) {
-            $_date = \explode('-', $_SESSION['NewsNaviFilter']->cDatum);
-            if (\count($_date) > 1) {
-                [$nMonat, $nJahr] = $_date;
-                $oSQL->cDatumSQL = " AND MONTH(tnews.dGueltigVon) = '" . (int)$nMonat . "' 
+            $date = \explode('-', $_SESSION['NewsNaviFilter']->cDatum);
+            if (\count($date) > 1) {
+                [$nMonat, $nJahr] = $date;
+                $sql->cDatumSQL   = " AND MONTH(tnews.dGueltigVon) = '" . (int)$nMonat . "' 
                                       AND YEAR(tnews.dGueltigVon) = '" . (int)$nJahr . "'";
             } else { //invalid date given/xss -> reset to -1
                 $_SESSION['NewsNaviFilter']->cDatum = -1;
             }
         }
         if ($_SESSION['NewsNaviFilter']->nNewsKat > 0) {
-            $oSQL->cNewsKatSQL = ' AND tnewskategorienews.kNewsKategorie = ' .
+            $sql->cNewsKatSQL = ' AND tnewskategorienews.kNewsKategorie = ' .
                 (int)$_SESSION['NewsNaviFilter']->nNewsKat;
         }
 
         if ($bActiveOnly) {
-            $oSQL->cNewsKatSQL .= ' JOIN tnewskategorie 
+            $sql->cNewsKatSQL .= ' JOIN tnewskategorie 
                                     ON tnewskategorie.kNewsKategorie = tnewskategorienews.kNewsKategorie
                                     AND tnewskategorie.nAktiv = 1';
         }
 
-        return $oSQL;
+        return $sql;
     }
 
     /**
@@ -510,20 +512,20 @@ class Controller
     private function getNewsDates($oSQL): array
     {
         $dateData = $this->db->query(
-            "SELECT MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr
+            'SELECT MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr
                 FROM tnews 
                 JOIN tnewskategorienews 
-                    ON tnewskategorienews.kNews = tnews.kNews" . $oSQL->cNewsKatSQL . "
+                    ON tnewskategorienews.kNews = tnews.kNews' . $oSQL->cNewsKatSQL . "
                 JOIN tnewssprache
                     ON tnewssprache.kNews = tnews.kNews
                 WHERE tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= NOW()
                     AND (tnews.cKundengruppe LIKE '%;-1;%' 
                         OR FIND_IN_SET('" . Session::getCustomerGroup()->getID() .
-                    "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
-                    AND tnewssprache.languageID = " . \Shop::getLanguageID() . "
+            "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
+                    AND tnewssprache.languageID = " . \Shop::getLanguageID() . '
                 GROUP BY nJahr, nMonat
-                ORDER BY dGueltigVon DESC",
+                ORDER BY dGueltigVon DESC',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $dates    = [];

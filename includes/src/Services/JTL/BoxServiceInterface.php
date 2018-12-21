@@ -7,35 +7,53 @@
 namespace Services\JTL;
 
 use Boxes\FactoryInterface;
+use Boxes\Renderer\RendererInterface;
+use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use Filter\ProductFilter;
-use Filter\SearchResultsInterface;
+use Smarty\JTLSmarty;
 
 /**
- * Class BoxService
+ * Interface BoxServiceInterface
+ * @package Services\JTL
  */
 interface BoxServiceInterface
 {
     /**
-     * @param array            $config
-     * @param FactoryInterface $factory
-     * @param DbInterface      $db
+     * @param array             $config
+     * @param FactoryInterface  $factory
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
+     * @param JTLSmarty         $smarty
+     * @param RendererInterface $renderer
      * @return BoxServiceInterface
      */
     public static function getInstance(
         array $config,
         FactoryInterface $factory,
-        DbInterface $db
+        DbInterface $db,
+        JTLCacheInterface $cache,
+        JTLSmarty $smarty,
+        RendererInterface $renderer
     ): BoxServiceInterface;
 
     /**
-     * BoxService constructor.
-     *
-     * @param array            $config
-     * @param FactoryInterface $factory
-     * @param DbInterface      $db
+     * BoxServiceInterface constructor.
+     * @param array             $config
+     * @param FactoryInterface  $factory
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
+     * @param JTLSmarty         $smarty
+     * @param RendererInterface $renderer
      */
-    public function __construct(array $config, FactoryInterface $factory, DbInterface $db);
+    public function __construct(
+        array $config,
+        FactoryInterface $factory,
+        DbInterface $db,
+        JTLCacheInterface $cache,
+        JTLSmarty $smarty,
+        RendererInterface $renderer
+    );
 
     /**
      * @param int $productID
@@ -53,17 +71,16 @@ interface BoxServiceInterface
     /**
      * @param int          $boxID
      * @param int          $pageType
-     * @param string|array $cFilter
+     * @param string|array $filter
      * @return int
      */
-    public function filterBoxVisibility(int $boxID, int $pageType, $cFilter = ''): int;
+    public function filterBoxVisibility(int $boxID, int $pageType, $filter = ''): int;
 
     /**
-     * @param ProductFilter          $pf
-     * @param SearchResultsInterface $sr
+     * @param ProductFilter $pf
      * @return bool
      */
-    public function showBoxes(ProductFilter $pf, SearchResultsInterface $sr): bool;
+    public function showBoxes(ProductFilter $pf): bool;
 
     /**
      * get raw data from visible boxes
@@ -87,11 +104,12 @@ interface BoxServiceInterface
 
     /**
      * @param array $positionedBoxes
+     * @param int   $pageType
      * @return array
      * @throws \Exception
      * @throws \SmartyException
      */
-    public function render(array $positionedBoxes): array;
+    public function render(array $positionedBoxes, int $pageType): array;
 
     /**
      * @param int  $pageType

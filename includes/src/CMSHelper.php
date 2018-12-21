@@ -4,6 +4,9 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\SearchSpecial;
+use Helpers\URL;
+
 /**
  * Class CMSHelper
  */
@@ -26,22 +29,22 @@ class CMSHelper
             $products = [];
             switch ($box->name) {
                 case 'TopAngebot':
-                    $products = SearchSpecialHelper::getTopOffers($box->anzahl, $customerGroupID);
+                    $products = SearchSpecial::getTopOffers($box->anzahl, $customerGroupID);
                     $url      = SEARCHSPECIALS_TOPOFFERS;
                     break;
 
                 case 'Bestseller':
-                    $products = SearchSpecialHelper::getBestsellers($box->anzahl, $customerGroupID);
+                    $products = SearchSpecial::getBestsellers($box->anzahl, $customerGroupID);
                     $url      = SEARCHSPECIALS_BESTSELLER;
                     break;
 
                 case 'Sonderangebote':
-                    $products = SearchSpecialHelper::getSpecialOffers($box->anzahl, $customerGroupID);
+                    $products = SearchSpecial::getSpecialOffers($box->anzahl, $customerGroupID);
                     $url      = SEARCHSPECIALS_SPECIALOFFERS;
                     break;
 
                 case 'NeuImSortiment':
-                    $products = SearchSpecialHelper::getNewProducts($box->anzahl, $customerGroupID);
+                    $products = SearchSpecial::getNewProducts($box->anzahl, $customerGroupID);
                     $url      = SEARCHSPECIALS_NEWPRODUCTS;
                     break;
             }
@@ -50,7 +53,7 @@ class CMSHelper
             });
             if (count($productIDs) > 0) {
                 shuffle($productIDs);
-                $box->cURL    = SearchSpecialHelper::buildURL($url);
+                $box->cURL    = SearchSpecial::buildURL($url);
                 $box->Artikel = new ArtikelListe();
                 $box->Artikel->getArtikelByKeys($productIDs, 0, count($productIDs));
             }
@@ -79,7 +82,7 @@ class CMSHelper
             if ((int)$conf['news']['news_anzahl_content'] > 0) {
                 $cSQL = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
             }
-            $newsIDs    = Shop::Container()->getDB()->query(
+            $newsIDs = Shop::Container()->getDB()->query(
                 "SELECT tnews.kNews
                     FROM tnews
                     JOIN tnewskategorienews 
@@ -92,8 +95,8 @@ class CMSHelper
                     LEFT JOIN tseo 
                         ON tseo.cKey = 'kNews'
                         AND tseo.kKey = tnews.kNews
-                        AND tseo.kSprache = " . $langID . "
-                    WHERE t.languageID = " . $langID . "
+                        AND tseo.kSprache = " . $langID . '
+                    WHERE t.languageID = ' . $langID . "
                         AND tnews.nAktiv = 1
                         AND tnews.dGueltigVon <= NOW()
                         AND (tnews.cKundengruppe LIKE '%;-1;%' 
@@ -103,7 +106,7 @@ class CMSHelper
                     ORDER BY tnews.dGueltigVon DESC" . $cSQL,
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            $items = new \News\ItemList(Shop::Container()->getDB());
+            $items   = new \News\ItemList(Shop::Container()->getDB());
             $items->createItems(\Functional\map($newsIDs, function ($e) {
                 return (int)$e->kNews;
             }));
@@ -202,8 +205,8 @@ class CMSHelper
             $item->Klasse   = $priority < 1
                 ? rand(1, 10)
                 : (round(($item->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / $priority) + 1);
-            $item->cURL     = UrlHelper::buildURL($item, URLART_LIVESUCHE);
-            $item->cURLFull = UrlHelper::buildURL($item, URLART_LIVESUCHE, true);
+            $item->cURL     = URL::buildURL($item, URLART_LIVESUCHE);
+            $item->cURLFull = URL::buildURL($item, URLART_LIVESUCHE, true);
             $search[]       = $item;
         }
 
@@ -247,8 +250,8 @@ class CMSHelper
             $item->Klasse   = $priority < 1
                 ? rand(1, 10)
                 : round(($item->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / $priority) + 1;
-            $item->cURL     = UrlHelper::buildURL($item, URLART_LIVESUCHE);
-            $item->cURLFull = UrlHelper::buildURL($item, URLART_LIVESUCHE, true);
+            $item->cURL     = URL::buildURL($item, URLART_LIVESUCHE);
+            $item->cURLFull = URL::buildURL($item, URLART_LIVESUCHE, true);
             $search[]       = $item;
         }
 
@@ -292,8 +295,8 @@ class CMSHelper
             $tag->Klasse   = ($priority < 1) ?
                 rand(1, 10) :
                 (round(($tag->Anzahl - $tagData[$count - 1]->Anzahl) / $priority) + 1);
-            $tag->cURL     = UrlHelper::buildURL($tag, URLART_TAG);
-            $tag->cURLFull = UrlHelper::buildURL($tag, URLART_TAG, true);
+            $tag->cURL     = URL::buildURL($tag, URLART_TAG);
+            $tag->cURLFull = URL::buildURL($tag, URLART_TAG, true);
             $tags[]        = $tag;
         }
         shuffle($tags);
@@ -316,8 +319,8 @@ class CMSHelper
             'dStart DESC'
         );
         foreach ($history as $item) {
-            $item->cURL     = UrlHelper::buildURL($item, URLART_NEWS);
-            $item->cURLFull = UrlHelper::buildURL($item, URLART_NEWS, true);
+            $item->cURL     = URL::buildURL($item, URLART_NEWS);
+            $item->cURLFull = URL::buildURL($item, URLART_NEWS, true);
         }
 
         return $history;
@@ -342,13 +345,13 @@ class CMSHelper
             ? ' LIMIT ' . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
             : '';
         $tmpGifts = Shop::Container()->getDB()->query(
-            "SELECT tartikel.kArtikel, tartikelattribut.cWert
+            'SELECT tartikel.kArtikel, tartikelattribut.cWert
                 FROM tartikel
                 JOIN tartikelattribut 
                     ON tartikelattribut.kArtikel = tartikel.kArtikel
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . \Session\Session::getCustomerGroup()->getID() .
+                    AND tartikelsichtbarkeit.kKundengruppe = ' . \Session\Session::getCustomerGroup()->getID() .
             " WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "' " .
             Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() .

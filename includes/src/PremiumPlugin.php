@@ -103,11 +103,11 @@ class PremiumPlugin
      */
     public function __construct(string $pluginID)
     {
-        $plugin            = \Plugin\Plugin::getPluginById($pluginID);
+        $plugin            = \Plugin\Helper::getPluginById($pluginID);
         $this->pluginID    = $pluginID;
         $this->exists      = file_exists(PFAD_ROOT . PFAD_PLUGIN . $pluginID . '/info.xml');
         $this->isInstalled = $plugin !== null && $plugin->kPlugin > 0;
-        $this->isActivated = $this->isInstalled && (int)$plugin->nStatus === \Plugin\Plugin::PLUGIN_ACTIVATED;
+        $this->isActivated = $this->isInstalled && (int)$plugin->nStatus === \Plugin\State::ACTIVATED;
         $this->kPlugin     = $this->isInstalled ? (int)$plugin->kPlugin : 0;
     }
 

@@ -1,0 +1,48 @@
+msgid "warenkorbpers"
+msgstr "Gespeicherte Warenkörbe"
+
+msgid "warenkorbpersURL"
+msgstr "https://jtl-url.de/mntv5"
+
+msgid "warenkorbpersDesc"
+msgstr "Sie finden hier Warenkörbe, die von angemeldeten Kunden gefüllt wurden und noch nicht gekauft wurden. Sie können diese Option unter Einstellungen -> Globale Einstellungen ein- bzw. ausschalten."
+
+msgid "warenkorbpersCompany"
+msgstr "Firma"
+
+msgid "warenkorbpersClientName"
+msgstr "Kunde"
+
+msgid "warenkorbpersClient"
+msgstr "Gespeicherter Warenkorb von"
+
+msgid "warenkorbpersProduct"
+msgstr "Artikel"
+
+msgid "warenkorbpersCount"
+msgstr "Anzahl"
+
+msgid "warenkorbpersDate"
+msgstr "Datum"
+
+msgid "warenkorbpersBack"
+msgstr "zurück"
+
+msgid "warenkorbpersShow"
+msgstr "Anzeigen"
+
+msgid "warenkorbpersDel"
+msgstr "Löschen"
+
+msgid "warenkorbpersSettings"
+msgstr "Einstellungen"
+
+msgid "warenkorbpersSearch"
+msgstr "Suche"
+
+msgid "warenkorbpersSearchBTN"
+msgstr "Suchen"
+
+msgid "warenkorbpersAction"
+msgstr "Aktion"
+

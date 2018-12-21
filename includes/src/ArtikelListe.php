@@ -206,8 +206,8 @@ class ArtikelListe
             $cLimitSql     = isset($Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
                 ? ('LIMIT ' . (int)$Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
                 : 'LIMIT 6';
-            $lagerfilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $objArr      = Shop::Container()->getDB()->query(
+            $lagerfilter   = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
+            $objArr        = Shop::Container()->getDB()->query(
                 "SELECT DISTINCT (tartikel.kArtikel)
                     FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
@@ -224,7 +224,7 @@ class ArtikelListe
                     ",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            $cacheTags   = [CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION];
+            $cacheTags     = [CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION];
             foreach ($categoryIDs as $category) {
                 $cacheTags[] = CACHING_GROUP_CATEGORY . '_' . $category;
             }
@@ -292,12 +292,12 @@ class ArtikelListe
                     LEFT JOIN tartikelsichtbarkeit
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = $kKundengruppe
-                    " . Preise::getPriceJoinSql($kKundengruppe) . "
+                    " . Preise::getPriceJoinSql($kKundengruppe) . '
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                        " . $sql_artikelExclude . "
+                        ' . $sql_artikelExclude . '
                         AND tartikel.kArtikel = tkategorieartikel.kArtikel
                         AND tartikel.kArtikel = tbestseller.kArtikel
-                        AND (tkategorieartikel.kKategorie IN (" . implode(', ', $arr_kKategorie) . "))
+                        AND (tkategorieartikel.kKategorie IN (' . implode(', ', $arr_kKategorie) . "))
                         $lagerfilter
                     ORDER BY tbestseller.fAnzahl DESC
                     {$cLimitSql}",

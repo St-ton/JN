@@ -1,0 +1,45 @@
+msgid "lang"
+msgstr "Sprachverwaltung"
+
+msgid "langURL"
+msgstr "https://jtl-url.de/nab7v"
+
+msgid "langDesc"
+msgstr "Ändern Sie hier die Standard-Textbausteine des Shops. Alle Texte sind sprachabhängig definiert. Sie haben in der Sprachverwaltung außerdem  die Möglichkeit, Ihre Textbausteine pro Sprache zu exportieren und wieder zu importieren."
+
+msgid "langVars"
+msgstr "Sprachvariablen"
+
+msgid "notFoundVars"
+msgstr "Nicht gefundene Variablen"
+
+msgid "section"
+msgstr "Sektion"
+
+msgid "variableName"
+msgstr "Variable"
+
+msgid "variableContent"
+msgstr "Inhalt"
+
+msgid "btnAddVar"
+msgstr "Variable hinzufügen"
+
+msgid "btnResetLog"
+msgstr "Liste leeren"
+
+msgid "newLangVar"
+msgstr "Neue Sprachvariable"
+
+msgid "langSection"
+msgstr "Sprachsektion"
+
+msgid "new"
+msgstr "neu"
+
+msgid "current"
+msgstr "aktuell"
+
+msgid "notImportedYet"
+msgstr "Sprache wurde noch nicht importiert"
+

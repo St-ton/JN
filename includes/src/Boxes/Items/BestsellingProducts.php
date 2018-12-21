@@ -7,23 +7,24 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
+use Session\Session;
 
 /**
  * Class BestsellingProducts
- * @package Boxes
+ * @package Boxes\Items
  */
 final class BestsellingProducts extends AbstractBox
 {
     /**
-     * CompareList constructor.
+     * BestsellingProducts constructor.
      * @param array $config
      */
     public function __construct(array $config)
     {
         parent::__construct($config);
         $this->setShow(false);
-        $customerGroupID = \Session\Session::getCustomerGroup()->getID();
-        if ($customerGroupID && \Session\Session::getCustomerGroup()->mayViewCategories()) {
+        $customerGroupID = Session::getCustomerGroup()->getID();
+        if ($customerGroupID && Session::getCustomerGroup()->mayViewCategories()) {
             $res            = [];
             $cached         = true;
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
@@ -41,17 +42,16 @@ final class BestsellingProducts extends AbstractBox
                     $limit = 10;
                 }
                 $productIDs = \Shop::Container()->getDB()->query(
-                    "SELECT tartikel.kArtikel
+                    'SELECT tartikel.kArtikel
                         FROM tbestseller, tartikel
                         LEFT JOIN tartikelsichtbarkeit 
                             ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = $customerGroupID
+                            AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             AND tbestseller.kArtikel = tartikel.kArtikel
-                            AND round(tbestseller.fAnzahl) >= " . $minCount . "
-                            $parentSQL
-                            $stockFilterSQL
-                        ORDER BY fAnzahl DESC LIMIT " . $limit,
+                            AND ROUND(tbestseller.fAnzahl) >= ' . $minCount . ' ' .
+                            $parentSQL . $stockFilterSQL . '
+                        ORDER BY fAnzahl DESC LIMIT ' . $limit,
                     ReturnType::ARRAY_OF_OBJECTS
                 );
                 \Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
@@ -76,7 +76,7 @@ final class BestsellingProducts extends AbstractBox
                 $products = new \ArtikelListe();
                 $products->getArtikelByKeys($res, 0, \count($res));
                 $this->setProducts($products);
-                $this->setURL(\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_BESTSELLER));
+                $this->setURL(\Helpers\SearchSpecial::buildURL(\SEARCHSPECIALS_BESTSELLER));
             }
 
             \executeHook(\HOOK_BOXEN_INC_BESTSELLER, [

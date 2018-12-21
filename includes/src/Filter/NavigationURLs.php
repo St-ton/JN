@@ -12,7 +12,7 @@ namespace Filter;
  */
 class NavigationURLs implements NavigationURLsInterface
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array

@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Form;
 use JTLShop\SemVer\Version;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -18,7 +19,7 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
     if (Shop::getShopDatabaseVersion()->equals(Version::parse('4.0.0'))
         || Shop::getShopDatabaseVersion()->greaterThan(Version::parse('4.0.0'))
     ) {
-        $csrfOK = FormHelper::validateToken();
+        $csrfOK = Form::validateToken();
     }
     $loginName = isset($_POST['benutzer'])
         ? StringHandler::filterXSS(Shop::Container()->getDB()->escape($_POST['benutzer']))
@@ -31,7 +32,7 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
             case AdminLoginStatus::ERROR_LOCKED:
             case AdminLoginStatus::ERROR_INVALID_PASSWORD_LOCKED:
                 $lockTime = $oAccount->getLockedMinutes();
-                $cFehler = 'Gesperrt für ' . $lockTime . ' Minute' . ($lockTime !== 1 ? 'n' : '');
+                $cFehler  = 'Gesperrt für ' . $lockTime . ' Minute' . ($lockTime !== 1 ? 'n' : '');
                 break;
 
             case AdminLoginStatus::ERROR_USER_NOT_FOUND:
@@ -180,6 +181,7 @@ if ($oAccount->getIsAuthenticated()) {
         } else {
             $_SESSION['AdminAccount']->TwoFA_expired = true;
         }
+        \Shop::Container()->getGetText()->loadAdminLocale('pages/login');
         // "redirect" to the "login not valid"
         // (we've received a wrong code and give the user the chance to retry)
         $oAccount->redirectOnUrl();
@@ -199,6 +201,7 @@ if ($oAccount->getIsAuthenticated()) {
                 break;
         }
     }
+    \Shop::Container()->getGetText()->loadAdminLocale('pages/login');
     $smarty->assign('uri', isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0
         ? trim($_REQUEST['uri'])
         : '')

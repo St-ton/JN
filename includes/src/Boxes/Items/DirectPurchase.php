@@ -8,7 +8,7 @@ namespace Boxes\Items;
 
 /**
  * Class DirectPurchase
- * @package Boxes
+ * @package Boxes\Items
  */
 final class DirectPurchase extends AbstractBox
 {

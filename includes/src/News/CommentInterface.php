@@ -7,20 +7,20 @@
 namespace News;
 
 /**
- * Class Comment
+ * Interface CommentInterface
  * @package News
  */
 interface CommentInterface
 {
     /**
      * @param int $id
-     * @return Comment
+     * @return CommentInterface
      */
     public function load(int $id): CommentInterface;
 
     /**
      * @param array $comments
-     * @return Comment
+     * @return CommentInterface
      */
     public function map(array $comments): CommentInterface;
 

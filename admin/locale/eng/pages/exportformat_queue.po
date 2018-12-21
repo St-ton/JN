@@ -1,0 +1,87 @@
+msgid "exportformat"
+msgstr "Aufgabenplaner Exporte"
+
+msgid "exportformatDesc"
+msgstr "Mit dem Aufgabenplaner können Sie automatisch auszuführende Aufgaben z.B. für Preissuchmaschinen-Exportformate anlegen."
+
+msgid "exportformatUrl"
+msgstr "https://jtl-url.de/jl5z1"
+
+msgid "exportformatFormat"
+msgstr "Exportformate"
+
+msgid "exportformatFormatSingle"
+msgstr "Exportformat"
+
+msgid "exportformatFilename"
+msgstr "Dateiname"
+
+msgid "exportformatOptions"
+msgstr "Sprache/Währung/Kundengrp"
+
+msgid "exportformatAdd"
+msgstr "Neue Planung erstellen"
+
+msgid "exportformatStart"
+msgstr "Startdatum"
+
+msgid "exportformatEveryXHour"
+msgstr "Alle X Stunden"
+
+msgid "exportformatLastXHourPre"
+msgstr "Letzten"
+
+msgid "exportformatLastXHourPost"
+msgstr "Stunden"
+
+msgid "exportformatShow"
+msgstr "Zeigen"
+
+msgid "exportformatDelete"
+msgstr "Planung löschen"
+
+msgid "exportformatQueue"
+msgstr "Aktive, geplante Aufgaben"
+
+msgid "exportformatNoFormat"
+msgstr "Keine Exportformate vorhanden"
+
+msgid "exportformatBack"
+msgstr "zurück"
+
+msgid "exportformatEveryXHourShort"
+msgstr "Wiederholung"
+
+msgid "exportformatStatus"
+msgstr "Status"
+
+msgid "exportformatStatusWorking"
+msgstr "in Bearbeitung"
+
+msgid "exportformatStatusReady"
+msgstr "Wartend"
+
+msgid "exportformatExported"
+msgstr "Exportiert"
+
+msgid "exportformatLastStart"
+msgstr "letzter Start"
+
+msgid "exportformatNextStart"
+msgstr "vsl. nächster Start"
+
+msgid "exportformatEdit"
+msgstr "Editieren"
+
+msgid "exportformatTodaysWork"
+msgstr "Zuletzt fertiggestellt"
+
+msgid "exportformatTriggerCron"
+msgstr "Cron manuell anstoßen"
+
+msgid "exportformatNoTodaysWork"
+msgstr "Es wurden im ausgewählten Zeitraum keine Exportformate bearbeitet."
+
+msgid "exportformatRefresh"
+msgstr "Aktualisieren"
+

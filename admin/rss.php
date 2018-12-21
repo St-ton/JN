@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'rss_inc.php';
 
@@ -11,7 +14,7 @@ $oAccount->permission('EXPORT_RSSFEED_VIEW', true, true);
 $cHinweis = '';
 $cFehler  = '';
 
-if (isset($_GET['f']) && (int)$_GET['f'] === 1 && FormHelper::validateToken()) {
+if (isset($_GET['f']) && (int)$_GET['f'] === 1 && Form::validateToken()) {
     if (generiereRSSXML()) {
         $cHinweis = 'RSS Feed wurde erstellt!';
     } else {
@@ -22,14 +25,11 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_RSS, $_POST);
 }
 if (!is_writable(PFAD_ROOT . FILE_RSS_FEED)) {
-    $rssNotice = "'" . PFAD_ROOT . FILE_RSS_FEED . "' kann nicht geschrieben werden.
-        Bitte achten Sie darauf, dass diese Datei ausreichende Schreibrechte besitzt. " .
-        "Ansonsten kann keine RSS XML Datei erstellt werden.";
-} else {
-    $rssNotice = '<a href="rss.php?f=1">RSS-Feed XML Datei erstellen</a>';
+    $cFehler = 'Datei "' . PFAD_ROOT . FILE_RSS_FEED . '" kann nicht geschrieben werden. 
+        Bitte achten Sie darauf, dass diese Datei ausreichende Schreibrechte besitzt.
+        Ansonsten kann keine RSS XML Datei erstellt werden.';
 }
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_RSS))
        ->assign('hinweis', $cHinweis)
-       ->assign('rsshinweis', $rssNotice)
        ->assign('fehler', $cFehler)
        ->display('rss.tpl');

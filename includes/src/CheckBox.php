@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\GeneralObject;
+
 /**
  * Class CheckBox
  */
@@ -100,10 +102,9 @@ class CheckBox
     public $oLink;
 
     /**
-     * @param int  $kCheckBox
-     * @param bool $bSprachWerte
+     * @param int $kCheckBox
      */
-    public function __construct(int $kCheckBox = 0, bool $bSprachWerte = true)
+    public function __construct(int $kCheckBox = 0)
     {
         $this->oLink = new \Link\Link(Shop::Container()->getDB());
         $this->loadFromDB($kCheckBox);
@@ -126,7 +127,8 @@ class CheckBox
 
             return $this;
         }
-        $oCheckBox = Shop::Container()->getDB()->queryPrepared(
+        $db        = Shop::Container()->getDB();
+        $oCheckBox = $db->queryPrepared(
             "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE 
                 FROM tcheckbox 
                 WHERE kCheckBox = :cbid",
@@ -136,8 +138,7 @@ class CheckBox
         if ($oCheckBox === false || $oCheckBox === null) {
             return $this;
         }
-        $cMember_arr = array_keys(get_object_vars($oCheckBox));
-        foreach ($cMember_arr as $cMember) {
+        foreach (array_keys(get_object_vars($oCheckBox)) as $cMember) {
             $this->$cMember = $oCheckBox->$cMember;
         }
         // Global Identifier
@@ -155,7 +156,7 @@ class CheckBox
         // Falls mal kCheckBoxFunktion gesetzt war aber diese Funktion nicht mehr existiert (deinstallation vom Plugin)
         // wird kCheckBoxFunktion auf 0 gesetzt
         if ($this->kCheckBoxFunktion > 0) {
-            $oCheckBoxFunktion = Shop::Container()->getDB()->select(
+            $oCheckBoxFunktion = $db->select(
                 'tcheckboxfunktion',
                 'kCheckBoxFunktion',
                 (int)$this->kCheckBoxFunktion
@@ -164,18 +165,23 @@ class CheckBox
                 $this->oCheckBoxFunktion = $oCheckBoxFunktion;
             } else {
                 $this->kCheckBoxFunktion = 0;
-                $upd = new stdClass();
-                $upd->kCheckBoxFunktion = 0;
-                Shop::Container()->getDB()->update('tcheckbox', 'kCheckBox', (int)$this->kCheckBox, $upd);
+                $upd                     = new stdClass();
+                $upd->kCheckBoxFunktion  = 0;
+                $db->update('tcheckbox', 'kCheckBox', (int)$this->kCheckBox, $upd);
             }
         }
         if ($this->kLink > 0) {
-            $this->oLink = new \Link\Link(Shop::Container()->getDB());
-            $this->oLink->load($this->kLink);
+            $this->oLink = new \Link\Link($db);
+            try {
+                $this->oLink->load($this->kLink);
+            } catch (InvalidArgumentException $e) {
+                $logger = Shop::Container()->getLogService();
+                $logger->error('Checkbox cannot link to link ID ' . $this->kLink);
+            }
         } else {
             $this->cLink = 'kein interner Link';
         }
-        $oCheckBoxSpracheTMP_arr = Shop::Container()->getDB()->selectAll(
+        $oCheckBoxSpracheTMP_arr = $db->selectAll(
             'tcheckboxsprache',
             'kCheckBox',
             (int)$this->kCheckBox
@@ -212,8 +218,8 @@ class CheckBox
                 $kKundengruppe = Kundengruppe::getDefaultGroupID();
             }
         }
-        $oCheckBox_arr = [];
-        $cSQL          = '';
+        $checkboxes = [];
+        $cSQL       = '';
         if ($bAktiv) {
             $cSQL .= ' AND nAktiv = 1';
         }
@@ -227,15 +233,15 @@ class CheckBox
             "SELECT kCheckBox FROM tcheckbox
                 WHERE FIND_IN_SET('" . $nAnzeigeOrt . "', REPLACE(cAnzeigeOrt, ';', ',')) > 0
                     AND FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppe, ';', ',')) > 0
-                    " . $cSQL . "
-                ORDER BY nSort",
+                    " . $cSQL . '
+                ORDER BY nSort',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oCheckBoxTMP_arr as $oCheckBoxTMP) {
-            $oCheckBox_arr[] = new self((int)$oCheckBoxTMP->kCheckBox, $bSprache);
+            $checkboxes[] = new self((int)$oCheckBoxTMP->kCheckBox);
         }
         executeHook(HOOK_CHECKBOX_CLASS_GETCHECKBOXFRONTEND, [
-            'oCheckBox_arr' => &$oCheckBox_arr,
+            'oCheckBox_arr' => &$checkboxes,
             'nAnzeigeOrt'   => $nAnzeigeOrt,
             'kKundengruppe' => $kKundengruppe,
             'bAktiv'        => $bAktiv,
@@ -244,7 +250,7 @@ class CheckBox
             'bLogging'      => $bLogging
         ]);
 
-        return $oCheckBox_arr;
+        return $checkboxes;
     }
 
     /**
@@ -298,12 +304,12 @@ class CheckBox
                 // Festdefinierte Shopfunktionen
                 switch ($oCheckBox->oCheckBoxFunktion->cID) {
                     case 'jtl_newsletter': // Newsletteranmeldung
-                        $xParamas_arr['oKunde'] = ObjectHelper::copyMembers($xParamas_arr['oKunde']);
+                        $xParamas_arr['oKunde'] = GeneralObject::copyMembers($xParamas_arr['oKunde']);
                         $this->sfCheckBoxNewsletter($xParamas_arr['oKunde']);
                         break;
 
                     case 'jtl_adminmail': // CheckBoxMail
-                        $xParamas_arr['oKunde'] = ObjectHelper::copyMembers($xParamas_arr['oKunde']);
+                        $xParamas_arr['oKunde'] = GeneralObject::copyMembers($xParamas_arr['oKunde']);
                         $this->sfCheckBoxMailToAdmin($xParamas_arr['oKunde'], $oCheckBox, $nAnzeigeOrt);
                         break;
 
@@ -351,10 +357,9 @@ class CheckBox
     /**
      * @param string $cLimitSQL
      * @param bool   $bAktiv
-     * @param bool   $bSprache
      * @return CheckBox[]
      */
-    public function getAllCheckBox(string $cLimitSQL = '', bool $bAktiv = false, bool $bSprache = false): array
+    public function getAllCheckBox(string $cLimitSQL = '', bool $bAktiv = false): array
     {
         $oCheckBox_arr = [];
         $cSQL          = '';
@@ -368,7 +373,7 @@ class CheckBox
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oCheckBoxTMP_arr as $i => $oCheckBoxTMP) {
-            $oCheckBox_arr[$i] = new self($oCheckBoxTMP->kCheckBox, $bSprache);
+            $oCheckBox_arr[$i] = new self($oCheckBoxTMP->kCheckBox);
         }
 
         return $oCheckBox_arr;
@@ -380,17 +385,11 @@ class CheckBox
      */
     public function getAllCheckBoxCount(bool $bAktiv = false): int
     {
-        $cSQL = '';
-        if ($bAktiv) {
-            $cSQL = ' WHERE nAktiv = 1';
-        }
-        $oCheckBoxCount = Shop::Container()->getDB()->query(
+        return (int)Shop::Container()->getDB()->query(
             'SELECT COUNT(*) AS nAnzahl 
-                FROM tcheckbox' . $cSQL,
+                FROM tcheckbox' . ($bAktiv ? ' WHERE nAktiv = 1' : ''),
             \DB\ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$oCheckBoxCount->nAnzahl;
+        )->nAnzahl;
     }
 
     /**
@@ -470,7 +469,7 @@ class CheckBox
     public function insertDB($texts, $descriptions): self
     {
         if (is_array($texts) && count($texts) > 0) {
-            $oCheckBox = ObjectHelper::copyMembers($this);
+            $oCheckBox = GeneralObject::copyMembers($this);
             unset(
                 $oCheckBox->kCheckBox,
                 $oCheckBox->cID,

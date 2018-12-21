@@ -17,7 +17,7 @@ final class LiveSearch extends AbstractItem
      */
     public function generateLocation(): void
     {
-        $this->setLocation(\UrlHelper::buildURL($this->data, \URLART_SEITE, true));
+        $this->setLocation(\Helpers\URL::buildURL($this->data, \URLART_SEITE, true));
     }
 
     /**

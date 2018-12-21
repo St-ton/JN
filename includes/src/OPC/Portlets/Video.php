@@ -6,13 +6,14 @@
 
 namespace OPC\Portlets;
 
+use OPC\Portlet;
 use OPC\PortletInstance;
 
 /**
  * Class Video
  * @package OPC\Portlets
  */
-class Video extends \OPC\Portlet
+class Video extends Portlet
 {
     /**
      * @param PortletInstance $instance
@@ -21,7 +22,7 @@ class Video extends \OPC\Portlet
      */
     public function getPreviewHtml(PortletInstance $instance): string
     {
-        $instance->setProperty('uid', uniqid('vd-', false));
+        $instance->setProperty('uid', \uniqid('vd-', false));
 
         return $this->getPreviewHtmlFromTpl($instance);
     }
@@ -33,7 +34,7 @@ class Video extends \OPC\Portlet
      */
     public function getFinalHtml(PortletInstance $instance): string
     {
-        $instance->setProperty('uid', uniqid('vd-', false));
+        $instance->setProperty('uid', \uniqid('vd-', false));
 
         return $this->getFinalHtmlFromTpl($instance);
     }
@@ -97,7 +98,12 @@ class Video extends \OPC\Portlet
                 'label'                => 'Hinweis',
                 'type'                 => 'hint',
                 'class'                => 'danger',
-                'text'                 => 'In ihren Datenschutzerklärungen sollten sie darauf hinweisen, dass YouTube-Videos im „erweiterten Datenschutzmodus“ in ihren Seiten eingebettet sind. Die Nutzer sollten erfahren, dass der Aufruf der Seiten zu einer Verbindungsaufnahme mit YouTube und dem DoubleClick-Netzwerk führt. Man sollte ihnen auch nicht verschweigen, dass schon ein Klick auf das Video weitere Datenverarbeitungsvorgänge auslösen kann, auf die der Website-Betreiber keinen Einfluss mehr hat.',
+                'text'                 => 'In ihren Datenschutzerklärungen sollten sie darauf hinweisen, ' .
+                    'dass YouTube-Videos im „erweiterten Datenschutzmodus“ in ihren Seiten eingebettet sind. ' .
+                    'Die Nutzer sollten erfahren, dass der Aufruf der Seiten zu einer Verbindungsaufnahme mit ' .
+                    'YouTube und dem DoubleClick-Netzwerk führt. Man sollte ihnen auch nicht verschweigen, ' .
+                    'dass schon ein Klick auf das Video weitere Datenverarbeitungsvorgänge auslösen kann, ' .
+                    'auf die der Website-Betreiber keinen Einfluss mehr hat.',
                 'collapseControlStart' => true,
                 'showOnProp'           => 'video-vendor',
                 'showOnPropValue'      => 'youtube',
@@ -153,7 +159,8 @@ class Video extends \OPC\Portlet
             ],
             'video-yt-playlist' => [
                 'label'              => 'Playlist',
-                'help'               => 'Geben Sie die Video-IDs durch Komma getrennt ein . Bsp.: xITQHgJ3RRo,sNYv0JgrUlw',
+                'help'               => 'Geben Sie die Video-IDs durch Komma getrennt ein. ' .
+                    'Bsp.: xITQHgJ3RRo,sNYv0JgrUlw',
                 'collapseControlEnd' => true,
             ],
             'video-vim-id'      => [

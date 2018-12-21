@@ -1,0 +1,9 @@
+msgid "banner"
+msgstr "Banner"
+
+msgid "bannerURL"
+msgstr "https://jtl-url.de/kf5vr"
+
+msgid "bannerDesc"
+msgstr "Über die Bannerverwaltung pflegen Sie für beliebige Seiten in Ihrem Onlineshop klickbare Grafikbanner ein. Die klickbaren Flächen lassen sich innerhalb des Grafikbanners frei positionieren und mit Artikeln oder beliebigen URLs verknüpfen.<br /><strong>Achtung:</strong> Deaktivieren Sie Adblock, falls Sie Probleme auf dieser Seite feststellen."
+

@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Date;
+use Helpers\Request;
+
 /**
  * Class Kampagne
  */
@@ -102,7 +105,7 @@ class Kampagne
         $obj->dErstellt  = $this->dErstellt;
 
         $this->kKampagne    = Shop::Container()->getDB()->insert('tkampagne', $obj);
-        $cDatum_arr         = DateHelper::getDateParts($this->dErstellt);
+        $cDatum_arr         = Date::getDateParts($this->dErstellt);
         $this->dErstellt_DE = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'] . ' ' .
             $cDatum_arr['cStunde'] . ':' . $cDatum_arr['cMinute'] . ':' . $cDatum_arr['cSekunde'];
 
@@ -126,7 +129,7 @@ class Kampagne
         $obj->kKampagne  = $this->kKampagne;
 
         $res                = Shop::Container()->getDB()->update('tkampagne', 'kKampagne', $obj->kKampagne, $obj);
-        $cDatum_arr         = DateHelper::getDateParts($this->dErstellt);
+        $cDatum_arr         = Date::getDateParts($this->dErstellt);
         $this->dErstellt_DE = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'] . ' ' .
             $cDatum_arr['cStunde'] . ':' . $cDatum_arr['cMinute'] . ':' . $cDatum_arr['cSekunde'];
 
@@ -167,16 +170,17 @@ class Kampagne
                 1,
                 '*, DATE_FORMAT(dErstellt, \'%d.%m.%Y %H:%i:%s\') AS dErstellt_DE'
             );
-            $setRes = Shop::Container()->getCache()->set($cacheID, $oKampagne_arr, [CACHING_GROUP_CORE]);
+            $setRes        = Shop::Container()->getCache()->set($cacheID, $oKampagne_arr, [CACHING_GROUP_CORE]);
             if ($setRes === false) {
                 // could not save to cache - use session instead
-                $_SESSION['Kampagnen'] = [];
+                $campaigns = [];
                 if (is_array($oKampagne_arr) && count($oKampagne_arr) > 0) {
                     // save to session
                     foreach ($oKampagne_arr as $oKampagne) {
-                        $_SESSION['Kampagnen'][] = $oKampagne;
+                        $campaigns[] = $oKampagne;
                     }
                 }
+                $_SESSION['Kampagnen'] = $campaigns;
 
                 return $_SESSION['Kampagnen'];
             }
@@ -197,13 +201,13 @@ class Kampagne
         $bKampagnenHit = false;
         foreach ($campaigns as $oKampagne) {
             // Wurde für die aktuelle Kampagne der Parameter via GET oder POST uebergeben?
-            if (strlen(RequestHelper::verifyGPDataString($oKampagne->cParameter)) > 0
+            if (strlen(Request::verifyGPDataString($oKampagne->cParameter)) > 0
                 && isset($oKampagne->nDynamisch)
                 && ((int)$oKampagne->nDynamisch === 1
                     || ((int)$oKampagne->nDynamisch === 0
                         && isset($oKampagne->cWert)
                         && strtolower($oKampagne->cWert) ===
-                        strtolower(RequestHelper::verifyGPDataString($oKampagne->cParameter)))
+                        strtolower(Request::verifyGPDataString($oKampagne->cParameter)))
                 )
             ) {
                 $referrer = Visitor::getReferer();
@@ -225,7 +229,7 @@ class Kampagne
                     $event->kKampagneDef = KAMPAGNE_DEF_HIT;
                     $event->kKey         = $_SESSION['oBesucher']->kBesucher;
                     $event->fWert        = 1.0;
-                    $event->cParamWert   = RequestHelper::verifyGPDataString($oKampagne->cParameter);
+                    $event->cParamWert   = Request::verifyGPDataString($oKampagne->cParameter);
                     $event->cCustomData  = StringHandler::filterXSS($_SERVER['REQUEST_URI']) . ';' . $referrer;
                     if ((int)$oKampagne->nDynamisch === 0) {
                         $event->cParamWert = $oKampagne->cWert;
@@ -252,7 +256,7 @@ class Kampagne
                 );
 
                 if (!isset($oVorgang->kKampagneVorgang)) {
-                    $oKampagne                       = new Kampagne(KAMPAGNE_INTERN_GOOGLE);
+                    $oKampagne           = new Kampagne(KAMPAGNE_INTERN_GOOGLE);
                     $event               = new stdClass();
                     $event->kKampagne    = KAMPAGNE_INTERN_GOOGLE;
                     $event->kKampagneDef = KAMPAGNE_DEF_HIT;
@@ -262,7 +266,7 @@ class Kampagne
                     $event->dErstellt    = 'NOW()';
 
                     if ((int)$oKampagne->nDynamisch === 1) {
-                        $event->cParamWert = RequestHelper::verifyGPDataString($oKampagne->cParameter);
+                        $event->cParamWert = Request::verifyGPDataString($oKampagne->cParameter);
                     }
 
                     Shop::Container()->getDB()->insert('tkampagnevorgang', $event);

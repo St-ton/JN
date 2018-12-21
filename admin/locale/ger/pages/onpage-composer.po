@@ -1,0 +1,130 @@
+msgid "The OPC update is not installed properly. Please update your migrations."
+msgstr "Das OPC Update wurde nicht ordnungsgemäß installiert. Bitte aktualisieren Sie ihre Migrationen."
+
+msgid "Draft"
+msgstr "Entwurf"
+
+msgid "extended"
+msgstr "erweitert"
+
+msgid "replaced"
+msgstr "ersetzt"
+
+# OPC GUI
+
+msgid "Import"
+msgstr "Import"
+
+msgid "Export"
+msgstr "Export"
+
+msgid "Help"
+msgstr "Hilfe"
+
+msgid "Publicate"
+msgstr "Veröffentlichen"
+
+msgid "Save page"
+msgstr "Seite speichern"
+
+msgid "Close OnPage-Composer"
+msgstr "OnPage-Composer schließen"
+
+msgid "Portlets"
+msgstr "Portlets"
+
+msgid "Blueprints"
+msgstr "Vorlagen"
+
+msgid "Revisions"
+msgstr "Versionen"
+
+msgid "Page structure"
+msgstr "Seitenstruktur"
+
+msgid "Import blueprint"
+msgstr "Vorlage importieren"
+
+msgid "Unsaved revision"
+msgstr "Ungespeicherte Version"
+
+msgid "Current revision"
+msgstr "Aktuelle Version"
+
+msgid "Please wait..."
+msgstr "Bitte warten..."
+
+msgid "Error"
+msgstr "Fehler"
+
+msgid "Edit Portlet"
+msgstr "Portlet bearbeiten"
+
+msgid "Save this Portlet as a blueprint"
+msgstr "Portlet als Vorlage speichern"
+
+msgid "Blueprint name"
+msgstr "Vorlagen-Name"
+
+msgid "Delete Blueprint?"
+msgstr "Vorlage löschen?"
+
+msgid "Delete"
+msgstr "Löschen"
+
+# Config Tabs
+
+msgid "General"
+msgstr "Allgemein"
+
+msgid "Styles"
+msgstr "Stile"
+
+msgid "Animation"
+msgstr "Animation"
+
+# Styles tab
+
+msgid "Font color"
+msgstr "Schriftfarbe"
+
+msgid "Visibility"
+msgstr "Sichtbarkeit"
+
+msgid "hide"
+msgstr "ausblenden"
+
+msgid "Background color"
+msgstr "Hintergrundfarbe"
+
+msgid "Font size"
+msgstr "Schriftgröße"
+
+# Animations tab
+
+msgid "Animation style"
+msgstr "Animations-Typ"
+
+msgid "Duration"
+msgstr "Dauer"
+
+msgid "Delay"
+msgstr "Verzögerung"
+
+msgid "Offset (px)"
+msgstr "Abstand (Pixel)"
+
+msgid "Iteration"
+msgstr "Wiederholung"
+
+msgid "Change the animation duration (e.g. 2s)"
+msgstr "Dauer der Animation (z.B. 2s)"
+
+msgid "Delay before the animation starts"
+msgstr "Wartezeit bis die Animation beginnt"
+
+msgid "Distance to start the animation (related to the browser bottom)"
+msgstr "Animation beginnt sobald der Scroll-Abstand erreicht ist (von der Unterkante des Fensters)"
+
+msgid "Number of times the animation is repeated"
+msgstr "Wie oft wird die Animation wiederholt"

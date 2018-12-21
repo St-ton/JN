@@ -3,7 +3,13 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+use Helpers\PHPSettings;
+
 require_once __DIR__ . '/includes/admininclude.php';
+
+\Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 define('PARTNER_PACKAGE', 'JTL');
 define('SHOP_SOFTWARE', 'JTL');
@@ -21,7 +27,7 @@ $Einstellungen = Shop::getSettings([CONF_TRUSTEDSHOPS]);
 
 if (isset($_POST['kaeuferschutzeinstellungen'])
     && (int)$_POST['kaeuferschutzeinstellungen'] === 1
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     // Lpesche das Zertifikat
     if (isset($_POST['delZertifikat'])) {
@@ -32,8 +38,8 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
                 $cHinweis = 'Ihr Zertifikat wurde erfolgreich für die aktuelle Sprache gelöscht.';
 
                 Shop::Container()->getDB()->query(
-                    "DELETE FROM teinstellungen
-                        WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
+                    'DELETE FROM teinstellungen
+                        WHERE kEinstellungenSektion = ' . CONF_TRUSTEDSHOPS . "
                             AND cName = 'trustedshops_nutzen'",
                     \DB\ReturnType::DEFAULT
                 );
@@ -52,9 +58,9 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
     } else {
         $cPreStatus  = $Einstellungen['trustedshops']['trustedshops_nutzen'];
         $oConfig_arr = Shop::Container()->getDB()->query(
-            "SELECT *
+            'SELECT *
                 FROM teinstellungenconf
-                WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
+                WHERE kEinstellungenSektion = ' . CONF_TRUSTEDSHOPS . "
                     AND cConf = 'Y'
                     AND cWertName != 'trustedshops_kundenbewertung_anzeigen'
                 ORDER BY nSort",
@@ -125,7 +131,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
     }
 } elseif (isset($_POST['kaeuferschutzupdate'])
     && (int)$_POST['kaeuferschutzupdate'] === 1
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     // Kaeuferprodukte updaten
     $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
@@ -139,7 +145,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
     }
 } elseif (isset($_POST['kundenbewertungeinstellungen'])
     && (int)$_POST['kundenbewertungeinstellungen'] === 1
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     // Kundenbewertung Einstellungen
     $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
@@ -264,6 +270,8 @@ if ($step === 'uebersicht') {
     );
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
+        \Shop::Container()->getGetText()->localizeConfig($oConfig_arr[$i]);
+
         if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
             $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->query(
                 'SELECT *
@@ -272,6 +280,7 @@ if ($step === 'uebersicht') {
                     ORDER BY nSort',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
+            \Shop::Container()->getGetText()->localizeConfigValues($oConfig_arr[$i], $oConfig_arr[$i]->ConfWerte);
         } elseif ($oConfig_arr[$i]->cInputTyp === 'listbox') {
             $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->query(
                 'SELECT kKundengruppe, cName
@@ -282,19 +291,19 @@ if ($step === 'uebersicht') {
         }
 
         if ($oConfig_arr[$i]->cInputTyp === 'listbox') {
-            $oSetValue = Shop::Container()->getDB()->query(
-                "SELECT cWert
+            $oSetValue                      = Shop::Container()->getDB()->query(
+                'SELECT cWert
                     FROM teinstellungen
-                    WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
+                    WHERE kEinstellungenSektion = ' . CONF_TRUSTEDSHOPS . "
                         AND cName = '" . $oConfig_arr[$i]->cWertName . "'",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $oConfig_arr[$i]->gesetzterWert = $oSetValue;
         } else {
-            $oSetValue = Shop::Container()->getDB()->query(
-                "SELECT cWert
+            $oSetValue                      = Shop::Container()->getDB()->query(
+                'SELECT cWert
                     FROM teinstellungen
-                    WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
+                    WHERE kEinstellungenSektion = ' . CONF_TRUSTEDSHOPS . "
                         AND cName = '" . $oConfig_arr[$i]->cWertName . "'",
                 \DB\ReturnType::SINGLE_OBJECT
             );
@@ -376,7 +385,7 @@ if ($step === 'uebersicht') {
         ];
     }
 
-    $oSprach_arr = [
+    $oSprach_arr   = [
         'de' => 'Deutsch',
         'en' => 'Englisch',
         'fr' => 'Französisch',
@@ -404,9 +413,9 @@ if ($step === 'uebersicht') {
 }
 $smarty->assign('TS_BUYERPROT_CLASSIC', TS_BUYERPROT_CLASSIC)
        ->assign('TS_BUYERPROT_EXCELLENCE', TS_BUYERPROT_EXCELLENCE)
-       ->assign('bAllowfopen', PHPSettingsHelper::checkAllowFopen())
-       ->assign('bSOAP', PHPSettingsHelper::checkSOAP())
-       ->assign('bCURL', PHPSettingsHelper::checkCURL())
+       ->assign('bAllowfopen', PHPSettings::checkAllowFopen())
+       ->assign('bSOAP', PHPSettings::checkSOAP())
+       ->assign('bCURL', PHPSettings::checkCURL())
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)

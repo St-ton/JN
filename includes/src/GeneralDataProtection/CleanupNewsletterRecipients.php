@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -6,7 +6,12 @@
 
 namespace GeneralDataProtection;
 
+use DB\ReturnType;
+
 /**
+ * Class CleanupNewsletterRecipients
+ * @package GeneralDataProtection
+ *
  * Delete newsletter-registrations with no opt-in within given interval
  * (interval former "interval_clear_logs" = 90 days)
  *
@@ -18,20 +23,20 @@ namespace GeneralDataProtection;
 class CleanupNewsletterRecipients extends Method implements MethodInterface
 {
     /**
-     * runs all anonymize-routines
+     * runs all anonymize routines
      */
-    public function execute()
+    public function execute(): void
     {
-        $this->clean_tnewsletter();
+        $this->cleanupNewsletters();
     }
 
     /**
-     * delete newsletter-registrations with no "opt-in"
+     * delete newsletter registrations with no "opt-in"
      * within the given interval
      */
-    private function clean_tnewsletter()
+    private function cleanupNewsletters(): void
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared(
+        $data = \Shop::Container()->getDB()->queryPrepared(
             "SELECT e.cOptCode
             FROM tnewsletterempfaenger e
                 JOIN tnewsletterempfaengerhistory h ON h.cOptCode = e.cOptCode AND h.cEmail = e.cEmail
@@ -43,23 +48,20 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
             ORDER BY h.dEingetragen ASC
             LIMIT :pLimit",
             [
-                'pDateLimit' => $this->szDateLimit,
-                'pLimit'     => $this->iWorkLimit
+                'pDateLimit' => $this->dateLimit,
+                'pLimit'     => $this->workLimit
             ],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!\is_array($vResult)) {
-            return;
-        }
-        foreach ($vResult as $oResult) {
+        foreach ($data as $res) {
             \Shop::Container()->getDB()->queryPrepared(
                 'DELETE e, h
                 FROM tnewsletterempfaenger e
                    INNER JOIN tnewsletterempfaengerhistory h ON h.cOptCode = e.cOptCode AND h.cEmail = e.cEmail
                 WHERE
                    e.cOptCode = :pOpCode',
-                ['pOpCode' => $oResult->cOptCode],
-                \DB\ReturnType::AFFECTED_ROWS
+                ['pOpCode' => $res->cOptCode],
+                ReturnType::DEFAULT
             );
         }
     }

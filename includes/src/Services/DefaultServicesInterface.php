@@ -12,7 +12,14 @@ use DB\DbInterface;
 use DB\Services\GcServiceInterface;
 use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
+use L10n\GetText;
 use Monolog\Logger;
+use OPC\DB;
+use OPC\Locker;
+use OPC\PageDB;
+use OPC\PageService;
+use OPC\Service;
+use Services\JTL\AdminAccountService;
 use Services\JTL\BoxServiceInterface;
 use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
@@ -65,29 +72,29 @@ interface DefaultServicesInterface extends ContainerInterface
     public function getBackendLogService() : LoggerInterface;
 
     /**
-     * @return \OPC\Service
+     * @return Service
      */
-    public function getOPC(): \OPC\Service;
+    public function getOPC(): Service;
 
     /**
-     * @return \OPC\PageService
+     * @return PageService
      */
-    public function getOPCPageService(): \OPC\PageService;
+    public function getOPCPageService(): PageService;
 
     /**
-     * @return \OPC\DB
+     * @return DB
      */
-    public function getOPCDB(): \OPC\DB;
+    public function getOPCDB(): DB;
 
     /**
-     * @return \OPC\PageDB
+     * @return PageDB
      */
-    public function getOPCPageDB(): \OPC\PageDB;
+    public function getOPCPageDB(): PageDB;
 
     /**
-     * @return \OPC\Locker
+     * @return Locker
      */
-    public function getOPCLocker(): \OPC\Locker;
+    public function getOPCLocker(): Locker;
 
     /**
      * @return Logger
@@ -125,4 +132,14 @@ interface DefaultServicesInterface extends ContainerInterface
      * @return AlertServiceInterface
      */
     public function getAlertService() : AlertServiceInterface;
+
+    /**
+     * @return GetText
+     */
+    public function getGetText() : GetText;
+
+    /**
+     * @return \AdminAccount
+     */
+    public function getAdminAccount(): \AdminAccount;
 }

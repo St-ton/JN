@@ -83,5 +83,5 @@
         });
     </script>
 {else}
-    <div class="alert alert-info" role="alert">{#statisticNoData#}</div>
+    <div class="alert alert-info" role="alert">{__('statisticNoData')}</div>
 {/if}

@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Date;
+
 /**
  * Class Statistik
  */
@@ -55,8 +57,8 @@ class Statistik
         $this->nStampBis         = 0;
 
         if (strlen($cDatumVon) > 0 && strlen($cDatumBis) > 0) {
-            $this->cDatumVon_arr = DateHelper::getDateParts($cDatumVon);
-            $this->cDatumBis_arr = DateHelper::getDateParts($cDatumBis);
+            $this->cDatumVon_arr = Date::getDateParts($cDatumVon);
+            $this->cDatumBis_arr = Date::getDateParts($cDatumBis);
         } elseif ((int)$nStampVon > 0 && (int)$nStampBis > 0) {
             $this->nStampVon = (int)$nStampVon;
             $this->nStampBis = (int)$nStampBis;
@@ -88,9 +90,9 @@ class Statistik
                         DATE_FORMAT( dZeit, '%Y' ) AS nYear, 
                         COUNT( dZeit ) AS nCount
                     FROM tbesucherarchiv
-                    " . $oDatumSQL->cWhere . "
+                    " . $oDatumSQL->cWhere . '
                         AND kBesucherBot = 0
-                        " . $oDatumSQL->cGroupBy . "
+                        ' . $oDatumSQL->cGroupBy . "
                         UNION SELECT dZeit, DATE_FORMAT( dZeit, '%d.%m.%Y' ) AS dTime, 
                             DATE_FORMAT( dZeit, '%m' ) AS nMonth, 
                             DATE_FORMAT( dZeit, '%H' ) AS nHour,
@@ -98,12 +100,12 @@ class Statistik
                             DATE_FORMAT( dZeit, '%Y' ) AS nYear, 
                             COUNT( dZeit ) AS nCount
                         FROM tbesucher
-                        " . $oDatumSQL->cWhere . "
+                        " . $oDatumSQL->cWhere . '
                             AND kBesucherBot = 0
-                        " . $oDatumSQL->cGroupBy . "
+                        ' . $oDatumSQL->cGroupBy . '
                         ) AS t
-                        " . $oDatumSQL->cGroupBy . "
-                        ORDER BY dTime ASC",
+                        ' . $oDatumSQL->cGroupBy . '
+                        ORDER BY dTime ASC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
@@ -138,12 +140,12 @@ class Statistik
                         UNION SELECT IF(cReferer = '', 'direkter Einstieg', cReferer) AS cReferer, 
                         COUNT(dZeit) AS nCount
                         FROM tbesucherarchiv
-                        " . $oDatumSQL->cWhere . "
+                        " . $oDatumSQL->cWhere . '
                             AND kBesucherBot = 0
                         GROUP BY cReferer
                     ) AS t
                     GROUP BY t.cReferer
-                    ORDER BY nCount DESC",
+                    ORDER BY nCount DESC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
@@ -214,8 +216,8 @@ class Statistik
                     FROM tbestellung
                     " . $oDatumSQL->cWhere . "
                     AND cStatus != '-1'
-                    " . $oDatumSQL->cGroupBy . "
-                    ORDER BY tbestellung.dErstellt ASC",
+                    " . $oDatumSQL->cGroupBy . '
+                    ORDER BY tbestellung.dErstellt ASC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
@@ -271,7 +273,8 @@ class Statistik
         if (count($this->cDatumVon_arr) > 0 && count($this->cDatumBis_arr) > 0) {
             $oDay = Shop::Container()->getDB()->query(
                 "SELECT DATEDIFF('" . $this->cDatumBis_arr['cDatum'] . "', '" .
-                $this->cDatumVon_arr['cDatum'] . "') AS nTage", 1
+                $this->cDatumVon_arr['cDatum'] . "') AS nTage",
+                1
             );
 
             if (isset($oDay->nTage)) {
@@ -329,11 +332,11 @@ class Statistik
                 $cZeitBis = $this->cDatumBis_arr['cZeit'];
             }
 
-            $oDatum->cWhere = " WHERE " . $cDatumSpalte . " BETWEEN '" .
-                $this->cDatumVon_arr['cDatum'] . " " . $cZeitVon . "' AND '" .
-                $this->cDatumBis_arr['cDatum'] . " " . $cZeitBis . "' ";
+            $oDatum->cWhere = ' WHERE ' . $cDatumSpalte . " BETWEEN '" .
+                $this->cDatumVon_arr['cDatum'] . ' ' . $cZeitVon . "' AND '" .
+                $this->cDatumBis_arr['cDatum'] . ' ' . $cZeitBis . "' ";
         } elseif ($this->nStampVon > 0 && $this->nStampBis > 0) {
-            $oDatum->cWhere = " WHERE " . $cDatumSpalte . " BETWEEN '" .
+            $oDatum->cWhere = ' WHERE ' . $cDatumSpalte . " BETWEEN '" .
                 date('Y-m-d H:i:s', $this->nStampVon) . "' AND '" .
                 date('Y-m-d H:i:s', $this->nStampBis) . "' ";
         }
@@ -341,20 +344,20 @@ class Statistik
         if ($this->nAnzeigeIntervall > 0) {
             switch ($this->nAnzeigeIntervall) {
                 case 1: // Stunden
-                    $oDatum->cGroupBy = " GROUP BY HOUR(" . $cDatumSpalte . ")";
+                    $oDatum->cGroupBy = ' GROUP BY HOUR(' . $cDatumSpalte . ')';
                     break;
 
                 case 2: // Tage
-                    $oDatum->cGroupBy = " GROUP BY DAY(" . $cDatumSpalte . "), YEAR(" .
-                        $cDatumSpalte . "), MONTH(" . $cDatumSpalte . ")";
+                    $oDatum->cGroupBy = ' GROUP BY DAY(' . $cDatumSpalte . '), YEAR(' .
+                        $cDatumSpalte . '), MONTH(' . $cDatumSpalte . ')';
                     break;
 
                 case 3: // Monate
-                    $oDatum->cGroupBy = " GROUP BY MONTH(" . $cDatumSpalte . "), YEAR(" . $cDatumSpalte . ")";
+                    $oDatum->cGroupBy = ' GROUP BY MONTH(' . $cDatumSpalte . '), YEAR(' . $cDatumSpalte . ')';
                     break;
 
                 case 4: // Jahre
-                    $oDatum->cGroupBy = " GROUP BY YEAR(" . $cDatumSpalte . ")";
+                    $oDatum->cGroupBy = ' GROUP BY YEAR(' . $cDatumSpalte . ')';
                     break;
             }
         }
@@ -376,8 +379,8 @@ class Statistik
         switch ($this->nAnzeigeIntervall) {
             case 1: // Stunden
                 for ($i = 0; $i <= 23; $i++) {
-                    $oStat        = new stdClass();
-                    $oStat->dZeit = mktime(
+                    $oStat         = new stdClass();
+                    $oStat->dZeit  = mktime(
                         $i,
                         0,
                         0,
@@ -392,8 +395,8 @@ class Statistik
 
             case 2: // Tage
                 for ($i = 0; $i <= 30; $i++) {
-                    $oStat        = new stdClass();
-                    $oStat->dZeit = mktime(
+                    $oStat         = new stdClass();
+                    $oStat->dZeit  = mktime(
                         0,
                         0,
                         0,
@@ -408,8 +411,8 @@ class Statistik
 
             case 3: // Monate
                 for ($i = 0; $i <= 11; $i++) {
-                    $oStat        = new stdClass();
-                    $oStat->dZeit = mktime(
+                    $oStat         = new stdClass();
+                    $oStat->dZeit  = mktime(
                         0,
                         0,
                         0,
@@ -463,7 +466,7 @@ class Statistik
                         date('d', $this->nStampVon),
                         date('Y', $this->nStampVon)
                     );
-                    $end = mktime(
+                    $end   = mktime(
                         23,
                         59,
                         59,
@@ -482,7 +485,7 @@ class Statistik
                         date('d', $this->nStampVon),
                         date('Y', $this->nStampVon)
                     );
-                    $end = mktime(
+                    $end   = mktime(
                         23,
                         59,
                         59,
@@ -591,7 +594,7 @@ class Statistik
      */
     public function setDatumVon($cDatumVon): self
     {
-        $this->cDatumVon_arr = DateHelper::getDateParts($cDatumVon);
+        $this->cDatumVon_arr = Date::getDateParts($cDatumVon);
 
         return $this;
     }
@@ -602,7 +605,7 @@ class Statistik
      */
     public function setDatumBis($cDatumBis): self
     {
-        $this->cDatumBis_arr = DateHelper::getDateParts($cDatumBis);
+        $this->cDatumBis_arr = Date::getDateParts($cDatumBis);
 
         return $this;
     }

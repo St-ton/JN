@@ -8,12 +8,12 @@ namespace Boxes\Items;
 
 /**
  * Class Login
- * @package Boxes
+ * @package Boxes\Items
  */
 final class Login extends AbstractBox
 {
     /**
-     * DirectPurchase constructor.
+     * Login constructor.
      * @param array $config
      */
     public function __construct(array $config)

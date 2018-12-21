@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -6,8 +6,13 @@
 
 namespace GeneralDataProtection;
 
+use DB\ReturnType;
+
 /**
- * writes a journal of customer-data-changes,
+ * Class Journal
+ * @package GeneralDataProtection
+ *
+ * writes a journal of customer data changes,
  * e.g. deletion of a customer
  *
  * usage:
@@ -23,42 +28,59 @@ class Journal
      *
      * @var object DateTime
      */
-    protected $oNow;
+    protected $now;
 
     /**
-     * @param \DateTime $oNow
+     * @param \DateTime $now
      */
-    public function __construct(\DateTime $oNow = null)
+    public function __construct(\DateTime $now = null)
     {
-        if ($oNow === null) {
-            $oNow = new \DateTime();
+        if ($now === null) {
+            $now = new \DateTime();
         }
-        $this->oNow     = $oNow;
+        $this->now = $now;
     }
 
-    public static const ISSUER_CUSTOMER    = 'CUSTOMER';
-    public static const ISSUER_APPLICATION = 'APPLICATION';
-    public static const ISSUER_ADMIN       = 'ADMIN';
+    public const ISSUER_TYPE_CUSTOMER = 'CUSTOMER';
+
+    public const ISSUER_TYPE_APPLICATION = 'APPLICATION';
+
+    public const ISSUER_TYPE_DBES = 'DBES';
+
+    public const ISSUER_TYPE_ADMIN = 'ADMIN';
+
+    public const ISSUER_TYPE_PLUGIN = 'PLUGIN';
+
+    public const ACTION_CUSTOMER_DEACTIVATED = 'CUSTOMER_DEACTIVATED';
+
+    public const ACTION_CUSTOMER_DELETED = 'CUSTOMER_DELETED';
 
     /**
-     * saves the occurence of a data-modify-event to the journal
-     *
-     * @param string $szAction
-     * @param string $szIssuer
+     * @param string         $issuerType
+     * @param int            $issuerID
+     * @param string         $action
+     * @param string         $message
+     * @param \stdClass|null $detail
      */
-    public function save(string $szIssuer, int $iIssuerId, string $szAction): void
-    {
+    public function addEntry(
+        string $issuerType,
+        int $issuerID,
+        string $action,
+        string $message = '',
+        \stdClass $detail = null
+    ): void {
         \Shop::Container()->getDB()->queryPrepared(
-            'INSERT INTO tanondatajournal(cAction, cIssuer, iIssuerId, dEventTime)
-            VALUES(pAction, pIssuer, pIssuerId, pEventTime)',
+            'INSERT INTO tanondatajournal(cIssuer, iIssuerId, cAction, cDetail, cMessage, dEventTime)
+                VALUES(:cIssuer, :iIssuerId, :cAction, :cDetail, :cMessage, :dEventTime)',
             [
-                'pAction'    => $szAction,
-                'pIssuer'    => $szIssuer,
-                'pIssuerId'  => $iIssuerId,
-                'pEventTime' => $this->oNow->format('Y-m-d H:i:s')
+                'cMessage'   => $message,
+                'cDetail'    => \json_encode($detail),
+                'cAction'    => $action,
+                'cIssuer'    => $issuerType,
+                'iIssuerId'  => $issuerID,
+                'dEventTime' => $this->now->format('Y-m-d H:i:s')
             ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
     }
-
 }

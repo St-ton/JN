@@ -16,14 +16,14 @@ $smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyC
        ->registerPlugin('function', 'getRevisions', 'getRevisions')
        ->registerPlugin('function', 'captchaMarkup', 'captchaMarkup')
        ->registerPlugin('modifier', 'permission', 'permission')
-       ->registerPlugin('function', '__', [L10n\GetText::getInstance(), 'translate']);
+       ->registerPlugin('function', '__', [\Shop::Container()->getGetText(), 'translate']);
 
 /**
  * @param array            $params
  * @param Smarty\JTLSmarty $smarty
- * @return mixed
+ * @return string
  */
-function getRevisions($params, $smarty)
+function getRevisions(array $params, $smarty): string
 {
     $secondary = $params['secondary'] ?? false;
     $data      = $params['data'] ?? null;
@@ -41,7 +41,7 @@ function getRevisions($params, $smarty)
  * @param Smarty\JTLSmarty $smarty
  * @return string
  */
-function getCurrencyConversionSmarty($params, $smarty)
+function getCurrencyConversionSmarty(array $params, $smarty): string
 {
     $bForceSteuer = !(isset($params['bSteuer']) && $params['bSteuer'] === false);
     if (!isset($params['fPreisBrutto'])) {
@@ -67,21 +67,20 @@ function getCurrencyConversionSmarty($params, $smarty)
  * @param Smarty\JTLSmarty $smarty
  * @return string
  */
-function getCurrencyConversionTooltipButton($params, $smarty)
+function getCurrencyConversionTooltipButton(array $params, $smarty): string
 {
     $placement = $params['placement'] ?? 'left';
 
-    if (isset($params['inputId'])) {
-        $inputId = $params['inputId'];
-        $button  = '<button type="button" class="btn btn-tooltip btn-info" id="' .
-            $inputId . 'Tooltip" data-html="true"';
-        $button  .= ' data-toggle="tooltip" data-placement="' . $placement . '">';
-        $button  .= '<i class="fa fa-eur"></i></button>';
-
-        return $button;
+    if (!isset($params['inputId'])) {
+        return '';
     }
+    $inputId = $params['inputId'];
+    $button  = '<button type="button" class="btn btn-tooltip btn-info" id="' .
+        $inputId . 'Tooltip" data-html="true"';
+    $button  .= ' data-toggle="tooltip" data-placement="' . $placement . '">';
+    $button  .= '<i class="fa fa-eur"></i></button>';
 
-    return '';
+    return $button;
 }
 
 /**
@@ -103,7 +102,7 @@ function getCurrentPage($params, $smarty): void
  * @param Smarty\JTLSmarty $smarty
  * @return string
  */
-function getHelpDesc($params, $smarty)
+function getHelpDesc(array $params, $smarty): string
 {
     $placement   = $params['placement'] ?? 'left';
     $cID         = !empty($params['cID']) ? $params['cID'] : null;
@@ -123,22 +122,22 @@ function getHelpDesc($params, $smarty)
  */
 function permission($cRecht): bool
 {
-    $bOkay = false;
+    $ok = false;
     if (isset($_SESSION['AdminAccount'])) {
         if ((int)$_SESSION['AdminAccount']->oGroup->kAdminlogingruppe === ADMINGROUP) {
-            $bOkay = true;
+            $ok = true;
         } else {
             $orExpressions = explode('|', $cRecht);
             foreach ($orExpressions as $flag) {
-                $bOkay = in_array($flag, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true);
-                if ($bOkay) {
+                $ok = in_array($flag, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true);
+                if ($ok) {
                     break;
                 }
             }
         }
     }
 
-    return $bOkay;
+    return $ok;
 }
 
 /**
@@ -146,7 +145,7 @@ function permission($cRecht): bool
  * @param Smarty\JTLSmarty $smarty
  * @return string
  */
-function SmartyConvertDate($params, $smarty)
+function SmartyConvertDate(array $params, $smarty)
 {
     if (isset($params['date']) && strlen($params['date']) > 0) {
         $oDateTime = new DateTime($params['date']);
@@ -172,7 +171,7 @@ function SmartyConvertDate($params, $smarty)
  * @param array            $params
  * @param Smarty\JTLSmarty $smarty
  */
-function getExtensionCategory($params, $smarty)
+function getExtensionCategory(array $params, $smarty): void
 {
     if (!isset($params['cat'])) {
         return;
@@ -199,7 +198,7 @@ function getExtensionCategory($params, $smarty)
  * @param Smarty\JTLSmarty $smarty
  * @return string|null
  */
-function formatVersion($params, $smarty)
+function formatVersion(array $params, $smarty): ?string
 {
     if (!isset($params['value'])) {
         return null;
@@ -222,7 +221,7 @@ function formatVersion($params, $smarty)
  * @source https://gravatar.com/site/implement/images/php/
  * @return string
  */
-function gravatarImage($params, $smarty)
+function gravatarImage(array $params, $smarty): string
 {
     $email = $params['email'] ?? null;
     if ($email === null) {
@@ -250,7 +249,7 @@ function gravatarImage($params, $smarty)
  * @param Smarty\JTLSmarty $smarty
  * @return string
  */
-function captchaMarkup($params, $smarty)
+function captchaMarkup(array $params, $smarty): string
 {
     if (isset($params['getBody']) && $params['getBody']) {
         return Shop::Container()->getCaptchaService()->getBodyMarkup($smarty);

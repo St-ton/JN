@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Form;
+use Helpers\Request;
+
 /**
  * @global JTLSmarty    $smarty
  * @global AdminAccount $oAccount
@@ -13,12 +16,12 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'elfinder_inc.php';
 
-if (FormHelper::validateToken()) {
+if (Form::validateToken()) {
     $mediafilesSubdir = 'Bilder';
-    $mediafilesType   = RequestHelper::verifyGPDataString('mediafilesType');
-    $elfinderCommand  = RequestHelper::verifyGPDataString('cmd');
-    $isCKEditor       = RequestHelper::verifyGPDataString('ckeditor') === '1';
-    $CKEditorFuncNum  = RequestHelper::verifyGPDataString('CKEditorFuncNum');
+    $mediafilesType   = Request::verifyGPDataString('mediafilesType');
+    $elfinderCommand  = Request::verifyGPDataString('cmd');
+    $isCKEditor       = Request::verifyGPDataString('ckeditor') === '1';
+    $CKEditorFuncNum  = Request::verifyGPDataString('CKEditorFuncNum');
 
     switch ($mediafilesType) {
         case 'image':
@@ -42,7 +45,7 @@ if (FormHelper::validateToken()) {
         // https://github.com/Studio-42/elFinder/wiki/Connector-configuration-options
         // run elFinder
         $connector = new elFinderConnector(new elFinder([
-            'bind' => [
+            'bind'  => [
                 'rm rename' => function ($cmd, &$result, $args, $elfinder, $volume) use ($mediafilesSubdir) {
                     $sizes = ['xs', 'sm', 'md', 'lg', 'xl'];
 
@@ -86,12 +89,11 @@ if (FormHelper::validateToken()) {
 
         $connector->run();
     } else {
-        $smarty
-            ->assign('mediafilesType', $mediafilesType)
-            ->assign('mediafilesSubdir', $mediafilesSubdir)
-            ->assign('isCKEditor', $isCKEditor)
-            ->assign('CKEditorFuncNum', $CKEditorFuncNum)
-            ->assign('templateUrl', Shop::getURL() . '/' . PFAD_ADMIN . $currentTemplateDir)
-            ->display('elfinder.tpl');
+        $smarty->assign('mediafilesType', $mediafilesType)
+               ->assign('mediafilesSubdir', $mediafilesSubdir)
+               ->assign('isCKEditor', $isCKEditor)
+               ->assign('CKEditorFuncNum', $CKEditorFuncNum)
+               ->assign('templateUrl', Shop::getURL() . '/' . PFAD_ADMIN . $currentTemplateDir)
+               ->display('elfinder.tpl');
     }
 }

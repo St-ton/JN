@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Tax;
+use Helpers\ShippingMethod;
+
 /**
  * @param array $cPost_arr
  * @return array|int
@@ -191,7 +194,7 @@ function kundeSpeichern(array $cPost_arr)
             }
         }
         if (isset($cart->kWarenkorb) && $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
-            TaxHelper::setTaxRates();
+            Tax::setTaxRates();
             $cart->gibGesamtsummeWarenLocalized();
         }
         if ((int)$cPost_arr['checkout'] === 1) {
@@ -255,7 +258,10 @@ function gibFormularDaten(int $nCheckout = 0)
     Shop::Smarty()->assign('herkunfte', $herkunfte)
         ->assign('Kunde', $Kunde)
         ->assign('cKundenattribut_arr', $cKundenattribut_arr)
-        ->assign('laender', VersandartHelper::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID(), false, true))
+        ->assign(
+            'laender',
+            ShippingMethod::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID(), false, true)
+        )
         ->assign(
             'warning_passwortlaenge',
             lang_passwortlaenge(Shop::getSettingValue(CONF_KUNDEN, 'kundenregistrierung_passwortlaenge'))

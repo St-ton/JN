@@ -4,6 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Form;
+use Helpers\Request;
+use Pagination\Pagination;
+
 /**
  * @global Smarty\JTLSmarty $smarty
  * @global AdminAccount $oAccount
@@ -12,11 +16,9 @@
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
-\L10n\GetText::getInstance()->loadAdminLocale('opc-controlcenter');
-
 $notice = '';
 $error  = '';
-$action = RequestHelper::verifyGPDataString('action');
+$action = Request::verifyGPDataString('action');
 
 $opc       = Shop::Container()->getOPC();
 $opcPage   = Shop::Container()->getOPCPageService();
@@ -26,15 +28,15 @@ $pagesPagi = (new Pagination('pages'))
     ->setItemCount($opcPageDB->getPageCount())
     ->assemble();
 
-if (FormHelper::validateToken()) {
+if (Form::validateToken()) {
     if ($action === 'restore') {
-        $pageId = RequestHelper::verifyGPDataString('pageId');
+        $pageId = Request::verifyGPDataString('pageId');
         $opcPage->deletePage($pageId);
-        $notice = __('The OPC content for this page has been reset.');
+        $notice = __('opcNoticePageReset');
     } elseif ($action === 'discard') {
-        $pageKey = RequestHelper::verifyGPCDataInt('pageKey');
+        $pageKey = Request::verifyGPCDataInt('pageKey');
         $opcPage->deleteDraft($pageKey);
-        $notice = __('The draft has been deleted.');
+        $notice = __('opcNoticeDraftDelete');
     }
 }
 

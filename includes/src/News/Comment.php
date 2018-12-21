@@ -16,7 +16,7 @@ use DB\ReturnType;
 class Comment implements CommentInterface
 {
 
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -113,8 +113,10 @@ class Comment implements CommentInterface
     public function map(array $comments): CommentInterface
     {
         foreach ($comments as $comment) {
+            $this->setID((int)$comment->kNewsKommentar);
             $this->setNewsID((int)$comment->kNews);
             $this->setCustomerID((int)$comment->kKunde);
+            $this->setIsActive((int)$comment->nAktiv === 1);
             $this->setName($comment->cName);
             $this->setMail($comment->cEmail);
             $this->setText($comment->cKommentar);

@@ -1,0 +1,147 @@
+msgid "umfrage"
+msgstr "Umfragesystem"
+
+msgid "umfrageDesc"
+msgstr "Das Umfragesystem erlaubt es Ihnen, vielseitige Umfragen im Shop durchzuführen. Als Motivation für Shop-Besucher können Sie Kupons oder Bonusguthaben an die Teilnahme der Umfrage knüpfen."
+
+msgid "umfrageURL"
+msgstr "https://jtl-url.de/nx0d7"
+
+msgid "umfrageSave"
+msgstr "Speichern"
+
+msgid "umfrageAdd"
+msgstr "Neue Umfrage erstellen"
+
+msgid "umfrageOverview"
+msgstr "Umfragen"
+
+msgid "umfrageName"
+msgstr "Name"
+
+msgid "umfrageSeo"
+msgstr "SEO"
+
+msgid "umfrageCustomerGrp"
+msgstr "Kundengruppe"
+
+msgid "umfrageValidation"
+msgstr "Gültigkeit"
+
+msgid "umfrageActive"
+msgstr "Aktiv"
+
+msgid "umfrageText"
+msgstr "Beschreibung"
+
+msgid "umfrageDate"
+msgstr "Erstellt am"
+
+msgid "umfrageInfinite"
+msgstr "immer"
+
+msgid "umfrageEdit"
+msgstr "Editieren"
+
+msgid "umfrageDelete"
+msgstr "Löschen"
+
+msgid "umfrageFrom"
+msgstr "vom"
+
+msgid "umfrageTo"
+msgstr "bis"
+
+msgid "umfrageCoupon"
+msgstr "Kupon"
+
+msgid "umfrageCredits"
+msgstr "Guthaben"
+
+msgid "umfrageExtraPoints"
+msgstr "Bonuspunkte"
+
+msgid "umfrageNoCoupon"
+msgstr "Keinen"
+
+msgid "umfrageSort"
+msgstr "Sortierung"
+
+msgid "umfrageType"
+msgstr "Typ"
+
+msgid "umfrageAnotherQ"
+msgstr "Weitere Frage"
+
+msgid "umfrageSaveQ"
+msgstr "Fertig"
+
+msgid "umfrageEnterQ"
+msgstr "Fragen hinzufügen"
+
+msgid "umfrageEnter"
+msgstr "Umfrage hinzufügen"
+
+msgid "umfrageQ"
+msgstr "Frage"
+
+msgid "umfrageQType"
+msgstr "Typ"
+
+msgid "umfrageQs"
+msgstr "Fragen"
+
+msgid "umfrageQA"
+msgstr "Anworten"
+
+msgid "umfrageQASing"
+msgstr "Antwort"
+
+msgid "umfrageQO"
+msgstr "Optionen"
+
+msgid "umfrageBack"
+msgstr "zurück"
+
+msgid "umfrageQAdd"
+msgstr "Frage hinzufügen"
+
+msgid "umfrageQFreeField"
+msgstr "Freifeld hinzufügen"
+
+msgid "umfrageQEssential"
+msgstr "Notwendig"
+
+msgid "umfrageStats"
+msgstr "Statistik"
+
+msgid "umfrageStatsView"
+msgstr "Statistik anschauen"
+
+msgid "umfrageQResPercent"
+msgstr "Antworten Prozent"
+
+msgid "umfrageQResCount"
+msgstr "Antworten Anzahl"
+
+msgid "umfrageQMax"
+msgstr "Gesamtanzahl"
+
+msgid "umfrageTryCount"
+msgstr "Anzahl Durchläufe"
+
+msgid "umfrageQCount"
+msgstr "Anzahl Fragen"
+
+msgid "umfrageQADelete"
+msgstr "Antwort löschen"
+
+msgid "umfrageQODelete"
+msgstr "Option löschen"
+
+msgid "umfrageQSort"
+msgstr "Sortierung"
+
+msgid "umfrageSettings"
+msgstr "Einstellungen"
+

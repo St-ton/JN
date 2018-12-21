@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\GeneralObject;
+
 /**
  * Class EigenschaftWert
  */
@@ -100,7 +102,7 @@ class EigenschaftWert
      */
     public function insertInDB(): int
     {
-        $obj = ObjectHelper::copyMembers($this);
+        $obj = GeneralObject::copyMembers($this);
         unset($obj->fAufpreis);
 
         return Shop::Container()->getDB()->insert('teigenschaftwert', $obj);
@@ -113,7 +115,7 @@ class EigenschaftWert
      */
     public function updateInDB(): int
     {
-        $obj = ObjectHelper::copyMembers($this);
+        $obj = GeneralObject::copyMembers($this);
         unset($obj->fAufpreis);
 
         return Shop::Container()->getDB()->update('teigenschaftwert', 'kEigenschaftWert', $obj->kEigenschaftWert, $obj);

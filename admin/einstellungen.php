@@ -3,12 +3,17 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 /** @global Smarty\JTLSmarty $smarty */
 /** @global AdminAccount $oAccount */
 $kSektion = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
 $bSuche   = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
+
+\Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 if ($bSuche) {
     $oAccount->permission('SETTINGS_SEARCH_VIEW', true, true);
@@ -65,13 +70,15 @@ if ($kSektion > 0) {
     $smarty->assign('kEinstellungenSektion', CONF_GLOBAL);
 }
 
+\Shop::Container()->getGetText()->localizeConfigSection($section);
+
 if ($bSuche) {
     $step = 'einstellungen bearbeiten';
 }
 if (isset($_POST['einstellungen_bearbeiten'])
     && (int)$_POST['einstellungen_bearbeiten'] === 1
     && $kSektion > 0
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     // Einstellungssuche
     $oSQL = new stdClass();
@@ -89,9 +96,9 @@ if (isset($_POST['einstellungen_bearbeiten'])
     } else {
         $section = Shop::Container()->getDB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
         $Conf    = Shop::Container()->getDB()->query(
-            "SELECT *
+            'SELECT *
                 FROM teinstellungenconf
-                WHERE kEinstellungenSektion = " . (int)$section->kEinstellungenSektion . "
+                WHERE kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . "
                     AND cConf = 'Y'
                     AND nModul = 0
                     AND nStandardanzeigen = 1
@@ -163,22 +170,23 @@ if ($step === 'uebersicht') {
     );
     $sectionCount = count($sections);
     for ($i = 0; $i < $sectionCount; $i++) {
-        $anz_einstellunen = Shop::Container()->getDB()->query(
+        $anz_einstellunen = Shop::Container()->getDB()->queryPrepared(
             "SELECT COUNT(*) AS anz
                 FROM teinstellungenconf
-                WHERE kEinstellungenSektion = " . (int)$sections[$i]->kEinstellungenSektion . "
+                WHERE kEinstellungenSektion = :sid
                     AND cConf = 'Y'
                     AND nStandardAnzeigen = 1
                     AND nModul = 0",
+            ['sid' => (int)$sections[$i]->kEinstellungenSektion],
             \DB\ReturnType::SINGLE_OBJECT
         );
 
         $sections[$i]->anz = $anz_einstellunen->anz;
+        \Shop::Container()->getGetText()->localizeConfigSection($sections[$i]);
     }
     $smarty->assign('Sektionen', $sections);
 }
 if ($step === 'einstellungen bearbeiten') {
-    // Einstellungssuche
     $Conf = [];
     $oSQL = new stdClass();
     if ($bSuche) {
@@ -194,13 +202,13 @@ if ($step === 'einstellungen bearbeiten') {
                ->assign('cSuche', $oSQL->cSuche);
     } else {
         $Conf = Shop::Container()->getDB()->query(
-            "SELECT *
+            'SELECT *
                 FROM teinstellungenconf
                 WHERE nModul = 0 
                     AND nStandardAnzeigen = 1
-                    AND kEinstellungenSektion = " . (int)$section->kEinstellungenSektion . "
-                {$oSQL->cWHERE}
-                ORDER BY nSort",
+                    AND kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . ' ' .
+                $oSQL->cWHERE . '
+                ORDER BY nSort',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
@@ -210,7 +218,8 @@ if ($step === 'einstellungen bearbeiten') {
         $config->nStandardAnzeigen     = (int)$config->nStandardAnzeigen;
         $config->nSort                 = (int)$config->nSort;
         $config->nModul                = (int)$config->nModul;
-        $oSection = SettingSection::getInstance((int)$config->kEinstellungenSektion);
+        $oSection                      = SettingSection::getInstance((int)$config->kEinstellungenSektion);
+        \Shop::Container()->getGetText()->localizeConfig($config);
         //@ToDo: Setting 492 is the only one listbox at the moment.
         //But In special case of setting 492 values come from kKundengruppe instead of teinstellungenconfwerte
         if ($config->cInputTyp === 'listbox' && $config->kEinstellungenConf === 492) {
@@ -228,16 +237,18 @@ if ($step === 'einstellungen bearbeiten') {
                 '*',
                 'nSort'
             );
+
+            \Shop::Container()->getGetText()->localizeConfigValues($config, $config->ConfWerte);
         }
         if ($config->cInputTyp === 'listbox') {
-            $setValue                = Shop::Container()->getDB()->selectAll(
+            $setValue              = Shop::Container()->getDB()->selectAll(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [(int)$config->kEinstellungenSektion, $config->cWertName]
             );
             $config->gesetzterWert = $setValue;
         } else {
-            $setValue                = Shop::Container()->getDB()->select(
+            $setValue              = Shop::Container()->getDB()->select(
                 'teinstellungen',
                 'kEinstellungenSektion',
                 (int)$config->kEinstellungenSektion,

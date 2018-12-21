@@ -1012,6 +1012,12 @@ msgstr "Spamschutz aktivieren"
 msgid "benachrichtigung_abfragen_captcha_desc"
 msgstr "Soll ein Sicherheitscode abgefragt werden, damit die Benachrichtigungsanfrage akzeptiert wird?"
 
+msgid "benachrichtigung_min_lagernd_name"
+msgstr "Mindestlagerbestand für Benachrichtigung"
+
+msgid "benachrichtigung_min_lagernd_desc"
+msgstr "Erst wenn der Lagerbestand des Artikels diesen Wert übersteigt wird eine Verfügbarkeitsbenachrichtigung versendet"
+
 msgid "artikeldetails_vergleichsliste_anzeigen_name"
 msgstr "Button zur Vergleichsliste hinzufügen anzeigen"
 

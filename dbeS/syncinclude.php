@@ -568,7 +568,10 @@ function fuelleArtikelKategorieRabatt($product, $customerGroups): array
  */
 function versendeVerfuegbarkeitsbenachrichtigung($product)
 {
-    if (!($product->fLagerbestand > 0 && $product->kArtikel)) {
+    $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
+    if ($product->kArtikel <= 0
+         || !($product->fLagerbestand > $conf['artikeldetails']['benachrichtigung_min_lagernd'])
+    ) {
         return;
     }
     $Benachrichtigungen = Shop::Container()->getDB()->selectAll(

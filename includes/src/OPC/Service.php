@@ -13,7 +13,6 @@ use Filter\Items\PriceRange;
 use Filter\Option;
 use Filter\ProductFilter;
 use Filter\Type;
-use L10n\GetText;
 
 /**
  * Class Service
@@ -43,7 +42,6 @@ class Service
     public function __construct(DB $db)
     {
         $this->db = $db;
-        GetText::getInstance()->loadAdminLocale('opc');
     }
 
     /**

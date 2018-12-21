@@ -15,8 +15,11 @@ $oAccount->permission('ORDER_BILLPAY_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'billpay_inc.php';
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
+\Shop::Container()->getGetText()->loadConfigLocales();
+
 $cFehler = null;
 $cStep   = 'uebersicht';
+
 /** @global Smarty\JTLSmarty $smarty */
 $smarty->assign('cTab', $cStep);
 if (strlen(Request::verifyGPDataString('tab')) > 0) {
@@ -118,6 +121,8 @@ $Conf = Shop::Container()->getDB()->selectAll(
     'nSort'
 );
 
+\Shop::Container()->getGetText()->localizeConfigs($Conf);
+
 if (isset($_POST['einstellungen_bearbeiten']) && Form::validateToken()) {
     foreach ($Conf as $i => $oConfig) {
         unset($aktWert);
@@ -165,6 +170,8 @@ for ($i = 0; $i < $configCount; $i++) {
             '*',
             'nSort'
         );
+
+        \Shop::Container()->getGetText()->localizeConfigValues($Conf[$i], $Conf[$i]->ConfWerte);
     }
     $setValue                = Shop::Container()->getDB()->select(
         'teinstellungen',

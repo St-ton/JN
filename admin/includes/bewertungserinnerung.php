@@ -48,7 +48,7 @@ function baueBewertungsErinnerung()
         return;
     }
     $nMaxTage = $nVersandTage * 2;
-    if ($nVersandTage == 1) {
+    if ($nVersandTage === 1) {
         $nMaxTage = 4;
     }
     $cQuery            = 'SELECT kBestellung
@@ -77,15 +77,18 @@ function baueBewertungsErinnerung()
 
         foreach ($oBestellung->Positionen as $Pos) {
             if ($Pos->kArtikel > 0) {
-                $res = Shop::Container()->getDB()->query(
-                    'SELECT kBewertung
-                        FROM tbewertung
-                        WHERE kArtikel = ' . (int)$Pos->kArtikel . '
-                            AND kKunde = ' . (int)$oBestellung->kKunde,
-                    \DB\ReturnType::SINGLE_OBJECT
-                );
-                if ($res === false) {
-                    $openReviewPos_arr[] = $Pos;
+                $productVisible = (new Artikel())->fuelleArtikel($Pos->kArtikel, null, $oKunde->kKundengruppe);
+                if ($productVisible->kArtikel > 0) {
+                    $res = Shop::Container()->getDB()->query(
+                        'SELECT kBewertung
+                            FROM tbewertung
+                            WHERE kArtikel = ' . (int)$Pos->kArtikel . '
+                                AND kKunde = ' . (int)$oBestellung->kKunde,
+                        \DB\ReturnType::SINGLE_OBJECT
+                    );
+                    if ($res === false) {
+                        $openReviewPos_arr[] = $Pos;
+                    }
                 }
             }
         }

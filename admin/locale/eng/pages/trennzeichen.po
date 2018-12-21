@@ -1,0 +1,12 @@
+msgid "Trennzeichen"
+msgstr "Zahlenformate"
+
+msgid "trennzeichenURL"
+msgstr "https://jtl-url.de/xiepq"
+
+msgid "trennzeichenDesc"
+msgstr ""
+
+msgid "trennzeichenSave"
+msgstr "Speichern"
+

@@ -1,0 +1,120 @@
+msgid "exportformats"
+msgstr "Exportformate"
+
+msgid "exportformatsURL"
+msgstr "https://jtl-url.de/ycaxd"
+
+msgid "exportformatsDesc"
+msgstr "Hier können Sie Formate zum Exportieren Ihrer Artikeldaten definieren."
+
+msgid "languageCurrencyCustGrp"
+msgstr "Sprache/Währung/Kundengruppe"
+
+msgid "filename"
+msgstr "Dateiname"
+
+msgid "campaigns"
+msgstr "Kampagne"
+
+msgid "lastModified"
+msgstr "zuletzt erstellt"
+
+msgid "actions"
+msgstr "Aktionen"
+
+msgid "name"
+msgstr "Name"
+
+msgid "markedElement"
+msgstr "Markiertes Element"
+
+msgid "createExportFile"
+msgstr "Erstelle Exportdatei"
+
+msgid "createExportFileShort"
+msgstr "Erstellen"
+
+msgid "createExportFileAsync"
+msgstr "Erstelle Exportdatei (asynchron)"
+
+msgid "createExportFileAsyncShort"
+msgstr "Erstellen (asynchron)"
+
+msgid "edit"
+msgstr "Bearbeiten"
+
+msgid "delete"
+msgstr "Löschen"
+
+msgid "do"
+msgstr "Ausführen"
+
+msgid "newExportformat"
+msgstr "Neues Exportformat erstellen"
+
+msgid "modifyExportformat"
+msgstr "Exportformat bearbeiten"
+
+msgid "newExportformatSave"
+msgstr "Neues Exportformat speichern"
+
+msgid "modifyExportformatSave"
+msgstr "Überarbeitetes Exportformat speichern"
+
+msgid "language"
+msgstr "Sprache"
+
+msgid "currency"
+msgstr "Währung"
+
+msgid "customerGroup"
+msgstr "Kundengruppe"
+
+msgid "header"
+msgstr "Kopfzeile"
+
+msgid "onlyIfNeeded"
+msgstr "Nur angeben, wenn Exportdatei die Kopfzeile enthalten soll"
+
+msgid "template"
+msgstr "Vorlage des Inhalts"
+
+msgid "smartyRules"
+msgstr "Smarty wird genutzt. Achtung: PHP-Tags und Inhalte sind nicht erlaubt."
+
+msgid "download"
+msgstr "Datei herunterladen"
+
+msgid "footer"
+msgstr "Fusszeile"
+
+msgid "onlyIfNeededFooter"
+msgstr "Nur angeben, wenn die Fusszeile angehängt werden soll"
+
+msgid "saveSettings"
+msgstr "Einstellungen speichern"
+
+msgid "StartTime"
+msgstr "Startdatum (nur beim Erstellen)"
+
+msgid "encoding"
+msgstr "Zeichenkodierung"
+
+msgid "varikombiOption"
+msgstr "VariationKombi Option"
+
+msgid "varikombiOption1"
+msgstr "Vater- und Kindartikel exportieren"
+
+msgid "varikombiOption2"
+msgstr "Nur Vaterartikel exportieren"
+
+msgid "varikombiOption3"
+msgstr "Nur Kindartikel exportieren"
+
+msgid "splitSize"
+msgstr "Grösse pro Datei (MB)"
+
+msgid "FillOut"
+msgstr "Bitte ausfüllen"
+

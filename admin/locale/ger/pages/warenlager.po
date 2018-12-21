@@ -1,0 +1,30 @@
+msgid "warenlager"
+msgstr "Warenlager"
+
+msgid "warenlagerURL"
+msgstr "https://jtl-url.de/2onym"
+
+msgid "warenlagerDesc"
+msgstr "Über die Warenlagerverwaltung pflegen Sie die Anzeige der Läger im Shop"
+
+msgid "warenlagerIntern"
+msgstr "interne Bezeichnung"
+
+msgid "warenlagerDescInt"
+msgstr "Beschreibung"
+
+msgid "watenlagerActive"
+msgstr "Im Shop aktiv"
+
+msgid "warenlagerOption"
+msgstr "Optionen"
+
+msgid "warenlagerSelectAll"
+msgstr "Alle auswählen"
+
+msgid "warenlagerUpdate"
+msgstr "Aktualisieren"
+
+msgid "warenlagerDesignation"
+msgstr "Bezeichnung ändern"
+

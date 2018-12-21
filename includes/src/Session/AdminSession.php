@@ -153,9 +153,11 @@ class AdminSession
     /**
      * @return string
      */
-    public static function createHash(): string
+    private static function createHash(): string
     {
-        return \mhash(\MHASH_SHA1, \Shop::getApplicationVersion());
+        return \function_exists('mhash')
+            ? \bin2hex(\mhash(\MHASH_SHA1, \Shop::getApplicationVersion()))
+            : \sha1(\Shop::getApplicationVersion());
     }
 
     /**

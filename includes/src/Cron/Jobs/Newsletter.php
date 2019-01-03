@@ -26,7 +26,7 @@ class Newsletter extends Job
     {
         parent::__construct($db, $logger);
         if (\JOBQUEUE_LIMIT_M_NEWSLETTER > 0) {
-            $this->setLimit((int)\JOBQUEUE_LIMIT_M_NEWSLETTER);
+            $this->setLimit(\JOBQUEUE_LIMIT_M_NEWSLETTER);
         }
     }
 

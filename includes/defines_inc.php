@@ -305,13 +305,11 @@ define('SEP_MERKMAL', '__');
 define('SEP_MM_MMW', '--');
 // extract params seperator
 define('EXT_PARAMS_SEPERATORS_REGEX', '\&\?');
-// Updater
-define('U_FILE_PREFIX', 'jtl_update_');
 // JobQueue
 defined('JOBQUEUE_LIMIT_JOBS') || define('JOBQUEUE_LIMIT_JOBS', 5);
 defined('JOBQUEUE_LIMIT_M_EXPORTE') || define('JOBQUEUE_LIMIT_M_EXPORTE', 500);
-define('JOBQUEUE_LIMIT_M_NEWSLETTER', 100);
-define('JOBQUEUE_LIMIT_M_STATUSEMAIL', 1);
+defined('JOBQUEUE_LIMIT_M_NEWSLETTER') || define('JOBQUEUE_LIMIT_M_NEWSLETTER', 100);
+defined('JOBQUEUE_LIMIT_M_STATUSEMAIL') || define('JOBQUEUE_LIMIT_M_STATUSEMAIL', 1);
 defined('JOBQUEUE_LIMIT_IMAGE_CACHE_IMAGES') || define('JOBQUEUE_LIMIT_IMAGE_CACHE_IMAGES', 400);
 // Exportformate
 defined('EXPORTFORMAT_LIMIT_M') || define('EXPORTFORMAT_LIMIT_M', 2000);

@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -29,6 +28,7 @@ use Filter\States\BaseSearchQuery;
 use Filter\States\BaseSearchSpecial;
 use Filter\States\BaseTag;
 use Filter\States\DummyState;
+use Helpers\Request;
 use Mapper\SortingType;
 use Tightenco\Collect\Support\Collection;
 use function Functional\first;
@@ -774,7 +774,7 @@ class ProductFilter
                     ['artikel_artikelanzeigefilter'] === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
             ]);
         }
-        $this->nSeite = \max(1, \Helpers\Request::verifyGPCDataInt('seite'));
+        $this->nSeite = \max(1, Request::verifyGPCDataInt('seite'));
         foreach ($this->getCustomFilters() as $filter) {
             $filterParam = $filter->getUrlParam();
             $filterClass = $filter->getClassName();
@@ -786,8 +786,8 @@ class ProductFilter
                 // escape all input values
                 if (($filter->getType() === Type::OR && \is_array($_GET[$filterParam]))
                     || ($filter->getType() === Type::AND
-                        && (\Helpers\Request::verifyGPCDataInt($filterParam) > 0
-                            || \Helpers\Request::verifyGPDataString($filterParam) !== ''))
+                        && (Request::verifyGPCDataInt($filterParam) > 0
+                            || Request::verifyGPDataString($filterParam) !== ''))
                 ) {
                     $filterValue = \is_array($_GET[$filterParam])
                         ? \array_map([$this->db, 'realEscape'], $_GET[$filterParam])
@@ -1535,7 +1535,7 @@ class ProductFilter
      */
     public function setUserSort(\Kategorie $category = null): self
     {
-        $gpcSort = \Helpers\Request::verifyGPCDataInt('Sortierung');
+        $gpcSort = Request::verifyGPCDataInt('Sortierung');
         // user wants to reset default sorting
         if ($gpcSort === \SEARCH_SORT_STANDARD) {
             unset($_SESSION['Usersortierung'], $_SESSION['nUsersortierungWahl'], $_SESSION['UsersortierungVorSuche']);
@@ -1747,8 +1747,7 @@ class ProductFilter
                 ->setSearchTerm(\strip_tags(\trim($this->params['cSuche'])))
                 ->setError($error);
         }
-        if ($fill === true) {
-            // @todo: slice list of IDs when not filling?
+        if ($fill === true) { // @todo: slice list of IDs when not filling?
             $opt                        = new \stdClass();
             $opt->nMerkmale             = 1;
             $opt->nKategorie            = 1;
@@ -1988,8 +1987,8 @@ class ProductFilter
         } else {
             $i = 1;
             while ($i < 20) {
-                if (\Helpers\Request::verifyGPCDataInt('sf' . $i) > 0) {
-                    $filter[] = \Helpers\Request::verifyGPCDataInt('sf' . $i);
+                if (Request::verifyGPCDataInt('sf' . $i) > 0) {
+                    $filter[] = Request::verifyGPCDataInt('sf' . $i);
                 }
                 ++$i;
             }
@@ -2030,8 +2029,8 @@ class ProductFilter
         } else {
             $i = 1;
             while ($i < 20) {
-                if (\Helpers\Request::verifyGPCDataInt('tf' . $i) > 0) {
-                    $filter[] = \Helpers\Request::verifyGPCDataInt('tf' . $i);
+                if (Request::verifyGPCDataInt('tf' . $i) > 0) {
+                    $filter[] = Request::verifyGPCDataInt('tf' . $i);
                 }
                 ++$i;
             }
@@ -2051,7 +2050,7 @@ class ProductFilter
     /**
      * @param DbInterface $db
      */
-    public function setDB(DbInterface $db)
+    public function setDB(DbInterface $db): void
     {
         $this->db = $db;
     }
@@ -2067,7 +2066,7 @@ class ProductFilter
     /**
      * @param \Cache\JTLCacheInterface $cache
      */
-    public function setCache(JTLCacheInterface $cache)
+    public function setCache(JTLCacheInterface $cache): void
     {
         $this->cache = $cache;
     }
@@ -2083,7 +2082,7 @@ class ProductFilter
     /**
      * @param Config $filterConfig
      */
-    public function setFilterConfig(Config $filterConfig)
+    public function setFilterConfig(Config $filterConfig): void
     {
         $this->filterConfig = $filterConfig;
     }

@@ -67,20 +67,35 @@ class PluginLoader extends AbstractLoader
         if ($invalidateCache === true) {
             $this->cache->flush('hook_list');
             $this->cache->flushTags([\CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $id]);
+        } elseif (($plugin = $this->loadFromCache()) !== null) {
+            $this->plugin = $plugin;
+
+            return $this->plugin;
         }
-//        elseif (($plugin = $this->cache->get($this->cacheID)) !== false) {
-//            foreach (\get_object_vars($plugin) as $k => $v) {
-//                $this->plugin->$k = $v;
-//            }
-//
-//            return $this->plugin;
-//        }
         $obj = $this->db->select('tplugin', 'kPlugin', $id);
         if ($obj === null) {
             throw new \InvalidArgumentException('Cannot find plugin with ID ' . $id);
         }
 
         return $this->loadFromObject($obj, $languageCode);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function saveToCache(AbstractExtension $extension): bool
+    {
+        return $this->cacheID !== null
+            ? $this->cache->set($this->cacheID, $extension, [\CACHING_GROUP_PLUGIN, $extension->getCache()->getGroup()])
+            : false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function loadFromCache(): ?AbstractExtension
+    {
+        return ($plugin = $this->cache->get($this->cacheID)) === false ? null : $plugin;
     }
 
     /**
@@ -117,7 +132,7 @@ class PluginLoader extends AbstractLoader
         $this->plugin->setWidgets($this->loadWidgets($this->plugin));
         $this->plugin->setPaymentMethods($this->loadPaymentMethods($this->plugin));
         $this->plugin->setMailTemplates($this->loadMailTemplates($this->plugin));
-        $this->cache();
+        $this->saveToCache($this->plugin);
 
         return $this->plugin;
     }
@@ -158,16 +173,6 @@ class PluginLoader extends AbstractLoader
         }, $this->db->selectAll('tpluginhook', 'kPlugin', $id));
 
         return $hooks;
-    }
-
-    /**
-     * @return bool
-     */
-    protected function cache(): bool
-    {
-        return $this->cacheID !== null
-            ? $this->cache->set($this->cacheID, $this->plugin, [\CACHING_GROUP_PLUGIN, $this->plugin->pluginCacheGroup])
-            : false;
     }
 
     /**

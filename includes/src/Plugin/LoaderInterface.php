@@ -35,7 +35,18 @@ interface LoaderInterface
     /**
      * @param object $obj
      * @param string $currentLanguageCode
-     * @return mixed
+     * @return AbstractExtension
      */
     public function loadFromObject($obj, string $currentLanguageCode);
+
+    /**
+     * @return AbstractExtension|null
+     */
+    public function loadFromCache(): ?AbstractExtension;
+
+    /**
+     * @param AbstractExtension $extension
+     * @return bool
+     */
+    public function saveToCache(AbstractExtension $extension): bool;
 }

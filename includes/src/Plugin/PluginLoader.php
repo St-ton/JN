@@ -55,12 +55,15 @@ class PluginLoader extends AbstractLoader
     /**
      * @inheritdoc
      */
-    public function init(int $id, bool $invalidateCache = false)
+    public function init(int $id, bool $invalidateCache = false, int $languageID = null)
     {
+        $languageID    = $languageID ?? \Shop::getLanguageID() ?? \Shop::Lang()::getDefaultLanguage()->kSprache;
+        $languageCode  = \Shop::Lang()->getIsoFromLangID($languageID)->cISO;
+        $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id . '_' . $languageID;
         if ($this->plugin === null) {
             $this->plugin = new Plugin();
         }
-        $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id;// . '_' . \Shop::getLanguageID();
+        $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id . '_' . $languageID;
         if ($invalidateCache === true) {
             $this->cache->flush('hook_list');
             $this->cache->flushTags([\CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $id]);
@@ -77,14 +80,18 @@ class PluginLoader extends AbstractLoader
             throw new \InvalidArgumentException('Cannot find plugin with ID ' . $id);
         }
 
-        return $this->loadFromObject($obj);
+        return $this->loadFromObject($obj, $languageCode);
     }
 
     /**
      * @inheritdoc
      */
-    public function loadFromObject($obj): Plugin
+    public function loadFromObject($obj, string $currentLanguageCode): Plugin
     {
+        $currentLanguageCode = $currentLanguageCode
+            ?? \Shop::getLanguageCode()
+            ?? \Sprache::getDefaultLanguage()->cISO;
+
         $this->plugin->setID((int)$obj->kPlugin);
         $this->plugin->setPluginID($obj->cPluginID);
         $this->plugin->setState((int)$obj->nStatus);
@@ -105,7 +112,7 @@ class PluginLoader extends AbstractLoader
         $this->loadMarkdownFiles($this->plugin->getPaths()->getBasePath(), $this->plugin->getMeta());
         $this->loadAdminMenu($this->plugin);
         $this->plugin->setConfig($this->loadConfig($this->plugin->getPaths()->getAdminPath(), $this->plugin->getID()));
-        $this->plugin->setLocalization($this->loadLocalization($this->plugin->getID()));
+        $this->plugin->setLocalization($this->loadLocalization($this->plugin->getID(), $currentLanguageCode));
         $this->plugin->setLinks($this->loadLinks($this->plugin->getID()));
         $this->plugin->setWidgets($this->loadWidgets($this->plugin));
         $this->plugin->setPaymentMethods($this->loadPaymentMethods($this->plugin));
@@ -126,8 +133,8 @@ class PluginLoader extends AbstractLoader
             $widget->className = \str_replace($widget->namespace, 'Widget', $widget->className);
             $widget->namespace = null;
             $widget->classFile = \str_replace(
-                PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_WIDGET,
-                PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_WIDGET . 'class.Widget',
+                \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_WIDGET,
+                \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_WIDGET . 'class.Widget',
                 $widget->classFile
             );
         }

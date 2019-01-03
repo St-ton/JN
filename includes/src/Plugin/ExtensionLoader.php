@@ -8,8 +8,6 @@ namespace Plugin;
 
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
-use DB\NiceDB;
-use L10n\GetText;
 
 /**
  * Class ExtensionLoader
@@ -31,10 +29,11 @@ class ExtensionLoader extends AbstractLoader
     /**
      * @inheritdoc
      */
-    public function init(int $id, bool $invalidateCache = false)
+    public function init(int $id, bool $invalidateCache = false, int $languageID = null)
     {
-        $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id .
-            '_' . \Shop::getLanguageID();
+        $languageID    = $languageID ?? \Shop::getLanguageID() ?? \Shop::Lang()::getDefaultLanguage()->kSprache;
+        $languageCode  = \Shop::Lang()->getIsoFromLangID($languageID)->cISO;
+        $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id . '_' . $languageID;
         if ($invalidateCache === true) {
             $this->cache->flush('hook_list');
             $this->cache->flushTags([\CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $id]);
@@ -52,17 +51,16 @@ class ExtensionLoader extends AbstractLoader
             throw new \InvalidArgumentException('Cannot find plugin with ID ' . $id);
         }
 
-        return $this->loadFromObject($obj);
+        return $this->loadFromObject($obj, $languageCode);
     }
 
     /**
      * @inheritdoc
      */
-    public function loadFromObject($obj): Extension
+    public function loadFromObject($obj, string $currentLanguageCode): Extension
     {
-        $id    = (int)$obj->kPlugin;
-        $paths = $this->loadPaths($obj->cVerzeichnis);
-
+        $id        = (int)$obj->kPlugin;
+        $paths     = $this->loadPaths($obj->cVerzeichnis);
         $extension = new Extension();
         $extension->setIsExtension(true);
         $extension->setMeta($this->loadMetaData($obj));
@@ -78,7 +76,7 @@ class ExtensionLoader extends AbstractLoader
         $extension->setCache($this->loadCacheData($extension));
         \Shop::Container()->getGetText()->loadPluginLocale($obj->cPluginID, $extension);
         $extension->setConfig($this->loadConfig($paths->getAdminPath(), $extension->getID()));
-        $extension->setLocalization($this->loadLocalization($id));
+        $extension->setLocalization($this->loadLocalization($id, $currentLanguageCode));
         $extension->setWidgets($this->loadWidgets($extension));
         $extension->setMailTemplates($this->loadMailTemplates($extension));
         $extension->setPaymentMethods($this->loadPaymentMethods($extension));

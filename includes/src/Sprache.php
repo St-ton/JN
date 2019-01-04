@@ -28,7 +28,7 @@
  * @method bool valid()
  * @method bool isValid()
  * @method array|mixed|null getLangArray()
- * @method bool|string getIsoFromLangID(int $kSprache)
+ * @method stdClass|null getIsoFromLangID(int $kSprache)
  * @method static stdClass|null getLangIDFromIso(string $cISO)
  * @method static bool|int|string getLanguageDataByType(string $cISO = '', int $kSprache = 0)
  */
@@ -207,7 +207,7 @@ class Sprache
 
     /**
      * @param int $kSprache
-     * @return mixed
+     * @return stdClass|null
      */
     public function _getIsoFromLangID(int $kSprache)
     {
@@ -982,24 +982,24 @@ class Sprache
     }
 
     /**
-     * @param bool     $bShop
+     * @param bool     $shop
      * @param int|null $kSprache - optional lang id to check against instead of session value
      * @return bool
      * @former standardspracheAktiv()
      * @since 5.0.0
      */
-    public static function isDefaultLanguageActive(bool $bShop = false, int $kSprache = null): bool
+    public static function isDefaultLanguageActive(bool $shop = false, int $kSprache = null): bool
     {
         if ($kSprache === null && !isset($_SESSION['kSprache'])) {
             return true;
         }
         $langToCheckAgainst = $kSprache !== null ? (int)$kSprache : Shop::getLanguageID();
         if ($langToCheckAgainst > 0) {
-            foreach (\Session\Frontend::getLanguages() as $Sprache) {
-                if ($Sprache->cStandard === 'Y' && (int)$Sprache->kSprache === $langToCheckAgainst && !$bShop) {
+            foreach (\Session\Frontend::getLanguages() as $language) {
+                if ($language->cStandard === 'Y' && (int)$language->kSprache === $langToCheckAgainst && !$shop) {
                     return true;
                 }
-                if ($Sprache->cShopStandard === 'Y' && (int)$Sprache->kSprache === $langToCheckAgainst && $bShop) {
+                if ($language->cShopStandard === 'Y' && (int)$language->kSprache === $langToCheckAgainst && $shop) {
                     return true;
                 }
             }
@@ -1011,28 +1011,27 @@ class Sprache
     }
 
     /**
-     * @param bool $bShop
+     * @param bool $shop
      * @return stdClass|Sprache
      * @former gibStandardsprache()
      * @since 5.0.0
      */
-    public static function getDefaultLanguage($bShop = true)
+    public static function getDefaultLanguage(bool $shop = true)
     {
-        foreach (\Session\Frontend::getLanguages() as $Sprache) {
-            if ($Sprache->cStandard === 'Y' && !$bShop) {
-                return $Sprache;
+        foreach (\Session\Frontend::getLanguages() as $language) {
+            if ($language->cStandard === 'Y' && !$shop) {
+                return $language;
             }
-            if ($Sprache->cShopStandard === 'Y' && $bShop) {
-                return $Sprache;
+            if ($language->cShopStandard === 'Y' && $shop) {
+                return $language;
             }
         }
 
-        $cacheID = 'shop_lang_' . (($bShop === true) ? 'b' : '');
+        $cacheID = 'shop_lang_' . (($shop === true) ? 'b' : '');
         if (($lang = Shop::Container()->getCache()->get($cacheID)) !== false && $lang !== null) {
             return $lang;
         }
-        $row            = $bShop ? 'cShopStandard' : 'cStandard';
-        $lang           = Shop::Container()->getDB()->select('tsprache', $row, 'Y');
+        $lang           = Shop::Container()->getDB()->select('tsprache', $shop ? 'cShopStandard' : 'cStandard', 'Y');
         $lang->kSprache = (int)$lang->kSprache;
         Shop::Container()->getCache()->set($cacheID, $lang, [CACHING_GROUP_LANGUAGE]);
 
@@ -1194,18 +1193,18 @@ class Sprache
     }
 
     /**
-     * @param string $cLand
+     * @param string $country
      * @return string
      * @former landISO()
      * @since 5.0.0
      */
-    public static function getIsoCodeByCountryName(string $cLand): string
+    public static function getIsoCodeByCountryName(string $country): string
     {
-        $iso = Shop::Container()->getDB()->select('tland', 'cDeutsch', $cLand);
+        $iso = Shop::Container()->getDB()->select('tland', 'cDeutsch', $country);
         if (!empty($iso->cISO)) {
             return $iso->cISO;
         }
-        $iso = Shop::Container()->getDB()->select('tland', 'cEnglisch', $cLand);
+        $iso = Shop::Container()->getDB()->select('tland', 'cEnglisch', $country);
         if (!empty($iso->cISO)) {
             return $iso->cISO;
         }

@@ -1966,7 +1966,7 @@ final class Shop
             ));
         });
         // GetText
-        $container->setSingleton(\L10n\GetText::class, function (Container $container) {
+        $container->setSingleton(\L10n\GetText::class, function () {
             return new \L10n\GetText();
         });
         $container->setSingleton(\AdminAccount::class, function (Container $container) {

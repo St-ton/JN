@@ -1,0 +1,41 @@
+msgid "headingType"
+msgstr "Type"
+
+msgid "headingStartTime"
+msgstr "Start time"
+
+msgid "headingStartDate"
+msgstr "Start date"
+
+msgid "headingLastStarted"
+msgstr "Last start"
+
+msgid "headingFrequency"
+msgstr "Frequency"
+
+msgid "headingRunning"
+msgstr "Currently running"
+
+msgid "headingAction"
+msgstr "Action"
+
+msgid "btnDelete"
+msgstr "delete"
+
+msgid "btnReset"
+msgstr "reset"
+
+msgid "createQueueEntry"
+msgstr "Create queue entry"
+
+msgid "btnCreate"
+msgstr "create"
+
+msgid "msgCreated"
+msgstr "Successfully created."
+
+msgid "msgUpdated"
+msgstr "Successfully updated."
+
+msgid "msgDeleted"
+msgstr "Successfully deleted."

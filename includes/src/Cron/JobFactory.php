@@ -45,22 +45,9 @@ class JobFactory
     {
         $mapper = new JobTypeToJob();
         $class  = $mapper->map($data->cJobArt);
-        $job    = new $class($this->db, $this->logger);
+        $job    = new $class($this->db, $this->logger, new JobHydrator());
         /** @var JobInterface $job */
-        $job->setType($data->cJobArt);
-        $job->setTable($data->cTabelle);
-        $job->setForeignKey($data->cKey);
-        $job->setForeignKeyID((int)$data->kKey);
-        $job->setCronID((int)$data->kCron);
-        // @todo: setID vs. setCrontID
-        $job->setID((int)$data->kCron);
-        $job->setQueueID((int)$data->kJobQueue);
-        if ($data->nLimitM > 0) {
-            $job->setLimit((int)$data->nLimitM);
-        }
-        if ($data->nLimitN > 0) {
-            $job->setExecuted((int)$data->nLimitN);
-        }
+        $job->hydrate($data);
 
         return $job;
     }

@@ -63,6 +63,11 @@ abstract class Job implements JobInterface
     /**
      * @var string
      */
+    private $startTime = '';
+
+    /**
+     * @var string
+     */
     private $table = '';
 
     /**
@@ -71,23 +76,42 @@ abstract class Job implements JobInterface
     private $finished = false;
 
     /**
+     * @var int
+     */
+    private $frequency = 24;
+
+    /**
      * @var DbInterface
      */
     protected $db;
 
     /**
-     * @var
+     * @var LoggerInterface
      */
     protected $logger;
 
     /**
+     * @var JobHydrator
+     */
+    protected $hydrator;
+
+    /**
      * @inheritdoc
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger)
+    public function __construct(DbInterface $db, LoggerInterface $logger, JobHydrator $hydrator)
     {
-        $this->db     = $db;
-        $this->logger = $logger;
+        $this->db       = $db;
+        $this->logger   = $logger;
+        $this->hydrator = $hydrator;
         $this->setDateLastStarted(new \DateTime());
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function hydrate($data)
+    {
+        return $this->hydrator->hydrate($this, $data);
     }
 
     /**
@@ -155,7 +179,7 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function getDateLastStarted(): \DateTime
+    public function getDateLastStarted(): ?\DateTime
     {
         return $this->dateLastStarted;
     }
@@ -163,9 +187,33 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function setDateLastStarted(\DateTime $dateLastStarted): void
+    public function setDateLastStarted(?\DateTime $dateLastStarted): void
     {
         $this->dateLastStarted = $dateLastStarted;
+    }
+
+    /**
+     * @param string $dateLastStarted
+     */
+    public function setLastStarted(?string $dateLastStarted): void
+    {
+        $this->dateLastStarted = $dateLastStarted === null ? null : new \DateTime($dateLastStarted);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getStartTime(): string
+    {
+        return $this->startTime;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setStartTime(string $startTime): void
+    {
+        $this->startTime = $startTime;
     }
 
     /**
@@ -272,6 +320,22 @@ abstract class Job implements JobInterface
     public function setFinished(bool $finished): void
     {
         $this->finished = $finished;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getFrequency(): int
+    {
+        return $this->frequency;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setFrequency(int $frequency): void
+    {
+        $this->frequency = $frequency;
     }
 
     /**

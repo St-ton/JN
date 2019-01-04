@@ -7,6 +7,7 @@
 namespace Cron\Jobs;
 
 use Cron\Job;
+use Cron\JobHydrator;
 use Cron\JobInterface;
 use Cron\QueueEntry;
 use DB\DbInterface;
@@ -21,9 +22,9 @@ class Export extends Job
     /**
      * @inheritdoc
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger)
+    public function __construct(DbInterface $db, LoggerInterface $logger, JobHydrator $hydrator)
     {
-        parent::__construct($db, $logger);
+        parent::__construct($db, $logger, $hydrator);
         if (\JOBQUEUE_LIMIT_M_EXPORTE > 0) {
             $this->setLimit((int)\JOBQUEUE_LIMIT_M_EXPORTE);
         }

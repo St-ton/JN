@@ -7,6 +7,7 @@
 namespace Cron\Jobs;
 
 use Cron\Job;
+use Cron\JobHydrator;
 use Cron\JobInterface;
 use Cron\QueueEntry;
 use DB\DbInterface;
@@ -22,9 +23,9 @@ class Newsletter extends Job
     /**
      * @inheritdoc
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger)
+    public function __construct(DbInterface $db, LoggerInterface $logger, JobHydrator $hydrator)
     {
-        parent::__construct($db, $logger);
+        parent::__construct($db, $logger, $hydrator);
         if (\JOBQUEUE_LIMIT_M_NEWSLETTER > 0) {
             $this->setLimit(\JOBQUEUE_LIMIT_M_NEWSLETTER);
         }

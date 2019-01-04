@@ -19,8 +19,15 @@ interface JobInterface
      * JobInterface constructor.
      * @param DbInterface     $db
      * @param LoggerInterface $logger
+     * @param JobHydrator     $hydrator
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger);
+    public function __construct(DbInterface $db, LoggerInterface $logger, JobHydrator $hydrator);
+
+    /**
+     * @param QueueEntry|\stdClass $data
+     * @return object
+     */
+    public function hydrate($data);
 
     /**
      * @return string
@@ -53,14 +60,29 @@ interface JobInterface
     public function setID(int $id): void;
 
     /**
-     * @return \DateTime
+     * @return \DateTime|null
      */
-    public function getDateLastStarted(): \DateTime;
+    public function getDateLastStarted(): ?\DateTime;
 
     /**
-     * @param \DateTime $dateLastStarted
+     * @param \DateTime|null $dateLastStarted
      */
-    public function setDateLastStarted(\DateTime $dateLastStarted): void;
+    public function setDateLastStarted(?\DateTime $dateLastStarted): void;
+
+    /**
+     * @param string|null $dateLastStarted
+     */
+    public function setLastStarted(?string $dateLastStarted): void;
+
+    /**
+     * @return string
+     */
+    public function getStartTime(): string;
+
+    /**
+     * @param string $startTime
+     */
+    public function setStartTime(string $startTime): void;
 
     /**
      * @return int
@@ -127,6 +149,16 @@ interface JobInterface
      * @param bool $finished
      */
     public function setFinished(bool $finished): void;
+
+    /**
+     * @return int
+     */
+    public function getFrequency(): int;
+
+    /**
+     * @param int $frequency
+     */
+    public function setFrequency(int $frequency): void;
 
     /**
      * @return int

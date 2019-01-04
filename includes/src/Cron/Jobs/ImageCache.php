@@ -7,6 +7,7 @@
 namespace Cron\Jobs;
 
 use Cron\Job;
+use Cron\JobHydrator;
 use Cron\JobInterface;
 use Cron\QueueEntry;
 use DB\DbInterface;
@@ -22,9 +23,9 @@ class ImageCache extends Job
     /**
      * @inheritdoc
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger)
+    public function __construct(DbInterface $db, LoggerInterface $logger, JobHydrator $hydrator)
     {
-        parent::__construct($db, $logger);
+        parent::__construct($db, $logger, $hydrator);
         if (\JOBQUEUE_LIMIT_IMAGE_CACHE_IMAGES > 0) {
             $this->setLimit(\JOBQUEUE_LIMIT_IMAGE_CACHE_IMAGES);
         }
@@ -67,6 +68,7 @@ class ImageCache extends Job
      */
     public function start(QueueEntry $queueEntry): JobInterface
     {
+        \Shop::dbg($this, true, 'started:');
         parent::start($queueEntry);
         $res = $this->generateImageCache($queueEntry->nLimitN);
         $this->logger->debug('Generated cache for ' . $res->renderedImages . ' images');

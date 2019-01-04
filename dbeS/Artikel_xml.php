@@ -886,7 +886,9 @@ function bearbeiteInsert($xml, array $conf)
                     $ewCount             = count($EigenschaftWert_arr);
                     for ($o = 0; $o < $ewCount; ++$o) {
                         if ($ewCount < 2) {
-                            loescheEigenschaftWert($xml['tartikel']['teigenschaft'][$i]['teigenschaftwert attr']['kEigenschaftWert']);
+                            loescheEigenschaftWert(
+                                $xml['tartikel']['teigenschaft'][$i]['teigenschaftwert attr']['kEigenschaftWert']
+                            );
                             updateXMLinDB(
                                 $xml['tartikel']['teigenschaft'][$i]['teigenschaftwert'],
                                 'teigenschaftwertsprache',
@@ -964,8 +966,7 @@ function bearbeiteInsert($xml, array $conf)
         $res[] = (int)$artikel_arr[0]->kVaterartikel;
     }
     handlePriceRange((int)$Artikel->kArtikel);
-
-    //emailbenachrichtigung, wenn verfügbar
+    // emailbenachrichtigung, wenn verfügbar
     versendeVerfuegbarkeitsbenachrichtigung($artikel_arr[0]);
 
     return $res;

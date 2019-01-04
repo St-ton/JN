@@ -5464,11 +5464,9 @@ class Artikel
         $languageISO = null,
         $shippingID = null
     ) {
-        //Language-Fallback fuer Exportformate - #6663.
-        //@todo: Abfrage der aktuellen Sprache in Session-Class oder System-Class auslagern
-        if ($languageISO === null && !isset($_SESSION['cISOSprache'])) {
-            $oSprache                = Sprache::getDefaultLanguage(true);
-            $_SESSION['cISOSprache'] = $oSprache->cISO;
+        if (!isset($_SESSION['cISOSprache'])) {
+            $oSprache = Sprache::getDefaultLanguage();
+            Shop::setLanguage($oSprache->kSprache, $oSprache->cISO);
         }
         if ($purchaseQuantity !== null) {
             $purchaseQuantity = (float)$purchaseQuantity;
@@ -5485,7 +5483,7 @@ class Artikel
         if ($favShipping === null || $this->inWarenkorbLegbar <= 0) {
             return '';
         }
-        //set default values
+        // set default values
         $minDeliveryDays = (strlen(trim($favShipping->nMinLiefertage)) > 0) ? (int)$favShipping->nMinLiefertage : 2;
         $maxDeliveryDays = (strlen(trim($favShipping->nMaxLiefertage)) > 0) ? (int)$favShipping->nMaxLiefertage : 3;
         // get all pieces (even invisible) to calc delivery
@@ -6102,26 +6100,26 @@ class Artikel
                         Shop::Lang()->get('noShippingCostsAtExtended', 'basket', '') .
                         trim($cLaender) . ', ' . Shop::Lang()->get('else') . ' ' .
                         Shop::Lang()->get('plus', 'basket') .
-                        ' <a href="' . $_SESSION['Link_Versandseite'][$_SESSION['cISOSprache']] .
+                        ' <a href="' . $_SESSION['Link_Versandseite'][Shop::getLanguageCode()] .
                         '" rel="nofollow" class="shipment">' .
                         Shop::Lang()->get('shipping', 'basket') . '</a>';
                 } else {
                     $versand .= '<a href="' .
-                        $_SESSION['Link_Versandseite'][$_SESSION['cISOSprache']] .
+                        $_SESSION['Link_Versandseite'][Shop::getLanguageCode()] .
                         '" rel="nofollow" class="shipment" data-toggle="tooltip" data-placement="left" title="' .
                         $versandfreielaender . ', ' . Shop::Lang()->get('else') . ' ' .
                         Shop::Lang()->get('plus', 'basket') . ' ' . Shop::Lang()->get('shipping', 'basket') . '">' .
                         Shop::Lang()->get('noShippingcostsTo') . '</a>';
                 }
-            } elseif (isset($_SESSION['cISOSprache'], $_SESSION['Link_Versandseite'][$_SESSION['cISOSprache']])) {
+            } elseif (isset($_SESSION['Link_Versandseite'][Shop::getLanguageCode()])) {
                 $versand .= Shop::Lang()->get('plus', 'basket') .
-                    ' <a href="' . $_SESSION['Link_Versandseite'][$_SESSION['cISOSprache']] .
+                    ' <a href="' . $_SESSION['Link_Versandseite'][Shop::getLanguageCode()] .
                     '" rel="nofollow" class="shipment">' .
                     Shop::Lang()->get('shipping', 'basket') . '</a>';
             }
         } elseif ($this->conf['global']['global_versandhinweis'] === 'inkl') {
             $versand = ', ' . Shop::Lang()->get('incl', 'productDetails')
-                . ' <a href="' . $_SESSION['Link_Versandseite'][$_SESSION['cISOSprache']] .
+                . ' <a href="' . $_SESSION['Link_Versandseite'][Shop::getLanguageCode()] .
                 '" rel="nofollow" class="shipment">'
                 . Shop::Lang()->get('shipping', 'basket') . '</a>';
         }
@@ -6328,7 +6326,7 @@ class Artikel
             $exclude      = Shop::Container()->getDB()->select(
                 'texcludekeywords',
                 'cISOSprache',
-                $_SESSION['cISOSprache'] ?? Sprache::getDefaultLanguage()->cISO
+                Shop::getLanguageCode() ?? Sprache::getDefaultLanguage()->cISO
             );
             $excludeWords = isset($exclude->cKeywords)
                 ? explode(' ', $exclude->cKeywords)

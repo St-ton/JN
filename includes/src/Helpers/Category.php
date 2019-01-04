@@ -135,7 +135,7 @@ class Category
             $isDefaultLang       = Sprache::isDefaultLanguageActive();
             $visibilityWhere     = ' AND tartikelsichtbarkeit.kArtikel IS NULL';
             $depthWhere          = self::$limitReached === true
-                ? ' AND node.nLevel <= ' . CATEGORY_FULL_LOAD_MAX_LEVEL
+                ? ' AND node.nLevel <= ' . \CATEGORY_FULL_LOAD_MAX_LEVEL
                 : '';
             $getDescription      = ($categoryCount < $categoryLimit
                 || // always get description if there aren't that many categories

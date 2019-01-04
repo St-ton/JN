@@ -11,11 +11,13 @@
 function executeHook(int $hookID, $args_arr = [])
 {
     global $smarty;
-
+    $timer = Shop::Container()->getDebugBar()->getTimer();
+    $timer->startMeasure('shop.hook.' . $hookID);
     \Events\Dispatcher::getInstance()->fire('shop.hook.' . $hookID, array_merge((array)$hookID, $args_arr));
 
     $hookList = \Plugin\Helper::getHookList();
     if (empty($hookList[$hookID]) || !is_array($hookList[$hookID])) {
+        $timer->stopMeasure('shop.hook.' . $hookID);
         return;
     }
     $db    = \Shop::Container()->getDB();
@@ -62,6 +64,7 @@ function executeHook(int $hookID, $args_arr = [])
             $smarty->clearAssign('oPlugin_' . $oPlugin->getPluginID());
         }
     }
+    $timer->stopMeasure('shop.hook.' . $hookID);
 }
 
 /**

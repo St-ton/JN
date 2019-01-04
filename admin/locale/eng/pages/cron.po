@@ -1,3 +1,6 @@
+msgid "queueEntries"
+msgstr "Queue entries"
+
 msgid "headingType"
 msgstr "Type"
 

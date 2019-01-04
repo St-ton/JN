@@ -12,40 +12,47 @@
 {/if}
 
 {if $jobs|count > 0}
-    <form method="post">
-        {$jtl_token}
-        <table class="table table-striped">
-            <thead>
-            <th>{__('headingType')}</th>
-            <th>{__('headingStartTime')}</th>
-            <th>{__('headingLastStarted')}</th>
-            <th>{__('headingFrequency')}</th>
-            <th>{__('headingRunning')}</th>
-            <th>{__('headingAction')}</th>
-            </thead>
-            <tbody>
-                {foreach $jobs as $job}
-                    <tr>
-                        <td>{$job->getType()}</td>
-                        <td>{$job->getStartTime()}</td>
-                        <td>{if $job->getDateLastStarted() === null}&dash;{else}{$job->getDateLastStarted()->format('d:m:Y h:i')}{/if}</td>
-                        <td>{$job->getFrequency()}h</td>
-                        <td>{if $job->isRunning()}<i class="fa fa-check"></i>{else}<i class="fa fa-times"></i>{/if}</td>
-                        <td>
-                            <button class="btn btn-danger btn-xs" type="submit" name="delete" value="{$job->getCronID()}">
-                                <i class="fa fa-trash"></i> {__('btnDelete')}
-                            </button>
-                            {if $job->isRunning()}
-                                <button class="btn btn-default btn-xs" type="submit" name="reset" value="{$job->getQueueID()}">
-                                    <i class="fa fa-refresh"></i> {__('btnReset')}
-                                </button>
-                            {/if}
-                        </td>
-                    </tr>
-                {/foreach}
-            </tbody>
-        </table>
-    </form>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">{__('queueEntries')}</h3>
+        </div>
+        <div class="panel-body">
+            <form method="post">
+                {$jtl_token}
+                <table class="table table-striped">
+                    <thead>
+                    <th>{__('headingType')}</th>
+                    <th>{__('headingStartTime')}</th>
+                    <th>{__('headingLastStarted')}</th>
+                    <th>{__('headingFrequency')}</th>
+                    <th>{__('headingRunning')}</th>
+                    <th>{__('headingAction')}</th>
+                    </thead>
+                    <tbody>
+                        {foreach $jobs as $job}
+                            <tr>
+                                <td>{$job->getType()}</td>
+                                <td>{$job->getStartTime()}</td>
+                                <td>{if $job->getDateLastStarted() === null}&dash;{else}{$job->getDateLastStarted()->format('d:m:Y h:i')}{/if}</td>
+                                <td>{$job->getFrequency()}h</td>
+                                <td>{if $job->isRunning()}<i class="fa fa-check"></i>{else}<i class="fa fa-times"></i>{/if}</td>
+                                <td>
+                                    <button class="btn btn-danger btn-xs" type="submit" name="delete" value="{$job->getCronID()}">
+                                        <i class="fa fa-trash"></i> {__('btnDelete')}
+                                    </button>
+                                    {if $job->isRunning()}
+                                        <button class="btn btn-default btn-xs" type="submit" name="reset" value="{$job->getQueueID()}">
+                                            <i class="fa fa-refresh"></i> {__('btnReset')}
+                                        </button>
+                                    {/if}
+                                </td>
+                            </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
 {else}
     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
 {/if}

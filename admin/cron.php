@@ -26,9 +26,6 @@ if (\Helpers\Form::validateToken()) {
     }
 }
 $jobs = $admin->getJobs();
-//if (!empty($_POST)) Shop::dbg($_POST, false, 'POST:');
-//Shop::dbg($jobs);
-Shop::dbg(Shop::Container()->getGetText()->loadedPoFiles);
 $smarty->assign('jobs', $jobs)
        ->assign('deleted', $deleted)
        ->assign('updated', $updated)

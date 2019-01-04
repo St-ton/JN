@@ -76,6 +76,11 @@ abstract class Job implements JobInterface
     private $finished = false;
 
     /**
+     * @var bool
+     */
+    private $running = false;
+
+    /**
      * @var int
      */
     private $frequency = 24;
@@ -320,6 +325,22 @@ abstract class Job implements JobInterface
     public function setFinished(bool $finished): void
     {
         $this->finished = $finished;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isRunning(): bool
+    {
+        return $this->running;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setRunning(bool $running): void
+    {
+        $this->running = $running;
     }
 
     /**

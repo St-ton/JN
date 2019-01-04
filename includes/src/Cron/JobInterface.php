@@ -151,6 +151,16 @@ interface JobInterface
     public function setFinished(bool $finished): void;
 
     /**
+     * @return bool
+     */
+    public function isRunning(): bool;
+
+    /**
+     * @param bool $running
+     */
+    public function setRunning(bool $running): void;
+
+    /**
      * @return int
      */
     public function getFrequency(): int;

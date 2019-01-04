@@ -9,6 +9,7 @@ namespace Cron\Admin;
 use Cron\JobHydrator;
 use Cron\JobInterface;
 use DB\DbInterface;
+use DB\ReturnType;
 use Mapper\JobTypeToJob;
 use Psr\Log\LoggerInterface;
 
@@ -40,17 +41,33 @@ final class Listing
     }
 
     /**
+     * @param int $id
+     * @return int
+     */
+    public function resetQueueEntry(int $id): int
+    {
+        return $this->db->update('tjobqueue', 'kJobQueue', $id, (object)['nInArbeit' => 0]);
+    }
+
+    /**
      * @return JobInterface[]
      */
     public function getJobs(): array
     {
-        $jobs = [];
-        $all      = $this->db->selectAll('tcron', [], []);
+        $jobs     = [];
+        $all      = $this->db->query(
+            'SELECT *
+              FROM tcron
+              JOIN tjobqueue
+                ON tcron.kCron = tjobqueue.kCron',
+            ReturnType::ARRAY_OF_OBJECTS
+        );
         $hydrator = new JobHydrator();
         foreach ($all as $cron) {
             $cron->kCron     = (int)$cron->kCron;
             $cron->kKey      = (int)$cron->kKey;
             $cron->nAlleXStd = (int)$cron->nAlleXStd;
+            $cron->nInArbeit = (bool)$cron->nInArbeit;
             $mapper          = new JobTypeToJob();
             $class           = $mapper->map($cron->cJobArt);
             $job             = new $class($this->db, $this->logger, $hydrator);

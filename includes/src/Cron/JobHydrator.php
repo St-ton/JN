@@ -23,7 +23,8 @@ final class JobHydrator
         'kJobQueue'     => 'QueueID',
         'dLetzterStart' => 'LastStarted',
         'dStartZeit'    => 'StartTime',
-        'nAlleXStd'     => 'Frequency'
+        'nAlleXStd'     => 'Frequency',
+        'nInArbeit'     => 'Running'
     ];
 
     /**

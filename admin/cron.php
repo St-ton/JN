@@ -8,13 +8,30 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->redirectOnFailure();
 /** @global Smarty\JTLSmarty $smarty */
 
-$admin = new Cron\Admin\Listing(Shop::Container()->getDB(), Shop::Container()->getLogService());
-if (isset($_POST['reset']) && \Helpers\Form::validateToken()) {
-    $admin->resetQueueEntry((int)$_POST['reset']);
+$admin   = new Cron\Admin\Listing(
+    Shop::Container()->getDB(),
+    Shop::Container()->getLogService(),
+    new \Cron\JobHydrator()
+);
+$deleted = 0;
+$updated = 0;
+$inserted = 0;
+if (\Helpers\Form::validateToken()) {
+    if (isset($_POST['reset'])) {
+        $updated = $admin->resetQueueEntry((int)$_POST['reset']);
+    } elseif (isset($_POST['delete'])) {
+        $deleted = $admin->deleteQueueEntry((int)$_POST['delete']);
+    } elseif (isset($_POST['add-cron']) && (int)$_POST['add-cron'] === 1) {
+        $inserted = $admin->addQueueEntry($_POST);
+    }
 }
 $jobs = $admin->getJobs();
 //if (!empty($_POST)) Shop::dbg($_POST, false, 'POST:');
 //Shop::dbg($jobs);
+Shop::dbg(Shop::Container()->getGetText()->loadedPoFiles);
 $smarty->assign('jobs', $jobs)
-//       ->assign('cateogries', $orphanedCategories)
+       ->assign('deleted', $deleted)
+       ->assign('updated', $updated)
+       ->assign('inserted', $inserted)
+       ->assign('available', $admin->getAvailableCronJobs())
        ->display('cron.tpl');

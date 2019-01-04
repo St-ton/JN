@@ -78,7 +78,6 @@ class QueueEntry
      */
     public function __construct(\stdClass $data)
     {
-        \Shop::dbg($data, true, 'QueueEntry:');
         $this->kJobQueue        = (int)$data->kJobQueue;
         $this->kCron            = (int)$data->kCron;
         $this->kKey             = (int)$data->kKey;

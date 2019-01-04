@@ -121,7 +121,7 @@ class Category
                 ReturnType::SINGLE_OBJECT
             );
             $categoryCount       = (int)$categoryCountObj->cnt;
-            $categoryLimit       = CATEGORY_FULL_LOAD_LIMIT;
+            $categoryLimit       = \CATEGORY_FULL_LOAD_LIMIT;
             self::$limitReached  = ($categoryCount >= $categoryLimit);
             $functionAttributes  = [];
             $localizedAttributes = [];

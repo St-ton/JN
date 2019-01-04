@@ -205,6 +205,8 @@ ifndef('ES_SESSIONS', 0);
 
 ifndef('MAX_REVISIONS', 5);
 
+ifndef('SHOW_DEBUG_BAR', false);
+
 // security
 ifndef('NEWSLETTER_USE_SECURITY', true);
 ifndef('MAILTEMPLATE_USE_SECURITY', true);

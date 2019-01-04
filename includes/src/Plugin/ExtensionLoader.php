@@ -39,7 +39,7 @@ class ExtensionLoader extends AbstractLoader
             $this->cache->flushTags([\CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $id]);
         } elseif (($extension = $this->loadFromCache()) !== null) {
             $getText = \Shop::Container()->getGetText();
-            $getText->setLangIso($languageCode);
+            $getText->setLangIso($_SESSION['AdminAccount']->cISO ?? $languageCode);
             $getText->loadPluginLocale($extension->getPluginID(), $extension);
 
             return $extension;
@@ -91,7 +91,7 @@ class ExtensionLoader extends AbstractLoader
         $extension->setLicense($this->loadLicense($obj));
         $extension->setCache($this->loadCacheData($extension));
         $getText = \Shop::Container()->getGetText();
-        $getText->setLangIso($currentLanguageCode);
+        $getText->setLangIso($_SESSION['AdminAccount']->cISO ?? $currentLanguageCode);
         $getText->loadPluginLocale($obj->cPluginID, $extension);
         $extension->setConfig($this->loadConfig($paths->getAdminPath(), $extension->getID()));
         $extension->setLocalization($this->loadLocalization($id, $currentLanguageCode));

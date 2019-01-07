@@ -257,7 +257,7 @@
             });
         </script>
     {/if}
-
+    {$dbgBarBody}
     <script>
         jtl.load({strip}[
             {* evo js *}

@@ -67,10 +67,11 @@ abstract class AbstractLoader implements LoaderInterface
     }
 
     /**
-     * @param int $id
+     * @param int    $id
+     * @param string $currentLanguageCode
      * @return Localization
      */
-    protected function loadLocalization(int $id): Localization
+    protected function loadLocalization(int $id, string $currentLanguageCode): Localization
     {
         $data         = $this->db->queryPrepared(
             'SELECT l.kPluginSprachvariable, l.kPlugin, l.cName, l.cBeschreibung,
@@ -87,7 +88,7 @@ abstract class AbstractLoader implements LoaderInterface
             ['pid' => $id],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $localization = new Localization();
+        $localization = new Localization($currentLanguageCode);
 
         return $localization->load($data);
     }

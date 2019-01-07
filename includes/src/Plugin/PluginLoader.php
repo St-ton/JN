@@ -57,7 +57,9 @@ class PluginLoader extends AbstractLoader
      */
     public function init(int $id, bool $invalidateCache = false, int $languageID = null)
     {
-        $languageID    = $languageID ?? \Shop::getLanguageID() ?? \Shop::Lang()::getDefaultLanguage()->kSprache;
+        if (($languageID = $languageID ?? \Shop::getLanguageID()) === 0) {
+            $languageID = \Shop::Lang()::getDefaultLanguage()->kSprache;
+        }
         $languageCode  = \Shop::Lang()->getIsoFromLangID($languageID)->cISO;
         $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id . '_' . $languageID;
         if ($this->plugin === null) {

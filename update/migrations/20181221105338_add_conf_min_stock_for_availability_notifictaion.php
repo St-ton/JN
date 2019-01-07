@@ -33,11 +33,7 @@ class Migration_20181221105338 extends Migration implements IMigration
             5,
             'Mindestlagerbestand für Benachrichtigung',
             'number',
-            745,
-            (object)[
-                'cBeschreibung' => 'Erst wenn der Lagerbestand des Artikels diesen Wert übersteigt, wird eine '
-                . 'Verfügbarkeitsbenachrichtigung versendet'
-            ]
+            745
         );
     }
 

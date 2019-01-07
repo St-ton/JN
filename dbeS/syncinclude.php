@@ -566,7 +566,11 @@ function versendeVerfuegbarkeitsbenachrichtigung($product)
 {
     $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
     if ($product->kArtikel <= 0
-         || !($product->fLagerbestand > $conf['artikeldetails']['benachrichtigung_min_lagernd'])
+         || ($product->fLagerbestand <= $conf['artikeldetails']['benachrichtigung_min_lagernd']
+            && (!isset($product->cLagerKleinerNull)
+                || $product->cLagerKleinerNull === 'N'
+            )
+        )
     ) {
         return;
     }

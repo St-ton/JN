@@ -6,7 +6,6 @@
 
 namespace L10n;
 
-use DB\DbInterface;
 use Gettext\Translations;
 use Gettext\Translator;
 use Plugin\AbstractExtension;
@@ -39,16 +38,20 @@ class GetText
     {
         $this->translator = new Translator();
         $this->translator->register();
-        $this->setLangIso($_SESSION['AdminAccount']->cISO ?? 'ger')
-             ->loadAdminLocale('base');
+        $this->setLangIso($_SESSION['AdminAccount']->cISO ?? \Shop::getLanguageCode() ?? 'ger')
+             ->loadAdminLocale();
     }
 
     /**
      * @param string $langIso
      * @return $this
      */
-    private function setLangIso(string $langIso): self
+    public function setLangIso(string $langIso): self
     {
+        if ($this->langIso !== null && $this->langIso !== $langIso) {
+            $this->translator = new Translator();
+            $this->translator->register();
+        }
         $this->langIso = $langIso;
 
         return $this;

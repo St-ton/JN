@@ -17,10 +17,10 @@ use Mapper\JobTypeToJob;
 use Psr\Log\LoggerInterface;
 
 /**
- * Class Listing
+ * Class Controller
  * @package Cron\Admin
  */
-final class Listing
+final class Controller
 {
     /**
      * @var DbInterface

@@ -8,13 +8,13 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->redirectOnFailure();
 /** @global Smarty\JTLSmarty $smarty */
 
-$admin   = new Cron\Admin\Listing(
+$admin    = new Cron\Admin\Controller(
     Shop::Container()->getDB(),
     Shop::Container()->getLogService(),
     new \Cron\JobHydrator()
 );
-$deleted = 0;
-$updated = 0;
+$deleted  = 0;
+$updated  = 0;
 $inserted = 0;
 if (\Helpers\Form::validateToken()) {
     if (isset($_POST['reset'])) {

@@ -113,6 +113,7 @@ class Helper
     {
         $db      = \Shop::Container()->getDB();
         $cache   = \Shop::Container()->getCache();
+        $langID  = \Shop::getLanguageID();
         $cacheID = 'plugin_id_list';
         if (($plugins = $cache->get($cacheID)) === false) {
             $plugins = $db->query(
@@ -129,7 +130,7 @@ class Helper
                 ? new ExtensionLoader($db, $cache)
                 : new PluginLoader($db, $cache);
 
-            return $loader->init((int)$plugin->kPlugin);
+            return $loader->init((int)$plugin->kPlugin, false, $langID);
         }
 
         return null;
@@ -143,7 +144,6 @@ class Helper
         if (self::$templatePaths !== null) {
             return self::$templatePaths;
         }
-
         $cacheID = 'template_paths';
         if (($templatePaths = \Shop::Container()->getCache()->get($cacheID)) !== false) {
             self::$templatePaths = $templatePaths;
@@ -202,9 +202,10 @@ class Helper
             $method   = \PLUGIN_LICENCE_METHODE;
 
             if (!$instance->$method($license->getKey())) {
-                $plugin->setState(State::LICENSE_KEY_INVALID);
-                $plugin->cFehler = 'Lizenzschlüssel ist ungültig'; //@todo
-                $plugin->updateInDB();
+                $upd          = new \stdClass();
+                $upd->nStatus = State::LICENSE_KEY_INVALID;
+                $upd->cFehler = 'Lizenzschlüssel ist ungültig';
+                \Shop::Container()->getDB()->update('tplugin', 'kPlugin', $plugin->getID(), $upd);
                 \Shop::Container()->getLogService()->withName('kPlugin')->error(
                     'Plugin Lizenzprüfung: Das Plugin "' . $plugin->getMeta()->getName() .
                     '" hat keinen gültigen Lizenzschlüssel und wurde daher deaktiviert!',
@@ -234,12 +235,12 @@ class Helper
     }
 
     /**
-     * @param Plugin $plugin
-     * @param int    $state
+     * @param AbstractExtension|Plugin $plugin
+     * @param int                      $state
      * @former aenderPluginZahlungsartStatus()
      * @since 5.0.0
      */
-    public static function updatePaymentMethodState(Plugin $plugin, int $state): void
+    public static function updatePaymentMethodState($plugin, int $state): void
     {
         foreach (\array_keys($plugin->oPluginZahlungsmethodeAssoc_arr) as $moduleID) {
             \Shop::Container()->getDB()->update(

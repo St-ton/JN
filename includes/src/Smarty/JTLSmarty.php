@@ -102,7 +102,7 @@ class JTLSmarty extends \SmartyBC
                 \mkdir($compileDir);
             }
             $templatePaths[$this->context] = \PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/';
-            foreach (\Plugin\Helper::getTemplatePaths() as $moduleId => $path) {
+            foreach (Helper::getTemplatePaths() as $moduleId => $path) {
                 $templateKey                 = 'plugin_' . $moduleId;
                 $templatePaths[$templateKey] = $path;
             }
@@ -141,13 +141,13 @@ class JTLSmarty extends \SmartyBC
     private function init($parent = null): void
     {
         $pluginCollection = new PluginCollection($this->config, \Sprache::getInstance());
-        $this->registerPlugin('function', 'lang', [$pluginCollection, 'translate'])
-             ->registerPlugin('modifier', 'replace_delim', [$pluginCollection, 'replaceDelimiters'])
-             ->registerPlugin('modifier', 'count_characters', [$pluginCollection, 'countCharacters'])
-             ->registerPlugin('modifier', 'string_format', [$pluginCollection, 'stringFormat'])
-             ->registerPlugin('modifier', 'string_date_format', [$pluginCollection, 'dateFormat'])
-             ->registerPlugin('modifiercompiler', 'default', [$pluginCollection, 'compilerModifierDefault'])
-             ->registerPlugin('modifier', 'truncate', [$pluginCollection, 'truncate']);
+        $this->registerPlugin(self::PLUGIN_FUNCTION, 'lang', [$pluginCollection, 'translate'])
+             ->registerPlugin(self::PLUGIN_MODIFIER, 'replace_delim', [$pluginCollection, 'replaceDelimiters'])
+             ->registerPlugin(self::PLUGIN_MODIFIER, 'count_characters', [$pluginCollection, 'countCharacters'])
+             ->registerPlugin(self::PLUGIN_MODIFIER, 'string_format', [$pluginCollection, 'stringFormat'])
+             ->registerPlugin(self::PLUGIN_MODIFIER, 'string_date_format', [$pluginCollection, 'dateFormat'])
+             ->registerPlugin(self::PLUGIN_MODIFIERCOMPILER, 'default', [$pluginCollection, 'compilerModifierDefault'])
+             ->registerPlugin(self::PLUGIN_MODIFIER, 'truncate', [$pluginCollection, 'truncate']);
 
         if ($this->context !== ContextType::BACKEND) {
             $this->cache_lifetime = 86400;
@@ -176,10 +176,7 @@ class JTLSmarty extends \SmartyBC
      */
     public function setCachingParams(array $config = null): self
     {
-        // instantiate new cache - we use different options here
-        if ($config === null) {
-            $config = \Shop::getSettings([\CONF_CACHING]);
-        }
+        $config = $config ?? \Shop::getSettings([\CONF_CACHING]);
 
         return $this->setCaching(self::CACHING_OFF)
                     ->setCompileCheck(!(isset($config['caching']['compile_check'])
@@ -214,7 +211,7 @@ class JTLSmarty extends \SmartyBC
      */
     public function outputFilter(string $tplOutput): string
     {
-        $hookList = \Plugin\Helper::getHookList();
+        $hookList = Helper::getHookList();
         if ((isset($hookList[\HOOK_SMARTY_OUTPUTFILTER])
                 && \is_array($hookList[\HOOK_SMARTY_OUTPUTFILTER])
                 && \count($hookList[\HOOK_SMARTY_OUTPUTFILTER]) > 0)
@@ -312,15 +309,15 @@ class JTLSmarty extends \SmartyBC
             // disabled on child templates for now
             return $filename;
         }
-        $cFile       = \basename($filename, '.tpl');
-        $cSubPath    = \dirname($filename);
-        $cCustomFile = \strpos($cSubPath, \PFAD_ROOT) === false
-            ? $this->getTemplateDir($this->context) . (($cSubPath === '.')
+        $file   = \basename($filename, '.tpl');
+        $dir    = \dirname($filename);
+        $custom = \strpos($dir, \PFAD_ROOT) === false
+            ? $this->getTemplateDir($this->context) . (($dir === '.')
                 ? ''
-                : ($cSubPath . '/')) . $cFile . '_custom.tpl'
-            : ($cSubPath . '/' . $cFile . '_custom.tpl');
+                : ($dir . '/')) . $file . '_custom.tpl'
+            : ($dir . '/' . $file . '_custom.tpl');
 
-        return \file_exists($cCustomFile) ? $cCustomFile : $filename;
+        return \file_exists($custom) ? $custom : $filename;
     }
 
     /**
@@ -347,13 +344,13 @@ class JTLSmarty extends \SmartyBC
      */
     public function fetch($template = null, $cacheID = null, $compileID = null, $parent = null): string
     {
-        $_debug = !empty($this->_debug->template_data)
+        $debug = !empty($this->_debug->template_data)
             ? $this->_debug->template_data
             : null;
-        $res    = parent::fetch($this->getResourceName($template), $cacheID, $compileID, $parent);
-        if ($_debug !== null) {
+        $res   = parent::fetch($this->getResourceName($template), $cacheID, $compileID, $parent);
+        if ($debug !== null) {
             // fetch overwrites the old debug data so we have to merge it with our previously saved data
-            $this->_debug->template_data = \array_merge($_debug, $this->_debug->template_data);
+            $this->_debug->template_data = \array_merge($debug, $this->_debug->template_data);
         }
 
         return $res;

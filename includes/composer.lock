@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9bef2690ed668c744ba637e8e056a894",
+    "content-hash": "1f02de366035294075af45e1dbd43f08",
     "packages": [
         {
             "name": "andyftw/ssllabs-php",
@@ -940,7 +940,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.jtl-software.de/jtlshop/scc.git",
-                "reference": "fcca03b40bd4e4380bd941b53d0d7656b7cdfb6a"
+                "reference": "d1f4192a7cba0063daa862fd0a65773604813a6a"
             },
             "require": {
                 "myclabs/php-enum": "^1.5",
@@ -967,7 +967,7 @@
             "keywords": [
                 "jtl-shop"
             ],
-            "time": "2018-12-12T09:26:02+00:00"
+            "time": "2018-12-13T18:48:02+00:00"
         },
         {
             "name": "jtlshop/semver",
@@ -1163,6 +1163,67 @@
                 "functional"
             ],
             "time": "2018-12-03T16:47:05+00:00"
+        },
+        {
+            "name": "maximebf/debugbar",
+            "version": "v1.15.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/maximebf/php-debugbar.git",
+                "reference": "30e7d60937ee5f1320975ca9bc7bcdd44d500f07"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/maximebf/php-debugbar/zipball/30e7d60937ee5f1320975ca9bc7bcdd44d500f07",
+                "reference": "30e7d60937ee5f1320975ca9bc7bcdd44d500f07",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0",
+                "psr/log": "^1.0",
+                "symfony/var-dumper": "^2.6|^3.0|^4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.0|^5.0"
+            },
+            "suggest": {
+                "kriswallsmith/assetic": "The best way to manage assets",
+                "monolog/monolog": "Log using Monolog",
+                "predis/predis": "Redis storage"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.14-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "DebugBar\\": "src/DebugBar/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Maxime Bouroumeau-Fuseau",
+                    "email": "maxime.bouroumeau@gmail.com",
+                    "homepage": "http://maximebf.com"
+                },
+                {
+                    "name": "Barry vd. Heuvel",
+                    "email": "barryvdh@gmail.com"
+                }
+            ],
+            "description": "Debug bar in the browser for php application",
+            "homepage": "https://github.com/maximebf/php-debugbar",
+            "keywords": [
+                "debug",
+                "debugbar"
+            ],
+            "time": "2017-12-15T11:13:46+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -1913,16 +1974,16 @@
         },
         {
             "name": "studio-42/elfinder",
-            "version": "2.1.43",
+            "version": "2.1.44",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Studio-42/elFinder.git",
-                "reference": "878daf75321c5c81d1ae308298241d94b383ea62"
+                "reference": "8dadc8cb94ffb3b932b8c7af4077b548062719a6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Studio-42/elFinder/zipball/878daf75321c5c81d1ae308298241d94b383ea62",
-                "reference": "878daf75321c5c81d1ae308298241d94b383ea62",
+                "url": "https://api.github.com/repos/Studio-42/elFinder/zipball/8dadc8cb94ffb3b932b8c7af4077b548062719a6",
+                "reference": "8dadc8cb94ffb3b932b8c7af4077b548062719a6",
                 "shasum": ""
             },
             "require": {
@@ -1967,7 +2028,7 @@
             ],
             "description": "File manager for web",
             "homepage": "http://elfinder.org",
-            "time": "2018-11-24T01:37:42+00:00"
+            "time": "2018-12-15T10:55:18+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -2099,16 +2160,16 @@
         },
         {
             "name": "tightenco/collect",
-            "version": "v5.7.16",
+            "version": "v5.7.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tightenco/collect.git",
-                "reference": "52a7b56dc0a9d265dd5911dff433dedd3417dcc4"
+                "reference": "799108d67cdc9843ed3569ae2989888826166381"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tightenco/collect/zipball/52a7b56dc0a9d265dd5911dff433dedd3417dcc4",
-                "reference": "52a7b56dc0a9d265dd5911dff433dedd3417dcc4",
+                "url": "https://api.github.com/repos/tightenco/collect/zipball/799108d67cdc9843ed3569ae2989888826166381",
+                "reference": "799108d67cdc9843ed3569ae2989888826166381",
                 "shasum": ""
             },
             "require": {
@@ -2145,7 +2206,7 @@
                 "collection",
                 "laravel"
             ],
-            "time": "2018-12-07T15:32:04+00:00"
+            "time": "2018-12-17T15:11:32+00:00"
         },
         {
             "name": "tubalmartin/cssmin",

@@ -18,6 +18,11 @@ use MediaImage;
 class ImageCache extends Job
 {
     /**
+     * @var int
+     */
+    private $nextIndex = 0;
+
+    /**
      * @inheritdoc
      */
     public function hydrate($data)
@@ -31,18 +36,16 @@ class ImageCache extends Job
     /**
      * @param int    $index
      * @param string $type
-     * @return \stdClass
+     * @return bool
      * @throws \Exception
      */
-    private function generateImageCache(int $index, string $type = \Image::TYPE_PRODUCT): \stdClass
+    private function generateImageCache(int $index, string $type = \Image::TYPE_PRODUCT): bool
     {
-        $started  = \time();
         $rendered = 0;
         $total    = MediaImage::getUncachedProductImageCount();
         $images   = MediaImage::getImages($type, true, $index, $this->getLimit());
         $totalAll = MediaImage::getProductImageCount();
-        $this->logger->debug('Uncached images count: ' . $total);
-        $this->logger->debug('Total image count: ' . $totalAll);
+        $this->logger->debug('Uncached images: ' . $total . '/' . $totalAll);
         while (\count($images) === 0 && $index < $totalAll) {
             $index  += $this->getLimit();
             $images = MediaImage::getImages($type, true, $index, $this->getLimit());
@@ -51,16 +54,11 @@ class ImageCache extends Job
             MediaImage::cacheImage($image);
             ++$index;
             ++$rendered;
-            \sleep(2);
         }
+        $this->logger->debug('Generated cache for ' . $rendered . ' images');
+        $this->nextIndex = $total === 0 ? 0 : $index;
 
-        return (object)[
-            'total'          => $total,
-            'renderTime'     => \time() - $started,
-            'nextIndex'      => $total === 0 ? 0 : $index,
-            'renderedImages' => $rendered,
-            'finished'       => $total === 0
-        ];
+        return $total === 0;
     }
 
     /**
@@ -70,11 +68,9 @@ class ImageCache extends Job
     {
         parent::start($queueEntry);
         $this->logger->debug('Generating image cache - max. ' . $this->getLimit());
-        $res = $this->generateImageCache($queueEntry->nLimitN);
-        $this->logger->debug('Generated cache for ' . $res->renderedImages . ' images');
-
-        $queueEntry->nLimitN = $res->nextIndex;
-        $this->setFinished($res->finished);
+        $res                 = $this->generateImageCache($queueEntry->nLimitN);
+        $queueEntry->nLimitN = $this->nextIndex;
+        $this->setFinished($res);
 
         return $this;
     }

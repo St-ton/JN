@@ -222,12 +222,22 @@
                                     <span class="input-group-wrap">
                                         <select class="form-control" id="linkID" name="linkID" required>
                                             <option value="" {if $oEditBox->kCustomID == 0}selected="selected"{/if}>{__('FillOut')}</option>
-                                            {foreach from=$oLink_arr item=oLink}
-                                                <option value="{$oLink->kLinkgruppe}" {if $oLink->kLinkgruppe == $oEditBox->kCustomID}selected="selected"{/if}>{$oLink->cName}</option>
+                                            {foreach $oLink_arr as $link}
+                                                <option value="{$link->getID()}" {if $link->getID() == $oEditBox->kCustomID}selected="selected"{/if}>
+                                                    {$link->getName()}
+                                                </option>
                                             {/foreach}
                                         </select>
                                     </span>
                                 </div>
+                                {foreach $oSprachen_arr as $oSprache}
+                                    <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <label for="title-{$oSprache->cISO}">{__('boxTitle')} {$oSprache->cNameDeutsch}</label>
+                                        </span>
+                                        <input class="form-control" id="title-{$oSprache->cISO}" type="text" name="title[{$oSprache->cISO}]" value="{foreach from=$oEditBox->oSprache_arr item=oBoxSprache}{if $oSprache->cISO == $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}" />
+                                    </div>
+                                {/foreach}
                             {/if}
                             <input type="hidden" name="item" id="editor_id" value="{$oEditBox->kBox}" />
                             <input type="hidden" name="action" value="edit" />

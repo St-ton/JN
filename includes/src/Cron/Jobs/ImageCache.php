@@ -18,6 +18,17 @@ use MediaImage;
 class ImageCache extends Job
 {
     /**
+     * @inheritdoc
+     */
+    public function hydrate($data)
+    {
+        parent::hydrate($data);
+        if (\JOBQUEUE_LIMIT_IMAGE_CACHE_IMAGES > 0) {
+            $this->setLimit(\JOBQUEUE_LIMIT_IMAGE_CACHE_IMAGES);
+        }
+    }
+
+    /**
      * @param int    $index
      * @param string $type
      * @return \stdClass
@@ -57,9 +68,6 @@ class ImageCache extends Job
      */
     public function start(QueueEntry $queueEntry): JobInterface
     {
-        if (\JOBQUEUE_LIMIT_IMAGE_CACHE_IMAGES > 0) {
-            $this->setLimit(\JOBQUEUE_LIMIT_IMAGE_CACHE_IMAGES);
-        }
         parent::start($queueEntry);
         $this->logger->debug('Generating image cache - max. ' . $this->getLimit());
         $res = $this->generateImageCache($queueEntry->nLimitN);

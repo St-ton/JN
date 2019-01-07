@@ -114,22 +114,13 @@ class Queue
                 $this->logger->notice('Job ' . $job->getID() . ' successfully finished.');
                 $this->db->delete('tjobqueue', 'kCron', $job->getCronID());
             } else {
-                $this->db->queryPrepared(
-                    'UPDATE tjobqueue SET 
-                        nLimitN = :ln,
-                        nLimitM = :lm,
-                        nLastArticleID = :lp,
-                        nInArbeit = 0,
-                        dZuletztgelaufen = NOW()
-                     WHERE kCron = :cid',
-                    [
-                        'ln'  => $queueEntry->nLimitN,
-                        'lm'  => $queueEntry->nLimitM,
-                        'lp'  => $queueEntry->nLastArticleID,
-                        'cid' => $job->getCronID()
-                    ],
-                    ReturnType::DEFAULT
-                );
+                $upd                   = new \stdClass();
+                $upd->nLimitN          = $queueEntry->nLimitN;
+                $upd->nLimitM          = $queueEntry->nLimitM;
+                $upd->nLastArticleID   = $queueEntry->nLastArticleID;
+                $upd->dZuletztgelaufen = 'NOW()';
+                $upd->nInArbeit        = 0;
+                $this->db->update('tjobqueue', 'kCron', $job->getCronID(), $upd);
             }
             \executeHook(\HOOK_JOBQUEUE_INC_BEHIND_SWITCH, [
                 'oJobQueue' => $queueEntry,

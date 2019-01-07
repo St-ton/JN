@@ -20,12 +20,20 @@ class Newsletter extends Job
     /**
      * @inheritdoc
      */
+    public function hydrate($data)
+    {
+        parent::hydrate($data);
+        if (\JOBQUEUE_LIMIT_M_NEWSLETTER > 0) {
+            $this->setLimit((int)\JOBQUEUE_LIMIT_M_NEWSLETTER);
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function start(QueueEntry $queueEntry): JobInterface
     {
         parent::start($queueEntry);
-        if (\JOBQUEUE_LIMIT_M_NEWSLETTER > 0) {
-            $this->setLimit(\JOBQUEUE_LIMIT_M_NEWSLETTER);
-        }
         $oNewsletter = $this->getJobData();
         if ($oNewsletter === null) {
             return $this;

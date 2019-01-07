@@ -19,12 +19,20 @@ class Statusmail extends Job
     /**
      * @inheritdoc
      */
-    public function start(QueueEntry $queueEntry): JobInterface
+    public function hydrate($data)
     {
-        parent::start($queueEntry);
+        parent::hydrate($data);
         if (\JOBQUEUE_LIMIT_M_STATUSEMAIL > 0) {
             $this->setLimit((int)\JOBQUEUE_LIMIT_M_STATUSEMAIL);
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function start(QueueEntry $queueEntry): JobInterface
+    {
+        parent::start($queueEntry);
         $jobData = $this->getJobData();
         if ($jobData === null) {
             return $this;

@@ -17,6 +17,17 @@ use Cron\QueueEntry;
 class Export extends Job
 {
     /**
+     * @inheritdoc
+     */
+    public function hydrate($data)
+    {
+        parent::hydrate($data);
+        if (\JOBQUEUE_LIMIT_M_EXPORTE > 0) {
+            $this->setLimit((int)\JOBQUEUE_LIMIT_M_EXPORTE);
+        }
+    }
+
+    /**
      * @param QueueEntry $queueEntry
      * @return bool
      */
@@ -48,9 +59,6 @@ class Export extends Job
     public function start(QueueEntry $queueEntry): JobInterface
     {
         parent::start($queueEntry);
-        if (\JOBQUEUE_LIMIT_M_EXPORTE > 0) {
-            $this->setLimit((int)\JOBQUEUE_LIMIT_M_EXPORTE);
-        }
         $ef = new \Exportformat($this->getForeignKeyID(), $this->db);
         $ef->setLogger($this->logger);
         $finished = $ef->startExport($queueEntry, false, false, true);

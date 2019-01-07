@@ -7,11 +7,8 @@
 namespace Cron\Jobs;
 
 use Cron\Job;
-use Cron\JobHydrator;
 use Cron\JobInterface;
 use Cron\QueueEntry;
-use DB\DbInterface;
-use Psr\Log\LoggerInterface;
 
 /**
  * Class Export
@@ -19,17 +16,6 @@ use Psr\Log\LoggerInterface;
  */
 class Export extends Job
 {
-    /**
-     * @inheritdoc
-     */
-    public function __construct(DbInterface $db, LoggerInterface $logger, JobHydrator $hydrator)
-    {
-        parent::__construct($db, $logger, $hydrator);
-        if (\JOBQUEUE_LIMIT_M_EXPORTE > 0) {
-            $this->setLimit((int)\JOBQUEUE_LIMIT_M_EXPORTE);
-        }
-    }
-
     /**
      * @param QueueEntry $queueEntry
      * @return bool
@@ -62,6 +48,9 @@ class Export extends Job
     public function start(QueueEntry $queueEntry): JobInterface
     {
         parent::start($queueEntry);
+        if (\JOBQUEUE_LIMIT_M_EXPORTE > 0) {
+            $this->setLimit((int)\JOBQUEUE_LIMIT_M_EXPORTE);
+        }
         $ef = new \Exportformat($this->getForeignKeyID(), $this->db);
         $ef->setLogger($this->logger);
         $finished = $ef->startExport($queueEntry, false, false, true);

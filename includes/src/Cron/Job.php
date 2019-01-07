@@ -61,9 +61,9 @@ abstract class Job implements JobInterface
     private $dateLastStarted;
 
     /**
-     * @var string
+     * @var \DateTime
      */
-    private $startTime = '';
+    private $startTime;
 
     /**
      * @var string
@@ -108,7 +108,6 @@ abstract class Job implements JobInterface
         $this->db       = $db;
         $this->logger   = $logger;
         $this->hydrator = $hydrator;
-        $this->setDateLastStarted(new \DateTime());
     }
 
     /**
@@ -192,9 +191,11 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function setDateLastStarted(?\DateTime $dateLastStarted): void
+    public function setDateLastStarted($dateLastStarted): void
     {
-        $this->dateLastStarted = $dateLastStarted;
+        $this->dateLastStarted = \is_string($dateLastStarted)
+            ? new \DateTime($dateLastStarted)
+            : $dateLastStarted;
     }
 
     /**
@@ -208,7 +209,7 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function getStartTime(): string
+    public function getStartTime(): ?\DateTime
     {
         return $this->startTime;
     }
@@ -216,9 +217,11 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function setStartTime(string $startTime): void
+    public function setStartTime($startTime): void
     {
-        $this->startTime = $startTime;
+        $this->startTime = \is_string($startTime)
+            ? new \DateTime($startTime)
+            : $startTime;
     }
 
     /**
@@ -275,6 +278,12 @@ abstract class Job implements JobInterface
     public function start(QueueEntry $queueEntry): JobInterface
     {
         $this->setDateLastStarted(new \DateTime());
+        $this->db->update(
+            'tjobqueue',
+            'kJobQueue',
+            $queueEntry->kJobQueue,
+            (object)['nInArbeit' => $queueEntry->nInArbeit]
+        );
 
         return $this;
     }

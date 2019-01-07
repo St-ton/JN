@@ -30,20 +30,22 @@
                     <tbody>
                         {foreach $jobs as $job}
                             <tr>
-                                <td>{$job->getType()}</td>
-                                <td>{$job->getStartTime()}</td>
+                                <td>{__($job->getType())}</td>
+                                <td>{$job->getStartTime()->format('h:i')}</td>
                                 <td>{if $job->getDateLastStarted() === null}&dash;{else}{$job->getDateLastStarted()->format('d:m:Y h:i')}{/if}</td>
                                 <td>{$job->getFrequency()}h</td>
                                 <td>{if $job->isRunning()}<i class="fa fa-check"></i>{else}<i class="fa fa-times"></i>{/if}</td>
                                 <td>
-                                    <button class="btn btn-danger btn-xs" type="submit" name="delete" value="{$job->getCronID()}">
-                                        <i class="fa fa-trash"></i> {__('btnDelete')}
-                                    </button>
-                                    {if $job->isRunning()}
-                                        <button class="btn btn-default btn-xs" type="submit" name="reset" value="{$job->getQueueID()}">
-                                            <i class="fa fa-refresh"></i> {__('btnReset')}
+                                    <span class="btn-group">
+                                        <button class="btn btn-danger btn-xs" type="submit" name="delete" value="{$job->getCronID()}">
+                                            <i class="fa fa-trash"></i> {__('btnDelete')}
                                         </button>
-                                    {/if}
+                                        {if $job->isRunning()}
+                                            <button class="btn btn-default btn-xs" type="submit" name="reset" value="{$job->getQueueID()}">
+                                                <i class="fa fa-refresh"></i> {__('btnReset')}
+                                            </button>
+                                        {/if}
+                                    </span>
                                 </td>
                             </tr>
                         {/foreach}

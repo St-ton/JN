@@ -7,11 +7,8 @@
 namespace Cron\Jobs;
 
 use Cron\Job;
-use Cron\JobHydrator;
 use Cron\JobInterface;
 use Cron\QueueEntry;
-use DB\DbInterface;
-use Psr\Log\LoggerInterface;
 
 /**
  * Class Statusmail
@@ -22,20 +19,12 @@ class Statusmail extends Job
     /**
      * @inheritdoc
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger, JobHydrator $hydrator)
-    {
-        parent::__construct($db, $logger, $hydrator);
-        if (\JOBQUEUE_LIMIT_M_STATUSEMAIL > 0) {
-            $this->setLimit((int)\JOBQUEUE_LIMIT_M_STATUSEMAIL);
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function start(QueueEntry $queueEntry): JobInterface
     {
         parent::start($queueEntry);
+        if (\JOBQUEUE_LIMIT_M_STATUSEMAIL > 0) {
+            $this->setLimit((int)\JOBQUEUE_LIMIT_M_STATUSEMAIL);
+        }
         $jobData = $this->getJobData();
         if ($jobData === null) {
             return $this;

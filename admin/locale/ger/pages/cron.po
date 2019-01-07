@@ -54,3 +54,6 @@ msgstr "Newsletter"
 
 msgid "dataprotection"
 msgstr "Kundendatenanonymisierung"
+
+msgid "exportformat"
+msgstr "Exportformat"

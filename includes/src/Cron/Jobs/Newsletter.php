@@ -7,12 +7,9 @@
 namespace Cron\Jobs;
 
 use Cron\Job;
-use Cron\JobHydrator;
 use Cron\JobInterface;
 use Cron\QueueEntry;
-use DB\DbInterface;
 use DB\ReturnType;
-use Psr\Log\LoggerInterface;
 
 /**
  * Class Newsletter
@@ -23,20 +20,12 @@ class Newsletter extends Job
     /**
      * @inheritdoc
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger, JobHydrator $hydrator)
-    {
-        parent::__construct($db, $logger, $hydrator);
-        if (\JOBQUEUE_LIMIT_M_NEWSLETTER > 0) {
-            $this->setLimit(\JOBQUEUE_LIMIT_M_NEWSLETTER);
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function start(QueueEntry $queueEntry): JobInterface
     {
         parent::start($queueEntry);
+        if (\JOBQUEUE_LIMIT_M_NEWSLETTER > 0) {
+            $this->setLimit(\JOBQUEUE_LIMIT_M_NEWSLETTER);
+        }
         $oNewsletter = $this->getJobData();
         if ($oNewsletter === null) {
             return $this;

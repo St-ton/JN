@@ -65,9 +65,9 @@ interface JobInterface
     public function getDateLastStarted(): ?\DateTime;
 
     /**
-     * @param \DateTime|null $dateLastStarted
+     * @param \DateTime|string|null $dateLastStarted
      */
-    public function setDateLastStarted(?\DateTime $dateLastStarted): void;
+    public function setDateLastStarted($dateLastStarted): void;
 
     /**
      * @param string|null $dateLastStarted
@@ -75,14 +75,14 @@ interface JobInterface
     public function setLastStarted(?string $dateLastStarted): void;
 
     /**
-     * @return string
+     * @return \DateTime|null
      */
-    public function getStartTime(): string;
+    public function getStartTime(): ?\DateTime;
 
     /**
-     * @param string $startTime
+     * @param \DateTime|string|null $startTime
      */
-    public function setStartTime(string $startTime): void;
+    public function setStartTime($startTime): void;
 
     /**
      * @return int

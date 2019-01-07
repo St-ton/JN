@@ -133,7 +133,6 @@ final class Controller
                     ON tcron.kCron = tjobqueue.kCron',
             ReturnType::ARRAY_OF_OBJECTS
         );
-//        \Shop::dbg($all);
         foreach ($all as $cron) {
             $cron->kJobQueue = (int)($cron->kJobQueue ?? 0);
             $cron->kCron     = (int)$cron->kCron;

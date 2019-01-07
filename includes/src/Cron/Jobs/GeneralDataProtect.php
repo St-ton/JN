@@ -22,8 +22,8 @@ class GeneralDataProtect extends Job
      */
     public function start(QueueEntry $queueEntry): JobInterface
     {
-        $oTableCleaner = new TableCleaner();
-        $oTableCleaner->execute();
+        $tableCleaner = new TableCleaner();
+        $tableCleaner->execute();
 
         return $this;
     }

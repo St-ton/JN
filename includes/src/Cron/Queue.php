@@ -64,7 +64,7 @@ class Queue
         foreach ($queueData as $entry) {
             $this->queueEntries[] = new QueueEntry($entry);
         }
-        $this->logger->debug('Loaded ' . \count($this->queueEntries) . ' existing jobs.');
+        $this->logger->debug('Loaded ' . \count($this->queueEntries) . ' existing job(s).');
 
         return $this->queueEntries;
     }
@@ -100,7 +100,7 @@ class Queue
             $job                   = $this->factory->create($queueEntry);
             $queueEntry->nLimitM   = $job->getLimit();
             $queueEntry->nInArbeit = 1;
-            $this->logger->notice('Got job - ' . $job->getID() . ', type = ' . $job->getType() . ')');
+            $this->logger->notice('Got job - ' . $job->getCronID() . ', type = ' . $job->getType() . ')');
             $job->start($queueEntry);
             $queueEntry->nInArbeit        = 0;
             $queueEntry->dZuletztGelaufen = new \DateTime();
@@ -119,6 +119,7 @@ class Queue
                         nLimitN = :ln,
                         nLimitM = :lm,
                         nLastArticleID = :lp,
+                        nInArbeit = 0,
                         dZuletztgelaufen = NOW()
                      WHERE kCron = :cid',
                     [

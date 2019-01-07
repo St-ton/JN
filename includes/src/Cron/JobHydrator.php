@@ -21,8 +21,8 @@ final class JobHydrator
         'cKey'             => 'ForeignKey',
         'cTabelle'         => 'Table',
         'kJobQueue'        => 'QueueID',
-        'dLetzterStart'    => 'LastStarted',
-        'dZuletztGelaufen' => 'LastStarted',
+        'dLetzterStart'    => 'DateLastStarted',
+        'dZuletztGelaufen' => 'DateLastStarted',
         'dStartZeit'       => 'StartTime',
         'nAlleXStd'        => 'Frequency',
         'nInArbeit'        => 'Running'

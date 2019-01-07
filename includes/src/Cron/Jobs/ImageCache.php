@@ -7,11 +7,8 @@
 namespace Cron\Jobs;
 
 use Cron\Job;
-use Cron\JobHydrator;
 use Cron\JobInterface;
 use Cron\QueueEntry;
-use DB\DbInterface;
-use Psr\Log\LoggerInterface;
 use MediaImage;
 
 /**
@@ -20,17 +17,6 @@ use MediaImage;
  */
 class ImageCache extends Job
 {
-    /**
-     * @inheritdoc
-     */
-    public function __construct(DbInterface $db, LoggerInterface $logger, JobHydrator $hydrator)
-    {
-        parent::__construct($db, $logger, $hydrator);
-        if (\JOBQUEUE_LIMIT_IMAGE_CACHE_IMAGES > 0) {
-            $this->setLimit(\JOBQUEUE_LIMIT_IMAGE_CACHE_IMAGES);
-        }
-    }
-
     /**
      * @param int    $index
      * @param string $type
@@ -44,6 +30,8 @@ class ImageCache extends Job
         $total    = MediaImage::getUncachedProductImageCount();
         $images   = MediaImage::getImages($type, true, $index, $this->getLimit());
         $totalAll = MediaImage::getProductImageCount();
+        $this->logger->debug('Uncached images count: ' . $total);
+        $this->logger->debug('Total image count: ' . $totalAll);
         while (\count($images) === 0 && $index < $totalAll) {
             $index  += $this->getLimit();
             $images = MediaImage::getImages($type, true, $index, $this->getLimit());
@@ -52,6 +40,7 @@ class ImageCache extends Job
             MediaImage::cacheImage($image);
             ++$index;
             ++$rendered;
+            \sleep(2);
         }
 
         return (object)[
@@ -68,8 +57,11 @@ class ImageCache extends Job
      */
     public function start(QueueEntry $queueEntry): JobInterface
     {
-        \Shop::dbg($this, true, 'started:');
+        if (\JOBQUEUE_LIMIT_IMAGE_CACHE_IMAGES > 0) {
+            $this->setLimit(\JOBQUEUE_LIMIT_IMAGE_CACHE_IMAGES);
+        }
         parent::start($queueEntry);
+        $this->logger->debug('Generating image cache - max. ' . $this->getLimit());
         $res = $this->generateImageCache($queueEntry->nLimitN);
         $this->logger->debug('Generated cache for ' . $res->renderedImages . ' images');
 

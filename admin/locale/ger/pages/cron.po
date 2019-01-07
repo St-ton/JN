@@ -42,3 +42,15 @@ msgstr "Erfolgreich aktualisiert."
 
 msgid "msgDeleted"
 msgstr "Erfolgreich gelöscht."
+
+msgid "imagecache"
+msgstr "Bildercache"
+
+msgid "statusemail"
+msgstr "Status-Mails"
+
+msgid "newsletter"
+msgstr "Newsletter"
+
+msgid "dataprotection"
+msgstr "Kundendatenanonymisierung"

@@ -6,7 +6,6 @@
 {if $deleted > 0}
     <div class="alert alert-info">{__('msgDeleted')}</div>
 {/if}
-
 {if $updated > 0}
     <div class="alert alert-info">{__('msgUpdated')}</div>
 {/if}
@@ -71,7 +70,7 @@
                     </span>
                     <select name="type" class="form-control" id="cron-type" required>
                         {foreach $available as $type}
-                            <option value="{$type}">{$type}</option>
+                            <option value="{$type}">{__($type)}</option>
                         {/foreach}
                     </select>
                 </div>

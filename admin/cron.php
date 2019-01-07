@@ -25,8 +25,7 @@ if (\Helpers\Form::validateToken()) {
         $inserted = $admin->addQueueEntry($_POST);
     }
 }
-$jobs = $admin->getJobs();
-$smarty->assign('jobs', $jobs)
+$smarty->assign('jobs', $admin->getJobs())
        ->assign('deleted', $deleted)
        ->assign('updated', $updated)
        ->assign('inserted', $inserted)

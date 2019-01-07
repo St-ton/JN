@@ -214,6 +214,9 @@ class Helper
                 if (isset($params['cModulId']) && \strlen($params['cModulId']) > 0) {
                     self::updatePaymentMethodState($plugin, 0);
                 }
+                \Shop::Container()->getCache()->flush('hook_list');
+                self::$hookList = null;
+                \Shop::set('oplugin_' . $plugin->getID(), null);
 
                 return false;
             }

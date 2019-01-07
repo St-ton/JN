@@ -25,6 +25,8 @@ class Statusmail extends Job
         if (\JOBQUEUE_LIMIT_M_STATUSEMAIL > 0) {
             $this->setLimit((int)\JOBQUEUE_LIMIT_M_STATUSEMAIL);
         }
+
+        return $this;
     }
 
     /**

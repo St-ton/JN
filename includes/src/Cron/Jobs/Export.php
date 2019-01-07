@@ -25,6 +25,8 @@ class Export extends Job
         if (\JOBQUEUE_LIMIT_M_EXPORTE > 0) {
             $this->setLimit((int)\JOBQUEUE_LIMIT_M_EXPORTE);
         }
+
+        return $this;
     }
 
     /**

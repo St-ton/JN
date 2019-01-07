@@ -31,6 +31,8 @@ class ImageCache extends Job
         if (\JOBQUEUE_LIMIT_IMAGE_CACHE_IMAGES > 0) {
             $this->setLimit(\JOBQUEUE_LIMIT_IMAGE_CACHE_IMAGES);
         }
+
+        return $this;
     }
 
     /**

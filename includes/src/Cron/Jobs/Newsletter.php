@@ -26,6 +26,8 @@ class Newsletter extends Job
         if (\JOBQUEUE_LIMIT_M_NEWSLETTER > 0) {
             $this->setLimit((int)\JOBQUEUE_LIMIT_M_NEWSLETTER);
         }
+
+        return $this;
     }
 
     /**

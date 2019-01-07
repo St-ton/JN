@@ -1013,10 +1013,10 @@ msgid "benachrichtigung_abfragen_captcha_desc"
 msgstr "Hier legen Sie fest, ob für Benachrichtigungsanfragen der Spamschutz aktiviert werden soll. Dazu müssen Sie ggf. zuerst den Spamschutz von JTL-Shop in den globalen Einstellungen konfigurieren."
 
 msgid "benachrichtigung_min_lagernd_name"
-msgstr "Mindestlagerbestand für Benachrichtigung"
+msgstr "Benachrichtigung ab Mindestlagerbestand"
 
 msgid "benachrichtigung_min_lagernd_desc"
-msgstr "Erst wenn der Lagerbestand des Artikels diesen Wert übersteigt, wird eine Verfügbarkeitsbenachrichtigung versendet"
+msgstr "Hier stellen Sie ein, welchen verfügbaren Lagerbestand ein Artikel mindestens haben muss, damit eine Verfügbarkeitsbenachrichtigung versendet wird."
 
 msgid "artikeldetails_vergleichsliste_anzeigen_name"
 msgstr "„Zur Vergleichsliste hinzufügen“ anzeigen"

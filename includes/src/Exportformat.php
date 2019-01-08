@@ -4,14 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Cron\QueueEntry;
 use DB\DbInterface;
 use DB\ReturnType;
 use Helpers\Category;
 use Helpers\Request;
-use Helpers\Tax;
 use Helpers\ShippingMethod;
+use Helpers\Tax;
 use Smarty\SmartyResourceNiceDB;
-use Cron\QueueEntry;
 
 /**
  * Class Exportformat
@@ -1050,15 +1050,15 @@ class Exportformat
     }
 
     /**
-     * @param \Cron\QueueEntry $queueObject
-     * @param bool            $isAsync
-     * @param bool            $back
-     * @param bool            $isCron
-     * @param int|null        $max
+     * @param QueueEntry $queueObject
+     * @param bool       $isAsync
+     * @param bool       $back
+     * @param bool       $isCron
+     * @param int|null   $max
      * @return bool
      */
     public function startExport(
-        \Cron\QueueEntry $queueObject,
+        QueueEntry $queueObject,
         bool $isAsync = false,
         bool $back = false,
         bool $isCron = false,

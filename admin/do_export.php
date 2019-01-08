@@ -17,8 +17,6 @@ if (!isset($_GET['e']) || !((int)$_GET['e'] > 0) || !Form::validateToken()) {
 $db    = Shop::Container()->getDB();
 $queue = $db->select('texportqueue', 'kExportqueue', (int)$_GET['e']);
 if (!isset($queue->kExportformat) || !$queue->kExportformat || !$queue->nLimit_m) {
-    Shop::dbg($_GET, false, 'GET:');
-    Shop::dbg($queue, false, 'Q:');
     die('1');
 }
 $ef = new Exportformat($queue->kExportformat, $db);

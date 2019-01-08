@@ -125,11 +125,9 @@ if ($cAction !== null && $kExportformat !== null && Form::validateToken()) {
             $kExportqueue = $db->insert('texportqueue', $queue);
 
             $cURL = 'do_export.php?&back=admin&token=' . $_SESSION['jtl_token'] . '&e=' . $kExportqueue;
-            error_log('inserted: ' . $kExportqueue);
             if ($bAsync) {
                 $cURL .= '&ajax';
             }
-            error_log('URL:  ' . $cURL);
             header('Location: ' . $cURL);
             exit;
         case 'download':
@@ -258,11 +256,12 @@ if ($step === 'neuer Export') {
         }
         $smarty->assign('Exportformat', $exportformat);
     }
+    $gettext = \Shop::Container()->getGetText();
     $configs = getAdminSectionSettings(CONF_EXPORTFORMATE);
-    \Shop::Container()->getGetText()->localizeConfigs($configs);
+    $gettext->localizeConfigs($configs);
 
     foreach ($configs as $config) {
-        \Shop::Container()->getGetText()->localizeConfigValues($config, $config->ConfWerte);
+        $gettext->localizeConfigValues($config, $config->ConfWerte);
     }
 
     $smarty->assign('Conf', $configs);

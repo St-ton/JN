@@ -818,6 +818,7 @@ class Bestellung
     }
 
     /**
+     * @deprecated since 5.0.0
      * @return $this
      */
     public function machGoogleAnalyticsReady(): self

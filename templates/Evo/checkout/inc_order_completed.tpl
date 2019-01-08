@@ -9,5 +9,3 @@
         <p>{lang key='yourChosenPaymentOption' section='checkout'}: {$Bestellung->cZahlungsartName}</p>
     {/block}
 </div>
-
-{include file='checkout/inc_conversion_tracking.tpl'}

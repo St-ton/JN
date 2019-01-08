@@ -4,7 +4,7 @@
  *}
 {foreach $oBox->getItems() as $Merkmal}
     {assign var=kMerkmal value=$Merkmal->kMerkmal}
-    <section class="panel panel-default box box-filter-characteristics">
+    <section class="panel panel-default box box-filter-characteristics" id="sidebox{$oBox->getID()}-{$Merkmal->kMerkmal}">
         {if ($Merkmal->getData('cTyp') === 'SELECTBOX') && $Merkmal->oMerkmalWerte_arr|@count > 1}
             <div class="panel-heading dropdown">
                 <div class="panel-title">

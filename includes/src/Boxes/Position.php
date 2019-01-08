@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -6,11 +6,10 @@
 
 namespace Boxes;
 
-
 use MyCLabs\Enum\Enum;
 
 /**
- * Class ComponentPropertyType
+ * Class Position
  *
  * @package Boxes
  * @method Position LEFT()
@@ -20,11 +19,11 @@ use MyCLabs\Enum\Enum;
  */
 class Position extends Enum
 {
-    const LEFT = 'left';
+    public const LEFT = 'left';
 
-    const RIGHT = 'right';
+    public const RIGHT = 'right';
 
-    const BOTTOM = 'bottom';
+    public const BOTTOM = 'bottom';
 
-    const TOP = 'top';
+    public const TOP = 'top';
 }

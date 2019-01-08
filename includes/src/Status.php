@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Template;
 use function Functional\some;
 
 /**
@@ -65,7 +66,6 @@ class Status
 
     /**
      * checks the db-structure against 'admin/includes/shopmd5files/dbstruct_[shop-version].json'
-     * (the 'shop-Version' is here needed without points)
      *
      * @return bool  true='no errors', false='something is wrong'
      */
@@ -81,18 +81,35 @@ class Status
 
     /**
      * checks the shop-filesystem-structure against 'admin/includes/shopmd5files/[shop-version].csv'
-     * (the 'shop-Version' is here needed without points)
      *
      * @return bool  true='no errors', false='something is wrong'
      */
-    protected function validFileStruct(): bool
+    protected function validModifiedFileStruct(): bool
     {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
 
-        $files = $stats = [];
+        $files = [];
+        $stats = 0;
 
-        return getAllFiles($files, $stats) === 1
-            ? end($stats) === 0
+        return getAllModifiedFiles($files, $stats) === 1
+            ? $stats === 0
+            : false;
+    }
+
+    /**
+     * checks the shop-filesystem-structure against 'admin/includes/shopmd5files/deleted_files_[shop-version].csv'
+     *
+     * @return bool  true='no errors', false='something is wrong'
+     */
+    protected function validOrphanedFilesStruct(): bool
+    {
+        require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
+
+        $files = [];
+        $stats = 0;
+
+        return getAllOrphanedFiles($files, $stats) === 1
+            ? $stats === 0
             : false;
     }
 
@@ -131,7 +148,7 @@ class Status
                         AND tplugin.nStatus = :state',
                 [
                     'hook'  => $hookID,
-                    'state' => Plugin::PLUGIN_ACTIVATED
+                    'state' => \Plugin\State::ACTIVATED
                 ],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
@@ -145,6 +162,7 @@ class Status
 
     /**
      * @return bool
+     * @throws Exception
      */
     protected function hasPendingUpdates(): bool
     {
@@ -182,7 +200,7 @@ class Status
     {
         $oTemplate = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
         if ($oTemplate !== null && isset($oTemplate->cTemplate)) {
-            $oTplData = TemplateHelper::getInstance()->getData($oTemplate->cTemplate);
+            $oTplData = Template::getInstance()->getData($oTemplate->cTemplate);
             if ($oTplData->bResponsive) {
                 $oMobileTpl = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'mobil');
                 if ($oMobileTpl !== null) {
@@ -246,7 +264,7 @@ class Status
         $lines = explode('  ', $stats);
 
         $lines = array_map(function ($v) {
-            list($key, $value) = explode(':', $v, 2);
+            [$key, $value] = explode(':', $v, 2);
 
             return ['key' => trim($key), 'value' => trim($value)];
         }, $lines);
@@ -334,18 +352,17 @@ class Status
         return isset($conf['suche_fulltext'])
             && $conf['suche_fulltext'] !== 'N'
             && (!Shop::Container()->getDB()->query(
-                    "SHOW INDEX 
-                    FROM tartikel 
-                    WHERE KEY_NAME = 'idx_tartikel_fulltext'",
-                    \DB\ReturnType::SINGLE_OBJECT
-                )
-                || !Shop::Container()->getDB()->query(
-                    "SHOW INDEX 
-                        FROM tartikelsprache 
-                        WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
-                    \DB\ReturnType::SINGLE_OBJECT
-                )
-            );
+                "SHOW INDEX 
+                FROM tartikel 
+                WHERE KEY_NAME = 'idx_tartikel_fulltext'",
+                \DB\ReturnType::SINGLE_OBJECT
+            )
+            || !Shop::Container()->getDB()->query(
+                "SHOW INDEX 
+                    FROM tartikelsprache 
+                    WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
+                \DB\ReturnType::SINGLE_OBJECT
+            ));
     }
 
     /**

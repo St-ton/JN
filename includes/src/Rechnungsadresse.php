@@ -62,6 +62,8 @@ class Rechnungsadresse extends Adresse
             return 0;
         }
         $this->fromObject($obj);
+        $this->kKunde            = (int)$this->kKunde;
+        $this->kRechnungsadresse = (int)$this->kRechnungsadresse;
 
         $this->cAnredeLocalized = Kunde::mapSalutation($this->cAnrede, 0, $this->kKunde);
         $this->angezeigtesLand  = Sprache::getCountryCodeByCountryName($this->cLand);
@@ -106,7 +108,12 @@ class Rechnungsadresse extends Adresse
 
         unset($obj->angezeigtesLand, $obj->cAnredeLocalized);
 
-        $res = Shop::Container()->getDB()->update('trechnungsadresse', 'kRechnungsadresse', $obj->kRechnungsadresse, $obj);
+        $res = Shop::Container()->getDB()->update(
+            'trechnungsadresse',
+            'kRechnungsadresse',
+            $obj->kRechnungsadresse,
+            $obj
+        );
         $this->decrypt();
         // Anrede mappen
         $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);

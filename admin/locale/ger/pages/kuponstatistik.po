@@ -1,0 +1,99 @@
+msgid "couponstatisticsURL"
+msgstr "https://jtl-url.de/v5h81"
+
+msgid "couponStatistic"
+msgstr "Kupon-Statistik"
+
+msgid "fromUntilDate"
+msgstr "von - bis Datum"
+
+msgid "january"
+msgstr "Januar"
+
+msgid "february"
+msgstr "Februar"
+
+msgid "march"
+msgstr "März"
+
+msgid "april"
+msgstr "April"
+
+msgid "may"
+msgstr "Mai"
+
+msgid "june"
+msgstr "Juni"
+
+msgid "july"
+msgstr "Juli"
+
+msgid "august"
+msgstr "August"
+
+msgid "september"
+msgstr "September"
+
+msgid "october"
+msgstr "Oktober"
+
+msgid "november"
+msgstr "November"
+
+msgid "december"
+msgstr "Dezember"
+
+msgid "filtering"
+msgstr "Filtern"
+
+msgid "countUsedCoupons"
+msgstr "Summe benutzter Kupons (% der Bestellungen)"
+
+msgid "countOrders"
+msgstr "Bestellungen gesamt"
+
+msgid "countCustomers"
+msgstr "Anzahl der Kunden"
+
+msgid "couponAmountAll"
+msgstr "Wert aller benutzten Kupons zusammen"
+
+msgid "shoppingCartAmountAll"
+msgstr "Wert aller Bestellungen mit benutzten Kupons"
+
+msgid "couponName"
+msgstr "Kupon"
+
+msgid "customerName"
+msgstr "Kunde"
+
+msgid "orderNumber"
+msgstr "Bestell-Nr."
+
+msgid "couponValue"
+msgstr "Kuponwert"
+
+msgid "orderValue"
+msgstr "Bestellwert"
+
+msgid "date"
+msgstr "Datum"
+
+msgid "order"
+msgstr "Bestellung"
+
+msgid "orderPosition"
+msgstr "Bestellposition"
+
+msgid "amount"
+msgstr "Anzahl"
+
+msgid "unitPrice"
+msgstr "Stückpreis"
+
+msgid "totalPrice"
+msgstr "Gesamtpreis"
+
+msgid "totalAmount"
+msgstr "Gesamtsumme"
+

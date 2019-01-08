@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
-ifndef('MAX_REVISIONS', 5);
 
 /**
  * Class Revision
@@ -44,8 +43,11 @@ class Revision
                 'id'    => 'kPage'
             ],
             'news'          => [
-                'table' => 'tnews',
-                'id'    => 'kNews'
+                'table'         => 'tnews',
+                'id'            => 'kNews',
+                'reference'     => 'tnewssprache',
+                'reference_id'  => 'kNews',
+                'reference_key' => 'languageCode'
             ],
             'box'           => [
                 'table'         => 'tboxen',
@@ -70,9 +72,9 @@ class Revision
 
     /**
      * @param string $type
-     * @return string|null
+     * @return array|null
      */
-    private function getMapping(string $type)
+    private function getMapping(string $type): ?array
     {
         return $this->mapping[$type] ?? null;
     }
@@ -93,7 +95,7 @@ class Revision
      * @param int $id
      * @return stdClass|null
      */
-    public function getRevision(int $id)
+    public function getRevision(int $id): ?stdClass
     {
         return Shop::Container()->getDB()->select('trevisions', 'id', $id);
     }
@@ -103,7 +105,7 @@ class Revision
      * @param int $key
      * @return stdClass|null
      */
-    public function getLatestRevision($type, int $key)
+    public function getLatestRevision($type, int $key): ?stdClass
     {
         $mapping = $this->getMapping($type);
         if ($key === 0 || $mapping === null) {
@@ -155,11 +157,13 @@ class Revision
         $revision->author             = $author;
         $revision->custom_table       = $mapping['table'];
         $revision->custom_primary_key = $mapping['id'];
-
         if ($secondary !== false && !empty($mapping['reference'])) {
             $field               = $mapping['reference_key'];
-            $referencedRevisions = Shop::Container()->getDB()->selectAll($mapping['reference'],
-                $mapping['reference_id'], $key);
+            $referencedRevisions = Shop::Container()->getDB()->selectAll(
+                $mapping['reference'],
+                $mapping['reference_id'],
+                $key
+            );
             if (empty($referencedRevisions)) {
                 return false;
             }
@@ -230,7 +234,7 @@ class Revision
      * @param bool   $secondary
      * @return bool
      */
-    public function restoreRevision($type, $id, $secondary = false): bool
+    public function restoreRevision($type, $id, bool $secondary = false): bool
     {
         $revision = $this->getRevision($id);
         $mapping  = $this->getMapping($type); // get static mapping from build in content types

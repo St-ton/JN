@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
 namespace Filter;
-
 
 /**
  * Class Config
@@ -26,7 +25,7 @@ interface ConfigInterface
     /**
      * @param int $langID
      */
-    public function setLanguageID(int $langID);
+    public function setLanguageID(int $langID): void;
 
     /**
      * @return array
@@ -47,7 +46,7 @@ interface ConfigInterface
     /**
      * @param array $config
      */
-    public function setConfig(array $config);
+    public function setConfig(array $config): void;
 
     /**
      * @return int
@@ -57,7 +56,7 @@ interface ConfigInterface
     /**
      * @param int $customerGroupID
      */
-    public function setCustomerGroupID(int $customerGroupID);
+    public function setCustomerGroupID(int $customerGroupID): void;
 
     /**
      * @return string

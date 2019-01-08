@@ -6,13 +6,14 @@
 
 namespace OPC\Portlets;
 
+use OPC\Portlet;
 use OPC\PortletInstance;
 
 /**
  * Class Button
  * @package OPC\Portlets
  */
-class Button extends \OPC\Portlet
+class Button extends Portlet
 {
     /**
      * @param PortletInstance $instance
@@ -26,22 +27,21 @@ class Button extends \OPC\Portlet
         $size          = $instance->getProperty('btn-size');
         $alignment     = $instance->getProperty('btn-alignment');
         $fullWidthflag = $instance->getProperty('btn-full-width-flag');
-
         // icon
         $iconFlag      = $instance->getProperty('btn-icon-flag');
         $icon          = $instance->getProperty('btn-icon');
         $iconAlignment = $instance->getProperty('btn-icon-alignment');
 
-        $instance->addClass("btn")
-                 ->addClass("btn-$type")
-                 ->addClass("btn-$size")
+        $instance->addClass('btn')
+                 ->addClass('btn-' . $type)
+                 ->addClass('btn-' . $size)
                  ->addClass(!empty($fullWidthflag) ? 'btn-block' : '');
 
         $attributes    = $instance->getAttributeString();
         $dataAttribute = $instance->getDataAttributeString();
 
-        $previewButton = "<a ";
-        $wrapperClass  = "";
+        $previewButton = '<a ';
+        $wrapperClass  = '';
         if (!empty($alignment)) {
             $wrapperClass = $alignment !== 'inline' ? 'text-' . $alignment : 'inline-block';
         }
@@ -49,15 +49,15 @@ class Button extends \OPC\Portlet
 
         if (!empty($iconFlag) && $icon !== '') {
             if ($iconAlignment === 'left') {
-                $previewButton .= "<i class='$icon' style='top:2px'></i> $text</a>";
+                $previewButton .= '<i class="' . $icon . '" style="top:2px"></i> ' . $text . '</a>';
             } else {
-                $previewButton .= "$text <i class='$icon' style='top:2px'></i></a>";
+                $previewButton .= $text . ' <i class="' . $icon . '" style="top:2px"></i></a>';
             }
         } else {
-            $previewButton .= "$text</a>";
+            $previewButton .= $text . '</a>';
         }
 
-        return "<div class='" . $wrapperClass . "' $dataAttribute>" . $previewButton . "</div>";
+        return '<div class="' . $wrapperClass . '" ' . $dataAttribute . '>' . $previewButton . '</div>';
     }
 
     /**
@@ -72,34 +72,29 @@ class Button extends \OPC\Portlet
         $size          = $instance->getProperty('btn-size');
         $alignment     = $instance->getProperty('btn-alignment');
         $fullWidthflag = $instance->getProperty('btn-full-width-flag');
-
         // icon
         $iconFlag      = $instance->getProperty('btn-icon-flag');
         $icon          = $instance->getProperty('btn-icon');
         $iconAlignment = $instance->getProperty('btn-icon-alignment');
-
         // URL
         $linkFlag       = $instance->getProperty('btn-link-flag');
         $linkUrl        = $instance->getProperty('btn-link-url');
         $linkTitle      = $instance->getProperty('btn-link-title');
         $linkNewTabFlag = $instance->getProperty('btn-link-new-tab-flag');
 
-        $instance->addClass("btn")
-                 ->addClass("btn-$type")
-                 ->addClass("btn-$size")
+        $instance->addClass('btn')
+                 ->addClass('btn-' . $type)
+                 ->addClass('btn-' . $size)
                  ->addClass(!empty($fullWidthflag) ? 'btn-block' : '');
 
-        $attributes = $instance->getAttributeString();
-
-        $previewButton = "<a ";
+        $attributes    = $instance->getAttributeString();
+        $previewButton = '<a ';
+        $wrapperClass  = '';
 
         if (!empty($linkFlag) && $linkFlag !== 'false' && !empty($linkUrl)) {
             $previewButton .= ' href="' . $linkUrl . '" title="' . $linkTitle . '" ';
             $previewButton .= !empty($linkNewTabFlag) ? ' target="_blank" ' : '';
         }
-
-        $wrapperClass = "";
-
         if (!empty($alignment)) {
             $wrapperClass = $alignment !== 'inline' ? 'text-' . $alignment : 'inline-block';
         }
@@ -108,15 +103,15 @@ class Button extends \OPC\Portlet
 
         if (!empty($iconFlag) && $icon !== '') {
             if ($iconAlignment === 'left') {
-                $previewButton .= "<i class='$icon' style='top:2px'></i> $text</a>";
+                $previewButton .= '<i class="' . $icon . ' style="top:2px"></i> ' . $text . '</a>';
             } else {
-                $previewButton .= "$text <i class='$icon' style='top:2px'></i></a>";
+                $previewButton .= $text . ' <i class="' . $icon . '" style="top:2px"></i></a>';
             }
         } else {
-            $previewButton .= "$text</a>";
+            $previewButton .= $text . '</a>';
         }
 
-        return "<div class='" . $wrapperClass . "'>" . $previewButton . "</div>";
+        return '<div class="' . $wrapperClass . '">' . $previewButton . '</div>';
     }
 
     /**
@@ -124,7 +119,7 @@ class Button extends \OPC\Portlet
      */
     public function getButtonHtml(): string
     {
-        return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Button';
+        return '<img alt="" class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Button';
     }
 
     /**
@@ -215,6 +210,7 @@ class Button extends \OPC\Portlet
                     'true'  => 'ja',
                     'false' => 'nein',
                 ],
+                'default'    => 'false',
                 'dspl_width' => 100,
             ],
             'btn-link-url'          => [

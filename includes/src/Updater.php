@@ -4,10 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTLShop\SemVer\Compare;
-use JTLShop\SemVer\Parser;
 use JTLShop\SemVer\Version;
-use JTLShop\SemVer\VersionRange;
+use JTLShop\SemVer\VersionCollection;
 
 /**
  * Class Updater
@@ -34,11 +32,11 @@ class Updater
      *
      * @throws Exception
      */
-    public function verify()
+    public function verify(): void
     {
         if (static::$isVerified !== true) {
             MigrationHelper::verifyIntegrity();
-            $dbVersion = $this->getCurrentDatabaseVersion();
+            $dbVersion      = $this->getCurrentDatabaseVersion();
             $dbVersionShort = (int)sprintf('%d%02d', $dbVersion->getMajor(), $dbVersion->getMinor());
 
             // While updating from 3.xx to 4.xx provide a default admin-template row
@@ -82,16 +80,16 @@ class Updater
         $fileVersion = $this->getCurrentFileVersion();
         $dbVersion   = $this->getCurrentDatabaseVersion();
 
-        if (Compare::greaterThan(Parser::parse($fileVersion), $dbVersion)
-            || (Compare::smallerThan($dbVersion, Parser::parse('2.19'))
-                || Compare::equals($dbVersion, Parser::parse('2.19')))) {
+        if (Version::parse($fileVersion)->greaterThan($dbVersion)
+            || ($dbVersion->smallerThan(Version::parse('2.19'))
+                || $dbVersion->equals(Version::parse('2.19')))
+        ) {
             return true;
         }
 
         $manager = new MigrationManager();
-        $pending = $manager->getPendingMigrations();
 
-        return count($pending) > 0;
+        return count($manager->getPendingMigrations()) > 0;
     }
 
     /**
@@ -101,7 +99,7 @@ class Updater
      * @param bool   $compress
      * @throws Exception
      */
-    public function createSqlDump(string $file, bool $compress = true)
+    public function createSqlDump(string $file, bool $compress = true): void
     {
         if ($compress) {
             $info = pathinfo($file);
@@ -147,6 +145,7 @@ class Updater
     public function getVersion()
     {
         $v = Shop::Container()->getDB()->query('SELECT * FROM tversion', \DB\ReturnType::SINGLE_OBJECT);
+
         if ($v === null) {
             throw new \Exception('Unable to identify application version');
         }
@@ -168,13 +167,13 @@ class Updater
      */
     public function getCurrentDatabaseVersion(): Version
     {
-        $v = $this->getVersion();
+        $version = $this->getVersion()->nVersion;
 
-        if (!stristr($v->nVersion, '.')) {
-            return Parser::parse(substr($v->nVersion, 0, 1).'.'.(int)substr($v->nVersion, 1).'.0');
-        } else {
-            return Parser::parse($v->nVersion);
+        if ($version === '5' || $version === 5) {
+            $version = '5.0.0';
         }
+
+        return Version::parse($version);
     }
 
     /**
@@ -183,31 +182,30 @@ class Updater
      */
     public function getTargetVersion(Version $version): Version
     {
-        $majors        = ['2.19' => Parser::parse('3.00.0'), '3.20' => Parser::parse('4.00.0')];
+        $majors        = ['2.19' => Version::parse('3.00.0'), '3.20' => Version::parse('4.00.0')];
         $targetVersion = null;
 
         foreach ($majors as $preMajor => $major) {
-            if (Compare::equals($version, Parser::parse($preMajor))) {
+            if ($version->equals(Version::parse($preMajor))) {
                 $targetVersion = $major;
             }
         }
 
         if (empty($targetVersion)) {
-            $api                    = Shop::Container()->get(\Network\JTLApi::class);
-            $availableUpdates       = $api->getAvailableVersions();
-            $parsedAvailableUpdates = [];
+            $api               = Shop::Container()->get(\Network\JTLApi::class);
+            $availableUpdates  = $api->getAvailableVersions() ?? [];
+            $versionCollection = new VersionCollection();
 
             foreach ($availableUpdates as $availableUpdate) {
-                $parsedAvailableUpdates[] = Parser::parse($availableUpdate->reference);
+                $versionCollection->append($availableUpdate->reference);
             }
-            $versionRange  = new VersionRange($parsedAvailableUpdates);
-            $versionRange->setVersionRange($version);
-            $targetVersion = Compare::smallerThan($version, Parser::parse($this->getCurrentFileVersion()))
-                ? $versionRange->getNextVersion($version)
+
+            $targetVersion = $version->smallerThan(Version::parse($this->getCurrentFileVersion()))
+                ? $versionCollection->getNextVersion($version)
                 : $version;
         }
 
-        return $targetVersion;
+        return $targetVersion ?? Version::parse(APPLICATION_VERSION);
     }
 
     /**
@@ -272,18 +270,18 @@ class Updater
     }
 
     /**
-     * @return int|null
+     * @return IMigration|Version
      * @throws Exception
      */
     public function update()
     {
         return $this->hasPendingUpdates()
             ? $this->updateToNextVersion()
-            : null;
+            : Version::parse(APPLICATION_VERSION);
     }
 
     /**
-     * @return int|mixed
+     * @return IMigration|Version
      * @throws Exception
      */
     protected function updateToNextVersion()
@@ -291,7 +289,7 @@ class Updater
         $currentVersion = $this->getCurrentDatabaseVersion();
         $targetVersion  = $this->getTargetVersion($currentVersion);
 
-        if (Compare::smallerThan($targetVersion, Parser::parse('4.03.0'))) {
+        if ($targetVersion->smallerThan(Version::parse('4.03.0'))) {
             return $targetVersion <= $currentVersion
                 ? $currentVersion
                 : $this->updateBySqlFile($currentVersion, $targetVersion);
@@ -303,7 +301,7 @@ class Updater
     /**
      * @param Version $currentVersion
      * @param Version $targetVersion
-     * @return mixed
+     * @return Version
      * @throws Exception
      */
     protected function updateBySqlFile(Version $currentVersion, Version $targetVersion): Version
@@ -339,13 +337,13 @@ class Updater
                          nFehler = :errcnt,
                          nTyp = :type, 
                          cFehlerSQL = :err, 
-                         dAktualisiert = now()',
+                         dAktualisiert = NOW()',
                     [
                         'rw'     => $currentLine,
                         'errcnt' => $errorCountForLine,
                         'type'   => $code,
                         'err'    => $error
-                        
+
                     ],
                     \DB\ReturnType::AFFECTED_ROWS
                 );
@@ -361,24 +359,22 @@ class Updater
 
     /**
      * @param Version $targetVersion
-     *
-     * @return mixed
+     * @return IMigration|Version
      * @throws Exception
      */
     protected function updateByMigration(Version $targetVersion)
     {
         $manager           = new MigrationManager();
         $pendingMigrations = $manager->getPendingMigrations();
-        $id                = reset($pendingMigrations);
-        $migration         = $manager->getMigrationById($id);
+        if (count($pendingMigrations) === 0) {
+            $this->setVersion($targetVersion);
+
+            return $targetVersion;
+        }
+        $id        = reset($pendingMigrations);
+        $migration = $manager->getMigrationById($id);
 
         $manager->executeMigration($migration, IMigration::UP);
-
-        $pendingMigrationsExecuted = $manager->getPendingMigrations();
-
-        if (count($pendingMigrationsExecuted) < 1) {
-            $this->setVersion($targetVersion);
-        }
 
         return $migration;
     }
@@ -386,7 +382,7 @@ class Updater
     /**
      * @throws Exception
      */
-    protected function executeMigrations()
+    protected function executeMigrations(): void
     {
         foreach ((new MigrationManager())->migrate() as $migration) {
             if ($migration->error !== null) {
@@ -397,14 +393,12 @@ class Updater
 
     /**
      * @param Version $targetVersion
-     *
      * @throws Exception
      */
-    protected function setVersion($targetVersion)
+    protected function setVersion(Version $targetVersion): void
     {
         $db              = Shop::Container()->getDB();
-        $tVersionColumns = $db->executeQuery("SHOW COLUMNS FROM `tversion`", \DB\ReturnType::ARRAY_OF_OBJECTS);
-
+        $tVersionColumns = $db->executeQuery('SHOW COLUMNS FROM `tversion`', \DB\ReturnType::ARRAY_OF_OBJECTS);
         foreach ($tVersionColumns as $column) {
             if ($column->Field === 'nVersion') {
                 if ($column->Type !== 'varchar(20)') {
@@ -427,7 +421,7 @@ class Updater
                 nFehler = 0, 
                 nTyp = 1, 
                 cFehlerSQL = '', 
-                dAktualisiert = now()",
+                dAktualisiert = NOW()",
             ['ver' => $newVersion],
             \DB\ReturnType::AFFECTED_ROWS
         );

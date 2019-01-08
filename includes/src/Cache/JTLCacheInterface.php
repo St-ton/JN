@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
 
 namespace Cache;
-
 
 /**
  * Interface JTLCacheInterface
@@ -302,5 +301,5 @@ interface JTLCacheInterface
      * @param string $error
      * @return JTLCacheInterface
      */
-    public function setError(string $error): JTLCacheInterface;
+    public function setError(string $error);
 }

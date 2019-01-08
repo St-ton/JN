@@ -6,7 +6,6 @@
 
 namespace Filter;
 
-
 use Filter\Pagination\Info;
 use Tightenco\Collect\Support\Collection;
 
@@ -112,7 +111,7 @@ interface SearchResultsInterface
     /**
      * @return string|null
      */
-    public function getSearchTerm();
+    public function getSearchTerm(): ?string;
 
     /**
      * @param string $searchTerm
@@ -121,9 +120,9 @@ interface SearchResultsInterface
     public function setSearchTerm($searchTerm): SearchResultsInterface;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSearchTermWrite();
+    public function getSearchTermWrite(): ?string;
 
     /**
      * @param string $searchTerm
@@ -244,7 +243,7 @@ interface SearchResultsInterface
     /**
      * @return string|null
      */
-    public function getTagFilterJSON();
+    public function getTagFilterJSON(): ?string;
 
     /**
      * @param string $json
@@ -255,7 +254,7 @@ interface SearchResultsInterface
     /**
      * @return string|null
      */
-    public function getSearchFilterJSON();
+    public function getSearchFilterJSON(): ?string;
 
     /**
      * @param string $json
@@ -266,7 +265,7 @@ interface SearchResultsInterface
     /**
      * @return string|null
      */
-    public function getError();
+    public function getError(): ?string;
 
     /**
      * @param string $error

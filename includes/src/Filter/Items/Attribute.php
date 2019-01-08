@@ -6,7 +6,6 @@
 
 namespace Filter\Items;
 
-
 use DB\ReturnType;
 use Filter\FilterInterface;
 use Filter\Join;
@@ -27,7 +26,7 @@ use function Functional\map;
  */
 class Attribute extends BaseAttribute
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var int
@@ -150,7 +149,6 @@ class Attribute extends BaseAttribute
 
             return $this->setType($this->isMultiSelect() ? Type::OR : Type::AND)
                         ->setSeo($this->getAvailableLanguages());
-
         }
 
         return $this->setValue($value)->setSeo($this->getAvailableLanguages());
@@ -196,7 +194,7 @@ class Attribute extends BaseAttribute
     /**
      * @param array $data
      */
-    private function setBatchAttributeData(array $data)
+    private function setBatchAttributeData(array $data): void
     {
         $this->batchAttributeData = $data;
     }
@@ -241,7 +239,8 @@ class Attribute extends BaseAttribute
      */
     public function attributeValueIsActive($kMerkmalWert): bool
     {
-        return \array_reduce($this->productFilter->getAttributeFilter(),
+        return \array_reduce(
+            $this->productFilter->getAttributeFilter(),
             function ($a, $b) use ($kMerkmalWert) {
                 /** @var Attribute $b */
                 return $a || $b->getValue() === $kMerkmalWert;
@@ -346,6 +345,10 @@ class Attribute extends BaseAttribute
                     $activeAndFilterIDs[] = $values;
                 }
             }
+            $productFilter = $this->productFilter->showChildProducts()
+                ? '(innerProduct.kVaterArtikel > 0 OR innerProduct.nIstVater = 0)'
+                : 'innerProduct.kVaterArtikel = 0';
+
             if (\count($activeAndFilterIDs) > 0) {
                 $state->addJoin((new Join())
                     ->setComment('join active AND filters from ' . __METHOD__)
@@ -360,16 +363,23 @@ class Attribute extends BaseAttribute
                     ->setOrigin(__CLASS__));
             }
             if (\count($activeOrFilterIDs) > 0) {
-                $state->addSelect('IF(tartikel.kArtikel IN (SELECT im1.kArtikel
-                             FROM tartikelmerkmal AS im1
-                                WHERE im1.kMerkmalWert IN (' . \implode(', ',
-                        \array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])) . ')
-                             GROUP BY im1.kArtikel
-                             HAVING COUNT(im1.kArtikel) = (SELECT COUNT(DISTINCT im2.kMerkmal)
-                                                           FROM tartikelmerkmal im2
-                                                           WHERE im2.kMerkmalWert IN
-                                                                 (' . \implode(', ', \array_merge($activeOrFilterIDs,
-                        ['tartikelmerkmal.kMerkmalWert'])) . '))), tartikel.kArtikel, NULL) AS kArtikel');
+                $state->addSelect(
+                    'IF(EXISTS (SELECT 1
+                     FROM tartikelmerkmal AS im1
+                     INNER JOIN tartikel AS innerProduct ON innerProduct.kArtikel = im1.kArtikel
+                        WHERE ' . $productFilter . ' AND im1.kMerkmalWert IN (' .
+                        \implode(', ', \array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])) . ')
+                            AND im1.kArtikel = tartikel.kArtikel
+                        GROUP BY innerProduct.kArtikel
+                        HAVING COUNT(im1.kArtikel) = (SELECT COUNT(DISTINCT im2.kMerkmal)
+                           FROM tartikelmerkmal im2
+                           INNER JOIN tartikel AS innerProduct ON innerProduct.kArtikel = im2.kArtikel
+                           WHERE ' . $productFilter . ' AND im2.kMerkmalWert IN (' .
+                                \implode(
+                                    ', ',
+                                    \array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])
+                                ) . '))), tartikel.kArtikel, NULL) AS kArtikel'
+                );
             } else {
                 $state->addSelect('tartikel.kArtikel AS kArtikel');
             }
@@ -394,11 +404,11 @@ class Attribute extends BaseAttribute
             );
             if (\count($catAttributeFilters) > 0) {
                 $state->addCondition('tmerkmal.cName IN (' . \implode(',', map(
-                        $catAttributeFilters,
-                        function ($e) {
-                            return '"' . $e . '"';
-                        }
-                    )) . ')');
+                    $catAttributeFilters,
+                    function ($e) {
+                        return '"' . $e . '"';
+                    }
+                )) . ')');
             }
         }
 
@@ -429,19 +439,19 @@ class Attribute extends BaseAttribute
         }
         $state   = $this->getState($data['oAktuelleKategorie'] ?? null);
         $baseQry = $this->productFilter->getFilterSQL()->getBaseQuery($state);
-        $cacheID = 'fltr_' . __CLASS__ . \md5($baseQry);
+        $cacheID = 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($baseQry);
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 
             return $this->options;
         }
         $qryRes                    = $this->productFilter->getDB()->executeQuery(
-            "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
+            'SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
             ssMerkmal.nMehrfachauswahl, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, 
             ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl
-                FROM (" . $baseQry . ") AS ssMerkmal
+                FROM (' . $baseQry . ') AS ssMerkmal
                 GROUP BY ssMerkmal.kMerkmalWert
-                ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert",
+                ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $currentAttributeValue     = $this->productFilter->getAttributeValue()->getValue();
@@ -551,7 +561,7 @@ class Attribute extends BaseAttribute
             $this->applyOptionLimit($af, $attributeValueLimit);
         }
         $this->options = $attributeFilters;
-        $this->productFilter->getCache()->set($cacheID, $attributeFilters, [CACHING_GROUP_FILTER]);
+        $this->productFilter->getCache()->set($cacheID, $attributeFilters, [\CACHING_GROUP_FILTER]);
 
         return $attributeFilters;
     }
@@ -570,7 +580,7 @@ class Attribute extends BaseAttribute
     /**
      * @param Option $option
      */
-    protected function sortNumeric(Option $option)
+    protected function sortNumeric(Option $option): void
     {
         $options = $option->getOptions();
         \usort($options, function (Option $a, Option $b) {
@@ -582,7 +592,7 @@ class Attribute extends BaseAttribute
     /**
      * @param Option $option
      */
-    protected function sortByCountDesc(Option $option)
+    protected function sortByCountDesc(Option $option): void
     {
         $options = $option->getOptions();
         \usort($options, function (Option $a, Option $b) {
@@ -595,7 +605,7 @@ class Attribute extends BaseAttribute
      * @param Option $option
      * @param int    $attributeValueLimit
      */
-    protected function applyOptionLimit(Option $option, int $attributeValueLimit)
+    protected function applyOptionLimit(Option $option, int $attributeValueLimit): void
     {
         if ($attributeValueLimit <= 0 || $attributeValueLimit >= \count($option->getOptions())) {
             return;
@@ -617,12 +627,12 @@ class Attribute extends BaseAttribute
             return (int)$row->kMerkmalWert;
         }, $attributeValues));
         $queryResult       = $this->productFilter->getDB()->query(
-            "SELECT tmerkmalwertsprache.cWert, tmerkmalwertsprache.kMerkmalWert, 
+            'SELECT tmerkmalwertsprache.cWert, tmerkmalwertsprache.kMerkmalWert, 
             tmerkmalwertsprache.cSeo, tmerkmalwert.kMerkmal, tmerkmalwertsprache.kSprache
                 FROM tmerkmalwertsprache
                 JOIN tmerkmalwert 
                     ON tmerkmalwert.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
-                WHERE tmerkmalwertsprache.kMerkmalWert IN (" . $attributeValueIDs . ")",
+                WHERE tmerkmalwertsprache.kMerkmalWert IN (' . $attributeValueIDs . ')',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $result            = [];

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -6,17 +6,16 @@
 
 namespace Boxes\Items;
 
-
 use Filter\Visibility;
 
 /**
  * Class FilterPricerange
- * @package Boxes
+ * @package Boxes\Items
  */
 final class FilterPricerange extends AbstractBox
 {
     /**
-     * FilterAttribute constructor.
+     * FilterPricerange constructor.
      * @param array $config
      */
     public function __construct(array $config)

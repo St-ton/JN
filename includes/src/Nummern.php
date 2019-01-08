@@ -80,7 +80,7 @@ class Nummern
     public function update(bool $bDate = true): int
     {
         if ($bDate) {
-            $this->setAktualisiert('now()');
+            $this->setAktualisiert('NOW()');
         }
         $_upd                = new stdClass();
         $_upd->nNummer       = $this->nNummer;
@@ -125,7 +125,7 @@ class Nummern
      */
     public function setAktualisiert($dAktualisiert): self
     {
-        $this->dAktualisiert = $dAktualisiert === 'now()'
+        $this->dAktualisiert = strtoupper($dAktualisiert) === 'NOW()'
             ? date('Y-m-d H:i:s')
             : Shop::Container()->getDB()->escape($dAktualisiert);
 
@@ -135,7 +135,7 @@ class Nummern
     /**
      * @return int|null
      */
-    public function getNummer()
+    public function getNummer(): ?int
     {
         return $this->nNummer;
     }
@@ -143,7 +143,7 @@ class Nummern
     /**
      * @return int|null
      */
-    public function getArt()
+    public function getArt(): ?int
     {
         return $this->nArt;
     }
@@ -151,7 +151,7 @@ class Nummern
     /**
      * @return string|null
      */
-    public function getAktualisiert()
+    public function getAktualisiert(): ?string
     {
         return $this->dAktualisiert;
     }

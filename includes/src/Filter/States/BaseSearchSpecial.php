@@ -6,10 +6,9 @@
 
 namespace Filter\States;
 
-
 use Filter\AbstractFilter;
-use Filter\Join;
 use Filter\FilterInterface;
+use Filter\Join;
 use Filter\ProductFilter;
 
 /**
@@ -18,7 +17,7 @@ use Filter\ProductFilter;
  */
 class BaseSearchSpecial extends AbstractFilter
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -56,7 +55,7 @@ class BaseSearchSpecial extends AbstractFilter
      */
     public function setSeo(array $languages): FilterInterface
     {
-        $oSeo_arr = $this->productFilter->getDB()->selectAll(
+        $seoData = $this->productFilter->getDB()->selectAll(
             'tseo',
             ['cKey', 'kKey'],
             ['suchspecial', $this->getValue()],
@@ -65,7 +64,7 @@ class BaseSearchSpecial extends AbstractFilter
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            foreach ($oSeo_arr as $oSeo) {
+            foreach ($seoData as $oSeo) {
                 $oSeo->kSprache = (int)$oSeo->kSprache;
                 if ($language->kSprache === $oSeo->kSprache) {
                     $this->cSeo[$language->kSprache] = $oSeo->cSeo;
@@ -116,11 +115,11 @@ class BaseSearchSpecial extends AbstractFilter
     {
         switch ($this->value) {
             case \SEARCHSPECIALS_BESTSELLER:
-                $nAnzahl = (($min = $this->getConfig('global')['global_bestseller_minanzahl']) > 0)
+                $count = (($min = $this->getConfig('global')['global_bestseller_minanzahl']) > 0)
                     ? (int)$min
                     : 100;
 
-                return "ROUND(tbestseller.fAnzahl) >= " . $nAnzahl;
+                return 'ROUND(tbestseller.fAnzahl) >= ' . $count;
 
             case \SEARCHSPECIALS_SPECIALOFFERS:
                 $tasp = 'tartikelsonderpreis';
@@ -130,33 +129,33 @@ class BaseSearchSpecial extends AbstractFilter
                     $tsp  = 'tsp';
                 }
 
-                return $tasp . " .kArtikel = tartikel.kArtikel
-                                    AND " . $tasp . ".cAktiv = 'Y' AND " . $tasp . ".dStart <= now()
-                                    AND (" . $tasp . ".dEnde >= curdate() OR " . $tasp . ".dEnde = '0000-00-00')
-                                    AND " . $tsp . " .kKundengruppe = " . \Session::CustomerGroup()->getID();
+                return $tasp . ' .kArtikel = tartikel.kArtikel
+                                    AND ' . $tasp . ".cAktiv = 'Y' AND " . $tasp . '.dStart <= NOW()
+                                    AND (' . $tasp . '.dEnde >= CURDATE() OR ' . $tasp . '.dEnde IS NULL)
+                                    AND ' . $tsp . ' .kKundengruppe = ' . \Session::getCustomerGroup()->getID();
 
             case \SEARCHSPECIALS_NEWPRODUCTS:
-                $alter_tage = (($age = $this->getConfig('boxen')['box_neuimsortiment_alter_tage']) > 0)
+                $days = (($age = $this->getConfig('boxen')['box_neuimsortiment_alter_tage']) > 0)
                     ? (int)$age
                     : 30;
 
                 return "tartikel.cNeu = 'Y' 
-                    AND DATE_SUB(now(), INTERVAL $alter_tage DAY) < tartikel.dErstellt 
+                    AND DATE_SUB(NOW(), INTERVAL " . $days . " DAY) < tartikel.dErstellt 
                     AND tartikel.cNeu = 'Y'";
 
             case \SEARCHSPECIALS_TOPOFFERS:
                 return "tartikel.cTopArtikel = 'Y'";
 
             case \SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                return 'now() < tartikel.dErscheinungsdatum';
+                return 'NOW() < tartikel.dErscheinungsdatum';
 
             case \SEARCHSPECIALS_TOPREVIEWS:
                 if (!$this->productFilter->hasRatingFilter()) {
-                    $nMindestSterne = ($min = $this->getConfig('boxen')['boxen_topbewertet_minsterne']) > 0
+                    $minStars = ($min = $this->getConfig('boxen')['boxen_topbewertet_minsterne']) > 0
                         ? (int)$min
                         : 4;
 
-                    return ' ROUND(taex.fDurchschnittsBewertung) >= ' . $nMindestSterne;
+                    return ' ROUND(taex.fDurchschnittsBewertung) >= ' . $minStars;
                 }
                 break;
 

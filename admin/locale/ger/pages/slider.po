@@ -1,0 +1,9 @@
+msgid "slider"
+msgstr "Slider"
+
+msgid "sliderURL"
+msgstr "https://jtl-url.de/uywto"
+
+msgid "sliderDesc"
+msgstr "Über die Sliderverwaltung pflegen Sie für beliebige Seiten in Ihrem Onlineshop Slider ein."
+

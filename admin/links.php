@@ -3,13 +3,17 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+use Helpers\Request;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'links_inc.php';
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $hinweis            = '';
 $fehler             = '';
 $step               = 'uebersicht';
@@ -20,7 +24,6 @@ $continue           = true;
 $db                 = Shop::Container()->getDB();
 $cache              = Shop::Container()->getCache();
 $linkAdmin          = new \Link\Admin\LinkAdmin($db, $cache);
-
 if (isset($_POST['addlink']) && (int)$_POST['addlink'] > 0) {
     $step = 'neuer Link';
     $link = new \Link\Link($db);
@@ -30,7 +33,7 @@ if (isset($_POST['addlink']) && (int)$_POST['addlink'] > 0) {
 
 if (isset($_POST['removefromlinkgroup'], $_POST['kLinkgruppe'])
     && (int)$_POST['removefromlinkgroup'] > 0
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     $res = $linkAdmin->removeLinkFromLinkGroup((int)$_POST['removefromlinkgroup'], (int)$_POST['kLinkgruppe']);
     if ($res > 0) {
@@ -43,7 +46,7 @@ if (isset($_POST['removefromlinkgroup'], $_POST['kLinkgruppe'])
     $clearCache = true;
 }
 
-if (isset($_POST['dellink']) && (int)$_POST['dellink'] > 0 && FormHelper::validateToken()) {
+if (isset($_POST['dellink']) && (int)$_POST['dellink'] > 0 && Form::validateToken()) {
     $res = $linkAdmin->deleteLink((int)$_POST['dellink']);
     if ($res > 0) {
         $hinweis .= 'Link erfolgreich gelöscht!';
@@ -55,7 +58,7 @@ if (isset($_POST['dellink']) && (int)$_POST['dellink'] > 0 && FormHelper::valida
     $_POST      = [];
 }
 
-if (isset($_POST['loesch_linkgruppe']) && (int)$_POST['loesch_linkgruppe'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['loesch_linkgruppe']) && (int)$_POST['loesch_linkgruppe'] === 1 && Form::validateToken()) {
     if (isset($_POST['loeschConfirmJaSubmit'])) {
         $step = 'loesch_linkgruppe';
     } else {
@@ -66,7 +69,7 @@ if (isset($_POST['loesch_linkgruppe']) && (int)$_POST['loesch_linkgruppe'] === 1
 
 if (((isset($_POST['dellinkgruppe']) && (int)$_POST['dellinkgruppe'] > 0)
         || $step === 'loesch_linkgruppe')
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     $step        = 'uebersicht';
     $linkGroupID = 0;
@@ -77,7 +80,7 @@ if (((isset($_POST['dellinkgruppe']) && (int)$_POST['dellinkgruppe'] > 0)
         $linkGroupID = (int)$_POST['kLinkgruppe'];
     }
     if ($linkAdmin->deleteLinkGroup($linkGroupID) > 0) {
-        $hinweis    .= 'Linkgruppe erfolgreich gelöscht!';
+        $hinweis   .= 'Linkgruppe erfolgreich gelöscht!';
         $clearCache = true;
         $step       = 'uebersicht';
         $_POST      = [];
@@ -86,14 +89,14 @@ if (((isset($_POST['dellinkgruppe']) && (int)$_POST['dellinkgruppe'] > 0)
     }
 }
 
-if (isset($_POST['delconfirmlinkgruppe']) && (int)$_POST['delconfirmlinkgruppe'] > 0 && FormHelper::validateToken()) {
+if (isset($_POST['delconfirmlinkgruppe']) && (int)$_POST['delconfirmlinkgruppe'] > 0 && Form::validateToken()) {
     $step = 'linkgruppe_loeschen_confirm';
 
     $smarty->assign('oLinkgruppe', holeLinkgruppe((int)$_POST['delconfirmlinkgruppe']))
            ->assign('affectedLinkNames', $linkAdmin->getPreDeletionLinks((int)$_POST['delconfirmlinkgruppe'], true));
 }
 
-if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && Form::validateToken()) {
     $sprachen    = Sprache::getAllLanguages();
     $hasHTML_arr = [];
 
@@ -110,15 +113,15 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && FormHelper::va
         if ((int)$_POST['kLink'] === 0) {
             $hinweis .= 'Link wurde erfolgreich hinzugefügt.';
         } else {
-            $hinweis .= 'Der Link <strong>' . $link->getName() . '</strong> wurde erfolgreich geändert.';
+            $hinweis .= 'Der Link <strong>' . $link->getDisplayName() . '</strong> wurde erfolgreich geändert.';
         }
         $clearCache = true;
         $kLink      = $link->getID();
         $step       = 'uebersicht';
         $continue   = (isset($_POST['continue']) && (int)$_POST['continue'] === 1);
         if ($continue) {
-            $step          = 'neuer link';
-            $post['kLink'] = $kLink;
+            $step           = 'neuer Link';
+            $_POST['kLink'] = $kLink;
         }
         // Bilder hochladen
         if (!is_dir($cUploadVerzeichnis . $kLink)) {
@@ -157,7 +160,7 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && FormHelper::va
     }
 } elseif (((isset($_POST['neuelinkgruppe']) && (int)$_POST['neuelinkgruppe'] === 1)
         || (isset($_POST['kLinkgruppe']) && (int)$_POST['kLinkgruppe'] > 0))
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     $step = 'neue Linkgruppe';
     if (isset($_POST['kLinkgruppe']) && (int)$_POST['kLinkgruppe'] > 0) {
@@ -166,18 +169,17 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && FormHelper::va
                ->assign('Linkgruppenname', getLinkgruppeNames($linkgruppe->kLinkgruppe));
     }
 }
-
 if ($continue
     && ((isset($_POST['kLink']) && (int)$_POST['kLink'] > 0)
         || (isset($_GET['kLink'], $_GET['delpic']) && (int)$_GET['kLink']))
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     $step = 'neuer Link';
-    $link = (new \Link\Link($db))->load(RequestHelper::verifyGPCDataInt('kLink'));
+    $link = (new \Link\Link($db))->load(Request::verifyGPCDataInt('kLink'));
     $smarty->assign('Link', $link);
     // Bild loeschen?
-    if (RequestHelper::verifyGPCDataInt('delpic') === 1) {
-        @unlink($cUploadVerzeichnis . $link->getID() . '/' . RequestHelper::verifyGPDataString('cName'));
+    if (Request::verifyGPCDataInt('delpic') === 1) {
+        @unlink($cUploadVerzeichnis . $link->getID() . '/' . Request::verifyGPDataString('cName'));
     }
     $cDatei_arr = [];
     if (is_dir($cUploadVerzeichnis . $link->getID())) {
@@ -195,8 +197,11 @@ if ($continue
                 $oDatei->cNameFull = $Datei;
                 $oDatei->cURL      = '<img class="link_image" src="' .
                     $shopURL . PFAD_BILDER . PFAD_LINKBILDER . $link->getID() . '/' . $Datei . '" />';
-                $oDatei->nBild     = (int)substr(str_replace('Bild', '', $Datei), 0,
-                    strpos(str_replace('Bild', '', $Datei), '.'));
+                $oDatei->nBild     = (int)substr(
+                    str_replace('Bild', '', $Datei),
+                    0,
+                    strpos(str_replace('Bild', '', $Datei), '.')
+                );
                 $cDatei_arr[]      = $oDatei;
             }
         }
@@ -205,14 +210,14 @@ if ($continue
     }
 }
 
-if (isset($_POST['neu_linkgruppe']) && (int)$_POST['neu_linkgruppe'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['neu_linkgruppe']) && (int)$_POST['neu_linkgruppe'] === 1 && Form::validateToken()) {
     // Plausi
     $oPlausiCMS = new PlausiCMS();
     $oPlausiCMS->setPostVar($_POST);
     $oPlausiCMS->doPlausi('grp');
 
     if (count($oPlausiCMS->getPlausiVar()) === 0) {
-        $kLinkgruppe = 0;
+        $kLinkgruppe             = 0;
         $linkGroupTemplateExists = Shop::Container()->getDB()->select(
             'tlinkgruppe',
             'cTemplatename',
@@ -228,8 +233,10 @@ if (isset($_POST['neu_linkgruppe']) && (int)$_POST['neu_linkgruppe'] === 1 && Fo
                 $linkAdmin->createOrUpdateLinkGroup(0, $_POST);
                 $hinweis .= 'Linkgruppe wurde erfolgreich hinzugefügt.';
             } else {
-                $linkgruppe  = $linkAdmin->createOrUpdateLinkGroup((int)$_POST['kLinkgruppe'], $_POST);
-                $hinweis    .= 'Die Linkgruppe <strong>' . $linkgruppe->cName . '</strong> wurde erfolgreich geändert.';
+                $linkgruppe = $linkAdmin->createOrUpdateLinkGroup((int)$_POST['kLinkgruppe'], $_POST);
+                $hinweis   .= 'Die Linkgruppe <strong>' .
+                    $linkgruppe->cName .
+                    '</strong> wurde erfolgreich geändert.';
             }
             $step = 'uebersicht';
         }
@@ -243,7 +250,7 @@ if (isset($_POST['neu_linkgruppe']) && (int)$_POST['neu_linkgruppe'] === 1 && Fo
     }
 }
 // Verschiebt einen Link in eine andere Linkgruppe
-if (isset($_POST['aender_linkgruppe']) && (int)$_POST['aender_linkgruppe'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['aender_linkgruppe']) && (int)$_POST['aender_linkgruppe'] === 1 && Form::validateToken()) {
     if ((int)$_POST['kLink'] > 0 && (int)$_POST['kLinkgruppe'] > 0 && (int)$_POST['kLinkgruppeAlt'] >= -1) {
         $res = $linkAdmin->updateLinkGroup(
             (int)$_POST['kLink'],
@@ -257,7 +264,7 @@ if (isset($_POST['aender_linkgruppe']) && (int)$_POST['aender_linkgruppe'] === 1
         } elseif ($res === \Link\Admin\LinkAdmin::ERROR_LINK_GROUP_NOT_FOUND) {
             $fehler .= 'Fehler: Es konnte keine Linkgruppe mit Ihrem Key gefunden werden.';
         } elseif ($res instanceof \Link\LinkInterface) {
-            $hinweis    .= 'Sie haben den Link "' . $link->getName() . '" erfolgreich verschoben.';
+            $hinweis   .= 'Sie haben den Link "' . $link->getDisplayName() . '" erfolgreich verschoben.';
             $step       = 'uebersicht';
             $clearCache = true;
         } else {
@@ -270,7 +277,7 @@ if (isset($_POST['kopiere_in_linkgruppe'])
     && (int)$_POST['kopiere_in_linkgruppe'] === 1
     && (int)$_POST['kLink'] > 0
     && (int)$_POST['kLinkgruppe'] > 0
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     $res = $linkAdmin->copyLinkToLinkGroup((int)$_POST['kLink'], (int)$_POST['kLinkgruppe']);
     if ($res === \Link\Admin\LinkAdmin::ERROR_LINK_ALREADY_EXISTS) {
@@ -280,7 +287,7 @@ if (isset($_POST['kopiere_in_linkgruppe'])
     } elseif ($res === \Link\Admin\LinkAdmin::ERROR_LINK_GROUP_NOT_FOUND) {
         $fehler .= 'Fehler: Es konnte keine Linkgruppe mit Ihrem Key gefunden werden.';
     } elseif ($res instanceof \Link\LinkInterface) {
-        $hinweis    .= 'Sie haben den Link "' . $link->getName() . '" erfolgreich kopiert.';
+        $hinweis   .= 'Sie haben den Link "' . $link->getDisplayName() . '" erfolgreich kopiert.';
         $step       = 'uebersicht';
         $clearCache = true;
     } else {
@@ -288,13 +295,13 @@ if (isset($_POST['kopiere_in_linkgruppe'])
     }
 }
 // Ordnet einen Link neu an
-if (isset($_POST['aender_linkvater']) && (int)$_POST['aender_linkvater'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['aender_linkvater']) && (int)$_POST['aender_linkvater'] === 1 && Form::validateToken()) {
     if ((int)$_POST['kLink'] > 0
         && (int)$_POST['kVaterLink'] >= 0
         && (int)$_POST['kLinkgruppe'] > 0
         && ($oLink = $linkAdmin->updateParentID((int)$_POST['kLink'], (int)$_POST['kVaterLink'])) !== false
     ) {
-        $hinweis    .= "Sie haben den Link '" . $oLink->cName . "' erfolgreich verschoben.";
+        $hinweis   .= "Sie haben den Link '" . $oLink->cName . "' erfolgreich verschoben.";
         $step       = 'uebersicht';
         $clearCache = true;
     } else {
@@ -305,7 +312,7 @@ if ($clearCache === true) {
     $linkAdmin->clearCache();
 }
 if ($step === 'uebersicht') {
-    $smarty->assign('kPlugin', RequestHelper::verifyGPCDataInt('kPlugin'))
+    $smarty->assign('kPlugin', Request::verifyGPCDataInt('kPlugin'))
            ->assign('linkGroupCountByLinkID', $linkAdmin->getLinkGroupCountForLinkIDs())
            ->assign('linkgruppen', $linkAdmin->getLinkGroups());
 }

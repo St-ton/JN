@@ -1,27 +1,31 @@
 {strip}
-<div class="grid">
     {if isset($settings)}
         {foreach $settings as $setting}
-            <div class="grid-item">
-                <h2>{$setting->cName} <small>{$setting->cSektionsPfad}</small></h2>
-                <ul>
+            <li>
+                <h4>{$setting->cName} <small>{$setting->cSektionsPfad}</small></h4>
+            </li>
+            <li>
+                <ul class="backend-search-section">
                     {foreach $setting->oEinstellung_arr as $s}
-                        <li>
-                            <a href="einstellungen.php?cSuche={$s->kEinstellungenConf}&einstellungen_suchen=1" class="value">
-                                <p>{$s->cName} (Einstellungsnr.: {$s->kEinstellungenConf})</p>
+                        <li class="backend-search-item" tabindex="-1">
+                            <a href="einstellungen.php?cSuche={$s->kEinstellungenConf}&einstellungen_suchen=1"
+                               class="value">
+                                <span>{$s->cName} (Einstellungsnr.: {$s->kEinstellungenConf})</span>
                                 <small>{$s->cBeschreibung}</small>
                             </a>
                         </li>
                     {/foreach}
                 </ul>
-            </div>
+            </li>
         {/foreach}
     {elseif isset($shippings)}
-        <div class="grid-item">
-            <h2><a href="versandarten.php" class="value">Versandartenübersicht</a></h2>
-            <ul>
+        <li>
+            <h4><a href="versandarten.php" class="value">Versandartenübersicht</a></h4>
+        </li>
+        <li>
+            <ul class="backend-search-section">
                 {foreach $shippings as $shipping}
-                    <li>
+                    <li class="backend-search-item" tabindex="-1">
                         <form method="post" action="versandarten.php">
                             {$jtl_token}
                             <input type="hidden" name="edit" value="{$shipping->kVersandart}">
@@ -30,20 +34,21 @@
                     </li>
                 {/foreach}
             </ul>
-        </div>
+        </li>
     {elseif isset($paymentMethods)}
-        <div class="grid-item">
-            <h2><a href="zahlungsarten.php" class="value">Zahlungsartenübersicht</a></h2>
-            <ul>
+        <li>
+            <h4><a href="zahlungsarten.php" class="value">Zahlungsartenübersicht</a></h4>
+        </li>
+        <li>
+            <ul class="backend-search-section">
                 {foreach $paymentMethods as $paymentMethod}
-                    <li>
+                    <li class="backend-search-item" tabindex="-1">
                         <a href="zahlungsarten.php?kZahlungsart={$paymentMethod->kZahlungsart}&token={$smarty.session.jtl_token}" class="value">
                             <p>{$paymentMethod->cName}</p>
                         </a>
                     </li>
                 {/foreach}
             </ul>
-        </div>
+        </li>
     {/if}
-</div>
 {/strip}

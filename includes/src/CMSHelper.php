@@ -4,6 +4,9 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\SearchSpecial;
+use Helpers\URL;
+
 /**
  * Class CMSHelper
  */
@@ -16,8 +19,8 @@ class CMSHelper
      */
     public static function getHomeBoxes(): array
     {
-        $customerGroupID = Session::CustomerGroup()->getID();
-        if (!$customerGroupID || !Session::CustomerGroup()->mayViewCategories()) {
+        $customerGroupID = \Session\Session::getCustomerGroup()->getID();
+        if (!$customerGroupID || !\Session\Session::getCustomerGroup()->mayViewCategories()) {
             return [];
         }
         $boxes = self::getHomeBoxList(Shop::getSettings([CONF_STARTSEITE])['startseite']);
@@ -26,22 +29,22 @@ class CMSHelper
             $products = [];
             switch ($box->name) {
                 case 'TopAngebot':
-                    $products = SearchSpecialHelper::getTopOffers($box->anzahl, $customerGroupID);
+                    $products = SearchSpecial::getTopOffers($box->anzahl, $customerGroupID);
                     $url      = SEARCHSPECIALS_TOPOFFERS;
                     break;
 
                 case 'Bestseller':
-                    $products = SearchSpecialHelper::getBestsellers($box->anzahl, $customerGroupID);
+                    $products = SearchSpecial::getBestsellers($box->anzahl, $customerGroupID);
                     $url      = SEARCHSPECIALS_BESTSELLER;
                     break;
 
                 case 'Sonderangebote':
-                    $products = SearchSpecialHelper::getSpecialOffers($box->anzahl, $customerGroupID);
+                    $products = SearchSpecial::getSpecialOffers($box->anzahl, $customerGroupID);
                     $url      = SEARCHSPECIALS_SPECIALOFFERS;
                     break;
 
                 case 'NeuImSortiment':
-                    $products = SearchSpecialHelper::getNewProducts($box->anzahl, $customerGroupID);
+                    $products = SearchSpecial::getNewProducts($box->anzahl, $customerGroupID);
                     $url      = SEARCHSPECIALS_NEWPRODUCTS;
                     break;
             }
@@ -50,7 +53,7 @@ class CMSHelper
             });
             if (count($productIDs) > 0) {
                 shuffle($productIDs);
-                $box->cURL    = SearchSpecialHelper::buildURL($url);
+                $box->cURL    = SearchSpecial::buildURL($url);
                 $box->Artikel = new ArtikelListe();
                 $box->Artikel->getArtikelByKeys($productIDs, 0, count($productIDs));
             }
@@ -62,85 +65,69 @@ class CMSHelper
 
     /**
      * @param array $conf
-     * @return array
+     * @return \Tightenco\Collect\Support\Collection
      * @since 5.0.0
      * @former gibNews()
      */
-    public static function getHomeNews(array $conf): array
+    public static function getHomeNews(array $conf): \Tightenco\Collect\Support\Collection
     {
-        $cSQL      = '';
-        $oNews_arr = [];
+        $cSQL  = '';
+        $items = new \Tightenco\Collect\Support\Collection();
         if (!isset($conf['news']['news_anzahl_content']) || (int)$conf['news']['news_anzahl_content'] === 0) {
-            return $oNews_arr;
+            return $items;
         }
-        $cacheID = 'news_' . md5(json_encode($conf['news']) . '_' . Shop::getLanguage());
-        if (($oNews_arr = Shop::Cache()->get($cacheID)) === false) {
+        $langID  = Shop::getLanguageID();
+        $cacheID = 'news_' . md5(json_encode($conf['news']) . '_' . $langID);
+        if (($items = Shop::Container()->getCache()->get($cacheID)) === false) {
             if ((int)$conf['news']['news_anzahl_content'] > 0) {
                 $cSQL = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
             }
-            $oNews_arr    = Shop::Container()->getDB()->query(
-                "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
-                tnews.cVorschauText, tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords, 
-                tnews.nAktiv, tnews.dErstellt, tnews.cPreviewImage, tseo.cSeo,
-                count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 
-                DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dErstellt_de,
-                DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
+            $newsIDs = Shop::Container()->getDB()->query(
+                "SELECT tnews.kNews
                     FROM tnews
                     JOIN tnewskategorienews 
                         ON tnewskategorienews.kNews = tnews.kNews
+                    JOIN tnewssprache t 
+                        ON tnews.kNews = t.kNews
                     JOIN tnewskategorie 
                         ON tnewskategorie.kNewsKategorie = tnewskategorienews.kNewsKategorie
                          AND tnewskategorie.nAktiv = 1
-                    LEFT JOIN tnewskommentar 
-                        ON tnewskommentar.kNews = tnews.kNews
-                        AND tnewskommentar.nAktiv = 1
                     LEFT JOIN tseo 
                         ON tseo.cKey = 'kNews'
                         AND tseo.kKey = tnews.kNews
-                        AND tseo.kSprache = " . Shop::getLanguage() . "
-                    WHERE tnews.kSprache = " . Shop::getLanguage() . "
+                        AND tseo.kSprache = " . $langID . '
+                    WHERE t.languageID = ' . $langID . "
                         AND tnews.nAktiv = 1
-                        AND tnews.dGueltigVon <= now()
+                        AND tnews.dGueltigVon <= NOW()
                         AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                            OR FIND_IN_SET('" . Session::CustomerGroup()->getID() . "', 
+                            OR FIND_IN_SET('" . \Session\Session::getCustomerGroup()->getID() . "', 
                             REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     GROUP BY tnews.kNews
                     ORDER BY tnews.dGueltigVon DESC" . $cSQL,
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            $shopURL      = Shop::getURL() . '/';
-            $imageBaseURL = Shop::getImageBaseURL();
-            foreach ($oNews_arr as $oNews) {
-                $oNews->cPreviewImageFull = empty($oNews->cPreviewImage)
-                    ? ''
-                    : $imageBaseURL . $oNews->cPreviewImage;
-                $oNews->cText             = StringHandler::parseNewsText($oNews->cText);
-                $oNews->cURL              = UrlHelper::buildURL($oNews, URLART_NEWS);
-                $oNews->cURLFull          = $shopURL . $oNews->cURL;
-                $oNews->cMehrURL          = '<a href="' . $oNews->cURL . '">' .
-                    Shop::Lang()->get('moreLink', 'news') .
-                    '</a>';
-                $oNews->cMehrURLFull      = '<a href="' . $oNews->cURLFull . '">' .
-                    Shop::Lang()->get('moreLink', 'news') .
-                    '</a>';
-            }
-            $cacheTags = [CACHING_GROUP_NEWS, CACHING_GROUP_OPTION];
+            $items   = new \News\ItemList(Shop::Container()->getDB());
+            $items->createItems(\Functional\map($newsIDs, function ($e) {
+                return (int)$e->kNews;
+            }));
+            $items     = $items->getItems();
+            $cacheTags = [CACHING_GROUP_NEWS];
             executeHook(HOOK_GET_NEWS, [
                 'cached'    => false,
                 'cacheTags' => &$cacheTags,
-                'oNews_arr' => &$oNews_arr
+                'oNews_arr' => $items
             ]);
-            Shop::Cache()->set($cacheID, $oNews_arr, $cacheTags);
+            Shop::Container()->getCache()->set($cacheID, $items, $cacheTags);
 
-            return $oNews_arr;
+            return $items;
         }
         executeHook(HOOK_GET_NEWS, [
             'cached'    => true,
             'cacheTags' => [],
-            'oNews_arr' => &$oNews_arr
+            'oNews_arr' => $items
         ]);
 
-        return $oNews_arr;
+        return $items;
     }
 
     /**
@@ -218,8 +205,8 @@ class CMSHelper
             $item->Klasse   = $priority < 1
                 ? rand(1, 10)
                 : (round(($item->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / $priority) + 1);
-            $item->cURL     = UrlHelper::buildURL($item, URLART_LIVESUCHE);
-            $item->cURLFull = UrlHelper::buildURL($item, URLART_LIVESUCHE, true);
+            $item->cURL     = URL::buildURL($item, URLART_LIVESUCHE);
+            $item->cURLFull = URL::buildURL($item, URLART_LIVESUCHE, true);
             $search[]       = $item;
         }
 
@@ -263,8 +250,8 @@ class CMSHelper
             $item->Klasse   = $priority < 1
                 ? rand(1, 10)
                 : round(($item->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / $priority) + 1;
-            $item->cURL     = UrlHelper::buildURL($item, URLART_LIVESUCHE);
-            $item->cURLFull = UrlHelper::buildURL($item, URLART_LIVESUCHE, true);
+            $item->cURL     = URL::buildURL($item, URLART_LIVESUCHE);
+            $item->cURLFull = URL::buildURL($item, URLART_LIVESUCHE, true);
             $search[]       = $item;
         }
 
@@ -308,8 +295,8 @@ class CMSHelper
             $tag->Klasse   = ($priority < 1) ?
                 rand(1, 10) :
                 (round(($tag->Anzahl - $tagData[$count - 1]->Anzahl) / $priority) + 1);
-            $tag->cURL     = UrlHelper::buildURL($tag, URLART_TAG);
-            $tag->cURLFull = UrlHelper::buildURL($tag, URLART_TAG, true);
+            $tag->cURL     = URL::buildURL($tag, URLART_TAG);
+            $tag->cURLFull = URL::buildURL($tag, URLART_TAG, true);
             $tags[]        = $tag;
         }
         shuffle($tags);
@@ -332,8 +319,8 @@ class CMSHelper
             'dStart DESC'
         );
         foreach ($history as $item) {
-            $item->cURL     = UrlHelper::buildURL($item, URLART_NEWS);
-            $item->cURLFull = UrlHelper::buildURL($item, URLART_NEWS, true);
+            $item->cURL     = URL::buildURL($item, URLART_NEWS);
+            $item->cURLFull = URL::buildURL($item, URLART_NEWS, true);
         }
 
         return $history;
@@ -358,13 +345,13 @@ class CMSHelper
             ? ' LIMIT ' . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
             : '';
         $tmpGifts = Shop::Container()->getDB()->query(
-            "SELECT tartikel.kArtikel, tartikelattribut.cWert
+            'SELECT tartikel.kArtikel, tartikelattribut.cWert
                 FROM tartikel
                 JOIN tartikelattribut 
                     ON tartikelattribut.kArtikel = tartikel.kArtikel
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() .
+                    AND tartikelsichtbarkeit.kKundengruppe = ' . \Session\Session::getCustomerGroup()->getID() .
             " WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "' " .
             Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() .

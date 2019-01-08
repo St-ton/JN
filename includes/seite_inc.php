@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Category;
+
 /**
  * @return array
  * @deprecated since 5.0.0
@@ -26,12 +28,10 @@ function gibNews($conf)
 }
 
 /**
- * @param array $search
- * @param array $conf
- * @return null|stdClass
+ * @return null
  * @deprecated since 5.0.0
  */
-function gibNextBoxPrio($search, $conf)
+function gibNextBoxPrio()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return null;
@@ -92,11 +92,10 @@ function gibGratisGeschenkArtikel($conf)
 }
 
 /**
- * @param array $Einstellungen
  * @return null
  * @deprecated since 5.0.0
  */
-function gibAuswahlAssistentFragen($Einstellungen)
+function gibAuswahlAssistentFragen()
 {
     trigger_error(__FUNCTION__ . ' is deprecated and does not do anything useful.', E_USER_DEPRECATED);
     return null;
@@ -110,7 +109,7 @@ function gibSitemapKategorien()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $oKategorieliste           = new KategorieListe();
-    $oKategorieliste->elemente = KategorieHelper::getInstance()->combinedGetAll();
+    $oKategorieliste->elemente = Category::getInstance()->combinedGetAll();
 
     return $oKategorieliste;
 }
@@ -128,29 +127,26 @@ function gibSitemapGlobaleMerkmale()
 }
 
 /**
- * @param object $oMerkmal
  * @deprecated since 5.0.0
  */
-function verarbeiteMerkmalBild(&$oMerkmal)
+function verarbeiteMerkmalBild()
 {
     trigger_error(__FUNCTION__ . ' is deprecated and does not do anything useful.', E_USER_DEPRECATED);
 }
 
 /**
- * @param object $oMerkmalWert
  * @deprecated since 5.0.0
  */
-function verarbeiteMerkmalWertBild(&$oMerkmalWert)
+function verarbeiteMerkmalWertBild()
 {
     trigger_error(__FUNCTION__ . ' is deprecated and does not do anything useful.', E_USER_DEPRECATED);
 }
 
 /**
- * @param array $conf
  * @return array
  * @deprecated since 5.0.0
  */
-function gibBoxNews($conf)
+function gibBoxNews()
 {
     trigger_error(__FUNCTION__ . ' is deprecated and does not return anything useful.', E_USER_DEPRECATED);
     return [];
@@ -181,8 +177,8 @@ function gibNewsKategorie()
 }
 
 /**
- * @param array $conf
- * @param JTLSmarty $smarty
+ * @param array            $conf
+ * @param Smarty\JTLSmarty $smarty
  * @deprecated since 5.0.0
  */
 function gibSeiteSitemap($conf, $smarty)

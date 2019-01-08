@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
 namespace Filter;
-
 
 use Session\Session;
 
@@ -49,7 +48,7 @@ class Config implements ConfigInterface
         $config->setLanguageID(\Shop::getLanguageID());
         $config->setLanguages(\Sprache::getInstance()->getLangArray());
         $config->setConfig(\Shopsetting::getInstance()->getAll());
-        $config->setCustomerGroupID(Session::CustomerGroup()->getID());
+        $config->setCustomerGroupID(\Session::getCustomerGroup()->getID());
         $config->setBaseURL(\Shop::getURL() . '/');
 
         return $config;
@@ -66,7 +65,7 @@ class Config implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function setLanguageID(int $langID)
+    public function setLanguageID(int $langID): void
     {
         $this->langID = $langID;
     }
@@ -82,7 +81,7 @@ class Config implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function setLanguages(array $languages)
+    public function setLanguages(array $languages): void
     {
         $this->languages = $languages;
     }
@@ -98,7 +97,7 @@ class Config implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function setConfig(array $config)
+    public function setConfig(array $config): void
     {
         $this->config = $config;
     }
@@ -114,7 +113,7 @@ class Config implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function setCustomerGroupID(int $customerGroupID)
+    public function setCustomerGroupID(int $customerGroupID): void
     {
         $this->customerGroupID = $customerGroupID;
     }
@@ -130,7 +129,7 @@ class Config implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function setBaseURL(string $baseURL)
+    public function setBaseURL(string $baseURL): void
     {
         $this->baseURL = $baseURL;
     }

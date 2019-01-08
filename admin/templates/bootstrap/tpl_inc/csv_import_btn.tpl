@@ -62,23 +62,23 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">{#importCsvChooseType#}</h4>
+                    <h4 class="modal-title">{__('importCsvChooseType')}</h4>
                 </div>
                 <div class="modal-body">
-                    <label for="importType-{$importerId}" class="sr-only">{#importCsvChooseType#}</label>
+                    <label for="importType-{$importerId}" class="sr-only">{__('importCsvChooseType')}</label>
                     <select class="form-control" name="importType" id="importType-{$importerId}">
-                        <option value="0">{#importCsvType0#}</option>
-                        <option value="1">{#importCsvType1#}</option>
-                        <option value="2">{#importCsvType2#}</option>
+                        <option value="0">{__('importCsvType0')}</option>
+                        <option value="1">{__('importCsvType1')}</option>
+                        <option value="2">{__('importCsvType2')}</option>
                     </select>
                 </div>
                 <div class="modal-footer">
                     <div class="btn-group">
                         <button type="button" class="btn btn-danger" onclick="onModalCancel_{$importerId}();">
-                            <i class="fa fa-times"></i> {#cancel#}
+                            <i class="fa fa-times"></i> {__('cancel')}
                         </button>
                         <button type="button" class="btn btn-primary" onclick="onModalSubmit_{$importerId}();">
-                            <i class="fa fa-upload"></i> {#importCsv#}
+                            <i class="fa fa-upload"></i> {__('importCsv')}
                         </button>
                     </div>
                 </div>
@@ -87,5 +87,5 @@
     </div>
 {/if}
 <button type="button" class="btn btn-default" onclick="onClickCsvImport_{$importerId}()">
-    <i class="fa fa-upload"></i> {#importCsv#}
+    <i class="fa fa-upload"></i> {__('importCsv')}
 </button>

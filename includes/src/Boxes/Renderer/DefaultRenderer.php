@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -8,16 +8,14 @@ namespace Boxes\Renderer;
 
 use Boxes\Items\BoxInterface;
 
-
 /**
- * Class BoxRenderer
- *
- * @package Boxes
+ * Class DefaultRenderer
+ * @package Boxes\Renderer
  */
 class DefaultRenderer implements RendererInterface
 {
     /**
-     * @var \JTLSmarty
+     * @var \Smarty\JTLSmarty
      */
     protected $smarty;
 
@@ -38,7 +36,7 @@ class DefaultRenderer implements RendererInterface
     /**
      * @inheritdoc
      */
-    public function setBox(BoxInterface $box)
+    public function setBox(BoxInterface $box): void
     {
         $this->box = $box;
     }

@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Request;
+
 /**
  * Class Vergleichsliste
  */
@@ -26,9 +28,12 @@ class Vergleichsliste
             $oArtikel           = new stdClass();
             $tmpName            = Shop::Container()->getDB()->select(
                 'tartikel',
-                'kArtikel', $kArtikel,
-                null, null,
-                null, null,
+                'kArtikel',
+                $kArtikel,
+                null,
+                null,
+                null,
+                null,
                 false,
                 'cName'
             );
@@ -41,7 +46,28 @@ class Vergleichsliste
 
             executeHook(HOOK_VERGLEICHSLISTE_CLASS_EINFUEGEN);
         } elseif (isset($_SESSION['Vergleichsliste'])) {
-            $this->oArtikel_arr = $_SESSION['Vergleichsliste']->oArtikel_arr;
+            $this->loadFromSession();
+        }
+    }
+
+    /**
+     * load comparelist from session
+     */
+    public function loadFromSession(): void
+    {
+        $compareList = \Session::get('Vergleichsliste');
+        if ($compareList !== null) {
+            $defaultOptions = Artikel::getDefaultOptions();
+            $linkHelper     = Shop::Container()->getLinkService();
+            $baseURL        = $linkHelper->getStaticRoute('vergleichsliste.php');
+            foreach ($compareList->oArtikel_arr as $oArtikel) {
+                $product          = (new Artikel())->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
+                $product->cURLDEL = $baseURL . '?vlplo=' . $oArtikel->kArtikel;
+                if (isset($oArtikel->oVariationen_arr) && count($oArtikel->oVariationen_arr) > 0) {
+                    $product->Variationen = $oArtikel->oVariationen_arr;
+                }
+                $this->oArtikel_arr[] = $product;
+            }
         }
     }
 
@@ -53,8 +79,8 @@ class Vergleichsliste
     public function umgebungsWechsel(): self
     {
         foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $oArtikel) {
-            $tmpProduct           = new stdClass();
-            $tmpProduct->kArtikel = $oArtikel->kArtikel;
+            $tmpProduct                                    = new stdClass();
+            $tmpProduct->kArtikel                          = $oArtikel->kArtikel;
             $_SESSION['Vergleichsliste']->oArtikel_arr[$i] = $tmpProduct;
         }
 
@@ -72,7 +98,7 @@ class Vergleichsliste
         // Existiert der Key und ist er noch nicht vorhanden?
         if ($kArtikel > 0 && !$this->artikelVorhanden($kArtikel)) {
             //new slim variant for compare list
-            $product = new Artikel();
+            $product           = new Artikel();
             $product->kArtikel = $kArtikel;
             if ($kKonfigitem > 0 && class_exists('Konfigitem')) {
                 // Falls Konfigitem gesetzt Preise + Name überschreiben
@@ -120,45 +146,40 @@ class Vergleichsliste
      */
     public static function buildAttributeAndVariation(Vergleichsliste $compareList): array
     {
-        $res        = [];
         $attributes = [];
         $variations = [];
-        // Falls es min. einen Artikel in der Vergleichsliste gibt ...
-        if (count($compareList->oArtikel_arr) > 0) {
-            // Alle Artikel in der Vergleichsliste durchgehen
-            foreach ($compareList->oArtikel_arr as $oArtikel) {
-                /** @var Artikel $oArtikel */
-                // Falls ein Artikel min. ein Merkmal besitzt
-                if (count($oArtikel->oMerkmale_arr) > 0) {
-                    // Falls das Merkmal Array nicht leer ist
-                    if (count($attributes) > 0) {
-                        foreach ($oArtikel->oMerkmale_arr as $oMerkmale) {
-                            if (!self::containsAttribute($attributes, $oMerkmale->kMerkmal)) {
-                                $attributes[] = $oMerkmale;
-                            }
+        foreach ($compareList->oArtikel_arr as $oArtikel) {
+            /** @var Artikel $oArtikel */
+            if (count($oArtikel->oMerkmale_arr) > 0) {
+                // Falls das Merkmal Array nicht leer ist
+                if (count($attributes) > 0) {
+                    foreach ($oArtikel->oMerkmale_arr as $oMerkmale) {
+                        if (!self::containsAttribute($attributes, $oMerkmale->kMerkmal)) {
+                            $attributes[] = $oMerkmale;
                         }
-                    } else {
-                        $attributes = $oArtikel->oMerkmale_arr;
                     }
+                } else {
+                    $attributes = $oArtikel->oMerkmale_arr;
                 }
-                // Falls ein Artikel min. eine Variation enthält
-                if (count($oArtikel->Variationen) > 0) {
-                    if (count($variations) > 0) {
-                        foreach ($oArtikel->Variationen as $oVariationen) {
-                            if (!self::containsVariation($variations, $oVariationen->cName)) {
-                                $variations[] = $oVariationen;
-                            }
+            }
+            // Falls ein Artikel min. eine Variation enthält
+            if (count($oArtikel->Variationen) > 0) {
+                if (count($variations) > 0) {
+                    foreach ($oArtikel->Variationen as $oVariationen) {
+                        if (!self::containsVariation($variations, $oVariationen->cName)) {
+                            $variations[] = $oVariationen;
                         }
-                    } else {
-                        $variations = $oArtikel->Variationen;
                     }
+                } else {
+                    $variations = $oArtikel->Variationen;
                 }
             }
         }
-        $res[0] = $attributes;
-        $res[1] = $variations;
 
-        return $res;
+        return [
+            $attributes,
+            $variations
+        ];
     }
 
     /**
@@ -241,25 +262,25 @@ class Vergleichsliste
      *
      * @param Vergleichsliste $compareList
      */
-    public static function setComparison(Vergleichsliste $compareList)
+    public static function setComparison(Vergleichsliste $compareList): void
     {
         if (count($compareList->oArtikel_arr) === 0) {
             return;
         }
-        $nVergleiche = Shop::Container()->getDB()->queryPrepared(
-            'SELECT count(kVergleichsliste) AS nVergleiche
+        $oVergleiche = Shop::Container()->getDB()->queryPrepared(
+            'SELECT COUNT(kVergleichsliste) AS nVergleiche
                 FROM tvergleichsliste
                 WHERE cIP = :ip
-                    AND dDate > DATE_SUB(now(),INTERVAL 1 DAY)',
-            ['ip' => RequestHelper::getIP()],
+                    AND dDate > DATE_SUB(NOW(),INTERVAL 1 DAY)',
+            ['ip' => Request::getRealIP()],
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        if ($nVergleiche->nVergleiche < 3) {
+        if ($oVergleiche->nVergleiche < 3) {
             $compareListTable        = new stdClass();
-            $compareListTable->cIP   = RequestHelper::getIP();
+            $compareListTable->cIP   = Request::getRealIP();
             $compareListTable->dDate = date('Y-m-d H:i:s');
-            $kVergleichsliste = Shop::Container()->getDB()->insert('tvergleichsliste', $compareListTable);
+            $kVergleichsliste        = Shop::Container()->getDB()->insert('tvergleichsliste', $compareListTable);
             foreach ($compareList->oArtikel_arr as $oArtikel) {
                 $compareListPosTable                   = new stdClass();
                 $compareListPosTable->kVergleichsliste = $kVergleichsliste;

@@ -28,9 +28,9 @@ class ContentAuthor
         if ($authorID > 0) {
             return Shop::Container()->getDB()->query(
                 "INSERT INTO tcontentauthor (cRealm, kAdminlogin, kContentId)
-                    VALUES('" . $realm . "', " . $authorID . ", " . $contentID . ")
+                    VALUES('" . $realm . "', " . $authorID . ', ' . $contentID . ')
                     ON DUPLICATE KEY UPDATE
-                        kAdminlogin = " . $authorID,
+                        kAdminlogin = ' . $authorID,
                 \DB\ReturnType::DEFAULT
             );
         }
@@ -42,9 +42,9 @@ class ContentAuthor
      * @param string $realm
      * @param int    $contentID
      */
-    public function clearAuthor($realm, $contentID)
+    public function clearAuthor($realm, int $contentID): void
     {
-        Shop::Container()->getDB()->delete('tcontentauthor', ['cRealm', 'kContentId'], [$realm, (int)$contentID]);
+        Shop::Container()->getDB()->delete('tcontentauthor', ['cRealm', 'kContentId'], [$realm, $contentID]);
     }
 
     /**

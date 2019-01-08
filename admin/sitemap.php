@@ -10,7 +10,17 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'sitemapexport.php';
 
 $oAccount->permission('EXPORT_SITEMAP_VIEW', true, true);
 
-generateSitemapXML();
+$db           = Shop::Container()->getDB();
+$config       = Shop::getSettings([CONF_GLOBAL, CONF_SITEMAP]);
+$exportConfig = new \Sitemap\Config\DefaultConfig($db, $config, Shop::getURL() . '/', Shop::getImageBaseURL());
+$exporter     = new \Sitemap\Export(
+    $db,
+    Shop::Container()->getLogService(),
+    new \Sitemap\ItemRenderers\DefaultRenderer(),
+    new \Sitemap\SchemaRenderers\DefaultSchemaRenderer(),
+    $config
+);
+$exporter->generate([Kundengruppe::getDefaultGroupID()], Sprache::getAllLanguages(), $exportConfig->getFactories());
 
 if (isset($_REQUEST['update']) && (int)$_REQUEST['update'] === 1) {
     header('Location: sitemapexport.php?update=1');

@@ -3,13 +3,18 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Product;
+use Helpers\Category;
+use Helpers\Request;
+
 if (!defined('PFAD_ROOT')) {
     http_response_code(400);
     exit();
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Shop::setPageType(PAGE_ARTIKELLISTE);
-/** @global JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 /** @global \Filter\ProductFilter $NaviFilter*/
 $Einstellungen      = Shopsetting::getInstance()->getAll();
 $conf               = $Einstellungen;
@@ -21,13 +26,13 @@ $AktuelleKategorie  = new Kategorie();
 $expandedCategories = new KategorieListe();
 $hasError           = false;
 $cParameter_arr     = Shop::getParameters();
+/** @var \Filter\ProductFilter $NaviFilter */
 if ($NaviFilter->hasCategory()) {
-    $AktuelleSeite               = 'PRODUKTE';
     $kKategorie                  = $NaviFilter->getCategory()->getValue();
     $_SESSION['LetzteKategorie'] = $kKategorie;
     if ($AktuelleKategorie->kKategorie === null) {
         // temp. workaround: do not return 404 when non-localized existing category is loaded
-        if (KategorieHelper::categoryExists($kKategorie)) {
+        if (Category::categoryExists($kKategorie)) {
             $AktuelleKategorie->loadFromDB($kKategorie);
         } else {
             Shop::$is404             = true;
@@ -46,9 +51,8 @@ if ($conf['navigationsfilter']['allgemein_weiterleitung'] === 'Y' && $oSuchergeb
         ? (new \Kategorie(
             $categoryID,
             $NaviFilter->getFilterConfig()->getLanguageID(),
-            $NaviFilter->getFilterConfig()->getCustomerGroupID())
-        )
-            ->existierenUnterkategorien()
+            $NaviFilter->getFilterConfig()->getCustomerGroupID()
+        ))->existierenUnterkategorien()
         : false;
     if ($NaviFilter->getFilterCount() > 0
         || $NaviFilter->getRealSearch() !== null
@@ -78,17 +82,17 @@ if ($conf['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y'
     });
     $bestsellers = Bestseller::buildBestsellers(
         $productsIDs,
-        Session::CustomerGroup()->getID(),
-        Session::CustomerGroup()->mayViewCategories(),
+        \Session\Session::getCustomerGroup()->getID(),
+        \Session\Session::getCustomerGroup()->mayViewCategories(),
         false,
         (int)$conf['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'],
         (int)$conf['global']['global_bestseller_minanzahl']
     );
-    $products = $oSuchergebnisse->getProducts()->all();
+    $products    = $oSuchergebnisse->getProducts()->all();
     Bestseller::ignoreProducts($products, $bestsellers);
 }
-if (RequestHelper::verifyGPCDataInt('zahl') > 0) {
-    $_SESSION['ArtikelProSeite'] = RequestHelper::verifyGPCDataInt('zahl');
+if (Request::verifyGPCDataInt('zahl') > 0) {
+    $_SESSION['ArtikelProSeite'] = Request::verifyGPCDataInt('zahl');
 }
 if (!isset($_SESSION['ArtikelProSeite'])
     && $conf['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'N'
@@ -99,7 +103,7 @@ if (!isset($_SESSION['ArtikelProSeite'])
     );
 }
 $oSuchergebnisse->getProducts()->transform(function ($product) use ($conf) {
-    $product->verfuegbarkeitsBenachrichtigung = ArtikelHelper::showAvailabilityForm(
+    $product->verfuegbarkeitsBenachrichtigung = Product::showAvailabilityForm(
         $product,
         $conf['artikeldetails']['benachrichtigung_nutzen']
     );
@@ -110,7 +114,7 @@ if ($oSuchergebnisse->getProducts()->count() === 0) {
     if ($NaviFilter->hasCategory()) {
         $KategorieInhalt                  = new stdClass();
         $KategorieInhalt->Unterkategorien = new KategorieListe();
-        $h                                = KategorieHelper::getInstance();
+        $h                                = Category::getInstance();
         $children                         = $h->getCategoryById($NaviFilter->getCategory()->getValue());
         if ($children !== false && isset($children->Unterkategorien)) {
             $KategorieInhalt->Unterkategorien->elemente = $children->Unterkategorien;

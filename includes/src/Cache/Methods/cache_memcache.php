@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -6,12 +6,12 @@
 
 namespace Cache\Methods;
 
-
 use Cache\ICachingMethod;
 use Cache\JTLCacheTrait;
 
 /**
  * Class cache_memcache
+ *
  * Implements the Memcache memory object caching system - no "d" at the end
  * @package Cache\Methods
  */
@@ -27,7 +27,7 @@ class cache_memcache implements ICachingMethod
     /**
      * @var \Memcache
      */
-    private $_memcache;
+    private $memcache;
 
     /**
      * @param array $options
@@ -52,11 +52,11 @@ class cache_memcache implements ICachingMethod
      */
     private function setMemcache($host, $port): ICachingMethod
     {
-        if ($this->_memcache !== null) {
-            $this->_memcache->close();
+        if ($this->memcache !== null) {
+            $this->memcache->close();
         }
-        $this->_memcache = new \Memcache();
-        $this->_memcache->addServer($host, (int)$port);
+        $this->memcache = new \Memcache();
+        $this->memcache->addServer($host, (int)$port);
 
         return $this;
     }
@@ -66,7 +66,7 @@ class cache_memcache implements ICachingMethod
      */
     public function store($cacheID, $content, $expiration = null): bool
     {
-        return $this->_memcache->set(
+        return $this->memcache->set(
             $this->options['prefix'] . $cacheID,
             $content,
             0,
@@ -79,7 +79,7 @@ class cache_memcache implements ICachingMethod
      */
     public function storeMulti($keyValue, $expiration = null): bool
     {
-        return $this->_memcache->set($this->prefixArray($keyValue), $expiration ?? $this->options['lifetime']);
+        return $this->memcache->set($this->prefixArray($keyValue), $expiration ?? $this->options['lifetime']);
     }
 
     /**
@@ -87,7 +87,7 @@ class cache_memcache implements ICachingMethod
      */
     public function load($cacheID)
     {
-        return $this->_memcache->get($this->options['prefix'] . $cacheID);
+        return $this->memcache->get($this->options['prefix'] . $cacheID);
     }
 
     /**
@@ -102,7 +102,7 @@ class cache_memcache implements ICachingMethod
         foreach ($cacheIDs as $_cid) {
             $prefixedKeys[] = $this->options['prefix'] . $_cid;
         }
-        $res = $this->dePrefixArray($this->_memcache->get($prefixedKeys));
+        $res = $this->dePrefixArray($this->memcache->get($prefixedKeys));
 
         // fill up result
         return \array_merge(\array_fill_keys($cacheIDs, false), $res);
@@ -121,7 +121,7 @@ class cache_memcache implements ICachingMethod
      */
     public function flush($cacheID): bool
     {
-        return $this->_memcache->delete($this->options['prefix'] . $cacheID);
+        return $this->memcache->delete($this->options['prefix'] . $cacheID);
     }
 
     /**
@@ -129,7 +129,7 @@ class cache_memcache implements ICachingMethod
      */
     public function flushAll(): bool
     {
-        return $this->_memcache->flush();
+        return $this->memcache->flush();
     }
 
     /**
@@ -137,7 +137,7 @@ class cache_memcache implements ICachingMethod
      */
     public function getStats(): array
     {
-        $stats = $this->_memcache->getStats();
+        $stats = $this->memcache->getStats();
 
         return [
             'entries' => $stats['curr_items'],

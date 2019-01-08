@@ -25,41 +25,58 @@
     {assign var='isRequired' value=false}
 {/if}
 
+{assign var="inputNameTmp" value=$inputName|replace:"register[shipping_address][":""|replace:"]":""}
+
 {if isset($invalidReason) && $invalidReason|strlen > 0}
     {assign var='hasError' value=true}
-{elseif !empty($fehlendeAngaben) && isset($fehlendeAngaben.{$inputName})}
+{elseif !empty($fehlendeAngaben) && isset($fehlendeAngaben.{$inputNameTmp})}
+    {assign var='errCode' value=$fehlendeAngaben.{$inputNameTmp}}
     {assign var='hasError' value=true}
-    {if $inputName === 'email' && isset($fehlendeAngaben.email)}
-        {if $fehlendeAngaben.email == 1}
+    {if $inputNameTmp === 'email'}
+        {if $errCode == 1}
             {lang assign='invalidReason' key='fillOut' section='global'}
-        {elseif $fehlendeAngaben.email == 2}
+        {elseif $errCode == 2}
             {lang assign='invalidReason' key='invalidEmail' section='global'}
-        {elseif $fehlendeAngaben.email == 3}
+        {elseif $errCode == 3}
             {lang assign='invalidReason' key='blockedEmail' section='global'}
-        {elseif $fehlendeAngaben.email == 4}
+        {elseif $errCode == 4}
             {lang assign='invalidReason' key='noDnsEmail' section='account data'}
-        {elseif $fehlendeAngaben.email == 5}
+        {elseif $errCode == 5}
             {lang assign='invalidReason' key='emailNotAvailable' section='account data'}
         {/if}
-    {elseif $inputName === 'mobil' && isset($fehlendeAngaben.mobil)
-        || $inputName === 'tel' && isset($fehlendeAngaben.tel)
-        || $inputName === 'fax' && isset($fehlendeAngaben.fax)}
-        {if $fehlendeAngaben.mobil == 1}
-            {lang key='fillOut' section='global'}
-        {elseif $fehlendeAngaben.mobil == 2}
-            {lang key='invalidTel' section='global'}
+    {elseif $inputNameTmp === 'mobil'
+        || $inputNameTmp === 'tel'
+        || $inputNameTmp === 'fax'}
+        {if $errCode == 1}
+            {lang assign='invalidReason' key='fillOut' section='global'}
+        {elseif $errCode == 2}
+            {lang assign='invalidReason' key='invalidTel' section='global'}
         {/if}
-    {elseif $inputName === 'vorname' && isset($fehlendeAngaben.vorname)}
-        {if $fehlendeAngaben.vorname == 1}
-            {lang key='fillOut' section='global'}
-        {elseif $fehlendeAngaben.vorname == 2}
-            {lang key='firstNameNotNumeric' section='account data'}
+    {elseif $inputNameTmp === 'vorname'}
+        {if $errCode == 1}
+            {lang assign='invalidReason' key='fillOut' section='global'}
+        {elseif $errCode == 2}
+            {lang assign='invalidReason' key='firstNameNotNumeric' section='account data'}
         {/if}
-    {elseif $inputName === 'nachname' && isset($fehlendeAngaben.nachname)}
-        {if $fehlendeAngaben.nachname == 1}
-            {lang key='fillOut' section='global'}
-        {elseif $fehlendeAngaben.nachname == 2}
-            {lang key='lastNameNotNumeric' section='account data'}
+    {elseif $inputNameTmp === 'nachname'}
+        {if $errCode == 1}
+            {lang assign='invalidReason' key='fillOut' section='global'}
+        {elseif $errCode == 2}
+            {lang assign='invalidReason' key='lastNameNotNumeric' section='account data'}
+        {/if}
+    {elseif $inputNameTmp === 'geburtstag'}
+        {if $errCode == 1}
+            {lang assign='invalidReason' key='fillOut' section='global'}
+        {elseif $errCode == 2}
+            {lang assign='invalidReason' key='invalidDateformat' section='global'}
+        {elseif $errCode == 3}
+            {lang assign='invalidReason' key='invalidDate' section='global'}
+        {/if}
+    {elseif $inputNameTmp === 'www'}
+        {if $errCode == 1}
+            {lang assign='invalidReason' key='fillOut' section='global'}
+        {elseif $errCode == 2}
+            {lang assign='invalidReason' key='invalidURL' section='global'}
         {/if}
     {else}
         {lang assign='invalidReason' key='fillOut' section='global'}
@@ -72,7 +89,7 @@
 <div class="form-group{if $hasError} has-error{/if}">
     <label for="{$inputId}" class="control-label float-label-control">{$label}
         {if !$isRequired}
-            <span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span>
+            <span class="optional"> - {lang key='optional'}</span>
         {/if}
     </label>
     <input type="{if isset($inputType)}{$inputType}{else}text{/if}" name="{$inputName}"

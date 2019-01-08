@@ -46,7 +46,7 @@ function bearbeiteInsert($xml)
     if ($nCount < 2) {
         updateXMLinDB($xml['quicksync']['tartikel'], 'tpreise', $GLOBALS['mPreise'], 'kKundengruppe', 'kArtikel');
 
-        if (isset($xml['quicksync']['tartikel']['tpreis']) && version_compare($_POST['vers'], '099976', '>=')) {
+        if (isset($xml['quicksync']['tartikel']['tpreis'])) {
             handleNewPriceFormat($xml['quicksync']['tartikel']);
         } else {
             handleOldPriceFormat(mapArray($xml['quicksync']['tartikel'], 'tpreise', $GLOBALS['mPreise']));
@@ -64,11 +64,8 @@ function bearbeiteInsert($xml)
                 'kKundengruppe',
                 'kArtikel'
             );
-            if (version_compare($_POST['vers'], '099976', '>=')) {
-                handleNewPriceFormat(mapArray($xml['quicksync']['tartikel'][$i], 'tpreise', $GLOBALS['mPreise']));
-            }
 
-            if (isset($xml['quicksync']['tartikel'][$i]['tpreis']) && version_compare($_POST['vers'], '099976', '>=')) {
+            if (isset($xml['quicksync']['tartikel'][$i]['tpreis'])) {
                 handleNewPriceFormat($xml['quicksync']['tartikel'][$i]);
             } else {
                 handleOldPriceFormat(mapArray($xml['quicksync']['tartikel'][$i], 'tpreise', $GLOBALS['mPreise']));
@@ -81,10 +78,11 @@ function bearbeiteInsert($xml)
             }
         }
     }
+    $db        = Shop::Container()->getDB();
     $clearTags = [];
     foreach ($oArtikel_arr as $oArtikel) {
         if (isset($oArtikel->fLagerbestand) && $oArtikel->fLagerbestand > 0) {
-            $delta = Shop::Container()->getDB()->query(
+            $delta = $db->query(
                 "SELECT SUM(pos.nAnzahl) AS totalquantity
                     FROM tbestellung b
                     JOIN twarenkorbpos pos
@@ -105,16 +103,19 @@ function bearbeiteInsert($xml)
         $upd                        = new stdClass();
         $upd->fLagerbestand         = $oArtikel->fLagerbestand;
         $upd->fStandardpreisNetto   = $oArtikel->fStandardpreisNetto;
-        $upd->dLetzteAktualisierung = 'now()';
-        Shop::Container()->getDB()->update('tartikel', 'kArtikel', (int)$oArtikel->kArtikel, $upd);
+        $upd->dLetzteAktualisierung = 'NOW()';
+        $db->update('tartikel', 'kArtikel', (int)$oArtikel->kArtikel, $upd);
         executeHook(HOOK_QUICKSYNC_XML_BEARBEITEINSERT, ['oArtikel' => $oArtikel]);
         handlePriceRange((int)$oArtikel->kArtikel);
         // clear object cache for this article and its parent if there is any
-        $parentArticle = Shop::Container()->getDB()->select(
+        $parentArticle = $db->select(
             'tartikel',
-            'kArtikel', $oArtikel->kArtikel,
-            null, null,
-            null, null,
+            'kArtikel',
+            $oArtikel->kArtikel,
+            null,
+            null,
+            null,
+            null,
             false,
             'kVaterArtikel'
         );
@@ -124,7 +125,7 @@ function bearbeiteInsert($xml)
         $clearTags[] = (int)$oArtikel->kArtikel;
         versendeVerfuegbarkeitsbenachrichtigung($oArtikel);
     }
-    Shop::Cache()->flushTags(\Functional\map(array_unique($clearTags), function ($e) {
+    Shop::Container()->getCache()->flushTags(\Functional\map(array_unique($clearTags), function ($e) {
         return CACHING_GROUP_ARTICLE . '_' . $e;
     }));
 }

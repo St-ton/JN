@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -6,23 +6,24 @@
 
 namespace Boxes\Items;
 
+use Session\Session;
 
 /**
  * Class GlobalAttributes
- * @package Boxes
+ * @package Boxes\Items
  */
 final class GlobalAttributes extends AbstractBox
 {
     /**
-     * DirectPurchase constructor.
+     * GlobalAttributes constructor.
      * @param array $config
      */
     public function __construct(array $config)
     {
         parent::__construct($config);
-        parent::addMapping('globaleMerkmale', 'Items');
+        $this->addMapping('globaleMerkmale', 'Items');
         $this->setShow(true);
-        $attributes = \Session::CustomerGroup()->mayViewCategories()
+        $attributes = Session::getCustomerGroup()->mayViewCategories()
             ? $this->getGlobalAttributes()
             : [];
         $this->setItems($attributes);
@@ -40,9 +41,9 @@ final class GlobalAttributes extends AbstractBox
         $attributeIDs = \Shop::Container()->getDB()->selectAll('tmerkmal', 'nGlobal', 1, 'kMerkmal', 'nSort');
         $attributes   = [];
         foreach ($attributeIDs as $attributeID) {
-            $attributes[] = new \Merkmal($attributeID->kMerkmal, true);
+            $attributes[] = new \Merkmal((int)$attributeID->kMerkmal, true);
         }
-        \Shop::Container()->getCache()->set($cacheID, $attributes, [CACHING_GROUP_ATTRIBUTE]);
+        \Shop::Container()->getCache()->set($cacheID, $attributes, [\CACHING_GROUP_ATTRIBUTE]);
 
         return $attributes;
     }

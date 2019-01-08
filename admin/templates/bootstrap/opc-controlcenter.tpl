@@ -1,16 +1,16 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='opc'}
-{include file='tpl_inc/seite_header.tpl' cTitel=#opc# cBeschreibung=#opcDesc# cDokuURL=#opcUrl#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('opc') cBeschreibung=__('opcDesc') cDokuURL=__('opcUrl')}
 
 <ul class="nav nav-tabs">
     <li class="active">
-        <a data-toggle="tab" href="#pages">{#opcPages#}</a>
+        <a data-toggle="tab" href="#pages">{__('opcPages')}</a>
     </li>
     <li>
-        <a data-toggle="tab" href="#portlets">{#opcPortlets#}</a>
+        <a data-toggle="tab" href="#portlets">{__('opcPortlets')}</a>
     </li>
     <li>
-        <a data-toggle="tab" href="#blueprints">{#opcBlueprints#}</a>
+        <a data-toggle="tab" href="#blueprints">{__('opcBlueprints')}</a>
     </li>
 </ul>
 
@@ -36,13 +36,14 @@
                         </thead>
                         <tbody>
                             {foreach $pages as $page}
+                                {assign var="pageIdHash" value=$page->cPageId|md5}
                                 {assign var="publicPageRow" value=$opcPageDB->getPublicPageRow($page->cPageId)}
                                 <tr>
                                     <td>
                                         <a href="{$URL_SHOP}{$page->cPageUrl}" target="_blank">{$page->cPageUrl}</a>
                                     </td>
                                     <td>
-                                        <a href="#page-{$page->cPageId}" data-toggle="collapse">{$page->cPageId}</a>
+                                        <a href="#page-{$pageIdHash}" data-toggle="collapse">{$page->cPageId}</a>
                                     </td>
                                     <td>
                                         <div class="btn-group pull-right">
@@ -63,7 +64,7 @@
                                 </tr>
                                 <tr>
                                     <td colspan="3">
-                                        <div  class="collapse" id="page-{$page->cPageId}">
+                                        <div  class="collapse" id="page-{$pageIdHash}">
                                         <table class="list table ">
                                             <thead>
                                             <tr>
@@ -134,7 +135,7 @@
                 </div>
             {else}
                 <div class="alert alert-info" role="alert">
-                    {#noDataAvailable#}
+                    {__('noDataAvailable')}
                 </div>
             {/if}
         </div>
@@ -193,7 +194,7 @@
                 </div>
             {else}
                 <div class="alert alert-info" role="alert">
-                    {#noDataAvailable#}
+                    {__('noDataAvailable')}
                 </div>
             {/if}
         </div>

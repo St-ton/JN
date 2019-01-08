@@ -23,7 +23,7 @@
     <div id="settings">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">{#slider#}</h3>
+                <h3 class="panel-title">{__('slider')}</h3>
             </div>
             <div class="table-responsive">
                 <table id="tableSlide" class="table">
@@ -45,8 +45,6 @@
             </div>
             <table class="hidden"><tbody id="newSlide">{slide oSlide=null kSlide='NEU'}</tbody></table>
             <div class="panel-footer">
-                <div class="upload_info kcfinder_path">{$shopURL}/{$PFAD_KCFINDER}</div>
-                <div class="upload_info shop_url">{$shopURL}</div>
                 <div class="btn-group">
                     <button type="button" class="btn btn-default" onclick="window.location.href = 'slider.php';"><i class="fa fa-angle-double-left"></i> zur&uuml;ck</button>
                     <button type="button" class="btn btn-success" onclick="addSlide();"><i class="glyphicon glyphicon-plus"></i> Hinzuf&uuml;gen</button>
@@ -57,4 +55,3 @@
         </div>
     </div>
 </form>
-<script type="text/javascript" src="{$currentTemplateDir}js/jquery.uploadify.js"></script>

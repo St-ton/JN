@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -6,17 +6,16 @@
 
 namespace Boxes\Items;
 
-
 use Filter\Visibility;
 
 /**
  * Class FilterManufacturer
- * @package Boxes
+ * @package Boxes\Items
  */
 final class FilterManufacturer extends AbstractBox
 {
     /**
-     * FilterAttribute constructor.
+     * FilterManufacturer constructor.
      * @param array $config
      */
     public function __construct(array $config)

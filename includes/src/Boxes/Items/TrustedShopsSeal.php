@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -6,10 +6,9 @@
 
 namespace Boxes\Items;
 
-
 /**
  * Class TrustedShopsSeal
- * @package Boxes
+ * @package Boxes\Items
  */
 final class TrustedShopsSeal extends AbstractBox
 {
@@ -34,7 +33,7 @@ final class TrustedShopsSeal extends AbstractBox
     private $backGroundImageURL = '';
 
     /**
-     * DirectPurchase constructor.
+     * TrustedShopsSeal constructor.
      * @param array $config
      */
     public function __construct(array $config)
@@ -70,7 +69,7 @@ final class TrustedShopsSeal extends AbstractBox
     /**
      * @param string $logoURL
      */
-    public function setLogoURL(string $logoURL)
+    public function setLogoURL(string $logoURL): void
     {
         $this->logoURL = $logoURL;
     }
@@ -86,7 +85,7 @@ final class TrustedShopsSeal extends AbstractBox
     /**
      * @param string $logoSealURL
      */
-    public function setLogoSealURL(string $logoSealURL)
+    public function setLogoSealURL(string $logoSealURL): void
     {
         $this->logoSealURL = $logoSealURL;
     }
@@ -102,7 +101,7 @@ final class TrustedShopsSeal extends AbstractBox
     /**
      * @param string $imageURL
      */
-    public function setImageURL(string $imageURL)
+    public function setImageURL(string $imageURL): void
     {
         $this->imageURL = $imageURL;
     }
@@ -118,7 +117,7 @@ final class TrustedShopsSeal extends AbstractBox
     /**
      * @param string $backGroundImageURL
      */
-    public function setBackGroundImageURL(string $backGroundImageURL)
+    public function setBackGroundImageURL(string $backGroundImageURL): void
     {
         $this->backGroundImageURL = $backGroundImageURL;
     }

@@ -6,7 +6,6 @@
 
 namespace Filter\Items;
 
-
 use Filter\AbstractFilter;
 use Filter\Option;
 use Filter\FilterInterface;
@@ -97,7 +96,7 @@ class Limit extends AbstractFilter
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())
-                ->setName($name)
+                ->setName((string)$name)
                 ->setValue($limitOption)
                 ->setSort($i);
         }

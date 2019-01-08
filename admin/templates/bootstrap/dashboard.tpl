@@ -29,26 +29,8 @@
             {include file='tpl_inc/widget_container.tpl' eContainer='right'}
         </div>
     </div>
-
-    <div id="switcher">
-        <div class="switcher" id="dashboard-config">
-            <a href="#" class="dropdown-toggle parent btn-toggle" data-toggle="dropdown">
-                <i class="fa fa-gear"></i>
-            </a>
-            <div class="switcher-wrapper">
-                <div class="switcher-header">
-                    <h2>Widgets</h2>
-                </div>
-                <div class="switcher-content">
-                    <div id="settings">
-                        {include file='tpl_inc/widget_selector.tpl' oAvailableWidget_arr=$oAvailableWidget_arr}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 {else}
-    {include file='tpl_inc/seite_header.tpl' cTitel=#dashboard#}
+    {include file='tpl_inc/seite_header.tpl' cTitel=__('dashboard')}
     <div class="alert alert-success">
         <strong>Es stehen keine weiteren Informationen zur Verf&uuml;gung.</strong>
     </div>

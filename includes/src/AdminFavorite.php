@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\GeneralObject;
+use Helpers\URL;
+
 /**
  * Class AdminFavorite
  */
@@ -68,7 +71,7 @@ class AdminFavorite
      */
     public function insertInDB(): int
     {
-        $obj = ObjectHelper::copyMembers($this);
+        $obj = GeneralObject::copyMembers($this);
         unset($obj->kAdminfav);
 
         return Shop::Container()->getDB()->insert('tadminfavs', $obj);
@@ -81,7 +84,7 @@ class AdminFavorite
      */
     public function updateInDB(): int
     {
-        $obj = ObjectHelper::copyMembers($this);
+        $obj = GeneralObject::copyMembers($this);
 
         return Shop::Container()->getDB()->update('tadminfavs', 'kAdminfav', $obj->kAdminfav, $obj);
     }
@@ -92,13 +95,17 @@ class AdminFavorite
      */
     public static function fetchAll(int $kAdminlogin): array
     {
-        $favs = Shop::Container()->getDB()->selectAll(
-            'tadminfavs',
-            'kAdminlogin',
-            $kAdminlogin,
-            'kAdminfav, cTitel, cUrl',
-            'nSort ASC'
-        );
+        try {
+            $favs = Shop::Container()->getDB()->selectAll(
+                'tadminfavs',
+                'kAdminlogin',
+                $kAdminlogin,
+                'kAdminfav, cTitel, cUrl',
+                'nSort ASC'
+            );
+        } catch (Exception $e) {
+            return [];
+        }
 
         $favs = is_array($favs) ? $favs : [];
 
@@ -123,7 +130,7 @@ class AdminFavorite
      */
     public static function add(int $id, $title, $url, int $sort = -1): bool
     {
-        $urlHelper = new UrlHelper($url);
+        $urlHelper = new URL($url);
         $url       = str_replace(
             [Shop::getURL(), Shop::getURL(true)],
             '',
@@ -158,7 +165,7 @@ class AdminFavorite
      * @param int $id
      * @param int $kAdminfav
      */
-    public static function remove($id, int $kAdminfav = 0)
+    public static function remove($id, int $kAdminfav = 0): void
     {
         if ($kAdminfav > 0) {
             Shop::Container()->getDB()->delete('tadminfavs', ['kAdminfav', 'kAdminlogin'], [$kAdminfav, $id]);

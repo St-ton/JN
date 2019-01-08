@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -6,10 +6,11 @@
 
 namespace Boxes\Items;
 
+use Session\Session;
 
 /**
  * Class Wishlist
- * @package Boxes
+ * @package Boxes\Items
  */
 final class Wishlist extends AbstractBox
 {
@@ -28,9 +29,9 @@ final class Wishlist extends AbstractBox
         parent::addMapping('nBilderAnzeigen', 'ShowImages');
         parent::addMapping('CWunschlistePos_arr', 'Items');
         $this->setShow(true);
-        if (!empty(\Session::WishList()->kWunschliste)) {
-            $this->setWishListID(\Session::WishList()->kWunschliste);
-            $wishlistItems    = \Session::WishList()->CWunschlistePos_arr;
+        if (!empty(Session::getWishList()->kWunschliste)) {
+            $this->setWishListID(Session::getWishList()->kWunschliste);
+            $wishlistItems    = Session::getWishList()->CWunschlistePos_arr;
             $validPostVars    = ['a', 'k', 's', 'h', 'l', 'm', 't', 'hf', 'kf', 'show', 'suche'];
             $additionalParams = '';
             $postMembers      = \array_keys($_REQUEST);
@@ -66,7 +67,7 @@ final class Wishlist extends AbstractBox
                     $cDeleteParam .
                     $wishlistItem->kWunschlistePos .
                     $additionalParams;
-                if (\Session::CustomerGroup()->isMerchant()) {
+                if (Session::getCustomerGroup()->isMerchant()) {
                     $fPreis = isset($wishlistItem->Artikel->Preise->fVKNetto)
                         ? (int)$wishlistItem->fAnzahl * $wishlistItem->Artikel->Preise->fVKNetto
                         : 0;
@@ -76,7 +77,7 @@ final class Wishlist extends AbstractBox
                             (100 + $_SESSION['Steuersatz'][$wishlistItem->Artikel->kSteuerklasse]) / 100)
                         : 0;
                 }
-                $wishlistItem->cPreis = \Preise::getLocalizedPriceString($fPreis, \Session::Currency());
+                $wishlistItem->cPreis = \Preise::getLocalizedPriceString($fPreis, Session::getCurrency());
             }
             $this->setItemCount((int)$this->config['boxen']['boxen_wunschzettel_anzahl']);
             $this->setItems(\array_reverse($wishlistItems));
@@ -95,15 +96,15 @@ final class Wishlist extends AbstractBox
     /**
      * @param int $id
      */
-    public function setWishListID(int $id)
+    public function setWishListID(int $id): void
     {
         $this->wishListID = $id;
     }
 
     /**
-     * @return string
+     * @return bool
      */
-    public function getShowImages(): string
+    public function getShowImages(): bool
     {
         return $this->config['boxen']['boxen_wunschzettel_bilder'] === 'Y';
     }
@@ -111,8 +112,7 @@ final class Wishlist extends AbstractBox
     /**
      * @param string $value
      */
-    public function setShowImages($value)
+    public function setShowImages($value): void
     {
-
     }
 }

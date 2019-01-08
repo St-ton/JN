@@ -171,14 +171,12 @@ class ExtensionPoint
             case PAGE_LOGIN:
             case PAGE_REGISTRIERUNG:
             case PAGE_BESTELLVORGANG:
-            case PAGE_DRUCKANSICHT:
             case PAGE_PASSWORTVERGESSEN:
             case PAGE_WARTUNG:
             case PAGE_WUNSCHLISTE:
             case PAGE_VERGLEICHSLISTE:
             default:
                 break;
-
         }
 
         return $oKey;

@@ -109,7 +109,7 @@ class MediaImageRequest
     /**
      * @return string|null
      */
-    public function getType()
+    public function getType(): ?string
     {
         return $this->type;
     }
@@ -125,7 +125,7 @@ class MediaImageRequest
     /**
      * @return string|null
      */
-    public function getSizeType()
+    public function getSizeType(): ?string
     {
         return $this->size;
     }
@@ -149,7 +149,7 @@ class MediaImageRequest
     /**
      * @return string|null
      */
-    public function getPath()
+    public function getPath(): ?string
     {
         if (empty($this->path)) {
             $this->path = $this->getPathById();
@@ -161,7 +161,7 @@ class MediaImageRequest
     /**
      * @return string|null
      */
-    public function getExt()
+    public function getExt(): ?string
     {
         if (empty($this->ext)) {
             $info      = pathinfo($this->getPath());
@@ -175,7 +175,7 @@ class MediaImageRequest
      * @param bool $absolute
      * @return null|string
      */
-    public function getRaw(bool $absolute = false)
+    public function getRaw(bool $absolute = false): ?string
     {
         $path = $this->getPath();
         $path = empty($path) ? null : sprintf('%s%s', self::getStoragePath(), $path);
@@ -242,10 +242,10 @@ class MediaImageRequest
     /**
      * @return string|null
      */
-    public function getPathById()
+    public function getPathById(): ?string
     {
-        $id     = $this->getId();
-        $type   = $this->getType();
+        $id = $this->getId();
+//        $type   = $this->getType();
         $number = $this->getNumber();
 
         if (($path = $this->cachedPath()) !== null) {
@@ -270,7 +270,7 @@ class MediaImageRequest
      * @param string|null $path
      * @return string|null
      */
-    protected function cachedPath($path = null)
+    protected function cachedPath($path = null): ?string
     {
         $hash = sprintf('%s-%s-%s', $this->getId(), $this->getNumber(), $this->getType());
         if ($path === null) {

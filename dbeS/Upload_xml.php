@@ -24,10 +24,10 @@ class Uploader extends NetSyncHandler
     protected function request($eRequest)
     {
         if (!class_exists('Upload')) {
-            self::throwResponse(NetSyncResponse::ErrorNoLicense);
+            self::throwResponse(NetSyncResponse::ERRORNOLICENSE);
         }
         switch ($eRequest) {
-            case NetSyncRequest::UploadFiles:
+            case NetSyncRequest::UPLOADFILES:
                 $kBestellung = (int)$_POST['kBestellung'];
                 if ($kBestellung > 0) {
                     $oSystemFiles_arr = [];
@@ -41,8 +41,10 @@ class Uploader extends NetSyncHandler
                             }
 
                             $oSystemFiles_arr[] = new SystemFile(
-                                $oUpload->kUpload, $oUpload->cName,
-                                $oUpload->cName, $cPath_arr['filename'],
+                                $oUpload->kUpload,
+                                $oUpload->cName,
+                                $oUpload->cName,
+                                $cPath_arr['filename'],
                                 '/',
                                 $cExt,
                                 date_format(date_create($oUpload->dErstellt), 'U'),
@@ -50,13 +52,13 @@ class Uploader extends NetSyncHandler
                             );
                         }
 
-                        self::throwResponse(NetSyncResponse::Ok, $oSystemFiles_arr);
+                        self::throwResponse(NetSyncResponse::OK, $oSystemFiles_arr);
                     }
                 }
-                self::throwResponse(NetSyncResponse::ErrorInternal);
+                self::throwResponse(NetSyncResponse::ERRORINTERNAL);
                 break;
 
-            case NetSyncRequest::UploadFileData:
+            case NetSyncRequest::UPLOADFILEDATA:
                 $kUpload = (int)$_GET['kFileID'];
                 if ($kUpload > 0) {
                     $oUploadDatei = new UploadDatei();
@@ -68,9 +70,8 @@ class Uploader extends NetSyncHandler
                         }
                     }
                 }
-                self::throwResponse(NetSyncResponse::ErrorInternal);
+                self::throwResponse(NetSyncResponse::ERRORINTERNAL);
                 break;
-
         }
     }
 }

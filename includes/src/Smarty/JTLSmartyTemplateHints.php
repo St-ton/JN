@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -6,9 +6,9 @@
 
 namespace Smarty;
 
-
 /**
  * Class JTLSmartyTemplateHints
+ * @package Smarty
  */
 class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
 {
@@ -59,7 +59,8 @@ class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
         } elseif (\SHOW_TEMPLATE_HINTS === 4) {
             $tplID = \uniqid('tpl');
             if ($tplName !== 'layout/header.tpl' && $tplName !== 'layout/header_custom.tpl') {
-                echo '<span class="tpl-debug-start" data-uid="' . $tplID . '" style="display:none;" data-tpl="' . $tplName . '">';
+                echo '<span class="tpl-debug-start" data-uid="' .
+                    $tplID . '" style="display:none;" data-tpl="' . $tplName . '">';
                 echo '<span class="tpl-name">' . $tplName . '</span>';
                 echo '</span>';
             }
@@ -78,7 +79,10 @@ class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
         );
         if (\SHOW_TEMPLATE_HINTS === 1) {
             echo '<!-- end ' . $tplName . '-->';
-        } elseif (\SHOW_TEMPLATE_HINTS === 2 && $tplName === 'layout/header.tpl' && $tplName === 'layout/header_custom.tpl') {
+        } elseif (\SHOW_TEMPLATE_HINTS === 2
+            && $tplName === 'layout/header.tpl'
+            && $tplName === 'layout/header_custom.tpl'
+        ) {
             echo '<style>
                     .tpl-debug{border:1px dashed black;position:relative;min-height:25px;opacity:.75;z-index:9;}
                     .tpl-name{position:absolute;left:0;}
@@ -108,16 +112,16 @@ class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
                     $('.bounding-box').remove();
                     $('.tpl-debug-start').each(function(){
                         var elem = $(this),
-                            boxElem;
-                        uid  = elem.attr('data-uid'),
-                        tpl  = elem.attr('data-tpl'),
-                        next = elem.nextUntil('.tpl-debug-end[data-uid=\"' + uid +'\"]'),
-                        box  = {
-                            left: 999999,
-                            right: 0,
-                            top: 999999,
-                            bottom: 0
-                        };
+                            boxElem,
+                            uid  = elem.attr('data-uid'),
+                            tpl  = elem.attr('data-tpl'),
+                            next = elem.nextUntil('.tpl-debug-end[data-uid=\"' + uid +'\"]'),
+                            box  = {
+                                left: 999999,
+                                right: 0,
+                                top: 999999,
+                                bottom: 0
+                            };
                                 
                         next.each(function(i, c) {
                             var bb, 

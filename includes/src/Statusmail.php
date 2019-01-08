@@ -4,6 +4,9 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+/**
+ * Class Statusmail
+ */
 class Statusmail
 {
     /**
@@ -11,8 +14,14 @@ class Statusmail
      */
     private $db;
 
+    /**
+     * @var string
+     */
     private $dateStart;
 
+    /**
+     * @var string
+     */
     private $dateEnd;
 
     /**
@@ -52,7 +61,7 @@ class Statusmail
                 $statusMail->nInterval = $interval;
                 $statusMail->cInhalt   = StringHandler::createSSK($_POST['cInhalt_arr']);
                 $statusMail->nAktiv    = (int)$_POST['nAktiv'];
-                $statusMail->dLastSent = 'now()';
+                $statusMail->dLastSent = 'NOW()';
 
                 $id = $this->db->insert('tstatusemail', $statusMail);
                 $this->createCronJob($id, $interval * 24);
@@ -83,8 +92,7 @@ class Statusmail
             'tstatusemail',
             'id',
             $d->format('Y-m-d H:i:s'),
-            $d->format('H:i:s'),
-            '0000-00-00 00:00:00'
+            $d->format('H:i:s')
         );
 
         return $oCron->speicherInDB() !== false;
@@ -175,7 +183,7 @@ class Statusmail
         );
         foreach ($customerGroups as $oKundengruppe) {
             $productData            = $this->db->queryPrepared(
-                'SELECT count(*) AS nAnzahl
+                'SELECT COUNT(*) AS nAnzahl
                     FROM tartikel
                     LEFT JOIN tartikelsichtbarkeit 
                         ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
@@ -201,7 +209,7 @@ class Statusmail
     private function getNewCustomersCount(): int
     {
         $oKunde = $this->db->queryPrepared(
-            'SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tkunde
                 WHERE dErstellt >= :from
                     AND dErstellt < :to
@@ -222,7 +230,7 @@ class Statusmail
     private function getNewCustomerSalesCount(): int
     {
         $customerData = $this->db->queryPrepared(
-            'SELECT count(DISTINCT(tkunde.kKunde)) AS nAnzahl
+            'SELECT COUNT(DISTINCT(tkunde.kKunde)) AS nAnzahl
                 FROM tkunde
                 JOIN tbestellung 
                     ON tbestellung.kKunde = tkunde.kKunde
@@ -249,7 +257,7 @@ class Statusmail
     private function getOrderCount(): int
     {
         $orderData = $this->db->queryPrepared(
-            'SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tbestellung
                 WHERE dErstellt >= :from
                     AND dErstellt < :to',
@@ -271,7 +279,7 @@ class Statusmail
     private function getOrderCountForNewCustomers(): int
     {
         $orderData = $this->db->queryPrepared(
-            'SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tbestellung
                 JOIN tkunde 
                     ON tkunde.kKunde = tbestellung.kKunde
@@ -296,11 +304,11 @@ class Statusmail
     private function getIncomingPaymentsCount(): int
     {
         $orderData = $this->db->queryPrepared(
-            "SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tbestellung
                 WHERE tbestellung.dErstellt >= :from
                     AND tbestellung.dErstellt < :to
-                    AND tbestellung.dBezahltDatum != '0000-00-00'",
+                    AND tbestellung.dBezahltDatum IS NOT NULL',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
@@ -319,11 +327,11 @@ class Statusmail
     private function getShippedOrdersCount(): int
     {
         $orderData = $this->db->queryPrepared(
-            "SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tbestellung
                 WHERE tbestellung.dErstellt >= :from
                     AND tbestellung.dErstellt < :to
-                    AND tbestellung.dVersandDatum != '0000-00-00'",
+                    AND tbestellung.dVersandDatum IS NOT NULL',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
@@ -342,7 +350,7 @@ class Statusmail
     private function getVisitorCount(): int
     {
         $visitorData = $this->db->queryPrepared(
-            'SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tbesucherarchiv
                 WHERE dZeit >= :from
                     AND dZeit < :to 
@@ -365,7 +373,7 @@ class Statusmail
     private function getBotVisitCount(): int
     {
         $visitorData = $this->db->queryPrepared(
-            "SELECT count(*) AS nAnzahl
+            "SELECT COUNT(*) AS nAnzahl
                 FROM tbesucherarchiv
                 WHERE dZeit >= :from
                     AND dZeit < :to
@@ -388,7 +396,7 @@ class Statusmail
     private function getRatingsCount(): int
     {
         $ratingData = $this->db->queryPrepared(
-            'SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tbewertung
                 WHERE dDatum >= :from
                     AND dDatum < :to
@@ -411,7 +419,7 @@ class Statusmail
     private function getNonApprovedRatingsCount(): int
     {
         $ratingData = $this->db->queryPrepared(
-            'SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tbewertung
                 WHERE dDatum >= :from
                     AND dDatum < :to
@@ -438,7 +446,7 @@ class Statusmail
         $oTMP->fSummeGuthaben = 0;
 
         $oBewertung = $this->db->queryPrepared(
-            'SELECT count(*) AS nAnzahl, sum(fGuthabenBonus) AS fSummeGuthaben
+            'SELECT COUNT(*) AS nAnzahl, sum(fGuthabenBonus) AS fSummeGuthaben
                 FROM tbewertungguthabenbonus
                 WHERE dDatum >= :from
                     AND dDatum < :to',
@@ -466,7 +474,7 @@ class Statusmail
     private function getTagCount(): int
     {
         $tagData = $this->db->queryPrepared(
-            'SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM ttagkunde
                 JOIN ttag 
                     ON ttag.kTag = ttagkunde.kTag
@@ -491,7 +499,7 @@ class Statusmail
     private function getNonApprovedTagsCounts(): int
     {
         $tagData = $this->db->queryPrepared(
-            'SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM ttagkunde
                 JOIN ttag 
                     ON ttag.kTag = ttagkunde.kTag
@@ -516,7 +524,7 @@ class Statusmail
     private function getNewCustomerPromotionsCount(): int
     {
         $oKwK = $this->db->queryPrepared(
-            'SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tkundenwerbenkunden
                 WHERE dErstellt >= :from
                     AND dErstellt < :to',
@@ -538,7 +546,7 @@ class Statusmail
     private function getSuccessfulNewCustomerPromotionsCount(): int
     {
         $oKwK = $this->db->queryPrepared(
-            'SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tkundenwerbenkunden
                 WHERE dErstellt >= :from
                     AND dErstellt < :to
@@ -562,7 +570,7 @@ class Statusmail
     private function getSentWishlistCount(): int
     {
         $wishlistData = $this->db->queryPrepared(
-            'SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                     FROM twunschlisteversand
                     WHERE dZeit >= :from
                         AND dZeit < :to',
@@ -584,7 +592,7 @@ class Statusmail
     private function getSurveyParticipationsCount(): int
     {
         $surveyData = $this->db->queryPrepared(
-            'SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tumfragedurchfuehrung
                 WHERE dDurchgefuehrt >= :from
                     AND dDurchgefuehrt < :to',
@@ -606,7 +614,7 @@ class Statusmail
     private function getNewsCommentsCount(): int
     {
         $newsCommentData = $this->db->queryPrepared(
-            'SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tnewskommentar
                 WHERE dErstellt >= :from
                     AND dErstellt < :to
@@ -629,7 +637,7 @@ class Statusmail
     private function getNonApprovedCommentsCount(): int
     {
         $newsCommentData = $this->db->queryPrepared(
-            'SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tnewskommentar
                 WHERE dErstellt >= :from
                     AND dErstellt < :to
@@ -652,7 +660,7 @@ class Statusmail
     private function getAvailabilityNotificationsCount(): int
     {
         $availabilityData = $this->db->queryPrepared(
-            'SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tverfuegbarkeitsbenachrichtigung
                 WHERE dErstellt >= :from
                     AND dErstellt < :to',
@@ -674,7 +682,7 @@ class Statusmail
     private function getProductInquriesCount(): int
     {
         $inquiryData = $this->db->queryPrepared(
-            'SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tproduktanfragehistory
                 WHERE dErstellt >= :from
                     AND dErstellt < :to',
@@ -696,7 +704,7 @@ class Statusmail
     private function getComparisonsCount(): int
     {
         $comparisonData = $this->db->queryPrepared(
-            'SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tvergleichsliste
                 WHERE dDate >= :from
                     AND dDate < :to',
@@ -718,7 +726,7 @@ class Statusmail
     private function getCouponUsageCount(): int
     {
         $couponData = $this->db->queryPrepared(
-            'SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tkuponkunde
                 WHERE dErstellt >= :from
                     AND dErstellt < :to',
@@ -744,7 +752,7 @@ class Statusmail
                     FROM tjtllog
                     WHERE dErstellt >= :from
                         AND dErstellt < :to
-                        AND nLevel IN (' . implode(',', array_map('intval', $logLevels)) . ')
+                        AND nLevel IN (' . implode(',', array_map('\intval', $logLevels)) . ')
                     ORDER BY dErstellt DESC',
                 [
                     'from' => $this->dateStart,

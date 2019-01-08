@@ -1,0 +1,27 @@
+msgid "dbupdater"
+msgstr "Datenbank-Update"
+
+msgid "dbupdaterURL"
+msgstr "https://jtl-url.de/8qef4"
+
+msgid "dbupdaterDesc"
+msgstr "Hier können Sie Ihre JTL-Shop-Datenbank aktualisieren. Die Zielversion für das Datenbank-Update entspricht der derzeit installierten Shop-Version."
+
+msgid "updateNow"
+msgstr "Datenbank-Update starten"
+
+msgid "nextStep"
+msgstr "fortfahren"
+
+msgid "fromVersion"
+msgstr "Von Version"
+
+msgid "toVersion"
+msgstr "Nach Version"
+
+msgid "row"
+msgstr "Zeile"
+
+msgid "progress"
+msgstr "Fortschritt"
+

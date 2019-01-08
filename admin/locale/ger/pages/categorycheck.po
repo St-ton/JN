@@ -1,0 +1,8 @@
+msgid "categorycheck"
+msgstr "Verwaiste Kategorien"
+
+msgid "categorycheckURL"
+msgstr "https://jtl-url.de/njc39"
+
+msgid "categorycheckDesc"
+msgstr "Überprüft Kategorien auf vorhandende Vaterkategorien"

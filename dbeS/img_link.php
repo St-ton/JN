@@ -53,7 +53,7 @@ function bildartikellink_xml(SimpleXMLElement $xml)
         $cacheArticleIDs[] = CACHING_GROUP_ARTICLE . '_' . $_aid;
         MediaImage::clearCache(Image::TYPE_PRODUCT, $_aid);
     }
-    Shop::Cache()->flushTags($cacheArticleIDs);
+    Shop::Container()->getCache()->flushTags($cacheArticleIDs);
 }
 
 /**
@@ -72,7 +72,7 @@ function del_bildartikellink_xml(SimpleXMLElement $xml)
         $cacheArticleIDs[] = CACHING_GROUP_ARTICLE . '_' . $_aid;
         MediaImage::clearCache(Image::TYPE_PRODUCT, $_aid);
     }
-    Shop::Cache()->flushTags($cacheArticleIDs);
+    Shop::Container()->getCache()->flushTags($cacheArticleIDs);
 }
 
 /**

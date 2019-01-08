@@ -6,7 +6,6 @@
 
 namespace Filter;
 
-
 use function Functional\reduce_left;
 
 /**
@@ -82,7 +81,7 @@ class StateSQL implements StateSQLInterface
     /**
      * @inheritdoc
      */
-    public function setHaving(array $having)
+    public function setHaving(array $having): void
     {
         $this->having = $having;
     }
@@ -108,7 +107,7 @@ class StateSQL implements StateSQLInterface
     /**
      * @inheritdoc
      */
-    public function setConditions(array $conditions)
+    public function setConditions(array $conditions): void
     {
         $this->conditions = $conditions;
     }
@@ -152,7 +151,7 @@ class StateSQL implements StateSQLInterface
     /**
      * @inheritdoc
      */
-    public function setJoins(array $joins)
+    public function setJoins(array $joins): void
     {
         $this->joins = $joins;
     }
@@ -178,7 +177,7 @@ class StateSQL implements StateSQLInterface
     /**
      * @inheritdoc
      */
-    public function setSelect(array $select)
+    public function setSelect(array $select): void
     {
         $this->select = $select;
     }
@@ -196,7 +195,7 @@ class StateSQL implements StateSQLInterface
     /**
      * @return string|null
      */
-    public function getOrderBy()
+    public function getOrderBy(): ?string
     {
         return $this->orderBy;
     }
@@ -204,7 +203,7 @@ class StateSQL implements StateSQLInterface
     /**
      * @param string|null $orderBy
      */
-    public function setOrderBy($orderBy)
+    public function setOrderBy($orderBy): void
     {
         $this->orderBy = $orderBy;
     }
@@ -220,7 +219,7 @@ class StateSQL implements StateSQLInterface
     /**
      * @param string $limit
      */
-    public function setLimit(string $limit)
+    public function setLimit(string $limit): void
     {
         $this->limit = $limit;
     }
@@ -247,7 +246,7 @@ class StateSQL implements StateSQLInterface
     /**
      * @param array $groupBy
      */
-    public function setGroupBy(array $groupBy)
+    public function setGroupBy(array $groupBy): void
     {
         $this->groupBy = $groupBy;
     }

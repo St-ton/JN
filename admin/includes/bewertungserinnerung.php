@@ -48,23 +48,19 @@ function baueBewertungsErinnerung()
         return;
     }
     $nMaxTage = $nVersandTage * 2;
-    if ($nVersandTage == 1) {
+    if ($nVersandTage === 1) {
         $nMaxTage = 4;
     }
-    $cQuery            = "SELECT kBestellung
+    $cQuery            = 'SELECT kBestellung
             FROM tbestellung
             JOIN tkunde 
                 ON tkunde.kKunde = tbestellung.kKunde
-            WHERE dVersandDatum != '0000-00-00'
-                AND dVersandDatum IS NOT NULL
-                AND DATE_ADD(dVersandDatum, INTERVAL " . $nVersandTage . " DAY) <= now()
-                AND DATE_ADD(dVersandDatum, INTERVAL " . $nMaxTage . " DAY) > now()
+            WHERE dVersandDatum IS NOT NULL
+                AND DATE_ADD(dVersandDatum, INTERVAL ' . $nVersandTage . ' DAY) <= NOW()
+                AND DATE_ADD(dVersandDatum, INTERVAL ' . $nMaxTage . ' DAY) > NOW()
                 AND cStatus = 4
-                AND (" . $cSQL . ")
-                AND (
-                        dBewertungErinnerung IS NULL 
-                        OR dBewertungErinnerung = '0000-00-00 00:00:00'
-                    )";
+                AND (' . $cSQL . ')
+                AND dBewertungErinnerung IS NULL';
     $oBestellungen_arr = Shop::Container()->getDB()->query($cQuery, \DB\ReturnType::ARRAY_OF_OBJECTS);
     if (count($oBestellungen_arr) === 0) {
         Shop::Container()->getLogService()->debug('Keine Bestellungen für Bewertungserinnerungen gefunden.');
@@ -72,7 +68,7 @@ function baueBewertungsErinnerung()
     }
     foreach ($oBestellungen_arr as $oBestellungen) {
         $oBestellung = new Bestellung($oBestellungen->kBestellung);
-        $oBestellung->fuelleBestellung(0);
+        $oBestellung->fuelleBestellung(false);
         $oKunde            = new Kunde($oBestellung->kKunde ?? 0);
         $obj               = new stdClass();
         $obj->tkunde       = $oKunde;
@@ -81,15 +77,18 @@ function baueBewertungsErinnerung()
 
         foreach ($oBestellung->Positionen as $Pos) {
             if ($Pos->kArtikel > 0) {
-                $res = Shop::Container()->getDB()->query(
-                    'SELECT kBewertung
-                        FROM tbewertung
-                        WHERE kArtikel = ' . (int)$Pos->kArtikel . '
-                            AND kKunde = ' . (int)$oBestellung->kKunde,
-                    \DB\ReturnType::SINGLE_OBJECT
-                );
-                if ($res === false) {
-                    $openReviewPos_arr[] = $Pos;
+                $productVisible = (new Artikel())->fuelleArtikel($Pos->kArtikel, null, $oKunde->kKundengruppe);
+                if ($productVisible->kArtikel > 0) {
+                    $res = Shop::Container()->getDB()->query(
+                        'SELECT kBewertung
+                            FROM tbewertung
+                            WHERE kArtikel = ' . (int)$Pos->kArtikel . '
+                                AND kKunde = ' . (int)$oBestellung->kKunde,
+                        \DB\ReturnType::SINGLE_OBJECT
+                    );
+                    if ($res === false) {
+                        $openReviewPos_arr[] = $Pos;
+                    }
                 }
             }
         }
@@ -102,7 +101,7 @@ function baueBewertungsErinnerung()
 
         Shop::Container()->getDB()->query(
             'UPDATE tbestellung
-                SET dBewertungErinnerung = now()
+                SET dBewertungErinnerung = NOW()
                 WHERE kBestellung = ' . (int)$oBestellungen->kBestellung,
             \DB\ReturnType::AFFECTED_ROWS
         );

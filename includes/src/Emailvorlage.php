@@ -387,12 +387,15 @@ class Emailvorlage
      */
     public static function load(string $modulId, $isPlugin = false)
     {
-        $table   = $isPlugin ? 'tpluginemailvorlage' : 'temailvorlage';
-        $obj     = Shop::Container()->getDB()->select(
+        $table = $isPlugin ? 'tpluginemailvorlage' : 'temailvorlage';
+        $obj   = Shop::Container()->getDB()->select(
             $table,
-            'cModulId', $modulId,
-            null, null,
-            null, null,
+            'cModulId',
+            $modulId,
+            null,
+            null,
+            null,
+            null,
             false,
             'kEmailvorlage'
         );

@@ -12,9 +12,12 @@ namespace JTL;
  */
 class NavigationEntry
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
-    private static $mapping = [
+    /**
+     * @var array
+     */
+    protected static $mapping = [
         'name'     => 'Name',
         'url'      => 'URL',
         'urlFull'  => 'URLFull',
@@ -52,7 +55,7 @@ class NavigationEntry
     /**
      * @param string $name
      */
-    public function setName(string $name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -68,7 +71,7 @@ class NavigationEntry
     /**
      * @param string $url
      */
-    public function setURL(string $url)
+    public function setURL(string $url): void
     {
         $this->url = $url;
     }
@@ -84,7 +87,7 @@ class NavigationEntry
     /**
      * @param string $url
      */
-    public function setURLFull(string $url)
+    public function setURLFull(string $url): void
     {
         $this->urlFull = $url;
     }
@@ -100,7 +103,7 @@ class NavigationEntry
     /**
      * @param bool $hasChild
      */
-    public function setHasChild(bool $hasChild)
+    public function setHasChild(bool $hasChild): void
     {
         $this->hasChild = $hasChild;
     }

@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\GeneralObject;
+
 /**
  * Class JobQueue
  */
@@ -72,7 +74,7 @@ class JobQueue
     /**
      * @return int|null
      */
-    public function getKJobQueue()
+    public function getKJobQueue(): ?int
     {
         return $this->kJobQueue;
     }
@@ -251,7 +253,7 @@ class JobQueue
     /**
      * @param string $cKey
      */
-    public function setCKey($cKey)
+    public function setCKey($cKey): void
     {
         $this->cKey = $cKey;
     }
@@ -261,7 +263,7 @@ class JobQueue
      */
     public function getDStartZeit(): string
     {
-        return $this->dStartZeit ?? 'now()';
+        return $this->dStartZeit ?? 'NOW()';
     }
 
     /**
@@ -280,7 +282,7 @@ class JobQueue
      */
     public function getDZuletztGelaufen(): string
     {
-        return $this->dZuletztGelaufen ?? '0000-00-00';
+        return $this->dZuletztGelaufen ?? '_DBNULL_';
     }
 
     /**
@@ -317,8 +319,8 @@ class JobQueue
         $cJobArt = '',
         $cTabelle = '',
         $cKey = '',
-        $dStartZeit = 'now()',
-        $dZuletztGelaufen = '0000-00-00'
+        $dStartZeit = 'NOW()',
+        $dZuletztGelaufen = null
     ) {
         $this->kJobQueue        = $kJobQueue;
         $this->kCron            = $kCron;
@@ -337,12 +339,12 @@ class JobQueue
     /**
      * @return stdClass|null
      */
-    public function holeJobArt()
+    public function holeJobArt(): ?stdClass
     {
         if ($this->kKey > 0 && strlen($this->cTabelle) > 0) {
             return Shop::Container()->getDB()->select(
-                Shop::Container()->getDB()->escape($this->cTabelle),
-                Shop::Container()->getDB()->escape($this->cKey),
+                $this->cTabelle,
+                $this->cKey,
                 (int)$this->kKey
             );
         }
@@ -362,7 +364,7 @@ class JobQueue
             && strlen($this->cTabelle) > 0
             && strlen($this->dStartZeit) > 0
         ) {
-            $queue = ObjectHelper::copyMembers($this);
+            $queue = GeneralObject::copyMembers($this);
             unset($queue->kJobQueue);
 
             return Shop::Container()->getDB()->insert('tjobqueue', $queue);

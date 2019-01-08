@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -6,10 +6,9 @@
 
 namespace Boxes\Items;
 
-
 /**
  * Class CompareList
- * @package Boxes
+ * @package Boxes\Items
  */
 final class CompareList extends AbstractBox
 {
@@ -89,8 +88,7 @@ final class CompareList extends AbstractBox
     /**
      * @param string $value
      */
-    public function setShowBox(string $value)
+    public function setShowBox(string $value): void
     {
-
     }
 }

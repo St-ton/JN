@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -6,10 +6,9 @@
 
 namespace Boxes\Items;
 
-
 /**
  * Class TrustedShopsReviews
- * @package Boxes
+ * @package Boxes\Items
  */
 final class TrustedShopsReviews extends AbstractBox
 {
@@ -29,7 +28,7 @@ final class TrustedShopsReviews extends AbstractBox
     private $imageURL = '';
 
     /**
-     * DirectPurchase constructor.
+     * TrustedShopsReviews constructor.
      * @param array $config
      */
     public function __construct(array $config)
@@ -40,7 +39,7 @@ final class TrustedShopsReviews extends AbstractBox
         parent::addMapping('cBildPfad', 'ImagePath');
         $this->setShow(false);
         $validISOCodes = ['de', 'en', 'fr', 'es', 'pl'];
-        $langCode            = \StringHandler::convertISO2ISO639(\Shop::getLanguageCode());
+        $langCode      = \StringHandler::convertISO2ISO639(\Shop::getLanguageCode());
         if ($config['trustedshops']['trustedshops_nutzen'] === 'Y' && \in_array($langCode, $validISOCodes, true)) {
             $ts       = new \TrustedShops(-1, $langCode);
             $tsRating = $ts->holeKundenbewertungsstatus($langCode);
@@ -74,7 +73,7 @@ final class TrustedShopsReviews extends AbstractBox
      */
     private function cachecheck(string $filename_cache, int $timeout = 10800): bool
     {
-        $filename_cache = PFAD_ROOT . \PFAD_GFX_TRUSTEDSHOPS . $filename_cache;
+        $filename_cache = \PFAD_ROOT . \PFAD_GFX_TRUSTEDSHOPS . $filename_cache;
 
         return \file_exists($filename_cache)
             ? ((\time() - \filemtime($filename_cache)) < $timeout)
@@ -92,7 +91,7 @@ final class TrustedShopsReviews extends AbstractBox
     /**
      * @param string $path
      */
-    public function setImagePath(string $path)
+    public function setImagePath(string $path): void
     {
         $this->imagePath = $path;
     }
@@ -100,7 +99,7 @@ final class TrustedShopsReviews extends AbstractBox
     /**
      * @return null|\stdClass
      */
-    public function getStats()
+    public function getStats(): ?\stdClass
     {
         return $this->stats;
     }
@@ -108,7 +107,7 @@ final class TrustedShopsReviews extends AbstractBox
     /**
      * @param null|\stdClass $stats
      */
-    public function setStats($stats)
+    public function setStats($stats): void
     {
         $this->stats = $stats;
     }
@@ -124,7 +123,7 @@ final class TrustedShopsReviews extends AbstractBox
     /**
      * @param string $imageURL
      */
-    public function setImageURL(string $imageURL)
+    public function setImageURL(string $imageURL): void
     {
         $this->imageURL = $imageURL;
     }

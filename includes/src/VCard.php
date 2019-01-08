@@ -25,15 +25,15 @@
  */
 class VCard
 {
-    const NL             = "\n";
-    const OPT_ERR_IGNORE = 0x01;
-    const OPT_ERR_RAISE  = 0x02;
+    public const NL             = "\n";
+    public const OPT_ERR_IGNORE = 0x01;
+    public const OPT_ERR_RAISE  = 0x02;
 
-    const MODE_UNKNOWN   = 0x00;
-    const MODE_SINGLE    = 0x01;
-    const MODE_MULTIPLE  = 0x02;
+    public const MODE_UNKNOWN  = 0x00;
+    public const MODE_SINGLE   = 0x01;
+    public const MODE_MULTIPLE = 0x02;
 
-    const ERR_INVALID    = 0x01;
+    public const ERR_INVALID = 0x01;
 
     /**
      * @var string
@@ -43,17 +43,17 @@ class VCard
     /**
      * @var array
      */
-    private $data     = [];
+    private $data = [];
 
     /**
      * @var int
      */
-    private $mode     = self::MODE_UNKNOWN;
+    private $mode = self::MODE_UNKNOWN;
 
     /**
      * @var int
      */
-    private $iVCard   = 0;
+    private $iVCard = 0;
 
     /**
      * @var array
@@ -87,7 +87,8 @@ class VCard
         'email' => ['internet', 'x400', 'pref', 'work', 'home'],
         'adr'   => ['dom', 'intl', 'postal', 'parcel', 'home', 'work', 'pref'],
         'label' => ['dom', 'intl', 'postal', 'parcel', 'home', 'work', 'pref'],
-        'tel'   => ['home', 'msg', 'work', 'pref', 'voice', 'fax', 'cell', 'video', 'pager', 'bbs', 'modem', 'car', 'isdn', 'pcs'],
+        'tel'   => ['home', 'msg', 'work', 'pref', 'voice', 'fax',
+                    'cell', 'video', 'pager', 'bbs', 'modem', 'car', 'isdn', 'pcs'],
         'impp'  => ['personal', 'business', 'home', 'work', 'mobile', 'pref']
     ];
     /**
@@ -261,8 +262,7 @@ class VCard
      */
     protected function parseVCardLine($line)
     {
-        // Jede Zeile in zwei Teile trennen. key enthält den Elementnamen und ggfs. weitere Parameter, value ist der Wert
-        list($key, $rawValue) = explode(':', $line, 2);
+        [$key, $rawValue] = explode(':', $line, 2);
 
         $key = strtolower(trim(self::unescape($key)));
         if (in_array($key, ['begin', 'end'], true)) {
@@ -289,8 +289,8 @@ class VCard
         $params   = [];
 
         if (strpos($key, 'item') === 0) {
-            $tmpKey  = explode('.', $key, 2);
-            $key     = $tmpKey[1];
+            $tmpKey = explode('.', $key, 2);
+            $key    = $tmpKey[1];
         }
 
         if (count($keyParts) > 1) {
@@ -436,7 +436,9 @@ class VCard
                 return $propData[$property];
             }
             if ($property === 'bday') {
-                $bDay = is_array($propData[$property]) && count($propData[$property]) > 0 ? $propData[$property][0] : $propData[$property];
+                $bDay = is_array($propData[$property]) && count($propData[$property]) > 0
+                    ? $propData[$property][0]
+                    : $propData[$property];
                 if (is_numeric($bDay)) {
                     return DateTime::createFromFormat('YmdHis', (string)$bDay . '000000');
                 }
@@ -638,7 +640,12 @@ class VCard
         }
         if (isset($this->TEL)) {
             $Kunde->cMobil = self::getValue($this->TEL, ['cell'], '', false);
-            $Kunde->cFax   = self::getValue($this->TEL, ['fax', 'home_fax', 'fax_home', 'work_fax', 'fax_work'], '', false);
+            $Kunde->cFax   = self::getValue(
+                $this->TEL,
+                ['fax', 'home_fax', 'fax_home', 'work_fax', 'fax_work'],
+                '',
+                false
+            );
             $Kunde->cTel   = self::getValue($this->TEL, ['home', 'work', '*'], '');
         }
         if (isset($this->EMAIL)) {

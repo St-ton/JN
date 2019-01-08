@@ -207,18 +207,18 @@ class UstIDviesVatParser
         for ($i = 0; $i < $len; $i++) {
             // each character and white-space is compared exactly, while digits can be [1..9]
             switch (true) {
-                case ctype_alpha($szPattern[$i]) :
-                case ctype_space($szPattern[$i]) :
+                case ctype_alpha($szPattern[$i]):
+                case ctype_space($szPattern[$i]):
                     if ($szPattern[$i] === $szVATid[$i]) {
                         continue 2; // check-space OK
                     }
                     break 2; // check-space FAIL
-                case is_numeric($szPattern[$i]) :
+                case is_numeric($szPattern[$i]):
                     if (is_numeric($szVATid[$i])) {
                         continue 2; // check-num OK
                     }
                     break 2; // check-num FAIL
-                default :
+                default:
                     if ('_' === $szPattern[$i]) {
                         continue 2;
                     }
@@ -270,7 +270,6 @@ class UstIDviesVatParser
             // checking the given pattern (return a possible interrupt-position)
             $nParseResult = $this->isIdPatternValid($this->szVATid, $szPattern);
             if (0 === $nParseResult) {
-
                 return true; // if we found a valid pattern-match, we've done our job here
             }
 
@@ -328,4 +327,3 @@ class UstIDviesVatParser
         return $this->nErrorPos;
     }
 }
-

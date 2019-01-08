@@ -4,10 +4,10 @@ require_once __DIR__. '/ipl_xml_request.php';
 
 /**
  * class ipl_get_billpay_bank_data
- * 
+ *
  * @author Jan Wehrs (jan.wehrs@billpay.de)
  * @copyright Copyright 2010 Billpay GmbH
- * @license commercial 
+ * @license commercial
  */
 class ipl_get_billpay_bank_data extends ipl_xml_request
 {

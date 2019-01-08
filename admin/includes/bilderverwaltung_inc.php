@@ -4,23 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\URL;
+
 /**
  * @param bool $filesize
  * @return array
  * @throws Exception
  */
-function getItems(bool $filesize = false)
+function getItems(bool $filesize = false): array
 {
-    $smarty = \Smarty\JTLSmarty::getInstance(false, true);
-    $smarty->configLoad('german.conf', 'bilderverwaltung');
-
-    $item = (object) [
-        'name'  => $smarty->config_vars['typeProduct'],
-        'type'  => Image::TYPE_PRODUCT,
-        'stats' => MediaImage::getStats(Image::TYPE_PRODUCT, $filesize)
+    return [
+        Image::TYPE_PRODUCT => (object)[
+            'name'  => __('typeProduct'),
+            'type'  => Image::TYPE_PRODUCT,
+            'stats' => MediaImage::getStats(Image::TYPE_PRODUCT, $filesize)
+        ]
     ];
-
-    return [Image::TYPE_PRODUCT => $item];
 }
 
 /**
@@ -132,7 +131,7 @@ function clearImageCache($type, bool $isAjax = false)
  * @return IOError|object
  * @throws Exception
  */
-function generateImageCache($type, int $index)
+function generateImageCache(?string $type, ?int $index)
 {
     if ($type === null || $index === null) {
         return new IOError('Invalid argument request', 500);
@@ -148,13 +147,13 @@ function generateImageCache($type, int $index)
     ];
 
     if ($index === 0) {
-        $_SESSION['image_count']    = count(MediaImage::getImages($type, true));
+        $_SESSION['image_count']    = MediaImage::getUncachedProductImageCount();
         $_SESSION['renderedImages'] = 0;
     }
 
     $total    = $_SESSION['image_count'];
     $images   = MediaImage::getImages($type, true, $index, IMAGE_PRELOAD_LIMIT);
-    $totalAll = count(MediaImage::getImages($type));
+    $totalAll = MediaImage::getProductImageCount();
     while (count($images) === 0 && $index < $totalAll) {
         $index += 10;
         $images = MediaImage::getImages($type, true, $index, IMAGE_PRELOAD_LIMIT);
@@ -187,23 +186,26 @@ function generateImageCache($type, int $index)
  */
 function getCorruptedImages($type, int $limit)
 {
-    static $offset = 0;
     $corruptedImages = [];
-    $totalImages     = count(MediaImage::getImages($type));
-
+    $totalImages     = MediaImage::getProductImageCount();
     do {
-        $images = MediaImage::getImages($type, false, $offset, $limit);
-        foreach ($images as $image) {
-            $raw = $image->getRaw(true);
-            $fallback = $image->getFallbackThumb(Image::SIZE_XS);
-            if (!file_exists($raw) && !file_exists(PFAD_ROOT . $fallback)) {
-                $corruptedImage  = (object) [
+        $i = 0;
+        foreach (MediaImage::getProductImages() as $image) {
+            ++$i;
+            if (!file_exists($image->getRaw(true))
+                && !file_exists(PFAD_ROOT . $image->getFallbackThumb(Image::SIZE_XS))
+            ) {
+                $corruptedImage            = (object)[
                     'article' => [],
                     'picture' => ''
                 ];
-                $articleDB           = Shop::Container()->getDB()->select('tartikel', 'kArtikel', $image->getId());
-                $articleDB->cURLFull = UrlHelper::buildURL($articleDB, URLART_ARTIKEL, true);
-                $article             = (object) [
+                $articleDB                 = Shop::Container()->getDB()->select(
+                    'tartikel',
+                    'kArtikel',
+                    $image->getId()
+                );
+                $articleDB->cURLFull       = URL::buildURL($articleDB, URLART_ARTIKEL, true);
+                $article                   = (object)[
                     'articleNr'      => $articleDB->cArtNr,
                     'articleURLFull' => $articleDB->cURLFull
                 ];
@@ -216,8 +218,7 @@ function getCorruptedImages($type, int $limit)
                 }
             }
         }
-        $offset += count($images);
-    } while(count($corruptedImages) < $limit && $offset < $totalImages);
+    } while (count($corruptedImages) < $limit && $i < $totalImages);
 
     return [Image::TYPE_PRODUCT => array_slice($corruptedImages, 0, $limit)];
 }

@@ -6,13 +6,14 @@
 
 namespace OPC\Portlets;
 
+use OPC\Portlet;
 use OPC\PortletInstance;
 
 /**
  * Class Banner
  * @package OPC\Portlets
  */
-class Banner extends \OPC\Portlet
+class Banner extends Portlet
 {
     /**
      * @param PortletInstance $instance
@@ -32,11 +33,11 @@ class Banner extends \OPC\Portlet
             return $oImageMap;
         }
 
-        $cBildPfad            = PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . basename($instance->getProperty('src'));
+        $cBildPfad            = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . \basename($instance->getProperty('src'));
         $oImageMap->cBildPfad = \Shop::getURL() . $oImageMap->cBildPfad;
         $cParse_arr           = \parse_url($oImageMap->cBildPfad);
         $oImageMap->cBild     = \substr($cParse_arr['path'], \strrpos($cParse_arr['path'], '/') + 1);
-        list($width, $height) = \getimagesize($cBildPfad);
+        [$width, $height]     = \getimagesize($cBildPfad);
         $oImageMap->fWidth    = $width;
         $oImageMap->fHeight   = $height;
         $defaultOptions       = \Artikel::getDefaultOptions();
@@ -68,14 +69,15 @@ class Banner extends \OPC\Portlet
     /**
      * @return string
      */
-    public function getPlaceholderImgUrl()
+    public function getPlaceholderImgUrl(): string
     {
-        return \Shop::getURL() . '/' . PFAD_TEMPLATES . 'Evo/portlets/Banner/preview.banner.png';
+        return \Shop::getURL() . '/' . \PFAD_TEMPLATES . 'Evo/portlets/Banner/preview.banner.png';
     }
 
     /**
      * @param PortletInstance $instance
      * @return string
+     * @throws \Exception
      */
     public function getPreviewHtml(PortletInstance $instance): string
     {
@@ -99,42 +101,33 @@ class Banner extends \OPC\Portlet
     }
 
     /**
-     * @return string
-     */
-    public function getButtonHtml(): string
-    {
-        return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Banner';
-    }
-
-    /**
      * @return array
      */
     public function getPropertyDesc(): array
     {
         return [
             'src'   => [
-                'label'      => 'Bild',
+                'label'      => __('Image'),
                 'type'       => 'image',
                 'default'    => '',
                 'dspl_width' => 50,
                 'required'   => true,
             ],
             'zones' => [
-                'label'   => 'Zonen',
+                'label'   => __('Zones'),
                 'type'    => 'banner-zones',
                 'default' => '[]',
             ],
             'class' => [
-                'label' => 'CSS Class',
+                'label' => __('CSS class'),
             ],
             'alt'   => [
-                'label' => 'Altenativtext',
+                'label' => __('Altenativ text'),
             ],
             'title' => [
-                'label' => 'Titel'
+                'label' => __('Title')
             ],
         ];
-
     }
 
     /**
@@ -143,8 +136,8 @@ class Banner extends \OPC\Portlet
     public function getPropertyTabs(): array
     {
         return [
-            'Styles'    => 'styles',
-            'Animation' => 'animations',
+            __('Styles')    => 'styles',
+            __('Animation') => 'animations',
         ];
     }
 }

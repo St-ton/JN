@@ -4,17 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Date;
+use Helpers\Request;
+
 /**
  * @return array
  */
 function holeAlleKampagnenDefinitionen()
 {
-    return \Functional\reindex(Shop::Container()->getDB()->query(
+    return \Functional\reindex(
+        Shop::Container()->getDB()->query(
             'SELECT *
                 FROM tkampagnedef
                 ORDER BY kKampagneDef',
             \DB\ReturnType::ARRAY_OF_OBJECTS
-        ), function ($e) {
+        ),
+        function ($e) {
             return $e->kKampagneDef;
         }
     );
@@ -52,29 +57,29 @@ function holeKampagneGesamtStats($oKampagne_arr, $oKampagneDef_arr)
 {
     $oKampagneStat_arr = [];
     $cSQL              = '';
-    $cDatum_arr        = DateHelper::getDateParts($_SESSION['Kampagne']->cStamp);
+    $cDatum_arr        = Date::getDateParts($_SESSION['Kampagne']->cStamp);
     switch ((int)$_SESSION['Kampagne']->nAnsicht) {
         case 1:    // Monat
-            $cSQL = "WHERE '" . $cDatum_arr['cJahr'] . "-" . 
+            $cSQL = "WHERE '" . $cDatum_arr['cJahr'] . '-' .
                 $cDatum_arr['cMonat'] . "' = DATE_FORMAT(dErstellt, '%Y-%m')";
             break;
         case 2:    // Woche
-            $cDatum_arr = ermittleDatumWoche($cDatum_arr['cJahr'] . "-" . 
-                $cDatum_arr['cMonat'] . "-" . $cDatum_arr['cTag']);
-            $cSQL       = "WHERE dErstellt BETWEEN FROM_UNIXTIME(" . 
-                $cDatum_arr[0] . ", '%Y-%m-%d %H:%i:%s') AND FROM_UNIXTIME(" . 
+            $cDatum_arr = ermittleDatumWoche($cDatum_arr['cJahr'] . '-' .
+                $cDatum_arr['cMonat'] . '-' . $cDatum_arr['cTag']);
+            $cSQL       = 'WHERE dErstellt BETWEEN FROM_UNIXTIME(' .
+                $cDatum_arr[0] . ", '%Y-%m-%d %H:%i:%s') AND FROM_UNIXTIME(" .
                 $cDatum_arr[1] . ", '%Y-%m-%d %H:%i:%s')";
             break;
         case 3:    // Tag
-            $cSQL = "WHERE '" . $cDatum_arr['cJahr'] . '-' . 
-                $cDatum_arr['cMonat'] . '-' . 
+            $cSQL = "WHERE '" . $cDatum_arr['cJahr'] . '-' .
+                $cDatum_arr['cMonat'] . '-' .
                 $cDatum_arr['cTag'] . "' = DATE_FORMAT(dErstellt, '%Y-%m-%d')";
             break;
     }
 
     if (is_array($oKampagne_arr)
         && count($oKampagne_arr) > 0
-        &&  is_array($oKampagneDef_arr)
+        && is_array($oKampagneDef_arr)
         && count($oKampagneDef_arr)
     ) {
         foreach ($oKampagne_arr as $oKampagne) {
@@ -159,13 +164,16 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
 {
     // Zeitraum
     $cSQLWHERE           = '';
-    $nAnzahlTageProMonat = date('t', mktime(
-        0,
-        0,
-        0,
-        $_SESSION['Kampagne']->cFromDate_arr['nMonat'],
-        1,
-        $_SESSION['Kampagne']->cFromDate_arr['nJahr'])
+    $nAnzahlTageProMonat = date(
+        't',
+        mktime(
+            0,
+            0,
+            0,
+            $_SESSION['Kampagne']->cFromDate_arr['nMonat'],
+            1,
+            $_SESSION['Kampagne']->cFromDate_arr['nJahr']
+        )
     );
     // Int String Work Around
     $cMonat = $_SESSION['Kampagne']->cFromDate_arr['nMonat'];
@@ -179,25 +187,25 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
 
     switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
         case 1:    // Jahr
-            $cSQLWHERE = " WHERE dErstellt BETWEEN '" . $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . "-" .
+            $cSQLWHERE = " WHERE dErstellt BETWEEN '" . $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' .
                 $_SESSION['Kampagne']->cFromDate_arr['nMonat'] . "-01' AND '" .
-                $_SESSION['Kampagne']->cToDate_arr['nJahr'] . "-" .
-                $_SESSION['Kampagne']->cToDate_arr['nMonat'] . "-" . $nAnzahlTageProMonat . "'";
+                $_SESSION['Kampagne']->cToDate_arr['nJahr'] . '-' .
+                $_SESSION['Kampagne']->cToDate_arr['nMonat'] . '-' . $nAnzahlTageProMonat . "'";
             if ($_SESSION['Kampagne']->cFromDate_arr['nJahr'] == $_SESSION['Kampagne']->cToDate_arr['nJahr']) {
                 $cSQLWHERE = " WHERE DATE_FORMAT(dErstellt, '%Y') = '" .
                     $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . "'";
             }
             break;
         case 2:    // Monat
-            $cSQLWHERE = " WHERE dErstellt BETWEEN '" . $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . "-" .
+            $cSQLWHERE = " WHERE dErstellt BETWEEN '" . $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' .
                 $_SESSION['Kampagne']->cFromDate_arr['nMonat'] .
-                "-01' AND '" . $_SESSION['Kampagne']->cToDate_arr['nJahr'] . "-" .
-                $_SESSION['Kampagne']->cToDate_arr['nMonat'] . "-" . $nAnzahlTageProMonat . "'";
+                "-01' AND '" . $_SESSION['Kampagne']->cToDate_arr['nJahr'] . '-' .
+                $_SESSION['Kampagne']->cToDate_arr['nMonat'] . '-' . $nAnzahlTageProMonat . "'";
             if ($_SESSION['Kampagne']->cFromDate_arr['nJahr'] == $_SESSION['Kampagne']->cToDate_arr['nJahr']
                 && $_SESSION['Kampagne']->cFromDate_arr['nMonat'] == $_SESSION['Kampagne']->cToDate_arr['nMonat']
             ) {
                 $cSQLWHERE = " WHERE DATE_FORMAT(dErstellt, '%Y-%m') = '" .
-                    $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . "-" . $cMonat . "'";
+                    $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' . $cMonat . "'";
             }
             break;
         case 3:    // Woche
@@ -212,7 +220,7 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
                 "' AND '" . $_SESSION['Kampagne']->cToDate . "'";
             if ($_SESSION['Kampagne']->cFromDate == $_SESSION['Kampagne']->cToDate) {
                 $cSQLWHERE = " WHERE DATE_FORMAT(dErstellt, '%Y-%m-%d') = '" .
-                    $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . "-" . $cMonat . "-" . $cTag . "'";
+                    $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' . $cMonat . '-' . $cTag . "'";
             }
             break;
     }
@@ -220,19 +228,19 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
     switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
         case 1:    // Jahr
             $cSQLSELECT  = "DATE_FORMAT(dErstellt, '%Y') AS cDatum";
-            $cSQLGROUPBY = "GROUP BY YEAR(dErstellt)";
+            $cSQLGROUPBY = 'GROUP BY YEAR(dErstellt)';
             break;
         case 2:    // Monat
             $cSQLSELECT  = "DATE_FORMAT(dErstellt, '%Y-%m') AS cDatum";
-            $cSQLGROUPBY = "GROUP BY MONTH(dErstellt), YEAR(dErstellt)";
+            $cSQLGROUPBY = 'GROUP BY MONTH(dErstellt), YEAR(dErstellt)';
             break;
         case 3:    // Woche
-            $cSQLSELECT  = "WEEK(dErstellt, 1) AS cDatum";
-            $cSQLGROUPBY = "GROUP BY WEEK(dErstellt, 1), YEAR(dErstellt)";
+            $cSQLSELECT  = 'WEEK(dErstellt, 1) AS cDatum';
+            $cSQLGROUPBY = 'GROUP BY WEEK(dErstellt, 1), YEAR(dErstellt)';
             break;
         case 4:    // Tag
             $cSQLSELECT  = "DATE_FORMAT(dErstellt, '%Y-%m-%d') AS cDatum";
-            $cSQLGROUPBY = "GROUP BY DAY(dErstellt), YEAR(dErstellt), MONTH(dErstellt)";
+            $cSQLGROUPBY = 'GROUP BY DAY(dErstellt), YEAR(dErstellt), MONTH(dErstellt)';
             break;
         default:
             return [];
@@ -336,7 +344,7 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
 function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStampText, &$cMember_arr, $cBlaetterSQL1)
 {
     $cryptoService = Shop::Container()->getCryptoService();
-    $oDaten_arr    = [];
+    $data          = [];
     if ((int)$kKampagne > 0 && (int)$oKampagneDef->kKampagneDef > 0 && strlen($cStamp) > 0) {
         $cSQLSELECT = '';
         $cSQLWHERE  = '';
@@ -356,7 +364,9 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 $cStampText = $oStats_arr[0]->cStampText;
                 break;
             case 2:    // Monat
-                $cStampTextParts_arr = isset($oStats_arr[0]->cStampText) ? explode('.', $oStats_arr[0]->cStampText) : [];
+                $cStampTextParts_arr = isset($oStats_arr[0]->cStampText)
+                    ? explode('.', $oStats_arr[0]->cStampText)
+                    : [];
                 $cMonat              = $cStampTextParts_arr [0] ?? '';
                 $cJahr               = $cStampTextParts_arr [1] ?? '';
                 $cStampText          = mappeENGMonat($cMonat) . ' ' . $cJahr;
@@ -373,8 +383,9 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
         // Kampagnendefinitionen
         switch ((int)$oKampagneDef->kKampagneDef) {
             case KAMPAGNE_DEF_HIT:    // HIT
-                $oDaten_arr = Shop::Container()->getDB()->query(
-                    "SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey " . $cSQLSELECT . ",
+                $data = Shop::Container()->getDB()->query(
+                    'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
+                        $cSQLSELECT . ",
                         tkampagnevorgang.cCustomData, DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
                         IF(tbesucher.cIP IS NULL, tbesucherarchiv.cIP, tbesucher.cIP) AS cIP,
                         IF(tbesucher.cReferer IS NULL, tbesucherarchiv.cReferer, tbesucher.cReferer) AS cReferer,
@@ -386,21 +397,21 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         LEFT JOIN tbesucher ON tbesucher.kBesucher = tkampagnevorgang.kKey
                         LEFT JOIN tbesucherarchiv ON tbesucherarchiv.kBesucher = tkampagnevorgang.kKey
                         LEFT JOIN tbesucherbot ON tbesucherbot.kBesucherBot = tbesucher.kBesucherBot
-                        " . $cSQLWHERE . "
-                            AND kKampagne = " . (int)$kKampagne . "
-                            AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . "
-                        ORDER BY tkampagnevorgang.dErstellt DESC" . $cBlaetterSQL1,
+                        " . $cSQLWHERE . '
+                            AND kKampagne = ' . (int)$kKampagne . '
+                            AND kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . '
+                        ORDER BY tkampagnevorgang.dErstellt DESC' . $cBlaetterSQL1,
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
-                if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
-                    foreach ($oDaten_arr as $i => $oDaten) {
+                if (is_array($data) && count($data) > 0) {
+                    foreach ($data as $i => $oDaten) {
                         $cCustomDataParts_arr = explode(';', $oDaten->cCustomData);
                         $cEinstiegsseite      = $cCustomDataParts_arr [0] ?? '';
                         $cReferer             = $cCustomDataParts_arr [1] ?? '';
 
-                        $oDaten_arr[$i]->cEinstiegsseite = $cEinstiegsseite;
-                        $oDaten_arr[$i]->cReferer        = $cReferer;
+                        $data[$i]->cEinstiegsseite = $cEinstiegsseite;
+                        $data[$i]->cReferer        = $cReferer;
                     }
 
                     $cMember_arr = [
@@ -415,8 +426,9 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 }
                 break;
             case KAMPAGNE_DEF_VERKAUF:    // VERKAUF
-                $oDaten_arr = Shop::Container()->getDB()->query(
-                    "SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey " . $cSQLSELECT . ",
+                $data = Shop::Container()->getDB()->query(
+                    'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
+                        $cSQLSELECT . ",
                         DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
                         IF(tkunde.cVorname IS NULL, 'n.v.', tkunde.cVorname) AS cVorname,
                         IF(tkunde.cNachname IS NULL, 'n.v.', tkunde.cNachname) AS cNachname,
@@ -432,32 +444,32 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         FROM tkampagnevorgang
                         LEFT JOIN tbestellung ON tbestellung.kBestellung = tkampagnevorgang.kKey
                         LEFT JOIN tkunde ON tkunde.kKunde = tbestellung.kKunde
-                        " . $cSQLWHERE . "
-                            AND kKampagne = " . (int)$kKampagne . "
-                            AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . "
-                        ORDER BY tkampagnevorgang.dErstellt DESC",
+                        " . $cSQLWHERE . '
+                            AND kKampagne = ' . (int)$kKampagne . '
+                            AND kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . '
+                        ORDER BY tkampagnevorgang.dErstellt DESC',
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
-                if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
-                    $dCount = count($oDaten_arr);
+                if (is_array($data) && count($data) > 0) {
+                    $dCount = count($data);
                     for ($i = 0; $i < $dCount; $i++) {
-                        if ($oDaten_arr[$i]->cNachname !== 'n.v.') {
-                            $oDaten_arr[$i]->cNachname = trim($cryptoService->decryptXTEA($oDaten_arr[$i]->cNachname));
+                        if ($data[$i]->cNachname !== 'n.v.') {
+                            $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
                         }
-                        if ($oDaten_arr[$i]->cFirma !== 'n.v.') {
-                            $oDaten_arr[$i]->cFirma = trim($cryptoService->decryptXTEA($oDaten_arr[$i]->cFirma));
+                        if ($data[$i]->cFirma !== 'n.v.') {
+                            $data[$i]->cFirma = trim($cryptoService->decryptXTEA($data[$i]->cFirma));
                         }
-                        if ($oDaten_arr[$i]->nRegistriert !== 'n.v.') {
-                            $oDaten_arr[$i]->nRegistriert = (int)$oDaten_arr[$i]->nRegistriert === 1
+                        if ($data[$i]->nRegistriert !== 'n.v.') {
+                            $data[$i]->nRegistriert = (int)$data[$i]->nRegistriert === 1
                                 ? 'Ja'
                                 : 'Nein';
                         }
-                        if ($oDaten_arr[$i]->fGesamtsumme !== 'n.v.') {
-                            $oDaten_arr[$i]->fGesamtsumme = Preise::getLocalizedPriceString($oDaten_arr[$i]->fGesamtsumme);
+                        if ($data[$i]->fGesamtsumme !== 'n.v.') {
+                            $data[$i]->fGesamtsumme = Preise::getLocalizedPriceString($data[$i]->fGesamtsumme);
                         }
-                        if ($oDaten_arr[$i]->cStatus !== 'n.v.') {
-                            $oDaten_arr[$i]->cStatus = lang_bestellstatus($oDaten_arr[$i]->cStatus);
+                        if ($data[$i]->cStatus !== 'n.v.') {
+                            $data[$i]->cStatus = lang_bestellstatus($data[$i]->cStatus);
                         }
                     }
 
@@ -476,8 +488,9 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 }
                 break;
             case KAMPAGNE_DEF_ANMELDUNG:    // ANMELDUNG
-                $oDaten_arr = Shop::Container()->getDB()->query(
-                    "SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey " . $cSQLSELECT . ",
+                $data = Shop::Container()->getDB()->query(
+                    'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
+                        $cSQLSELECT . ",
                         DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
                         IF(tkunde.cVorname IS NULL, 'n.v.', tkunde.cVorname) AS cVorname,
                         IF(tkunde.cNachname IS NULL, 'n.v.', tkunde.cNachname) AS cNachname,
@@ -487,24 +500,24 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         DATE_FORMAT(tkunde.dErstellt, '%d.%m.%Y') AS dErstellt_DE
                         FROM tkampagnevorgang
                         LEFT JOIN tkunde ON tkunde.kKunde = tkampagnevorgang.kKey
-                        " . $cSQLWHERE . "
-                            AND kKampagne = " . (int)$kKampagne . "
-                            AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . "
-                        ORDER BY tkampagnevorgang.dErstellt DESC",
+                        " . $cSQLWHERE . '
+                            AND kKampagne = ' . (int)$kKampagne . '
+                            AND kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . '
+                        ORDER BY tkampagnevorgang.dErstellt DESC',
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
-                if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
-                    $count = count($oDaten_arr);
+                if (is_array($data) && count($data) > 0) {
+                    $count = count($data);
                     for ($i = 0; $i < $count; $i++) {
-                        if ($oDaten_arr[$i]->cNachname !== 'n.v.') {
-                            $oDaten_arr[$i]->cNachname = trim($cryptoService->decryptXTEA($oDaten_arr[$i]->cNachname));
+                        if ($data[$i]->cNachname !== 'n.v.') {
+                            $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
                         }
-                        if ($oDaten_arr[$i]->cFirma !== 'n.v.') {
-                            $oDaten_arr[$i]->cFirma = trim($cryptoService->decryptXTEA($oDaten_arr[$i]->cFirma));
+                        if ($data[$i]->cFirma !== 'n.v.') {
+                            $data[$i]->cFirma = trim($cryptoService->decryptXTEA($data[$i]->cFirma));
                         }
-                        if ($oDaten_arr[$i]->nRegistriert !== 'n.v.') {
-                            $oDaten_arr[$i]->nRegistriert = ((int)$oDaten_arr[$i]->nRegistriert === 1)
+                        if ($data[$i]->nRegistriert !== 'n.v.') {
+                            $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
                                 ? 'Ja'
                                 : 'Nein';
                         }
@@ -522,8 +535,9 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 }
                 break;
             case KAMPAGNE_DEF_VERKAUFSSUMME:    // VERKAUFSSUMME
-                $oDaten_arr = Shop::Container()->getDB()->query(
-                    "SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey " . $cSQLSELECT . ",
+                $data   = Shop::Container()->getDB()->query(
+                    'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
+                        $cSQLSELECT . ",
                         DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
                         IF(tkunde.cVorname IS NULL, 'n.v.', tkunde.cVorname) AS cVorname,
                         IF(tkunde.cNachname IS NULL, 'n.v.', tkunde.cNachname) AS cNachname,
@@ -539,31 +553,31 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         FROM tkampagnevorgang
                         LEFT JOIN tbestellung ON tbestellung.kBestellung = tkampagnevorgang.kKey
                         LEFT JOIN tkunde ON tkunde.kKunde = tbestellung.kKunde
-                        " . $cSQLWHERE . "
-                            AND kKampagne = " . (int)$kKampagne . "
-                            AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . "
-                        ORDER BY tkampagnevorgang.dErstellt DESC",
+                        " . $cSQLWHERE . '
+                            AND kKampagne = ' . (int)$kKampagne . '
+                            AND kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . '
+                        ORDER BY tkampagnevorgang.dErstellt DESC',
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
-                $dCount = count($oDaten_arr);
-                if (is_array($oDaten_arr) && $dCount > 0) {
+                $dCount = count($data);
+                if (is_array($data) && $dCount > 0) {
                     for ($i = 0; $i < $dCount; $i++) {
-                        if ($oDaten_arr[$i]->cNachname !== 'n.v.') {
-                            $oDaten_arr[$i]->cNachname = trim($cryptoService->decryptXTEA($oDaten_arr[$i]->cNachname));
+                        if ($data[$i]->cNachname !== 'n.v.') {
+                            $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
                         }
-                        if ($oDaten_arr[$i]->cFirma !== 'n.v.') {
-                            $oDaten_arr[$i]->cFirma = trim($cryptoService->decryptXTEA($oDaten_arr[$i]->cFirma));
+                        if ($data[$i]->cFirma !== 'n.v.') {
+                            $data[$i]->cFirma = trim($cryptoService->decryptXTEA($data[$i]->cFirma));
                         }
-                        if ($oDaten_arr[$i]->nRegistriert !== 'n.v.') {
-                            $oDaten_arr[$i]->nRegistriert = ((int)$oDaten_arr[$i]->nRegistriert === 1)
+                        if ($data[$i]->nRegistriert !== 'n.v.') {
+                            $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
                                 ? 'Ja'
                                 : 'Nein';
                         }
-                        if ($oDaten_arr[$i]->fGesamtsumme !== 'n.v.') {
-                            $oDaten_arr[$i]->fGesamtsumme = Preise::getLocalizedPriceString($oDaten_arr[$i]->fGesamtsumme);
+                        if ($data[$i]->fGesamtsumme !== 'n.v.') {
+                            $data[$i]->fGesamtsumme = Preise::getLocalizedPriceString($data[$i]->fGesamtsumme);
                         }
-                        if ($oDaten_arr[$i]->cStatus !== 'n.v.') {
-                            $oDaten_arr[$i]->cStatus = lang_bestellstatus($oDaten_arr[$i]->cStatus);
+                        if ($data[$i]->cStatus !== 'n.v.') {
+                            $data[$i]->cStatus = lang_bestellstatus($data[$i]->cStatus);
                         }
                     }
 
@@ -582,8 +596,9 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 }
                 break;
             case KAMPAGNE_DEF_FRAGEZUMPRODUKT:    // FRAGEZUMPRODUKT
-                $oDaten_arr = Shop::Container()->getDB()->query(
-                    "SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey " . $cSQLSELECT . ",
+                $data = Shop::Container()->getDB()->query(
+                    'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
+                        $cSQLSELECT . ",
                         DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
                         IF(tproduktanfragehistory.cVorname IS NULL, 'n.v.', tproduktanfragehistory.cVorname) AS cVorname,
                         IF(tproduktanfragehistory.cNachname IS NULL, 'n.v.', tproduktanfragehistory.cNachname) AS cNachname,
@@ -597,14 +612,14 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         FROM tkampagnevorgang
                         LEFT JOIN tproduktanfragehistory ON tproduktanfragehistory.kProduktanfrageHistory = tkampagnevorgang.kKey
                         LEFT JOIN tartikel ON tartikel.kArtikel = tproduktanfragehistory.kArtikel
-                        " . $cSQLWHERE . "
-                            AND kKampagne = " . (int)$kKampagne . "
-                            AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . "
-                        ORDER BY tkampagnevorgang.dErstellt DESC",
+                        " . $cSQLWHERE . '
+                            AND kKampagne = ' . (int)$kKampagne . '
+                            AND kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . '
+                        ORDER BY tkampagnevorgang.dErstellt DESC',
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
-                if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
+                if (is_array($data) && count($data) > 0) {
                     $cMember_arr = [
                         'cArtikelname'        => 'Artikel',
                         'cArtNr'              => 'Artikelnummer',
@@ -621,8 +636,9 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
 
                 break;
             case KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE:    // VERFUEGBARKEITSANFRAGE
-                $oDaten_arr = Shop::Container()->getDB()->query(
-                    "SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey " . $cSQLSELECT . ",
+                $data = Shop::Container()->getDB()->query(
+                    'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
+                        $cSQLSELECT . ",
                         DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
                         IF(tverfuegbarkeitsbenachrichtigung.cVorname IS NULL, 'n.v.', tverfuegbarkeitsbenachrichtigung.cVorname) AS cVorname,
                         IF(tverfuegbarkeitsbenachrichtigung.cNachname IS NULL, 'n.v.', tverfuegbarkeitsbenachrichtigung.cNachname) AS cNachname,
@@ -636,14 +652,14 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                                 ON tverfuegbarkeitsbenachrichtigung.kVerfuegbarkeitsbenachrichtigung = tkampagnevorgang.kKey
                         LEFT JOIN tartikel 
                                 ON tartikel.kArtikel = tverfuegbarkeitsbenachrichtigung.kArtikel
-                        " . $cSQLWHERE . "
-                            AND kKampagne = " . (int)$kKampagne . "
-                            AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . "
-                        ORDER BY tkampagnevorgang.dErstellt DESC",
+                        " . $cSQLWHERE . '
+                            AND kKampagne = ' . (int)$kKampagne . '
+                            AND kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . '
+                        ORDER BY tkampagnevorgang.dErstellt DESC',
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
-                if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
+                if (is_array($data) && count($data) > 0) {
                     $cMember_arr = [
                         'cArtikelname'        => 'Artikel',
                         'cArtNr'              => 'Artikelnummer',
@@ -658,8 +674,9 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
 
                 break;
             case KAMPAGNE_DEF_LOGIN:    // LOGIN
-                $oDaten_arr = Shop::Container()->getDB()->query(
-                    "SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey " . $cSQLSELECT . ",
+                $data   = Shop::Container()->getDB()->query(
+                    'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
+                    $cSQLSELECT . ",
                         DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
                         IF(tkunde.cVorname IS NULL, 'n.v.', tkunde.cVorname) AS cVorname,
                         IF(tkunde.cNachname IS NULL, 'n.v.', tkunde.cNachname) AS cNachname,
@@ -670,24 +687,24 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         FROM tkampagnevorgang
                         LEFT JOIN tkunde 
                                 ON tkunde.kKunde = tkampagnevorgang.kKey
-                        " . $cSQLWHERE . "
-                            AND kKampagne = " . (int)$kKampagne . "
-                            AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . "
-                        ORDER BY tkampagnevorgang.dErstellt DESC",
+                        " . $cSQLWHERE . '
+                            AND kKampagne = ' . (int)$kKampagne . '
+                            AND kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . '
+                        ORDER BY tkampagnevorgang.dErstellt DESC',
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
-                $dCount = count($oDaten_arr);
-                if (is_array($oDaten_arr) && $dCount > 0) {
+                $dCount = count($data);
+                if (is_array($data) && $dCount > 0) {
                     for ($i = 0; $i < $dCount; $i++) {
-                        if ($oDaten_arr[$i]->cNachname !== 'n.v.') {
-                            $oDaten_arr[$i]->cNachname = trim($cryptoService->decryptXTEA($oDaten_arr[$i]->cNachname));
+                        if ($data[$i]->cNachname !== 'n.v.') {
+                            $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
                         }
-                        if ($oDaten_arr[$i]->cFirma !== 'n.v.') {
-                            $oDaten_arr[$i]->cFirma = trim($cryptoService->decryptXTEA($oDaten_arr[$i]->cFirma));
+                        if ($data[$i]->cFirma !== 'n.v.') {
+                            $data[$i]->cFirma = trim($cryptoService->decryptXTEA($data[$i]->cFirma));
                         }
 
-                        if ($oDaten_arr[$i]->nRegistriert !== 'n.v.') {
-                            $oDaten_arr[$i]->nRegistriert = ((int)$oDaten_arr[$i]->nRegistriert === 1)
+                        if ($data[$i]->nRegistriert !== 'n.v.') {
+                            $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
                                 ? 'Ja'
                                 : 'Nein';
                         }
@@ -705,8 +722,9 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 }
                 break;
             case KAMPAGNE_DEF_WUNSCHLISTE:    // WUNSCHLISTE
-                $oDaten_arr = Shop::Container()->getDB()->query(
-                    "SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey " . $cSQLSELECT . ",
+                $data   = Shop::Container()->getDB()->query(
+                    'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
+                    $cSQLSELECT . ",
                         DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
                         IF(tkunde.cVorname IS NULL, 'n.v.', tkunde.cVorname) AS cVorname,
                         IF(tkunde.cNachname IS NULL, 'n.v.', tkunde.cNachname) AS cNachname,
@@ -721,24 +739,24 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         LEFT JOIN twunschliste ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
                         LEFT JOIN tkunde ON tkunde.kKunde = twunschliste.kKunde
                         LEFT JOIN tartikel ON tartikel.kArtikel = twunschlistepos.kArtikel
-                        " . $cSQLWHERE . "
-                            AND kKampagne = " . (int)$kKampagne . "
-                            AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . "
-                        ORDER BY tkampagnevorgang.dErstellt DESC",
+                        " . $cSQLWHERE . '
+                            AND kKampagne = ' . (int)$kKampagne . '
+                            AND kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . '
+                        ORDER BY tkampagnevorgang.dErstellt DESC',
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
-                $dCount = count($oDaten_arr);
-                if (is_array($oDaten_arr) && $dCount > 0) {
+                $dCount = count($data);
+                if (is_array($data) && $dCount > 0) {
                     for ($i = 0; $i < $dCount; $i++) {
-                        if ($oDaten_arr[$i]->cNachname !== 'n.v.') {
-                            $oDaten_arr[$i]->cNachname = trim($cryptoService->decryptXTEA($oDaten_arr[$i]->cNachname));
+                        if ($data[$i]->cNachname !== 'n.v.') {
+                            $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
                         }
-                        if ($oDaten_arr[$i]->cFirma !== 'n.v.') {
-                            $oDaten_arr[$i]->cFirma = trim($cryptoService->decryptXTEA($oDaten_arr[$i]->cFirma));
+                        if ($data[$i]->cFirma !== 'n.v.') {
+                            $data[$i]->cFirma = trim($cryptoService->decryptXTEA($data[$i]->cFirma));
                         }
 
-                        if ($oDaten_arr[$i]->nRegistriert !== 'n.v.') {
-                            $oDaten_arr[$i]->nRegistriert = ((int)$oDaten_arr[$i]->nRegistriert === 1)
+                        if ($data[$i]->nRegistriert !== 'n.v.') {
+                            $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
                                 ? 'Ja'
                                 : 'Nein';
                         }
@@ -760,35 +778,36 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
             case KAMPAGNE_DEF_WARENKORB:    // WARENKORB
                 $kKundengruppe = Kundengruppe::getDefaultGroupID();
 
-                $oDaten_arr = Shop::Container()->getDB()->query(
-                    "SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey " . $cSQLSELECT . ",
+                $data = Shop::Container()->getDB()->query(
+                    'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
+                    $cSQLSELECT . ",
                         DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
                         IF(tartikel.kArtikel IS NULL, 'n.v.', tartikel.kArtikel) AS kArtikel,
                         if(tartikel.cName IS NULL, 'n.v.', tartikel.cName) AS cName,
                         IF(tartikel.fLagerbestand IS NULL, 'n.v.', tartikel.fLagerbestand) AS fLagerbestand,
                         IF(tartikel.cArtNr IS NULL, 'n.v.', tartikel.cArtNr) AS cArtNr,
                         IF(tartikel.fMwSt IS NULL, 'n.v.', tartikel.fMwSt) AS fMwSt,
-                        IF(tpreise.fVKNetto IS NULL, 'n.v.', tpreise.fVKNetto) AS fVKNetto, DATE_FORMAT(tartikel.dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_DE
+                        IF(tpreise.fVKNetto IS NULL, 'n.v.', tpreise.fVKNetto) AS fVKNetto,
+                        DATE_FORMAT(tartikel.dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_DE
                         FROM tkampagnevorgang
                         LEFT JOIN tartikel ON tartikel.kArtikel = tkampagnevorgang.kKey
                         LEFT JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
-                            AND kKundengruppe = " . $kKundengruppe . "
-                        " . $cSQLWHERE . "
-                            AND tkampagnevorgang.kKampagne = " . (int)$kKampagne . "
-                            AND tkampagnevorgang.kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . "
-                        ORDER BY tkampagnevorgang.dErstellt DESC",
+                            AND kKundengruppe = " . $kKundengruppe . '
+                        ' . $cSQLWHERE . '
+                            AND tkampagnevorgang.kKampagne = ' . (int)$kKampagne . '
+                            AND tkampagnevorgang.kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . '
+                        ORDER BY tkampagnevorgang.dErstellt DESC',
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
-
-                if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
-                    Session\Session::CustomerGroup()->setMayViewPrices(1);
-                    $count = count($oDaten_arr);
+                if (is_array($data) && count($data) > 0) {
+                    Session\Session::getCustomerGroup()->setMayViewPrices(1);
+                    $count = count($data);
                     for ($i = 0; $i < $count; $i++) {
-                        if (isset($oDaten_arr[$i]->fVKNetto) && $oDaten_arr[$i]->fVKNetto > 0) {
-                            $oDaten_arr[$i]->fVKNetto = Preise::getLocalizedPriceString($oDaten_arr[$i]->fVKNetto);
+                        if (isset($data[$i]->fVKNetto) && $data[$i]->fVKNetto > 0) {
+                            $data[$i]->fVKNetto = Preise::getLocalizedPriceString($data[$i]->fVKNetto);
                         }
-                        if (isset($oDaten_arr[$i]->fMwSt) && $oDaten_arr[$i]->fMwSt > 0) {
-                            $oDaten_arr[$i]->fMwSt = number_format($oDaten_arr[$i]->fMwSt, 2) . "%";
+                        if (isset($data[$i]->fMwSt) && $data[$i]->fMwSt > 0) {
+                            $data[$i]->fMwSt = number_format($data[$i]->fMwSt, 2) . '%';
                         }
                     }
 
@@ -804,26 +823,29 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 }
                 break;
             case KAMPAGNE_DEF_NEWSLETTER:    // NEWSLETTER
-                $oDaten_arr = Shop::Container()->getDB()->query(
-                    "SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey " . $cSQLSELECT . ",
+                $data = Shop::Container()->getDB()->query(
+                    'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
+                    $cSQLSELECT . ",
                         DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
                         IF(tnewsletter.cName IS NULL, 'n.v.', tnewsletter.cName) AS cName,
-                        IF(tnewsletter.cBetreff IS NULL, 'n.v.', tnewsletter.cBetreff) AS cBetreff, DATE_FORMAT(tnewslettertrack.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltTrack_DE,
+                        IF(tnewsletter.cBetreff IS NULL, 'n.v.', tnewsletter.cBetreff) AS cBetreff,
+                        DATE_FORMAT(tnewslettertrack.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltTrack_DE,
                         IF(tnewsletterempfaenger.cVorname IS NULL, 'n.v.', tnewsletterempfaenger.cVorname) AS cVorname,
                         IF(tnewsletterempfaenger.cNachname IS NULL, 'n.v.', tnewsletterempfaenger.cNachname) AS cNachname,
                         IF(tnewsletterempfaenger.cEmail IS NULL, 'n.v.', tnewsletterempfaenger.cEmail) AS cEmail
                         FROM tkampagnevorgang
                         LEFT JOIN tnewslettertrack ON tnewslettertrack.kNewsletterTrack = tkampagnevorgang.kKey
                         LEFT JOIN tnewsletter ON tnewsletter.kNewsletter = tnewslettertrack.kNewsletter
-                        LEFT JOIN tnewsletterempfaenger ON tnewsletterempfaenger.kNewsletterEmpfaenger = tnewslettertrack.kNewsletterEmpfaenger
-                        " . $cSQLWHERE . "
-                            AND tkampagnevorgang.kKampagne = " . (int)$kKampagne . "
-                            AND tkampagnevorgang.kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . "
-                        ORDER BY tkampagnevorgang.dErstellt DESC",
+                        LEFT JOIN tnewsletterempfaenger
+                            ON tnewsletterempfaenger.kNewsletterEmpfaenger = tnewslettertrack.kNewsletterEmpfaenger
+                        " . $cSQLWHERE . '
+                            AND tkampagnevorgang.kKampagne = ' . (int)$kKampagne . '
+                            AND tkampagnevorgang.kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . '
+                        ORDER BY tkampagnevorgang.dErstellt DESC',
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
-                if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
+                if (is_array($data) && count($data) > 0) {
                     $cMember_arr = [
                         'cName'               => 'Newsletter',
                         'cBetreff'            => 'Betreff',
@@ -838,7 +860,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
         }
     }
 
-    return $oDaten_arr;
+    return $data;
 }
 
 /**
@@ -879,21 +901,73 @@ function gibDetailDatumZeitraum()
     $cZeitraum_arr['cDatumFull'] = [];
     switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
         case 1:    // Jahr
-            $nFromStamp          = mktime(0, 0, 0, $_SESSION['Kampagne']->cFromDate_arr['nMonat'], 1, $_SESSION['Kampagne']->cFromDate_arr['nJahr']);
-            $nAnzahlTageProMonat = date('t', mktime(0, 0, 0, $_SESSION['Kampagne']->cToDate_arr['nMonat'], 1, $_SESSION['Kampagne']->cToDate_arr['nJahr']));
-            $nToStamp            = mktime(0, 0, 0, $_SESSION['Kampagne']->cToDate_arr['nMonat'], (int)$nAnzahlTageProMonat, $_SESSION['Kampagne']->cToDate_arr['nJahr']);
+            $nFromStamp          = mktime(
+                0,
+                0,
+                0,
+                $_SESSION['Kampagne']->cFromDate_arr['nMonat'],
+                1,
+                $_SESSION['Kampagne']->cFromDate_arr['nJahr']
+            );
+            $nAnzahlTageProMonat = date('t', mktime(
+                0,
+                0,
+                0,
+                $_SESSION['Kampagne']->cToDate_arr['nMonat'],
+                1,
+                $_SESSION['Kampagne']->cToDate_arr['nJahr']
+            ));
+            $nToStamp            = mktime(
+                0,
+                0,
+                0,
+                $_SESSION['Kampagne']->cToDate_arr['nMonat'],
+                (int)$nAnzahlTageProMonat,
+                $_SESSION['Kampagne']->cToDate_arr['nJahr']
+            );
             $nTMPStamp           = $nFromStamp;
             while ($nTMPStamp <= $nToStamp) {
                 $cZeitraum_arr['cDatum'][]     = date('Y', $nTMPStamp);
                 $cZeitraum_arr['cDatumFull'][] = date('Y', $nTMPStamp);
-                $nDiff                         = mktime(0, 0, 0, (int)date('m', $nTMPStamp), (int)date('d', $nTMPStamp), (int)date('Y', $nTMPStamp) + 1) - $nTMPStamp;
-                $nTMPStamp += $nDiff;
+                $nDiff                         = mktime(
+                    0,
+                    0,
+                    0,
+                    (int)date('m', $nTMPStamp),
+                    (int)date('d', $nTMPStamp),
+                    (int)date('Y', $nTMPStamp) + 1
+                ) - $nTMPStamp;
+                $nTMPStamp                    += $nDiff;
             }
             break;
         case 2:    // Monat
-            $nFromStamp          = mktime(0, 0, 0, $_SESSION['Kampagne']->cFromDate_arr['nMonat'], 1, $_SESSION['Kampagne']->cFromDate_arr['nJahr']);
-            $nAnzahlTageProMonat = date('t', mktime(0, 0, 0, $_SESSION['Kampagne']->cToDate_arr['nMonat'], 1, $_SESSION['Kampagne']->cToDate_arr['nJahr']));
-            $nToStamp            = mktime(0, 0, 0, $_SESSION['Kampagne']->cToDate_arr['nMonat'], (int)$nAnzahlTageProMonat, $_SESSION['Kampagne']->cToDate_arr['nJahr']);
+            $nFromStamp          = mktime(
+                0,
+                0,
+                0,
+                $_SESSION['Kampagne']->cFromDate_arr['nMonat'],
+                1,
+                $_SESSION['Kampagne']->cFromDate_arr['nJahr']
+            );
+            $nAnzahlTageProMonat = date(
+                't',
+                mktime(
+                    0,
+                    0,
+                    0,
+                    $_SESSION['Kampagne']->cToDate_arr['nMonat'],
+                    1,
+                    $_SESSION['Kampagne']->cToDate_arr['nJahr']
+                )
+            );
+            $nToStamp            = mktime(
+                0,
+                0,
+                0,
+                $_SESSION['Kampagne']->cToDate_arr['nMonat'],
+                (int)$nAnzahlTageProMonat,
+                $_SESSION['Kampagne']->cToDate_arr['nJahr']
+            );
             $nTMPStamp           = $nFromStamp;
             while ($nTMPStamp <= $nToStamp) {
                 $cZeitraum_arr['cDatum'][]     = date('Y-m', $nTMPStamp);
@@ -911,14 +985,24 @@ function gibDetailDatumZeitraum()
             }
             break;
         case 3:    // Woche
-            $nDatumWoche_arr = ermittleDatumWoche($_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' . $_SESSION['Kampagne']->cFromDate_arr['nMonat'] . '-' . $_SESSION['Kampagne']->cFromDate_arr['nTag']);
+            $nDatumWoche_arr = ermittleDatumWoche($_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' .
+                $_SESSION['Kampagne']->cFromDate_arr['nMonat'] . '-' .
+                $_SESSION['Kampagne']->cFromDate_arr['nTag']);
             $nFromStamp      = $nDatumWoche_arr[0];
-            $nToStamp        = mktime(0, 0, 0, $_SESSION['Kampagne']->cToDate_arr['nMonat'], $_SESSION['Kampagne']->cToDate_arr['nTag'], $_SESSION['Kampagne']->cToDate_arr['nJahr']);
+            $nToStamp        = mktime(
+                0,
+                0,
+                0,
+                $_SESSION['Kampagne']->cToDate_arr['nMonat'],
+                $_SESSION['Kampagne']->cToDate_arr['nTag'],
+                $_SESSION['Kampagne']->cToDate_arr['nJahr']
+            );
             $nTMPStamp       = $nFromStamp;
             while ($nTMPStamp <= $nToStamp) {
                 $nDatumWoche_arr               = ermittleDatumWoche(date('Y-m-d', $nTMPStamp));
                 $cZeitraum_arr['cDatum'][]     = date('Y-W', $nTMPStamp);
-                $cZeitraum_arr['cDatumFull'][] = date('d.m.Y', $nDatumWoche_arr[0]) . ' - ' . date('d.m.Y', $nDatumWoche_arr[1]);
+                $cZeitraum_arr['cDatumFull'][] = date('d.m.Y', $nDatumWoche_arr[0]) .
+                    ' - ' . date('d.m.Y', $nDatumWoche_arr[1]);
                 $nAnzahlTageProMonat           = date('t', $nTMPStamp);
 
                 $nTag   = (int)date('d', $nDatumWoche_arr[1]) + 1;
@@ -941,8 +1025,22 @@ function gibDetailDatumZeitraum()
             }
             break;
         case 4:    // Tag
-            $nFromStamp = mktime(0, 0, 0, $_SESSION['Kampagne']->cFromDate_arr['nMonat'], $_SESSION['Kampagne']->cFromDate_arr['nTag'], $_SESSION['Kampagne']->cFromDate_arr['nJahr']);
-            $nToStamp   = mktime(0, 0, 0, $_SESSION['Kampagne']->cToDate_arr['nMonat'], $_SESSION['Kampagne']->cToDate_arr['nTag'], $_SESSION['Kampagne']->cToDate_arr['nJahr']);
+            $nFromStamp = mktime(
+                0,
+                0,
+                0,
+                $_SESSION['Kampagne']->cFromDate_arr['nMonat'],
+                $_SESSION['Kampagne']->cFromDate_arr['nTag'],
+                $_SESSION['Kampagne']->cFromDate_arr['nJahr']
+            );
+            $nToStamp   = mktime(
+                0,
+                0,
+                0,
+                $_SESSION['Kampagne']->cToDate_arr['nMonat'],
+                $_SESSION['Kampagne']->cToDate_arr['nTag'],
+                $_SESSION['Kampagne']->cToDate_arr['nJahr']
+            );
             $nTMPStamp  = $nFromStamp;
             while ($nTMPStamp <= $nToStamp) {
                 $cZeitraum_arr['cDatum'][]     = date('Y-m-d', $nTMPStamp);
@@ -986,7 +1084,9 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
         switch ((int)$nAnsicht) {
             case 1:    // Monat
                 $oDate = Shop::Container()->getDB()->query(
-                    "SELECT " . $cFkt . "('" . $cStampOld . "', INTERVAL 1 MONTH) AS cStampNew, if(" . $cFkt . "('" . $cStampOld . "', INTERVAL 1 MONTH) > now(), 1, 0) AS nGroesser",
+                    'SELECT ' . $cFkt . "('" . $cStampOld . "', INTERVAL 1 MONTH) 
+                        AS cStampNew, IF(" . $cFkt . "('" . $cStampOld . "', INTERVAL 1 MONTH) > NOW(), 1, 0) 
+                        AS nGroesser",
                     \DB\ReturnType::SINGLE_OBJECT
                 );
 
@@ -994,13 +1094,15 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
                     return date('Y-m-d');
                 }
 
-                $cDatum_arr = DateHelper::getDateParts($oDate->cStampNew);
+                $cDatum_arr = Date::getDateParts($oDate->cStampNew);
 
                 return $cDatum_arr['cJahr'] . '-' . $cDatum_arr['cMonat'] . '-' . $cDatum_arr['cTag'];
                 break;
             case 2:    // Woche
                 $oDate = Shop::Container()->getDB()->query(
-                    "SELECT " . $cFkt . "('" . $cStampOld . "', INTERVAL 1 WEEK) AS cStampNew, if(" . $cFkt . "('" . $cStampOld . "', INTERVAL 1 WEEK) > now(), 1, 0) AS nGroesser",
+                    'SELECT ' . $cFkt . "('" . $cStampOld . "', INTERVAL 1 WEEK) 
+                        AS cStampNew, IF(" . $cFkt . "('" . $cStampOld . "', INTERVAL 1 WEEK) > NOW(), 1, 0) 
+                        AS nGroesser",
                     \DB\ReturnType::SINGLE_OBJECT
                 );
 
@@ -1008,13 +1110,15 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
                     return date('Y-m-d');
                 }
 
-                $cDatum_arr = DateHelper::getDateParts($oDate->cStampNew);
+                $cDatum_arr = Date::getDateParts($oDate->cStampNew);
 
                 return $cDatum_arr['cJahr'] . '-' . $cDatum_arr['cMonat'] . '-' . $cDatum_arr['cTag'];
                 break;
             case 3:    // Tag
                 $oDate = Shop::Container()->getDB()->query(
-                    "SELECT " . $cFkt . "('" . $cStampOld . "', INTERVAL 1 DAY) AS cStampNew, if(" . $cFkt . "('" . $cStampOld . "', INTERVAL 1 DAY) > now(), 1, 0) AS nGroesser",
+                    'SELECT ' . $cFkt . "('" . $cStampOld . "', INTERVAL 1 DAY) 
+                        AS cStampNew, IF(" . $cFkt . "('" . $cStampOld . "', INTERVAL 1 DAY) > NOW(), 1, 0) 
+                        AS nGroesser",
                     \DB\ReturnType::SINGLE_OBJECT
                 );
 
@@ -1022,7 +1126,7 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
                     return date('Y-m-d');
                 }
 
-                $cDatum_arr = DateHelper::getDateParts($oDate->cStampNew);
+                $cDatum_arr = Date::getDateParts($oDate->cStampNew);
 
                 return $cDatum_arr['cJahr'] . '-' . $cDatum_arr['cMonat'] . '-' . $cDatum_arr['cTag'];
                 break;
@@ -1077,11 +1181,15 @@ function speicherKampagne($oKampagne)
     $oKampagneTMP = Shop::Container()->getDB()->queryPrepared(
         'SELECT kKampagne
             FROM tkampagne
-            WHERE cName = :cName', ['cName' => $oKampagne->cName],
+            WHERE cName = :cName',
+        ['cName' => $oKampagne->cName],
         \DB\ReturnType::SINGLE_OBJECT
     );
 
-    if (isset($oKampagneTMP->kKampagne) && $oKampagneTMP->kKampagne > 0 && (!isset($oKampagne->kKampagne) || $oKampagne->kKampagne == 0)) {
+    if (isset($oKampagneTMP->kKampagne)
+        && $oKampagneTMP->kKampagne > 0
+        && (!isset($oKampagne->kKampagne) || $oKampagne->kKampagne == 0)
+    ) {
         return 6;// Kampagnennamen schon vergeben
     }
     // Parameter schon vorhanden?
@@ -1089,11 +1197,15 @@ function speicherKampagne($oKampagne)
         $oKampagneTMP = Shop::Container()->getDB()->queryPrepared(
             'SELECT kKampagne
                 FROM tkampagne
-                WHERE cParameter = :param', ['param' => $oKampagne->cParameter],
+                WHERE cParameter = :param',
+            ['param' => $oKampagne->cParameter],
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        if (isset($oKampagneTMP->kKampagne) && $oKampagneTMP->kKampagne > 0 && (!isset($oKampagne->kKampagne) || $oKampagne->kKampagne == 0)) {
+        if (isset($oKampagneTMP->kKampagne)
+            && $oKampagneTMP->kKampagne > 0
+            && (!isset($oKampagne->kKampagne) || $oKampagne->kKampagne == 0)
+        ) {
             return 7;// Kampagnenparameter schon vergeben
         }
     }
@@ -1103,8 +1215,7 @@ function speicherKampagne($oKampagne)
     } else {
         $oKampagne->insertInDB();
     }
-    // Speichern
-    Shop::Cache()->flush('campaigns');
+    Shop::Container()->getCache()->flush('campaigns');
 
     return 1;
 }
@@ -1158,7 +1269,7 @@ function loescheGewaehlteKampagnen($kKampagne_arr)
                 }
             }
         }
-        Shop::Cache()->flush('campaigns');
+        Shop::Container()->getCache()->flush('campaigns');
 
         return 1;
     }
@@ -1197,7 +1308,7 @@ function setzeDetailZeitraum($cDatumNow_arr)
             (int)$cDatumNow_arr['cMonat'] . '-' . (int)$cDatumNow_arr['cTag'];
     }
     // Ansicht und Zeitraum
-    if (RequestHelper::verifyGPCDataInt('zeitraum') === 1) {
+    if (Request::verifyGPCDataInt('zeitraum') === 1) {
         // Ansicht
         if (isset($_POST['nAnsicht']) && (int)$_POST['nAnsicht'] > 0) {
             $_SESSION['Kampagne']->nDetailAnsicht = $_POST['nAnsicht'];
@@ -1237,42 +1348,45 @@ function setzeDetailZeitraum($cDatumNow_arr)
 function checkGesamtStatZeitParam()
 {
     $cStamp = '';
+    if (strlen(Request::verifyGPDataString('cZeitParam')) > 0) {
+        $span      = base64_decode(Request::verifyGPDataString('cZeitParam'));
+        $spanParts = explode(' - ', $span);
+        $dateStart = $spanParts[0] ?? '';
+        $dateEnd   = $spanParts[1] ?? '';
+        if (strlen($dateEnd) === 0) {
+            [$startDay, $startMonth, $startYear] = explode('.', $dateStart);
 
-    // Klick durch Gesamtübersicht
-    if (strlen(RequestHelper::verifyGPDataString('cZeitParam')) > 0) {
-        $cZeitraum          = base64_decode(RequestHelper::verifyGPDataString('cZeitParam'));
-        $cZeitraumParts_arr = explode(' - ', $cZeitraum);
-        $cStartDatum        = $cZeitraumParts_arr[0] ?? '';
-        $cEndDatum          = $cZeitraumParts_arr[1] ?? '';
+            $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = (int)$startYear;
+            $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = (int)$startMonth;
+            $_SESSION['Kampagne']->cFromDate_arr['nTag']   = (int)$startDay;
+            $_SESSION['Kampagne']->cFromDate               = (int)$startYear . '-' .
+                (int)$startMonth . '-' .
+                (int)$startDay;
 
-        // Ansicht war Tag
-        if (strlen($cEndDatum) === 0) {
-            list($cTagStart, $cMonatStart, $cJahrStart) = explode('.', $cStartDatum);
-
-            $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = (int)$cJahrStart;
-            $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = (int)$cMonatStart;
-            $_SESSION['Kampagne']->cFromDate_arr['nTag']   = (int)$cTagStart;
-            $_SESSION['Kampagne']->cFromDate               = (int)$cJahrStart . '-' . (int)$cMonatStart . '-' . (int)$cTagStart;
-
-            $_SESSION['Kampagne']->cToDate_arr['nJahr']  = (int)$cJahrStart;
-            $_SESSION['Kampagne']->cToDate_arr['nMonat'] = (int)$cMonatStart;
-            $_SESSION['Kampagne']->cToDate_arr['nTag']   = (int)$cTagStart;
-            $_SESSION['Kampagne']->cToDate               = (int)$cJahrStart . '-' . (int)$cMonatStart . '-' . (int)$cTagStart;
+            $_SESSION['Kampagne']->cToDate_arr['nJahr']  = (int)$startYear;
+            $_SESSION['Kampagne']->cToDate_arr['nMonat'] = (int)$startMonth;
+            $_SESSION['Kampagne']->cToDate_arr['nTag']   = (int)$startDay;
+            $_SESSION['Kampagne']->cToDate               = (int)$startYear . '-' .
+                (int)$startMonth . '-' .
+                (int)$startDay;
         } else {
-            list($cTagStart, $cMonatStart, $cJahrStart) = explode('.', $cStartDatum);
-            list($cTagEnde, $cMonatEnde, $cJahrEnde)    = explode('.', $cEndDatum);
+            [$startDay, $startMonth, $startYear] = explode('.', $dateStart);
+            [$cTagEnde, $cMonatEnde, $cJahrEnde] = explode('.', $dateEnd);
 
-            $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = (int)$cJahrStart;
-            $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = (int)$cMonatStart;
-            $_SESSION['Kampagne']->cFromDate_arr['nTag']   = (int)$cTagStart;
-            $_SESSION['Kampagne']->cFromDate               = (int)$cJahrStart . '-' . (int)$cMonatStart . '-' . (int)$cTagStart;
+            $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = (int)$startYear;
+            $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = (int)$startMonth;
+            $_SESSION['Kampagne']->cFromDate_arr['nTag']   = (int)$startDay;
+            $_SESSION['Kampagne']->cFromDate               = (int)$startYear . '-' .
+                (int)$startMonth . '-' .
+                (int)$startDay;
 
             $_SESSION['Kampagne']->cToDate_arr['nJahr']  = (int)$cJahrEnde;
             $_SESSION['Kampagne']->cToDate_arr['nMonat'] = (int)$cMonatEnde;
             $_SESSION['Kampagne']->cToDate_arr['nTag']   = (int)$cTagEnde;
-            $_SESSION['Kampagne']->cToDate               = (int)$cJahrEnde . '-' . (int)$cMonatEnde . '-' . (int)$cTagEnde;
+            $_SESSION['Kampagne']->cToDate               = (int)$cJahrEnde . '-' .
+                (int)$cMonatEnde . '-' .
+                (int)$cTagEnde;
         }
-
         // Int String Work Around
         $cMonat = $_SESSION['Kampagne']->cFromDate_arr['nMonat'];
         if ($cMonat < 10) {
@@ -1291,8 +1405,16 @@ function checkGesamtStatZeitParam()
                 break;
             case 2: // Woche
                 $_SESSION['Kampagne']->nDetailAnsicht = 3;
-                $cStamp                               = date('W', mktime(0, 0, 0, $_SESSION['Kampagne']->cFromDate_arr['nMonat'],
-                    $_SESSION['Kampagne']->cFromDate_arr['nTag'], $_SESSION['Kampagne']->cFromDate_arr['nJahr'])
+                $cStamp                               = date(
+                    'W',
+                    mktime(
+                        0,
+                        0,
+                        0,
+                        $_SESSION['Kampagne']->cFromDate_arr['nMonat'],
+                        $_SESSION['Kampagne']->cFromDate_arr['nTag'],
+                        $_SESSION['Kampagne']->cFromDate_arr['nJahr']
+                    )
                 );
                 break;
             case 3: // Tag
@@ -1413,9 +1535,9 @@ function PrepareLineChartKamp($Stats, $Type)
 
                     if ($Key == $Type) {
                         $obj    = new stdClass();
-                        $obj->y = (float) $Stat;
+                        $obj->y = (float)$Stat;
 
-                        $chart->addAxis((string) $x);
+                        $chart->addAxis((string)$x);
                         $data[] = $obj;
                     }
                 }

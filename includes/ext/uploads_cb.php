@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+
 require_once __DIR__ . '/../globalinclude.php';
 
 /**
@@ -15,7 +18,7 @@ function retCode($bOk)
     die(json_encode(['status' => $bOk ? 'ok' : 'error']));
 }
 $session = \Session\Session::getInstance();
-if (!FormHelper::validateToken()) {
+if (!Form::validateToken()) {
     retCode(0);
 }
 // upload file
@@ -38,7 +41,7 @@ if (!empty($_FILES)) {
     }
     if (isset($fileData['error'], $fileData['name'])
         && (int)$fileData['error'] === UPLOAD_ERR_OK
-        && strpos($realPath . '/', PFAD_UPLOADS) === 0
+        && strpos($realPath . DS, PFAD_UPLOADS) === 0
         && move_uploaded_file($cTempFile, $cTargetFile)
     ) {
         $oFile         = new stdClass();
@@ -70,7 +73,7 @@ if (!empty($_REQUEST['action'])) {
             $realPath   = realpath($targetInfo['dirname']);
             if (!isset($targetInfo['extension'])
                 && isset($_SESSION['Uploader'][$cUnique])
-                && strpos($realPath . '/', PFAD_UPLOADS) === 0
+                && strpos($realPath . DS, PFAD_UPLOADS) === 0
             ) {
                 unset($_SESSION['Uploader'][$cUnique]);
                 if (file_exists($cFilePath)) {

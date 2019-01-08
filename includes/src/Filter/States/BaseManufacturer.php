@@ -6,7 +6,6 @@
 
 namespace Filter\States;
 
-
 use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterInterface;
@@ -22,7 +21,7 @@ use Filter\Type;
  */
 class BaseManufacturer extends AbstractFilter
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -64,26 +63,26 @@ class BaseManufacturer extends AbstractFilter
             if (!\is_array($val)) {
                 $val = [$val];
             }
-            $oSeo_arr = $this->productFilter->getDB()->query(
+            $seoData = $this->productFilter->getDB()->query(
                 "SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
                     FROM tseo
                     JOIN thersteller
                         ON thersteller.kHersteller = tseo.kKey
                     WHERE cKey = 'kHersteller' 
-                        AND kKey IN (" . \implode(', ', $val) . ")",
+                        AND kKey IN (" . \implode(', ', $val) . ')',
                 ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
-                foreach ($oSeo_arr as $oSeo) {
+                foreach ($seoData as $oSeo) {
                     if ($language->kSprache === (int)$oSeo->kSprache) {
-                        $sep                             = $this->cSeo[$language->kSprache] === '' ? '' : \SEP_HST;
+                        $sep                              = $this->cSeo[$language->kSprache] === '' ? '' : \SEP_HST;
                         $this->cSeo[$language->kSprache] .= $sep . $oSeo->cSeo;
                     }
                 }
             }
-            if (isset($oSeo_arr[0]->cName)) {
-                $this->setName($oSeo_arr[0]->cName);
+            if (isset($seoData[0]->cName)) {
+                $this->setName($seoData[0]->cName);
             } else {
                 // invalid manufacturer ID
                 \Shop::$kHersteller = 0;
@@ -148,7 +147,8 @@ class BaseManufacturer extends AbstractFilter
         if ($this->getConfig('navigationsfilter')['allgemein_herstellerfilter_benutzen'] === 'N') {
             return $options;
         }
-        $state = $this->productFilter->getCurrentStateData($this->getType() === Type::OR
+        $state = $this->productFilter->getCurrentStateData(
+            $this->getType() === Type::OR
             ? $this->getClassName()
             : null
         );
@@ -169,21 +169,21 @@ class BaseManufacturer extends AbstractFilter
             ->setOn('tartikel.kHersteller = thersteller.kHersteller')
             ->setOrigin(__CLASS__));
         $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-        $cacheID   = 'fltr_' . __CLASS__ . \md5($baseQuery);
+        $cacheID   = 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($baseQuery);
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 
             return $this->options;
         }
         $manufacturers    = $this->productFilter->getDB()->query(
-            "SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
-                FROM (" . $baseQuery . ") AS ssMerkmal
+            'SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
+                FROM (' . $baseQuery . ") AS ssMerkmal
                     LEFT JOIN tseo 
                         ON tseo.kKey = ssMerkmal.kHersteller
                         AND tseo.cKey = 'kHersteller'
-                        AND tseo.kSprache = " . $this->getLanguageID() . "
+                        AND tseo.kSprache = " . $this->getLanguageID() . '
                     GROUP BY ssMerkmal.kHersteller
-                    ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName",
+                    ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $additionalFilter = new Manufacturer($this->productFilter);
@@ -198,9 +198,11 @@ class BaseManufacturer extends AbstractFilter
 
             $options[] = (new Option())
                 ->setURL($manufacturer->cURL)
-                ->setIsActive($this->productFilter->filterOptionIsActive(
-                    $this->getClassName(),
-                    $manufacturer->kHersteller)
+                ->setIsActive(
+                    $this->productFilter->filterOptionIsActive(
+                        $this->getClassName(),
+                        $manufacturer->kHersteller
+                    )
                 )
                 ->setType($this->getType())
                 ->setFrontendName($manufacturer->cName)
@@ -212,7 +214,7 @@ class BaseManufacturer extends AbstractFilter
                 ->setSort($manufacturer->nSortNr);
         }
         $this->options = $options;
-        $this->productFilter->getCache()->set($cacheID, $options, [CACHING_GROUP_FILTER]);
+        $this->productFilter->getCache()->set($cacheID, $options, [\CACHING_GROUP_FILTER]);
 
         return $options;
     }

@@ -4,13 +4,20 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Request;
+use Helpers\Tax;
+use Helpers\URL;
+
 /**
  * @param string $nDatei
  * @param mixed  $data
+ * @deprecated since 5.0.0
  */
 function baueSitemap($nDatei, $data)
 {
-    Shop::Container()->getLogService()->debug('Baue "' . PFAD_EXPORT . 'sitemap_' .
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    Shop::Container()->getLogService()->debug(
+        'Baue "' . PFAD_EXPORT . 'sitemap_' .
         $nDatei . '.xml", Datenlaenge ' . strlen($data)
     );
     $conf = Shop::getSettings([CONF_SITEMAP]);
@@ -35,22 +42,14 @@ function baueSitemap($nDatei, $data)
 }
 
 /**
- * @deprecated since 4.06
- * @param bool $ssl
- * @return string
- */
-function getSitemapBaseURL($ssl = false)
-{
-    return Shop::getURL($ssl);
-}
-
-/**
  * @param string $nDatei
  * @param bool   $bGZ
  * @return string
+ * @deprecated since 5.0.0
  */
 function baueSitemapIndex($nDatei, $bGZ)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $shopURL = Shop::getURL();
     $conf    = Shop::getSettings([CONF_SITEMAP]);
     $cIndex  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
@@ -60,14 +59,16 @@ function baueSitemapIndex($nDatei, $bGZ)
             $cIndex .= '<sitemap><loc>' .
                 StringHandler::htmlentities($shopURL . '/' . PFAD_EXPORT . 'sitemap_' . $i . '.xml.gz') .
                 '</loc>' .
-                ((!isset($conf['sitemap']['sitemap_insert_lastmod']) || $conf['sitemap']['sitemap_insert_lastmod'] === 'Y')
+                ((!isset($conf['sitemap']['sitemap_insert_lastmod'])
+                    || $conf['sitemap']['sitemap_insert_lastmod'] === 'Y')
                     ? ('<lastmod>' . StringHandler::htmlentities(date('Y-m-d')) . '</lastmod>') :
                     '') .
                 '</sitemap>' . "\n";
         } else {
             $cIndex .= '<sitemap><loc>' . StringHandler::htmlentities($shopURL . '/' .
                     PFAD_EXPORT . 'sitemap_' . $i . '.xml') . '</loc>' .
-                ((!isset($conf['sitemap']['sitemap_insert_lastmod']) || $conf['sitemap']['sitemap_insert_lastmod'] === 'Y')
+                ((!isset($conf['sitemap']['sitemap_insert_lastmod'])
+                    || $conf['sitemap']['sitemap_insert_lastmod'] === 'Y')
                     ? ('<lastmod>' . StringHandler::htmlentities(date('Y-m-d')) . '</lastmod>')
                     : '') .
                 '</sitemap>' . "\n";
@@ -85,6 +86,7 @@ function baueSitemapIndex($nDatei, $bGZ)
  * @param null|string $strPriority
  * @param string      $cGoogleImageURL
  * @param bool        $ssl
+ * @deprecated since 5.0.0
  *
  * @return string
  */
@@ -96,6 +98,7 @@ function makeURL(
     $cGoogleImageURL = '',
     $ssl = false
 ) {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $strRet = "  <url>\n" .
         '     <loc>' . StringHandler::htmlentities(Shop::getURL($ssl)) . '/' .
         StringHandler::htmlentities($strLoc) . "</loc>\n";
@@ -123,9 +126,11 @@ function makeURL(
  * @param string $cISO
  * @param array  $Sprachen
  * @return bool
+ * @deprecated since 5.0.0
  */
 function spracheEnthalten($cISO, $Sprachen)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if ($_SESSION['cISOSprache'] === $cISO) {
         return true;
     }
@@ -143,9 +148,11 @@ function spracheEnthalten($cISO, $Sprachen)
 /**
  * @param string $cUrl
  * @return bool
+ * @deprecated since 5.0.0
  */
 function isSitemapBlocked($cUrl)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $cExclude_arr = [
         'navi.php',
         'suche.php',
@@ -165,10 +172,11 @@ function isSitemapBlocked($cUrl)
 }
 
 /**
- *
+ * @deprecated since 5.0.0
  */
 function generateSitemapXML()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     Shop::Container()->getLogService()->debug('Sitemap wird erstellt');
     $nStartzeit = microtime(true);
     $conf       = Shop::getSettings([
@@ -191,37 +199,8 @@ function generateSitemapXML()
     if (!isset($conf['sitemap']['sitemap_google_ping'])) {
         $conf['sitemap']['sitemap_google_ping'] = 'N';
     }
-    if ($conf['sitemap']['sitemap_insert_changefreq'] === 'Y') {
-        define('FREQ_ALWAYS', 'always');
-        define('FREQ_HOURLY', 'hourly');
-        define('FREQ_DAILY', 'daily');
-        define('FREQ_WEEKLY', 'weekly');
-        define('FREQ_MONTHLY', 'monthly');
-        define('FREQ_YEARLY', 'yearly');
-        define('FREQ_NEVER', 'never');
-    } else {
-        define('FREQ_ALWAYS', null);
-        define('FREQ_HOURLY', null);
-        define('FREQ_DAILY', null);
-        define('FREQ_WEEKLY', null);
-        define('FREQ_MONTHLY', null);
-        define('FREQ_YEARLY', null);
-        define('FREQ_NEVER', null);
-    }
-    // priorities
-    if ($conf['sitemap']['sitemap_insert_priority'] === 'Y') {
-        define('PRIO_VERYHIGH', '1.0');
-        define('PRIO_HIGH', '0.7');
-        define('PRIO_NORMAL', '0.5');
-        define('PRIO_LOW', '0.3');
-        define('PRIO_VERYLOW', '0.0');
-    } else {
-        define('PRIO_VERYHIGH', null);
-        define('PRIO_HIGH', null);
-        define('PRIO_NORMAL', null);
-        define('PRIO_LOW', null);
-        define('PRIO_VERYLOW', null);
-    }
+    $addChangeFreq = $conf['sitemap']['sitemap_insert_changefreq'] === 'Y';
+    $addPriority   = $conf['sitemap']['sitemap_insert_priority'] === 'Y';
     // W3C Datetime formats:
     //  YYYY-MM-DD (eg 1997-07-16)
     //  YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
@@ -232,7 +211,7 @@ function generateSitemapXML()
     $defaultLangID           = (int)$defaultLang->kSprache;
     $_SESSION['kSprache']    = $defaultLangID;
     $_SESSION['cISOSprache'] = $defaultLang->cISO;
-    TaxHelper::setTaxRates();
+    Tax::setTaxRates();
     if (!isset($_SESSION['Kundengruppe'])) {
         $_SESSION['Kundengruppe'] = new Kundengruppe();
     }
@@ -284,7 +263,7 @@ function generateSitemapXML()
     $sitemap_data   = '';
     $imageBaseURL   = Shop::getImageBaseURL();
     //Hauptseite
-    $sitemap_data .= makeURL('', null, FREQ_ALWAYS, PRIO_VERYHIGH);
+    $sitemap_data .= makeURL('', null, $addChangeFreq ? FREQ_ALWAYS : null, $addPriority ? PRIO_VERYHIGH : null);
     //Alte Sitemaps löschen
     loescheSitemaps();
     $andWhere = '';
@@ -307,8 +286,8 @@ function generateSitemapXML()
         ? ', tartikel.dLetzteAktualisierung'
         : '';
     $res          = Shop::Container()->getDB()->queryPrepared(
-        "SELECT tartikel.kArtikel, tartikel.cName, tseo.cSeo, tartikel.cArtNr" .
-            $modification . "
+        'SELECT tartikel.kArtikel, tartikel.cName, tseo.cSeo, tartikel.cArtNr' .
+        $modification . "
             FROM tartikel
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
@@ -321,7 +300,7 @@ function generateSitemapXML()
         [
             'kGrpID' => $defaultCustomerGroupID,
             'langID' => $defaultLangID
-        ], 
+        ],
         \DB\ReturnType::QUERYSINGLE
     );
     while (($oArtikel = $res->fetch(PDO::FETCH_OBJ)) !== false) {
@@ -348,7 +327,7 @@ function generateSitemapXML()
                 $cGoogleImage = $imageBaseURL . $cGoogleImage;
             }
         }
-        $cUrl = UrlHelper::buildURL($oArtikel, URLART_ARTIKEL);
+        $cUrl = URL::buildURL($oArtikel, URLART_ARTIKEL);
 
         if (!isSitemapBlocked($cUrl)) {
             $sitemap_data .= makeURL(
@@ -356,8 +335,8 @@ function generateSitemapXML()
                 (($conf['sitemap']['sitemap_insert_lastmod'] === 'Y')
                     ? date_format(date_create($oArtikel->dLetzteAktualisierung), 'c')
                     : null),
-                FREQ_DAILY,
-                PRIO_HIGH,
+                $addChangeFreq ? FREQ_DAILY : null,
+                $addPriority ? PRIO_HIGH : null,
                 $cGoogleImage
             );
             ++$nSitemap;
@@ -402,13 +381,29 @@ function generateSitemapXML()
                 $nAnzahlURL_arr[$nDatei] = 0;
                 $sitemap_data            = '';
             }
-            $cUrl = UrlHelper::buildURL($oArtikel, URLART_ARTIKEL);
+            $cGoogleImage = '';
+            if ($conf['sitemap']['sitemap_googleimage_anzeigen'] === 'Y'
+                && ($number = MediaImage::getPrimaryNumber(Image::TYPE_PRODUCT, $oArtikel->kArtikel)) !== null
+            ) {
+                $cGoogleImage = MediaImage::getThumb(
+                    Image::TYPE_PRODUCT,
+                    $oArtikel->kArtikel,
+                    $oArtikel,
+                    Image::SIZE_LG,
+                    $number
+                );
+                if (strlen($cGoogleImage) > 0) {
+                    $cGoogleImage = $imageBaseURL . $cGoogleImage;
+                }
+            }
+            $cUrl = URL::buildURL($oArtikel, URLART_ARTIKEL);
             if (!isSitemapBlocked($cUrl)) {
                 $sitemap_data .= makeURL(
                     $cUrl,
                     date_format(date_create($oArtikel->dLetzteAktualisierung), 'c'),
-                    FREQ_DAILY,
-                    PRIO_HIGH
+                    $addChangeFreq ? FREQ_DAILY : null,
+                    $addPriority ? PRIO_HIGH : null,
+                    $cGoogleImage
                 );
                 ++$nSitemap;
                 ++$nAnzahlURL_arr[$nDatei];
@@ -467,14 +462,21 @@ function generateSitemapXML()
                     }
 
                     $tlink->cLocalizedSeo[$tlink->cISOSprache] = $tlink->cSeo ?? null;
-                    $link                                      = UrlHelper::buildURL($tlink, URLART_SEITE);
+                    $link                                      = URL::buildURL($tlink, URLART_SEITE);
                     if (strlen($tlink->cSeo) > 0) {
                         $link = $tlink->cSeo;
                     } elseif ($_SESSION['cISOSprache'] !== $tlink->cISOSprache) {
                         $link .= '&lang=' . $tlink->cISOSprache;
                     }
                     if (!isSitemapBlocked($link)) {
-                        $sitemap_data .= makeURL($link, null, FREQ_MONTHLY, PRIO_LOW, '', (int)$tlink->bSSL === 2);
+                        $sitemap_data .= makeURL(
+                            $link,
+                            null,
+                            $addChangeFreq ? FREQ_MONTHLY : null,
+                            $addPriority ? PRIO_LOW : null,
+                            '',
+                            (int)$tlink->bSSL === 2
+                        );
                         ++$nSitemap;
                         ++$nAnzahlURL_arr[$nDatei];
                         ++$nStat_arr['link'];
@@ -515,11 +517,7 @@ function generateSitemapXML()
                 $conf
             );
             foreach ($cURL_arr as $cURL) {
-                if ($categoryHelper->nichtLeer(
-                    $tkategorie->kKategorie,
-                    $defaultCustomerGroupID
-                    ) === true
-                ) {
+                if ($categoryHelper->nichtLeer($tkategorie->kKategorie, $defaultCustomerGroupID) === true) {
                     if ($nSitemap > $nSitemapLimit) {
                         $nSitemap = 1;
                         baueSitemap($nDatei, $sitemap_data);
@@ -569,11 +567,7 @@ function generateSitemapXML()
                     $conf
                 );
                 foreach ($cURL_arr as $cURL) { // X viele Seiten durchlaufen
-                    if ($categoryHelper->nichtLeer(
-                        $tkategorie->kKategorie,
-                        $defaultCustomerGroupID
-                        ) === true
-                    ) {
+                    if ($categoryHelper->nichtLeer($tkategorie->kKategorie, $defaultCustomerGroupID) === true) {
                         if ($nSitemap > $nSitemapLimit) {
                             $nSitemap = 1;
                             baueSitemap($nDatei, $sitemap_data);
@@ -912,25 +906,28 @@ function generateSitemapXML()
     }
     if ($conf['sitemap']['sitemap_news_anzeigen'] === 'Y') {
         $res = Shop::Container()->getDB()->query(
-            "SELECT tnews.*, tseo.cSeo
+            "SELECT tnews.*, tseo.cSeo, tseo.kSprache
                 FROM tnews
+                JOIN tnewssprache t 
+                    ON tnews.kNews = t.kNews
                 JOIN tseo 
                     ON tseo.cKey = 'kNews'
                     AND tseo.kKey = tnews.kNews
-                    AND tseo.kSprache = tnews.kSprache
+                    AND tseo.kSprache = t.languageID
                 WHERE tnews.nAktiv = 1
-                    AND tnews.dGueltigVon <= now()
+                    AND tnews.dGueltigVon <= NOW()
                     AND (tnews.cKundengruppe LIKE '%;-1;%'
-                    OR FIND_IN_SET('" . Session::CustomerGroup()->getID() . "', REPLACE(tnews.cKundengruppe, ';',',')) > 0) 
+                    OR FIND_IN_SET('" . \Session\Session::getCustomerGroup()->getID() .
+                        "', REPLACE(tnews.cKundengruppe, ';',',')) > 0) 
                     ORDER BY tnews.dErstellt",
             \DB\ReturnType::QUERYSINGLE
         );
         while (($oNews = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $cURL = makeURL(
-                UrlHelper::buildURL($oNews, URLART_NEWS),
+                URL::buildURL($oNews, URLART_NEWS),
                 date_format(date_create($oNews->dGueltigVon), 'c'),
-                FREQ_DAILY,
-                PRIO_HIGH
+                $addChangeFreq ? FREQ_DAILY : null,
+                $addPriority ? PRIO_HIGH : null
             );
             if ($nSitemap > $nSitemapLimit) {
                 $nSitemap = 1;
@@ -949,22 +946,24 @@ function generateSitemapXML()
     }
     if ($conf['sitemap']['sitemap_newskategorien_anzeigen'] === 'Y') {
         $res = Shop::Container()->getDB()->query(
-            "SELECT tnewskategorie.*, tseo.cSeo
+            "SELECT tnewskategorie.*, tseo.cSeo, tseo.kSprache
                  FROM tnewskategorie
+                 JOIN tnewskategoriesprache t 
+                    ON tnewskategorie.kNewsKategorie = t.kNewsKategorie
                  JOIN tseo 
                     ON tseo.cKey = 'kNewsKategorie'
                     AND tseo.kKey = tnewskategorie.kNewsKategorie
-                    AND tseo.kSprache = tnewskategorie.kSprache
+                    AND tseo.kSprache = t.languageID
                  WHERE tnewskategorie.nAktiv = 1",
             \DB\ReturnType::QUERYSINGLE
         );
 
         while (($oNewsKategorie = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $cURL = makeURL(
-                UrlHelper::buildURL($oNewsKategorie, URLART_NEWSKATEGORIE),
+                URL::buildURL($oNewsKategorie, URLART_NEWSKATEGORIE),
                 date_format(date_create($oNewsKategorie->dLetzteAktualisierung), 'c'),
-                FREQ_DAILY,
-                PRIO_HIGH
+                $addChangeFreq ? FREQ_DAILY : null,
+                $addPriority ? PRIO_HIGH : null
             );
             if ($nSitemap > $nSitemapLimit) {
                 $nSitemap = 1;
@@ -998,10 +997,14 @@ function generateSitemapXML()
         // ping sitemap to Google and Bing
         if ($conf['sitemap']['sitemap_google_ping'] === 'Y') {
             $encodedSitemapIndexURL = urlencode(Shop::getURL() . '/sitemap_index.xml');
-            if (200 !== ($httpStatus = RequestHelper::http_get_status('http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL))) {
+            if (200 !== ($httpStatus = Request::http_get_status(
+                'http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL
+            ))) {
                 Shop::Container()->getLogService()->notice('Sitemap ping to Google failed with status ' . $httpStatus);
             }
-            if (200 !== ($httpStatus = RequestHelper::http_get_status('http://www.bing.com/ping?sitemap=' . $encodedSitemapIndexURL))) {
+            if (200 !== ($httpStatus = Request::http_get_status(
+                'http://www.bing.com/ping?sitemap=' . $encodedSitemapIndexURL
+            ))) {
                 Shop::Container()->getLogService()->notice('Sitemap ping to Bing failed with status ' . $httpStatus);
             }
         }
@@ -1011,9 +1014,11 @@ function generateSitemapXML()
 /**
  * @param string $cGoogleImageEinstellung
  * @return string
+ * @deprecated since 5.0.0
  */
 function getXMLHeader($cGoogleImageEinstellung)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $cHead = '<?xml version="1.0" encoding="UTF-8"?>
             <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"';
 
@@ -1031,9 +1036,11 @@ function getXMLHeader($cGoogleImageEinstellung)
 /**
  * @param stdClass $artikel
  * @return string|null
+ * @deprecated since 5.0.0
  */
 function holeGoogleImage($artikel)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $oArtikel           = new Artikel();
     $oArtikel->kArtikel = $artikel->kArtikel;
     $oArtikel->holArtikelAttribute();
@@ -1076,9 +1083,11 @@ function holeGoogleImage($artikel)
 
 /**
  * @return bool
+ * @deprecated since 5.0.0
  */
 function loescheSitemaps()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if (is_dir(PFAD_ROOT . PFAD_EXPORT) && $dh = opendir(PFAD_ROOT . PFAD_EXPORT)) {
         while (($file = readdir($dh)) !== false) {
             if ($file === 'sitemap_index.xml' || strpos($file, 'sitemap_') !== false) {
@@ -1097,9 +1106,11 @@ function loescheSitemaps()
 /**
  * @param array $nAnzahlURL_arr
  * @param float $fTotalZeit
+ * @deprecated since 5.0.0
  */
 function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if ($fTotalZeit > 0 && is_array($nAnzahlURL_arr) && count($nAnzahlURL_arr) > 0) {
         $nTotalURL = 0;
         foreach ($nAnzahlURL_arr as $nAnzahlURL) {
@@ -1108,7 +1119,7 @@ function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
         $oSitemapReport                     = new stdClass();
         $oSitemapReport->nTotalURL          = $nTotalURL;
         $oSitemapReport->fVerarbeitungszeit = number_format($fTotalZeit, 2);
-        $oSitemapReport->dErstellt          = 'now()';
+        $oSitemapReport->dErstellt          = 'NOW()';
 
         $kSitemapReport = Shop::Container()->getDB()->insert('tsitemapreport', $oSitemapReport);
         $bGZ            = function_exists('gzopen');
@@ -1120,9 +1131,9 @@ function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
                 $oSitemapReportFile->cDatei         = $bGZ
                     ? ('sitemap_' . $i . '.xml.gz')
                     : ('sitemap_' . $i . '.xml');
-                $oSitemapReportFile->nAnzahlURL = $nAnzahlURL;
-                $file                           = PFAD_ROOT . PFAD_EXPORT . $oSitemapReportFile->cDatei;
-                $oSitemapReportFile->fGroesse   = is_file($file)
+                $oSitemapReportFile->nAnzahlURL     = $nAnzahlURL;
+                $file                               = PFAD_ROOT . PFAD_EXPORT . $oSitemapReportFile->cDatei;
+                $oSitemapReportFile->fGroesse       = is_file($file)
                     ? number_format(filesize(PFAD_ROOT . PFAD_EXPORT . $oSitemapReportFile->cDatei) / 1024, 2)
                     : 0;
                 Shop::Container()->getDB()->insert('tsitemapreportfile', $oSitemapReportFile);
@@ -1140,9 +1151,12 @@ function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
  * @param int        $productsPerPage
  * @param array|null $config
  * @return array
+ * @deprecated since 5.0.0
  */
 function baueExportURL(int $kKey, $cKey, $lastUpdate, $languages, $langID, $productsPerPage, $config = null)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $config   = $config ?? \Shopsetting::getInstance()->getAll();
     $cURL_arr = [];
     $params   = [];
     Shop::setLanguage($langID);
@@ -1150,20 +1164,18 @@ function baueExportURL(int $kKey, $cKey, $lastUpdate, $languages, $langID, $prod
     $filterConfig->setLanguageID($langID);
     $filterConfig->setLanguages($languages);
     $filterConfig->setConfig($config);
-    $filterConfig->setCustomerGroupID(\Session\Session::CustomerGroup()->getID());
+    $filterConfig->setCustomerGroupID(\Session\Session::getCustomerGroup()->getID());
     $filterConfig->setBaseURL(Shop::getURL() . '/');
     $naviFilter = new \Filter\ProductFilter($filterConfig, Shop::Container()->getDB(), Shop::Container()->getCache());
     switch ($cKey) {
         case 'kKategorie':
             $params['kKategorie'] = $kKey;
             $naviFilter->initStates($params);
-            $filterSeo = $naviFilter->getCategory()->getSeo($langID);
             break;
 
         case 'kHersteller':
             $params['kHersteller'] = $kKey;
             $naviFilter->initStates($params);
-            $filterSeo = $naviFilter->getManufacturer()->getSeo($langID);
             break;
 
         case 'kSuchanfrage':
@@ -1182,28 +1194,24 @@ function baueExportURL(int $kKey, $cKey, $lastUpdate, $languages, $langID, $prod
                     $naviFilter->getSearchQuery()->setID($kKey)->setName($oSuchanfrage->cSuche);
                 }
             }
-            $filterSeo = $naviFilter->getSearchQuery()->getSeo($langID);
             break;
 
         case 'kMerkmalWert':
             $params['kMerkmalWert'] = $kKey;
             $naviFilter->initStates($params);
-            $filterSeo = $naviFilter->getAttributeValue()->getSeo($langID);
             break;
 
         case 'kTag':
             $params['kTag'] = $kKey;
             $naviFilter->initStates($params);
-            $filterSeo = $naviFilter->getTag()->getSeo($langID);
             break;
 
         case 'kSuchspecial':
             $params['kSuchspecial'] = $kKey;
             $naviFilter->initStates($params);
-            $filterSeo = $naviFilter->getSearchSpecial()->getSeo($langID);
             break;
 
-        default :
+        default:
             return $cURL_arr;
     }
     $oSuchergebnisse = $naviFilter->generateSearchResults(null, false, (int)$productsPerPage);
@@ -1215,8 +1223,8 @@ function baueExportURL(int $kKey, $cKey, $lastUpdate, $languages, $langID, $prod
         $cURL_arr[] = makeURL(
             str_replace($search, $replace, $naviFilter->getFilterURL()->getURL()),
             $lastUpdate,
-            FREQ_WEEKLY,
-            PRIO_NORMAL
+            $config['sitemap']['sitemap_insert_changefreq'] === 'Y' ? FREQ_WEEKLY : null,
+            $config ['sitemap']['sitemap_insert_priority'] === 'Y' ? PRIO_NORMAL : null
         );
     }
 
@@ -1226,9 +1234,11 @@ function baueExportURL(int $kKey, $cKey, $lastUpdate, $languages, $langID, $prod
 /**
  * @param array $Sprachen
  * @return array
+ * @deprecated since 5.0.0
  */
 function gibAlleSprachenAssoc($Sprachen)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $oSpracheAssoc_arr = [];
     foreach ($Sprachen as $oSprache) {
         $oSpracheAssoc_arr[$oSprache->cISO] = (int)$oSprache->kSprache;

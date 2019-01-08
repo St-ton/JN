@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\MagicCompatibilityTrait;
+
 /**
  * Class Boxen
  * @deprecated since 5.0.0
@@ -15,7 +17,7 @@ class Boxen
     /**
      * @var array
      */
-    private static $mapping = [
+    protected static $mapping = [
         'boxes'     => 'BoxList',
         'boxConfig' => 'Config'
     ];
@@ -50,7 +52,7 @@ class Boxen
     /**
      * @var Boxen
      */
-    private static $_instance;
+    private static $instance;
 
     /**
      * @var \Services\JTL\BoxService
@@ -64,7 +66,7 @@ class Boxen
     public static function getInstance(): self
     {
         trigger_error(__CLASS__ . ' is deprecated.', E_USER_DEPRECATED);
-        return self::$_instance ?? new self();
+        return self::$instance ?? new self();
     }
 
     /**
@@ -73,7 +75,7 @@ class Boxen
     public function __construct()
     {
         $this->boxService = Shop::Container()->getBoxService();
-        self::$_instance  = $this;
+        self::$instance   = $this;
     }
 
     /**
@@ -213,7 +215,7 @@ class Boxen
             E_USER_DEPRECATED
         );
 
-        return $this->boxService->render($this->boxService->getBoxes());
+        return $this->boxService->render($this->boxService->getBoxes(), Shop::getPageType());
     }
 
     /**
@@ -306,12 +308,12 @@ class Boxen
     {
         trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         $oBox = Shop::Container()->getDB()->query(
-            "SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.cTitel, tboxen.ePosition,
+            'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.cTitel, tboxen.ePosition,
                 tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cVerfuegbar, tboxvorlage.cTemplate
                 FROM tboxen
                 LEFT JOIN tboxvorlage 
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                WHERE kBox = " . $kBox,
+                WHERE kBox = ' . $kBox,
             \DB\ReturnType::SINGLE_OBJECT
         );
 
@@ -442,13 +444,12 @@ class Boxen
 
     /**
      * @param \Filter\ProductFilter $pf
-     * @param \Filter\SearchResults $sr
      * @return bool
      * @deprecated since 5.0.0
      */
-    public function gibBoxenFilterNach(\Filter\ProductFilter $pf, \Filter\SearchResults $sr): bool
+    public function gibBoxenFilterNach(\Filter\ProductFilter $pf): bool
     {
-        return $this->boxService->showBoxes($pf, $sr);
+        return $this->boxService->showBoxes($pf);
     }
 
     /**
@@ -487,7 +488,8 @@ class Boxen
      * @return string
      * @deprecated since 5.0.0
      */
-    public static function gibJSONString($c, $speed = '1', $opacity = '0.2', $color = false, $hover = false): string {
+    public static function gibJSONString($c, $speed = '1', $opacity = '0.2', $color = false, $hover = false): string
+    {
         trigger_error(__METHOD__ . ' is deprecated and does not work anymore.', E_USER_DEPRECATED);
         return '';
     }
@@ -535,7 +537,6 @@ class Boxen
             PAGE_REGISTRIERUNG,
             PAGE_BESTELLVORGANG,
             PAGE_BEWERTUNG,
-            PAGE_DRUCKANSICHT,
             PAGE_PASSWORTVERGESSEN,
             PAGE_WARTUNG,
             PAGE_WUNSCHLISTE,
@@ -552,7 +553,6 @@ class Boxen
             PAGE_WRB,
             PAGE_PLUGIN,
             PAGE_NEWSLETTERARCHIV,
-            PAGE_NEWSARCHIV,
             PAGE_EIGENE,
             PAGE_AUSWAHLASSISTENT,
             PAGE_BESTELLABSCHLUSS

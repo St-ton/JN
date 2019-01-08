@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -9,6 +9,7 @@ namespace Survey;
 use DB\DbInterface;
 use DB\ReturnType;
 use Session\Session;
+use Smarty\JTLSmarty;
 use Tightenco\Collect\Support\Collection;
 
 /**
@@ -28,7 +29,7 @@ class Controller
     private $db;
 
     /**
-     * @var \JTLSmarty
+     * @var JTLSmarty
      */
     private $smarty;
 
@@ -40,9 +41,9 @@ class Controller
     /**
      * Controller constructor.
      * @param DbInterface $db
-     * @param \JTLSmarty  $smarty
+     * @param JTLSmarty   $smarty
      */
-    public function __construct(DbInterface $db, \JTLSmarty $smarty)
+    public function __construct(DbInterface $db, JTLSmarty $smarty)
     {
         $this->db     = $db;
         $this->smarty = $smarty;
@@ -51,7 +52,7 @@ class Controller
     /**
      * @param Survey $survey
      */
-    public function setSurvey(Survey $survey)
+    public function setSurvey(Survey $survey): void
     {
         $this->survey = $survey;
     }
@@ -67,7 +68,7 @@ class Controller
     /**
      * @param string $errorMsg
      */
-    public function setErrorMsg(string $errorMsg)
+    public function setErrorMsg(string $errorMsg): void
     {
         $this->errorMsg = $errorMsg;
     }
@@ -104,22 +105,21 @@ class Controller
     {
         $questions   = $survey->getQuestions();
         $currentPage = \max($currentPage, 1);
-        if (\RequestHelper::verifyGPCDataInt('s') === 0) {
+        if (\Helpers\Request::verifyGPCDataInt('s') === 0) {
             unset($_SESSION['Umfrage']);
             $_SESSION['Umfrage']                    = new \stdClass();
             $_SESSION['Umfrage']->kUmfrage          = $survey->getID();
             $_SESSION['Umfrage']->oUmfrageFrage_arr = [];
             $_SESSION['Umfrage']->nEnde             = 0;
-
-            // Speicher alle Fragen in Session
             foreach ($questions as $question) {
+                /** @var SurveyQuestion $question */
                 $answer = new GivenAnswer();
                 $answer->setQuestionID($question->getID());
                 $answer->setQuestionType($question->getType());
                 $_SESSION['Umfrage']->oUmfrageFrage_arr[$question->getID()] = $answer;
             }
         } else {
-            $currentPage = \RequestHelper::verifyGPCDataInt('s');
+            $currentPage = \Helpers\Request::verifyGPCDataInt('s');
 
             if (isset($_POST['next'])) {
                 $this->saveAnswers($_POST);
@@ -195,13 +195,15 @@ class Controller
      */
     public function saveAnswers(array $post): bool
     {
-        if (!\is_array($post['kUmfrageFrage']) || \count($post['kUmfrageFrage']) === 0) {
+        if (empty($post['kUmfrageFrage'])) {
             return false;
         }
         foreach ($post['kUmfrageFrage'] as $questionID) {
             $questionID = (int)$questionID;
             $question   = $this->survey->getQuestionByID($questionID);
             $type       = $question !== null ? $question->getType() : null;
+            $given      = $_SESSION['Umfrage']->oUmfrageFrage_arr[$questionID];
+            /** @var GivenAnswer $given */
             if ($question === null
                 || $type === QuestionType::TEXT_PAGE_CHANGE
                 || $type === QuestionType::TEXT_STATIC
@@ -212,12 +214,15 @@ class Controller
                 $answer = [];
 
                 foreach ($question->getAnswerOptions() as $answerOption) {
-                    $answer[] = $post[$questionID . '_' . $answerOption->getID()];
+                    $idx = 'sq' . $questionID . '_' . $answerOption->getID();
+                    if (isset($post[$idx])) {
+                        $answer[] = $post[$idx];
+                    }
                 }
-                $_SESSION['Umfrage']->oUmfrageFrage_arr[$questionID]->setAnswer($answer);
             } else {
-                $_SESSION['Umfrage']->oUmfrageFrage_arr[$questionID]->setAnswer($post[$questionID]);
+                $answer = $post['sq' . $questionID];
             }
+            $given->setAnswer($answer);
         }
 
         return true;
@@ -248,7 +253,7 @@ class Controller
     {
         $msg = \Shop::Lang()->get('pollAdd', 'messages');
         $this->save();
-        if (Session::Customer()->getID() > 0) {
+        if (Session::getCustomer()->getID() > 0) {
             // Bekommt der Kunde einen Kupon und ist dieser gültig?
             if ($this->survey->getCouponID() > 0) {
                 $oKupon = $this->db->queryPrepared(
@@ -260,27 +265,25 @@ class Controller
                             AND tkuponsprache.cISOSprache = :liso
                             AND tkupon.cAktiv = 'Y'
                             AND (
-                                    tkupon.dGueltigAb <= now() 
-                                    AND (tkupon.dGueltigBis >= now() 
-                                    OR tkupon.dGueltigBis = '0000-00-00 00:00:00')
+                                tkupon.dGueltigAb <= NOW() 
+                                AND (tkupon.dGueltigBis IS NULL OR tkupon.dGueltigBis >= NOW())
                                 )
                             AND (
-                                    tkupon.kKundengruppe = -1 
-                                    OR tkupon.kKundengruppe = :cgid)",
+                                tkupon.kKundengruppe = -1 
+                                OR tkupon.kKundengruppe = :cgid)",
                     [
-                        'cgid' => Session::Customer()->kKundengruppe,
+                        'cgid' => Session::getCustomer()->kKundengruppe,
                         'cid'  => $this->survey->getCouponID(),
                         'liso' => \Shop::getLanguageCode()
                     ],
                     ReturnType::SINGLE_OBJECT
                 );
-                // Gültig
                 if ($oKupon->kKupon > 0) {
                     $msg = \sprintf(\Shop::Lang()->get('pollCoupon', 'messages'), $oKupon->cCode);
                 } else {
                     \Shop::Container()->getLogService()->error(\sprintf(
                         'Fehlerhafter Kupon in Umfragebelohnung. Kunde: %s  Kupon: %s',
-                        Session::Customer()->getID(),
+                        Session::getCustomer()->getID(),
                         $this->survey->getCouponID()
                     ));
                     $this->errorMsg = \Shop::Lang()->get('pollError', 'messages');
@@ -290,11 +293,10 @@ class Controller
                     \Shop::Lang()->get('pollCredit', 'messages'),
                     \Preise::getLocalizedPriceString($this->survey->getCredits())
                 );
-                // Kunde Guthaben gutschreiben
                 if (!$this->updateCustomerCredits($this->survey->getCredits(), $_SESSION['Kunde']->kKunde)) {
                     \Shop::Container()->getLogService()->error(\sprintf(
                         'Umfragebelohnung: Guthaben konnte nicht verrechnet werden. Kunde: %s',
-                        Session::Customer()->getID()
+                        Session::getCustomer()->getID()
                     ));
                     $this->errorMsg = \Shop::Lang()->get('pollError', 'messages');
                 }
@@ -323,10 +325,8 @@ class Controller
                 WHERE tumfrage.nAktiv = 1
                     AND tumfrage.kSprache = :lid
                     AND (
-                        (dGueltigVon <= now() 
-                        AND dGueltigBis >= now()) 
-                        || (dGueltigVon <= now() 
-                        AND dGueltigBis = \'0000-00-00 00:00:00\')
+                        (dGueltigVon <= NOW() AND dGueltigBis >= NOW()) 
+                        OR (dGueltigVon <= NOW() AND dGueltigBis IS NULL)
                     )
                 GROUP BY tumfrage.kUmfrage
                 HAVING COUNT(tumfragefrage.kUmfrageFrage) > 0
@@ -352,17 +352,17 @@ class Controller
      */
     private function updateCustomerCredits($credits, int $customerID): bool
     {
-        if ($customerID > 0) {
-            return $this->db->queryPrepared(
-                'UPDATE tkunde
-                    SET fGuthaben = fGuthaben + :crdt
-                    WHERE kKunde = :cid',
-                    ['crdt' => (float)$credits, 'cid' => $customerID],
-                    ReturnType::AFFECTED_ROWS
-                ) > 0;
+        if ($customerID <= 0) {
+            return false;
         }
 
-        return false;
+        return $this->db->queryPrepared(
+            'UPDATE tkunde
+                SET fGuthaben = fGuthaben + :crdt
+                WHERE kKunde = :cid',
+            ['crdt' => (float)$credits, 'cid' => $customerID],
+            ReturnType::AFFECTED_ROWS
+        ) > 0;
     }
 
     /**
@@ -376,15 +376,15 @@ class Controller
         }
         // Eintrag in tumfragedurchfuehrung
         $participation = new \stdClass();
-        if (Session::Customer()->getID() > 0) {
-            $participation->kKunde = Session::Customer()->getID();
+        if (Session::getCustomer()->getID() > 0) {
+            $participation->kKunde = Session::getCustomer()->getID();
             $participation->cIP    = '';
         } else {
             $participation->kKunde = 0;
             $participation->cIP    = $_SESSION['oBesucher']->cID;
         }
         $participation->kUmfrage       = $_SESSION['Umfrage']->kUmfrage;
-        $participation->dDurchgefuehrt = 'now()';
+        $participation->dDurchgefuehrt = 'NOW()';
 
         $id = $this->db->insert('tumfragedurchfuehrung', $participation);
         foreach ($_SESSION['Umfrage']->oUmfrageFrage_arr as $j => $answer) {
@@ -415,10 +415,10 @@ class Controller
                         ? \StringHandler::htmlentities(\StringHandler::filterXSS(\ltrim($given)))
                         : '';
                 } elseif ($type === QuestionType::MATRIX_SINGLE || $type === QuestionType::MATRIX_MULTI) {
-                    list($kUmfrageFrageAntwort, $kUmfrageMatrixOption) = \explode('_', $given);
-                    $data->kUmfrageFrageAntwort = $kUmfrageFrageAntwort;
-                    $data->kUmfrageMatrixOption = $kUmfrageMatrixOption;
-                    $data->cText                = '';
+                    [$kUmfrageFrageAntwort, $kUmfrageMatrixOption] = \explode('_', $given);
+                    $data->kUmfrageFrageAntwort                    = $kUmfrageFrageAntwort;
+                    $data->kUmfrageMatrixOption                    = $kUmfrageMatrixOption;
+                    $data->cText                                   = '';
                 } elseif ((int)$given === -1) {
                     $data->kUmfrageFrageAntwort = 0;
                     $data->kUmfrageMatrixOption = 0;
@@ -443,17 +443,18 @@ class Controller
      * Return 0 falls alles in Ordnung
      * Return $kUmfrageFrage falls inkorrekte oder leere Antwort
      *
-     * @param array $cPost_arr
+     * @param array $post
      * @return int
      */
-    public function checkInputData(array $cPost_arr): int
+    public function checkInputData(array $post): int
     {
-        if (!\is_array($cPost_arr['kUmfrageFrage']) || \count($cPost_arr['kUmfrageFrage']) === 0) {
+        if (!\is_array($post['kUmfrageFrage']) || \count($post['kUmfrageFrage']) === 0) {
             return 0;
         }
-        foreach ($cPost_arr['kUmfrageFrage'] as $i => $questionID) {
+        foreach ($post['kUmfrageFrage'] as $i => $questionID) {
             $questionID = (int)$questionID;
             $question   = $this->survey->getQuestionByID($questionID);
+            $idx        = 'sq' . $questionID;
 
             if ($question === null || $question->isRequired() !== true) {
                 continue;
@@ -464,14 +465,15 @@ class Controller
                 if ($answerOptions->count() > 0) {
                     foreach ($answerOptions as $answerOption) {
                         if ($type === QuestionType::MATRIX_SINGLE) {
-                            if (!isset($cPost_arr[$questionID . '_' . $answerOption->getID()])) {
+                            $idx = 'sq' . $questionID . '_' . $answerOption->getID();
+                            if (!isset($post[$idx])) {
                                 return $questionID;
                             }
                         } elseif ($type === QuestionType::MATRIX_MULTI) {
-                            if (\is_array($cPost_arr[$questionID]) && \count($cPost_arr[$questionID]) > 0) {
+                            if (\is_array($post[$idx]) && \count($post[$idx]) > 0) {
                                 $exists = false;
-                                foreach ($cPost_arr[$questionID] as $givenMatrix) {
-                                    list($questionIDAntwortTMP, $kUmfrageMatrixOption) = \explode('_', $givenMatrix);
+                                foreach ($post[$idx] as $givenMatrix) {
+                                    [$questionIDAntwortTMP, $kUmfrageMatrixOption] = \explode('_', $givenMatrix);
                                     if ((int)$questionIDAntwortTMP === $answerOption->getID()) {
                                         $exists = true;
                                         break;
@@ -488,10 +490,10 @@ class Controller
                     }
                 }
             } elseif ($type === QuestionType::TEXT_SMALL || $type === QuestionType::TEXT_BIG) {
-                if (!isset($cPost_arr[$questionID]) || \trim($cPost_arr[$questionID][0]) === '') {
+                if (!isset($post[$idx]) || \trim($post[$idx][0]) === '') {
                     return $questionID;
                 }
-            } elseif (!isset($cPost_arr[$questionID]) && $answerOptions->count() > 0) {
+            } elseif (!isset($post[$idx]) && $answerOptions->count() > 0) {
                 return $questionID;
             }
         }

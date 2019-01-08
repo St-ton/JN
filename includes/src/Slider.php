@@ -4,12 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\MagicCompatibilityTrait;
+
 /**
  * Class Slider
  */
 class Slider implements IExtensionPoint
 {
     use MagicCompatibilityTrait;
+
     /**
      * @var int
      */
@@ -128,7 +131,7 @@ class Slider implements IExtensionPoint
      * @param string $type
      * @return string|null
      */
-    private function getMapping(string $type)
+    private function getMapping(string $type): ?string
     {
         return self::$mapping[$type] ?? null;
     }
@@ -178,11 +181,11 @@ class Slider implements IExtensionPoint
             $kSlider = $this->id;
         }
         $data  = Shop::Container()->getDB()->queryPrepared(
-            "SELECT *, tslider.kSlider AS id FROM tslider
+            'SELECT *, tslider.kSlider AS id FROM tslider
                 LEFT JOIN tslide
                     ON tslider.kSlider = tslide.kSlider
-                WHERE tslider.kSlider = :kslider" . $activeSQL .
-            " ORDER BY tslide.nSort",
+                WHERE tslider.kSlider = :kslider' . $activeSQL .
+            ' ORDER BY tslide.nSort',
             ['kslider' => $kSlider],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -285,7 +288,7 @@ class Slider implements IExtensionPoint
     /**
      * @param int|string $kSlider
      */
-    public function setID($kSlider)
+    public function setID($kSlider): void
     {
         $this->id = (int)$kSlider;
     }
@@ -301,7 +304,7 @@ class Slider implements IExtensionPoint
     /**
      * @param string $name
      */
-    public function setName(string $name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -317,7 +320,7 @@ class Slider implements IExtensionPoint
     /**
      * @param int|string $languageID
      */
-    public function setLanguageID($languageID)
+    public function setLanguageID($languageID): void
     {
         $this->languageID = (int)$languageID;
     }
@@ -333,7 +336,7 @@ class Slider implements IExtensionPoint
     /**
      * @param int|string $customerGroupID
      */
-    public function setCustomerGroupID($customerGroupID)
+    public function setCustomerGroupID($customerGroupID): void
     {
         $this->customerGroupID = (int)$customerGroupID;
     }
@@ -349,7 +352,7 @@ class Slider implements IExtensionPoint
     /**
      * @param int|string $pageType
      */
-    public function setPageType($pageType)
+    public function setPageType($pageType): void
     {
         $this->pageType = (int)$pageType;
     }
@@ -365,7 +368,7 @@ class Slider implements IExtensionPoint
     /**
      * @param string $theme
      */
-    public function setTheme(string $theme)
+    public function setTheme(string $theme): void
     {
         $this->theme = $theme;
     }
@@ -381,7 +384,7 @@ class Slider implements IExtensionPoint
     /**
      * @param int|string|bool $isActive
      */
-    public function setIsActive($isActive)
+    public function setIsActive($isActive): void
     {
         $this->isActive = (bool)$isActive;
     }
@@ -397,7 +400,7 @@ class Slider implements IExtensionPoint
     /**
      * @param string $effects
      */
-    public function setEffects(string $effects)
+    public function setEffects(string $effects): void
     {
         $this->effects = $effects;
     }
@@ -413,7 +416,7 @@ class Slider implements IExtensionPoint
     /**
      * @param int|string $pauseTime
      */
-    public function setPauseTime($pauseTime)
+    public function setPauseTime($pauseTime): void
     {
         $this->pauseTime = (int)$pauseTime;
     }
@@ -429,7 +432,7 @@ class Slider implements IExtensionPoint
     /**
      * @param bool|int|string $thumbnail
      */
-    public function setThumbnail($thumbnail)
+    public function setThumbnail($thumbnail): void
     {
         $this->thumbnail = (bool)$thumbnail;
     }
@@ -445,7 +448,7 @@ class Slider implements IExtensionPoint
     /**
      * @param int|string $animationSpeed
      */
-    public function setAnimationSpeed($animationSpeed)
+    public function setAnimationSpeed($animationSpeed): void
     {
         $this->animationSpeed = (int)$animationSpeed;
     }
@@ -461,7 +464,7 @@ class Slider implements IExtensionPoint
     /**
      * @param bool|int|string $pauseOnHover
      */
-    public function setPauseOnHover($pauseOnHover)
+    public function setPauseOnHover($pauseOnHover): void
     {
         $this->pauseOnHover = (bool)$pauseOnHover;
     }
@@ -477,7 +480,7 @@ class Slider implements IExtensionPoint
     /**
      * @param array $slides
      */
-    public function setSlides(array $slides)
+    public function setSlides(array $slides): void
     {
         $this->slides = $slides;
     }
@@ -493,7 +496,7 @@ class Slider implements IExtensionPoint
     /**
      * @param bool|string|int $controlNav
      */
-    public function setControlNav($controlNav)
+    public function setControlNav($controlNav): void
     {
         $this->controlNav = (bool)$controlNav;
     }
@@ -509,7 +512,7 @@ class Slider implements IExtensionPoint
     /**
      * @param bool|string|int $randomStart
      */
-    public function setRandomStart($randomStart)
+    public function setRandomStart($randomStart): void
     {
         $this->randomStart = (bool)$randomStart;
     }
@@ -525,7 +528,7 @@ class Slider implements IExtensionPoint
     /**
      * @param bool|string|int $directionNav
      */
-    public function setDirectionNav($directionNav)
+    public function setDirectionNav($directionNav): void
     {
         $this->directionNav = (bool)$directionNav;
     }
@@ -541,7 +544,7 @@ class Slider implements IExtensionPoint
     /**
      * @param bool|string|int $useKB
      */
-    public function setUseKB($useKB)
+    public function setUseKB($useKB): void
     {
         $this->useKB = (bool)$useKB;
     }

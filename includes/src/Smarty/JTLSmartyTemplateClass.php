@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -6,9 +6,9 @@
 
 namespace Smarty;
 
-
 /**
  * Class JTLSmartyTemplateClass
+ * @package Smarty
  */
 class JTLSmartyTemplateClass extends \Smarty_Internal_Template
 {

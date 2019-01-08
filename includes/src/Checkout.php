@@ -15,7 +15,7 @@ class Checkout
     public $kArtikel;
 
     /**
-     * 
+     *
      */
     public function __construct()
     {

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -8,6 +8,7 @@ namespace Mapper;
 
 /**
  * Class AdminLoginStatusMessageMapper
+ * @package Mapper
  */
 class AdminLoginStatusMessageMapper
 {
@@ -15,7 +16,7 @@ class AdminLoginStatusMessageMapper
      * @param int $code
      * @return string
      */
-    public function map(int $code) : string
+    public function map(int $code): string
     {
         switch ($code) {
             case \AdminLoginStatus::LOGIN_OK:

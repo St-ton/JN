@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -6,17 +6,16 @@
 
 namespace Boxes\Items;
 
-
 use DB\ReturnType;
 
 /**
  * Class TagCloud
- * @package Boxes
+ * @package Boxes\Items
  */
 final class TagCloud extends AbstractBox
 {
     /**
-     * Cart constructor.
+     * TagCloud constructor.
      * @param array $config
      */
     public function __construct(array $config)
@@ -56,8 +55,8 @@ final class TagCloud extends AbstractBox
                         $tagwolke->Klasse   = ($prio_step < 1) ?
                             \rand(1, 10) :
                             (\round(($tagwolke->Anzahl - $tags[$count - 1]->Anzahl) / $prio_step) + 1);
-                        $tagwolke->cURL     = \UrlHelper::buildURL($tagwolke, \URLART_TAG);
-                        $tagwolke->cURLFull = \UrlHelper::buildURL($tagwolke, \URLART_TAG, true);
+                        $tagwolke->cURL     = \Helpers\URL::buildURL($tagwolke, \URLART_TAG);
+                        $tagwolke->cURLFull = \Helpers\URL::buildURL($tagwolke, \URLART_TAG, true);
                         $tagCloud[]         = $tagwolke;
                     }
                 }

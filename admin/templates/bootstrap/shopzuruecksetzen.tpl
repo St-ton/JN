@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="shopzuruecksetzen"}
-{include file='tpl_inc/seite_header.tpl' cTitel=#shopReset# cBeschreibung=#shopResetDesc# cDokuURL=#shopResetURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('shopReset') cBeschreibung=__('shopResetDesc') cDokuURL=__('shopResetURL')}
 {literal}
     <script>
         $(document).ready(function(){
@@ -136,7 +136,7 @@
             <div class="checkbox hide">
                 <label><input id="backupDone" type="checkbox" value="" />Ja, ich habe ein Backup meiner Shop-Datenbank erstellt.</label>
             </div>
-            <button disabled="true" type="button" value="{#shopReset#}" data-toggle="modal" data-target=".zuruecksetzen-modal" class="btn btn-danger"><i class="fa fa-exclamation-triangle"></i> {#shopReset#}</button>
+            <button disabled="true" type="button" value="{__('shopReset')}" data-toggle="modal" data-target=".zuruecksetzen-modal" class="btn btn-danger"><i class="fa fa-exclamation-triangle"></i> {__('shopReset')}</button>
         </div>
     </form>
 </div>

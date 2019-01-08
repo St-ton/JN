@@ -1,0 +1,11 @@
+msgid "Zones"
+msgstr "Zonen"
+
+msgid "CSS class"
+msgstr "CSS-Klasse"
+
+msgid "Altenativ text"
+msgstr "Altenativtext"
+
+msgid "Title"
+msgstr "Titel"

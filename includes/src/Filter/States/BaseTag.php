@@ -6,7 +6,6 @@
 
 namespace Filter\States;
 
-
 use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterInterface;
@@ -23,7 +22,7 @@ use Filter\Type;
  */
 class BaseTag extends AbstractFilter
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -141,7 +140,8 @@ class BaseTag extends AbstractFilter
         if ($this->getConfig('navigationsfilter')['allgemein_tagfilter_benutzen'] === 'N') {
             return $options;
         }
-        $state = $this->productFilter->getCurrentStateData($this->getType() === Type::OR
+        $state = $this->productFilter->getCurrentStateData(
+            $this->getType() === Type::OR
             ? $this->getClassName()
             : null
         );
@@ -171,21 +171,21 @@ class BaseTag extends AbstractFilter
         $sql->addCondition('ttag.nAktiv = 1');
         $sql->addCondition('ttag.kSprache = ' . $this->getLanguageID());
         $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-        $cacheID   = 'fltr_' . __CLASS__ . \md5($baseQuery);
+        $cacheID   = 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($baseQuery);
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 
             return $this->options;
         }
         $tags             = $this->productFilter->getDB()->query(
-            "SELECT tseo.cSeo, ssMerkmal.kTag, ssMerkmal.cName, 
+            'SELECT tseo.cSeo, ssMerkmal.kTag, ssMerkmal.cName, 
                 COUNT(*) AS nAnzahl, SUM(ssMerkmal.nAnzahlTagging) AS nAnzahlTagging
-                    FROM (" . $baseQuery . ") AS ssMerkmal
+                    FROM (' . $baseQuery . ") AS ssMerkmal
                 LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kTag
                     AND tseo.cKey = 'kTag'
-                    AND tseo.kSprache = " . $this->getLanguageID() . "
+                    AND tseo.kSprache = " . $this->getLanguageID() . '
                 GROUP BY ssMerkmal.kTag
-                ORDER BY nAnzahl DESC LIMIT 0, " .
+                ORDER BY nAnzahl DESC LIMIT 0, ' .
             (int)$this->getConfig('navigationsfilter')['tagfilter_max_anzeige'],
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -218,7 +218,7 @@ class BaseTag extends AbstractFilter
                 ->setCount((int)$tag->nAnzahl);
         }
         $this->options = $options;
-        $this->productFilter->getCache()->set($cacheID, $options, [CACHING_GROUP_FILTER]);
+        $this->productFilter->getCache()->set($cacheID, $options, [\CACHING_GROUP_FILTER]);
 
         return $options;
     }

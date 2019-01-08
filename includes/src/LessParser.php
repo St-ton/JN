@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 /**
  * Class LessParser
@@ -8,7 +12,7 @@ class LessParser
     /**
      * @var array
      */
-    private $_stack = [];
+    private $stack = [];
 
     /**
      * @param string $file
@@ -20,7 +24,7 @@ class LessParser
         foreach ($lines as $line) {
             if (preg_match('/@([\d\w\-]+)\s*:\s*([^;]+)/', $line, $matches)) {
                 list(, $key, $value) = $matches;
-                $this->_stack[$key]  = $value;
+                $this->stack[$key]   = $value;
             }
         }
 
@@ -34,7 +38,7 @@ class LessParser
     public function write($file)
     {
         $content = '';
-        foreach ($this->_stack as $key => $value) {
+        foreach ($this->stack as $key => $value) {
             $content .= "@{$key}: {$value};\r\n";
         }
 
@@ -46,7 +50,7 @@ class LessParser
      */
     public function getStack(): array
     {
-        return $this->_stack;
+        return $this->stack;
     }
 
     /**
@@ -55,7 +59,7 @@ class LessParser
     public function getColors(): array
     {
         $colors = [];
-        foreach ($this->_stack as $key => $value) {
+        foreach ($this->stack as $key => $value) {
             $color = $this->getAs($value, 'color');
             if ($color) {
                 $colors[$key] = $color;
@@ -72,7 +76,7 @@ class LessParser
      */
     public function set($key, $value): self
     {
-        $this->_stack[$key] = $value;
+        $this->stack[$key] = $value;
 
         return $this;
     }
@@ -84,7 +88,7 @@ class LessParser
      */
     public function get($key, $type = null)
     {
-        $value = $this->_stack[$key] ?? null;
+        $value = $this->stack[$key] ?? null;
 
         if ($value !== null && !$type !== null) {
             $typedValue = $this->getAs($value, $type);
@@ -155,7 +159,7 @@ class LessParser
         $g = dechex($g < 0 ? 0 : ($g > 255 ? 255 : $g));
         $b = dechex($b < 0 ? 0 : ($b > 255 ? 255 : $b));
 
-        $color = (strlen($r) < 2 ? '0' : '') . $r;
+        $color  = (strlen($r) < 2 ? '0' : '') . $r;
         $color .= (strlen($g) < 2 ? '0' : '') . $g;
         $color .= (strlen($b) < 2 ? '0' : '') . $b;
 

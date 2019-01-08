@@ -3,39 +3,45 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+use Helpers\Request;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'agbwrb_inc.php';
-/** @global JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $oAccount->permission('ORDER_AGB_WRB_VIEW', true, true);
-
 $cHinweis = '';
 $cFehler  = '';
 $step     = 'agbwrb_uebersicht';
 
 setzeSprache();
 
-if (RequestHelper::verifyGPCDataInt('agbwrb') === 1 && FormHelper::validateToken()) {
+if (Request::verifyGPCDataInt('agbwrb') === 1 && Form::validateToken()) {
     // Editieren
-    if (RequestHelper::verifyGPCDataInt('agbwrb_edit') === 1) {
-        if (RequestHelper::verifyGPCDataInt('kKundengruppe') > 0) {
+    if (Request::verifyGPCDataInt('agbwrb_edit') === 1) {
+        if (Request::verifyGPCDataInt('kKundengruppe') > 0) {
             $step    = 'agbwrb_editieren';
             $oAGBWRB = Shop::Container()->getDB()->select(
                 'ttext',
-                'kSprache', (int)$_SESSION['kSprache'],
-                'kKundengruppe', RequestHelper::verifyGPCDataInt('kKundengruppe')
+                'kSprache',
+                (int)$_SESSION['kSprache'],
+                'kKundengruppe',
+                Request::verifyGPCDataInt('kKundengruppe')
             );
-            $smarty->assign('kKundengruppe', RequestHelper::verifyGPCDataInt('kKundengruppe'))
+            $smarty->assign('kKundengruppe', Request::verifyGPCDataInt('kKundengruppe'))
                    ->assign('oAGBWRB', $oAGBWRB);
         } else {
             $cFehler .= 'Fehler: Bitte geben Sie eine gültige Kundengruppe an.<br />';
         }
-    } elseif (RequestHelper::verifyGPCDataInt('agbwrb_editieren_speichern') === 1) { // Speichern
+    } elseif (Request::verifyGPCDataInt('agbwrb_editieren_speichern') === 1) {
         if (speicherAGBWRB(
-            RequestHelper::verifyGPCDataInt('kKundengruppe'),
+            Request::verifyGPCDataInt('kKundengruppe'),
             $_SESSION['kSprache'],
-            $_POST, RequestHelper::verifyGPCDataInt('kText'))
-        ) {
+            $_POST,
+            Request::verifyGPCDataInt('kText')
+        )) {
             $cHinweis .= 'Ihre AGB bzw. WRB wurde erfolgreich gespeichert.<br />';
         } else {
             $cFehler .= 'Fehler: Ihre AGB/WRB konnte nicht gespeichert werden.<br />';
@@ -45,7 +51,13 @@ if (RequestHelper::verifyGPCDataInt('agbwrb') === 1 && FormHelper::validateToken
 
 if ($step === 'agbwrb_uebersicht') {
     // Kundengruppen holen
-    $oKundengruppe_arr = Shop::Container()->getDB()->selectAll('tkundengruppe', [], [], 'kKundengruppe, cName', 'cStandard DESC');
+    $oKundengruppe_arr = Shop::Container()->getDB()->selectAll(
+        'tkundengruppe',
+        [],
+        [],
+        'kKundengruppe, cName',
+        'cStandard DESC'
+    );
     // AGB fuer jeweilige Sprache holen
     $oAGBWRB_arr    = [];
     $oAGBWRBTMP_arr = Shop::Container()->getDB()->selectAll('ttext', 'kSprache', (int)$_SESSION['kSprache']);

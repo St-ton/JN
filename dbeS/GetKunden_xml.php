@@ -10,7 +10,8 @@ $xml_obj = [];
 
 if (auth()) {
     $return                      = 0;
-    $xml_obj['kunden']['tkunde'] = Shop::Container()->getDB()->query(
+    $db                          = Shop::Container()->getDB();
+    $xml_obj['kunden']['tkunde'] = $db->query(
         "SELECT kKunde, kKundengruppe, kSprache, cKundenNr, cPasswort, cAnrede, cTitel, cVorname,
             cNachname, cFirma, cStrasse, cHausnummer, cAdressZusatz, cPLZ, cOrt, cBundesland, cLand, cTel,
             cMobil, cFax, cMail, cUSTID, cWWW, fGuthaben, cNewsletter, dGeburtstag, fRabatt,
@@ -29,20 +30,26 @@ if (auth()) {
                 $xml_obj['kunden']['tkunde'][$i]['cAnrede'],
                 $xml_obj['kunden']['tkunde'][$i]['kSprache']
             );
-            $xml_obj['kunden']['tkunde'][$i]['cNachname'] = trim($cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][$i]['cNachname']));
-            $xml_obj['kunden']['tkunde'][$i]['cFirma']    = trim($cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][$i]['cFirma']));
-            $xml_obj['kunden']['tkunde'][$i]['cStrasse']  = trim($cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][$i]['cStrasse']));
-            //Strasse und Hausnummer zusammenfuehren
+            $xml_obj['kunden']['tkunde'][$i]['cNachname'] = trim(
+                $cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][$i]['cNachname'])
+            );
+            $xml_obj['kunden']['tkunde'][$i]['cFirma']    = trim(
+                $cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][$i]['cFirma'])
+            );
+            $xml_obj['kunden']['tkunde'][$i]['cStrasse']  = trim(
+                $cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][$i]['cStrasse'])
+            );
+            // Strasse und Hausnummer zusammenfuehren
             $xml_obj['kunden']['tkunde'][$i]['cStrasse'] .= ' ' . trim($xml_obj['kunden']['tkunde'][$i]['cHausnummer']);
             unset($xml_obj['kunden']['tkunde'][$i]['cHausnummer'], $xml_obj['kunden']['tkunde'][$i]['cPasswort']);
             $xml_obj['kunden']['tkunde'][$i . ' attr'] = buildAttributes($xml_obj['kunden']['tkunde'][$i]);
             $cZusatz                                   = $xml_obj['kunden']['tkunde'][$i]['cZusatz'];
             unset($xml_obj['kunden']['tkunde'][$i]['cZusatz']);
             $xml_obj['kunden']['tkunde'][$i]['cZusatz']         = trim($cryptoService->decryptXTEA($cZusatz));
-            $xml_obj['kunden']['tkunde'][$i]['tkundenattribut'] = Shop::Container()->getDB()->query(
-                "SELECT * 
+            $xml_obj['kunden']['tkunde'][$i]['tkundenattribut'] = $db->query(
+                'SELECT * 
                     FROM tkundenattribut 
-                    WHERE kKunde = " . (int)$xml_obj['kunden']['tkunde'][$i . ' attr']['kKunde'],
+                    WHERE kKunde = ' . (int)$xml_obj['kunden']['tkunde'][$i . ' attr']['kKunde'],
                 \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
             );
 

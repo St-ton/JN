@@ -47,7 +47,7 @@ function lang_warenkorb_warenkorbLabel(Warenkorb $warenkorb)
     return Shop::Lang()->get('basket', 'checkout') .
         ' (' .
         Preise::getLocalizedPriceString(
-            $warenkorb->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], !Session::CustomerGroup()->isMerchant())
+            $warenkorb->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], !\Session\Session::getCustomerGroup()->isMerchant())
         ) . ')';
 }
 

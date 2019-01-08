@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
 namespace Link;
-
 
 use DB\DbInterface;
 use DB\ReturnType;
@@ -54,7 +53,8 @@ final class LinkList implements LinkListInterface
             return $this->links;
         }
         $linkLanguages = $this->db->query(
-            "SELECT tlink.*, tlinksprache.cISOSprache, 
+            "SELECT tlink.*, tlinksprache.cISOSprache,
+                tlink.cName AS displayName,
                 tlinksprache.cName AS localizedName, 
                 tlinksprache.cTitle AS localizedTitle, 
                 tsprache.kSprache, 
@@ -82,9 +82,9 @@ final class LinkList implements LinkListInterface
                     ON tspezialseite.nLinkart = tlink.nLinkart
                 LEFT JOIN tplugin
                     ON tplugin.kPlugin = tlink.kPlugin
-                WHERE tlink.kLink IN (" . \implode(',', $this->linkIDs) . ")
+                WHERE tlink.kLink IN (" . \implode(',', $this->linkIDs) . ')
                 GROUP BY tlink.kLink, tseo.kSprache
-                ORDER BY tlink.nSort, tlink.cName",
+                ORDER BY tlink.nSort, tlink.cName',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $links         = map(group($linkLanguages, function ($e) {
@@ -114,7 +114,7 @@ final class LinkList implements LinkListInterface
     /**
      * @inheritdoc
      */
-    public function setLinks(Collection $links)
+    public function setLinks(Collection $links): void
     {
         $this->links = $links;
     }
@@ -122,7 +122,7 @@ final class LinkList implements LinkListInterface
     /**
      * @inheritdoc
      */
-    public function addLink(LinkInterface $link)
+    public function addLink(LinkInterface $link): void
     {
         $this->links->push($link);
     }

@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#kampagneDetailStatsDef#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('kampagneDetailStatsDef')}
 <div id="content" class="container-fluid">
     <div id="tabellenLivesuche" class="table-responsive">
         <table class="table">
@@ -7,8 +7,8 @@
             </tr>
             <tr>
                 <td>
-                    {#kampagnePeriod#}: {$cStampText}<br />
-                    {#kampagneOverall#}: {$nGesamtAnzahlDefDetail}
+                    {__('kampagnePeriod')}: {$cStampText}<br />
+                    {__('kampagneOverall')}: {$nGesamtAnzahlDefDetail}
                 </td>
             </tr>
         </table>
@@ -24,7 +24,7 @@
                 <table class="table table-striped">
                     <tr>
                         {foreach name="kampagnendefs" from=$cMember_arr key=cMember item=cMemberAnzeige}
-                            <th class="th-2">{$cMemberAnzeige|truncate:50:"..."}</th>
+                            <th class="th-2">{$cMemberAnzeige|truncate:50:'...'}</th>
                         {/foreach}
                     </tr>
 
@@ -38,11 +38,11 @@
                 </table>
             </div>
         {else}
-            <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+            <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
         {/if}
         <div class="panel-footer">
             <a class="btn btn-default" href="kampagne.php?kKampagne={$oKampagne->kKampagne}&detail=1&token={$smarty.session.jtl_token}">
-                <i class="fa fa-angle-double-left"></i> {#kampagneBackBTN#}
+                <i class="fa fa-angle-double-left"></i> {__('kampagneBackBTN')}
             </a>
         </div>
     </div>

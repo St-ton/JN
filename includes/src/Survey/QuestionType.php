@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -11,7 +11,7 @@ use MyCLabs\Enum\Enum;
 /**
  * Class ComponentPropertyType
  *
- * @package Filter
+ * @package Survey
  * @method static QuestionType MULTI()
  * @method static QuestionType MULTI_SINGLE()
  * @method static QuestionType SELECT_SINGLE()
@@ -25,23 +25,23 @@ use MyCLabs\Enum\Enum;
  */
 class QuestionType extends Enum
 {
-    const MULTI = 'multiple_multi';
+    public const MULTI = 'multiple_multi';
 
-    const MULTI_SINGLE = 'multiple_single';
+    public const MULTI_SINGLE = 'multiple_single';
 
-    const SELECT_SINGLE = 'select_single';
+    public const SELECT_SINGLE = 'select_single';
 
-    const SELECT_MULTI = 'select_multi';
+    public const SELECT_MULTI = 'select_multi';
 
-    const TEXT_SMALL = 'text_klein';
+    public const TEXT_SMALL = 'text_klein';
 
-    const TEXT_BIG = 'text_gross';
+    public const TEXT_BIG = 'text_gross';
 
-    const MATRIX_SINGLE = 'matrix_single';
+    public const MATRIX_SINGLE = 'matrix_single';
 
-    const MATRIX_MULTI = 'matrix_multi';
+    public const MATRIX_MULTI = 'matrix_multi';
 
-    const TEXT_STATIC = 'text_statisch';
+    public const TEXT_STATIC = 'text_statisch';
 
-    const TEXT_PAGE_CHANGE = 'text_statisch_seitenwechsel';
+    public const TEXT_PAGE_CHANGE = 'text_statisch_seitenwechsel';
 }

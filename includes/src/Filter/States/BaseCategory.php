@@ -6,12 +6,11 @@
 
 namespace Filter\States;
 
-
 use DB\ReturnType;
 use Filter\AbstractFilter;
-use Filter\Join;
 use Filter\FilterInterface;
 use Filter\Items\Category;
+use Filter\Join;
 use Filter\ProductFilter;
 
 /**
@@ -20,7 +19,7 @@ use Filter\ProductFilter;
  */
 class BaseCategory extends AbstractFilter
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -84,7 +83,7 @@ class BaseCategory extends AbstractFilter
     public function setSeo(array $languages): FilterInterface
     {
         if ($this->getValue() > 0) {
-            $oSeo_arr = $this->productFilter->getDB()->queryPrepared(
+            $seoData = $this->productFilter->getDB()->queryPrepared(
                 "SELECT tseo.cSeo, tseo.kSprache, tkategorie.cName AS cKatName, tkategoriesprache.cName
                     FROM tseo
                         LEFT JOIN tkategorie
@@ -100,13 +99,13 @@ class BaseCategory extends AbstractFilter
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
-                foreach ($oSeo_arr as $oSeo) {
+                foreach ($seoData as $oSeo) {
                     if ($language->kSprache === (int)$oSeo->kSprache) {
                         $this->cSeo[$language->kSprache] = $oSeo->cSeo;
                     }
                 }
             }
-            foreach ($oSeo_arr as $item) {
+            foreach ($seoData as $item) {
                 if ((int)$item->kSprache === \Shop::getLanguage()) {
                     if (!empty($item->cName)) {
                         $this->setName($item->cName);

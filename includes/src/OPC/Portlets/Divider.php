@@ -6,13 +6,14 @@
 
 namespace OPC\Portlets;
 
+use OPC\Portlet;
 use OPC\PortletInstance;
 
 /**
  * Class Divider
  * @package OPC\Portlets
  */
-class Divider extends \OPC\Portlet
+class Divider extends Portlet
 {
     /**
      * @param PortletInstance $instance
@@ -37,7 +38,7 @@ class Divider extends \OPC\Portlet
      */
     public function getButtonHtml(): string
     {
-        return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Trennlinie';
+        return '<img alt="" class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Trennlinie';
     }
 
     /**

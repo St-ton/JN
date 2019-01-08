@@ -6,7 +6,6 @@
 
 namespace Filter\Pagination;
 
-
 /**
  * Class ItemFactory
  * @package Filter\Pagination

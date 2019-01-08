@@ -3,19 +3,22 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+use Helpers\Request;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_SEPARATOR_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'trennzeichen_inc.php';
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 setzeSprache();
 
 $cHinweis = '';
 $cFehler  = '';
 $step     = 'trennzeichen_uebersicht';
-// Speichern
-if (RequestHelper::verifyGPCDataInt('save') === 1 && FormHelper::validateToken()) {
+if (Request::verifyGPCDataInt('save') === 1 && Form::validateToken()) {
     $oPlausiTrennzeichen = new PlausiTrennzeichen();
     $oPlausiTrennzeichen->setPostVar($_POST);
     $oPlausiTrennzeichen->doPlausi();
@@ -24,17 +27,19 @@ if (RequestHelper::verifyGPCDataInt('save') === 1 && FormHelper::validateToken()
     if (count($xPlausiVar_arr) === 0) {
         if (speicherTrennzeichen($_POST)) {
             $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
-            Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_CORE]);
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_CORE]);
         } else {
             $cFehler = 'Fehler: Ihr Einstellungen konnten nicht gespeichert werden!';
             $smarty->assign('xPostVar_arr', $oPlausiTrennzeichen->getPostVar());
         }
     } else {
         $cFehler = 'Fehler: Bitte füllen Sie alle Pflichtangaben aus!';
-        if (isset($xPlausiVar_arr['nDezimal_' . JTL_SEPARATOR_WEIGHT]) && $xPlausiVar_arr['nDezimal_' . JTL_SEPARATOR_WEIGHT] == 2) {
+        $idx     = 'nDezimal_' . JTL_SEPARATOR_WEIGHT;
+        if (isset($xPlausiVar_arr[$idx]) && $xPlausiVar_arr[$idx] === 2) {
             $cFehler = 'Fehler: Die Anzahl der Dezimalstellen beim Gewicht dürfen nicht größer 4 sein!';
         }
-        if (isset($xPlausiVar_arr['nDezimal_' . JTL_SEPARATOR_AMOUNT]) && $xPlausiVar_arr['nDezimal_' . JTL_SEPARATOR_AMOUNT] == 2) {
+        $idx = 'nDezimal_' . JTL_SEPARATOR_AMOUNT;
+        if (isset($xPlausiVar_arr[$idx]) && $xPlausiVar_arr[$idx] === 2) {
             $cFehler = 'Fehler: Die Anzahl der Dezimalstellen bei der Menge dürfen nicht größer 2 sein!';
         }
         $smarty->assign('xPlausiVar_arr', $oPlausiTrennzeichen->getPlausiVar())

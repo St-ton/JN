@@ -7,7 +7,6 @@
 
 namespace Filter;
 
-
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\ReturnType;
@@ -43,12 +42,7 @@ use function Functional\select;
  */
 class ProductFilter
 {
-    use \MagicCompatibilityTrait;
-
-    /**
-     * @var array
-     */
-    private $languages;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var BaseCategory
@@ -708,8 +702,11 @@ class ProductFilter
         }
         // @todo: how to handle \strlen($params['cSuche']) === 0?
         if ($params['kSuchanfrage'] > 0) {
-            $oSuchanfrage = $this->db->select('tsuchanfrage', 'kSuchanfrage',
-                $params['kSuchanfrage']);
+            $oSuchanfrage = $this->db->select(
+                'tsuchanfrage',
+                'kSuchanfrage',
+                $params['kSuchanfrage']
+            );
             if (isset($oSuchanfrage->cSuche) && \strlen($oSuchanfrage->cSuche) > 0) {
                 $this->search->setName($oSuchanfrage->cSuche);
             }
@@ -730,9 +727,12 @@ class ProductFilter
             $this->searchQuery->setName($params['cSuche']);
             $oSuchanfrage = $this->db->select(
                 'tsuchanfrage',
-                'cSuche', $params['cSuche'],
-                'kSprache', $this->getFilterConfig()->getLanguageID(),
-                'nAktiv', 1,
+                'cSuche',
+                $params['cSuche'],
+                'kSprache',
+                $this->getFilterConfig()->getLanguageID(),
+                'nAktiv',
+                1,
                 false,
                 'kSuchanfrage'
             );
@@ -769,11 +769,11 @@ class ProductFilter
                 'nArtikelProSeite'           => &$limit,
                 'nSeite'                     => &$this->nSeite,
                 'nSortierung'                => $_SESSION['Usersortierung'] ?? null,
-                'bLagerbeachten'             => (int)$this->getFilterConfig()->getConfig('global')['artikel_artikelanzeigefilter'] ===
-                    \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+                'bLagerbeachten'             => (int)$this->getFilterConfig()->getConfig('global')
+                    ['artikel_artikelanzeigefilter'] === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
             ]);
         }
-        $this->nSeite = \max(1, \RequestHelper::verifyGPCDataInt('seite'));
+        $this->nSeite = \max(1, \Helpers\Request::verifyGPCDataInt('seite'));
         foreach ($this->getCustomFilters() as $filter) {
             $filterParam = $filter->getUrlParam();
             $filterClass = $filter->getClassName();
@@ -785,7 +785,8 @@ class ProductFilter
                 // escape all input values
                 if (($filter->getType() === Type::OR && \is_array($_GET[$filterParam]))
                     || ($filter->getType() === Type::AND
-                        && (\RequestHelper::verifyGPCDataInt($filterParam) > 0 || \RequestHelper::verifyGPDataString($filterParam) !== ''))
+                        && (\Helpers\Request::verifyGPCDataInt($filterParam) > 0
+                            || \Helpers\Request::verifyGPDataString($filterParam) !== ''))
                 ) {
                     $filterValue = \is_array($_GET[$filterParam])
                         ? \array_map([$this->db, 'realEscape'], $_GET[$filterParam])
@@ -898,7 +899,7 @@ class ProductFilter
 
     /**
      * @param string $filterClassName
-     * @return int|null
+     * @return int|array|null
      */
     public function getFilterValue(string $filterClassName)
     {
@@ -926,7 +927,7 @@ class ProductFilter
      * @param string $filterClassName
      * @return FilterInterface|null
      */
-    public function getFilterByClassName(string $filterClassName)
+    public function getFilterByClassName(string $filterClassName): ?FilterInterface
     {
         $filter = \array_filter(
             $this->filters,
@@ -943,7 +944,7 @@ class ProductFilter
      * @param string $filterClassName
      * @return FilterInterface|null
      */
-    public function getActiveFilterByClassName(string $filterClassName)
+    public function getActiveFilterByClassName(string $filterClassName): ?FilterInterface
     {
         $filter = \array_filter(
             $this->activeFilters,
@@ -1533,7 +1534,7 @@ class ProductFilter
      */
     public function setUserSort(\Kategorie $category = null): self
     {
-        $gpcSort = \RequestHelper::verifyGPCDataInt('Sortierung');
+        $gpcSort = \Helpers\Request::verifyGPCDataInt('Sortierung');
         // user wants to reset default sorting
         if ($gpcSort === \SEARCH_SORT_STANDARD) {
             unset($_SESSION['Usersortierung'], $_SESSION['nUsersortierungWahl'], $_SESSION['UsersortierungVorSuche']);
@@ -1542,10 +1543,12 @@ class ProductFilter
         if (!isset($_SESSION['Usersortierung'])) {
             unset($_SESSION['nUsersortierungWahl']);
 
-            $_SESSION['Usersortierung'] = (int)$this->getFilterConfig()->getConfig('artikeluebersicht')['artikeluebersicht_artikelsortierung'];
+            $_SESSION['Usersortierung'] = (int)$this->getFilterConfig()->getConfig('artikeluebersicht')
+            ['artikeluebersicht_artikelsortierung'];
         }
         if (!isset($_SESSION['nUsersortierungWahl'])) {
-            $_SESSION['Usersortierung'] = (int)$this->getFilterConfig()->getConfig('artikeluebersicht')['artikeluebersicht_artikelsortierung'];
+            $_SESSION['Usersortierung'] = (int)$this->getFilterConfig()->getConfig('artikeluebersicht')
+            ['artikeluebersicht_artikelsortierung'];
         }
         if (!isset($_SESSION['nUsersortierungWahl']) && $this->getSearch()->getSearchCacheID() > 0) {
             // nur bei initialsuche Sortierung zurücksetzen
@@ -1564,7 +1567,7 @@ class ProductFilter
         }
         // search special sorting
         if ($this->hasSearchSpecial()) {
-            //@todo oooooooooooooooooo!
+            //@todo
             $oSuchspecialEinstellung_arr = $this->getSearchSpecialConfigMapping();
             $idx                         = $this->getSearchSpecial()->getValue();
             $ssConf                      = isset($oSuchspecialEinstellung_arr[$idx]) ?: null;
@@ -1679,7 +1682,8 @@ class ProductFilter
     ): SearchResultsInterface {
         $productsPerPage        = $limit ?? $this->limits->getProductsPerPageLimit();
         $nLimitN                = $productsPerPage * ($this->nSeite - 1);
-        $maxPaginationPageCount = (int)$this->getFilterConfig()->getConfig('artikeluebersicht')['artikeluebersicht_max_seitenzahl'];
+        $maxPaginationPageCount = (int)$this->getFilterConfig()->getConfig('artikeluebersicht')
+        ['artikeluebersicht_max_seitenzahl'];
         $error                  = false;
         if ($this->searchResults === null) {
             $productList         = new Collection();
@@ -1691,8 +1695,12 @@ class ProductFilter
             if (!empty($this->search->getName())) {
                 if ($this->searchQuery->getError() === null) {
                     $this->search->saveQuery($productCount, $this->search->getName(), !$this->bExtendedJTLSearch);
-                    $this->search->setQueryID($this->search->getName(), $this->getFilterConfig()->getLanguageID());
-                    $this->searchQuery->setValue($this->search->getValue())->setSeo($this->getFilterConfig()->getLanguages());
+                    $this->search->setQueryID(
+                        $this->search->getName() ?? '',
+                        $this->getFilterConfig()->getLanguageID()
+                    );
+                    $this->searchQuery->setValue($this->search->getValue())
+                                      ->setSeo($this->getFilterConfig()->getLanguages());
                 } else {
                     $error = $this->searchQuery->getError();
                 }
@@ -1704,10 +1712,10 @@ class ProductFilter
             $minPage = (int)\max($this->nSeite - \floor($maxPaginationPageCount / 2), 1);
             $maxPage = $minPage + $maxPaginationPageCount - 1;
             if ($maxPage > $total) {
-                $diff    = $total - $maxPage;
-                $maxPage = $total;
+                $diff     = $total - $maxPage;
+                $maxPage  = $total;
                 $minPage += $diff;
-                $minPage = (int)\max($minPage, 1);
+                $minPage  = (int)\max($minPage, 1);
             }
             $pages = new Info();
             $pages->setMinPage($minPage);
@@ -1723,7 +1731,14 @@ class ProductFilter
             $productKeys = $this->searchResults->getProductKeys();
         }
         if ($error !== false) {
+            $pages = new Info();
+            $pages->setMinPage(0);
+            $pages->setMaxPage(0);
+            $pages->setTotalPages(0);
+            $pages->setCurrentPage(0);
+
             return $this->searchResults
+                ->setPages($pages)
                 ->setProductCount(0)
                 ->setVisibleProductCount(0)
                 ->setProducts($productList)
@@ -1741,7 +1756,8 @@ class ProductFilter
             $opt->nVariationKombiKinder = 1;
             $opt->nWarenlager           = 1;
             $opt->nRatings              = \PRODUCT_LIST_SHOW_RATINGS === true ? 1 : 0;
-            $opt->nVariationDetailPreis = (int)$this->getFilterConfig()->getConfig('artikeldetails')['artikel_variationspreisanzeige'] !== 0
+            $opt->nVariationDetailPreis = (int)$this->getFilterConfig()->getConfig('artikeldetails')
+            ['artikel_variationspreisanzeige'] !== 0
                 ? 1
                 : 0;
             if ($productsPerPage < 0) {
@@ -1837,8 +1853,11 @@ class ProductFilter
                 // this is the most clean and usual behaviour.
                 // 'misc' and custom contain clean new filters that can be calculated by just iterating over the array
                 foreach ($active as $filter) {
-                    $joins[]      = $filter->getSQLJoin();
-                    $conditions[] = "\n#condition from filter " . $type . "\n" . $filter->getSQLCondition();
+                    $joins[]   = $filter->getSQLJoin();
+                    $condition = $filter->getSQLCondition();
+                    if (!empty($condition)) {
+                        $conditions[] = "\n#condition from filter " . $type . "\n" . $condition;
+                    }
                 }
             }
         }
@@ -1917,16 +1936,18 @@ class ProductFilter
                     $filter[] = $value;
                 }
             }
-        } elseif (\count($_GET) > 0) {
-            foreach ($_GET as $key => $value) {
-                if (\preg_match('/mf\d+/i', $key)) {
-                    $filter[] = (int)$value;
+        } elseif (isset($_SERVER['REQUEST_METHOD'])) {
+            if ($_SERVER['REQUEST_METHOD'] === 'GET' && \count($_GET) > 0) {
+                foreach ($_GET as $key => $value) {
+                    if (\preg_match('/mf\d+/i', $key)) {
+                        $filter[] = (int)$value;
+                    }
                 }
-            }
-        } elseif (\count($_POST) > 0) {
-            foreach ($_POST as $key => $value) {
-                if (\preg_match('/mf\d+/i', $key)) {
-                    $filter[] = (int)$value;
+            } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && \count($_POST) > 0) {
+                foreach ($_POST as $key => $value) {
+                    if (\preg_match('/mf\d+/i', $key)) {
+                        $filter[] = (int)$value;
+                    }
                 }
             }
         }
@@ -1966,8 +1987,8 @@ class ProductFilter
         } else {
             $i = 1;
             while ($i < 20) {
-                if (\RequestHelper::verifyGPCDataInt('sf' . $i) > 0) {
-                    $filter[] = \RequestHelper::verifyGPCDataInt('sf' . $i);
+                if (\Helpers\Request::verifyGPCDataInt('sf' . $i) > 0) {
+                    $filter[] = \Helpers\Request::verifyGPCDataInt('sf' . $i);
                 }
                 ++$i;
             }
@@ -2008,8 +2029,8 @@ class ProductFilter
         } else {
             $i = 1;
             while ($i < 20) {
-                if (\RequestHelper::verifyGPCDataInt('tf' . $i) > 0) {
-                    $filter[] = \RequestHelper::verifyGPCDataInt('tf' . $i);
+                if (\Helpers\Request::verifyGPCDataInt('tf' . $i) > 0) {
+                    $filter[] = \Helpers\Request::verifyGPCDataInt('tf' . $i);
                 }
                 ++$i;
             }

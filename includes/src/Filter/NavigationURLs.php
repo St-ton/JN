@@ -6,14 +6,13 @@
 
 namespace Filter;
 
-
 /**
  * Class NavigationURLs
  * @package Filter
  */
 class NavigationURLs implements NavigationURLsInterface
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array

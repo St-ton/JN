@@ -17,7 +17,7 @@
                 {include file='productlist/header.tpl'}
             {/block}
             {assign var='style' value='gallery'}
-            {if isset($boxes.left) && !$bExclusive && !empty($boxes.left)}
+            {if !$bExclusive && !empty($boxes.left)}
                 {assign var='grid' value='col-xs-6 col-lg-4'}
             {else}
                 {assign var='grid' value='col-xs-6 col-md-4'}

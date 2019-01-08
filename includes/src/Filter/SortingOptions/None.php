@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
 namespace Filter\SortingOptions;
-
 
 use Filter\ProductFilter;
 
@@ -16,15 +15,15 @@ use Filter\ProductFilter;
 class None extends AbstractSortingOption
 {
     /**
-     * SortDefault constructor.
+     * None constructor.
      * @param ProductFilter $productFilter
      */
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->orderBy = '';
+        $this->setOrderBy('');
         $this->setName('');
         $this->setPriority(-1);
-        $this->setValue(SEARCH_SORT_NONE);
+        $this->setValue(\SEARCH_SORT_NONE);
     }
 }

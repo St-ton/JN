@@ -6,7 +6,6 @@
 
 namespace Filter;
 
-
 use function Functional\reduce_left;
 
 /**
@@ -37,7 +36,8 @@ class ProductFilterSQL implements ProductFilterSQLInterface
     /**
      * @inheritdoc
      */
-    public function getBaseQuery(StateSQLInterface $state, string $type = 'filter'): string {
+    public function getBaseQuery(StateSQLInterface $state, string $type = 'filter'): string
+    {
         $select     = $state->getSelect();
         $joins      = $state->getJoins();
         $conditions = $state->getConditions();
@@ -57,10 +57,11 @@ class ProductFilterSQL implements ProductFilterSQLInterface
             ->setTable('tartikelsichtbarkeit')
             ->setOrigin(__CLASS__)
             ->setOn('tartikel.kArtikel = tartikelsichtbarkeit.kArtikel 
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . $this->productFilter->getFilterConfig()->getCustomerGroupID());
+                        AND tartikelsichtbarkeit.kKundengruppe = ' .
+                $this->productFilter->getFilterConfig()->getCustomerGroupID());
         // remove duplicate joins
         $checked = [];
-        $joins   = reduce_left($joins, function(JoinInterface $value, $i, $c, $reduction) use (&$checked) {
+        $joins   = reduce_left($joins, function (JoinInterface $value, $i, $c, $reduction) use (&$checked) {
             $key = $value->getTable();
             if (!\in_array($key, $checked, true)) {
                 $checked[]   = $key;
@@ -151,7 +152,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
         if ($filterType === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
             || $filterType === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
         ) {
-            $or = $filterType === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+            $or        = $filterType === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
                 ? " OR tartikel.cLagerKleinerNull = 'Y'"
                 : '';
             $filterSQL = ($withAnd === true ? ' AND ' : ' ') .
@@ -165,7 +166,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
                             WHERE teigenschaft.kArtikel = tartikel.kArtikel
                         ) > 0
                     )" . $or .
-                ")";
+                ')';
         }
         \executeHook(\HOOK_STOCK_FILTER, [
             'conf'      => $filterType,

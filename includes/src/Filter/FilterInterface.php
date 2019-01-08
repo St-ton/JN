@@ -6,7 +6,6 @@
 
 namespace Filter;
 
-
 /**
  * Interface FilterInterface
  * @package Filter
@@ -191,7 +190,7 @@ interface FilterInterface
      *
      * @return string|null
      */
-    public function getName();
+    public function getName(): ?string;
 
     /**
      * get the GET parameter used in frontend for filtering products
@@ -346,7 +345,7 @@ interface FilterInterface
      * @param string|null
      * @return string
      */
-    public function getUnsetFilterURL($idx = null);
+    public function getUnsetFilterURL($idx = null): ?string;
 
     /**
      * @return array
@@ -395,7 +394,7 @@ interface FilterInterface
     /**
      * @return string|null
      */
-    public function getIcon();
+    public function getIcon(): ?string;
 
     /**
      * @return Option|Option[]

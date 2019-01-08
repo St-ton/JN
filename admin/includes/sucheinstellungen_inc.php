@@ -24,8 +24,8 @@ function createSearchIndex($index, $create)
     try {
         if (Shop::Container()->getDB()->query(
             "SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'",
-            \DB\ReturnType::SINGLE_OBJECT)
-        ) {
+            \DB\ReturnType::SINGLE_OBJECT
+        )) {
             Shop::Container()->getDB()->executeQuery(
                 "ALTER TABLE $index DROP KEY idx_{$index}_fulltext",
                 \DB\ReturnType::QUERYSINGLE
@@ -74,7 +74,7 @@ function createSearchIndex($index, $create)
             );
             $res = Shop::Container()->getDB()->executeQuery(
                 "ALTER TABLE $index
-                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $rows) . ")",
+                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $rows) . ')',
                 \DB\ReturnType::QUERYSINGLE
             );
         } catch (Exception $e) {
@@ -82,7 +82,8 @@ function createSearchIndex($index, $create)
         }
 
         if ($res === 0) {
-            $cFehler      = 'Der Index für die Volltextsuche konnte nicht angelegt werden! Die Volltextsuche wird deaktiviert.';
+            $cFehler      = 'Der Index für die Volltextsuche konnte nicht angelegt werden! ' .
+                'Die Volltextsuche wird deaktiviert.';
             $shopSettings = Shopsetting::getInstance();
             $settings     = $shopSettings[Shopsetting::mapSettingName(CONF_ARTIKELUEBERSICHT)];
 
@@ -90,7 +91,7 @@ function createSearchIndex($index, $create)
                 $settings['suche_fulltext'] = 'N';
                 saveAdminSectionSettings(CONF_ARTIKELUEBERSICHT, $settings);
 
-                Shop::Cache()->flushTags([
+                Shop::Container()->getCache()->flushTags([
                     CACHING_GROUP_OPTION,
                     CACHING_GROUP_CORE,
                     CACHING_GROUP_ARTICLE,

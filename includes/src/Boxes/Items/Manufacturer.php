@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -6,10 +6,9 @@
 
 namespace Boxes\Items;
 
-
 /**
  * Class Manufacturer
- * @package Boxes
+ * @package Boxes\Items
  */
 final class Manufacturer extends AbstractBox
 {
@@ -26,7 +25,7 @@ final class Manufacturer extends AbstractBox
     {
         parent::__construct($config);
         parent::addMapping('manufacturers', 'Manufacturers');
-        $this->setManufacturers(\HerstellerHelper::getInstance()->getManufacturers());
+        $this->setManufacturers(\Helpers\Manufacturer::getInstance()->getManufacturers());
         $this->setShow(\count($this->manufacturerList) > 0);
     }
 
@@ -41,7 +40,7 @@ final class Manufacturer extends AbstractBox
     /**
      * @param array $manufacturers
      */
-    public function setManufacturers(array $manufacturers)
+    public function setManufacturers(array $manufacturers): void
     {
         $this->manufacturerList = $manufacturers;
     }

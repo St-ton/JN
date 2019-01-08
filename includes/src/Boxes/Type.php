@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -6,11 +6,10 @@
 
 namespace Boxes;
 
-
 use MyCLabs\Enum\Enum;
 
 /**
- * Class ComponentPropertyType
+ * Class Type
  *
  * @package Boxes
  * @method Type DEFAULT()
@@ -21,17 +20,19 @@ use MyCLabs\Enum\Enum;
  */
 class Type extends Enum
 {
-    const DEFAULT = 'default';
+    public const DEFAULT = 'default';
 
-    const PLUGIN = 'plugin';
+    public const PLUGIN = 'plugin';
 
-    const TEXT = 'text';
+    public const TEXT = 'text';
 
-    const LINK = 'link';
+    public const LINK = 'link';
 
-    const CATBOX = 'catbox';
+    public const CATBOX = 'catbox';
 
-    const TPL = 'tpl';
+    public const TPL = 'tpl';
 
-    const CONTAINER = 'container';
+    public const CONTAINER = 'container';
+
+    public const EXTENSION = 'extension';
 }

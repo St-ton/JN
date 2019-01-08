@@ -6,15 +6,19 @@
 
 namespace Session;
 
+use phpDocumentor\Reflection\Types\Self_;
 use Session\Handler\SessionHandlerDB;
 use Session\Handler\SessionHandlerJTL;
 
 /**
  * Class AdminSession
+ * @package Session
  */
 class AdminSession
 {
-    const DEFAULT_SESSION = 'JTLSHOP';
+    public const DEFAULT_SESSION = 'JTLSHOP';
+
+    public const SESSION_HASH_KEY = 'session.hash';
 
     /**
      * @var int
@@ -34,14 +38,14 @@ class AdminSession
     /**
      * @var AdminSession
      */
-    private static $_instance;
+    private static $instance;
 
     /**
      * @return AdminSession
      */
     public static function getInstance(): self
     {
-        return self::$_instance ?? new self();
+        return self::$instance ?? new self();
     }
 
     /**
@@ -49,10 +53,10 @@ class AdminSession
      */
     public function __construct()
     {
-        self::$_instance = $this;
+        self::$instance = $this;
         \session_name('eSIdAdm');
 
-        self::$handler = \ES_SESSIONS === 1
+        self::$handler  = \ES_SESSIONS === 1
             ? new SessionHandlerDB(\Shop::Container()->getDB(), 'tadminsession')
             : new SessionHandlerJTL();
         $conf           = \Shop::getSettings([\CONF_GLOBAL])['global'];
@@ -75,7 +79,7 @@ class AdminSession
             $set    = true;
             $domain = $conf['global_cookie_domain'];
         }
-        if (isset($conf['global_cookie_lifetime']) 
+        if (isset($conf['global_cookie_lifetime'])
             && \is_numeric($conf['global_cookie_lifetime'])
             && (int)$conf['global_cookie_lifetime'] > 0
         ) {
@@ -144,5 +148,33 @@ class AdminSession
     public static function set($key, $value)
     {
         return self::$handler->set($key, $value);
+    }
+
+    /**
+     * @return string
+     */
+    private static function createHash(): string
+    {
+        return \function_exists('mhash')
+            ? \bin2hex(\mhash(\MHASH_SHA1, \Shop::getApplicationVersion()))
+            : \sha1(\Shop::getApplicationVersion());
+    }
+
+    /**
+     * @return $this
+     */
+    public function reHash(): self
+    {
+        self::set(self::SESSION_HASH_KEY, self::createHash());
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isValid(): bool
+    {
+        return self::get(self::SESSION_HASH_KEY, '') === self::createHash();
     }
 }

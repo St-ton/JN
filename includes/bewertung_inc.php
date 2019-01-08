@@ -75,7 +75,8 @@ function speicherBewertung(int $productID, int $customerID, int $langID, $title,
     unset($oBewertungBereitsVorhanden);
     if ($nFreischalten === 0) {
         if ($reward > 0) {
-            header('Location: ' . $url . 'bewertung_anzeigen=1&fB=' .
+            header(
+                'Location: ' . $url . 'bewertung_anzeigen=1&fB=' .
                 $reward . '&cHinweis=h04',
                 true,
                 301
@@ -174,7 +175,8 @@ function speicherHilfreich(int $productID, int $customerID, int $langID, int $pa
             executeHook(HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNGHILFREICH, ['rating' => &$helpfulRating]);
 
             Shop::Container()->getDB()->insert('tbewertunghilfreich', $helpfulRating);
-            header('Location: ' . Shop::getURL() . '/?a=' . $productID .
+            header(
+                'Location: ' . Shop::getURL() . '/?a=' . $productID .
                 '&bewertung_anzeigen=1&cHinweis=h02' . $redir,
                 true,
                 303
@@ -214,7 +216,8 @@ function speicherHilfreich(int $productID, int $customerID, int $langID, int $pa
             ],
             \DB\ReturnType::AFFECTED_ROWS
         );
-        header('Location: ' . Shop::getURL() . '/?a=' . $productID .
+        header(
+            'Location: ' . Shop::getURL() . '/?a=' . $productID .
             '&bewertung_anzeigen=1&cHinweis=h03' . $redir,
             true,
             303
@@ -270,7 +273,7 @@ function aktualisiereDurchschnitt(int $productID, string $activate): bool
  * @param int $customerID
  * @return int
  */
-function pruefeKundeArtikelBewertet(int $productID, int $customerID)
+function pruefeKundeArtikelBewertet(int $productID, int $customerID): int
 {
     if ($customerID > 0) {
         $oBewertung = Shop::Container()->getDB()->select(
@@ -291,7 +294,7 @@ function pruefeKundeArtikelBewertet(int $productID, int $customerID)
  * @param int $customerID
  * @return int
  */
-function pruefeKundeArtikelGekauft(int $productID, int $customerID)
+function pruefeKundeArtikelGekauft(int $productID, int $customerID): int
 {
     // Prüfen ob der Bewerter diesen Artikel bereits gekauft hat
     if ($customerID > 0 && $productID > 0 && Shop::getSettingValue(CONF_BEWERTUNG, 'bewertung_artikel_gekauft')) {
@@ -391,13 +394,13 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
         $ratingBonus->kBewertung     = $ratingID;
         $ratingBonus->kKunde         = $customerID;
         $ratingBonus->fGuthabenBonus = $reward;
-        $ratingBonus->dDatum         = 'now()';
+        $ratingBonus->dDatum         = 'NOW()';
 
         if (Shop::Container()->getDB()->select(
-                'tbewertungguthabenbonus',
-                ['kBewertung', 'kKunde'],
-                [$ratingID, $customerID]) !== null
-        ) {
+            'tbewertungguthabenbonus',
+            ['kBewertung', 'kKunde'],
+            [$ratingID, $customerID]
+        ) !== null) {
             Shop::Container()->getDB()->queryPrepared(
                 'UPDATE tbewertungguthabenbonus 
                     SET fGuthabenBonus = :reward 
@@ -408,7 +411,6 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
                 ],
                 \DB\ReturnType::SINGLE_OBJECT
             );
-
         } else {
             Shop::Container()->getDB()->insert('tbewertungguthabenbonus', $ratingBonus);
         }
@@ -437,12 +439,12 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
         $ratingBonus->kBewertung     = $ratingID;
         $ratingBonus->kKunde         = $customerID;
         $ratingBonus->fGuthabenBonus = $reward;
-        $ratingBonus->dDatum         = 'now()';
+        $ratingBonus->dDatum         = 'NOW()';
         if (Shop::Container()->getDB()->select(
-                'tbewertungguthabenbonus',
-                ['kBewertung', 'kKunde'],
-                [$ratingID, $customerID]) !== null
-        ) {
+            'tbewertungguthabenbonus',
+            ['kBewertung', 'kKunde'],
+            [$ratingID, $customerID]
+        ) !== null) {
             Shop::Container()->getDB()->queryPrepared(
                 'UPDATE tbewertungguthabenbonus 
                     SET fGuthabenBonus = :reward 
@@ -470,7 +472,7 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
  * @param int $ratingID
  * @return bool
  */
-function BewertungsGuthabenBonusLoeschen(int $ratingID)
+function BewertungsGuthabenBonusLoeschen(int $ratingID): bool
 {
     $rating = Shop::Container()->getDB()->select('tbewertung', 'kBewertung', $ratingID);
     if ($rating === null || $rating->kBewertung <= 0) {

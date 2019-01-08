@@ -21,7 +21,7 @@
                 <div class="radio">
                     <label for="billpay_b2b_no">
                         <input type="radio" name="billpay_b2b" id="billpay_b2b_no" value="0" {if $cData_arr.billpay_b2b == 0}checked="checked"{/if} />
-                        Privatkunde<span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span>
+                        Privatkunde<span class="optional"> - {lang key='optional'}</span>
                     </label>
                 </div>
                 {*/if*}
@@ -30,7 +30,7 @@
                 <div class="radio">
                     <label for="billpay_b2b_yes">
                         <input type="radio" name="billpay_b2b" id="billpay_b2b_yes" value="1" {if $cData_arr.billpay_b2b == 1}checked="checked"{/if} />
-                        Gesch&auml;ftskunde<span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span>
+                        Gesch&auml;ftskunde<span class="optional"> - {lang key='optional'}</span>
                     </label>
                 </div>
                 {*/if*}
@@ -54,7 +54,7 @@
 
                 {if $cAdditionalCustomer_arr.dGeburtstag}
                     <div class="form-group{if $cMissing_arr.dGeburtstag > 0} has-error{/if}">
-                        <label class="control-label col-xs-4" for="dGeburtstag">{lang key='birthday' section='account data'}<span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span></label>
+                        <label class="control-label col-xs-4" for="dGeburtstag">{lang key='birthday' section='account data'}<span class="optional"> - {lang key='optional'}</span></label>
                         <div class="col-xs-8">
                             <input type="text" name="dGeburtstag" value="{$cData_arr.dGeburtstag}" id="dGeburtstag" class="form-control birthday" />
                             {if $cMissing_arr.dGeburtstag > 0}
@@ -97,7 +97,7 @@
                                 <option value="m" {if $cData_arr.cAnrede === 'm'}selected="selected"{/if}>{lang key='salutationM'}</option>
                                 <option value="w" {if $cData_arr.cAnrede === 'w'}selected="selected"{/if}>{lang key='salutationW'}</option>
                             </select>
-                            <label for="firstName" class="control-label">{lang key='salutation' section='account data'}<span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span></label></div>
+                            <label for="firstName" class="control-label">{lang key='salutation' section='account data'}<span class="optional"> - {lang key='optional'}</span></label></div>
                     </div>
                     <div class="col-xs-12 col-md-6">
                         <div class="form-group float-label-control">
@@ -217,7 +217,7 @@
                 </div>
 
                 <div class="form-group{if $cMissing_arr.cUSTID > 0} has-error{/if}">
-                    <label class="control-label" for="cUSTID">USt-IdNr.<span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span></label>
+                    <label class="control-label" for="cUSTID">USt-IdNr.<span class="optional"> - {lang key='optional'}</span></label>
                     <input class="form-control" type="text" name="cUSTID" value="{$cData_arr.cUSTID}" id="cUSTID">
                     {if $cMissing_arr.cUSTID > 0}
                         <div class="alert alert-danger">{lang key='fillOut' section='global'}</div>
@@ -225,7 +225,7 @@
                 </div>
 
                 <div class="form-group{if $cMissing_arr.cHrn > 0} has-error{/if}">
-                    <label class="control-label" for="cHrn">Handelsregisternummer<span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span></label>
+                    <label class="control-label" for="cHrn">Handelsregisternummer<span class="optional"> - {lang key='optional'}</span></label>
                     <input class="form-control" type="text" name="cHrn" value="{$cData_arr.cHrn}" id="cHrn">
                     {if $cMissing_arr.cHrn > 0}
                         <div class="alert alert-danger">{lang key='fillOut' section='global'}</div>

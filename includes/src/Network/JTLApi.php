@@ -6,8 +6,6 @@
 
 namespace Network;
 
-use JTLShop\SemVer\Compare;
-use JTLShop\SemVer\Parser;
 use JTLShop\SemVer\Version;
 
 /**
@@ -16,9 +14,9 @@ use JTLShop\SemVer\Version;
  */
 final class JTLApi
 {
-    const URI = 'https://api.jtl-software.de/shop';
+    public const URI = 'https://api.jtl-software.de/shop';
 
-    const URI_VERSION = 'https://api.jtl-shop.de';
+    public const URI_VERSION = 'https://api.jtl-shop.de';
 
     /**
      * @var array
@@ -31,41 +29,22 @@ final class JTLApi
     private $nice;
 
     /**
-     * @var \Shop
-     */
-    private $shop;
-
-    /**
      * JTLApi constructor.
      * @param array $session
      * @param \Nice $nice
-     * @param \Shop $shop
      */
-    public function __construct(array &$session, \Nice $nice, \Shop $shop)
+    public function __construct(array &$session, \Nice $nice)
     {
-        $this->session = $session;
+        $this->session = &$session;
         $this->nice    = $nice;
-        $this->shop    = $shop;
     }
 
     /**
-     *
+     * @return \stdClass|null
      */
-    private function init()
-    {
-        if (!isset($this->session['rs'])) {
-            $this->session['rs'] = [];
-        }
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSubscription()
+    public function getSubscription(): ?\stdClass
     {
         if (!isset($this->session['rs']['subscription'])) {
-
-
             $uri          = self::URI . '/check/subscription';
             $subscription = $this->call($uri, [
                 'key'    => $this->nice->getAPIKey(),
@@ -73,44 +52,47 @@ final class JTLApi
             ]);
 
             $this->session['rs']['subscription'] = (isset($subscription->kShop) && $subscription->kShop > 0)
-                ? $subscription : null;
+                ? $subscription
+                : null;
         }
 
         return $this->session['rs']['subscription'];
     }
 
     /**
-     * @return mixed
+     * @return bool|null|string
      */
     public function getAvailableVersions()
     {
         if (!isset($this->session['rs']['versions'])) {
-            $uri = self::URI_VERSION . '/versions';
-            $this->session['rs']['versions'] = $this->call($uri);
+            $this->session['rs']['versions'] = $this->call(self::URI_VERSION . '/versions');
         }
 
         return $this->session['rs']['versions'];
     }
 
     /**
-     * @return mixed
+     * @return Version
      */
     public function getLatestVersion(): Version
     {
-        $shopVersion       = $this->shop->_getVersion();
-        $parsedShopVersion = Parser::parse($shopVersion);
+        $shopVersion       = \APPLICATION_VERSION;
+        $parsedShopVersion = Version::parse($shopVersion);
         $oVersions         = $this->getAvailableVersions();
 
         $oNewerVersions = \array_filter((array)$oVersions, function ($v) use ($parsedShopVersion) {
-            return Compare::greaterThan(Parser::parse($v->reference), $parsedShopVersion);
+            return Version::parse($v->reference)->greaterThan($parsedShopVersion);
         });
 
         if (\count($oNewerVersions) > 0) {
-            return $oNewerVersions;
+            $reverseVersionsArr = \array_reverse($oNewerVersions);
+            $version            = \end($reverseVersionsArr);
         } else {
             $oVersion = \end($oVersions);
-            return Parser::parse($oVersion->reference);
+            $version  = Version::parse($oVersion->reference);
         }
+
+        return $version;
     }
 
     /**
@@ -122,20 +104,17 @@ final class JTLApi
             return false;
         }
 
-        $shopVersion = $this->shop->_getVersion();
-        $oVersion    = $this->getLatestVersion();
-
-        return isset($oVersion) && Compare::greaterThan($oVersion, Parser::parse($shopVersion));
+        return $this->getLatestVersion()->greaterThan(Version::parse(\APPLICATION_VERSION));
     }
 
     /**
      * @param string $uri
      * @param null   $data
-     * @return mixed|null
+     * @return string|bool|null
      */
     private function call($uri, $data = null)
     {
-        $content = \RequestHelper::http_get_contents($uri, 10, $data);
+        $content = \Helpers\Request::http_get_contents($uri, 10, $data);
 
         return empty($content) ? null : \json_decode($content);
     }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -6,10 +6,9 @@
 
 namespace Boxes\Items;
 
-
 /**
- * Class CompareList
- * @package Boxes
+ * Class Plain
+ * @package Boxes\Items
  */
 final class Plain extends AbstractBox
 {
@@ -26,7 +25,7 @@ final class Plain extends AbstractBox
     /**
      * @inheritdoc
      */
-    public function map(array $boxData)
+    public function map(array $boxData): void
     {
         parent::map($boxData);
         $this->setShow(!empty($this->getContent(\Shop::getLanguageID())));

@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTLShop\SemVer\Version;
+
 ob_start();
 require_once __DIR__ . '/syncinclude.php';
 
@@ -24,33 +26,39 @@ if (auth()) {
             }
             removeTemporaryFiles($xmlFile);
         }
-        removeTemporaryFiles($unzipPath);
+        removeTemporaryFiles($unzipPath, true);
     }
 }
 echo $return;
 
 /**
  * @param SimpleXMLElement $xml
+ *
+ * @throws \Exceptions\CircularReferenceException
+ * @throws \Exceptions\ServiceNotFoundException
  */
 function bildercheck_xml(SimpleXMLElement $xml)
 {
+    $db     = Shop::Container()->getDB();
     $found  = [];
     $sqls   = [];
     $object = get_object($xml);
     foreach ($object->items as $item) {
-        $hash   = Shop::Container()->getDB()->escape($item->hash);
+        $hash   = $db->escape($item->hash);
         $sqls[] = "(kBild={$item->id} && cPfad='{$hash}')";
     }
     $sqlOr  = implode(' || ', $sqls);
     $sql    = "SELECT kBild AS id, cPfad AS hash FROM tbild WHERE {$sqlOr}";
-    $images = Shop::Container()->getDB()->query($sql, \DB\ReturnType::ARRAY_OF_OBJECTS);
+    $images = $db->query($sql, \DB\ReturnType::ARRAY_OF_OBJECTS);
     if ($images !== false) {
         foreach ($images as $image) {
             $storage = PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $image->hash;
             if (!file_exists($storage)) {
-                Shop::Container()->getLogService()->debug("Dropping orphan {$image->id} -> {$image->hash}: no such file");
-                Shop::Container()->getDB()->delete('tbild', 'kBild', $image->id);
-                Shop::Container()->getDB()->delete('tartikelpict', 'kBild', $image->id);
+                Shop::Container()->getLogService()->debug(
+                    'Dropping orphan ' . $image->id . ' -> ' . $image->hash . ': no such file'
+                );
+                $db->delete('tbild', 'kBild', $image->id);
+                $db->delete('tartikelpict', 'kBild', $image->id);
             }
             $found[] = $image->id;
         }
@@ -79,7 +87,7 @@ function bildercheck_xml(SimpleXMLElement $xml)
     }, $missing);
 
     $idlist = implode(';', $ids);
-    push_response("0;\n<bildcheck><notfound>{$idlist}</notfound></bildcheck>");
+    push_response("0;\n<bildcheck><notfound>" . $idlist . '</notfound></bildcheck>');
 }
 
 /**
@@ -144,7 +152,7 @@ function cloud_download($hash)
 function download($url)
 {
     $ch           = curl_init($url);
-    $version      = \JTLShop\SemVer\Parser::parse(APPLICATION_VERSION);
+    $version      = Version::parse(APPLICATION_VERSION);
     $versionShort = sprintf('%d%02d', $version->getMajor(), $version->getMinor());
 
     curl_setopt($ch, CURLOPT_TIMEOUT, 1000);

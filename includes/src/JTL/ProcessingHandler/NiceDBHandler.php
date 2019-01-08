@@ -12,7 +12,7 @@ use Monolog\Logger;
 
 /**
  * Class NiceDBHandler
- * @package Services\JTL
+ * @package JTL\ProcessingHandler
  */
 class NiceDBHandler extends AbstractProcessingHandler
 {
@@ -50,6 +50,7 @@ class NiceDBHandler extends AbstractProcessingHandler
                 'cLog'      => $record['formatted'],
                 'kKey'      => $context,
                 'dErstellt' => $record['datetime']->format('Y-m-d H:i:s'),
-            ]);
+            ]
+        );
     }
 }

@@ -13,19 +13,19 @@ namespace Cron;
 final class JobHydrator
 {
     private static $mapping = [
-        'kCron'            => 'CronID',
-        'cJobArt'          => 'Type',
-        'nLimitM'          => 'Limit',
-        'nLimitN'          => 'Executed',
-        'kKey'             => 'ForeignKeyID',
-        'cKey'             => 'ForeignKey',
-        'cTabelle'         => 'Table',
-        'kJobQueue'        => 'QueueID',
-        'dLetzterStart'    => 'DateLastStarted',
-        'dZuletztGelaufen' => 'DateLastStarted',
-        'dStartZeit'       => 'StartTime',
-        'nAlleXStd'        => 'Frequency',
-        'nInArbeit'        => 'Running'
+        'cronID'        => 'CronID',
+        'jobType'       => 'Type',
+        'taskLimit'     => 'Limit',
+        'tasksExecuted' => 'Executed',
+        'foreignKeyID'  => 'ForeignKeyID',
+        'foreignKey'    => 'ForeignKey',
+        'tableName'     => 'TableName',
+        'jobQueueID'    => 'QueueID',
+        'lastStart'     => 'DateLastStarted',
+        'startTime'     => 'StartTime',
+        'frequency'     => 'Frequency',
+        'isRunning'     => 'Running',
+        'lastFinish'    => 'DateLastFinished'
     ];
 
     /**

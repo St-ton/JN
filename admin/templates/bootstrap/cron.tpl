@@ -81,7 +81,7 @@
                         <label for="cron-type">{__('headingFrequency')}</label>
                     </span>
                     <span class="input-group-wrap">
-                        <input type="number" min="1" max="24" value="24" name="frequency" class="form-control" required>
+                        <input type="number" min="1" value="24" name="frequency" class="form-control" required>
                     </span>
                     <span class="input-group-addon">
                         <label for="cron-type">h</label>

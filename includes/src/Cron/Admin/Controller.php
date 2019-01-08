@@ -56,7 +56,7 @@ final class Controller
      */
     public function resetQueueEntry(int $id): int
     {
-        return $this->db->update('tjobqueue', 'kJobQueue', $id, (object)['nInArbeit' => 0]);
+        return $this->db->update('tjobqueue', 'id', $id, (object)['isRunning' => 0]);
     }
 
     /**
@@ -66,13 +66,13 @@ final class Controller
     public function deleteQueueEntry(int $id): int
     {
         $affected = $this->db->queryPrepared(
-            'DELETE FROM tjobqueue WHERE kCron = :id',
+            'DELETE FROM tjobqueue WHERE cronID = :id',
             ['id' => $id],
             ReturnType::AFFECTED_ROWS
         );
 
         return $affected + $this->db->queryPrepared(
-            'DELETE FROM tcron WHERE kCron = :id',
+            'DELETE FROM tcron WHERE cronID = :id',
             ['id' => $id],
             ReturnType::AFFECTED_ROWS
         );
@@ -90,16 +90,13 @@ final class Controller
         } catch (\InvalidArgumentException $e) {
             return -1;
         }
-        $date            = new \DateTime($post['date']);
-        $ins             = new \stdClass();
-        $ins->nAlleXStd  = (int)$post['frequency'];
-        $ins->cKey       = '';
-        $ins->cTabelle   = '';
-        $ins->kKey       = 999;
-        $ins->cJobArt    = $post['type'];
-        $ins->cName      = 'manuell@' . \date('Y-m-d H:i:s');
-        $ins->dStartZeit = \strlen($post['time']) === 5 ? $post['time'] . ':00' : $post['time'];
-        $ins->dStart     = $date->format('Y-m-d H:i:s');
+        $date           = new \DateTime($post['date']);
+        $ins            = new \stdClass();
+        $ins->frequency = (int)$post['frequency'];
+        $ins->jobType   = $post['type'];
+        $ins->name      = 'manuell@' . \date('Y-m-d H:i:s');
+        $ins->startTime = \strlen($post['time']) === 5 ? $post['time'] . ':00' : $post['time'];
+        $ins->startDate = $date->format('Y-m-d H:i:s');
 
         return $this->db->insert('tcron', $ins);
     }
@@ -127,20 +124,22 @@ final class Controller
     {
         $jobs = [];
         $all  = $this->db->query(
-            'SELECT tcron.*, tjobqueue.nInArbeit, tjobqueue.kJobQueue
+            'SELECT tcron.*, tjobqueue.isRunning, tjobqueue.jobQueueID
                 FROM tcron
                 LEFT JOIN tjobqueue
-                    ON tcron.kCron = tjobqueue.kCron',
+                    ON tcron.cronID = tjobqueue.cronID',
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($all as $cron) {
-            $cron->kJobQueue = (int)($cron->kJobQueue ?? 0);
-            $cron->kCron     = (int)$cron->kCron;
-            $cron->kKey      = (int)$cron->kKey;
-            $cron->nAlleXStd = (int)$cron->nAlleXStd;
-            $cron->nInArbeit = (bool)$cron->nInArbeit;
+            $cron->jobQueueID = (int)($cron->jobQueueID ?? 0);
+            $cron->cronID     = (int)$cron->cronID;
+            if ($cron->foreignKeyID !== null) {
+                $cron->foreignKeyID = (int)$cron->foreignKeyID;
+            }
+            $cron->frequency = (int)$cron->frequency;
+            $cron->isRunning = (bool)$cron->isRunning;
             $mapper          = new JobTypeToJob();
-            $class           = $mapper->map($cron->cJobArt);
+            $class           = $mapper->map($cron->jobType);
             $job             = new $class($this->db, $this->logger, $this->hydrator);
             /** @var JobInterface $job */
             $jobs[] = $job->hydrate($cron);

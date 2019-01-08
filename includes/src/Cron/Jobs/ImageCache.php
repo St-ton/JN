@@ -69,10 +69,12 @@ class ImageCache extends Job
     public function start(QueueEntry $queueEntry): JobInterface
     {
         parent::start($queueEntry);
+        $this->logger->debug('$this->tasksExecuted: ' . $queueEntry->tasksExecuted);
         $this->logger->debug('Generating image cache - max. ' . $this->getLimit());
-        $res                 = $this->generateImageCache($queueEntry->nLimitN);
-        $queueEntry->nLimitN = $this->nextIndex;
+        $res                   = $this->generateImageCache($queueEntry->tasksExecuted);
+        $queueEntry->tasksExecuted = $this->nextIndex;
         $this->setFinished($res);
+        $this->logger->debug('$this->nextIndex2: ' . $this->nextIndex);
 
         return $this;
     }

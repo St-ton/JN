@@ -125,9 +125,11 @@ if ($cAction !== null && $kExportformat !== null && Form::validateToken()) {
             $kExportqueue = $db->insert('texportqueue', $queue);
 
             $cURL = 'do_export.php?&back=admin&token=' . $_SESSION['jtl_token'] . '&e=' . $kExportqueue;
+            error_log('inserted: ' . $kExportqueue);
             if ($bAsync) {
                 $cURL .= '&ajax';
             }
+            error_log('URL:  ' . $cURL);
             header('Location: ' . $cURL);
             exit;
         case 'download':

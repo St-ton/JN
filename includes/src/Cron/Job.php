@@ -33,11 +33,6 @@ abstract class Job implements JobInterface
     /**
      * @var int
      */
-    private $id = 0;
-
-    /**
-     * @var int
-     */
     private $cronID = 0;
 
     /**
@@ -46,9 +41,9 @@ abstract class Job implements JobInterface
     private $queueID = 0;
 
     /**
-     * @var int
+     * @var int|null
      */
-    private $foreignKeyID = 0;
+    private $foreignKeyID;
 
     /**
      * @var string
@@ -63,12 +58,17 @@ abstract class Job implements JobInterface
     /**
      * @var \DateTime
      */
+    private $dateLastFinished;
+
+    /**
+     * @var \DateTime
+     */
     private $startTime;
 
     /**
      * @var string
      */
-    private $table = '';
+    private $tableName = '';
 
     /**
      * @var bool
@@ -113,6 +113,30 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
+    public function delete(): bool
+    {
+        return $this->db->delete('tjobqueue', 'cronID', $this->getCronID()) > 0;
+    }
+
+    /**
+     * @param QueueEntry $queueEntry
+     * @return bool
+     */
+    public function saveProgress(QueueEntry $queueEntry): bool
+    {
+        $upd                = new \stdClass();
+        $upd->taskLimit     = $queueEntry->taskLimit;
+        $upd->tasksExecuted = $queueEntry->tasksExecuted;
+        $upd->lastProductID = $queueEntry->lastProductID;
+        $upd->lastFinish    = 'NOW()';
+        $upd->isRunning     = 0;
+
+        return $this->db->update('tjobqueue', 'cronID', $this->getCronID(), $upd) >= 0;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function hydrate($data)
     {
         return $this->hydrator->hydrate($this, $data);
@@ -123,9 +147,9 @@ abstract class Job implements JobInterface
      */
     protected function getJobData(): ?\stdClass
     {
-        return $this->getForeignKeyID() > 0 && $this->getForeignKey() !== '' && $this->getTable() !== ''
+        return $this->getForeignKeyID() > 0 && $this->getForeignKey() !== '' && $this->getTableName() !== ''
             ? $this->db->select(
-                $this->getTable(),
+                $this->getTableName(),
                 $this->getForeignKey(),
                 $this->getForeignKeyID()
             )
@@ -169,7 +193,7 @@ abstract class Job implements JobInterface
      */
     public function getID(): int
     {
-        return $this->id;
+        return $this->cronID;
     }
 
     /**
@@ -177,7 +201,7 @@ abstract class Job implements JobInterface
      */
     public function setID(int $id): void
     {
-        $this->id = $id;
+        $this->cronID = $id;
     }
 
     /**
@@ -191,19 +215,37 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function setDateLastStarted($dateLastStarted): void
+    public function setDateLastStarted($date): void
     {
-        $this->dateLastStarted = \is_string($dateLastStarted)
-            ? new \DateTime($dateLastStarted)
-            : $dateLastStarted;
+        $this->dateLastStarted = \is_string($date)
+            ? new \DateTime($date)
+            : $date;
     }
 
     /**
-     * @param string $dateLastStarted
+     * @inheritdoc
      */
-    public function setLastStarted(?string $dateLastStarted): void
+    public function getDateLastFinished(): ?\DateTime
     {
-        $this->dateLastStarted = $dateLastStarted === null ? null : new \DateTime($dateLastStarted);
+        return $this->dateLastFinished;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setDateLastFinished($date): void
+    {
+        $this->dateLastFinished = \is_string($date)
+            ? new \DateTime($date)
+            : $date;
+    }
+
+    /**
+     * @param string $date
+     */
+    public function setLastStarted(?string $date): void
+    {
+        $this->dateLastStarted = $date === null ? null : new \DateTime($date);
     }
 
     /**
@@ -227,7 +269,7 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function getForeignKeyID(): int
+    public function getForeignKeyID(): ?int
     {
         return $this->foreignKeyID;
     }
@@ -235,7 +277,7 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function setForeignKeyID(int $foreignKeyID): void
+    public function setForeignKeyID(?int $foreignKeyID): void
     {
         $this->foreignKeyID = $foreignKeyID;
     }
@@ -243,7 +285,7 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function getForeignKey(): string
+    public function getForeignKey(): ?string
     {
         return $this->foreignKey;
     }
@@ -251,7 +293,7 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function setForeignKey(string $foreignKey): void
+    public function setForeignKey(?string $foreignKey): void
     {
         $this->foreignKey = $foreignKey;
     }
@@ -259,17 +301,17 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function getTable(): string
+    public function getTableName(): ?string
     {
-        return $this->table;
+        return $this->tableName;
     }
 
     /**
      * @inheritdoc
      */
-    public function setTable(string $table): void
+    public function setTableName(?string $tableName): void
     {
-        $this->table = $table;
+        $this->tableName = $tableName;
     }
 
     /**
@@ -280,9 +322,15 @@ abstract class Job implements JobInterface
         $this->setDateLastStarted(new \DateTime());
         $this->db->update(
             'tjobqueue',
-            'kJobQueue',
-            $queueEntry->kJobQueue,
-            (object)['nInArbeit' => $queueEntry->nInArbeit]
+            'jobQueueID',
+            $queueEntry->jobQueueID,
+            (object)['isRunning' => $queueEntry->isRunning, 'lastStart' => 'NOW()']
+        );
+        $this->db->update(
+            'tcron',
+            'cronID',
+            $queueEntry->cronID,
+            (object)['lastStart' => 'NOW()']
         );
 
         return $this;

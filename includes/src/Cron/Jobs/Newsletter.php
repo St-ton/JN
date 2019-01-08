@@ -53,7 +53,7 @@ class Newsletter extends Job
         $campaign        = new \Kampagne($oNewsletter->kKampagne);
         if (\count($customerGroups) === 0) {
             $this->setFinished(true);
-            $this->db->delete('tnewsletterqueue', 'kNewsletter', $queueEntry->kKey);
+            $this->db->delete('tnewsletterqueue', 'kNewsletter', $queueEntry->foreignKeyID);
 
             return $this;
         }
@@ -81,7 +81,7 @@ class Newsletter extends Job
                 WHERE tnewsletterempfaenger.kSprache = ' . (int)$oNewsletter->kSprache . '
                     AND tnewsletterempfaenger.nAktiv = 1 ' . $cgSQL . '
                 ORDER BY tnewsletterempfaenger.kKunde
-                LIMIT ' . $queueEntry->nLimitN . ', ' . $queueEntry->nLimitM,
+                LIMIT ' . $queueEntry->tasksExecuted . ', ' . $queueEntry->taskLimit,
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (\count($recipients) > 0) {
@@ -113,12 +113,12 @@ class Newsletter extends Job
                     (int)$recipient->kNewsletterEmpfaenger,
                     (object)['dLetzterNewsletter' => \date('Y-m-d H:m:s')]
                 );
-                ++$queueEntry->nLimitN;
+                ++$queueEntry->taskLimit;
             }
             $this->setFinished(false);
         } else {
             $this->setFinished(true);
-            $this->db->delete('tnewsletterqueue', 'kNewsletter', $queueEntry->kKey);
+            $this->db->delete('tnewsletterqueue', 'kNewsletter', $queueEntry->foreignKeyID);
         }
 
         return $this;

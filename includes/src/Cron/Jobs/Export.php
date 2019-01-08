@@ -35,17 +35,17 @@ class Export extends Job
      */
     public function updateExportformatQueueBearbeitet(QueueEntry $queueEntry): bool
     {
-        if ($queueEntry->kJobQueue > 0) {
-            $this->db->delete('texportformatqueuebearbeitet', 'kJobQueue', (int)$queueEntry->kJobQueue);
+        if ($queueEntry->jobQueueID > 0) {
+            $this->db->delete('texportformatqueuebearbeitet', 'kJobQueue', (int)$queueEntry->jobQueueID);
 
             $ins                   = new \stdClass();
-            $ins->kJobQueue        = $queueEntry->kJobQueue;
-            $ins->kExportformat    = $queueEntry->kKey;
-            $ins->nLimitN          = $queueEntry->nLimitN;
-            $ins->nLimitM          = $queueEntry->nLimitM;
-            $ins->nInArbeit        = $queueEntry->nInArbeit;
-            $ins->dStartZeit       = $queueEntry->dStartZeit->format('Y-m-d H:i');
-            $ins->dZuletztGelaufen = $queueEntry->dZuletztGelaufen->format('Y-m-d H:i');
+            $ins->kJobQueue        = $queueEntry->jobQueueID;
+            $ins->kExportformat    = $queueEntry->foreignKeyID;
+            $ins->nLimitN          = $queueEntry->taskLimit;
+            $ins->nLimitM          = $queueEntry->tasksExecuted;
+            $ins->nInArbeit        = $queueEntry->isRunning;
+            $ins->dStartZeit       = $queueEntry->startTime->format('Y-m-d H:i');
+            $ins->dZuletztGelaufen = $queueEntry->lastStart->format('Y-m-d H:i');
 
             $this->db->insert('texportformatqueuebearbeitet', $ins);
 

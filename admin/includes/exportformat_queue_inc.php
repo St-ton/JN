@@ -13,19 +13,20 @@ function holeExportformatCron()
 {
     $db      = Shop::Container()->getDB();
     $exports = $db->query(
-        "SELECT texportformat.*, tcron.kCron, tcron.nAlleXStd, tcron.dStart, 
-            DATE_FORMAT(tcron.dStart, '%d.%m.%Y %H:%i') AS dStart_de, tcron.dLetzterStart, 
-            DATE_FORMAT(tcron.dLetzterStart, '%d.%m.%Y %H:%i') AS dLetzterStart_de,
-            DATE_FORMAT(DATE_ADD(tcron.dLetzterStart, INTERVAL tcron.nAlleXStd HOUR), '%d.%m.%Y %H:%i') 
+        "SELECT texportformat.*, tcron.cronID, tcron.frequency, tcron.startDate, 
+            DATE_FORMAT(tcron.startDate, '%d.%m.%Y %H:%i') AS dStart_de, tcron.lastStart, 
+            DATE_FORMAT(tcron.lastStart, '%d.%m.%Y %H:%i') AS dLetzterStart_de,
+            DATE_FORMAT(DATE_ADD(tcron.lastStart, INTERVAL tcron.frequency HOUR), '%d.%m.%Y %H:%i') 
             AS dNaechsterStart_de
             FROM texportformat
-            JOIN tcron ON tcron.cJobArt = 'exportformat'
-                AND tcron.kKey = texportformat.kExportformat
-            ORDER BY tcron.dStart DESC",
+            JOIN tcron 
+                ON tcron.jobType = 'exportformat'
+                AND tcron.foreignKeyID = texportformat.kExportformat
+            ORDER BY tcron.startDate DESC",
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($exports as $export) {
-        $export->cAlleXStdToDays = rechneUmAlleXStunden($export->nAlleXStd);
+        $export->cAlleXStdToDays = rechneUmAlleXStunden($export->frequency);
         $export->Sprache         = $db->select(
             'tsprache',
             'kSprache',
@@ -41,10 +42,11 @@ function holeExportformatCron()
             'kKundengruppe',
             (int)$export->kKundengruppe
         );
-        $export->oJobQueue       = $db->query(
-            "SELECT *, DATE_FORMAT(dZuletztGelaufen, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_de 
+        $export->oJobQueue       = $db->queryPrepared(
+            "SELECT *, DATE_FORMAT(lastStart, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_de 
                 FROM tjobqueue 
-                WHERE kCron = " . (int)$export->kCron,
+                WHERE cronID = :id",
+            ['id' => (int)$export->cronID],
             \DB\ReturnType::SINGLE_OBJECT
         );
         $export->nAnzahlArtikel  = holeMaxExportArtikelAnzahl($export);
@@ -62,13 +64,17 @@ function holeCron($kCron)
     $kCron = (int)$kCron;
     if ($kCron > 0) {
         $oCron = Shop::Container()->getDB()->query(
-            "SELECT *, DATE_FORMAT(tcron.dStart, '%d.%m.%Y %H:%i') AS dStart_de
+            "SELECT *, DATE_FORMAT(tcron.startDate, '%d.%m.%Y %H:%i') AS dStart_de
                 FROM tcron
-                WHERE kCron = " . $kCron,
+                WHERE cronID = " . $kCron,
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        if (!empty($oCron->kCron) && $oCron->kCron > 0) {
+        if (!empty($oCron->cronID) && $oCron->cronID > 0) {
+            $oCron->cronID       = (int)$oCron->cronID;
+            $oCron->frequency    = (int)$oCron->frequency;
+            $oCron->foreignKeyID = (int)($oCron->foreignKeyID ?? 0);
+
             return $oCron;
         }
     }
@@ -150,12 +156,13 @@ function erstelleExportformatCron($kExportformat, $dStart, $nAlleXStunden, $kCro
     if ($kExportformat > 0 && $nAlleXStunden >= 1 && dStartPruefen($dStart)) {
         if ($kCron > 0) {
             // Editieren
-            Shop::Container()->getDB()->query(
+            Shop::Container()->getDB()->queryPrepared(
                 'DELETE tcron, tjobqueue
                     FROM tcron
                     LEFT JOIN tjobqueue 
-                        ON tjobqueue.kCron = tcron.kCron
-                    WHERE tcron.kCron = ' . $kCron,
+                        ON tjobqueue.cronID = tcron.cronID
+                    WHERE tcron.cronID = :id',
+                ['id' => $kCron],
                 \DB\ReturnType::DEFAULT
             );
             $oCron = new Cron(
@@ -174,8 +181,14 @@ function erstelleExportformatCron($kExportformat, $dStart, $nAlleXStunden, $kCro
             return 1;
         }
         // Pruefe ob Exportformat nicht bereits vorhanden
-        $oCron = Shop::Container()->getDB()->select('tcron', 'cKey', 'kExportformat', 'kKey', $kExportformat);
-        if (isset($oCron->kCron) && $oCron->kCron > 0) {
+        $oCron = Shop::Container()->getDB()->select(
+            'tcron',
+            'foreignKey',
+            'kExportformat',
+            'foreignKeyID',
+            $kExportformat
+        );
+        if (isset($oCron->cronID) && $oCron->cronID > 0) {
             return -1;
         }
         $oCron = new Cron(
@@ -227,22 +240,17 @@ function baueENGDate($dateStart, $asTime = false)
 }
 
 /**
- * @param array $kCron_arr
+ * @param int[] $cronIDs
  * @return bool
  */
-function loescheExportformatCron($kCron_arr)
+function loescheExportformatCron(array $cronIDs)
 {
-    if (is_array($kCron_arr) && count($kCron_arr) > 0) {
-        foreach ($kCron_arr as $kCron) {
-            $kCron = (int)$kCron;
-            Shop::Container()->getDB()->delete('tjobqueue', 'kCron', $kCron);
-            Shop::Container()->getDB()->delete('tcron', 'kCron', $kCron);
-        }
-
-        return true;
+    foreach ($cronIDs as $cronID) {
+        Shop::Container()->getDB()->delete('tjobqueue', 'cronID', (int)$cronID);
+        Shop::Container()->getDB()->delete('tcron', 'cronID', (int)$cronID);
     }
 
-    return false;
+    return true;
 }
 
 /**
@@ -309,7 +317,7 @@ function exportformatQueueActionEditieren(Smarty\JTLSmarty $smarty, array &$mess
     $kCron = Request::verifyGPCDataInt('kCron');
     $oCron = $kCron > 0 ? holeCron($kCron) : 0;
 
-    if (is_object($oCron) && $oCron->kCron > 0) {
+    if (is_object($oCron) && $oCron->cronID > 0) {
         $step = 'erstellen';
         $smarty->assign('oCron', $oCron)
                ->assign('oExportformat_arr', holeAlleExportformate());

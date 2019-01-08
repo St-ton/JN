@@ -24,6 +24,17 @@ interface JobInterface
     public function __construct(DbInterface $db, LoggerInterface $logger, JobHydrator $hydrator);
 
     /**
+     * @return bool
+     */
+    public function delete(): bool;
+
+    /**
+     * @param QueueEntry $queueEntry
+     * @return bool
+     */
+    public function saveProgress(QueueEntry $queueEntry): bool;
+
+    /**
      * @param QueueEntry|\stdClass $data
      * @return object
      */
@@ -65,14 +76,24 @@ interface JobInterface
     public function getDateLastStarted(): ?\DateTime;
 
     /**
-     * @param \DateTime|string|null $dateLastStarted
+     * @param \DateTime|string|null $date
      */
-    public function setDateLastStarted($dateLastStarted): void;
+    public function setDateLastStarted($date): void;
 
     /**
-     * @param string|null $dateLastStarted
+     * @inheritdoc
      */
-    public function setLastStarted(?string $dateLastStarted): void;
+    public function getDateLastFinished(): ?\DateTime;
+
+    /**
+     * @inheritdoc
+     */
+    public function setDateLastFinished($date): void;
+
+    /**
+     * @param string|null $date
+     */
+    public function setLastStarted(?string $date): void;
 
     /**
      * @return \DateTime|null
@@ -85,34 +106,34 @@ interface JobInterface
     public function setStartTime($startTime): void;
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getForeignKeyID(): int;
+    public function getForeignKeyID(): ?int;
 
     /**
-     * @param int $foreignKeyID
+     * @param int|null $foreignKeyID
      */
-    public function setForeignKeyID(int $foreignKeyID): void;
+    public function setForeignKeyID(?int $foreignKeyID): void;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getForeignKey(): string;
+    public function getForeignKey(): ?string;
 
     /**
-     * @param string $foreignKey
+     * @param string|null $foreignKey
      */
-    public function setForeignKey(string $foreignKey): void;
+    public function setForeignKey(?string $foreignKey): void;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getTable(): string;
+    public function getTableName(): ?string;
 
     /**
-     * @param string $table
+     * @param string|null $table
      */
-    public function setTable(string $table): void;
+    public function setTableName(?string $table): void;
 
     /**
      * @param QueueEntry $queueEntry

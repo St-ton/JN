@@ -1070,7 +1070,7 @@ function handleOldPriceFormat($objs)
  */
 function handlePriceRange(array $articleIDs)
 {
-    $db            = Shop::Container()->getDB();
+    $db = Shop::Container()->getDB();
     $db->executeQuery(
         'DELETE FROM tpricerange
             WHERE kArtikel IN (' . implode(',', $articleIDs) . ')',

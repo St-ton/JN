@@ -1086,8 +1086,12 @@ class Warenkorb
      * @param bool $excludeShippingCostAttributes
      * @return float|int
      */
-    public function gibGesamtsummeWarenExt(array $posTypes, bool $Brutto = false, string $cISO = '', bool $excludeShippingCostAttributes = false)
-    {
+    public function gibGesamtsummeWarenExt(
+        array $posTypes,
+        bool $Brutto = false,
+        string $cISO = '',
+        bool $excludeShippingCostAttributes = false
+    ) {
         if (!is_array($posTypes)) {
             return 0;
         }

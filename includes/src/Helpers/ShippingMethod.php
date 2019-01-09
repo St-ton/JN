@@ -178,19 +178,18 @@ class ShippingMethod
      */
     public static function getPossibleShippingMethods($lieferland, $plz, $versandklassen, int $kKundengruppe): array
     {
-        $db                       = Shop::Container()->getDB();
-        $cart                     = Session::getCart();
-        $kSteuerklasse            = $cart->gibVersandkostenSteuerklasse();
-        $minVersand               = 10000;
-        $cISO                     = $lieferland;
-        $hasSpecificShippingcosts = self::hasSpecificShippingcosts($lieferland);
-        $vatNote                  = null;
-        $cNurAbhaengigeVersandart = self::normalerArtikelversand($lieferland) === false
+        $db                            = Shop::Container()->getDB();
+        $cart                          = Session::getCart();
+        $kSteuerklasse                 = $cart->gibVersandkostenSteuerklasse();
+        $minVersand                    = 10000;
+        $cISO                          = $lieferland;
+        $hasSpecificShippingcosts      = self::hasSpecificShippingcosts($lieferland);
+        $vatNote                       = null;
+        $cNurAbhaengigeVersandart      = self::normalerArtikelversand($lieferland) === false
             ? 'Y'
             : 'N';
         $excludeShippingCostAttributes = $cNurAbhaengigeVersandart === 'N';
-
-        $methods                  = $db->queryPrepared(
+        $methods                       = $db->queryPrepared(
             "SELECT * FROM tversandart
                 WHERE cNurAbhaengigeVersandart = :depOnly
                     AND cLaender LIKE :iso
@@ -207,7 +206,7 @@ class ShippingMethod
             ],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $netPricesActive          = Session::getCustomerGroup()->isMerchant();
+        $netPricesActive               = Session::getCustomerGroup()->isMerchant();
 
         foreach ($methods as $i => $shippingMethod) {
             $bSteuerPos = $shippingMethod->eSteuer !== 'netto';
@@ -218,7 +217,13 @@ class ShippingMethod
             $shippingMethod->nMinLiefertage     = (int)$shippingMethod->nMinLiefertage;
             $shippingMethod->nMaxLiefertage     = (int)$shippingMethod->nMaxLiefertage;
             $shippingMethod->Zuschlag           = self::getAdditionalFees($shippingMethod, $cISO, $plz);
-            $shippingMethod->fEndpreis          = self::calculateShippingFees($shippingMethod, $cISO, null, 0, $excludeShippingCostAttributes);
+            $shippingMethod->fEndpreis          = self::calculateShippingFees(
+                $shippingMethod,
+                $cISO,
+                null,
+                0,
+                $excludeShippingCostAttributes
+            );
             if ($shippingMethod->fEndpreis === -1) {
                 unset($methods[$i]);
                 continue;
@@ -1026,12 +1031,18 @@ class ShippingMethod
      * @param String            $cISO
      * @param Artikel|stdClass  $oZusatzArtikel
      * @param Artikel|int       $Artikel
-     * @param bool              $excludeShippingCostAttributes - exclude articles with these attributes from weight, amount and count calculation
+     * @param bool              $excludeShippingCostAttributes - exclude articles with these attributes from weight,
+     *  amount and count calculation
      * @return int|string
      * @former berechneVersandpreis()
      */
-    public static function calculateShippingFees($versandart, $cISO, $oZusatzArtikel, $Artikel = 0, $excludeShippingCostAttributes = false)
-    {
+    public static function calculateShippingFees(
+        $versandart,
+        $cISO,
+        $oZusatzArtikel,
+        $Artikel = 0,
+        $excludeShippingCostAttributes = false
+    ) {
         if (!isset($oZusatzArtikel->fAnzahl)) {
             if ($oZusatzArtikel === null) {
                 $oZusatzArtikel = new stdClass();
@@ -1075,7 +1086,12 @@ class ShippingMethod
             case 'vm_versandberechnung_warenwert_jtl':
                 $warenkorbwert  = $Artikel
                     ? $Artikel->Preise->fVKNetto
-                    : Session::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, $cISO, $excludeShippingCostAttributes);
+                    : Session::getCart()->gibGesamtsummeWarenExt(
+                        [\C_WARENKORBPOS_TYP_ARTIKEL],
+                        true,
+                        $cISO,
+                        $excludeShippingCostAttributes
+                    );
                 $warenkorbwert += $oZusatzArtikel->fWarenwertNetto;
                 $versand        = Shop::Container()->getDB()->queryPrepared(
                     'SELECT *
@@ -1097,8 +1113,11 @@ class ShippingMethod
                 $artikelanzahl = 1;
                 if (!$Artikel) {
                     $artikelanzahl = isset($_SESSION['Warenkorb'])
-                        ? Session::getCart()->gibAnzahlArtikelExt([\C_WARENKORBPOS_TYP_ARTIKEL], $cISO, $excludeShippingCostAttributes)
-                        : 0;
+                        ? Session::getCart()->gibAnzahlArtikelExt(
+                            [\C_WARENKORBPOS_TYP_ARTIKEL],
+                            $cISO,
+                            $excludeShippingCostAttributes
+                        ) : 0;
                 }
                 $artikelanzahl += $oZusatzArtikel->fAnzahl;
                 $versand        = Shop::Container()->getDB()->queryPrepared(
@@ -1123,8 +1142,8 @@ class ShippingMethod
         }
         //artikelabhaengiger Versand?
         if ($versandart->cNurAbhaengigeVersandart === 'Y'
-            && (!empty($Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN])
-                || !empty($Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT]))
+            && (!empty($Artikel->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN])
+                || !empty($Artikel->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT]))
         ) {
             $fArticleSpecific = self::gibArtikelabhaengigeVersandkosten($cISO, $Artikel, 1);
             $preis           += $fArticleSpecific->fKosten ?? 0;
@@ -1313,7 +1332,7 @@ class ShippingMethod
                 'cISOSprache',
                 Shop::getLanguageCode()
             );
-            $name             = !empty($VersandartSprache->cName)
+            $name              = !empty($VersandartSprache->cName)
                 ? $VersandartSprache->cName
                 : $oVersandart->cName;
         }

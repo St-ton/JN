@@ -6823,13 +6823,12 @@ class Artikel
      */
     public function isUsedForShippingCostCalculation(string $cISO): bool
     {
-        $oExcludedAttributes_arr = [FKT_ATTRIBUT_VERSANDKOSTEN, FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT];
+        $excludedAttributes = [\FKT_ATTRIBUT_VERSANDKOSTEN, \FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT];
 
-        foreach ($oExcludedAttributes_arr as $cExcludedAttribute) {
+        foreach ($excludedAttributes as $excludedAttribute) {
             if ($cISO !== ''
-                && isset($this->FunktionsAttribute[$cExcludedAttribute])
-                && (strpos($this->FunktionsAttribute[$cExcludedAttribute], $cISO) !== false)
-                && array_key_exists($cExcludedAttribute, $this->FunktionsAttribute)
+                && isset($this->FunktionsAttribute[$excludedAttribute])
+                && (strpos($this->FunktionsAttribute[$excludedAttribute], $cISO) !== false)
             ) {
                 return false;
             }

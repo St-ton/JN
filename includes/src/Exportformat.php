@@ -1300,7 +1300,6 @@ class Exportformat
                     : '';
                 $product->Lieferbar             = $product->fLagerbestand <= 0 ? 'N' : 'Y';
                 $product->Lieferbar_01          = $product->fLagerbestand <= 0 ? 0 : 1;
-                $product->Verfuegbarkeit_kelkoo = $product->fLagerbestand > 0 ? '001' : '003';
 
                 $_out = $this->smarty->assign('Artikel', $product)->fetch('db:' . $this->getExportformat());
                 if (!empty($_out)) {
@@ -1550,7 +1549,6 @@ class Exportformat
                 $product->Artikelbild           = '';
                 $product->Lieferbar             = '';
                 $product->Lieferbar_01          = '';
-                $product->Verfuegbarkeit_kelkoo = '';
                 $product->cBeschreibungHTML     = '';
                 $product->cKurzBeschreibungHTML = '';
                 $product->fUst                  = 0;

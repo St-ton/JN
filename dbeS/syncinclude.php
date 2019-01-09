@@ -1066,12 +1066,12 @@ function handleOldPriceFormat($objs)
 }
 
 /**
- * @param int $kArtikel
+ * @param int[] $articleIDs
  */
-function handlePriceRange(int $kArtikel)
+function handlePriceRange(array $articleIDs)
 {
     $db            = Shop::Container()->getDB();
-    $priceRangeArr = $db->queryPrepared(
+    $priceRangeArr = $db->query(
         "SELECT baseprice.kArtikel,
                 COALESCE(baseprice.kKundengruppe, 0) AS kKundengruppe,
                 COALESCE(baseprice.kKunde, 0) AS kKunde,
@@ -1147,7 +1147,7 @@ function handlePriceRange(int $kArtikel)
             ) varaufpreis 
                 ON varaufpreis.kArtikel = baseprice.kKindArtikel 
                 AND baseprice.nIstVater = 0
-            WHERE baseprice.kArtikel = :kArtikel
+            WHERE baseprice.kArtikel IN (" . implode(',', array_unique($articleIDs)) . ")
             GROUP BY baseprice.kArtikel,
                 baseprice.kKundengruppe,
                 baseprice.kKunde,
@@ -1155,12 +1155,15 @@ function handlePriceRange(int $kArtikel)
                 baseprice.nLagerAnzahlMax,
                 baseprice.dStart,
                 baseprice.dEnde",
-        ['kArtikel' => $kArtikel],
         \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
     );
 
-    $updated = [];
+    $lastArticleID = 0;
     foreach ($priceRangeArr as $priceRange) {
+        if ($lastArticleID !== (int)$priceRange['kArtikel']) {
+            $db->delete('tpricerange', 'kArtikel', $priceRange['kArtikel']);
+            $lastArticleID = (int)$priceRange['kArtikel'];
+        }
         $db->queryPrepared(
             'INSERT INTO tpricerange 
             (kArtikel, kKundengruppe, kKunde, nRangeType, fVKNettoMin, fVKNettoMax, nLagerAnzahlMax, dStart, dEnde)
@@ -1173,23 +1176,6 @@ function handlePriceRange(int $kArtikel)
                     dStart = :dStart,
                     dEnde = :dEnde',
             $priceRange,
-            \DB\ReturnType::AFFECTED_ROWS
-        );
-        $updated[] = "({$priceRange['kKundengruppe']}, {$priceRange['nRangeType']})";
-    }
-
-    if (count($updated) > 0) {
-        $db->queryPrepared(
-            'DELETE FROM tpricerange
-                WHERE kArtikel = :kArtikel
-                    AND (kKundengruppe, nRangeType) NOT IN (' . implode($updated, ', ') . ')',
-            ['kArtikel' => $kArtikel],
-            \DB\ReturnType::AFFECTED_ROWS
-        );
-    } else {
-        $db->queryPrepared(
-            'DELETE FROM tpricerange WHERE kArtikel = :kArtikel',
-            ['kArtikel' => $kArtikel],
             \DB\ReturnType::AFFECTED_ROWS
         );
     }

@@ -44,6 +44,7 @@ if (auth()) {
                 );
             }
         }
+        handlePriceRange($articleIDs);
         removeTemporaryFiles(substr($unzipPath, 0, -1), true);
         clearProductCaches($articleIDs);
     }
@@ -965,7 +966,6 @@ function bearbeiteInsert($xml, array $conf)
     if (!empty($artikel_arr[0]->kVaterartikel)) {
         $res[] = (int)$artikel_arr[0]->kVaterartikel;
     }
-    handlePriceRange((int)$Artikel->kArtikel);
     // emailbenachrichtigung, wenn verfügbar
     versendeVerfuegbarkeitsbenachrichtigung($artikel_arr[0]);
 

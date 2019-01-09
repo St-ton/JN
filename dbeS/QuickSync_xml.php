@@ -106,7 +106,6 @@ function bearbeiteInsert($xml)
         $upd->dLetzteAktualisierung = 'NOW()';
         $db->update('tartikel', 'kArtikel', (int)$oArtikel->kArtikel, $upd);
         executeHook(HOOK_QUICKSYNC_XML_BEARBEITEINSERT, ['oArtikel' => $oArtikel]);
-        handlePriceRange((int)$oArtikel->kArtikel);
         // clear object cache for this article and its parent if there is any
         $parentArticle = $db->select(
             'tartikel',
@@ -125,6 +124,7 @@ function bearbeiteInsert($xml)
         $clearTags[] = (int)$oArtikel->kArtikel;
         versendeVerfuegbarkeitsbenachrichtigung($oArtikel);
     }
+    handlePriceRange($clearTags);
     Shop::Container()->getCache()->flushTags(\Functional\map(array_unique($clearTags), function ($e) {
         return CACHING_GROUP_ARTICLE . '_' . $e;
     }));

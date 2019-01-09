@@ -24,6 +24,11 @@ interface JobInterface
     public function __construct(DbInterface $db, LoggerInterface $logger, JobHydrator $hydrator);
 
     /**
+     * @return int
+     */
+    public function insert(): int;
+
+    /**
      * @return bool
      */
     public function delete(): bool;
@@ -104,6 +109,16 @@ interface JobInterface
      * @param \DateTime|string|null $startTime
      */
     public function setStartTime($startTime): void;
+
+    /**
+     * @return \DateTime
+     */
+    public function getStartDate(): \DateTime;
+
+    /**
+     * @param \DateTime|string $date
+     */
+    public function setStartDate($date): void;
 
     /**
      * @return int|null

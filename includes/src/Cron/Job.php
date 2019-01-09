@@ -21,6 +21,11 @@ abstract class Job implements JobInterface
     private $type;
 
     /**
+     * @var string|null
+     */
+    private $name;
+
+    /**
      * @var int
      */
     private $limit = 100;
@@ -66,6 +71,11 @@ abstract class Job implements JobInterface
     private $startTime;
 
     /**
+     * @var \DateTime
+     */
+    private $startDate;
+
+    /**
      * @var string
      */
     private $tableName = '';
@@ -108,6 +118,36 @@ abstract class Job implements JobInterface
         $this->db       = $db;
         $this->logger   = $logger;
         $this->hydrator = $hydrator;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function insert(): int
+    {
+        $ins               = new \stdClass();
+        $ins->foreignKeyID = $this->getForeignKeyID() ?? '_DBNULL_';
+        $ins->foreignKey   = $this->getForeignKey() ?? '_DBNULL_';
+        $ins->tableName    = $this->getTableName() ?? '_DBNULL_';
+        $ins->name         = $this->getName();
+        $ins->jobType      = $this->getType();
+        $ins->frequency    = $this->getFrequency();
+        $ins->startDate    = $this->getStartDate() === null
+            ? '_DBNULL_'
+            : $this->getStartDate()->format('Y-m-d H:i');
+        $ins->startTime    = $this->getStartTime() === null
+            ? '_DBNULL_'
+            : $this->getStartTime()->format('H:i:s');
+        $ins->lastStart    = $this->getDateLastStarted() === null
+            ? '_DBNULL_'
+            : $this->getDateLastStarted()->format('Y-m-d H:i');
+        $ins->lastFinish   = $this->getDateLastFinished() === null
+            ? '_DBNULL_'
+            : $this->getDateLastFinished()->format('Y-m-d H:i');
+
+        $this->setCronID($this->db->insert('tcron', $ins));
+
+        return $this->getCronID();
     }
 
     /**
@@ -170,6 +210,22 @@ abstract class Job implements JobInterface
     public function setType(string $type): void
     {
         $this->type = $type;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string|null $name
+     */
+    public function setName(?string $name): void
+    {
+        $this->name = $name;
     }
 
     /**
@@ -264,6 +320,24 @@ abstract class Job implements JobInterface
         $this->startTime = \is_string($startTime)
             ? new \DateTime($startTime)
             : $startTime;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getStartDate(): \DateTime
+    {
+        return $this->startDate;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setStartDate($date): void
+    {
+        $this->startDate = \is_string($date)
+            ? new \DateTime($date)
+            : $date;
     }
 
     /**

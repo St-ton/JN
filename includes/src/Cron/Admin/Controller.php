@@ -139,10 +139,14 @@ final class Controller
             $cron->frequency = (int)$cron->frequency;
             $cron->isRunning = (bool)$cron->isRunning;
             $mapper          = new JobTypeToJob();
-            $class           = $mapper->map($cron->jobType);
-            $job             = new $class($this->db, $this->logger, $this->hydrator);
-            /** @var JobInterface $job */
-            $jobs[] = $job->hydrate($cron);
+            try {
+                $class = $mapper->map($cron->jobType);
+                $job   = new $class($this->db, $this->logger, $this->hydrator);
+                /** @var JobInterface $job */
+                $jobs[] = $job->hydrate($cron);
+            } catch (\InvalidArgumentException $e) {
+                $this->logger->info('Invalid cron job found: ' . $cron->jobType);
+            }
         }
 
         return $jobs;

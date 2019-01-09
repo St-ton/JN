@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-L10n\GetText::getInstance()->loadAdminLocale('menu');
+\Shop::Container()->getGetText()->loadAdminLocale('menu');
 
 /** @var array $adminMenu */
 $adminMenu = [

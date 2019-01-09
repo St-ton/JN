@@ -70,11 +70,11 @@
                                 </td>
                                 <td>
                                     {assign var=nicename value=$cg.nicename}
-                                    <label for="group-cb-{$smarty.foreach.cgfe.index}">{$smarty.config.$nicename}</label>
+                                    <label for="group-cb-{$smarty.foreach.cgfe.index}">{__($nicename)}</label>
                                 </td>
                                 <td>
                                     {assign var=description value=$cg.description}
-                                    {$smarty.config.$description}
+                                    {__($description)}
                                 </td>
                                 <td>{$cg.key_count}</td>
                                 <td>

@@ -13,7 +13,7 @@ use Helpers\Request;
  */
 function getAdminSectionSettings($configSectionID)
 {
-    \L10n\GetText::getInstance()->loadConfigLocales();
+    \Shop::Container()->getGetText()->loadConfigLocales();
 
     $db = Shop::Container()->getDB();
     if (is_array($configSectionID)) {
@@ -40,7 +40,7 @@ function getAdminSectionSettings($configSectionID)
         $conf->nStandardAnzeigen     = (int)$conf->nStandardAnzeigen;
         $conf->nModul                = (int)$conf->nModul;
 
-        \L10n\GetText::getInstance()->localizeConfig($conf);
+        \Shop::Container()->getGetText()->localizeConfig($conf);
 
         if ($conf->cInputTyp === 'listbox') {
             $conf->ConfWerte = $db->selectAll(
@@ -66,7 +66,7 @@ function getAdminSectionSettings($configSectionID)
                 'nSort'
             );
 
-            \L10n\GetText::getInstance()->localizeConfigValues($conf, $conf->ConfWerte);
+            \Shop::Container()->getGetText()->localizeConfigValues($conf, $conf->ConfWerte);
         }
 
         if ($conf->cInputTyp === 'listbox') {

@@ -20,7 +20,7 @@ $action       = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : nu
 $cache        = null;
 $opcacheStats = null;
 
-\L10n\GetText::getInstance()->loadConfigLocales();
+\Shop::Container()->getGetText()->loadConfigLocales();
 
 if (0 < strlen(Request::verifyGPDataString('tab'))) {
     $smarty->assign('tab', Request::verifyGPDataString('tab'));
@@ -297,7 +297,7 @@ $settings = Shop::Container()->getDB()->selectAll(
     'nSort'
 );
 
-\L10n\GetText::getInstance()->localizeConfigs($settings);
+\Shop::Container()->getGetText()->localizeConfigs($settings);
 foreach ($settings as $i => $setting) {
     if ($setting->cName === 'caching_types_disabled') {
         unset($settings[$i]);
@@ -311,7 +311,7 @@ foreach ($settings as $i => $setting) {
             '*',
             'nSort'
         );
-        \L10n\GetText::getInstance()->localizeConfigValues($setting, $setting->ConfWerte);
+        \Shop::Container()->getGetText()->localizeConfigValues($setting, $setting->ConfWerte);
     }
     $oSetValue              = Shop::Container()->getDB()->select(
         'teinstellungen',
@@ -329,7 +329,7 @@ $advancedSettings = Shop::Container()->getDB()->query(
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 
-\L10n\GetText::getInstance()->localizeConfigs($advancedSettings);
+\Shop::Container()->getGetText()->localizeConfigs($advancedSettings);
 
 $settingsCount = count($advancedSettings);
 
@@ -342,7 +342,7 @@ for ($i = 0; $i < $settingsCount; ++$i) {
             '*',
             'nSort'
         );
-        \L10n\GetText::getInstance()->localizeConfigValues($advancedSettings[$i], $advancedSettings[$i]->ConfWerte);
+        \Shop::Container()->getGetText()->localizeConfigValues($advancedSettings[$i], $advancedSettings[$i]->ConfWerte);
     }
     $oSetValue                           = Shop::Container()->getDB()->select(
         'teinstellungen',

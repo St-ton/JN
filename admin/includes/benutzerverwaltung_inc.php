@@ -100,18 +100,18 @@ function getInfoInUse($cRow, $cValue)
 }
 
 /**
- * @param int $kSprache
+ * @param int $langID
  */
-function changeAdminUserLanguage(int $kSprache)
+function changeAdminUserLanguage(int $langID)
 {
-    $_SESSION['AdminAccount']->kSprache = $kSprache;
-    $_SESSION['AdminAccount']->kAdminlogin;
+    $_SESSION['AdminAccount']->kSprache = $langID;
+    $_SESSION['AdminAccount']->cISO     = Shop::Lang()->getIsoFromLangID($langID)->cISO;
 
     Shop::Container()->getDB()->update(
         'tadminlogin',
         'kAdminlogin',
-        $_SESSION['AdminAccount']->kAdminlogin,
-        (object)['kSprache' => $kSprache]
+        $langID,
+        (object)['kSprache' => $langID]
     );
 }
 

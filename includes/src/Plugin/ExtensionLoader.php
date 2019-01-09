@@ -8,7 +8,6 @@ namespace Plugin;
 
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
-use L10n\GetText;
 
 /**
  * Class ExtensionLoader
@@ -30,38 +29,56 @@ class ExtensionLoader extends AbstractLoader
     /**
      * @inheritdoc
      */
-    public function init(int $id, bool $invalidateCache = false)
+    public function init(int $id, bool $invalidateCache = false, int $languageID = null)
     {
-        $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id .
-            '_' . \Shop::getLanguageID();
+        if (($languageID = $languageID ?? \Shop::getLanguageID()) === 0) {
+            $languageID = \Shop::Lang()::getDefaultLanguage()->kSprache;
+        }
+        $languageCode  = \Shop::Lang()->getIsoFromLangID($languageID)->cISO;
+        $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id . '_' . $languageID;
         if ($invalidateCache === true) {
             $this->cache->flush('hook_list');
             $this->cache->flushTags([\CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $id]);
+        } elseif (($extension = $this->loadFromCache()) !== null) {
+            $getText = \Shop::Container()->getGetText();
+            $getText->setLangIso($_SESSION['AdminAccount']->cISO ?? $languageCode);
+            $getText->loadPluginLocale($extension->getPluginID(), $extension);
+
+            return $extension;
         }
-//        elseif (($data = $this->cache->get($this->cacheID)) !== false) {
-//            $extension = new Extension();
-//            foreach (\get_object_vars($data) as $k => $v) {
-//                $extension->$k = $v;
-//            }
-//
-//            return $extension;
-//        }
         $obj = $this->db->select('tplugin', 'kPlugin', $id);
         if ($obj === null) {
             throw new \InvalidArgumentException('Cannot find plugin with ID ' . $id);
         }
 
-        return $this->loadFromObject($obj);
+        return $this->loadFromObject($obj, $languageCode);
     }
 
     /**
      * @inheritdoc
      */
-    public function loadFromObject($obj): Extension
+    public function loadFromCache(): ?AbstractExtension
     {
-        $id    = (int)$obj->kPlugin;
-        $paths = $this->loadPaths($obj->cVerzeichnis);
+        return ($extension = $this->cache->get($this->cacheID)) === false ? null : $extension;
+    }
 
+    /**
+     * @inheritdoc
+     */
+    public function saveToCache(AbstractExtension $extension): bool
+    {
+        return $this->cacheID !== null
+            ? $this->cache->set($this->cacheID, $extension, [\CACHING_GROUP_PLUGIN, $extension->getCache()->getGroup()])
+            : false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function loadFromObject($obj, string $currentLanguageCode): Extension
+    {
+        $id        = (int)$obj->kPlugin;
+        $paths     = $this->loadPaths($obj->cVerzeichnis);
         $extension = new Extension();
         $extension->setIsExtension(true);
         $extension->setMeta($this->loadMetaData($obj));
@@ -75,14 +92,17 @@ class ExtensionLoader extends AbstractLoader
         $extension->setPriority((int)$obj->nPrio);
         $extension->setLicense($this->loadLicense($obj));
         $extension->setCache($this->loadCacheData($extension));
-        GetText::getInstance()->loadPluginLocale($obj->cPluginID, $extension);
+        $getText = \Shop::Container()->getGetText();
+        $getText->setLangIso($_SESSION['AdminAccount']->cISO ?? $currentLanguageCode);
+        $getText->loadPluginLocale($obj->cPluginID, $extension);
         $extension->setConfig($this->loadConfig($paths->getAdminPath(), $extension->getID()));
-        $extension->setLocalization($this->loadLocalization($id));
+        $extension->setLocalization($this->loadLocalization($id, $currentLanguageCode));
         $extension->setWidgets($this->loadWidgets($extension));
         $extension->setMailTemplates($this->loadMailTemplates($extension));
         $extension->setPaymentMethods($this->loadPaymentMethods($extension));
 
         $this->loadAdminMenu($extension);
+        $this->saveToCache($extension);
 
         return $extension;
     }

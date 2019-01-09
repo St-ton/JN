@@ -15,7 +15,7 @@ use Helpers\Request;
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
-\L10n\GetText::getInstance()->loadAdminLocale('opc');
+\Shop::Container()->getGetText()->loadAdminLocale('opc');
 
 $pageKey      = Request::verifyGPCDataInt('pageKey');
 $pageId       = Request::verifyGPDataString('pageId');

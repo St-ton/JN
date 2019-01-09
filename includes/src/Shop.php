@@ -1778,7 +1778,7 @@ final class Shop
         }
         $result   = false;
         $isLogged = function () {
-            return (new AdminAccount(true))->logged();
+            return self::Container()->getAdminAccount()->logged();
         };
         if (isset($_COOKIE['eSIdAdm'])) {
             if (session_name() !== 'eSIdAdm') {
@@ -1880,6 +1880,9 @@ final class Shop
         $container->setSingleton(\Services\JTL\PasswordServiceInterface::class, function (Container $container) {
             return new \Services\JTL\PasswordService($container->getCryptoService());
         });
+        $container->setSingleton(\Debug\JTLDebugBar::class, function (Container $container) {
+            return new \Debug\JTLDebugBar($container->getDB()->getPDO(), \Shopsetting::getInstance()->getAll());
+        });
         $container->setSingleton('BackendAuthLogger', function (Container $container) {
             $loggingConf = self::getConfig([CONF_GLOBAL])['global']['admin_login_logger_mode'] ?? [];
             $handlers    = [];
@@ -1964,6 +1967,18 @@ final class Shop
                     || \Session\Session::getCustomer()->isLoggedIn()
                 )
             ));
+        });
+        // GetText
+        $container->setSingleton(\L10n\GetText::class, function () {
+            return new \L10n\GetText();
+        });
+        $container->setSingleton(\AdminAccount::class, function (Container $container) {
+            return new AdminAccount(
+                $container->getDB(),
+                $container->getBackendLogService(),
+                new \Mapper\AdminLoginStatusMessageMapper(),
+                new \Mapper\AdminLoginStatusToLogLevel()
+            );
         });
     }
 

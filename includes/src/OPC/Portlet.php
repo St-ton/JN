@@ -66,9 +66,9 @@ abstract class Portlet implements \JsonSerializable
         }
 
         if ($this->plugin === null) {
-            \L10n\GetText::getInstance()->loadAdminLocale('portlets/' . $this->class);
+            \Shop::Container()->getGetText()->loadAdminLocale('portlets/' . $this->class);
         } else {
-            \L10n\GetText::getInstance()->loadPluginLocale('portlets/' . $this->class, $this->plugin);
+            \Shop::Container()->getGetText()->loadPluginLocale('portlets/' . $this->class, $this->plugin);
         }
     }
 

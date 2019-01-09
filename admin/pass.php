@@ -12,14 +12,12 @@ $step     = 'prepare';
 $cFehler  = '';
 $cHinweis = '';
 if (isset($_POST['mail']) && Form::validateToken()) {
-    $account = new AdminAccount(false);
+    $account = Shop::Container()->getAdminAccount();
     $account->prepareResetPassword(StringHandler::filterXSS($_POST['mail']));
     $cHinweis = 'Eine E-Mail mit weiteren Anweisung wurde an die hinterlegte Adresse gesendet, sofern vorhanden.';
-} elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpm'], $_POST['fpwh'])
-    && Form::validateToken()
-) {
+} elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpm'], $_POST['fpwh']) && Form::validateToken()) {
     if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
-        $account  = new AdminAccount(false);
+        $account  = Shop::Container()->getAdminAccount();
         $verified = $account->verifyResetPasswordHash($_POST['fpwh'], $_POST['fpm']);
         if ($verified === true) {
             $upd        = new stdClass();

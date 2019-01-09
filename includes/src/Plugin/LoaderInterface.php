@@ -26,14 +26,27 @@ interface LoaderInterface
     /**
      * @param int  $id
      * @param bool $invalidateCache
+     * @param int  $languageID
      * @return Plugin|Extension
      * @throws \InvalidArgumentException
      */
-    public function init(int $id, bool $invalidateCache = false);
+    public function init(int $id, bool $invalidateCache = false, int $languageID = null);
 
     /**
      * @param object $obj
-     * @return Extension|Plugin
+     * @param string $currentLanguageCode
+     * @return AbstractExtension
      */
-    public function loadFromObject($obj);
+    public function loadFromObject($obj, string $currentLanguageCode);
+
+    /**
+     * @return AbstractExtension|null
+     */
+    public function loadFromCache(): ?AbstractExtension;
+
+    /**
+     * @param AbstractExtension $extension
+     * @return bool
+     */
+    public function saveToCache(AbstractExtension $extension): bool;
 }

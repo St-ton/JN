@@ -1071,8 +1071,15 @@ function handleOldPriceFormat($objs)
 function handlePriceRange(array $articleIDs)
 {
     $db            = Shop::Container()->getDB();
-    $priceRangeArr = $db->query(
-        "SELECT baseprice.kArtikel,
+    $db->executeQuery(
+        'DELETE FROM tpricerange
+            WHERE kArtikel IN (' . implode(',', $articleIDs) . ')',
+        \DB\ReturnType::DEFAULT
+    );
+    $db->executeQuery(
+        "INSERT INTO tpricerange
+            (kArtikel, kKundengruppe, kKunde, nRangeType, fVKNettoMin, fVKNettoMax, nLagerAnzahlMax, dStart, dEnde)
+            SELECT baseprice.kArtikel,
                 COALESCE(baseprice.kKundengruppe, 0) AS kKundengruppe,
                 COALESCE(baseprice.kKunde, 0) AS kKunde,
                 baseprice.nRangeType,
@@ -1155,30 +1162,8 @@ function handlePriceRange(array $articleIDs)
                 baseprice.nLagerAnzahlMax,
                 baseprice.dStart,
                 baseprice.dEnde",
-        \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
+        \DB\ReturnType::DEFAULT
     );
-
-    $lastArticleID = 0;
-    foreach ($priceRangeArr as $priceRange) {
-        if ($lastArticleID !== (int)$priceRange['kArtikel']) {
-            $db->delete('tpricerange', 'kArtikel', $priceRange['kArtikel']);
-            $lastArticleID = (int)$priceRange['kArtikel'];
-        }
-        $db->queryPrepared(
-            'INSERT INTO tpricerange 
-            (kArtikel, kKundengruppe, kKunde, nRangeType, fVKNettoMin, fVKNettoMax, nLagerAnzahlMax, dStart, dEnde)
-                VALUES (:kArtikel, :kKundengruppe, :kKunde, :nRangeType, :fVKNettoMin,
-                        :fVKNettoMax, :nLagerAnzahlMax, :dStart, :dEnde)
-                ON DUPLICATE KEY UPDATE
-                    fVKNettoMin = :fVKNettoMin,
-                    fVKNettoMax = :fVKNettoMax,
-                    nLagerAnzahlMax = :nLagerAnzahlMax,
-                    dStart = :dStart,
-                    dEnde = :dEnde',
-            $priceRange,
-            \DB\ReturnType::AFFECTED_ROWS
-        );
-    }
 }
 
 /**

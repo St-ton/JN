@@ -136,11 +136,16 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
 }
 // Download-Artikel vorhanden?
 if (empty($_SESSION['Kunde']->cPasswort) && class_exists('Download') && Download::hasDownloads($cart)) {
-        // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
-        $step     = 'accountwahl';
-        $cHinweis = Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
+    // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
+    $step     = 'accountwahl';
+    $cHinweis = Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
 
-        unset($_SESSION['Kunde']);
+    unset($_SESSION['Kunde']);
+    //unset not needed values to ensure the correct $step
+    $_POST = [];
+    if (isset($_GET['editRechnungsadresse'])) {
+        unset($_GET['editRechnungsadresse']);
+    }
 }
 // autom. step ermitteln
 pruefeVersandkostenStep();

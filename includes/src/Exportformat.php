@@ -1308,9 +1308,9 @@ class Exportformat
                 }
 
                 executeHook(HOOK_DO_EXPORT_OUTPUT_FETCHED);
-                if (!$isAsync && ($queueObject->nLimitN % max(round($queueObject->nLimitM / 10), 10)) === 0) {
+                if (!$isAsync && ($queueObject->tasksExecuted % max(round($queueObject->taskLimit / 10), 10)) === 0) {
                     //max. 10 status updates per run
-                    $this->log($queueObject->nLimitN . '/' . $max . ' products exported');
+                    $this->log($queueObject->tasksExecuted . '/' . $max . ' products exported');
                 }
             }
         }

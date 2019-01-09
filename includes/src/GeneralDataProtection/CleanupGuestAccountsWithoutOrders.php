@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -6,7 +6,12 @@
 
 namespace GeneralDataProtection;
 
+use DB\ReturnType;
+
 /**
+ * Class CleanupGuestAccountsWithoutOrders
+ * @package GeneralDataProtection
+ *
  * Deleted guest accounts with no open orders
  *
  * names of the tables, we manipulate:
@@ -18,15 +23,15 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
     /**
      * runs all anonymize-routines
      */
-    public function execute()
+    public function execute(): void
     {
-        $this->cleanup_tkunde();
+        $this->cleanupCustomers();
     }
 
     /**
      * delete not registered customers (relicts)
      */
-    private function cleanup_tkunde()
+    private function cleanupCustomers(): void
     {
         $guestAccounts = \Shop::Container()->getDB()->queryPrepared(
             "SELECT kKunde
@@ -34,8 +39,8 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
                 WHERE nRegistriert = 0
                   AND cAbgeholt ='Y'
                 LIMIT :pLimit",
-            ['pLimit' => $this->iWorkLimit],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ['pLimit' => $this->workLimit],
+            ReturnType::ARRAY_OF_OBJECTS
         );
 
         foreach ($guestAccounts as $guestAccount) {

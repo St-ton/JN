@@ -229,7 +229,7 @@ define('HOOK_NAVI_PAGE', 31);
  *
  * @file news.php
  * @param \News\Item newsItem - since 5.0.0
- * @param Pagination pagination - since 5.0.0
+ * @param \Pagination\Pagination pagination - since 5.0.0
  */
 define('HOOK_NEWS_PAGE_DETAILANSICHT', 32);
 
@@ -903,6 +903,7 @@ define('HOOK_LIEFERADRESSE_CLASS_LOADFROMDB', 122);
 
 /**
  * @file Merkmal.php
+ * @param Merkmal instance - since 5.0.0
  */
 define('HOOK_MERKMAL_CLASS_LOADFROMDB', 123);
 
@@ -975,6 +976,7 @@ define('HOOK_INDEX_NAVI_HEAD_POSTGET', 132);
  * after instanciating JTLSmarty
  *
  * @file smartyInclude.php
+ * @param \Smarty\JTLSmarty $smarty
  */
 define('HOOK_SMARTY_INC', 133);
 
@@ -1034,6 +1036,7 @@ define('HOOK_CRON_EXPORTFORMATE_OUTPUT_FETCHED', 139);
  *
  * @file JTLSmarty.php
  * @param Smarty\JTLSmarty smarty
+ * @param phpQueryObject document
  */
 define('HOOK_SMARTY_OUTPUTFILTER', 140);
 

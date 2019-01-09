@@ -8,35 +8,32 @@ namespace DB;
 
 /**
  * Class ReturnType
- *
- * Defines which result DbService returns
- *
  * @package DB
  */
 abstract class ReturnType
 {
     /**
-     *
-     */
-    public const DEFAULT = 4;
-
-    /**
-     * Return a single instance of \stdClass
+     * return a single instance of \stdClass
      */
     public const SINGLE_OBJECT = 1;
 
     /**
-     * Return an array of instances of \stdClass
+     * return an array of instances of \stdClass
      */
     public const ARRAY_OF_OBJECTS = 2;
 
     /**
-     * Return the amount of affected rows as integer
+     * return the amount of affected rows as integer
      */
     public const AFFECTED_ROWS = 3;
 
     /**
-     * Return the last inserted id (note: you should only use this, if you insert one row)
+     * return always true
+     */
+    public const DEFAULT = 4;
+
+    /**
+     * return the last inserted id (note: you should only use this, if you insert one row)
      */
     public const LAST_INSERTED_ID = 7;
 
@@ -46,7 +43,7 @@ abstract class ReturnType
     public const SINGLE_ASSOC_ARRAY = 8;
 
     /**
-     * Return the result set as an array of assoc arrays
+     * return the result set as an array of assoc arrays
      */
     public const ARRAY_OF_ASSOC_ARRAYS = 9;
 

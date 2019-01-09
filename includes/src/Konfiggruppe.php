@@ -82,7 +82,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public function jsonSerialize()
         {
             if ($this->oSprache === null) {
-                $this->oSprache  = new Konfiggruppesprache($this->kKonfiggruppe);
+                $this->oSprache = new Konfiggruppesprache($this->kKonfiggruppe);
             }
             $override = [
                 'kKonfiggruppe' => (int)$this->kKonfiggruppe,
@@ -97,7 +97,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 'cBeschreibung' => $this->oSprache->getBeschreibung(),
                 'oItem_arr'     => $this->oItem_arr
             ];
-            $result = array_merge(get_object_vars($this), $override);
+            $result   = array_merge(get_object_vars($this), $override);
 
             return StringHandler::utf8_convert_recursive($result);
         }
@@ -159,15 +159,20 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function update(): int
         {
-            $_upd             = new stdClass();
-            $_upd->cBildPfad  = $this->cBildPfad;
-            $_upd->nMin       = $this->nMin;
-            $_upd->nMax       = $this->nMax;
-            $_upd->nTyp       = $this->nTyp;
-            $_upd->nSort      = $this->nSort;
-            $_upd->cKommentar = $this->cKommentar;
+            $upd             = new stdClass();
+            $upd->cBildPfad  = $this->cBildPfad;
+            $upd->nMin       = $this->nMin;
+            $upd->nMax       = $this->nMax;
+            $upd->nTyp       = $this->nTyp;
+            $upd->nSort      = $this->nSort;
+            $upd->cKommentar = $this->cKommentar;
 
-            return Shop::Container()->getDB()->update('tkonfiggruppe', 'kKonfiggruppe', (int)$this->kKonfiggruppe, $_upd);
+            return Shop::Container()->getDB()->update(
+                'tkonfiggruppe',
+                'kKonfiggruppe',
+                (int)$this->kKonfiggruppe,
+                $upd
+            );
         }
 
         /**

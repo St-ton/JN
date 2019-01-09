@@ -21,7 +21,7 @@ use Filter\StateSQL;
  */
 class Search extends AbstractFilter
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var int
@@ -217,7 +217,7 @@ class Search extends AbstractFilter
         if (empty($query)) {
             return false;
         }
-        $Suchausdruck = \str_replace(["'", "\\", "*", "%"], '', $query);
+        $Suchausdruck = \str_replace(["'", '\\', '*', '%'], '', $query);
         $languageID   = $languageIDExt > 0 ? $languageIDExt : $this->getLanguageID();
         // db füllen für auswertugnen / suggest, dabei Blacklist beachten
         $tempQueries = \explode(';', $Suchausdruck);
@@ -238,7 +238,7 @@ class Search extends AbstractFilter
                 FROM tsuchanfragencache
                 WHERE kSprache = :lang
                 AND cIP = :ip',
-            ['lang' => $languageID, 'ip' => \RequestHelper::getRealIP()],
+            ['lang' => $languageID, 'ip' => \Helpers\Request::getRealIP()],
             ReturnType::SINGLE_OBJECT
         );
         $ipUsed       = $this->productFilter->getDB()->select(
@@ -248,7 +248,7 @@ class Search extends AbstractFilter
             'cSuche',
             $Suchausdruck,
             'cIP',
-            \RequestHelper::getRealIP(),
+            \Helpers\Request::getRealIP(),
             false,
             'kSuchanfrageCache'
         );
@@ -259,7 +259,7 @@ class Search extends AbstractFilter
             // Fülle Suchanfragencache
             $searchQueryCache           = new \stdClass();
             $searchQueryCache->kSprache = $languageID;
-            $searchQueryCache->cIP      = \RequestHelper::getRealIP();
+            $searchQueryCache->cIP      = \Helpers\Request::getRealIP();
             $searchQueryCache->cSuche   = $Suchausdruck;
             $searchQueryCache->dZeit    = 'NOW()';
             $this->productFilter->getDB()->insert('tsuchanfragencache', $searchQueryCache);

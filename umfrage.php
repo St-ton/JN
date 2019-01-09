@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Request;
+
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'umfrage_inc.php';
 
@@ -13,13 +16,13 @@ $cParameter_arr         = Shop::getParameters();
 $cHinweis               = '';
 $cCanonicalURL          = '';
 $step                   = 'umfrage_uebersicht';
-$nAktuelleSeite         = max(1, RequestHelper::verifyGPCDataInt('s'));
+$nAktuelleSeite         = max(1, Request::verifyGPCDataInt('s'));
 $sourveys               = [];
 $linkHelper             = Shop::Container()->getLinkService();
 $kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_UMFRAGE);
 $link                   = (new \Link\Link(Shop::Container()->getDB()))->load($kLink);
 $AufgeklappteKategorien = new KategorieListe();
-$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
+$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $db                     = Shop::Container()->getDB();
 $controller             = new \Survey\Controller($db, $smarty);
 $surveyID               = $cParameter_arr['kUmfrage'];
@@ -38,7 +41,7 @@ if ($surveyID > 0) {
     if ($survey->getID() > 0 && $controller->checkAlreadyVoted($customerID, $_SESSION['oBesucher']->cID ?? null)) {
         $breadCrumbName = $survey->getName();
         $breadCrumbURL  = Shop::getURL() . '/'. $survey->getURL();
-        $step = 'umfrage_durchfuehren';
+        $step           = 'umfrage_durchfuehren';
         if (isset($_POST['end'])) {
             $controller->saveAnswers($_POST);
             if ($controller->checkInputData($_POST) > 0) {

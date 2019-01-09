@@ -71,12 +71,12 @@ $(document).ready(function() {
 </style>
 {/literal}
 
-{assign var="cTitel" value=#benutzerNeu#}
+{assign var="cTitel" value=__('benutzerNeu')}
 {if isset($oAccount->kAdminlogin) && $oAccount->kAdminlogin > 0}
-    {assign var="cTitel" value=#benutzerBearbeiten#}
+    {assign var="cTitel" value=__('benutzerBearbeiten')}
 {/if}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=#benutzerDesc#}
+{include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__('benutzerDesc')}
 <div id="content" class="container-fluid">
     <form class="navbar-form" action="benutzerverwaltung.php" method="post">
         {$jtl_token}
@@ -106,6 +106,25 @@ $(document).ready(function() {
                                 <input id="cMail" class="form-control" type="text" name="cMail" value="{if isset($oAccount->cMail)}{$oAccount->cMail}{/if}" />
                             </span>
                             {if isset($cError_arr.cMail)}<span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>{/if}
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="input-group{if isset($cError_arr.kSprache)} error{/if}">
+                            <span class="input-group-addon">
+                                <label for="kSprache">Sprache</label>
+                            </span>
+                            <span class="input-group-wrap">
+                                <select id="kSprache" class="form-control" name="kSprache">
+                                    {foreach $languages as $language}
+                                        <option value="{$language->kSprache}"
+                                                {if isset($oAccount->kSprache) && (int)$oAccount->kSprache === $language->kSprache}
+                                                    selected="selected"
+                                                {/if}>
+                                            {$language->cNameEnglisch}
+                                        </option>
+                                    {/foreach}
+                                </select>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -330,7 +349,7 @@ $(document).ready(function() {
                     <input type="hidden" name="kAdminlogin" value="{$oAccount->kAdminlogin}" />
                 {/if}
                 <input type="hidden" name="save" value="1" />
-                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
+                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 <a class="btn btn-danger" href="benutzerverwaltung.php"><i class="fa fa-exclamation"></i> Abbrechen</a>
             </div>
         </div>

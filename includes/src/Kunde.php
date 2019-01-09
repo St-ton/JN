@@ -3,6 +3,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Date;
+use Helpers\Form;
+use Helpers\GeneralObject;
+
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 
 /**
@@ -292,7 +297,7 @@ class Kunde
                 && isset($attempts->nLoginversuche)
                 && (int)$attempts->nLoginversuche >= (int)$conf['kunden']['kundenlogin_max_loginversuche']
             ) {
-                if (FormHelper::validateCaptcha($_POST)) {
+                if (Form::validateCaptcha($_POST)) {
                     return true;
                 }
 
@@ -396,12 +401,12 @@ class Kunde
         $update = false;
         if ($passwordService->needsRehash($customer->cPasswort)) {
             $customer->cPasswort = $passwordService->hash($pass);
-            $update = true;
+            $update              = true;
         }
 
         if ($customer->nLoginversuche > 0) {
             $customer->nLoginversuche = 0;
-            $update = true;
+            $update                   = true;
         }
         if ($update) {
             $update = (array)$customer;
@@ -450,9 +455,9 @@ class Kunde
                 : date_format(date_create($this->dGeburtstag), 'd.m.Y');
 
             $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
-            $cDatum_arr               = DateHelper::getDateParts($this->dErstellt ?? '');
+            $cDatum_arr               = Date::getDateParts($this->dErstellt ?? '');
             if (count($cDatum_arr) > 0) {
-                $this->dErstellt_DE       = $cDatum_arr['cTag'] . '.' .
+                $this->dErstellt_DE = $cDatum_arr['cTag'] . '.' .
                     $cDatum_arr['cMonat'] . '.' .
                     $cDatum_arr['cJahr'];
             }
@@ -539,7 +544,7 @@ class Kunde
         $obj->cAbgeholt      = $this->cAbgeholt;
         $obj->nRegistriert   = $this->nRegistriert;
         $obj->nLoginversuche = $this->nLoginversuche;
-        $obj->dGeburtstag    = DateHelper::convertDateToMysqlStandard($this->dGeburtstag);
+        $obj->dGeburtstag    = Date::convertDateToMysqlStandard($this->dGeburtstag);
 
         $obj->cLand   = $this->pruefeLandISO($obj->cLand);
         $this->kKunde = Shop::Container()->getDB()->insert('tkunde', $obj);
@@ -547,7 +552,7 @@ class Kunde
 
         $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
         $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
-        $cDatum_arr               = DateHelper::getDateParts($this->dErstellt);
+        $cDatum_arr               = Date::getDateParts($this->dErstellt);
         $this->dErstellt_DE       = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
 
         return $this->kKunde;
@@ -558,13 +563,13 @@ class Kunde
      */
     public function updateInDB(): int
     {
-        $this->dGeburtstag           = DateHelper::convertDateToMysqlStandard($this->dGeburtstag);
+        $this->dGeburtstag           = Date::convertDateToMysqlStandard($this->dGeburtstag);
         $this->dGeburtstag_formatted = $this->dGeburtstag === '_DBNULL_'
             ? ''
             : DateTime::createFromFormat('Y-m-d', $this->dGeburtstag)->format('d.m.Y');
 
         $this->verschluesselKundendaten();
-        $obj = ObjectHelper::copyMembers($this);
+        $obj = GeneralObject::copyMembers($this);
 
         $cKundenattribut_arr = [];
         if (is_array($obj->cKundenattribut_arr)) {
@@ -599,7 +604,7 @@ class Kunde
 
         $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
         $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
-        $cDatum_arr               = DateHelper::getDateParts($this->dErstellt);
+        $cDatum_arr               = Date::getDateParts($this->dErstellt);
         $this->dErstellt_DE       = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
 
         return $cReturn;

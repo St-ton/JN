@@ -103,15 +103,11 @@ final class BoxAdmin
 
         return \count($affectedBoxes) > 0
             && $this->db->query(
-                'DELETE 
+                'DELETE tboxen, tboxensichtbar, tboxsprache
                     FROM tboxen
-                    WHERE kBox IN (' . \implode(',', $affectedBoxes) . ')',
-                ReturnType::AFFECTED_ROWS
-            ) > 0
-            && $this->db->query(
-                'DELETE 
-                    FROM tboxensichtbar
-                    WHERE kBox IN (' . \implode(',', $affectedBoxes) . ')',
+                    LEFT JOIN tboxensichtbar USING (kBox)
+                    LEFT JOIN tboxsprache USING (kBox)
+                    WHERE tboxen.kBox IN (' . \implode(',', $affectedBoxes) . ')',
                 ReturnType::AFFECTED_ROWS
             ) > 0;
     }
@@ -185,7 +181,8 @@ final class BoxAdmin
             ReturnType::SINGLE_OBJECT
         );
 
-        $oBox->oSprache_arr      = ($oBox && ($oBox->eTyp === Type::TEXT || $oBox->eTyp === Type::CATBOX))
+        $oBox->oSprache_arr      = ($oBox && ($oBox->eTyp === Type::TEXT || $oBox->eTyp === Type::CATBOX
+                || $oBox->eTyp === Type::LINK))
             ? $this->getContent($boxID)
             : [];
         $oBox->kBox              = (int)$oBox->kBox;
@@ -450,6 +447,9 @@ final class BoxAdmin
             } elseif ($oVorlage->eTyp === Type::CATBOX) {
                 $nID   = 4;
                 $cName = 'Kategorie';
+            } elseif ($oVorlage->eTyp === Type::EXTENSION) {
+                $nID   = 5;
+                $cName = 'Extension';
             }
 
             if (!isset($templates[$nID])) {

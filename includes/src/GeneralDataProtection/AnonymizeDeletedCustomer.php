@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -6,35 +6,31 @@
 
 namespace GeneralDataProtection;
 
+use DB\ReturnType;
+
 /**
- * anonymize personal data when customer accounts was deleted
- *
- * names of the tables, we manipulate:
- *
- * `tbewertung`
- * `tzahlungseingang`
- * `tnewskommentar`
+ * Class AnonymizeDeletedCustomer
+ * @package GeneralDataProtection
  */
 class AnonymizeDeletedCustomer extends Method implements MethodInterface
 {
     /**
      * runs all anonymize-routines
      */
-    public function execute()
+    public function execute(): void
     {
-        $this->anon_tbewertung();
-        $this->anon_tzahlungseingang();
-        $this->anon_tnewskommentar();
+        $this->anonymizeRatings();
+        $this->anonymizeReceivedPayments();
+        $this->anonymizeNewsComments();
     }
 
     /**
      * anonymize orphaned ratings.
      * (e.g. of canceled memberships)
      */
-    private function anon_tbewertung()
+    private function anonymizeRatings(): void
     {
         \Shop::Container()->getDB()->queryPrepared(
-
             "UPDATE tbewertung b
             SET
                 b.cName  = 'Anonym',
@@ -46,10 +42,10 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
                 AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = b.kKunde)
             LIMIT :pLimit",
             [
-                'pDateLimit' => $this->szDateLimit,
-                'pLimit'     => $this->iWorkLimit
+                'pDateLimit' => $this->dateLimit,
+                'pLimit'     => $this->workLimit
             ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
     }
 
@@ -57,10 +53,9 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
      * anonymize received payments.
      * (replace `cZahler`(e-mail) in `tzahlungseingang`)
      */
-    private function anon_tzahlungseingang()
+    private function anonymizeReceivedPayments(): void
     {
         \Shop::Container()->getDB()->queryPrepared(
-
             "UPDATE tzahlungseingang z
             SET
                 z.cZahler = '-'
@@ -76,22 +71,22 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
             ORDER BY z.dZeit ASC
             LIMIT :pLimit",
             [
-                'pDateLimit' => $this->szDateLimit,
-                'pLimit'     => $this->iWorkLimit
+                'pDateLimit' => $this->dateLimit,
+                'pLimit'     => $this->workLimit
             ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
     }
 
     /**
-     * anonymize comments of news, where no (more) registered customers are there for these.
+     * anonymize comments of news without registered customers
      * (delete names and e-mails from `tnewskommentar` and remove the customer-relation)
      *
-     * CONSIDERE: using no time-base or limit!
+     * CONSIDER: using no time base or limit!
      */
-    private function anon_tnewskommentar()
+    private function anonymizeNewsComments(): void
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared(
+        \Shop::Container()->getDB()->queryPrepared(
             "UPDATE tnewskommentar n
             SET
                 n.cName = 'Anonym',
@@ -103,10 +98,8 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
                 AND n.kKunde > 0
                 AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = n.kKunde)
             LIMIT :pLimit",
-            [
-                'pLimit' => $this->iWorkLimit
-            ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ['pLimit' => $this->workLimit],
+            ReturnType::DEFAULT
         );
     }
 }

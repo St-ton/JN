@@ -6,10 +6,10 @@
             <div class="block">
                 <div class="input-group p25 left">
                     <span class="input-group-addon">
-                        <label for="{#changeLanguage#}">{#changeLanguage#}:</strong></label>
+                        <label for="{__('changeLanguage')}">{__('changeLanguage')}:</strong></label>
                     </span>
                     <span class="input-group-wrap last">
-                        <select id="{#changeLanguage#}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
+                        <select id="{__('changeLanguage')}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
                             {foreach name=sprachen from=$Sprachen item=sprache}
                                 <option value="{$sprache->kSprache}" {if $sprache->kSprache==$smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
                             {/foreach}
@@ -20,10 +20,10 @@
         </form>
         <ul class="nav nav-tabs" role="tablist">
             <li class="tab{if !isset($cTab) || $cTab === 'umfrage'} active{/if}">
-                <a data-toggle="tab" role="tab" href="#umfrage">{#umfrageOverview#}</a>
+                <a data-toggle="tab" role="tab" href="#umfrage">{__('umfrageOverview')}</a>
             </li>
             <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-                <a data-toggle="tab" role="tab" href="#einstellungen">{#umfrageSettings#}</a>
+                <a data-toggle="tab" role="tab" href="#einstellungen">{__('umfrageSettings')}</a>
             </li>
         </ul>
         <div class="tab-content">
@@ -34,7 +34,7 @@
                     <input type="hidden" name="umfrage_erstellen" value="1" />
                     <input type="hidden" name="tab" value="umfrage" />
                     <p class="tcenter">
-                        <button name="umfrageerstellen" type="submit" value="{#umfrageAdd#}" class="btn btn-primary"><i class="fa fa-share"></i> {#umfrageAdd#}</button>
+                        <button name="umfrageerstellen" type="submit" value="{__('umfrageAdd')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('umfrageAdd')}</button>
                     </p>
                 </form>
                 {if $oUmfrage_arr|@count > 0 && $oUmfrage_arr}
@@ -54,12 +54,12 @@
                                         <table class="table table-striped">
                                             <tr>
                                                 <th class="th-1"></th>
-                                                <th class="th-2">{#umfrageName#}</th>
-                                                <th class="th-3">{#umfrageCustomerGrp#}</th>
-                                                <th class="th-4">{#umfrageValidation#}</th>
-                                                <th class="th-5">{#umfrageActive#}</th>
-                                                <th class="th-6">{#umfrageQCount#}</th>
-                                                <th class="th-7">{#umfrageDate#}</th>
+                                                <th class="th-2">{__('umfrageName')}</th>
+                                                <th class="th-3">{__('umfrageCustomerGrp')}</th>
+                                                <th class="th-4">{__('umfrageValidation')}</th>
+                                                <th class="th-5">{__('umfrageActive')}</th>
+                                                <th class="th-6">{__('umfrageQCount')}</th>
+                                                <th class="th-7">{__('umfrageDate')}</th>
                                                 <th class="th-8">Aktionen</th>
                                             </tr>
                                             {foreach name=umfrage from=$oUmfrage_arr item=oUmfrage}
@@ -73,16 +73,16 @@
                                                             {$cKundengruppe}{if !$smarty.foreach.kundengruppen.last},{/if}
                                                         {/foreach}
                                                     </td>
-                                                    <td>{$oUmfrage->dGueltigVon_de}-{if $oUmfrage->dGueltigBis === null}{#umfrageInfinite#}{else}{$oUmfrage->dGueltigBis_de}{/if}</td>
+                                                    <td>{$oUmfrage->dGueltigVon_de}-{if $oUmfrage->dGueltigBis === null}{__('umfrageInfinite')}{else}{$oUmfrage->dGueltigBis_de}{/if}</td>
                                                     <td>{$oUmfrage->nAktiv}</td>
                                                     <td>{$oUmfrage->nAnzahlFragen}</td>
                                                     <td>{$oUmfrage->dErstellt_de}</td>
                                                     <td>
                                                         <div class="btn-group">
-                                                            <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&umfrage_editieren=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage" class="btn btn-default" title="{#modify#}">
+                                                            <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&umfrage_editieren=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage" class="btn btn-default" title="{__('modify')}">
                                                                 <i class="fa fa-edit"></i>
                                                             </a>
-                                                            <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&kUmfrage={$oUmfrage->kUmfrage}&umfrage_statistik=1" class="btn btn-default" title="{#umfrageStats#}"><i class="fa fa-bar-chart"></i></a>
+                                                            <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&kUmfrage={$oUmfrage->kUmfrage}&umfrage_statistik=1" class="btn btn-default" title="{__('umfrageStats')}"><i class="fa fa-bar-chart"></i></a>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -90,21 +90,21 @@
                                         </table>
                                     </div>
                                     <div class="panel-footer">
-                                        <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
+                                        <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </form>
                 {else}
-                    <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                    <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
             <div id="einstellungen" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
-                {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='umfrage.php' buttonCaption=#umfrageSave# title='Einstellungen' tab='einstellungen'}
+                {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='umfrage.php' buttonCaption=__('umfrageSave') title='Einstellungen' tab='einstellungen'}
             </div>
         </div>
     {else}
-        <div class="alert alert-danger">{#noModuleAvailable#}</div>
+        <div class="alert alert-danger">{__('noModuleAvailable')}</div>
     {/if}
 </div>

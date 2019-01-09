@@ -28,9 +28,9 @@ class ContentAuthor
         if ($authorID > 0) {
             return Shop::Container()->getDB()->query(
                 "INSERT INTO tcontentauthor (cRealm, kAdminlogin, kContentId)
-                    VALUES('" . $realm . "', " . $authorID . ", " . $contentID . ")
+                    VALUES('" . $realm . "', " . $authorID . ', ' . $contentID . ')
                     ON DUPLICATE KEY UPDATE
-                        kAdminlogin = " . $authorID,
+                        kAdminlogin = ' . $authorID,
                 \DB\ReturnType::DEFAULT
             );
         }

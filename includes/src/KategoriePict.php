@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\GeneralObject;
+
 /**
  * Class KategoriePict
  */
@@ -60,7 +62,7 @@ class KategoriePict
      */
     public function insertInDB(): int
     {
-        return Shop::Container()->getDB()->insert('tkategoriepict', ObjectHelper::copyMembers($this));
+        return Shop::Container()->getDB()->insert('tkategoriepict', GeneralObject::copyMembers($this));
     }
 
     /**
@@ -68,7 +70,7 @@ class KategoriePict
      */
     public function updateInDB(): int
     {
-        $obj = ObjectHelper::copyMembers($this);
+        $obj = GeneralObject::copyMembers($this);
 
         return Shop::Container()->getDB()->update('tkategoriepict', 'kKategoriePict', $obj->kKategoriePict, $obj);
     }

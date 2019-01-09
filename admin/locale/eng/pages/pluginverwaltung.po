@@ -1,0 +1,132 @@
+msgid "pluginverwaltung"
+msgstr "Pluginverwaltung"
+
+msgid "pluginverwaltungLocales"
+msgstr "Sprachvariablen"
+
+msgid "pluginverwaltungLicenceKeyInput"
+msgstr "Plugin Lizenzschlüsseleingabe"
+
+msgid "pluginverwaltungLicenceKey"
+msgstr "Lizenzschlüssel"
+
+msgid "pluginverwaltungDesc"
+msgstr "Plugins erweitern den Funktionsumfang, ohne den Kern-Shopcode zu verändern. Plugins können jederzeit deaktiviert bzw. komplett deinstalliert werden. Bitte installieren Sie keine Plugins, deren Ursprung Ihnen nicht bekannt ist. <br /><strong>Sicherheitshinweis: Plugins haben Zugriff auf die gesamte Datenbank des Shopsystems!</strong>"
+
+msgid "pluginverwaltungURL"
+msgstr "https://jtl-url.de/5stze"
+
+msgid "pluginListNotInstalled"
+msgstr "Verfügbare (nicht installierte) Plugins"
+
+msgid "pluginListNotActivated"
+msgstr "Verfügbare (nicht aktivierte) Plugins"
+
+msgid "pluginListNotInstalledAndError"
+msgstr "Fehlerhafte (nicht installierte) Plugins"
+
+msgid "pluginListInstalled"
+msgstr "Installierte Plugins"
+
+msgid "pluginListProblems"
+msgstr "Installierte Plugins, die konfiguriert werden müssen"
+
+msgid "pluginName"
+msgstr "Name"
+
+msgid "pluginErrorCode"
+msgstr "Fehlercode"
+
+msgid "pluginAuthor"
+msgstr "Autor"
+
+msgid "pluginHomepage"
+msgstr "Homepage"
+
+msgid "pluginDesc"
+msgstr "Beschreibung"
+
+msgid "pluginLanguage"
+msgstr "Sprachen"
+
+msgid "pluginVersion"
+msgstr "Version"
+
+msgid "pluginInfo"
+msgstr "Info"
+
+msgid "pluginInstalled"
+msgstr "Installiert am"
+
+msgid "pluginUpdated"
+msgstr "Aktualisiert am"
+
+msgid "pluginFolder"
+msgstr "Verzeichnis"
+
+msgid "status"
+msgstr "Status"
+
+msgid "statusInstalled"
+msgstr "Installiert"
+
+msgid "statusDeactive"
+msgstr "Deaktiviert"
+
+msgid "statusNotInstalled"
+msgstr "Nicht installiert"
+
+msgid "statusError"
+msgstr "Fehlerhaft"
+
+msgid "pluginBtnUpdate"
+msgstr "Updaten"
+
+msgid "pluginBtnInstall"
+msgstr "Installieren"
+
+msgid "pluginBtnActivate"
+msgstr "Aktivieren"
+
+msgid "pluginBtnDeActivate"
+msgstr "Deaktivieren"
+
+msgid "pluginBtnDeInstall"
+msgstr "Deinstallieren"
+
+msgid "pluginBtnReload"
+msgstr "Neu laden"
+
+msgid "pluginBtnLicenceAdd"
+msgstr "Lizenzkey eingeben"
+
+msgid "pluginBtnLicenceChange"
+msgstr "ändern"
+
+msgid "pluginBtnLicence"
+msgstr "Lizenz"
+
+msgid "pluginBtnSave"
+msgstr "Speichern"
+
+msgid "pluginBtnBack"
+msgstr "zurück"
+
+msgid "pluginLocalesStd"
+msgstr "auf den Installationszustand zurücksetzen"
+
+msgid "pluginEditLocales"
+msgstr "Sprachvariablen"
+
+msgid "pluginEditLinkgrps"
+msgstr "Linkgruppen"
+
+msgid "pluginSelectAll"
+msgstr "Alle auswählen"
+
+msgid "pluginUpdateExists"
+msgstr "Das Plugin wurde in einer aktuelleren Version hochgeladen und kann geupdated werden"
+
+msgid "pluginUpdateExistsError"
+msgstr "Dieses hat jedoch den folgenden Fehler"
+

@@ -4,11 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Request;
+
 defined('PLZIMPORT_HOST') || define('PLZIMPORT_HOST', 'www.fa-technik.adfc.de');
 defined('PLZIMPORT_URL') || define('PLZIMPORT_URL', 'http://' . PLZIMPORT_HOST . '/code/opengeodb/');
 defined('PLZIMPORT_ISO_REGEX') || define('PLZIMPORT_ISO_REGEX', '/([A-Z]{2})\.tab/');
-defined('PLZIMPORT_REGEX') || define('PLZIMPORT_REGEX',
-    '/<td><a href="([A-Z]{2}\.tab)">([A-Z]{2})\.tab<\/a><\/td><td[^>]*>([0-9]{2}\-[A-Za-z]{3}\-[0-9]{4}[0-9: ]+?) *<\/td><td[^>]*> *([0-9MK\.]+)<\/td>/');
+defined('PLZIMPORT_REGEX') || define(
+    'PLZIMPORT_REGEX',
+    '/<td><a href="([A-Z]{2}\.tab)">([A-Z]{2})\.tab<\/a><\/td><td[^>]*>([0-9]{2}\-[A-Za-z]{3}\-[0-9]{4}[0-9: ]+?) *<\/td><td[^>]*> *([0-9MK\.]+)<\/td>/'
+);
 
 /**
  * @return array
@@ -85,7 +89,7 @@ function plzimportDoImport($target, array $sessData, $result): void
 
         while (!feof($fHandle)) {
             $read += strlen(implode(',', $data));
-            $data = fgetcsv($fHandle, 0, "\t");
+            $data  = fgetcsv($fHandle, 0, "\t");
 
             if (isset($data[13]) && in_array($data[13], [6, 8])) {
                 $plz_arr       = explode(',', $data[7]);
@@ -194,7 +198,7 @@ function plzimportDoDownload($target, array $sessData, $result): void
     }
 
     fwrite($ioHandle, "GET {$ioFile} HTTP/1.1\r\n" .
-        "Host: " . PLZIMPORT_HOST . "\r\n" .
+        'Host: ' . PLZIMPORT_HOST . "\r\n" .
         "User-Agent: Mozilla/5.0\r\n" .
         "Keep-Alive: 115\r\n" .
         "Connection: keep-alive\r\n" .
@@ -212,7 +216,7 @@ function plzimportDoDownload($target, array $sessData, $result): void
     $written = 0;
     while (!feof($ioHandle) && $buf !== false) {
         $written += fwrite($fHandle, $buf);
-        $buf     = fread($ioHandle, $partSize);
+        $buf      = fread($ioHandle, $partSize);
         if ($buf === false) {
             fclose($fHandle);
             fclose($ioHandle);
@@ -549,11 +553,10 @@ function plzimportActionRestoreBackup($target = ''): stdClass
 }
 
 /**
- * @param string           $step
  * @param Smarty\JTLSmarty $smarty
  * @param array            $messages
  */
-function plzimportFinalize($step, Smarty\JTLSmarty $smarty, array &$messages): void
+function plzimportFinalize(Smarty\JTLSmarty $smarty, array &$messages): void
 {
     if (isset($_SESSION['plzimport.notice'])) {
         $messages['notice'] = $_SESSION['plzimport.notice'];
@@ -575,7 +578,7 @@ function plzimportFinalize($step, Smarty\JTLSmarty $smarty, array &$messages): v
  */
 function plzimportOpenSession($sessID): bool
 {
-    $dbSess = Shop::Container()->getDB()->select('tadminsession', 'cSessionId', "plzimport.{$sessID}");
+    $dbSess = Shop::Container()->getDB()->select('tadminsession', 'cSessionId', 'plzimport.' . $sessID);
 
     if (!isset($dbSess->nSessionExpires) || $dbSess->nSessionExpires < time()) {
         Shop::Container()->getDB()->query(
@@ -598,7 +601,7 @@ function plzimportOpenSession($sessID): bool
  */
 function plzimportCloseSession($sessID): void
 {
-    Shop::Container()->getDB()->delete('tadminsession', 'cSessionId', "plzimport.{$sessID}");
+    Shop::Container()->getDB()->delete('tadminsession', 'cSessionId', 'plzimport.' . $sessID);
 }
 
 /**
@@ -607,7 +610,7 @@ function plzimportCloseSession($sessID): void
  */
 function plzimportWriteSession($sessID, array $data): void
 {
-    Shop::Container()->getDB()->update('tadminsession', 'cSessionId', "plzimport.{$sessID}", (object)[
+    Shop::Container()->getDB()->update('tadminsession', 'cSessionId', 'plzimport.' . $sessID, (object)[
         'cSessionData'    => serialize($data),
         'nSessionExpires' => time() + 2 * 60
     ]);
@@ -619,7 +622,7 @@ function plzimportWriteSession($sessID, array $data): void
  */
 function plzimportReadSession($sessID)
 {
-    $dbSess = Shop::Container()->getDB()->select('tadminsession', 'cSessionId', "plzimport.{$sessID}");
+    $dbSess = Shop::Container()->getDB()->select('tadminsession', 'cSessionId', 'plzimport.' . $sessID);
 
     return !empty($dbSess->cSessionData)
         ? unserialize($dbSess->cSessionData)
@@ -642,7 +645,7 @@ function plzimportMakeResponse($data, $error = null)
     header('Content-type: application/json');
 
     if ($error !== null) {
-        header(RequestHelper::makeHTTPHeader(500), true, $error);
+        header(Request::makeHTTPHeader(500), true, $error);
     }
 
     $result = (object)[

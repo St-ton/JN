@@ -13,12 +13,12 @@ if (auth()) {
     if (isset($_POST['kBestellung'], $_POST['dRechnungErstellt'], $_POST['kSprache'])) {
         handleData($_POST['kBestellung'], $_POST['dRechnungErstellt'], $_POST['kSprache']);
     } else {
-        pushError("Invoice Auth: POST-Parameter konnten nicht verarbeitet werden " .
-            "(kBestellung: {$_POST['kBestellung']}, dRechnungErstellt: " .
-            "{$_POST['dRechnungErstellt']}, kSprache: {$_POST['kSprache']}).");
+        pushError('Invoice Auth: POST-Parameter konnten nicht verarbeitet werden ' .
+            '(kBestellung: ' . $_POST['kBestellung'] . ', dRechnungErstellt: ' .
+            $_POST['dRechnungErstellt'] . ', kSprache: ' . $_POST['kSprache'] . ').');
     }
 } else {
-    pushError("Invoice Auth: Anmeldung fehlgeschlagen.");
+    pushError('Invoice Auth: Anmeldung fehlgeschlagen.');
 }
 
 /**
@@ -57,20 +57,19 @@ function handleData(int $kBestellung, $dRechnungErstellt, int $kSprache)
                     zipRedirect(time() . '.jtl', $cResponse);
                     exit;
                 }
-                pushError("Fehler beim Erstellen der Rechnung (kBestellung: {$oBestellung->kBestellung}).");
+                pushError('Fehler beim Erstellen der Rechnung (kBestellung: ' . $oBestellung->kBestellung . ').');
             } else {
                 // payment method does not exist
                 pushError(
-                    "Invoice handleData: Für die Zahlungsart {$oPaymentMethod->cName} " .
-                    "kann keine Rechnung erstellt werden (kBestellung: {$oBestellung->kBestellung})."
+                    'Invoice handleData: Für die Zahlungsart ' . $oPaymentMethod->cName .
+                    ' kann keine Rechnung erstellt werden (kBestellung: ' . $oBestellung->kBestellung . ').'
                 );
             }
         } else {
-            // no order found
-            pushError("Keine Bestellung mit kBestellung {$kBestellung} gefunden!");
+            pushError('Keine Bestellung mit kBestellung ' . $kBestellung . ' gefunden!');
         }
     } else {
-        pushError("Fehlerhafte Parameter (kBestellung: {$kBestellung}, kSprache: {$kSprache}).");
+        pushError('Fehlerhafte Parameter (kBestellung: ' . $kBestellung . ', kSprache: ' . $kSprache . ').');
     }
 }
 

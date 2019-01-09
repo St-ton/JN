@@ -6,7 +6,7 @@
         });
 
         $('#kategorien button[data-target=".delete-modal"]').click(function(){
-            $('.modal-title').html('{#newsDeleteCat#}');
+            $('.modal-title').html('{__('newsDeleteCat')}');
             $('#submitDelete').data('name', 'kategorien');
 
             var itemsToDelete = '';
@@ -16,11 +16,11 @@
             $('.delete-modal .modal-body').html('<ul class="list-group">' + itemsToDelete + '</ul>');
         });
         $('#aktiv button[data-target=".delete-modal"]').click(function(){
-            $('.modal-title').html('{#newsDeleteNews#}');
+            $('.modal-title').html('{__('newsDeleteNews')}');
             $('#submitDelete').data('name', 'aktiv');
         });
         $('#inaktiv button[data-target=".delete-modal"]').click(function(){
-            $('.modal-title').html('{#newsDeleteComment#}');
+            $('.modal-title').html('{__('newsDeleteComment')}');
             $('#submitDelete').data('name', 'inaktiv');
         });
 
@@ -42,20 +42,20 @@
         });
     });
 </script>
-{include file='tpl_inc/seite_header.tpl' cTitel=#news# cBeschreibung=#newsDesc# cDokuURL=#newsURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('news') cBeschreibung=__('newsDesc') cDokuURL=__('newsURL')}
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'inaktiv'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#inaktiv">{#newsCommentActivate#}</a>
+            <a data-toggle="tab" role="tab" href="#inaktiv">{__('newsCommentActivate')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'aktiv'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#aktiv">{#newsOverview#}</a>
+            <a data-toggle="tab" role="tab" href="#aktiv">{__('newsOverview')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'kategorien'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#kategorien">{#newsCatOverview#}</a>
+            <a data-toggle="tab" role="tab" href="#kategorien">{__('newsCatOverview')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einstellungen">{#newsSettings#}</a>
+            <a data-toggle="tab" role="tab" href="#einstellungen">{__('newsSettings')}</a>
         </li>
     </ul>
 
@@ -71,17 +71,17 @@
                     <input type="hidden" name="tab" value="inaktiv" />
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">{#newsCommentActivate#}</h3>
+                            <h3 class="panel-title">{__('newsCommentActivate')}</h3>
                         </div>
                         <div class="table-responsive">
                             <table class="list table table-striped">
                                 <thead>
                                 <tr>
                                     <th class="check">&nbsp;</th>
-                                    <th class="tleft">{#newsUser#}</th>
-                                    <th class="tleft">{#newsHeadline#}</th>
-                                    <th class="tleft">{#newsText#}</th>
-                                    <th class="th-5">{#newsDate#}</th>
+                                    <th class="tleft">{__('newsUser')}</th>
+                                    <th class="tleft">{__('newsHeadline')}</th>
+                                    <th class="tleft">{__('newsText')}</th>
+                                    <th class="th-5">{__('newsDate')}</th>
                                     <th class="th-6" style="min-width: 140px;"></th>
                                 </tr>
                                 </thead>
@@ -105,7 +105,7 @@
                                         <td class="tcenter">{$oNewsKommentar->getDateCreatedCompat()}</td>
                                         <td class="tcenter">
                                             <a href="news.php?news=1&kNews={$oNewsKommentar->getNewsID()}&kNewsKommentar={$oNewsKommentar->getID()}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
-                                               class="btn btn-primary" title="{#modify#}">
+                                               class="btn btn-primary" title="{__('modify')}">
                                                 <i class="fa fa-edit"></i>
                                             </a>
                                         </td>
@@ -122,15 +122,15 @@
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group">
-                                <button name="freischalten" type="submit" value="{#newsActivate#}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {#newsActivate#}</button>
-                                <input name="kommentareloeschenSubmit" type="submit" data-id="loeschen" value="{#delete#}" class="hidden-soft">
-                                <button name="kommentareloeschenSubmit" type="button" data-toggle="modal" data-target=".delete-modal" value="{#delete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#delete#}</button>
+                                <button name="freischalten" type="submit" value="{__('newsActivate')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('newsActivate')}</button>
+                                <input name="kommentareloeschenSubmit" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
+                                <button name="kommentareloeschenSubmit" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
                             </div>
                         </div>
                     </div>
                 </form>
             {else}
-                <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="aktiv" class="tab-pane fade{if isset($cTab) && $cTab === 'aktiv'} active in{/if}">
@@ -142,20 +142,20 @@
                 <input type="hidden" name="tab" value="aktiv" />
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{#newsOverview#}</h3>
+                        <h3 class="panel-title">{__('newsOverview')}</h3>
                     </div>
                     <div class="table-responsive">
                         <table class="sortable list table table-striped">
                             <thead>
                             <tr>
                                 <th class="check"></th>
-                                <th class="tleft">{#newsHeadline#}</th>
-                                {*<th class="tleft">{#newsCategory#}</th>*}
-                                <th class="tleft">{#newsCustomerGrp#}</th>
-                                <th class="tleft">{#newsValidation#}</th>
-                                <th>{#newsActive#}</th>
-                                <th>{#newsComments#}</th>
-                                <th>{#newsCatLastUpdate#}</th>
+                                <th class="tleft">{__('newsHeadline')}</th>
+                                {*<th class="tleft">{__('newsCategory')}</th>*}
+                                <th class="tleft">{__('newsCustomerGrp')}</th>
+                                <th class="tleft">{__('newsValidation')}</th>
+                                <th>{__('newsActive')}</th>
+                                <th>{__('newsComments')}</th>
+                                <th>{__('newsCatLastUpdate')}</th>
                                 <th style="min-width: 100px;"></th>
                             </tr>
                             </thead>
@@ -184,11 +184,11 @@
                                         <td class="tcenter">
                                             <div class="btn-group">
                                                 <a href="news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-primary" title="{#modify#}">
+                                                   class="btn btn-primary" title="{__('modify')}">
                                                     <i class="fa fa-edit"></i>
                                                 </a>
                                                 <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-default" title="{#newsPreview#}">
+                                                   class="btn btn-default" title="{__('newsPreview')}">
                                                     <i class="fa fa-eye"></i>
                                                 </a>
                                             </div>
@@ -198,7 +198,7 @@
                             {else}
                                 <tr>
                                     <td colspan="9">
-                                        <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                                        <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                                     </td>
                                 </tr>
                             {/if}
@@ -206,7 +206,7 @@
                             <tfoot>
                             <tr>
                                 <td class="check"><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                                <td colspan="8"><label for="ALLMSGS2">{#globalSelectAll#}</label></td>
+                                <td colspan="8"><label for="ALLMSGS2">{__('globalSelectAll')}</label></td>
                             </tr>
                             </tfoot>
                         </table>
@@ -216,9 +216,9 @@
                     <input type="hidden" name="tab" value="aktiv" />
                     <div class="panel-footer">
                         <div class="btn-group">
-                            <button name="news_erstellen" type="submit" value="{#newAdd#}" class="btn btn-primary"><i class="fa fa-share"></i> {#newAdd#}</button>
-                            <input name="loeschen" type="submit" data-id="loeschen" value="{#delete#}" class="hidden-soft">
-                            <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{#delete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#delete#}</button>
+                            <button name="news_erstellen" type="submit" value="{__('newAdd')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('newAdd')}</button>
+                            <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
+                            <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
                         </div>
                     </div>
                 </div>
@@ -239,17 +239,17 @@
                 <input type="hidden" name="tab" value="kategorien" />
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{#newsCatOverview#}</h3>
+                        <h3 class="panel-title">{__('newsCatOverview')}</h3>
                     </div>
                     <div class="table-responsive">
                         <table id="category-list" class="list table table-striped">
                             <thead>
                             <tr>
                                 <th class="check"></th>
-                                <th class="tleft">{#newsCatName#}</th>
-                                <th class="">{#newsCatSortShort#}</th>
-                                <th class="th-4">{#newsActive#}</th>
-                                <th class="th-5">{#newsCatLastUpdate#}</th>
+                                <th class="tleft">{__('newsCatName')}</th>
+                                <th class="">{__('newsCatSortShort')}</th>
+                                <th class="th-4">{__('newsActive')}</th>
+                                <th class="th-5">{__('newsCatLastUpdate')}</th>
                                 <th class="th-5">&nbsp;</th>
                             </tr>
                             </thead>
@@ -269,7 +269,7 @@
                                         <td class="tcenter">{$oNewsKategorie->getDateLastModified()->format('d.m.Y H:i')}</td>
                                         <td class="tcenter">
                                             <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
-                                               class="btn btn-primary" title="{#modify#}">
+                                               class="btn btn-primary" title="{__('modify')}">
                                                 <i class="fa fa-edit"></i>
                                             </a>
                                         </td>
@@ -279,7 +279,7 @@
                             {else}
                                 <tr>
                                     <td colspan="6">
-                                        <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                                        <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                                     </td>
                                 </tr>
                             {/if}
@@ -297,9 +297,9 @@
                     <input type="hidden" name="tab" value="kategorien" />
                     <div class="panel-footer">
                         <div class="btn-group">
-                            <button name="news_kategorie_erstellen" type="submit" value="{#newsCatAdd#}" class="btn btn-primary"><i class="fa fa-share"></i> {#newsCatAdd#}</button>
-                            <input name="loeschen" type="submit" data-id="loeschen" value="{#delete#}" class="hidden-soft">
-                            <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{#delete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#delete#}</button>
+                            <button name="news_kategorie_erstellen" type="submit" value="{__('newsCatAdd')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('newsCatAdd')}</button>
+                            <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
+                            <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
                         </div>
                     </div>
                 </div>
@@ -349,14 +349,14 @@
                         {foreach $oNewsMonatsPraefix_arr as $oNewsMonatsPraefix}
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="praefix_{$oNewsMonatsPraefix->cISOSprache}">{#newsPraefix#} ({$oNewsMonatsPraefix->cNameDeutsch})</label>
+                                    <label for="praefix_{$oNewsMonatsPraefix->cISOSprache}">{__('newsPraefix')} ({$oNewsMonatsPraefix->cNameDeutsch})</label>
                                 </span>
                                 <input type="text" class="form-control" id="praefix_{$oNewsMonatsPraefix->cISOSprache}" name="praefix_{$oNewsMonatsPraefix->cISOSprache}" value="{$oNewsMonatsPraefix->cPraefix}" tabindex="1" />
                             </div>
                         {/foreach}
                     </div>
                     <div class="panel-footer">
-                        <button type="submit" value="{#newsSave#}" class="btn btn-primary"><i class="fa fa-save"></i> {#newsSave#}</button>
+                        <button type="submit" value="{__('newsSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('newsSave')}</button>
                     </div>
                 </div>
             </form>
@@ -371,9 +371,9 @@
             </div>
             <div class="modal-body"></div>
             <div class="modal-footer">
-                <p>{#wantToConfirm#}</p>
-                <button type="button" id="submitDelete" data-name="" class="btn btn-danger">{#delete#}</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">{#cancel#}</button>
+                <p>{__('wantToConfirm')}</p>
+                <button type="button" id="submitDelete" data-name="" class="btn btn-danger">{__('delete')}</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">{__('cancel')}</button>
             </div>
         </div>
     </div>

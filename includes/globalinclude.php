@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Debug\DataCollector\Smarty;
+use Helpers\PHPSettings;
 use JTLShop\SemVer\Version;
 
 $nStartzeit = microtime(true);
@@ -51,7 +53,7 @@ if (!function_exists('Shop')) {
     }
 }
 // PHP memory_limit work around
-if (!PHPSettingsHelper::getInstance()->hasMinLimit(64 * 1024 * 1024)) {
+if (!PHPSettings::getInstance()->hasMinLimit(64 * 1024 * 1024)) {
     ini_set('memory_limit', '64M');
 }
 
@@ -88,11 +90,13 @@ if (PHP_SAPI !== 'cli'
 }
 
 if (!JTL_INCLUDE_ONLY_DB) {
+    $debugbar = Shop::Container()->getDebugBar();
+
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikelsuchspecial_inc.php';
-    $oPluginHookListe_arr         = \Plugin\Plugin::getHookList();
+    $oPluginHookListe_arr         = \Plugin\Helper::getHookList();
     $nSystemlogFlag               = Jtllog::getSytemlogFlag();
     $template                     = Template::getInstance();
     $oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
@@ -111,6 +115,7 @@ if (!JTL_INCLUDE_ONLY_DB) {
         $bAdminWartungsmodus = true;
     }
     Sprache::getInstance();
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
     Shop::bootstrap();
+    require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
+    $debugbar->addCollector(new Smarty(Shop::Smarty()));
 }

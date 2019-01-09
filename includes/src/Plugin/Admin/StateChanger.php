@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -8,8 +8,17 @@ namespace Plugin\Admin;
 
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
+use Plugin\Admin\Installation\Installer;
+use Plugin\Admin\Installation\Uninstaller;
+use Plugin\Admin\Validation\ExtensionValidator;
+use Plugin\Admin\Validation\PluginValidator;
+use Plugin\Admin\Validation\ValidatorInterface;
+use Plugin\ExtensionLoader;
+use Plugin\Helper;
 use Plugin\InstallCode;
 use Plugin\Plugin;
+use Plugin\PluginLoader;
+use Plugin\State;
 
 /**
  * Class StateChanger
@@ -28,21 +37,32 @@ class StateChanger
     private $cache;
 
     /**
-     * @var Validator
+     * @var ValidatorInterface|PluginValidator
      */
-    private $validator;
+    private $pluginValidator;
+
+    /**
+     * @var ValidatorInterface|ExtensionValidator
+     */
+    protected $extensionValidator;
 
     /**
      * StateChanger constructor.
-     * @param DbInterface       $db
-     * @param JTLCacheInterface $cache
-     * @param Validator|null    $validator
+     * @param DbInterface             $db
+     * @param JTLCacheInterface       $cache
+     * @param ValidatorInterface|null $pluginValidator
+     * @param ValidatorInterface|null $extensionValidator
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache, Validator $validator = null)
-    {
-        $this->db        = $db;
-        $this->cache     = $cache;
-        $this->validator = $validator;
+    public function __construct(
+        DbInterface $db,
+        JTLCacheInterface $cache,
+        ValidatorInterface $pluginValidator = null,
+        ValidatorInterface $extensionValidator = null
+    ) {
+        $this->db                 = $db;
+        $this->cache              = $cache;
+        $this->pluginValidator    = $pluginValidator;
+        $this->extensionValidator = $extensionValidator;
     }
 
     /**
@@ -61,9 +81,13 @@ class StateChanger
         if (empty($pluginData->kPlugin)) {
             return InstallCode::NO_PLUGIN_FOUND;
         }
-        $path       = \PFAD_ROOT . \PFAD_PLUGIN;
-        $validation = $this->validator->validateByPath($path . $pluginData->cVerzeichnis);
-
+        if ((int)$pluginData->bExtension === 1) {
+            $path       = \PFAD_ROOT . \PFAD_EXTENSIONS;
+            $validation = $this->extensionValidator->validateByPath($path . $pluginData->cVerzeichnis);
+        } else {
+            $path       = \PFAD_ROOT . \PFAD_PLUGIN;
+            $validation = $this->pluginValidator->validateByPath($path . $pluginData->cVerzeichnis);
+        }
         if ($validation === InstallCode::OK
             || $validation === InstallCode::DUPLICATE_PLUGIN_ID
             || $validation === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE
@@ -72,14 +96,19 @@ class StateChanger
                 'tplugin',
                 'kPlugin',
                 $pluginID,
-                (object)['nStatus' => Plugin::PLUGIN_ACTIVATED]
+                (object)['nStatus' => State::ACTIVATED]
             );
             $this->db->update('tadminwidgets', 'kPlugin', $pluginID, (object)['bActive' => 1]);
             $this->db->update('tlink', 'kPlugin', $pluginID, (object)['bIsActive' => 1]);
             $this->db->update('topcportlet', 'kPlugin', $pluginID, (object)['bActive' => 1]);
             $this->db->update('topcblueprint', 'kPlugin', $pluginID, (object)['bActive' => 1]);
+            if ((int)$pluginData->bExtension === 1) {
+                $loader = new ExtensionLoader($this->db, $this->cache);
+            } else {
+                $loader = new PluginLoader($this->db, $this->cache);
+            }
 
-            if (($p = Plugin::bootstrapper($pluginID)) !== null) {
+            if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
                 $p->enabled();
             }
 
@@ -103,10 +132,16 @@ class StateChanger
         if ($pluginID <= 0) {
             return InstallCode::WRONG_PARAM;
         }
-        if (($p = Plugin::bootstrapper($pluginID)) !== null) {
+        $pluginData = $this->db->select('tplugin', 'kPlugin', $pluginID);
+        if ((int)$pluginData->bExtension === 1) {
+            $loader = new ExtensionLoader($this->db, $this->cache);
+        } else {
+            $loader = new PluginLoader($this->db, $this->cache);
+        }
+        if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
             $p->disabled();
         }
-        $this->db->update('tplugin', 'kPlugin', $pluginID, (object)['nStatus' => Plugin::PLUGIN_DISABLED]);
+        $this->db->update('tplugin', 'kPlugin', $pluginID, (object)['nStatus' => State::DISABLED]);
         $this->db->update('tadminwidgets', 'kPlugin', $pluginID, (object)['bActive' => 0]);
         $this->db->update('tlink', 'kPlugin', $pluginID, (object)['bIsActive' => 0]);
         $this->db->update('topcportlet', 'kPlugin', $pluginID, (object)['bActive' => 0]);
@@ -131,20 +166,19 @@ class StateChanger
      */
     public function reload($plugin, $forceReload = false): int
     {
-        $info = \PFAD_ROOT . \PFAD_PLUGIN . $plugin->cVerzeichnis . '/' . \PLUGIN_INFO_FILE;
+        $info = $plugin->getPaths()->getBasePath() . \PLUGIN_INFO_FILE;
         if (!\file_exists($info)) {
             return -1;
         }
-        $lastUpdate    = new \DateTimeImmutable($plugin->dZuletztAktualisiert);
+        $lastUpdate    = $plugin->getMeta()->getDateLastUpdate();
         $lastXMLChange = \filemtime($info);
         if ($forceReload === true || $lastXMLChange > $lastUpdate->getTimestamp()) {
-            $uninstaller = new Uninstaller($this->db);
-            $installer   = new Installer($this->db, $uninstaller, $this->validator);
-            $installer->setDir($plugin->cVerzeichnis);
+            $uninstaller = new Uninstaller($this->db, $this->cache);
+            $installer   = new Installer($this->db, $uninstaller, $this->pluginValidator, $this->extensionValidator);
+            $installer->setDir($plugin->getPaths()->getBaseDir());
             $installer->setPlugin($plugin);
-            $installer->setDir($plugin->cVerzeichnis);
 
-            return $installer->installierePluginVorbereitung();
+            return $installer->prepare();
         }
 
         return 200; // kein Reload nötig, da info file älter als dZuletztAktualisiert

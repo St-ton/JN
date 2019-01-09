@@ -12,7 +12,7 @@ namespace Survey;
  */
 class MatrixOption
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var int

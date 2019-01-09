@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\URL;
+
 /**
  * Class News
  */
@@ -435,7 +437,7 @@ class News extends MainModel
                     LIMIT 1",
                 \DB\ReturnType::SINGLE_OBJECT
             );
-            $oObj->cUrl = UrlHelper::buildURL($oObj, URLART_NEWS);
+            $oObj->cUrl = URL::buildURL($oObj, URLART_NEWS);
 
             $this->loadObject($oObj);
         }
@@ -514,7 +516,7 @@ class News extends MainModel
         );
         $oNews_arr = [];
         foreach ($oObj_arr as $oObj) {
-            $oObj->cUrl    = UrlHelper::buildURL($oObj, URLART_NEWS);
+            $oObj->cUrl    = URL::buildURL($oObj, URLART_NEWS);
             $oObj->cUrlExt = Shop::getURL() . "/{$oObj->cUrl}";
             $oNews_arr[]   = new self(null, $oObj);
         }
@@ -543,8 +545,8 @@ class News extends MainModel
                     FROM tnewskategorie
                     JOIN tnewskategoriesprache t 
                         ON tnewskategorie.kNewsKategorie = t.kNewsKategorie
-                    WHERE t.languageID = " . $kSprache . ($showOnlyActive ? ' AND nAktiv = 1 ' : '') . "
-                    ORDER BY nSort ASC",
+                    WHERE t.languageID = " . $kSprache . ($showOnlyActive ? ' AND nAktiv = 1 ' : '') . '
+                    ORDER BY nSort ASC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $oNewsCategories     = is_array($oNewsCategories) ? $oNewsCategories : [];

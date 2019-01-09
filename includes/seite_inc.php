@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Category;
+
 /**
  * @return array
  * @deprecated since 5.0.0
@@ -107,7 +109,7 @@ function gibSitemapKategorien()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $oKategorieliste           = new KategorieListe();
-    $oKategorieliste->elemente = KategorieHelper::getInstance()->combinedGetAll();
+    $oKategorieliste->elemente = Category::getInstance()->combinedGetAll();
 
     return $oKategorieliste;
 }

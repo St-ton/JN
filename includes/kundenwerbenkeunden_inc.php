@@ -11,7 +11,8 @@
  */
 function pruefeEingabe(array $post)
 {
-    trigger_error(__FUNCTION__ . ' is deprecated. Use KundenwerbenKunden::checkInputData() instead.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated. ' .
+        'Use KundenwerbenKunden::checkInputData() instead.', E_USER_DEPRECATED);
     return KundenwerbenKunden::checkInputData($post);
 }
 

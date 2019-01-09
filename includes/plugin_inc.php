@@ -11,84 +11,83 @@
 function executeHook(int $hookID, $args_arr = [])
 {
     global $smarty;
+    $timer = Shop::Container()->getDebugBar()->getTimer();
+    $timer->startMeasure('shop.hook.' . $hookID);
+    \Events\Dispatcher::getInstance()->fire('shop.hook.' . $hookID, array_merge((array)$hookID, $args_arr));
 
-    EventDispatcher::getInstance()->fire("shop.hook.{$hookID}", array_merge((array)$hookID, $args_arr));
-
-    $hookList = \Plugin\Plugin::getHookList();
+    $hookList = \Plugin\Helper::getHookList();
     if (empty($hookList[$hookID]) || !is_array($hookList[$hookID])) {
+        $timer->stopMeasure('shop.hook.' . $hookID);
         return;
     }
-    foreach ($hookList[$hookID] as $oPluginTmp) {
-        //try to get plugin instance from registry
-        $oPlugin = Shop::get('oplugin_' . $oPluginTmp->kPlugin);
-        //not found in registry - create new
+    $db    = \Shop::Container()->getDB();
+    $cache = \Shop::Container()->getCache();
+    foreach ($hookList[$hookID] as $item) {
+        $oPlugin = Shop::get('oplugin_' . $item->kPlugin);
         if ($oPlugin === null) {
-            $oPlugin = new \Plugin\Plugin($oPluginTmp->kPlugin);
-            if (!$oPlugin->kPlugin) {
+            $loader  = new \Plugin\PluginLoader($db, $cache);
+            $oPlugin = $loader->init((int)$item->kPlugin);
+            if ($oPlugin === null) {
                 continue;
             }
-            //license check is only executed once per plugin
-            if (!\Plugin\Plugin::licenseCheck($oPlugin)) {
+            if (!\Plugin\Helper::licenseCheck($oPlugin)) {
                 continue;
             }
-            //save to registry
-            Shop::set('oplugin_' . $oPluginTmp->kPlugin, $oPlugin);
+            Shop::set('oplugin_' . $item->kPlugin, $oPlugin);
         }
         if ($smarty !== null) {
-            $smarty->assign('oPlugin_' . $oPlugin->cPluginID, $oPlugin);
+            $smarty->assign('oPlugin_' . $oPlugin->getPluginID(), $oPlugin);
         }
-        $cDateiname = $oPluginTmp->cDateiname;
-        // Welcher Hook wurde aufgerufen?
+        $file                 = $item->cDateiname;
         $oPlugin->nCalledHook = $hookID;
-        if ($hookID === HOOK_SEITE_PAGE_IF_LINKART && $cDateiname === PLUGIN_SEITENHANDLER) {
-            // Work Around, falls der Hook auf geht => Frontend Link
+        if ($hookID === HOOK_SEITE_PAGE_IF_LINKART && $file === PLUGIN_SEITENHANDLER) {
             include PFAD_ROOT . PFAD_INCLUDES . PLUGIN_SEITENHANDLER;
         } elseif ($hookID === HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION) {
-            // Work Around, falls der Hook auf geht => CheckBox Trigger Special Function
-            if ((int)$oPlugin->kPlugin === (int)$args_arr['oCheckBox']->oCheckBoxFunktion->kPlugin) {
-                include $oPlugin->cFrontendPfad . $cDateiname;
+            if ($oPlugin->getID() === (int)$args_arr['oCheckBox']->oCheckBoxFunktion->kPlugin) {
+                include $oPlugin->getPaths()->getFrontendPath() . $file;
             }
-        } elseif (is_file($oPlugin->cFrontendPfad . $cDateiname)) {
+        } elseif (is_file($oPlugin->getPaths()->getFrontendPath() . $file)) {
             $start = microtime(true);
-            include $oPlugin->cFrontendPfad . $cDateiname;
+            include $oPlugin->getPaths()->getFrontendPath() . $file;
             if (PROFILE_PLUGINS === true) {
                 $runData = [
                     'runtime'   => microtime(true) - $start,
                     'timestamp' => microtime(true),
                     'hookID'    => $hookID,
                     'runcount'  => 1,
-                    'file'      => $oPlugin->cFrontendPfad . $cDateiname
+                    'file'      => $oPlugin->getPaths()->getFrontendPath() . $file
                 ];
                 Profiler::setPluginProfile($runData);
             }
         }
         if ($smarty !== null) {
-            $smarty->clearAssign('oPlugin_' . $oPlugin->cPluginID);
+            $smarty->clearAssign('oPlugin_' . $oPlugin->getPluginID());
         }
     }
+    $timer->stopMeasure('shop.hook.' . $hookID);
 }
 
 /**
  * @param \Plugin\Plugin $oPlugin
- * @param array  $xParam_arr
+ * @param array          $xParam_arr
  * @return bool
  * @deprecated since 5.0.0
  */
 function pluginLizenzpruefung($oPlugin, array $xParam_arr = []): bool
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Plugin\Plugin::licenseCheck($oPlugin, $xParam_arr);
+    return \Plugin\Helper::licenseCheck($oPlugin, $xParam_arr);
 }
 
 /**
  * @param \Plugin\Plugin $oPlugin
- * @param int    $nStatus
+ * @param int            $nStatus
  * @deprecated since 5.0.0
  */
 function aenderPluginZahlungsartStatus($oPlugin, int $nStatus)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    \Plugin\Plugin::updatePaymentMethodState($oPlugin, $nStatus);
+    \Plugin\Helper::updatePaymentMethodState($oPlugin, $nStatus);
 }
 
 /**
@@ -99,7 +98,7 @@ function aenderPluginZahlungsartStatus($oPlugin, int $nStatus)
 function gibPluginEinstellungen(int $kPlugin)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Plugin\Plugin::getConfigByID($kPlugin);
+    return \Plugin\Helper::getConfigByID($kPlugin);
 }
 
 /**
@@ -111,7 +110,7 @@ function gibPluginEinstellungen(int $kPlugin)
 function gibPluginSprachvariablen(int $kPlugin, $cISO = ''): array
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Plugin\Plugin::getLanguageVariablesByID($kPlugin, $cISO);
+    return \Plugin\Helper::getLanguageVariablesByID($kPlugin, $cISO);
 }
 
 /**
@@ -123,7 +122,7 @@ function gibPluginSprachvariablen(int $kPlugin, $cISO = ''): array
 function aenderPluginStatus(int $nStatus, int $kPlugin): bool
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Plugin\Plugin::updateStatusByID($nStatus, $kPlugin);
+    return \Plugin\Helper::updateStatusByID($nStatus, $kPlugin);
 }
 
 /**
@@ -135,7 +134,7 @@ function aenderPluginStatus(int $nStatus, int $kPlugin): bool
 function gibPlugincModulId(int $kPlugin, string $cNameZahlungsmethode): string
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Plugin\Plugin::getModuleIDByPluginID($kPlugin, $cNameZahlungsmethode);
+    return \Plugin\Helper::getModuleIDByPluginID($kPlugin, $cNameZahlungsmethode);
 }
 
 /**
@@ -146,7 +145,7 @@ function gibPlugincModulId(int $kPlugin, string $cNameZahlungsmethode): string
 function gibkPluginAuscModulId(string $cModulId): int
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Plugin\Plugin::getIDByModuleID($cModulId);
+    return \Plugin\Helper::getIDByModuleID($cModulId);
 }
 
 /**
@@ -157,7 +156,7 @@ function gibkPluginAuscModulId(string $cModulId): int
 function gibkPluginAuscPluginID(string $cPluginID): int
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Plugin\Plugin::getIDByPluginID($cPluginID);
+    return \Plugin\Helper::getIDByPluginID($cPluginID);
 }
 
 /**
@@ -175,7 +174,7 @@ function gibPluginExtendedTemplates(): array
                 ON tplugintemplate.kPlugin = tplugin.kPlugin
                 WHERE tplugin.nStatus = :state 
             ORDER BY tplugin.nPrio DESC',
-        ['state' => \Plugin\Plugin::PLUGIN_ACTIVATED],
+        ['state' => \Plugin\State::ACTIVATED],
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($oTemplate_arr as $oTemplate) {

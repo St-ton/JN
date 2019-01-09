@@ -40,7 +40,7 @@ final class Product extends AbstractItem
      */
     public function generateLocation(): void
     {
-        $this->setLocation(\UrlHelper::buildURL($this->data, \URLART_ARTIKEL, true));
+        $this->setLocation(\Helpers\URL::buildURL($this->data, \URLART_ARTIKEL, true));
     }
 
     /**

@@ -9,7 +9,7 @@ namespace News;
 use Tightenco\Collect\Support\Collection;
 
 /**
- * Interface NewsListInterface
+ * Interface ItemListInterface
  * @package News
  */
 interface ItemListInterface

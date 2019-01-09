@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -345,4 +345,8 @@ class InstallCode extends Enum
     public const SQL_CANNOT_SAVE_BLUEPRINT = 318;
 
     public const SQL_CANNOT_SAVE_EXPORT = 319;
+
+    public const EXT_MUST_NOT_HAVE_UNINSTALLER = 400;
+
+    public const WRONG_EXT_DIR = 401;
 }

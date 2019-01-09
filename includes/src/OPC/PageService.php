@@ -76,7 +76,7 @@ class PageService
      * @param \AdminIO $io
      * @throws \Exception
      */
-    public function registerAdminIOFunctions(\AdminIO $io)
+    public function registerAdminIOFunctions(\AdminIO $io): void
     {
         $adminAccount = $io->getAccount();
 
@@ -134,7 +134,7 @@ class PageService
      * @param string $id
      * @return null|Page
      */
-    public function getPublicPage(string $id)
+    public function getPublicPage(string $id): ?Page
     {
         return $this->pageDB->getPublicPage($id);
     }
@@ -177,7 +177,7 @@ class PageService
     /**
      * @return string
      */
-    public function createCurrentPageId()
+    public function createCurrentPageId(): string
     {
         $res              = '';
         $params           = (object)\Shop::getParameters();
@@ -206,13 +206,13 @@ class PageService
         } elseif ($params->kUmfrage > 0) {
             $res .= 'poll:' . $params->kUmfrage;
         } elseif (\strlen($params->cSuche) > 0) {
-            $res .= 'search:' . base64_encode($params->cSuche);
+            $res .= 'search:' . \base64_encode($params->cSuche);
         } else {
             $res .= 'other:' . \md5(\serialize($params));
         }
 
         if (\is_array($params->MerkmalFilter) && \count($params->MerkmalFilter) > 0) {
-            $res .= ';attribs:' . implode(',', $params->MerkmalFilter);
+            $res .= ';attribs:' . \implode(',', $params->MerkmalFilter);
         }
         if (\strlen($params->cPreisspannenFilter) > 0) {
             $res .= ';range:' . $params->cPreisspannenFilter;
@@ -270,7 +270,7 @@ class PageService
      * @param array $data
      * @throws \Exception
      */
-    public function saveDraft(array $data)
+    public function saveDraft(array $data): void
     {
         $draft = $this->getDraft($data['key'])->deserialize($data);
         $this->pageDB->saveDraft($draft);
@@ -280,7 +280,7 @@ class PageService
      * @param array $data
      * @throws \Exception
      */
-    public function publicateDraft(array $data)
+    public function publicateDraft(array $data): void
     {
         $page = (new Page())->deserialize($data);
         $this->pageDB->saveDraftPublicationStatus($page);
@@ -290,7 +290,7 @@ class PageService
      * @param string $id
      * @return $this
      */
-    public function deletePage(string $id)
+    public function deletePage(string $id): self
     {
         $this->pageDB->deletePage($id);
 
@@ -313,7 +313,7 @@ class PageService
      * @return bool true if the draft could be locked, false if it is still locked by some other user
      * @throws \Exception
      */
-    public function lockDraft($key)
+    public function lockDraft($key): bool
     {
         $draft = $this->getDraft($key);
 
@@ -324,7 +324,7 @@ class PageService
      * @param int $key
      * @throws \Exception
      */
-    public function unlockDraft(int $key)
+    public function unlockDraft(int $key): void
     {
         $page = (new Page())->setKey($key);
         $this->locker->unlock($page);

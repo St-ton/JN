@@ -4,6 +4,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . 'toolsajax.server.php';
 $oAccount->permission('SLIDER_VIEW', true, true);
@@ -13,7 +16,7 @@ $cFehler     = '';
 $cHinweis    = '';
 $_kSlider    = 0;
 $redirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'slider.php';
-$action      = isset($_REQUEST['action']) && FormHelper::validateToken()
+$action      = isset($_REQUEST['action']) && Form::validateToken()
     ? $_REQUEST['action']
     : 'view';
 $kSlider     = isset($_REQUEST['id'])
@@ -45,7 +48,7 @@ switch ($action) {
         break;
     default:
         $smarty->assign('disabled', '');
-        if (!empty($_POST) && FormHelper::validateToken()) {
+        if (!empty($_POST) && Form::validateToken()) {
             $slider   = new Slider();
             $_kSlider = (int)$_POST['kSlider'];
             $slider->load($kSlider, false);
@@ -108,7 +111,6 @@ switch ($action) {
         }
         break;
 }
-// Daten anzeigen
 switch ($action) {
     case 'slides':
         $slider = new Slider();
@@ -126,10 +128,9 @@ switch ($action) {
         }
         $slider = new Slider();
         $slider->load($kSlider, false);
-        $oExtension = holeExtension($kSlider);
         $smarty->assign('oSprachen_arr', Sprache::getInstance(false)->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
-               ->assign('oExtension', $oExtension);
+               ->assign('oExtension', holeExtension($kSlider));
 
         if ($slider->getEffects() !== 'random') {
             $cEffects_arr = explode(';', $slider->getEffects());
@@ -142,7 +143,6 @@ switch ($action) {
             $smarty->assign('checked', 'checked="checked"')
                    ->assign('disabled', 'disabled="true"');
         }
-
         $smarty->assign('oSlider', $slider);
 
         if (!is_object($slider)) {
@@ -153,18 +153,16 @@ switch ($action) {
         break;
 
     case 'new':
-        $slider = new Slider();
         $smarty->assign('checked', 'checked="checked"')
                ->assign('oSprachen_arr', Sprache::getInstance(false)->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
-               ->assign('oSlider', $slider);
+               ->assign('oSlider', new Slider());
         break;
 
     case 'delete':
-        $slider   = new Slider();
+        $slider = new Slider();
         $slider->load($kSlider, false);
-        $bSuccess = $slider->delete();
-        if ($bSuccess === true) {
+        if ($slider->delete() === true) {
             header('Location: ' . $redirectUrl);
             exit;
         }

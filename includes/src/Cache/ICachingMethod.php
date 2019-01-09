@@ -141,12 +141,12 @@ interface ICachingMethod
     /**
      * @return string|null
      */
-    public function getJournalID();
+    public function getJournalID(): ?string;
 
     /**
      * @param string $id
      */
-    public function setJournalID($id);
+    public function setJournalID($id): void;
 
     /**
      * @return string
@@ -155,6 +155,7 @@ interface ICachingMethod
 
     /**
      * @param string $error
+     * @return JTLCacheInterface
      */
     public function setError(string $error);
 }

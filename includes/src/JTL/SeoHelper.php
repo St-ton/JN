@@ -34,7 +34,7 @@ class SeoHelper
         if ($exists === null) {
             return $url;
         }
-        \Shop::Container()->getDB()->query("SET @IKEY := 0", \DB\ReturnType::QUERYSINGLE);
+        \Shop::Container()->getDB()->query('SET @IKEY := 0', \DB\ReturnType::QUERYSINGLE);
         $obj = \Shop::Container()->getDB()->query(
             "SELECT oseo.newSeo
                 FROM (

@@ -59,7 +59,8 @@ class UstIDvies
      * @param string $szString
      * @return string
      */
-    public function condenseSpaces($szString) {
+    public function condenseSpaces($szString)
+    {
         return str_replace(' ', '', $szString);
     }
 
@@ -126,7 +127,6 @@ class UstIDvies
                 'errortype' => 'vies',
                 'errorcode' => 5 // error: ID is invalid according to the VIES-system
             ];
-
         }
         // inform the user:"The VAT-office in this country has closed this time."
         Shop::Container()->getLogService()->notice('MIAS-Amt aktuell nicht erreichbar. (ID: '.$szUstID.')');
@@ -138,5 +138,4 @@ class UstIDvies
             'errorinfo' => $this->oDownTimes->getDownInfo() // the time, till which the office has closed
         ];
     }
-
 }

@@ -6,11 +6,12 @@
 
 namespace Sitemap\Factories;
 
+use DB\ReturnType;
 use function Functional\map;
 
 /**
  * Class NewsCategory
- * @package Sitemap\Generators
+ * @package Sitemap\Factories
  */
 final class NewsCategory extends AbstractFactory
 {
@@ -33,8 +34,8 @@ final class NewsCategory extends AbstractFactory
                     AND tseo.kKey = tnewskategorie.kNewsKategorie
                     AND tseo.kSprache = t.languageID
                 WHERE tnewskategorie.nAktiv = 1
-                    AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ")",
-            \DB\ReturnType::QUERYSINGLE
+                    AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ')',
+            ReturnType::QUERYSINGLE
         );
         while (($nc = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
             $nc->kNewsKategorie = (int)$nc->kNewsKategorie;

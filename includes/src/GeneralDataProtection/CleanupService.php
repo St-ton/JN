@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -6,9 +6,11 @@
 
 namespace GeneralDataProtection;
 
+use DB\ReturnType;
+
 /**
- * Class GcService
- * @package DB\Services
+ * Class CleanupService
+ * @package GeneralDataProtection
  */
 class CleanupService extends Method implements MethodInterface
 {
@@ -16,7 +18,7 @@ class CleanupService extends Method implements MethodInterface
      * @var array
      */
     protected $definition = [
-        'tbesucherarchiv' => [
+        'tbesucherarchiv'              => [
             'cDate'     => 'dZeit',
             'cDateType' => 'DATETIME',
             'cSubTable' => [
@@ -24,7 +26,7 @@ class CleanupService extends Method implements MethodInterface
             ],
             'cInterval' => '2920' // anonymized after 7 days, removed after 8 years (former 180 days)
         ],
-        'tcheckboxlogging' => [
+        'tcheckboxlogging'             => [
             'cDate'     => 'dErstellt',
             'cDateType' => 'DATETIME',
             'cSubTable' => null,
@@ -36,25 +38,25 @@ class CleanupService extends Method implements MethodInterface
             'cSubTable' => null,
             'cInterval' => '30'
         ],
-        'tkampagnevorgang' => [
+        'tkampagnevorgang'             => [
             'cDate'     => 'dErstellt',
             'cDateType' => 'DATETIME',
             'cSubTable' => null,
             'cInterval' => '365'
         ],
-        'tpreisverlauf' => [
+        'tpreisverlauf'                => [
             'cDate'     => 'dDate',
             'cDateType' => 'DATE',
             'cSubTable' => null,
             'cInterval' => '730' // 2 years (former 120 days)
         ],
-        'tredirectreferer' => [
+        'tredirectreferer'             => [
             'cDate'     => 'dDate',
             'cDateType' => 'TIMESTAMP',
             'cSubTable' => null,
             'cInterval' => '2920' // anonymized after 7 days, removed after 8 years (former 60 days)
         ],
-        'tsitemapreport' => [
+        'tsitemapreport'               => [
             'cDate'     => 'dErstellt',
             'cDateType' => 'DATETIME',
             'cSubTable' => [
@@ -62,7 +64,7 @@ class CleanupService extends Method implements MethodInterface
             ],
             'cInterval' => '365' // (former 120 days)
         ],
-        'tsuchanfrage' => [
+        'tsuchanfrage'                 => [
             'cDate'     => 'dZuletztGesucht',
             'cDateType' => 'DATETIME',
             'cSubTable' => [
@@ -72,7 +74,7 @@ class CleanupService extends Method implements MethodInterface
             ],
             'cInterval' => '2920' // anonymized after 7 days, removed after 8 years (former 60 days)
         ],
-        'tsuchcache' => [
+        'tsuchcache'                   => [
             'cDate'     => 'dGueltigBis',
             'cDateType' => 'DATETIME',
             'cSubTable' => [
@@ -80,7 +82,7 @@ class CleanupService extends Method implements MethodInterface
             ],
             'cInterval' => '30'
         ],
-        'tfsession' => [
+        'tfsession'                    => [
             'cDate'     => 'dErstellt',
             'cDateType' => 'DATETIME',
             'cSubTable' => null,
@@ -91,40 +93,39 @@ class CleanupService extends Method implements MethodInterface
     /**
      * remove data from various tables
      */
-    public function execute()
+    public function execute(): void
     {
-        foreach ($this->definition as $cTable => $cMainTable_arr) {
-            $cDateField    = $cMainTable_arr['cDate'];
-            $cSubTable_arr = $cMainTable_arr['cSubTable'];
-            $cInterval     = $cMainTable_arr['cInterval'];
-            $cObjectNow    = $this->oNow->format('Y-m-d H:i:s');
-
-            if ($cSubTable_arr !== null) {
-                $cFrom = $cTable;
-                $cJoin = '';
-                foreach ($cSubTable_arr as $cSubTable => $cKey) {
-                    $cFrom .= ", {$cSubTable}";
-                    $cJoin .= " LEFT JOIN {$cSubTable} ON {$cSubTable}.{$cKey} = {$cTable}.{$cKey}";
+        foreach ($this->definition as $table => $tableData) {
+            $dateField  = $tableData['cDate'];
+            $subTables  = $tableData['cSubTable'];
+            $cInterval  = $tableData['cInterval'];
+            $cObjectNow = $this->now->format('Y-m-d H:i:s');
+            if ($subTables !== null) {
+                $from = $table;
+                $join = '';
+                foreach ($subTables as $cSubTable => $cKey) {
+                    $from .= ", {$cSubTable}";
+                    $join .= " LEFT JOIN {$cSubTable} ON {$cSubTable}.{$cKey} = {$table}.{$cKey}";
                 }
-                $szDateColumn = "{$cTable}.{$cDateField}";
-                if ($cMainTable_arr['cDateType'] === 'TIMESTAMP') {
-                    $szDateColumn = "FROM_UNIXTIME({$szDateColumn})";
+                $dateCol = "{$table}.{$dateField}";
+                if ($tableData['cDateType'] === 'TIMESTAMP') {
+                    $dateCol = "FROM_UNIXTIME({$dateCol})";
                 }
-                $res = \Shop::Container()->getDB()->query(
-                    "DELETE {$cFrom}
-                        FROM {$cTable} {$cJoin}
-                        WHERE DATE_SUB('{$cObjectNow}', INTERVAL {$cInterval} DAY) >= {$szDateColumn}",
-                    \DB\ReturnType::AFFECTED_ROWS
+                \Shop::Container()->getDB()->query(
+                    "DELETE {$from}
+                        FROM {$table} {$join}
+                        WHERE DATE_SUB('{$cObjectNow}', INTERVAL {$cInterval} DAY) >= {$dateCol}",
+                    ReturnType::DEFAULT
                 );
             } else {
-                $szDateColumn = $cDateField;
-                if ($cMainTable_arr['cDateType'] === 'TIMESTAMP') {
-                    $szDateColumn = "FROM_UNIXTIME({$szDateColumn})";
+                $dateCol = $dateField;
+                if ($tableData['cDateType'] === 'TIMESTAMP') {
+                    $dateCol = "FROM_UNIXTIME({$dateCol})";
                 }
-                $res = \Shop::Container()->getDB()->query(
-                    "DELETE FROM {$cTable}
-                        WHERE DATE_SUB('{$cObjectNow}', INTERVAL {$cInterval} DAY) >= {$szDateColumn}",
-                    \DB\ReturnType::AFFECTED_ROWS
+                \Shop::Container()->getDB()->query(
+                    "DELETE FROM {$table}
+                        WHERE DATE_SUB('{$cObjectNow}', INTERVAL {$cInterval} DAY) >= {$dateCol}",
+                    ReturnType::DEFAULT
                 );
             }
         }

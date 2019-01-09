@@ -130,7 +130,7 @@ class MigrationManager
     {
         // reset cached executed migrations
         $this->executedMigrations = null;
-        $start = new DateTime('now');
+        $start                    = new DateTime('now');
         try {
             Shop::Container()->getDB()->beginTransaction();
             $migration->$direction();
@@ -201,7 +201,7 @@ class MigrationManager
 
                     $migration = new $class($info, $date);
 
-                    if (!is_subclass_of($migration, 'IMigration')) {
+                    if (!is_subclass_of($migration, IMigration::class)) {
                         throw new \InvalidArgumentException(sprintf(
                             'The class "%s" in file "%s" must implement IMigration interface',
                             $class,
@@ -227,9 +227,9 @@ class MigrationManager
     public function getCurrentId(): int
     {
         $oVersion = Shop::Container()->getDB()->query(
-            "SELECT kMigration 
+            'SELECT kMigration 
                 FROM tmigration 
-                ORDER BY kMigration DESC",
+                ORDER BY kMigration DESC',
             \DB\ReturnType::SINGLE_OBJECT
         );
 
@@ -269,9 +269,9 @@ class MigrationManager
     {
         if ($this->executedMigrations === null) {
             $migrations = Shop::Container()->getDB()->executeQuery(
-                "SELECT * 
+                'SELECT * 
                     FROM tmigration 
-                    ORDER BY kMigration ASC",
+                    ORDER BY kMigration ASC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($migrations as $m) {

@@ -88,6 +88,26 @@
                     {/if}
                     <li class="dropdown" id="favs-drop">{include file="tpl_inc/favs_drop.tpl"}</li>
                     <li class="dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle parent btn-toggle" data-toggle="dropdown">
+                            <i class="fa fa-language"></i>
+                            {$language->cNameEnglisch}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            {foreach $languages as $olang}
+                                {if $olang->kSprache !== (int)$language->kSprache}
+                                    <li>
+                                        <a href="{strip}benutzerverwaltung.php
+                                                ?token={$smarty.session.jtl_token}
+                                                &action=quick_change_language
+                                                &kSprache={$olang->kSprache}{/strip}">
+                                            {$olang->cNameEnglisch}
+                                        </a>
+                                    </li>
+                                {/if}
+                            {/foreach}
+                        </ul>
+                    </li>
                     <li class="dropdown avatar">
                         <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
                             <img src="{gravatarImage email=$account->cMail}" title="{$account->cMail}" class="img-circle">
@@ -98,8 +118,8 @@
                                     <i class="fa fa-shopping-cart"></i> Zum Shop
                                 </a>
                                 <a class="link-logout" href="logout.php?token={$smarty.session.jtl_token}"
-                                   title="{#logout#}">
-                                    <i class="fa fa-sign-out"></i> {#logout#}
+                                   title="{__('logout')}">
+                                    <i class="fa fa-sign-out"></i> {__('logout')}
                                 </a>
                             </li>
                         </ul>

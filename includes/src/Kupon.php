@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Product;
+use Helpers\Cart;
+
 /**
  * Class Kupon
  */
@@ -826,8 +829,8 @@ class Kupon
             ) {
                 $kArtikel = (int)$Pos->Artikel->kArtikel;
                 // Kind?
-                if (ArtikelHelper::isVariChild($kArtikel)) {
-                    $kArtikel = ArtikelHelper::getParent($kArtikel);
+                if (Product::isVariChild($kArtikel)) {
+                    $kArtikel = Product::getParent($kArtikel);
                 }
                 $categoryIDs = Shop::Container()->getDB()->selectAll(
                     'tkategorieartikel',
@@ -894,7 +897,10 @@ class Kupon
         if (date_create($Kupon->dGueltigAb) > date_create()) {
             $ret['ungueltig'] = 3;
         }
-        if ($Kupon->fMindestbestellwert > \Session\Session::getCart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)) {
+        if ($Kupon->fMindestbestellwert > \Session\Session::getCart()->gibGesamtsummeWarenExt(
+            [C_WARENKORBPOS_TYP_ARTIKEL],
+            true
+        )) {
             $ret['ungueltig'] = 4;
         }
         if ($Kupon->cWertTyp === 'festpreis'
@@ -936,7 +942,7 @@ class Kupon
         }
         // Neukundenkupon
         if ($Kupon->cKuponTyp === 'neukundenkupon') {
-            $Hash = Kuponneukunde::Hash(
+            $Hash = Kuponneukunde::hash(
                 null,
                 trim($_SESSION['Kunde']->cNachname),
                 trim($_SESSION['Kunde']->cStrasse),
@@ -946,7 +952,7 @@ class Kupon
                 trim($_SESSION['Kunde']->cLand)
             );
 
-            $Kuponneukunde = Kuponneukunde::Load($_SESSION['Kunde']->cMail, $Hash);
+            $Kuponneukunde = Kuponneukunde::load($_SESSION['Kunde']->cMail, $Hash);
             if ($Kuponneukunde !== null && $Kuponneukunde->cVerwendet === 'Y') {
                 $ret['ungueltig'] = 11;
             }
@@ -1041,9 +1047,9 @@ class Kupon
                 if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
                     $articlePrice = 0;
                     foreach ($cart->PositionenArr as $oWKPosition) {
-                        $articlePrice += WarenkorbHelper::checkSetPercentCouponWKPos($oWKPosition, $Kupon)->fPreis;
-                        if (!empty(WarenkorbHelper::checkSetPercentCouponWKPos($oWKPosition, $Kupon)->cName)) {
-                            $articleName_arr[] = WarenkorbHelper::checkSetPercentCouponWKPos(
+                        $articlePrice += Cart::checkSetPercentCouponWKPos($oWKPosition, $Kupon)->fPreis;
+                        if (!empty(Cart::checkSetPercentCouponWKPos($oWKPosition, $Kupon)->cName)) {
+                            $articleName_arr[] = Cart::checkSetPercentCouponWKPos(
                                 $oWKPosition,
                                 $Kupon
                             )->cName;
@@ -1066,7 +1072,7 @@ class Kupon
                 && $Kupon->cKuponTyp !== 'neukundenkupon'
             ) {
                 $Spezialpos->cName[$Sprache->cISO] .= ' ' . $Kupon->fWert . '% ';
-                $discountForArticle                = Shop::Container()->getDB()->select(
+                $discountForArticle                 = Shop::Container()->getDB()->select(
                     'tsprachwerte',
                     'cName',
                     'discountForArticle',
@@ -1134,7 +1140,7 @@ class Kupon
     public static function resetNewCustomerCoupon(): void
     {
         if (\Session\Session::getCustomer()->isLoggedIn()) {
-            $hash = Kuponneukunde::Hash(
+            $hash = Kuponneukunde::hash(
                 null,
                 trim($_SESSION['Kunde']->cNachname),
                 trim($_SESSION['Kunde']->cStrasse),

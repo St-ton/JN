@@ -3,6 +3,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+use Helpers\Request;
+use Pagination\Pagination;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_BILLPAY_VIEW', true, true);
@@ -10,19 +15,22 @@ $oAccount->permission('ORDER_BILLPAY_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'billpay_inc.php';
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
-$cFehler           = null;
-$cStep             = 'uebersicht';
+\Shop::Container()->getGetText()->loadConfigLocales();
+
+$cFehler = null;
+$cStep   = 'uebersicht';
+
 /** @global Smarty\JTLSmarty $smarty */
 $smarty->assign('cTab', $cStep);
-if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
+if (strlen(Request::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 /** @var Billpay $oBillpay */
 $oBillpay = PaymentMethod::create('za_billpay_jtl');
 
-if (strlen($oBillpay->getSetting('pid')) > 0 &&
-    strlen($oBillpay->getSetting('mid')) > 0 &&
-    strlen($oBillpay->getSetting('bpsecure')) > 0
+if (strlen($oBillpay->getSetting('pid')) > 0
+    && strlen($oBillpay->getSetting('mid')) > 0
+    && strlen($oBillpay->getSetting('bpsecure')) > 0
 ) {
     $oItem_arr = [];
     $oConfig   = $oBillpay->getApi('module_config');
@@ -83,28 +91,20 @@ if (strlen($oBillpay->getSetting('pid')) > 0 &&
         }
     }
 
-    $smarty->assign('oItem_arr', $oItem_arr);
-
-    /*
-    if (verifyGPCDataInteger('del') === 1) {
-        $oLog->loeschen();
-        header('location: billpay.php?tab=log');
-    }
-    */
-
-    $oLog_arr = ZahlungsLog::getLog([
+    $oLog_arr  = ZahlungsLog::getLog([
         'za_billpay_invoice_jtl',
         'za_billpay_direct_debit_jtl',
         'za_billpay_rate_payment_jtl',
         'za_billpay_paylater_jtl'
     ]);
-    $oPagiLog = (new Pagination('log'))
+    $oPagiLog  = (new Pagination('log'))
         ->setItemArray($oLog_arr)
         ->assemble();
     $nLogCount = count($oLog_arr);
 
     $smarty->assign('oLog_arr', $oPagiLog->getPageItems())
-        ->assign('oPagiLog', $oPagiLog);
+           ->assign('oItem_arr', $oItem_arr)
+           ->assign('oPagiLog', $oPagiLog);
 } else {
     $cFehler = 'Billpay wurde bisher nicht konfiguriert. ' .
         '<a href="https://jtl-url.de/0kqhs" rel="noopener" target="_blank">' .
@@ -121,7 +121,9 @@ $Conf = Shop::Container()->getDB()->selectAll(
     'nSort'
 );
 
-if (isset($_POST['einstellungen_bearbeiten']) && FormHelper::validateToken()) {
+\Shop::Container()->getGetText()->localizeConfigs($Conf);
+
+if (isset($_POST['einstellungen_bearbeiten']) && Form::validateToken()) {
     foreach ($Conf as $i => $oConfig) {
         unset($aktWert);
         $aktWert = new stdClass();
@@ -168,6 +170,8 @@ for ($i = 0; $i < $configCount; $i++) {
             '*',
             'nSort'
         );
+
+        \Shop::Container()->getGetText()->localizeConfigValues($Conf[$i], $Conf[$i]->ConfWerte);
     }
     $setValue                = Shop::Container()->getDB()->select(
         'teinstellungen',

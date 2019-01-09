@@ -5,9 +5,12 @@
  *
  * @global Smarty\JTLSmarty $smarty
  */
+
+use Helpers\Manufacturer;
+use Helpers\Category;
+use Helpers\Tax;
+
 $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisStringLocalizedSmarty')
-       ->registerPlugin('function', 'load_boxes', 'load_boxes')
-       ->registerPlugin('function', 'load_boxes_raw', 'load_boxes_raw')
        ->registerPlugin('function', 'getBoxesByPosition', 'getBoxesByPosition')
        ->registerPlugin('function', 'has_boxes', 'has_boxes')
        ->registerPlugin('function', 'image', 'get_img_tag')
@@ -136,7 +139,7 @@ function get_static_route($params, $smarty)
  */
 function get_manufacturers($params, $smarty)
 {
-    $manufacturers = HerstellerHelper::getInstance()->getManufacturers();
+    $manufacturers = Manufacturer::getInstance()->getManufacturers();
     if (isset($params['assign'])) {
         $smarty->assign($params['assign'], $manufacturers);
 
@@ -144,19 +147,6 @@ function get_manufacturers($params, $smarty)
     }
 
     return $manufacturers;
-}
-
-/**
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
- * @return string
- */
-function load_boxes_raw($params, $smarty)
-{
-    if (isset($params['array'], $params['assign']) && $params['array'] === true) {
-        $rawData = Shop::Container()->getBoxService()->getRawData();
-        $smarty->assign($params['assign'], $rawData[$params['type']] ?? null);
-    }
 }
 
 /**
@@ -186,7 +176,7 @@ function get_category_array($params, $smarty)
 {
     $id = isset($params['categoryId']) ? (int)$params['categoryId'] : 0;
     if ($id === 0) {
-        $categories = KategorieHelper::getInstance();
+        $categories = Category::getInstance();
         $list       = $categories->combinedGetAll();
     } else {
         $categories = new KategorieListe();
@@ -268,76 +258,6 @@ function get_img_tag($params, $smarty)
 /**
  * @param array            $params
  * @param Smarty\JTLSmarty $smarty
- * @return string
- */
-function load_boxes($params, $smarty)
-{
-    $cTplData     = '';
-    $cOldTplDir   = '';
-    $oBoxen_arr   = Shop::Container()->getBoxService()->compatGet();
-    $cTemplateDir = $smarty->getTemplateDir($smarty->context);
-    if (is_array($oBoxen_arr) && isset($params['type'])) {
-        $cType   = $params['type'];
-        $_sBoxes = $smarty->getTemplateVars('boxes');
-        if (isset($_sBoxes[$cType], $oBoxen_arr[$cType]) && is_array($oBoxen_arr[$cType])) {
-            foreach ($oBoxen_arr[$cType] as $oBox) {
-                $oPluginVar = '';
-                $cTemplate  = 'tpl_inc/boxes/' . $oBox->cTemplate;
-                if ($oBox->eTyp === 'plugin') {
-                    $oPlugin = new Plugin\Plugin($oBox->kCustomID);
-                    if ($oPlugin->kPlugin > 0 && $oPlugin->nStatus === 2) {
-                        $cTemplate    = $oBox->cTemplate;
-                        $cOldTplDir   = $cTemplateDir;
-                        $cTemplateDir = $oPlugin->cFrontendPfad . PFAD_PLUGIN_BOXEN;
-                        $oPluginVar   = 'oPlugin' . $oBox->kBox;
-                        $smarty->assign($oPluginVar, $oPlugin);
-                    }
-                } elseif ($oBox->eTyp === 'link') {
-                    foreach (Shop::Container()->getLinkService()->getLinkGroups() as $oLinkTpl) {
-                        if ($oLinkTpl->kLinkgruppe == $oBox->kCustomID) {
-                            $oBox->oLinkGruppeTemplate = $oLinkTpl;
-                            $oBox->oLinkGruppe         = $oLinkTpl;
-                        }
-                    }
-                }
-                if (file_exists($cTemplateDir . '/' . $cTemplate)) {
-                    $oBoxVar = 'oBox' . $oBox->kBox;
-                    $smarty->assign($oBoxVar, $oBox);
-                    // Custom Template
-                    $Einstellungen = $smarty->getTemplateVars('Einstellungen');
-                    if ($Einstellungen['template']['general']['use_customtpl'] === 'Y') {
-                        $cTemplatePath   = pathinfo($cTemplate);
-                        $cCustomTemplate = $cTemplatePath['dirname'] . '/' . $cTemplatePath['filename'] . '_custom.tpl';
-                        if (file_exists($cTemplateDir . '/' . $cCustomTemplate)) {
-                            $cTemplate = $cCustomTemplate;
-                        }
-                    }
-                    $cTemplatePath = $cTemplateDir . '/' . $cTemplate;
-                    if ($oBox->eTyp === 'plugin') {
-                        $cTplData .= "{include file='" . $cTemplatePath . "' oBox=\$$oBoxVar oPlugin=\$$oPluginVar}";
-                    } else {
-                        $cTplData .= "{include file='" . $cTemplatePath . "' oBox=\$$oBoxVar}";
-                    }
-
-                    if (strlen($cOldTplDir)) {
-                        $cTemplateDir = $cOldTplDir;
-                    }
-                }
-            }
-        }
-    }
-    if (isset($params['assign'])) {
-        $smarty->assign($params['assign'], $cTplData);
-
-        return;
-    }
-
-    return $cTplData;
-}
-
-/**
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
  */
 function has_boxes($params, $smarty)
 {
@@ -412,10 +332,10 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
             }
         } else {
             $oAufpreis->cAufpreisLocalized = Preise::getLocalizedPriceString(
-                TaxHelper::getGross($fAufpreisNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4)
+                Tax::getGross($fAufpreisNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4)
             );
             $oAufpreis->cPreisInklAufpreis = Preise::getLocalizedPriceString(
-                TaxHelper::getGross($fAufpreisNetto + $fVKNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4)
+                Tax::getGross($fAufpreisNetto + $fVKNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4)
             );
             $oAufpreis->cAufpreisLocalized = ($fAufpreisNetto > 0)
                 ? ('+ ' . $oAufpreis->cAufpreisLocalized)
@@ -423,13 +343,13 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
 
             if ($fVPEWert > 0) {
                 $oAufpreis->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
-                    TaxHelper::getGross($fAufpreisNetto / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
+                    Tax::getGross($fAufpreisNetto / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
                     \Session\Session::getCurrency()->getCode(),
                     true,
                     $nGenauigkeit
                 ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
                 $oAufpreis->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
-                    TaxHelper::getGross(
+                    Tax::getGross(
                         ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
                         $_SESSION['Steuersatz'][$kSteuerklasse]
                     ),

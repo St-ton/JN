@@ -30,7 +30,7 @@
         </div>
     </div>
 {else}
-    {include file='tpl_inc/seite_header.tpl' cTitel=#dashboard#}
+    {include file='tpl_inc/seite_header.tpl' cTitel=__('dashboard')}
     <div class="alert alert-success">
         <strong>Es stehen keine weiteren Informationen zur Verf&uuml;gung.</strong>
     </div>

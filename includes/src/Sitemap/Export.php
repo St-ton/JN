@@ -172,7 +172,7 @@ final class Export
         $defaultLangID           = (int)$defaultLang->kSprache;
         $_SESSION['kSprache']    = $defaultLangID;
         $_SESSION['cISOSprache'] = $defaultLang->cISO;
-        \TaxHelper::setTaxRates();
+        \Helpers\Tax::setTaxRates();
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = new \Kundengruppe();
         }
@@ -207,7 +207,7 @@ final class Export
         }
         $indexURL = \urlencode($this->baseURL . 'sitemap_index.xml');
         foreach ([self::SITEMAP_URL_GOOGLE, self::SITEMAP_URL_BING] as $url) {
-            $status = \RequestHelper::http_get_status($url . $indexURL);
+            $status = \Helpers\Request::http_get_status($url . $indexURL);
             if ($status !== 200) {
                 $this->logger->notice('Sitemap ping to ' . $url . ' failed with status ' . $status);
             }

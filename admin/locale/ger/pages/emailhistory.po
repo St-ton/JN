@@ -1,0 +1,32 @@
+msgid "emailhistory"
+msgstr "E-Mail-Logbuch"
+
+msgid "emailhistoryURL"
+msgstr "https://jtl-url.de/koyfj"
+
+msgid "emailhistoryDesc"
+msgstr "Eine Übersicht der vom Shop versendeten E-Mails"
+
+msgid "subject"
+msgstr "Betreff"
+
+msgid "fromname"
+msgstr "Absender Name"
+
+msgid "fromemail"
+msgstr "Absender E-Mail"
+
+msgid "toname"
+msgstr "Empfänger Name"
+
+msgid "toemail"
+msgstr "Empfänger E-Mail"
+
+msgid "date"
+msgstr "Versendet am"
+
+msgid "delete"
+msgstr "Löschen"
+
+msgid "nodata"
+msgstr "Keine Daten vorhanden"

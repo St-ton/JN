@@ -27,6 +27,7 @@
         "myclabs/php-enum": "^1.6",
         "jtlshop/semver": "~0.0.5",
         "studio-42/elfinder": "^2.1",
+        "maximebf/debugbar": "^1.15",
         "gettext/gettext": "^4.6"
     },
     "require-dev": {
@@ -62,7 +63,7 @@
     "autoload": {
         "files": [ "vendor/jtlshop/shop4-systemcheck/lib/bootstrap.php" ],
         "psr-4": {
-            "": "src/"
+            "": ["src/","../extensions/"]
         }
     }
 }

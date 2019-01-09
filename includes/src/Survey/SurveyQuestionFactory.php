@@ -10,7 +10,7 @@ use DB\DbInterface;
 
 /**
  * Class SurveyQuestionFactory
- * @package JTL
+ * @package Survey
  */
 class SurveyQuestionFactory
 {

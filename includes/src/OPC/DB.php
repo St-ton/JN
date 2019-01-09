@@ -8,6 +8,8 @@ namespace OPC;
 
 use DB\DbInterface;
 use DB\ReturnType;
+use Plugin\Extension;
+use Plugin\ExtensionLoader;
 use Plugin\Plugin;
 
 /**
@@ -76,7 +78,7 @@ class DB
      * @param Blueprint $blueprint
      * @throws \Exception
      */
-    public function loadBlueprint(Blueprint $blueprint)
+    public function loadBlueprint(Blueprint $blueprint): void
     {
         $blueprintDB = $this->shopDB->select('topcblueprint', 'kBlueprint', $blueprint->getId());
 
@@ -86,10 +88,9 @@ class DB
 
         $content = \json_decode($blueprintDB->cJson, true);
 
-        $blueprint
-            ->setId($blueprintDB->kBlueprint)
-            ->setName($blueprintDB->cName)
-            ->deserialize(['name' => $blueprintDB->cName, 'content' => $content]);
+        $blueprint->setId($blueprintDB->kBlueprint)
+                  ->setName($blueprintDB->cName)
+                  ->deserialize(['name' => $blueprintDB->cName, 'content' => $content]);
     }
 
     /**
@@ -223,9 +224,10 @@ class DB
         }
 
         if ($portletDB->kPlugin > 0) {
-            $plugin  = new Plugin((int)$portletDB->kPlugin);
-            $include = $plugin->cAdminmenuPfad . \PFAD_PLUGIN_PORTLETS
-                . $portletDB->cClass . '/' . $portletDB->cClass . '.php';
+            $loader  = new ExtensionLoader($this->shopDB, \Shop::Container()->getCache());
+            $plugin  = $loader->init((int)$portletDB->kPlugin);
+            $include = $plugin->getPaths()->getPortletsPath() .
+                $portletDB->cClass . '/' . $portletDB->cClass . '.php';
             require_once $include;
         }
 

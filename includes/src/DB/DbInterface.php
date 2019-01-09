@@ -7,12 +7,11 @@
 namespace DB;
 
 /**
- * Class NiceDB
- * Class for handling mysql DB
+ * Interface DbInterface
+ * @package DB
  */
 interface DbInterface extends \Serializable
 {
-
     /**
      * Database configuration
      *
@@ -233,7 +232,8 @@ interface DbInterface extends \Serializable
      * executes query and returns misc data
      *
      * @param string   $stmt - Statement to be executed
-     * @param array    $params - An array of values with as many elements as there are bound parameters in the SQL statement being executed
+     * @param array    $params - An array of values with as many elements as there
+     * are bound parameters in the SQL statement being executed
      * @param int      $return - what should be returned.
      * 1  - single fetched object
      * 2  - array of fetched objects
@@ -246,7 +246,7 @@ interface DbInterface extends \Serializable
      * @param int|bool $echo print current stmt
      * @param bool     $bExecuteHook should function executeHook be executed
      * @param callable $fnInfo statistic callback
-     * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
+     * @return array|object|int|bool - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws \InvalidArgumentException
      */
     public function executeQueryPrepared(
@@ -267,7 +267,14 @@ interface DbInterface extends \Serializable
      * @param mixed    $fnINfo
      * @return int|object|array
      */
-    public function queryPrepared($stmt, $params, $return, bool $echo = false, bool $bExecuteHook = false, $fnINfo = null);
+    public function queryPrepared(
+        $stmt,
+        $params,
+        $return,
+        bool $echo = false,
+        bool $bExecuteHook = false,
+        $fnINfo = null
+    );
 
     /**
      * @param string $stmt

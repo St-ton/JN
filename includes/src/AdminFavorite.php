@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\GeneralObject;
+use Helpers\URL;
+
 /**
  * Class AdminFavorite
  */
@@ -68,7 +71,7 @@ class AdminFavorite
      */
     public function insertInDB(): int
     {
-        $obj = ObjectHelper::copyMembers($this);
+        $obj = GeneralObject::copyMembers($this);
         unset($obj->kAdminfav);
 
         return Shop::Container()->getDB()->insert('tadminfavs', $obj);
@@ -81,7 +84,7 @@ class AdminFavorite
      */
     public function updateInDB(): int
     {
-        $obj = ObjectHelper::copyMembers($this);
+        $obj = GeneralObject::copyMembers($this);
 
         return Shop::Container()->getDB()->update('tadminfavs', 'kAdminfav', $obj->kAdminfav, $obj);
     }
@@ -127,7 +130,7 @@ class AdminFavorite
      */
     public static function add(int $id, $title, $url, int $sort = -1): bool
     {
-        $urlHelper = new UrlHelper($url);
+        $urlHelper = new URL($url);
         $url       = str_replace(
             [Shop::getURL(), Shop::getURL(true)],
             '',

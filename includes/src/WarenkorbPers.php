@@ -187,7 +187,7 @@ class WarenkorbPers
             \DB\ReturnType::SINGLE_OBJECT
         );
         // Prüfen ob der eingeloggte Kunde auch der Besitzer der zu löschenden WarenkorbPersPos ist
-        if (isset($oKunde->kKunde) && (int)$oKunde->kKunde === \Session\Session::getCustomer()->getID()) {
+        if (isset($oKunde->kKunde) && (int)$oKunde->kKunde === \Session\Frontend::getCustomer()->getID()) {
             // Alle Eigenschaften löschen
             Shop::Container()->getDB()->delete('twarenkorbpersposeigenschaft', 'kWarenkorbPersPos', $id);
             // Die Position mit ID $id löschen

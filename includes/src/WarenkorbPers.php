@@ -159,16 +159,13 @@ class WarenkorbPers
      */
     public function entferneSelf(): bool
     {
-        if ($this->kWarenkorbPers > 0) {
-            // Entferne Pos und PosEigenschaft
-            $this->entferneAlles();
-            // Entferne Pers
-            Shop::Container()->getDB()->delete('twarenkorbpers', 'kWarenkorbPers', (int)$this->kWarenkorbPers);
-
-            return true;
+        if ($this->kWarenkorbPers <= 0) {
+            return false;
         }
+        $this->entferneAlles();
+        Shop::Container()->getDB()->delete('twarenkorbpers', 'kWarenkorbPers', (int)$this->kWarenkorbPers);
 
-        return false;
+        return true;
     }
 
     /**
@@ -232,11 +229,11 @@ class WarenkorbPers
      */
     public function schreibeDB(): self
     {
-        $oTemp                = new stdClass();
-        $oTemp->kKunde        = $this->kKunde;
-        $oTemp->dErstellt     = $this->dErstellt;
-        $this->kWarenkorbPers = Shop::Container()->getDB()->insert('twarenkorbpers', $oTemp);
-        unset($oTemp);
+        $ins                = new stdClass();
+        $ins->kKunde        = $this->kKunde;
+        $ins->dErstellt     = $this->dErstellt;
+        $this->kWarenkorbPers = Shop::Container()->getDB()->insert('twarenkorbpers', $ins);
+        unset($ins);
 
         return $this;
     }
@@ -416,7 +413,6 @@ class WarenkorbPers
                 $productIDs[] = (int)$cartPos->kArtikel;
             }
         }
-        // Artikel aus dem Array Löschen, die nicht mehr Gültig sind
         if ($bForceDelete) {
             foreach ($this->oWarenkorbPersPos_arr as $i => $cartPos) {
                 if (!in_array((int)$cartPos->kArtikel, $productIDs, true)) {

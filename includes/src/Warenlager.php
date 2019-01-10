@@ -501,6 +501,7 @@ class Warenlager extends MainModel
      */
     public function update(): int
     {
+        $db      = Shop::Container()->getDB();
         $sql     = 'UPDATE twarenlager SET ';
         $set     = [];
         $members = array_keys(get_object_vars($this));
@@ -511,7 +512,7 @@ class Warenlager extends MainModel
                     $val    = $this->$cMethod();
                     $mValue = $val === null
                         ? 'NULL'
-                        : ("'" . Shop::Container()->getDB()->escape($val) . "'");
+                        : ("'" . $db->escape($val) . "'");
                     $set[]  = "{$cMember} = {$mValue}";
                 }
             }
@@ -519,7 +520,7 @@ class Warenlager extends MainModel
             $sql .= implode(', ', $set);
             $sql .= ' WHERE kWarenlager = ' . $this->kWarenlager;
 
-            return Shop::Container()->getDB()->query($sql, \DB\ReturnType::AFFECTED_ROWS);
+            return $db->query($sql, \DB\ReturnType::AFFECTED_ROWS);
         }
         throw new Exception('ERROR: Object has no members!');
     }

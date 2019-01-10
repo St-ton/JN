@@ -136,36 +136,38 @@ function bearbeiteGutscheine($xml)
     if (!isset($xml['gutscheine']['gutschein']) || !is_array($xml['gutscheine']['gutschein'])) {
         return;
     }
-    $gutscheine_arr = mapArray($xml['gutscheine'], 'gutschein', $GLOBALS['mGutschein']);
-    foreach ($gutscheine_arr as $gutschein) {
-        if (!($gutschein->kGutschein > 0 && $gutschein->kKunde > 0)) {
+    $db       = Shop::Container()->getDB();
+    $logger   = Shop::Container()->getLogService();
+    $vouchers = mapArray($xml['gutscheine'], 'gutschein', $GLOBALS['mGutschein']);
+    foreach ($vouchers as $voucher) {
+        if (!($voucher->kGutschein > 0 && $voucher->kKunde > 0)) {
             continue;
         }
-        $exists = Shop::Container()->getDB()->select('tgutschein', 'kGutschein', (int)$gutschein->kGutschein);
+        $exists = $db->select('tgutschein', 'kGutschein', (int)$voucher->kGutschein);
         if (!isset($exists->kGutschein) || !$exists->kGutschein) {
-            Shop::Container()->getDB()->insert('tgutschein', $gutschein);
-            Shop::Container()->getLogService()->debug(
+            $db->insert('tgutschein', $voucher);
+            $logger->debug(
                 'Gutschein fuer kKunde ' .
-                (int)$gutschein->kKunde . ' wurde eingeloest. ' .
-                print_r($gutschein, true)
+                (int)$voucher->kKunde . ' wurde eingeloest. ' .
+                print_r($voucher, true)
             );
-            Shop::Container()->getDB()->query(
+            $db->query(
                 'UPDATE tkunde 
-                    SET fGuthaben = fGuthaben + ' . (float)$gutschein->fWert . ' 
-                    WHERE kKunde = ' . (int)$gutschein->kKunde,
+                    SET fGuthaben = fGuthaben + ' . (float)$voucher->fWert . ' 
+                    WHERE kKunde = ' . (int)$voucher->kKunde,
                 \DB\ReturnType::DEFAULT
             );
-            Shop::Container()->getDB()->query(
+            $db->query(
                 'UPDATE tkunde 
                     SET fGuthaben = 0 
-                    WHERE kKunde = ' . (int)$gutschein->kKunde . ' 
+                    WHERE kKunde = ' . (int)$voucher->kKunde . ' 
                         AND fGuthaben < 0',
                 \DB\ReturnType::AFFECTED_ROWS
             );
-            $kunde           = new Kunde((int)$gutschein->kKunde);
+            $kunde           = new Kunde((int)$voucher->kKunde);
             $obj             = new stdClass();
             $obj->tkunde     = $kunde;
-            $obj->tgutschein = $gutschein;
+            $obj->tgutschein = $voucher;
             if ($kunde->cMail) {
                 sendeMail(MAILTEMPLATE_GUTSCHEIN, $obj);
             }

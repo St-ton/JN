@@ -264,6 +264,7 @@ class KategorieListe
         }
         $categoryList  = self::getCategoryList($kKundengruppe, $kSprache);
         $subCategories = $categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie] ?? null;
+        $db            = Shop::Container()->getDB();
 
         if ($subCategories !== null && is_array($subCategories)) {
             //nimm kats aus session
@@ -303,7 +304,7 @@ class KategorieListe
                         AND tkategorie.kOberKategorie = ' . $kKategorie . '
                     GROUP BY tkategorie.kKategorie
                     ORDER BY tkategorie.nSort, ' . $cSortSQLName . 'tkategorie.cName';
-            $oKategorie_arr = Shop::Container()->getDB()->query($categorySQL, \DB\ReturnType::ARRAY_OF_OBJECTS);
+            $oKategorie_arr = $db->query($categorySQL, \DB\ReturnType::ARRAY_OF_OBJECTS);
 
             $categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie] = [];
             $imageBaseURL                                                  = Shop::getImageBaseURL();
@@ -334,7 +335,7 @@ class KategorieListe
                 ) {
                     $kDefaultLang = (int)$oSpracheTmp->kSprache;
                     if ($kSprache !== $kDefaultLang) {
-                        $oSeo = Shop::Container()->getDB()->select(
+                        $oSeo = $db->select(
                             'tseo',
                             'cKey',
                             'kKategorie',
@@ -362,7 +363,7 @@ class KategorieListe
                 // Attribute holen
                 $oKategorie->categoryFunctionAttributes = [];
                 $oKategorie->categoryAttributes         = [];
-                $oKategorieAttribut_arr                 = Shop::Container()->getDB()->query(
+                $oKategorieAttribut_arr                 = $db->query(
                     'SELECT COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName,
                             COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
                             tkategorieattribut.bIstFunktionsAttribut, tkategorieattribut.nSort
@@ -394,7 +395,7 @@ class KategorieListe
                 //hat die Kat Unterkategorien?
                 $oKategorie->bUnterKategorien = 0;
                 if (isset($oKategorie->kKategorie) && $oKategorie->kKategorie > 0) {
-                    $oUnterkategorien = Shop::Container()->getDB()->select(
+                    $oUnterkategorien = $db->select(
                         'tkategorie',
                         'kOberKategorie',
                         $oKategorie->kKategorie
@@ -444,6 +445,7 @@ class KategorieListe
                     return false;
                 }
             }
+            $db     = Shop::Container()->getDB();
             $kats   = [];
             $kats[] = $kKategorie;
             while (count($kats) > 0) {
@@ -455,16 +457,16 @@ class KategorieListe
 
                         return true;
                     }
-                    $objArr = Shop::Container()->getDB()->query(
-                        "SELECT tkategorie.kKategorie
+                    $objArr = $db->queryPrepared(
+                        'SELECT tkategorie.kKategorie
                             FROM tkategorie
                             LEFT JOIN tkategoriesichtbarkeit 
                                 ON tkategorie.kKategorie=tkategoriesichtbarkeit.kKategorie
-                                AND tkategoriesichtbarkeit.kKundengruppe = $kKundengruppe
+                                AND tkategoriesichtbarkeit.kKundengruppe = :cgid
                             WHERE tkategoriesichtbarkeit.kKategorie IS NULL
-                                AND tkategorie.kOberKategorie = $kat
-                                AND tkategorie.kKategorie != $kKategorie
-                            ",
+                                AND tkategorie.kOberKategorie = :pcid
+                                AND tkategorie.kKategorie != :cid',
+                        ['cid' => $kKategorie, 'pcid' => $kat, 'cgid' => $kKundengruppe],
                         \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
                     foreach ($objArr as $obj) {

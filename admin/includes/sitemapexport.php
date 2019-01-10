@@ -262,8 +262,8 @@ function generateSitemapXML()
     $nSitemapLimit  = 25000;
     $sitemap_data   = '';
     $imageBaseURL   = Shop::getImageBaseURL();
-    //Hauptseite
-    $sitemap_data .= makeURL('', null, $addChangeFreq ? FREQ_ALWAYS : null, $addPriority ? PRIO_VERYHIGH : null);
+    $db             = Shop::Container()->getDB();
+    $sitemap_data  .= makeURL('', null, $addChangeFreq ? FREQ_ALWAYS : null, $addPriority ? PRIO_VERYHIGH : null);
     //Alte Sitemaps löschen
     loescheSitemaps();
     $andWhere = '';
@@ -285,7 +285,7 @@ function generateSitemapXML()
     $modification = $conf['sitemap']['sitemap_insert_lastmod'] === 'Y'
         ? ', tartikel.dLetzteAktualisierung'
         : '';
-    $res          = Shop::Container()->getDB()->queryPrepared(
+    $res          = $db->queryPrepared(
         'SELECT tartikel.kArtikel, tartikel.cName, tseo.cSeo, tartikel.cArtNr' .
         $modification . "
             FROM tartikel
@@ -352,7 +352,7 @@ function generateSitemapXML()
         if ($SpracheTMP->kSprache === $defaultLangID) {
             continue;
         }
-        $res = Shop::Container()->getDB()->queryPrepared(
+        $res = $db->queryPrepared(
             "SELECT tartikel.kArtikel, tartikel.dLetzteAktualisierung, tseo.cSeo
                 FROM tartikelsprache, tartikel
                 JOIN tseo 
@@ -414,7 +414,7 @@ function generateSitemapXML()
 
     if ($conf['sitemap']['sitemap_seiten_anzeigen'] === 'Y') {
         // Links alle sprachen
-        $res = Shop::Container()->getDB()->queryPrepared(
+        $res = $db->queryPrepared(
             "SELECT tlink.nLinkart, tlinksprache.kLink, tlinksprache.cISOSprache, tlink.bSSL
                 FROM tlink
                 JOIN tlinkgroupassociations
@@ -436,7 +436,7 @@ function generateSitemapXML()
         );
         while (($tlink = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             if (spracheEnthalten($tlink->cISOSprache, $Sprachen)) {
-                $oSeo = Shop::Container()->getDB()->queryPrepared(
+                $oSeo = $db->queryPrepared(
                     "SELECT cSeo
                         FROM tseo
                         WHERE cKey = 'kLink'
@@ -488,7 +488,7 @@ function generateSitemapXML()
     if ($conf['sitemap']['sitemap_kategorien_anzeigen'] === 'Y') {
         $categoryHelper = new KategorieListe();
         // Kategorien STD Sprache
-        $res = Shop::Container()->getDB()->queryPrepared(
+        $res = $db->queryPrepared(
             "SELECT tkategorie.kKategorie, tseo.cSeo, tkategorie.dLetzteAktualisierung
                 FROM tkategorie
                 JOIN tseo 
@@ -536,7 +536,7 @@ function generateSitemapXML()
         }
         // Kategorien sonstige Sprachen
         foreach ($Sprachen as $SpracheTMP) {
-            $res = Shop::Container()->getDB()->queryPrepared(
+            $res = $db->queryPrepared(
                 "SELECT tkategorie.kKategorie, tkategorie.dLetzteAktualisierung, tseo.cSeo
                     FROM tkategoriesprache, tkategorie
                     JOIN tseo 
@@ -588,7 +588,7 @@ function generateSitemapXML()
     }
     if ($conf['sitemap']['sitemap_tags_anzeigen'] === 'Y') {
         // Tags
-        $res = Shop::Container()->getDB()->queryPrepared(
+        $res = $db->queryPrepared(
             "SELECT ttag.kTag, ttag.cName, tseo.cSeo
                 FROM ttag               
                 JOIN tseo 
@@ -632,7 +632,7 @@ function generateSitemapXML()
             if ($SpracheTMP->kSprache === $defaultLangID) {
                 continue;
             }
-            $res = Shop::Container()->getDB()->queryPrepared(
+            $res = $db->queryPrepared(
                 "SELECT ttag.kTag, ttag.cName, tseo.cSeo
                     FROM ttag
                     JOIN tseo 
@@ -676,7 +676,7 @@ function generateSitemapXML()
     }
     if ($conf['sitemap']['sitemap_hersteller_anzeigen'] === 'Y') {
         // Hersteller
-        $res = Shop::Container()->getDB()->queryPrepared(
+        $res = $db->queryPrepared(
             "SELECT thersteller.kHersteller, thersteller.cName, tseo.cSeo
                 FROM thersteller
                 JOIN tseo 
@@ -716,7 +716,7 @@ function generateSitemapXML()
     }
     if ($conf['sitemap']['sitemap_livesuche_anzeigen'] === 'Y') {
         // Livesuche STD Sprache
-        $res = Shop::Container()->getDB()->queryPrepared(
+        $res = $db->queryPrepared(
             "SELECT tsuchanfrage.kSuchanfrage, tseo.cSeo, tsuchanfrage.dZuletztGesucht
                 FROM tsuchanfrage
                 JOIN tseo 
@@ -760,7 +760,7 @@ function generateSitemapXML()
             if ($SpracheTMP->kSprache === $defaultLangID) {
                 continue;
             }
-            $res = Shop::Container()->getDB()->queryPrepared(
+            $res = $db->queryPrepared(
                 "SELECT tsuchanfrage.kSuchanfrage, tseo.cSeo, tsuchanfrage.dZuletztGesucht
                     FROM tsuchanfrage
                     JOIN tseo 
@@ -803,7 +803,7 @@ function generateSitemapXML()
     }
     if ($conf['sitemap']['sitemap_globalemerkmale_anzeigen'] === 'Y') {
         // Merkmale STD Sprache
-        $res = Shop::Container()->getDB()->query(
+        $res = $db->query(
             "SELECT tmerkmal.cName, tmerkmal.kMerkmal, tmerkmalwertsprache.cWert, 
                 tseo.cSeo, tmerkmalwert.kMerkmalWert
                 FROM tmerkmal
@@ -852,7 +852,7 @@ function generateSitemapXML()
             if ($SpracheTMP->kSprache === $defaultLangID) {
                 continue;
             }
-            $res = Shop::Container()->getDB()->queryPrepared(
+            $res = $db->queryPrepared(
                 "SELECT tmerkmalsprache.cName, tmerkmalsprache.kMerkmal, tmerkmalwertsprache.cWert, 
                     tseo.cSeo, tmerkmalwert.kMerkmalWert
                     FROM tmerkmalsprache
@@ -905,7 +905,7 @@ function generateSitemapXML()
         }
     }
     if ($conf['sitemap']['sitemap_news_anzeigen'] === 'Y') {
-        $res = Shop::Container()->getDB()->query(
+        $res = $db->query(
             "SELECT tnews.*, tseo.cSeo, tseo.kSprache
                 FROM tnews
                 JOIN tnewssprache t 
@@ -945,7 +945,7 @@ function generateSitemapXML()
         }
     }
     if ($conf['sitemap']['sitemap_newskategorien_anzeigen'] === 'Y') {
-        $res = Shop::Container()->getDB()->query(
+        $res = $db->query(
             "SELECT tnewskategorie.*, tseo.cSeo, tseo.kSprache
                  FROM tnewskategorie
                  JOIN tnewskategoriesprache t 

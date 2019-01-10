@@ -72,7 +72,7 @@ function plzimportDoImport($target, array $sessData, $result): void
     }
 
     plzimportWriteSession('Import', $sessData);
-
+    $db = Shop::Container()->getDB();
     if (preg_match(PLZIMPORT_ISO_REGEX, $target, $hits)) {
         $isoLand = $hits[1];
 
@@ -82,7 +82,7 @@ function plzimportDoImport($target, array $sessData, $result): void
             $read = $sessData['currentPos'];
             fseek($fHandle, $sessData['currentPos']);
         } else {
-            Shop::Container()->getDB()->delete('tplz', 'cLandISO', 'IMP');
+            $db->delete('tplz', 'cLandISO', 'IMP');
             // Erste Zeile nur Headerinformationen
             $data = fgetcsv($fHandle, 0, "\t");
         }
@@ -99,7 +99,7 @@ function plzimportDoImport($target, array $sessData, $result): void
                     $oPLZOrt->cPLZ = $plz;
 
                     if (!empty($oPLZOrt->cPLZ) && !empty($oPLZOrt->cOrt)) {
-                        Shop::Container()->getDB()->insert('tplz', $oPLZOrt);
+                        $db->insert('tplz', $oPLZOrt);
                     }
                 }
 
@@ -133,21 +133,19 @@ function plzimportDoImport($target, array $sessData, $result): void
         $sessData['status'] = 'Erstelle Backup von ' . $isoLand . '...';
         plzimportWriteSession('Import', $sessData);
 
-        Shop::Container()->getDB()->delete('tplz_backup', 'cLandISO', $isoLand);
-        Shop::Container()->getDB()->queryPrepared(
+        $db->delete('tplz_backup', 'cLandISO', $isoLand);
+        $db->queryPrepared(
             'INSERT INTO tplz_backup SELECT * FROM tplz WHERE cLandISO = :isoCode',
             ['isoCode' => $isoLand],
             \DB\ReturnType::AFFECTED_ROWS
         );
-        Shop::Container()->getDB()->delete('tplz', 'cLandISO', $isoLand);
+        $db->delete('tplz', 'cLandISO', $isoLand);
 
         $sessData['step']   = 95;
         $sessData['status'] = 'Aktualisiere ' . $isoLand . ' in Datenbank...';
         plzimportWriteSession('Import', $sessData);
 
-        Shop::Container()->getDB()->update('tplz', 'cLandISO', 'IMP', (object)[
-            'cLandISO' => $isoLand,
-        ]);
+        $db->update('tplz', 'cLandISO', 'IMP', (object)['cLandISO' => $isoLand]);
 
         $result->type    = 'success';
         $result->message = 'Import erfolgreich!';

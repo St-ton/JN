@@ -258,10 +258,10 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
     );
     // Vorbelegen
     $oStatsAssoc_arr = [];
-    if (is_array($cZeitraum_arr['cDatum'])
-        && count($cZeitraum_arr['cDatum']) > 0
-        && is_array($oKampagneDef_arr)
+    if (is_array($oKampagneDef_arr)
+        && is_array($cZeitraum_arr['cDatum'])
         && count($oKampagneDef_arr) > 0
+        && count($cZeitraum_arr['cDatum']) > 0
     ) {
         foreach ($cZeitraum_arr['cDatum'] as $i => $cZeitraum) {
             if (!isset($oStatsAssoc_arr[$cZeitraum]['cDatum'])) {
@@ -276,8 +276,8 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
     // Finde den maximalen Wert heraus, um die Höhe des Graphen zu ermitteln
     $nGraphMaxAssoc_arr = []; // Assoc Array key = kKampagneDef
     if (is_array($oStats_arr)
-        && count($oStats_arr) > 0
         && is_array($oKampagneDef_arr)
+        && count($oStats_arr) > 0
         && count($oKampagneDef_arr) > 0
     ) {
         foreach ($oStats_arr as $oStats) {
@@ -1507,11 +1507,8 @@ function GetTypes()
 function GetKampTypeName($Type)
 {
     $Serienames = GetTypes();
-    if (isset($Serienames[$Type])) {
-        return $Serienames[$Type];
-    }
 
-    return '';
+    return $Serienames[$Type] ?? '';
 }
 
 /**

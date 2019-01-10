@@ -7,9 +7,9 @@
 use Helpers\Product;
 use Helpers\Request;
 use Helpers\SearchSpecial;
+use Helpers\ShippingMethod;
 use Helpers\Tax;
 use Helpers\URL;
-use Helpers\ShippingMethod;
 
 /**
  * Class Artikel
@@ -1013,15 +1013,42 @@ class Artikel
     private $options;
 
     /**
-     * Konstruktor
      *
-     * @param int $kArtikel
-     * @param int $kKundengruppe
-     * @param int $kSprache
      */
-    public function __construct(int $kArtikel = 0, int $kKundengruppe = 0, int $kSprache = 0)
+    public function __wakeup()
     {
-        $this->conf     = Shop::getSettings([
+        if ($this->kSteuerklasse === null) {
+            return;
+        }
+        $this->conf    = $this->getConfig();
+        $this->taxData = $this->getShippingAndTaxData();
+    }
+
+    /**
+     * @return array
+     */
+    public function __sleep()
+    {
+        return \Functional\select(array_keys(get_object_vars($this)), function ($e) {
+            return $e !== 'conf';
+        });
+    }
+
+    /**
+     * Artikel constructor.
+     */
+    public function __construct()
+    {
+        $this->options = new stdClass();
+        $this->conf    = $this->getConfig();
+    }
+
+    /**
+     * @return array
+     */
+    private function getConfig(): array
+    {
+        return Shop::getSettings([
             CONF_GLOBAL,
             CONF_ARTIKELDETAILS,
             CONF_ARTIKELUEBERSICHT,
@@ -1029,8 +1056,6 @@ class Artikel
             CONF_METAANGABEN,
             CONF_BEWERTUNG
         ]);
-        $this->kSprache = $kSprache;
-        $this->options  = new stdClass();
     }
 
     /**
@@ -1183,6 +1208,7 @@ class Artikel
         if ($this->nIstVater === 1 || $this->kVaterArtikel > 0) {
             return $preis;
         }
+        $db = Shop::Container()->getDB();
         foreach ($Eigenschaft_arr as $EigenschaftWert) {
             if (isset($EigenschaftWert->cTyp)
                 && ($EigenschaftWert->cTyp === 'FREIFELD' || $EigenschaftWert->cTyp === 'PFLICHT-FREIFELD')
@@ -1197,7 +1223,7 @@ class Artikel
             }
             $EW          = new EigenschaftWert($kEigenschaftWert);
             $aufpreis    = $EW->fAufpreisNetto;
-            $EW_aufpreis = Shop::Container()->getDB()->select(
+            $EW_aufpreis = $db->select(
                 'teigenschaftwertaufpreis',
                 'kEigenschaftWert',
                 $kEigenschaftWert,
@@ -1205,7 +1231,7 @@ class Artikel
                 $kKundengruppe
             );
             if (!is_object($EW_aufpreis) && $this->Preise->isDiscountable()) {
-                $EW_aufpreis = Shop::Container()->getDB()->select(
+                $EW_aufpreis = $db->select(
                     'teigenschaftwert',
                     'kEigenschaftWert',
                     $kEigenschaftWert
@@ -1448,8 +1474,9 @@ class Artikel
     {
         $this->Attribute      = [];
         $this->AttributeAssoc = [];
+        $db                   = Shop::Container()->getDB();
         $kSprache             = !$kSprache ? Shop::getLanguageID() : $kSprache;
-        $eigenschaften_arr    = Shop::Container()->getDB()->selectAll(
+        $eigenschaften_arr    = $db->selectAll(
             'tattribut',
             'kArtikel',
             (int)$this->kArtikel,
@@ -1465,7 +1492,7 @@ class Artikel
             $Attribut->cName     = $att->cName;
             $Attribut->cWert     = $att->cTextWert ?: $att->cStringWert;
             if ($att->kAttribut > 0 && $kSprache > 0 && !$isDefaultLanguage) {
-                $attributsprache = Shop::Container()->getDB()->select(
+                $attributsprache = $db->select(
                     'tattributsprache',
                     'kAttribut',
                     (int)$att->kAttribut,
@@ -1666,6 +1693,7 @@ class Artikel
         if (!$kSprache) {
             $kSprache = Shop::getLanguageID();
         }
+        $db                     = Shop::Container()->getDB();
         $kDefaultLanguage       = Sprache::getDefaultLanguage()->kSprache;
         $this->oMedienDatei_arr = [];
         // Funktionsattribut gesetzt? Tab oder Beschreibung
@@ -1700,7 +1728,7 @@ class Artikel
                     WHERE tmediendatei.kArtikel = ' . (int)$this->kArtikel . '
                     ORDER BY tmediendatei.nSort ASC';
 
-        $this->oMedienDatei_arr = Shop::Container()->getDB()->query($cSQL, \DB\ReturnType::ARRAY_OF_OBJECTS);
+        $this->oMedienDatei_arr = $db->query($cSQL, \DB\ReturnType::ARRAY_OF_OBJECTS);
         $cMedienTyp_arr         = []; // Wird im Template gebraucht um Tabs aufzubauen
         foreach ($this->oMedienDatei_arr as $oMedienDatei) {
             $oMedienDatei->kSprache                 = (int)$oMedienDatei->kSprache;
@@ -1718,7 +1746,7 @@ class Artikel
                 $oMedienDatei->cPfad = substr($oMedienDatei->cPfad, 1);
             }
             // Hole alle Attribute zu einer Mediendatei (falls vorhanden)
-            $oMedienDatei->oMedienDateiAttribut_arr = Shop::Container()->getDB()->selectAll(
+            $oMedienDatei->oMedienDateiAttribut_arr = $db->selectAll(
                 'tmediendateiattribut',
                 ['kMedienDatei', 'kSprache'],
                 [(int)$oMedienDatei->kMedienDatei, $kSprache]
@@ -1779,15 +1807,14 @@ class Artikel
                 $related    = '?rel=0';
                 $fullscreen = ' allowfullscreen';
                 if (isset($mediaFile->oMedienDateiAttribut_arr) && count($mediaFile->oMedienDateiAttribut_arr) > 0) {
-                    foreach ($mediaFile->oMedienDateiAttribut_arr as $_attr) {
-                        if ($_attr->cName === 'related' && $_attr->cWert === '1') {
+                    foreach ($mediaFile->oMedienDateiAttribut_arr as $attr) {
+                        if ($attr->cName === 'related' && $attr->cWert === '1') {
                             $related = '';
-                        } elseif ($_attr->cName === 'width' && is_numeric($_attr->cWert)) {
-                            $width = $_attr->cWert;
-                        } elseif ($_attr->cName === 'height' && is_numeric($_attr->cWert)) {
-                            $height = $_attr->cWert;
-                        } elseif ($_attr->cName === 'fullscreen' && ($_attr->cWert === '0'
-                                || $_attr->cWert === 'false')) {
+                        } elseif ($attr->cName === 'width' && is_numeric($attr->cWert)) {
+                            $width = $attr->cWert;
+                        } elseif ($attr->cName === 'height' && is_numeric($attr->cWert)) {
+                            $height = $attr->cWert;
+                        } elseif ($attr->cName === 'fullscreen' && ($attr->cWert === '0' || $attr->cWert === 'false')) {
                             $fullscreen = '';
                         }
                     }
@@ -1816,15 +1843,15 @@ class Artikel
                 $related    = '?rel=0';
                 $fullscreen = ' allowfullscreen';
                 if (isset($mediaFile->oMedienDateiAttribut_arr) && count($mediaFile->oMedienDateiAttribut_arr) > 0) {
-                    foreach ($mediaFile->oMedienDateiAttribut_arr as $_attr) {
-                        if ($_attr->cName === 'related' && $_attr->cWert === '1') {
+                    foreach ($mediaFile->oMedienDateiAttribut_arr as $attr) {
+                        if ($attr->cName === 'related' && $attr->cWert === '1') {
                             $related = '';
-                        } elseif ($_attr->cName === 'width' && is_numeric($_attr->cWert)) {
-                            $width = $_attr->cWert;
-                        } elseif ($_attr->cName === 'height' && is_numeric($_attr->cWert)) {
-                            $height = $_attr->cWert;
-                        } elseif ($_attr->cName === 'fullscreen' && ($_attr->cWert === '0'
-                                || $_attr->cWert === 'false')) {
+                        } elseif ($attr->cName === 'width' && is_numeric($attr->cWert)) {
+                            $width = $attr->cWert;
+                        } elseif ($attr->cName === 'height' && is_numeric($attr->cWert)) {
+                            $height = $attr->cWert;
+                        } elseif ($attr->cName === 'fullscreen' && ($attr->cWert === '0'
+                                || $attr->cWert === 'false')) {
                             $fullscreen = '';
                         }
                     }
@@ -1856,7 +1883,7 @@ class Artikel
         if ($sub === 'intern_' || $sub === 'img_alt') {
             return true;
         }
-        if ($attributeName{0} === 't' || $attributeName{0} === 'T') {
+        if (stripos($attributeName, 'T') === 0) {
             for ($i = 1; $i < 11; $i++) {
                 $stl = strtolower($attributeName);
                 if ($stl === 'tab' . $i . ' name' || $stl === 'tab' . $i . ' inhalt') {
@@ -1864,19 +1891,18 @@ class Artikel
                 }
             }
         }
-        switch ($attributeName) {
-            case ART_ATTRIBUT_STEUERTEXT:
-            case ART_ATTRIBUT_METATITLE:
-            case ART_ATTRIBUT_METADESCRIPTION:
-            case ART_ATTRIBUT_METAKEYWORDS:
-            case ART_ATTRIBUT_AMPELTEXT_GRUEN:
-            case ART_ATTRIBUT_AMPELTEXT_GELB:
-            case ART_ATTRIBUT_AMPELTEXT_ROT:
-            case ART_ATTRIBUT_SHORTNAME:
-                return true;
-            default:
-                return false;
-        }
+        $names = [
+            ART_ATTRIBUT_STEUERTEXT,
+            ART_ATTRIBUT_METATITLE,
+            ART_ATTRIBUT_METADESCRIPTION,
+            ART_ATTRIBUT_METAKEYWORDS,
+            ART_ATTRIBUT_AMPELTEXT_GRUEN,
+            ART_ATTRIBUT_AMPELTEXT_GELB,
+            ART_ATTRIBUT_AMPELTEXT_ROT,
+            ART_ATTRIBUT_SHORTNAME
+        ];
+
+        return in_array($attributeName, $names, true);
     }
 
     /**
@@ -2349,9 +2375,7 @@ class Artikel
                 $this->Variationen[$nZaehler] = $variation;
             }
             // Fix #1517
-            if (!isset($tmpVariation->fAufpreisNetto_teigenschaftwertaufpreis)
-                && $tmpVariation->fAufpreisNetto != 0
-            ) {
+            if (!isset($tmpVariation->fAufpreisNetto_teigenschaftwertaufpreis) && $tmpVariation->fAufpreisNetto != 0) {
                 $tmpVariation->fAufpreisNetto_teigenschaftwertaufpreis = $tmpVariation->fAufpreisNetto;
             }
             $tmpVariation->kEigenschaft = (int)$tmpVariation->kEigenschaft;
@@ -3446,17 +3470,13 @@ class Artikel
                     $cAufpreisVorzeichen .
                     Preise::getLocalizedPriceString(
                         abs($oArtikelTMP->Preise->fVK[0] - $this->Preise->fVK[0]) * ((100 - $discount) / 100),
-                        $currency,
-                        true,
-                        2
+                        $currency
                     );
                 $this->oVariationDetailPreis_arr[$idx]->Preise->cAufpreisLocalized[1] =
                     $cAufpreisVorzeichen .
                     Preise::getLocalizedPriceString(
                         abs($oArtikelTMP->Preise->fVK[1] - $this->Preise->fVK[1]) * ((100 - $discount) / 100),
-                        $currency,
-                        true,
-                        2
+                        $currency
                     );
             }
             // Grundpreis?
@@ -3804,6 +3824,7 @@ class Artikel
         if ($kSprache > 0 && !Sprache::isDefaultLanguageActive()) {
             $oSQLArtikelSprache = $this->baueArtikelSprache($kArtikel, $kSprache);
         }
+        $db = Shop::Container()->getDB();
         // Seo
         $oSQLSeo          = new stdClass();
         $oSQLSeo->cSELECT = '';
@@ -3812,7 +3833,7 @@ class Artikel
         $oSQLSeo->cJOIN   = "LEFT JOIN tseo ON tseo.cKey = 'kArtikel' AND tseo.kKey = tartikel.kArtikel";
         $oSQLSeo->cJOIN   .= ' AND tseo.kSprache = ' . $kSprache;
         // Work Around um an kStueckliste zu kommen
-        $oStueckliste    = Shop::Container()->getDB()->query(
+        $oStueckliste    = $db->query(
             'SELECT kStueckliste, fLagerbestand
                 FROM tartikel 
                 WHERE kArtikel = ' . $kArtikel,
@@ -3931,7 +3952,7 @@ class Artikel
                 WHERE tartikel.kArtikel = " . $kArtikel . "
                     " . $cSichbarkeitSQL . "
                     " . $cLagerbestandSQL;
-        $oArtikelTMP = Shop::Container()->getDB()->query($productSQL, \DB\ReturnType::SINGLE_OBJECT);
+        $oArtikelTMP = $db->query($productSQL, \DB\ReturnType::SINGLE_OBJECT);
         if (($oArtikelTMP === false || $oArtikelTMP === null)
             && (!isset($oArtikelOptionen->nKeinLagerbestandBeachten)
                 || $oArtikelOptionen->nKeinLagerbestandBeachten !== 1)
@@ -3974,13 +3995,13 @@ class Artikel
                 "LEFT JOIN tseo ON tseo.cKey = 'kArtikel' AND tseo.kKey = tartikel.kArtikel",
                 $productSQL
             );
-            $oArtikelTMP = Shop::Container()->getDB()->query($productSQL, \DB\ReturnType::SINGLE_OBJECT);
+            $oArtikelTMP = $db->query($productSQL, \DB\ReturnType::SINGLE_OBJECT);
         }
         //EXPERIMENTAL_MULTILANG_SHOP END
         // Hersteller nicht leer? => Seo holen
         unset($oHerstellerSeo);
         if (isset($oArtikelTMP->kHersteller) && $oArtikelTMP->kHersteller > 0) {
-            $oHerstellerSeo = Shop::Container()->getDB()->select(
+            $oHerstellerSeo = $db->select(
                 'tseo',
                 'cKey',
                 'kHersteller',
@@ -4089,8 +4110,8 @@ class Artikel
         if (!empty($_abbr)) {
             $this->cMasseinheitName = $_abbr;
         }
-        if ($this->getOption('bSimilar', false) === true
-            && (int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0
+        if ((int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0
+            && $this->getOption('bSimilar', false) === true
         ) {
             $this->similarProducts = $this->getSimilarProducts();
         }
@@ -4115,7 +4136,7 @@ class Artikel
         // Lokalisieren
         if ($kSprache > 0 && !Sprache::isDefaultLanguageActive()) {
             //VPE-Einheit
-            $oVPEEinheitRes = Shop::Container()->getDB()->query(
+            $oVPEEinheitRes = $db->query(
                 "SELECT cName
                     FROM teinheit
                     WHERE kEinheit = (SELECT kEinheit
@@ -4195,7 +4216,7 @@ class Artikel
            aber nur wenn auch Preise angezeigt werden, this->Preise also auch vorhanden ist */
         if (is_object($this->Preise) && $this->kVaterArtikel === 0 && $this->nIstVater === 1) {
             $fVKNetto         = $this->Preise->fVKNetto ?? 0.0;
-            $oKindSonderpreis = Shop::Container()->getDB()->query(
+            $oKindSonderpreis = $db->query(
                 "SELECT COUNT(a.kArtikel) AS nVariationsAufpreisVorhanden
                     FROM tartikel AS a
                     JOIN tpreis AS p 
@@ -5029,32 +5050,33 @@ class Artikel
     public function setzeSprache(int $kSprache): self
     {
         $oSprache = Sprache::getDefaultLanguage(false);
-        if ($this->kArtikel > 0 && $kSprache !== $oSprache->kSprache) {
-            //auf aktuelle Sprache setzen
-            $objSprache = Shop::Container()->getDB()->query(
-                "SELECT tartikelsprache.cName, tseo.cSeo, 
-                tartikelsprache.cKurzBeschreibung, tartikelsprache.cBeschreibung
-                    FROM tartikelsprache
-                    LEFT JOIN tseo 
-                        ON tseo.cKey = 'kArtikel'
-                        AND tseo.kKey = tartikelsprache.kArtikel
-                        AND tseo.kSprache = tartikelsprache.kSprache
-                    WHERE kArtikel = " . (int)$this->kArtikel . "
-                        AND tartikelsprache.kSprache = " . $kSprache,
-                \DB\ReturnType::SINGLE_OBJECT
-            );
-            if (isset($objSprache->cName) && trim($objSprache->cName)) {
-                $this->cName = $objSprache->cName;
-            }
-            if (isset($objSprache->cKurzBeschreibung) && trim($objSprache->cKurzBeschreibung)) {
-                $this->cKurzBeschreibung = StringHandler::parseNewsText($objSprache->cKurzBeschreibung);
-            }
-            if (isset($objSprache->cBeschreibung) && trim($objSprache->cBeschreibung)) {
-                $this->cBeschreibung = StringHandler::parseNewsText($objSprache->cBeschreibung);
-            }
-            if (isset($objSprache->cSeo) && trim($objSprache->cSeo)) {
-                $this->cSeo = $objSprache->cSeo;
-            }
+        if ($this->kArtikel <= 0 || $kSprache === $oSprache->kSprache) {
+            return $this;
+        }
+        //auf aktuelle Sprache setzen
+        $objSprache = Shop::Container()->getDB()->query(
+            "SELECT tartikelsprache.cName, tseo.cSeo, 
+            tartikelsprache.cKurzBeschreibung, tartikelsprache.cBeschreibung
+                FROM tartikelsprache
+                LEFT JOIN tseo 
+                    ON tseo.cKey = 'kArtikel'
+                    AND tseo.kKey = tartikelsprache.kArtikel
+                    AND tseo.kSprache = tartikelsprache.kSprache
+                WHERE kArtikel = " . (int)$this->kArtikel . "
+                    AND tartikelsprache.kSprache = " . $kSprache,
+            \DB\ReturnType::SINGLE_OBJECT
+        );
+        if (isset($objSprache->cName) && trim($objSprache->cName)) {
+            $this->cName = $objSprache->cName;
+        }
+        if (isset($objSprache->cKurzBeschreibung) && trim($objSprache->cKurzBeschreibung)) {
+            $this->cKurzBeschreibung = StringHandler::parseNewsText($objSprache->cKurzBeschreibung);
+        }
+        if (isset($objSprache->cBeschreibung) && trim($objSprache->cBeschreibung)) {
+            $this->cBeschreibung = StringHandler::parseNewsText($objSprache->cBeschreibung);
+        }
+        if (isset($objSprache->cSeo) && trim($objSprache->cSeo)) {
+            $this->cSeo = $objSprache->cSeo;
         }
 
         return $this;
@@ -6149,77 +6171,69 @@ class Artikel
     }
 
     /**
-     * @param bool $bString
+     * @param bool $asString
      * @return array|string
      */
-    public function gibMwStVersandLaenderString($bString = true)
+    public function gibMwStVersandLaenderString($asString = true)
     {
+        if ($this->conf['global']['global_versandfrei_anzeigen'] !== 'Y') {
+            return $asString ? '' : [];
+        }
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = (new Kundengruppe())->loadDefaultGroup();
         }
         $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
-        if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
-            $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
+        if (\Session\Session::getCustomer()->kKundengruppe > 0) {
+            $kKundengruppe = \Session\Session::getCustomer()->kKundengruppe;
         }
-        $helper              = ShippingMethod::getInstance();
-        $versandfreielaender = isset($this->Preise->fVK[0])
+        $helper                = ShippingMethod::getInstance();
+        $shippingFreeCountries = isset($this->Preise->fVK[0])
             ? $helper->getFreeShippingCountries($this->Preise->fVK[0], $kKundengruppe, $this->kVersandklasse)
             : '';
-
-        if ($versandfreielaender && $this->conf['global']['global_versandfrei_anzeigen'] === 'Y') {
-            $cLaender_arr = explode(',', $versandfreielaender);
-            if (strlen($cLaender_arr[count($cLaender_arr) - 1]) === 0) {
-                unset($cLaender_arr[count($cLaender_arr) - 1]);
-            }
-            foreach ($cLaender_arr as $i => $cLand) {
-                $cLaender_arr[$i] = trim($cLand);
-            }
-            $cSQL     = '';
-            $nLaender = count($cLaender_arr);
-            foreach ($cLaender_arr as $i => $land) {
-                $cSQL .= "cISO = '" . $land . "'";
-                if ($nLaender > ($i + 1)) {
-                    $cSQL .= ' OR ';
-                }
-            }
-            $cLaender = '';
-            $cacheID  = 'jtl_ola_' . md5($cSQL);
-            if (($oLand_arr = Shop::Container()->getCache()->get($cacheID)) === false) {
-                $oLand_arr = Shop::Container()->getDB()->query(
+        if ($shippingFreeCountries) {
+            $codes   = array_filter(\Functional\map(explode(',', $shippingFreeCountries), function ($e) {
+                return strlen($e) > 0 ? "'" . trim($e) . "'" : null;
+            }));
+            $count   = count($codes);
+            $sql     = 'cISO IN (' . implode(',', $codes) . ')';
+            $string  = '';
+            $cacheID = 'jtl_ola_' . md5($sql);
+            if (($countryData = Shop::Container()->getCache()->get($cacheID)) === false) {
+                $countryData = Shop::Container()->getDB()->query(
                     'SELECT cISO, cDeutsch, cEnglisch 
-                        FROM tland WHERE ' . $cSQL,
+                        FROM tland WHERE ' . $sql,
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 Shop::Container()->getCache()->set(
                     $cacheID,
-                    $oLand_arr,
+                    $countryData,
                     [CACHING_GROUP_CORE, CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION]
                 );
             }
             $countriesAssoc = [];
             $german         = (!isset($_SESSION['cISOSprache']) || Shop::getLanguageCode() === 'ger');
-            foreach ($oLand_arr as $i => $country) {
-                if ($bString) {
-                    $cLaender .= $german === true
+            foreach ($countryData as $i => $country) {
+                if ($asString) {
+                    $string .= $german === true
                         ? $country->cDeutsch
                         : $country->cEnglisch;
-                    if ($nLaender > ($i + 1)) {
-                        $cLaender .= ', ';
+                    if ($count > ($i + 1)) {
+                        $string .= ', ';
                     }
                 } else {
-                    $cLaender = $german === true
+                    $string                         = $german === true
                         ? $country->cDeutsch
                         : $country->cEnglisch;
+                    $countriesAssoc[$country->cISO] = $string;
                 }
-                $countriesAssoc[$country->cISO] = $cLaender;
             }
 
-            return $bString
-                ? Shop::Lang()->get('noShippingCostsAtExtended', 'basket', $cLaender)
+            return $asString
+                ? Shop::Lang()->get('noShippingCostsAtExtended', 'basket', $string)
                 : $countriesAssoc;
         }
 
-        return '';
+        return $asString ? '' : [];
     }
 
     /**

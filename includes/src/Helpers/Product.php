@@ -222,12 +222,13 @@ class Product
         if ($productID <= 0) {
             return [];
         }
+        $db             = Shop::Container()->getDB();
         $customerGroup  = Session::getCustomerGroup()->getID();
         $properties     = [];
         $propertyValues = [];
         $exists         = true;
         // Hole EigenschaftWerte zur gewaehlten VariationKombi
-        $oVariationKombiKind_arr = Shop::Container()->getDB()->query(
+        $oVariationKombiKind_arr = $db->query(
             'SELECT teigenschaftkombiwert.kEigenschaftWert, teigenschaftkombiwert.kEigenschaft, tartikel.kVaterArtikel
                 FROM teigenschaftkombiwert
                 JOIN tartikel
@@ -276,7 +277,7 @@ class Product
                                     AND teigenschaftwertsprache.kSprache = ' . $langID;
         }
 
-        $oEigenschaft_arr = Shop::Container()->getDB()->query(
+        $oEigenschaft_arr = $db->query(
             'SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName, ' . $attrVal->cSELECT . '
                 teigenschaftwertsichtbarkeit.kKundengruppe, teigenschaftwert.kEigenschaft, teigenschaft.cTyp, ' .
             $attr->cSELECT . ' teigenschaft.cName AS cNameEigenschaft, teigenschaft.kArtikel
@@ -296,7 +297,7 @@ class Product
             ReturnType::ARRAY_OF_OBJECTS
         );
 
-        $oEigenschaftTMP_arr = Shop::Container()->getDB()->query(
+        $oEigenschaftTMP_arr = $db->query(
             'SELECT teigenschaft.kEigenschaft,teigenschaft.cName,teigenschaft.cTyp
                 FROM teigenschaft
                 LEFT JOIN teigenschaftsichtbarkeit
@@ -321,7 +322,7 @@ class Product
             if ($oEigenschaft->cTyp !== 'FREIFELD' && $oEigenschaft->cTyp !== 'PFLICHT-FREIFELD') {
                 // Ist kEigenschaft zu eigenschaftwert vorhanden
                 if (self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)) {
-                    $oEigenschaftWertVorhanden = Shop::Container()->getDB()->query(
+                    $oEigenschaftWertVorhanden = $db->query(
                         'SELECT teigenschaftwert.kEigenschaftWert
                             FROM teigenschaftwert
                             LEFT JOIN teigenschaftwertsichtbarkeit
@@ -424,8 +425,9 @@ class Product
      */
     public static function getSelectedPropertiesForArticle(int $productID, bool $redirect = true): array
     {
+        $db              = Shop::Container()->getDB();
         $customerGroupID = Session::getCustomerGroup()->getID();
-        $propData        = Shop::Container()->getDB()->queryPrepared(
+        $propData        = $db->queryPrepared(
             'SELECT teigenschaft.kEigenschaft,teigenschaft.cName,teigenschaft.cTyp
                 FROM teigenschaft
                 LEFT JOIN teigenschaftsichtbarkeit
@@ -445,7 +447,7 @@ class Product
             $prop->kEigenschaft = (int)$prop->kEigenschaft;
             if ($prop->cTyp !== 'FREIFELD' && $prop->cTyp !== 'PFLICHT-FREIFELD') {
                 if (self::hasSelectedVariationValue($prop->kEigenschaft)) {
-                    $propExists = Shop::Container()->getDB()->queryPrepared(
+                    $propExists = $db->queryPrepared(
                         'SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName,
                             teigenschaftwertsichtbarkeit.kKundengruppe
                             FROM teigenschaftwert
@@ -495,7 +497,7 @@ class Product
                     exit();
                 }
                 $val                = new stdClass();
-                $val->cFreifeldWert = Shop::Container()->getDB()->escape(
+                $val->cFreifeldWert = $db->escape(
                     StringHandler::filterXSS(self::getSelectedVariationValue($prop->kEigenschaft))
                 );
                 $val->kEigenschaft  = $prop->kEigenschaft;

@@ -31,8 +31,8 @@
                         {foreach $jobs as $job}
                             <tr>
                                 <td>{__($job->getType())}</td>
-                                <td>{$job->getStartTime()->format('h:i')}</td>
-                                <td>{if $job->getDateLastStarted() === null}&dash;{else}{$job->getDateLastStarted()->format('d:m:Y h:i')}{/if}</td>
+                                <td>{$job->getStartTime()->format('H:i')}</td>
+                                <td>{if $job->getDateLastStarted() === null}&dash;{else}{$job->getDateLastStarted()->format('d.m.Y H:i')}{/if}</td>
                                 <td>{$job->getFrequency()}h</td>
                                 <td>{if $job->isRunning()}<i class="fa fa-check"></i>{else}<i class="fa fa-times"></i>{/if}</td>
                                 <td>

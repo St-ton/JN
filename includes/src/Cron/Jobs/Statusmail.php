@@ -37,6 +37,8 @@ class Statusmail extends Job
         parent::start($queueEntry);
         $jobData = $this->getJobData();
         if ($jobData === null) {
+            $this->setFinished(true);
+
             return $this;
         }
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';

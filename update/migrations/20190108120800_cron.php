@@ -15,7 +15,6 @@ class Migration_20190108120800 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("ALTER TABLE `tjobqueue` ADD COLUMN `dLastStart` DATETIME NULL DEFAULT NULL");
         $this->execute("ALTER TABLE `tcron` 
             CHANGE COLUMN `kCron` `cronID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
             CHANGE COLUMN `kKey` `foreignKeyID` INT(10) UNSIGNED DEFAULT NULL,
@@ -48,7 +47,6 @@ class Migration_20190108120800 extends Migration implements IMigration
 
     public function down()
     {
-        $this->execute("ALTER TABLE `tjobqueue` DROP COLUMN `dLastStart`");
         $this->execute("ALTER TABLE `tcron`
             CHANGE COLUMN `cronID` `kCron` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
             CHANGE COLUMN `foreignKeyID` `kKey` INT(10) UNSIGNED NOT NULL DEFAULT '0',

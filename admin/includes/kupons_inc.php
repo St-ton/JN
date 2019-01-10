@@ -620,13 +620,10 @@ function saveCoupon($oKupon, $oSprache_arr)
  */
 function informCouponCustomers($oKupon)
 {
-    // Augment Coupon
     augmentCoupon($oKupon);
-    // Standard-Sprache
-    $oStdSprache = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
-    // Standard-Waehrung
-    $oStdWaehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
-    // Artikel Default Optionen
+    $db             = Shop::Container()->getDB();
+    $oStdSprache    = $db->select('tsprache', 'cShopStandard', 'Y');
+    $oStdWaehrung   = $db->select('twaehrung', 'cStandard', 'Y');
     $defaultOptions = Artikel::getDefaultOptions();
     // lokalisierter Kuponwert und MBW
     $oKupon->cLocalizedWert = $oKupon->cWertTyp === 'festpreis'
@@ -635,7 +632,7 @@ function informCouponCustomers($oKupon)
     $oKupon->cLocalizedMBW  = Preise::getLocalizedPriceString($oKupon->fMindestbestellwert, $oStdWaehrung, false);
     // kKunde-Array aller auserwaehlten Kunden
     $kKunde_arr   = StringHandler::parseSSK($oKupon->cKunden);
-    $oKundeDB_arr = Shop::Container()->getDB()->query(
+    $oKundeDB_arr = $db->query(
         'SELECT kKunde
             FROM tkunde
             WHERE TRUE
@@ -652,7 +649,7 @@ function informCouponCustomers($oKupon)
     $cArtNr_arr     = StringHandler::parseSSK($oKupon->cArtikel);
 
     if (count($cArtNr_arr) > 0) {
-        $oArtikelDB_arr = Shop::Container()->getDB()->query(
+        $oArtikelDB_arr = $db->query(
             'SELECT kArtikel
                 FROM tartikel
                 WHERE cArtNr IN (' . implode(',', $cArtNr_arr) . ')',
@@ -660,22 +657,19 @@ function informCouponCustomers($oKupon)
         );
     }
     foreach ($oKundeDB_arr as $oKundeDB) {
-        $oKunde = new Kunde($oKundeDB->kKunde);
-        // Sprache
+        $oKunde   = new Kunde($oKundeDB->kKunde);
         $oSprache = Shop::Lang()->getIsoFromLangID($oKunde->kSprache);
         if (!$oSprache) {
             $oSprache = $oStdSprache;
         }
-        // Kuponsprache
-        $oKuponsprache = Shop::Container()->getDB()->select(
+        $oKuponsprache  = $db->select(
             'tkuponsprache',
             ['kKupon', 'cISOSprache'],
             [$oKupon->kKupon, $oSprache->cISO]
         );
-        // Kategorien
         $oKategorie_arr = [];
         if ($oKupon->cKategorien !== '-1') {
-            $kKategorie_arr = array_map('intval', StringHandler::parseSSK($oKupon->cKategorien));
+            $kKategorie_arr = array_map('\intval', StringHandler::parseSSK($oKupon->cKategorien));
             foreach ($kKategorie_arr as $kKategorie) {
                 if ($kKategorie > 0) {
                     $oKategorie       = new Kategorie($kKategorie, $oKunde->kSprache, $oKunde->kKundengruppe);

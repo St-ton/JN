@@ -4,7 +4,7 @@
  *}
 <section class="panel panel-default box box-linkgroup" id="box{$oBox->getID()}">
     <div class="panel-heading">
-        <div class="panel-title">{$oBox->getLinkGroupTemplate()}</div>
+        <div class="panel-title">{$oBox->getTitle()}</div>
     </div>
     <div class="box-body nav-panel">
         <ul class="nav nav-list">

@@ -19,8 +19,31 @@ interface JobInterface
      * JobInterface constructor.
      * @param DbInterface     $db
      * @param LoggerInterface $logger
+     * @param JobHydrator     $hydrator
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger);
+    public function __construct(DbInterface $db, LoggerInterface $logger, JobHydrator $hydrator);
+
+    /**
+     * @return int
+     */
+    public function insert(): int;
+
+    /**
+     * @return bool
+     */
+    public function delete(): bool;
+
+    /**
+     * @param QueueEntry $queueEntry
+     * @return bool
+     */
+    public function saveProgress(QueueEntry $queueEntry): bool;
+
+    /**
+     * @param QueueEntry|\stdClass $data
+     * @return object
+     */
+    public function hydrate($data);
 
     /**
      * @return string
@@ -53,44 +76,79 @@ interface JobInterface
     public function setID(int $id): void;
 
     /**
+     * @return \DateTime|null
+     */
+    public function getDateLastStarted(): ?\DateTime;
+
+    /**
+     * @param \DateTime|string|null $date
+     */
+    public function setDateLastStarted($date): void;
+
+    /**
+     * @inheritdoc
+     */
+    public function getDateLastFinished(): ?\DateTime;
+
+    /**
+     * @inheritdoc
+     */
+    public function setDateLastFinished($date): void;
+
+    /**
+     * @param string|null $date
+     */
+    public function setLastStarted(?string $date): void;
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getStartTime(): ?\DateTime;
+
+    /**
+     * @param \DateTime|string|null $startTime
+     */
+    public function setStartTime($startTime): void;
+
+    /**
      * @return \DateTime
      */
-    public function getDateLastStarted(): \DateTime;
+    public function getStartDate(): \DateTime;
 
     /**
-     * @param \DateTime $dateLastStarted
+     * @param \DateTime|string $date
      */
-    public function setDateLastStarted(\DateTime $dateLastStarted): void;
+    public function setStartDate($date): void;
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getForeignKeyID(): int;
+    public function getForeignKeyID(): ?int;
 
     /**
-     * @param int $foreignKeyID
+     * @param int|null $foreignKeyID
      */
-    public function setForeignKeyID(int $foreignKeyID): void;
+    public function setForeignKeyID(?int $foreignKeyID): void;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getForeignKey(): string;
+    public function getForeignKey(): ?string;
 
     /**
-     * @param string $foreignKey
+     * @param string|null $foreignKey
      */
-    public function setForeignKey(string $foreignKey): void;
+    public function setForeignKey(?string $foreignKey): void;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getTable(): string;
+    public function getTableName(): ?string;
 
     /**
-     * @param string $table
+     * @param string|null $table
      */
-    public function setTable(string $table): void;
+    public function setTableName(?string $table): void;
 
     /**
      * @param QueueEntry $queueEntry
@@ -127,6 +185,26 @@ interface JobInterface
      * @param bool $finished
      */
     public function setFinished(bool $finished): void;
+
+    /**
+     * @return bool
+     */
+    public function isRunning(): bool;
+
+    /**
+     * @param bool $running
+     */
+    public function setRunning(bool $running): void;
+
+    /**
+     * @return int
+     */
+    public function getFrequency(): int;
+
+    /**
+     * @param int $frequency
+     */
+    public function setFrequency(int $frequency): void;
 
     /**
      * @return int

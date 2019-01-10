@@ -133,15 +133,16 @@ class WarenkorbPers
      */
     public function entferneAlles(): self
     {
+        $db = Shop::Container()->getDB();
         foreach ($this->oWarenkorbPersPos_arr as $oWarenkorbPersPos) {
             // Eigenschaften löschen
-            Shop::Container()->getDB()->delete(
+            $db->delete(
                 'twarenkorbpersposeigenschaft',
                 'kWarenkorbPersPos',
                 (int)$oWarenkorbPersPos->kWarenkorbPersPos
             );
             // Postitionen löschen
-            Shop::Container()->getDB()->delete(
+            $db->delete(
                 'twarenkorbperspos',
                 'kWarenkorbPers',
                 (int)$oWarenkorbPersPos->kWarenkorbPers
@@ -186,7 +187,7 @@ class WarenkorbPers
             \DB\ReturnType::SINGLE_OBJECT
         );
         // Prüfen ob der eingeloggte Kunde auch der Besitzer der zu löschenden WarenkorbPersPos ist
-        if (isset($oKunde->kKunde) && $oKunde->kKunde == $_SESSION['Kunde']->kKunde) {
+        if (isset($oKunde->kKunde) && (int)$oKunde->kKunde === \Session\Session::getCustomer()->getID()) {
             // Alle Eigenschaften löschen
             Shop::Container()->getDB()->delete('twarenkorbpersposeigenschaft', 'kWarenkorbPersPos', $id);
             // Die Position mit ID $id löschen
@@ -343,11 +344,12 @@ class WarenkorbPers
         $productNames = [];
         $productIDs   = [];
         $msg          = '';
+        $db           = Shop::Container()->getDB();
         foreach ($this->oWarenkorbPersPos_arr as $cartPos) {
             // Hat die Position einen Artikel
             if ($cartPos->kArtikel > 0) {
                 // Prüfe auf kArtikel
-                $oArtikelVorhanden = Shop::Container()->getDB()->select(
+                $oArtikelVorhanden = $db->select(
                     'tartikel',
                     'kArtikel',
                     (int)$cartPos->kArtikel
@@ -355,7 +357,7 @@ class WarenkorbPers
                 // Falls Artikel vorhanden
                 if (isset($oArtikelVorhanden->kArtikel) && $oArtikelVorhanden->kArtikel > 0) {
                     // Sichtbarkeit Prüfen
-                    $oSichtbarkeit = Shop::Container()->getDB()->select(
+                    $oSichtbarkeit = $db->select(
                         'tartikelsichtbarkeit',
                         'kArtikel',
                         (int)$cartPos->kArtikel,
@@ -364,7 +366,7 @@ class WarenkorbPers
                     );
                     if ($oSichtbarkeit === null || !isset($oSichtbarkeit->kArtikel) || !$oSichtbarkeit->kArtikel) {
                         // Prüfe welche kEigenschaft gesetzt ist
-                        $oEigenschaft_arr = Shop::Container()->getDB()->selectAll(
+                        $oEigenschaft_arr = $db->selectAll(
                             'teigenschaft',
                             'kArtikel',
                             (int)$cartPos->kArtikel,
@@ -377,7 +379,7 @@ class WarenkorbPers
                             ) {
                                 foreach ($cartPos->oWarenkorbPersPosEigenschaft_arr as $oWarenkorbPersPosEigenschaft) {
                                     if ($oWarenkorbPersPosEigenschaft->kEigenschaft === $oEigenschaft->kEigenschaft) {
-                                        $oEigenschaftWertVorhanden = Shop::Container()->getDB()->select(
+                                        $oEigenschaftWertVorhanden = $db->select(
                                             'teigenschaftwert',
                                             'kEigenschaftWert',
                                             (int)$oWarenkorbPersPosEigenschaft->kEigenschaftWert,
@@ -388,12 +390,12 @@ class WarenkorbPers
                                         if (!isset($oEigenschaftWertVorhanden->kEigenschaftWert)
                                             || !$oEigenschaftWertVorhanden->kEigenschaftWert
                                         ) {
-                                            Shop::Container()->getDB()->delete(
+                                            $db->delete(
                                                 'twarenkorbperspos',
                                                 'kWarenkorbPersPos',
                                                 $cartPos->kWarenkorbPersPos
                                             );
-                                            Shop::Container()->getDB()->delete(
+                                            $db->delete(
                                                 'twarenkorbpersposeigenschaft',
                                                 'kWarenkorbPersPos',
                                                 $cartPos->kWarenkorbPersPos

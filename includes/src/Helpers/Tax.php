@@ -54,7 +54,8 @@ class Tax
         $_SESSION['Steuersatz'] = [];
         $billingCountryCode     = null;
         $merchantCountryCode    = 'DE';
-        $Firma                  = Shop::Container()->getDB()->query(
+        $db                     = Shop::Container()->getDB();
+        $Firma                  = $db->query(
             'SELECT cLand FROM tfirma',
             ReturnType::SINGLE_OBJECT
         );
@@ -93,13 +94,13 @@ class Tax
                 || (\strcasecmp($billingCountryCode, 'GR') === 0
                     && \strcasecmp(\substr(Frontend::getCustomer()->cUSTID, 0, 2), 'EL') === 0))
         ) {
-            $deliveryCountry = Shop::Container()->getDB()->select('tland', 'cISO', $deliveryCountryCode);
-            $shopCountry     = Shop::Container()->getDB()->select('tland', 'cISO', $merchantCountryCode);
+            $deliveryCountry = $db->select('tland', 'cISO', $deliveryCountryCode);
+            $shopCountry     = $db->select('tland', 'cISO', $merchantCountryCode);
             if (!empty($deliveryCountry->nEU) && !empty($shopCountry->nEU)) {
                 $UstBefreiungIGL = true;
             }
         }
-        $steuerzonen = Shop::Container()->getDB()->queryPrepared(
+        $steuerzonen = $db->queryPrepared(
             'SELECT tsteuerzone.kSteuerzone
                 FROM tsteuerzone, tsteuerzoneland
                 WHERE tsteuerzoneland.cISO = :ciso
@@ -117,7 +118,7 @@ class Tax
             Shop::Container()->getLogService()->error('Keine Steuerzone für "' . $country . '" hinterlegt!');
 
             if (Request::isAjaxRequest()) {
-                $link = new Link(Shop::Container()->getDB());
+                $link = new Link($db);
                 $link->setLinkType(\LINKTYP_STARTSEITE);
                 $link->setTitle(Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'));
 
@@ -146,7 +147,7 @@ class Tax
             \header('Location: ' . $redirURL);
             exit;
         }
-        $steuerklassen = Shop::Container()->getDB()->query(
+        $steuerklassen = $db->query(
             'SELECT * FROM tsteuerklasse',
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -159,7 +160,7 @@ class Tax
 
         if ($qry !== '') {
             foreach ($steuerklassen as $steuerklasse) {
-                $steuersatz                                           = Shop::Container()->getDB()->query(
+                $steuersatz                                           = $db->query(
                     'SELECT fSteuersatz
                         FROM tsteuersatz
                         WHERE kSteuerklasse = ' . (int)$steuerklasse->kSteuerklasse . '

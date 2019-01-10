@@ -175,7 +175,7 @@ class Kupon
             $ins->$cMember = $this->$cMember;
         }
 
-        unset($ins->kKupon);
+        unset($ins->kKupon, $ins->translationList);
         if (empty($ins->dGueltigBis)) {
             $ins->dGueltigBis = '_DBNULL_';
         }

@@ -1199,7 +1199,6 @@ function finalisiereBestellung($orderNo = '', bool $sendMail = true): Bestellung
 
     $order = new Bestellung($_SESSION['kBestellung']);
     $order->fuelleBestellung(false);
-    $order->machGoogleAnalyticsReady();
 
     if ($order->oRechnungsadresse !== null) {
         $hash = Kuponneukunde::hash(

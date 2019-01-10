@@ -199,6 +199,7 @@ class WarenkorbPos
      */
     public function setzeVariationsWert(int $kEigenschaft, int $kEigenschaftWert, $freifeld = ''): bool
     {
+        $db                                = Shop::Container()->getDB();
         $attributeValue                    = new EigenschaftWert($kEigenschaftWert);
         $attribute                         = new Eigenschaft($kEigenschaft);
         $newAttributes                     = new WarenkorbPosEigenschaft();
@@ -206,7 +207,7 @@ class WarenkorbPos
         $newAttributes->kEigenschaftWert   = $kEigenschaftWert;
         $newAttributes->fGewichtsdifferenz = $attributeValue->fGewichtDiff;
         $newAttributes->fAufpreis          = $attributeValue->fAufpreisNetto;
-        $Aufpreis_obj                      = Shop::Container()->getDB()->select(
+        $Aufpreis_obj                      = $db->select(
             'teigenschaftwertaufpreis',
             'kEigenschaftWert',
             (int)$newAttributes->kEigenschaftWert,
@@ -232,7 +233,7 @@ class WarenkorbPos
             $newAttributes->cEigenschaftWertName[$Sprache->cISO] = $attributeValue->cName;
 
             if ($Sprache->cStandard !== 'Y') {
-                $eigenschaft_spr = Shop::Container()->getDB()->select(
+                $eigenschaft_spr = $db->select(
                     'teigenschaftsprache',
                     'kEigenschaft',
                     (int)$newAttributes->kEigenschaft,
@@ -242,7 +243,7 @@ class WarenkorbPos
                 if (!empty($eigenschaft_spr->cName)) {
                     $newAttributes->cEigenschaftName[$Sprache->cISO] = $eigenschaft_spr->cName;
                 }
-                $eigenschaftwert_spr = Shop::Container()->getDB()->select(
+                $eigenschaftwert_spr = $db->select(
                     'teigenschaftwertsprache',
                     'kEigenschaftWert',
                     (int)$newAttributes->kEigenschaftWert,
@@ -255,7 +256,7 @@ class WarenkorbPos
             }
 
             if ($freifeld || strlen(trim($freifeld)) > 0) {
-                $newAttributes->cEigenschaftWertName[$Sprache->cISO] = Shop::Container()->getDB()->escape($freifeld);
+                $newAttributes->cEigenschaftWertName[$Sprache->cISO] = $db->escape($freifeld);
             }
         }
         $this->WarenkorbPosEigenschaftArr[] = $newAttributes;

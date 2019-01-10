@@ -34,7 +34,10 @@ executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
     'cPluginJsHead_arr' => &$cMinify_arr['plugin_js_head'],
     'cPluginJsBody_arr' => &$cMinify_arr['plugin_js_body']
 ]);
-$kKundengruppe = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
+
+$debugbar         = Shop::Container()->getDebugBar();
+$debugbarRenderer = $debugbar->getJavascriptRenderer();
+$kKundengruppe    = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
     ? $_SESSION['Kunde']->kKundengruppe
     : \Session\Frontend::getCustomerGroup()->getID();
 $cKundenherkunft = (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0)
@@ -181,9 +184,12 @@ $visitorCount = $Einstellungen['global']['global_zaehler_anzeigen'] === 'Y'
         \DB\ReturnType::SINGLE_OBJECT
     )->nZaehler
     : 0;
+$debugbar->getTimer()->stopMeasure('init');
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('Brotnavi', $nav->createNavigation())
        ->assign('nIsSSL', Request::checkSSL())
        ->assign('boxes', $boxesToShow)
        ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
-       ->assign('Besucherzaehler', $visitorCount);
+       ->assign('Besucherzaehler', $visitorCount)
+       ->assign('dbgBarHead', $debugbarRenderer->renderHead())
+       ->assign('dbgBarBody', $debugbarRenderer->render());

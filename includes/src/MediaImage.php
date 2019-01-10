@@ -3,6 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
 use Imanee\Imanee;
 
 /**
@@ -11,7 +12,7 @@ use Imanee\Imanee;
 class MediaImage implements IMedia
 {
     /**
-     *
+     * MediaImage constructor.
      */
     public function __construct()
     {
@@ -27,13 +28,11 @@ class MediaImage implements IMedia
      */
     public static function getRequest($type, $id, $mixed, $size, int $number = 1): MediaImageRequest
     {
-        $name = Image::getCustomName($type, $mixed);
-
         return MediaImageRequest::create([
             'id'     => $id,
             'type'   => $type,
             'number' => $number,
-            'name'   => $name,
+            'name'   => Image::getCustomName($type, $mixed),
             'size'   => $size,
         ]);
     }
@@ -49,19 +48,15 @@ class MediaImage implements IMedia
      */
     public static function getThumb($type, $id, $mixed, $size, int $number = 1): string
     {
-        $name     = Image::getCustomName($type, $mixed);
-        $settings = Image::getSettings();
         $req      = MediaImageRequest::create([
             'id'     => $id,
             'type'   => $type,
             'number' => $number,
-            'name'   => $name,
-            'ext'    => $settings['format'],
+            'name'   => Image::getCustomName($type, $mixed),
+            'ext'    => Image::getSettings()['format'],
         ]);
         $thumb    = $req->getThumb($size);
-        $thumbAbs = PFAD_ROOT . $thumb;
-
-        if (!file_exists($thumbAbs) && !file_exists(PFAD_ROOT . $req->getRaw())) {
+        if (!file_exists(PFAD_ROOT . $thumb) && !file_exists(PFAD_ROOT . $req->getRaw())) {
             $fallback = $req->getFallbackThumb($size);
             $thumb    = file_exists(PFAD_ROOT . $fallback)
                 ? $fallback
@@ -80,13 +75,11 @@ class MediaImage implements IMedia
      */
     public static function getThumbUrl($type, $id, $size, int $number = 1): string
     {
-        $req = MediaImageRequest::create([
+        return MediaImageRequest::create([
             'type'   => $type,
             'id'     => $id,
             'number' => $number,
-        ]);
-
-        return $req->getThumbUrl($size);
+        ])->getThumbUrl($size);
     }
 
     /**
@@ -115,13 +108,11 @@ class MediaImage implements IMedia
                 Image::SIZE_LG => 0,
             ],
         ];
-
-        foreach (self::getImages($type) as $image) {
+        foreach (self::getProductImages() as $image) {
             $raw = $image->getRaw(true);
             ++$result->total;
             if (!file_exists($raw)) {
-                $fallback = $image->getFallbackThumb(Image::SIZE_XS);
-                if (file_exists(PFAD_ROOT . $fallback)) {
+                if (file_exists(PFAD_ROOT . $image->getFallbackThumb(Image::SIZE_XS))) {
                     ++$result->fallback;
                 } else {
                     ++$result->corrupted;
@@ -268,7 +259,6 @@ class MediaImage implements IMedia
     public static function writeHttp(Imanee $imanee, $nocache = false): void
     {
         $data = $imanee->output();
-        $size = strlen($data);
 
         while (ob_get_level()) {
             ob_end_clean();
@@ -277,8 +267,8 @@ class MediaImage implements IMedia
         header('Accept-Ranges: none');
         header('Content-Encoding: None', true);
 
-        header("Content-Length: {$size}");
-        header("Content-Type: {$imanee->getMime()}");
+        header('Content-Length: ' . strlen($data));
+        header('Content-Type: ' . $imanee->getMime());
 
         if ($nocache === true) {
             $format   = 'D, d M Y H:i:s \G\M\T';
@@ -286,8 +276,8 @@ class MediaImage implements IMedia
             $modified = new DateTime('now', new DateTimezone('UTC'));
 
             header('Cache-Control: max-age=2592000');
-            header("Expires: {$expires->format($format)}");
-            header("Last-Modified: {$modified->format($format)}");
+            header('Expires: ' . $expires->format($format));
+            header('Last-Modified: ' . $modified->format($format));
         }
 
         echo $data;
@@ -348,6 +338,78 @@ class MediaImage implements IMedia
     }
 
     /**
+     * @return int
+     */
+    public static function getProductImageCount(): int
+    {
+        return (int)Shop::Container()->getDB()->query(
+            'SELECT COUNT(tartikelpict.kArtikel) AS cnt
+                FROM tartikelpict
+                INNER JOIN tartikel
+                    ON tartikelpict.kArtikel = tartikel.kArtikel',
+            \DB\ReturnType::SINGLE_OBJECT
+        )->cnt;
+    }
+
+    /**
+     * @return int
+     */
+    public static function getUncachedProductImageCount(): int
+    {
+        $i = 0;
+        foreach (self::getProductImages() as $image) {
+            if (!self::isCached($image)) {
+                ++$i;
+            }
+        }
+
+        return $i;
+    }
+
+    /**
+     * @return Generator
+     */
+    public static function getProductImages(): Generator
+    {
+        $cols = '';
+        switch (Image::getSettings()['naming']['product']) {
+            case 0:
+                break;
+            case 1:
+                $cols = ', tartikel.cArtNr';
+                break;
+            case 2:
+                $cols = ', tartikel.cSeo, tartikel.cName';
+                break;
+            case 3:
+                $cols = ', tartikel.cArtNr, tartikel.cSeo, tartikel.cName';
+                break;
+            case 4:
+                $cols = ', tartikel.cBarcode';
+                break;
+            default:
+                break;
+        }
+        $images = Shop::Container()->getDB()->query(
+            'SELECT tartikelpict.cPfad AS path, tartikelpict.nNr AS number, tartikelpict.kArtikel ' . $cols . '
+                FROM tartikelpict
+                INNER JOIN tartikel
+                  ON tartikelpict.kArtikel = tartikel.kArtikel',
+            \DB\ReturnType::QUERYSINGLE
+        );
+
+        while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
+            yield MediaImageRequest::create([
+                'id'     => $image->kArtikel,
+                'type'   => Image::TYPE_PRODUCT,
+                'name'   => Image::getCustomName(Image::TYPE_PRODUCT, $image),
+                'number' => $image->number,
+                'path'   => $image->path,
+            ]);
+        }
+    }
+
+    /**
      * @param string   $type
      * @param bool     $notCached
      * @param int|null $offset
@@ -360,7 +422,7 @@ class MediaImage implements IMedia
         $requests = [];
         switch ($type) {
             case Image::TYPE_PRODUCT:
-                //only select the necessary columns to save memory
+                // only select the necessary columns to save memory
                 $cols = '';
                 $conf = Image::getSettings();
                 switch ($conf['naming']['product']) {
@@ -437,13 +499,12 @@ class MediaImage implements IMedia
      * @param string $request
      * @return array|null
      */
-    private function parse($request): ?array
+    private function parse(?string $request): ?array
     {
         if (!is_string($request) || strlen($request) === 0) {
             return null;
         }
-
-        if ($request[0] === '/') {
+        if (strpos($request, '/') === 0) {
             $request = substr($request, 1);
         }
 
@@ -456,11 +517,9 @@ class MediaImage implements IMedia
      * @param string $request
      * @return MediaImageRequest
      */
-    private function create($request): MediaImageRequest
+    private function create(?string $request): MediaImageRequest
     {
-        $matches = $this->parse($request);
-
-        return MediaImageRequest::create($matches);
+        return MediaImageRequest::create($this->parse($request));
     }
 
     /**
@@ -468,7 +527,7 @@ class MediaImage implements IMedia
      * @param int    $id
      * @return int|null
      */
-    public static function getPrimaryNumber($type, $id): ?int
+    public static function getPrimaryNumber(string $type, int $id): ?int
     {
         $prepared = self::getImageStmt($type, $id);
         if ($prepared !== null) {
@@ -490,7 +549,7 @@ class MediaImage implements IMedia
      * @param int    $id
      * @return stdClass|null
      */
-    public static function getImageStmt($type, int $id): ?stdClass
+    public static function getImageStmt(string $type, int $id): ?stdClass
     {
         switch ($type) {
             case Image::TYPE_PRODUCT:
@@ -588,7 +647,7 @@ class MediaImage implements IMedia
      * @param int    $id
      * @return bool
      */
-    public static function hasImage($type, int $id): bool
+    public static function hasImage(string $type, int $id): bool
     {
         return static::imageCount($type, $id) > 0;
     }
@@ -601,7 +660,7 @@ class MediaImage implements IMedia
      * @param int    $number
      * @return string|int|null
      */
-    public static function getRawOrFilesize($type, $id, $mixed, $size, int $number = 1)
+    public static function getRawOrFilesize(string $type, $id, $mixed, $size, int $number = 1)
     {
         $name     = Image::getCustomName($type, $mixed);
         $settings = Image::getSettings();

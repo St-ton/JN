@@ -196,6 +196,17 @@ $nav = $Einstellungen['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
     ? Product::getProductNavigation($AktuellerArtikel->kArtikel ?? 0, $AktuelleKategorie->kKategorie ?? 0)
     : null;
 
+if (class_exists('Upload')) {
+    $oUploadSchema_arr = Upload::gibArtikelUploads($AktuellerArtikel->kArtikel);
+    if ($oUploadSchema_arr) {
+        $nMaxSize = Upload::uploadMax();
+        $smarty->assign('cSessionID', session_id())
+               ->assign('nMaxUploadSize', $nMaxSize)
+               ->assign('cMaxUploadSize', Upload::formatGroesse($nMaxSize))
+               ->assign('oUploadSchema_arr', $oUploadSchema_arr);
+    }
+}
+
 $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('arNichtErlaubteEigenschaftswerte', $nonAllowed)
        ->assign('oAehnlicheArtikel_arr', $similarArticles)

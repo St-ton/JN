@@ -12,7 +12,6 @@ use Helpers\URL;
 function generiereRSSXML()
 {
     Shop::Container()->getLogService()->debug('RSS wird erstellt');
-    $shopURL = Shop::getURL();
     if (!is_writable(PFAD_ROOT . FILE_RSS_FEED)) {
         Shop::Container()->getLogService()->error(
             'RSS Verzeichnis ' . PFAD_ROOT . FILE_RSS_FEED . 'nicht beschreibbar!'
@@ -20,39 +19,41 @@ function generiereRSSXML()
 
         return false;
     }
-    $Einstellungen = Shop::getSettings([CONF_RSS]);
-    if ($Einstellungen['rss']['rss_nutzen'] !== 'Y') {
+    $shopURL = Shop::getURL();
+    $db      = Shop::Container()->getDB();
+    $conf    = Shop::getSettings([CONF_RSS]);
+    if ($conf['rss']['rss_nutzen'] !== 'Y') {
         return false;
     }
-    $Sprache                 = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
-    $stdKundengruppe         = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
+    $Sprache                 = $db->select('tsprache', 'cShopStandard', 'Y');
+    $stdKundengruppe         = $db->select('tkundengruppe', 'cStandard', 'Y');
     $_SESSION['kSprache']    = (int)$Sprache->kSprache;
     $_SESSION['cISOSprache'] = $Sprache->cISO;
     // ISO-8859-1
     $xml = '<?xml version="1.0" encoding="' . JTL_CHARSET . '"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
-		<title>' . $Einstellungen['rss']['rss_titel'] . '</title>
+		<title>' . $conf['rss']['rss_titel'] . '</title>
 		<link>' . $shopURL . '</link>
-		<description>' . $Einstellungen['rss']['rss_description'] . '</description>
+		<description>' . $conf['rss']['rss_description'] . '</description>
 		<language>' . StringHandler::convertISO2ISO639($Sprache->cISO) . '</language>
-		<copyright>' . $Einstellungen['rss']['rss_copyright'] . '</copyright>
+		<copyright>' . $conf['rss']['rss_copyright'] . '</copyright>
 		<pubDate>' . date('r') . '</pubDate>
 		<atom:link href="' . $shopURL . '/rss.xml" rel="self" type="application/rss+xml" />
 		<image>
-			<url>' . $Einstellungen['rss']['rss_logoURL'] . '</url>
-			<title>' . $Einstellungen['rss']['rss_titel'] . '</title>
+			<url>' . $conf['rss']['rss_logoURL'] . '</url>
+			<title>' . $conf['rss']['rss_titel'] . '</title>
 			<link>' . $shopURL . '</link>
 		</image>';
     //Artikel STD Sprache
     $lagerfilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-    $alter_tage  = (int)$Einstellungen['rss']['rss_alterTage'];
+    $alter_tage  = (int)$conf['rss']['rss_alterTage'];
     if (!$alter_tage) {
         $alter_tage = 14;
     }
     // Artikel beachten?
-    if ($Einstellungen['rss']['rss_artikel_beachten'] === 'Y') {
-        $products = Shop::Container()->getDB()->query(
+    if ($conf['rss']['rss_artikel_beachten'] === 'Y') {
+        $products = $db->query(
             "SELECT tartikel.kArtikel, tartikel.cName, tartikel.cKurzBeschreibung, tseo.cSeo, 
                 tartikel.dLetzteAktualisierung, tartikel.dErstellt, 
                 DATE_FORMAT(tartikel.dErstellt, \"%a, %d %b %Y %H:%i:%s UTC\") AS erstellt
@@ -85,8 +86,8 @@ function generiereRSSXML()
         }
     }
     // News beachten?
-    if ($Einstellungen['rss']['rss_news_beachten'] === 'Y') {
-        $news = Shop::Container()->getDB()->query(
+    if ($conf['rss']['rss_news_beachten'] === 'Y') {
+        $news = $db->query(
             "SELECT tnews.*, t.title, t.preview, DATE_FORMAT(dGueltigVon, '%a, %d %b %Y %H:%i:%s UTC') AS dErstellt_RSS
                 FROM tnews
                 JOIN tnewssprache t 
@@ -110,8 +111,8 @@ function generiereRSSXML()
         }
     }
     // bewertungen beachten?
-    if ($Einstellungen['rss']['rss_bewertungen_beachten'] === 'Y') {
-        $oBewertung_arr = Shop::Container()->getDB()->query(
+    if ($conf['rss']['rss_bewertungen_beachten'] === 'Y') {
+        $oBewertung_arr = $db->query(
             "SELECT *, dDatum, DATE_FORMAT(dDatum, '%a, %d %b %y %h:%i:%s +0100') AS dErstellt_RSS
                 FROM tbewertung
                 WHERE DATE_SUB(NOW(), INTERVAL " . $alter_tage . ' DAY) < dDatum

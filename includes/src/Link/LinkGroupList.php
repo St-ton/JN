@@ -100,7 +100,7 @@ final class LinkGroupList implements LinkGroupListInterface
 
             $this->cache->set('linkgroups', $this->linkGroups, [\CACHING_GROUP_CORE]);
         }
-        $this->applyVisibilityFilter(Session::getCustomerGroup()->getID(), \Session::getCustomer()->getID());
+        $this->applyVisibilityFilter(Session::getCustomerGroup()->getID(), Session::getCustomer()->getID());
 
         return $this;
     }

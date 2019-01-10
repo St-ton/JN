@@ -29,20 +29,21 @@ class DBMigrationHelper
         static $versionInfo = null;
 
         if ($versionInfo === null) {
+            $db          = Shop::Container()->getDB();
             $versionInfo = new stdClass();
 
-            $innodbSupport = Shop::Container()->getDB()->query(
+            $innodbSupport = $db->query(
                 "SELECT `SUPPORT`
                     FROM information_schema.ENGINES
                     WHERE `ENGINE` = 'InnoDB'",
                 \DB\ReturnType::SINGLE_OBJECT
             );
-            $utf8Support   = Shop::Container()->getDB()->query(
+            $utf8Support   = $db->query(
                 "SELECT `IS_COMPILED` FROM information_schema.COLLATIONS
                     WHERE `COLLATION_NAME` = 'utf8_unicode_ci'",
                 \DB\ReturnType::SINGLE_OBJECT
             );
-            $innodbPath    = Shop::Container()->getDB()->query(
+            $innodbPath    = $db->query(
                 'SELECT @@innodb_data_file_path AS path',
                 \DB\ReturnType::SINGLE_OBJECT
             );
@@ -73,12 +74,12 @@ class DBMigrationHelper
                 }
             }
 
-            $versionInfo->server = Shop::Container()->getDB()->info();
+            $versionInfo->server = $db->info();
             $versionInfo->innodb = new stdClass();
 
             $versionInfo->innodb->support = $innodbSupport
                 && in_array($innodbSupport->SUPPORT, ['YES', 'DEFAULT'], true);
-            $versionInfo->innodb->version = Shop::Container()->getDB()->query(
+            $versionInfo->innodb->version = $db->query(
                 "SHOW VARIABLES LIKE 'innodb_version'",
                 \DB\ReturnType::SINGLE_OBJECT
             )->Value;

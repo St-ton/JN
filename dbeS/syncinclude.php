@@ -567,7 +567,8 @@ function versendeVerfuegbarkeitsbenachrichtigung($product)
     if (!($product->fLagerbestand > 0 && $product->kArtikel)) {
         return;
     }
-    $subscriptions = Shop::Container()->getDB()->selectAll(
+    $db            = Shop::Container()->getDB();
+    $subscriptions = $db->selectAll(
         'tverfuegbarkeitsbenachrichtigung',
         ['nStatus', 'kArtikel'],
         [0, $product->kArtikel]
@@ -604,7 +605,7 @@ function versendeVerfuegbarkeitsbenachrichtigung($product)
         $upd->nStatus           = 1;
         $upd->dBenachrichtigtAm = 'NOW()';
         $upd->cAbgeholt         = 'N';
-        Shop::Container()->getDB()->update(
+        $db->update(
             'tverfuegbarkeitsbenachrichtigung',
             'kVerfuegbarkeitsbenachrichtigung',
             $msg->kVerfuegbarkeitsbenachrichtigung,

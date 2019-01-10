@@ -160,8 +160,9 @@ function saveAdminSettings(array $settingsIDs, array &$cPost_arr, $tags = [CACHI
  */
 function bearbeiteListBox($listBoxes, $cWertName, int $configSectionID)
 {
+    $db = Shop::Container()->getDB();
     if (is_array($listBoxes) && count($listBoxes) > 0) {
-        Shop::Container()->getDB()->delete(
+        $db->delete(
             'teinstellungen',
             ['kEinstellungenSektion', 'cName'],
             [$configSectionID, $cWertName]
@@ -172,13 +173,13 @@ function bearbeiteListBox($listBoxes, $cWertName, int $configSectionID)
             $oAktWert->cName                 = $cWertName;
             $oAktWert->kEinstellungenSektion = $configSectionID;
 
-            Shop::Container()->getDB()->insert('teinstellungen', $oAktWert);
+            $db->insert('teinstellungen', $oAktWert);
         }
     } elseif ($cWertName === 'bewertungserinnerung_kundengruppen' || $cWertName === 'kwk_kundengruppen') {
         // Leere Kundengruppen Work Around
-        $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
+        $oKundengruppe = $db->select('tkundengruppe', 'cStandard', 'Y');
         if ($oKundengruppe->kKundengruppe > 0) {
-            Shop::Container()->getDB()->delete(
+            $db->delete(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [$configSectionID, $cWertName]
@@ -188,7 +189,7 @@ function bearbeiteListBox($listBoxes, $cWertName, int $configSectionID)
             $oAktWert->cName                 = $cWertName;
             $oAktWert->kEinstellungenSektion = CONF_BEWERTUNG;
 
-            Shop::Container()->getDB()->insert('teinstellungen', $oAktWert);
+            $db->insert('teinstellungen', $oAktWert);
         }
     }
 }

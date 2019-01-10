@@ -13,7 +13,8 @@ use JTLShop\SemVer\Version;
  */
 function resetteUpdateDB()
 {
-    $columns = Shop::Container()->getDB()->query('SHOW COLUMNS FROM tversion', \DB\ReturnType::ARRAY_OF_OBJECTS);
+    $db      = Shop::Container()->getDB();
+    $columns = $db->query('SHOW COLUMNS FROM tversion', \DB\ReturnType::ARRAY_OF_OBJECTS);
     if (is_array($columns) && count($columns) > 0) {
         $colNames = [];
         foreach ($columns as $col) {
@@ -21,43 +22,43 @@ function resetteUpdateDB()
         }
         if (count($colNames) > 0) {
             if (!in_array('nZeileVon', $colNames, true)) {
-                Shop::Container()->getDB()->query(
+                $db->query(
                     'ALTER TABLE tversion ADD nZeileVon INT UNSIGNED NOT NULL AFTER nVersion',
                     \DB\ReturnType::DEFAULT
                 );
             }
             if (!in_array('nZeileBis', $colNames, true)) {
-                Shop::Container()->getDB()->query(
+                $db->query(
                     'ALTER TABLE tversion ADD nZeileBis INT UNSIGNED NOT NULL AFTER nZeileVon',
                     \DB\ReturnType::DEFAULT
                 );
             }
             if (!in_array('nInArbeit', $colNames, true)) {
-                Shop::Container()->getDB()->query(
+                $db->query(
                     'ALTER TABLE tversion ADD nInArbeit TINYINT NOT NULL AFTER nZeileBis',
                     \DB\ReturnType::DEFAULT
                 );
             }
             if (!in_array('nFehler', $colNames, true)) {
-                Shop::Container()->getDB()->query(
+                $db->query(
                     'ALTER TABLE tversion ADD nFehler TINYINT UNSIGNED NOT NULL AFTER nInArbeit',
                     \DB\ReturnType::DEFAULT
                 );
             }
             if (!in_array('nTyp', $colNames, true)) {
-                Shop::Container()->getDB()->query(
+                $db->query(
                     'ALTER TABLE tversion ADD nTyp TINYINT UNSIGNED NOT NULL AFTER nFehler',
                     \DB\ReturnType::DEFAULT
                 );
             }
             if (!in_array('cFehlerSQL', $colNames, true)) {
-                Shop::Container()->getDB()->query(
+                $db->query(
                     'ALTER TABLE tversion ADD cFehlerSQL VARCHAR(255) NOT NULL AFTER nTyp',
                     \DB\ReturnType::DEFAULT
                 );
             }
         }
-        Shop::Container()->getDB()->query(
+        $db->query(
             "UPDATE tversion
                 SET nZeileVon = 1,
                 nZeileBis = 0,

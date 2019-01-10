@@ -209,7 +209,7 @@ class Kupon
             }
         }
 
-        unset($oObj->kKupon);
+        unset($oObj->kKupon, $oObj->translationList);
 
         $kPrim = Shop::DB()->insert('tkupon', $oObj);
 

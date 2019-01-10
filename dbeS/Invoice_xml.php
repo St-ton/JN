@@ -13,11 +13,12 @@ if (auth()) {
     if (isset($_POST['kBestellung'], $_POST['dRechnungErstellt'], $_POST['kSprache'])) {
         handleData($_POST['kBestellung'], $_POST['dRechnungErstellt'], $_POST['kSprache']);
     } else {
-        pushError("Invoice Auth: POST-Parameter konnten nicht verarbeitet werden " .
-            "(kBestellung: {$_POST['kBestellung']}, dRechnungErstellt: {$_POST['dRechnungErstellt']}, kSprache: {$_POST['kSprache']}).");
+        pushError('Invoice Auth: POST-Parameter konnten nicht verarbeitet werden ' .
+            '(kBestellung: ' . $_POST['kBestellung'] . ', dRechnungErstellt: ' .
+            $_POST['dRechnungErstellt'] . ', kSprache: ' . $_POST['kSprache'] . ').');
     }
 } else {
-    pushError("Invoice Auth: Anmeldung fehlgeschlagen.");
+    pushError('Invoice Auth: Anmeldung fehlgeschlagen.');
 }
 
 /**
@@ -56,18 +57,19 @@ function handleData(int $kBestellung, $dRechnungErstellt, int $kSprache)
                     zipRedirect(time() . '.jtl', $cResponse);
                     exit;
                 }
-                // could not create invoice
-                pushError("Invoice handleData: Fehler beim Erstellen der Rechnung (kBestellung: {$oBestellung->kBestellung}).");
+                pushError('Fehler beim Erstellen der Rechnung (kBestellung: ' . $oBestellung->kBestellung . ').');
             } else {
                 // payment method does not exist
-                pushError("Invoice handleData: Für die Zahlungsart {$oPaymentMethod->cName} kann keine Rechnung erstellt werden (kBestellung: {$oBestellung->kBestellung}).");
+                pushError(
+                    'Invoice handleData: Für die Zahlungsart ' . $oPaymentMethod->cName .
+                    ' kann keine Rechnung erstellt werden (kBestellung: ' . $oBestellung->kBestellung . ').'
+                );
             }
         } else {
-            // no order found
-            pushError("Invoice handleData: Keine Bestellung mit kBestellung {$kBestellung} gefunden!");
+            pushError('Keine Bestellung mit kBestellung ' . $kBestellung . ' gefunden!');
         }
     } else {
-        pushError("Invoice handleData: Fehlerhafte Parameter (kBestellung: {$kBestellung}, kSprache: {$kSprache}).");
+        pushError('Fehlerhafte Parameter (kBestellung: ' . $kBestellung . ', kSprache: ' . $kSprache . ').');
     }
 }
 
@@ -84,9 +86,11 @@ function createResponse(int $kBestellung, $cTyp, $cComment)
     $aResponse['tbestellung']['cTyp']        = $cTyp;
     $aResponse['tbestellung']['cKommentar']  = html_entity_decode(
         $cComment,
-        ENT_COMPAT | ENT_HTML401, 'ISO-8859-1'
+        ENT_COMPAT | ENT_HTML401,
+        'ISO-8859-1'
     ); // decode entities for jtl-wawi.
-    //Entities are html-encoded since https://gitlab.jtl-software.de/jtlshop/jtl-shop/commit/e81f7a93797d8e57d00a1705cc5f13191eee9ca1
+    // Entities are html-encoded since
+    // https://gitlab.jtl-software.de/jtlshop/jtl-shop/commit/e81f7a93797d8e57d00a1705cc5f13191eee9ca1
 
     return $aResponse;
 }

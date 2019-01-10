@@ -10,19 +10,19 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
      */
     class Download
     {
-        const ERROR_NONE = 1;
+        public const ERROR_NONE = 1;
 
-        const ERROR_ORDER_NOT_FOUND = 2;
-        
-        const ERROR_INVALID_CUSTOMER = 3;
-        
-        const ERROR_PRODUCT_NOT_FOUND = 4;
+        public const ERROR_ORDER_NOT_FOUND = 2;
 
-        const ERROR_DOWNLOAD_LIMIT_REACHED = 5;
+        public const ERROR_INVALID_CUSTOMER = 3;
 
-        const ERROR_DOWNLOAD_EXPIRED = 6;
+        public const ERROR_PRODUCT_NOT_FOUND = 4;
 
-        const ERROR_MISSING_PARAMS = 7;
+        public const ERROR_DOWNLOAD_LIMIT_REACHED = 5;
+
+        public const ERROR_DOWNLOAD_EXPIRED = 6;
+
+        public const ERROR_MISSING_PARAMS = 7;
 
         /**
          * @var int
@@ -147,7 +147,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                     );
                     if ($oBestellung !== null
                         && $oBestellung->kBestellung > 0
-                        && $oBestellung->dBezahltDatum !== '0000-00-00'
+                        && $oBestellung->dBezahltDatum !== null
                         && $this->getTage() > 0
                     ) {
                         $paymentDate = new DateTime($oBestellung->dBezahltDatum);
@@ -254,7 +254,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                                    JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                                         AND twarenkorbpos.nPosTyp = ' . C_WARENKORBPOS_TYP_ARTIKEL;
                 } elseif ($kKunde > 0) {
-                    $cSQLSelect = 'MAX(tbestellung.kBestellung) AS kBestellung, tbestellung.kKunde, tartikeldownload.kDownload';
+                    $cSQLSelect = 'MAX(tbestellung.kBestellung) AS kBestellung, tbestellung.kKunde, 
+                        tartikeldownload.kDownload';
                     $cSQLWhere  = 'tartikeldownload.kArtikel = twarenkorbpos.kArtikel';
                     $cSQLJoin   = 'JOIN tbestellung ON tbestellung.kKunde = ' . $kKunde . '
                                    JOIN tdownload ON tdownload.kDownload = tartikeldownload.kDownload
@@ -271,18 +272,24 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 foreach ($oDown_arr as $i => &$oDown) {
+                    $oDown->kDownload  = (int)$oDown->kDownload;
                     $oDownload_arr[$i] = new self(
                         $oDown->kDownload,
                         $kSprache,
                         true,
-                        $oDown->kBestellung ?? 0
+                        (int)($oDown->kBestellung ?? 0)
                     );
                     if (($kBestellung > 0 || $kKunde > 0) && $oDownload_arr[$i]->getAnzahl() > 0) {
-                        $oDownloadHistory_arr           = DownloadHistory::getOrderHistory($oDown->kKunde,
-                            $oDown->kBestellung);
+                        $oDown->kKunde      = (int)$oDown->kKunde;
+                        $oDown->kBestellung = (int)$oDown->kBestellung;
+
+                        $history                        = DownloadHistory::getOrderHistory(
+                            $oDown->kKunde,
+                            $oDown->kBestellung
+                        );
                         $kDownload                      = $oDownload_arr[$i]->getDownload();
-                        $count                          = isset($oDownloadHistory_arr[$kDownload])
-                            ? count($oDownloadHistory_arr[$kDownload])
+                        $count                          = isset($history[$kDownload])
+                            ? count($history[$kDownload])
                             : 0;
                         $oDownload_arr[$i]->cLimit      = $count . ' / ' . $oDownload_arr[$i]->getAnzahl();
                         $oDownload_arr[$i]->kBestellung = $oDown->kBestellung;
@@ -327,7 +334,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                         ->setDownload($kDownload)
                         ->setKunde($kKunde)
                         ->setBestellung($kBestellung)
-                        ->setErstellt('now()')
+                        ->setErstellt('NOW()')
                         ->save();
 
                     self::send_file_to_browser(
@@ -366,7 +373,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                 // Existiert die Bestellung und wurde Sie bezahlt?
                 if ($oBestellung->kBestellung <= 0
                     || empty($oBestellung->dBezahltDatum)
-                    || $oBestellung->dBezahltDatum === '0000-00-00'
+                    || $oBestellung->dBezahltDatum === null
                 ) {
                     return self::ERROR_ORDER_NOT_FOUND;
                 }
@@ -387,11 +394,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                         }
                         // Check Anzahl
                         if ($oDownload->getAnzahl() > 0) {
-                            $oDownloadHistory_arr = DownloadHistory::getOrderHistory(
-                                $kKunde,
-                                $kBestellung
-                            );
-                            if (count($oDownloadHistory_arr[$oDownload->kDownload]) >= $oDownload->getAnzahl()) {
+                            $history = DownloadHistory::getOrderHistory($kKunde, $kBestellung);
+                            if (count($history[$oDownload->kDownload]) >= $oDownload->getAnzahl()) {
                                 return self::ERROR_DOWNLOAD_LIMIT_REACHED;
                             }
                         }

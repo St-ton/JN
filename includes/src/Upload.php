@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\PHPSettings;
+
 $oNice = Nice::getInstance();
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
     /**
@@ -120,7 +123,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         /**
          * @param int $nErrorCode
          */
-        public static function redirectWarenkorb(int $nErrorCode)
+        public static function redirectWarenkorb(int $nErrorCode): void
         {
             header('Location: ' .
                 LinkHelper::getInstance()->getStaticRoute('warenkorb.php') .
@@ -131,7 +134,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          * @param Warenkorb $oWarenkorb
          * @param int       $kBestellung
          */
-        public static function speicherUploadDateien(Warenkorb $oWarenkorb, int $kBestellung)
+        public static function speicherUploadDateien(Warenkorb $oWarenkorb, int $kBestellung): void
         {
             foreach (self::gibWarenkorbUploads($oWarenkorb) as $oUploadSchema) {
                 foreach ($oUploadSchema->oUpload_arr as $oUploadDatei) {
@@ -160,7 +163,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          * @param string $cPfad
          * @param int    $nBytes
          */
-        public static function setzeUploadDatei(int $kCustomID, int $nTyp, $cName, $cPfad, int $nBytes)
+        public static function setzeUploadDatei(int $kCustomID, int $nTyp, $cName, $cPfad, int $nBytes): void
         {
             $oUploadDatei            = new stdClass();
             $oUploadDatei->kCustomID = $kCustomID;
@@ -168,7 +171,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
             $oUploadDatei->cName     = $cName;
             $oUploadDatei->cPfad     = $cPfad;
             $oUploadDatei->nBytes    = $nBytes;
-            $oUploadDatei->dErstellt = 'now()';
+            $oUploadDatei->dErstellt = 'NOW()';
 
             Shop::Container()->getDB()->insert('tuploaddatei', $oUploadDatei);
         }
@@ -177,7 +180,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          * @param int $kBestellung
          * @param int $kCustomID
          */
-        public static function setzeUploadQueue(int $kBestellung, int $kCustomID)
+        public static function setzeUploadQueue(int $kBestellung, int $kCustomID): void
         {
             $oUploadQueue              = new stdClass();
             $oUploadQueue->kBestellung = $kBestellung;
@@ -191,11 +194,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public static function uploadMax()
         {
+            $helper = PHPSettings::getInstance();
+
             return min(
-                    Shop()->PHPSettingsHelper()->uploadMaxFileSize(),
-                    Shop()->PHPSettingsHelper()->postMaxSize(),
-                    Shop()->PHPSettingsHelper()->limit()
-                );
+                $helper->uploadMaxFileSize(),
+                $helper->postMaxSize(),
+                $helper->limit()
+            );
         }
 
         /**

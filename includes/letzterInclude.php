@@ -4,6 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Form;
+use Helpers\Manufacturer;
+use Helpers\Category;
+use Helpers\Request;
+use Helpers\ShippingMethod;
+
 $smarty        = Shop::Smarty();
 $oTemplate     = Template::getInstance();
 $tplDir        = PFAD_TEMPLATES . $oTemplate->getDir() . '/';
@@ -28,17 +34,22 @@ executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
     'cPluginJsHead_arr' => &$cMinify_arr['plugin_js_head'],
     'cPluginJsBody_arr' => &$cMinify_arr['plugin_js_body']
 ]);
-$kKundengruppe = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
+
+$debugbar         = Shop::Container()->getDebugBar();
+$debugbarRenderer = $debugbar->getJavascriptRenderer();
+$kKundengruppe    = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
     ? $_SESSION['Kunde']->kKundengruppe
-    : Session::CustomerGroup()->getID();
-$cKundenherkunft = (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0)
+    : \Session\Session::getCustomerGroup()->getID();
+$cKundenherkunft  = (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0)
     ? $_SESSION['Kunde']->cLand
     : '';
-$warensumme[0]         = Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true));
-$warensumme[1]         = Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false));
-$gesamtsumme[0]        = Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren(true, true));
-$gesamtsumme[1]        = Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren(false, true));
-$oVersandartKostenfrei = VersandartHelper::getFreeShippingMinimum($kKundengruppe, $cKundenherkunft);
+
+$warensumme[0]   = Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true));
+$warensumme[1]   = Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false));
+$gesamtsumme[0]  = Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren(true, true));
+$gesamtsumme[1]  = Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren(false, true));
+
+$oVersandartKostenfrei = ShippingMethod::getFreeShippingMinimum($kKundengruppe, $cKundenherkunft);
 $oGlobaleMetaAngaben   = $oGlobaleMetaAngabenAssoc_arr[Shop::getLanguageID()] ?? null;
 $pagetType             = Shop::getPageType();
 
@@ -53,7 +64,6 @@ if (is_object($oGlobaleMetaAngaben)) {
         $cMetaKeywords = $oGlobaleMetaAngaben->Meta_Keywords;
     }
 }
-// Kategorielisten aufbauen
 if (!isset($AktuelleKategorie)) {
     $AktuelleKategorie = null;
 }
@@ -64,9 +74,9 @@ $linkHelper->activate($pagetType);
 
 $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('NaviFilter', $NaviFilter)
-       ->assign('manufacturers', HerstellerHelper::getInstance()->getManufacturers())
+       ->assign('manufacturers', Manufacturer::getInstance()->getManufacturers())
        ->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
-       ->assign('oUnterKategorien_arr', KategorieHelper::getSubcategoryList($AktuelleKategorie, false))
+       ->assign('oUnterKategorien_arr', Category::getSubcategoryList($AktuelleKategorie->kKategorie ?? -1))
        ->assign('cPluginJsHead_arr', $cMinify_arr['plugin_js_head'])
        ->assign('cPluginJsBody_arr', $cMinify_arr['plugin_js_body'])
        ->assign('cCSS_arr', $cCSS_arr)
@@ -83,7 +93,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('ShopURL', $shopURL)
        ->assign('imageBaseURL', Shop::getImageBaseURL())
        ->assign('ShopURLSSL', Shop::getURL(true))
-       ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
+       ->assign('NettoPreise', \Session\Session::getCustomerGroup()->getIsMerchant())
        ->assign('cShopName', $cShopName)
        ->assign('KaufabwicklungsURL', $linkHelper->getStaticRoute('bestellvorgang.php'))
        ->assign('WarenkorbArtikelanzahl', $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]))
@@ -93,11 +103,13 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('WarenkorbGesamtgewicht', $cart->getWeight())
        ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($cart))
        ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
-       ->assign('WarenkorbVersandkostenfreiHinweis', VersandartHelper::getShippingFreeString($oVersandartKostenfrei,
-           $cart->gibGesamtsummeWarenExt(
-               [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
-               true
-           )))
+       ->assign(
+           'WarenkorbVersandkostenfreiHinweis',
+           ShippingMethod::getShippingFreeString(
+               $oVersandartKostenfrei,
+               $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
+           )
+       )
        ->assign('meta_title', $cMetaTitle ?? '')
        ->assign('meta_description', $cMetaDescription ?? '')
        ->assign('meta_keywords', $cMetaKeywords ?? '')
@@ -105,9 +117,9 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('meta_copyright', $Einstellungen['metaangaben']['global_meta_copyright'])
        ->assign('meta_language', StringHandler::convertISO2ISO639($_SESSION['cISOSprache']))
        ->assign('oSpezialseiten_arr', $linkHelper->getSpecialPages())
-       ->assign('bNoIndex', $linkHelper->checkNoIndex())
-       ->assign('bAjaxRequest', RequestHelper::isAjaxRequest())
-       ->assign('jtl_token', FormHelper::getTokenInput())
+       ->assign('bNoIndex', $NaviFilter->getMetaData()->checkNoIndex())
+       ->assign('bAjaxRequest', Request::isAjaxRequest())
+       ->assign('jtl_token', Form::getTokenInput())
        ->assign('ShopLogoURL', $shopLogo)
        ->assign('ShopLogoURL_abs', $shopLogo === '' ? '' : ($shopURL . $shopLogo))
        ->assign('nSeitenTyp', $pagetType)
@@ -117,6 +129,8 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
        ->assign('FavourableShipping', $cart->getFavourableShipping())
        ->assign('Einstellungen', $Einstellungen)
+       ->assign('isFluidTemplate', isset($Einstellungen['template']['theme']['pagelayout'])
+           && $Einstellungen['template']['theme']['pagelayout'] === 'fluid')
        ->assign('deletedPositions', Warenkorb::$deletedPositions)
        ->assign('updatedPositions', Warenkorb::$updatedPositions)
        ->assign('cCanonicalURL', $cCanonicalURL ?? null)
@@ -126,7 +140,8 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('PFAD_SLIDER', $shopURL . '/' . PFAD_BILDER_SLIDER)
        ->assign('Suchergebnisse', $oSuchergebnisse ?? new \Filter\SearchResults())
        ->assign('opc', Shop::Container()->getOPC())
-       ->assign('opcPageService', Shop::Container()->getOPCPageService());
+       ->assign('opcPageService', Shop::Container()->getOPCPageService())
+       ->assign('shopFaviconURL', Shop::getFaviconURL());
 
 $nav = new \JTL\Navigation(Shop::Lang(), Shop::Container()->getLinkService());
 $nav->setPageType(Shop::getPageType());
@@ -158,18 +173,23 @@ Sprache::generateLanguageAndCurrencyLinks();
 $oExtension = (new ExtensionPoint($pagetType, Shop::getParameters(), Shop::getLanguageID(), $kKundengruppe))->load();
 executeHook(HOOK_LETZTERINCLUDE_INC);
 $boxes       = Shop::Container()->getBoxService();
-$boxesToShow = $boxes->render($boxes->buildList($pagetType));
-/* @global Artikel $AktuellerArtikel */
+$boxesToShow = $boxes->render($boxes->buildList($pagetType), $pagetType);
+/* @global null|Artikel $AktuellerArtikel */
 if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
-    // Letzten angesehenden Artikel hinzufügen
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
 }
 $visitorCount = $Einstellungen['global']['global_zaehler_anzeigen'] === 'Y'
-    ? (int)Shop::Container()->getDB()->query('SELECT nZaehler FROM tbesucherzaehler', \DB\ReturnType::SINGLE_OBJECT)->nZaehler
+    ? (int)Shop::Container()->getDB()->query(
+        'SELECT nZaehler FROM tbesucherzaehler',
+        \DB\ReturnType::SINGLE_OBJECT
+    )->nZaehler
     : 0;
+$debugbar->getTimer()->stopMeasure('init');
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('Brotnavi', $nav->createNavigation())
-       ->assign('nIsSSL', RequestHelper::checkSSL())
+       ->assign('nIsSSL', Request::checkSSL())
        ->assign('boxes', $boxesToShow)
        ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
-       ->assign('Besucherzaehler', $visitorCount);
+       ->assign('Besucherzaehler', $visitorCount)
+       ->assign('dbgBarHead', $debugbarRenderer->renderHead())
+       ->assign('dbgBarBody', $debugbarRenderer->render());

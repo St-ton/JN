@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 <div class="reviews row">
     <div class="col-xs-12">
         {block name='productdetails-review-overview'}
@@ -73,10 +77,16 @@
                         </div>
                     </form>
                 </div>
-            </div>{* /panel *}
-        </div>{* /reviews-overview *}
+            </div>
+        </div>
         {/block}
 
+        {if $ratingPagination->getPageItemCount() > 0 || isset($Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) &&
+        $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0}
+            <p>{lang key='reviewsInCurrLang' section='product rating'}</p>
+        {else}
+            <p>{lang key='noReviewsInCurrLang' section='product rating'}</p>
+        {/if}
         {if isset($Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) &&
             $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0
         }
@@ -124,5 +134,5 @@
             </form>
             {include file='snippets/pagination.tpl' oPagination=$ratingPagination cThisUrl=$Artikel->cURLFull cAnchor='tab-votes' showFilter=false}
         {/if}
-    </div>{* /col *}
-</div>{* /row *}
+    </div>
+</div>

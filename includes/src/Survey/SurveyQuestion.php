@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -8,17 +8,17 @@ namespace Survey;
 
 use DB\DbInterface;
 use DB\ReturnType;
+use Tightenco\Collect\Support\Collection;
 use function Functional\first;
 use function Functional\map;
-use Tightenco\Collect\Support\Collection;
 
 /**
  * Class SurveyQuestion
- * @package JTL
+ * @package Survey
  */
 class SurveyQuestion
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var int
@@ -83,7 +83,7 @@ class SurveyQuestion
     /**
      * @var array
      */
-    private static $mapping = [
+    protected static $mapping = [
         'kUmfrageFrage'            => 'ID',
         'kUmfrage'                 => 'SurveyID',
         'cTyp'                     => 'Type',
@@ -201,11 +201,11 @@ class SurveyQuestion
     }
 
     /**
-     * @param int $id
+     * @param int|string $id
      */
-    public function setID(int $id)
+    public function setID($id): void
     {
-        $this->id = $id;
+        $this->id = (int)$id;
     }
 
     /**
@@ -217,11 +217,11 @@ class SurveyQuestion
     }
 
     /**
-     * @param int $surveyID
+     * @param int|string $surveyID
      */
-    public function setSurveyID(int $surveyID)
+    public function setSurveyID($surveyID): void
     {
-        $this->surveyID = $surveyID;
+        $this->surveyID = (int)$surveyID;
     }
 
     /**
@@ -235,7 +235,7 @@ class SurveyQuestion
     /**
      * @param string $type
      */
-    public function setType(string $type)
+    public function setType(string $type): void
     {
         $this->type = $type;
     }
@@ -251,7 +251,7 @@ class SurveyQuestion
     /**
      * @param string $name
      */
-    public function setName(string $name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -267,7 +267,7 @@ class SurveyQuestion
     /**
      * @param string $description
      */
-    public function setDescription(string $description)
+    public function setDescription(string $description): void
     {
         $this->description = $description;
     }
@@ -281,11 +281,11 @@ class SurveyQuestion
     }
 
     /**
-     * @param int $sort
+     * @param int|string $sort
      */
-    public function setSort(int $sort)
+    public function setSort($sort): void
     {
-        $this->sort = $sort;
+        $this->sort = (int)$sort;
     }
 
     /**
@@ -305,11 +305,11 @@ class SurveyQuestion
     }
 
     /**
-     * @param bool $freeField
+     * @param bool|string $freeField
      */
-    public function setFreeField(bool $freeField)
+    public function setFreeField($freeField): void
     {
-        $this->freeField = $freeField;
+        $this->freeField = (bool)$freeField;
     }
 
     /**
@@ -329,11 +329,11 @@ class SurveyQuestion
     }
 
     /**
-     * @param bool $required
+     * @param bool|string $required
      */
-    public function setRequired(bool $required)
+    public function setRequired($required): void
     {
-        $this->required = $required;
+        $this->required = (bool)$required;
     }
 
     /**
@@ -347,7 +347,7 @@ class SurveyQuestion
     /**
      * @param Collection $matrixOptions
      */
-    public function setMatrixOptions(Collection $matrixOptions)
+    public function setMatrixOptions(Collection $matrixOptions): void
     {
         $this->matrixOptions = $matrixOptions;
     }
@@ -363,7 +363,7 @@ class SurveyQuestion
     /**
      * @param Collection $answerOptions
      */
-    public function setAnswerOptions(Collection $answerOptions)
+    public function setAnswerOptions(Collection $answerOptions): void
     {
         $this->answerOptions = $answerOptions;
     }
@@ -382,7 +382,7 @@ class SurveyQuestion
     /**
      * @param array $givenAnswer
      */
-    public function setGivenAnswer(array $givenAnswer)
+    public function setGivenAnswer(array $givenAnswer): void
     {
         $this->givenAnswer = $givenAnswer;
     }
@@ -398,7 +398,7 @@ class SurveyQuestion
     /**
      * @param DbInterface $db
      */
-    public function setDB(DbInterface $db)
+    public function setDB(DbInterface $db): void
     {
         $this->db = $db;
     }

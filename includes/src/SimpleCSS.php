@@ -164,7 +164,7 @@ class SimpleCSS
      */
     public function getTemplatePath(string $cOrdner): string
     {
-        return realpath(PFAD_ROOT . 'templates/' . basename($cOrdner)) . '/';
+        return realpath(PFAD_ROOT . PFAD_TEMPLATES . basename($cOrdner)) . '/';
     }
 
     /**
@@ -186,7 +186,7 @@ class SimpleCSS
         $cMatch_arr = [];
 
         switch ($cType) {
-            case 'color': {
+            case 'color':
                 // rgb(255,255,255)
                 if (preg_match('/rgb(\s*)\(([\d\s]+),([\d\s]+),([\d\s]+)\)/', $cValue, $cMatch_arr)) {
                     return $this->rgb2html((int)$cMatch_arr[2], (int)$cMatch_arr[3], (int)$cMatch_arr[4]);
@@ -195,9 +195,8 @@ class SimpleCSS
                     return trim($cMatch_arr[0]);
                 }
                 break;
-            }
 
-            case 'size': {
+            case 'size':
                 // 1.2em 15% '12 px'
                 if (preg_match('/([\d\.]+)(.*)/', $cValue, $cMatch_arr)) {
                     $cOut['numeric'] = (float)$cMatch_arr[1];
@@ -206,7 +205,6 @@ class SimpleCSS
                     return $cOut;
                 }
                 break;
-            }
 
             default:
                 break;
@@ -234,7 +232,7 @@ class SimpleCSS
         $g = dechex($g < 0 ? 0 : ($g > 255 ? 255 : $g));
         $b = dechex($b < 0 ? 0 : ($b > 255 ? 255 : $b));
 
-        $color = (strlen($r) < 2 ? '0' : '') . $r;
+        $color  = (strlen($r) < 2 ? '0' : '') . $r;
         $color .= (strlen($g) < 2 ? '0' : '') . $g;
         $color .= (strlen($b) < 2 ? '0' : '') . $b;
 

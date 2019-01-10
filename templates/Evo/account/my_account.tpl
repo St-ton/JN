@@ -1,8 +1,7 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
-
 <h1 class="menu-title">{lang key='welcome' section='login'} {if $Kunde->cAnrede === 'w'}{lang key='salutationW'}{elseif $Kunde->cAnrede === 'm'}{lang key='salutationM'}{/if} {$smarty.session.Kunde->cNachname}</h1>
 
 <div class="row">
@@ -25,9 +24,7 @@
             </div>
         {/block}
     </div>
-
     <div class="col-xs-12 col-md-6">
-
         {block name='account-credit'}
             <div class="panel panel-default">
                 <div class="panel-body">
@@ -35,10 +32,8 @@
                 </div>
             </div>
         {/block}
-
         {block name='account-general'}
             <div class="panel-group" id="account-general" role="tablist" aria-multiselectable="true">
-
                 {if $Einstellungen.kundenwerbenkunden.kwk_nutzen === 'Y'}
                     <p>
                         <a class="btn btn-default btn-group-justified" href="{get_static_route id='jtl.php' params=['KwK' => 1]}">
@@ -46,13 +41,11 @@
                         </a>
                     </p>
                 {/if}
-
                 <p>
                     <a class="btn btn-default btn-group-justified" href="{get_static_route id='jtl.php' params=['pass' => 1]}">
                         <span class="fa fa-lock"></span> {lang key='changePassword' section='login'}
                     </a>
                 </p>
-
                 <p>
                     <a class="btn btn-danger btn-group-justified" href="{get_static_route id='jtl.php' params=['del' => 1]}">
                         <span class="fa fa-chain-broken"></span> {lang key='deleteAccount' section='login'}
@@ -62,5 +55,4 @@
         {/block}
     </div>
 </div>
-
 {include file='account/downloads.tpl'}

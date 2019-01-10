@@ -6,7 +6,6 @@
 
 namespace Services\JTL\Validation;
 
-
 use Eloquent\Pathogen\Exception\InvalidPathStateException;
 use Eloquent\Pathogen\Path;
 use Services\JTL\Validation\Rules;
@@ -22,6 +21,9 @@ use Services\JTL\Validation\Rules;
  */
 class RuleSet
 {
+    /**
+     * @var array|RuleInterface[]
+     */
     protected $rules = [];
 
     /**
@@ -128,11 +130,6 @@ class RuleSet
         return $this->addRule(new Rules\DateTime($format));
     }
 
-
-    /*
-     * COMPARISON RULES
-     */
-
     /**
      * Validates that the value strictly equals the expected value (without type coercion / ===)
      *
@@ -232,10 +229,6 @@ class RuleSet
         return $this->addRule(new Rules\Type($expectedType));
     }
 
-
-    /*
-     * Security
-     */
     /**
      * @param string|Path $basePath
      * @return RuleSet

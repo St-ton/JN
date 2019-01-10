@@ -1,4 +1,8 @@
-<div class="form-group float-label-control required">
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
+<div class="form-group float-label-control">
     <input type="hidden" name="{$captchaToken}" value="{$captchaCode}">
     <label>{lang key='captcha_code_active' section='global'}</label>
     {if isset($bAnti_spam_failed) && $bAnti_spam_failed}

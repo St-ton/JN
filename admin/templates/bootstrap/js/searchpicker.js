@@ -42,6 +42,7 @@ function SearchPicker(options)
 
     $(function () {
         $searchModal.on('show.bs.modal', self.onShow);
+        $searchModal.on('shown.bs.modal', () => $searchInput.focus());
         $searchModal.on('hide.bs.modal', self.onHide);
         $searchInput.keyup(self.onChangeSearchInput);
         $applyButton.click(self.onApply);

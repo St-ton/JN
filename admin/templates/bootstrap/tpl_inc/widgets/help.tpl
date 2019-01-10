@@ -24,6 +24,6 @@
 
 <script type="text/javascript">
     $(document).ready(function () {ldelim}
-        ioCall('getRemoteData', ['{$JTLURL_GET_SHOPHELP}', 'oHelp_arr', 'widgets/help_data.tpl', 'help_data_wrapper']);
+        ioCall('getRemoteData', ['{$smarty.const.JTLURL_GET_SHOPHELP}', 'oHelp_arr', 'widgets/help_data.tpl', 'help_data_wrapper']);
     {rdelim});
 </script>

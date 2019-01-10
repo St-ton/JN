@@ -7,29 +7,48 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
 
 $oAccount->permission('FILECHECK_VIEW', true, true);
-/** @global JTLSmarty $smarty */
-$cHinweis     = '';
-$cFehler      = '';
-$oDatei_arr   = [];
-$nStat_arr    = [];
-$nReturnValue = getAllFiles($oDatei_arr, $nStat_arr);
+/** @global Smarty\JTLSmarty $smarty */
+$cHinweis                   = '';
+$modifiedFilesError         = '';
+$orphanedFilesError         = '';
+$modifiedFiles              = [];
+$orphanedFiles              = [];
+$errorsCounModifiedFiles    = 0;
+$errorsCountOrphanedFiles   = 0;
+$validateModifiedFilesState = getAllModifiedFiles($modifiedFiles, $errorsCounModifiedFiles);
+$validateOrphanedFilesState = getAllOrphanedFiles($orphanedFiles, $errorsCountOrphanedFiles);
 
-if ($nReturnValue !== 1) {
-    switch ($nReturnValue) {
+if ($validateModifiedFilesState !== 1) {
+    switch ($validateModifiedFilesState) {
         case 2:
-            $cFehler = 'Fehler: Die Datei mit der aktuellen Dateiliste existiert nicht.';
+            $modifiedFilesError = 'Fehler: Die Datei mit der aktuellen Dateiliste existiert nicht.';
             break;
         case 3:
-            $cFehler = 'Fehler: Die Datei mit der aktuellen Dateiliste ist leer.';
+            $modifiedFilesError = 'Fehler: Die Datei mit der aktuellen Dateiliste ist leer.';
             break;
         default:
-            $cFehler = '';
+            $modifiedFilesError = '';
+            break;
+    }
+}
+if ($validateOrphanedFilesState !== 1) {
+    switch ($validateOrphanedFilesState) {
+        case 2:
+            $orphanedFilesError = 'Fehler: Die Datei mit der aktuellen Dateiliste existiert nicht.';
+            break;
+        case 3:
+            $orphanedFilesError = 'Fehler: Die Datei mit der aktuellen Dateiliste ist leer.';
+            break;
+        default:
+            $orphanedFilesError = '';
             break;
     }
 }
 $smarty->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
-       ->assign('oDatei_arr', $oDatei_arr)
-       ->assign('nStat_arr', $nStat_arr)
-       ->assign('JTL_VERSION', JTL_VERSION)
+       ->assign('modifiedFilesError', $modifiedFilesError)
+       ->assign('orphanedFilesError', $orphanedFilesError)
+       ->assign('modifiedFiles', $modifiedFiles)
+       ->assign('orphanedFiles', $orphanedFiles)
+       ->assign('errorsCounModifiedFiles', $errorsCounModifiedFiles)
+       ->assign('errorsCountOrphanedFiles', $errorsCountOrphanedFiles)
        ->display('filecheck.tpl');

@@ -6,7 +6,6 @@
 
 namespace Services\JTL;
 
-
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use function Functional\first;
@@ -21,15 +20,14 @@ use Tightenco\Collect\Support\Collection;
 
 /**
  * Class LinkService
- * @package Link
- * @since 5.0.0
+ * @package Services\JTL
  */
 final class LinkService implements LinkServiceInterface
 {
     /**
      * @var LinkService
      */
-    private static $_instance;
+    private static $instance;
 
     /**
      * @var LinkGroupCollection
@@ -54,7 +52,7 @@ final class LinkService implements LinkServiceInterface
     public function __construct(DbInterface $db, JTLCacheInterface $cache)
     {
         $this->db            = $db;
-        self::$_instance     = $this;
+        self::$instance      = $this;
         $this->linkGroupList = new LinkGroupList($this->db, $cache);
         $this->initLinkGroups();
     }
@@ -64,7 +62,7 @@ final class LinkService implements LinkServiceInterface
      */
     public static function getInstance(): LinkServiceInterface
     {
-        return self::$_instance ?? new self(\Shop::Container()->getDB(), \Shop::Container()->getCache());
+        return self::$instance ?? new self(\Shop::Container()->getDB(), \Shop::Container()->getCache());
     }
 
     /**
@@ -104,7 +102,7 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
-    public function getLinkByID(int $id)
+    public function getLinkByID(int $id): ?LinkInterface
     {
         foreach ($this->linkGroups as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
@@ -122,7 +120,7 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
-    public function getParentForID(int $id)
+    public function getParentForID(int $id): ?LinkInterface
     {
         foreach ($this->linkGroups as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
@@ -172,7 +170,7 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
-    public function getRootID(int $id)
+    public function getRootID(int $id): ?int
     {
         $res = null;
         while (($parent = $this->getParentForID($id)) !== null && $parent->getID() !== $id) {
@@ -221,7 +219,7 @@ final class LinkService implements LinkServiceInterface
      * @param int $nLinkart
      * @return LinkInterface|null
      */
-    public function getSpecialPage(int $nLinkart)
+    public function getSpecialPage(int $nLinkart): ?LinkInterface
     {
         $lg = $this->getLinkGroupByName('specialpages');
 
@@ -253,15 +251,15 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
-    public function getLinkGroupByName(string $name)
+    public function getLinkGroupByName(string $name, bool $filtered = true): ?LinkGroupInterface
     {
-        return $this->linkGroupList->getLinkgroupByTemplate($name);
+        return $this->linkGroupList->getLinkgroupByTemplate($name, $filtered);
     }
 
     /**
      * @inheritdoc
      */
-    public function getLinkGroupByID(int $id)
+    public function getLinkGroupByID(int $id): ?LinkGroupInterface
     {
         return $this->linkGroupList->getLinkgroupByID($id);
     }
@@ -314,7 +312,7 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
-    public function getPageLinkLanguage(int $id)
+    public function getPageLinkLanguage(int $id): ?LinkInterface
     {
         return $this->getLinkByID($id);
     }
@@ -322,7 +320,7 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
-    public function getPageLink(int $id)
+    public function getPageLink(int $id): ?LinkInterface
     {
         return $this->getLinkByID($id);
     }
@@ -330,7 +328,7 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
-    public function getLinkObject(int $id)
+    public function getLinkObject(int $id): ?LinkInterface
     {
         return $this->getLinkByID($id);
     }
@@ -338,7 +336,7 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
-    public function findCMSLinkInSession(int $id, int $pluginID = 0)
+    public function findCMSLinkInSession(int $id, int $pluginID = 0): ?LinkInterface
     {
         $link = $this->getLinkByID($id);
 
@@ -358,7 +356,7 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
-    public function getRootLink(int $id)
+    public function getRootLink(int $id): ?int
     {
         return $this->getRootID($id);
     }
@@ -374,7 +372,7 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
-    public function getParent(int $id)
+    public function getParent(int $id): ?LinkInterface
     {
         return $this->getLinkByID($id);
     }
@@ -391,6 +389,9 @@ final class LinkService implements LinkServiceInterface
             $first = $linkGroup->getLinks()->first(function (LinkInterface $link) use ($type) {
                 return $link->getLinkType() === $type;
             });
+            if ($first !== null) {
+                break;
+            }
         }
 //        if ($cISOSprache !== null) {
 //            $shopISO = \Shop::getLanguageCode();
@@ -405,7 +406,6 @@ final class LinkService implements LinkServiceInterface
         $oMeta->cTitle    = '';
         $oMeta->cDesc     = '';
         $oMeta->cKeywords = '';
-
         if ($first !== null) {
             /** @var LinkInterface $first */
             $oMeta->cTitle    = $first->getMetaTitle();
@@ -521,8 +521,8 @@ final class LinkService implements LinkServiceInterface
         if ($langID <= 0 || $customerGroupID <= 0) {
             return false;
         }
-        $oLinkAGB   = null;
-        $oLinkWRB   = null;
+        $oLinkAGB = null;
+        $oLinkWRB = null;
         // kLink für AGB und WRB suchen
         foreach ($this->getSpecialPages() as $sp) {
             /** @var \Link\LinkInterface $sp */
@@ -534,27 +534,19 @@ final class LinkService implements LinkServiceInterface
         }
         $oAGBWRB = $this->db->select(
             'ttext',
-            'kKundengruppe', $customerGroupID,
-            'kSprache', $langID
+            'kKundengruppe',
+            $customerGroupID,
+            'kSprache',
+            $langID
         );
-        if (!empty($oAGBWRB->kText)) {
-            $oAGBWRB->cURLAGB  = $oLinkAGB->getURL() ?? '';
-            $oAGBWRB->cURLWRB  = $oLinkWRB->getURL() ?? '';
-            $oAGBWRB->kLinkAGB = $oLinkAGB !== null
-                ? $oLinkAGB->getID()
-                : 0;
-            $oAGBWRB->kLinkWRB = $oLinkWRB !== null
-                ? $oLinkWRB->getID()
-                : 0;
-
-            return $oAGBWRB;
+        if (empty($oAGBWRB->kText)) {
+            $oAGBWRB = $this->db->select('ttext', 'nStandard', 1);
         }
-        $oAGBWRB = $this->db->select('ttext', 'nStandard', 1);
         if (!empty($oAGBWRB->kText)) {
             $oAGBWRB->cURLAGB  = $oLinkAGB !== null ? $oLinkAGB->getURL() : '';
-            $oAGBWRB->cURLWRB  = $oAGBWRB !== null ? $oLinkAGB->getURL() : '';
+            $oAGBWRB->cURLWRB  = $oLinkWRB !== null ? $oLinkWRB->getURL() : '';
             $oAGBWRB->kLinkAGB = $oLinkAGB !== null ? $oLinkAGB->getID() : 0;
-            $oAGBWRB->kLinkWRB = $oAGBWRB !== null ? $oAGBWRB->getID() : 0;
+            $oAGBWRB->kLinkWRB = $oLinkWRB !== null ? $oLinkWRB->getID() : 0;
 
             return $oAGBWRB;
         }

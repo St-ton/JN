@@ -10,13 +10,14 @@ use Session\Handler\SessionHandlerJTL;
 
 /**
  * Class SessionStorage
+ * @package Session
  */
 class SessionStorage
 {
     /**
      * @var \SessionHandlerInterface
      */
-    protected $_handler;
+    protected $handler;
 
     /**
      * @var array
@@ -40,12 +41,12 @@ class SessionStorage
      */
     public function setHandler(\SessionHandlerInterface $handler, bool $start = true): self
     {
-        $this->_handler = $handler;
-        if (\get_class($this->_handler) === SessionHandlerJTL::class) {
+        $this->handler = $handler;
+        if (\get_class($this->handler) === SessionHandlerJTL::class) {
             // native php session handler
             $res = true;
         } else {
-            $res = session_set_save_handler($this->_handler, true);
+            $res = session_set_save_handler($this->handler, true);
         }
         if ($res !== true) {
             throw new \RuntimeException('Failed to set session handler');
@@ -117,7 +118,7 @@ class SessionStorage
 //            \setcookie(\session_name(), \session_id(), $exp, $path, $domain, $secure, $httpOnly);
         }
 
-        $this->_handler->sessionData = &$_SESSION;
+        $this->handler->sessionData = &$_SESSION;
 
         return $this;
     }
@@ -127,6 +128,6 @@ class SessionStorage
      */
     public function getHandler(): \SessionHandlerInterface
     {
-        return $this->_handler;
+        return $this->handler;
     }
 }

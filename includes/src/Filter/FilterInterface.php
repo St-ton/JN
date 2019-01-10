@@ -165,7 +165,7 @@ interface FilterInterface
     /**
      * list of necessary joins
      *
-     * @return FilterJoinInterface|FilterJoinInterface[]
+     * @return JoinInterface|JoinInterface[]
      */
     public function getSQLJoin();
 
@@ -173,24 +173,24 @@ interface FilterInterface
      * get list of available filter options in the current view
      *
      * @param mixed|null $mixed - additional data that might be needed
-     * @return FilterOption[]
+     * @return Option[]
      */
     public function getOptions($mixed = null): array;
 
     /**
      * set the list of available options
      *
-     * @param mixed $mixed
+     * @param mixed $options
      * @return $this
      */
-    public function setOptions($mixed): FilterInterface;
+    public function setOptions($options): FilterInterface;
 
     /**
      * get a nice name
      *
      * @return string|null
      */
-    public function getName();
+    public function getName(): ?string;
 
     /**
      * get the GET parameter used in frontend for filtering products
@@ -345,7 +345,7 @@ interface FilterInterface
      * @param string|null
      * @return string
      */
-    public function getUnsetFilterURL($idx = null);
+    public function getUnsetFilterURL($idx = null): ?string;
 
     /**
      * @return array
@@ -394,10 +394,10 @@ interface FilterInterface
     /**
      * @return string|null
      */
-    public function getIcon();
+    public function getIcon(): ?string;
 
     /**
-     * @return FilterOption|FilterOption[]
+     * @return Option|Option[]
      */
     public function getActiveValues();
 

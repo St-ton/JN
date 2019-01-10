@@ -4,8 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Form;
+use Helpers\Request;
+use Pagination\Filter;
+use Pagination\Pagination;
+
 /**
- * @global JTLSmarty $smarty
+ * @global Smarty\JTLSmarty $smarty
  * @global AdminAccount $oAccount
  */
 
@@ -20,8 +25,8 @@ $cHinweis  = '';
 $cFehler   = '';
 $redirects = $_POST['redirects'] ?? [];
 
-if (FormHelper::validateToken()) {
-    switch (RequestHelper::verifyGPDataString('action')) {
+if (Form::validateToken()) {
+    switch (Request::verifyGPDataString('action')) {
         case 'save':
             foreach ($redirects as $kRedirect => $redirect) {
                 $oRedirect = new Redirect($kRedirect);
@@ -50,14 +55,17 @@ if (FormHelper::validateToken()) {
             break;
         case 'new':
             $oRedirect = new Redirect();
-            if ($oRedirect->saveExt(RequestHelper::verifyGPDataString('cFromUrl'), RequestHelper::verifyGPDataString('cToUrl'))) {
+            if ($oRedirect->saveExt(
+                Request::verifyGPDataString('cFromUrl'),
+                Request::verifyGPDataString('cToUrl')
+            )) {
                 $cHinweis = 'Ihre Weiterleitung wurde erfolgreich gespeichert';
             } else {
                 $cFehler = 'Fehler: Bitte prüfen Sie Ihre Eingaben';
                 $smarty
                     ->assign('cTab', 'new_redirect')
-                    ->assign('cFromUrl', RequestHelper::verifyGPDataString('cFromUrl'))
-                    ->assign('cToUrl', RequestHelper::verifyGPDataString('cToUrl'));
+                    ->assign('cFromUrl', Request::verifyGPDataString('cFromUrl'))
+                    ->assign('cToUrl', Request::verifyGPDataString('cToUrl'));
             }
             break;
         case 'csvimport':
@@ -81,21 +89,21 @@ if (FormHelper::validateToken()) {
     }
 }
 
-$oFilter = new Filter();
-$oFilter->addTextfield('URL', 'cFromUrl', 1);
-$oFilter->addTextfield('Ziel-URL', 'cToUrl', 1);
-$oSelect = $oFilter->addSelectfield('Umleitung', 'cToUrl');
-$oSelect->addSelectOption('alle', '');
-$oSelect->addSelectOption('vorhanden', '', 9);
-$oSelect->addSelectOption('fehlend', '', 4);
-$oFilter->addTextfield('Aufrufe', 'nCount', 0, 1);
-$oFilter->assemble();
+$filter = new Filter();
+$filter->addTextfield('URL', 'cFromUrl', \Pagination\Operation::CONTAINS);
+$filter->addTextfield('Ziel-URL', 'cToUrl', \Pagination\Operation::CONTAINS);
+$select = $filter->addSelectfield('Umleitung', 'cToUrl');
+$select->addSelectOption('alle', '');
+$select->addSelectOption('vorhanden', '', \Pagination\Operation::NOT_EQUAL);
+$select->addSelectOption('fehlend', '', \Pagination\Operation::EQUALS);
+$filter->addTextfield('Aufrufe', 'nCount', \Pagination\Operation::CUSTOM, \Pagination\DataType::NUMBER);
+$filter->assemble();
 
-$nRedirectCount = Redirect::getRedirectCount($oFilter->getWhereSQL());
+$redirectCount = Redirect::getRedirectCount($filter->getWhereSQL());
 
-$oPagination = new Pagination();
-$oPagination
-    ->setItemCount($nRedirectCount)
+$pagination = new Pagination();
+$pagination
+    ->setItemCount($redirectCount)
     ->setSortByOptions([
         ['cFromUrl', 'URL'],
         ['cToUrl', 'Ziel-URL'],
@@ -104,18 +112,21 @@ $oPagination
     ->assemble();
 
 $oRedirect_arr = Redirect::getRedirects(
-    $oFilter->getWhereSQL(), $oPagination->getOrderSQL(), $oPagination->getLimitSQL()
+    $filter->getWhereSQL(),
+    $pagination->getOrderSQL(),
+    $pagination->getLimitSQL()
 );
 
 handleCsvExportAction(
-    'redirects', 'redirects.csv',
-    function () use ($oFilter, $oPagination, $nRedirectCount)
-    {
-        $cWhereSQL = $oFilter->getWhereSQL();
-        $cOrderSQL = $oPagination->getOrderSQL();
+    'redirects',
+    'redirects.csv',
+    function () use ($filter, $pagination, $redirectCount) {
+        $db        = Shop::Container()->getDB();
+        $cWhereSQL = $filter->getWhereSQL();
+        $cOrderSQL = $pagination->getOrderSQL();
 
-        for ($i = 0; $i < $nRedirectCount; $i += 1000) {
-            $oRedirectIter = Shop::Container()->getDB()->query(
+        for ($i = 0; $i < $redirectCount; $i += 1000) {
+            $oRedirectIter = $db->query(
                 'SELECT cFromUrl, cToUrl
                     FROM tredirect' .
                     ($cWhereSQL !== '' ? ' WHERE ' . $cWhereSQL : '') .
@@ -134,8 +145,8 @@ handleCsvExportAction(
 $smarty
     ->assign('cHinweis', $cHinweis)
     ->assign('cFehler', $cFehler)
-    ->assign('oFilter', $oFilter)
-    ->assign('oPagination', $oPagination)
+    ->assign('oFilter', $filter)
+    ->assign('oPagination', $pagination)
     ->assign('oRedirect_arr', $oRedirect_arr)
     ->assign('nTotalRedirectCount', Redirect::getRedirectCount())
     ->display('redirect.tpl');

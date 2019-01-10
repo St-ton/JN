@@ -86,7 +86,7 @@
             <div class="panel-footer">
                 <div class="save btn-group">
                     <button type="submit" name="action" value="save" class="btn btn-primary">
-                        <i class="fa fa-save"></i> {#save#}
+                        <i class="fa fa-save"></i> {__('save')}
                     </button>
                 </div>
             </div>

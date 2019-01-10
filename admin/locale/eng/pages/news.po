@@ -1,0 +1,158 @@
+msgid "news"
+msgstr "News-/Blogsystem"
+
+msgid "newsURL"
+msgstr "https://jtl-url.de/2ek6o"
+
+msgid "newsDesc"
+msgstr "Dieses Modul kann als News bzw. Blogsystem genutzt werden."
+
+msgid "newAdd"
+msgstr "Neuen Beitrag erstellen"
+
+msgid "newEdit"
+msgstr "Beitrag bearbeiten"
+
+msgid "newsSave"
+msgstr "Speichern"
+
+msgid "newsHeadline"
+msgstr "Überschrift"
+
+msgid "newsCategory"
+msgstr "Kategorie"
+
+msgid "newsCustomerGrp"
+msgstr "Kundengruppe"
+
+msgid "newsText"
+msgstr "Text"
+
+msgid "newsPreviewText"
+msgstr "Vorschautext"
+
+msgid "newsActive"
+msgstr "Aktiv"
+
+msgid "newsValidation"
+msgstr "Erstellt am"
+
+msgid "newsFrom"
+msgstr "vom"
+
+msgid "newsTo"
+msgstr "bis"
+
+msgid "newsEdit"
+msgstr "Editieren"
+
+msgid "newsPreview"
+msgstr "Vorschau"
+
+msgid "newsDate"
+msgstr "Erstellt am"
+
+msgid "newsBack"
+msgstr "zurück"
+
+msgid "newsArchive"
+msgstr "Archivieren"
+
+msgid "newsArchiveLast"
+msgstr "Archivierte Beiträge"
+
+msgid "newsPictures"
+msgstr "Bilder"
+
+msgid "newsPicAdd"
+msgstr "weiteres Bild"
+
+msgid "newsPics"
+msgstr "Verfügbare Bilder"
+
+msgid "newsActivate"
+msgstr "freischalten"
+
+msgid "newsUser"
+msgstr "Besucher"
+
+msgid "newsCommentActivate"
+msgstr "Nicht aktive Beitragskommentare"
+
+msgid "newsComments"
+msgstr "Kommentare"
+
+msgid "newsSeo"
+msgstr "SEO"
+
+msgid "newsPraefix"
+msgstr "Monatsübersicht-Präfix"
+
+msgid "newsCat"
+msgstr "Kategorie"
+
+msgid "newsCatDesc"
+msgstr "Beschreibung"
+
+msgid "newsCatName"
+msgstr "Name"
+
+msgid "newsCatAdd"
+msgstr "Neue Kategorie erstellen"
+
+msgid "newsCatNew"
+msgstr "Kategorie bearbeiten"
+
+msgid "newsCatSort"
+msgstr "Kategorie Sortierung"
+
+msgid "newsCatParent"
+msgstr "Oberkategorie"
+
+msgid "newsCatSortShort"
+msgstr "Sortierung"
+
+msgid "newsCatLastUpdate"
+msgstr "Letzte Aktualisierung"
+
+msgid "newsOverview"
+msgstr "Beiträge"
+
+msgid "newsCatOverview"
+msgstr "Kategorien"
+
+msgid "newsInfinite"
+msgstr "immer"
+
+msgid "newsCommentEdit"
+msgstr "Kommentar editieren"
+
+msgid "newsMetaTitle"
+msgstr "Meta Title"
+
+msgid "newsMetaDescription"
+msgstr "Meta Description"
+
+msgid "newsMetaKeywords"
+msgstr "Meta Keywords"
+
+msgid "newsAuthor"
+msgstr "Autor"
+
+msgid "newsSettings"
+msgstr "Einstellungen"
+
+msgid "newsMandatoryFields"
+msgstr "(*) Pflichtfelder"
+
+msgid "newsAlreadyExists"
+msgstr "schon vorhanden"
+
+msgid "newsDeleteCat"
+msgstr "Folgende News-Kategorien und deren Unterkategorien werden gelöscht:"
+
+msgid "newsDeleteNews"
+msgstr "News löschen"
+
+msgid "newsDeleteComment"
+msgstr "Kommentar löschen"

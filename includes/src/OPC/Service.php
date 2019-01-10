@@ -7,8 +7,11 @@
 namespace OPC;
 
 use Filter\AbstractFilter;
-use Filter\FilterOption;
-use Filter\Items\ItemAttribute;
+use Filter\Config;
+use Filter\Items\Attribute;
+use Filter\Items\PriceRange;
+use Filter\Option;
+use Filter\ProductFilter;
 use Filter\Type;
 
 /**
@@ -66,14 +69,29 @@ class Service
      * @param \AdminIO $io
      * @throws \Exception
      */
-    public function registerAdminIOFunctions(\AdminIO $io)
+    public function registerAdminIOFunctions(\AdminIO $io): void
     {
-        $this->adminName = $io->getAccount()->account()->cLogin;
+        $adminAccount = $io->getAccount();
+
+        if ($adminAccount === null) {
+            throw new \Exception('Admin account was not set on AdminIO.');
+        }
+
+        $this->adminName = $adminAccount->account()->cLogin;
 
         foreach ($this->getIOFunctionNames() as $functionName) {
             $publicFunctionName = 'opc' . \ucfirst($functionName);
             $io->register($publicFunctionName, [$this, $functionName], null, 'CONTENT_PAGE_VIEW');
         }
+    }
+
+    /**
+     * @return null|string
+     * @throws \Exception
+     */
+    public function getAdminSessionToken(): ?string
+    {
+        return \Shop::getAdminSessionToken();
     }
 
     /**
@@ -108,9 +126,7 @@ class Service
      */
     public function getBlueprint(int $id): Blueprint
     {
-        $blueprint = (new Blueprint())
-            ->setId($id);
-
+        $blueprint = (new Blueprint())->setId($id);
         $this->db->loadBlueprint($blueprint);
 
         return $blueprint;
@@ -141,22 +157,18 @@ class Service
      * @param array $data
      * @throws \Exception
      */
-    public function saveBlueprint($name, $data)
+    public function saveBlueprint($name, $data): void
     {
-        $blueprint = (new Blueprint())
-            ->deserialize(['name' => $name, 'content' => $data]);
-
+        $blueprint = (new Blueprint())->deserialize(['name' => $name, 'content' => $data]);
         $this->db->saveBlueprint($blueprint);
     }
 
     /**
      * @param int $id
      */
-    public function deleteBlueprint($id)
+    public function deleteBlueprint($id): void
     {
-        $blueprint = (new Blueprint())
-            ->setId($id);
-
+        $blueprint = (new Blueprint())->setId($id);
         $this->db->deleteBlueprint($blueprint);
     }
 
@@ -207,7 +219,7 @@ class Service
      */
     public function isEditMode(): bool
     {
-        return \RequestHelper::verifyGPDataString('opcEditMode') === 'yes';
+        return \Helpers\Request::verifyGPDataString('opcEditMode') === 'yes';
     }
 
     /**
@@ -223,7 +235,7 @@ class Service
      */
     public function getEditedPageKey(): int
     {
-        return \RequestHelper::verifyGPCDataInt('opcEditedPageKey');
+        return \Helpers\Request::verifyGPCDataInt('opcEditedPageKey');
     }
 
     /**
@@ -232,7 +244,13 @@ class Service
      */
     public function getFilterOptions(array $enabledFilters = []): array
     {
-        $productFilter    = new \Filter\ProductFilter();
+        \Helpers\Tax::setTaxRates();
+
+        $productFilter    = new ProductFilter(
+            Config::getDefault(),
+            \Shop::Container()->getDB(),
+            \Shop::Container()->getCache()
+        );
         $availableFilters = $productFilter->getAvailableFilters();
         $results          = [];
         $enabledMap       = [];
@@ -241,7 +259,11 @@ class Service
             /** @var AbstractFilter $newFilter **/
             $newFilter = new $enabledFilter['class']($productFilter);
             $newFilter->setType(Type::AND);
-            $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
+            if ($newFilter instanceof PriceRange) {
+                $productFilter->addActiveFilter($newFilter, (string)$enabledFilter['value']);
+            } else {
+                $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
+            }
             $enabledMap[$enabledFilter['class'] . ':' . $enabledFilter['value']] = true;
         }
 
@@ -250,12 +272,12 @@ class Service
             $name    = $availableFilter->getFrontendName();
             $options = [];
 
-            if ($class === ItemAttribute::class) {
+            if ($class === Attribute::class) {
                 $name = 'Merkmale';
 
                 foreach ($availableFilter->getOptions() as $option) {
                     foreach ($option->getOptions() as $suboption) {
-                        /** @var FilterOption $suboption */
+                        /** @var Option $suboption */
                         $value    = $suboption->kMerkmalWert;
                         $mapindex = $class . ':' . $value;
 

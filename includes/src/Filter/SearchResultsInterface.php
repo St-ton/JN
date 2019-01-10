@@ -9,7 +9,6 @@ namespace Filter;
 use Filter\Pagination\Info;
 use Tightenco\Collect\Support\Collection;
 
-
 /**
  * Class SearchResults
  * @package Filter
@@ -112,7 +111,7 @@ interface SearchResultsInterface
     /**
      * @return string|null
      */
-    public function getSearchTerm();
+    public function getSearchTerm(): ?string;
 
     /**
      * @param string $searchTerm
@@ -121,9 +120,9 @@ interface SearchResultsInterface
     public function setSearchTerm($searchTerm): SearchResultsInterface;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSearchTermWrite();
+    public function getSearchTermWrite(): ?string;
 
     /**
      * @param string $searchTerm
@@ -143,100 +142,100 @@ interface SearchResultsInterface
     public function setSearchUnsuccessful($searchUnsuccessful): SearchResultsInterface;
 
     /**
-     * @return FilterOption[]
+     * @return Option[]
      */
     public function getManufacturerFilterOptions(): array;
 
     /**
-     * @param FilterOption[] $options
+     * @param Option[] $options
      * @return $this
      */
     public function setManufacturerFilterOptions($options): SearchResultsInterface;
 
     /**
-     * @return FilterOption[]
+     * @return Option[]
      */
     public function getRatingFilterOptions(): array;
 
     /**
-     * @param FilterOption[] $options
+     * @param Option[] $options
      * @return $this
      */
     public function setRatingFilterOptions($options): SearchResultsInterface;
 
     /**
-     * @return FilterOption[]
+     * @return Option[]
      */
     public function getTagFilterOptions(): array;
 
     /**
-     * @param FilterOption[] $options
+     * @param Option[] $options
      * @return $this
      */
     public function setTagFilterOptions($options): SearchResultsInterface;
 
     /**
-     * @return FilterOption[]
+     * @return Option[]
      */
     public function getAttributeFilterOptions(): array;
 
     /**
-     * @param FilterOption[] $options
+     * @param Option[] $options
      * @return $this
      */
     public function setAttributeFilterOptions($options): SearchResultsInterface;
 
     /**
-     * @return FilterOption[]
+     * @return Option[]
      */
     public function getPriceRangeFilterOptions(): array;
 
     /**
-     * @param FilterOption[] $options
+     * @param Option[] $options
      * @return $this
      */
     public function setPriceRangeFilterOptions($options): SearchResultsInterface;
 
     /**
-     * @return FilterOption[]
+     * @return Option[]
      */
     public function getCategoryFilterOptions(): array;
 
     /**
-     * @param FilterOption[] $options
+     * @param Option[] $options
      * @return $this
      */
     public function setCategoryFilterOptions($options): SearchResultsInterface;
 
     /**
-     * @return FilterOption[]
+     * @return Option[]
      */
     public function getSearchFilterOptions(): array;
 
     /**
-     * @param FilterOption[] $options
+     * @param Option[] $options
      * @return $this
      */
     public function setSearchFilterOptions($options): SearchResultsInterface;
 
     /**
-     * @return FilterOption[]
+     * @return Option[]
      */
     public function getSearchSpecialFilterOptions(): array;
 
     /**
-     * @param FilterOption[] $options
+     * @param Option[] $options
      * @return $this
      */
     public function setSearchSpecialFilterOptions($options): SearchResultsInterface;
 
     /**
-     * @return FilterOption[]
+     * @return Option[]
      */
     public function getCustomFilterOptions(): array;
 
     /**
-     * @param FilterOption[] $options
+     * @param Option[] $options
      * @return $this
      */
     public function setCustomFilterOptions($options): SearchResultsInterface;
@@ -244,7 +243,7 @@ interface SearchResultsInterface
     /**
      * @return string|null
      */
-    public function getTagFilterJSON();
+    public function getTagFilterJSON(): ?string;
 
     /**
      * @param string $json
@@ -255,7 +254,7 @@ interface SearchResultsInterface
     /**
      * @return string|null
      */
-    public function getSearchFilterJSON();
+    public function getSearchFilterJSON(): ?string;
 
     /**
      * @param string $json
@@ -266,7 +265,7 @@ interface SearchResultsInterface
     /**
      * @return string|null
      */
-    public function getError();
+    public function getError(): ?string;
 
     /**
      * @param string $error

@@ -1,17 +1,1 @@
-<?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
-
-/**
- * Interface PluginLizenz
- */
-interface IPluginLizenz
-{
-    /**
-     * @param string $cLicence
-     * @return mixed
-     */
-    public function checkLicence($cLicence);
-}
+<?php // removed in 5.0.0

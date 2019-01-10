@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -28,7 +28,7 @@ class cache_redis implements ICachingMethod
     /**
      * @var \Redis
      */
-    private $_redis;
+    private $redis;
 
     /**
      * @param array $options
@@ -48,7 +48,7 @@ class cache_redis implements ICachingMethod
             );
         }
         if ($res === false) {
-            $this->_redis        = null;
+            $this->redis         = null;
             $this->isInitialized = false;
         } else {
             $this->isInitialized = true;
@@ -68,9 +68,14 @@ class cache_redis implements ICachingMethod
         $redis   = new \Redis();
         $connect = $persist === false ? 'connect' : 'pconnect';
         if ($host !== null) {
-            $res = ($port !== null && $host[0] !== '/')
-                ? $redis->$connect($host, (int)$port, \REDIS_CONNECT_TIMEOUT)
-                : $redis->$connect($host); //for connecting to socket
+            try {
+                $res = ($port !== null && $host[0] !== '/')
+                    ? $redis->$connect($host, (int)$port, \REDIS_CONNECT_TIMEOUT)
+                    : $redis->$connect($host); //for connecting to socket
+            } catch (\RedisException $e) {
+                $this->setError($e->getMessage());
+                $res = false;
+            }
             if ($res !== false && $pass !== null && $pass !== '') {
                 $res = $redis->auth($pass);
             }
@@ -83,9 +88,9 @@ class cache_redis implements ICachingMethod
             // set custom prefix
             $redis->setOption(\Redis::OPT_PREFIX, $this->options['prefix']);
             // set php serializer for objects and arrays
-            $redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
+            $redis->setOption(\Redis::OPT_SERIALIZER, (string)\Redis::SERIALIZER_PHP);
 
-            $this->_redis = $redis;
+            $this->redis = $redis;
 
             return true;
         }
@@ -99,11 +104,11 @@ class cache_redis implements ICachingMethod
     public function store($cacheID, $content, $expiration = null): bool
     {
         try {
-            $res = $this->_redis->set($cacheID, $content);
+            $res = $this->redis->set($cacheID, $content);
             $exp = $expiration ?? $this->options['lifetime'];
             // the journal and negative expiration values should not cause an expiration
             if ($cacheID !== $this->journalID && $exp > -1) {
-                $this->_redis->setTimeout($cacheID, $exp);
+                $this->redis->setTimeout($cacheID, $exp);
             }
 
             return $res;
@@ -120,9 +125,9 @@ class cache_redis implements ICachingMethod
     public function storeMulti($idContent, $expiration = null): bool
     {
         try {
-            $res = $this->_redis->mset($idContent);
+            $res = $this->redis->mset($idContent);
             foreach (\array_keys($idContent) as $_cacheID) {
-                $this->_redis->setTimeout($_cacheID, $expiration ?? $this->options['lifetime']);
+                $this->redis->setTimeout($_cacheID, $expiration ?? $this->options['lifetime']);
             }
 
             return $res;
@@ -139,7 +144,7 @@ class cache_redis implements ICachingMethod
     public function load($cacheID)
     {
         try {
-            return $this->_redis->get($cacheID);
+            return $this->redis->get($cacheID);
         } catch (\RedisException $e) {
             echo 'Redis exception: ' . $e->getMessage();
 
@@ -153,7 +158,7 @@ class cache_redis implements ICachingMethod
     public function loadMulti(array $cacheIDs): array
     {
         try {
-            $res    = $this->_redis->mget($cacheIDs);
+            $res    = $this->redis->mget($cacheIDs);
             $i      = 0;
             $return = [];
             foreach ($res as $_idx => $_val) {
@@ -183,7 +188,7 @@ class cache_redis implements ICachingMethod
     public function flush($cacheID): bool
     {
         try {
-            return $this->_redis->delete($cacheID) > 0;
+            return $this->redis->delete($cacheID) > 0;
         } catch (\RedisException $e) {
             echo 'Redis exception: ' . $e->getMessage();
 
@@ -197,7 +202,7 @@ class cache_redis implements ICachingMethod
     public function setCacheTag($tags, $cacheID): bool
     {
         $res   = false;
-        $redis = $this->_redis->multi();
+        $redis = $this->redis->multi();
         if (\is_string($tags)) {
             $tags = [$tags];
         }
@@ -233,7 +238,7 @@ class cache_redis implements ICachingMethod
             $keys[] = self::_keyFromTagName($tag);
         }
 
-        return $this->flush($keys);
+        return $this->flush($keys) ? \count($tags) : 0;
     }
 
     /**
@@ -241,7 +246,7 @@ class cache_redis implements ICachingMethod
      */
     public function flushAll(): bool
     {
-        return $this->_redis->flushDB();
+        return $this->redis->flushDB();
     }
 
     /**
@@ -253,13 +258,13 @@ class cache_redis implements ICachingMethod
             ? [self::_keyFromTagName($tags)]
             : \array_map('Cache\Methods\cache_redis::_keyFromTagName', $tags);
         $res       = \count($matchTags) === 1
-            ? $this->_redis->sMembers($matchTags[0])
-            : $this->_redis->sUnion($matchTags);
+            ? $this->redis->sMembers($matchTags[0])
+            : $this->redis->sUnion($matchTags);
         if (\PHP_SAPI === 'srv' || \PHP_SAPI === 'cli') { // for some reason, hhvm does not unserialize values
             foreach ($res as &$_cid) {
                 // phpredis will throw an exception when unserializing unserialized data
                 try {
-                    $_cid = $this->_redis->_unserialize($_cid);
+                    $_cid = $this->redis->_unserialize($_cid);
                 } catch (\RedisException $e) {
                     // we know we don't have to continue unserializing when there was an exception
                     break;
@@ -275,7 +280,7 @@ class cache_redis implements ICachingMethod
      */
     public function keyExists($cacheID): bool
     {
-        return $this->_redis->exists($cacheID);
+        return (bool)$this->redis->exists($cacheID);
     }
 
     /**
@@ -287,20 +292,20 @@ class cache_redis implements ICachingMethod
         $slowLog     = [];
         $slowLogData = [];
         try {
-            $stats = $this->_redis->info();
+            $stats = $this->redis->info();
         } catch (\RedisException $e) {
             echo 'Redis exception: ' . $e->getMessage();
 
             return [];
         }
         try {
-            $slowLog = \method_exists($this->_redis, 'slowlog')
-                ? $this->_redis->slowlog('get', 25)
+            $slowLog = \method_exists($this->redis, 'slowlog')
+                ? $this->redis->slowlog('get', 25)
                 : [];
         } catch (\RedisException $e) {
             echo 'Redis exception: ' . $e->getMessage();
         }
-        $db  = $this->_redis->getDBNum();
+        $db  = $this->redis->getDBNum();
         $idx = 'db' . $db;
         if (isset($stats[$idx])) {
             $dbStats = \explode(',', $stats[$idx]);

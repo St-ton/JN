@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {block name='header'}
     {include file='layout/header.tpl'}
 {/block}
@@ -11,6 +15,9 @@
     {if !empty($cFehler)}
         <div class="alert alert-danger">{$cFehler}</div>
     {/if}
+
+    {include file='snippets/extension.tpl'}
+
     {if $step === 'wunschliste versenden' && $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
         {*{include file='account/wishlist_email_form.tpl'}*}
         <h1>{lang key='wishlistViaEmail' section='login'}</h1>

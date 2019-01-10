@@ -4,14 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\FileSystem;
+
 require_once __DIR__ . '/syncinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 
 if (auth()) {
-    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
+    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
     if (!KEEP_SYNC_FILES) {
-        FileSystemHelper::delDirRecursively(PFAD_ROOT . PFAD_DBES_TMP);
+        FileSystem::delDirRecursively(PFAD_ROOT . PFAD_DBES_TMP);
     }
 
     LastJob::getInstance()->finishStdJobs();
@@ -28,8 +30,26 @@ if (auth()) {
                 break;
             case LASTJOBS_SITEMAP:
                 if ($conf['sitemap']['sitemap_wawiabgleich'] === 'Y') {
-                    require_once PFAD_ROOT . PFAD_ADMIN . 'includes/sitemapexport.php';
-                    generateSitemapXML();
+                    $db           = Shop::Container()->getDB();
+                    $config       = Shop::getSettings([CONF_GLOBAL, CONF_SITEMAP]);
+                    $exportConfig = new \Sitemap\Config\DefaultConfig(
+                        $db,
+                        $config,
+                        Shop::getURL() . '/',
+                        Shop::getImageBaseURL()
+                    );
+                    $exporter     = new \Sitemap\Export(
+                        $db,
+                        Shop::Container()->getLogService(),
+                        new \Sitemap\ItemRenderers\DefaultRenderer(),
+                        new \Sitemap\SchemaRenderers\DefaultSchemaRenderer(),
+                        $config
+                    );
+                    $exporter->generate(
+                        [Kundengruppe::getDefaultGroupID()],
+                        Sprache::getAllLanguages(),
+                        $exportConfig->getFactories()
+                    );
                     updateJob(LASTJOBS_SITEMAP);
                 }
                 break;

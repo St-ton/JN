@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\FileSystem;
+
 /**
  * Class Link
  */
@@ -163,7 +165,7 @@ class Link extends MainModel
     /**
      * @return string|null
      */
-    public function getURLFullSSL()
+    public function getURLFullSSL(): ?string
     {
         return $this->cURLFullSSL;
     }
@@ -182,7 +184,7 @@ class Link extends MainModel
     /**
      * @return string|null
      */
-    public function getURLFull()
+    public function getURLFull(): ?string
     {
         return $this->cURLFull;
     }
@@ -231,7 +233,7 @@ class Link extends MainModel
     /**
      * @return string|null
      */
-    public function getISO()
+    public function getISO(): ?string
     {
         return $this->cISO;
     }
@@ -269,7 +271,7 @@ class Link extends MainModel
     /**
      * @return string|null
      */
-    public function getSeo()
+    public function getSeo(): ?string
     {
         return $this->cSeo;
     }
@@ -353,7 +355,7 @@ class Link extends MainModel
     /**
      * @return string|null
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->cName;
     }
@@ -391,7 +393,7 @@ class Link extends MainModel
     /**
      * @return string|null
      */
-    public function getNoFollow()
+    public function getNoFollow(): ?string
     {
         return $this->cNoFollow;
     }
@@ -410,7 +412,7 @@ class Link extends MainModel
     /**
      * @return string|null
      */
-    public function getURL()
+    public function getURL(): ?string
     {
         return $this->cURL;
     }
@@ -429,7 +431,7 @@ class Link extends MainModel
     /**
      * @return string|null
      */
-    public function getKundengruppen()
+    public function getKundengruppen(): ?string
     {
         return $this->cKundengruppen;
     }
@@ -448,7 +450,7 @@ class Link extends MainModel
     /**
      * @return string|null
      */
-    public function getSichtbarNachLogin()
+    public function getSichtbarNachLogin(): ?string
     {
         return $this->cSichtbarNachLogin;
     }
@@ -468,7 +470,7 @@ class Link extends MainModel
      * @deprecated since 4.0
      * @return string|null
      */
-    public function getDruckButton()
+    public function getDruckButton(): ?string
     {
         return $this->cDruckButton;
     }
@@ -487,7 +489,7 @@ class Link extends MainModel
     }
 
     /**
-     * @return string
+     * @return int
      */
     public function getSort(): int
     {
@@ -616,7 +618,7 @@ class Link extends MainModel
      * @param int $kVaterLinkgruppe
      * @return null|array
      */
-    public static function getSub(int $kVaterLink, int $kVaterLinkgruppe = null)
+    public static function getSub(int $kVaterLink, int $kVaterLinkgruppe = null): ?array
     {
         if ($kVaterLink > 0) {
             if (!empty($kVaterLinkgruppe)) {
@@ -722,7 +724,11 @@ class Link extends MainModel
         $nRows = 0;
         if ($this->kLink > 0) {
             if (!empty($kLinkgruppe)) {
-                $nRows = Shop::Container()->getDB()->delete('tlink', ['kLink', 'kLinkgruppe'], [$this->getLink(), $kLinkgruppe]);
+                $nRows = Shop::Container()->getDB()->delete(
+                    'tlink',
+                    ['kLink', 'kLinkgruppe'],
+                    [$this->getLink(), $kLinkgruppe]
+                );
             } else {
                 $nRows = Shop::Container()->getDB()->delete('tlink', 'kLink', $this->getLink());
             }
@@ -732,7 +738,7 @@ class Link extends MainModel
                 Shop::Container()->getDB()->delete('tseo', ['kKey', 'cKey'], [$this->getLink(), 'kLink']);
 
                 $cDir = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER . $this->getLink();
-                if (is_dir($cDir) && $this->getLink() > 0 && FileSystemHelper::delDirRecursively($cDir)) {
+                if (is_dir($cDir) && $this->getLink() > 0 && FileSystem::delDirRecursively($cDir)) {
                     rmdir($cDir);
                 }
             }

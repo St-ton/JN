@@ -6,7 +6,6 @@
 
 namespace Filter\SortingOptions;
 
-
 use Filter\ProductFilter;
 use Mapper\SortingType;
 use Tightenco\Collect\Support\Collection;
@@ -64,7 +63,7 @@ class Factory
      * @param int    $value
      * @param string $className
      */
-    public function registerSortingOption(int $value, string $className)
+    public function registerSortingOption(int $value, string $className): void
     {
         $this->mapping[$value] = $className;
     }
@@ -93,7 +92,7 @@ class Factory
      * @return SortingOptionInterface|null
      * @throws \InvalidArgumentException
      */
-    public function getSortingOption(int $type)
+    public function getSortingOption(int $type): ?SortingOptionInterface
     {
         $mapper  = new SortingType();
         $mapping = $mapper->mapSortTypeToClassName($type);

@@ -77,9 +77,9 @@ function pruefeExportformat()
  */
 function splitteExportDatei($oExportformat)
 {
-    if (isset($oExportformat->nSplitgroesse) &&
-        (int)$oExportformat->nSplitgroesse > 0 &&
-        file_exists(PFAD_ROOT . PFAD_EXPORT . $oExportformat->cDateiname)
+    if (isset($oExportformat->nSplitgroesse)
+        && (int)$oExportformat->nSplitgroesse > 0
+        && file_exists(PFAD_ROOT . PFAD_EXPORT . $oExportformat->cDateiname)
     ) {
         $nDateiZaehler       = 1;
         $cDateinameSplit_arr = [];
@@ -276,39 +276,40 @@ function holeMaxExportArtikelAnzahl(&$oExportformat)
 {
     $cSQL_arr = baueArtikelExportSQL($oExportformat);
     $conf     = Shop::getSettings([CONF_GLOBAL]);
-    $sql      = 'AND NOT (DATE(tartikel.dErscheinungsdatum) > DATE(NOW()))';
-    if (isset($conf['global']['global_erscheinende_kaeuflich']) &&
-        $conf['global']['global_erscheinende_kaeuflich'] === 'Y') {
-        $sql = 'AND (
-                    NOT (DATE(tartikel.dErscheinungsdatum) > DATE(NOW()))
-                    OR  (
-                            DATE(tartikel.dErscheinungsdatum) > DATE(NOW())
-                            AND (tartikel.cLagerBeachten = "N" 
-                                OR tartikel.fLagerbestand > 0 OR tartikel.cLagerKleinerNull = "Y")
-                        )
-                )';
+    $sql      = 'AND tartikel.dErscheinungsdatum IS NULL OR (DATE(tartikel.dErscheinungsdatum) <= CURDATE())';
+    if (isset($conf['global']['global_erscheinende_kaeuflich'])
+        && $conf['global']['global_erscheinende_kaeuflich'] === 'Y'
+    ) {
+        $sql = "AND (
+                    tartikel.dErscheinungsdatum IS NULL 
+                    OR (DATE(tartikel.dErscheinungsdatum) <= CURDATE())
+                    OR (
+                        DATE(tartikel.dErscheinungsdatum) > CURDATE()
+                        AND (tartikel.cLagerBeachten = 'N' 
+                            OR tartikel.fLagerbestand > 0 OR tartikel.cLagerKleinerNull = 'Y')
+                    )
+                )";
     }
     $cid = 'xp_' . md5(json_encode($cSQL_arr) . $sql);
-    if (($count = Shop::Cache()->get($cid)) !== false) {
+    if (($count = Shop::Container()->getCache()->get($cid)) !== false) {
         return $count;
     }
 
     $count = Shop::Container()->getDB()->query(
-        "SELECT count(*) AS nAnzahl
+        "SELECT COUNT(*) AS nAnzahl
             FROM tartikel
             LEFT JOIN tartikelattribut 
                 ON tartikelattribut.kArtikel = tartikel.kArtikel
                 AND tartikelattribut.cName = '" . FKT_ATTRIBUT_KEINE_PREISSUCHMASCHINEN . "'
             LEFT JOIN tartikelsichtbarkeit 
                 ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                AND tartikelsichtbarkeit.kKundengruppe = " . (int)$oExportformat->kKundengruppe . "
-            " . $cSQL_arr['Join'] . "
-            WHERE tartikelattribut.kArtikelAttribut IS NULL" . $cSQL_arr['Where'] . "
-                AND tartikelsichtbarkeit.kArtikel IS NULL
-                {$sql}",
+                AND tartikelsichtbarkeit.kKundengruppe = " . (int)$oExportformat->kKundengruppe . '
+            ' . $cSQL_arr['Join'] . '
+            WHERE tartikelattribut.kArtikelAttribut IS NULL' . $cSQL_arr['Where'] . "
+                AND tartikelsichtbarkeit.kArtikel IS NULL " . $sql,
         \DB\ReturnType::SINGLE_OBJECT
     );
-    Shop::Cache()->set($cid, $count, [CACHING_GROUP_CORE], 120);
+    Shop::Container()->getCache()->set($cid, $count, [CACHING_GROUP_CORE], 120);
 
     return $count;
 }

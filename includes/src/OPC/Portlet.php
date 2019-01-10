@@ -6,6 +6,10 @@
 
 namespace OPC;
 
+use Plugin\AbstractExtension;
+use Plugin\Extension;
+use Plugin\ExtensionLoader;
+
 /**
  * Class Portlet
  * @package OPC
@@ -22,7 +26,7 @@ abstract class Portlet implements \JsonSerializable
     protected $id = 0;
 
     /**
-     * @var null|\Plugin
+     * @var Extension
      */
     protected $plugin;
 
@@ -48,9 +52,24 @@ abstract class Portlet implements \JsonSerializable
 
     /**
      * Portlet constructor.
+     * @param string $class
+     * @param int    $id
+     * @param int    $pluginId
      */
-    final public function __construct()
+    final public function __construct(string $class, int $id, int $pluginId)
     {
+        $this->class = $class;
+        $this->id    = $id;
+        if ($pluginId > 0) {
+            $loader       = new ExtensionLoader(\Shop::Container()->getDB(), \Shop::Container()->getCache());
+            $this->plugin = $loader->init($pluginId);
+        }
+
+        if ($this->plugin === null) {
+            \Shop::Container()->getGetText()->loadAdminLocale('portlets/' . $this->class);
+        } else {
+            \Shop::Container()->getGetText()->loadPluginLocale('portlets/' . $this->class, $this->plugin);
+        }
     }
 
     /**
@@ -59,6 +78,7 @@ abstract class Portlet implements \JsonSerializable
     final public function getDefaultProps(): array
     {
         $defProps = [];
+
         foreach ($this->getPropertyDesc() as $name => $propDesc) {
             $defProps[$name] = $propDesc['default'] ?? '';
         }
@@ -95,7 +115,7 @@ abstract class Portlet implements \JsonSerializable
      */
     public function getPluginId(): int
     {
-        return $this->plugin === null ? 0 : $this->plugin->kPlugin;
+        return $this->plugin === null ? 0 : $this->plugin->getID();
     }
 
     /**
@@ -103,7 +123,7 @@ abstract class Portlet implements \JsonSerializable
      */
     public function getTitle(): string
     {
-        return $this->title;
+        return __($this->title);
     }
 
     /**
@@ -131,45 +151,12 @@ abstract class Portlet implements \JsonSerializable
     }
 
     /**
-     * @param int $id
-     * @return Portlet
-     */
-    public function setId(int $id): self
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * @param int $pluginId
-     * @return Portlet
-     */
-    public function setPluginId(int $pluginId): self
-    {
-        $this->plugin = $pluginId > 0 ? new \Plugin($pluginId) : null;
-
-        return $this;
-    }
-
-    /**
      * @param string $title
      * @return Portlet
      */
     public function setTitle(string $title): self
     {
         $this->title = $title;
-
-        return $this;
-    }
-
-    /**
-     * @param string $class
-     * @return Portlet
-     */
-    public function setClass(string $class): self
-    {
-        $this->class = $class;
 
         return $this;
     }
@@ -186,9 +173,9 @@ abstract class Portlet implements \JsonSerializable
     }
 
     /**
-     * @return \Plugin|null
+     * @return AbstractExtension|null
      */
-    public function getPlugin()
+    public function getPlugin(): ?AbstractExtension
     {
         return $this->plugin;
     }

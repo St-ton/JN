@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -75,7 +75,7 @@ interface ICachingMethod
     /**
      * removes cache IDs associated with given tags from cache
      *
-     * @param array $tags
+     * @param array|string $tags
      * @return int
      */
     public function flushTags($tags): int;
@@ -141,10 +141,21 @@ interface ICachingMethod
     /**
      * @return string|null
      */
-    public function getJournalID();
+    public function getJournalID(): ?string;
 
     /**
      * @param string $id
      */
-    public function setJournalID($id);
+    public function setJournalID($id): void;
+
+    /**
+     * @return string
+     */
+    public function getError(): string;
+
+    /**
+     * @param string $error
+     * @return JTLCacheInterface
+     */
+    public function setError(string $error);
 }

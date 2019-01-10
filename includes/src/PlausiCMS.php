@@ -58,7 +58,9 @@ class PlausiCMS extends Plausi
                 }
 
                 // cTempaltename
-                if (!isset($this->xPostVar_arr['cTemplatename']) || strlen($this->xPostVar_arr['cTemplatename']) === 0) {
+                if (!isset($this->xPostVar_arr['cTemplatename'])
+                    || strlen($this->xPostVar_arr['cTemplatename']) === 0
+                ) {
                     $this->xPlausiVar_arr['cTemplatename'] = 1;
                 }
 

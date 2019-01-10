@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if $Artikel->nIstVater == 1 && $Artikel->oVariationKombiKinderAssoc_arr|count > 0}
     <div class="table-responsive">
         <table class="table table-striped variation-matrix">
@@ -22,9 +26,9 @@
                             </div>
                             <div class="small">
                                 {if $child->nErscheinendesProdukt}
-                                    {lang key='productAvailableFrom' section='global'}: <strong>{$child->Erscheinungsdatum_de}</strong>
+                                    {lang key='productAvailableFrom'}: <strong>{$child->Erscheinungsdatum_de}</strong>
                                     {if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y' && $child->inWarenkorbLegbar == 1}
-                                        ({lang key='preorderPossible' section='global'})
+                                        ({lang key='preorderPossible'})
                                     {/if}
                                 {/if}
                                 {include file='productdetails/stock.tpl' Artikel=$child tplscope='matrix'}
@@ -59,5 +63,5 @@
     </div>
     <input type="hidden" name="variBox" value="1" />
     <input type="hidden" name="varimatrix" value="1" />
-    <button name="inWarenkorb" type="submit" value="{lang key='addToCart' section='global'}" class="submit btn btn-primary pull-right">{lang key='addToCart' section='global'}</button>
+    <button name="inWarenkorb" type="submit" value="{lang key='addToCart'}" class="submit btn btn-primary pull-right">{lang key='addToCart'}</button>
 {/if}

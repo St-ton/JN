@@ -6,7 +6,7 @@
 
 namespace Filter\SortingOptions;
 
-use Filter\FilterJoin;
+use Filter\Join;
 
 /**
  * Interface SortingOptionInterface
@@ -15,14 +15,14 @@ use Filter\FilterJoin;
 interface SortingOptionInterface
 {
     /**
-     * @return FilterJoin
+     * @return Join
      */
-    public function getJoin(): FilterJoin;
+    public function getJoin(): Join;
 
     /**
-     * @param FilterJoin $join
+     * @param Join $join
      */
-    public function setJoin(FilterJoin $join);
+    public function setJoin(Join $join): void;
 
     /**
      * @return string
@@ -32,7 +32,7 @@ interface SortingOptionInterface
     /**
      * @param string $orderBy
      */
-    public function setOrderBy(string $orderBy);
+    public function setOrderBy(string $orderBy): void;
 
     /**
      * @return int
@@ -42,7 +42,7 @@ interface SortingOptionInterface
     /**
      * @param int $priority
      */
-    public function setPriority(int $priority);
+    public function setPriority(int $priority): void;
 
     /**
      * @return int|string|array

@@ -4,95 +4,121 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\MagicCompatibilityTrait;
+
 /**
  * Class Slider
  */
 class Slider implements IExtensionPoint
 {
+    use MagicCompatibilityTrait;
+
     /**
      * @var int
      */
-    public $kSlider;
+    private $id = 0;
 
     /**
      * @var string
      */
-    public $cName;
+    private $name = '';
 
     /**
      * @var int
      */
-    public $kSprache;
+    private $languageID = 0;
 
     /**
      * @var int
      */
-    public $kKundengruppe;
+    private $customerGroupID = 0;
 
     /**
      * @var int
      */
-    public $nSeitenTyp;
+    private $pageType = 0;
 
     /**
      * @var string
      */
-    public $cTheme;
+    private $theme = '';
 
     /**
      * @var int
      */
-    public $bAktiv = 0;
+    private $isActive = false;
 
     /**
      * @var string
      */
-    public $cEffects = 'random';
+    private $effects = 'random';
 
     /**
      * @var int
      */
-    public $nPauseTime = 3000;
+    private $pauseTime = 3000;
 
     /**
      * @var bool
      */
-    public $bThumbnail = false;
+    private $thumbnail = false;
 
     /**
      * @var int
      */
-    public $nAnimationSpeed = 500;
+    private $animationSpeed = 500;
 
     /**
      * @var bool
      */
-    public $bPauseOnHover = false;
+    private $pauseOnHover = false;
+
+    /**
+     * @var Slide[]
+     */
+    private $slides = [];
+
+    /**
+     * @var bool
+     */
+    private $controlNav = true;
+
+    /**
+     * @var bool
+     */
+    private $randomStart = false;
+
+    /**
+     * @var bool
+     */
+    private $directionNav = true;
+
+    /**
+     * @var bool
+     */
+    private $useKB = true;
 
     /**
      * @var array
      */
-    public $oSlide_arr = [];
-
-    /**
-     * @var bool
-     */
-    public $bControlNav = true;
-
-    /**
-     * @var bool
-     */
-    public $bRandomStart = false;
-
-    /**
-     * @var bool
-     */
-    public $bDirectionNav = true;
-
-    /**
-     * @var bool
-     */
-    public $bUseKB = true;
+    private static $mapping = [
+        'bAktiv'          => 'IsActive',
+        'kSlider'         => 'ID',
+        'cName'           => 'Name',
+        'kSprache'        => 'LanguageID',
+        'nSeitentyp'      => 'PageType',
+        'cTheme'          => 'Theme',
+        'cEffects'        => 'Effects',
+        'nPauseTime'      => 'PauseTime',
+        'bThumbnail'      => 'Thumbnail',
+        'nAnimationSpeed' => 'AnimationSpeed',
+        'bPauseOnHover'   => 'PauseOnHover',
+        'oSlide_arr'      => 'Slides',
+        'bControlNav'     => 'ControlNav',
+        'bRandomStart'    => 'RandomStart',
+        'bDirectionNav'   => 'DirectionNav',
+        'bUseKB'          => 'UseKB',
+    ];
 
     /**
      *
@@ -102,13 +128,22 @@ class Slider implements IExtensionPoint
     }
 
     /**
+     * @param string $type
+     * @return string|null
+     */
+    private function getMapping(string $type): ?string
+    {
+        return self::$mapping[$type] ?? null;
+    }
+
+    /**
      * @param int $kSlider
      * @return $this
      */
     public function init($kSlider)
     {
-        $kSlider = (int)$kSlider;
-        if ($kSlider > 0 && $this->load($kSlider, 'AND bAktiv = 1') === true) {
+        $loaded = $this->load($kSlider, true);
+        if ($kSlider > 0 && $loaded === true) {
             Shop::Smarty()->assign('oSlider', $this);
         }
 
@@ -116,17 +151,15 @@ class Slider implements IExtensionPoint
     }
 
     /**
-     * @param array $cData_arr
+     * @param stdClass $data
      * @return $this
      */
-    public function set(array $cData_arr): self
+    public function set(stdClass $data): self
     {
-        $cObjectFields_arr = get_class_vars('Slider');
-        unset($cObjectFields_arr['oSlide_arr']);
-
-        foreach ($cObjectFields_arr as $cField => $cValue) {
-            if (isset($cData_arr[$cField])) {
-                $this->$cField = $cData_arr[$cField];
+        foreach (get_object_vars($data) as $field => $value) {
+            if (($mapping = $this->getMapping($field)) !== null) {
+                $method = 'set' . $mapping;
+                $this->$method($value);
             }
         }
 
@@ -134,43 +167,42 @@ class Slider implements IExtensionPoint
     }
 
     /**
-     * @param int    $kSlider
-     * @param string $filter
-     * @param int $limit
+     * @param int  $kSlider
+     * @param bool $active
      * @return bool
      */
-    public function load(int $kSlider = 0, $filter = '', int $limit = 1): bool
+    public function load(int $kSlider = 0, $active = true): bool
     {
-        if ($kSlider > 0 || (!empty($this->kSlider) && (int)$this->kSlider > 0)) {
-            if (empty($kSlider) || $kSlider === 0) {
-                $kSlider = $this->kSlider;
+        if ($kSlider <= 0 && $this->id <= 0) {
+            return false;
+        }
+        $activeSQL = $active ? ' AND bAktiv = 1 ' : '';
+        if ($kSlider === 0) {
+            $kSlider = $this->id;
+        }
+        $data  = Shop::Container()->getDB()->queryPrepared(
+            'SELECT *, tslider.kSlider AS id FROM tslider
+                LEFT JOIN tslide
+                    ON tslider.kSlider = tslide.kSlider
+                WHERE tslider.kSlider = :kslider' . $activeSQL .
+            ' ORDER BY tslide.nSort',
+            ['kslider' => $kSlider],
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+        $first = \Functional\first($data);
+        if ($first !== null) {
+            $this->setID($first->id);
+            foreach ($data as $slideData) {
+                $slideData->kSlider = $this->getID();
+                if ($slideData->kSlide !== null) {
+                    $slide = new Slide();
+                    $slide->map($slideData);
+                    $this->slides[] = $slide;
+                }
             }
-            $cSlider_arr = Shop::Container()->getDB()->query(
-                "SELECT *
-                    FROM tslider
-                    WHERE kSlider = " . $kSlider . " " . $filter . "
-                    LIMIT " . $limit, 8
-            );
-            if ($cSlider_arr === null) {
-                return false;
-            }
-            $slides = Shop::Container()->getDB()->queryPrepared(
-                'SELECT kSlide
-                    FROM tslide
-                    WHERE kSlider = :sliderID
-                    ORDER BY nSort ASC',
-                ['sliderID' => $kSlider],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
-            );
-            foreach ($slides as $slide) {
-                $this->oSlide_arr[] = new Slide($cSlider_arr['kSlider'], $slide->kSlide);
-            }
+            $this->set($first);
 
-            if (is_array($cSlider_arr)) {
-                $this->set($cSlider_arr);
-
-                return true;
-            }
+            return $this->getID() > 0 && count($this->slides) > 0;
         }
 
         return false;
@@ -179,9 +211,9 @@ class Slider implements IExtensionPoint
     /**
      * @return bool
      */
-    public function save()
+    public function save(): bool
     {
-        return $this->kSlider > 0
+        return $this->id > 0
             ? $this->update()
             : $this->append();
     }
@@ -191,13 +223,17 @@ class Slider implements IExtensionPoint
      */
     private function append(): bool
     {
-        $oSlider = clone $this;
-        unset($oSlider->oSlide_arr, $oSlider->kSlider);
+        $slider = new stdClass();
+        foreach (self::$mapping as $type => $methodName) {
+            $method        = 'get' . $methodName;
+            $slider->$type = $this->$method();
+        }
+        unset($slider->oSlide_arr, $slider->slides, $slider->kSlider);
 
-        $kSlider = Shop::Container()->getDB()->insert('tslider', $oSlider);
+        $kSlider = Shop::Container()->getDB()->insert('tslider', $slider);
 
         if ($kSlider > 0) {
-            $this->kSlider = $kSlider;
+            $this->id = $kSlider;
 
             return true;
         }
@@ -210,31 +246,28 @@ class Slider implements IExtensionPoint
      */
     private function update(): bool
     {
-        $oSlider = clone $this;
+        $slider = new stdClass();
+        foreach (self::$mapping as $type => $methodName) {
+            $method        = 'get' . $methodName;
+            $slider->$type = $this->$method();
+        }
+        unset($slider->oSlide_arr, $slider->slides, $slider->kSlider);
 
-        unset($oSlider->oSlide_arr, $oSlider->kSlider);
-
-        return Shop::Container()->getDB()->update('tslider', 'kSlider', $this->kSlider, $oSlider) >= 0;
+        return Shop::Container()->getDB()->update('tslider', 'kSlider', $this->getID(), $slider) >= 0;
     }
 
     /**
-     * @param int $kSlider
      * @return bool
      */
-    public function delete(int $kSlider = 0): bool
+    public function delete(): bool
     {
-        if ((int)$this->kSlider !== 0 && $kSlider !== 0) {
-            $kSlider = $this->kSlider;
-        }
-        if ($kSlider !== 0) {
-            $affected = Shop::Container()->getDB()->delete('tslider', 'kSlider', $kSlider);
-            Shop::Container()->getDB()->delete('textensionpoint', ['cClass', 'kInitial'], ['Slider', $kSlider]);
-
+        $id = $this->getID();
+        if ($id !== 0) {
+            $affected = Shop::Container()->getDB()->delete('tslider', 'kSlider', $id);
+            Shop::Container()->getDB()->delete('textensionpoint', ['cClass', 'kInitial'], ['Slider', $id]);
             if ($affected > 0) {
-                if (!empty($this->oSlide_arr)) {
-                    foreach ($this->oSlide_arr as $oSlide) {
-                        $oSlide->delete();
-                    }
+                foreach ($this->slides as $slide) {
+                    $slide->delete();
                 }
 
                 return true;
@@ -242,5 +275,277 @@ class Slider implements IExtensionPoint
         }
 
         return false;
+    }
+
+    /**
+     * @return int
+     */
+    public function getID(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int|string $kSlider
+     */
+    public function setID($kSlider): void
+    {
+        $this->id = (int)$kSlider;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLanguageID(): int
+    {
+        return $this->languageID;
+    }
+
+    /**
+     * @param int|string $languageID
+     */
+    public function setLanguageID($languageID): void
+    {
+        $this->languageID = (int)$languageID;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCustomerGroupID(): int
+    {
+        return $this->customerGroupID;
+    }
+
+    /**
+     * @param int|string $customerGroupID
+     */
+    public function setCustomerGroupID($customerGroupID): void
+    {
+        $this->customerGroupID = (int)$customerGroupID;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPageType(): int
+    {
+        return $this->pageType;
+    }
+
+    /**
+     * @param int|string $pageType
+     */
+    public function setPageType($pageType): void
+    {
+        $this->pageType = (int)$pageType;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTheme(): string
+    {
+        return $this->theme;
+    }
+
+    /**
+     * @param string $theme
+     */
+    public function setTheme(string $theme): void
+    {
+        $this->theme = $theme;
+    }
+
+    /**
+     * @return int
+     */
+    public function getIsActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    /**
+     * @param int|string|bool $isActive
+     */
+    public function setIsActive($isActive): void
+    {
+        $this->isActive = (bool)$isActive;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEffects(): string
+    {
+        return $this->effects;
+    }
+
+    /**
+     * @param string $effects
+     */
+    public function setEffects(string $effects): void
+    {
+        $this->effects = $effects;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPauseTime(): int
+    {
+        return $this->pauseTime;
+    }
+
+    /**
+     * @param int|string $pauseTime
+     */
+    public function setPauseTime($pauseTime): void
+    {
+        $this->pauseTime = (int)$pauseTime;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getThumbnail(): bool
+    {
+        return $this->thumbnail;
+    }
+
+    /**
+     * @param bool|int|string $thumbnail
+     */
+    public function setThumbnail($thumbnail): void
+    {
+        $this->thumbnail = (bool)$thumbnail;
+    }
+
+    /**
+     * @return int
+     */
+    public function getAnimationSpeed(): int
+    {
+        return $this->animationSpeed;
+    }
+
+    /**
+     * @param int|string $animationSpeed
+     */
+    public function setAnimationSpeed($animationSpeed): void
+    {
+        $this->animationSpeed = (int)$animationSpeed;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getPauseOnHover(): bool
+    {
+        return $this->pauseOnHover;
+    }
+
+    /**
+     * @param bool|int|string $pauseOnHover
+     */
+    public function setPauseOnHover($pauseOnHover): void
+    {
+        $this->pauseOnHover = (bool)$pauseOnHover;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSlides(): array
+    {
+        return $this->slides;
+    }
+
+    /**
+     * @param array $slides
+     */
+    public function setSlides(array $slides): void
+    {
+        $this->slides = $slides;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getControlNav(): bool
+    {
+        return $this->controlNav;
+    }
+
+    /**
+     * @param bool|string|int $controlNav
+     */
+    public function setControlNav($controlNav): void
+    {
+        $this->controlNav = (bool)$controlNav;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getRandomStart(): bool
+    {
+        return $this->randomStart;
+    }
+
+    /**
+     * @param bool|string|int $randomStart
+     */
+    public function setRandomStart($randomStart): void
+    {
+        $this->randomStart = (bool)$randomStart;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getDirectionNav(): bool
+    {
+        return $this->directionNav;
+    }
+
+    /**
+     * @param bool|string|int $directionNav
+     */
+    public function setDirectionNav($directionNav): void
+    {
+        $this->directionNav = (bool)$directionNav;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getUseKB(): bool
+    {
+        return $this->useKB;
+    }
+
+    /**
+     * @param bool|string|int $useKB
+     */
+    public function setUseKB($useKB): void
+    {
+        $this->useKB = (bool)$useKB;
     }
 }

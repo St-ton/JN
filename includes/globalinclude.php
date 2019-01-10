@@ -3,6 +3,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Debug\DataCollector\Smarty;
+use Helpers\PHPSettings;
+use JTLShop\SemVer\Version;
+
 $nStartzeit = microtime(true);
 
 if (file_exists(__DIR__ . '/config.JTL-Shop.ini.php')) {
@@ -13,7 +18,7 @@ if (defined('PFAD_ROOT')) {
     require_once PFAD_ROOT . 'includes/defines.php';
 } else {
     die('Die Konfigurationsdatei des Shops konnte nicht geladen werden! ' .
-        'Bei einer Neuinstallation bitte <a href="install/index.php">hier</a> klicken.');
+        'Bei einer Neuinstallation bitte <a href="install/">hier</a> klicken.');
 }
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'error_handler.php';
@@ -23,6 +28,16 @@ defined('DB_HOST') || die('Kein MySql-Datenbank Host angegeben. Bitte config.JTL
 defined('DB_NAME') || die('Kein MySql Datenbanknamen angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
 defined('DB_USER') || die('Kein MySql-Datenbank Benutzer angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
 defined('DB_PASS') || die('Kein MySql-Datenbank Passwort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+
+define(
+    'JTL_VERSION',
+    (int)sprintf(
+        '%d%02d',
+        Version::parse(APPLICATION_VERSION)->getMajor(),
+        Version::parse(APPLICATION_VERSION)->getMinor()
+    )
+); // DEPRECATED since 5.0.0
+define('JTL_MINOR_VERSION', (int) Version::parse(APPLICATION_VERSION)->getPatch()); // DEPRECATED since 5.0.0
 
 Profiler::start();
 
@@ -38,7 +53,7 @@ if (!function_exists('Shop')) {
     }
 }
 // PHP memory_limit work around
-if (!Shop()->PHPSettingsHelper()->hasMinLimit(64 * 1024 * 1024)) {
+if (!PHPSettings::getInstance()->hasMinLimit(64 * 1024 * 1024)) {
     ini_set('memory_limit', '64M');
 }
 
@@ -75,11 +90,13 @@ if (PHP_SAPI !== 'cli'
 }
 
 if (!JTL_INCLUDE_ONLY_DB) {
+    $debugbar = Shop::Container()->getDebugBar();
+
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikelsuchspecial_inc.php';
-    $oPluginHookListe_arr         = Plugin::getHookList();
+    $oPluginHookListe_arr         = \Plugin\Helper::getHookList();
     $nSystemlogFlag               = Jtllog::getSytemlogFlag();
     $template                     = Template::getInstance();
     $oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
@@ -98,6 +115,7 @@ if (!JTL_INCLUDE_ONLY_DB) {
         $bAdminWartungsmodus = true;
     }
     Sprache::getInstance();
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
     Shop::bootstrap();
+    require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
+    $debugbar->addCollector(new Smarty(Shop::Smarty()));
 }

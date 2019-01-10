@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 <input type="submit" name="fake" class="hidden">
 
 <table class="table table-striped order-items layout-fixed hyphens">
@@ -118,11 +122,20 @@
                                 <li class="shortdescription">{$oPosition->Artikel->cKurzBeschreibung}</li>
                             {/if}
 
-                            {if isset($oPosition->Artikel->cGewicht) && $Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $oPosition->Artikel->fGewicht > 0}
-                                <li class="weight">
-                                    <strong>{lang key='shippingWeight' section='global'}: </strong>
-                                    <span class="value">{$oPosition->Artikel->cGewicht} {lang key='weightUnit' section='global'}</span>
-                                </li>
+                            {if $oPosition->istKonfigVater()}
+                                {if isset($oPosition->getTotalConfigWeight()) && $Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $oPosition->getTotalConfigWeight() > 0}
+                                    <li class="weight">
+                                        <strong>{lang key='shippingWeight' section='global'}: </strong>
+                                        <span class="value">{$oPosition->getTotalConfigWeight()} {lang key='weightUnit' section='global'}</span>
+                                    </li>
+                                {/if}
+                            {else}
+                                {if isset($oPosition->Artikel->cGewicht) && $Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $oPosition->Artikel->fGewicht > 0}
+                                    <li class="weight">
+                                        <strong>{lang key='shippingWeight' section='global'}: </strong>
+                                        <span class="value">{$oPosition->Artikel->cGewicht} {lang key='weightUnit' section='global'}</span>
+                                    </li>
+                                {/if}
                             {/if}
                         </ul>
                     {else}
@@ -324,7 +337,15 @@
                      <td class="hidden-xs"></td>
                  {/if}
                  <td class="text-right" colspan="2">{lang key='useCredit' section='account data'}</td>
-                 <td class="text-right" colspan="{if $tplscope === 'cart'}4{else}3{/if}">{$smarty.session.Bestellung->GutscheinLocalized}</td>
+                 <td class="text-right" colspan="{if $tplscope === 'cart'}4{else}3{/if}">{$smarty.session.Bestellung->GutscheinLocalized}
+                    {if $tplscope == 'cart'}
+                        &nbsp;
+                        <button type="submit" class="btn btn-xs btn-small" title="Guthaben nicht verrechnen" name="dropPos" value="assetToUse">
+                            <span class="fa fa-trash"></span>
+                        </button>
+                    {/if}
+                 </td>
+
              </tr>
         {/if}
 
@@ -349,7 +370,7 @@
             <tr class="shipping-costs text-right">
                 <td colspan="{$colspan}"><small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->cCountryCode key='shippingInformationSpecific' section='basket'}</small></td>
             </tr>
-        {elseif empty($FavourableShipping)}
+        {elseif empty($FavourableShipping) && empty($smarty.session.Versandart)}
             <tr class="shipping-costs text-right">
                 <td colspan="{$colspan}"><small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}</small></td>
             </tr>

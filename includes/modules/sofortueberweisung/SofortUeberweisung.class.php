@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
@@ -111,7 +115,8 @@ class SofortUeberweisung extends PaymentMethod
         $oEinstellungen = Shop::Container()->getDB()->query(
             "SELECT cWert
                 FROM teinstellungen
-                WHERE cName = 'zahlungsart_sofortueberweisung_project_password'", 1
+                WHERE cName = 'zahlungsart_sofortueberweisung_project_password'",
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         if (!empty($oEinstellungen->cWert)) {
@@ -133,7 +138,8 @@ class SofortUeberweisung extends PaymentMethod
         $oEinstellungen = Shop::Container()->getDB()->query(
             "SELECT cWert
                 FROM teinstellungen
-                WHERE cName = 'zahlungsart_sofortueberweisung_benachrichtigung_password'", 1
+                WHERE cName = 'zahlungsart_sofortueberweisung_benachrichtigung_password'",
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         if (!empty($oEinstellungen->cWert)) {
@@ -149,14 +155,7 @@ class SofortUeberweisung extends PaymentMethod
     public function preparePaymentProcess($order)
     {
         $smarty = Shop::Smarty();
-        if (D_MODE === 1) {
-            Jtllog::writeLog(': preparePaymentProcess enter.', JTLLOG_LEVEL_DEBUG);
-        }
-
         if ($order->fGesamtsummeKundenwaehrung > 0) {
-            if (D_MODE === 1) {
-                Jtllog::writeLog(': preparePaymentProcess fGesamtsummeKundenwaehrung > 0', JTLLOG_LEVEL_DEBUG);
-            }
             $this->sofortueberweisung_id         = $this->paymentConfig['zahlungsart_sofortueberweisung_id'];
             $this->sofortueberweisung_project_id = $this->paymentConfig['zahlungsart_sofortueberweisung_project_id'];
             if ($this->paymentConfig['zahlungsart_sofortueberweisung_debugmode'] === 'Y') {
@@ -167,10 +166,10 @@ class SofortUeberweisung extends PaymentMethod
             $this->baueSicherheitsHash($order, $paymentHash);
 
             if ($this->bDebug === true) {
-                echo "<br/><br/>sender_holder: $this->name<br/>";
-                echo "sender_country_id: $this->strSenderCountryID<br/>";
-                echo "amount: $this->strAmount<br/>";
-                echo "currency_id: " . $order->Waehrung->cISO . "<br/>";
+                echo '<br/><br/>sender_holder: ' . $this->name . '<br/>';
+                echo 'sender_country_id: ' . $this->strSenderCountryID . '<br/>';
+                echo 'amount: ' . $this->strAmount . '<br/>';
+                echo 'currency_id: ' . $order->Waehrung->cISO . '<br/>';
             }
 
             if (!($this->sofortueberweisung_id
@@ -184,13 +183,13 @@ class SofortUeberweisung extends PaymentMethod
                     return 'Es ist ein Datenbankfehler aufgetreten!';
                 }
                 if (!$this->sofortueberweisung_id) {
-                    echo "\$this->sofortueberweisung_id is null<br/>";
+                    echo '$this->sofortueberweisung_id is null<br/>';
                 }
                 if (!$this->sofortueberweisung_project_id) {
-                    echo "\$this->sofortueberweisung_project_id is null<br/>";
+                    echo '$this->sofortueberweisung_project_id is null<br/>';
                 }
                 if (!$this->getProjectPassword()) {
-                    echo "\$this->getProjectPassword() is null<br/>";
+                    echo '$this->getProjectPassword() is null<br/>';
                 }
             }
 
@@ -216,13 +215,9 @@ class SofortUeberweisung extends PaymentMethod
                 '<input type="hidden" name="encoding" value="' . JTL_CHARSET . '">' .
                 '<input name="kBestellung" type="hidden" value="' . $order->kBestellung . '"/>' .
                 '<input name="interface_version" type="hidden" value="JTL-Shop-3"/>' .
-                '<input type="submit" class="btn btn-primary" name="Sofort-Ueberweisung" value="' . Shop::Lang()->get('payWithSofortueberweisung', 'global') . '"/>' .
+                '<input type="submit" class="btn btn-primary" name="Sofort-Ueberweisung" value="' .
+                    Shop::Lang()->get('payWithSofortueberweisung', 'global') . '"/>' .
                 '</form>';
-
-            if (D_MODE === 1) {
-                Jtllog::writeLog(': preparePaymentProcess strReturn: ' . $strReturn, JTLLOG_LEVEL_DEBUG);
-            }
-
             $smarty->assign('sofortueberweisungform', $strReturn);
         }
     }
@@ -246,7 +241,7 @@ class SofortUeberweisung extends PaymentMethod
             $this->name = $order->oRechnungsadresse->cFirma;
         }
         // ISO pruefen
-        preg_match("/[a-zA-Z]{2}/", $this->strSenderCountryID, $cTreffer1_arr);
+        preg_match('/[a-zA-Z]{2}/', $this->strSenderCountryID, $cTreffer1_arr);
         if (strlen($cTreffer1_arr[0]) !== strlen($this->strSenderCountryID)) {
             $cISO = Sprache::getIsoCodeByCountryName($this->strSenderCountryID);
             if (strlen($cISO) > 0 && $cISO !== 'noISO') {
@@ -278,12 +273,6 @@ class SofortUeberweisung extends PaymentMethod
 
         $data_implode = implode('|', $data);
         $this->hash   = sha1($data_implode);
-
-        if (D_MODE === 1) {
-            Jtllog::writeLog(': baueSicherheitsHash data: ' . print_r($data, true), JTLLOG_LEVEL_DEBUG);
-            Jtllog::writeLog(': baueSicherheitsHash data_implode: ' . $data_implode, JTLLOG_LEVEL_DEBUG);
-            Jtllog::writeLog(': baueSicherheitsHash hash: ' . $this->hash, JTLLOG_LEVEL_DEBUG);
-        }
     }
 
     /**
@@ -294,21 +283,14 @@ class SofortUeberweisung extends PaymentMethod
     public function handleNotification($order, $paymentHash, $args)
     {
         $this->doLog(print_r($args, true));
-
-        if (D_MODE === 1) {
-            Jtllog::writeLog(': handleNotification args: ' . print_r($args, true), JTLLOG_LEVEL_DEBUG);
-        }
-
         if ($this->verifyNotification($order, $paymentHash, $args)) {
-            if (D_MODE === 1) {
-                Jtllog::writeLog(': verifyNotification pass. addIncomingPayment', JTLLOG_LEVEL_DEBUG);
-            }
-
             $transaction = Shop::Container()->getDB()->query(
-                "SELECT tzahlungseingang.cZahlungsanbieter, tzahlungseingang.fBetrag, tzahlungsession.nBezahlt
+                'SELECT tzahlungseingang.cZahlungsanbieter, tzahlungseingang.fBetrag, tzahlungsession.nBezahlt
                     FROM tzahlungsession
-                    INNER JOIN tzahlungseingang ON tzahlungseingang.kBestellung = " . (int)$order->kBestellung . "
-                    WHERE tzahlungsession.cZahlungsID = '" . substr($paymentHash, 1) . "'", 1
+                    INNER JOIN tzahlungseingang 
+                        ON tzahlungseingang.kBestellung = ' . (int)$order->kBestellung . "
+                    WHERE tzahlungsession.cZahlungsID = '" . substr($paymentHash, 1) . "'",
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             if (!isset($transaction)
@@ -340,10 +322,6 @@ class SofortUeberweisung extends PaymentMethod
      */
     public function verifyNotification($order, $paymentHash, $args)
     {
-        if (D_MODE === 1) {
-            Jtllog::writeLog(': verifyNotification args: ' . print_r($args, true), JTLLOG_LEVEL_DEBUG);
-            Jtllog::writeLog(': verifyNotification args als REQUEST: ' . print_r($_REQUEST, true), JTLLOG_LEVEL_DEBUG);
-        }
         extract($args);
         $data                  = [
             'transaction'               => $args['transaction'] ?? null,
@@ -385,11 +363,6 @@ class SofortUeberweisung extends PaymentMethod
         $data_implode = implode('|', $data);
         $hashTMP      = sha1($data_implode);
 
-        if (D_MODE === 1) {
-            Jtllog::writeLog(': verifyNotification data: ' . print_r($data, true), JTLLOG_LEVEL_DEBUG);
-            Jtllog::writeLog(': verifyNotification hashTMP: ' . $hashTMP . ' - hash: ' . $hash, JTLLOG_LEVEL_DEBUG);
-        }
-
         return ($hashTMP === $hash);
     }
 
@@ -430,7 +403,7 @@ class SofortUeberweisung extends PaymentMethod
         } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_reason_1'] == 8) {
             $this->reason_1 = $this->getShopTitle();
         }
-        $this->reason_1 = str_replace("\"", "&quot;", $this->reason_1);
+        $this->reason_1 = str_replace('"', '&quot;', $this->reason_1);
 
         if ($this->paymentConfig['zahlungsart_sofortueberweisung_reason_2'] == 1) {
             $this->reason_2 = '';
@@ -449,10 +422,10 @@ class SofortUeberweisung extends PaymentMethod
         } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_reason_2'] == 8) {
             $this->reason_2 = $this->getShopTitle();
         }
-        $this->reason_2 = str_replace("\"", "&quot;", $this->reason_2);
+        $this->reason_2 = str_replace('"', '&quot;', $this->reason_2);
 
         if ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_2'] == 1) {
-            $this->user_variable_2 = "";
+            $this->user_variable_2 = '';
         } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_2'] == 2) {
             $this->user_variable_2 = $order->oRechnungsadresse->cFirma;
         } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_2'] == 3) {
@@ -470,10 +443,10 @@ class SofortUeberweisung extends PaymentMethod
         } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_2'] == 9) {
             $this->user_variable_2 = $order->oRechnungsadresse->cFax;
         }
-        $this->user_variable_2 = str_replace("\"", "&quot;", $this->user_variable_2);
+        $this->user_variable_2 = str_replace('"', '&quot;', $this->user_variable_2);
 
         if ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_3'] == 1) {
-            $this->user_variable_3 = "";
+            $this->user_variable_3 = '';
         } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_3'] == 2) {
             $this->user_variable_3 = $order->oRechnungsadresse->cFirma;
         } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_3'] == 3) {
@@ -491,10 +464,10 @@ class SofortUeberweisung extends PaymentMethod
         } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_3'] == 9) {
             $this->user_variable_3 = $order->oRechnungsadresse->cFax;
         }
-        $this->user_variable_3 = str_replace("\"", "&quot;", $this->user_variable_3);
+        $this->user_variable_3 = str_replace('"', '&quot;', $this->user_variable_3);
 
         if ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_4'] == 1) {
-            $this->user_variable_4 = "";
+            $this->user_variable_4 = '';
         } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_4'] == 2) {
             $this->user_variable_4 = $order->oRechnungsadresse->cFirma;
         } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_4'] == 3) {
@@ -512,7 +485,7 @@ class SofortUeberweisung extends PaymentMethod
         } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_4'] == 9) {
             $this->user_variable_4 = $order->oRechnungsadresse->cFax;
         }
-        $this->user_variable_4 = str_replace("\"", "&quot;", $this->user_variable_4);
+        $this->user_variable_4 = str_replace('"', '&quot;', $this->user_variable_4);
     }
 
     /**
@@ -545,12 +518,22 @@ class SofortUeberweisung extends PaymentMethod
             return false;
         }
         if (strlen($this->getNotificationPassword()) === 0) {
-            ZahlungsLog::add($this->moduleID, 'Pflichtparameter "Projekt Passwort" ist nicht gesetzt!', null, LOGLEVEL_ERROR);
+            ZahlungsLog::add(
+                $this->moduleID,
+                'Pflichtparameter "Projekt Passwort" ist nicht gesetzt!',
+                null,
+                LOGLEVEL_ERROR
+            );
 
             return false;
         }
         if (strlen($this->getProjectPassword()) == 0) {
-            ZahlungsLog::add($this->moduleID, 'Pflichtparameter "Benachrichtigungspasswort" ist nicht gesetzt!', null, LOGLEVEL_ERROR);
+            ZahlungsLog::add(
+                $this->moduleID,
+                'Pflichtparameter "Benachrichtigungspasswort" ist nicht gesetzt!',
+                null,
+                LOGLEVEL_ERROR
+            );
 
             return false;
         }

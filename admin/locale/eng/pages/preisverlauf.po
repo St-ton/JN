@@ -1,0 +1,9 @@
+msgid "configurePriceFlow"
+msgstr "Preisverlauf-Einstellungen"
+
+msgid "configurePriceFlowURL"
+msgstr "https://jtl-url.de/9m031"
+
+msgid "configurePriceFlowDesc"
+msgstr "Einstellungen zum Preisverlaufgraphen können Sie hier vornehmen."
+

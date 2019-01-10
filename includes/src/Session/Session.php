@@ -7,6 +7,7 @@
 namespace Session;
 
 use DB\ReturnType;
+use Helpers\Request;
 use Link\LinkGroupCollection;
 use Session\Handler\SessionHandlerBot;
 use Session\Handler\SessionHandlerDB;
@@ -14,30 +15,31 @@ use Session\Handler\SessionHandlerJTL;
 
 /**
  * Class Session
+ * @package Session
  */
 class Session
 {
-    const DEFAULT_SESSION = 'JTLSHOP';
+    public const DEFAULT_SESSION = 'JTLSHOP';
 
     /**
      * handle bot like normal visitor
      */
-    const SAVE_BOT_SESSIONS_NORMAL = 0;
+    public const SAVE_BOT_SESSIONS_NORMAL = 0;
 
     /**
      * use single session ID for all bot visits
      */
-    const SAVE_BOT_SESSIONS_COMBINED = 1;
+    public const SAVE_BOT_SESSIONS_COMBINED = 1;
 
     /**
      * save combined bot session to cache
      */
-    const SAVE_BOT_SESSIONS_CACHE = 2;
+    public const SAVE_BOT_SESSIONS_CACHE = 2;
 
     /**
      * never save bot sessions
      */
-    const SAVE_BOT_SESSIONS_NEVER = 3;
+    public const SAVE_BOT_SESSIONS_NEVER = 3;
 
     /**
      * @var string
@@ -84,26 +86,26 @@ class Session
     {
         self::$instance    = $this;
         self::$sessionName = $sessionName;
-        $bot               = SAVE_BOT_SESSION !== 0 && isset($_SERVER['HTTP_USER_AGENT'])
+        $bot               = \SAVE_BOT_SESSION !== 0 && isset($_SERVER['HTTP_USER_AGENT'])
             ? self::getIsCrawler($_SERVER['HTTP_USER_AGENT'])
             : false;
         \session_name(self::$sessionName);
-        if ($bot === false || SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NORMAL) {
+        if ($bot === false || \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NORMAL) {
             self::$handler = \ES_SESSIONS === 1
                 ? new SessionHandlerDB(\Shop::Container()->getDB())
                 : new SessionHandlerJTL();
         } else {
-            if (SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_COMBINED
-                || SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
+            if (\SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_COMBINED
+                || \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
             ) {
                 \session_id('jtl-bot');
             }
-            if (SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
-                || SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NEVER
+            if (\SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
+                || \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NEVER
             ) {
-                $save = SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
-                    && \Shop::Cache()->isAvailable()
-                    && \Shop::Cache()->isActive();
+                $save = \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
+                    && \Shop::Container()->getCache()->isAvailable()
+                    && \Shop::Container()->getCache()->isActive();
 
                 self::$handler = new SessionHandlerBot($save);
             } else {
@@ -124,10 +126,11 @@ class Session
     public static function getIsCrawler(string $userAgent): bool
     {
         return \preg_match(
-                '/Google|ApacheBench|sqlmap|loader.io|bot|Rambler|Yahoo|AbachoBOT|accoona' .
-                '|spider|AcioRobot|ASPSeek|CocoCrawler|Dumbot|FAST-WebCrawler|GeonaBot' .
-                '|Gigabot|Lycos|alexa|AltaVista|IDBot|Scrubby/', $userAgent
-            ) > 0;
+            '/Google|ApacheBench|sqlmap|loader.io|bot|Rambler|Yahoo|AbachoBOT|accoona' .
+            '|spider|AcioRobot|ASPSeek|CocoCrawler|Dumbot|FAST-WebCrawler|GeonaBot' .
+            '|Gigabot|Lycos|alexa|AltaVista|IDBot|Scrubby/',
+            $userAgent
+        ) > 0;
     }
 
     /**
@@ -222,7 +225,8 @@ class Session
             \session_destroy();
             die('<h1>Ihr Shop wurde installiert. Lesen Sie in unserem Guide ' .
                 '<a href="https://jtl-url.de/3dw4f">' .
-                'mehr zu ersten Schritten mit JTL-Shop, der Grundkonfiguration und dem erstem Abgleich mit JTL-Wawi</a>.</h1>');
+                'mehr zu ersten Schritten mit JTL-Shop, der Grundkonfiguration ' .
+                'und dem erstem Abgleich mit JTL-Wawi</a>.</h1>');
         }
 
         //wurde kunde über wawi aktualisiert?
@@ -234,7 +238,7 @@ class Session
                 'SELECT kKunde
                     FROM tkunde
                     WHERE kKunde = :cid
-                        AND date_sub(now(), INTERVAL 3 HOUR) < dVeraendert',
+                        AND DATE_SUB(NOW(), INTERVAL 3 HOUR) < dVeraendert',
                 ['cid' => (int)$_SESSION['Kunde']->kKunde],
                 ReturnType::SINGLE_OBJECT
             );
@@ -251,9 +255,8 @@ class Session
     /**
      * @throws \Exception
      */
-    private function updateGlobals()
+    private function updateGlobals(): void
     {
-        //Kategorie
         unset($_SESSION['cTemplate'], $_SESSION['template'], $_SESSION['oKategorie_arr_new']);
         $_SESSION['oKategorie_arr']                   = [];
         $_SESSION['kKategorieVonUnterkategorien_arr'] = [];
@@ -269,28 +272,24 @@ class Session
 
             return $lang;
         }, $_SESSION['Sprachen']);
-        // Sprache anhand der Browsereinstellung ermitteln
-        $cLangDefault = '';
-        $cAllowed_arr = [];
+        $defaultLang = '';
+        $allowed     = [];
         foreach ($_SESSION['Sprachen'] as $oSprache) {
             $cISO              = \StringHandler::convertISO2ISO639($oSprache->cISO);
             $oSprache->cISO639 = $cISO;
-            $cAllowed_arr[]    = $cISO;
+            $allowed[]         = $cISO;
             if ($oSprache->cShopStandard === 'Y') {
-                $cLangDefault = $cISO;
+                $defaultLang = $cISO;
             }
         }
         if (!isset($_SESSION['kSprache'])) {
-            $cDefaultLanguage = $this->getBrowserLanguage($cAllowed_arr, $cLangDefault);
-            $cDefaultLanguage = \StringHandler::convertISO6392ISO($cDefaultLanguage);
-            foreach ($_SESSION['Sprachen'] as $Sprache) {
-                if ($Sprache->cISO === $cDefaultLanguage
-                    || (empty($cDefaultLanguage) && $Sprache->cShopStandard === 'Y')
-                ) {
-                    $_SESSION['kSprache']    = $Sprache->kSprache;
-                    $_SESSION['cISOSprache'] = \trim($Sprache->cISO);
+            $default = \StringHandler::convertISO6392ISO($this->getBrowserLanguage($allowed, $defaultLang));
+            foreach ($_SESSION['Sprachen'] as $lang) {
+                if ($lang->cISO === $default || (empty($default) && $lang->cShopStandard === 'Y')) {
+                    $_SESSION['kSprache']    = $lang->kSprache;
+                    $_SESSION['cISOSprache'] = \trim($lang->cISO);
                     \Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
-                    $_SESSION['currentLanguage'] = clone $Sprache;
+                    $_SESSION['currentLanguage'] = clone $lang;
                     break;
                 }
             }
@@ -316,19 +315,18 @@ class Session
             }
         }
         // EXPERIMENTAL_MULTILANG_SHOP
-        foreach ($_SESSION['Sprachen'] as $Sprache) {
-            if (\defined('URL_SHOP_' . \strtoupper($Sprache->cISO))) {
-                $shopLangURL = \constant('URL_SHOP_' . \strtoupper($Sprache->cISO));
+        foreach ($_SESSION['Sprachen'] as $lang) {
+            if (\defined('URL_SHOP_' . \strtoupper($lang->cISO))) {
+                $shopLangURL = \constant('URL_SHOP_' . \strtoupper($lang->cISO));
                 if (\strpos($shopLangURL, $_SERVER['HTTP_HOST']) !== false) {
-                    $_SESSION['kSprache']    = $Sprache->kSprache;
-                    $_SESSION['cISOSprache'] = \trim($Sprache->cISO);
+                    $_SESSION['kSprache']    = $lang->kSprache;
+                    $_SESSION['cISOSprache'] = \trim($lang->cISO);
                     \Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
                     break;
                 }
             }
         }
         // EXPERIMENTAL_MULTILANG_SHOP END
-
         if (!isset($_SESSION['Kunde']->kKunde, $_SESSION['Kundengruppe']->kKundengruppe)
             || \get_class($_SESSION['Kundengruppe']) === 'stdClass'
         ) {
@@ -339,13 +337,12 @@ class Session
         if (!$_SESSION['Kundengruppe']->hasAttributes()) {
             $_SESSION['Kundengruppe']->initAttributes();
         }
-        if (\Shop::Cache()->isCacheGroupActive(\CACHING_GROUP_CORE) === false) {
+        if (\Shop::Container()->getCache()->isCacheGroupActive(\CACHING_GROUP_CORE) === false) {
             $_SESSION['Linkgruppen'] = \Shop::Container()->getLinkService()->getLinkGroups();
-            $_SESSION['Hersteller']  = \HerstellerHelper::getInstance()->getManufacturers();
+            $_SESSION['Hersteller']  = \Helpers\Manufacturer::getInstance()->getManufacturers();
         }
-        $_SESSION['Warenkorb']->loescheDeaktiviertePositionen();
-        \TaxHelper::setTaxRates();
-        // sprache neu laden
+        self::getCart()->loescheDeaktiviertePositionen();
+        \Helpers\Tax::setTaxRates();
         \Shop::Lang()->reset();
     }
 
@@ -354,10 +351,10 @@ class Session
      */
     private function checkWishlistDeletes(): self
     {
-        $kWunschlistePos = \RequestHelper::verifyGPCDataInt('wlplo');
-        if ($kWunschlistePos !== 0) {
-            $CWunschliste = new \Wunschliste();
-            $CWunschliste->entfernePos($kWunschlistePos);
+        $index = Request::verifyGPCDataInt('wlplo');
+        if ($index !== 0) {
+            $wl = new \Wunschliste();
+            $wl->entfernePos($index);
         }
 
         return $this;
@@ -368,7 +365,7 @@ class Session
      */
     private function checkComparelistDeletes(): self
     {
-        $kVergleichlistePos = \RequestHelper::verifyGPCDataInt('vlplo');
+        $kVergleichlistePos = Request::verifyGPCDataInt('vlplo');
         if ($kVergleichlistePos !== 0
             && isset($_SESSION['Vergleichsliste']->oArtikel_arr)
             && \is_array($_SESSION['Vergleichsliste']->oArtikel_arr)
@@ -398,47 +395,44 @@ class Session
     }
 
     /**
-     * @param array  $cAllowed_arr
-     * @param string $cDefault
+     * @param array  $allowed
+     * @param string $default
      * @return string
      */
-    public function getBrowserLanguage(array $cAllowed_arr, $cDefault): string
+    public function getBrowserLanguage(array $allowed, string $default): string
     {
-        $cLanguage = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null;
-
-        if (empty($cLanguage)) {
-            return $cDefault;
+        $acceptLanguage = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null;
+        if (empty($acceptLanguage)) {
+            return $default;
         }
-
-        $cAccepted_arr   = \preg_split('/,\s*/', $cLanguage);
-        $cCurrentLang    = $cDefault;
-        $nCurrentQuality = 0;
-
-        foreach ($cAccepted_arr as $cAccepted) {
+        $accepted = \preg_split('/,\s*/', $acceptLanguage);
+        $current  = $default;
+        $quality  = 0;
+        foreach ($accepted as $lang) {
             $res = \preg_match(
                 '/^([a-z]{1,8}(?:-[a-z]{1,8})*)' .
-                '(?:;\s*q=(0(?:\.[0-9]{1,3})?|1(?:\.0{1,3})?))?$/i', $cAccepted, $cMatch_arr
+                '(?:;\s*q=(0(?:\.[0-9]{1,3})?|1(?:\.0{1,3})?))?$/i',
+                $lang,
+                $matches
             );
             if (!$res) {
                 continue;
             }
-            $cLangeCode   = \explode('-', $cMatch_arr[1]);
-            $nLangQuality = isset($cMatch_arr[2])
-                ? (float)$cMatch_arr[2]
+            $codes       = \explode('-', $matches[1]);
+            $langQuality = isset($matches[2])
+                ? (float)$matches[2]
                 : 1.0;
-            while (\count($cLangeCode)) {
-                if ($nLangQuality > $nCurrentQuality
-                    && \in_array(\strtolower(\implode('-', $cLangeCode)), $cAllowed_arr, true)
-                ) {
-                    $cCurrentLang    = \strtolower(\implode('-', $cLangeCode));
-                    $nCurrentQuality = $nLangQuality;
+            while (\count($codes)) {
+                if ($langQuality > $quality && \in_array(\strtolower(\implode('-', $codes)), $allowed, true)) {
+                    $current = \strtolower(\implode('-', $codes));
+                    $quality = $langQuality;
                     break;
                 }
-                \array_pop($cLangeCode);
+                \array_pop($codes);
             }
         }
 
-        return $cCurrentLang;
+        return $current;
     }
 
     /**
@@ -446,7 +440,6 @@ class Session
      */
     public function cleanUp(): self
     {
-        // Unregistrierten Benutzer löschen
         if (isset($_SESSION['Kunde']->nRegistriert) && (int)$_SESSION['Kunde']->nRegistriert === 0) {
             unset($_SESSION['Kunde']);
         }
@@ -475,19 +468,35 @@ class Session
     }
 
     /**
-     * @param \Kunde $Kunde
+     * @return \Lieferadresse
+     */
+    public static function getDeliveryAddress(): \Lieferadresse
+    {
+        return $_SESSION['Lieferadresse'] ?? new \Lieferadresse();
+    }
+
+    /**
+     * @param \Lieferadresse $address
+     */
+    public static function setDeliveryAddress(\Lieferadresse $address): void
+    {
+        $_SESSION['Lieferadresse'] = $address;
+    }
+
+    /**
+     * @param \Kunde $customer
      * @return $this
      */
-    public function setCustomer(\Kunde $Kunde): self
+    public function setCustomer(\Kunde $customer): self
     {
-        $Kunde->angezeigtesLand   = \Sprache::getCountryCodeByCountryName($Kunde->cLand);
-        $_SESSION['Kunde']        = $Kunde;
-        $_SESSION['Kundengruppe'] = new \Kundengruppe((int)$Kunde->kKundengruppe);
+        $customer->angezeigtesLand = \Sprache::getCountryCodeByCountryName($customer->cLand);
+        $_SESSION['Kunde']         = $customer;
+        $_SESSION['Kundengruppe']  = new \Kundengruppe((int)$customer->kKundengruppe);
         $_SESSION['Kundengruppe']->setMayViewCategories(1)
                                  ->setMayViewPrices(1)
                                  ->initAttributes();
-        self::Cart()->setzePositionsPreise();
-        \TaxHelper::setTaxRates();
+        self::getCart()->setzePositionsPreise();
+        \Helpers\Tax::setTaxRates();
         self::setSpecialLinks();
 
         return $this;
@@ -496,102 +505,206 @@ class Session
     /**
      * @return \Kunde
      */
-    public static function Customer(): \Kunde
+    public static function getCustomer(): \Kunde
     {
         return $_SESSION['Kunde'] ?? new \Kunde();
     }
 
     /**
+     * @return \Kunde
+     * @deprecated since 5.0.0
+     */
+    public static function customer(): \Kunde
+    {
+        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
+        return self::getCustomer();
+    }
+
+    /**
      * @return \Kundengruppe
      */
-    public static function CustomerGroup(): \Kundengruppe
+    public static function getCustomerGroup(): \Kundengruppe
     {
         return $_SESSION['Kundengruppe'] ?? (new \Kundengruppe())->loadDefaultGroup();
     }
 
     /**
+     * @return \Kundengruppe
+     * @deprecated since 5.0.0
+     */
+    public static function customerGroup(): \Kundengruppe
+    {
+        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
+        return self::getCustomerGroup();
+    }
+
+    /**
      * @return \Sprache
      */
-    public function Language(): \Sprache
+    public function getLanguage(): \Sprache
     {
-        $o              = \Sprache::getInstance(false);
-        $o->kSprache    = (int)$_SESSION['kSprache'];
-        $o->kSprachISO  = (int)$_SESSION['kSprache'];
-        $o->cISOSprache = $_SESSION['cISOSprache'];
+        $lang              = \Sprache::getInstance(false);
+        $lang->kSprache    = (int)$_SESSION['kSprache'];
+        $lang->kSprachISO  = (int)$_SESSION['kSprache'];
+        $lang->cISOSprache = $_SESSION['cISOSprache'];
 
-        return $o;
+        return $lang;
+    }
+
+    /**
+     * @return \Sprache
+     * @deprecated since 5.0.0
+     */
+    public function language(): \Sprache
+    {
+        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
+        return $this->getLanguage();
     }
 
     /**
      * @return array
      */
-    public static function Languages(): array
+    public static function getLanguages(): array
     {
         return $_SESSION['Sprachen'] ?? [];
     }
 
     /**
      * @return array
+     * @deprecated since 5.0.0
      */
-    public function Payments(): array
+    public static function languages(): array
+    {
+        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
+        return self::getLanguages();
+    }
+
+    /**
+     * @return array
+     */
+    public function getPaymentMethods(): array
     {
         return $_SESSION['Zahlungsarten'] ?? [];
     }
 
     /**
-     * @return \stdClass
+     * @return array
+     * @deprecated since 5.0.0
      */
-    public function DeliveryCountries()
+    public function payments(): array
     {
-        return $_SESSION['Lieferlaender'];
+        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
+        return $this->getPaymentMethods();
+    }
+
+    /**
+     * @return array
+     * @deprecated since 5.0.0
+     */
+    public function deliveryCountries(): array
+    {
+        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
+        return [];
     }
 
     /**
      * @return \Currency
      */
-    public static function Currency(): \Currency
+    public static function getCurrency(): \Currency
     {
         return $_SESSION['Waehrung'] ?? (new \Currency())->getDefault();
     }
 
     /**
+     * @return \Currency
+     * @deprecated since 5.0.0
+     */
+    public static function currency(): \Currency
+    {
+        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
+        return self::getCurrency();
+    }
+
+    /**
      * @return \Warenkorb
      */
-    public static function Cart(): \Warenkorb
+    public static function getCart(): \Warenkorb
     {
         return $_SESSION['Warenkorb'] ?? new \Warenkorb();
     }
 
     /**
+     * @return \Warenkorb
+     * @deprecated since 5.0.0
+     */
+    public static function cart(): \Warenkorb
+    {
+        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
+        return self::getCart();
+    }
+
+    /**
      * @return \Currency[]
      */
-    public static function Currencies(): array
+    public static function getCurrencies(): array
     {
         return $_SESSION['Waehrungen'] ?? [];
     }
 
     /**
-     * @return \Warenkorb
+     * @return \Currency[]
+     * @deprecated since 5.0.0
      */
-    public function Basket(): \Warenkorb
+    public static function currencies(): array
     {
+        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
+        return self::getCurrencies();
+    }
+
+    /**
+     * @return \Warenkorb
+     * @deprecated since 5.0.0
+     */
+    public function basket(): \Warenkorb
+    {
+        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
         return $_SESSION['Warenkorb'] ?? new \Warenkorb();
     }
 
     /**
      * @return \Wunschliste
      */
-    public static function WishList(): \Wunschliste
+    public static function getWishList(): \Wunschliste
     {
         return $_SESSION['Wunschliste'] ?? new \Wunschliste();
     }
 
     /**
+     * @return \Wunschliste
+     * @deprecated since 5.0.0
+     */
+    public static function wishList(): \Wunschliste
+    {
+        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
+        return self::getWishList();
+    }
+
+    /**
      * @return \Vergleichsliste
      */
-    public static function CompareList(): \Vergleichsliste
+    public static function getCompareList(): \Vergleichsliste
     {
         return $_SESSION['Vergleichsliste'] ?? new \Vergleichsliste();
+    }
+
+    /**
+     * @return \Vergleichsliste
+     * @deprecated since 5.0.0
+     */
+    public static function compareList(): \Vergleichsliste
+    {
+        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
+        return self::getCompareList();
     }
 
     /**
@@ -599,7 +712,7 @@ class Session
      * @former checkeSpracheWaehrung()
      * @since 5.0.0
      */
-    public static function checkReset($langISO = '')
+    public static function checkReset($langISO = ''): void
     {
         if (\strlen($langISO) > 0) {
             //Kategorien zurücksetzen, da sie lokalisiert abgelegt wurden
@@ -617,155 +730,192 @@ class Session
                 unset($_SESSION['Suche']);
                 self::setSpecialLinks();
                 if (isset($_SESSION['Wunschliste'])) {
-                    self::WishList()->umgebungsWechsel();
+                    self::getWishList()->umgebungsWechsel();
                 }
                 if (isset($_SESSION['Vergleichsliste'])) {
-                    self::CompareList()->umgebungsWechsel();
+                    self::getCompareList()->umgebungsWechsel();
                 }
                 $_SESSION['currentLanguage'] = clone $lang;
                 unset($_SESSION['currentLanguage']->cURL);
             } else {
-                // lang mitgegeben, aber nicht mehr in db vorhanden -> alter Sprachlink
-                $kArtikel              = \RequestHelper::verifyGPCDataInt('a');
-                $kKategorie            = \RequestHelper::verifyGPCDataInt('k');
-                $kSeite                = \RequestHelper::verifyGPCDataInt('s');
-                $kVariKindArtikel      = \RequestHelper::verifyGPCDataInt('a2');
-                $kHersteller           = \RequestHelper::verifyGPCDataInt('h');
-                $kSuchanfrage          = \RequestHelper::verifyGPCDataInt('l');
-                $kMerkmalWert          = \RequestHelper::verifyGPCDataInt('m');
-                $kTag                  = \RequestHelper::verifyGPCDataInt('t');
-                $kSuchspecial          = \RequestHelper::verifyGPCDataInt('q');
-                $kNews                 = \RequestHelper::verifyGPCDataInt('n');
-                $kNewsMonatsUebersicht = \RequestHelper::verifyGPCDataInt('nm');
-                $kNewsKategorie        = \RequestHelper::verifyGPCDataInt('nk');
-                $kUmfrage              = \RequestHelper::verifyGPCDataInt('u');
-                $cSeo                  = '';
-                //redirect per 301
+                $kArtikel              = Request::verifyGPCDataInt('a');
+                $kKategorie            = Request::verifyGPCDataInt('k');
+                $kSeite                = Request::verifyGPCDataInt('s');
+                $kVariKindArtikel      = Request::verifyGPCDataInt('a2');
+                $kHersteller           = Request::verifyGPCDataInt('h');
+                $kSuchanfrage          = Request::verifyGPCDataInt('l');
+                $kMerkmalWert          = Request::verifyGPCDataInt('m');
+                $kTag                  = Request::verifyGPCDataInt('t');
+                $kSuchspecial          = Request::verifyGPCDataInt('q');
+                $kNews                 = Request::verifyGPCDataInt('n');
+                $kNewsMonatsUebersicht = Request::verifyGPCDataInt('nm');
+                $kNewsKategorie        = Request::verifyGPCDataInt('nk');
+                $kUmfrage              = Request::verifyGPCDataInt('u');
+                $seo                   = '';
                 \http_response_code(301);
                 if ($kArtikel > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
-                        'cKey', 'kArtikel',
-                        'kKey', $kArtikel,
-                        'kSprache', \Shop::getLanguageID()
+                        'cKey',
+                        'kArtikel',
+                        'kKey',
+                        $kArtikel,
+                        'kSprache',
+                        \Shop::getLanguageID()
                     );
-                    $cSeo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kKategorie > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
-                        'cKey', 'kKategorie',
-                        'kKey', $kKategorie,
-                        'kSprache', \Shop::getLanguageID()
+                        'cKey',
+                        'kKategorie',
+                        'kKey',
+                        $kKategorie,
+                        'kSprache',
+                        \Shop::getLanguageID()
                     );
-                    $cSeo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kSeite > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
-                        'cKey', 'kLink',
-                        'kKey', $kSeite,
-                        'kSprache', \Shop::getLanguageID()
+                        'cKey',
+                        'kLink',
+                        'kKey',
+                        $kSeite,
+                        'kSprache',
+                        \Shop::getLanguageID()
                     );
-                    $cSeo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kVariKindArtikel > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
-                        'cKey', 'kArtikel',
-                        'kKey', $kVariKindArtikel,
-                        'kSprache', \Shop::getLanguageID()
+                        'cKey',
+                        'kArtikel',
+                        'kKey',
+                        $kVariKindArtikel,
+                        'kSprache',
+                        \Shop::getLanguageID()
                     );
-                    $cSeo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kHersteller > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
-                        'cKey', 'kHersteller',
-                        'kKey', $kHersteller,
-                        'kSprache', \Shop::getLanguageID()
+                        'cKey',
+                        'kHersteller',
+                        'kKey',
+                        $kHersteller,
+                        'kSprache',
+                        \Shop::getLanguageID()
                     );
-                    $cSeo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kSuchanfrage > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
-                        'cKey', 'kSuchanfrage',
-                        'kKey', $kSuchanfrage,
-                        'kSprache', \Shop::getLanguageID()
+                        'cKey',
+                        'kSuchanfrage',
+                        'kKey',
+                        $kSuchanfrage,
+                        'kSprache',
+                        \Shop::getLanguageID()
                     );
-                    $cSeo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kMerkmalWert > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
-                        'cKey', 'kMerkmalWert',
-                        'kKey', $kMerkmalWert,
-                        'kSprache', \Shop::getLanguageID()
+                        'cKey',
+                        'kMerkmalWert',
+                        'kKey',
+                        $kMerkmalWert,
+                        'kSprache',
+                        \Shop::getLanguageID()
                     );
-                    $cSeo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kTag > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
-                        'cKey', 'kTag',
-                        'kKey', $kTag,
-                        'kSprache', \Shop::getLanguageID()
+                        'cKey',
+                        'kTag',
+                        'kKey',
+                        $kTag,
+                        'kSprache',
+                        \Shop::getLanguageID()
                     );
-                    $cSeo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kSuchspecial > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
-                        'cKey', 'kSuchspecial',
-                        'kKey', $kSuchspecial,
-                        'kSprache', \Shop::getLanguageID()
+                        'cKey',
+                        'kSuchspecial',
+                        'kKey',
+                        $kSuchspecial,
+                        'kSprache',
+                        \Shop::getLanguageID()
                     );
-                    $cSeo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kNews > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
-                        'cKey', 'kNews',
-                        'kKey', $kNews,
-                        'kSprache', \Shop::getLanguageID()
+                        'cKey',
+                        'kNews',
+                        'kKey',
+                        $kNews,
+                        'kSprache',
+                        \Shop::getLanguageID()
                     );
-                    $cSeo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kNewsMonatsUebersicht > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
-                        'cKey', 'kNewsMonatsUebersicht',
-                        'kKey', $kNewsMonatsUebersicht,
-                        'kSprache', \Shop::getLanguageID()
+                        'cKey',
+                        'kNewsMonatsUebersicht',
+                        'kKey',
+                        $kNewsMonatsUebersicht,
+                        'kSprache',
+                        \Shop::getLanguageID()
                     );
-                    $cSeo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kNewsKategorie > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
-                        'cKey', 'kNewsKategorie',
-                        'kKey', $kNewsKategorie,
-                        'kSprache', \Shop::getLanguageID()
+                        'cKey',
+                        'kNewsKategorie',
+                        'kKey',
+                        $kNewsKategorie,
+                        'kSprache',
+                        \Shop::getLanguageID()
                     );
-                    $cSeo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 } elseif ($kUmfrage > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
-                        'cKey', 'kUmfrage',
-                        'kKey', $kUmfrage,
-                        'kSprache', \Shop::getLanguageID()
+                        'cKey',
+                        'kUmfrage',
+                        'kKey',
+                        $kUmfrage,
+                        'kSprache',
+                        \Shop::getLanguageID()
                     );
-                    $cSeo  = $dbRes->cSeo;
+                    $seo   = $dbRes->cSeo;
                 }
-                \header('Location: ' . \Shop::getURL() . '/' . $cSeo, true, 301);
+                \header('Location: ' . \Shop::getURL() . '/' . $seo, true, 301);
                 exit;
             }
         }
 
-        $currencyCode = \RequestHelper::verifyGPDataString('curr');
+        $currencyCode = Request::verifyGPDataString('curr');
         if ($currencyCode) {
-            $cart     = self::Cart();
-            $currency = \Functional\first(self::Currencies(), function (\Currency $c) use ($currencyCode) {
+            $cart     = self::getCart();
+            $currency = \Functional\first(self::getCurrencies(), function (\Currency $c) use ($currencyCode) {
                 return $c->getCode() === $currencyCode;
             });
             if ($currency !== null) {
                 $_SESSION['Waehrung']      = $currency;
                 $_SESSION['cWaehrungName'] = $currency->getName();
                 if (isset($_SESSION['Wunschliste'])) {
-                    self::WishList()->umgebungsWechsel();
+                    self::getWishList()->umgebungsWechsel();
                 }
                 if (isset($_SESSION['Vergleichsliste'])) {
-                    self::CompareList()->umgebungsWechsel();
+                    self::getCompareList()->umgebungsWechsel();
                 }
                 unset($_SESSION['TrustedShops']);
                 if ($cart !== null) {
@@ -786,7 +936,7 @@ class Session
      */
     public static function setSpecialLinks(): LinkGroupCollection
     {
-        $linkGroups = \Shop::Container()->getLinkService()->getLinkGroups();
+        $linkGroups                    = \Shop::Container()->getLinkService()->getLinkGroups();
         $_SESSION['Link_Datenschutz']  = $linkGroups->Link_Datenschutz;
         $_SESSION['Link_AGB']          = $linkGroups->Link_AGB;
         $_SESSION['Link_Versandseite'] = $linkGroups->Link_Versandseite;

@@ -1,0 +1,68 @@
+msgid "kundenfeld"
+msgstr "Selbstdefinierbare Kundenfelder"
+
+msgid "kundenfeldURL"
+msgstr "https://jtl-url.de/nsmuy"
+
+msgid "kundenfeldDesc"
+msgstr "Diese Kundenfelder werden zusätzlich bei der Erstellung eines Kundenkontos bzw. im Bestellvorgang abgefragt."
+
+msgid "kundenfeldExistingDesc"
+msgstr "Ihre angelegten Kundenfelder:"
+
+msgid "kundenfeldSave"
+msgstr "Speichern"
+
+msgid "kundenfeldName"
+msgstr "Kundenattribut Feldname"
+
+msgid "kundenfeldNameShort"
+msgstr "Attributname"
+
+msgid "kundenfeldSort"
+msgstr "Sortierung"
+
+msgid "kundenfeldPflicht"
+msgstr "Pflichtfeld?"
+
+msgid "kundenfeldTyp"
+msgstr "Feldtyp"
+
+msgid "kundenfeldSortDesc"
+msgstr "Ganzzahl, z.B. 10 (leer oder 0 keine, Sortierung willkürlich)"
+
+msgid "kundenfeldDel"
+msgstr "Löschen"
+
+msgid "kundenfeldUpdate"
+msgstr "Aktualisieren"
+
+msgid "kundenfeldValue"
+msgstr "Werte"
+
+msgid "kundenfeldPflichtDesc"
+msgstr "(*) = Pflichtfeld"
+
+msgid "kundenfeldWawi"
+msgstr "JTL-WaWi Feldname"
+
+msgid "kundenfeldWawiShort"
+msgstr "WaWi Feldname"
+
+msgid "kundenfeldEditable"
+msgstr "Nachträglich editierbar?"
+
+msgid "kundenfeldEdit"
+msgstr "Kundenfeld bearbeiten"
+
+msgid "kundenfeldYes"
+msgstr "Ja"
+
+msgid "kundenfeldNo"
+msgstr "Nein"
+
+msgid "kundenfeldSettings"
+msgstr "Einstellungen"
+
+msgid "kundenfeldCreate"
+msgstr "Neues Kundenfeld erstellen"

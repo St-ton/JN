@@ -1,0 +1,65 @@
+msgid "plz_ort_import"
+msgstr "PLZ-Orte Import"
+
+msgid "plz_ort_importDesc"
+msgstr "Hier können Sie aktuelle Daten für PLZ und Orte aus OpenGeoDB importieren."
+
+msgid "plz_ort_available"
+msgstr "Vorhandene PLZ und Ortsdaten"
+
+msgid "plz_ort_iso"
+msgstr "ISO"
+
+msgid "plz_ort_country"
+msgstr "Land"
+
+msgid "plz_ort_continent"
+msgstr "Kontinent"
+
+msgid "plz_ort_count"
+msgstr "Einträge"
+
+msgid "plz_ort_action"
+msgstr "Aktion"
+
+msgid "plz_ort_date"
+msgstr "Datum"
+
+msgid "plz_ort_size"
+msgstr "Dateigröße"
+
+msgid "plz_ort_import_new"
+msgstr "Neu Importieren"
+
+msgid "plz_ort_import_select"
+msgstr "Import auswählen"
+
+msgid "plz_ort_import_select_failed"
+msgstr "Die Liste der verfügbaren Imports konnte nicht geladen werden!"
+
+msgid "plz_ort_import_load"
+msgstr "Wird geladen..."
+
+msgid "plz_ort_import_tmp_exists"
+msgstr "Es wurde ein temporärer Import in der Datenbank gefunden. Soll dieser gelöscht werden?"
+
+msgid "plz_ort_import_delete_no"
+msgstr "Nein, nicht löschen"
+
+msgid "plz_ort_import_delete_yes"
+msgstr "Ja, Löschen"
+
+msgid "plz_ort_import_ok"
+msgstr "OK"
+
+msgid "plz_ort_import_cancel"
+msgstr "Abbrechen"
+
+msgid "plz_ort_import_refresh_desc"
+msgstr "Neue Daten importieren..."
+
+msgid "plz_ort_import_reset_desc"
+msgstr "Rückgängig - Backup zurückspielen..."
+
+msgid "plz_ort_import_help"
+msgstr "Mit dem Button \"Neu Importieren\" können Sie direkt von <i>%s</i> eine Datendatei downloaden und automatisch installieren.<br/>Sollte der direkte Download nicht möglich sein oder wg. Zeitüberschreitung abbrechen, dann laden Sie die gewünschte Datei bitte per FTP in das Verzeichnis <i>/uploads</i> ihrer Shopinstallation. Die Datei kann dann über das <i class=\"fa fa-download\"></i>-Symbol in der Übersicht importiert werden.<br/>Vor dem Import wird ein Backup der aktuellen Daten erstellt, welches bei Bedarf zurückgespielt werden kann."

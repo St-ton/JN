@@ -17,23 +17,23 @@ interface SetValidationResultInterface
      * @param ValidationResultInterface $valueValidationResult
      * @return void
      */
-    public function setFieldResult($fieldName, ValidationResultInterface $valueValidationResult);
+    public function setFieldResult($fieldName, ValidationResultInterface $valueValidationResult): void;
 
     /**
      * @param string $fieldName
      * @return ValidationResultInterface
      */
-    public function getFieldResult($fieldName);
+    public function getFieldResult($fieldName): ValidationResultInterface;
 
     /**
      * @return array|null
      */
-    public function getSetAsArray();
+    public function getSetAsArray(): ?array;
 
     /**
      * @return array
      */
-    public function getSetAsArrayInsecure();
+    public function getSetAsArrayInsecure(): array;
 
     /**
      * @return object|null
@@ -48,5 +48,5 @@ interface SetValidationResultInterface
     /**
      * @return bool
      */
-    public function isValid();
+    public function isValid(): bool;
 }

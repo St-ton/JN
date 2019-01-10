@@ -1,13 +1,17 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {block name='doctype'}<!DOCTYPE html>{/block}
-<html {block name='html-attributes'}lang="{$meta_language}" itemscope {if $nSeitenTyp == URLART_ARTIKEL}itemtype="http://schema.org/ItemPage"
+<html {block name='html-attributes'}lang="{$meta_language}" itemscope {if $nSeitenTyp === URLART_ARTIKEL}itemtype="http://schema.org/ItemPage"
       {elseif $nSeitenTyp == URLART_KATEGORIE}itemtype="http://schema.org/CollectionPage"
       {else}itemtype="http://schema.org/WebPage"{/if}{/block}>
 {block name='head'}
 <head>
     {block name='head-meta'}
         <meta http-equiv="content-type" content="text/html; charset={$smarty.const.JTL_CHARSET}">
-        <meta name="description" itemprop="description" content={block name='head-meta-description'}"{$meta_description|truncate:1000:"":true}{/block}">
-        <meta name="keywords" itemprop="keywords" content="{block name='head-meta-keywords'}{$meta_keywords|truncate:255:"":true}{/block}">
+        <meta name="description" itemprop="description" content={block name='head-meta-description'}"{$meta_description|truncate:1000:'':true}{/block}">
+        <meta name="keywords" itemprop="keywords" content="{block name='head-meta-keywords'}{$meta_keywords|truncate:255:'':true}{/block}">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="robots" content="{if $bNoIndex === true  || (isset($Link) && $Link->getNoFollow() === true)}noindex{else}index, follow{/if}">
@@ -17,7 +21,7 @@
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="{$meta_title}" />
         <meta property="og:title" content="{$meta_title}" />
-        <meta property="og:description" content="{$meta_description|truncate:1000:"":true}" />
+        <meta property="og:description" content="{$meta_description|truncate:1000:'':true}" />
         <meta property="og:image" content="{$imageBaseURL}{$ShopLogoURL}" />
         <meta property="og:url" content="{$cCanonicalURL}"/>
     {/block}
@@ -31,18 +35,7 @@
     {block name='head-base'}{/block}
 
     {block name='head-icons'}
-        {if !empty($Einstellungen.template.theme.favicon)}
-            {if file_exists("{$currentTemplateDir}{$Einstellungen.template.theme.favicon}")}
-                <link type="image/x-icon" href="{$ShopURL}/{$currentTemplateDir}{$Einstellungen.template.theme.favicon}"
-                    rel="shortcut icon">
-            {else}
-                <link type="image/x-icon"
-                    href="{$ShopURL}/{$currentTemplateDir}themes/base/images/{$Einstellungen.template.theme.favicon}"
-                        rel="shortcut icon">
-            {/if}
-        {else}
-            <link type="image/x-icon" href="{$ShopURL}/favicon-default.ico" rel="shortcut icon">
-        {/if}
+            <link type="image/x-icon" href="{$shopFaviconURL}" rel="icon">
         {if $nSeitenTyp === 1 && !empty($Artikel->Bilder)}
             <link rel="image_src" href="{$Artikel->Bilder[0]->cURLGross}">
             <meta property="og:image" content="{$Artikel->Bilder[0]->cURLGross}">
@@ -71,7 +64,7 @@
         {* Languages *}
         {if !empty($smarty.session.Sprachen) && count($smarty.session.Sprachen) > 1}
             {foreach item=oSprache from=$smarty.session.Sprachen}
-                    <link rel="alternate" hreflang="{$oSprache->cISO639}" href="{$oSprache->cURLFull}">
+                <link rel="alternate" hreflang="{$oSprache->cISO639}" href="{if $nSeitenTyp === $smarty.const.PAGE_STARTSEITE && $oSprache->cStandard === 'Y'}{$cCanonicalURL}{else}{$oSprache->cURLFull}{/if}">
             {/foreach}
         {/if}
     {/block}
@@ -95,6 +88,7 @@
         <script src="{$ShopURL}/{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-1.12.4.min.js"></script>
     {/block}
     {include file='layout/header_inline_js.tpl'}
+    {$dbgBarHead}
 </head>
 {/block}
 
@@ -117,7 +111,7 @@
          </div>
     {/if}
 
-    {block name="header"}
+    {block name='header'}
         {if Shop::isAdmin()}
             {include file='layout/header_composer_menu.tpl'}
         {/if}
@@ -186,13 +180,12 @@
     {block name='content-wrapper-starttag'}
     <div id="content-wrapper">
     {/block}
-    
     {block name='header-fluid-banner'}
         {assign var="isFluidBanner" value=isset($Einstellungen.template.theme.banner_full_width) && $Einstellungen.template.theme.banner_full_width === 'Y' &&  isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($oImageMap)}
         {if $isFluidBanner}
             {include file='snippets/banner.tpl'}
         {/if}
-        {assign var='isFluidSlider' value=isset($Einstellungen.template.theme.slider_full_width) && $Einstellungen.template.theme.slider_full_width === 'Y' &&  isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($oSlider->oSlide_arr) && count($oSlider->oSlide_arr) > 0}
+        {assign var='isFluidSlider' value=isset($Einstellungen.template.theme.slider_full_width) && $Einstellungen.template.theme.slider_full_width === 'Y' &&  isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($oSlider) && count($oSlider->getSlides()) > 0}
         {if $isFluidSlider}
             {include file='snippets/slider.tpl'}
         {/if}

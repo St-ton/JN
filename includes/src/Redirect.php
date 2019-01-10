@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Request;
+use Helpers\URL;
+
 /**
  * Class Redirect
  */
@@ -86,7 +89,7 @@ class Redirect
      * @param string $cUrl
      * @return null|stdClass
      */
-    public function find(string $cUrl)
+    public function find(string $cUrl): ?stdClass
     {
         return Shop::Container()->getDB()->select('tredirect', 'cFromUrl', $this->normalize($cUrl));
     }
@@ -97,7 +100,7 @@ class Redirect
      * @param string $cToUrl target to search for
      * @return null|stdClass
      */
-    public function getRedirectByTarget(string $cToUrl)
+    public function getRedirectByTarget(string $cToUrl): ?stdClass
     {
         return Shop::Container()->getDB()->select('tredirect', 'cToUrl', $this->normalize($cToUrl));
     }
@@ -160,7 +163,9 @@ class Redirect
             } elseif ($this->normalize($oRedirect->cFromUrl) === $this->normalize($cSource)
                 && empty($oRedirect->cToUrl)
                 && Shop::Container()->getDB()->update(
-                    'tredirect', 'cFromUrl', $this->normalize($cSource),
+                    'tredirect',
+                    'cFromUrl',
+                    $this->normalize($cSource),
                     (object)['cToUrl' => StringHandler::convertUTF8($cDestination)]
                 ) > 0
             ) {
@@ -225,7 +230,7 @@ class Redirect
         if (isset($xParse_arr['query'])) {
             $cFromUrl .= '?' . $xParse_arr['query'];
         }
-        $options = ['cFromUrl' => $cFromUrl];
+        $options           = ['cFromUrl' => $cFromUrl];
         $options['cArtNr'] = null;
         if (isset($csv[$cMapping_arr['articlenumber']])) {
             $options['cArtNr'] = $csv[$cMapping_arr['articlenumber']];
@@ -265,7 +270,7 @@ class Redirect
      * @param string $cIso
      * @return null|string
      */
-    public function getArtNrUrl($cArtNr, string $cIso)
+    public function getArtNrUrl($cArtNr, string $cIso): ?string
     {
         if (strlen($cArtNr) === 0) {
             return null;
@@ -285,7 +290,7 @@ class Redirect
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return UrlHelper::buildURL($oObj, URLART_ARTIKEL);
+        return URL::buildURL($oObj, URLART_ARTIKEL);
     }
 
     /**
@@ -294,7 +299,7 @@ class Redirect
      * @param array $cRow_arr
      * @return array|null
      */
-    public function readHeadRow($cRow_arr)
+    public function readHeadRow($cRow_arr): ?array
     {
         $cMapping_arr = ['sourceurl' => null];
         // Must not be present in the file
@@ -401,7 +406,7 @@ class Redirect
             if (strlen($cReferer) > 0) {
                 $cReferer = $this->normalize($cReferer);
             }
-            $cIP = RequestHelper::getRealIP();
+            $cIP = Request::getRealIP();
             // Eintrag für diese IP bereits vorhanden?
             $oEntry = Shop::Container()->getDB()->queryPrepared(
                 'SELECT *
@@ -475,10 +480,10 @@ class Redirect
      */
     public function normalize(string $cUrl): string
     {
-        $oUrl = new UrlHelper();
+        $oUrl = new URL();
         $oUrl->setUrl($cUrl);
 
-        return '/' . trim($oUrl->normalize(), "\\/");
+        return '/' . trim($oUrl->normalize(), '\\/');
     }
 
     /**
@@ -501,7 +506,7 @@ class Redirect
             $qry .= ' AND ';
         }
         if (!empty($cSuchbegriff)) {
-            $qry  .= 'cFromUrl LIKE :search';
+            $qry .= 'cFromUrl LIKE :search';
             $prep = ['search' => '%' . $cSuchbegriff . '%'];
         }
         $oCount = Shop::Container()->getDB()->executeQueryPrepared($qry, $prep, \DB\ReturnType::SINGLE_OBJECT);
@@ -516,11 +521,10 @@ class Redirect
      * @param string $sortBy
      * @param string $dir
      * @param string $search
-     * @param bool   $dep
      * @return mixed
      * @deprecated since 4.05 - use Redirect::getRedirects()
      */
-    public function getList($start, $limit, $redirURLs, $sortBy, $dir, $search, $dep = true)
+    public function getList($start, $limit, $redirURLs, $sortBy, $dir, $search)
     {
         $cWhereSQL_arr = [];
         $cOrderSQL     = $sortBy . ' ' . $dir;
@@ -679,7 +683,7 @@ class Redirect
     /**
      * @param int $kRedirect
      */
-    public static function deleteRedirect(int $kRedirect)
+    public static function deleteRedirect(int $kRedirect): void
     {
         Shop::Container()->getDB()->delete('tredirect', 'kRedirect', $kRedirect);
         Shop::Container()->getDB()->delete('tredirectreferer', 'kRedirect', $kRedirect);
@@ -741,7 +745,7 @@ class Redirect
      * @param int    $count
      * @param bool   $bSeo
      */
-    public static function doMainwordRedirect($productFilter, int $count, bool $bSeo = false)
+    public static function doMainwordRedirect($productFilter, int $count, bool $bSeo = false): void
     {
         $cMainword_arr = [
             'getCategory'       => [

@@ -1,8 +1,7 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
-
 <h1>{lang key='newsMonthOverview' section='news'}</h1>
 
 {if !empty($hinweis)}
@@ -41,11 +40,12 @@
                         {if $oNews->cVorschauText|count_characters > 0}
                             {$oNews->cVorschauText}
                             <div class="flt_right">
-                                <a class="news-more-link" href="{$oNews->cURL}">{lang key='moreLink' section='news'}</a>
+                                <a class="news-more-link" href="{$oNews->cURLFull}">{lang key='moreLink' section='news'}</a>
                             </div>
                             <div class="clearer"></div>
                         {elseif $oNews->cText|count_characters > 200}
-                            {$oNews->cText|truncate:200:$oNews->cMehrURL}
+                            {$oNews->cText|truncate:200}
+                            <a class="news-more-link" href="{$oNews->cURLFull}">{lang key='moreLink' section='news'}</a>
                         {else}
                             {$oNews->cText}
                         {/if}

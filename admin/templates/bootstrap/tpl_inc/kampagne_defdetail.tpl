@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#kampagneDetailStatsDef#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('kampagneDetailStatsDef')}
 <div id="content" class="container-fluid">
     <div id="tabellenLivesuche" class="table-responsive">
         <table class="table">
@@ -6,9 +6,9 @@
                 <th class="tleft"><strong>{$oKampagneDef->cName}</strong></th>
             </tr>
             <tr>
-                <td class="TD1">
-                    {#kampagnePeriod#}: {$cStampText}<br />
-                    {#kampagneOverall#}: {$nGesamtAnzahlDefDetail}
+                <td>
+                    {__('kampagnePeriod')}: {$cStampText}<br />
+                    {__('kampagneOverall')}: {$nGesamtAnzahlDefDetail}
                 </td>
             </tr>
         </table>
@@ -21,28 +21,28 @@
                                  'kKampagneDef'=>$oKampagneDef->kKampagneDef, 'cZeitParam'=>$cZeitraumParam,
                                  'token'=>$smarty.session.jtl_token]}
             <div id="tabellenLivesuche" class="table-responsive">
-                <table class="table">
+                <table class="table table-striped">
                     <tr>
                         {foreach name="kampagnendefs" from=$cMember_arr key=cMember item=cMemberAnzeige}
-                            <th class="th-2">{$cMemberAnzeige|truncate:50:"..."}</th>
+                            <th class="th-2">{$cMemberAnzeige|truncate:50:'...'}</th>
                         {/foreach}
                     </tr>
 
                     {foreach name="kampagnenstats" from=$oKampagneStat_arr item=oKampagneStat}
-                        <tr class="tab_bg{$smarty.foreach.kampagnenstats.iteration%2}">
+                        <tr>
                             {foreach name="kampagnendefs" from=$cMember_arr key=cMember item=cMemberAnzeige}
-                                <td class="TD1" style="text-align: center;">{$oKampagneStat->$cMember|wordwrap:40:"<br />":true}</td>
+                                <td style="text-align: center;">{$oKampagneStat->$cMember|wordwrap:40:"<br />":true}</td>
                             {/foreach}
                         </tr>
                     {/foreach}
                 </table>
             </div>
         {else}
-            <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+            <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
         {/if}
         <div class="panel-footer">
             <a class="btn btn-default" href="kampagne.php?kKampagne={$oKampagne->kKampagne}&detail=1&token={$smarty.session.jtl_token}">
-                <i class="fa fa-angle-double-left"></i> {#kampagneBackBTN#}
+                <i class="fa fa-angle-double-left"></i> {__('kampagneBackBTN')}
             </a>
         </div>
     </div>

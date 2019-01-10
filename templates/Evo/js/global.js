@@ -261,9 +261,10 @@ function navigation()
 }
 
 function addValidationListener() {
-    var forms  = $('form.evo-validate'),
-        inputs = $('form.evo-validate input,form.evo-validate select,form.evo-validate textarea'),
-        $body  = $('body');
+    var forms   = $('form.evo-validate'),
+        inputs  = $('form.evo-validate input,form.evo-validate select,form.evo-validate textarea'),
+        selects = $('form.evo-validate select'),
+        $body   = $('body');
 
     for (var i = 0; i < forms.length; i++) {
         forms[i].addEventListener('invalid', function (event) {
@@ -295,30 +296,40 @@ function addValidationListener() {
             }
         }, true);
     }
-
     for (var i = 0; i < inputs.length; i++) {
         inputs[i].addEventListener('blur', function (event) {
-            var $target = $(event.target);
-            $target.closest('.form-group').find('div.form-error-msg').remove();
+            checkInputError(event);
 
-            if ($target.data('must-equal-to') !== undefined) {
-                var $equalsTo = $($target.data('must-equal-to'));
-                if ($equalsTo.length === 1) {
-                    var theOther = $equalsTo[0];
-                    if (theOther.value !== '' && theOther.value !== event.target.value && event.target.value !== '') {
-                        event.target.setCustomValidity($target.data('custom-message') !== undefined ? $target.data('custom-message') : event.target.validationMessage);
-                    } else {
-                        event.target.setCustomValidity('');
-                    }
-                }
-            }
-
-            if (event.target.validity.valid) {
-                $(event.target).closest('.form-group').removeClass('has-error');
-            } else {
-                $(event.target).closest('.form-group').addClass('has-error').append('<div class="form-error-msg text-danger"><i class="fa fa-warning"></i> ' + event.target.validationMessage + '</div>');
-            }
         }, true);
+    }
+    for (var i = 0; i < selects.length; i++) {
+        selects[i].addEventListener('change', function (event) {
+            checkInputError(event);
+        }, true);
+    }
+}
+
+function checkInputError(event)
+{
+    var $target = $(event.target);
+    $target.closest('.form-group').find('div.form-error-msg').remove();
+
+    if ($target.data('must-equal-to') !== undefined) {
+        var $equalsTo = $($target.data('must-equal-to'));
+        if ($equalsTo.length === 1) {
+            var theOther = $equalsTo[0];
+            if (theOther.value !== '' && theOther.value !== event.target.value && event.target.value !== '') {
+                event.target.setCustomValidity($target.data('custom-message') !== undefined ? $target.data('custom-message') : event.target.validationMessage);
+            } else {
+                event.target.setCustomValidity('');
+            }
+        }
+    }
+
+    if (event.target.validity.valid) {
+        $target.closest('.form-group').removeClass('has-error');
+    } else {
+        $target.closest('.form-group').addClass('has-error').append('<div class="form-error-msg text-danger"><i class="fa fa-warning"></i> ' + event.target.validationMessage + '</div>');
     }
 }
 
@@ -607,6 +618,22 @@ $(document).ready(function () {
         $body.attr('data-viewport', viewport.current());
         $body.attr('data-touchcapable', isTouchCapable() ? 'true' : 'false');
     })(jQuery, document, window, ResponsiveBootstrapToolkit);
+
+    /**
+     * provide the possibility of removing the shop-credit in
+     * the "Versandart/Zahlungsart"-step/mask
+     */
+    $("#using-shop-credit").on('click', function() {
+        // remove the shop-credit from the basket
+        // by loading it with POST-var "dropPos"
+        $.ajax({
+            url    : 'warenkorb.php',
+            method : 'POST',
+            data   : {dropPos : 'assetToUse'}
+        }).done(function(data) {
+            $('input[name="Versandart"]:checked', '#checkout-shipping-payment').change();
+        })
+    });
 
     lazyLoadMenu($('body').attr('data-viewport'));
     categoryMenu();

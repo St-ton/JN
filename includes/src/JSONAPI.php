@@ -15,14 +15,18 @@ class JSONAPI
     private static $instance;
 
     /**
-     * ctor
+     * JSONAPI constructor.
      */
-    private function __construct() { }
+    private function __construct()
+    {
+    }
 
     /**
-     * copy-ctor
+     *
      */
-    private function __clone() { }
+    private function __clone()
+    {
+    }
 
     /**
      * @return JSONAPI
@@ -85,7 +89,12 @@ class JSONAPI
         }
 
         return $this->itemsToJson($this->getItems(
-            'tkategorie', ['kKategorie', 'cName'], CACHING_GROUP_CATEGORY, $searchIn, $search, $limit
+            'tkategorie',
+            ['kKategorie', 'cName'],
+            CACHING_GROUP_CATEGORY,
+            $searchIn,
+            $search,
+            $limit
         ));
     }
 
@@ -106,7 +115,12 @@ class JSONAPI
 
         return $this->itemsToJson(
             $this->getItems(
-                'tartikel', ['kArtikel', 'cName', 'cArtNr'], CACHING_GROUP_ARTICLE, $searchIn, $search, $limit
+                'tartikel',
+                ['kArtikel', 'cName', 'cArtNr'],
+                CACHING_GROUP_ARTICLE,
+                $searchIn,
+                $search,
+                $limit
             )
         );
     }
@@ -127,7 +141,12 @@ class JSONAPI
         }
 
         return $this->itemsToJson($this->getItems(
-            'thersteller', ['kHersteller', 'cName'], CACHING_GROUP_MANUFACTURER, $searchIn, $search, $limit
+            'thersteller',
+            ['kHersteller', 'cName'],
+            CACHING_GROUP_MANUFACTURER,
+            $searchIn,
+            $search,
+            $limit
         ));
     }
 
@@ -146,9 +165,13 @@ class JSONAPI
             $searchIn = $keyName;
         }
 
-        $items = $this->getItems(
-            'tkunde', ['kKunde', 'cVorname', 'cNachname', 'cStrasse', 'cHausnummer', 'cPLZ', 'cOrt', 'cMail'],
-            null, $searchIn, $search, $limit
+        $items         = $this->getItems(
+            'tkunde',
+            ['kKunde', 'cVorname', 'cNachname', 'cStrasse', 'cHausnummer', 'cPLZ', 'cOrt', 'cMail'],
+            null,
+            $searchIn,
+            $search,
+            $limit
         );
         $cryptoService = Shop::Container()->getCryptoService();
         foreach ($items as $item) {
@@ -175,7 +198,12 @@ class JSONAPI
         }
 
         return $this->itemsToJson($this->getItems(
-            'ttag', ['kTag', 'cName'], CACHING_GROUP_ARTICLE, $searchIn, $search, $limit
+            'ttag',
+            ['kTag', 'cName'],
+            CACHING_GROUP_ARTICLE,
+            $searchIn,
+            $search,
+            $limit
         ));
     }
 
@@ -195,7 +223,12 @@ class JSONAPI
         }
 
         return $this->itemsToJson($this->getItems(
-            'tmerkmalwertsprache', ['kMerkmalWert', 'cWert'], CACHING_GROUP_ARTICLE, $searchIn, $search, $limit
+            'tmerkmalwertsprache',
+            ['kMerkmalWert', 'cWert'],
+            CACHING_GROUP_ARTICLE,
+            $searchIn,
+            $search,
+            $limit
         ));
     }
 
@@ -220,7 +253,7 @@ class JSONAPI
             $cacheTags[] = $addCacheTag;
         }
 
-        if (($data = Shop::Cache()->get($cacheId)) !== false) {
+        if (($data = Shop::Container()->getCache()->get($cacheId)) !== false) {
             return $data;
         }
 
@@ -238,10 +271,10 @@ class JSONAPI
             }
 
             $result = Shop::Container()->getDB()->query(
-                "SELECT " . implode(',', $columns) . "
-                    FROM " . $table . "
-                    WHERE " . implode(' OR ', $conditions) . "
-                    " . ($limit > 0 ? "LIMIT " . $limit : ""),
+                'SELECT ' . implode(',', $columns) . '
+                    FROM ' . $table . '
+                    WHERE ' . implode(' OR ', $conditions) . '
+                    ' . ($limit > 0 ? 'LIMIT ' . $limit : ''),
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         } elseif (is_string($searchIn) && is_array($searchFor)) {
@@ -253,18 +286,18 @@ class JSONAPI
             }
 
             $result = Shop::Container()->getDB()->query(
-                "SELECT " . implode(',', $columns) . "
-                    FROM " . $table . "
-                    WHERE " . $searchIn . " IN (" . implode(',', $searchFor) . ")
-                    " . ($limit > 0 ? "LIMIT " . $limit : ""),
+                'SELECT ' . implode(',', $columns) . '
+                    FROM ' . $table . '
+                    WHERE ' . $searchIn . ' IN (' . implode(',', $searchFor) . ')
+                    ' . ($limit > 0 ? 'LIMIT ' . $limit : ''),
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         } elseif ($searchIn === null && $searchFor === null) {
             // select all
             $result = Shop::Container()->getDB()->query(
-                "SELECT " . implode(',', $columns) . "
-                    FROM " . $table . "
-                    " . ($limit > 0 ? "LIMIT " . $limit : ""),
+                'SELECT ' . implode(',', $columns) . '
+                    FROM ' . $table . '
+                    ' . ($limit > 0 ? 'LIMIT ' . $limit : ''),
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         } else {
@@ -276,7 +309,7 @@ class JSONAPI
             $result = [];
         }
 
-        Shop::Cache()->set($cacheId, $result, $cacheTags);
+        Shop::Container()->getCache()->set($cacheId, $result, $cacheTags);
 
         return $result;
     }

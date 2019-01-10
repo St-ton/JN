@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -8,9 +8,8 @@ namespace Link;
 
 use Tightenco\Collect\Support\Collection;
 
-
 /**
- * Class LinkList
+ * Interface LinkListInterface
  * @package Link
  */
 interface LinkListInterface
@@ -29,10 +28,10 @@ interface LinkListInterface
     /**
      * @param Collection $links
      */
-    public function setLinks(Collection $links);
+    public function setLinks(Collection $links): void;
 
     /**
      * @param LinkInterface $link
      */
-    public function addLink(LinkInterface $link);
+    public function addLink(LinkInterface $link): void;
 }

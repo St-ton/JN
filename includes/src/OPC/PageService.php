@@ -76,9 +76,15 @@ class PageService
      * @param \AdminIO $io
      * @throws \Exception
      */
-    public function registerAdminIOFunctions(\AdminIO $io)
+    public function registerAdminIOFunctions(\AdminIO $io): void
     {
-        $this->adminName = $io->getAccount()->account()->cLogin;
+        $adminAccount = $io->getAccount();
+
+        if ($adminAccount === null) {
+            throw new \Exception('Admin account was not set on AdminIO.');
+        }
+
+        $this->adminName = $adminAccount->account()->cLogin;
 
         foreach ($this->getPageIOFunctionNames() as $functionName) {
             $publicFunctionName = 'opc' . \ucfirst($functionName);
@@ -128,7 +134,7 @@ class PageService
      * @param string $id
      * @return null|Page
      */
-    public function getPublicPage(string $id)
+    public function getPublicPage(string $id): ?Page
     {
         return $this->pageDB->getPublicPage($id);
     }
@@ -148,17 +154,73 @@ class PageService
             } elseif ($isEditMode && $editedPageKey > 0) {
                 $this->curPage = $this->getDraft($editedPageKey);
             } else {
-                $curPageUrl                    = '/' . \ltrim(\Shop::getRequestUri(), '/');
-                $curPageParameters             = \Shop::getParameters();
-                $curPageParameters['kSprache'] = \Shop::getLanguage();
-                $curPageId                     = \md5(\serialize($curPageParameters));
-                $this->curPage                 = $this->getPublicPage($curPageId) ?? new Page();
+                $curPageUrl    = '/' . \ltrim(\Shop::getRequestUri(), '/');
+                $curPageId     = $this->createCurrentPageId();
+                $this->curPage = $this->getPublicPage($curPageId) ?? new Page();
                 $this->curPage->setId($curPageId);
                 $this->curPage->setUrl($curPageUrl);
             }
         }
 
         return $this->curPage;
+    }
+
+    /**
+     * @param string $id
+     * @return array
+     */
+    public function getOtherLanguageDrafts(string $id): array
+    {
+        return $this->pageDB->getOtherLanguageDraftRows($id);
+    }
+
+    /**
+     * @return string
+     */
+    public function createCurrentPageId(): string
+    {
+        $res              = '';
+        $params           = (object)\Shop::getParameters();
+        $params->kSprache = \Shop::getLanguage();
+
+        if ($params->kKategorie > 0) {
+            $res .= 'category:' . $params->kKategorie;
+        } elseif ($params->kHersteller > 0) {
+            $res .= 'manufacturer:' . $params->kHersteller;
+        } elseif ($params->kVariKindArtikel > 0) {
+            $res .= 'child:' . $params->kVariKindArtikel;
+        } elseif ($params->kArtikel > 0) {
+            $res .= 'product:' . $params->kArtikel;
+        } elseif ($params->kLink > 0) {
+            $res .= 'link:' . $params->kLink;
+        } elseif ($params->kMerkmalWert > 0) {
+            $res .= 'attrib:' . $params->kMerkmalWert;
+        } elseif ($params->kTag > 0) {
+            $res .= 'tag:' . $params->kTag;
+        } elseif ($params->kSuchspecial > 0) {
+            $res .= 'special:' . $params->kSuchspecial;
+        } elseif ($params->kNews > 0) {
+            $res .= 'news:' . $params->kNews;
+        } elseif ($params->kNewsKategorie > 0) {
+            $res .= 'newscat:' . $params->kNewsKategorie;
+        } elseif ($params->kUmfrage > 0) {
+            $res .= 'poll:' . $params->kUmfrage;
+        } elseif (\strlen($params->cSuche) > 0) {
+            $res .= 'search:' . \base64_encode($params->cSuche);
+        } else {
+            $res .= 'other:' . \md5(\serialize($params));
+        }
+
+        if (\is_array($params->MerkmalFilter) && \count($params->MerkmalFilter) > 0) {
+            $res .= ';attribs:' . \implode(',', $params->MerkmalFilter);
+        }
+        if (\strlen($params->cPreisspannenFilter) > 0) {
+            $res .= ';range:' . $params->cPreisspannenFilter;
+        }
+
+        $res .= ';lang:' . $params->kSprache;
+
+        return $res;
     }
 
     /**
@@ -208,7 +270,7 @@ class PageService
      * @param array $data
      * @throws \Exception
      */
-    public function saveDraft(array $data)
+    public function saveDraft(array $data): void
     {
         $draft = $this->getDraft($data['key'])->deserialize($data);
         $this->pageDB->saveDraft($draft);
@@ -218,7 +280,7 @@ class PageService
      * @param array $data
      * @throws \Exception
      */
-    public function publicateDraft(array $data)
+    public function publicateDraft(array $data): void
     {
         $page = (new Page())->deserialize($data);
         $this->pageDB->saveDraftPublicationStatus($page);
@@ -228,7 +290,7 @@ class PageService
      * @param string $id
      * @return $this
      */
-    public function deletePage(string $id)
+    public function deletePage(string $id): self
     {
         $this->pageDB->deletePage($id);
 
@@ -251,7 +313,7 @@ class PageService
      * @return bool true if the draft could be locked, false if it is still locked by some other user
      * @throws \Exception
      */
-    public function lockDraft($key)
+    public function lockDraft($key): bool
     {
         $draft = $this->getDraft($key);
 
@@ -262,7 +324,7 @@ class PageService
      * @param int $key
      * @throws \Exception
      */
-    public function unlockDraft(int $key)
+    public function unlockDraft(int $key): void
     {
         $page = (new Page())->setKey($key);
         $this->locker->unlock($page);

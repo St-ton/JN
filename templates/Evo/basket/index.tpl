@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {block name='header'}
     {include file='layout/header.tpl'}
 {/block}
@@ -15,7 +19,7 @@
     {if $Schnellkaufhinweis}
         <div class="alert alert-info">{$Schnellkaufhinweis}</div>
     {/if}
-    {if count($Warenkorbhinweise)>0}
+    {if count($Warenkorbhinweise) > 0}
         <div class="alert alert-warning">
             {foreach $Warenkorbhinweise as $Warenkorbhinweis}
                 {$Warenkorbhinweis}

@@ -6,7 +6,7 @@
 
 namespace Filter\Items;
 
-use Filter\FilterJoin;
+use Filter\Join;
 use Filter\FilterInterface;
 use Filter\Type;
 use Filter\ProductFilter;
@@ -57,12 +57,12 @@ class Tag extends BaseTag
     public function getSQLJoin()
     {
         return [
-            (new FilterJoin())
+            (new Join())
                 ->setType('JOIN')
                 ->setTable('ttagartikel')
                 ->setOn('tartikel.kArtikel = ttagartikel.kArtikel')
                 ->setOrigin(__CLASS__),
-            (new FilterJoin())
+            (new Join())
                 ->setType('JOIN')
                 ->setTable('ttag')
                 ->setOn('ttagartikel.kTag = ttag.kTag')

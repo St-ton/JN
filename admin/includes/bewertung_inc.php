@@ -4,9 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Request;
+
 /**
  * @param int $kBewertung
- * @return mixed
+ * @return stdClass|null
  */
 function holeBewertung(int $kBewertung)
 {
@@ -21,10 +23,9 @@ function editiereBewertung($cPost_arr): bool
 {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 
-    $kBewertung = RequestHelper::verifyGPCDataInt('kBewertung');
+    $kBewertung = Request::verifyGPCDataInt('kBewertung');
     $conf       = Shop::getSettings([CONF_BEWERTUNG]);
-    if ($kBewertung > 0
-        && !empty($cPost_arr['cName'])
+    if (!empty($cPost_arr['cName'])
         && !empty($cPost_arr['cTitel'])
         && isset($cPost_arr['nSterne'])
         && (int)$cPost_arr['nSterne'] > 0
@@ -43,10 +44,9 @@ function editiereBewertung($cPost_arr): bool
             }
 
             Shop::Container()->getDB()->update('tbewertung', 'kBewertung', $kBewertung, $upd);
-            // Durchschnitt neu berechnen
             aktualisiereDurchschnitt($oBewertung->kArtikel, $conf['bewertung']['bewertung_freischalten']);
 
-            Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $oBewertung->kArtikel]);
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $oBewertung->kArtikel]);
 
             return true;
         }
@@ -56,7 +56,7 @@ function editiereBewertung($cPost_arr): bool
 }
 
 /**
- * @param $kBewertung
+ * @param int $kBewertung
  */
 function removeReply(int $kBewertung)
 {

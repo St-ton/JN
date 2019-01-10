@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -6,12 +6,10 @@
 
 namespace Boxes\Admin;
 
-
-use Boxes\BoxType;
+use Boxes\Type;
 use DB\DbInterface;
 use DB\ReturnType;
 use function Functional\map;
-use Services\JTL\BoxServiceInterface;
 
 /**
  * Class BoxAdmin
@@ -46,7 +44,6 @@ final class BoxAdmin
         \PAGE_REGISTRIERUNG,
         \PAGE_BESTELLVORGANG,
         \PAGE_BEWERTUNG,
-        \PAGE_DRUCKANSICHT,
         \PAGE_PASSWORTVERGESSEN,
         \PAGE_WARTUNG,
         \PAGE_WUNSCHLISTE,
@@ -63,7 +60,6 @@ final class BoxAdmin
         \PAGE_WRB,
         \PAGE_PLUGIN,
         \PAGE_NEWSLETTERARCHIV,
-        \PAGE_NEWSARCHIV,
         \PAGE_EIGENE,
         \PAGE_AUSWAHLASSISTENT,
         \PAGE_BESTELLABSCHLUSS
@@ -71,7 +67,7 @@ final class BoxAdmin
 
     /**
      * BoxAdmin constructor.
-     * @param DbInterface         $db
+     * @param DbInterface $db
      */
     public function __construct(DbInterface $db)
     {
@@ -107,15 +103,11 @@ final class BoxAdmin
 
         return \count($affectedBoxes) > 0
             && $this->db->query(
-                'DELETE 
+                'DELETE tboxen, tboxensichtbar, tboxsprache
                     FROM tboxen
-                    WHERE kBox IN (' . \implode(',', $affectedBoxes) . ')',
-                ReturnType::AFFECTED_ROWS
-            ) > 0
-            && $this->db->query(
-                'DELETE 
-                    FROM tboxensichtbar
-                    WHERE kBox IN (' . \implode(',', $affectedBoxes) . ')',
+                    LEFT JOIN tboxensichtbar USING (kBox)
+                    LEFT JOIN tboxsprache USING (kBox)
+                    WHERE tboxen.kBox IN (' . \implode(',', $affectedBoxes) . ')',
                 ReturnType::AFFECTED_ROWS
             ) > 0;
     }
@@ -125,7 +117,7 @@ final class BoxAdmin
      * @return \stdClass|null
      * @former holeVorlage()
      */
-    private function getTemplate(int $baseType)
+    private function getTemplate(int $baseType): ?\stdClass
     {
         return $this->db->select('tboxvorlage', 'kBoxvorlage', $baseType);
     }
@@ -189,7 +181,8 @@ final class BoxAdmin
             ReturnType::SINGLE_OBJECT
         );
 
-        $oBox->oSprache_arr      = ($oBox && ($oBox->eTyp === BoxType::TEXT || $oBox->eTyp === BoxType::CATBOX))
+        $oBox->oSprache_arr      = ($oBox && ($oBox->eTyp === Type::TEXT || $oBox->eTyp === Type::CATBOX
+                || $oBox->eTyp === Type::LINK))
             ? $this->getContent($boxID)
             : [];
         $oBox->kBox              = (int)$oBox->kBox;
@@ -298,27 +291,27 @@ final class BoxAdmin
             $ok = true;
             for ($i = 0; $i < \count($validPageTypes) && $ok; $i++) {
                 $ok = $this->db->executeQueryPrepared(
-                        "REPLACE INTO tboxenanzeige 
-                            SET bAnzeigen = :show,
-                                nSeite = :page, 
-                                ePosition = :position",
-                        [
-                            'show'     => $show,
-                            'page'     => $i,
-                            'position' => $position
-                        ],
-                        ReturnType::DEFAULT
-                    ) && $ok;
+                    'REPLACE INTO tboxenanzeige 
+                        SET bAnzeigen = :show,
+                            nSeite = :page, 
+                            ePosition = :position',
+                    [
+                        'show'     => $show,
+                        'page'     => $i,
+                        'position' => $position
+                    ],
+                    ReturnType::DEFAULT
+                ) && $ok;
             }
 
             return $ok;
         }
 
         return $this->db->executeQueryPrepared(
-            "REPLACE INTO tboxenanzeige 
+            'REPLACE INTO tboxenanzeige 
                 SET bAnzeigen = :show, 
                     nSeite = :page, 
-                    ePosition = :position",
+                    ePosition = :position',
             ['show' => $show, 'page' => $pageID, 'position' => $position],
             ReturnType::DEFAULT
         );
@@ -342,34 +335,34 @@ final class BoxAdmin
                 $oBox = $this->db->select('tboxensichtbar', 'kBox', $boxID);
                 $ok   = !empty($oBox)
                     ? ($this->db->query(
-                            "UPDATE tboxensichtbar 
-                                SET nSort = " . $nSort . ",
-                                    bAktiv = " . $active . " 
-                                WHERE kBox = " . $boxID . " 
-                                    AND kSeite = " . $i,
-                            ReturnType::DEFAULT
-                        ) !== false)
+                        'UPDATE tboxensichtbar 
+                            SET nSort = ' . $nSort . ',
+                                bAktiv = ' . $active . ' 
+                            WHERE kBox = ' . $boxID . ' 
+                                AND kSeite = ' . $i,
+                        ReturnType::DEFAULT
+                    ) !== false)
                     : ($this->db->query(
-                            "INSERT INTO tboxensichtbar 
-                                SET kBox = " . $boxID . ",
-                                    kSeite = " . $i . ", 
-                                    nSort = " . $nSort . ", 
-                                    bAktiv = " . $active,
-                            ReturnType::DEFAULT
-                        ) === true);
+                        'INSERT INTO tboxensichtbar 
+                            SET kBox = ' . $boxID . ',
+                                kSeite = ' . $i . ', 
+                                nSort = ' . $nSort . ', 
+                                bAktiv = ' . $active,
+                        ReturnType::DEFAULT
+                    ) === true);
             }
 
             return $ok;
         }
 
         return $this->db->query(
-                "REPLACE INTO tboxensichtbar 
-                  SET kBox = " . $boxID . ", 
-                      kSeite = " . $pageID . ", 
-                      nSort = " . $nSort . ", 
-                      bAktiv = " . $active,
-                ReturnType::AFFECTED_ROWS
-            ) !== false;
+            'REPLACE INTO tboxensichtbar 
+              SET kBox = ' . $boxID . ', 
+                  kSeite = ' . $pageID . ', 
+                  nSort = ' . $nSort . ', 
+                  bAktiv = ' . $active,
+            ReturnType::AFFECTED_ROWS
+        ) !== false;
     }
 
     /**
@@ -407,11 +400,11 @@ final class BoxAdmin
             for ($i = 0; $i < \count($validPageTypes) && $ok; ++$i) {
                 $upd->bAktiv = $active;
                 $ok          = $this->db->update(
-                        'tboxensichtbar',
-                        ['kBox', 'kSeite'],
-                        [$boxID, $i],
-                        $upd
-                    ) >= 0;
+                    'tboxensichtbar',
+                    ['kBox', 'kSeite'],
+                    [$boxID, $i],
+                    $upd
+                ) >= 0;
             }
 
             return $ok;
@@ -434,26 +427,29 @@ final class BoxAdmin
             ? 'WHERE (cVerfuegbar = "' . $pageID . '" OR cVerfuegbar = "0")'
             : '';
         $oVorlage_arr = $this->db->query(
-            "SELECT * 
-                FROM tboxvorlage " . $cSQL . " 
-                ORDER BY cVerfuegbar ASC",
+            'SELECT * 
+                FROM tboxvorlage ' . $cSQL . ' 
+                ORDER BY cVerfuegbar ASC',
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oVorlage_arr as $oVorlage) {
             $nID   = 0;
             $cName = 'Vorlage';
-            if ($oVorlage->eTyp === BoxType::TEXT) {
+            if ($oVorlage->eTyp === Type::TEXT) {
                 $nID   = 1;
                 $cName = 'Inhalt';
-            } elseif ($oVorlage->eTyp === BoxType::LINK) {
+            } elseif ($oVorlage->eTyp === Type::LINK) {
                 $nID   = 2;
                 $cName = 'Linkliste';
-            } elseif ($oVorlage->eTyp === BoxType::PLUGIN) {
+            } elseif ($oVorlage->eTyp === Type::PLUGIN) {
                 $nID   = 3;
                 $cName = 'Plugin';
-            } elseif ($oVorlage->eTyp === BoxType::CATBOX) {
+            } elseif ($oVorlage->eTyp === Type::CATBOX) {
                 $nID   = 4;
                 $cName = 'Kategorie';
+            } elseif ($oVorlage->eTyp === Type::EXTENSION) {
+                $nID   = 5;
+                $cName = 'Extension';
             }
 
             if (!isset($templates[$nID])) {

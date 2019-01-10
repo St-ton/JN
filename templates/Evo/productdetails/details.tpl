@@ -1,6 +1,8 @@
-{if isset($boxes)}{* only available in shop versions > 3.19 *}
-    {has_boxes position='left' assign='hasLeftBox'}
-{/if}
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
+{has_boxes position='left' assign='hasLeftBox'}
 {if !empty($hinweis)}
     {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
         {include file='productdetails/pushed_success.tpl'}
@@ -41,10 +43,10 @@
 <form id="buy_form" method="post" action="{$Artikel->cURLFull}" class="evo-validate">
     {$jtl_token}
     <div class="row product-primary" id="product-offer">
-        <div class="product-gallery{if $hasLeftBox} col-sm-5{else} col-sm-6{/if}">
+        <div class="product-gallery {if $hasLeftBox}col-sm-5{else}col-sm-6{/if}">
             {include file='productdetails/image.tpl'}
         </div>
-        <div class="product-info{if $hasLeftBox} col-sm-7{else} col-sm-6{/if}">
+        <div class="product-info {if $hasLeftBox}col-sm-7{else}col-sm-6{/if}">
             {block name='productdetails-info'}
             <div class="product-info-inner">
                 {block name='productdetails-info-manufacturer-wrapper'}

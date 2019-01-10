@@ -12,12 +12,12 @@ namespace Link;
  */
 abstract class AbstractLink implements LinkInterface
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var array
      */
-    private static $mapping = [
+    protected static $mapping = [
         'cNoFollow'          => 'NoFollowCompat',
         'cURL'               => 'URL',
         'cURLFull'           => 'URL',
@@ -76,7 +76,7 @@ abstract class AbstractLink implements LinkInterface
     /**
      * @return string|null
      */
-    public function getCustomerGroupsCompat()
+    public function getCustomerGroupsCompat(): ?string
     {
         $groups = $this->getCustomerGroups();
 
@@ -88,7 +88,7 @@ abstract class AbstractLink implements LinkInterface
     /**
      * @param string|array $value
      */
-    public function setCustomerGroupsCompat($value)
+    public function setCustomerGroupsCompat($value): void
     {
         $this->setCustomerGroups(!\is_array($value) ? self::parseSSKAdvanced($value) : $value);
     }
@@ -104,7 +104,7 @@ abstract class AbstractLink implements LinkInterface
     /**
      * @param string|bool $value
      */
-    public function setPrintButtonCompat($value)
+    public function setPrintButtonCompat($value): void
     {
         $this->setPrintButton($value === 'Y' || $value === true);
     }
@@ -120,7 +120,7 @@ abstract class AbstractLink implements LinkInterface
     /**
      * @param string|bool $value
      */
-    public function setNoFollowCompat($value)
+    public function setNoFollowCompat($value): void
     {
         $this->setNoFollow($value === 'Y' || $value === true);
     }
@@ -136,7 +136,7 @@ abstract class AbstractLink implements LinkInterface
     /**
      * @param string|bool $value
      */
-    public function setVisibleLoggedInOnlyCompat($value)
+    public function setVisibleLoggedInOnlyCompat($value): void
     {
         $this->setVisibleLoggedInOnly($value === 'Y' || $value === true);
     }
@@ -146,7 +146,7 @@ abstract class AbstractLink implements LinkInterface
      */
     public function getNamesCompat(): array
     {
-        $byCode = [];
+        $byCode    = [];
         $languages = \Sprache::getAllLanguages(1);
         foreach ($this->getNames() as $langID => $name) {
             $byCode[$languages[$langID]->cISO] = $name;

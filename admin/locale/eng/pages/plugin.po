@@ -1,0 +1,17 @@
+msgid "plugin"
+msgstr "Plugin"
+
+msgid "pluginVersion"
+msgstr "Version"
+
+msgid "pluginDesc"
+msgstr "Beschreibung"
+
+msgid "pluginAuthor"
+msgstr "Autor"
+
+msgid "pluginHomepage"
+msgstr "Homepage"
+
+msgid "pluginSettingSave"
+msgstr "Speichern"

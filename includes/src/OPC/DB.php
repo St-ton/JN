@@ -6,7 +6,11 @@
 
 namespace OPC;
 
+use DB\DbInterface;
 use DB\ReturnType;
+use Plugin\Extension;
+use Plugin\ExtensionLoader;
+use Plugin\Plugin;
 
 /**
  * Class DB
@@ -15,14 +19,15 @@ use DB\ReturnType;
 class DB
 {
     /**
-     * @var null|\DB\DbInterface
+     * @var null|DbInterface
      */
-    protected $shopDB = null;
+    protected $shopDB;
 
     /**
      * DB constructor.
+     * @param \DB\DbInterface $shopDB
      */
-    public function __construct(\DB\DbInterface $shopDB)
+    public function __construct(DbInterface $shopDB)
     {
         $this->shopDB = $shopDB;
     }
@@ -31,7 +36,7 @@ class DB
      * @param bool $withInactive
      * @return int[]
      */
-    public function getAllBlueprintIds($withInactive = false)
+    public function getAllBlueprintIds(bool $withInactive = false): array
     {
         $blueprintsDB = $this->shopDB->selectAll(
             'topcblueprint',
@@ -53,15 +58,16 @@ class DB
      * @param Blueprint $blueprint
      * @return bool
      */
-    public function blueprintExists(Blueprint $blueprint)
+    public function blueprintExists(Blueprint $blueprint): bool
     {
         return \is_object($this->shopDB->select('topcblueprint', 'kBlueprint', $blueprint->getId()));
     }
 
     /**
+     * @param Blueprint $blueprint
      * @return $this
      */
-    public function deleteBlueprint(Blueprint $blueprint)
+    public function deleteBlueprint(Blueprint $blueprint): self
     {
         $this->shopDB->delete('topcblueprint', 'kBlueprint', $blueprint->getId());
 
@@ -72,7 +78,7 @@ class DB
      * @param Blueprint $blueprint
      * @throws \Exception
      */
-    public function loadBlueprint(Blueprint $blueprint)
+    public function loadBlueprint(Blueprint $blueprint): void
     {
         $blueprintDB = $this->shopDB->select('topcblueprint', 'kBlueprint', $blueprint->getId());
 
@@ -82,10 +88,9 @@ class DB
 
         $content = \json_decode($blueprintDB->cJson, true);
 
-        $blueprint
-            ->setId($blueprintDB->kBlueprint)
-            ->setName($blueprintDB->cName)
-            ->deserialize(['name' => $blueprintDB->cName, 'content' => $content]);
+        $blueprint->setId($blueprintDB->kBlueprint)
+                  ->setName($blueprintDB->cName)
+                  ->deserialize(['name' => $blueprintDB->cName, 'content' => $content]);
     }
 
     /**
@@ -93,7 +98,7 @@ class DB
      * @return $this
      * @throws \Exception
      */
-    public function saveBlueprint(Blueprint $blueprint)
+    public function saveBlueprint(Blueprint $blueprint): self
     {
         if ($blueprint->getName() === '') {
             throw new \Exception('The OPC blueprint data to be saved is incomplete or invalid.');
@@ -188,7 +193,7 @@ class DB
     /**
      * @return int
      */
-    public function getPortletCount()
+    public function getPortletCount(): int
     {
         return (int)$this->shopDB->query(
             'SELECT COUNT(kPortlet) AS count FROM topcportlet',
@@ -219,22 +224,19 @@ class DB
         }
 
         if ($portletDB->kPlugin > 0) {
-            $plugin  = new \Plugin($portletDB->kPlugin);
-            $include = PFAD_ROOT . \PFAD_PLUGIN . $plugin->cVerzeichnis . '/' . \PFAD_PLUGIN_VERSION
-                . $plugin->getCurrentVersion() . '/' . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS
-                . $portletDB->cClass . '/' . $portletDB->cClass . '.php';
+            $loader  = new ExtensionLoader($this->shopDB, \Shop::Container()->getCache());
+            $plugin  = $loader->init((int)$portletDB->kPlugin);
+            $include = $plugin->getPaths()->getPortletsPath() .
+                $portletDB->cClass . '/' . $portletDB->cClass . '.php';
             require_once $include;
         }
 
         /** @var Portlet $portlet */
         $fullClass = "\\OPC\\Portlets\\$class";
-        $portlet   = new $fullClass();
+        $portlet   = new $fullClass($class, $portletDB->kPortlet, $portletDB->kPlugin);
 
         return $portlet
-            ->setId($portletDB->kPortlet)
-            ->setPluginId($portletDB->kPlugin)
             ->setTitle($portletDB->cTitle)
-            ->setClass($portletDB->cClass)
             ->setGroup($portletDB->cGroup)
             ->setActive((int)$portletDB->bActive === 1);
     }
@@ -244,13 +246,6 @@ class DB
      */
     public function isOPCInstalled(): bool
     {
-        try {
-            $this->shopDB->selectAll('topcportlet', [], []);
-            $this->shopDB->selectAll('topcblueprint', [], []);
-            $this->shopDB->selectAll('topcpage', [], []);
-            return true;
-        } catch (\InvalidArgumentException $e) {
-            return false;
-        }
+        return $this->shopDB->select('tmigration', 'kMigration', 20180507101900) !== null;
     }
 }

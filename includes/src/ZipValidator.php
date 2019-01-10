@@ -203,7 +203,6 @@ class ZipValidator
      */
     private $szErrorString;
 
-
     /**
      * @param string $cISO
      */
@@ -223,10 +222,10 @@ class ZipValidator
      * @param string $szZipCode
      * @return string
      */
-    public function validateZip($szZipCode)
+    public function validateZip($szZipCode): string
     {
         if (array_key_exists($this->cISO, self::$vPatternHashList)) {
-            if (!preg_match("/^" . self::$vPatternHashList[$this->cISO] . "$/", $szZipCode)) {
+            if (!preg_match('/^' . self::$vPatternHashList[$this->cISO] . '$/', $szZipCode)) {
                 $this->szErrorString = $this->beautifyErrorString($szZipCode, self::$vPatternHashList[$this->cISO]);
                 Shop::Container()->getLogService()->error(
                     'Postleitzahl stimmt nicht mit Landesvorgabe überein! ' . $szZipCode .
@@ -251,15 +250,16 @@ class ZipValidator
      * @param string $szPattern
      * @return string
      */
-    private function beautifyErrorString($szZipCode, $szPattern)
+    private function beautifyErrorString($szZipCode, $szPattern): string
     {
         return preg_replace_callback(
             "/{$szPattern}/",
-            function($hit) {
+            function ($hit) {
                 return '<span class="alert-danger">' . $hit[0] . '</span>';
             },
             $szZipCode,
-            1);
+            1
+        );
     }
 
     /**
@@ -267,7 +267,7 @@ class ZipValidator
      *
      * @return string
      */
-    public function getError()
+    public function getError(): string
     {
         if ('' !== $this->szErrorString) {
             return 'Postleitzahl stimmt nicht mit Landesvorgabe überein! '
@@ -275,5 +275,4 @@ class ZipValidator
         }
         return '';
     }
-
 }

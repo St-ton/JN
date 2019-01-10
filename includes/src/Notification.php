@@ -83,8 +83,8 @@ class Notification implements IteratorAggregate, Countable
 
         if ($status->hasPendingUpdates()) {
             $this->add(
-                NotificationEntry::TYPE_DANGER, 
-                'Systemupdate', 
+                NotificationEntry::TYPE_DANGER,
+                'Systemupdate',
                 'Ein Datenbank-Update ist zwingend notwendig',
                 'dbupdater.php'
             );
@@ -92,8 +92,8 @@ class Notification implements IteratorAggregate, Countable
 
         if (!$status->validFolderPermissions()) {
             $this->add(
-                NotificationEntry::TYPE_DANGER, 
-                'Dateisystem', 
+                NotificationEntry::TYPE_DANGER,
+                'Dateisystem',
                 'Es sind Verzeichnisse nicht beschreibbar.',
                 'permissioncheck.php'
             );
@@ -109,20 +109,19 @@ class Notification implements IteratorAggregate, Countable
 
         if (!$status->validDatabaseStruct()) {
             $this->add(
-                NotificationEntry::TYPE_DANGER,
-                'Datenbank',
+                NotificationEntry::TYPE_WARNING,
+                'Datenbankstruktur',
                 'Es liegen Fehler in der Datenbankstruktur vor.',
                 'dbcheck.php'
             );
         }
 
-        if ($status->hasDifferentTemplateVersion()) {
+        if (!$status->validModifiedFileStruct() || !$status->validOrphanedFilesStruct()) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
-                'Template',
-                'Ihre Template-Version unterscheidet sich von Ihrer Shop-Version.<br />' .
-                    'Weitere Hilfe zu Template-Updates finden Sie im <i class="fa fa-external-link"></i> Wiki',
-                'shoptemplate.php'
+                'Dateistruktur',
+                'Es liegen Fehler in der Dateistruktur vor.',
+                'filecheck.php'
             );
         }
 
@@ -222,13 +221,23 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
-        if ($status->needPasswordRehash2FA()) {
+        try {
+            if ($status->needPasswordRehash2FA()) {
+                $this->add(
+                    NotificationEntry::TYPE_DANGER,
+                    'Benutzerverwaltung',
+                    'Der Algorithmus zur Passwortspeicherung hat sich geändert.<br/>' .
+                    'Bitte erzeugen Sie neue Notfall-Codes für die Zwei-Faktor-Authentifizierung.',
+                    'benutzerverwaltung.php'
+                );
+            }
+        } catch (Exception $e) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
-                'Benutzerverwaltung',
-                'Der Algorithmus zur Passwortspeicherung hat sich geändert.<br/>' .
-                    'Bitte erzeugen Sie neue Notfall-Codes für die Zwei-Faktor-Authentifizierung.',
-                'benutzerverwaltung.php'
+                'Datenbank-Update',
+                'Die Methode needPasswordRehash2FA hat eine Exception geworfen.<br/>' .
+                'Bitte führen Sie die Migration 20170306130802_create_emergency_code_table aus.',
+                'dbupdater.php'
             );
         }
 

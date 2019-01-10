@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -6,8 +6,8 @@
 
 namespace Cron;
 
-
 use DB\DbInterface;
+use DB\ReturnType;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -33,25 +33,25 @@ class Checker
      */
     public function __construct(DbInterface $db, LoggerInterface $logger)
     {
-        $this->db      = $db;
-        $this->logger  = $logger;
+        $this->db     = $db;
+        $this->logger = $logger;
     }
 
     /**
-     * @return array
+     * @return \stdClass[]
      */
     public function check(): array
     {
         $jobs = $this->db->query(
-            "SELECT tcron.*
+            'SELECT tcron.*
                 FROM tcron
                 LEFT JOIN tjobqueue 
                     ON tjobqueue.kCron = tcron.kCron
-                WHERE ((tcron.dLetzterStart = '0000-00-00 00:00:00' OR tcron.dLetzterStart = '1970-01-01 00:00:00') 
-                    OR (UNIX_TIMESTAMP(now()) > (UNIX_TIMESTAMP(tcron.dLetzterStart) + (3600 * tcron.nAlleXStd))))
-                    AND tcron.dStart < now()
-                    AND tjobqueue.kJobQueue IS NULL",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+                WHERE (tcron.dLetzterStart IS NULL 
+                    OR (NOW() > ADDDATE(tcron.dLetzterStart, INTERVAL tcron.nAlleXStd HOUR)))
+                    AND tcron.dStart < NOW()
+                    AND tjobqueue.kJobQueue IS NULL',
+            ReturnType::ARRAY_OF_OBJECTS
         );
         $this->logger->debug('Found ' . \count($jobs) . ' new cron jobs.');
 

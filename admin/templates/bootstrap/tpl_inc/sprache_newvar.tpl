@@ -1,8 +1,8 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#lang# cBeschreibung=#langDesc# cDokuURL=#langURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('lang') cBeschreibung=__('langDesc') cDokuURL=__('langURL')}
 <div id="content" class="container-fluid">
     <div class="panel panel-default settings">
         <div class="panel-heading">
-            <h3 class="panel-title">{#newLangVar#}</h3>
+            <h3 class="panel-title">{__('newLangVar')}</h3>
         </div>
         <form action="sprache.php" method="post">
             {$jtl_token}
@@ -10,7 +10,7 @@
             <div class="panel-body">
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="kSprachsektion">{#langSection#}</label>
+                        <label for="kSprachsektion">{__('langSection')}</label>
                     </span>
                     <span class="input-group-wrap">
                         <select class="form-control" name="kSprachsektion" id="kSprachsektion">
@@ -25,7 +25,7 @@
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="cName">{#variableName#}</label>
+                        <label for="cName">{__('variableName')}</label>
                     </span>
                     <span class="input-group-wrap">
                         <input type="text" class="form-control" name="cName" id="cName" value="{$oVariable->cName}">
@@ -38,12 +38,12 @@
                                 <label for="bOverwrite_{$oSprache->cISO}_yes">
                                     <input type="radio" id="bOverwrite_{$oSprache->cISO}_yes"
                                            name="bOverwrite_arr[{$oSprache->cISO}]" value="1">
-                                    {$oSprache->cNameDeutsch} ({#new#})
+                                    {$oSprache->cNameDeutsch} ({__('new')})
                                 </label>
                             </span>
                             <span class="input-group-wrap">
                                 <input type="text" class="form-control" name="cWert_arr[{$oSprache->cISO}]"
-                                       id="cWert_{$oSprache->cISO}" value="{$oVariable->cWert_arr[$oSprache->cISO]}">
+                                       id="cWert_{$oSprache->cISO}" value="{if !empty($oVariable->cWert_arr[$oSprache->cISO])}{$oVariable->cWert_arr[$oSprache->cISO]}{/if}">
                             </span>
                         </div>
                         <div class="input-group">
@@ -51,13 +51,13 @@
                                 <label for="bOverwrite_{$oSprache->cISO}_no">
                                     <input type="radio" id="bOverwrite_{$oSprache->cISO}_no"
                                            name="bOverwrite_arr[{$oSprache->cISO}]" value="0" checked>
-                                    {$oSprache->cNameDeutsch} ({#current#})
+                                    {$oSprache->cNameDeutsch} ({__('current')})
                                 </label>
                             </span>
                                 <span class="input-group-wrap">
                                 <input type="text" class="form-control" name="cWertAlt_arr[{$oSprache->cISO}]" disabled
                                        id="cWertAlt_{$oSprache->cISO}"
-                                       value="{$oVariable->cWertAlt_arr[$oSprache->cISO]}">
+                                       value="{if !empty($oVariable->cWertAlt_arr[$oSprache->cISO])}{$oVariable->cWertAlt_arr[$oSprache->cISO]}{/if}">
                             </span>
                         </div>
                     {else}
@@ -69,7 +69,7 @@
                             </span>
                             <span class="input-group-wrap">
                                 <input type="text" class="form-control" name="cWert_arr[{$oSprache->cISO}]"
-                                       id="cWert_{$oSprache->cISO}" value="{$oVariable->cWert_arr[$oSprache->cISO]}">
+                                       id="cWert_{$oSprache->cISO}" value="{$oVariable->cWert_arr[$oSprache->cISO]|default:''}">
                             </span>
                         </div>
                     {/if}
@@ -79,9 +79,9 @@
                 <div class="btn-group">
                     <button type="submit" class="btn btn-primary" name="action" value="savevar">
                         <i class="fa fa-save"></i>
-                        {#save#}
+                        {__('save')}
                     </button>
-                    <a href="sprache.php?tab={$tab}" class="btn btn-danger">{#goBack#}</a>
+                    <a href="sprache.php?tab={$tab}" class="btn btn-danger">{__('goBack')}</a>
                 </div>
             </div>
         </form>

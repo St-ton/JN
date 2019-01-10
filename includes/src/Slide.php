@@ -4,60 +4,80 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\MagicCompatibilityTrait;
+
 /**
  * Class Slide
  */
 class Slide
 {
-    /**
-     * @var int
-     */
-    public $kSlide;
+    use MagicCompatibilityTrait;
 
     /**
      * @var int
      */
-    public $kSlider;
-
-    /**
-     * @var string
-     */
-    public $cTitel;
-
-    /**
-     * @var string
-     */
-    public $cBild;
-
-    /**
-     * @var string
-     */
-    public $cText;
-
-    /**
-     * @var string
-     */
-    public $cThumbnail;
-
-    /**
-     * @var string
-     */
-    public $cLink;
+    private $id = 0;
 
     /**
      * @var int
      */
-    public $nSort;
+    private $sliderID = 0;
 
     /**
      * @var string
      */
-    public $cBildAbsolut;
+    private $title = '';
 
     /**
      * @var string
      */
-    public $cThumbnailAbsolut;
+    private $image = '';
+
+    /**
+     * @var string
+     */
+    private $text = '';
+
+    /**
+     * @var string
+     */
+    private $thumbnail = '';
+
+    /**
+     * @var string
+     */
+    private $link = '';
+
+    /**
+     * @var int
+     */
+    private $sort = 0;
+
+    /**
+     * @var string
+     */
+    private $absoluteImage = '';
+
+    /**
+     * @var string
+     */
+    private $absoluteThumbnail = '';
+
+    /**
+     * @var array
+     */
+    private static $mapping = [
+        'kSlide'            => 'ID',
+        'kSlider'           => 'SliderID',
+        'cTitel'            => 'Title',
+        'cBild'             => 'Image',
+        'cText'             => 'Text',
+        'cThumbnail'        => 'Thumbnail',
+        'cLink'             => 'Link',
+        'nSort'             => 'Sort',
+        'cBildAbsolut'      => 'AbsoluteImage',
+        'cThumbnailAbsolut' => 'AbsoluteThumbnail'
+    ];
 
     /**
      *
@@ -67,38 +87,39 @@ class Slide
     }
 
     /**
-     * @param int $kSlider
-     * @param int $kSlide
+     * @param string $type
+     * @return string|null
      */
-    public function __construct(int $kSlider = 0, int $kSlide = 0)
+    private function getMapping(string $type): ?string
     {
-        if ($kSlider > 0 && $kSlide > 0) {
-            $this->load($kSlider, $kSlide);
+        return self::$mapping[$type] ?? null;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function __construct(int $id = 0)
+    {
+        if ($id > 0) {
+            $this->load($id);
         }
     }
 
     /**
-     * @param int $kSlider
-     * @param int $kSlide
+     * @param int $id
      * @return bool
      */
-    public function load(int $kSlider = 0, int $kSlide = 0): bool
+    public function load(int $id = 0): bool
     {
-        if ($kSlider > 0
-            || (!empty($this->kSlider) && (int)$this->kSlider > 0 && $kSlide > 0)
-            || (!empty($this->kSlide) && (int)$this->kSlide > 0)
-        ) {
-            if (empty($kSlider) || $kSlider === 0) {
-                $kSlider = $this->kSlider;
-            }
-            if (empty($kSlide) || $kSlide === 0) {
-                $kSlide = $this->kSlide;
+        if ($id > 0 || ((int)$this->id > 0)) {
+            if ($id === 0) {
+                $id = $this->id;
             }
 
-            $oSlide = Shop::Container()->getDB()->select('tslide', 'kSlide', $kSlide);
+            $slide = Shop::Container()->getDB()->select('tslide', 'kSlide', $id);
 
-            if (is_object($oSlide)) {
-                $this->set((array)$oSlide);
+            if (is_object($slide)) {
+                $this->set($slide);
 
                 return true;
             }
@@ -108,19 +129,36 @@ class Slide
     }
 
     /**
-     * @param array $cData_arr
+     * @param stdClass $data
      * @return $this
      */
-    public function set(array $cData_arr): self
+    public function map(stdClass $data): self
     {
-        $cObjectFields_arr = get_class_vars('Slide');
-        foreach ($cObjectFields_arr as $cField => $cValue) {
-            if (isset($cData_arr[$cField])) {
-                $this->$cField = $cData_arr[$cField];
+        foreach (get_object_vars($data) as $field => $value) {
+            if (($mapping = $this->getMapping($field)) !== null) {
+                $method = 'set' . $mapping;
+                $this->$method($value);
+            }
+        }
+        $this->setAbsoluteImagePaths();
+
+        return $this;
+    }
+
+    /**
+     * @param stdClass $data
+     * @return $this
+     */
+    public function set(stdClass $data): self
+    {
+        foreach (get_object_vars($data) as $field => $value) {
+            if (($mapping = $this->getMapping($field)) !== null) {
+                $method = 'set' . $mapping;
+                $this->$method($value);
             }
         }
 
-        return $this->setAbsoluteImagePaths();
+        return $this;
     }
 
     /**
@@ -128,11 +166,9 @@ class Slide
      */
     private function setAbsoluteImagePaths(): self
     {
-        $imageBaseURL = Shop::getImageBaseURL();
-        $this->cBildAbsolut      = $imageBaseURL . PFAD_MEDIAFILES .
-            str_replace($imageBaseURL . PFAD_MEDIAFILES, '', $this->cBild);
-        $this->cThumbnailAbsolut = $imageBaseURL . PFAD_MEDIAFILES .
-            str_replace($imageBaseURL . PFAD_MEDIAFILES, '', $this->cThumbnail);
+        $basePath                = Shop::getImageBaseURL() . PFAD_MEDIAFILES;
+        $this->absoluteImage     = $basePath . str_replace($basePath, '', $this->image);
+        $this->absoluteThumbnail = $basePath . str_replace($basePath, '', $this->thumbnail);
 
         return $this;
     }
@@ -142,7 +178,7 @@ class Slide
      */
     public function save(): bool
     {
-        if (!empty($this->cBild)) {
+        if (!empty($this->image)) {
             $cShopUrl  = parse_url(Shop::getURL(), PHP_URL_PATH);
             $cShopUrl2 = parse_url(URL_SHOP, PHP_URL_PATH);
             if (strrpos($cShopUrl, '/') !== (strlen($cShopUrl) - 1)) {
@@ -153,18 +189,18 @@ class Slide
             }
             $cPfad  = $cShopUrl . PFAD_MEDIAFILES;
             $cPfad2 = $cShopUrl2 . PFAD_MEDIAFILES;
-            if (strpos($this->cBild, $cPfad) !== false) {
-                $nStrLength       = strlen($cPfad);
-                $this->cBild      = substr($this->cBild, $nStrLength);
-                $this->cThumbnail = '.thumbs/' . $this->cBild;
-            } elseif (strpos($this->cBild, $cPfad2) !== false) {
-                $nStrLength       = strlen($cPfad2);
-                $this->cBild      = substr($this->cBild, $nStrLength);
-                $this->cThumbnail = '.thumbs/' . $this->cBild;
+            if (strpos($this->image, $cPfad) !== false) {
+                $nStrLength      = strlen($cPfad);
+                $this->image     = substr($this->image, $nStrLength);
+                $this->thumbnail = '.thumbs/' . $this->image;
+            } elseif (strpos($this->image, $cPfad2) !== false) {
+                $nStrLength      = strlen($cPfad2);
+                $this->image     = substr($this->image, $nStrLength);
+                $this->thumbnail = '.thumbs/' . $this->image;
             }
         }
 
-        return $this->kSlide === null
+        return $this->id === null || $this->id === 0
             ? $this->append()
             : $this->update() > 0;
     }
@@ -174,13 +210,17 @@ class Slide
      */
     private function update(): int
     {
-        $oSlide = clone $this;
-        if (empty($oSlide->cThumbnail)) {
-            unset($oSlide->cThumbnail);
+        $slide = new stdClass();
+        if (!empty($this->getThumbnail())) {
+            $slide->cThumbnail = $this->getThumbnail();
         }
-        unset($oSlide->cBildAbsolut, $oSlide->cThumbnailAbsolut, $oSlide->kSlide);
+        $slide->kSlider = $this->getSliderID();
+        $slide->cTitel  = $this->getTitle();
+        $slide->cBild   = $this->getImage();
+        $slide->nSort   = $this->getSort();
+        $slide->cLink   = $this->getLink();
 
-        return Shop::Container()->getDB()->update('tslide', 'kSlide', (int)$this->kSlide, $oSlide);
+        return Shop::Container()->getDB()->update('tslide', 'kSlide', $this->getID(), $slide);
     }
 
     /**
@@ -188,23 +228,27 @@ class Slide
      */
     private function append(): bool
     {
-        if (!empty($this->cBild)) {
-            $oSlide = clone $this;
-            unset($oSlide->cBildAbsolut, $oSlide->cThumbnailAbsolut, $oSlide->kSlide);
-            if ($this->nSort === null) {
-                $oSort = Shop::Container()->getDB()->queryPrepared(
+        if (!empty($this->image)) {
+            $slide = new stdClass();
+            foreach (self::$mapping as $type => $methodName) {
+                $method       = 'get' . $methodName;
+                $slide->$type = $this->$method();
+            }
+            unset($slide->cBildAbsolut, $slide->cThumbnailAbsolut, $slide->kSlide);
+            if ($this->sort === null) {
+                $oSort        = Shop::Container()->getDB()->queryPrepared(
                     'SELECT nSort
                         FROM tslide
                         WHERE kSlider = :sliderID
                         ORDER BY nSort DESC LIMIT 1',
-                    ['sliderID' => $this->kSlider],
+                    ['sliderID' => $this->sliderID],
                     \DB\ReturnType::SINGLE_OBJECT
                 );
-                $oSlide->nSort = (!is_object($oSort) || (int)$oSort->nSort === 0) ? 1 : ($oSort->nSort + 1);
+                $slide->nSort = (!is_object($oSort) || (int)$oSort->nSort === 0) ? 1 : ($oSort->nSort + 1);
             }
-            $kSlide = Shop::Container()->getDB()->insert('tslide', $oSlide);
-            if ($kSlide > 0) {
-                $this->kSlide = $kSlide;
+            $id = Shop::Container()->getDB()->insert('tslide', $slide);
+            if ($id > 0) {
+                $this->id = $id;
 
                 return true;
             }
@@ -218,8 +262,166 @@ class Slide
      */
     public function delete(): bool
     {
-        return $this->kSlide !== null
-            && (int)$this->kSlide > 0
-            && Shop::Container()->getDB()->delete('tslide', 'kSlide', (int)$this->kSlide) > 0;
+        return (int)$this->id > 0 && Shop::Container()->getDB()->delete('tslide', 'kSlide', (int)$this->id) > 0;
+    }
+
+    /**
+     * @return int
+     */
+    public function getID(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int|string $id
+     */
+    public function setID($id): void
+    {
+        $this->id = (int)$id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSliderID(): int
+    {
+        return $this->sliderID;
+    }
+
+    /**
+     * @param int|string $sliderID
+     */
+    public function setSliderID($sliderID): void
+    {
+        $this->sliderID = (int)$sliderID;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title
+     */
+    public function setTitle(string $title): void
+    {
+        $this->title = $title;
+    }
+
+    /**
+     * @return string
+     */
+    public function getImage(): string
+    {
+        return $this->image;
+    }
+
+    /**
+     * @param string $image
+     */
+    public function setImage(string $image): void
+    {
+        $this->image = $image;
+    }
+
+    /**
+     * @return string
+     */
+    public function getText(): string
+    {
+        return $this->text;
+    }
+
+    /**
+     * @param string $text
+     */
+    public function setText(string $text): void
+    {
+        $this->text = $text;
+    }
+
+    /**
+     * @return string
+     */
+    public function getThumbnail(): string
+    {
+        return $this->thumbnail;
+    }
+
+    /**
+     * @param string $thumbnail
+     */
+    public function setThumbnail(string $thumbnail): void
+    {
+        $this->thumbnail = $thumbnail;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLink(): string
+    {
+        return $this->link;
+    }
+
+    /**
+     * @param string $link
+     */
+    public function setLink(string $link): void
+    {
+        $this->link = $link;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSort(): int
+    {
+        return $this->sort;
+    }
+
+    /**
+     * @param int|string $sort
+     */
+    public function setSort($sort): void
+    {
+        $this->sort = (int)$sort;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAbsoluteImage(): string
+    {
+        return $this->absoluteImage;
+    }
+
+    /**
+     * @param string $absoluteImage
+     */
+    public function setAbsoluteImage(string $absoluteImage): void
+    {
+        $this->absoluteImage = $absoluteImage;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAbsoluteThumbnail(): string
+    {
+        return $this->absoluteThumbnail;
+    }
+
+    /**
+     * @param string $absoluteThumbnail
+     */
+    public function setAbsoluteThumbnail(string $absoluteThumbnail): void
+    {
+        $this->absoluteThumbnail = $absoluteThumbnail;
     }
 }

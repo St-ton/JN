@@ -3,8 +3,12 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+use Helpers\Request;
+
 require_once __DIR__ . '/includes/admininclude.php';
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 setzeSprache();
 $oAccount->permission('OBJECTCACHE_VIEW', true, true);
 $notice       = '';
@@ -12,11 +16,14 @@ $error        = '';
 $cacheAction  = '';
 $step         = 'uebersicht';
 $tab          = 'uebersicht';
-$action       = (isset($_POST['a']) && FormHelper::validateToken()) ? $_POST['a'] : null;
+$action       = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : null;
 $cache        = null;
 $opcacheStats = null;
-if (0 < strlen(RequestHelper::verifyGPDataString('tab'))) {
-    $smarty->assign('tab', RequestHelper::verifyGPDataString('tab'));
+
+\Shop::Container()->getGetText()->loadConfigLocales();
+
+if (0 < strlen(Request::verifyGPDataString('tab'))) {
+    $smarty->assign('tab', Request::verifyGPDataString('tab'));
 }
 try {
     $cache = Shop::Container()->getCache();
@@ -40,11 +47,11 @@ if ($action !== null && isset($_POST['cache-action'])) {
     $cacheAction = $_POST['cache-action'];
 }
 switch ($action) {
-    case 'cacheMassAction' :
+    case 'cacheMassAction':
         //mass action cache flush
         $tab = 'massaction';
         switch ($cacheAction) {
-            case 'flush' :
+            case 'flush':
                 if (isset($_POST['cache-types']) && is_array($_POST['cache-types'])) {
                     $okCount = 0;
                     foreach ($_POST['cache-types'] as $cacheType) {
@@ -63,7 +70,7 @@ switch ($action) {
                     $error .= 'Kein Cache-Typ ausgewählt.';
                 }
                 break;
-            case 'activate' :
+            case 'activate':
                 if (isset($_POST['cache-types']) && is_array($_POST['cache-types'])) {
                     foreach ($_POST['cache-types'] as $cacheType) {
                         $index = array_search($cacheType, $currentlyDisabled, true);
@@ -86,7 +93,7 @@ switch ($action) {
                     $error .= 'Kein Cache-Typ ausgewählt.';
                 }
                 break;
-            case 'deactivate' :
+            case 'deactivate':
                 if (isset($_POST['cache-types']) && is_array($_POST['cache-types'])) {
                     foreach ($_POST['cache-types'] as $cacheType) {
                         $cache->flushTags([$cacheType]);
@@ -108,11 +115,11 @@ switch ($action) {
                     $error .= 'Kein Cache-Typ ausgewählt.';
                 }
                 break;
-            default :
+            default:
                 break;
         }
         break;
-    case 'flush_object_cache' :
+    case 'flush_object_cache':
         $tab = 'massaction';
         if ($cache !== null && $cache->flushAll() !== false) {
             $notice = 'Object Cache wurde erfolgreich gelöscht.';
@@ -123,8 +130,8 @@ switch ($action) {
             $error .= 'Der Cache konnte nicht gelöscht werden.';
         }
         break;
-    case 'settings' :
-        $settings = Shop::Container()->getDB()->selectAll(
+    case 'settings':
+        $settings      = Shop::Container()->getDB()->selectAll(
             'teinstellungenconf',
             ['kEinstellungenSektion', 'cConf'],
             [CONF_CACHING, 'Y'],
@@ -133,6 +140,7 @@ switch ($action) {
         );
         $i             = 0;
         $settingsCount = count($settings);
+
         while ($i < $settingsCount) {
             if (isset($_POST[$settings[$i]->cWertName])) {
                 $value                        = new stdClass();
@@ -140,17 +148,17 @@ switch ($action) {
                 $value->cName                 = $settings[$i]->cWertName;
                 $value->kEinstellungenSektion = CONF_CACHING;
                 switch ($settings[$i]->cInputTyp) {
-                    case 'kommazahl' :
+                    case 'kommazahl':
                         $value->cWert = (float)$value->cWert;
                         break;
-                    case 'zahl' :
+                    case 'zahl':
                     case 'number':
                         $value->cWert = (int)$value->cWert;
                         break;
-                    case 'text' :
+                    case 'text':
                         $value->cWert = (strlen($value->cWert) > 0) ? substr($value->cWert, 0, 255) : $value->cWert;
                         break;
-                    case 'listbox' :
+                    case 'listbox':
                         bearbeiteListBox($value->cWert, $settings[$i]->cWertName, CONF_CACHING);
                         break;
                 }
@@ -179,7 +187,7 @@ switch ($action) {
                             $value->cWert = 'xcache';
                         } elseif (in_array('advancedfile', $availableMethods, true)) {
                             $value->cWert = 'advancedfile';
-                        }  elseif (in_array('file', $availableMethods, true)) {
+                        } elseif (in_array('file', $availableMethods, true)) {
                             $value->cWert = 'file';
                         }
                     } else {
@@ -203,9 +211,9 @@ switch ($action) {
         $cache->flushAll();
         $cache->setJtlCacheConfig();
         $notice .= 'Ihre Einstellungen wurden übernommen.<br />';
-        $tab = 'settings';
+        $tab     = 'settings';
         break;
-    case 'benchmark' :
+    case 'benchmark':
         //do benchmarks
         $tab      = 'benchmark';
         $testData = 'simple short string';
@@ -220,17 +228,17 @@ switch ($action) {
         }
         if (isset($_POST['testdata'])) {
             switch ($_POST['testdata']) {
-                case 'array' :
+                case 'array':
                     $testData = ['test1' => 'string number one', 'test2' => 'string number two', 'test3' => 333];
                     break;
-                case 'object' :
+                case 'object':
                     $testData        = new stdClass();
                     $testData->test1 = 'string number one';
                     $testData->test2 = 'string number two';
                     $testData->test3 = 333;
                     break;
-                case 'string' :
-                default :
+                case 'string':
+                default:
                     $testData = 'simple short string';
                     break;
             }
@@ -243,9 +251,9 @@ switch ($action) {
             $smarty->assign('bench_results', $benchResults);
         }
         break;
-    case 'flush_template_cache' :
+    case 'flush_template_cache':
         // delete all template cachefiles
-        $callback = function (array $pParameters) {
+        $callback     = function (array $pParameters) {
             if (!$pParameters['isdir']) {
                 if (@unlink($pParameters['path'] . $pParameters['filename'])) {
                     $pParameters['count']++;
@@ -264,8 +272,8 @@ switch ($action) {
             'notice' => &$notice,
             'error'  => &$error
         ];
-        $template    = Template::getInstance();
-        $dirMan      = new DirManager();
+        $template     = Template::getInstance();
+        $dirMan       = new DirManager();
         $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $template->getDir(), $callback, $cbParameters);
         $dirMan->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback, $cbParameters);
         $notice .= 'Es wurden <strong>' .
@@ -281,13 +289,15 @@ if ($cache !== null) {
            ->assign('all_methods', $cache->getAllMethods())
            ->assign('stats', $cache->getStats());
 }
-$settings      = Shop::Container()->getDB()->selectAll(
+$settings = Shop::Container()->getDB()->selectAll(
     'teinstellungenconf',
     ['nStandardAnzeigen', 'kEinstellungenSektion'],
     [1, CONF_CACHING],
     '*',
     'nSort'
 );
+
+\Shop::Container()->getGetText()->localizeConfigs($settings);
 foreach ($settings as $i => $setting) {
     if ($setting->cName === 'caching_types_disabled') {
         unset($settings[$i]);
@@ -301,8 +311,9 @@ foreach ($settings as $i => $setting) {
             '*',
             'nSort'
         );
+        \Shop::Container()->getGetText()->localizeConfigValues($setting, $setting->ConfWerte);
     }
-    $oSetValue = Shop::Container()->getDB()->select(
+    $oSetValue              = Shop::Container()->getDB()->select(
         'teinstellungen',
         ['kEinstellungenSektion', 'cName'],
         [CONF_CACHING, $setting->cWertName]
@@ -317,7 +328,11 @@ $advancedSettings = Shop::Container()->getDB()->query(
         ORDER BY nSort',
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
-$settingsCount    = count($advancedSettings);
+
+\Shop::Container()->getGetText()->localizeConfigs($advancedSettings);
+
+$settingsCount = count($advancedSettings);
+
 for ($i = 0; $i < $settingsCount; ++$i) {
     if ($advancedSettings[$i]->cInputTyp === 'selectbox') {
         $advancedSettings[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
@@ -327,8 +342,9 @@ for ($i = 0; $i < $settingsCount; ++$i) {
             '*',
             'nSort'
         );
+        \Shop::Container()->getGetText()->localizeConfigValues($advancedSettings[$i], $advancedSettings[$i]->ConfWerte);
     }
-    $oSetValue = Shop::Container()->getDB()->select(
+    $oSetValue                           = Shop::Container()->getDB()->select(
         'teinstellungen',
         ['kEinstellungenSektion', 'cName'],
         [CONF_CACHING, $advancedSettings[$i]->cWertName]
@@ -338,7 +354,8 @@ for ($i = 0; $i < $settingsCount; ++$i) {
 if (function_exists('opcache_get_status')) {
     $_opcacheStatus             = opcache_get_status();
     $opcacheStats               = new stdClass();
-    $opcacheStats->enabled      = isset($_opcacheStatus['opcache_enabled']) && $_opcacheStatus['opcache_enabled'] === true;
+    $opcacheStats->enabled      = isset($_opcacheStatus['opcache_enabled'])
+        && $_opcacheStatus['opcache_enabled'] === true;
     $opcacheStats->memoryFree   = isset($_opcacheStatus['memory_usage']['free_memory'])
         ? round($_opcacheStatus['memory_usage']['free_memory'] / 1024 / 1024, 2)
         : -1;
@@ -377,16 +394,19 @@ $dirMan   = new DirManager();
 $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $template->getDir(), $callback, ['files' => &$tplcacheStats->frontend])
        ->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback, ['files' => &$tplcacheStats->backend]);
 
-$allMethods          = $cache->checkAvailability();
-$availableMethods    = [];
-$nonAvailableMethods = [];
+$allMethods           = $cache->checkAvailability();
+$availableMethods     = [];
+$disFunctionalMethods = [];
+$nonAvailableMethods  = [];
 foreach ($allMethods as $_name => $_status) {
-    if (isset($_status['available'], $_status['functional'])
-        && $_status['available'] === true
-        && $_status['functional'] === true
-    ) {
+    if ($_name === 'null') {
+        continue;
+    }
+    if ($_status['functional'] === true) {
         $availableMethods[] = $_name;
-    } elseif ($_name !== 'null') {
+    } elseif ($_status['available'] === true) {
+        $disFunctionalMethods[] = $_name;
+    } else {
         $nonAvailableMethods[] = $_name;
     }
 }
@@ -398,7 +418,9 @@ if ($cache !== null) {
     }
     unset($cachingGroup);
 }
-
+if (!empty($cache->getError())) {
+    $error .= $cache->getError();
+}
 $smarty->assign('settings', $settings)
        ->assign('caching_groups', $cachingGroups)
        ->assign('cache_enabled', isset($options['activated']) && $options['activated'] === true)
@@ -406,7 +428,8 @@ $smarty->assign('settings', $settings)
        ->assign('options', $options)
        ->assign('opcache_stats', $opcacheStats)
        ->assign('tplcacheStats', $tplcacheStats)
-       ->assign('available_methods', json_encode($availableMethods))
+       ->assign('functional_methods', json_encode($availableMethods))
+       ->assign('disfunctional_methods', json_encode($disFunctionalMethods))
        ->assign('non_available_methods', json_encode($nonAvailableMethods))
        ->assign('advanced_settings', $advancedSettings)
        ->assign('disabled_caches', $currentlyDisabled)

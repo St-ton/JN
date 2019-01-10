@@ -12,7 +12,7 @@ namespace Filter\Pagination;
  */
 class Item
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var int
@@ -54,7 +54,7 @@ class Item
     /**
      * @param int $page
      */
-    public function setPageNumber(int $page)
+    public function setPageNumber(int $page): void
     {
         $this->page = $page;
     }
@@ -62,7 +62,7 @@ class Item
     /**
      * @return string|null
      */
-    public function getURL()
+    public function getURL(): ?string
     {
         return $this->url;
     }
@@ -70,7 +70,7 @@ class Item
     /**
      * @param string|null $url
      */
-    public function setURL($url)
+    public function setURL($url): void
     {
         $this->url = $url;
     }
@@ -86,7 +86,7 @@ class Item
     /**
      * @param bool $isActive
      */
-    public function setIsActive(bool $isActive)
+    public function setIsActive(bool $isActive): void
     {
         $this->isActive = $isActive;
     }

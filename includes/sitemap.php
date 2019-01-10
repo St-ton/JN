@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Request;
+
 define('JTL_INCLUDE_ONLY_DB', 1);
 require_once __DIR__ . '/globalinclude.php';
 
@@ -15,7 +18,7 @@ if ($cDatei === null) {
     header('Retry-After: 86400');
     exit;
 }
-$cIP              = RequestHelper::getRealIP();
+$cIP              = Request::getRealIP();
 $nFloodProtection = Shop::Container()->getDB()->queryPrepared(
     'SELECT * 
         FROM `tsitemaptracker` 
@@ -32,7 +35,7 @@ if ($nFloodProtection === 0) {
     $oSitemapTracker->kBesucherBot = getRequestBot();
     $oSitemapTracker->cIP          = $cIP;
     $oSitemapTracker->cUserAgent   = StringHandler::filterXSS($_SERVER['HTTP_USER_AGENT']);
-    $oSitemapTracker->dErstellt    = 'now()';
+    $oSitemapTracker->dErstellt    = 'NOW()';
 
     Shop::Container()->getDB()->insert('tsitemaptracker', $oSitemapTracker);
 }

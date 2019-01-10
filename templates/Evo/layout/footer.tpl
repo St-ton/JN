@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {block name='content-all-closingtags'}
     {block name='content-closingtag'}
     </div>{* /content *}
@@ -49,22 +53,6 @@
                     {/foreach}
                 </div>
             {/if}
-            {*{load_boxes_raw type='bottom' assign='arrBoxBottom' array=true}*}
-            {*{if isset($arrBoxBottom) && count($arrBoxBottom) > 0}*}
-                {*<div class="row" id="footer-boxes">*}
-                    {*{foreach $arrBoxBottom as $box}*}
-                        {*{if ($box.obj->getBaseType() !== 0 && $box.obj->show())*}
-                        {*|| ($box.obj->getBaseType() === 0 && !empty($box.obj->getChildren()))}*}
-                            {*<div class="{block name='footer-boxes-class'}col-xs-12 col-sm-6 col-md-3{/block}">*}
-                                {*{if isset($box.obj) && isset($box.tpl)}*}
-                                    {*{assign var=oBox value=$box.obj}*}
-                                    {*{include file=$box.tpl}*}
-                                {*{/if}*}
-                            {*</div>*}
-                        {*{/if}*}
-                    {*{/foreach}*}
-                {*</div>*}
-            {*{/if}*}
             {/block}
 
             {block name='footer-additional'}
@@ -269,36 +257,7 @@
             });
         </script>
     {/if}
-
-    {if !empty($Einstellungen.global.global_google_analytics_id)}
-        <script type="text/javascript">
-            function gaOptout() {
-              document.cookie = disableStr + '=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/';
-              window[disableStr] = true;
-            }
-
-            var gaProperty = '{$Einstellungen.global.global_google_analytics_id}',
-                disableStr = 'ga-disable-' + gaProperty;
-            if (document.cookie.indexOf(disableStr + '=true') > -1) {
-              window[disableStr] = true;
-            } else {
-                var _gaq = _gaq || [];
-                _gaq.push(['_setAccount', '{$Einstellungen.global.global_google_analytics_id}']);
-                _gaq.push(['_gat._anonymizeIp']);
-                _gaq.push(['_trackPageview']);
-                (function () {ldelim}
-                    var ga = document.createElement('script'),
-                        s;
-                    ga.type = 'text/javascript';
-                    ga.async = true;
-                    ga.src = ('https:' === document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-                    s = document.getElementsByTagName('script')[0];
-                    s.parentNode.insertBefore(ga, s);
-                {rdelim})();
-            }
-        </script>
-    {/if}
-
+    {$dbgBarBody}
     <script>
         jtl.load({strip}[
             {* evo js *}

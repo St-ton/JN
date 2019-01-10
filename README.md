@@ -15,7 +15,7 @@
 * MySQL or MariaDB >= v5.0
 
 **PHP**
-* PHP 7.0 or greater (7.1 or 7.2 recommended) 
+* PHP 7.1 or greater
 * PHP-Modules: 
  * [GD](http://php.net/manual/en/book.image.php)
  * [SimpleXML](http://php.net/manual/en/book.simplexml.php)
@@ -40,14 +40,14 @@
 * Proprietary, see [LICENSE.md](LICENSE.md) for further details
 
 ## Changelog
-* See [CHANGELOG.md](CHANGELOG.md) for details
+* See [issues.jtl-software.de](https://issues.jtl-software.de/issues?project=JTL-Shop) or review commits in [Gitlab](https://gitlab.jtl-software.de/jtlshop/shop4/) for the latest changes
 
 ## Third party libraries
 * Smarty (http://www.smarty.net/) - LGPL
 * Guzzle - MIT
 * imanee - MIT
 * CKEditor - LGPL
-* KCFinder
+* elFinder - BSD
 * CodeMirror - MIT
 * Minify
 * NuSoap - LGPLv2
@@ -69,8 +69,7 @@
 ## Related Links
 
 * [JTL](https://www.jtl-software.de) - JTL-Software Homepage
-* [JTL Userguide](http://guide.jtl-software.de) - Userguide
+* [JTL Userguide](https://guide.jtl-software.de) - Userguide
 * [JTL Developer Documentation](http://docs.jtl-shop.de) - Developer Docs
-* [JTL Community](http://forum.jtl-software.de) - JTL-Forum 
-* [JTL Feedback](http://feedback.jtl-software.de) - Feature Proposals
+* [JTL Community](https://forum.jtl-software.de) - JTL-Forum 
 * [JTL Shop4-Entwicklung](https://gitlab.jtl-software.de/jtlshop/shop4) - Gitlab 

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -11,6 +11,7 @@ use Cache\JTLCacheTrait;
 
 /**
  * Class cache_redisCluster
+ * @package Cache\Methods
  * Implements caching via phpredis in cluster mode
  *
  * @see https://github.com/nicolasff/phpredis
@@ -27,7 +28,7 @@ class cache_redisCluster implements ICachingMethod
     /**
      * @var \RedisCluster
      */
-    private $_redis;
+    private $redis;
 
     /**
      * @var array
@@ -79,12 +80,12 @@ class cache_redisCluster implements ICachingMethod
                 default:
                     $redis->setOption(\RedisCluster::OPT_SLAVE_FAILOVER, \RedisCluster::FAILOVER_NONE);
                     break;
-
             }
             $this->masters = $redis->_masters();
 
-            $this->_redis = $redis;
+            $this->redis = $redis;
         } catch (\RedisClusterException $e) {
+            $this->setError($e->getMessage());
             \Shop::Container()->getLogService()->critical('\RedisClusterException: ' . $e->getMessage());
         }
 
@@ -99,7 +100,7 @@ class cache_redisCluster implements ICachingMethod
         try {
             $exp = $expiration ?? $this->options['lifetime'];
 
-            return $this->_redis->set($cacheID, $content, $cacheID !== $this->journalID && $exp > -1 ? $exp : null);
+            return $this->redis->set($cacheID, $content, $cacheID !== $this->journalID && $exp > -1 ? $exp : null);
         } catch (\RedisClusterException $e) {
             \Shop::Container()->getLogService()->error('\RedisClusterException: ' . $e->getMessage());
 
@@ -113,11 +114,11 @@ class cache_redisCluster implements ICachingMethod
     public function storeMulti($idContent, $expiration = null): bool
     {
         try {
-            $res = $this->_redis->mset($idContent);
+            $res = $this->redis->mset($idContent);
             $exp = $expiration ?? $this->options['lifetime'];
             $exp = $exp > -1 ? $exp : null;
             foreach (\array_keys($idContent) as $_cacheID) {
-                $this->_redis->expire($_cacheID, $exp);
+                $this->redis->expire($_cacheID, $exp);
             }
 
             return $res;
@@ -134,7 +135,7 @@ class cache_redisCluster implements ICachingMethod
     public function load($cacheID)
     {
         try {
-            return $this->_redis->get($cacheID);
+            return $this->redis->get($cacheID);
         } catch (\RedisClusterException $e) {
             \Shop::Container()->getLogService()->error('\RedisClusterException: ' . $e->getMessage());
 
@@ -147,7 +148,7 @@ class cache_redisCluster implements ICachingMethod
      */
     public function loadMulti(array $cacheIDs): array
     {
-        $res    = $this->_redis->mget($cacheIDs);
+        $res    = $this->redis->mget($cacheIDs);
         $i      = 0;
         $return = [];
         foreach ($res as $_idx => $_val) {
@@ -171,7 +172,7 @@ class cache_redisCluster implements ICachingMethod
      */
     public function flush($cacheID): bool
     {
-        return $this->_redis->del($cacheID) > 0;
+        return $this->redis->del($cacheID) > 0;
     }
 
     /**
@@ -185,7 +186,7 @@ class cache_redisCluster implements ICachingMethod
         }
         if (\count($tags) > 0) {
             foreach ($tags as $tag) {
-                $this->_redis->sAdd(self::_keyFromTagName($tag), $cacheID);
+                $this->redis->sAdd(self::_keyFromTagName($tag), $cacheID);
             }
             $res = true;
         }
@@ -209,7 +210,9 @@ class cache_redisCluster implements ICachingMethod
      */
     public function flushTags($tags): int
     {
-        return $this->flush(\array_unique($this->getKeysByTag($tags)));
+        $tags = \array_unique($this->getKeysByTag($tags));
+
+        return $this->flush($tags) ? \count($tags) : 0;
     }
 
     /**
@@ -218,7 +221,7 @@ class cache_redisCluster implements ICachingMethod
     public function flushAll(): bool
     {
         foreach ($this->masters as $master) {
-            $this->_redis->flushDB($master);
+            $this->redis->flushDB($master);
         }
 
         return true;
@@ -233,13 +236,13 @@ class cache_redisCluster implements ICachingMethod
             ? [self::_keyFromTagName($tags)]
             : \array_map('Cache\Methods\cache_redisCluster::_keyFromTagName', $tags);
         $res       = \count($tags) === 1
-            ? $this->_redis->sMembers($matchTags[0])
-            : $this->_redis->sUnion($matchTags);
+            ? $this->redis->sMembers($matchTags[0])
+            : $this->redis->sUnion($matchTags);
         if (\PHP_SAPI === 'srv' || \PHP_SAPI === 'cli') { // for some reason, hhvm does not unserialize values
             foreach ($res as &$_cid) {
                 // phpredis will throw an exception when unserializing unserialized data
                 try {
-                    $_cid = $this->_redis->_unserialize($_cid);
+                    $_cid = $this->redis->_unserialize($_cid);
                 } catch (\RedisClusterException $e) {
                     // we know we don't have to continue unserializing when there was an exception
                     break;
@@ -255,7 +258,7 @@ class cache_redisCluster implements ICachingMethod
      */
     public function keyExists($cacheID): bool
     {
-        return $this->_redis->exists($cacheID);
+        return $this->redis->exists($cacheID);
     }
 
     /**
@@ -275,9 +278,9 @@ class cache_redisCluster implements ICachingMethod
         $mps         = [];
         try {
             foreach ($this->masters as $master) {
-                $stats[]    = $this->_redis->info($master);
-                $slowLogs[] = \method_exists($this->_redis, 'slowlog')
-                    ? $this->_redis->slowlog($master, 'get', 25)
+                $stats[]    = $this->redis->info($master);
+                $slowLogs[] = \method_exists($this->redis, 'slowlog')
+                    ? $this->redis->slowlog($master, 'get', 25)
                     : [];
             }
         } catch (\RedisClusterException $e) {

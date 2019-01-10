@@ -102,7 +102,7 @@ class WarenkorbPersPos
         $this->kArtikel        = $kArtikel;
         $this->cArtikelName    = $cArtikelName;
         $this->fAnzahl         = $fAnzahl;
-        $this->dHinzugefuegt   = 'now()';
+        $this->dHinzugefuegt   = 'NOW()';
         $this->kWarenkorbPers  = $kWarenkorbPers;
         $this->cUnique         = $cUnique;
         $this->cResponsibility = !empty($cResponsibility) ? $cResponsibility : 'core';
@@ -171,7 +171,12 @@ class WarenkorbPersPos
         $oTemp->kKonfigitem       = $this->kKonfigitem;
         $oTemp->nPosTyp           = $this->nPosTyp;
 
-        return Shop::Container()->getDB()->update('twarenkorbperspos', 'kWarenkorbPersPos', $this->kWarenkorbPersPos, $oTemp);
+        return Shop::Container()->getDB()->update(
+            'twarenkorbperspos',
+            'kWarenkorbPersPos',
+            $this->kWarenkorbPersPos,
+            $oTemp
+        );
     }
 
     /**
@@ -180,7 +185,7 @@ class WarenkorbPersPos
      * @param string $cFreifeldWert
      * @return bool
      */
-    public function istEigenschaftEnthalten(int $kEigenschaft, int $kEigenschaftWert, string $cFreifeldWert = '')
+    public function istEigenschaftEnthalten(int $kEigenschaft, int $kEigenschaftWert, string $cFreifeldWert = ''): bool
     {
         foreach ($this->oWarenkorbPersPosEigenschaft_arr as $oWarenkorbPersPosEigenschaft) {
             if ((int)$oWarenkorbPersPosEigenschaft->kEigenschaft === $kEigenschaft

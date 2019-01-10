@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Request;
+
 require_once __DIR__ . '/globalinclude.php';
 
 $session = \Session\Session::getInstance();
@@ -10,13 +13,13 @@ $session = \Session\Session::getInstance();
 // kK   = kKampagne
 // kN   = kNewsletter
 // kNE  = kNewsletterEmpfaenger
-if (RequestHelper::verifyGPCDataInt('kK') > 0
-    && RequestHelper::verifyGPCDataInt('kN') > 0
-    && RequestHelper::verifyGPCDataInt('kNE') > 0
+if (Request::verifyGPCDataInt('kK') > 0
+    && Request::verifyGPCDataInt('kN') > 0
+    && Request::verifyGPCDataInt('kNE') > 0
 ) {
-    $kKampagne             = RequestHelper::verifyGPCDataInt('kK');
-    $kNewsletter           = RequestHelper::verifyGPCDataInt('kN');
-    $kNewsletterEmpfaenger = RequestHelper::verifyGPCDataInt('kNE');
+    $kKampagne             = Request::verifyGPCDataInt('kK');
+    $kNewsletter           = Request::verifyGPCDataInt('kN');
+    $kNewsletterEmpfaenger = Request::verifyGPCDataInt('kNE');
     // Prüfe ob der Newsletter vom Newsletterempfänger bereits geöffnet wurde.
     $oNewsletterTrackTMP = Shop::Container()->getDB()->select(
         'tnewslettertrack',
@@ -34,7 +37,7 @@ if (RequestHelper::verifyGPCDataInt('kK') > 0
         $oNewsletterTrack->kKampagne             = $kKampagne;
         $oNewsletterTrack->kNewsletter           = $kNewsletter;
         $oNewsletterTrack->kNewsletterEmpfaenger = $kNewsletterEmpfaenger;
-        $oNewsletterTrack->dErstellt             = 'now()';
+        $oNewsletterTrack->dErstellt             = 'NOW()';
 
         $kNewsletterTrack = Shop::Container()->getDB()->insert('tnewslettertrack', $oNewsletterTrack);
 

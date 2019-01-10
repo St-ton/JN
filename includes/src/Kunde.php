@@ -3,6 +3,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Date;
+use Helpers\Form;
+use Helpers\GeneralObject;
+
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 
 /**
@@ -158,7 +163,7 @@ class Kunde
     /**
      * @var string
      */
-    public $dGeburtstag = '0000-00-00';
+    public $dGeburtstag;
 
     /**
      * @var string
@@ -183,7 +188,7 @@ class Kunde
     /**
      * @var string
      */
-    public $dErstellt = '0000-00-00';
+    public $dErstellt;
 
     /**
      * @var string
@@ -241,14 +246,17 @@ class Kunde
      * @param string $cEmail
      * @return Kunde|null
      */
-    public function holRegKundeViaEmail($cEmail)
+    public function holRegKundeViaEmail($cEmail): ?Kunde
     {
         if (strlen($cEmail) > 0) {
             $oKundeTMP = Shop::Container()->getDB()->select(
                 'tkunde',
-                'cMail', StringHandler::filterXSS($cEmail),
-                null, null,
-                null, null,
+                'cMail',
+                StringHandler::filterXSS($cEmail),
+                null,
+                null,
+                null,
+                null,
                 false,
                 'kKunde'
             );
@@ -276,9 +284,12 @@ class Kunde
         ) {
             $attempts = Shop::Container()->getDB()->select(
                 'tkunde',
-                'cMail', StringHandler::filterXSS($cBenutzername),
-                'nRegistriert', 1,
-                null, null,
+                'cMail',
+                StringHandler::filterXSS($cBenutzername),
+                'nRegistriert',
+                1,
+                null,
+                null,
                 false,
                 'nLoginversuche'
             );
@@ -286,7 +297,7 @@ class Kunde
                 && isset($attempts->nLoginversuche)
                 && (int)$attempts->nLoginversuche >= (int)$conf['kunden']['kundenlogin_max_loginversuche']
             ) {
-                if (FormHelper::validateCaptcha($_POST)) {
+                if (Form::validateCaptcha($_POST)) {
                     return true;
                 }
 
@@ -350,19 +361,19 @@ class Kunde
     }
 
     /**
-     * @param string $cBenutzername
-     * @param string $cPasswort
+     * @param string $user
+     * @param string $pass
      * @return bool|stdClass
      * @throws Exception
      */
-    public function checkCredentials($cBenutzername, $cPasswort)
+    public function checkCredentials($user, $pass)
     {
         $passwordService = Shop::Container()->getPasswordService();
         $db              = Shop::Container()->getDB();
-        $oUser           = $db->select(
+        $customer        = $db->select(
             'tkunde',
             'cMail',
-            $cBenutzername,
+            $user,
             'nRegistriert',
             1,
             null,
@@ -370,39 +381,40 @@ class Kunde
             false,
             '*, date_format(dGeburtstag, \'%d.%m.%Y\') AS dGeburtstag_formatted'
         );
-        if (!$oUser) {
+        if (!$customer) {
             return false;
         }
-        $oUser->kKunde         = (int)$oUser->kKunde;
-        $oUser->kKundengruppe  = (int)$oUser->kKundengruppe;
-        $oUser->kSprache       = (int)$oUser->kSprache;
-        $oUser->nLoginversuche = (int)$oUser->nLoginversuche;
-        $oUser->nRegistriert   = (int)$oUser->nRegistriert;
+        $customer->kKunde                = (int)$customer->kKunde;
+        $customer->kKundengruppe         = (int)$customer->kKundengruppe;
+        $customer->kSprache              = (int)$customer->kSprache;
+        $customer->nLoginversuche        = (int)$customer->nLoginversuche;
+        $customer->nRegistriert          = (int)$customer->nRegistriert;
+        $customer->dGeburtstag_formatted = $customer->dGeburtstag_formatted !== '00.00.0000'
+            ? $customer->dGeburtstag_formatted
+            : '';
 
-        if (!$passwordService->verify($cPasswort, $oUser->cPasswort)) {
-            $tries = ++$oUser->nLoginversuche;
-            Shop::Container()->getDB()->update('tkunde', 'cMail', $cBenutzername, (object)['nLoginversuche' => $tries]);
+        if (!$passwordService->verify($pass, $customer->cPasswort)) {
+            $tries = ++$customer->nLoginversuche;
+            Shop::Container()->getDB()->update('tkunde', 'cMail', $user, (object)['nLoginversuche' => $tries]);
             return false;
         }
-
         $update = false;
-        if ($passwordService->needsRehash($oUser->cPasswort)) {
-            $oUser->cPasswort = $passwordService->hash($cPasswort);
-            $update = true;
+        if ($passwordService->needsRehash($customer->cPasswort)) {
+            $customer->cPasswort = $passwordService->hash($pass);
+            $update              = true;
         }
 
-        if($oUser->nLoginversuche > 0) {
-            $oUser->nLoginversuche = 0;
-            $update = true;
+        if ($customer->nLoginversuche > 0) {
+            $customer->nLoginversuche = 0;
+            $update                   = true;
         }
-
-        if($update) {
-            $update = (array)$oUser;
+        if ($update) {
+            $update = (array)$customer;
             unset($update['dGeburtstag_formatted']);
-            Shop::Container()->getDB()->update('tkunde', 'kKunde', $oUser->kKunde, (object)$update);
+            Shop::Container()->getDB()->update('tkunde', 'kKunde', $customer->kKunde, (object)$update);
         }
 
-        return $oUser;
+        return $customer;
     }
 
     /**
@@ -428,10 +440,9 @@ class Kunde
             foreach ($members as $member) {
                 $this->$member = $obj->$member;
             }
-            // Anrede mappen
+            $this->kSprache         = (int)$this->kSprache;
             $this->cAnredeLocalized = self::mapSalutation($this->cAnrede, $this->kSprache);
             $this->angezeigtesLand  = Sprache::getCountryCodeByCountryName($this->cLand);
-            //$this->cLand = landISO($this->cLand);
             $this->holeKundenattribute()->entschluesselKundendaten();
             $this->kKunde         = (int)$this->kKunde;
             $this->kKundengruppe  = (int)$this->kKundengruppe;
@@ -439,12 +450,17 @@ class Kunde
             $this->nLoginversuche = (int)$this->nLoginversuche;
             $this->nRegistriert   = (int)$this->nRegistriert;
 
-            $this->dGeburtstag_formatted = date_format(date_create($this->dGeburtstag), 'd.m.Y');
-            $this->cGuthabenLocalized    = $this->gibGuthabenLocalized();
-            $cDatum_arr                  = DateHelper::getDateParts($this->dErstellt);
-            $this->dErstellt_DE          = $cDatum_arr['cTag'] . '.' .
-                $cDatum_arr['cMonat'] . '.' .
-                $cDatum_arr['cJahr'];
+            $this->dGeburtstag_formatted = $this->dGeburtstag === null
+                ? ''
+                : date_format(date_create($this->dGeburtstag), 'd.m.Y');
+
+            $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
+            $cDatum_arr               = Date::getDateParts($this->dErstellt ?? '');
+            if (count($cDatum_arr) > 0) {
+                $this->dErstellt_DE = $cDatum_arr['cTag'] . '.' .
+                    $cDatum_arr['cMonat'] . '.' .
+                    $cDatum_arr['cJahr'];
+            }
             executeHook(HOOK_KUNDE_CLASS_LOADFROMDB);
         }
 
@@ -520,29 +536,23 @@ class Kunde
         $obj->cSperre        = $this->cSperre;
         $obj->fGuthaben      = $this->fGuthaben;
         $obj->cNewsletter    = $this->cNewsletter;
-        $obj->dGeburtstag    = $this->dGeburtstag;
         $obj->fRabatt        = $this->fRabatt;
         $obj->cHerkunft      = $this->cHerkunft;
-        $obj->dErstellt      = $this->dErstellt;
-        $obj->dVeraendert    = $this->dVeraendert;
+        $obj->dErstellt      = $this->dErstellt ?? '_DBNULL_';
+        $obj->dVeraendert    = $this->dVeraendert ?? 'NOW()';
         $obj->cAktiv         = $this->cAktiv;
         $obj->cAbgeholt      = $this->cAbgeholt;
         $obj->nRegistriert   = $this->nRegistriert;
         $obj->nLoginversuche = $this->nLoginversuche;
+        $obj->dGeburtstag    = Date::convertDateToMysqlStandard($this->dGeburtstag);
 
-        if (empty($obj->dGeburtstag)) {
-            $obj->dGeburtstag = '0000-00-00';
-        }
-        if (empty($obj->dVeraendert)) {
-            $obj->dVeraendert = 'now()';
-        }
         $obj->cLand   = $this->pruefeLandISO($obj->cLand);
         $this->kKunde = Shop::Container()->getDB()->insert('tkunde', $obj);
         $this->entschluesselKundendaten();
 
         $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
         $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
-        $cDatum_arr               = DateHelper::getDateParts($this->dErstellt);
+        $cDatum_arr               = Date::getDateParts($this->dErstellt);
         $this->dErstellt_DE       = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
 
         return $this->kKunde;
@@ -553,12 +563,13 @@ class Kunde
      */
     public function updateInDB(): int
     {
-        if (preg_match('/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/', $this->dGeburtstag, $matches) === 1) {
-            $this->dGeburtstag = $matches[3] . '-' . $matches[2] . '-' . $matches[1];
-        }
+        $this->dGeburtstag           = Date::convertDateToMysqlStandard($this->dGeburtstag);
+        $this->dGeburtstag_formatted = $this->dGeburtstag === '_DBNULL_'
+            ? ''
+            : DateTime::createFromFormat('Y-m-d', $this->dGeburtstag)->format('d.m.Y');
 
         $this->verschluesselKundendaten();
-        $obj = ObjectHelper::copyMembers($this);
+        $obj = GeneralObject::copyMembers($this);
 
         $cKundenattribut_arr = [];
         if (is_array($obj->cKundenattribut_arr)) {
@@ -577,20 +588,23 @@ class Kunde
             $obj->cPasswortKlartext
         );
         if ($obj->dGeburtstag === '') {
-            $obj->dGeburtstag = '0000-00-00';
+            $obj->dGeburtstag = '_DBNULL_';
         }
 
         $obj->cLand       = $this->pruefeLandISO($obj->cLand);
-        $obj->dVeraendert = 'now()';
+        $obj->dVeraendert = 'NOW()';
         $cReturn          = Shop::Container()->getDB()->update('tkunde', 'kKunde', $obj->kKunde, $obj);
         if (is_array($cKundenattribut_arr) && count($cKundenattribut_arr) > 0) {
             $obj->cKundenattribut_arr = $cKundenattribut_arr;
+        }
+        if ($obj->dGeburtstag === '_DBNULL_') {
+            $obj->dGeburtstag = '';
         }
         $this->entschluesselKundendaten();
 
         $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
         $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
-        $cDatum_arr               = DateHelper::getDateParts($this->dErstellt);
+        $cDatum_arr               = Date::getDateParts($this->dErstellt);
         $this->dErstellt_DE       = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
 
         return $cReturn;
@@ -608,7 +622,8 @@ class Kunde
             'tkundenattribut',
             'kKunde',
             (int)$this->kKunde,
-            '*', 'kKundenAttribut'
+            '*',
+            'kKundenAttribut'
         );
         foreach ($oKundenattribut_arr as $oKundenattribut) {
             $this->cKundenattribut_arr[$oKundenattribut->kKundenfeld] = $oKundenattribut;
@@ -656,7 +671,10 @@ class Kunde
      */
     public function verschluesselAlleKunden(): self
     {
-        foreach (Shop::Container()->getDB()->query('SELECT * FROM tkunde', \DB\ReturnType::ARRAY_OF_OBJECTS) as $oKunden) {
+        foreach (Shop::Container()->getDB()->query(
+            'SELECT * FROM tkunde',
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        ) as $oKunden) {
             if ($oKunden->kKunde > 0) {
                 unset($oKundeTMP);
                 $oKundeTMP = new self($oKunden->kKunde);
@@ -780,7 +798,7 @@ class Kunde
             [
                 'kKunde'   => $this->kKunde,
                 'cKey'     => $key,
-                'dExpires' => $expires->format(DateTime::ISO8601),
+                'dExpires' => $expires->format(DateTime::ATOM),
             ],
             \DB\ReturnType::AFFECTED_ROWS
         );
@@ -865,5 +883,211 @@ class Kunde
         }
 
         return $cAnrede;
+    }
+
+    /**
+     * @param string $issuerType
+     * @param int $issuerID
+     * @param bool $force
+     * @param bool $confirmationMail
+     */
+    public function deleteAccount(
+        string $issuerType,
+        int $issuerID,
+        bool $force = false,
+        bool $confirmationMail = false
+    ): void {
+        $customerID = $this->getID();
+
+        if (empty($customerID)) {
+            return;
+        }
+
+        if ($force) {
+            $this->erasePersonalData($issuerType, $issuerID);
+
+            return;
+        }
+
+        $openOrders = $this->getOpenOrders();
+        if (!$openOrders) {
+            $this->erasePersonalData($issuerType, $issuerID);
+            $logMessage = \sprintf('Account with ID kKunde = %s deleted', $customerID);
+        } else {
+            Shop::Container()->getDB()->update('tkunde', 'kKunde', $customerID, (object)[
+                'cPasswort'    => '',
+                'nRegistriert' => 0,
+            ]);
+            $logMessage = \sprintf(
+                'Account with ID kKunde = %s deleted, but had %s open orders with %s still in cancellation time. ' .
+                'Account is deactivated until all orders are completed.',
+                $customerID,
+                $openOrders->openOrders,
+                $openOrders->ordersInCancellationTime
+            );
+
+            (new GeneralDataProtection\Journal())->addEntry(
+                $issuerType,
+                $customerID,
+                GeneralDataProtection\Journal::ACTION_CUSTOMER_DEACTIVATED,
+                $logMessage,
+                (object)['kKunde' => $customerID]
+            );
+        }
+
+        Shop::Container()->getLogService()->notice($logMessage);
+
+        if ($confirmationMail) {
+            sendeMail(MAILTEMPLATE_KUNDENACCOUNT_GELOESCHT, (object)['tkunde' => $this]);
+        }
+    }
+
+    /**
+     * @return false|stdClass
+     */
+    public function getOpenOrders()
+    {
+        $cancellationTime = Shopsetting::getInstance()->getValue(CONF_GLOBAL, 'global_cancellation_time');
+        $db               = Shop::Container()->getDB();
+        $customerID       = $this->getID();
+
+        $openOrders               = $db->queryPrepared(
+            'SELECT COUNT(kBestellung) AS orderCount
+                    FROM tbestellung
+                    WHERE cStatus NOT IN (:orderSent, :orderCanceled)
+                        AND kKunde = :customerId',
+            [
+                'customerId'    => $customerID,
+                'orderSent'     => BESTELLUNG_STATUS_VERSANDT,
+                'orderCanceled' => BESTELLUNG_STATUS_STORNO,
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
+        );
+        $ordersInCancellationTime = $db->queryPrepared(
+            'SELECT COUNT(kBestellung) AS orderCount
+                    FROM tbestellung
+                    WHERE kKunde = :customerId
+                        AND cStatus = :orderSent
+                        AND DATE(dVersandDatum) > DATE_SUB(NOW(), INTERVAL :cancellationTime DAY)',
+            [
+                'customerId'       => $customerID,
+                'orderSent'        => BESTELLUNG_STATUS_VERSANDT,
+                'cancellationTime' => $cancellationTime,
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
+        );
+
+        if (!empty($openOrders->orderCount) || !empty($ordersInCancellationTime->orderCount)) {
+            return (object)[
+                'openOrders'               => (int)$openOrders->orderCount,
+                'ordersInCancellationTime' => (int)$ordersInCancellationTime->orderCount
+            ];
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $issuerType
+     * @param int $issuerID
+     */
+    private function erasePersonalData(string $issuerType, int $issuerID): void
+    {
+        $customerID = $this->getID();
+        $db         = Shop::Container()->getDB();
+        if (empty($customerID)) {
+            return;
+        }
+        $anonymous = 'Anonym';
+
+        $db->delete('tlieferadresse', 'kKunde', $customerID);
+        $db->delete('trechnungsadresse', 'kKunde', $customerID);
+        $db->delete('tkundenattribut', 'kKunde', $customerID);
+        $db->delete('tkunde', 'kKunde', $customerID);
+        $db->delete('tkundendatenhistory', 'kKunde', $customerID);
+        $db->delete('tkundenkontodaten', 'kKunde', $customerID);
+        $db->delete('tzahlungsinfo', 'kKunde', $customerID);
+        $db->delete('tkundenwerbenkunden', 'kKunde', $customerID);
+        $db->delete('tkundenwerbenkundenbonus', 'kKunde', $customerID);
+        $db->delete('tkuponneukunde', 'cEmail', $this->cMail);
+        $db->delete('tkontakthistory', 'cMail', $this->cMail);
+        $db->delete('tproduktanfragehistory', 'cMail', $this->cMail);
+        $db->delete('tverfuegbarkeitsbenachrichtigung', 'cMail', $this->cMail);
+
+        $db->update('tbewertung', 'kKunde', $customerID, (object)['cName' => $anonymous]);
+        $db->update('tnewskommentar', 'kKunde', $customerID, (object)[
+            'cName'  => $anonymous,
+            'cEmail' => $anonymous
+        ]);
+        $db->update('tkuponkunde', 'kKunde', $customerID, (object)['cMail' => $anonymous]);
+
+        //newsletter
+        $db->queryPrepared(
+            'DELETE FROM tnewsletterempfaenger
+                WHERE cEmail = :email
+                    OR kKunde = :customerID',
+            ['email' => $this->cMail, 'customerID' => $customerID],
+            \DB\ReturnType::AFFECTED_ROWS
+        );
+
+        $obj            = new stdClass();
+        $obj->cAnrede   = $anonymous;
+        $obj->cVorname  = $anonymous;
+        $obj->cNachname = $anonymous;
+        $obj->cEmail    = $anonymous;
+        $db->update('tnewsletterempfaengerhistory', 'kKunde', $customerID, $obj);
+        $db->update('tnewsletterempfaengerhistory', 'cEmail', $this->cMail, $obj);
+
+        $db->insert('tnewsletterempfaengerhistory', (object)[
+            'kSprache'     => $this->kSprache,
+            'kKunde'       => $customerID,
+            'cAnrede'      => $anonymous,
+            'cVorname'     => $anonymous,
+            'cNachname'    => $anonymous,
+            'cEmail'       => $anonymous,
+            'cOptCode'     => '',
+            'cLoeschCode'  => '',
+            'cAktion'      => 'Geloescht',
+            'dAusgetragen' => 'NOW()',
+            'dEingetragen' => '',
+            'dOptCode'     => '',
+        ]);
+
+        //wishlist
+        $db->queryPrepared(
+            'DELETE twunschliste, twunschlistepos, twunschlisteposeigenschaft, twunschlisteversand
+                FROM twunschliste
+                LEFT JOIN twunschlistepos
+                    ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
+                LEFT JOIN twunschlisteposeigenschaft
+                    ON twunschlisteposeigenschaft.kWunschlistePos = twunschlistepos.kWunschlistePos
+                LEFT JOIN twunschlisteversand
+                    ON twunschlisteversand.kWunschliste = twunschliste.kWunschliste
+                WHERE twunschliste.kKunde = :customerID',
+            ['customerID' => $customerID],
+            \DB\ReturnType::DEFAULT
+        );
+
+        //cart
+        $db->queryPrepared(
+            'DELETE twarenkorbpers, twarenkorbperspos, twarenkorbpersposeigenschaft
+                FROM twarenkorbpers
+                LEFT JOIN twarenkorbperspos
+                    ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
+                LEFT JOIN twarenkorbpersposeigenschaft
+                    ON twarenkorbpersposeigenschaft.kWarenkorbPersPos = twarenkorbperspos.kWarenkorbPersPos
+                WHERE twarenkorbpers.kKunde = :customerID',
+            ['customerID' => $customerID],
+            \DB\ReturnType::DEFAULT
+        );
+
+        $logMessage = \sprintf('Account with ID kKunde = %s deleted', $customerID);
+        (new GeneralDataProtection\Journal())->addEntry(
+            $issuerType,
+            $issuerID,
+            GeneralDataProtection\Journal::ACTION_CUSTOMER_DELETED,
+            $logMessage,
+            (object)['kKunde' => $customerID]
+        );
     }
 }

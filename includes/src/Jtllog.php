@@ -67,11 +67,10 @@ class Jtllog
     }
 
     /**
-     * @param bool $bPrim
-     * @return bool|int
+     * @return bool
      * @deprecated since 5.0.0
      */
-    public function save(bool $bPrim = true)
+    public function save(): bool
     {
         trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         return false;
@@ -119,8 +118,9 @@ class Jtllog
      * @param int    $nLevel
      * @param bool   $bForce
      * @param string $cKey
-     * @param string $kKey
+     * @param int    $kKey
      * @return bool
+     * @deprecated since 5.0.0
      */
     public static function writeLog(
         $cLog,
@@ -153,9 +153,9 @@ class Jtllog
      */
     public static function getLog(string $cFilter = '', int $nLevel = 0, int $nLimitN = 0, int $nLimitM = 1000): array
     {
-        $oJtllog_arr = [];
-        $conditions  = [];
-        $values      = ['limitfrom' => $nLimitN, 'limitto' => $nLimitM];
+        $logs       = [];
+        $conditions = [];
+        $values     = ['limitfrom' => $nLimitN, 'limitto' => $nLimitM];
         if (strlen($cFilter) > 0) {
             $conditions[]   = 'cLog LIKE :clog';
             $values['clog'] = '%' . $cFilter . '%';
@@ -164,25 +164,25 @@ class Jtllog
             $conditions[]     = 'nLevel = :nlevel';
             $values['nlevel'] = $nLevel;
         }
-        $cSQLWhere = count($conditions) > 0
+        $where = count($conditions) > 0
             ? ' WHERE ' . implode(' AND ', $conditions)
             : '';
-        $oLog_arr  = Shop::Container()->getDB()->queryPrepared(
+        $data  = Shop::Container()->getDB()->queryPrepared(
             'SELECT kLog
                 FROM tjtllog
-                ' . $cSQLWhere . '
+                ' . $where . '
                 ORDER BY dErstellt DESC, kLog DESC
-                LIMIT :limitfrom, :limitto', 
+                LIMIT :limitfrom, :limitto',
             $values,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($oLog_arr as $oLog) {
+        foreach ($data as $oLog) {
             if (isset($oLog->kLog) && (int)$oLog->kLog > 0) {
-                $oJtllog_arr[] = new self($oLog->kLog);
+                $logs[] = new self($oLog->kLog);
             }
         }
 
-        return $oJtllog_arr;
+        return $logs;
     }
 
     /**
@@ -220,7 +220,7 @@ class Jtllog
             }
         }
         $oLog = Shop::Container()->getDB()->query(
-            'SELECT count(*) AS nAnzahl 
+            'SELECT COUNT(*) AS nAnzahl 
                 FROM tjtllog' .
                 $cSQLWhere,
             \DB\ReturnType::SINGLE_OBJECT
@@ -232,15 +232,15 @@ class Jtllog
     /**
      *
      */
-    public static function truncateLog()
+    public static function truncateLog(): void
     {
         Shop::Container()->getDB()->query(
             'DELETE FROM tjtllog 
-                WHERE DATE_ADD(dErstellt, INTERVAL 30 DAY) < now()',
+                WHERE DATE_ADD(dErstellt, INTERVAL 30 DAY) < NOW()',
             \DB\ReturnType::AFFECTED_ROWS
         );
         $oObj = Shop::Container()->getDB()->query(
-            'SELECT count(*) AS nCount 
+            'SELECT COUNT(*) AS nCount 
                 FROM tjtllog',
             \DB\ReturnType::SINGLE_OBJECT
         );
@@ -261,7 +261,7 @@ class Jtllog
     public static function deleteIDs(array $ids): int
     {
         return Shop::Container()->getDB()->query(
-            'DELETE FROM tjtllog WHERE kLog IN (' . implode(',', array_map('intval', $ids)) . ')',
+            'DELETE FROM tjtllog WHERE kLog IN (' . implode(',', array_map('\intval', $ids)) . ')',
             \DB\ReturnType::AFFECTED_ROWS
         );
     }
@@ -350,11 +350,10 @@ class Jtllog
     }
 
     /**
-     * @param array $nFlag_arr
      * @return int
      * @deprecated since 5.0.0
      */
-    public static function setBitFlag($nFlag_arr): int
+    public static function setBitFlag(): int
     {
         trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         return JTLLOG_LEVEL_NOTICE;
@@ -377,23 +376,23 @@ class Jtllog
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getcLog()
+    public function getcLog(): ?string
     {
         return $this->cLog;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getcKey()
+    public function getcKey(): ?string
     {
         return $this->cKey;
     }
 
     /**
-     * @return int|string
+     * @return int|string|null
      */
     public function getkKey()
     {
@@ -401,9 +400,9 @@ class Jtllog
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getErstellt()
+    public function getErstellt(): ?string
     {
         return $this->dErstellt;
     }

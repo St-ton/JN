@@ -1,0 +1,8 @@
+msgid "dbcheck"
+msgstr "Datenbank-Check"
+
+msgid "dbcheckDesc"
+msgstr "Mit diesem Tool können Sie die Konsistenz Ihrer Datenbank überprüfen"
+
+msgid "dbcheckURL"
+msgstr "https://jtl-url.de/vrf0o"

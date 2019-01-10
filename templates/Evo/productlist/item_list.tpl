@@ -1,4 +1,7 @@
-{* template to display products in product-lists *}
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if $Einstellungen.template.productlist.variation_select_productlist === 'N' || $Einstellungen.template.productlist.hover_productlist !== 'Y'}
     {assign var='hasOnlyListableVariations' value=0}
 {else}
@@ -155,7 +158,7 @@
                             {assign var=anzeige value=$Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandsanzeige}
                             {if $Artikel->nErscheinendesProdukt}
                                 <div class="availablefrom">
-                                    <small>{lang key='productAvailable'}: {$Artikel->Erscheinungsdatum_de}</small>
+                                    <small>{lang key='productAvailableFrom'}: {$Artikel->Erscheinungsdatum_de}</small>
                                 </div>
                                 {if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y' && $Artikel->inWarenkorbLegbar === 1}
                                     <div class="attr attr-preorder"><small class="value">{lang key='preorderPossible'}</small></div>

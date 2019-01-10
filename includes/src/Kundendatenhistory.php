@@ -3,7 +3,8 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
+
+use Helpers\GeneralObject;
 
 /**
  * Class Kundendatenhistory
@@ -40,11 +41,11 @@ class Kundendatenhistory extends MainModel
      */
     public $dErstellt;
 
-    const QUELLE_MEINKONTO = 'Mein Konto';
+    public const QUELLE_MEINKONTO = 'Mein Konto';
 
-    const QUELLE_BESTELLUNG = 'Bestellvorgang';
+    public const QUELLE_BESTELLUNG = 'Bestellvorgang';
 
-    const QUELLE_DBES = 'Wawi Abgleich';
+    public const QUELLE_DBES = 'Wawi Abgleich';
 
     /**
      * @return int
@@ -87,7 +88,7 @@ class Kundendatenhistory extends MainModel
     /**
      * @return string|null
      */
-    public function getJsonAlt()
+    public function getJsonAlt(): ?string
     {
         return $this->cJsonAlt;
     }
@@ -106,7 +107,7 @@ class Kundendatenhistory extends MainModel
     /**
      * @return string|null
      */
-    public function getJsonNeu()
+    public function getJsonNeu(): ?string
     {
         return $this->cJsonNeu;
     }
@@ -125,7 +126,7 @@ class Kundendatenhistory extends MainModel
     /**
      * @return string|null
      */
-    public function getQuelle()
+    public function getQuelle(): ?string
     {
         return $this->cQuelle;
     }
@@ -144,7 +145,7 @@ class Kundendatenhistory extends MainModel
     /**
      * @return string|null
      */
-    public function getErstellt()
+    public function getErstellt(): ?string
     {
         return $this->dErstellt;
     }
@@ -155,7 +156,7 @@ class Kundendatenhistory extends MainModel
      */
     public function setErstellt($dErstellt): self
     {
-        $this->dErstellt = ($dErstellt === 'now()')
+        $this->dErstellt = (strtoupper($dErstellt) === 'NOW()')
             ? date('Y-m-d H:i:s')
             : $dErstellt;
 
@@ -233,7 +234,11 @@ class Kundendatenhistory extends MainModel
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->delete('tkundendatenhistory', 'kKundendatenHistory', $this->getKundendatenHistory());
+        return Shop::Container()->getDB()->delete(
+            'tkundendatenhistory',
+            'kKundendatenHistory',
+            $this->getKundendatenHistory()
+        );
     }
 
     /**
@@ -247,10 +252,10 @@ class Kundendatenhistory extends MainModel
         if (!is_object($oKundeOld) || !is_object($oKundeNew)) {
             return false;
         }
-        if ($oKundeOld->dGeburtstag === '0000-00-00' || $oKundeOld->dGeburtstag === '00.00.0000') {
+        if ($oKundeOld->dGeburtstag === null) {
             $oKundeOld->dGeburtstag = '';
         }
-        if ($oKundeNew->dGeburtstag === '0000-00-00' || $oKundeNew->dGeburtstag === '00.00.0000') {
+        if ($oKundeNew->dGeburtstag === null) {
             $oKundeNew->dGeburtstag = '';
         }
 
@@ -260,8 +265,8 @@ class Kundendatenhistory extends MainModel
             return true;
         }
         $cryptoService = Shop::Container()->getCryptoService();
-        $oKundeOld = ObjectHelper::deepCopy($oKundeOld);
-        $oKundeNew = ObjectHelper::deepCopy($oKundeNew);
+        $oKundeOld     = GeneralObject::deepCopy($oKundeOld);
+        $oKundeNew     = GeneralObject::deepCopy($oKundeNew);
         // Encrypt Old
         $oKundeOld->cNachname = $cryptoService->encryptXTEA(trim($oKundeOld->cNachname));
         $oKundeOld->cFirma    = $cryptoService->encryptXTEA(trim($oKundeOld->cFirma));
@@ -276,7 +281,7 @@ class Kundendatenhistory extends MainModel
                             ->setJsonAlt(json_encode($oKundeOld))
                             ->setJsonNeu(json_encode($oKundeNew))
                             ->setQuelle($cQuelle)
-                            ->setErstellt('now()');
+                            ->setErstellt('NOW()');
 
         return $oKundendatenhistory->save() > 0;
     }

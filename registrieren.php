@@ -3,12 +3,16 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use Helpers\Form;
+use Helpers\Request;
+
 require_once __DIR__ . '/includes/globalinclude.php';
 
 $linkHelper = Shop::Container()->getLinkService();
 if (isset($_SESSION['Kunde']->kKunde)
     && $_SESSION['Kunde']->kKunde > 0
-    && RequestHelper::verifyGPCDataInt('editRechnungsadresse') === 0
+    && Request::verifyGPCDataInt('editRechnungsadresse') === 0
 ) {
     header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 301);
 }
@@ -19,7 +23,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';
 
 Shop::setPageType(PAGE_REGISTRIERUNG);
-$AktuelleSeite        = 'REGISTRIEREN';
 $Einstellungen        = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
@@ -39,7 +42,6 @@ $editRechnungsadresse = isset($_GET['editRechnungsadresse'])
 if (isset($_POST['editRechnungsadresse'])) {
     $editRechnungsadresse = (int)$_POST['editRechnungsadresse'];
 }
-// Kunde speichern
 if (isset($_POST['form']) && (int)$_POST['form'] === 1) {
     kundeSpeichern($_POST);
 }
@@ -48,16 +50,15 @@ if (isset($_GET['editRechnungsadresse']) && (int)$_GET['editRechnungsadresse'] =
     gibKunde();
 }
 if ($step === 'formular') {
-    gibFormularDaten(RequestHelper::verifyGPCDataInt('checkout'));
+    gibFormularDaten(Request::verifyGPCDataInt('checkout'));
 }
 if (isset($_FILES['vcard'])
     && $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y'
-    && FormHelper::validateToken()
+    && Form::validateToken()
 ) {
     gibKundeFromVCard($_FILES['vcard']['tmp_name']);
 }
-// hole aktuelle Kategorie, falls eine gesetzt
-$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
+$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 Shop::Smarty()->assign('editRechnungsadresse', $editRechnungsadresse)
@@ -66,17 +67,16 @@ Shop::Smarty()->assign('editRechnungsadresse', $editRechnungsadresse)
     ->assign('hinweis', $hinweis)
     ->assign('step', $step)
     ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
-    ->assign('code_registrieren', false);
+    ->assign('code_registrieren', false)
+    ->assign('unregForm', 0);
 
-$cCanonicalURL = $linkHelper->getStaticRoute('registrieren.php');
-// Metaangaben
+$cCanonicalURL    = $linkHelper->getStaticRoute('registrieren.php');
 $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_REGISTRIEREN);
 $cMetaTitle       = $oMeta->cTitle;
 $cMetaDescription = $oMeta->cDesc;
 $cMetaKeywords    = $oMeta->cKeywords;
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-//Zum prüfen wie lange ein User/Bot gebraucht hat um das Registrieren-Formular auszufüllen
 if (isset($Einstellungen['kunden']['kundenregistrierung_pruefen_zeit'])
     && $Einstellungen['kunden']['kundenregistrierung_pruefen_zeit'] === 'Y'
 ) {

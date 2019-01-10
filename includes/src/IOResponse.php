@@ -59,7 +59,6 @@ class IOResponse implements JsonSerializable
         $filtered = $arguments;
 
         array_walk($filtered, function (&$value, $key) {
-
             switch (gettype($value)) {
                 case 'array':
                 case 'object':
@@ -100,12 +99,12 @@ class IOResponse implements JsonSerializable
 
             $this->script("console.groupCollapsed('%c CALL %c {$function}()', '$orange', '$reset');");
             $this->script("console.log('%c METHOD %c {$function}()', '$grey', '$reset');");
-            $this->script("console.log('%c PARAMS %c', '$grey', '$reset', " . $args . ");");
+            $this->script("console.log('%c PARAMS %c', '$grey', '$reset', " . $args . ');');
 
             $this->script("console.groupCollapsed('%c TOGGLE DEBUG TRACE %c', '$grey', '$reset');");
 
             foreach ($this->generateCallTrace() as $trace) {
-                $this->script("console.log('%c TRACE %c', '$grey', '$reset', " . json_encode($trace) . ");");
+                $this->script("console.log('%c TRACE %c', '$grey', '$reset', " . json_encode($trace) . ');');
             }
 
             $this->script('console.groupEnd();');

@@ -4,8 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Form;
+use Helpers\Request;
+use Pagination\Pagination;
+
 /**
- * @global JTLSmarty $smarty
+ * @global Smarty\JTLSmarty $smarty
  * @global AdminAccount $oAccount
  */
 
@@ -14,7 +18,7 @@ $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
 $notice = '';
 $error  = '';
-$action = RequestHelper::verifyGPDataString('action');
+$action = Request::verifyGPDataString('action');
 
 $opc       = Shop::Container()->getOPC();
 $opcPage   = Shop::Container()->getOPCPageService();
@@ -24,15 +28,15 @@ $pagesPagi = (new Pagination('pages'))
     ->setItemCount($opcPageDB->getPageCount())
     ->assemble();
 
-if (FormHelper::validateToken()) {
+if (Form::validateToken()) {
     if ($action === 'restore') {
-        $pageId = RequestHelper::verifyGPDataString('pageId');
+        $pageId = Request::verifyGPDataString('pageId');
         $opcPage->deletePage($pageId);
-        $notice = 'Der Composer-Inhalt für die Seite wurde zurückgesetzt.';
+        $notice = __('opcNoticePageReset');
     } elseif ($action === 'discard') {
-        $pageKey = RequestHelper::verifyGPCDataInt('pageKey');
+        $pageKey = Request::verifyGPCDataInt('pageKey');
         $opcPage->deleteDraft($pageKey);
-        $notice = 'Der Entwurf wurde gelöscht.';
+        $notice = __('opcNoticeDraftDelete');
     }
 }
 

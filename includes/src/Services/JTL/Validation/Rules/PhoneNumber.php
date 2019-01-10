@@ -6,7 +6,6 @@
 
 namespace Services\JTL\Validation\Rules;
 
-
 use Services\JTL\Validation\RuleInterface;
 use Services\JTL\Validation\RuleResult;
 
@@ -20,12 +19,12 @@ use Services\JTL\Validation\RuleResult;
  */
 class PhoneNumber implements RuleInterface
 {
-    const REGEX = '/^[0-9\-\(\)\/\+\s]{1,}$/'; // taken from tools.Global.php function checkeTel
+    public const REGEX = '/^[0-9\-\(\)\/\+\s]{1,}$/'; // taken from tools.Global.php function checkeTel
 
     /**
      * @inheritdoc
      */
-    public function validate($value)
+    public function validate($value): RuleResult
     {
         return \preg_match(self::REGEX, $value)
             ? new RuleResult(true, '', $value)

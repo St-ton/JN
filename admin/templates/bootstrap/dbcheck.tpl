@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="dbcheck"}
-{include file='tpl_inc/seite_header.tpl' cTitel=#dbcheck# cBeschreibung=#dbcheckDesc# cDokuURL=#dbcheckURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('dbcheck') cBeschreibung=__('dbcheckDesc') cDokuURL=__('dbcheckURL')}
 <div id="content" class="container-fluid">
     {if $maintenanceResult !== null}
         {if $maintenanceResult|is_array}
@@ -70,7 +70,7 @@
                                     {if $cTable|array_key_exists:$cDBStruct_arr}{$cDBStruct_arr.$cTable->TABLE_ROWS|number_format:0:",":"."}{/if}
                                 </td>
                                 <td class="centered">
-                                    {if $cTable|array_key_exists:$cDBStruct_arr}{$cDBStruct_arr.$cTable->DATA_SIZE|formatSize:"%.0f"|upper|strip:"&nbsp;"}{/if}
+                                    {if $cTable|array_key_exists:$cDBStruct_arr}{$cDBStruct_arr.$cTable->DATA_SIZE|formatByteSize:"%.0f"|upper|strip:"&nbsp;"}{/if}
                                 </td>
                                 <td>
                                     {if $hasError}
@@ -83,9 +83,9 @@
                                     {if isset($cDBStruct_arr.$cTable)}
                                         {if $cDBStruct_arr.$cTable->Locked}
                                             <span title="Tabelle in Benutzung"><i class="fa fa-cog fa-spin fa-2x fa-fw"></i></span>
-                                        {elseif ($cDBStruct_arr.$cTable->ENGINE !== 'InnoDB' || $cDBStruct_arr.$cTable->TABLE_COLLATION|strpos:'utf8' === false) && $DB_Version->collation_utf8 && $DB_Version->innodb->support}
+                                        {elseif (($cDBStruct_arr.$cTable->Migration & DBMigrationHelper::MIGRATE_TABLE) !== DBMigrationHelper::MIGRATE_NONE) && $DB_Version->collation_utf8 && $DB_Version->innodb->support}
                                             <a href="#" class="btn btn-default" data-action="migrate" data-table="{$cTable}" data-step="1"><i class="fa fa-cogs"></i></a>
-                                        {elseif (isset($cDBError_arr.$cTable) && $cDBError_arr.$cTable|strpos:'Inkonsistente Kollation' === 0) && $DB_Version->collation_utf8 && $DB_Version->innodb->support}
+                                        {elseif (($cDBStruct_arr.$cTable->Migration & DBMigrationHelper::MIGRATE_COLUMN) !== DBMigrationHelper::MIGRATE_NONE) && $DB_Version->collation_utf8 && $DB_Version->innodb->support}
                                             <a href="#" class="btn btn-default" data-action="migrate" data-table="{$cTable}" data-step="2"><i class="fa fa-cogs"></i></a>
                                         {elseif !$hasError}
                                             <input id="check-{$smarty.foreach.datei.iteration}" type="checkbox" name="check[]" value="{$cTable}" />

@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if !empty($cFehler)}
     <div class="alert alert-danger">{$cFehler}</div>
 {/if}
@@ -10,7 +14,7 @@
     {assign var='moreTitle' value=null}
     {include file='snippets/opc_mount_point.tpl' id='opc_home_boxes_prepend'}
     {foreach $StartseiteBoxen as $Box}
-        {if isset($Box->Artikel->elemente) && count($Box->Artikel->elemente)>0 && isset($Box->cURL)}
+        {if isset($Box->Artikel->elemente) && count($Box->Artikel->elemente) > 0 && isset($Box->cURL)}
             {if $Box->name === 'TopAngebot'}
                 {lang key='topOffer' section='global' assign='title'}
                 {lang key='showAllTopOffers' section='global' assign='moreTitle'}

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -6,8 +6,8 @@
 
 namespace Cron;
 
-
 use DB\DbInterface;
+use DB\ReturnType;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -50,7 +50,7 @@ class Queue
     }
 
     /**
-     * @return array
+     * @return QueueEntry[]
      */
     public function loadQueueFromDB(): array
     {
@@ -58,8 +58,8 @@ class Queue
             'SELECT * 
                 FROM tjobqueue 
                 WHERE nInArbeit = 0 
-                    AND dStartZeit < now()',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+                    AND dStartZeit < NOW()',
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($queueData as $entry) {
             $this->queueEntries[] = new QueueEntry($entry);
@@ -70,9 +70,9 @@ class Queue
     }
 
     /**
-     * @param array $jobs
+     * @param \stdClass[] $jobs
      */
-    public function enqueueCronJobs(array $jobs)
+    public function enqueueCronJobs(array $jobs): void
     {
         foreach ($jobs as $job) {
             $queueEntry             = new \stdClass();
@@ -81,7 +81,7 @@ class Queue
             $queueEntry->cKey       = $job->cKey;
             $queueEntry->cTabelle   = $job->cTabelle;
             $queueEntry->cJobArt    = $job->cJobArt;
-            $queueEntry->dStartZeit = $job->dStartZeit;
+            $queueEntry->dStartZeit = $job->dStart;
             $queueEntry->nLimitN    = 0;
             $queueEntry->nLimitM    = 0;
             $queueEntry->nInArbeit  = 0;
@@ -90,7 +90,7 @@ class Queue
         }
     }
 
-    public function run()
+    public function run(): void
     {
         foreach ($this->queueEntries as $i => $queueEntry) {
             if ($i >= \JOBQUEUE_LIMIT_JOBS) {
@@ -114,12 +114,20 @@ class Queue
                 $this->logger->notice('Job ' . $job->getID() . ' successfully finished.');
                 $this->db->delete('tjobqueue', 'kCron', $job->getCronID());
             } else {
-                $update                   = new \stdClass();
-                $update->dZuletztgelaufen = 'now';
-                $update->nLimitN          = $queueEntry->nLimitN;
-                $update->nlimitM          = $queueEntry->nLimitM;
-                $update->nLastArticleID   = $queueEntry->nLastArticleID;
-                $this->db->update('tjobqueue', 'kCron', $job->getCronID(), $update);
+                $this->db->queryPrepared(
+                    'UPDATE tjobqueue SET 
+                        nLimitN = :ln,
+                        nLimitM = :lm,
+                        nLastArticleID = :lp,
+                        dZuletztgelaufen = NOW()
+                     WHERE kCron = 0',
+                    [
+                        'ln' => $queueEntry->nLimitN,
+                        'lm' => $queueEntry->nLimitM,
+                        'lp' => $queueEntry->nLastArticleID
+                    ],
+                    ReturnType::DEFAULT
+                );
             }
             \executeHook(\HOOK_JOBQUEUE_INC_BEHIND_SWITCH, [
                 'oJobQueue' => $queueEntry,

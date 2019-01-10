@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\GeneralObject;
+
 /**
  * Class Versandart
  */
@@ -110,6 +112,21 @@ class Versandart
     public $nMaxLiefertage;
 
     /**
+     * @var ?string
+     */
+    public $eSteuer;
+
+    /**
+     * @var ?string
+     */
+    public $cCountryCode;
+
+    /**
+     * @var ?array
+     */
+    public $cPriceLocalized;
+
+    /**
      * Konstruktor
      *
      * @param int $kVersandart
@@ -137,7 +154,11 @@ class Versandart
         }
         $this->kVersandart = (int)$this->kVersandart;
         // VersandartSprache
-        $oVersandartSprache_arr = Shop::Container()->getDB()->selectAll('tversandartsprache', 'kVersandart', $this->kVersandart);
+        $oVersandartSprache_arr = Shop::Container()->getDB()->selectAll(
+            'tversandartsprache',
+            'kVersandart',
+            $this->kVersandart
+        );
         foreach ($oVersandartSprache_arr as $oVersandartSprache) {
             $this->oVersandartSprache_arr[$oVersandartSprache->cISOSprache] = $oVersandartSprache;
         }
@@ -156,7 +177,7 @@ class Versandart
      */
     public function insertInDB(): int
     {
-        $obj = ObjectHelper::copyMembers($this);
+        $obj = GeneralObject::copyMembers($this);
         unset(
             $obj->oVersandartSprache_arr,
             $obj->oVersandartStaffel_arr,
@@ -174,7 +195,7 @@ class Versandart
      */
     public function updateInDB(): int
     {
-        $obj = ObjectHelper::copyMembers($this);
+        $obj = GeneralObject::copyMembers($this);
         unset(
             $obj->oVersandartSprache_arr,
             $obj->oVersandartStaffel_arr,
@@ -271,7 +292,7 @@ class Versandart
      * @param mixed       $value
      * @param null|string $unsetKey
      */
-    private static function cloneShippingSection(array $objectArr, $table, $key, int $value, $unsetKey = null)
+    private static function cloneShippingSection(array $objectArr, $table, $key, int $value, $unsetKey = null): void
     {
         if ($value > 0 && is_array($objectArr) && count($objectArr) > 0 && strlen($key) > 0) {
             foreach ($objectArr as $Obj) {
@@ -296,7 +317,7 @@ class Versandart
      * @param int $oldKey
      * @param int $newKey
      */
-    private static function cloneShippingSectionSpecial(int $oldKey, int $newKey)
+    private static function cloneShippingSectionSpecial(int $oldKey, int $newKey): void
     {
         if ($oldKey > 0 && $newKey > 0) {
             $cSectionSub_arr = [

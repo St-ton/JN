@@ -45,11 +45,10 @@ body.no-bg {
     white-space: nowrap;
 }
 
-.form-group.required input, .form-group.required select, .form-group.required input, .form-group.required textarea, .form-group.required .bootstrap-select .btn {
-    background-image: url("../images/asterisk.png");
-    background-repeat: no-repeat;
-    background-position: top right;
-    background-size: 32px 32px;
+.form-group .optional,
+.panel-title .optional {
+    font-weight: normal;
+    font-style: italic;
 }
 
 .form-group label {
@@ -57,12 +56,6 @@ body.no-bg {
     > .indication {
         font-weight: normal;
         opacity: .5;
-    }
-}
-
-.form-group.required .control-label {
-    .required {
-        color: @brand-info;
     }
 }
 
@@ -1919,6 +1912,10 @@ fieldset {
 .row.gallery .product-wrapper {
     border-bottom: 1px solid @panel-default-border;
     border-right: 1px solid @panel-default-border;
+    overflow: hidden;
+    &:hover {
+        overflow: visible;
+    }
 }
 
 @media (min-width: @screen-lg-min) {
@@ -2561,6 +2558,7 @@ div#add-to-cart {
 
         .label-variation {
             line-height: 50px;
+            height: 50px;
             min-width: 50px;
         }
         > span.label-variation {

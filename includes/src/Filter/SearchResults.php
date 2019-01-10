@@ -6,13 +6,13 @@
 
 namespace Filter;
 
-use Boxes\AbstractBox;
+use Boxes\Items\AbstractBox;
 use Filter\Pagination\Info;
+use Tightenco\Collect\Support\Collection;
 use function Functional\every;
 use function Functional\filter;
 use function Functional\invoke;
 use function Functional\map;
-use Tightenco\Collect\Support\Collection;
 
 /**
  * Class SearchResults
@@ -20,7 +20,7 @@ use Tightenco\Collect\Support\Collection;
  */
 class SearchResults implements SearchResultsInterface
 {
-    use \MagicCompatibilityTrait;
+    use \JTL\MagicCompatibilityTrait;
 
     /**
      * @var \Tightenco\Collect\Support\Collection()
@@ -76,55 +76,55 @@ class SearchResults implements SearchResultsInterface
     private $searchUnsuccessful = false;
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former Herstellerauswahl
      */
     private $manufacturerFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former Bewertung
      */
     private $ratingFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former Tags
      */
     private $tagFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former MerkmalFilter
      */
     private $attributeFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former Preisspanne
      */
     private $priceRangeFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former Kategorieauswahl
      */
     private $categoryFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former SuchFilter
      */
     private $searchFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former Suchspecialauswahl
      */
     private $searchSpecialFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      */
     private $customFilterOptions = [];
 
@@ -355,7 +355,7 @@ class SearchResults implements SearchResultsInterface
     /**
      * @inheritdoc
      */
-    public function getSearchTerm()
+    public function getSearchTerm(): ?string
     {
         return $this->searchTerm;
     }
@@ -373,7 +373,7 @@ class SearchResults implements SearchResultsInterface
     /**
      * @inheritdoc
      */
-    public function getSearchTermWrite()
+    public function getSearchTermWrite(): ?string
     {
         return $this->searchTermWrite;
     }
@@ -571,7 +571,7 @@ class SearchResults implements SearchResultsInterface
     /**
      * @inheritdoc
      */
-    public function getTagFilterJSON()
+    public function getTagFilterJSON(): ?string
     {
         return $this->tagFilterJSON;
     }
@@ -589,7 +589,7 @@ class SearchResults implements SearchResultsInterface
     /**
      * @inheritdoc
      */
-    public function getSearchFilterJSON()
+    public function getSearchFilterJSON(): ?string
     {
         return $this->searchFilterJSON;
     }
@@ -607,7 +607,7 @@ class SearchResults implements SearchResultsInterface
     /**
      * @inheritdoc
      */
-    public function getError()
+    public function getError(): ?string
     {
         return $this->error;
     }
@@ -680,15 +680,16 @@ class SearchResults implements SearchResultsInterface
      * @param FilterInterface[] $activeFilters
      * @param FilterInterface[] $availableFilters
      */
-    private function autoActivateOptions($activeFilters, $availableFilters)
+    private function autoActivateOptions($activeFilters, $availableFilters): void
     {
         foreach ($activeFilters as $activeFilter) {
             $class        = $activeFilter->getClassName();
             $activeValues = $activeFilter->getActiveValues();
             foreach ($this->getActiveFiltersByClassName($availableFilters, $class, $activeValues) as $filter) {
+                /** @var FilterInterface $filter */
                 $currentValues = $filter->getActiveValues();
                 $act           = \is_array($currentValues)
-                    ? map($currentValues, function ($e) {
+                    ? map($currentValues, function (FilterInterface $e) {
                         return $e->getValue();
                     })
                     : [$currentValues->getValue()];
@@ -701,9 +702,9 @@ class SearchResults implements SearchResultsInterface
      * @param FilterInterface $filter
      * @param array           $values
      */
-    private function updateOptions(FilterInterface $filter, $values)
+    private function updateOptions(FilterInterface $filter, $values): void
     {
-        invoke(filter($filter->getOptions(), function (FilterOption $e) use ($values) {
+        invoke(filter($filter->getOptions(), function (Option $e) use ($values) {
             return \in_array($e->getValue(), $values, true);
         }), 'setIsActive', [true]);
     }
@@ -762,6 +763,16 @@ class SearchResults implements SearchResultsInterface
                 return $e;
             }
         );
+        $json                = AbstractBox::getJSONString(
+            \array_map(
+                function ($e) {
+                    $e->cURL = \StringHandler::htmlentitydecode($e->cURL);
+
+                    return $e;
+                },
+                $searchFilterOptions
+            )
+        );
 
         $this->setManufacturerFilterOptions($manufacturerOptions)
              ->setSortingOptions($productFilter->getSorting()->getOptions())
@@ -774,19 +785,12 @@ class SearchResults implements SearchResultsInterface
              ->setSearchSpecialFilterOptions($searchSpecialFilters)
              ->setAttributeFilterOptions($attribtuteFilterOptions)
              ->setCustomFilterOptions($customFilterOptions)
-             ->setSearchFilterJSON(AbstractBox::getJSONString(\array_map(
-                 function ($e) {
-                     $e->cURL = \StringHandler::htmlentitydecode($e->cURL);
+             ->setSearchFilterJSON($json);
 
-                     return $e;
-                 },
-                 $searchFilterOptions
-             )));
-
-        if ($productFilter->getConfig('navigationsfilter')['allgemein_tagfilter_benutzen'] !== 'N') {
+        if ($productFilter->getFilterConfig()->getConfig('navigationsfilter')['allgemein_tagfilter_benutzen'] !== 'N') {
             $this->setTagFilterJSON(AbstractBox::getJSONString(\array_map(
                 function ($e) {
-                    /** @var FilterOption $e */
+                    /** @var Option $e */
                     return $e->setURL(\StringHandler::htmlentitydecode($e->getURL()));
                 },
                 $tagOptions
@@ -829,14 +833,14 @@ class SearchResults implements SearchResultsInterface
             $productFilter->getAttributeFilterCollection()->hide();
         } elseif ($hideActiveOnly === true) {
             foreach ($attribtuteFilterOptions as $af) {
-                /** @var FilterOption $af */
+                /** @var Option $af */
                 $options = $af->getOptions();
                 if (\is_array($options)
                     && $af->getVisibility() !== Visibility::SHOW_NEVER
                     && \array_reduce(
                         $options,
                         function ($carry, $option) {
-                            /** @var FilterOption $option */
+                            /** @var Option $option */
                             return $carry && $option->isActive();
                         },
                         true
@@ -845,7 +849,7 @@ class SearchResults implements SearchResultsInterface
                     $af->hide();
                 }
             }
-            if (every($attribtuteFilterOptions, function (FilterOption $item) {
+            if (every($attribtuteFilterOptions, function (Option $item) {
                 return $item->getVisibility() === Visibility::SHOW_NEVER;
             })) {
                 // hide the whole attribute filter collection if every filter consists of only active options

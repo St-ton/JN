@@ -1,218 +1,348 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-###############################################
-# Configuration
-###############################################
+build_create()
+{
+    # $1 repository dir
+    export REPOSITORY_DIR=$1;
+    # $2 target build version
+    export APPLICATION_VERSION=$2;
+    # $3 last commit sha
+    local APPLICATION_BUILD_SHA=$3;
+    # $4 database host
+    export DB_HOST=$4;
+    # $5 database user
+    export DB_USER=$5;
+    # $6 database password
+    export DB_PASSWORD=$6;
+    # $7 database name
+    export DB_NAME=$7;
 
-TMP_PATH="$WORKSPACE/build/tmp"
-SHOP_EXPORT_PATH="$TMP_PATH/shop_export"
-BUILD_TIMESTAMP=$(date +%Y%m%d%H%M%S)
+    local SCRIPT_DIR="${REPOSITORY_DIR}/build/scripts";
+    local VERSION_REGEX="v?([0-9]{1,})\\.([0-9]{1,})\\.([0-9]{1,})(-(alpha|beta|rc)(\\.([0-9]{1,}))?)?";
 
-###############################################
-# Git parameters
-###############################################
+    source ${SCRIPT_DIR}/create_version_string.sh;
 
-HEADREVISION=$(git rev-parse HEAD)
-CURRENT_BRANCH=$(git symbolic-ref -q HEAD)
-CURRENT_BRANCH=${CURRENT_BRANCH##refs/heads/}
-CURRENT_BRANCH=${CURRENT_BRANCH:-HEAD}
+    # Deactivate git renameList
+    git config diff.renames 0;
 
-git submodule init
-git submodule sync
-git submodule update
-#git submodule foreach "(git checkout master; git pull)&"
+    echo "Create build info";
+    create_version_string ${REPOSITORY_DIR} ${APPLICATION_VERSION} ${APPLICATION_BUILD_SHA};
 
-###############################################
+    if [[ "$APPLICATION_VERSION"  == "master" ]]; then
+        if [[ ! -z "${NEW_VERSION}" ]]; then
+            export APPLICATION_VERSION_STR=${NEW_VERSION};
+        fi
+    else
+        export APPLICATION_VERSION_STR=${APPLICATION_VERSION};
+    fi
 
-source $WORKSPACE/build/version.conf
-export SHOPVERSION_MAJOR SHOPVERSION_MINOR SHOPVERSION_BUILD
+    echo "Executing composer";
+    build_composer_execute;
 
-ARGS=($0 "$@")
-debug() {
-    echo $(basename ${ARGS[0]})": "$1
+    echo "Create delete files csv";
+    build_create_deleted_files_csv ${APPLICATION_VERSION_STR};
+
+    echo "Move class files";
+    build_move_class_files;
+
+    echo "Set classes path";
+    build_set_classes_path;
+
+    echo "Add old files";
+    build_add_old_files;
+
+    echo "Create shop installer";
+    build_create_shop_installer;
+
+    echo "Creating md5 hashfile";
+    build_create_md5_hashfile;
+
+    echo "Importing initial schema";
+    build_import_initial_schema;
+
+    echo "Writing config.JTL-Shop.ini.initial.php";
+    build_create_config_file;
+
+    echo "Executing migrations";
+    build_migrate;
+
+    echo "Creating database struct";
+    build_create_db_struct;
+
+    echo "Creating new initial schema";
+    build_create_initial_schema;
+
+    echo "Clean up";
+    build_clean_up;
+
+    if [[ ${APPLICATION_VERSION} =~ ${VERSION_REGEX} ]]; then
+        echo "Create patch(es)";
+        build_create_patches "${BASH_REMATCH[@]}";
+    fi
+
+    # Activate git renameList
+    git config diff.renames 1;
 }
 
-if [ $# -lt 2 ] ; then
-    echo "USAGE: $0 user password"
-    exit 0
-fi
+build_composer_execute()
+{
+    composer install --no-dev -q -d ${REPOSITORY_DIR}/includes;
+}
 
-DB_USER=$1
-DB_PASSWORD=$2
+build_create_deleted_files_csv()
+{
+    local VERSION="${1//[\/\.]/-}";
+    local VERSION="${VERSION//[v]/}";
+    local CUR_PWD=$(pwd);
+    local DELETE_FILES_CSV_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/deleted_files_${VERSION}.csv";
+    local DELETE_FILES_CSV_FILENAME_TMP="${REPOSITORY_DIR}/admin/includes/shopmd5files/deleted_files_${VERSION}_tmp.csv";
 
-cd $WORKSPACE
+    cd ${REPOSITORY_DIR};
+    git diff --name-status --diff-filter D v4.03.0 ${APPLICATION_VERSION} -- ${REPOSITORY_DIR} ':!admin/classes' ':!classes' ':!includes/ext' ':!includes/plugins' > ${DELETE_FILES_CSV_FILENAME_TMP};
+    cd ${CUR_PWD};
 
-# Build temporary directories
-debug "creating temporary directories..."
-[ -d $TMP_PATH ] && rm -rf $TMP_PATH
+    while read line; do
+        local LINEINPUT="${line//[D ]/}";
+        echo ${LINEINPUT} >> ${DELETE_FILES_CSV_FILENAME};
+    done < ${DELETE_FILES_CSV_FILENAME_TMP};
 
-mkdir -p $TMP_PATH
-mkdir -p $SHOP_EXPORT_PATH
+    rm ${DELETE_FILES_CSV_FILENAME_TMP};
 
-debug "copying Shop files to ${SHOP_EXPORT_PATH}..."
-rsync -av --exclude=".git" --exclude="build" $WORKSPACE/ $SHOP_EXPORT_PATH
+    echo "  Deleted files schema admin/includes/shopmd5files/deleted_files_${VERSION}.csv";
+}
 
-rm $SHOP_EXPORT_PATH/.git*
+build_move_class_files()
+{
+    # Move admin old classes
+    if [[ -d "${REPOSITORY_DIR}/admin/classes/old/" ]]; then
+        cp -a ${REPOSITORY_DIR}/admin/classes/old/. ${REPOSITORY_DIR}/admin/classes;
+        rm -R ${REPOSITORY_DIR}/admin/classes/old;
+    fi
+    # Move old classes
+    if [[ -d "${REPOSITORY_DIR}/classes/old/" ]]; then
+        cp -a ${REPOSITORY_DIR}/classes/old/. ${REPOSITORY_DIR}/classes;
+        rm -R ${REPOSITORY_DIR}/classes/old;
+    fi
+}
 
-###############################################
-# Additional files
-###############################################
+build_set_classes_path()
+{
+    sed -i "s/'PFAD_CLASSES', '.*'/'PFAD_CLASSES', '\/classes'/g" ${REPOSITORY_DIR}/includes/defines.php
+}
 
-debug "creating additional files..."
-touch $SHOP_EXPORT_PATH/shopinfo.xml
-mkdir -p $SHOP_EXPORT_PATH/export
-touch $SHOP_EXPORT_PATH/export/sitemap_index.xml
-touch $SHOP_EXPORT_PATH/rss.xml
-mkdir -p $SHOP_EXPORT_PATH/includes
-touch $SHOP_EXPORT_PATH/includes/config.JTL-Shop.ini.initial.php
+build_add_old_files()
+{
+    while read line; do
+        echo "<?php // moved to /includes/src" > ${REPOSITORY_DIR}/${line};
+    done < ${REPOSITORY_DIR}/oldfiles.txt;
+}
 
-###############################################
+build_create_shop_installer() {
+    composer install --no-dev -q -d ${REPOSITORY_DIR}/build/components/vue-installer;
+}
 
-#rm old templates
-rm -r $SHOP_EXPORT_PATH/templates/Tiny
-rm -r $SHOP_EXPORT_PATH/templates/Mobile
+build_create_md5_hashfile()
+{
+    local VERSION="${APPLICATION_VERSION_STR//[\/\.]/-}";
+    local VERSION="${VERSION//[v]/}";
+    local CUR_PWD=$(pwd);
+    local MD5_HASH_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/${VERSION}.csv";
 
-###############################################
-# Add vendor libs
-###############################################
-cd $SHOP_EXPORT_PATH/includes
-curl -sS https://getcomposer.org/installer | php
-php composer.phar install
+    cd ${REPOSITORY_DIR};
+    find -type f ! \( -name ".asset_cs" -or -name ".git*" -or -name ".idea*" -or -name ".htaccess" -or -name ".php_cs" -or -name ".travis.yml" -or -name "composer.lock" -or -name "config.JTL-Shop.ini.initial.php" -or -name "phpunit.xml" -or -name "robots.txt" -or -name "rss.xml" -or -name "shopinfo.xml" -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" | grep -vE ".git/|admin/gfx/|admin/includes/emailpdfs/|admin/includes/shopmd5files/|admin/templates_c/|bilder/|build/|docs/|downloads/|export/|gfx/|includes/plugins/|includes/vendor/|install/|jtllogs/|mediafiles/|templates_c/|tests/|uploads/" | xargs md5sum | awk '{ print $1";"$2; }' | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
+    cd ${CUR_PWD};
 
-###############################################
-# Postprocessing build
-###############################################
+    echo "  File checksums admin/includes/shopmd5files/${VERSION}.csv";
+}
 
-sed -i "s/#JTL_MINOR_VERSION#/${SHOPVERSION_BUILD}/g" $SHOP_EXPORT_PATH/includes/defines_inc.php
-sed -i "s/#JTL_BUILD_TIMESTAMP#/${BUILD_TIMESTAMP}/g" $SHOP_EXPORT_PATH/includes/defines_inc.php
+build_import_initial_schema()
+{
+    local INITIALSCHEMA=${REPOSITORY_DIR}/install/initial_schema.sql
 
-MD5_DB_FILENAME="$SHOP_EXPORT_PATH/admin/includes/shopmd5files/${SHOPVERSION_MAJOR}${SHOPVERSION_MINOR}.csv"
-debug "generate MD5 checksum database in ${MD5_DB_FILENAME}..."
-cd $SHOP_EXPORT_PATH
-find . -type f ! -name robots.txt ! -name rss.xml ! -name shopinfo.xml ! -name .htaccess ! -samefile includes/defines.php ! -samefile includes/defines_inc.php ! -samefile includes/config.JTL-Shop.ini.initial.php -printf '%P\n' | grep -v -E '.git/|/.gitkeep|admin/gfx|admin/includes/emailpdfs|admin/includes/shopmd5files|admin/templates/gfx|admin/templates_c/|bilder/|downloads/|gfx/|includes/plugins|install/|jtllogs/|mediafiles/|templates/|templates_c/|uploads/|export/|shopinfo.xml|sitemap_index.xml' | xargs md5sum | awk '{ print $2";"$1; }' | sort > $MD5_DB_FILENAME
+    mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}";
 
-###############################################
-# Create database schema
-###############################################
+    while read -r table;
+    do
+        mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "DROP TABLE IF EXISTS ${table}";
+    done< <(mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | sed 1d);
 
-# Determine last release version
-if (( $SHOPVERSION_MINOR > 0 )); then
-    LAST_MAJOR=$SHOPVERSION_MAJOR
-    LAST_MINOR=0$(($SHOPVERSION_MINOR - 1))
-else
-    LAST_MAJOR=$(($SHOPVERSION_MAJOR - 1))
-    LAST_MINOR=20
-fi
+    mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} < ${INITIALSCHEMA};
+}
 
-echo Preparing DB-Checkfile: LAST_MAJOR is $LAST_MAJOR, LAST_MINOR is $LAST_MINOR
-LAST_SCHEMA=$WORKSPACE/build/sql/${LAST_MAJOR}.${LAST_MINOR}.sql
-debug "importing old schema from ${LAST_SCHEMA} ..."
+build_create_config_file()
+{
+    echo "<?php define('PFAD_ROOT', '${REPOSITORY_DIR}/'); \
+        define('URL_SHOP', 'http://build'); \
+        define('DB_HOST', '${DB_HOST}'); \
+        define('DB_USER', '${DB_USER}'); \
+        define('DB_PASS', '${DB_PASSWORD}'); \
+        define('DB_NAME', '${DB_NAME}'); \
+        define('BLOWFISH_KEY', 'BLOWFISH_KEY');" > ${REPOSITORY_DIR}/includes/config.JTL-Shop.ini.php;
+}
 
-if [ ! -e $LAST_SCHEMA ]; then
-    debug "$LAST_SCHEMA: no such file or directory"
-    exit 1
-fi  
+build_migrate()
+{
+    php -r "
+        require_once '${REPOSITORY_DIR}/includes/globalinclude.php'; \
+        \$manager = new MigrationManager(null); \
+        \$manager->migrate(null); \
+        try {
+            \$result = \$manager->migrate(null);
+        } catch (Exception \$e) {
+            \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations())));
+            \$result = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage());
+            echo \$result;
+            exit(1);
+        }
+    ";
 
-TEMPDB=jenkins_shop_${BASHPID}
+    echo 'TRUNCATE tversion' | mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
+    echo "INSERT INTO tversion (nVersion, nZeileVon, nZeileBis, nInArbeit, nFehler, nTyp, cFehlerSQL, dAktualisiert) VALUES ('${APPLICATION_VERSION_STR}', 1, 0, 0, 0, 0, '', NOW())" | mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
+}
 
-echo "DROP DATABASE IF EXISTS ${TEMPDB}" | mysql
-echo "CREATE DATABASE ${TEMPDB}" | mysql
-mysql --default-character-set=latin1 -D ${TEMPDB} < $LAST_SCHEMA
-if [ $? -ne 0 ]; then
-    debug "error: could not import old schema"
-    exit 1
-fi
+build_create_db_struct()
+{
+    local i=0;
+    local DB_STRUCTURE='{';
+    local TABLE_COUNT=$(($(mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | wc -l)-1));
+    local SCHEMAJSON_PATH=${REPOSITORY_DIR}/admin/includes/shopmd5files/dbstruct_${APPLICATION_VERSION_STR}.json;
 
-TEMPCONFIG=$SHOP_EXPORT_PATH/includes/config.JTL-Shop.ini.php
+    while ((i++)); read -r table;
+    do
+        DB_STRUCTURE+='"'${table}'":[';
+        local j=0;
+        local COLUMN_COUNT=$(($(mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "SHOW COLUMNS FROM ${table};" | wc -l)-1));
 
-echo "<?php define('PFAD_ROOT', '${SHOP_EXPORT_PATH}/'); \
-define('URL_SHOP', 'http://jenkins'); \
-define('DB_HOST', 'localhost'); \
-define('DB_NAME', '${TEMPDB}'); \
-define('DB_USER', '${DB_USER}'); \
-define('DB_PASS', '${DB_PASSWORD}'); \
-define('BLOWFISH_KEY', 'BLOWFISH_KEY');" > $TEMPCONFIG
+        while ((j++)); read -r column;
+        do
+            local value=$(echo "${column}" | awk -F'\t' '{print $1}');
+            DB_STRUCTURE+='"'${value}'"';
 
-echo "CREATE TABLE IF NOT EXISTS tmigration (kMigration bigint(14) NOT NULL, nVersion int(3) NOT NULL, dExecuted datetime NOT NULL, PRIMARY KEY (kMigration)) ENGINE=InnoDB DEFAULT CHARSET=latin1" | mysql -D $TEMPDB
-echo "CREATE TABLE IF NOT EXISTS tmigrationlog (kMigrationlog int(10) NOT NULL AUTO_INCREMENT, kMigration bigint(20) NOT NULL, cDir enum('up','down') NOT NULL, cState varchar(6) NOT NULL, cLog text NOT NULL, dCreated datetime NOT NULL, PRIMARY KEY (kMigrationlog)) ENGINE=InnoDB DEFAULT CHARSET=latin1" | mysql -D $TEMPDB
+            if [[ ${j} -lt ${COLUMN_COUNT} ]]; then
+                DB_STRUCTURE+=',';
+            else
+                DB_STRUCTURE+=']';
+            fi
+        done< <(mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "SHOW COLUMNS FROM ${table};" | sed 1d);
 
-debug "Running migrations"
+        if [[ ${i} -lt ${TABLE_COUNT} ]]; then
+            DB_STRUCTURE+=',';
+        else
+            DB_STRUCTURE+='}';
+        fi
+    done< <(mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | sed 1d);
 
-php -r "require_once '${SHOP_EXPORT_PATH}/includes/globalinclude.php'; \
-\$manager = new MigrationManager(${LAST_MAJOR}${LAST_MINOR}); \
-print_r(\$manager->migrate(null));"
+    echo "${DB_STRUCTURE}" > ${SCHEMAJSON_PATH};
+}
+
+build_create_initial_schema()
+{
+    local INITIAL_SCHEMA_PATH=${REPOSITORY_DIR}/install/initial_schema.sql;
+    local MYSQL_CONN="-h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD}";
+    local ORDER_BY="table_name ASC";
+    local SQL="SET group_concat_max_len = 1048576;";
+          SQL="${SQL} SELECT GROUP_CONCAT(table_name ORDER BY ${ORDER_BY} SEPARATOR ' ')";
+          SQL="${SQL} FROM information_schema.tables";
+          SQL="${SQL} WHERE table_schema='${DB_NAME}'";
+    local TABLES=$(mysql ${MYSQL_CONN} -ANe"${SQL}");
+
+    mysqldump -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} --default-character-set=utf8 --skip-comments=true --skip-dump-date=true \
+        --add-locks=false --add-drop-table=false --no-autocommit=false ${DB_NAME} ${TABLES} > ${INITIAL_SCHEMA_PATH};
+}
+
+build_clean_up()
+{
+    #Delete created database
+    mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} -e "DROP DATABASE IF EXISTS ${DB_NAME}";
+    #Delete created config file
+    rm ${REPOSITORY_DIR}/includes/config.JTL-Shop.ini.php;
+}
+
+build_create_patches()
+{
+    local i=1;
+    local VERSION=("$@");
+
+    local SHOP_VERSION_MAJOR=${VERSION[1]};
+    local SHOP_VERSION_MINOR=${VERSION[2]};
+    local SHOP_VERSION_PATCH=${VERSION[3]};
+
+    if [[ ! -z "${VERSION[5]}" ]]; then
+        SHOP_VERSION_GREEK=${VERSION[5]};
+
+        if [[ ! -z "${VERSION[7]}" ]]; then
+            SHOP_VERSION_PRERELEASENUMBER=${VERSION[7]};
+        fi
+    fi
+
+    if [[ ! -z "${SHOP_VERSION_PRERELEASENUMBER}" ]]; then
+        for (( i=1; ${i}<${SHOP_VERSION_PRERELEASENUMBER}; ((i++)) ))
+        do
+            local PATCH_VERSION="v${SHOP_VERSION_MAJOR}.${SHOP_VERSION_MINOR}.${SHOP_VERSION_PATCH}-${SHOP_VERSION_GREEK}.${i}";
+            local PATCH_DIR="patch-dir-${PATCH_VERSION}-to-${APPLICATION_VERSION}";
+            mkdir ${PATCH_DIR};
+
+            build_add_files_to_patch_dir ${PATCH_VERSION} ${PATCH_DIR};
+        done
+    else
+        for (( i=0; ${i}<${SHOP_VERSION_PATCH}; ((i++)) ))
+        do
+            local PATCH_VERSION="v${SHOP_VERSION_MAJOR}.${SHOP_VERSION_MINOR}.${i}";
+            local PATCH_DIR="patch-dir-${PATCH_VERSION}-to-${APPLICATION_VERSION}";
+            mkdir ${PATCH_DIR};
+
+            build_add_files_to_patch_dir ${PATCH_VERSION} ${PATCH_DIR};
+        done
+    fi
+}
+
+build_add_files_to_patch_dir()
+{
+    local PATCH_VERSION=$1;
+    local PATCH_DIR=$2;
+
+    echo "  Patch ${PATCH_VERSION} to ${APPLICATION_VERSION}";
+
+    while read -r line;
+    do
+        local path=$(echo "${line}" | awk -F'\t' '{print $2}');
+        local rename_path=$(echo "${line}" | awk -F'\t' '{print $3}');
+
+        if [[ ! -z "${rename_path}" ]]; then
+            path=${rename_path};
+        fi
+        if [[ -f ${path} ]]; then
+            rsync -R ${path} ${PATCH_DIR};
+        fi
+    done< <(git diff --name-status --diff-filter=d ${PATCH_VERSION} ${APPLICATION_VERSION});
+
+    # Rsync shopmd5files
+    rsync -R admin/includes/shopmd5files/dbstruct_${APPLICATION_VERSION_STR}.json ${PATCH_DIR};
+    rsync -R admin/includes/shopmd5files/${APPLICATION_VERSION_STR}.csv ${PATCH_DIR};
+    rsync -R includes/defines_inc.php ${PATCH_DIR};
+
+    if [[ -f "${PATCH_DIR}/includes/composer.json" ]]; then
+        mkdir /tmp_composer;
+        mkdir /tmp_composer/includes;
+        touch /tmp_composer/includes/composer.json;
+        git show ${PATCH_VERSION}:includes/composer.json > /tmp_composer/includes/composer.json;
+        composer install --no-dev -q -d /tmp_composer/includes;
+
+        while read -r line;
+        do
+            path=$(echo "${line}" | grep "^Files.*differ$" | sed 's/^Files .* and \(.*\) differ$/\1/');
+            if [[ -z "${path}" ]]; then
+                filename=$(echo "${line}" | grep "^Only in includes\/vendor: .*$" | sed 's/^Only in includes\/vendor: \(.*\)$/\1/');
+                if [[ ! -z "${filename}" ]]; then
+                    path="includes/vendor/${filename}";
+                    rsync -Ra -f"+ *" ${path} ${PATCH_DIR};
+                fi
+            else
+                rsync -R ${path} ${PATCH_DIR};
+            fi
+        done< <(diff -rq /tmp_composer/includes/vendor includes/vendor);
+    fi
+}
 
 
-debug "Compiling themes"
-
-php ${SHOP_EXPORT_PATH}/includes/plugins/evo_editor/version/100/adminmenu/cli.php
-
-
-rm $TEMPCONFIG
-
-#truncate templates_c dir
-rm -r $SHOP_EXPORT_PATH/templates_c/*
-
-echo 'TRUNCATE tmigration' | mysql -D $TEMPDB
-echo 'TRUNCATE tmigrationlog' | mysql -D $TEMPDB
-echo 'TRUNCATE tversion' | mysql -D $TEMPDB
-
-echo "INSERT INTO tversion (nVersion, nZeileVon, nZeileBis, nInArbeit, nFehler, nTyp, cFehlerSQL, dAktualisiert) VALUES ('${SHOPVERSION_MAJOR}${SHOPVERSION_MINOR}', 1, 0, 0, 0, 0, '', NOW())" | mysql -D $TEMPDB
-
-if [ $CURRENT_BRANCH == "develop" ]; then
-SCHEMASQL_PATH=$SHOP_EXPORT_PATH/install/initial_schema_develop.sql
-debug "exporting initial DB schema to ${SCHEMASQL_PATH} ..."
-mysqldump --default-character-set=latin1 $TEMPDB > $SCHEMASQL_PATH
-fi
-
-SCHEMAJSON_PATH=$SHOP_EXPORT_PATH/admin/includes/shopmd5files/dbstruct_${SHOPVERSION_MAJOR}$(printf '%02u' ${SHOPVERSION_MINOR}).json
-debug "exporting DB structure into $SCHEMAJSON_PATH ..."
-$WORKSPACE/build/scripts/export_db_schema.pl $TEMPDB > $SCHEMAJSON_PATH
-
-debug "deleting intermediate database..."
-echo "DROP DATABASE IF EXISTS ${TEMPDB}" | mysql
-
-###############################################
-# Build ZIP archive
-###############################################
-
-debug "zip and deploy ${TARGET}. CURRENT_BRANCH is ${CURRENT_BRANCH}. "
-
-if [ $CURRENT_BRANCH == "develop" ]; then
-    # Development branch
-    debug "preparing devel ZIP"
-    TARGET="jtlshop_devel"
-else
-    # Release or preparation branch
-    debug "preparing release ZIP"
-    TARGET="jtlshop_release"
-fi
-
-# Append current shop version
-TARGET="${TARGET}_${SHOPVERSION_MAJOR}.${SHOPVERSION_MINOR}"
-if [ $SHOPVERSION_BUILD -gt 0 ]; then
-    TARGET="${TARGET}_build$SHOPVERSION_BUILD"
-fi
-
-# Append build timestamp
-TARGET="${TARGET}_${BUILD_TIMESTAMP}"
-
-if [ $CURRENT_BRANCH != "master" ]; then
-    # Append git revision if on devel branch
-    TARGET="${TARGET}_${HEADREVISION:0:9}"
-fi
-
-debug "final build will be placed in ${TARGET}.zip"
-
-cd $SHOP_EXPORT_PATH
-TMPZIPFILE="$WORKSPACE/build/${TARGET}.zip"
-
-debug "compressing build into ${TMPZIPFILE}"
-rm -f $TMPZIPFILE
-zip -r $TMPZIPFILE .
-
-echo BUILD_IDENTIFIER is ${BUILD_IDENTIFIER}
-if test -n "$BUILD_IDENTIFIER"; then
-    rm -f $WORKSPACE/build/jtl-shop-${BUILD_IDENTIFIER}.zip
-    cp $TMPZIPFILE $WORKSPACE/build/jtl-shop-${BUILD_IDENTIFIER}.zip
-fi
+(build_create $*)

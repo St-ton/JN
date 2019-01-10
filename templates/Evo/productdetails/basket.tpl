@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if ($Artikel->inWarenkorbLegbar == 1 || $Artikel->nErscheinendesProdukt == 1) || $Artikel->Variationen}
     <div id="add-to-cart" class="hidden-print product-buy text-right{if $Artikel->nErscheinendesProdukt} coming_soon{/if}">
     {block name='add-to-cart'}
@@ -33,7 +37,13 @@
                 {/block}
             {/if}
         {/if}
-        {if $Artikel->inWarenkorbLegbar == 1 && ($Artikel->fMindestbestellmenge > 1 || ($Artikel->fMindestbestellmenge > 0 && $Artikel->cTeilbar === 'Y') || $Artikel->fAbnahmeintervall > 0 || $Artikel->cTeilbar === 'Y' || (isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE]) && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE] > 0))}
+        {if $Artikel->inWarenkorbLegbar == 1
+            && ($Artikel->fMindestbestellmenge > 1
+                || ($Artikel->fMindestbestellmenge > 0 && $Artikel->cTeilbar === 'Y')
+                || $Artikel->fAbnahmeintervall > 0
+                || $Artikel->cTeilbar === 'Y'
+                || (!empty($Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE])
+                    && $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE] > 0))}
             <div class="clearfix"></div>
             <div class="purchase-info alert alert-info top10" role="alert">
                 {assign var='units' value=$Artikel->cEinheit}
@@ -55,9 +65,9 @@
                     <p>{lang key='integralQuantities' section='productDetails'}</p>
                 {/if}
 
-                {if isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE]) && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE] > 0}
+                {if !empty($Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]) && $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE] > 0}
                     {lang key='maximalPurchase' section='productDetails' assign='maximalPurchase'}
-                    <p>{$maximalPurchase|replace:"%d":$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE]|replace:"%s":$units}</p>
+                    <p>{$maximalPurchase|replace:"%d":$Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|replace:"%s":$units}</p>
                 {/if}
             </div>
         {/if}

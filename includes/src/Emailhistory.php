@@ -123,20 +123,21 @@ class Emailhistory
         $cSet_arr    = [];
         $cMember_arr = array_keys(get_object_vars($this));
         if (is_array($cMember_arr) && count($cMember_arr) > 0) {
+            $db = Shop::Container()->getDB();
             foreach ($cMember_arr as $cMember) {
                 $cMethod = 'get' . substr($cMember, 1);
                 if (method_exists($this, $cMethod)) {
                     $val        = $this->$cMethod();
                     $mValue     = $val === null
                         ? 'NULL'
-                        : ("'" . Shop::Container()->getDB()->escape($val) . "'");
+                        : ("'" . $db->escape($val) . "'");
                     $cSet_arr[] = "{$cMember} = {$mValue}";
                 }
             }
             $cQuery .= implode(', ', $cSet_arr);
-            $cQuery .= " WHERE kEmailhistory = {$this->getEmailhistory()}";
+            $cQuery .= ' WHERE kEmailhistory = ' . $this->getEmailhistory();
 
-            return Shop::Container()->getDB()->query($cQuery, \DB\ReturnType::AFFECTED_ROWS);
+            return $db->query($cQuery, \DB\ReturnType::AFFECTED_ROWS);
         }
         throw new Exception('ERROR: Object has no members!');
     }
@@ -150,26 +151,23 @@ class Emailhistory
     }
 
     /**
-     * @param string $cSqlLimit
+     * @param string $limitSQL
      * @return array
      */
-    public function getAll($cSqlLimit = ''): array
+    public function getAll(string $limitSQL = ''): array
     {
-        if ($cSqlLimit === null) {
-            $cSqlLimit = '';
-        }
-        $oObj_arr = Shop::Container()->getDB()->query(
+        $historyData = Shop::Container()->getDB()->query(
             'SELECT * 
                 FROM temailhistory 
-                ORDER BY dSent DESC' . $cSqlLimit,
+                ORDER BY dSent DESC' . $limitSQL,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        $oEmailhistory_arr = [];
-        foreach ($oObj_arr as $oObj) {
-            $oEmailhistory_arr[] = new self(null, $oObj);
+        $history     = [];
+        foreach ($historyData as $item) {
+            $history[] = new self(null, $item);
         }
 
-        return $oEmailhistory_arr;
+        return $history;
     }
 
     /**
@@ -177,27 +175,27 @@ class Emailhistory
      */
     public function getCount(): int
     {
-        $oObj = Shop::Container()->getDB()->query(
-            'SELECT count(*) AS nCount FROM temailhistory',
+        return (int)Shop::Container()->getDB()->query(
+            'SELECT COUNT(*) AS nCount FROM temailhistory',
             \DB\ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$oObj->nCount;
+        )->nCount;
     }
 
     /**
-     * @param array $kEmailhistory_arr
+     * @param array $ids
      * @return bool|int
      */
-    public function deletePack(array $kEmailhistory_arr)
+    public function deletePack(array $ids)
     {
-        if (count($kEmailhistory_arr) > 0) {
-            $kEmailhistory_arr = array_map(function ($i) { return (int)$i; }, $kEmailhistory_arr);
+        if (count($ids) > 0) {
+            $ids = array_map(function ($i) {
+                return (int)$i;
+            }, $ids);
 
             return Shop::Container()->getDB()->query(
                 'DELETE 
                     FROM temailhistory 
-                    WHERE kEmailhistory IN (' . implode(',', $kEmailhistory_arr) . ')',
+                    WHERE kEmailhistory IN (' . implode(',', $ids) . ')',
                 \DB\ReturnType::AFFECTED_ROWS
             );
         }

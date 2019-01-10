@@ -5,6 +5,9 @@
  * @author Danny Raufeisen
  */
 
+/**
+ * Class Migration_20181130110200
+ */
 class Migration_20181130110200 extends Migration implements IMigration
 {
     protected $author      = 'Danny Raufeisen';

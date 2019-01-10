@@ -6,6 +6,8 @@
 
 namespace Plugin;
 
+use Cache\JTLCacheInterface;
+use DB\DbInterface;
 use Events\Dispatcher;
 
 /**
@@ -30,13 +32,27 @@ abstract class AbstractPlugin implements PluginInterface
     private $plugin;
 
     /**
-     * AbstractPlugin constructor.
-     * @param Plugin $plugin
+     * @var DbInterface
      */
-    final public function __construct($plugin)
+    private $db;
+
+    /**
+     * @var JTLCacheInterface
+     */
+    private $cache;
+
+    /**
+     * AbstractPlugin constructor.
+     * @param AbstractExtension $plugin
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
+     */
+    final public function __construct($plugin, DbInterface $db, JTLCacheInterface $cache)
     {
         $this->plugin   = $plugin;
         $this->pluginId = $plugin->getPluginID();
+        $this->db       = $db;
+        $this->cache    = $cache;
     }
 
     /**
@@ -99,10 +115,42 @@ abstract class AbstractPlugin implements PluginInterface
     }
 
     /**
-     * @return Plugin
+     * @return AbstractExtension
      */
     public function getPlugin()
     {
         return $this->plugin;
+    }
+
+    /**
+     * @return DbInterface
+     */
+    public function getDB(): DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @param DbInterface $db
+     */
+    public function setDB(DbInterface $db): void
+    {
+        $this->db = $db;
+    }
+
+    /**
+     * @return JTLCacheInterface
+     */
+    public function getCache(): JTLCacheInterface
+    {
+        return $this->cache;
+    }
+
+    /**
+     * @param JTLCacheInterface $cache
+     */
+    public function setCache(JTLCacheInterface $cache): void
+    {
+        $this->cache = $cache;
     }
 }

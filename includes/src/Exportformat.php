@@ -4,12 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Cron\QueueEntry;
 use DB\DbInterface;
 use DB\ReturnType;
 use Helpers\Category;
 use Helpers\Request;
-use Helpers\Tax;
 use Helpers\ShippingMethod;
+use Helpers\Tax;
 use Smarty\SmartyResourceNiceDB;
 
 /**
@@ -118,7 +119,7 @@ class Exportformat
     protected $config = [];
 
     /**
-     * @var object
+     * @var QueueEntry
      */
     protected $queue;
 
@@ -856,8 +857,8 @@ class Exportformat
             $select = 'COUNT(*) AS nAnzahl';
         } else {
             $select     = 'tartikel.kArtikel';
-            $limit      = ' ORDER BY tartikel.kArtikel LIMIT ' . $this->getQueue()->nLimitM;
-            $condition .= ' AND tartikel.kArtikel > ' . $this->getQueue()->nLastArticleID;
+            $limit      = ' ORDER BY tartikel.kArtikel LIMIT ' . $this->getQueue()->taskLimit;
+            $condition .= ' AND tartikel.kArtikel > ' . $this->getQueue()->lastProductID;
         }
 
         return 'SELECT ' . $select . "
@@ -872,22 +873,18 @@ class Exportformat
     }
 
     /**
-     * @param object $queue
+     * @param QueueEntry $queue
      * @return $this
      */
-    private function setQueue($queue): self
+    private function setQueue(QueueEntry $queue): self
     {
-        if (isset($queue->nLimit_m)) {
-            $queue->nLimitM = $queue->nLimit_m;
-            $queue->nLimitN = $queue->nLimit_n;
-        }
         $this->queue = $queue;
 
         return $this;
     }
 
     /**
-     * @return object
+     * @return QueueEntry
      */
     public function getQueue()
     {
@@ -1053,15 +1050,15 @@ class Exportformat
     }
 
     /**
-     * @param JobQueue|object $queueObject
-     * @param bool            $isAsync
-     * @param bool            $back
-     * @param bool            $isCron
-     * @param int|null        $max
+     * @param QueueEntry $queueObject
+     * @param bool       $isAsync
+     * @param bool       $back
+     * @param bool       $isCron
+     * @param int|null   $max
      * @return bool
      */
     public function startExport(
-        $queueObject,
+        QueueEntry $queueObject,
         bool $isAsync = false,
         bool $back = false,
         bool $isCron = false,
@@ -1116,12 +1113,12 @@ class Exportformat
             include $oPlugin->getPaths()->getExportPath() .
                 str_replace(PLUGIN_EXPORTFORMAT_CONTENTFILE, '', $this->getContent());
 
-            if (isset($queueObject->kExportqueue)) {
-                $this->db->delete('texportqueue', 'kExportqueue', (int)$queueObject->kExportqueue);
+            if ($queueObject->jobQueueID > 0) {
+                $this->db->delete('texportqueue', 'kExportqueue', $queueObject->jobQueueID);
             }
             if (isset($_GET['back']) && $_GET['back'] === 'admin') {
                 header('Location: exportformate.php?action=exported&token=' .
-                    $_SESSION['jtl_token'] . '&kExportformat=' . (int)$this->queue->kExportformat);
+                    $_SESSION['jtl_token'] . '&kExportformat=' . (int)$this->queue->foreignKeyID);
                 exit;
             }
             $this->log('Finished export');
@@ -1133,7 +1130,7 @@ class Exportformat
         $cacheMisses  = 0;
         $cOutput      = '';
         $errorMessage = '';
-        if ((int)$this->queue->nLimitN === 0 && file_exists(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName)) {
+        if ((int)$this->queue->tasksExecuted === 0 && file_exists(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName)) {
             unlink(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName);
         }
         $datei = fopen(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName, 'a');
@@ -1150,9 +1147,9 @@ class Exportformat
             ' with caching ' . ((Shop::Container()->getCache()->isActive() && $this->useCache())
                 ? 'enabled'
                 : 'disabled') .
-            ' - ' . $queueObject->nLimitN . '/' . $max . ' products exported');
+            ' - ' . $queueObject->tasksExecuted . '/' . $max . ' products exported');
         // Kopfzeile schreiben
-        if ((int)$this->queue->nLimitN === 0) {
+        if ((int)$this->queue->tasksExecuted === 0) {
             $this->writeHeader($datei);
         }
         $content          = $this->getContent();
@@ -1219,8 +1216,8 @@ class Exportformat
 
             if ($product->kArtikel > 0) {
                 $started = true;
-                ++$this->queue->nLimitN;
-                $this->queue->nLastArticleID = $product->kArtikel;
+                ++$this->queue->tasksExecuted;
+                $this->queue->lastProductID = $product->kArtikel;
 
                 if ($product->cacheHit === true) {
                     ++$cacheHits;
@@ -1303,7 +1300,6 @@ class Exportformat
                     : '';
                 $product->Lieferbar             = $product->fLagerbestand <= 0 ? 'N' : 'Y';
                 $product->Lieferbar_01          = $product->fLagerbestand <= 0 ? 0 : 1;
-                $product->Verfuegbarkeit_kelkoo = $product->fLagerbestand > 0 ? '001' : '003';
 
                 $_out = $this->smarty->assign('Artikel', $product)->fetch('db:' . $this->getExportformat());
                 if (!empty($_out)) {
@@ -1311,9 +1307,9 @@ class Exportformat
                 }
 
                 executeHook(HOOK_DO_EXPORT_OUTPUT_FETCHED);
-                if (!$isAsync && ($queueObject->nLimitN % max(round($queueObject->nLimitM / 10), 10)) === 0) {
+                if (!$isAsync && ($queueObject->tasksExecuted % max(round($queueObject->taskLimit / 10), 10)) === 0) {
                     //max. 10 status updates per run
-                    $this->log($queueObject->nLimitN . '/' . $max . ' products exported');
+                    $this->log($queueObject->tasksExecuted . '/' . $max . ' products exported');
                 }
             }
         }
@@ -1333,9 +1329,9 @@ class Exportformat
                         nLastArticleID = :nLastArticleID
                         WHERE kExportqueue = :kExportqueue',
                     [
-                        'nLimitM'        => $this->queue->nLimitM,
-                        'nLastArticleID' => $this->queue->nLastArticleID,
-                        'kExportqueue'   => (int)$this->queue->kExportqueue,
+                        'nLimitM'        => $this->queue->taskLimit,
+                        'nLastArticleID' => $this->queue->lastProductID,
+                        'kExportqueue'   => (int)$this->queue->jobQueueID,
                     ],
                     ReturnType::DEFAULT
                 );
@@ -1346,19 +1342,19 @@ class Exportformat
                 if ($isAsync) {
                     $oCallback                 = new stdClass();
                     $oCallback->kExportformat  = $this->getExportformat();
-                    $oCallback->kExportqueue   = $this->queue->kExportqueue;
+                    $oCallback->kExportqueue   = $this->queue->jobQueueID;
                     $oCallback->nMax           = $max;
-                    $oCallback->nCurrent       = $this->queue->nLimitN;
-                    $oCallback->nLastArticleID = $this->queue->nLastArticleID;
+                    $oCallback->nCurrent       = $this->queue->tasksExecuted;
+                    $oCallback->nLastArticleID = $this->queue->lastProductID;
                     $oCallback->bFinished      = false;
-                    $oCallback->bFirst         = ((int)$this->queue->nLimitN === 0);
+                    $oCallback->bFirst         = ((int)$this->queue->tasksExecuted === 0);
                     $oCallback->cURL           = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
                     $oCallback->cacheMisses    = $cacheMisses;
                     $oCallback->cacheHits      = $cacheHits;
                     echo json_encode($oCallback);
                 } else {
                     $cURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] .
-                        '?e=' . (int)$this->queue->kExportqueue .
+                        '?e=' . (int)$this->queue->jobQueueID .
                         '&back=admin&token=' . $_SESSION['jtl_token'] . '&max=' . $max;
                     header('Location: ' . $cURL);
                 }
@@ -1370,7 +1366,7 @@ class Exportformat
                         WHERE kExportformat = ' . $this->getExportformat(),
                     ReturnType::DEFAULT
                 );
-                $this->db->delete('texportqueue', 'kExportqueue', (int)$this->queue->kExportqueue);
+                $this->db->delete('texportqueue', 'kExportqueue', (int)$this->queue->foreignKeyID);
 
                 $this->writeFooter($datei);
                 fclose($datei);
@@ -1388,8 +1384,8 @@ class Exportformat
                         $oCallback                 = new stdClass();
                         $oCallback->kExportformat  = $this->getExportformat();
                         $oCallback->nMax           = $max;
-                        $oCallback->nCurrent       = $this->queue->nLimitN;
-                        $oCallback->nLastArticleID = $this->queue->nLastArticleID;
+                        $oCallback->nCurrent       = $this->queue->tasksExecuted;
+                        $oCallback->nLastArticleID = $this->queue->lastProductID;
                         $oCallback->bFinished      = true;
                         $oCallback->cacheMisses    = $cacheMisses;
                         $oCallback->cacheHits      = $cacheHits;
@@ -1414,7 +1410,7 @@ class Exportformat
                 $this->db->update(
                     'texportformat',
                     'kExportformat',
-                    (int)$queueObject->kKey,
+                    (int)$queueObject->foreignKeyID,
                     (object)['dZuletztErstellt' => 'NOW()']
                 );
                 if (file_exists(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
@@ -1553,7 +1549,6 @@ class Exportformat
                 $product->Artikelbild           = '';
                 $product->Lieferbar             = '';
                 $product->Lieferbar_01          = '';
-                $product->Verfuegbarkeit_kelkoo = '';
                 $product->cBeschreibungHTML     = '';
                 $product->cKurzBeschreibungHTML = '';
                 $product->fUst                  = 0;

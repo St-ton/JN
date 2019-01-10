@@ -76,6 +76,24 @@ class Warenkorb
     private $config;
 
     /**
+     *
+     */
+    public function __wakeup()
+    {
+        $this->config = $this->config ?? Shop::getSettings([CONF_GLOBAL, CONF_KAUFABWICKLUNG]);
+    }
+
+    /**
+     * @return array
+     */
+    public function __sleep()
+    {
+        return \Functional\select(array_keys(get_object_vars($this)), function ($e) {
+            return $e !== 'config';
+        });
+    }
+
+    /**
      * Konstruktor
      *
      * @param int $kWarenkorb Falls angegeben, wird der Warenkorb mit angegebenem kWarenkorb aus der DB geholt

@@ -28,7 +28,7 @@ $controller             = new \Survey\Controller($db, $smarty);
 $surveyID               = $cParameter_arr['kUmfrage'];
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 if ($surveyID > 0) {
-    $customerID = Session\Session::getCustomer()->getID();
+    $customerID = Session\Frontend::getCustomer()->getID();
     $step       = 'umfrage_uebersicht';
     if ($customerID === 0 && Shop::getConfigValue(CONF_UMFRAGE, 'umfrage_einloggen') === 'Y') {
         header('Location: ' . $linkHelper->getStaticRoute('jtl.php') .

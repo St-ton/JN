@@ -304,7 +304,7 @@ class PaymentMethod
             'cZahlungsanbieter' => empty($order->cZahlungsartName) ? $this->name : $order->cZahlungsartName,
             'fBetrag'           => 0,
             'fZahlungsgebuehr'  => 0,
-            'cISO'              => \Session\Session::getCurrency()->getCode(),
+            'cISO'              => \Session\Frontend::getCurrency()->getCode(),
             'cEmpfaenger'       => '',
             'cZahler'           => '',
             'dZeit'             => 'NOW()',

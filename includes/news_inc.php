@@ -231,7 +231,7 @@ function getNewsArchive(int $kNews, bool $bActiveOnly = false)
                 AND tseo.kSprache = " . Shop::getLanguageID() . "
             WHERE tnews.kNews = " . $kNews . " 
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                    OR FIND_IN_SET('" . \Session\Session::getCustomerGroup()->getID()
+                    OR FIND_IN_SET('" . \Session\Frontend::getCustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                 AND t.languageID = " . Shop::getLanguageID()
                 . $activeFilter,
@@ -396,7 +396,7 @@ function getNewsOverview($oSQL, $cLimitSQL)
             WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= NOW()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                    OR FIND_IN_SET('" . \Session\Session::getCustomerGroup()->getID()
+                    OR FIND_IN_SET('" . \Session\Frontend::getCustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                 AND t.languageID = " . Shop::getLanguageID() . "
                 " . $oSQL->cDatumSQL . "
@@ -424,7 +424,7 @@ function getFullNewsOverview($oSQL)
             WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= NOW()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                    OR FIND_IN_SET('" . \Session\Session::getCustomerGroup()->getID()
+                    OR FIND_IN_SET('" . \Session\Frontend::getCustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                 " . $oSQL->cDatumSQL . "
                 AND t.languageID = " . Shop::getLanguageID(),
@@ -449,7 +449,7 @@ function getNewsDateArray($oSQL)
             WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= NOW()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                    OR FIND_IN_SET('" . \Session\Session::getCustomerGroup()->getID()
+                    OR FIND_IN_SET('" . \Session\Frontend::getCustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                 AND t.languageID = " . Shop::getLanguageID() . "
             GROUP BY nJahr, nMonat

@@ -486,14 +486,14 @@ final class Shop
     /**
      * get session instance
      *
-     * @return \Session\Session
+     * @return \Session\Frontend
      * @throws Exception
      * @deprecated since 5.0.0
      */
-    public function Session(): \Session\Session
+    public function Session(): \Session\Frontend
     {
         trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-        return \Session\Session::getInstance();
+        return \Session\Frontend::getInstance();
     }
 
     /**
@@ -880,7 +880,7 @@ final class Shop
             exit();
         }
         if ((self::$kArtikel > 0 || self::$kKategorie > 0)
-            && !\Session\Session::getCustomerGroup()->mayViewCategories()
+            && !\Session\Frontend::getCustomerGroup()->mayViewCategories()
         ) {
             // falls Artikel/Kategorien nicht gesehen werden duerfen -> login
             header('Location: ' . LinkHelper::getInstance()->getStaticRoute('jtl.php') . '?li=1', true, 303);
@@ -889,7 +889,7 @@ final class Shop
         $conf = new \Filter\Config();
         $conf->setLanguageID(self::$kSprache);
         $conf->setLanguages(self::Lang()->getLangArray());
-        $conf->setCustomerGroupID(\Session\Session::getCustomerGroup()->getID());
+        $conf->setCustomerGroupID(\Session\Frontend::getCustomerGroup()->getID());
         $conf->setConfig(self::$settings->getAll());
         $conf->setBaseURL(self::getURL() . '/');
         self::$productFilter = new ProductFilter($conf, self::Container()->getDB(), self::Container()->getCache());
@@ -910,7 +910,7 @@ final class Shop
     public static function getParameters(): array
     {
         if (self::$kKategorie > 0
-            && !Kategorie::isVisible(self::$kKategorie, \Session\Session::getCustomerGroup()->getID())
+            && !Kategorie::isVisible(self::$kKategorie, \Session\Frontend::getCustomerGroup()->getID())
         ) {
             self::$kKategorie = 0;
         }
@@ -1319,7 +1319,7 @@ final class Shop
         $spr   = self::Lang()->getIsoFromLangID($languageID);
         $cLang = $spr->cISO ?? null;
         if ($cLang !== $_SESSION['cISOSprache']) {
-            Session\Session::checkReset($cLang);
+            Session\Frontend::checkReset($cLang);
             Tax::setTaxRates();
         }
         if (self::$productFilter->getFilterConfig()->getLanguageID() !== $languageID) {
@@ -1403,8 +1403,8 @@ final class Shop
                 $link = null;
                 self::setPageType(PAGE_STARTSEITE);
                 self::$fileName = 'seite.php';
-                if (\Session\Session::getCustomerGroup()->getID() > 0) {
-                    $cKundengruppenSQL = " AND (FIND_IN_SET('" . \Session\Session::getCustomerGroup()->getID()
+                if (\Session\Frontend::getCustomerGroup()->getID() > 0) {
+                    $cKundengruppenSQL = " AND (FIND_IN_SET('" . \Session\Frontend::getCustomerGroup()->getID()
                         . "', REPLACE(cKundengruppen, ';', ',')) > 0
                         OR cKundengruppen IS NULL 
                         OR cKundengruppen = 'NULL' 
@@ -1419,8 +1419,8 @@ final class Shop
                 self::$kLink = isset($link->kLink)
                     ? (int)$link->kLink
                     : self::Container()->getLinkService()->getSpecialPageLinkKey(LINKTYP_STARTSEITE);
-            } elseif (self::Media()->isValidRequest($path)) {
-                self::Media()->handleRequest($path);
+            } elseif (Media::getInstance()->isValidRequest($path)) {
+                Media::getInstance()->handleRequest($path);
             } else {
                 self::$is404    = true;
                 self::$fileName = null;
@@ -1869,6 +1869,9 @@ final class Shop
         $container->setSingleton(\Services\JTL\LinkServiceInterface::class, function (Container $container) {
             return new \Services\JTL\LinkService($container->getDB(), $container->getCache());
         });
+        $container->setSingleton(\Services\JTL\AlertServiceInterface::class, function () {
+            return new \Services\JTL\AlertService();
+        });
         $container->setSingleton(\Services\JTL\NewsServiceInterface::class, function (Container $container) {
             return new \Services\JTL\NewsService($container->getDB(), $container->getCache());
         });
@@ -1879,6 +1882,9 @@ final class Shop
 
         $container->setSingleton(\Services\JTL\PasswordServiceInterface::class, function (Container $container) {
             return new \Services\JTL\PasswordService($container->getCryptoService());
+        });
+        $container->setSingleton(\Debug\JTLDebugBar::class, function (Container $container) {
+            return new \Debug\JTLDebugBar($container->getDB()->getPDO(), \Shopsetting::getInstance()->getAll());
         });
         $container->setSingleton('BackendAuthLogger', function (Container $container) {
             $loggingConf = self::getConfig([CONF_GLOBAL])['global']['admin_login_logger_mode'] ?? [];
@@ -1960,13 +1966,13 @@ final class Shop
             return new \Services\JTL\CaptchaService(new \Services\JTL\SimpleCaptchaService(
                 // Captcha Prüfung ist bei eingeloggtem Kunden, bei bereits erfolgter Prüfung
                 // oder ausgeschaltetem Captcha nicht notwendig
-                !(\Session\Session::get('bAnti_spam_already_checked', false)
-                    || \Session\Session::getCustomer()->isLoggedIn()
+                !(\Session\Frontend::get('bAnti_spam_already_checked', false)
+                    || \Session\Frontend::getCustomer()->isLoggedIn()
                 )
             ));
         });
         // GetText
-        $container->setSingleton(\L10n\GetText::class, function (Container $container) {
+        $container->setSingleton(\L10n\GetText::class, function () {
             return new \L10n\GetText();
         });
         $container->setSingleton(\AdminAccount::class, function (Container $container) {

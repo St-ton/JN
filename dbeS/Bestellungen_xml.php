@@ -61,17 +61,18 @@ function bearbeiteAck($xml)
     if (!is_array($xml['ack_bestellungen']['kBestellung'])) {
         return;
     }
+    $db = Shop::Container()->getDB();
     foreach ($xml['ack_bestellungen']['kBestellung'] as $orderID) {
         $orderID = (int)$orderID;
         if ($orderID > 0) {
-            Shop::Container()->getDB()->update('tbestellung', 'kBestellung', $orderID, (object)['cAbgeholt' => 'Y']);
-            Shop::Container()->getDB()->update(
+            $db->update('tbestellung', 'kBestellung', $orderID, (object)['cAbgeholt' => 'Y']);
+            $db->update(
                 'tbestellung',
                 ['kBestellung', 'cStatus'],
                 [$orderID, BESTELLUNG_STATUS_OFFEN],
                 (object)['cStatus' => BESTELLUNG_STATUS_IN_BEARBEITUNG]
             );
-            Shop::Container()->getDB()->update('tzahlungsinfo', 'kBestellung', $orderID, (object)['cAbgeholt' => 'Y']);
+            $db->update('tzahlungsinfo', 'kBestellung', $orderID, (object)['cAbgeholt' => 'Y']);
         }
     }
 }
@@ -119,7 +120,7 @@ function bearbeiteDel($xml)
             //uploads (artikel der bestellung)
             //todo...
             //wenn unreg kunde, dann kunden auch löschen
-            $b = $db->query(
+            $db = $db->query(
                 'SELECT kKunde FROM tbestellung WHERE kBestellung = ' . $orderID,
                 \DB\ReturnType::SINGLE_OBJECT
             );

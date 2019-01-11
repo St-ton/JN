@@ -179,7 +179,7 @@ class Kupon
             $ins->$cMember = $this->$cMember;
         }
 
-        unset($ins->kKupon);
+        unset($ins->kKupon, $ins->translationList);
         if (empty($ins->dGueltigBis)) {
             $ins->dGueltigBis = '_DBNULL_';
         }
@@ -791,7 +791,7 @@ class Kupon
         if (isset($_SESSION['Kupon']) && $_SESSION['Kupon']->cWertTyp === 'prozent') {
             $oKupon = $_SESSION['Kupon'];
             unset($_SESSION['Kupon']);
-            \Session\Session::getCart()->setzePositionsPreise();
+            \Session\Frontend::getCart()->setzePositionsPreise();
             require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
             self::acceptCoupon($oKupon);
         }
@@ -804,7 +804,7 @@ class Kupon
      */
     public static function couponsAvailable(): int
     {
-        $cart        = \Session\Session::getCart();
+        $cart        = \Session\Frontend::getCart();
         $productQry  = '';
         $manufQry    = '';
         $categories  = [];
@@ -868,7 +868,7 @@ class Kupon
                         OR cKuponTyp = '" . self::TYPE_STANDARD . "')
                     AND (kKundengruppe = -1
                         OR kKundengruppe = 0
-                        OR kKundengruppe = " . \Session\Session::getCustomerGroup()->getID() . ")
+                        OR kKundengruppe = " . \Session\Frontend::getCustomerGroup()->getID() . ")
                     AND (nVerwendungen = 0
                         OR nVerwendungen > nVerwendungenBisher)
                     AND (cArtikel = '' $productQry)
@@ -901,7 +901,7 @@ class Kupon
         } elseif (date_create($Kupon->dGueltigAb) > date_create()) {
             //invalid at the moment
             $ret['ungueltig'] = 3;
-        } elseif ($Kupon->fMindestbestellwert > \Session\Session::getCart()->gibGesamtsummeWarenExt(
+        } elseif ($Kupon->fMindestbestellwert > \Session\Frontend::getCart()->gibGesamtsummeWarenExt(
                 [C_WARENKORBPOS_TYP_ARTIKEL],
                 true
             )
@@ -909,22 +909,22 @@ class Kupon
                 && $Kupon->nGanzenWKRabattieren === '0'
                 && $Kupon->fMindestbestellwert > gibGesamtsummeKuponartikelImWarenkorb(
                     $Kupon,
-                    \Session\Session::getCart()->PositionenArr
+                    \Session\Frontend::getCart()->PositionenArr
                 )
             )
         ) {
             //minimum order value not reached for whole cart or the products which are valid for this coupon
             $ret['ungueltig'] = 4;
-        } elseif ($Kupon->kKundengruppe > 0 && (int)$Kupon->kKundengruppe !== \Session\Session::getCustomerGroup()->getID()) {
+        } elseif ($Kupon->kKundengruppe > 0 && (int)$Kupon->kKundengruppe !== \Session\Frontend::getCustomerGroup()->getID()) {
             //invalid customer group
             $ret['ungueltig'] = 5;
         } elseif ($Kupon->nVerwendungen > 0 && $Kupon->nVerwendungen <= $Kupon->nVerwendungenBisher) {
             //maximum usage reached
             $ret['ungueltig'] = 6;
-        } elseif (!warenkorbKuponFaehigArtikel($Kupon, \Session\Session::getCart()->PositionenArr)) {
+        } elseif (!warenkorbKuponFaehigArtikel($Kupon, \Session\Frontend::getCart()->PositionenArr)) {
             //cart needs at least one product for which this coupon is valid
             $ret['ungueltig'] = 7;
-        } elseif (!warenkorbKuponFaehigKategorien($Kupon, \Session\Session::getCart()->PositionenArr)) {
+        } elseif (!warenkorbKuponFaehigKategorien($Kupon, \Session\Frontend::getCart()->PositionenArr)) {
             //cart needs at least one category for which this coupon is valid
             $ret['ungueltig'] = 8;
         } elseif ($Kupon->cKuponTyp !== self::TYPE_NEWCUSTOMER
@@ -942,7 +942,7 @@ class Kupon
         ) {
             //invalid for shipping country
             $ret['ungueltig'] = 10;
-        } elseif (!warenkorbKuponFaehigHersteller($Kupon, \Session\Session::getCart()->PositionenArr)) {
+        } elseif (!warenkorbKuponFaehigHersteller($Kupon, \Session\Frontend::getCart()->PositionenArr)) {
             //invalid for manufacturer
             $ret['ungueltig'] = 12;
         } elseif (!empty($_SESSION['Kunde']->cMail)) {
@@ -1004,7 +1004,7 @@ class Kupon
      */
     public static function acceptCoupon($Kupon): void
     {
-        $cart                        = \Session\Session::getCart();
+        $cart                        = \Session\Frontend::getCart();
         $logger                      = Shop::Container()->getLogService();
         $Kupon->nGanzenWKRabattieren = (int)$Kupon->nGanzenWKRabattieren;
         if ((!empty($_SESSION['oVersandfreiKupon']) || !empty($_SESSION['VersandKupon']) || !empty($_SESSION['Kupon']))
@@ -1124,9 +1124,9 @@ class Kupon
     public static function resetNewCustomerCoupon(): void
     {
         unset($_SESSION['NeukundenKupon'], $_SESSION['NeukundenKuponAngenommen']);
-        \Session\Session::getCart()
-               ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
-               ->setzePositionsPreise();
+        \Session\Frontend::getCart()
+                         ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
+                         ->setzePositionsPreise();
     }
 
     /**

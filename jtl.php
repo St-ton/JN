@@ -71,7 +71,7 @@ if (isset($_GET['updated_pw']) && $_GET['updated_pw'] === 'true') {
 if (isset($_POST['login']) && (int)$_POST['login'] === 1 && !empty($_POST['email']) && !empty($_POST['passwort'])) {
     fuehreLoginAus($_POST['email'], $_POST['passwort']);
 }
-$customerID             = \Session\Session::getCustomer()->getID();
+$customerID             = \Session\Frontend::getCustomer()->getID();
 $AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $editRechnungsadresse   = 0;
@@ -98,7 +98,7 @@ if ($customerID > 0) {
         // Sprache und Waehrung beibehalten
         $kSprache    = Shop::getLanguage();
         $cISOSprache = Shop::getLanguage(true);
-        $Waehrung    = \Session\Session::getCurrency();
+        $Waehrung    = \Session\Frontend::getCurrency();
         // Kategoriecache loeschen
         unset(
             $_SESSION['kKategorieVonUnterkategorien_arr'],
@@ -131,7 +131,7 @@ if ($customerID > 0) {
     }
 
     if (isset($_GET['del']) && (int)$_GET['del'] === 1) {
-        $smarty->assign('openOrders', \Session\Session::getCustomer()->getOpenOrders());
+        $smarty->assign('openOrders', \Session\Frontend::getCustomer()->getOpenOrders());
         $step = 'account loeschen';
     }
     // Vorhandenen Warenkorb mit persistenten Warenkorb mergen?
@@ -248,7 +248,7 @@ if ($customerID > 0) {
             // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
             $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
             if (!empty($oWunschliste->kKunde)
-                && (int)$oWunschliste->kKunde === \Session\Session::getCustomer()->getID()
+                && (int)$oWunschliste->kKunde === \Session\Frontend::getCustomer()->getID()
             ) {
                 $step                    = 'wunschliste anzeigen';
                 $cHinweis               .= Wunschliste::update($kWunschliste);
@@ -304,7 +304,7 @@ if ($customerID > 0) {
         if ($kWunschliste) {
             $oWunschliste = new Wunschliste($kWunschliste);
 
-            if ($oWunschliste->kKunde > 0 && $oWunschliste->kKunde === \Session\Session::getCustomer()->getID()) {
+            if ($oWunschliste->kKunde > 0 && $oWunschliste->kKunde === \Session\Frontend::getCustomer()->getID()) {
                 $step = 'wunschliste anzeigen';
                 $oWunschliste->entferneAllePos();
                 if ((int)$_SESSION['Wunschliste']->kWunschliste === $oWunschliste->kWunschliste) {
@@ -320,7 +320,7 @@ if ($customerID > 0) {
         $kWunschliste = Request::verifyGPCDataInt('wl');
         if ($kWunschliste) {
             $oWunschliste = new Wunschliste($kWunschliste);
-            if ($oWunschliste->kKunde && $oWunschliste->kKunde === \Session\Session::getCustomer()->getID()) {
+            if ($oWunschliste->kKunde && $oWunschliste->kKunde === \Session\Frontend::getCustomer()->getID()) {
                 $step                              = 'wunschliste anzeigen';
                 $oWunschlistePosSuche_arr          = $oWunschliste->sucheInWunschliste($cSuche);
                 $oWunschliste->CWunschlistePos_arr = $oWunschlistePosSuche_arr;
@@ -335,7 +335,7 @@ if ($customerID > 0) {
             // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
             $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
             if (isset($oWunschliste->kKunde)
-                && (int)$oWunschliste->kKunde === \Session\Session::getCustomer()->getID()
+                && (int)$oWunschliste->kKunde === \Session\Frontend::getCustomer()->getID()
             ) {
                 if (isset($_REQUEST['wlAction']) && Form::validateToken()) {
                     $wlAction = Request::verifyGPDataString('wlAction');
@@ -367,7 +367,7 @@ if ($customerID > 0) {
         Shop::Smarty()->assign('cPost_arr', $cPost_arr);
 
         $fehlendeAngaben = checkKundenFormularArray($cPost_arr, 1, 0);
-        $kKundengruppe   = \Session\Session::getCustomerGroup()->getID();
+        $kKundengruppe   = \Session\Frontend::getCustomerGroup()->getID();
         // CheckBox Plausi
         $oCheckBox           = new CheckBox();
         $fehlendeAngaben     = array_merge(
@@ -439,9 +439,9 @@ if ($customerID > 0) {
             $cHinweis .= Shop::Lang()->get('dataEditSuccessful', 'login');
             Tax::setTaxRates();
             if (isset($_SESSION['Warenkorb']->kWarenkorb)
-                && \Session\Session::getCart()->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
+                && \Session\Frontend::getCart()->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
             ) {
-                \Session\Session::getCart()->gibGesamtsummeWarenLocalized();
+                \Session\Frontend::getCart()->gibGesamtsummeWarenLocalized();
             }
         } else {
             Shop::Smarty()->assign('fehlendeAngaben', $fehlendeAngaben);
@@ -509,7 +509,7 @@ if ($customerID > 0) {
         $bestellung = new Bestellung(Request::verifyGPCDataInt('bestellung'), true);
         if ($bestellung->kKunde !== null
             && (int)$bestellung->kKunde > 0
-            && (int)$bestellung->kKunde === \Session\Session::getCustomer()->getID()
+            && (int)$bestellung->kKunde === \Session\Frontend::getCustomer()->getID()
         ) {
             // Download wurde angefordert?
             if (Request::verifyGPCDataInt('dl') > 0 && class_exists('Download')) {
@@ -558,9 +558,9 @@ if ($customerID > 0) {
             $cHinweis .= Shop::Lang()->get('csrfValidationFailed', 'global');
             Shop::Container()->getLogService()->error('CSRF-Warnung fuer Account-Loeschung und kKunde ' . $customerID);
         } else {
-            \Session\Session::getCustomer()->deleteAccount(
+            \Session\Frontend::getCustomer()->deleteAccount(
                 GeneralDataProtection\Journal::ISSUER_TYPE_CUSTOMER,
-                \Session\Session::getCustomer()->getID(),
+                \Session\Frontend::getCustomer()->getID(),
                 false,
                 true
             );

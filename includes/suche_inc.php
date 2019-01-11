@@ -76,7 +76,8 @@ function mappingBeachten($query, int $kSpracheExt = 0)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $kSprache = ($kSpracheExt > 0) ? $kSpracheExt : Sprache::getDefaultLanguage(true)->kSprache;
     if (strlen($query) > 0) {
-        $SuchausdruckmappingTMP = Shop::Container()->getDB()->select(
+        $db      = Shop::Container()->getDB();
+        $tmp     = $db->select(
             'tsuchanfragemapping',
             'kSprache',
             $kSprache,
@@ -87,32 +88,29 @@ function mappingBeachten($query, int $kSpracheExt = 0)
             false,
             'cSucheNeu'
         );
-        $Suchausdruckmapping    = $SuchausdruckmappingTMP;
-        while ($SuchausdruckmappingTMP !== null
-            && isset($SuchausdruckmappingTMP->cSucheNeu)
-            && strlen($SuchausdruckmappingTMP->cSucheNeu) > 0
-        ) {
-            $SuchausdruckmappingTMP = Shop::Container()->getDB()->select(
+        $mapping = $tmp;
+        while ($tmp !== null && isset($tmp->cSucheNeu) && strlen($tmp->cSucheNeu) > 0) {
+            $tmp = $db->select(
                 'tsuchanfragemapping',
                 'kSprache',
                 $kSprache,
                 'cSuche',
-                $SuchausdruckmappingTMP->cSucheNeu,
+                $tmp->cSucheNeu,
                 null,
                 null,
                 false,
                 'cSucheNeu'
             );
-            if (isset($SuchausdruckmappingTMP->cSucheNeu) && strlen($SuchausdruckmappingTMP->cSucheNeu) > 0) {
-                $Suchausdruckmapping = $SuchausdruckmappingTMP;
+            if (isset($tmp->cSucheNeu) && strlen($tmp->cSucheNeu) > 0) {
+                $mapping = $tmp;
             }
         }
-        if (isset($Suchausdruckmapping->cSucheNeu) && strlen($Suchausdruckmapping->cSucheNeu) > 0) {
-            $query = $Suchausdruckmapping->cSucheNeu;
+        if (isset($mapping->cSucheNeu) && strlen($mapping->cSucheNeu) > 0) {
+            $query = $mapping->cSucheNeu;
         }
     }
-    if (isset($Suchausdruckmapping->cSucheNeu) && strlen($Suchausdruckmapping->cSucheNeu) > 0) {
-        $query = $Suchausdruckmapping->cSucheNeu;
+    if (isset($mapping->cSucheNeu) && strlen($mapping->cSucheNeu) > 0) {
+        $query = $mapping->cSucheNeu;
     }
 
     return $query;

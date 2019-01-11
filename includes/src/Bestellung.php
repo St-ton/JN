@@ -405,9 +405,10 @@ class Bestellung
         if (!($this->kWarenkorb > 0 || $nZahlungExtern > 0)) {
             return $this;
         }
+        $db               = Shop::Container()->getDB();
         $warenwert        = null;
         $date             = null;
-        $this->Positionen = Shop::Container()->getDB()->selectAll(
+        $this->Positionen = $db->selectAll(
             'twarenkorbpos',
             'kWarenkorb',
             (int)$this->kWarenkorb,
@@ -442,19 +443,19 @@ class Bestellung
             }
         }
 
-        $bestellstatus          = Shop::Container()->getDB()->select(
+        $bestellstatus          = $db->select(
             'tbestellstatus',
             'kBestellung',
             (int)$this->kBestellung
         );
         $this->BestellstatusURL = Shop::getURL() . '/status.php?uid=' . $bestellstatus->cUID;
-        $warenwert              = Shop::Container()->getDB()->query(
+        $warenwert              = $db->query(
             'SELECT sum(((fPreis*fMwSt)/100+fPreis)*nAnzahl) AS wert
                 FROM twarenkorbpos
                 WHERE kWarenkorb = ' . (int)$this->kWarenkorb,
             \DB\ReturnType::SINGLE_OBJECT
         );
-        $date                   = Shop::Container()->getDB()->query(
+        $date                   = $db->query(
             "SELECT date_format(dVersandDatum,'%d.%m.%Y') AS dVersanddatum_de,
                 date_format(dBezahltDatum,'%d.%m.%Y') AS dBezahldatum_de,
                 date_format(dErstellt,'%d.%m.%Y %H:%i:%s') AS dErstelldatum_de,
@@ -475,7 +476,7 @@ class Bestellung
         // Hole Netto- oder Bruttoeinstellung der Kundengruppe
         $nNettoPreis = 0;
         if ($this->kBestellung > 0) {
-            $oKundengruppeBestellung = Shop::Container()->getDB()->query(
+            $oKundengruppeBestellung = $db->query(
                 'SELECT tkundengruppe.nNettoPreise
                     FROM tkundengruppe
                     JOIN tbestellung 
@@ -492,7 +493,7 @@ class Bestellung
         $this->cBestellwertLocalized = Preise::getLocalizedPriceString($warenwert->wert ?? 0, $htmlWaehrung);
         $this->Status                = lang_bestellstatus((int)$this->cStatus);
         if ($this->kWaehrung > 0) {
-            $this->Waehrung = Shop::Container()->getDB()->select('twaehrung', 'kWaehrung', (int)$this->kWaehrung);
+            $this->Waehrung = $db->select('twaehrung', 'kWaehrung', (int)$this->kWaehrung);
             if ($this->fWaehrungsFaktor !== null && $this->fWaehrungsFaktor != 1 && isset($this->Waehrung->fFaktor)) {
                 $this->Waehrung->fFaktor = $this->fWaehrungsFaktor;
             }
@@ -507,7 +508,7 @@ class Bestellung
             );
             if ($this->kZahlungsart > 0) {
                 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-                $this->Zahlungsart = Shop::Container()->getDB()->select(
+                $this->Zahlungsart = $db->select(
                     'tzahlungsart',
                     'kZahlungsart',
                     (int)$this->kZahlungsart
@@ -579,7 +580,7 @@ class Bestellung
                     $this->oUpload_arr = Upload::gibBestellungUploads($this->kBestellung);
                 }
                 if ($position->kWarenkorbPos > 0) {
-                    $position->WarenkorbPosEigenschaftArr = Shop::Container()->getDB()->selectAll(
+                    $position->WarenkorbPosEigenschaftArr = $db->selectAll(
                         'twarenkorbposeigenschaft',
                         'kWarenkorbPos',
                         (int)$position->kWarenkorbPos
@@ -610,7 +611,7 @@ class Bestellung
                 );
             }
             if (!isset($position->kSteuerklasse)) {
-                $taxClass = Shop::Container()->getDB()->select('tsteuersatz', 'fSteuersatz', $position->fMwSt);
+                $taxClass = $db->select('tsteuersatz', 'fSteuersatz', $position->fMwSt);
                 if ($taxClass !== null) {
                     $position->kSteuerklasse = $taxClass->kSteuerklasse;
                 }
@@ -716,7 +717,7 @@ class Bestellung
         $oData->cPLZ             = $this->oRechnungsadresse->cPLZ ?? ($this->Lieferadresse->cPLZ ?? '');
         $this->oLieferschein_arr = [];
         if ((int)$this->kBestellung > 0) {
-            $kLieferschein_arr = Shop::Container()->getDB()->selectAll(
+            $kLieferschein_arr = $db->selectAll(
                 'tlieferschein',
                 'kInetBestellung',
                 (int)$this->kBestellung,
@@ -818,6 +819,7 @@ class Bestellung
     }
 
     /**
+     * @deprecated since 5.0.0
      * @return $this
      */
     public function machGoogleAnalyticsReady(): self

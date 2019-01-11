@@ -47,12 +47,12 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
 } elseif ($link->getLinkType() === LINKTYP_AGB) {
     $smarty->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
         Shop::getLanguage(),
-        \Session\Session::getCustomerGroup()->getID()
+        \Session\Frontend::getCustomerGroup()->getID()
     ));
 } elseif ($link->getLinkType() === LINKTYP_WRB) {
     $smarty->assign('WRB', Shop::Container()->getLinkService()->getAGBWRB(
         Shop::getLanguage(),
-        \Session\Session::getCustomerGroup()->getID()
+        \Session\Frontend::getCustomerGroup()->getID()
     ));
 } elseif ($link->getLinkType() === LINKTYP_VERSAND) {
     if (isset($_POST['land'], $_POST['plz']) && !ShippingMethod::getShippingCosts($_POST['land'], $_POST['plz'])) {
@@ -61,7 +61,7 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     $smarty->assign(
         'laender',
         ShippingMethod::getPossibleShippingCountries(
-            \Session\Session::getCustomerGroup()->getID()
+            \Session\Frontend::getCustomerGroup()->getID()
         )
     );
 } elseif ($link->getLinkType() === LINKTYP_LIVESUCHE) {

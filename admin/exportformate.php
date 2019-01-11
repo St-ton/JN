@@ -256,11 +256,12 @@ if ($step === 'neuer Export') {
         }
         $smarty->assign('Exportformat', $exportformat);
     }
+    $gettext = \Shop::Container()->getGetText();
     $configs = getAdminSectionSettings(CONF_EXPORTFORMATE);
-    \Shop::Container()->getGetText()->localizeConfigs($configs);
+    $gettext->localizeConfigs($configs);
 
     foreach ($configs as $config) {
-        \Shop::Container()->getGetText()->localizeConfigValues($config, $config->ConfWerte);
+        $gettext->localizeConfigValues($config, $config->ConfWerte);
     }
 
     $smarty->assign('Conf', $configs);

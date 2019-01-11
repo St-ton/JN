@@ -108,7 +108,8 @@ function pruefeKategorieSichtbarkeit(int $customerGroupID)
     if (!$customerGroupID) {
         return false;
     }
-    $cacheID      = 'catlist_p_' . Shop::Container()->getCache()->getBaseID(
+    $cache        = Shop::Container()->getCache();
+    $cacheID      = 'catlist_p_' . $cache->getBaseID(
         false,
         false,
         $customerGroupID,
@@ -116,7 +117,7 @@ function pruefeKategorieSichtbarkeit(int $customerGroupID)
         false
     );
     $save         = false;
-    $categoryList = Shop::Container()->getCache()->get($cacheID);
+    $categoryList = $cache->get($cacheID);
     $useCache     = true;
     if ($categoryList === false) {
         $useCache     = false;
@@ -156,8 +157,8 @@ function pruefeKategorieSichtbarkeit(int $customerGroupID)
     }
     if ($save === true) {
         if ($useCache === true) {
-            //category list has changed - write back changes to cache
-            Shop::Container()->getCache()->set($cacheID, $categoryList, [CACHING_GROUP_CATEGORY]);
+            // category list has changed - write back changes to cache
+            $cache->set($cacheID, $categoryList, [CACHING_GROUP_CATEGORY]);
         } else {
             $_SESSION['oKategorie_arr'] = $categoryList;
         }
@@ -175,12 +176,13 @@ function setzeWarenkorbPersInWarenkorb(int $customerID): bool
     if (!$customerID) {
         return false;
     }
-    $cart = \Session\Session::getCart();
+    $cart = \Session\Frontend::getCart();
+    $db   = Shop::Container()->getDB();
     foreach ($cart->PositionenArr as $oWarenkorbPos) {
         if ($oWarenkorbPos->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
             $kArtikelGeschenk = (int)$oWarenkorbPos->kArtikel;
             // Pruefen ob der Artikel wirklich ein Gratis Geschenk ist
-            $oArtikelGeschenk = Shop::Container()->getDB()->queryPrepared(
+            $oArtikelGeschenk = $db->queryPrepared(
                 'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand,
                        tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
                     FROM tartikelattribut
@@ -226,7 +228,7 @@ function setzeWarenkorbPersInWarenkorb(int $customerID): bool
         if ($oWarenkorbPersPos->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
             $kArtikelGeschenk = (int)$oWarenkorbPersPos->kArtikel;
             // Pruefen ob der Artikel wirklich ein Gratis Geschenk ist
-            $oArtikelGeschenk = Shop::Container()->getDB()->queryPrepared(
+            $oArtikelGeschenk = $db->queryPrepared(
                 'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand,
                        tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
                     FROM tartikelattribut
@@ -287,15 +289,16 @@ function setzeWarenkorbPersInWarenkorb(int $customerID): bool
  */
 function pruefeWarenkorbArtikelSichtbarkeit(int $customerGroupID): void
 {
-    $cart = \Session\Session::getCart();
+    $cart = \Session\Frontend::getCart();
     if ($customerGroupID <= 0 || empty($cart->PositionenArr)) {
         return;
     }
+    $db = Shop::Container()->getDB();
     foreach ($cart->PositionenArr as $i => $oPosition) {
         if ($oPosition->nPosTyp !== C_WARENKORBPOS_TYP_ARTIKEL || !empty($oPosition->cUnique)) {
             continue;
         }
-        $visibility = Shop::Container()->getDB()->query(
+        $visibility = $db->query(
             'SELECT kArtikel
                 FROM tartikelsichtbarkeit
                 WHERE kArtikel = ' . (int)$oPosition->kArtikel . '
@@ -309,7 +312,7 @@ function pruefeWarenkorbArtikelSichtbarkeit(int $customerGroupID): void
         ) {
             unset($cart->PositionenArr[$i]);
         }
-        $price = Shop::Container()->getDB()->query(
+        $price = $db->query(
             'SELECT fVKNetto
                FROM tpreise
                WHERE kArtikel = ' . (int)$oPosition->kArtikel . '
@@ -338,7 +341,8 @@ function fuehreLoginAus($userLogin, $passLogin): void
         $cHinweis .= Shop::Lang()->get('csrfValidationFailed');
         Shop::Container()->getLogService()->warning('CSRF-Warnung für Login: ' . $_POST['login']);
     } else {
-        $cart           = \Session\Session::getCart();
+        $cart           = \Session\Frontend::getCart();
+        $db             = Shop::Container()->getDB();
         $config         = Shop::getSettings([CONF_GLOBAL, CONF_KAUFABWICKLUNG, CONF_KUNDEN]);
         $loginCaptchaOK = $Kunde->verifyLoginCaptcha($_POST);
         if ($loginCaptchaOK === true) {
@@ -354,11 +358,10 @@ function fuehreLoginAus($userLogin, $passLogin): void
             $oKupons[] = !empty($_SESSION['oVersandfreiKupon']) ? $_SESSION['oVersandfreiKupon'] : null;
             $oKupons[] = !empty($_SESSION['NeukundenKupon']) ? $_SESSION['NeukundenKupon'] : null;
             $oKupons[] = !empty($_SESSION['Kupon']) ? $_SESSION['Kupon'] : null;
-            //create new session id to prevent session hijacking
-            session_regenerate_id(false);
-            //in tbesucher kKunde setzen
+            // create new session id to prevent session hijacking
+            session_regenerate_id();
             if (isset($_SESSION['oBesucher']->kBesucher) && $_SESSION['oBesucher']->kBesucher > 0) {
-                Shop::Container()->getDB()->update(
+                $db->update(
                     'tbesucher',
                     'kBesucher',
                     (int)$_SESSION['oBesucher']->kBesucher,
@@ -382,7 +385,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
                 if (isset($_SESSION['Kampagnenbesucher'])) {
                     Kampagne::setCampaignAction(KAMPAGNE_DEF_LOGIN, $Kunde->kKunde, 1.0); // Login
                 }
-                $session = \Session\Session::getInstance();
+                $session = \Session\Frontend::getInstance();
                 $session->setCustomer($Kunde);
                 // Setzt aktuelle Wunschliste (falls vorhanden) vom Kunden in die Session
                 Wunschliste::persistInSession();
@@ -403,7 +406,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
                             // Gratisgeschenk in Warenkorb legen
                             if ((int)$oWarenkorbPersPos->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                                 $kArtikelGeschenk = (int)$oWarenkorbPersPos->kArtikel;
-                                $oArtikelGeschenk = Shop::Container()->getDB()->queryPrepared(
+                                $oArtikelGeschenk = $db->queryPrepared(
                                     'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
                                         tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
                                         FROM tartikelattribut
@@ -438,7 +441,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
                                     $oKonfigitem->getSteuerklasse(),
                                     C_WARENKORBPOS_TYP_ARTIKEL,
                                     false,
-                                    !\Session\Session::getCustomerGroup()->isMerchant(),
+                                    !\Session\Frontend::getCustomerGroup()->isMerchant(),
                                     '',
                                     $oWarenkorbPersPos->cUnique,
                                     $oWarenkorbPersPos->kKonfigitem,

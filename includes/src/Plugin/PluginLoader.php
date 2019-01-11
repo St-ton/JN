@@ -55,36 +55,60 @@ class PluginLoader extends AbstractLoader
     /**
      * @inheritdoc
      */
-    public function init(int $id, bool $invalidateCache = false)
+    public function init(int $id, bool $invalidateCache = false, int $languageID = null)
     {
+        if (($languageID = $languageID ?? \Shop::getLanguageID()) === 0) {
+            $languageID = \Shop::Lang()::getDefaultLanguage()->kSprache;
+        }
+        $languageCode  = \Shop::Lang()->getIsoFromLangID($languageID)->cISO;
+        $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id . '_' . $languageID;
         if ($this->plugin === null) {
             $this->plugin = new Plugin();
         }
-        $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id;// . '_' . \Shop::getLanguageID();
+        $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id . '_' . $languageID;
         if ($invalidateCache === true) {
             $this->cache->flush('hook_list');
             $this->cache->flushTags([\CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $id]);
+        } elseif (($plugin = $this->loadFromCache()) !== null) {
+            $this->plugin = $plugin;
+
+            return $this->plugin;
         }
-//        elseif (($plugin = $this->cache->get($this->cacheID)) !== false) {
-//            foreach (\get_object_vars($plugin) as $k => $v) {
-//                $this->plugin->$k = $v;
-//            }
-//
-//            return $this->plugin;
-//        }
         $obj = $this->db->select('tplugin', 'kPlugin', $id);
         if ($obj === null) {
             throw new \InvalidArgumentException('Cannot find plugin with ID ' . $id);
         }
 
-        return $this->loadFromObject($obj);
+        return $this->loadFromObject($obj, $languageCode);
     }
 
     /**
      * @inheritdoc
      */
-    public function loadFromObject($obj): Plugin
+    public function saveToCache(AbstractExtension $extension): bool
     {
+        return $this->cacheID !== null
+            ? $this->cache->set($this->cacheID, $extension, [\CACHING_GROUP_PLUGIN, $extension->getCache()->getGroup()])
+            : false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function loadFromCache(): ?AbstractExtension
+    {
+        return ($plugin = $this->cache->get($this->cacheID)) === false ? null : $plugin;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function loadFromObject($obj, string $currentLanguageCode): Plugin
+    {
+        $currentLanguageCode = $currentLanguageCode
+            ?? \Shop::getLanguageCode()
+            ?? \Sprache::getDefaultLanguage()->cISO;
+
         $this->plugin->setID((int)$obj->kPlugin);
         $this->plugin->setPluginID($obj->cPluginID);
         $this->plugin->setState((int)$obj->nStatus);
@@ -105,12 +129,12 @@ class PluginLoader extends AbstractLoader
         $this->loadMarkdownFiles($this->plugin->getPaths()->getBasePath(), $this->plugin->getMeta());
         $this->loadAdminMenu($this->plugin);
         $this->plugin->setConfig($this->loadConfig($this->plugin->getPaths()->getAdminPath(), $this->plugin->getID()));
-        $this->plugin->setLocalization($this->loadLocalization($this->plugin->getID()));
+        $this->plugin->setLocalization($this->loadLocalization($this->plugin->getID(), $currentLanguageCode));
         $this->plugin->setLinks($this->loadLinks($this->plugin->getID()));
         $this->plugin->setWidgets($this->loadWidgets($this->plugin));
         $this->plugin->setPaymentMethods($this->loadPaymentMethods($this->plugin));
         $this->plugin->setMailTemplates($this->loadMailTemplates($this->plugin));
-        $this->cache();
+        $this->saveToCache($this->plugin);
 
         return $this->plugin;
     }
@@ -126,8 +150,8 @@ class PluginLoader extends AbstractLoader
             $widget->className = \str_replace($widget->namespace, 'Widget', $widget->className);
             $widget->namespace = null;
             $widget->classFile = \str_replace(
-                PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_WIDGET,
-                PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_WIDGET . 'class.Widget',
+                \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_WIDGET,
+                \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_WIDGET . 'class.Widget',
                 $widget->classFile
             );
         }
@@ -154,16 +178,6 @@ class PluginLoader extends AbstractLoader
     }
 
     /**
-     * @return bool
-     */
-    protected function cache(): bool
-    {
-        return $this->cacheID !== null
-            ? $this->cache->set($this->cacheID, $this->plugin, [\CACHING_GROUP_PLUGIN, $this->plugin->pluginCacheGroup])
-            : false;
-    }
-
-    /**
      * @inheritdoc
      */
     protected function loadPaths(string $pluginDir): Paths
@@ -184,7 +198,7 @@ class PluginLoader extends AbstractLoader
         $paths->setLicencePath($basePath . $versioned . \PFAD_PLUGIN_LICENCE);
         $paths->setUninstaller($basePath . $versioned . \PFAD_PLUGIN_UNINSTALL);
         $paths->setPortletsPath($basePath . $versioned . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS);
-        $paths->setExportPath($basePath . $versioned . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS);
+        $paths->setExportPath($basePath . $versioned . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_EXPORTFORMAT);
 
         return $paths;
     }
@@ -203,7 +217,7 @@ class PluginLoader extends AbstractLoader
 
             $configCompatItem          = new \stdClass();
             $configCompatItem->kPlugin = $id;
-            $configCompatItem->cName   = $option->niceName;
+            $configCompatItem->cName   = $option->valueID;
             $configCompatItem->cWert   = $option->value;
             $configCompat[]            = $configCompatItem;
 

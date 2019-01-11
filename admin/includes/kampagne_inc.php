@@ -258,10 +258,10 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
     );
     // Vorbelegen
     $oStatsAssoc_arr = [];
-    if (is_array($cZeitraum_arr['cDatum'])
-        && count($cZeitraum_arr['cDatum']) > 0
-        && is_array($oKampagneDef_arr)
+    if (is_array($oKampagneDef_arr)
+        && is_array($cZeitraum_arr['cDatum'])
         && count($oKampagneDef_arr) > 0
+        && count($cZeitraum_arr['cDatum']) > 0
     ) {
         foreach ($cZeitraum_arr['cDatum'] as $i => $cZeitraum) {
             if (!isset($oStatsAssoc_arr[$cZeitraum]['cDatum'])) {
@@ -276,8 +276,8 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
     // Finde den maximalen Wert heraus, um die Höhe des Graphen zu ermitteln
     $nGraphMaxAssoc_arr = []; // Assoc Array key = kKampagneDef
     if (is_array($oStats_arr)
-        && count($oStats_arr) > 0
         && is_array($oKampagneDef_arr)
+        && count($oStats_arr) > 0
         && count($oKampagneDef_arr) > 0
     ) {
         foreach ($oStats_arr as $oStats) {
@@ -800,7 +800,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 if (is_array($data) && count($data) > 0) {
-                    Session\Session::getCustomerGroup()->setMayViewPrices(1);
+                    Session\Frontend::getCustomerGroup()->setMayViewPrices(1);
                     $count = count($data);
                     for ($i = 0; $i < $count; $i++) {
                         if (isset($data[$i]->fVKNetto) && $data[$i]->fVKNetto > 0) {
@@ -1507,11 +1507,8 @@ function GetTypes()
 function GetKampTypeName($Type)
 {
     $Serienames = GetTypes();
-    if (isset($Serienames[$Type])) {
-        return $Serienames[$Type];
-    }
 
-    return '';
+    return $Serienames[$Type] ?? '';
 }
 
 /**

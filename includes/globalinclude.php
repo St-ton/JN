@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Debug\DataCollector\Smarty;
 use Helpers\PHPSettings;
 use JTLShop\SemVer\Version;
 
@@ -89,6 +90,8 @@ if (PHP_SAPI !== 'cli'
 }
 
 if (!JTL_INCLUDE_ONLY_DB) {
+    $debugbar = Shop::Container()->getDebugBar();
+
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
@@ -99,8 +102,8 @@ if (!JTL_INCLUDE_ONLY_DB) {
     $oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
     executeHook(HOOK_GLOBALINCLUDE_INC);
     $session             = (defined('JTLCRON') && JTLCRON === true)
-        ? \Session\Session::getInstance(true, true, 'JTLCRON')
-        : \Session\Session::getInstance();
+        ? \Session\Frontend::getInstance(true, true, 'JTLCRON')
+        : \Session\Frontend::getInstance();
     $bAdminWartungsmodus = false;
     if ($config['wartungsmodus_aktiviert'] === 'Y' && basename($_SERVER['SCRIPT_FILENAME']) !== 'wartung.php') {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
@@ -114,4 +117,5 @@ if (!JTL_INCLUDE_ONLY_DB) {
     Sprache::getInstance();
     Shop::bootstrap();
     require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
+    $debugbar->addCollector(new Smarty(Shop::Smarty()));
 }

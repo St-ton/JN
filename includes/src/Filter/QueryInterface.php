@@ -7,7 +7,7 @@
 namespace Filter;
 
 /**
- * Class Query
+ * Interface QueryInterface
  * @package Filter
  */
 interface QueryInterface

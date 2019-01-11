@@ -21,7 +21,7 @@ Shop::setPageType(PAGE_BESTELLVORGANG);
 $Einstellungen = Shopsetting::getInstance()->getAll();
 $step          = 'accountwahl';
 $cHinweis      = '';
-$cart          = \Session\Session::getCart();
+$cart          = \Session\Frontend::getCart();
 unset($_SESSION['ajaxcheckout']);
 // Loginbenutzer?
 if (isset($_POST['login']) && (int)$_POST['login'] === 1) {
@@ -118,7 +118,7 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     if (!isset($_SESSION['Versandart']) || !is_object($_SESSION['Versandart'])) {
         $land          = $_SESSION['Lieferadresse']->cLand ?? $_SESSION['Kunde']->cLand;
         $plz           = $_SESSION['Lieferadresse']->cPLZ ?? $_SESSION['Kunde']->cPLZ;
-        $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+        $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
 
         $oVersandart_arr  = ShippingMethod::getPossibleShippingMethods(
             $land,
@@ -228,7 +228,7 @@ if ($step === 'Bestaetigung'
         $_SESSION['Bestellung']->GuthabenNutzen   = 1;
         $_SESSION['Bestellung']->fGuthabenGenutzt = min(
             $_SESSION['Kunde']->fGuthaben,
-            \Session\Session::getCart()->gibGesamtsummeWaren(true, false)
+            \Session\Frontend::getCart()->gibGesamtsummeWaren(true, false)
         );
     }
     Warenkorb::refreshChecksum($cart);
@@ -245,7 +245,7 @@ Shop::Smarty()->assign(
     'AGB',
     Shop::Container()->getLinkService()->getAGBWRB(
         Shop::getLanguage(),
-        \Session\Session::getCustomerGroup()->getID()
+        \Session\Frontend::getCustomerGroup()->getID()
     )
 )
     ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))

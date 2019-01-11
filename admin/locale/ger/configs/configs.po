@@ -118,18 +118,6 @@ msgstr "Neues Kundenkonto aktiv"
 msgid "global_kundenkonto_aktiv_desc"
 msgstr "Hier legen Sie fest, ob Kundenkonten erst in JTL-Wawi aktiviert werden müssen oder direkt nach Erstellung in JTL-Shop aktiv sind und zum Kauf verwendet werden können."
 
-msgid "global_google_analytics_id_name"
-msgstr "Google Analytics ID"
-
-msgid "global_google_analytics_id_desc"
-msgstr "Falls Sie einen Google Analytics Account haben, tragen Sie hier Ihre ID ein (z.B. UA-xxxxxxx-x)"
-
-msgid "global_google_ecommerce_name"
-msgstr "Google Analytics eCommerce-Erweiterung nutzen"
-
-msgid "global_google_ecommerce_desc"
-msgstr "Hier legen Sie fest, ob die eCommerce-Erweiterung von Google Analytics verwendet werden soll. In diesem Fall trackt Google alle Ihre Verkäufe."
-
 msgid "kaufabwicklung_ssl_nutzen_name"
 msgstr "Automatischer Seitenwechsel zwischen http / https"
 

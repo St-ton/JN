@@ -17,11 +17,6 @@ use function Functional\group;
 class Localization
 {
     /**
-     * @var array
-     */
-    private $translations = [];
-
-    /**
      * @var Collection
      */
     private $langVars;
@@ -33,11 +28,12 @@ class Localization
 
     /**
      * Localization constructor.
+     * @param string $currentLanguageCode
      */
-    public function __construct()
+    public function __construct(string $currentLanguageCode)
     {
         $this->langVars            = new Collection();
-        $this->currentLanguageCode = \Shop::getLanguageCode();
+        $this->currentLanguageCode = $currentLanguageCode;
     }
 
     /**
@@ -68,10 +64,6 @@ class Localization
             }
             $this->langVars->push($var);
         }
-        $iso = \strtoupper($this->currentLanguageCode);
-        foreach ($this->langVars as $var) {
-            $this->translations[$var->name] = $var->values[$iso] ?? null;
-        }
 
         return $this;
     }
@@ -94,15 +86,18 @@ class Localization
      */
     public function getTranslations(): array
     {
-        return $this->translations;
+        $iso = \strtoupper($this->currentLanguageCode);
+
+        return $this->langVars->mapWithKeys(function ($item) use ($iso) {
+            return [$item->name => $item->values[$iso] ?? null];
+        })->toArray();
     }
 
     /**
-     * @param array $translations
+     * compatability dummy
      */
-    public function setTranslations(array $translations): void
+    public function setTranslations(): void
     {
-        $this->translations = $translations;
     }
 
     /**

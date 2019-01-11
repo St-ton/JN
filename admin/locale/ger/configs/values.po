@@ -100,12 +100,6 @@ msgstr "Sofort aktiv und nutzbar"
 msgid "global_kundenkonto_aktiv_value(A)"
 msgstr "Muss in JTL-Wawi aktiviert werden"
 
-msgid "global_google_ecommerce_value(0)"
-msgstr "Nein"
-
-msgid "global_google_ecommerce_value(1)"
-msgstr "Ja"
-
 msgid "kaufabwicklung_ssl_nutzen_value(N)"
 msgstr "Kein automatischer Wechsel"
 

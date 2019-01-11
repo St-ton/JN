@@ -56,4 +56,3 @@
         {include file='checkout/inc_trustedshops_excellence.tpl'}
     </div>
 {/if}
-{include file='checkout/inc_conversion_tracking.tpl'}

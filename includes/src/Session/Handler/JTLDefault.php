@@ -7,28 +7,42 @@
 namespace Session\Handler;
 
 /**
- * Class SessionHandlerJTL
+ * Class JTLDefault
  * @package Session\Handler
  */
-class SessionHandlerJTL extends \SessionHandler
+class JTLDefault extends \SessionHandler implements JTLHandlerInterface
 {
     /**
      * @var array|null
      */
-    public $sessionData;
+    protected $sessionData;
 
     /**
-     * @return array|null
+     * @inheritdoc
      */
-    public function getAll()
+    public function setSessionData(&$data): void
+    {
+        $this->sessionData = &$data;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSessionData(): ?array
     {
         return $this->sessionData;
     }
 
     /**
-     * @param string $key
-     * @param null $default
-     * @return array|null
+     * @inheritdoc
+     */
+    public function getAll(): ?array
+    {
+        return $this->getSessionData();
+    }
+
+    /**
+     * @inheritdoc
      */
     public function get($key, $default = null)
     {
@@ -50,9 +64,7 @@ class SessionHandlerJTL extends \SessionHandler
     }
 
     /**
-     * @param string $name
-     * @param mixed $value
-     * @return mixed
+     * @inheritdoc
      */
     public function set($name, $value)
     {
@@ -60,10 +72,7 @@ class SessionHandlerJTL extends \SessionHandler
     }
 
     /**
-     * @param array $array
-     * @param string $key
-     * @param mixed $value
-     * @return mixed
+     * @inheritdoc
      */
     public static function array_set(&$array, $key, $value)
     {
@@ -86,12 +95,9 @@ class SessionHandlerJTL extends \SessionHandler
     }
 
     /**
-     * put a key/value pair or array of key/value pairs in the session.
-     *
-     * @param  string|array $key
-     * @param  mixed|null   $value
+     * @inheritdoc
      */
-    public function put($key, $value = null)
+    public function put($key, $value = null): void
     {
         if (!\is_array($key)) {
             $key = [$key => $value];
@@ -102,13 +108,9 @@ class SessionHandlerJTL extends \SessionHandler
     }
 
     /**
-     * push a value onto a session array.
-     *
-     * @param  string $key
-     * @param  mixed  $value
-     * @return void
+     * @inheritdoc
      */
-    public function push($key, $value)
+    public function push($key, $value): void
     {
         $array   = $this->get($key, []);
         $array[] = $value;

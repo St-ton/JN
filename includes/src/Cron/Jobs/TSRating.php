@@ -22,15 +22,15 @@ class TSRating extends Job
     public function start(QueueEntry $queueEntry): JobInterface
     {
         parent::start($queueEntry);
-        $cValidSprachISO_arr = ['de', 'en', 'fr', 'pl', 'es'];
-        foreach ($cValidSprachISO_arr as $cValidSprachISO) {
-            $ts     = new \TrustedShops(-1, $cValidSprachISO);
-            $rating = $ts->holeKundenbewertungsstatus($cValidSprachISO);
+        $validLanguageCodes = ['de', 'en', 'fr', 'pl', 'es'];
+        foreach ($validLanguageCodes as $languageCode) {
+            $ts     = new \TrustedShops(-1, $languageCode);
+            $rating = $ts->holeKundenbewertungsstatus($languageCode);
             if ((int)$rating->nStatus === 1 && \strlen($rating->cTSID) > 0) {
                 $res = $ts->aenderKundenbewertungsstatus(
                     $rating->cTSID,
                     1,
-                    $cValidSprachISO
+                    $languageCode
                 );
                 if ($res !== 1) {
                     $ts->aenderKundenbewertungsstatusDB(

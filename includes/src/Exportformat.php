@@ -732,7 +732,7 @@ class Exportformat
             ->setCompileDir(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR)
             ->registerResource('db', new SmartyResourceNiceDB($this->db, \Smarty\ContextType::EXPORT))
             ->assign('URL_SHOP', Shop::getURL())
-            ->assign('Waehrung', \Session\Session::getCurrency())
+            ->assign('Waehrung', \Session\Frontend::getCurrency())
             ->assign('Einstellungen', $this->getConfig());
         // disable php execution in export format templates for security
         if (EXPORTFORMAT_USE_SECURITY) {
@@ -752,7 +752,7 @@ class Exportformat
             $this->oldSession->Kundengruppe = $_SESSION['Kundengruppe'];
             $this->oldSession->kSprache     = $_SESSION['kSprache'];
             $this->oldSession->cISO         = $_SESSION['cISOSprache'];
-            $this->oldSession->Waehrung     = \Session\Session::getCurrency();
+            $this->oldSession->Waehrung     = \Session\Frontend::getCurrency();
         }
         $this->currency = $this->kWaehrung > 0
             ? new Currency($this->kWaehrung)

@@ -7,7 +7,8 @@
 namespace Filter;
 
 /**
- * Class Metadata
+ * Interface MetadataInterface
+ * @package Filter
  */
 interface MetadataInterface
 {

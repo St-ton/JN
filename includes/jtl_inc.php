@@ -176,7 +176,7 @@ function setzeWarenkorbPersInWarenkorb(int $customerID): bool
     if (!$customerID) {
         return false;
     }
-    $cart = \Session\Session::getCart();
+    $cart = \Session\Frontend::getCart();
     $db   = Shop::Container()->getDB();
     foreach ($cart->PositionenArr as $oWarenkorbPos) {
         if ($oWarenkorbPos->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
@@ -289,7 +289,7 @@ function setzeWarenkorbPersInWarenkorb(int $customerID): bool
  */
 function pruefeWarenkorbArtikelSichtbarkeit(int $customerGroupID): void
 {
-    $cart = \Session\Session::getCart();
+    $cart = \Session\Frontend::getCart();
     if ($customerGroupID <= 0 || empty($cart->PositionenArr)) {
         return;
     }
@@ -341,8 +341,8 @@ function fuehreLoginAus($userLogin, $passLogin): void
         $cHinweis .= Shop::Lang()->get('csrfValidationFailed');
         Shop::Container()->getLogService()->warning('CSRF-Warnung für Login: ' . $_POST['login']);
     } else {
+        $cart           = \Session\Frontend::getCart();
         $db             = Shop::Container()->getDB();
-        $cart           = \Session\Session::getCart();
         $config         = Shop::getSettings([CONF_GLOBAL, CONF_KAUFABWICKLUNG, CONF_KUNDEN]);
         $loginCaptchaOK = $Kunde->verifyLoginCaptcha($_POST);
         if ($loginCaptchaOK === true) {
@@ -385,7 +385,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
                 if (isset($_SESSION['Kampagnenbesucher'])) {
                     Kampagne::setCampaignAction(KAMPAGNE_DEF_LOGIN, $Kunde->kKunde, 1.0); // Login
                 }
-                $session = \Session\Session::getInstance();
+                $session = \Session\Frontend::getInstance();
                 $session->setCustomer($Kunde);
                 // Setzt aktuelle Wunschliste (falls vorhanden) vom Kunden in die Session
                 Wunschliste::persistInSession();
@@ -441,7 +441,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
                                     $oKonfigitem->getSteuerklasse(),
                                     C_WARENKORBPOS_TYP_ARTIKEL,
                                     false,
-                                    !\Session\Session::getCustomerGroup()->isMerchant(),
+                                    !\Session\Frontend::getCustomerGroup()->isMerchant(),
                                     '',
                                     $oWarenkorbPersPos->cUnique,
                                     $oWarenkorbPersPos->kKonfigitem,

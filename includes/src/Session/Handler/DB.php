@@ -10,10 +10,10 @@ use DB\DbInterface;
 use DB\ReturnType;
 
 /**
- * Class SessionHandlerDB
+ * Class DB
  * @package Session\Handler
  */
-class SessionHandlerDB extends SessionHandlerJTL
+class DB extends JTLDefault
 {
     /**
      * @var int

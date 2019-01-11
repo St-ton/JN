@@ -39,8 +39,8 @@ $debugbar         = Shop::Container()->getDebugBar();
 $debugbarRenderer = $debugbar->getJavascriptRenderer();
 $kKundengruppe    = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
     ? $_SESSION['Kunde']->kKundengruppe
-    : \Session\Session::getCustomerGroup()->getID();
-$cKundenherkunft  = (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0)
+    : \Session\Frontend::getCustomerGroup()->getID();
+$cKundenherkunft = (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0)
     ? $_SESSION['Kunde']->cLand
     : '';
 
@@ -93,7 +93,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('ShopURL', $shopURL)
        ->assign('imageBaseURL', Shop::getImageBaseURL())
        ->assign('ShopURLSSL', Shop::getURL(true))
-       ->assign('NettoPreise', \Session\Session::getCustomerGroup()->getIsMerchant())
+       ->assign('NettoPreise', \Session\Frontend::getCustomerGroup()->getIsMerchant())
        ->assign('cShopName', $cShopName)
        ->assign('KaufabwicklungsURL', $linkHelper->getStaticRoute('bestellvorgang.php'))
        ->assign('WarenkorbArtikelanzahl', $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]))

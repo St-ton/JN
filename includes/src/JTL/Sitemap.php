@@ -8,7 +8,7 @@ namespace JTL;
 
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
-use Session\Session;
+use Session\Frontend;
 use Smarty\JTLSmarty;
 
 /**
@@ -54,7 +54,7 @@ class Sitemap
         $this->cache           = $cache;
         $this->conf            = $conf;
         $this->langID          = \Shop::getLanguageID();
-        $this->customerGroupID = Session::getCustomerGroup()->getID();
+        $this->customerGroupID = Frontend::getCustomerGroup()->getID();
     }
 
     /**

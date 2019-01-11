@@ -34,7 +34,7 @@ function expandPriceArray($data, $max)
 }
 
 if (isset($_GET['kArtikel'])) {
-    $session       = \Session\Session::getInstance();
+    $session       = \Session\Frontend::getInstance();
     $Einstellungen = Shop::getSettings([CONF_PREISVERLAUF]);
     $kArtikel      = (int)$_GET['kArtikel'];
     $kKundengruppe = (int)$_GET['kKundengruppe'];
@@ -43,8 +43,8 @@ if (isset($_GET['kArtikel'])) {
 
     if (count($Einstellungen) > 0) {
         $oPreisConfig           = new stdClass();
-        $oPreisConfig->Waehrung = \Session\Session::getCurrency()->getName();
-        $oPreisConfig->Netto    = \Session\Session::getCustomerGroup()->isMerchant()
+        $oPreisConfig->Waehrung = \Session\Frontend::getCurrency()->getName();
+        $oPreisConfig->Netto    = \Session\Frontend::getCustomerGroup()->isMerchant()
             ? 0
             : $_GET['fMwSt'];
 

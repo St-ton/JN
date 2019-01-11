@@ -16,7 +16,7 @@ $Einstellungen  = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_BEWERTUNG]);
 if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     speicherBewertung(
         $cParameter_arr['kArtikel'],
-        \Session\Session::getCustomer()->getID(),
+        \Session\Frontend::getCustomer()->getID(),
         Shop::getLanguageID(),
         Request::verifyGPDataString('cTitel'),
         Request::verifyGPDataString('cText'),
@@ -25,13 +25,13 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
 } elseif (isset($_POST['bhjn']) && (int)$_POST['bhjn'] === 1) {
     speicherHilfreich(
         $cParameter_arr['kArtikel'],
-        \Session\Session::getCustomer()->getID(),
+        \Session\Frontend::getCustomer()->getID(),
         Shop::getLanguageID(),
         Request::verifyGPCDataInt('btgseite'),
         Request::verifyGPCDataInt('btgsterne')
     );
 } elseif (Request::verifyGPCDataInt('bfa') === 1) {
-    if (\Session\Session::getCustomer()->getID() <= 0) {
+    if (\Session\Frontend::getCustomer()->getID() <= 0) {
         $helper = Shop::Container()->getLinkService();
         header(
             'Location: ' . $helper->getStaticRoute('jtl.php') .
@@ -83,7 +83,7 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
             Shop::Container()->getDB()->select(
                 'tbewertung',
                 ['kArtikel', 'kKunde'],
-                [$AktuellerArtikel->kArtikel, \Session\Session::getCustomer()->getID()]
+                [$AktuellerArtikel->kArtikel, \Session\Frontend::getCustomer()->getID()]
             )
         );
 

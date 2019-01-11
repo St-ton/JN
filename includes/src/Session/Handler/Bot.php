@@ -6,13 +6,13 @@
 
 namespace Session\Handler;
 
-use Session\Session;
+use Session\Frontend;
 
 /**
- * Class SessionHandlerBot
+ * Class Bot
  * @package Session\Handler
  */
-class SessionHandlerBot extends SessionHandlerJTL
+class Bot extends JTLDefault
 {
     /**
      * @var string
@@ -53,7 +53,8 @@ class SessionHandlerBot extends SessionHandlerJTL
 
     /**
      * @param string $sessID
-     * @return string
+     * @return mixed|string
+     * @throws \Exception
      */
     public function read($sessID)
     {
@@ -64,7 +65,7 @@ class SessionHandlerBot extends SessionHandlerJTL
                 : '';
         }
         if ($sessionData === '') {
-            Session::getInstance()->setStandardSessionVars();
+            Frontend::getInstance()->setStandardSessionVars();
         }
 
         return $sessionData;

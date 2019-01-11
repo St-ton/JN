@@ -6,7 +6,7 @@
 
 namespace Helpers;
 
-use Session\Session;
+use Session\Frontend;
 use Shop;
 use Zahlungsart;
 
@@ -116,13 +116,13 @@ class PaymentMethod
                 require_once \PFAD_ROOT . \PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
                 $paymentMethod = \PaymentMethod::create($paymentMethod->cModulId);
 
-                return $paymentMethod->isValid($_SESSION['Kunde'] ?? null, Session::getCart());
+                return $paymentMethod->isValid($_SESSION['Kunde'] ?? null, Frontend::getCart());
                 break;
             default:
                 require_once \PFAD_ROOT . \PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
                 $paymentMethod = \PaymentMethod::create($paymentMethod->cModulId);
                 if ($paymentMethod !== null) {
-                    return $paymentMethod->isValid($_SESSION['Kunde'] ?? null, Session::getCart());
+                    return $paymentMethod->isValid($_SESSION['Kunde'] ?? null, Frontend::getCart());
                 }
                 break;
         }

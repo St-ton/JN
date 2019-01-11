@@ -22,7 +22,7 @@ function kundeSpeichern(array $cPost_arr)
     unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart']);
     $db   = Shop::Container()->getDB();
     $conf = Shop::getSettings([CONF_GLOBAL, CONF_KUNDENWERBENKUNDEN]);
-    $cart = \Session\Session::getCart();
+    $cart = \Session\Frontend::getCart();
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
 
@@ -34,7 +34,7 @@ function kundeSpeichern(array $cPost_arr)
         : checkKundenFormular(1, 0);
     $knd                 = getKundendaten($cPost_arr, 1, 0);
     $cKundenattribut_arr = getKundenattribute($cPost_arr);
-    $kKundengruppe       = \Session\Session::getCustomerGroup()->getID();
+    $kKundengruppe       = \Session\Frontend::getCustomerGroup()->getID();
     $oCheckBox           = new CheckBox();
     $fehlendeAngaben     = array_merge(
         $fehlendeAngaben,
@@ -122,7 +122,7 @@ function kundeSpeichern(array $cPost_arr)
                 'nRegistriert',
                 0
             );
-            $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+            $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
             if (isset($oNeukunde->kKundenWerbenKunden, $conf['kundenwerbenkunden']['kwk_kundengruppen'])
                 && $oNeukunde->kKundenWerbenKunden > 0
                 && (int)$conf['kundenwerbenkunden']['kwk_kundengruppen'] > 0
@@ -254,7 +254,7 @@ function gibFormularDaten(int $nCheckout = 0)
         ->assign('cKundenattribut_arr', $cKundenattribut_arr)
         ->assign(
             'laender',
-            ShippingMethod::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID(), false, true)
+            ShippingMethod::getPossibleShippingCountries(\Session\Frontend::getCustomerGroup()->getID(), false, true)
         )
         ->assign(
             'warning_passwortlaenge',

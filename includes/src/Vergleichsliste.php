@@ -55,7 +55,7 @@ class Vergleichsliste
      */
     public function loadFromSession(): void
     {
-        $compareList = \Session::get('Vergleichsliste');
+        $compareList = \Session\Frontend::get('Vergleichsliste');
         if ($compareList !== null) {
             $defaultOptions = Artikel::getDefaultOptions();
             $linkHelper     = Shop::Container()->getLinkService();

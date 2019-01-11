@@ -37,7 +37,7 @@ if (isset($_GET['uid'])) {
     $smarty->assign('Bestellung', $bestellung)
            ->assign('Kunde', new Kunde($bestellung->kKunde))
            ->assign('Lieferadresse', $bestellung->Lieferadresse)
-           ->assign('showLoginPanel', \Session\Session::getCustomer()->isLoggedIn())
+           ->assign('showLoginPanel', \Session\Frontend::getCustomer()->isLoggedIn())
            ->assign('billingAddress', $bestellung->oRechnungsadresse);
 } else {
     header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);

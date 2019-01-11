@@ -83,6 +83,27 @@ class Alert
     public const ICON_CHECK   = 'check';
 
     /**
+     * @return array
+     */
+    public function __sleep(): array
+    {
+        $propertiesToSave =['type', 'message', 'key'];
+        if ($this->getOptions() !== null) {
+            $propertiesToSave = array_merge($propertiesToSave, array_keys($this->options));
+        }
+
+        return $propertiesToSave;
+    }
+
+    /**
+     *
+     */
+    public function __wakeup()
+    {
+        $this->initAlert(true);
+    }
+
+    /**
      * @param string $message
      * @param string $type
      * @param string $key
@@ -121,7 +142,7 @@ class Alert
                 $this->setFadeOut(self::FADE_MEDIUM)
                      ->setIcon(self::ICON_CHECK);
                 break;
-            default;
+            default:
                 break;
         }
 
@@ -344,7 +365,7 @@ class Alert
     }
 
     /**
-     * @return null|array
+     * @return array|null
      */
     private function getOptions(): ?array
     {
@@ -352,10 +373,10 @@ class Alert
     }
 
     /**
-     * @param array $options
+     * @param array|null $options
      * @return $this
      */
-    private function setOptions(array $options): self
+    private function setOptions(?array $options): self
     {
         $this->options = $options;
 
@@ -381,20 +402,5 @@ class Alert
         if (isset($_SESSION['alerts'][$this->getKey()])) {
             unset($_SESSION['alerts'][$this->getKey()]);
         }
-    }
-
-    public function __sleep()
-    {
-        $propertiesToSave =['type', 'message', 'key'];
-        if ($this->getOptions() !== null) {
-            $propertiesToSave = array_merge($propertiesToSave, array_keys($this->options));
-        }
-
-        return $propertiesToSave;
-    }
-
-    public function __wakeup()
-    {
-        $this->initAlert(true);
     }
 }

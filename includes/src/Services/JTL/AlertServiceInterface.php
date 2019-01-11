@@ -22,9 +22,10 @@ interface AlertServiceInterface
      * @param string $type
      * @param string $message
      * @param string $key
+     * @param array|null $options
      * @return Alert
      */
-    public function addAlert(string $type, string $message, string $key): Alert;
+    public function addAlert(string $type, string $message, string $key, array $options = null): Alert;
 
     /**
      * @param string $key
@@ -36,5 +37,4 @@ interface AlertServiceInterface
      * @return array
      */
     public function getAlertlist(): array;
-
 }

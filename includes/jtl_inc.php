@@ -500,10 +500,10 @@ function fuehreLoginAus($userLogin, $passLogin): void
                             'nReturnValue' => &$nReturnValue
                         ]);
                         if ($nReturnValue) {
-                            if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
+                            if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === Kupon::TYPE_STANDARD) {
                                 Kupon::acceptCoupon($Kupon);
                                 executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
-                            } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
+                            } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
                                 // Versandfrei Kupon
                                 $_SESSION['oVersandfreiKupon'] = $Kupon;
                                 Shop::Smarty()->assign(
@@ -512,6 +512,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
                                 );
                             }
                         } else {
+                            \Session\Session::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
                             Shop::Smarty()->assign('cKuponfehler', $Kuponfehler['ungueltig']);
                         }
                     }

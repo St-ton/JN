@@ -185,6 +185,7 @@ if ($step === 'edit_customer_address' || $step === 'Lieferadresse') {
     gibStepLieferadresse();
 }
 if ($step === 'Versand' || $step === 'Zahlung') {
+    validateCouponInCheckout();
     gibStepVersand();
     gibStepZahlung();
     Warenkorb::refreshChecksum($cart);
@@ -194,6 +195,7 @@ if ($step === 'ZahlungZusatzschritt') {
     Warenkorb::refreshChecksum($cart);
 }
 if ($step === 'Bestaetigung') {
+    validateCouponInCheckout();
     plausiGuthaben($_POST);
     Shop::Smarty()->assign('cKuponfehler_arr', plausiKupon($_POST));
     //evtl genutztes guthaben anpassen

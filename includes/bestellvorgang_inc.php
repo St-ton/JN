@@ -397,8 +397,8 @@ function pruefeLieferadresseStep($cGet_arr): void
  */
 function pruefeVersandkostenfreiKuponVorgemerkt(): array
 {
-    if ((isset($_SESSION['Kupon']) && $_SESSION['Kupon']->cKuponTyp === 'versandkupon')
-        || (isset($_SESSION['oVersandfreiKupon']) && $_SESSION['oVersandfreiKupon']->cKuponTyp === 'versandkupon')
+    if ((isset($_SESSION['Kupon']) && $_SESSION['Kupon']->cKuponTyp === Kupon::TYPE_SHIPPING)
+        || (isset($_SESSION['oVersandfreiKupon']) && $_SESSION['oVersandfreiKupon']->cKuponTyp === Kupon::TYPE_SHIPPING)
     ) {
         \Session\Frontend::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
         unset($_SESSION['Kupon']);
@@ -958,7 +958,7 @@ function plausiKupon($cPost_arr)
             $nKuponfehler_arr = Kupon::checkCoupon($Kupon);
             if (angabenKorrekt($nKuponfehler_arr)) {
                 Kupon::acceptCoupon($Kupon);
-                if ($Kupon->cKuponTyp === 'versandkupon') { // Versandfrei Kupon
+                if ($Kupon->cKuponTyp === Kupon::TYPE_SHIPPING) { // Versandfrei Kupon
                     $_SESSION['oVersandfreiKupon'] = $Kupon;
                 }
             } else {
@@ -987,73 +987,33 @@ function plausiNeukundenKupon()
     if ((!isset($_SESSION['Kupon']->cKuponTyp) || $_SESSION['Kupon']->cKuponTyp !== 'standard')
         && !empty($customer->cMail)
     ) {
-        $query  = 'SELECT tbestellung.kBestellung
-            FROM tkunde
-            JOIN tbestellung
-                ON tbestellung.kKunde = tkunde.kKunde
-            WHERE tkunde.cMail = :mail';
-        $values = ['mail' => $customer->cMail];
-        $conf   = Shop::getSettings([CONF_KAUFABWICKLUNG]);
+        $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
         if ($customer->kKunde <= 0
             && $conf['kaufabwicklung']['bestellvorgang_unregneukundenkupon_zulassen'] === 'N'
         ) {
             //unregistrierte Neukunden, keine Kupons für Gastbestellungen zugelassen
             return;
         }
+        //not for already registered customers with order(s)
         if ($customer->kKunde > 0) {
-            // registrierte Kunden und Neukunden mit Kundenkonto
-            $query           .= ' OR tkunde.kKunde = :kkunde';
-            $values['kkunde'] = $customer->kKunde;
-        }
-        $query      .= ' LIMIT 1';
-        $oBestellung = Shop::Container()->getDB()->executeQueryPrepared($query, $values, \DB\ReturnType::SINGLE_OBJECT);
-
-        if (!empty($oBestellung)) {
-            return;
-        }
-        $NeukundenKupons = (new Kupon())->getNewCustomerCoupon();
-        if (!empty($NeukundenKupons)) {
-            $verwendet = Shop::Container()->getDB()->select(
-                'tkuponneukunde',
-                'cEmail',
-                $customer->cMail
+            $oBestellung  = Shop::Container()->getDB()->executeQueryPrepared('
+              SELECT kBestellung
+                FROM tbestellung
+                WHERE kKunde = :customerID
+                LIMIT 1',
+                ['customerID' => $customer->kKunde],
+                \DB\ReturnType::SINGLE_OBJECT
             );
-            $verwendet = !empty($verwendet) ? $verwendet->cVerwendet : null;
-            foreach ($NeukundenKupons as $NeukundenKupon) {
-                // teste ob Kunde mit cMail den Neukundenkupon schon verwendet hat...
-                $oDbKuponKunde = Shop::Container()->getDB()->select(
-                    'tkuponkunde',
-                    ['kKupon', 'cMail'],
-                    [$NeukundenKupon->kKupon, $customer->cMail]
-                );
-                if (is_object($oDbKuponKunde)) {
-                    // ...falls ja, versuche nächsten Neukundenkupon
-                    continue;
-                }
-                if ((empty($verwendet) || $verwendet === 'N') && angabenKorrekt(Kupon::checkCoupon($NeukundenKupon))) {
-                    Kupon::acceptCoupon($NeukundenKupon);
-                    if (empty($verwendet)) {
-                        $hash    = Kuponneukunde::hash(
-                            null,
-                            trim($customer->cNachname),
-                            trim($customer->cStrasse),
-                            null,
-                            trim($customer->cPLZ),
-                            trim($customer->cOrt),
-                            trim($customer->cLand)
-                        );
-                        $Options = [
-                            'Kupon'     => $NeukundenKupon->kKupon,
-                            'Email'     => $customer->cMail,
-                            'DatenHash' => $hash,
-                            'Erstellt'  => 'NOW()',
-                            'Verwendet' => 'N'
-                        ];
+            if (!empty($oBestellung)) {
+                return;
+            }
+        }
 
-                        $Kuponneukunde = new Kuponneukunde();
-                        $Kuponneukunde->setOptions($Options);
-                        $Kuponneukunde->save();
-                    }
+        $NeukundenKupons = (new Kupon())->getNewCustomerCoupon();
+        if (!empty($NeukundenKupons) && !Kupon::newCustomerCouponUsed($customer->cMail)) {
+            foreach ($NeukundenKupons as $NeukundenKupon) {
+                if (angabenKorrekt(Kupon::checkCoupon($NeukundenKupon))) {
+                    Kupon::acceptCoupon($NeukundenKupon);
                     break;
                 }
             }
@@ -2513,13 +2473,10 @@ function gibGesamtsummeKuponartikelImWarenkorb($Kupon, array $cartPositions)
 {
     $gesamtsumme = 0;
     foreach ($cartPositions as $Position) {
-        if ((empty($Kupon->cArtikel) || warenkorbKuponFaehigArtikel($Kupon, [$Position]))
-            && (empty($Kupon->cHersteller)
-                || $Kupon->cHersteller === '-1'
-                || warenkorbKuponFaehigHersteller($Kupon, [$Position]))
-            && (empty($Kupon->cKategorien)
-                || $Kupon->cKategorien === '-1'
-                || warenkorbKuponFaehigKategorien($Kupon, [$Position]))
+        if ($Position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+            && warenkorbKuponFaehigArtikel($Kupon, [$Position])
+            && warenkorbKuponFaehigHersteller($Kupon, [$Position])
+            && warenkorbKuponFaehigKategorien($Kupon, [$Position])
         ) {
             $gesamtsumme += $Position->fPreis *
                 $Position->nAnzahl *
@@ -2537,15 +2494,19 @@ function gibGesamtsummeKuponartikelImWarenkorb($Kupon, array $cartPositions)
  */
 function warenkorbKuponFaehigArtikel($Kupon, array $cartPositions): bool
 {
-    foreach ($cartPositions as $Pos) {
-        if ($Pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
-            && preg_match('/;' . preg_quote($Pos->Artikel->cArtNr, '/') . ';/i', $Kupon->cArtikel)
-        ) {
-            return true;
+    if (!empty($Kupon->cArtikel)) {
+        foreach ($cartPositions as $Pos) {
+            if ($Pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+                && preg_match('/;' . preg_quote($Pos->Artikel->cArtNr, '/') . ';/i', $Kupon->cArtikel)
+            ) {
+                return true;
+            }
         }
+
+        return false;
     }
 
-    return false;
+    return true;
 }
 
 /**
@@ -2555,15 +2516,19 @@ function warenkorbKuponFaehigArtikel($Kupon, array $cartPositions): bool
  */
 function warenkorbKuponFaehigHersteller($Kupon, array $cartPositions): bool
 {
-    foreach ($cartPositions as $Pos) {
-        if ($Pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
-            && preg_match('/;' . preg_quote($Pos->Artikel->kHersteller, '/') . ';/i', $Kupon->cHersteller)
-        ) {
-            return true;
+    if (!empty($Kupon->cHersteller) && (int)$Kupon->cHersteller !== -1) {
+        foreach ($cartPositions as $Pos) {
+            if ($Pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+                && preg_match('/;' . preg_quote($Pos->Artikel->kHersteller, '/') . ';/i', $Kupon->cHersteller)
+            ) {
+                return true;
+            }
         }
+
+        return false;
     }
 
-    return false;
+    return true;
 }
 
 /**
@@ -2573,31 +2538,28 @@ function warenkorbKuponFaehigHersteller($Kupon, array $cartPositions): bool
  */
 function warenkorbKuponFaehigKategorien($Kupon, array $cartPositions): bool
 {
-    $categories = [];
-    foreach ($cartPositions as $Pos) {
-        if (empty($Pos->Artikel)) {
-            continue;
-        }
-        $kArtikel = $Pos->Artikel->kArtikel;
-        // Kind?
-        if (Product::isVariChild($kArtikel)) {
-            $kArtikel = Product::getParent($kArtikel);
-        }
-        $catData = Shop::Container()->getDB()->selectAll('tkategorieartikel', 'kArtikel', $kArtikel, 'kKategorie');
-        foreach ($catData as $category) {
-            $category->kKategorie = (int)$category->kKategorie;
-            if (!in_array($category->kKategorie, $categories, true)) {
-                $categories[] = $category->kKategorie;
+    if (!empty($Kupon->cKategorien) && (int)$Kupon->cKategorien !== -1) {
+        $products = [];
+        foreach ($cartPositions as $Pos) {
+            if (empty($Pos->Artikel)) {
+                continue;
             }
+            $products[] = $Pos->Artikel->kVaterArtikel !== 0 ? $Pos->Artikel->kVaterArtikel : $Pos->Artikel->kArtikel;
         }
-    }
-    foreach ($categories as $category) {
-        if (preg_match('/;' . preg_quote($category, '/') . ';/i', $Kupon->cKategorien)) {
-            return true;
-        }
+        //check if at least one product is in at least one category valid for this coupon
+        $category = Shop::Container()->getDB()->query(
+            'SELECT kKategorie 
+                FROM tkategorieartikel
+                  WHERE kArtikel IN (' . \implode(',', $products) . ')
+                    AND kKategorie IN (' . str_replace(';', ',', trim($Kupon->cKategorien, ';')) . ')
+                    LIMIT 1',
+            \DB\ReturnType::SINGLE_OBJECT
+        );
+
+        return !empty($category);
     }
 
-    return false;
+    return true;
 }
 
 /**

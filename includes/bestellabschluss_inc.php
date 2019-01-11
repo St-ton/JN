@@ -871,21 +871,17 @@ function KuponVerwendungen($oBestellung): void
     $cKuponTyp        = '';
     $fKuponwertBrutto = 0;
     if (isset($_SESSION['VersandKupon']->kKupon) && $_SESSION['VersandKupon']->kKupon > 0) {
-        $kKupon           = $_SESSION['VersandKupon']->kKupon;
-        $cKuponTyp        = 'versand';
+        $kKupon           = (int)$_SESSION['VersandKupon']->kKupon;
+        $cKuponTyp        = Kupon::TYPE_SHIPPING;
         $fKuponwertBrutto = $_SESSION['Versandart']->fPreis;
     }
     if (isset($_SESSION['NeukundenKupon']->kKupon) && $_SESSION['NeukundenKupon']->kKupon > 0) {
-        $kKupon    = $_SESSION['NeukundenKupon']->kKupon;
-        $cKuponTyp = 'neukunden';
+        $kKupon    = (int)$_SESSION['NeukundenKupon']->kKupon;
+        $cKuponTyp = Kupon::TYPE_NEWCUSTOMER;
     }
     if (isset($_SESSION['Kupon']->kKupon) && $_SESSION['Kupon']->kKupon > 0) {
-        $kKupon = $_SESSION['Kupon']->kKupon;
-        if (isset($_SESSION['Kupon']->cWertTyp)
-            && ($_SESSION['Kupon']->cWertTyp === 'prozent' || $_SESSION['Kupon']->cWertTyp === 'festpreis')
-        ) {
-            $cKuponTyp = $_SESSION['Kupon']->cWertTyp;
-        }
+        $kKupon    = (int)$_SESSION['Kupon']->kKupon;
+        $cKuponTyp = Kupon::TYPE_STANDARD;
     }
     foreach ($cart->PositionenArr as $Position) {
         $Position->nPosTyp = (int)$Position->nPosTyp;
@@ -899,38 +895,33 @@ function KuponVerwendungen($oBestellung): void
             ) * (-1);
         }
     }
-    $kKupon = (int)$kKupon;
     if ($kKupon > 0) {
-        $db->query(
-            'UPDATE tkupon SET nVerwendungenBisher = nVerwendungenBisher + 1 WHERE kKupon = ' . $kKupon,
+        $db->queryPrepared(
+            'UPDATE tkupon
+              SET nVerwendungenBisher = nVerwendungenBisher + 1
+              WHERE kKupon = :couponID',
+            ['couponID' => $kKupon],
             \DB\ReturnType::DEFAULT
         );
-        $KuponKunde                = new stdClass();
-        $KuponKunde->kKupon        = $kKupon;
-        $KuponKunde->kKunde        = $cart->kKunde;
-        $KuponKunde->cMail         = StringHandler::filterXSS(\Session\Frontend::getCustomer()->cMail);
-        $KuponKunde->dErstellt     = 'NOW()';
-        $KuponKunde->nVerwendungen = 1;
-        $KuponKundeBisher          = $db->queryPrepared(
-            'SELECT SUM(nVerwendungen) AS nVerwendungen
-                FROM tkuponkunde
-                WHERE cMail = :mail',
-            ['mail' => $KuponKunde->cMail],
-            \DB\ReturnType::SINGLE_OBJECT
-        );
-        if (isset($KuponKundeBisher->nVerwendungen) && $KuponKundeBisher->nVerwendungen > 0) {
-            $KuponKunde->nVerwendungen += $KuponKundeBisher->nVerwendungen;
-        }
-        $db->delete('tkuponkunde', ['kKunde', 'kKupon'], [(int)$KuponKunde->kKunde, $kKupon]);
-        $db->insert('tkuponkunde', $KuponKunde);
 
-        if (isset($_SESSION['NeukundenKupon']->kKupon) && $_SESSION['NeukundenKupon']->kKupon > 0) {
-            $db->delete(
-                'tkuponneukunde',
-                ['kKupon', 'cEmail'],
-                [$kKupon, \Session\Frontend::getCustomer()->cMail]
-            );
-        }
+        $db->queryPrepared(
+            'INSERT INTO `tkuponkunde` (kKupon, cMail, dErstellt, nVerwendungen)
+                VALUES (:couponID, :email, NOW(), :used)
+                ON DUPLICATE KEY UPDATE
+                  nVerwendungen = nVerwendungen + 1',
+            [
+                'couponID'   => $kKupon,
+                'email' => Kupon::hash(\Session\Frontend::getCustomer()->cMail),
+                'used' => 1
+            ],
+            \DB\ReturnType::DEFAULT
+        );
+
+        $db->insert('tkuponflag', (object)[
+            'cKuponTyp'  => $cKuponTyp,
+            'cEmailHash' => Kupon::hash(\Session\Frontend::getCustomer()->cMail),
+            'dErstellt'  => 'NOW()'
+        ]);
 
         $oKuponBestellung                     = new KuponBestellung();
         $oKuponBestellung->kKupon             = $kKupon;
@@ -941,6 +932,7 @@ function KuponVerwendungen($oBestellung): void
         $oKuponBestellung->fKuponwertBrutto   = $fKuponwertBrutto;
         $oKuponBestellung->cKuponTyp          = $cKuponTyp;
         $oKuponBestellung->dErstellt          = 'NOW()';
+
         $oKuponBestellung->save();
     }
 }
@@ -1199,19 +1191,6 @@ function finalisiereBestellung($orderNo = '', bool $sendMail = true): Bestellung
 
     $order = new Bestellung($_SESSION['kBestellung']);
     $order->fuelleBestellung(false);
-
-    if ($order->oRechnungsadresse !== null) {
-        $hash = Kuponneukunde::hash(
-            null,
-            trim($order->oRechnungsadresse->cNachname),
-            trim($order->oRechnungsadresse->cStrasse),
-            null,
-            trim($order->oRechnungsadresse->cPLZ),
-            trim($order->oRechnungsadresse->cOrt),
-            trim($order->oRechnungsadresse->cLand)
-        );
-        Shop::Container()->getDB()->update('tkuponneukunde', 'cDatenHash', $hash, (object)['cVerwendet' => 'Y']);
-    }
 
     $upd              = new stdClass();
     $upd->kKunde      = \Session\Frontend::getCart()->kKunde;

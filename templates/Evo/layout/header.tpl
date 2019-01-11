@@ -221,4 +221,7 @@
     {block name='header-breadcrumb'}
         {include file='layout/breadcrumb.tpl'}
     {/block}
+
+    {include file='snippets/alert_list.tpl'}
+
 {/block}{* /content-all-starttags *}

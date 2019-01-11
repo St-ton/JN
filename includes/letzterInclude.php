@@ -191,5 +191,6 @@ $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('boxes', $boxesToShow)
        ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
        ->assign('Besucherzaehler', $visitorCount)
+       ->assign('alertList', Shop::Container()->getAlertService()->getAlertlist())
        ->assign('dbgBarHead', $debugbarRenderer->renderHead())
        ->assign('dbgBarBody', $debugbarRenderer->render());

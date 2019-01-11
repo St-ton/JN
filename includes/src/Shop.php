@@ -1869,6 +1869,9 @@ final class Shop
         $container->setSingleton(\Services\JTL\LinkServiceInterface::class, function (Container $container) {
             return new \Services\JTL\LinkService($container->getDB(), $container->getCache());
         });
+        $container->setSingleton(\Services\JTL\AlertServiceInterface::class, function () {
+            return new \Services\JTL\AlertService();
+        });
         $container->setSingleton(\Services\JTL\NewsServiceInterface::class, function (Container $container) {
             return new \Services\JTL\NewsService($container->getDB(), $container->getCache());
         });

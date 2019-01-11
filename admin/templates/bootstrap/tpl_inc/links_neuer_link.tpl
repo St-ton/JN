@@ -32,12 +32,15 @@
     });
     $(window).on('load', function () {
         $('select[id="nLink3"], #cKundengruppen').change(function () {
+            console.log($('select[id="nLink3"]').val());
+            console.log($('input[name="kLink"]').val());
             ioCall('isDuplicateSpecialLink', [
                     parseInt($('select[id="nLink3"]').val()),
                     parseInt($('input[name="kLink"]').val()) || 0,
                     $('select[name="cKundengruppen[]"').val()
                 ],
                 function (result) {
+                console.log(result);
                 if (result) {
                     $('#nLink3-error').removeClass('hidden-soft');
                 } else {
@@ -105,7 +108,7 @@
                                         <option value="{$oSpezialseite->nLinkart}" {if isset($xPostVar_arr.nSpezialseite) && $xPostVar_arr.nSpezialseite === $oSpezialseite->nLinkart}selected{elseif $Link->getLinkType() === (int)$oSpezialseite->nLinkart}selected{/if}>{$oSpezialseite->cName}</option>
                                     {/foreach}
                                 </select>
-                                <span id="nLink3-error" class="hidden-soft error"> <i title="{#specialSiteExists#}" class="fa fa-warning error"></i></span>
+                                <span id="nLink3-error" class="hidden-soft error"> <i title="Die Spezialseite existiert bereits für die gewählte(n) Kundengruppe(n)." class="fa fa-warning error"></i></span>
                             </p>
                         {/if}
                         </div>

@@ -36,7 +36,7 @@ function gibLetzteBildNummer($linkID)
     $images    = [];
     if (is_dir($uploadDir . $linkID)) {
         $handle = opendir($uploadDir . $linkID);
-        while (false !== ($Datei = readdir($handle))) {
+        while (($Datei = readdir($handle)) !== false) {
             if ($Datei !== '.' && $Datei !== '..') {
                 $images[] = $Datei;
             }
@@ -65,7 +65,7 @@ function parseText($text, int $linkID)
     $sort      = [];
     if (is_dir($uploadDir . $linkID)) {
         $handle = opendir($uploadDir . $linkID);
-        while (false !== ($file = readdir($handle))) {
+        while (($file = readdir($handle)) !== false) {
             if ($file !== '.' && $file !== '..') {
                 $imageID          = (int)substr(
                     str_replace('Bild', '', $file),
@@ -81,9 +81,8 @@ function parseText($text, int $linkID)
     $basePath = Shop::getURL() . '/' . PFAD_BILDER . PFAD_LINKBILDER;
     foreach ($sort as $sortID) {
         $text = str_replace(
-            '$#Bild' . $sortID . '#$', '<img src="' .
-            $basePath . $linkID . '/' . $images[$sortID] .
-            '" />',
+            '$#Bild' . $sortID . '#$',
+            '<img src="' . $basePath . $linkID . '/' . $images[$sortID] . '" />',
             $text
         );
     }
@@ -270,28 +269,18 @@ function holeSpezialseiten()
  * @param array $customerGroups
  * @return bool
  */
-function isDuplicateSpecialLink (int $linkType, int $linkID, array $customerGroups): bool
+function isDuplicateSpecialLink(int $linkType, int $linkID, array $customerGroups): bool
 {
-    $currentSetCustomerGroups = [];
-    $specialLinks             = Shop::Container()->getDB()->queryPrepared(
-        'SELECT kLink, cName, cKundengruppen
-            FROM tlink
-            WHERE nLinkart = :lnktype
-                AND kLink != :linkID',
-        ['lnktype' => $linkType, 'linkID' => $linkID],
-        \DB\ReturnType::ARRAY_OF_OBJECTS
-    );
-    if (!empty($specialLinks) && in_array('-1', $customerGroups)) {
-        return true;
-    }
-    foreach ($specialLinks as $specialLink) {
-        if ($specialLink->cKundengruppen === null || $specialLink->cKundengruppen === 'NULL') {
-            //NULL means it is set for all customer groups
-            return true;
-        }
-        $currentSetCustomerGroups = array_merge($currentSetCustomerGroups, StringHandler::parseSSK($specialLink->cKundengruppen));
-    }
-    return !empty(array_intersect($currentSetCustomerGroups, $customerGroups));
+    $duplicateLinks = Shop::Container()->getLinkService()->getAllLinkGroups()->getLinkgroupByTemplate('specialpages')
+        ->filterLinks(function (\Link\Link $link) use ($linkType, $linkID, $customerGroups) {
+            return ($link->getLinkType() === $linkType
+                && $link->getID() !== $linkID
+                && (empty($link->getCustomerGroups())
+                    || array_intersect($link->getCustomerGroups(), $customerGroups)
+                ));
+        });
+
+    return !$duplicateLinks->isEmpty();
 }
 
 /**
@@ -299,9 +288,9 @@ function isDuplicateSpecialLink (int $linkType, int $linkID, array $customerGrou
  */
 function getDuplicateSpecialLinkTypes(): array
 {
-    $linksTMP       = [];
+    $linksTMP           = [];
     $duplicateLinkTypes = [];
-    $links          = Shop::Container()->getDB()->query(
+    $links              = Shop::Container()->getDB()->query(
         'SELECT tlink.*, tspezialseite.cName as linkName FROM tlink
                 LEFT JOIN tspezialseite ON tspezialseite.nLinkart = tlink.nLinkart
                 WHERE tspezialseite.nLinkart IS NOT NULL
@@ -319,13 +308,13 @@ function getDuplicateSpecialLinkTypes(): array
             $linksTMP[$link->nLinkart] = [];
         }
 
-        if (!empty(array_intersect($linksTMP[$link->nLinkart], $customerGroups))) {
-            $duplicateLinkTypes[$link->nLinkart] = $link;
-        } else {
+        if (empty(array_intersect($linksTMP[$link->nLinkart], $customerGroups))) {
             $linksTMP[$link->nLinkart] = array_merge($linksTMP[$link->nLinkart], $customerGroups);
             if (count($linksTMP[$link->nLinkart]) > 1 && in_array(0, $linksTMP[$link->nLinkart], true)) {
                 $duplicateLinkTypes[$link->nLinkart] = $link;
             }
+        } else {
+            $duplicateLinkTypes[$link->nLinkart] = $link;
         }
     }
 

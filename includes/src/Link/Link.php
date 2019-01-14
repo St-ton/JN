@@ -1105,6 +1105,30 @@ final class Link extends AbstractLink
     }
 
     /**
+     * @return bool
+     */
+    public function hasDuplicateSpecialLink(): bool
+    {
+        $links = clone \Shop::Container()->getLinkService()->getAllLinkGroups()->getLinkgroupByTemplate('specialpages');
+        if ($links === null) {
+            return false;
+        }
+        $duplicateLinks = $links->filterLinks(function (Link $link) {
+            return ($link->getPluginID() === 0
+                && $link->getLinkType() === $this->getLinkType()
+                && $link->getID() !== $this->getID()
+                && ( empty($this->getCustomerGroups())
+                    || \in_array(-1, $this->getCustomerGroups())
+                    || empty($link->getCustomerGroups())
+                    || array_intersect($link->getCustomerGroups(), $this->getCustomerGroups())
+                )
+            );
+        });
+
+        return !$duplicateLinks->isEmpty();
+    }
+
+    /**
      * @return array
      */
     public function __debugInfo()

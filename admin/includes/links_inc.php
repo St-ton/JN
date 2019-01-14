@@ -271,52 +271,10 @@ function holeSpezialseiten()
  */
 function isDuplicateSpecialLink(int $linkType, int $linkID, array $customerGroups): bool
 {
-    $duplicateLinks = Shop::Container()->getLinkService()->getAllLinkGroups()->getLinkgroupByTemplate('specialpages')
-        ->filterLinks(function (\Link\Link $link) use ($linkType, $linkID, $customerGroups) {
-            return ($link->getLinkType() === $linkType
-                && $link->getID() !== $linkID
-                && (empty($link->getCustomerGroups())
-                    || array_intersect($link->getCustomerGroups(), $customerGroups)
-                ));
-        });
+    $link = new \Link\Link(Shop::Container()->getDB());
+    $link->setCustomerGroups($customerGroups);
+    $link->setLinkType($linkType);
+    $link->setID($linkID);
 
-    return !$duplicateLinks->isEmpty();
-}
-
-/**
- * @return array
- */
-function getDuplicateSpecialLinkTypes(): array
-{
-    $linksTMP           = [];
-    $duplicateLinkTypes = [];
-    $links              = Shop::Container()->getDB()->query(
-        'SELECT tlink.*, tspezialseite.cName as linkName FROM tlink
-                LEFT JOIN tspezialseite ON tspezialseite.nLinkart = tlink.nLinkart
-                WHERE tspezialseite.nLinkart IS NOT NULL
-                ORDER BY tlink.nLinkart',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
-    );
-
-    foreach ($links as $link) {
-        if ($link->cKundengruppen === null || $link->cKundengruppen === 'NULL') {
-            $customerGroups = [0];
-        } else {
-            $customerGroups = StringHandler::parseSSK($link->cKundengruppen);
-        }
-        if (!isset($linksTMP[$link->nLinkart])) {
-            $linksTMP[$link->nLinkart] = [];
-        }
-
-        if (empty(array_intersect($linksTMP[$link->nLinkart], $customerGroups))) {
-            $linksTMP[$link->nLinkart] = array_merge($linksTMP[$link->nLinkart], $customerGroups);
-            if (count($linksTMP[$link->nLinkart]) > 1 && in_array(0, $linksTMP[$link->nLinkart], true)) {
-                $duplicateLinkTypes[$link->nLinkart] = $link;
-            }
-        } else {
-            $duplicateLinkTypes[$link->nLinkart] = $link;
-        }
-    }
-
-    return $duplicateLinkTypes;
+    return $link->hasDuplicateSpecialLink();
 }

@@ -312,11 +312,11 @@ if ($clearCache === true) {
     $linkAdmin->clearCache();
 }
 if ($step === 'uebersicht') {
-    $duplicateSpecialLinks = getDuplicateSpecialLinkTypes();
-    if (!empty($duplicateSpecialLinks)) {
-        foreach ($duplicateSpecialLinks as $specialLink) {
-            $fehler .= sprintf('Spezialseite "%s" ist mehrfach für gleiche Kundengruppen belegt.<br />', $specialLink->linkName);
-        }
+    foreach ($linkAdmin->getDuplicateSpecialLinks() as $specialLink) {
+        $fehler .= sprintf(
+            'Spezialseite "%s" ist mehrfach für gleiche Kundengruppen belegt.<br />',
+            $specialLink->getName()
+        );
     }
     $smarty->assign('kPlugin', Request::verifyGPCDataInt('kPlugin'))
            ->assign('linkGroupCountByLinkID', $linkAdmin->getLinkGroupCountForLinkIDs())

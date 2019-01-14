@@ -25,12 +25,12 @@ class PlausiCMS extends Plausi
                 if (isset($this->xPostVar_arr['nSpezialseite'], $this->xPostVar_arr['nLinkart'])
                     && (int)$this->xPostVar_arr['nLinkart'] === 3
                 ) {
-                    $isDuplicateSepcialLink = isDuplicateSpecialLink(
-                        (int)$this->xPostVar_arr['nSpezialseite'],
-                        (int)$this->xPostVar_arr['kLink'],
-                        $this->xPostVar_arr['cKundengruppen']
-                    );
-                    if ($isDuplicateSepcialLink) {
+                    $link = new \Link\Link(Shop::Container()->getDB());
+                    $link->setCustomerGroups($this->xPostVar_arr['cKundengruppen']);
+                    $link->setLinkType((int)$this->xPostVar_arr['nSpezialseite']);
+                    $link->setID((int)$this->xPostVar_arr['kLink']);
+
+                    if ($isDuplicateSepcialLink = $link->hasDuplicateSpecialLink()) {
                         $this->xPlausiVar_arr['nSpezialseite'] = $isDuplicateSepcialLink;
                     }
                 }

@@ -79,7 +79,10 @@ class Notification implements IteratorAggregate, Countable
      */
     public function buildDefault(): self
     {
-        $status = Status::getInstance();
+        $status    = Status::getInstance();
+        $db        = Shop::Container()->getDB();
+        $cache     = Shop::Container()->getCache();
+        $linkAdmin = new \Link\Admin\LinkAdmin($db, $cache);
 
         if ($status->hasPendingUpdates()) {
             $this->add(
@@ -251,13 +254,13 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
-        if ($status->hasDuplicateSpecialLinkTypes()) {
-           $this->add(
-               NotificationEntry::TYPE_DANGER,
-               'Spezialseite mehrfach belegt',
-               'Eine oder mehrere Spezialseiten sind mehrfach für die gleiche(n) Kundengruppe(n) angelegt',
-               'links.php'
-           );
+        if ($linkAdmin->getDuplicateSpecialLinks()) {
+            $this->add(
+                NotificationEntry::TYPE_DANGER,
+                'Spezialseite mehrfach belegt',
+                'Eine oder mehrere Spezialseiten sind mehrfach für die gleiche(n) Kundengruppe(n) angelegt',
+                'links.php'
+            );
         }
 
         return $this;

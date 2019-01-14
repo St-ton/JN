@@ -353,7 +353,15 @@ class PortletInstance implements \JsonSerializable
      */
     public function getDataAttributeString(): string
     {
-        return 'data-portlet="' . \htmlspecialchars(\json_encode($this->jsonSerializeShort()), \ENT_QUOTES) . '"';
+        return 'data-portlet="' . $this->getDataAttribute() . '"';
+    }
+
+    /**
+     * @return string
+     */
+    public function getDataAttribute(): string
+    {
+        return \htmlspecialchars(\json_encode($this->jsonSerializeShort()), \ENT_QUOTES);
     }
 
     /**

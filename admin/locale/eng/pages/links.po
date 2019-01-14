@@ -202,3 +202,8 @@ msgstr "keine Links vorhanden"
 msgid "active"
 msgstr "Aktiv"
 
+msgid "duplicateSpecialLink"
+msgstr "Die Spezialseite existiert bereits für die gewählte(n) Kundengruppe(n)."
+
+msgid "hasDuplicateSpecialLink"
+msgstr "Die Spezialseite existiert mehrfach für gleiche Kundengruppe(n)."

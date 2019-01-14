@@ -108,7 +108,7 @@
                                         <option value="{$oSpezialseite->nLinkart}" {if isset($xPostVar_arr.nSpezialseite) && $xPostVar_arr.nSpezialseite === $oSpezialseite->nLinkart}selected{elseif $Link->getLinkType() === (int)$oSpezialseite->nLinkart}selected{/if}>{$oSpezialseite->cName}</option>
                                     {/foreach}
                                 </select>
-                                <span id="nLink3-error" class="hidden-soft error"> <i title="Die Spezialseite existiert bereits für die gewählte(n) Kundengruppe(n)." class="fa fa-warning error"></i></span>
+                                <span id="nLink3-error" class="hidden-soft error"> <i title="{__('isDuplicateSpecialLink')}" class="fa fa-warning error"></i></span>
                             </p>
                         {/if}
                         </div>

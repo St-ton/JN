@@ -1,1 +1,1 @@
-{include file="./container.tpl" isPreview=true}
+{include file='./container.tpl' isPreview=true}

@@ -20,7 +20,7 @@
             {foreach $Bestellung->Positionen as $KonfigPos}
                 {if $Position->cUnique == $KonfigPos->cUnique}
                     <li>
-                        {if !($KonfigPos->cUnique|strlen > 0 && $KonfigPos->kKonfigitem == 0)}{$KonfigPos->nAnzahlEinzel}x {/if}{$KonfigPos->cName} </span>
+                        {if !($KonfigPos->cUnique|strlen > 0 && $KonfigPos->kKonfigitem == 0)}{$KonfigPos->nAnzahlEinzel}x {/if}{$KonfigPos->cName}
                     </li>
                 {/if}
             {/foreach}

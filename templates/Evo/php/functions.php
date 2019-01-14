@@ -10,10 +10,13 @@ use Helpers\Manufacturer;
 use Helpers\Category;
 use Helpers\Tax;
 
+$scc = new \scc\DefaultComponentRegistrator(new \sccbs3\Bs3sccRenderer($smarty));
+$scc->registerComponents();
+
 $smarty->registerPlugin(Smarty::PLUGIN_FUNCTION, 'gibPreisStringLocalizedSmarty', 'gibPreisStringLocalizedSmarty')
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getBoxesByPosition', 'getBoxesByPosition')
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'has_boxes', 'has_boxes')
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'image', 'get_img_tag')
+       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'imageTag', 'get_img_tag')
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getCheckBoxForLocation', 'getCheckBoxForLocation')
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'hasCheckBoxForLocation', 'hasCheckBoxForLocation')
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'aaURLEncode', 'aaURLEncode')

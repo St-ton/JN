@@ -5,6 +5,7 @@
 
 {if $Position->nPosTyp == 1}
     <p><a href="{$Position->Artikel->cURLFull}">{$Position->cName}</a></p>
+    <p>{lang key='pricePerUnit' section='productDetails'}: {$Position->cEinzelpreisLocalized[$NettoPreise]}</p>
     {if !empty($Position->cSeriennummer)}
         <p>{lang key='serialnumber'}: {$Position->cSeriennummer}</p>
     {/if}
@@ -18,8 +19,8 @@
         <ul class="children_ex">
             {foreach $Bestellung->Positionen as $KonfigPos}
                 {if $Position->cUnique == $KonfigPos->cUnique}
-                    <li>{if !($KonfigPos->cUnique|strlen > 0 && $KonfigPos->kKonfigitem == 0)}{$KonfigPos->nAnzahlEinzel}x {/if}{$KonfigPos->cName} {if $bPreis}
-                        <span class="price">{$KonfigPos->cEinzelpreisLocalized[$NettoPreise]}{/if}</span>
+                    <li>
+                        {if !($KonfigPos->cUnique|strlen > 0 && $KonfigPos->kKonfigitem == 0)}{$KonfigPos->nAnzahlEinzel}x {/if}{$KonfigPos->cName} </span>
                     </li>
                 {/if}
             {/foreach}

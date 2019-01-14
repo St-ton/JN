@@ -2039,11 +2039,14 @@ class Artikel
                 if (!$exportWorkaround) {
                     $scoreSelect    = ', COALESCE(ek.score, 0) nMatched';
                     $scoreJoin      = "LEFT JOIN (
-	                        SELECT kEigenschaftKombi, COUNT(teigenschaftkombiwert.kEigenschaftWert) AS score
+	                        SELECT teigenschaftkombiwert.kEigenschaftKombi, COUNT(teigenschaftkombiwert.kEigenschaftWert) AS score
                             FROM teigenschaftkombiwert
+                            INNER JOIN tartikel ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+                            LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
+                                AND tartikelsichtbarkeit.kKundengruppe = {$kKundengruppe}
                             WHERE kEigenschaftWert IN (
                                 SELECT kEigenschaftWert FROM teigenschaftkombiwert WHERE kEigenschaftKombi = {$this->kEigenschaftKombi}
-                           )
+                            ) AND tartikelsichtbarkeit.kArtikel IS NULL
                             GROUP BY teigenschaftkombiwert.kEigenschaftKombi
                         ) ek ON ek.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi";
                     $cntVariationen = Shop::DB()->query(
@@ -2108,7 +2111,11 @@ class Artikel
                                     AND ek.kEigenschaftWert IN (
                                         SELECT kEigenschaftWert FROM teigenschaftkombiwert WHERE kEigenschaftKombi = {$this->kEigenschaftKombi}
                                     )
+                                LEFT JOIN tartikel art ON art.kEigenschaftKombi = ek.kEigenschaftKombi
+                                LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = art.kArtikel
+                                AND tartikelsichtbarkeit.kKundengruppe = {$kKundengruppe}
                                 WHERE tartikel.kVaterArtikel = " . (int)$this->kVaterArtikel . "
+                                    AND tartikelsichtbarkeit.kArtikel IS NULL
                                 GROUP BY teigenschaftkombiwert.kEigenschaftKombi, teigenschaftkombiwert.kEigenschaftWert
                             ) pref
                             GROUP BY pref.kEigenschaftWert",
@@ -2227,7 +2234,7 @@ class Artikel
                 $nZaehler         = -1;
                 $nFreifelder      = 0;
                 $rabattTemp       = $this->getDiscount($kKundengruppe, $this->kArtikel);
-                $nGenauigkeit = 2;
+                $nGenauigkeit     = 2;
                 if (isset($this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
                     && (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0
                 ) {
@@ -6629,7 +6636,10 @@ class Artikel
             $i            = 2;
             $cSQL         = [];
             $kEigenschaft = (int)$kEigenschaft;
-            $prepvalues   = ['where' => $kEigenschaft];
+            $prepvalues   = [
+                'customerGroupID' => (int)$_SESSION['Kundengruppe']->kKundengruppe,
+                'where'           => $kEigenschaft
+            ];
             foreach ($kGesetzteEigeschaftWert_arr as $kGesetzteEigenschaft => $kEigenschaftWert) {
                 $kGesetzteEigenschaft = (int)$kGesetzteEigenschaft;
                 $kEigenschaftWert     = (int)$kEigenschaftWert;
@@ -6648,7 +6658,11 @@ class Artikel
                     INNER JOIN tartikel k 
                         ON e1.kEigenschaftKombi = k.kEigenschaftKombi
                     {$cSQLStr}
-                    WHERE e1.kEigenschaft = :where", $prepvalues, 2
+                    LEFT JOIN tartikelsichtbarkeit
+                        ON tartikelsichtbarkeit.kArtikel = k.kArtikel
+                            AND tartikelsichtbarkeit.kKundengruppe = :customerGroupID
+                    WHERE e1.kEigenschaft = :where
+                        AND tartikelsichtbarkeit.kArtikel IS NULL", $prepvalues, 2
             );
             foreach ($oEigenschaft_arr as $oEigenschaft) {
                 $oEigenschaft->kEigenschaftWert = (int)$oEigenschaft->kEigenschaftWert;

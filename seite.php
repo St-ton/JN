@@ -18,6 +18,7 @@ $Einstellungen          = Shopsetting::getInstance()->getAll();
 $AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $linkHelper             = Shop::Container()->getLinkService();
+$alertHelper            = Shop::Container()->getAlertService();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 if (Shop::$isInitialized === true) {
     $kLink = Shop::$kLink;
@@ -56,7 +57,11 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     ));
 } elseif ($link->getLinkType() === LINKTYP_VERSAND) {
     if (isset($_POST['land'], $_POST['plz']) && !ShippingMethod::getShippingCosts($_POST['land'], $_POST['plz'])) {
-        $smarty->assign('fehler', Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'));
+        $alertHelper->addAlert(
+            Alert::TYPE_ERROR,
+            Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'),
+            'missingParamShippingDetermination'
+        );
     }
     $smarty->assign(
         'laender',
@@ -87,7 +92,11 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
         if (is_array($oArtikelGeschenk_arr) && count($oArtikelGeschenk_arr) > 0) {
             $smarty->assign('oArtikelGeschenk_arr', $oArtikelGeschenk_arr);
         } else {
-            $cFehler .= Shop::Lang()->get('freegiftsNogifts', 'errorMessages');
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                Shop::Lang()->get('freegiftsNogifts', 'errorMessages'),
+                'freegiftsNogifts'
+            );
         }
     }
 } elseif ($link->getLinkType() === LINKTYP_AUSWAHLASSISTENT) {
@@ -98,7 +107,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_SEITE_PAGE_IF_LINKART);
 $smarty->assign('Link', $link)
        ->assign('bSeiteNichtGefunden', Shop::getPageType() === PAGE_404)
-       ->assign('cFehler', !empty($cFehler) ? $cFehler : null)
        ->assign('meta_language', StringHandler::convertISO2ISO639(Shop::getLanguageCode()));
 
 $cMetaTitle       = $link->getMetaTitle();

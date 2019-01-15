@@ -34,7 +34,6 @@ $Einstellungen        = Shop::getSettings([
 $kLink                = $linkHelper->getSpecialPageLinkKey(LINKTYP_REGISTRIEREN);
 $link                 = $linkHelper->getPageLink($kLink);
 $step                 = 'formular';
-$hinweis              = '';
 $titel                = Shop::Lang()->get('newAccount', 'login');
 $editRechnungsadresse = isset($_GET['editRechnungsadresse'])
     ? (int)$_GET['editRechnungsadresse']
@@ -64,7 +63,6 @@ $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 Shop::Smarty()->assign('editRechnungsadresse', $editRechnungsadresse)
     ->assign('Ueberschrift', $titel)
     ->assign('Link', $link)
-    ->assign('hinweis', $hinweis)
     ->assign('step', $step)
     ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
     ->assign('code_registrieren', false)

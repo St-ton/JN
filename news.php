@@ -92,10 +92,10 @@ $cMetaTitle = \Filter\Metadata::prepareMeta(
 );
 
 if ($controller->getErrorMsg() !== '') {
-    $alertHelper->addAlert(Alert::TYPE_ERROR, 'newsError', $controller->getErrorMsg());
+    $alertHelper->addAlert(Alert::TYPE_ERROR, $controller->getErrorMsg(), 'newsError');
 }
 if ($controller->getNoticeMsg() !== '') {
-    $alertHelper->addAlert(Alert::TYPE_NOTE, 'newsNote', $controller->getNoticeMsg());
+    $alertHelper->addAlert(Alert::TYPE_NOTE, $controller->getNoticeMsg(), 'newsNote');
 }
 
 Shop::Smarty()->assign('oPagination', $pagination)

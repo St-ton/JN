@@ -13,6 +13,7 @@
     <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter"/>
     <rule ref="Generic.Commenting.Todo"/>
     <rule ref="Generic.ControlStructures.InlineControlStructure"/>
+    <rule ref="Generic.Formatting.NoSpaceAfterCast"/>
     <rule ref="Generic.Commenting.Todo.CommentFound">
         <message>Please review this TODO comment: %s</message>
         <severity>3</severity>
@@ -63,5 +64,13 @@
     <rule ref="Squiz.Strings.DoubleQuoteUsage.ContainsVar">
         <exclude-pattern>*/tests/*</exclude-pattern>
         <exclude-pattern>*/data/*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.WhiteSpace.SemicolonSpacing"/>
+    <rule ref="Squiz.WhiteSpace.LogicalOperatorSpacing"/>
+    <rule ref="Squiz.WhiteSpace.ObjectOperatorSpacing"/>
+    <rule ref="Squiz.WhiteSpace.OperatorSpacing">
+        <properties>
+            <property name="ignoreNewlines" value="true"/>
+        </properties>
     </rule>
 </ruleset>

@@ -128,7 +128,7 @@
             </nav>
             <div class="backend-content" id="content_wrapper">
 
-            {assign var='alertList' value=Shop::Container()->getAlertService()->getAlertList()}
+            {assign var='alertList' value=Shop::Container()->getAlertService()}
 
             {include file='snippets/alert_list.tpl'}
 

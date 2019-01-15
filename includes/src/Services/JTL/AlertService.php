@@ -60,6 +60,16 @@ class AlertService implements AlertServiceInterface
     /**
      * @inheritdoc
      */
+    public function displayAlertByKey(string $key): void
+    {
+        if ($alert = $this->getAlert($key)) {
+            $alert->display();
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getAlertList(): array
     {
         return $this->alertList;

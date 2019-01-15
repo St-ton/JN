@@ -555,6 +555,33 @@ function fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr)
 }
 
 /**
+ * @param int $kKategorie
+ */
+function fuelleKategorieRabatt($kKategorie)
+{
+    Shop::DB()->delete('tartikelkategorierabatt', 'kKategorie', (int)$kKategorie);
+    Shop::DB()->queryPrepared(
+        "INSERT INTO tartikelkategorierabatt (
+            SELECT tkategorieartikel.kArtikel, tkategoriekundengruppe.kKundengruppe, tkategorieartikel.kKategorie,
+                   MAX(tkategoriekundengruppe.fRabatt) fRabatt
+            FROM tkategoriekundengruppe
+            INNER JOIN tkategorieartikel ON tkategorieartikel.kKategorie = tkategoriekundengruppe.kKategorie
+            LEFT JOIN tkategoriesichtbarkeit ON tkategoriesichtbarkeit.kKategorie = tkategoriekundengruppe.kKategorie
+                AND tkategoriesichtbarkeit.kKundengruppe = tkategoriekundengruppe.kKundengruppe
+            WHERE tkategoriekundengruppe.kKategorie = :categoryID
+                AND tkategoriesichtbarkeit.kKategorie IS NULL
+            GROUP BY tkategorieartikel.kArtikel, tkategoriekundengruppe.kKundengruppe, tkategorieartikel.kKategorie
+            HAVING MAX(tkategoriekundengruppe.fRabatt) > 0
+        )",
+        [
+            'categoryID' => (int)$kKategorie
+        ],
+        10
+    );
+    Shop::Cache()->flushTags([CACHING_GROUP_CATEGORY . '_' . $kKategorie]);
+}
+
+/**
  * @param object $oArtikel
  */
 function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)

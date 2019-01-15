@@ -76,8 +76,6 @@ echo $return;
 function bearbeiteDeletes($xml)
 {
     if (isset($xml['del_kategorien']['kKategorie'])) {
-        // Alle Shop Kundengruppen holen
-        $oKundengruppe_arr = Shop::DB()->query("SELECT kKundengruppe FROM tkundengruppe", 2);
         if (!is_array($xml['del_kategorien']['kKategorie']) && (int)$xml['del_kategorien']['kKategorie'] > 0) {
             $xml['del_kategorien']['kKategorie'] = [$xml['del_kategorien']['kKategorie']];
         }
@@ -86,14 +84,7 @@ function bearbeiteDeletes($xml)
                 $kKategorie = (int)$kKategorie;
                 if ($kKategorie > 0) {
                     loescheKategorie($kKategorie);
-                    //hole alle artikel raus in dieser Kategorie
-                    $oArtikel_arr = Shop::DB()->selectAll('tkategorieartikel', 'kKategorie', $kKategorie, 'kArtikel');
-                    //gehe alle Artikel durch
-                    if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
-                        foreach ($oArtikel_arr as $oArtikel) {
-                            fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr);
-                        }
-                    }
+                    fuelleKategorieRabatt($kKategorie);
 
                     executeHook(HOOK_KATEGORIE_XML_BEARBEITEDELETES, ['kKategorie' => $kKategorie]);
                 }
@@ -202,19 +193,8 @@ function bearbeiteInsert($xml)
                 }
             }
         }
-        // Alle Shop Kundengruppen holen
-        $oKundengruppe_arr = Shop::DB()->query("SELECT kKundengruppe FROM tkundengruppe", 2);
         updateXMLinDB($xml['tkategorie'], 'tkategoriekundengruppe', $GLOBALS['mKategorieKundengruppe'], 'kKundengruppe', 'kKategorie');
-        if (is_array($oKundengruppe_arr) && count($oKundengruppe_arr) > 0) {
-            //hole alle artikel raus in dieser Kategorie
-            $oArtikel_arr = Shop::DB()->selectAll('tkategorieartikel', 'kKategorie', $kategorie_arr[0]->kKategorie, 'kArtikel');
-            //gehe alle Artikel durch und ermittle max rabatt
-            if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
-                foreach ($oArtikel_arr as $oArtikel) {
-                    fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr);
-                }
-            }
-        }
+        fuelleKategorieRabatt($kategorie_arr[0]->kKategorie);
 
         updateXMLinDB($xml['tkategorie'], 'tkategorieattribut', $GLOBALS['mKategorieAttribut'], 'kKategorieAttribut');
         updateXMLinDB($xml['tkategorie'], 'tkategoriesichtbarkeit', $GLOBALS['mKategorieSichtbarkeit'], 'kKundengruppe', 'kKategorie');

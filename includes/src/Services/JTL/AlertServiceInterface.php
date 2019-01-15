@@ -43,4 +43,9 @@ interface AlertServiceInterface
      * @return bool
      */
     public function alertTypeExists(string $type): bool;
+
+    /**
+     * @param string $key
+     */
+    public function displayAlertByKey(string $key): void;
 }

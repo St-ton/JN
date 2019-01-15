@@ -16,8 +16,7 @@ $kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_PASSWORD_VE
 $AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $step                   = 'formular';
-$hinweis                = '';
-$cFehler                = '';
+$alertHelper            = Shop::Container()->getAlertService();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 //loginbenutzer?
 if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwort_vergessen'] === 1) {
@@ -39,9 +38,9 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
 
         Shop::Smarty()->assign('Kunde', $oKunde);
     } elseif (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre === 'Y') {
-        $hinweis = Shop::Lang()->get('accountLocked');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, Shop::Lang()->get('accountLocked'), 'accountLocked');
     } else {
-        $hinweis = Shop::Lang()->get('incorrectEmail');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, Shop::Lang()->get('incorrectEmail'), 'incorrectEmail');
     }
 } elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpwh'])) {
     if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
@@ -56,15 +55,31 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
                     header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '?updated_pw=true');
                     exit();
                 }
-                $cFehler = Shop::Lang()->get('invalidCustomer', 'account data');
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    Shop::Lang()->get('invalidCustomer', 'account data'),
+                    'invalidCustomer'
+                );
             } else {
-                $cFehler = Shop::Lang()->get('invalidHash', 'account data');
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    Shop::Lang()->get('invalidHash', 'account data'),
+                    'invalidHash'
+                );
             }
         } else {
-            $cFehler = Shop::Lang()->get('invalidHash', 'account data');
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                Shop::Lang()->get('invalidHash', 'account data'),
+                'invalidHash'
+            );
         }
     } else {
-        $cFehler = Shop::Lang()->get('passwordsMustBeEqual', 'account data');
+        $alertHelper->addAlert(
+            Alert::TYPE_ERROR,
+            Shop::Lang()->get('passwordsMustBeEqual', 'account data'),
+            'passwordsMustBeEqual'
+        );
     }
     $step = 'confirm';
     Shop::Smarty()->assign('fpwh', StringHandler::filterXSS($_POST['fpwh']));
@@ -75,10 +90,18 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
         if ($dateExpires >= new DateTime()) {
             Shop::Smarty()->assign('fpwh', StringHandler::filterXSS($_GET['fpwh']));
         } else {
-            $cFehler = Shop::Lang()->get('invalidHash', 'account data');
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                Shop::Lang()->get('invalidHash', 'account data'),
+                'invalidHash'
+            );
         }
     } else {
-        $cFehler = Shop::Lang()->get('invalidHash', 'account data');
+        $alertHelper->addAlert(
+            Alert::TYPE_ERROR,
+            Shop::Lang()->get('invalidHash', 'account data'),
+            'invalidHash'
+        );
     }
     $step = 'confirm';
 }
@@ -88,10 +111,18 @@ $link             = $linkHelper->getPageLink($kLink);
 $cMetaTitle       = $oMeta->cTitle;
 $cMetaDescription = $oMeta->cDesc;
 $cMetaKeywords    = $oMeta->cKeywords;
+
+if (!$alertHelper->alertTypeExists(Alert::TYPE_ERROR)) {
+    $alertHelper->addAlert(
+        Alert::TYPE_INFO,
+        Shop::Lang()->get('forgotPasswordDesc', 'forgot password'),
+        'forgotPasswordDesc',
+        ['showInAlertListTemplate' => false]
+    );
+}
+
 Shop::Smarty()->assign('step', $step)
-    ->assign('hinweis', $hinweis)
-    ->assign('Link', $link)
-    ->assign('cFehler', $cFehler);
+    ->assign('Link', $link);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 Shop::Smarty()->display('account/password.tpl');

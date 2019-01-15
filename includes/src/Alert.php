@@ -73,6 +73,10 @@ class Alert
     public const TYPE_LIGHT     = 'light';
     public const TYPE_DARK      = 'dark';
 
+    //used for former cFehler / cHinhweis
+    public const TYPE_ERROR = 'error';
+    public const TYPE_NOTE  = 'note';
+
     public const FADE_FAST   = 3000;
     public const FADE_SLOW   = 9000;
     public const FADE_MEDIUM = 5000;
@@ -87,7 +91,7 @@ class Alert
      */
     public function __sleep(): array
     {
-        $propertiesToSave =['type', 'message', 'key'];
+        $propertiesToSave = ['type', 'message', 'key'];
         if ($this->getOptions() !== null) {
             $propertiesToSave = array_merge($propertiesToSave, array_keys($this->options));
         }
@@ -127,6 +131,7 @@ class Alert
     {
         switch ($this->getType()) {
             case self::TYPE_DANGER:
+            case self::TYPE_ERROR:
                 $this->setDismissable(true)
                      ->setIcon(self::ICON_WARNING);
                 break;
@@ -135,8 +140,8 @@ class Alert
                      ->setIcon(self::ICON_WARNING);
                 break;
             case self::TYPE_INFO:
-                $this->setFadeOut(self::FADE_SLOW)
-                     ->setIcon(self::ICON_INFO);
+            case self::TYPE_NOTE:
+                $this->setIcon(self::ICON_INFO);
                 break;
             case self::TYPE_SUCCESS:
                 $this->setFadeOut(self::FADE_MEDIUM)
@@ -401,6 +406,21 @@ class Alert
     {
         if (isset($_SESSION['alerts'][$this->getKey()])) {
             unset($_SESSION['alerts'][$this->getKey()]);
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getCssType(): string
+    {
+        switch ($this->getType()) {
+            case self::TYPE_ERROR:
+                return self::TYPE_DANGER;
+            case self::TYPE_NOTE:
+                return self::TYPE_INFO;
+            default:
+                return $this->getType();
         }
     }
 }

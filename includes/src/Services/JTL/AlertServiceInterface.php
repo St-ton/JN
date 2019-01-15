@@ -37,4 +37,10 @@ interface AlertServiceInterface
      * @return array
      */
     public function getAlertlist(): array;
+
+    /**
+     * @param string $type
+     * @return bool
+     */
+    public function alertTypeExists(string $type): bool;
 }

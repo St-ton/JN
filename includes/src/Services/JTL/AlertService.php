@@ -64,4 +64,17 @@ class AlertService implements AlertServiceInterface
     {
         return $this->alertList;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function alertTypeExists(string $type): bool
+    {
+        foreach ($this->getAlertList() as $alert) {
+            if ($alert->getType() === $type) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -80,7 +80,7 @@ function sendeMail($ModulId, $Object, $mail = null)
     $kopie         = '';
     $mailSmarty    = new \Smarty\JTLSmarty(true, \Smarty\ContextType::MAIL);
     $mailSmarty->registerResource('db', new \Smarty\SmartyResourceNiceDB($db, \Smarty\ContextType::MAIL))
-               ->registerPlugin('function', 'includeMailTemplate', 'includeMailTemplate')
+               ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'includeMailTemplate', 'includeMailTemplate')
                ->setCaching(0)
                ->setDebugging(0)
                ->setCompileDir(PFAD_ROOT . PFAD_COMPILEDIR)

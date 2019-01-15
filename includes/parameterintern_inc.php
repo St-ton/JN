@@ -7,14 +7,14 @@
 //mainword
 use Helpers\Request;
 
-$kKonfigPos       = Request::verifyGPCDataInt('ek');
-$kKategorie       = Request::verifyGPCDataInt('k');
-$kArtikel         = Request::verifyGPCDataInt('a');
-$kVariKindArtikel = Request::verifyGPCDataInt('a2');
-$kSeite           = Request::verifyGPCDataInt('s');
-$kLink            = Request::verifyGPCDataInt('s');
-$kHersteller      = Request::verifyGPCDataInt('h');
-$kSuchanfrage     = Request::verifyGPCDataInt('l');
+$kKonfigPos            = Request::verifyGPCDataInt('ek');
+$kKategorie            = Request::verifyGPCDataInt('k');
+$kArtikel              = Request::verifyGPCDataInt('a');
+$kVariKindArtikel      = Request::verifyGPCDataInt('a2');
+$kSeite                = Request::verifyGPCDataInt('s');
+$kLink                 = Request::verifyGPCDataInt('s');
+$kHersteller           = Request::verifyGPCDataInt('h');
+$kSuchanfrage          = Request::verifyGPCDataInt('l');
 $kMerkmalWert          = Request::verifyGPCDataInt('m');
 $kTag                  = Request::verifyGPCDataInt('t');
 $kSuchspecial          = Request::verifyGPCDataInt('q');

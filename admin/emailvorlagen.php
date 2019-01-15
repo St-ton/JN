@@ -774,7 +774,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
             $db->insert($cTableSprache, $localized);
             $mailSmarty = new Smarty\JTLSmarty(true, \Smarty\ContextType::MAIL);
             $mailSmarty->registerResource('db', new \Smarty\SmartyResourceNiceDB($db, \Smarty\ContextType::MAIL))
-                       ->registerPlugin('function', 'includeMailTemplate', 'includeMailTemplate')
+                       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'includeMailTemplate', 'includeMailTemplate')
                        ->setCaching(Smarty::CACHING_OFF)
                        ->setDebugging(Smarty::DEBUG_OFF)
                        ->setCompileDir(PFAD_ROOT . PFAD_COMPILEDIR);

@@ -27,6 +27,7 @@ $linkService      = Shop::Container()->getLinkService();
 $kLink            = $linkService->getSpecialPageLinkKey(LINKTYP_NEWS);
 $link             = $linkService->getPageLink($kLink);
 $controller       = new \News\Controller($db, $Einstellungen, $smarty);
+$alertHelper      = Shop::Container()->getAlertService();
 
 switch ($controller->getPageType($cParameter_arr)) {
     case \News\ViewType::NEWS_DETAIL:
@@ -90,9 +91,14 @@ $cMetaTitle = \Filter\Metadata::prepareMeta(
     (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']
 );
 
-Shop::Smarty()->assign('hinweis', $controller->getNoticeMsg())
-    ->assign('fehler', $controller->getErrorMsg())
-    ->assign('oPagination', $pagination)
+if ($controller->getErrorMsg() !== '') {
+    $alertHelper->addAlert(Alert::TYPE_ERROR, 'newsError', $controller->getErrorMsg());
+}
+if ($controller->getNoticeMsg() !== '') {
+    $alertHelper->addAlert(Alert::TYPE_NOTE, 'newsNote', $controller->getNoticeMsg());
+}
+
+Shop::Smarty()->assign('oPagination', $pagination)
     ->assign('code_news', false);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

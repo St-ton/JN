@@ -22,7 +22,6 @@ $Einstellungen = Shopsetting::getInstance()->getAll();
 $step          = 'accountwahl';
 $cart          = \Session\Frontend::getCart();
 $alertHelper   = Shop::Container()->getAlertService();
-$hinweis       = 'blub';
 unset($_SESSION['ajaxcheckout']);
 // Loginbenutzer?
 if (isset($_POST['login']) && (int)$_POST['login'] === 1) {
@@ -207,7 +206,7 @@ if ($step === 'ZahlungZusatzschritt') {
 if ($step === 'Bestaetigung') {
     validateCouponInCheckout();
     plausiGuthaben($_POST);
-    Shop::Smarty()->assign('cKuponfehler_arr', plausiKupon($_POST));
+    plausiKupon($_POST);
     //evtl genutztes guthaben anpassen
     pruefeGuthabenNutzen();
     // Eventuellen Zahlungsarten Aufpreis/Rabatt neusetzen

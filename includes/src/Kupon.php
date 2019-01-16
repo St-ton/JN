@@ -1149,4 +1149,41 @@ class Kupon
           'shipping'    => self::TYPE_SHIPPING
         ];
     }
+
+    /**
+     * @param int $errorCode
+     * @param bool $createAlert
+     * @return null|string
+     */
+    public static function mapCouponErrorMessage(int $errorCode, bool $createAlert = true): ?string
+    {
+        switch ($errorCode) {
+            case 0:
+                return null;
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+            case 12:
+                $errorMessage = Shop::Lang()->get('couponErr' . $errorCode);
+                break;
+            case 11:
+                $errorMessage = Shop::Lang()->get('invalidCouponCode', 'checkout');
+                break;
+            default:
+                $errorMessage = Shop::Lang()->get('couponErr99');
+                break;
+        }
+        if ($createAlert) {
+            Shop::Container()->getAlertService()->addAlert(Alert::TYPE_DANGER, $errorMessage, 'couponError');
+        }
+
+        return $errorMessage;
+    }
 }

@@ -976,14 +976,13 @@ function plausiKupon($cPost_arr)
                 if ($Kupon->cKuponTyp === Kupon::TYPE_SHIPPING) { // Versandfrei Kupon
                     $_SESSION['oVersandfreiKupon'] = $Kupon;
                 }
-            } else {
-                Shop::Smarty()->assign('cKuponfehler_arr', $nKuponfehler_arr);
             }
         } else {
             $nKuponfehler_arr['ungueltig'] = 11;
         }
     }
     plausiNeukundenKupon();
+    Kupon::mapCouponErrorMessage($nKuponfehler_arr['ungueltig'] ?? 0);
 
     return (count($nKuponfehler_arr) > 0)
         ? $nKuponfehler_arr

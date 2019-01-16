@@ -50,10 +50,11 @@ if ($cart !== null
     // Kupon darf nicht im leeren Warenkorb eingelöst werden
     $Kupon             = new Kupon();
     $Kupon             = $Kupon->getByCode($_POST['Kuponcode']);
-    $invalidCouponCode = false;
+    $invalidCouponCode = 11;
     if ($Kupon !== false && $Kupon->kKupon > 0) {
-        $Kuponfehler  = Kupon::checkCoupon($Kupon);
-        $nReturnValue = angabenKorrekt($Kuponfehler);
+        $Kuponfehler       = Kupon::checkCoupon($Kupon);
+        $nReturnValue      = angabenKorrekt($Kuponfehler);
+        $invalidCouponCode = 0;
         executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
             'error'        => &$Kuponfehler,
             'nReturnValue' => &$nReturnValue
@@ -70,13 +71,10 @@ if ($cart !== null
                 $smarty->assign('cVersandfreiKuponLieferlaender_arr', explode(';', $Kupon->cLieferlaender));
                 $nVersandfreiKuponGueltig = true;
             }
-        } else {
-            $smarty->assign('cKuponfehler', $Kuponfehler['ungueltig']);
         }
-    } else {
-        $invalidCouponCode = true;
-        $smarty->assign('invalidCouponCode', $invalidCouponCode);
     }
+
+    $smarty->assign('invalidCouponCode', Kupon::mapCouponErrorMessage($Kuponfehler['ungueltig'] ?? $invalidCouponCode));
 }
 // Kupon nicht mehr verfügbar. Redirect im Bestellabschluss. Fehlerausgabe
 if (isset($_SESSION['checkCouponResult'])) {

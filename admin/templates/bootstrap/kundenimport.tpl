@@ -1,5 +1,5 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="kundenimport"}
+{config_load file="$lang.conf" section='kundenimport'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('customerImport') cBeschreibung=__('customerImportDesc') cDokuURL=__('customerImportURL')}
 <div id="content" class="container-fluid">
     <form name="kundenimporter" method="post" action="kundenimport.php" enctype="multipart/form-data">
@@ -16,7 +16,7 @@
                     </span>
                     <span class="input-group-wrap">
                         <select name="kSprache" id="kSprache" class="form-control combo">
-                            {foreach name=sprache from=$sprachen item=sprache}
+                            {foreach $sprachen as $sprache}
                                 <option value="{$sprache->kSprache}">{$sprache->cNameDeutsch}</option>
                             {/foreach}
                         </select>
@@ -28,8 +28,8 @@
                     </span>
                     <span class="input-group-wrap">
                         <select name="kKundengruppe" id="kKundengruppe" class="form-control combo">
-                            {foreach name=kdgrp from=$kundengruppen item=kundengruppe}
-                                {assign var="kKundengruppe" value=$kundengruppe->kKundengruppe}
+                            {foreach $kundengruppen as $kundengruppe}
+                                {assign var=kKundengruppe value=$kundengruppe->kKundengruppe}
                                 <option value="{$kundengruppe->kKundengruppe}">{$kundengruppe->cName}</option>
                             {/foreach}
                         </select>

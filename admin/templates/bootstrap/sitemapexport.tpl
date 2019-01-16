@@ -1,5 +1,5 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="sitemapExport"}
+{config_load file="$lang.conf" section='sitemapExport'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('sitemapExport') cBeschreibung=__('sitemapExportDesc') cDokuURL=__('sitemapExportURL')}
 <div id="content" class="container-fluid">
     <div id="confirmModal" class="modal fade" role="dialog">
@@ -69,7 +69,7 @@
                             <input type="hidden" name="SitemapDownload_nPage" value="0">
                             <label for="nYear">Jahr</label>
                             <select id="nYear" name="nYear_downloads">
-                                {foreach name=oSitemapDownloadYears from=$oSitemapDownloadYears_arr item=oSitemapDownloadYear}
+                                {foreach $oSitemapDownloadYears_arr as $oSitemapDownloadYear}
                                     <option value="{$oSitemapDownloadYear->year}"{if isset($nSitemapDownloadYear) && $nSitemapDownloadYear == $oSitemapDownloadYear->year} selected="selected"{/if}>{$oSitemapDownloadYear->year}</option>
                                 {/foreach}
                             </select>
@@ -99,7 +99,7 @@
                                         <th>{__('sitemapBot')}</th>
                                         <th class="text-right">{__('sitemapDate')}</th>
                                     </tr>
-                                    {foreach name=sitemapdownloads from=$oSitemapDownload_arr item=oSitemapDownload}
+                                    {foreach $oSitemapDownload_arr as $oSitemapDownload}
                                         <tr>
                                             <td width="20">
                                                 <input name="kSitemapTracker[]" type="checkbox" value="{$oSitemapDownload->kSitemapTracker}">
@@ -147,7 +147,7 @@
                             <input type="hidden" name="SitemapReport_nPage" value="0">
                             <label for="nYear">Jahr</label>
                             <select id="nYear" name="nYear_reports">
-                                {foreach name=oSitemapReportYears from=$oSitemapReportYears_arr item=oSitemapReportYear}
+                                {foreach $oSitemapReportYears_arr as $oSitemapReportYear}
                                     <option value="{$oSitemapReportYear->year}"{if isset($nSitemapReportYear) && $nSitemapReportYear == $oSitemapReportYear->year} selected="selected"{/if}>{$oSitemapReportYear->year}</option>
                                 {/foreach}
                             </select>
@@ -177,7 +177,7 @@
                                     <th class="th-3">{__('sitemapTotalURL')}</th>
                                     <th class="th-5">{__('sitemapDate')}</th>
                                 </tr>
-                                {foreach name=sitemapreports from=$oSitemapReport_arr item=oSitemapReport}
+                                {foreach $oSitemapReport_arr as $oSitemapReport}
                                     <tr>
                                         <td class="check">
                                             <input name="kSitemapReport[]" type="checkbox" value="{$oSitemapReport->kSitemapReport}">
@@ -205,7 +205,7 @@
                                                         <th class="th-3">{__('sitemapSize')}</th>
                                                     </tr>
 
-                                                    {foreach name=sitemapreportfiles from=$oSitemapReport->oSitemapReportFile_arr item=oSitemapReportFile}
+                                                    {foreach $oSitemapReport->oSitemapReportFile_arr as $oSitemapReportFile}
                                                         <tr>
                                                             <td>{$oSitemapReportFile->cDatei}</td>
                                                             <td class="tcenter">{$oSitemapReportFile->nAnzahlURL}</td>

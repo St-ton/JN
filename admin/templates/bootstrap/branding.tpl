@@ -1,4 +1,4 @@
-{config_load file="$lang.conf" section="branding"}
+{config_load file="$lang.conf" section='branding'}
 {include file='tpl_inc/header.tpl'}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('branding') cBeschreibung=__('brandingDesc') cDokuURL=__('brandingUrl')}
@@ -13,7 +13,7 @@
                 </span>
                 <span class="input-group-wrap">
                     <select name="kBranding" class="form-control selectBox" id="{__('brandingActive')}" onchange="document.branding.submit();">
-                        {foreach name=brandings from=$oBranding_arr item=oBrandingTMP}
+                        {foreach $oBranding_arr as $oBrandingTMP}
                             <option value="{$oBrandingTMP->kBranding}" {if $oBrandingTMP->kBranding == $oBranding->kBrandingTMP}selected{/if}>{$oBrandingTMP->cBildKategorie}</option>
                         {/foreach}
                     </select>
@@ -58,7 +58,7 @@
                             <span class="input-group-wrap">
                                 <select name="cPosition" id="cPosition" class="form-control combo">
                                     <option value="oben"{if $oBranding->cPosition === 'oben'} selected{/if}>oben</option>
-                                    <option value="oben-rechts"{if $oBranding->cPosition === "oben-rechts"} selected{/if}>
+                                    <option value="oben-rechts"{if $oBranding->cPosition === 'oben-rechts'} selected{/if}>
                                         oben-rechts
                                     </option>
                                     <option value="rechts"{if $oBranding->cPosition === 'rechts'} selected{/if}>rechts
@@ -67,7 +67,7 @@
                                         unten-rechts
                                     </option>
                                     <option value="unten"{if $oBranding->cPosition === 'unten'} selected{/if}>unten</option>
-                                    <option value="unten-links"{if $oBranding->cPosition === "unten-links"} selected{/if}>
+                                    <option value="unten-links"{if $oBranding->cPosition === 'unten-links'} selected{/if}>
                                         unten-links
                                     </option>
                                     <option value="links"{if $oBranding->cPosition === 'links'} selected{/if}>links</option>

@@ -1,5 +1,5 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="livesuche"}
+{config_load file="$lang.conf" section='livesuche'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('livesearch') cBeschreibung=__('livesucheDesc') cDokuURL=__('livesucheURL')}
 <div id="content" class="container-fluid">
     <form name="sprache" method="post" action="livesuche.php">
@@ -12,8 +12,8 @@
                 </span>
                 <span class="input-group-wrap last">
                     <select id="{__('changeLanguage')}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
-                        {foreach name=sprachen from=$Sprachen item=sprache}
-                            <option value="{$sprache->kSprache}" {if $sprache->kSprache==$smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
+                        {foreach $Sprachen as $sprache}
+                            <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
                         {/foreach}
                     </select>
                 </span>
@@ -97,7 +97,7 @@
                                     <th class="th-5">{__('mapping')}</th>
                                 </tr>
 
-                                {foreach name=suchanfragen from=$Suchanfragen item=suchanfrage}
+                                {foreach $Suchanfragen as $suchanfrage}
                                     <input name="kSuchanfrageAll[]" type="hidden" value="{$suchanfrage->kSuchanfrage}" />
                                     <tr>
                                         <td>
@@ -165,7 +165,7 @@
                                     <th class="th-3" align="left">{__('lastsearch')}</th>
                                     <th class="th-4" align="left">{__('mapping')}</th>
                                 </tr>
-                                {foreach name=suchanfragenerfolglos from=$Suchanfragenerfolglos item=Suchanfrageerfolglos}
+                                {foreach $Suchanfragenerfolglos as $Suchanfrageerfolglos}
                                     <tr>
                                         <td>
                                             <input name="kSuchanfrageErfolglos[]" type="checkbox" value="{$Suchanfrageerfolglos->kSuchanfrageErfolglos}" />
@@ -226,7 +226,7 @@
                                     <th class="th-3">{__('searchnew')}</th>
                                     <th class="th-4">{__('searchcount')}</th>
                                 </tr>
-                                {foreach name=suchanfragenmapping from=$Suchanfragenmapping item=sfm}
+                                {foreach $Suchanfragenmapping as $sfm}
                                     <tr>
                                         <td>
                                             <input name="kSuchanfrageMapping[]" type="checkbox" value="{$sfm->kSuchanfrageMapping}">
@@ -264,7 +264,7 @@
                             </tr>
                             <tr class="tab-1_bg">
                                 <td>
-                                    <textarea class="form-control" name="suchanfrageblacklist" style="width:100%;min-height:400px;">{foreach name=suchanfragenblacklist from=$Suchanfragenblacklist item=Suchanfrageblacklist}{$Suchanfrageblacklist->cSuche};{/foreach}</textarea>
+                                    <textarea class="form-control" name="suchanfrageblacklist" style="width:100%;min-height:400px;">{foreach $Suchanfragenblacklist as $Suchanfrageblacklist}{$Suchanfrageblacklist->cSuche};{/foreach}</textarea>
                                 </td>
                             </tr>
                         </table>

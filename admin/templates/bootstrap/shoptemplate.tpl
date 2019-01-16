@@ -1,16 +1,16 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='shoptemplate'}
-{assign var="cBeschreibung" value=__('shoptemplatesDesc')}
+{assign var=cBeschreibung value=__('shoptemplatesDesc')}
 {if isset($oEinstellungenXML) && $oEinstellungenXML}
-    {assign var="cTitel" value="Einstellungen: "|cat:$oTemplate->cName}
+    {assign var=cTitel value='Einstellungen: '|cat:$oTemplate->cName}
     {if !empty($oTemplate->cDokuURL)}
-        {assign var="cDokuURL" value=$oTemplate->cDokuURL}
+        {assign var=cDokuURL value=$oTemplate->cDokuURL}
     {else}
-        {assign var="cDokuURL" value=__('shoptemplateURL')}
+        {assign var=cDokuURL value=__('shoptemplateURL')}
     {/if}
 {else}
-    {assign var="cTitel" value=__('shoptemplates')}
-    {assign var="cDokuURL" value=__('shoptemplateURL')}
+    {assign var=cTitel value=__('shoptemplates')}
+    {assign var=cDokuURL value=__('shoptemplateURL')}
 {/if}
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=$cBeschreibung cDokuURL=$cDokuURL}
 {*workaround: no async uploads (the fileinput option uploadAsync does not work correctly... *}
@@ -136,9 +136,9 @@
                                                             {rdelim});
                                                     </script>
                                                 {elseif $oSetting->cType === 'number'}
-                                                    <input class="form-control" type="number" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}" value="{$oSetting->cValue|escape:"html"}" placeholder="{$oSetting->cPlaceholder}" />
+                                                    <input class="form-control" type="number" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}" value="{$oSetting->cValue|escape:'html'}" placeholder="{$oSetting->cPlaceholder}" />
                                                 {elseif $oSetting->cType === 'text' || $oSetting->cType === 'float'}
-                                                    <input class="form-control" type="text" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}" value="{$oSetting->cValue|escape:"html"}" placeholder="{$oSetting->cPlaceholder}" />
+                                                    <input class="form-control" type="text" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}" value="{$oSetting->cValue|escape:'html'}" placeholder="{$oSetting->cPlaceholder}" />
                                                 {elseif $oSetting->cType === 'textarea' }
                                                     <div class="form-group">
                                                         <textarea style="resize:{if isset($oSetting->vTextAreaAttr_arr.Resizable)}{$oSetting->vTextAreaAttr_arr.Resizable}{/if};max-width:800%;width:100%;border:none"
@@ -199,7 +199,7 @@
                                                 {/if}
                                             </span>
                                         {else}
-                                            <input type="hidden" name="cWert[]" value="{$oSetting->cValue|escape:"html"}" />
+                                            <input type="hidden" name="cWert[]" value="{$oSetting->cValue|escape:'html'}" />
                                         {/if}
                                     </div>
                                 </div>

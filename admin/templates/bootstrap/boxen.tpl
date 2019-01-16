@@ -1,4 +1,4 @@
-{config_load file="$lang.conf" section="boxen"}
+{config_load file="$lang.conf" section='boxen'}
 {include file='tpl_inc/header.tpl'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('boxen') cBeschreibung=__('boxenDesc') cDokuURL=__('boxenURL')}
 
@@ -178,7 +178,7 @@
                                 <input class="form-control" id="boxtitle" type="text" name="boxtitle" value="{$oEditBox->cTitel}" />
                             </div>
                             {if $oEditBox->eTyp === 'text'}
-                                {foreach name="sprachen" from=$oSprachen_arr item=oSprache}
+                                {foreach $oSprachen_arr as $oSprache}
                                     <div class="input-group">
                                         <span class="input-group-addon">
                                             <label for="title-{$oSprache->cISO}">{__('boxTitle')} {$oSprache->cNameDeutsch}</label>
@@ -204,7 +204,7 @@
                                         </button>
                                     </span>
                                 </div>
-                                {foreach name="sprachen" from=$oSprachen_arr item=oSprache}
+                                {foreach $oSprachen_arr as $oSprache}
                                     <div class="input-group">
                                         <span class="input-group-addon">
                                             <label for="title-{$oSprache->cISO}">{__('boxTitle')} {$oSprache->cNameDeutsch}:</label>
@@ -266,7 +266,7 @@
                         </span>
                         <span class="input-group-wrap last">
                             <select name="page" class="selectBox form-control" id="{__('page')}" onchange="document.boxen.submit();">
-                                {include file="tpl_inc/seiten_liste.tpl"}
+                                {include file='tpl_inc/seiten_liste.tpl'}
                             </select>
                         </span>
                         <input type="hidden" name="boxen" value="1" />

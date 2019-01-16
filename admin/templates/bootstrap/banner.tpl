@@ -1,5 +1,5 @@
 {include file='tpl_inc/header.tpl' bForceFluid=($cAction === 'area')}
-{config_load file="$lang.conf" section="banner"}
+{config_load file="$lang.conf" section='banner'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('banner') cBeschreibung=__('bannerDesc') cDokuURL=__('bannerURL')}
 
 <div id="content">
@@ -174,11 +174,11 @@
                         <span class="input-group-wrap">
                             <select class="form-control" id="nSeitenTyp" name="nSeitenTyp">
                                 {if isset($nSeitenTyp) && intval($nSeitenTyp) > 0}
-                                    {include file="tpl_inc/seiten_liste.tpl" nPage=$nSeitenTyp}
+                                    {include file='tpl_inc/seiten_liste.tpl' nPage=$nSeitenTyp}
                                 {elseif isset($oExtension->nSeite)}
-                                    {include file="tpl_inc/seiten_liste.tpl" nPage=$oExtension->nSeite}
+                                    {include file='tpl_inc/seiten_liste.tpl' nPage=$oExtension->nSeite}
                                 {else}
-                                    {include file="tpl_inc/seiten_liste.tpl" nPage=0}
+                                    {include file='tpl_inc/seiten_liste.tpl' nPage=0}
                                 {/if}
                             </select>
                         </span>

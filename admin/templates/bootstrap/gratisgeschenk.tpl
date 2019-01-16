@@ -1,5 +1,5 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="gratisgeschenk"}
+{config_load file="$lang.conf" section='gratisgeschenk'}
 
 {assign var=cFunAttrib value=$ART_ATTRIBUT_GRATISGESCHENKAB}
 

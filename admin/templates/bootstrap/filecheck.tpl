@@ -1,5 +1,5 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="filecheck"}
+{config_load file="$lang.conf" section='filecheck'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('filecheck') cBeschreibung=__('filecheckDesc') cDokuURL=__('filecheckURL')}
 {$modifiedFilesCheck = !empty($modifiedFilesError) || isset($modifiedFiles) && $modifiedFiles|@count > 0}
 {$orphanedFilesCheck = !empty($orphanedFilesError) || isset($orphanedFiles) && $orphanedFiles|@count > 0}
@@ -30,8 +30,8 @@
                                         <th>{__('fileCheckFile')}</th>
                                     </tr>
                                     </thead>
-                                    {foreach name=datei from=$modifiedFiles item=file}
-                                        <tr class="filestate mod{$smarty.foreach.datei.iteration%2} modified">
+                                    {foreach $modifiedFiles as $file}
+                                        <tr class="filestate mod{$file@iteration % 2} modified">
                                             <td>{$file}</td>
                                         </tr>
                                     {/foreach}
@@ -68,8 +68,8 @@
                                             <th>{__('fileCheckFile')}</th>
                                         </tr>
                                     </thead>
-                                    {foreach name=datei from=$orphanedFiles item=file}
-                                        <tr class="filestate mod{$smarty.foreach.datei.iteration%2} orphaned">
+                                    {foreach $orphanedFiles as $file}
+                                        <tr class="filestate mod{$file@iteration % 2} orphaned">
                                             <td>{$file}</td>
                                         </tr>
                                     {/foreach}

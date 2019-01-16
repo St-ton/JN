@@ -1,4 +1,4 @@
-{config_load file="$lang.conf" section="systemcheck"}
+{config_load file="$lang.conf" section='systemcheck'}
 {include file='tpl_inc/header.tpl'}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('systemcheck') cBeschreibung=__('systemcheckDesc') cDokuURL=__('systemcheckURL')}

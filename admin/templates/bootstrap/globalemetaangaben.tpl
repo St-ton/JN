@@ -1,4 +1,4 @@
-{config_load file="$lang.conf" section="globalemetaangaben"}
+{config_load file="$lang.conf" section='globalemetaangaben'}
 {include file='tpl_inc/header.tpl'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('globalemetaangaben') cBeschreibung=__('globalemetaangabenDesc') cDokuURL=__('globalemetaangabenUrl')}
 {assign var=currentLanguage value=''}
@@ -13,8 +13,8 @@
                 </span>
                 <span class="input-group-wrap last">
                     <select id="{__('changeLanguage')}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
-                        {foreach name=sprachen from=$Sprachen item=sprache}
-                            <option value="{$sprache->kSprache}" {if $sprache->kSprache==$smarty.session.kSprache}{assign var=currentLanguage value=$sprache->cNameDeutsch}selected{/if}>{$sprache->cNameDeutsch}</option>
+                        {foreach $Sprachen as $sprache}
+                            <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}{assign var=currentLanguage value=$sprache->cNameDeutsch}selected{/if}>{$sprache->cNameDeutsch}</option>
                         {/foreach}
                     </select>
                 </span>
@@ -65,7 +65,7 @@
             </div>
 
             {assign var=open value=false}
-            {foreach name=conf from=$oConfig_arr item=oConfig}
+            {foreach $oConfig_arr as $oConfig}
                 {if $oConfig->cConf === 'Y'}
                     <div class="input-group">
                         <span class="input-group-addon">
@@ -74,7 +74,7 @@
                         {if $oConfig->cInputTyp === 'selectbox'}
                             <span class="input-group-wrap">
                                 <select name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" class="form-control combo">
-                                    {foreach name=selectfor from=$oConfig->ConfWerte item=wert}
+                                    {foreach $oConfig->ConfWerte as $wert}
                                         <option value="{$wert->cWert}" {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                     {/foreach}
                                 </select>

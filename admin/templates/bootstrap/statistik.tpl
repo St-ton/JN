@@ -1,4 +1,4 @@
-{config_load file="$lang.conf" section="statistics"}
+{config_load file="$lang.conf" section='statistics'}
 {include file='tpl_inc/header.tpl'}
 
 {include file='tpl_inc/statistik_jsoninc.tpl'}
@@ -20,7 +20,7 @@
     <table class="list table">
         <thead>
         <tr>
-            {foreach name=member from=$cMember_arr[0] key=i item=cMember}
+            {foreach $cMember_arr[0] as $cMember}
                 <th>{$cMember[1]}</th>
             {/foreach}
         </tr>
@@ -32,9 +32,9 @@
                     {foreach name=member from=$cMember_arr[$i] key=j item=cMember}
                         {assign var=cMemberVar value=$cMember[0]}
                         <td class="tcenter">
-                            {if $cMemberVar == "nCount" && $nTyp == $STATS_ADMIN_TYPE_UMSATZ}
+                            {if $cMemberVar === 'nCount' && $nTyp == $STATS_ADMIN_TYPE_UMSATZ}
                                 {$oStat->$cMemberVar|number_format:2:',':'.'} &euro;
-                            {elseif $cMemberVar == "nCount"}
+                            {elseif $cMemberVar === 'nCount'}
                                 {$oStat->$cMemberVar|number_format:0:',':'.'}
                             {else}
                                 {$oStat->$cMemberVar}

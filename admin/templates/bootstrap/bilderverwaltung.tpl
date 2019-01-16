@@ -20,7 +20,7 @@
             </tr>
             </thead>
             <tbody>
-            {foreach from=$items item="item"}
+            {foreach $items as $item}
                 {$corruptedPicsTypes[{$item->type}] = $item->stats->corrupted}
                 <tr data-type="{$item->type}">
                     <td class="item-name">{$item->name}</td>
@@ -81,19 +81,18 @@
                 </tr>
                 </thead>
                 <tbody>
-                {foreach from=$corruptedImages key=key item="corruptedImage"}
+                {foreach from=$corruptedImages key=key item='corruptedImage'}
                     <tr>
                         <td class="col-xs-7 word-break-all">{$corruptedImage->picture}</td>
                         <td class="col-xs-5">
                             {$moreCorruptedImages = false}
                             <div class="input-group">
-                                {foreach name='corruptedImageArticle' from=$corruptedImage->article item="article"}
-                                    {if $smarty.foreach.corruptedImageArticle.iteration <= 3}
+                                {foreach $corruptedImage->article as $article}
+                                    {if $article@iteration <= 3}
                                         <a href="{$article->articleURLFull}" rel="nofollow" target="_blank">
                                             {$article->articleNr}
                                         </a>
-                                        {if !$smarty.foreach.corruptedImageArticle.last
-                                        && $smarty.foreach.corruptedImageArticle.iteration < 3} |{/if}
+                                        {if !$article@last && $article@iteration < 3} |{/if}
                                     {else}
                                         {$moreCorruptedImages = true}
                                         {$moreCorruptedImage = $key}
@@ -107,12 +106,12 @@
                                         {__('more')} <span class="caret"></span>
                                     </a>
                                     <div class="collapse" id="dropdownCorruptedImages-{$moreCorruptedImage}">
-                                        {foreach name='corruptedImageArticle' from=$corruptedImage->article item="article"}
-                                            {if $smarty.foreach.corruptedImageArticle.iteration > 3}
+                                        {foreach $corruptedImage->article as $article}
+                                            {if $article@iteration > 3}
                                                 <a href="{$article->articleURLFull}" rel="nofollow" target="_blank">
                                                     {$article->articleNr}
                                                 </a>
-                                                {if !$smarty.foreach.corruptedImageArticle.last} |{/if}
+                                                {if !$article@last} |{/if}
                                             {/if}
                                         {/foreach}
                                     </div>

@@ -1,5 +1,5 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="redirect"}
+{config_load file="$lang.conf" section='redirect'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('redirect') cBeschreibung=__('redirectDesc') cDokuURL=__('redirectURL')}
 {include file='tpl_inc/sortcontrols.tpl'}
 

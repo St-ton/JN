@@ -1,4 +1,4 @@
-{config_load file="$lang.conf" section="suchspecialoverlay"}
+{config_load file="$lang.conf" section='suchspecialoverlay'}
 {include file='tpl_inc/header.tpl'}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('suchspecialoverlay') cBeschreibung=__('suchspecialoverlayDesc') cDokuURL=__('suchspecialoverlayUrl')}
@@ -14,8 +14,8 @@
                     </span>
                     <span class="input-group-wrap last">
                         <select id="{__('changeLanguage')}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
-                            {foreach name=sprachen from=$Sprachen item=sprache}
-                                <option value="{$sprache->kSprache}" {if $sprache->kSprache==$smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
+                            {foreach $Sprachen as $sprache}
+                                <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
                             {/foreach}
                         </select>
                     </span>
@@ -31,7 +31,7 @@
                 <input type="hidden" name="suchspecialoverlay" value="1" />
                 <span class="input-group-wrap last">
                     <select name="kSuchspecialOverlay" class="form-control selectBox" id="{__('suchspecial')}" onchange="document.suchspecialoverlay.submit();">
-                        {foreach name=suchspecialoverlay from=$oSuchspecialOverlay_arr item=oSuchspecialOverlayTMP}
+                        {foreach $oSuchspecialOverlay_arr as $oSuchspecialOverlayTMP}
                             <option value="{$oSuchspecialOverlayTMP->kSuchspecialOverlay}" {if $oSuchspecialOverlayTMP->kSuchspecialOverlay == $oSuchspecialOverlay->kSuchspecialOverlay}selected{/if}>{$oSuchspecialOverlayTMP->cSuchspecial}</option>
                         {/foreach}
                     </select>

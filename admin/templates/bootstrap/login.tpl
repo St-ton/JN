@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="login"}
-{config_load file="$lang.conf" section="shopupdate"}
+{config_load file="$lang.conf" section='login'}
+{config_load file="$lang.conf" section='shopupdate'}
 
 <script type="text/javascript">
     {literal}

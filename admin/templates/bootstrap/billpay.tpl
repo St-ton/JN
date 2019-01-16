@@ -1,11 +1,6 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- *}
-
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='einstellungen'}
-{config_load file="$lang.conf" section="billpay"}
+{config_load file="$lang.conf" section='billpay'}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('billpay') cBeschreibung=__('billpayDesc') cDokuURL=__('billpayURL')}
 <div id="content">
@@ -64,7 +59,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {foreach from=$oLog_arr item="oLog"}
+                            {foreach $oLog_arr as $oLog}
                                 <tr class="text-vcenter">
                                     <td>{$oLog->cLog}</td>
                                     <td class="text-center">
@@ -86,7 +81,7 @@
                                     </td>
                                 </tr>
                                 {if $oLog->cLogData|strlen > 0}
-                                    {assign var="oKunde" value=$oLog->cLogData|unserialize}
+                                    {assign var=oKunde value=$oLog->cLogData|unserialize}
                                     <tr class="hidden" id="data{$oLog->kZahlunglog}">
                                         <td colspan="4">
                                             {if $oKunde->kKunde > 0}

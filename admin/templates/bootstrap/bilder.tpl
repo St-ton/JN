@@ -1,5 +1,5 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="bilder"}
+{config_load file="$lang.conf" section='bilder'}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('bilder') cBeschreibung=__('bilderDesc') cDokuURL=__('bilderURL')}
 <div id="content">
@@ -144,7 +144,7 @@
                 </div>
             </div>
             {assign var=open value=false}
-            {foreach name=conf from=$oConfig_arr item=cnf}
+            {foreach $oConfig_arr as $cnf}
             {if $cnf->kEinstellungenConf == 267 || $cnf->kEinstellungenConf == 268 || $cnf->kEinstellungenConf == 269 || $cnf->kEinstellungenConf == 1135 || $cnf->kEinstellungenConf == 1421 || $cnf->kEinstellungenConf == 172 || $cnf->kEinstellungenConf == 161  || $cnf->kEinstellungenConf == 1483  || $cnf->kEinstellungenConf == 1484 || $cnf->kEinstellungenConf == 1485}
                 {if $cnf->cConf === 'Y'}
                     <div class="input-group item{if isset($cSuche) && $cnf->kEinstellungenConf == $cSuche} highlight{/if}">
@@ -154,8 +154,8 @@
                         {if $cnf->cInputTyp === 'selectbox'}
                             <span class="input-group-wrap">
                                 <select class="form-control" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
-                                    {foreach name=selectfor from=$cnf->ConfWerte item=wert}
-                                        <option value="{$wert->cWert}" {if $cnf->gesetzterWert==$wert->cWert}selected{/if}>{$wert->cName}</option>
+                                    {foreach $cnf->ConfWerte as $wert}
+                                        <option value="{$wert->cWert}" {if $cnf->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                     {/foreach}
                                 </select>
                             </span>

@@ -4,9 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Category;
 use Helpers\Form;
 use Helpers\Manufacturer;
-use Helpers\Category;
 use Helpers\Request;
 use Helpers\ShippingMethod;
 
@@ -24,15 +24,15 @@ $themeDir      = empty($Einstellungen['template']['theme']['theme_default'])
 $cShopName     = empty($Einstellungen['global']['global_shopname'])
     ? 'JTL-Shop'
     : $Einstellungen['global']['global_shopname'];
-$cMinify_arr = $oTemplate->getMinifyArray();
-$cCSS_arr    = $cMinify_arr["{$themeDir}.css"] ?? [];
-$cJS_arr     = $cMinify_arr['jtl3.js'] ?? [];
+$minify        = $oTemplate->getMinifyArray();
+$css           = $minify["{$themeDir}.css"] ?? [];
+$js            = $minify['jtl3.js'] ?? [];
 executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
-    'cCSS_arr'          => &$cCSS_arr,
-    'cJS_arr'           => &$cJS_arr,
-    'cPluginCss_arr'    => &$cMinify_arr['plugin_css'],
-    'cPluginJsHead_arr' => &$cMinify_arr['plugin_js_head'],
-    'cPluginJsBody_arr' => &$cMinify_arr['plugin_js_body']
+    'cCSS_arr'          => &$css,
+    'cJS_arr'           => &$js,
+    'cPluginCss_arr'    => &$minify['plugin_css'],
+    'cPluginJsHead_arr' => &$minify['plugin_js_head'],
+    'cPluginJsBody_arr' => &$minify['plugin_js_body']
 ]);
 
 $debugbar         = Shop::Container()->getDebugBar();
@@ -75,12 +75,12 @@ $linkHelper->activate($pagetType);
 $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('NaviFilter', $NaviFilter)
        ->assign('manufacturers', Manufacturer::getInstance()->getManufacturers())
-       ->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
+       ->assign('cPluginCss_arr', $minify['plugin_css'])
        ->assign('oUnterKategorien_arr', Category::getSubcategoryList($AktuelleKategorie->kKategorie ?? -1))
-       ->assign('cPluginJsHead_arr', $cMinify_arr['plugin_js_head'])
-       ->assign('cPluginJsBody_arr', $cMinify_arr['plugin_js_body'])
-       ->assign('cCSS_arr', $cCSS_arr)
-       ->assign('cJS_arr', $cJS_arr)
+       ->assign('cPluginJsHead_arr', $minify['plugin_js_head'])
+       ->assign('cPluginJsBody_arr', $minify['plugin_js_body'])
+       ->assign('cCSS_arr', $css)
+       ->assign('cJS_arr', $js)
        ->assign('nTemplateVersion', $oTemplate->getVersion())
        ->assign('currentTemplateDir', $tplDir)
        ->assign('currentTemplateDirFull', $shopURL . '/' . $tplDir)

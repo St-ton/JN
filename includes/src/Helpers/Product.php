@@ -1924,7 +1924,8 @@ class Product
         $conf            = Shop::getSettings([\CONF_ARTIKELDETAILS]);
         $oXSeller        = self::getXSelling($productID);
         $xsellProductIDs = [];
-        if (isset($oXSeller->Standard->XSellGruppen)
+        if ($oXSeller !== null
+            && isset($oXSeller->Standard->XSellGruppen)
             && \is_array($oXSeller->Standard->XSellGruppen)
             && \count($oXSeller->Standard->XSellGruppen) > 0
         ) {

@@ -23,17 +23,16 @@ $PositiveFeedback             = [];
 $nonAllowed                   = [];
 $Einstellungen                = Shopsetting::getInstance()->getAll();
 $oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
+$alertHelper                  = Shop::Container()->getAlertService();
 // Bewertungsguthaben
 $fBelohnung = (isset($_GET['fB']) && (float)$_GET['fB'] > 0) ? (float)$_GET['fB'] : 0.0;
-// Hinweise und Fehler sammeln - Nur wenn bisher kein Fehler gesetzt wurde!
-$cHinweis = $smarty->getTemplateVars('hinweis');
-$shopURL  = Shop::getURL() . '/';
-if (empty($cHinweis)) {
-    $cHinweis = Product::mapErrorCode(Request::verifyGPDataString('cHinweis'), $fBelohnung);
+
+$shopURL = Shop::getURL() . '/';
+if ($cHinweis = Product::mapErrorCode(Request::verifyGPDataString('cHinweis'), $fBelohnung)) {
+    $alertHelper->addAlert(Alert::TYPE_NOTE, $cHinweis, 'productNote', ['showInAlertListTemplate' => false]);
 }
-$cFehler = $smarty->getTemplateVars('fehler');
-if (empty($cFehler)) {
-    $cFehler = Product::mapErrorCode(Request::verifyGPDataString('cFehler'));
+if ($cFehler = Product::mapErrorCode(Request::verifyGPDataString('cFehler'))) {
+    $alertHelper->addAlert(Alert::TYPE_ERROR, $cFehler, 'productError');
 }
 if (isset($_POST['a'])
     && Request::verifyGPCDataInt('addproductbundle') === 1
@@ -229,8 +228,7 @@ $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('ProduktTagging', $AktuellerArtikel->tags)
        ->assign('BlaetterNavi', $ratingNav)
        ->assign('BewertungsTabAnzeigen', $BewertungsTabAnzeigen)
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
+       ->assign('alertNote', $alertHelper->alertTypeExists(Alert::TYPE_NOTE))
        ->assign('PFAD_MEDIAFILES', $shopURL . PFAD_MEDIAFILES)
        ->assign('PFAD_BILDER', PFAD_BILDER)
        ->assign('FKT_ATTRIBUT_ATTRIBUTEANHAENGEN', FKT_ATTRIBUT_ATTRIBUTEANHAENGEN)

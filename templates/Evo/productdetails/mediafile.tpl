@@ -2,16 +2,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{if !empty($hinweis)}
-    <div class="alert alert-info">
-        {$hinweis}
-    </div>
-{/if}
-{if !empty($fehler)}
-    <div class="alert alert-danger">
-        {$fehler}
-    </div>
-{/if}
 {if !empty($Artikel->oMedienDatei_arr)}
     {assign var=mp3List value=false}
     {assign var=titles value=false}

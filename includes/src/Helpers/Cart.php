@@ -515,7 +515,8 @@ class Cart
                             $oKonfigitem->oEigenschaftwerte_arr,
                             \C_WARENKORBPOS_TYP_ARTIKEL,
                             $cUnique,
-                            $oKonfigitem->getKonfigitem()
+                            $oKonfigitem->getKonfigitem(),
+                            false
                         );
                         break;
 
@@ -1435,27 +1436,30 @@ class Cart
             return false;
         }
         Frontend::getCart()
-                ->fuegeEin(
-                   $kArtikel,
-                   $anzahl,
-                   $oEigenschaftwerte_arr,
-                   1,
-                   $cUnique,
-                   $kKonfigitem,
-                   $setzePositionsPreise,
-                   $cResponsibility
-               )
-                ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDPOS)
-                ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
-                ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
-               ->loescheSpezialPos(\C_WARENKORBPOS_TYP_ZAHLUNGSART)
-               ->loescheSpezialPos(\C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
-               ->loescheSpezialPos(\C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-               ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
-               ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-               ->loescheSpezialPos(\C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+            ->fuegeEin(
+                $kArtikel,
+                $anzahl,
+                $oEigenschaftwerte_arr,
+                1,
+                $cUnique,
+                $kKonfigitem,
+                false,
+                $cResponsibility
+            )
+            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDPOS)
+            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
+            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
+            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_ZAHLUNGSART)
+            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
+            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
+            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
+            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
+           ->loescheSpezialPos(\C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
 
-        Kupon::resetNewCustomerCoupon();
+        Kupon::resetNewCustomerCoupon(false);
+        if ($setzePositionsPreise) {
+            Frontend::getCart()->setzePositionsPreise();
+        }
         unset(
             $_SESSION['VersandKupon'],
             $_SESSION['Versandart'],

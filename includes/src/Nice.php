@@ -62,7 +62,7 @@ class Nice
                 }
             }
         }
-        $this->ladeDefines();
+        $this->initConstants();
         self::$instance = $this;
     }
 
@@ -93,7 +93,7 @@ class Nice
                         base64_decode($data->cBrocken)
                     )
                 );
-                Shop::Container()->getCache()->set($cacheID, $this->brocken, [CACHING_GROUP_CORE]);
+                Shop::Container()->getCache()->set($cacheID, $brocken, [CACHING_GROUP_CORE]);
             }
         }
 
@@ -117,7 +117,7 @@ class Nice
     /**
      * @return $this
      */
-    private function ladeDefines(): self
+    private function initConstants(): self
     {
         ifndef('SHOP_ERWEITERUNG_SEO', 8001);
         ifndef('SHOP_ERWEITERUNG_UMFRAGE', 8021);
@@ -138,7 +138,7 @@ class Nice
     {
         $modules = [];
         if (!defined(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
-            $this->ladeDefines();
+            $this->initConstants();
         }
         $module           = new stdClass();
         $module->kModulId = SHOP_ERWEITERUNG_UMFRAGE;

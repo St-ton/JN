@@ -111,9 +111,8 @@ class Emailvorlage
         $oObj          = Shop::Container()->getDB()->select($cTable, 'kEmailvorlage', $kEmailvorlage);
 
         if (isset($oObj->kEmailvorlage) && $oObj->kEmailvorlage > 0) {
-            $cMember_arr = array_keys(get_object_vars($oObj));
-            foreach ($cMember_arr as $cMember) {
-                $this->$cMember = $oObj->$cMember;
+            foreach (array_keys(get_object_vars($oObj)) as $member) {
+                $this->$member = $oObj->$member;
             }
             // Settings
             $this->oEinstellung_arr = Shop::Container()->getDB()->selectAll(

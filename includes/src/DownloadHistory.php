@@ -48,18 +48,18 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         /**
          * @param int $kDownloadHistory
          */
-        private function loadFromDB(int $kDownloadHistory)
+        private function loadFromDB(int $kDownloadHistory): void
         {
-            $oDownloadHistory = Shop::Container()->getDB()->select(
+            $history = Shop::Container()->getDB()->select(
                 'tdownloadhistory',
                 'kDownloadHistory',
                 $kDownloadHistory
             );
-            if ($oDownloadHistory !== null && (int)$oDownloadHistory->kDownloadHistory > 0) {
-                $cMember_arr = array_keys(get_object_vars($oDownloadHistory));
-                if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-                    foreach ($cMember_arr as $cMember) {
-                        $this->$cMember = $oDownloadHistory->$cMember;
+            if ($history !== null && (int)$history->kDownloadHistory > 0) {
+                $members = array_keys(get_object_vars($history));
+                if (is_array($members) && count($members) > 0) {
+                    foreach ($members as $member) {
+                        $this->$member = $history->$member;
                     }
                     $this->kDownload        = (int)$this->kDownload;
                     $this->kDownloadHistory = (int)$this->kDownloadHistory;
@@ -87,21 +87,21 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          */
         public static function getHistory(int $kDownload): array
         {
-            $oDownloadHistory_arr = [];
+            $history = [];
             if ($kDownload > 0) {
-                $oHistory_arr = Shop::Container()->getDB()->selectAll(
+                $data = Shop::Container()->getDB()->selectAll(
                     'tdownloadhistory',
                     'kDownload',
                     $kDownload,
                     'kDownloadHistory',
                     'dErstellt DESC'
                 );
-                foreach ($oHistory_arr as $oHistory) {
-                    $oDownloadHistory_arr[] = new self($oHistory->kDownloadHistory);
+                foreach ($data as $item) {
+                    $history[] = new self((int)$item->kDownloadHistory);
                 }
             }
 
-            return $oDownloadHistory_arr;
+            return $history;
         }
 
         /**
@@ -111,31 +111,31 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          */
         public static function getOrderHistory(int $kKunde, int $kBestellung = 0): array
         {
-            $oHistory_arr = [];
+            $history = [];
             if ($kBestellung > 0 || $kKunde > 0) {
                 $cSQLWhere = 'kBestellung = ' . $kBestellung;
                 if ($kBestellung > 0) {
                     $cSQLWhere .= ' AND kKunde = ' . $kKunde;
                 }
 
-                $oHistoryTMP_arr = Shop::Container()->getDB()->query(
+                $data = Shop::Container()->getDB()->query(
                     'SELECT kDownload, kDownloadHistory
                          FROM tdownloadhistory
                          WHERE ' . $cSQLWhere . '
                          ORDER BY dErstellt DESC',
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
-                foreach ($oHistoryTMP_arr as $oHistoryTMP) {
-                    if (!isset($oHistory_arr[$oHistoryTMP->kDownload])
-                        || !is_array($oHistory_arr[$oHistoryTMP->kDownload])
+                foreach ($data as $item) {
+                    if (!isset($history[$item->kDownload])
+                        || !is_array($history[$item->kDownload])
                     ) {
-                        $oHistory_arr[$oHistoryTMP->kDownload] = [];
+                        $history[$item->kDownload] = [];
                     }
-                    $oHistory_arr[$oHistoryTMP->kDownload][] = new self($oHistoryTMP->kDownloadHistory);
+                    $history[$item->kDownload][] = new self((int)$item->kDownloadHistory);
                 }
             }
 
-            return $oHistory_arr;
+            return $history;
         }
 
         /**
@@ -144,10 +144,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          */
         public function save(bool $bPrimary = false)
         {
-            $oObj = $this->kopiereMembers();
-            unset($oObj->kDownloadHistory);
+            $ins = $this->kopiereMembers();
+            unset($ins->kDownloadHistory);
 
-            $kDownloadHistory = Shop::Container()->getDB()->insert('tdownloadhistory', $oObj);
+            $kDownloadHistory = Shop::Container()->getDB()->insert('tdownloadhistory', $ins);
             if ($kDownloadHistory > 0) {
                 return $bPrimary ? $kDownloadHistory : true;
             }
@@ -160,17 +160,17 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          */
         public function update(): int
         {
-            $_upd              = new stdClass();
-            $_upd->kDownload   = $this->kDownload;
-            $_upd->kKunde      = $this->kKunde;
-            $_upd->kBestellung = $this->kBestellung;
-            $_upd->dErstellt   = $this->dErstellt;
+            $upd              = new stdClass();
+            $upd->kDownload   = $this->kDownload;
+            $upd->kKunde      = $this->kKunde;
+            $upd->kBestellung = $this->kBestellung;
+            $upd->dErstellt   = $this->dErstellt;
 
             return Shop::Container()->getDB()->update(
                 'tdownloadhistory',
                 'kDownloadHistory',
                 (int)$this->kDownloadHistory,
-                $_upd
+                $upd
             );
         }
 
@@ -274,12 +274,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          */
         private function kopiereMembers(): stdClass
         {
-            $obj         = new stdClass();
-            $cMember_arr = array_keys(get_object_vars($this));
-
-            if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-                foreach ($cMember_arr as $cMember) {
-                    $obj->$cMember = $this->$cMember;
+            $obj     = new stdClass();
+            $members = array_keys(get_object_vars($this));
+            if (is_array($members) && count($members) > 0) {
+                foreach ($members as $member) {
+                    $obj->$member = $this->$member;
                 }
             }
 

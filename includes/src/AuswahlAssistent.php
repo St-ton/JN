@@ -52,12 +52,12 @@ class AuswahlAssistent
     /**
      * @var AuswahlAssistentFrage[]
      */
-    private $oFrage_arr = [];
+    private $questions = [];
 
     /**
      * @var AuswahlAssistentFrage[] - keys are kMerkmal
      */
-    private $oFrage_assoc = [];
+    private $questionsAssoc = [];
 
     /**
      * @var int
@@ -67,12 +67,12 @@ class AuswahlAssistent
     /**
      * @var array
      */
-    private $kSelection_arr = [];
+    private $selections = [];
 
     /**
      * @var \Filter\ProductFilter
      */
-    private $oNaviFilter;
+    private $productFilter;
 
     /**
      * @var array
@@ -111,9 +111,9 @@ class AuswahlAssistent
      * @param int    $kSprache
      * @param bool   $bOnlyActive
      */
-    private function loadFromDB($cKey, int $kKey, int $kSprache, bool $bOnlyActive = true)
+    private function loadFromDB($cKey, int $kKey, int $kSprache, bool $bOnlyActive = true): void
     {
-        $oDbResult = Shop::Container()->getDB()->queryPrepared(
+        $item = Shop::Container()->getDB()->queryPrepared(
             'SELECT *
                 FROM tauswahlassistentort AS ao
                     JOIN tauswahlassistentgruppe AS ag
@@ -130,8 +130,8 @@ class AuswahlAssistent
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        if ($oDbResult !== null && $oDbResult !== false) {
-            foreach (get_object_vars($oDbResult) as $name => $value) {
+        if ($item !== null && $item !== false) {
+            foreach (get_object_vars($item) as $name => $value) {
                 $this->$name = $value;
             }
 
@@ -151,12 +151,12 @@ class AuswahlAssistent
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
-            $this->oFrage_arr = [];
+            $this->questions = [];
 
             foreach ($questionIDs as $questionID) {
-                $question                                = new AuswahlAssistentFrage((int)$questionID->id);
-                $this->oFrage_arr[]                      = $question;
-                $this->oFrage_assoc[$question->kMerkmal] = $question;
+                $question                                  = new AuswahlAssistentFrage((int)$questionID->id);
+                $this->questions[]                         = $question;
+                $this->questionsAssoc[$question->kMerkmal] = $question;
             }
         }
     }
@@ -167,8 +167,8 @@ class AuswahlAssistent
      */
     public function setNextSelection(int $kWert): self
     {
-        if ($this->nCurQuestion < count($this->oFrage_arr)) {
-            $this->kSelection_arr[] = $kWert;
+        if ($this->nCurQuestion < count($this->questions)) {
+            $this->selections[] = $kWert;
             ++$this->nCurQuestion;
         }
 
@@ -180,33 +180,33 @@ class AuswahlAssistent
      */
     public function filter(): self
     {
-        $cParameter_arr = [];
+        $params = [];
         if ($this->cKey === AUSWAHLASSISTENT_ORT_KATEGORIE) {
-            $cParameter_arr['kKategorie'] = $this->kKey;
+            $params['kKategorie'] = $this->kKey;
 
-            if (count($this->kSelection_arr) > 0) {
-                $cParameter_arr['MerkmalFilter_arr'] = $this->kSelection_arr;
+            if (count($this->selections) > 0) {
+                $params['MerkmalFilter_arr'] = $this->selections;
             }
-        } elseif (count($this->kSelection_arr) > 0) {
-            $cParameter_arr['kMerkmalWert'] = $this->kSelection_arr[0];
-            if (count($this->kSelection_arr) > 1) {
-                $cParameter_arr['MerkmalFilter_arr'] = array_slice($this->kSelection_arr, 1);
+        } elseif (count($this->selections) > 0) {
+            $params['kMerkmalWert'] = $this->selections[0];
+            if (count($this->selections) > 1) {
+                $params['MerkmalFilter_arr'] = array_slice($this->selections, 1);
             }
         }
-        $NaviFilter        = Shop::buildProductFilter($cParameter_arr);
-        $AktuelleKategorie = isset($cParameter_arr['kKategorie'])
-            ? new Kategorie($cParameter_arr['kKategorie'])
+        $productFilter     = Shop::buildProductFilter($params);
+        $AktuelleKategorie = isset($params['kKategorie'])
+            ? new Kategorie($params['kKategorie'])
             : null;
         $attributeFilters  = (new \Filter\SearchResults())->setFilterOptions(
-            $NaviFilter,
+            $productFilter,
             $AktuelleKategorie,
             true
         )->getAttributeFilterOptions();
 
         foreach ($attributeFilters as $attributeFilter) {
             /** @var \Filter\Items\Attribute $attributeFilter */
-            if (array_key_exists($attributeFilter->getValue(), $this->oFrage_assoc)) {
-                $oFrage                    = $this->oFrage_assoc[$attributeFilter->getValue()];
+            if (array_key_exists($attributeFilter->getValue(), $this->questionsAssoc)) {
+                $oFrage                    = $this->questionsAssoc[$attributeFilter->getValue()];
                 $oFrage->oWert_arr         = $attributeFilter->getOptions();
                 $oFrage->nTotalResultCount = 0;
                 foreach ($attributeFilter->getOptions() as $oWert) {
@@ -215,7 +215,7 @@ class AuswahlAssistent
                 }
             }
         }
-        $this->oNaviFilter = $NaviFilter;
+        $this->productFilter = $productFilter;
 
         return $this;
     }
@@ -293,7 +293,7 @@ class AuswahlAssistent
      */
     public function getQuestion(int $nFrage)
     {
-        return $this->oFrage_arr[$nFrage] ?? null;
+        return $this->questions[$nFrage] ?? null;
     }
 
     /**
@@ -301,7 +301,7 @@ class AuswahlAssistent
      */
     public function getQuestions(): array
     {
-        return $this->oFrage_arr;
+        return $this->questions;
     }
 
     /**
@@ -309,7 +309,7 @@ class AuswahlAssistent
      */
     public function getQuestionCount(): int
     {
-        return count($this->oFrage_arr);
+        return count($this->questions);
     }
 
     /**
@@ -325,7 +325,7 @@ class AuswahlAssistent
      */
     public function getSelections(): array
     {
-        return $this->kSelection_arr;
+        return $this->selections;
     }
 
     /**
@@ -334,8 +334,8 @@ class AuswahlAssistent
      */
     public function getSelectedValue(int $nFrage)
     {
-        $oFrage         = $this->oFrage_arr[$nFrage];
-        $kSelectedValue = $this->kSelection_arr[$nFrage];
+        $oFrage         = $this->questions[$nFrage];
+        $kSelectedValue = $this->selections[$nFrage];
 
         return $oFrage->oWert_assoc[$kSelectedValue];
     }
@@ -345,7 +345,7 @@ class AuswahlAssistent
      */
     public function getNaviFilter(): \Filter\ProductFilter
     {
-        return $this->oNaviFilter;
+        return $this->productFilter;
     }
 
     /**
@@ -353,8 +353,8 @@ class AuswahlAssistent
      */
     public function getLastSelectedValue()
     {
-        $oFrage         = end($this->oFrage_arr);
-        $kSelectedValue = end($this->kSelection_arr);
+        $oFrage         = end($this->questions);
+        $kSelectedValue = end($this->selections);
 
         return $oFrage->oWert_assoc[$kSelectedValue] ?? null;
     }

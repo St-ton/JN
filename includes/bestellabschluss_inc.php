@@ -703,7 +703,7 @@ function aktualisiereStuecklistenLagerbestand($partListProduct, $amount)
         return $bestandNeu;
     }
     // Gibt es lagerrelevante Komponenten in der Stückliste?
-    $oKomponente_arr = Shop::Container()->getDB()->queryPrepared(
+    $components = Shop::Container()->getDB()->queryPrepared(
         "SELECT tstueckliste.kArtikel, tstueckliste.fAnzahl
             FROM tstueckliste
             JOIN tartikel
@@ -714,21 +714,21 @@ function aktualisiereStuecklistenLagerbestand($partListProduct, $amount)
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
-    if (is_array($oKomponente_arr) && count($oKomponente_arr) > 0) {
+    if (is_array($components) && count($components) > 0) {
         // wenn ja, dann wird für diese auch der Bestand aktualisiert
         $options = Artikel::getDefaultOptions();
 
         $options->nKeineSichtbarkeitBeachten = 1;
-        foreach ($oKomponente_arr as $oKomponente) {
+        foreach ($components as $component) {
             $tmpArtikel = new Artikel();
-            $tmpArtikel->fuelleArtikel($oKomponente->kArtikel, $options);
+            $tmpArtikel->fuelleArtikel($component->kArtikel, $options);
 
             $komponenteBestand = floor(
                 aktualisiereLagerbestand(
                     $tmpArtikel,
-                    $amount * $oKomponente->fAnzahl,
+                    $amount * $component->fAnzahl,
                     null
-                ) / $oKomponente->fAnzahl
+                ) / $component->fAnzahl
             );
 
             if ($komponenteBestand < $bestandNeu && $tmpArtikel->cLagerKleinerNull !== 'Y') {

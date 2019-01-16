@@ -221,17 +221,17 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param array|int $sektionen_arr
+     * @param array|int $sections
      * @return array
      */
-    public function getSettings($sektionen_arr): array
+    public function getSettings($sections): array
     {
         $ret = [];
-        if (!is_array($sektionen_arr)) {
-            $sektionen_arr = (array)$sektionen_arr;
+        if (!is_array($sections)) {
+            $sections = (array)$sections;
         }
-        foreach ($sektionen_arr as $sektionen) {
-            $mapping = self::mapSettingName($sektionen);
+        foreach ($sections as $section) {
+            $mapping = self::mapSettingName($section);
             if ($mapping !== null) {
                 $ret[$mapping] = $this[$mapping];
             }

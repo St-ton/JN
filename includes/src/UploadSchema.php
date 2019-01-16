@@ -146,11 +146,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
             if (!is_object($objTo)) {
                 $objTo = new stdClass();
             }
-            $cMember_arr = array_keys(get_object_vars($objFrom));
-            if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-                foreach ($cMember_arr as $cMember) {
-                    $objTo->$cMember = $objFrom->$cMember;
-                }
+            foreach (array_keys(get_object_vars($objFrom)) as $member) {
+                $objTo->$member = $objFrom->$member;
             }
 
             return $objTo;

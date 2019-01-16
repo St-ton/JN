@@ -61,7 +61,8 @@ class Vergleichsliste
             $linkHelper     = Shop::Container()->getLinkService();
             $baseURL        = $linkHelper->getStaticRoute('vergleichsliste.php');
             foreach ($compareList->oArtikel_arr as $oArtikel) {
-                $product          = (new Artikel())->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
+                $product = new Artikel();
+                $product->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
                 $product->cURLDEL = $baseURL . '?vlplo=' . $oArtikel->kArtikel;
                 if (isset($oArtikel->oVariationen_arr) && count($oArtikel->oVariationen_arr) > 0) {
                     $product->Variationen = $oArtikel->oVariationen_arr;

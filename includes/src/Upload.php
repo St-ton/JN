@@ -204,36 +204,36 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         }
 
         /**
-         * @param int $nFileSize
+         * @param int $fileSize
          * @return string
          */
-        public static function formatGroesse($nFileSize): string
+        public static function formatGroesse($fileSize): string
         {
-            if (!is_numeric($nFileSize)) {
+            if (!is_numeric($fileSize)) {
                 return '---';
             }
-            $nStep       = 0;
-            $nDecr       = 1024;
-            $cPrefix_arr = ['Byte', 'KB', 'MB', 'GB', 'TB', 'PB'];
+            $step     = 0;
+            $decr     = 1024;
+            $prefixes = ['Byte', 'KB', 'MB', 'GB', 'TB', 'PB'];
 
-            while (($nFileSize / $nDecr) > 0.9) {
-                $nFileSize /= $nDecr;
-                ++$nStep;
+            while (($fileSize / $decr) > 0.9) {
+                $fileSize /= $decr;
+                ++$step;
             }
 
-            return round($nFileSize, 2) . ' ' . $cPrefix_arr[$nStep];
+            return round($fileSize, 2) . ' ' . $prefixes[$step];
         }
 
         /**
-         * @param object $oUpload
+         * @param object $upload
          * @return string
          */
-        public static function uniqueDateiname($oUpload): string
+        public static function uniqueDateiname($upload): string
         {
-            $unique = $oUpload->kUploadSchema . $oUpload->kCustomID . $oUpload->nTyp . self::getSessionKey();
-            if (!empty($oUpload->nEigenschaften_arr)) {
+            $unique = $upload->kUploadSchema . $upload->kCustomID . $upload->nTyp . self::getSessionKey();
+            if (!empty($upload->nEigenschaften_arr)) {
                 $eigenschaften = '';
-                foreach ($oUpload->nEigenschaften_arr as $k => $v) {
+                foreach ($upload->nEigenschaften_arr as $k => $v) {
                     $eigenschaften .= $k . $v;
                 }
                 $unique .= $eigenschaften;
@@ -269,16 +269,16 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         }
 
         /**
-         * @param string $cName
+         * @param string $name
          * @return bool
          */
-        public static function vorschauTyp(string $cName): bool
+        public static function vorschauTyp(string $name): bool
         {
-            $cPath_arr = pathinfo($cName);
+            $pathInfo = pathinfo($name);
 
-            return is_array($cPath_arr)
+            return is_array($pathInfo)
                 ? in_array(
-                    $cPath_arr['extension'],
+                    $pathInfo['extension'],
                     ['gif', 'png', 'jpg', 'jpeg', 'bmp', 'jpe'],
                     true
                 )

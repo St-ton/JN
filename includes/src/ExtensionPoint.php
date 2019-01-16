@@ -30,15 +30,15 @@ class ExtensionPoint
     protected $kKundengruppe;
 
     /**
-     * @param int   $nSeitenTyp
-     * @param array $cParam_arr
+     * @param int   $pageType
+     * @param array $params
      * @param int   $kSprache
      * @param int   $kKundengruppe
      */
-    public function __construct(int $nSeitenTyp, array $cParam_arr, int $kSprache, int $kKundengruppe)
+    public function __construct(int $pageType, array $params, int $kSprache, int $kKundengruppe)
     {
-        $this->nSeitenTyp    = $nSeitenTyp;
-        $this->cParam_arr    = $cParam_arr;
+        $this->nSeitenTyp    = $pageType;
+        $this->cParam_arr    = $params;
         $this->kSprache      = $kSprache;
         $this->kKundengruppe = $kKundengruppe;
     }

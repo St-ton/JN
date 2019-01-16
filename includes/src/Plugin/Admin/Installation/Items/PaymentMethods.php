@@ -139,8 +139,7 @@ class PaymentMethods extends AbstractItem
                 'Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden.',
                 'Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)'
             ];
-            $nSort_arr    = [100, 101, 102];
-
+            $sorting      = [100, 101, 102];
             for ($z = 0; $z < 3; $z++) {
                 $conf          = new \stdClass();
                 $conf->kPlugin = $pluginID;
@@ -154,7 +153,7 @@ class PaymentMethods extends AbstractItem
                 $plgnConf->cBeschreibung    = $descriptions[$z];
                 $plgnConf->cWertName        = $moduleID . '_' . $valueNames[$z];
                 $plgnConf->cInputTyp        = 'zahl';
-                $plgnConf->nSort            = $nSort_arr[$z];
+                $plgnConf->nSort            = $sorting[$z];
                 $plgnConf->cConf            = 'Y';
 
                 $this->db->insert('tplugineinstellungenconf', $plgnConf);

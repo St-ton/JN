@@ -16,7 +16,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @var array
          */
-        private static $oGruppen_arr = [];
+        private static $groups = [];
 
         /**
          * getKonfig
@@ -27,31 +27,31 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public static function getKonfig(int $kArtikel, int $kSprache = 0): array
         {
-            if (isset(self::$oGruppen_arr[$kArtikel])) {
+            if (isset(self::$groups[$kArtikel])) {
                 //#7482
-                return self::$oGruppen_arr[$kArtikel];
+                return self::$groups[$kArtikel];
             }
-            $oGruppen_arr = Shop::Container()->getDB()->selectAll(
+            $groups = Shop::Container()->getDB()->selectAll(
                 'tartikelkonfiggruppe',
                 'kArtikel',
                 $kArtikel,
                 'kArtikel, kKonfigGruppe',
                 'nSort ASC'
             );
-            if (!is_array($oGruppen_arr) || count($oGruppen_arr) === 0) {
+            if (!is_array($groups) || count($groups) === 0) {
                 return [];
             }
             if (!$kSprache) {
                 $kSprache = Shop::getLanguageID();
             }
-            foreach ($oGruppen_arr as &$oGruppe) {
-                $oGruppe = new Konfiggruppe((int)$oGruppe->kKonfigGruppe, $kSprache);
+            foreach ($groups as &$group) {
+                $group = new Konfiggruppe((int)$group->kKonfigGruppe, $kSprache);
             }
-            unset($oGruppe);
+            unset($group);
 
-            self::$oGruppen_arr[$kArtikel] = $oGruppen_arr;
+            self::$groups[$kArtikel] = $groups;
 
-            return $oGruppen_arr;
+            return $groups;
         }
 
         /**
@@ -60,7 +60,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public static function hasKonfig(int $kArtikel): bool
         {
-            $oGruppen_arr = Shop::Container()->getDB()->query(
+            $groups = Shop::Container()->getDB()->query(
                 'SELECT kArtikel, kKonfigGruppe
                      FROM tartikelkonfiggruppe
                      WHERE tartikelkonfiggruppe.kArtikel = ' . $kArtikel . '
@@ -68,7 +68,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
-            return is_array($oGruppen_arr) && count($oGruppen_arr) > 0;
+            return is_array($groups) && count($groups) > 0;
         }
 
         /**
@@ -89,57 +89,54 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             if (!is_array($oBasket->PositionenArr) || count($oBasket->PositionenArr) === 0) {
                 return;
             }
-            $beDeletednPos_arr = [];
-            foreach ($oBasket->PositionenArr as $nPos => $oPosition) {
-                $bDeleted = false;
-                if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
-                    // Konfigvater
-                    if ($oPosition->cUnique && $oPosition->kKonfigitem == 0) {
-                        $oKonfigitem_arr = [];
+            $deletedPositions = [];
+            foreach ($oBasket->PositionenArr as $index => $position) {
+                $deleted = false;
+                if ($position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
+                    if ($position->cUnique && $position->kKonfigitem == 0) {
+                        $configItems = [];
                         // Alle Kinder suchen
-                        foreach ($oBasket->PositionenArr as $oChildPosition) {
-                            if ($oChildPosition->cUnique &&
-                                $oChildPosition->cUnique === $oPosition->cUnique
-                                && $oChildPosition->kKonfigitem > 0
+                        foreach ($oBasket->PositionenArr as $childPosition) {
+                            if ($childPosition->cUnique
+                                && $childPosition->cUnique === $position->cUnique
+                                && $childPosition->kKonfigitem > 0
                             ) {
-                                $oKonfigitem_arr[] = new Konfigitem($oChildPosition->kKonfigitem);
+                                $configItems[] = new Konfigitem($childPosition->kKonfigitem);
                             }
                         }
                         // Konfiguration validieren
-                        if (self::validateBasket($oPosition->kArtikel, $oKonfigitem_arr) !== true) {
-                            $bDeleted            = true;
-                            $beDeletednPos_arr[] = $nPos;
+                        if (self::validateBasket($position->kArtikel, $configItems) !== true) {
+                            $deleted            = true;
+                            $deletedPositions[] = $index;
                             //loescheWarenkorbPosition($nPos);
                         }
-                    } elseif (!$oPosition->cUnique) {
+                    } elseif (!$position->cUnique) {
                         // Konfiguration vorhanden -> löschen
-                        if (self::hasKonfig($oPosition->kArtikel)) {
-                            $bDeleted            = true;
-                            $beDeletednPos_arr[] = $nPos;
+                        if (self::hasKonfig($position->kArtikel)) {
+                            $deleted            = true;
+                            $deletedPositions[] = $index;
                             //loescheWarenkorbPosition($nPos);
                         }
                     }
-
-                    if ($bDeleted) {
-                        $cISO = $_SESSION['cISOSprache'];
+                    if ($deleted) {
                         Shop::Container()->getLogService()->error(
                             'Validierung der Konfiguration fehlgeschlagen - Warenkorbposition wurde entfernt: ' .
-                            $oPosition->cName[$cISO] . '(' . $oPosition->kArtikel . ')'
+                            $position->cName[$_SESSION['cISOSprache']] . '(' . $position->kArtikel . ')'
                         );
                     }
                 }
             }
-            Cart::deleteCartPositions($beDeletednPos_arr);
+            Cart::deleteCartPositions($deletedPositions);
         }
 
         /**
          * @param int   $kArtikel
-         * @param array $oKonfigitem_arr
+         * @param array $configItems
          * @return array|bool
          */
-        public static function validateBasket(int $kArtikel, $oKonfigitem_arr)
+        public static function validateBasket(int $kArtikel, $configItems)
         {
-            if ($kArtikel === 0 || !is_array($oKonfigitem_arr)) {
+            if ($kArtikel === 0 || !is_array($configItems)) {
                 Shop::Container()->getLogService()->error(
                     'Validierung der Konfiguration fehlgeschlagen - Ungültige Daten'
                 );
@@ -155,43 +152,41 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             if ($oArtikel && (int)$oArtikel->kArtikel > 0) {
                 $fFinalPrice += $oArtikel->Preise->fVKNetto;
             }
-            // Anzahl
-            foreach ($oKonfigitem_arr as $oKonfigitem) {
-                if (!isset($oKonfigitem->fAnzahl) ||
-                    $oKonfigitem->fAnzahl < $oKonfigitem->getMin() ||
-                    $oKonfigitem->fAnzahl > $oKonfigitem->getMax()) {
-                    $oKonfigitem->fAnzahl = $oKonfigitem->getInitial();
+            foreach ($configItems as $configItem) {
+                if (!isset($configItem->fAnzahl) ||
+                    $configItem->fAnzahl < $configItem->getMin() ||
+                    $configItem->fAnzahl > $configItem->getMax()) {
+                    $configItem->fAnzahl = $configItem->getInitial();
                 }
-                $fFinalPrice += $oKonfigitem->getPreis(true) * $oKonfigitem->fAnzahl;
+                $fFinalPrice += $configItem->getPreis(true) * $configItem->fAnzahl;
             }
-
-            $aError_arr = [];
-            foreach (self::getKonfig($kArtikel) as $oGruppe) {
-                $nItemCount    = 0;
-                $kKonfiggruppe = $oGruppe->getKonfiggruppe();
-                foreach ($oKonfigitem_arr as $oKonfigitem) {
-                    if ($oKonfigitem->getKonfiggruppe() == $kKonfiggruppe) {
-                        $nItemCount++;
+            $errors = [];
+            foreach (self::getKonfig($kArtikel) as $group) {
+                $itemCount     = 0;
+                $kKonfiggruppe = $group->getKonfiggruppe();
+                foreach ($configItems as $configItem) {
+                    if ($configItem->getKonfiggruppe() == $kKonfiggruppe) {
+                        $itemCount++;
                     }
                 }
-                if ($nItemCount < $oGruppe->getMin() && $oGruppe->getMin() > 0) {
-                    if ($oGruppe->getMin() == $oGruppe->getMax()) {
-                        $aError_arr[$kKonfiggruppe] =
-                            Shop::Lang()->get('configChooseNComponents', 'productDetails', $oGruppe->getMin());
+                if ($itemCount < $group->getMin() && $group->getMin() > 0) {
+                    if ($group->getMin() == $group->getMax()) {
+                        $errors[$kKonfiggruppe] =
+                            Shop::Lang()->get('configChooseNComponents', 'productDetails', $group->getMin());
                     } else {
-                        $aError_arr[$kKonfiggruppe] =
-                            Shop::Lang()->get('configChooseMinComponents', 'productDetails', $oGruppe->getMin());
+                        $errors[$kKonfiggruppe] =
+                            Shop::Lang()->get('configChooseMinComponents', 'productDetails', $group->getMin());
                     }
-                    $aError_arr[$kKonfiggruppe] .= self::langComponent($oGruppe->getMin() > 1);
-                } elseif ($nItemCount > $oGruppe->getMax() && $oGruppe->getMax() > 0) {
-                    if ($oGruppe->getMin() == $oGruppe->getMax()) {
-                        $aError_arr[$kKonfiggruppe] =
-                            Shop::Lang()->get('configChooseNComponents', 'productDetails', $oGruppe->getMin()) .
-                            self::langComponent($oGruppe->getMin() > 1);
+                    $errors[$kKonfiggruppe] .= self::langComponent($group->getMin() > 1);
+                } elseif ($itemCount > $group->getMax() && $group->getMax() > 0) {
+                    if ($group->getMin() == $group->getMax()) {
+                        $errors[$kKonfiggruppe] =
+                            Shop::Lang()->get('configChooseNComponents', 'productDetails', $group->getMin()) .
+                            self::langComponent($group->getMin() > 1);
                     } else {
-                        $aError_arr[$kKonfiggruppe] =
-                            Shop::Lang()->get('configChooseMaxComponents', 'productDetails', $oGruppe->getMax()) .
-                            self::langComponent($oGruppe->getMax() > 1);
+                        $errors[$kKonfiggruppe] =
+                            Shop::Lang()->get('configChooseMaxComponents', 'productDetails', $group->getMax()) .
+                            self::langComponent($group->getMax() > 1);
                     }
                 }
             }
@@ -208,7 +203,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 return false;
             }
 
-            return count($aError_arr) === 0 ? true : $aError_arr;
+            return count($errors) === 0 ? true : $errors;
         }
 
         /**
@@ -218,9 +213,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         private static function langComponent(bool $bPlural = false, bool $bSpace = true): string
         {
-            $cComponent = $bSpace ? ' ' : '';
+            $component = $bSpace ? ' ' : '';
 
-            return $cComponent . Shop::Lang()->get($bPlural ? 'configComponents' : 'configComponent', 'productDetails');
+            return $component . Shop::Lang()->get($bPlural ? 'configComponents' : 'configComponent', 'productDetails');
         }
     }
 }

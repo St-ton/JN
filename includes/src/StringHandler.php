@@ -242,9 +242,9 @@ class StringHandler
      */
     public static function convertISO2ISO639(string $ISO)
     {
-        $cISO_arr = self::getISOMappings();
+        $mappings = self::getISOMappings();
 
-        return $cISO_arr[$ISO];
+        return $mappings[$ISO];
     }
 
     /**

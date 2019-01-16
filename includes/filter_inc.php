@@ -212,12 +212,12 @@ function gibTagFilterOptionen($FilterSQL, $NaviFilter)
 function gibSuchFilterJSONOptionen($FilterSQL, $NaviFilter)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $oSuchfilter_arr = gibSuchFilterOptionen($FilterSQL, $NaviFilter); // cURL
-    foreach ($oSuchfilter_arr as $key => $oSuchfilter) {
-        $oSuchfilter_arr[$key]->cURL = StringHandler::htmlentitydecode($oSuchfilter->cURL);
+    $searchFilters = gibSuchFilterOptionen($FilterSQL, $NaviFilter); // cURL
+    foreach ($searchFilters as $key => $sf) {
+        $searchFilters[$key]->cURL = StringHandler::htmlentitydecode($sf->cURL);
     }
 
-    return \Boxes\Items\AbstractBox::getJSONString($oSuchfilter_arr);
+    return \Boxes\Items\AbstractBox::getJSONString($searchFilters);
 }
 
 /**
@@ -229,11 +229,11 @@ function gibSuchFilterJSONOptionen($FilterSQL, $NaviFilter)
 function gibTagFilterJSONOptionen($FilterSQL, $NaviFilter)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $oTags_arr = gibTagFilterOptionen($FilterSQL, $NaviFilter);
-    foreach ($oTags_arr as $key => $oTags) {
-        $oTags_arr[$key]->cURL = StringHandler::htmlentitydecode($oTags->cURL);
+    $tags = gibTagFilterOptionen($FilterSQL, $NaviFilter);
+    foreach ($tags as $key => $oTags) {
+        $tags[$key]->cURL = StringHandler::htmlentitydecode($oTags->cURL);
     }
-    return \Boxes\Items\AbstractBox::getJSONString($oTags_arr);
+    return \Boxes\Items\AbstractBox::getJSONString($tags);
 }
 
 /**
@@ -418,16 +418,16 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
 
 /**
  * @param object       $oPreis
- * @param object|array $oPreisspannenfilter_arr
+ * @param object|array $priceRangeFilter
  * @return string
  * @deprecated since 5.0.0
  */
-function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = null)
+function berechnePreisspannenSQL($oPreis, $priceRangeFilter = null)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::getProductFilter()
                ->getPriceRangeFilter()
-               ->getPriceRangeSQL($oPreis, \Session\Frontend::getCurrency(), $oPreisspannenfilter_arr);
+               ->getPriceRangeSQL($oPreis, \Session\Frontend::getCurrency(), $priceRangeFilter);
 }
 
 /**

@@ -55,11 +55,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                 $kSprache
             );
             if ($oDownloadSprache !== null && (int)$oDownloadSprache->kDownload > 0) {
-                $cMember_arr = array_keys(get_object_vars($oDownloadSprache));
-                if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-                    foreach ($cMember_arr as $cMember) {
-                        $this->$cMember = $oDownloadSprache->$cMember;
-                    }
+                foreach (array_keys(get_object_vars($oDownloadSprache)) as $member) {
+                    $this->$member = $oDownloadSprache->$member;
                 }
                 $this->kSprache  = (int)$this->kSprache;
                 $this->kDownload = (int)$this->kDownload;
@@ -179,12 +176,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          */
         private function kopiereMembers(): stdClass
         {
-            $obj         = new stdClass();
-            $cMember_arr = array_keys(get_object_vars($this));
-            if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-                foreach ($cMember_arr as $cMember) {
-                    $obj->$cMember = $this->$cMember;
-                }
+            $obj = new stdClass();
+            foreach (array_keys(get_object_vars($this)) as $member) {
+                $obj->$member = $this->$member;
             }
 
             return $obj;

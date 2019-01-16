@@ -167,7 +167,7 @@ class Merkmal
                                         AND standardSprache.kSprache = {$kSprache}";
                 $cOrderBy         = 'ORDER BY tmw.nSort, standardSprache.cWert';
             }
-            $oMerkmalWertTMP_arr    = Shop::Container()->getDB()->query(
+            $tmpAttributes          = Shop::Container()->getDB()->query(
                 "SELECT tmw.kMerkmalWert
                     FROM tmerkmalwert tmw
                     {$cJoinMerkmalwert}
@@ -176,7 +176,7 @@ class Merkmal
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $this->oMerkmalWert_arr = [];
-            foreach ($oMerkmalWertTMP_arr as $oMerkmalWertTMP) {
+            foreach ($tmpAttributes as $oMerkmalWertTMP) {
                 $this->oMerkmalWert_arr[] = new MerkmalWert((int)$oMerkmalWertTMP->kMerkmalWert, $this->kSprache);
             }
         }

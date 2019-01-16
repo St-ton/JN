@@ -31,23 +31,23 @@ class Menus extends AbstractItem
             && \is_array($node['Customlink'])
             && \count($node['Customlink']) > 0
         ) {
-            foreach ($node['Customlink'] as $i => $Customlink_arr) {
+            foreach ($node['Customlink'] as $i => $customLink) {
                 $i = (string)$i;
                 \preg_match('/[0-9]+\sattr/', $i, $hits1);
                 \preg_match('/[0-9]+/', $i, $hits2);
                 if (\strlen($hits2[0]) === \strlen($i)) {
                     \preg_match(
                         '/[a-zA-Z0-9äÄüÜöÖß' . '\_\- ]+/',
-                        $Customlink_arr['Name'],
+                        $customLink['Name'],
                         $hits
                     );
-                    if (empty($Customlink_arr['Name']) || \strlen($hits[0]) !== \strlen($Customlink_arr['Name'])) {
+                    if (empty($customLink['Name']) || \strlen($hits[0]) !== \strlen($customLink['Name'])) {
                         return InstallCode::INVALID_CUSTOM_LINK_NAME;
                     }
-                    if (empty($Customlink_arr['Filename'])) {
+                    if (empty($customLink['Filename'])) {
                         return InstallCode::INVALID_CUSTOM_LINK_FILE_NAME;
                     }
-                    if (!\file_exists($dir . \PFAD_PLUGIN_ADMINMENU . $Customlink_arr['Filename'])) {
+                    if (!\file_exists($dir . \PFAD_PLUGIN_ADMINMENU . $customLink['Filename'])) {
                         return InstallCode::MISSING_CUSTOM_LINK_FILE;
                     }
                 }

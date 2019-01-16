@@ -190,15 +190,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         private function loadFromDB(int $kKonfigitem = 0, int $kSprache = 0, int $kKundengruppe = 0): self
         {
-            $oObj = Shop::Container()->getDB()->select('tkonfigitem', 'kKonfigitem', $kKonfigitem);
-            if (isset($oObj->kKonfigitem) && $oObj->kKonfigitem > 0) {
-                $cMember_arr = array_keys(get_object_vars($oObj));
-                foreach ($cMember_arr as $cMember) {
-                    $this->$cMember = $oObj->$cMember;
+            $item = Shop::Container()->getDB()->select('tkonfigitem', 'kKonfigitem', $kKonfigitem);
+            if (isset($item->kKonfigitem) && $item->kKonfigitem > 0) {
+                foreach (array_keys(get_object_vars($item)) as $member) {
+                    $this->$member = $item->$member;
                 }
 
                 if (!$kSprache) {
-                    $kSprache = Shop::getLanguageID() ?? Sprache::getDefaultLanguage(true)->kSprache;
+                    $kSprache = Shop::getLanguageID() ?? Sprache::getDefaultLanguage()->kSprache;
                 }
                 if (!$kKundengruppe) {
                     $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
@@ -221,16 +220,16 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $this->oPreis            = new Konfigitempreis($this->kKonfigitem, $kKundengruppe);
                 $this->oArtikel          = null;
                 if ($this->kArtikel > 0) {
-                    $oArtikelOptionen                             = new stdClass();
-                    $oArtikelOptionen->nAttribute                 = 1;
-                    $oArtikelOptionen->nArtikelAttribute          = 1;
-                    $oArtikelOptionen->nVariationKombi            = 1;
-                    $oArtikelOptionen->nVariationKombiKinder      = 1;
-                    $oArtikelOptionen->nKeineSichtbarkeitBeachten = 1;
-                    $oArtikelOptionen->nVariationen               = 0;
+                    $options                             = new stdClass();
+                    $options->nAttribute                 = 1;
+                    $options->nArtikelAttribute          = 1;
+                    $options->nVariationKombi            = 1;
+                    $options->nVariationKombiKinder      = 1;
+                    $options->nKeineSichtbarkeitBeachten = 1;
+                    $options->nVariationen               = 0;
 
                     $this->oArtikel = new Artikel();
-                    $this->oArtikel->fuelleArtikel($this->kArtikel, $oArtikelOptionen, $kKundengruppe, $kSprache);
+                    $this->oArtikel->fuelleArtikel($this->kArtikel, $options, $kKundengruppe, $kSprache);
                 }
             }
 
@@ -251,23 +250,23 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function save(bool $bPrim = true)
         {
-            $oObj                    = new stdClass();
-            $oObj->kKonfiggruppe     = $this->kKonfiggruppe;
-            $oObj->kArtikel          = $this->kArtikel;
-            $oObj->nPosTyp           = $this->nPosTyp;
-            $oObj->bSelektiert       = $this->bSelektiert;
-            $oObj->bEmpfohlen        = $this->bEmpfohlen;
-            $oObj->bName             = $this->bName;
-            $oObj->bPreis            = $this->bPreis;
-            $oObj->bRabatt           = $this->bRabatt;
-            $oObj->bZuschlag         = $this->bZuschlag;
-            $oObj->bIgnoreMultiplier = $this->bIgnoreMultiplier;
-            $oObj->fMin              = $this->fMin;
-            $oObj->fMax              = $this->fMax;
-            $oObj->fInitial          = $this->fInitial;
-            $oObj->nSort             = $this->nSort;
+            $ins                    = new stdClass();
+            $ins->kKonfiggruppe     = $this->kKonfiggruppe;
+            $ins->kArtikel          = $this->kArtikel;
+            $ins->nPosTyp           = $this->nPosTyp;
+            $ins->bSelektiert       = $this->bSelektiert;
+            $ins->bEmpfohlen        = $this->bEmpfohlen;
+            $ins->bName             = $this->bName;
+            $ins->bPreis            = $this->bPreis;
+            $ins->bRabatt           = $this->bRabatt;
+            $ins->bZuschlag         = $this->bZuschlag;
+            $ins->bIgnoreMultiplier = $this->bIgnoreMultiplier;
+            $ins->fMin              = $this->fMin;
+            $ins->fMax              = $this->fMax;
+            $ins->fInitial          = $this->fInitial;
+            $ins->nSort             = $this->nSort;
 
-            $kPrim = Shop::Container()->getDB()->insert('tkonfigitem', $oObj);
+            $kPrim = Shop::Container()->getDB()->insert('tkonfigitem', $ins);
             if ($kPrim > 0) {
                 return $bPrim ? $kPrim : true;
             }
@@ -280,23 +279,23 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function update(): int
         {
-            $_upd                    = new stdClass();
-            $_upd->kKonfiggruppe     = $this->kKonfiggruppe;
-            $_upd->kArtikel          = $this->kArtikel;
-            $_upd->nPosTyp           = $this->nPosTyp;
-            $_upd->bSelektiert       = $this->bSelektiert;
-            $_upd->bEmpfohlen        = $this->bEmpfohlen;
-            $_upd->bPreis            = $this->bPreis;
-            $_upd->bName             = $this->bName;
-            $_upd->bRabatt           = $this->bRabatt;
-            $_upd->bZuschlag         = $this->bZuschlag;
-            $_upd->bIgnoreMultiplier = $this->bIgnoreMultiplier;
-            $_upd->fMin              = $this->fMin;
-            $_upd->fMax              = $this->fMax;
-            $_upd->fInitial          = $this->fInitial;
-            $_upd->nSort             = $this->nSort;
+            $upd                    = new stdClass();
+            $upd->kKonfiggruppe     = $this->kKonfiggruppe;
+            $upd->kArtikel          = $this->kArtikel;
+            $upd->nPosTyp           = $this->nPosTyp;
+            $upd->bSelektiert       = $this->bSelektiert;
+            $upd->bEmpfohlen        = $this->bEmpfohlen;
+            $upd->bPreis            = $this->bPreis;
+            $upd->bName             = $this->bName;
+            $upd->bRabatt           = $this->bRabatt;
+            $upd->bZuschlag         = $this->bZuschlag;
+            $upd->bIgnoreMultiplier = $this->bIgnoreMultiplier;
+            $upd->fMin              = $this->fMin;
+            $upd->fMax              = $this->fMax;
+            $upd->fInitial          = $this->fInitial;
+            $upd->nSort             = $this->nSort;
 
-            return Shop::Container()->getDB()->update('tkonfigitem', 'kKonfigitem', (int)$this->kKonfigitem, $_upd);
+            return Shop::Container()->getDB()->update('tkonfigitem', 'kKonfigitem', (int)$this->kKonfigitem, $upd);
         }
 
         /**
@@ -313,8 +312,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public static function fetchAll(int $kKonfiggruppe): array
         {
-            $oItemEx_arr = [];
-            $oItem_arr   = Shop::Container()->getDB()->queryPrepared(
+            $items = [];
+            $data  = Shop::Container()->getDB()->queryPrepared(
                 'SELECT kKonfigitem 
                     FROM tkonfigitem 
                     WHERE kKonfiggruppe = :groupID 
@@ -322,15 +321,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 ['groupID' => $kKonfiggruppe],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            foreach ($oItem_arr as &$oItem) {
-                $kKonfigitem = (int)$oItem->kKonfigitem;
-                $oItem       = new self($kKonfigitem);
-                if ($oItem->isValid()) {
-                    $oItemEx_arr[] = $oItem;
+            foreach ($data as &$item) {
+                $kKonfigitem = (int)$item->kKonfigitem;
+                $item       = new self($kKonfigitem);
+                if ($item->isValid()) {
+                    $items[] = $item;
                 }
             }
 
-            return $oItemEx_arr;
+            return $items;
         }
 
         /**

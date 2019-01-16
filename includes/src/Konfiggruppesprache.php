@@ -63,20 +63,16 @@ class Konfiggruppesprache implements JsonSerializable
      */
     private function loadFromDB(int $kKonfiggruppe = 0, int $kSprache = 0): void
     {
-        $oObj = Shop::Container()->getDB()->select(
+        $item = Shop::Container()->getDB()->select(
             'tkonfiggruppesprache',
             'kKonfiggruppe',
             $kKonfiggruppe,
             'kSprache',
             $kSprache
         );
-        if (isset($oObj->kKonfiggruppe, $oObj->kSprache)
-            && $oObj->kKonfiggruppe > 0
-            && $oObj->kSprache > 0
-        ) {
-            $cMember_arr = array_keys(get_object_vars($oObj));
-            foreach ($cMember_arr as $cMember) {
-                $this->$cMember = $oObj->$cMember;
+        if (isset($item->kKonfiggruppe, $item->kSprache) && $item->kKonfiggruppe > 0 && $item->kSprache > 0) {
+            foreach (array_keys(get_object_vars($item)) as $member) {
+                $this->$member = $item->$member;
             }
             $this->kSprache      = (int)$this->kSprache;
             $this->kKonfiggruppe = (int)$this->kKonfiggruppe;
@@ -89,16 +85,13 @@ class Konfiggruppesprache implements JsonSerializable
      */
     public function save(bool $bPrim = true)
     {
-        $oObj        = new stdClass();
-        $cMember_arr = array_keys(get_object_vars($this));
-        if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-            foreach ($cMember_arr as $cMember) {
-                $oObj->$cMember = $this->$cMember;
-            }
+        $ins = new stdClass();
+        foreach (array_keys(get_object_vars($this)) as $member) {
+            $ins->$member = $this->$member;
         }
-        unset($oObj->kKonfiggruppe, $oObj->kSprache);
+        unset($ins->kKonfiggruppe, $ins->kSprache);
 
-        $kPrim = Shop::Container()->getDB()->insert('tkonfiggruppesprache', $oObj);
+        $kPrim = Shop::Container()->getDB()->insert('tkonfiggruppesprache', $ins);
 
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
@@ -112,16 +105,16 @@ class Konfiggruppesprache implements JsonSerializable
      */
     public function update(): int
     {
-        $_upd                = new stdClass();
-        $_upd->kSprache      = $this->getSprache();
-        $_upd->cName         = $this->getName();
-        $_upd->cBeschreibung = $this->getBeschreibung();
+        $upd                = new stdClass();
+        $upd->kSprache      = $this->getSprache();
+        $upd->cName         = $this->getName();
+        $upd->cBeschreibung = $this->getBeschreibung();
 
         return Shop::Container()->getDB()->update(
             'tkonfiggruppesprache',
             ['kKonfiggruppe', 'kSprache'],
             [$this->getKonfiggruppe(), $this->getSprache()],
-            $_upd
+            $upd
         );
     }
 

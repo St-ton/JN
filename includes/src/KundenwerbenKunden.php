@@ -84,19 +84,17 @@ class KundenwerbenKunden
     }
 
     /**
-     * @param string $cEmail
+     * @param string $mail
      * @return $this
      */
-    private function loadFromDB($cEmail): self
+    private function loadFromDB($mail): self
     {
-        if (strlen($cEmail) > 0) {
-            $cEmail = StringHandler::filterXSS($cEmail);
-            // Hole Daten durch Email vom Neukunden
-            $oKwK = Shop::Container()->getDB()->select('tkundenwerbenkunden', 'cEmail', $cEmail);
+        if (strlen($mail) > 0) {
+            $mail = StringHandler::filterXSS($mail);
+            $oKwK = Shop::Container()->getDB()->select('tkundenwerbenkunden', 'cEmail', $mail);
             if (isset($oKwK->kKundenWerbenKunden) && $oKwK->kKundenWerbenKunden > 0) {
-                $cMember_arr = array_keys(get_object_vars($oKwK));
-                foreach ($cMember_arr as $cMember) {
-                    $this->$cMember = $oKwK->$cMember;
+                foreach (array_keys(get_object_vars($oKwK)) as $member) {
+                    $this->$member = $oKwK->$member;
                 }
                 $oKundeTMP                = new Kunde();
                 $this->fGuthabenLocalized = Preise::getLocalizedPriceString($this->fGuthaben);
@@ -114,10 +112,10 @@ class KundenwerbenKunden
      */
     public function insertDB(bool $bLoadDB = false): self
     {
-        $oObj = GeneralObject::copyMembers($this);
-        unset($oObj->fGuthabenLocalized, $oObj->oNeukunde, $oObj->oBestandskunde);
+        $ins = GeneralObject::copyMembers($this);
+        unset($ins->fGuthabenLocalized, $ins->oNeukunde, $ins->oBestandskunde);
 
-        $this->kKundenWerbenKunden = Shop::Container()->getDB()->insert('tkundenwerbenkunden', $oObj);
+        $this->kKundenWerbenKunden = Shop::Container()->getDB()->insert('tkundenwerbenkunden', $ins);
         if ($bLoadDB) {
             $this->loadFromDB($this->cEmail);
         }

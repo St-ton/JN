@@ -72,17 +72,16 @@ class Kampagne
      */
     public function loadFromDB(int $kKampagne): self
     {
-        $oKampagne = Shop::Container()->getDB()->query(
+        $campaign = Shop::Container()->getDB()->query(
             "SELECT tkampagne.*, DATE_FORMAT(tkampagne.dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
                 FROM tkampagne
                 WHERE tkampagne.kKampagne = " . $kKampagne,
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
-            $cMember_arr = array_keys(get_object_vars($oKampagne));
-            foreach ($cMember_arr as $cMember) {
-                $this->$cMember = $oKampagne->$cMember;
+        if (isset($campaign->kKampagne) && $campaign->kKampagne > 0) {
+            foreach (array_keys(get_object_vars($campaign)) as $member) {
+                $this->$member = $campaign->$member;
             }
         }
 
@@ -104,10 +103,10 @@ class Kampagne
         $obj->nAktiv     = $this->nAktiv;
         $obj->dErstellt  = $this->dErstellt;
 
-        $this->kKampagne    = Shop::Container()->getDB()->insert('tkampagne', $obj);
-        $cDatum_arr         = Date::getDateParts($this->dErstellt);
-        $this->dErstellt_DE = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'] . ' ' .
-            $cDatum_arr['cStunde'] . ':' . $cDatum_arr['cMinute'] . ':' . $cDatum_arr['cSekunde'];
+        $this->kKampagne  = Shop::Container()->getDB()->insert('tkampagne', $obj);
+        $parts            = Date::getDateParts($this->dErstellt);
+        $this->dErstellt_DE = $parts['cTag'] . '.' . $parts['cMonat'] . '.' . $parts['cJahr'] . ' ' .
+            $parts['cStunde'] . ':' . $parts['cMinute'] . ':' . $parts['cSekunde'];
 
         return $this->kKampagne;
     }
@@ -129,9 +128,9 @@ class Kampagne
         $obj->kKampagne  = $this->kKampagne;
 
         $res                = Shop::Container()->getDB()->update('tkampagne', 'kKampagne', $obj->kKampagne, $obj);
-        $cDatum_arr         = Date::getDateParts($this->dErstellt);
-        $this->dErstellt_DE = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'] . ' ' .
-            $cDatum_arr['cStunde'] . ':' . $cDatum_arr['cMinute'] . ':' . $cDatum_arr['cSekunde'];
+        $parts              = Date::getDateParts($this->dErstellt);
+        $this->dErstellt_DE = $parts['cTag'] . '.' . $parts['cMonat'] . '.' . $parts['cJahr'] . ' ' .
+            $parts['cStunde'] . ':' . $parts['cMinute'] . ':' . $parts['cSekunde'];
 
         return $res;
     }
@@ -162,20 +161,20 @@ class Kampagne
     public static function getAvailable(): array
     {
         $cacheID = 'campaigns';
-        if (($oKampagne_arr = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $oKampagne_arr = Shop::Container()->getDB()->selectAll(
+        if (($campaigns = Shop::Container()->getCache()->get($cacheID)) === false) {
+            $campaigns = Shop::Container()->getDB()->selectAll(
                 'tkampagne',
                 'nAktiv',
                 1,
                 '*, DATE_FORMAT(dErstellt, \'%d.%m.%Y %H:%i:%s\') AS dErstellt_DE'
             );
-            $setRes        = Shop::Container()->getCache()->set($cacheID, $oKampagne_arr, [CACHING_GROUP_CORE]);
+            $setRes    = Shop::Container()->getCache()->set($cacheID, $campaigns, [CACHING_GROUP_CORE]);
             if ($setRes === false) {
                 // could not save to cache - use session instead
                 $campaigns = [];
-                if (is_array($oKampagne_arr) && count($oKampagne_arr) > 0) {
+                if (is_array($campaigns) && count($campaigns) > 0) {
                     // save to session
-                    foreach ($oKampagne_arr as $oKampagne) {
+                    foreach ($campaigns as $oKampagne) {
                         $campaigns[] = $oKampagne;
                     }
                 }
@@ -185,7 +184,7 @@ class Kampagne
             }
         }
 
-        return $oKampagne_arr;
+        return $campaigns;
     }
 
     /**

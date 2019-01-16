@@ -83,26 +83,25 @@ class AuswahlAssistentGruppe
     private function loadFromDB(int $groupID, bool $bAktiv, bool $activeOnly, bool $bBackend): void
     {
         if ($groupID > 0) {
-            $cAktivSQL = $bAktiv ? ' AND nAktiv = 1' : '';
-            $oGruppe   = Shop::Container()->getDB()->queryPrepared(
+            $activeSQL = $bAktiv ? ' AND nAktiv = 1' : '';
+            $group     = Shop::Container()->getDB()->queryPrepared(
                 'SELECT *
                     FROM tauswahlassistentgruppe
                     WHERE kAuswahlAssistentGruppe = :groupID' .
-                    $cAktivSQL,
+                $activeSQL,
                 ['groupID' => $groupID],
                 \DB\ReturnType::SINGLE_OBJECT
             );
-            if (isset($oGruppe->kAuswahlAssistentGruppe) && $oGruppe->kAuswahlAssistentGruppe > 0) {
-                $cMember_arr = array_keys(get_object_vars($oGruppe));
-                foreach ($cMember_arr as $cMember) {
-                    $this->$cMember = $oGruppe->$cMember;
+            if (isset($group->kAuswahlAssistentGruppe) && $group->kAuswahlAssistentGruppe > 0) {
+                foreach (array_keys(get_object_vars($group)) as $member) {
+                    $this->$member = $group->$member;
                 }
                 $this->kAuswahlAssistentGruppe = (int)$this->kAuswahlAssistentGruppe;
                 $this->kSprache                = (int)$this->kSprache;
                 $this->nAktiv                  = (int)$this->nAktiv;
                 // Fragen
                 $this->oAuswahlAssistentFrage_arr = AuswahlAssistentFrage::getQuestions(
-                    $oGruppe->kAuswahlAssistentGruppe,
+                    $group->kAuswahlAssistentGruppe,
                     $activeOnly
                 );
                 $oAuswahlAssistentOrt             = new AuswahlAssistentOrt(
@@ -121,14 +120,14 @@ class AuswahlAssistentGruppe
                         $this->nStartseite = 1;
                     }
                 }
-                $oSprache       = Shop::Container()->getDB()->queryPrepared(
+                $language       = Shop::Container()->getDB()->queryPrepared(
                     'SELECT cNameDeutsch 
                         FROM tsprache 
                         WHERE kSprache = :langID',
                     ['langID' => (int)$this->kSprache],
                     \DB\ReturnType::SINGLE_OBJECT
                 );
-                $this->cSprache = $oSprache->cNameDeutsch;
+                $this->cSprache = $language->cNameDeutsch;
             }
         }
     }

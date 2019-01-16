@@ -113,9 +113,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         {
             $oObj = Shop::Container()->getDB()->select('tkonfiggruppe', 'kKonfiggruppe', $kKonfiggruppe);
             if (isset($oObj->kKonfiggruppe) && $oObj->kKonfiggruppe > 0) {
-                $cMember_arr = array_keys(get_object_vars($oObj));
-                foreach ($cMember_arr as $cMember) {
-                    $this->$cMember = $oObj->$cMember;
+                foreach (array_keys(get_object_vars($oObj)) as $member) {
+                    $this->$member = $oObj->$member;
                 }
                 if (!$kSprache) {
                     $kSprache = Shop::getLanguageID();
@@ -138,15 +137,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function save(bool $bPrim = true)
         {
-            $oObj             = new stdClass();
-            $oObj->cBildPfad  = $this->cBildPfad;
-            $oObj->nMin       = $this->nMin;
-            $oObj->nMax       = $this->nMax;
-            $oObj->nTyp       = $this->nTyp;
-            $oObj->nSort      = $this->nSort;
-            $oObj->cKommentar = $this->cKommentar;
+            $ins             = new stdClass();
+            $ins->cBildPfad  = $this->cBildPfad;
+            $ins->nMin       = $this->nMin;
+            $ins->nMax       = $this->nMax;
+            $ins->nTyp       = $this->nTyp;
+            $ins->nSort      = $this->nSort;
+            $ins->cKommentar = $this->cKommentar;
 
-            $kPrim = Shop::Container()->getDB()->insert('tkonfiggruppe', $oObj);
+            $kPrim = Shop::Container()->getDB()->insert('tkonfiggruppe', $ins);
             if ($kPrim > 0) {
                 return $bPrim ? $kPrim : true;
             }

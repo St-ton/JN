@@ -48,15 +48,15 @@ final class Communication
 
     /**
      * @param string $cURL
-     * @param array  $xData_arr
+     * @param array  $data
      * @param bool   $bPost
      * @return string
      * @throws Exception
      */
-    public static function postData(string $cURL, $xData_arr = [], bool $bPost = true)
+    public static function postData(string $cURL, $data = [], bool $bPost = true)
     {
-        return is_array($xData_arr)
-            ? self::doCall($cURL, $xData_arr, $bPost)
+        return is_array($data)
+            ? self::doCall($cURL, $data, $bPost)
             : '';
     }
 

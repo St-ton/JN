@@ -50,48 +50,46 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         private function loadFromDB(int $kKonfigitem = 0, int $kSprache = 0)
         {
-            $oObj = Shop::Container()->getDB()->select(
+            $item = Shop::Container()->getDB()->select(
                 'tkonfigitemsprache',
                 'kKonfigitem',
                 $kKonfigitem,
                 'kSprache',
                 $kSprache
             );
-            if ($oObj !== null && empty($oObj->cName)) {
-                $def              = Sprache::getDefaultLanguage();
-                $StandardLanguage = Shop::Container()->getDB()->select(
+            $defaultLanguage = Sprache::getDefaultLanguage();
+            if ($item !== null && empty($item->cName)) {
+                $localized   = Shop::Container()->getDB()->select(
                     'tkonfigitemsprache',
                     'kKonfigitem',
                     $kKonfigitem,
                     'kSprache',
-                    (int)$def->kSprache,
+                    (int)$defaultLanguage->kSprache,
                     null,
                     null,
                     false,
                     'cName'
                 );
-                $oObj->cName      = $StandardLanguage->cName;
+                $item->cName = $localized->cName;
             }
-            if ($oObj !== null && empty($oObj->cBeschreibung)) {
-                $def                 = Sprache::getDefaultLanguage();
-                $StandardLanguage    = Shop::Container()->getDB()->select(
+            if ($item !== null && empty($item->cBeschreibung)) {
+                $localized           = Shop::Container()->getDB()->select(
                     'tkonfigitemsprache',
                     'kKonfigitem',
                     $kKonfigitem,
                     'kSprache',
-                    (int)$def->kSprache,
+                    (int)$defaultLanguage->kSprache,
                     null,
                     null,
                     false,
                     'cBeschreibung'
                 );
-                $oObj->cBeschreibung = $StandardLanguage->cBeschreibung;
+                $item->cBeschreibung = $localized->cBeschreibung;
             }
 
-            if (isset($oObj->kKonfigitem, $oObj->kSprache) && $oObj->kKonfigitem > 0 && $oObj->kSprache > 0) {
-                $cMember_arr = array_keys(get_object_vars($oObj));
-                foreach ($cMember_arr as $cMember) {
-                    $this->$cMember = $oObj->$cMember;
+            if (isset($item->kKonfigitem, $item->kSprache) && $item->kKonfigitem > 0 && $item->kSprache > 0) {
+                foreach (array_keys(get_object_vars($item)) as $member) {
+                    $this->$member = $item->$member;
                 }
             }
         }
@@ -102,16 +100,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function save(bool $bPrim = true)
         {
-            $oObj        = new stdClass();
-            $cMember_arr = array_keys(get_object_vars($this));
-            if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-                foreach ($cMember_arr as $cMember) {
-                    $oObj->$cMember = $this->$cMember;
-                }
+            $ins = new stdClass();
+            foreach (array_keys(get_object_vars($this)) as $member) {
+                $ins->$member = $this->$member;
             }
-            unset($oObj->kKonfigitem, $oObj->kSprache);
+            unset($ins->kKonfigitem, $ins->kSprache);
 
-            $kPrim = Shop::Container()->getDB()->insert('tkonfigitemsprache', $oObj);
+            $kPrim = Shop::Container()->getDB()->insert('tkonfigitemsprache', $ins);
 
             if ($kPrim > 0) {
                 return $bPrim ? $kPrim : true;
@@ -125,15 +120,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function update(): int
         {
-            $_upd                = new stdClass();
-            $_upd->cName         = $this->getName();
-            $_upd->cBeschreibung = $this->getBeschreibung();
+            $upd                = new stdClass();
+            $upd->cName         = $this->getName();
+            $upd->cBeschreibung = $this->getBeschreibung();
 
             return Shop::Container()->getDB()->update(
                 'tkonfigitemsprache',
                 ['kKonfigitem', 'kSprache'],
                 [$this->getKonfigitem(), $this->getSprache()],
-                $_upd
+                $upd
             );
         }
 

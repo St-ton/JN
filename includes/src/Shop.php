@@ -982,11 +982,11 @@ final class Shop
         $manufSeo     = [];
         $katseo       = '';
         $customSeo    = [];
-        $xShopurl_arr = parse_url(self::getURL());
-        $xBaseurl_arr = parse_url($uri);
-        $seo          = isset($xBaseurl_arr['path'])
-            ? substr($xBaseurl_arr['path'], isset($xShopurl_arr['path'])
-                ? (strlen($xShopurl_arr['path']) + 1)
+        $shopURLdata  = parse_url(self::getURL());
+        $baseURLdata = parse_url($uri);
+        $seo          = isset($baseURLdata['path'])
+            ? substr($baseURLdata['path'], isset($shopURLdata['path'])
+                ? (strlen($shopURLdata['path']) + 1)
                 : 1)
             : false;
         $seo          = Request::extractExternalParams($seo);
@@ -1037,10 +1037,10 @@ final class Shop
             if (substr($seo, strlen($seo) - 1, 1) === '?') {
                 $seo = substr($seo, 0, -1);
             }
-            $nMatch = preg_match('/[^_](' . SEP_SEITE . '([0-9]+))/', $seo, $cMatch_arr, PREG_OFFSET_CAPTURE);
+            $nMatch = preg_match('/[^_](' . SEP_SEITE . '([0-9]+))/', $seo, $matches, PREG_OFFSET_CAPTURE);
             if ($nMatch === 1) {
-                $seite = (int)$cMatch_arr[2][0];
-                $seo   = substr($seo, 0, $cMatch_arr[1][1]);
+                $seite = (int)$matches[2][0];
+                $seo   = substr($seo, 0, $matches[1][1]);
             }
             // duplicate content work around
             if ($seite === 1 && strlen($seo) > 0) {
@@ -1531,29 +1531,29 @@ final class Shop
     /**
      * build navigation filter object from parameters
      *
-     * @param array                     $cParameter_arr
+     * @param array                     $params
      * @param object|null|ProductFilter $productFilter
      * @return ProductFilter
      * @deprecated since 5.0
      */
-    public static function buildNaviFilter(array $cParameter_arr, $productFilter = null): ProductFilter
+    public static function buildNaviFilter(array $params, $productFilter = null): ProductFilter
     {
         trigger_error(
             __METHOD__ . ' is deprecated. Use ' . __CLASS__ . '::buildProductFilter() instead',
             E_USER_DEPRECATED
         );
 
-        return self::buildProductFilter($cParameter_arr, $productFilter);
+        return self::buildProductFilter($params, $productFilter);
     }
 
     /**
      * build navigation filter object from parameters
      *
-     * @param array                       $cParameter_arr
+     * @param array                       $params
      * @param stdClass|null|ProductFilter $productFilter
      * @return ProductFilter
      */
-    public static function buildProductFilter(array $cParameter_arr, $productFilter = null): ProductFilter
+    public static function buildProductFilter(array $params, $productFilter = null): ProductFilter
     {
         $pf = new ProductFilter(
             \Filter\Config::getDefault(),
@@ -1566,7 +1566,7 @@ final class Shop
             }
         }
 
-        return $pf->initStates($cParameter_arr);
+        return $pf->initStates($params);
     }
 
     /**
@@ -1754,16 +1754,16 @@ final class Shop
      */
     public static function getRequestUri(): string
     {
-        $uri          = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
-        $xShopurl_arr = parse_url(self::getURL());
-        $xBaseurl_arr = parse_url($uri);
+        $uri         = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
+        $shopURLdata = parse_url(self::getURL());
+        $baseURLdata = parse_url($uri);
 
-        if (empty($xShopurl_arr['path'])) {
-            $xShopurl_arr['path'] = '/';
+        if (empty($shopURLdata['path'])) {
+            $shopURLdata['path'] = '/';
         }
 
-        return isset($xBaseurl_arr['path'])
-            ? substr($xBaseurl_arr['path'], strlen($xShopurl_arr['path']))
+        return isset($baseURLdata['path'])
+            ? substr($baseURLdata['path'], strlen($shopURLdata['path']))
             : '';
     }
 

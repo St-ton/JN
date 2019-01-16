@@ -7,6 +7,7 @@
 namespace Filter;
 
 use DB\ReturnType;
+use Helpers\Category;
 use Tightenco\Collect\Support\Collection;
 use function Functional\group;
 use function Functional\map;
@@ -544,16 +545,13 @@ class Metadata implements MetadataInterface
                 ); // Filter nicht erlaubte Keywords
                 if (\strpos($cExcArtikelName, ' ') !== false) {
                     // Wenn der Dateiname aus mehreren Wörtern besteht
-                    $cSubNameTMP_arr = \explode(' ', $cExcArtikelName);
-                    $cSubName        = '';
-                    if (\is_array($cSubNameTMP_arr) && \count($cSubNameTMP_arr) > 0) {
-                        foreach ($cSubNameTMP_arr as $j => $cSubNameTMP) {
-                            if (\strlen($cSubNameTMP) > 2) {
-                                $cSubNameTMP = \str_replace(',', '', $cSubNameTMP);
-                                $cSubName   .= $j > 0
-                                    ? ', ' . $cSubNameTMP
-                                    : $cSubNameTMP;
-                            }
+                    $cSubName = '';
+                    foreach (\explode(' ', $cExcArtikelName) as $j => $cSubNameTMP) {
+                        if (\strlen($cSubNameTMP) > 2) {
+                            $cSubNameTMP = \str_replace(',', '', $cSubNameTMP);
+                            $cSubName   .= $j > 0
+                                ? ', ' . $cSubNameTMP
+                                : $cSubNameTMP;
                         }
                     }
                     $cArtikelName .= $cSubName;
@@ -564,21 +562,20 @@ class Metadata implements MetadataInterface
                 }
             }
             $cMetaKeywords = $cArtikelName;
-            // Prüfe doppelte Einträge und lösche diese
-            $cMetaKeywordsUnique_arr = [];
-            $cMeta_arr               = \explode(', ', $cMetaKeywords);
-            if (\is_array($cMeta_arr) && \count($cMeta_arr) > 1) {
-                foreach ($cMeta_arr as $cMeta) {
-                    if (!\in_array($cMeta, $cMetaKeywordsUnique_arr, true)) {
-                        $cMetaKeywordsUnique_arr[] = $cMeta;
+            $unique        = [];
+            $metaArr       = \explode(', ', $cMetaKeywords);
+            if (\is_array($metaArr) && \count($metaArr) > 1) {
+                foreach ($metaArr as $cMeta) {
+                    if (!\in_array($cMeta, $unique, true)) {
+                        $unique[] = $cMeta;
                     }
                 }
-                $cMetaKeywords = \implode(', ', $cMetaKeywordsUnique_arr);
+                $cMetaKeywords = \implode(', ', $unique);
             }
         } elseif (!empty($category->kKategorie)) {
             // Hat die aktuelle Kategorie Unterkategorien?
             if ($category->bUnterKategorien) {
-                $helper = \Helpers\Category::getInstance();
+                $helper = Category::getInstance();
                 $sub    = $helper->getCategoryById($category->kKategorie);
                 if ($sub !== false && !empty($sub->Unterkategorien) && \count($sub->Unterkategorien) > 0) {
                     $catNames     = map($sub->Unterkategorien, function ($e) {
@@ -589,10 +586,8 @@ class Metadata implements MetadataInterface
             } elseif (!empty($category->cBeschreibung)) { // Hat die aktuelle Kategorie eine Beschreibung?
                 $cKatKeywords = $category->cBeschreibung;
             }
-            $cKatKeywords  = \str_replace('"', '', $cKatKeywords);
-            $cMetaKeywords = $cKatKeywords;
 
-            return \strip_tags($cMetaKeywords);
+            return \strip_tags(\str_replace('"', '', $cKatKeywords));
         }
 
         return \strip_tags(\StringHandler::htmlentitydecode(\str_replace('"', '', $cMetaKeywords), \ENT_NOQUOTES));

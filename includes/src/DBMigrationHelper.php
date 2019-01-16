@@ -342,31 +342,30 @@ class DBMigrationHelper
     public static function sqlConvertUTF8($oTable, $lineBreak = ''): string
     {
         $mysqlVersion = self::getMySQLVersion();
-        $oColumn_arr  = self::getColumnsNeedMigration($oTable->TABLE_NAME);
+        $columns      = self::getColumnsNeedMigration($oTable->TABLE_NAME);
         $sql          = '';
-
-        if ($oColumn_arr !== false && count($oColumn_arr) > 0) {
+        if ($columns !== false && count($columns) > 0) {
             $sql = "ALTER TABLE `{$oTable->TABLE_NAME}`$lineBreak";
 
             $columnChange = [];
-            foreach ($oColumn_arr as $key => $oColumn) {
+            foreach ($columns as $key => $col) {
                 /* Workaround for quoted values in MariaDB >= 10.2.7 Fix: SHOP-2593 */
-                if ($oColumn->COLUMN_DEFAULT === 'NULL' || $oColumn->COLUMN_DEFAULT === "'NULL'") {
-                    $oColumn->COLUMN_DEFAULT = null;
+                if ($col->COLUMN_DEFAULT === 'NULL' || $col->COLUMN_DEFAULT === "'NULL'") {
+                    $col->COLUMN_DEFAULT = null;
                 }
-                if ($oColumn->COLUMN_DEFAULT !== null) {
-                    $oColumn->COLUMN_DEFAULT = trim($oColumn->COLUMN_DEFAULT, '\'');
-                }
-
-                if ($oColumn->COLUMN_TYPE === 'text') {
-                    $oColumn->COLUMN_TYPE = 'MEDIUMTEXT';
+                if ($col->COLUMN_DEFAULT !== null) {
+                    $col->COLUMN_DEFAULT = trim($col->COLUMN_DEFAULT, '\'');
                 }
 
-                $columnChange[] = "    CHANGE COLUMN `{$oColumn->COLUMN_NAME}` `{$oColumn->COLUMN_NAME}` "
-                    ."{$oColumn->COLUMN_TYPE} CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci'"
-                    . ($oColumn->IS_NULLABLE === 'YES' ? ' NULL' : ' NOT NULL')
-                    . ($oColumn->IS_NULLABLE === 'NO' && $oColumn->COLUMN_DEFAULT === null ? '' : ' DEFAULT '
-                        . ($oColumn->COLUMN_DEFAULT === null ? 'NULL' : "'{$oColumn->COLUMN_DEFAULT}'"));
+                if ($col->COLUMN_TYPE === 'text') {
+                    $col->COLUMN_TYPE = 'MEDIUMTEXT';
+                }
+
+                $columnChange[] = "    CHANGE COLUMN `{$col->COLUMN_NAME}` `{$col->COLUMN_NAME}` "
+                    ."{$col->COLUMN_TYPE} CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci'"
+                    . ($col->IS_NULLABLE === 'YES' ? ' NULL' : ' NOT NULL')
+                    . ($col->IS_NULLABLE === 'NO' && $col->COLUMN_DEFAULT === null ? '' : ' DEFAULT '
+                        . ($col->COLUMN_DEFAULT === null ? 'NULL' : "'{$col->COLUMN_DEFAULT}'"));
             }
 
             $sql .= implode(", $lineBreak", $columnChange);

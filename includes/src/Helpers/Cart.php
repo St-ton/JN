@@ -402,35 +402,35 @@ class Cart
             if (!Konfigurator::validateKonfig($articleID)) {
                 $isConfigArticle = false;
             } else {
-                $oGruppen_arr    = Konfigurator::getKonfig($articleID);
-                $isConfigArticle = \is_array($oGruppen_arr) && \count($oGruppen_arr) > 0;
+                $groups          = Konfigurator::getKonfig($articleID);
+                $isConfigArticle = \is_array($groups) && \count($groups) > 0;
             }
         }
 
         if (!$isConfigArticle) {
             return self::addProductIDToCart($articleID, $count, $attributes);
         }
-        $bValid                  = true;
-        $aError_arr              = [];
-        $aItemError_arr          = [];
-        $oKonfigitem_arr         = [];
-        $nKonfiggruppe_arr       = (isset($_POST['item']) && \is_array($_POST['item']))
+        $valid             = true;
+        $errors            = [];
+        $itemErrors        = [];
+        $configItems       = [];
+        $configGroups      = (isset($_POST['item']) && \is_array($_POST['item']))
             ? $_POST['item']
             : [];
-        $nKonfiggruppeAnzahl_arr = (isset($_POST['quantity']) && \is_array($_POST['quantity']))
+        $configGroupCounts = (isset($_POST['quantity']) && \is_array($_POST['quantity']))
             ? $_POST['quantity']
             : [];
-        $nKonfigitemAnzahl_arr   = (isset($_POST['item_quantity']) && \is_array($_POST['item_quantity']))
+        $configItemCounts  = (isset($_POST['item_quantity']) && \is_array($_POST['item_quantity']))
             ? $_POST['item_quantity']
             : false;
-        $bIgnoreLimits           = isset($_POST['konfig_ignore_limits']);
+        $ignoreLimits      = isset($_POST['konfig_ignore_limits']);
         // Beim Bearbeiten die alten Positionen löschen
         if (isset($_POST['kEditKonfig'])) {
             $kEditKonfig = (int)$_POST['kEditKonfig'];
             self::deleteCartPosition($kEditKonfig);
         }
 
-        foreach ($nKonfiggruppe_arr as $nKonfigitem_arr) {
+        foreach ($configGroups as $nKonfigitem_arr) {
             foreach ($nKonfigitem_arr as $kKonfigitem) {
                 $kKonfigitem = (int)$kKonfigitem;
                 // Falls ungültig, ignorieren
@@ -438,10 +438,10 @@ class Cart
                     continue;
                 }
                 $oKonfigitem          = new Konfigitem($kKonfigitem);
-                $oKonfigitem->fAnzahl = (float)($nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()]
+                $oKonfigitem->fAnzahl = (float)($configGroupCounts[$oKonfigitem->getKonfiggruppe()]
                     ?? $oKonfigitem->getInitial());
-                if ($nKonfigitemAnzahl_arr && isset($nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()])) {
-                    $oKonfigitem->fAnzahl = (float)$nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()];
+                if ($configItemCounts && isset($configItemCounts[$oKonfigitem->getKonfigitem()])) {
+                    $oKonfigitem->fAnzahl = (float)$configItemCounts[$oKonfigitem->getKonfigitem()];
                 }
                 // Todo: Mindestbestellanzahl / Abnahmeinterval beachten
                 if ($oKonfigitem->fAnzahl < 1) {
@@ -452,7 +452,7 @@ class Cart
                 if (!$oKonfigitem->ignoreMultiplier()) {
                     $oKonfigitem->fAnzahlWK *= $count;
                 }
-                $oKonfigitem_arr[] = $oKonfigitem;
+                $configItems[] = $oKonfigitem;
                 // Alle Artikel können in den WK gelegt werden?
                 if ($oKonfigitem->getPosTyp() === \KONFIG_ITEM_TYP_ARTIKEL) {
                     // Varikombi
@@ -478,7 +478,7 @@ class Cart
                         $oKonfigitem->oEigenschaftwerte_arr
                     );
                     if (\count($redirectParam) > 0) {
-                        $bValid            = false;
+                        $valid            = false;
                         $aArticleError_arr = Product::getProductMessages(
                             $redirectParam,
                             true,
@@ -487,25 +487,25 @@ class Cart
                             $oKonfigitem->getKonfigitem()
                         );
 
-                        $aItemError_arr[$oKonfigitem->getKonfigitem()] = $aArticleError_arr[0];
+                        $itemErrors[$oKonfigitem->getKonfigitem()] = $aArticleError_arr[0];
                     }
                 }
             }
         }
         // Komplette Konfiguration validieren
-        if (!$bIgnoreLimits
-            && (($aError_arr = Konfigurator::validateBasket($articleID, $oKonfigitem_arr)) !== true)
+        if (!$ignoreLimits
+            && (($errors = Konfigurator::validateBasket($articleID, $configItems)) !== true)
         ) {
-            $bValid = false;
+            $valid = false;
         }
         // Alle Konfigurationsartikel können in den WK gelegt werden
-        if ($bValid) {
+        if ($valid) {
             // Eindeutige ID
             $cUnique = \uniqid('', true);
             // Hauptartikel in den WK legen
             self::addProductIDToCart($articleID, $count, $attributes, 0, $cUnique);
             // Konfigartikel in den WK legen
-            foreach ($oKonfigitem_arr as $oKonfigitem) {
+            foreach ($configItems as $oKonfigitem) {
                 $oKonfigitem->isKonfigItem = true;
                 switch ($oKonfigitem->getPosTyp()) {
                     case \KONFIG_ITEM_TYP_ARTIKEL:
@@ -546,21 +546,21 @@ class Cart
             }
             Frontend::getCart()->redirectTo();
         } else {
-            Shop::Smarty()->assign('aKonfigerror_arr', $aError_arr)
-                ->assign('aKonfigitemerror_arr', $aItemError_arr)
+            Shop::Smarty()->assign('aKonfigerror_arr', $errors)
+                ->assign('aKonfigitemerror_arr', $itemErrors)
                 ->assign('fehler', Shop::Lang()->get('configError', 'productDetails'));
         }
 
         $nKonfigitem_arr = [];
-        foreach ($nKonfiggruppe_arr as $nTmpKonfigitem_arr) {
+        foreach ($configGroups as $nTmpKonfigitem_arr) {
             $nKonfigitem_arr = \array_merge($nKonfigitem_arr, $nTmpKonfigitem_arr);
         }
         Shop::Smarty()->assign('fAnzahl', $count)
             ->assign('nKonfigitem_arr', $nKonfigitem_arr)
-            ->assign('nKonfigitemAnzahl_arr', $nKonfigitemAnzahl_arr)
-            ->assign('nKonfiggruppeAnzahl_arr', $nKonfiggruppeAnzahl_arr);
+            ->assign('nKonfigitemAnzahl_arr', $configItemCounts)
+            ->assign('nKonfiggruppeAnzahl_arr', $configGroupCounts);
 
-        return $bValid;
+        return $valid;
     }
 
     /**
@@ -606,31 +606,31 @@ class Cart
             );
             if ($vis === null || !isset($vis->kArtikel) || !$vis->kArtikel) {
                 // Prüfe auf Vater Artikel
-                $oVariationen_arr = [];
+                $variations = [];
                 if (Product::isParent($kArtikel)) {
-                    $kArtikel         = Product::getArticleForParent($kArtikel);
-                    $oVariationen_arr = Product::getSelectedPropertiesForVarCombiArticle($kArtikel, 1);
+                    $kArtikel   = Product::getArticleForParent($kArtikel);
+                    $variations = Product::getSelectedPropertiesForVarCombiArticle($kArtikel, 1);
                 }
-                $oVergleichsliste = new Vergleichsliste($kArtikel, $oVariationen_arr);
+                $compareList = new Vergleichsliste($kArtikel, $variations);
                 // Falls es eine Vergleichsliste in der Session gibt
                 if (isset($_SESSION['Vergleichsliste'])) {
                     // Falls Artikel vorhanden sind
                     if (\is_array($_SESSION['Vergleichsliste']->oArtikel_arr)
                         && \count($_SESSION['Vergleichsliste']->oArtikel_arr) > 0
                     ) {
-                        $bSchonVorhanden = false;
+                        $exists = false;
                         foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $oArtikel) {
-                            if ($oArtikel->kArtikel === $oVergleichsliste->oArtikel_arr[0]->kArtikel) {
-                                $bSchonVorhanden = true;
+                            if ($oArtikel->kArtikel === $compareList->oArtikel_arr[0]->kArtikel) {
+                                $exists = true;
                                 break;
                             }
                         }
                         // Wenn der Artikel der eingetragen werden soll, nicht schon in der Session ist
-                        if (!$bSchonVorhanden) {
+                        if (!$exists) {
                             foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $oArtikel) {
-                                $oVergleichsliste->oArtikel_arr[] = $oArtikel;
+                                $compareList->oArtikel_arr[] = $oArtikel;
                             }
-                            $_SESSION['Vergleichsliste'] = $oVergleichsliste;
+                            $_SESSION['Vergleichsliste'] = $compareList;
                             Shop::Smarty()->assign(
                                 'hinweis',
                                 Shop::Lang()->get('comparelistProductadded', 'messages')
@@ -644,7 +644,7 @@ class Cart
                     }
                 } else {
                     // Vergleichsliste neu in der Session anlegen
-                    $_SESSION['Vergleichsliste'] = $oVergleichsliste;
+                    $_SESSION['Vergleichsliste'] = $compareList;
                     Shop::Smarty()->assign('hinweis', Shop::Lang()->get('comparelistProductadded', 'messages'));
                 }
             }
@@ -1235,7 +1235,7 @@ class Cart
     }
 
     /**
-     * @param array $variBoxAnzahl_arr
+     * @param array $variBoxCounts
      * @param int   $kArtikel
      * @param bool  $bIstVater
      * @param bool  $bExtern
@@ -1243,21 +1243,20 @@ class Cart
      * @since 5.0.0
      */
     public static function addVariboxToCart(
-        array $variBoxAnzahl_arr,
+        array $variBoxCounts,
         int $kArtikel,
         bool $bIstVater,
         bool $bExtern = false
     ) {
-        if (!\is_array($variBoxAnzahl_arr) || \count($variBoxAnzahl_arr) === 0) {
+        if (!\is_array($variBoxCounts) || \count($variBoxCounts) === 0) {
             return;
         }
-        $cKeys_arr     = \array_keys($variBoxAnzahl_arr);
         $kVaterArtikel = $kArtikel;
         $attributes    = [];
         unset($_SESSION['variBoxAnzahl_arr']);
         // Es ist min. eine Anzahl vorhanden
-        foreach ($cKeys_arr as $cKeys) {
-            if ((float)$variBoxAnzahl_arr[$cKeys] <= 0) {
+        foreach (\array_keys($variBoxCounts) as $cKeys) {
+            if ((float)$variBoxCounts[$cKeys] <= 0) {
                 continue;
             }
             // Switch zwischen 1 Vari und 2
@@ -1266,19 +1265,18 @@ class Cart
                 [$kEigenschaft0, $kEigenschaftWert0] = \explode(':', $cVariation0);
                 // In die Session einbauen
                 $oVariKombi                                 = new stdClass();
-                $oVariKombi->fAnzahl                        = (float)$variBoxAnzahl_arr[$cKeys];
+                $oVariKombi->fAnzahl                        = (float)$variBoxCounts[$cKeys];
                 $oVariKombi->cVariation0                    = StringHandler::filterXSS($cVariation0);
                 $oVariKombi->kEigenschaft0                  = (int)$kEigenschaft0;
                 $oVariKombi->kEigenschaftWert0              = (int)$kEigenschaftWert0;
                 $_SESSION['variBoxAnzahl_arr'][$cKeys]      = $oVariKombi;
                 $_POST['eigenschaftwert_' . $kEigenschaft0] = $kEigenschaftWert0;
             } elseif ($bExtern) {
-                $cComb_arr                        = \explode('_', $cKeys);
                 $oVariKombi                       = new stdClass();
-                $oVariKombi->fAnzahl              = (float)$variBoxAnzahl_arr[$cKeys];
+                $oVariKombi->fAnzahl              = (float)$variBoxCounts[$cKeys];
                 $oVariKombi->kEigenschaft_arr     = [];
                 $oVariKombi->kEigenschaftWert_arr = [];
-                foreach ($cComb_arr as $cComb) {
+                foreach (\explode('_', $cKeys) as $cComb) {
                     [$kEigenschaft, $kEigenschaftWert]         = \explode(':', $cComb);
                     $oVariKombi->kEigenschaft_arr[]            = (int)$kEigenschaft;
                     $oVariKombi->kEigenschaftWert_arr[]        = (int)$kEigenschaftWert;
@@ -1291,7 +1289,7 @@ class Cart
                 [$kEigenschaft1, $kEigenschaftWert1] = \explode(':', $cVariation1);
                 // In die Session einbauen
                 $oVariKombi                                 = new stdClass();
-                $oVariKombi->fAnzahl                        = (float)$variBoxAnzahl_arr[$cKeys];
+                $oVariKombi->fAnzahl                        = (float)$variBoxCounts[$cKeys];
                 $oVariKombi->cVariation0                    = StringHandler::filterXSS($cVariation0);
                 $oVariKombi->cVariation1                    = StringHandler::filterXSS($cVariation1);
                 $oVariKombi->kEigenschaft0                  = (int)$kEigenschaft0;
@@ -1317,37 +1315,37 @@ class Cart
                 $attributes[$cKeys]->kArtikel         = $kArtikel;
             }
         }
-        $nRedirectErr_arr = [];
+        $redirectErrors = [];
         if (!\is_array($attributes) || \count($attributes) === 0) {
             return;
         }
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($attributes as $i => $oAlleEigenschaftPre) {
             // Prüfe ob er Artikel in den Warenkorb gelegt werden darf
-            $nRedirect_arr = self::addToCartCheck(
+            $redirects = self::addToCartCheck(
                 (new Artikel())->fuelleArtikel($oAlleEigenschaftPre->kArtikel, $defaultOptions),
-                (float)$variBoxAnzahl_arr[$i],
+                (float)$variBoxCounts[$i],
                 $oAlleEigenschaftPre->oEigenschaft_arr
             );
 
             $_SESSION['variBoxAnzahl_arr'][$i]->bError = false;
-            if (\count($nRedirect_arr) > 0) {
-                foreach ($nRedirect_arr as $nRedirect) {
+            if (\count($redirects) > 0) {
+                foreach ($redirects as $nRedirect) {
                     $nRedirect = (int)$nRedirect;
-                    if (!\in_array($nRedirect, $nRedirectErr_arr, true)) {
-                        $nRedirectErr_arr[] = $nRedirect;
+                    if (!\in_array($nRedirect, $redirectErrors, true)) {
+                        $redirectErrors[] = $nRedirect;
                     }
                 }
                 $_SESSION['variBoxAnzahl_arr'][$i]->bError = true;
             }
         }
 
-        if (\count($nRedirectErr_arr) > 0) {
+        if (\count($redirectErrors) > 0) {
             $articleID = $bIstVater
                 ? $kVaterArtikel
                 : $kArtikel;
             \header('Location: ' . Shop::getURL() . '/?a=' . $articleID .
-                '&r=' . \implode(',', $nRedirectErr_arr), true, 302);
+                '&r=' . \implode(',', $redirectErrors), true, 302);
             exit();
         }
         foreach ($attributes as $i => $oAlleEigenschaftPost) {
@@ -1355,7 +1353,7 @@ class Cart
                 //#8224, #7482 -> do not call setzePositionsPreise() in loop @ Wanrekob::fuegeEin()
                 self::addProductIDToCart(
                     $oAlleEigenschaftPost->kArtikel,
-                    (float)$variBoxAnzahl_arr[$i],
+                    (float)$variBoxCounts[$i],
                     $oAlleEigenschaftPost->oEigenschaft_arr,
                     0,
                     false,
@@ -1436,24 +1434,24 @@ class Cart
         }
         Frontend::getCart()
                 ->fuegeEin(
-                   $kArtikel,
-                   $anzahl,
-                   $oEigenschaftwerte_arr,
-                   1,
-                   $cUnique,
-                   $kKonfigitem,
-                   $setzePositionsPreise,
-                   $cResponsibility
-               )
+                    $kArtikel,
+                    $anzahl,
+                    $oEigenschaftwerte_arr,
+                    1,
+                    $cUnique,
+                    $kKonfigitem,
+                    $setzePositionsPreise,
+                    $cResponsibility
+                )
                 ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDPOS)
                 ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
                 ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
-               ->loescheSpezialPos(\C_WARENKORBPOS_TYP_ZAHLUNGSART)
-               ->loescheSpezialPos(\C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
-               ->loescheSpezialPos(\C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-               ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
-               ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-               ->loescheSpezialPos(\C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+                ->loescheSpezialPos(\C_WARENKORBPOS_TYP_ZAHLUNGSART)
+                ->loescheSpezialPos(\C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
+                ->loescheSpezialPos(\C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
+                ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
+                ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
+                ->loescheSpezialPos(\C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
 
         Kupon::resetNewCustomerCoupon();
         unset(
@@ -1486,8 +1484,8 @@ class Cart
      */
     public static function deleteCartPositions(array $positions): void
     {
-        $cart        = Frontend::getCart();
-        $cUnique_arr = [];
+        $cart    = Frontend::getCart();
+        $uniques = [];
         foreach ($positions as $nPos) {
             if (!isset($cart->PositionenArr[$nPos])) {
                 return;
@@ -1497,8 +1495,8 @@ class Cart
             ) {
                 return;
             }
-            $cUnique = $cart->PositionenArr[$nPos]->cUnique;
-            if (!empty($cUnique) && $cart->PositionenArr[$nPos]->kKonfigitem > 0) {
+            $unique = $cart->PositionenArr[$nPos]->cUnique;
+            if (!empty($unique) && $cart->PositionenArr[$nPos]->kKonfigitem > 0) {
                 return;
             }
             \executeHook(\HOOK_WARENKORB_LOESCHE_POSITION, [
@@ -1510,18 +1508,18 @@ class Cart
                 Upload::deleteArtikelUploads($cart->PositionenArr[$nPos]->kArtikel);
             }
 
-            $cUnique_arr[] = $cUnique;
+            $uniques[] = $unique;
 
             unset($cart->PositionenArr[$nPos]);
         }
         $cart->PositionenArr = \array_merge($cart->PositionenArr);
-        foreach ($cUnique_arr as $cUnique) {
-            if (empty($cUnique)) {
+        foreach ($uniques as $unique) {
+            if (empty($unique)) {
                 continue;
             }
             $positionCount = \count($cart->PositionenArr);
             for ($i = 0; $i < $positionCount; $i++) {
-                if (isset($cart->PositionenArr[$i]->cUnique) && $cart->PositionenArr[$i]->cUnique === $cUnique) {
+                if (isset($cart->PositionenArr[$i]->cUnique) && $cart->PositionenArr[$i]->cUnique === $unique) {
                     unset($cart->PositionenArr[$i]);
                     $cart->PositionenArr = \array_merge($cart->PositionenArr);
                     $i                   = -1;

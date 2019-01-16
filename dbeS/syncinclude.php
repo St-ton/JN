@@ -1076,8 +1076,9 @@ function handlePriceRange(array $articleIDs)
             WHERE kArtikel IN (' . implode(',', $articleIDs) . ')',
         \DB\ReturnType::DEFAULT
     );
+    $uniqueArticleIDs = implode(',', array_unique($articleIDs));
     $db->executeQuery(
-        "INSERT INTO tpricerange
+        'INSERT INTO tpricerange
             (kArtikel, kKundengruppe, kKunde, nRangeType, fVKNettoMin, fVKNettoMax, nLagerAnzahlMax, dStart, dEnde)
             SELECT baseprice.kArtikel,
                 COALESCE(baseprice.kKundengruppe, 0) AS kKundengruppe,
@@ -1105,6 +1106,8 @@ function handlePriceRange(array $articleIDs)
                     ON tpreis.kArtikel = tartikel.kArtikel
                 INNER JOIN tpreisdetail 
                     ON tpreisdetail.kPreis = tpreis.kPreis
+                WHERE IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
+                    . $uniqueArticleIDs . ')
 
                 UNION ALL
 
@@ -1128,7 +1131,9 @@ function handlePriceRange(array $articleIDs)
                     ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
                 INNER JOIN tsonderpreise 
                     ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
-                WHERE tartikelsonderpreis.cAktiv = 'Y'
+                WHERE tartikelsonderpreis.cAktiv = \'Y\'
+                    AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
+                        . $uniqueArticleIDs . ')
             ) baseprice
             LEFT JOIN (
                 SELECT variations.kArtikel, variations.kKundengruppe,
@@ -1148,20 +1153,21 @@ function handlePriceRange(array $articleIDs)
                     LEFT JOIN teigenschaftwertaufpreis 
                         ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                         AND teigenschaftwertaufpreis.kKundengruppe = tkundengruppe.kKundengruppe
+                    WHERE teigenschaft.kArtikel IN (' . $uniqueArticleIDs . ')
                     GROUP BY teigenschaft.kArtikel, tkundengruppe.kKundengruppe, teigenschaft.kEigenschaft
                 ) variations
                 GROUP BY variations.kArtikel, variations.kKundengruppe
             ) varaufpreis 
                 ON varaufpreis.kArtikel = baseprice.kKindArtikel 
                 AND baseprice.nIstVater = 0
-            WHERE baseprice.kArtikel IN (" . implode(',', array_unique($articleIDs)) . ")
+            WHERE baseprice.kArtikel IN (' . $uniqueArticleIDs . ')
             GROUP BY baseprice.kArtikel,
                 baseprice.kKundengruppe,
                 baseprice.kKunde,
                 baseprice.nRangeType,
                 baseprice.nLagerAnzahlMax,
                 baseprice.dStart,
-                baseprice.dEnde",
+                baseprice.dEnde',
         \DB\ReturnType::DEFAULT
     );
 }

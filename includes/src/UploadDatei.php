@@ -107,15 +107,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                 ['kCustomID', 'nTyp'],
                 [$kCustomID, $nTyp]
             );
-            foreach ($files as &$oUpload) {
-                $oUpload->cGroesse   = Upload::formatGroesse($oUpload->nBytes);
-                $oUpload->bVorhanden = is_file(PFAD_UPLOADS . $oUpload->cPfad);
-                $oUpload->bVorschau  = Upload::vorschauTyp($oUpload->cName);
-                $oUpload->cBildpfad  = sprintf(
+            foreach ($files as $upload) {
+                $upload->cGroesse   = Upload::formatGroesse($upload->nBytes);
+                $upload->bVorhanden = is_file(PFAD_UPLOADS . $upload->cPfad);
+                $upload->bVorschau  = Upload::vorschauTyp($upload->cName);
+                $upload->cBildpfad  = sprintf(
                     '%s/%s?action=preview&secret=%s&sid=%s',
                     Shop::getURL(),
                     PFAD_UPLOAD_CALLBACK,
-                    rawurlencode(Shop::Container()->getCryptoService()->encryptXTEA($oUpload->kUpload)),
+                    rawurlencode(Shop::Container()->getCryptoService()->encryptXTEA($upload->kUpload)),
                     session_id()
                 );
             }
@@ -133,11 +133,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
             if (!is_object($objTo)) {
                 $objTo = new stdClass();
             }
-            $cMember_arr = array_keys(get_object_vars($objFrom));
-            if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-                foreach ($cMember_arr as $cMember) {
-                    $objTo->$cMember = $objFrom->$cMember;
-                }
+            foreach (array_keys(get_object_vars($objFrom)) as $member) {
+                $objTo->$member = $objFrom->$member;
             }
 
             return $objTo;
@@ -186,7 +183,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
 
             $size = @filesize($filename);
             if ($size) {
-                header("Content-length: $size");
+                header('Content-length: ' . $size);
             }
 
             readfile($filename);

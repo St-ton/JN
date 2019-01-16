@@ -7,6 +7,7 @@
 namespace Services\JTL;
 
 use Alert;
+use Tightenco\Collect\Support\Collection;
 
 /**
  * Class AlertService
@@ -34,9 +35,9 @@ interface AlertServiceInterface
     public function getAlert(string $key): ?Alert;
 
     /**
-     * @return array
+     * @return Collection
      */
-    public function getAlertlist(): array;
+    public function getAlertlist(): Collection;
 
     /**
      * @param string $type
@@ -48,4 +49,9 @@ interface AlertServiceInterface
      * @param string $key
      */
     public function displayAlertByKey(string $key): void;
+
+    /**
+     * @param string $key
+     */
+    public function removeAlertByKey(string $key): void;
 }

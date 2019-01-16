@@ -7,19 +7,24 @@
 namespace Services\JTL;
 
 use Alert;
+use Tightenco\Collect\Support\Collection;
 
 /**
  * Class AlertService
  */
 class AlertService implements AlertServiceInterface
 {
-    private $alertList = [];
+    /**
+    * @var Collection
+    */
+    private $alertList;
 
     /**
      * Alertservice constructor.
      */
     public function __construct()
     {
+        $this->alertList = new Collection();
         $this->initFromSession();
     }
 
@@ -32,8 +37,7 @@ class AlertService implements AlertServiceInterface
 
         if (!empty($alerts)) {
             foreach ($alerts as $alertSerialized) {
-                $alert                             = unserialize($alertSerialized, ['allowed_classes', 'Alert']);
-                $this->alertList[$alert->getKey()] = $alert;
+                $this->pushAlert(unserialize($alertSerialized, ['allowed_classes', 'Alert']));
             }
         }
     }
@@ -43,8 +47,8 @@ class AlertService implements AlertServiceInterface
      */
     public function addAlert(string $type, string $message, string $key, array $options = null): Alert
     {
-        $alert                 = new Alert($type, $message, $key, $options);
-        $this->alertList[$key] = $alert;
+        $alert = new Alert($type, $message, $key, $options);
+        $this->pushAlert($alert);
 
         return $alert;
     }
@@ -54,7 +58,9 @@ class AlertService implements AlertServiceInterface
      */
     public function getAlert(string $key): ?Alert
     {
-        return $this->alertList[$key] ?? null;
+        return $this->alertList->filter(function (Alert $alert) use ($key) {
+            return $alert->getKey() === $key;
+        })->pop();
     }
 
     /**
@@ -70,7 +76,7 @@ class AlertService implements AlertServiceInterface
     /**
      * @inheritdoc
      */
-    public function getAlertList(): array
+    public function getAlertList(): Collection
     {
         return $this->alertList;
     }
@@ -86,5 +92,27 @@ class AlertService implements AlertServiceInterface
             }
         }
         return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function removeAlertByKey(string $key): void
+    {
+        $key = $this->getAlertList()->search(function (Alert $alert) use ($key) {
+            return $alert->getKey() === $key;
+        });
+        if ($key !== false) {
+            $this->getAlertList()->pull($key);
+        }
+    }
+
+    /**
+     * @param Alert $alert
+     */
+    private function pushAlert(Alert $alert): void
+    {
+        $this->removeAlertByKey($alert->getKey());
+        $this->getAlertList()->push($alert);
     }
 }

@@ -60,7 +60,7 @@ $cache = Shop::Container()->getCache()->setJtlCacheConfig();
 
 $GLOBALS['bSeo']      = true; //compatibility!
 $oPluginHookListe_arr = \Plugin\Helper::getHookList();
-$oSprache             = Sprache::getInstance(true);
+$oSprache             = Sprache::getInstance();
 
 /**
  * @param string     $cacheID

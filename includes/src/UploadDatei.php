@@ -160,8 +160,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                 $browser_agent = 'ie';
             } elseif (preg_match('/OmniWeb\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {
                 $browser_agent = 'omniweb';
-            } elseif (preg_match('/Netscape([0-9]{1})/', $HTTP_USER_AGENT, $log_version)) {
-                $browser_agent = 'netscape';
             } elseif (preg_match('/Mozilla\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {
                 $browser_agent = 'mozilla';
             } elseif (preg_match('/Konqueror\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {

@@ -17,7 +17,6 @@ $Einstellungen = Shop::getSettings([
     CONF_KUNDEN,
     CONF_KAUFABWICKLUNG
 ]);
-$hinweis       = '';
 $linkHelper    = Shop::Container()->getLinkService();
 
 if (isset($_GET['uid'])) {
@@ -50,7 +49,6 @@ $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
 $smarty->assign('step', $step)
-       ->assign('hinweis', $hinweis)
        ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
        ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)
        ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN);

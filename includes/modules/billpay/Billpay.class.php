@@ -364,7 +364,11 @@ class Billpay extends PaymentMethod
         // Identitaets- und Bonitaetspruefung fehlgeschlagen
         if (isset($_SESSION['za_billpay_jtl']['bUse']) && !$_SESSION['za_billpay_jtl']['bUse']) {
             if (isset($_SESSION['za_billpay_jtl']['cMessage'])) {
-                Shop::Smarty()->assign('cFehler', $_SESSION['za_billpay_jtl']['cMessage']);
+                Shop::Container()->getAlertService()->addAlert(
+                    Alert::TYPE_ERROR,
+                    mappeBestellvorgangZahlungshinweis($_SESSION['za_billpay_jtl']['cMessage']),
+                    'billpayError'
+                );
             }
 
             return false;

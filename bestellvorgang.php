@@ -20,8 +20,9 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 Shop::setPageType(PAGE_BESTELLVORGANG);
 $Einstellungen = Shopsetting::getInstance()->getAll();
 $step          = 'accountwahl';
-$cHinweis      = '';
 $cart          = \Session\Frontend::getCart();
+$alertHelper   = Shop::Container()->getAlertService();
+$hinweis       = 'blub';
 unset($_SESSION['ajaxcheckout']);
 // Loginbenutzer?
 if (isset($_POST['login']) && (int)$_POST['login'] === 1) {
@@ -139,8 +140,13 @@ if (class_exists('Download') && Download::hasDownloads($cart)) {
     if ($step !== 'accountwahl' && empty($_SESSION['Kunde']->cPasswort)) {
         // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
         $step      = 'accountwahl';
-        $cHinweis  = Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
         $cPost_arr = StringHandler::filterXSS($_POST);
+
+        $alertHelper->addAlert(
+            Alert::TYPE_NOTE,
+            Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout'),
+            'digitalProductsRegisterInfo'
+        );
 
         Shop::Smarty()->assign('cKundenattribut_arr', getKundenattribute($cPost_arr))
             ->assign('kLieferadresse', $cPost_arr['kLieferadresse'])
@@ -155,7 +161,11 @@ if (class_exists('Download') && Download::hasDownloads($cart)) {
 
         unset($_SESSION['Kunde']);
     } elseif ($step === 'accountwahl') {
-        $cHinweis .= Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
+        $alertHelper->addAlert(
+            Alert::TYPE_NOTE,
+            Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout'),
+            'digitalProductsRegisterInfo'
+        );
     }
 }
 // autom. step ermitteln
@@ -251,7 +261,7 @@ Shop::Smarty()->assign(
     ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
     ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
     ->assign('Link', $link)
-    ->assign('hinweis', $cHinweis)
+    ->assign('alertNote', $alertHelper->alertTypeExists(Alert::TYPE_NOTE))
     ->assign('step', $step)
     ->assign('editRechnungsadresse', Request::verifyGPCDataInt('editRechnungsadresse'))
     ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())

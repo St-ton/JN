@@ -20,6 +20,7 @@ $link                   = $linkHelper->getPageLink($kLink);
 $AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $cCanonicalURL          = '';
+$SpezialContent         = new stdClass();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 if (Form::checkSubject()) {
     $step            = 'formular';
@@ -53,13 +54,12 @@ if (Form::checkSubject()) {
             }
         }
     }
-    $lang           = $_SESSION['cISOSprache'];
-    $Contents       = Shop::Container()->getDB()->selectAll(
+    $lang     = $_SESSION['cISOSprache'];
+    $Contents = Shop::Container()->getDB()->selectAll(
         'tspezialcontentsprache',
         ['nSpezialContent', 'cISOSprache'],
         [(int)SC_KONTAKTFORMULAR, $lang]
     );
-    $SpezialContent = new stdClass();
     foreach ($Contents as $content) {
         $SpezialContent->{$content->cTyp} = $content->cContent;
     }
@@ -89,18 +89,18 @@ if (Form::checkSubject()) {
     $cMetaTitle       = $oMeta->cTitle;
     $cMetaDescription = $oMeta->cDesc;
     $cMetaKeywords    = $oMeta->cKeywords;
+
     $smarty->assign('step', $step)
            ->assign('code', false)
            ->assign('betreffs', $subjects)
-           ->assign('hinweis', $hinweis ?? null)
            ->assign('Vorgaben', Form::baueKontaktFormularVorgaben())
            ->assign('fehlendeAngaben', $fehlendeAngaben)
            ->assign('nAnzeigeOrt', CHECKBOX_ORT_KONTAKT);
 } else {
     Shop::Container()->getLogService()->error('Kein Kontaktbetreff vorhanden! Bitte im Backend unter ' .
         'Einstellungen -> Kontaktformular -> Betreffs einen Betreff hinzuf&uuml;gen.');
-    $smarty->assign('hinweis', Shop::Lang()->get('noSubjectAvailable', 'contact'));
-    $SpezialContent = new stdClass();
+
+    $alertHelper->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('noSubjectAvailable', 'contact'), 'noSubjectAvailable');
 }
 
 $smarty->assign('Link', $link)

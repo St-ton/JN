@@ -141,20 +141,19 @@ class Kampagne
      */
     public function deleteInDB(): bool
     {
-        if ($this->kKampagne > 0) {
-            Shop::Container()->getDB()->query(
-                'DELETE tkampagne, tkampagnevorgang
-                    FROM tkampagne
-                    LEFT JOIN tkampagnevorgang 
-                        ON tkampagnevorgang.kKampagne = tkampagne.kKampagne
-                    WHERE tkampagne.kKampagne = ' . (int)$this->kKampagne,
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-
-            return true;
+        if ($this->kKampagne <= 0) {
+            return false;
         }
+        Shop::Container()->getDB()->query(
+            'DELETE tkampagne, tkampagnevorgang
+                FROM tkampagne
+                LEFT JOIN tkampagnevorgang 
+                    ON tkampagnevorgang.kKampagne = tkampagne.kKampagne
+                WHERE tkampagne.kKampagne = ' . (int)$this->kKampagne,
+            \DB\ReturnType::AFFECTED_ROWS
+        );
 
-        return false;
+        return true;
     }
 
     /**

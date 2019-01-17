@@ -88,7 +88,7 @@ if (Shop::$kVariKindArtikel > 0) {
     $cCanonicalURL = $AktuellerArtikel->baueVariKombiKindCanonicalURL(SHOP_SEO, $AktuellerArtikel, $bCanonicalURL);
 }
 if ($Einstellungen['preisverlauf']['preisverlauf_anzeigen'] === 'Y'
-    && \Session\Session::getCustomerGroup()->mayViewPrices()
+    && \Session\Frontend::getCustomerGroup()->mayViewPrices()
 ) {
     Shop::$kArtikel = Shop::$kVariKindArtikel > 0
         ? Shop::$kVariKindArtikel
@@ -151,7 +151,7 @@ if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreic
 } else {
     $ratings = $AktuellerArtikel->Bewertungen->oBewertung_arr;
 }
-if (\Session\Session::getCustomer()->getID() > 0) {
+if (\Session\Frontend::getCustomer()->getID() > 0) {
     $bereitsBewertet = Product::getRatedByCurrentCustomer(
         (int)$AktuellerArtikel->kArtikel,
         (int)$AktuellerArtikel->kVaterArtikel
@@ -195,6 +195,17 @@ foreach ($AktuellerArtikel->Variationen as $Variation) {
 $nav = $Einstellungen['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
     ? Product::getProductNavigation($AktuellerArtikel->kArtikel ?? 0, $AktuelleKategorie->kKategorie ?? 0)
     : null;
+
+if (class_exists('Upload')) {
+    $oUploadSchema_arr = Upload::gibArtikelUploads($AktuellerArtikel->kArtikel);
+    if ($oUploadSchema_arr) {
+        $nMaxSize = Upload::uploadMax();
+        $smarty->assign('cSessionID', session_id())
+               ->assign('nMaxUploadSize', $nMaxSize)
+               ->assign('cMaxUploadSize', Upload::formatGroesse($nMaxSize))
+               ->assign('oUploadSchema_arr', $oUploadSchema_arr);
+    }
+}
 
 $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('arNichtErlaubteEigenschaftswerte', $nonAllowed)

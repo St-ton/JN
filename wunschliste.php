@@ -30,7 +30,7 @@ $action           = null;
 $kWunschlistePos  = null;
 $wishlists        = [];
 $linkHelper       = Shop::Container()->getLinkService();
-$customerID       = Session\Session::getCustomer()->getID();
+$customerID       = Session\Frontend::getCustomer()->getID();
 
 if ($kWunschliste === 0 && $customerID > 0 && empty($_SESSION['Wunschliste']->kWunschliste)) {
     $_SESSION['Wunschliste'] = new Wunschliste();

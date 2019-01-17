@@ -15,6 +15,7 @@ $templateDir        = $smarty->getTemplateDir($smarty->context);
 $template           = AdminTemplate::getInstance();
 $config             = Shop::getSettings([CONF_GLOBAL]);
 $shopURL            = Shop::getURL();
+$db                 = Shop::Container()->getDB();
 $currentTemplateDir = str_replace(PFAD_ROOT . PFAD_ADMIN, '', $templateDir);
 $resourcePaths      = $template->getResources(isset($config['template']['general']['use_minify'])
     && $config['template']['general']['use_minify'] === 'Y');
@@ -22,7 +23,7 @@ $resourcePaths      = $template->getResources(isset($config['template']['general
 $adminLoginGruppe   = !empty($oAccount->account()->oGroup->kAdminlogingruppe)
     ? (int)$oAccount->account()->oGroup->kAdminlogingruppe
     : -1;
-$mainGroups         = Shop::Container()->getDB()->selectAll(
+$mainGroups         = $db->selectAll(
     'tadminmenugruppe',
     'kAdminmenueOberGruppe',
     0,
@@ -31,7 +32,7 @@ $mainGroups         = Shop::Container()->getDB()->selectAll(
 );
 
 // JTL Search Plugin aktiv?
-$oPluginSearch = Shop::Container()->getDB()->query(
+$oPluginSearch = $db->query(
     "SELECT kPlugin, cName
         FROM tplugin
         WHERE cPluginID = 'jtl_search'",
@@ -63,7 +64,7 @@ foreach ($adminMenu as $rootName => $rootEntry) {
         ];
 
         if ($secondEntry === 'DYNAMIC_PLUGINS') {
-            $pluginLinks = Shop::Container()->getDB()->queryPrepared(
+            $pluginLinks = $db->queryPrepared(
                 'SELECT DISTINCT p.kPlugin, p.cName, p.cPluginID, p.nPrio
                     FROM tplugin AS p INNER JOIN tpluginadminmenu AS pam
                         ON p.kPlugin = pam.kPlugin
@@ -149,7 +150,7 @@ foreach ($adminMenu as $rootName => $rootEntry) {
 if (isset($_SESSION['AdminAccount']->kSprache)) {
     $smarty->assign(
         'language',
-        Shop::Container()->getDB()->select('tsprache', 'kSprache', $_SESSION['AdminAccount']->kSprache)
+        $db->select('tsprache', 'kSprache', $_SESSION['AdminAccount']->kSprache)
     );
 }
 

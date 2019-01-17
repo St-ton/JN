@@ -14,6 +14,7 @@ use Filter\Option;
 use Filter\ProductFilter;
 use Filter\StateSQL;
 use function Functional\filter;
+use Session\Frontend;
 
 /**
  * Class BaseSearchQuery
@@ -943,7 +944,7 @@ class BaseSearchQuery extends AbstractFilter
                         FROM ($cSQL) AS i
                         LEFT JOIN tartikelsichtbarkeit 
                             ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
-                            AND tartikelsichtbarkeit.kKundengruppe = " . \Session::getCustomerGroup()->getID() . '
+                            AND tartikelsichtbarkeit.kKundengruppe = " . Frontend::getCustomerGroup()->getID() . '
                         WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
                         GROUP BY kSuchCache, kArtikelTMP' . ($nLimit > 0 ? ' LIMIT ' . $nLimit : '');
 

@@ -10,6 +10,7 @@ use Filter\AbstractFilter;
 use Filter\FilterInterface;
 use Filter\Join;
 use Filter\ProductFilter;
+use Session\Frontend;
 
 /**
  * Class BaseSearchSpecial
@@ -132,7 +133,7 @@ class BaseSearchSpecial extends AbstractFilter
                 return $tasp . ' .kArtikel = tartikel.kArtikel
                                     AND ' . $tasp . ".cAktiv = 'Y' AND " . $tasp . '.dStart <= NOW()
                                     AND (' . $tasp . '.dEnde >= CURDATE() OR ' . $tasp . '.dEnde IS NULL)
-                                    AND ' . $tsp . ' .kKundengruppe = ' . \Session::getCustomerGroup()->getID();
+                                    AND ' . $tsp . ' .kKundengruppe = ' . Frontend::getCustomerGroup()->getID();
 
             case \SEARCHSPECIALS_NEWPRODUCTS:
                 $days = (($age = $this->getConfig('boxen')['box_neuimsortiment_alter_tage']) > 0)

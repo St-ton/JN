@@ -19,8 +19,8 @@ class CMSHelper
      */
     public static function getHomeBoxes(): array
     {
-        $customerGroupID = \Session\Session::getCustomerGroup()->getID();
-        if (!$customerGroupID || !\Session\Session::getCustomerGroup()->mayViewCategories()) {
+        $customerGroupID = \Session\Frontend::getCustomerGroup()->getID();
+        if (!$customerGroupID || !\Session\Frontend::getCustomerGroup()->mayViewCategories()) {
             return [];
         }
         $boxes = self::getHomeBoxList(Shop::getSettings([CONF_STARTSEITE])['startseite']);
@@ -100,7 +100,7 @@ class CMSHelper
                         AND tnews.nAktiv = 1
                         AND tnews.dGueltigVon <= NOW()
                         AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                            OR FIND_IN_SET('" . \Session\Session::getCustomerGroup()->getID() . "', 
+                            OR FIND_IN_SET('" . \Session\Frontend::getCustomerGroup()->getID() . "', 
                             REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     GROUP BY tnews.kNews
                     ORDER BY tnews.dGueltigVon DESC" . $cSQL,
@@ -351,7 +351,7 @@ class CMSHelper
                     ON tartikelattribut.kArtikel = tartikel.kArtikel
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . \Session\Session::getCustomerGroup()->getID() .
+                    AND tartikelsichtbarkeit.kKundengruppe = ' . \Session\Frontend::getCustomerGroup()->getID() .
             " WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "' " .
             Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() .

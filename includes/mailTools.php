@@ -363,7 +363,8 @@ function sendeMail($ModulId, $Object, $mail = null)
             break;
 
         case MAILTEMPLATE_KUPON:
-            $mailSmarty->assign('Kupon', $Object->tkupon);
+            $mailSmarty->assign('Kupon', $Object->tkupon)
+                       ->assign('couponTypes', Kupon::getCouponTypes());
             break;
 
         case MAILTEMPLATE_KONTAKTFORMULAR:

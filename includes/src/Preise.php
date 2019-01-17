@@ -465,7 +465,7 @@ class Preise
      */
     public function localizePreise(): self
     {
-        $currency = \Session\Session::getCurrency();
+        $currency = \Session\Frontend::getCurrency();
 
         $this->cPreisLocalized_arr = [];
         foreach ($this->fPreis_arr as $fPreis) {
@@ -499,7 +499,7 @@ class Preise
      */
     public function berechneVKs(): self
     {
-        $factor = \Session\Session::getCurrency()->getConversionFactor();
+        $factor = \Session\Frontend::getCurrency()->getConversionFactor();
 
         $this->fVKBrutto = Tax::getGross($this->fVKNetto, $this->fUst);
 
@@ -612,7 +612,7 @@ class Preise
      */
     public static function getLocalizedPriceWithoutFactor($preis, $waehrung = null, bool $html = true): string
     {
-        $currency = !$waehrung ? \Session\Session::getCurrency() : $waehrung;
+        $currency = !$waehrung ? \Session\Frontend::getCurrency() : $waehrung;
         if ($currency !== null && get_class($currency) === 'stdClass') {
             $currency = new Currency($currency->kWaehrung);
         }
@@ -639,7 +639,7 @@ class Preise
         int $decimals = 2
     ): string {
         if ($currency === null || is_numeric($currency) || is_bool($currency)) {
-            $currency = \Session\Session::getCurrency();
+            $currency = \Session\Frontend::getCurrency();
         } elseif (is_object($currency) && get_class($currency) === 'stdClass') {
             $currency = new Currency((int)$currency->kWaehrung);
         }

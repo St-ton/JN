@@ -4,8 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\GeneralObject;
-
 /**
  * Class JobQueue
  */
@@ -364,10 +362,20 @@ class JobQueue
             && strlen($this->cTabelle) > 0
             && strlen($this->dStartZeit) > 0
         ) {
-            $queue = GeneralObject::copyMembers($this);
-            unset($queue->kJobQueue);
+            $ins                = new stdClass();
+            $ins->cronID        = (int)$this->kCron;
+            $ins->foreignKeyID  = (int)$this->kKey;
+            $ins->tasksExecuted = (int)$this->nLimitN;
+            $ins->taskLimit     = (int)$this->nLimitM;
+            $ins->lastProductID = (int)$this->nLastArticleID;
+            $ins->isRunning     = (int)$this->nInArbeit;
+            $ins->jobType       = $this->cJobArt;
+            $ins->tableName     = $this->cTabelle;
+            $ins->foreignKey    = $this->cKey;
+            $ins->startTime     = $this->dStartZeit;
+            $ins->lastStart     = $this->dZuletztGelaufen;
 
-            return Shop::Container()->getDB()->insert('tjobqueue', $queue);
+            return Shop::Container()->getDB()->insert('tjobqueue', $ins);
         }
 
         return 0;
@@ -379,20 +387,20 @@ class JobQueue
     public function updateJobInDB(): int
     {
         if ($this->kJobQueue > 0) {
-            $_upd                   = new stdClass();
-            $_upd->kCron            = (int)$this->kCron;
-            $_upd->kKey             = (int)$this->kKey;
-            $_upd->nLimitN          = (int)$this->nLimitN;
-            $_upd->nLimitM          = (int)$this->nLimitM;
-            $_upd->nLastArticleID   = (int)$this->nLastArticleID;
-            $_upd->nInArbeit        = (int)$this->nInArbeit;
-            $_upd->cJobArt          = $this->cJobArt;
-            $_upd->cTabelle         = $this->cTabelle;
-            $_upd->cKey             = $this->cKey;
-            $_upd->dStartZeit       = $this->dStartZeit;
-            $_upd->dZuletztGelaufen = $this->dZuletztGelaufen;
+            $upd                = new stdClass();
+            $upd->cronID        = (int)$this->kCron;
+            $upd->foreignKeyID  = (int)$this->kKey;
+            $upd->tasksExecuted = (int)$this->nLimitN;
+            $upd->taskLimit     = (int)$this->nLimitM;
+            $upd->lastProductID = (int)$this->nLastArticleID;
+            $upd->isRunning     = (int)$this->nInArbeit;
+            $upd->jobType       = $this->cJobArt;
+            $upd->tableName     = $this->cTabelle;
+            $upd->foreignKey    = $this->cKey;
+            $upd->startTime     = $this->dStartZeit;
+            $upd->lastStart     = $this->dZuletztGelaufen;
 
-            return Shop::Container()->getDB()->update('tjobqueue', 'kJobQueue', (int)$this->kJobQueue, $_upd);
+            return Shop::Container()->getDB()->update('tjobqueue', 'jobQueueID', (int)$this->kJobQueue, $upd);
         }
 
         return 0;
@@ -404,7 +412,7 @@ class JobQueue
     public function deleteJobInDB(): int
     {
         return $this->kJobQueue > 0
-            ? Shop::Container()->getDB()->delete('tjobqueue', 'kJobQueue', (int)$this->kJobQueue)
+            ? Shop::Container()->getDB()->delete('tjobqueue', 'jobQueueID', (int)$this->kJobQueue)
             : 0;
     }
 }

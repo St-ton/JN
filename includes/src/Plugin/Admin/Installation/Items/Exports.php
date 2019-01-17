@@ -33,7 +33,7 @@ class Exports extends AbstractItem
         $defaultCustomerGroupID = \Kundengruppe::getDefaultGroupID();
         $language               = \Sprache::getDefaultLanguage(true);
         $defaultLanguageID      = $language->kSprache;
-        $defaultCurrencyID      = \Session\Session::getCurrency()->getID();
+        $defaultCurrencyID      = \Session\Frontend::getCurrency()->getID();
         foreach ($this->getNode() as $i => $data) {
             $i = (string)$i;
             \preg_match('/[0-9]+/', $i, $hits);

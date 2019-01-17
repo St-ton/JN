@@ -8,7 +8,7 @@ use Helpers\Request;
 
 require_once __DIR__ . '/globalinclude.php';
 
-$session = \Session\Session::getInstance();
+$session = \Session\Frontend::getInstance();
 
 // kK   = kKampagne
 // kN   = kNewsletter

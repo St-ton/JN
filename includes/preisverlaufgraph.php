@@ -6,7 +6,7 @@
 
 if ((int)$_GET['kArtikel'] > 0 && (int)$_GET['kKundengruppe'] > 0 && (int)$_GET['kSteuerklasse'] > 0) {
     require_once __DIR__ . '/globalinclude.php';
-    $session = \Session\Session::getInstance();
+    $session = \Session\Frontend::getInstance();
     $conf    = Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_PREISVERLAUF);
     if (count($conf) > 0) {
         $Einstellungen          = Shop::getSettings([CONF_PREISVERLAUF]);
@@ -15,8 +15,8 @@ if ((int)$_GET['kArtikel'] > 0 && (int)$_GET['kKundengruppe'] > 0 && (int)$_GET[
         $kSteuerklasse          = (int)$_GET['kSteuerklasse'];
         $nMonat                 = (int)$Einstellungen['preisverlauf']['preisverlauf_anzahl_monate'];
         $oPreisConfig           = new stdClass();
-        $oPreisConfig->Waehrung = \Session\Session::getCurrency()->getName();
-        $oPreisConfig->Netto    = \Session\Session::getCustomerGroup()->isMerchant()
+        $oPreisConfig->Waehrung = \Session\Frontend::getCurrency()->getName();
+        $oPreisConfig->Netto    = \Session\Frontend::getCustomerGroup()->isMerchant()
             ? 0
             : $_SESSION['Steuersatz'][$kSteuerklasse];
         $oPreisverlauf          = Shop::Container()->getDB()->query(

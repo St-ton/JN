@@ -69,13 +69,13 @@ class Preisverlauf
                     ORDER BY tpreisverlauf.dDate DESC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            $_currency = \Session\Session::getCurrency();
+            $_currency = \Session\Frontend::getCurrency();
             $dt        = new DateTime();
             foreach ($obj_arr as &$_pv) {
                 if (isset($_pv->timestamp)) {
                     $dt->setTimestamp((int)$_pv->timestamp);
                     $_pv->date     = $dt->format('d.m.');
-                    $_pv->fPreis   = \Session\Session::getCustomerGroup()->isMerchant()
+                    $_pv->fPreis   = \Session\Frontend::getCustomerGroup()->isMerchant()
                         ? round($_pv->fVKNetto * $_currency->getConversionFactor(), 2)
                         : Tax::getGross($_pv->fVKNetto * $_currency->getConversionFactor(), $_pv->fMwst);
                     $_pv->currency = $_currency->getCode();

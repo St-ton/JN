@@ -444,7 +444,7 @@ class Helper
             if (!\class_exists($class)) {
                 return null;
             }
-            $bootstrapper = new $class($plugin);
+            $bootstrapper = new $class($plugin, $loader->getDB(), $loader->getCache());
             if (!\is_subclass_of($bootstrapper, AbstractPlugin::class)) {
                 return null;
             }

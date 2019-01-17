@@ -77,9 +77,9 @@ if (strlen($cSh) > 0) {
     if (session_id() !== $paymentSession->cSID) {
         session_destroy();
         session_id($paymentSession->cSID);
-        $session = \Session\Session::getInstance(true, true);
+        $session = \Session\Frontend::getInstance(true, true);
     } else {
-        $session = \Session\Session::getInstance(false, false);
+        $session = \Session\Frontend::getInstance(false, false);
     }
     require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
 
@@ -166,7 +166,7 @@ if (strlen($cSh) > 0) {
 
 /*** Payment Hash ***/
 
-$session = \Session\Session::getInstance();
+$session = \Session\Frontend::getInstance();
 if (strlen($cPh) > 0) {
     if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
         $logger->debug('Notify request:' . print_r($_REQUEST, true));

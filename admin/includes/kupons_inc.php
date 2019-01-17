@@ -16,15 +16,15 @@ function loescheKupons($kKupon_arr)
     }
     $kKupon_arr = array_map('\intval', $kKupon_arr);
     $nRows      = Shop::Container()->getDB()->query(
-        'DELETE
+        'DELETE tkupon, tkuponsprache, tkuponkunde, tkuponbestellung
             FROM tkupon
-            WHERE kKupon IN(' . implode(',', $kKupon_arr) . ')',
-        \DB\ReturnType::AFFECTED_ROWS
-    );
-    Shop::Container()->getDB()->query(
-        'DELETE
-            FROM tkuponsprache
-            WHERE kKupon IN(' . implode(',', $kKupon_arr) . ')',
+            LEFT JOIN tkuponsprache
+              ON tkuponsprache.kKupon = tkupon.kKupon
+            LEFT JOIN tkuponkunde
+              ON tkuponkunde.kKupon = tkupon.kKupon
+            LEFT JOIN tkuponbestellung
+              ON tkuponbestellung.kKupon = tkupon.kKupon
+            WHERE tkupon.kKupon IN(' . implode(',', $kKupon_arr) . ')',
         \DB\ReturnType::AFFECTED_ROWS
     );
 
@@ -131,7 +131,7 @@ function normalizeDate($string)
  * @param string $cLimitSQL
  * @return array|int|object
  */
-function getRawCoupons($cKuponTyp = 'standard', $cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = '')
+function getRawCoupons($cKuponTyp = Kupon::TYPE_STANDARD, $cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = '')
 {
     return Shop::Container()->getDB()->query(
         "SELECT k.*, max(kk.dErstellt) AS dLastUse
@@ -155,7 +155,7 @@ function getRawCoupons($cKuponTyp = 'standard', $cWhereSQL = '', $cOrderSQL = ''
  * @param string $cLimitSQL - an SQL LIMIT clause  (10,20)
  * @return array
  */
-function getCoupons($cKuponTyp = 'standard', $cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = '')
+function getCoupons($cKuponTyp = Kupon::TYPE_STANDARD, $cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = '')
 {
     $oKuponDB_arr = getRawCoupons($cKuponTyp, $cWhereSQL, $cOrderSQL, $cLimitSQL);
     $oKupon_arr   = [];
@@ -171,7 +171,7 @@ function getCoupons($cKuponTyp = 'standard', $cWhereSQL = '', $cOrderSQL = '', $
  * @param string $cWhereSQL
  * @return array
  */
-function getExportableCoupons($cKuponTyp = 'standard', $cWhereSQL = '')
+function getExportableCoupons($cKuponTyp = Kupon::TYPE_STANDARD, $cWhereSQL = '')
 {
     $coupons = getRawCoupons($cKuponTyp, $cWhereSQL);
 
@@ -267,9 +267,7 @@ function augmentCoupon($oKupon)
 
     $oMaxErstelltDB   = Shop::Container()->getDB()->query(
         'SELECT max(dErstellt) as dLastUse
-            FROM ' . ($oKupon->cKuponTyp === 'neukundenkupon'
-                ? 'tkuponneukunde'
-                : 'tkuponkunde') . '
+            FROM tkuponkunde
             WHERE kKupon = ' . (int)$oKupon->kKupon,
         \DB\ReturnType::SINGLE_OBJECT
     );
@@ -283,7 +281,7 @@ function augmentCoupon($oKupon)
 /**
  * Create a fresh Kupon instance with default values to be edited
  *
- * @param $cKuponTyp - 'standard', 'versandkupon', 'neukundenkupon'
+ * @param $cKuponTyp - Kupon::TYPE_STANDRAD, Kupon::TYPE_SHIPPING, Kupon::TYPE_NEWCUSTOMER
  * @return Kupon
  */
 function createNewCoupon($cKuponTyp)
@@ -346,7 +344,7 @@ function createCouponFromInput()
     $oKupon->dGueltigBis           = normalizeDate(!empty($_POST['dGueltigBis']) ? $_POST['dGueltigBis'] : '');
     $oKupon->cAktiv                = isset($_POST['cAktiv']) && $_POST['cAktiv'] === 'Y' ? 'Y' : 'N';
     $oKupon->cKategorien           = '-1';
-    if ($oKupon->cKuponTyp !== 'neukundenkupon') {
+    if ($oKupon->cKuponTyp !== Kupon::TYPE_NEWCUSTOMER) {
         $oKupon->cKunden = '-1';
     }
     if (isset($_POST['bOpenEnd']) && $_POST['bOpenEnd'] === 'Y') {
@@ -407,7 +405,7 @@ function createCouponFromInput()
  * @param string $cWhereSQL
  * @return int
  */
-function getCouponCount($cKuponTyp = 'standard', $cWhereSQL = '')
+function getCouponCount($cKuponTyp = Kupon::TYPE_STANDARD, $cWhereSQL = '')
 {
     $oKuponDB = Shop::Container()->getDB()->query(
         "SELECT COUNT(kKupon) AS count
@@ -433,13 +431,13 @@ function validateCoupon($oKupon)
     if ($oKupon->cName === '') {
         $cFehler_arr[] = 'Es wurde kein Kuponname angegeben. Bitte geben Sie einen Namen an!';
     }
-    if (($oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'neukundenkupon') && $oKupon->fWert < 0) {
+    if (($oKupon->cKuponTyp === Kupon::TYPE_STANDARD || $oKupon->cKuponTyp === Kupon::TYPE_NEWCUSTOMER) && $oKupon->fWert < 0) {
         $cFehler_arr[] = 'Bitte geben Sie einen nicht-negativen Kuponwert an!';
     }
     if ($oKupon->fMindestbestellwert < 0) {
         $cFehler_arr[] = 'Bitte geben Sie einen nicht-negativen Mindestbestellwert an!';
     }
-    if ($oKupon->cKuponTyp === 'versandkupon' && $oKupon->cLieferlaender === '') {
+    if ($oKupon->cKuponTyp === Kupon::TYPE_SHIPPING && $oKupon->cLieferlaender === '') {
         $cFehler_arr[] = 'Bitte geben Sie die Länderkürzel (ISO-Codes) unter "Lieferländer" an, ' .
             'für die dieser Versandkupon gelten soll!';
     }
@@ -466,7 +464,7 @@ function validateCoupon($oKupon)
     }
     if ($oKupon->cCode !== ''
         && !isset($oKupon->massCreationCoupon)
-        && ($oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon')
+        && ($oKupon->cKuponTyp === Kupon::TYPE_STANDARD || $oKupon->cKuponTyp === Kupon::TYPE_SHIPPING)
     ) {
         $queryRes = Shop::Container()->getDB()->executeQueryPrepared(
             'SELECT kKupon
@@ -497,7 +495,7 @@ function validateCoupon($oKupon)
 
     $oKupon->cArtikel = StringHandler::createSSK($validArtNrs);
 
-    if ($oKupon->cKuponTyp === 'versandkupon') {
+    if ($oKupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
         $cLandISO_arr = StringHandler::parseSSK($oKupon->cLieferlaender);
         foreach ($cLandISO_arr as $cLandISO) {
             $res = Shop::Container()->getDB()->select('tland', 'cISO', $cLandISO);
@@ -550,7 +548,7 @@ function saveCoupon($oKupon, $oSprache_arr)
             $oKupon->kKupon     = [];
             unset($oKupon->massCreationCoupon, $_POST['informieren']);
             for ($i = 1; $i <= $massCreationCoupon->numberOfCoupons; $i++) {
-                if ($oKupon->cKuponTyp !== 'neukundenkupon') {
+                if ($oKupon->cKuponTyp !== Kupon::TYPE_NEWCUSTOMER) {
                     $oKupon->cCode = $oKupon->generateCode(
                         $massCreationCoupon->hashLength,
                         $massCreationCoupon->lowerCase,
@@ -564,7 +562,7 @@ function saveCoupon($oKupon, $oSprache_arr)
                 $oKupon->kKupon[] = (int)$oKupon->save();
             }
         } else {
-            if ($oKupon->cKuponTyp !== 'neukundenkupon' && $oKupon->cCode === '') {
+            if ($oKupon->cKuponTyp !== Kupon::TYPE_NEWCUSTOMER && $oKupon->cCode === '') {
                 $oKupon->cCode = $oKupon->generateCode();
             }
             unset($oKupon->translationList);
@@ -620,13 +618,10 @@ function saveCoupon($oKupon, $oSprache_arr)
  */
 function informCouponCustomers($oKupon)
 {
-    // Augment Coupon
     augmentCoupon($oKupon);
-    // Standard-Sprache
-    $oStdSprache = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
-    // Standard-Waehrung
-    $oStdWaehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
-    // Artikel Default Optionen
+    $db             = Shop::Container()->getDB();
+    $oStdSprache    = $db->select('tsprache', 'cShopStandard', 'Y');
+    $oStdWaehrung   = $db->select('twaehrung', 'cStandard', 'Y');
     $defaultOptions = Artikel::getDefaultOptions();
     // lokalisierter Kuponwert und MBW
     $oKupon->cLocalizedWert = $oKupon->cWertTyp === 'festpreis'
@@ -635,7 +630,7 @@ function informCouponCustomers($oKupon)
     $oKupon->cLocalizedMBW  = Preise::getLocalizedPriceString($oKupon->fMindestbestellwert, $oStdWaehrung, false);
     // kKunde-Array aller auserwaehlten Kunden
     $kKunde_arr   = StringHandler::parseSSK($oKupon->cKunden);
-    $oKundeDB_arr = Shop::Container()->getDB()->query(
+    $oKundeDB_arr = $db->query(
         'SELECT kKunde
             FROM tkunde
             WHERE TRUE
@@ -652,7 +647,7 @@ function informCouponCustomers($oKupon)
     $cArtNr_arr     = StringHandler::parseSSK($oKupon->cArtikel);
 
     if (count($cArtNr_arr) > 0) {
-        $oArtikelDB_arr = Shop::Container()->getDB()->query(
+        $oArtikelDB_arr = $db->query(
             'SELECT kArtikel
                 FROM tartikel
                 WHERE cArtNr IN (' . implode(',', $cArtNr_arr) . ')',
@@ -660,22 +655,19 @@ function informCouponCustomers($oKupon)
         );
     }
     foreach ($oKundeDB_arr as $oKundeDB) {
-        $oKunde = new Kunde($oKundeDB->kKunde);
-        // Sprache
+        $oKunde   = new Kunde($oKundeDB->kKunde);
         $oSprache = Shop::Lang()->getIsoFromLangID($oKunde->kSprache);
         if (!$oSprache) {
             $oSprache = $oStdSprache;
         }
-        // Kuponsprache
-        $oKuponsprache = Shop::Container()->getDB()->select(
+        $oKuponsprache  = $db->select(
             'tkuponsprache',
             ['kKupon', 'cISOSprache'],
             [$oKupon->kKupon, $oSprache->cISO]
         );
-        // Kategorien
         $oKategorie_arr = [];
         if ($oKupon->cKategorien !== '-1') {
-            $kKategorie_arr = array_map('intval', StringHandler::parseSSK($oKupon->cKategorien));
+            $kKategorie_arr = array_map('\intval', StringHandler::parseSSK($oKupon->cKategorien));
             foreach ($kKategorie_arr as $kKategorie) {
                 if ($kKategorie > 0) {
                     $oKategorie       = new Kategorie($kKategorie, $oKunde->kSprache, $oKunde->kKundengruppe);

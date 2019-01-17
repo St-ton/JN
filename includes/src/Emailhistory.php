@@ -123,20 +123,21 @@ class Emailhistory
         $cSet_arr    = [];
         $cMember_arr = array_keys(get_object_vars($this));
         if (is_array($cMember_arr) && count($cMember_arr) > 0) {
+            $db = Shop::Container()->getDB();
             foreach ($cMember_arr as $cMember) {
                 $cMethod = 'get' . substr($cMember, 1);
                 if (method_exists($this, $cMethod)) {
                     $val        = $this->$cMethod();
                     $mValue     = $val === null
                         ? 'NULL'
-                        : ("'" . Shop::Container()->getDB()->escape($val) . "'");
+                        : ("'" . $db->escape($val) . "'");
                     $cSet_arr[] = "{$cMember} = {$mValue}";
                 }
             }
             $cQuery .= implode(', ', $cSet_arr);
             $cQuery .= ' WHERE kEmailhistory = ' . $this->getEmailhistory();
 
-            return Shop::Container()->getDB()->query($cQuery, \DB\ReturnType::AFFECTED_ROWS);
+            return $db->query($cQuery, \DB\ReturnType::AFFECTED_ROWS);
         }
         throw new Exception('ERROR: Object has no members!');
     }

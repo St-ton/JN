@@ -198,7 +198,7 @@ class PluginLoader extends AbstractLoader
         $paths->setLicencePath($basePath . $versioned . \PFAD_PLUGIN_LICENCE);
         $paths->setUninstaller($basePath . $versioned . \PFAD_PLUGIN_UNINSTALL);
         $paths->setPortletsPath($basePath . $versioned . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS);
-        $paths->setExportPath($basePath . $versioned . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS);
+        $paths->setExportPath($basePath . $versioned . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_EXPORTFORMAT);
 
         return $paths;
     }
@@ -217,7 +217,7 @@ class PluginLoader extends AbstractLoader
 
             $configCompatItem          = new \stdClass();
             $configCompatItem->kPlugin = $id;
-            $configCompatItem->cName   = $option->niceName;
+            $configCompatItem->cName   = $option->valueID;
             $configCompatItem->cWert   = $option->value;
             $configCompat[]            = $configCompatItem;
 

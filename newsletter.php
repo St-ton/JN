@@ -19,7 +19,7 @@ $oLink->kLink = 0;
 foreach ($links as $l) {
     $customerGroupIDs = StringHandler::parseSSK($l->cKundengruppen);
     $ok               = array_reduce($customerGroupIDs, function ($c, $p) {
-        return $c === true || $p === 'NULL' || (int)$p === \Session\Session::getCustomerGroup()->getID();
+        return $c === true || $p === 'NULL' || (int)$p === \Session\Frontend::getCustomerGroup()->getID();
     }, false);
     if ($ok === true) {
         $oLink = $l;
@@ -203,7 +203,7 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
         $smarty->assign('oFehlendeAngaben', (object)['cUnsubscribeEmail' => 1]);
     }
 } elseif (isset($_GET['show']) && (int)$_GET['show'] > 0) {
-    $kKundengruppe = \Session\Session::getCustomer()->getID();
+    $kKundengruppe = \Session\Frontend::getCustomer()->getID();
     $option        = 'anzeigen';
     $history       = $db->query(
         "SELECT kNewsletterHistory, nAnzahl, cBetreff, cHTMLStatic, cKundengruppeKey,
@@ -216,8 +216,8 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
         $smarty->assign('oNewsletterHistory', $history);
     }
 }
-if (\Session\Session::getCustomer()->getID() > 0) {
-    $customer = new Kunde(\Session\Session::getCustomer()->getID());
+if (\Session\Frontend::getCustomer()->getID() > 0) {
+    $customer = new Kunde(\Session\Frontend::getCustomer()->getID());
     $smarty->assign('bBereitsAbonnent', pruefeObBereitsAbonnent($customer->kKunde))
            ->assign('oKunde', $customer);
 }

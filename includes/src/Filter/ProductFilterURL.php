@@ -15,11 +15,12 @@ use Filter\Items\Search;
 use Filter\Items\SearchSpecial;
 use Filter\Items\Tag;
 use Filter\States\BaseSearchQuery;
-use Session\Session;
+use Session\Frontend;
 use function Functional\first;
 
 /**
  * Class ProductFilterURL
+ * @package Filter
  */
 class ProductFilterURL
 {
@@ -201,7 +202,7 @@ class ProductFilterURL
             }
         }
         if (empty($seoFilterParams) && $languageID !== \Shop::getLanguageID()) {
-            $language = first(Session::getLanguages(), function ($l) use ($languageID) {
+            $language = first(Frontend::getLanguages(), function ($l) use ($languageID) {
                 return $l->kSprache === $languageID;
             });
             if ($language !== null) {

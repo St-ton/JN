@@ -27,7 +27,7 @@ $Schnellkaufhinweis       = Cart::checkQuickBuy();
 $linkHelper               = Shop::Container()->getLinkService();
 $KuponcodeUngueltig       = false;
 $nVersandfreiKuponGueltig = false;
-$cart                     = \Session\Session::getCart();
+$cart                     = \Session\Frontend::getCart();
 $kLink                    = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
 $link                     = $linkHelper->getPageLink($kLink);
 // Warenkorbaktualisierung?
@@ -59,10 +59,10 @@ if ($cart !== null
             'nReturnValue' => &$nReturnValue
         ]);
         if ($nReturnValue) {
-            if ($Kupon->cKuponTyp === 'standard') {
+            if ($Kupon->cKuponTyp === Kupon::TYPE_STANDARD) {
                 Kupon::acceptCoupon($Kupon);
                 executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
-            } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
+            } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
                 // Aktiven Kupon aus der Session löschen und dessen Warenkorbposition
                 $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
                 // Versandfrei Kupon
@@ -120,7 +120,7 @@ $AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 if (isset($_GET['fillOut'])) {
-    $mbw = \Session\Session::getCustomerGroup()->getAttribute(KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
+    $mbw = \Session\Frontend::getCustomerGroup()->getAttribute(KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
     if ((int)$_GET['fillOut'] === 9 && $mbw > 0 && $cart->gibGesamtsummeWaren(true, false) < $mbw) {
         $MsgWarning = Shop::Lang()->get('minordernotreached', 'checkout') . ' ' .
             Preise::getLocalizedPriceString($mbw);
@@ -135,7 +135,7 @@ if (isset($_GET['fillOut'])) {
         $MsgWarning = Shop::Lang()->get('missingFilesUpload', 'checkout');
     }
 }
-$kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+$kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
 if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']->kKundengruppe > 0) {
     $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
 }

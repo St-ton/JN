@@ -82,8 +82,8 @@ if ($conf['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y'
     });
     $bestsellers = Bestseller::buildBestsellers(
         $productsIDs,
-        \Session\Session::getCustomerGroup()->getID(),
-        \Session\Session::getCustomerGroup()->mayViewCategories(),
+        \Session\Frontend::getCustomerGroup()->getID(),
+        \Session\Frontend::getCustomerGroup()->mayViewCategories(),
         false,
         (int)$conf['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'],
         (int)$conf['global']['global_bestseller_minanzahl']

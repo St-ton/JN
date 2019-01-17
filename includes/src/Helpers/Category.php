@@ -9,7 +9,7 @@ namespace Helpers;
 use DB\ReturnType;
 use Kategorie;
 use KategorieListe;
-use Session\Session;
+use Session\Frontend;
 use Shop;
 use Sprache;
 use StringHandler;
@@ -79,7 +79,7 @@ class Category
             ? Shop::getLanguageID()
             : $kSprache;
         $kKundengruppe = $kKundengruppe === 0
-            ? Session::getCustomerGroup()->getID()
+            ? Frontend::getCustomerGroup()->getID()
             : $kKundengruppe;
         $config        = Shop::getSettings([\CONF_GLOBAL, \CONF_TEMPLATE]);
         if (self::$instance !== null && self::$kSprache !== $kSprache) {
@@ -121,7 +121,7 @@ class Category
                 ReturnType::SINGLE_OBJECT
             );
             $categoryCount       = (int)$categoryCountObj->cnt;
-            $categoryLimit       = CATEGORY_FULL_LOAD_LIMIT;
+            $categoryLimit       = \CATEGORY_FULL_LOAD_LIMIT;
             self::$limitReached  = ($categoryCount >= $categoryLimit);
             $functionAttributes  = [];
             $localizedAttributes = [];
@@ -135,7 +135,7 @@ class Category
             $isDefaultLang       = Sprache::isDefaultLanguageActive();
             $visibilityWhere     = ' AND tartikelsichtbarkeit.kArtikel IS NULL';
             $depthWhere          = self::$limitReached === true
-                ? ' AND node.nLevel <= ' . CATEGORY_FULL_LOAD_MAX_LEVEL
+                ? ' AND node.nLevel <= ' . \CATEGORY_FULL_LOAD_MAX_LEVEL
                 : '';
             $getDescription      = ($categoryCount < $categoryLimit
                 || // always get description if there aren't that many categories

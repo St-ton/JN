@@ -44,6 +44,38 @@ abstract class AbstractLoader implements LoaderInterface
     protected $cacheID;
 
     /**
+     * @inheritdoc
+     */
+    public function getDB(): DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setDB(DbInterface $db): void
+    {
+        $this->db = $db;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCache(): JTLCacheInterface
+    {
+        return $this->cache;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setCache(JTLCacheInterface $cache): void
+    {
+        $this->cache = $cache;
+    }
+
+    /**
      * @param int $id
      * @return Links
      */

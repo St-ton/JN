@@ -7,7 +7,7 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
-use Session\Session;
+use Session\Frontend;
 
 /**
  * Class NewsCategories
@@ -27,7 +27,7 @@ final class NewsCategories extends AbstractBox
             ? ' LIMIT ' . (int)$config['news']['news_anzahl_box']
             : '';
         $langID    = \Shop::getLanguageID();
-        $cacheID   = 'bnk_' . $langID . '_' . Session::getCustomerGroup()->getID() . '_' . \md5($cSQL);
+        $cacheID   = 'bnk_' . $langID . '_' . Frontend::getCustomerGroup()->getID() . '_' . \md5($cSQL);
         $cached    = true;
         $cacheTags = [\CACHING_GROUP_BOX, \CACHING_GROUP_NEWS];
         if (($newsCategories = \Shop::Container()->getCache()->get($cacheID)) === false) {
@@ -58,7 +58,7 @@ final class NewsCategories extends AbstractBox
                         AND t.languageID = :lid
                     GROUP BY tnewskategorienews.kNewsKategorie
                     ORDER BY tnewskategorie.nSort DESC" . $cSQL,
-                ['lid' => $langID, 'cid' => Session::getCustomerGroup()->getID()],
+                ['lid' => $langID, 'cid' => Frontend::getCustomerGroup()->getID()],
                 ReturnType::ARRAY_OF_OBJECTS
             );
             \Shop::Container()->getCache()->set($cacheID, $newsCategories, $cacheTags);

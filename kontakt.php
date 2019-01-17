@@ -8,7 +8,6 @@ use Helpers\Form;
 use Helpers\Request;
 
 require_once __DIR__ . '/includes/globalinclude.php';
-$session = \Session\Session::getInstance();
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kontakt_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
@@ -27,7 +26,7 @@ if (Form::checkSubject()) {
     $fehlendeAngaben = [];
     if (isset($_POST['kontakt']) && (int)$_POST['kontakt'] === 1) {
         $fehlendeAngaben = Form::getMissingContactFormData();
-        $kKundengruppe   = \Session\Session::getCustomerGroup()->getID();
+        $kKundengruppe   = \Session\Frontend::getCustomerGroup()->getID();
         $oCheckBox       = new CheckBox();
         $fehlendeAngaben = array_merge(
             $fehlendeAngaben,
@@ -68,7 +67,7 @@ if (Form::checkSubject()) {
         "SELECT *
             FROM tkontaktbetreff
             WHERE (cKundengruppen = 0 
-            OR FIND_IN_SET('" . \Session\Session::getCustomerGroup()->getID()
+            OR FIND_IN_SET('" . \Session\Frontend::getCustomerGroup()->getID()
         . "', REPLACE(cKundengruppen, ';', ',')) > 0) 
             ORDER BY nSort",
         \DB\ReturnType::ARRAY_OF_OBJECTS

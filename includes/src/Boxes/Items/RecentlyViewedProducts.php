@@ -6,7 +6,7 @@
 
 namespace Boxes\Items;
 
-use Session\Session;
+use Session\Frontend;
 
 /**
  * Class RecentlyViewedProducts
@@ -25,7 +25,7 @@ final class RecentlyViewedProducts extends AbstractBox
         if (isset($_SESSION['ZuletztBesuchteArtikel'])
             && \is_array($_SESSION['ZuletztBesuchteArtikel'])
             && \count($_SESSION['ZuletztBesuchteArtikel']) > 0
-            && Session::getCustomerGroup()->mayViewCategories()
+            && Frontend::getCustomerGroup()->mayViewCategories()
         ) {
             $products       = [];
             $defaultOptions = \Artikel::getDefaultOptions();

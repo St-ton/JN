@@ -7,64 +7,27 @@
 namespace Session;
 
 use DB\ReturnType;
+use Helpers\Manufacturer;
+use Helpers\Request;
+use Helpers\Tax;
 use Link\LinkGroupCollection;
-use Session\Handler\SessionHandlerBot;
-use Session\Handler\SessionHandlerDB;
-use Session\Handler\SessionHandlerJTL;
 
 /**
- * Class Session
- * @package Session
+ * Class Frontend
+ * @package Session,
  */
-class Session
+class Frontend extends AbstractSession
 {
-    public const DEFAULT_SESSION = 'JTLSHOP';
-
     /**
-     * handle bot like normal visitor
+     * @var Frontend
      */
-    public const SAVE_BOT_SESSIONS_NORMAL = 0;
-
-    /**
-     * use single session ID for all bot visits
-     */
-    public const SAVE_BOT_SESSIONS_COMBINED = 1;
-
-    /**
-     * save combined bot session to cache
-     */
-    public const SAVE_BOT_SESSIONS_CACHE = 2;
-
-    /**
-     * never save bot sessions
-     */
-    public const SAVE_BOT_SESSIONS_NEVER = 3;
-
-    /**
-     * @var string
-     */
-    protected static $sessionName = self::DEFAULT_SESSION;
-
-    /**
-     * @var Session
-     */
-    private static $instance;
-
-    /**
-     * @var \SessionHandlerInterface
-     */
-    protected static $handler;
-
-    /**
-     * @var SessionStorage
-     */
-    protected static $storage;
+    protected static $instance;
 
     /**
      * @param bool   $start       - call session_start()?
      * @param bool   $force       - force new instance?
      * @param string $sessionName - if null, then default to current session name
-     * @return Session
+     * @return Frontend
      * @throws \Exception
      */
     public static function getInstance(bool $start = true, $force = false, $sessionName = self::DEFAULT_SESSION): self
@@ -75,81 +38,20 @@ class Session
     }
 
     /**
-     * Session constructor.
-     *
+     * Frontend constructor.
      * @param bool   $start
      * @param string $sessionName
      * @throws \Exception
      */
-    public function __construct(bool $start = true, $sessionName = self::DEFAULT_SESSION)
+    public function __construct(bool $start = true, string $sessionName = self::DEFAULT_SESSION)
     {
-        self::$instance    = $this;
-        self::$sessionName = $sessionName;
-        $bot               = \SAVE_BOT_SESSION !== 0 && isset($_SERVER['HTTP_USER_AGENT'])
-            ? self::getIsCrawler($_SERVER['HTTP_USER_AGENT'])
-            : false;
-        \session_name(self::$sessionName);
-        if ($bot === false || \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NORMAL) {
-            self::$handler = \ES_SESSIONS === 1
-                ? new SessionHandlerDB(\Shop::Container()->getDB())
-                : new SessionHandlerJTL();
-        } else {
-            if (\SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_COMBINED
-                || \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
-            ) {
-                \session_id('jtl-bot');
-            }
-            if (\SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
-                || \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NEVER
-            ) {
-                $save = \SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
-                    && \Shop::Container()->getCache()->isAvailable()
-                    && \Shop::Container()->getCache()->isActive();
+        parent::__construct($start, $sessionName);
+        self::$instance = $this;
 
-                self::$handler = new SessionHandlerBot($save);
-            } else {
-                self::$handler = new SessionHandlerJTL();
-            }
-        }
-        self::$storage = new SessionStorage(self::$handler, $start);
         $this->setStandardSessionVars();
         \Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
 
         \executeHook(\HOOK_CORE_SESSION_CONSTRUCTOR);
-    }
-
-    /**
-     * @param string $userAgent
-     * @return bool
-     */
-    public static function getIsCrawler(string $userAgent): bool
-    {
-        return \preg_match(
-            '/Google|ApacheBench|sqlmap|loader.io|bot|Rambler|Yahoo|AbachoBOT|accoona' .
-            '|spider|AcioRobot|ASPSeek|CocoCrawler|Dumbot|FAST-WebCrawler|GeonaBot' .
-            '|Gigabot|Lycos|alexa|AltaVista|IDBot|Scrubby/',
-            $userAgent
-        ) > 0;
-    }
-
-    /**
-     * @param string     $key
-     * @param null|mixed $default
-     * @return mixed
-     */
-    public static function get($key, $default = null)
-    {
-        return self::$handler->get($key, $default);
-    }
-
-    /**
-     * @param string $key
-     * @param mixed  $value
-     * @return mixed
-     */
-    public static function set($key, $value)
-    {
-        return self::$handler->set($key, $value);
     }
 
     /**
@@ -338,10 +240,10 @@ class Session
         }
         if (\Shop::Container()->getCache()->isCacheGroupActive(\CACHING_GROUP_CORE) === false) {
             $_SESSION['Linkgruppen'] = \Shop::Container()->getLinkService()->getLinkGroups();
-            $_SESSION['Hersteller']  = \Helpers\Manufacturer::getInstance()->getManufacturers();
+            $_SESSION['Hersteller']  = Manufacturer::getInstance()->getManufacturers();
         }
         self::getCart()->loescheDeaktiviertePositionen();
-        \Helpers\Tax::setTaxRates();
+        Tax::setTaxRates();
         \Shop::Lang()->reset();
     }
 
@@ -350,7 +252,7 @@ class Session
      */
     private function checkWishlistDeletes(): self
     {
-        $index = \Helpers\Request::verifyGPCDataInt('wlplo');
+        $index = Request::verifyGPCDataInt('wlplo');
         if ($index !== 0) {
             $wl = new \Wunschliste();
             $wl->entfernePos($index);
@@ -364,11 +266,10 @@ class Session
      */
     private function checkComparelistDeletes(): self
     {
-        $kVergleichlistePos = \Helpers\Request::verifyGPCDataInt('vlplo');
+        $kVergleichlistePos = Request::verifyGPCDataInt('vlplo');
         if ($kVergleichlistePos !== 0
             && isset($_SESSION['Vergleichsliste']->oArtikel_arr)
             && \is_array($_SESSION['Vergleichsliste']->oArtikel_arr)
-            && \count($_SESSION['Vergleichsliste']->oArtikel_arr) > 0
         ) {
             // Wunschliste Position aus der Session löschen
             foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $oArtikel) {
@@ -398,7 +299,7 @@ class Session
      * @param string $default
      * @return string
      */
-    public function getBrowserLanguage(array $allowed, string $default): string
+    private function getBrowserLanguage(array $allowed, string $default): string
     {
         $acceptLanguage = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null;
         if (empty($acceptLanguage)) {
@@ -495,7 +396,7 @@ class Session
                                  ->setMayViewPrices(1)
                                  ->initAttributes();
         self::getCart()->setzePositionsPreise();
-        \Helpers\Tax::setTaxRates();
+        Tax::setTaxRates();
         self::setSpecialLinks();
 
         return $this;
@@ -713,8 +614,7 @@ class Session
      */
     public static function checkReset($langISO = ''): void
     {
-        if (\strlen($langISO) > 0) {
-            //Kategorien zurücksetzen, da sie lokalisiert abgelegt wurden
+        if ($langISO !== '') {
             if ($langISO !== \Shop::getLanguageCode()) {
                 $_SESSION['oKategorie_arr']     = [];
                 $_SESSION['oKategorie_arr_new'] = [];
@@ -737,19 +637,19 @@ class Session
                 $_SESSION['currentLanguage'] = clone $lang;
                 unset($_SESSION['currentLanguage']->cURL);
             } else {
-                $kArtikel              = \Helpers\Request::verifyGPCDataInt('a');
-                $kKategorie            = \Helpers\Request::verifyGPCDataInt('k');
-                $kSeite                = \Helpers\Request::verifyGPCDataInt('s');
-                $kVariKindArtikel      = \Helpers\Request::verifyGPCDataInt('a2');
-                $kHersteller           = \Helpers\Request::verifyGPCDataInt('h');
-                $kSuchanfrage          = \Helpers\Request::verifyGPCDataInt('l');
-                $kMerkmalWert          = \Helpers\Request::verifyGPCDataInt('m');
-                $kTag                  = \Helpers\Request::verifyGPCDataInt('t');
-                $kSuchspecial          = \Helpers\Request::verifyGPCDataInt('q');
-                $kNews                 = \Helpers\Request::verifyGPCDataInt('n');
-                $kNewsMonatsUebersicht = \Helpers\Request::verifyGPCDataInt('nm');
-                $kNewsKategorie        = \Helpers\Request::verifyGPCDataInt('nk');
-                $kUmfrage              = \Helpers\Request::verifyGPCDataInt('u');
+                $kArtikel              = Request::verifyGPCDataInt('a');
+                $kKategorie            = Request::verifyGPCDataInt('k');
+                $kSeite                = Request::verifyGPCDataInt('s');
+                $kVariKindArtikel      = Request::verifyGPCDataInt('a2');
+                $kHersteller           = Request::verifyGPCDataInt('h');
+                $kSuchanfrage          = Request::verifyGPCDataInt('l');
+                $kMerkmalWert          = Request::verifyGPCDataInt('m');
+                $kTag                  = Request::verifyGPCDataInt('t');
+                $kSuchspecial          = Request::verifyGPCDataInt('q');
+                $kNews                 = Request::verifyGPCDataInt('n');
+                $kNewsMonatsUebersicht = Request::verifyGPCDataInt('nm');
+                $kNewsKategorie        = Request::verifyGPCDataInt('nk');
+                $kUmfrage              = Request::verifyGPCDataInt('u');
                 $seo                   = '';
                 \http_response_code(301);
                 if ($kArtikel > 0) {
@@ -901,7 +801,7 @@ class Session
             }
         }
 
-        $currencyCode = \Helpers\Request::verifyGPDataString('curr');
+        $currencyCode = Request::verifyGPDataString('curr');
         if ($currencyCode) {
             $cart     = self::getCart();
             $currency = \Functional\first(self::getCurrencies(), function (\Currency $c) use ($currencyCode) {

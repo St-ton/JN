@@ -157,7 +157,7 @@ class Kategorie
         $oSpracheTmp   = null;
         $catAttributes = null;
         if (!$kKundengruppe) {
-            $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+            $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
         }
         if (!$kKundengruppe) {
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
@@ -191,6 +191,8 @@ class Kategorie
 
             return $this;
         }
+        $db = Shop::Container()->getDB();
+
         $oSQLKategorie          = new stdClass();
         $oSQLKategorie->cSELECT = '';
         $oSQLKategorie->cJOIN   = '';
@@ -204,7 +206,7 @@ class Kategorie
             $oSQLKategorie->cJOIN   = ' JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie';
             $oSQLKategorie->cWHERE  = ' AND tkategoriesprache.kSprache = ' . $kSprache;
         }
-        $oKategorie = Shop::Container()->getDB()->query(
+        $oKategorie = $db->query(
             'SELECT tkategorie.kKategorie, ' . $oSQLKategorie->cSELECT . ' tkategorie.kOberKategorie, 
                 tkategorie.nSort, tkategorie.dLetzteAktualisierung,
                 tkategorie.cName, tkategorie.cBeschreibung, tseo.cSeo, tkategoriepict.cPfad, tkategoriepict.cType
@@ -245,7 +247,7 @@ class Kategorie
         ) {
             $kDefaultLang = (int)($oSpracheTmp->kSprache ?? Sprache::getDefaultLanguage()->kSprache);
             if ($kSprache !== $kDefaultLang) {
-                $oSeo = Shop::Container()->getDB()->select(
+                $oSeo = $db->select(
                     'tseo',
                     'cKey',
                     'kKategorie',
@@ -281,7 +283,7 @@ class Kategorie
         $this->categoryFunctionAttributes = [];
         $this->categoryAttributes         = [];
         if ($this->kKategorie > 0) {
-            $catAttributes = Shop::Container()->getDB()->query(
+            $catAttributes = $db->query(
                 'SELECT COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName,
                         COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
                         tkategorieattribut.bIstFunktionsAttribut, tkategorieattribut.nSort
@@ -338,7 +340,7 @@ class Kategorie
             }
         }
         if ($this->kKategorie > 0) {
-            $subCats = Shop::Container()->getDB()->select('tkategorie', 'kOberKategorie', (int)$this->kKategorie);
+            $subCats = $db->select('tkategorie', 'kOberKategorie', (int)$this->kKategorie);
             if (isset($subCats->kKategorie)) {
                 $this->bUnterKategorien = 1;
             }

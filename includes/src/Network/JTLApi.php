@@ -6,6 +6,7 @@
 
 namespace Network;
 
+use Helpers\Request;
 use JTLShop\SemVer\Version;
 
 /**
@@ -60,7 +61,7 @@ final class JTLApi
     }
 
     /**
-     * @return bool|null|string
+     * @return array|null
      */
     public function getAvailableVersions()
     {
@@ -100,11 +101,9 @@ final class JTLApi
      */
     public function hasNewerVersion(): bool
     {
-        if (\APPLICATION_BUILD_SHA === '#DEV#') {
-            return false;
-        }
-
-        return $this->getLatestVersion()->greaterThan(Version::parse(\APPLICATION_VERSION));
+        return \APPLICATION_BUILD_SHA === '#DEV#'
+            ? false
+            : $this->getLatestVersion()->greaterThan(Version::parse(\APPLICATION_VERSION));
     }
 
     /**
@@ -114,7 +113,7 @@ final class JTLApi
      */
     private function call($uri, $data = null)
     {
-        $content = \Helpers\Request::http_get_contents($uri, 10, $data);
+        $content = Request::http_get_contents($uri, 10, $data);
 
         return empty($content) ? null : \json_decode($content);
     }

@@ -66,7 +66,7 @@ class AdminAccount
         $this->authLogger    = $logger;
         $this->messageMapper = $statusMessageMapper;
         $this->levelMapper   = $levelMapper;
-        \Session\AdminSession::getInstance();
+        \Session\Backend::getInstance();
         $this->initDefaults();
         $this->validateSession();
     }
@@ -150,20 +150,16 @@ class AdminAccount
      */
     public function prepareResetPassword(string $mail): bool
     {
-        $cryptoService            = Shop::Container()->getCryptoService();
-        $passwordService          = Shop::Container()->getPasswordService();
-        $now                      = new DateTime();
-        $timestamp                = $now->format('U');
-        $stringToSend             = md5($mail . $cryptoService->randomString(30));
-        $_upd                     = new stdClass();
-        $_upd->cResetPasswordHash = $timestamp . ':' . $passwordService->hash($stringToSend);
-        $res                      = $this->db->update('tadminlogin', 'cMail', $mail, $_upd);
+        $now  = (new DateTime())->format('U');
+        $hash = md5($mail . Shop::Container()->getCryptoService()->randomString(30));
+        $upd  = (object)['cResetPasswordHash' => $now . ':' . Shop::Container()->getPasswordService()->hash($hash)];
+        $res  = Shop::Container()->getDB()->update('tadminlogin', 'cMail', $mail, $upd);
         if ($res > 0) {
-            $user = $this->db->select('tadminlogin', 'cMail', $mail);
             require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
+            $user                   = Shop::Container()->getDB()->select('tadminlogin', 'cMail', $mail);
             $obj                    = new stdClass();
-            $obj->passwordResetLink = Shop::getAdminURL() . '/pass.php?fpwh=' . $stringToSend . '&mail=' . $mail;
-            $obj->cHash             = $stringToSend;
+            $obj->passwordResetLink = Shop::getAdminURL() . '/pass.php?fpwh=' . $hash . '&mail=' . $mail;
+            $obj->cHash             = $hash;
             $obj->mail              = new stdClass();
             $obj->mail->toEmail     = $mail;
             $obj->mail->toName      = $user->cLogin;

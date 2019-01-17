@@ -14,7 +14,7 @@ use Filter\Option;
 use Filter\ProductFilter;
 use Filter\StateSQL;
 use Filter\Type;
-use Session\Session;
+use Session\Frontend;
 
 /**
  * Class SearchSpecial
@@ -177,7 +177,7 @@ class SearchSpecial extends AbstractFilter
                                         AND " . $tasp . '.dStart <= NOW()
                                         AND (' . $tasp . '.dEnde >= CURDATE() 
                                             OR ' . $tasp . '.dEnde IS NULL)
-                                        AND ' . $tsp . ' .kKundengruppe = ' . Session::getCustomerGroup()->getID();
+                                        AND ' . $tsp . ' .kKundengruppe = ' . Frontend::getCustomerGroup()->getID();
                     break;
 
                 case \SEARCHSPECIALS_NEWPRODUCTS:

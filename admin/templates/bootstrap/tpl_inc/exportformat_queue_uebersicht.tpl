@@ -35,18 +35,19 @@
                                     {foreach name=exportformatqueue from=$oExportformatCron_arr item=oExportformatCron}
                                         <tr>
                                             <td class="tleft">
-                                                <input name="kCron[]" type="checkbox" value="{$oExportformatCron->kCron}" id="kCron-{$oExportformatCron->kCron}" />
+                                                <input name="kCron[]" type="checkbox" value="{$oExportformatCron->cronID}" id="kCron-{$oExportformatCron->cronID}" />
                                             </td>
-                                            <td class="tleft"><label for="kCron-{$oExportformatCron->kCron}">{$oExportformatCron->cName}</label></td>
+                                            <td class="tleft"><label for="kCron-{$oExportformatCron->cronID}">{$oExportformatCron->cName}</label></td>
                                             <td class="tleft">{$oExportformatCron->Sprache->cNameDeutsch}/{$oExportformatCron->Waehrung->cName}/{$oExportformatCron->Kundengruppe->cName}</td>
                                             <td class="tcenter">{$oExportformatCron->dStart_de}</td>
                                             <td class="tcenter">{$oExportformatCron->cAlleXStdToDays}</td>
-                                            <td class="tcenter">{if isset($oExportformatCron->oJobQueue->nLimitN) && $oExportformatCron->oJobQueue->nLimitN > 0}{$oExportformatCron->oJobQueue->nLimitN}{else}0{/if}
-                                                von {$oExportformatCron->nAnzahlArtikel->nAnzahl}</td>
+                                            <td class="tcenter">
+                                                {$oExportformatCron->oJobQueue->tasksExecuted|default:0}/{$oExportformatCron->nAnzahlArtikel->nAnzahl}
+                                            </td>
                                             <td class="tcenter">{if $oExportformatCron->dLetzterStart_de === '00.00.0000 00:00'}-{else}{$oExportformatCron->dLetzterStart_de}{/if}</td>
                                             <td class="tcenter">{if $oExportformatCron->dNaechsterStart_de === null}sofort{else}{$oExportformatCron->dNaechsterStart_de}{/if}</td>
                                             <td class="tcenter">
-                                                <a href="exportformat_queue.php?action=editieren&kCron={$oExportformatCron->kCron}&token={$smarty.session.jtl_token}"
+                                                <a href="exportformat_queue.php?action=editieren&kCron={$oExportformatCron->cronID}&token={$smarty.session.jtl_token}"
                                                    class="btn btn-default" title="{__('modify')}"><i class="fa fa-edit"></i>
                                                 </a>
                                             </td>

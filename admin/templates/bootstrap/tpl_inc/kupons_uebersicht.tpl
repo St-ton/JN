@@ -21,8 +21,8 @@
                                     <th title="Aktiv"></th>
                                     <th></th>
                                     <th>{__('name')} {call sortControls oPagination=$oPagination nSortBy=0}</th>
-                                    {if $cKuponTyp === 'standard' || $cKuponTyp === 'neukundenkupon'}<th>{__('value')}</th>{/if}
-                                    {if $cKuponTyp === 'standard' || $cKuponTyp === 'versandkupon'}
+                                    {if $cKuponTyp === $couponTypes.standard || $cKuponTyp === $couponTypes.newCustomer}<th>{__('value')}</th>{/if}
+                                    {if $cKuponTyp === $couponTypes.standard || $cKuponTyp === $couponTypes.shipping}
                                         <th>{__('code')} {call sortControls oPagination=$oPagination nSortBy=1}</th>
                                     {/if}
                                     <th>{__('mbw')}</th>
@@ -42,7 +42,7 @@
                                                 {$oKupon->cName}
                                             </label>
                                         </td>
-                                        {if $cKuponTyp === 'standard' || $cKuponTyp === 'neukundenkupon'}
+                                        {if $cKuponTyp === $couponTypes.standard || $cKuponTyp === $couponTypes.newCustomer}
                                             <td>
                                                 {if $oKupon->cWertTyp === 'festpreis'}
                                                     <span data-toggle="tooltip" data-placement="right" data-html="true"
@@ -54,7 +54,7 @@
                                                 {/if}
                                             </td>
                                         {/if}
-                                        {if $cKuponTyp === 'standard' || $cKuponTyp === 'versandkupon'}<td>{$oKupon->cCode}</td>{/if}
+                                        {if $cKuponTyp === $couponTypes.standard || $cKuponTyp === $couponTypes.shipping}<td>{$oKupon->cCode}</td>{/if}
                                         <td>
                                             <span data-toggle="tooltip" data-placement="right" data-html="true"
                                                   title='{getCurrencyConversionSmarty fPreisBrutto=$oKupon->fMindestbestellwert}'>
@@ -134,19 +134,19 @@
 
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
-        <li class="tab{if $tab === 'standard'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#standard" aria-expanded="false">{__('standardCoupon')}s</a>
+        <li class="tab{if $tab === $couponTypes.standard} active{/if}">
+            <a data-toggle="tab" role="tab" href="#{$couponTypes.standard}" aria-expanded="false">{__('standardCoupon')}s</a>
         </li>
-        <li class="tab{if $tab === 'versandkupon'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#versandkupon" aria-expanded="false">{__('shippingCoupon')}s</a>
+        <li class="tab{if $tab === $couponTypes.shipping} active{/if}">
+            <a data-toggle="tab" role="tab" href="#{$couponTypes.shipping}" aria-expanded="false">{__('shippingCoupon')}s</a>
         </li>
-        <li class="tab{if $tab === 'neukundenkupon'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#neukundenkupon" aria-expanded="false">{__('newCustomerCoupon')}s</a>
+        <li class="tab{if $tab === $couponTypes.newCustomer} active{/if}">
+            <a data-toggle="tab" role="tab" href="#{$couponTypes.newCustomer}" aria-expanded="false">{__('newCustomerCoupon')}s</a>
         </li>
     </ul>
     <div class="tab-content">
         {kupons_uebersicht_tab
-            cKuponTyp='standard'
+            cKuponTyp=$couponTypes.standard
             cKuponTypName=__('standardCoupon')
             oKupon_arr=$oKuponStandard_arr
             nKuponCount=$nKuponStandardCount
@@ -154,7 +154,7 @@
             oFilter=$oFilterStandard
         }
         {kupons_uebersicht_tab
-            cKuponTyp='versandkupon'
+            cKuponTyp=$couponTypes.shipping
             cKuponTypName=__('shippingCoupon')
             oKupon_arr=$oKuponVersandkupon_arr
             nKuponCount=$nKuponVersandCount
@@ -162,7 +162,7 @@
             oFilter=$oFilterVersand
         }
         {kupons_uebersicht_tab
-            cKuponTyp='neukundenkupon'
+            cKuponTyp=$couponTypes.newCustomer
             cKuponTypName=__('newCustomerCoupon')
             oKupon_arr=$oKuponNeukundenkupon_arr
             nKuponCount=$nKuponNeukundenCount

@@ -7,7 +7,7 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
-use Session\Session;
+use Session\Frontend;
 
 /**
  * Class SpecialOffers
@@ -23,8 +23,8 @@ final class SpecialOffers extends AbstractBox
     {
         parent::__construct($config);
         $this->setShow(false);
-        $customerGroupID = Session::getCustomerGroup()->getID();
-        if ($customerGroupID && Session::getCustomerGroup()->mayViewCategories()) {
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
+        if ($customerGroupID && Frontend::getCustomerGroup()->mayViewCategories()) {
             $cached         = true;
             $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';

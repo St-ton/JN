@@ -206,14 +206,7 @@
     {else}
         {lang key='compareListNoItems'}
     {/if}
-    
-    {if !empty($cFehler)}
-        <br>
-        <div class="alert alert-danger">
-            {$cFehler}
-        </div>
-    {/if}
-    
+
     {if isset($bAjaxRequest) && $bAjaxRequest}
         <script type="text/javascript">
             $('.modal a.remove').click(function(e) {

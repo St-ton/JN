@@ -192,7 +192,6 @@ $smarty->assign('MsgWarning', $MsgWarning)
        ->assign('oArtikelGeschenk_arr', Cart::getFreeGifts($Einstellungen))
        ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
        ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
-       ->assign('cErrorVersandkosten', $cErrorVersandkosten ?? null)
        ->assign('KuponcodeUngueltig', $KuponcodeUngueltig)
        ->assign('Warenkorb', $cart);
 

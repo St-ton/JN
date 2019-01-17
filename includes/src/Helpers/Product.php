@@ -1529,9 +1529,6 @@ class Product
         if ($renew || !isset($GLOBALS['Artikelhinweise']) || !\is_array($GLOBALS['Artikelhinweise'])) {
             $GLOBALS['Artikelhinweise'] = [];
         }
-        if ($renew || !isset($GLOBALS['PositiveFeedback']) || !\is_array($GLOBALS['PositiveFeedback'])) {
-            $GLOBALS['PositiveFeedback'] = [];
-        }
         if ($redirectParam) {
             $messages = \is_array($redirectParam) ? $redirectParam : \explode(',', $redirectParam);
             $messages = \array_unique($messages);

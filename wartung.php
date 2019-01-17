@@ -8,8 +8,7 @@ use Helpers\Request;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 
-$Einstellungen = Shop::getSettings([CONF_GLOBAL]);
-if ($Einstellungen['global']['wartungsmodus_aktiviert'] === 'N') {
+if (Shop::getSettings([CONF_GLOBAL])['global']['wartungsmodus_aktiviert'] === 'N') {
     header('Location: ' . Shop::getURL(), true, 307);
     exit;
 }

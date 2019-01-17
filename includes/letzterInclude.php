@@ -10,23 +10,23 @@ use Helpers\Manufacturer;
 use Helpers\Request;
 use Helpers\ShippingMethod;
 
-$smarty        = Shop::Smarty();
-$oTemplate     = Template::getInstance();
-$tplDir        = PFAD_TEMPLATES . $oTemplate->getDir() . '/';
-$shopLogo      = Shop::getLogo();
-$shopURL       = Shop::getURL();
-$cart          = $_SESSION['Warenkorb'] ?? new Warenkorb();
-$Einstellungen = Shopsetting::getInstance()->getAll();
-$linkHelper    = Shop::Container()->getLinkService();
-$themeDir      = empty($Einstellungen['template']['theme']['theme_default'])
+$smarty     = Shop::Smarty();
+$oTemplate  = Template::getInstance();
+$tplDir     = PFAD_TEMPLATES . $oTemplate->getDir() . '/';
+$shopLogo   = Shop::getLogo();
+$shopURL    = Shop::getURL();
+$cart       = $_SESSION['Warenkorb'] ?? new Warenkorb();
+$conf       = Shopsetting::getInstance()->getAll();
+$linkHelper = Shop::Container()->getLinkService();
+$themeDir   = empty($conf['template']['theme']['theme_default'])
     ? 'evo'
-    : $Einstellungen['template']['theme']['theme_default'];
-$cShopName     = empty($Einstellungen['global']['global_shopname'])
+    : $conf['template']['theme']['theme_default'];
+$cShopName  = empty($conf['global']['global_shopname'])
     ? 'JTL-Shop'
-    : $Einstellungen['global']['global_shopname'];
-$minify        = $oTemplate->getMinifyArray();
-$css           = $minify["{$themeDir}.css"] ?? [];
-$js            = $minify['jtl3.js'] ?? [];
+    : $conf['global']['global_shopname'];
+$minify     = $oTemplate->getMinifyArray();
+$css        = $minify["{$themeDir}.css"] ?? [];
+$js         = $minify['jtl3.js'] ?? [];
 executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
     'cCSS_arr'          => &$css,
     'cJS_arr'           => &$js,
@@ -113,8 +113,8 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('meta_title', $cMetaTitle ?? '')
        ->assign('meta_description', $cMetaDescription ?? '')
        ->assign('meta_keywords', $cMetaKeywords ?? '')
-       ->assign('meta_publisher', $Einstellungen['metaangaben']['global_meta_publisher'])
-       ->assign('meta_copyright', $Einstellungen['metaangaben']['global_meta_copyright'])
+       ->assign('meta_publisher', $conf['metaangaben']['global_meta_publisher'])
+       ->assign('meta_copyright', $conf['metaangaben']['global_meta_copyright'])
        ->assign('meta_language', StringHandler::convertISO2ISO639($_SESSION['cISOSprache']))
        ->assign('oSpezialseiten_arr', $linkHelper->getSpecialPages())
        ->assign('bNoIndex', $NaviFilter->getMetaData()->checkNoIndex())
@@ -128,9 +128,9 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
        ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
        ->assign('FavourableShipping', $cart->getFavourableShipping())
-       ->assign('Einstellungen', $Einstellungen)
-       ->assign('isFluidTemplate', isset($Einstellungen['template']['theme']['pagelayout'])
-           && $Einstellungen['template']['theme']['pagelayout'] === 'fluid')
+       ->assign('Einstellungen', $conf)
+       ->assign('isFluidTemplate', isset($conf['template']['theme']['pagelayout'])
+           && $conf['template']['theme']['pagelayout'] === 'fluid')
        ->assign('deletedPositions', Warenkorb::$deletedPositions)
        ->assign('updatedPositions', Warenkorb::$updatedPositions)
        ->assign('cCanonicalURL', $cCanonicalURL ?? null)
@@ -178,7 +178,7 @@ $boxesToShow = $boxes->render($boxes->buildList($pagetType), $pagetType);
 if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
 }
-$visitorCount = $Einstellungen['global']['global_zaehler_anzeigen'] === 'Y'
+$visitorCount = $conf['global']['global_zaehler_anzeigen'] === 'Y'
     ? (int)Shop::Container()->getDB()->query(
         'SELECT nZaehler FROM tbesucherzaehler',
         \DB\ReturnType::SINGLE_OBJECT

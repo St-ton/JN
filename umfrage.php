@@ -12,7 +12,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'umfrage_inc.php';
 Shop::run();
 Shop::setPageType(PAGE_UMFRAGE);
 $smarty                 = Shop::Smarty();
-$cParameter_arr         = Shop::getParameters();
+$params                 = Shop::getParameters();
 $cHinweis               = '';
 $cCanonicalURL          = '';
 $step                   = 'umfrage_uebersicht';
@@ -25,7 +25,7 @@ $AufgeklappteKategorien = new KategorieListe();
 $AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $db                     = Shop::Container()->getDB();
 $controller             = new \Survey\Controller($db, $smarty);
-$surveyID               = $cParameter_arr['kUmfrage'];
+$surveyID               = $params['kUmfrage'];
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 if ($surveyID > 0) {
     $customerID = Session\Frontend::getCustomer()->getID();

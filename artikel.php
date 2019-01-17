@@ -21,7 +21,7 @@ $bereitsBewertet              = false;
 $Artikelhinweise              = [];
 $PositiveFeedback             = [];
 $nonAllowed                   = [];
-$Einstellungen                = Shopsetting::getInstance()->getAll();
+$conf                         = Shopsetting::getInstance()->getAll();
 $oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
 // Bewertungsguthaben
 $fBelohnung = (isset($_GET['fB']) && (float)$_GET['fB'] > 0) ? (float)$_GET['fB'] : 0.0;
@@ -47,14 +47,14 @@ $AktuellerArtikel = (new Artikel())->fuelleArtikel(Shop::$kArtikel, Artikel::get
 if (isset($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigen'])
     && strlen($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigen']) > 0
 ) {
-    $Einstellungen['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] =
+    $conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] =
         $AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigen'];
 }
 // Warenkorbmatrix Anzeigeformat auf Artikel Attribut pruefen und falls vorhanden setzen
 if (isset($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigeformat'])
     && strlen($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigeformat']) > 0
 ) {
-    $Einstellungen['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] =
+    $conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] =
         $AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigeformat'];
 }
 // 404
@@ -65,7 +65,7 @@ if (empty($AktuellerArtikel->kArtikel)) {
 
     return;
 }
-$similarArticles = (int)$Einstellungen['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0
+$similarArticles = (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0
     ? $AktuellerArtikel->holeAehnlicheArtikel()
     : [];
 if (Shop::$kVariKindArtikel > 0) {
@@ -73,7 +73,7 @@ if (Shop::$kVariKindArtikel > 0) {
     if ($oVariKindArtikel !== null && $oVariKindArtikel->kArtikel > 0) {
         $oVariKindArtikel->verfuegbarkeitsBenachrichtigung = Product::showAvailabilityForm(
             $oVariKindArtikel,
-            $Einstellungen['artikeldetails']['benachrichtigung_nutzen']
+            $conf['artikeldetails']['benachrichtigung_nutzen']
         );
 
         $AktuellerArtikel = Product::combineParentAndChild($AktuellerArtikel, $oVariKindArtikel);
@@ -84,10 +84,10 @@ if (Shop::$kVariKindArtikel > 0) {
 
         return;
     }
-    $bCanonicalURL = $Einstellungen['artikeldetails']['artikeldetails_canonicalurl_varkombikind'] !== 'N';
+    $bCanonicalURL = $conf['artikeldetails']['artikeldetails_canonicalurl_varkombikind'] !== 'N';
     $cCanonicalURL = $AktuellerArtikel->baueVariKombiKindCanonicalURL(SHOP_SEO, $AktuellerArtikel, $bCanonicalURL);
 }
-if ($Einstellungen['preisverlauf']['preisverlauf_anzeigen'] === 'Y'
+if ($conf['preisverlauf']['preisverlauf_anzeigen'] === 'Y'
     && \Session\Frontend::getCustomerGroup()->mayViewPrices()
 ) {
     Shop::$kArtikel = Shop::$kVariKindArtikel > 0
@@ -97,14 +97,14 @@ if ($Einstellungen['preisverlauf']['preisverlauf_anzeigen'] === 'Y'
     $oPreisverlauf  = $oPreisverlauf->gibPreisverlauf(
         Shop::$kArtikel,
         $AktuellerArtikel->Preise->kKundengruppe,
-        (int)$Einstellungen['preisverlauf']['preisverlauf_anzahl_monate']
+        (int)$conf['preisverlauf']['preisverlauf_anzahl_monate']
     );
 }
 // Canonical bei non SEO Shops oder wenn SEO kein Ergebnis geliefert hat
 if (empty($cCanonicalURL)) {
     $cCanonicalURL = $shopURL . $AktuellerArtikel->cSeo;
 }
-$AktuellerArtikel->berechneSieSparenX($Einstellungen['artikeldetails']['sie_sparen_x_anzeigen']);
+$AktuellerArtikel->berechneSieSparenX($conf['artikeldetails']['sie_sparen_x_anzeigen']);
 Product::getProductMessages();
 
 if (isset($_POST['fragezumprodukt']) && (int)$_POST['fragezumprodukt'] === 1) {
@@ -128,14 +128,14 @@ if ($ratingPage === 0) {
 }
 if ($AktuellerArtikel->Bewertungen === null || $ratingStars > 0) {
     $AktuellerArtikel->holeBewertung(
-        Shop::getLanguage(),
-        $Einstellungen['bewertung']['bewertung_anzahlseite'],
+        Shop::getLanguageID(),
+        $conf['bewertung']['bewertung_anzahlseite'],
         $ratingPage,
         $ratingStars,
-        $Einstellungen['bewertung']['bewertung_freischalten'],
+        $conf['bewertung']['bewertung_freischalten'],
         $sorting
     );
-    $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguage());
+    $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguageID());
 }
 
 if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich)
@@ -160,8 +160,8 @@ if (\Session\Frontend::getCustomer()->getID() > 0) {
 
 $pagination = (new Pagination('ratings'))
     ->setItemArray($ratings)
-    ->setItemsPerPageOptions([(int)$Einstellungen['bewertung']['bewertung_anzahlseite']])
-    ->setDefaultItemsPerPage($Einstellungen['bewertung']['bewertung_anzahlseite'])
+    ->setItemsPerPageOptions([(int)$conf['bewertung']['bewertung_anzahlseite']])
+    ->setDefaultItemsPerPage($conf['bewertung']['bewertung_anzahlseite'])
     ->setSortByOptions([
         ['dDatum', Shop::Lang()->get('paginationOrderByDate')],
         ['nSterne', Shop::Lang()->get('paginationOrderByRating')],
@@ -178,7 +178,7 @@ $ratingNav    = Product::getRatingNavigation(
     $ratingPage,
     $ratingStars,
     $ratingsCount,
-    $Einstellungen['bewertung']['bewertung_anzahlseite']
+    $conf['bewertung']['bewertung_anzahlseite']
 );
 // Konfig bearbeiten
 if (Request::hasGPCData('ek')) {
@@ -192,7 +192,7 @@ foreach ($AktuellerArtikel->Variationen as $Variation) {
         $nonAllowed[$Wert->kEigenschaftWert] = Product::getNonAllowedAttributeValues($Wert->kEigenschaftWert);
     }
 }
-$nav = $Einstellungen['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
+$nav = $conf['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
     ? Product::getProductNavigation($AktuellerArtikel->kArtikel ?? 0, $AktuelleKategorie->kKategorie ?? 0)
     : null;
 
@@ -222,7 +222,7 @@ $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
            'verfuegbarkeitsBenachrichtigung',
            Product::showAvailabilityForm(
                $AktuellerArtikel,
-               $Einstellungen['artikeldetails']['benachrichtigung_nutzen']
+               $conf['artikeldetails']['benachrichtigung_nutzen']
            )
        )
        ->assign('ProdukttagHinweis', Product::editProductTags($AktuellerArtikel))

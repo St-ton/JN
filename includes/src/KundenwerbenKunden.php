@@ -163,17 +163,15 @@ class KundenwerbenKunden
             \DB\ReturnType::SINGLE_OBJECT
         );
         if (isset($oBestandskunde->kKunde) && $oBestandskunde->kKunde > 0) {
-            $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_KUNDENWERBENKUNDEN]);
-            if (isset($Einstellungen['kundenwerbenkunden']['kwk_nutzen'])
-                && $Einstellungen['kundenwerbenkunden']['kwk_nutzen'] === 'Y'
-            ) { //#8023
-                $guthaben              = (float)$Einstellungen['kundenwerbenkunden']['kwk_bestandskundenguthaben'];
-                $oMail                 = new stdClass();
-                $oMail->tkunde         = new Kunde($oBestandskunde->kKunde);
+            $conf = Shop::getSettings([CONF_GLOBAL, CONF_KUNDENWERBENKUNDEN]);
+            if ($conf['kundenwerbenkunden']['kwk_nutzen'] === 'Y') {
+                $guthaben              = (float)$conf['kundenwerbenkunden']['kwk_bestandskundenguthaben'];
+                $mail                 = new stdClass();
+                $mail->tkunde         = new Kunde($oBestandskunde->kKunde);
                 $oKundeTMP             = new Kunde();
-                $oMail->oNeukunde      = $oKundeTMP->holRegKundeViaEmail($cMail);
-                $oMail->oBestandskunde = $oMail->tkunde;
-                $oMail->Einstellungen  = $Einstellungen;
+                $mail->oNeukunde      = $oKundeTMP->holRegKundeViaEmail($cMail);
+                $mail->oBestandskunde = $mail->tkunde;
+                $mail->Einstellungen  = $conf;
                 // Update das Guthaben vom Bestandskunden
                 Shop::Container()->getDB()->query(
                     'UPDATE tkunde
@@ -184,21 +182,19 @@ class KundenwerbenKunden
                 // in tkundenwerbenkundenboni eintragen
                 $oKundenWerbenKundenBoni = $this->insertBoniDB($oBestandskunde->kKunde);
                 // tkundenwerbenkunden updaten und hinterlegen, dass der Bestandskunde das Guthaben erhalten hat
-                $_upd                    = new stdClass();
-                $_upd->nGuthabenVergeben = 1;
                 Shop::Container()->getDB()->update(
                     'tkundenwerbenkunden',
                     'cEmail',
                     StringHandler::filterXSS($cMail),
-                    $_upd
+                    (object)['nGuthabenVergeben' => 1]
                 );
 
                 $oKundenWerbenKundenBoni->fGuthaben = Preise::getLocalizedPriceString(
-                    (float)$Einstellungen['kundenwerbenkunden']['kwk_bestandskundenguthaben']
+                    (float)$conf['kundenwerbenkunden']['kwk_bestandskundenguthaben']
                 );
-                $oMail->BestandskundenBoni          = $oKundenWerbenKundenBoni;
+                $mail->BestandskundenBoni           = $oKundenWerbenKundenBoni;
                 // verschicke Email an Bestandskunden
-                sendeMail(MAILTEMPLATE_KUNDENWERBENKUNDENBONI, $oMail);
+                sendeMail(MAILTEMPLATE_KUNDENWERBENKUNDENBONI, $mail);
             }
         }
 

@@ -24,11 +24,11 @@ function baueFilterSQL($bActiveOnly = false)
  * @param string $cName
  * @param string $cEmail
  * @param int    $kNews
- * @param array  $Einstellungen
+ * @param array  $conf
  * @return array
  * @deprecated since 5.0.0
  */
-function pruefeKundenKommentar($cKommentar, $cName, $cEmail, $kNews, $Einstellungen)
+function pruefeKundenKommentar($cKommentar, $cName, $cEmail, $kNews, $conf)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use \News\Controller::checkComment() instead.', E_USER_DEPRECATED);
     if (!isset($_POST['cEmail'])) {
@@ -39,7 +39,7 @@ function pruefeKundenKommentar($cKommentar, $cName, $cEmail, $kNews, $Einstellun
     }
     $_POST['cKommentar'] = $cKommentar;
 
-    return \News\Controller::checkComment($_POST, (int)$kNews, $Einstellungen);
+    return \News\Controller::checkComment($_POST, (int)$kNews, $conf);
 }
 
 /**

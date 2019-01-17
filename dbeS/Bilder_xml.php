@@ -5,116 +5,116 @@
  */
 require_once __DIR__ . '/syncinclude.php';
 $return        = 3;
-$Einstellungen = null;
+$conf          = null;
 $oBranding_arr = null;
 $zipFile       = '';
 if (auth()) {
-    $zipFile       = checkFile();
-    $Einstellungen = Shop::getSettings([CONF_BILDER]);
+    $zipFile = checkFile();
+    $conf    = Shop::getSettings([CONF_BILDER]);
     // Branding Einstellungen pro Bildkategorie
     $oBranding_arr = holeBilderEinstellungen();
 
-    if (!$Einstellungen['bilder']['bilder_kategorien_breite']) {
-        $Einstellungen['bilder']['bilder_kategorien_breite'] = 100;
+    if (!$conf['bilder']['bilder_kategorien_breite']) {
+        $conf['bilder']['bilder_kategorien_breite'] = 100;
     }
-    if (!$Einstellungen['bilder']['bilder_kategorien_hoehe']) {
-        $Einstellungen['bilder']['bilder_kategorien_hoehe'] = 100;
+    if (!$conf['bilder']['bilder_kategorien_hoehe']) {
+        $conf['bilder']['bilder_kategorien_hoehe'] = 100;
     }
-    if (!$Einstellungen['bilder']['bilder_variationen_gross_breite']) {
-        $Einstellungen['bilder']['bilder_variationen_gross_breite'] = 800;
+    if (!$conf['bilder']['bilder_variationen_gross_breite']) {
+        $conf['bilder']['bilder_variationen_gross_breite'] = 800;
     }
-    if (!$Einstellungen['bilder']['bilder_variationen_gross_hoehe']) {
-        $Einstellungen['bilder']['bilder_variationen_gross_hoehe'] = 800;
+    if (!$conf['bilder']['bilder_variationen_gross_hoehe']) {
+        $conf['bilder']['bilder_variationen_gross_hoehe'] = 800;
     }
-    if (!$Einstellungen['bilder']['bilder_variationen_breite']) {
-        $Einstellungen['bilder']['bilder_variationen_breite'] = 210;
+    if (!$conf['bilder']['bilder_variationen_breite']) {
+        $conf['bilder']['bilder_variationen_breite'] = 210;
     }
-    if (!$Einstellungen['bilder']['bilder_variationen_hoehe']) {
-        $Einstellungen['bilder']['bilder_variationen_hoehe'] = 210;
+    if (!$conf['bilder']['bilder_variationen_hoehe']) {
+        $conf['bilder']['bilder_variationen_hoehe'] = 210;
     }
-    if (!$Einstellungen['bilder']['bilder_variationen_mini_breite']) {
-        $Einstellungen['bilder']['bilder_variationen_mini_breite'] = 30;
+    if (!$conf['bilder']['bilder_variationen_mini_breite']) {
+        $conf['bilder']['bilder_variationen_mini_breite'] = 30;
     }
-    if (!$Einstellungen['bilder']['bilder_variationen_mini_hoehe']) {
-        $Einstellungen['bilder']['bilder_variationen_mini_hoehe'] = 30;
+    if (!$conf['bilder']['bilder_variationen_mini_hoehe']) {
+        $conf['bilder']['bilder_variationen_mini_hoehe'] = 30;
     }
-    if (!$Einstellungen['bilder']['bilder_artikel_gross_breite']) {
-        $Einstellungen['bilder']['bilder_artikel_gross_breite'] = 800;
+    if (!$conf['bilder']['bilder_artikel_gross_breite']) {
+        $conf['bilder']['bilder_artikel_gross_breite'] = 800;
     }
-    if (!$Einstellungen['bilder']['bilder_artikel_gross_hoehe']) {
-        $Einstellungen['bilder']['bilder_artikel_gross_hoehe'] = 800;
+    if (!$conf['bilder']['bilder_artikel_gross_hoehe']) {
+        $conf['bilder']['bilder_artikel_gross_hoehe'] = 800;
     }
-    if (!$Einstellungen['bilder']['bilder_artikel_normal_breite']) {
-        $Einstellungen['bilder']['bilder_artikel_normal_breite'] = 210;
+    if (!$conf['bilder']['bilder_artikel_normal_breite']) {
+        $conf['bilder']['bilder_artikel_normal_breite'] = 210;
     }
-    if (!$Einstellungen['bilder']['bilder_artikel_normal_hoehe']) {
-        $Einstellungen['bilder']['bilder_artikel_normal_hoehe'] = 210;
+    if (!$conf['bilder']['bilder_artikel_normal_hoehe']) {
+        $conf['bilder']['bilder_artikel_normal_hoehe'] = 210;
     }
-    if (!$Einstellungen['bilder']['bilder_artikel_klein_breite']) {
-        $Einstellungen['bilder']['bilder_artikel_klein_breite'] = 80;
+    if (!$conf['bilder']['bilder_artikel_klein_breite']) {
+        $conf['bilder']['bilder_artikel_klein_breite'] = 80;
     }
-    if (!$Einstellungen['bilder']['bilder_artikel_klein_hoehe']) {
-        $Einstellungen['bilder']['bilder_artikel_klein_hoehe'] = 80;
+    if (!$conf['bilder']['bilder_artikel_klein_hoehe']) {
+        $conf['bilder']['bilder_artikel_klein_hoehe'] = 80;
     }
-    if (!$Einstellungen['bilder']['bilder_artikel_mini_breite']) {
-        $Einstellungen['bilder']['bilder_artikel_mini_breite'] = 30;
+    if (!$conf['bilder']['bilder_artikel_mini_breite']) {
+        $conf['bilder']['bilder_artikel_mini_breite'] = 30;
     }
-    if (!$Einstellungen['bilder']['bilder_artikel_mini_hoehe']) {
-        $Einstellungen['bilder']['bilder_artikel_mini_hoehe'] = 30;
+    if (!$conf['bilder']['bilder_artikel_mini_hoehe']) {
+        $conf['bilder']['bilder_artikel_mini_hoehe'] = 30;
     }
-    if (!$Einstellungen['bilder']['bilder_hersteller_normal_breite']) {
-        $Einstellungen['bilder']['bilder_hersteller_normal_breite'] = 100;
+    if (!$conf['bilder']['bilder_hersteller_normal_breite']) {
+        $conf['bilder']['bilder_hersteller_normal_breite'] = 100;
     }
-    if (!$Einstellungen['bilder']['bilder_hersteller_normal_hoehe']) {
-        $Einstellungen['bilder']['bilder_hersteller_normal_hoehe'] = 100;
+    if (!$conf['bilder']['bilder_hersteller_normal_hoehe']) {
+        $conf['bilder']['bilder_hersteller_normal_hoehe'] = 100;
     }
-    if (!$Einstellungen['bilder']['bilder_hersteller_klein_breite']) {
-        $Einstellungen['bilder']['bilder_hersteller_klein_breite'] = 40;
+    if (!$conf['bilder']['bilder_hersteller_klein_breite']) {
+        $conf['bilder']['bilder_hersteller_klein_breite'] = 40;
     }
-    if (!$Einstellungen['bilder']['bilder_hersteller_klein_hoehe']) {
-        $Einstellungen['bilder']['bilder_hersteller_klein_hoehe'] = 40;
+    if (!$conf['bilder']['bilder_hersteller_klein_hoehe']) {
+        $conf['bilder']['bilder_hersteller_klein_hoehe'] = 40;
     }
-    if (!$Einstellungen['bilder']['bilder_merkmal_normal_breite']) {
-        $Einstellungen['bilder']['bilder_merkmal_normal_breite'] = 100;
+    if (!$conf['bilder']['bilder_merkmal_normal_breite']) {
+        $conf['bilder']['bilder_merkmal_normal_breite'] = 100;
     }
-    if (!$Einstellungen['bilder']['bilder_merkmal_normal_hoehe']) {
-        $Einstellungen['bilder']['bilder_merkmal_normal_hoehe'] = 100;
+    if (!$conf['bilder']['bilder_merkmal_normal_hoehe']) {
+        $conf['bilder']['bilder_merkmal_normal_hoehe'] = 100;
     }
-    if (!$Einstellungen['bilder']['bilder_merkmal_klein_breite']) {
-        $Einstellungen['bilder']['bilder_merkmal_klein_breite'] = 20;
+    if (!$conf['bilder']['bilder_merkmal_klein_breite']) {
+        $conf['bilder']['bilder_merkmal_klein_breite'] = 20;
     }
-    if (!$Einstellungen['bilder']['bilder_merkmal_klein_hoehe']) {
-        $Einstellungen['bilder']['bilder_merkmal_klein_hoehe'] = 20;
+    if (!$conf['bilder']['bilder_merkmal_klein_hoehe']) {
+        $conf['bilder']['bilder_merkmal_klein_hoehe'] = 20;
     }
-    if (!$Einstellungen['bilder']['bilder_merkmalwert_normal_breite']) {
-        $Einstellungen['bilder']['bilder_merkmalwert_normal_breite'] = 100;
+    if (!$conf['bilder']['bilder_merkmalwert_normal_breite']) {
+        $conf['bilder']['bilder_merkmalwert_normal_breite'] = 100;
     }
-    if (!$Einstellungen['bilder']['bilder_merkmalwert_normal_hoehe']) {
-        $Einstellungen['bilder']['bilder_merkmalwert_normal_hoehe'] = 100;
+    if (!$conf['bilder']['bilder_merkmalwert_normal_hoehe']) {
+        $conf['bilder']['bilder_merkmalwert_normal_hoehe'] = 100;
     }
-    if (!$Einstellungen['bilder']['bilder_merkmalwert_klein_breite']) {
-        $Einstellungen['bilder']['bilder_merkmalwert_klein_breite'] = 20;
+    if (!$conf['bilder']['bilder_merkmalwert_klein_breite']) {
+        $conf['bilder']['bilder_merkmalwert_klein_breite'] = 20;
     }
-    if (!$Einstellungen['bilder']['bilder_merkmalwert_klein_hoehe']) {
-        $Einstellungen['bilder']['bilder_merkmalwert_klein_hoehe'] = 20;
+    if (!$conf['bilder']['bilder_merkmalwert_klein_hoehe']) {
+        $conf['bilder']['bilder_merkmalwert_klein_hoehe'] = 20;
     }
-    if (!$Einstellungen['bilder']['bilder_konfiggruppe_klein_breite']) {
-        $Einstellungen['bilder']['bilder_konfiggruppe_klein_breite'] = 130;
+    if (!$conf['bilder']['bilder_konfiggruppe_klein_breite']) {
+        $conf['bilder']['bilder_konfiggruppe_klein_breite'] = 130;
     }
-    if (!$Einstellungen['bilder']['bilder_konfiggruppe_klein_hoehe']) {
-        $Einstellungen['bilder']['bilder_konfiggruppe_klein_hoehe'] = 130;
+    if (!$conf['bilder']['bilder_konfiggruppe_klein_hoehe']) {
+        $conf['bilder']['bilder_konfiggruppe_klein_hoehe'] = 130;
     }
-    if (!$Einstellungen['bilder']['bilder_jpg_quali']) {
-        $Einstellungen['bilder']['bilder_jpg_quali'] = 80;
+    if (!$conf['bilder']['bilder_jpg_quali']) {
+        $conf['bilder']['bilder_jpg_quali'] = 80;
     }
-    if (!$Einstellungen['bilder']['bilder_dateiformat']) {
-        $Einstellungen['bilder']['bilder_dateiformat'] = 'PNG';
+    if (!$conf['bilder']['bilder_dateiformat']) {
+        $conf['bilder']['bilder_dateiformat'] = 'PNG';
     }
-    if (!$Einstellungen['bilder']['bilder_hintergrundfarbe']) {
-        $Einstellungen['bilder']['bilder_hintergrundfarbe'] = '#ffffff';
+    if (!$conf['bilder']['bilder_hintergrundfarbe']) {
+        $conf['bilder']['bilder_hintergrundfarbe'] = '#ffffff';
     }
-    if (!$Einstellungen['bilder']['bilder_skalieren']) {
-        $Einstellungen['bilder']['bilder_skalieren'] = 'N';
+    if (!$conf['bilder']['bilder_skalieren']) {
+        $conf['bilder']['bilder_skalieren'] = 'N';
     }
     // tseo Sprache
     $oSprache = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');

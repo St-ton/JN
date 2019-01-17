@@ -20,21 +20,18 @@ $oAccount->permission('ORDER_TRUSTEDSHOPS_VIEW', true, true);
 $cHinweis = '';
 $cFehler  = '';
 $step     = 'uebersicht';
+$conf     = Shop::getSettings([CONF_TRUSTEDSHOPS]);
 
 setzeSpracheTrustedShops();
-
-$Einstellungen = Shop::getSettings([CONF_TRUSTEDSHOPS]);
 
 if (isset($_POST['kaeuferschutzeinstellungen'])
     && (int)$_POST['kaeuferschutzeinstellungen'] === 1
     && Form::validateToken()
 ) {
-    // Lpesche das Zertifikat
     if (isset($_POST['delZertifikat'])) {
-        $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
-
-        if ($oTrustedShops->oZertifikat->kTrustedShopsZertifikat > 0) {
-            if ($oTrustedShops->loescheTrustedShopsZertifikat($oTrustedShops->oZertifikat->kTrustedShopsZertifikat)) {
+        $ts = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
+        if ($ts->oZertifikat->kTrustedShopsZertifikat > 0) {
+            if ($ts->loescheTrustedShopsZertifikat($ts->oZertifikat->kTrustedShopsZertifikat)) {
                 $cHinweis = 'Ihr Zertifikat wurde erfolgreich für die aktuelle Sprache gelöscht.';
 
                 Shop::Container()->getDB()->query(
@@ -56,8 +53,8 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
             $cFehler .= 'Fehler: Es wurde kein Zertifikat fü die aktuelle Sprache gefunden.';
         }
     } else {
-        $cPreStatus  = $Einstellungen['trustedshops']['trustedshops_nutzen'];
-        $oConfig_arr = Shop::Container()->getDB()->query(
+        $cPreStatus  = $conf['trustedshops']['trustedshops_nutzen'];
+        $confData    = Shop::Container()->getDB()->query(
             'SELECT *
                 FROM teinstellungenconf
                 WHERE kEinstellungenSektion = ' . CONF_TRUSTEDSHOPS . "
@@ -66,13 +63,13 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
                 ORDER BY nSort",
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        $configCount = count($oConfig_arr);
+        $configCount = count($confData);
         for ($i = 0; $i < $configCount; $i++) {
             $aktWert                        = new stdClass();
-            $aktWert->cWert                 = $_POST[$oConfig_arr[$i]->cWertName];
-            $aktWert->cName                 = $oConfig_arr[$i]->cWertName;
+            $aktWert->cWert                 = $_POST[$confData[$i]->cWertName];
+            $aktWert->cName                 = $confData[$i]->cWertName;
             $aktWert->kEinstellungenSektion = CONF_TRUSTEDSHOPS;
-            switch ($oConfig_arr[$i]->cInputTyp) {
+            switch ($confData[$i]->cInputTyp) {
                 case 'kommazahl':
                     $aktWert->cWert = (float)$aktWert->cWert;
                     break;
@@ -84,15 +81,15 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
                     $aktWert->cWert = substr($aktWert->cWert, 0, 255);
                     break;
                 case 'listbox':
-                    bearbeiteListBox($aktWert->cWert, $oConfig_arr[$i]->cWertName, CONF_TRUSTEDSHOPS);
+                    bearbeiteListBox($aktWert->cWert, $confData[$i]->cWertName, CONF_TRUSTEDSHOPS);
                     break;
             }
 
-            if ($oConfig_arr[$i]->cInputTyp !== 'listbox') {
+            if ($confData[$i]->cInputTyp !== 'listbox') {
                 Shop::Container()->getDB()->delete(
                     'teinstellungen',
                     ['kEinstellungenSektion', 'cName'],
-                    [CONF_TRUSTEDSHOPS, $oConfig_arr[$i]->cWertName]
+                    [CONF_TRUSTEDSHOPS, $confData[$i]->cWertName]
                 );
                 Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
             }
@@ -105,20 +102,20 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
                 && strlen($_POST['wsPassword']) > 0
                 || $_POST['eType'] === TS_BUYERPROT_CLASSIC)
         ) {
-            $oZertifikat              = new stdClass();
-            $oZertifikat->cTSID       = StringHandler::htmlentities(StringHandler::filterXSS(trim($_POST['tsId'])));
-            $oZertifikat->cWSUser     = StringHandler::htmlentities(StringHandler::filterXSS($_POST['wsUser']));
-            $oZertifikat->cWSPasswort = StringHandler::htmlentities(StringHandler::filterXSS($_POST['wsPassword']));
-            $oZertifikat->cISOSprache = $_SESSION['TrustedShops']->oSprache->cISOSprache;
-            $oZertifikat->nAktiv      = 0;
-            $oZertifikat->eType       = StringHandler::htmlentities(StringHandler::filterXSS($_POST['eType']));
-            $oZertifikat->dErstellt   = 'NOW()';
+            $cert              = new stdClass();
+            $cert->cTSID       = StringHandler::htmlentities(StringHandler::filterXSS(trim($_POST['tsId'])));
+            $cert->cWSUser     = StringHandler::htmlentities(StringHandler::filterXSS($_POST['wsUser']));
+            $cert->cWSPasswort = StringHandler::htmlentities(StringHandler::filterXSS($_POST['wsPassword']));
+            $cert->cISOSprache = $_SESSION['TrustedShops']->oSprache->cISOSprache;
+            $cert->nAktiv      = 0;
+            $cert->eType       = StringHandler::htmlentities(StringHandler::filterXSS($_POST['eType']));
+            $cert->dErstellt   = 'NOW()';
 
-            $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
+            $ts = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
 
-            $nReturnValue = (strlen($oTrustedShops->kTrustedShopsZertifikat) > 0)
-                ? $oTrustedShops->speicherTrustedShopsZertifikat($oZertifikat, $oTrustedShops->kTrustedShopsZertifikat)
-                : $oTrustedShops->speicherTrustedShopsZertifikat($oZertifikat);
+            $nReturnValue = (strlen($ts->kTrustedShopsZertifikat) > 0)
+                ? $ts->speicherTrustedShopsZertifikat($cert, $ts->kTrustedShopsZertifikat)
+                : $ts->speicherTrustedShopsZertifikat($cert);
 
             mappeTSFehlerCode($cHinweis, $cFehler, $nReturnValue);
         } elseif ($cPreStatus === 'Y') {
@@ -127,18 +124,18 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
 
         $cHinweis .= 'Ihre Einstellungen wurden übernommen.';
         Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
-        unset($oConfig_arr);
+        unset($confData);
     }
 } elseif (isset($_POST['kaeuferschutzupdate'])
     && (int)$_POST['kaeuferschutzupdate'] === 1
     && Form::validateToken()
 ) {
     // Kaeuferprodukte updaten
-    $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
+    $ts = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
     //$oZertifikat = $oTrustedShops->gibTrustedShopsZertifikatISO($_SESSION['TrustedShops']->oSprache->cISOSprache);
 
-    if ($oTrustedShops->oZertifikat->kTrustedShopsZertifikat > 0 && $oTrustedShops->oZertifikat->nAktiv == 1) {
-        $oTrustedShops->holeKaeuferschutzProdukte($oTrustedShops->oZertifikat->kTrustedShopsZertifikat);
+    if ($ts->oZertifikat->kTrustedShopsZertifikat > 0 && $ts->oZertifikat->nAktiv == 1) {
+        $ts->holeKaeuferschutzProdukte($ts->oZertifikat->kTrustedShopsZertifikat);
         $cHinweis .= 'Ihre Käuferschutzprodukte wurden aktualisiert.';
     } else {
         $cFehler .= 'Fehler: Ihre Käuferschutzprodukte konnten nicht aktualisiert werden.';
@@ -148,23 +145,23 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
     && Form::validateToken()
 ) {
     // Kundenbewertung Einstellungen
-    $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
-    $cPreStatus    = $Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'];
+    $ts         = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
+    $cPreStatus = $conf['trustedshops']['trustedshops_kundenbewertung_anzeigen'];
 
-    $oConfig_arr = Shop::Container()->getDB()->selectAll(
+    $confData    = Shop::Container()->getDB()->selectAll(
         'teinstellungenconf',
         ['kEinstellungenSektion', 'cConf', 'cWertName'],
         [CONF_TRUSTEDSHOPS, 'Y', 'trustedshops_kundenbewertung_anzeigen'],
         '*',
         'nSort'
     );
-    $configCount = count($oConfig_arr);
+    $configCount = count($confData);
     for ($i = 0; $i < $configCount; $i++) {
         $aktWert                        = new stdClass();
-        $aktWert->cWert                 = $_POST[$oConfig_arr[$i]->cWertName];
-        $aktWert->cName                 = $oConfig_arr[$i]->cWertName;
+        $aktWert->cWert                 = $_POST[$confData[$i]->cWertName];
+        $aktWert->cName                 = $confData[$i]->cWertName;
         $aktWert->kEinstellungenSektion = CONF_TRUSTEDSHOPS;
-        switch ($oConfig_arr[$i]->cInputTyp) {
+        switch ($confData[$i]->cInputTyp) {
             case 'kommazahl':
                 $aktWert->cWert = (float)$aktWert->cWert;
                 break;
@@ -176,29 +173,29 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
                 $aktWert->cWert = substr($aktWert->cWert, 0, 255);
                 break;
             case 'listbox':
-                bearbeiteListBox($aktWert->cWert, $oConfig_arr[$i]->cWertName, CONF_TRUSTEDSHOPS);
+                bearbeiteListBox($aktWert->cWert, $confData[$i]->cWertName, CONF_TRUSTEDSHOPS);
                 break;
         }
 
-        if ($oConfig_arr[$i]->cInputTyp !== 'listbox') {
+        if ($confData[$i]->cInputTyp !== 'listbox') {
             Shop::Container()->getDB()->delete(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
-                [CONF_TRUSTEDSHOPS, $oConfig_arr[$i]->cWertName]
+                [CONF_TRUSTEDSHOPS, $confData[$i]->cWertName]
             );
             Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
         }
     }
     $settings = Shopsetting::getInstance();
     $settings->reset();
-    $Einstellungen = Shop::getSettings([CONF_TRUSTEDSHOPS]);
-    if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'N') {
-        $oTrustedShops->aenderKundenbewertungsstatusDB(0, $_SESSION['TrustedShops']->oSprache->cISOSprache);
-        $oTrustedShops->aenderKundenbewertungsstatus(0, $_SESSION['TrustedShops']->oSprache->cISOSprache);
+    $conf = Shop::getSettings([CONF_TRUSTEDSHOPS]);
+    if ($conf['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'N') {
+        $ts->aenderKundenbewertungsstatusDB(0, $_SESSION['TrustedShops']->oSprache->cISOSprache);
+        $ts->aenderKundenbewertungsstatus(0, $_SESSION['TrustedShops']->oSprache->cISOSprache);
     }
 
     if (strlen($_POST['kb-tsId']) > 0) {
-        $oTrustedShops->aenderKundenbewertungtsIDDB(
+        $ts->aenderKundenbewertungtsIDDB(
             trim($_POST['kb-tsId']),
             $_SESSION['TrustedShops']->oSprache->cISOSprache
         );
@@ -213,26 +210,26 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
         if (isset($_POST['tsKundenbewertungActive'])) {
             $nStatus = 1;
         }
-        $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
-        $tscRating     = $oTrustedShops->holeKundenbewertungsstatus(
+        $ts        = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
+        $tscRating = $ts->holeKundenbewertungsstatus(
             $_SESSION['TrustedShops']->oSprache->cISOSprache
         );
 
         if (strlen($tscRating->cTSID) > 0) {
-            $nReturnValue = $oTrustedShops->aenderKundenbewertungsstatus(
+            $nReturnValue = $ts->aenderKundenbewertungsstatus(
                 $tscRating->cTSID,
                 $nStatus,
                 $_SESSION['TrustedShops']->oSprache->cISOSprache
             );
             if ($nReturnValue === 1) {
                 $filename = $tscRating->cTSID . '.gif';
-                $oTrustedShops::ladeKundenbewertungsWidgetNeu($filename);
+                $ts::ladeKundenbewertungsWidgetNeu($filename);
                 $cHinweis = 'Ihr Status wurde erfolgreich geändert';
             } elseif ($nReturnValue === 2) {
                 $cFehler = 'Fehler: Bei der Statusänderung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.';
             } elseif ($nReturnValue === 3) {
                 // Wurde die TS-ID vielleicht schon in einer anderen Sprache benutzt?
-                if ($oTrustedShops->pruefeKundenbewertungsstatusAndereSprache(
+                if ($ts->pruefeKundenbewertungsstatusAndereSprache(
                     $tscRating->cTSID,
                     $_SESSION['TrustedShops']->oSprache->cISOSprache
                 )) {
@@ -257,32 +254,29 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
 } elseif (isset($_GET['whatisrating']) && (int)$_GET['whatisrating'] === 1) { // Infoseite Kundenbewertung anzeigen
     $step = 'info_kundenbewertung';
 }
-
-// Uebersicht
 if ($step === 'uebersicht') {
-    // Config holen
-    $oConfig_arr = Shop::Container()->getDB()->query(
+    $confData    = Shop::Container()->getDB()->query(
         'SELECT *
             FROM teinstellungenconf
             WHERE kEinstellungenSektion = ' . CONF_TRUSTEDSHOPS . '
             ORDER BY nSort',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    $configCount = count($oConfig_arr);
+    $configCount = count($confData);
     for ($i = 0; $i < $configCount; $i++) {
-        \Shop::Container()->getGetText()->localizeConfig($oConfig_arr[$i]);
+        \Shop::Container()->getGetText()->localizeConfig($confData[$i]);
 
-        if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-            $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->query(
+        if ($confData[$i]->cInputTyp === 'selectbox') {
+            $confData[$i]->ConfWerte = Shop::Container()->getDB()->query(
                 'SELECT *
                     FROM teinstellungenconfwerte
-                    WHERE kEinstellungenConf = ' . (int)$oConfig_arr[$i]->kEinstellungenConf . '
+                    WHERE kEinstellungenConf = ' . (int)$confData[$i]->kEinstellungenConf . '
                     ORDER BY nSort',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            \Shop::Container()->getGetText()->localizeConfigValues($oConfig_arr[$i], $oConfig_arr[$i]->ConfWerte);
-        } elseif ($oConfig_arr[$i]->cInputTyp === 'listbox') {
-            $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->query(
+            \Shop::Container()->getGetText()->localizeConfigValues($confData[$i], $confData[$i]->ConfWerte);
+        } elseif ($confData[$i]->cInputTyp === 'listbox') {
+            $confData[$i]->ConfWerte = Shop::Container()->getDB()->query(
                 'SELECT kKundengruppe, cName
                     FROM tkundengruppe
                     ORDER BY cStandard DESC',
@@ -290,44 +284,43 @@ if ($step === 'uebersicht') {
             );
         }
 
-        if ($oConfig_arr[$i]->cInputTyp === 'listbox') {
-            $oSetValue                      = Shop::Container()->getDB()->query(
+        if ($confData[$i]->cInputTyp === 'listbox') {
+            $oSetValue                   = Shop::Container()->getDB()->query(
                 'SELECT cWert
                     FROM teinstellungen
                     WHERE kEinstellungenSektion = ' . CONF_TRUSTEDSHOPS . "
-                        AND cName = '" . $oConfig_arr[$i]->cWertName . "'",
+                        AND cName = '" . $confData[$i]->cWertName . "'",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            $oConfig_arr[$i]->gesetzterWert = $oSetValue;
+            $confData[$i]->gesetzterWert = $oSetValue;
         } else {
-            $oSetValue                      = Shop::Container()->getDB()->query(
+            $oSetValue                   = Shop::Container()->getDB()->query(
                 'SELECT cWert
                     FROM teinstellungen
                     WHERE kEinstellungenSektion = ' . CONF_TRUSTEDSHOPS . "
-                        AND cName = '" . $oConfig_arr[$i]->cWertName . "'",
+                        AND cName = '" . $confData[$i]->cWertName . "'",
                 \DB\ReturnType::SINGLE_OBJECT
             );
-            $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
+            $confData[$i]->gesetzterWert = $oSetValue->cWert ?? null;
         }
     }
 
-    $smarty->assign('oConfig_arr', $oConfig_arr);
+    $smarty->assign('oConfig_arr', $confData);
 
-    $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
-    $swParam       = '?shopsw=' . SHOP_SOFTWARE . '&partnerPackage=' . PARTNER_PACKAGE;
+    $ts      = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
+    $swParam = '?shopsw=' . SHOP_SOFTWARE . '&partnerPackage=' . PARTNER_PACKAGE;
 
     if (isset($_POST['kaeuferschutzupdate'], $_POST['tsupdate'])
         && (int)$_POST['kaeuferschutzupdate'] === 1
-        && $Einstellungen['trustedshops']['trustedshops_nutzen'] === 'Y'
+        && $conf['trustedshops']['trustedshops_nutzen'] === 'Y'
     ) {
-        $smarty->assign('oKaeuferschutzProdukteDB', $oTrustedShops->oKaeuferschutzProdukteDB)
+        $smarty->assign('oKaeuferschutzProdukteDB', $ts->oKaeuferschutzProdukteDB)
                ->assign(
                    'oZertifikat',
-                   $oTrustedShops->gibTrustedShopsZertifikatISO($_SESSION['TrustedShops']->oSprache->cISOSprache)
+                   $ts->gibTrustedShopsZertifikatISO($_SESSION['TrustedShops']->oSprache->cISOSprache)
                );
 
-        // Kundenbwertungsstatus
-        $tscRating = $oTrustedShops->holeKundenbewertungsstatus(
+        $tscRating = $ts->holeKundenbewertungsstatus(
             $_SESSION['TrustedShops']->oSprache->cISOSprache
         );
         if ($tscRating) {
@@ -335,7 +328,7 @@ if ($step === 'uebersicht') {
         }
 
         // Kundenbewertungs URL zur Uebersicht
-        $cURLKundenBewertung_arr = [
+        $ratingURLs = [
             'de' => 'https://www.trustedshops.de/shopbetreiber/' . $swParam,
             'en' => 'https://www.trustedshops.co.uk/merchants/partners/' . $swParam,
             'fr' => 'https://www.trustedshops.fr/marchands/partenaires/' . $swParam,
@@ -346,23 +339,21 @@ if ($step === 'uebersicht') {
         ];
     }
 
-    if ($Einstellungen['trustedshops']['trustedshops_nutzen'] === 'Y') {
-        $smarty->assign('oKaeuferschutzProdukteDB', $oTrustedShops->oKaeuferschutzProdukteDB);
+    if ($conf['trustedshops']['trustedshops_nutzen'] === 'Y') {
+        $smarty->assign('oKaeuferschutzProdukteDB', $ts->oKaeuferschutzProdukteDB);
     }
 
-    $smarty->assign('Einstellungen', $Einstellungen);
-    $smarty->assign('oZertifikat', $oTrustedShops->oZertifikat);
+    $smarty->assign('Einstellungen', $conf)
+           ->assign('oZertifikat', $ts->oZertifikat);
 
     // Kundenbewertungsstatus
-    $tscRating = $oTrustedShops->holeKundenbewertungsstatus(
+    $tscRating = $ts->holeKundenbewertungsstatus(
         $_SESSION['TrustedShops']->oSprache->cISOSprache
     );
-    if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
+    if ($conf['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
         $smarty->assign('oTrustedShopsKundenbewertung', $tscRating);
     }
-
-    // Kundenbewertungs URL zur Uebersicht
-    $cURLKundenBewertung_arr = [
+    $ratingURLs = [
         'de' => 'https://www.trustedshops.de/shopbetreiber/' . $swParam,
         'en' => 'https://www.trustedshops.co.uk/merchants/partners/' . $swParam,
         'fr' => 'https://www.trustedshops.fr/marchands/partenaires/' . $swParam,
@@ -372,9 +363,9 @@ if ($step === 'uebersicht') {
         'pl' => 'https://www.trustedshops.pl/handlowcy/' . $swParam
     ];
 
-    $cURLKundenBewertungUebersicht_arr = [];
+    $customerRatingURLs = [];
     if (isset($tscRating->cTSID) && strlen($tscRating->cTSID) > 0) {
-        $cURLKundenBewertungUebersicht_arr = [
+        $customerRatingURLs = [
             'de' => 'https://www.trustedshops.com/bewertung/info_' . $tscRating->cTSID . '.html',
             'en' => 'https://www.trustedshops.com/buyerrating/info_' . $tscRating->cTSID . '.html',
             'fr' => 'https://www.trustedshops.com/evaluation/info_' . $tscRating->cTSID . '.html',
@@ -385,7 +376,7 @@ if ($step === 'uebersicht') {
         ];
     }
 
-    $oSprach_arr   = [
+    $langMappings = [
         'de' => 'Deutsch',
         'en' => 'Englisch',
         'fr' => 'Französisch',
@@ -394,18 +385,17 @@ if ($step === 'uebersicht') {
         'pl' => 'Polnisch',
         'es' => 'Spanisch'
     ];
-    $cMember_arr   = array_keys($oSprach_arr);
-    $oSprachen_arr = [];
-    foreach ($oSprach_arr as $i => $oSprach) {
-        $oSprachen_arr[$i]                      = new stdClass();
-        $oSprachen_arr[$i]->cISOSprache         = $i;
-        $oSprachen_arr[$i]->cNameSprache        = $oSprach_arr[$i];
-        $oSprachen_arr[$i]->cURLKundenBewertung = $cURLKundenBewertung_arr[$i];
-        if (count($cURLKundenBewertungUebersicht_arr) > 0) {
-            $oSprachen_arr[$i]->cURLKundenBewertungUebersicht = $cURLKundenBewertungUebersicht_arr[$i];
+    $languages    = [];
+    foreach ($langMappings as $i => $lang) {
+        $languages[$i]                      = new stdClass();
+        $languages[$i]->cISOSprache         = $i;
+        $languages[$i]->cNameSprache        = $langMappings[$i];
+        $languages[$i]->cURLKundenBewertung = $ratingURLs[$i];
+        if (count($customerRatingURLs) > 0) {
+            $languages[$i]->cURLKundenBewertungUebersicht = $customerRatingURLs[$i];
         }
     }
-    $smarty->assign('Sprachen', $oSprachen_arr);
+    $smarty->assign('Sprachen', $languages);
 } elseif ($step === 'info') {
     $smarty->assign('PFAD_GFX_TRUSTEDSHOPS', PFAD_GFX_TRUSTEDSHOPS);
 } elseif ($step === 'info_kundenbewertung') {

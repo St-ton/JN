@@ -13,7 +13,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_KONTAKT);
 $smarty                 = Shop::Smarty();
-$Einstellungen          = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
+$conf                   = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
 $linkHelper             = Shop::Container()->getLinkService();
 $kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
 $link                   = $linkHelper->getPageLink($kLink);
@@ -38,7 +38,7 @@ if (Form::checkSubject()) {
 
         if ($nReturnValue) {
             $step = 'floodschutz';
-            if (!Form::checkFloodProtection($Einstellungen['kontakt']['kontakt_sperre_minuten'])) {
+            if (!Form::checkFloodProtection($conf['kontakt']['kontakt_sperre_minuten'])) {
                 $oNachricht = Form::baueKontaktFormularVorgaben();
                 // CheckBox Spezialfunktion ausfuehren
                 $oCheckBox->triggerSpecialFunction(

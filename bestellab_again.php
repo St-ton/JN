@@ -12,16 +12,9 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_BESTELLABSCHLUSS);
-$Einstellungen = Shop::getSettings([
-    CONF_GLOBAL,
-    CONF_RSS,
-    CONF_KUNDEN,
-    CONF_KAUFABWICKLUNG,
-    CONF_ZAHLUNGSARTEN
-]);
-$kBestellung   = (int)$_REQUEST['kBestellung'];
-$linkHelper    = Shop::Container()->getLinkService();
-$bestellung    = new Bestellung($kBestellung, true);
+$kBestellung = (int)$_REQUEST['kBestellung'];
+$linkHelper  = Shop::Container()->getLinkService();
+$bestellung  = new Bestellung($kBestellung, true);
 //abfragen, ob diese Bestellung dem Kunden auch gehoert
 //bei Gastbestellungen ist ggf das Kundenobjekt bereits entfernt bzw nRegistriert = 0
 if ($bestellung->oKunde !== null

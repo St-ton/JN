@@ -6,13 +6,13 @@
  * @global Session $session
  */
 
-use Helpers\Product;
+use Helpers\Cart;
 use Helpers\Date;
 use Helpers\Form;
+use Helpers\Product;
 use Helpers\Request;
-use Helpers\Tax;
 use Helpers\ShippingMethod;
-use Helpers\Cart;
+use Helpers\Tax;
 use Pagination\Pagination;
 
 require_once __DIR__ . '/includes/globalinclude.php';
@@ -23,13 +23,13 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kundenwerbenkeunden_inc.php';
 
 Shop::setPageType(PAGE_MEINKONTO);
-$linkHelper    = Shop::Container()->getLinkService();
-$Einstellungen = Shopsetting::getInstance()->getAll();
-$kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_LOGIN);
-$cHinweis      = '';
-$hinweis       = '';
-$cFehler       = '';
-$ratings       = [];
+$linkHelper = Shop::Container()->getLinkService();
+$conf       = Shopsetting::getInstance()->getAll();
+$kLink      = $linkHelper->getSpecialPageLinkKey(LINKTYP_LOGIN);
+$cHinweis   = '';
+$hinweis    = '';
+$cFehler    = '';
+$ratings    = [];
 if (Request::verifyGPCDataInt('wlidmsg') > 0) {
     $cHinweis .= Wunschliste::mapMessage(Request::verifyGPCDataInt('wlidmsg'));
 }
@@ -96,8 +96,8 @@ if ($customerID > 0) {
     // abmelden + meldung
     if (isset($_GET['logout']) && (int)$_GET['logout'] === 1) {
         // Sprache und Waehrung beibehalten
-        $kSprache    = Shop::getLanguage();
-        $cISOSprache = Shop::getLanguage(true);
+        $kSprache    = Shop::getLanguageID();
+        $cISOSprache = Shop::getLanguageCode();
         $Waehrung    = \Session\Frontend::getCurrency();
         // Kategoriecache loeschen
         unset(
@@ -151,12 +151,12 @@ if ($customerID > 0) {
         $cHinweis .= Wunschliste::setDefault(Request::verifyGPCDataInt('wls'));
     }
     // Kunden werben Kunden
-    if ($Einstellungen['kundenwerbenkunden']['kwk_nutzen'] === 'Y' && Request::verifyGPCDataInt('KwK') === 1) {
+    if ($conf['kundenwerbenkunden']['kwk_nutzen'] === 'Y' && Request::verifyGPCDataInt('KwK') === 1) {
         $step = 'kunden_werben_kunden';
         if (Request::verifyGPCDataInt('kunde_werben') === 1) {
             if (!SimpleMail::checkBlacklist($_POST['cEmail'])) {
                 if (KundenwerbenKunden::checkInputData($_POST)) {
-                    if (KundenwerbenKunden::saveToDB($_POST, $Einstellungen)) {
+                    if (KundenwerbenKunden::saveToDB($_POST, $conf)) {
                         $cHinweis .= sprintf(
                             Shop::Lang()->get('kwkAdd', 'messages') . '<br />',
                             StringHandler::filterXSS($_POST['cEmail'])
@@ -283,7 +283,7 @@ if ($customerID > 0) {
             $step = 'wunschliste anzeigen';
             // Soll die Wunschliste nun an die Emailempfaenger geschickt werden?
             if (isset($_POST['send']) && (int)$_POST['send'] === 1) {
-                if ($Einstellungen['global']['global_wunschliste_anzeigen'] === 'Y') {
+                if ($conf['global']['global_wunschliste_anzeigen'] === 'Y') {
                     $mails     = explode(' ', StringHandler::htmlentities(StringHandler::filterXSS($_POST['email'])));
                     $cHinweis .= Wunschliste::send($mails, $kWunschliste);
                     // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
@@ -292,13 +292,11 @@ if ($customerID > 0) {
                 }
             } else {
                 $step = 'wunschliste versenden';
-                // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
                 $CWunschliste = Wunschliste::buildPrice(new Wunschliste($kWunschliste));
                 Shop::Smarty()->assign('CWunschliste', $CWunschliste);
             }
         }
     }
-    // Wunschliste alle Positionen loeschen
     if (Request::verifyGPCDataInt('wldl') === 1) {
         $kWunschliste = Request::verifyGPCDataInt('wl');
         if ($kWunschliste) {
@@ -314,7 +312,6 @@ if ($customerID > 0) {
             }
         }
     }
-    // Wunschliste Artikelsuche
     if (Request::verifyGPCDataInt('wlsearch') === 1) {
         $cSuche       = StringHandler::filterXSS(Request::verifyGPDataString('cSuche'));
         $kWunschliste = Request::verifyGPCDataInt('wl');
@@ -369,14 +366,14 @@ if ($customerID > 0) {
         $fehlendeAngaben = checkKundenFormularArray($cPost_arr, 1, 0);
         $kKundengruppe   = \Session\Frontend::getCustomerGroup()->getID();
         // CheckBox Plausi
-        $oCheckBox           = new CheckBox();
-        $fehlendeAngaben     = array_merge(
+        $oCheckBox          = new CheckBox();
+        $fehlendeAngaben    = array_merge(
             $fehlendeAngaben,
             $oCheckBox->validateCheckBox(CHECKBOX_ORT_KUNDENDATENEDITIEREN, $kKundengruppe, $cPost_arr, true)
         );
-        $knd                 = getKundendaten($cPost_arr, 0, 0);
-        $cKundenattribut_arr = getKundenattribute($cPost_arr);
-        $nReturnValue        = angabenKorrekt($fehlendeAngaben);
+        $knd                = getKundendaten($cPost_arr, 0, 0);
+        $customerAttributes = getKundenattribute($cPost_arr);
+        $nReturnValue       = angabenKorrekt($fehlendeAngaben);
 
         executeHook(HOOK_JTL_PAGE_KUNDENDATEN_PLAUSI);
 
@@ -395,7 +392,7 @@ if ($customerID > 0) {
             Kundendatenhistory::saveHistory($_SESSION['Kunde'], $knd, Kundendatenhistory::QUELLE_MEINKONTO);
             $_SESSION['Kunde'] = $knd;
             // Update Kundenattribute
-            if (is_array($cKundenattribut_arr) && count($cKundenattribut_arr) > 0) {
+            if (is_array($customerAttributes) && count($customerAttributes) > 0) {
                 $nonEditableFields = \Functional\map(
                     getKundenattributeNichtEditierbar(),
                     function ($e) {
@@ -410,26 +407,26 @@ if ($customerID > 0) {
                         WHERE kKunde = ' . $customerID . $cSQL,
                     \DB\ReturnType::DEFAULT
                 );
-                $nKundenattributKey_arr             = array_keys($cKundenattribut_arr);
-                $oKundenAttributNichtEditierbar_arr = getNonEditableCustomerFields();
-                if (is_array($oKundenAttributNichtEditierbar_arr) && count($oKundenAttributNichtEditierbar_arr) > 0) {
-                    $attrKeys = array_keys($oKundenAttributNichtEditierbar_arr);
-                    foreach (array_diff($nKundenattributKey_arr, $attrKeys) as $kKundenfeld) {
+                $customerAttributeIDs  = array_keys($customerAttributes);
+                $nonEditableAttributes = getNonEditableCustomerFields();
+                if (count($nonEditableAttributes) > 0) {
+                    $attrKeys = array_keys($nonEditableAttributes);
+                    foreach (array_diff($customerAttributeIDs, $attrKeys) as $kKundenfeld) {
                         $oKundenattribut              = new stdClass();
                         $oKundenattribut->kKunde      = $customerID;
-                        $oKundenattribut->kKundenfeld = (int)$cKundenattribut_arr[$kKundenfeld]->kKundenfeld;
-                        $oKundenattribut->cName       = $cKundenattribut_arr[$kKundenfeld]->cWawi;
-                        $oKundenattribut->cWert       = $cKundenattribut_arr[$kKundenfeld]->cWert;
+                        $oKundenattribut->kKundenfeld = (int)$customerAttributes[$kKundenfeld]->kKundenfeld;
+                        $oKundenattribut->cName       = $customerAttributes[$kKundenfeld]->cWawi;
+                        $oKundenattribut->cWert       = $customerAttributes[$kKundenfeld]->cWert;
 
                         Shop::Container()->getDB()->insert('tkundenattribut', $oKundenattribut);
                     }
                 } else {
-                    foreach ($nKundenattributKey_arr as $kKundenfeld) {
+                    foreach ($customerAttributeIDs as $kKundenfeld) {
                         $oKundenattribut              = new stdClass();
                         $oKundenattribut->kKunde      = $customerID;
-                        $oKundenattribut->kKundenfeld = (int)$cKundenattribut_arr[$kKundenfeld]->kKundenfeld;
-                        $oKundenattribut->cName       = $cKundenattribut_arr[$kKundenfeld]->cWawi;
-                        $oKundenattribut->cWert       = $cKundenattribut_arr[$kKundenfeld]->cWert;
+                        $oKundenattribut->kKundenfeld = (int)$customerAttributes[$kKundenfeld]->kKundenfeld;
+                        $oKundenattribut->cName       = $customerAttributes[$kKundenfeld]->cWawi;
+                        $oKundenattribut->cWert       = $customerAttributes[$kKundenfeld]->cWert;
 
                         Shop::Container()->getDB()->insert('tkundenattribut', $oKundenattribut);
                     }
@@ -449,9 +446,9 @@ if ($customerID > 0) {
     }
     if (isset($_POST['pass_aendern']) && (int)$_POST['pass_aendern'] && Form::validateToken()) {
         $step = 'passwort aendern';
-        if (!isset($_POST['altesPasswort'], $_POST['neuesPasswort1']) ||
-            !$_POST['altesPasswort'] ||
-            !$_POST['neuesPasswort1']
+        if (!isset($_POST['altesPasswort'], $_POST['neuesPasswort1'])
+            || !$_POST['altesPasswort']
+            || !$_POST['neuesPasswort1']
         ) {
             $cHinweis .= Shop::Lang()->get('changepasswordFilloutForm', 'login');
         }
@@ -462,14 +459,14 @@ if ($customerID > 0) {
             $cFehler .= Shop::Lang()->get('changepasswordPassesNotEqual', 'login');
         }
         if (isset($_POST['neuesPasswort1'])
-            && strlen($_POST['neuesPasswort1']) < $Einstellungen['kunden']['kundenregistrierung_passwortlaenge']
+            && strlen($_POST['neuesPasswort1']) < $conf['kunden']['kundenregistrierung_passwortlaenge']
         ) {
             $cFehler .= Shop::Lang()->get('changepasswordPassTooShort', 'login') . ' ' .
-                lang_passwortlaenge($Einstellungen['kunden']['kundenregistrierung_passwortlaenge']);
+                lang_passwortlaenge($conf['kunden']['kundenregistrierung_passwortlaenge']);
         }
         if (isset($_POST['neuesPasswort1'], $_POST['neuesPasswort2']) &&
             $_POST['neuesPasswort1'] && $_POST['neuesPasswort1'] === $_POST['neuesPasswort2'] &&
-            strlen($_POST['neuesPasswort1']) >= $Einstellungen['kunden']['kundenregistrierung_passwortlaenge']
+            strlen($_POST['neuesPasswort1']) >= $conf['kunden']['kundenregistrierung_passwortlaenge']
         ) {
             $oKunde = new Kunde($customerID);
             $oUser  = Shop::Container()->getDB()->select(
@@ -527,7 +524,7 @@ if ($customerID > 0) {
             Shop::Smarty()->assign('Bestellung', $bestellung)
                 ->assign('billingAddress', $bestellung->oRechnungsadresse)
                 ->assign('Lieferadresse', $bestellung->Lieferadresse ?? null);
-            if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
+            if ($conf['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
                 Shop::Smarty()->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
                     $bestellung->oRechnungsadresse->cMail,
                     $bestellung->cBestellNr
@@ -555,7 +552,7 @@ if ($customerID > 0) {
     if (isset($_POST['del_acc']) && (int)$_POST['del_acc'] === 1) {
         $csrfTest = Form::validateToken();
         if ($csrfTest === false) {
-            $cHinweis .= Shop::Lang()->get('csrfValidationFailed', 'global');
+            $cHinweis .= Shop::Lang()->get('csrfValidationFailed');
             Shop::Container()->getLogService()->error('CSRF-Warnung fuer Account-Loeschung und kKunde ' . $customerID);
         } else {
             \Session\Frontend::getCustomer()->deleteAccount(
@@ -573,11 +570,11 @@ if ($customerID > 0) {
     }
 
     if ($step === 'mein Konto' || $step === 'bestellungen') {
-        $oDownload_arr = [];
-        $orders        = [];
+        $downloads = [];
+        $orders    = [];
         if (class_exists('Download')) {
-            $oDownload_arr = Download::getDownloads(['kKunde' => $customerID], Shop::getLanguage());
-            Shop::Smarty()->assign('oDownload_arr', $oDownload_arr);
+            $downloads = Download::getDownloads(['kKunde' => $customerID], Shop::getLanguageID());
+            Shop::Smarty()->assign('oDownload_arr', $downloads);
         }
         // Download wurde angefordert?
         if (Request::verifyGPCDataInt('dl') > 0 && class_exists('Download')) {
@@ -599,7 +596,7 @@ if ($customerID > 0) {
         );
         foreach ($orders as $i => $order) {
             $order->bDownload = false;
-            foreach ($oDownload_arr as $oDownload) {
+            foreach ($downloads as $oDownload) {
                 if ((int)$order->kBestellung === (int)$oDownload->kBestellung) {
                     $order->bDownload = true;
                     break;
@@ -643,27 +640,26 @@ if ($customerID > 0) {
     }
 
     if ($step === 'mein Konto' || $step === 'wunschliste') {
-        $oWunschliste_arr = Shop::Container()->getDB()->selectAll(
+        Shop::Smarty()->assign('oWunschliste_arr', Shop::Container()->getDB()->selectAll(
             'twunschliste',
             'kKunde',
             $customerID,
             '*',
             'dErstellt DESC'
-        );
-        Shop::Smarty()->assign('oWunschliste_arr', $oWunschliste_arr);
+        ));
     }
 
     if ($step === 'mein Konto') {
-        $Lieferadressen      = [];
-        $oLieferdatenTMP_arr = Shop::Container()->getDB()->selectAll(
+        $Lieferadressen = [];
+        $addressData    = Shop::Container()->getDB()->selectAll(
             'tlieferadresse',
             'kKunde',
             $customerID,
             'kLieferadresse'
         );
-        foreach ($oLieferdatenTMP_arr as $oLieferdatenTMP) {
-            if ($oLieferdatenTMP->kLieferadresse > 0) {
-                $Lieferadressen[] = new Lieferadresse($oLieferdatenTMP->kLieferadresse);
+        foreach ($addressData as $item) {
+            if ($item->kLieferadresse > 0) {
+                $Lieferadressen[] = new Lieferadresse((int)$item->kLieferadresse);
             }
         }
 
@@ -675,40 +671,40 @@ if ($customerID > 0) {
     if ($step === 'rechnungsdaten') {
         $knd = $_SESSION['Kunde'];
         if (isset($_POST['edit']) && (int)$_POST['edit'] === 1) {
-            $knd                 = getKundendaten($_POST, 0, 0);
-            $cKundenattribut_arr = getKundenattribute($_POST);
+            $knd                = getKundendaten($_POST, 0, 0);
+            $customerAttributes = getKundenattribute($_POST);
         } else {
-            $cKundenattribut_arr = $knd->cKundenattribut_arr;
+            $customerAttributes = $knd->cKundenattribut_arr;
         }
 
         Shop::Smarty()->assign('Kunde', $knd)
-            ->assign('cKundenattribut_arr', $cKundenattribut_arr)
+            ->assign('cKundenattribut_arr', $customerAttributes)
             ->assign('laender', ShippingMethod::getPossibleShippingCountries(
                 $_SESSION['Kunde']->kKundengruppe,
                 false,
                 true
             ));
-        $oKundenfeld_arr = Shop::Container()->getDB()->selectAll(
+        $customerFields = Shop::Container()->getDB()->selectAll(
             'tkundenfeld',
             'kSprache',
-            Shop::getLanguage(),
+            Shop::getLanguageID(),
             '*',
             'nSort DESC'
         );
-        foreach ($oKundenfeld_arr as $i => $oKundenfeld) {
-            if ($oKundenfeld->cTyp !== 'auswahl') {
+        foreach ($customerFields as $field) {
+            if ($field->cTyp !== 'auswahl') {
                 continue;
             }
-            $oKundenfeld_arr[$i]->oKundenfeldWert_arr = Shop::Container()->getDB()->selectAll(
+            $field->oKundenfeldWert_arr = Shop::Container()->getDB()->selectAll(
                 'tkundenfeldwert',
                 'kKundenfeld',
-                (int)$oKundenfeld->kKundenfeld,
+                (int)$field->kKundenfeld,
                 '*',
                 '`kKundenfeld`, `nSort`, `kKundenfeldWert` ASC'
             );
         }
 
-        Shop::Smarty()->assign('oKundenfeld_arr', $oKundenfeld_arr);
+        Shop::Smarty()->assign('oKundenfeld_arr', $customerFields);
     }
     if ($step === 'bewertungen') {
         $ratings = Shop::Container()->getDB()->queryPrepared(

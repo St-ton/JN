@@ -35,13 +35,13 @@ function expandPriceArray($data, $max)
 
 if (isset($_GET['kArtikel'])) {
     $session       = \Session\Frontend::getInstance();
-    $Einstellungen = Shop::getSettings([CONF_PREISVERLAUF]);
+    $conf          = Shop::getSettings([CONF_PREISVERLAUF]);
     $kArtikel      = (int)$_GET['kArtikel'];
     $kKundengruppe = (int)$_GET['kKundengruppe'];
     $kSteuerklasse = (int)$_GET['kSteuerklasse'];
-    $nMonat        = (int)$Einstellungen['preisverlauf']['preisverlauf_anzahl_monate'];
+    $nMonat        = (int)$conf['preisverlauf']['preisverlauf_anzahl_monate'];
 
-    if (count($Einstellungen) > 0) {
+    if (count($conf) > 0) {
         $priceConfig           = new stdClass();
         $priceConfig->Waehrung = \Session\Frontend::getCurrency()->getName();
         $priceConfig->Netto    = \Session\Frontend::getCustomerGroup()->isMerchant()

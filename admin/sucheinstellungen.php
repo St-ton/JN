@@ -13,7 +13,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 $oAccount->permission('SETTINGS_ARTICLEOVERVIEW_VIEW', true, true);
 /** @global Smarty\JTLSmarty $smarty */
 $kSektion         = CONF_ARTIKELUEBERSICHT;
-$Einstellungen    = Shop::getSettings([$kSektion]);
+$conf             = Shop::getSettings([$kSektion]);
 $standardwaehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
 $mysqlVersion     = Shop::Container()->getDB()->query(
     "SHOW VARIABLES LIKE 'innodb_version'",
@@ -57,16 +57,14 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
     }
 
     if ($_GET['create'] === 'Y') {
-        $cSuchspalten_arr = array_map(function ($item) {
-            $item_arr = explode('.', $item, 2);
-
-            return $item_arr[1];
+        $searchCols = array_map(function ($item) {
+            return explode('.', $item, 2)[1];
         }, \Filter\States\BaseSearchQuery::getSearchRows());
 
         switch ($index) {
             case 'tartikel':
-                $cSpalten_arr = array_intersect(
-                    $cSuchspalten_arr,
+                $rows = array_intersect(
+                    $searchCols,
                     ['cName', 'cSeo', 'cSuchbegriffe',
                      'cArtNr', 'cKurzBeschreibung',
                      'cBeschreibung', 'cBarcode',
@@ -75,8 +73,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
                 );
                 break;
             case 'tartikelsprache':
-                $cSpalten_arr = array_intersect(
-                    $cSuchspalten_arr,
+                $rows = array_intersect(
+                    $searchCols,
                     ['cName', 'cSeo', 'cKurzBeschreibung', 'cBeschreibung']
                 );
                 break;
@@ -93,7 +91,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
             );
             $res = Shop::Container()->getDB()->executeQuery(
                 "ALTER TABLE $index
-                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $cSpalten_arr) . ')',
+                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $rows) . ')',
                 \DB\ReturnType::QUERYSINGLE
             );
         } catch (Exception $e) {
@@ -173,7 +171,7 @@ if (isset($_POST['einstellungen_bearbeiten'])
             'suche_prio_han',
             'suche_prio_anmerkung'
         ] as $sucheParam) {
-        if (isset($_POST[$sucheParam]) && ($_POST[$sucheParam] != $Einstellungen['artikeluebersicht'][$sucheParam])) {
+        if (isset($_POST[$sucheParam]) && ($_POST[$sucheParam] != $conf['artikeluebersicht'][$sucheParam])) {
             $fulltextChanged = true;
             break;
         }
@@ -188,11 +186,11 @@ if (isset($_POST['einstellungen_bearbeiten'])
         $cHinweis .= ' Volltextsuche wurde deaktiviert.';
     }
 
-    $Einstellungen = Shop::getSettings([$kSektion]);
+    $conf = Shop::getSettings([$kSektion]);
 }
 
 $section = Shop::Container()->getDB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
-if ($Einstellungen['artikeluebersicht']['suche_fulltext'] !== 'N'
+if ($conf['artikeluebersicht']['suche_fulltext'] !== 'N'
     && (!Shop::Container()->getDB()->query(
         "SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'",
         \DB\ReturnType::SINGLE_OBJECT
@@ -212,16 +210,16 @@ if ($Einstellungen['artikeluebersicht']['suche_fulltext'] !== 'N'
 }
 
 $smarty->configLoad('german.conf', 'einstellungen')
-    ->assign('action', 'sucheinstellungen.php')
-    ->assign('kEinstellungenSektion', $kSektion)
-    ->assign('Sektion', $section)
-    ->assign('Conf', getAdminSectionSettings(CONF_ARTIKELUEBERSICHT))
-    ->assign('cPrefDesc', $smarty->getConfigVars('prefDesc' . $kSektion))
-    ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $kSektion))
-    ->assign('step', $step)
-    ->assign('supportFulltext', version_compare($mysqlVersion, '5.6', '>='))
-    ->assign('createIndex', $createIndex)
-    ->assign('cHinweis', $cHinweis)
-    ->assign('cFehler', $cFehler)
-    ->assign('waehrung', $standardwaehrung->cName)
-    ->display('sucheinstellungen.tpl');
+       ->assign('action', 'sucheinstellungen.php')
+       ->assign('kEinstellungenSektion', $kSektion)
+       ->assign('Sektion', $section)
+       ->assign('Conf', getAdminSectionSettings(CONF_ARTIKELUEBERSICHT))
+       ->assign('cPrefDesc', $smarty->getConfigVars('prefDesc' . $kSektion))
+       ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $kSektion))
+       ->assign('step', $step)
+       ->assign('supportFulltext', version_compare($mysqlVersion, '5.6', '>='))
+       ->assign('createIndex', $createIndex)
+       ->assign('cHinweis', $cHinweis)
+       ->assign('cFehler', $cFehler)
+       ->assign('waehrung', $standardwaehrung->cName)
+       ->display('sucheinstellungen.tpl');

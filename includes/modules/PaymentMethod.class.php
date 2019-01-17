@@ -203,32 +203,25 @@ class PaymentMethod
      */
     public function sendErrorMail($body)
     {
-        global $Einstellungen;
-        // Load Mail Settings
-        if (!isset($Einstellungen['emails'])) {
-            $Einstellungen = Shop::getSettings([CONF_EMAILS]);
-        }
-        $mail = new stdClass();
-        // Content
-        $mail->toEmail   = $Einstellungen['emails']['email_master_absender'];
-        $mail->toName    = $Einstellungen['emails']['email_master_absender_name'];
-        $mail->fromEmail = $mail->toEmail;
-        $mail->fromName  = $mail->toName;
-        $mail->subject   = sprintf(
+        $conf                = Shop::getSettings([CONF_EMAILS]);
+        $mail                = new stdClass();
+        $mail->toEmail       = $conf['emails']['email_master_absender'];
+        $mail->toName        = $conf['emails']['email_master_absender_name'];
+        $mail->fromEmail     = $mail->toEmail;
+        $mail->fromName      = $mail->toName;
+        $mail->subject       = sprintf(
             Shop::Lang()->get('errorMailSubject', 'paymentMethods'),
-            $Einstellungen['global']['global_meta_title']
+            $conf['global']['global_meta_title']
         );
-        $mail->bodyText  = $body;
-        // Method
-        $mail->methode       = $Einstellungen['eMails']['eMail_methode'];
-        $mail->sendMail_pfad = $Einstellungen['eMails']['eMail_sendMail_pfad'];
-        $mail->smtp_hostname = $Einstellungen['eMails']['eMail_smtp_hostname'];
-        $mail->smtp_port     = $Einstellungen['eMails']['eMail_smtp_port'];
-        $mail->smtp_auth     = $Einstellungen['eMails']['eMail_smtp_auth'];
-        $mail->smtp_user     = $Einstellungen['eMails']['eMail_smtp_user'];
-        $mail->smtp_pass     = $Einstellungen['eMails']['eMail_smtp_pass'];
-        $mail->SMTPSecure    = $Einstellungen['emails']['email_smtp_verschluesselung'];
-        // Send
+        $mail->bodyText      = $body;
+        $mail->methode       = $conf['eMails']['eMail_methode'];
+        $mail->sendMail_pfad = $conf['eMails']['eMail_sendMail_pfad'];
+        $mail->smtp_hostname = $conf['eMails']['eMail_smtp_hostname'];
+        $mail->smtp_port     = $conf['eMails']['eMail_smtp_port'];
+        $mail->smtp_auth     = $conf['eMails']['eMail_smtp_auth'];
+        $mail->smtp_user     = $conf['eMails']['eMail_smtp_user'];
+        $mail->smtp_pass     = $conf['eMails']['eMail_smtp_pass'];
+        $mail->SMTPSecure    = $conf['emails']['email_smtp_verschluesselung'];
         include_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
         verschickeMail($mail);
 
@@ -424,15 +417,7 @@ class PaymentMethod
      */
     public function loadSettings()
     {
-        global $Einstellungen;
-
-        if (!is_array($Einstellungen)) {
-            $Einstellungen = [];
-        }
-        if (!array_key_exists('zahlungsarten', $Einstellungen) || $Einstellungen['zahlungsarten'] === null) {
-            $Einstellungen = array_merge($Einstellungen, Shop::getSettings([CONF_ZAHLUNGSARTEN]));
-        }
-        $this->paymentConfig = $Einstellungen['zahlungsarten'];
+        $this->paymentConfig = Shop::getSettings([CONF_ZAHLUNGSARTEN])['zahlungsarten'];
 
         return $this;
     }
@@ -443,10 +428,10 @@ class PaymentMethod
      */
     public function getSetting($key)
     {
-        $Einstellungen = Shop::getSettings([CONF_ZAHLUNGSARTEN, CONF_PLUGINZAHLUNGSARTEN]);
+        $conf = Shop::getSettings([CONF_ZAHLUNGSARTEN, CONF_PLUGINZAHLUNGSARTEN]);
 
-        return $Einstellungen['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key]
-            ?? ($Einstellungen['pluginzahlungsarten'][$this->moduleID . '_' . $key] ?? null);
+        return $conf['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key]
+            ?? ($conf['pluginzahlungsarten'][$this->moduleID . '_' . $key] ?? null);
     }
 
     /**

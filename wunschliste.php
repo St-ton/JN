@@ -13,12 +13,12 @@ require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 
 Shop::run();
-$cParameter_arr   = Shop::getParameters();
+$conf             = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
+$params           = Shop::getParameters();
 $cURLID           = StringHandler::filterXSS(Request::verifyGPDataString('wlid'));
-$Einstellungen    = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
 $kWunschliste     = (Request::verifyGPCDataInt('wl') > 0 && Request::verifyGPCDataInt('wlvm') === 0)
     ? Request::verifyGPCDataInt('wl') //one of multiple customer wishlists
-    : ($cParameter_arr['kWunschliste'] //default wishlist from Shop class
+    : ($params['kWunschliste'] //default wishlist from Shop class
         ?? $cURLID); //public link
 $wishlistTargetID = Request::verifyGPCDataInt('kWunschlisteTarget');
 $cHinweis         = '';
@@ -82,11 +82,10 @@ if ($action !== null && Form::validateToken()) {
                     $step = 'wunschliste anzeigen';
                     require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
                     if (isset($_POST['send']) && (int)$_POST['send'] === 1) {
-                        if ($Einstellungen['global']['global_wunschliste_anzeigen'] === 'Y') {
-                            $cEmail_arr = explode(' ', StringHandler::filterXSS($_POST['email']));
-                            $cHinweis  .= Wunschliste::send($cEmail_arr, $kWunschliste);
-                            // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
-                            $wishlist = Wunschliste::buildPrice(new Wunschliste($kWunschliste));
+                        if ($conf['global']['global_wunschliste_anzeigen'] === 'Y') {
+                            $mails     = explode(' ', StringHandler::filterXSS($_POST['email']));
+                            $cHinweis .= Wunschliste::send($mails, $kWunschliste);
+                            $wishlist  = Wunschliste::buildPrice(new Wunschliste($kWunschliste));
                         }
                     } else {
                         $step = 'wunschliste versenden';
@@ -278,12 +277,12 @@ if (Request::verifyGPCDataInt('error') === 1) {
         header(
             'Location: ' .
             $linkHelper->getStaticRoute('jtl.php') .
-            '?u=' . $cParameter_arr['kUmfrage'] . '&r=' . R_LOGIN_WUNSCHLISTE
+            '?u=' . $params['kUmfrage'] . '&r=' . R_LOGIN_WUNSCHLISTE
         );
         exit;
     }
 }
-$link = ($cParameter_arr['kLink'] > 0) ? $linkHelper->getPageLink($cParameter_arr['kLink']) : null;
+$link = ($params['kLink'] > 0) ? $linkHelper->getPageLink($params['kLink']) : null;
 if (empty($wishlist)) {
     $wishlist = Wunschliste::buildPrice(new Wunschliste($kWunschliste));
 }

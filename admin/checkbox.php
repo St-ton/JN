@@ -14,7 +14,6 @@ $oAccount->permission('CHECKBOXES_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'checkbox_inc.php';
 /** @global Smarty\JTLSmarty $smarty */
-$Einstellungen   = Shop::getSettings([CONF_CHECKBOX]);
 $cHinweis        = '';
 $cFehler         = '';
 $cStep           = 'uebersicht';

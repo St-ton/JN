@@ -16,8 +16,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Shop::setPageType(PAGE_ARTIKELLISTE);
 /** @global \Smarty\JTLSmarty $smarty */
 /** @global \Filter\ProductFilter $NaviFilter*/
-$Einstellungen      = Shopsetting::getInstance()->getAll();
-$conf               = $Einstellungen;
+$conf               = Shopsetting::getInstance()->getAll();
 $bestsellers        = [];
 $suchanfrage        = '';
 $doSearch           = true;
@@ -25,7 +24,7 @@ $KategorieInhalt    = null;
 $AktuelleKategorie  = new Kategorie();
 $expandedCategories = new KategorieListe();
 $hasError           = false;
-$cParameter_arr     = Shop::getParameters();
+$params             = Shop::getParameters();
 /** @var \Filter\ProductFilter $NaviFilter */
 if ($NaviFilter->hasCategory()) {
     $kKategorie                  = $NaviFilter->getCategory()->getValue();
@@ -35,8 +34,8 @@ if ($NaviFilter->hasCategory()) {
         if (Category::categoryExists($kKategorie)) {
             $AktuelleKategorie->loadFromDB($kKategorie);
         } else {
-            Shop::$is404             = true;
-            $cParameter_arr['is404'] = true;
+            Shop::$is404     = true;
+            $params['is404'] = true;
 
             return;
         }
@@ -144,7 +143,7 @@ if (strpos(basename($NaviFilter->getFilterURL()->getURL()), '.php') === false) {
 }
 AuswahlAssistent::startIfRequired(
     AUSWAHLASSISTENT_ORT_KATEGORIE,
-    $cParameter_arr['kKategorie'],
+    $params['kKategorie'],
     Shop::getLanguageID(),
     $smarty,
     [],
@@ -154,7 +153,7 @@ $pagination = new \Filter\Pagination\Pagination($NaviFilter, new \Filter\Paginat
 $pagination->create($pages);
 $smarty->assign('NaviFilter', $NaviFilter)
        ->assign('KategorieInhalt', $KategorieInhalt)
-       ->assign('oErweiterteDarstellung', $NaviFilter->getMetaData()->getExtendedView($cParameter_arr['nDarstellung']))
+       ->assign('oErweiterteDarstellung', $NaviFilter->getMetaData()->getExtendedView($params['nDarstellung']))
        ->assign('oBestseller_arr', $bestsellers)
        ->assign('oNaviSeite_arr', $pagination->getItemsCompat())
        ->assign('filterPagination', $pagination)

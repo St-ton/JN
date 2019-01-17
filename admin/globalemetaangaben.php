@@ -10,9 +10,8 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_GLOBAL_META_VIEW', true, true);
 /** @global Smarty\JTLSmarty $smarty */
-$Einstellungen = Shop::getSettings([CONF_METAANGABEN]);
-$chinweis      = '';
-$cfehler       = '';
+$chinweis = '';
+$cfehler  = '';
 setzeSprache();
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form::validateToken()) {
     saveAdminSectionSettings(CONF_METAANGABEN, $_POST);

@@ -567,20 +567,18 @@ class CheckBox
         if (!isset($oKunde->cVorname, $oKunde->cNachname, $oKunde->cMail)) {
             return false;
         }
-        $Einstellungen = Shop::getSettings([CONF_EMAILS]);
-        if (isset($Einstellungen['emails']['email_master_absender'])
-            && strlen($Einstellungen['emails']['email_master_absender']) > 0
-        ) {
+        $conf = Shop::getSettings([CONF_EMAILS]);
+        if (isset($conf['emails']['email_master_absender']) && strlen($conf['emails']['email_master_absender']) > 0) {
             require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-            $oObj                = new stdClass();
-            $oObj->oCheckBox     = $oCheckBox;
-            $oObj->oKunde        = $oKunde;
-            $oObj->tkunde        = $oKunde;
-            $oObj->cAnzeigeOrt   = $this->mappeCheckBoxOrte($nAnzeigeOrt);
-            $oObj->mail          = new stdClass();
-            $oObj->mail->toEmail = $Einstellungen['emails']['email_master_absender'];
+            $mail                = new stdClass();
+            $mail->oCheckBox     = $oCheckBox;
+            $mail->oKunde        = $oKunde;
+            $mail->tkunde        = $oKunde;
+            $mail->cAnzeigeOrt   = $this->mappeCheckBoxOrte($nAnzeigeOrt);
+            $mail->mail          = new stdClass();
+            $mail->mail->toEmail = $conf['emails']['email_master_absender'];
 
-            sendeMail(MAILTEMPLATE_CHECKBOX_SHOPBETREIBER, $oObj);
+            sendeMail(MAILTEMPLATE_CHECKBOX_SHOPBETREIBER, $mail);
         }
 
         return true;

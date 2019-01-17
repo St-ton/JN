@@ -14,7 +14,7 @@ if (!defined('PFAD_ROOT')) {
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 $smarty                 = Shop::Smarty();
-$Einstellungen          = Shopsetting::getInstance()->getAll();
+$conf                   = Shopsetting::getInstance()->getAll();
 $AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $linkHelper             = Shop::Container()->getLinkService();
@@ -40,8 +40,8 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
         exit();
     }
     $smarty->assign('StartseiteBoxen', CMSHelper::getHomeBoxes())
-           ->assign('oNews_arr', $Einstellungen['news']['news_benutzen'] === 'Y'
-               ? CMSHelper::getHomeNews($Einstellungen)
+           ->assign('oNews_arr', $conf['news']['news_benutzen'] === 'Y'
+               ? CMSHelper::getHomeNews($conf)
                : []);
     AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguage(), $smarty);
 } elseif ($link->getLinkType() === LINKTYP_AGB) {
@@ -65,25 +65,25 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
         )
     );
 } elseif ($link->getLinkType() === LINKTYP_LIVESUCHE) {
-    $smarty->assign('LivesucheTop', CMSHelper::getLiveSearchTop($Einstellungen))
-           ->assign('LivesucheLast', CMSHelper::getLiveSearchLast($Einstellungen));
+    $smarty->assign('LivesucheTop', CMSHelper::getLiveSearchTop($conf))
+           ->assign('LivesucheLast', CMSHelper::getLiveSearchLast($conf));
 } elseif ($link->getLinkType() === LINKTYP_TAGGING) {
-    $smarty->assign('Tagging', CMSHelper::getTagging($Einstellungen));
+    $smarty->assign('Tagging', CMSHelper::getTagging($conf));
 } elseif ($link->getLinkType() === LINKTYP_HERSTELLER) {
     $smarty->assign('oHersteller_arr', Hersteller::getAll());
 } elseif ($link->getLinkType() === LINKTYP_NEWSLETTERARCHIV) {
     $smarty->assign('oNewsletterHistory_arr', CMSHelper::getNewsletterHistory());
 } elseif ($link->getLinkType() === LINKTYP_SITEMAP) {
     Shop::setPageType(PAGE_SITEMAP);
-    $sitemap = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), $Einstellungen);
+    $sitemap = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), $conf);
     $sitemap->assignData($smarty);
 } elseif ($link->getLinkType() === LINKTYP_404) {
-    $sitemap = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), $Einstellungen);
+    $sitemap = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), $conf);
     $sitemap->assignData($smarty);
     Shop::setPageType(PAGE_404);
 } elseif ($link->getLinkType() === LINKTYP_GRATISGESCHENK) {
-    if ($Einstellungen['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {
-        $oArtikelGeschenk_arr = CMSHelper::getFreeGifts($Einstellungen);
+    if ($conf['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {
+        $oArtikelGeschenk_arr = CMSHelper::getFreeGifts($conf);
         if (is_array($oArtikelGeschenk_arr) && count($oArtikelGeschenk_arr) > 0) {
             $smarty->assign('oArtikelGeschenk_arr', $oArtikelGeschenk_arr);
         } else {
@@ -120,12 +120,12 @@ if ($globalMeta !== null) {
 $cMetaTitle       = \Filter\Metadata::prepareMeta(
     $cMetaTitle,
     null,
-    (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']
+    (int)$conf['metaangaben']['global_meta_maxlaenge_title']
 );
 $cMetaDescription = \Filter\Metadata::prepareMeta(
     $cMetaDescription,
     null,
-    (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_description']
+    (int)$conf['metaangaben']['global_meta_maxlaenge_description']
 );
 
 $smarty->assign('meta_title', $cMetaTitle)

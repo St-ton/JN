@@ -35,7 +35,6 @@ if (isset($oLink->kLink) && $oLink->kLink > 0) {
     Shop::$kLink             = (int)$oLink->kLink;
     Shop::$bFileNotFound     = true;
     Shop::$is404             = true;
-    $cParameter_arr['is404'] = true;
 
     return;
 }
@@ -43,7 +42,6 @@ if (isset($oLink->kLink) && $oLink->kLink > 0) {
 $cHinweis               = '';
 $cFehler                = '';
 $cCanonicalURL          = '';
-$Einstellungen          = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_NEWSLETTER]);
 $AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $option                 = 'eintragen';

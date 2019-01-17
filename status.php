@@ -10,15 +10,9 @@ require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_BESTELLSTATUS);
-$smarty        = Shop::Smarty();
-$Einstellungen = Shop::getSettings([
-    CONF_GLOBAL,
-    CONF_RSS,
-    CONF_KUNDEN,
-    CONF_KAUFABWICKLUNG
-]);
-$hinweis       = '';
-$linkHelper    = Shop::Container()->getLinkService();
+$smarty     = Shop::Smarty();
+$hinweis    = '';
+$linkHelper = Shop::Container()->getLinkService();
 
 if (isset($_GET['uid'])) {
     $status = Shop::Container()->getDB()->queryPrepared(

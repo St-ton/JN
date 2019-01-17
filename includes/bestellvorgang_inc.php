@@ -657,7 +657,7 @@ function gibStepLieferadresse()
  */
 function gibStepZahlung()
 {
-    global $step, $Einstellungen;
+    global $step;
     $cart          = \Session\Frontend::getCart();
     $conf          = Shop::getSettings([CONF_TRUSTEDSHOPS]);
     $oTrustedShops = new stdClass();
@@ -755,7 +755,7 @@ function gibStepZahlung()
             ];
         }
         Shop::Smarty()->assign('Zahlungsarten', $oZahlungsart_arr)
-            ->assign('Einstellungen', $Einstellungen)
+            ->assign('Einstellungen', $conf)
             ->assign('Versandarten', $shippingMethods)
             ->assign('Verpackungsarten', $packagings)
             ->assign('AktiveVersandart', $aktiveVersandart)
@@ -3588,7 +3588,7 @@ function setzeFehlendeAngaben($missingData, $context = null)
  */
 function globaleAssigns()
 {
-    global $step, $hinweis, $Einstellungen;
+    global $step, $hinweis;
     Shop::Smarty()->assign(
         'AGB',
         Shop::Container()->getLinkService()->getAGBWRB(
@@ -3598,7 +3598,7 @@ function globaleAssigns()
     )
         ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
         ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
-        ->assign('Einstellungen', $Einstellungen)
+        ->assign('Einstellungen', Shopsetting::getInstance()->getAll())
         ->assign('hinweis', $hinweis)
         ->assign('step', $step)
         ->assign('WarensummeLocalized', \Session\Frontend::getCart()->gibGesamtsummeWarenLocalized())

@@ -16,12 +16,12 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 /** @global \Smarty\JTLSmarty $smarty */
-$Einstellungen = Shop::getSettings([CONF_BEWERTUNG]);
-$cHinweis      = '';
-$cFehler       = '';
-$step          = 'bewertung_uebersicht';
-$cTab          = 'freischalten';
-$cacheTags     = [];
+$conf      = Shop::getSettings([CONF_BEWERTUNG]);
+$cHinweis  = '';
+$cFehler   = '';
+$step      = 'bewertung_uebersicht';
+$cTab      = 'freischalten';
+$cacheTags = [];
 
 setzeSprache();
 
@@ -58,8 +58,8 @@ if (Form::validateToken()) {
                     $upd         = new stdClass();
                     $upd->nAktiv = 1;
                     Shop::Container()->getDB()->update('tbewertung', 'kBewertung', (int)$kBewertung, $upd);
-                    aktualisiereDurchschnitt($kArtikel_arr[$i], $Einstellungen['bewertung']['bewertung_freischalten']);
-                    checkeBewertungGuthabenBonus($kBewertung, $Einstellungen);
+                    aktualisiereDurchschnitt($kArtikel_arr[$i], $conf['bewertung']['bewertung_freischalten']);
+                    checkeBewertungGuthabenBonus($kBewertung, $conf);
                     $cacheTags[] = $kArtikel_arr[$i];
                 }
                 array_walk(
@@ -105,7 +105,7 @@ if (Form::validateToken()) {
             foreach ($_POST['kBewertung'] as $i => $kBewertung) {
                 BewertungsGuthabenBonusLoeschen($kBewertung);
                 Shop::Container()->getDB()->delete('tbewertung', 'kBewertung', (int)$kBewertung);
-                aktualisiereDurchschnitt($kArtikel_arr[$i], $Einstellungen['bewertung']['bewertung_freischalten']);
+                aktualisiereDurchschnitt($kArtikel_arr[$i], $conf['bewertung']['bewertung_freischalten']);
                 $cacheTags[] = $kArtikel_arr[$i];
             }
             array_walk(

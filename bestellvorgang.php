@@ -18,12 +18,11 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 
 Shop::setPageType(PAGE_BESTELLVORGANG);
-$Einstellungen = Shopsetting::getInstance()->getAll();
-$step          = 'accountwahl';
-$cHinweis      = '';
-$cart          = \Session\Frontend::getCart();
+$conf     = Shopsetting::getInstance()->getAll();
+$step     = 'accountwahl';
+$cHinweis = '';
+$cart     = \Session\Frontend::getCart();
 unset($_SESSION['ajaxcheckout']);
-// Loginbenutzer?
 if (isset($_POST['login']) && (int)$_POST['login'] === 1) {
     fuehreLoginAus($_POST['email'], $_POST['passwort']);
 }
@@ -34,21 +33,18 @@ if (Request::verifyGPCDataInt('basket2Pers') === 1) {
     header('Location: bestellvorgang.php?wk=1');
     exit();
 }
-// Ist Bestellung moeglich?
 if ($cart->istBestellungMoeglich() !== 10) {
     pruefeBestellungMoeglich();
 }
-// Pflicht-Uploads vorhanden?
 if (class_exists('Upload') && !Upload::pruefeWarenkorbUploads($cart)) {
     Upload::redirectWarenkorb(UPLOAD_ERROR_NEED_UPLOAD);
 }
-// Download-Artikel vorhanden?
 if (class_exists('Download') && Download::hasDownloads($cart)) {
     // Nur registrierte Benutzer
-    $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] = 'N';
+    $conf['kaufabwicklung']['bestellvorgang_unregistriert'] = 'N';
 }
 // oneClick? Darf nur einmal ausgeführt werden und nur dann, wenn man vom Warenkorb kommt.
-if ($Einstellungen['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
+if ($conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
     && Request::verifyGPCDataInt('wk') === 1
 ) {
     $kKunde = 0;
@@ -57,8 +53,8 @@ if ($Einstellungen['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] ==
     }
     $oWarenkorbPers = new WarenkorbPers($kKunde);
     if (!(isset($_POST['login']) && (int)$_POST['login'] === 1
-        && $Einstellungen['global']['warenkorbpers_nutzen'] === 'Y'
-        && $Einstellungen['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P'
+        && $conf['global']['warenkorbpers_nutzen'] === 'Y'
+        && $conf['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P'
         && count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0)
     ) {
         pruefeAjaxEinKlick();
@@ -68,14 +64,14 @@ if (Request::verifyGPCDataInt('wk') === 1) {
     Kupon::resetNewCustomerCoupon();
 }
 if (isset($_FILES['vcard'])
-    && $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y'
+    && $conf['kunden']['kundenregistrierung_vcardupload'] === 'Y'
     && Form::validateToken()
 ) {
     gibKundeFromVCard($_FILES['vcard']['tmp_name']);
 }
 if (isset($_POST['unreg_form'])
     && (int)$_POST['unreg_form'] === 1
-    && $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
+    && $conf['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
 ) {
     pruefeUnregistriertBestellen($_POST);
 }
@@ -105,7 +101,7 @@ if ((isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1) || 
 }
 if (isset($_GET['unreg'])
     && (int)$_GET['unreg'] === 1
-    && $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
+    && $conf['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
 ) {
     $step = 'edit_customer_address';
 }
@@ -134,7 +130,6 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
         );
     }
 }
-// Download-Artikel vorhanden?
 if (class_exists('Download') && Download::hasDownloads($cart)) {
     if ($step !== 'accountwahl' && empty($_SESSION['Kunde']->cPasswort)) {
         // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
@@ -244,7 +239,7 @@ Cart::addVariationPictures($cart);
 Shop::Smarty()->assign(
     'AGB',
     Shop::Container()->getLinkService()->getAGBWRB(
-        Shop::getLanguage(),
+        Shop::getLanguageID(),
         \Session\Frontend::getCustomerGroup()->getID()
     )
 )

@@ -23,7 +23,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';
 
 Shop::setPageType(PAGE_REGISTRIERUNG);
-$Einstellungen        = Shop::getSettings([
+$conf                 = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
     CONF_KUNDEN,
@@ -53,7 +53,7 @@ if ($step === 'formular') {
     gibFormularDaten(Request::verifyGPCDataInt('checkout'));
 }
 if (isset($_FILES['vcard'])
-    && $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y'
+    && $conf['kunden']['kundenregistrierung_vcardupload'] === 'Y'
     && Form::validateToken()
 ) {
     gibKundeFromVCard($_FILES['vcard']['tmp_name']);
@@ -77,8 +77,8 @@ $cMetaDescription = $oMeta->cDesc;
 $cMetaKeywords    = $oMeta->cKeywords;
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-if (isset($Einstellungen['kunden']['kundenregistrierung_pruefen_zeit'])
-    && $Einstellungen['kunden']['kundenregistrierung_pruefen_zeit'] === 'Y'
+if (isset($conf['kunden']['kundenregistrierung_pruefen_zeit'])
+    && $conf['kunden']['kundenregistrierung_pruefen_zeit'] === 'Y'
 ) {
     $_SESSION['dRegZeit'] = time();
 }

@@ -582,10 +582,6 @@ class VCard
      */
     public function asKunde()
     {
-        $Einstellungen = Shop::getSettings([
-            CONF_KUNDEN
-        ]);
-
         $Kunde = new stdClass();
         if (isset($this->GENDER)) {
             $Kunde->cAnrede = $this->GENDER === 'F' ? 'w' : 'm';
@@ -629,7 +625,7 @@ class VCard
                 $Kunde->cLand = Sprache::getIsoCodeByCountryName($adr->Region);
             }
             if ($Kunde->cLand === 'noISO') {
-                $Kunde->cLand = $Einstellungen['kunden']['kundenregistrierung_standardland'];
+                $Kunde->cLand = Shop::getConfigValue(CONF_KUNDEN, 'kundenregistrierung_standardland');
             }
             if (preg_match('/^(.*)[\. ]*([0-9]+[a-zA-Z]?)$/U', $Kunde->cStrasse, $hits)) {
                 $Kunde->cStrasse    = $hits[1];

@@ -12,7 +12,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'news_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 
 $NaviFilter       = Shop::run();
-$cParameter_arr   = Shop::getParameters();
+$params           = Shop::getParameters();
 $db               = Shop::Container()->getDB();
 $service          = Shop::Container()->getNewsService();
 $pagination       = new Pagination();
@@ -21,18 +21,18 @@ $breadCrumbURL    = null;
 $cMetaTitle       = '';
 $cMetaDescription = '';
 $cMetaKeywords    = '';
-$Einstellungen    = Shopsetting::getInstance()->getAll();
+$conf             = Shopsetting::getInstance()->getAll();
 $customerGroupID  = \Session\Frontend::getCustomerGroup()->getID();
 $linkService      = Shop::Container()->getLinkService();
 $kLink            = $linkService->getSpecialPageLinkKey(LINKTYP_NEWS);
 $link             = $linkService->getPageLink($kLink);
-$controller       = new \News\Controller($db, $Einstellungen, $smarty);
+$controller       = new \News\Controller($db, $conf, $smarty);
 
-switch ($controller->getPageType($cParameter_arr)) {
+switch ($controller->getPageType($params)) {
     case \News\ViewType::NEWS_DETAIL:
         Shop::setPageType(PAGE_NEWSDETAIL);
         $pagination = new Pagination('comments');
-        $newsItemID = $cParameter_arr['kNews'];
+        $newsItemID = $params['kNews'];
         $newsItem   = new \News\Item($db);
         $newsItem->load($newsItemID);
 
@@ -55,7 +55,7 @@ switch ($controller->getPageType($cParameter_arr)) {
         break;
     case \News\ViewType::NEWS_CATEGORY:
         Shop::setPageType(PAGE_NEWSKATEGORIE);
-        $kNewsKategorie = (int)$cParameter_arr['kNewsKategorie'];
+        $kNewsKategorie = (int)$params['kNewsKategorie'];
         $overview       = $controller->displayOverview($pagination, $kNewsKategorie, 0, $customerGroupID);
         $cCanonicalURL  = $overview->getURL();
         $breadCrumbURL  = $cCanonicalURL;
@@ -68,7 +68,7 @@ switch ($controller->getPageType($cParameter_arr)) {
         break;
     case \News\ViewType::NEWS_MONTH_OVERVIEW:
         Shop::setPageType(PAGE_NEWSMONAT);
-        $id             = (int)$cParameter_arr['kNewsMonatsUebersicht'];
+        $id             = (int)$params['kNewsMonatsUebersicht'];
         $overview       = $controller->displayOverview($pagination, 0, $id, $customerGroupID);
         $cCanonicalURL  = $overview->getURL();
         $breadCrumbURL  = $cCanonicalURL;
@@ -87,7 +87,7 @@ switch ($controller->getPageType($cParameter_arr)) {
 $cMetaTitle = \Filter\Metadata::prepareMeta(
     $cMetaTitle,
     null,
-    (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']
+    (int)$conf['metaangaben']['global_meta_maxlaenge_title']
 );
 
 Shop::Smarty()->assign('hinweis', $controller->getNoticeMsg())

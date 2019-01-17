@@ -12,9 +12,9 @@ require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 
-$MsgWarning    = '';
-$smarty        = Shop::Smarty();
-$Einstellungen = Shop::getSettings([
+$MsgWarning = '';
+$smarty     = Shop::Smarty();
+$conf       = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
     CONF_KAUFABWICKLUNG,
@@ -48,26 +48,26 @@ if ($cart !== null
     && $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
 ) {
     // Kupon darf nicht im leeren Warenkorb eingelöst werden
-    $Kupon             = new Kupon();
-    $Kupon             = $Kupon->getByCode($_POST['Kuponcode']);
+    $coupon            = new Kupon();
+    $coupon            = $coupon->getByCode($_POST['Kuponcode']);
     $invalidCouponCode = false;
-    if ($Kupon !== false && $Kupon->kKupon > 0) {
-        $Kuponfehler  = Kupon::checkCoupon($Kupon);
+    if ($coupon !== false && $coupon->kKupon > 0) {
+        $Kuponfehler  = Kupon::checkCoupon($coupon);
         $nReturnValue = angabenKorrekt($Kuponfehler);
         executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
             'error'        => &$Kuponfehler,
             'nReturnValue' => &$nReturnValue
         ]);
         if ($nReturnValue) {
-            if ($Kupon->cKuponTyp === Kupon::TYPE_STANDARD) {
-                Kupon::acceptCoupon($Kupon);
+            if ($coupon->cKuponTyp === Kupon::TYPE_STANDARD) {
+                Kupon::acceptCoupon($coupon);
                 executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
-            } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
+            } elseif (!empty($coupon->kKupon) && $coupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
                 // Aktiven Kupon aus der Session löschen und dessen Warenkorbposition
                 $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
                 // Versandfrei Kupon
-                $_SESSION['oVersandfreiKupon'] = $Kupon;
-                $smarty->assign('cVersandfreiKuponLieferlaender_arr', explode(';', $Kupon->cLieferlaender));
+                $_SESSION['oVersandfreiKupon'] = $coupon;
+                $smarty->assign('cVersandfreiKuponLieferlaender_arr', explode(';', $coupon->cLieferlaender));
                 $nVersandfreiKuponGueltig = true;
             }
         } else {
@@ -149,13 +149,13 @@ $cMetaKeywords    = $oMeta->cKeywords;
 $cartNotices      = [];
 // Uploads
 if (class_exists('Upload')) {
-    $oUploadSchema_arr = Upload::gibWarenkorbUploads($cart);
-    if ($oUploadSchema_arr) {
-        $nMaxSize = Upload::uploadMax();
+    $uploads = Upload::gibWarenkorbUploads($cart);
+    if ($uploads) {
+        $maxSize = Upload::uploadMax();
         $smarty->assign('cSessionID', session_id())
-               ->assign('nMaxUploadSize', $nMaxSize)
-               ->assign('cMaxUploadSize', Upload::formatGroesse($nMaxSize))
-               ->assign('oUploadSchema_arr', $oUploadSchema_arr);
+               ->assign('nMaxUploadSize', $maxSize)
+               ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
+               ->assign('oUploadSchema_arr', $uploads);
     }
 }
 if (!empty($_SESSION['Warenkorbhinweise'])) {
@@ -177,8 +177,8 @@ $smarty->assign('MsgWarning', $MsgWarning)
            ? $_SESSION['oVersandfreiKupon']->translationList
            : null))
        ->assign('xselling', Cart::getXSelling())
-       ->assign('oArtikelGeschenk_arr', Cart::getFreeGifts($Einstellungen))
-       ->assign('BestellmengeHinweis', Cart::checkOrderAmountAndStock($Einstellungen))
+       ->assign('oArtikelGeschenk_arr', Cart::getFreeGifts($conf))
+       ->assign('BestellmengeHinweis', Cart::checkOrderAmountAndStock($conf))
        ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
        ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
        ->assign('cErrorVersandkosten', $cErrorVersandkosten ?? null)

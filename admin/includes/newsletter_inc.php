@@ -7,10 +7,10 @@
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 /**
- * @param array $Einstellungen
+ * @param array $conf
  * @return \Smarty\JTLSmarty
  */
-function bereiteNewsletterVor($Einstellungen)
+function bereiteNewsletterVor($conf)
 {
     $db         = Shop::Container()->getDB();
     $mailSmarty = new \Smarty\JTLSmarty(true, \Smarty\ContextType::NEWSLETTER);
@@ -23,7 +23,7 @@ function bereiteNewsletterVor($Einstellungen)
                    \DB\ReturnType::SINGLE_OBJECT
                ))
                ->assign('URL_SHOP', Shop::getURL())
-               ->assign('Einstellungen', $Einstellungen);
+               ->assign('Einstellungen', $conf);
     if (NEWSLETTER_USE_SECURITY) {
         $mailSmarty->activateBackendSecurityMode();
     }
@@ -32,39 +32,39 @@ function bereiteNewsletterVor($Einstellungen)
 
 /**
  * @param Smarty\JTLSmarty $mailSmarty
- * @param object           $oNewsletter
- * @param array            $Einstellungen
- * @param string           $oEmailempfaenger
- * @param array            $oArtikel_arr
- * @param array            $oHersteller_arr
- * @param array            $oKategorie_arr
- * @param string           $oKampagne
+ * @param object           $newsletter
+ * @param array            $conf
+ * @param string           $recipients
+ * @param array            $products
+ * @param array            $manufacturers
+ * @param array            $categories
+ * @param string           $campaign
  * @param string           $oKunde
  * @return string|bool
  */
 function versendeNewsletter(
     $mailSmarty,
-    $oNewsletter,
-    $Einstellungen,
-    $oEmailempfaenger = '',
-    $oArtikel_arr = [],
-    $oHersteller_arr = [],
-    $oKategorie_arr = [],
-    $oKampagne = '',
+    $newsletter,
+    $conf,
+    $recipients = '',
+    $products = [],
+    $manufacturers = [],
+    $categories = [],
+    $campaign = '',
     $oKunde = ''
 ) {
-    $mailSmarty->assign('oNewsletter', $oNewsletter)
-               ->assign('Emailempfaenger', $oEmailempfaenger)
+    $mailSmarty->assign('oNewsletter', $newsletter)
+               ->assign('Emailempfaenger', $recipients)
                ->assign('Kunde', $oKunde)
-               ->assign('Artikelliste', $oArtikel_arr)
-               ->assign('Herstellerliste', $oHersteller_arr)
-               ->assign('Kategorieliste', $oKategorie_arr)
-               ->assign('Kampagne', $oKampagne)
+               ->assign('Artikelliste', $products)
+               ->assign('Herstellerliste', $manufacturers)
+               ->assign('Kategorieliste', $categories)
+               ->assign('Kampagne', $campaign)
                ->assign(
                    'cNewsletterURL',
                    Shop::getURL() .
                    '/newsletter.php?show=' .
-                   ($oNewsletter->kNewsletter ?? '0')
+                   ($newsletter->kNewsletter ?? '0')
                );
     $NettoPreise = 0;
     $bodyHtml    = '';
@@ -85,21 +85,21 @@ function versendeNewsletter(
     $mailSmarty->assign('NettoPreise', $NettoPreise);
 
     $cPixel = '';
-    if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
+    if (isset($campaign->kKampagne) && $campaign->kKampagne > 0) {
         $cPixel = '<br /><img src="' . Shop::getURL() . '/' . PFAD_INCLUDES .
-            'newslettertracker.php?kK=' . $oKampagne->kKampagne .
-            '&kN=' . ($oNewsletter->kNewsletter ?? 0) . '&kNE=' .
-            ($oEmailempfaenger->kNewsletterEmpfaenger ?? 0) . '" alt="Newsletter" />';
+            'newslettertracker.php?kK=' . $campaign->kKampagne .
+            '&kN=' . ($newsletter->kNewsletter ?? 0) . '&kNE=' .
+            ($recipients->kNewsletterEmpfaenger ?? 0) . '" alt="Newsletter" />';
     }
 
     $cTyp = 'VL';
-    $nKey = $oNewsletter->kNewsletterVorlage ?? 0;
-    if (isset($oNewsletter->kNewsletter) && $oNewsletter->kNewsletter > 0) {
+    $nKey = $newsletter->kNewsletterVorlage ?? 0;
+    if (isset($newsletter->kNewsletter) && $newsletter->kNewsletter > 0) {
         $cTyp = 'NL';
-        $nKey = $oNewsletter->kNewsletter;
+        $nKey = $newsletter->kNewsletter;
     }
     //fetch
-    if ($oNewsletter->cArt === 'text/html' || $oNewsletter->cArt === 'html') {
+    if ($newsletter->cArt === 'text/html' || $newsletter->cArt === 'html') {
         try {
             $bodyHtml = $mailSmarty->fetch('db:' . $cTyp . '_' . $nKey . '_html') . $cPixel;
         } catch (Exception $e) {
@@ -116,30 +116,30 @@ function versendeNewsletter(
         return $e->getMessage();
     }
     $mail          = new stdClass();
-    $mail->toEmail = $oEmailempfaenger->cEmail;
-    $mail->toName  = ($oEmailempfaenger->cVorname ?? '') . ' ' . ($oEmailempfaenger->cNachname ?? '');
+    $mail->toEmail = $recipients->cEmail;
+    $mail->toName  = ($recipients->cVorname ?? '') . ' ' . ($recipients->cNachname ?? '');
     if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
         $mail->toName = ($oKunde->cVorname ?? '') . ' ' . ($oKunde->cNachname ?? '');
     }
 
-    $oSpracheTMP = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$oNewsletter->kSprache);
+    $oSpracheTMP = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$newsletter->kSprache);
 
-    $mail->fromEmail     = $Einstellungen['newsletter']['newsletter_emailadresse'];
-    $mail->fromName      = $Einstellungen['newsletter']['newsletter_emailabsender'];
-    $mail->replyToEmail  = $Einstellungen['newsletter']['newsletter_emailadresse'];
-    $mail->replyToName   = $Einstellungen['newsletter']['newsletter_emailabsender'];
-    $mail->subject       = $oNewsletter->cBetreff;
+    $mail->fromEmail     = $conf['newsletter']['newsletter_emailadresse'];
+    $mail->fromName      = $conf['newsletter']['newsletter_emailabsender'];
+    $mail->replyToEmail  = $conf['newsletter']['newsletter_emailadresse'];
+    $mail->replyToName   = $conf['newsletter']['newsletter_emailabsender'];
+    $mail->subject       = $newsletter->cBetreff;
     $mail->bodyText      = $bodyText;
     $mail->bodyHtml      = $bodyHtml;
     $mail->lang          = $oSpracheTMP->cISO;
-    $mail->methode       = $Einstellungen['newsletter']['newsletter_emailmethode'];
-    $mail->sendmail_pfad = $Einstellungen['newsletter']['newsletter_sendmailpfad'];
-    $mail->smtp_hostname = $Einstellungen['newsletter']['newsletter_smtp_host'];
-    $mail->smtp_port     = $Einstellungen['newsletter']['newsletter_smtp_port'];
-    $mail->smtp_auth     = $Einstellungen['newsletter']['newsletter_smtp_authnutzen'];
-    $mail->smtp_user     = $Einstellungen['newsletter']['newsletter_smtp_benutzer'];
-    $mail->smtp_pass     = $Einstellungen['newsletter']['newsletter_smtp_pass'];
-    $mail->SMTPSecure    = $Einstellungen['newsletter']['newsletter_smtp_verschluesselung'];
+    $mail->methode       = $conf['newsletter']['newsletter_emailmethode'];
+    $mail->sendmail_pfad = $conf['newsletter']['newsletter_sendmailpfad'];
+    $mail->smtp_hostname = $conf['newsletter']['newsletter_smtp_host'];
+    $mail->smtp_port     = $conf['newsletter']['newsletter_smtp_port'];
+    $mail->smtp_auth     = $conf['newsletter']['newsletter_smtp_authnutzen'];
+    $mail->smtp_user     = $conf['newsletter']['newsletter_smtp_benutzer'];
+    $mail->smtp_pass     = $conf['newsletter']['newsletter_smtp_pass'];
+    $mail->SMTPSecure    = $conf['newsletter']['newsletter_smtp_verschluesselung'];
     verschickeMail($mail);
 
     return true;
@@ -1129,54 +1129,48 @@ function loescheAbonnent(int $kNewsletterEmpfaenger)
 }
 
 /**
- * @param object $oNewsletterVorlage
+ * @param object $template
  * @return string|bool
  */
-function baueNewsletterVorschau($oNewsletterVorlage)
+function baueNewsletterVorschau($template)
 {
-    $Einstellungen = Shop::getSettings([CONF_NEWSLETTER]);
-    $mailSmarty    = bereiteNewsletterVor($Einstellungen);
-    // Baue Arrays mit kKeys
-    $kArtikel_arr    = gibAHKKeys($oNewsletterVorlage->cArtikel, true);
-    $kHersteller_arr = gibAHKKeys($oNewsletterVorlage->cHersteller);
-    $kKategorie_arr  = gibAHKKeys($oNewsletterVorlage->cKategorie);
-    // Baue Kampagnenobjekt, falls vorhanden in der Newslettervorlage
-    $oKampagne = new Kampagne((int)$oNewsletterVorlage->kKampagne);
-    // Baue Arrays von Objekten
-    $oArtikel_arr    = gibArtikelObjekte($kArtikel_arr, $oKampagne);
-    $oHersteller_arr = gibHerstellerObjekte($kHersteller_arr, $oKampagne);
-    $oKategorie_arr  = gibKategorieObjekte($kKategorie_arr, $oKampagne);
-    // Kunden Dummy bauen
-    $oKunde            = new stdClass();
-    $oKunde->cAnrede   = 'm';
-    $oKunde->cVorname  = 'Max';
-    $oKunde->cNachname = 'Mustermann';
-    // Emailempfaenger dummy bauen
-    $oEmailempfaenger              = new stdClass();
-    $oEmailempfaenger->cEmail      = $Einstellungen['newsletter']['newsletter_emailtest'];
-    $oEmailempfaenger->cLoeschCode = '78rev6gj8er6we87gw6er8';
-    $oEmailempfaenger->cLoeschURL  = Shop::getURL() .
-        '/newsletter.php?lang=ger' . '&lc=' . $oEmailempfaenger->cLoeschCode;
+    $conf                   = Shop::getSettings([CONF_NEWSLETTER]);
+    $mailSmarty             = bereiteNewsletterVor($conf);
+    $productIDs             = gibAHKKeys($template->cArtikel, true);
+    $manufacturerIDs        = gibAHKKeys($template->cHersteller);
+    $categoryIDs            = gibAHKKeys($template->cKategorie);
+    $campaign               = new Kampagne((int)$template->kKampagne);
+    $products               = gibArtikelObjekte($productIDs, $campaign);
+    $manufacturers          = gibHerstellerObjekte($manufacturerIDs, $campaign);
+    $categories             = gibKategorieObjekte($categoryIDs, $campaign);
+    $customer               = new stdClass();
+    $customer->cAnrede      = 'm';
+    $customer->cVorname     = 'Max';
+    $customer->cNachname    = 'Mustermann';
+    $recipient              = new stdClass();
+    $recipient->cEmail      = $conf['newsletter']['newsletter_emailtest'];
+    $recipient->cLoeschCode = '78rev6gj8er6we87gw6er8';
+    $recipient->cLoeschURL  = Shop::getURL() . '/newsletter.php?lang=ger' . '&lc=' . $recipient->cLoeschCode;
 
-    $mailSmarty->assign('NewsletterEmpfaenger', $oEmailempfaenger)
-               ->assign('Emailempfaenger', $oEmailempfaenger)
-               ->assign('oNewsletterVorlage', $oNewsletterVorlage)
-               ->assign('Kunde', $oKunde)
-               ->assign('Artikelliste', $oArtikel_arr)
-               ->assign('Herstellerliste', $oHersteller_arr)
-               ->assign('Kategorieliste', $oKategorie_arr)
-               ->assign('Kampagne', $oKampagne);
+    $mailSmarty->assign('NewsletterEmpfaenger', $recipient)
+               ->assign('Emailempfaenger', $recipient)
+               ->assign('oNewsletterVorlage', $template)
+               ->assign('Kunde', $customer)
+               ->assign('Artikelliste', $products)
+               ->assign('Herstellerliste', $manufacturers)
+               ->assign('Kategorieliste', $categories)
+               ->assign('Kampagne', $campaign);
 
     $cTyp = 'VL';
     //fetch
     try {
-        $bodyHtml = $mailSmarty->fetch('db:' . $cTyp . '_' . $oNewsletterVorlage->kNewsletterVorlage . '_html');
-        $bodyText = $mailSmarty->fetch('db:' . $cTyp . '_' . $oNewsletterVorlage->kNewsletterVorlage . '_text');
+        $bodyHtml = $mailSmarty->fetch('db:' . $cTyp . '_' . $template->kNewsletterVorlage . '_html');
+        $bodyText = $mailSmarty->fetch('db:' . $cTyp . '_' . $template->kNewsletterVorlage . '_text');
     } catch (Exception $e) {
         return $e->getMessage();
     }
-    $oNewsletterVorlage->cInhaltHTML = $bodyHtml;
-    $oNewsletterVorlage->cInhaltText = $bodyText;
+    $template->cInhaltHTML = $bodyHtml;
+    $template->cInhaltText = $bodyText;
 
     return true;
 }

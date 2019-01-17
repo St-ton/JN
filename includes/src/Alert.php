@@ -64,6 +64,11 @@ class Alert
      */
     private $options;
 
+    /**
+     * @var string
+     */
+    private $id;
+
     public const TYPE_PRIMARY   = 'primary';
     public const TYPE_SECONDARY = 'secondary';
     public const TYPE_SUCCESS   = 'success';
@@ -384,6 +389,25 @@ class Alert
     private function setOptions(?array $options): self
     {
         $this->options = $options;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param string $id
+     * @return $this
+     */
+    private function setId(string $id): self
+    {
+        $this->id = $id;
 
         return $this;
     }

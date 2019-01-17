@@ -6365,9 +6365,9 @@ class Artikel
         $cPreis           = '';
         // append global meta title
         if ($this->conf['metaangaben']['global_meta_title_anhaengen'] === 'Y') {
-            $oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
-            if (!empty($oGlobaleMetaAngabenAssoc_arr[Shop::getLanguageID()]->Title)) {
-                $cGlobalMetaTitle = ' - ' . $oGlobaleMetaAngabenAssoc_arr[Shop::getLanguageID()]->Title;
+            $globalMetaData = \Filter\Metadata::getGlobalMetaData();
+            if (!empty($globalMetaData[Shop::getLanguageID()]->Title)) {
+                $cGlobalMetaTitle = ' - ' . $globalMetaData[Shop::getLanguageID()]->Title;
             }
         }
         $idx = \Session\Frontend::getCustomerGroup()->getIsMerchant();

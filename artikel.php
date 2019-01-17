@@ -15,14 +15,14 @@ if (!defined('PFAD_ROOT')) {
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 /** @global \Smarty\JTLSmarty $smarty */
 Shop::setPageType(PAGE_ARTIKEL);
-$oPreisverlauf                = null;
-$bPreisverlauf                = false;
-$bereitsBewertet              = false;
-$Artikelhinweise              = [];
-$PositiveFeedback             = [];
-$nonAllowed                   = [];
-$conf                         = Shopsetting::getInstance()->getAll();
-$oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
+$oPreisverlauf    = null;
+$bPreisverlauf    = false;
+$bereitsBewertet  = false;
+$Artikelhinweise  = [];
+$PositiveFeedback = [];
+$nonAllowed       = [];
+$conf             = Shopsetting::getInstance()->getAll();
+$globalMetaData   = \Filter\Metadata::getGlobalMetaData();
 // Bewertungsguthaben
 $fBelohnung = (isset($_GET['fB']) && (float)$_GET['fB'] > 0) ? (float)$_GET['fB'] : 0.0;
 // Hinweise und Fehler sammeln - Nur wenn bisher kein Fehler gesetzt wurde!

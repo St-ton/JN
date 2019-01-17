@@ -20,6 +20,7 @@ $link                   = $linkHelper->getPageLink($kLink);
 $AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $cCanonicalURL          = '';
+$lang                   = Shop::getLanguageCode();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 if (Form::checkSubject()) {
     $step            = 'formular';
@@ -53,15 +54,14 @@ if (Form::checkSubject()) {
             }
         }
     }
-    $lang           = $_SESSION['cISOSprache'];
-    $Contents       = Shop::Container()->getDB()->selectAll(
+    $contents       = Shop::Container()->getDB()->selectAll(
         'tspezialcontentsprache',
         ['nSpezialContent', 'cISOSprache'],
         [(int)SC_KONTAKTFORMULAR, $lang]
     );
-    $SpezialContent = new stdClass();
-    foreach ($Contents as $content) {
-        $SpezialContent->{$content->cTyp} = $content->cContent;
+    $specialContent = new stdClass();
+    foreach ($contents as $content) {
+        $specialContent->{$content->cTyp} = $content->cContent;
     }
     $subjects = Shop::Container()->getDB()->query(
         "SELECT *
@@ -100,11 +100,11 @@ if (Form::checkSubject()) {
     Shop::Container()->getLogService()->error('Kein Kontaktbetreff vorhanden! Bitte im Backend unter ' .
         'Einstellungen -> Kontaktformular -> Betreffs einen Betreff hinzuf&uuml;gen.');
     $smarty->assign('hinweis', Shop::Lang()->get('noSubjectAvailable', 'contact'));
-    $SpezialContent = new stdClass();
+    $specialContent = new stdClass();
 }
 
 $smarty->assign('Link', $link)
-       ->assign('Spezialcontent', $SpezialContent);
+       ->assign('Spezialcontent', $specialContent);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_KONTAKT_PAGE);

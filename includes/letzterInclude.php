@@ -50,7 +50,7 @@ $gesamtsumme[0]  = Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren(tr
 $gesamtsumme[1]  = Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren(false, true));
 
 $oVersandartKostenfrei = ShippingMethod::getFreeShippingMinimum($kKundengruppe, $cKundenherkunft);
-$oGlobaleMetaAngaben   = $oGlobaleMetaAngabenAssoc_arr[Shop::getLanguageID()] ?? null;
+$oGlobaleMetaAngaben   = $globalMetaData[Shop::getLanguageID()] ?? null;
 $pagetType             = Shop::getPageType();
 
 if (is_object($oGlobaleMetaAngaben)) {

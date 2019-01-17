@@ -4,7 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-//mainword
 use Helpers\Request;
 
 $kKonfigPos            = Request::verifyGPCDataInt('ek');
@@ -22,7 +21,7 @@ $kNews                 = Request::verifyGPCDataInt('n');
 $kNewsMonatsUebersicht = Request::verifyGPCDataInt('nm');
 $kNewsKategorie        = Request::verifyGPCDataInt('nk');
 $kUmfrage              = Request::verifyGPCDataInt('u');
-//filter
+// filter
 $nBewertungSterneFilter = Request::verifyGPCDataInt('bf');
 $cPreisspannenFilter    = Request::verifyGPDataString('pf');
 $kHerstellerFilter      = Request::verifyGPCDataInt('hf');

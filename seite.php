@@ -105,7 +105,7 @@ $cMetaTitle       = $link->getMetaTitle();
 $cMetaDescription = $link->getMetaDescription() ?? null;
 $cMetaKeywords    = $link->getMetaKeyword() ?? null;
 $kSprache         = Shop::getLanguage();
-$globalMeta       = $oGlobaleMetaAngabenAssoc_arr[$kSprache] ?? null;
+$globalMeta       = $globalMetaData[$kSprache] ?? null;
 if ($globalMeta !== null) {
     if (empty($cMetaTitle)) {
         $cMetaTitle = $globalMeta->Title;

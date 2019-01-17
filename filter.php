@@ -164,12 +164,12 @@ $smarty->assign('NaviFilter', $NaviFilter)
 
 executeHook(HOOK_FILTER_PAGE);
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-$oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
+$globalMetaData = \Filter\Metadata::getGlobalMetaData();
 $smarty->assign(
     'meta_title',
     $oNavigationsinfo->generateMetaTitle(
         $oSuchergebnisse,
-        $oGlobaleMetaAngabenAssoc_arr,
+        $globalMetaData,
         $AktuelleKategorie
     )
 )->assign(
@@ -177,7 +177,7 @@ $smarty->assign(
     $oNavigationsinfo->generateMetaDescription(
         $oSuchergebnisse->getProducts()->all(),
         $oSuchergebnisse,
-        $oGlobaleMetaAngabenAssoc_arr,
+        $globalMetaData,
         $AktuelleKategorie
     )
 )->assign(

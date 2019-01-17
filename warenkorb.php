@@ -30,12 +30,9 @@ $nVersandfreiKuponGueltig = false;
 $cart                     = \Session\Frontend::getCart();
 $kLink                    = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
 $link                     = $linkHelper->getPageLink($kLink);
-// Warenkorbaktualisierung?
 Cart::applyCartChanges();
-// validiere Konfigurationen
 Cart::validateCartConfig();
 pruefeGuthabenNutzen();
-// Versandermittlung?
 if (isset($_POST['land'], $_POST['plz'])
     && !ShippingMethod::getShippingCosts($_POST['land'], $_POST['plz'], $MsgWarning)
 ) {
@@ -88,7 +85,6 @@ if (isset($_SESSION['checkCouponResult'])) {
 // Gratis Geschenk bearbeiten
 if (isset($_POST['gratis_geschenk'], $_POST['gratisgeschenk']) && (int)$_POST['gratis_geschenk'] === 1) {
     $kArtikelGeschenk = (int)$_POST['gratisgeschenk'];
-    // Pruefen ob der Artikel wirklich ein Gratis Geschenk ist
     $oArtikelGeschenk = Shop::Container()->getDB()->query(
         'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
             tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
@@ -115,7 +111,6 @@ if (isset($_POST['gratis_geschenk'], $_POST['gratisgeschenk']) && (int)$_POST['g
         }
     }
 }
-// hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
@@ -139,9 +134,7 @@ $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
 if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']->kKundengruppe > 0) {
     $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
 }
-// Canonical
-$cCanonicalURL = $linkHelper->getStaticRoute('warenkorb.php');
-// Metaangaben
+$cCanonicalURL    = $linkHelper->getStaticRoute('warenkorb.php');
 $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_WARENKORB);
 $cMetaTitle       = $oMeta->cTitle;
 $cMetaDescription = $oMeta->cDesc;

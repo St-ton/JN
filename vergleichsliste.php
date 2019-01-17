@@ -10,10 +10,10 @@ require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'vergleichsliste_inc.php';
 
 Shop::setPageType(PAGE_VERGLEICHSLISTE);
-$oVergleichsliste       = null;
+$compareList            = null;
 $conf                   = Shop::getSettings([CONF_VERGLEICHSLISTE, CONF_ARTIKELDETAILS]);
-$cExclude               = [];
-$oMerkVaria_arr         = [[], []];
+$prioRows               = [];
+$attrVar                = [[], []];
 $linkHelper             = Shop::Container()->getLinkService();
 $kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_VERGLEICHSLISTE);
 $link                   = $linkHelper->getPageLink($kLink);
@@ -27,13 +27,13 @@ if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {
         exit();
     }
 } else {
-    $oVergleichsliste = new Vergleichsliste();
-    $oMerkVaria_arr   = Vergleichsliste::buildAttributeAndVariation($oVergleichsliste);
-    Vergleichsliste::setComparison($oVergleichsliste);
+    $compareList = new Vergleichsliste();
+    $attrVar     = Vergleichsliste::buildAttributeAndVariation($compareList);
+    Vergleichsliste::setComparison($compareList);
     for ($i = 0; $i < 8; ++$i) {
-        $cElement = Vergleichsliste::gibMaxPrioSpalteV($cExclude, $conf);
-        if (strlen($cElement) > 1) {
-            $cExclude[] = $cElement;
+        $elem = Vergleichsliste::gibMaxPrioSpalteV($prioRows, $conf);
+        if (strlen($elem) > 1) {
+            $prioRows[] = $elem;
         }
     }
 }
@@ -43,13 +43,13 @@ $nBreiteAttribut = ($conf['vergleichsliste']['vergleichsliste_spaltengroesseattr
 $nBreiteArtikel  = ($conf['vergleichsliste']['vergleichsliste_spaltengroesse'] > 0)
     ? (int)$conf['vergleichsliste']['vergleichsliste_spaltengroesse']
     : 200;
-Shop::Smarty()->assign('nBreiteTabelle', $nBreiteArtikel * count($oVergleichsliste->oArtikel_arr) + $nBreiteAttribut)
-    ->assign('cPrioSpalten_arr', $cExclude)
+Shop::Smarty()->assign('nBreiteTabelle', $nBreiteArtikel * count($compareList->oArtikel_arr) + $nBreiteAttribut)
+    ->assign('cPrioSpalten_arr', $prioRows)
     ->assign('Link', $link)
-    ->assign('oMerkmale_arr', $oMerkVaria_arr[0])
-    ->assign('oVariationen_arr', $oMerkVaria_arr[1])
+    ->assign('oMerkmale_arr', $attrVar[0])
+    ->assign('oVariationen_arr', $attrVar[1])
     ->assign('print', (isset($_GET['print']) && (int)$_GET['print'] === 1) ? 1 : 0)
-    ->assign('oVergleichsliste', $oVergleichsliste)
+    ->assign('oVergleichsliste', $compareList)
     ->assign('Einstellungen_Vergleichsliste', $conf);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

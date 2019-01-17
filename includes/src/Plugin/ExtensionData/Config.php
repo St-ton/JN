@@ -58,9 +58,8 @@ class Config
             $cfg->id          = (int)$base->id;
             $cfg->valueID     = $base->confName;
             $cfg->menuID      = (int)$base->menuID;
-            $cfg->niceName    = $base->name;
+            $cfg->niceName    = __($cfg->valueID . '_name');
             $cfg->name        = $base->confNicename;
-            $cfg->description = $base->description;
             $cfg->inputType   = $base->inputType;
             $cfg->sort        = (int)$base->nSort;
             $cfg->confType    = $base->confType;
@@ -70,6 +69,14 @@ class Config
                 : $base->currentValue;
 //            $cfg->raw         = $base;
             $cfg->options = [];
+
+            $msgid            = $cfg->valueID . '_desc';
+            $cfg->description = __($msgid);
+
+            if ($cfg->description === $msgid) {
+                $cfg->description = '';
+            }
+
             if (!empty($cfg->sourceFile)
                 && ($cfg->inputType === InputType::SELECT || $cfg->inputType === InputType::RADIO)
             ) {
@@ -77,7 +84,7 @@ class Config
             } elseif (!($base->confValue === null && $base->confNicename === null)) {
                 foreach ($values as $value) {
                     $opt           = new \stdClass();
-                    $opt->niceName = $value->confNicename;
+                    $opt->niceName = __($cfg->valueID . '_value(' . $value->confValue . ')');
                     $opt->value    = $value->confValue;
                     $opt->sort     = (int)$value->confSort;
 

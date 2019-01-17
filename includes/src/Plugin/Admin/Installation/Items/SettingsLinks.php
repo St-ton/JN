@@ -115,6 +115,7 @@ class SettingsLinks extends AbstractItem
                         $plgnConf->cInputTyp        = $type;
                         $plgnConf->nSort            = $sort;
                         $plgnConf->cConf            = $cConf;
+
                         //dynamic data source for selectbox/radio
                         if ($type === InputType::SELECT || $type === InputType::RADIO) {
                             if (isset($setting['OptionsSource'][0]['File'])) {

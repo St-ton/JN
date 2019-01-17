@@ -195,6 +195,7 @@ abstract class AbstractLoader implements LoaderInterface
     {
         $i     = -1;
         $menus = \array_map(function ($menu) use (&$i) {
+            $menu->cName            = __($menu->cName);
             $menu->name             = $menu->cName;
             $menu->kPluginAdminMenu = (int)$menu->kPluginAdminMenu;
             $menu->id               = (int)$menu->kPluginAdminMenu;

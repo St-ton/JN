@@ -159,7 +159,7 @@
                             <td>{$portlet->getGroup()}</td>
                             <td>
                                 {if $portlet->getPluginId() > 0}
-                                    {$portlet->getPlugin()->cName}
+                                    {$portlet->getPlugin()->getPluginID()}
                                 {/if}
                             </td>
                         </tr>

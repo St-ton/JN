@@ -43,6 +43,8 @@ class ExtensionLoader extends AbstractLoader
             $getText = \Shop::Container()->getGetText();
             $getText->setLangIso($_SESSION['AdminAccount']->cISO ?? $languageCode);
             $getText->loadPluginLocale($extension->getPluginID(), $extension);
+            $getText->loadPluginLocale('base', $extension);
+            $getText->loadPluginLocale('adminmenu', $extension);
 
             return $extension;
         }
@@ -81,9 +83,7 @@ class ExtensionLoader extends AbstractLoader
         $paths     = $this->loadPaths($obj->cVerzeichnis);
         $extension = new Extension();
         $extension->setIsExtension(true);
-        $extension->setMeta($this->loadMetaData($obj));
         $extension->setPaths($paths);
-        $this->loadMarkdownFiles($paths->getBasePath(), $extension->getMeta());
         $extension->setState((int)$obj->nStatus);
         $extension->setID($id);
         $extension->setBootstrap(true);
@@ -91,10 +91,22 @@ class ExtensionLoader extends AbstractLoader
         $extension->setPluginID($obj->cPluginID);
         $extension->setPriority((int)$obj->nPrio);
         $extension->setLicense($this->loadLicense($obj));
-        $extension->setCache($this->loadCacheData($extension));
         $getText = \Shop::Container()->getGetText();
         $getText->setLangIso($_SESSION['AdminAccount']->cISO ?? $currentLanguageCode);
         $getText->loadPluginLocale($obj->cPluginID, $extension);
+        $getText->loadPluginLocale('base', $extension);
+        $getText->loadPluginLocale('adminmenu', $extension);
+        $meta  = $this->loadMetaData($obj);
+        $msgid = $extension->getPluginID() . '_desc';
+        $desc  = __($msgid);
+
+        if ($desc !== $msgid) {
+            $meta->setDescription(__($extension->getPluginID() . '_desc'));
+        }
+
+        $extension->setMeta($meta);
+        $this->loadMarkdownFiles($paths->getBasePath(), $extension->getMeta());
+        $extension->setCache($this->loadCacheData($extension));
         $extension->setConfig($this->loadConfig($paths->getAdminPath(), $extension->getID()));
         $extension->setLocalization($this->loadLocalization($id, $currentLanguageCode));
         $extension->setWidgets($this->loadWidgets($extension));

@@ -19,7 +19,6 @@ $oPreisverlauf                = null;
 $bPreisverlauf                = false;
 $bereitsBewertet              = false;
 $Artikelhinweise              = [];
-$PositiveFeedback             = [];
 $nonAllowed                   = [];
 $Einstellungen                = Shopsetting::getInstance()->getAll();
 $oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
@@ -205,7 +204,10 @@ if (class_exists('Upload')) {
                ->assign('oUploadSchema_arr', $oUploadSchema_arr);
     }
 }
-
+//alerts
+if (($productNote = Product::editProductTags($AktuellerArtikel)) !== null) {
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, $productNote, 'editProductTags');
+}
 $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('arNichtErlaubteEigenschaftswerte', $nonAllowed)
        ->assign('oAehnlicheArtikel_arr', $similarArticles)
@@ -216,7 +218,6 @@ $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
            ? Product::getXSelling($AktuellerArtikel->kVariKindArtikel)
            : Product::getXSelling($AktuellerArtikel->kArtikel, $AktuellerArtikel->nIstVater > 0))
        ->assign('Artikelhinweise', $Artikelhinweise)
-       ->assign('PositiveFeedback', $PositiveFeedback)
        ->assign(
            'verfuegbarkeitsBenachrichtigung',
            Product::showAvailabilityForm(
@@ -224,7 +225,6 @@ $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
                $Einstellungen['artikeldetails']['benachrichtigung_nutzen']
            )
        )
-       ->assign('ProdukttagHinweis', Product::editProductTags($AktuellerArtikel))
        ->assign('ProduktTagging', $AktuellerArtikel->tags)
        ->assign('BlaetterNavi', $ratingNav)
        ->assign('BewertungsTabAnzeigen', $BewertungsTabAnzeigen)

@@ -8,19 +8,6 @@
 {else}
     {$alertList->displayAlertByKey('productNote')}
 {/if}
-{if !empty($ProdukttagHinweis)}
-    <div class="alert alert-success">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-        {$ProdukttagHinweis}
-    </div>
-{/if}
-{if isset($PositiveFeedback) && count($PositiveFeedback) > 0}
-    {foreach $PositiveFeedback as $feedback}
-        <div class="alert alert-success">{$feedback}</div>
-    {/foreach}
-{/if}
 {if isset($Artikelhinweise) && count($Artikelhinweise) > 0}
     {foreach $Artikelhinweise as $Artikelhinweis}
         <div class="alert alert-danger">{$Artikelhinweis}</div>

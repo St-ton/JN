@@ -1191,8 +1191,12 @@ class Product
         $history->cIP        = Request::getRealIP();
         $history->dErstellt  = 'NOW()';
 
-        $inquiryID                     = Shop::Container()->getDB()->insert('tproduktanfragehistory', $history);
-        $GLOBALS['PositiveFeedback'][] = Shop::Lang()->get('thankYouForQuestion', 'messages');
+        $inquiryID = Shop::Container()->getDB()->insert('tproduktanfragehistory', $history);
+        Shop::Container()->getAlertService()->addAlert(
+            \Alert::TYPE_SUCCESS,
+            Shop::Lang()->get('thankYouForQuestion', 'messages'),
+            'thankYouForQuestion'
+        );
         if (isset($_SESSION['Kampagnenbesucher'])) {
             Kampagne::setCampaignAction(\KAMPAGNE_DEF_FRAGEZUMPRODUKT, $inquiryID, 1.0);
         }
@@ -1278,9 +1282,10 @@ class Product
                 if (isset($_SESSION['Kampagnenbesucher'])) {
                     Kampagne::setCampaignAction(\KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE, $inquiryID, 1.0);
                 }
-                $GLOBALS['PositiveFeedback'][] = Shop::Lang()->get(
-                    'thankYouForNotificationSubscription',
-                    'messages'
+                Shop::Container()->getAlertService()->addAlert(
+                    \Alert::TYPE_SUCCESS,
+                    Shop::Lang()->get('thankYouForNotificationSubscription', 'messages'),
+                    'thankYouForNotificationSubscription'
                 );
             } else {
                 $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('notificationNotPossible', 'messages');

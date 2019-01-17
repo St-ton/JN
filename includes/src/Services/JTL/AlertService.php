@@ -91,6 +91,7 @@ class AlertService implements AlertServiceInterface
                 return true;
             }
         }
+
         return false;
     }
 

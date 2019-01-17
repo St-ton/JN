@@ -70,8 +70,13 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
         )
     );
 } elseif ($link->getLinkType() === LINKTYP_LIVESUCHE) {
-    $smarty->assign('LivesucheTop', CMSHelper::getLiveSearchTop($Einstellungen))
-           ->assign('LivesucheLast', CMSHelper::getLiveSearchLast($Einstellungen));
+    $liveSearchTop  = CMSHelper::getLiveSearchTop($Einstellungen);
+    $liveSearchLast = CMSHelper::getLiveSearchLast($Einstellungen);
+    if (count($liveSearchTop) === 0 && count($liveSearchLast) === 0) {
+        $alertHelper->addAlert(Alert::TYPE_WARNING, Shop::Lang()->get('noDataAvailable'), 'noDataAvailable');
+    }
+    $smarty->assign('LivesucheTop', $liveSearchTop)
+           ->assign('LivesucheLast', $liveSearchLast);
 } elseif ($link->getLinkType() === LINKTYP_TAGGING) {
     $smarty->assign('Tagging', CMSHelper::getTagging($Einstellungen));
 } elseif ($link->getLinkType() === LINKTYP_HERSTELLER) {
@@ -86,6 +91,7 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     $sitemap = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), $Einstellungen);
     $sitemap->assignData($smarty);
     Shop::setPageType(PAGE_404);
+    $alertHelper->addAlert(Alert::TYPE_DANGER, Shop::Lang()->get('pageNotFound'), 'pageNotFound');
 } elseif ($link->getLinkType() === LINKTYP_GRATISGESCHENK) {
     if ($Einstellungen['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {
         $oArtikelGeschenk_arr = CMSHelper::getFreeGifts($Einstellungen);
@@ -106,7 +112,6 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
 require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_SEITE_PAGE_IF_LINKART);
 $smarty->assign('Link', $link)
-       ->assign('bSeiteNichtGefunden', Shop::getPageType() === PAGE_404)
        ->assign('meta_language', StringHandler::convertISO2ISO639(Shop::getLanguageCode()));
 
 $cMetaTitle       = $link->getMetaTitle();

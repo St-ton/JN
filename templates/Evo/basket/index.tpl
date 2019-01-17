@@ -16,33 +16,8 @@
             <span class="basket_notice">{$WarenkorbVersandkostenfreiHinweis}</span>
         </div>
     {/if}
-    {if $Schnellkaufhinweis}
-        <div class="alert alert-info">{$Schnellkaufhinweis}</div>
-    {/if}
-    {if count($Warenkorbhinweise) > 0}
-        <div class="alert alert-warning">
-            {foreach $Warenkorbhinweise as $Warenkorbhinweis}
-                {$Warenkorbhinweis}
-                <br />
-            {/foreach}
-        </div>
-    {/if}
-    {if !empty($MsgWarning)}
-        <p class="alert alert-danger" id="msgWarning">{$MsgWarning}</p>
-    {/if}
     
     {if ($Warenkorb->PositionenArr|@count > 0)}
-        {if !empty($BestellmengeHinweis)}
-            <div class="alert alert-warning">{$BestellmengeHinweis}</div>
-        {/if}
-        {if $nVersandfreiKuponGueltig}
-            <div class="alert alert-success">
-                {lang key='couponSucc1'}
-                {foreach $cVersandfreiKuponLieferlaender_arr as $cVersandfreiKuponLieferlaender}
-                    {$cVersandfreiKuponLieferlaender}{if !$cVersandfreiKuponLieferlaender@last}, {/if}
-                {/foreach}
-            </div>
-        {/if}
         {block name='basket'}
             <div class="basket_wrapper">
                 <div class="basket-well">
@@ -61,7 +36,7 @@
                                     <form class="form-inline evo-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}">
                                         {$jtl_token}
                                         {block name='basket-coupon'}
-                                            <div class="form-group{if $invalidCouponCode} has-error{/if}">
+                                            <div class="form-group{if !empty($invalidCouponCode)} has-error{/if}">
                                                 <p class="input-group">
                                                     <input aria-label="{lang key='couponCode' section='account data'}" class="form-control" type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder="{lang key='couponCode' section='account data'}" required/>
                                                     <span class="input-group-btn">

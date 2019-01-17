@@ -23,13 +23,13 @@ $Einstellungen = Shop::getSettings([
     CONF_SONSTIGES
 ]);
 Shop::setPageType(PAGE_WARENKORB);
-$Schnellkaufhinweis       = Cart::checkQuickBuy();
-$linkHelper               = Shop::Container()->getLinkService();
-$KuponcodeUngueltig       = false;
-$nVersandfreiKuponGueltig = false;
-$cart                     = \Session\Frontend::getCart();
-$kLink                    = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
-$link                     = $linkHelper->getPageLink($kLink);
+$Schnellkaufhinweis = Cart::checkQuickBuy();
+$linkHelper         = Shop::Container()->getLinkService();
+$KuponcodeUngueltig = false;
+$cart               = \Session\Frontend::getCart();
+$kLink              = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
+$link               = $linkHelper->getPageLink($kLink);
+$alertHelper        = Shop::Container()->getAlertService();
 // Warenkorbaktualisierung?
 Cart::applyCartChanges();
 // validiere Konfigurationen
@@ -68,8 +68,11 @@ if ($cart !== null
                 $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
                 // Versandfrei Kupon
                 $_SESSION['oVersandfreiKupon'] = $Kupon;
-                $smarty->assign('cVersandfreiKuponLieferlaender_arr', explode(';', $Kupon->cLieferlaender));
-                $nVersandfreiKuponGueltig = true;
+                $alertHelper->addAlert(
+                    Alert::TYPE_SUCCESS,
+                    Shop::Lang()->get('couponSucc1') . ' ' . trim(str_replace(';', ', ', $Kupon->cLieferlaender), ', '),
+                    'shippingFreeSuccess'
+                );
             }
         }
     }
@@ -144,7 +147,6 @@ $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_WARENKORB);
 $cMetaTitle       = $oMeta->cTitle;
 $cMetaDescription = $oMeta->cDesc;
 $cMetaKeywords    = $oMeta->cKeywords;
-$cartNotices      = [];
 // Uploads
 if (class_exists('Upload')) {
     $oUploadSchema_arr = Upload::gibWarenkorbUploads($cart);
@@ -156,15 +158,27 @@ if (class_exists('Upload')) {
                ->assign('oUploadSchema_arr', $oUploadSchema_arr);
     }
 }
+//alerts
+if ($Schnellkaufhinweis !== '') {
+    $alertHelper->addAlert(Alert::TYPE_INFO, $Schnellkaufhinweis, 'quickBuyNote');
+}
 if (!empty($_SESSION['Warenkorbhinweise'])) {
     $cartNotices = $_SESSION['Warenkorbhinweise'];
+    foreach ($cartNotices as $key => $cartNotice) {
+        $alertHelper->addAlert(Alert::TYPE_WARNING, $cartNotice, 'cartNotice' . $key);
+    }
     unset($_SESSION['Warenkorbhinweise']);
+}
+if ($MsgWarning !== '') {
+    $alertHelper->addAlert(Alert::TYPE_DANGER, $MsgWarning, 'cartWarning', ['id' => 'msgWarning']);
+}
+if (($orderAmountStock = Cart::checkOrderAmountAndStock($Einstellungen)) !== '') {
+    $alertHelper->addAlert(Alert::TYPE_WARNING, $orderAmountStock, 'orderAmountStock');
 }
 
 Cart::addVariationPictures($cart);
 $smarty->assign('MsgWarning', $MsgWarning)
        ->assign('Link', $link)
-       ->assign('Schnellkaufhinweis', $Schnellkaufhinweis)
        ->assign('laender', ShippingMethod::getPossibleShippingCountries($kKundengruppe))
        ->assign('KuponMoeglich', Kupon::couponsAvailable())
        ->assign('currentCoupon', Shop::Lang()->get('currentCoupon', 'checkout'))
@@ -176,14 +190,11 @@ $smarty->assign('MsgWarning', $MsgWarning)
            : null))
        ->assign('xselling', Cart::getXSelling())
        ->assign('oArtikelGeschenk_arr', Cart::getFreeGifts($Einstellungen))
-       ->assign('BestellmengeHinweis', Cart::checkOrderAmountAndStock($Einstellungen))
        ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
        ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
        ->assign('cErrorVersandkosten', $cErrorVersandkosten ?? null)
        ->assign('KuponcodeUngueltig', $KuponcodeUngueltig)
-       ->assign('nVersandfreiKuponGueltig', $nVersandfreiKuponGueltig)
-       ->assign('Warenkorb', $cart)
-       ->assign('Warenkorbhinweise', $cartNotices);
+       ->assign('Warenkorb', $cart);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 

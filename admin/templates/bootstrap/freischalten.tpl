@@ -202,17 +202,17 @@
                         <div class="panel-footer">
                             <div class="btn-group p50">
                                 <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> Markierte freischalten</button>
-                                <button name="freischaltenleoschen" type="submit" value="Markierte l&ouml;schen" class="btn btn-danger">
+                                <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
                                     <i class="fa fa-trash"></i> {__('deleteSelected')}
                                 </button>
                             </div>
                             <div class="input-group right p50" data-toggle="tooltip" data-placement="bottom" title='{__('freischaltenMappingDesc')}'>
                                 <span class="input-group-addon">
-                                    <label for="cMapping">Markierte verkn&uuml;pfen mit</label>
+                                    <label for="cMapping">Markierte verknüpfen mit</label>
                                 </span>
                                 <input class="form-control" name="cMapping" id="cMapping" type="text" value="" />
                                 <span class="input-group-btn">
-                                    <button name="submitMapping" type="submit" value="Verkn&uouml;pfen" class="btn btn-primary">Verkn&uuml;pfen</button>
+                                    <button name="submitMapping" type="submit" value="Verknüpfen" class="btn btn-primary">Verknüpfen</button>
                                 </span>
                             </div>
                         </div>
@@ -328,7 +328,7 @@
                         <div class="panel-footer">
                             <div class="btn-group">
                                 <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> Markierte freischalten</button>
-                                <button name="freischaltenleoschen" type="submit" value="Markierte l&ouml;schen" class="btn btn-danger">
+                                <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
                                     <i class="fa fa-trash"></i> {__('deleteSelected')}
                                 </button>
                             </div>
@@ -384,7 +384,7 @@
                         <div class="panel-footer">
                             <div class="btn-group">
                                 <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> Markierte freischalten</button>
-                                <button name="freischaltenleoschen" type="submit" value="Markierte l&ouml;schen" class="btn btn-danger">
+                                <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
                                     <i class="fa fa-trash"></i> {__('deleteSelected')}
                                 </button>
                             </div>

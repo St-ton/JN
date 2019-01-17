@@ -362,5 +362,4 @@
         aenderAnzeigeLinks(true);
     </script>
 {/if}
-
 {include file='tpl_inc/footer.tpl'}

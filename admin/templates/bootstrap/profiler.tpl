@@ -15,7 +15,7 @@ var pies = [];
         <form class="delete-run" action="profiler.php" method="post">
             {$jtl_token}
             <input type="hidden" value="y" name="delete-all" />
-            <button type="submit" class="btn btn-danger" name="delete-run-submit"><i class="fa fa-trash"></i> Alle Eintr&auml;ge l&ouml;schen</button>
+            <button type="submit" class="btn btn-danger" name="delete-run-submit"><i class="fa fa-trash"></i> {__('deleteAll')}</button>
         </form>
     </div>
     <ul class="nav nav-tabs" role="tablist">
@@ -45,7 +45,7 @@ var pies = [];
                                 <div class="list-group">
                                     {foreach $profile->data as $file}
                                         <div class="list-group-item">
-                                            <h5 class="list-group-item-heading">{$file->filename}</h5>
+                                            <h5 class="list-group-item-heading">{$file->filename|replace:$smarty.const.PFAD_ROOT:''}</h5>
                                             <p class="list-group-item-text">
                                                 Hook: {$file->hookID}<br />Zeit: {$file->runtime}s<br />Aufrufe: {$file->runcount}
                                             </p>
@@ -57,7 +57,7 @@ var pies = [];
                                 <form class="delete-run" action="profiler.php" method="post">
                                     {$jtl_token}
                                     <input type="hidden" value="{$profile->runID}" name="run-id" />
-                                    <button type="submit" class="btn btn-default" name="delete-run-submit"><i class="fa fa-trash"></i> Eintrag l&ouml;schen</button>
+                                    <button type="submit" class="btn btn-default" name="delete-run-submit"><i class="fa fa-trash"></i> Eintrag löschen</button>
                                 </form>
                             </div>
                         </div>
@@ -65,7 +65,7 @@ var pies = [];
                     {/foreach}
                 </div>
             {else}
-                <div class="alert alert-info"><i class="fa fa-info-circle"></i> Keine Daten vorhanden.</div>
+                <div class="alert alert-info"><i class="fa fa-info-circle"></i> {__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="sqlprofiler" class="tab-pane fade{if isset($tab) && $tab === 'sqlprofiler'} active in{/if}">
@@ -113,7 +113,7 @@ var pies = [];
                                     <form class="delete-run" action="profiler.php" method="post">
                                         {$jtl_token}
                                         <input type="hidden" value="{$run->runID}" name="run-id" />
-                                        <button type="submit" class="btn btn-default" name="delete-run-submit">Eintrag l&ouml;schen</button>
+                                        <button type="submit" class="btn btn-default" name="delete-run-submit">Eintrag löschen</button>
                                     </form>
                                 </div>
                             </div>
@@ -121,10 +121,9 @@ var pies = [];
                     {/foreach}
                 </div>
             {else}
-                <div class="alert alert-info">Keine Daten vorhanden.</div>
+                <div class="alert alert-info">{__('noDataAvailable')}</div>
             {/if}
         </div>
     </div>
 </div>
-
 {include file='tpl_inc/footer.tpl'}

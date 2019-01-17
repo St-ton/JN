@@ -31,7 +31,7 @@
                 <input type="hidden" name="speicher_einstellung" value="1" />
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Branding f&uuml;r {$oBranding->cBildKategorie} bearbeiten</h3>
+                        <h3 class="panel-title">Branding für {$oBranding->cBildKategorie} bearbeiten</h3>
                     </div>
                     <div class="panel-body">
                         {if $oBranding->cBrandingBild|strlen > 0}

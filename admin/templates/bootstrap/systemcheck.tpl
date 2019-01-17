@@ -1,10 +1,7 @@
 {config_load file="$lang.conf" section='systemcheck'}
 {include file='tpl_inc/header.tpl'}
-
 {include file='tpl_inc/seite_header.tpl' cTitel=__('systemcheck') cBeschreibung=__('systemcheckDesc') cDokuURL=__('systemcheckURL')}
-
 {include file='tpl_inc/systemcheck.tpl'}
-
 <style type="text/css">
 {literal}
     .phpinfo pre {margin: 0; font-family: monospace;}
@@ -42,15 +39,15 @@
                 <label class="col-sm-2 control-label">Provider:</label>
                 <div class="col-sm-10">
                     <p class="form-control-static">
-                        {if $platform->getProvider() == 'jtl'}
+                        {if $platform->getProvider() === 'jtl'}
                             JTL-Software GmbH
-                        {elseif $platform->getProvider() == 'hosteurope'}
+                        {elseif $platform->getProvider() === 'hosteurope'}
                             HostEurope
-                        {elseif $platform->getProvider() == 'strato'}
+                        {elseif $platform->getProvider() === 'strato'}
                             Strato
-                        {elseif $platform->getProvider() == '1und1'}
+                        {elseif $platform->getProvider() === '1und1'}
                             1&amp;1
-                        {elseif $platform->getProvider() == 'alfahosting'}
+                        {elseif $platform->getProvider() === 'alfahosting'}
                             Alfahosting
                         {else}
                             <em>Unbekannt</em> ({$platform->getHostname()})
@@ -70,20 +67,20 @@
                     <p class="form-control-static">{$platform->getDocumentRoot()}</p>
                 </div>
             </div>
-            {if $platform->getProvider() == 'hosteurope' || $platform->getProvider() == 'strato' || $platform->getProvider() == '1und1'}
+            {if $platform->getProvider() === 'hosteurope' || $platform->getProvider() === 'strato' || $platform->getProvider() === '1und1'}
             <div class="form-group">
                 <label class="col-sm-2 control-label">Hinweise:</label>
                 <div class="col-sm-10">
                     <p class="form-control-static">
                         {$version = $platform->getPhpVersion()}
-                        {if $platform->getProvider() == 'hosteurope'}
+                        {if $platform->getProvider() === 'hosteurope'}
                             Sie können die PHP-Einstellungen im <a href="https://kis.hosteurope.de/">HostEurope-KIS</a> (<a href="https://kis.hosteurope.de/">https://kis.hosteurope.de/</a>) anpassen.
-                        {elseif $platform->getProvider() == 'strato'}
+                        {elseif $platform->getProvider() === 'strato'}
                             Bitte laden Sie <a href="http://www.ioncube.com/loaders.php">hier</a> den ionCube-Loader herunter und entpacken Sie das Archiv nach {$platform->getDocumentRoot()} auf dem Server.<br>
                             Erstellen Sie auf dem Server eine Datei <code>php.ini</code> mit dem folgenden Inhalt:<br><br>
                         <pre>[Zend]
     zend_extension = {$platform->getDocumentRoot()}/ioncube/ioncube_loader_lin_{$version|substr:0:3}.so</pre>
-                        {elseif $platform->getProvider() == '1und1'}
+                        {elseif $platform->getProvider() === '1und1'}
                             Bitte laden Sie <a href="http://www.ioncube.com/loaders.php">hier</a> den ionCube-Loader herunter und entpacken Sie das Archiv nach {$platform->getDocumentRoot()} auf dem Server.<br>
                             Erstellen Sie auf dem Server eine Datei <code>php.ini</code> mit dem folgenden Inhalt:<br><br>
                         <pre>[Zend]
@@ -243,5 +240,4 @@
         {/if}
     </div>
 </div>
-
 {include file='tpl_inc/footer.tpl'}

@@ -12,7 +12,7 @@
                 {/foreach}
             </ul>
         {else}
-            <div class="alert alert-info">Konnte Aktion nicht ausf&uuml;hren.</div>
+            <div class="alert alert-info">Konnte Aktion nicht ausführen.</div>
         {/if}
     {/if}
     <div id="pageCheck">
@@ -67,10 +67,10 @@
                                     {/if}
                                 </td>
                                 <td class="centered">
-                                    {if $cTable|array_key_exists:$cDBStruct_arr}{$cDBStruct_arr.$cTable->TABLE_ROWS|number_format:0:",":"."}{/if}
+                                    {if $cTable|array_key_exists:$cDBStruct_arr}{$cDBStruct_arr.$cTable->TABLE_ROWS|number_format:0:',':'.'}{/if}
                                 </td>
                                 <td class="centered">
-                                    {if $cTable|array_key_exists:$cDBStruct_arr}{$cDBStruct_arr.$cTable->DATA_SIZE|formatByteSize:"%.0f"|upper|strip:"&nbsp;"}{/if}
+                                    {if $cTable|array_key_exists:$cDBStruct_arr}{$cDBStruct_arr.$cTable->DATA_SIZE|formatByteSize:'%.0f'|upper|strip:'&nbsp;'}{/if}
                                 </td>
                                 <td>
                                     {if $hasError}
@@ -105,7 +105,7 @@
                                 <option value="optimize">optimieren</option>
                                 <option value="repair">reparieren</option>
                                 <option value="analyze">analysieren</option>
-                                <option value="check">pr&uuml;fen</option>
+                                <option value="check">prüfen</option>
                             </select>
                             <div class="input-group-btn">
                                 <button type="submit" class="btn btn-primary">absenden</button>

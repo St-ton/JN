@@ -1,9 +1,7 @@
 {config_load file="$lang.conf" section='statistics'}
 {include file='tpl_inc/header.tpl'}
-
 {include file='tpl_inc/statistik_jsoninc.tpl'}
 {include file='tpl_inc/statistik_header.tpl'}
-
 {if isset($linechart)}
     <br>
     {include file='tpl_inc/linechart_inc.tpl' linechart=$linechart headline=$headline id='linechart' width='100%'
@@ -13,9 +11,7 @@
     {include file='tpl_inc/piechart_inc.tpl' piechart=$piechart headline=$headline id='piechart' width='100%'
         height='400px'}
 {/if}
-
 {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cParam_arr=['s' => $nTyp]}
-
 {if isset($oStat_arr) && $oStat_arr|@count > 0}
     <table class="list table">
         <thead>
@@ -47,5 +43,4 @@
         </tbody>
     </table>
 {/if}
-
 {include file='tpl_inc/footer.tpl'}

@@ -9,5 +9,4 @@
 {else}
     {include file='tpl_inc/auswahlassistent_uebersicht.tpl'}
 {/if}
-
 {include file='tpl_inc/footer.tpl'}

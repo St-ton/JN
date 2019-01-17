@@ -60,7 +60,7 @@
                                     <input type="hidden" value="{if $secondary === true}1{else}0{/if}" name="revision-secondary" />
                                     <span class="btn-group">
                                         <button type="submit" class="btn btn-primary" name="revision-action" value="restore"><i class="fa fa-refresh"></i> Revision wiederherstellen</button>
-                                        <button type="submit" class="btn btn-danger" name="revision-action" value="delete"><i class="fa fa-trash"></i> Revision l&ouml;schen</button>
+                                        <button type="submit" class="btn btn-danger" name="revision-action" value="delete"><i class="fa fa-trash"></i> Revision löschen</button>
                                     </span>
                                 </form>
                             </div>

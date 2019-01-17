@@ -10,12 +10,12 @@
                     <h4 class="modal-title">Achtung!</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Wollen Sie wirklich alle Eintr&auml;ge f&uuml;r das ausgew&auml;hlte Jahr l&ouml;schen?</p>
+                    <p>Wollen Sie wirklich alle Einträge für das ausgewählte Jahr löschen?</p>
                 </div>
                 <div class="modal-footer">
                     <div class="btn-group">
-                        <button type="button" class="btn btn-info" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;Abbrechen</button>
-                        <button id="formSubmit" type="button" class="btn btn-danger" name="delete" ><i class="fa fa-trash"></i>&nbsp;L&ouml;schen</button>
+                        <button type="button" class="btn btn-info" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;{__('cancel')}</button>
+                        <button id="formSubmit" type="button" class="btn btn-danger" name="delete" ><i class="fa fa-trash"></i>&nbsp;{__('delete')}</button>
                     </div>
                 </div>
             </div>
@@ -77,7 +77,7 @@
                         <div class="btn-group">
                             <button name="action[year_downloads]" type="submit" value="1" class="btn btn-info"><i class="fa fa-search"></i>&nbsp;Zeigen</button>
                             <button type="button" class="btn btn-danger"
-                                    data-form="#formDeleteSitemapExport" data-action="year_downloads_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapDownload')} l&ouml;schen"><i class="fa fa-trash"></i>&nbsp;L&ouml;schen</button>
+                                    data-form="#formDeleteSitemapExport" data-action="year_downloads_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapDownload')} löschen"><i class="fa fa-trash"></i>&nbsp;Löschen</button>
                         </div>
                     </form>
                 </div>
@@ -155,7 +155,7 @@
                         <div class="btn-group">
                             <button name="action[year_reports]" type="submit" value="1" class="btn btn-info"><i class="fa fa-search"></i>&nbsp;Zeigen</button>
                             <button type="button" class="btn btn-danger"
-                                    data-form="#formDeleteSitemapReport" data-action="year_reports_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapReport')} l&ouml;schen"><i class="fa fa-trash"></i>&nbsp;L&ouml;schen</button>
+                                    data-form="#formDeleteSitemapReport" data-action="year_reports_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapReport')} löschen"><i class="fa fa-trash"></i>&nbsp;Löschen</button>
                         </div>
                     </form>
                 </div>

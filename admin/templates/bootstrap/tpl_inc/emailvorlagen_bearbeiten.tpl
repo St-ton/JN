@@ -1,7 +1,7 @@
-{assign var="template" value=__('template')}
-{assign var="modify" value=__('modify')}
+{assign var=template value=__('template')}
+{assign var=modify value=__('modify')}
 {include file='tpl_inc/seite_header.tpl'
-    cTitel=$template|cat: " "|cat:$Emailvorlage->cName|cat: " "|cat:$modify
+    cTitel=$template|cat: ' '|cat:$Emailvorlage->cName|cat: ' '|cat:$modify
     cBeschreibung=__('emailTemplateModifyHint')}
 <div id="content" class="container-fluid">
     <form name="vorlagen_aendern" method="post" action="emailvorlagen.php" enctype="multipart/form-data">
@@ -94,8 +94,8 @@
                             </span>
                             <span class="input-group-wrap">
                                 <select id="nWRB" name="nWRB" class="form-control">
-                                    <option value="0"{if $Emailvorlage->nWRB == "0"} selected{/if}>{__('no')}</option>
-                                    <option value="1"{if $Emailvorlage->nWRB == "1"} selected{/if}>{__('yes')}</option>
+                                    <option value="0"{if $Emailvorlage->nWRB == '0'} selected{/if}>{__('no')}</option>
+                                    <option value="1"{if $Emailvorlage->nWRB == '1'} selected{/if}>{__('yes')}</option>
                                 </select>
                             </span>
                         </div>
@@ -105,8 +105,8 @@
                             </span>
                             <span class="input-group-wrap">
                                 <select id="nWRBForm" name="nWRBForm" class="form-control">
-                                    <option value="0"{if $Emailvorlage->nWRBForm == "0"} selected{/if}>{__('no')}</option>
-                                    <option value="1"{if $Emailvorlage->nWRBForm == "1"} selected{/if}>{__('yes')}</option>
+                                    <option value="0"{if $Emailvorlage->nWRBForm == '0'} selected{/if}>{__('no')}</option>
+                                    <option value="1"{if $Emailvorlage->nWRBForm == '1'} selected{/if}>{__('yes')}</option>
                                 </select>
                             </span>
                         </div>
@@ -116,8 +116,8 @@
                             </span>
                             <span class="input-group-wrap">
                                 <select id="nDSE" name="nDSE" class="form-control">
-                                    <option value="0"{if $Emailvorlage->nDSE == "0"} selected{/if}>{__('no')}</option>
-                                    <option value="1"{if $Emailvorlage->nDSE == "1"} selected{/if}>{__('yes')}</option>
+                                    <option value="0"{if $Emailvorlage->nDSE == '0'} selected{/if}>{__('no')}</option>
+                                    <option value="1"{if $Emailvorlage->nDSE == '1'} selected{/if}>{__('yes')}</option>
                                 </select>
                             </span>
                         </div>
@@ -156,9 +156,9 @@
                     </code>
                 </div>
             </div>
-            {foreach name=sprachen from=$Sprachen item=sprache}
+            {foreach $Sprachen as $sprache}
                 <div class="box_info panel panel-default">
-                    {assign var="kSprache" value=$sprache->kSprache}
+                    {assign var=kSprache value=$sprache->kSprache}
                     <div class="panel-heading">
                         <h3 class="panel-title">Inhalt {$sprache->cNameDeutsch}</h3>
                     </div>
@@ -176,14 +176,14 @@
                             <div class="name"><label for="cContentHtml_{$kSprache}">{__('mailHtml')}</label></div>
                             <div class="for">
                                 <textarea class="codemirror smarty" id="cContentHtml_{$kSprache}" name="cContentHtml_{$kSprache}"
-                                          style="width:99%" rows="20">{if isset($Emailvorlagesprache[$kSprache]->cContentHtml)}{$Emailvorlagesprache[$kSprache]->cContentHtml|escape:"html"}{/if}</textarea>
+                                          style="width:99%" rows="20">{if isset($Emailvorlagesprache[$kSprache]->cContentHtml)}{$Emailvorlagesprache[$kSprache]->cContentHtml|escape:'html'}{/if}</textarea>
                             </div>
                         </div>
                         <div class="item well">
                             <div class="name"><label for="cContentText_{$kSprache}">{__('mailText')}</label></div>
                             <div class="for">
                                 <textarea class="codemirror smarty" id="cContentText_{$kSprache}" name="cContentText_{$kSprache}"
-                                          style="width:99%" rows="20">{if isset($Emailvorlagesprache[$kSprache]->cContentText)}{$Emailvorlagesprache[$kSprache]->cContentText|escape:"html"}{/if}</textarea>
+                                          style="width:99%" rows="20">{if isset($Emailvorlagesprache[$kSprache]->cContentText)}{$Emailvorlagesprache[$kSprache]->cContentText|escape:'html'}{/if}</textarea>
                             </div>
                         </div>
                         {if isset($Emailvorlagesprache[$kSprache]->cPDFS_arr) && $Emailvorlagesprache[$kSprache]->cPDFS_arr|@count > 0}
@@ -193,8 +193,8 @@
                                     (<a href="emailvorlagen.php?kEmailvorlage={$Emailvorlage->kEmailvorlage}&kS={$kSprache}&a=pdfloeschen&token={$smarty.session.jtl_token}{if isset($kPlugin) && $kPlugin > 0}&kPlugin={$kPlugin}{/if}">{__('deleteAll')}</a>)
                                 </div>
                                 <div class="for">
-                                    {foreach name=pdfs from=$Emailvorlagesprache[$kSprache]->cPDFS_arr item=cPDF}
-                                        {assign var="i" value=$smarty.foreach.pdfs.iteration-1}
+                                    {foreach $Emailvorlagesprache[$kSprache]->cPDFS_arr as $cPDF}
+                                        {assign var=i value=$cPDF@iteration-1}
                                         <div>
                                             <span class="pdf">{$Emailvorlagesprache[$kSprache]->cDateiname_arr[$i]}.pdf</span>
                                         </div>

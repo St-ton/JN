@@ -10,11 +10,11 @@
 
     function startKundenfeldwertEdit() {
         $('#cTyp').after($('<div class="kundenfeld_wert"></div>').append(
-                $('<button name="button" type="button" class="btn btn-primary add" value="Wert hinzuf&uuml;gen"></button>')
+                $('<button name="button" type="button" class="btn btn-primary add" value="Wert hinzufügen"></button>')
                 .click(function() {
                     addKundenfeldWert();
                 })
-                .append('<i class="fa fa-plus-square-o"></i>&nbsp;Wert hinzuf&uuml;gen'))
+                .append('<i class="fa fa-plus-square-o"></i>&nbsp;Wert hinzufügen'))
         );
         addKundenfeldWert();
     }
@@ -227,7 +227,7 @@
                                     </select>
                                     {if (isset($xPostVar_arr.cTyp) && $xPostVar_arr.cTyp === 'auswahl') || (isset($oKundenfeld->cTyp) && $oKundenfeld->cTyp === 'auswahl')}
                                         <div class="kundenfeld_wert">
-                                            <button name="button" type="button" class="btn btn-primary add" value="Wert hinzuf&uuml;gen" onclick="addKundenfeldWert()"><i class="fa fa-plus-square-o"></i> Wert hinzuf&uuml;gen</button>
+                                            <button name="button" type="button" class="btn btn-primary add" value="Wert hinzufügen" onclick="addKundenfeldWert()"><i class="fa fa-plus-square-o"></i> Wert hinzufügen</button>
                                         </div>
                                     {/if}
                                 </td>
@@ -311,7 +311,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {foreach name=kundenfeld from=$oKundenfeld_arr item=oKundenfeld}
+                                {foreach $oKundenfeld_arr as $oKundenfeld}
                                     <tr>
                                         <td class="check">
                                             <input name="kKundenfeld[]" type="checkbox" value="{$oKundenfeld->kKundenfeld}" id="check-{$oKundenfeld->kKundenfeld}" />
@@ -321,8 +321,8 @@
                                         <td>{$oKundenfeld->cTyp}</td>
                                         <td>
                                             {if isset($oKundenfeld->oKundenfeldWert_arr)}
-                                                {foreach name=kundenfeldwert from=$oKundenfeld->oKundenfeldWert_arr item=oKundenfeldWert}
-                                                    {$oKundenfeldWert->cWert}{if !$smarty.foreach.kundenfeldwert.last}, {/if}
+                                                {foreach $oKundenfeld->oKundenfeldWert_arr as $oKundenfeldWert}
+                                                    {$oKundenfeldWert->cWert}{if !$oKundenfeldWert@last}, {/if}
                                                 {/foreach}
                                             {/if}
                                         </td>

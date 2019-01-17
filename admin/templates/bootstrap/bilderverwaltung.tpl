@@ -161,7 +161,7 @@
         running = true;
         lastResults = [];
         lastTick = new Date();
-        notify = showGenerateNotify('Bilder werden aufger&auml;umt', 'L&ouml;sche Bilder...');
+        notify = showGenerateNotify('Bilder werden aufgeräumt', 'Lösche Bilder...');
         $('.action-buttons a').attr('disabled', true);
         doCleanup(0);
     }
@@ -176,9 +176,9 @@
 
         notify.update({
             progress: 100,
-            message: 'Insgesamt ' + result.deletedImages + ' Bilder gel&ouml;scht.',
+            message: 'Insgesamt ' + result.deletedImages + ' Bilder gelöscht.',
             type: 'success',
-            title: 'Bilder erfolgreich aufger&auml;umt'
+            title: 'Bilder erfolgreich aufgeräumt'
         });
     }
 

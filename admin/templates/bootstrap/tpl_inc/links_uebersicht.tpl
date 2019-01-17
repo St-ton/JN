@@ -58,7 +58,7 @@
                     {*{/if}*}
                     {if $linkgruppe->getLinks()->count() > 0}
                         <table class="table">
-                            {include file="tpl_inc/links_uebersicht_item.tpl" list=$linkgruppe->getLinks() id=$linkgruppe->getID()}
+                            {include file='tpl_inc/links_uebersicht_item.tpl' list=$linkgruppe->getLinks() id=$linkgruppe->getID()}
                         </table>
                     {else}
                         <p class="alert alert-info" style="margin:10px;"><i class="fa fa-info-circle"></i> {__('noData')}</p>

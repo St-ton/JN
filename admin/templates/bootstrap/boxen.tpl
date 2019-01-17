@@ -4,22 +4,22 @@
 
 {include file='tpl_inc/searchpicker_modal.tpl'
     searchPickerName='articlePicker'
-    modalTitle='Artikel ausw&auml;hlen'
+    modalTitle='Artikel auswählen'
     searchInputLabel='Suche nach Artikelnamen'
 }
 {include file='tpl_inc/searchpicker_modal.tpl'
     searchPickerName='categoryPicker'
-    modalTitle='Kategorien ausw&auml;hlen'
+    modalTitle='Kategorien auswählen'
     searchInputLabel='Suche nach Kategorienamen'
 }
 {include file='tpl_inc/searchpicker_modal.tpl'
     searchPickerName='manufacturerPicker'
-    modalTitle='Hersteller ausw&auml;hlen'
+    modalTitle='Hersteller auswählen'
     searchInputLabel='Suche nach Herstellernamen'
 }
 {include file='tpl_inc/searchpicker_modal.tpl'
     searchPickerName='pagePicker'
-    modalTitle='Eigene Seiten ausw&auml;hlen'
+    modalTitle='Eigene Seiten auswählen'
     searchInputLabel='Suche nach Seitennamen'
 }
 
@@ -124,13 +124,13 @@
                                 <strong>{__('boxPosition')}</strong>
                             </th>
                         </tr>
-                        {foreach from=$invisibleBoxes item=invisibleBox name=invisibleBoxList}
+                        {foreach $invisibleBoxes as $invisibleBox}
                             <tr>
                                 <td class="check">
-                                    <input name="kInvisibleBox[]" type="checkbox" value="{$invisibleBox->kBox}" id="kInvisibleBox-{$smarty.foreach.invisibleBoxList.index}">
+                                    <input name="kInvisibleBox[]" type="checkbox" value="{$invisibleBox->kBox}" id="kInvisibleBox-{$invisibleBox@index}">
                                 </td>
                                 <td>
-                                    <label for="kInvisibleBox-{$smarty.foreach.invisibleBoxList.index}">{$invisibleBox->cTitel}</label>
+                                    <label for="kInvisibleBox-{$invisibleBox@index}">{$invisibleBox->cTitel}</label>
                                 </td>
                                 <td>
                                     {$invisibleBox->cName}
@@ -183,10 +183,10 @@
                                         <span class="input-group-addon">
                                             <label for="title-{$oSprache->cISO}">{__('boxTitle')} {$oSprache->cNameDeutsch}</label>
                                         </span>
-                                        <input class="form-control" id="title-{$oSprache->cISO}" type="text" name="title[{$oSprache->cISO}]" value="{foreach from=$oEditBox->oSprache_arr item=oBoxSprache}{if $oSprache->cISO == $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}" />
+                                        <input class="form-control" id="title-{$oSprache->cISO}" type="text" name="title[{$oSprache->cISO}]" value="{foreach $oEditBox->oSprache_arr  as $oBoxSprache}{if $oSprache->cISO == $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}" />
                                     </div>
                                     <textarea id="text-{$oSprache->cISO}" name="text[{$oSprache->cISO}]" class="form-control ckeditor" rows="15" cols="60">
-                                        {foreach from=$oEditBox->oSprache_arr item=oBoxSprache}{if $oSprache->cISO == $oBoxSprache->cISO}{$oBoxSprache->cInhalt}{/if}{/foreach}
+                                        {foreach $oEditBox->oSprache_arr as $oBoxSprache}{if $oSprache->cISO == $oBoxSprache->cISO}{$oBoxSprache->cInhalt}{/if}{/foreach}
                                     </textarea>
                                     <hr>
                                 {/foreach}
@@ -211,7 +211,7 @@
                                         </span>
                                         <input class="form-control" id="title-{$oSprache->cISO}" type="text"
                                                name="title[{$oSprache->cISO}]"
-                                               value="{foreach from=$oEditBox->oSprache_arr item=oBoxSprache}{if $oSprache->cISO == $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}">
+                                               value="{foreach $oEditBox->oSprache_arr as $oBoxSprache}{if $oSprache->cISO == $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}">
                                     </div>
                                 {/foreach}
                             {elseif $oEditBox->eTyp === 'link'}
@@ -235,7 +235,7 @@
                                         <span class="input-group-addon">
                                             <label for="title-{$oSprache->cISO}">{__('boxTitle')} {$oSprache->cNameDeutsch}</label>
                                         </span>
-                                        <input class="form-control" id="title-{$oSprache->cISO}" type="text" name="title[{$oSprache->cISO}]" value="{foreach from=$oEditBox->oSprache_arr item=oBoxSprache}{if $oSprache->cISO == $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}" />
+                                        <input class="form-control" id="title-{$oSprache->cISO}" type="text" name="title[{$oSprache->cISO}]" value="{foreach $oEditBox->oSprache_arr as $oBoxSprache}{if $oSprache->cISO == $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}" />
                                     </div>
                                 {/foreach}
                             {/if}

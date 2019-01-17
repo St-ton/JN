@@ -1,14 +1,14 @@
 {if empty($tab)}
     {if $engineUpdate->tableCount > 10}
-        {assign var="tab" value="update_automatic"}
+        {assign var=tab value='update_automatic'}
     {else}
-        {assign var="tab" value="update_individual"}
+        {assign var=tab value='update_individual'}
     {/if}
 {/if}
 <div class="alert alert-warning">
     <h3 class="panel-title">Struktur-Migration erforderlich!</h3>
     F&uuml;r {$engineUpdate->tableCount} Tabellen ist eine Verschiebung in den InnoDB-Tablespace und ggfs. die Konvertierung in einen UTF-8 Zeichensatz erforderlich.
-    Von dieser Migration sind ca.&nbsp;{$engineUpdate->dataSize|formatByteSize:"%.0f"|upper|strip:"&nbsp;"} an Daten betroffen.
+    Von dieser Migration sind ca.&nbsp;{$engineUpdate->dataSize|formatByteSize:'%.0f'|upper|strip:'&nbsp;'} an Daten betroffen.
 </div>
 {if $DB_Version->collation_utf8 && $DB_Version->innodb->support}
     {if $DB_Version->innodb->support && $DB_Version->innodb->version|version_compare:'5.6' < 0}
@@ -22,7 +22,7 @@
                     <li>Die Volltextsuche wird deaktiviert.</li>
                     {/if}
                     {if $FulltextIndizes !== false}
-                    {foreach name=indizes from=$FulltextIndizes item=index}
+                    {foreach $FulltextIndizes as $index}
                     <li>Der Volltextindex {$index->INDEX_NAME} für {$index->TABLE_NAME} wird gelöscht.</li>
                     {/foreach}
                     {/if}
@@ -33,7 +33,7 @@
     {if $DB_Version->innodb->size !== 'auto' && $engineUpdate->dataSize > $DB_Version->innodb->size}
         <div class="alert alert-warning">
             <h3 class="panel-title">Nicht genügend Platz im InnoDB-Tablespace!</h3>
-            Im InnoDB-Tablespace Ihrer Datenbank stehen offensichtlich nur {$DB_Version->innodb->size|formatByteSize:"%.0f"|upper|strip:"&nbsp;"} für Daten zur Verfügung.
+            Im InnoDB-Tablespace Ihrer Datenbank stehen offensichtlich nur {$DB_Version->innodb->size|formatByteSize:'%.0f'|upper|strip:'&nbsp;'} für Daten zur Verfügung.
             Das wird für die zu migrierende Datenmenge u.U. nicht ausreichen! Bitte stellen Sie sicher, dass genügend Platz im InnoDB-Tablespace zur Verfügung steht.
         </div>
     {/if}
@@ -62,7 +62,7 @@
                         <a title="Softwarebeschr&auml;nkungen und Grenzen der JTL-Produkte" href="https://jtl-url.de/8qsat">Spezifikationen</a> f&uuml;r
                         JTL-Shop befindet.
                     </p>
-                    <p>Bitte haben Sie Geduld! Bei {$engineUpdate->tableCount} Tabellen und einer Datenmenge von ca.&nbsp;{$engineUpdate->dataSize|formatByteSize:"%.0f"|upper|strip:"&nbsp;"} kann die Migration
+                    <p>Bitte haben Sie Geduld! Bei {$engineUpdate->tableCount} Tabellen und einer Datenmenge von ca.&nbsp;{$engineUpdate->dataSize|formatByteSize:'%.0f'|upper|strip:'&nbsp;'} kann die Migration
                         {if $engineUpdate->estimated[0] < 60}
                             weniger als eine Minute
                         {elseif $engineUpdate->estimated[0] < 3600}

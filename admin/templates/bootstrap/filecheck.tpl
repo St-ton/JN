@@ -83,5 +83,4 @@
         </div>
     </div>
 {/if}
-
 {include file='tpl_inc/footer.tpl'}

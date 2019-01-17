@@ -23,15 +23,15 @@
             <div id="tabellenLivesuche" class="table-responsive">
                 <table class="table table-striped">
                     <tr>
-                        {foreach name="kampagnendefs" from=$cMember_arr key=cMember item=cMemberAnzeige}
+                        {foreach $cMember_arr as $cMemberAnzeige}
                             <th class="th-2">{$cMemberAnzeige|truncate:50:'...'}</th>
                         {/foreach}
                     </tr>
 
-                    {foreach name="kampagnenstats" from=$oKampagneStat_arr item=oKampagneStat}
+                    {foreach $oKampagneStat_arr as $oKampagneStat}
                         <tr>
-                            {foreach name="kampagnendefs" from=$cMember_arr key=cMember item=cMemberAnzeige}
-                                <td style="text-align: center;">{$oKampagneStat->$cMember|wordwrap:40:"<br />":true}</td>
+                            {foreach name='kampagnendefs' from=$cMember_arr key=cMember item=cMemberAnzeige}
+                                <td style="text-align: center;">{$oKampagneStat->$cMember|wordwrap:40:'<br />':true}</td>
                             {/foreach}
                         </tr>
                     {/foreach}

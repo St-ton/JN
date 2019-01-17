@@ -371,7 +371,7 @@
                                     </label>
                                 </div>
                                 <div class="btn-group pull-right">
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">{__('Cancel')}</button>
                                     <button class="btn btn-primary">Tour starten</button>
                                 </div>
                             </form>
@@ -409,7 +409,7 @@
                     </div>
                     <div class="modal-footer">
                         <div class="btn-group">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">{__('cancel')}</button>
                             <button class="btn btn-primary">Übernehmen</button>
                         </div>
                     </div>

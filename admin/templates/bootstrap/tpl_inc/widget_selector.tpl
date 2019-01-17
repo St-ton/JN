@@ -1,4 +1,4 @@
-{foreach from=$oAvailableWidget_arr item=oAvailableWidget}
+{foreach $oAvailableWidget_arr as $oAvailableWidget}
     <div class="media widget">
         <div class="media-body">
             <h4 class="media-heading">{$oAvailableWidget->cTitle}</h4>

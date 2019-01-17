@@ -33,15 +33,15 @@
                         {/if}
                         <div class="item input-group">
                             <span class="input-group-addon">
-                                <label for="eTyp">Standard-Template f&uuml;r mobile Endger&auml;te?</label>
+                                <label for="eTyp">Standard-Template für mobile Endgeräte?</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select class="form-control" name="eTyp" id="eTyp">
                                     <option value="standard" {if $oTemplate->eTyp === 'standard'}selected="selected"{/if}>Nein
-                                        (optimiert f&uuml;r Standard-Browser)
+                                        (optimiert für Standard-Browser)
                                     </option>
                                     <option value="mobil" {if $oTemplate->eTyp === 'mobil'}selected="selected"{/if}>Ja (optimiert
-                                        f&uuml;r mobile Endger&auml;te)
+                                        für mobile Endgeräte)
                                     </option>
                                 </select>
                             </span>
@@ -270,7 +270,7 @@
                             </h4>
                         {elseif $oTemplate->bAktiv}
                             <h4 class="label-wrap">
-                                <span class="label label-success">Aktiviert {if $oTemplate->eTyp === 'mobil'}(Mobile Endger&auml;te){/if}</span>
+                                <span class="label label-success">Aktiviert {if $oTemplate->eTyp === 'mobil'}(Mobile Endgeräte){/if}</span>
                             </h4>
                         {/if}
                     </td>

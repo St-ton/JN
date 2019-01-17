@@ -9,17 +9,17 @@
         <div id="settings">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Bildgr&ouml;&szlig;en</h3>
+                    <h3 class="panel-title">Bildgrößen</h3>
                 </div>
                 <div class="table-responsive">
                     <table class="list table table-images">
                         <thead>
                         <tr>
                             <th class="tleft">Typ</th>
-                            <th class="tcenter">Mini <small>(Breite x H&ouml;he)</small></th>
-                            <th class="tcenter">Klein <small>(Breite x H&ouml;he)</small></th>
-                            <th class="tcenter">Normal <small>(Breite x H&ouml;he)</small></th>
-                            <th class="tcenter">Gro&szlig; <small>(Breite x H&ouml;he)</small></th>
+                            <th class="tcenter">Mini <small>(Breite x Höhe)</small></th>
+                            <th class="tcenter">Klein <small>(Breite x Höhe)</small></th>
+                            <th class="tcenter">Normal <small>(Breite x Höhe)</small></th>
+                            <th class="tcenter">Groß <small>(Breite x Höhe)</small></th>
                         </tr>
                         </thead>
                         <tbody>

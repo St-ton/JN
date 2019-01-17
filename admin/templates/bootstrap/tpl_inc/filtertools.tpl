@@ -20,7 +20,7 @@
                                                 name="{$oFilter->getId()}_{$oField->getId()}_op"
                                                 id="{$oFilter->getId()}_{$oField->getId()}_op">
                                             {if $oField->getDataType() == 0}
-                                                <option value="1"{if $oField->getTestOp() == 1} selected{/if}>enth&auml;lt</option>
+                                                <option value="1"{if $oField->getTestOp() == 1} selected{/if}>enthält</option>
                                                 <option value="2"{if $oField->getTestOp() == 2} selected{/if}>beginnt mit</option>
                                                 <option value="3"{if $oField->getTestOp() == 3} selected{/if}>endet mit</option>
                                                 <option value="4"{if $oField->getTestOp() == 4} selected{/if}>ist gleich</option>
@@ -142,7 +142,7 @@
                             <i class="fa fa-search"></i>
                         </button>
                         <button type="submit" class="btn btn-default" name="action" value="{$oFilter->getId()}_resetfilter"
-                                title="Filter zur&uuml;cksetzen" id="{$oFilter->getId()}_btn_resetfilter">
+                                title="Filter zurücksetzen" id="{$oFilter->getId()}_btn_resetfilter">
                             <i class="fa fa-eraser"></i>
                         </button>
                     </div>

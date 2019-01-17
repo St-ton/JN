@@ -1,6 +1,5 @@
 {config_load file="$lang.conf" section='suchspecials'}
 {include file='tpl_inc/header.tpl'}
-
 {include file='tpl_inc/seite_header.tpl' cTitel=__('suchspecials') cBeschreibung=__('suchspecialsDesc') cDokuURL=__('suchspecialURL')}
 <div id="content" class="container-fluid">
     <div class="block">
@@ -90,5 +89,4 @@
         </div>
     </div>
 </div>
-
 {include file='tpl_inc/footer.tpl'}

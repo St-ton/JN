@@ -1,6 +1,5 @@
 {config_load file="$lang.conf" section='suchspecialoverlay'}
 {include file='tpl_inc/header.tpl'}
-
 {include file='tpl_inc/seite_header.tpl' cTitel=__('suchspecialoverlay') cBeschreibung=__('suchspecialoverlayDesc') cDokuURL=__('suchspecialoverlayUrl')}
 <div id="content" class="container-fluid">
     <div class="block">
@@ -190,7 +189,7 @@
             var maxsize = {$nMaxFileSize};
             {literal}
             if (filesize >= maxsize) {
-                $('.input-group.file-input').after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist gr&ouml;&szlig;er als das Uploadlimit des Servers.</div>').slideDown();
+                $('.input-group.file-input').after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist größer als das Uploadlimit des Servers.</div>').slideDown();
                 file2large = true;
             } else {
                 $('form div.alert').slideUp();

@@ -36,7 +36,7 @@
     </div>
 {/function}
 
-{capture "filter_row_tpl" assign="filter_row_tpl_data"}
+{capture 'filter_row_tpl' assign='filter_row_tpl_data'}
     {filter_row headers=array_keys($columns)}
 {/capture}
 
@@ -429,7 +429,7 @@ $(function() {
                 <!-- ###################################################### -->
                 {if isset($result) && !isset($result[0])}
                     <div class="alert alert-xs alert-success">
-                        <p>Keine Datens&auml;tze</p>
+                        <p>Keine Datensätze</p>
                     </div>
                 {elseif isset($result[0])}
                     {$headers = array_keys($result[0])}
@@ -582,7 +582,7 @@ $(function() {
                     </div>
                     <div class="query-sub">
                         <span class="text-muted" title="Millisekunden"><i class="fa fa-clock-o" aria-hidden="true"></i> &nbsp;{"`$info.time*1000`"|number_format:2} ms</span>
-                        <span class="text-muted"><i class="fa fa-database" aria-hidden="true"></i> &nbsp;{$count|number_format:0} Datens&auml;tze</span>
+                        <span class="text-muted"><i class="fa fa-database" aria-hidden="true"></i> &nbsp;{$count|number_format:0} Datensätze</span>
                         <a href="dbmanager.php?command&query={$info.statement|urlencode}">
                             <i class="fa fa-pencil" aria-hidden="true"></i> Bearbeiten
                         </a>
@@ -632,7 +632,7 @@ $(function() {
                     </div>
                 {else}
                     <div class="alert alert-xs alert-success">
-                        <p>Keine Datens&auml;tze</p>
+                        <p>Keine Datensätze</p>
                     </div>
                 {/if}
 
@@ -649,5 +649,4 @@ $(function() {
         </div>
     </div>
 </div>
-
 {include file='tpl_inc/footer.tpl'}

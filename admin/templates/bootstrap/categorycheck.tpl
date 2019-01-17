@@ -1,7 +1,6 @@
 {config_load file="$lang.conf" section='categorycheck'}
 {include file='tpl_inc/header.tpl'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('categorycheck') cBeschreibung=__('categorycheckDesc') cDokuURL=__('categorycheckURL')}
-
 <div id="content" class="container-fluid">
     <div class="systemcheck">
         {if !$passed}
@@ -29,5 +28,4 @@
         {/if}
     </div>
 </div>
-
 {include file='tpl_inc/footer.tpl'}

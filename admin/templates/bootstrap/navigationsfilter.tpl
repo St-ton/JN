@@ -91,10 +91,10 @@
                     cFehler += 'Ein oder mehrere Felder sind nicht gesetzt.<br>';
                     $row.addClass('has-error');
                 } else if(fVon >= fBis) {
-                    cFehler += 'Die Preisspanne ' + fVon + ' bis ' + fBis + ' ist ung&uuml;tig.<br>';
+                    cFehler += 'Die Preisspanne ' + fVon + ' bis ' + fBis + ' ist ungütig.<br>';
                     $row.addClass('has-error');
                 } else if(fVon < lastUpperBound) {
-                    cFehler += 'Die Preisspanne ' + fVon + ' bis ' + fBis + ' &uuml;berschneidet sich mit anderen.<br>';
+                    cFehler += 'Die Preisspanne ' + fVon + ' bis ' + fBis + ' überschneidet sich mit anderen.<br>';
                     $row.addClass('has-error');
                 }
 
@@ -195,5 +195,4 @@
         </p>
     </form>
 </div>
-
 {include file='tpl_inc/footer.tpl'}

@@ -3,7 +3,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('redirect') cBeschreibung=__('redirectDesc') cDokuURL=__('redirectURL')}
 {include file='tpl_inc/sortcontrols.tpl'}
 
-{assign var='cTab' value=$cTab|default:'redirects'}
+{assign var=cTab value=$cTab|default:'redirects'}
 
 <script>
     $(function () {
@@ -68,7 +68,7 @@
             case 'kLink': type = 'Seite'; break;
             case 'kNews': type = 'News'; break;
             case 'kNewsKategorie': type = 'News-Kategorie'; break;
-            case 'kNewsMonatsUebersicht': type = 'News-Montas&uuml;bersicht'; break;
+            case 'kNewsMonatsUebersicht': type = 'News-Montasübersicht'; break;
             case 'kUmfrage': type = 'Umfrage'; break;
             case 'kArtikel': type = 'Artikel'; break;
             case 'kKategorie': type = 'Kategorie'; break;
@@ -209,7 +209,7 @@
                                                                     {/if}
                                                                 </td>
                                                                 <td>
-                                                                    {$oRedirectReferer->dDate|date_format:"%d.%m.%Y - %H:%M:%S"}
+                                                                    {$oRedirectReferer->dDate|date_format:'%d.%m.%Y - %H:%M:%S'}
                                                                 </td>
                                                             </tr>
                                                         {/foreach}
@@ -325,5 +325,4 @@
         </form>
     </div>
 </div>
-
 {include file='tpl_inc/footer.tpl'}

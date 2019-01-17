@@ -230,5 +230,4 @@
         $('.collapse.in').collapse('hide');
     });
 </script>
-
 {include file='tpl_inc/footer.tpl'}

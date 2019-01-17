@@ -9,7 +9,7 @@
 {elseif $oKupon->cKuponTyp === $couponTypes.shipping}
     {assign var=cTitel value="$cTitel : Versandkostenfrei-Kupon"}
 {elseif $oKupon->cKuponTyp === $couponTypes.newCustomer}
-    {assign var=cTitel value="$cTitel : Neukunden-/Begr&uuml;&szlig;ungskupon"}
+    {assign var=cTitel value="$cTitel : Neukunden-/Begrüßungskupon"}
 {/if}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__('couponsDesc') cDokuURL=__('couponsURL')}
@@ -151,7 +151,7 @@
                                 </option>
                             </select>
                         </span>
-                        <span class="input-group-addon" {if $oKupon->cWertTyp == 'prozent'} style="display: none;"{/if}>
+                        <span class="input-group-addon" {if $oKupon->cWertTyp === 'prozent'} style="display: none;"{/if}>
                             {getCurrencyConversionTooltipButton inputId='fWert'}
                         </span>
                     </div>
@@ -299,7 +299,7 @@
             <div class="panel-body">
                 {include file='tpl_inc/searchpicker_modal.tpl'
                     searchPickerName='articlePicker'
-                    modalTitle='Artikel ausw&auml;hlen'
+                    modalTitle='Artikel auswählen'
                     searchInputLabel='Suche nach Artikelnamen'
                 }
                 <script>
@@ -406,7 +406,7 @@
                 {if $oKupon->cKuponTyp === $couponTypes.standard || $oKupon->cKuponTyp === $couponTypes.shipping}
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='customerPicker'
-                        modalTitle='Kunden ausw&auml;hlen'
+                        modalTitle='Kunden auswählen'
                         searchInputLabel='Suche nach Vornamen, E-Mail-Adresse, Wohnort oder Postleitzahl'
                     }
                     <script>

@@ -1,6 +1,5 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='trennzeichen'}
-
 {include file='tpl_inc/seite_header.tpl' cTitel=__('Trennzeichen') cBeschreibung=__('trennzeichenDesc') cDokuURL=__('trennzeichenURL')}
 <div id="content" class="container-fluid">
     <div class="block">
@@ -105,5 +104,4 @@
         </div>
     </form>
 </div>
-
 {include file='tpl_inc/footer.tpl'}

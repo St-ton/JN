@@ -1,6 +1,6 @@
 {assign var=cPlugin value=__('plugin')}
 {if $oPlugin !== null}
-    {include file='tpl_inc/seite_header.tpl' cTitel=$cPlugin|cat:": "|cat:$oPlugin->getMeta()->getName()
+    {include file='tpl_inc/seite_header.tpl' cTitel=$cPlugin|cat:': '|cat:$oPlugin->getMeta()->getName()
         pluginMeta=$oPlugin->getMeta()}
 {/if}
 <div id="content" class="container-fluid">

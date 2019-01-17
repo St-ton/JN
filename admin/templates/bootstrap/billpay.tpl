@@ -73,7 +73,7 @@
                                         {/if}
                                         </h4>
                                     </td>
-                                    <td class="text-center">{$oLog->dDatum|date_format:"%d.%m.%Y - %H:%M:%S"}</td>
+                                    <td class="text-center">{$oLog->dDatum|date_format:'%d.%m.%Y - %H:%M:%S'}</td>
                                     <td class="text-center" style="width:24px">
                                         {if $oLog->cLogData|strlen > 0}
                                             <a href="#" onclick="$('#data{$oLog->kZahlunglog}').toggle();return false;" class="btn btn-default btn-sm"><i class="fa fa-bars"></i></a>
@@ -88,7 +88,7 @@
                                                 <p><strong>Kdn:</strong> {$oKunde->kKunde}</p>
                                             {/if}
                                             <p><strong>Name:</strong> {$oKunde->cVorname} {$oKunde->cNachname}</p>
-                                            <p><strong>Stra&szlig;e:</strong> {$oKunde->cStrasse} {$oKunde->cHausnummer}</p>
+                                            <p><strong>Straße:</strong> {$oKunde->cStrasse} {$oKunde->cHausnummer}</p>
                                             <p><strong>Ort:</strong> {$oKunde->cPLZ} {$oKunde->cOrt}</p>
                                             <p><strong>E-Mail:</strong> {$oKunde->cMail}</p>
                                         </td>

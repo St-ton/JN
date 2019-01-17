@@ -68,14 +68,14 @@
                     <input type="hidden" name="nSort" value="{$nSort}" />
                     <input type="hidden" name="tab" value="suchanfrage" />
                     {if isset($cSuche) && $cSuche|strlen > 0}
-                        {assign var=pAdditional value="cSuche="|cat:$cSuche}
+                        {assign var=pAdditional value='cSuche='|cat:$cSuche}
                     {else}
                         {assign var=pAdditional value=''}
                     {/if}
                     {if isset($cSuche)}
-                        {assign var=cSuchStr value="&Suche=1&cSuche="|cat:$cSuche|cat:"&"}
+                        {assign var=cSuchStr value='&Suche=1&cSuche='|cat:$cSuche|cat:'&'}
                     {else}
-                        {assign var=cSuchStr value=""}
+                        {assign var=cSuchStr value=''}
                     {/if}
                     <div class="panel panel-default">
                         <div class="panel-heading">

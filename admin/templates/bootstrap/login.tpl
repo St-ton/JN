@@ -17,7 +17,6 @@
             </p>
             <div id="login_outer" class="panel panel-default">
                 <div class="panel-body">
-
                     {if isset($cFehler) && $cFehler}
                         <div class="alert alert-danger">{$cFehler}</div>
                         <script type="text/javascript">
@@ -28,7 +27,7 @@
                             {/literal}
                         </script>
                     {elseif isset($pw_updated) && $pw_updated === true}
-                        <div class="alert alert-success" role="alert"><i class="fa fa-info-circle"></i> Passwort wurde erfolgreich ge&auml;ndert.</div>
+                        <div class="alert alert-success" role="alert"><i class="fa fa-info-circle"></i> Passwort wurde erfolgreich geändert.</div>
                     {else}
                         {if !isset($smarty.session.AdminAccount->TwoFA_active) || false === $smarty.session.AdminAccount->TwoFA_active }  {* added for 2FA *}
                             <p class="text-muted">{__('login')}</p>
@@ -42,13 +41,9 @@
                         {if isset($uri) && $uri|strlen > 0}
                             <input type="hidden" name="uri" value="{$uri}" />
                         {/if}
-
-                        {* BEGIN google-2FA-authentiocation *}
                         {if isset($smarty.session.AdminAccount->TwoFA_active) && true === $smarty.session.AdminAccount->TwoFA_active }  {* added for 2FA *}
-                            {* forwarded index, no content in this vars! *}
                             <input type="hidden" name="benutzer" value="">
                             <input type="hidden" name="passwort" value="">
-
                             <p class="text-muted">{__('TwoFALogin')}</p>
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-user"></i></span>
@@ -62,9 +57,7 @@
                                 <script>
                                     $(document).ready(function () {
                                         $("[id$=inputTwoFA]").focus();
-
                                         var distance = (218 / 30);
-
                                         // "eye-candy" .. make a bar smaller every second, from a length of 30(s)
                                         var date = new Date();
                                         var sec = date.getSeconds();
@@ -101,8 +94,6 @@
                                 </script>
                             {/literal}
                         {else}
-
-                            {* BEGIN regular authentication (additionaly active once before 2fa) *}
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-user"></i></span>
                                 <input class="form-control" type="text" placeholder="{__('username')}" name="benutzer" id="user_login" value="" size="20" tabindex="10" />
@@ -114,11 +105,7 @@
                             {if isset($code_adminlogin) && $code_adminlogin}
                                 {captchaMarkup getBody=true}
                             {/if}
-                            {* END regular authentication *}
-
                         {/if}
-                        {* END google-2FA-authentiocation *}
-
                         <button type="submit" value="Anmelden" tabindex="100" class="btn btn-primary btn-block btn-md">Anmelden</button>
                         {if isset($smarty.session.AdminAccount->TwoFA_active) && true === $smarty.session.AdminAccount->TwoFA_active }
                             <button type="button" tabindex="110" class="btn btn-default btn-block btn-md" onclick="switchUser();">Benutzer wechseln</button>
@@ -133,6 +120,3 @@
     </div>
 </div>
 {include file='tpl_inc/footer.tpl'}
-
-{* vim: set expandtab:tw=4:sw=4 *}
-

@@ -1,6 +1,5 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='pluginprofiler'}
-
 {include file='tpl_inc/seite_header.tpl' cTitel=__('pluginprofiler') cBeschreibung=__('pluginprofilerDesc') cDokuURL=__('pluginprofilerURL')}
 <script type="text/javascript" src="{$shopURL}/{$PFAD_ADMIN}/{$currentTemplateDir}js/profiler.js"></script>
 <script type="text/javascript">
@@ -121,7 +120,7 @@ var pies = [];
                     {/foreach}
                 </div>
             {else}
-                <div class="alert alert-info">{__('noDataAvailable')}</div>
+                <div class="alert alert-info"><i class="fa fa-info-circle"></i> {__('noDataAvailable')}</div>
             {/if}
         </div>
     </div>

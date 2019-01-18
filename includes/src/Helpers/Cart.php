@@ -478,8 +478,8 @@ class Cart
                         $oKonfigitem->oEigenschaftwerte_arr
                     );
                     if (\count($redirectParam) > 0) {
-                        $valid            = false;
-                        $aArticleError_arr = Product::getProductMessages(
+                        $valid           = false;
+                        $productMessages = Product::getProductMessages(
                             $redirectParam,
                             true,
                             $oKonfigitem->getArtikel(),
@@ -487,7 +487,7 @@ class Cart
                             $oKonfigitem->getKonfigitem()
                         );
 
-                        $itemErrors[$oKonfigitem->getKonfigitem()] = $aArticleError_arr[0];
+                        $itemErrors[$oKonfigitem->getKonfigitem()] = $productMessages[0];
                     }
                 }
             }

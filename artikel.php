@@ -15,19 +15,16 @@ if (!defined('PFAD_ROOT')) {
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 /** @global \Smarty\JTLSmarty $smarty */
 Shop::setPageType(PAGE_ARTIKEL);
-$oPreisverlauf    = null;
-$bPreisverlauf    = false;
-$bereitsBewertet  = false;
-$Artikelhinweise  = [];
-$PositiveFeedback = [];
-$nonAllowed       = [];
-$conf             = Shopsetting::getInstance()->getAll();
-$globalMetaData   = \Filter\Metadata::getGlobalMetaData();
-// Bewertungsguthaben
-$fBelohnung = (isset($_GET['fB']) && (float)$_GET['fB'] > 0) ? (float)$_GET['fB'] : 0.0;
-// Hinweise und Fehler sammeln - Nur wenn bisher kein Fehler gesetzt wurde!
-$cHinweis = $smarty->getTemplateVars('hinweis');
-$shopURL  = Shop::getURL() . '/';
+$oPreisverlauf   = null;
+$bPreisverlauf   = false;
+$bereitsBewertet = false;
+$productNotices  = [];
+$nonAllowed      = [];
+$conf            = Shopsetting::getInstance()->getAll();
+$globalMetaData  = \Filter\Metadata::getGlobalMetaData();
+$fBelohnung      = (isset($_GET['fB']) && (float)$_GET['fB'] > 0) ? (float)$_GET['fB'] : 0.0;
+$cHinweis        = $smarty->getTemplateVars('hinweis');
+$shopURL         = Shop::getURL() . '/';
 if (empty($cHinweis)) {
     $cHinweis = Product::mapErrorCode(Request::verifyGPDataString('cHinweis'), $fBelohnung);
 }
@@ -87,9 +84,7 @@ if (Shop::$kVariKindArtikel > 0) {
     $bCanonicalURL = $conf['artikeldetails']['artikeldetails_canonicalurl_varkombikind'] !== 'N';
     $cCanonicalURL = $AktuellerArtikel->baueVariKombiKindCanonicalURL(SHOP_SEO, $AktuellerArtikel, $bCanonicalURL);
 }
-if ($conf['preisverlauf']['preisverlauf_anzeigen'] === 'Y'
-    && \Session\Frontend::getCustomerGroup()->mayViewPrices()
-) {
+if ($conf['preisverlauf']['preisverlauf_anzeigen'] === 'Y' && \Session\Frontend::getCustomerGroup()->mayViewPrices()) {
     Shop::$kArtikel = Shop::$kVariKindArtikel > 0
         ? Shop::$kVariKindArtikel
         : $AktuellerArtikel->kArtikel;
@@ -105,12 +100,12 @@ if (empty($cCanonicalURL)) {
     $cCanonicalURL = $shopURL . $AktuellerArtikel->cSeo;
 }
 $AktuellerArtikel->berechneSieSparenX($conf['artikeldetails']['sie_sparen_x_anzeigen']);
-Product::getProductMessages();
+$productNotices = Product::getProductMessages();
 
 if (isset($_POST['fragezumprodukt']) && (int)$_POST['fragezumprodukt'] === 1) {
-    Product::checkProductQuestion();
+    $productNotices = Product::checkProductQuestion($productNotices, $conf);
 } elseif (isset($_POST['benachrichtigung_verfuegbarkeit']) && (int)$_POST['benachrichtigung_verfuegbarkeit'] === 1) {
-    Product::checkAvailabilityMessage();
+    $productNotices = Product::checkAvailabilityMessage($productNotices);
 }
 // hole aktuelle Kategorie, falls eine gesetzt
 $kKategorie             = $AktuellerArtikel->gibKategorie();
@@ -216,8 +211,7 @@ $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('Xselling', !empty($AktuellerArtikel->kVariKindArtikel)
            ? Product::getXSelling($AktuellerArtikel->kVariKindArtikel)
            : Product::getXSelling($AktuellerArtikel->kArtikel, $AktuellerArtikel->nIstVater > 0))
-       ->assign('Artikelhinweise', $Artikelhinweise)
-       ->assign('PositiveFeedback', $PositiveFeedback)
+       ->assign('Artikelhinweise', $productNotices)
        ->assign(
            'verfuegbarkeitsBenachrichtigung',
            Product::showAvailabilityForm(
@@ -225,7 +219,7 @@ $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
                $conf['artikeldetails']['benachrichtigung_nutzen']
            )
        )
-       ->assign('ProdukttagHinweis', Product::editProductTags($AktuellerArtikel))
+       ->assign('ProdukttagHinweis', Product::editProductTags($AktuellerArtikel, $conf))
        ->assign('ProduktTagging', $AktuellerArtikel->tags)
        ->assign('BlaetterNavi', $ratingNav)
        ->assign('BewertungsTabAnzeigen', $BewertungsTabAnzeigen)

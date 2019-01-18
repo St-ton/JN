@@ -128,7 +128,7 @@ function cmp_obj($a, $b)
  */
 function calcRatio($file, $nMaxBreite = 0, $nMaxHoehe = 0)
 {
-    list($width, $height) = getimagesize($file);
+    [$width, $height] = getimagesize($file);
 
     return [$width, $height];
 }

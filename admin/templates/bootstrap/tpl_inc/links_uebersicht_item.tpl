@@ -9,7 +9,7 @@
             <div style="margin-left:{if $fac > 0}{$fac}px{else}0{/if}; padding-top: 7px" {if $link->getLevel() > 0 && $link->getParent() > 0}class="sub"{/if}>
                 {$link->getDisplayName()}
                 {if $missingLinkTranslations|count > 0} <i title="Fehlende Übersetzungen: {$missingLinkTranslations|count}" class="fa fa-warning"></i>{/if}
-                {if $link->hasDuplicateSpecialLink()} <i title="{__('hasDuplicateSpecialLink')}" class="fa fa-warning error"></i>{/if}
+                {if $link->hasDuplicateSpecialLink()} <i title="{sprintf(__('hasDuplicateSpecialLink'), '')}" class="fa fa-warning error"></i>{/if}
             </div>
         </td>
         <td class="tcenter floatforms" style="width: 50%">

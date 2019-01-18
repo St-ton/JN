@@ -84,6 +84,8 @@ class Notification implements IteratorAggregate, Countable
         $cache     = Shop::Container()->getCache();
         $linkAdmin = new \Link\Admin\LinkAdmin($db, $cache);
 
+        Shop::Container()->getGetText()->loadAdminLocale('notifications');
+
         if ($status->hasPendingUpdates()) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
@@ -257,8 +259,8 @@ class Notification implements IteratorAggregate, Countable
         if ($linkAdmin->getDuplicateSpecialLinks()) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
-                'Spezialseite mehrfach belegt',
-                'Eine oder mehrere Spezialseiten sind mehrfach für die gleiche(n) Kundengruppe(n) angelegt',
+                __('duplicateSpecialLinkTitle'),
+                __('duplicateSpecialLinkDesc'),
                 'links.php'
             );
         }

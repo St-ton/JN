@@ -32,21 +32,19 @@
     });
     $(window).on('load', function () {
         $('select[id="nLink3"], #cKundengruppen').change(function () {
-            console.log($('select[id="nLink3"]').val());
-            console.log($('input[name="kLink"]').val());
             ioCall('isDuplicateSpecialLink', [
                     parseInt($('select[id="nLink3"]').val()),
                     parseInt($('input[name="kLink"]').val()) || 0,
                     $('select[name="cKundengruppen[]"').val()
                 ],
                 function (result) {
-                console.log(result);
-                if (result) {
-                    $('#nLink3-error').removeClass('hidden-soft');
-                } else {
-                    $('#nLink3-error').addClass('hidden-soft');
+                    if (result) {
+                        $('#nLink3-error').removeClass('hidden-soft');
+                    } else {
+                        $('#nLink3-error').addClass('hidden-soft');
+                    }
                 }
-            });
+            );
         }).trigger('change');
     });
     {/literal}

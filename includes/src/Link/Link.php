@@ -1125,7 +1125,7 @@ final class Link extends AbstractLink
             );
         });
 
-        return !$duplicateLinks->isEmpty();
+        return $duplicateLinks->isNotEmpty();
     }
 
     /**

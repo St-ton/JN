@@ -156,7 +156,7 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && Form::validate
         $link->setLinkGroups([(int)$_POST['kLinkgruppe']]);
         $oPlausiVar_arr = $oPlausiCMS->getPlausiVar();
         if (isset($oPlausiVar_arr['nSpezialseite'])) {
-            $fehler = 'Fehler: Die gewählte Spezialseite existiert bereits für die gewählten Kundengruppen!';
+            $fehler = __('isDuplicateSpecialLink');
         } else {
             $fehler = 'Fehler: Bitte füllen Sie alle Pflichtangaben aus!';
         }
@@ -190,7 +190,7 @@ if ($continue
     if (is_dir($cUploadVerzeichnis . $link->getID())) {
         $DirHandle = opendir($cUploadVerzeichnis . $link->getID());
         $shopURL   = Shop::getURL() . '/';
-        while (false !== ($Datei = readdir($DirHandle))) {
+        while (($Datei = readdir($DirHandle)) !== false) {
             if ($Datei !== '.' && $Datei !== '..') {
                 $oDatei            = new stdClass();
                 $oDatei->cName     = substr($Datei, 0, strpos($Datei, '.'));
@@ -314,8 +314,8 @@ if ($clearCache === true) {
 if ($step === 'uebersicht') {
     foreach ($linkAdmin->getDuplicateSpecialLinks() as $specialLink) {
         $fehler .= sprintf(
-            'Spezialseite "%s" ist mehrfach für gleiche Kundengruppen belegt.<br />',
-            $specialLink->getName()
+            __('hasDuplicateSpecialLink') . '<br />',
+            ' "' . $specialLink->getName() .'"'
         );
     }
     $smarty->assign('kPlugin', Request::verifyGPCDataInt('kPlugin'))

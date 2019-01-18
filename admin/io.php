@@ -83,8 +83,7 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('createSearchIndex', 'createSearchIndex', $sucheinstellungInc, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
    ->register('clearSearchCache', 'clearSearchCache', $sucheinstellungInc, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
    ->register('adminSearch', 'adminSearch', $sucheInc, 'SETTINGS_SEARCH_VIEW')
-   ->register('isDuplicateSpecialLink', 'isDuplicateSpecialLink', $linksInc)
-;
+   ->register('isDuplicateSpecialLink', 'isDuplicateSpecialLink', $linksInc);
 
 $data = $io->handleRequest($_REQUEST['io']);
 $io->respondAndExit($data);

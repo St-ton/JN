@@ -1144,7 +1144,7 @@ class Sprache
                                 $url = $shopURL . $specialPage->getFileName();
                             } else {
                                 // there is a SEO link - make it a full URL
-                                $url = $helper->getStaticRoute($specialPage->getFileName(), true);
+                                $url = $helper->getStaticRoute($specialPage->getFileName());
                             }
                         }
                     }

@@ -24,7 +24,7 @@ class DBMigrationHelper
     /**
      * @return stdClass
      */
-    public static function getMySQLVersion()
+    public static function getMySQLVersion(): \stdClass
     {
         static $versionInfo = null;
 

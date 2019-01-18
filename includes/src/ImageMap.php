@@ -38,11 +38,11 @@ class ImageMap implements IExtensionPoint
      * @param bool $fetch_all
      * @return $this
      */
-    public function init($kInitial, $fetch_all = false)
+    public function init($kInitial, $fetch_all = false): self
     {
-        $oImageMap = $this->fetch($kInitial, $fetch_all);
-        if (is_object($oImageMap)) {
-            Shop::Smarty()->assign('oImageMap', $oImageMap);
+        $imageMap = $this->fetch($kInitial, $fetch_all);
+        if (is_object($imageMap)) {
+            Shop::Smarty()->assign('oImageMap', $imageMap);
         }
 
         return $this;
@@ -166,7 +166,7 @@ class ImageMap implements IExtensionPoint
      * @param string $bDatum
      * @return bool
      */
-    public function update(int $kImageMap, $cTitel, $cBildPfad, $vDatum, $bDatum)
+    public function update(int $kImageMap, $cTitel, $cBildPfad, $vDatum, $bDatum): bool
     {
         if (empty($vDatum)) {
             $vDatum = '_DBNULL_';

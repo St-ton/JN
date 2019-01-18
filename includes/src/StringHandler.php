@@ -26,7 +26,7 @@ class StringHandler
      * @param string $string
      * @return string
      */
-    public static function unhtmlentities($string)
+    public static function unhtmlentities($string): string
     {
         // replace numeric entities
         $string = preg_replace_callback(
@@ -557,7 +557,7 @@ class StringHandler
      * @param array $parts
      * @return string - the resulting URL
      */
-    public static function buildUrl(array $parts)
+    public static function buildUrl(array $parts): string
     {
         return (isset($parts['scheme']) ? $parts['scheme'] . '://' : '') .
             (isset($parts['user']) ? $parts['user'] . (isset($parts['pass']) ? ':' . $parts['pass'] : '') . '@' : '') .
@@ -605,7 +605,7 @@ class StringHandler
         if (!preg_match('/^\d{1,2}\.\d{1,2}\.(\d{4})$/', $data)) {
             return 2;
         }
-        list($tag, $monat, $jahr) = explode('.', $data);
+        [$tag, $monat, $jahr] = explode('.', $data);
         if (!checkdate($monat, $tag, $jahr)) {
             return 3;
         }

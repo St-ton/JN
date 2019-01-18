@@ -7,7 +7,6 @@
 namespace Plugin\Admin\Validation\Items;
 
 use Plugin\Admin\InputType;
-use Plugin\Admin\Validation\ValidationItemInterface;
 use Plugin\InstallCode;
 
 /**

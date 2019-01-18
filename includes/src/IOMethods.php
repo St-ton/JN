@@ -208,9 +208,7 @@ class IOMethods
         $warensumme[0] = Preise::getLocalizedPriceString(
             $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
         );
-        $warensumme[1] = Preise::getLocalizedPriceString(
-            $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false)
-        );
+        $warensumme[1] = Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL]));
         $smarty->assign('Boxen', $boxesToShow)
                ->assign('WarenkorbWarensumme', $warensumme);
 
@@ -614,9 +612,8 @@ class IOMethods
             $itemQuantities
         );
         $net             = \Session\Frontend::getCustomerGroup()->getIsMerchant();
-        $Artikel->fuelleArtikel($productID, null);
-        $Artikel->Preise->cVKLocalized[$net] =
-            Preise::getLocalizedPriceString($Artikel->Preise->fVK[$net] * $amount, null, true);
+        $Artikel->fuelleArtikel($productID);
+        $Artikel->Preise->cVKLocalized[$net] = Preise::getLocalizedPriceString($Artikel->Preise->fVK[$net] * $amount);
 
         $smarty->assign('oKonfig', $oKonfig)
                ->assign('NettoPreise', $net)
@@ -939,7 +936,7 @@ class IOMethods
             }
 
             $objResponse->jsfunc('$.evo.article().variationDisableAll', $wrapper);
-            $nPossibleVariations = $oArtikel->getVariationsBySelection($kGesetzteEigeschaftWerte, false);
+            $nPossibleVariations = $oArtikel->getVariationsBySelection($kGesetzteEigeschaftWerte);
             $checkStockInfo      = count($kGesetzteEigeschaftWerte) > 0
                 && (count($kGesetzteEigeschaftWerte) === count($nPossibleVariations) - 1);
             $stockInfo           = (object)[

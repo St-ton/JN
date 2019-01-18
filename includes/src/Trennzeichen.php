@@ -129,7 +129,7 @@ class Trennzeichen
     public static function getUnit(int $nEinheit, int $kSprache, $fAmount = -1)
     {
         if (!$kSprache) {
-            $oSprache = Sprache::getDefaultLanguage(true);
+            $oSprache = Sprache::getDefaultLanguage();
             $kSprache = (int)$oSprache->kSprache;
         }
 

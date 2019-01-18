@@ -40,7 +40,7 @@ class IO
      */
     public static function getInstance()
     {
-        return static::$instance === null ? (static::$instance = new static()) : static::$instance;
+        return static::$instance ?? (static::$instance = new static());
     }
 
     /**

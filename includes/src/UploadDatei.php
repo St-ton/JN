@@ -145,7 +145,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          * @param string $mimetype
          * @param string $downloadName
          */
-        public static function send_file_to_browser(string $filename, string $mimetype, string $downloadName)
+        public static function send_file_to_browser(string $filename, string $mimetype, string $downloadName): void
         {
             $browser_agent   = 'other';
             $HTTP_USER_AGENT = !empty($_SERVER['HTTP_USER_AGENT'])

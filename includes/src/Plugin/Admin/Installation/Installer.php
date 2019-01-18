@@ -370,7 +370,7 @@ final class Installer
             return $targetVersion;
         }
 
-        return $manager->migrate(null);
+        return $manager->migrate();
     }
 
     /**

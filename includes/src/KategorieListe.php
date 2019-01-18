@@ -174,19 +174,19 @@ class KategorieListe
     /**
      * Holt alle augeklappten Kategorien für eine gewählte Kategorie, jeweils nach Name sortiert
      *
-     * @param Kategorie $AktuelleKategorie
+     * @param Kategorie $currentCategory
      * @param int       $kKundengruppe
      * @param int       $kSprache
      * @return array
      */
-    public function getOpenCategories($AktuelleKategorie, int $kKundengruppe = 0, int $kSprache = 0): array
+    public function getOpenCategories($currentCategory, int $kKundengruppe = 0, int $kSprache = 0): array
     {
         $this->elemente = [];
         if (!\Session\Frontend::getCustomerGroup()->mayViewCategories()) {
             return $this->elemente;
         }
-        $this->elemente[]       = $AktuelleKategorie;
-        $AktuellekOberkategorie = $AktuelleKategorie->kOberKategorie;
+        $this->elemente[] = $currentCategory;
+        $currentParent    = $currentCategory->kOberKategorie;
         if (!$kKundengruppe) {
             $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
         }
@@ -194,15 +194,11 @@ class KategorieListe
             $kSprache = Shop::getLanguageID();
         }
         $allCategories = static::getCategoryList($kKundengruppe, $kSprache);
-        while ($AktuellekOberkategorie > 0) {
-            //kann man aus dem cache nehmen?
-            if (isset($allCategories['oKategorie_arr'][$AktuellekOberkategorie])) {
-                $oKategorie = $allCategories['oKategorie_arr'][$AktuellekOberkategorie];
-            } else {
-                $oKategorie = new Kategorie($AktuellekOberkategorie, $kSprache, $kKundengruppe);
-            }
-            $this->elemente[]       = $oKategorie;
-            $AktuellekOberkategorie = $oKategorie->kOberKategorie;
+        while ($currentParent > 0) {
+            $categoriy        = $allCategories['oKategorie_arr'][$currentParent]
+                ?? new Kategorie($currentParent, $kSprache, $kKundengruppe);
+            $this->elemente[] = $categoriy;
+            $currentParent    = $categoriy->kOberKategorie;
         }
 
         return $this->elemente;

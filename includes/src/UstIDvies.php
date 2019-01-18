@@ -56,12 +56,12 @@ class UstIDvies
      * spaces can't handled by the VIES-system,
      * so we condense the ID-string here and let them out
      *
-     * @param string $szString
+     * @param string $string
      * @return string
      */
-    public function condenseSpaces($szString)
+    public function condenseSpaces($string): string
     {
-        return str_replace(' ', '', $szString);
+        return str_replace(' ', '', $string);
     }
 
     /**
@@ -75,12 +75,12 @@ class UstIDvies
      *      , errorinfo : addition information to show it the user in the frontend
      * ]
      *
-     * @param string $szUstID
+     * @param string $ustID
      * @return array
      */
-    public function doCheckID($szUstID = ''): array
+    public function doCheckID($ustID = ''): array
     {
-        if ('' === $szUstID) {
+        if ($ustID === '') {
             return [
                 'success'   => false,
                 'errortype' => 'parse',
@@ -89,9 +89,9 @@ class UstIDvies
         }
 
         // parse the ID-string
-        $oVatParser = new UstIDviesVatParser($this->condenseSpaces($szUstID));
+        $oVatParser = new UstIDviesVatParser($this->condenseSpaces($ustID));
         if (true === $oVatParser->parseVatId()) {
-            list($szCountryCode, $szVatNumber) = $oVatParser->getIdAsParams();
+            [$szCountryCode, $szVatNumber] = $oVatParser->getIdAsParams();
         } else {
             return [
                 'success'   => false,
@@ -103,16 +103,16 @@ class UstIDvies
 
         // asking the remote service, if the VAT-office is reachable
         if (false === $this->oDownTimes->isDown($szCountryCode)) {
-            $oSoapClient = new SoapClient($this->szViesWSDL);
-            $oViesResult = null;
+            $soapClient = new SoapClient($this->szViesWSDL);
+            $viesResult = null;
             try {
-                $oViesResult = $oSoapClient->checkVat(['countryCode' => $szCountryCode, 'vatNumber' => $szVatNumber]);
+                $viesResult = $soapClient->checkVat(['countryCode' => $szCountryCode, 'vatNumber' => $szVatNumber]);
             } catch (Exception $e) {
                 Shop::Container()->getLogService()->error('MwStID Exception: '.$e->getMessage());
             }
 
-            if (null !== $oViesResult && true === $oViesResult->valid) {
-                Shop::Container()->getLogService()->notice('MwStID valid. (' . print_r($oViesResult, true) . ')');
+            if (null !== $viesResult && true === $viesResult->valid) {
+                Shop::Container()->getLogService()->notice('MwStID valid. (' . print_r($viesResult, true) . ')');
 
                 return [
                     'success'   => true,
@@ -120,7 +120,7 @@ class UstIDvies
                     'errorcode' => ''
                 ];
             }
-            Shop::Container()->getLogService()->notice('MwStID invalid! (' . print_r($oViesResult, true) . ')');
+            Shop::Container()->getLogService()->notice('MwStID invalid! (' . print_r($viesResult, true) . ')');
 
             return [
                 'success'   => false,
@@ -129,7 +129,7 @@ class UstIDvies
             ];
         }
         // inform the user:"The VAT-office in this country has closed this time."
-        Shop::Container()->getLogService()->notice('MIAS-Amt aktuell nicht erreichbar. (ID: '.$szUstID.')');
+        Shop::Container()->getLogService()->notice('MIAS-Amt aktuell nicht erreichbar. (ID: '.$ustID.')');
 
         return [
             'success'   => false,

@@ -122,7 +122,7 @@ class VCard
      * @param string $vcardData
      * @return VCard
      */
-    protected function createInstance($vcardData)
+    protected function createInstance($vcardData): self
     {
         $className = static::class;
 
@@ -133,7 +133,7 @@ class VCard
      * @param string $encodedStr
      * @return string
      */
-    protected static function correctEncoding($encodedStr)
+    protected static function correctEncoding($encodedStr): string
     {
         // das erste BASE64 final = sign muss maskiert werden, damit es vom nachfolgenden replace nicht ersetzt wird
         $encodedStr = preg_replace('{(\n\s.+)=(\n)}', '$1-base64=-$2', $encodedStr);
@@ -152,7 +152,7 @@ class VCard
      * @param string $str
      * @return string
      */
-    protected static function unescape($str)
+    protected static function unescape($str): string
     {
         return str_replace(
             ['\:', '\;', '\,', self::NL],
@@ -167,7 +167,7 @@ class VCard
      * @param array|null $rawParams
      * @return array
      */
-    protected static function parseParameters($key, array $rawParams = null)
+    protected static function parseParameters($key, array $rawParams = null): array
     {
         $result = [];
         $type   = [];
@@ -260,7 +260,7 @@ class VCard
      * parses a vcard line
      * @param string $line
      */
-    protected function parseVCardLine($line)
+    protected function parseVCardLine($line): void
     {
         [$key, $rawValue] = explode(':', $line, 2);
 
@@ -361,7 +361,7 @@ class VCard
      * parses vcard
      * @throws Exception
      */
-    protected function parseVCard()
+    protected function parseVCard(): void
     {
         $beginCount = preg_match_all('{^BEGIN\:VCARD}miS', $this->rawVCard);
         $endCount   = preg_match_all('{^END\:VCARD}miS', $this->rawVCard);
@@ -381,7 +381,7 @@ class VCard
             $this->rawVCard = str_replace("\r", self::NL, $this->rawVCard);
             $this->rawVCard = preg_replace('{(\n+)}', self::NL, $this->rawVCard);
 
-            if ($this->mode == self::MODE_MULTIPLE) {
+            if ($this->mode === self::MODE_MULTIPLE) {
                 $this->rawVCard = explode('BEGIN:VCARD', $this->rawVCard);
                 // leere Einträge entfernen
                 $this->rawVCard = array_filter($this->rawVCard);
@@ -566,7 +566,7 @@ class VCard
      * @param int $vCard
      * @return vCard
      */
-    public function selectVCard($vCard)
+    public function selectVCard($vCard): self
     {
         $vCard        = (int)$vCard;
         $this->iVCard = 0;
@@ -580,7 +580,7 @@ class VCard
     /**
      * @return stdClass
      */
-    public function asKunde()
+    public function asKunde(): stdClass
     {
         $Kunde = new stdClass();
         if (isset($this->GENDER)) {

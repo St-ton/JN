@@ -572,11 +572,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $isConverted = true;
             }
             if ($bConvertCurrency && !$isConverted) {
-                if (isset($_SESSION['Waehrung'])) {
-                    $waehrung = $_SESSION['Waehrung'];
-                } else {
-                    $waehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
-                }
+                $waehrung  = $_SESSION['Waehrung'] ?? Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
                 $fVKPreis *= (float)$waehrung->fFaktor;
             }
             if (!$bForceNetto && !\Session\Frontend::getCustomerGroup()->getIsMerchant()) {

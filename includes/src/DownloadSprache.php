@@ -45,7 +45,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          * @param int $kDownload
          * @param int $kSprache
          */
-        private function loadFromDB(int $kDownload, int $kSprache)
+        private function loadFromDB(int $kDownload, int $kSprache): void
         {
             $oDownloadSprache = Shop::Container()->getDB()->select(
                 'tdownloadsprache',

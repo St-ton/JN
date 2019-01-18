@@ -797,11 +797,10 @@ class Bestellung
         }
         // Fallback for Non-Beta
         if ((int)$this->cStatus === BESTELLUNG_STATUS_VERSANDT) {
-            $positionCountB = count($this->Positionen);
-            for ($i = 0; $i < $positionCountB; $i++) {
-                $this->Positionen[$i]->nAusgeliefertGesamt = $this->Positionen[$i]->nAnzahl;
-                $this->Positionen[$i]->bAusgeliefert       = true;
-                $this->Positionen[$i]->nOffenGesamt        = 0;
+            foreach ($this->Positionen as $position) {
+                $position->nAusgeliefertGesamt = $position->nAnzahl;
+                $position->bAusgeliefert       = true;
+                $position->nOffenGesamt        = 0;
             }
         }
 

@@ -394,7 +394,7 @@ class AuswahlAssistent
         $smarty = null,
         $selected = [],
         $pf = null
-    ) {
+    ): ?self {
         // only start if enabled in the backend settings
         if (!self::isRequired()) {
             return null;

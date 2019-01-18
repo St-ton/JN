@@ -74,7 +74,7 @@ class Template
      */
     public function __construct()
     {
-        self::$helper = \Helpers\Template::getInstance(false);
+        self::$helper = \Helpers\Template::getInstance();
         $this->init();
         $this->xmlData          = self::$helper->getData(self::$cTemplate, false);
         self::$frontEndInstance = $this;
@@ -447,7 +447,7 @@ class Template
      *
      * @return string|null
      */
-    public function getSkin()
+    public function getSkin(): ?string
     {
         $cSkin = Shop::Container()->getDB()->select(
             'ttemplateeinstellungen',
@@ -722,7 +722,7 @@ class Template
                 return false;
             }
             while (($obj = readdir($dh)) !== false) {
-                if ($obj{0} === '.') {
+                if (strpos($obj, '.') === 0) {
                     continue;
                 }
                 if (!is_dir(PFAD_ROOT . PFAD_COMPILEDIR . $obj)) {
@@ -863,7 +863,7 @@ class Template
      * @param bool $bRedirect
      * @deprecated since 5.0.0
      */
-    public function check($bRedirect = true)
+    public function check($bRedirect = true): void
     {
     }
 }

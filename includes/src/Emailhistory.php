@@ -267,7 +267,7 @@ class Emailhistory
     /**
      * @return string|null
      */
-    public function getFromName()
+    public function getFromName(): ?string
     {
         return $this->cFromName;
     }

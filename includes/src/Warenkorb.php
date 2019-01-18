@@ -151,11 +151,11 @@ class Warenkorb
     {
         static $depAmount = null;
 
-        if (!isset($depAmount, $depAmount[$productID]) || $excludePos !== null) {
+        if ($excludePos !== null || !isset($depAmount, $depAmount[$productID])) {
             $depAmount = $this->getAllDependentAmount($onlyStockRelevant, $excludePos);
         }
 
-        return isset($depAmount[$productID]) ? $depAmount[$productID] : 0;
+        return $depAmount[$productID] ?? 0;
     }
 
     /**
@@ -164,47 +164,47 @@ class Warenkorb
      */
     public function loescheDeaktiviertePositionen(): self
     {
-        foreach ($this->PositionenArr as $i => $Position) {
-            $Position->nPosTyp = (int)$Position->nPosTyp;
+        foreach ($this->PositionenArr as $i => $position) {
+            $position->nPosTyp = (int)$position->nPosTyp;
             $delete            = false;
-            if (!empty($Position->Artikel)) {
+            if (!empty($position->Artikel)) {
                 if (isset(
-                    $Position->Artikel->fLagerbestand,
-                    $Position->Artikel->cLagerBeachten,
-                    $Position->Artikel->cLagerKleinerNull,
-                    $Position->Artikel->cLagerVariation
+                    $position->Artikel->fLagerbestand,
+                    $position->Artikel->cLagerBeachten,
+                    $position->Artikel->cLagerKleinerNull,
+                    $position->Artikel->cLagerVariation
                 )
-                    && $Position->Artikel->fLagerbestand <= 0
-                    && $Position->Artikel->cLagerBeachten === 'Y'
-                    && $Position->Artikel->cLagerKleinerNull !== 'Y'
-                    && $Position->Artikel->cLagerVariation !== 'Y'
+                    && $position->Artikel->fLagerbestand <= 0
+                    && $position->Artikel->cLagerBeachten === 'Y'
+                    && $position->Artikel->cLagerKleinerNull !== 'Y'
+                    && $position->Artikel->cLagerVariation !== 'Y'
                 ) {
                     $delete = true;
-                } elseif (empty($Position->kKonfigitem)
-                    && $Position->fPreisEinzelNetto == 0
-                    && !$Position->Artikel->bHasKonfig
-                    && $Position->nPosTyp !== C_WARENKORBPOS_TYP_GRATISGESCHENK
-                    && isset($Position->fPreisEinzelNetto, $this->config['global']['global_preis0'])
+                } elseif (empty($position->kKonfigitem)
+                    && $position->fPreisEinzelNetto == 0
+                    && !$position->Artikel->bHasKonfig
+                    && $position->nPosTyp !== C_WARENKORBPOS_TYP_GRATISGESCHENK
+                    && isset($position->fPreisEinzelNetto, $this->config['global']['global_preis0'])
                     && $this->config['global']['global_preis0'] === 'N'
                 ) {
                     $delete = true;
-                } elseif (!empty($Position->Artikel->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH])) {
+                } elseif (!empty($position->Artikel->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH])) {
                     $delete = true;
                 } else {
                     $delete = (Shop::Container()->getDB()->select(
                         'tartikel',
                         'kArtikel',
-                        $Position->kArtikel
+                        $position->kArtikel
                     ) === null);
                 }
 
                 executeHook(HOOK_WARENKORB_CLASS_LOESCHEDEAKTIVIERTEPOS, [
-                    'oPosition' => $Position,
+                    'oPosition' => $position,
                     'delete'    => &$delete
                 ]);
             }
             if ($delete) {
-                self::addDeletedPosition($Position);
+                self::addDeletedPosition($position);
                 unset($this->PositionenArr[$i]);
             }
         }
@@ -595,7 +595,7 @@ class Warenkorb
         $cUnique = false,
         int $kKonfigitem = 0,
         int $kArtikel = 0
-    ) {
+    ): self {
         if ($delSamePosType) {
             $this->loescheSpezialPos($typ);
         }
@@ -833,7 +833,7 @@ class Warenkorb
      *
      * @param int $kArtikel
      * @param int $exclude_pos
-     * @return int Anzahl eines bestimmten Artikels im Warenkorb
+     * @return int
      */
     public function gibAnzahlEinesArtikels(int $kArtikel, int $exclude_pos = -1)
     {
@@ -1507,7 +1507,7 @@ class Warenkorb
      * @param bool $isRedirect
      * @param bool $unique
      */
-    public function redirectTo(bool $isRedirect = false, $unique = false)
+    public function redirectTo(bool $isRedirect = false, $unique = false): void
     {
         if (!$isRedirect
             && !$unique

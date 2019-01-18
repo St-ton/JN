@@ -71,7 +71,7 @@ final class Communication
     {
         if (file_exists($cFile)) {
             $aData_arr['opt_file'] = '@' . $cFile;
-            $cContent              = self::doCall($cURL, $aData_arr, true);
+            $cContent              = self::doCall($cURL, $aData_arr);
             if ($bDeleteFile) {
                 @unlink($cFile);
             }

@@ -3011,33 +3011,30 @@ class Artikel
                 if ($lastkArtikel > 0) {
                     $varCombChildren[$cIdentifier] = $lastkArtikel;
                 }
-                $cIdentifier = "{$varkombi->kEigenschaft}:{$varkombi->kEigenschaftWert}";
+                $cIdentifier = $varkombi->kEigenschaft . ':' . $varkombi->kEigenschaftWert;
             }
             $lastkArtikel = $varkombi->kArtikel;
         }
         $varCombChildren[$cIdentifier] = $lastkArtikel; //last item
 
         // Preise holen bzw. Artikel
-        if (is_array($varCombChildren)
-            && count($varCombChildren) > 0
-            && count($varCombChildren) <= ART_MATRIX_MAX
-        ) {
-            $oTMP_arr = [];
+        if (is_array($varCombChildren) && ($cnt = count($varCombChildren)) > 0 && $cnt <= ART_MATRIX_MAX) {
+            $tmp      = [];
             $per      = ' ' . Shop::Lang()->get('vpePer') . ' ';
             $taxRate  = $_SESSION['Steuersatz'][$this->kSteuerklasse];
             $currency = \Session\Frontend::getCurrency();
             foreach ($varCombChildren as $i => $kArtikel) {
-                if (!isset($oTMP_arr[$kArtikel])) {
+                if (!isset($tmp[$kArtikel])) {
                     $options                            = new stdClass();
                     $options->nKeinLagerbestandBeachten = 1;
                     $options->nArtikelAttribute         = 1;
-                    $oArtikel                                    = new self();
-                    $oArtikel->fuelleArtikel($kArtikel, $options);
+                    $product                            = new self();
+                    $product->fuelleArtikel($kArtikel, $options);
 
-                    $oTMP_arr[$kArtikel] = $oArtikel;
-                    $varCombChildren[$i] = $oArtikel;
+                    $tmp[$kArtikel]      = $product;
+                    $varCombChildren[$i] = $product;
                 } else {
-                    $varCombChildren[$i] = $oTMP_arr[$kArtikel];
+                    $varCombChildren[$i] = $tmp[$kArtikel];
                 }
                 // GrundPreis nicht vom Vater => Ticket #1228
                 if ($varCombChildren[$i]->fVPEWert > 0) {
@@ -3097,7 +3094,7 @@ class Artikel
      * @param array        $array
      * @param string|array $properties
      */
-    public function sortVarCombinationArray(&$array, $properties)
+    public function sortVarCombinationArray(&$array, $properties): void
     {
         if (is_string($properties)) {
             $properties = [$properties => SORT_ASC];
@@ -4766,8 +4763,8 @@ class Artikel
         $per           = ' ' . Shop::Lang()->get('vpePer') . ' ' . $basepriceUnit;
         $ust           = Tax::getSalesTax($this->kSteuerklasse);
 
-        if (Shop::getPageType() === PAGE_ARTIKELLISTE
-            && $this->Preise->oPriceRange !== null
+        if ($this->Preise->oPriceRange !== null
+            && Shop::getPageType() === PAGE_ARTIKELLISTE
             && $this->Preise->oPriceRange->isRange()
         ) {
             if ($this->Preise->oPriceRange->rangeWidth() <=

@@ -38,7 +38,7 @@ class ImageSlider extends Portlet
         if (!empty($images[0]['url'])) {
             return
                 '<div ' . $instance->getAttributeString() . $instance->getDataAttributeString() .
-                '><img src="' . $images[0]['url'] .
+                '><img alt="" src="' . $images[0]['url'] .
                 '" style="width: 98%; filter: grayscale(50%) opacity(60%)">' .
                 '<p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">' .
                 'Slider</p></div>';

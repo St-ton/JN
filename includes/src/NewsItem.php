@@ -66,7 +66,7 @@ class NewsItem
      * @param mixed $oAsset
      * @return $this
      */
-    public function addAsset($oAsset)
+    public function addAsset($oAsset): self
     {
         $this->asset = $oAsset;
 

@@ -551,7 +551,7 @@ class CheckBox
         $oKundeTMP->cNachname = $knd->cNachname;
         $oKundeTMP->cEmail    = $knd->cMail;
 
-        fuegeNewsletterEmpfaengerEin($oKundeTMP, false);
+        fuegeNewsletterEmpfaengerEin($oKundeTMP);
 
         return true;
     }

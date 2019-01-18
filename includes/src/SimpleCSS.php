@@ -243,7 +243,7 @@ class SimpleCSS
      */
     public function html2rgb($color)
     {
-        if ($color[0] === '#') {
+        if (strpos($color, '#') === 0) {
             $color = substr($color, 1);
         }
         if (strlen($color) === 6) {

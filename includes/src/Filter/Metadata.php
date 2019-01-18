@@ -436,7 +436,7 @@ class Metadata implements MetadataInterface
                 $catDescription = \strip_tags(\str_replace(['<br>', '<br />'], [' ', ' '], $category->cBeschreibung));
             } elseif ($category->bUnterKategorien) {
                 // Hat die aktuelle Kategorie Unterkategorien?
-                $helper = \Helpers\Category::getInstance();
+                $helper = Category::getInstance();
                 $sub    = $helper->getCategoryById($category->kKategorie);
                 if ($sub !== false && !empty($sub->Unterkategorien) && \count($sub->Unterkategorien) > 0) {
                     $catNames       = map($sub->Unterkategorien, function ($e) {
@@ -472,22 +472,22 @@ class Metadata implements MetadataInterface
         $cMetaDescription = '';
         if (\is_array($products) && \count($products) > 0) {
             \shuffle($products);
-            $nCount       = \min(12, \count($products));
-            $cArtikelName = '';
-            for ($i = 0; $i < $nCount; ++$i) {
-                $cArtikelName .= $i > 0
+            $maxIdx      = \min(12, \count($products));
+            $productName = '';
+            for ($i = 0; $i < $maxIdx; ++$i) {
+                $productName .= $i > 0
                     ? ' - ' . $products[$i]->cName
                     : $products[$i]->cName;
             }
-            $cArtikelName = \str_replace('"', '', $cArtikelName);
-            $cArtikelName = \StringHandler::htmlentitydecode($cArtikelName, \ENT_NOQUOTES);
+            $productName = \str_replace('"', '', $productName);
+            $productName = \StringHandler::htmlentitydecode($productName, \ENT_NOQUOTES);
 
             $cMetaDescription = !empty($globalMeta[$languageID]->Meta_Description_Praefix)
                 ? $this->getMetaStart($searchResults) .
                 ': ' .
                 $globalMeta[$languageID]->Meta_Description_Praefix .
-                ' ' . $cArtikelName
-                : $this->getMetaStart($searchResults) . ': ' . $cArtikelName;
+                ' ' . $productName
+                : $this->getMetaStart($searchResults) . ': ' . $productName;
             // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
             if ($searchResults->getOffsetStart() > 0
                 && $searchResults->getOffsetEnd() > 0
@@ -511,7 +511,7 @@ class Metadata implements MetadataInterface
             return \strip_tags($this->metaKeywords);
         }
         // Kategorieattribut?
-        $cKatKeywords = '';
+        $catKeyWords = '';
         if ($this->productFilter->hasCategory()) {
             $category = $category ?? new \Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($category->cMetaKeywords)) {
@@ -529,48 +529,48 @@ class Metadata implements MetadataInterface
             }
         }
         // Keine eingestellten Metas vorhanden => baue Standard Metas
-        $cMetaKeywords = '';
+        $keywordsMeta = '';
         if (\is_array($products) && \count($products) > 0) {
             \shuffle($products); // Shuffle alle Artikel
-            $nCount           = \min(6, \count($products));
-            $cArtikelName     = '';
+            $maxIdx           = \min(6, \count($products));
+            $productName      = '';
             $excludes         = self::getExcludes();
             $excludedKeywords = isset($excludes[$_SESSION['cISOSprache']]->cKeywords)
                 ? \explode(' ', $excludes[$_SESSION['cISOSprache']]->cKeywords)
                 : [];
-            for ($i = 0; $i < $nCount; ++$i) {
-                $cExcArtikelName = self::getFilteredString(
+            for ($i = 0; $i < $maxIdx; ++$i) {
+                $extProductName = self::getFilteredString(
                     $products[$i]->cName,
                     $excludedKeywords
                 ); // Filter nicht erlaubte Keywords
-                if (\strpos($cExcArtikelName, ' ') !== false) {
+                if (\strpos($extProductName, ' ') !== false) {
                     // Wenn der Dateiname aus mehreren Wörtern besteht
-                    $cSubName = '';
-                    foreach (\explode(' ', $cExcArtikelName) as $j => $cSubNameTMP) {
-                        if (\strlen($cSubNameTMP) > 2) {
-                            $cSubNameTMP = \str_replace(',', '', $cSubNameTMP);
-                            $cSubName   .= $j > 0
-                                ? ', ' . $cSubNameTMP
-                                : $cSubNameTMP;
+                    $subName = '';
+                    foreach (\explode(' ', $extProductName) as $j => $tmp) {
+                        if (\strlen($tmp) > 2) {
+                            $tmp = \str_replace(',', '', $tmp);
+                            $subName   .= $j > 0
+                                ? ', ' . $tmp
+                                : $tmp;
                         }
                     }
-                    $cArtikelName .= $cSubName;
+                    $productName .= $subName;
                 } elseif ($i > 0) {
-                    $cArtikelName .= ', ' . $products[$i]->cName;
+                    $productName .= ', ' . $products[$i]->cName;
                 } else {
-                    $cArtikelName .= $products[$i]->cName;
+                    $productName .= $products[$i]->cName;
                 }
             }
-            $cMetaKeywords = $cArtikelName;
+            $keywordsMeta = $productName;
             $unique        = [];
-            $metaArr       = \explode(', ', $cMetaKeywords);
+            $metaArr       = \explode(', ', $keywordsMeta);
             if (\is_array($metaArr) && \count($metaArr) > 1) {
                 foreach ($metaArr as $cMeta) {
                     if (!\in_array($cMeta, $unique, true)) {
                         $unique[] = $cMeta;
                     }
                 }
-                $cMetaKeywords = \implode(', ', $unique);
+                $keywordsMeta = \implode(', ', $unique);
             }
         } elseif (!empty($category->kKategorie)) {
             // Hat die aktuelle Kategorie Unterkategorien?
@@ -581,16 +581,16 @@ class Metadata implements MetadataInterface
                     $catNames     = map($sub->Unterkategorien, function ($e) {
                         return \strip_tags($e->cName);
                     });
-                    $cKatKeywords = \implode(', ', \array_filter($catNames));
+                    $catKeyWords = \implode(', ', \array_filter($catNames));
                 }
             } elseif (!empty($category->cBeschreibung)) { // Hat die aktuelle Kategorie eine Beschreibung?
-                $cKatKeywords = $category->cBeschreibung;
+                $catKeyWords = $category->cBeschreibung;
             }
 
-            return \strip_tags(\str_replace('"', '', $cKatKeywords));
+            return \strip_tags(\str_replace('"', '', $catKeyWords));
         }
 
-        return \strip_tags(\StringHandler::htmlentitydecode(\str_replace('"', '', $cMetaKeywords), \ENT_NOQUOTES));
+        return \strip_tags(\StringHandler::htmlentitydecode(\str_replace('"', '', $keywordsMeta), \ENT_NOQUOTES));
     }
 
     /**

@@ -58,7 +58,6 @@ class Config
             $cfg->id          = (int)$base->id;
             $cfg->valueID     = $base->confName;
             $cfg->menuID      = (int)$base->menuID;
-            $cfg->niceName    = __($cfg->valueID . '_name');
             $cfg->name        = $base->confNicename;
             $cfg->inputType   = $base->inputType;
             $cfg->sort        = (int)$base->nSort;
@@ -70,11 +69,18 @@ class Config
 //            $cfg->raw         = $base;
             $cfg->options = [];
 
+            $msgid         = $cfg->valueID . '_name';
+            $cfg->niceName = __($msgid);
+
+            if ($cfg->niceName === $msgid) {
+                $cfg->niceName = $base->name;
+            }
+
             $msgid            = $cfg->valueID . '_desc';
             $cfg->description = __($msgid);
 
             if ($cfg->description === $msgid) {
-                $cfg->description = '';
+                $cfg->description = $base->description;
             }
 
             if (!empty($cfg->sourceFile)
@@ -84,9 +90,15 @@ class Config
             } elseif (!($base->confValue === null && $base->confNicename === null)) {
                 foreach ($values as $value) {
                     $opt           = new \stdClass();
-                    $opt->niceName = __($cfg->valueID . '_value(' . $value->confValue . ')');
                     $opt->value    = $value->confValue;
                     $opt->sort     = (int)$value->confSort;
+
+                    $msgid         = $cfg->valueID . '_value(' . $value->confValue . ')';
+                    $opt->niceName = __($msgid);
+
+                    if ($opt->niceName === $msgid) {
+                        $opt->niceName = $value->confNicename;
+                    }
 
                     $cfg->options[] = $opt;
                 }

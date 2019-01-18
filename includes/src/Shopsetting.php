@@ -340,14 +340,15 @@ final class Shopsetting implements ArrayAccess
     public function preLoad(): array
     {
         $cacheID = 'settings_all_preload';
-        if (($result = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $result = $this->getAll();
-            Shop::Container()->getCache()->set(
-                $cacheID,
-                $result,
-                [CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION, CACHING_GROUP_CORE]
-            );
-        }
+        $result  = Shop::Container()->getCache()->get(
+            $cacheID,
+            function ($cache, $id, &$content, &$tags) {
+                $content = $this->getAll();
+                $tags    = [CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION, CACHING_GROUP_CORE];
+
+                return true;
+            }
+        );
         $this->container   = $result;
         $this->allSettings = $result;
 

@@ -42,7 +42,6 @@ class ExtensionLoader extends AbstractLoader
         } elseif (($extension = $this->loadFromCache()) !== null) {
             $getText = \Shop::Container()->getGetText();
             $getText->setLangIso($_SESSION['AdminAccount']->cISO ?? $languageCode);
-            $getText->loadPluginLocale($extension->getPluginID(), $extension);
             $getText->loadPluginLocale('base', $extension);
             $getText->loadPluginLocale('adminmenu', $extension);
 
@@ -93,7 +92,6 @@ class ExtensionLoader extends AbstractLoader
         $extension->setLicense($this->loadLicense($obj));
         $getText = \Shop::Container()->getGetText();
         $getText->setLangIso($_SESSION['AdminAccount']->cISO ?? $currentLanguageCode);
-        $getText->loadPluginLocale($obj->cPluginID, $extension);
         $getText->loadPluginLocale('base', $extension);
         $getText->loadPluginLocale('adminmenu', $extension);
         $meta  = $this->loadMetaData($obj);

@@ -79,16 +79,12 @@ class GetText
 
     /**
      * @param string      $domain
-     * @param ListingItem $plugin
+     * @param ListingItem $item
      * @return GetText
      */
-    public function loadPluginItemLocale(string $domain, ListingItem $item, bool $isExtension): self
+    public function loadPluginItemLocale(string $domain, ListingItem $item): self
     {
-        if ($isExtension) {
-            $dir = \PFAD_ROOT . \PFAD_EXTENSIONS . $item->getDir() . '/';
-        } else {
-            $dir = \PFAD_ROOT . \PFAD_PLUGIN . $item->getDir() . '/';
-        }
+        $dir = \PFAD_ROOT . \PFAD_EXTENSIONS . $item->getDir() . '/';
 
         return $this->addLocale($dir, $domain);
     }

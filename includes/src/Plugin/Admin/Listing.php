@@ -175,7 +175,9 @@ final class Listing
                 $plugin = $item->parseXML($xml);
                 $plugin->setPath($pluginDir . $dir);
 
-                \Shop::Container()->getGetText()->loadPluginItemLocale('base', $item, $isExtension);
+                if ($isExtension) {
+                    \Shop::Container()->getGetText()->loadPluginItemLocale('base', $item);
+                }
 
                 $msgid = $item->getID() . '_desc';
                 $desc  = __($msgid);

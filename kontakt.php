@@ -21,6 +21,7 @@ $AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $cCanonicalURL          = '';
 $SpezialContent         = new stdClass();
+$alertHelper            = Shop::Container()->getAlertService();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 if (Form::checkSubject()) {
     $step            = 'formular';
@@ -89,6 +90,16 @@ if (Form::checkSubject()) {
     $cMetaTitle       = $oMeta->cTitle;
     $cMetaDescription = $oMeta->cDesc;
     $cMetaKeywords    = $oMeta->cKeywords;
+
+    if ($step === 'nachricht versendet') {
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, Shop::Lang()->get('messageSent', 'contact'), 'messageSent');
+    } elseif ($step === 'floodschutz') {
+        $alertHelper->addAlert(
+            Alert::TYPE_DANGER,
+            Shop::Lang()->get('youSentUsAMessageShortTimeBefore', 'contact'),
+            'youSentUsAMessageShortTimeBefore'
+        );
+    }
 
     $smarty->assign('step', $step)
            ->assign('code', false)

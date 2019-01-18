@@ -179,7 +179,7 @@ final class Shopsetting implements ArrayAccess
                 }
                 if ($section === CONF_PLUGINZAHLUNGSARTEN) {
                     $settings = Shop::Container()->getDB()->query(
-                        "SELECT cName, cWert
+                        "SELECT cName, cWert, '' AS type
                              FROM tplugineinstellungen
                              WHERE cName LIKE '%_min%' 
                               OR cName LIKE '%_max'",
@@ -198,7 +198,7 @@ final class Shopsetting implements ArrayAccess
                         \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
                 }
-                if (is_array($settings) && count($settings) > 0) {
+                if (count($settings) > 0) {
                     $this->container[$offset] = [];
                     foreach ($settings as $setting) {
                         if ($setting->type === 'listbox') {

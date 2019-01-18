@@ -132,7 +132,9 @@ class Adresse
     {
         $cryptoService = Shop::Container()->getCryptoService();
         foreach (self::$encodedProperties as $property) {
-            $this->{$property} = trim($cryptoService->decryptXTEA($this->{$property}));
+            if ($this->{$property} !== null) {
+                $this->{$property} = trim($cryptoService->decryptXTEA($this->{$property}));
+            }
         }
 
         return $this;

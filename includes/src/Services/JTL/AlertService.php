@@ -37,7 +37,10 @@ class AlertService implements AlertServiceInterface
 
         if (!empty($alerts)) {
             foreach ($alerts as $alertSerialized) {
-                $this->pushAlert(unserialize($alertSerialized, ['allowed_classes', 'Alert']));
+                $alert = unserialize($alertSerialized, ['allowed_classes', 'Alert']);
+                if ($alert !== false) {
+                    $this->pushAlert($alert);
+                }
             }
         }
     }
@@ -58,7 +61,7 @@ class AlertService implements AlertServiceInterface
      */
     public function getAlert(string $key): ?Alert
     {
-        return $this->alertList->filter(function (Alert $alert) use ($key) {
+        return $this->getAlertList()->filter(function (Alert $alert) use ($key) {
             return $alert->getKey() === $key;
         })->pop();
     }
@@ -86,13 +89,9 @@ class AlertService implements AlertServiceInterface
      */
     public function alertTypeExists(string $type): bool
     {
-        foreach ($this->getAlertList() as $alert) {
-            if ($alert->getType() === $type) {
-                return true;
-            }
-        }
-
-        return false;
+        return count($this->getAlertList()->filter(function (Alert $alert) use ($type) {
+            return $alert->getType() === $type;
+        })) > 0;
     }
 
     /**

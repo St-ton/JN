@@ -69,7 +69,7 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
             ['showInAlertListTemplate' => false]
         );
         $ratingAllowed = false;
-    } elseif (pruefeKundeArtikelGekauft($AktuellerArtikel->kArtikel, $_SESSION['Kunde']->kKunde) === false) {
+    } elseif (pruefeKundeArtikelGekauft($AktuellerArtikel->kArtikel, \Session\Frontend::getCustomer()) === false) {
         Shop::Container()->getAlertService()->addAlert(
             Alert::TYPE_DANGER,
             Shop::Lang()->get('productNotBuyed', 'product rating'),

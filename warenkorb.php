@@ -163,8 +163,7 @@ if ($Schnellkaufhinweis !== '') {
     $alertHelper->addAlert(Alert::TYPE_INFO, $Schnellkaufhinweis, 'quickBuyNote');
 }
 if (!empty($_SESSION['Warenkorbhinweise'])) {
-    $cartNotices = $_SESSION['Warenkorbhinweise'];
-    foreach ($cartNotices as $key => $cartNotice) {
+    foreach ($_SESSION['Warenkorbhinweise'] as $key => $cartNotice) {
         $alertHelper->addAlert(Alert::TYPE_WARNING, $cartNotice, 'cartNotice' . $key);
     }
     unset($_SESSION['Warenkorbhinweise']);

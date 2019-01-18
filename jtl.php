@@ -27,8 +27,6 @@ $linkHelper    = Shop::Container()->getLinkService();
 $Einstellungen = Shopsetting::getInstance()->getAll();
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_LOGIN);
 $alertHelper   = Shop::Container()->getAlertService();
-$cHinweis      = '';
-$hinweis       = '';
 $ratings       = [];
 if (Request::verifyGPCDataInt('wlidmsg') > 0) {
     $alertHelper->addAlert(

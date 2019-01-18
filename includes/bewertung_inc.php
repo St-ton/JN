@@ -36,7 +36,7 @@ function speicherBewertung(int $productID, int $customerID, int $langID, $title,
     unset($oBewertungBereitsVorhanden);
     // Prüfe ob die Einstellung (Bewertung nur bei bereits gekauftem Artikel) gesetzt ist
     // und der Kunde den Artikel bereits gekauft hat
-    if (pruefeKundeArtikelGekauft($productID) === false) {
+    if (pruefeKundeArtikelGekauft($productID, \Session\Frontend::getCustomer()) === false) {
         header('Location: ' . $url . 'bewertung_anzeigen=1&cFehler=f03');
         exit;
     }
@@ -291,14 +291,15 @@ function pruefeKundeArtikelBewertet(int $productID, int $customerID): int
 
 /**
  * @param int $productID
+ * @param Kunde $customerID
  * @return bool
  */
-function pruefeKundeArtikelGekauft(int $productID): bool
+function pruefeKundeArtikelGekauft(int $productID, \Kunde $customerID): bool
 {
     // Prüfen ob der Bewerter diesen Artikel bereits gekauft hat
     if ($productID > 0
         && Shop::getSettingValue(CONF_BEWERTUNG, 'bewertung_artikel_gekauft') === 'Y'
-        && \Session\Frontend::getCustomer()->isLoggedIn()
+        && $customerID->isLoggedIn()
     ) {
         $order = Shop::Container()->getDB()->queryPrepared(
             'SELECT tbestellung.kBestellung
@@ -314,7 +315,7 @@ function pruefeKundeArtikelGekauft(int $productID): bool
                     OR twarenkorbpos.kArtikel = tartikel.kArtikel)',
             [
                 'aid' => $productID,
-                'cid' => \Session\Frontend::getCustomer()->getID()
+                'cid' => $customerID->getID()
             ],
             \DB\ReturnType::SINGLE_OBJECT
         );

@@ -13,8 +13,6 @@ $oAccount->permission('IMPORT_NEWSLETTER_RECEIVER_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
-//jtl2
-$format  = ['cAnrede', 'cVorname', 'cNachname', 'cEmail'];
 $hinweis = '';
 $fehler  = '';
 
@@ -25,13 +23,14 @@ if (isset($_POST['newsletterimport'], $_FILES['csv']['tmp_name'])
 ) {
     $file = fopen($_FILES['csv']['tmp_name'], 'r');
     if ($file !== false) {
+        $format   = ['cAnrede', 'cVorname', 'cNachname', 'cEmail'];
         $row      = 0;
         $formatId = -1;
         $fmt      = [];
         while ($data = fgetcsv($file, 2000, ';', '"')) {
             if ($row === 0) {
                 $hinweis .= 'Checke Kopfzeile ...';
-                $fmt      = checkformat($data);
+                $fmt      = checkformat($data, $format);
                 if ($fmt === -1) {
                     $fehler = 'Format nicht erkannt!';
                     break;
@@ -108,15 +107,15 @@ function pruefeNLEBlacklist($cMail)
 
 /**
  * @param array $data
+ * @param array $format
  * @return array|int
  */
-function checkformat($data)
+function checkformat($data, $format)
 {
     $fmt = [];
     $cnt = count($data);
     for ($i = 0; $i < $cnt; $i++) {
-        // jtl-shop/issues#296
-        if (!empty($data[$i]) && in_array($data[$i], $GLOBALS['format'], true)) {
+        if (!empty($data[$i]) && in_array($data[$i], $format, true)) {
             $fmt[$i] = $data[$i];
         }
     }

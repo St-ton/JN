@@ -29,4 +29,6 @@ class Type extends Enum
     public const DATAPROTECTION = 'dataprotection';
 
     public const IMAGECACHE = 'imagecache';
+
+    public const STORE = 'store';
 }

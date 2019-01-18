@@ -1,0 +1,17 @@
+msgid "queueEntries"
+msgstr "Queueeinträge"
+
+msgid "store"
+msgstr "JTL-Store"
+
+msgid "storeDesc"
+msgstr "Um auf JTL-Store Inhalte zugreifen zu k&ouml;nnen, müssen Sie zun&auml;chst Ihr JTL-Konto verkn&uuml;pfen."
+
+msgid "storeURL"
+msgstr ""
+
+msgid "storeLink"
+msgstr "Jetzt verknüpfen"
+
+msgid "storeRevoke"
+msgstr "Verknüpfung entfernen"

@@ -596,8 +596,7 @@ class ShippingMethod
                     $additionalProduct->fWarenwertNetto += $product['fAnzahl'] * $child->Preise->fVKNetto;
                     $additionalProduct->fGewicht        += $product['fAnzahl'] * $child->fGewicht;
                 }
-                if (\strlen($shippingClasses) > 0 && \strpos($shippingClasses, $child->kVersandklasse) === false
-                ) {
+                if (\strlen($shippingClasses) > 0 && \strpos($shippingClasses, $child->kVersandklasse) === false) {
                     $shippingClasses = '-' . $child->kVersandklasse;
                 } elseif (\strlen($shippingClasses) === 0) {
                     $shippingClasses = $child->kVersandklasse;

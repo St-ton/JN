@@ -585,11 +585,8 @@ class Product
     protected static function getSelectedVariationValue(int $groupID)
     {
         $idx = 'eigenschaftwert_' . $groupID;
-        if (isset($_POST[$idx])) {
-            return $_POST[$idx];
-        }
 
-        return $_POST['eigenschaftwert'][$groupID] ?? false;
+        return $_POST[$idx] ?? $_POST['eigenschaftwert'][$groupID] ?? false;
     }
 
     /**
@@ -1604,7 +1601,7 @@ class Product
             // Pruefe ob Kunde eingeloggt
             if (empty($_SESSION['Kunde']->kKunde) && $conf['artikeldetails']['tagging_freischaltung'] === 'Y') {
                 $linkHelper = Shop::Container()->getLinkService();
-                \header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) .
+                \header('Location: ' . $linkHelper->getStaticRoute('jtl.php') .
                     '?a=' . (int)$_POST['a'] . '&tag=' .
                     StringHandler::htmlentities(StringHandler::filterXSS($_POST['tag'])) .
                     '&r=' . \R_LOGIN_TAG . '&produktTag=1', true, 303);
@@ -1730,7 +1727,7 @@ class Product
                 return Shop::Lang()->get('maxTagsExceeded', 'messages');
             }
         } elseif (isset($_POST['einloggen'])) {
-            \header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('jtl.php', true) .
+            \header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('jtl.php') .
                 '?a=' . (int)$_POST['a'] . '&r=' . \R_LOGIN_TAG, true, 303);
             exit();
         } else {

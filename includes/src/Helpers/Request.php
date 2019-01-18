@@ -242,7 +242,7 @@ class Request
      */
     public static function http_get_contents($url, int $timeout = 5, $post = null)
     {
-        return self::make_http_request($url, $timeout, $post, false);
+        return self::make_http_request($url, $timeout, $post);
     }
 
     /**

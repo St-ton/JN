@@ -93,7 +93,7 @@ final class Shopsetting implements ArrayAccess
      *
      * @return $this
      */
-    public function reset()
+    public function reset(): self
     {
         $this->container = [];
 
@@ -144,12 +144,10 @@ final class Shopsetting implements ArrayAccess
     {
         if (!isset($this->container[$offset])) {
             $section = static::mapSettingName(null, $offset);
-
+            $cacheID = 'setting_' . $section;
             if ($section === false || $section === null) {
                 return null;
             }
-            $cacheID = 'setting_' . $section;
-            // Template work around
             if ($section === CONF_TEMPLATE) {
                 if (($templateSettings = Shop::Container()->getCache()->get($cacheID)) === false) {
                     $template         = Template::getInstance();
@@ -182,13 +180,12 @@ final class Shopsetting implements ArrayAccess
                         "SELECT cName, cWert, '' AS type
                              FROM tplugineinstellungen
                              WHERE cName LIKE '%_min%' 
-                              OR cName LIKE '%_max'",
+                                OR cName LIKE '%_max'",
                         \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
                 } else {
                     $settings = Shop::Container()->getDB()->queryPrepared(
-                        'SELECT teinstellungen.kEinstellungenSektion, teinstellungen.cName, teinstellungen.cWert,
-                            teinstellungenconf.cInputTyp AS type
+                        'SELECT teinstellungen.cName, teinstellungen.cWert, teinstellungenconf.cInputTyp AS type
                             FROM teinstellungen
                             LEFT JOIN teinstellungenconf
                                 ON teinstellungenconf.cWertName = teinstellungen.cName
@@ -281,6 +278,7 @@ final class Shopsetting implements ArrayAccess
         if ($this->allSettings !== null) {
             return $this->allSettings;
         }
+        $result   = [];
         $settings = Shop::Container()->getDB()->query(
             'SELECT teinstellungen.kEinstellungenSektion, teinstellungen.cName, teinstellungen.cWert,
                 teinstellungenconf.cInputTyp AS type
@@ -291,11 +289,10 @@ final class Shopsetting implements ArrayAccess
                 ORDER BY kEinstellungenSektion',
             \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
-        $result   = [];
         foreach (self::$mapping as $mappingID => $sectionName) {
             foreach ($settings as $setting) {
-                $kEinstellungenSektion = (int)$setting['kEinstellungenSektion'];
-                if ($kEinstellungenSektion === $mappingID) {
+                $sectionID = (int)$setting['kEinstellungenSektion'];
+                if ($sectionID === $mappingID) {
                     if (!isset($result[$sectionName])) {
                         $result[$sectionName] = [];
                     }
@@ -340,13 +337,5 @@ final class Shopsetting implements ArrayAccess
         $this->allSettings = $result;
 
         return $result;
-    }
-
-    /**
-     * @return string[]
-     */
-    private static function getMappings(): array
-    {
-        return self::$mapping;
     }
 }

@@ -98,74 +98,7 @@
 {block name='order-details-basket'}
 <h2>{lang key='basket'}</h2>
 <div class="table-responsive">
-    <table class="table table-striped table-bordered" id="customerorder">
-        <thead>
-            <tr>
-                <th>{lang key='product' section='global'}</th>
-                <th>{lang key='shippingStatus' section='login'}</th>
-                <th class="text-right">{lang key='quantity' section='checkout'}</th>
-                <th class="text-right">{lang key='merchandiseValue' section='checkout'}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {foreach $Bestellung->Positionen as $Position}
-                {if !($Position->cUnique|strlen > 0 && $Position->kKonfigitem > 0)}
-                    <tr>
-                        <td>
-                            {include file='account/order_item.tpl' Position=$Position bPreis=true bKonfig=true}
-                        </td>
-                        <td>
-                            {if $Position->nPosTyp == 1}
-                                {if $Position->bAusgeliefert}
-                                    {lang key='statusShipped' section='order'}
-                                {elseif $Position->nAusgeliefert > 0}
-                                    {if $Position->cUnique|strlen == 0}{lang key='statusShipped' section='order'}: {$Position->nAusgeliefertGesamt}{else}{lang key='statusPartialShipped' section='order'}{/if}
-                                {else}
-                                    {lang key='notShippedYet' section='login'}
-                                {/if}
-                            {/if}
-                        </td>
-                        <td class="text-right">
-                            {$Position->nAnzahl|replace_delim}
-                        </td>
-                        <td class="text-right">
-                            {if $Position->cUnique|strlen > 0 && $Position->kKonfigitem == 0}
-                                <p>{$Position->cKonfigpreisLocalized[$NettoPreise]}</p>
-                            {else}
-                                <p>{$Position->cGesamtpreisLocalized[$NettoPreise]}</p>
-                            {/if}
-                        </td>
-                    </tr>
-                {/if}
-            {/foreach}
-        </tbody>
-        <tfoot>
-            {if $NettoPreise}
-                <tr>
-                    <td colspan="3" class="text-right"><span class="price_label">{lang key='totalSum' section='global'}:</span></td>
-                    <td class="text-right"><span>{$Bestellung->WarensummeLocalized[$NettoPreise]}</span></td>
-                </tr>
-            {/if}
-            {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N'}
-                {foreach $Bestellung->Steuerpositionen as $taxPosition}
-                    <tr>
-                        <td colspan="3" class="text-right">{$taxPosition->cName}</td>
-                        <td class="text-right">{$taxPosition->cPreisLocalized}</td>
-                    </tr>
-                {/foreach}
-            {/if}
-            {if $Bestellung->GuthabenNutzen == 1}
-                <tr>
-                    <td colspan="3" class="text-right"><span class="price_label">{lang key='useCredit' section='account data'}:</span></td>
-                    <td class="text-right">{$Bestellung->GutscheinLocalized}</span></td>
-                </tr>
-            {/if}
-            <tr class="info">
-                <td colspan="3" class="text-right"><span class="price_label"><strong>{lang key='totalSum' section='global'}</strong>{if $NettoPreise} {lang key='gross' section='global'}{/if}:</span></td>
-                <td class="text-right"><span class="price">{$Bestellung->WarensummeLocalized[0]}</span></td>
-            </tr>
-        </tfoot>
-    </table>
+    {include file='account/order_item.tpl' tplscope='confirmation'}
 </div>
 
 {include file='account/downloads.tpl'}

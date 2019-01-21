@@ -206,4 +206,4 @@ msgid "isDuplicateSpecialLink"
 msgstr "Die Spezialseite existiert bereits für die gewählte(n) Kundengruppe(n)."
 
 msgid "hasDuplicateSpecialLink"
-msgstr "Die Spezialseite%s existiert mehrfach für gleiche Kundengruppe(n)."
+msgstr "Die Spezialseite%s existiert mehrmals für die gleiche(n) Kundengruppe(n)."

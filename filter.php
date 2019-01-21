@@ -18,9 +18,8 @@ Shop::setPageType(PAGE_ARTIKELLISTE);
 /** @global \Filter\ProductFilter $NaviFilter*/
 $conf               = Shopsetting::getInstance()->getAll();
 $bestsellers        = [];
-$suchanfrage        = '';
 $doSearch           = true;
-$KategorieInhalt    = null;
+$categoryContent    = null;
 $AktuelleKategorie  = new Kategorie();
 $expandedCategories = new KategorieListe();
 $hasError           = false;
@@ -93,9 +92,7 @@ if ($conf['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y'
 if (Request::verifyGPCDataInt('zahl') > 0) {
     $_SESSION['ArtikelProSeite'] = Request::verifyGPCDataInt('zahl');
 }
-if (!isset($_SESSION['ArtikelProSeite'])
-    && $conf['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'N'
-) {
+if (!isset($_SESSION['ArtikelProSeite']) && $conf['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'N') {
     $_SESSION['ArtikelProSeite'] = min(
         (int)$conf['artikeluebersicht']['artikeluebersicht_artikelproseite'],
         ARTICLES_PER_PAGE_HARD_LIMIT
@@ -111,24 +108,24 @@ $oSuchergebnisse->getProducts()->transform(function ($product) use ($conf) {
 });
 if ($oSuchergebnisse->getProducts()->count() === 0) {
     if ($NaviFilter->hasCategory()) {
-        $KategorieInhalt                  = new stdClass();
-        $KategorieInhalt->Unterkategorien = new KategorieListe();
+        $categoryContent                  = new stdClass();
+        $categoryContent->Unterkategorien = new KategorieListe();
         $h                                = Category::getInstance();
         $children                         = $h->getCategoryById($NaviFilter->getCategory()->getValue());
         if ($children !== false && isset($children->Unterkategorien)) {
-            $KategorieInhalt->Unterkategorien->elemente = $children->Unterkategorien;
+            $categoryContent->Unterkategorien->elemente = $children->Unterkategorien;
         }
 
         $tb = $conf['artikeluebersicht']['topbest_anzeigen'];
         if ($tb === 'Top' || $tb === 'TopBest') {
-            $KategorieInhalt->TopArtikel = new ArtikelListe();
-            $KategorieInhalt->TopArtikel->holeTopArtikel($KategorieInhalt->Unterkategorien);
+            $categoryContent->TopArtikel = new ArtikelListe();
+            $categoryContent->TopArtikel->holeTopArtikel($categoryContent->Unterkategorien);
         }
         if ($tb === 'Bestseller' || $tb === 'TopBest') {
-            $KategorieInhalt->BestsellerArtikel = new ArtikelListe();
-            $KategorieInhalt->BestsellerArtikel->holeBestsellerArtikel(
-                $KategorieInhalt->Unterkategorien,
-                $KategorieInhalt->TopArtikel ?? null
+            $categoryContent->BestsellerArtikel = new ArtikelListe();
+            $categoryContent->BestsellerArtikel->holeBestsellerArtikel(
+                $categoryContent->Unterkategorien,
+                $categoryContent->TopArtikel ?? null
             );
         }
     } else {
@@ -152,7 +149,7 @@ AuswahlAssistent::startIfRequired(
 $pagination = new \Filter\Pagination\Pagination($NaviFilter, new \Filter\Pagination\ItemFactory());
 $pagination->create($pages);
 $smarty->assign('NaviFilter', $NaviFilter)
-       ->assign('KategorieInhalt', $KategorieInhalt)
+       ->assign('KategorieInhalt', $categoryContent)
        ->assign('oErweiterteDarstellung', $NaviFilter->getMetaData()->getExtendedView($params['nDarstellung']))
        ->assign('oBestseller_arr', $bestsellers)
        ->assign('oNaviSeite_arr', $pagination->getItemsCompat())

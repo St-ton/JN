@@ -24,8 +24,7 @@ $cMetaKeywords    = '';
 $conf             = Shopsetting::getInstance()->getAll();
 $customerGroupID  = \Session\Frontend::getCustomerGroup()->getID();
 $linkService      = Shop::Container()->getLinkService();
-$kLink            = $linkService->getSpecialPageLinkKey(LINKTYP_NEWS);
-$link             = $linkService->getPageLink($kLink);
+$link             = $linkService->getPageLink($linkService->getSpecialPageLinkKey(LINKTYP_NEWS));
 $controller       = new \News\Controller($db, $conf, $smarty);
 
 switch ($controller->getPageType($params)) {

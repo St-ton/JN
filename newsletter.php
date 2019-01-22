@@ -39,13 +39,10 @@ if (isset($oLink->kLink) && $oLink->kLink > 0) {
     return;
 }
 
-$cHinweis               = '';
-$cFehler                = '';
-$cCanonicalURL          = '';
-$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$option                 = 'eintragen';
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
+$cHinweis      = '';
+$cFehler       = '';
+$cCanonicalURL = '';
+$option        = 'eintragen';
 if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
     $option     = 'freischalten';
     $optCode    = StringHandler::htmlentities(StringHandler::filterXSS(strip_tags($_GET['fc'])));
@@ -220,10 +217,10 @@ if (\Session\Frontend::getCustomer()->getID() > 0) {
            ->assign('oKunde', $customer);
 }
 $cCanonicalURL    = Shop::getURL() . '/newsletter.php';
-$oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_NEWSLETTER);
-$cMetaTitle       = $oMeta->cTitle;
-$cMetaDescription = $oMeta->cDesc;
-$cMetaKeywords    = $oMeta->cKeywords;
+$metaData         = $linkHelper->buildSpecialPageMeta(LINKTYP_NEWSLETTER);
+$cMetaTitle       = $metaData->cTitle;
+$cMetaDescription = $metaData->cDesc;
+$cMetaKeywords    = $metaData->cKeywords;
 
 $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)

@@ -38,3 +38,7 @@ class_alias(\Extensions\Konfigitem::class, 'Konfigitem', true);
 class_alias(\Extensions\Konfigitempreis::class, 'Konfigitempreis', true);
 class_alias(\Extensions\Konfigitemsprache::class, 'Konfigitemsprache', true);
 class_alias(\Extensions\Konfigurator::class, 'Konfigurator', true);
+class_alias(\Extensions\AuswahlAssistent::class, 'AuswahlAssistent', true);
+class_alias(\Extensions\AuswahlAssistentFrage::class, 'AuswahlAssistentFrage', true);
+class_alias(\Extensions\AuswahlAssistentFrage::class, 'AuswahlAssistentFrage', true);
+class_alias(\Extensions\AuswahlAssistentOrt::class, 'AuswahlAssistentOrt', true);

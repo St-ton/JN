@@ -78,7 +78,6 @@ $linkHelper->activate($pagetType);
 $origin = (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0)
     ? $_SESSION['Kunde']->cLand
     : '';
-
 $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('NaviFilter', $NaviFilter)
        ->assign('manufacturers', Manufacturer::getInstance()->getManufacturers())

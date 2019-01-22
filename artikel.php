@@ -237,10 +237,11 @@ $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('bPreisverlauf', is_array($oPreisverlauf) && count($oPreisverlauf) > 1)
        ->assign('preisverlaufData', $oPreisverlauf)
        ->assign('NavigationBlaettern', $nav)
-       ->assign('bereitsBewertet', $rated)
-       ->assign('meta_title', $AktuellerArtikel->getMetaTitle())
-       ->assign('meta_description', $AktuellerArtikel->getMetaDescription($expandedCategories))
-       ->assign('meta_keywords', $AktuellerArtikel->getMetaKeywords());
+       ->assign('bereitsBewertet', $rated);
+
+$cMetaTitle       = $AktuellerArtikel->getMetaTitle();
+$cMetaDescription = $AktuellerArtikel->getMetaDescription($expandedCategories);
+$cMetaKeywords    = $AktuellerArtikel->getMetaKeywords();
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 

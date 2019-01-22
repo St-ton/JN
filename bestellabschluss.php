@@ -87,9 +87,6 @@ if (isset($_GET['i'])) {
     }
     setzeSmartyWeiterleitung($bestellung);
 }
-$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 if ($conf['trustedshops']['trustedshops_nutzen'] === 'Y') {
     $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
     if ((int)$oTrustedShops->nAktiv === 1 && strlen($oTrustedShops->tsId) > 0) {

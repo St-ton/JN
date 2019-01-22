@@ -65,11 +65,8 @@ if (isset($_GET['updated_pw']) && $_GET['updated_pw'] === 'true') {
 if (isset($_POST['login']) && (int)$_POST['login'] === 1 && !empty($_POST['email']) && !empty($_POST['passwort'])) {
     fuehreLoginAus($_POST['email'], $_POST['passwort']);
 }
-$customerID             = \Session\Frontend::getCustomer()->getID();
-$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$editRechnungsadresse   = 0;
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
+$customerID           = \Session\Frontend::getCustomer()->getID();
+$editRechnungsadresse = 0;
 
 if (isset($customer)
     && !empty($customer->kKunde)
@@ -677,10 +674,10 @@ if ($customerID > 0) {
            ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr);
 }
 $cCanonicalURL    = $linkHelper->getStaticRoute('jtl.php', true);
-$oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_LOGIN);
-$cMetaTitle       = $oMeta->cTitle;
-$cMetaDescription = $oMeta->cDesc;
-$cMetaKeywords    = $oMeta->cKeywords;
+$metaData         = $linkHelper->buildSpecialPageMeta(LINKTYP_LOGIN);
+$cMetaTitle       = $metaData->cTitle;
+$cMetaDescription = $metaData->cDesc;
+$cMetaKeywords    = $metaData->cKeywords;
 $link             = $linkHelper->getPageLink($kLink);
 $smarty->assign('bewertungen', $ratings)
        ->assign('cHinweis', $cHinweis)

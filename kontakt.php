@@ -12,16 +12,13 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'kontakt_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_KONTAKT);
-$smarty                 = Shop::Smarty();
-$conf                   = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
-$linkHelper             = Shop::Container()->getLinkService();
-$kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
-$link                   = $linkHelper->getPageLink($kLink);
-$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$cCanonicalURL          = '';
-$lang                   = Shop::getLanguageCode();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
+$smarty        = Shop::Smarty();
+$conf          = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
+$linkHelper    = Shop::Container()->getLinkService();
+$kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
+$link          = $linkHelper->getPageLink($kLink);
+$cCanonicalURL = '';
+$lang          = Shop::getLanguageCode();
 if (Form::checkSubject()) {
     $step            = 'formular';
     $fehlendeAngaben = [];
@@ -85,10 +82,10 @@ if (Form::checkSubject()) {
         }
     }
     $cCanonicalURL    = $linkHelper->getStaticRoute('kontakt.php');
-    $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_KONTAKT, $lang);
-    $cMetaTitle       = $oMeta->cTitle;
-    $cMetaDescription = $oMeta->cDesc;
-    $cMetaKeywords    = $oMeta->cKeywords;
+    $metaData         = $linkHelper->buildSpecialPageMeta(LINKTYP_KONTAKT, $lang);
+    $cMetaTitle       = $metaData->cTitle;
+    $cMetaDescription = $metaData->cDesc;
+    $cMetaKeywords    = $metaData->cKeywords;
     $smarty->assign('step', $step)
            ->assign('code', false)
            ->assign('betreffs', $subjects)

@@ -10,16 +10,13 @@ require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'vergleichsliste_inc.php';
 
 Shop::setPageType(PAGE_VERGLEICHSLISTE);
-$compareList            = null;
-$conf                   = Shop::getSettings([CONF_VERGLEICHSLISTE, CONF_ARTIKELDETAILS]);
-$prioRows               = [];
-$attrVar                = [[], []];
-$linkHelper             = Shop::Container()->getLinkService();
-$kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_VERGLEICHSLISTE);
-$link                   = $linkHelper->getPageLink($kLink);
-$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
+$compareList = null;
+$conf        = Shop::getSettings([CONF_VERGLEICHSLISTE, CONF_ARTIKELDETAILS]);
+$prioRows    = [];
+$attrVar     = [[], []];
+$linkHelper  = Shop::Container()->getLinkService();
+$kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_VERGLEICHSLISTE);
+$link        = $linkHelper->getPageLink($kLink);
 if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {
     $kArtikel = Request::verifyGPCDataInt('a');
     if ($kArtikel > 0) {

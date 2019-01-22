@@ -131,9 +131,6 @@ if ($kPlugin > 0) {
     $paymentMethod->cModulId = $moduleID;
     $paymentMethod->preparePaymentProcess($bestellung);
 }
-$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
 Shop::Smarty()->assign('WarensummeLocalized', \Session\Frontend::getCart()->gibGesamtsummeWarenLocalized())
     ->assign('Bestellung', $bestellung);

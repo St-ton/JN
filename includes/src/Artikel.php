@@ -6310,9 +6310,9 @@ class Artikel
             $description = $this->cKurzBeschreibung;
         }
         if (empty($description)) {
-            $AufgeklappteKategorien = new KategorieListe();
-            $AufgeklappteKategorien->getOpenCategories(new Kategorie($this->gibKategorie()));
-            $description = $this->getMetaDescription($AufgeklappteKategorien);
+            $expandedCategories = new KategorieListe();
+            $expandedCategories->getOpenCategories(new Kategorie($this->gibKategorie()));
+            $description = $this->getMetaDescription($expandedCategories);
         }
 
         $description          = str_replace(['<br>', '<br />', '</p>', '</li>', "\n", "\r", '.'], ' ', $description);
@@ -6357,14 +6357,14 @@ class Artikel
         if ($this->metaTitle !== null) {
             return $this->metaTitle;
         }
-        $cGlobalMetaTitle = '';
-        $title            = '';
-        $cPreis           = '';
+        $globalMetaTitle = '';
+        $title           = '';
+        $price           = '';
         // append global meta title
         if ($this->conf['metaangaben']['global_meta_title_anhaengen'] === 'Y') {
             $globalMetaData = \Filter\Metadata::getGlobalMetaData();
             if (!empty($globalMetaData[Shop::getLanguageID()]->Title)) {
-                $cGlobalMetaTitle = ' - ' . $globalMetaData[Shop::getLanguageID()]->Title;
+                $globalMetaTitle = ' - ' . $globalMetaData[Shop::getLanguageID()]->Title;
             }
         }
         $idx = \Session\Frontend::getCustomerGroup()->getIsMerchant();
@@ -6376,19 +6376,19 @@ class Artikel
             && $this->Preise->fVK[$idx] > 0
             && $this->conf['metaangaben']['global_meta_title_preis'] === 'Y'
         ) {
-            $cPreis = ', ' . $this->Preise->cVKLocalized[$idx];
+            $price = ', ' . $this->Preise->cVKLocalized[$idx];
         }
         if (!empty($this->AttributeAssoc[ART_ATTRIBUT_METATITLE])) {
             return \Filter\Metadata::prepareMeta(
-                $this->AttributeAssoc[ART_ATTRIBUT_METATITLE] . $cGlobalMetaTitle,
-                $cPreis,
+                $this->AttributeAssoc[ART_ATTRIBUT_METATITLE] . $globalMetaTitle,
+                $price,
                 (int)$this->conf['metaangaben']['global_meta_maxlaenge_title']
             );
         }
         if (!empty($this->FunktionsAttribute[ART_ATTRIBUT_METATITLE])) {
             return \Filter\Metadata::prepareMeta(
-                $this->FunktionsAttribute[ART_ATTRIBUT_METATITLE] . $cGlobalMetaTitle,
-                $cPreis,
+                $this->FunktionsAttribute[ART_ATTRIBUT_METATITLE] . $globalMetaTitle,
+                $price,
                 (int)$this->conf['metaangaben']['global_meta_maxlaenge_title']
             );
         }
@@ -6398,13 +6398,13 @@ class Artikel
                 ? StringHandler::htmlentities($this->cName)
                 : $this->cName;
         }
-        $cTitle = str_replace('"', '', $title) . $cGlobalMetaTitle;
+        $title = str_replace('"', '', $title) . $globalMetaTitle;
 
-        executeHook(HOOK_ARTIKEL_INC_METATITLE, ['cTitle' => &$cTitle]);
+        executeHook(HOOK_ARTIKEL_INC_METATITLE, ['cTitle' => &$title]);
 
         return \Filter\Metadata::prepareMeta(
-            $cTitle,
-            $cPreis,
+            $title,
+            $price,
             (int)$this->conf['metaangaben']['global_meta_maxlaenge_title']
         );
     }

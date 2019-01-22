@@ -13,9 +13,6 @@ if (Shop::getSettings([CONF_GLOBAL])['global']['wartungsmodus_aktiviert'] === 'N
     exit;
 }
 Shop::setPageType(PAGE_WARTUNG);
-$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 

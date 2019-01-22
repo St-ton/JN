@@ -229,9 +229,6 @@ if ($step === 'Bestaetigung'
     Warenkorb::refreshChecksum($cart);
     $_SESSION['AktiveZahlungsart'] = $savedPayment;
 }
-$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 $linkHelper = Shop::Container()->getLinkService();
 $kLink      = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLVORGANG);
 $link       = $linkHelper->getPageLink($kLink);

@@ -21,7 +21,6 @@ $rated          = false;
 $productNotices = [];
 $nonAllowed     = [];
 $conf           = Shopsetting::getInstance()->getAll();
-$globalMetaData = \Filter\Metadata::getGlobalMetaData();
 $cHinweis       = $smarty->getTemplateVars('hinweis');
 $shopURL        = Shop::getURL() . '/';
 if (empty($cHinweis)) {
@@ -109,15 +108,15 @@ if (isset($_POST['fragezumprodukt']) && (int)$_POST['fragezumprodukt'] === 1) {
 } elseif (isset($_POST['benachrichtigung_verfuegbarkeit']) && (int)$_POST['benachrichtigung_verfuegbarkeit'] === 1) {
     $productNotices = Product::checkAvailabilityMessage($productNotices);
 }
-$kKategorie             = $AktuellerArtikel->gibKategorie();
-$AktuelleKategorie      = new Kategorie($kKategorie);
-$AufgeklappteKategorien = new KategorieListe();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-$ratingPage            = Request::verifyGPCDataInt('btgseite');
-$ratingStars           = Request::verifyGPCDataInt('btgsterne');
-$sorting               = Request::verifyGPCDataInt('sortierreihenfolge');
-$showRatings           = Request::verifyGPCDataInt('bewertung_anzeigen');
-$allLanguages          = Request::verifyGPCDataInt('moreRating');
+$kKategorie         = $AktuellerArtikel->gibKategorie();
+$AktuelleKategorie  = new Kategorie($kKategorie);
+$expandedCategories = new KategorieListe();
+$expandedCategories->getOpenCategories($AktuelleKategorie);
+$ratingPage   = Request::verifyGPCDataInt('btgseite');
+$ratingStars  = Request::verifyGPCDataInt('btgsterne');
+$sorting      = Request::verifyGPCDataInt('sortierreihenfolge');
+$showRatings  = Request::verifyGPCDataInt('bewertung_anzeigen');
+$allLanguages = Request::verifyGPCDataInt('moreRating');
 if ($ratingPage === 0) {
     $ratingPage = 1;
 }
@@ -237,14 +236,14 @@ $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('bewertungSterneSelected', $ratingStars)
        ->assign('bPreisverlauf', is_array($oPreisverlauf) && count($oPreisverlauf) > 1)
        ->assign('preisverlaufData', $oPreisverlauf)
-       ->assign('NavigationBlaettern', $nav);
+       ->assign('NavigationBlaettern', $nav)
+       ->assign('bereitsBewertet', $rated)
+       ->assign('meta_title', $AktuellerArtikel->getMetaTitle())
+       ->assign('meta_description', $AktuellerArtikel->getMetaDescription($expandedCategories))
+       ->assign('meta_keywords', $AktuellerArtikel->getMetaKeywords());
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 
-$smarty->assign('meta_title', $AktuellerArtikel->getMetaTitle())
-       ->assign('meta_description', $AktuellerArtikel->getMetaDescription($AufgeklappteKategorien))
-       ->assign('meta_keywords', $AktuellerArtikel->getMetaKeywords())
-       ->assign('bereitsBewertet', $rated);
 executeHook(HOOK_ARTIKEL_PAGE, ['oArtikel' => $AktuellerArtikel]);
 
 if (Request::isAjaxRequest()) {

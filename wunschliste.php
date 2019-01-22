@@ -23,7 +23,7 @@ $kWunschliste     = (Request::verifyGPCDataInt('wl') > 0 && Request::verifyGPCDa
 $wishlistTargetID = Request::verifyGPCDataInt('kWunschlisteTarget');
 $cHinweis         = '';
 $cFehler          = '';
-$searchQuery           = null;
+$searchQuery      = null;
 $step             = null;
 $wishlist         = null;
 $action           = null;
@@ -50,9 +50,9 @@ if (!empty($_POST['addToCart'])) {
 }
 if ($action !== null && Form::validateToken()) {
     if (isset($_POST['kWunschliste'])) {
-        $kWunschliste                 = (int)$_POST['kWunschliste'];
-        $wl                           = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
-        $userOK                       = $customerID === (int)$wl->kKunde;
+        $kWunschliste = (int)$_POST['kWunschliste'];
+        $wl           = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
+        $userOK       = $customerID === (int)$wl->kKunde;
         switch ($action) {
             case 'addToCart':
                 $wishlistPosition = Wunschliste::getWishListPositionDataByID($kWunschlistePos);

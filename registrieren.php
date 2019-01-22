@@ -58,9 +58,6 @@ if (isset($_FILES['vcard'])
 ) {
     gibKundeFromVCard($_FILES['vcard']['tmp_name']);
 }
-$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 Shop::Smarty()->assign('editRechnungsadresse', $editRechnungsadresse)
     ->assign('Ueberschrift', $titel)
     ->assign('Link', $link)
@@ -71,10 +68,10 @@ Shop::Smarty()->assign('editRechnungsadresse', $editRechnungsadresse)
     ->assign('unregForm', 0);
 
 $cCanonicalURL    = $linkHelper->getStaticRoute('registrieren.php');
-$oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_REGISTRIEREN);
-$cMetaTitle       = $oMeta->cTitle;
-$cMetaDescription = $oMeta->cDesc;
-$cMetaKeywords    = $oMeta->cKeywords;
+$metaData         = $linkHelper->buildSpecialPageMeta(LINKTYP_REGISTRIEREN);
+$cMetaTitle       = $metaData->cTitle;
+$cMetaDescription = $metaData->cDesc;
+$cMetaKeywords    = $metaData->cKeywords;
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 if (isset($conf['kunden']['kundenregistrierung_pruefen_zeit'])

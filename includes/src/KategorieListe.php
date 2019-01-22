@@ -182,7 +182,7 @@ class KategorieListe
     public function getOpenCategories($currentCategory, int $kKundengruppe = 0, int $kSprache = 0): array
     {
         $this->elemente = [];
-        if (!\Session\Frontend::getCustomerGroup()->mayViewCategories()) {
+        if (!\Session\Frontend::getCustomerGroup()->mayViewCategories() || empty($currentCategory->kKategorie)) {
             return $this->elemente;
         }
         $this->elemente[] = $currentCategory;

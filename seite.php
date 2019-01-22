@@ -13,12 +13,9 @@ if (!defined('PFAD_ROOT')) {
     exit();
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
-$smarty                 = Shop::Smarty();
-$conf                   = Shopsetting::getInstance()->getAll();
-$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$linkHelper             = Shop::Container()->getLinkService();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
+$smarty     = Shop::Smarty();
+$conf       = Shopsetting::getInstance()->getAll();
+$linkHelper = Shop::Container()->getLinkService();
 if (Shop::$isInitialized === true) {
     $kLink = Shop::$kLink;
 }
@@ -33,7 +30,6 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
 } elseif (strpos($requestURL, '.php') === false) {
     $cCanonicalURL = Shop::getURL() . '/' . $requestURL;
 }
-$AufgeklappteKategorien = new KategorieListe();
 if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     if ($link->getRedirectCode() > 0) {
         header('Location: ' . $cCanonicalURL, true, $link->getRedirectCode());
@@ -98,39 +94,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_SEITE_PAGE_IF_LINKART);
 $smarty->assign('Link', $link)
        ->assign('bSeiteNichtGefunden', Shop::getPageType() === PAGE_404)
-       ->assign('cFehler', !empty($cFehler) ? $cFehler : null)
-       ->assign('meta_language', StringHandler::convertISO2ISO639(Shop::getLanguageCode()));
-
-$cMetaTitle       = $link->getMetaTitle();
-$cMetaDescription = $link->getMetaDescription() ?? null;
-$cMetaKeywords    = $link->getMetaKeyword() ?? null;
-$kSprache         = Shop::getLanguage();
-$globalMeta       = $globalMetaData[$kSprache] ?? null;
-if ($globalMeta !== null) {
-    if (empty($cMetaTitle)) {
-        $cMetaTitle = $globalMeta->Title;
-    }
-    if (empty($cMetaDescription)) {
-        $cMetaDescription = $globalMeta->Meta_Description;
-    }
-    if (empty($cMetaKeywords)) {
-        $cMetaKeywords = $globalMeta->Meta_Keywords;
-    }
-}
-$cMetaTitle       = \Filter\Metadata::prepareMeta(
-    $cMetaTitle,
-    null,
-    (int)$conf['metaangaben']['global_meta_maxlaenge_title']
-);
-$cMetaDescription = \Filter\Metadata::prepareMeta(
-    $cMetaDescription,
-    null,
-    (int)$conf['metaangaben']['global_meta_maxlaenge_description']
-);
-
-$smarty->assign('meta_title', $cMetaTitle)
-       ->assign('meta_description', $cMetaDescription)
-       ->assign('meta_keywords', $cMetaKeywords);
+       ->assign('cFehler', !empty($cFehler) ? $cFehler : null);
 
 executeHook(HOOK_SEITE_PAGE);
 

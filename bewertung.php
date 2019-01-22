@@ -48,7 +48,6 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
         header('Location: ' . Shop::getURL() . '/', true, 303);
         exit;
     }
-    $AufgeklappteKategorien = new KategorieListe();
     if ($AktuellerArtikel->Bewertungen === null) {
         $AktuellerArtikel->holeBewertung(
             Shop::getLanguageID(),

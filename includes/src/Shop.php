@@ -1330,8 +1330,9 @@ final class Shop
 
     /**
      * decide which page to load
+     * @return string
      */
-    public static function getEntryPoint(): void
+    public static function getEntryPoint(): string
     {
         self::setPageType(PAGE_UNBEKANNT);
         if ((self::$kArtikel > 0 && !self::$kKategorie)
@@ -1502,6 +1503,8 @@ final class Shop
             self::setPageType(PAGE_EIGENE);
         }
         self::check404();
+
+        return self::$fileName;
     }
 
     /**

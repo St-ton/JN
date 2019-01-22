@@ -27,22 +27,18 @@ if (isset($_GET['uid'])) {
         header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
         exit;
     }
-    $bestellung = new Bestellung($status->kBestellung, true);
-    $smarty->assign('Bestellung', $bestellung)
-           ->assign('Kunde', new Kunde($bestellung->kKunde))
-           ->assign('Lieferadresse', $bestellung->Lieferadresse)
+    $order = new Bestellung($status->kBestellung, true);
+    $smarty->assign('Bestellung', $order)
+           ->assign('Kunde', new Kunde($order->kKunde))
+           ->assign('Lieferadresse', $order->Lieferadresse)
            ->assign('showLoginPanel', \Session\Frontend::getCustomer()->isLoggedIn())
-           ->assign('billingAddress', $bestellung->oRechnungsadresse);
+           ->assign('billingAddress', $order->oRechnungsadresse);
 } else {
     header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
     exit;
 }
 
-$step                   = 'bestellung';
-$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-
+$step = 'bestellung';
 $smarty->assign('step', $step)
        ->assign('hinweis', $hinweis)
        ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)

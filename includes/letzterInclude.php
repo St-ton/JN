@@ -11,8 +11,8 @@ use Helpers\Request;
 use Helpers\ShippingMethod;
 
 $smarty     = Shop::Smarty();
-$oTemplate  = Template::getInstance();
-$tplDir     = PFAD_TEMPLATES . $oTemplate->getDir() . '/';
+$template   = Template::getInstance();
+$tplDir     = PFAD_TEMPLATES . $template->getDir() . '/';
 $shopLogo   = Shop::getLogo();
 $shopURL    = Shop::getURL();
 $cart       = $_SESSION['Warenkorb'] ?? new Warenkorb();
@@ -21,10 +21,7 @@ $linkHelper = Shop::Container()->getLinkService();
 $themeDir   = empty($conf['template']['theme']['theme_default'])
     ? 'evo'
     : $conf['template']['theme']['theme_default'];
-$cShopName  = empty($conf['global']['global_shopname'])
-    ? 'JTL-Shop'
-    : $conf['global']['global_shopname'];
-$minify     = $oTemplate->getMinifyArray();
+$minify     = $template->getMinifyArray();
 $css        = $minify["{$themeDir}.css"] ?? [];
 $js         = $minify['jtl3.js'] ?? [];
 executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
@@ -35,14 +32,14 @@ executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
     'cPluginJsBody_arr' => &$minify['plugin_js_body']
 ]);
 
-$debugbar         = Shop::Container()->getDebugBar();
-$debugbarRenderer = $debugbar->getJavascriptRenderer();
-$customerGroupID  = ($id = \Session\Frontend::getCustomer()->kKundengruppe) > 0
+$expandedCategories = $expandedCategories ?? new KategorieListe();
+$debugbar           = Shop::Container()->getDebugBar();
+$debugbarRenderer   = $debugbar->getJavascriptRenderer();
+$customerGroupID    = ($id = \Session\Frontend::getCustomer()->kKundengruppe) > 0
     ? $id
     : \Session\Frontend::getCustomerGroup()->getID();
-
-$globalMetaData = $globalMetaData[Shop::getLanguageID()] ?? null;
-$pagetType      = Shop::getPageType();
+$globalMetaData     = $globalMetaData[Shop::getLanguageID()] ?? null;
+$pagetType          = Shop::getPageType();
 
 if (is_object($globalMetaData)) {
     if (empty($cMetaTitle)) {
@@ -56,8 +53,9 @@ if (is_object($globalMetaData)) {
     }
 }
 if (!isset($AktuelleKategorie)) {
-    $AktuelleKategorie = null;
+    $AktuelleKategorie  = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 }
+$expandedCategories->getOpenCategories($AktuelleKategorie);
 if (!isset($NaviFilter)) {
     $NaviFilter = Shop::run();
 }
@@ -75,7 +73,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('cPluginJsBody_arr', $minify['plugin_js_body'])
        ->assign('cCSS_arr', $css)
        ->assign('cJS_arr', $js)
-       ->assign('nTemplateVersion', $oTemplate->getVersion())
+       ->assign('nTemplateVersion', $template->getVersion())
        ->assign('currentTemplateDir', $tplDir)
        ->assign('currentTemplateDirFull', $shopURL . '/' . $tplDir)
        ->assign('currentTemplateDirFullPath', PFAD_ROOT . $tplDir)
@@ -88,7 +86,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('imageBaseURL', Shop::getImageBaseURL())
        ->assign('ShopURLSSL', Shop::getURL(true))
        ->assign('NettoPreise', \Session\Frontend::getCustomerGroup()->getIsMerchant())
-       ->assign('cShopName', $cShopName)
+       ->assign('cShopName', $conf['global']['global_shopname'])
        ->assign('KaufabwicklungsURL', $linkHelper->getStaticRoute('bestellvorgang.php'))
        ->assign('WarenkorbArtikelanzahl', $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]))
        ->assign('WarenkorbArtikelPositionenanzahl', $cart->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]))
@@ -146,11 +144,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
 $nav = new \JTL\Navigation(Shop::Lang(), Shop::Container()->getLinkService());
 $nav->setPageType(Shop::getPageType());
 $nav->setProductFilter($NaviFilter);
-if (isset($AufgeklappteKategorien) && $AufgeklappteKategorien instanceof KategorieListe) {
-    $nav->setCategoryList($AufgeklappteKategorien);
-} elseif (isset($expandedCategories) && $expandedCategories instanceof KategorieListe) {
-    $nav->setCategoryList($expandedCategories);
-}
+$nav->setCategoryList($expandedCategories);
 if (isset($AktuellerArtikel) && $AktuellerArtikel instanceof Artikel) {
     $nav->setProduct($AktuellerArtikel);
 }
@@ -170,7 +164,8 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Visitor::generateData();
 Kampagne::checkCampaignParameters();
 Sprache::generateLanguageAndCurrencyLinks();
-$oExtension = (new ExtensionPoint($pagetType, Shop::getParameters(), Shop::getLanguageID(), $customerGroupID))->load();
+$ep = new ExtensionPoint($pagetType, Shop::getParameters(), Shop::getLanguageID(), $customerGroupID);
+$ep->load();
 executeHook(HOOK_LETZTERINCLUDE_INC);
 $boxes       = Shop::Container()->getBoxService();
 $boxesToShow = $boxes->render($boxes->buildList($pagetType), $pagetType);

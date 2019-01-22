@@ -826,15 +826,15 @@ class Bestellung
         foreach ($this->Positionen as $position) {
             $position->nPosTyp = (int)$position->nPosTyp;
             if ($position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && $position->kArtikel > 0) {
-                $artikel                = new Artikel();
-                $artikel->kArtikel      = $position->kArtikel;
-                $AufgeklappteKategorien = new KategorieListe();
-                $kategorie              = new Kategorie($artikel->gibKategorie());
-                $AufgeklappteKategorien->getOpenCategories($kategorie);
+                $artikel            = new Artikel();
+                $artikel->kArtikel  = $position->kArtikel;
+                $expandedCategories = new KategorieListe();
+                $kategorie          = new Kategorie($artikel->gibKategorie());
+                $expandedCategories->getOpenCategories($kategorie);
                 $position->Category = '';
-                $elemCount          = count($AufgeklappteKategorien->elemente) - 1;
+                $elemCount          = count($expandedCategories->elemente) - 1;
                 for ($o = $elemCount; $o >= 0; $o--) {
-                    $position->Category = $AufgeklappteKategorien->elemente[$o]->cName;
+                    $position->Category = $expandedCategories->elemente[$o]->cName;
                     if ($o > 0) {
                         $position->Category .= ' / ';
                     }

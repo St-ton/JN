@@ -10,14 +10,11 @@ require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_PASSWORTVERGESSEN);
-$linkHelper             = Shop::Container()->getLinkService();
-$kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_PASSWORD_VERGESSEN);
-$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$step                   = 'formular';
-$hinweis                = '';
-$cFehler                = '';
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
+$linkHelper = Shop::Container()->getLinkService();
+$kLink      = $linkHelper->getSpecialPageLinkKey(LINKTYP_PASSWORD_VERGESSEN);
+$step       = 'formular';
+$hinweis    = '';
+$cFehler    = '';
 if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwort_vergessen'] === 1) {
     $kunde = Shop::Container()->getDB()->select(
         'tkunde',
@@ -81,11 +78,11 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
     $step = 'confirm';
 }
 $cCanonicalURL    = $linkHelper->getStaticRoute('pass.php');
-$oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_PASSWORD_VERGESSEN);
+$metaData         = $linkHelper->buildSpecialPageMeta(LINKTYP_PASSWORD_VERGESSEN);
 $link             = $linkHelper->getPageLink($kLink);
-$cMetaTitle       = $oMeta->cTitle;
-$cMetaDescription = $oMeta->cDesc;
-$cMetaKeywords    = $oMeta->cKeywords;
+$cMetaTitle       = $metaData->cTitle;
+$cMetaDescription = $metaData->cDesc;
+$cMetaKeywords    = $metaData->cKeywords;
 Shop::Smarty()->assign('step', $step)
     ->assign('hinweis', $hinweis)
     ->assign('Link', $link)

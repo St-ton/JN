@@ -138,7 +138,7 @@ if (strpos(basename($NaviFilter->getFilterURL()->getURL()), '.php') === false) {
         ? SEP_SEITE . $pages->getCurrentPage()
         : '');
 }
-AuswahlAssistent::startIfRequired(
+\Extensions\AuswahlAssistent::startIfRequired(
     AUSWAHLASSISTENT_ORT_KATEGORIE,
     $params['kKategorie'],
     Shop::getLanguageID(),

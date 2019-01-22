@@ -1158,14 +1158,14 @@ class IOMethods
      * @param string $cKey
      * @param int    $kKey
      * @param int    $kSprache
-     * @param array  $kSelection_arr
+     * @param array  $selection
      * @return IOResponse
      */
-    public function setSelectionWizardAnswers($cKey, $kKey, $kSprache, $kSelection_arr): IOResponse
+    public function setSelectionWizardAnswers($cKey, $kKey, $kSprache, $selection): IOResponse
     {
         $smarty   = Shop::Smarty();
         $response = new IOResponse();
-        $AWA      = AuswahlAssistent::startIfRequired($cKey, $kKey, $kSprache, $smarty, $kSelection_arr);
+        $AWA      = \Extensions\AuswahlAssistent::startIfRequired($cKey, $kKey, $kSprache, $smarty, $selection);
 
         if ($AWA !== null) {
             $oLastSelectedValue = $AWA->getLastSelectedValue();

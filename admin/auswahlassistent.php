@@ -6,6 +6,9 @@
 
 use Helpers\Form;
 use Helpers\Request;
+use Extensions\AuswahlAssistent;
+use Extensions\AuswahlAssistentFrage;
+use Extensions\AuswahlAssistentGruppe;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \Smarty\JTLSmarty $smarty */

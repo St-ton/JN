@@ -4,8 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Extensions;
+
 /**
  * Class AuswahlAssistent
+ *
+ * @package Extensions
  */
 class AuswahlAssistent
 {
@@ -89,17 +93,16 @@ class AuswahlAssistent
      */
     public function __construct($cKey, int $kKey, int $kSprache = 0, bool $bOnlyActive = true)
     {
-        $oNice        = Nice::getInstance();
-        $this->config = Shop::getSettings(CONF_AUSWAHLASSISTENT)['auswahlassistent'];
+        $this->config = \Shop::getSettings(CONF_AUSWAHLASSISTENT)['auswahlassistent'];
 
         if ($kSprache === 0) {
-            $kSprache = Shop::getLanguageID();
+            $kSprache = \Shop::getLanguageID();
         }
 
         if ($kKey > 0
             && $kSprache > 0
             && !empty($cKey)
-            && $oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)
+            && \Nice::getInstance()->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)
         ) {
             $this->loadFromDB($cKey, $kKey, $kSprache, $bOnlyActive);
         }
@@ -113,7 +116,7 @@ class AuswahlAssistent
      */
     private function loadFromDB($cKey, int $kKey, int $kSprache, bool $bOnlyActive = true): void
     {
-        $item = Shop::Container()->getDB()->queryPrepared(
+        $item = \Shop::Container()->getDB()->queryPrepared(
             'SELECT *
                 FROM tauswahlassistentort AS ao
                     JOIN tauswahlassistentgruppe AS ag
@@ -131,7 +134,7 @@ class AuswahlAssistent
         );
 
         if ($item !== null && $item !== false) {
-            foreach (get_object_vars($item) as $name => $value) {
+            foreach (\get_object_vars($item) as $name => $value) {
                 $this->$name = $value;
             }
 
@@ -141,7 +144,7 @@ class AuswahlAssistent
             $this->kSprache                = (int)$this->kSprache;
             $this->nAktiv                  = (int)$this->nAktiv;
 
-            $questionIDs = Shop::Container()->getDB()->queryPrepared(
+            $questionIDs = \Shop::Container()->getDB()->queryPrepared(
                 'SELECT kAuswahlAssistentFrage AS id
                     FROM tauswahlassistentfrage
                     WHERE kAuswahlAssistentGruppe = :groupID' .
@@ -167,7 +170,7 @@ class AuswahlAssistent
      */
     public function setNextSelection(int $kWert): self
     {
-        if ($this->nCurQuestion < count($this->questions)) {
+        if ($this->nCurQuestion < \count($this->questions)) {
             $this->selections[] = $kWert;
             ++$this->nCurQuestion;
         }
@@ -184,18 +187,18 @@ class AuswahlAssistent
         if ($this->cKey === AUSWAHLASSISTENT_ORT_KATEGORIE) {
             $params['kKategorie'] = $this->kKey;
 
-            if (count($this->selections) > 0) {
+            if (\count($this->selections) > 0) {
                 $params['MerkmalFilter_arr'] = $this->selections;
             }
-        } elseif (count($this->selections) > 0) {
+        } elseif (\count($this->selections) > 0) {
             $params['kMerkmalWert'] = $this->selections[0];
-            if (count($this->selections) > 1) {
-                $params['MerkmalFilter_arr'] = array_slice($this->selections, 1);
+            if (\count($this->selections) > 1) {
+                $params['MerkmalFilter_arr'] = \array_slice($this->selections, 1);
             }
         }
-        $productFilter     = Shop::buildProductFilter($params);
+        $productFilter     = \Shop::buildProductFilter($params);
         $AktuelleKategorie = isset($params['kKategorie'])
-            ? new Kategorie($params['kKategorie'])
+            ? new \Kategorie($params['kKategorie'])
             : null;
         $attributeFilters  = (new \Filter\SearchResults())->setFilterOptions(
             $productFilter,
@@ -205,7 +208,7 @@ class AuswahlAssistent
 
         foreach ($attributeFilters as $attributeFilter) {
             /** @var \Filter\Items\Attribute $attributeFilter */
-            if (array_key_exists($attributeFilter->getValue(), $this->questionsAssoc)) {
+            if (\array_key_exists($attributeFilter->getValue(), $this->questionsAssoc)) {
                 $oFrage                    = $this->questionsAssoc[$attributeFilter->getValue()];
                 $oFrage->oWert_arr         = $attributeFilter->getOptions();
                 $oFrage->nTotalResultCount = 0;
@@ -223,7 +226,7 @@ class AuswahlAssistent
     /**
      * Return the HTML for this selection wizard in its current state
      *
-     * @param Smarty\JTLSmarty $smarty
+     * @param \Smarty\JTLSmarty $smarty
      * @return string
      */
     public function fetchForm($smarty): string
@@ -276,7 +279,7 @@ class AuswahlAssistent
      */
     public function getDescription(): string
     {
-        return preg_replace('/\s+/', ' ', trim($this->cBeschreibung));
+        return \preg_replace('/\s+/', ' ', trim($this->cBeschreibung));
     }
 
     /**
@@ -309,7 +312,7 @@ class AuswahlAssistent
      */
     public function getQuestionCount(): int
     {
-        return count($this->questions);
+        return \count($this->questions);
     }
 
     /**
@@ -349,12 +352,12 @@ class AuswahlAssistent
     }
 
     /**
-     * @return stdClass|null
+     * @return \stdClass|null
      */
     public function getLastSelectedValue()
     {
-        $oFrage         = end($this->questions);
-        $kSelectedValue = end($this->selections);
+        $oFrage         = \end($this->questions);
+        $kSelectedValue = \end($this->selections);
 
         return $oFrage->oWert_assoc[$kSelectedValue] ?? null;
     }
@@ -375,14 +378,14 @@ class AuswahlAssistent
      */
     public static function isRequired(): bool
     {
-        return Shop::getSettings([CONF_AUSWAHLASSISTENT])['auswahlassistent']['auswahlassistent_nutzen'] === 'Y';
+        return \Shop::getSettings([CONF_AUSWAHLASSISTENT])['auswahlassistent']['auswahlassistent_nutzen'] === 'Y';
     }
 
     /**
      * @param string                     $cKey
      * @param int                        $kKey
      * @param int                        $kSprache
-     * @param Smarty\JTLSmarty           $smarty
+     * @param \Smarty\JTLSmarty           $smarty
      * @param array                      $selected
      * @param \Filter\ProductFilter|null $pf
      * @return self|null
@@ -427,6 +430,6 @@ class AuswahlAssistent
      */
     public static function getLinks(): array
     {
-        return Shop::Container()->getDB()->selectAll('tlink', 'nLinkart', LINKTYP_AUSWAHLASSISTENT);
+        return \Shop::Container()->getDB()->selectAll('tlink', 'nLinkart', LINKTYP_AUSWAHLASSISTENT);
     }
 }

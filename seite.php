@@ -39,7 +39,7 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
            ->assign('oNews_arr', $conf['news']['news_benutzen'] === 'Y'
                ? CMSHelper::getHomeNews($conf)
                : []);
-    AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguage(), $smarty);
+    \Extensions\AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguage(), $smarty);
 } elseif ($link->getLinkType() === LINKTYP_AGB) {
     $smarty->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
         Shop::getLanguage(),
@@ -87,7 +87,12 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
         }
     }
 } elseif ($link->getLinkType() === LINKTYP_AUSWAHLASSISTENT) {
-    AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_LINK, $link->getID(), Shop::getLanguage(), $smarty);
+    \Extensions\AuswahlAssistent::startIfRequired(
+        AUSWAHLASSISTENT_ORT_LINK,
+        $link->getID(),
+        Shop::getLanguageID(),
+        $smarty
+    );
 }
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

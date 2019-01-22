@@ -4,10 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Extensions;
+
 use Helpers\GeneralObject;
 
 /**
  * Class AuswahlAssistentGruppe
+ *
+ * @package Extensions
  */
 class AuswahlAssistentGruppe
 {
@@ -84,7 +88,7 @@ class AuswahlAssistentGruppe
     {
         if ($groupID > 0) {
             $activeSQL = $bAktiv ? ' AND nAktiv = 1' : '';
-            $group     = Shop::Container()->getDB()->queryPrepared(
+            $group     = \Shop::Container()->getDB()->queryPrepared(
                 'SELECT *
                     FROM tauswahlassistentgruppe
                     WHERE kAuswahlAssistentGruppe = :groupID' .
@@ -112,15 +116,15 @@ class AuswahlAssistentGruppe
                 $this->oAuswahlAssistentOrt_arr   = $oAuswahlAssistentOrt->oOrt_arr;
                 foreach ($this->oAuswahlAssistentOrt_arr as $oAuswahlAssistentOrt) {
                     // Kategorien
-                    if ($oAuswahlAssistentOrt->cKey === AUSWAHLASSISTENT_ORT_KATEGORIE) {
+                    if ($oAuswahlAssistentOrt->cKey === \AUSWAHLASSISTENT_ORT_KATEGORIE) {
                         $this->cKategorie .= $oAuswahlAssistentOrt->kKey . ';';
                     }
                     // Startseite
-                    if ($oAuswahlAssistentOrt->cKey === AUSWAHLASSISTENT_ORT_STARTSEITE) {
+                    if ($oAuswahlAssistentOrt->cKey === \AUSWAHLASSISTENT_ORT_STARTSEITE) {
                         $this->nStartseite = 1;
                     }
                 }
-                $language       = Shop::Container()->getDB()->queryPrepared(
+                $language       = \Shop::Container()->getDB()->queryPrepared(
                     'SELECT cNameDeutsch 
                         FROM tsprache 
                         WHERE kSprache = :langID',
@@ -147,7 +151,7 @@ class AuswahlAssistentGruppe
     ): array {
         $groups    = [];
         $activeSQL = $active ? ' AND nAktiv = 1' : '';
-        $groupData = Shop::Container()->getDB()->queryPrepared(
+        $groupData = \Shop::Container()->getDB()->queryPrepared(
             'SELECT kAuswahlAssistentGruppe
                 FROM tauswahlassistentgruppe
                 WHERE kSprache = :langID' . $activeSQL,
@@ -169,7 +173,7 @@ class AuswahlAssistentGruppe
     public function saveGroup(array $params, bool $primary = false)
     {
         $cPlausi_arr = $this->checkGroup($params);
-        if (count($cPlausi_arr) === 0) {
+        if (\count($cPlausi_arr) === 0) {
             $oObj = GeneralObject::copyMembers($this);
 
             $this->nAktiv                  = (int)$this->nAktiv;
@@ -183,7 +187,7 @@ class AuswahlAssistentGruppe
                 $oObj->oAuswahlAssistentOrt_arr,
                 $oObj->oAuswahlAssistentFrage_arr
             );
-            $groupID = Shop::Container()->getDB()->insert('tauswahlassistentgruppe', $oObj);
+            $groupID = \Shop::Container()->getDB()->insert('tauswahlassistentgruppe', $oObj);
             if ($groupID > 0) {
                 AuswahlAssistentOrt::saveLocation($params, $groupID);
 
@@ -203,14 +207,14 @@ class AuswahlAssistentGruppe
     public function updateGroup(array $cParam_arr)
     {
         $validation = $this->checkGroup($cParam_arr, true);
-        if (count($validation) === 0) {
-            $upd                = new stdClass();
+        if (\count($validation) === 0) {
+            $upd                = new \stdClass();
             $upd->kSprache      = $this->kSprache;
             $upd->cName         = $this->cName;
             $upd->cBeschreibung = $this->cBeschreibung;
             $upd->nAktiv        = $this->nAktiv;
 
-            Shop::Container()->getDB()->update(
+            \Shop::Container()->getDB()->update(
                 'tauswahlassistentgruppe',
                 'kAuswahlAssistentGruppe',
                 (int)$this->kAuswahlAssistentGruppe,
@@ -242,7 +246,7 @@ class AuswahlAssistentGruppe
             $validation['nAktiv'] = 1;
         }
         $location   = AuswahlAssistentOrt::checkLocation($params, $update);
-        $validation = array_merge($location, $validation);
+        $validation = \array_merge($location, $validation);
 
         return $validation;
     }
@@ -254,13 +258,13 @@ class AuswahlAssistentGruppe
     public static function deleteGroup(array $cParam_arr): bool
     {
         if (!isset($cParam_arr['kAuswahlAssistentGruppe_arr'])
-            || !is_array($cParam_arr['kAuswahlAssistentGruppe_arr'])
-            || count($cParam_arr['kAuswahlAssistentGruppe_arr']) === 0
+            || !\is_array($cParam_arr['kAuswahlAssistentGruppe_arr'])
+            || \count($cParam_arr['kAuswahlAssistentGruppe_arr']) === 0
         ) {
             return false;
         }
         foreach ($cParam_arr['kAuswahlAssistentGruppe_arr'] as $groupID) {
-            Shop::Container()->getDB()->queryPrepared(
+            \Shop::Container()->getDB()->queryPrepared(
                 'DELETE tag, taf, tao
                     FROM tauswahlassistentgruppe tag
                     LEFT JOIN tauswahlassistentfrage taf
@@ -283,7 +287,7 @@ class AuswahlAssistentGruppe
     public static function getLanguage(int $groupID): int
     {
         if ($groupID > 0) {
-            $oGruppe = Shop::Container()->getDB()->queryPrepared(
+            $oGruppe = \Shop::Container()->getDB()->queryPrepared(
                 'SELECT kSprache
                     FROM tauswahlassistentgruppe
                     WHERE kAuswahlAssistentGruppe = :groupID',

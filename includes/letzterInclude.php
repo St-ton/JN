@@ -37,31 +37,22 @@ executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
 
 $debugbar         = Shop::Container()->getDebugBar();
 $debugbarRenderer = $debugbar->getJavascriptRenderer();
-$kKundengruppe    = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
-    ? $_SESSION['Kunde']->kKundengruppe
+$customerGroupID  = ($id = \Session\Frontend::getCustomer()->kKundengruppe) > 0
+    ? $id
     : \Session\Frontend::getCustomerGroup()->getID();
-$cKundenherkunft = (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0)
-    ? $_SESSION['Kunde']->cLand
-    : '';
 
-$warensumme[0]   = Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true));
-$warensumme[1]   = Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false));
-$gesamtsumme[0]  = Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren(true, true));
-$gesamtsumme[1]  = Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren(false, true));
+$globalMetaData = $globalMetaData[Shop::getLanguageID()] ?? null;
+$pagetType      = Shop::getPageType();
 
-$oVersandartKostenfrei = ShippingMethod::getFreeShippingMinimum($kKundengruppe, $cKundenherkunft);
-$oGlobaleMetaAngaben   = $globalMetaData[Shop::getLanguageID()] ?? null;
-$pagetType             = Shop::getPageType();
-
-if (is_object($oGlobaleMetaAngaben)) {
+if (is_object($globalMetaData)) {
     if (empty($cMetaTitle)) {
-        $cMetaTitle = $oGlobaleMetaAngaben->Title;
+        $cMetaTitle = $globalMetaData->Title;
     }
     if (empty($cMetaDescription)) {
-        $cMetaDescription = $oGlobaleMetaAngaben->Meta_Description;
+        $cMetaDescription = $globalMetaData->Meta_Description;
     }
     if (empty($cMetaKeywords)) {
-        $cMetaKeywords = $oGlobaleMetaAngaben->Meta_Keywords;
+        $cMetaKeywords = $globalMetaData->Meta_Keywords;
     }
 }
 if (!isset($AktuelleKategorie)) {
@@ -71,6 +62,9 @@ if (!isset($NaviFilter)) {
     $NaviFilter = Shop::run();
 }
 $linkHelper->activate($pagetType);
+$origin = (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0)
+    ? $_SESSION['Kunde']->cLand
+    : '';
 
 $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('NaviFilter', $NaviFilter)
@@ -98,15 +92,21 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('KaufabwicklungsURL', $linkHelper->getStaticRoute('bestellvorgang.php'))
        ->assign('WarenkorbArtikelanzahl', $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]))
        ->assign('WarenkorbArtikelPositionenanzahl', $cart->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]))
-       ->assign('WarenkorbWarensumme', $warensumme)
-       ->assign('WarenkorbGesamtsumme', $gesamtsumme)
+       ->assign('WarenkorbWarensumme', [
+           0 => Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)),
+           1 => Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL]))
+       ])
+       ->assign('WarenkorbGesamtsumme', [
+           0 => Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren(true)),
+           1 => Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren())
+       ])
        ->assign('WarenkorbGesamtgewicht', $cart->getWeight())
        ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($cart))
        ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
        ->assign(
            'WarenkorbVersandkostenfreiHinweis',
            ShippingMethod::getShippingFreeString(
-               $oVersandartKostenfrei,
+               ShippingMethod::getFreeShippingMinimum($customerGroupID, $origin),
                $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
            )
        )
@@ -170,7 +170,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Visitor::generateData();
 Kampagne::checkCampaignParameters();
 Sprache::generateLanguageAndCurrencyLinks();
-$oExtension = (new ExtensionPoint($pagetType, Shop::getParameters(), Shop::getLanguageID(), $kKundengruppe))->load();
+$oExtension = (new ExtensionPoint($pagetType, Shop::getParameters(), Shop::getLanguageID(), $customerGroupID))->load();
 executeHook(HOOK_LETZTERINCLUDE_INC);
 $boxes       = Shop::Container()->getBoxService();
 $boxesToShow = $boxes->render($boxes->buildList($pagetType), $pagetType);

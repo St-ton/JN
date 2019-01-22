@@ -24,10 +24,7 @@ $action           = '';
 $tab              = Kupon::TYPE_STANDARD;
 $oSprache_arr     = Sprache::getAllLanguages();
 $oKupon           = null;
-$importDeleteDone = false;
-$res              = handleCsvImportAction('kupon', function ($obj, $importType = 2) {
-    global $importDeleteDone;
-
+$res              = handleCsvImportAction('kupon', function ($obj, &$importDeleteDone, $importType = 2) {
     if ($importType === 0 && $importDeleteDone === false) {
         Shop::Container()->getDB()->query('TRUNCATE TABLE tkupon', \DB\ReturnType::AFFECTED_ROWS);
         Shop::Container()->getDB()->query('TRUNCATE TABLE tkuponsprache', \DB\ReturnType::AFFECTED_ROWS);

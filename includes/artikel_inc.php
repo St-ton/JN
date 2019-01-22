@@ -146,14 +146,14 @@ function baueArtikelhinweise($redirectParam = null, $renew = false, $oArtikel = 
 }
 
 /**
- * @param Artikel $AktuellerArtikel
+ * @param Artikel $product
  * @return mixed
  * @deprecated since 5.0.0
  */
-function bearbeiteProdukttags($AktuellerArtikel)
+function bearbeiteProdukttags($product)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Product::editProductTags($AktuellerArtikel, Shop::getSettings([CONF_ARTIKELDETAILS]));
+    return Product::editProductTags($product, Shop::getSettings([CONF_ARTIKELDETAILS]));
 }
 
 /**

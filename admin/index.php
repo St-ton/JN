@@ -126,8 +126,9 @@ $smarty->assign('bProfilerActive', $profilerState !== 0)
  */
 function openDashboard()
 {
-    global $oAccount, $smarty;
+    global $oAccount;
 
+    $smarty = Shop::Smarty();
     if (isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0) {
         redirectToURI($_REQUEST['uri']);
     }
@@ -135,14 +136,14 @@ function openDashboard()
     if ($oAccount->permission('DASHBOARD_VIEW')) {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
 
-        $oFsCheck = new Systemcheck_Platform_Filesystem(PFAD_ROOT);
-        $oFsCheck->getFoldersChecked();
+        $fsCheck = new Systemcheck_Platform_Filesystem(PFAD_ROOT);
+        $fsCheck->getFoldersChecked();
 
         $smarty->assign('bDashboard', true)
-               ->assign('oPermissionStat', $oFsCheck->getFolderStats())
+               ->assign('oPermissionStat', $fsCheck->getFolderStats())
                ->assign('bUpdateError', ((isset($_POST['shopupdate']) && $_POST['shopupdate'] === '1') ? '1' : false))
                ->assign('bTemplateDiffers', APPLICATION_VERSION !== Template::getInstance()->getVersion())
-               ->assign('oActiveWidget_arr', getWidgets(true))
+               ->assign('oActiveWidget_arr', getWidgets())
                ->assign('oAvailableWidget_arr', getWidgets(false))
                ->assign('bInstallExists', is_dir(PFAD_ROOT . 'install'));
     }
@@ -194,12 +195,8 @@ if ($oAccount->getIsAuthenticated()) {
     openDashboard();
 } else {
     $oAccount->redirectOnUrl();
-    if (isset($_GET['errCode'])) {
-        switch ((int)$_GET['errCode']) {
-            case AdminLoginStatus::ERROR_SESSION_INVALID:
-                $cFehler = 'Ihre Sitzung wurde zurückgesetzt! Bitte melden Sie sich neu an.';
-                break;
-        }
+    if (isset($_GET['errCode']) && (int)$_GET['errCode'] === AdminLoginStatus::ERROR_SESSION_INVALID) {
+        $cFehler = 'Ihre Sitzung wurde zurückgesetzt! Bitte melden Sie sich erneut an.';
     }
     \Shop::Container()->getGetText()->loadAdminLocale('pages/login');
     $smarty->assign('uri', isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0

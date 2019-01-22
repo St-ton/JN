@@ -140,16 +140,12 @@ $cMetaTitle       = $oMeta->cTitle;
 $cMetaDescription = $oMeta->cDesc;
 $cMetaKeywords    = $oMeta->cKeywords;
 $cartNotices      = [];
-// Uploads
 if (class_exists('Upload')) {
     $uploads = Upload::gibWarenkorbUploads($cart);
-    if ($uploads) {
-        $maxSize = Upload::uploadMax();
-        $smarty->assign('cSessionID', session_id())
-               ->assign('nMaxUploadSize', $maxSize)
-               ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
-               ->assign('oUploadSchema_arr', $uploads);
-    }
+    $maxSize = Upload::uploadMax();
+    $smarty->assign('nMaxUploadSize', $maxSize)
+           ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
+           ->assign('oUploadSchema_arr', $uploads);
 }
 if (!empty($_SESSION['Warenkorbhinweise'])) {
     $cartNotices = $_SESSION['Warenkorbhinweise'];

@@ -603,7 +603,6 @@ class Metadata implements MetadataInterface
         $append     = $this->conf['metaangaben']['global_meta_title_anhaengen'] === 'Y';
         if (!empty($this->metaTitle)) {
             $metaTitle = \strip_tags($this->metaTitle);
-            // Globalen Meta Title anhaengen
             if ($append === true && !empty($globalMeta[$languageID]->Title)) {
                 return $this->truncateMetaTitle(
                     $metaTitle . ' ' .
@@ -614,42 +613,40 @@ class Metadata implements MetadataInterface
             return $this->truncateMetaTitle($metaTitle);
         }
         // Set Default Titles
-        $cMetaTitle = $this->getMetaStart($searchResults);
-        $cMetaTitle = \str_replace('"', "'", $cMetaTitle);
-        $cMetaTitle = \StringHandler::htmlentitydecode($cMetaTitle, \ENT_NOQUOTES);
-        // Kategorieattribute koennen Standard-Titles ueberschreiben
+        $metaTitle = $this->getMetaStart($searchResults);
+        $metaTitle = \str_replace('"', "'", $metaTitle);
+        $metaTitle = \StringHandler::htmlentitydecode($metaTitle, \ENT_NOQUOTES);
         if ($this->productFilter->hasCategory()) {
             $category = $category ?? new \Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($category->cTitleTag)) {
                 // meta title via new method
-                $cMetaTitle = \strip_tags($category->cTitleTag);
-                $cMetaTitle = \str_replace('"', "'", $cMetaTitle);
-                $cMetaTitle = \StringHandler::htmlentitydecode($cMetaTitle, \ENT_NOQUOTES);
+                $metaTitle = \strip_tags($category->cTitleTag);
+                $metaTitle = \str_replace('"', "'", $metaTitle);
+                $metaTitle = \StringHandler::htmlentitydecode($metaTitle, \ENT_NOQUOTES);
             } elseif (!empty($category->categoryAttributes['meta_title']->cWert)) {
                 // Hat die aktuelle Kategorie als Kategorieattribut einen Meta Title gesetzt?
-                $cMetaTitle = \strip_tags($category->categoryAttributes['meta_title']->cWert);
-                $cMetaTitle = \str_replace('"', "'", $cMetaTitle);
-                $cMetaTitle = \StringHandler::htmlentitydecode($cMetaTitle, \ENT_NOQUOTES);
+                $metaTitle = \strip_tags($category->categoryAttributes['meta_title']->cWert);
+                $metaTitle = \str_replace('"', "'", $metaTitle);
+                $metaTitle = \StringHandler::htmlentitydecode($metaTitle, \ENT_NOQUOTES);
             } elseif (!empty($category->KategorieAttribute['meta_title'])) {
                 /** @deprecated since 4.05 - this is for compatibilty only! */
-                $cMetaTitle = \strip_tags($category->KategorieAttribute['meta_title']);
-                $cMetaTitle = \str_replace('"', "'", $cMetaTitle);
-                $cMetaTitle = \StringHandler::htmlentitydecode($cMetaTitle, \ENT_NOQUOTES);
+                $metaTitle = \strip_tags($category->KategorieAttribute['meta_title']);
+                $metaTitle = \str_replace('"', "'", $metaTitle);
+                $metaTitle = \StringHandler::htmlentitydecode($metaTitle, \ENT_NOQUOTES);
             }
         }
         // Seitenzahl anhaengen ab Seite 2 (Doppelte Titles vermeiden, #5992)
         if ($searchResults->getPages()->getCurrentPage() > 1) {
-            $cMetaTitle .= ', ' . \Shop::Lang()->get('page') . ' ' .
+            $metaTitle .= ', ' . \Shop::Lang()->get('page') . ' ' .
                 $searchResults->getPages()->getCurrentPage();
         }
-        // Globalen Meta Title ueberall anhaengen
         if ($append === true && !empty($globalMeta[$languageID]->Title)) {
-            $cMetaTitle .= ' - ' . $globalMeta[$languageID]->Title;
+            $metaTitle .= ' - ' . $globalMeta[$languageID]->Title;
         }
         // @todo: temp. fix to avoid destroyed header
-        $cMetaTitle = \str_replace(['<', '>'], ['&lt;', '&gt;'], $cMetaTitle);
+        $metaTitle = \str_replace(['<', '>'], ['&lt;', '&gt;'], $metaTitle);
 
-        return $this->truncateMetaTitle($cMetaTitle);
+        return $this->truncateMetaTitle($metaTitle);
     }
 
     /**

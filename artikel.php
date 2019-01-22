@@ -15,18 +15,20 @@ if (!defined('PFAD_ROOT')) {
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 /** @global \Smarty\JTLSmarty $smarty */
 Shop::setPageType(PAGE_ARTIKEL);
-$oPreisverlauf   = null;
-$bPreisverlauf   = false;
-$bereitsBewertet = false;
-$productNotices  = [];
-$nonAllowed      = [];
-$conf            = Shopsetting::getInstance()->getAll();
-$globalMetaData  = \Filter\Metadata::getGlobalMetaData();
-$fBelohnung      = (isset($_GET['fB']) && (float)$_GET['fB'] > 0) ? (float)$_GET['fB'] : 0.0;
-$cHinweis        = $smarty->getTemplateVars('hinweis');
-$shopURL         = Shop::getURL() . '/';
+$oPreisverlauf  = null;
+$bPreisverlauf  = false;
+$rated          = false;
+$productNotices = [];
+$nonAllowed     = [];
+$conf           = Shopsetting::getInstance()->getAll();
+$globalMetaData = \Filter\Metadata::getGlobalMetaData();
+$cHinweis       = $smarty->getTemplateVars('hinweis');
+$shopURL        = Shop::getURL() . '/';
 if (empty($cHinweis)) {
-    $cHinweis = Product::mapErrorCode(Request::verifyGPDataString('cHinweis'), $fBelohnung);
+    $cHinweis = Product::mapErrorCode(
+        Request::verifyGPDataString('cHinweis'),
+        (isset($_GET['fB']) && (float)$_GET['fB'] > 0) ? (float)$_GET['fB'] : 0.0
+    );
 }
 $cFehler = $smarty->getTemplateVars('fehler');
 if (empty($cFehler)) {
@@ -107,7 +109,6 @@ if (isset($_POST['fragezumprodukt']) && (int)$_POST['fragezumprodukt'] === 1) {
 } elseif (isset($_POST['benachrichtigung_verfuegbarkeit']) && (int)$_POST['benachrichtigung_verfuegbarkeit'] === 1) {
     $productNotices = Product::checkAvailabilityMessage($productNotices);
 }
-// hole aktuelle Kategorie, falls eine gesetzt
 $kKategorie             = $AktuellerArtikel->gibKategorie();
 $AktuelleKategorie      = new Kategorie($kKategorie);
 $AufgeklappteKategorien = new KategorieListe();
@@ -117,7 +118,6 @@ $ratingStars           = Request::verifyGPCDataInt('btgsterne');
 $sorting               = Request::verifyGPCDataInt('sortierreihenfolge');
 $showRatings           = Request::verifyGPCDataInt('bewertung_anzeigen');
 $allLanguages          = Request::verifyGPCDataInt('moreRating');
-$BewertungsTabAnzeigen = ($ratingPage || $ratingStars || $showRatings || $allLanguages) ? 1 : 0;
 if ($ratingPage === 0) {
     $ratingPage = 1;
 }
@@ -147,7 +147,7 @@ if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreic
     $ratings = $AktuellerArtikel->Bewertungen->oBewertung_arr;
 }
 if (\Session\Frontend::getCustomer()->getID() > 0) {
-    $bereitsBewertet = Product::getRatedByCurrentCustomer(
+    $rated = Product::getRatedByCurrentCustomer(
         (int)$AktuellerArtikel->kArtikel,
         (int)$AktuellerArtikel->kVaterArtikel
     );
@@ -175,7 +175,6 @@ $ratingNav    = Product::getRatingNavigation(
     $ratingsCount,
     $conf['bewertung']['bewertung_anzahlseite']
 );
-// Konfig bearbeiten
 if (Request::hasGPCData('ek')) {
     Product::getEditConfigMode(Request::verifyGPCDataInt('ek'), $smarty);
 }
@@ -183,8 +182,8 @@ foreach ($AktuellerArtikel->Variationen as $Variation) {
     if (!$Variation->Werte || $Variation->cTyp === 'FREIFELD' || $Variation->cTyp === 'PFLICHT-FREIFELD') {
         continue;
     }
-    foreach ($Variation->Werte as $Wert) {
-        $nonAllowed[$Wert->kEigenschaftWert] = Product::getNonAllowedAttributeValues($Wert->kEigenschaftWert);
+    foreach ($Variation->Werte as $value) {
+        $nonAllowed[$value->kEigenschaftWert] = Product::getNonAllowedAttributeValues($value->kEigenschaftWert);
     }
 }
 $nav = $conf['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
@@ -192,14 +191,11 @@ $nav = $conf['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
     : null;
 
 if (class_exists('Upload')) {
-    $oUploadSchema_arr = Upload::gibArtikelUploads($AktuellerArtikel->kArtikel);
-    if ($oUploadSchema_arr) {
-        $nMaxSize = Upload::uploadMax();
-        $smarty->assign('cSessionID', session_id())
-               ->assign('nMaxUploadSize', $nMaxSize)
-               ->assign('cMaxUploadSize', Upload::formatGroesse($nMaxSize))
-               ->assign('oUploadSchema_arr', $oUploadSchema_arr);
-    }
+    $uploads = Upload::gibArtikelUploads($AktuellerArtikel->kArtikel);
+    $maxSize = Upload::uploadMax();
+    $smarty->assign('nMaxUploadSize', $maxSize)
+           ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
+           ->assign('oUploadSchema_arr', $uploads);
 }
 
 $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
@@ -222,7 +218,7 @@ $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('ProdukttagHinweis', Product::editProductTags($AktuellerArtikel, $conf))
        ->assign('ProduktTagging', $AktuellerArtikel->tags)
        ->assign('BlaetterNavi', $ratingNav)
-       ->assign('BewertungsTabAnzeigen', $BewertungsTabAnzeigen)
+       ->assign('BewertungsTabAnzeigen', ($ratingPage || $ratingStars || $showRatings || $allLanguages) ? 1 : 0)
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('PFAD_MEDIAFILES', $shopURL . PFAD_MEDIAFILES)
@@ -247,14 +243,14 @@ require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 
 $smarty->assign('meta_title', $AktuellerArtikel->getMetaTitle())
        ->assign('meta_description', $AktuellerArtikel->getMetaDescription($AufgeklappteKategorien))
-       ->assign('meta_keywords', $AktuellerArtikel->getMetaKeywords());
+       ->assign('meta_keywords', $AktuellerArtikel->getMetaKeywords())
+       ->assign('bereitsBewertet', $rated);
 executeHook(HOOK_ARTIKEL_PAGE, ['oArtikel' => $AktuellerArtikel]);
 
 if (Request::isAjaxRequest()) {
     $smarty->assign('listStyle', isset($_GET['isListStyle']) ? StringHandler::filterXSS($_GET['isListStyle']) : '');
 }
 
-$smarty->assign('bereitsBewertet', $bereitsBewertet);
 $smarty->display('productdetails/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

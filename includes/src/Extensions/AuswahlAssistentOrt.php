@@ -148,7 +148,7 @@ class AuswahlAssistentOrt
                 }
             }
             // Spezialseite
-            if (isset($params['kLink_arr']) && \is_array($params['kLink_arr']) && count($params['kLink_arr']) > 0) {
+            if (isset($params['kLink_arr']) && \is_array($params['kLink_arr']) && \count($params['kLink_arr']) > 0) {
                 foreach ($params['kLink_arr'] as $kLink) {
                     if ((int)$kLink > 0) {
                         $ins                          = new \stdClass();

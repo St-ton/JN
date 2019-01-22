@@ -93,7 +93,7 @@ class AuswahlAssistent
      */
     public function __construct($cKey, int $kKey, int $kSprache = 0, bool $bOnlyActive = true)
     {
-        $this->config = \Shop::getSettings(CONF_AUSWAHLASSISTENT)['auswahlassistent'];
+        $this->config = \Shop::getSettings(\CONF_AUSWAHLASSISTENT)['auswahlassistent'];
 
         if ($kSprache === 0) {
             $kSprache = \Shop::getLanguageID();
@@ -102,7 +102,7 @@ class AuswahlAssistent
         if ($kKey > 0
             && $kSprache > 0
             && !empty($cKey)
-            && \Nice::getInstance()->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)
+            && \Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_AUSWAHLASSISTENT)
         ) {
             $this->loadFromDB($cKey, $kKey, $kSprache, $bOnlyActive);
         }
@@ -279,7 +279,7 @@ class AuswahlAssistent
      */
     public function getDescription(): string
     {
-        return \preg_replace('/\s+/', ' ', trim($this->cBeschreibung));
+        return \preg_replace('/\s+/', ' ', \trim($this->cBeschreibung));
     }
 
     /**
@@ -378,7 +378,7 @@ class AuswahlAssistent
      */
     public static function isRequired(): bool
     {
-        return \Shop::getSettings([CONF_AUSWAHLASSISTENT])['auswahlassistent']['auswahlassistent_nutzen'] === 'Y';
+        return \Shop::getSettings([\CONF_AUSWAHLASSISTENT])['auswahlassistent']['auswahlassistent_nutzen'] === 'Y';
     }
 
     /**
@@ -430,6 +430,6 @@ class AuswahlAssistent
      */
     public static function getLinks(): array
     {
-        return \Shop::Container()->getDB()->selectAll('tlink', 'nLinkart', LINKTYP_AUSWAHLASSISTENT);
+        return \Shop::Container()->getDB()->selectAll('tlink', 'nLinkart', \LINKTYP_AUSWAHLASSISTENT);
     }
 }

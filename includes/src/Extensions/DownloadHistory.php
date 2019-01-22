@@ -67,8 +67,8 @@ class DownloadHistory
             $kDownloadHistory
         );
         if ($history !== null && (int)$history->kDownloadHistory > 0) {
-            $members = array_keys(get_object_vars($history));
-            if (is_array($members) && count($members) > 0) {
+            $members = \array_keys(get_object_vars($history));
+            if (\is_array($members) && \count($members) > 0) {
                 foreach ($members as $member) {
                     $this->$member = $history->$member;
                 }
@@ -87,7 +87,7 @@ class DownloadHistory
      */
     public static function getHistorys(int $kDownload): array
     {
-        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+        trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
 
         return self::getHistory($kDownload);
     }
@@ -138,7 +138,7 @@ class DownloadHistory
             );
             foreach ($data as $item) {
                 if (!isset($history[$item->kDownload])
-                    || !is_array($history[$item->kDownload])
+                    || !\is_array($history[$item->kDownload])
                 ) {
                     $history[$item->kDownload] = [];
                 }

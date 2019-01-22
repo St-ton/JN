@@ -95,7 +95,7 @@ class AuswahlAssistentFrage
             \DB\ReturnType::SINGLE_OBJECT
         );
         if ($oDbResult !== null && $oDbResult !== false) {
-            foreach (get_object_vars($oDbResult) as $name => $value) {
+            foreach (\get_object_vars($oDbResult) as $name => $value) {
                 $this->$name = $value;
             }
             $this->kAuswahlAssistentFrage  = (int)$this->kAuswahlAssistentFrage;
@@ -142,7 +142,7 @@ class AuswahlAssistentFrage
     public function saveQuestion(bool $bPrimary = false)
     {
         $checks = $this->checkQuestion();
-        if (count($checks) === 0) {
+        if (\count($checks) === 0) {
             $ins                          = new \stdClass();
             $ins->kAuswahlAssistentFrage  = $this->kAuswahlAssistentFrage;
             $ins->kAuswahlAssistentGruppe = $this->kAuswahlAssistentGruppe;
@@ -168,7 +168,7 @@ class AuswahlAssistentFrage
     public function updateQuestion()
     {
         $checks = $this->checkQuestion(true);
-        if (count($checks) === 0) {
+        if (\count($checks) === 0) {
             $upd                          = new \stdClass();
             $upd->kAuswahlAssistentGruppe = $this->kAuswahlAssistentGruppe;
             $upd->kMerkmal                = $this->kMerkmal;
@@ -196,8 +196,8 @@ class AuswahlAssistentFrage
     public static function deleteQuestion(array $params): bool
     {
         if (isset($params['kAuswahlAssistentFrage_arr'])
-            && is_array($params['kAuswahlAssistentFrage_arr'])
-            && count($params['kAuswahlAssistentFrage_arr']) > 0
+            && \is_array($params['kAuswahlAssistentFrage_arr'])
+            && \count($params['kAuswahlAssistentFrage_arr']) > 0
         ) {
             foreach ($params['kAuswahlAssistentFrage_arr'] as $kAuswahlAssistentFrage) {
                 \Shop::Container()->getDB()->delete(
@@ -221,7 +221,7 @@ class AuswahlAssistentFrage
     {
         $checks = [];
         // Frage
-        if (strlen($this->cFrage) === 0) {
+        if (\strlen($this->cFrage) === 0) {
             $checks['cFrage'] = 1;
         }
         // Gruppe
@@ -275,12 +275,12 @@ class AuswahlAssistentFrage
     /**
      * @param int  $kMerkmal
      * @param bool $bMMW
-     * @return Merkmal|\stdClass
+     * @return \Merkmal|\stdClass
      */
     public static function getMerkmal(int $kMerkmal, bool $bMMW = false)
     {
         return $kMerkmal > 0
-            ? new Merkmal($kMerkmal, $bMMW)
+            ? new \Merkmal($kMerkmal, $bMMW)
             : new \stdClass();
     }
 }

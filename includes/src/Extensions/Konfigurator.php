@@ -149,7 +149,7 @@ class Konfigurator
      */
     public static function validateBasket(int $kArtikel, $configItems)
     {
-        if ($kArtikel === 0 || !is_array($configItems)) {
+        if ($kArtikel === 0 || !\is_array($configItems)) {
             \Shop::Container()->getLogService()->error(
                 'Validierung der Konfiguration fehlgeschlagen - Ungültige Daten'
             );

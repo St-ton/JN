@@ -925,10 +925,12 @@ class ShippingMethod
     {
         $arrVersandpositionen = [];
         if (!\is_array($positions)) {
+
             return $arrVersandpositionen;
         }
         $positions = \array_filter($positions, function ($pos) {
-            return (int)$pos->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL;
+            
+            return (int)$pos->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL && \is_object($pos->Artikel);
         });
         foreach ($positions as $pos) {
             $shippingPos = self::gibArtikelabhaengigeVersandkosten(

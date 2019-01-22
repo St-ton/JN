@@ -187,7 +187,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
                 }
             }
             //bestseller tabelle füllen
-            if ($position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
+            if ($position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && is_object($position->Artikel)) {
                 //Lagerbestand verringern
                 aktualisiereLagerbestand(
                     $position->Artikel,

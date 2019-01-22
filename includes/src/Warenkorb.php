@@ -938,7 +938,7 @@ class Warenkorb
         if ((int)$oPosition->kKonfigitem <= 0 || !class_exists('Konfigitem')) {
             return $this;
         }
-        $oKonfigitem = new Konfigitem($oPosition->kKonfigitem);
+        $oKonfigitem = new \Extensions\Konfigitem($oPosition->kKonfigitem);
         if ($oKonfigitem->getKonfigitem() > 0) {
             if ($bPreise) {
                 $oPosition->fPreisEinzelNetto = $oKonfigitem->getPreis(true);
@@ -946,13 +946,13 @@ class Warenkorb
                 $oPosition->kSteuerklasse     = $oKonfigitem->getSteuerklasse();
                 $oPosition->setzeGesamtpreisLocalized();
             }
-            if ($bName && $oKonfigitem->getUseOwnName() && class_exists('Konfigitemsprache')) {
-                foreach (\Session\Frontend::getLanguages() as $Sprache) {
-                    $oKonfigitemsprache               = new Konfigitemsprache(
+            if ($bName && $oKonfigitem->getUseOwnName()) {
+                foreach (\Session\Frontend::getLanguages() as $language) {
+                    $oKonfigitemsprache               = new \Extensions\Konfigitemsprache(
                         $oKonfigitem->getKonfigitem(),
-                        $Sprache->kSprache
+                        $language->kSprache
                     );
-                    $oPosition->cName[$Sprache->cISO] = $oKonfigitemsprache->getName();
+                    $oPosition->cName[$language->cISO] = $oKonfigitemsprache->getName();
                 }
             }
         }
@@ -1722,13 +1722,13 @@ class Warenkorb
      */
     public function hasDigitalProducts(): bool
     {
-        return class_exists('Download') && Download::hasDownloads($this);
+        return \Extensions\Download::hasDownloads($this);
     }
 
     /**
      * @return null|Versandart - cheapest shipping except shippings that offer cash payment
      */
-    public function getFavourableShipping()
+    public function getFavourableShipping(): ?Versandart
     {
         if (!empty($_SESSION['Versandart']->kVersandart) && isset($_SESSION['Versandart']->nMinLiefertage)
             || empty($_SESSION['Warenkorb']->PositionenArr)

@@ -428,7 +428,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
                             }
                             // Konfigitems ohne Artikelbezug
                         } elseif ($oWarenkorbPersPos->kArtikel === 0 && !empty($oWarenkorbPersPos->kKonfigitem)) {
-                            $oKonfigitem = new Konfigitem($oWarenkorbPersPos->kKonfigitem);
+                            $oKonfigitem = new \Extensions\Konfigitem($oWarenkorbPersPos->kKonfigitem);
                             $cart->erstelleSpezialPos(
                                 $oKonfigitem->getName(),
                                 $oWarenkorbPersPos->fAnzahl,

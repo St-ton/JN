@@ -10,6 +10,8 @@ use Helpers\SearchSpecial;
 use Helpers\ShippingMethod;
 use Helpers\Tax;
 use Helpers\URL;
+use Extensions\Konfigurator;
+use Extensions\Download;
 
 /**
  * Class Artikel
@@ -3611,7 +3613,7 @@ class Artikel
         }
         $given = get_object_vars($options);
         $mask  = '';
-        if (isset($options->nDownload) && $options->nDownload === 1 && !class_exists('Download')) {
+        if (isset($options->nDownload) && $options->nDownload === 1 && Download::checkLicense()) {
             //unset download-option if there is no license for the download module
             $options->nDownload = 0;
         }
@@ -4240,12 +4242,12 @@ class Artikel
             isset($_SESSION['Kundengruppe']->nNettoPreise) ? \Session\Frontend::getCustomerGroup()->isMerchant() : false
         );
         $this->oDownload_arr = [];
-        if ($this->getOption('nDownload', 0) === 1 && class_exists('Download')) {
+        if ($this->getOption('nDownload', 0) === 1) {
             $this->oDownload_arr = Download::getDownloads(['kArtikel' => $this->kArtikel], $kSprache);
         }
         $this->bHasKonfig  = false;
         $this->oKonfig_arr = [];
-        if (class_exists('Konfigurator')) {
+        if (Konfigurator::checkLicense()) {
             $this->bHasKonfig = Konfigurator::hasKonfig($this->kArtikel);
             if ($this->bHasKonfig && $this->getOption('nKonfig', 0) === 1) {
                 if (Konfigurator::validateKonfig($this->kArtikel)) {
@@ -5563,7 +5565,7 @@ class Artikel
         }
         if ($this->bHasKonfig && !empty($this->oKonfig_arr)) {
             foreach ($this->oKonfig_arr as $gruppe) {
-                /** @var Konfigitem $piece */
+                /** @var \Extensions\Konfigitem $piece */
                 foreach ($gruppe->oItem_arr as $piece) {
                     $konfigItemArticle = $piece->getArtikel();
                     if (!empty($konfigItemArticle)) {

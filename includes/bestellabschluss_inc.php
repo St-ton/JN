@@ -979,8 +979,8 @@ function baueBestellnummer(): string
  */
 function speicherUploads($oBestellung): void
 {
-    if (!empty($oBestellung->kBestellung) && class_exists('Upload')) {
-        Upload::speicherUploadDateien(\Session\Frontend::getCart(), $oBestellung->kBestellung);
+    if (!empty($oBestellung->kBestellung) && \Extensions\Upload::checkLicense()) {
+        \Extensions\Upload::speicherUploadDateien(\Session\Frontend::getCart(), $oBestellung->kBestellung);
     }
 }
 

@@ -36,10 +36,10 @@ if (Request::verifyGPCDataInt('basket2Pers') === 1) {
 if ($cart->istBestellungMoeglich() !== 10) {
     pruefeBestellungMoeglich();
 }
-if (class_exists('Upload') && !Upload::pruefeWarenkorbUploads($cart)) {
-    Upload::redirectWarenkorb(UPLOAD_ERROR_NEED_UPLOAD);
+if (!\Extensions\Upload::pruefeWarenkorbUploads($cart)) {
+    \Extensions\Upload::redirectWarenkorb(UPLOAD_ERROR_NEED_UPLOAD);
 }
-if (class_exists('Download') && Download::hasDownloads($cart)) {
+if (\Extensions\Download::hasDownloads($cart)) {
     // Nur registrierte Benutzer
     $conf['kaufabwicklung']['bestellvorgang_unregistriert'] = 'N';
 }
@@ -130,21 +130,21 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
         );
     }
 }
-if (class_exists('Download') && Download::hasDownloads($cart)) {
+if (\Extensions\Download::hasDownloads($cart)) {
     if ($step !== 'accountwahl' && empty($_SESSION['Kunde']->cPasswort)) {
         // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
-        $step      = 'accountwahl';
-        $cHinweis  = Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
-        $cPost_arr = StringHandler::filterXSS($_POST);
+        $step     = 'accountwahl';
+        $cHinweis = Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
+        $postData = StringHandler::filterXSS($_POST);
 
-        Shop::Smarty()->assign('cKundenattribut_arr', getKundenattribute($cPost_arr))
-            ->assign('kLieferadresse', $cPost_arr['kLieferadresse'])
-            ->assign('cPost_var', $cPost_arr);
+        Shop::Smarty()->assign('cKundenattribut_arr', getKundenattribute($postData))
+            ->assign('kLieferadresse', $postData['kLieferadresse'])
+            ->assign('cPost_var', $postData);
 
-        if ((int)$cPost_arr['shipping_address'] === 1) {
+        if ((int)$postData['shipping_address'] === 1) {
             Shop::Smarty()->assign(
                 'Lieferadresse',
-                mappeLieferadresseKontaktdaten($cPost_arr['register']['shipping_address'])
+                mappeLieferadresseKontaktdaten($postData['register']['shipping_address'])
             );
         }
 
@@ -218,7 +218,7 @@ if ($step === 'Bestaetigung'
     zahlungsartKorrekt($oPaymentMethod->kZahlungsart);
 
     if ((isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1)
-        || (isset($cPost_arr['guthabenVerrechnen']) && (int)$cPost_arr['guthabenVerrechnen'] === 1)
+        || (isset($postData['guthabenVerrechnen']) && (int)$postData['guthabenVerrechnen'] === 1)
     ) {
         $_SESSION['Bestellung']->GuthabenNutzen   = 1;
         $_SESSION['Bestellung']->fGuthabenGenutzt = min(

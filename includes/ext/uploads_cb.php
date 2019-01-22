@@ -91,7 +91,7 @@ if (!empty($_REQUEST['action'])) {
             break;
 
         case 'preview':
-            $oUpload   = new UploadDatei();
+            $oUpload   = new \Extensions\UploadDatei();
             $kKunde    = (int)$_SESSION['Kunde']->kKunde;
             $cFilePath = PFAD_ROOT . BILD_UPLOAD_ZUGRIFF_VERWEIGERT;
             $kUpload   = (int)Shop::Container()->getCryptoService()->decryptXTEA(rawurldecode($_REQUEST['secret']));

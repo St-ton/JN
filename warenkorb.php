@@ -118,19 +118,13 @@ if (isset($_GET['fillOut'])) {
         $warning = Shop::Lang()->get('missingFilesUpload', 'checkout');
     }
 }
-$kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
-if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']->kKundengruppe > 0) {
-    $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
-}
-$cCanonicalURL = $linkHelper->getStaticRoute('warenkorb.php');
-$cartNotices   = [];
-if (class_exists('Upload')) {
-    $uploads = Upload::gibWarenkorbUploads($cart);
-    $maxSize = Upload::uploadMax();
-    $smarty->assign('nMaxUploadSize', $maxSize)
-           ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
-           ->assign('oUploadSchema_arr', $uploads);
-}
+$customerGroupID = ($id = \Session\Frontend::getCustomer()->kKundengruppe) > 0
+    ? $id
+    : \Session\Frontend::getCustomerGroup()->getID();
+$cCanonicalURL   = $linkHelper->getStaticRoute('warenkorb.php');
+$cartNotices     = [];
+$uploads         = \Extensions\Upload::gibWarenkorbUploads($cart);
+$maxSize         = \Extensions\Upload::uploadMax();
 if (!empty($_SESSION['Warenkorbhinweise'])) {
     $cartNotices = $_SESSION['Warenkorbhinweise'];
     unset($_SESSION['Warenkorbhinweise']);
@@ -138,9 +132,12 @@ if (!empty($_SESSION['Warenkorbhinweise'])) {
 
 Cart::addVariationPictures($cart);
 $smarty->assign('MsgWarning', $warning)
+       ->assign('nMaxUploadSize', $maxSize)
+       ->assign('cMaxUploadSize', \Extensions\Upload::formatGroesse($maxSize))
+       ->assign('oUploadSchema_arr', $uploads)
        ->assign('Link', $link)
        ->assign('Schnellkaufhinweis', Cart::checkQuickBuy())
-       ->assign('laender', ShippingMethod::getPossibleShippingCountries($kKundengruppe))
+       ->assign('laender', ShippingMethod::getPossibleShippingCountries($customerGroupID))
        ->assign('KuponMoeglich', Kupon::couponsAvailable())
        ->assign('currentCoupon', Shop::Lang()->get('currentCoupon', 'checkout'))
        ->assign('currentCouponName', (!empty($_SESSION['Kupon']->translationList)

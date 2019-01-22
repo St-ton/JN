@@ -11,9 +11,9 @@ use CheckBox;
 use DB\ReturnType;
 use JTL\SeoHelper;
 use Kampagne;
-use Konfiggruppe;
-use Konfigitem;
-use Konfigurator;
+use Extensions\Konfiggruppe;
+use Extensions\Konfigitem;
+use Extensions\Konfigurator;
 use Kundengruppe;
 use Preise;
 use Session\Frontend;
@@ -2124,7 +2124,7 @@ class Product
         $config->cPreisLocalized = [];
         $config->cPreisString    = Shop::Lang()->get('priceAsConfigured', 'productDetails');
 
-        if (!\class_exists('Konfigurator') || !Konfigurator::validateKonfig($productID)) {
+        if (!Konfigurator::checkLicense() || !Konfigurator::validateKonfig($productID)) {
             return null;
         }
         foreach ($variations as $i => $nVariation) {
@@ -2236,7 +2236,7 @@ class Product
     public static function getEditConfigMode($configID, $smarty): void
     {
         $cart = Frontend::getCart();
-        if (!isset($cart->PositionenArr[$configID]) || !\class_exists('Konfigitem')) {
+        if (!isset($cart->PositionenArr[$configID]) || !Konfigitem::checkLicense()) {
             return;
         }
         /** @var WarenkorbPos $basePosition */

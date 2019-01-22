@@ -11,8 +11,8 @@ use Currency;
 use DB\ReturnType;
 use EigenschaftWert;
 use Kampagne;
-use Konfigitem;
-use Konfigurator;
+use Extensions\Konfigitem;
+use Extensions\Konfigurator;
 use Kunde;
 use Kupon;
 use Lieferadresse;
@@ -22,7 +22,7 @@ use Session\Frontend;
 use Shop;
 use stdClass;
 use StringHandler;
-use Upload;
+use Extensions\Upload;
 use Vergleichsliste;
 use Warenkorb;
 use WarenkorbPers;
@@ -398,7 +398,7 @@ class Cart
             $attributes = Product::getSelectedPropertiesForArticle($articleID);
         }
         $isConfigArticle = false;
-        if (\class_exists('Konfigurator')) {
+        if (Konfigurator::checkLicense()) {
             if (!Konfigurator::validateKonfig($articleID)) {
                 $isConfigArticle = false;
             } else {
@@ -1504,9 +1504,7 @@ class Cart
                 'position' => &$cart->PositionenArr[$nPos]
             ]);
 
-            if (\class_exists('Upload')) {
-                Upload::deleteArtikelUploads($cart->PositionenArr[$nPos]->kArtikel);
-            }
+            Upload::deleteArtikelUploads($cart->PositionenArr[$nPos]->kArtikel);
 
             $uniques[] = $unique;
 
@@ -2022,8 +2020,6 @@ class Cart
      */
     public static function validateCartConfig(): void
     {
-        if (\class_exists('Konfigurator')) {
-            Konfigurator::postcheckBasket($_SESSION['Warenkorb']);
-        }
+        Konfigurator::postcheckBasket($_SESSION['Warenkorb']);
     }
 }

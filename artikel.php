@@ -185,19 +185,15 @@ foreach ($AktuellerArtikel->Variationen as $Variation) {
         $nonAllowed[$value->kEigenschaftWert] = Product::getNonAllowedAttributeValues($value->kEigenschaftWert);
     }
 }
-$nav = $conf['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
+$nav     = $conf['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
     ? Product::getProductNavigation($AktuellerArtikel->kArtikel ?? 0, $AktuelleKategorie->kKategorie ?? 0)
     : null;
-
-if (class_exists('Upload')) {
-    $uploads = Upload::gibArtikelUploads($AktuellerArtikel->kArtikel);
-    $maxSize = Upload::uploadMax();
-    $smarty->assign('nMaxUploadSize', $maxSize)
-           ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
-           ->assign('oUploadSchema_arr', $uploads);
-}
-
-$smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
+$uploads = \Extensions\Upload::gibArtikelUploads($AktuellerArtikel->kArtikel);
+$maxSize = \Extensions\Upload::uploadMax();
+$smarty->assign('nMaxUploadSize', $maxSize)
+       ->assign('cMaxUploadSize', \Extensions\Upload::formatGroesse($maxSize))
+       ->assign('oUploadSchema_arr', $uploads)
+       ->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('arNichtErlaubteEigenschaftswerte', $nonAllowed)
        ->assign('oAehnlicheArtikel_arr', $similarArticles)
        ->assign('UVPlocalized', $AktuellerArtikel->cUVPLocalized)

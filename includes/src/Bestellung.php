@@ -7,6 +7,8 @@
 use Helpers\Tax;
 use Helpers\ShippingMethod;
 use Helpers\Cart;
+use Extensions\Download;
+use Extensions\Upload;
 
 /**
  * Class Bestellung
@@ -571,14 +573,8 @@ class Bestellung
                 if ($bArtikel) {
                     $position->Artikel = (new Artikel())->fuelleArtikel($position->kArtikel, $defaultOptions);
                 }
-                // Downloads
-                if (class_exists('Download')) {
-                    $this->oDownload_arr = Download::getDownloads(['kBestellung' => $this->kBestellung], $kSprache);
-                }
-                // Uploads
-                if (class_exists('Upload')) {
-                    $this->oUpload_arr = Upload::gibBestellungUploads($this->kBestellung);
-                }
+                $this->oDownload_arr = Download::getDownloads(['kBestellung' => $this->kBestellung], $kSprache);
+                $this->oUpload_arr   = Upload::gibBestellungUploads($this->kBestellung);
                 if ($position->kWarenkorbPos > 0) {
                     $position->WarenkorbPosEigenschaftArr = $db->selectAll(
                         'twarenkorbposeigenschaft',

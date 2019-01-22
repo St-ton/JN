@@ -4,10 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Extensions;
+
 /**
  * Class Konfiggruppesprache
+ *
+ * @package Extensions
  */
-class Konfiggruppesprache implements JsonSerializable
+class Konfiggruppesprache implements \JsonSerializable
 {
     /**
      * @var int
@@ -49,7 +53,7 @@ class Konfiggruppesprache implements JsonSerializable
      */
     public function jsonSerialize()
     {
-        return StringHandler::utf8_convert_recursive([
+        return \StringHandler::utf8_convert_recursive([
             'cName'         => $this->cName,
             'cBeschreibung' => $this->cBeschreibung
         ]);
@@ -63,7 +67,7 @@ class Konfiggruppesprache implements JsonSerializable
      */
     private function loadFromDB(int $kKonfiggruppe = 0, int $kSprache = 0): void
     {
-        $item = Shop::Container()->getDB()->select(
+        $item = \Shop::Container()->getDB()->select(
             'tkonfiggruppesprache',
             'kKonfiggruppe',
             $kKonfiggruppe,
@@ -71,7 +75,7 @@ class Konfiggruppesprache implements JsonSerializable
             $kSprache
         );
         if (isset($item->kKonfiggruppe, $item->kSprache) && $item->kKonfiggruppe > 0 && $item->kSprache > 0) {
-            foreach (array_keys(get_object_vars($item)) as $member) {
+            foreach (\array_keys(\get_object_vars($item)) as $member) {
                 $this->$member = $item->$member;
             }
             $this->kSprache      = (int)$this->kSprache;
@@ -85,13 +89,13 @@ class Konfiggruppesprache implements JsonSerializable
      */
     public function save(bool $bPrim = true)
     {
-        $ins = new stdClass();
-        foreach (array_keys(get_object_vars($this)) as $member) {
+        $ins = new \stdClass();
+        foreach (\array_keys(\get_object_vars($this)) as $member) {
             $ins->$member = $this->$member;
         }
         unset($ins->kKonfiggruppe, $ins->kSprache);
 
-        $kPrim = Shop::Container()->getDB()->insert('tkonfiggruppesprache', $ins);
+        $kPrim = \Shop::Container()->getDB()->insert('tkonfiggruppesprache', $ins);
 
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
@@ -105,12 +109,12 @@ class Konfiggruppesprache implements JsonSerializable
      */
     public function update(): int
     {
-        $upd                = new stdClass();
+        $upd                = new \stdClass();
         $upd->kSprache      = $this->getSprache();
         $upd->cName         = $this->getName();
         $upd->cBeschreibung = $this->getBeschreibung();
 
-        return Shop::Container()->getDB()->update(
+        return \Shop::Container()->getDB()->update(
             'tkonfiggruppesprache',
             ['kKonfiggruppe', 'kSprache'],
             [$this->getKonfiggruppe(), $this->getSprache()],
@@ -123,7 +127,7 @@ class Konfiggruppesprache implements JsonSerializable
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->delete(
+        return \Shop::Container()->getDB()->delete(
             'tkonfiggruppesprache',
             ['kKonfiggruppe', 'kSprache'],
             [(int)$this->kKonfiggruppe, (int)$this->kSprache]
@@ -158,7 +162,7 @@ class Konfiggruppesprache implements JsonSerializable
      */
     public function setName($cName): self
     {
-        $this->cName = Shop::Container()->getDB()->escape($cName);
+        $this->cName = \Shop::Container()->getDB()->escape($cName);
 
         return $this;
     }
@@ -169,7 +173,7 @@ class Konfiggruppesprache implements JsonSerializable
      */
     public function setBeschreibung($cBeschreibung): self
     {
-        $this->cBeschreibung = Shop::Container()->getDB()->escape($cBeschreibung);
+        $this->cBeschreibung = \Shop::Container()->getDB()->escape($cBeschreibung);
 
         return $this;
     }
@@ -211,6 +215,6 @@ class Konfiggruppesprache implements JsonSerializable
      */
     public function hatBeschreibung(): bool
     {
-        return strlen($this->cBeschreibung) > 0;
+        return \strlen($this->cBeschreibung) > 0;
     }
 }

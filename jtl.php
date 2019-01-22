@@ -14,6 +14,7 @@ use Helpers\Request;
 use Helpers\ShippingMethod;
 use Helpers\Tax;
 use Pagination\Pagination;
+use Extensions\Download;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
@@ -464,7 +465,7 @@ if ($customerID > 0) {
             && (int)$bestellung->kKunde > 0
             && (int)$bestellung->kKunde === \Session\Frontend::getCustomer()->getID()
         ) {
-            if (Request::verifyGPCDataInt('dl') > 0 && class_exists('Download')) {
+            if (Request::verifyGPCDataInt('dl') > 0 && Download::checkLicense()) {
                 $returnCode = Download::getFile(
                     Request::verifyGPCDataInt('dl'),
                     $customerID,
@@ -525,13 +526,10 @@ if ($customerID > 0) {
     }
 
     if ($step === 'mein Konto' || $step === 'bestellungen') {
-        $downloads = [];
+        $downloads = Download::getDownloads(['kKunde' => $customerID], Shop::getLanguageID());
         $orders    = [];
-        if (class_exists('Download')) {
-            $downloads = Download::getDownloads(['kKunde' => $customerID], Shop::getLanguageID());
-            $smarty->assign('oDownload_arr', $downloads);
-        }
-        if (Request::verifyGPCDataInt('dl') > 0 && class_exists('Download')) {
+        $smarty->assign('oDownload_arr', $downloads);
+        if (Request::verifyGPCDataInt('dl') > 0 && Download::checkLicense()) {
             $returnCode = Download::getFile(
                 Request::verifyGPCDataInt('dl'),
                 $customerID,

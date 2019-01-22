@@ -69,7 +69,7 @@ class UstIDvies
      *
      * return a array of check-results
      * [
-     *        success   : boolean, "true" = all checks were fine, "false" somthing went wrong
+     *        success   : bool, "true" = all checks were fine, "false" somthing went wrong
      *      , errortype : string, which type of error was occure, time- or parse-error
      *      , errorcode : string, numerical code to identify the error
      *      , errorinfo : addition information to show it the user in the frontend

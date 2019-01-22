@@ -573,7 +573,7 @@ class Template
                     }
                     $setting->bEditable = strlen($setting->bEditable) === 0
                         ? true
-                        : (boolean)(int)$setting->bEditable;
+                        : (bool)(int)$setting->bEditable;
                     if ($setting->bEditable && isset($oDBSettings[$oSection->cKey][$setting->cKey])) {
                         $setting->cValue = $oDBSettings[$oSection->cKey][$setting->cKey];
                     }
@@ -644,7 +644,7 @@ class Template
                 /** @var SimpleXMLElement $oXMLContainer */
                 foreach ($oXMLBoxes_arr as $oXMLContainer) {
                     $cPosition         = (string)$oXMLContainer->attributes()->Position;
-                    $bAvailable        = (boolean)(int)$oXMLContainer->attributes()->Available;
+                    $bAvailable        = (bool)(int)$oXMLContainer->attributes()->Available;
                     $items[$cPosition] = $bAvailable;
                 }
             }

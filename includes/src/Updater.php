@@ -13,7 +13,7 @@ use JTLShop\SemVer\VersionCollection;
 class Updater
 {
     /**
-     * @var boolean
+     * @var bool
      */
     protected static $isVerified = false;
 

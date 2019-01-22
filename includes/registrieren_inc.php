@@ -15,7 +15,7 @@ function kundeSpeichern(array $post)
 {
     global $Kunde,
            $step,
-           $editRechnungsadresse,
+           $edit,
            $knd,
            $cKundenattribut_arr;
 
@@ -26,10 +26,10 @@ function kundeSpeichern(array $post)
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
 
-    $editRechnungsadresse = (int)$post['editRechnungsadresse'];
-    $step                 = 'formular';
+    $edit = (int)$post['editRechnungsadresse'];
+    $step = 'formular';
     Shop::Smarty()->assign('cPost_arr', StringHandler::filterXSS($post));
-    $fehlendeAngaben     = (!$editRechnungsadresse)
+    $fehlendeAngaben     = (!$edit)
         ? checkKundenFormular(1)
         : checkKundenFormular(1, 0);
     $knd                 = getKundendaten($post, 1, 0);
@@ -72,7 +72,7 @@ function kundeSpeichern(array $post)
             ['oKunde' => $knd]
         )->checkLogging(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $post, true);
 
-        if ($editRechnungsadresse && $_SESSION['Kunde']->kKunde > 0) {
+        if ($edit && $_SESSION['Kunde']->kKunde > 0) {
             $knd->cAbgeholt = 'N';
             unset($knd->cPasswort);
             $knd->updateInDB();

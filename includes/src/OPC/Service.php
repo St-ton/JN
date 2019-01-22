@@ -13,6 +13,7 @@ use Filter\Items\PriceRange;
 use Filter\Option;
 use Filter\ProductFilter;
 use Filter\Type;
+use OPC\Portlets\MissingPortlet;
 
 /**
  * Class Service
@@ -179,6 +180,12 @@ class Service
      */
     public function createPortletInstance($class): PortletInstance
     {
+        $portlet = $this->db->getPortlet($class);
+
+        if ($portlet instanceof MissingPortlet) {
+            return new MissingPortletInstance($portlet, $portlet->getMissingClassName());
+        }
+
         return new PortletInstance($this->db->getPortlet($class));
     }
 
@@ -189,6 +196,11 @@ class Service
      */
     public function getPortletInstance($data): PortletInstance
     {
+        if ($data['class'] === 'MissingPortlet') {
+            return $this->createPortletInstance($data['missingClass'])
+                ->deserialize($data);
+        }
+
         return $this->createPortletInstance($data['class'])
             ->deserialize($data);
     }
@@ -209,9 +221,13 @@ class Service
      * @return string
      * @throws \Exception
      */
-    public function getConfigPanelHtml($portletClass, $props): string
+    public function getConfigPanelHtml($portletClass, $missingClassName, $props): string
     {
-        return $this->getPortletInstance(['class' => $portletClass, 'properties' => $props])->getConfigPanelHtml();
+        return $this->getPortletInstance([
+            'class'        => $portletClass,
+            'missingClass' => $missingClassName,
+            'properties'   => $props,
+        ])->getConfigPanelHtml();
     }
 
     /**

@@ -8,6 +8,7 @@ namespace OPC\Portlets;
 
 use OPC\Portlet;
 use OPC\PortletInstance;
+use Plugin\Extension;
 
 /**
  * Class MissingPortlet
@@ -16,12 +17,23 @@ use OPC\PortletInstance;
 class MissingPortlet extends Portlet
 {
     /**
+     * @var string
+     */
+    protected $missingClassName = '';
+
+    /**
+     * @var null|Extension
+     */
+    protected $inactivePlugin = null;
+
+    /**
      * @param PortletInstance $instance
      * @return string
+     * @throws \Exception
      */
     public function getPreviewHtml(PortletInstance $instance): string
     {
-        return '<div ' . $instance->getDataAttributeString() . '>' . $this->getTitle() . '</div>';
+        return $this->getPreviewHtmlFromTpl($instance);
     }
 
     /**
@@ -40,7 +52,44 @@ class MissingPortlet extends Portlet
      */
     public function getConfigPanelHtml(PortletInstance $instance): string
     {
-        return '<p>The <b>"' . $this->class . '"</b> Portlet is either not installed or currently just set inactive.</p>'
-            . '<p>Please install the missing Plugin that provides this Portlet!';
+        return $this->getConfigPanelHtmlFromTpl($instance);
+    }
+
+    /**
+     * @return string
+     */
+    public function getMissingClassName(): string
+    {
+        return $this->missingClassName;
+    }
+
+    /**
+     * @param string $missingClassName
+     * @return $this
+     */
+    public function setMissingClassName(string $missingClassName)
+    {
+        $this->missingClassName = $missingClassName;
+
+        return $this;
+    }
+
+    /**
+     * @return Extension|null
+     */
+    public function getInactivePlugin(): ?Extension
+    {
+        return $this->inactivePlugin;
+    }
+
+    /**
+     * @param Extension|null $inactivePlugin
+     * @return MissingPortlet
+     */
+    public function setInactivePlugin(?Extension $inactivePlugin): MissingPortlet
+    {
+        $this->inactivePlugin = $inactivePlugin;
+
+        return $this;
     }
 }

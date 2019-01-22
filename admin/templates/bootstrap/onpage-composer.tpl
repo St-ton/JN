@@ -249,10 +249,13 @@
                 <form id="configForm">
                     <div class="modal-body" id="configModalBody"></div>
                     <div class="modal-footer">
-                        <div class="btn-group">
+                        <div class="btn-group" id="stdConfigButtons">
                             <button type="button" class="btn btn-danger" data-dismiss="modal">{__('Cancel')}</button>
                             <button class="btn btn-primary">{__('Save')}</button>
                         </div>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" id="missingConfigButtons">
+                            {__('OK')}
+                        </button>
                     </div>
                 </form>
             </div>

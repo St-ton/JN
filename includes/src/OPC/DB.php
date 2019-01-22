@@ -8,6 +8,7 @@ namespace OPC;
 
 use DB\DbInterface;
 use DB\ReturnType;
+use OPC\Portlets\MissingPortlet;
 use Plugin\Extension;
 use Plugin\ExtensionLoader;
 use Plugin\Plugin;
@@ -216,11 +217,13 @@ class DB
         $portletDB = $this->shopDB->select('topcportlet', 'cClass', $class);
 
         if (!\is_object($portletDB)) {
-            throw new \Exception("The OPC portlet with class name '$class' could not be found.");
+            return (new MissingPortlet($class, 0, 0))
+                ->setTitle('Missing Portlet "' . $class . '"');
         }
 
         if ((int)$portletDB->bActive !== 1) {
-            throw new \Exception("The OPC portlet with class name '$class' is inactive.");
+            return (new MissingPortlet($class, 0, 0))
+                ->setTitle('Inactive Portlet "' . $class . '"');
         }
 
         if ($portletDB->kPlugin > 0) {

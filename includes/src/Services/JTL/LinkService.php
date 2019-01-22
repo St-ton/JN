@@ -379,38 +379,26 @@ final class LinkService implements LinkServiceInterface
 
     /**
      * @inheritdoc
-     * @todo: use $cISOSprache?
      */
-    public function buildSpecialPageMeta(int $type, string $cISOSprache = null): \stdClass
+    public function buildSpecialPageMeta(int $type): \stdClass
     {
-        $first = null;
+        $first           = null;
+        $meta            = new \stdClass();
+        $meta->cTitle    = '';
+        $meta->cDesc     = '';
+        $meta->cKeywords = '';
         foreach ($this->linkGroups as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
             $first = $linkGroup->getLinks()->first(function (LinkInterface $link) use ($type) {
                 return $link->getLinkType() === $type;
             });
             if ($first !== null) {
-                break;
+                $meta->cTitle    = $first->getMetaTitle();
+                $meta->cDesc     = $first->getMetaDescription();
+                $meta->cKeywords = $first->getMetaKeyword();
+
+                return $meta;
             }
-        }
-//        if ($cISOSprache !== null) {
-//            $shopISO = \Shop::getLanguageCode();
-//            if ($shopISO !== null && \strlen($shopISO) > 0) {
-//                $cISOSprache = $shopISO;
-//            } else {
-//                $oSprache    = gibStandardsprache();
-//                $cISOSprache = $oSprache->cISO;
-//            }
-//        }
-        $meta            = new \stdClass();
-        $meta->cTitle    = '';
-        $meta->cDesc     = '';
-        $meta->cKeywords = '';
-        if ($first !== null) {
-            /** @var LinkInterface $first */
-            $meta->cTitle    = $first->getMetaTitle();
-            $meta->cDesc     = $first->getMetaDescription();
-            $meta->cKeywords = $first->getMetaKeyword();
         }
 
         return $meta;

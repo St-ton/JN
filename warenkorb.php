@@ -122,12 +122,8 @@ $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
 if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']->kKundengruppe > 0) {
     $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
 }
-$cCanonicalURL    = $linkHelper->getStaticRoute('warenkorb.php');
-$metaData         = $linkHelper->buildSpecialPageMeta(LINKTYP_WARENKORB);
-$cMetaTitle       = $metaData->cTitle;
-$cMetaDescription = $metaData->cDesc;
-$cMetaKeywords    = $metaData->cKeywords;
-$cartNotices      = [];
+$cCanonicalURL = $linkHelper->getStaticRoute('warenkorb.php');
+$cartNotices   = [];
 if (class_exists('Upload')) {
     $uploads = Upload::gibWarenkorbUploads($cart);
     $maxSize = Upload::uploadMax();

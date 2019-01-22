@@ -4,8 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
-
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
@@ -77,12 +75,8 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
     }
     $step = 'confirm';
 }
-$cCanonicalURL    = $linkHelper->getStaticRoute('pass.php');
-$metaData         = $linkHelper->buildSpecialPageMeta(LINKTYP_PASSWORD_VERGESSEN);
-$link             = $linkHelper->getPageLink($kLink);
-$cMetaTitle       = $metaData->cTitle;
-$cMetaDescription = $metaData->cDesc;
-$cMetaKeywords    = $metaData->cKeywords;
+$cCanonicalURL = $linkHelper->getStaticRoute('pass.php');
+$link          = $linkHelper->getPageLink($kLink);
 Shop::Smarty()->assign('step', $step)
     ->assign('hinweis', $hinweis)
     ->assign('Link', $link)

@@ -40,7 +40,22 @@ $customerGroupID    = ($id = \Session\Frontend::getCustomer()->kKundengruppe) > 
     : \Session\Frontend::getCustomerGroup()->getID();
 $globalMetaData     = $globalMetaData[Shop::getLanguageID()] ?? null;
 $pagetType          = Shop::getPageType();
-
+$specialPageTypes   = [
+    PAGE_REGISTRIERUNG,
+    PAGE_WARENKORB,
+    PAGE_PASSWORTVERGESSEN,
+    PAGE_NEWSLETTER,
+    PAGE_KONTAKT,
+    PAGE_MEINKONTO,
+    PAGE_LOGIN
+];
+if (in_array($pagetType, $specialPageTypes, true)) {
+    $mapper = new \Mapper\PageTypeToLinkType();
+    $metaData         = $linkHelper->buildSpecialPageMeta($mapper->map($pagetType));
+    $cMetaTitle       = $metaData->cTitle;
+    $cMetaDescription = $metaData->cDesc;
+    $cMetaKeywords    = $metaData->cKeywords;
+}
 if (is_object($globalMetaData)) {
     if (empty($cMetaTitle)) {
         $cMetaTitle = $globalMetaData->Title;

@@ -673,12 +673,8 @@ if ($customerID > 0) {
     $smarty->assign('Kunde', $_SESSION['Kunde'])
            ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr);
 }
-$cCanonicalURL    = $linkHelper->getStaticRoute('jtl.php', true);
-$metaData         = $linkHelper->buildSpecialPageMeta(LINKTYP_LOGIN);
-$cMetaTitle       = $metaData->cTitle;
-$cMetaDescription = $metaData->cDesc;
-$cMetaKeywords    = $metaData->cKeywords;
-$link             = $linkHelper->getPageLink($kLink);
+$cCanonicalURL = $linkHelper->getStaticRoute('jtl.php', true);
+$link          = $linkHelper->getPageLink($kLink);
 $smarty->assign('bewertungen', $ratings)
        ->assign('cHinweis', $cHinweis)
        ->assign('cFehler', $cFehler)

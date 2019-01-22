@@ -67,11 +67,7 @@ Shop::Smarty()->assign('editRechnungsadresse', $editRechnungsadresse)
     ->assign('code_registrieren', false)
     ->assign('unregForm', 0);
 
-$cCanonicalURL    = $linkHelper->getStaticRoute('registrieren.php');
-$metaData         = $linkHelper->buildSpecialPageMeta(LINKTYP_REGISTRIEREN);
-$cMetaTitle       = $metaData->cTitle;
-$cMetaDescription = $metaData->cDesc;
-$cMetaKeywords    = $metaData->cKeywords;
+$cCanonicalURL = $linkHelper->getStaticRoute('registrieren.php');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 if (isset($conf['kunden']['kundenregistrierung_pruefen_zeit'])

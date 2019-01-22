@@ -81,11 +81,7 @@ if (Form::checkSubject()) {
             $subject->AngezeigterName = $localization->cName;
         }
     }
-    $cCanonicalURL    = $linkHelper->getStaticRoute('kontakt.php');
-    $metaData         = $linkHelper->buildSpecialPageMeta(LINKTYP_KONTAKT, $lang);
-    $cMetaTitle       = $metaData->cTitle;
-    $cMetaDescription = $metaData->cDesc;
-    $cMetaKeywords    = $metaData->cKeywords;
+    $cCanonicalURL = $linkHelper->getStaticRoute('kontakt.php');
     $smarty->assign('step', $step)
            ->assign('code', false)
            ->assign('betreffs', $subjects)

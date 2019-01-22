@@ -30,11 +30,11 @@ $linkHelper = Shop::Container()->getLinkService();
 if (isset($oLink->kLink) && $oLink->kLink > 0) {
     $link = $linkHelper->getLinkByID($oLink->kLink);
 } else {
-    $oLink                   = $db->select('tlink', 'nLinkart', LINKTYP_404);
-    $bFileNotFound           = true;
-    Shop::$kLink             = (int)$oLink->kLink;
-    Shop::$bFileNotFound     = true;
-    Shop::$is404             = true;
+    $oLink               = $db->select('tlink', 'nLinkart', LINKTYP_404);
+    $bFileNotFound       = true;
+    Shop::$kLink         = (int)$oLink->kLink;
+    Shop::$bFileNotFound = true;
+    Shop::$is404         = true;
 
     return;
 }
@@ -216,11 +216,7 @@ if (\Session\Frontend::getCustomer()->getID() > 0) {
     $smarty->assign('bBereitsAbonnent', pruefeObBereitsAbonnent($customer->kKunde))
            ->assign('oKunde', $customer);
 }
-$cCanonicalURL    = Shop::getURL() . '/newsletter.php';
-$metaData         = $linkHelper->buildSpecialPageMeta(LINKTYP_NEWSLETTER);
-$cMetaTitle       = $metaData->cTitle;
-$cMetaDescription = $metaData->cDesc;
-$cMetaKeywords    = $metaData->cKeywords;
+$cCanonicalURL = Shop::getURL() . '/newsletter.php';
 
 $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)

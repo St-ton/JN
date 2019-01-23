@@ -586,8 +586,10 @@ class Wunschliste
                 $this->delWunschlistePosSess($wlPosition->kArtikel);
             }
         }
+        $hinweis .= 'sgf'.implode(', ', $cArtikel_arr);
+        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $hinweis, 'wlNote');
 
-        return $hinweis . implode(', ', $cArtikel_arr);
+        return $hinweis;
     }
 
     /**
@@ -681,7 +683,7 @@ class Wunschliste
             );
             if (isset($oWunschliste->kWunschliste)) {
                 $_SESSION['Wunschliste'] = new Wunschliste((int)$oWunschliste->kWunschliste);
-                $GLOBALS['hinweis']      = $_SESSION['Wunschliste']->ueberpruefePositionen();
+                $_SESSION['Wunschliste']->ueberpruefePositionen();
             }
         }
     }
@@ -739,7 +741,7 @@ class Wunschliste
                     );
                     // Neue Standard Wunschliste in die Session laden
                     $_SESSION['Wunschliste'] = new Wunschliste($oWunschliste->kWunschliste);
-                    $GLOBALS['hinweis']      = $_SESSION['Wunschliste']->ueberpruefePositionen();
+                    $_SESSION['Wunschliste']->ueberpruefePositionen();
                 }
             }
 
@@ -819,7 +821,7 @@ class Wunschliste
             // Session updaten
             unset($_SESSION['Wunschliste']);
             $_SESSION['Wunschliste'] = new Wunschliste($id);
-            $GLOBALS['hinweis']      = $_SESSION['Wunschliste']->ueberpruefePositionen();
+            $_SESSION['Wunschliste']->ueberpruefePositionen();
 
             $msg = Shop::Lang()->get('wishlistStandard', 'messages');
         }

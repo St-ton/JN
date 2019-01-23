@@ -48,8 +48,11 @@ class AlertService implements AlertServiceInterface
     /**
      * @inheritdoc
      */
-    public function addAlert(string $type, string $message, string $key, array $options = null): Alert
+    public function addAlert(string $type, string $message, string $key, array $options = null): ?Alert
     {
+        if (trim($message) === '' || trim($type) === '' || trim($key) === '') {
+            return null;
+        }
         $alert = new Alert($type, $message, $key, $options);
         $this->pushAlert($alert);
 

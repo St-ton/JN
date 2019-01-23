@@ -16,7 +16,7 @@
                         <div class="col-xs-3"><strong>{__('plz_ort_size')}</strong></div>
                         <div class="col-xs-1"></div>
                     </li>
-                    {foreach from=$oLand_arr item="oLand"}
+                    {foreach $oLand_arr as $oLand}
                     <li class="list-group-item boxRow">
                         <div class="col-xs-1">{$oLand->cISO}</div>
                         <div class="col-xs-4">{$oLand->cDeutsch}</div>

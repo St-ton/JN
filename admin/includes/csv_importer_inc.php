@@ -44,8 +44,7 @@ function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = nul
             }
 
             if (count($fields) === 0) {
-                $row    = fgetcsv($fs, 0, $cDelim);
-                $fields = $row;
+                $fields = fgetcsv($fs, 0, $cDelim);
             }
 
             if (isset($_REQUEST['importType'])) {
@@ -55,7 +54,7 @@ function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = nul
             if ($importType === 0 && is_string($target)) {
                 Shop::Container()->getDB()->query('TRUNCATE ' . $target, \DB\ReturnType::AFFECTED_ROWS);
             }
-
+            $importDeleteDone = false;
             while (($row = fgetcsv($fs, 0, $cDelim)) !== false) {
                 $obj = new stdClass();
 
@@ -65,7 +64,7 @@ function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = nul
                 }
 
                 if (is_callable($target)) {
-                    $res = $target($obj, $importType);
+                    $res = $target($obj, $importDeleteDone, $importType);
 
                     if ($res === false) {
                         ++$nErrors;

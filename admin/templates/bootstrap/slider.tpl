@@ -44,7 +44,7 @@
                                     <div class="btn-group">
                                         <a class="btn btn-default add" href="slider.php?action=slides&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="Slides"><i class="fa fa-image"></i></a>
                                         <a class="btn btn-default" href="slider.php?action=edit&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('modify')}"><i class="fa fa-edit"></i></a>
-                                        <a class="btn btn-danger" href="slider.php?action=delete&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="L&ouml;schen"><i class="fa fa-trash"></i></a>
+                                        <a class="btn btn-danger" href="slider.php?action=delete&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fa fa-trash"></i></a>
                                     </div>
                                 </td>
                             </tr>
@@ -53,7 +53,7 @@
                     </table>
                 {/if}
                 <div class="panel-footer">
-                    <a class="btn btn-primary" href="slider.php?action=new&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> Slider hinzuf&uuml;gen</a>
+                    <a class="btn btn-primary" href="slider.php?action=new&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> Slider hinzufügen</a>
                 </div>
             </div>
         </div>

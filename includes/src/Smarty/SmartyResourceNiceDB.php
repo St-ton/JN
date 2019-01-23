@@ -67,12 +67,12 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
                 );
             } else {
                 // Plugin Emailvorlage?
-                $cTableSprache = 'temailvorlagesprache';
+                $table = 'temailvorlagesprache';
                 if (isset($pcs[3]) && (int)$pcs[3] > 0) {
-                    $cTableSprache = 'tpluginemailvorlagesprache';
+                    $table = 'tpluginemailvorlagesprache';
                 }
                 $vl = $this->db->select(
-                    $cTableSprache,
+                    $table,
                     ['kEmailvorlage', 'kSprache'],
                     [(int)$pcs[1], (int)$pcs[2]]
                 );
@@ -94,19 +94,18 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
                 );
             }
         } elseif ($this->type === 'newsletter') {
-            $cTeile_arr = \explode('_', $name);
-            $cTabelle   = 'tnewslettervorlage';
-            $cFeld      = 'kNewsletterVorlage';
-            if ($cTeile_arr[0] === 'NL') {
-                $cTabelle = 'tnewsletter';
-                $cFeld    = 'kNewsletter';
+            $parts = \explode('_', $name);
+            $table = 'tnewslettervorlage';
+            $row   = 'kNewsletterVorlage';
+            if ($parts[0] === 'NL') {
+                $table = 'tnewsletter';
+                $row   = 'kNewsletter';
             }
-            $oNewsletter = $this->db->select($cTabelle, $cFeld, $cTeile_arr[1]);
-
-            if ($cTeile_arr[2] === 'html') {
-                $source = $oNewsletter->cInhaltHTML;
-            } elseif ($cTeile_arr[2] === 'text') {
-                $source = $oNewsletter->cInhaltText;
+            $newsletter = $this->db->select($table, $row, $parts[1]);
+            if ($parts[2] === 'html') {
+                $source = $newsletter->cInhaltHTML;
+            } elseif ($parts[2] === 'text') {
+                $source = $newsletter->cInhaltText;
             }
         } else {
             $source = '';

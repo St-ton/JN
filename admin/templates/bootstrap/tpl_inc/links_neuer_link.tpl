@@ -100,13 +100,13 @@
                         </span>
                         <select required name="cKundengruppen[]" class="form-control{if isset($xPlausiVar_arr.cKundengruppen)} fieldfillout{/if}" multiple="multiple" size="6" id="cKundengruppen">
                             <option value="-1"{if isset($Link->getID()) && $Link->getID() > 0 && isset($gesetzteKundengruppen[0]) && $gesetzteKundengruppen[0]} selected{elseif isset($xPostVar_arr.cKundengruppen)}
-                                {foreach name=postkndgrp from=$xPostVar_arr.cKundengruppen item=cPostKndGrp}
-                                    {if $cPostKndGrp|strlen > 0 && $cPostKndGrp == "-1"}selected{/if}
+                                {foreach $xPostVar_arr.cKundengruppen as $cPostKndGrp}
+                                    {if $cPostKndGrp|strlen > 0 && $cPostKndGrp == '-1'}selected{/if}
                                 {/foreach}
                                     {elseif !$Link->getID()}selected{/if}>{__('all')}</option>
 
                             {foreach $kundengruppen as $kundengruppe}
-                                {assign var='kKundengruppe' value=$kundengruppe->kKundengruppe}
+                                {assign var=kKundengruppe value=$kundengruppe->kKundengruppe}
                                 {assign var=postkndgrp value='0'}
                                 {if isset($xPostVar_arr.cKundengruppen)}
                                     {foreach $xPostVar_arr.cKundengruppen as $cPostKndGrp}
@@ -175,7 +175,7 @@
                         <span class="input-group-addon"><label>{__('linkPics')}</label></span>
                         <div class="input-group-wrap">
                         {if isset($cDatei_arr)}
-                            {foreach name=bilder from=$cDatei_arr item=cDatei}
+                            {foreach $cDatei_arr as $cDatei}
                                 <span class="block tcenter vmiddle">
                                     <a href="links.php?kLink={$Link->getID()}&token={$smarty.session.jtl_token}&delpic=1&cName={$cDatei->cNameFull}{if isset($Link->getPluginID()) && $Link->getPluginID() > 0}{$Link->getPluginID()}{/if}"><img src="{$currentTemplateDir}/gfx/layout/remove.png" alt="delete"></a>
                                     $#{$cDatei->cName}#$
@@ -201,7 +201,7 @@
                         <span class="input-group-addon"><label for="lang">Sprache</label></span>
                         <span class="input-group-wrap">
                             <select class="form-control" name="cISO" id="lang">
-                                {foreach name=sprachen from=$sprachen item=sprache}
+                                {foreach $sprachen as $sprache}
                                     <option value="{$sprache->cISO}" {if $sprache->cShopStandard === 'Y'}selected="selected"{/if}>{$sprache->cNameDeutsch} {if $sprache->cShopStandard === 'Y'}(Standard){/if}</option>
                                 {/foreach}
                             </select>
@@ -210,9 +210,9 @@
                 </div>
             </div>
 
-            {foreach name=sprachen from=$sprachen item=sprache}
-                {assign var="cISO" value=$sprache->cISO}
-                {assign var="langID" value=(int)$sprache->kSprache}
+            {foreach $sprachen as $sprache}
+                {assign var=cISO value=$sprache->cISO}
+                {assign var=langID value=(int)$sprache->kSprache}
                 <div id="iso_{$cISO}" class="iso_wrapper{if $sprache->cShopStandard !== 'Y'} hidden-soft{/if}">
                     <div class="panel panel-default">
                         <div class="panel-heading">

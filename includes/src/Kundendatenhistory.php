@@ -185,15 +185,12 @@ class Kundendatenhistory extends MainModel
      */
     public function save(bool $bPrim = true)
     {
-        $oObj        = new stdClass();
-        $cMember_arr = array_keys(get_object_vars($this));
-        if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-            foreach ($cMember_arr as $cMember) {
-                $oObj->$cMember = $this->$cMember;
-            }
+        $ins = new stdClass();
+        foreach (array_keys(get_object_vars($this)) as $member) {
+            $ins->$member = $this->$member;
         }
-        unset($oObj->kKundendatenHistory);
-        $kPrim = Shop::Container()->getDB()->insert('tkundendatenhistory', $oObj);
+        unset($ins->kKundendatenHistory);
+        $kPrim = Shop::Container()->getDB()->insert('tkundendatenhistory', $ins);
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
         }
@@ -207,24 +204,24 @@ class Kundendatenhistory extends MainModel
      */
     public function update(): int
     {
-        $cQuery      = 'UPDATE tkundendatenhistory SET ';
-        $cSet_arr    = [];
-        $cMember_arr = array_keys(get_object_vars($this));
-        if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-            foreach ($cMember_arr as $cMember) {
-                $cMethod = 'get' . substr($cMember, 1);
-                if (method_exists($this, $cMethod)) {
-                    $val        = $this->$cMethod();
+        $sql     = 'UPDATE tkundendatenhistory SET ';
+        $set     = [];
+        $members = array_keys(get_object_vars($this));
+        if (is_array($members) && count($members) > 0) {
+            foreach ($members as $member) {
+                $method = 'get' . substr($member, 1);
+                if (method_exists($this, $method)) {
+                    $val        = $this->$method();
                     $mValue     = $val === null
                         ? 'NULL'
                         : ("'" . Shop::Container()->getDB()->escape($val) . "'");
-                    $cSet_arr[] = "{$cMember} = {$mValue}";
+                    $set[] = "{$member} = {$mValue}";
                 }
             }
-            $cQuery .= implode(', ', $cSet_arr);
-            $cQuery .= " WHERE kKundendatenHistory = {$this->getKundendatenHistory()}";
+            $sql .= implode(', ', $set);
+            $sql .= " WHERE kKundendatenHistory = {$this->getKundendatenHistory()}";
 
-            return Shop::Container()->getDB()->query($cQuery, \DB\ReturnType::AFFECTED_ROWS);
+            return Shop::Container()->getDB()->query($sql, \DB\ReturnType::AFFECTED_ROWS);
         }
         throw new Exception('ERROR: Object has no members!');
     }
@@ -242,47 +239,47 @@ class Kundendatenhistory extends MainModel
     }
 
     /**
-     * @param Kunde $oKundeOld
-     * @param Kunde $oKundeNew
-     * @param string $cQuelle
+     * @param Kunde  $old
+     * @param Kunde  $new
+     * @param string $source
      * @return bool
      */
-    public static function saveHistory($oKundeOld, $oKundeNew, $cQuelle): bool
+    public static function saveHistory($old, $new, $source): bool
     {
-        if (!is_object($oKundeOld) || !is_object($oKundeNew)) {
+        if (!is_object($old) || !is_object($new)) {
             return false;
         }
-        if ($oKundeOld->dGeburtstag === null) {
-            $oKundeOld->dGeburtstag = '';
+        if ($old->dGeburtstag === null) {
+            $old->dGeburtstag = '';
         }
-        if ($oKundeNew->dGeburtstag === null) {
-            $oKundeNew->dGeburtstag = '';
+        if ($new->dGeburtstag === null) {
+            $new->dGeburtstag = '';
         }
 
-        $oKundeNew->cPasswort = $oKundeOld->cPasswort;
+        $new->cPasswort = $old->cPasswort;
 
-        if (Kunde::isEqual($oKundeOld, $oKundeNew)) {
+        if (Kunde::isEqual($old, $new)) {
             return true;
         }
         $cryptoService = Shop::Container()->getCryptoService();
-        $oKundeOld     = GeneralObject::deepCopy($oKundeOld);
-        $oKundeNew     = GeneralObject::deepCopy($oKundeNew);
+        $old           = GeneralObject::deepCopy($old);
+        $new           = GeneralObject::deepCopy($new);
         // Encrypt Old
-        $oKundeOld->cNachname = $cryptoService->encryptXTEA(trim($oKundeOld->cNachname));
-        $oKundeOld->cFirma    = $cryptoService->encryptXTEA(trim($oKundeOld->cFirma));
-        $oKundeOld->cStrasse  = $cryptoService->encryptXTEA(trim($oKundeOld->cStrasse));
+        $old->cNachname = $cryptoService->encryptXTEA(trim($old->cNachname));
+        $old->cFirma    = $cryptoService->encryptXTEA(trim($old->cFirma));
+        $old->cStrasse  = $cryptoService->encryptXTEA(trim($old->cStrasse));
         // Encrypt New
-        $oKundeNew->cNachname = $cryptoService->encryptXTEA(trim($oKundeNew->cNachname));
-        $oKundeNew->cFirma    = $cryptoService->encryptXTEA(trim($oKundeNew->cFirma));
-        $oKundeNew->cStrasse  = $cryptoService->encryptXTEA(trim($oKundeNew->cStrasse));
+        $new->cNachname = $cryptoService->encryptXTEA(trim($new->cNachname));
+        $new->cFirma    = $cryptoService->encryptXTEA(trim($new->cFirma));
+        $new->cStrasse  = $cryptoService->encryptXTEA(trim($new->cStrasse));
 
-        $oKundendatenhistory = new self();
-        $oKundendatenhistory->setKunde($oKundeOld->kKunde)
-                            ->setJsonAlt(json_encode($oKundeOld))
-                            ->setJsonNeu(json_encode($oKundeNew))
-                            ->setQuelle($cQuelle)
+        $history = new self();
+        $history->setKunde($old->kKunde)
+                            ->setJsonAlt(json_encode($old))
+                            ->setJsonNeu(json_encode($new))
+                            ->setQuelle($source)
                             ->setErstellt('NOW()');
 
-        return $oKundendatenhistory->save() > 0;
+        return $history->save() > 0;
     }
 }

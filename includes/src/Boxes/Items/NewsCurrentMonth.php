@@ -7,6 +7,7 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
+use Helpers\URL;
 
 /**
  * Class NewsCurrentMonth
@@ -21,7 +22,7 @@ final class NewsCurrentMonth extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        parent::addMapping('oNewsMonatsUebersicht_arr', 'Items');
+        $this->addMapping('oNewsMonatsUebersicht_arr', 'Items');
         $langID       = \Shop::getLanguageID();
         $sql          = (int)$config['news']['news_anzahl_box'] > 0
             ? ' LIMIT ' . (int)$config['news']['news_anzahl_box']
@@ -49,8 +50,8 @@ final class NewsCurrentMonth extends AbstractBox
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($newsOverview as $item) {
-            $item->cURL     = \Helpers\URL::buildURL($item, \URLART_NEWSMONAT);
-            $item->cURLFull = \Helpers\URL::buildURL($item, \URLART_NEWSMONAT, true);
+            $item->cURL     = URL::buildURL($item, \URLART_NEWSMONAT);
+            $item->cURLFull = URL::buildURL($item, \URLART_NEWSMONAT, true);
         }
         $this->setShow(\count($newsOverview) > 0);
         $this->setItems($newsOverview);

@@ -31,7 +31,7 @@
             <div class="form-group">
                 <select id="kKupon" name="kKupon" class="combo form-control">
                     <option value="-1">Alle</option>
-                    {foreach from=$coupons_arr item=coupon_arr}
+                    {foreach $coupons_arr as $coupon_arr}
                         <option value="{$coupon_arr.kKupon}"{if isset($coupon_arr.aktiv) && $coupon_arr.aktiv} selected{/if}>{$coupon_arr.cName}</option>
                     {/foreach}
                 </select>
@@ -79,7 +79,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {foreach from=$usedCouponsOrder item=usedCouponOrder}
+                    {foreach $usedCouponsOrder as $usedCouponOrder}
                         <tr>
                             <td>
                                 {if $usedCouponOrder.kKupon}
@@ -92,7 +92,7 @@
                             <td>{$usedCouponOrder.cBestellNr}</td>
                             <td>{$usedCouponOrder.nCouponValue}</td>
                             <td>{$usedCouponOrder.nShoppingCartAmount}</td>
-                            <td>{$usedCouponOrder.dErstellt|date_format:"%d.%m.%Y %H:%M:%S"}</td>
+                            <td>{$usedCouponOrder.dErstellt|date_format:'%d.%m.%Y %H:%M:%S'}</td>
                             <td>
                                 <button type="button" class="btn btn-xs btn-info" data-toggle="modal" data-target="#order_{$usedCouponOrder.cBestellNr}"><i class="fa fa-info"></i></button>
                                 <div class="modal fade bs-example-modal-lg" id="order_{$usedCouponOrder.cBestellNr}" role="dialog">
@@ -113,7 +113,7 @@
                                                     </tr>
                                                     </thead>
                                                     <tbody>
-                                                    {foreach from=$usedCouponOrder.cOrderPos_arr item=cOrderPos_arr}
+                                                    {foreach $usedCouponOrder.cOrderPos_arr as $cOrderPos_arr}
                                                         <tr>
                                                             <td>{$cOrderPos_arr.cName}</td>
                                                             <td>{$cOrderPos_arr.nAnzahl}</td>

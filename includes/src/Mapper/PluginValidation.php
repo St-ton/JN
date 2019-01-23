@@ -16,7 +16,7 @@ class PluginValidation
 {
     /**
      * @param int     $code
-     * @param string|null $plugin
+     * @param string|null $pluginID
      * @return string
      */
     public function map($code, $pluginID): string

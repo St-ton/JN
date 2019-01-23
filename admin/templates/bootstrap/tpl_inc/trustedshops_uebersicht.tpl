@@ -11,8 +11,8 @@
                     </span>
                     <span class="input-group-wrap last">
                         <select id="ts-change-language" name="cISOSprache" class="form-control selectBox" onchange="document.sprache.submit();">
-                            {foreach name=sprachen from=$Sprachen item=sprache}
-                                <option value="{$sprache->cISOSprache}" {if $sprache->cISOSprache==$smarty.session.TrustedShops->oSprache->cISOSprache}selected{/if}>{$sprache->cNameSprache}</option>
+                            {foreach $Sprachen as $sprache}
+                                <option value="{$sprache->cISOSprache}" {if $sprache->cISOSprache == $smarty.session.TrustedShops->oSprache->cISOSprache}selected{/if}>{$sprache->cNameSprache}</option>
                             {/foreach}
                         </select>
                     </span>
@@ -25,7 +25,7 @@
             <input type="hidden" name="kaeuferschutzeinstellungen" value="1" />
             <div class="settings panel panel-default">
                 {assign var=open value=false}
-                {foreach name=conf from=$oConfig_arr item=oConfig}
+                {foreach $oConfig_arr as $oConfig}
                     {if $oConfig->cWertName !== 'trustedshops_kundenbewertung_anzeigen'}
                         {if $oConfig->cConf === 'Y'}
                             <div class="input-group">
@@ -35,14 +35,14 @@
                                 <span class="input-group-wrap">
                                     {if $oConfig->cInputTyp === 'selectbox'}
                                         <select class="form-control" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}">
-                                            {foreach name=selectfor from=$oConfig->ConfWerte item=wert}
+                                            {foreach $oConfig->ConfWerte as $wert}
                                                 <option value="{$wert->cWert}" {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                             {/foreach}
                                         </select>
                                     {elseif $oConfig->cInputTyp === 'listbox'}
                                         <select class="form-control" name="{$oConfig->cWertName}[]" id="{$oConfig->cWertName}">
-                                            {foreach name=selectfor from=$oConfig->ConfWerte item=wert}
-                                                <option value="{$wert->kKundengruppe}" {foreach name=werte from=$oConfig->gesetzterWert item=gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
+                                            {foreach $oConfig->ConfWerte as $wert}
+                                                <option value="{$wert->kKundengruppe}" {foreach $oConfig->gesetzterWert as $gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
                                             {/foreach}
                                         </select>
                                     {elseif $oConfig->cInputTyp === 'number'}
@@ -63,7 +63,7 @@
 
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="eType">Trusted Shops K&auml;uferschutz Typ</label>
+                        <label for="eType">Trusted Shops Käuferschutz Typ</label>
                     </span>
                     <span class="input-group-wrap">
                         <select class="form-control" name="eType" id="eType">
@@ -72,7 +72,7 @@
                             </option>
                         </select>
                     </span>
-                    <span class="input-group-addon">{getHelpDesc cDesc="Trusted Shops K&auml;uferschutzvariante."}</span>
+                    <span class="input-group-addon">{getHelpDesc cDesc="Trusted Shops Käuferschutzvariante."}</span>
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
@@ -127,7 +127,7 @@
                     <th class="th-2">{__('tsCoverage')}</th>
                     <th class="th-3">{__('tsCurrency')}</th>
                 </tr>
-                {foreach name=kaeuferschutzprodukte from=$oKaeuferschutzProdukteDB->item item=oKaeuferschutzProdukt}
+                {foreach $oKaeuferschutzProdukteDB->item as $oKaeuferschutzProdukt}
                     <tr>
                         <td>{$oKaeuferschutzProdukt->cProduktID}</td>
                         <td>{$oKaeuferschutzProdukt->nWert}</td>
@@ -157,7 +157,7 @@
                         </div>
                         <div class="panel-body">
                             <input type="hidden" name="kundenbewertungeinstellungen" value="1" />
-                            {foreach name=conf from=$oConfig_arr item=oConfig}
+                            {foreach $oConfig_arr as $oConfig}
                                 {if $oConfig->cConf === 'Y' && $oConfig->cWertName === 'trustedshops_kundenbewertung_anzeigen'}
                                     <div class="input-group">
                                         <span class="input-group-addon">
@@ -166,7 +166,7 @@
                                         <span class="input-group-wrap">
                                             {if $oConfig->cInputTyp === 'selectbox'}
                                                 <select class="form-control" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}">
-                                                    {foreach name=selectfor from=$oConfig->ConfWerte item=wert}
+                                                    {foreach $oConfig->ConfWerte as $wert}
                                                         <option value="{$wert->cWert}" {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                                     {/foreach}
                                                 </select>

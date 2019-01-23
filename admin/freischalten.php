@@ -21,7 +21,6 @@ setzeSprache();
 $cHinweis              = '';
 $cFehler               = '';
 $step                  = 'freischalten_uebersicht';
-$Einstellungen         = Shop::getSettings([CONF_BEWERTUNG]);
 $ratingsSQL            = new stdClass();
 $liveSearchSQL         = new stdClass();
 $tagsSQL               = new stdClass();

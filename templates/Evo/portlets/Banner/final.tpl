@@ -1,7 +1,7 @@
 <div {$instance->getAttributeString()}>
     <img {$instance->getImageAttributeString(null, null, null, 1, $portlet->getPlaceholderImgUrl())}
             style="width: 100%">
-    {assign var="oBanner" value=$portlet->getImageMap($instance)}
+    {assign var=oBanner value=$portlet->getImageMap($instance)}
     {foreach $oBanner->oArea_arr as $oImageMapArea}
         {strip}
             <a href="{$oImageMapArea->cUrl}" class="area {$oImageMapArea->cStyle}"

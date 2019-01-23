@@ -15,48 +15,44 @@ $oAccount->permission('CONTENT_EMAIL_TEMPLATE_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 /** @global Smarty\JTLSmarty $smarty */
-$mailTpl               = null;
-$hinweis               = '';
-$cHinweis              = '';
-$cFehler               = '';
-$nFehler               = 0;
-$continue              = true;
-$oEmailvorlage         = null;
-$localized             = [];
-$cFehlerAnhang_arr     = [];
-$step                  = 'uebersicht';
-$Einstellungen         = Shop::getSettings([CONF_EMAILS]);
-$oSmartyError          = new stdClass();
-$oSmartyError->nCode   = 0;
-$cTable                = 'temailvorlage';
-$cTableSprache         = 'temailvorlagesprache';
-$cTableSpracheOriginal = 'temailvorlagespracheoriginal';
-$cTableSetting         = 'temailvorlageeinstellungen';
-$cTablePluginSetting   = 'tpluginemailvorlageeinstellungen';
-$db                    = Shop::Container()->getDB();
+$mailTpl             = null;
+$hinweis             = '';
+$cHinweis            = '';
+$cFehler             = '';
+$nFehler             = 0;
+$continue            = true;
+$emailTemplate       = null;
+$localized           = [];
+$attachmentErrors    = [];
+$step                = 'uebersicht';
+$conf                = Shop::getSettings([CONF_EMAILS]);
+$smartyError         = new stdClass();
+$smartyError->nCode  = 0;
+$tableName           = 'temailvorlage';
+$localizedTableName  = 'temailvorlagesprache';
+$originalTableName   = 'temailvorlagespracheoriginal';
+$settingsTableName   = 'temailvorlageeinstellungen';
+$pluginSettingsTable = 'tpluginemailvorlageeinstellungen';
+$db                  = Shop::Container()->getDB();
 if (Request::verifyGPCDataInt('kPlugin') > 0) {
-    $cTable                = 'tpluginemailvorlage';
-    $cTableSprache         = 'tpluginemailvorlagesprache';
-    $cTableSpracheOriginal = 'tpluginemailvorlagespracheoriginal';
-    $cTableSetting         = 'tpluginemailvorlageeinstellungen';
+    $tableName          = 'tpluginemailvorlage';
+    $localizedTableName = 'tpluginemailvorlagesprache';
+    $originalTableName  = 'tpluginemailvorlagespracheoriginal';
+    $settingsTableName  = 'tpluginemailvorlageeinstellungen';
 }
-// Errorhandler
 if (isset($_GET['err'])) {
-    setzeFehler($_GET['kEmailvorlage'], true);
+    setzeFehler($_GET['kEmailvorlage']);
     $cFehler = __('errorTemplate');
     if (is_array($_SESSION['last_error'])) {
         $cFehler .= '<br />' . $_SESSION['last_error']['message'];
         unset($_SESSION['last_error']);
     }
 }
-// Emailvorlage zuruecksetzen
 if (isset($_POST['resetConfirm']) && (int)$_POST['resetConfirm'] > 0) {
-    $oEmailvorlage = $db->select($cTable, 'kEmailvorlage', (int)$_POST['resetConfirm']);
-
-    if (isset($oEmailvorlage->kEmailvorlage) && $oEmailvorlage->kEmailvorlage > 0) {
+    $emailTemplate = $db->select($tableName, 'kEmailvorlage', (int)$_POST['resetConfirm']);
+    if (isset($emailTemplate->kEmailvorlage) && $emailTemplate->kEmailvorlage > 0) {
         $step = 'zuruecksetzen';
-
-        $smarty->assign('oEmailvorlage', $oEmailvorlage);
+        $smarty->assign('oEmailvorlage', $emailTemplate);
     }
 }
 
@@ -65,8 +61,8 @@ if (isset($_POST['resetEmailvorlage'])
     && (int)$_POST['kEmailvorlage'] > 0
     && Form::validateToken()
 ) {
-    $oEmailvorlage = $db->select($cTable, 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
-    if ($oEmailvorlage->kEmailvorlage > 0 && isset($_POST['resetConfirmJaSubmit'])) {
+    $emailTemplate = $db->select($tableName, 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
+    if ($emailTemplate->kEmailvorlage > 0 && isset($_POST['resetConfirmJaSubmit'])) {
         // Resetten
         if (Request::verifyGPCDataInt('kPlugin') > 0) {
             $db->delete(
@@ -92,10 +88,10 @@ if (isset($_POST['resetEmailvorlage'])
             );
         }
         $db->query(
-            'INSERT INTO ' . $cTableSprache . '
+            'INSERT INTO ' . $localizedTableName . '
                 SELECT *
-                FROM ' . $cTableSpracheOriginal . '
-                WHERE ' . $cTableSpracheOriginal . '.kEmailvorlage = ' . (int)$_POST['kEmailvorlage'],
+                FROM ' . $originalTableName . '
+                WHERE ' . $originalTableName . '.kEmailvorlage = ' . (int)$_POST['kEmailvorlage'],
             \DB\ReturnType::DEFAULT
         );
         $languages = Sprache::getAllLanguages();
@@ -129,7 +125,7 @@ if (isset($_POST['resetEmailvorlage'])
                     $upd->cContentHtml = $doDecodeHtml === true ? StringHandler::convertUTF8($html) : $html;
                     $upd->cContentText = $doDecodeText === true ? StringHandler::convertUTF8($text) : $text;
                     $db->update(
-                        $cTableSprache,
+                        $localizedTableName,
                         ['kEmailVorlage', 'kSprache'],
                         [(int)$_POST['kEmailvorlage'], (int)$_lang->kSprache],
                         $upd
@@ -141,14 +137,14 @@ if (isset($_POST['resetEmailvorlage'])
     }
 }
 if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
-    $Sprachen                = $db->query(
+    $availableLanguages      = $db->query(
         'SELECT * 
             FROM tsprache 
             ORDER BY cShopStandard DESC, cNameDeutsch',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $mailTpl                 = $db->select(
-        $cTable,
+        $tableName,
         'kEmailvorlage',
         (int)$_POST['preview']
     );
@@ -331,7 +327,7 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
     $customer->cLand            = 'Musterland';
     $customer->cTel             = '12345678';
     $customer->cFax             = '98765432';
-    $customer->cMail            = $Einstellungen['emails']['email_master_absender'];
+    $customer->cMail            = $conf['emails']['email_master_absender'];
     $customer->cUSTID           = 'ust234';
     $customer->cBundesland      = 'NRW';
     $customer->cAdressZusatz    = 'Linker Hof';
@@ -460,89 +456,86 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
     $wishlist->CWunschlistePos_arr[1]->CWunschlistePosEigenschaft_arr[0]->cEigenschaftName           = 'Farbe';
     $wishlist->CWunschlistePos_arr[1]->CWunschlistePosEigenschaft_arr[0]->cEigenschaftWertName       = 'rot';
 
-    $NewsletterEmpfaenger                     = new stdClass();
-    $NewsletterEmpfaenger->kSprache           = 1;
-    $NewsletterEmpfaenger->kKunde             = null;
-    $NewsletterEmpfaenger->nAktiv             = 0;
-    $NewsletterEmpfaenger->cAnrede            = 'w';
-    $NewsletterEmpfaenger->cVorname           = 'Erika';
-    $NewsletterEmpfaenger->cNachname          = 'Mustermann';
-    $NewsletterEmpfaenger->cEmail             = 'test@example.com';
-    $NewsletterEmpfaenger->cOptCode           = '88abd18fe51be05d775a2151fbb74bf7';
-    $NewsletterEmpfaenger->cLoeschCode        = 'a14a986321ff6a4998e81b84056933d3';
-    $NewsletterEmpfaenger->dEingetragen       = 'NOW()';
-    $NewsletterEmpfaenger->dLetzterNewsletter = '_DBNULL_';
-    $NewsletterEmpfaenger->cLoeschURL         = Shop::getURL() .
+    $newsletterRecipient                     = new stdClass();
+    $newsletterRecipient->kSprache           = 1;
+    $newsletterRecipient->kKunde             = null;
+    $newsletterRecipient->nAktiv             = 0;
+    $newsletterRecipient->cAnrede            = 'w';
+    $newsletterRecipient->cVorname           = 'Erika';
+    $newsletterRecipient->cNachname          = 'Mustermann';
+    $newsletterRecipient->cEmail             = 'test@example.com';
+    $newsletterRecipient->cOptCode           = '88abd18fe51be05d775a2151fbb74bf7';
+    $newsletterRecipient->cLoeschCode        = 'a14a986321ff6a4998e81b84056933d3';
+    $newsletterRecipient->dEingetragen       = 'NOW()';
+    $newsletterRecipient->dLetzterNewsletter = '_DBNULL_';
+    $newsletterRecipient->cLoeschURL         = Shop::getURL() .
         '/newsletter.php?lang=ger&lc=a14a986321ff6a4998e81b84056933d3';
-    $NewsletterEmpfaenger->cFreischaltURL     = Shop::getURL() .
+    $newsletterRecipient->cFreischaltURL     = Shop::getURL() .
         '/newsletter.php?lang=ger&fc=88abd18fe51be05d775a2151fbb74bf7';
 
-    $Bestandskunde                = new stdClass();
-    $Bestandskunde->kKunde        = 1379;
-    $Bestandskunde->kKundengruppe = 1;
-    $Bestandskunde->kSprache      = 1;
-    $Bestandskunde->cKundenNr     = 1028;
-    $Bestandskunde->cPasswort     = 'a725e241eceb20739d4617d6ae5a2cef';
-    $Bestandskunde->cAnrede       = 'm';
-    $Bestandskunde->Anrede        = 'Herr';
-    $Bestandskunde->cTitel        = '';
-    $Bestandskunde->cVorname      = 'Max';
-    $Bestandskunde->cNachname     = 'Mustermann';
-    $Bestandskunde->cFirma        = '';
-    $Bestandskunde->cStrasse      = 'Beispielweg';
-    $Bestandskunde->cHausnummer   = '5';
-    $Bestandskunde->cAdressZusatz = '';
-    $Bestandskunde->cPLZ          = 12345;
-    $Bestandskunde->cOrt          = 'Musterhausen';
-    $Bestandskunde->cBundesland   = '';
-    $Bestandskunde->cLand         = 'DE';
-    $Bestandskunde->cTel          = '';
-    $Bestandskunde->cMobil        = '';
-    $Bestandskunde->cFax          = '';
-    $Bestandskunde->cMail         = 'test@example.com';
-    $Bestandskunde->cUSTID        = '';
-    $Bestandskunde->cWWW          = 'www.example.com';
-    $Bestandskunde->fGuthaben     = 0.0;
-    $Bestandskunde->cNewsletter   = '';
-    $Bestandskunde->dGeburtstag   = '1980-12-03';
-    $Bestandskunde->fRabatt       = 0.0;
-    $Bestandskunde->cHerkunft     = '';
-    $Bestandskunde->dErstellt     = '2016-07-06';
-    $Bestandskunde->dVeraendert   = '2016-11-18 13:52:25';
-    $Bestandskunde->cAktiv        = 'Y';
-    $Bestandskunde->cAbgeholt     = 'Y';
-    $Bestandskunde->nRegistriert  = 0;
+    $existingCustomer                = new stdClass();
+    $existingCustomer->kKunde        = 1379;
+    $existingCustomer->kKundengruppe = 1;
+    $existingCustomer->kSprache      = 1;
+    $existingCustomer->cKundenNr     = 1028;
+    $existingCustomer->cPasswort     = 'a725e241eceb20739d4617d6ae5a2cef';
+    $existingCustomer->cAnrede       = 'm';
+    $existingCustomer->Anrede        = 'Herr';
+    $existingCustomer->cTitel        = '';
+    $existingCustomer->cVorname      = 'Max';
+    $existingCustomer->cNachname     = 'Mustermann';
+    $existingCustomer->cFirma        = '';
+    $existingCustomer->cStrasse      = 'Beispielweg';
+    $existingCustomer->cHausnummer   = '5';
+    $existingCustomer->cAdressZusatz = '';
+    $existingCustomer->cPLZ          = 12345;
+    $existingCustomer->cOrt          = 'Musterhausen';
+    $existingCustomer->cBundesland   = '';
+    $existingCustomer->cLand         = 'DE';
+    $existingCustomer->cTel          = '';
+    $existingCustomer->cMobil        = '';
+    $existingCustomer->cFax          = '';
+    $existingCustomer->cMail         = 'test@example.com';
+    $existingCustomer->cUSTID        = '';
+    $existingCustomer->cWWW          = 'www.example.com';
+    $existingCustomer->fGuthaben     = 0.0;
+    $existingCustomer->cNewsletter   = '';
+    $existingCustomer->dGeburtstag   = '1980-12-03';
+    $existingCustomer->fRabatt       = 0.0;
+    $existingCustomer->cHerkunft     = '';
+    $existingCustomer->dErstellt     = '2016-07-06';
+    $existingCustomer->dVeraendert   = '2016-11-18 13:52:25';
+    $existingCustomer->cAktiv        = 'Y';
+    $existingCustomer->cAbgeholt     = 'Y';
+    $existingCustomer->nRegistriert  = 0;
 
-    $BestandskundenBoni               = new stdClass();
-    $BestandskundenBoni->kKunde       = 1379;
-    $BestandskundenBoni->fGuthaben    = '2,00 &euro';
-    $BestandskundenBoni->nBonuspunkte = 0;
-    $BestandskundenBoni->dErhalten    = 'NOW()';
+    $customerBonus               = new stdClass();
+    $customerBonus->kKunde       = 1379;
+    $customerBonus->fGuthaben    = '2,00 &euro';
+    $customerBonus->nBonuspunkte = 0;
+    $customerBonus->dErhalten    = 'NOW()';
 
-    $Neues_Passwort = 'geheim007';
-
-    $Benachrichtigung            = new stdClass();
-    $Benachrichtigung->cVorname  = $customer->cVorname;
-    $Benachrichtigung->cNachname = $customer->cNachname;
+    $availabilityMsg            = new stdClass();
+    $availabilityMsg->cVorname  = $customer->cVorname;
+    $availabilityMsg->cNachname = $customer->cNachname;
 
     $sendStatus = true;
-
-    foreach ($Sprachen as $Sprache) {
-        $Sprache->kSprache = (int)$Sprache->kSprache;
-        $oAGBWRB           = new stdClass();
+    foreach ($availableLanguages as $lang) {
+        $lang->kSprache = (int)$lang->kSprache;
+        $oAGBWRB        = new stdClass();
         if ($customer->kKundengruppe > 0) {
             $oAGBWRB = $db->select(
                 'ttext',
                 ['kKundengruppe', 'kSprache'],
-                [$customer->kKundengruppe, $Sprache->kSprache]
+                [$customer->kKundengruppe, $lang->kSprache]
             );
         }
-        $localized[$Sprache->kSprache] = $db->select(
-            $cTableSprache,
+        $localized[$lang->kSprache] = $db->select(
+            $localizedTableName,
             ['kEmailvorlage', 'kSprache'],
-            [(int)$mailTpl->kEmailvorlage, (int)$Sprache->kSprache]
+            [(int)$mailTpl->kEmailvorlage, (int)$lang->kSprache]
         );
-        if (!empty($localized[$Sprache->kSprache])) {
+        if (!empty($localized[$lang->kSprache])) {
             $cModulId = $mailTpl->cModulId;
             if (Request::verifyGPCDataInt('kPlugin') > 0) {
                 $cModulId = 'kPlugin_' . Request::verifyGPCDataInt('kPlugin') . '_' . $cModulId;
@@ -560,14 +553,14 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
                 $order->oEstimatedDelivery->longestMax
             )->format('d.m.Y');
 
-            $customer->kSprache                    = $Sprache->kSprache;
-            $NewsletterEmpfaenger->kSprache        = $Sprache->kSprache;
+            $customer->kSprache                    = $lang->kSprache;
+            $newsletterRecipient->kSprache         = $lang->kSprache;
             $obj                                   = new stdClass();
             $obj->tkunde                           = $customer;
             $obj->tkunde->cPasswortKlartext        = 'superGeheim';
             $obj->tkundengruppe                    = $customerGroup;
             $obj->tbestellung                      = $order;
-            $obj->neues_passwort                   = $Neues_Passwort;
+            $obj->neues_passwort                   = 'geheim007';
             $obj->passwordResetLink                = Shop::getURL() . '/pass.php?fpwh=ca68b243f0c1e7e57162055f248218fd';
             $obj->tgutschein                       = $gutschein;
             $obj->AGB                              = $oAGBWRB;
@@ -578,14 +571,14 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
             $obj->tartikel                         = $product;
             $obj->twunschliste                     = $wishlist;
             $obj->tvonkunde                        = $obj->tkunde;
-            $obj->tverfuegbarkeitsbenachrichtigung = $Benachrichtigung;
-            $obj->NewsletterEmpfaenger             = $NewsletterEmpfaenger;
+            $obj->tverfuegbarkeitsbenachrichtigung = $availabilityMsg;
+            $obj->NewsletterEmpfaenger             = $newsletterRecipient;
             $res                                   = sendeMail($cModulId, $obj);
             if ($res === false) {
                 $sendStatus = false;
             }
         } else {
-            $cHinweis .= __('errorTemplateMissing') . $Sprache->cNameDeutsch . '<br/>';
+            $cHinweis .= __('errorTemplateMissing') . $lang->cNameDeutsch . '<br/>';
         }
     }
     if ($sendStatus === true) {
@@ -598,20 +591,20 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
     && (int)$_POST['Aendern'] === 1
     && (int)$_POST['kEmailvorlage'] > 0 && Form::validateToken()
 ) {
-    $step                        = 'uebersicht';
-    $kEmailvorlage               = (int)$_POST['kEmailvorlage'];
-    $cUploadVerzeichnis          = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
-    $oEmailvorlageSpracheTMP_arr = $db->selectAll(
-        $cTableSprache,
+    $step          = 'uebersicht';
+    $kEmailvorlage = (int)$_POST['kEmailvorlage'];
+    $uploadDir     = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
+    $localizedData = $db->selectAll(
+        $localizedTableName,
         'kEmailvorlage',
         (int)$_POST['kEmailvorlage'],
         'cPDFS, cDateiname, kSprache'
     );
-    $oEmailvorlageSprache_arr    = [];
-    foreach ($oEmailvorlageSpracheTMP_arr as $oEmailvorlageSpracheTMP) {
-        $oEmailvorlageSprache_arr[$oEmailvorlageSpracheTMP->kSprache] = $oEmailvorlageSpracheTMP;
+    $localizedTPLs = [];
+    foreach ($localizedData as $translation) {
+        $localizedTPLs[$translation->kSprache] = $translation;
     }
-    $Sprachen = $db->query(
+    $availableLanguages = $db->query(
         'SELECT * 
             FROM tsprache 
             ORDER BY cShopStandard DESC, cNameDeutsch',
@@ -621,79 +614,76 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
         $localized = new stdClass();
     }
     $localized->kEmailvorlage = (int)$_POST['kEmailvorlage'];
-    $cAnhangError_arr         = [];
 
     $revision = new Revision();
     $revision->addRevision('mail', (int)$_POST['kEmailvorlage'], true);
-
-    foreach ($Sprachen as $Sprache) {
-        // PDFs hochladen
-        $filenames         = [];
-        $pdfFiles          = [];
-        $cPDFSTMP_arr      = isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS)
-            ? bauePDFArray($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS)
+    foreach ($availableLanguages as $lang) {
+        $filenames    = [];
+        $pdfFiles     = [];
+        $tmpPDFs      = isset($localizedTPLs[$lang->kSprache]->cPDFS)
+            ? bauePDFArray($localizedTPLs[$lang->kSprache]->cPDFS)
             : [];
-        $cDateinameTMP_arr = isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname)
-            ? baueDateinameArray($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname)
+        $tmpFileNames = isset($localizedTPLs[$lang->kSprache]->cDateiname)
+            ? baueDateinameArray($localizedTPLs[$lang->kSprache]->cDateiname)
             : [];
-        if (!isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS)
-            || strlen($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS) === 0
-            || count($cPDFSTMP_arr) < 3
+        if (!isset($localizedTPLs[$lang->kSprache]->cPDFS)
+            || strlen($localizedTPLs[$lang->kSprache]->cPDFS) === 0
+            || count($tmpPDFs) < 3
         ) {
-            if (count($cPDFSTMP_arr) < 3) {
-                foreach ($cPDFSTMP_arr as $i => $cPDFSTMP) {
+            if (count($tmpPDFs) < 3) {
+                foreach ($tmpPDFs as $i => $cPDFSTMP) {
                     $pdfFiles[] = $cPDFSTMP;
 
-                    if (strlen($_POST['dateiname_' . ($i + 1) . '_' . $Sprache->kSprache]) > 0) {
+                    if (strlen($_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache]) > 0) {
                         $regs = [];
                         preg_match(
                             '/[A-Za-z0-9_-]+/',
-                            $_POST['dateiname_' . ($i + 1) . '_' . $Sprache->kSprache],
+                            $_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache],
                             $regs
                         );
-                        if (strlen($regs[0]) === strlen($_POST['dateiname_' . ($i + 1) . '_' . $Sprache->kSprache])) {
-                            $filenames[] = $_POST['dateiname_' . ($i + 1) . '_' . $Sprache->kSprache];
-                            unset($_POST['dateiname_' . ($i + 1) . '_' . $Sprache->kSprache]);
+                        if (strlen($regs[0]) === strlen($_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache])) {
+                            $filenames[] = $_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache];
+                            unset($_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache]);
                         } else {
                             $cFehler .= sprintf(
                                 __('errorFileName'),
-                                $_POST['dateiname_' . ($i + 1) . '_' . $Sprache->kSprache]
+                                $_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache]
                             ) . '<br />';
                             $nFehler  = 1;
                             break;
                         }
                     } else {
-                        $filenames[] = $cDateinameTMP_arr[$i];
+                        $filenames[] = $tmpFileNames[$i];
                     }
                 }
             }
 
             for ($i = 1; $i <= 3; $i++) {
-                if (isset($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['name'])
-                    && strlen($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['name']) > 0
-                    && strlen($_POST['dateiname_' . $i . '_' . $Sprache->kSprache]) > 0
+                if (isset($_FILES['pdf_' . $i . '_' . $lang->kSprache]['name'])
+                    && strlen($_FILES['pdf_' . $i . '_' . $lang->kSprache]['name']) > 0
+                    && strlen($_POST['dateiname_' . $i . '_' . $lang->kSprache]) > 0
                 ) {
-                    if ($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['size'] <= 2097152) {
-                        if (!strrpos($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['name'], ';')
-                            && !strrpos($_POST['dateiname_' . $i . '_' . $Sprache->kSprache], ';')
+                    if ($_FILES['pdf_' . $i . '_' . $lang->kSprache]['size'] <= 2097152) {
+                        if (!strrpos($_FILES['pdf_' . $i . '_' . $lang->kSprache]['name'], ';')
+                            && !strrpos($_POST['dateiname_' . $i . '_' . $lang->kSprache], ';')
                         ) {
                             $cPlugin = '';
                             if (Request::verifyGPCDataInt('kPlugin') > 0) {
                                 $cPlugin = '_' . Request::verifyGPCDataInt('kPlugin');
                             }
-                            $cUploadDatei = $cUploadVerzeichnis . $localized->kEmailvorlage .
-                                '_' . $Sprache->kSprache . '_' . $i . $cPlugin . '.pdf';
+                            $cUploadDatei = $uploadDir . $localized->kEmailvorlage .
+                                '_' . $lang->kSprache . '_' . $i . $cPlugin . '.pdf';
                             if (!move_uploaded_file(
-                                $_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['tmp_name'],
+                                $_FILES['pdf_' . $i . '_' . $lang->kSprache]['tmp_name'],
                                 $cUploadDatei
                             )) {
                                 $cFehler .= __('errorFileSave') . '<br />';
                                 $nFehler  = 1;
                                 break;
                             }
-                            $filenames[] = $_POST['dateiname_' . $i . '_' . $Sprache->kSprache];
+                            $filenames[] = $_POST['dateiname_' . $i . '_' . $lang->kSprache];
                             $pdfFiles[]  = $localized->kEmailvorlage . '_' .
-                                $Sprache->kSprache . '_' . $i . $cPlugin . '.pdf';
+                                $lang->kSprache . '_' . $i . $cPlugin . '.pdf';
                         } else {
                             $cFehler .= __('errorFileNameMissing') . '<br />';
                             $nFehler  = 1;
@@ -705,24 +695,24 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                         break;
                     }
                 } elseif (isset(
-                    $_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['name'],
-                    $_POST['dateiname_' . $i . '_' . $Sprache->kSprache]
+                    $_FILES['pdf_' . $i . '_' . $lang->kSprache]['name'],
+                    $_POST['dateiname_' . $i . '_' . $lang->kSprache]
                 )
-                    && strlen($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['name']) > 0
-                    && strlen($_POST['dateiname_' . $i . '_' . $Sprache->kSprache]) === 0
+                    && strlen($_FILES['pdf_' . $i . '_' . $lang->kSprache]['name']) > 0
+                    && strlen($_POST['dateiname_' . $i . '_' . $lang->kSprache]) === 0
                 ) {
-                    $cFehlerAnhang_arr[$Sprache->kSprache][$i] = 1;
-                    $cFehler                                  .= __('errorFileNamePdfMissing') . '<br />';
-                    $nFehler                                   = 1;
+                    $attachmentErrors[$lang->kSprache][$i] = 1;
+                    $cFehler                              .= __('errorFileNamePdfMissing') . '<br />';
+                    $nFehler                               = 1;
                     break;
                 }
             }
         } else {
-            $pdfFiles = bauePDFArray($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS);
+            $pdfFiles = bauePDFArray($localizedTPLs[$lang->kSprache]->cPDFS);
             foreach ($pdfFiles as $i => $pdf) {
                 $j   = $i + 1;
-                $idx = 'dateiname_' . $j . '_' . $Sprache->kSprache;
-                if (strlen($_POST['dateiname_' . $j . '_' . $Sprache->kSprache]) > 0 && strlen($pdfFiles[$j - 1]) > 0) {
+                $idx = 'dateiname_' . $j . '_' . $lang->kSprache;
+                if (strlen($_POST['dateiname_' . $j . '_' . $lang->kSprache]) > 0 && strlen($pdfFiles[$j - 1]) > 0) {
                     $regs = [];
                     preg_match('/[A-Za-z0-9_-]+/', $_POST[$idx], $regs);
                     if (strlen($regs[0]) === strlen($_POST[$idx])) {
@@ -740,38 +730,38 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
             }
         }
         $localized->cDateiname   = '';
-        $localized->kSprache     = $Sprache->kSprache;
-        $localized->cBetreff     = $_POST['cBetreff_' . $Sprache->kSprache] ?? null;
-        $localized->cContentHtml = $_POST['cContentHtml_' . $Sprache->kSprache] ?? null;
-        $localized->cContentText = $_POST['cContentText_' . $Sprache->kSprache] ?? null;
+        $localized->kSprache     = $lang->kSprache;
+        $localized->cBetreff     = $_POST['cBetreff_' . $lang->kSprache] ?? null;
+        $localized->cContentHtml = $_POST['cContentHtml_' . $lang->kSprache] ?? null;
+        $localized->cContentText = $_POST['cContentText_' . $lang->kSprache] ?? null;
         $localized->cPDFS        = '';
         if (count($pdfFiles) > 0) {
             $localized->cPDFS = ';' . implode(';', $pdfFiles) . ';';
-        } elseif (isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS)
-            && strlen($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS) > 0
+        } elseif (isset($localizedTPLs[$lang->kSprache]->cPDFS)
+            && strlen($localizedTPLs[$lang->kSprache]->cPDFS) > 0
         ) {
-            $localized->cPDFS = $oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS;
+            $localized->cPDFS = $localizedTPLs[$lang->kSprache]->cPDFS;
         }
         if (count($filenames) > 0) {
             $localized->cDateiname = ';' . implode(';', $filenames) . ';';
-        } elseif (isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname)
-            && strlen($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname) > 0
+        } elseif (isset($localizedTPLs[$lang->kSprache]->cDateiname)
+            && strlen($localizedTPLs[$lang->kSprache]->cDateiname) > 0
         ) {
-            $localized->cDateiname = $oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname;
+            $localized->cDateiname = $localizedTPLs[$lang->kSprache]->cDateiname;
         }
         if ($nFehler === 0) {
             $db->delete(
-                $cTableSprache,
+                $localizedTableName,
                 ['kSprache', 'kEmailvorlage'],
                 [
-                    (int)$Sprache->kSprache,
+                    (int)$lang->kSprache,
                     (int)$_POST['kEmailvorlage']
                 ]
             );
-            $db->insert($cTableSprache, $localized);
+            $db->insert($localizedTableName, $localized);
             $mailSmarty = new Smarty\JTLSmarty(true, \Smarty\ContextType::MAIL);
             $mailSmarty->registerResource('db', new \Smarty\SmartyResourceNiceDB($db, \Smarty\ContextType::MAIL))
-                       ->registerPlugin('function', 'includeMailTemplate', 'includeMailTemplate')
+                       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'includeMailTemplate', 'includeMailTemplate')
                        ->setCaching(Smarty::CACHING_OFF)
                        ->setDebugging(Smarty::DEBUG_OFF)
                        ->setCompileDir(PFAD_ROOT . PFAD_COMPILEDIR);
@@ -780,44 +770,39 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
             }
             try {
                 $mailSmarty->fetch('db:html_' . $localized->kEmailvorlage .
-                    '_' . $Sprache->kSprache . '_' . $cTableSprache);
+                    '_' . $lang->kSprache . '_' . $localizedTableName);
                 $mailSmarty->fetch('db:text_' . $localized->kEmailvorlage .
-                    '_' . $Sprache->kSprache . '_' . $cTableSprache);
+                    '_' . $lang->kSprache . '_' . $localizedTableName);
             } catch (Exception $e) {
-                $oSmartyError->cText = $e->getMessage();
-                $oSmartyError->nCode = 1;
+                $smartyError->cText = $e->getMessage();
+                $smartyError->nCode = 1;
             }
         }
     }
-    $kEmailvorlage  = (int)$_POST['kEmailvorlage'];
-    $_upd           = new stdClass();
-    $_upd->cMailTyp = $_POST['cMailTyp'];
-    $_upd->cAktiv   = $_POST['cEmailActive'];
-    $_upd->nAKZ     = isset($_POST['nAKZ']) ? (int)$_POST['nAKZ'] : 0;
-    $_upd->nAGB     = isset($_POST['nAGB']) ? (int)$_POST['nAGB'] : 0;
-    $_upd->nWRB     = isset($_POST['nWRB']) ? (int)$_POST['nWRB'] : 0;
-    $_upd->nWRBForm = isset($_POST['nWRBForm']) ? (int)$_POST['nWRBForm'] : 0;
-    $_upd->nDSE     = isset($_POST['nDSE']) ? (int)$_POST['nDSE'] : 0;
-    $db->update($cTable, 'kEmailvorlage', $kEmailvorlage, $_upd);
-
-    // Einstellungen
-    $db->delete($cTableSetting, 'kEmailvorlage', $kEmailvorlage);
-    // Email Ausgangsadresse
+    $kEmailvorlage = (int)$_POST['kEmailvorlage'];
+    $upd           = new stdClass();
+    $upd->cMailTyp = $_POST['cMailTyp'];
+    $upd->cAktiv   = $_POST['cEmailActive'];
+    $upd->nAKZ     = isset($_POST['nAKZ']) ? (int)$_POST['nAKZ'] : 0;
+    $upd->nAGB     = isset($_POST['nAGB']) ? (int)$_POST['nAGB'] : 0;
+    $upd->nWRB     = isset($_POST['nWRB']) ? (int)$_POST['nWRB'] : 0;
+    $upd->nWRBForm = isset($_POST['nWRBForm']) ? (int)$_POST['nWRBForm'] : 0;
+    $upd->nDSE     = isset($_POST['nDSE']) ? (int)$_POST['nDSE'] : 0;
+    $db->update($tableName, 'kEmailvorlage', $kEmailvorlage, $upd);
+    $db->delete($settingsTableName, 'kEmailvorlage', $kEmailvorlage);
     if (isset($_POST['cEmailOut']) && strlen($_POST['cEmailOut']) > 0) {
-        saveEmailSetting($cTableSetting, $kEmailvorlage, 'cEmailOut', $_POST['cEmailOut']);
+        saveEmailSetting($settingsTableName, $kEmailvorlage, 'cEmailOut', $_POST['cEmailOut']);
     }
-    // Email Absendername
     if (isset($_POST['cEmailSenderName']) && strlen($_POST['cEmailSenderName']) > 0) {
-        saveEmailSetting($cTableSetting, $kEmailvorlage, 'cEmailSenderName', $_POST['cEmailSenderName']);
+        saveEmailSetting($settingsTableName, $kEmailvorlage, 'cEmailSenderName', $_POST['cEmailSenderName']);
     }
-    // Email Kopie
     if (isset($_POST['cEmailCopyTo']) && strlen($_POST['cEmailCopyTo']) > 0) {
-        saveEmailSetting($cTableSetting, $kEmailvorlage, 'cEmailCopyTo', $_POST['cEmailCopyTo']);
+        saveEmailSetting($settingsTableName, $kEmailvorlage, 'cEmailCopyTo', $_POST['cEmailCopyTo']);
     }
 
     if ($nFehler === 1) {
         $step = 'prebearbeiten';
-    } elseif ($oSmartyError->nCode == 0) {
+    } elseif ($smartyError->nCode === 0) {
         setzeFehler((int)$_POST['kEmailvorlage'], false, true);
         $cHinweis = __('successTemplateEdit');
         $step     = 'uebersicht';
@@ -825,8 +810,8 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
     } else {
         $nFehler = 1;
         $step    = 'prebearbeiten';
-        $cFehler = __('errorTemplate') . '<br />' . $oSmartyError->cText;
-        setzeFehler($_POST['kEmailvorlage'], true);
+        $cFehler = __('errorTemplate') . '<br />' . $smartyError->cText;
+        setzeFehler($_POST['kEmailvorlage']);
     }
 }
 if (((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $continue === true)
@@ -834,23 +819,21 @@ if (((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $con
         || (isset($_GET['a']) && $_GET['a'] === 'pdfloeschen')
     ) && Form::validateToken()
 ) {
-    $cUploadVerzeichnis = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
-    $localized          = [];
-
+    $uploadDir = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
+    $localized = [];
     if (empty($_POST['kEmailvorlage']) || (int)$_POST['kEmailvorlage'] === 0) {
         $_POST['kEmailvorlage'] = (isset($_GET['a'], $_GET['kEmailvorlage']) && $_GET['a'] === 'pdfloeschen')
             ? $_GET['kEmailvorlage']
             : $kEmailvorlage;
     }
-    // PDF loeschen
     if (isset($_GET['kS'], $_GET['a'], $_GET['token'])
         && $_GET['a'] === 'pdfloeschen'
         && $_GET['token'] === $_SESSION['jtl_token']
     ) {
         $_POST['kEmailvorlage'] = $_GET['kEmailvorlage'];
         $_POST['kS']            = $_GET['kS'];
-        $oEmailvorlageSprache   = $db->select(
-            $cTableSprache,
+        $localizedData          = $db->select(
+            $localizedTableName,
             'kEmailvorlage',
             (int)$_POST['kEmailvorlage'],
             'kSprache',
@@ -860,20 +843,17 @@ if (((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $con
             false,
             'cPDFS, cDateiname'
         );
-        $pdfFiles               = bauePDFArray($oEmailvorlageSprache->cPDFS);
-
-        if (is_array($pdfFiles) && count($pdfFiles) > 0) {
-            foreach ($pdfFiles as $pdf) {
-                if (file_exists($cUploadVerzeichnis . $pdf)) {
-                    @unlink($cUploadVerzeichnis . $pdf);
-                }
+        $pdfFiles               = bauePDFArray($localizedData->cPDFS);
+        foreach ($pdfFiles as $pdf) {
+            if (file_exists($uploadDir . $pdf)) {
+                @unlink($uploadDir . $pdf);
             }
         }
         $upd             = new stdClass();
         $upd->cPDFS      = '';
         $upd->cDateiname = '';
         $db->update(
-            $cTableSprache,
+            $localizedTableName,
             ['kEmailvorlage', 'kSprache'],
             [
                 (int)$_POST['kEmailvorlage'],
@@ -884,47 +864,46 @@ if (((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $con
         $cHinweis .= __('successFileAppendixDelete') . '<br />';
     }
 
-    $step       = 'bearbeiten';
-    $cFromTable = isset($_REQUEST['kPlugin']) ? $cTablePluginSetting : $cTableSetting;
+    $step  = 'bearbeiten';
+    $table = isset($_REQUEST['kPlugin']) ? $pluginSettingsTable : $settingsTableName;
 
-    $Sprachen    = Sprache::getAllLanguages();
-    $mailTpl     = $db->select($cTable, 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
-    $config      = $db->selectAll($cFromTable, 'kEmailvorlage', (int)$mailTpl->kEmailvorlage);
-    $configAssoc = [];
-    foreach ($config as $oEmailEinstellung) {
-        $configAssoc[$oEmailEinstellung->cKey] = $oEmailEinstellung->cValue;
+    $availableLanguages = Sprache::getAllLanguages();
+    $mailTpl            = $db->select($tableName, 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
+    $config             = $db->selectAll($table, 'kEmailvorlage', (int)$mailTpl->kEmailvorlage);
+    $configAssoc        = [];
+    foreach ($config as $item) {
+        $configAssoc[$item->cKey] = $item->cValue;
     }
-
-    foreach ($Sprachen as $Sprache) {
-        $localized[$Sprache->kSprache] = $db->select(
-            $cTableSprache,
+    foreach ($availableLanguages as $lang) {
+        $localized[$lang->kSprache] = $db->select(
+            $localizedTableName,
             'kEmailvorlage',
             (int)$_POST['kEmailvorlage'],
             'kSprache',
-            (int)$Sprache->kSprache
+            (int)$lang->kSprache
         );
-        $pdfFiles                      = [];
-        $filenames                     = [];
-        if (!empty($localized[$Sprache->kSprache]->cPDFS)) {
-            $cPDFSTMP_arr = bauePDFArray($localized[$Sprache->kSprache]->cPDFS);
-            foreach ($cPDFSTMP_arr as $cPDFSTMP) {
+        $pdfFiles                   = [];
+        $filenames                  = [];
+        if (!empty($localized[$lang->kSprache]->cPDFS)) {
+            $tmpPDFs = bauePDFArray($localized[$lang->kSprache]->cPDFS);
+            foreach ($tmpPDFs as $cPDFSTMP) {
                 $pdfFiles[] = $cPDFSTMP;
             }
-            $cDateinameTMP_arr = baueDateinameArray($localized[$Sprache->kSprache]->cDateiname);
-            foreach ($cDateinameTMP_arr as $cDateinameTMP) {
+            $tmpFileNames = baueDateinameArray($localized[$lang->kSprache]->cDateiname);
+            foreach ($tmpFileNames as $cDateinameTMP) {
                 $filenames[] = $cDateinameTMP;
             }
         }
-        if (!isset($localized[$Sprache->kSprache]) ||
-            $localized[$Sprache->kSprache] === false) {
-            $localized[$Sprache->kSprache] = new stdClass();
+        if (!isset($localized[$lang->kSprache]) ||
+            $localized[$lang->kSprache] === false) {
+            $localized[$lang->kSprache] = new stdClass();
         }
-        $localized[$Sprache->kSprache]->cPDFS_arr      = $pdfFiles;
-        $localized[$Sprache->kSprache]->cDateiname_arr = $filenames;
+        $localized[$lang->kSprache]->cPDFS_arr      = $pdfFiles;
+        $localized[$lang->kSprache]->cDateiname_arr = $filenames;
     }
-    $smarty->assign('Sprachen', $Sprachen)
+    $smarty->assign('Sprachen', $availableLanguages)
            ->assign('oEmailEinstellungAssoc_arr', $configAssoc)
-           ->assign('cUploadVerzeichnis', $cUploadVerzeichnis);
+           ->assign('cUploadVerzeichnis', $uploadDir);
 }
 
 if ($step === 'uebersicht') {
@@ -937,13 +916,12 @@ if ($step === 'bearbeiten') {
            ->assign('Emailvorlagesprache', $localized);
 }
 $smarty->assign('kPlugin', Request::verifyGPCDataInt('kPlugin'))
-       ->assign('cFehlerAnhang_arr', $cFehlerAnhang_arr)
+       ->assign('cFehlerAnhang_arr', $attachmentErrors)
        ->assign('step', $step)
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
-       ->assign('Einstellungen', $Einstellungen);
-
-$smarty->display('emailvorlagen.tpl');
+       ->assign('Einstellungen', $conf)
+       ->display('emailvorlagen.tpl');
 
 /**
  * @param string $cPDF
@@ -951,68 +929,61 @@ $smarty->display('emailvorlagen.tpl');
  */
 function bauePDFArray($cPDF)
 {
-    $cPDFTMP_arr = explode(';', $cPDF);
-    $cPDF_arr    = [];
-    if (count($cPDFTMP_arr) > 0) {
-        foreach ($cPDFTMP_arr as $cPDFTMP) {
-            if (strlen($cPDFTMP) > 0) {
-                $cPDF_arr[] = $cPDFTMP;
-            }
+    $pdf = [];
+    foreach (explode(';', $cPDF) as $cPDFTMP) {
+        if (strlen($cPDFTMP) > 0) {
+            $pdf[] = $cPDFTMP;
         }
     }
 
-    return $cPDF_arr;
+    return $pdf;
 }
 
 /**
- * @param string $cDateiname
+ * @param string $fileName
  * @return array
  */
-function baueDateinameArray($cDateiname)
+function baueDateinameArray($fileName)
 {
-    $cDateinameTMP_arr = explode(';', $cDateiname);
-    $cDateiname_arr    = [];
-    if (count($cDateinameTMP_arr) > 0) {
-        foreach ($cDateinameTMP_arr as $cDateinameTMP) {
-            if (strlen($cDateinameTMP) > 0) {
-                $cDateiname_arr[] = $cDateinameTMP;
-            }
+    $fileNames = [];
+    foreach (explode(';', $fileName) as $cDateinameTMP) {
+        if (strlen($cDateinameTMP) > 0) {
+            $fileNames[] = $cDateinameTMP;
         }
     }
 
-    return $cDateiname_arr;
+    return $fileNames;
 }
 
 /**
  * @param int  $kEmailvorlage
- * @param bool $bFehler
- * @param bool $bForce
+ * @param bool $error
+ * @param bool $force
  */
-function setzeFehler($kEmailvorlage, $bFehler = true, $bForce = false)
+function setzeFehler($kEmailvorlage, $error = true, $force = false)
 {
-    $cAktiv           = $bFehler ? 'N' : 'Y';
     $upd              = new stdClass();
-    $upd->nFehlerhaft = (int)$bFehler;
-    if (!$bForce) {
-        $upd->cAktiv = $cAktiv;
+    $upd->nFehlerhaft = (int)$error;
+    if (!$force) {
+        $upd->cAktiv = $error ? 'N' : 'Y';
     }
     Shop::Container()->getDB()->update('temailvorlage', 'kEmailvorlage', (int)$kEmailvorlage, $upd);
 }
 
 /**
- * @param string $cTableSetting
+ * @param string $settingsTable
  * @param int    $kEmailvorlage
- * @param string $cKey
- * @param string $cValue
+ * @param string $key
+ * @param string $value
  */
-function saveEmailSetting($cTableSetting, $kEmailvorlage, $cKey, $cValue)
+function saveEmailSetting($settingsTable, $kEmailvorlage, $key, $value)
 {
-    if ((int)$kEmailvorlage > 0 && strlen($cTableSetting) > 0 && strlen($cKey) > 0 && strlen($cValue) > 0) {
-        $oEmailvorlageEinstellung                = new stdClass();
-        $oEmailvorlageEinstellung->kEmailvorlage = (int)$kEmailvorlage;
-        $oEmailvorlageEinstellung->cKey          = $cKey;
-        $oEmailvorlageEinstellung->cValue        = $cValue;
+    if ((int)$kEmailvorlage > 0 && strlen($settingsTable) > 0 && strlen($key) > 0 && strlen($value) > 0) {
+        $conf                = new stdClass();
+        $conf->kEmailvorlage = (int)$kEmailvorlage;
+        $conf->cKey          = $key;
+        $conf->cValue        = $value;
 
-        Shop::Container()->getDB()->insert($cTableSetting, $oEmailvorlageEinstellung);
+        Shop::Container()->getDB()->insert($settingsTable, $conf);
     }
 }

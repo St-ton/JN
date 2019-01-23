@@ -4,9 +4,9 @@
             <div id="{$instance->getProperty('uid')}" class="nivoSlider">
                 {foreach from=$instance->getProperty('slides') item=slide}
                     {if !empty($slide.cText)}
-                        {assign var="slideTitle" value=$slide.cTitle}
+                        {assign var=slideTitle value=$slide.cTitle}
                     {else}
-                        {assign var="slideTitle" value=''}
+                        {assign var=slideTitle value=''}
                     {/if}
                     {assign var="slideTitle" value="#{$instance->getProperty('uid')}_slide_caption_{$slide.nSort}"}
                     {if !empty($slide.url)}

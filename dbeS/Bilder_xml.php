@@ -133,11 +133,13 @@ if (auth()) {
         PFAD_SYNC_TMP .
         basename($_FILES['data']['tmp_name']) . '_' .
         date('dhis') . '/';
+    $db        = Shop::Container()->getDB();
     if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
         Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile . ' to ' . $unzipPath);
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
+        $db->query('START TRANSACTION', \DB\ReturnType::DEFAULT);
         foreach ($syncFiles as $xmlFile) {
             switch (pathinfo($xmlFile)['basename']) {
                 case 'bilder_ka.xml':
@@ -167,6 +169,7 @@ if (auth()) {
                     break;
             }
         }
+        $db->query('COMMIT', \DB\ReturnType::DEFAULT);
         removeTemporaryFiles(substr($unzipPath, 0, -1), true);
     }
 }

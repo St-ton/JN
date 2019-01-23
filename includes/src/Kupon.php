@@ -1131,11 +1131,12 @@ class Kupon
 
     /**
      * @param string $strToHash
+     * @param bool $strtolower
      * @return string
      */
-    public static function hash(string $strToHash): string
+    public static function hash(string $strToHash, bool $strtolower = true): string
     {
-        return $strToHash === '' ? '' : hash('sha256', $strToHash);
+        return $strToHash === '' ? '' : hash('sha256', $strtolower ? strtolower($strToHash) : $strToHash);
     }
 
     /**

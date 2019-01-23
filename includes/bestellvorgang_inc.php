@@ -2609,6 +2609,7 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
         }
     }
 
+    $customer->cMail                 = strtolower($customer->cMail);
     $customer->dGeburtstag           = Date::convertDateToMysqlStandard($customer->dGeburtstag ?? '');
     $customer->dGeburtstag_formatted = $customer->dGeburtstag === '_DBNULL_'
         ? ''

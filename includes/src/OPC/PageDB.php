@@ -330,8 +330,9 @@ class PageDB
     }
 
     /**
-     * @param object $row
+     * @param $row
      * @return Page
+     * @throws \Exception
      */
     protected function getPageFromRow($row): Page
     {

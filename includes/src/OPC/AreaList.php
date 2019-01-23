@@ -91,7 +91,8 @@ class AreaList implements \JsonSerializable
     }
 
     /**
-     * @param array $data
+     * @param $data
+     * @throws \Exception
      */
     public function deserialize($data): void
     {

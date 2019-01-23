@@ -357,7 +357,7 @@
                 placeholder="{lang key="email" section="account data"}" 
                 required 
                 >
-                {if isset($fehlendeAngaben.email)}
+                {if isset($fehlendeAngaben.email) || isset($fehlendeAngaben.email_vorhanden)}
                 <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                     {if $fehlendeAngaben.email == 1}
                         {lang key="fillOut" section="global"}
@@ -367,7 +367,7 @@
                         {lang key="blockedEmail" section="global"}
                     {elseif $fehlendeAngaben.email == 4}
                         {lang key="noDnsEmail" section="account data"}
-                    {elseif $fehlendeAngaben.email == 5}
+                    {elseif $fehlendeAngaben.email == 5 || $fehlendeAngaben.email_vorhanden == 1}
                         {lang key="emailNotAvailable" section="account data"}
                     {/if}
                 </div>

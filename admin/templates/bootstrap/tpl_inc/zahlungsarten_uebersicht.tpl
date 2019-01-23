@@ -19,7 +19,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {foreach name=zahlungsarten from=$zahlungsarten item=zahlungsart}
+                    {foreach $zahlungsarten as $zahlungsart}
                         <tr class="text-vcenter">
                             <td class="text-left">
                                 <h4>{$zahlungsart->cName}
@@ -52,7 +52,7 @@
                                     </a>
                                     <a {if $zahlungsart->nEingangAnzahl > 0}href="zahlungsarten.php?a=payments&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"{/if}
                                        class="btn btn-default {if $zahlungsart->nEingangAnzahl === 0}disabled{/if}"
-                                       title="Zahlungseing&auml;nge">
+                                       title="Zahlungseingänge">
                                         <i class="fa fa-money"></i>
                                     </a>
                                     <a href="zahlungsarten.php?kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"

@@ -10,11 +10,11 @@
 class PlausiKundenfeld extends Plausi
 {
     /**
-     * @param null|string $cTyp
-     * @param bool        $bUpdate
+     * @param null|string $type
+     * @param bool        $update
      * @return bool
      */
-    public function doPlausi($cTyp = null, bool $bUpdate = false): bool
+    public function doPlausi($type = null, bool $update = false): bool
     {
         if (count($this->xPostVar_arr) === 0) {
             return false;
@@ -37,7 +37,7 @@ class PlausiKundenfeld extends Plausi
         if (!isset($this->xPostVar_arr['nEdit'])) {
             $this->xPlausiVar_arr['nEdit'] = 1;
         }
-        if ($cTyp === 'auswahl') {
+        if ($type === 'auswahl') {
             if (is_array($this->xPostVar_arr['cfValues'])) {
                 foreach ($this->xPostVar_arr['cfValues'] as $szFieldValue) {
                     // empty value are not allowed
@@ -49,7 +49,7 @@ class PlausiKundenfeld extends Plausi
                 // empty arrays should not be savable
                 $this->xPlausiVar_arr['cWert'] = 1;
             }
-        } elseif (!$bUpdate) {
+        } elseif (!$update) {
             $oKundenfeld = Shop::Container()->getDB()->select(
                 'tkundenfeld',
                 'kSprache',

@@ -29,8 +29,8 @@ final class LinkGroup extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        parent::addMapping('oLinkGruppe', 'LinkGroup');
-        parent::addMapping('oLinkGruppeTemplate', 'LinkGroupTemplate');
+        $this->addMapping('oLinkGruppe', 'LinkGroup');
+        $this->addMapping('oLinkGruppeTemplate', 'LinkGroupTemplate');
     }
 
     /**

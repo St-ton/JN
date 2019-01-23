@@ -8,9 +8,7 @@ namespace OPC;
 
 use DB\DbInterface;
 use DB\ReturnType;
-use Plugin\Extension;
 use Plugin\ExtensionLoader;
-use Plugin\Plugin;
 
 /**
  * Class DB

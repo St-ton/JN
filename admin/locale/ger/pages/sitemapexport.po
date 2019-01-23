@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "sitemapExport"
 msgstr "Sitemap Export"
 
@@ -64,3 +68,20 @@ msgstr "Gesamtanzahl URLs"
 msgid "sitemapCountURL"
 msgstr "Anzahl URLs"
 
+msgid "errorSitemapCreatePermission"
+msgstr " kann nicht geschrieben werden. Bitte achten Sie darauf, dass diese Datei ausreichende Schreibrechte besitzt. Ansonsten kann keine Sitemap erstellt werden."
+
+msgid "successSave"
+msgstr " wurde erfolgreich aktualisiert."
+
+msgid "successSitemapDLDelete"
+msgstr "Ihre markierten Sitemap Downloads wurden erfolgreich gelöscht."
+
+msgid "successSitemapReportDelete"
+msgstr "Ihre markierten Sitemap Reports wurden erfolgreich gelöscht."
+
+msgid "successSitemapDLDeleteByYear"
+msgstr "Ihre markierten Sitemap Downloads für %s wurden erfolgreich gelöscht."
+
+msgid "successSitemapReportDeleteByYear"
+msgstr "Ihre Sitemap Reports für %s wurden erfolgreich gelöscht."

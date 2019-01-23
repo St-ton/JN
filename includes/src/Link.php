@@ -622,7 +622,7 @@ class Link extends MainModel
     {
         if ($kVaterLink > 0) {
             if (!empty($kVaterLinkgruppe)) {
-                $oLink_arr = Shop::Container()->getDB()->queryPrepared(
+                $links = Shop::Container()->getDB()->queryPrepared(
                     'SELECT tlink.* 
                         FROM tlink 
                         JOIN tlinkgroupassociations t 
@@ -636,13 +636,13 @@ class Link extends MainModel
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
             } else {
-                $oLink_arr = Shop::Container()->getDB()->selectAll('tlink', 'kVaterLink', $kVaterLink);
+                $links = Shop::Container()->getDB()->selectAll('tlink', 'kVaterLink', $kVaterLink);
             }
-            foreach ($oLink_arr as &$oLink) {
-                $oLink = new self($oLink->kLink, null, true, $kVaterLinkgruppe);
+            foreach ($links as &$link) {
+                $link = new self((int)$link->kLink, null, true, $kVaterLinkgruppe);
             }
 
-            return $oLink_arr;
+            return $links;
         }
 
         return null;
@@ -654,28 +654,28 @@ class Link extends MainModel
      */
     public function save(bool $bPrim = true)
     {
-        $oObj        = new stdClass();
-        $cMember_arr = array_keys(get_object_vars($this));
-        if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-            $oObj->kLink              = $this->kLink;
-            $oObj->kVaterLink         = $this->kVaterLink;
-            $oObj->kLinkgruppe        = $this->kLinkgruppe;
-            $oObj->kPlugin            = $this->kPlugin;
-            $oObj->cName              = $this->cName;
-            $oObj->nLinkart           = $this->nLinkart;
-            $oObj->cNoFollow          = $this->cNoFollow;
-            $oObj->cURL               = $this->cURL;
-            $oObj->cKundengruppen     = $this->cKundengruppen;
-            $oObj->bIsActive          = $this->bIsActive;
-            $oObj->cSichtbarNachLogin = $this->cSichtbarNachLogin;
-            $oObj->cDruckButton       = $this->cDruckButton;
-            $oObj->nSort              = $this->nSort;
-            $oObj->bSSL               = $this->bSSL;
-            $oObj->bIsFluid           = $this->bIsFluid;
-            $oObj->cIdentifier        = $this->cIdentifier;
+        $ins     = new stdClass();
+        $members = array_keys(get_object_vars($this));
+        if (is_array($members) && count($members) > 0) {
+            $ins->kLink              = $this->kLink;
+            $ins->kVaterLink         = $this->kVaterLink;
+            $ins->kLinkgruppe        = $this->kLinkgruppe;
+            $ins->kPlugin            = $this->kPlugin;
+            $ins->cName              = $this->cName;
+            $ins->nLinkart           = $this->nLinkart;
+            $ins->cNoFollow          = $this->cNoFollow;
+            $ins->cURL               = $this->cURL;
+            $ins->cKundengruppen     = $this->cKundengruppen;
+            $ins->bIsActive          = $this->bIsActive;
+            $ins->cSichtbarNachLogin = $this->cSichtbarNachLogin;
+            $ins->cDruckButton       = $this->cDruckButton;
+            $ins->nSort              = $this->nSort;
+            $ins->bSSL               = $this->bSSL;
+            $ins->bIsFluid           = $this->bIsFluid;
+            $ins->cIdentifier        = $this->cIdentifier;
         }
 
-        $kPrim = Shop::Container()->getDB()->insert('tlink', $oObj);
+        $kPrim = Shop::Container()->getDB()->insert('tlink', $ins);
 
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
@@ -690,66 +690,65 @@ class Link extends MainModel
      */
     public function update(): int
     {
-        $cQuery   = 'UPDATE tlink SET ';
-        $cSet_arr = [];
-
-        $cMember_arr = array_keys(get_object_vars($this));
-        if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-            foreach ($cMember_arr as $cMember) {
+        $sql     = 'UPDATE tlink SET ';
+        $set     = [];
+        $members = array_keys(get_object_vars($this));
+        if (is_array($members) && count($members) > 0) {
+            foreach ($members as $cMember) {
                 $cMethod = 'get' . substr($cMember, 1);
                 if (method_exists($this, $cMethod)) {
                     $val        = $this->$cMethod();
                     $mValue     = $val === null
                         ? 'NULL'
                         : ("'" . Shop::Container()->getDB()->realEscape($val) . "'");
-                    $cSet_arr[] = "{$cMember} = {$mValue}";
+                    $set[] = "{$cMember} = {$mValue}";
                 }
             }
 
-            $cQuery .= implode(', ', $cSet_arr);
-            $cQuery .= " WHERE kLink = {$this->getLink()} AND klinkgruppe = {$this->getLinkgruppe()}";
+            $sql .= implode(', ', $set);
+            $sql .= " WHERE kLink = {$this->getLink()} AND klinkgruppe = {$this->getLinkgruppe()}";
 
-            return Shop::Container()->getDB()->query($cQuery, \DB\ReturnType::AFFECTED_ROWS);
+            return Shop::Container()->getDB()->query($sql, \DB\ReturnType::AFFECTED_ROWS);
         }
         throw new Exception('ERROR: Object has no members!');
     }
 
     /**
-     * @param bool $bSub
-     * @param int  $kLinkgruppe
+     * @param bool $sub
+     * @param int  $linkGroupID
      * @return int
      */
-    public function delete(bool $bSub = true, int $kLinkgruppe = null): int
+    public function delete(bool $sub = true, int $linkGroupID = null): int
     {
-        $nRows = 0;
+        $rowCount = 0;
         if ($this->kLink > 0) {
-            if (!empty($kLinkgruppe)) {
-                $nRows = Shop::Container()->getDB()->delete(
+            if (!empty($linkGroupID)) {
+                $rowCount = Shop::Container()->getDB()->delete(
                     'tlink',
                     ['kLink', 'kLinkgruppe'],
-                    [$this->getLink(), $kLinkgruppe]
+                    [$this->getLink(), $linkGroupID]
                 );
             } else {
-                $nRows = Shop::Container()->getDB()->delete('tlink', 'kLink', $this->getLink());
+                $rowCount = Shop::Container()->getDB()->delete('tlink', 'kLink', $this->getLink());
             }
-            $nLinkAnz = Shop::Container()->getDB()->selectAll('tlink', 'kLink', $this->getLink());
-            if (count($nLinkAnz) === 0) {
+            $links = Shop::Container()->getDB()->selectAll('tlink', 'kLink', $this->getLink());
+            if (count($links) === 0) {
                 Shop::Container()->getDB()->delete('tlinksprache', 'kLink', $this->getLink());
                 Shop::Container()->getDB()->delete('tseo', ['kKey', 'cKey'], [$this->getLink(), 'kLink']);
 
-                $cDir = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER . $this->getLink();
-                if (is_dir($cDir) && $this->getLink() > 0 && FileSystem::delDirRecursively($cDir)) {
-                    rmdir($cDir);
+                $dir = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER . $this->getLink();
+                if (is_dir($dir) && $this->getLink() > 0 && FileSystem::delDirRecursively($dir)) {
+                    rmdir($dir);
                 }
             }
 
-            if ($bSub && count($this->oSub_arr) > 0) {
+            if ($sub && count($this->oSub_arr) > 0) {
                 foreach ($this->oSub_arr as $oSub) {
-                    $oSub->delete(true, $kLinkgruppe);
+                    $oSub->delete(true, $linkGroupID);
                 }
             }
         }
 
-        return $nRows;
+        return $rowCount;
     }
 }

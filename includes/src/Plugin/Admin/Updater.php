@@ -10,7 +10,6 @@ use DB\DbInterface;
 use Plugin\Admin\Installation\Installer;
 use Plugin\Helper;
 use Plugin\InstallCode;
-use Plugin\Plugin;
 
 /**
  * Class Updater

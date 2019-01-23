@@ -91,7 +91,7 @@ class Boxen
     /**
      * @param array $boxList
      */
-    public function setBoxList(array $boxList)
+    public function setBoxList(array $boxList): void
     {
         trigger_error(__CLASS__ . ': setting boxes here is not possible anymore.', E_USER_DEPRECATED);
     }
@@ -163,20 +163,6 @@ class Boxen
     }
 
     /**
-     * read linkgroup array and search for specific ID
-     *
-     * @param int $id
-     * @return \Link\LinkGroupInterface|null
-     * @deprecated since 5.0.0
-     */
-    private function getLinkGroupByID(int $id)
-    {
-        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-
-        return Shop::Container()->getLinkService()->getLinkGroupByID($id);
-    }
-
-    /**
      * supply data for specific box types
      *
      * @param int    $kBoxVorlage
@@ -188,18 +174,6 @@ class Boxen
     {
         trigger_error(__METHOD__ . ' is deprecated and does not work anymore.', E_USER_DEPRECATED);
         return null;
-    }
-
-    /**
-     * @param string $filename_cache
-     * @param int    $timeout
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    private function cachecheck(string $filename_cache, int $timeout = 10800): bool
-    {
-        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-        return false;
     }
 
     /**
@@ -223,7 +197,7 @@ class Boxen
      * @param int $nMaxAnzahl
      * @deprecated since 5.0.0
      */
-    public function addRecentlyViewed(int $kArtikel, $nMaxAnzahl = null)
+    public function addRecentlyViewed(int $kArtikel, $nMaxAnzahl = null): void
     {
         trigger_error(__METHOD__ . ' is deprecated and does not work anymore.', E_USER_DEPRECATED);
     }
@@ -269,7 +243,7 @@ class Boxen
      * @return stdClass|null
      * @deprecated since 5.0.0
      */
-    public function holeVorlage(int $kBoxvorlage)
+    public function holeVorlage(int $kBoxvorlage): ?\stdClass
     {
         trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         return Shop::Container()->getDB()->select('tboxvorlage', 'kBoxvorlage', $kBoxvorlage);
@@ -277,10 +251,9 @@ class Boxen
 
     /**
      * @param string $ePosition
-     * @return array
      * @deprecated since 5.0.0
      */
-    public function holeContainer(string $ePosition): array
+    public function holeContainer(string $ePosition): void
     {
         trigger_error(__METHOD__ . ' is deprecated and does not work anymore.', E_USER_DEPRECATED);
     }
@@ -331,10 +304,9 @@ class Boxen
      * @param int    $kBox
      * @param string $cTitel
      * @param int    $kCustomID
-     * @return bool
      * @deprecated since 5.0.0
      */
-    public function bearbeiteBox(int $kBox, $cTitel, int $kCustomID = 0): bool
+    public function bearbeiteBox(int $kBox, $cTitel, int $kCustomID = 0)
     {
         trigger_error(__METHOD__ . ' is deprecated and does not work anymore.', E_USER_DEPRECATED);
     }
@@ -344,10 +316,9 @@ class Boxen
      * @param string $cISO
      * @param string $cTitel
      * @param string $cInhalt
-     * @return bool
      * @deprecated since 5.0.0
      */
-    public function bearbeiteBoxSprache(int $kBox, string $cISO, string $cTitel, string $cInhalt): bool
+    public function bearbeiteBoxSprache(int $kBox, string $cISO, string $cTitel, string $cInhalt): void
     {
         trigger_error(__METHOD__ . ' is deprecated and does not work anymore.', E_USER_DEPRECATED);
     }
@@ -356,10 +327,9 @@ class Boxen
      * @param int    $page
      * @param string $ePosition
      * @param int    $kContainer
-     * @return int
      * @deprecated since 5.0.0
      */
-    public function letzteSortierID(int $page, string $ePosition = 'left', int $kContainer = 0): int
+    public function letzteSortierID(int $page, string $ePosition = 'left', int $kContainer = 0): void
     {
         trigger_error(__METHOD__ . ' is deprecated and does not work anymore..', E_USER_DEPRECATED);
     }
@@ -368,10 +338,9 @@ class Boxen
      * @param int          $kBox
      * @param int          $kSeite
      * @param string|array $cFilter
-     * @return int
      * @deprecated since 5.0.0
      */
-    public function filterBoxVisibility(int $kBox, int $kSeite, $cFilter = ''): int
+    public function filterBoxVisibility(int $kBox, int $kSeite, $cFilter = ''): void
     {
         trigger_error(__METHOD__ . ' is deprecated and does not work anymore..', E_USER_DEPRECATED);
     }
@@ -387,6 +356,7 @@ class Boxen
     public function sortBox(int $kBox, int $page, int $nSort, $active = true): bool
     {
         trigger_error(__METHOD__ . ' is deprecated and does not work anymore.', E_USER_DEPRECATED);
+        return false;
     }
 
     /**
@@ -399,6 +369,7 @@ class Boxen
     public function aktiviereBox(int $kBox, int $page, $active = true): bool
     {
         trigger_error(__METHOD__ . ' is deprecated and does not work anymore.', E_USER_DEPRECATED);
+        return false;
     }
 
     /**

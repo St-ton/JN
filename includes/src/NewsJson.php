@@ -18,9 +18,9 @@ class NewsJson
      * @param string $cHeadline
      * @param string $cText
      * @param string $cStartDate
-     * @param array $oNews_arr
+     * @param array  $newsItems
      */
-    public function __construct($cHeadline, $cText, $cStartDate, array $oNews_arr)
+    public function __construct($cHeadline, $cText, $cStartDate, array $newsItems)
     {
         $this->timeline            = new stdClass();
         $this->timeline->headline  = $cHeadline;
@@ -29,25 +29,25 @@ class NewsJson
         $this->timeline->startDate = $cStartDate;
         $this->timeline->date      = [];
 
-        if (count($oNews_arr) > 0) {
+        if (count($newsItems) > 0) {
             $shopURL = Shop::getURL() . '/';
-            foreach ($oNews_arr as $oNews) {
-                $oNewsItem = new NewsItem(
-                    $oNews->cBetreff,
-                    $oNews->cText,
-                    $oNews->dGueltigVonJS,
-                    $shopURL . $oNews->cUrl
+            foreach ($newsItems as $item) {
+                $newsItem = new NewsItem(
+                    $item->cBetreff,
+                    $item->cText,
+                    $item->dGueltigVonJS,
+                    $shopURL . $item->cUrl
                 );
 
-                if ($this->checkMedia($oNews->cVorschauText)) {
-                    $oNewsItemAsset = new NewsItemAsset($oNews->cVorschauText);
-                    $oNewsItem->addAsset($oNewsItemAsset);
+                if ($this->checkMedia($item->cVorschauText)) {
+                    $oNewsItemAsset = new NewsItemAsset($item->cVorschauText);
+                    $newsItem->addAsset($oNewsItemAsset);
                 } else {
-                    $oNewsItem->text = $oNews->cVorschauText .
-                        '<br /><a href="' . $oNews->cUrl . '" class="btn">Mehr...</a>';
+                    $newsItem->text = $item->cVorschauText .
+                        '<br /><a href="' . $item->cUrl . '" class="btn">Mehr...</a>';
                 }
 
-                $this->timeline->date[] = $oNewsItem;
+                $this->timeline->date[] = $newsItem;
             }
         }
     }
@@ -61,12 +61,12 @@ class NewsJson
     }
 
     /**
-     * @param string $cMediaLink
+     * @param string $link
      * @return bool
      */
-    protected function checkMedia($cMediaLink): bool
+    protected function checkMedia($link): bool
     {
-        $cMedia_arr = [
+        $media = [
             'youtube.com/watch?v=',
             'vimeo.com/',
             'twitter.com/',
@@ -77,9 +77,9 @@ class NewsJson
             'soundcloud.com/'
         ];
 
-        if (strlen($cMediaLink) > 3) {
-            foreach ($cMedia_arr as $cMedia) {
-                if (strpos($cMediaLink, $cMedia) !== false) {
+        if (strlen($link) > 3) {
+            foreach ($media as $cMedia) {
+                if (strpos($link, $cMedia) !== false) {
                     return true;
                 }
             }
@@ -95,7 +95,7 @@ class NewsJson
     {
         if (isset($options['filename'], $options['path'], $options['isdir']) && !$options['isdir']) {
             $options['thumb'] = Shop::getImageBaseURL() .
-                PFAD_NEWSBILDER . "{$options['news']}/{$options['filename']}";
+                PFAD_NEWSBILDER . $options['news'] . '/' . $options['filename'];
         }
     }
 }

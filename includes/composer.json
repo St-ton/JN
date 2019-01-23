@@ -8,6 +8,7 @@
         "ifsnop/mysqldump-php": "^2.1",
         "symfony/var-dumper": "^3.0",
         "jtlshop/shop4-systemcheck": "^1.1",
+        "jtlshop/sccbs3": "dev-master",
         "jtlshop/scc": "dev-master",
         "smarty/smarty": "~3.1",
         "jdorn/sql-formatter": "^1.2",
@@ -54,6 +55,10 @@
         {
             "type": "vcs",
             "url": "https://gitlab.jtl-software.de/jtlshop/qrcodegenerator.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.jtl-software.de/jtlshop/sccbs3.git"
         },
         {
             "type": "vcs",

@@ -82,8 +82,7 @@ function createSearchIndex($index, $create)
         }
 
         if ($res === 0) {
-            $cFehler      = 'Der Index für die Volltextsuche konnte nicht angelegt werden! ' .
-                'Die Volltextsuche wird deaktiviert.';
+            $cFehler      = __('errorIndexNotCreatable');
             $shopSettings = Shopsetting::getInstance();
             $settings     = $shopSettings[Shopsetting::mapSettingName(CONF_ARTIKELUEBERSICHT)];
 
@@ -100,10 +99,10 @@ function createSearchIndex($index, $create)
                 $shopSettings->reset();
             }
         } else {
-            $cHinweis = 'Der Volltextindex für ' . $index . ' wurde angelegt!';
+            $cHinweis = sprintf(__('successIndexCreate'), $index);
         }
     } else {
-        $cHinweis = 'Der Volltextindex für ' . $index . ' wurde gelöscht!';
+        $cHinweis = sprintf(__('successIndexDelete'), $index);
     }
 
     return $cFehler !== '' ? new IOError($cFehler) : ['hinweis' => $cHinweis];
@@ -117,5 +116,5 @@ function clearSearchCache()
     Shop::Container()->getDB()->query('DELETE FROM tsuchcachetreffer', \DB\ReturnType::AFFECTED_ROWS);
     Shop::Container()->getDB()->query('DELETE FROM tsuchcache', \DB\ReturnType::AFFECTED_ROWS);
 
-    return ['hinweis' => 'Der Such-Cache wurde gelöscht'];
+    return ['hinweis' => __('successSearchCacheDelete')];
 }

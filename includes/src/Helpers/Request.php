@@ -242,7 +242,7 @@ class Request
      */
     public static function http_get_contents($url, int $timeout = 5, $post = null)
     {
-        return self::make_http_request($url, $timeout, $post, false);
+        return self::make_http_request($url, $timeout, $post);
     }
 
     /**
@@ -290,9 +290,9 @@ class Request
                 \curl_setopt($curl, \CURLOPT_POSTFIELDS, $post);
             }
 
-            $cData     = self::curl_exec_follow($curl);
-            $cInfo_arr = \curl_getinfo($curl);
-            $nCode     = (int)$cInfo_arr['http_code'];
+            $cData = self::curl_exec_follow($curl);
+            $info  = \curl_getinfo($curl);
+            $nCode = (int)$info['http_code'];
 
             \curl_close($curl);
         } elseif (\ini_get('allow_url_fopen')) {

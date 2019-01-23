@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "systemlog"
 msgstr "Systemlog"
 
@@ -43,3 +47,8 @@ msgstr "Eintrag"
 msgid "systemlogReset"
 msgstr "Log zurücksetzen"
 
+msgid "successSystemLogReset"
+msgstr "Ihr Systemlog wurde erfolgreich gelöscht."
+
+msgid "successEntriesDelete"
+msgstr " markierte Log-Einträge wurden gelöscht."

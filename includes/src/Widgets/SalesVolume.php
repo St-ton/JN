@@ -42,7 +42,7 @@ class SalesVolume extends AbstractWidget
             $interval
         );
         foreach ($stats as $stat) {
-            $stat->cLocalized = \Preise::getLocalizedPriceString($stat->nCount, $this->oWaehrung, true);
+            $stat->cLocalized = \Preise::getLocalizedPriceString($stat->nCount, $this->oWaehrung);
         }
 
         return $stats;

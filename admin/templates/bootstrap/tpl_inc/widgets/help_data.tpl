@@ -1,5 +1,5 @@
 {if count($oHelp_arr) > 0}
-    {foreach name='help' from=$oHelp_arr item=oHelp}
+    {foreach $oHelp_arr as $oHelp}
         <li>
             <p>
                 {if $oHelp->cIconURL|strlen > 0}

@@ -31,7 +31,7 @@ class SortingType
      * @param int $type
      * @return string|null
      */
-    public function mapSortTypeToClassName(int $type)
+    public function mapSortTypeToClassName(int $type): ?string
     {
         switch ($type) {
             case \SEARCH_SORT_NONE:

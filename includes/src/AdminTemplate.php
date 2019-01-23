@@ -136,8 +136,8 @@ class AdminTemplate
         $folders   = [];
         $folders[] = $cOrdner;
         $cacheID   = 'template_minify_data_adm_' . $cOrdner . (($absolute === true) ? '_a' : '');
-        if (($tplGroups_arr = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $tplGroups_arr = [
+        if (($tplGroups = Shop::Container()->getCache()->get($cacheID)) === false) {
+            $tplGroups = [
                 'admin_css' => [],
                 'admin_js'  => []
             ];
@@ -151,8 +151,8 @@ class AdminTemplate
                 /** @var SimpleXMLElement $oCSS */
                 foreach ($cssSource as $oCSS) {
                     $name = (string)$oCSS->attributes()->Name;
-                    if (!isset($tplGroups_arr[$name])) {
-                        $tplGroups_arr[$name] = [];
+                    if (!isset($tplGroups[$name])) {
+                        $tplGroups[$name] = [];
                     }
                     foreach ($oCSS->File as $oFile) {
                         $cFile     = (string)$oFile->attributes()->Path;
@@ -160,12 +160,12 @@ class AdminTemplate
                             ? PFAD_ROOT . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile
                             : PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile;
                         if (file_exists($cFilePath)) {
-                            $tplGroups_arr[$name][] = ($absolute === true ? PFAD_ROOT : '') .
+                            $tplGroups[$name][] = ($absolute === true ? PFAD_ROOT : '') .
                                 (self::$isAdmin === true ? PFAD_ADMIN : '') .
                                 PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path;
                             $cCustomFilePath        = str_replace('.css', '_custom.css', $cFilePath);
                             if (file_exists($cCustomFilePath)) {
-                                $tplGroups_arr[$name][] = str_replace(
+                                $tplGroups[$name][] = str_replace(
                                     '.css',
                                     '_custom.css',
                                     ($absolute === true ? PFAD_ROOT : '') .
@@ -178,18 +178,18 @@ class AdminTemplate
                     // assign custom.css
                     $cCustomFilePath = PFAD_ROOT . 'templates/' . $oXML->Ordner . '/themes/custom.css';
                     if (file_exists($cCustomFilePath)) {
-                        $tplGroups_arr[$name][] = (($absolute === true) ? PFAD_ROOT : '') .
+                        $tplGroups[$name][] = (($absolute === true) ? PFAD_ROOT : '') .
                             (self::$isAdmin === true ? PFAD_ADMIN : '') .
                             PFAD_TEMPLATES . $cOrdner . '/' . 'themes/custom.css';
                     }
                 }
                 foreach ($jsSource as $oJS) {
                     $name = (string)$oJS->attributes()->Name;
-                    if (!isset($tplGroups_arr[$name])) {
-                        $tplGroups_arr[$name] = [];
+                    if (!isset($tplGroups[$name])) {
+                        $tplGroups[$name] = [];
                     }
                     foreach ($oJS->File as $oFile) {
-                        $tplGroups_arr[$name][] = ($absolute === true ? PFAD_ROOT : '') .
+                        $tplGroups[$name][] = ($absolute === true ? PFAD_ROOT : '') .
                             (self::$isAdmin === true ? PFAD_ADMIN : '') .
                             PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path;
                     }
@@ -197,12 +197,12 @@ class AdminTemplate
             }
             $cacheTags = [CACHING_GROUP_OPTION, CACHING_GROUP_TEMPLATE, CACHING_GROUP_PLUGIN];
             if (!self::$isAdmin) {
-                executeHook(HOOK_CSS_JS_LIST, ['groups' => &$tplGroups_arr, 'cache_tags' => &$cacheTags]);
+                executeHook(HOOK_CSS_JS_LIST, ['groups' => &$tplGroups, 'cache_tags' => &$cacheTags]);
             }
-            Shop::Container()->getCache()->set($cacheID, $tplGroups_arr, $cacheTags);
+            Shop::Container()->getCache()->set($cacheID, $tplGroups, $cacheTags);
         }
 
-        return $tplGroups_arr;
+        return $tplGroups;
     }
 
     /**

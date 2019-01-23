@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1262af35a904129c287ab59ffc826f54",
+    "content-hash": "f4c1fe5442993bf573be3cf7f80e7aee",
     "packages": [
         {
             "name": "andyftw/ssllabs-php",
@@ -1173,7 +1173,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.jtl-software.de/jtlshop/scc.git",
-                "reference": "e7f8d44828003aa08ad2fe1780553c55c09fb9c2"
+                "reference": "0e56fa1e3169caa24caf9d2219705fa91acdfe3a"
             },
             "require": {
                 "myclabs/php-enum": "^1.5",
@@ -1200,7 +1200,42 @@
             "keywords": [
                 "jtl-shop"
             ],
-            "time": "2019-01-11T16:31:44+00:00"
+            "time": "2019-01-23T11:10:59+00:00"
+        },
+        {
+            "name": "jtlshop/sccbs3",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab.jtl-software.de/jtlshop/sccbs3.git",
+                "reference": "6a22249c2022556e1997e95c2ab37a4d84ff083d"
+            },
+            "require": {
+                "jtlshop/scc": "dev-master",
+                "php": ">=7.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "sccbs3\\": "src/sccbs3"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Felix Moche",
+                    "email": "felix.moche@jtl-software.com",
+                    "homepage": "https://www.jtl-software.de/"
+                }
+            ],
+            "description": "Bootstrap3 renderer for Smarty component collection",
+            "homepage": "https://www.jtl-software.de/",
+            "keywords": [
+                "jtl-shop"
+            ],
+            "time": "2019-01-14T12:16:33+00:00"
         },
         {
             "name": "jtlshop/semver",
@@ -2595,16 +2630,16 @@
         },
         {
             "name": "tightenco/collect",
-            "version": "v5.7.21",
+            "version": "v5.7.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tightenco/collect.git",
-                "reference": "62ae82d8a71015981ac1ac862f59a63eb732c843"
+                "reference": "124cb1074cf739fdc2d72d7d299095d7e272dc71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tightenco/collect/zipball/62ae82d8a71015981ac1ac862f59a63eb732c843",
-                "reference": "62ae82d8a71015981ac1ac862f59a63eb732c843",
+                "url": "https://api.github.com/repos/tightenco/collect/zipball/124cb1074cf739fdc2d72d7d299095d7e272dc71",
+                "reference": "124cb1074cf739fdc2d72d7d299095d7e272dc71",
                 "shasum": ""
             },
             "require": {
@@ -2641,7 +2676,7 @@
                 "collection",
                 "laravel"
             ],
-            "time": "2019-01-15T17:02:30+00:00"
+            "time": "2019-01-22T17:10:37+00:00"
         },
         {
             "name": "tubalmartin/cssmin",
@@ -4630,6 +4665,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "imanee/imanee": 20,
+        "jtlshop/sccbs3": 20,
         "jtlshop/scc": 20,
         "phpgangsta/googleauthenticator": 20,
         "jtlshop/qrcodegenerator": 20,

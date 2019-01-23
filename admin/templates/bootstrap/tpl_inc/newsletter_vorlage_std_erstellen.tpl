@@ -31,7 +31,7 @@
 <div id="content" class="container-fluid">
     {if !empty($cPlausiValue_arr)}
         <div class="alert alert-danger">
-            <p>Bitte f&uuml;llen Sie alle Pflichtfelder aus.</p>
+            <p>Bitte füllen Sie alle Pflichtfelder aus.</p>
         </div>
     {/if}
     <form name="formnewslettervorlagestd" id="formnewslettervorlagestd" method="post" action="newsletter.php" enctype="multipart/form-data">
@@ -78,23 +78,23 @@
                         <select id="kKundengruppeSelect" name="kKundengruppe[]" multiple="multiple" class="form-control {if isset($cPlausiValue_arr.kKundengruppe_arr)}fieldfillout{else}combo{/if}">
                             <option value="0"
                                 {if isset($kKundengruppe_arr)}
-                                    {foreach name=kkundengruppen from=$kKundengruppe_arr item=kKundengruppe}
-                                        {if $kKundengruppe == "0"}selected{/if}
+                                    {foreach $kKundengruppe_arr as $kKundengruppe}
+                                        {if $kKundengruppe == '0'}selected{/if}
                                     {/foreach}
                                 {elseif isset($cPostVar_arr.kKundengruppe)}
-                                    {foreach name=kkundengruppen from=$cPostVar_arr.kKundengruppe item=kKundengruppe}
-                                        {if $kKundengruppe == "0"}selected{/if}
+                                    {foreach $cPostVar_arr.kKundengruppe as $kKundengruppe}
+                                        {if $kKundengruppe == '0'}selected{/if}
                                     {/foreach}
-                                {/if}>Newsletterempf&auml;nger ohne Kundenkonto
+                                {/if}>Newsletterempfänger ohne Kundenkonto
                             </option>
-                            {foreach name=kundengruppen from=$oKundengruppe_arr item=oKundengruppe}
+                            {foreach $oKundengruppe_arr as $oKundengruppe}
                                 <option value="{$oKundengruppe->kKundengruppe}"
                                     {if isset($kKundengruppe_arr)}
-                                        {foreach name=kkundengruppen from=$kKundengruppe_arr item=kKundengruppe}
+                                        {foreach $kKundengruppe_arr as $kKundengruppe}
                                             {if $oKundengruppe->kKundengruppe == $kKundengruppe}selected{/if}
                                         {/foreach}
                                     {elseif isset($cPostVar_arr.kKundengruppe)}
-                                        {foreach name=kkundengruppen from=$cPostVar_arr.kKundengruppe item=kKundengruppe}
+                                        {foreach $cPostVar_arr.kKundengruppe as $kKundengruppe}
                                             {if $oKundengruppe->kKundengruppe == $kKundengruppe}selected{/if}
                                         {/foreach}
                                     {/if}>{$oKundengruppe->cName}</option>
@@ -123,11 +123,11 @@
                         <select id="dTag" name="dTag" class="form-control combo">
                             {section name=dTag start=1 loop=32 step=1}
                                 {if $smarty.section.dTag.index < 10}
-                                    <option value="0{$smarty.section.dTag.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|@count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[0] == $smarty.section.dTag.index} selected{/if}{else}{if $smarty.now|date_format:"%d" == $smarty.section.dTag.index} selected{/if}{/if}>
+                                    <option value="0{$smarty.section.dTag.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|@count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[0] == $smarty.section.dTag.index} selected{/if}{else}{if $smarty.now|date_format:'%d' == $smarty.section.dTag.index} selected{/if}{/if}>
                                         0{$smarty.section.dTag.index}
                                     </option>
                                 {else}
-                                    <option value="{$smarty.section.dTag.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|@count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[0] == $smarty.section.dTag.index} selected{/if}{else}{if $smarty.now|date_format:"%d" == $smarty.section.dTag.index} selected{/if}{/if}>
+                                    <option value="{$smarty.section.dTag.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|@count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[0] == $smarty.section.dTag.index} selected{/if}{else}{if $smarty.now|date_format:'%d' == $smarty.section.dTag.index} selected{/if}{/if}>
                                         {$smarty.section.dTag.index}
                                     </option>
                                 {/if}
@@ -141,11 +141,11 @@
                         <select id="dMonat" name="dMonat" class="form-control combo">
                             {section name=dMonat start=1 loop=13 step=1}
                                 {if $smarty.section.dMonat.index < 10}
-                                    <option value="0{$smarty.section.dMonat.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|@count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[1] == $smarty.section.dMonat.index} selected{/if}{else}{if $smarty.now|date_format:"%m" == $smarty.section.dMonat.index} selected{/if}{/if}>
+                                    <option value="0{$smarty.section.dMonat.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|@count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[1] == $smarty.section.dMonat.index} selected{/if}{else}{if $smarty.now|date_format:'%m' == $smarty.section.dMonat.index} selected{/if}{/if}>
                                         0{$smarty.section.dMonat.index}
                                     </option>
                                 {else}
-                                    <option value="{$smarty.section.dMonat.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|@count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[1] == $smarty.section.dMonat.index} selected{/if}{else}{if $smarty.now|date_format:"%m" == $smarty.section.dMonat.index} selected{/if}{/if}>
+                                    <option value="{$smarty.section.dMonat.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|@count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[1] == $smarty.section.dMonat.index} selected{/if}{else}{if $smarty.now|date_format:'%m' == $smarty.section.dMonat.index} selected{/if}{/if}>
                                         {$smarty.section.dMonat.index}
                                     </option>
                                 {/if}
@@ -157,9 +157,9 @@
                     </div>
                     <div class="input-group-wrap">
                         <select id="dJahr" name="dJahr" class="form-control combo">
-                            {$Y = $smarty.now|date_format:"%Y"}
+                            {$Y = $smarty.now|date_format:'%Y'}
                             {section name=dJahr start=$Y loop=($Y+2) step=1}
-                                <option value="{$smarty.section.dJahr.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|@count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[2] == $smarty.section.dJahr.index} selected{/if}{else}{if $smarty.now|date_format:"%Y" == $smarty.section.dJahr.index} selected{/if}{/if}>
+                                <option value="{$smarty.section.dJahr.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|@count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[2] == $smarty.section.dJahr.index} selected{/if}{else}{if $smarty.now|date_format:'%Y' == $smarty.section.dJahr.index} selected{/if}{/if}>
                                     {$smarty.section.dJahr.index}
                                 </option>
                             {/section}
@@ -172,11 +172,11 @@
                         <select id="dStunde" name="dStunde" class="form-control combo">
                             {section name=dStunde start=0 loop=24 step=1}
                                 {if $smarty.section.dStunde.index < 10}
-                                    <option value="0{$smarty.section.dStunde.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|@count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[3] == $smarty.section.dStunde.index} selected{/if}{else}{if $smarty.now|date_format:"%H" == $smarty.section.dStunde.index} selected{/if}{/if}>
+                                    <option value="0{$smarty.section.dStunde.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|@count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[3] == $smarty.section.dStunde.index} selected{/if}{else}{if $smarty.now|date_format:'%H' == $smarty.section.dStunde.index} selected{/if}{/if}>
                                         0{$smarty.section.dStunde.index}
                                     </option>
                                 {else}
-                                    <option value="{$smarty.section.dStunde.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|@count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[3] == $smarty.section.dStunde.index} selected{/if}{else}{if $smarty.now|date_format:"%H" == $smarty.section.dStunde.index} selected{/if}{/if}>
+                                    <option value="{$smarty.section.dStunde.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|@count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[3] == $smarty.section.dStunde.index} selected{/if}{else}{if $smarty.now|date_format:'%H' == $smarty.section.dStunde.index} selected{/if}{/if}>
                                         {$smarty.section.dStunde.index}
                                     </option>
                                 {/if}
@@ -190,11 +190,11 @@
                         <select id="dMinute" name="dMinute" class="form-control combo">
                             {section name=dMinute start=0 loop=60 step=1}
                                 {if $smarty.section.dMinute.index < 10}
-                                    <option value="0{$smarty.section.dMinute.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|@count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[4] == $smarty.section.dMinute.index} selected{/if}{else}{if $smarty.now|date_format:"%M" == $smarty.section.dMinute.index} selected{/if}{/if}>
+                                    <option value="0{$smarty.section.dMinute.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|@count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[4] == $smarty.section.dMinute.index} selected{/if}{else}{if $smarty.now|date_format:'%M' == $smarty.section.dMinute.index} selected{/if}{/if}>
                                         0{$smarty.section.dMinute.index}
                                     </option>
                                 {else}
-                                    <option value="{$smarty.section.dMinute.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|@count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[4] == $smarty.section.dMinute.index} selected{/if}{else}{if $smarty.now|date_format:"%M" == $smarty.section.dMinute.index} selected{/if}{/if}>
+                                    <option value="{$smarty.section.dMinute.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|@count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[4] == $smarty.section.dMinute.index} selected{/if}{else}{if $smarty.now|date_format:'%M' == $smarty.section.dMinute.index} selected{/if}{/if}>
                                         {$smarty.section.dMinute.index}
                                     </option>
                                 {/if}
@@ -211,7 +211,7 @@
                     <div class="input-group-wrap">
                         <select id="kKampagneselect" name="kKampagne" class="form-control">
                             <option value="0"></option>
-                            {foreach name="Kampagnen" from=$oKampagne_arr item=oKampagne}
+                            {foreach $oKampagne_arr as $oKampagne}
                                 <option value="{$oKampagne->kKampagne}"{if (isset($oKampagne->kKampagne) && isset($oNewslettervorlageStd->kKampagn) && $oKampagne->kKampagne == $oNewslettervorlageStd->kKampagne) || (isset($cPostVar_arr.kKampagne) && isset($oKampagne->kKampagne) && $cPostVar_arr.kKampagne == $oKampagne->kKampagne)} selected{/if}>
                                     {$oKampagne->cName}
                                 </option>
@@ -222,7 +222,7 @@
 
                 {include file='tpl_inc/searchpicker_modal.tpl'
                     searchPickerName='articlePicker'
-                    modalTitle='Artikel ausw&auml;hlen'
+                    modalTitle='Artikel auswählen'
                     searchInputLabel='Suche nach Artikelnamen'
                 }
                 <script>
@@ -263,7 +263,7 @@
                 </div>
                 {include file='tpl_inc/searchpicker_modal.tpl'
                     searchPickerName='manufacturerPicker'
-                    modalTitle='Hersteller ausw&auml;hlen'
+                    modalTitle='Hersteller auswählen'
                     searchInputLabel='Suche nach Herstellernamen'
                 }
                 <script>
@@ -304,7 +304,7 @@
                 </div>
                 {include file='tpl_inc/searchpicker_modal.tpl'
                     searchPickerName='categoryPicker'
-                    modalTitle='Kategorien ausw&auml;hlen'
+                    modalTitle='Kategorien auswählen'
                     searchInputLabel='Suche nach Kategorienamen'
                 }
                 <script>
@@ -345,7 +345,7 @@
                 </div>
 
                 {if isset($oNewslettervorlageStd->oNewslettervorlageStdVar_arr) && $oNewslettervorlageStd->oNewslettervorlageStdVar_arr|@count > 0}
-                    {foreach name=newslettervorlagestdvar from=$oNewslettervorlageStd->oNewslettervorlageStdVar_arr item=oNewslettervorlageStdVar}
+                    {foreach $oNewslettervorlageStd->oNewslettervorlageStdVar_arr as $oNewslettervorlageStdVar}
                         {if $oNewslettervorlageStdVar->cTyp === 'BILD'}
                             {if isset($oNewslettervorlageStdVar->cInhalt) && $oNewslettervorlageStdVar->cInhalt|strlen > 0}
                                 <img src="{$oNewslettervorlageStdVar->cInhalt}?={$nRand}" /><br /><br class="clear" />

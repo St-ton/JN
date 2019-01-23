@@ -52,7 +52,7 @@ class PaymentMethods extends AbstractItem
             }
             \preg_match('/[A-Z_]+/', $method['TSCode'], $hits1);
             if (\strlen($hits1[0]) === \strlen($method['TSCode'])) {
-                $cTSCode_arr = [
+                $tsCodes = [
                     'DIRECT_DEBIT',
                     'CREDIT_CARD',
                     'INVOICE',
@@ -71,7 +71,7 @@ class PaymentMethods extends AbstractItem
                     'DIRECT_E_BANKING',
                     'OTHER'
                 ];
-                if (!\in_array($method['TSCode'], $cTSCode_arr, true)) {
+                if (!\in_array($method['TSCode'], $tsCodes, true)) {
                     return InstallCode::INVALID_PAYMENT_METHOD_TSCODE;
                 }
             } else {

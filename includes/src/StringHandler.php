@@ -520,7 +520,9 @@ class StringHandler
         ) {
             $input = self::convertUTF8($input);
         }
-        $input     = function_exists('idn_to_ascii') ? idn_to_ascii($input) : $input;
+        $input     = function_exists('idn_to_ascii')
+            ? idn_to_ascii($input, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46)
+            : $input;
         $sanitized = filter_var($input, FILTER_SANITIZE_EMAIL);
 
         return $validate
@@ -543,7 +545,9 @@ class StringHandler
         ) {
             $input = self::convertUTF8($input);
         }
-        $input     = function_exists('idn_to_ascii') ? idn_to_ascii($input) : $input;
+        $input     = function_exists('idn_to_ascii')
+            ? idn_to_ascii($input, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46)
+            : $input;
         $sanitized = filter_var($input, FILTER_SANITIZE_URL);
 
         return $validate

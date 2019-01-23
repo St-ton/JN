@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "rssConf"
 msgstr "Einstellungen"
 
@@ -10,3 +14,11 @@ msgstr "RSS-Einstellungen"
 msgid "rssDescription"
 msgstr "JTL-Shop beherrscht die automatische Generierung und Aktualisierung eines RSS-Feeds. In diesem Feed werden Ihre Angebote, die neu im Sortiment sind, sowie News- Blogeinträge und Bewertungen hinterlegt. Somit können Sie Interessenten stets mit diesem RSS-Feed über Ihre neusten Angebote informieren. Der RSS-Feed kann auch so eingestellt werden, dass er nach jedem JTL-Wawi Abgleich neu generiert wird."
 
+msgid "successRSSCreate"
+msgstr "RSS Feed wurde erstellt!"
+
+msgid "errorRSSCreate"
+msgstr "RSS Feed konnte nicht erstellt werden!"
+
+msgid "errorRSSCreatePermissions"
+msgstr "Datei %s kann nicht geschrieben werden. Bitte achten Sie darauf, dass diese Datei ausreichende Schreibrechte besitzt. Ansonsten kann keine RSS XML Datei erstellt werden."

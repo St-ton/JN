@@ -35,12 +35,12 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
                 $success = $success && $cf->delete((int)$kKundenfeld);
             }
             if ($success) {
-                $cHinweis .= 'Die ausgewählten Kundenfelder wurden erfolgreich gelöscht.<br />';
+                $cHinweis .= __('successCustomerFieldDelete') . '<br />';
             } else {
-                $cFehler .= 'Die ausgewählten Kundenfelder konnten nicht gelöscht werden.<br />';
+                $cFehler .= __('errorCustomerFieldDelete') . '<br />';
             }
         } else {
-            $cFehler .= 'Fehler: Bitte wählen Sie mindestens ein Kundenfeld aus.<br />';
+            $cFehler .= __('errorAtLeastOneCustomerField') . '<br />';
         }
     } elseif (isset($_POST['aktualisieren'])) {
         foreach ($cf->getCustomerFields() as $customerField) {
@@ -48,9 +48,9 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
             $success              = $success && $cf->save($customerField);
         }
         if ($success) {
-            $cHinweis .= 'Ihre Kundenfelder wurden erfolgreich aktualisiert.<br />';
+            $cHinweis .= __('successCustomerFieldRefresh') . '<br />';
         } else {
-            $cFehler .= 'Ihre Kundenfelder konnten nicht aktualisiert werden.<br />';
+            $cFehler .= __('errorCustomerFieldRefresh') . '<br />';
         }
     } else { // Speichern
         $customerField = (object)[
@@ -74,16 +74,16 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
 
         if (count($check->getPlausiVar()) === 0) {
             if ($cf->save($customerField, $cfValues)) {
-                $cHinweis .= 'Ihr Kundenfeld wurde erfolgreich gespeichert.<br />';
+                $cHinweis .= __('successCustomerFieldSave') . '<br />';
             } else {
-                $cFehler .= 'Ihr Kundenfeld konnte nicht gespeichert werden.<br />';
+                $cFehler .= __('errorCustomerFieldSave') . '<br />';
             }
         } else {
             $erroneousFields = $check->getPlausiVar();
             if (isset($erroneousFields['cName']) && 2 === $erroneousFields['cName']) {
-                $cFehler = 'Ein Feld mit diesen Namen existiert bereits!';
+                $cFehler = __('errorCustomerFieldNameExists');
             } else {
-                $cFehler = 'Fehler: Bitte füllen Sie alle Pflichtangaben aus!';
+                $cFehler = __('errorFillRequired');
             }
             $smarty->assign('xPlausiVar_arr', $check->getPlausiVar())
                    ->assign('xPostVar_arr', $check->getPostVar())

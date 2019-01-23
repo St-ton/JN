@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "branding"
 msgstr "Wasserzeichen (Bild-Branding)"
 
@@ -51,4 +55,3 @@ msgstr "Brandingbild"
 
 msgid "brandingFileNameDesc"
 msgstr "Geben Sie ein Brandingbild an."
-

@@ -134,17 +134,20 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
                                 );
                             }
                         }
-                        $cHinweis .= 'Der Tag "' . $tagmapping_obj->cName . '" wurde erfolgreich auf "' .
-                            $tagmapping_obj->cNameNeu . '" gemappt.<br />';
+                        $cHinweis .= sprintf(
+                            __('successTagMap'),
+                            $tagmapping_obj->cNamem,
+                            $tagmapping_obj->cNameNeu
+                        ) . '<br />';
                     }
 
                     unset($tagmapping_obj);
                 }
             } else {
-                $cHinweis .= 'Der Tag "' . $tag->cName . '" kann nicht auf den gleichen Tagbegriff gemappt werden.';
+                $cHinweis .= sprintf(__('errorTagMapSelf'), $tag->cName);
             }
         }
-        $cHinweis .= 'Die Tags wurden erfolgreich aktualisiert.<br />';
+        $cHinweis .= __('successTagRefresh') . '<br />';
     } elseif (isset($_POST['delete'])) { // Auswahl loeschen
         if (is_array($_POST['kTag'])) {
             // flush cache before deleting the tags, since they will be removed from ttagartikel
@@ -165,13 +168,13 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
                     // also delete possible mappings TO this tag
                     $db->delete('ttagmapping', 'cNameNeu', $oTag->cName);
                     $db->delete('ttagartikel', 'kTag', $kTag);
-                    $cHinweis .= 'Der Tag "' . $oTag->cName . '" wurde erfolgreich gelöscht.<br />';
+                    $cHinweis .= sprintf(__('successTagDelete'), $oTag->cName) . '<br />';
                 } else {
-                    $cFehler .= 'Es wurde kein Tag mit der ID "' . $kTag . '" gefunden.<br />';
+                    $cFehler .= sprintf(__('errorTagNotFound'), $kTag) . '<br />';
                 }
             }
         } else {
-            $cFehler .= 'Bitte wählen Sie mindestens einen Tag aus.<br />';
+            $cFehler .= __('errorAtLeastOneTag') . '<br />';
         }
     }
 } elseif (isset($_POST['tagging']) && (int)$_POST['tagging'] === 2 && Form::validateToken()) { // Mappinglist
@@ -183,13 +186,13 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
                 if (strlen($oMapping->cName) > 0) {
                     $db->delete('ttagmapping', 'kTagMapping', $kTagMapping);
 
-                    $cHinweis .= 'Das Mapping "' . $oMapping->cName . '" wurde erfolgreich gelöscht.<br />';
+                    $cHinweis .= sprintf(__('successMapDelete'), $oMapping->cName) . '<br />';
                 } else {
-                    $cFehler .= 'Es wurde kein Mapping mit der ID "' . $kTagMapping . '" gefunden.<br />';
+                    $cFehler .= sprintf(__('errorMapNotFound'), $kTagMapping) . '<br />';
                 }
             }
         } else {
-            $cFehler .= 'Bitte wählen Sie mindestens ein Mapping aus.<br />';
+            $cFehler .= __('errorAtLeastOneMap') . '<br />';
         }
     }
 } elseif ((isset($_POST['a']) && $_POST['a'] === 'saveSettings') ||
@@ -206,10 +209,10 @@ if (Request::verifyGPCDataInt('kTag') > 0 && Request::verifyGPCDataInt('tagdetai
     if (!empty($_POST['kArtikel_arr']) && is_array($_POST['kArtikel_arr']) &&
         count($_POST['kArtikel_arr']) && Request::verifyGPCDataInt('detailloeschen') === 1) {
         if (loescheTagsVomArtikel($_POST['kArtikel_arr'], Request::verifyGPCDataInt('kTag'))) {
-            $cHinweis = 'Der Tag wurde erfolgreich bei Ihren markierten Artikeln gelöscht.';
+            $cHinweis = __('successTagDeleteProduct');
         } else {
             $step    = 'detail';
-            $cFehler = 'Fehler: Ihre markierten Artikel zum Produkttag konnten nicht gelöscht werden.';
+            $cFehler = __('errorProductTagDelete');
         }
     }
     $tagProducts = holeTagDetail(

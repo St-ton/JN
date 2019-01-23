@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "livesearch"
 msgstr "Livesuche"
 
@@ -70,3 +74,53 @@ msgstr "Speichern"
 msgid "livesucheSelectAll"
 msgstr "Alle auswählen"
 
+msgid "errorSearchTermMissing"
+msgstr "Fehler: Bitte geben Sie einen Suchbegriff ein."
+
+msgid "successSearchMap"
+msgstr "Die Suchanfrage %s wurde erfolgreich auf %s gemappt."
+
+msgid "errorSearchMapSelf"
+msgstr "Die Suchanfrage %s kann nicht auf den gleichen Suchebegriff gemappt werden."
+
+msgid "successSearchRefresh"
+msgstr "Die Suchanfragen wurden erfolgreich aktualisiert."
+
+msgid "successSearchMapMultiple"
+msgstr "Ihre markierten Suchanfragen wurden erfolgreich auf %s gemappt."
+
+msgid "errorSearchMapToNotExist"
+msgstr "Fehler: Sie haben versucht auf eine nicht existierende Suchanfrage zu mappen."
+
+msgid "errorSearchMapNotExist"
+msgstr "Fehler: Sie haben versucht eine nicht existierende Suchanfrage zu mappen."
+
+msgid "errorAtLeastOneSearch"
+msgstr "Fehler: Bitte markieren Sie mindestens eine Suchanfrage."
+
+msgid "errorMapNameMissing"
+msgstr "Fehler: Bitte geben Sie ein Mappingname an."
+
+msgid "successSearchDelete"
+msgstr "Die Suchanfrage %s wurde erfolgreich gelöscht."
+
+msgid "successSearchBlacklist"
+msgstr "Die Suchanfrage %s wurde auf die Blacklist hinzugefügt."
+
+msgid "errorSearchMapLoop"
+msgstr "Das Mapping von %s auf %s würde eine Schleife verursachen."
+
+msgid "successSearchDeleteMultiple"
+msgstr "Ihre markierten Suchanfragen wurden erfolgreich gelöscht."
+
+msgid "successBlacklistRefresh"
+msgstr "Die Blacklist wurde erfolgreich aktualisiert."
+
+msgid "successSearchMapDelete"
+msgstr "Das Mapping %s wurde erfolgreich gelöscht."
+
+msgid "errorSearchMapNotFound"
+msgstr "Es wurde kein Mapping mit der ID %s gefunden."
+
+msgid "errorAtLeastOneSearchMap"
+msgstr "Bitte wählen Sie mindestens ein Mapping aus."

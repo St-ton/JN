@@ -57,15 +57,15 @@ if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
         $hinweis  = '';
         while ($data = fgetcsv($file, 2000, $delimiter, '"')) {
             if ($row === 0) {
-                $hinweis .= 'Checke Kopfzeile ...';
+                $hinweis .= __('checkHead');
                 $fmt      = checkformat($data, $format);
                 if ($fmt === -1) {
-                    $hinweis .= ' - Format nicht erkannt!';
+                    $hinweis .= __('errorFormatNotFound');
                     break;
                 }
-                $hinweis .= '<br><br>Importiere...<br>';
+                $hinweis .= '<br /><br />' . __('importPending') . '<br />';
             } else {
-                $hinweis .= '<br>Zeile ' . $row . ': ' . processImport($fmt, $data);
+                $hinweis .= '<br />' . __('row') . $row . ': ' . processImport($fmt, $data);
             }
 
             $row++;
@@ -153,20 +153,20 @@ function processImport($fmt, $data)
         }
     }
     if (StringHandler::filterEmailAddress($kunde->cMail) === false) {
-        return 'keine gültige Email ($kunde->cMail) ! Übergehe diesen Datensatz.';
+        return __('errorInvalidEmail');
     }
     if ((int)$_POST['PasswortGenerieren'] !== 1
         && (!$kunde->cPasswort || $kunde->cPasswort === 'd41d8cd98f00b204e9800998ecf8427e')
     ) {
-        return 'kein Passwort! Übergehe diesen Datensatz. (Kann unregstrierter JTL Shop Kunde sein)';
+        return __('errorNoPassword');
     }
     if (!$kunde->cNachname) {
-        return 'kein Nachname! Übergehe diesen Datensatz.';
+        return __('errorNoSurname');
     }
 
     $old_mail = Shop::Container()->getDB()->select('tkunde', 'cMail', $kunde->cMail);
     if (isset($old_mail->kKunde) && $old_mail->kKunde > 0) {
-        return 'Kunde mit dieser Emailadresse bereits vorhanden: ' . $kunde->cMail . '! Übergehe Datensatz.';
+        return sprintf(__('errorEmailDuplicate'), $kunde->cMail);
     }
     if ($kunde->cAnrede === 'f' || strtolower($kunde->cAnrede) === 'frau') {
         $kunde->cAnrede = 'w';
@@ -219,8 +219,8 @@ function processImport($fmt, $data)
             sendeMail(MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj);
         }
 
-        return 'Datensatz OK. Importiere: ' . $kunde->cVorname . ' ' . $kunde->cNachname;
+        return __('importRecord') . $kunde->cVorname . ' ' . $kunde->cNachname;
     }
 
-    return 'Fehler beim Import dieser Zeile! Bitte in ShopRoot/logs/ nachschauen!';
+    return __('errorImportRecord');
 }

@@ -48,8 +48,11 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $bestSellerSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($bestSellerSeo));
 
         if ($bestSellerSeo !== $_POST['bestseller']) {
-            $cHinweis .= 'Das BestSeller Seo "' . StringHandler::filterXSS($_POST['bestseller']) .
-                '" war bereits vorhanden und wurde in "' . $bestSellerSeo . '" umbenannt.<br />';
+            $cHinweis .= sprintf(
+                __('errorExistRename'),
+                StringHandler::filterXSS($_POST['bestseller']),
+                $bestSellerSeo
+            ) . '<br />';
         }
         $oBestSeller       = new stdClass();
         $oBestSeller->kKey = SEARCHSPECIALS_BESTSELLER;
@@ -68,8 +71,11 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $specialOffersSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($specialOffersSeo));
 
         if ($specialOffersSeo !== $_POST['sonderangebote']) {
-            $cHinweis .= 'Das Sonderangebot Seo "' . StringHandler::filterXSS($_POST['sonderangebote']) .
-                '" war bereits vorhanden und wurde auf "' . $specialOffersSeo . '" umbenannt.<br />';
+            $cHinweis .= sprintf(
+                __('errorSpecialExistRename'),
+                StringHandler::filterXSS($_POST['sonderangebote']),
+                $specialOffersSeo
+            ) . '<br />';
         }
         $specialOffer       = new stdClass();
         $specialOffer->kKey = SEARCHSPECIALS_SPECIALOFFERS;
@@ -89,8 +95,11 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $newProductsSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($newProductsSeo));
 
         if ($newProductsSeo !== $_POST['neu_im_sortiment']) {
-            $cHinweis .= 'Das Neu im Sortiment Seo "' . StringHandler::filterXSS($_POST['neu_im_sortiment']) .
-                '" war bereits vorhanden und wurde auf "' . $newProductsSeo . '" umbenannt.<br />';
+            $cHinweis .= sprintf(
+                __('errorNewExistRename'),
+                StringHandler::filterXSS($_POST['neu_im_sortiment']),
+                $newProductsSeo
+            ) . '<br />';
         }
         $newProducts       = new stdClass();
         $newProducts->kKey = SEARCHSPECIALS_NEWPRODUCTS;
@@ -110,8 +119,11 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $topOffersSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($topOffersSeo));
 
         if ($topOffersSeo !== $_POST['top_angebote']) {
-            $cHinweis .= 'Das Top Angebote Seo "' . StringHandler::filterXSS($_POST['top_angebote']) .
-                '" war bereits vorhanden und wurde auf "' . $topOffersSeo . '" umbenannt.<br />';
+            $cHinweis .= sprintf(
+                __('errorTopProductsExistRename'),
+                StringHandler::filterXSS($_POST['top_angebote']),
+                $topOffersSeo
+            ) . '<br />';
         }
         $topOffers       = new stdClass();
         $topOffers->kKey = SEARCHSPECIALS_TOPOFFERS;
@@ -130,9 +142,11 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
     )) {
         $releaseSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($releaseSeo));
         if ($releaseSeo !== $_POST['in_kuerze_verfuegbar']) {
-            $cHinweis .= 'Das In kürze Verfügbar Seo "' .
-                StringHandler::filterXSS($_POST['in_kuerze_verfuegbar']) .
-                '" war bereits vorhanden und wurde auf "' . $releaseSeo . '" umbenannt.<br />';
+            $cHinweis .= sprintf(
+                __('errorSoonExistRename'),
+                StringHandler::filterXSS($_POST['in_kuerze_verfuegbar']),
+                $releaseSeo
+            ) . '<br />';
         }
         $release       = new stdClass();
         $release->kKey = SEARCHSPECIALS_UPCOMINGPRODUCTS;
@@ -152,9 +166,11 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $topRatedSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($topRatedSeo));
 
         if ($topRatedSeo !== $_POST['top_bewertet']) {
-            $cHinweis .= 'Das In kürze Verfügbar Seo "' .
-                StringHandler::filterXSS($_POST['top_bewertet']) .
-                '" war bereits vorhanden und wurde auf "' . $topRatedSeo . '" umbenannt.<br />';
+            $cHinweis .= sprintf(
+                __('errorTopRatingExistRename'),
+                StringHandler::filterXSS($_POST['top_bewertet']),
+                $topRatedSeo
+            ) . '<br />';
         }
         $topRated       = new stdClass();
         $topRated->kKey = SEARCHSPECIALS_TOPREVIEWS;
@@ -198,7 +214,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         );
     }
 
-    $cHinweis .= 'Ihre Seos wurden erfolgreich gespeichert bzw. aktualisiert.<br />';
+    $cHinweis .= __('successSeoSave') . '<br />';
 }
 
 $ssSeoData      = Shop::Container()->getDB()->selectAll(

@@ -46,7 +46,7 @@ if (!empty($_POST['action']) && !empty($_POST['check'])) {
 }
 
 if (empty($dbFileStruct)) {
-    $cFehler = 'Fehler beim Lesen der Struktur-Datei.';
+    $cFehler = __('errorReadStructureFile');
 }
 
 if (strlen($cFehler) === 0) {
@@ -54,12 +54,12 @@ if (strlen($cFehler) === 0) {
 }
 
 if (count($dbErrors) > 0) {
-    $cEngineError = array_filter($dbErrors, function ($item) {
-        return strpos($item, 'keine InnoDB-Tabelle') !== false
-            || strpos($item, 'falsche Kollation') !== false
-            || strpos($item, 'Datentyp text in Spalte') !== false;
+    $engineErrors = array_filter($dbErrors, function ($item) {
+        return strpos($item, __('errorNoInnoTable')) !== false
+            || strpos($item, __('errorWrongCollation')) !== false
+            || strpos($item, __('errorDatatTypeInRow')) !== false;
     });
-    if (count($cEngineError) > 5) {
+    if (count($engineErrors) > 5) {
         $engineUpdate    = determineEngineUpdate($dbStruct);
         $fulltextIndizes = DBMigrationHelper::getFulltextIndizes();
     }

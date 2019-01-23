@@ -312,17 +312,6 @@ class Cart
      */
     public static function checkAdditions(): bool
     {
-        // prg
-        if (isset($_SESSION['bWarenkorbHinzugefuegt'], $_SESSION['bWarenkorbAnzahl'])) {
-            if (isset($_POST['a'])) {
-                require_once \PFAD_ROOT . \PFAD_INCLUDES . 'artikel_inc.php';
-            }
-            Shop::Smarty()
-                ->assign('bWarenkorbHinzugefuegt', $_SESSION['bWarenkorbHinzugefuegt'])
-                ->assign('bWarenkorbAnzahl', $_SESSION['bWarenkorbAnzahl'])
-                ->assign('Xselling', isset($_POST['a']) ? Product::getXSelling($_POST['a']) : null);
-            unset($_SESSION['bWarenkorbAnzahl'], $_SESSION['bWarenkorbHinzugefuegt']);
-        }
         $fAnzahl = 0;
         if (isset($_POST['anzahl'])) {
             $_POST['anzahl'] = \str_replace(',', '.', $_POST['anzahl']);

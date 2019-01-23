@@ -586,7 +586,7 @@ class Wunschliste
                 $this->delWunschlistePosSess($wlPosition->kArtikel);
             }
         }
-        $hinweis .= 'sgf'.implode(', ', $cArtikel_arr);
+        $hinweis .= implode(', ', $cArtikel_arr);
         Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $hinweis, 'wlNote');
 
         return $hinweis;

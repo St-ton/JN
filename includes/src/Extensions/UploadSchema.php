@@ -6,6 +6,8 @@
 
 namespace Extensions;
 
+use DB\ReturnType;
+
 /**
  * Class UploadSchema
  *
@@ -90,7 +92,7 @@ final class UploadSchema
                 'lid' => \Shop::getLanguageID(),
                 'uid' => $kUploadSchema
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         if (isset($upload->kUploadSchema) && (int)$upload->kUploadSchema > 0) {
@@ -152,7 +154,7 @@ final class UploadSchema
                     AND tuploadschemasprache.kSprache = :lid
                 WHERE nTyp = :tpe' . $cSql,
             ['tpe' => $type, 'lid' => \Shop::getLanguage()],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
     }
 
@@ -163,10 +165,10 @@ final class UploadSchema
      */
     private static function copyMembers($objFrom, &$objTo = null)
     {
-        if (!is_object($objTo)) {
+        if (!\is_object($objTo)) {
             $objTo = new \stdClass();
         }
-        foreach (array_keys(get_object_vars($objFrom)) as $member) {
+        foreach (\array_keys(\get_object_vars($objFrom)) as $member) {
             $objTo->$member = $objFrom->$member;
         }
 

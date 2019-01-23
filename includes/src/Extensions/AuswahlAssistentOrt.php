@@ -6,6 +6,8 @@
 
 namespace Extensions;
 
+use DB\ReturnType;
+
 /**
  * Class AuswahlAssistentOrt
  *
@@ -79,14 +81,14 @@ class AuswahlAssistentOrt
                 $locationID
             );
             if (isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0) {
-                foreach (array_keys(get_object_vars($oOrt)) as $member) {
+                foreach (\array_keys(\get_object_vars($oOrt)) as $member) {
                     $this->$member = $oOrt->$member;
                 }
                 $this->kAuswahlAssistentGruppe = (int)$this->kAuswahlAssistentGruppe;
                 $this->kAuswahlAssistentOrt    = (int)$this->kAuswahlAssistentOrt;
                 $this->kKey                    = (int)$this->kKey;
                 switch ($this->cKey) {
-                    case AUSWAHLASSISTENT_ORT_KATEGORIE:
+                    case \AUSWAHLASSISTENT_ORT_KATEGORIE:
                         if ($backend) {
                             unset($_SESSION['oKategorie_arr'], $_SESSION['oKategorie_arr_new']);
                         }
@@ -98,7 +100,7 @@ class AuswahlAssistentOrt
                         $this->cOrt = $oKategorie->cName . '(Kategorie)';
                         break;
 
-                    case AUSWAHLASSISTENT_ORT_LINK:
+                    case \AUSWAHLASSISTENT_ORT_LINK:
                         $oSprache   = \Shop::Container()->getDB()->select(
                             'tsprache',
                             'kSprache',
@@ -118,7 +120,7 @@ class AuswahlAssistentOrt
                         $this->cOrt = isset($oLink->cName) ? ($oLink->cName . '(CMS)') : null;
                         break;
 
-                    case AUSWAHLASSISTENT_ORT_STARTSEITE:
+                    case \AUSWAHLASSISTENT_ORT_STARTSEITE:
                         $this->cOrt = 'Startseite';
                         break;
                 }
@@ -134,7 +136,6 @@ class AuswahlAssistentOrt
     public static function saveLocation(array $params, int $groupID): bool
     {
         if ($groupID > 0 && \is_array($params) && \count($params) > 0) {
-            // Kategorie
             if (isset($params['cKategorie']) && \strlen($params['cKategorie']) > 0) {
                 foreach (\explode(';', $params['cKategorie']) as $cKategorie) {
                     if ((int)$cKategorie > 0 && \strlen($cKategorie) > 0) {
@@ -147,7 +148,6 @@ class AuswahlAssistentOrt
                     }
                 }
             }
-            // Spezialseite
             if (isset($params['kLink_arr']) && \is_array($params['kLink_arr']) && \count($params['kLink_arr']) > 0) {
                 foreach ($params['kLink_arr'] as $kLink) {
                     if ((int)$kLink > 0) {
@@ -160,7 +160,6 @@ class AuswahlAssistentOrt
                     }
                 }
             }
-            // Startseite
             if (isset($params['nStartseite']) && (int)$params['nStartseite'] === 1) {
                 $ins                          = new \stdClass();
                 $ins->kAuswahlAssistentGruppe = $groupID;
@@ -300,7 +299,7 @@ class AuswahlAssistentOrt
                 'catID'  => $kKategorie,
                 'langID' => $kSprache
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return isset($item->kAuswahlAssistentOrt) && $item->kAuswahlAssistentOrt > 0;
@@ -333,7 +332,7 @@ class AuswahlAssistentOrt
                 'keyID'  => \AUSWAHLASSISTENT_ORT_LINK,
                 'linkID' => $kLink
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0;
@@ -361,7 +360,7 @@ class AuswahlAssistentOrt
                 WHERE o.cKey = :keyID' . $locationSQL . '
                     AND o.kKey = 1',
             ['langID' => $kSprache, 'keyID' => \AUSWAHLASSISTENT_ORT_STARTSEITE],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return isset($item->kAuswahlAssistentOrt) && $item->kAuswahlAssistentOrt > 0;
@@ -390,7 +389,7 @@ class AuswahlAssistentOrt
                     'keyID'  => $cKey,
                     'kkey'   => $kKey
                 ],
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
 
             if (isset($item->kAuswahlAssistentOrt) && $item->kAuswahlAssistentOrt > 0) {

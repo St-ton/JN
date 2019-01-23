@@ -6,6 +6,7 @@
 
 namespace Extensions;
 
+use DB\ReturnType;
 use Helpers\Cart;
 
 /**
@@ -78,7 +79,7 @@ class Konfigurator
                  FROM tartikelkonfiggruppe
                  WHERE tartikelkonfiggruppe.kArtikel = ' . $kArtikel . '
                  ORDER BY tartikelkonfiggruppe.nSort ASC',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
 
         return \is_array($groups) && \count($groups) > 0;

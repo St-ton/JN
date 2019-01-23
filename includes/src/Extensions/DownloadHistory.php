@@ -6,6 +6,8 @@
 
 namespace Extensions;
 
+use DB\ReturnType;
+
 /**
  * Class DownloadHistory
  *
@@ -67,7 +69,7 @@ class DownloadHistory
             $kDownloadHistory
         );
         if ($history !== null && (int)$history->kDownloadHistory > 0) {
-            $members = \array_keys(get_object_vars($history));
+            $members = \array_keys(\get_object_vars($history));
             if (\is_array($members) && \count($members) > 0) {
                 foreach ($members as $member) {
                     $this->$member = $history->$member;
@@ -87,7 +89,7 @@ class DownloadHistory
      */
     public static function getHistorys(int $kDownload): array
     {
-        trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
 
         return self::getHistory($kDownload);
     }
@@ -134,7 +136,7 @@ class DownloadHistory
                      FROM tdownloadhistory
                      WHERE ' . $cSQLWhere . '
                      ORDER BY dErstellt DESC',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($data as $item) {
                 if (!isset($history[$item->kDownload])
@@ -275,7 +277,7 @@ class DownloadHistory
     /**
      * @return string|null
      */
-    public function getErstellt()
+    public function getErstellt(): ?string
     {
         return $this->dErstellt;
     }

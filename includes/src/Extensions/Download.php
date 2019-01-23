@@ -6,6 +6,8 @@
 
 namespace Extensions;
 
+use DB\ReturnType;
+
 /**
  * Class Download
  *
@@ -120,40 +122,35 @@ class Download
     }
 
     /**
-     * @param int  $kDownload
-     * @param int  $kSprache
-     * @param bool $bInfo
-     * @param int  $kBestellung
+     * @param int  $id
+     * @param int  $languageID
+     * @param bool $info
+     * @param int  $orderID
      */
-    private function loadFromDB(int $kDownload, int $kSprache, bool $bInfo, int $kBestellung)
+    private function loadFromDB(int $id, int $languageID, bool $info, int $orderID): void
     {
-        $oDownload = \Shop::Container()->getDB()->select('tdownload', 'kDownload', $kDownload);
-        if ($oDownload !== null && isset($oDownload->kDownload) && (int)$oDownload->kDownload > 0) {
-            $members = \array_keys(\get_object_vars($oDownload));
-            if (\is_array($members) && \count($members) > 0) {
-                foreach ($members as &$member) {
-                    $this->$member = $oDownload->$member;
-                }
-                unset($member);
-                $this->kBestellung = (int)$this->kBestellung;
-                $this->nAnzahl     = (int)$this->nAnzahl;
-                $this->nTage       = (int)$this->nTage;
-                $this->nSort       = (int)$this->nSort;
+        $item = \Shop::Container()->getDB()->select('tdownload', 'kDownload', $id);
+        if ($item !== null && isset($item->kDownload) && (int)$item->kDownload > 0) {
+            foreach (\array_keys(\get_object_vars($item)) as $member) {
+                $this->$member = $item->$member;
             }
-            if ($bInfo) {
-                if (!$kSprache) {
-                    $kSprache = \Shop::getLanguageID();
+            $this->kDownload = (int)$this->kDownload;
+            $this->nAnzahl   = (int)$this->nAnzahl;
+            $this->nTage     = (int)$this->nTage;
+            $this->nSort     = (int)$this->nSort;
+            if ($info) {
+                if (!$languageID) {
+                    $languageID = \Shop::getLanguageID();
                 }
-                $this->oDownloadSprache = new DownloadSprache($oDownload->kDownload, $kSprache);
-                // History
-                $this->oDownloadHistory_arr = DownloadHistory::getHistory($oDownload->kDownload);
+                $this->oDownloadSprache     = new DownloadSprache($item->kDownload, $languageID);
+                $this->oDownloadHistory_arr = DownloadHistory::getHistory($item->kDownload);
             }
-            if ($kBestellung > 0) {
-                $this->kBestellung = $kBestellung;
-                $oBestellung       = \Shop::Container()->getDB()->select(
+            if ($orderID > 0) {
+                $this->kBestellung = $orderID;
+                $order             = \Shop::Container()->getDB()->select(
                     'tbestellung',
                     'kBestellung',
-                    $kBestellung,
+                    $orderID,
                     null,
                     null,
                     null,
@@ -161,12 +158,12 @@ class Download
                     false,
                     'kBestellung, dBezahltDatum'
                 );
-                if ($oBestellung !== null
-                    && $oBestellung->kBestellung > 0
-                    && $oBestellung->dBezahltDatum !== null
+                if ($order !== null
+                    && $order->kBestellung > 0
+                    && $order->dBezahltDatum !== null
                     && $this->getTage() > 0
                 ) {
-                    $paymentDate = new \DateTime($oBestellung->dBezahltDatum);
+                    $paymentDate = new \DateTime($order->dBezahltDatum);
                     $modifyBy    = $this->getTage() + 1;
                     $paymentDate->modify('+' . $modifyBy . ' day');
                     $this->dGueltigBis = $paymentDate->format('d.m.Y');
@@ -180,7 +177,7 @@ class Download
                     WHERE tartikeldownload.kDownload = :dlid
                     ORDER BY tdownload.nSort',
                 ['dlid' => $this->kDownload],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
         }
     }
@@ -241,22 +238,22 @@ class Download
                     ON tdownloadhistory.kDownload = tdownload.kDownload
                 WHERE tdownload.kDownload = :dlid',
             ['dlid' => $this->kDownload],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
     }
 
     /**
-     * @param array $kKey_arr
-     * @param int   $kSprache
+     * @param array $keys
+     * @param int   $languageID
      * @return array
      */
-    public static function getDownloads($kKey_arr = [], int $kSprache = 0): array
+    public static function getDownloads($keys = [], int $languageID = 0): array
     {
-        $kArtikel    = isset($kKey_arr['kArtikel']) ? (int)$kKey_arr['kArtikel'] : 0;
-        $kBestellung = isset($kKey_arr['kBestellung']) ? (int)$kKey_arr['kBestellung'] : 0;
-        $kKunde      = isset($kKey_arr['kKunde']) ? (int)$kKey_arr['kKunde'] : 0;
+        $kArtikel    = isset($keys['kArtikel']) ? (int)$keys['kArtikel'] : 0;
+        $kBestellung = isset($keys['kBestellung']) ? (int)$keys['kBestellung'] : 0;
+        $kKunde      = isset($keys['kKunde']) ? (int)$keys['kKunde'] : 0;
         $downloads   = [];
-        if (($kArtikel > 0 || $kBestellung > 0 || $kKunde > 0) && $kSprache > 0 && self::checkLicense()) {
+        if (($kArtikel > 0 || $kBestellung > 0 || $kKunde > 0) && $languageID > 0 && self::checkLicense()) {
             $cSQLSelect = 'tartikeldownload.kDownload';
             $cSQLWhere  = 'kArtikel = ' . $kArtikel;
             $cSQLJoin   = 'LEFT JOIN tdownload ON tartikeldownload.kDownload = tdownload.kDownload';
@@ -283,13 +280,13 @@ class Download
                     WHERE ' . $cSQLWhere . '
                     GROUP BY tartikeldownload.kDownload
                     ORDER BY tdownload.nSort, tdownload.dErstellt DESC',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($items as $i => &$download) {
-                $download->kDownload  = (int)$download->kDownload;
-                $downloads[$i] = new self(
+                $download->kDownload = (int)$download->kDownload;
+                $downloads[$i]       = new self(
                     $download->kDownload,
-                    $kSprache,
+                    $languageID,
                     true,
                     (int)($download->kBestellung ?? 0)
                 );
@@ -297,12 +294,12 @@ class Download
                     $download->kKunde      = (int)$download->kKunde;
                     $download->kBestellung = (int)$download->kBestellung;
 
-                    $history                        = DownloadHistory::getOrderHistory(
+                    $history                    = DownloadHistory::getOrderHistory(
                         $download->kKunde,
                         $download->kBestellung
                     );
-                    $kDownload                      = $downloads[$i]->getDownload();
-                    $count                          = isset($history[$kDownload])
+                    $kDownload                  = $downloads[$i]->getDownload();
+                    $count                      = isset($history[$kDownload])
                         ? \count($history[$kDownload])
                         : 0;
                     $downloads[$i]->cLimit      = $count . ' / ' . $downloads[$i]->getAnzahl();
@@ -321,7 +318,7 @@ class Download
     public static function hasDownloads($cart): bool
     {
         foreach ($cart->PositionenArr as $oPosition) {
-            if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+            if ($oPosition->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
                 && isset($oPosition->Artikel->oDownload_arr)
                 && \count($oPosition->Artikel->oDownload_arr) > 0
             ) {
@@ -557,7 +554,7 @@ class Download
     /**
      * @return int|null
      */
-    public function getDownload()
+    public function getDownload(): ?int
     {
         return $this->kDownload;
     }
@@ -565,7 +562,7 @@ class Download
     /**
      * @return string|null
      */
-    public function getID()
+    public function getID(): ?string
     {
         return $this->cID;
     }
@@ -573,7 +570,7 @@ class Download
     /**
      * @return string|null
      */
-    public function getPfad()
+    public function getPfad(): ?string
     {
         return $this->cPfad;
     }
@@ -708,7 +705,7 @@ class Download
      * @param string $filename
      * @param string $mimetype
      */
-    private static function send_file_to_browser(string $filename, string $mimetype)
+    private static function send_file_to_browser(string $filename, string $mimetype): void
     {
         $browser   = 'other';
         $userAgent = !empty($_SERVER['HTTP_USER_AGENT'])

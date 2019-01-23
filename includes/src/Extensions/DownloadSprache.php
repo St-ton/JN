@@ -169,7 +169,7 @@ class DownloadSprache
     /**
      * @return string|null
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->cName;
     }
@@ -177,7 +177,7 @@ class DownloadSprache
     /**
      * @return string|null
      */
-    public function getBeschreibung()
+    public function getBeschreibung(): ?string
     {
         return $this->cBeschreibung;
     }

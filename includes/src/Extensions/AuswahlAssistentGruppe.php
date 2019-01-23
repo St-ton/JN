@@ -6,6 +6,7 @@
 
 namespace Extensions;
 
+use DB\ReturnType;
 use Helpers\GeneralObject;
 
 /**
@@ -94,16 +95,15 @@ class AuswahlAssistentGruppe
                     WHERE kAuswahlAssistentGruppe = :groupID' .
                 $activeSQL,
                 ['groupID' => $groupID],
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
             if (isset($group->kAuswahlAssistentGruppe) && $group->kAuswahlAssistentGruppe > 0) {
-                foreach (array_keys(get_object_vars($group)) as $member) {
+                foreach (\array_keys(\get_object_vars($group)) as $member) {
                     $this->$member = $group->$member;
                 }
-                $this->kAuswahlAssistentGruppe = (int)$this->kAuswahlAssistentGruppe;
-                $this->kSprache                = (int)$this->kSprache;
-                $this->nAktiv                  = (int)$this->nAktiv;
-                // Fragen
+                $this->kAuswahlAssistentGruppe    = (int)$this->kAuswahlAssistentGruppe;
+                $this->kSprache                   = (int)$this->kSprache;
+                $this->nAktiv                     = (int)$this->nAktiv;
                 $this->oAuswahlAssistentFrage_arr = AuswahlAssistentFrage::getQuestions(
                     $group->kAuswahlAssistentGruppe,
                     $activeOnly
@@ -115,11 +115,9 @@ class AuswahlAssistentGruppe
                 );
                 $this->oAuswahlAssistentOrt_arr   = $oAuswahlAssistentOrt->oOrt_arr;
                 foreach ($this->oAuswahlAssistentOrt_arr as $oAuswahlAssistentOrt) {
-                    // Kategorien
                     if ($oAuswahlAssistentOrt->cKey === \AUSWAHLASSISTENT_ORT_KATEGORIE) {
                         $this->cKategorie .= $oAuswahlAssistentOrt->kKey . ';';
                     }
-                    // Startseite
                     if ($oAuswahlAssistentOrt->cKey === \AUSWAHLASSISTENT_ORT_STARTSEITE) {
                         $this->nStartseite = 1;
                     }
@@ -129,7 +127,7 @@ class AuswahlAssistentGruppe
                         FROM tsprache 
                         WHERE kSprache = :langID',
                     ['langID' => (int)$this->kSprache],
-                    \DB\ReturnType::SINGLE_OBJECT
+                    ReturnType::SINGLE_OBJECT
                 );
                 $this->cSprache = $language->cNameDeutsch;
             }
@@ -156,7 +154,7 @@ class AuswahlAssistentGruppe
                 FROM tauswahlassistentgruppe
                 WHERE kSprache = :langID' . $activeSQL,
             ['langID' => $langID],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($groupData as $oGruppeTMP) {
             $groups[] = new self($oGruppeTMP->kAuswahlAssistentGruppe, $active, $activeOnly, $backend);
@@ -172,8 +170,8 @@ class AuswahlAssistentGruppe
      */
     public function saveGroup(array $params, bool $primary = false)
     {
-        $cPlausi_arr = $this->checkGroup($params);
-        if (\count($cPlausi_arr) === 0) {
+        $checks = $this->checkGroup($params);
+        if (\count($checks) === 0) {
             $oObj = GeneralObject::copyMembers($this);
 
             $this->nAktiv                  = (int)$this->nAktiv;
@@ -197,7 +195,7 @@ class AuswahlAssistentGruppe
             return false;
         }
 
-        return $cPlausi_arr;
+        return $checks;
     }
 
     /**
@@ -252,18 +250,18 @@ class AuswahlAssistentGruppe
     }
 
     /**
-     * @param array $cParam_arr
+     * @param array $params
      * @return bool
      */
-    public static function deleteGroup(array $cParam_arr): bool
+    public static function deleteGroup(array $params): bool
     {
-        if (!isset($cParam_arr['kAuswahlAssistentGruppe_arr'])
-            || !\is_array($cParam_arr['kAuswahlAssistentGruppe_arr'])
-            || \count($cParam_arr['kAuswahlAssistentGruppe_arr']) === 0
+        if (!isset($params['kAuswahlAssistentGruppe_arr'])
+            || !\is_array($params['kAuswahlAssistentGruppe_arr'])
+            || \count($params['kAuswahlAssistentGruppe_arr']) === 0
         ) {
             return false;
         }
-        foreach ($cParam_arr['kAuswahlAssistentGruppe_arr'] as $groupID) {
+        foreach ($params['kAuswahlAssistentGruppe_arr'] as $groupID) {
             \Shop::Container()->getDB()->queryPrepared(
                 'DELETE tag, taf, tao
                     FROM tauswahlassistentgruppe tag
@@ -273,7 +271,7 @@ class AuswahlAssistentGruppe
                         ON tao.kAuswahlAssistentGruppe = tag.kAuswahlAssistentGruppe
                     WHERE tag.kAuswahlAssistentGruppe = :groupID',
                 ['groupID' => (int)$groupID],
-                \DB\ReturnType::AFFECTED_ROWS
+                ReturnType::AFFECTED_ROWS
             );
         }
 
@@ -287,15 +285,15 @@ class AuswahlAssistentGruppe
     public static function getLanguage(int $groupID): int
     {
         if ($groupID > 0) {
-            $oGruppe = \Shop::Container()->getDB()->queryPrepared(
+            $group = \Shop::Container()->getDB()->queryPrepared(
                 'SELECT kSprache
                     FROM tauswahlassistentgruppe
                     WHERE kAuswahlAssistentGruppe = :groupID',
                 ['groupID' => $groupID],
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
-            if (isset($oGruppe->kSprache) && $oGruppe->kSprache > 0) {
-                return (int)$oGruppe->kSprache;
+            if (isset($group->kSprache) && $group->kSprache > 0) {
+                return (int)$group->kSprache;
             }
         }
 

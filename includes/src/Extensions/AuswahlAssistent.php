@@ -6,6 +6,10 @@
 
 namespace Extensions;
 
+use DB\ReturnType;
+use Filter\ProductFilter;
+use Filter\SearchResults;
+
 /**
  * Class AuswahlAssistent
  *
@@ -130,7 +134,7 @@ class AuswahlAssistent
                 'kkey'     => $kKey,
                 'ksprache' => $kSprache
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         if ($item !== null && $item !== false) {
@@ -151,7 +155,7 @@ class AuswahlAssistent
                 ($bOnlyActive ? ' AND nAktiv = 1 ' : ' ') .
                 'ORDER BY nSort',
                 ['groupID' => $this->kAuswahlAssistentGruppe],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
 
             $this->questions = [];
@@ -184,9 +188,8 @@ class AuswahlAssistent
     public function filter(): self
     {
         $params = [];
-        if ($this->cKey === AUSWAHLASSISTENT_ORT_KATEGORIE) {
+        if ($this->cKey === \AUSWAHLASSISTENT_ORT_KATEGORIE) {
             $params['kKategorie'] = $this->kKey;
-
             if (\count($this->selections) > 0) {
                 $params['MerkmalFilter_arr'] = $this->selections;
             }
@@ -200,7 +203,7 @@ class AuswahlAssistent
         $AktuelleKategorie = isset($params['kKategorie'])
             ? new \Kategorie($params['kKategorie'])
             : null;
-        $attributeFilters  = (new \Filter\SearchResults())->setFilterOptions(
+        $attributeFilters  = (new SearchResults())->setFilterOptions(
             $productFilter,
             $AktuelleKategorie,
             true
@@ -294,13 +297,13 @@ class AuswahlAssistent
      * @param int $nFrage
      * @return AuswahlAssistentFrage|null
      */
-    public function getQuestion(int $nFrage)
+    public function getQuestion(int $nFrage): ?AuswahlAssistentFrage
     {
         return $this->questions[$nFrage] ?? null;
     }
 
     /**
-     * @return array
+     * @return AuswahlAssistentFrage[]
      */
     public function getQuestions(): array
     {
@@ -344,9 +347,9 @@ class AuswahlAssistent
     }
 
     /**
-     * @return \Filter\ProductFilter
+     * @return ProductFilter
      */
-    public function getNaviFilter(): \Filter\ProductFilter
+    public function getNaviFilter(): ProductFilter
     {
         return $this->productFilter;
     }
@@ -356,10 +359,10 @@ class AuswahlAssistent
      */
     public function getLastSelectedValue()
     {
-        $oFrage         = \end($this->questions);
-        $kSelectedValue = \end($this->selections);
+        $question      = \end($this->questions);
+        $selectedValue = \end($this->selections);
 
-        return $oFrage->oWert_assoc[$kSelectedValue] ?? null;
+        return $question->oWert_assoc[$selectedValue] ?? null;
     }
 
     /**
@@ -385,7 +388,7 @@ class AuswahlAssistent
      * @param string                     $cKey
      * @param int                        $kKey
      * @param int                        $kSprache
-     * @param \Smarty\JTLSmarty           $smarty
+     * @param \Smarty\JTLSmarty          $smarty
      * @param array                      $selected
      * @param \Filter\ProductFilter|null $pf
      * @return self|null

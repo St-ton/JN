@@ -77,7 +77,7 @@ final class Upload
     {
         $uploads = [];
         foreach ($cart->PositionenArr as $position) {
-            if ($position->nPosTyp !== C_WARENKORBPOS_TYP_ARTIKEL || empty($position->Artikel->kArtikel)) {
+            if ($position->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL || empty($position->Artikel->kArtikel)) {
                 continue;
             }
             $eigenschaftArr = [];
@@ -108,7 +108,7 @@ final class Upload
      */
     public static function gibBestellungUploads(int $kBestellung): array
     {
-        return UploadDatei::fetchAll($kBestellung, UPLOAD_TYP_BESTELLUNG);
+        return UploadDatei::fetchAll($kBestellung, \UPLOAD_TYP_BESTELLUNG);
     }
 
     /**

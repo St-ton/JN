@@ -6,6 +6,8 @@
 
 namespace Extensions;
 
+use Session\Frontend;
+
 /**
  * Class Konfigitempreis
  *
@@ -13,6 +15,10 @@ namespace Extensions;
  */
 class Konfigitempreis
 {
+    public const PRICE_TYPE_PERCENTAGE = 1;
+
+    public const PRICE_TYPE_SUM = 0;
+
     /**
      * @var int
      */
@@ -62,7 +68,7 @@ class Konfigitempreis
      * @param int $kKonfigitem
      * @param int $kKundengruppe
      */
-    private function loadFromDB(int $kKonfigitem = 0, int $kKundengruppe = 0)
+    private function loadFromDB(int $kKonfigitem = 0, int $kKundengruppe = 0): void
     {
         $item = \Shop::Container()->getDB()->select(
             'tkonfigitempreis',
@@ -213,7 +219,7 @@ class Konfigitempreis
     {
         $fPreis = $this->fPreis;
         if ($bConvertCurrency && $fPreis > 0) {
-            $fPreis *= \Session\Frontend::getCurrency()->getConversionFactor();
+            $fPreis *= Frontend::getCurrency()->getConversionFactor();
         }
 
         return $fPreis;
@@ -222,7 +228,7 @@ class Konfigitempreis
     /**
      * @return int|null
      */
-    public function getTyp()
+    public function getTyp(): ?int
     {
         return $this->nTyp;
     }

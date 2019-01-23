@@ -129,7 +129,7 @@ class UploadDatei
         );
         foreach ($files as $upload) {
             $upload->cGroesse   = Upload::formatGroesse($upload->nBytes);
-            $upload->bVorhanden = \is_file(PFAD_UPLOADS . $upload->cPfad);
+            $upload->bVorhanden = \is_file(\PFAD_UPLOADS . $upload->cPfad);
             $upload->bVorschau  = Upload::vorschauTyp($upload->cName);
             $upload->cBildpfad  = \sprintf(
                 '%s/%s?action=preview&secret=%s&sid=%s',

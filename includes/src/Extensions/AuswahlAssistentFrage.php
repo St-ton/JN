@@ -6,6 +6,8 @@
 
 namespace Extensions;
 
+use DB\ReturnType;
+
 /**
  * Class AuswahlAssistentFrage
  *
@@ -92,7 +94,7 @@ class AuswahlAssistentFrage
                             AND ms.kSprache = ag.kSprache
                 WHERE af.kAuswahlAssistentFrage = ' . $questionID .
                     ($activeOnly ? ' AND af.nAktiv = 1' : ''),
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
         if ($oDbResult !== null && $oDbResult !== false) {
             foreach (\get_object_vars($oDbResult) as $name => $value) {
@@ -125,7 +127,7 @@ class AuswahlAssistentFrage
                     WHERE kAuswahlAssistentGruppe = ' . $groupID .
                     $cAktivSQL . '
                     ORDER BY nSort',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($data as $question) {
                 $questions[] = new self((int)$question->kAuswahlAssistentFrage, $activeOnly);
@@ -220,29 +222,24 @@ class AuswahlAssistentFrage
     public function checkQuestion(bool $update = false): array
     {
         $checks = [];
-        // Frage
         if (\strlen($this->cFrage) === 0) {
             $checks['cFrage'] = 1;
         }
-        // Gruppe
         if ($this->kAuswahlAssistentGruppe === null
             || $this->kAuswahlAssistentGruppe === 0
             || $this->kAuswahlAssistentGruppe === -1
         ) {
             $checks['kAuswahlAssistentGruppe'] = 1;
         }
-        // Merkmal
         if ($this->kMerkmal === null || $this->kMerkmal === 0 || $this->kMerkmal === -1) {
             $checks['kMerkmal'] = 1;
         }
         if (!$update && $this->isMerkmalTaken($this->kMerkmal, $this->kAuswahlAssistentGruppe)) {
             $checks['kMerkmal'] = 2;
         }
-        // Sortierung
         if ($this->nSort <= 0) {
             $checks['nSort'] = 1;
         }
-        // Aktiv
         if ($this->nAktiv !== 0 && $this->nAktiv !== 1) {
             $checks['nAktiv'] = 1;
         }

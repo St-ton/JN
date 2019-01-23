@@ -6,6 +6,8 @@
 
 namespace Extensions;
 
+use DB\ReturnType;
+
 /**
  * Class Konfiggruppe
  *
@@ -102,8 +104,8 @@ class Konfiggruppe implements \JsonSerializable
             'nMax'          => (float)$this->nMax,
             'nTyp'          => (int)$this->nTyp,
             'fInitial'      => (float)$this->getInitQuantity(),
-            'bAnzahl'       => $this->getAnzeigeTyp() == \KONFIG_ANZEIGE_TYP_RADIO
-                || $this->getAnzeigeTyp() == \KONFIG_ANZEIGE_TYP_DROPDOWN,
+            'bAnzahl'       => $this->getAnzeigeTyp() === \KONFIG_ANZEIGE_TYP_RADIO
+                || $this->getAnzeigeTyp() === \KONFIG_ANZEIGE_TYP_DROPDOWN,
             'cName'         => $this->oSprache->getName(),
             'cBeschreibung' => $this->oSprache->getBeschreibung(),
             'oItem_arr'     => $this->oItem_arr
@@ -124,7 +126,7 @@ class Konfiggruppe implements \JsonSerializable
     {
         $oObj = \Shop::Container()->getDB()->select('tkonfiggruppe', 'kKonfiggruppe', $kKonfiggruppe);
         if (isset($oObj->kKonfiggruppe) && $oObj->kKonfiggruppe > 0) {
-            foreach (array_keys(get_object_vars($oObj)) as $member) {
+            foreach (\array_keys(\get_object_vars($oObj)) as $member) {
                 $this->$member = $oObj->$member;
             }
             if (!$kSprache) {
@@ -240,7 +242,7 @@ class Konfiggruppe implements \JsonSerializable
     /**
      * @return int|null
      */
-    public function getKonfiggruppe()
+    public function getKonfiggruppe(): ?int
     {
         return $this->kKonfiggruppe;
     }
@@ -248,7 +250,7 @@ class Konfiggruppe implements \JsonSerializable
     /**
      * @return string|null
      */
-    public function getBildPfad()
+    public function getBildPfad(): ?string
     {
         return !empty($this->cBildPfad)
             ? \PFAD_KONFIGURATOR_KLEIN . $this->cBildPfad
@@ -258,7 +260,7 @@ class Konfiggruppe implements \JsonSerializable
     /**
      * @return int|null
      */
-    public function getMin()
+    public function getMin(): ?int
     {
         return $this->nMin;
     }
@@ -266,7 +268,7 @@ class Konfiggruppe implements \JsonSerializable
     /**
      * @return int|null
      */
-    public function getMax()
+    public function getMax(): ?int
     {
         return $this->nMax;
     }
@@ -282,7 +284,7 @@ class Konfiggruppe implements \JsonSerializable
     /**
      * @return int|null
      */
-    public function getAnzeigeTyp()
+    public function getAnzeigeTyp(): ?int
     {
         return $this->nTyp;
     }
@@ -290,7 +292,7 @@ class Konfiggruppe implements \JsonSerializable
     /**
      * @return int|null
      */
-    public function getSort()
+    public function getSort(): ?int
     {
         return $this->nSort;
     }
@@ -298,7 +300,7 @@ class Konfiggruppe implements \JsonSerializable
     /**
      * @return string|null
      */
-    public function getKommentar()
+    public function getKommentar(): ?string
     {
         return $this->cKommentar;
     }
@@ -320,7 +322,7 @@ class Konfiggruppe implements \JsonSerializable
             'SELECT COUNT(*) AS nCount 
                 FROM tkonfigitem 
                 WHERE kKonfiggruppe = ' . (int)$this->kKonfiggruppe,
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         )->nCount;
     }
 

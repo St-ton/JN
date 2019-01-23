@@ -19,7 +19,7 @@ final class CompareList extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        parent::addMapping('cAnzeigen', 'ShowBox');
+        $this->addMapping('cAnzeigen', 'ShowBox');
         $this->setShow(true);
         $productList = [];
         $products    = [];
@@ -35,12 +35,11 @@ final class CompareList extends AbstractBox
                     $extra .= '&' . $param . '=' . $_REQUEST[$param];
                 }
             }
-            $extra = \StringHandler::filterXSS($extra);
-
+            $extra          = \StringHandler::filterXSS($extra);
             $requestURI     = \Shop::getRequestUri();
             $defaultOptions = \Artikel::getDefaultOptions();
             if ($requestURI === 'io.php') {
-                // Box wird von einem Ajax-Call gerendert
+                // render via ajax call
                 $requestURI = \LinkHelper::getInstance()->getStaticRoute('vergleichsliste.php');
             }
             foreach ($productList as $_prod) {

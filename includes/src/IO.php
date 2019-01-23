@@ -40,7 +40,7 @@ class IO
      */
     public static function getInstance()
     {
-        return static::$instance === null ? (static::$instance = new static()) : static::$instance;
+        return static::$instance ?? (static::$instance = new static());
     }
 
     /**
@@ -176,11 +176,7 @@ class IO
      */
     protected function pushFile($filename, $mimetype)
     {
-        $userAgent = '';
-        if (isset($_SERVER['HTTP_USER_AGENT'])) {
-            $userAgent = $_SERVER['HTTP_USER_AGENT'];
-        }
-
+        $userAgent    = $_SERVER['HTTP_USER_AGENT'] ?? '';
         $browserAgent = '';
         if (preg_match('/Opera\/([0-9].[0-9]{1,2})/', $userAgent, $m)) {
             $browserAgent = 'opera';
@@ -188,8 +184,6 @@ class IO
             $browserAgent = 'ie';
         } elseif (preg_match('/OmniWeb\/([0-9].[0-9]{1,2})/', $userAgent, $m)) {
             $browserAgent = 'omniweb';
-        } elseif (preg_match('/Netscape([0-9]{1})/', $userAgent, $m)) {
-            $browserAgent = 'netscape';
         } elseif (preg_match('/Mozilla\/([0-9].[0-9]{1,2})/', $userAgent, $m)) {
             $browserAgent = 'mozilla';
         } elseif (preg_match('/Konqueror\/([0-9].[0-9]{1,2})/', $userAgent, $m)) {

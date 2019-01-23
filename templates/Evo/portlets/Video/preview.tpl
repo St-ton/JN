@@ -9,8 +9,8 @@
                          height: {$instance->getProperty('video-height')}px"
              {/if}>
     {elseif $instance->getProperty('video-vendor') === 'vimeo'}
-        {assign var="imgid" value=$instance->getProperty('video-vim-id')}
-        {assign var="hash" value=unserialize(file_get_contents("http://vimeo.com/api/v2/video/$imgid.php"))}
+        {assign var=imgid value=$instance->getProperty('video-vim-id')}
+        {assign var=hash value=unserialize(file_get_contents("http://vimeo.com/api/v2/video/$imgid.php"))}
         <img src="{$hash[0].thumbnail_large}" alt="Vimeo Video" class="img-responsive"
              {if !empty($instance->getProperty('video-responsive'))}
                 style="width: 100%;"

@@ -10,79 +10,67 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_GLOBAL_META_VIEW', true, true);
 /** @global Smarty\JTLSmarty $smarty */
-$Einstellungen = Shop::getSettings([CONF_METAANGABEN]);
-$chinweis      = '';
-$cfehler       = '';
+$chinweis = '';
+$cfehler  = '';
+$db       = Shop::Container()->getDB();
 setzeSprache();
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form::validateToken()) {
     saveAdminSectionSettings(CONF_METAANGABEN, $_POST);
-
-    $cTitle           = $_POST['Title'];
-    $cMetaDesc        = $_POST['Meta_Description'];
-    $cMetaKeys        = $_POST['Meta_Keywords'];
-    $cMetaDescPraefix = $_POST['Meta_Description_Praefix'];
-    Shop::Container()->getDB()->delete(
+    $title     = $_POST['Title'];
+    $desc      = $_POST['Meta_Description'];
+    $metaKeys  = $_POST['Meta_Keywords'];
+    $metaDescr = $_POST['Meta_Description_Praefix'];
+    $db->delete(
         'tglobalemetaangaben',
         ['kSprache', 'kEinstellungenSektion'],
         [(int)$_SESSION['kSprache'], CONF_METAANGABEN]
     );
-    // Title
-    unset($oGlobaleMetaAngaben);
-    $oGlobaleMetaAngaben                        = new stdClass();
-    $oGlobaleMetaAngaben->kEinstellungenSektion = CONF_METAANGABEN;
-    $oGlobaleMetaAngaben->kSprache              = (int)$_SESSION['kSprache'];
-    $oGlobaleMetaAngaben->cName                 = 'Title';
-    $oGlobaleMetaAngaben->cWertName             = $cTitle;
-    Shop::Container()->getDB()->insert('tglobalemetaangaben', $oGlobaleMetaAngaben);
-    // Meta Description
-    unset($oGlobaleMetaAngaben);
-    $oGlobaleMetaAngaben                        = new stdClass();
-    $oGlobaleMetaAngaben->kEinstellungenSektion = CONF_METAANGABEN;
-    $oGlobaleMetaAngaben->kSprache              = (int)$_SESSION['kSprache'];
-    $oGlobaleMetaAngaben->cName                 = 'Meta_Description';
-    $oGlobaleMetaAngaben->cWertName             = $cMetaDesc;
-    Shop::Container()->getDB()->insert('tglobalemetaangaben', $oGlobaleMetaAngaben);
-    // Meta Keywords
-    unset($oGlobaleMetaAngaben);
-    $oGlobaleMetaAngaben                        = new stdClass();
-    $oGlobaleMetaAngaben->kEinstellungenSektion = CONF_METAANGABEN;
-    $oGlobaleMetaAngaben->kSprache              = (int)$_SESSION['kSprache'];
-    $oGlobaleMetaAngaben->cName                 = 'Meta_Keywords';
-    $oGlobaleMetaAngaben->cWertName             = $cMetaKeys;
-    Shop::Container()->getDB()->insert('tglobalemetaangaben', $oGlobaleMetaAngaben);
-    // Meta Description Präfix
-    unset($oGlobaleMetaAngaben);
-    $oGlobaleMetaAngaben                        = new stdClass();
-    $oGlobaleMetaAngaben->kEinstellungenSektion = CONF_METAANGABEN;
-    $oGlobaleMetaAngaben->kSprache              = (int)$_SESSION['kSprache'];
-    $oGlobaleMetaAngaben->cName                 = 'Meta_Description_Praefix';
-    $oGlobaleMetaAngaben->cWertName             = $cMetaDescPraefix;
-    Shop::Container()->getDB()->insert('tglobalemetaangaben', $oGlobaleMetaAngaben);
-
+    $globalMetaData                        = new stdClass();
+    $globalMetaData->kEinstellungenSektion = CONF_METAANGABEN;
+    $globalMetaData->kSprache              = (int)$_SESSION['kSprache'];
+    $globalMetaData->cName                 = 'Title';
+    $globalMetaData->cWertName             = $title;
+    $db->insert('tglobalemetaangaben', $globalMetaData);
+    $globalMetaData                        = new stdClass();
+    $globalMetaData->kEinstellungenSektion = CONF_METAANGABEN;
+    $globalMetaData->kSprache              = (int)$_SESSION['kSprache'];
+    $globalMetaData->cName                 = 'Meta_Description';
+    $globalMetaData->cWertName             = $desc;
+    $db->insert('tglobalemetaangaben', $globalMetaData);
+    $globalMetaData                        = new stdClass();
+    $globalMetaData->kEinstellungenSektion = CONF_METAANGABEN;
+    $globalMetaData->kSprache              = (int)$_SESSION['kSprache'];
+    $globalMetaData->cName                 = 'Meta_Keywords';
+    $globalMetaData->cWertName             = $metaKeys;
+    $db->insert('tglobalemetaangaben', $globalMetaData);
+    $globalMetaData                        = new stdClass();
+    $globalMetaData->kEinstellungenSektion = CONF_METAANGABEN;
+    $globalMetaData->kSprache              = (int)$_SESSION['kSprache'];
+    $globalMetaData->cName                 = 'Meta_Description_Praefix';
+    $globalMetaData->cWertName             = $metaDescr;
+    $db->insert('tglobalemetaangaben', $globalMetaData);
     $keywords              = new stdClass();
     $keywords->cISOSprache = $_SESSION['cISOSprache'];
     $keywords->cKeywords   = $_POST['keywords'];
-    Shop::Container()->getDB()->delete('texcludekeywords', 'cISOSprache', $keywords->cISOSprache);
-    Shop::Container()->getDB()->insert('texcludekeywords', $keywords);
+    $db->delete('texcludekeywords', 'cISOSprache', $keywords->cISOSprache);
+    $db->insert('texcludekeywords', $keywords);
     Shop::Container()->getCache()->flushAll();
     $chinweis .= __('successConfigSave') . '<br />';
-    unset($oConfig_arr);
 }
 
-$oMetaangaben_arr = Shop::Container()->getDB()->selectAll(
+$excludeKeywords = $db->select('texcludekeywords', 'cISOSprache', $_SESSION['cISOSprache']);
+$meta            = $db->selectAll(
     'tglobalemetaangaben',
     ['kSprache', 'kEinstellungenSektion'],
     [(int)$_SESSION['kSprache'], CONF_METAANGABEN]
 );
-$cTMP_arr         = [];
-foreach ($oMetaangaben_arr as $oMetaangaben) {
-    $cTMP_arr[$oMetaangaben->cName] = $oMetaangaben->cWertName;
+$metaData        = [];
+foreach ($meta as $item) {
+    $metaData[$item->cName] = $item->cWertName;
 }
 
-$excludeKeywords = Shop::Container()->getDB()->select('texcludekeywords', 'cISOSprache', $_SESSION['cISOSprache']);
-
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_METAANGABEN))
-       ->assign('oMetaangaben_arr', $cTMP_arr)
+       ->assign('oMetaangaben_arr', $metaData)
        ->assign('keywords', $excludeKeywords)
        ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('hinweis', $chinweis)

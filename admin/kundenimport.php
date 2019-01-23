@@ -14,13 +14,6 @@ require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 
-$format = [
-    'cPasswort', 'cAnrede', 'cTitel', 'cVorname', 'cNachname', 'cFirma',
-    'cStrasse', 'cHausnummer', 'cAdressZusatz', 'cPLZ', 'cOrt', 'cBundesland',
-    'cLand', 'cTel', 'cMobil', 'cFax', 'cMail', 'cUSTID', 'cWWW', 'fGuthaben',
-    'cNewsletter', 'dGeburtstag', 'fRabatt', 'cHerkunft', 'dErstellt', 'cAktiv'
-];
-
 if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
     && (int)$_POST['kundenimport'] === 1
     && $_FILES['csv']
@@ -30,6 +23,34 @@ if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
     $delimiter = getCsvDelimiter($_FILES['csv']['tmp_name']);
     $file      = fopen($_FILES['csv']['tmp_name'], 'r');
     if ($file !== false) {
+        $format   = [
+            'cPasswort',
+            'cAnrede',
+            'cTitel',
+            'cVorname',
+            'cNachname',
+            'cFirma',
+            'cStrasse',
+            'cHausnummer',
+            'cAdressZusatz',
+            'cPLZ',
+            'cOrt',
+            'cBundesland',
+            'cLand',
+            'cTel',
+            'cMobil',
+            'cFax',
+            'cMail',
+            'cUSTID',
+            'cWWW',
+            'fGuthaben',
+            'cNewsletter',
+            'dGeburtstag',
+            'fRabatt',
+            'cHerkunft',
+            'dErstellt',
+            'cAktiv'
+        ];
         $row      = 0;
         $fmt      = [];
         $formatId = -1;
@@ -37,7 +58,7 @@ if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
         while ($data = fgetcsv($file, 2000, $delimiter, '"')) {
             if ($row === 0) {
                 $hinweis .= __('checkHead');
-                $fmt      = checkformat($data);
+                $fmt      = checkformat($data, $format);
                 if ($fmt === -1) {
                     $hinweis .= __('errorFormatNotFound');
                     break;
@@ -84,14 +105,15 @@ function generatePW($length = 8, $myseed = 1)
 
 /**
  * @param array $data
+ * @param array $format
  * @return array|int
  */
-function checkformat($data)
+function checkformat($data, $format)
 {
     $fmt = [];
     $cnt = count($data);
     for ($i = 0; $i < $cnt; $i++) {
-        if (in_array($data[$i], $GLOBALS['format'], true)) {
+        if (in_array($data[$i], $format, true)) {
             $fmt[$i] = $data[$i];
         } else {
             $fmt[$i] = '';
@@ -180,18 +202,18 @@ function processImport($fmt, $data)
         $cPasswortKlartext = Shop::Container()->getPasswordService()->generate(PASSWORD_DEFAULT_LENGTH);
         $kunde->cPasswort  = Shop::Container()->getPasswordService()->hash($cPasswortKlartext);
     }
-    $oTMP              = new stdClass();
-    $oTMP->cNachname   = $kunde->cNachname;
-    $oTMP->cFirma      = $kunde->cFirma;
-    $oTMP->cStrasse    = $kunde->cStrasse;
-    $oTMP->cHausnummer = $kunde->cHausnummer;
+    $tmp              = new stdClass();
+    $tmp->cNachname   = $kunde->cNachname;
+    $tmp->cFirma      = $kunde->cFirma;
+    $tmp->cStrasse    = $kunde->cStrasse;
+    $tmp->cHausnummer = $kunde->cHausnummer;
     if ($kunde->insertInDB()) {
         if ((int)$_POST['PasswortGenerieren'] === 1) {
             $kunde->cPasswortKlartext = $cPasswortKlartext;
-            $kunde->cNachname         = $oTMP->cNachname;
-            $kunde->cFirma            = $oTMP->cFirma;
-            $kunde->cStrasse          = $oTMP->cStrasse;
-            $kunde->cHausnummer       = $oTMP->cHausnummer;
+            $kunde->cNachname         = $tmp->cNachname;
+            $kunde->cFirma            = $tmp->cFirma;
+            $kunde->cStrasse          = $tmp->cStrasse;
+            $kunde->cHausnummer       = $tmp->cHausnummer;
             $obj                      = new stdClass();
             $obj->tkunde              = $kunde;
             sendeMail(MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj);

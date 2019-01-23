@@ -11,7 +11,6 @@ use DB\ReturnType;
 use OPC\Portlets\MissingPortlet;
 use Plugin\Extension;
 use Plugin\ExtensionLoader;
-use Plugin\Plugin;
 
 /**
  * Class DB

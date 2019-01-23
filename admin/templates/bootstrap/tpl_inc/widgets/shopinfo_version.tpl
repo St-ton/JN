@@ -3,7 +3,7 @@
         <tbody>
             {if $oSubscription}
                 <tr>
-                    <td width="50%">Subscription g&uuml;ltig bis</td>
+                    <td width="50%">Subscription gültig bis</td>
                     <td width="50%" id="subscription">
                         {if $oSubscription->nDayDiff < 0}
                             <a href="https://jtl-url.de/subscription" target="_blank">Abgelaufen</a>

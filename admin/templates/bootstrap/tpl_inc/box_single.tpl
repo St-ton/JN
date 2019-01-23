@@ -60,13 +60,13 @@
             {if $oBox->getContainerID() === 0}
                 {if $nPage === $smarty.const.PAGE_ARTIKEL || $nPage === $smarty.const.PAGE_ARTIKELLISTE || $nPage === $smarty.const.PAGE_HERSTELLER || $nPage === $smarty.const.PAGE_EIGENE}
                     {if $nPage === $smarty.const.PAGE_ARTIKEL}
-                        {assign var='picker' value='articlePicker'}
+                        {assign var=picker value='articlePicker'}
                     {elseif $nPage === $smarty.const.PAGE_ARTIKELLISTE}
-                        {assign var='picker' value='categoryPicker'}
+                        {assign var=picker value='categoryPicker'}
                     {elseif $nPage === $smarty.const.PAGE_HERSTELLER}
-                        {assign var='picker' value='manufacturerPicker'}
+                        {assign var=picker value='manufacturerPicker'}
                     {elseif $nPage === $smarty.const.PAGE_EIGENE}
-                        {assign var='picker' value='pagePicker'}
+                        {assign var=picker value='pagePicker'}
                     {/if}
                     {if !is_array($oBox->getFilter($nPage)) || \Functional\true($oBox->getFilter())}
                         <input type="hidden" id="box-filter-{$oBox->getID()}" name="box-filter-{$oBox->getID()}" value="">

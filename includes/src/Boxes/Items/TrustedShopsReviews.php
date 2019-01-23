@@ -34,9 +34,9 @@ final class TrustedShopsReviews extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        parent::addMapping('oStatistik', 'Stats');
-        parent::addMapping('cBildPfadURL', 'ImageURL');
-        parent::addMapping('cBildPfad', 'ImagePath');
+        $this->addMapping('oStatistik', 'Stats');
+        $this->addMapping('cBildPfadURL', 'ImageURL');
+        $this->addMapping('cBildPfad', 'ImagePath');
         $this->setShow(false);
         $validISOCodes = ['de', 'en', 'fr', 'es', 'pl'];
         $langCode      = \StringHandler::convertISO2ISO639(\Shop::getLanguageCode());
@@ -52,7 +52,7 @@ final class TrustedShopsReviews extends AbstractBox
                     'pl' => ''
                 ];
                 $this->setShow(true);
-                if (!$this->cachecheck($filename = $tsRating->cTSID . '.gif', 10800)) {
+                if (!$this->cachecheck($filename = $tsRating->cTSID . '.gif')) {
                     if (!$ts::ladeKundenbewertungsWidgetNeu($filename)) {
                         $this->setShow(false);
                     }

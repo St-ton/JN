@@ -23,36 +23,36 @@ class Uploader extends NetSyncHandler
      */
     protected function request($eRequest)
     {
-        if (!class_exists('Upload')) {
+        if (\Extensions\Upload::checkLicense()) {
             self::throwResponse(NetSyncResponse::ERRORNOLICENSE);
         }
         switch ($eRequest) {
             case NetSyncRequest::UPLOADFILES:
                 $kBestellung = (int)$_POST['kBestellung'];
                 if ($kBestellung > 0) {
-                    $oSystemFiles_arr = [];
-                    $oUpload_arr      = Upload::gibBestellungUploads($kBestellung);
-                    if (is_array($oUpload_arr) && count($oUpload_arr)) {
-                        foreach ($oUpload_arr as $oUpload) {
-                            $cPath_arr = pathinfo($oUpload->cName);
-                            $cExt      = $cPath_arr['extension'];
-                            if (strlen($cExt) === 0) {
-                                $cExt = 'unknown';
+                    $systemFiles = [];
+                    $uploads     = \Extensions\Upload::gibBestellungUploads($kBestellung);
+                    if (is_array($uploads) && count($uploads)) {
+                        foreach ($uploads as $oUpload) {
+                            $paths = pathinfo($oUpload->cName);
+                            $ext   = $paths['extension'];
+                            if (strlen($ext) === 0) {
+                                $ext = 'unknown';
                             }
 
-                            $oSystemFiles_arr[] = new SystemFile(
+                            $systemFiles[] = new SystemFile(
                                 $oUpload->kUpload,
                                 $oUpload->cName,
                                 $oUpload->cName,
-                                $cPath_arr['filename'],
+                                $paths['filename'],
                                 '/',
-                                $cExt,
+                                $ext,
                                 date_format(date_create($oUpload->dErstellt), 'U'),
                                 $oUpload->nBytes
                             );
                         }
 
-                        self::throwResponse(NetSyncResponse::OK, $oSystemFiles_arr);
+                        self::throwResponse(NetSyncResponse::OK, $systemFiles);
                     }
                 }
                 self::throwResponse(NetSyncResponse::ERRORINTERNAL);
@@ -61,7 +61,7 @@ class Uploader extends NetSyncHandler
             case NetSyncRequest::UPLOADFILEDATA:
                 $kUpload = (int)$_GET['kFileID'];
                 if ($kUpload > 0) {
-                    $oUploadDatei = new UploadDatei();
+                    $oUploadDatei = new \Extensions\UploadDatei();
                     if ($oUploadDatei->loadFromDB($kUpload)) {
                         $cFilePath = PFAD_UPLOADS . $oUploadDatei->cPfad;
                         if (file_exists($cFilePath)) {

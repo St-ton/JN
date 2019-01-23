@@ -128,7 +128,7 @@ class PriceRange
             $this->maxNettoPrice = $this->articleData->fNettoPreis;
         }
 
-        if (class_exists('Konfigurator') && Konfigurator::hasKonfig($this->articleData->kArtikel)) {
+        if (\Extensions\Konfigurator::hasKonfig($this->articleData->kArtikel)) {
             $this->loadConfiguratorRange();
         }
 

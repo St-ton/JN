@@ -89,7 +89,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {foreach name=exportformate from=$exportformate item=exportformat}
+                {foreach $exportformate as $exportformat}
                     {if $exportformat->nSpecial == 0}
                         <tr>
                             <td class="tleft"> {$exportformat->cName}</td>
@@ -113,7 +113,7 @@
                                         {/if}
                                         <button name="action" value="download" class="btn btn-default btn-sm download notext" title="{__('download')}"><i class="fa fa-download"></i></button>
                                         <button name="action" value="edit" class="btn btn-default btn-sm edit notext" title="{__('edit')}"><i class="fa fa-edit"></i></button>
-                                        <button name="action" value="delete" class="btn btn-danger btn-sm remove notext" title="{__('delete')}" onclick="return confirm('Exportformat l&ouml;schen?');"><i class="fa fa-trash"></i></button>
+                                        <button name="action" value="delete" class="btn btn-danger btn-sm remove notext" title="{__('delete')}" onclick="return confirm('Exportformat löschen?');"><i class="fa fa-trash"></i></button>
                                     </div>
                                 </form>
                             </td>

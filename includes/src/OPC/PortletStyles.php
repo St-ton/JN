@@ -6,8 +6,6 @@
 
 namespace OPC;
 
-use Gettext\BaseTranslator;
-
 /**
  * Trait PortletStyles
  * @package OPC

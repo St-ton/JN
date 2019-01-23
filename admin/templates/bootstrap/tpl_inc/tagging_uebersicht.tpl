@@ -8,8 +8,8 @@
                 <span class="input-group-addon"><label for="kSprache">{__('changeLanguage')}</label></span>
                 <span class="input-group-wrap last">
                     <select id="kSprache" name="kSprache" class="selectBox form-control" onchange="document.sprache.submit();">
-                        {foreach name=sprachen from=$Sprachen item=sprache}
-                            <option value="{$sprache->kSprache}" {if $sprache->kSprache==$smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
+                        {foreach $Sprachen as $sprache}
+                            <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
                         {/foreach}
                     </select>
                 </span>
@@ -48,7 +48,7 @@
                                     <th class="th-4">{__('active')}</th>
                                     <th class="th-5">{__('mapping')}</th>
                                 </tr>
-                                {foreach name=tags from=$Tags item=tag}
+                                {foreach $Tags as $tag}
                                     <tr>
                                         <td>
                                             <input type="checkbox" name="kTag[]" value="{$tag->kTag}" />
@@ -98,7 +98,7 @@
                                     <th class="th-2">{__('tag')}</th>
                                     <th class="th-3">{__('tagnew')}</th>
                                 </tr>
-                                {foreach name=tagsmapping from=$Tagmapping item=tagmapping}
+                                {foreach $Tagmapping as $tagmapping}
                                     <tr>
                                         <td>
                                             <input name="kTagMapping[]" type="checkbox" value="{$tagmapping->kTagMapping}" />

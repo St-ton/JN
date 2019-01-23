@@ -14,10 +14,9 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
 $oAccount->permission('MODULE_CAC_VIEW', true, true);
 /** @global Smarty\JTLSmarty $smarty */
-$Einstellungen = Shop::getSettings([CONF_KUNDENWERBENKUNDEN]);
-$cHinweis      = '';
-$cFehler       = '';
-$step          = 'kwk_uebersicht';
+$cHinweis = '';
+$cFehler  = '';
+$step     = 'kwk_uebersicht';
 
 setzeSprache();
 if (strlen(Request::verifyGPDataString('tab')) > 0) {
@@ -30,10 +29,10 @@ if (Request::verifyGPCDataInt('KwK') === 1
     && Request::verifyGPCDataInt('nichtreggt_loeschen') === 1
     && Form::validateToken()
 ) {
-    $kKundenWerbenKunden_arr = $_POST['kKundenWerbenKunden'];
-    if (is_array($kKundenWerbenKunden_arr) && count($kKundenWerbenKunden_arr) > 0) {
-        foreach ($kKundenWerbenKunden_arr as $kKundenWerbenKunden) {
-            Shop::Container()->getDB()->delete('tkundenwerbenkunden', 'kKundenWerbenKunden', (int)$kKundenWerbenKunden);
+    $kwkIDs = $_POST['kKundenWerbenKunden'];
+    if (is_array($kwkIDs) && count($kwkIDs) > 0) {
+        foreach ($kwkIDs as $id) {
+            Shop::Container()->getDB()->delete('tkundenwerbenkunden', 'kKundenWerbenKunden', (int)$id);
         }
         $cHinweis .= __('successNewCustomerDelete') . '<br />';
     } else {
@@ -41,35 +40,34 @@ if (Request::verifyGPCDataInt('KwK') === 1
     }
 }
 if ($step === 'kwk_uebersicht') {
-    $oAnzahlReg      = Shop::Container()->getDB()->query(
+    $regCount    = Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tkundenwerbenkunden
             WHERE nRegistriert = 0',
         \DB\ReturnType::SINGLE_OBJECT
     );
-    $oAnzahlNichtReg = Shop::Container()->getDB()->query(
+    $nonRegCount = Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tkundenwerbenkunden
             WHERE nRegistriert = 1',
         \DB\ReturnType::SINGLE_OBJECT
     );
-    $oAnzahlPraemie  = Shop::Container()->getDB()->query(
+    $bonusCount  = Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tkundenwerbenkundenbonus',
         \DB\ReturnType::SINGLE_OBJECT
     );
+    $pagiNonReg  = (new Pagination('nichtreg'))
+        ->setItemCount($regCount->nAnzahl)
+        ->assemble();
+    $pagiReg     = (new Pagination('reg'))
+        ->setItemCount($nonRegCount->nAnzahl)
+        ->assemble();
+    $pagiBonus   = (new Pagination('praemie'))
+        ->setItemCount($bonusCount->nAnzahl)
+        ->assemble();
 
-    $oPagiNichtReg = (new Pagination('nichtreg'))
-        ->setItemCount($oAnzahlReg->nAnzahl)
-        ->assemble();
-    $oPagiReg      = (new Pagination('reg'))
-        ->setItemCount($oAnzahlNichtReg->nAnzahl)
-        ->assemble();
-    $oPagiPraemie  = (new Pagination('praemie'))
-        ->setItemCount($oAnzahlPraemie->nAnzahl)
-        ->assemble();
-
-    $oKwKNichtReg_arr = Shop::Container()->getDB()->query(
+    $nonRegistered = Shop::Container()->getDB()->query(
         "SELECT tkundenwerbenkunden.*, tkunde.kKunde AS kKundeBestand, tkunde.cMail, 
             DATE_FORMAT(tkundenwerbenkunden.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de,
             tkunde.cVorname AS cBestandVorname, tkunde.cNachname AS cBestandNachname
@@ -78,13 +76,12 @@ if ($step === 'kwk_uebersicht') {
                 ON tkunde.kKunde = tkundenwerbenkunden.kKunde
             WHERE tkundenwerbenkunden.nRegistriert = 0
             ORDER BY tkundenwerbenkunden.dErstellt DESC 
-            LIMIT " . $oPagiNichtReg->getLimitSQL(),
+            LIMIT " . $pagiNonReg->getLimitSQL(),
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    foreach ($oKwKNichtReg_arr as $i => $oKwKNichtReg) {
-        $oKunde = new Kunde($oKwKNichtReg->kKundeBestand ?? 0);
-
-        $oKwKNichtReg_arr[$i]->cBestandNachname = $oKunde->cNachname;
+    foreach ($nonRegistered as $item) {
+        $cstmr                  = new Kunde((int)($item->kKundeBestand ?? 0));
+        $item->cBestandNachname = $cstmr->cNachname;
     }
     $registered = Shop::Container()->getDB()->query(
         "SELECT tkundenwerbenkunden.*, 
@@ -95,18 +92,18 @@ if ($step === 'kwk_uebersicht') {
                 ON tkunde.cMail = tkundenwerbenkunden.cEmail
             WHERE tkundenwerbenkunden.nRegistriert = 1
             ORDER BY tkundenwerbenkunden.dErstellt DESC 
-            LIMIT " . $oPagiReg->getLimitSQL(),
+            LIMIT " . $pagiReg->getLimitSQL(),
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($registered as $customer) {
-        $oBestandsKunde = new Kunde($customer->kKunde ?? 0);
+        $regCstmr = new Kunde($customer->kKunde ?? 0);
 
-        $customer->cBestandVorname  = $oBestandsKunde->cVorname;
-        $customer->cBestandNachname = $oBestandsKunde->cNachname;
-        $customer->cMail            = $oBestandsKunde->cMail;
+        $customer->cBestandVorname  = $regCstmr->cVorname;
+        $customer->cBestandNachname = $regCstmr->cNachname;
+        $customer->cMail            = $regCstmr->cMail;
     }
     // letzten 100 Bestandskunden die Guthaben erhalten haben
-    $oKwKBestandBonus_arr = Shop::Container()->getDB()->query(
+    $last100bonus = Shop::Container()->getDB()->query(
         "SELECT tkundenwerbenkundenbonus.*, tkunde.kKunde AS kKundeBestand, tkunde.cMail, 
             DATE_FORMAT(tkundenwerbenkundenbonus.dErhalten, '%d.%m.%Y %H:%i') AS dErhalten_de,
             tkunde.cVorname AS cBestandVorname, tkunde.cNachname AS cBestandNachname
@@ -114,21 +111,20 @@ if ($step === 'kwk_uebersicht') {
             JOIN tkunde 
                 ON tkunde.kKunde = tkundenwerbenkundenbonus.kKunde
             ORDER BY dErhalten DESC 
-            LIMIT " . $oPagiPraemie->getLimitSQL(),
+            LIMIT " . $pagiBonus->getLimitSQL(),
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    foreach ($oKwKBestandBonus_arr as $i => $oKwKBestandBonus) {
-        $oKunde = new Kunde($oKwKBestandBonus->kKundeBestand ?? 0);
-
-        $oKwKBestandBonus_arr[$i]->cBestandNachname = $oKunde->cNachname;
+    foreach ($last100bonus as $item) {
+        $cstmr                  = new Kunde((int)($item->kKundeBestand ?? 0));
+        $item->cBestandNachname = $cstmr->cNachname;
     }
     $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_KUNDENWERBENKUNDEN))
-           ->assign('oKwKNichtReg_arr', $oKwKNichtReg_arr)
+           ->assign('oKwKNichtReg_arr', $nonRegistered)
            ->assign('oKwKReg_arr', $registered)
-           ->assign('oKwKBestandBonus_arr', $oKwKBestandBonus_arr)
-           ->assign('oPagiNichtReg', $oPagiNichtReg)
-           ->assign('oPagiReg', $oPagiReg)
-           ->assign('oPagiPraemie', $oPagiPraemie);
+           ->assign('oKwKBestandBonus_arr', $last100bonus)
+           ->assign('oPagiNichtReg', $pagiNonReg)
+           ->assign('oPagiReg', $pagiReg)
+           ->assign('oPagiPraemie', $pagiBonus);
 }
 $smarty->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('kSprache', $_SESSION['kSprache'])

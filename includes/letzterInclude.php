@@ -151,6 +151,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('showLoginCaptcha', isset($_SESSION['showLoginCaptcha']) && $_SESSION['showLoginCaptcha'])
        ->assign('PFAD_SLIDER', $shopURL . '/' . PFAD_BILDER_SLIDER)
        ->assign('Suchergebnisse', $oSuchergebnisse ?? new \Filter\SearchResults())
+       ->assign('cSessionID', session_id())
        ->assign('opc', Shop::Container()->getOPC())
        ->assign('opcPageService', Shop::Container()->getOPCPageService())
        ->assign('shopFaviconURL', Shop::getFaviconURL());

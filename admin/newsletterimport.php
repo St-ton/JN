@@ -30,15 +30,15 @@ if (isset($_POST['newsletterimport'], $_FILES['csv']['tmp_name'])
         $fmt      = [];
         while ($data = fgetcsv($file, 2000, ';', '"')) {
             if ($row === 0) {
-                $hinweis .= 'Checke Kopfzeile ...';
+                $hinweis .= __('checkHead');
                 $fmt      = checkformat($data);
                 if ($fmt === -1) {
-                    $fehler = 'Format nicht erkannt!';
+                    $fehler = __('errorFormatUnknown');
                     break;
                 }
-                $hinweis .= '<br /><br />Importiere...<br />';
+                $hinweis .= '<br /><br />' . __('importPending') . '<br />';
             } else {
-                $hinweis .= '<br />Zeile ' . $row . ': ' . processImport($fmt, $data);
+                $hinweis .= '<br />' . __('row') . $row . ': ' . processImport($fmt, $data);
             }
             $row++;
         }
@@ -173,20 +173,18 @@ function processImport($fmt, $data)
     }
 
     if (StringHandler::filterEmailAddress($recipient->cEmail) === false) {
-        return "keine gültige Email ($recipient->cEmail)! Übergehe diesen Datensatz.";
+        return sprintf(__('errorEmailInvalid'), $recipient->cEmail);
     }
     if (pruefeNLEBlacklist($recipient->cEmail)) {
-        return 'keine gültige Email: ' . $recipient->cEmail . '!' .
-            ' Kunde hat sich auf die Blacklist setzen lassen! Übergehe diesen Datensatz.';
+        return __('errorEmailInvalidBlacklist');
     }
     if (!$recipient->cNachname) {
-        return 'kein Nachname! Übergehe diesen Datensatz.';
+        return __('errorSurnameMissing');
     }
 
     $oldMail = Shop::Container()->getDB()->select('tnewsletterempfaenger', 'cEmail', $recipient->cEmail);
     if (isset($oldMail->kNewsletterEmpfaenger) && $oldMail->kNewsletterEmpfaenger > 0) {
-        return 'Newsletterempfänger mit dieser Emailadresse bereits vorhanden: (' .
-            $recipient->cEmail . ')! Übergehe Datensatz.';
+        return sprintf(__('errorEmailExists'), $recipient->cEmail);
     }
 
     if ($recipient->cAnrede === 'f') {
@@ -231,11 +229,11 @@ function processImport($fmt, $data)
         $ins->cAktion      = 'Daten-Import';
         $res               = Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $ins);
         if ($res) {
-            return 'Datensatz OK. Importiere: ' .
+            return __('successImport') .
                 $recipient->cVorname . ' ' .
                 $recipient->cNachname;
         }
     }
 
-    return 'Fehler beim Import dieser Zeile!';
+    return __('errorImportRow');
 }

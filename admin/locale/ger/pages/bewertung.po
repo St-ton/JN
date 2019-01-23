@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "bearbeiteBewertung"
 msgstr "Bewertung bearbeiten"
 
@@ -109,3 +113,17 @@ msgstr "Speichern"
 msgid "ratingSettings"
 msgstr "Einstellungen"
 
+msgid "successRatingEdit"
+msgstr "Ihre Bewertung wurde erfolgreich editiert."
+
+msgid "errorCreditUnlock"
+msgstr "Guthabenbonus kann nur mit \"Bewertung freischalten\" verwendet werden."
+
+msgid "successRatingUnlock"
+msgstr " Bewertung(en) wurde(n) erfolgreich aktiviert."
+
+msgid "successRatingDelete"
+msgstr " Bewertung(en) wurde(n) erfolgreich gelöscht."
+
+msgid "successRatingCommentDelete"
+msgstr "Antwort zu einer Bewertung wurde entfernt."

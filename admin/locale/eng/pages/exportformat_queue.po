@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "exportformat"
 msgstr "Aufgabenplaner Exporte"
 
@@ -85,3 +89,35 @@ msgstr "Es wurden im ausgewählten Zeitraum keine Exportformate bearbeitet."
 msgid "exportformatRefresh"
 msgstr "Aktualisieren"
 
+msgid "errorWrongQueue"
+msgstr "Fehler: Bitte wählen Sie eine gültige Warteschlange aus."
+
+msgid "successQueueDelete"
+msgstr "Ihr ausgewählten Warteschlangen wurde erfolgreich gelöscht."
+
+msgid "errorCronStart"
+msgstr "Es wurde kein Cron-Job gestartet."
+
+msgid "errorCronsStart"
+msgstr "Es wurden %s Cron-Jobs gestartet."
+
+msgid "successCronStart"
+msgstr "Es wurde ein Cron-Job gestartet."
+
+msgid "successQueueDone"
+msgstr "Es wurde eine Job-Queue abgearbeitet"
+
+msgid "successQueuseDone"
+msgstr "Es wurden %s Job-Queues abgearbeitet"
+
+msgid "errorFormatInQueue"
+msgstr "Fehler: Das Exportformat ist bereits in der Warteschlange vorhanden."
+
+msgid "successQueueCreate"
+msgstr "Ihre neue Exportwarteschlange wurde erfolgreich angelegt."
+
+msgid "errorGreaterEqualOne"
+msgstr "Fehler: Bitte geben Sie einen Wert größer oder gleich 1 ein."
+
+msgid "errorFormatSelect"
+msgstr "Fehler: Bitte wählen Sie ein gültiges Exportformat aus."

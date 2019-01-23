@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "coupons"
 msgstr "Kupons"
 
@@ -208,3 +212,65 @@ msgstr "Leer lassen, wenn der Kupon unbegrenzt gültig ist oder eine Gültigkeit
 msgid "periodOfValidityHelp"
 msgstr "Bei der Einstellung \"Gültig bis\", wird das Datum aus \"Gültig von\" mit der eingetragenen Zahl addiert."
 
+msgid "errorImportCSV"
+msgstr "Konnte CSV-Datei nicht vollständig importieren."
+
+msgid "successImportCSV"
+msgstr "CSV-Datei wurde erfolgreich importiert."
+
+msgid "errorImportRow"
+msgstr "Zeile(n) sind nicht importierbar."
+
+msgid "successCouponSave"
+msgstr "Der Kupon wurde erfolgreich gespeichert."
+
+msgid "errorCouponSave"
+msgstr "Der Kupon konnte nicht gespeichert werden."
+
+msgid "successCouponDelete"
+msgstr "Ihre markierten Kupons wurden erfolgreich gelöscht."
+
+msgid "errorCouponDelete"
+msgstr "Fehler: Ein oder mehrere Kupons konnten nicht gelöscht werden."
+
+msgid "errorAtLeastOneCoupon"
+msgstr "Fehler: Bitte markieren Sie mindestens einen Kupon."
+
+msgid "errorCouponNameMissing"
+msgstr "Es wurde kein Kuponname angegeben. Bitte geben Sie einen Namen an!"
+
+msgid "errorCouponValueNegative"
+msgstr "Bitte geben Sie einen nicht-negativen Kuponwert an!"
+
+msgid "errorCouponMinOrderValueNegative"
+msgstr "Bitte geben Sie einen nicht-negativen Mindestbestellwert an!"
+
+msgid "errorCouponISOMissing"
+msgstr "Bitte geben Sie die Länderkürzel (ISO-Codes) unter 'Lieferländer' an, für die dieser Versandkupon gelten soll!"
+
+msgid "errorCouponCodeLong"
+msgstr "Der zu generiende Code ist länger als 32 Zeichen. Bitte verringern Sie die Menge der Zeichen in Präfix, Suffix oder geben eine kleinere Zahl bei der Länge des Zufallcodes an."
+
+msgid "errorCouponCodeShort"
+msgstr "Der zu generiende Code ist kürzer als 2 Zeichen. Bitte vergrößern Sie die Menge der Zeichen in Präfix, Suffix oder geben eine größere Zahl bei der Länge des Zufallcodes an."
+
+msgid "errorCouponCodeOptionSelect"
+msgstr "Bitte wählen Sie für &quot;Zufallscode mit ...&quot; mindestens eine Option aus!"
+
+msgid "errorCouponCodeDuplicate"
+msgstr "Der angegeben Kuponcode wird bereits von einem anderen Kupon verwendet. Bitte wählen Sie einen anderen Code!"
+
+msgid "errorProductNumberNotFound"
+msgstr "Die Artikelnummer %s gehört zu keinem gültigen Artikel und wird entfernt."
+
+msgid "errorISOInvalid"
+msgstr "Der ISO-Code %s gehört zu keinem gültigen Land."
+
+msgid "errorPeriodBeginFormat"
+msgstr "Bitte geben sie den Beginn des Gültigkeitszeitraumes im Format (<strong>tt.mm.yyyy ss:mm</strong>) an!"
+
+msgid "errorPeriodEndFormat"
+msgstr "Bitte geben sie das Ende des Gültigkeitszeitraumes im Format (<strong>tt.mm.yyyy ss:mm</strong>) an!"
+
+msgid "errorPeriodEndAfterBegin"
+msgstr "Das Ende des Gültigkeitszeitraumes muss nach dem Beginn des Gültigkeitszeitraumes liegen!"

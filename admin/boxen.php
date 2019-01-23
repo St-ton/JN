@@ -30,7 +30,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
                         ++$cnt;
                     }
                 }
-                $cHinweis = $cnt . ' Box(en) wurde(n) erfolgreich gelöscht.';
+                $cHinweis = $cnt . __('successBoxDelete');
             }
             break;
 
@@ -41,16 +41,16 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
                 // Neuer Container
                 $bOk = $boxAdmin->create(0, $pageID, $ePosition);
                 if ($bOk) {
-                    $cHinweis = 'Container wurde erfolgreich hinzugefügt.';
+                    $cHinweis = __('successContainerCreate');
                 } else {
-                    $cFehler = 'Container konnte nicht angelegt werden.';
+                    $cFehler = __('errorContainerCreate');
                 }
             } else {
                 $bOk = $boxAdmin->create($boxID, $pageID, $ePosition, $kContainer);
                 if ($bOk) {
-                    $cHinweis = 'Box wurde erfolgreich hinzugefügt.';
+                    $cHinweis = __('successBoxCreate');
                 } else {
-                    $cFehler = 'Box konnte nicht angelegt werden.';
+                    $cFehler = __('errorBoxCreate');
                 }
             }
             break;
@@ -58,9 +58,9 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
         case 'del':
             $bOk = $boxAdmin->delete($boxID);
             if ($bOk) {
-                $cHinweis = 'Box wurde erfolgreich entfernt.';
+                $cHinweis = __('successBoxDelete');
             } else {
-                $cFehler = 'Box konnte nicht entfernt werden.';
+                $cFehler = __('errorBoxDelete');
             }
             break;
 
@@ -115,9 +115,9 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             }
 
             if ($bOk) {
-                $cHinweis = 'Box wurde erfolgreich bearbeitet.';
+                $cHinweis = __('successBoxEdit');
             } else {
-                $cFehler = 'Box konnte nicht bearbeitet werden.';
+                $cFehler = __('errorBoxEdit');
             }
             break;
 
@@ -130,9 +130,9 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             $bValue    = $_REQUEST['box_show'] ?? false;
             $bOk       = $boxAdmin->setVisibility($pageID, $ePosition, $bValue);
             if ($bOk) {
-                $cHinweis = 'Box wurde erfolgreich bearbeitet.';
+                $cHinweis = __('successBoxEdit');
             } else {
-                $cFehler = 'Box konnte nicht bearbeitet werden.';
+                $cFehler = __('errorBoxEdit');
             }
 
             foreach ($boxes as $i => $box) {
@@ -144,16 +144,16 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             if ($ePosition !== 'left' || $pageID > 0) {
                 $boxAdmin->setVisibility($pageID, $ePosition, isset($_REQUEST['box_show']));
             }
-            $cHinweis = 'Die Boxen wurden aktualisiert.';
+            $cHinweis = __('successBoxRefresh');
             break;
 
         case 'activate':
             $bActive = (bool)$_REQUEST['value'];
             $bOk     = $boxAdmin->activate($boxID, 0, $bActive);
             if ($bOk) {
-                $cHinweis = 'Box wurde erfolgreich bearbeitet.';
+                $cHinweis = __('successBoxEdit');
             } else {
-                $cFehler = 'Box konnte nicht bearbeitet werden.';
+                $cFehler = __('errorBoxEdit');
             }
             break;
 
@@ -162,9 +162,9 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             $bValue    = (bool)$_GET['value'];
             $bOk       = $boxAdmin->setVisibility(0, $ePosition, $bValue);
             if ($bOk) {
-                $cHinweis = 'Box wurde erfolgreich bearbeitet.';
+                $cHinweis = __('successBoxEdit');
             } else {
-                $cFehler = 'Box konnte nicht bearbeitet werden.';
+                $cFehler = __('errorBoxEdit');
             }
             break;
 

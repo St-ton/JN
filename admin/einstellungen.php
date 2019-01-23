@@ -148,7 +148,7 @@ if (isset($_POST['einstellungen_bearbeiten'])
     }
 
     Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
-    $cHinweis    = 'Die Einstellungen wurden erfolgreich gespeichert.';
+    $cHinweis    = __('successConfigSave');
     $tagsToFlush = [CACHING_GROUP_OPTION];
     if ($kSektion === 1 || $kSektion === 4 || $kSektion === 5) {
         $tagsToFlush[] = CACHING_GROUP_CORE;

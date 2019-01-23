@@ -591,34 +591,34 @@ function mappeFragenTyp(string $cTyp): string
 {
     switch ($cTyp) {
         case \Survey\QuestionType::MULTI_SINGLE:
-            return 'Multiple Choice (Eine Antwort)';
+            return __('errorQuestionTypeMultipleChoice');
 
         case \Survey\QuestionType::MULTI:
-            return 'Multiple Choice (Viele Antworten)';
+            return __('errorQuestionTypeMultipleChoiceMany');
 
         case \Survey\QuestionType::SELECT_SINGLE:
-            return 'Selectbox (Eine Antwort)';
+            return __('errorQuestionTypeSelectboxOne');
 
         case \Survey\QuestionType::SELECT_MULTI:
-            return 'SelectBox (Viele Antworten)';
+            return __('errorQuestionTypeSelectboxMany');
 
         case \Survey\QuestionType::TEXT_SMALL:
-            return 'Textfeld (klein)';
+            return __('errorQuestionTypeTextSmall');
 
         case \Survey\QuestionType::TEXT_BIG:
-            return 'Textfeld (groß)';
+            return __('errorQuestionTypeTextBig');
 
         case \Survey\QuestionType::MATRIX_SINGLE:
-            return 'Matrix (Eine Antwort pro Zeile)';
+            return __('errorQuestionTypeMatrixOne');
 
         case \Survey\QuestionType::MATRIX_MULTI:
-            return 'Matrix (Viele Antworten pro Zeile)';
+            return __('errorQuestionTypeMatrixMany');
 
         case \Survey\QuestionType::TEXT_STATIC:
-            return 'Statischer Trenntext';
+            return __('errorQuestionTypeDivider');
 
         case \Survey\QuestionType::TEXT_PAGE_CHANGE:
-            return 'Statischer Trenntext + Seitenwechsel';
+            return __('errorQuestionTypeDividerNewPage');
 
         default:
             return '';

@@ -35,9 +35,9 @@ if (Request::verifyGPCDataInt('KwK') === 1
         foreach ($kKundenWerbenKunden_arr as $kKundenWerbenKunden) {
             Shop::Container()->getDB()->delete('tkundenwerbenkunden', 'kKundenWerbenKunden', (int)$kKundenWerbenKunden);
         }
-        $cHinweis .= 'Ihre markierten Neukunden wurden erfolgreich gelöscht.<br />';
+        $cHinweis .= __('successNewCustomerDelete') . '<br />';
     } else {
-        $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Neukunden<br />';
+        $cFehler .= __('errorAtLeastOneNewCustomer') . '<br />';
     }
 }
 if ($step === 'kwk_uebersicht') {

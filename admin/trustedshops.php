@@ -35,7 +35,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
 
         if ($oTrustedShops->oZertifikat->kTrustedShopsZertifikat > 0) {
             if ($oTrustedShops->loescheTrustedShopsZertifikat($oTrustedShops->oZertifikat->kTrustedShopsZertifikat)) {
-                $cHinweis = 'Ihr Zertifikat wurde erfolgreich für die aktuelle Sprache gelöscht.';
+                $cHinweis = __('successDelete');
 
                 Shop::Container()->getDB()->query(
                     'DELETE FROM teinstellungen
@@ -50,10 +50,10 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
                 Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
                 Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
             } else {
-                $cFehler .= 'Fehler: Es wurde kein Zertifikat fü die aktuelle Sprache gefunden.';
+                $cFehler .= __('errorCertificateNotFound');
             }
         } else {
-            $cFehler .= 'Fehler: Es wurde kein Zertifikat fü die aktuelle Sprache gefunden.';
+            $cFehler .= __('errorCertificateNotFound');
         }
     } else {
         $cPreStatus  = $Einstellungen['trustedshops']['trustedshops_nutzen'];
@@ -122,10 +122,10 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
 
             mappeTSFehlerCode($cHinweis, $cFehler, $nReturnValue);
         } elseif ($cPreStatus === 'Y') {
-            $cFehler .= 'Fehler: Bitte füllen Sie alle Felder aus.';
+            $cFehler .= __('errorFillRequired');
         }
 
-        $cHinweis .= 'Ihre Einstellungen wurden übernommen.';
+        $cHinweis .= __('successConfigSave');
         Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
         unset($oConfig_arr);
     }
@@ -139,9 +139,9 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
 
     if ($oTrustedShops->oZertifikat->kTrustedShopsZertifikat > 0 && $oTrustedShops->oZertifikat->nAktiv == 1) {
         $oTrustedShops->holeKaeuferschutzProdukte($oTrustedShops->oZertifikat->kTrustedShopsZertifikat);
-        $cHinweis .= 'Ihre Käuferschutzprodukte wurden aktualisiert.';
+        $cHinweis .= __('successBuyerProtectSave');
     } else {
-        $cFehler .= 'Fehler: Ihre Käuferschutzprodukte konnten nicht aktualisiert werden.';
+        $cFehler .= __('errorBuyerProtectSave');
     }
 } elseif (isset($_POST['kundenbewertungeinstellungen'])
     && (int)$_POST['kundenbewertungeinstellungen'] === 1
@@ -202,9 +202,9 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
             trim($_POST['kb-tsId']),
             $_SESSION['TrustedShops']->oSprache->cISOSprache
         );
-        $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
+        $cHinweis = __('successConfigSave');
     } else {
-        $cFehler .= 'Fehler: Bitte geben Sie eine tsID ein!<br>';
+        $cFehler .= __('errorTSIDMissing') . '<br>';
     }
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 } elseif (isset($_POST['kundenbewertungupdate']) && (int)$_POST['kundenbewertungupdate'] === 1) {
@@ -227,29 +227,28 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
             if ($nReturnValue === 1) {
                 $filename = $tscRating->cTSID . '.gif';
                 $oTrustedShops::ladeKundenbewertungsWidgetNeu($filename);
-                $cHinweis = 'Ihr Status wurde erfolgreich geändert';
+                $cHinweis = __('successStatusSave');
             } elseif ($nReturnValue === 2) {
-                $cFehler = 'Fehler: Bei der Statusänderung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.';
+                $cFehler = __('errorStatusSave');
             } elseif ($nReturnValue === 3) {
                 // Wurde die TS-ID vielleicht schon in einer anderen Sprache benutzt?
                 if ($oTrustedShops->pruefeKundenbewertungsstatusAndereSprache(
                     $tscRating->cTSID,
                     $_SESSION['TrustedShops']->oSprache->cISOSprache
                 )) {
-                    $cFehler = 'Fehler: Ihre Trusted Shops ID (tsId) wurde bereits für eine andere Sprache verwendet.';
+                    $cFehler = __('errorTSIDOtherLang');
                 } else {
-                    $cFehler = 'Fehler: Ihre Trusted Shops ID (tsId) ist falsch.';
+                    $cFehler = __('errorTSIDInvalid');
                 }
             } elseif ($nReturnValue === 4) {
-                $cFehler = 'Fehler: Sie sind nicht registriert um die Kundenbewertung zu nutzen. ' .
-                    'Bitte nutzen Sie den Link zum Formular oben auf dieser Seite.';
+                $cFehler = __('errorNotRegistered');
             } elseif ($nReturnValue === 5) {
-                $cFehler = 'Fehler: Ihr Username und Passwort sind falsch.';
+                $cFehler = __('errorWrongPasswordUser');
             } elseif ($nReturnValue === 6) {
-                $cFehler = 'Fehler: Sie müssen Ihre Trusted Shops Kundenbewertung erst aktivieren.';
+                $cFehler = __('errorTSActivateFirst');
             }
         } else {
-            $cFehler = 'Fehler: Kundenbewertung nicht gefunden.';
+            $cFehler = __('errorCustomerRatingNotFound');
         }
     }
 } elseif (isset($_GET['whatis']) && (int)$_GET['whatis'] === 1) { // Infoseite anzeigen
@@ -429,43 +428,39 @@ $smarty->assign('TS_BUYERPROT_CLASSIC', TS_BUYERPROT_CLASSIC)
 function mappeTSFehlerCode(&$cHinweis, &$cFehler, $nReturnValue)
 {
     if ($nReturnValue === -1) {
-        $cHinweis .= 'Das Trusted Shops Zertifikat wurde erfolgreich gespeichert.<br />
-            Bitte Besuchen Sie unter dem Backend Menüpunkt "Admin" ' .
-            'die "Boxenverwaltung" und fügen Sie die Trusted Shops Siegelbox hinzu.<br />';
+        $cHinweis .= __('successSaveAddTSBox') . '<br />';
     } elseif ($nReturnValue === 1) {
         // Fehlende Sprache + TSID
-        $cFehler .= 'Fehler: Bitte füllen Sie alle Felder aus.';
+        $cFehler .= __('errorFillRequired');
     } elseif ($nReturnValue === 2) {
-        // Das Zertifikat existiert nich
-        $cFehler .= 'Fehler: Das Zertifikat zu Ihrer Trusted Shops ID existiert nicht.';
+        // Das Zertifikat existiert nicht
+        $cFehler .= __('errorCertificateInvalid');
     } elseif ($nReturnValue === 3) {
         // Das Zertifikat ist abgelaufen
-        $cFehler .= 'Fehler: Das Zertifikat zu Ihrer Trusted Shops ID ist abgelaufen.';
+        $cFehler .= __('errorCertificateExpired');
     } elseif ($nReturnValue === 4) {
         // Das Zertifikat ist gesperrt
-        $cFehler .= 'Fehler: Das Zertifikat zu Ihrer Trusted Shops ID ist gesperrt.';
+        $cFehler .= __('errorCertificateBlocked');
     } elseif ($nReturnValue === 5) {
         // Shop befindet sich in der Zertifizierung
-        $cFehler .= 'Fehler: Das Zertifikat befindet sich in der Zertifzierung.';
+        $cFehler .= __('errorCertificatePending');
     } elseif ($nReturnValue === 6) {
         // Keine Excellence-Variante mit Kaeuferschutz im Checkout-Prozess
-        $cFehler .= 'Fehler: Das Zertifikat hat keine Excellence-Variante mit Käuferschutz im Checkout-Prozess.';
+        $cFehler .= __('errorCertificateNoExcellence');
     } elseif ($nReturnValue === 7) {
         // Ungueltige Sprache fuer gewaehlte TS-ID
-        $cFehler .= 'Fehler: Ihre gewählte Sprache stimmt nicht mit Ihrer Trusted Shops ID überein.';
+        $cFehler .= __('errorLangMismatch');
     } elseif ($nReturnValue === 8) {
         // Benutzername & Passwort ungueltig
-        $cFehler .= 'Fehler: Ihre WebService User ID (wsUser) und Ihr WebService Passwort ' .
-            '(wsPassword) konnten nicht verifiziert werden.';
+        $cFehler .= __('errorWebServiceLoginInvalid');
     } elseif ($nReturnValue === 9) {
         // Zertifikat konnte nicht gespeichert werden
-        $cFehler .= 'Fehler: Das Zertifikat konnte nicht gespeichert werden.';
+        $cFehler .= __('errorCertificateSave');
     } elseif ($nReturnValue === 10) {
         // Falsche Kaeuferschutzvariante
-        $cFehler .= 'Fehler: Ihre Trusted Shops ID entspricht nicht dem ausgewählten Käuferschutz Typ.';
+        $cFehler .= __('errorTSIDBuyerProtectionMismatch');
     } elseif ($nReturnValue === 11) {
         // SOAP Fehler
-        $cFehler .= 'Fehler: Interner SOAP Fehler. Entweder ist das Netzwerkprotokoll SOAP ' .
-            'nicht eingebunden oder der Trusted Shops Service ist momentan nicht erreichbar.';
+        $cFehler .= '';
     }
 }

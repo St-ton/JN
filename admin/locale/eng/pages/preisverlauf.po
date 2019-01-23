@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "configurePriceFlow"
 msgstr "Preisverlauf-Einstellungen"
 
@@ -7,3 +11,5 @@ msgstr "https://jtl-url.de/9m031"
 msgid "configurePriceFlowDesc"
 msgstr "Einstellungen zum Preisverlaufgraphen können Sie hier vornehmen."
 
+msgid "errorColorCode"
+msgstr "Bitte den Farbcode in folgender Schreibweise angeben: z.B. #FFFFFF"

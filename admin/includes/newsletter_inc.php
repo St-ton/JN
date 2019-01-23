@@ -260,12 +260,10 @@ function speicherVorlage($cPost_arr)
             $_upd->cInhaltText   = $oNewsletterVorlage->cInhaltText;
             $_upd->dStartZeit    = $oNewsletterVorlage->dStartZeit;
             Shop::Container()->getDB()->update('tnewslettervorlage', 'kNewsletterVorlage', $kNewsletterVorlage, $_upd);
-            $GLOBALS['cHinweis'] .= 'Die Vorlage "' . $oNewsletterVorlage->cName .
-                '" wurde erfolgreich editiert.<br />';
+            $GLOBALS['cHinweis'] .= sprintf(__('successNewsletterTemplateEdit'), $oNewsletterVorlage->cName) .'<br />';
         } else {
             $kNewsletterVorlage   = Shop::Container()->getDB()->insert('tnewslettervorlage', $oNewsletterVorlage);
-            $GLOBALS['cHinweis'] .= 'Die Vorlage "' . $oNewsletterVorlage->cName .
-                '" wurde erfolgreich gespeichert.<br />';
+            $GLOBALS['cHinweis'] .= sprintf(__('successNewsletterTemplateSave'), $oNewsletterVorlage->cName) .'<br />';
         }
         $oNewsletterVorlage->kNewsletterVorlage = $kNewsletterVorlage;
 

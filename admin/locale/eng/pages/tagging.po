@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "tagging"
 msgstr "Produkttags"
 
@@ -52,3 +56,35 @@ msgstr "Einstellungen"
 msgid "taggingSave"
 msgstr "Speichern"
 
+msgid "errorTagMapSelf"
+msgstr "Der Tag %s kann nicht auf den gleichen Tagbegriff gemappt werden."
+
+msgid "successTagRefresh"
+msgstr "Die Tags wurden erfolgreich aktualisiert."
+
+msgid "successTagDelete"
+msgstr "Der Tag %s wurde erfolgreich gelöscht."
+
+msgid "successTagMap"
+msgstr "Der Tag %s wurde erfolgreich auf %s gemappt.."
+
+msgid "errorTagNotFound"
+msgstr "Es wurde kein Tag mit der ID %s gefunden."
+
+msgid "errorMapNotFound"
+msgstr "Es wurde kein Mapping mit der ID %s gefunden."
+
+msgid "errorAtLeastOneTag"
+msgstr "Bitte wählen Sie mindestens einen Tag aus."
+
+msgid "errorAtLeastOneMap"
+msgstr "Bitte wählen Sie mindestens ein Mapping aus."
+
+msgid "successMapDelete"
+msgstr "Das Mapping %s wurde erfolgreich gelöscht."
+
+msgid "successTagDeleteProduct"
+msgstr "Der Tag wurde erfolgreich bei Ihren markierten Artikeln gelöscht."
+
+msgid "errorProductTagDelete"
+msgstr "Fehler: Ihre markierten Artikel zum Produkttag konnten nicht gelöscht werden."

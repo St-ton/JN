@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "emailTemplates"
 msgstr "E-Mail-Vorlagen"
 
@@ -103,3 +107,38 @@ msgstr "E-Mail Absendername"
 msgid "emailCopyTo"
 msgstr "E-Mail Kopieadresse"
 
+msgid "errorTemplate"
+msgstr "Die Emailvorlage ist fehlerhaft."
+
+msgid "successTemplateReset"
+msgstr "Ihre markierte Emailvorlage wurde erfolgreich zurückgesetzt"
+
+msgid "errorTemplateMissing"
+msgstr "Es existiert keine Emailvorlage: "
+
+msgid "successEmailSend"
+msgstr "E-Mail wurde erfolgreich versendet."
+
+msgid "errorEmailSend"
+msgstr "E-Mail konnte nicht versendet werden."
+
+msgid "errorFileName"
+msgstr "Fehler: Ihr Dateiname %s enthält unzulässige Zeichen (Erlaubt sind A-Z, a-z, 0-9, _ und -)."
+
+msgid "errorFileSave"
+msgstr "Fehler: Die Dateien konnten nicht geschrieben werden. 'Prüfen Sie bitte, ob das PDF Verzeichnis Schreibrechte besitzt."
+
+msgid "errorFileNameMissing"
+msgstr "Fehler: Bitte geben Sie zu jeder Datei auch einen Dateinamen (Wunschnamen) ein."
+
+msgid "errorFileSizeType"
+msgstr "Fehler: Die Datei muss ein PDF sein und darf maximal 2MB groß sein"
+
+msgid "errorFileNamePdfMissing"
+msgstr "Fehler: Sie haben zu einem PDF keinen Dateinamen angegeben."
+
+msgid "successTemplateEdit"
+msgstr "Emailvorlage erfolgreich geändert."
+
+msgid "successFileAppendixDelete"
+msgstr "Ihre Dateianhänge für Ihre gewählte Sprache, wurden erfolgreich gelöscht."

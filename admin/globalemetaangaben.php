@@ -65,7 +65,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form
     Shop::Container()->getDB()->delete('texcludekeywords', 'cISOSprache', $keywords->cISOSprache);
     Shop::Container()->getDB()->insert('texcludekeywords', $keywords);
     Shop::Container()->getCache()->flushAll();
-    $chinweis .= 'Ihre Einstellungen wurden übernommen.<br />';
+    $chinweis .= __('successConfigSave') . '<br />';
     unset($oConfig_arr);
 }
 

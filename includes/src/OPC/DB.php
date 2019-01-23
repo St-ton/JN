@@ -240,7 +240,7 @@ class DB
 
         /** @var MissingPortlet $portlet */
         $portlet = (new MissingPortlet('MissingPortlet', 0, 0))
-            ->setMissingClassName($class)
+            ->setMissingClass($class)
             ->setTitle('Missing Portlet "' . $class . '"')
             ->setGroup('hidden')
             ->setActive(false);

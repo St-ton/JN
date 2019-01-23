@@ -285,7 +285,7 @@ GUI.prototype = {
 
         this.io.getConfigPanelHtml(
             portletData.class,
-            portletData.missingClassName,
+            portletData.missingClass,
             portletData.properties,
             this.onGetConfigPanelHtml
         );

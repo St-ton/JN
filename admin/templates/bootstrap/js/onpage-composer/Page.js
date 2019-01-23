@@ -265,7 +265,7 @@ Page.prototype = {
         var subareas = portlet.find('.opc-area').not(portlet.find('[data-portlet] .opc-area'));
 
         if (data.class === 'MissingPortlet') {
-            result.missingClass = data.missingClassName;
+            result.missingClass = data.missingClass;
         }
 
         for(var i=0; i<subareas.length; i++) {

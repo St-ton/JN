@@ -13,33 +13,33 @@ class MissingPortletInstance extends PortletInstance
     /**
      * @var string
      */
-    protected $missingClassName = '';
+    protected $missingClass = '';
 
     /**
      * @param MissingPortlet $portlet
-     * @param string         $missingClassName
+     * @param string         $missingClass
      */
-    public function __construct(MissingPortlet $portlet, string $missingClassName)
+    public function __construct(MissingPortlet $portlet, string $missingClass)
     {
         parent::__construct($portlet);
-        $this->setMissingClassName($missingClassName);
+        $this->setMissingClass($missingClass);
     }
 
     /**
      * @return string
      */
-    public function getMissingClassName(): string
+    public function getMissingClass(): string
     {
-        return $this->missingClassName;
+        return $this->missingClass;
     }
 
     /**
-     * @param string $missingClassName
+     * @param string $missingClass
      * @return $this
      */
-    public function setMissingClassName(string $missingClassName): self
+    public function setMissingClass(string $missingClass): self
     {
-        $this->missingClassName = $missingClassName;
+        $this->missingClass = $missingClass;
 
         return $this;
     }
@@ -49,9 +49,8 @@ class MissingPortletInstance extends PortletInstance
      */
     public function jsonSerializeShort()
     {
-        $result = parent::jsonSerializeShort();
-
-        $result['missingClassName'] = $this->getMissingClassName();
+        $result                     = parent::jsonSerializeShort();
+        $result['missingClass'] = $this->getMissingClass();
 
         return $result;
     }

@@ -19,7 +19,7 @@ class MissingPortlet extends Portlet
     /**
      * @var string
      */
-    protected $missingClassName = '';
+    protected $missingClass = '';
 
     /**
      * @var null|Extension
@@ -58,18 +58,18 @@ class MissingPortlet extends Portlet
     /**
      * @return string
      */
-    public function getMissingClassName(): string
+    public function getMissingClass(): string
     {
-        return $this->missingClassName;
+        return $this->missingClass;
     }
 
     /**
-     * @param string $missingClassName
+     * @param string $missingClass
      * @return $this
      */
-    public function setMissingClassName(string $missingClassName)
+    public function setMissingClass(string $missingClass)
     {
-        $this->missingClassName = $missingClassName;
+        $this->missingClass = $missingClass;
 
         return $this;
     }

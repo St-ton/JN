@@ -183,10 +183,10 @@ class Service
         $portlet = $this->db->getPortlet($class);
 
         if ($portlet instanceof MissingPortlet) {
-            return new MissingPortletInstance($portlet, $portlet->getMissingClassName());
+            return new MissingPortletInstance($portlet, $portlet->getMissingClass());
         }
 
-        return new PortletInstance($this->db->getPortlet($class));
+        return new PortletInstance($portlet);
     }
 
     /**
@@ -221,11 +221,11 @@ class Service
      * @return string
      * @throws \Exception
      */
-    public function getConfigPanelHtml($portletClass, $missingClassName, $props): string
+    public function getConfigPanelHtml($portletClass, $missingClass, $props): string
     {
         return $this->getPortletInstance([
             'class'        => $portletClass,
-            'missingClass' => $missingClassName,
+            'missingClass' => $missingClass,
             'properties'   => $props,
         ])->getConfigPanelHtml();
     }

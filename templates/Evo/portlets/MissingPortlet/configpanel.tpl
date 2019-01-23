@@ -1,5 +1,5 @@
 <p>
-    The <b>{$portlet->getMissingClassName()}</b> Portlet is either not installed or currently just set inactive.
+    The <b>{$portlet->getMissingClass()}</b> Portlet is either not installed or currently just set inactive.
 </p>
 <p>
     Please install and activate the missing Plugin

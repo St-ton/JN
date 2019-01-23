@@ -2011,16 +2011,16 @@
         },
         {
             "name": "studio-42/elfinder",
-            "version": "2.1.44",
+            "version": "2.1.46",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Studio-42/elFinder.git",
-                "reference": "8dadc8cb94ffb3b932b8c7af4077b548062719a6"
+                "reference": "67799d42e7ee0afd3ed13e95f935694a8b3820d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Studio-42/elFinder/zipball/8dadc8cb94ffb3b932b8c7af4077b548062719a6",
-                "reference": "8dadc8cb94ffb3b932b8c7af4077b548062719a6",
+                "url": "https://api.github.com/repos/Studio-42/elFinder/zipball/67799d42e7ee0afd3ed13e95f935694a8b3820d1",
+                "reference": "67799d42e7ee0afd3ed13e95f935694a8b3820d1",
                 "shasum": ""
             },
             "require": {
@@ -2065,7 +2065,7 @@
             ],
             "description": "File manager for web",
             "homepage": "http://elfinder.org",
-            "time": "2018-12-15T10:55:18+00:00"
+            "time": "2019-01-14T03:59:31+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -2197,16 +2197,16 @@
         },
         {
             "name": "tightenco/collect",
-            "version": "v5.7.20",
+            "version": "v5.7.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tightenco/collect.git",
-                "reference": "48296279085ffde345c1c2513df7ed5209f80a6c"
+                "reference": "124cb1074cf739fdc2d72d7d299095d7e272dc71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tightenco/collect/zipball/48296279085ffde345c1c2513df7ed5209f80a6c",
-                "reference": "48296279085ffde345c1c2513df7ed5209f80a6c",
+                "url": "https://api.github.com/repos/tightenco/collect/zipball/124cb1074cf739fdc2d72d7d299095d7e272dc71",
+                "reference": "124cb1074cf739fdc2d72d7d299095d7e272dc71",
                 "shasum": ""
             },
             "require": {
@@ -2243,7 +2243,7 @@
                 "collection",
                 "laravel"
             ],
-            "time": "2019-01-09T14:58:39+00:00"
+            "time": "2019-01-22T17:10:37+00:00"
         },
         {
             "name": "tubalmartin/cssmin",
@@ -3130,16 +3130,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.5.1",
+            "version": "7.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "c23d78776ad415d5506e0679723cb461d71f488f"
+                "reference": "7c89093bd00f7d5ddf0ab81dee04f801416b4944"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c23d78776ad415d5506e0679723cb461d71f488f",
-                "reference": "c23d78776ad415d5506e0679723cb461d71f488f",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/7c89093bd00f7d5ddf0ab81dee04f801416b4944",
+                "reference": "7c89093bd00f7d5ddf0ab81dee04f801416b4944",
                 "shasum": ""
             },
             "require": {
@@ -3210,7 +3210,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-12-12T07:20:32+00:00"
+            "time": "2019-01-15T08:19:08+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",

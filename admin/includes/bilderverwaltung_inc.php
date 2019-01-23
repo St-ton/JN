@@ -117,9 +117,9 @@ function clearImageCache($type, bool $isAjax = false)
         MediaImage::clearCache($type);
         unset($_SESSION['image_count'], $_SESSION['renderedImages']);
         if ($isAjax === true) {
-            return ['success' => 'Cache wurde erfolgreich zurückgesetzt'];
+            return ['success' => __('successCacheReset')];
         }
-        Shop::Smarty()->assign('success', 'Cache wurde erfolgreich zurückgesetzt');
+        Shop::Smarty()->assign('success', __('successCacheReset'));
     }
 
     return [];

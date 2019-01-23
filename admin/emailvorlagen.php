@@ -43,7 +43,7 @@ if (Request::verifyGPCDataInt('kPlugin') > 0) {
 // Errorhandler
 if (isset($_GET['err'])) {
     setzeFehler($_GET['kEmailvorlage'], true);
-    $cFehler = '<b>Die Emailvorlage ist fehlerhaft.</b>';
+    $cFehler = __('errorTemplate');
     if (is_array($_SESSION['last_error'])) {
         $cFehler .= '<br />' . $_SESSION['last_error']['message'];
         unset($_SESSION['last_error']);
@@ -137,7 +137,7 @@ if (isset($_POST['resetEmailvorlage'])
                 }
             }
         }
-        $cHinweis .= 'Ihre markierte Emailvorlage wurde erfolgreich zurückgesetzt.<br />';
+        $cHinweis .= __('successTemplateReset') . '<br />';
     }
 }
 if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
@@ -585,13 +585,13 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
                 $sendStatus = false;
             }
         } else {
-            $cHinweis .= 'Es existiert keine Emailvorlage: ' . $Sprache->cNameDeutsch . '<br/>';
+            $cHinweis .= __('errorTemplateMissing') . $Sprache->cNameDeutsch . '<br/>';
         }
     }
     if ($sendStatus === true) {
-        $cHinweis .= 'E-Mail wurde erfolgreich versendet.';
+        $cHinweis .= __('successEmailSend');
     } else {
-        $cFehler = 'E-Mail konnte nicht versendet werden.';
+        $cFehler = __('errorEmailSend');
     }
 }
 if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
@@ -655,9 +655,10 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                             $filenames[] = $_POST['dateiname_' . ($i + 1) . '_' . $Sprache->kSprache];
                             unset($_POST['dateiname_' . ($i + 1) . '_' . $Sprache->kSprache]);
                         } else {
-                            $cFehler .= 'Fehler: Ihr Dateiname "' .
-                                $_POST['dateiname_' . ($i + 1) . '_' . $Sprache->kSprache] .
-                                '" enthält unzulässige Zeichen (Erlaubt sind A-Z, a-z, 0-9, _ und -).<br />';
+                            $cFehler .= sprintf(
+                                __('errorFileName'),
+                                $_POST['dateiname_' . ($i + 1) . '_' . $Sprache->kSprache]
+                            ) . '<br />';
                             $nFehler  = 1;
                             break;
                         }
@@ -686,8 +687,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                                 $_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['tmp_name'],
                                 $cUploadDatei
                             )) {
-                                $cFehler .= 'Fehler: Die Dateien konnten nicht geschrieben werden. ' .
-                                    'Prüfen Sie bitte, ob das PDF Verzeichnis Schreibrechte besitzt.<br />';
+                                $cFehler .= __('errorFileSave') . '<br />';
                                 $nFehler  = 1;
                                 break;
                             }
@@ -695,13 +695,12 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                             $pdfFiles[]  = $localized->kEmailvorlage . '_' .
                                 $Sprache->kSprache . '_' . $i . $cPlugin . '.pdf';
                         } else {
-                            $cFehler .= 'Fehler: Bitte geben Sie zu jeder Datei ' .
-                                'auch einen Dateinamen (Wunschnamen) ein.<br />';
+                            $cFehler .= __('errorFileNameMissing') . '<br />';
                             $nFehler  = 1;
                             break;
                         }
                     } else {
-                        $cFehler .= 'Fehler: Die Datei muss ein PDF sein und darf maximal 2MB groß sein.<br />';
+                        $cFehler .= __('errorFileSizeType') . '<br />';
                         $nFehler  = 1;
                         break;
                     }
@@ -713,8 +712,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                     && strlen($_POST['dateiname_' . $i . '_' . $Sprache->kSprache]) === 0
                 ) {
                     $cFehlerAnhang_arr[$Sprache->kSprache][$i] = 1;
-                    $cFehler                                  .= 'Fehler: Sie haben zu einem PDF keinen ' .
-                        'Dateinamen angegeben.<br />';
+                    $cFehler                                  .= __('errorFileNamePdfMissing') . '<br />';
                     $nFehler                                   = 1;
                     break;
                 }
@@ -730,13 +728,12 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                     if (strlen($regs[0]) === strlen($_POST[$idx])) {
                         $filenames[] = $_POST[$idx];
                     } else {
-                        $cFehler .= 'Fehler: Ihr Dateiname "' . $_POST[$idx] .
-                            '" enthält unzulässige Zeichen (Erlaubt sind A-Z, a-z, 0-9, _ und -).<br />';
+                        $cFehler .= __('errorFileName') . '<br />';
                         $nFehler  = 1;
                         break;
                     }
                 } else {
-                    $cFehler .= 'Fehler: Sie haben zu einem PDF keinen Dateinamen angegeben.<br />';
+                    $cFehler .= __('errorFileNamePdfMissing') . '<br />';
                     $nFehler  = 1;
                     break;
                 }
@@ -822,13 +819,13 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
         $step = 'prebearbeiten';
     } elseif ($oSmartyError->nCode == 0) {
         setzeFehler((int)$_POST['kEmailvorlage'], false, true);
-        $cHinweis = 'Emailvorlage erfolgreich geändert.';
+        $cHinweis = __('successTemplateEdit');
         $step     = 'uebersicht';
         $continue = (isset($_POST['continue']) && $_POST['continue'] === '1');
     } else {
         $nFehler = 1;
         $step    = 'prebearbeiten';
-        $cFehler = '<b>Die E-Mail Vorlage ist fehlerhaft</b><br />' . $oSmartyError->cText;
+        $cFehler = __('errorTemplate') . '<br />' . $oSmartyError->cText;
         setzeFehler($_POST['kEmailvorlage'], true);
     }
 }
@@ -884,7 +881,7 @@ if (((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $con
             ],
             $upd
         );
-        $cHinweis .= 'Ihre Dateianhänge für Ihre gewählte Sprache, wurden erfolgreich gelöscht.<br />';
+        $cHinweis .= __('successFileAppendixDelete') . '<br />';
     }
 
     $step       = 'bearbeiten';

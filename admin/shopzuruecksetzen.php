@@ -244,9 +244,9 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && Form
         }
         Shop::Container()->getCache()->flushAll();
         $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
-        $cHinweis = 'Der Shop wurde mit Ihren gewählten Optionen zurückgesetzt.';
+        $cHinweis = __('successShopReturn');
     } else {
-        $cFehler = 'Bitte wählen Sie mindestens eine Option aus.';
+        $cFehler = __('errorChooseOption');
     }
 
     executeHook(HOOK_BACKEND_SHOP_RESET_AFTER);

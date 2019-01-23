@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "pluginverwaltung"
 msgstr "Pluginverwaltung"
 
@@ -130,3 +134,50 @@ msgstr "Das Plugin wurde in einer aktuelleren Version hochgeladen und kann geupd
 msgid "pluginUpdateExistsError"
 msgstr "Dieses hat jedoch den folgenden Fehler"
 
+msgid "successPluginKeySave"
+msgstr "Ihr Plugin-Lizenzschlüssel wurde gespeichert."
+
+msgid "errorPluginKeyInvalid"
+msgstr "Fehler: Ihr Lizenzschlüssel ist ungültig."
+
+msgid "errorPluginNotFound"
+msgstr "Fehler: Ihr Plugin wurde nicht in der Datenbank gefunden."
+
+msgid "successPluginActivate"
+msgstr "Ihre ausgewählten Plugins wurden erfolgreich aktiviert."
+
+msgid "errorAtLeastOnePlugin"
+msgstr "Fehler: Bitte wählen Sie mindestens ein Plugin aus."
+
+msgid "successPluginDeactivate"
+msgstr "Ihre ausgewählten Plugins wurden erfolgreich deaktiviert."
+
+msgid "errorPluginDeleteSQL"
+msgstr "Fehler: Plugin konnte aufgrund eines SQL-Fehlers nicht deinstalliert werden."
+
+msgid "successPluginDelete"
+msgstr "Ihre ausgewählten Plugins wurden erfolgreich deinstalliert."
+
+msgid "errorPluginNotFoundMultiple"
+msgstr "Fehler: Ein oder mehrere Plugins wurden nicht in der Datenbank gefunden."
+
+msgid "successPluginRefresh"
+msgstr "Ihre ausgewählten Plugins wurden erfolgreich neu geladen."
+
+msgid "errorPluginRefresh"
+msgstr "Fehler: Ein Plugin konnte nicht neu geladen werden."
+
+msgid "successPlguinUpdate"
+msgstr "Ihr Plugin wurde erfolgreich geupdated."
+
+msgid "errorPluginUpdate"
+msgstr "Fehler: Beim Update ist ein Fehler aufgetreten. Fehlercode: "
+
+msgid "successPluginInstall"
+msgstr "Ihre ausgewählten Plugins wurden erfolgreich installiert."
+
+msgid "errorPluginInstall"
+msgstr "Fehler: Bei der Installation ist ein Fehler aufgetreten. Fehlercode: "
+
+msgid "successVariableRestore"
+msgstr "Sie haben den Installationszustand der ausgewählten Variable erfolgreich wiederhergestellt."

@@ -26,21 +26,21 @@ if (Request::verifyGPCDataInt('save') === 1 && Form::validateToken()) {
     $xPlausiVar_arr = $oPlausiTrennzeichen->getPlausiVar();
     if (count($xPlausiVar_arr) === 0) {
         if (speicherTrennzeichen($_POST)) {
-            $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
+            $cHinweis = __('successConfigSave');
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_CORE]);
         } else {
-            $cFehler = 'Fehler: Ihr Einstellungen konnten nicht gespeichert werden!';
+            $cFehler = __('errorConfigSave');
             $smarty->assign('xPostVar_arr', $oPlausiTrennzeichen->getPostVar());
         }
     } else {
-        $cFehler = 'Fehler: Bitte füllen Sie alle Pflichtangaben aus!';
+        $cFehler = __('errorFillRequired');
         $idx     = 'nDezimal_' . JTL_SEPARATOR_WEIGHT;
         if (isset($xPlausiVar_arr[$idx]) && $xPlausiVar_arr[$idx] === 2) {
-            $cFehler = 'Fehler: Die Anzahl der Dezimalstellen beim Gewicht dürfen nicht größer 4 sein!';
+            $cFehler = __('errorWeightDecimals');
         }
         $idx = 'nDezimal_' . JTL_SEPARATOR_AMOUNT;
         if (isset($xPlausiVar_arr[$idx]) && $xPlausiVar_arr[$idx] === 2) {
-            $cFehler = 'Fehler: Die Anzahl der Dezimalstellen bei der Menge dürfen nicht größer 2 sein!';
+            $cFehler = __('errorAmountDecimals');
         }
         $smarty->assign('xPlausiVar_arr', $oPlausiTrennzeichen->getPlausiVar())
                ->assign('xPostVar_arr', $oPlausiTrennzeichen->getPostVar());

@@ -31,13 +31,13 @@ if (isset($_POST['erstellenShowButton'])) {
     $kCheckBox_arr = $_POST['kCheckBox'];
     if (isset($_POST['checkboxAktivierenSubmit'])) {
         $oCheckBox->aktivateCheckBox($kCheckBox_arr);
-        $cHinweis = 'Ihre markierten Checkboxen wurden erfolgreich aktiviert.';
+        $cHinweis = __('successCheckboxActivate');
     } elseif (isset($_POST['checkboxDeaktivierenSubmit'])) {
         $oCheckBox->deaktivateCheckBox($kCheckBox_arr);
-        $cHinweis = 'Ihre markierten Checkboxen wurden erfolgreich deaktiviert.';
+        $cHinweis = __('successCheckboxDeactivate');
     } elseif (isset($_POST['checkboxLoeschenSubmit'])) {
         $oCheckBox->deleteCheckBox($kCheckBox_arr);
-        $cHinweis = 'Ihre markierten Checkboxen wurden erfolgreich gelöscht.';
+        $cHinweis = __('successCheckboxDelete');
     }
 } elseif (Request::verifyGPCDataInt('edit') > 0) {
     $kCheckBox = Request::verifyGPCDataInt('edit');
@@ -51,9 +51,9 @@ if (isset($_POST['erstellenShowButton'])) {
     if (count($cPlausi_arr) === 0) {
         $oCheckBox = speicherCheckBox($_POST, $oSprach_arr);
         $cStep     = 'uebersicht';
-        $cHinweis  = 'Ihre Checkbox wurde erfolgreich erstellt.';
+        $cHinweis  = __('successCheckboxCreate');
     } else {
-        $cFehler = 'Fehler: Bitte füllen Sie alle nötigen Angaben aus!';
+        $cFehler = __('errorFillRequired');
         $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST))
                ->assign('cPlausi_arr', $cPlausi_arr);
         if ($kCheckBox > 0) {

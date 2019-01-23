@@ -76,7 +76,7 @@ if (Request::verifyGPCDataInt('Suche') === 1) {
         $smarty->assign('cSuche', $search)
                ->assign('cSuchTyp', Request::verifyGPDataString('cSuchTyp'));
     } else {
-        $cFehler = 'Fehler: Bitte geben Sie einen Suchbegriff ein.';
+        $cFehler = __('errorSearchTermMissing');
     }
 }
 
@@ -121,15 +121,15 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
     if (Request::verifyGPCDataInt('bewertungen') === 1) {
         if (isset($_POST['freischaltensubmit'])) {
             if (schalteBewertungFrei($_POST['kBewertung'], $_POST['kArtikel'], $_POST['kBewertungAll'])) {
-                $cHinweis .= 'Ihre markierten Bewertungen wurden erfolgreich freigeschaltet.<br />';
+                $cHinweis .= __('successRatingUnlock') . '<br />';
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Bewertung.<br />';
+                $cFehler .= __('errorAtLeastOneRating') . '<br />';
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
             if (loescheBewertung($_POST['kBewertung'])) {
-                $cHinweis .= 'Ihre markierten Bewertungen wurden erfolgreich gelöscht.<br />';
+                $cHinweis .= __('successRatingDelete') . '<br />';
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Bewertung.<br />';
+                $cFehler .= __('errorAtLeastOneRating') . '<br />';
             }
         }
     } elseif (Request::verifyGPCDataInt('suchanfragen') === 1) { // Suchanfragen
@@ -143,83 +143,78 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
 
                     if ($nReturnValue === 1) { // Alles O.K.
                         if (schalteSuchanfragenFrei($_POST['kSuchanfrage'])) {
-                            $cHinweis = 'Ihre markierten Livesuchen wurden erfolgreich auf "' .
-                                $cMapping . '" gemappt.';
+                            $cHinweis = sprintf(__('successLiveSearchMap'), $cMapping);
                         } else {
-                            $cFehler = 'Fehler: Ihre Livesuche wurde zwar erfolgreich gemappt, ' .
-                                'konnte jedoch aufgrund eines unbekannten Fehlers, nicht freigeschaltet werden.';
+                            $cFehler = __('errorLiveSearchMapNotUnlock');
                         }
                     } else {
                         switch ($nReturnValue) {
                             case 2:
-                                $cFehler = 'Fehler: Mapping konnte aufgrund eines ' .
-                                    'unbekannten Fehlers nicht durchgeführt werden.';
+                                $cFehler = __('errorMapUnknown');
                                 break;
                             case 3:
-                                $cFehler = 'Fehler: Mindestens eine Suchanfrage wurde nicht in der Datenbank gefunden.';
+                                $cFehler = __('errorSearchNotFoundDB');
                                 break;
                             case 4:
-                                $cFehler = 'Fehler: Mindestens eine Suchanfrage konnte nicht ' .
-                                    'als Mapping in die Datenbank gespeichert werden.';
+                                $cFehler = __('errorMapDB');
                                 break;
                             case 5:
-                                $cFehler = 'Fehler: Sie haben versucht auf eine ' .
-                                    'nicht existierende Suchanfrage zu mappen.';
+                                $cFehler = __('errorMapToNotExisting');
                                 break;
                             case 6:
-                                $cFehler = 'Fehler: Es kann nicht auf sich selbst gemappt werden.';
+                                $cFehler = __('errorMapSelf');
                                 break;
                             default:
                                 break;
                         }
                     }
                 } else {
-                    $cFehler = 'Fehler: Bitte markieren Sie mindestens eine Livesuche.';
+                    $cFehler = __('errorAtLeastOneLiveSearch');
                 }
             } else {
-                $cFehler = 'Fehler: Bitte geben Sie ein Mappingnamen an.';
+                $cFehler = __('errorMapNameMissing');
             }
         }
 
         if (isset($_POST['freischaltensubmit'])) {
             if (isset($_POST['kSuchanfrage']) && schalteSuchanfragenFrei($_POST['kSuchanfrage'])) {
-                $cHinweis .= 'Ihre markierten Suchanfragen wurden erfolgreich freigeschaltet.<br />';
+                $cHinweis .= __('successSearchUnlock') . '<br />';
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Suchanfrage.<br />';
+                $cFehler .= __('errorAtLeastOneSearch') . '<br />';
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
             if (isset($_POST['kSuchanfrage']) && loescheSuchanfragen($_POST['kSuchanfrage'])) {
-                $cHinweis .= 'Ihre markierten Suchanfragen wurden erfolgreich gelöscht.<br />';
+                $cHinweis .= __('successSearchDelete') . '<br />';
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Suchanfrage.<br />';
+                $cFehler .= __('errorAtLeastOneSearch') . '<br />';
             }
         }
     } elseif (Request::verifyGPCDataInt('tags') === 1 && Form::validateToken()) { // Tags
         if (isset($_POST['freischaltensubmit'])) {
             if (isset($_POST['kTag']) && schalteTagsFrei($_POST['kTag'])) {
-                $cHinweis .= 'Ihre markierten Tags wurden erfolgreich freigeschaltet.<br />';
+                $cHinweis .= __('successTagUnlock') . '<br />';
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Tag.<br />';
+                $cFehler .= __('errorAtLeastOneTag') . '<br />';
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
             if (isset($_POST['kTag']) && loescheTags($_POST['kTag'])) {
-                $cHinweis .= 'Ihre markierten Tags wurden erfolgreich gelöscht.<br />';
+                $cHinweis .= __('successTagDelete') . '<br />';
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Tag.<br />';
+                $cFehler .= __('errorAtLeastOneTag') . '<br />';
             }
         }
     } elseif (Request::verifyGPCDataInt('newskommentare') === 1 && Form::validateToken()) {
         if (isset($_POST['freischaltensubmit'])) {
             if (isset($_POST['kNewsKommentar']) && schalteNewskommentareFrei($_POST['kNewsKommentar'])) {
-                $cHinweis .= 'Ihre markierten Newskommentare wurden erfolgreich freigeschaltet.<br />';
+                $cHinweis .= __('successNewsCommentUnlock') . '<br />';
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newskommentar.<br />';
+                $cFehler .= __('errorAtLeastOneNewsComment') . '<br />';
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
             if (isset($_POST['kNewsKommentar']) && loescheNewskommentare($_POST['kNewsKommentar'])) {
-                $cHinweis .= 'Ihre markierten Newskommentare wurden erfolgreich gelöscht.<br />';
+                $cHinweis .= __('successNewsCommentDelete') . '<br />';
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newskommentar.<br />';
+                $cFehler .= __('errorAtLeastOneNewsComment') . '<br />';
             }
         }
     } elseif (Request::verifyGPCDataInt('newsletterempfaenger') === 1 && Form::validateToken()) {
@@ -227,17 +222,17 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
             if (isset($_POST['kNewsletterEmpfaenger'])
                 && schalteNewsletterempfaengerFrei($_POST['kNewsletterEmpfaenger'])
             ) {
-                $cHinweis .= 'Ihre markierten Newsletterempfänger wurden erfolgreich freigeschaltet.<br />';
+                $cHinweis .= __('successNewsletterUnlock') . '<br />';
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletterempfänger.<br />';
+                $cFehler .= __('errorAtLeastOneNewsletter') . '<br />';
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
             if (isset($_POST['kNewsletterEmpfaenger'])
                 && loescheNewsletterempfaenger($_POST['kNewsletterEmpfaenger'])
             ) {
-                $cHinweis .= 'Ihre markierten Newsletterempfänger wurden erfolgreich gelöscht.<br />';
+                $cHinweis .= __('successNewsletterDelete') . '<br />';
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletterempfänger.<br />';
+                $cFehler .= __('errorAtLeastOneNewsletter') . '<br />';
             }
         }
     }

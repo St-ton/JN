@@ -38,7 +38,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
 
     if (!in_array($index, ['tartikel', 'tartikelsprache'], true)) {
         header(Request::makeHTTPHeader(403), true);
-        echo json_encode((object)['error' => 'Ungültiger Index angegeben']);
+        echo json_encode((object)['error' => __('errorIndexInvalid')]);
         exit;
     }
 
@@ -82,7 +82,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
                 break;
             default:
                 header(Request::makeHTTPHeader(403), true);
-                echo json_encode((object)['error' => 'Ungültiger Index angegeben']);
+                echo json_encode((object)['error' => __('errorIndexInvalid')]);
                 exit;
         }
 
@@ -101,8 +101,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
         }
 
         if ($res === 0) {
-            $cFehler      = 'Der Index für die Volltextsuche konnte nicht angelegt werden! ' .
-                'Die Volltextsuche wird deaktiviert.';
+            $cFehler      = __('errorIndexNotCreatable');
             $shopSettings = Shopsetting::getInstance();
             $settings     = $shopSettings[Shopsetting::mapSettingName(CONF_ARTIKELUEBERSICHT)];
 
@@ -119,10 +118,10 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
                 $shopSettings->reset();
             }
         } else {
-            $cHinweis = 'Der Volltextindex für ' . $index . ' wurde angelegt!';
+            $cHinweis = sprintf(__('successIndexCreate'), $index);
         }
     } else {
-        $cHinweis = 'Der Volltextindex für ' . $index . ' wurde gelöscht!';
+        $cHinweis = sprintf(__('successIndexDelete'), $index);
     }
 
     header(Request::makeHTTPHeader(200), true);
@@ -141,7 +140,7 @@ if (isset($_POST['einstellungen_bearbeiten'])
         if (version_compare($mysqlVersion, '5.6', '<')) {
             //Volltextindizes werden von MySQL mit InnoDB erst ab Version 5.6 unterstützt
             $_POST['suche_fulltext'] = 'N';
-            $cFehler                 = 'Die Volltextsuche erfordert MySQL ab Version 5.6!';
+            $cFehler                 = __('errorFulltextSearchMYSQL');
         } else {
             // Bei Volltextsuche die Mindeswortlänge an den DB-Parameter anpassen
             $oValue                     = Shop::Container()->getDB()->query(
@@ -183,9 +182,9 @@ if (isset($_POST['einstellungen_bearbeiten'])
     }
 
     if ($sucheFulltext && $fulltextChanged) {
-        $cHinweis .= ' Volltextsuche wurde aktiviert.';
+        $cHinweis .= __('successSearchActivate');
     } elseif ($fulltextChanged) {
-        $cHinweis .= ' Volltextsuche wurde deaktiviert.';
+        $cHinweis .= __('successSearchDeactivate');
     }
 
     $Einstellungen = Shop::getSettings([$kSektion]);
@@ -201,12 +200,11 @@ if ($Einstellungen['artikeluebersicht']['suche_fulltext'] !== 'N'
         "SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
         \DB\ReturnType::SINGLE_OBJECT
     ))) {
-    $cFehler = 'Der Volltextindex ist nicht vorhanden! ' .
-        'Die Erstellung des Index kann jedoch einige Zeit in Anspruch nehmen. ' .
+    $cFehler = __('errorCreateTime') .
         '<a href="sucheinstellungen.php" title="Aktualisieren"><i class="alert-danger fa fa-refresh"></i></a>';
     Notification::getInstance()->add(
         NotificationEntry::TYPE_WARNING,
-        'Der Volltextindex wird erstellt!',
+        __('indexCreate'),
         'sucheinstellungen.php'
     );
 }

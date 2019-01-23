@@ -7,6 +7,7 @@
 namespace Extensions;
 
 use DB\ReturnType;
+use Filter\Option;
 use Filter\ProductFilter;
 use Filter\SearchResults;
 
@@ -355,9 +356,9 @@ class AuswahlAssistent
     }
 
     /**
-     * @return \stdClass|null
+     * @return Option|null
      */
-    public function getLastSelectedValue()
+    public function getLastSelectedValue(): ?Option
     {
         $question      = \end($this->questions);
         $selectedValue = \end($this->selections);
@@ -366,12 +367,12 @@ class AuswahlAssistent
     }
 
     /**
-     * @param string $cName
-     * @return mixed
+     * @param string $name
+     * @return string
      */
-    public function getConf($cName)
+    public function getConf(string $name): ?string
     {
-        return $this->config[$cName];
+        return $this->config[$name];
     }
 
     /**
@@ -387,8 +388,8 @@ class AuswahlAssistent
     /**
      * @param string                     $cKey
      * @param int                        $kKey
-     * @param int                        $kSprache
-     * @param \Smarty\JTLSmarty          $smarty
+     * @param int                        $languageID
+     * @param \Smarty\JTLSmarty|null     $smarty
      * @param array                      $selected
      * @param \Filter\ProductFilter|null $pf
      * @return self|null
@@ -396,7 +397,7 @@ class AuswahlAssistent
     public static function startIfRequired(
         $cKey,
         int $kKey,
-        int $kSprache = 0,
+        int $languageID = 0,
         $smarty = null,
         $selected = [],
         $pf = null
@@ -408,20 +409,18 @@ class AuswahlAssistent
         $filterCount = $pf !== null ? $pf->getFilterCount() : 0;
         // only start if no filters are already set
         if ($filterCount === 0) {
-            $AWA = new self($cKey, $kKey, $kSprache, true);
+            $wizard = new self($cKey, $kKey, $languageID, true);
             // only start if the respective selection wizard group is enabled (active)
-            if ($AWA->isActive()) {
+            if ($wizard->isActive()) {
                 foreach ($selected as $kMerkmalWert) {
-                    $AWA->setNextSelection($kMerkmalWert);
+                    $wizard->setNextSelection($kMerkmalWert);
                 }
-
-                $AWA->filter();
-
+                $wizard->filter();
                 if ($smarty !== null) {
-                    $smarty->assign('AWA', $AWA);
+                    $smarty->assign('AWA', $wizard);
                 }
 
-                return $AWA;
+                return $wizard;
             }
         }
 

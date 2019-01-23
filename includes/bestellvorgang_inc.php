@@ -2591,7 +2591,7 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
         'www'               => 'cWWW',
         'ustid'             => 'cUSTID',
         'geburtstag'        => 'dGeburtstag',
-        'kundenherkunft'    => 'cHerkunft',
+        'kundenherkunft'    => 'cHerkunft'
     ];
 
     if ($kundenaccount !== 0) {

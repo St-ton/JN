@@ -902,10 +902,9 @@ class Kupon
             //invalid at the moment
             $ret['ungueltig'] = 3;
         } elseif ($Kupon->fMindestbestellwert > \Session\Frontend::getCart()->gibGesamtsummeWarenExt(
-                [C_WARENKORBPOS_TYP_ARTIKEL],
-                true
-            )
-            || ($Kupon->cWertTyp === 'festpreis'
+            [C_WARENKORBPOS_TYP_ARTIKEL],
+            true
+        ) || ($Kupon->cWertTyp === 'festpreis'
                 && $Kupon->nGanzenWKRabattieren === '0'
                 && $Kupon->fMindestbestellwert > gibGesamtsummeKuponartikelImWarenkorb(
                     $Kupon,
@@ -915,7 +914,9 @@ class Kupon
         ) {
             //minimum order value not reached for whole cart or the products which are valid for this coupon
             $ret['ungueltig'] = 4;
-        } elseif ($Kupon->kKundengruppe > 0 && (int)$Kupon->kKundengruppe !== \Session\Frontend::getCustomerGroup()->getID()) {
+        } elseif ($Kupon->kKundengruppe > 0
+            && (int)$Kupon->kKundengruppe !== \Session\Frontend::getCustomerGroup()->getID()
+        ) {
             //invalid customer group
             $ret['ungueltig'] = 5;
         } elseif ($Kupon->nVerwendungen > 0 && $Kupon->nVerwendungen <= $Kupon->nVerwendungenBisher) {
@@ -953,7 +954,7 @@ class Kupon
                 $ret['ungueltig'] = 11;
             } elseif (!empty($Kupon->nVerwendungenProKunde) && $Kupon->nVerwendungenProKunde > 0) {
                 //check if max usage of coupon is reached for cutomer
-                $countCouponUsed= Shop::Container()->getDB()->executeQueryPrepared(
+                $countCouponUsed = Shop::Container()->getDB()->executeQueryPrepared(
                     'SELECT nVerwendungen
                       FROM tkuponkunde
                       WHERE kKupon = :coupon

@@ -1452,7 +1452,7 @@ class Cart
             ->loescheSpezialPos(\C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
             ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
             ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-           ->loescheSpezialPos(\C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
 
         Kupon::resetNewCustomerCoupon(false);
         if ($setzePositionsPreise) {

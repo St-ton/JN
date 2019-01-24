@@ -59,23 +59,23 @@ function getRequestBot(): int
 }
 
 /**
- * @param string $cDatei
+ * @param string $file
  * @return null|string
  */
-function getRequestFile($cDatei)
+function getRequestFile($file)
 {
-    $cDateiInfo_arr = pathinfo($cDatei);
+    $pathInfo = pathinfo($file);
 
-    if (!isset($cDateiInfo_arr['extension']) || !in_array($cDateiInfo_arr['extension'], ['xml', 'txt', 'gz'], true)) {
+    if (!isset($pathInfo['extension']) || !in_array($pathInfo['extension'], ['xml', 'txt', 'gz'], true)) {
         return null;
     }
-    if ($cDatei !== $cDateiInfo_arr['basename']) {
+    if ($file !== $pathInfo['basename']) {
         return null;
     }
-    $cDatei = $cDateiInfo_arr['basename'];
+    $file = $pathInfo['basename'];
 
-    return file_exists(PFAD_ROOT . PFAD_EXPORT . $cDatei)
-        ? $cDatei
+    return file_exists(PFAD_ROOT . PFAD_EXPORT . $file)
+        ? $file
         : null;
 }
 

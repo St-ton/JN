@@ -429,38 +429,35 @@ function validateCoupon($oKupon)
     $cFehler_arr = [];
 
     if ($oKupon->cName === '') {
-        $cFehler_arr[] = 'Es wurde kein Kuponname angegeben. Bitte geben Sie einen Namen an!';
+        $cFehler_arr[] = __('errorCouponNameMissing');
     }
     if (($oKupon->cKuponTyp === Kupon::TYPE_STANDARD || $oKupon->cKuponTyp === Kupon::TYPE_NEWCUSTOMER) && $oKupon->fWert < 0) {
-        $cFehler_arr[] = 'Bitte geben Sie einen nicht-negativen Kuponwert an!';
+        $cFehler_arr[] = __('errorCouponValueNegative');
     }
     if ($oKupon->fMindestbestellwert < 0) {
-        $cFehler_arr[] = 'Bitte geben Sie einen nicht-negativen Mindestbestellwert an!';
+        $cFehler_arr[] = __('errorCouponMinOrderValueNegative');
     }
     if ($oKupon->cKuponTyp === Kupon::TYPE_SHIPPING && $oKupon->cLieferlaender === '') {
-        $cFehler_arr[] = 'Bitte geben Sie die Länderkürzel (ISO-Codes) unter "Lieferländer" an, ' .
-            'für die dieser Versandkupon gelten soll!';
+        $cFehler_arr[] = __('errorCouponISOMissing');
     }
     if (isset($oKupon->massCreationCoupon)) {
         $cCodeLength = (int)$oKupon->massCreationCoupon->hashLength
             + (int)strlen($oKupon->massCreationCoupon->prefixHash)
             + (int)strlen($oKupon->massCreationCoupon->suffixHash);
         if ($cCodeLength > 32) {
-            $cFehler_arr[] = 'Der zu generiende Code ist länger als 32 Zeichen. Bitte verringern Sie die Menge ' .
-                'der Zeichen in Präfix, Suffix oder geben eine kleinere Zahl bei der Länge des Zufallcodes an.';
+            $cFehler_arr[] = __('errorCouponCodeLong');
         }
         if ($cCodeLength < 2) {
-            $cFehler_arr[] = 'Der zu generiende Code ist kürzer als 2 Zeichen. Bitte vergrößern Sie die Menge ' .
-                'der Zeichen in Präfix, Suffix oder geben eine größere Zahl bei der Länge des Zufallcodes an.';
+            $cFehler_arr[] = __('errorCouponCodeShort');
         }
         if (!$oKupon->massCreationCoupon->lowerCase
             && !$oKupon->massCreationCoupon->upperCase
             && !$oKupon->massCreationCoupon->numbersHash
         ) {
-            $cFehler_arr[] = 'Bitte wählen Sie für &quot;Zufallscode mit ...&quot; mindestens eine Option aus!';
+            $cFehler_arr[] = __('errorCouponCodeOptionSelect');
         }
     } elseif (strlen($oKupon->cCode) > 32) {
-        $cFehler_arr[] = 'Bitte geben Sie einen kürzeren Code ein. Es sind maximal 32 Zeichen erlaubt.';
+        $cFehler_arr[] = __('errorCouponCodeLong');
     }
     if ($oKupon->cCode !== ''
         && !isset($oKupon->massCreationCoupon)
@@ -475,8 +472,7 @@ function validateCoupon($oKupon)
             \DB\ReturnType::SINGLE_OBJECT
         );
         if (is_object($queryRes)) {
-            $cFehler_arr[] = 'Der angegeben Kuponcode wird bereits von einem anderen Kupon verwendet. Bitte ' .
-                'wählen Sie einen anderen Code!';
+            $cFehler_arr[] = __('errorCouponCodeDuplicate');
         }
     }
 
@@ -486,8 +482,7 @@ function validateCoupon($oKupon)
     foreach ($cArtNr_arr as $cArtNr) {
         $res = Shop::Container()->getDB()->select('tartikel', 'cArtNr', $cArtNr);
         if ($res === null) {
-            $cFehler_arr[] = 'Die Artikelnummer "' . $cArtNr .
-                '" gehört zu keinem gültigen Artikel und wird entfernt.';
+            $cFehler_arr[] = sprintf(__('errorProductNumberNotFound'), $cArtNr);
         } else {
             $validArtNrs[] = $cArtNr;
         }
@@ -500,7 +495,7 @@ function validateCoupon($oKupon)
         foreach ($cLandISO_arr as $cLandISO) {
             $res = Shop::Container()->getDB()->select('tland', 'cISO', $cLandISO);
             if ($res === null) {
-                $cFehler_arr[] = 'Der ISO-Code "' . $cLandISO . '" gehört zu keinem gültigen Land.';
+                $cFehler_arr[] = sprintf(__('errorISOInvalid'), $cLandISO);
             }
         }
     }
@@ -509,19 +504,16 @@ function validateCoupon($oKupon)
     $dGueltigBis = date_create($oKupon->dGueltigBis);
 
     if ($dGueltigAb === false) {
-        $cFehler_arr[] = 'Bitte geben sie den Beginn des Gültigkeitszeitraumes ' .
-            'im Format (<strong>tt.mm.yyyy ss:mm</strong>) an!';
+        $cFehler_arr[] = __('errorPeriodBeginFormat');
     }
     if ($dGueltigBis === false) {
-        $cFehler_arr[] = 'Bitte geben sie das Ende des Gültigkeitszeitraumes ' .
-            'im Format (<strong>tt.mm.yyyy ss:mm</strong>) an!';
+        $cFehler_arr[] = __('errorPeriodEndFormat');
     }
 
     $bOpenEnd = $oKupon->dGueltigBis === null;
 
     if ($dGueltigAb !== false && $dGueltigBis !== false && $dGueltigAb > $dGueltigBis && $bOpenEnd === false) {
-        $cFehler_arr[] = 'Das Ende des Gültigkeitszeitraumes muss nach dem Beginn des ' .
-            'Gültigkeitszeitraumes liegen!';
+        $cFehler_arr[] = __('errorPeriodEndAfterBegin');
     }
 
     return $cFehler_arr;

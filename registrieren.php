@@ -23,7 +23,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';
 
 Shop::setPageType(PAGE_REGISTRIERUNG);
-$Einstellungen        = Shop::getSettings([
+$conf  = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
     CONF_KUNDEN,
@@ -31,20 +31,19 @@ $Einstellungen        = Shop::getSettings([
     CONF_KUNDENWERBENKUNDEN,
     CONF_NEWSLETTER
 ]);
-$kLink                = $linkHelper->getSpecialPageLinkKey(LINKTYP_REGISTRIEREN);
-$link                 = $linkHelper->getPageLink($kLink);
-$step                 = 'formular';
-$titel                = Shop::Lang()->get('newAccount', 'login');
-$editRechnungsadresse = isset($_GET['editRechnungsadresse'])
+$kLink = $linkHelper->getSpecialPageLinkKey(LINKTYP_REGISTRIEREN);
+$link  = $linkHelper->getPageLink($kLink);
+$step  = 'formular';
+$titel = Shop::Lang()->get('newAccount', 'login');
+$edit  = isset($_GET['editRechnungsadresse'])
     ? (int)$_GET['editRechnungsadresse']
     : 0;
 if (isset($_POST['editRechnungsadresse'])) {
-    $editRechnungsadresse = (int)$_POST['editRechnungsadresse'];
+    $edit = (int)$_POST['editRechnungsadresse'];
 }
 if (isset($_POST['form']) && (int)$_POST['form'] === 1) {
     kundeSpeichern($_POST);
 }
-// Kunde ändern
 if (isset($_GET['editRechnungsadresse']) && (int)$_GET['editRechnungsadresse'] === 1) {
     gibKunde();
 }
@@ -52,15 +51,12 @@ if ($step === 'formular') {
     gibFormularDaten(Request::verifyGPCDataInt('checkout'));
 }
 if (isset($_FILES['vcard'])
-    && $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y'
+    && $conf['kunden']['kundenregistrierung_vcardupload'] === 'Y'
     && Form::validateToken()
 ) {
     gibKundeFromVCard($_FILES['vcard']['tmp_name']);
 }
-$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-Shop::Smarty()->assign('editRechnungsadresse', $editRechnungsadresse)
+Shop::Smarty()->assign('editRechnungsadresse', $edit)
     ->assign('Ueberschrift', $titel)
     ->assign('Link', $link)
     ->assign('step', $step)
@@ -68,15 +64,11 @@ Shop::Smarty()->assign('editRechnungsadresse', $editRechnungsadresse)
     ->assign('code_registrieren', false)
     ->assign('unregForm', 0);
 
-$cCanonicalURL    = $linkHelper->getStaticRoute('registrieren.php');
-$oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_REGISTRIEREN);
-$cMetaTitle       = $oMeta->cTitle;
-$cMetaDescription = $oMeta->cDesc;
-$cMetaKeywords    = $oMeta->cKeywords;
+$cCanonicalURL = $linkHelper->getStaticRoute('registrieren.php');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-if (isset($Einstellungen['kunden']['kundenregistrierung_pruefen_zeit'])
-    && $Einstellungen['kunden']['kundenregistrierung_pruefen_zeit'] === 'Y'
+if (isset($conf['kunden']['kundenregistrierung_pruefen_zeit'])
+    && $conf['kunden']['kundenregistrierung_pruefen_zeit'] === 'Y'
 ) {
     $_SESSION['dRegZeit'] = time();
 }

@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "globalemetaangaben"
 msgstr "Globale Meta-Angaben"
 
@@ -33,4 +37,3 @@ msgstr "Auszuschliessende Wörter"
 
 msgid "spaceSeparated"
 msgstr "getrennt durch Leerzeichen"
-

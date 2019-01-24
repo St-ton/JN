@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "dbcheck"
 msgstr "Datenbank-Check"
 
@@ -6,3 +10,27 @@ msgstr "Mit diesem Tool können Sie die Konsistenz Ihrer Datenbank überprüfen"
 
 msgid "dbcheckURL"
 msgstr "https://jtl-url.de/vrf0o"
+
+msgid "errorReadStructureFile"
+msgstr "Fehler beim Lesen der Struktur-Datei."
+
+msgid "errorNoInnoTable"
+msgstr "ist keine InnoDB-Tabelle"
+
+msgid "errorWrongCollation"
+msgstr "hat die falsche Kollation"
+
+msgid "errorDatatTypeInRow"
+msgstr "Datentyp text in Spalte"
+
+msgid "errorNoTable"
+msgstr "Tabelle nicht vorhanden"
+
+msgid "errorRowMissing"
+msgstr "Spalte %s in %s nicht vorhanden"
+
+msgid "errorWrongCollationRow"
+msgstr "Inkonsistente Kollation in Spalte %s"
+
+msgid "errorEmptyCache"
+msgstr "Leeren des Objektcache fehlgeschlagen! (%s)"

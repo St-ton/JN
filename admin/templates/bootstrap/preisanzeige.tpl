@@ -1,1 +1,1 @@
-{*removed in 5.0*}
+{*removed in 5.0.0*}

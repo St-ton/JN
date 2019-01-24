@@ -8,11 +8,11 @@ use Helpers\Request;
 
 require_once __DIR__ . '/syncinclude.php';
 
-$Einstellungen = Shop::getSettings([CONF_BILDER]);
-if ($Einstellungen['bilder']['bilder_externe_bildschnittstelle'] === 'N') {
+$conf = Shop::getSettings([CONF_BILDER]);
+if ($conf['bilder']['bilder_externe_bildschnittstelle'] === 'N') {
     exit();
 }
-if ($Einstellungen['bilder']['bilder_externe_bildschnittstelle'] === 'W' && !auth()) {
+if ($conf['bilder']['bilder_externe_bildschnittstelle'] === 'W' && !auth()) {
     exit();
 }
 

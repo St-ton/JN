@@ -41,7 +41,7 @@
             <div class="panel-footer">
                 <span class="btn-group">
                     <button name="newskommentarsavesubmit" type="submit" value="{__('newsSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('newsSave')}</button>
-                    <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> Abbrechen</a>
+                    <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> {__('Cancel')}</a>
                 </span>
             </div>
         </div>

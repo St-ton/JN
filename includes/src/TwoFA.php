@@ -31,7 +31,7 @@ class TwoFA
      *
      * @var string
      */
-    private $szShopName;
+    private $shopName;
 
     /**
      * constructor
@@ -43,7 +43,7 @@ class TwoFA
         $this->oUserTuple->cLogin         = '';
         $this->oUserTuple->b2FAauth       = false;
         $this->oUserTuple->c2FAauthSecret = '';
-        $this->szShopName                 = '';
+        $this->shopName                   = '';
     }
 
     /**
@@ -63,7 +63,7 @@ class TwoFA
      */
     public function is2FAauthSecretExist(): bool
     {
-        return ('' !== $this->oUserTuple->c2FAauthSecret);
+        return $this->oUserTuple->c2FAauthSecret !== '';
     }
 
     /**
@@ -77,7 +77,7 @@ class TwoFA
         // (only if we want a new secret! (something like lazy loading))
         $this->oGA = new PHPGangsta_GoogleAuthenticator();
 
-        if (null === $this->oUserTuple) {
+        if ($this->oUserTuple === null) {
             $this->oUserTuple = new stdClass();
         }
         $this->oUserTuple->c2FAauthSecret = $this->oGA->createSecret();
@@ -99,22 +99,22 @@ class TwoFA
      * instantiate a authenticator-object and try to verify the given code
      * by load the users secret
      *
-     * @param string $szCode - numerical code from the login screen (the code, which the user has found on his mobile)
+     * @param string $code - numerical code from the login screen (the code, which the user has found on his mobile)
      * @return bool - true="code ist valid" | false="code is invalid"
      */
-    public function isCodeValid($szCode): bool
+    public function isCodeValid($code): bool
     {
         // store a google-authenticator-object instance
         // (only if we check any credential! (something like lazy loading))
         $this->oGA = new PHPGangsta_GoogleAuthenticator();
         // codes with a length over 6 chars are emergency-codes
-        if (6 < strlen($szCode)) {
+        if (6 < strlen($code)) {
             // try to find this code in the emergency-code-pool
             $o2FAemergency = new TwoFAEmergency();
 
-            return $o2FAemergency->isValidEmergencyCode($this->oUserTuple->kAdminlogin, $szCode);
+            return $o2FAemergency->isValidEmergencyCode($this->oUserTuple->kAdminlogin, $code);
         }
-        return $this->oGA->verifyCode($this->oUserTuple->c2FAauthSecret, $szCode);
+        return $this->oGA->verifyCode($this->oUserTuple->c2FAauthSecret, $code);
     }
 
     /**
@@ -125,30 +125,30 @@ class TwoFA
      */
     public function getQRcode(): string
     {
-        if ('' !== $this->oUserTuple->c2FAauthSecret) {
-            $szTotpUrl = rawurlencode('JTL-Shop ' . $this->oUserTuple->cLogin . '@' . $this->getShopName());
+        if ($this->oUserTuple->c2FAauthSecret !== '') {
+            $totpUrl = rawurlencode('JTL-Shop ' . $this->oUserTuple->cLogin . '@' . $this->getShopName());
             // by the QR-Code there are 63 bytes allowed for this URL-appendix
             // so we shorten that string (and we take care about the hex-character-replacements!)
-            $nOverhang = strlen($szTotpUrl) - 63;
-            if (0 < $nOverhang) {
-                for ($i=0; $i < $nOverhang; $i++) {
-                    if ('%' === $szTotpUrl[strlen($szTotpUrl)-3]) {
-                        $szTotpUrl  = substr($szTotpUrl, 0, -3); // shorten by 3 byte..
-                        $nOverhang -= 2;                         // ..and correct the counter (here nOverhang)
+            $overflow = strlen($totpUrl) - 63;
+            if (0 < $overflow) {
+                for ($i=0; $i < $overflow; $i++) {
+                    if ('%' === $totpUrl[strlen($totpUrl)-3]) {
+                        $totpUrl  = substr($totpUrl, 0, -3); // shorten by 3 byte..
+                        $overflow -= 2;                         // ..and correct the counter (here nOverhang)
                     } else {
-                        $szTotpUrl = substr($szTotpUrl, 0, -1);  // shorten by 1 byte
+                        $totpUrl = substr($totpUrl, 0, -1);  // shorten by 1 byte
                     }
                 }
             }
             // create the QR-code
-            $szQRString = new QRCode(
-                'otpauth://totp/' . $szTotpUrl .
+            $qrCode = new QRCode(
+                'otpauth://totp/' . $totpUrl .
                 '?secret=' . $this->oUserTuple->c2FAauthSecret .
                 '&issuer=JTL-Software',
                 new QRString()
             );
 
-            return $szQRString->output();
+            return $qrCode->output();
         }
 
         return ''; // better return a empty string instead of a bar-code with empty secret!
@@ -160,7 +160,7 @@ class TwoFA
      *
      * @param int - the (DB-)id of this user-account
      */
-    public function setUserByID(int $iID)
+    public function setUserByID(int $iID): void
     {
         $this->oUserTuple = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $iID);
     }
@@ -172,12 +172,12 @@ class TwoFA
      *
      * @param string - the users login-name
      */
-    public function setUserByName(string $szUserName)
+    public function setUserByName(string $userName): void
     {
         // write at least the user's name we get via e.g. ajax
-        $this->oUserTuple->cLogin = $szUserName;
+        $this->oUserTuple->cLogin = $userName;
         // check if we know that user yet
-        if (($oTuple = Shop::Container()->getDB()->select('tadminlogin', 'cLogin', $szUserName)) !== null) {
+        if (($oTuple = Shop::Container()->getDB()->select('tadminlogin', 'cLogin', $userName)) !== null) {
             $this->oUserTuple = $oTuple;
         }
     }
@@ -199,12 +199,12 @@ class TwoFA
      */
     public function getShopName(): string
     {
-        if ('' === $this->szShopName) {
-            $oResult          = Shop::Container()->getDB()->select('teinstellungen', 'cName', 'global_shopname');
-            $this->szShopName = $oResult->cWert;
+        if ($this->shopName !== '') {
+            $result         = Shop::Container()->getDB()->select('teinstellungen', 'cName', 'global_shopname');
+            $this->shopName = $result->cWert;
         }
 
-        return trim($this->szShopName);
+        return trim($this->shopName);
     }
 
 
@@ -223,16 +223,16 @@ class TwoFA
      * @param string $userName
      * @return string
      */
-    public static function getNewTwoFA($userName)
+    public static function getNewTwoFA($userName): string
     {
-        $oTwoFA = new TwoFA();
-        $oTwoFA->setUserByName($userName);
+        $twoFA = new TwoFA();
+        $twoFA->setUserByName($userName);
 
-        $oUserData           = new stdClass();
-        $oUserData->szSecret = $oTwoFA->createNewSecret()->getSecret();
-        $oUserData->szQRcode = $oTwoFA->getQRcode();
+        $userData           = new stdClass();
+        $userData->szSecret = $twoFA->createNewSecret()->getSecret();
+        $userData->szQRcode = $twoFA->getQRcode();
 
-        return json_encode($oUserData);
+        return json_encode($userData);
     }
 
     /**
@@ -241,17 +241,17 @@ class TwoFA
      */
     public static function genTwoFAEmergencyCodes(string $userName): stdClass
     {
-        $oTwoFA = new TwoFA();
-        $oTwoFA->setUserByName($userName);
+        $twoFA = new TwoFA();
+        $twoFA->setUserByName($userName);
 
         $data            = new stdClass();
-        $data->loginName = $oTwoFA->getUserTuple()->cLogin;
-        $data->shopName  = $oTwoFA->getShopName();
+        $data->loginName = $twoFA->getUserTuple()->cLogin;
+        $data->shopName  = $twoFA->getShopName();
 
-        $oTwoFAgenEmergCodes = new TwoFAEmergency();
-        $oTwoFAgenEmergCodes->removeExistingCodes($oTwoFA->getUserTuple());
+        $emergencyCodes = new TwoFAEmergency();
+        $emergencyCodes->removeExistingCodes($twoFA->getUserTuple());
 
-        $data->vCodes = $oTwoFAgenEmergCodes->createNewCodes($oTwoFA->getUserTuple());
+        $data->vCodes = $emergencyCodes->createNewCodes($twoFA->getUserTuple());
 
         return $data;
     }

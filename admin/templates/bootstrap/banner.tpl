@@ -1,23 +1,23 @@
 {include file='tpl_inc/header.tpl' bForceFluid=($cAction === 'area')}
-{config_load file="$lang.conf" section="banner"}
+{config_load file="$lang.conf" section='banner'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('banner') cBeschreibung=__('bannerDesc') cDokuURL=__('bannerURL')}
 
 <div id="content">
     {if $cFehler}
         {if isset($cPlausi_arr.vDatum)}
-            <div class="alert alert-danger">{if $cPlausi_arr.vDatum == 1}Konnte Ihre Eingabe f&uuml;r das 'Aktiv von Datum' nicht verarbeiten.{/if}</div>
+            <div class="alert alert-danger">{if $cPlausi_arr.vDatum == 1}Konnte Ihre Eingabe für das 'Aktiv von Datum' nicht verarbeiten.{/if}</div>
         {/if}
         {if isset($cPlausi_arr.bDatum)}
             <div class="alert alert-danger">
                 {if $cPlausi_arr.bDatum == 1}
-                    Konnte Ihre Eingabe f&uuml;r das 'Aktiv bis Datum' nicht verarbeiten.
+                    Konnte Ihre Eingabe für das 'Aktiv bis Datum' nicht verarbeiten.
                 {elseif $cPlausi_arr.bDatum == 2}
-                    Das Datum bis wann ein Banner aktiv ist muss gr&ouml;&szlig;er sein als das 'Aktiv von Datum'.
+                    Das Datum bis wann ein Banner aktiv ist muss größer sein als das 'Aktiv von Datum'.
                 {/if}
             </div>
         {/if}
         {if isset($cPlausi_arr.oFile)}
-            <div class="alert alert-danger"><i class="fa fa-warning"></i> Die Bilddatei ist zu gro&szlig;.</div>
+            <div class="alert alert-danger"><i class="fa fa-warning"></i> Die Bilddatei ist zu groß.</div>
         {/if}
     {/if}
 
@@ -44,7 +44,7 @@
                 var maxsize = {$nMaxFileSize};
                 if (filesize >= maxsize) {
                     $('.input-group.file-input')
-                        .after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist gr&ouml;&szlig;er als das Uploadlimit des Servers.</div>')
+                        .after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist größer als das Uploadlimit des Servers.</div>')
                         .slideDown();
                     file2large = true;
                 } else {
@@ -112,11 +112,11 @@
                         <input class="form-control" id="oFile" type="file" name="oFile" />
                     </div>
                     <div class="input-group">
-                        <span class="input-group-addon"><label for="cPath">&raquo; vorhandene Datei w&auml;hlen</label></span>
+                        <span class="input-group-addon"><label for="cPath">&raquo; vorhandene Datei wählen</label></span>
                         <span class="input-group-wrap">
                         {if $cBannerFile_arr|@count > 0}
                             <select id="cPath" name="cPath" class="form-control">
-                                <option value="">Banner w&auml;hlen</option>
+                                <option value="">Banner wählen</option>
                                 {foreach $cBannerFile_arr as $cBannerFile}
                                     <option value="{$cBannerFile}" {if (isset($oBanner->cBildPfad) && $cBannerFile == $oBanner->cBildPfad) || (isset($oBanner->cBild) && $cBannerFile == $oBanner->cBild)}selected="selected"{/if}>{$cBannerFile}</option>
                                 {/foreach}
@@ -128,11 +128,11 @@
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon"><label for="vDatum">Aktiv von</label></span>
-                        <input class="form-control" type="text" name="vDatum" id="vDatum" value="{if isset($vDatum) && $vDatum > 0}{$vDatum|date_format:"%d.%m.%Y"}{elseif isset($oBanner->vDatum) && $oBanner->vDatum > 0}{$oBanner->vDatum|date_format:"%d.%m.%Y"}{/if}" />
+                        <input class="form-control" type="text" name="vDatum" id="vDatum" value="{if isset($vDatum) && $vDatum > 0}{$vDatum|date_format:'%d.%m.%Y'}{elseif isset($oBanner->vDatum) && $oBanner->vDatum > 0}{$oBanner->vDatum|date_format:'%d.%m.%Y'}{/if}" />
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon"><label for="bDatum">Aktiv bis</label></span>
-                        <input class="form-control" type="text" name="bDatum" id="bDatum" value="{if isset($bDatum) && $bDatum > 0}{$bDatum|date_format:"%d.%m.%Y"}{elseif isset($oBanner->bDatum) && $oBanner->bDatum > 0}{$oBanner->bDatum|date_format:"%d.%m.%Y"}{/if}" />
+                        <input class="form-control" type="text" name="bDatum" id="bDatum" value="{if isset($bDatum) && $bDatum > 0}{$bDatum|date_format:'%d.%m.%Y'}{elseif isset($oBanner->bDatum) && $oBanner->bDatum > 0}{$oBanner->bDatum|date_format:'%d.%m.%Y'}{/if}" />
                     </div>
                 </div><!-- /.panel-body -->
             </div><!-- /.panel -->
@@ -174,11 +174,11 @@
                         <span class="input-group-wrap">
                             <select class="form-control" id="nSeitenTyp" name="nSeitenTyp">
                                 {if isset($nSeitenTyp) && intval($nSeitenTyp) > 0}
-                                    {include file="tpl_inc/seiten_liste.tpl" nPage=$nSeitenTyp}
+                                    {include file='tpl_inc/seiten_liste.tpl' nPage=$nSeitenTyp}
                                 {elseif isset($oExtension->nSeite)}
-                                    {include file="tpl_inc/seiten_liste.tpl" nPage=$oExtension->nSeite}
+                                    {include file='tpl_inc/seiten_liste.tpl' nPage=$oExtension->nSeite}
                                 {else}
-                                    {include file="tpl_inc/seiten_liste.tpl" nPage=0}
+                                    {include file='tpl_inc/seiten_liste.tpl' nPage=0}
                                 {/if}
                             </select>
                         </span>
@@ -329,7 +329,7 @@
 
         </form>
     </div>
-    {elseif $cAction == 'area'}
+    {elseif $cAction === 'area'}
     <script type="text/javascript" src="{$shopURL}/includes/libs/flashchart/js/json/json2.js"></script>
     <script type="text/javascript" src="{$shopURL}/{$PFAD_ADMIN}/{$currentTemplateDir}js/clickareas.js"></script>
     <link rel="stylesheet" href="{$shopURL}/{$PFAD_ADMIN}/{$currentTemplateDir}css/clickareas.css" type="text/css" media="screen" />
@@ -406,9 +406,9 @@
                 </div>
                 <input type="hidden" name="id" id="id" />
                 <div class="save_wrapper btn-group">
-                    <a href="#" class="btn btn-default" id="article_browser">Artikel w&auml;hlen</a>
-                    <a href="#" class="btn btn-default" id="article_unlink">Artikel L&ouml;sen</a>
-                    <button type="button" class="btn btn-danger" id="remove"><i class="fa fa-trash"></i> Zone l&ouml;schen</button>
+                    <a href="#" class="btn btn-default" id="article_browser">Artikel wählen</a>
+                    <a href="#" class="btn btn-default" id="article_unlink">Artikel Lösen</a>
+                    <button type="button" class="btn btn-danger" id="remove"><i class="fa fa-trash"></i> Zone löschen</button>
                 </div>
             </div>
         </div>
@@ -419,7 +419,7 @@
     <div class="save_wrapper btn-group">
         <a class="btn btn-default" href="#" id="area_new"><i class="fa fa-share"></i> Neue Zone</a>
         <a class="btn btn-primary" href="#" id="area_save"><i class="fa fa-save"></i> Zonen speichern</a>
-        <a class="btn btn-danger" href="banner.php" id="cancel"><i class="fa fa-angle-double-left"></i> zur&uuml;ck</a>
+        <a class="btn btn-danger" href="banner.php" id="cancel"><i class="fa fa-angle-double-left"></i> zurück</a>
     </div>
     {else}
         <div id="settings">
@@ -476,7 +476,7 @@
                    </div>
                 {/if}
                 <div class="panel-footer">
-                    <a class="btn btn-primary" href="banner.php?action=new&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> Banner hinzuf&uuml;gen</a>
+                    <a class="btn btn-primary" href="banner.php?action=new&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> Banner hinzufügen</a>
                 </div>
             </div>
         </div>

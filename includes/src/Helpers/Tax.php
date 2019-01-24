@@ -38,8 +38,8 @@ class Tax
             && \is_array($_SESSION['Steuersatz'])
             && !isset($_SESSION['Steuersatz'][$taxID])
         ) {
-            $nKey_arr = \array_keys($_SESSION['Steuersatz']);
-            $taxID    = $nKey_arr[0];
+            $keys  = \array_keys($_SESSION['Steuersatz']);
+            $taxID = $keys[0];
         }
 
         return $_SESSION['Steuersatz'][$taxID];

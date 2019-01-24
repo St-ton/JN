@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "cache"
 msgstr "Cache"
 
@@ -145,3 +149,38 @@ msgstr "Erweiterte Optionen anzeigen"
 msgid "configurationError"
 msgstr "(fehlerhaft konfiguriert)"
 
+msgid "successCacheEmptied"
+msgstr " Caches erfolgreich geleert."
+
+msgid "errorNoCacheType"
+msgstr "Kein Cache-Typ ausgewählt."
+
+msgid "errorCacheTypeDelete"
+msgstr "Konnte Cache %s nicht löschen (evtl. bereits leer)."
+
+msgid "successCacheTypeActivate"
+msgstr "Ausgewählte Typen erfolgreich aktiviert."
+
+msgid "successCacheTypeDeactivate"
+msgstr "Ausgewählte Typen erfolgreich deaktiviert."
+
+msgid "successCacheDelete"
+msgstr "Object Cache wurde erfolgreich gelöscht."
+
+msgid "errorCacheDelete"
+msgstr "Der Cache konnte nicht gelöscht werden."
+
+msgid "successCacheMethodSave"
+msgstr " wurde als Cache-Methode gespeichert."
+
+msgid "errorCacheMethodSelect"
+msgstr "Konnte keine funktionierende Cache-Methode auswählen."
+
+msgid "errorFileDelete"
+msgstr "Die Datei %s konnte nicht gelöscht werden!"
+
+msgid "errorDirDelete"
+msgstr "Das Verzeichnis %s konnte nicht gelöscht werden!"
+
+msgid "successTemplateCacheDelete"
+msgstr "Es wurden %d Dateien im Templatecache gelöscht!"

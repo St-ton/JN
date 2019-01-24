@@ -58,9 +58,9 @@ if (!function_exists('Shop')) {
 $DB    = new \DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 $cache = Shop::Container()->getCache()->setJtlCacheConfig();
 
-$GLOBALS['bSeo']      = true; //compatibility!
-$oPluginHookListe_arr = \Plugin\Helper::getHookList();
-$oSprache             = Sprache::getInstance(true);
+$GLOBALS['bSeo'] = true; //compatibility!
+$pluginHooks     = \Plugin\Helper::getHookList();
+$oSprache        = Sprache::getInstance();
 
 /**
  * @param string     $cacheID
@@ -1096,13 +1096,21 @@ function handleOldPriceFormat($objs)
 }
 
 /**
- * @param int $kArtikel
+ * @param int[] $productIDs
  */
-function handlePriceRange(int $kArtikel)
+function handlePriceRange(array $productIDs)
 {
-    $db            = Shop::Container()->getDB();
-    $priceRangeArr = $db->queryPrepared(
-        "SELECT baseprice.kArtikel,
+    $db = Shop::Container()->getDB();
+    $db->executeQuery(
+        'DELETE FROM tpricerange
+            WHERE kArtikel IN (' . implode(',', $productIDs) . ')',
+        \DB\ReturnType::DEFAULT
+    );
+    $uniqueProductIDs = implode(',', array_unique($productIDs));
+    $db->executeQuery(
+        'INSERT INTO tpricerange
+            (kArtikel, kKundengruppe, kKunde, nRangeType, fVKNettoMin, fVKNettoMax, nLagerAnzahlMax, dStart, dEnde)
+            SELECT baseprice.kArtikel,
                 COALESCE(baseprice.kKundengruppe, 0) AS kKundengruppe,
                 COALESCE(baseprice.kKunde, 0) AS kKunde,
                 baseprice.nRangeType,
@@ -1128,6 +1136,8 @@ function handlePriceRange(int $kArtikel)
                     ON tpreis.kArtikel = tartikel.kArtikel
                 INNER JOIN tpreisdetail 
                     ON tpreisdetail.kPreis = tpreis.kPreis
+                WHERE IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
+                    . $uniqueProductIDs . ')
 
                 UNION ALL
 
@@ -1151,7 +1161,9 @@ function handlePriceRange(int $kArtikel)
                     ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
                 INNER JOIN tsonderpreise 
                     ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
-                WHERE tartikelsonderpreis.cAktiv = 'Y'
+                WHERE tartikelsonderpreis.cAktiv = \'Y\'
+                    AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
+                        . $uniqueProductIDs . ')
             ) baseprice
             LEFT JOIN (
                 SELECT variations.kArtikel, variations.kKundengruppe,
@@ -1171,58 +1183,23 @@ function handlePriceRange(int $kArtikel)
                     LEFT JOIN teigenschaftwertaufpreis 
                         ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                         AND teigenschaftwertaufpreis.kKundengruppe = tkundengruppe.kKundengruppe
+                    WHERE teigenschaft.kArtikel IN (' . $uniqueProductIDs . ')
                     GROUP BY teigenschaft.kArtikel, tkundengruppe.kKundengruppe, teigenschaft.kEigenschaft
                 ) variations
                 GROUP BY variations.kArtikel, variations.kKundengruppe
             ) varaufpreis 
                 ON varaufpreis.kArtikel = baseprice.kKindArtikel 
                 AND baseprice.nIstVater = 0
-            WHERE baseprice.kArtikel = :kArtikel
+            WHERE baseprice.kArtikel IN (' . $uniqueProductIDs . ')
             GROUP BY baseprice.kArtikel,
                 baseprice.kKundengruppe,
                 baseprice.kKunde,
                 baseprice.nRangeType,
                 baseprice.nLagerAnzahlMax,
                 baseprice.dStart,
-                baseprice.dEnde",
-        ['kArtikel' => $kArtikel],
-        \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                baseprice.dEnde',
+        \DB\ReturnType::DEFAULT
     );
-
-    $updated = [];
-    foreach ($priceRangeArr as $priceRange) {
-        $db->queryPrepared(
-            'INSERT INTO tpricerange 
-            (kArtikel, kKundengruppe, kKunde, nRangeType, fVKNettoMin, fVKNettoMax, nLagerAnzahlMax, dStart, dEnde)
-                VALUES (:kArtikel, :kKundengruppe, :kKunde, :nRangeType, :fVKNettoMin,
-                        :fVKNettoMax, :nLagerAnzahlMax, :dStart, :dEnde)
-                ON DUPLICATE KEY UPDATE
-                    fVKNettoMin = :fVKNettoMin,
-                    fVKNettoMax = :fVKNettoMax,
-                    nLagerAnzahlMax = :nLagerAnzahlMax,
-                    dStart = :dStart,
-                    dEnde = :dEnde',
-            $priceRange,
-            \DB\ReturnType::AFFECTED_ROWS
-        );
-        $updated[] = "({$priceRange['kKundengruppe']}, {$priceRange['nRangeType']})";
-    }
-
-    if (count($updated) > 0) {
-        $db->queryPrepared(
-            'DELETE FROM tpricerange
-                WHERE kArtikel = :kArtikel
-                    AND (kKundengruppe, nRangeType) NOT IN (' . implode($updated, ', ') . ')',
-            ['kArtikel' => $kArtikel],
-            \DB\ReturnType::AFFECTED_ROWS
-        );
-    } else {
-        $db->queryPrepared(
-            'DELETE FROM tpricerange WHERE kArtikel = :kArtikel',
-            ['kArtikel' => $kArtikel],
-            \DB\ReturnType::AFFECTED_ROWS
-        );
-    }
 }
 
 /**

@@ -21,7 +21,7 @@
                         <h3 class="panel-title">{__('settings')}</h3>
                     </div>
                     <div class="panel-body">
-                        {foreach name=conf from=$Conf item=cnf}
+                        {foreach $Conf as $cnf}
                             {if $cnf->cConf === 'Y'}
                                 <div class="input-group">
                                     <span class="input-group-addon">
@@ -30,8 +30,8 @@
                                     {if $cnf->cInputTyp === 'selectbox'}
                                         <span class="input-group-wrap">
                                             <select name="{$cnf->cWertName}" id="{$cnf->cWertName}" class="form-control combo">
-                                                {foreach name=selectfor from=$cnf->ConfWerte item=wert}
-                                                    <option value="{$wert->cWert}" {if $cnf->gesetzterWert==$wert->cWert}selected{/if}>{$wert->cName}</option>
+                                                {foreach $cnf->ConfWerte as $wert}
+                                                    <option value="{$wert->cWert}" {if $cnf->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                                 {/foreach}
                                             </select>
                                         </span>
@@ -68,7 +68,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach name=betreffs from=$Betreffs item=Betreff}
+                        {foreach $Betreffs as $Betreff}
                             <tr>
                                 <td>
                                     <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}">{$Betreff->cName}</a>
@@ -103,9 +103,9 @@
                     </div>
                     <div class="panel-body">
                         <div class="settings">
-                            {foreach name=sprachen from=$sprachen item=sprache}
-                                {assign var="cISOcat" value=$sprache->cISO|cat:"_titel"}
-                                {assign var="cISO" value=$sprache->cISO}
+                            {foreach $sprachen as $sprache}
+                                {assign var=cISOcat value=$sprache->cISO|cat:'_titel'}
+                                {assign var=cISO value=$sprache->cISO}
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <label for="cTitle_{$cISO}">{__('title')} ({$sprache->cNameDeutsch})</label>
@@ -115,15 +115,15 @@
                                     </span>
                                 </div>
                             {/foreach}
-                            {foreach name=sprachen from=$sprachen item=sprache}
-                                {assign var="cISOcat" value=$sprache->cISO|cat:"_oben"}
-                                {assign var="cISO" value=$sprache->cISO}
+                            {foreach $sprachen as $sprache}
+                                {assign var=cISOcat value=$sprache->cISO|cat:'_oben'}
+                                {assign var=cISO value=$sprache->cISO}
                                 <div class="category">{__('topContent')} ({$sprache->cNameDeutsch})</div>
                                 <textarea class="ckeditor form-control" name="cContentTop_{$cISO}" id="cContentTop_{$cISO}">{if !empty($Content[$cISOcat])}{$Content[$cISOcat]}{/if}</textarea>
                             {/foreach}
-                            {foreach name=sprachen from=$sprachen item=sprache}
-                                {assign var="cISOcat" value=$sprache->cISO|cat:"_unten"}
-                                {assign var="cISO" value=$sprache->cISO}
+                            {foreach $sprachen as $sprache}
+                                {assign var=cISOcat value=$sprache->cISO|cat:'_unten'}
+                                {assign var=cISO value=$sprache->cISO}
                                 <div class="category">{__('bottomContent')} ({$sprache->cNameDeutsch})</div>
                                 <textarea class="ckeditor form-control" name="cContentBottom_{$cISO}" id="cContentBottom_{$cISO}">{if !empty($Content[$cISOcat])}{$Content[$cISOcat]}{/if}</textarea>
                             {/foreach}

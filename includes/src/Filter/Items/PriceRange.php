@@ -634,7 +634,7 @@ class PriceRange extends AbstractFilter
      */
     public function calculateSteps($fMax, $fMin): \stdClass
     {
-        static $fStepWert_arr = [
+        static $steps = [
             0.001,
             0.005,
             0.01,
@@ -691,31 +691,31 @@ class PriceRange extends AbstractFilter
             100000000.0
         ];
 
-        $nStep      = 10;
-        $fDiffPreis = (float)($fMax - $fMin) * 1000;
-        $nMaxSteps  = $this->getConfig('navigationsfilter')['preisspannenfilter_anzeige_berechnung'] === 'M'
+        $step     = 10;
+        $diff     = (float)($fMax - $fMin) * 1000;
+        $maxSteps = $this->getConfig('navigationsfilter')['preisspannenfilter_anzeige_berechnung'] === 'M'
             ? 10
             : 5;
-        foreach ($fStepWert_arr as $i => $fStepWert) {
-            if (($fDiffPreis / (float)($fStepWert * 1000)) < $nMaxSteps) {
-                $nStep = $i;
+        foreach ($steps as $i => $value) {
+            if (($diff / (float)($value * 1000)) < $maxSteps) {
+                $step = $i;
                 break;
             }
         }
-        $fMax          *= 1000.0;
-        $fMin          *= 1000.0;
-        $fStepWert      = $fStepWert_arr[$nStep] * 1000;
-        $fMaxPreis      = \round(((($fMax * 100) - (($fMax * 100) % ($fStepWert * 100))) + ($fStepWert * 100)) / 100);
-        $fMinPreis      = \round((($fMin * 100) - (($fMin * 100) % ($fStepWert * 100))) / 100);
-        $fDiffPreis     = $fMaxPreis - $fMinPreis;
-        $nAnzahlSpannen = \round($fDiffPreis / $fStepWert);
+        $fMax     *= 1000.0;
+        $fMin     *= 1000.0;
+        $value     = $steps[$step] * 1000;
+        $fMaxPreis = \round(((($fMax * 100) - (($fMax * 100) % ($value * 100))) + ($value * 100)) / 100);
+        $fMinPreis = \round((($fMin * 100) - (($fMin * 100) % ($value * 100))) / 100);
+        $diff      = $fMaxPreis - $fMinPreis;
+        $stepCount = \round($diff / $value);
 
         $oObject                 = new \stdClass();
         $oObject->fMaxPreis      = $fMaxPreis / 1000;
         $oObject->fMinPreis      = $fMinPreis / 1000;
-        $oObject->fStep          = $fStepWert_arr[$nStep];
-        $oObject->fDiffPreis     = $fDiffPreis / 1000;
-        $oObject->nAnzahlSpannen = $nAnzahlSpannen;
+        $oObject->fStep          = $steps[$step];
+        $oObject->fDiffPreis     = $diff / 1000;
+        $oObject->nAnzahlSpannen = $stepCount;
 
         return $oObject;
     }

@@ -11,7 +11,7 @@
     ymin        - string
 *}
 
-{config_load file="$lang.conf" section="statistics"}
+{config_load file="$lang.conf" section='statistics'}
  
 {if $linechart->getActive()}
     <div id="{$id}" style="width: {$width}; height: {$height};"></div>

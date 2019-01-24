@@ -21,7 +21,7 @@
                 {/if}
                 <select title="{__('linkGroupMove')}" class="form-control" name="kLinkgruppe" onchange="document.forms['aenderlinkgruppe_{$link->getID()}_{$id}'].submit();">
                     <option value="-1">{__('linkGroupMove')}</option>
-                    {foreach name=aenderlinkgruppe from=$linkgruppen item=linkgruppeTMP}
+                    {foreach $linkgruppen as $linkgruppeTMP}
                         {if $linkgruppeTMP->getID() != $id && $linkgruppeTMP->getID() > 0}
                             <option value="{$linkgruppeTMP->getID()}">{$linkgruppeTMP->getName()}</option>
                         {/if}
@@ -38,7 +38,7 @@
                 {if $id > 0}
                     <select title="{__('linkGroupCopy')}" class="form-control" name="kLinkgruppe" onchange="document.forms['kopiereinlinkgruppe_{$link->getID()}_{$id}'].submit();">
                         <option value="-1">{__('linkGroupCopy')}</option>
-                        {foreach name=kopiereinlinkgruppe from=$linkgruppen item=linkgruppeTMP}
+                        {foreach $linkgruppen as $linkgruppeTMP}
                             {if $linkgruppeTMP->getID() != $id && $linkgruppeTMP->getID() > 0}
                                 <option value="{$linkgruppeTMP->getID()}">{$linkgruppeTMP->getName()}</option>
                             {/if}
@@ -92,6 +92,6 @@
         </td>
     </tr>
     {if $link->getChildLinks()->count() > 0}
-        {include file="tpl_inc/links_uebersicht_item.tpl" list=$link->getChildLinks() id=$id}
+        {include file='tpl_inc/links_uebersicht_item.tpl' list=$link->getChildLinks() id=$id}
     {/if}
 {/foreach}

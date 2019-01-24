@@ -15,11 +15,11 @@
 {function pageButtons}
     <label>
         {if $bMultiplePages}
-            Eintr&auml;ge {$oPagination->getFirstPageItem() + 1}
+            Einträge {$oPagination->getFirstPageItem() + 1}
             - {$oPagination->getFirstPageItem() + $oPagination->getPageItemCount()}
             von {$oPagination->getItemCount()}
         {else}
-            Eintr&auml;ge gesamt:
+            Einträge gesamt:
         {/if}
     </label>
     {if $bMultiplePages}
@@ -66,7 +66,7 @@
 {/function}
 
 {function itemsPerPageOptions}
-    <label for="{$oPagination->getId()}_nItemsPerPage">Eintr&auml;ge/Seite</label>
+    <label for="{$oPagination->getId()}_nItemsPerPage">Einträge/Seite</label>
     <select class="form-control" name="{$oPagination->getId()}_nItemsPerPage" id="{$oPagination->getId()}_nItemsPerPage"
             onchange="this.form.submit()">
         {foreach $oPagination->getItemsPerPageOptions() as $nItemsPerPageOption}

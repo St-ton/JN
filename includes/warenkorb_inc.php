@@ -65,27 +65,27 @@ function gibXSelling()
 }
 
 /**
- * @param array $Einstellungen
+ * @param array $conf
  * @return array
  * @deprecated since 5.0.0
  */
-function gibGratisGeschenke(array $Einstellungen)
+function gibGratisGeschenke(array $conf)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Cart::getFreeGifts($Einstellungen);
+    return Cart::getFreeGifts($conf);
 }
 
 /**
  * Schaut nach ob eine Bestellmenge > Lagersbestand ist und falls dies erlaubt ist, gibt es einen Hinweis
  *
- * @param array $Einstellungen
+ * @param array $conf
  * @return string
  * @deprecated since 5.0.0
  */
-function pruefeBestellMengeUndLagerbestand($Einstellungen = [])
+function pruefeBestellMengeUndLagerbestand($conf = [])
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Cart::checkOrderAmountAndStock($Einstellungen);
+    return Cart::checkOrderAmountAndStock($conf);
 }
 
 /**

@@ -7,6 +7,7 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
+use Helpers\URL;
 
 /**
  * Class SearchCloud
@@ -21,8 +22,8 @@ final class SearchCloud extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        parent::addMapping('Suchbegriffe', 'Items');
-        parent::addMapping('SuchbegriffeJSON', 'JSON');
+        $this->addMapping('Suchbegriffe', 'Items');
+        $this->addMapping('SuchbegriffeJSON', 'JSON');
         $this->setShow(false);
         $langID    = \Shop::getLanguageID();
         $limit     = (int)$config['boxen']['boxen_livesuche_count'];
@@ -57,8 +58,8 @@ final class SearchCloud extends AbstractBox
                 $cloudEntry->Klasse   = ($prio_step < 1) ?
                     \rand(1, 10) :
                     (\round(($cloudEntry->nAnzahlGesuche - $items[$count - 1]->nAnzahlGesuche) / $prio_step) + 1);
-                $cloudEntry->cURL     = \Helpers\URL::buildURL($cloudEntry, \URLART_LIVESUCHE);
-                $cloudEntry->cURLFull = \Helpers\URL::buildURL($cloudEntry, \URLART_LIVESUCHE, true);
+                $cloudEntry->cURL     = URL::buildURL($cloudEntry, \URLART_LIVESUCHE);
+                $cloudEntry->cURLFull = URL::buildURL($cloudEntry, \URLART_LIVESUCHE, true);
             }
             $this->setShow(true);
             \shuffle($items);

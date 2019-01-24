@@ -106,9 +106,9 @@ if (strlen($oBillpay->getSetting('pid')) > 0
            ->assign('oItem_arr', $oItem_arr)
            ->assign('oPagiLog', $oPagiLog);
 } else {
-    $cFehler = 'Billpay wurde bisher nicht konfiguriert. ' .
+    $cFehler = __('errorBillpayNotConfigured') .
         '<a href="https://jtl-url.de/0kqhs" rel="noopener" target="_blank">' .
-        '<i class="fa fa-external-link"></i> Zur Dokumentation</a>';
+        '<i class="fa fa-external-link"></i>' . __('docu') . '</a>';
 }
 
 $smarty->assign('cFehlerBillpay', $cFehler);

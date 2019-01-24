@@ -485,7 +485,7 @@ class WarenkorbPers
         int $kKonfigitem = 0,
         int $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL,
         string $cResponsibility = 'core'
-    ) {
+    ): void {
         if (!\Session\Frontend::getCustomer()->isLoggedIn()) {
             return;
         }

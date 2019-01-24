@@ -188,9 +188,9 @@ class Adresse
     {
         switch (strtolower($anrede)) {
             case 'm':
-                return Shop::Lang()->get('salutationM', 'global');
+                return Shop::Lang()->get('salutationM');
             case 'w':
-                return Shop::Lang()->get('salutationW', 'global');
+                return Shop::Lang()->get('salutationW');
             default:
                 return '';
         }

@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "exportformats"
 msgstr "Exportformate"
 
@@ -118,3 +122,17 @@ msgstr "Grösse pro Datei (MB)"
 msgid "FillOut"
 msgstr "Bitte ausfüllen"
 
+msgid "successFormatEdit"
+msgstr "Das Exportformat %s wurde erfolgreich geändert."
+
+msgid "successFormatCreate"
+msgstr "Das Exportformat %s wurde erfolgreich erstellt."
+
+msgid "successFormatDelete"
+msgstr "Exportformat erfolgreich gelöscht."
+
+msgid "errorFormatDelete"
+msgstr "Exportformat konnte nicht gelöscht werden."
+
+msgid "errorFormatCreate"
+msgstr "Das Exportformat %s konnte nicht erstellt werden. Fehlende Schreibrechte?"

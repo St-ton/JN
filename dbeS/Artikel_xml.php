@@ -17,13 +17,14 @@ if (auth()) {
     $zipFile    = checkFile();
     $return     = 2;
     $unzipPath  = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($zipFile) . '_' . date('dhis') . '/';
-
+    $db         = Shop::Container()->getDB();
     if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
         $logger->error('Error: Cannot extract zip file ' . $zipFile . ' to ' . $unzipPath);
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
         $conf   = Shop::getSettings([CONF_GLOBAL]);
+        $db->query('START TRANSACTION', \DB\ReturnType::DEFAULT);
         foreach ($syncFiles as $i => $xmlFile) {
             $d   = file_get_contents($xmlFile);
             $xml = XML_unserialize($d);
@@ -44,6 +45,8 @@ if (auth()) {
                 );
             }
         }
+        handlePriceRange($articleIDs);
+        $db->query('COMMIT', \DB\ReturnType::DEFAULT);
         removeTemporaryFiles(substr($unzipPath, 0, -1), true);
         clearProductCaches($articleIDs);
     }
@@ -967,7 +970,6 @@ function bearbeiteInsert($xml, array $conf)
     if (!empty($artikel_arr[0]->kVaterartikel)) {
         $res[] = (int)$artikel_arr[0]->kVaterartikel;
     }
-    handlePriceRange((int)$Artikel->kArtikel);
     // emailbenachrichtigung, wenn verfügbar
     versendeVerfuegbarkeitsbenachrichtigung($artikel_arr[0]);
 

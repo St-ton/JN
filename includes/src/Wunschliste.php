@@ -159,7 +159,7 @@ class Wunschliste
         );
 
         // Prüfen ob der eingeloggte Kunde auch der Besitzer der zu löschenden WunschlistenPos ist
-        if (!empty($oKunde->kKunde) && $oKunde->kKunde == $_SESSION['Kunde']->kKunde) {
+        if (!empty($oKunde->kKunde) && (int)$oKunde->kKunde === \Session\Frontend::getCustomer()->getID()) {
             // Alle Eigenschaften löschen
             Shop::Container()->getDB()->delete('twunschlisteposeigenschaft', 'kWunschlistePos', $kWunschlistePos);
             // Die Posiotion mit ID $kWunschlistePos löschen

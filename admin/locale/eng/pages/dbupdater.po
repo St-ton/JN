@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "dbupdater"
 msgstr "Datenbank-Update"
 
@@ -25,3 +29,11 @@ msgstr "Zeile"
 msgid "progress"
 msgstr "Fortschritt"
 
+msgid "errorSqlUpdate"
+msgstr "Fehler: Ein SQL-Befehl im Update konnte nicht ausgeführt werden. Bitte versuchen Sie es erneut."
+
+msgid "successUpdate"
+msgstr "Das Update wurde erfolgreich abgeschlossen"
+
+msgid "errorUpdate"
+msgstr "Fehler: Ein SQL-Befehl im Update hat 3 mal nicht funktioniert. Das Update wurde abgebrochen. Bitte kontaktieren Sie den Support!"

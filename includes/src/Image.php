@@ -403,7 +403,7 @@ class Image
                 $width       = min($brandSize['width'], $brandWidth);
                 $height      = min($brandSize['height'], $brandHeight);
 
-                $containerImage->resize($width, $height, true, true);
+                $containerImage->resize($width, $height);
             }
             $imanee->watermark($containerImage, $branding->position, $branding->transparency);
         }

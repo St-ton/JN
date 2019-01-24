@@ -953,7 +953,7 @@ class Kupon
                 $ret['ungueltig'] = 11;
             } elseif (!empty($Kupon->nVerwendungenProKunde) && $Kupon->nVerwendungenProKunde > 0) {
                 //check if max usage of coupon is reached for cutomer
-                $countCouponUsed= Shop::Container()->getDB()->executeQueryPrepared(
+                $countCouponUsed = Shop::Container()->getDB()->executeQueryPrepared(
                     'SELECT nVerwendungen
                       FROM tkuponkunde
                       WHERE kKupon = :coupon
@@ -1131,11 +1131,12 @@ class Kupon
 
     /**
      * @param string $strToHash
+     * @param bool $strtolower
      * @return string
      */
-    public static function hash(string $strToHash): string
+    public static function hash(string $strToHash, bool $strtolower = true): string
     {
-        return $strToHash === '' ? '' : hash('sha256', $strToHash);
+        return $strToHash === '' ? '' : hash('sha256', $strtolower ? strtolower($strToHash) : $strToHash);
     }
 
     /**

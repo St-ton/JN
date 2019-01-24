@@ -287,7 +287,7 @@
                             <tfoot>
                             <tr>
                                 <td class="check"><input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                                <td colspan="5"><label for="ALLMSGS3">Alle ausw&auml;hlen</label></td>
+                                <td colspan="5"><label for="ALLMSGS3">{__('globalSelectAll')}</label></td>
                             </tr>
                             </tfoot>
                         </table>

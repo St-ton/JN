@@ -62,9 +62,9 @@
                     <td><label for="kKundengruppe">{__('zusatzverpackungCustomerGrp')}</label></td>
                     <td>
                         <select id="kKundengruppe" name="kKundengruppe[]" multiple="multiple" class="form-control combo" required>
-                            <option value="-1"{if isset($oVerpackungEdit) && $oVerpackungEdit->cKundengruppe == "-1"} selected{/if}>Alle</option>
+                            <option value="-1"{if isset($oVerpackungEdit) && $oVerpackungEdit->cKundengruppe == '-1'} selected{/if}>Alle</option>
                             {foreach $oKundengruppe_arr as $oKundengruppe}
-                                {if (isset($oVerpackungEdit->cKundengruppe) && $oVerpackungEdit->cKundengruppe == "-1") || !isset($oVerpackungEdit) || !$oVerpackungEdit}
+                                {if (isset($oVerpackungEdit->cKundengruppe) && $oVerpackungEdit->cKundengruppe == '-1') || !isset($oVerpackungEdit) || !$oVerpackungEdit}
                                     <option value="{$oKundengruppe->kKundengruppe}">{$oKundengruppe->cName}</option>
                                 {else}
                                     <option value="{$oKundengruppe->kKundengruppe}"

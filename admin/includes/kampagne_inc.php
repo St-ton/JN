@@ -462,8 +462,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         }
                         if ($data[$i]->nRegistriert !== 'n.v.') {
                             $data[$i]->nRegistriert = (int)$data[$i]->nRegistriert === 1
-                                ? 'Ja'
-                                : 'Nein';
+                                ? __('yes')
+                                : __('no');
                         }
                         if ($data[$i]->fGesamtsumme !== 'n.v.') {
                             $data[$i]->fGesamtsumme = Preise::getLocalizedPriceString($data[$i]->fGesamtsumme);
@@ -518,8 +518,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         }
                         if ($data[$i]->nRegistriert !== 'n.v.') {
                             $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
-                                ? 'Ja'
-                                : 'Nein';
+                                ? __('yes')
+                                : __('no');
                         }
                     }
 
@@ -570,8 +570,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         }
                         if ($data[$i]->nRegistriert !== 'n.v.') {
                             $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
-                                ? 'Ja'
-                                : 'Nein';
+                                ? __('yes')
+                                : __('no');
                         }
                         if ($data[$i]->fGesamtsumme !== 'n.v.') {
                             $data[$i]->fGesamtsumme = Preise::getLocalizedPriceString($data[$i]->fGesamtsumme);
@@ -705,8 +705,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
 
                         if ($data[$i]->nRegistriert !== 'n.v.') {
                             $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
-                                ? 'Ja'
-                                : 'Nein';
+                                ? __('yes')
+                                : __('no');
                         }
                     }
 
@@ -757,8 +757,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
 
                         if ($data[$i]->nRegistriert !== 'n.v.') {
                             $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
-                                ? 'Ja'
-                                : 'Nein';
+                                ? __('yes')
+                                : __('no');
                         }
                     }
 
@@ -1229,22 +1229,22 @@ function mappeFehlerCodeSpeichern($nReturnValue)
     if ((int)$nReturnValue > 0) {
         switch ((int)$nReturnValue) {
             case 2:
-                return 'Fehler: Kampagne konnte nicht gespeichert werden';
+                return __('errorCampaignSave');
                 break;
             case 3:
-                return 'Fehler: Bitte geben Sie einen Kampagnennamen ein.';
+                return __('errorCampaignNameMissing');
                 break;
             case 4:
-                return 'Fehler: Bitte geben Sie einen Kampagnenparameter ein.';
+                return __('errorCampaignParameterMissing');
                 break;
             case 5:
-                return 'Fehler: Bitte geben Sie einen Kampagnenwert ein.';
+                return __('errorCampaignValueMissing');
                 break;
             case 6:
-                return 'Fehler: Der angegebene Kampagnenname ist bereits vergeben.';
+                return __('errorCampaignNameDuplicate');
                 break;
             case 7:
-                return 'Fehler: Der angegebene Kampagnenparameter ist bereits vergeben.';
+                return __('errorCampaignParameterDuplicate');
                 break;
         }
     }

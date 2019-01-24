@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "order"
 msgstr "Bestellungen"
 
@@ -67,3 +71,11 @@ msgstr "teilversendet"
 msgid "orderIpAddress"
 msgstr "IP-Adresse"
 
+msgid "successOrderReset"
+msgstr "Die markierten Bestellungen wurden erfolgreich zurückgesetzt."
+
+msgid "errorAtLeastOneOrder"
+msgstr "Fehler: Bitte markieren Sie mindestens eine Bestellung."
+
+msgid "errorMissingOrderNumber"
+msgstr "Fehler: Bitte geben Sie eine Bestellnummer ein."

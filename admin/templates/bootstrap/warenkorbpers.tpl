@@ -1,5 +1,5 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="warenkorbpers"}
+{config_load file="$lang.conf" section='warenkorbpers'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('warenkorbpers') cBeschreibung=__('warenkorbpersDesc') cDokuURL=__('warenkorbpersURL')}
 <div id="content" class="container-fluid">
     {if $step === 'uebersicht'}
@@ -33,9 +33,9 @@
                 </form>
 
                 {if isset($oKunde_arr) && $oKunde_arr|@count > 0}
-                    {assign var="cParam_arr" value=[]}
+                    {assign var=cParam_arr value=[]}
                     {if isset($cSuche)}
-                        {append var="cParam_arr" index='cSuche' value=$cSuche}
+                        {append var=cParam_arr index='cSuche' value=$cSuche}
                     {/if}
                     {include file='tpl_inc/pagination.tpl' oPagination=$oPagiKunden cParam_arr=$cParam_arr cAnchor='massaction'}
                     <div class="panel panel-default">
@@ -54,7 +54,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {foreach name=warenkorbkunden from=$oKunde_arr item=oKunde}
+                                {foreach $oKunde_arr as $oKunde}
                                     <tr>
                                         <td>{$oKunde->cFirma}</td>
                                         <td>{$oKunde->cVorname} {$oKunde->cNachname}</td>
@@ -97,7 +97,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {foreach name=warenkorbpers from=$oWarenkorbPersPos_arr item=oWarenkorbPersPos}
+                    {foreach $oWarenkorbPersPos_arr as $oWarenkorbPersPos}
                         <tr>
                             <td class="tleft">
                                 <a href="{$shopURL}/index.php?a={$oWarenkorbPersPos->kArtikel}" target="_blank">{$oWarenkorbPersPos->cArtikelName}</a>

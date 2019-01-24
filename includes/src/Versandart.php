@@ -153,14 +153,13 @@ class Versandart
             $this->$member = $obj->$member;
         }
         $this->kVersandart = (int)$this->kVersandart;
-        // VersandartSprache
-        $oVersandartSprache_arr = Shop::Container()->getDB()->selectAll(
+        $localized         = Shop::Container()->getDB()->selectAll(
             'tversandartsprache',
             'kVersandart',
             $this->kVersandart
         );
-        foreach ($oVersandartSprache_arr as $oVersandartSprache) {
-            $this->oVersandartSprache_arr[$oVersandartSprache->cISOSprache] = $oVersandartSprache;
+        foreach ($localized as $translation) {
+            $this->oVersandartSprache_arr[$translation->cISOSprache] = $translation;
         }
         // Versandstaffel
         $this->oVersandartStaffel_arr = Shop::Container()->getDB()->selectAll(
@@ -240,23 +239,23 @@ class Versandart
      */
     public static function cloneShipping(int $kVersandart): bool
     {
-        $cSection_arr = [
+        $sections = [
             'tversandartsprache'     => 'kVersandart',
             'tversandartstaffel'     => 'kVersandartStaffel',
             'tversandartzahlungsart' => 'kVersandartZahlungsart',
             'tversandzuschlag'       => 'kVersandzuschlag'
         ];
 
-        $oVersandart = Shop::Container()->getDB()->select('tversandart', 'kVersandart', $kVersandart);
+        $method = Shop::Container()->getDB()->select('tversandart', 'kVersandart', $kVersandart);
 
-        if (isset($oVersandart->kVersandart) && $oVersandart->kVersandart > 0) {
-            unset($oVersandart->kVersandart);
-            $kVersandartNew = Shop::Container()->getDB()->insert('tversandart', $oVersandart);
+        if (isset($method->kVersandart) && $method->kVersandart > 0) {
+            unset($method->kVersandart);
+            $kVersandartNew = Shop::Container()->getDB()->insert('tversandart', $method);
 
             if ($kVersandartNew > 0) {
-                foreach ($cSection_arr as $cSection => $cKey) {
-                    $oSection_arr = self::getShippingSection($cSection, 'kVersandart', $kVersandart);
-                    self::cloneShippingSection($oSection_arr, $cSection, 'kVersandart', $kVersandartNew, $cKey);
+                foreach ($sections as $name => $key) {
+                    $items = self::getShippingSection($name, 'kVersandart', $kVersandart);
+                    self::cloneShippingSection($items, $name, 'kVersandart', $kVersandartNew, $key);
                 }
 
                 return true;
@@ -320,15 +319,15 @@ class Versandart
     private static function cloneShippingSectionSpecial(int $oldKey, int $newKey): void
     {
         if ($oldKey > 0 && $newKey > 0) {
-            $cSectionSub_arr = [
+            $sections = [
                 'tversandzuschlagplz'     => 'kVersandzuschlagPlz',
                 'tversandzuschlagsprache' => 'kVersandzuschlag'
             ];
 
-            foreach ($cSectionSub_arr as $cSectionSub => $cSubKey) {
-                $oSubSection_arr = self::getShippingSection($cSectionSub, 'kVersandzuschlag', $oldKey);
+            foreach ($sections as $section => $subKey) {
+                $subSections = self::getShippingSection($section, 'kVersandzuschlag', $oldKey);
 
-                self::cloneShippingSection($oSubSection_arr, $cSectionSub, 'kVersandzuschlag', $newKey, $cSubKey);
+                self::cloneShippingSection($subSections, $section, 'kVersandzuschlag', $newKey, $subKey);
             }
         }
     }

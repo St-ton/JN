@@ -1452,17 +1452,11 @@ class Billpay extends PaymentMethod
 
     /**
      * @param string $key
-     * @param bool   $root
      * @return string|null
      */
-    public function getCoreSetting($key, $root = false)
+    public function getCoreSetting($key)
     {
-        global $Einstellungen;
-        if (!is_array($Einstellungen)) {
-            $Einstellungen = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
-        }
-
-        return $Einstellungen['zahlungsarten']['zahlungsart_billpay_' . $key] ?? null;
+        return Shop::getSettings([CONF_ZAHLUNGSARTEN])['zahlungsarten']['zahlungsart_billpay_' . $key] ?? null;
     }
 
     /**

@@ -154,7 +154,7 @@ class Bestseller
             }
             // Storage SQL
             $storagesql = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $obj_arr    = Shop::Container()->getDB()->query(
+            $data       = Shop::Container()->getDB()->query(
                 'SELECT tartikel.kArtikel
                     FROM tartikel
                     JOIN tbestseller
@@ -170,8 +170,8 @@ class Bestseller
                     LIMIT ' . $this->limit,
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            foreach ($obj_arr as $obj) {
-                $products[] = $obj->kArtikel;
+            foreach ($data as $item) {
+                $products[] = $item->kArtikel;
             }
         }
 

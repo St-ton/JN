@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "boxen"
 msgstr "Boxen"
 
@@ -129,3 +133,30 @@ msgstr "Header"
 
 msgid "sectionBottom"
 msgstr "Footer"
+
+msgid "successBoxDelete"
+msgstr " Box(en) wurde(n) erfolgreich gelöscht."
+
+msgid "successContainerCreate"
+msgstr "Container wurde erfolgreich hinzugefügt."
+
+msgid "errorContainerCreate"
+msgstr "Container konnte nicht angelegt werden."
+
+msgid "successBoxCreate"
+msgstr "Box wurde erfolgreich hinzugefügt."
+
+msgid "errorBoxCreate"
+msgstr "Box konnte nicht angelegt werden."
+
+msgid "errorBoxDelete"
+msgstr "Box konnte nicht entfernt werden."
+
+msgid "successBoxEdit"
+msgstr "Box wurde erfolgreich bearbeitet."
+
+msgid "errorBoxEdit"
+msgstr "Box konnte nicht bearbeitet werden."
+
+msgid "successBoxRefresh"
+msgstr "Die Boxen wurden aktualisiert."

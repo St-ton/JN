@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "opcNoticePageReset"
 msgstr "Der Composer-Inhalt für die Seite wurde zurückgesetzt."
 

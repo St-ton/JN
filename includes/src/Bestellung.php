@@ -7,6 +7,8 @@
 use Helpers\Tax;
 use Helpers\ShippingMethod;
 use Helpers\Cart;
+use Extensions\Download;
+use Extensions\Upload;
 
 /**
  * Class Bestellung
@@ -571,14 +573,8 @@ class Bestellung
                 if ($bArtikel) {
                     $position->Artikel = (new Artikel())->fuelleArtikel($position->kArtikel, $defaultOptions);
                 }
-                // Downloads
-                if (class_exists('Download')) {
-                    $this->oDownload_arr = Download::getDownloads(['kBestellung' => $this->kBestellung], $kSprache);
-                }
-                // Uploads
-                if (class_exists('Upload')) {
-                    $this->oUpload_arr = Upload::gibBestellungUploads($this->kBestellung);
-                }
+                $this->oDownload_arr = Download::getDownloads(['kBestellung' => $this->kBestellung], $kSprache);
+                $this->oUpload_arr   = Upload::gibBestellungUploads($this->kBestellung);
                 if ($position->kWarenkorbPos > 0) {
                     $position->WarenkorbPosEigenschaftArr = $db->selectAll(
                         'twarenkorbposeigenschaft',
@@ -797,11 +793,10 @@ class Bestellung
         }
         // Fallback for Non-Beta
         if ((int)$this->cStatus === BESTELLUNG_STATUS_VERSANDT) {
-            $positionCountB = count($this->Positionen);
-            for ($i = 0; $i < $positionCountB; $i++) {
-                $this->Positionen[$i]->nAusgeliefertGesamt = $this->Positionen[$i]->nAnzahl;
-                $this->Positionen[$i]->bAusgeliefert       = true;
-                $this->Positionen[$i]->nOffenGesamt        = 0;
+            foreach ($this->Positionen as $position) {
+                $position->nAusgeliefertGesamt = $position->nAnzahl;
+                $position->bAusgeliefert       = true;
+                $position->nOffenGesamt        = 0;
             }
         }
 
@@ -827,15 +822,15 @@ class Bestellung
         foreach ($this->Positionen as $position) {
             $position->nPosTyp = (int)$position->nPosTyp;
             if ($position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && $position->kArtikel > 0) {
-                $artikel                = new Artikel();
-                $artikel->kArtikel      = $position->kArtikel;
-                $AufgeklappteKategorien = new KategorieListe();
-                $kategorie              = new Kategorie($artikel->gibKategorie());
-                $AufgeklappteKategorien->getOpenCategories($kategorie);
+                $artikel            = new Artikel();
+                $artikel->kArtikel  = $position->kArtikel;
+                $expandedCategories = new KategorieListe();
+                $kategorie          = new Kategorie($artikel->gibKategorie());
+                $expandedCategories->getOpenCategories($kategorie);
                 $position->Category = '';
-                $elemCount          = count($AufgeklappteKategorien->elemente) - 1;
+                $elemCount          = count($expandedCategories->elemente) - 1;
                 for ($o = $elemCount; $o >= 0; $o--) {
-                    $position->Category = $AufgeklappteKategorien->elemente[$o]->cName;
+                    $position->Category = $expandedCategories->elemente[$o]->cName;
                     if ($o > 0) {
                         $position->Category .= ' / ';
                     }

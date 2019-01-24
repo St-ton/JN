@@ -63,14 +63,14 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach name=cgfe from=$caching_groups item=cg}
-                            <tr class="{if ($smarty.foreach.cgfe.index % 2) === 0}even{else}odd{/if}">
+                        {foreach $caching_groups as $cg}
+                            <tr class="{if ($cg@index % 2) === 0}even{else}odd{/if}">
                                 <td>
-                                    <input type="checkbox" class="massaction-checkbox" value="{$cg.value}" name="cache-types[]" id="group-cb-{$smarty.foreach.cgfe.index}">
+                                    <input type="checkbox" class="massaction-checkbox" value="{$cg.value}" name="cache-types[]" id="group-cb-{$cg@index}">
                                 </td>
                                 <td>
                                     {assign var=nicename value=$cg.nicename}
-                                    <label for="group-cb-{$smarty.foreach.cgfe.index}">{__($nicename)}</label>
+                                    <label for="group-cb-{$cg@index}">{__($nicename)}</label>
                                 </td>
                                 <td>
                                     {assign var=description value=$cg.description}
@@ -139,13 +139,13 @@
                         {/if}
                         {if isset($stats.mem) && $stats.mem !== null}
                             <tr class="cache-row">
-                                <td>Komplette Gr&ouml;&szlig;e:</td>
-                                <td>{$stats.mem} Bytes{if $stats.mem|strpos:'/' === false} ({($stats.mem/1024/1024)|string_format:"%.2f"} MB){/if}</td>
+                                <td>Komplette Größe:</td>
+                                <td>{$stats.mem} Bytes{if $stats.mem|strpos:'/' === false} ({($stats.mem/1024/1024)|string_format:'%.2f'} MB){/if}</td>
                             </tr>
                         {/if}
                         {if isset($stats.entries) && $stats.entries !== null}
                             <tr class="cache-row">
-                                <td>Anzahl Eintr&auml;ge:</td>
+                                <td>Anzahl Einträge:</td>
                                 <td>{$stats.entries}</td>
                             </tr>
                         {/if}
@@ -154,7 +154,7 @@
                                 <td>Misses:</td>
                                 <td>{$stats.misses}
                                     {if isset($stats.mps) && $stats.mps !== null && $stats.mps|strpos:'/' === false}
-                                        <span class="inline"> ({$stats.mps|string_format:"%.2f"} Misses/s)</span>
+                                        <span class="inline"> ({$stats.mps|string_format:'%.2f'} Misses/s)</span>
                                     {/if}
                                 </td>
                             </tr>
@@ -164,7 +164,7 @@
                                 <td>Hits:</td>
                                 <td>{$stats.hits}
                                     {if isset($stats.hps) && $stats.hps !== null && $stats.hps|strpos:'/' === false}
-                                        <span class="inline"> ({$stats.hps|string_format:"%.2f"} Hits/s)</span>
+                                        <span class="inline"> ({$stats.hps|string_format:'%.2f'} Hits/s)</span>
                                     {/if}
                                 </td>
                             </tr>
@@ -184,7 +184,7 @@
                         </div>
                         {if $stats.slow|@count > 0}
                             <table class="table">
-                                {foreach name=slowlog from=$stats.slow key=type item=slow}
+                                {foreach $stats.slow as $slow}
                                     <tr>
                                         <td>{$slow.date}</td>
                                         <td>{$slow.cmd} ({$slow.exec_time}s)</td>
@@ -243,7 +243,7 @@
                             <td colspan="2" style="padding: 0">
                                 <div id="hitRateDetail" class="panel-collapse collapse">
                                     <table class="table cache-stats">
-                                        {foreach name=scripts from=$opcache_stats->scripts item=script}
+                                        {foreach $opcache_stats->scripts as $script}
                                             <tr class="cache-row">
                                                 <td class="file-path">{$script.full_path}</td>
                                                 <td class="value">{$script.hits} Hits</td>
@@ -271,7 +271,7 @@
                             <td colspan="2" style="padding: 0">
                                 <div id="cachefilesFrontendDetail" class="panel-collapse collapse">
                                     <table class="table cache-stats">
-                                        {foreach name=frontend from=$tplcacheStats->frontend item=file}
+                                        {foreach $tplcacheStats->frontend as $file}
                                             <tr class="cache-row">
                                                 <td class="file-path">{$file->fullname}</td>
                                             </tr>
@@ -290,7 +290,7 @@
                             <td colspan="2" style="padding: 0">
                                 <div id="cachefilesBackendDetail" class="panel-collapse collapse">
                                     <table class="table cache-stats">
-                                        {foreach name=backend from=$tplcacheStats->backend item=file}
+                                        {foreach $tplcacheStats->backend as $file}
                                             <tr class="cache-row">
                                                 <td class="file-path">{$file->fullname}</td>
                                             </tr>
@@ -315,7 +315,7 @@
                         <div class="panel-body">
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="runcount">Durchl&auml;ufe</label>
+                                    <label for="runcount">Durchläufe</label>
                                 </span>
                                 <input class="form-control" type="number" name="runcount" id="runcount" value="{if isset($smarty.post.runcount) && is_numeric($smarty.post.runcount)}{$smarty.post.runcount}{else}1000{/if}" size="5" />
                             </div>
@@ -342,7 +342,7 @@
                                     <label for="methods">Methoden</label>
                                 </span>
                                 <select class="form-control" name="methods[]" id="methods" multiple>
-                                    {foreach from=$all_methods item=method}
+                                    {foreach $all_methods as $method}
                                         <option value="{$method}"{if !empty($smarty.post.methods) && $method|in_array:$smarty.post.methods}selected{/if}>{$method}</option>
                                     {/foreach}
                                 </select>
@@ -367,7 +367,7 @@
                                     <p><span class="opt">Zeit get: </span>
                                         {if $result.status !== 'failed' && $result.status !== 'invalid'}
                                             <span class="text">{$result.timings.get}s</span>
-                                            <span class="text">({$result.rps.get} Eintr&auml;ge/s)</span>
+                                            <span class="text">({$result.rps.get} Einträge/s)</span>
                                         {else}
                                             <span class="text">-</span>
                                         {/if}
@@ -376,7 +376,7 @@
                                     <p><span class="opt">Zeit set: </span>
                                         {if $result.status !== 'failed' && $result.status !== 'invalid'}
                                             <span class="text">{$result.timings.set}s</span>
-                                            <span class="text">({$result.rps.set} Eintr&auml;ge/s)</span>
+                                            <span class="text">({$result.rps.set} Einträge/s)</span>
                                         {else}
                                             <span class="text">-</span>
                                         {/if}
@@ -386,7 +386,7 @@
                             {/if}
                         {/foreach}
                     {else}
-                        <div class="alert alert-warning">Konnte Benchmark nicht ausf&uuml;hren.</div>
+                        <div class="alert alert-warning">Konnte Benchmark nicht ausführen.</div>
                     {/if}
                 {/if}
             {else}
@@ -404,7 +404,7 @@
                         <h3 class="panel-title">Allgemein</h3>
                     </div>
                     <div class="panel-body">
-                        {foreach name=conf from=$settings item=setting}
+                        {foreach $settings as $setting}
                             {if $setting->cConf === 'Y'}
                                 <div class="input-group">
                                     <span class="input-group-addon">
@@ -413,7 +413,7 @@
                                     <span class="input-group-wrap">
                                         {if $setting->cInputTyp === 'selectbox'}
                                             <select name="{$setting->cWertName}" id="{$setting->cWertName}" class="form-control">
-                                                {foreach name=selectfor from=$setting->ConfWerte item=wert}
+                                                {foreach $setting->ConfWerte as $wert}
                                                     <option value="{$wert->cWert}" {if isset($setting->gesetzterWert) && $setting->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                                 {/foreach}
                                             </select>
@@ -441,7 +441,7 @@
                             <h3 class="panel-title">Erweitert</h3>
                         </div>
                         <div class="panel-body">
-                            {foreach name=conf from=$advanced_settings item=setting}
+                            {foreach $advanced_settings as $setting}
                                 {if $setting->cConf === 'Y'}
                                     <div class="input-group">
                                         <span class="input-group-addon">
@@ -450,7 +450,7 @@
                                         <span class="input-group-wrap">
                                             {if $setting->cInputTyp === 'selectbox'}
                                                 <select name="{$setting->cWertName}" id="{$setting->cWertName}" class="form-control">
-                                                    {foreach name=selectfor from=$setting->ConfWerte item=wert}
+                                                    {foreach $setting->ConfWerte as $wert}
                                                         <option value="{$wert->cWert}" {if isset($setting->gesetzterWert) && $setting->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                                     {/foreach}
                                                 </select>

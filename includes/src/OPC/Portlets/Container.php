@@ -6,7 +6,6 @@
 
 namespace OPC\Portlets;
 
-use function Functional\unique;
 use OPC\Portlet;
 use OPC\PortletInstance;
 

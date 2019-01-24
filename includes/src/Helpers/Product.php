@@ -11,9 +11,9 @@ use CheckBox;
 use DB\ReturnType;
 use JTL\SeoHelper;
 use Kampagne;
-use Konfiggruppe;
-use Konfigitem;
-use Konfigurator;
+use Extensions\Konfiggruppe;
+use Extensions\Konfigitem;
+use Extensions\Konfigurator;
 use Kundengruppe;
 use Preise;
 use Session\Frontend;
@@ -585,11 +585,8 @@ class Product
     protected static function getSelectedVariationValue(int $groupID)
     {
         $idx = 'eigenschaftwert_' . $groupID;
-        if (isset($_POST[$idx])) {
-            return $_POST[$idx];
-        }
 
-        return $_POST['eigenschaftwert'][$groupID] ?? false;
+        return $_POST[$idx] ?? $_POST['eigenschaftwert'][$groupID] ?? false;
     }
 
     /**
@@ -995,65 +992,68 @@ class Product
     }
 
     /**
+     * @param array $notices
+     * @param array $conf
+     * @return array
      * @former bearbeiteFrageZumProdukt()
      * @since 5.0.0
      */
-    public static function checkProductQuestion(): void
+    public static function checkProductQuestion(array $notices, array $conf): array
     {
-        $conf = Shop::getSettings([\CONF_ARTIKELDETAILS]);
         if ($conf['artikeldetails']['artikeldetails_fragezumprodukt_anzeigen'] !== 'N') {
-            $missingData = self::getMissingProductQuestionFormData();
+            $missingData = self::getMissingProductQuestionFormData($conf);
             Shop::Smarty()->assign('fehlendeAngaben_fragezumprodukt', $missingData);
             $resultCode = Form::eingabenKorrekt($missingData);
 
             \executeHook(\HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT_PLAUSI);
-
             if ($resultCode) {
                 if (!self::checkProductQuestionFloodProtection(
                     (int)$conf['artikeldetails']['produktfrage_sperre_minuten']
                 )) {
                     $checkBox      = new CheckBox();
                     $kKundengruppe = Frontend::getCustomerGroup()->getID();
-                    $oAnfrage      = self::getProductQuestionFormDefaults();
+                    $inquiry       = self::getProductQuestionFormDefaults();
 
                     \executeHook(\HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT);
-                    if (empty($oAnfrage->cNachname)) {
-                        $oAnfrage->cNachname = '';
+                    if (empty($inquiry->cNachname)) {
+                        $inquiry->cNachname = '';
                     }
-                    if (empty($oAnfrage->cVorname)) {
-                        $oAnfrage->cVorname = '';
+                    if (empty($inquiry->cVorname)) {
+                        $inquiry->cVorname = '';
                     }
                     $checkBox->triggerSpecialFunction(
                         \CHECKBOX_ORT_FRAGE_ZUM_PRODUKT,
                         $kKundengruppe,
                         true,
                         $_POST,
-                        ['oKunde' => $oAnfrage, 'oNachricht' => $oAnfrage]
+                        ['oKunde' => $inquiry, 'oNachricht' => $inquiry]
                     )->checkLogging(\CHECKBOX_ORT_FRAGE_ZUM_PRODUKT, $kKundengruppe, $_POST, true);
-                    self::sendProductQuestion();
+                    Shop::Smarty()->assign('PositiveFeedback', self::sendProductQuestion());
                 } else {
-                    $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('questionNotPossible', 'messages');
+                    $notices[] = Shop::Lang()->get('questionNotPossible', 'messages');
                 }
             } elseif (isset($missingData['email']) && $missingData['email'] === 3) {
-                $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('blockedEmail');
+                $notices[] = Shop::Lang()->get('blockedEmail');
             } else {
                 Shop::Smarty()->assign('Anfrage', self::getProductQuestionFormDefaults());
-                $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
+                $notices[] = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
             }
         } else {
-            $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('productquestionPleaseLogin', 'errorMessages');
+            $notices[] = Shop::Lang()->get('productquestionPleaseLogin', 'errorMessages');
         }
+
+        return $notices;
     }
 
     /**
+     * @param array $conf
      * @return array
      * @former gibFehlendeEingabenProduktanfrageformular()
      * @since 5.0.0
      */
-    public static function getMissingProductQuestionFormData(): array
+    public static function getMissingProductQuestionFormData(array $conf): array
     {
-        $ret  = [];
-        $conf = Shop::getSettings([\CONF_ARTIKELDETAILS, \CONF_GLOBAL]);
+        $ret = [];
         if (!$_POST['nachricht']) {
             $ret['nachricht'] = 1;
         }
@@ -1130,10 +1130,11 @@ class Product
     }
 
     /**
+     * @return string
      * @former sendeProduktanfrage()
      * @since 5.0.0
      */
-    public static function sendProductQuestion(): void
+    public static function sendProductQuestion(): string
     {
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
 
@@ -1191,11 +1192,12 @@ class Product
         $history->cIP        = Request::getRealIP();
         $history->dErstellt  = 'NOW()';
 
-        $inquiryID                     = Shop::Container()->getDB()->insert('tproduktanfragehistory', $history);
-        $GLOBALS['PositiveFeedback'][] = Shop::Lang()->get('thankYouForQuestion', 'messages');
+        $inquiryID = Shop::Container()->getDB()->insert('tproduktanfragehistory', $history);
         if (isset($_SESSION['Kampagnenbesucher'])) {
             Kampagne::setCampaignAction(\KAMPAGNE_DEF_FRAGEZUMPRODUKT, $inquiryID, 1.0);
         }
+
+        return Shop::Lang()->get('thankYouForQuestion', 'messages');
     }
 
     /**
@@ -1222,17 +1224,19 @@ class Product
     }
 
     /**
+     * @param array $notices
+     * @return array
      * @former bearbeiteBenachrichtigung()
      * @since 5.0.0
      */
-    public static function checkAvailabilityMessage(): void
+    public static function checkAvailabilityMessage(array $notices): array
     {
         $conf = Shop::getSettings([\CONF_ARTIKELDETAILS]);
         if (!isset($_POST['a'], $conf['artikeldetails']['benachrichtigung_nutzen'])
             || (int)$_POST['a'] <= 0
             || $conf['artikeldetails']['benachrichtigung_nutzen'] === 'N'
         ) {
-            return;
+            return $notices;
         }
         $missingData = self::getMissingAvailibilityFormData();
         Shop::Smarty()->assign('fehlendeAngaben_benachrichtigung', $missingData);
@@ -1278,19 +1282,21 @@ class Product
                 if (isset($_SESSION['Kampagnenbesucher'])) {
                     Kampagne::setCampaignAction(\KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE, $inquiryID, 1.0);
                 }
-                $GLOBALS['PositiveFeedback'][] = Shop::Lang()->get(
-                    'thankYouForNotificationSubscription',
-                    'messages'
+                Shop::Smarty()->assign(
+                    'PositiveFeedback',
+                    Shop::Lang()->get('thankYouForNotificationSubscription', 'messages')
                 );
             } else {
-                $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('notificationNotPossible', 'messages');
+                $notices[] = Shop::Lang()->get('notificationNotPossible', 'messages');
             }
         } elseif (isset($missingData['email']) && $missingData['email'] === 3) {
-            $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('blockedEmail');
+            $notices[] = Shop::Lang()->get('blockedEmail');
         } else {
             Shop::Smarty()->assign('Benachrichtigung', self::getAvailabilityFormDefaults());
-            $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
+            $notices[] = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
         }
+
+        return $notices;
     }
 
     /**
@@ -1507,6 +1513,7 @@ class Product
      * @param null|Artikel      $product
      * @param null|float        $amount
      * @param int               $configItemID
+     * @param array             $notices
      * @return array
      * @former baueArtikelhinweise()
      * @since 5.0.0
@@ -1516,65 +1523,61 @@ class Product
         $renew = false,
         $product = null,
         $amount = null,
-        $configItemID = 0
+        $configItemID = 0,
+        array $notices = []
     ): array {
         if ($redirectParam === null && isset($_GET['r'])) {
             $redirectParam = $_GET['r'];
         }
-        if ($renew || !isset($GLOBALS['Artikelhinweise']) || !\is_array($GLOBALS['Artikelhinweise'])) {
-            $GLOBALS['Artikelhinweise'] = [];
-        }
-        if ($renew || !isset($GLOBALS['PositiveFeedback']) || !\is_array($GLOBALS['PositiveFeedback'])) {
-            $GLOBALS['PositiveFeedback'] = [];
+        if ($renew) {
+            $notices = [];
         }
         if ($redirectParam) {
             $messages = \is_array($redirectParam) ? $redirectParam : \explode(',', $redirectParam);
-            $messages = \array_unique($messages);
-
-            foreach ($messages as $message) {
+            foreach (\array_unique($messages) as $message) {
                 switch ($message) {
                     case \R_LAGERVAR:
-                        $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('quantityNotAvailableVar', 'messages');
+                        $notices[] = Shop::Lang()->get('quantityNotAvailableVar', 'messages');
                         break;
                     case \R_VARWAEHLEN:
-                        $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('chooseVariations', 'messages');
+                        $notices[] = Shop::Lang()->get('chooseVariations', 'messages');
                         break;
                     case \R_VORBESTELLUNG:
-                        $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('preorderNotPossible', 'messages');
+                        $notices[] = Shop::Lang()->get('preorderNotPossible', 'messages');
                         break;
                     case \R_LOGIN:
-                        $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('pleaseLogin', 'messages');
+                        $notices[] = Shop::Lang()->get('pleaseLogin', 'messages');
                         break;
                     case \R_LAGER:
-                        $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('quantityNotAvailable', 'messages');
+                        $notices[] = Shop::Lang()->get('quantityNotAvailable', 'messages');
                         break;
                     case \R_MINDESTMENGE:
-                        $GLOBALS['Artikelhinweise'][] = \lang_mindestbestellmenge(
+                        $notices[] = \lang_mindestbestellmenge(
                             $product ?? $GLOBALS['AktuellerArtikel'],
                             $amount ?? $_GET['n'],
                             $configItemID
                         );
                         break;
                     case \R_LOGIN_WUNSCHLISTE:
-                        $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('loginWishlist', 'messages');
+                        $notices[] = Shop::Lang()->get('loginWishlist', 'messages');
                         break;
                     case \R_MAXBESTELLMENGE:
-                        $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('wkMaxorderlimit', 'messages');
+                        $notices[] = Shop::Lang()->get('wkMaxorderlimit', 'messages');
                         break;
                     case \R_ARTIKELABNAHMEINTERVALL:
-                        $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('wkPurchaseintervall', 'messages');
+                        $notices[] = Shop::Lang()->get('wkPurchaseintervall', 'messages');
                         break;
                     case \R_UNVERKAEUFLICH:
-                        $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('wkUnsalable', 'messages');
+                        $notices[] = Shop::Lang()->get('wkUnsalable', 'messages');
                         break;
                     case \R_AUFANFRAGE:
-                        $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('wkOnrequest', 'messages');
+                        $notices[] = Shop::Lang()->get('wkOnrequest', 'messages');
                         break;
                     case \R_EMPTY_TAG:
-                        $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('tagArtikelEmpty', 'messages');
+                        $notices[] = Shop::Lang()->get('tagArtikelEmpty', 'messages');
                         break;
                     case \R_EMPTY_VARIBOX:
-                        $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('artikelVariBoxEmpty', 'messages');
+                        $notices[] = Shop::Lang()->get('artikelVariBoxEmpty', 'messages');
                         break;
                     default:
                         break;
@@ -1583,28 +1586,27 @@ class Product
             }
         }
 
-        return $GLOBALS['Artikelhinweise'];
+        return $notices;
     }
 
     /**
      * @param Artikel $product
+     * @param array   $conf
      * @return mixed
      * @former bearbeiteProdukttags()
      * @since 5.0.0
      */
-    public static function editProductTags($product)
+    public static function editProductTags($product, array $conf)
     {
         if (Request::verifyGPCDataInt('produktTag') !== 1) {
             return null;
         }
-        $tag             = StringHandler::filterXSS(Request::verifyGPDataString('tag'));
+        $tagString       = StringHandler::filterXSS(Request::verifyGPDataString('tag'));
         $variKindArtikel = Request::verifyGPDataString('variKindArtikel');
-        if (\strlen($tag) > 0) {
-            $conf = Shop::getSettings([\CONF_ARTIKELDETAILS]);
-            // Pruefe ob Kunde eingeloggt
+        if (\strlen($tagString) > 0) {
             if (empty($_SESSION['Kunde']->kKunde) && $conf['artikeldetails']['tagging_freischaltung'] === 'Y') {
                 $linkHelper = Shop::Container()->getLinkService();
-                \header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) .
+                \header('Location: ' . $linkHelper->getStaticRoute('jtl.php') .
                     '?a=' . (int)$_POST['a'] . '&tag=' .
                     StringHandler::htmlentities(StringHandler::filterXSS($_POST['tag'])) .
                     '&r=' . \R_LOGIN_TAG . '&produktTag=1', true, 303);
@@ -1615,10 +1617,8 @@ class Product
                     WHERE dZeit < DATE_SUB(NOW(),INTERVAL 1 MONTH)',
                 ReturnType::DEFAULT
             );
-            if (($conf['artikeldetails']['tagging_freischaltung'] === 'Y'
-                    && isset($_SESSION['Kunde']->kKunde)
-                    && $_SESSION['Kunde']->kKunde > 0)
-                || $conf['artikeldetails']['tagging_freischaltung'] === 'O'
+            if ($conf['artikeldetails']['tagging_freischaltung'] === 'O'
+                || ($conf['artikeldetails']['tagging_freischaltung'] === 'Y' && Frontend::getCustomer()->getID() > 0)
             ) {
                 $ip = Request::getRealIP();
                 if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
@@ -1642,47 +1642,43 @@ class Product
                     );
                     $kKunde      = 0;
                 }
-                // Wenn die max. eingestellte Anzahl der Posts pro Tag nicht überschritten wurde
                 if ($tagPostings->Anzahl < (int)$conf['artikeldetails']['tagging_max_ip_count']) {
                     if ($kKunde === 0 && $conf['artikeldetails']['tagging_freischaltung'] === 'Y') {
                         return Shop::Lang()->get('pleaseLoginToAddTags', 'messages');
                     }
-                    // Prüfe, ob der Tag bereits gemappt wurde
-                    $tagmapping_objTMP = Shop::Container()->getDB()->select(
+                    $mapping = Shop::Container()->getDB()->select(
                         'ttagmapping',
                         'kSprache',
                         Shop::getLanguage(),
                         'cName',
-                        Shop::Container()->getDB()->escape($tag)
+                        Shop::Container()->getDB()->escape($tagString)
                     );
-                    $tagmapping_obj    = $tagmapping_objTMP;
-                    if (isset($tagmapping_obj->cNameNeu) && \strlen($tagmapping_obj->cNameNeu) > 0) {
-                        $tag = $tagmapping_obj->cNameNeu;
+                    if (isset($mapping->cNameNeu) && \strlen($mapping->cNameNeu) > 0) {
+                        $tagString = $mapping->cNameNeu;
                     }
-                    // Prüfe ob der Tag bereits vorhanden ist
-                    $tag_obj = new Tag();
-                    $tag_obj->getByName($tag);
-                    $kTag = isset($tag_obj->kTag) ? (int)$tag_obj->kTag : null;
-                    if (!empty($kTag)) {
+                    $tag = new Tag();
+                    $tag->getByName($tagString);
+                    $tagID = isset($tag->kTag) ? (int)$tag->kTag : null;
+                    if (!empty($tagID)) {
                         // Tag existiert bereits, TagArtikel updaten/anlegen
-                        $tagArticle = new TagArticle($kTag, (int)$product->kArtikel);
+                        $tagArticle = new TagArticle($tagID, (int)$product->kArtikel);
                         if (!empty($tagArticle->kTag)) {
                             $tagArticle->nAnzahlTagging = (int)$tagArticle->nAnzahlTagging + 1;
                             $tagArticle->updateInDB();
                         } else {
-                            $tagArticle->kTag           = $kTag;
+                            $tagArticle->kTag           = $tagID;
                             $tagArticle->kArtikel       = (int)$product->kArtikel;
                             $tagArticle->nAnzahlTagging = 1;
                             $tagArticle->insertInDB();
                         }
 
                         if (!empty($variKindArtikel)) {
-                            $childTag = new TagArticle($kTag, (int)$variKindArtikel);
+                            $childTag = new TagArticle($tagID, (int)$variKindArtikel);
                             if (!empty($childTag->kTag)) {
                                 $childTag->nAnzahlTagging = (int)$childTag->nAnzahlTagging + 1;
                                 $childTag->updateInDB();
                             } else {
-                                $childTag->kTag           = $kTag;
+                                $childTag->kTag           = $tagID;
                                 $childTag->kArtikel       = (int)$variKindArtikel;
                                 $childTag->nAnzahlTagging = 1;
                                 $childTag->insertInDB();
@@ -1690,47 +1686,45 @@ class Product
                         }
                     } else {
                         require_once \PFAD_ROOT . \PFAD_DBES . 'seo.php';
-                        $neuerTag           = new Tag();
-                        $neuerTag->kSprache = Shop::getLanguage();
-                        $neuerTag->cName    = $tag;
-                        $neuerTag->cSeo     = SeoHelper::getSeo($tag);
-                        $neuerTag->cSeo     = SeoHelper::checkSeo($neuerTag->cSeo);
-                        $neuerTag->nAktiv   = 0;
-                        $kTag               = $neuerTag->insertInDB();
-                        if ($kTag > 0) {
+                        $newTag           = new Tag();
+                        $newTag->kSprache = Shop::getLanguage();
+                        $newTag->cName    = $tagString;
+                        $newTag->cSeo     = SeoHelper::getSeo($tagString);
+                        $newTag->cSeo     = SeoHelper::checkSeo($newTag->cSeo);
+                        $newTag->nAktiv   = 0;
+                        $tagID             = $newTag->insertInDB();
+                        if ($tagID > 0) {
                             $tagArticle                 = new TagArticle();
-                            $tagArticle->kTag           = $kTag;
+                            $tagArticle->kTag           = $tagID;
                             $tagArticle->kArtikel       = (int)$product->kArtikel;
                             $tagArticle->nAnzahlTagging = 1;
                             $tagArticle->insertInDB();
                             if (!empty($variKindArtikel)) {
                                 $childTag = new TagArticle();
                                 // TagArticle neu anlegen
-                                $childTag->kTag           = $kTag;
+                                $childTag->kTag           = $tagID;
                                 $childTag->kArtikel       = (int)$variKindArtikel;
                                 $childTag->nAnzahlTagging = 1;
                                 $childTag->insertInDB();
                             }
                         }
                     }
-                    $neuerTagKunde         = new stdClass();
-                    $neuerTagKunde->kTag   = $kTag;
-                    $neuerTagKunde->kKunde = $kKunde;
-                    $neuerTagKunde->cIP    = $ip;
-                    $neuerTagKunde->dZeit  = 'NOW()';
-                    Shop::Container()->getDB()->insert('ttagkunde', $neuerTagKunde);
+                    $ins         = new stdClass();
+                    $ins->kTag   = $tagID;
+                    $ins->kKunde = $kKunde;
+                    $ins->cIP    = $ip;
+                    $ins->dZeit  = 'NOW()';
+                    Shop::Container()->getDB()->insert('ttagkunde', $ins);
 
-                    if ($tag_obj->nAktiv !== null && (int)$tag_obj->nAktiv === 0) {
-                        return Shop::Lang()->get('tagAcceptedWaitCheck', 'messages');
-                    }
-
-                    return Shop::Lang()->get('tagAccepted', 'messages');
+                    return $tag->nAktiv !== null && (int)$tag->nAktiv === 0
+                        ? Shop::Lang()->get('tagAcceptedWaitCheck', 'messages')
+                        : Shop::Lang()->get('tagAccepted', 'messages');
                 }
 
                 return Shop::Lang()->get('maxTagsExceeded', 'messages');
             }
         } elseif (isset($_POST['einloggen'])) {
-            \header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('jtl.php', true) .
+            \header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('jtl.php') .
                 '?a=' . (int)$_POST['a'] . '&r=' . \R_LOGIN_TAG, true, 303);
             exit();
         } else {
@@ -1924,7 +1918,8 @@ class Product
         $conf            = Shop::getSettings([\CONF_ARTIKELDETAILS]);
         $oXSeller        = self::getXSelling($productID);
         $xsellProductIDs = [];
-        if (isset($oXSeller->Standard->XSellGruppen)
+        if ($oXSeller !== null
+            && isset($oXSeller->Standard->XSellGruppen)
             && \is_array($oXSeller->Standard->XSellGruppen)
             && \count($oXSeller->Standard->XSellGruppen) > 0
         ) {
@@ -2129,7 +2124,7 @@ class Product
         $config->cPreisLocalized = [];
         $config->cPreisString    = Shop::Lang()->get('priceAsConfigured', 'productDetails');
 
-        if (!\class_exists('Konfigurator') || !Konfigurator::validateKonfig($productID)) {
+        if (!Konfigurator::checkLicense() || !Konfigurator::validateKonfig($productID)) {
             return null;
         }
         foreach ($variations as $i => $nVariation) {
@@ -2241,7 +2236,7 @@ class Product
     public static function getEditConfigMode($configID, $smarty): void
     {
         $cart = Frontend::getCart();
-        if (!isset($cart->PositionenArr[$configID]) || !\class_exists('Konfigitem')) {
+        if (!isset($cart->PositionenArr[$configID]) || !Konfigitem::checkLicense()) {
             return;
         }
         /** @var WarenkorbPos $basePosition */

@@ -68,18 +68,16 @@ class KuponBestellung
      */
     private function loadFromDB(int $kKupon = 0, int $kBestellung = 0): self
     {
-        $oObj = Shop::Container()->getDB()->select(
+        $item = Shop::Container()->getDB()->select(
             'tkuponbestelllung',
             'kKupon',
             $kKupon,
             'kBestellung',
             $kBestellung
         );
-
-        if (isset($oObj->kKupon) && $oObj->kKupon > 0) {
-            $cMember_arr = array_keys(get_object_vars($oObj));
-            foreach ($cMember_arr as $cMember) {
-                $this->$cMember = $oObj->$cMember;
+        if (isset($item->kKupon) && $item->kKupon > 0) {
+            foreach (array_keys(get_object_vars($item)) as $member) {
+                $this->$member = $item->$member;
             }
         }
 
@@ -92,15 +90,12 @@ class KuponBestellung
      */
     public function save(bool $bPrim = true)
     {
-        $oObj        = new stdClass();
-        $cMember_arr = array_keys(get_object_vars($this));
-        if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-            foreach ($cMember_arr as $cMember) {
-                $oObj->$cMember = $this->$cMember;
-            }
+        $ins = new stdClass();
+        foreach (array_keys(get_object_vars($this)) as $member) {
+            $ins->$member = $this->$member;
         }
 
-        $kPrim = Shop::Container()->getDB()->insert('tkuponbestellung', $oObj);
+        $kPrim = Shop::Container()->getDB()->insert('tkuponbestellung', $ins);
 
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;

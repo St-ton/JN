@@ -1,5 +1,5 @@
-{config_load file="$lang.conf" section="dbupdater"}
-{config_load file="$lang.conf" section="shopupdate"}
+{config_load file="$lang.conf" section='dbupdater'}
+{config_load file="$lang.conf" section='shopupdate'}
 
 {function migration_list manager=null title='' filter=0} {* filter: 0 - All, 1 - Executed, 2 - Pending *}
     {if $title|strlen > 0}
@@ -12,7 +12,7 @@
         <tr>
             <th width="5%">#</th>
             <th width="60%">Migration</th>
-            <th width="250%" class="text-center">{if $filter != 2}Ausgef&uuml;hrt{/if}</th>
+            <th width="250%" class="text-center">{if $filter != 2}Ausgeführt{/if}</th>
             <th width="10%" class="text-center"></th>
         </tr>
         </thead>
@@ -27,7 +27,7 @@
                       <td>
                         {$m->getDescription()}<br>
                         {if $m->getCreated()}
-                          <small class="text-muted"><i class="fa fa-clock-o" aria-hidden="true"></i> {$m->getCreated()|date_format:"d.m.Y - H:i:s"}&nbsp;&nbsp;</small>
+                          <small class="text-muted"><i class="fa fa-clock-o" aria-hidden="true"></i> {$m->getCreated()|date_format:'d.m.Y - H:i:s'}&nbsp;&nbsp;</small>
                         {/if}
                         <small class="text-muted"><i class="fa fa-file-code-o" aria-hidden="true"></i> {$m->getName()}</small>
                       </td>
@@ -50,7 +50,7 @@
     {if $updatesAvailable}
         <div class="alert alert-warning">
             <h4><i class="fa fa-warning"></i> Datenbankaktualisierung {if $hasDifferentVersions}von Version {$currentDatabaseVersion} auf Version {$currentFileVersion}{/if} erforderlich</h4>
-            Klicken Sie auf <a href="dbupdater.php?action=update" data-callback="update">jetzt aktualisieren</a>, um die Datenbankaktualisierung durchzuf&uuml;hren.
+            Klicken Sie auf <a href="dbupdater.php?action=update" data-callback="update">jetzt aktualisieren</a>, um die Datenbankaktualisierung durchzuführen.
         </div>
 
         <div class="btn-group btn-group-md" id="btn-update-group" role="group">
@@ -77,7 +77,7 @@
 {if isset($manager) && is_object($manager)}
     <p>&nbsp;</p>
     {if $updatesAvailable}
-        {migration_list manager=$manager filter=2 title='Nicht-ausgef&uuml;hrte Migrationen'}
+        {migration_list manager=$manager filter=2 title='Nicht-ausgeführte Migrationen'}
     {/if}
     {migration_list manager=$manager filter=1 title='Erfolgreiche Migrationen'}
 {/if}

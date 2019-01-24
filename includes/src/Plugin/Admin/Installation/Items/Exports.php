@@ -7,6 +7,7 @@
 namespace Plugin\Admin\Installation\Items;
 
 use Plugin\InstallCode;
+use Session\Frontend;
 
 /**
  * Class Exports
@@ -31,9 +32,9 @@ class Exports extends AbstractItem
     public function install(): int
     {
         $defaultCustomerGroupID = \Kundengruppe::getDefaultGroupID();
-        $language               = \Sprache::getDefaultLanguage(true);
+        $language               = \Sprache::getDefaultLanguage();
         $defaultLanguageID      = $language->kSprache;
-        $defaultCurrencyID      = \Session\Frontend::getCurrency()->getID();
+        $defaultCurrencyID      = Frontend::getCurrency()->getID();
         foreach ($this->getNode() as $i => $data) {
             $i = (string)$i;
             \preg_match('/[0-9]+/', $i, $hits);

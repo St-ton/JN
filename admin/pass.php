@@ -14,7 +14,7 @@ $cHinweis = '';
 if (isset($_POST['mail']) && Form::validateToken()) {
     $account = Shop::Container()->getAdminAccount();
     $account->prepareResetPassword(StringHandler::filterXSS($_POST['mail']));
-    $cHinweis = 'Eine E-Mail mit weiteren Anweisung wurde an die hinterlegte Adresse gesendet, sofern vorhanden.';
+    $cHinweis = __('successEmailSend');
 } elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpm'], $_POST['fpwh']) && Form::validateToken()) {
     if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
         $account  = Shop::Container()->getAdminAccount();
@@ -24,16 +24,16 @@ if (isset($_POST['mail']) && Form::validateToken()) {
             $upd->cPass = Shop::Container()->getPasswordService()->hash($_POST['pw_new']);
             $update     = Shop::Container()->getDB()->update('tadminlogin', 'cMail', $_POST['fpm'], $upd);
             if ($update > 0) {
-                $cHinweis = 'Passwort wurde erfolgreich geändert.';
+                $cHinweis = __('successPasswordChange');
                 header('Location: index.php?pw_updated=true');
             } else {
-                $cFehler = 'Passwort konnte nicht geändert werden.';
+                $cFehler = __('errorPasswordChange');
             }
         } else {
-            $cFehler = 'Ungütiger Hash übergeben.';
+            $cFehler = __('errorHashInvalid');
         }
     } else {
-        $cFehler = 'Passwörter stimmen nicht überein.';
+        $cFehler = __('errorPasswordMismatch');
     }
     $smarty->assign('fpwh', $_POST['fpwh'])
            ->assign('fpm', $_POST['fpm']);

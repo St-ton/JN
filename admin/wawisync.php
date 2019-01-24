@@ -32,7 +32,7 @@ if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && Form::validateToken()) {
         \DB\ReturnType::AFFECTED_ROWS
     );
 
-    $cHinweis = 'Erfolgreich gespeichert.';
+    $cHinweis = __('successConfigSave');
 }
 
 $user = Shop::Container()->getDB()->select('tsynclogin', 'kSynclogin', 1);

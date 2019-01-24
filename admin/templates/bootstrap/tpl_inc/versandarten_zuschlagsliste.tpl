@@ -3,9 +3,9 @@
 {assign var=cLandName value=$Land->cDeutsch}
 {assign var=cLandISO value=$Land->cISO}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=$isleListFor|cat: " "|cat:$cVersandartName|cat:", "|cat:$cLandName|cat:"("|cat:$cLandISO|cat:")" cBeschreibung=__('isleListsDesc')}
+{include file='tpl_inc/seite_header.tpl' cTitel=$isleListFor|cat: ' '|cat:$cVersandartName|cat:', '|cat:$cLandName|cat:'('|cat:$cLandISO|cat:')' cBeschreibung=__('isleListsDesc')}
 <div id="content" class="container-fluid">
-    {foreach name=zuschlaege from=$Zuschlaege item=zuschlag}
+    {foreach $Zuschlaege as $zuschlag}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">{__('isleList')}: {$zuschlag->cName}</h3>
@@ -13,8 +13,8 @@
             <div class="table-responsive">
                 <table class="list table">
                     <tbody>
-                    {foreach name=sprachen from=$sprachen item=sprache}
-                        {assign var="cISO" value=$sprache->cISO}
+                    {foreach $sprachen as $sprache}
+                        {assign var=cISO value=$sprache->cISO}
                         <tr>
                             <td width="35%">{__('showedName')} ({$sprache->cNameDeutsch})</td>
                             <td>{$zuschlag->angezeigterName[$cISO]}</td>
@@ -28,7 +28,7 @@
                         <td width="35%">{__('plz')}</td>
                         <td>
                             <div class="row">
-                                {foreach name=plz from=$zuschlag->zuschlagplz item=plz}
+                                {foreach $zuschlag->zuschlagplz as $plz}
                                     <p class="col-xs-6 col-md-4">
                                         {if $plz->cPLZ}{$plz->cPLZ}{elseif $plz->cPLZAb}{$plz->cPLZAb} - {$plz->cPLZBis}{/if}
                                         {if $plz->cPLZ || $plz->cPLZAb}
@@ -102,10 +102,10 @@
                         </span>
                         <input class="form-control" type="text" id="cName" name="cName" value="{if isset($oVersandzuschlag->cName)}{$oVersandzuschlag->cName}{/if}" tabindex="1" required/>
                     </div>
-                    {assign var="idx" value="1"}
-                    {foreach name=sprachen from=$sprachen item=sprache}
-                        {assign var="cISO" value=$sprache->cISO}
-                        {assign var="idx" value=$idx+1}
+                    {assign var=idx value=1}
+                    {foreach $sprachen as $sprache}
+                        {assign var=cISO value=$sprache->cISO}
+                        {assign var=idx value=$idx+1}
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <label for="cName_{$cISO}">{__('showedName')} ({$sprache->cNameDeutsch})</label>

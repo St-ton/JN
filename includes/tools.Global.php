@@ -100,9 +100,9 @@ function gibUID(int $nAnzahlStellen = 40, string $cString = '')
     // Wurde ein String übergeben?
     if (strlen($cString) > 0) {
         // Hat der String Elemente?
-        list($cString_arr) = explode(';', $cString);
-        if (is_array($cString_arr) && count($cString_arr) > 0) {
-            foreach ($cString_arr as $string) {
+        [$strings] = explode(';', $cString);
+        if (is_array($strings) && count($strings) > 0) {
+            foreach ($strings as $string) {
                 $cUID .= md5($string . md5(PFAD_ROOT . (time() - mt_rand())));
             }
 
@@ -283,7 +283,7 @@ function pruefeVariationAusverkauft(int $kArtikel = 0, $oArtikel = null): array
         $oArtikel = (new Artikel())->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
     }
 
-    $oVariationsAusverkauft_arr = [];
+    $soldOut = [];
     if ($oArtikel !== null
         && $oArtikel->kEigenschaftKombi === 0
         && $oArtikel->nIstVater === 0
@@ -298,49 +298,49 @@ function pruefeVariationAusverkauft(int $kArtikel = 0, $oArtikel = null): array
                 // Ist Variation ausverkauft?
                 if ($oVariationWert->fLagerbestand <= 0) {
                     $oVariationWert->cNameEigenschaft                      = $oVariation->cName;
-                    $oVariationsAusverkauft_arr[$oVariation->kEigenschaft] = $oVariationWert;
+                    $soldOut[$oVariation->kEigenschaft] = $oVariationWert;
                 }
             }
         }
     }
 
-    return $oVariationsAusverkauft_arr;
+    return $soldOut;
 }
 
 /**
  * Sortiert ein Array von Objekten anhand von einem bestimmten Member vom Objekt
  * z.B. sortiereFilter($NaviFilter->MerkmalFilter, "kMerkmalWert");
  *
- * @param array $oFilter_arr
- * @param string $cKey
+ * @param array $filters
+ * @param string $key
  * @return array
  * @deprecated since 5.0.0 - not used in core
  */
-function sortiereFilter($oFilter_arr, $cKey)
+function sortiereFilter($filters, $key)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $kKey_arr        = [];
-    $oFilterSort_arr = [];
+    $keys        = [];
+    $oFilterSort = [];
 
-    if (is_array($oFilter_arr) && count($oFilter_arr) > 0) {
-        foreach ($oFilter_arr as $oFilter) {
+    if (is_array($filters) && count($filters) > 0) {
+        foreach ($filters as $oFilter) {
             // Baue das Array mit Keys auf, die sortiert werden sollen
-            $kKey_arr[] = (int)$oFilter->$cKey;
+            $keys[] = (int)$oFilter->$key;
         }
         // Sortiere das Array
-        sort($kKey_arr, SORT_NUMERIC);
-        foreach ($kKey_arr as $kKey) {
-            foreach ($oFilter_arr as $oFilter) {
-                if ((int)$oFilter->$cKey === $kKey) {
+        sort($keys, SORT_NUMERIC);
+        foreach ($keys as $kKey) {
+            foreach ($filters as $oFilter) {
+                if ((int)$oFilter->$key === $kKey) {
                     // Baue das Array auf, welches sortiert zurueckgegeben wird
-                    $oFilterSort_arr[] = $oFilter;
+                    $oFilterSort[] = $oFilter;
                     break;
                 }
             }
         }
     }
 
-    return $oFilterSort_arr;
+    return $oFilterSort;
 }
 
 /**
@@ -368,23 +368,23 @@ function holeExcludedKeywords()
 /**
  * Erhält einen String aus dem alle nicht erlaubten Wörter rausgefiltert werden
  *
- * @param string $cString
- * @param array  $oExcludesKeywords_arr
+ * @param string $string
+ * @param array  $excludes
  * @return string
  * @deprecated since 5.0.0
  */
-function gibExcludesKeywordsReplace($cString, $oExcludesKeywords_arr)
+function gibExcludesKeywordsReplace($string, $excludes)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    if (is_array($oExcludesKeywords_arr) && count($oExcludesKeywords_arr) > 0) {
-        foreach ($oExcludesKeywords_arr as $i => $oExcludesKeywords) {
-            $oExcludesKeywords_arr[$i] = ' ' . $oExcludesKeywords . ' ';
+    if (is_array($excludes) && count($excludes) > 0) {
+        foreach ($excludes as $i => $oExcludesKeywords) {
+            $excludes[$i] = ' ' . $oExcludesKeywords . ' ';
         }
 
-        return str_replace($oExcludesKeywords_arr, ' ', $cString);
+        return str_replace($excludes, ' ', $string);
     }
 
-    return $cString;
+    return $string;
 }
 
 /**
@@ -419,49 +419,49 @@ function formatCurrency($fSumme)
  * Mapped die Suchspecial Einstellungen und liefert die Einstellungswerte als Assoc Array zurück.
  * Das Array kann via kKey Assoc angesprochen werden.
  *
- * @param array $oSuchspecialEinstellung_arr
+ * @param array $config
  * @return array
  * @deprecated since 5.0.0
  */
-function gibSuchspecialEinstellungMapping(array $oSuchspecialEinstellung_arr): array
+function gibSuchspecialEinstellungMapping(array $config): array
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $oEinstellungen_arr = [];
-    foreach ($oSuchspecialEinstellung_arr as $key => $oSuchspecialEinstellung) {
+    $assoc = [];
+    foreach ($config as $key => $oSuchspecialEinstellung) {
         switch ($key) {
             case 'suchspecials_sortierung_bestseller':
-                $oEinstellungen_arr[SEARCHSPECIALS_BESTSELLER] = $oSuchspecialEinstellung;
+                $assoc[SEARCHSPECIALS_BESTSELLER] = $oSuchspecialEinstellung;
                 break;
             case 'suchspecials_sortierung_sonderangebote':
-                $oEinstellungen_arr[SEARCHSPECIALS_SPECIALOFFERS] = $oSuchspecialEinstellung;
+                $assoc[SEARCHSPECIALS_SPECIALOFFERS] = $oSuchspecialEinstellung;
                 break;
             case 'suchspecials_sortierung_neuimsortiment':
-                $oEinstellungen_arr[SEARCHSPECIALS_NEWPRODUCTS] = $oSuchspecialEinstellung;
+                $assoc[SEARCHSPECIALS_NEWPRODUCTS] = $oSuchspecialEinstellung;
                 break;
             case 'suchspecials_sortierung_topangebote':
-                $oEinstellungen_arr[SEARCHSPECIALS_TOPOFFERS] = $oSuchspecialEinstellung;
+                $assoc[SEARCHSPECIALS_TOPOFFERS] = $oSuchspecialEinstellung;
                 break;
             case 'suchspecials_sortierung_inkuerzeverfuegbar':
-                $oEinstellungen_arr[SEARCHSPECIALS_UPCOMINGPRODUCTS] = $oSuchspecialEinstellung;
+                $assoc[SEARCHSPECIALS_UPCOMINGPRODUCTS] = $oSuchspecialEinstellung;
                 break;
             case 'suchspecials_sortierung_topbewertet':
-                $oEinstellungen_arr[SEARCHSPECIALS_TOPREVIEWS] = $oSuchspecialEinstellung;
+                $assoc[SEARCHSPECIALS_TOPREVIEWS] = $oSuchspecialEinstellung;
                 break;
         }
     }
 
-    return $oEinstellungen_arr;
+    return $assoc;
 }
 
 /**
- * @param int $nSeitentyp
+ * @param int $pageType
  * @return string
  * @deprecated since 5.0.0 - not used in core
  */
-function mappeSeitentyp(int $nSeitentyp)
+function mappeSeitentyp(int $pageType)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    switch ($nSeitentyp) {
+    switch ($pageType) {
         case PAGE_ARTIKEL:
             return 'Artikeldetails';
 
@@ -1781,60 +1781,57 @@ function gibKeyStringFuerKeyArray($cKey_arr, $cSeperator)
  * und gibt ein Array mit den Keys zurück
  *
  * @param string $cKeys
- * @param string $cSeperator
+ * @param string $seperator
  * @return array
  * @deprecated since 5.0.0
  */
-function gibKeyArrayFuerKeyString($cKeys, $cSeperator)
+function gibKeyArrayFuerKeyString($cKeys, $seperator)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $cTMP_arr = explode($cSeperator, $cKeys);
-    $kKey_arr = [];
-    if (is_array($cTMP_arr) && count($cTMP_arr) > 0) {
-        foreach ($cTMP_arr as $cTMP) {
-            if (strlen($cTMP) > 0) {
-                $kKey_arr[] = (int)$cTMP;
-            }
+    $keys = [];
+    foreach (explode($seperator, $cKeys) as $cTMP) {
+        if (strlen($cTMP) > 0) {
+            $keys[] = (int)$cTMP;
         }
     }
 
-    return $kKey_arr;
+    return $keys;
 }
 
 /**
- * @param array $nFilter_arr
+ * @param array $filter
  * @return array
  * @deprecated since 5.0.0
  */
-function setzeMerkmalFilter($nFilter_arr = [])
+function setzeMerkmalFilter($filter = [])
 {
     trigger_error(
         __FUNCTION__ . ' is deprecated. Use ProductFilter::initAttributeFilter() instead.',
         E_USER_DEPRECATED
     );
-    return \Filter\ProductFilter::initAttributeFilter($nFilter_arr);
+    return \Filter\ProductFilter::initAttributeFilter($filter);
 }
 
 /**
- * @param array $nFilter_arr
+ * @param array $filter
  * @return array
  * @deprecated since 5.0.0
  */
-function setzeSuchFilter($nFilter_arr = [])
+function setzeSuchFilter($filter = [])
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use ProductFilter::initSearchFilter() instead.', E_USER_DEPRECATED);
-    return \Filter\ProductFilter::initSearchFilter($nFilter_arr);
+    return \Filter\ProductFilter::initSearchFilter($filter);
 }
 
 /**
- * @param array $nFilter_arr
+ * @param array $filter
  * @return array
  * @deprecated since 5.0.0
  */
-function setzeTagFilter($nFilter_arr = [])
+function setzeTagFilter($filter = [])
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use ProductFilter::initTagFilter() instead.', E_USER_DEPRECATED);
-    return \Filter\ProductFilter::initTagFilter($nFilter_arr);
+    return \Filter\ProductFilter::initTagFilter($filter);
 }
 
 /**
@@ -1954,9 +1951,9 @@ function gibToken(bool $bAlten = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if ($bAlten) {
-        $cToken_arr = gibLetztenTokenDaten();
-        if (!empty($cToken_arr) && array_key_exists('token', $cToken_arr)) {
-            return $cToken_arr['token'];
+        $tokens = gibLetztenTokenDaten();
+        if (!empty($tokens) && array_key_exists('token', $tokens)) {
+            return $tokens['token'];
         }
     }
 
@@ -1972,9 +1969,9 @@ function gibTokenName(bool $bAlten = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if ($bAlten) {
-        $cToken_arr = gibLetztenTokenDaten();
-        if (!empty($cToken_arr) && array_key_exists('name', $cToken_arr)) {
-            return $cToken_arr['name'];
+        $tokens = gibLetztenTokenDaten();
+        if (!empty($tokens) && array_key_exists('name', $tokens)) {
+            return $tokens['name'];
         }
     }
 

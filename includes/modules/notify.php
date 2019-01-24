@@ -16,7 +16,7 @@ define('NO_PFAD', PFAD_LOGFILES . 'notify.log');
 $logger              = Shop::Container()->getLogService();
 $moduleId            = null;
 $Sprache             = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
-$Einstellungen       = Shop::getSettings([
+$conf                = Shop::getSettings([
     CONF_GLOBAL,
     CONF_KUNDEN,
     CONF_KAUFABWICKLUNG,
@@ -110,11 +110,11 @@ if (strlen($cSh) > 0) {
 
                 if ($order->kBestellung > 0) {
                     $logger->debug('tzahlungsession aktualisiert.');
-                    $_upd               = new stdClass();
-                    $_upd->nBezahlt     = 1;
-                    $_upd->dZeitBezahlt = 'NOW()';
-                    $_upd->kBestellung  = (int)$order->kBestellung;
-                    Shop::Container()->getDB()->update('tzahlungsession', 'cZahlungsID', $sessionHash, $_upd);
+                    $upd               = new stdClass();
+                    $upd->nBezahlt     = 1;
+                    $upd->dZeitBezahlt = 'NOW()';
+                    $upd->kBestellung  = (int)$order->kBestellung;
+                    Shop::Container()->getDB()->update('tzahlungsession', 'cZahlungsID', $sessionHash, $upd);
                     $paymentMethod->handleNotification($order, '_' . $sessionHash, $_REQUEST);
                     if ($paymentMethod->redirectOnPaymentSuccess() === true) {
                         header('Location: ' . $paymentMethod->getReturnURL($order));

@@ -1,9 +1,9 @@
 <div id="{$instance->getProperty('uid')}" {$instance->getAttributeString()} {if $isPreview}{$instance->getDataAttributeString()}{/if}>
     <div class="opc-area" {if $isPreview}data-area-id="cntdwn-title"{/if}>
         {if $isPreview}
-            {$instance->getSubareaPreviewHtml("cntdwn-title")}
+            {$instance->getSubareaPreviewHtml('cntdwn-title')}
         {else}
-            {$instance->getSubareaFinalHtml("cntdwn-title")}
+            {$instance->getSubareaFinalHtml('cntdwn-title')}
         {/if}
     </div>
     <div class="row text-center">
@@ -27,9 +27,9 @@
     </div>
     <div class="opc-area" {if $isPreview}data-area-id="cntdwn-footer"{/if}>
         {if $isPreview}
-            {$instance->getSubareaPreviewHtml("cntdwn-footer")}
+            {$instance->getSubareaPreviewHtml('cntdwn-footer')}
         {else}
-            {$instance->getSubareaFinalHtml("cntdwn-footer")}
+            {$instance->getSubareaFinalHtml('cntdwn-footer')}
         {/if}
     </div>
     <script>

@@ -8,6 +8,7 @@ namespace News;
 
 use DB\DbInterface;
 use DB\ReturnType;
+use Helpers\Form;
 use Helpers\URL;
 use Pagination\Pagination;
 use Session\Frontend;
@@ -219,7 +220,7 @@ class Controller
 
         $metaTitle       = $metaTitle === ''
             ? \Shop::Lang()->get('news', 'news') . ' ' .
-            \Shop::Lang()->get('from', 'global') . ' ' .
+            \Shop::Lang()->get('from') . ' ' .
             $this->config['global']['global_shopname']
             : $metaTitle;
         $metaDescription = $metaDescription === ''
@@ -404,7 +405,7 @@ class Controller
             if (empty($post['cEmail']) || \StringHandler::filterEmailAddress($post['cEmail']) === false) {
                 $checks['cEmail'] = 1;
             }
-            if ($config['news']['news_sicherheitscode'] !== 'N' && !\Helpers\Form::validateCaptcha($post)) {
+            if ($config['news']['news_sicherheitscode'] !== 'N' && !Form::validateCaptcha($post)) {
                 $checks['captcha'] = 2;
             }
         }

@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "bilderverwaltung"
 msgstr "Bilderverwaltung"
 
@@ -52,3 +56,5 @@ msgstr "*Fallback: Bilder, die sich im Ordner „bilder/“ und nicht im Ordner 
 msgid "more"
 msgstr "Mehr"
 
+msgid "successCacheReset"
+msgstr "Cache wurde erfolgreich zurückgesetzt"

@@ -25,20 +25,20 @@ class ArticleDownloads extends NetSyncHandler
     {
         switch ($eRequest) {
             case NetSyncRequest::DOWNLOADFOLDERS:
-                $bPreview            = (int)$_POST['bPreview'];
-                $oDownloadFolder_arr = getFolderStruct($bPreview ? PFAD_DOWNLOADS_PREVIEW : PFAD_DOWNLOADS);
-                self::throwResponse(NetSyncResponse::OK, $oDownloadFolder_arr);
+                self::throwResponse(
+                    NetSyncResponse::OK,
+                    getFolderStruct((int)$_POST['bPreview'] ? PFAD_DOWNLOADS_PREVIEW : PFAD_DOWNLOADS)
+                );
                 break;
 
             case NetSyncRequest::DOWNLOADFILESINFOLDER:
-                $bPreview = (int)$_POST['bPreview'];
+                $preview = (int)$_POST['bPreview'];
                 if (!isset($_POST['cBasePath']) || empty($_POST['cBasePath'])) {
-                    $_POST['cBasePath'] = $bPreview ? PFAD_DOWNLOADS_PREVIEW : PFAD_DOWNLOADS;
+                    $_POST['cBasePath'] = $preview ? PFAD_DOWNLOADS_PREVIEW : PFAD_DOWNLOADS;
                 }
-                $cBasePath = $_POST['cBasePath'];
-                if (is_dir($cBasePath)) {
-                    $oFiles_arr = getFilesStruct($cBasePath, $bPreview);
-                    self::throwResponse(NetSyncResponse::OK, $oFiles_arr);
+                $basePath = $_POST['cBasePath'];
+                if (is_dir($basePath)) {
+                    self::throwResponse(NetSyncResponse::OK, getFilesStruct($basePath, $preview));
                 } else {
                     self::throwResponse(NetSyncResponse::FOLDERNOTEXISTS);
                 }

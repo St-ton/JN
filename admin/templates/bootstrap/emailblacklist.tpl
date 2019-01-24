@@ -1,4 +1,4 @@
-{config_load file="$lang.conf" section="emailblacklist"}
+{config_load file="$lang.conf" section='emailblacklist'}
 {include file='tpl_inc/header.tpl'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('emailblacklist') cBeschreibung=__('emailblacklistDesc') cDokuURL=__('emailblacklistURL')}
 <div id="content" class="container-fluid">
@@ -8,7 +8,7 @@
         <input type="hidden" name="emailblacklist" value="1" />
         <div id="settings">
             {assign var=open value=false}
-            {foreach name=conf from=$oConfig_arr item=oConfig}
+            {foreach $oConfig_arr as $oConfig}
                 {if $oConfig->cConf === 'Y'}
                     <div class="item input-group">
                         <span class="input-group-addon">
@@ -17,7 +17,7 @@
                         <span class="input-group-wrap">
                             {if $oConfig->cInputTyp === 'selectbox'}
                                 <select name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" class="form-control combo">
-                                    {foreach name=selectfor from=$oConfig->ConfWerte item=wert}
+                                    {foreach $oConfig->ConfWerte as $wert}
                                         <option value="{$wert->cWert}" {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                     {/foreach}
                                 </select>
@@ -52,7 +52,7 @@
                 <h3 class="panel-title">{__('emailblacklistEmail')} {__('emailblacklistSeperator')}</h3>
             </div>
             <div class="panel-body">
-                <textarea class="form-control" name="cEmail" cols="50" rows="10">{if isset($oEmailBlacklist_arr)}{foreach name=emailblacklist from=$oEmailBlacklist_arr item=oEmailBlacklist}{$oEmailBlacklist->cEmail}{if !$smarty.foreach.emailblacklist.last};{/if}{/foreach}{/if}</textarea>
+                <textarea class="form-control" name="cEmail" cols="50" rows="10">{if isset($oEmailBlacklist_arr)}{foreach $oEmailBlacklist_arr as $oEmailBlacklist}{$oEmailBlacklist->cEmail}{if !$oEmailBlacklist@last};{/if}{/foreach}{/if}</textarea>
             </div>
         </div>
         <div class="save_wrapper">
@@ -65,7 +65,7 @@
                 <h3 class="panel-title">{__('emailblacklistBlockedEmails')}</h3>
             </div>
             <div class="panel-body">
-                {foreach name=blocked from=$oEmailBlacklistBlock_arr item=entry}
+                {foreach $oEmailBlacklistBlock_arr as $entry}
                     {$entry->cEmail} ({$entry->dLetzterBlock})<br />
                 {/foreach}
             </div>

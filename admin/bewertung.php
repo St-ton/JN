@@ -16,12 +16,12 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 /** @global \Smarty\JTLSmarty $smarty */
-$Einstellungen = Shop::getSettings([CONF_BEWERTUNG]);
-$cHinweis      = '';
-$cFehler       = '';
-$step          = 'bewertung_uebersicht';
-$cTab          = 'freischalten';
-$cacheTags     = [];
+$conf      = Shop::getSettings([CONF_BEWERTUNG]);
+$cHinweis  = '';
+$cFehler   = '';
+$step      = 'bewertung_uebersicht';
+$cTab      = 'freischalten';
+$cacheTags = [];
 
 setzeSprache();
 
@@ -31,7 +31,7 @@ if (strlen(Request::verifyGPDataString('tab')) > 0) {
 if (Form::validateToken()) {
     if (Request::verifyGPCDataInt('bewertung_editieren') === 1) {
         if (editiereBewertung($_POST)) {
-            $cHinweis .= 'Ihre Bewertung wurde erfolgreich editiert. ';
+            $cHinweis .= __('successRatingEdit');
 
             if (Request::verifyGPCDataInt('nFZ') === 1) {
                 header('Location: freischalten.php');
@@ -39,13 +39,13 @@ if (Form::validateToken()) {
             }
         } else {
             $step     = 'bewertung_editieren';
-            $cFehler .= 'Fehler: Bitte überprüfen Sie Ihre Eingaben. ';
+            $cFehler .= __('errorFillRequired');
         }
     } elseif (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
         if (Request::verifyGPDataString('bewertung_guthaben_nutzen') === 'Y'
             && Request::verifyGPDataString('bewertung_freischalten') !== 'Y'
         ) {
-            $cFehler = 'Guthabenbonus kann nur mit "Bewertung freischalten" verwendet werden.';
+            $cFehler = __('errorCreditUnlock');
         } else {
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE]);
             $cHinweis .= saveAdminSectionSettings(CONF_BEWERTUNG, $_POST);
@@ -58,8 +58,8 @@ if (Form::validateToken()) {
                     $upd         = new stdClass();
                     $upd->nAktiv = 1;
                     Shop::Container()->getDB()->update('tbewertung', 'kBewertung', (int)$kBewertung, $upd);
-                    aktualisiereDurchschnitt($kArtikel_arr[$i], $Einstellungen['bewertung']['bewertung_freischalten']);
-                    checkeBewertungGuthabenBonus($kBewertung, $Einstellungen);
+                    aktualisiereDurchschnitt($kArtikel_arr[$i], $conf['bewertung']['bewertung_freischalten']);
+                    checkeBewertungGuthabenBonus($kBewertung, $conf);
                     $cacheTags[] = $kArtikel_arr[$i];
                 }
                 array_walk(
@@ -69,14 +69,14 @@ if (Form::validateToken()) {
                     }
                 );
                 Shop::Container()->getCache()->flushTags($cacheTags);
-                $cHinweis .= count($_POST['kBewertung']) . ' Bewertung(en) wurde(n) erfolgreich aktiviert.';
+                $cHinweis .= count($_POST['kBewertung']) . __('successRatingUnlock');
             }
         } elseif (isset($_POST['loeschen'])) { // Bewertungen loeschen
             if (is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
                 foreach ($_POST['kBewertung'] as $kBewertung) {
                     Shop::Container()->getDB()->delete('tbewertung', 'kBewertung', (int)$kBewertung);
                 }
-                $cHinweis .= count($_POST['kBewertung']) . ' Bewertung(en) wurde(n) erfolgreich gelöscht.';
+                $cHinweis .= count($_POST['kBewertung']) . __('successRatingDelete');
             }
         }
     } elseif (isset($_POST['bewertung_aktiv']) && (int)$_POST['bewertung_aktiv'] === 1) {
@@ -105,7 +105,7 @@ if (Form::validateToken()) {
             foreach ($_POST['kBewertung'] as $i => $kBewertung) {
                 BewertungsGuthabenBonusLoeschen($kBewertung);
                 Shop::Container()->getDB()->delete('tbewertung', 'kBewertung', (int)$kBewertung);
-                aktualisiereDurchschnitt($kArtikel_arr[$i], $Einstellungen['bewertung']['bewertung_freischalten']);
+                aktualisiereDurchschnitt($kArtikel_arr[$i], $conf['bewertung']['bewertung_freischalten']);
                 $cacheTags[] = $kArtikel_arr[$i];
             }
             array_walk(
@@ -115,7 +115,7 @@ if (Form::validateToken()) {
                 }
             );
             Shop::Container()->getCache()->flushTags($cacheTags);
-            $cHinweis .= count($_POST['kBewertung']) . ' Bewertung(en) wurde(n) erfolgreich gelöscht.';
+            $cHinweis .= count($_POST['kBewertung']) . __('successRatingDelete');
         }
     }
 }
@@ -129,7 +129,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
 } elseif ($step === 'bewertung_uebersicht') {
     if (isset($_GET['a']) && $_GET['a'] === 'delreply' && Form::validateToken()) {
         removeReply(Request::verifyGPCDataInt('kBewertung'));
-        $cHinweis = 'Antwort zu einer Bewertung wurde entfernt.';
+        $cHinweis = __('successRatingCommentDelete');
     }
     $nBewertungen      = (int)Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl

@@ -32,7 +32,7 @@
                                         <th class="tcenter">{__('exportformatNextStart')}</th>
                                         <th class="tcenter">&nbsp;</th>
                                     </tr>
-                                    {foreach name=exportformatqueue from=$oExportformatCron_arr item=oExportformatCron}
+                                    {foreach $oExportformatCron_arr as $oExportformatCron}
                                         <tr>
                                             <td class="tleft">
                                                 <input name="kCron[]" type="checkbox" value="{$oExportformatCron->cronID}" id="kCron-{$oExportformatCron->cronID}" />
@@ -113,7 +113,7 @@
                                     <th class="th-4">{__('exportformatExported')}</th>
                                     <th class="th-5">{__('exportformatLastStart')}</th>
                                 </tr>
-                                {foreach name=exportformatqueue from=$oExportformatQueueBearbeitet_arr item=oExportformatQueueBearbeitet}
+                                {foreach $oExportformatQueueBearbeitet_arr as $oExportformatQueueBearbeitet}
                                     <tr>
                                         <td>{$oExportformatQueueBearbeitet->cName}</td>
                                         <td>{$oExportformatQueueBearbeitet->cDateiname}</td>

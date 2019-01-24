@@ -8,7 +8,6 @@ namespace Plugin\Admin\Validation;
 
 use Plugin\Admin\Validation\Items\Author;
 use Plugin\Admin\Validation\Items\Blueprints;
-use Plugin\Admin\Validation\Items\Bootstrapper;
 use Plugin\Admin\Validation\Items\Boxes;
 use Plugin\Admin\Validation\Items\Checkboxes;
 use Plugin\Admin\Validation\Items\Exports;

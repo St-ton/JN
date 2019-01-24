@@ -331,7 +331,7 @@ class WarenkorbPos
 
         if ($this->kKonfigitem === 0 && !empty($this->cUnique)) {
             foreach (\Session\Frontend::getCart()->PositionenArr as $pos) {
-                if ($pos->istKonfigKind() && $pos->cUnique === $this->cUnique) {
+                if ($pos->cUnique === $this->cUnique && $pos->istKonfigKind()) {
                     $weight += $pos->fGesamtgewicht;
                 }
             }

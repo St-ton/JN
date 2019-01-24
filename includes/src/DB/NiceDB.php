@@ -1376,7 +1376,7 @@ class NiceDB implements DbInterface
      * @param mixed        $value
      * @param int|null     $type
      */
-    protected function _bind(PDOStatement $stmt, $parameter, $value, $type = null)
+    protected function _bind(PDOStatement $stmt, $parameter, $value, $type = null): void
     {
         $parameter = $this->_bindName($parameter);
 
@@ -1452,7 +1452,7 @@ class NiceDB implements DbInterface
      * @param string $name
      * @throws InvalidEntityNameException
      */
-    protected function validateEntityName(string $name)
+    protected function validateEntityName(string $name): void
     {
         if (!$this->isValidEntityName($name)) {
             throw new InvalidEntityNameException($name);
@@ -1466,7 +1466,7 @@ class NiceDB implements DbInterface
      * @throws InvalidEntityNameException
      * @throws \InvalidArgumentException
      */
-    protected function validateDbObject($obj)
+    protected function validateDbObject($obj): void
     {
         if (!\is_object($obj)) {
             $type = \gettype($obj);

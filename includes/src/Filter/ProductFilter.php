@@ -1569,11 +1569,11 @@ class ProductFilter
         // search special sorting
         if ($this->hasSearchSpecial()) {
             //@todo
-            $oSuchspecialEinstellung_arr = $this->getSearchSpecialConfigMapping();
-            $idx                         = $this->getSearchSpecial()->getValue();
-            $ssConf                      = isset($oSuchspecialEinstellung_arr[$idx]) ?: null;
-            if ($ssConf !== null && $ssConf !== -1 && \count($oSuchspecialEinstellung_arr) > 0) {
-                $_SESSION['Usersortierung'] = (int)$oSuchspecialEinstellung_arr[$idx];
+            $mapping = $this->getSearchSpecialConfigMapping();
+            $idx     = $this->getSearchSpecial()->getValue();
+            $ssConf  = isset($mapping[$idx]) ?: null;
+            if ($ssConf !== null && $ssConf !== -1 && \count($mapping) > 0) {
+                $_SESSION['Usersortierung'] = (int)$mapping[$idx];
             }
         }
         // explicitly set by user

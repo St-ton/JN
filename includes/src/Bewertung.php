@@ -149,10 +149,10 @@ class Bewertung
         if ($kArtikel <= 0 || $kSprache <= 0) {
             return $this;
         }
-        $oBewertungAnzahl_arr = [];
-        $cSQL                 = '';
-        $cOrderSQL            = $this->getOrderSQL($nOption);
-        $db                   = Shop::Container()->getDB();
+        $ratingCounts = [];
+        $cSQL         = '';
+        $cOrderSQL    = $this->getOrderSQL($nOption);
+        $db           = Shop::Container()->getDB();
         executeHook(HOOK_BEWERTUNG_CLASS_SWITCH_SORTIERUNG);
 
         $cSQLFreischalten = $cFreischalten === 'Y'
@@ -168,7 +168,7 @@ class Bewertung
             if ($nSterne > 0) {
                 $cSQL = ' AND nSterne = ' . $nSterne;
             }
-            $oBewertungAnzahl_arr = $db->query(
+            $ratingCounts = $db->query(
                 'SELECT COUNT(*) AS nAnzahl, nSterne
                     FROM tbewertung
                     WHERE kArtikel = ' . $kArtikel . $cSQLFreischalten . '
@@ -193,7 +193,7 @@ class Bewertung
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         }
-        $oBewertungGesamt = $db->query(
+        $total = $db->query(
             'SELECT COUNT(*) AS nAnzahl, tartikelext.fDurchschnittsBewertung AS fDurchschnitt
                 FROM tartikelext
                 JOIN tbewertung 
@@ -203,33 +203,33 @@ class Bewertung
             \DB\ReturnType::SINGLE_OBJECT
         );
         // Anzahl Bewertungen für aktuelle Sprache
-        $oBewertungGesamtSprache = $db->query(
+        $totalLocalized = $db->query(
             'SELECT COUNT(*) AS nAnzahlSprache
                 FROM tbewertung
                 WHERE kArtikel = ' . $kArtikel . $cSprachSQL . $cSQLFreischalten,
             \DB\ReturnType::SINGLE_OBJECT
         );
-        if (isset($oBewertungGesamt->fDurchschnitt) && (int)$oBewertungGesamt->fDurchschnitt > 0) {
-            $oBewertungGesamt->fDurchschnitt = round($oBewertungGesamt->fDurchschnitt * 2) / 2;
-            $oBewertungGesamt->nAnzahl       = (int)$oBewertungGesamt->nAnzahl;
-            $this->oBewertungGesamt          = $oBewertungGesamt;
+        if (isset($total->fDurchschnitt) && (int)$total->fDurchschnitt > 0) {
+            $total->fDurchschnitt = round($total->fDurchschnitt * 2) / 2;
+            $total->nAnzahl       = (int)$total->nAnzahl;
+            $this->oBewertungGesamt          = $total;
         } else {
-            $oBewertungGesamt                = new stdClass();
-            $oBewertungGesamt->fDurchschnitt = 0;
-            $oBewertungGesamt->nAnzahl       = 0;
-            $this->oBewertungGesamt          = $oBewertungGesamt;
+            $total                = new stdClass();
+            $total->fDurchschnitt = 0;
+            $total->nAnzahl       = 0;
+            $this->oBewertungGesamt          = $total;
         }
-        $this->nAnzahlSprache = ((int)$oBewertungGesamtSprache->nAnzahlSprache > 0)
-            ? (int)$oBewertungGesamtSprache->nAnzahlSprache
+        $this->nAnzahlSprache = ((int)$totalLocalized->nAnzahlSprache > 0)
+            ? (int)$totalLocalized->nAnzahlSprache
             : 0;
         foreach ($this->oBewertung_arr as $i => $oBewertung) {
             $this->oBewertung_arr[$i]->nAnzahlHilfreich = $oBewertung->nHilfreich + $oBewertung->nNichtHilfreich;
         }
-        $nSterne_arr = [0, 0, 0, 0, 0];
-        foreach ($oBewertungAnzahl_arr as $oBewertungAnzahl) {
-            $nSterne_arr[5 - $oBewertungAnzahl->nSterne] = $oBewertungAnzahl->nAnzahl;
+        $stars = [0, 0, 0, 0, 0];
+        foreach ($ratingCounts as $item) {
+            $stars[5 - $item->nSterne] = $item->nAnzahl;
         }
-        $this->nSterne_arr = $nSterne_arr;
+        $this->nSterne_arr = $stars;
 
         executeHook(HOOK_BEWERTUNG_CLASS_BEWERTUNG, ['oBewertung' => &$this]);
 

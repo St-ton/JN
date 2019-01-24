@@ -10,8 +10,8 @@
                 </span>
                 <span class="input-group-wrap last">
                     <select id="{__('changeLanguage')}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
-                        {foreach name=sprachen from=$Sprachen item=sprache}
-                            <option value="{$sprache->kSprache}" {if $sprache->kSprache==$smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
+                        {foreach $Sprachen as $sprache}
+                            <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
                         {/foreach}
                     </select>
                 </span>
@@ -123,7 +123,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {foreach name=bewertungletzten50 from=$oBewertungLetzten50_arr item=oBewertungLetzten50}
+                                {foreach $oBewertungLetzten50_arr as $oBewertungLetzten50}
                                     <tr>
                                         <td class="check"><input name="kBewertung[]" type="checkbox" value="{$oBewertungLetzten50->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungLetzten50->kArtikel}"></td>
                                         <td><a href="../index.php?a={$oBewertungLetzten50->kArtikel}" target="_blank">{$oBewertungLetzten50->ArtikelName}</a></td>
@@ -211,7 +211,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {foreach name=bewertungaktiv from=$oBewertungAktiv_arr item=oBewertungAktiv}
+                                {foreach $oBewertungAktiv_arr as $oBewertungAktiv}
                                     <tr>
                                         <td><input name="kBewertung[]" type="checkbox" value="{$oBewertungAktiv->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungAktiv->kArtikel}"></td>
                                         <td><a href="../index.php?a={$oBewertungAktiv->kArtikel}" target="_blank">{$oBewertungAktiv->ArtikelName}</a></td>
@@ -255,25 +255,25 @@
                         <h3 class="panel-title">{__('ratingSettings')}</h3>
                     </div>
                     <div class="panel-body">
-                        {foreach name=conf from=$oConfig_arr item=oConfig}
+                        {foreach $oConfig_arr as $oConfig}
                             {if $oConfig->cConf === 'Y'}
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <label for="{$oConfig->cWertName}">{$oConfig->cName}
-                                            {if $oConfig->cWertName|strpos:"_guthaben"} <span id="EinstellungAjax_{$oConfig->cWertName}"></span>{/if}
+                                            {if $oConfig->cWertName|strpos:'_guthaben'} <span id="EinstellungAjax_{$oConfig->cWertName}"></span>{/if}
                                         </label>
                                     </span>
                                     <span class="input-group-wrap">
                                         {if $oConfig->cInputTyp === 'selectbox'}
                                             <select name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" class="form-control combo">
-                                                {foreach name=selectfor from=$oConfig->ConfWerte item=wert}
+                                                {foreach $oConfig->ConfWerte as $wert}
                                                     <option value="{$wert->cWert}" {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                                 {/foreach}
                                             </select>
                                         {elseif $oConfig->cInputTyp === 'listbox'}
                                             <select name="{$oConfig->cWertName}[]" id="{$oConfig->cWertName}" multiple="multiple" class="form-control combo">
-                                                {foreach name=selectfor from=$oConfig->ConfWerte item=wert}
-                                                    <option value="{$wert->kKundengruppe}" {foreach name=werte from=$oConfig->gesetzterWert item=gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
+                                                {foreach $oConfig->ConfWerte $wert}
+                                                    <option value="{$wert->kKundengruppe}" {foreach $oConfig->gesetzterWert as $gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
                                                 {/foreach}
                                             </select>
                                         {elseif $oConfig->cInputTyp === 'number'}
@@ -294,7 +294,7 @@
                         {/foreach}
                     </div>
                     <div class="panel-footer">
-                        <button type="submit" value="{__('ragingSave')}" class="btn btn-primary"><i class="fa fa-save"></i> Speichern</button>
+                        <button type="submit" value="{__('ragingSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </div>
             </form>
@@ -303,8 +303,8 @@
 </div>
 
 <script type="text/javascript">
-    {foreach name=conf from=$oConfig_arr item=oConfig}
-        {if $oConfig->cWertName|strpos:"_guthaben"}
+    {foreach $oConfig_arr as $oConfig}
+        {if $oConfig->cWertName|strpos:'_guthaben'}
             ioCall('getCurrencyConversion', [0, $('#{$oConfig->cWertName}').val(), 'EinstellungAjax_{$oConfig->cWertName}']);
         {/if}
     {/foreach}

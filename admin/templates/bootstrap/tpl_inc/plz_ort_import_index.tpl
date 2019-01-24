@@ -213,7 +213,7 @@
     }
 
     function plz_ort_import_delete_temp() {
-        notify = showImportNotify('PLZ-Orte Import', 'Tempor&auml;rer Import wird gel&ouml;scht...');
+        notify = showImportNotify('PLZ-Orte Import', 'Temporärer Import wird gelöscht...');
         ioCall('plzimportActionDelTempImport', [], function(result) {
             notify.update({
                 progress: 100,

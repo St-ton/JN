@@ -22,7 +22,7 @@
                            autocomplete="off">
                     <span class="input-group-btn">
                         <button type="button" class="btn btn-default" id="{$searchPickerName}-reset-btn"
-                                title="Eingabe l&ouml;schen">
+                                title="Eingabe löschen">
                             <i class="fa fa-eraser"></i>
                         </button>
                     </span>

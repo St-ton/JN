@@ -670,22 +670,22 @@ class Exportformat
     }
 
     /**
-     * @param array $einstellungenAssoc_arr
+     * @param array $config
      * @return bool
      * @deprecated since 5.0.0
      */
-    public function insertEinstellungen(array $einstellungenAssoc_arr): bool
+    public function insertEinstellungen(array $config): bool
     {
         $ok = true;
-        foreach ($einstellungenAssoc_arr as $einstellungAssoc_arr) {
-            $oObj = new stdClass();
-            if (is_array($einstellungAssoc_arr) && count($einstellungAssoc_arr) > 0) {
-                foreach (array_keys($einstellungAssoc_arr) as $cMember) {
-                    $oObj->$cMember = $einstellungAssoc_arr[$cMember];
+        foreach ($config as $item) {
+            $ins = new stdClass();
+            if (is_array($item) && count($item) > 0) {
+                foreach (array_keys($item) as $cMember) {
+                    $ins->$cMember = $item[$cMember];
                 }
-                $oObj->kExportformat = $this->getExportformat();
+                $ins->kExportformat = $this->getExportformat();
             }
-            $ok = $ok && ($this->db->insert('texportformateinstellungen', $oObj) > 0);
+            $ok = $ok && ($this->db->insert('texportformateinstellungen', $ins) > 0);
         }
 
         return $ok;

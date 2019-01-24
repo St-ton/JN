@@ -30,24 +30,19 @@ $linkHelper = Shop::Container()->getLinkService();
 if (isset($oLink->kLink) && $oLink->kLink > 0) {
     $link = $linkHelper->getLinkByID($oLink->kLink);
 } else {
-    $oLink                   = $db->select('tlink', 'nLinkart', LINKTYP_404);
-    $bFileNotFound           = true;
-    Shop::$kLink             = (int)$oLink->kLink;
-    Shop::$bFileNotFound     = true;
-    Shop::$is404             = true;
-    $cParameter_arr['is404'] = true;
+    $oLink               = $db->select('tlink', 'nLinkart', LINKTYP_404);
+    $bFileNotFound       = true;
+    Shop::$kLink         = (int)$oLink->kLink;
+    Shop::$bFileNotFound = true;
+    Shop::$is404         = true;
 
     return;
 }
 
-$cHinweis               = '';
-$cFehler                = '';
-$cCanonicalURL          = '';
-$Einstellungen          = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_NEWSLETTER]);
-$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$option                 = 'eintragen';
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
+$cHinweis      = '';
+$cFehler       = '';
+$cCanonicalURL = '';
+$option        = 'eintragen';
 if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
     $option     = 'freischalten';
     $optCode    = StringHandler::htmlentities(StringHandler::filterXSS(strip_tags($_GET['fc'])));
@@ -221,11 +216,7 @@ if (\Session\Frontend::getCustomer()->getID() > 0) {
     $smarty->assign('bBereitsAbonnent', pruefeObBereitsAbonnent($customer->kKunde))
            ->assign('oKunde', $customer);
 }
-$cCanonicalURL    = Shop::getURL() . '/newsletter.php';
-$oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_NEWSLETTER);
-$cMetaTitle       = $oMeta->cTitle;
-$cMetaDescription = $oMeta->cDesc;
-$cMetaKeywords    = $oMeta->cKeywords;
+$cCanonicalURL = Shop::getURL() . '/newsletter.php';
 
 $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)

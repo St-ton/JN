@@ -3,20 +3,28 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+$scc = new \scc\DefaultComponentRegistrator(new \sccbs3\Bs3sccRenderer($smarty));
+$scc->registerComponents();
+
 /** @global Smarty\JTLSmarty $smarty */
-$smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyConversionSmarty')
-       ->registerPlugin('function', 'getCurrencyConversionTooltipButton', 'getCurrencyConversionTooltipButton')
-       ->registerPlugin('function', 'getCurrentPage', 'getCurrentPage')
-       ->registerPlugin('function', 'SmartyConvertDate', 'SmartyConvertDate')
-       ->registerPlugin('function', 'getHelpDesc', 'getHelpDesc')
-       ->registerPlugin('function', 'getExtensionCategory', 'getExtensionCategory')
-       ->registerPlugin('function', 'formatVersion', 'formatVersion')
-       ->registerPlugin('modifier', 'formatByteSize', ['StringHandler', 'formatSize'])
-       ->registerPlugin('function', 'gravatarImage', 'gravatarImage')
-       ->registerPlugin('function', 'getRevisions', 'getRevisions')
-       ->registerPlugin('function', 'captchaMarkup', 'captchaMarkup')
-       ->registerPlugin('modifier', 'permission', 'permission')
-       ->registerPlugin('function', '__', [\Shop::Container()->getGetText(), 'translate']);
+$smarty->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getCurrencyConversionSmarty', 'getCurrencyConversionSmarty')
+       ->registerPlugin(
+           Smarty::PLUGIN_FUNCTION,
+           'getCurrencyConversionTooltipButton',
+           'getCurrencyConversionTooltipButton'
+       )
+       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getCurrentPage', 'getCurrentPage')
+       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'SmartyConvertDate', 'SmartyConvertDate')
+       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getHelpDesc', 'getHelpDesc')
+       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getExtensionCategory', 'getExtensionCategory')
+       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'formatVersion', 'formatVersion')
+       ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'formatByteSize', ['StringHandler', 'formatSize'])
+       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'gravatarImage', 'gravatarImage')
+       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getRevisions', 'getRevisions')
+       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'captchaMarkup', 'captchaMarkup')
+       ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'permission', 'permission')
+       ->registerPlugin(Smarty::PLUGIN_FUNCTION, '__', [\Shop::Container()->getGetText(), 'translate']);
 
 /**
  * @param array            $params

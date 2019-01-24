@@ -201,10 +201,10 @@ class ArtikelListe
         $cacheID = 'hTA_' . md5(json_encode($categoryIDs));
         $objArr  = Shop::Container()->getCache()->get($cacheID);
         if ($objArr === false && count($categoryIDs) > 0) {
-            $Einstellungen = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
+            $conf          = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
             $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
-            $cLimitSql     = isset($Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
-                ? ('LIMIT ' . (int)$Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
+            $cLimitSql     = isset($conf['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
+                ? ('LIMIT ' . (int)$conf['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
                 : 'LIMIT 6';
             $lagerfilter   = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $objArr        = Shop::Container()->getDB()->query(

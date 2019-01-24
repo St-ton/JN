@@ -14,80 +14,71 @@ class TwoFAEmergency
      *
      * @var array
      */
-    private $vEmergeCodes;
+    private $codes = [];
 
     /**
      * generate 10 codes (maybe should placed into a config)
      *
-     * @var integer
+     * @var int
      */
-    private $iCodeCount;
-
-    /**
-     * constructor
-     */
-    public function __construct()
-    {
-        $this->vEmergeCodes = [];
-        $this->iCodeCount   = 10;
-    }
+    private $codeCount = 10;
 
     /**
      * create a pool of emergency-codes
      * for the current admin-account and store them in the DB.
      *
-     * @param object $oUserTuple - user-data, as delivered from TwoFA-object
+     * @param object $userTuple - user-data, as delivered from TwoFA-object
      * @return array - new created emergency-codes (as written into the DB)
      * @throws Exception
      */
-    public function createNewCodes($oUserTuple): array
+    public function createNewCodes($userTuple): array
     {
         $passwordService = Shop::Container()->getPasswordService();
-        $vAnalogyArray   = [];
-        $szSqlRowValues  = '';
-        $iValCount       = 'a';
-        for ($i = 0; $i < $this->iCodeCount; $i++) {
-            $szEmergeCode         = substr(md5(rand(1000, 9000)), 0, 16);
-            $this->vEmergeCodes[] = $szEmergeCode;
+        $bindings        = [];
+        $rowValues       = '';
+        $valCount        = 'a';
+        for ($i = 0; $i < $this->codeCount; $i++) {
+            $code          = substr(md5(rand(1000, 9000)), 0, 16);
+            $this->codes[] = $code;
 
-            if ('' !== $szSqlRowValues) {
-                $szSqlRowValues .= ', ';
+            if ($rowValues !== '') {
+                $rowValues .= ', ';
             }
-            $szEmergeCode = $passwordService->hash($szEmergeCode);
+            $code = $passwordService->hash($code);
 
             // to prevent the fireing from within a loop against the DB
             // we build a values-string (like this: "(:a, :b), (:c, :d), ... " )
             // and an according array
-            $vAnalogyArray[$iValCount] = $oUserTuple->kAdminlogin;
-            $szSqlRowValues           .= '(:' . $iValCount . ',';
-            $iValCount++;
-            $vAnalogyArray[$iValCount] = $szEmergeCode;
-            $szSqlRowValues           .= ' :' . $iValCount . ')';
-            $iValCount++;
+            $bindings[$valCount] = $userTuple->kAdminlogin;
+            $rowValues          .= '(:' . $valCount . ',';
+            $valCount++;
+            $bindings[$valCount] = $code;
+            $rowValues          .= ' :' . $valCount . ')';
+            $valCount++;
         }
         // now write into the DB what we got till now
         Shop::Container()->getDB()->executeQueryPrepared(
-            'INSERT INTO `tadmin2facodes`(`kAdminlogin`, `cEmergencyCode`) VALUES' . $szSqlRowValues,
-            $vAnalogyArray,
+            'INSERT INTO `tadmin2facodes`(`kAdminlogin`, `cEmergencyCode`) VALUES' . $rowValues,
+            $bindings,
             \DB\ReturnType::AFFECTED_ROWS
         );
 
-        return $this->vEmergeCodes;
+        return $this->codes;
     }
 
     /**
      * delete all the existing codes for the given user
      *
-     * @param object $oUserTuple - user-data, as delivered from TwoFA-object
+     * @param object $userTuple - user-data, as delivered from TwoFA-object
      */
-    public function removeExistingCodes($oUserTuple)
+    public function removeExistingCodes($userTuple): void
     {
-        $iEffectedRows = Shop::Container()->getDB()->deleteRow(
+        $effected = Shop::Container()->getDB()->deleteRow(
             'tadmin2facodes',
             'kAdminlogin',
-            $oUserTuple->kAdminlogin
+            $userTuple->kAdminlogin
         );
-        if ($this->iCodeCount !== $iEffectedRows) {
+        if ($this->codeCount !== $effected) {
             Shop::Container()->getLogService()->error(
                 '2FA-Notfall-Codes für diesen Account konnten nicht entfernt werden.'
             );
@@ -98,27 +89,27 @@ class TwoFAEmergency
      * check a given code for his existence in a given users emergency-code pool
      * (keep this method as fast as possible, because it's called during each admin-login)
      *
-     * @param int    $iAdminID - admin-account ID
-     * @param string $szCode - code, as typed in the login-fields
+     * @param int    $adminID - admin-account ID
+     * @param string $code - code, as typed in the login-fields
      * @return bool - true="valid emergency-code", false="not a valid emergency-code"
      */
-    public function isValidEmergencyCode($iAdminID, $szCode): bool
+    public function isValidEmergencyCode($adminID, $code): bool
     {
-        $voHashes = Shop::Container()->getDB()->selectArray('tadmin2facodes', 'kAdminlogin', $iAdminID);
-        if (1 > count($voHashes)) {
+        $hashes = Shop::Container()->getDB()->selectArray('tadmin2facodes', 'kAdminlogin', $adminID);
+        if (1 > count($hashes)) {
             return false; // no emergency-codes are there
         }
 
-        foreach ($voHashes as $oElement) {
-            if (true === password_verify($szCode, $oElement->cEmergencyCode)) {
+        foreach ($hashes as $item) {
+            if (true === password_verify($code, $item->cEmergencyCode)) {
                 // valid code found. remove it from DB and return a 'true'
-                $iEffectedRows = Shop::Container()->getDB()->delete(
+                $effected = Shop::Container()->getDB()->delete(
                     'tadmin2facodes',
                     ['kAdminlogin', 'cEmergencyCode'],
-                    [$iAdminID, $oElement->cEmergencyCode],
+                    [$adminID, $item->cEmergencyCode],
                     \DB\ReturnType::AFFECTED_ROWS
                 );
-                if (1 !== $iEffectedRows) {
+                if (1 !== $effected) {
                     Shop::Container()->getLogService()->error('2FA-Notfall-Code konnte nicht gelöscht werden.');
                 }
 

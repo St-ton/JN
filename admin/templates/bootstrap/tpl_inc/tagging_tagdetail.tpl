@@ -21,7 +21,7 @@
                             <th class="check">&nbsp;</th>
                             <th class="th-2">{__('taggingProduct')}</th>
                         </tr>
-                        {foreach name=tagdetail from=$oTagArtikel_arr item=oTagArtikel}
+                        {foreach $oTagArtikel_arr as $oTagArtikel}
                             <tr>
                                 <td class="check">
                                     <input name="kArtikel_arr[]" type="checkbox" value="{$oTagArtikel->kArtikel}" />

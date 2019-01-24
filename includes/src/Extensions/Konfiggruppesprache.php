@@ -4,10 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Extensions;
+
 /**
  * Class Konfiggruppesprache
+ *
+ * @package Extensions
  */
-class Konfiggruppesprache implements JsonSerializable
+class Konfiggruppesprache implements \JsonSerializable
 {
     /**
      * @var int
@@ -49,7 +53,7 @@ class Konfiggruppesprache implements JsonSerializable
      */
     public function jsonSerialize()
     {
-        return StringHandler::utf8_convert_recursive([
+        return \StringHandler::utf8_convert_recursive([
             'cName'         => $this->cName,
             'cBeschreibung' => $this->cBeschreibung
         ]);
@@ -63,20 +67,16 @@ class Konfiggruppesprache implements JsonSerializable
      */
     private function loadFromDB(int $kKonfiggruppe = 0, int $kSprache = 0): void
     {
-        $oObj = Shop::Container()->getDB()->select(
+        $item = \Shop::Container()->getDB()->select(
             'tkonfiggruppesprache',
             'kKonfiggruppe',
             $kKonfiggruppe,
             'kSprache',
             $kSprache
         );
-        if (isset($oObj->kKonfiggruppe, $oObj->kSprache)
-            && $oObj->kKonfiggruppe > 0
-            && $oObj->kSprache > 0
-        ) {
-            $cMember_arr = array_keys(get_object_vars($oObj));
-            foreach ($cMember_arr as $cMember) {
-                $this->$cMember = $oObj->$cMember;
+        if (isset($item->kKonfiggruppe, $item->kSprache) && $item->kKonfiggruppe > 0 && $item->kSprache > 0) {
+            foreach (\array_keys(\get_object_vars($item)) as $member) {
+                $this->$member = $item->$member;
             }
             $this->kSprache      = (int)$this->kSprache;
             $this->kKonfiggruppe = (int)$this->kKonfiggruppe;
@@ -89,16 +89,13 @@ class Konfiggruppesprache implements JsonSerializable
      */
     public function save(bool $bPrim = true)
     {
-        $oObj        = new stdClass();
-        $cMember_arr = array_keys(get_object_vars($this));
-        if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-            foreach ($cMember_arr as $cMember) {
-                $oObj->$cMember = $this->$cMember;
-            }
+        $ins = new \stdClass();
+        foreach (\array_keys(\get_object_vars($this)) as $member) {
+            $ins->$member = $this->$member;
         }
-        unset($oObj->kKonfiggruppe, $oObj->kSprache);
+        unset($ins->kKonfiggruppe, $ins->kSprache);
 
-        $kPrim = Shop::Container()->getDB()->insert('tkonfiggruppesprache', $oObj);
+        $kPrim = \Shop::Container()->getDB()->insert('tkonfiggruppesprache', $ins);
 
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
@@ -112,16 +109,16 @@ class Konfiggruppesprache implements JsonSerializable
      */
     public function update(): int
     {
-        $_upd                = new stdClass();
-        $_upd->kSprache      = $this->getSprache();
-        $_upd->cName         = $this->getName();
-        $_upd->cBeschreibung = $this->getBeschreibung();
+        $upd                = new \stdClass();
+        $upd->kSprache      = $this->getSprache();
+        $upd->cName         = $this->getName();
+        $upd->cBeschreibung = $this->getBeschreibung();
 
-        return Shop::Container()->getDB()->update(
+        return \Shop::Container()->getDB()->update(
             'tkonfiggruppesprache',
             ['kKonfiggruppe', 'kSprache'],
             [$this->getKonfiggruppe(), $this->getSprache()],
-            $_upd
+            $upd
         );
     }
 
@@ -130,7 +127,7 @@ class Konfiggruppesprache implements JsonSerializable
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->delete(
+        return \Shop::Container()->getDB()->delete(
             'tkonfiggruppesprache',
             ['kKonfiggruppe', 'kSprache'],
             [(int)$this->kKonfiggruppe, (int)$this->kSprache]
@@ -165,7 +162,7 @@ class Konfiggruppesprache implements JsonSerializable
      */
     public function setName($cName): self
     {
-        $this->cName = Shop::Container()->getDB()->escape($cName);
+        $this->cName = \Shop::Container()->getDB()->escape($cName);
 
         return $this;
     }
@@ -176,7 +173,7 @@ class Konfiggruppesprache implements JsonSerializable
      */
     public function setBeschreibung($cBeschreibung): self
     {
-        $this->cBeschreibung = Shop::Container()->getDB()->escape($cBeschreibung);
+        $this->cBeschreibung = \Shop::Container()->getDB()->escape($cBeschreibung);
 
         return $this;
     }
@@ -218,6 +215,6 @@ class Konfiggruppesprache implements JsonSerializable
      */
     public function hatBeschreibung(): bool
     {
-        return strlen($this->cBeschreibung) > 0;
+        return \strlen($this->cBeschreibung) > 0;
     }
 }

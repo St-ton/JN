@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-
 {if $inserted !== 0}
     <div class="alert alert-info">{__('msgCreated')}</div>
 {/if}

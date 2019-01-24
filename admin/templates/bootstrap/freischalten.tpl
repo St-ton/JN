@@ -1,4 +1,4 @@
-{config_load file="$lang.conf" section="freischalten"}
+{config_load file="$lang.conf" section='freischalten'}
 {include file='tpl_inc/header.tpl'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('freischalten') cBeschreibung=__('freischaltenDesc') cDokuURL=__('freischaltenURL')}
 <div id="content" class="container-fluid">
@@ -14,8 +14,8 @@
                     </span>
                     <span class="input-group-wrap">
                         <select class="form-control" id="formSprachwechselSelect" name="kSprache" >
-                            {foreach name=sprachen from=$Sprachen item=sprache}
-                                <option value="{$sprache->kSprache}" {if $sprache->kSprache==$smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
+                            {foreach $Sprachen as $sprache}
+                                <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
                             {/foreach}
                         </select>
                     </span>
@@ -104,7 +104,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {foreach name=bewertungen from=$oBewertung_arr item=oBewertung}
+                                {foreach $oBewertung_arr as $oBewertung}
                                     <tr>
                                         <td class="check">
                                             <input name="kBewertung[]" type="checkbox" value="{$oBewertung->kBewertung}" />
@@ -164,9 +164,9 @@
                         <input type="hidden" name="nSort" value="{$nSort}" />
                         {/if}
                         {if isset($cSuche) && isset($cSuchTyp) && $cSuche && $cSuchTyp}
-                            {assign var=cSuchStr value="Suche=1&cSuche="|cat:$cSuche|cat:"&cSuchTyp="|cat:$cSuchTyp|cat:"&"}
+                            {assign var=cSuchStr value='Suche=1&cSuche='|cat:$cSuche|cat:'&cSuchTyp='|cat:$cSuchTyp|cat:'&'}
                         {else}
-                            {assign var=cSuchStr value=""}
+                            {assign var=cSuchStr value=''}
                         {/if}
 
                         <div class="table-responsive">
@@ -181,7 +181,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {foreach name=suchanfragen from=$oSuchanfrage_arr item=oSuchanfrage}
+                                {foreach $oSuchanfrage_arr as $oSuchanfrage}
                                     <tr>
                                         <td class="check"><input name="kSuchanfrage[]" type="checkbox" value="{$oSuchanfrage->kSuchanfrage}" /></td>
                                         <td class="tleft">{$oSuchanfrage->cSuche}</td>
@@ -202,17 +202,17 @@
                         <div class="panel-footer">
                             <div class="btn-group p50">
                                 <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> Markierte freischalten</button>
-                                <button name="freischaltenleoschen" type="submit" value="Markierte l&ouml;schen" class="btn btn-danger">
+                                <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
                                     <i class="fa fa-trash"></i> {__('deleteSelected')}
                                 </button>
                             </div>
                             <div class="input-group right p50" data-toggle="tooltip" data-placement="bottom" title='{__('freischaltenMappingDesc')}'>
                                 <span class="input-group-addon">
-                                    <label for="cMapping">Markierte verkn&uuml;pfen mit</label>
+                                    <label for="cMapping">Markierte verknüpfen mit</label>
                                 </span>
                                 <input class="form-control" name="cMapping" id="cMapping" type="text" value="" />
                                 <span class="input-group-btn">
-                                    <button name="submitMapping" type="submit" value="Verkn&uouml;pfen" class="btn btn-primary">Verkn&uuml;pfen</button>
+                                    <button name="submitMapping" type="submit" value="Verknüpfen" class="btn btn-primary">Verknüpfen</button>
                                 </span>
                             </div>
                         </div>
@@ -242,7 +242,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {foreach name=tags from=$oTag_arr item=oTag}
+                                    {foreach $oTag_arr as $oTag}
                                         <tr>
                                             <td class="check"><input name="kTag[]" type="checkbox" value="{$oTag->kTag}" /></td>
                                             <td>{$oTag->cName}</td>
@@ -328,7 +328,7 @@
                         <div class="panel-footer">
                             <div class="btn-group">
                                 <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> Markierte freischalten</button>
-                                <button name="freischaltenleoschen" type="submit" value="Markierte l&ouml;schen" class="btn btn-danger">
+                                <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
                                     <i class="fa fa-trash"></i> {__('deleteSelected')}
                                 </button>
                             </div>
@@ -363,7 +363,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {foreach name=newsletterempfaenger from=$oNewsletterEmpfaenger_arr item=oNewsletterEmpfaenger}
+                                    {foreach $oNewsletterEmpfaenger_arr as $oNewsletterEmpfaenger}
                                         <tr>
                                             <td class="check"><input type="checkbox" name="kNewsletterEmpfaenger[]" value="{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}" /></td>
                                             <td>{$oNewsletterEmpfaenger->cEmail}</td>
@@ -384,7 +384,7 @@
                         <div class="panel-footer">
                             <div class="btn-group">
                                 <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> Markierte freischalten</button>
-                                <button name="freischaltenleoschen" type="submit" value="Markierte l&ouml;schen" class="btn btn-danger">
+                                <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
                                     <i class="fa fa-trash"></i> {__('deleteSelected')}
                                 </button>
                             </div>

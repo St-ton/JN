@@ -167,9 +167,8 @@ class MerkmalWert
             \DB\ReturnType::SINGLE_OBJECT
         );
         if (isset($oMerkmalWert->kMerkmalWert) && $oMerkmalWert->kMerkmalWert > 0) {
-            $cMember_arr = array_keys(get_object_vars($oMerkmalWert));
-            foreach ($cMember_arr as $cMember) {
-                $this->$cMember = $oMerkmalWert->$cMember;
+            foreach (array_keys(get_object_vars($oMerkmalWert)) as $member) {
+                $this->$member = $oMerkmalWert->$member;
             }
             $this->cURL     = URL::buildURL($this, URLART_MERKMAL);
             $this->cURLFull = URL::buildURL($this, URLART_MERKMAL, true);

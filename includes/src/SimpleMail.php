@@ -49,7 +49,7 @@ class SimpleMail
      *
      * @var array
      */
-    private $cAnhang_arr = [];
+    private $attachments = [];
 
     /**
      * Versandmethode
@@ -114,12 +114,12 @@ class SimpleMail
 
     /**
      *
-     * @param bool  $bShopMail
-     * @param array $cMailEinstellungen_arr
+     * @param bool  $shopMail
+     * @param array $mailConfig
      */
-    public function __construct(bool $bShopMail = true, array $cMailEinstellungen_arr = [])
+    public function __construct(bool $shopMail = true, array $mailConfig = [])
     {
-        if ($bShopMail === true) {
+        if ($shopMail === true) {
             $config = Shop::getSettings([CONF_EMAILS])['emails'];
 
             $this->cMethod        = $config['email_methode'];
@@ -131,24 +131,24 @@ class SimpleMail
             $this->cSMTPPass      = $config['email_smtp_pass'];
             $this->cVerfasserName = $config['email_master_absender_name'];
             $this->cVerfasserMail = $config['email_master_absender'];
-        } elseif (!empty($cMailEinstellungen_arr)) {
-            if (isset($cMailEinstellungen_arr['cMethod']) && !empty($cMailEinstellungen_arr['cMethod'])) {
-                $this->valid = $this->setMethod($cMailEinstellungen_arr['cMethod']);
+        } elseif (!empty($mailConfig)) {
+            if (isset($mailConfig['cMethod']) && !empty($mailConfig['cMethod'])) {
+                $this->valid = $this->setMethod($mailConfig['cMethod']);
             }
 
-            $this->cSendMailPfad = $cMailEinstellungen_arr['cSendMailPfad'];
-            $this->cSMTPHost     = $cMailEinstellungen_arr['cSMTPHost'];
-            $this->cSMTPPort     = (int)$cMailEinstellungen_arr['cSMTPPort'];
-            $this->cSMTPAuth     = $cMailEinstellungen_arr['cSMTPAuth'];
-            $this->cSMTPUser     = $cMailEinstellungen_arr['cSMTPUser'];
-            $this->cSMTPPass     = $cMailEinstellungen_arr['cSMTPPass'];
+            $this->cSendMailPfad = $mailConfig['cSendMailPfad'];
+            $this->cSMTPHost     = $mailConfig['cSMTPHost'];
+            $this->cSMTPPort     = (int)$mailConfig['cSMTPPort'];
+            $this->cSMTPAuth     = $mailConfig['cSMTPAuth'];
+            $this->cSMTPUser     = $mailConfig['cSMTPUser'];
+            $this->cSMTPPass     = $mailConfig['cSMTPPass'];
 
-            if (isset($cMailEinstellungen_arr['cVerfasserName']) && !empty($cMailEinstellungen_arr['cVerfasserName'])) {
-                $this->setVerfasserName($cMailEinstellungen_arr['cVerfasserName']);
+            if (isset($mailConfig['cVerfasserName']) && !empty($mailConfig['cVerfasserName'])) {
+                $this->setVerfasserName($mailConfig['cVerfasserName']);
             }
 
-            if (isset($cMailEinstellungen_arr['cVerfasserMail']) && !empty($cMailEinstellungen_arr['cVerfasserMail'])) {
-                $this->valid = $this->setVerfasserMail($cMailEinstellungen_arr['cVerfasserMail']);
+            if (isset($mailConfig['cVerfasserMail']) && !empty($mailConfig['cVerfasserMail'])) {
+                $this->valid = $this->setVerfasserMail($mailConfig['cVerfasserMail']);
             }
         } else {
             $this->valid = false;
@@ -159,25 +159,25 @@ class SimpleMail
      * Anhang hinzufügen
      * array('cName' => 'Mein Anhang', 'cPath' => '/pfad/zu/meiner/datei.txt');
      *
-     * @param string $cName
-     * @param string $cPath
-     * @param string $cEncoding
-     * @param string $cType
+     * @param string $name
+     * @param string $path
+     * @param string $encoding
+     * @param string $type
      * @return bool
      */
     public function addAttachment(
-        string $cName,
-        string $cPath,
-        string $cEncoding = 'base64',
-        string $cType = 'application/octet-stream'
+        string $name,
+        string $path,
+        string $encoding = 'base64',
+        string $type = 'application/octet-stream'
     ): bool {
-        if (!empty($cName) && file_exists($cPath)) {
-            $cAnhang_arr              = [];
-            $cAnhang_arr['cName']     = $cName;
-            $cAnhang_arr['cPath']     = $cPath;
-            $cAnhang_arr['cEncoding'] = $cEncoding;
-            $cAnhang_arr['cType']     = $cType;
-            $this->cAnhang_arr[]      = $cAnhang_arr;
+        if (!empty($name) && file_exists($path)) {
+            $attachments              = [];
+            $attachments['cName']     = $name;
+            $attachments['cPath']     = $path;
+            $attachments['cEncoding'] = $encoding;
+            $attachments['cType']     = $type;
+            $this->attachments[]      = $attachments;
 
             return true;
         }
@@ -237,91 +237,91 @@ class SimpleMail
     /**
      * E-Mail verschicken
      *
-     * @param array $cEmpfaenger_arr
-     * @param array $cCC_arr
-     * @param array $cBCC_arr
-     * @param array $cReply_arr
+     * @param array $recipients
+     * @param array $cc
+     * @param array $bcc
+     * @param array $replyTo
      * @return bool
      * @throws Exception
      * @throws \PHPMailer\PHPMailer\Exception
      */
-    public function send(array $cEmpfaenger_arr, $cCC_arr = [], $cBCC_arr = [], $cReply_arr = []): bool
+    public function send(array $recipients, $cc = [], $bcc = [], $replyTo = []): bool
     {
         if ($this->validate() !== true) {
             return false;
         }
-        $oPHPMailer           = new \PHPMailer\PHPMailer\PHPMailer();
-        $oPHPMailer->CharSet  = JTL_CHARSET;
-        $oPHPMailer->Timeout  = SOCKET_TIMEOUT;
-        $oPHPMailer->From     = $this->cVerfasserMail;
-        $oPHPMailer->Sender   = $this->cVerfasserMail;
-        $oPHPMailer->FromName = $this->cVerfasserName;
+        $mailer           = new \PHPMailer\PHPMailer\PHPMailer();
+        $mailer->CharSet  = JTL_CHARSET;
+        $mailer->Timeout  = SOCKET_TIMEOUT;
+        $mailer->From     = $this->cVerfasserMail;
+        $mailer->Sender   = $this->cVerfasserMail;
+        $mailer->FromName = $this->cVerfasserName;
 
-        if (!empty($cEmpfaenger_arr)) {
-            foreach ($cEmpfaenger_arr as $cEmpfaenger) {
-                $oPHPMailer->addAddress($cEmpfaenger['cMail'], $cEmpfaenger['cName']);
+        if (!empty($recipients)) {
+            foreach ($recipients as $recipient) {
+                $mailer->addAddress($recipient['cMail'], $recipient['cName']);
             }
         }
-        if (!empty($cCC_arr)) {
-            foreach ($cCC_arr as $cCC) {
-                $oPHPMailer->addCC($cCC['cMail'], $cCC['cName']);
+        if (!empty($cc)) {
+            foreach ($cc as $recipient) {
+                $mailer->addCC($recipient['cMail'], $recipient['cName']);
             }
         }
-        if (!empty($cBCC_arr)) {
-            foreach ($cBCC_arr as $cBCC) {
-                $oPHPMailer->addBCC($cBCC['cMail'], $cBCC['cName']);
+        if (!empty($bcc)) {
+            foreach ($bcc as $recipient) {
+                $mailer->addBCC($recipient['cMail'], $recipient['cName']);
             }
         }
-        if (!empty($cReply_arr)) {
-            foreach ($cReply_arr as $cReply) {
-                $oPHPMailer->addReplyTo($cReply['cMail'], $cReply['cName']);
+        if (!empty($replyTo)) {
+            foreach ($replyTo as $item) {
+                $mailer->addReplyTo($item['cMail'], $item['cName']);
             }
         }
 
-        $oPHPMailer->Subject = $this->cBetreff;
+        $mailer->Subject = $this->cBetreff;
 
         switch ($this->cMethod) {
             case 'mail':
-                $oPHPMailer->isMail();
+                $mailer->isMail();
                 break;
             case 'sendmail':
-                $oPHPMailer->isSendmail();
-                $oPHPMailer->Sendmail = $this->cSendMailPfad;
+                $mailer->isSendmail();
+                $mailer->Sendmail = $this->cSendMailPfad;
                 break;
             case 'qmail':
-                $oPHPMailer->isQmail();
+                $mailer->isQmail();
                 break;
             case 'smtp':
-                $oPHPMailer->isSMTP();
-                $oPHPMailer->Host          = $this->cSMTPHost;
-                $oPHPMailer->Port          = $this->cSMTPPort;
-                $oPHPMailer->SMTPKeepAlive = true;
-                $oPHPMailer->SMTPAuth      = $this->cSMTPAuth;
-                $oPHPMailer->Username      = $this->cSMTPUser;
-                $oPHPMailer->Password      = $this->cSMTPPass;
+                $mailer->isSMTP();
+                $mailer->Host          = $this->cSMTPHost;
+                $mailer->Port          = $this->cSMTPPort;
+                $mailer->SMTPKeepAlive = true;
+                $mailer->SMTPAuth      = $this->cSMTPAuth;
+                $mailer->Username      = $this->cSMTPUser;
+                $mailer->Password      = $this->cSMTPPass;
                 break;
         }
 
         if (!empty($this->cBodyHTML)) {
-            $oPHPMailer->isHTML(true);
-            $oPHPMailer->Body    = $this->cBodyHTML;
-            $oPHPMailer->AltBody = $this->cBodyText;
+            $mailer->isHTML(true);
+            $mailer->Body    = $this->cBodyHTML;
+            $mailer->AltBody = $this->cBodyText;
         } else {
-            $oPHPMailer->isHTML(false);
-            $oPHPMailer->Body = $this->cBodyText;
+            $mailer->isHTML(false);
+            $mailer->Body = $this->cBodyText;
         }
-        foreach ($this->cAnhang_arr as $cAnhang_arr) {
-            $oPHPMailer->addAttachment(
-                $cAnhang_arr['cPath'],
-                $cAnhang_arr['cName'],
-                $cAnhang_arr['cEncoding'],
-                $cAnhang_arr['cType']
+        foreach ($this->attachments as $attachment) {
+            $mailer->addAttachment(
+                $attachment['cPath'],
+                $attachment['cName'],
+                $attachment['cEncoding'],
+                $attachment['cType']
             );
         }
-        $bSent = $oPHPMailer->send();
-        $oPHPMailer->clearAddresses();
+        $sent = $mailer->send();
+        $mailer->clearAddresses();
 
-        return $bSent;
+        return $sent;
     }
 
     /**

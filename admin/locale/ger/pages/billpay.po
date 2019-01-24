@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "billpay"
 msgstr "Billpay"
 
@@ -36,3 +40,6 @@ msgstr "Debug"
 
 msgid "logReset"
 msgstr "Log zurücksetzen"
+
+msgid "errorBillpayNotConfigured"
+msgstr "Billpay wurde bisher nicht konfiguriert."

@@ -159,7 +159,7 @@ class Chartdata
     /**
      * @return string|null
      */
-    public function getUrl()
+    public function getUrl(): ?string
     {
         return $this->_url;
     }

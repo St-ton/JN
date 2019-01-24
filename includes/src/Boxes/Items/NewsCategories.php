@@ -7,6 +7,7 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
+use Helpers\URL;
 use Session\Frontend;
 
 /**
@@ -22,7 +23,7 @@ final class NewsCategories extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        parent::addMapping('oNewsKategorie_arr', 'Items');
+        $this->addMapping('oNewsKategorie_arr', 'Items');
         $cSQL      = (int)$config['news']['news_anzahl_box'] > 0
             ? ' LIMIT ' . (int)$config['news']['news_anzahl_box']
             : '';
@@ -64,8 +65,8 @@ final class NewsCategories extends AbstractBox
             \Shop::Container()->getCache()->set($cacheID, $newsCategories, $cacheTags);
         }
         foreach ($newsCategories as $newsCategory) {
-            $newsCategory->cURL     = \Helpers\URL::buildURL($newsCategory, \URLART_NEWSKATEGORIE);
-            $newsCategory->cURLFull = \Helpers\URL::buildURL($newsCategory, \URLART_NEWSKATEGORIE, true);
+            $newsCategory->cURL     = URL::buildURL($newsCategory, \URLART_NEWSKATEGORIE);
+            $newsCategory->cURLFull = URL::buildURL($newsCategory, \URLART_NEWSKATEGORIE, true);
         }
         $this->setShow(\count($newsCategories) > 0);
         $this->setItems($newsCategories);

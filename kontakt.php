@@ -12,15 +12,13 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'kontakt_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_KONTAKT);
-$smarty                 = Shop::Smarty();
-$Einstellungen          = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
-$linkHelper             = Shop::Container()->getLinkService();
-$kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
-$link                   = $linkHelper->getPageLink($kLink);
-$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$cCanonicalURL          = '';
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
+$smarty        = Shop::Smarty();
+$conf          = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
+$linkHelper    = Shop::Container()->getLinkService();
+$kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
+$link          = $linkHelper->getPageLink($kLink);
+$cCanonicalURL = '';
+$lang          = Shop::getLanguageCode();
 if (Form::checkSubject()) {
     $step            = 'formular';
     $fehlendeAngaben = [];
@@ -38,7 +36,7 @@ if (Form::checkSubject()) {
 
         if ($nReturnValue) {
             $step = 'floodschutz';
-            if (!Form::checkFloodProtection($Einstellungen['kontakt']['kontakt_sperre_minuten'])) {
+            if (!Form::checkFloodProtection($conf['kontakt']['kontakt_sperre_minuten'])) {
                 $oNachricht = Form::baueKontaktFormularVorgaben();
                 // CheckBox Spezialfunktion ausfuehren
                 $oCheckBox->triggerSpecialFunction(
@@ -53,15 +51,14 @@ if (Form::checkSubject()) {
             }
         }
     }
-    $lang           = $_SESSION['cISOSprache'];
-    $Contents       = Shop::Container()->getDB()->selectAll(
+    $contents       = Shop::Container()->getDB()->selectAll(
         'tspezialcontentsprache',
         ['nSpezialContent', 'cISOSprache'],
         [(int)SC_KONTAKTFORMULAR, $lang]
     );
-    $SpezialContent = new stdClass();
-    foreach ($Contents as $content) {
-        $SpezialContent->{$content->cTyp} = $content->cContent;
+    $specialContent = new stdClass();
+    foreach ($contents as $content) {
+        $specialContent->{$content->cTyp} = $content->cContent;
     }
     $subjects = Shop::Container()->getDB()->query(
         "SELECT *
@@ -84,11 +81,7 @@ if (Form::checkSubject()) {
             $subject->AngezeigterName = $localization->cName;
         }
     }
-    $cCanonicalURL    = $linkHelper->getStaticRoute('kontakt.php');
-    $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_KONTAKT, $lang);
-    $cMetaTitle       = $oMeta->cTitle;
-    $cMetaDescription = $oMeta->cDesc;
-    $cMetaKeywords    = $oMeta->cKeywords;
+    $cCanonicalURL = $linkHelper->getStaticRoute('kontakt.php');
     $smarty->assign('step', $step)
            ->assign('code', false)
            ->assign('betreffs', $subjects)
@@ -100,11 +93,11 @@ if (Form::checkSubject()) {
     Shop::Container()->getLogService()->error('Kein Kontaktbetreff vorhanden! Bitte im Backend unter ' .
         'Einstellungen -> Kontaktformular -> Betreffs einen Betreff hinzuf&uuml;gen.');
     $smarty->assign('hinweis', Shop::Lang()->get('noSubjectAvailable', 'contact'));
-    $SpezialContent = new stdClass();
+    $specialContent = new stdClass();
 }
 
 $smarty->assign('Link', $link)
-       ->assign('Spezialcontent', $SpezialContent);
+       ->assign('Spezialcontent', $specialContent);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_KONTAKT_PAGE);

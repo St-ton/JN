@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "slider"
 msgstr "Slider"
 
@@ -7,3 +11,14 @@ msgstr "https://jtl-url.de/uywto"
 msgid "sliderDesc"
 msgstr "Über die Sliderverwaltung pflegen Sie für beliebige Seiten in Ihrem Onlineshop Slider ein."
 
+msgid "errorSliderSave"
+msgstr "Slider konnte nicht gespeichert werden."
+
+msgid "successSliderSave"
+msgstr "Änderungen erfolgreich gespeichert."
+
+msgid "errorSliderNotFound"
+msgstr "Slider wurde nicht gefunden."
+
+msgid "errorSliderRemove"
+msgstr "Slider konnte nicht entfernt werden."

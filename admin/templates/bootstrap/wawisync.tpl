@@ -6,7 +6,7 @@
         {$jtl_token}
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Benutzername/Passwort &auml;ndern</h3>
+                <h3 class="panel-title">Benutzername/Passwort ändern</h3>
             </div>
             <div class="panel-body">
                 <div class="input-group">
@@ -23,7 +23,7 @@
                 </div>
             </div>
             <div class="panel-footer">
-                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Speichern</button>
+                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
             </div>
         </div>
     </form>

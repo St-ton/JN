@@ -455,11 +455,11 @@ class Kunde
                 : date_format(date_create($this->dGeburtstag), 'd.m.Y');
 
             $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
-            $cDatum_arr               = Date::getDateParts($this->dErstellt ?? '');
-            if (count($cDatum_arr) > 0) {
-                $this->dErstellt_DE = $cDatum_arr['cTag'] . '.' .
-                    $cDatum_arr['cMonat'] . '.' .
-                    $cDatum_arr['cJahr'];
+            $parts                    = Date::getDateParts($this->dErstellt ?? '');
+            if (count($parts) > 0) {
+                $this->dErstellt_DE = $parts['cTag'] . '.' .
+                    $parts['cMonat'] . '.' .
+                    $parts['cJahr'];
             }
             executeHook(HOOK_KUNDE_CLASS_LOADFROMDB);
         }
@@ -552,8 +552,8 @@ class Kunde
 
         $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
         $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
-        $cDatum_arr               = Date::getDateParts($this->dErstellt);
-        $this->dErstellt_DE       = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
+        $parts                    = Date::getDateParts($this->dErstellt);
+        $this->dErstellt_DE       = $parts['cTag'] . '.' . $parts['cMonat'] . '.' . $parts['cJahr'];
 
         return $this->kKunde;
     }
@@ -571,10 +571,7 @@ class Kunde
         $this->verschluesselKundendaten();
         $obj = GeneralObject::copyMembers($this);
 
-        $cKundenattribut_arr = [];
-        if (is_array($obj->cKundenattribut_arr)) {
-            $cKundenattribut_arr = $obj->cKundenattribut_arr;
-        }
+        $customerAttributes = is_array($obj->cKundenattribut_arr) ? $obj->cKundenattribut_arr : [];
 
         unset(
             $obj->cKundenattribut_arr,
@@ -593,9 +590,9 @@ class Kunde
 
         $obj->cLand       = $this->pruefeLandISO($obj->cLand);
         $obj->dVeraendert = 'NOW()';
-        $cReturn          = Shop::Container()->getDB()->update('tkunde', 'kKunde', $obj->kKunde, $obj);
-        if (is_array($cKundenattribut_arr) && count($cKundenattribut_arr) > 0) {
-            $obj->cKundenattribut_arr = $cKundenattribut_arr;
+        $return           = Shop::Container()->getDB()->update('tkunde', 'kKunde', $obj->kKunde, $obj);
+        if (is_array($customerAttributes) && count($customerAttributes) > 0) {
+            $obj->cKundenattribut_arr = $customerAttributes;
         }
         if ($obj->dGeburtstag === '_DBNULL_') {
             $obj->dGeburtstag = '';
@@ -604,10 +601,10 @@ class Kunde
 
         $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
         $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
-        $cDatum_arr               = Date::getDateParts($this->dErstellt);
-        $this->dErstellt_DE       = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
+        $parts                    = Date::getDateParts($this->dErstellt);
+        $this->dErstellt_DE       = $parts['cTag'] . '.' . $parts['cMonat'] . '.' . $parts['cJahr'];
 
-        return $cReturn;
+        return $return;
     }
 
     /**
@@ -618,15 +615,19 @@ class Kunde
     public function holeKundenattribute(): self
     {
         $this->cKundenattribut_arr = [];
-        $oKundenattribut_arr       = Shop::Container()->getDB()->selectAll(
+        $customerAttributes        = Shop::Container()->getDB()->selectAll(
             'tkundenattribut',
             'kKunde',
             (int)$this->kKunde,
             '*',
             'kKundenAttribut'
         );
-        foreach ($oKundenattribut_arr as $oKundenattribut) {
-            $this->cKundenattribut_arr[$oKundenattribut->kKundenfeld] = $oKundenattribut;
+        foreach ($customerAttributes as $attribute) {
+            $attribute->kKundenAttribut = (int)$attribute->kKundenAttribut;
+            $attribute->kKunde          = (int)$attribute->kKunde;
+            $attribute->kKundenfeld     = (int)$attribute->kKundenfeld;
+
+            $this->cKundenattribut_arr[$attribute->kKundenfeld] = $attribute;
         }
 
         return $this;
@@ -635,20 +636,20 @@ class Kunde
     /**
      * check country ISO code
      *
-     * @param string $cLandISO
+     * @param string $iso
      * @return string
      */
-    public function pruefeLandISO(string $cLandISO): string
+    public function pruefeLandISO(string $iso): string
     {
-        preg_match('/[a-zA-Z]{2}/', $cLandISO, $cTreffer1_arr);
-        if (strlen($cTreffer1_arr[0]) !== strlen($cLandISO)) {
-            $cISO = Sprache::getIsoCodeByCountryName($cLandISO);
+        preg_match('/[a-zA-Z]{2}/', $iso, $hits);
+        if (strlen($hits[0]) !== strlen($iso)) {
+            $cISO = Sprache::getIsoCodeByCountryName($iso);
             if ($cISO !== 'noISO' && strlen($cISO) > 0) {
-                $cLandISO = $cISO;
+                $iso = $cISO;
             }
         }
 
-        return $cLandISO;
+        return $iso;
     }
 
     /**
@@ -674,11 +675,11 @@ class Kunde
         foreach (Shop::Container()->getDB()->query(
             'SELECT * FROM tkunde',
             \DB\ReturnType::ARRAY_OF_OBJECTS
-        ) as $oKunden) {
-            if ($oKunden->kKunde > 0) {
-                unset($oKundeTMP);
-                $oKundeTMP = new self($oKunden->kKunde);
-                $oKundeTMP->updateInDB();
+        ) as $customer) {
+            if ($customer->kKunde > 0) {
+                unset($tmp);
+                $tmp = new self((int)$customer->kKunde);
+                $tmp->updateInDB();
             }
         }
 
@@ -686,31 +687,30 @@ class Kunde
     }
 
     /**
-     * @param Kunde $oKundeOne
-     * @param Kunde $oKundeTwo
+     * @param Kunde $customer1
+     * @param Kunde $customer2
      * @return bool
      */
-    public static function isEqual($oKundeOne, $oKundeTwo): bool
+    public static function isEqual($customer1, $customer2): bool
     {
-        if (is_object($oKundeOne) && is_object($oKundeTwo)) {
-            $cMemberOne_arr = array_keys(get_class_vars(get_class($oKundeOne)));
-            $cMemberTwo_arr = array_keys(get_class_vars(get_class($oKundeTwo)));
-
-            if (count($cMemberOne_arr) !== count($cMemberTwo_arr)) {
+        if (is_object($customer1) && is_object($customer2)) {
+            $members1 = array_keys(get_class_vars(get_class($customer1)));
+            $members2 = array_keys(get_class_vars(get_class($customer2)));
+            if (count($members1) !== count($members2)) {
                 return false;
             }
-            foreach ($cMemberOne_arr as $cMemberOne) {
-                if (!isset($oKundeTwo->{$cMemberOne})) {
+            foreach ($members1 as $member) {
+                if (!isset($customer2->{$member})) {
                     return false;
                 }
-                $xValueOne = $oKundeOne->{$cMemberOne};
-                $xValueTwo = null;
-                foreach ($cMemberTwo_arr as $cMemberTwo) {
-                    if ($cMemberOne == $cMemberTwo) {
-                        $xValueTwo = $oKundeTwo->{$cMemberOne};
+                $value1 = $customer1->{$member};
+                $value2 = null;
+                foreach ($members2 as $member2) {
+                    if ($member == $member2) {
+                        $value2 = $customer2->{$member};
                     }
                 }
-                if ($xValueOne != $xValueTwo) {
+                if ($value1 != $value2) {
                     return false;
                 }
             }
@@ -728,25 +728,25 @@ class Kunde
     {
         $passwordService = Shop::Container()->getPasswordService();
         if ($password === null) {
-            $cPasswortKlartext = $passwordService->generate(12);
-            $this->cPasswort   = $passwordService->hash($cPasswortKlartext);
+            $clearTextPassword = $passwordService->generate(12);
+            $this->cPasswort   = $passwordService->hash($clearTextPassword);
 
-            $_upd                 = new stdClass();
-            $_upd->cPasswort      = $this->cPasswort;
-            $_upd->nLoginversuche = 0;
-            Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$this->kKunde, $_upd);
+            $upd                 = new stdClass();
+            $upd->cPasswort      = $this->cPasswort;
+            $upd->nLoginversuche = 0;
+            Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$this->kKunde, $upd);
 
             $obj                 = new stdClass();
             $obj->tkunde         = $this;
-            $obj->neues_passwort = $cPasswortKlartext;
+            $obj->neues_passwort = $clearTextPassword;
             sendeMail(MAILTEMPLATE_PASSWORT_VERGESSEN, $obj);
         } else {
             $this->cPasswort = $passwordService->hash($password);
 
-            $_upd                 = new stdClass();
-            $_upd->cPasswort      = $this->cPasswort;
-            $_upd->nLoginversuche = 0;
-            Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$this->kKunde, $_upd);
+            $upd                 = new stdClass();
+            $upd->cPasswort      = $this->cPasswort;
+            $upd->nLoginversuche = 0;
+            Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$this->kKunde, $upd);
         }
 
         return $this;
@@ -1018,8 +1018,6 @@ class Kunde
             'cName'  => $anonymous,
             'cEmail' => $anonymous
         ]);
-
-        //newsletter
         $db->queryPrepared(
             'DELETE FROM tnewsletterempfaenger
                 WHERE cEmail = :email
@@ -1050,8 +1048,6 @@ class Kunde
             'dEingetragen' => '',
             'dOptCode'     => '',
         ]);
-
-        //wishlist
         $db->queryPrepared(
             'DELETE twunschliste, twunschlistepos, twunschlisteposeigenschaft, twunschlisteversand
                 FROM twunschliste
@@ -1065,8 +1061,6 @@ class Kunde
             ['customerID' => $customerID],
             \DB\ReturnType::DEFAULT
         );
-
-        //cart
         $db->queryPrepared(
             'DELETE twarenkorbpers, twarenkorbperspos, twarenkorbpersposeigenschaft
                 FROM twarenkorbpers

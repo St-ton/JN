@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Product;
 use Helpers\Date;
+use Helpers\Product;
 use Helpers\Request;
 use Helpers\Tax;
 
@@ -275,7 +275,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     $order->cStatus           = BESTELLUNG_STATUS_OFFEN;
     $order->dErstellt         = 'NOW()';
     $order->berechneEstimatedDelivery();
-    if (isset($_SESSION['Bestellung']->GuthabenNutzen) && $_SESSION['Bestellung']->GuthabenNutzen == 1) {
+    if (isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1) {
         $order->fGuthaben = -$_SESSION['Bestellung']->fGuthabenGenutzt;
         $db->queryPrepared(
             'UPDATE tkunde
@@ -703,7 +703,7 @@ function aktualisiereStuecklistenLagerbestand($partListProduct, $amount)
         return $bestandNeu;
     }
     // Gibt es lagerrelevante Komponenten in der Stückliste?
-    $oKomponente_arr = Shop::Container()->getDB()->queryPrepared(
+    $components = Shop::Container()->getDB()->queryPrepared(
         "SELECT tstueckliste.kArtikel, tstueckliste.fAnzahl
             FROM tstueckliste
             JOIN tartikel
@@ -714,21 +714,21 @@ function aktualisiereStuecklistenLagerbestand($partListProduct, $amount)
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
-    if (is_array($oKomponente_arr) && count($oKomponente_arr) > 0) {
+    if (is_array($components) && count($components) > 0) {
         // wenn ja, dann wird für diese auch der Bestand aktualisiert
         $options = Artikel::getDefaultOptions();
 
         $options->nKeineSichtbarkeitBeachten = 1;
-        foreach ($oKomponente_arr as $oKomponente) {
+        foreach ($components as $component) {
             $tmpArtikel = new Artikel();
-            $tmpArtikel->fuelleArtikel($oKomponente->kArtikel, $options);
+            $tmpArtikel->fuelleArtikel($component->kArtikel, $options);
 
             $komponenteBestand = floor(
                 aktualisiereLagerbestand(
                     $tmpArtikel,
-                    $amount * $oKomponente->fAnzahl,
+                    $amount * $component->fAnzahl,
                     null
-                ) / $oKomponente->fAnzahl
+                ) / $component->fAnzahl
             );
 
             if ($komponenteBestand < $bestandNeu && $tmpArtikel->cLagerKleinerNull !== 'Y') {
@@ -861,9 +861,9 @@ function AktualisiereLagerStuecklisten($product, $amount = null, $bStueckliste =
 }
 
 /**
- * @param $oBestellung
+ * @param $order
  */
-function KuponVerwendungen($oBestellung): void
+function KuponVerwendungen($order): void
 {
     $db               = Shop::Container()->getDB();
     $cart             = \Session\Frontend::getCart();
@@ -883,15 +883,15 @@ function KuponVerwendungen($oBestellung): void
         $kKupon    = (int)$_SESSION['Kupon']->kKupon;
         $cKuponTyp = Kupon::TYPE_STANDARD;
     }
-    foreach ($cart->PositionenArr as $Position) {
-        $Position->nPosTyp = (int)$Position->nPosTyp;
+    foreach ($cart->PositionenArr as $position) {
+        $position->nPosTyp = (int)$position->nPosTyp;
         if (!isset($_SESSION['VersandKupon'])
-            && ($Position->nPosTyp === C_WARENKORBPOS_TYP_KUPON
-                || $Position->nPosTyp === C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
+            && ($position->nPosTyp === C_WARENKORBPOS_TYP_KUPON
+                || $position->nPosTyp === C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
         ) {
             $fKuponwertBrutto = Tax::getGross(
-                $Position->fPreisEinzelNetto,
-                Tax::getSalesTax($Position->kSteuerklasse)
+                $position->fPreisEinzelNetto,
+                Tax::getSalesTax($position->kSteuerklasse)
             ) * (-1);
         }
     }
@@ -923,17 +923,17 @@ function KuponVerwendungen($oBestellung): void
             'dErstellt'  => 'NOW()'
         ]);
 
-        $oKuponBestellung                     = new KuponBestellung();
-        $oKuponBestellung->kKupon             = $kKupon;
-        $oKuponBestellung->kBestellung        = $oBestellung->kBestellung;
-        $oKuponBestellung->kKunde             = $cart->kKunde;
-        $oKuponBestellung->cBestellNr         = $oBestellung->cBestellNr;
-        $oKuponBestellung->fGesamtsummeBrutto = $oBestellung->fGesamtsumme;
-        $oKuponBestellung->fKuponwertBrutto   = $fKuponwertBrutto;
-        $oKuponBestellung->cKuponTyp          = $cKuponTyp;
-        $oKuponBestellung->dErstellt          = 'NOW()';
+        $couponOrder                     = new KuponBestellung();
+        $couponOrder->kKupon             = $kKupon;
+        $couponOrder->kBestellung        = $order->kBestellung;
+        $couponOrder->kKunde             = $cart->kKunde;
+        $couponOrder->cBestellNr         = $order->cBestellNr;
+        $couponOrder->fGesamtsummeBrutto = $order->fGesamtsumme;
+        $couponOrder->fKuponwertBrutto   = $fKuponwertBrutto;
+        $couponOrder->cKuponTyp          = $cKuponTyp;
+        $couponOrder->dErstellt          = 'NOW()';
 
-        $oKuponBestellung->save();
+        $couponOrder->save();
     }
 }
 
@@ -979,8 +979,8 @@ function baueBestellnummer(): string
  */
 function speicherUploads($oBestellung): void
 {
-    if (!empty($oBestellung->kBestellung) && class_exists('Upload')) {
-        Upload::speicherUploadDateien(\Session\Frontend::getCart(), $oBestellung->kBestellung);
+    if (!empty($oBestellung->kBestellung) && \Extensions\Upload::checkLicense()) {
+        \Extensions\Upload::speicherUploadDateien(\Session\Frontend::getCart(), $oBestellung->kBestellung);
     }
 }
 
@@ -1066,9 +1066,8 @@ function fakeBestellung()
     $order->Waehrung         = $_SESSION['Waehrung']; // @todo - check if this matches the new Currency class
     $order->kWaehrung        = \Session\Frontend::getCurrency()->getID();
     $order->fWaehrungsFaktor = \Session\Frontend::getCurrency()->getConversionFactor();
-    if ($order->oRechnungsadresse === null) {
-        $order->oRechnungsadresse = new stdClass();
-    }
+
+    $order->oRechnungsadresse              = $order->oRechnungsadresse ?? new stdClass();
     $order->oRechnungsadresse->cVorname    = $customer->cVorname;
     $order->oRechnungsadresse->cNachname   = $customer->cNachname;
     $order->oRechnungsadresse->cFirma      = $customer->cFirma;
@@ -1104,7 +1103,7 @@ function fakeBestellung()
             $order->Positionen[$i]->setzeGesamtpreisLocalized();
         }
     }
-    if (isset($_SESSION['Bestellung']->GuthabenNutzen) && $_SESSION['Bestellung']->GuthabenNutzen == 1) {
+    if (isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1) {
         $order->fGuthaben = -$_SESSION['Bestellung']->fGuthabenGenutzt;
     }
     $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
@@ -1170,8 +1169,7 @@ function pruefeVerfuegbarkeit(): array
     }
 
     if (count($res['cArtikelName_arr']) > 0) {
-        $cHinweis        = str_replace('%s', '', Shop::Lang()->get('orderExpandInventory', 'basket'));
-        $res['cHinweis'] = $cHinweis;
+        $res['cHinweis'] = str_replace('%s', '', Shop::Lang()->get('orderExpandInventory', 'basket'));
     }
 
     return $res;
@@ -1213,15 +1211,15 @@ function finalisiereBestellung($orderNo = '', bool $sendMail = true): Bestellung
     }
     $_SESSION['Kunde'] = $oKunde;
     $kKundengruppe     = \Session\Frontend::getCustomerGroup()->getID();
-    $oCheckBox         = new CheckBox();
-    $oCheckBox->triggerSpecialFunction(
+    $checkBox          = new CheckBox();
+    $checkBox->triggerSpecialFunction(
         CHECKBOX_ORT_BESTELLABSCHLUSS,
         $kKundengruppe,
         true,
         $_POST,
         ['oBestellung' => $order, 'oKunde' => $oKunde]
     );
-    $oCheckBox->checkLogging(CHECKBOX_ORT_BESTELLABSCHLUSS, $kKundengruppe, $_POST, true);
+    $checkBox->checkLogging(CHECKBOX_ORT_BESTELLABSCHLUSS, $kKundengruppe, $_POST, true);
 
     return $order;
 }

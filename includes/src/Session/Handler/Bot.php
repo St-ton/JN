@@ -64,9 +64,6 @@ class Bot extends JTLDefault
                 ? $sessionData
                 : '';
         }
-        if ($sessionData === '') {
-            Frontend::getInstance()->setStandardSessionVars();
-        }
 
         return $sessionData;
     }

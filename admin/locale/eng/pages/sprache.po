@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "lang"
 msgstr "Sprachverwaltung"
 
@@ -43,3 +47,41 @@ msgstr "aktuell"
 msgid "notImportedYet"
 msgstr "Sprache wurde noch nicht importiert"
 
+msgid "errorImport"
+msgstr "Fehler beim Importieren der Datei."
+
+msgid "successImport"
+msgstr "Es wurden %s Variablen aktualisiert"
+
+msgid "newLangAvailable"
+msgstr "Es sind neue Sprache(n) verfügbar."
+
+msgid "successVarRemove"
+msgstr "Variable %s wurde erfolgreich gelöscht."
+
+msgid "errorVarFormat"
+msgstr "Die Variable darf nur aus Buchstaben und Zahlen bestehen und darf nicht leer sein."
+
+msgid "errorVarExistsForLang"
+msgstr "Die Variable existiert bereits für folgende Sprachen: %s. Bitte wählen Sie aus, welche Versionen sie überschreiben möchten!"
+
+msgid "successVarChange"
+msgstr "Variablen erfolgreich geändert: "
+
+msgid "errorVarChangeNone"
+msgstr "Keine Variable wurde geändert."
+
+msgid "successListReset"
+msgstr "Liste erfolgreich zurückgesetzt."
+
+msgid "searchInContentAndVarName"
+msgstr "Suchen im Variablennamen und im Inhalt"
+
+msgid "systemOwn"
+msgstr "System/eigene"
+
+msgid "system"
+msgstr "nur System"
+
+msgid "own"
+msgstr "nur eigene"

@@ -16,8 +16,8 @@
                         </span>
                         <input type="text" class="form-control" name="cName" id="cName" value="{if isset($Betreff->cName)}{$Betreff->cName}{/if}" tabindex="1" required />
                     </div>
-                    {foreach name=sprachen from=$sprachen item=sprache}
-                        {assign var="cISO" value=$sprache->cISO}
+                    {foreach $sprachen as $sprache}
+                        {assign var=cISO value=$sprache->cISO}
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <label for="cName_{$cISO}">{__('showedName')} ({$sprache->cNameDeutsch})</label>
@@ -37,8 +37,8 @@
                         </span>
                         <select class="form-control" name="cKundengruppen[]" multiple="multiple" id="cKundengruppen">
                             <option value="0" {if $gesetzteKundengruppen[0]}selected{/if}>{__('allCustomerGroups')}</option>
-                            {foreach name=kdgrp from=$kundengruppen item=kundengruppe}
-                                {assign var="kKundengruppe" value=$kundengruppe->kKundengruppe}
+                            {foreach $kundengruppen as $kundengruppe}
+                                {assign var=kKundengruppe value=$kundengruppe->kKundengruppe}
                                 <option value="{$kundengruppe->kKundengruppe}" {if isset($gesetzteKundengruppen[$kKundengruppe])}selected{/if}>{$kundengruppe->cName}</option>
                             {/foreach}
                         </select>

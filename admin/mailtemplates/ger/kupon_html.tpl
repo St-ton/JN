@@ -4,7 +4,7 @@ Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{e
 <br>
 wir freuen uns Ihnen mitteilen zu dürfen, dass in unserem Onlineshop folgenden Kupon ({$Kupon->AngezeigterName}) verwenden dürfen:<br>
 <br>
-{if $Kupon->cKuponTyp=="standard"}
+{if $Kupon->cKuponTyp==$couponTypes.standard}
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
 	<tr>
 		<td class="column mobile-left" width="25%" align="right" valign="top">
@@ -80,7 +80,7 @@ wir freuen uns Ihnen mitteilen zu dürfen, dass in unserem Onlineshop folgenden 
 	</tr>
 </table><br>
 {/if}
-{if $Kupon->cKuponTyp=="versandkupon"}
+{if $Kupon->cKuponTyp==$couponTypes.shipping}
 	Mit diesem Kupon können Sie versandkostenfrei bei uns einkaufen!<br>
 	Er gilt für folgende Lieferländer: {$Kupon->cLieferlaender|upper}<br>
 	<br>

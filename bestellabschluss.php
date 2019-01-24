@@ -15,13 +15,13 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'trustedshops_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_BESTELLABSCHLUSS);
-$Einstellungen = Shopsetting::getInstance()->getAll();
-$linkHelper    = Shop::Container()->getLinkService();
-$kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLABSCHLUSS);
-$link          = $linkHelper->getPageLink($kLink);
-$cart          = \Session\Session::getCart();
-$smarty        = Shop::Smarty();
-$bestellung    = null;
+$conf       = Shopsetting::getInstance()->getAll();
+$linkHelper = Shop::Container()->getLinkService();
+$kLink      = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLABSCHLUSS);
+$link       = $linkHelper->getPageLink($kLink);
+$cart       = \Session\Frontend::getCart();
+$smarty     = Shop::Smarty();
+$bestellung = null;
 if (isset($_GET['i'])) {
     $bestellid = Shop::Container()->getDB()->select('tbestellid', 'cId', $_GET['i']);
     if (isset($bestellid->kBestellung) && $bestellid->kBestellung > 0) {
@@ -87,10 +87,7 @@ if (isset($_GET['i'])) {
     }
     setzeSmartyWeiterleitung($bestellung);
 }
-$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-if ($Einstellungen['trustedshops']['trustedshops_nutzen'] === 'Y') {
+if ($conf['trustedshops']['trustedshops_nutzen'] === 'Y') {
     $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
     if ((int)$oTrustedShops->nAktiv === 1 && strlen($oTrustedShops->tsId) > 0) {
         $smarty->assign('oTrustedShops', $oTrustedShops);
@@ -112,7 +109,7 @@ if ($kPlugin > 0) {
     $smarty->assign('oPlugin', $loader->init($kPlugin));
 }
 if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung) || isset($_GET['i'])) {
-    if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
+    if ($conf['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
         $smarty->assign(
             'oTrustedShopsBewertenButton',
             TrustedShops::getRatingButton($bestellung->oRechnungsadresse->cMail, $bestellung->cBestellNr)

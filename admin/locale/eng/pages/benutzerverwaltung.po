@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "benutzer"
 msgstr "Benutzerverwaltung"
 
@@ -94,3 +98,62 @@ msgstr "an"
 msgid "stateOFF"
 msgstr "aus"
 
+msgid "errorSelfLock"
+msgstr "Sie können sich nicht selbst sperren."
+
+msgid "errorLockAdmin"
+msgstr "Administratoren können nicht gesperrt werden."
+
+msgid "successLock"
+msgstr "Benutzer wurde erfolgreich gesperrt."
+
+msgid "errorUserNotFound"
+msgstr "Benutzer wurde nicht gefunden."
+
+msgid "successUnlocked"
+msgstr "Benutzer wurde erfolgreich entsperrt."
+
+msgid "errorAtLeastOneAdmin"
+msgstr "Es muss mindestens ein Administrator im System vorhanden sein."
+
+msgid "successUserSave"
+msgstr "Benutzer wurde erfolgreich gespeichert."
+
+msgid "errorUserSave"
+msgstr "Benutzer konnte nicht gespeichert werden."
+
+msgid "successUserAdd"
+msgstr "Benutzer wurde erfolgreich hinzugefügt."
+
+msgid "errorUserAdd"
+msgstr "Benutzer konnte nicht angelegt werden."
+
+msgid "errorSelfDelete"
+msgstr "Sie können sich nicht selbst löschen."
+
+msgid "successUserDelete"
+msgstr "Benutzer wurde erfolgreich gelöscht."
+
+msgid "errorUserDelete"
+msgstr "Benutzer konnte nicht gelöscht werden."
+
+msgid "errorAtLeastOneRight"
+msgstr "Mindestens eine Berechtigung auswählen."
+
+msgid "successGroupEdit"
+msgstr "Gruppe wurde erfolgreich bearbeitet."
+
+msgid "successGroupCreate"
+msgstr "Gruppe wurde erfolgreich angelegt."
+
+msgid "successGroupDelete"
+msgstr "Gruppe wurde erfolgreich gelöscht."
+
+msgid "errorGroupDelete"
+msgstr "Gruppe kann nicht entfernt werden."
+
+msgid "errorGroupDeleteCustomer"
+msgstr "Die Gruppe kann nicht entfernt werden, da sich noch ein oder mehrere Mitglied(er) in der Gruppe befinden."
+
+msgid "errorKeyChange"
+msgstr " konnte nicht geändert werden!"

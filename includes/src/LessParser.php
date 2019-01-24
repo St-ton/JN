@@ -148,7 +148,7 @@ class LessParser
     protected function rgb2html($r, $g, $b): string
     {
         if (is_array($r) && count($r) === 3) {
-            list($r, $g, $b) = $r;
+            [$r, $g, $b] = $r;
         }
 
         $r = (int)$r;

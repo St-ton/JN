@@ -7,7 +7,7 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
-use Session\Session;
+use Session\Frontend;
 
 /**
  * Class UpcomingProducts
@@ -23,8 +23,8 @@ final class UpcomingProducts extends AbstractBox
     {
         parent::__construct($config);
         $this->setShow(false);
-        $customerGroupID = Session::getCustomerGroup()->getID();
-        if ($customerGroupID > 0 && Session::getCustomerGroup()->mayViewCategories()) {
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
+        if ($customerGroupID > 0 && Frontend::getCustomerGroup()->mayViewCategories()) {
             $cached         = true;
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();

@@ -37,12 +37,12 @@
                         </li>
                         {foreach $oBox_arr as $oBox}
                             {if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}
-                                {include file="tpl_inc/box_single.tpl" oBox=$oBox nPage=$nPage position=$direction}
+                                {include file='tpl_inc/box_single.tpl' oBox=$oBox nPage=$nPage position=$direction}
                                 {foreach $oBox->getChildren() as $oContainerBox}
-                                    {include file="tpl_inc/box_single.tpl" oBox=$oContainerBox nPage=$nPage position=$direction}
+                                    {include file='tpl_inc/box_single.tpl' oBox=$oContainerBox nPage=$nPage position=$direction}
                                 {/foreach}
                             {else}
-                                {include file="tpl_inc/box_single.tpl" oBox=$oBox nPage=$nPage position=$direction}
+                                {include file='tpl_inc/box_single.tpl' oBox=$oBox nPage=$nPage position=$direction}
                             {/if}
                         {/foreach}
                         <li class="list-group-item boxSaveRow">
@@ -73,9 +73,9 @@
                                 <optgroup label="Container">
                                     <option value="0">{__('newContainer')}</option>
                                 </optgroup>
-                                {foreach from=$oVorlagen_arr item=oVorlagen}
+                                {foreach $oVorlagen_arr as $oVorlagen}
                                     <optgroup label="{$oVorlagen->cName}">
-                                        {foreach from=$oVorlagen->oVorlage_arr item=oVorlage}
+                                        {foreach $oVorlagen->oVorlage_arr as $oVorlage}
                                             <option value="{$oVorlage->kBoxvorlage}">{$oVorlage->cName}</option>
                                         {/foreach}
                                     </optgroup>
@@ -91,13 +91,13 @@
                         <div class="col-sm-8">
                             <select id="container_{$direction}" name="container" class="form-control">
                                 <option value="0">Standard</option>
-                                {foreach from=$oContainer_arr item=oContainer}
+                                {foreach $oContainer_arr as $oContainer}
                                     <option value="{$oContainer->kBox}">Container #{$oContainer->kBox}</option>
                                 {/foreach}
                             </select>
                         </div>
                         <div class="col-sm-2">
-                            <button type="submit" value="einf&uuml;gen" class="btn btn-info">
+                            <button type="submit" value="einfügen" class="btn btn-info">
                                 <i class="fa fa-level-down"></i> {__('insert')}
                             </button>
                         </div>

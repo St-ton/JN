@@ -27,7 +27,7 @@ $hinweis          = '';
 $step             = 'uebersicht';
 if (Request::verifyGPCDataInt('checkNutzbar') === 1) {
     PaymentMethod::checkPaymentMethodAvailability();
-    $hinweis = 'Ihre Zahlungsarten wurden auf Nutzbarkeit geprüft.';
+    $hinweis = __('successPaymentMethodCheck');
 }
 // reset log
 if (($action = Request::verifyGPDataString('a')) !== ''
@@ -39,7 +39,7 @@ if (($action = Request::verifyGPDataString('a')) !== ''
 
     if (isset($method->cModulId) && strlen($method->cModulId) > 0) {
         (new ZahlungsLog($method->cModulId))->loeschen();
-        $hinweis = 'Der Fehlerlog von ' . $method->cName . ' wurde erfolgreich zurückgesetzt.';
+        $hinweis = sprintf(__('successLogReset'), $method->cName);
     }
 }
 if ($action !== 'logreset' && Request::verifyGPCDataInt('kZahlungsart') > 0 && Form::validateToken()) {

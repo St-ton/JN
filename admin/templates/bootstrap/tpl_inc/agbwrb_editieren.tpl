@@ -12,7 +12,7 @@
             {/if}
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{__('agbwrb')} {foreach name=sprachen from=$Sprachen item=sprache}{if $sprache->kSprache == $smarty.session.kSprache}({$sprache->cNameDeutsch}){/if}{/foreach}{if isset($kKundengruppe)} f&uuml;r Kundengruppe {$kKundengruppe} editieren{/if}</h3>
+                    <h3 class="panel-title">{__('agbwrb')} {foreach $Sprachen as $sprache}{if $sprache->kSprache == $smarty.session.kSprache}({$sprache->cNameDeutsch}){/if}{/foreach}{if isset($kKundengruppe)} für Kundengruppe {$kKundengruppe} editieren{/if}</h3>
                 </div>
                 <table class="list table" id="formtable">
                     <tr>

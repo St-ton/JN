@@ -9,7 +9,7 @@ namespace Link;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\ReturnType;
-use Session\Session;
+use Session\Frontend;
 use Tightenco\Collect\Support\Collection;
 use function Functional\group;
 
@@ -100,7 +100,7 @@ final class LinkGroupList implements LinkGroupListInterface
 
             $this->cache->set('linkgroups', $this->linkGroups, [\CACHING_GROUP_CORE]);
         }
-        $this->applyVisibilityFilter(Session::getCustomerGroup()->getID(), Session::getCustomer()->getID());
+        $this->applyVisibilityFilter(Frontend::getCustomerGroup()->getID(), Frontend::getCustomer()->getID());
 
         return $this;
     }

@@ -2,7 +2,7 @@
     {if $oVisitorsInfo->nAll > 0}
         <div class="row">
             <div class="col-xs-4"><strong><i class="fa fa-users" aria-hidden="true"></i> Kunden:</strong> <span class="value">{$oVisitorsInfo->nCustomer}</span></div>
-            <div class="col-xs-4"><strong><i class="fa fa-user-secret" aria-hidden="true"></i> G&auml;ste:</strong> <span class="value">{$oVisitorsInfo->nUnknown}</span></div>
+            <div class="col-xs-4"><strong><i class="fa fa-user-secret" aria-hidden="true"></i> Gäste:</strong> <span class="value">{$oVisitorsInfo->nUnknown}</span></div>
             <div class="col-xs-4 text-right"><strong>Insgesamt:</strong> <span class="value">{$oVisitorsInfo->nAll}</span></div>
         </div>
         <hr>
@@ -16,16 +16,15 @@
                 <th>Kunde</th><th>Info</th><th class="text-center">Letzte Aktivität</th><th class="text-right">Letzter Einkauf</th>
             </thead>
             <tbody>
-            {foreach from=$oVisitors_arr item=oVisitor}
+            {foreach $oVisitors_arr as $oVisitor}
                 {if !empty($oVisitor->kKunde)}
                     <tr>
                         <td class="customer" onclick="$(this).parent().toggleClass('active')">
-
                             {$oVisitor->cVorname} {$oVisitor->cNachname}
                         </td>
                         <td>
                             {if $oVisitor->cBrowser|strlen > 0}
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="{if $oVisitor->dErstellt|strlen > 0}Kunde seit {$oVisitor->dErstellt|date_format:"%d.%m.%Y"}{/if} | Browser: {$oVisitor->cBrowser}{if $oVisitor->cIP|strlen > 0} | IP: {$oVisitor->cIP}{/if}"><i class="fa fa-user"></i><span class="sr-only">Details</span></a>
+                                <a href="#" data-toggle="tooltip" data-placement="top" title="{if $oVisitor->dErstellt|strlen > 0}Kunde seit {$oVisitor->dErstellt|date_format:'%d.%m.%Y'}{/if} | Browser: {$oVisitor->cBrowser}{if $oVisitor->cIP|strlen > 0} | IP: {$oVisitor->cIP}{/if}"><i class="fa fa-user"></i><span class="sr-only">Details</span></a>
                             {/if}
                             {if $oVisitor->cEinstiegsseite|strlen > 0}
                                 <a href="{$oVisitor->cEinstiegsseite}"  target="_blank" data-toggle="tooltip" data-placement="top" title="Einstiegsseite: {$oVisitor->cEinstiegsseite}{if $oVisitor->cReferer|strlen > 0} | Herkunft: {$oVisitor->cReferer|escape:'html'}{/if}"><i class="fa fa-globe"></i><span class="sr-only">Einstiegsseite</span></a>
@@ -38,10 +37,10 @@
                             {if $oVisitor->dLetzteAktivitaet|strlen > 0}
                                  {if $oVisitor->cAusstiegsseite|strlen > 0}
                                     <a href="{$oVisitor->cAusstiegsseite}" target="_blank" data-toggle="tooltip" data-placement="top" title="{$oVisitor->cAusstiegsseite}">
-                                        {$oVisitor->dLetzteAktivitaet|date_format:"%H:%M:%S"}
+                                        {$oVisitor->dLetzteAktivitaet|date_format:'%H:%M:%S'}
                                      </a>
                                  {else}
-                                    {$oVisitor->dLetzteAktivitaet|date_format:"%H:%M:%S"}
+                                    {$oVisitor->dLetzteAktivitaet|date_format:'%H:%M:%S'}
                                  {/if}
                             {/if}
                         </td>

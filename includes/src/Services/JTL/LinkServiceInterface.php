@@ -202,11 +202,10 @@ interface LinkServiceInterface
     public function getParent(int $id): ?LinkInterface;
 
     /**
-     * @param int         $type
-     * @param string|null $cISOSprache
+     * @param int $type
      * @return \stdClass
      */
-    public function buildSpecialPageMeta(int $type, string $cISOSprache = null): \stdClass;
+    public function buildSpecialPageMeta(int $type): \stdClass;
 
     /**
      * @return bool

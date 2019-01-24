@@ -7,7 +7,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_SITEMAP_VIEW', true, true);
 /** @global \Smarty\JTLSmarty $smarty */
-$Einstellungen = Shop::getSettings([CONF_BILDER]);
 $shopSettings  = Shopsetting::getInstance();
 $cHinweis      = '';
 $cFehler       = '';

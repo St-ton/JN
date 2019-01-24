@@ -96,14 +96,13 @@ if (!JTL_INCLUDE_ONLY_DB) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikelsuchspecial_inc.php';
-    $oPluginHookListe_arr         = \Plugin\Helper::getHookList();
-    $nSystemlogFlag               = Jtllog::getSytemlogFlag();
-    $template                     = Template::getInstance();
-    $oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
+    $pluginHooks    = \Plugin\Helper::getHookList();
+    $template       = Template::getInstance();
+    $globalMetaData = \Filter\Metadata::getGlobalMetaData();
     executeHook(HOOK_GLOBALINCLUDE_INC);
     $session             = (defined('JTLCRON') && JTLCRON === true)
-        ? \Session\Session::getInstance(true, true, 'JTLCRON')
-        : \Session\Session::getInstance();
+        ? \Session\Frontend::getInstance(true, true, 'JTLCRON')
+        : \Session\Frontend::getInstance();
     $bAdminWartungsmodus = false;
     if ($config['wartungsmodus_aktiviert'] === 'Y' && basename($_SERVER['SCRIPT_FILENAME']) !== 'wartung.php') {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';

@@ -26,7 +26,7 @@ class ImageMap implements IExtensionPoint
     {
         $this->kSprache      = Shop::getLanguage();
         $this->kKundengruppe = isset($_SESSION['Kundengruppe']->kKundengruppe)
-            ? \Session\Session::getCustomerGroup()->getID()
+            ? \Session\Frontend::getCustomerGroup()->getID()
             : null;
         if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
             $this->kKundengruppe = (int)$_SESSION['Kunde']->kKundengruppe;
@@ -38,11 +38,11 @@ class ImageMap implements IExtensionPoint
      * @param bool $fetch_all
      * @return $this
      */
-    public function init($kInitial, $fetch_all = false)
+    public function init($kInitial, $fetch_all = false): self
     {
-        $oImageMap = $this->fetch($kInitial, $fetch_all);
-        if (is_object($oImageMap)) {
-            Shop::Smarty()->assign('oImageMap', $oImageMap);
+        $imageMap = $this->fetch($kInitial, $fetch_all);
+        if (is_object($imageMap)) {
+            Shop::Smarty()->assign('oImageMap', $imageMap);
         }
 
         return $this;
@@ -76,51 +76,47 @@ class ImageMap implements IExtensionPoint
         if (!$fetchAll) {
             $cSQL .= ' AND (CURDATE() >= DATE(vDatum)) AND (CURDATE() <= DATE(bDatum) OR bDatum = 0)';
         }
-        $oImageMap = $db->query($cSQL, \DB\ReturnType::SINGLE_OBJECT);
-        if (!is_object($oImageMap)) {
+        $imageMap = $db->query($cSQL, \DB\ReturnType::SINGLE_OBJECT);
+        if (!is_object($imageMap)) {
             return false;
         }
-
-        $oImageMap->oArea_arr = $db->selectAll(
+        $imageMap->oArea_arr = $db->selectAll(
             'timagemaparea',
             'kImageMap',
-            (int)$oImageMap->kImageMap
+            (int)$imageMap->kImageMap
         );
-        $cBildPfad            = PFAD_ROOT . PFAD_IMAGEMAP . $oImageMap->cBildPfad;
-        $oImageMap->cBildPfad = Shop::getImageBaseURL() . PFAD_IMAGEMAP . $oImageMap->cBildPfad;
-        $cParse_arr           = parse_url($oImageMap->cBildPfad);
-        $oImageMap->cBild     = substr($cParse_arr['path'], strrpos($cParse_arr['path'], '/') + 1);
-        [$width, $height]     = getimagesize($cBildPfad);
-        $oImageMap->fWidth    = $width;
-        $oImageMap->fHeight   = $height;
-        $defaultOptions       = Artikel::getDefaultOptions();
+        $imageMap->cBildPfad = Shop::getImageBaseURL() . PFAD_IMAGEMAP . $imageMap->cBildPfad;
+        $parsed              = parse_url($imageMap->cBildPfad);
+        $imageMap->cBild     = substr($parsed['path'], strrpos($parsed['path'], '/') + 1);
+        $defaultOptions      = Artikel::getDefaultOptions();
 
-        foreach ($oImageMap->oArea_arr as &$oArea) {
-            $oArea->oCoords = new stdClass();
-            $aMap           = explode(',', $oArea->cCoords);
+        [$imageMap->fWidth, $imageMap->fHeight]    = getimagesize(PFAD_ROOT . PFAD_IMAGEMAP . $imageMap->cBildPfad);
+        foreach ($imageMap->oArea_arr as &$area) {
+            $area->oCoords = new stdClass();
+            $aMap          = explode(',', $area->cCoords);
             if (count($aMap) === 4) {
-                $oArea->oCoords->x = (int)$aMap[0];
-                $oArea->oCoords->y = (int)$aMap[1];
-                $oArea->oCoords->w = (int)$aMap[2];
-                $oArea->oCoords->h = (int)$aMap[3];
+                $area->oCoords->x = (int)$aMap[0];
+                $area->oCoords->y = (int)$aMap[1];
+                $area->oCoords->w = (int)$aMap[2];
+                $area->oCoords->h = (int)$aMap[3];
             }
 
-            $oArea->oArtikel = null;
-            if ((int)$oArea->kArtikel > 0) {
-                $oArea->oArtikel = new Artikel();
+            $area->oArtikel = null;
+            if ((int)$area->kArtikel > 0) {
+                $area->oArtikel = new Artikel();
                 if ($fill === true) {
-                    $oArea->oArtikel->fuelleArtikel(
-                        $oArea->kArtikel,
+                    $area->oArtikel->fuelleArtikel(
+                        $area->kArtikel,
                         $defaultOptions,
                         $this->kKundengruppe ?? 0,
                         $this->kSprache
                     );
                 } else {
-                    $oArea->oArtikel->kArtikel = $oArea->kArtikel;
-                    $oArea->oArtikel->cName    = $db->select(
+                    $area->oArtikel->kArtikel = $area->kArtikel;
+                    $area->oArtikel->cName    = $db->select(
                         'tartikel',
                         'kArtikel',
-                        $oArea->kArtikel,
+                        $area->kArtikel,
                         null,
                         null,
                         null,
@@ -129,19 +125,19 @@ class ImageMap implements IExtensionPoint
                         'cName'
                     )->cName;
                 }
-                if (strlen($oArea->cTitel) === 0) {
-                    $oArea->cTitel = $oArea->oArtikel->cName;
+                if (strlen($area->cTitel) === 0) {
+                    $area->cTitel = $area->oArtikel->cName;
                 }
-                if (strlen($oArea->cUrl) === 0) {
-                    $oArea->cUrl = $oArea->oArtikel->cURL;
+                if (strlen($area->cUrl) === 0) {
+                    $area->cUrl = $area->oArtikel->cURL;
                 }
-                if (strlen($oArea->cBeschreibung) === 0) {
-                    $oArea->cBeschreibung = $oArea->oArtikel->cKurzBeschreibung;
+                if (strlen($area->cBeschreibung) === 0) {
+                    $area->cBeschreibung = $area->oArtikel->cKurzBeschreibung;
                 }
             }
         }
 
-        return $oImageMap;
+        return $imageMap;
     }
 
     /**
@@ -153,13 +149,13 @@ class ImageMap implements IExtensionPoint
      */
     public function save($cTitel, $cBildPfad, $vDatum, $bDatum): int
     {
-        $oData            = new stdClass();
-        $oData->cTitel    = Shop::Container()->getDB()->escape($cTitel);
-        $oData->cBildPfad = Shop::Container()->getDB()->escape($cBildPfad);
-        $oData->vDatum    = $vDatum;
-        $oData->bDatum    = $bDatum;
+        $ins            = new stdClass();
+        $ins->cTitel    = Shop::Container()->getDB()->escape($cTitel);
+        $ins->cBildPfad = Shop::Container()->getDB()->escape($cBildPfad);
+        $ins->vDatum    = $vDatum;
+        $ins->bDatum    = $bDatum;
 
-        return Shop::Container()->getDB()->insert('timagemap', $oData);
+        return Shop::Container()->getDB()->insert('timagemap', $ins);
     }
 
     /**
@@ -170,7 +166,7 @@ class ImageMap implements IExtensionPoint
      * @param string $bDatum
      * @return bool
      */
-    public function update(int $kImageMap, $cTitel, $cBildPfad, $vDatum, $bDatum)
+    public function update(int $kImageMap, $cTitel, $cBildPfad, $vDatum, $bDatum): bool
     {
         if (empty($vDatum)) {
             $vDatum = '_DBNULL_';
@@ -204,16 +200,19 @@ class ImageMap implements IExtensionPoint
         $db = Shop::Container()->getDB();
         $db->delete('timagemaparea', 'kImageMap', (int)$oData->kImageMap);
         foreach ($oData->oArea_arr as $area) {
-            $oTmp                = new stdClass();
-            $oTmp->kImageMap     = $area->kImageMap;
-            $oTmp->kArtikel      = $area->kArtikel;
-            $oTmp->cStyle        = $area->cStyle;
-            $oTmp->cTitel        = $area->cTitel;
-            $oTmp->cUrl          = $area->cUrl;
-            $oTmp->cBeschreibung = $area->cBeschreibung;
-            $oTmp->cCoords       = "{$area->oCoords->x},{$area->oCoords->y},{$area->oCoords->w},{$area->oCoords->h}";
+            $ins                = new stdClass();
+            $ins->kImageMap     = $area->kImageMap;
+            $ins->kArtikel      = $area->kArtikel;
+            $ins->cStyle        = $area->cStyle;
+            $ins->cTitel        = $area->cTitel;
+            $ins->cUrl          = $area->cUrl;
+            $ins->cBeschreibung = $area->cBeschreibung;
+            $ins->cCoords       = $area->oCoords->x . ',' .
+                $area->oCoords->y . ',' .
+                $area->oCoords->w . ',' .
+                $area->oCoords->h;
 
-            $db->insert('timagemaparea', $oTmp);
+            $db->insert('timagemaparea', $ins);
         }
     }
 }

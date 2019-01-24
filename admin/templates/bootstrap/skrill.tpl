@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="skrill"}
-{config_load file="$lang.conf" section="einstellungen"}
+{config_load file="$lang.conf" section='skrill'}
+{config_load file="$lang.conf" section='einstellungen'}
 
 {assign var=preferences value=__('preferences')}
 {include file='tpl_inc/seite_header.tpl' cTitel="Skrill "|cat:$preferences}
@@ -116,5 +116,4 @@
     </div>
 
 </div>
-
 {include file='tpl_inc/footer.tpl'}

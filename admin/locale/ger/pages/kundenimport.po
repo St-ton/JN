@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "customerImport"
 msgstr "Kundenimport"
 
@@ -27,3 +31,30 @@ msgstr "Ja, jedem Kunden ein neues Passwort erstellen und per E-Mail informieren
 
 msgid "passNo"
 msgstr "Nein, Passwort aus CSV-Datei übernehmen und Kunden nicht per E-Mail benachrichtigen"
+
+msgid "errorInvalidEmail"
+msgstr "keine gültige Email ($kunde->cMail) ! Übergehe diesen Datensatz."
+
+msgid "errorNoPassword"
+msgstr "kein Passwort! Übergehe diesen Datensatz. (Kann unregstrierter JTL Shop Kunde sein)"
+
+msgid "errorNoSurname"
+msgstr "kein Nachname! Übergehe diesen Datensatz."
+
+msgid "errorEmailDuplicate"
+msgstr "Kunde mit dieser Emailadresse bereits vorhanden: %s! Übergehe Datensatz."
+
+msgid "errorImportRecord"
+msgstr "Fehler beim Import dieser Zeile! Bitte in ShopRoot/logs/ nachschauen!"
+
+msgid "successImportRecord"
+msgstr "Datensatz OK. Importiere: "
+
+msgid "checkHead"
+msgstr "Checke Kopfzeile ... "
+
+msgid "errorFormatNotFound"
+msgstr " - Format nicht erkannt!"
+
+msgid "importPending"
+msgstr "Importiere..."

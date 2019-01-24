@@ -1,4 +1,4 @@
-{assign var="title" value=$instance->getProperty('sliderTitle')}
+{assign var=title value=$instance->getProperty('sliderTitle')}
 
 {if $productlist|@count > 0}
     <section class="panel{if $title|strlen > 0} panel-default{/if}

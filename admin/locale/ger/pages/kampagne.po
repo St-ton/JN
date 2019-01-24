@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "kampagne"
 msgstr "Kampagnen"
 
@@ -112,3 +116,29 @@ msgstr "Erstellt am"
 msgid "kampagnenNLInfo"
 msgstr "Anzahl Aufrufe von Newslettern, welche mit der Kampagne verknüpft sind. Standard: 0, wenn die Kampagne keinem Newsletter zugewiesen ist oder keine Newsletteraufrufe gezählt wurden"
 
+msgid "successCampaignSave"
+msgstr "Ihre Kampagne wurde erfolgreich gespeichert."
+
+msgid "successCampaignDelete"
+msgstr "Ihre ausgewählten Kampagnen wurden erfolgreich gelöscht."
+
+msgid "errorAtLeastOneCampaign"
+msgstr "Fehler: Bitte markieren Sie mindestens eine Kampagne."
+
+msgid "errorCampaignSave"
+msgstr "Fehler: Kampagne konnte nicht gespeichert werden."
+
+msgid "errorCampaignNameMissing"
+msgstr "Fehler: Bitte geben Sie einen Kampagnennamen ein."
+
+msgid "errorCampaignParameterMissing"
+msgstr "Fehler: Bitte geben Sie einen Kampagnenparameter ein."
+
+msgid "errorCampaignValueMissing"
+msgstr "Fehler: Bitte geben Sie einen Kampagnenwert ein."
+
+msgid "errorCampaignNameDuplicate"
+msgstr "Fehler: Der angegebene Kampagnenname ist bereits vergeben."
+
+msgid "errorCampaignParameterDuplicate"
+msgstr "Fehler: Der angegebene Kampagnenparameter ist bereits vergeben."

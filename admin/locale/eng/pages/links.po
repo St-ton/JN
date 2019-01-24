@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "link"
 msgstr "Seite"
 
@@ -201,6 +205,60 @@ msgstr "keine Links vorhanden"
 
 msgid "active"
 msgstr "Aktiv"
+
+msgid "successLinkFromLinkGroupDelete"
+msgstr "Link erfolgreich aus Linkgruppe entfernt."
+
+msgid "errorLinkFromLinkGroupDelete"
+msgstr "Link konnte nicht aus Linkgruppe entfernt werden."
+
+msgid "successLinkDelete"
+msgstr "Link erfolgreich gelöscht!"
+
+msgid "errorLinkDelete"
+msgstr "Link konnte nicht gelöscht werden."
+
+msgid "errorLinkGroupDelete"
+msgstr "Linkgruppe konnte nicht gelöscht werden."
+
+msgid "successLinkGroupDelete"
+msgstr "Linkgruppe erfolgreich gelöscht!"
+
+msgid "successLinkCreate"
+msgstr "Link wurde erfolgreich hinzugefügt."
+
+msgid "successLinkEdit"
+msgstr "Der Link <strong>%s</strong> wurde erfolgreich geändert."
+
+msgid "errorTemplateNameDuplicate"
+msgstr "Fehler: Bitte wählen Sie einen eindeutigen Template-Namen."
+
+msgid "successLinkGroupCreate"
+msgstr "Linkgruppe wurde erfolgreich hinzugefügt."
+
+msgid "successLinkGroupEdit"
+msgstr "Die Linkgruppe <strong>%s</strong> wurde erfolgreich geändert."
+
+msgid "errorLinkMoveDuplicate"
+msgstr "Fehler: Der Link konnte nicht verschoben werden, da er bereits in der Zielgruppe existiert."
+
+msgid "errorLinkKeyNotFound"
+msgstr "Fehler: Es konnte kein Link mit Ihrem Key gefunden werden."
+
+msgid "errorLinkGroupKeyNotFound"
+msgstr "Fehler: Es konnte keine Linkgruppe mit Ihrem Key gefunden werden."
+
+msgid "successLinkMove"
+msgstr "Sie haben den Link %s erfolgreich verschoben."
+
+msgid "errorLinkMove"
+msgstr "Fehler: Link konnte nicht verschoben werden."
+
+msgid "errorLinkCopyDuplicate"
+msgstr "Fehler: Der Link konnte nicht kopiert werden, da er bereits in der Zielgruppe existiert."
+
+msgid "successLinkCopy"
+msgstr "Sie haben den Link %s erfolgreich kopiert."
 
 msgid "isDuplicateSpecialLink"
 msgstr "The special page already exists for the selected customer group(s)."

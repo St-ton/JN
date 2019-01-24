@@ -11,10 +11,10 @@ class PlausiCMS extends Plausi
 {
     /**
      * @param null|string $cType
-     * @param bool        $bUpdate
+     * @param bool        $update
      * @return bool
      */
-    public function doPlausi($cType = null, bool $bUpdate = false): bool
+    public function doPlausi($cType = null, bool $update = false): bool
     {
         if (count($this->xPostVar_arr) === 0 || strlen($cType) === 0) {
             return false;

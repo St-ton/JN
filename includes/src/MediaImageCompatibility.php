@@ -118,7 +118,7 @@ class MediaImageCompatibility implements IMedia
             return null;
         }
 
-        if ($request[0] === '/') {
+        if (strpos($request, '/') === 0) {
             $request = substr($request, 1);
         }
 

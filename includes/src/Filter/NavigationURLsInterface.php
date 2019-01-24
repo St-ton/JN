@@ -7,7 +7,7 @@
 namespace Filter;
 
 /**
- * Class NavigationURLs
+ * Interface NavigationURLsInterface
  * @package Filter
  */
 interface NavigationURLsInterface

@@ -1,5 +1,5 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="vergleichsliste"}
+{config_load file="$lang.conf" section='vergleichsliste'}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('configureComparelist') cBeschreibung=__('configureComparelistDesc') cDokuURL=__('configureComparelistURL')}
 <div id="content" class="container-fluid">
@@ -25,12 +25,12 @@
                             <th class="tleft">{__('compareProducts')}</th>
                             <th class="th-3">{__('compareDate')}</th>
                         </tr>
-                        {foreach name=letzten20 from=$Letzten20Vergleiche item=oVergleichsliste20}
+                        {foreach $Letzten20Vergleiche as $oVergleichsliste20}
                             <tr>
                                 <td class="tcenter">{$oVergleichsliste20->kVergleichsliste}</td>
                                 <td class="">
-                                    {foreach name=letzten20pos from=$oVergleichsliste20->oLetzten20VergleichslistePos_arr item=oVergleichslistePos20}
-                                        <a href="{$shopURL}/index.php?a={$oVergleichslistePos20->kArtikel}" target="_blank">{$oVergleichslistePos20->cArtikelName}</a>{if !$smarty.foreach.letzten20pos.last}{/if}
+                                    {foreach $oVergleichsliste20->oLetzten20VergleichslistePos_arr as $oVergleichslistePos20}
+                                        <a href="{$shopURL}/index.php?a={$oVergleichslistePos20->kArtikel}" target="_blank">{$oVergleichslistePos20->cArtikelName}</a>{if !$oVergleichslistePos20@last}{/if}
                                         <br />
                                     {/foreach}
                                 </td>
@@ -102,7 +102,7 @@
                             <th class="tleft">{__('compareProduct')}</th>
                             <th class="th-2">{__('compareCount')}</th>
                         </tr>
-                        {foreach name=top from=$TopVergleiche item=oVergleichslistePosTop}
+                        {foreach $TopVergleiche as $oVergleichslistePosTop}
                             <tr>
                                 <td>
                                     <a href="{$shopURL}/index.php?a={$oVergleichslistePosTop->kArtikel}" target="_blank">{$oVergleichslistePosTop->cArtikelName}</a>
@@ -121,5 +121,4 @@
         </div>
     </div>
 </div>
-
 {include file='tpl_inc/footer.tpl'}

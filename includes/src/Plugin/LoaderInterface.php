@@ -8,7 +8,6 @@ namespace Plugin;
 
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
-use Plugin\ExtensionData\Config;
 
 /**
  * Interface LoaderInterface
@@ -22,6 +21,26 @@ interface LoaderInterface
      * @param JTLCacheInterface $cache
      */
     public function __construct(DbInterface $db, JTLCacheInterface $cache);
+
+    /**
+     * @return DbInterface
+     */
+    public function getDB(): DbInterface;
+
+    /**
+     * @param DbInterface $db
+     */
+    public function setDB(DbInterface $db): void;
+
+    /**
+     * @return JTLCacheInterface
+     */
+    public function getCache(): JTLCacheInterface;
+
+    /**
+     * @param JTLCacheInterface $cache
+     */
+    public function setCache(JTLCacheInterface $cache): void;
 
     /**
      * @param int  $id

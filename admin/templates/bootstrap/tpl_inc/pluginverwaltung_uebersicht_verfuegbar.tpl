@@ -66,7 +66,7 @@
                                 <div class="modal-footer">
                                     <div class="btn-group">
                                         <button type="button" class="btn btn-success" name="ok" data-dismiss="modal"><i class="fa fa-check"></i>&nbsp;Ok</button>
-                                        <button type="button" class="btn btn-danger" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;Abbrechen</button>
+                                        <button type="button" class="btn btn-danger" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;{__('Cancel')}</button>
                                     </div>
                                 </div>
                             </div>

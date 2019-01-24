@@ -57,7 +57,7 @@
             var maxsize = {$nMaxFileSize};
             {literal}
             if (filesize >= maxsize) {
-                $(this).after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist gr&ouml;&szlig;er als das Uploadlimit des Servers.</div>').slideDown();
+                $(this).after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist größer als das Uploadlimit des Servers.</div>').slideDown();
                 file2large = true;
             } else {
                 $(this).closest('div.alert').slideUp();
@@ -104,7 +104,7 @@
                                 <option value="-1"
                                     {if isset($cPostVar_arr.kKundengruppe)}
                                         {foreach $cPostVar_arr.kKundengruppe as $kKundengruppe}
-                                            {if $kKundengruppe == "-1"}selected{/if}
+                                            {if $kKundengruppe == '-1'}selected{/if}
                                         {/foreach}
                                     {else}
                                         {foreach $oNews->getCustomerGroups() as $kKundengruppe}
@@ -235,9 +235,9 @@
                     </div>
                 </div>
             </div>
-            {foreach name=sprachen from=$sprachen item=sprache}
-                {assign var='cISO' value=$sprache->cISO}
-                {assign var='langID' value=$sprache->kSprache}
+            {foreach $sprachen as $sprache}
+                {assign var=cISO value=$sprache->cISO}
+                {assign var=langID value=$sprache->kSprache}
                 <input type="hidden" name="lang_{$cISO}" value="{$sprache->kSprache}">
                 <div id="iso_{$cISO}" class="iso_wrapper{if $sprache->cShopStandard !== 'Y'} hidden-soft{/if}">
                     <div class="panel panel-default">
@@ -297,7 +297,7 @@
                 {if $oNews->getID() > 0}
                     <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{__('newsSave')} und weiter bearbeiten</button>
                 {/if}
-                <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> Abbrechen</a>
+                <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> {__('Cancel')}</a>
             </div>
         </div>
     </form>

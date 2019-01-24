@@ -6,7 +6,7 @@
         <input type="hidden" name="kLinkgruppe" value="{$oLinkgruppe->kLinkgruppe}" />
 
         <div class="alert alert-danger">
-            <p><strong>Vorsicht</strong>: Alle Links innerhalb dieser Linkgruppe werden ebenfalls gel&ouml;scht</p>
+            <p><strong>Vorsicht</strong>: Alle Links innerhalb dieser Linkgruppe werden ebenfalls gelöscht</p>
             {if $affectedLinkNames|count > 0}
                 <p>Die folgenden Links werden in anderen Linkgruppen referenziert und werden ebenfalls gelöscht:</p>
                 <ul class="list">
@@ -15,7 +15,7 @@
                     {/foreach}
                 </ul>
             {/if}
-            <p>Wollen Sie die Linkgruppe "<strong>{$oLinkgruppe->cName}</strong>" wirklich l&ouml;schen?</p>
+            <p>Wollen Sie die Linkgruppe "<strong>{$oLinkgruppe->cName}</strong>" wirklich löschen?</p>
         </div>
         <div class="btn-group">
             <input name="loeschConfirmJaSubmit" type="submit" value="{__('loeschlinkgruppeYes')}" class="btn btn-danger" />

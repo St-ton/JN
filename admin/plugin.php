@@ -75,9 +75,9 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
             }
         }
         if ($bError) {
-            $cFehler = 'Fehler: Ihre Einstellungen konnten nicht gespeichert werden.';
+            $cFehler = __('errorConfigSave');
         } else {
-            $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert';
+            $cHinweis = __('successConfigSave');
         }
     }
     if (Request::verifyGPCDataInt('kPluginAdminMenu') > 0) {

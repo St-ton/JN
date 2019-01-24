@@ -9,9 +9,7 @@ namespace Cron\Jobs;
 use Cron\Job;
 use Cron\JobInterface;
 use Cron\QueueEntry;
-use DB\DbInterface;
 use DB\ReturnType;
-use Psr\Log\LoggerInterface;
 
 /**
  * Class Newsletter
@@ -22,12 +20,14 @@ class Newsletter extends Job
     /**
      * @inheritdoc
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger)
+    public function hydrate($data)
     {
-        parent::__construct($db, $logger);
+        parent::hydrate($data);
         if (\JOBQUEUE_LIMIT_M_NEWSLETTER > 0) {
             $this->setLimit((int)\JOBQUEUE_LIMIT_M_NEWSLETTER);
         }
+
+        return $this;
     }
 
     /**
@@ -53,19 +53,14 @@ class Newsletter extends Job
         $campaign        = new \Kampagne($oNewsletter->kKampagne);
         if (\count($customerGroups) === 0) {
             $this->setFinished(true);
-            $this->db->delete('tnewsletterqueue', 'kNewsletter', $queueEntry->kKey);
+            $this->db->delete('tnewsletterqueue', 'kNewsletter', $queueEntry->foreignKeyID);
 
             return $this;
         }
         $products   = [];
         $categories = [];
         foreach ($customerGroups as $groupID) {
-            $products[$groupID]   = \gibArtikelObjekte(
-                $productIDs,
-                $campaign,
-                $groupID,
-                (int)$oNewsletter->kSprache
-            );
+            $products[$groupID]   = \gibArtikelObjekte($productIDs, $campaign, $groupID, (int)$oNewsletter->kSprache);
             $categories[$groupID] = \gibKategorieObjekte($categoryIDs, $campaign);
         }
         $cgSQL = 'AND (tkunde.kKundengruppe IN (' . \implode(',', $customerGroups) . ') ';
@@ -86,7 +81,7 @@ class Newsletter extends Job
                 WHERE tnewsletterempfaenger.kSprache = ' . (int)$oNewsletter->kSprache . '
                     AND tnewsletterempfaenger.nAktiv = 1 ' . $cgSQL . '
                 ORDER BY tnewsletterempfaenger.kKunde
-                LIMIT ' . $queueEntry->nLimitN . ', ' . $queueEntry->nLimitM,
+                LIMIT ' . $queueEntry->tasksExecuted . ', ' . $queueEntry->taskLimit,
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (\count($recipients) > 0) {
@@ -118,12 +113,12 @@ class Newsletter extends Job
                     (int)$recipient->kNewsletterEmpfaenger,
                     (object)['dLetzterNewsletter' => \date('Y-m-d H:m:s')]
                 );
-                ++$queueEntry->nLimitN;
+                ++$queueEntry->taskLimit;
             }
             $this->setFinished(false);
         } else {
             $this->setFinished(true);
-            $this->db->delete('tnewsletterqueue', 'kNewsletter', $queueEntry->kKey);
+            $this->db->delete('tnewsletterqueue', 'kNewsletter', $queueEntry->foreignKeyID);
         }
 
         return $this;

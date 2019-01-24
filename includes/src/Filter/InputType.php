@@ -9,7 +9,7 @@ namespace Filter;
 use MyCLabs\Enum\Enum;
 
 /**
- * Class ComponentPropertyType
+ * Class InputType
  *
  * @package Filter
  * @method static InputType SELECT()

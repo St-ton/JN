@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "kundenwerbenkunden"
 msgstr "Kunden werben Kunden"
 
@@ -61,3 +65,8 @@ msgstr "Guthaben erhalten"
 msgid "kundenwerbenkundenSettings"
 msgstr "Einstellungen"
 
+msgid "successNewCustomerDelete"
+msgstr "Ihre markierten Neukunden wurden erfolgreich gelöscht."
+
+msgid "errorAtLeastOneNewCustomer"
+msgstr "Fehler: Bitte markieren Sie mindestens einen Neukunden."

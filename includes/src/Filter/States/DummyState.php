@@ -12,6 +12,7 @@ use Filter\ProductFilter;
 
 /**
  * Class DummyState
+ * @package Filter\States
  */
 class DummyState extends AbstractFilter
 {

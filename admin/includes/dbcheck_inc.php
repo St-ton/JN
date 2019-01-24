@@ -25,8 +25,8 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
         if (Shop::Container()->getCache()->isActive()) {
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE . '_getDBStruct']);
         } else {
-            \Session\AdminSession::set('getDBStruct_extended', false);
-            \Session\AdminSession::set('getDBStruct_normal', false);
+            \Session\Backend::set('getDBStruct_extended', false);
+            \Session\Backend::set('getDBStruct_normal', false);
         }
         $dbStruct['extended'] = null;
         $dbStruct['normal']   = null;
@@ -37,7 +37,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
         if ($dbStruct['extended'] === null) {
             $dbStruct['extended'] = Shop::Container()->getCache()->isActive()
                 ? Shop::Container()->getCache()->get($cacheID)
-                : \Session\AdminSession::get($cacheID, false);
+                : \Session\Backend::get($cacheID, false);
         }
         $cDBStruct_arr =& $dbStruct['extended'];
 
@@ -61,7 +61,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
         if ($dbStruct['normal'] === null) {
             $dbStruct['normal'] = Shop::Container()->getCache()->isActive()
                 ? Shop::Container()->getCache()->get($cacheID)
-                : \Session\AdminSession::get($cacheID);
+                : \Session\Backend::get($cacheID);
         }
         $cDBStruct_arr =& $dbStruct['normal'];
     }
@@ -135,7 +135,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                 [CACHING_GROUP_CORE, CACHING_GROUP_CORE . '_getDBStruct']
             );
         } else {
-            \Session\AdminSession::set($cacheID, $cDBStruct_arr);
+            \Session\Backend::set($cacheID, $cDBStruct_arr);
         }
     } elseif ($extended) {
         foreach (array_keys($cDBStruct_arr) as $cTable) {
@@ -185,15 +185,15 @@ function compareDBStruct(array $dbFileStruct, array $dbStruct)
     $errors = [];
     foreach ($dbFileStruct as $table => $columns) {
         if (!array_key_exists($table, $dbStruct)) {
-            $errors[$table] = 'Tabelle nicht vorhanden';
+            $errors[$table] = __('errorNoTable');
             continue;
         }
         if (($dbStruct[$table]->Migration & DBMigrationHelper::MIGRATE_INNODB) === DBMigrationHelper::MIGRATE_INNODB) {
-            $errors[$table] = "Tabelle $table ist keine InnoDB-Tabelle";
+            $errors[$table] = $table . __('errorNoInnoTable');
             continue;
         }
         if (($dbStruct[$table]->Migration & DBMigrationHelper::MIGRATE_UTF8) === DBMigrationHelper::MIGRATE_UTF8) {
-            $errors[$table] = "Tabelle $table hat die falsche Kollation";
+            $errors[$table] = $table . __('errorWrongCollation');
             continue;
         }
 
@@ -202,7 +202,7 @@ function compareDBStruct(array $dbFileStruct, array $dbStruct)
                 ? array_keys($dbStruct[$table]->Columns)
                 : $dbStruct[$table], true)
             ) {
-                $errors[$table] = "Spalte $cColumn in $table nicht vorhanden";
+                $errors[$table] = sprintf(__('errorRowMissing'), $cColumn, $table);
                 break;
             }
 
@@ -210,11 +210,11 @@ function compareDBStruct(array $dbFileStruct, array $dbStruct)
                 if (!empty($dbStruct[$table]->Columns[$cColumn]->COLLATION_NAME)
                     && $dbStruct[$table]->Columns[$cColumn]->COLLATION_NAME !== 'utf8_unicode_ci'
                 ) {
-                    $errors[$table] = "Inkonsistente Kollation in Spalte $cColumn";
+                    $errors[$table] = sprintf(__('errorWrongCollationRow'), $cColumn);
                     break;
                 }
                 if ($dbStruct[$table]->Columns[$cColumn]->DATA_TYPE === 'text') {
-                    $errors[$table] = "Datentyp text in Spalte $cColumn";
+                    $errors[$table] = __('errorDatatTypeInRow') . $cColumn;
                     break;
                 }
             }
@@ -501,7 +501,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
                 }
             } catch (Exception $e) {
                 Shop::Container()->getLogService()->error(
-                    'Leeren des Objektcache fehlgeschlagen! (' . $e->getMessage() . ')'
+                    sprintf(__('errorEmptyCache'), $e->getMessage())
                 );
             }
             $callback    = function (array $pParameters) {

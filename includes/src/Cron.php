@@ -111,15 +111,15 @@ class Cron
     public function speicherInDB()
     {
         if ($this->kKey > 0 && $this->cKey && $this->cTabelle && $this->cName && $this->nAlleXStd && $this->dStart) {
-            $ins                = new stdClass();
-            $ins->kKey          = $this->kKey;
-            $ins->cKey          = $this->cKey;
-            $ins->cName         = $this->cName;
-            $ins->cJobArt       = $this->cJobArt;
-            $ins->nAlleXStd     = $this->nAlleXStd;
-            $ins->dStart        = $this->dStart;
-            $ins->dStartZeit    = $this->dStartZeit;
-            $ins->dLetzterStart = $this->dLetzterStart ?? '_DBNULL_';
+            $ins               = new stdClass();
+            $ins->foreignKeyID = $this->kKey;
+            $ins->foreignKey   = $this->cKey;
+            $ins->name         = $this->cName;
+            $ins->jobType      = $this->cJobArt;
+            $ins->frequency    = $this->nAlleXStd;
+            $ins->startDate    = $this->dStart;
+            $ins->startTime    = $this->dStartZeit;
+            $ins->lastStart    = $this->dLetzterStart ?? '_DBNULL_';
 
             return Shop::Container()->getDB()->insert('tcron', $ins);
         }
@@ -136,18 +136,18 @@ class Cron
     public function speicherInJobQueue($cJobArt, $dStart, $nLimitM)
     {
         if ($dStart && $nLimitM > 0 && strlen($cJobArt) > 0) {
-            $oJobQueue             = new stdClass();
-            $oJobQueue->kCron      = $this->kCron;
-            $oJobQueue->kKey       = $this->kKey;
-            $oJobQueue->cKey       = $this->cKey;
-            $oJobQueue->cTabelle   = $this->cTabelle;
-            $oJobQueue->cJobArt    = $cJobArt;
-            $oJobQueue->dStartZeit = $dStart;
-            $oJobQueue->nLimitN    = 0;
-            $oJobQueue->nLimitM    = $nLimitM;
-            $oJobQueue->nInArbeit  = 0;
+            $ins                = new stdClass();
+            $ins->cronID        = $this->kCron;
+            $ins->foreignKeyID  = $this->kKey;
+            $ins->foreignKey    = $this->cKey;
+            $ins->tableName     = $this->cTabelle;
+            $ins->jobType       = $cJobArt;
+            $ins->startTime     = $dStart;
+            $ins->tasksExecuted = 0;
+            $ins->taskLimit     = $nLimitM;
+            $ins->isRunning     = 0;
 
-            return Shop::Container()->getDB()->insert('tjobqueue', $oJobQueue);
+            return Shop::Container()->getDB()->insert('tjobqueue', $ins);
         }
 
         return false;
@@ -159,17 +159,17 @@ class Cron
     public function updateCronDB(): bool
     {
         if ($this->kCron > 0) {
-            $_upd                = new stdClass();
-            $_upd->kKey          = (int)$this->kKey;
-            $_upd->cKey          = $this->cKey;
-            $_upd->cTabelle      = $this->cTabelle;
-            $_upd->cName         = $this->cName;
-            $_upd->cJobArt       = $this->cJobArt;
-            $_upd->nAlleXStd     = (int)$this->nAlleXStd;
-            $_upd->dStart        = $this->dStart;
-            $_upd->dLetzterStart = $this->dLetzterStart ?? '_DBNULL';
+            $upd               = new stdClass();
+            $upd->foreignKeyID = (int)$this->kKey;
+            $upd->foreignKey   = $this->cKey;
+            $upd->tableName    = $this->cTabelle;
+            $upd->name         = $this->cName;
+            $upd->jobType      = $this->cJobArt;
+            $upd->frequency    = (int)$this->nAlleXStd;
+            $upd->startDate    = $this->dStart;
+            $upd->lastStart    = $this->dLetzterStart ?? '_DBNULL';
 
-            return Shop::Container()->getDB()->update('tcron', 'kCron', $this->kCron, $_upd) >= 0;
+            return Shop::Container()->getDB()->update('tcron', 'cronID', $this->kCron, $upd) >= 0;
         }
 
         return false;

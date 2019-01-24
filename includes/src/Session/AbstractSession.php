@@ -32,8 +32,8 @@ abstract class AbstractSession
     {
         self::$sessionName = $sessionName;
         \session_name(self::$sessionName);
-        self::$handler = (new Storage())->getHandler();
         $this->initCookie(\Shop::getSettings([\CONF_GLOBAL])['global'], $start);
+        self::$handler = (new Storage())->getHandler();
     }
 
     /**

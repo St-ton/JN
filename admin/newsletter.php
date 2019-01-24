@@ -48,18 +48,18 @@ if (Form::validateToken()) {
             && isset($_POST['abonnentloeschenSubmit']))
     ) {
         if (loescheAbonnenten($_POST['kNewsletterEmpfaenger'])) { // Newsletterabonnenten loeschen
-            $cHinweis .= 'Ihre markierten Newsletter-Abonnenten wurden erfolgreich gelöscht.<br />';
+            $cHinweis .= __('successNewsletterAboDelete') . '<br />';
         } else {
-            $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletter-Abonnenten.<br />';
+            $cFehler .= __('errorAtLeastOneNewsletterAbo') . '<br />';
         }
     } elseif (isset($_POST['abonnentfreischaltenSubmit'])
         && Request::verifyGPCDataInt('inaktiveabonnenten') === 1
     ) {
         // Newsletterabonnenten freischalten
         if (aktiviereAbonnenten($_POST['kNewsletterEmpfaenger'])) {
-            $cHinweis .= 'Ihre markierten Newsletter-Abonnenten wurden erfolgreich freigeschaltet.<br />';
+            $cHinweis .= __('successNewsletterAbounlock') . '<br />';
         } else {
-            $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletter-Abonnenten.<br />';
+            $cFehler .= __('errorAtLeastOneNewsletterAbo') . '<br />';
         }
     } elseif (isset($_POST['newsletterabonnent_neu']) && (int)$_POST['newsletterabonnent_neu'] === 1) {
         // Newsletterabonnenten hinzufuegen
@@ -81,10 +81,10 @@ if (Form::validateToken()) {
                 $smarty->assign('oNewsletter', $oNewsletter);
             } else {
                 $db->insert('tnewsletterempfaenger', $oNewsletter);
-                $cHinweis = 'Newsletter-Empfänger wurde erfolgreich hinzugefügt';
+                $cHinweis = __('successNewsletterAboAdd');
             }
         } else {
-            $cFehler = 'Bitte füllen Sie das Feld Email aus.';
+            $cFehler = __('errorFillEmail');
             $smarty->assign('oNewsletter', $oNewsletter);
         }
     } elseif (isset($_POST['newsletterqueue']) && (int)$_POST['newsletterqueue'] === 1) { // Queue
@@ -106,9 +106,9 @@ if (Form::validateToken()) {
                     $cHinweis .= $entry->cBetreff . '", ';
                 }
                 $cHinweis  = substr($cHinweis, 0, -2);
-                $cHinweis .= ' wurden erfolgreich gelöscht.<br />';
+                $cHinweis .= __('successDelete') . '<br />';
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletter.<br />';
+                $cFehler .= __('errorAtLeastOneNewsletter') . '.<br />';
             }
         }
     } elseif ((isset($_POST['newsletterhistory']) && (int)$_POST['newsletterhistory'] === 1)
@@ -122,9 +122,9 @@ if (Form::validateToken()) {
                     $cHinweis .= $kNewsletterHistory . ', ';
                 }
                 $cHinweis  = substr($cHinweis, 0, -2);
-                $cHinweis .= ' wurden erfolgreich gelöscht.<br />';
+                $cHinweis .= __('successDelete') . '<br />';
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine History.<br />';
+                $cFehler .= __('errorAtLeastOneHistory') . '<br />';
             }
         } elseif (isset($_GET['anzeigen'])) {
             $step               = 'history_anzeigen';
@@ -187,7 +187,7 @@ if (Form::validateToken()) {
         }
         $smarty->assign('oNewsletterVorlage', $newsletterTPL)
                ->assign('cFehler', is_string($preview) ? $preview : null)
-               ->assign('NettoPreise', \Session\Session::getCustomerGroup()->getIsMerchant());
+               ->assign('NettoPreise', \Session\Frontend::getCustomerGroup()->getIsMerchant());
     } elseif (Request::verifyGPCDataInt('newslettervorlagenstd') === 1) { // Vorlagen Std
         $customerGroups    = $db->query(
             'SELECT kKundengruppe, cName
@@ -230,13 +230,16 @@ if (Form::validateToken()) {
                 } else {
                     $step = 'uebersicht';
                     $smarty->assign('cTab', 'newslettervorlagen');
-                    $cHinweis = 'Ihre Newslettervorlage "' .
-                        StringHandler::filterXSS($_POST['cName']) .
-                        '" wurde erfolgreich ';
                     if ($kNewslettervorlage > 0) {
-                        $cHinweis .= 'editiert.';
+                        $cHinweis = sprintf(
+                            __('successNewsletterTemplateEdit'),
+                            StringHandler::filterXSS($_POST['cName'])
+                        );
                     } else {
-                        $cHinweis .= 'gespeichert.';
+                        $cHinweis .= sprintf(
+                            __('successNewsletterTemplateSave'),
+                            StringHandler::filterXSS($_POST['cName'])
+                        );
                     }
                 }
             }
@@ -480,7 +483,7 @@ if (Form::validateToken()) {
                 // tnewsletterhistory fuellen
                 $db->insert('tnewsletterhistory', $oNewsletterHistory);
 
-                $cHinweis .= 'Der Newsletter "' . $oNewsletter->cName . '" wurde zum Versenden vorbereitet.<br />';
+                $cHinweis .= sprintf(__('successNewsletterPrepared'), $oNewsletter->cName) .'<br />';
             }
         } elseif (isset($_POST['speichern_und_testen'])) { // Vorlage speichern und testen
             $newsletterTPL = speicherVorlage($_POST);
@@ -507,7 +510,7 @@ if (Form::validateToken()) {
                 '/newsletter.php?lang=ger&lc=' .
                 $oEmailempfaenger->cLoeschCode;
             if (empty($oEmailempfaenger->cEmail)) {
-                $result = 'Die Empfänger-Adresse zum Testen ist leer.';
+                $result = __('errorTestTemplateEmpty');
             } else {
                 $mailSmarty = bereiteNewsletterVor($conf);
                 $result     = versendeNewsletter(
@@ -525,8 +528,7 @@ if (Form::validateToken()) {
             if ($result !== true) {
                 $smarty->assign('cFehler', $result);
             } else {
-                $cHinweis .= 'Die Newslettervorlage "' . $newsletterTPL->cName .
-                    '" wurde zum Testen an "' . $oEmailempfaenger->cEmail . '" gesendet.<br />';
+                $cHinweis .= sprintf(__('successTestEmailTo'), $newsletterTPL->cName, $oEmailempfaenger->cEmail);
             }
         } elseif (isset($_POST['loeschen'])) { // Vorlage loeschen
             $step = 'uebersicht';
@@ -561,9 +563,9 @@ if (Form::validateToken()) {
                         }
                     }
                 }
-                $cHinweis .= 'Die Newslettervorlage wurde erfolgreich gelöscht.<br />';
+                $cHinweis .= __('successNewsletterTemplateDelete') . '<br />';
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletter.<br />';
+                $cFehler .= __('errorAtLeastOneNewsletter') . '<br />';
             }
         }
         $smarty->assign('cOption', $option);

@@ -1,4 +1,4 @@
-{config_load file="$lang.conf" section="kundenwerbenkunden"}
+{config_load file="$lang.conf" section='kundenwerbenkunden'}
 {include file='tpl_inc/header.tpl'}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('kundenwerbenkunden') cBeschreibung=__('kundenwerbenkundenDesc') cDokuURL=__('kundenwerbenkundenURL')}
@@ -37,7 +37,7 @@
                                     <th class="tleft">{__('kundenwerbenkundenCredit')}</th>
                                     <th class="th-5">{__('kundenwerbenkundenDateInvite')}</th>
                                 </tr>
-                                {foreach name=nichtregkunden from=$oKwKNichtReg_arr item=oKwKNichtReg}
+                                {foreach $oKwKNichtReg_arr as $oKwKNichtReg}
                                     <tr>
                                         <td class="check">
                                             <input type="checkbox" name="kKundenWerbenKunden[]" value="{$oKwKNichtReg->kKundenWerbenKunden}">
@@ -76,7 +76,7 @@
                                 <th class="th-4">{__('kundenwerbenkundenDateInvite')}</th>
                                 <th class="th-5">{__('kundenwerbenkundenDateErstellt')}</th>
                             </tr>
-                            {foreach name=regkunden from=$oKwKReg_arr item=oKwKReg}
+                            {foreach $oKwKReg_arr as $oKwKReg}
                                 <tr>
                                     <td><b>{$oKwKReg->cVorname} {$oKwKReg->cNachname}</b><br />{$oKwKReg->cEmail}</td>
                                     <td>
@@ -106,7 +106,7 @@
                                 <th class="">{__('kundenwerbenkundenExtraPoints')}</th>
                                 <th class="th-4">{__('kundenwerbenkundenDateBoni')}</th>
                             </tr>
-                            {foreach name=letzte100bonis from=$oKwKBestandBonus_arr item=oKwKBestandBonus}
+                            {foreach $oKwKBestandBonus_arr as $oKwKBestandBonus}
                                 <tr>
                                     <td>
                                         <b>{$oKwKBestandBonus->cBestandVorname} {$oKwKBestandBonus->cBestandNachname}</b><br />{$oKwKBestandBonus->cMail}
@@ -130,8 +130,8 @@
 </div>
 
 <script type="text/javascript">
-    {foreach name=conf from=$oConfig_arr item=oConfig}
-        {if $oConfig->cWertName|strpos:"_bestandskundenguthaben" || $oConfig->cWertName|strpos:"_neukundenguthaben"}
+    {foreach $oConfig_arr as $oConfig}
+        {if $oConfig->cWertName|strpos:'_bestandskundenguthaben' || $oConfig->cWertName|strpos:'_neukundenguthaben'}
             ioCall('getCurrencyConversion', [0, $('#{$oConfig->cWertName}').val(), 'EinstellungAjax_{$oConfig->cWertName}']);
         {/if}
     {/foreach}

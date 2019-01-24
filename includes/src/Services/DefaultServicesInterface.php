@@ -10,6 +10,7 @@ use Boxes\FactoryInterface;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
+use Debug\JTLDebugBar;
 use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
 use L10n\GetText;
@@ -19,13 +20,13 @@ use OPC\Locker;
 use OPC\PageDB;
 use OPC\PageService;
 use OPC\Service;
-use Services\JTL\AdminAccountService;
 use Services\JTL\BoxServiceInterface;
 use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\LinkServiceInterface;
 use Services\JTL\NewsServiceInterface;
 use Services\JTL\PasswordServiceInterface;
+use Services\JTL\AlertServiceInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -128,6 +129,11 @@ interface DefaultServicesInterface extends ContainerInterface
     public function getNewsService() : NewsServiceInterface;
 
     /**
+     * @return AlertServiceInterface
+     */
+    public function getAlertService() : AlertServiceInterface;
+
+    /**
      * @return GetText
      */
     public function getGetText() : GetText;
@@ -136,4 +142,9 @@ interface DefaultServicesInterface extends ContainerInterface
      * @return \AdminAccount
      */
     public function getAdminAccount(): \AdminAccount;
+
+    /**
+     * @return JTLDebugBar
+     */
+    public function getDebugBar(): JTLDebugBar;
 }

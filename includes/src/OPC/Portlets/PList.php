@@ -6,7 +6,6 @@
 
 namespace OPC\Portlets;
 
-use function Couchbase\defaultDecoder;
 use OPC\Portlet;
 use OPC\PortletInstance;
 

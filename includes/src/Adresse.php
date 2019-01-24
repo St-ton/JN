@@ -132,7 +132,9 @@ class Adresse
     {
         $cryptoService = Shop::Container()->getCryptoService();
         foreach (self::$encodedProperties as $property) {
-            $this->{$property} = trim($cryptoService->decryptXTEA($this->{$property}));
+            if ($this->{$property} !== null) {
+                $this->{$property} = trim($cryptoService->decryptXTEA($this->{$property}));
+            }
         }
 
         return $this;
@@ -186,9 +188,9 @@ class Adresse
     {
         switch (strtolower($anrede)) {
             case 'm':
-                return Shop::Lang()->get('salutationM', 'global');
+                return Shop::Lang()->get('salutationM');
             case 'w':
-                return Shop::Lang()->get('salutationW', 'global');
+                return Shop::Lang()->get('salutationW');
             default:
                 return '';
         }

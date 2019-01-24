@@ -3,14 +3,6 @@ Liste mit allen Blocks
 
 Hier finden Sie eine Übersicht mit allen Blocks im EVO-Template. Diese können Sie in Ihrem Child-Template überschreiben oder erweitern.
 
-**Ordner**: ``<Shop-Root>\templates\Evo\checkout\inc_conversion_tracking.tpl``:
-
-.. code-block:: xml
-
-    Zeile 4:     {block name="checkout-conversion-tracking"}
-    <!-- Hier können Sie eigenen Code eintragen, um Ihre Conversion-Rate zu tracken -->
-
-----------------------------------------------------------------------------------------------------
 
 **Ordner**: ``<Shop-Root>\templates\Evo\checkout\inc_order_completed.tpl``:
 

@@ -486,14 +486,14 @@ final class Shop
     /**
      * get session instance
      *
-     * @return \Session\Session
+     * @return \Session\Frontend
      * @throws Exception
      * @deprecated since 5.0.0
      */
-    public function Session(): \Session\Session
+    public function Session(): \Session\Frontend
     {
         trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-        return \Session\Session::getInstance();
+        return \Session\Frontend::getInstance();
     }
 
     /**
@@ -880,7 +880,7 @@ final class Shop
             exit();
         }
         if ((self::$kArtikel > 0 || self::$kKategorie > 0)
-            && !\Session\Session::getCustomerGroup()->mayViewCategories()
+            && !\Session\Frontend::getCustomerGroup()->mayViewCategories()
         ) {
             // falls Artikel/Kategorien nicht gesehen werden duerfen -> login
             header('Location: ' . LinkHelper::getInstance()->getStaticRoute('jtl.php') . '?li=1', true, 303);
@@ -889,7 +889,7 @@ final class Shop
         $conf = new \Filter\Config();
         $conf->setLanguageID(self::$kSprache);
         $conf->setLanguages(self::Lang()->getLangArray());
-        $conf->setCustomerGroupID(\Session\Session::getCustomerGroup()->getID());
+        $conf->setCustomerGroupID(\Session\Frontend::getCustomerGroup()->getID());
         $conf->setConfig(self::$settings->getAll());
         $conf->setBaseURL(self::getURL() . '/');
         self::$productFilter = new ProductFilter($conf, self::Container()->getDB(), self::Container()->getCache());
@@ -910,7 +910,7 @@ final class Shop
     public static function getParameters(): array
     {
         if (self::$kKategorie > 0
-            && !Kategorie::isVisible(self::$kKategorie, \Session\Session::getCustomerGroup()->getID())
+            && !Kategorie::isVisible(self::$kKategorie, \Session\Frontend::getCustomerGroup()->getID())
         ) {
             self::$kKategorie = 0;
         }
@@ -982,11 +982,11 @@ final class Shop
         $manufSeo     = [];
         $katseo       = '';
         $customSeo    = [];
-        $xShopurl_arr = parse_url(self::getURL());
-        $xBaseurl_arr = parse_url($uri);
-        $seo          = isset($xBaseurl_arr['path'])
-            ? substr($xBaseurl_arr['path'], isset($xShopurl_arr['path'])
-                ? (strlen($xShopurl_arr['path']) + 1)
+        $shopURLdata  = parse_url(self::getURL());
+        $baseURLdata = parse_url($uri);
+        $seo          = isset($baseURLdata['path'])
+            ? substr($baseURLdata['path'], isset($shopURLdata['path'])
+                ? (strlen($shopURLdata['path']) + 1)
                 : 1)
             : false;
         $seo          = Request::extractExternalParams($seo);
@@ -1037,10 +1037,10 @@ final class Shop
             if (substr($seo, strlen($seo) - 1, 1) === '?') {
                 $seo = substr($seo, 0, -1);
             }
-            $nMatch = preg_match('/[^_](' . SEP_SEITE . '([0-9]+))/', $seo, $cMatch_arr, PREG_OFFSET_CAPTURE);
+            $nMatch = preg_match('/[^_](' . SEP_SEITE . '([0-9]+))/', $seo, $matches, PREG_OFFSET_CAPTURE);
             if ($nMatch === 1) {
-                $seite = (int)$cMatch_arr[2][0];
-                $seo   = substr($seo, 0, $cMatch_arr[1][1]);
+                $seite = (int)$matches[2][0];
+                $seo   = substr($seo, 0, $matches[1][1]);
             }
             // duplicate content work around
             if ($seite === 1 && strlen($seo) > 0) {
@@ -1319,7 +1319,7 @@ final class Shop
         $spr   = self::Lang()->getIsoFromLangID($languageID);
         $cLang = $spr->cISO ?? null;
         if ($cLang !== $_SESSION['cISOSprache']) {
-            Session\Session::checkReset($cLang);
+            Session\Frontend::checkReset($cLang);
             Tax::setTaxRates();
         }
         if (self::$productFilter->getFilterConfig()->getLanguageID() !== $languageID) {
@@ -1330,8 +1330,9 @@ final class Shop
 
     /**
      * decide which page to load
+     * @return string
      */
-    public static function getEntryPoint(): void
+    public static function getEntryPoint(): string
     {
         self::setPageType(PAGE_UNBEKANNT);
         if ((self::$kArtikel > 0 && !self::$kKategorie)
@@ -1403,8 +1404,8 @@ final class Shop
                 $link = null;
                 self::setPageType(PAGE_STARTSEITE);
                 self::$fileName = 'seite.php';
-                if (\Session\Session::getCustomerGroup()->getID() > 0) {
-                    $cKundengruppenSQL = " AND (FIND_IN_SET('" . \Session\Session::getCustomerGroup()->getID()
+                if (\Session\Frontend::getCustomerGroup()->getID() > 0) {
+                    $cKundengruppenSQL = " AND (FIND_IN_SET('" . \Session\Frontend::getCustomerGroup()->getID()
                         . "', REPLACE(cKundengruppen, ';', ',')) > 0
                         OR cKundengruppen IS NULL 
                         OR cKundengruppen = 'NULL' 
@@ -1419,8 +1420,8 @@ final class Shop
                 self::$kLink = isset($link->kLink)
                     ? (int)$link->kLink
                     : self::Container()->getLinkService()->getSpecialPageLinkKey(LINKTYP_STARTSEITE);
-            } elseif (self::Media()->isValidRequest($path)) {
-                self::Media()->handleRequest($path);
+            } elseif (Media::getInstance()->isValidRequest($path)) {
+                Media::getInstance()->handleRequest($path);
             } else {
                 self::$is404    = true;
                 self::$fileName = null;
@@ -1502,6 +1503,8 @@ final class Shop
             self::setPageType(PAGE_EIGENE);
         }
         self::check404();
+
+        return self::$fileName;
     }
 
     /**
@@ -1531,29 +1534,29 @@ final class Shop
     /**
      * build navigation filter object from parameters
      *
-     * @param array                     $cParameter_arr
+     * @param array                     $params
      * @param object|null|ProductFilter $productFilter
      * @return ProductFilter
      * @deprecated since 5.0
      */
-    public static function buildNaviFilter(array $cParameter_arr, $productFilter = null): ProductFilter
+    public static function buildNaviFilter(array $params, $productFilter = null): ProductFilter
     {
         trigger_error(
             __METHOD__ . ' is deprecated. Use ' . __CLASS__ . '::buildProductFilter() instead',
             E_USER_DEPRECATED
         );
 
-        return self::buildProductFilter($cParameter_arr, $productFilter);
+        return self::buildProductFilter($params, $productFilter);
     }
 
     /**
      * build navigation filter object from parameters
      *
-     * @param array                       $cParameter_arr
+     * @param array                       $params
      * @param stdClass|null|ProductFilter $productFilter
      * @return ProductFilter
      */
-    public static function buildProductFilter(array $cParameter_arr, $productFilter = null): ProductFilter
+    public static function buildProductFilter(array $params, $productFilter = null): ProductFilter
     {
         $pf = new ProductFilter(
             \Filter\Config::getDefault(),
@@ -1566,7 +1569,7 @@ final class Shop
             }
         }
 
-        return $pf->initStates($cParameter_arr);
+        return $pf->initStates($params);
     }
 
     /**
@@ -1754,16 +1757,16 @@ final class Shop
      */
     public static function getRequestUri(): string
     {
-        $uri          = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
-        $xShopurl_arr = parse_url(self::getURL());
-        $xBaseurl_arr = parse_url($uri);
+        $uri         = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
+        $shopURLdata = parse_url(self::getURL());
+        $baseURLdata = parse_url($uri);
 
-        if (empty($xShopurl_arr['path'])) {
-            $xShopurl_arr['path'] = '/';
+        if (empty($shopURLdata['path'])) {
+            $shopURLdata['path'] = '/';
         }
 
-        return isset($xBaseurl_arr['path'])
-            ? substr($xBaseurl_arr['path'], strlen($xShopurl_arr['path']))
+        return isset($baseURLdata['path'])
+            ? substr($baseURLdata['path'], strlen($shopURLdata['path']))
             : '';
     }
 
@@ -1869,6 +1872,9 @@ final class Shop
         $container->setSingleton(\Services\JTL\LinkServiceInterface::class, function (Container $container) {
             return new \Services\JTL\LinkService($container->getDB(), $container->getCache());
         });
+        $container->setSingleton(\Services\JTL\AlertServiceInterface::class, function () {
+            return new \Services\JTL\AlertService();
+        });
         $container->setSingleton(\Services\JTL\NewsServiceInterface::class, function (Container $container) {
             return new \Services\JTL\NewsService($container->getDB(), $container->getCache());
         });
@@ -1879,6 +1885,9 @@ final class Shop
 
         $container->setSingleton(\Services\JTL\PasswordServiceInterface::class, function (Container $container) {
             return new \Services\JTL\PasswordService($container->getCryptoService());
+        });
+        $container->setSingleton(\Debug\JTLDebugBar::class, function (Container $container) {
+            return new \Debug\JTLDebugBar($container->getDB()->getPDO(), \Shopsetting::getInstance()->getAll());
         });
         $container->setSingleton('BackendAuthLogger', function (Container $container) {
             $loggingConf = self::getConfig([CONF_GLOBAL])['global']['admin_login_logger_mode'] ?? [];
@@ -1956,17 +1965,15 @@ final class Shop
             );
         });
         // Captcha
-        $container->setSingleton(\Services\JTL\CaptchaServiceInterface::class, function (Container $container) {
+        $container->setSingleton(\Services\JTL\CaptchaServiceInterface::class, function () {
             return new \Services\JTL\CaptchaService(new \Services\JTL\SimpleCaptchaService(
-                // Captcha Prüfung ist bei eingeloggtem Kunden, bei bereits erfolgter Prüfung
-                // oder ausgeschaltetem Captcha nicht notwendig
-                !(\Session\Session::get('bAnti_spam_already_checked', false)
-                    || \Session\Session::getCustomer()->isLoggedIn()
+                !(\Session\Frontend::get('bAnti_spam_already_checked', false)
+                    || \Session\Frontend::getCustomer()->isLoggedIn()
                 )
             ));
         });
         // GetText
-        $container->setSingleton(\L10n\GetText::class, function (Container $container) {
+        $container->setSingleton(\L10n\GetText::class, function () {
             return new \L10n\GetText();
         });
         $container->setSingleton(\AdminAccount::class, function (Container $container) {

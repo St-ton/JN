@@ -258,10 +258,10 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
     );
     // Vorbelegen
     $oStatsAssoc_arr = [];
-    if (is_array($cZeitraum_arr['cDatum'])
-        && count($cZeitraum_arr['cDatum']) > 0
-        && is_array($oKampagneDef_arr)
+    if (is_array($oKampagneDef_arr)
+        && is_array($cZeitraum_arr['cDatum'])
         && count($oKampagneDef_arr) > 0
+        && count($cZeitraum_arr['cDatum']) > 0
     ) {
         foreach ($cZeitraum_arr['cDatum'] as $i => $cZeitraum) {
             if (!isset($oStatsAssoc_arr[$cZeitraum]['cDatum'])) {
@@ -276,8 +276,8 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
     // Finde den maximalen Wert heraus, um die Höhe des Graphen zu ermitteln
     $nGraphMaxAssoc_arr = []; // Assoc Array key = kKampagneDef
     if (is_array($oStats_arr)
-        && count($oStats_arr) > 0
         && is_array($oKampagneDef_arr)
+        && count($oStats_arr) > 0
         && count($oKampagneDef_arr) > 0
     ) {
         foreach ($oStats_arr as $oStats) {
@@ -462,8 +462,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         }
                         if ($data[$i]->nRegistriert !== 'n.v.') {
                             $data[$i]->nRegistriert = (int)$data[$i]->nRegistriert === 1
-                                ? 'Ja'
-                                : 'Nein';
+                                ? __('yes')
+                                : __('no');
                         }
                         if ($data[$i]->fGesamtsumme !== 'n.v.') {
                             $data[$i]->fGesamtsumme = Preise::getLocalizedPriceString($data[$i]->fGesamtsumme);
@@ -518,8 +518,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         }
                         if ($data[$i]->nRegistriert !== 'n.v.') {
                             $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
-                                ? 'Ja'
-                                : 'Nein';
+                                ? __('yes')
+                                : __('no');
                         }
                     }
 
@@ -570,8 +570,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         }
                         if ($data[$i]->nRegistriert !== 'n.v.') {
                             $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
-                                ? 'Ja'
-                                : 'Nein';
+                                ? __('yes')
+                                : __('no');
                         }
                         if ($data[$i]->fGesamtsumme !== 'n.v.') {
                             $data[$i]->fGesamtsumme = Preise::getLocalizedPriceString($data[$i]->fGesamtsumme);
@@ -705,8 +705,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
 
                         if ($data[$i]->nRegistriert !== 'n.v.') {
                             $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
-                                ? 'Ja'
-                                : 'Nein';
+                                ? __('yes')
+                                : __('no');
                         }
                     }
 
@@ -757,8 +757,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
 
                         if ($data[$i]->nRegistriert !== 'n.v.') {
                             $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
-                                ? 'Ja'
-                                : 'Nein';
+                                ? __('yes')
+                                : __('no');
                         }
                     }
 
@@ -800,7 +800,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 if (is_array($data) && count($data) > 0) {
-                    Session\Session::getCustomerGroup()->setMayViewPrices(1);
+                    Session\Frontend::getCustomerGroup()->setMayViewPrices(1);
                     $count = count($data);
                     for ($i = 0; $i < $count; $i++) {
                         if (isset($data[$i]->fVKNetto) && $data[$i]->fVKNetto > 0) {
@@ -1229,22 +1229,22 @@ function mappeFehlerCodeSpeichern($nReturnValue)
     if ((int)$nReturnValue > 0) {
         switch ((int)$nReturnValue) {
             case 2:
-                return 'Fehler: Kampagne konnte nicht gespeichert werden';
+                return __('errorCampaignSave');
                 break;
             case 3:
-                return 'Fehler: Bitte geben Sie einen Kampagnennamen ein.';
+                return __('errorCampaignNameMissing');
                 break;
             case 4:
-                return 'Fehler: Bitte geben Sie einen Kampagnenparameter ein.';
+                return __('errorCampaignParameterMissing');
                 break;
             case 5:
-                return 'Fehler: Bitte geben Sie einen Kampagnenwert ein.';
+                return __('errorCampaignValueMissing');
                 break;
             case 6:
-                return 'Fehler: Der angegebene Kampagnenname ist bereits vergeben.';
+                return __('errorCampaignNameDuplicate');
                 break;
             case 7:
-                return 'Fehler: Der angegebene Kampagnenparameter ist bereits vergeben.';
+                return __('errorCampaignParameterDuplicate');
                 break;
         }
     }
@@ -1507,11 +1507,8 @@ function GetTypes()
 function GetKampTypeName($Type)
 {
     $Serienames = GetTypes();
-    if (isset($Serienames[$Type])) {
-        return $Serienames[$Type];
-    }
 
-    return '';
+    return $Serienames[$Type] ?? '';
 }
 
 /**

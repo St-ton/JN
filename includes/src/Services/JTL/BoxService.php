@@ -19,7 +19,7 @@ use Filter\ProductFilter;
 use Filter\Visibility;
 use Plugin\ExtensionLoader;
 use Plugin\State;
-use Session\Session;
+use Session\Frontend;
 use Smarty\JTLSmarty;
 use function Functional\tail;
 
@@ -297,7 +297,7 @@ class BoxService implements BoxServiceInterface
         ];
         $this->smarty->assign('BoxenEinstellungen', $this->config)
                      ->assign('bBoxenFilterNach', $this->showBoxes(\Shop::getProductFilter()))
-                     ->assign('NettoPreise', Session::getCustomerGroup()->getIsMerchant());
+                     ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant());
         foreach ($positionedBoxes as $_position => $boxes) {
             if (!\is_array($boxes)) {
                 $boxes = [];

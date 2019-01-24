@@ -27,7 +27,7 @@
                         <span class="input-group-addon"><label for="kSprache">{__('language')}</label></span>
                         <span class="input-group-wrap">
                             <select class="form-control" name="kSprache" id="kSprache">
-                                {foreach name=sprache from=$sprachen item=sprache}
+                                {foreach $sprachen as $sprache}
                                     <option value="{$sprache->kSprache}" {if isset($Exportformat->kSprache) && $Exportformat->kSprache == $sprache->kSprache || (isset($cPlausiValue_arr.kSprache) && $cPlausiValue_arr.kSprache == $sprache->kSprache)}selected{/if}>{$sprache->cNameDeutsch}</option>
                                 {/foreach}
                             </select>
@@ -37,7 +37,7 @@
                         <span class="input-group-addon"><label for="kWaehrung">{__('currency')}</label></span>
                         <span class="input-group-wrap">
                             <select class="form-control" name="kWaehrung" id="kWaehrung">
-                                {foreach name=waehrung from=$waehrungen item=waehrung}
+                                {foreach $waehrungen as $waehrung}
                                     <option value="{$waehrung->kWaehrung}" {if isset($Exportformat->kSprache) && $Exportformat->kWaehrung == $waehrung->kWaehrung || (isset($cPlausiValue_arr.kWaehrung) && $cPlausiValue_arr.cName == $waehrung->kWaehrung)}selected{/if}>{$waehrung->cName}</option>
                                 {/foreach}
                             </select>
@@ -48,7 +48,7 @@
                         <span class="input-group-wrap">
                             <select class="form-control" name="kKampagne" id="kKampagne">
                                 <option value="0"></option>
-                                {foreach name=kampagnen from=$oKampagne_arr item=oKampagne}
+                                {foreach $oKampagne_arr as $oKampagne}
                                     <option value="{$oKampagne->kKampagne}" {if isset($Exportformat->kSprache) && $Exportformat->kKampagne == $oKampagne->kKampagne || (isset($cPlausiValue_arr.kKampagne) && $cPlausiValue_arr.kKampagne == $oKampagne->kKampagne)}selected{/if}>{$oKampagne->cName}</option>
                                 {/foreach}
                             </select>
@@ -58,7 +58,7 @@
                         <span class="input-group-addon"><label for="kKundengruppe">{__('customerGroup')}</label></span>
                         <span class="input-group-wrap">
                             <select class="form-control" name="kKundengruppe" id="kKundengruppe">
-                                {foreach name=kdgrp from=$kundengruppen item=kdgrp}
+                                {foreach $kundengruppen as $kdgrp}
                                     <option value="{$kdgrp->kKundengruppe}" {if isset($Exportformat->kSprache) && $Exportformat->kKundengruppe == $kdgrp->kKundengruppe || (isset($cPlausiValue_arr.kKundengruppe) && $cPlausiValue_arr.kKundengruppe == $kdgrp->kKundengruppe)}selected{/if}>{$kdgrp->cName}</option>
                                 {/foreach}
                             </select>
@@ -137,14 +137,14 @@
             </div>
             <div class="panel-body">
                 <ul class="jtl-list-group">
-                    {foreach name=conf from=$Conf item=cnf}
+                    {foreach $Conf as $cnf}
                         {if $cnf->cConf === 'Y'}
                             <li class="input-group">
                                 <span class="input-group-addon"><label for="{$cnf->cWertName}">{$cnf->cName}</label></span>
                                 {if $cnf->cInputTyp === 'selectbox'}
                                     <span class="input-group-wrap">
                                         <select class="form-control" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
-                                            {foreach name=selectfor from=$cnf->ConfWerte item=wert}
+                                            {foreach $cnf->ConfWerte as $wert}
                                                 <option value="{$wert->cWert}" {if isset($cnf->gesetzterWert) && $cnf->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                             {/foreach}
                                         </select>

@@ -100,28 +100,27 @@ class GcService implements GcServiceInterface
      */
     public function run(): GcServiceInterface
     {
-        foreach ($this->definition as $cTable => $cMainTable_arr) {
-            $cDateField    = $cMainTable_arr['cDate'];
-            $cSubTable_arr = $cMainTable_arr['cSubTable'];
-            $cInterval     = $cMainTable_arr['cInterval'];
-
-            if ($cSubTable_arr !== null) {
-                $cFrom = $cTable;
+        foreach ($this->definition as $table => $mainTables) {
+            $dateField = $mainTables['cDate'];
+            $subTables = $mainTables['cSubTable'];
+            $interval  = $mainTables['cInterval'];
+            if ($subTables !== null) {
+                $cFrom = $table;
                 $cJoin = '';
-                foreach ($cSubTable_arr as $cSubTable => $cKey) {
-                    $cFrom .= ", {$cSubTable}";
-                    $cJoin .= " LEFT JOIN {$cSubTable} ON {$cSubTable}.{$cKey} = {$cTable}.{$cKey}";
+                foreach ($subTables as $subTable => $cKey) {
+                    $cFrom .= ", {$subTable}";
+                    $cJoin .= " LEFT JOIN {$subTable} ON {$subTable}.{$cKey} = {$table}.{$cKey}";
                 }
                 $this->db->query(
                     "DELETE {$cFrom} 
-                        FROM {$cTable} {$cJoin} 
-                        WHERE DATE_SUB(NOW(), INTERVAL {$cInterval} DAY) >= {$cTable}.{$cDateField}",
+                        FROM {$table} {$cJoin} 
+                        WHERE DATE_SUB(NOW(), INTERVAL {$interval} DAY) >= {$table}.{$dateField}",
                     ReturnType::AFFECTED_ROWS
                 );
             } else {
                 $this->db->query(
-                    "DELETE FROM {$cTable} 
-                        WHERE DATE_SUB(NOW(), INTERVAL {$cInterval} DAY) >= {$cDateField}",
+                    "DELETE FROM {$table} 
+                        WHERE DATE_SUB(NOW(), INTERVAL {$interval} DAY) >= {$dateField}",
                     ReturnType::AFFECTED_ROWS
                 );
             }

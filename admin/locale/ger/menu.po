@@ -363,6 +363,9 @@ msgstr "Filter"
 msgid "Queries"
 msgstr "Suchanfragen"
 
+msgid "Cron"
+msgstr "Cron"
+
 # Top Menu
 msgid "Plugins"
 msgstr "Plug-ins"

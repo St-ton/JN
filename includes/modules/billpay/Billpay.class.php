@@ -286,7 +286,7 @@ class Billpay extends PaymentMethod
                         ->assign('abschlussseite', 1);
 
                     // clear session
-                    $session = \Session\Session::getInstance();
+                    $session = \Session\Frontend::getInstance();
                     $session->cleanUp();
                 } else {
                     $this->assignMessage($oCapture->get_customer_error_message(), 'error');
@@ -854,7 +854,7 @@ class Billpay extends PaymentMethod
             ),                                                             // shippingpricegross
             BPHelper::fmtAmount($oBasketInfo->fTotal[AMT_NET], true),      // carttotalprice
             BPHelper::fmtAmount($oBasketInfo->fTotal[AMT_GROSS], true),    // carttotalpricegross
-            BPHelper::strEncode(\Session\Session::getCurrency()->getCode(), 3),        // currency
+            BPHelper::strEncode(\Session\Frontend::getCurrency()->getCode(), 3),        // currency
             $cReference                                                    // reference
         );
 
@@ -1200,7 +1200,7 @@ class Billpay extends PaymentMethod
         $oBasketInfo->fRebate    = [0, 0];// rabatt
         $oBasketInfo->fSurcharge = [0, 0];// zuschlag
         $oBasketInfo->fTotal     = [0, 0];// warenkorb
-        $oBasketInfo->cCurrency  = \Session\Session::getCurrency();
+        $oBasketInfo->cCurrency  = \Session\Frontend::getCurrency();
 
         foreach ($oBasket->PositionenArr as $oPosition) {
             $fPreisEinzelNetto = $oPosition->fPreisEinzelNetto;
@@ -1409,7 +1409,7 @@ class Billpay extends PaymentMethod
      */
     public function addSpecialPosition($cName, $fQuantity, $fAmount, $nType, $bDelSamePosType, $bGross = true, $cNotice = '')
     {
-        $cart          = \Session\Session::getCart();
+        $cart          = \Session\Frontend::getCart();
         $kSteuerklasse = $cart->gibVersandkostenSteuerklasse('');
         $cart->erstelleSpezialPos(
             $cName,
@@ -1452,17 +1452,11 @@ class Billpay extends PaymentMethod
 
     /**
      * @param string $key
-     * @param bool   $root
      * @return string|null
      */
-    public function getCoreSetting($key, $root = false)
+    public function getCoreSetting($key)
     {
-        global $Einstellungen;
-        if (!is_array($Einstellungen)) {
-            $Einstellungen = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
-        }
-
-        return $Einstellungen['zahlungsarten']['zahlungsart_billpay_' . $key] ?? null;
+        return Shop::getSettings([CONF_ZAHLUNGSARTEN])['zahlungsarten']['zahlungsart_billpay_' . $key] ?? null;
     }
 
     /**
@@ -1553,7 +1547,7 @@ class BPHelper
             $cAmount *= 100;
         }
         if ($bFmt) {
-            $cAmount = Preise::getLocalizedPriceString($cAmount, \Session\Session::getCurrency()->getCode(), true, 2);
+            $cAmount = Preise::getLocalizedPriceString($cAmount, \Session\Frontend::getCurrency()->getCode(), true, 2);
         }
 
         return $cAmount;
@@ -1570,7 +1564,7 @@ class BPHelper
         $fAmount = round($fAmount, 2);
         $cAmount = number_format($fAmount / 100, 2, '.', '');
         if ($bFmt) {
-            $cAmount = Preise::getLocalizedPriceString($cAmount, \Session\Session::getCurrency()->getCode(), $bHTML, 2);
+            $cAmount = Preise::getLocalizedPriceString($cAmount, \Session\Frontend::getCurrency()->getCode(), $bHTML, 2);
         }
 
         return $cAmount;

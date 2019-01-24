@@ -23,7 +23,7 @@ class Linechart extends Chartdata
      * @param string $label
      * @return $this
      */
-    public function addAxis($label)
+    public function addAxis($label): self
     {
         if ($this->_xAxis === null) {
             $this->_xAxis             = new stdClass();
@@ -41,7 +41,7 @@ class Linechart extends Chartdata
      * @param string $color
      * @return $this
      */
-    public function addSerie($name, array $data, $linecolor = '#989898', $color = '#F78D23')
+    public function addSerie($name, array $data, $linecolor = '#989898', $color = '#F78D23'): self
     {
         if ($this->_series === null) {
             $this->_series = [];

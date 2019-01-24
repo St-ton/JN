@@ -199,6 +199,7 @@ class WarenkorbPos
      */
     public function setzeVariationsWert(int $kEigenschaft, int $kEigenschaftWert, $freifeld = ''): bool
     {
+        $db                                = Shop::Container()->getDB();
         $attributeValue                    = new EigenschaftWert($kEigenschaftWert);
         $attribute                         = new Eigenschaft($kEigenschaft);
         $newAttributes                     = new WarenkorbPosEigenschaft();
@@ -206,12 +207,12 @@ class WarenkorbPos
         $newAttributes->kEigenschaftWert   = $kEigenschaftWert;
         $newAttributes->fGewichtsdifferenz = $attributeValue->fGewichtDiff;
         $newAttributes->fAufpreis          = $attributeValue->fAufpreisNetto;
-        $Aufpreis_obj                      = Shop::Container()->getDB()->select(
+        $Aufpreis_obj                      = $db->select(
             'teigenschaftwertaufpreis',
             'kEigenschaftWert',
             (int)$newAttributes->kEigenschaftWert,
             'kKundengruppe',
-            \Session\Session::getCustomerGroup()->getID()
+            \Session\Frontend::getCustomerGroup()->getID()
         );
         if (!empty($Aufpreis_obj->fAufpreisNetto)) {
             if ($this->Artikel->Preise->rabatt > 0) {
@@ -232,7 +233,7 @@ class WarenkorbPos
             $newAttributes->cEigenschaftWertName[$Sprache->cISO] = $attributeValue->cName;
 
             if ($Sprache->cStandard !== 'Y') {
-                $eigenschaft_spr = Shop::Container()->getDB()->select(
+                $eigenschaft_spr = $db->select(
                     'teigenschaftsprache',
                     'kEigenschaft',
                     (int)$newAttributes->kEigenschaft,
@@ -242,7 +243,7 @@ class WarenkorbPos
                 if (!empty($eigenschaft_spr->cName)) {
                     $newAttributes->cEigenschaftName[$Sprache->cISO] = $eigenschaft_spr->cName;
                 }
-                $eigenschaftwert_spr = Shop::Container()->getDB()->select(
+                $eigenschaftwert_spr = $db->select(
                     'teigenschaftwertsprache',
                     'kEigenschaftWert',
                     (int)$newAttributes->kEigenschaftWert,
@@ -255,7 +256,7 @@ class WarenkorbPos
             }
 
             if ($freifeld || strlen(trim($freifeld)) > 0) {
-                $newAttributes->cEigenschaftWertName[$Sprache->cISO] = Shop::Container()->getDB()->escape($freifeld);
+                $newAttributes->cEigenschaftWertName[$Sprache->cISO] = $db->escape($freifeld);
             }
         }
         $this->WarenkorbPosEigenschaftArr[] = $newAttributes;
@@ -329,8 +330,8 @@ class WarenkorbPos
         $weight = $this->Artikel->fGewicht * $this->nAnzahl;
 
         if ($this->kKonfigitem === 0 && !empty($this->cUnique)) {
-            foreach (\Session\Session::getCart()->PositionenArr as $pos) {
-                if ($pos->istKonfigKind() && $pos->cUnique === $this->cUnique) {
+            foreach (\Session\Frontend::getCart()->PositionenArr as $pos) {
+                if ($pos->cUnique === $this->cUnique && $pos->istKonfigKind()) {
                     $weight += $pos->fGesamtgewicht;
                 }
             }
@@ -360,7 +361,7 @@ class WarenkorbPos
         if (!is_array($_SESSION['Waehrungen'])) {
             return $this;
         }
-        foreach (\Session\Session::getCurrencies() as $currency) {
+        foreach (\Session\Frontend::getCurrencies() as $currency) {
             $currencyName = $currency->getName();
             // Standardartikel
             $this->cGesamtpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
@@ -406,7 +407,7 @@ class WarenkorbPos
                 $fPreisBrutto = 0;
                 $nVaterPos    = null;
                 /** @var WarenkorbPos $oPosition */
-                foreach (\Session\Session::getCart()->PositionenArr as $nPos => $oPosition) {
+                foreach (\Session\Frontend::getCart()->PositionenArr as $nPos => $oPosition) {
                     if ($this->cUnique === $oPosition->cUnique) {
                         $fPreisNetto  += $oPosition->fPreis * $oPosition->nAnzahl;
                         $fPreisBrutto += Tax::getGross(
@@ -421,7 +422,7 @@ class WarenkorbPos
                     }
                 }
                 if ($nVaterPos !== null) {
-                    $oVaterPos = \Session\Session::getCart()->PositionenArr[$nVaterPos];
+                    $oVaterPos = \Session\Frontend::getCart()->PositionenArr[$nVaterPos];
                     if (is_object($oVaterPos)) {
                         $this->nAnzahlEinzel = $this->isIgnoreMultiplier()
                             ? $this->nAnzahl

@@ -159,7 +159,8 @@ class CustomerFields
      */
     protected function updateCustomerFieldValues(int $kCustomerField, array $customerFieldValues): void
     {
-        Shop::Container()->getDB()->delete('tkundenfeldwert', 'kKundenfeld', $kCustomerField);
+        $db = Shop::Container()->getDB();
+        $db->delete('tkundenfeldwert', 'kKundenfeld', $kCustomerField);
 
         foreach ($customerFieldValues as $customerFieldValue) {
             $entitie              = new stdClass();
@@ -167,11 +168,11 @@ class CustomerFields
             $entitie->cWert       = $customerFieldValue['cWert'];
             $entitie->nSort       = (int)$customerFieldValue['nSort'];
 
-            Shop::Container()->getDB()->insert('tkundenfeldwert', $entitie);
+            $db->insert('tkundenfeldwert', $entitie);
         }
 
         // Delete all customer values that are not in value list
-        Shop::Container()->getDB()->executeQueryPrepared(
+        $db->executeQueryPrepared(
             "DELETE tkundenattribut
                     FROM tkundenattribut
                     INNER JOIN tkundenfeld ON tkundenfeld.kKundenfeld = tkundenattribut.kKundenfeld

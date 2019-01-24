@@ -104,12 +104,12 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
         $ins = Shop::Container()->getDB()->insert('textensionpoint', $oExtension);
         if ($kImageMap && $ins > 0) {
             $cAction  = 'view';
-            $cHinweis = 'Banner wurde erfolgreich gespeichert.';
+            $cHinweis = __('successSave');
         } else {
-            $cFehler = 'Banner konnte nicht angelegt werden.';
+            $cFehler = __('errorSave');
         }
     } else {
-        $cFehler = 'Bitte füllen Sie alle Pflichtfelder die mit einem * marktiert sind aus';
+        $cFehler = __('errorFillRequired');
         $smarty->assign('cPlausi_arr', $cPlausi_arr)
                ->assign('cName', $_POST['cName'] ?? null)
                ->assign('vDatum', $_POST['vDatum'] ?? null)
@@ -129,7 +129,7 @@ switch ($cAction) {
     case 'area':
         $oBanner = holeBanner((int)$_POST['id'], false);
         if (!is_object($oBanner)) {
-            $cFehler = 'Banner wurde nicht gefunden';
+            $cFehler = __('errrorBannerNotFound');
             $cAction = 'view';
             break;
         }
@@ -150,7 +150,7 @@ switch ($cAction) {
                ->assign('oBanner', $oBanner);
 
         if (!is_object($oBanner)) {
-            $cFehler = 'Banner wurde nicht gefunden.';
+            $cFehler = __('errrorBannerNotFound');
             $cAction = 'view';
         }
         break;
@@ -166,9 +166,9 @@ switch ($cAction) {
 
     case 'delete':
         if (entferneBanner((int)$_POST['id'])) {
-            $cHinweis = 'Erfolgreich entfernt.';
+            $cHinweis = __('successDeleted');
         } else {
-            $cFehler = 'Banner konnte nicht entfernt werden.';
+            $cFehler = __('errorDeleted');
         }
         break;
 

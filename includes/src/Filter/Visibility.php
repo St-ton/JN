@@ -9,7 +9,7 @@ namespace Filter;
 use MyCLabs\Enum\Enum;
 
 /**
- * Class ComponentPropertyType
+ * Class Visibility
  *
  * @package Filter
  * @method static Visibility SHOW_NEVER()

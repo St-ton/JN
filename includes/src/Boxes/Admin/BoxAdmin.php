@@ -108,15 +108,11 @@ final class BoxAdmin
 
         return \count($affectedBoxes) > 0
             && $this->db->query(
-                'DELETE 
+                'DELETE tboxen, tboxensichtbar, tboxsprache
                     FROM tboxen
-                    WHERE kBox IN (' . \implode(',', $affectedBoxes) . ')',
-                ReturnType::AFFECTED_ROWS
-            ) > 0
-            && $this->db->query(
-                'DELETE 
-                    FROM tboxensichtbar
-                    WHERE kBox IN (' . \implode(',', $affectedBoxes) . ')',
+                    LEFT JOIN tboxensichtbar USING (kBox)
+                    LEFT JOIN tboxsprache USING (kBox)
+                    WHERE tboxen.kBox IN (' . \implode(',', $affectedBoxes) . ')',
                 ReturnType::AFFECTED_ROWS
             ) > 0;
     }
@@ -169,7 +165,7 @@ final class BoxAdmin
     public function getContent(int $boxID, string $isoCode = '')
     {
 
-        return \strlen($isoCode) > 0
+        return $isoCode !== ''
             ? $this->db->select('tboxsprache', 'kBox', $boxID, 'cISO', $isoCode)
             : $this->db->selectAll('tboxsprache', 'kBox', $boxID);
     }
@@ -191,7 +187,8 @@ final class BoxAdmin
             ReturnType::SINGLE_OBJECT
         );
 
-        $oBox->oSprache_arr      = ($oBox && ($oBox->eTyp === Type::TEXT || $oBox->eTyp === Type::CATBOX))
+        $oBox->oSprache_arr      = ($oBox && ($oBox->eTyp === Type::TEXT || $oBox->eTyp === Type::CATBOX
+                || $oBox->eTyp === Type::LINK))
             ? $this->getContent($boxID)
             : [];
         $oBox->kBox              = (int)$oBox->kBox;
@@ -441,42 +438,42 @@ final class BoxAdmin
     public function getTemplates(int $pageID = -1): array
     {
         $templates    = [];
-        $cSQL         = $pageID >= 0
+        $sql         = $pageID >= 0
             ? 'WHERE (cVerfuegbar = "' . $pageID . '" OR cVerfuegbar = "0")'
             : '';
-        $oVorlage_arr = $this->db->query(
+        $data = $this->db->query(
             'SELECT * 
-                FROM tboxvorlage ' . $cSQL . ' 
+                FROM tboxvorlage ' . $sql . ' 
                 ORDER BY cVerfuegbar ASC',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($oVorlage_arr as $oVorlage) {
-            $nID   = 0;
-            $cName = 'Vorlage';
-            if ($oVorlage->eTyp === Type::TEXT) {
-                $nID   = 1;
-                $cName = 'Inhalt';
-            } elseif ($oVorlage->eTyp === Type::LINK) {
-                $nID   = 2;
-                $cName = 'Linkliste';
-            } elseif ($oVorlage->eTyp === Type::PLUGIN) {
-                $nID   = 3;
-                $cName = 'Plugin';
-            } elseif ($oVorlage->eTyp === Type::CATBOX) {
-                $nID   = 4;
-                $cName = 'Kategorie';
-            } elseif ($oVorlage->eTyp === Type::EXTENSION) {
-                $nID   = 5;
-                $cName = 'Extension';
+        foreach ($data as $template) {
+            $id   = 0;
+            $name = 'Vorlage';
+            if ($template->eTyp === Type::TEXT) {
+                $id   = 1;
+                $name = 'Inhalt';
+            } elseif ($template->eTyp === Type::LINK) {
+                $id   = 2;
+                $name = 'Linkliste';
+            } elseif ($template->eTyp === Type::PLUGIN) {
+                $id   = 3;
+                $name = 'Plugin';
+            } elseif ($template->eTyp === Type::CATBOX) {
+                $id   = 4;
+                $name = 'Kategorie';
+            } elseif ($template->eTyp === Type::EXTENSION) {
+                $id   = 5;
+                $name = 'Extension';
             }
 
-            if (!isset($templates[$nID])) {
-                $templates[$nID]               = new \stdClass();
-                $templates[$nID]->oVorlage_arr = [];
+            if (!isset($templates[$id])) {
+                $templates[$id]               = new \stdClass();
+                $templates[$id]->oVorlage_arr = [];
             }
 
-            $templates[$nID]->cName          = $cName;
-            $templates[$nID]->oVorlage_arr[] = $oVorlage;
+            $templates[$id]->cName          = $name;
+            $templates[$id]->oVorlage_arr[] = $template;
         }
 
         return $templates;
@@ -493,15 +490,15 @@ final class BoxAdmin
         if ($this->visibility !== null) {
             return $this->visibility;
         }
-        $oBoxAnzeige = [];
-        $oBox_arr    = $this->db->selectAll('tboxenanzeige', 'nSeite', $pageID);
-        if (\count($oBox_arr) > 0) {
-            foreach ($oBox_arr as $oBox) {
-                $oBoxAnzeige[$oBox->ePosition] = (bool)$oBox->bAnzeigen;
+        $visibility = [];
+        $data       = $this->db->selectAll('tboxenanzeige', 'nSeite', $pageID);
+        if (\count($data) > 0) {
+            foreach ($data as $box) {
+                $visibility[$box->ePosition] = (bool)$box->bAnzeigen;
             }
-            $this->visibility = $oBoxAnzeige;
+            $this->visibility = $visibility;
 
-            return $oBoxAnzeige;
+            return $visibility;
         }
 
         return $pageID !== 0 && $global

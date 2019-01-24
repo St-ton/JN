@@ -23,9 +23,19 @@ $ef = new Exportformat($queue->kExportformat, $db);
 if (!$ef->isOK()) {
     die('2');
 }
+$queue->jobQueueID    = $queue->kExportqueue;
+$queue->cronID        = 0;
+$queue->foreignKeyID  = 0;
+$queue->taskLimit     = $queue->nLimit_m;
+$queue->tasksExecuted = $queue->nLimit_n;
+$queue->lastProductID = $queue->nLastArticleID;
+$queue->jobType       = 'exportformat';
+$queue->tableName     = null;
+$queue->foreignKey    = 'kExportformat';
+$queue->foreignKeyID  = $queue->kExportformat;
 
 $ef->startExport(
-    $queue,
+    new \Cron\QueueEntry($queue),
     isset($_GET['ajax']),
     isset($_GET['back']) && $_GET['back'] === 'admin',
     false,

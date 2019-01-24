@@ -64,23 +64,23 @@ function checkNewsletterSend() {ldelim}
                             <select id="kKundengruppe" name="kKundengruppe[]" multiple="multiple" class="form-control {if isset($cPlausiValue_arr.kKundengruppe_arr)}fieldfillout{else}combo{/if}">
                                 <option value="0"
                                         {if isset($kKundengruppe_arr)}
-                                            {foreach name=kkundengruppen from=$kKundengruppe_arr item=kKundengruppe}
-                                                {if $kKundengruppe == "0"}selected{/if}
+                                            {foreach $kKundengruppe_arr as $kKundengruppe}
+                                                {if $kKundengruppe == '0'}selected{/if}
                                             {/foreach}
                                         {elseif isset($cPostVar_arr.kKundengruppe)}
-                                            {foreach name=kkundengruppen from=$cPostVar_arr.kKundengruppe item=kKundengruppe}
-                                                {if $kKundengruppe == "0"}selected{/if}
+                                            {foreach $cPostVar_arr.kKundengruppe as $kKundengruppe}
+                                                {if $kKundengruppe == '0'}selected{/if}
                                             {/foreach}
                                         {/if}
-                                        >Newsletterempf&auml;nger ohne Kundenkonto</option>
-                                {foreach name=kundengruppen from=$oKundengruppe_arr item=oKundengruppe}
+                                        >Newsletterempfänger ohne Kundenkonto</option>
+                                {foreach $oKundengruppe_arr as $oKundengruppe}
                                     <option value="{$oKundengruppe->kKundengruppe}"
                                             {if isset($kKundengruppe_arr)}
-                                                {foreach name=kkundengruppen from=$kKundengruppe_arr item=kKundengruppe}
+                                                {foreach $kKundengruppe_arr as $kKundengruppe}
                                                     {if $oKundengruppe->kKundengruppe == $kKundengruppe}selected{/if}
                                                 {/foreach}
                                             {elseif isset($cPostVar_arr.kKundengruppe)}
-                                                {foreach name=kkundengruppen from=$cPostVar_arr.kKundengruppe item=kKundengruppe}
+                                                {foreach $cPostVar_arr.kKundengruppe as $kKundengruppe}
                                                     {if $oKundengruppe->kKundengruppe == $kKundengruppe}selected{/if}
                                                 {/foreach}
                                             {/if}
@@ -109,9 +109,9 @@ function checkNewsletterSend() {ldelim}
                             <select name="dTag" class="form-control combo" style="width:100%;">
                                 {section name=dTag start=1 loop=32 step=1}
                                     {if $smarty.section.dTag.index < 10}
-                                        <option value="0{$smarty.section.dTag.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[0] == $smarty.section.dTag.index} selected{/if}{else}{if $smarty.now|date_format:"%d" == $smarty.section.dTag.index} selected{/if}{/if}>0{$smarty.section.dTag.index}</option>
+                                        <option value="0{$smarty.section.dTag.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[0] == $smarty.section.dTag.index} selected{/if}{else}{if $smarty.now|date_format:'%d' == $smarty.section.dTag.index} selected{/if}{/if}>0{$smarty.section.dTag.index}</option>
                                     {else}
-                                        <option value="{$smarty.section.dTag.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[0] == $smarty.section.dTag.index} selected{/if}{else}{if $smarty.now|date_format:"%d" == $smarty.section.dTag.index} selected{/if}{/if}>{$smarty.section.dTag.index}</option>
+                                        <option value="{$smarty.section.dTag.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[0] == $smarty.section.dTag.index} selected{/if}{else}{if $smarty.now|date_format:'%d' == $smarty.section.dTag.index} selected{/if}{/if}>{$smarty.section.dTag.index}</option>
                                     {/if}
                                 {/section}
                             </select>
@@ -120,18 +120,18 @@ function checkNewsletterSend() {ldelim}
                             <select name="dMonat" class="form-control combo" style="width:100%;">
                                 {section name=dMonat start=1 loop=13 step=1}
                                     {if $smarty.section.dMonat.index < 10}
-                                        <option value="0{$smarty.section.dMonat.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[1] == $smarty.section.dMonat.index} selected{/if}{else}{if $smarty.now|date_format:"%m" == $smarty.section.dMonat.index} selected{/if}{/if}>0{$smarty.section.dMonat.index}</option>
+                                        <option value="0{$smarty.section.dMonat.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[1] == $smarty.section.dMonat.index} selected{/if}{else}{if $smarty.now|date_format:'%m' == $smarty.section.dMonat.index} selected{/if}{/if}>0{$smarty.section.dMonat.index}</option>
                                     {else}
-                                        <option value="{$smarty.section.dMonat.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[1] == $smarty.section.dMonat.index} selected{/if}{else}{if $smarty.now|date_format:"%m" == $smarty.section.dMonat.index} selected{/if}{/if}>{$smarty.section.dMonat.index}</option>
+                                        <option value="{$smarty.section.dMonat.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[1] == $smarty.section.dMonat.index} selected{/if}{else}{if $smarty.now|date_format:'%m' == $smarty.section.dMonat.index} selected{/if}{/if}>{$smarty.section.dMonat.index}</option>
                                     {/if}
                                 {/section}
                             </select>
                         </span>
                         <span class="input-group-wrap">
                             <select name="dJahr" class="form-control combo" style="width:100%;">
-                                {$Y = $smarty.now|date_format:"%Y"}
+                                {$Y = $smarty.now|date_format:'%Y'}
                                 {section name=dJahr start=$Y loop=($Y+2) step=1}
-                                    <option value="{$smarty.section.dJahr.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[2] == $smarty.section.dJahr.index} selected{/if}{else}{if $smarty.now|date_format:"%Y" == $smarty.section.dJahr.index} selected{/if}{/if}>{$smarty.section.dJahr.index}</option>
+                                    <option value="{$smarty.section.dJahr.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[2] == $smarty.section.dJahr.index} selected{/if}{else}{if $smarty.now|date_format:'%Y' == $smarty.section.dJahr.index} selected{/if}{/if}>{$smarty.section.dJahr.index}</option>
                                 {/section}
                             </select>
                         </span>
@@ -139,9 +139,9 @@ function checkNewsletterSend() {ldelim}
                             <select name="dStunde" class="form-control combo" style="width:100%;">
                                 {section name=dStunde start=0 loop=24 step=1}
                                     {if $smarty.section.dStunde.index < 10}
-                                        <option value="0{$smarty.section.dStunde.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[3] == $smarty.section.dStunde.index} selected{/if}{else}{if $smarty.now|date_format:"%H" == $smarty.section.dStunde.index} selected{/if}{/if}>0{$smarty.section.dStunde.index}</option>
+                                        <option value="0{$smarty.section.dStunde.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[3] == $smarty.section.dStunde.index} selected{/if}{else}{if $smarty.now|date_format:'%H' == $smarty.section.dStunde.index} selected{/if}{/if}>0{$smarty.section.dStunde.index}</option>
                                     {else}
-                                        <option value="{$smarty.section.dStunde.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[3] == $smarty.section.dStunde.index} selected{/if}{else}{if $smarty.now|date_format:"%H" == $smarty.section.dStunde.index} selected{/if}{/if}>{$smarty.section.dStunde.index}</option>
+                                        <option value="{$smarty.section.dStunde.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[3] == $smarty.section.dStunde.index} selected{/if}{else}{if $smarty.now|date_format:'%H' == $smarty.section.dStunde.index} selected{/if}{/if}>{$smarty.section.dStunde.index}</option>
                                     {/if}
                                 {/section}
                             </select>
@@ -150,9 +150,9 @@ function checkNewsletterSend() {ldelim}
                             <select name="dMinute" class="form-control combo" style="width:100%;">
                                 {section name=dMinute start=0 loop=60 step=1}
                                     {if $smarty.section.dMinute.index < 10}
-                                        <option value="0{$smarty.section.dMinute.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[4] == $smarty.section.dMinute.index} selected{/if}{else}{if $smarty.now|date_format:"%M" == $smarty.section.dMinute.index} selected{/if}{/if}>0{$smarty.section.dMinute.index}</option>
+                                        <option value="0{$smarty.section.dMinute.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[4] == $smarty.section.dMinute.index} selected{/if}{else}{if $smarty.now|date_format:'%M' == $smarty.section.dMinute.index} selected{/if}{/if}>0{$smarty.section.dMinute.index}</option>
                                     {else}
-                                        <option value="{$smarty.section.dMinute.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[4] == $smarty.section.dMinute.index} selected{/if}{else}{if $smarty.now|date_format:"%M" == $smarty.section.dMinute.index} selected{/if}{/if}>{$smarty.section.dMinute.index}</option>
+                                        <option value="{$smarty.section.dMinute.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[4] == $smarty.section.dMinute.index} selected{/if}{else}{if $smarty.now|date_format:'%M' == $smarty.section.dMinute.index} selected{/if}{/if}>{$smarty.section.dMinute.index}</option>
                                     {/if}
                                 {/section}
                             </select>
@@ -166,7 +166,7 @@ function checkNewsletterSend() {ldelim}
                         <span class="input-group-wrap">
                             <select class="form-control " id="kKampagne" name="kKampagne">
                                 <option value="0"></option>
-                                {foreach name="Kampagnen" from=$oKampagne_arr item=oKampagne}
+                                {foreach $oKampagne_arr as $oKampagne}
                                     <option value="{$oKampagne->kKampagne}"{if isset($oNewsletterVorlage->kKampagne) && $oKampagne->kKampagne == $oNewsletterVorlage->kKampagne || (isset($cPostVar_arr.kKampagne) && isset($oKampagne->kKampagne) && $cPostVar_arr.kKampagne == $oKampagne->kKampagne)} selected{/if}>{$oKampagne->cName}</option>
                                 {/foreach}
                             </select>
@@ -174,7 +174,7 @@ function checkNewsletterSend() {ldelim}
                     </div>
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='articlePicker'
-                        modalTitle='Artikel ausw&auml;hlen'
+                        modalTitle='Artikel auswählen'
                         searchInputLabel='Suche nach Artikelnamen'
                     }
                     <script>
@@ -215,7 +215,7 @@ function checkNewsletterSend() {ldelim}
                     </div>
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='manufacturerPicker'
-                        modalTitle='Hersteller ausw&auml;hlen'
+                        modalTitle='Hersteller auswählen'
                         searchInputLabel='Suche nach Herstellernamen'
                     }
                     <script>
@@ -256,7 +256,7 @@ function checkNewsletterSend() {ldelim}
                     </div>
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='categoryPicker'
-                        modalTitle='Kategorien ausw&auml;hlen'
+                        modalTitle='Kategorien auswählen'
                         searchInputLabel='Suche nach Kategorienamen'
                     }
                     <script>

@@ -15,12 +15,12 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
  */
 function create_NewsletterCode($dbfeld, $email): string
 {
-    $CodeNeu = md5($email . time() . rand(123, 456));
-    while (!unique_NewsletterCode($dbfeld, $CodeNeu)) {
-        $CodeNeu = md5($email . time() . rand(123, 456));
+    $code = md5($email . time() . rand(123, 456));
+    while (!unique_NewsletterCode($dbfeld, $code)) {
+        $code = md5($email . time() . rand(123, 456));
     }
 
-    return $CodeNeu;
+    return $code;
 }
 
 /**
@@ -36,152 +36,129 @@ function unique_NewsletterCode($dbfeld, $code): bool
 }
 
 /**
- * @param Kunde|stdClass $oKunde
- * @param bool  $bPruefeDaten
+ * @param Kunde|stdClass $customer
+ * @param bool           $validate
  * @return stdClass
  */
-function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false): stdClass
+function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
 {
     global $cFehler, $cHinweis;
 
-    $Einstellungen              = Shop::getSettings([CONF_NEWSLETTER]);
-    $oPlausi                    = new stdClass();
-    $oPlausi->nPlausi_arr       = [];
-    $oNewsletterEmpfaengerKunde = null;
-
-    if (!$bPruefeDaten || StringHandler::filterEmailAddress($oKunde->cEmail) !== false) {
-        $oPlausi->nPlausi_arr = newsletterAnmeldungPlausi();
-        $kKundengruppe        = \Session\Session::getCustomerGroup()->getID();
-        $oCheckBox            = new CheckBox();
-        $oPlausi->nPlausi_arr = array_merge(
-            $oPlausi->nPlausi_arr,
-            $oCheckBox->validateCheckBox(CHECKBOX_ORT_NEWSLETTERANMELDUNG, $kKundengruppe, $_POST, true)
+    $conf                = Shop::getSettings([CONF_NEWSLETTER]);
+    $plausi              = new stdClass();
+    $plausi->nPlausi_arr = [];
+    $nlCustomer          = null;
+    if (!$validate || StringHandler::filterEmailAddress($customer->cEmail) !== false) {
+        $plausi->nPlausi_arr = newsletterAnmeldungPlausi();
+        $kKundengruppe       = \Session\Frontend::getCustomerGroup()->getID();
+        $checkBox            = new CheckBox();
+        $plausi->nPlausi_arr = array_merge(
+            $plausi->nPlausi_arr,
+            $checkBox->validateCheckBox(CHECKBOX_ORT_NEWSLETTERANMELDUNG, $kKundengruppe, $_POST, true)
         );
 
-        $oPlausi->cPost_arr['cAnrede']   = $oKunde->cAnrede;
-        $oPlausi->cPost_arr['cVorname']  = $oKunde->cVorname;
-        $oPlausi->cPost_arr['cNachname'] = $oKunde->cNachname;
-        $oPlausi->cPost_arr['cEmail']    = $oKunde->cEmail;
-        $oPlausi->cPost_arr['captcha']   = isset($_POST['captcha'])
+        $plausi->cPost_arr['cAnrede']   = $customer->cAnrede;
+        $plausi->cPost_arr['cVorname']  = $customer->cVorname;
+        $plausi->cPost_arr['cNachname'] = $customer->cNachname;
+        $plausi->cPost_arr['cEmail']    = $customer->cEmail;
+        $plausi->cPost_arr['captcha']   = isset($_POST['captcha'])
             ? StringHandler::htmlentities(StringHandler::filterXSS($_POST['captcha']))
             : null;
-        if (!$bPruefeDaten || count($oPlausi->nPlausi_arr) === 0) {
-            // Pruefen ob Email bereits vorhanden
-            $oNewsletterEmpfaenger = Shop::Container()->getDB()->select(
+        if (!$validate || count($plausi->nPlausi_arr) === 0) {
+            $recipient = Shop::Container()->getDB()->select(
                 'tnewsletterempfaenger',
                 'cEmail',
-                $oKunde->cEmail
+                $customer->cEmail
             );
-            if (!empty($oNewsletterEmpfaenger->dEingetragen)) {
-                $oNewsletterEmpfaenger->Datum =
-                    (new DateTime($oNewsletterEmpfaenger->dEingetragen))->format('d.m.Y H:i');
+            if (!empty($recipient->dEingetragen)) {
+                $recipient->Datum = (new DateTime($recipient->dEingetragen))->format('d.m.Y H:i');
             }
             // Pruefen ob Kunde bereits eingetragen
             if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-                $oNewsletterEmpfaengerKunde = Shop::Container()->getDB()->select(
+                $nlCustomer = Shop::Container()->getDB()->select(
                     'tnewsletterempfaenger',
                     'kKunde',
                     (int)$_SESSION['Kunde']->kKunde
                 );
             }
-            if ((isset($oNewsletterEmpfaenger->cEmail) && strlen($oNewsletterEmpfaenger->cEmail) > 0)
-                || (isset($oNewsletterEmpfaengerKunde->kKunde) && $oNewsletterEmpfaengerKunde->kKunde > 0)
+            if ((isset($recipient->cEmail) && strlen($recipient->cEmail) > 0)
+                || (isset($nlCustomer->kKunde) && $nlCustomer->kKunde > 0)
             ) {
                 $cFehler = Shop::Lang()->get('newsletterExists', 'errorMessages');
             } else {
-                // CheckBox Spezialfunktion ausführen
-                $oCheckBox->triggerSpecialFunction(
+                $checkBox->triggerSpecialFunction(
                     CHECKBOX_ORT_NEWSLETTERANMELDUNG,
                     $kKundengruppe,
                     true,
                     $_POST,
-                    ['oKunde' => $oKunde]
+                    ['oKunde' => $customer]
                 );
-                $oCheckBox->checkLogging(CHECKBOX_ORT_NEWSLETTERANMELDUNG, $kKundengruppe, $_POST, true);
-
-                unset($oNewsletterEmpfaenger);
-
-                // Neuen Newsletterempfaenger hinzufuegen
-                $oNewsletterEmpfaenger           = new stdClass();
-                $oNewsletterEmpfaenger->kSprache = Shop::getLanguage();
-                $oNewsletterEmpfaenger->kKunde   = isset($_SESSION['Kunde']->kKunde)
+                $checkBox->checkLogging(CHECKBOX_ORT_NEWSLETTERANMELDUNG, $kKundengruppe, $_POST, true);
+                unset($recipient);
+                $recipient                     = new stdClass();
+                $recipient->kSprache           = Shop::getLanguage();
+                $recipient->kKunde             = isset($_SESSION['Kunde']->kKunde)
                     ? (int)$_SESSION['Kunde']->kKunde
                     : 0;
-                $oNewsletterEmpfaenger->nAktiv   = 0;
-                // Double OPT nur für unregistrierte? --> Kunden brauchen nichts bestaetigen
-                if (isset($_SESSION['Kunde']->kKunde)
+                $recipient->nAktiv             = isset($_SESSION['Kunde']->kKunde)
                     && $_SESSION['Kunde']->kKunde > 0
-                    && $Einstellungen['newsletter']['newsletter_doubleopt'] === 'U'
-                ) {
-                    $oNewsletterEmpfaenger->nAktiv = 1;
-                }
-                $oNewsletterEmpfaenger->cAnrede   = $oKunde->cAnrede;
-                $oNewsletterEmpfaenger->cVorname  = $oKunde->cVorname;
-                $oNewsletterEmpfaenger->cNachname = $oKunde->cNachname;
-                $oNewsletterEmpfaenger->cEmail    = $oKunde->cEmail;
-                // OptCode erstellen und ueberpruefen
-                // Werte für $dbfeld 'cOptCode','cLoeschCode'
-
-                $oNewsletterEmpfaenger->cOptCode           = create_NewsletterCode('cOptCode', $oKunde->cEmail);
-                $oNewsletterEmpfaenger->cLoeschCode        = create_NewsletterCode('cLoeschCode', $oKunde->cEmail);
-                $oNewsletterEmpfaenger->dEingetragen       = 'NOW()';
-                $oNewsletterEmpfaenger->dLetzterNewsletter = '_DBNULL_';
+                    && $conf['newsletter']['newsletter_doubleopt'] === 'U' ? 1 : 0;
+                $recipient->cAnrede            = $customer->cAnrede;
+                $recipient->cVorname           = $customer->cVorname;
+                $recipient->cNachname          = $customer->cNachname;
+                $recipient->cEmail             = $customer->cEmail;
+                $recipient->cOptCode           = create_NewsletterCode('cOptCode', $customer->cEmail);
+                $recipient->cLoeschCode        = create_NewsletterCode('cLoeschCode', $customer->cEmail);
+                $recipient->dEingetragen       = 'NOW()';
+                $recipient->dLetzterNewsletter = '_DBNULL_';
 
                 executeHook(HOOK_NEWSLETTER_PAGE_EMPFAENGEREINTRAGEN, [
-                    'oNewsletterEmpfaenger' => $oNewsletterEmpfaenger
+                    'oNewsletterEmpfaenger' => $recipient
                 ]);
 
-                Shop::Container()->getDB()->insert('tnewsletterempfaenger', $oNewsletterEmpfaenger);
+                Shop::Container()->getDB()->insert('tnewsletterempfaenger', $recipient);
                 $history               = new stdClass();
                 $history->kSprache     = Shop::getLanguage();
-                $history->kKunde       = isset($_SESSION['Kunde']->kKunde)
-                    ? (int)$_SESSION['Kunde']->kKunde
-                    : 0;
-                $history->cAnrede      = $oKunde->cAnrede;
-                $history->cVorname     = $oKunde->cVorname;
-                $history->cNachname    = $oKunde->cNachname;
-                $history->cEmail       = $oKunde->cEmail;
-                $history->cOptCode     = $oNewsletterEmpfaenger->cOptCode;
-                $history->cLoeschCode  = $oNewsletterEmpfaenger->cLoeschCode;
+                $history->kKunde       = (int)($_SESSION['Kunde']->kKunde ?? 0);
+                $history->cAnrede      = $customer->cAnrede;
+                $history->cVorname     = $customer->cVorname;
+                $history->cNachname    = $customer->cNachname;
+                $history->cEmail       = $customer->cEmail;
+                $history->cOptCode     = $recipient->cOptCode;
+                $history->cLoeschCode  = $recipient->cLoeschCode;
                 $history->cAktion      = 'Eingetragen';
                 $history->dEingetragen = 'NOW()';
                 $history->dAusgetragen = '_DBNULL_';
                 $history->dOptCode     = '_DBNULL_';
-                $history->cRegIp       = $oKunde->cRegIp;
+                $history->cRegIp       = $customer->cRegIp;
 
-                $kNewsletterEmpfaengerHistory = Shop::Container()->getDB()->insert(
+                $historyID = Shop::Container()->getDB()->insert(
                     'tnewsletterempfaengerhistory',
                     $history
                 );
-
                 executeHook(HOOK_NEWSLETTER_PAGE_HISTORYEMPFAENGEREINTRAGEN, [
                     'oNewsletterEmpfaengerHistory' => $history
                 ]);
-
-                if (($Einstellungen['newsletter']['newsletter_doubleopt'] === 'U'
-                        && !$_SESSION['Kunde']->kKunde)
-                    || $Einstellungen['newsletter']['newsletter_doubleopt'] === 'A'
+                if (($conf['newsletter']['newsletter_doubleopt'] === 'U' && empty($_SESSION['Kunde']->kKunde))
+                    || $conf['newsletter']['newsletter_doubleopt'] === 'A'
                 ) {
-                    $oNewsletterEmpfaenger->cLoeschURL     = Shop::getURL() .
-                        '/newsletter.php?lang=' . $_SESSION['cISOSprache'] . '&lc=' .
-                        $oNewsletterEmpfaenger->cLoeschCode;
-                    $oNewsletterEmpfaenger->cFreischaltURL = Shop::getURL() .
-                        '/newsletter.php?lang=' . $_SESSION['cISOSprache'] . '&fc=' .
-                        $oNewsletterEmpfaenger->cOptCode;
-                    $oObjekt                               = new stdClass();
-                    $oObjekt->tkunde                       = $_SESSION['Kunde'] ?? null;
-                    $oObjekt->NewsletterEmpfaenger         = $oNewsletterEmpfaenger;
+                    $recipient->cLoeschURL         = Shop::getURL() . '/newsletter.php?lang=' .
+                        $_SESSION['cISOSprache'] . '&lc=' . $recipient->cLoeschCode;
+                    $recipient->cFreischaltURL     = Shop::getURL() . '/newsletter.php?lang=' .
+                        $_SESSION['cISOSprache'] . '&fc=' . $recipient->cOptCode;
+                    $oObjekt                       = new stdClass();
+                    $oObjekt->tkunde               = $_SESSION['Kunde'] ?? null;
+                    $oObjekt->NewsletterEmpfaenger = $recipient;
 
                     $mail = sendeMail(MAILTEMPLATE_NEWSLETTERANMELDEN, $oObjekt);
                     Shop::Container()->getDB()->update(
                         'tnewsletterempfaengerhistory',
                         'kNewsletterEmpfaengerHistory',
-                        $kNewsletterEmpfaengerHistory,
+                        $historyID,
                         (object)['cEmailBodyHtml' => $mail->bodyHtml]
                     );
-
                     $cHinweis = Shop::Lang()->get('newsletterAdd', 'messages');
-                    $oPlausi  = new stdClass();
+                    $plausi   = new stdClass();
                 } else {
                     $cHinweis = Shop::Lang()->get('newsletterNomailAdd', 'messages');
                 }
@@ -191,7 +168,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false): stdClass
         $cFehler = Shop::Lang()->get('newsletterWrongemail', 'errorMessages');
     }
 
-    return $oPlausi;
+    return $plausi;
 }
 
 /**
@@ -200,9 +177,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false): stdClass
 function newsletterAnmeldungPlausi(): array
 {
     $res = [];
-    if (Shop::getConfigValue(CONF_NEWSLETTER, 'newsletter_sicherheitscode') !== 'N'
-        && !Form::validateCaptcha($_POST)
-    ) {
+    if (Shop::getConfigValue(CONF_NEWSLETTER, 'newsletter_sicherheitscode') !== 'N' && !Form::validateCaptcha($_POST)) {
         $res['captcha'] = 2;
     }
 
@@ -215,34 +190,32 @@ function newsletterAnmeldungPlausi(): array
  */
 function pruefeObBereitsAbonnent(int $kKunde): bool
 {
-    if ($kKunde > 0) {
-        $oNewsletterEmpfaenger = Shop::Container()->getDB()->select('tnewsletterempfaenger', 'kKunde', $kKunde);
-
-        return isset($oNewsletterEmpfaenger->kKunde) && $oNewsletterEmpfaenger->kKunde > 0;
+    if ($kKunde <= 0) {
+        return false;
     }
+    $recipient = Shop::Container()->getDB()->select('tnewsletterempfaenger', 'kKunde', $kKunde);
 
-    return false;
+    return isset($recipient->kKunde) && $recipient->kKunde > 0;
 }
 
 /**
- * @param int    $kKundengruppe
- * @param string $cKundengruppeKey
+ * @param int    $groupID
+ * @param string $groupKeys
  * @return bool
  */
-function pruefeNLHistoryKundengruppe(int $kKundengruppe, $cKundengruppeKey): bool
+function pruefeNLHistoryKundengruppe(int $groupID, $groupKeys): bool
 {
-    if (strlen($cKundengruppeKey) > 0) {
-        $kKundengruppe_arr    = [];
-        $cKundengruppeKey_arr = explode(';', $cKundengruppeKey);
-        foreach ($cKundengruppeKey_arr as $_cKundengruppeKey) {
-            if ((int)$_cKundengruppeKey > 0 || (strlen($_cKundengruppeKey) > 0 && (int)$_cKundengruppeKey === 0)) {
-                $kKundengruppe_arr[] = (int)$_cKundengruppeKey;
+    if (strlen($groupKeys) > 0) {
+        $groupIDs = [];
+        foreach (explode(';', $groupKeys) as $id) {
+            if ((int)$id > 0 || (strlen($id) > 0 && (int)$id === 0)) {
+                $groupIDs[] = (int)$id;
             }
         }
-        if (in_array(0, $kKundengruppe_arr, true)) {
+        if (in_array(0, $groupIDs, true)) {
             return true;
         }
-        if ($kKundengruppe > 0 && in_array($kKundengruppe, $kKundengruppe_arr, true)) {
+        if ($groupID > 0 && in_array($groupID, $groupIDs, true)) {
             return true;
         }
     }

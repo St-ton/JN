@@ -26,7 +26,6 @@ use Plugin\Admin\Validation\Items\NoUninstaller;
 use Plugin\Admin\Validation\Items\PaymentMethods;
 use Plugin\Admin\Validation\Items\PluginID;
 use Plugin\Admin\Validation\Items\Portlets;
-use Plugin\Admin\Validation\Items\Uninstaller;
 use Plugin\Admin\Validation\Items\WidgetsExtension;
 use Plugin\Admin\Validation\Items\XMLVersion;
 

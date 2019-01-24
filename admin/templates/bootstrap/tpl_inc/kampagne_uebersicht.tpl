@@ -31,7 +31,7 @@
                                 <th class="th-6"></th>
                             </tr>
 
-                            {foreach name="kampagnen" from=$oKampagne_arr item=oKampagne}
+                            {foreach $oKampagne_arr as $oKampagne}
                                 {if isset($oKampagne->kKampagne) && $oKampagne->kKampagne < 1000}
                                     <tr>
                                         <td>
@@ -81,7 +81,7 @@
                                     <th class="th-6"></th>
                                 </tr>
 
-                                {foreach name="kampagnen" from=$oKampagne_arr item=oKampagne}
+                                {foreach $oKampagne_arr as $oKampagne}
                                     {if $oKampagne->kKampagne >= 1000}
                                         <tr>
                                             <td class="check">
@@ -158,7 +158,7 @@
                             <thead>
                                 <tr>
                                     <th class="th-1"></th>
-                                    {foreach name="kampagnendefs" from=$oKampagneDef_arr item=oKampagneDef}
+                                    {foreach $oKampagneDef_arr as $oKampagneDef}
                                         <th class="th-2">
                                             <a href="kampagne.php?tab=globalestats&nSort={$oKampagneDef->kKampagneDef}&token={$smarty.session.jtl_token}">{$oKampagneDef->cName}</a>
                                             {if $oKampagneDef->cName === 'Angeschaute Newsletter'}
@@ -174,13 +174,13 @@
                                 </tr>
                             </thead>
 
-                            {foreach name="kampagnenstats" from=$oKampagneStat_arr key=kKampagne item=oKampagneStatDef_arr}
-                                {if $kKampagne != "Gesamt"}
+                            {foreach name='kampagnenstats' from=$oKampagneStat_arr key=kKampagne item=oKampagneStatDef_arr}
+                                {if $kKampagne !== 'Gesamt'}
                                     <tr>
                                         <td>
                                             <a href="kampagne.php?detail=1&kKampagne={$oKampagne_arr[$kKampagne]->kKampagne}&cZeitParam={$cZeitraumParam}&token={$smarty.session.jtl_token}">{$oKampagne_arr[$kKampagne]->cName}</a>
                                         </td>
-                                        {foreach name="kampagnendefs" from=$oKampagneStatDef_arr key=kKampagneDef item=oKampagneStatDef}
+                                        {foreach name='kampagnendefs' from=$oKampagneStatDef_arr key=kKampagneDef item=oKampagneStatDef}
                                             <td>
                                                 <a href="kampagne.php?kKampagne={$kKampagne}&defdetail=1&kKampagneDef={$kKampagneDef}&cZeitParam={$cZeitraumParam}&token={$smarty.session.jtl_token}">{$oKampagneStat_arr[$kKampagne][$kKampagneDef]}</a>
                                             </td>
@@ -191,7 +191,7 @@
                             <tfoot>
                                 <tr>
                                     <td>{__('kampagneOverall')}</td>
-                                    {foreach name="kampagnendefs" from=$oKampagneDef_arr key=kKampagneDef item=oKampagneDef}
+                                    {foreach name='kampagnendefs' from=$oKampagneDef_arr key=kKampagneDef item=oKampagneDef}
                                         <td>
                                             {$oKampagneStat_arr.Gesamt[$kKampagneDef]}
                                         </td>
@@ -202,9 +202,9 @@
                     </div>
                     <div class="panel-footer">
                         <div class="btn-group">
-                            <a href="kampagne.php?tab=globalestats&nStamp=-1&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-left"></i> Fr&uuml;her</a>
+                            <a href="kampagne.php?tab=globalestats&nStamp=-1&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-left"></i> Früher</a>
                             {if isset($bGreaterNow) && !$bGreaterNow}
-                                <a href="kampagne.php?tab=globalestats&nStamp=1&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-right"></i> Sp&auml;ter</a>
+                                <a href="kampagne.php?tab=globalestats&nStamp=1&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-right"></i> Später</a>
                             {/if}
                         </div>
                     </div>

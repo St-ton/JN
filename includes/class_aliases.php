@@ -5,8 +5,8 @@
  */
 
 class_alias(\DB\NiceDB::class, 'NiceDB', true);
-class_alias(\Session\Session::class, 'Session', true);
-class_alias(\Session\AdminSession::class, 'AdminSession', true);
+class_alias(\Session\Frontend::class, 'Session', true);
+class_alias(\Session\Backend::class, 'AdminSession', true);
 class_alias(\Services\JTL\LinkService::class, 'LinkHelper', true);
 class_alias(\PHPMailer\PHPMailer\PHPMailer::class, 'PHPMailer', true);
 class_alias(\Smarty\JTLSmarty::class, 'JTLSmarty', true);
@@ -27,3 +27,18 @@ class_alias(\Helpers\Template::class, 'TemplateHelper', true);
 class_alias(\Helpers\Product::class, 'ArtikelHelper', true);
 class_alias(\Helpers\URL::class, 'UrlHelper', true);
 class_alias(\Helpers\Manufacturer::class, 'HerstellerHelper', true);
+class_alias(\Extensions\Upload::class, 'Upload', true);
+class_alias(\Extensions\UploadDatei::class, 'UploadDatei', true);
+class_alias(\Extensions\UploadSchema::class, 'UploadSchema', true);
+class_alias(\Extensions\Download::class, 'Download', true);
+class_alias(\Extensions\DownloadHistory::class, 'DownloadHistory', true);
+class_alias(\Extensions\Konfiggruppe::class, 'Konfiggruppe', true);
+class_alias(\Extensions\Konfiggruppesprache::class, 'Konfiggruppesprache', true);
+class_alias(\Extensions\Konfigitem::class, 'Konfigitem', true);
+class_alias(\Extensions\Konfigitempreis::class, 'Konfigitempreis', true);
+class_alias(\Extensions\Konfigitemsprache::class, 'Konfigitemsprache', true);
+class_alias(\Extensions\Konfigurator::class, 'Konfigurator', true);
+class_alias(\Extensions\AuswahlAssistent::class, 'AuswahlAssistent', true);
+class_alias(\Extensions\AuswahlAssistentFrage::class, 'AuswahlAssistentFrage', true);
+class_alias(\Extensions\AuswahlAssistentGruppe::class, 'AuswahlAssistentGruppe', true);
+class_alias(\Extensions\AuswahlAssistentOrt::class, 'AuswahlAssistentOrt', true);

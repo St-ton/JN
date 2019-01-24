@@ -9,7 +9,7 @@ namespace Helpers;
 use DB\ReturnType;
 use Kategorie;
 use KategorieListe;
-use Session\Session;
+use Session\Frontend;
 use Shop;
 use Sprache;
 use StringHandler;
@@ -79,7 +79,7 @@ class Category
             ? Shop::getLanguageID()
             : $kSprache;
         $kKundengruppe = $kKundengruppe === 0
-            ? Session::getCustomerGroup()->getID()
+            ? Frontend::getCustomerGroup()->getID()
             : $kKundengruppe;
         $config        = Shop::getSettings([\CONF_GLOBAL, \CONF_TEMPLATE]);
         if (self::$instance !== null && self::$kSprache !== $kSprache) {
@@ -121,7 +121,7 @@ class Category
                 ReturnType::SINGLE_OBJECT
             );
             $categoryCount       = (int)$categoryCountObj->cnt;
-            $categoryLimit       = CATEGORY_FULL_LOAD_LIMIT;
+            $categoryLimit       = \CATEGORY_FULL_LOAD_LIMIT;
             self::$limitReached  = ($categoryCount >= $categoryLimit);
             $functionAttributes  = [];
             $localizedAttributes = [];
@@ -135,7 +135,7 @@ class Category
             $isDefaultLang       = Sprache::isDefaultLanguageActive();
             $visibilityWhere     = ' AND tartikelsichtbarkeit.kArtikel IS NULL';
             $depthWhere          = self::$limitReached === true
-                ? ' AND node.nLevel <= ' . CATEGORY_FULL_LOAD_MAX_LEVEL
+                ? ' AND node.nLevel <= ' . \CATEGORY_FULL_LOAD_MAX_LEVEL
                 : '';
             $getDescription      = ($categoryCount < $categoryLimit
                 || // always get description if there aren't that many categories
@@ -217,7 +217,7 @@ class Category
                 ORDER BY node.lft',
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            $_catAttribut_arr = Shop::Container()->getDB()->query(
+            $catAttributes = Shop::Container()->getDB()->query(
                 'SELECT tkategorieattribut.kKategorie, 
                         COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName, 
                         COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
@@ -230,78 +230,78 @@ class Category
                     tkategorieattribut.nSort',
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            foreach ($_catAttribut_arr as $_catAttribut) {
-                $catID = (int)$_catAttribut->kKategorie;
-                if ($_catAttribut->bIstFunktionsAttribut) {
-                    $functionAttributes[$catID][\strtolower($_catAttribut->cName)] = $_catAttribut->cWert;
+            foreach ($catAttributes as $catAttribute) {
+                $catID = (int)$catAttribute->kKategorie;
+                if ($catAttribute->bIstFunktionsAttribut) {
+                    $functionAttributes[$catID][\strtolower($catAttribute->cName)] = $catAttribute->cWert;
                 } else {
-                    $localizedAttributes[$catID][\strtolower($_catAttribut->cName)] = $_catAttribut;
+                    $localizedAttributes[$catID][\strtolower($catAttribute->cName)] = $catAttribute;
                 }
             }
-            foreach ($nodes as &$_cat) {
-                $_cat->kKategorie     = (int)$_cat->kKategorie;
-                $_cat->kOberKategorie = (int)$_cat->kOberKategorie;
-                $_cat->cnt            = (int)$_cat->cnt;
-                $_cat->cBildURL       = empty($_cat->cPfad)
+            foreach ($nodes as &$cat) {
+                $cat->kKategorie     = (int)$cat->kKategorie;
+                $cat->kOberKategorie = (int)$cat->kOberKategorie;
+                $cat->cnt            = (int)$cat->cnt;
+                $cat->cBildURL       = empty($cat->cPfad)
                     ? \BILD_KEIN_KATEGORIEBILD_VORHANDEN
-                    : \PFAD_KATEGORIEBILDER . $_cat->cPfad;
-                $_cat->cBildURLFull   = $imageBaseURL . $_cat->cBildURL;
-                $_cat->cURL           = URL::buildURL($_cat, \URLART_KATEGORIE);
-                $_cat->cURLFull       = $shopURL . '/' . $_cat->cURL;
+                    : \PFAD_KATEGORIEBILDER . $cat->cPfad;
+                $cat->cBildURLFull   = $imageBaseURL . $cat->cBildURL;
+                $cat->cURL           = URL::buildURL($cat, \URLART_KATEGORIE);
+                $cat->cURLFull       = $shopURL . '/' . $cat->cURL;
                 if (self::$kSprache > 0 && !$isDefaultLang) {
-                    if (!empty($_cat->cName_spr)) {
-                        $_cat->cName = $_cat->cName_spr;
+                    if (!empty($cat->cName_spr)) {
+                        $cat->cName = $cat->cName_spr;
                     }
-                    if (!empty($_cat->cBeschreibung_spr)) {
-                        $_cat->cBeschreibung = $_cat->cBeschreibung_spr;
+                    if (!empty($cat->cBeschreibung_spr)) {
+                        $cat->cBeschreibung = $cat->cBeschreibung_spr;
                     }
                 }
-                unset($_cat->cBeschreibung_spr, $_cat->cName_spr);
+                unset($cat->cBeschreibung_spr, $cat->cName_spr);
                 // Attribute holen
-                $_cat->categoryFunctionAttributes = $functionAttributes[$_cat->kKategorie] ?? [];
-                $_cat->categoryAttributes         = $localizedAttributes[$_cat->kKategorie] ?? [];
+                $cat->categoryFunctionAttributes = $functionAttributes[$cat->kKategorie] ?? [];
+                $cat->categoryAttributes         = $localizedAttributes[$cat->kKategorie] ?? [];
                 /** @deprecated since version 4.05 - use categoryFunctionAttributes instead */
-                $_cat->KategorieAttribute = &$_cat->categoryFunctionAttributes;
+                $cat->KategorieAttribute = &$cat->categoryFunctionAttributes;
                 //interne Verlinkung $#k:X:Y#$
-                $_cat->cBeschreibung    = StringHandler::parseNewsText($_cat->cBeschreibung);
-                $_cat->bUnterKategorien = 0;
-                $_cat->Unterkategorien  = [];
+                $cat->cBeschreibung    = StringHandler::parseNewsText($cat->cBeschreibung);
+                $cat->bUnterKategorien = 0;
+                $cat->Unterkategorien  = [];
                 // Kurzbezeichnung
-                $_cat->cKurzbezeichnung = isset($_cat->categoryAttributes[\ART_ATTRIBUT_SHORTNAME])
-                    ? $_cat->categoryAttributes[\ART_ATTRIBUT_SHORTNAME]->cWert
-                    : $_cat->cName;
-                if ($_cat->kOberKategorie === 0) {
-                    $fullCats[$_cat->kKategorie] = $_cat;
-                    $current                     = $_cat;
-                    $currentParent               = $_cat;
-                    $hierarchy                   = [$_cat->kKategorie];
-                } elseif ($current !== null && $_cat->kOberKategorie === $current->kKategorie) {
+                $cat->cKurzbezeichnung = isset($cat->categoryAttributes[\ART_ATTRIBUT_SHORTNAME])
+                    ? $cat->categoryAttributes[\ART_ATTRIBUT_SHORTNAME]->cWert
+                    : $cat->cName;
+                if ($cat->kOberKategorie === 0) {
+                    $fullCats[$cat->kKategorie] = $cat;
+                    $current                     = $cat;
+                    $currentParent               = $cat;
+                    $hierarchy                   = [$cat->kKategorie];
+                } elseif ($current !== null && $cat->kOberKategorie === $current->kKategorie) {
                     $current->bUnterKategorien = 1;
                     if (!isset($current->Unterkategorien)) {
                         $current->Unterkategorien = [];
                     }
-                    $current->Unterkategorien[$_cat->kKategorie] = $_cat;
-                    $current                                     = $_cat;
-                    $hierarchy[]                                 = $_cat->kOberKategorie;
+                    $current->Unterkategorien[$cat->kKategorie] = $cat;
+                    $current                                     = $cat;
+                    $hierarchy[]                                 = $cat->kOberKategorie;
                     $hierarchy                                   = \array_unique($hierarchy);
-                } elseif ($currentParent !== null && $_cat->kOberKategorie === $currentParent->kKategorie) {
+                } elseif ($currentParent !== null && $cat->kOberKategorie === $currentParent->kKategorie) {
                     $currentParent->bUnterKategorien                   = 1;
-                    $currentParent->Unterkategorien[$_cat->kKategorie] = $_cat;
-                    $current                                           = $_cat;
-                    $hierarchy                                         = [$_cat->kOberKategorie, $_cat->kKategorie];
+                    $currentParent->Unterkategorien[$cat->kKategorie] = $cat;
+                    $current                                           = $cat;
+                    $hierarchy                                         = [$cat->kOberKategorie, $cat->kKategorie];
                 } else {
                     $newCurrent = $fullCats;
                     $i          = 0;
                     foreach ($hierarchy as $_i) {
-                        if ($newCurrent[$_i]->kKategorie === $_cat->kOberKategorie) {
+                        if ($newCurrent[$_i]->kKategorie === $cat->kOberKategorie) {
                             $current                                     = $newCurrent[$_i];
                             $current->bUnterKategorien                   = 1;
-                            $current->Unterkategorien[$_cat->kKategorie] = $_cat;
+                            $current->Unterkategorien[$cat->kKategorie] = $cat;
                             \array_splice($hierarchy, $i);
-                            $hierarchy[] = $_cat->kOberKategorie;
-                            $hierarchy[] = $_cat->kKategorie;
+                            $hierarchy[] = $cat->kOberKategorie;
+                            $hierarchy[] = $cat->kKategorie;
                             $hierarchy   = \array_unique($hierarchy);
-                            $current     = $_cat;
+                            $current     = $cat;
                             break;
                         }
                         $newCurrent = $newCurrent[$_i]->Unterkategorien;
@@ -309,7 +309,7 @@ class Category
                     }
                 }
             }
-            unset($_cat);
+            unset($cat);
             if ($filterEmpty) {
                 $this->filterEmpty($fullCats)->removeRelicts($fullCats);
             }
@@ -422,7 +422,7 @@ class Category
                 ORDER BY parent.lft',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $_catAttribut_arr = Shop::Container()->getDB()->query(
+        $catAttributes = Shop::Container()->getDB()->query(
             'SELECT tkategorieattribut.kKategorie, 
                     COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName, 
                     COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
@@ -436,47 +436,45 @@ class Category
                 tkategorieattribut.nSort',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        if (\is_array($_catAttribut_arr)) {
-            foreach ($_catAttribut_arr as $_catAttribut) {
-                $catID = (int)$_catAttribut->kKategorie;
-                if ($_catAttribut->bIstFunktionsAttribut) {
-                    $functionAttributes[$catID][\strtolower($_catAttribut->cName)] = $_catAttribut->cWert;
-                } else {
-                    $localizedAttributes[$catID][\strtolower($_catAttribut->cName)] = $_catAttribut;
-                }
+        foreach ($catAttributes as $catAttribute) {
+            $catID = (int)$catAttribute->kKategorie;
+            if ($catAttribute->bIstFunktionsAttribut) {
+                $functionAttributes[$catID][\strtolower($catAttribute->cName)] = $catAttribute->cWert;
+            } else {
+                $localizedAttributes[$catID][\strtolower($catAttribute->cName)] = $catAttribute;
             }
         }
-        foreach ($nodes as &$_cat) {
-            $_cat->kKategorie     = (int)$_cat->kKategorie;
-            $_cat->kOberKategorie = (int)$_cat->kOberKategorie;
-            $_cat->cnt            = (int)$_cat->cnt;
-            $_cat->cBildURL       = empty($_cat->cPfad)
+        foreach ($nodes as &$cat) {
+            $cat->kKategorie     = (int)$cat->kKategorie;
+            $cat->kOberKategorie = (int)$cat->kOberKategorie;
+            $cat->cnt            = (int)$cat->cnt;
+            $cat->cBildURL       = empty($cat->cPfad)
                 ? \BILD_KEIN_KATEGORIEBILD_VORHANDEN
-                : \PFAD_KATEGORIEBILDER . $_cat->cPfad;
-            $_cat->cBildURLFull   = $imageBaseURL . $_cat->cBildURL;
-            $_cat->cURL           = URL::buildURL($_cat, \URLART_KATEGORIE);
-            $_cat->cURLFull       = $shopURL . '/' . $_cat->cURL;
+                : \PFAD_KATEGORIEBILDER . $cat->cPfad;
+            $cat->cBildURLFull   = $imageBaseURL . $cat->cBildURL;
+            $cat->cURL           = URL::buildURL($cat, \URLART_KATEGORIE);
+            $cat->cURLFull       = $shopURL . '/' . $cat->cURL;
             // lokalisieren
             if (self::$kSprache > 0 && !$isDefaultLang) {
-                if (!empty($_cat->cName_spr)) {
-                    $_cat->cName = $_cat->cName_spr;
+                if (!empty($cat->cName_spr)) {
+                    $cat->cName = $cat->cName_spr;
                 }
-                if (!empty($_cat->cBeschreibung_spr)) {
-                    $_cat->cBeschreibung = $_cat->cBeschreibung_spr;
+                if (!empty($cat->cBeschreibung_spr)) {
+                    $cat->cBeschreibung = $cat->cBeschreibung_spr;
                 }
             }
-            unset($_cat->cBeschreibung_spr, $_cat->cName_spr);
-            $_cat->categoryFunctionAttributes = $functionAttributes[$_cat->kKategorie] ?? [];
-            $_cat->categoryAttributes         = $localizedAttributes[$_cat->kKategorie] ?? [];
+            unset($cat->cBeschreibung_spr, $cat->cName_spr);
+            $cat->categoryFunctionAttributes = $functionAttributes[$cat->kKategorie] ?? [];
+            $cat->categoryAttributes         = $localizedAttributes[$cat->kKategorie] ?? [];
             /** @deprecated since version 4.05 - use categoryFunctionAttributes instead */
-            $_cat->KategorieAttribute = &$_cat->categoryFunctionAttributes;
+            $cat->KategorieAttribute = &$cat->categoryFunctionAttributes;
             //interne Verlinkung $#k:X:Y#$
-            $_cat->cBeschreibung    = StringHandler::parseNewsText($_cat->cBeschreibung);
-            $_cat->bUnterKategorien = 0;
-            $_cat->Unterkategorien  = [];
-            $fullCats[]             = $_cat;
+            $cat->cBeschreibung    = StringHandler::parseNewsText($cat->cBeschreibung);
+            $cat->bUnterKategorien = 0;
+            $cat->Unterkategorien  = [];
+            $fullCats[]             = $cat;
         }
-        unset($_cat);
+        unset($cat);
         if ($filterEmpty) {
             $this->filterEmpty($fullCats)->removeRelicts($fullCats);
         }
@@ -492,11 +490,11 @@ class Category
      */
     private function filterEmpty(&$catList): self
     {
-        foreach ($catList as $i => $_cat) {
-            if ($_cat->bUnterKategorien === 0 && $_cat->cnt === 0) {
+        foreach ($catList as $i => $cat) {
+            if ($cat->bUnterKategorien === 0 && $cat->cnt === 0) {
                 unset($catList[$i]);
-            } elseif ($_cat->bUnterKategorien === 1) {
-                $this->filterEmpty($_cat->Unterkategorien);
+            } elseif ($cat->bUnterKategorien === 1) {
+                $this->filterEmpty($cat->Unterkategorien);
             }
         }
 
@@ -513,13 +511,13 @@ class Category
      */
     private function removeRelicts(&$catList): self
     {
-        foreach ($catList as $i => $_cat) {
-            if ($_cat->bUnterKategorien === 1) {
-                if ($_cat->cnt === 0 && \count($_cat->Unterkategorien) === 0) {
+        foreach ($catList as $i => $cat) {
+            if ($cat->bUnterKategorien === 1) {
+                if ($cat->cnt === 0 && \count($cat->Unterkategorien) === 0) {
                     unset($catList[$i]);
                 } else {
-                    $this->removeRelicts($_cat->Unterkategorien);
-                    if (empty($_cat->Unterkategorien) && $_cat->cnt === 0) {
+                    $this->removeRelicts($cat->Unterkategorien);
+                    if (empty($cat->Unterkategorien) && $cat->cnt === 0) {
                         unset($catList[$i]);
                     }
                 }

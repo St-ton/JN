@@ -47,7 +47,7 @@ if ($cAction === 'update') {
         }
     }
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE]);
-    $cHinweis = 'Ihre Warenlager wurden erfolgreich aktualisiert';
+    $cHinweis = __('successStoreRefresh');
 }
 
 if ($cStep === 'uebersicht') {

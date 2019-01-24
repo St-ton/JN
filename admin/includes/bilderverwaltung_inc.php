@@ -11,15 +11,15 @@ use Helpers\URL;
  * @return array
  * @throws Exception
  */
-function getItems(bool $filesize = false)
+function getItems(bool $filesize = false): array
 {
-    $item = (object) [
-        'name'  => __('typeProduct'),
-        'type'  => Image::TYPE_PRODUCT,
-        'stats' => MediaImage::getStats(Image::TYPE_PRODUCT, $filesize)
+    return [
+        Image::TYPE_PRODUCT => (object)[
+            'name'  => __('typeProduct'),
+            'type'  => Image::TYPE_PRODUCT,
+            'stats' => MediaImage::getStats(Image::TYPE_PRODUCT, $filesize)
+        ]
     ];
-
-    return [Image::TYPE_PRODUCT => $item];
 }
 
 /**
@@ -117,9 +117,9 @@ function clearImageCache($type, bool $isAjax = false)
         MediaImage::clearCache($type);
         unset($_SESSION['image_count'], $_SESSION['renderedImages']);
         if ($isAjax === true) {
-            return ['success' => 'Cache wurde erfolgreich zurückgesetzt'];
+            return ['success' => __('successCacheReset')];
         }
-        Shop::Smarty()->assign('success', 'Cache wurde erfolgreich zurückgesetzt');
+        Shop::Smarty()->assign('success', __('successCacheReset'));
     }
 
     return [];
@@ -131,7 +131,7 @@ function clearImageCache($type, bool $isAjax = false)
  * @return IOError|object
  * @throws Exception
  */
-function generateImageCache($type, int $index)
+function generateImageCache(?string $type, ?int $index)
 {
     if ($type === null || $index === null) {
         return new IOError('Invalid argument request', 500);
@@ -147,13 +147,13 @@ function generateImageCache($type, int $index)
     ];
 
     if ($index === 0) {
-        $_SESSION['image_count']    = count(MediaImage::getImages($type, true));
+        $_SESSION['image_count']    = MediaImage::getUncachedProductImageCount();
         $_SESSION['renderedImages'] = 0;
     }
 
     $total    = $_SESSION['image_count'];
     $images   = MediaImage::getImages($type, true, $index, IMAGE_PRELOAD_LIMIT);
-    $totalAll = count(MediaImage::getImages($type));
+    $totalAll = MediaImage::getProductImageCount();
     while (count($images) === 0 && $index < $totalAll) {
         $index += 10;
         $images = MediaImage::getImages($type, true, $index, IMAGE_PRELOAD_LIMIT);
@@ -186,14 +186,15 @@ function generateImageCache($type, int $index)
  */
 function getCorruptedImages($type, int $limit)
 {
-    static $offset   = 0;
     $corruptedImages = [];
-    $totalImages     = count(MediaImage::getImages($type));
+    $totalImages     = MediaImage::getProductImageCount();
     do {
-        $images = MediaImage::getImages($type, false, $offset, $limit);
-        foreach ($images as $image) {
-            $fallback = $image->getFallbackThumb(Image::SIZE_XS);
-            if (!file_exists($image->getRaw(true)) && !file_exists(PFAD_ROOT . $fallback)) {
+        $i = 0;
+        foreach (MediaImage::getProductImages() as $image) {
+            ++$i;
+            if (!file_exists($image->getRaw(true))
+                && !file_exists(PFAD_ROOT . $image->getFallbackThumb(Image::SIZE_XS))
+            ) {
                 $corruptedImage            = (object)[
                     'article' => [],
                     'picture' => ''
@@ -217,8 +218,7 @@ function getCorruptedImages($type, int $limit)
                 }
             }
         }
-        $offset += count($images);
-    } while (count($corruptedImages) < $limit && $offset < $totalImages);
+    } while (count($corruptedImages) < $limit && $i < $totalImages);
 
     return [Image::TYPE_PRODUCT => array_slice($corruptedImages, 0, $limit)];
 }

@@ -1,3 +1,19 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Image"
+msgstr "Image"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Wrong XSRF token."
+msgstr "Wrong XSRF token."
+
 msgid "dashboard"
 msgstr "Dashboard"
 
@@ -213,3 +229,108 @@ msgstr "Invalid security token received"
 
 msgid "allPages"
 msgstr "All pages"
+
+msgid "errorFillRequired"
+msgstr "Fehler: Bitte füllen Sie alle Pflichtfelder korrekt aus."
+
+msgid "successConfigSave"
+msgstr "Ihre Einstellung(en) wurde erfolgreich gespeichert."
+
+msgid "errorConfigSave"
+msgstr "Fehler beim Speichern Ihrer Einstellungen."
+
+msgid "errorIsNoDir"
+msgstr " ist kein Verzeichnis"
+
+msgid "contactSupport"
+msgstr "Support kontaktieren"
+
+msgid "errorUnknown"
+msgstr "Unbekannter Fehler"
+
+msgid "errorUnknownLong"
+msgstr "Fehler: Es ist ein unbekannter Fehler aufgetreten"
+
+msgid "year"
+msgstr " Jahr"
+
+msgid "years"
+msgstr " Jahre"
+
+msgid "month"
+msgstr " Monat"
+
+msgid "months"
+msgstr " Monate"
+
+msgid "day"
+msgstr " Tag"
+
+msgid "days"
+msgstr " Tage"
+
+msgid "hour"
+msgstr " Stunde"
+
+msgid "hours"
+msgstr " Stunden"
+
+msgid "errorEnterValidDate"
+msgstr "Fehler: Bitte geben Sie ein gültiges Datum ein."
+
+msgid "smartySyntaxError"
+msgstr "Smarty-Syntax Fehler."
+
+msgid "errorCheckInput"
+msgstr "Fehler: Bitte überprüfen Sie Ihre Eingaben."
+
+msgid "lockForMinutes"
+msgstr "Gesperrt für %s Minuten."
+
+msgid "errorWrongPasswordUser"
+msgstr "Benutzername oder Passwort falsch."
+
+msgid "errorTwoFactorExpired"
+msgstr "2-Faktor-Authentifizierungs-Code abgelaufen."
+
+msgid "errorNoPermission"
+msgstr "Keine Berechtigungen vorhanden."
+
+msgid "errorCSRF"
+msgstr "Cross site request forgery! Sind Cookies aktiviert?"
+
+msgid "errorSessionExpired"
+msgstr "Ihre Sitzung wurde zurückgesetzt! Bitte melden Sie sich neu an."
+
+msgid "row"
+msgstr "Zeile"
+
+msgid "errorLangVarNotFound"
+msgstr "Fehler: Ihre ausgewählte Sprachvariable wurde nicht gefunden."
+
+msgid "successChangesSave"
+msgstr "Ihre Änderungen wurden erfolgreich übernommen."
+
+msgid "errorChooseOption"
+msgstr "Bitte wählen Sie mindestens eine Option aus."
+
+msgid "all"
+msgstr "alle"
+
+msgid "both"
+msgstr "beide"
+
+msgid "successEmailSend"
+msgstr "Eine E-Mail mit weiteren Anweisung wurde an die hinterlegte Adresse gesendet, sofern vorhanden."
+
+msgid "successPasswordChange"
+msgstr "Passwort wurde erfolgreich geändert."
+
+msgid "errorPasswordChange"
+msgstr "Passwort konnte nicht geändert werden."
+
+msgid "errorHashInvalid"
+msgstr "Ungültiger Hash übergeben."
+
+msgid "errorPasswordMismatch"
+msgstr "Passwörter stimmen nicht überein."

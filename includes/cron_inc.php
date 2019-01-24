@@ -16,9 +16,9 @@ if (file_exists(JOBQUEUE_LOCKFILE) === false) {
 
 $lockfile = fopen(JOBQUEUE_LOCKFILE, 'rb');
 
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
 use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 if (PHP_SAPI === 'cli') {
     $handler = new StreamHandler('php://stdout', Logger::DEBUG);
@@ -33,10 +33,8 @@ if (flock($lockfile, LOCK_EX | LOCK_NB) === false) {
     exit;
 }
 
-$db = Shop::Container()->getDB();
-
-$factory = new \Cron\JobFactory($db, $logger);
-$queue   = new \Cron\Queue($db, $logger, $factory);
+$db      = Shop::Container()->getDB();
+$queue   = new \Cron\Queue($db, $logger, new \Cron\JobFactory($db, $logger));
 $checker = new \Cron\Checker($db, $logger);
 
 $unqueuedJobs = $checker->check();

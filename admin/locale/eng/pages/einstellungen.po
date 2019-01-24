@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "preferences"
 msgstr "Einstellungen"
 
@@ -72,4 +76,3 @@ msgstr ""
 
 msgid "prefURL2"
 msgstr "https://jtl-url.de/sdka5"
-

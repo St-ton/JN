@@ -23,6 +23,7 @@ $nonAllowed     = [];
 $conf           = Shopsetting::getInstance()->getAll();
 $cHinweis       = $smarty->getTemplateVars('hinweis');
 $shopURL        = Shop::getURL() . '/';
+$alertHelper    = Shop::Container()->getAlertService();
 if ($cHinweis = Product::mapErrorCode(
     Request::verifyGPDataString('cHinweis'),
     (isset($_GET['fB']) && (float)$_GET['fB'] > 0) ? (float)$_GET['fB'] : 0.0

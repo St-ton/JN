@@ -24,11 +24,12 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kundenwerbenkeunden_inc.php';
 
 Shop::setPageType(PAGE_MEINKONTO);
-$linkHelper = Shop::Container()->getLinkService();
-$smarty     = Shop::Smarty();
-$conf       = Shopsetting::getInstance()->getAll();
-$kLink      = $linkHelper->getSpecialPageLinkKey(LINKTYP_LOGIN);
-$ratings    = [];
+$linkHelper  = Shop::Container()->getLinkService();
+$smarty      = Shop::Smarty();
+$conf        = Shopsetting::getInstance()->getAll();
+$kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_LOGIN);
+$alertHelper = Shop::Container()->getAlertService();
+$ratings     = [];
 if (Request::verifyGPCDataInt('wlidmsg') > 0) {
     $alertHelper->addAlert(
         Alert::TYPE_NOTE,

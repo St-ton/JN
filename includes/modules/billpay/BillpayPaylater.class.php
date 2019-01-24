@@ -69,7 +69,7 @@ class BillpayPaylater extends Billpay
 
             unset($_SESSION['za_billpay_jtl']['oOrderEx']);
 
-            $session = \Session\Session::getInstance();
+            $session = \Session\Frontend::getInstance();
             $session->cleanUp();
         }
 

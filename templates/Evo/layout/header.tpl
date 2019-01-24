@@ -3,15 +3,15 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='doctype'}<!DOCTYPE html>{/block}
-<html {block name='html-attributes'}lang="{$meta_language}" itemscope {if $nSeitenTyp == URLART_ARTIKEL}itemtype="http://schema.org/ItemPage"
+<html {block name='html-attributes'}lang="{$meta_language}" itemscope {if $nSeitenTyp === URLART_ARTIKEL}itemtype="http://schema.org/ItemPage"
       {elseif $nSeitenTyp == URLART_KATEGORIE}itemtype="http://schema.org/CollectionPage"
       {else}itemtype="http://schema.org/WebPage"{/if}{/block}>
 {block name='head'}
 <head>
     {block name='head-meta'}
         <meta http-equiv="content-type" content="text/html; charset={$smarty.const.JTL_CHARSET}">
-        <meta name="description" itemprop="description" content={block name='head-meta-description'}"{$meta_description|truncate:1000:"":true}{/block}">
-        <meta name="keywords" itemprop="keywords" content="{block name='head-meta-keywords'}{$meta_keywords|truncate:255:"":true}{/block}">
+        <meta name="description" itemprop="description" content={block name='head-meta-description'}"{$meta_description|truncate:1000:'':true}{/block}">
+        <meta name="keywords" itemprop="keywords" content="{block name='head-meta-keywords'}{$meta_keywords|truncate:255:'':true}{/block}">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="robots" content="{if $bNoIndex === true  || (isset($Link) && $Link->getNoFollow() === true)}noindex{else}index, follow{/if}">
@@ -21,7 +21,7 @@
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="{$meta_title}" />
         <meta property="og:title" content="{$meta_title}" />
-        <meta property="og:description" content="{$meta_description|truncate:1000:"":true}" />
+        <meta property="og:description" content="{$meta_description|truncate:1000:'':true}" />
         <meta property="og:image" content="{$imageBaseURL}{$ShopLogoURL}" />
         <meta property="og:url" content="{$cCanonicalURL}"/>
     {/block}
@@ -64,7 +64,7 @@
         {* Languages *}
         {if !empty($smarty.session.Sprachen) && count($smarty.session.Sprachen) > 1}
             {foreach item=oSprache from=$smarty.session.Sprachen}
-                    <link rel="alternate" hreflang="{$oSprache->cISO639}" href="{if $nSeitenTyp === 18 && $oSprache->cStandard === "Y"}{$cCanonicalURL}{else}{$oSprache->cURLFull}{/if}">
+                <link rel="alternate" hreflang="{$oSprache->cISO639}" href="{if $nSeitenTyp === $smarty.const.PAGE_STARTSEITE && $oSprache->cStandard === 'Y'}{$cCanonicalURL}{else}{$oSprache->cURLFull}{/if}">
             {/foreach}
         {/if}
     {/block}
@@ -88,6 +88,7 @@
         <script src="{$ShopURL}/{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-1.12.4.min.js"></script>
     {/block}
     {include file='layout/header_inline_js.tpl'}
+    {$dbgBarHead}
 </head>
 {/block}
 
@@ -136,7 +137,7 @@
                                 <meta itemprop="logo" content="{$imageBaseURL}{$ShopLogoURL}">
                                 <a href="{$ShopURL}" title="{$Einstellungen.global.global_shopname}">
                                     {if isset($ShopLogoURL)}
-                                        {image src=$ShopLogoURL alt=$Einstellungen.global.global_shopname class="img-responsive"}
+                                        {imageTag src=$ShopLogoURL alt=$Einstellungen.global.global_shopname class="img-responsive"}
                                     {else}
                                         <span class="h1">{$Einstellungen.global.global_shopname}</span>
                                     {/if}
@@ -220,4 +221,7 @@
     {block name='header-breadcrumb'}
         {include file='layout/breadcrumb.tpl'}
     {/block}
+
+    {include file='snippets/alert_list.tpl'}
+
 {/block}{* /content-all-starttags *}

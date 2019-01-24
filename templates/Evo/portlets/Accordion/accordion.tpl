@@ -1,4 +1,4 @@
-{assign var="areaId" value=$instance->getProperty('uid')}
+{assign var='areaId' value=$instance->getProperty('uid')}
 {if ($instance->getProperty('layout') === 'button')}
     <div {$instance->getAttributeString()} {if $isPreview}{$instance->getDataAttributeString()}{/if}>
         <button

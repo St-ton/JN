@@ -64,9 +64,9 @@
                         <div class="col-sm-10">
                             <select id="newBox_{$direction}" name="item" class="form-control" onchange="document.newBox_{$direction}.submit();">
                                 <option value="0">{__('pleaseSelect')}</option>
-                                {foreach from=$oVorlagen_arr item=oVorlagen}
+                                {foreach $oVorlagen_arr as $oVorlagen}
                                     <optgroup label="{$oVorlagen->cName}">
-                                        {foreach from=$oVorlagen->oVorlage_arr item=oVorlage}
+                                        {foreach $oVorlagen->oVorlage_arr as $oVorlage}
                                             <option value="{$oVorlage->kBoxvorlage}">{$oVorlage->cName}</option>
                                         {/foreach}
                                     </optgroup>

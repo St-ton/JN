@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "plz_ort_import"
 msgstr "PLZ-Orte Import"
 
@@ -63,3 +67,36 @@ msgstr "Rückgängig - Backup zurückspielen..."
 
 msgid "plz_ort_import_help"
 msgstr "Mit dem Button \"Neu Importieren\" können Sie direkt von <i>%s</i> eine Datendatei downloaden und automatisch installieren.<br/>Sollte der direkte Download nicht möglich sein oder wg. Zeitüberschreitung abbrechen, dann laden Sie die gewünschte Datei bitte per FTP in das Verzeichnis <i>/uploads</i> ihrer Shopinstallation. Die Datei kann dann über das <i class=\"fa fa-download\"></i>-Symbol in der Übersicht importiert werden.<br/>Vor dem Import wird ein Backup der aktuellen Daten erstellt, welches bei Bedarf zurückgespielt werden kann."
+
+msgid "errorImportInvalid"
+msgstr "Importdatei für %s kann nicht gelesen werden!"
+
+msgid "importProgress"
+msgstr "Aktualisiere %s in Datenbank..."
+
+msgid "successImport"
+msgstr "Import erfolgreich!"
+
+msgid "errorParameterInvalid"
+msgstr "Falscher Parameter angegeben!"
+
+msgid "errorDownload"
+msgstr " kann nicht heruntergeladen werden!"
+
+msgid "errorDownloadFileCreate"
+msgstr "Downloaddatei für %s kann nicht erstellt werden!"
+
+msgid "errorDownloadTimeLong"
+msgstr "Der Download von %s dauert zu lange!"
+
+msgid "successDownload"
+msgstr " wurde erfolgreich heruntergeladen!"
+
+msgid "errorImportRunning"
+msgstr "Es läuft bereits ein Import. Bitte warten Sie bis dieser abgeschlossen ist!"
+
+msgid "errorImportStart"
+msgstr "Import kann nicht gestartet werden!"
+
+msgid "successImportTempDelete"
+msgstr "Temporärer Import wurde gelöscht!"

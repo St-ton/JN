@@ -8,6 +8,7 @@
         "ifsnop/mysqldump-php": "^2.1",
         "symfony/var-dumper": "^3.0",
         "jtlshop/shop4-systemcheck": "^1.1",
+        "jtlshop/sccbs3": "dev-master",
         "jtlshop/scc": "dev-master",
         "smarty/smarty": "~3.1",
         "jdorn/sql-formatter": "^1.2",
@@ -27,6 +28,7 @@
         "myclabs/php-enum": "^1.6",
         "jtlshop/semver": "~0.0.5",
         "studio-42/elfinder": "^2.1",
+        "maximebf/debugbar": "^1.15",
         "gettext/gettext": "^4.6"
     },
     "require-dev": {
@@ -52,6 +54,10 @@
         {
             "type": "vcs",
             "url": "https://gitlab.jtl-software.de/jtlshop/qrcodegenerator.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.jtl-software.de/jtlshop/sccbs3.git"
         },
         {
             "type": "vcs",

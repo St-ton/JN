@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\Cart;
 use Helpers\Product;
+use Helpers\ShippingMethod;
 use Helpers\Tax;
 use Helpers\URL;
-use Helpers\ShippingMethod;
-use Helpers\Cart;
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
 
@@ -174,7 +174,7 @@ class IOMethods
 
             return $objResponse;
         }
-        $cart = \Session\Session::getCart();
+        $cart = \Session\Frontend::getCart();
         Cart::addVariationPictures($cart);
         /** @var Warenkorb $cart */
         $cart->fuegeEin($kArtikel, $amount, $properties)
@@ -208,15 +208,13 @@ class IOMethods
         $warensumme[0] = Preise::getLocalizedPriceString(
             $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
         );
-        $warensumme[1] = Preise::getLocalizedPriceString(
-            $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false)
-        );
+        $warensumme[1] = Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL]));
         $smarty->assign('Boxen', $boxesToShow)
                ->assign('WarenkorbWarensumme', $warensumme);
 
         $kKundengruppe = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
             ? $_SESSION['Kunde']->kKundengruppe
-            : \Session\Session::getCustomerGroup()->getID();
+            : \Session\Frontend::getCustomerGroup()->getID();
         $oXSelling     = Product::getXSelling($kArtikel, $Artikel->nIstVater > 0);
 
         $smarty->assign(
@@ -228,7 +226,7 @@ class IOMethods
         )
                ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
                ->assign('fAnzahl', $amount)
-               ->assign('NettoPreise', \Session\Session::getCustomerGroup()->getIsMerchant())
+               ->assign('NettoPreise', \Session\Frontend::getCustomerGroup()->getIsMerchant())
                ->assign('Einstellungen', $config)
                ->assign('Xselling', $oXSelling)
                ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
@@ -348,7 +346,7 @@ class IOMethods
         $_GET['Vergleichsliste'] = 1;
         $_GET['vlplo']           = $kArtikel;
 
-        \Session\Session::getInstance()->setStandardSessionVars();
+        \Session\Frontend::getInstance()->setStandardSessionVars();
         $oResponse->nType     = 2;
         $oResponse->nCount    = count($_SESSION['Vergleichsliste']->oArtikel_arr);
         $oResponse->cTitle    = Shop::Lang()->get('compare');
@@ -396,7 +394,7 @@ class IOMethods
         $objResponse = new IOResponse();
         $qty         = (int)$qty === 0 ? 1 : (int)$qty;
         $smarty      = Shop::Smarty();
-        if (\Session\Session::getCustomer()->getID() === 0) {
+        if (\Session\Frontend::getCustomer()->getID() === 0) {
             $oResponse->nType     = 1;
             $oResponse->cLocation = Shop::Container()->getLinkService()->getStaticRoute('jtl.php') .
                 '?a=' . $kArtikel .
@@ -495,7 +493,7 @@ class IOMethods
         $_GET['Wunschliste'] = 1;
         $_GET['wlplo']       = $kArtikel;
 
-        \Session\Session::getInstance()->setStandardSessionVars();
+        \Session\Frontend::getInstance()->setStandardSessionVars();
         $oResponse->nType  = 2;
         $oResponse->nCount = count($_SESSION['Wunschliste']->CWunschlistePos_arr);
         $oResponse->cTitle = Shop::Lang()->get('goToWishlist');
@@ -537,7 +535,7 @@ class IOMethods
     public function getBasketItems($nTyp = 0): IOResponse
     {
         require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-        $cart        = \Session\Session::getCart();
+        $cart        = \Session\Frontend::getCart();
         $oResponse   = new stdClass();
         $objResponse = new IOResponse();
 
@@ -546,7 +544,7 @@ class IOMethods
             default:
             case 0:
                 $smarty        = Shop::Smarty();
-                $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+                $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
                 $nAnzahl       = $cart->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]);
                 $cLand         = $_SESSION['cLieferlandISO'] ?? '';
                 $cPLZ          = '*';
@@ -567,7 +565,7 @@ class IOMethods
                        ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
                        ->assign('WarenkorbGesamtgewicht', $cart->getWeight())
                        ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($cart))
-                       ->assign('NettoPreise', \Session\Session::getCustomerGroup()->getIsMerchant())
+                       ->assign('NettoPreise', \Session\Frontend::getCustomerGroup()->getIsMerchant())
                        ->assign('FavourableShipping', $cart->getFavourableShipping())
                        ->assign('WarenkorbVersandkostenfreiHinweis', ShippingMethod::getShippingFreeString(
                            $versandkostenfreiAb,
@@ -613,10 +611,9 @@ class IOMethods
             $quantities,
             $itemQuantities
         );
-        $net             = \Session\Session::getCustomerGroup()->getIsMerchant();
-        $Artikel->fuelleArtikel($productID, null);
-        $Artikel->Preise->cVKLocalized[$net] =
-            Preise::getLocalizedPriceString($Artikel->Preise->fVK[$net] * $amount, null, true);
+        $net             = \Session\Frontend::getCustomerGroup()->getIsMerchant();
+        $Artikel->fuelleArtikel($productID);
+        $Artikel->Preise->cVKLocalized[$net] = Preise::getLocalizedPriceString($Artikel->Preise->fVK[$net] * $amount);
 
         $smarty->assign('oKonfig', $oKonfig)
                ->assign('NettoPreise', $net)
@@ -695,28 +692,28 @@ class IOMethods
         $objResponse   = new IOResponse();
         $kVaterArtikel = (int)$aValues['a'];
         $fAnzahl       = (float)$aValues['anzahl'];
-        $valueID_arr   = array_filter((array)$aValues['eigenschaftwert']);
+        $valueIDs      = array_filter((array)$aValues['eigenschaftwert']);
         $wrapper       = isset($aValues['wrapper']) ? StringHandler::filterXSS($aValues['wrapper']) : '';
 
         if ($kVaterArtikel <= 0) {
             return $objResponse;
         }
-        $oArtikelOptionen                            = new stdClass();
-        $oArtikelOptionen->nMerkmale                 = 0;
-        $oArtikelOptionen->nAttribute                = 0;
-        $oArtikelOptionen->nArtikelAttribute         = 0;
-        $oArtikelOptionen->nMedienDatei              = 0;
-        $oArtikelOptionen->nVariationKombi           = 1;
-        $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
-        $oArtikelOptionen->nKonfig                   = 0;
-        $oArtikelOptionen->nDownload                 = 0;
-        $oArtikelOptionen->nMain                     = 1;
-        $oArtikelOptionen->nWarenlager               = 1;
+        $options                            = new stdClass();
+        $options->nMerkmale                 = 0;
+        $options->nAttribute                = 0;
+        $options->nArtikelAttribute         = 0;
+        $options->nMedienDatei              = 0;
+        $options->nVariationKombi           = 1;
+        $options->nKeinLagerbestandBeachten = 1;
+        $options->nKonfig                   = 0;
+        $options->nDownload                 = 0;
+        $options->nMain                     = 1;
+        $options->nWarenlager               = 1;
         $oArtikel                                    = new Artikel();
-        $oArtikel->fuelleArtikel($kVaterArtikel, $oArtikelOptionen, \Session\Session::getCustomerGroup()->getID());
+        $oArtikel->fuelleArtikel($kVaterArtikel, $options, \Session\Frontend::getCustomerGroup()->getID());
         $weightDiff   = 0;
         $newProductNr = '';
-        foreach ($valueID_arr as $valueID) {
+        foreach ($valueIDs as $valueID) {
             $currentValue = new EigenschaftWert($valueID);
             $weightDiff  += $currentValue->fGewichtDiff;
             $newProductNr = (!empty($currentValue->cArtNr) && $oArtikel->cArtNr !== $currentValue->cArtNr)
@@ -734,17 +731,16 @@ class IOMethods
             $oArtikel->fArtikelgewicht + $weightDiff
         );
         $cUnitWeightLabel   = Shop::Lang()->get('weightUnit');
-
         // Alle Variationen ohne Freifeld
-        $nKeyValueVariation_arr = $oArtikel->keyValueVariations($oArtikel->VariationenOhneFreifeld);
-        foreach ($valueID_arr as $kKey => $cVal) {
-            if (!isset($nKeyValueVariation_arr[$kKey])) {
-                unset($valueID_arr[$kKey]);
+        $keyValueVariations = $oArtikel->keyValueVariations($oArtikel->VariationenOhneFreifeld);
+        foreach ($valueIDs as $kKey => $cVal) {
+            if (!isset($keyValueVariations[$kKey])) {
+                unset($valueIDs[$kKey]);
             }
         }
 
-        $nNettoPreise = \Session\Session::getCustomerGroup()->getIsMerchant();
-        $fVKNetto     = $oArtikel->gibPreis($fAnzahl, $valueID_arr, \Session\Session::getCustomerGroup()->getID());
+        $nNettoPreise = \Session\Frontend::getCustomerGroup()->getIsMerchant();
+        $fVKNetto     = $oArtikel->gibPreis($fAnzahl, $valueIDs, \Session\Frontend::getCustomerGroup()->getID());
         $fVK          = [
             Tax::getGross($fVKNetto, $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]),
             $fVKNetto
@@ -755,7 +751,7 @@ class IOMethods
         ];
         $cPriceLabel  = '';
         if (isset($oArtikel->nVariationAnzahl) && $oArtikel->nVariationAnzahl > 0) {
-            $cPriceLabel = $oArtikel->nVariationOhneFreifeldAnzahl === count($valueID_arr)
+            $cPriceLabel = $oArtikel->nVariationOhneFreifeldAnzahl === count($valueIDs)
                 ? Shop::Lang()->get('priceAsConfigured', 'productDetails')
                 : Shop::Lang()->get('priceStarting');
         }
@@ -779,8 +775,8 @@ class IOMethods
                 $nAnzahl                 = &$staffelPreis['nAnzahl'];
                 $fStaffelVKNetto         = $oArtikel->gibPreis(
                     $nAnzahl,
-                    $valueID_arr,
-                    \Session\Session::getCustomerGroup()->getID()
+                    $valueIDs,
+                    \Session\Frontend::getCustomerGroup()->getID()
                 );
                 $fStaffelVK[0][$nAnzahl] = Tax::getGross(
                     $fStaffelVKNetto,
@@ -839,16 +835,16 @@ class IOMethods
      */
     public function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWert = 0): IOResponse
     {
-        $kEigenschaft                = (int)$kEigenschaft;
-        $kEigenschaftWert            = (int)$kEigenschaftWert;
-        $oArtikel                    = null;
-        $objResponse                 = new IOResponse();
-        $kVaterArtikel               = (int)$aValues['a'];
-        $kArtikelKind                = isset($aValues['VariKindArtikel']) ? (int)$aValues['VariKindArtikel'] : 0;
-        $idx                         = isset($aValues['eigenschaftwert']) ? (array)$aValues['eigenschaftwert'] : [];
-        $kFreifeldEigeschaftWert_arr = [];
-        $kGesetzteEigeschaftWert_arr = array_filter($idx);
-        $wrapper                     = isset($aValues['wrapper']) ? StringHandler::filterXSS($aValues['wrapper']) : '';
+        $kEigenschaft             = (int)$kEigenschaft;
+        $kEigenschaftWert         = (int)$kEigenschaftWert;
+        $oArtikel                 = null;
+        $objResponse              = new IOResponse();
+        $kVaterArtikel            = (int)$aValues['a'];
+        $kArtikelKind             = isset($aValues['VariKindArtikel']) ? (int)$aValues['VariKindArtikel'] : 0;
+        $idx                      = isset($aValues['eigenschaftwert']) ? (array)$aValues['eigenschaftwert'] : [];
+        $kFreifeldEigeschaftWerte = [];
+        $kGesetzteEigeschaftWerte = array_filter($idx);
+        $wrapper                  = isset($aValues['wrapper']) ? StringHandler::filterXSS($aValues['wrapper']) : '';
 
         if ($kVaterArtikel > 0) {
             $oArtikelOptionen                            = new stdClass();
@@ -864,38 +860,33 @@ class IOMethods
             $oArtikelOptionen->nWarenlager               = 1;
             $oArtikel                                    = new Artikel();
             $oArtikel->fuelleArtikel($kVaterArtikel, $oArtikelOptionen);
-
             // Alle Variationen ohne Freifeld
-            $nKeyValueVariation_arr = $oArtikel->keyValueVariations($oArtikel->VariationenOhneFreifeld);
-
+            $keyValueVariations = $oArtikel->keyValueVariations($oArtikel->VariationenOhneFreifeld);
             // Freifeldpositionen gesondert zwischenspeichern
-            foreach ($kGesetzteEigeschaftWert_arr as $kKey => $cVal) {
-                if (!isset($nKeyValueVariation_arr[$kKey])) {
-                    unset($kGesetzteEigeschaftWert_arr[$kKey]);
-                    $kFreifeldEigeschaftWert_arr[$kKey] = $cVal;
+            foreach ($kGesetzteEigeschaftWerte as $kKey => $cVal) {
+                if (!isset($keyValueVariations[$kKey])) {
+                    unset($kGesetzteEigeschaftWerte[$kKey]);
+                    $kFreifeldEigeschaftWerte[$kKey] = $cVal;
                 }
             }
-
-            $bHasInvalidSelection = false;
-            $nInvalidVariations   = $oArtikel->getVariationsBySelection($kGesetzteEigeschaftWert_arr, true);
-
-            foreach ($kGesetzteEigeschaftWert_arr as $kKey => $kValue) {
-                if (isset($nInvalidVariations[$kKey]) && in_array($kValue, $nInvalidVariations[$kKey])) {
-                    $bHasInvalidSelection = true;
+            $hasInvalidSelection = false;
+            $invalidVariations   = $oArtikel->getVariationsBySelection($kGesetzteEigeschaftWerte, true);
+            foreach ($kGesetzteEigeschaftWerte as $kKey => $kValue) {
+                if (isset($invalidVariations[$kKey]) && in_array($kValue, $invalidVariations[$kKey])) {
+                    $hasInvalidSelection = true;
                     break;
                 }
             }
-
             // Auswahl zurücksetzen sobald eine nicht vorhandene Variation ausgewählt wurde.
-            if ($bHasInvalidSelection) {
+            if ($hasInvalidSelection) {
                 $objResponse->jsfunc('$.evo.article().variationResetAll', $wrapper);
 
-                $kGesetzteEigeschaftWert_arr = [$kEigenschaft => $kEigenschaftWert];
-                $nInvalidVariations          = $oArtikel->getVariationsBySelection($kGesetzteEigeschaftWert_arr, true);
+                $kGesetzteEigeschaftWerte = [$kEigenschaft => $kEigenschaftWert];
+                $invalidVariations          = $oArtikel->getVariationsBySelection($kGesetzteEigeschaftWerte, true);
 
                 // Auswählter EigenschaftWert ist ebenfalls nicht vorhanden
-                if (in_array($kEigenschaftWert, $nInvalidVariations[$kEigenschaft])) {
-                    $kGesetzteEigeschaftWert_arr = [];
+                if (in_array($kEigenschaftWert, $invalidVariations[$kEigenschaft])) {
+                    $kGesetzteEigeschaftWerte = [];
 
                     // Wir befinden uns im Kind-Artikel -> Weiterleitung auf Vater-Artikel
                     if ($kArtikelKind > 0) {
@@ -912,16 +903,14 @@ class IOMethods
                     }
                 }
             }
-
             // Alle EigenschaftWerte vorhanden, Kind-Artikel ermitteln
-            if (count($kGesetzteEigeschaftWert_arr) >= $oArtikel->nVariationOhneFreifeldAnzahl) {
-                $products = $this->getArticleByVariations($kVaterArtikel, $kGesetzteEigeschaftWert_arr);
-
+            if (count($kGesetzteEigeschaftWerte) >= $oArtikel->nVariationOhneFreifeldAnzahl) {
+                $products = $this->getArticleByVariations($kVaterArtikel, $kGesetzteEigeschaftWerte);
                 if (count($products) === 1 && $kArtikelKind !== (int)$products[0]->kArtikel) {
-                    $oArtikelTMP                  = $products[0];
-                    $oGesetzteEigeschaftWerte_arr = [];
-                    foreach ($kFreifeldEigeschaftWert_arr as $cKey => $cValue) {
-                        $oGesetzteEigeschaftWerte_arr[] = (object)[
+                    $oArtikelTMP             = $products[0];
+                    $gesetzteEigeschaftWerte = [];
+                    foreach ($kFreifeldEigeschaftWerte as $cKey => $cValue) {
+                        $gesetzteEigeschaftWerte[] = (object)[
                             'key'   => $cKey,
                             'value' => $cValue
                         ];
@@ -932,7 +921,7 @@ class IOMethods
                         $kVaterArtikel,
                         $oArtikelTMP->kArtikel,
                         $cUrl,
-                        $oGesetzteEigeschaftWerte_arr,
+                        $gesetzteEigeschaftWerte,
                         $wrapper
                     );
 
@@ -947,15 +936,14 @@ class IOMethods
             }
 
             $objResponse->jsfunc('$.evo.article().variationDisableAll', $wrapper);
-            $nPossibleVariations = $oArtikel->getVariationsBySelection($kGesetzteEigeschaftWert_arr, false);
-            $checkStockInfo      = count($kGesetzteEigeschaftWert_arr) > 0
-                && (count($kGesetzteEigeschaftWert_arr) === count($nPossibleVariations) - 1);
+            $nPossibleVariations = $oArtikel->getVariationsBySelection($kGesetzteEigeschaftWerte);
+            $checkStockInfo      = count($kGesetzteEigeschaftWerte) > 0
+                && (count($kGesetzteEigeschaftWerte) === count($nPossibleVariations) - 1);
             $stockInfo           = (object)[
                 'stock'  => true,
                 'status' => 2,
                 'text'   => '',
             ];
-
             foreach ($oArtikel->Variationen as $variation) {
                 if (in_array($variation->cTyp, ['FREITEXT', 'PFLICHTFREITEXT'])) {
                     $objResponse->jsfunc('$.evo.article().variationEnable', $variation->kEigenschaft, 0, $wrapper);
@@ -975,15 +963,15 @@ class IOMethods
                             );
 
                             if ($checkStockInfo
-                                && !array_key_exists($value->kEigenschaft, $kGesetzteEigeschaftWert_arr)
+                                && !array_key_exists($value->kEigenschaft, $kGesetzteEigeschaftWerte)
                             ) {
-                                $kGesetzteEigeschaftWert_arr[$value->kEigenschaft] = $value->kEigenschaftWert;
+                                $kGesetzteEigeschaftWerte[$value->kEigenschaft] = $value->kEigenschaftWert;
 
-                                $products = $this->getArticleByVariations($kVaterArtikel, $kGesetzteEigeschaftWert_arr);
+                                $products = $this->getArticleByVariations($kVaterArtikel, $kGesetzteEigeschaftWerte);
                                 if (count($products) === 1) {
                                     $stockInfo = $this->getArticleStockInfo((int)$products[0]->kArtikel);
                                 }
-                                unset($kGesetzteEigeschaftWert_arr[$value->kEigenschaft]);
+                                unset($kGesetzteEigeschaftWerte[$value->kEigenschaft]);
                             }
                         } else {
                             $stockInfo->stock  = false;
@@ -1008,11 +996,11 @@ class IOMethods
                         }
                     }
 
-                    if (isset($kGesetzteEigeschaftWert_arr[$variation->kEigenschaft])) {
+                    if (isset($kGesetzteEigeschaftWerte[$variation->kEigenschaft])) {
                         $objResponse->jsfunc(
                             '$.evo.article().variationActive',
                             $variation->kEigenschaft,
-                            addslashes($kGesetzteEigeschaftWert_arr[$variation->kEigenschaft]),
+                            addslashes($kGesetzteEigeschaftWerte[$variation->kEigenschaft]),
                             null,
                             $wrapper
                         );
@@ -1086,7 +1074,7 @@ class IOMethods
                     AND tartikelsichtbarkeit.kArtikel IS NULL',
             [
                 'languageID'      => Shop::getLanguageID(),
-                'customergroupID' => \Session\Session::getCustomerGroup()->getID(),
+                'customergroupID' => \Session\Frontend::getCustomerGroup()->getID(),
                 'parentProductID' => $parentProductID,
                 'variationID'     => $variationID,
                 'variationValue'  => $variationValue,
@@ -1155,7 +1143,7 @@ class IOMethods
 
         if (strlen($country) === 2) {
             $deliveryCountries = ShippingMethod::getPossibleShippingCountries(
-                Session::getCustomerGroup()->getID(),
+                \Session\Frontend::getCustomerGroup()->getID(),
                 false,
                 false,
                 [$country]
@@ -1170,14 +1158,14 @@ class IOMethods
      * @param string $cKey
      * @param int    $kKey
      * @param int    $kSprache
-     * @param array  $kSelection_arr
+     * @param array  $selection
      * @return IOResponse
      */
-    public function setSelectionWizardAnswers($cKey, $kKey, $kSprache, $kSelection_arr): IOResponse
+    public function setSelectionWizardAnswers($cKey, $kKey, $kSprache, $selection): IOResponse
     {
         $smarty   = Shop::Smarty();
         $response = new IOResponse();
-        $AWA      = AuswahlAssistent::startIfRequired($cKey, $kKey, $kSprache, $smarty, $kSelection_arr);
+        $AWA      = \Extensions\AuswahlAssistent::startIfRequired($cKey, $kKey, $kSprache, $smarty, $selection);
 
         if ($AWA !== null) {
             $oLastSelectedValue = $AWA->getLastSelectedValue();
@@ -1206,8 +1194,7 @@ class IOMethods
         $objResponse             = new IOResponse();
         $cToken                  = gibToken();
         $cName                   = gibTokenName();
-        $token_arr               = ['name' => $cName, 'token' => $cToken];
-        $_SESSION['xcrsf_token'] = json_encode($token_arr);
+        $_SESSION['xcrsf_token'] = json_encode(['name' => $cName, 'token' => $cToken]);
         $objResponse->script("doXcsrfToken('" . $cName . "', '" . $cToken . "');");
 
         return $objResponse;

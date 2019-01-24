@@ -22,9 +22,9 @@ if (Request::verifyGPCDataInt('branding') === 1) {
         && Form::validateToken()
     ) {
         if (speicherEinstellung(Request::verifyGPCDataInt('kBranding'), $_POST, $_FILES)) {
-            $cHinweis .= 'Ihre Einstellung wurde erfolgreich gespeichert.<br />';
+            $cHinweis .= __('successConfigSave') . '<br />';
         } else {
-            $cFehler .= 'Fehler: Bitte füllen Sie alle Felder komplett aus.<br />';
+            $cFehler .= __('errorFillRequired');
         }
     }
     // Hole bestimmtes branding

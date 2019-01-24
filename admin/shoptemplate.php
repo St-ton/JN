@@ -43,13 +43,13 @@ if (isset($_POST['key'], $_POST['upload'])) {
 }
 if (isset($_GET['check'])) {
     if ($_GET['check'] === 'true') {
-        $cHinweis = 'Template und Einstellungen wurden erfolgreich geändert.';
+        $cHinweis = __('successTemplateSave');
     } elseif ($_GET['check'] === 'false') {
-        $cFehler = 'Template bzw. Einstellungen konnten nicht geändert werden.';
+        $cFehler = __('errorTemplateSave');
     }
 }
 if (isset($_GET['uploadError'])) {
-    $cFehler .= 'Datei-Upload konnte nicht ausgeführt werden - bitte Schreibrechte &uumlberprüfen.';
+    $cFehler .= __('errorFileUpload');
 }
 if (isset($_POST['type']) && $_POST['type'] === 'layout' && Form::validateToken()) {
     $scss      = new SimpleCSS();
@@ -57,9 +57,9 @@ if (isset($_POST['type']) && $_POST['type'] === 'layout' && Form::validateToken(
     $customCSS = $scss->getCustomCSSFile($dir);
     if (isset($_POST['reset']) && (int)$_POST['reset'] === 1) {
         if (file_exists($customCSS) && is_writable($customCSS)) {
-            $cHinweis = 'Layout wurde erfolgreich zurückgesetzt.';
+            $cHinweis = __('successLayoutReset');
         } else {
-            $cFehler = 'Layout konnte nicht zurückgesetzt werden.';
+            $cFehler = __('errorLayoutReset');
         }
     } else {
         $selectors     = $_POST['selector'];
@@ -71,10 +71,10 @@ if (isset($_POST['type']) && $_POST['type'] === 'layout' && Form::validateToken(
             $scss->addCSS($selectors[$i], $attributes[$i], $values[$i]);
         }
         if (file_put_contents($customCSS, $scss->renderCSS()) === false) {
-            $cFehler = 'Style-Datei konnte nicht geschrieben werden. Überprüfen Sie die Dateirechte von ' .
+            $cFehler = __('errorStyleFilePermission') .
                 $customCSS . '.';
         } else {
-            $cHinweis = 'Layout wurde erfolgreich angepasst.';
+            $cHinweis = __('successLayoutSave');
         }
     }
 }
@@ -138,9 +138,9 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
     }
     $bCheck = __switchTemplate($_POST['ordner'], $_POST['eTyp']);
     if ($bCheck) {
-        $cHinweis = 'Template und Einstellungen wurden erfolgreich geändert.';
+        $cHinweis = __('successTemplateSave');
     } else {
-        $cFehler = 'Template bzw. Einstellungen konnten nicht geändert werden.';
+        $cFehler = __('errorTemplateSave');
     }
 
     if (Request::verifyGPCDataInt('activate') === 1) {
@@ -174,9 +174,9 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && Form::validateT
         $oTpl->eTyp = 'admin';
         $bCheck     = __switchTemplate($dir, $oTpl->eTyp);
         if ($bCheck) {
-            $cHinweis = 'Template und Einstellungen wurden erfolgreich geändert.';
+            $cHinweis = __('successTemplateSave');
         } else {
-            $cFehler = 'Template bzw. Einstellungen konnten nicht geändert werden.';
+            $cFehler = __('errorTemplateSave');
         }
         $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
         // re-init smarty with new template - problematic because of re-including functions.php
@@ -252,9 +252,9 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && Form::validateT
            ->assign('oEinstellungenXML', $tplConfXML);
 } elseif (isset($_GET['switch']) && strlen($_GET['switch']) > 0) {
     if (__switchTemplate($_GET['switch'], ($admin === true ? 'admin' : 'standard'))) {
-        $cHinweis = 'Template wurde erfolgreich geändert.';
+        $cHinweis = __('successTemplateSave');
     } else {
-        $cFehler = 'Template konnte nicht geändert werden.';
+        $cFehler = __('errorTemplateSave');
     }
 
     $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);

@@ -19,8 +19,8 @@
                                 <th>Bestell-Nr.</th>
                                 <th>Kunde</th>
                                 <th>Gezahlter Betrag</th>
-                                <th>Zahlungsgeb&uuml;hr</th>
-                                <th>W&auml;hrung</th>
+                                <th>Zahlungsgebühr</th>
+                                <th>Währung</th>
                                 <th>Abgeholt durch Wawi</th>
                             </tr>
                         </thead>
@@ -60,7 +60,7 @@
                         <tfoot>
                             <tr>
                                 <td><input type="checkbox" name="ALLMSGS" id="ALLMSGS" onclick="AllMessages(this.form);"></td>
-                                <td colspan="7"><label for="ALLMSGS">Alle ausw&auml;hlen</label></td>
+                                <td colspan="7"><label for="ALLMSGS">{__('selectAllShown')}</label></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -74,7 +74,7 @@
                 <div class="btn-group">
                     <button type="submit" name="action" value="paymentwawireset" class="btn btn-danger">
                         <i class="fa fa-refresh"></i>
-                        Wawi-Abholung zur&uuml;cksetzen
+                        Wawi-Abholung zurücksetzen
                     </button>
                     <a class="btn btn-primary" href="zahlungsarten.php">{__('goBack')}</a>
                 </div>

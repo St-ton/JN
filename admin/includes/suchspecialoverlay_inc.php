@@ -23,46 +23,46 @@ function gibAlleSuchspecialOverlays()
 }
 
 /**
- * @param int $kSuchspecialOverlay
- * @return mixed
+ * @param int $overlayID
+ * @return Overlay
  */
-function gibSuchspecialOverlay(int $kSuchspecialOverlay)
+function gibSuchspecialOverlay(int $overlayID)
 {
-    return Overlay::getInstance($kSuchspecialOverlay, (int)$_SESSION['kSprache']);
+    return Overlay::getInstance($overlayID, (int)$_SESSION['kSprache']);
 }
 
 /**
- * @param int $kSuchspecialOverlay
- * @param array $cPost_arr
- * @param array $cFiles_arr
+ * @param int $overlayID
+ * @param array $post
+ * @param array $files
  * @param int|null $lang
  * @param string|null $template
  * @return bool
  */
 function speicherEinstellung(
-    int $kSuchspecialOverlay,
-    array $cPost_arr,
-    array $cFiles_arr,
+    int $overlayID,
+    array $post,
+    array $files,
     int $lang = null,
     string $template = null
 ): bool {
-    $overlay = Overlay::getInstance($kSuchspecialOverlay, $lang ?? (int)$_SESSION['kSprache'], $template, false);
+    $overlay = Overlay::getInstance($overlayID, $lang ?? (int)$_SESSION['kSprache'], $template, false);
 
     if ($overlay->getType() <= 0) {
         return false;
     }
-    $overlay->setActive((int)$cPost_arr['nAktiv'])
-            ->setTransparence((int)$cPost_arr['nTransparenz'])
-            ->setSize((int)$cPost_arr['nGroesse'])
-            ->setPosition((int)($cPost_arr['nPosition'] ?? 0))
-            ->setPriority((int)$cPost_arr['nPrio']);
+    $overlay->setActive((int)$post['nAktiv'])
+            ->setTransparence((int)$post['nTransparenz'])
+            ->setSize((int)$post['nGroesse'])
+            ->setPosition((int)($post['nPosition'] ?? 0))
+            ->setPriority((int)$post['nPrio']);
 
-    if (strlen($cFiles_arr['name']) > 0) {
+    if (strlen($files['name']) > 0) {
         loescheBild($overlay);
         $overlay->setImageName(Overlay::IMAGENAME_TEMPLATE . '_' .
             $overlay->getLanguage() . '_' . $overlay->getType()
-                . mappeFileTyp($cFiles_arr['type']));
-        speicherBild($cFiles_arr, $overlay);
+                . mappeFileTyp($files['type']));
+        speicherBild($files, $overlay);
     }
     $overlay->save();
 
@@ -163,73 +163,72 @@ function imageload_alpha($img, $width, $height)
 }
 
 /**
- * @param string $cBild
- * @param int    $nBreite
- * @param int    $nHoehe
- * @param int    $nTransparenz
+ * @param string $image
+ * @param int    $width
+ * @param int    $height
+ * @param int    $transparency
  * @return resource
  */
-function ladeOverlay($cBild, $nBreite, $nHoehe, $nTransparenz)
+function ladeOverlay($image, $width, $height, $transparency)
 {
-    $img_src = imageload_alpha($cBild, $nBreite, $nHoehe);
-
-    if ($nTransparenz > 0) {
-        $new = imagecreatetruecolor($nBreite, $nHoehe);
+    $src = imageload_alpha($image, $width, $height);
+    if ($transparency > 0) {
+        $new = imagecreatetruecolor($width, $height);
         imagealphablending($new, false);
         imagesavealpha($new, true);
         $transparent = imagecolorallocatealpha($new, 255, 255, 255, 127);
-        imagefilledrectangle($new, 0, 0, $nBreite, $nHoehe, $transparent);
+        imagefilledrectangle($new, 0, 0, $width, $height, $transparent);
         imagealphablending($new, true);
         imagesavealpha($new, true);
 
-        imagecopymerge_alpha($new, $img_src, 0, 0, 0, 0, $nBreite, $nHoehe, 100 - $nTransparenz);
+        imagecopymerge_alpha($new, $src, 0, 0, 0, 0, $width, $height, 100 - $transparency);
 
         return $new;
     }
 
-    return $img_src;
+    return $src;
 }
 
 /**
  * @param resource $im
- * @param string   $cFormat
- * @param string   $cPfad
- * @param int      $nQuali
+ * @param string   $extension
+ * @param string   $path
+ * @param int      $quality
  * @return bool
  */
-function speicherOverlay($im, $cFormat, $cPfad, $nQuali = 80)
+function speicherOverlay($im, $extension, $path, $quality = 80)
 {
-    if (!$cFormat || !$im) {
+    if (!$extension || !$im) {
         return false;
     }
-    switch ($cFormat) {
+    switch ($extension) {
         case '.jpg':
             if (!function_exists('imagejpeg')) {
                 return false;
             }
 
-            return imagejpeg($im, $cPfad, $nQuali);
+            return imagejpeg($im, $path, $quality);
             break;
         case '.png':
             if (!function_exists('imagepng')) {
                 return false;
             }
 
-            return imagepng($im, $cPfad);
+            return imagepng($im, $path);
             break;
         case '.gif':
             if (!function_exists('imagegif')) {
                 return false;
             }
 
-            return imagegif($im, $cPfad);
+            return imagegif($im, $path);
             break;
         case '.bmp':
             if (!function_exists('imagewbmp')) {
                 return false;
             }
 
-            return imagewbmp($im, $cPfad);
+            return imagewbmp($im, $path);
             break;
     }
 
@@ -238,83 +237,82 @@ function speicherOverlay($im, $cFormat, $cPfad, $nQuali = 80)
 
 /**
  * @deprecated since 4.07
- * @param string $cBild
- * @param string $cBreite
- * @param string $cHoehe
- * @param int    $nGroesse
- * @param int    $nTransparenz
- * @param string $cFormat
- * @param string $cPfad
+ * @param string $image
+ * @param string $width
+ * @param string $height
+ * @param int    $size
+ * @param int    $transparency
+ * @param string $extension
+ * @param string $path
  */
-function erstelleOverlay($cBild, $cBreite, $cHoehe, $nGroesse, $nTransparenz, $cFormat, $cPfad)
+function erstelleOverlay($image, $width, $height, $size, $transparency, $extension, $path)
 {
-    $Einstellungen = Shop::getSettings([CONF_BILDER]);
-    $bSkalieren    = !($Einstellungen['bilder']['bilder_skalieren'] === 'N'); //@todo noch beachten
+    $conf = Shop::getSettings([CONF_BILDER]);
+    // $bSkalieren    = !($conf['bilder']['bilder_skalieren'] === 'N'); //@todo noch beachten
+    $width  = $conf['bilder'][$width];
+    $height = $conf['bilder'][$height];
 
-    $nBreite = $Einstellungen['bilder'][$cBreite];
-    $nHoehe  = $Einstellungen['bilder'][$cHoehe];
-
-    list($nOverlayBreite, $nOverlayHoehe) = getimagesize($cBild);
+    [$overlayWidth, $overlayHight] = getimagesize($image);
 
     $nOffX = $nOffY = 1;
-    if ($nGroesse > 0) {
-        $nMaxBreite = $nBreite * ($nGroesse / 100);
-        $nMaxHoehe  = $nHoehe * ($nGroesse / 100);
+    if ($size > 0) {
+        $maxWidth  = $width * ($size / 100);
+        $maxHeight = $height * ($size / 100);
 
-        $nOffX = $nOverlayBreite / $nMaxBreite;
-        $nOffY = $nOverlayHoehe / $nMaxHoehe;
+        $nOffX = $overlayWidth / $maxWidth;
+        $nOffY = $overlayHight / $maxHeight;
     }
 
     if ($nOffY > $nOffX) {
-        $nOverlayBreite = round($nOverlayBreite * (1 / $nOffY));
-        $nOverlayHoehe  = round($nOverlayHoehe * (1 / $nOffY));
+        $overlayWidth = round($overlayWidth * (1 / $nOffY));
+        $overlayHight = round($overlayHight * (1 / $nOffY));
     } else {
-        $nOverlayBreite = round($nOverlayBreite * (1 / $nOffX));
-        $nOverlayHoehe  = round($nOverlayHoehe * (1 / $nOffX));
+        $overlayWidth = round($overlayWidth * (1 / $nOffX));
+        $overlayHight = round($overlayHight * (1 / $nOffX));
     }
 
-    $im = ladeOverlay($cBild, $nOverlayBreite, $nOverlayHoehe, $nTransparenz);
-    speicherOverlay($im, $cFormat, $cPfad);
+    $im = ladeOverlay($image, $overlayWidth, $overlayHight, $transparency);
+    speicherOverlay($im, $extension, $path);
 }
 
 /**
- * @param string $cBild
- * @param int    $nGroesse
- * @param int    $nTransparenz
- * @param string $cFormat
- * @param string $cPfad
+ * @param string $image
+ * @param int    $size
+ * @param int    $transparency
+ * @param string $extension
+ * @param string $path
  */
-function erstelleFixedOverlay(string $cBild, int $nGroesse, int $nTransparenz, string $cFormat, string $cPfad): void
+function erstelleFixedOverlay(string $image, int $size, int $transparency, string $extension, string $path): void
 {
-//    $Einstellungen = Shop::getSettings([CONF_BILDER]);
-//    $bSkalieren    = !($Einstellungen['bilder']['bilder_skalieren'] === 'N'); //@todo noch beachten
+//    $conf = Shop::getSettings([CONF_BILDER]);
+//    $bSkalieren    = !($conf['bilder']['bilder_skalieren'] === 'N'); //@todo noch beachten
 
-    [$nBreite, $nHoehe] = getimagesize($cBild);
-    $factor             = $nGroesse/$nBreite;
+    [$width, $height] = getimagesize($image);
+    $factor           = $size / $width;
 
-    $im = ladeOverlay($cBild, $nGroesse, $nHoehe*$factor, $nTransparenz);
-    speicherOverlay($im, $cFormat, $cPfad);
+    $im = ladeOverlay($image, $size, $height*$factor, $transparency);
+    speicherOverlay($im, $extension, $path);
 }
 
 
 /**
- * @param array $cFiles_arr
+ * @param array $files
  * @param Overlay $overlay
  * @return bool
  */
-function speicherBild(array $cFiles_arr, Overlay $overlay): bool
+function speicherBild(array $files, Overlay $overlay): bool
 {
-    if ($cFiles_arr['type'] === 'image/jpeg'
-        || $cFiles_arr['type'] === 'image/pjpeg'
-        || $cFiles_arr['type'] === 'image/jpg'
-        || $cFiles_arr['type'] === 'image/gif'
-        || $cFiles_arr['type'] === 'image/png'
-        || $cFiles_arr['type'] === 'image/bmp'
-        || $cFiles_arr['type'] === 'image/x-png'
+    if ($files['type'] === 'image/jpeg'
+        || $files['type'] === 'image/pjpeg'
+        || $files['type'] === 'image/jpg'
+        || $files['type'] === 'image/gif'
+        || $files['type'] === 'image/png'
+        || $files['type'] === 'image/bmp'
+        || $files['type'] === 'image/x-png'
     ) {
-        if (empty($cFiles_arr['error'])) {
-            $cFormat   = mappeFileTyp($cFiles_arr['type']);
-            $cOriginal = $cFiles_arr['tmp_name'];
+        if (empty($files['error'])) {
+            $ext      = mappeFileTyp($files['type']);
+            $original = $files['tmp_name'];
 
             $sizesToCreate = [
                 ['size' => IMAGE_SIZE_XS,  'factor' => 1],
@@ -328,10 +326,10 @@ function speicherBild(array $cFiles_arr, Overlay $overlay): bool
                     mkdir(PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']), 0755, true);
                 }
                 erstelleFixedOverlay(
-                    $cOriginal,
+                    $original,
                     $overlay->getSize() * $sizeToCreate['factor'],
                     $overlay->getTransparance(),
-                    $cFormat,
+                    $ext,
                     PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']) . $overlay->getImageName()
                 );
             }
@@ -357,12 +355,12 @@ function loescheBild(Overlay $overlay): void
 }
 
 /**
- * @param string $cTyp
+ * @param string $type
  * @return string
  */
-function mappeFileTyp(string $cTyp): string
+function mappeFileTyp(string $type): string
 {
-    switch ($cTyp) {
+    switch ($type) {
         case 'image/jpeg':
             return '.jpg';
         case 'image/pjpeg':

@@ -7,7 +7,7 @@
 namespace Filter;
 
 /**
- * Class StateSQLInterface
+ * Interface StateSQLInterface
  * @package Filter
  */
 interface StateSQLInterface

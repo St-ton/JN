@@ -7,6 +7,7 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
+use Helpers\URL;
 
 /**
  * Class TagCloud
@@ -21,7 +22,7 @@ final class TagCloud extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        parent::addMapping('Tagbegriffe', 'Items');
+        $this->addMapping('Tagbegriffe', 'Items');
         $limit     = (int)$config['boxen']['boxen_tagging_count'];
         $limitSQL  = ($limit > 0) ? ' LIMIT ' . $limit : '';
         $cacheTags = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
@@ -55,8 +56,8 @@ final class TagCloud extends AbstractBox
                         $tagwolke->Klasse   = ($prio_step < 1) ?
                             \rand(1, 10) :
                             (\round(($tagwolke->Anzahl - $tags[$count - 1]->Anzahl) / $prio_step) + 1);
-                        $tagwolke->cURL     = \Helpers\URL::buildURL($tagwolke, \URLART_TAG);
-                        $tagwolke->cURLFull = \Helpers\URL::buildURL($tagwolke, \URLART_TAG, true);
+                        $tagwolke->cURL     = URL::buildURL($tagwolke, \URLART_TAG);
+                        $tagwolke->cURLFull = URL::buildURL($tagwolke, \URLART_TAG, true);
                         $tagCloud[]         = $tagwolke;
                     }
                 }

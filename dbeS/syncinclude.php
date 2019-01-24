@@ -58,9 +58,9 @@ if (!function_exists('Shop')) {
 $DB    = new \DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 $cache = Shop::Container()->getCache()->setJtlCacheConfig();
 
-$GLOBALS['bSeo']      = true; //compatibility!
-$oPluginHookListe_arr = \Plugin\Helper::getHookList();
-$oSprache             = Sprache::getInstance(true);
+$GLOBALS['bSeo'] = true; //compatibility!
+$pluginHooks     = \Plugin\Helper::getHookList();
+$oSprache        = Sprache::getInstance();
 
 /**
  * @param string     $cacheID
@@ -86,13 +86,13 @@ function html2rgb($color)
     }
 
     if (strlen($color) === 6) {
-        list($r, $g, $b) = [
+        [$r, $g, $b] = [
             $color[0] . $color[1],
             $color[2] . $color[3],
             $color[4] . $color[5]
         ];
     } elseif (strlen($color) === 3) {
-        list($r, $g, $b) = [
+        [$r, $g, $b] = [
             $color[0] . $color[0],
             $color[1] . $color[1],
             $color[2] . $color[2]
@@ -437,13 +437,12 @@ function mappe(&$obj, $xml, $map)
  */
 function mapArray($xml, $name, $map)
 {
-    $obj_arr = [];
-    if ((isset($xml[$name]) && is_array($xml[$name]))
-        || (isset($xml[$name . ' attr']) && is_array($xml[$name . ' attr']))
-    ) {
-        if (isset($xml[$name . ' attr']) && is_array($xml[$name . ' attr'])) {
+    $objects = [];
+    $idx     = $name . ' attr';
+    if ((isset($xml[$name]) && is_array($xml[$name])) || (isset($xml[$idx]) && is_array($xml[$idx]))) {
+        if (isset($xml[$idx]) && is_array($xml[$idx])) {
             $obj = new stdClass();
-            mapAttributes($obj, $xml[$name . ' attr']);
+            mapAttributes($obj, $xml[$idx]);
             mappe($obj, $xml[$name], $map);
 
             return [$obj];
@@ -451,67 +450,64 @@ function mapArray($xml, $name, $map)
         if (count($xml[$name]) > 2) {
             $cnt = count($xml[$name]) / 2;
             for ($i = 0; $i < $cnt; $i++) {
-                if (!isset($obj_arr[$i]) || $obj_arr[$i] === null) {
-                    $obj_arr[$i] = new stdClass();
+                if (!isset($objects[$i]) || $objects[$i] === null) {
+                    $objects[$i] = new stdClass();
                 }
-                mapAttributes($obj_arr[$i], $xml[$name][$i . ' attr']);
-                mappe($obj_arr[$i], $xml[$name][$i], $map);
+                mapAttributes($objects[$i], $xml[$name][$i . ' attr']);
+                mappe($objects[$i], $xml[$name][$i], $map);
             }
         }
     }
 
-    return $obj_arr;
+    return $objects;
 }
 
 /**
  * @param object $oXmlTree
- * @param array  $cMapping_arr
+ * @param array  $mappings
  * @return stdClass
  */
-function JTLMapArr($oXmlTree, array $cMapping_arr)
+function JTLMapArr($oXmlTree, array $mappings)
 {
-    $oMapped = new stdClass();
-    foreach ($oXmlTree->Attributes() as $cKey => $cVal) {
-        $oMapped->{$cKey} = (string)$cVal;
+    $mapped = new stdClass();
+    foreach ($oXmlTree->Attributes() as $key => $val) {
+        $mapped->{$key} = (string)$val;
     }
-    foreach ($cMapping_arr as $cMap) {
-        if (isset($oXmlTree->{$cMap})) {
-            $oMapped->{$cMap} = (string)$oXmlTree->{$cMap};
+    foreach ($mappings as $mapping) {
+        if (isset($oXmlTree->{$mapping})) {
+            $mapped->{$mapping} = (string)$oXmlTree->{$mapping};
         }
     }
 
-    return $oMapped;
+    return $mapped;
 }
 
 /**
  * @param array  $xml
- * @param string $tabelle
+ * @param string $table
  * @param array  $map
  * @param int    $del
  */
-function XML2DB($xml, $tabelle, $map, $del = 1)
+function XML2DB($xml, $table, $map, $del = 1)
 {
-    if (isset($xml[$tabelle]) && is_array($xml[$tabelle])) {
-        $obj_arr = mapArray($xml, $tabelle, $map);
-        DBDelInsert($tabelle, $obj_arr, $del);
+    if (isset($xml[$table]) && is_array($xml[$table])) {
+        $obj_arr = mapArray($xml, $table, $map);
+        DBDelInsert($table, $obj_arr, $del);
     }
 }
 
 /**
  * @param array      $xml
- * @param string     $tabelle
+ * @param string     $table
  * @param array      $map
  * @param string     $pk1
  * @param int|string $pk2
  */
-function updateXMLinDB($xml, $tabelle, $map, $pk1, $pk2 = 0)
+function updateXMLinDB($xml, $table, $map, $pk1, $pk2 = 0)
 {
-    if ((isset($xml[$tabelle]) && is_array($xml[$tabelle]))
-        || (isset($xml[$tabelle . ' attr']) && is_array($xml[$tabelle . ' attr']))
-    ) {
-        $obj_arr = mapArray($xml, $tabelle, $map);
-
-        DBUpdateInsert($tabelle, $obj_arr, $pk1, $pk2);
+    $idx = $table . ' attr';
+    if ((isset($xml[$table]) && is_array($xml[$table])) || (isset($xml[$idx]) && is_array($xml[$idx]))) {
+        DBUpdateInsert($table, mapArray($xml, $table, $map), $pk1, $pk2);
     }
 }
 
@@ -564,6 +560,35 @@ function fuelleArtikelKategorieRabatt($product, $customerGroups): array
 }
 
 /**
+ * @param int $categoryID
+ * @return void
+ */
+function setCategoryDiscount(int $categoryID)
+{
+    $db = Shop::Container()->getDB();
+    $db->delete('tartikelkategorierabatt', 'kKategorie', $categoryID);
+    $db->queryPrepared(
+        'INSERT INTO tartikelkategorierabatt (
+            SELECT tkategorieartikel.kArtikel, tkategoriekundengruppe.kKundengruppe, tkategorieartikel.kKategorie,
+                   MAX(tkategoriekundengruppe.fRabatt) fRabatt
+            FROM tkategoriekundengruppe
+            INNER JOIN tkategorieartikel ON tkategorieartikel.kKategorie = tkategoriekundengruppe.kKategorie
+            LEFT JOIN tkategoriesichtbarkeit ON tkategoriesichtbarkeit.kKategorie = tkategoriekundengruppe.kKategorie
+                AND tkategoriesichtbarkeit.kKundengruppe = tkategoriekundengruppe.kKundengruppe
+            WHERE tkategoriekundengruppe.kKategorie = :categoryID
+                AND tkategoriesichtbarkeit.kKategorie IS NULL
+            GROUP BY tkategorieartikel.kArtikel, tkategoriekundengruppe.kKundengruppe, tkategorieartikel.kKategorie
+            HAVING MAX(tkategoriekundengruppe.fRabatt) > 0
+        )',
+        [
+            'categoryID' => $categoryID,
+        ],
+        \DB\ReturnType::DEFAULT
+    );
+    Shop::Cache()->flushTags([CACHING_GROUP_CATEGORY . '_' . $categoryID]);
+}
+
+/**
  * @param object $product
  */
 function versendeVerfuegbarkeitsbenachrichtigung($product)
@@ -571,12 +596,13 @@ function versendeVerfuegbarkeitsbenachrichtigung($product)
     if (!($product->fLagerbestand > 0 && $product->kArtikel)) {
         return;
     }
-    $Benachrichtigungen = Shop::Container()->getDB()->selectAll(
+    $db            = Shop::Container()->getDB();
+    $subscriptions = $db->selectAll(
         'tverfuegbarkeitsbenachrichtigung',
         ['nStatus', 'kArtikel'],
         [0, $product->kArtikel]
     );
-    if (!is_array($Benachrichtigungen) || count($Benachrichtigungen) === 0) {
+    if (count($subscriptions) === 0) {
         return;
     }
     require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
@@ -586,21 +612,21 @@ function versendeVerfuegbarkeitsbenachrichtigung($product)
     if ($Artikel === null) {
         return;
     }
-    $oKampagne = new Kampagne(KAMPAGNE_INTERN_VERFUEGBARKEIT);
-    if ($oKampagne->kKampagne > 0) {
+    $campaign = new Kampagne(KAMPAGNE_INTERN_VERFUEGBARKEIT);
+    if ($campaign->kKampagne > 0) {
         $cSep           = strpos($Artikel->cURL, '.php') === false ? '?' : '&';
-        $Artikel->cURL .= $cSep . $oKampagne->cParameter . '=' . $oKampagne->cWert;
+        $Artikel->cURL .= $cSep . $campaign->cParameter . '=' . $campaign->cWert;
     }
-    foreach ($Benachrichtigungen as $Benachrichtigung) {
+    foreach ($subscriptions as $msg) {
         $obj                                   = new stdClass();
-        $obj->tverfuegbarkeitsbenachrichtigung = $Benachrichtigung;
+        $obj->tverfuegbarkeitsbenachrichtigung = $msg;
         $obj->tartikel                         = $Artikel;
         $obj->tartikel->cName                  = StringHandler::htmlentitydecode($obj->tartikel->cName);
         $mail                                  = new stdClass();
-        $mail->toEmail                         = $Benachrichtigung->cMail;
-        $mail->toName                          = ($Benachrichtigung->cVorname || $Benachrichtigung->cNachname)
-            ? ($Benachrichtigung->cVorname . ' ' . $Benachrichtigung->cNachname)
-            : $Benachrichtigung->cMail;
+        $mail->toEmail                         = $msg->cMail;
+        $mail->toName                          = ($msg->cVorname || $msg->cNachname)
+            ? ($msg->cVorname . ' ' . $msg->cNachname)
+            : $msg->cMail;
         $obj->mail                             = $mail;
         sendeMail(MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $obj);
 
@@ -608,10 +634,10 @@ function versendeVerfuegbarkeitsbenachrichtigung($product)
         $upd->nStatus           = 1;
         $upd->dBenachrichtigtAm = 'NOW()';
         $upd->cAbgeholt         = 'N';
-        Shop::Container()->getDB()->update(
+        $db->update(
             'tverfuegbarkeitsbenachrichtigung',
             'kVerfuegbarkeitsbenachrichtigung',
-            $Benachrichtigung->kVerfuegbarkeitsbenachrichtigung,
+            $msg->kVerfuegbarkeitsbenachrichtigung,
             $upd
         );
     }
@@ -624,8 +650,8 @@ function versendeVerfuegbarkeitsbenachrichtigung($product)
  */
 function setzePreisverlauf(int $kArtikel, int $kKundengruppe, float $fVKNetto)
 {
-    $db         = Shop::Container()->getDB();
-    $oPreis_arr = $db->queryPrepared(
+    $db      = Shop::Container()->getDB();
+    $history = $db->queryPrepared(
         'SELECT kPreisverlauf, fVKNetto, dDate, IF(dDate = CURDATE(), 1, 0) bToday
             FROM tpreisverlauf
             WHERE kArtikel = :kArtikel
@@ -638,27 +664,27 @@ function setzePreisverlauf(int $kArtikel, int $kKundengruppe, float $fVKNetto)
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
-    if (!empty($oPreis_arr[0]) && (int)$oPreis_arr[0]->bToday === 1) {
+    if (!empty($history[0]) && (int)$history[0]->bToday === 1) {
         // price for today exists
-        if (round($oPreis_arr[0]->fVKNetto * 100) === round($fVKNetto * 100)) {
+        if (round($history[0]->fVKNetto * 100) === round($fVKNetto * 100)) {
             // return if there is no difference
             return;
         }
-        if (!empty($oPreis_arr[1]) && round($oPreis_arr[1]->fVKNetto * 100) === round($fVKNetto * 100)) {
+        if (!empty($history[1]) && round($history[1]->fVKNetto * 100) === round($fVKNetto * 100)) {
             // delete todays price if the new price for today is the same as the latest price
-            $db->delete('tpreisverlauf', 'kPreisverlauf', (int)$oPreis_arr[0]->kPreisverlauf);
+            $db->delete('tpreisverlauf', 'kPreisverlauf', (int)$history[0]->kPreisverlauf);
         } else {
             // update if prices are different
             $db->update(
                 'tpreisverlauf',
                 'kPreisverlauf',
-                (int)$oPreis_arr[0]->kPreisverlauf,
+                (int)$history[0]->kPreisverlauf,
                 (object)['fVKNetto' => $fVKNetto]
             );
         }
     } else {
         // no price for today exists
-        if (!empty($oPreis_arr[0]) && round($oPreis_arr[0]->fVKNetto * 100) === round($fVKNetto * 100)) {
+        if (!empty($history[0]) && round($history[0]->fVKNetto * 100) === round($fVKNetto * 100)) {
             // return if there is no difference
             return;
         }
@@ -878,21 +904,21 @@ function getSeoFromDB($kKey, $cKey, $kSprache = null, $cAssoc = null)
             return $oSeo;
         }
     } else {
-        $oSeo_arr = Shop::Container()->getDB()->selectAll('tseo', ['kKey', 'cKey'], [$kKey, $cKey]);
-        if (is_array($oSeo_arr) && count($oSeo_arr) > 0) {
+        $seo = Shop::Container()->getDB()->selectAll('tseo', ['kKey', 'cKey'], [$kKey, $cKey]);
+        if (is_array($seo) && count($seo) > 0) {
             if ($cAssoc !== null && strlen($cAssoc) > 0) {
                 $oAssoc_arr = [];
-                foreach ($oSeo_arr as $oSeo) {
+                foreach ($seo as $oSeo) {
                     if (isset($oSeo->{$cAssoc})) {
                         $oAssoc_arr[$oSeo->{$cAssoc}] = $oSeo;
                     }
                 }
                 if (count($oAssoc_arr) > 0) {
-                    $oSeo_arr = $oAssoc_arr;
+                    $seo = $oAssoc_arr;
                 }
             }
 
-            return $oSeo_arr;
+            return $seo;
         }
     }
 
@@ -1070,13 +1096,21 @@ function handleOldPriceFormat($objs)
 }
 
 /**
- * @param int $kArtikel
+ * @param int[] $productIDs
  */
-function handlePriceRange(int $kArtikel)
+function handlePriceRange(array $productIDs)
 {
-    $db            = Shop::Container()->getDB();
-    $priceRangeArr = $db->queryPrepared(
-        "SELECT baseprice.kArtikel,
+    $db = Shop::Container()->getDB();
+    $db->executeQuery(
+        'DELETE FROM tpricerange
+            WHERE kArtikel IN (' . implode(',', $productIDs) . ')',
+        \DB\ReturnType::DEFAULT
+    );
+    $uniqueProductIDs = implode(',', array_unique($productIDs));
+    $db->executeQuery(
+        'INSERT INTO tpricerange
+            (kArtikel, kKundengruppe, kKunde, nRangeType, fVKNettoMin, fVKNettoMax, nLagerAnzahlMax, dStart, dEnde)
+            SELECT baseprice.kArtikel,
                 COALESCE(baseprice.kKundengruppe, 0) AS kKundengruppe,
                 COALESCE(baseprice.kKunde, 0) AS kKunde,
                 baseprice.nRangeType,
@@ -1102,6 +1136,8 @@ function handlePriceRange(int $kArtikel)
                     ON tpreis.kArtikel = tartikel.kArtikel
                 INNER JOIN tpreisdetail 
                     ON tpreisdetail.kPreis = tpreis.kPreis
+                WHERE IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
+                    . $uniqueProductIDs . ')
 
                 UNION ALL
 
@@ -1125,7 +1161,9 @@ function handlePriceRange(int $kArtikel)
                     ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
                 INNER JOIN tsonderpreise 
                     ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
-                WHERE tartikelsonderpreis.cAktiv = 'Y'
+                WHERE tartikelsonderpreis.cAktiv = \'Y\'
+                    AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
+                        . $uniqueProductIDs . ')
             ) baseprice
             LEFT JOIN (
                 SELECT variations.kArtikel, variations.kKundengruppe,
@@ -1145,58 +1183,23 @@ function handlePriceRange(int $kArtikel)
                     LEFT JOIN teigenschaftwertaufpreis 
                         ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                         AND teigenschaftwertaufpreis.kKundengruppe = tkundengruppe.kKundengruppe
+                    WHERE teigenschaft.kArtikel IN (' . $uniqueProductIDs . ')
                     GROUP BY teigenschaft.kArtikel, tkundengruppe.kKundengruppe, teigenschaft.kEigenschaft
                 ) variations
                 GROUP BY variations.kArtikel, variations.kKundengruppe
             ) varaufpreis 
                 ON varaufpreis.kArtikel = baseprice.kKindArtikel 
                 AND baseprice.nIstVater = 0
-            WHERE baseprice.kArtikel = :kArtikel
+            WHERE baseprice.kArtikel IN (' . $uniqueProductIDs . ')
             GROUP BY baseprice.kArtikel,
                 baseprice.kKundengruppe,
                 baseprice.kKunde,
                 baseprice.nRangeType,
                 baseprice.nLagerAnzahlMax,
                 baseprice.dStart,
-                baseprice.dEnde",
-        ['kArtikel' => $kArtikel],
-        \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                baseprice.dEnde',
+        \DB\ReturnType::DEFAULT
     );
-
-    $updated = [];
-    foreach ($priceRangeArr as $priceRange) {
-        $db->queryPrepared(
-            'INSERT INTO tpricerange 
-            (kArtikel, kKundengruppe, kKunde, nRangeType, fVKNettoMin, fVKNettoMax, nLagerAnzahlMax, dStart, dEnde)
-                VALUES (:kArtikel, :kKundengruppe, :kKunde, :nRangeType, :fVKNettoMin,
-                        :fVKNettoMax, :nLagerAnzahlMax, :dStart, :dEnde)
-                ON DUPLICATE KEY UPDATE
-                    fVKNettoMin = :fVKNettoMin,
-                    fVKNettoMax = :fVKNettoMax,
-                    nLagerAnzahlMax = :nLagerAnzahlMax,
-                    dStart = :dStart,
-                    dEnde = :dEnde',
-            $priceRange,
-            \DB\ReturnType::AFFECTED_ROWS
-        );
-        $updated[] = "({$priceRange['kKundengruppe']}, {$priceRange['nRangeType']})";
-    }
-
-    if (count($updated) > 0) {
-        $db->queryPrepared(
-            'DELETE FROM tpricerange
-                WHERE kArtikel = :kArtikel
-                    AND (kKundengruppe, nRangeType) NOT IN (' . implode($updated, ', ') . ')',
-            ['kArtikel' => $kArtikel],
-            \DB\ReturnType::AFFECTED_ROWS
-        );
-    } else {
-        $db->queryPrepared(
-            'DELETE FROM tpricerange WHERE kArtikel = :kArtikel',
-            ['kArtikel' => $kArtikel],
-            \DB\ReturnType::AFFECTED_ROWS
-        );
-    }
 }
 
 /**

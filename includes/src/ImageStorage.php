@@ -28,7 +28,7 @@ class ImageStorage
     /**
      * @throws Exception
      */
-    public function output()
+    public function output(): void
     {
         $thumbPath = $this->req->getThumbPath(true);
         if (!is_file($thumbPath)) {
@@ -44,7 +44,7 @@ class ImageStorage
     /**
      * @throws Exception
      */
-    private function render()
+    private function render(): void
     {
         $filepath       = ImageCache::getThumbFilePath($this->req);
         $masterFilepath = ImageCache::getMasterFilePath($this->req);
@@ -90,7 +90,7 @@ class ImageStorage
     /**
      *
      */
-    private function pushHeader()
+    private function pushHeader(): void
     {
         $filepath       = ImageCache::getThumbFilePath($this->req);
         $masterFilepath = ImageCache::getMasterFilePath($this->req);

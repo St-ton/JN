@@ -1,7 +1,7 @@
 {if (isset($oFrage->kAuswahlAssistentFrage) && $oFrage->kAuswahlAssistentFrage > 0) || (isset($kAuswahlAssistentFrage) && $kAuswahlAssistentFrage > 0)}
-    {assign var="cTitel" value=__('auswahlassistent')|cat:' - '|cat:__('aaQuestionEdit')}
+    {assign var=cTitel value=__('auswahlassistent')|cat:' - '|cat:__('aaQuestionEdit')}
 {else}
-    {assign var="cTitel" value=__('auswahlassistent')|cat:' - '|cat:__('aaQuestion')}
+    {assign var=cTitel value=__('auswahlassistent')|cat:' - '|cat:__('aaQuestion')}
 {/if}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__('auswahlassistentDesc')
@@ -48,13 +48,13 @@ cDokuURL=__('auswahlassistentURL')}
                         <span class="input-group-wrap">
                             <select id="kAuswahlAssistentGruppe" name="kAuswahlAssistentGruppe" class="form-control{if isset($cPlausi_arr.kAuswahlAssistentGruppe)} fieldfillout{/if}">
                                 <option value="-1">{__('aaChoose')}</option>
-                                {foreach name=gruppen from=$oAuswahlAssistentGruppe_arr item=oAuswahlAssistentGruppe}
+                                {foreach $oAuswahlAssistentGruppe_arr as $oAuswahlAssistentGruppe}
                                     <option value="{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}"
                                             {if isset($oAuswahlAssistentGruppe->kAuswahlAssistentGruppe) && ((isset($cPost_arr.kAuswahlAssistentGruppe) && $oAuswahlAssistentGruppe->kAuswahlAssistentGruppe == $cPost_arr.kAuswahlAssistentGruppe) || (isset($oFrage->kAuswahlAssistentGruppe) && $oAuswahlAssistentGruppe->kAuswahlAssistentGruppe == $oFrage->kAuswahlAssistentGruppe))} selected{/if}>{$oAuswahlAssistentGruppe->cName}</option>
                                 {/foreach}
                             </select>
                         </span>
-                        <span class="input-group-addon">{getHelpDesc cDesc="In welche Gruppe soll die Frage hinzugef&uuml;gt werden?"}</span>
+                        <span class="input-group-addon">{getHelpDesc cDesc="In welche Gruppe soll die Frage hinzugefügt werden?"}</span>
                     </div>
 
                     <div class="input-group">
@@ -66,7 +66,7 @@ cDokuURL=__('auswahlassistentURL')}
                         <span class="input-group-wrap">
                             <select id="kMM" name="kMerkmal" class="form-control{if isset($cPlausi_arr.kMerkmal)} fieldfillout{/if}">
                                 <option value="-1">{__('aaChoose')}</option>
-                                {foreach name=merkmale from=$oMerkmal_arr item=oMerkmal}
+                                {foreach $oMerkmal_arr as $oMerkmal}
                                     <option value="{$oMerkmal->kMerkmal}"{if (isset($cPost_arr.kMerkmal) && $oMerkmal->kMerkmal == $cPost_arr.kMerkmal) || (isset($oFrage->kMerkmal) && $oMerkmal->kMerkmal == $oFrage->kMerkmal)} selected{/if}>{$oMerkmal->cName}</option>
                                 {/foreach}
                             </select>
@@ -87,7 +87,7 @@ cDokuURL=__('auswahlassistentURL')}
                                name="nSort" type="text"
                                value="{if isset($cPost_arr.nSort)}{$cPost_arr.nSort}{elseif isset($oFrage->nSort)}{$oFrage->nSort}{else}1{/if}">
                         <span class="input-group-addon">
-                            {getHelpDesc cDesc="An welcher Position soll die Frage stehen? (Umso h&ouml;her desto weiter unten, z.b. 3)"}
+                            {getHelpDesc cDesc="An welcher Position soll die Frage stehen? (Umso höher desto weiter unten, z.b. 3)"}
                         </span>
                     </div>
 

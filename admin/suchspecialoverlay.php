@@ -27,9 +27,9 @@ if (Request::verifyGPCDataInt('suchspecialoverlay') === 1) {
     ) {
         if (speicherEinstellung($oID, $_POST, $_FILES['cSuchspecialOverlayBild'])) {
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
-            $cHinweis .= 'Ihre Einstellung wurde erfolgreich gespeichert.<br />';
+            $cHinweis .= __('successConfigSave') . '<br />';
         } else {
-            $cFehler .= 'Fehler: Bitte füllen Sie alle Felder komplett aus.<br />';
+            $cFehler .= __('errorFillRequired') . '<br />';
         }
     }
     if ($oID > 0) {

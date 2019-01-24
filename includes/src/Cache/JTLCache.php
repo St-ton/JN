@@ -7,6 +7,8 @@
 namespace Cache;
 
 use Cache\Methods\cache_null;
+use Helpers\Request;
+use Session\Frontend;
 
 \define('CACHING_ROOT_DIR', __DIR__ . '/');
 \define('CACHING_METHODS_DIR', \CACHING_ROOT_DIR . 'CachingMethods/');
@@ -786,7 +788,7 @@ final class JTLCache implements JTLCacheInterface
         }
         // add customer group
         if ($customerGroup === true) {
-            $baseID .= '_cgid' . \Session\Session::getCustomerGroup()->getID();
+            $baseID .= '_cgid' . Frontend::getCustomerGroup()->getID();
         } elseif (\is_numeric($customerGroup)) {
             $baseID .= '_cgid' . (int)$customerGroup;
         }
@@ -806,13 +808,13 @@ final class JTLCache implements JTLCacheInterface
         }
         // add currency ID
         if ($currencyID === true) {
-            $baseID .= '_curid' . \Session\Session::getCurrency()->getID();
+            $baseID .= '_curid' . Frontend::getCurrency()->getID();
         } elseif (\is_numeric($currencyID)) {
             $baseID .= '_curid' . (int)$currencyID;
         }
         // add current SSL status
         if ($sslStatus === true) {
-            $baseID .= '_ssl' . \Helpers\Request::checkSSL();
+            $baseID .= '_ssl' . Request::checkSSL();
         }
 
         if ($this->options['debug'] === true && $this->options['debug_method'] === 'echo') {

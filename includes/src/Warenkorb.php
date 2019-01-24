@@ -76,6 +76,24 @@ class Warenkorb
     private $config;
 
     /**
+     *
+     */
+    public function __wakeup()
+    {
+        $this->config = $this->config ?? Shop::getSettings([CONF_GLOBAL, CONF_KAUFABWICKLUNG]);
+    }
+
+    /**
+     * @return array
+     */
+    public function __sleep()
+    {
+        return \Functional\select(array_keys(get_object_vars($this)), function ($e) {
+            return $e !== 'config';
+        });
+    }
+
+    /**
      * Konstruktor
      *
      * @param int $kWarenkorb Falls angegeben, wird der Warenkorb mit angegebenem kWarenkorb aus der DB geholt
@@ -133,11 +151,11 @@ class Warenkorb
     {
         static $depAmount = null;
 
-        if (!isset($depAmount, $depAmount[$productID]) || $excludePos !== null) {
+        if ($excludePos !== null || !isset($depAmount, $depAmount[$productID])) {
             $depAmount = $this->getAllDependentAmount($onlyStockRelevant, $excludePos);
         }
 
-        return isset($depAmount[$productID]) ? $depAmount[$productID] : 0;
+        return $depAmount[$productID] ?? 0;
     }
 
     /**
@@ -146,47 +164,47 @@ class Warenkorb
      */
     public function loescheDeaktiviertePositionen(): self
     {
-        foreach ($this->PositionenArr as $i => $Position) {
-            $Position->nPosTyp = (int)$Position->nPosTyp;
+        foreach ($this->PositionenArr as $i => $position) {
+            $position->nPosTyp = (int)$position->nPosTyp;
             $delete            = false;
-            if (!empty($Position->Artikel)) {
+            if (!empty($position->Artikel)) {
                 if (isset(
-                    $Position->Artikel->fLagerbestand,
-                    $Position->Artikel->cLagerBeachten,
-                    $Position->Artikel->cLagerKleinerNull,
-                    $Position->Artikel->cLagerVariation
+                    $position->Artikel->fLagerbestand,
+                    $position->Artikel->cLagerBeachten,
+                    $position->Artikel->cLagerKleinerNull,
+                    $position->Artikel->cLagerVariation
                 )
-                    && $Position->Artikel->fLagerbestand <= 0
-                    && $Position->Artikel->cLagerBeachten === 'Y'
-                    && $Position->Artikel->cLagerKleinerNull !== 'Y'
-                    && $Position->Artikel->cLagerVariation !== 'Y'
+                    && $position->Artikel->fLagerbestand <= 0
+                    && $position->Artikel->cLagerBeachten === 'Y'
+                    && $position->Artikel->cLagerKleinerNull !== 'Y'
+                    && $position->Artikel->cLagerVariation !== 'Y'
                 ) {
                     $delete = true;
-                } elseif (empty($Position->kKonfigitem)
-                    && $Position->fPreisEinzelNetto == 0
-                    && !$Position->Artikel->bHasKonfig
-                    && $Position->nPosTyp !== C_WARENKORBPOS_TYP_GRATISGESCHENK
-                    && isset($Position->fPreisEinzelNetto, $this->config['global']['global_preis0'])
+                } elseif (empty($position->kKonfigitem)
+                    && $position->fPreisEinzelNetto == 0
+                    && !$position->Artikel->bHasKonfig
+                    && $position->nPosTyp !== C_WARENKORBPOS_TYP_GRATISGESCHENK
+                    && isset($position->fPreisEinzelNetto, $this->config['global']['global_preis0'])
                     && $this->config['global']['global_preis0'] === 'N'
                 ) {
                     $delete = true;
-                } elseif (!empty($Position->Artikel->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH])) {
+                } elseif (!empty($position->Artikel->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH])) {
                     $delete = true;
                 } else {
                     $delete = (Shop::Container()->getDB()->select(
                         'tartikel',
                         'kArtikel',
-                        $Position->kArtikel
+                        $position->kArtikel
                     ) === null);
                 }
 
                 executeHook(HOOK_WARENKORB_CLASS_LOESCHEDEAKTIVIERTEPOS, [
-                    'oPosition' => $Position,
+                    'oPosition' => $position,
                     'delete'    => &$delete
                 ]);
             }
             if ($delete) {
-                self::addDeletedPosition($Position);
+                self::addDeletedPosition($position);
                 unset($this->PositionenArr[$i]);
             }
         }
@@ -308,7 +326,7 @@ class Warenkorb
 
         $db = Shop::Container()->getDB();
 
-        foreach (\Session\Session::getLanguages() as $lang) {
+        foreach (\Session\Frontend::getLanguages() as $lang) {
             $pos->cName[$lang->cISO]         = $pos->Artikel->cName;
             $pos->cLieferstatus[$lang->cISO] = $cLieferstatus_StdSprache;
             if ($lang->cStandard === 'Y') {
@@ -577,7 +595,7 @@ class Warenkorb
         $cUnique = false,
         int $kKonfigitem = 0,
         int $kArtikel = 0
-    ) {
+    ): self {
         if ($delSamePosType) {
             $this->loescheSpezialPos($typ);
         }
@@ -591,7 +609,7 @@ class Warenkorb
         $pos->kKonfigitem   = $kKonfigitem;
         $pos->kArtikel      = $kArtikel;
         //fixes #4967
-        if (is_object($_SESSION['Kundengruppe']) && \Session\Session::getCustomerGroup()->isMerchant()) {
+        if (is_object($_SESSION['Kundengruppe']) && \Session\Frontend::getCustomerGroup()->isMerchant()) {
             if ($brutto) {
                 $pos->fPreis = $preis / (100 + Tax::getSalesTax($kSteuerklasse)) * 100.0;
             }
@@ -624,7 +642,7 @@ class Warenkorb
         $pos->cHinweis = $hinweis;
         $nOffset       = array_push($this->PositionenArr, $pos);
         $pos           = $this->PositionenArr[$nOffset - 1];
-        foreach (Session::getCurrencies() as $currency) {
+        foreach (\Session\Frontend::getCurrencies() as $currency) {
             $currencyName = $currency->getName();
             // Standardartikel
             $pos->cGesamtpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
@@ -708,7 +726,7 @@ class Warenkorb
         if (count($this->PositionenArr) < 1) {
             return 3;
         }
-        $mbw = \Session\Session::getCustomerGroup()->getAttribute(KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
+        $mbw = \Session\Frontend::getCustomerGroup()->getAttribute(KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
         if ($mbw > 0 && $this->gibGesamtsummeWaren(true, false) < $mbw) {
             return 9;
         }
@@ -815,7 +833,7 @@ class Warenkorb
      *
      * @param int $kArtikel
      * @param int $exclude_pos
-     * @return int Anzahl eines bestimmten Artikels im Warenkorb
+     * @return int
      */
     public function gibAnzahlEinesArtikels(int $kArtikel, int $exclude_pos = -1)
     {
@@ -920,7 +938,7 @@ class Warenkorb
         if ((int)$oPosition->kKonfigitem <= 0 || !class_exists('Konfigitem')) {
             return $this;
         }
-        $oKonfigitem = new Konfigitem($oPosition->kKonfigitem);
+        $oKonfigitem = new \Extensions\Konfigitem($oPosition->kKonfigitem);
         if ($oKonfigitem->getKonfigitem() > 0) {
             if ($bPreise) {
                 $oPosition->fPreisEinzelNetto = $oKonfigitem->getPreis(true);
@@ -928,13 +946,13 @@ class Warenkorb
                 $oPosition->kSteuerklasse     = $oKonfigitem->getSteuerklasse();
                 $oPosition->setzeGesamtpreisLocalized();
             }
-            if ($bName && $oKonfigitem->getUseOwnName() && class_exists('Konfigitemsprache')) {
-                foreach (\Session\Session::getLanguages() as $Sprache) {
-                    $oKonfigitemsprache               = new Konfigitemsprache(
+            if ($bName && $oKonfigitem->getUseOwnName()) {
+                foreach (\Session\Frontend::getLanguages() as $language) {
+                    $oKonfigitemsprache               = new \Extensions\Konfigitemsprache(
                         $oKonfigitem->getKonfigitem(),
-                        $Sprache->kSprache
+                        $language->kSprache
                     );
-                    $oPosition->cName[$Sprache->cISO] = $oKonfigitemsprache->getName();
+                    $oPosition->cName[$language->cISO] = $oKonfigitemsprache->getName();
                 }
             }
         }
@@ -1034,7 +1052,7 @@ class Warenkorb
      */
     public function gibGesamtsummeWaren(bool $Brutto = false, bool $gutscheinBeruecksichtigen = true)
     {
-        $currency         = $this->Waehrung ?? \Session\Session::getCurrency();
+        $currency         = $this->Waehrung ?? \Session\Frontend::getCurrency();
         $conversionFactor = $currency->getConversionFactor();
         $gesamtsumme      = 0;
         foreach ($this->PositionenArr as $pos) {
@@ -1063,7 +1081,7 @@ class Warenkorb
             $_SESSION['Bestellung']->GuthabenNutzen   = 1;
             $_SESSION['Bestellung']->fGuthabenGenutzt = min(
                 $_SESSION['Kunde']->fGuthaben,
-                \Session\Session::getCart()->gibGesamtsummeWaren(true, false)
+                \Session\Frontend::getCart()->gibGesamtsummeWaren(true, false)
             );
             $gesamtsumme                             -= $_SESSION['Bestellung']->fGuthabenGenutzt * $conversionFactor;
         }
@@ -1071,7 +1089,7 @@ class Warenkorb
         $gesamtsumme /= $conversionFactor;
         $this->useSummationRounding();
 
-        return Cart::roundOptionalCurrency($gesamtsumme, $this->Waehrung ?? \Session\Session::getCurrency());
+        return Cart::roundOptionalCurrency($gesamtsumme, $this->Waehrung ?? \Session\Frontend::getCurrency());
     }
 
     /**
@@ -1102,7 +1120,7 @@ class Warenkorb
         }
         $this->useSummationRounding();
 
-        return Cart::roundOptionalCurrency($gesamtsumme, $this->Waehrung ?? \Session\Session::getCurrency());
+        return Cart::roundOptionalCurrency($gesamtsumme, $this->Waehrung ?? \Session\Frontend::getCurrency());
     }
 
     /**
@@ -1118,7 +1136,7 @@ class Warenkorb
             return 0;
         }
         $gesamtsumme = 0;
-        $currency    = $this->Waehrung ?? \Session\Session::getCurrency();
+        $currency    = $this->Waehrung ?? \Session\Frontend::getCurrency();
         $factor      = $currency->getConversionFactor();
         foreach ($this->PositionenArr as $pos) {
             if (!in_array($pos->nPosTyp, $posTypes)) {
@@ -1144,7 +1162,7 @@ class Warenkorb
      */
     public function optionaleRundung($gesamtsumme)
     {
-        return Cart::roundOptionalCurrency($gesamtsumme, $this->Waehrung ?? \Session\Session::getCurrency());
+        return Cart::roundOptionalCurrency($gesamtsumme, $this->Waehrung ?? \Session\Frontend::getCurrency());
     }
 
     /**
@@ -1230,7 +1248,7 @@ class Warenkorb
                     $steuerpos[$idx]                  = new stdClass();
                     $steuerpos[$idx]->cName           = lang_steuerposition(
                         $ust,
-                        \Session\Session::getCustomerGroup()->isMerchant()
+                        \Session\Frontend::getCustomerGroup()->isMerchant()
                     );
                     $steuerpos[$idx]->fUst            = $ust;
                     $steuerpos[$idx]->fBetrag         = ($position->fPreis * $position->nAnzahl * $ust) / 100.0;
@@ -1489,7 +1507,7 @@ class Warenkorb
      * @param bool $isRedirect
      * @param bool $unique
      */
-    public function redirectTo(bool $isRedirect = false, $unique = false)
+    public function redirectTo(bool $isRedirect = false, $unique = false): void
     {
         if (!$isRedirect
             && !$unique
@@ -1527,10 +1545,10 @@ class Warenkorb
             // Kupon darf nicht im leeren Warenkorb eingelöst werden
             if (isset($_SESSION['Warenkorb']) && $this->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
                 $Kupon = Shop::Container()->getDB()->select('tkupon', 'kKupon', (int)$_SESSION['Kupon']->kKupon);
-                if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
+                if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === Kupon::TYPE_STANDARD) {
                     $isValid = (1 === angabenKorrekt(Kupon::checkCoupon($Kupon)));
                     $this->updateCouponValue();
-                } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
+                } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
                     //@todo?
                 } else {
                     $isValid = false;
@@ -1543,13 +1561,13 @@ class Warenkorb
             }
         } elseif (isset($_SESSION['Kupon']->nGanzenWKRabattieren)
             && (int)$_SESSION['Kupon']->nGanzenWKRabattieren === 0
-            && $_SESSION['Kupon']->cKuponTyp === 'standard'
+            && $_SESSION['Kupon']->cKuponTyp === Kupon::TYPE_STANDARD
             && $_SESSION['Kupon']->cWertTyp === 'prozent'
         ) {
             if (isset($_SESSION['Warenkorb']) && $this->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
                 $Kupon   = Shop::Container()->getDB()->select('tkupon', 'kKupon', (int)$_SESSION['Kupon']->kKupon);
                 $isValid = false;
-                if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
+                if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === Kupon::TYPE_STANDARD) {
                     $isValid = (1 === angabenKorrekt(Kupon::checkCoupon($Kupon)));
                 }
             }
@@ -1560,7 +1578,7 @@ class Warenkorb
             }
         } elseif (isset($_SESSION['Kupon']->nGanzenWKRabattieren)
             && (int)$_SESSION['Kupon']->nGanzenWKRabattieren === 0
-            && $_SESSION['Kupon']->cKuponTyp === 'standard'
+            && $_SESSION['Kupon']->cKuponTyp === Kupon::TYPE_STANDARD
         ) {
             //we have a coupon in the current session but none in the cart.
             //this happens with coupons tied to special articles that are no longer valid.
@@ -1623,7 +1641,7 @@ class Warenkorb
     {
         $cumulatedDelta    = 0;
         $cumulatedDeltaNet = 0;
-        foreach (Session::getCurrencies() as $currency) {
+        foreach (\Session\Frontend::getCurrencies() as $currency) {
             $currencyName = $currency->getName();
             foreach ($this->PositionenArr as $i => $position) {
                 $grossAmount        = Tax::getGross(
@@ -1704,13 +1722,13 @@ class Warenkorb
      */
     public function hasDigitalProducts(): bool
     {
-        return class_exists('Download') && Download::hasDownloads($this);
+        return \Extensions\Download::hasDownloads($this);
     }
 
     /**
      * @return null|Versandart - cheapest shipping except shippings that offer cash payment
      */
-    public function getFavourableShipping()
+    public function getFavourableShipping(): ?Versandart
     {
         if (!empty($_SESSION['Versandart']->kVersandart) && isset($_SESSION['Versandart']->nMinLiefertage)
             || empty($_SESSION['Warenkorb']->PositionenArr)

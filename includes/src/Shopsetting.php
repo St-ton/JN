@@ -93,7 +93,7 @@ final class Shopsetting implements ArrayAccess
      *
      * @return $this
      */
-    public function reset()
+    public function reset(): self
     {
         $this->container = [];
 
@@ -101,7 +101,7 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param mixed $offset
+     * @param string $offset
      * @param mixed $value
      * @return $this
      */
@@ -117,7 +117,7 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param mixed $offset
+     * @param string $offset
      * @return bool
      */
     public function offsetExists($offset)
@@ -126,7 +126,7 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param mixed $offset
+     * @param string $offset
      * @return $this
      */
     public function offsetUnset($offset)
@@ -142,78 +142,41 @@ final class Shopsetting implements ArrayAccess
      */
     public function offsetGet($offset)
     {
-        if (!isset($this->container[$offset])) {
-            $section = static::mapSettingName(null, $offset);
+        if (isset($this->container[$offset])) {
+            return $this->container[$offset];
+        }
+        $section = static::mapSettingName(null, $offset);
+        $cacheID = 'setting_' . $section;
+        if ($section === false || $section === null) {
+            return null;
+        }
+        if ($section === CONF_TEMPLATE) {
+            $settings = Shop::Container()->getCache()->get(
+                $cacheID,
+                function ($cache, $id, &$content, &$tags) {
+                    $content = Template::getInstance()->getConfig();
+                    $tags    = [CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION];
 
-            if ($section === false || $section === null) {
-                return null;
+                    return true;
+                }
+            );
+            if (is_array($settings)) {
+                foreach ($settings as $templateSection => $templateSetting) {
+                    $this->container[$offset][$templateSection] = $templateSetting;
+                }
             }
-            $cacheID = 'setting_' . $section;
-            // Template work around
-            if ($section === CONF_TEMPLATE) {
-                if (($templateSettings = Shop::Container()->getCache()->get($cacheID)) === false) {
-                    $template         = Template::getInstance();
-                    $templateSettings = $template->getConfig();
-                    Shop::Container()->getCache()->set(
-                        $cacheID,
-                        $templateSettings,
-                        [CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION]
-                    );
-                }
-                if (is_array($templateSettings)) {
-                    foreach ($templateSettings as $templateSection => $templateSetting) {
-                        $this->container[$offset][$templateSection] = $templateSetting;
-                    }
-                }
-            } else {
-                try {
-                    if (($settings = Shop::Container()->getCache()->get($cacheID)) !== false) {
-                        foreach ($settings as $setting) {
-                            $this->container[$offset][$setting->cName] = $setting->cWert;
-                        }
+        } else {
+            $settings = Shop::Container()->getCache()->get(
+                $cacheID,
+                function ($cache, $id, &$content, &$tags) use ($section) {
+                    $content = $this->getSectionData($section);
+                    $tags    = [CACHING_GROUP_OPTION];
 
-                        return $this->container[$offset];
-                    }
-                } catch (Exception $exc) {
-                    Shop::Container()->getLogService()->error('Setting Caching Exception: ' . $exc->getMessage());
+                    return true;
                 }
-                if ($section === CONF_PLUGINZAHLUNGSARTEN) {
-                    $settings = Shop::Container()->getDB()->query(
-                        "SELECT cName, cWert
-                             FROM tplugineinstellungen
-                             WHERE cName LIKE '%_min%' 
-                              OR cName LIKE '%_max'",
-                        \DB\ReturnType::ARRAY_OF_OBJECTS
-                    );
-                } else {
-                    $settings = Shop::Container()->getDB()->queryPrepared(
-                        'SELECT teinstellungen.kEinstellungenSektion, teinstellungen.cName, teinstellungen.cWert,
-                            teinstellungenconf.cInputTyp AS type
-                            FROM teinstellungen
-                            LEFT JOIN teinstellungenconf
-                                ON teinstellungenconf.cWertName = teinstellungen.cName
-                                AND teinstellungenconf.kEinstellungenSektion = teinstellungen.kEinstellungenSektion
-                            WHERE teinstellungen.kEinstellungenSektion = :section',
-                        ['section' => $section],
-                        \DB\ReturnType::ARRAY_OF_OBJECTS
-                    );
-                }
-                if (is_array($settings) && count($settings) > 0) {
-                    $this->container[$offset] = [];
-                    foreach ($settings as $setting) {
-                        if ($setting->type === 'listbox') {
-                            if (!isset($this->container[$offset][$setting->cName])) {
-                                $this->container[$offset][$setting->cName] = [];
-                            }
-                            $this->container[$offset][$setting->cName][] = $setting->cWert;
-                        } elseif ($setting->type === 'number') {
-                            $this->container[$offset][$setting->cName] = (int)$setting->cWert;
-                        } else {
-                            $this->container[$offset][$setting->cName] = $setting->cWert;
-                        }
-                    }
-                    Shop::Container()->getCache()->set($cacheID, $settings, [CACHING_GROUP_OPTION]);
-                }
+            );
+            if (count($settings) > 0) {
+                $this->addContainerData($offset, $settings);
             }
         }
 
@@ -221,17 +184,66 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param array|int $sektionen_arr
+     * @param string $offset
+     * @param array  $settings
+     */
+    private function addContainerData($offset, array $settings): void
+    {
+        $this->container[$offset] = [];
+        foreach ($settings as $setting) {
+            if ($setting->type === 'listbox') {
+                if (!isset($this->container[$offset][$setting->cName])) {
+                    $this->container[$offset][$setting->cName] = [];
+                }
+                $this->container[$offset][$setting->cName][] = $setting->cWert;
+            } elseif ($setting->type === 'number') {
+                $this->container[$offset][$setting->cName] = (int)$setting->cWert;
+            } else {
+                $this->container[$offset][$setting->cName] = $setting->cWert;
+            }
+        }
+    }
+
+    /**
+     * @param string $section
      * @return array
      */
-    public function getSettings($sektionen_arr): array
+    private function getSectionData($section): array
+    {
+        if ($section === CONF_PLUGINZAHLUNGSARTEN) {
+            return Shop::Container()->getDB()->query(
+                "SELECT cName, cWert, '' AS type
+                     FROM tplugineinstellungen
+                     WHERE cName LIKE '%_min%' 
+                        OR cName LIKE '%_max'",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
+            );
+        }
+
+        return Shop::Container()->getDB()->queryPrepared(
+            'SELECT teinstellungen.cName, teinstellungen.cWert, teinstellungenconf.cInputTyp AS type
+                FROM teinstellungen
+                LEFT JOIN teinstellungenconf
+                    ON teinstellungenconf.cWertName = teinstellungen.cName
+                    AND teinstellungenconf.kEinstellungenSektion = teinstellungen.kEinstellungenSektion
+                WHERE teinstellungen.kEinstellungenSektion = :section',
+            ['section' => $section],
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+    }
+
+    /**
+     * @param array|int $sections
+     * @return array
+     */
+    public function getSettings($sections): array
     {
         $ret = [];
-        if (!is_array($sektionen_arr)) {
-            $sektionen_arr = (array)$sektionen_arr;
+        if (!is_array($sections)) {
+            $sections = (array)$sections;
         }
-        foreach ($sektionen_arr as $sektionen) {
-            $mapping = self::mapSettingName($sektionen);
+        foreach ($sections as $section) {
+            $mapping = self::mapSettingName($section);
             if ($mapping !== null) {
                 $ret[$mapping] = $this[$mapping];
             }
@@ -281,6 +293,7 @@ final class Shopsetting implements ArrayAccess
         if ($this->allSettings !== null) {
             return $this->allSettings;
         }
+        $result   = [];
         $settings = Shop::Container()->getDB()->query(
             'SELECT teinstellungen.kEinstellungenSektion, teinstellungen.cName, teinstellungen.cWert,
                 teinstellungenconf.cInputTyp AS type
@@ -291,11 +304,10 @@ final class Shopsetting implements ArrayAccess
                 ORDER BY kEinstellungenSektion',
             \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
-        $result   = [];
         foreach (self::$mapping as $mappingID => $sectionName) {
             foreach ($settings as $setting) {
-                $kEinstellungenSektion = (int)$setting['kEinstellungenSektion'];
-                if ($kEinstellungenSektion === $mappingID) {
+                $sectionID = (int)$setting['kEinstellungenSektion'];
+                if ($sectionID === $mappingID) {
                     if (!isset($result[$sectionName])) {
                         $result[$sectionName] = [];
                     }
@@ -328,25 +340,18 @@ final class Shopsetting implements ArrayAccess
     public function preLoad(): array
     {
         $cacheID = 'settings_all_preload';
-        if (($result = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $result = $this->getAll();
-            Shop::Container()->getCache()->set(
-                $cacheID,
-                $result,
-                [CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION, CACHING_GROUP_CORE]
-            );
-        }
+        $result  = Shop::Container()->getCache()->get(
+            $cacheID,
+            function ($cache, $id, &$content, &$tags) {
+                $content = $this->getAll();
+                $tags    = [CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION, CACHING_GROUP_CORE];
+
+                return true;
+            }
+        );
         $this->container   = $result;
         $this->allSettings = $result;
 
         return $result;
-    }
-
-    /**
-     * @return string[]
-     */
-    private static function getMappings(): array
-    {
-        return self::$mapping;
     }
 }

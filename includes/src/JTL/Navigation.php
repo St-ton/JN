@@ -336,7 +336,7 @@ class Navigation
 
             case \PAGE_LOGIN:
             case \PAGE_MEINKONTO:
-                $name    = \Session\Session::getCustomer()->getID() > 0
+                $name    = \Session\Frontend::getCustomer()->getID() > 0
                     ? $this->language->get('account', 'breadcrumb')
                     : $this->language->get('login', 'breadcrumb');
                 $url     = $this->linkService->getStaticRoute('jtl.php', false);

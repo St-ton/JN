@@ -7,7 +7,8 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
-use Session\Session;
+use Helpers\URL;
+use Session\Frontend;
 
 /**
  * Class NewsCategories
@@ -22,12 +23,12 @@ final class NewsCategories extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        parent::addMapping('oNewsKategorie_arr', 'Items');
+        $this->addMapping('oNewsKategorie_arr', 'Items');
         $cSQL      = (int)$config['news']['news_anzahl_box'] > 0
             ? ' LIMIT ' . (int)$config['news']['news_anzahl_box']
             : '';
         $langID    = \Shop::getLanguageID();
-        $cacheID   = 'bnk_' . $langID . '_' . Session::getCustomerGroup()->getID() . '_' . \md5($cSQL);
+        $cacheID   = 'bnk_' . $langID . '_' . Frontend::getCustomerGroup()->getID() . '_' . \md5($cSQL);
         $cached    = true;
         $cacheTags = [\CACHING_GROUP_BOX, \CACHING_GROUP_NEWS];
         if (($newsCategories = \Shop::Container()->getCache()->get($cacheID)) === false) {
@@ -58,14 +59,14 @@ final class NewsCategories extends AbstractBox
                         AND t.languageID = :lid
                     GROUP BY tnewskategorienews.kNewsKategorie
                     ORDER BY tnewskategorie.nSort DESC" . $cSQL,
-                ['lid' => $langID, 'cid' => Session::getCustomerGroup()->getID()],
+                ['lid' => $langID, 'cid' => Frontend::getCustomerGroup()->getID()],
                 ReturnType::ARRAY_OF_OBJECTS
             );
             \Shop::Container()->getCache()->set($cacheID, $newsCategories, $cacheTags);
         }
         foreach ($newsCategories as $newsCategory) {
-            $newsCategory->cURL     = \Helpers\URL::buildURL($newsCategory, \URLART_NEWSKATEGORIE);
-            $newsCategory->cURLFull = \Helpers\URL::buildURL($newsCategory, \URLART_NEWSKATEGORIE, true);
+            $newsCategory->cURL     = URL::buildURL($newsCategory, \URLART_NEWSKATEGORIE);
+            $newsCategory->cURLFull = URL::buildURL($newsCategory, \URLART_NEWSKATEGORIE, true);
         }
         $this->setShow(\count($newsCategories) > 0);
         $this->setItems($newsCategories);

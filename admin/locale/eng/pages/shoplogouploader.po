@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "shoplogouploader"
 msgstr "Shoplogo-Uploader"
 
@@ -16,3 +20,20 @@ msgstr "Aktualisieren"
 msgid "shoplogouploaderPicture"
 msgstr "Shoplogo"
 
+msgid "successLogoDelete"
+msgstr "Ihr Logo wurde erfolgreich gelöscht."
+
+msgid "errorLogoDelete"
+msgstr "Fehler beim Löschen des Logos."
+
+msgid "successLogoUpload"
+msgstr "Ihr Logo wurde erfolgreich hochgeladen."
+
+msgid "errorFileName"
+msgstr "Fehler: Dateiname entspricht nicht der Konvention oder fehlt."
+
+msgid "errorFileType"
+msgstr "Fehler: Dateityp entspricht nicht der Konvention (nur jpg/gif/png/bmp) oder fehlt."
+
+msgid "errorFileMove"
+msgstr "Fehler beim Verschieben des Logos.'"

@@ -13,19 +13,20 @@ function holeExportformatCron()
 {
     $db      = Shop::Container()->getDB();
     $exports = $db->query(
-        "SELECT texportformat.*, tcron.kCron, tcron.nAlleXStd, tcron.dStart, 
-            DATE_FORMAT(tcron.dStart, '%d.%m.%Y %H:%i') AS dStart_de, tcron.dLetzterStart, 
-            DATE_FORMAT(tcron.dLetzterStart, '%d.%m.%Y %H:%i') AS dLetzterStart_de,
-            DATE_FORMAT(DATE_ADD(tcron.dLetzterStart, INTERVAL tcron.nAlleXStd HOUR), '%d.%m.%Y %H:%i') 
+        "SELECT texportformat.*, tcron.cronID, tcron.frequency, tcron.startDate, 
+            DATE_FORMAT(tcron.startDate, '%d.%m.%Y %H:%i') AS dStart_de, tcron.lastStart, 
+            DATE_FORMAT(tcron.lastStart, '%d.%m.%Y %H:%i') AS dLetzterStart_de,
+            DATE_FORMAT(DATE_ADD(tcron.lastStart, INTERVAL tcron.frequency HOUR), '%d.%m.%Y %H:%i') 
             AS dNaechsterStart_de
             FROM texportformat
-            JOIN tcron ON tcron.cJobArt = 'exportformat'
-                AND tcron.kKey = texportformat.kExportformat
-            ORDER BY tcron.dStart DESC",
+            JOIN tcron 
+                ON tcron.jobType = 'exportformat'
+                AND tcron.foreignKeyID = texportformat.kExportformat
+            ORDER BY tcron.startDate DESC",
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($exports as $export) {
-        $export->cAlleXStdToDays = rechneUmAlleXStunden($export->nAlleXStd);
+        $export->cAlleXStdToDays = rechneUmAlleXStunden($export->frequency);
         $export->Sprache         = $db->select(
             'tsprache',
             'kSprache',
@@ -41,10 +42,11 @@ function holeExportformatCron()
             'kKundengruppe',
             (int)$export->kKundengruppe
         );
-        $export->oJobQueue       = $db->query(
-            "SELECT *, DATE_FORMAT(dZuletztGelaufen, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_de 
+        $export->oJobQueue       = $db->queryPrepared(
+            "SELECT *, DATE_FORMAT(lastStart, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_de 
                 FROM tjobqueue 
-                WHERE kCron = " . (int)$export->kCron,
+                WHERE cronID = :id",
+            ['id' => (int)$export->cronID],
             \DB\ReturnType::SINGLE_OBJECT
         );
         $export->nAnzahlArtikel  = holeMaxExportArtikelAnzahl($export);
@@ -62,13 +64,17 @@ function holeCron($kCron)
     $kCron = (int)$kCron;
     if ($kCron > 0) {
         $oCron = Shop::Container()->getDB()->query(
-            "SELECT *, DATE_FORMAT(tcron.dStart, '%d.%m.%Y %H:%i') AS dStart_de
+            "SELECT *, DATE_FORMAT(tcron.startDate, '%d.%m.%Y %H:%i') AS dStart_de
                 FROM tcron
-                WHERE kCron = " . $kCron,
+                WHERE cronID = " . $kCron,
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        if (!empty($oCron->kCron) && $oCron->kCron > 0) {
+        if (!empty($oCron->cronID) && $oCron->cronID > 0) {
+            $oCron->cronID       = (int)$oCron->cronID;
+            $oCron->frequency    = (int)$oCron->frequency;
+            $oCron->foreignKeyID = (int)($oCron->foreignKeyID ?? 0);
+
             return $oCron;
         }
     }
@@ -89,19 +95,19 @@ function rechneUmAlleXStunden($nAlleXStd)
             if ($nAlleXStd >= 365) {
                 $nAlleXStd /= 365;
                 if ($nAlleXStd == 1) {
-                    $nAlleXStd .= ' Jahr';
+                    $nAlleXStd .= __('year');
                 } else {
-                    $nAlleXStd .= ' Jahre';
+                    $nAlleXStd .= __('years');
                 }
             } elseif ($nAlleXStd == 1) {
-                $nAlleXStd .= ' Tag';
+                $nAlleXStd .= __('day');
             } else {
-                $nAlleXStd .= ' Tage';
+                $nAlleXStd .= __('days');
             }
         } elseif ($nAlleXStd > 1) {
-            $nAlleXStd .= ' Stunden';
+            $nAlleXStd .= __('hour');
         } else {
-            $nAlleXStd .= ' Stunde';
+            $nAlleXStd .= __('hours');
         }
 
         return $nAlleXStd;
@@ -150,12 +156,13 @@ function erstelleExportformatCron($kExportformat, $dStart, $nAlleXStunden, $kCro
     if ($kExportformat > 0 && $nAlleXStunden >= 1 && dStartPruefen($dStart)) {
         if ($kCron > 0) {
             // Editieren
-            Shop::Container()->getDB()->query(
+            Shop::Container()->getDB()->queryPrepared(
                 'DELETE tcron, tjobqueue
                     FROM tcron
                     LEFT JOIN tjobqueue 
-                        ON tjobqueue.kCron = tcron.kCron
-                    WHERE tcron.kCron = ' . $kCron,
+                        ON tjobqueue.cronID = tcron.cronID
+                    WHERE tcron.cronID = :id',
+                ['id' => $kCron],
                 \DB\ReturnType::DEFAULT
             );
             $oCron = new Cron(
@@ -174,8 +181,14 @@ function erstelleExportformatCron($kExportformat, $dStart, $nAlleXStunden, $kCro
             return 1;
         }
         // Pruefe ob Exportformat nicht bereits vorhanden
-        $oCron = Shop::Container()->getDB()->select('tcron', 'cKey', 'kExportformat', 'kKey', $kExportformat);
-        if (isset($oCron->kCron) && $oCron->kCron > 0) {
+        $oCron = Shop::Container()->getDB()->select(
+            'tcron',
+            'foreignKey',
+            'kExportformat',
+            'foreignKeyID',
+            $kExportformat
+        );
+        if (isset($oCron->cronID) && $oCron->cronID > 0) {
             return -1;
         }
         $oCron = new Cron(
@@ -227,22 +240,17 @@ function baueENGDate($dateStart, $asTime = false)
 }
 
 /**
- * @param array $kCron_arr
+ * @param int[] $cronIDs
  * @return bool
  */
-function loescheExportformatCron($kCron_arr)
+function loescheExportformatCron(array $cronIDs)
 {
-    if (is_array($kCron_arr) && count($kCron_arr) > 0) {
-        foreach ($kCron_arr as $kCron) {
-            $kCron = (int)$kCron;
-            Shop::Container()->getDB()->delete('tjobqueue', 'kCron', $kCron);
-            Shop::Container()->getDB()->delete('tcron', 'kCron', $kCron);
-        }
-
-        return true;
+    foreach ($cronIDs as $cronID) {
+        Shop::Container()->getDB()->delete('tjobqueue', 'cronID', (int)$cronID);
+        Shop::Container()->getDB()->delete('tcron', 'cronID', (int)$cronID);
     }
 
-    return false;
+    return true;
 }
 
 /**
@@ -309,12 +317,12 @@ function exportformatQueueActionEditieren(Smarty\JTLSmarty $smarty, array &$mess
     $kCron = Request::verifyGPCDataInt('kCron');
     $oCron = $kCron > 0 ? holeCron($kCron) : 0;
 
-    if (is_object($oCron) && $oCron->kCron > 0) {
+    if (is_object($oCron) && $oCron->cronID > 0) {
         $step = 'erstellen';
         $smarty->assign('oCron', $oCron)
                ->assign('oExportformat_arr', holeAlleExportformate());
     } else {
-        $messages['error'] .= 'Fehler: Bitte wählen Sie eine gültige Warteschlange aus.';
+        $messages['error'] .= __('errorWrongQueue');
         $step               = 'uebersicht';
     }
 
@@ -331,12 +339,12 @@ function exportformatQueueActionLoeschen(array &$messages)
 
     if (is_array($kCron_arr) && count($kCron_arr) > 0) {
         if (loescheExportformatCron($kCron_arr)) {
-            $messages['notice'] .= 'Ihr ausgewählten Warteschlangen wurde erfolgreich gelöscht.';
+            $messages['notice'] .= __('successQueueDelete');
         } else {
-            $messages['error'] .= 'Fehler: Es ist ein unbekannter Fehler aufgetreten.<br />';
+            $messages['error'] .= __('errorUnknownLong') . '<br />';
         }
     } else {
-        $messages['error'] .= 'Fehler: Bitte wählen Sie eine gültige Warteschlange aus.';
+        $messages['error'] .= __('errorWrongQueue');
     }
 
     return 'loeschen_result';
@@ -358,17 +366,17 @@ function exportformatQueueActionTriggern(array &$messages)
         $jobCount  = count($oJobQueue_arr);
 
         if ($cronCount === 0 && $jobCount === 0) {
-            $messages['error'] .= 'Es wurde kein Cron-Job gestartet.<br />';
+            $messages['error'] .= __('errorCronStart') . '<br />';
         } elseif ($cronCount === 1) {
-            $messages['notice'] .= 'Es wurde ein Cron-Job gestartet.<br />';
+            $messages['notice'] .= __('successCronStart') . '<br />';
         } elseif ($cronCount > 1) {
-            $messages['notice'] .= 'Es wurden ' . $cronCount . ' Cron-Jobs gestartet.<br />';
+            $messages['notice'] .= sprintf(__('errorCronsStart'), $cronCount) . '<br />';
         }
 
         if ($jobCount === 1) {
-            $messages['notice'] .= 'Es wurde eine Job-Queue abgearbeitet.<br />';
+            $messages['notice'] .= __('successQueueDone') . '<br />';
         } elseif ($jobCount > 1) {
-            $messages['notice'] .= 'Es wurden ' . $jobCount . ' Job-Queues abgearbeitet.<br />';
+            $messages['notice'] .= sprintf(__('successQueuseDone'), $jobCount) . '<br />';
         }
     }
 
@@ -418,27 +426,27 @@ function exportformatQueueActionErstellenEintragen(Smarty\JTLSmarty $smarty, arr
                     : null;
                 $nStatus = erstelleExportformatCron($kExportformat, $dStart, $nAlleXStunden, $kCron);
                 if ($nStatus === 1) {
-                    $messages['notice'] .= 'Ihre neue Exportwarteschlange wurde erfolgreich angelegt.';
+                    $messages['notice'] .= __('successQueueCreate');
                     $step                = 'erstellen_success';
                 } elseif ($nStatus === -1) {
-                    $messages['error'] .= 'Fehler: Das Exportformat ist bereits in der Warteschlange vorhanden.<br />';
+                    $messages['error'] .= __('errorFormatInQueue') . '<br />';
                     $step               = 'erstellen';
                 } else {
-                    $messages['error'] .= 'Fehler: Es ist ein unbekannter Fehler aufgetreten.<br />';
+                    $messages['error'] .= __('errorUnknownLong') . '<br />';
                     $step               = 'erstellen';
                 }
             } else { // Alle X Stunden ist entweder leer oder kleiner als 6
-                $messages['error'] .= 'Fehler: Bitte geben Sie einen Wert größer oder gleich 1 ein.<br />';
+                $messages['error'] .= __('errorGreaterEqualOne') . '<br />';
                 $step               = 'erstellen';
                 $smarty->assign('oFehler', $oValues);
             }
         } else { // Kein gueltiges Datum + Uhrzeit
-            $messages['error'] .= 'Fehler: Bitte geben Sie ein gültiges Datum ein.<br />';
+            $messages['error'] .= __('errorEnterValidDate') . '<br />';
             $step               = 'erstellen';
             $smarty->assign('oFehler', $oValues);
         }
     } else { // Kein gueltiges Exportformat
-        $messages['error'] .= 'Fehler: Bitte wählen Sie ein gültiges Exportformat aus.<br />';
+        $messages['error'] .= __('errorFormatSelect') . '<br />';
         $step               = 'erstellen';
         $smarty->assign('oFehler', $oValues);
     }

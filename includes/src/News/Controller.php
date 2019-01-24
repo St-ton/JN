@@ -8,9 +8,10 @@ namespace News;
 
 use DB\DbInterface;
 use DB\ReturnType;
+use Helpers\Form;
 use Helpers\URL;
 use Pagination\Pagination;
-use Session\Session;
+use Session\Frontend;
 use Smarty\JTLSmarty;
 use Tightenco\Collect\Support\Collection;
 use function Functional\every;
@@ -219,7 +220,7 @@ class Controller
 
         $metaTitle       = $metaTitle === ''
             ? \Shop::Lang()->get('news', 'news') . ' ' .
-            \Shop::Lang()->get('from', 'global') . ' ' .
+            \Shop::Lang()->get('from') . ' ' .
             $this->config['global']['global_shopname']
             : $metaTitle;
         $metaDescription = $metaDescription === ''
@@ -293,7 +294,7 @@ class Controller
 
         \executeHook(\HOOK_NEWS_PAGE_NEWSKOMMENTAR_PLAUSI);
 
-        if ($this->config['news']['news_kommentare_eingeloggt'] === 'Y' && Session::getCustomer()->getID() > 0) {
+        if ($this->config['news']['news_kommentare_eingeloggt'] === 'Y' && Frontend::getCustomer()->getID() > 0) {
             if ($checkedOK) {
                 $comment             = new \stdClass();
                 $comment->kNews      = (int)$data['kNews'];
@@ -322,16 +323,16 @@ class Controller
             }
         } elseif ($this->config['news']['news_kommentare_eingeloggt'] === 'N') {
             if ($checkedOK) {
-                if (Session::getCustomer()->getID() > 0) {
-                    $cName  = Session::getCustomer()->cVorname . ' ' . Session::getCustomer()->cNachname[0] . '.';
-                    $cEmail = Session::getCustomer()->cMail;
+                if (Frontend::getCustomer()->getID() > 0) {
+                    $cName  = Frontend::getCustomer()->cVorname . ' ' . Frontend::getCustomer()->cNachname[0] . '.';
+                    $cEmail = Frontend::getCustomer()->cMail;
                 } else {
                     $cName  = \StringHandler::filterXSS($data['cName'] ?? '');
                     $cEmail = \StringHandler::filterXSS($data['cEmail'] ?? '');
                 }
                 $comment         = new \stdClass();
                 $comment->kNews  = (int)$data['kNews'];
-                $comment->kKunde = Session::getCustomer()->getID();
+                $comment->kKunde = Frontend::getCustomer()->getID();
                 $comment->nAktiv = $this->config['news']['news_kommentare_freischalten'] === 'Y'
                     ? 0
                     : 1;
@@ -386,7 +387,7 @@ class Controller
                     FROM tnewskommentar
                     WHERE kNews = :nid
                         AND kKunde = :cid',
-                ['nid' => $newsID, 'cid' => Session::getCustomer()->getID()],
+                ['nid' => $newsID, 'cid' => Frontend::getCustomer()->getID()],
                 ReturnType::SINGLE_OBJECT
             );
 
@@ -404,7 +405,7 @@ class Controller
             if (empty($post['cEmail']) || \StringHandler::filterEmailAddress($post['cEmail']) === false) {
                 $checks['cEmail'] = 1;
             }
-            if ($config['news']['news_sicherheitscode'] !== 'N' && !\Helpers\Form::validateCaptcha($post)) {
+            if ($config['news']['news_sicherheitscode'] !== 'N' && !Form::validateCaptcha($post)) {
                 $checks['captcha'] = 2;
             }
         }
@@ -521,7 +522,7 @@ class Controller
                 WHERE tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= NOW()
                     AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                        OR FIND_IN_SET('" . Session::getCustomerGroup()->getID() .
+                        OR FIND_IN_SET('" . Frontend::getCustomerGroup()->getID() .
             "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     AND tnewssprache.languageID = " . \Shop::getLanguageID() . '
                 GROUP BY nJahr, nMonat

@@ -1,5 +1,5 @@
-{assign var="productlist" value=$portlet->getFilteredProducts($instance)}
-{assign var="style" value=$instance->getProperty('listStyle')}
+{assign var=productlist value=$portlet->getFilteredProducts($instance)}
+{assign var=style value=$instance->getProperty('listStyle')}
 
 {if $style === 'gallery'}
     {assign var='grid' value='col-xs-6 col-lg-4'}
@@ -24,7 +24,7 @@
         </div>
         <div{if $title|strlen > 0} class="panel-body"{/if}>
             <div class="evo-box-vertical text-center">
-                {foreach name="sliderproducts" from=$productlist item='product'}
+                {foreach $productlist as $product}
                     <div class="product-wrapper{if isset($style)} {$style}{/if}"
                             {if isset($Link) && $Link->getLinkType() == $smarty.const.LINKTYP_STARTSEITE}
                                 itemprop="about"
@@ -42,7 +42,7 @@
     <div id="result-wrapper">
         <div {$instance->getAttributeString()}>
             <div class="row {if $style !== 'list'}row-eq-height row-eq-img-height{/if} {$style}" id="product-list">
-                {foreach name=artikel from=$portlet->getFilteredProducts($instance) item=Artikel}
+                {foreach $portlet->getFilteredProducts($instance) as $Artikel}
                     <div class="product-wrapper {$grid}">
                         {if $style === 'list'}
                             {include file='productlist/item_list.tpl' tplscope=$style}

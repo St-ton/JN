@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "checkbox"
 msgstr "Checkboxverwaltung"
 
@@ -57,3 +61,15 @@ msgstr "Logging"
 
 msgid "checkboxFunction"
 msgstr "Spezialfunktion"
+
+msgid "successCheckboxActivate"
+msgstr "Ihre markierten Checkboxen wurden erfolgreich aktiviert."
+
+msgid "successCheckboxDeactivate"
+msgstr "Ihre markierten Checkboxen wurden erfolgreich deaktiviert."
+
+msgid "successCheckboxDelete"
+msgstr "Ihre markierten Checkboxen wurden erfolgreich gelöscht."
+
+msgid "successCheckboxCreate"
+msgstr "Ihre Checkbox wurde erfolgreich erstellt."

@@ -92,7 +92,7 @@ if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
     $nReturnValue = speicherKampagne($oKampagne);
 
     if ($nReturnValue === 1) {
-        $cHinweis = 'Ihre Kampagne wurde erfolgreich gespeichert.';
+        $cHinweis = __('successCampaignSave');
     } else {
         $cFehler = mappeFehlerCodeSpeichern($nReturnValue);
         $smarty->assign('oKampagne', $oKampagne);
@@ -104,10 +104,10 @@ if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
         $nReturnValue = loescheGewaehlteKampagnen($_POST['kKampagne']);
 
         if ($nReturnValue == 1) {
-            $cHinweis = 'Ihre ausgewählten Kampagnen wurden erfolgreich gelöscht.';
+            $cHinweis = __('successCampaignDelete');
         }
     } else {
-        $cFehler = 'Fehler: Bitte markieren Sie mindestens eine Kampagne.';
+        $cFehler = __('errorAtLeastOneCampaign');
     }
 } elseif (Request::verifyGPCDataInt('nAnsicht') > 0) { // Ansicht
     $_SESSION['Kampagne']->nAnsicht = Request::verifyGPCDataInt('nAnsicht');

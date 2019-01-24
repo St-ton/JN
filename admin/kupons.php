@@ -24,10 +24,7 @@ $action           = '';
 $tab              = Kupon::TYPE_STANDARD;
 $oSprache_arr     = Sprache::getAllLanguages();
 $oKupon           = null;
-$importDeleteDone = false;
-$res              = handleCsvImportAction('kupon', function ($obj, $importType = 2) {
-    global $importDeleteDone;
-
+$res              = handleCsvImportAction('kupon', function ($obj, &$importDeleteDone, $importType = 2) {
     if ($importType === 0 && $importDeleteDone === false) {
         Shop::Container()->getDB()->query('TRUNCATE TABLE tkupon', \DB\ReturnType::AFFECTED_ROWS);
         Shop::Container()->getDB()->query('TRUNCATE TABLE tkuponsprache', \DB\ReturnType::AFFECTED_ROWS);
@@ -71,10 +68,10 @@ $res              = handleCsvImportAction('kupon', function ($obj, $importType =
 });
 
 if ($res > 0) {
-    $cFehler  = 'Konnte CSV-Datei nicht vollständig importieren. ';
-    $cFehler .= ($res === 1 ? '1 Zeile ist' : $res . ' Zeilen sind') . ' nicht importierbar.';
+    $cFehler  = __('errorImportCSV');
+    $cFehler .= __('errorImportRow');
 } elseif ($res === 0) {
-    $cHinweis = 'CSV-Datei wurde erfolgreich importiert.';
+    $cHinweis = __('successImportCSV');
 }
 
 // Aktion ausgeloest?
@@ -126,21 +123,21 @@ if ($action === 'bearbeiten') {
         ) {
             informCouponCustomers($oKupon);
         }
-        $cHinweis = 'Der Kupon wurde erfolgreich gespeichert.';
+        $cHinweis = __('successCouponSave');
     } else {
-        $cFehler = 'Der Kupon konnte nicht gespeichert werden.';
+        $cFehler = __('errorCouponSave');
     }
 } elseif ($action === 'loeschen') {
     // Kupons loeschen
     if (isset($_POST['kKupon_arr']) && is_array($_POST['kKupon_arr']) && count($_POST['kKupon_arr']) > 0) {
         $kKupon_arr = array_map('\intval', $_POST['kKupon_arr']);
         if (loescheKupons($kKupon_arr)) {
-            $cHinweis = 'Ihre markierten Kupons wurden erfolgreich gelöscht.';
+            $cHinweis = __('successCouponDelete');
         } else {
-            $cFehler = 'Fehler: Ein oder mehrere Kupons konnten nicht gelöscht werden.';
+            $cFehler = __('errorCouponDelete');
         }
     } else {
-        $cFehler = 'Fehler: Bitte markieren Sie mindestens einen Kupon.';
+        $cFehler = __('errorAtLeastOneCoupon');
     }
 }
 

@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "wishlistName"
 msgstr "Wunschzettel"
 
@@ -48,4 +52,3 @@ msgstr "Nächster"
 
 msgid "wishlistLastAdded"
 msgstr "Zuletzt hinzugefügt"
-

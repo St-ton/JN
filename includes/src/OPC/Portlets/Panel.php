@@ -6,7 +6,6 @@
 
 namespace OPC\Portlets;
 
-use function Couchbase\defaultDecoder;
 use OPC\Portlet;
 use OPC\PortletInstance;
 
@@ -26,20 +25,7 @@ class Panel extends Portlet
                  ->addClass('panel-' . $instance->getProperty('panel-state'))
                  ->addClass($instance->getProperty('panel-class'));
 
-        $ret  = '<div ' . $instance->getAttributeString() . ' ' . $instance->getDataAttributeString() . '>';
-        $ret .= !empty($instance->getProperty('title-flag'))
-            ? '<div class="panel-heading opc-area" data-area-id="pnl_title">' .
-            $instance->getSubareaPreviewHtml('pnl_title') . '</div>'
-            : '';
-        $ret .= '<div class="panel-body opc-area" data-area-id="pnl_body">' .
-            $instance->getSubareaPreviewHtml('pnl_body') . '</div>';
-        $ret .= !empty($instance->getProperty('footer-flag'))
-            ? '<div class="panel-footer opc-area" data-area-id="pnl_footer">' .
-            $instance->getSubareaPreviewHtml('pnl_footer') . '</div>'
-            : '';
-        $ret .= '</div>';
-
-        return $ret;
+        return $this->getPreviewHtmlFromTpl($instance);
     }
 
     /**
@@ -52,17 +38,7 @@ class Panel extends Portlet
                  ->addClass('panel-' . $instance->getProperty('panel-state'))
                  ->addClass($instance->getProperty('panel-class'));
 
-        $ret  = '<div ' . $instance->getAttributeString() . '>';
-        $ret .= !empty($instance->getProperty('title-flag'))
-            ? '<div class="panel-heading">' . $instance->getSubareaFinalHtml('pnl_title') . '</div>'
-            : '';
-        $ret .= '<div class="panel-body">' . $instance->getSubareaFinalHtml('pnl_body') . '</div>';
-        $ret .= !empty($instance->getProperty('footer-flag'))
-            ? '<div class="panel-footer">' . $instance->getSubareaFinalHtml('pnl_footer') . '</div>'
-            : '';
-        $ret .= '</div>';
-
-        return $ret;
+        return $this->getFinalHtmlFromTpl($instance);
     }
 
     /**

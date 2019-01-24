@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "shopReset"
 msgstr "Shopdaten zurücksetzen"
 
@@ -16,3 +20,5 @@ msgstr "Passwort"
 msgid "areas"
 msgstr "Bereiche"
 
+msgid "successShopReturn"
+msgstr "Der Shop wurde mit Ihren gewählten Optionen zurückgesetzt."

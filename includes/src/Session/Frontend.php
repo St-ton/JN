@@ -272,8 +272,8 @@ class Frontend extends AbstractSession
             && \is_array($_SESSION['Vergleichsliste']->oArtikel_arr)
         ) {
             // Wunschliste Position aus der Session löschen
-            foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $oArtikel) {
-                if ((int)$oArtikel->kArtikel === $kVergleichlistePos) {
+            foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $product) {
+                if ((int)$product->kArtikel === $kVergleichlistePos) {
                     unset($_SESSION['Vergleichsliste']->oArtikel_arr[$i]);
                 }
             }

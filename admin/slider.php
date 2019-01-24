@@ -103,10 +103,10 @@ switch ($action) {
                 header('Location: ' . $redirectUrl);
                 exit;
             }
-            $cFehler .= 'Slider konnte nicht gespeichert werden.';
+            $cFehler .= __('errorSliderSave');
 
             if (empty($cFehler)) {
-                $cHinweis = 'Änderungen erfolgreich gespeichert.';
+                $cHinweis = __('successSliderSave');
             }
         }
         break;
@@ -117,7 +117,7 @@ switch ($action) {
         $slider->load($kSlider, false);
         $smarty->assign('oSlider', $slider);
         if (!is_object($slider)) {
-            $cFehler = 'Slider wurde nicht gefunden.';
+            $cFehler = __('errorSliderNotFound');
             $action  = 'view';
         }
         break;
@@ -146,7 +146,7 @@ switch ($action) {
         $smarty->assign('oSlider', $slider);
 
         if (!is_object($slider)) {
-            $cFehler = 'Slider wurde nicht gefunden.';
+            $cFehler = __('errorSliderNotFound');
             $action  = 'view';
             break;
         }
@@ -166,7 +166,7 @@ switch ($action) {
             header('Location: ' . $redirectUrl);
             exit;
         }
-        $cFehler = 'Slider konnte nicht entfernt werden.';
+        $cFehler = __('errorSliderRemove');
         break;
 
     default:

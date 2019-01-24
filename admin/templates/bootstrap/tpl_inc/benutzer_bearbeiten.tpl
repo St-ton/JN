@@ -71,9 +71,9 @@ $(document).ready(function() {
 </style>
 {/literal}
 
-{assign var="cTitel" value=__('benutzerNeu')}
+{assign var=cTitel value=__('benutzerNeu')}
 {if isset($oAccount->kAdminlogin) && $oAccount->kAdminlogin > 0}
-    {assign var="cTitel" value=__('benutzerBearbeiten')}
+    {assign var=cTitel value=__('benutzerBearbeiten')}
 {/if}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__('benutzerDesc')}
@@ -94,7 +94,7 @@ $(document).ready(function() {
                             <span class="input-group-wrap">
                                 <input id="cName" class="form-control" type="text" name="cName" value="{if isset($oAccount->cName)}{$oAccount->cName}{/if}" />
                             </span>
-                            {if isset($cError_arr.cName)}<span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>{/if}
+                            {if isset($cError_arr.cName)}<span class="input-group-addon error" title="Bitte ausfüllen"><i class="fa fa-exclamation-triangle"></i></span>{/if}
                         </div>
                     </div>
                     <div class="item">
@@ -105,7 +105,7 @@ $(document).ready(function() {
                             <span class="input-group-wrap">
                                 <input id="cMail" class="form-control" type="text" name="cMail" value="{if isset($oAccount->cMail)}{$oAccount->cMail}{/if}" />
                             </span>
-                            {if isset($cError_arr.cMail)}<span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>{/if}
+                            {if isset($cError_arr.cMail)}<span class="input-group-addon error" title="Bitte ausfüllen"><i class="fa fa-exclamation-triangle"></i></span>{/if}
                         </div>
                     </div>
                     <div class="item">
@@ -144,7 +144,7 @@ $(document).ready(function() {
                                 <input id="cLogin" class="form-control" type="text" name="cLogin" value="{if isset($oAccount->cLogin)}{$oAccount->cLogin}{/if}">
                             </span>
                             {if isset($cError_arr.cLogin) && $cError_arr.cLogin == 1}
-                                <span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>
+                                <span class="input-group-addon error" title="Bitte ausfüllen"><i class="fa fa-exclamation-triangle"></i></span>
                             {elseif isset($cError_arr.cLogin) && $cError_arr.cLogin == 2}
                                 <span class="input-group-addon error">Benutzername <strong>'{$oAccount->cLogin}'</strong> bereits vergeben</span>
                                 <span class="input-group-addon error" title="Benutzername bereits vergeben"><i class="fa fa-exclamation-triangle"></i></span>
@@ -166,7 +166,7 @@ $(document).ready(function() {
                                     <i class="fa fa-random"></i>
                                 </button>
                             </span>
-                            {if isset($cError_arr.cPass)}<span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>{else}<span class="input-group-addon"><i class="fa fa-wrench"></i></span>{/if}
+                            {if isset($cError_arr.cPass)}<span class="input-group-addon error" title="Bitte ausfüllen"><i class="fa fa-exclamation-triangle"></i></span>{else}<span class="input-group-addon"><i class="fa fa-wrench"></i></span>{/if}
                         </div>
                     </div>
 
@@ -187,10 +187,10 @@ $(document).ready(function() {
                         <div class="item{if !empty($cError_arr.dGueltigBis)} error{/if}"{if !$oAccount->dGueltigBis || $oAccount->dGueltigBis == null} style="display: none;"{/if} id="tmp_date">
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="dGueltigBis">... bis einschlie&szlig;lich</label>
+                                    <label for="dGueltigBis">... bis einschließlich</label>
                                 </span>
-                                <input class="form-control" type="text" name="dGueltigBis" value="{if $oAccount->dGueltigBis}{$oAccount->dGueltigBis|date_format:"%d.%m.%Y %H:%M:%S"}{/if}" id="dGueltigBis" />
-                                {if !empty($cError_arr.dGueltigBis)}<span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>{/if}
+                                <input class="form-control" type="text" name="dGueltigBis" value="{if $oAccount->dGueltigBis}{$oAccount->dGueltigBis|date_format:'%d.%m.%Y %H:%M:%S'}{/if}" id="dGueltigBis" />
+                                {if !empty($cError_arr.dGueltigBis)}<span class="input-group-addon error" title="Bitte ausfüllen"><i class="fa fa-exclamation-triangle"></i></span>{/if}
                             </div>
                         </div>
                     {/if}
@@ -267,8 +267,8 @@ $(document).ready(function() {
                         <div id="TwoFAwrapper" {if isset($cError_arr.c2FAsecret)}class="error"{/if} style="border:1px solid {if isset($cError_arr.c2FAsecret)}red{else}lightgrey{/if};padding:10px;">
                             <div id="QRcodeCanvas" style="display:{if '' !== $QRcodeString }block{else}none{/if}">
                                 <div class="alert alert-danger" role="alert">
-                                    <strong>Achtung:</strong> Bitte beachten Sie, dass Sie mit diesem Account keine M&ouml;glichkeit mehr haben, in das Shop-Backend zu gelangen,<br>
-                                    falls Sie keinen Zugriff mehr auf die Google-Authenticator-App auf Ihrem Mobilger&auml;t haben sollten!<br>
+                                    <strong>Achtung:</strong> Bitte beachten Sie, dass Sie mit diesem Account keine Möglichkeit mehr haben, in das Shop-Backend zu gelangen,<br>
+                                    falls Sie keinen Zugriff mehr auf die Google-Authenticator-App auf Ihrem Mobilgerät haben sollten!<br>
                                 </div>
                                 Scannen Sie den hier abgebildeten QR-Code mit der "Google-Authenticator"-app auf Ihrem Handy.<br>
                                 <div id="QRcode" class="qrcode">{$QRcodeString}</div><br>
@@ -292,7 +292,7 @@ $(document).ready(function() {
                                         </div>
                                         <div class="modal-footer">
                                             <div class="btn-group">
-                                                <button class="btn btn-default" type="button" data-dismiss="modal">Schlie&szlig;en</button>
+                                                <button class="btn btn-default" type="button" data-dismiss="modal">Schließen</button>
                                                 <button class="btn btn-primary" type="button" onclick="printframe.print();">Drucken</button>
                                                 <button class="btn btn-danger" type="button" onclick="showEmergencyCodes('forceReload');">Codes neu erzeugen</button>
                                             </div>
@@ -325,8 +325,10 @@ $(document).ready(function() {
                                 </span>
                                 <span class="input-group-wrap">
                                     <select id="kAdminlogingruppe" class="form-control" name="kAdminlogingruppe">
-                                        {foreach from=$oAdminGroup_arr item="oGroup"}
-                                            <option value="{$oGroup->kAdminlogingruppe}" {if isset($oAccount->kAdminlogingruppe) && $oAccount->kAdminlogingruppe == $oGroup->kAdminlogingruppe}selected="selected"{/if}>{$oGroup->cGruppe} ({$oGroup->nCount})</option>
+                                        {foreach $oAdminGroup_arr as $oGroup}
+                                            <option value="{$oGroup->kAdminlogingruppe}" {if isset($oAccount->kAdminlogingruppe) && $oAccount->kAdminlogingruppe == $oGroup->kAdminlogingruppe}selected="selected"{/if}>
+                                                {$oGroup->cGruppe} ({$oGroup->nCount})
+                                            </option>
                                         {/foreach}
                                     </select>
                                 </span>
@@ -350,7 +352,7 @@ $(document).ready(function() {
                 {/if}
                 <input type="hidden" name="save" value="1" />
                 <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
-                <a class="btn btn-danger" href="benutzerverwaltung.php"><i class="fa fa-exclamation"></i> Abbrechen</a>
+                <a class="btn btn-danger" href="benutzerverwaltung.php"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
             </div>
         </div>
     </form>

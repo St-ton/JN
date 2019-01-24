@@ -1,4 +1,4 @@
-{config_load file="$lang.conf" section="kundenfeld"}
+{config_load file="$lang.conf" section='kundenfeld'}
 {include file='tpl_inc/header.tpl'}
 
 <script type="text/javascript">
@@ -10,11 +10,11 @@
 
     function startKundenfeldwertEdit() {
         $('#cTyp').after($('<div class="kundenfeld_wert"></div>').append(
-                $('<button name="button" type="button" class="btn btn-primary add" value="Wert hinzuf&uuml;gen"></button>')
+                $('<button name="button" type="button" class="btn btn-primary add" value="Wert hinzufügen"></button>')
                 .click(function() {
                     addKundenfeldWert();
                 })
-                .append('<i class="fa fa-plus-square-o"></i>&nbsp;Wert hinzuf&uuml;gen'))
+                .append('<i class="fa fa-plus-square-o"></i>&nbsp;Wert hinzufügen'))
         );
         addKundenfeldWert();
     }
@@ -121,7 +121,7 @@
                 </span>
                 <span class="input-group-wrap last">
                     <select id="kSprache" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
-                        {foreach name=sprachen from=$Sprachen item=sprache}
+                        {foreach $Sprachen as $sprache}
                             <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
                         {/foreach}
                     </select>
@@ -145,13 +145,13 @@
                 <input type="hidden" name="kundenfelder" value="1">
                 <input name="tab" type="hidden" value="uebersicht">
                 {if isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0}
-                    {assign var="cfEdit" value=true}
+                    {assign var=cfEdit value=true}
                     <input type="hidden" name="kKundenfeld" value="{$oKundenfeld->kKundenfeld}">
                 {elseif isset($kKundenfeld) && $kKundenfeld > 0}
-                    {assign var="cfEdit" value=true}
+                    {assign var=cfEdit value=true}
                     <input type="hidden" name="kKundenfeld" value="{$kKundenfeld}">
                 {else}
-                    {assign var="cfEdit" value=false}
+                    {assign var=cfEdit value=false}
                 {/if}
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -175,7 +175,7 @@
                                 <td><label for="nSort">{__('kundenfeldSort')}</label></td>
                                 <td>
                                     {if !empty($nHighestSortValue)}
-                                        {assign var="nNextHighestSort" value=$nHighestSortValue|intval + $nHighestSortDiff|intval}
+                                        {assign var=nNextHighestSort value=$nHighestSortValue|intval + $nHighestSortDiff|intval}
                                         <input id="nSort" name="nSort" type="text" class="{if isset($xPlausiVar_arr.nSort)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.nSort)}{$xPostVar_arr.nSort}{elseif isset($oKundenfeld->nSort)}{$oKundenfeld->nSort}{else}{$nNextHighestSort}{/if}"/>
                                     {else}
                                         <input id="nSort" name="nSort" type="text" class="{if isset($xPlausiVar_arr.nSort)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.nSort)}{$xPostVar_arr.nSort}{elseif isset($oKundenfeld->nSort)}{$oKundenfeld->nSort}{/if}" placeholder="{__('kundenfeldSortDesc')}"/>
@@ -227,7 +227,7 @@
                                     </select>
                                     {if (isset($xPostVar_arr.cTyp) && $xPostVar_arr.cTyp === 'auswahl') || (isset($oKundenfeld->cTyp) && $oKundenfeld->cTyp === 'auswahl')}
                                         <div class="kundenfeld_wert">
-                                            <button name="button" type="button" class="btn btn-primary add" value="Wert hinzuf&uuml;gen" onclick="addKundenfeldWert()"><i class="fa fa-plus-square-o"></i> Wert hinzuf&uuml;gen</button>
+                                            <button name="button" type="button" class="btn btn-primary add" value="Wert hinzufügen" onclick="addKundenfeldWert()"><i class="fa fa-plus-square-o"></i> Wert hinzufügen</button>
                                         </div>
                                     {/if}
                                 </td>
@@ -311,7 +311,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {foreach name=kundenfeld from=$oKundenfeld_arr item=oKundenfeld}
+                                {foreach $oKundenfeld_arr as $oKundenfeld}
                                     <tr>
                                         <td class="check">
                                             <input name="kKundenfeld[]" type="checkbox" value="{$oKundenfeld->kKundenfeld}" id="check-{$oKundenfeld->kKundenfeld}" />
@@ -321,8 +321,8 @@
                                         <td>{$oKundenfeld->cTyp}</td>
                                         <td>
                                             {if isset($oKundenfeld->oKundenfeldWert_arr)}
-                                                {foreach name=kundenfeldwert from=$oKundenfeld->oKundenfeldWert_arr item=oKundenfeldWert}
-                                                    {$oKundenfeldWert->cWert}{if !$smarty.foreach.kundenfeldwert.last}, {/if}
+                                                {foreach $oKundenfeld->oKundenfeldWert_arr as $oKundenfeldWert}
+                                                    {$oKundenfeldWert->cWert}{if !$oKundenfeldWert@last}, {/if}
                                                 {/foreach}
                                             {/if}
                                         </td>

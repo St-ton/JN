@@ -180,7 +180,7 @@
                 </p>
                 <hr>
                 <div class="row" id="plugin-screenshots">
-                    {foreach from=$pp->getScreenShots() item=screenShot}
+                    {foreach $pp->getScreenShots() as $screenShot}
                         <a href="#" data-toggle="modal" data-target="#screenshot-{$screenShot@iteration}">
                             <img class="img-responsive col-md-4" src="{$screenShot->preview}" />
                         </a>
@@ -232,7 +232,7 @@
                             <h4>Zertifikate</h4>
                             <div class="row" id="sp-certificates">
                                 {assign var=isOpen value=false}
-                                {foreach from=$sp->oZertifizierungen_arr item=cert}
+                                {foreach $sp->oZertifizierungen_arr as $cert}
                                     {if $cert@iteration is odd}
                                         {if $isOpen}</div>{/if}
                                         <div class="media">
@@ -259,7 +259,7 @@
                     </div>
                     <div class="panel-body">
                         <ul class="advantages list-unstyled">
-                            {foreach from=$pp->getAdvantages() item=advantage}
+                            {foreach $pp->getAdvantages() as $advantage}
                                 <li class="advantage"><i class="fa fa-check fake-list-style-image"></i> {$advantage}</li>
                             {/foreach}
                         </ul>
@@ -273,7 +273,7 @@
                     </div>
                     <div class="panel-body">
                         <ul class="howtos list-unstyled">
-                            {foreach from=$pp->getHowTos() item=howTo}
+                            {foreach $pp->getHowTos() as $howTo}
                                 <li class="howto"><i class="fa fa-check fake-list-style-image"></i> {$howTo}
                                 </li>
                             {/foreach}
@@ -304,7 +304,7 @@
                             {else}
                                 <a class="btn btn-default" href="{$pp->getDownloadLink()}" target="_blank"><i class="fa fa-external-link"></i> Plugin herunterladen</a>
                             {/if}
-                            {foreach from=$pp->getButtons() item=btn}
+                            {foreach $pp->getButtons() as $btn}
                                 <a{if $btn->external === true} target="_blank"{/if} class="{$btn->class}" href="{$btn->link}" title="{$btn->caption}">
                                     {if !empty($btn->fa)} <i class="fa fa-{$btn->fa}"></i> {/if}{$btn->caption}
                                 </a>

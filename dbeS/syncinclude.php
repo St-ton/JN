@@ -58,9 +58,9 @@ if (!function_exists('Shop')) {
 $DB    = new \DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 $cache = Shop::Container()->getCache()->setJtlCacheConfig();
 
-$GLOBALS['bSeo']      = true; //compatibility!
-$oPluginHookListe_arr = \Plugin\Helper::getHookList();
-$oSprache             = Sprache::getInstance(true);
+$GLOBALS['bSeo'] = true; //compatibility!
+$pluginHooks     = \Plugin\Helper::getHookList();
+$oSprache        = Sprache::getInstance();
 
 /**
  * @param string     $cacheID

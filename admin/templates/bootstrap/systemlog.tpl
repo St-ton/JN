@@ -1,9 +1,7 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="systemlog"}
+{config_load file="$lang.conf" section='systemlog'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('systemlog') cBeschreibung=__('systemlogDesc') cDokuURL=__('systemlogURL')}
-
-{assign var='cTab' value=$cTab|default:'log'}
-
+{assign var=cTab value=$cTab|default:'log'}
 <ul class="nav nav-tabs" role="tablist">
     <li role="presentation"{if $cTab === 'log'} class="active"{/if}>
         <a data-toggle="tab" role="tab" href="#log">{__('systemlogLog')}</a>
@@ -51,7 +49,7 @@
                                             {else}
                                                 <span class="label label-info info">{__('systemlogDebug')}</span>
                                             {/if}
-                                            {$oLog->dErstellt|date_format:"d.m.Y - H:i:s"}
+                                            {$oLog->dErstellt|date_format:'d.m.Y - H:i:s'}
                                         </label>
                                     </div>
                                     <div class="col-md-9 col-xs-12">
@@ -120,5 +118,4 @@
         </form>
     </div>
 </div>
-
 {include file='tpl_inc/footer.tpl'}

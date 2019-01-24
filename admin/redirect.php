@@ -36,9 +36,7 @@ if (Form::validateToken()) {
                         $oRedirect->cAvailable = 'y';
                         Shop::Container()->getDB()->update('tredirect', 'kRedirect', $oRedirect->kRedirect, $oRedirect);
                     } else {
-                        $cFehler .=
-                            'Änderungen konnten nicht gespeichert werden, da die weiterzuleitende URL "' .
-                            $redirect['cToUrl'] . '" nicht erreichbar ist.<br>';
+                        $cFehler .= sprintf(__('errorURLNotReachable'), $redirect['cToUrl']) . '<br>';
                     }
                 }
             }
@@ -59,9 +57,9 @@ if (Form::validateToken()) {
                 Request::verifyGPDataString('cFromUrl'),
                 Request::verifyGPDataString('cToUrl')
             )) {
-                $cHinweis = 'Ihre Weiterleitung wurde erfolgreich gespeichert';
+                $cHinweis = __('successRedirectSave');
             } else {
-                $cFehler = 'Fehler: Bitte prüfen Sie Ihre Eingaben';
+                $cFehler = __('errorCheckInput');
                 $smarty
                     ->assign('cTab', 'new_redirect')
                     ->assign('cFromUrl', Request::verifyGPDataString('cFromUrl'))
@@ -75,11 +73,10 @@ if (Form::validateToken()) {
                 if (move_uploaded_file($_FILES['cFile']['tmp_name'], $cFile)) {
                     $cError_arr = $oRedirect->doImport($cFile);
                     if (count($cError_arr) === 0) {
-                        $cHinweis = 'Der Import wurde erfolgreich durchgeführt';
+                        $cHinweis = __('successImport');
                     } else {
                         @unlink($cFile);
-                        $cFehler = 'Fehler: Der Import konnte nicht durchgeführt werden.' .
-                            'Bitte prüfen Sie die CSV-Datei<br><br>' . implode('<br>', $cError_arr);
+                        $cFehler = __('errorImport') . '<br><br>' . implode('<br>', $cError_arr);
                     }
                 }
             }

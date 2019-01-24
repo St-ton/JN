@@ -157,9 +157,8 @@ class Kupon
 
         if ($couponResult !== null && $couponResult->kKupon > 0) {
             $couponResult->translationList = $this->getTranslation($couponResult->kKupon);
-            $cMember_arr                   = array_keys(get_object_vars($couponResult));
-            foreach ($cMember_arr as $cMember) {
-                $this->$cMember = $couponResult->$cMember;
+            foreach (array_keys(get_object_vars($couponResult)) as $member) {
+                $this->$member = $couponResult->$member;
             }
 
             return $this;
@@ -680,9 +679,8 @@ class Kupon
 
         if (isset($couponResult->kKupon) && $couponResult->kKupon > 0) {
             $couponResult->translationList = $this->getTranslation($couponResult->kKupon);
-            $cMember_arr                   = array_keys(get_object_vars($couponResult));
-            foreach ($cMember_arr as $cMember) {
-                $this->$cMember = $couponResult->$cMember;
+            foreach (array_keys(get_object_vars($couponResult)) as $member) {
+                $this->$member = $couponResult->$member;
             }
 
             return $this;
@@ -723,8 +721,8 @@ class Kupon
      */
     public function getNewCustomerCoupon()
     {
-        $newCustomerCoupons_arr = [];
-        $newCustomerCoupons     = Shop::Container()->getDB()->selectAll(
+        $coupons            = [];
+        $newCustomerCoupons = Shop::Container()->getDB()->selectAll(
             'tkupon',
             ['cKuponTyp', 'cAktiv'],
             [self::TYPE_NEWCUSTOMER, 'Y'],
@@ -736,11 +734,11 @@ class Kupon
             if (isset($newCustomerCoupon->kKupon) && $newCustomerCoupon->kKupon > 0) {
                 $newCustomerCoupon->translationList = $this->getTranslation($newCustomerCoupon->kKupon);
 
-                $newCustomerCoupons_arr[] = $newCustomerCoupon;
+                $coupons[] = $newCustomerCoupon;
             }
         }
 
-        return $newCustomerCoupons_arr;
+        return $coupons;
     }
 
     /**
@@ -904,7 +902,8 @@ class Kupon
         } elseif ($Kupon->fMindestbestellwert > \Session\Frontend::getCart()->gibGesamtsummeWarenExt(
             [C_WARENKORBPOS_TYP_ARTIKEL],
             true
-        ) || ($Kupon->cWertTyp === 'festpreis'
+        )
+            || ($Kupon->cWertTyp === 'festpreis'
                 && $Kupon->nGanzenWKRabattieren === '0'
                 && $Kupon->fMindestbestellwert > gibGesamtsummeKuponartikelImWarenkorb(
                     $Kupon,
@@ -1028,13 +1027,13 @@ class Kupon
         } elseif ($Kupon->cWertTyp === 'prozent') {
             // Alle Positionen prüfen ob der Kupon greift und falls ja, dann Position rabattieren
             if ($Kupon->nGanzenWKRabattieren === 0) {
-                $articleName_arr = [];
+                $productNames = [];
                 if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
                     $articlePrice = 0;
                     foreach ($cart->PositionenArr as $oWKPosition) {
                         $articlePrice += Cart::checkSetPercentCouponWKPos($oWKPosition, $Kupon)->fPreis;
                         if (!empty(Cart::checkSetPercentCouponWKPos($oWKPosition, $Kupon)->cName)) {
-                            $articleName_arr[] = Cart::checkSetPercentCouponWKPos(
+                            $productNames[] = Cart::checkSetPercentCouponWKPos(
                                 $oWKPosition,
                                 $Kupon
                             )->cName;
@@ -1074,8 +1073,8 @@ class Kupon
                 $Spezialpos->cName[$Sprache->cISO] .= ' ' . $Kupon->fWert . '%';
             }
         }
-        if (isset($articleName_arr)) {
-            $Spezialpos->cArticleNameAffix = $articleName_arr;
+        if (isset($productNames)) {
+            $Spezialpos->cArticleNameAffix = $productNames;
         }
 
         $postyp = C_WARENKORBPOS_TYP_KUPON;

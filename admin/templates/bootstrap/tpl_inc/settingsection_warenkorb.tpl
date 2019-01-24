@@ -42,7 +42,7 @@
 
             if (anfangsnummer > maxVal) {
                 $all.closest('.input-group').addClass('has-error has-feedback');
-                showNotify('warning', 'Bestellnumer nicht zulässig', 'Die max. m&ouml;gliche Bestellnummer ist kleiner als die Anfangsnummer!');
+                showNotify('warning', 'Bestellnumer nicht zulässig', 'Die max. mögliche Bestellnummer ist kleiner als die Anfangsnummer!');
 
                 return false;
             }
@@ -50,7 +50,7 @@
                 $anfangsnummer.closest('.input-group').addClass('has-warning has-feedback');
                 var $notify = createNotify({
                     title: 'Bestellnummerbereich zu gering',
-                    message: 'Es sind nur max. ' + (maxVal - anfangsnummer) + ' Bestellnummern im Format ' + praefix + maxValStr + suffix + ' m&ouml;glich! <button id="forceSave" class="pull-right btn btn-warning"><i class="fa fa-save"></i>Trotzdem speichern!</button>'
+                    message: 'Es sind nur max. ' + (maxVal - anfangsnummer) + ' Bestellnummern im Format ' + praefix + maxValStr + suffix + ' möglich! <button id="forceSave" class="pull-right btn btn-warning"><i class="fa fa-save"></i>Trotzdem speichern!</button>'
                 }, {
                     type: 'info',
                     delay: 12000,

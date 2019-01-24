@@ -578,7 +578,7 @@ class Preise
     /**
      * Set all fvk prices to zero.
      */
-    public function setPricesToZero()
+    public function setPricesToZero(): void
     {
         $this->fVKNetto  = 0;
         $this->fVKBrutto = 0;

@@ -8,7 +8,7 @@
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('shippingmethods') cBeschreibung=__('isleListsHint') cDokuURL=__('shippingmethodsURL')}
 <div id="content" class="container-fluid">
-    {foreach name=versandarten from=$versandarten item=versandart}
+    {foreach $versandarten as $versandart}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">{$versandart->cName}</h3>
@@ -18,15 +18,15 @@
                     <tr>
                         <td style="width:160px">{__('shippingTypeName')}</td>
                         <td>
-                            {foreach name=versandartsprache from=$versandart->oVersandartSprachen_arr item=oVersandartSprachen}
-                                    {$oVersandartSprachen->cName}{if !$smarty.foreach.versandartsprache.last}, {/if}
+                            {foreach $versandart->oVersandartSprachen_arr as $oVersandartSprachen}
+                                {$oVersandartSprachen->cName}{if !$oVersandartSprachen@last}, {/if}
                             {/foreach}
                         </td>
                     </tr>
                     <tr>
                         <td>{__('countries')}</td>
                         <td>
-                            {foreach name=laender from=$versandart->land_arr item=land}
+                            {foreach $versandart->land_arr as $land}
                                 <a href="versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$land}&token={$smarty.session.jtl_token}"><span class="label label-{if isset($versandart->zuschlag_arr[$land])}success{else}default{/if}">{$land}</span></a>
                             {/foreach}
                         </td>
@@ -37,7 +37,7 @@
                             {if $versandart->versandklassen|@count == 1 && $versandart->versandklassen[0] === 'Alle'}
                                 {$versandart->versandklassen[0]}
                             {else}
-                                {foreach name=versandklassen from=$versandart->versandklassen item=versandklasse}
+                                {foreach $versandart->versandklassen as $versandklasse}
                                     [{$versandklasse}] &nbsp;
                                 {/foreach}
                             {/if}
@@ -46,7 +46,7 @@
                     <tr>
                         <td>{__('customerclass')}</td>
                         <td>
-                            {foreach name=versandklassen from=$versandart->cKundengruppenName_arr item=cKundengruppenName}
+                            {foreach $versandart->cKundengruppenName_arr as $cKundengruppenName}
                                 {$cKundengruppenName}
                             {/foreach}
                         </td>
@@ -62,7 +62,7 @@
                     <tr>
                         <td>{__('paymentMethods')}</td>
                         <td>
-                            {foreach name=zahlungsarten from=$versandart->versandartzahlungsarten item=zahlungsart}
+                            {foreach $versandart->versandartzahlungsarten as $zahlungsart}
                                 {$zahlungsart->zahlungsart->cName}{if isset($zahlungsart->zahlungsart->cAnbieter) &&
                                     $zahlungsart->zahlungsart->cAnbieter|strlen > 0} ({$zahlungsart->zahlungsart->cAnbieter}){/if} {if $zahlungsart->fAufpreis!=0}{if $zahlungsart->cAufpreisTyp != "%"}{getCurrencyConversionSmarty fPreisBrutto=$zahlungsart->fAufpreis bSteuer=false}{else}{$zahlungsart->fAufpreis}%{/if}{/if}
                                 <br />
@@ -79,7 +79,7 @@
                         </td>
                         <td>
                             {if $versandart->versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl' || $versandart->versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl' || $versandart->versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'}
-                                {foreach name=preisstaffel from=$versandart->versandartstaffeln item=versandartstaffel}
+                                {foreach $versandart->versandartstaffeln as $versandartstaffel}
                                     {if $versandartstaffel->fBis != 999999999}
                                         {__('upTo')} {$versandartstaffel->fBis} {$versandart->einheit} {getCurrencyConversionSmarty fPreisBrutto=$versandartstaffel->fPreis bSteuer=false}
                                         <br />
@@ -110,7 +110,7 @@
                     <div class="btn-group">
                         <button name="edit" value="{$versandart->kVersandart}" class="btn btn-primary"><i class="fa fa-edit"></i> Bearbeiten</button>
                         <button name="clone" value="{$versandart->kVersandart}" class="btn btn-default clone">Duplizieren</button>
-                        <button name="del" value="{$versandart->kVersandart}" class="btn btn-danger" onclick="return confirmDelete('{$versandart->cName}');"><i class="fa fa-trash"></i> L&ouml;schen</button>
+                        <button name="del" value="{$versandart->kVersandart}" class="btn btn-danger" onclick="return confirmDelete('{$versandart->cName}');"><i class="fa fa-trash"></i> Löschen</button>
                     </div>
                 </form>
             </div>
@@ -126,11 +126,11 @@
                 {$jtl_token}
                 <div class="panel-body">
                     <input type="hidden" name="neu" value="1" />
-                    {foreach name=versandberechnungen from=$versandberechnungen item=versandberechnung}
+                    {foreach $versandberechnungen as $versandberechnung}
                         <div class="item">
                             <div class="for">
-                                <input type="radio" id="l{$smarty.foreach.versandberechnungen.index}" name="kVersandberechnung" value="{$versandberechnung->kVersandberechnung}" {if $smarty.foreach.versandberechnungen.index == 0}checked="checked"{/if} />
-                                <label for="l{$smarty.foreach.versandberechnungen.index}">{$versandberechnung->cName}</label>
+                                <input type="radio" id="l{$versandberechnung@index}" name="kVersandberechnung" value="{$versandberechnung->kVersandberechnung}" {if $versandberechnung@index == 0}checked="checked"{/if} />
+                                <label for="l{$versandberechnung@index}">{$versandberechnung->cName}</label>
                             </div>
                         </div>
                     {/foreach}

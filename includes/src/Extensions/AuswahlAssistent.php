@@ -4,8 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Extensions;
+
+use DB\ReturnType;
+use Filter\Option;
+use Filter\ProductFilter;
+use Filter\SearchResults;
+
 /**
  * Class AuswahlAssistent
+ *
+ * @package Extensions
  */
 class AuswahlAssistent
 {
@@ -52,12 +61,12 @@ class AuswahlAssistent
     /**
      * @var AuswahlAssistentFrage[]
      */
-    private $oFrage_arr = [];
+    private $questions = [];
 
     /**
      * @var AuswahlAssistentFrage[] - keys are kMerkmal
      */
-    private $oFrage_assoc = [];
+    private $questionsAssoc = [];
 
     /**
      * @var int
@@ -67,12 +76,12 @@ class AuswahlAssistent
     /**
      * @var array
      */
-    private $kSelection_arr = [];
+    private $selections = [];
 
     /**
      * @var \Filter\ProductFilter
      */
-    private $oNaviFilter;
+    private $productFilter;
 
     /**
      * @var array
@@ -89,17 +98,16 @@ class AuswahlAssistent
      */
     public function __construct($cKey, int $kKey, int $kSprache = 0, bool $bOnlyActive = true)
     {
-        $oNice        = Nice::getInstance();
-        $this->config = Shop::getSettings(CONF_AUSWAHLASSISTENT)['auswahlassistent'];
+        $this->config = \Shop::getSettings(\CONF_AUSWAHLASSISTENT)['auswahlassistent'];
 
         if ($kSprache === 0) {
-            $kSprache = Shop::getLanguageID();
+            $kSprache = \Shop::getLanguageID();
         }
 
         if ($kKey > 0
             && $kSprache > 0
             && !empty($cKey)
-            && $oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)
+            && \Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_AUSWAHLASSISTENT)
         ) {
             $this->loadFromDB($cKey, $kKey, $kSprache, $bOnlyActive);
         }
@@ -111,9 +119,9 @@ class AuswahlAssistent
      * @param int    $kSprache
      * @param bool   $bOnlyActive
      */
-    private function loadFromDB($cKey, int $kKey, int $kSprache, bool $bOnlyActive = true)
+    private function loadFromDB($cKey, int $kKey, int $kSprache, bool $bOnlyActive = true): void
     {
-        $oDbResult = Shop::Container()->getDB()->queryPrepared(
+        $item = \Shop::Container()->getDB()->queryPrepared(
             'SELECT *
                 FROM tauswahlassistentort AS ao
                     JOIN tauswahlassistentgruppe AS ag
@@ -127,11 +135,11 @@ class AuswahlAssistent
                 'kkey'     => $kKey,
                 'ksprache' => $kSprache
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
-        if ($oDbResult !== null && $oDbResult !== false) {
-            foreach (get_object_vars($oDbResult) as $name => $value) {
+        if ($item !== null && $item !== false) {
+            foreach (\get_object_vars($item) as $name => $value) {
                 $this->$name = $value;
             }
 
@@ -141,22 +149,22 @@ class AuswahlAssistent
             $this->kSprache                = (int)$this->kSprache;
             $this->nAktiv                  = (int)$this->nAktiv;
 
-            $questionIDs = Shop::Container()->getDB()->queryPrepared(
+            $questionIDs = \Shop::Container()->getDB()->queryPrepared(
                 'SELECT kAuswahlAssistentFrage AS id
                     FROM tauswahlassistentfrage
                     WHERE kAuswahlAssistentGruppe = :groupID' .
                 ($bOnlyActive ? ' AND nAktiv = 1 ' : ' ') .
                 'ORDER BY nSort',
                 ['groupID' => $this->kAuswahlAssistentGruppe],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
 
-            $this->oFrage_arr = [];
+            $this->questions = [];
 
             foreach ($questionIDs as $questionID) {
-                $question                                = new AuswahlAssistentFrage((int)$questionID->id);
-                $this->oFrage_arr[]                      = $question;
-                $this->oFrage_assoc[$question->kMerkmal] = $question;
+                $question                                  = new AuswahlAssistentFrage((int)$questionID->id);
+                $this->questions[]                         = $question;
+                $this->questionsAssoc[$question->kMerkmal] = $question;
             }
         }
     }
@@ -167,8 +175,8 @@ class AuswahlAssistent
      */
     public function setNextSelection(int $kWert): self
     {
-        if ($this->nCurQuestion < count($this->oFrage_arr)) {
-            $this->kSelection_arr[] = $kWert;
+        if ($this->nCurQuestion < \count($this->questions)) {
+            $this->selections[] = $kWert;
             ++$this->nCurQuestion;
         }
 
@@ -180,33 +188,32 @@ class AuswahlAssistent
      */
     public function filter(): self
     {
-        $cParameter_arr = [];
-        if ($this->cKey === AUSWAHLASSISTENT_ORT_KATEGORIE) {
-            $cParameter_arr['kKategorie'] = $this->kKey;
-
-            if (count($this->kSelection_arr) > 0) {
-                $cParameter_arr['MerkmalFilter_arr'] = $this->kSelection_arr;
+        $params = [];
+        if ($this->cKey === \AUSWAHLASSISTENT_ORT_KATEGORIE) {
+            $params['kKategorie'] = $this->kKey;
+            if (\count($this->selections) > 0) {
+                $params['MerkmalFilter_arr'] = $this->selections;
             }
-        } elseif (count($this->kSelection_arr) > 0) {
-            $cParameter_arr['kMerkmalWert'] = $this->kSelection_arr[0];
-            if (count($this->kSelection_arr) > 1) {
-                $cParameter_arr['MerkmalFilter_arr'] = array_slice($this->kSelection_arr, 1);
+        } elseif (\count($this->selections) > 0) {
+            $params['kMerkmalWert'] = $this->selections[0];
+            if (\count($this->selections) > 1) {
+                $params['MerkmalFilter_arr'] = \array_slice($this->selections, 1);
             }
         }
-        $NaviFilter        = Shop::buildProductFilter($cParameter_arr);
-        $AktuelleKategorie = isset($cParameter_arr['kKategorie'])
-            ? new Kategorie($cParameter_arr['kKategorie'])
+        $productFilter     = \Shop::buildProductFilter($params);
+        $AktuelleKategorie = isset($params['kKategorie'])
+            ? new \Kategorie($params['kKategorie'])
             : null;
-        $attributeFilters  = (new \Filter\SearchResults())->setFilterOptions(
-            $NaviFilter,
+        $attributeFilters  = (new SearchResults())->setFilterOptions(
+            $productFilter,
             $AktuelleKategorie,
             true
         )->getAttributeFilterOptions();
 
         foreach ($attributeFilters as $attributeFilter) {
             /** @var \Filter\Items\Attribute $attributeFilter */
-            if (array_key_exists($attributeFilter->getValue(), $this->oFrage_assoc)) {
-                $oFrage                    = $this->oFrage_assoc[$attributeFilter->getValue()];
+            if (\array_key_exists($attributeFilter->getValue(), $this->questionsAssoc)) {
+                $oFrage                    = $this->questionsAssoc[$attributeFilter->getValue()];
                 $oFrage->oWert_arr         = $attributeFilter->getOptions();
                 $oFrage->nTotalResultCount = 0;
                 foreach ($attributeFilter->getOptions() as $oWert) {
@@ -215,7 +222,7 @@ class AuswahlAssistent
                 }
             }
         }
-        $this->oNaviFilter = $NaviFilter;
+        $this->productFilter = $productFilter;
 
         return $this;
     }
@@ -223,7 +230,7 @@ class AuswahlAssistent
     /**
      * Return the HTML for this selection wizard in its current state
      *
-     * @param Smarty\JTLSmarty $smarty
+     * @param \Smarty\JTLSmarty $smarty
      * @return string
      */
     public function fetchForm($smarty): string
@@ -276,7 +283,7 @@ class AuswahlAssistent
      */
     public function getDescription(): string
     {
-        return preg_replace('/\s+/', ' ', trim($this->cBeschreibung));
+        return \preg_replace('/\s+/', ' ', \trim($this->cBeschreibung));
     }
 
     /**
@@ -291,17 +298,17 @@ class AuswahlAssistent
      * @param int $nFrage
      * @return AuswahlAssistentFrage|null
      */
-    public function getQuestion(int $nFrage)
+    public function getQuestion(int $nFrage): ?AuswahlAssistentFrage
     {
-        return $this->oFrage_arr[$nFrage] ?? null;
+        return $this->questions[$nFrage] ?? null;
     }
 
     /**
-     * @return array
+     * @return AuswahlAssistentFrage[]
      */
     public function getQuestions(): array
     {
-        return $this->oFrage_arr;
+        return $this->questions;
     }
 
     /**
@@ -309,7 +316,7 @@ class AuswahlAssistent
      */
     public function getQuestionCount(): int
     {
-        return count($this->oFrage_arr);
+        return \count($this->questions);
     }
 
     /**
@@ -325,7 +332,7 @@ class AuswahlAssistent
      */
     public function getSelections(): array
     {
-        return $this->kSelection_arr;
+        return $this->selections;
     }
 
     /**
@@ -334,38 +341,38 @@ class AuswahlAssistent
      */
     public function getSelectedValue(int $nFrage)
     {
-        $oFrage         = $this->oFrage_arr[$nFrage];
-        $kSelectedValue = $this->kSelection_arr[$nFrage];
+        $oFrage         = $this->questions[$nFrage];
+        $kSelectedValue = $this->selections[$nFrage];
 
         return $oFrage->oWert_assoc[$kSelectedValue];
     }
 
     /**
-     * @return \Filter\ProductFilter
+     * @return ProductFilter
      */
-    public function getNaviFilter(): \Filter\ProductFilter
+    public function getNaviFilter(): ProductFilter
     {
-        return $this->oNaviFilter;
+        return $this->productFilter;
     }
 
     /**
-     * @return stdClass|null
+     * @return Option|null
      */
-    public function getLastSelectedValue()
+    public function getLastSelectedValue(): ?Option
     {
-        $oFrage         = end($this->oFrage_arr);
-        $kSelectedValue = end($this->kSelection_arr);
+        $question      = \end($this->questions);
+        $selectedValue = \end($this->selections);
 
-        return $oFrage->oWert_assoc[$kSelectedValue] ?? null;
+        return $question->oWert_assoc[$selectedValue] ?? null;
     }
 
     /**
-     * @param string $cName
-     * @return mixed
+     * @param string $name
+     * @return string
      */
-    public function getConf($cName)
+    public function getConf(string $name): ?string
     {
-        return $this->config[$cName];
+        return $this->config[$name];
     }
 
     /**
@@ -375,14 +382,14 @@ class AuswahlAssistent
      */
     public static function isRequired(): bool
     {
-        return Shop::getSettings([CONF_AUSWAHLASSISTENT])['auswahlassistent']['auswahlassistent_nutzen'] === 'Y';
+        return \Shop::getSettings([\CONF_AUSWAHLASSISTENT])['auswahlassistent']['auswahlassistent_nutzen'] === 'Y';
     }
 
     /**
      * @param string                     $cKey
      * @param int                        $kKey
-     * @param int                        $kSprache
-     * @param Smarty\JTLSmarty           $smarty
+     * @param int                        $languageID
+     * @param \Smarty\JTLSmarty|null     $smarty
      * @param array                      $selected
      * @param \Filter\ProductFilter|null $pf
      * @return self|null
@@ -390,11 +397,11 @@ class AuswahlAssistent
     public static function startIfRequired(
         $cKey,
         int $kKey,
-        int $kSprache = 0,
+        int $languageID = 0,
         $smarty = null,
         $selected = [],
         $pf = null
-    ) {
+    ): ?self {
         // only start if enabled in the backend settings
         if (!self::isRequired()) {
             return null;
@@ -402,20 +409,18 @@ class AuswahlAssistent
         $filterCount = $pf !== null ? $pf->getFilterCount() : 0;
         // only start if no filters are already set
         if ($filterCount === 0) {
-            $AWA = new self($cKey, $kKey, $kSprache, true);
+            $wizard = new self($cKey, $kKey, $languageID, true);
             // only start if the respective selection wizard group is enabled (active)
-            if ($AWA->isActive()) {
+            if ($wizard->isActive()) {
                 foreach ($selected as $kMerkmalWert) {
-                    $AWA->setNextSelection($kMerkmalWert);
+                    $wizard->setNextSelection($kMerkmalWert);
                 }
-
-                $AWA->filter();
-
+                $wizard->filter();
                 if ($smarty !== null) {
-                    $smarty->assign('AWA', $AWA);
+                    $smarty->assign('AWA', $wizard);
                 }
 
-                return $AWA;
+                return $wizard;
             }
         }
 
@@ -427,6 +432,6 @@ class AuswahlAssistent
      */
     public static function getLinks(): array
     {
-        return Shop::Container()->getDB()->selectAll('tlink', 'nLinkart', LINKTYP_AUSWAHLASSISTENT);
+        return \Shop::Container()->getDB()->selectAll('tlink', 'nLinkart', \LINKTYP_AUSWAHLASSISTENT);
     }
 }

@@ -146,7 +146,7 @@ class NotificationEntry
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function hasDescription(): bool
     {

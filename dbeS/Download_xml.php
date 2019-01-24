@@ -96,13 +96,13 @@ function bearbeiteInsert($xml)
 }
 
 /**
- * @param int $kDownload
+ * @param int $id
  */
-function loescheDownload(int $kDownload)
+function loescheDownload(int $id)
 {
-    if ($kDownload > 0 && class_exists('Download')) {
-        $oDownload = new Download($kDownload);
-        $nRows     = $oDownload->delete();
-        Shop::Container()->getLogService()->debug($nRows . ' Downloads geloescht');
+    if ($id > 0 && \Extensions\Download::checkLicense()) {
+        $download = new \Extensions\Download($id);
+        $rows     = $download->delete();
+        Shop::Container()->getLogService()->debug($rows . ' Downloads geloescht');
     }
 }

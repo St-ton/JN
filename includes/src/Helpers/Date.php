@@ -62,33 +62,33 @@ class Date
     /**
      * YYYY-MM-DD HH:MM:SS, YYYY-MM-DD, now oder now()
      *
-     * @param string $cDatum
+     * @param string $dateString
      * @return array
      * @former gibDatumTeile()
      * @since 5.0.0
      */
-    public static function getDateParts(string $cDatum): array
+    public static function getDateParts(string $dateString): array
     {
-        $date_arr = [];
-        if (\strlen($cDatum) > 0) {
-            if (\strtolower($cDatum) === 'now()') {
-                $cDatum = 'now';
+        $parts = [];
+        if (\strlen($dateString) > 0) {
+            if (\strtolower($dateString) === 'now()') {
+                $dateString = 'now';
             }
             try {
-                $date                 = new DateTime($cDatum);
-                $date_arr['cDatum']   = $date->format('Y-m-d');
-                $date_arr['cZeit']    = $date->format('H:m:s');
-                $date_arr['cJahr']    = $date->format('Y');
-                $date_arr['cMonat']   = $date->format('m');
-                $date_arr['cTag']     = $date->format('d');
-                $date_arr['cStunde']  = $date->format('H');
-                $date_arr['cMinute']  = $date->format('i');
-                $date_arr['cSekunde'] = $date->format('s');
+                $date                 = new DateTime($dateString);
+                $parts['cDatum']   = $date->format('Y-m-d');
+                $parts['cZeit']    = $date->format('H:m:s');
+                $parts['cJahr']    = $date->format('Y');
+                $parts['cMonat']   = $date->format('m');
+                $parts['cTag']     = $date->format('d');
+                $parts['cStunde']  = $date->format('H');
+                $parts['cMinute']  = $date->format('i');
+                $parts['cSekunde'] = $date->format('s');
             } catch (Exception $e) {
             }
         }
 
-        return $date_arr;
+        return $parts;
     }
 
     /**

@@ -44,10 +44,10 @@ if ($action === 'save') {
     );
 
     if (!(isset($_POST['cName_' . $oSprache_arr[0]->cISO]) && strlen($_POST['cName_' . $oSprache_arr[0]->cISO]) > 0)) {
-        $cFehler .= 'Fehler: Bitte geben Sie der Verpackung einen Namen.<br />';
+        $cFehler .= __('errorNameMissing') . '<br />';
     }
     if (!(is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0)) {
-        $cFehler .= 'Fehler: Bitte wählen Sie mindestens eine Kundengruppe aus.<br />';
+        $cFehler .= __('errorCustomerGroupMissing') . '<br />';
     }
 
     if ($cFehler !== '') {
@@ -91,8 +91,7 @@ if ($action === 'save') {
                 );
             Shop::Container()->getDB()->insert('tverpackungsprache', $oVerpackungSprache);
         }
-        $cHinweis .= 'Die Verpackung "' . $_POST['cName_' .
-            $oSprache_arr[0]->cISO] . '" wurde erfolgreich gespeichert.<br />';
+        $cHinweis .= sprintf(__('successPackagingSave'), $_POST['cName_' . $oSprache_arr[0]->cISO]) . '<br />';
     }
 } elseif ($action === 'edit' && Request::verifyGPCDataInt('kVerpackung') > 0) { // Editieren
     $kVerpackung = Request::verifyGPCDataInt('kVerpackung');
@@ -124,9 +123,9 @@ if ($action === 'save') {
             // tverpackungsprache loeschen
             Shop::Container()->getDB()->delete('tverpackungsprache', 'kVerpackung', $kVerpackung);
         }
-        $cHinweis .= 'Die markierten Verpackungen wurden erfolgreich gelöscht.<br />';
+        $cHinweis .= __('successPackagingDelete') . '<br />';
     } else {
-        $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Verpackung.<br />';
+        $cFehler .= __('errorAtLeastOnePackaging') . '<br />';
     }
 } elseif ($action === 'refresh') {
     if (isset($_POST['nAktivTMP']) && is_array($_POST['nAktivTMP']) && count($_POST['nAktivTMP']) > 0) {
@@ -135,7 +134,7 @@ if ($action === 'save') {
             $upd->nAktiv = isset($_POST['nAktiv']) && in_array($kVerpackung, $_POST['nAktiv'], true) ? 1 : 0;
             Shop::Container()->getDB()->update('tverpackung', 'kVerpackung', (int)$kVerpackung, $upd);
         }
-        $cHinweis .= 'Ihre markierten Verpackungen wurden erfolgreich aktualisiert.<br />';
+        $cHinweis .= __('successPackagingSaveMultiple') . '<br />';
     }
 }
 

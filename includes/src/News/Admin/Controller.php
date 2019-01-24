@@ -9,6 +9,8 @@ namespace News\Admin;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\ReturnType;
+use Helpers\Request;
+use JTL\SeoHelper;
 use News\Category;
 use News\CategoryInterface;
 use News\CategoryList;
@@ -149,9 +151,7 @@ class Controller
                 $seoData->cKey     = 'kNews';
                 $seoData->kKey     = $newsItemID;
                 $seoData->kSprache = $langID;
-                $seoData->cSeo     = \JTL\SeoHelper::checkSeo(
-                    \JTL\SeoHelper::getSeo($this->getSeo($post, $languages, $iso))
-                );
+                $seoData->cSeo     = SeoHelper::checkSeo(SeoHelper::getSeo($this->getSeo($post, $languages, $iso)));
                 $this->db->insert('tnewssprache', $loc);
                 $this->db->insert('tseo', $seoData);
 
@@ -188,9 +188,7 @@ class Controller
                         ]
                     );
                     $oSeo           = new \stdClass();
-                    $oSeo->cSeo     = \JTL\SeoHelper::checkSeo(
-                        \JTL\SeoHelper::getSeo($prefix . '-' . $month . '-' . $year)
-                    );
+                    $oSeo->cSeo     = SeoHelper::checkSeo(SeoHelper::getSeo($prefix . '-' . $month . '-' . $year));
                     $oSeo->cKey     = 'kNewsMonatsUebersicht';
                     $oSeo->kKey     = $monthOverview->kNewsMonatsUebersicht;
                     $oSeo->kSprache = $langID;
@@ -215,9 +213,7 @@ class Controller
                         ['kNewsMonatsUebersicht', $kNewsMonatsUebersicht, $langID]
                     );
                     $oSeo           = new \stdClass();
-                    $oSeo->cSeo     = \JTL\SeoHelper::checkSeo(
-                        \JTL\SeoHelper::getSeo($prefix . '-' . $month . '-' . $year)
-                    );
+                    $oSeo->cSeo     = SeoHelper::checkSeo(SeoHelper::getSeo($prefix . '-' . $month . '-' . $year));
                     $oSeo->cKey     = 'kNewsMonatsUebersicht';
                     $oSeo->kKey     = $kNewsMonatsUebersicht;
                     $oSeo->kSprache = $langID;
@@ -255,11 +251,11 @@ class Controller
                 $this->step         = 'news_editieren';
                 $this->continueWith = $newsItemID;
             } else {
-                $tab = \Helpers\Request::verifyGPDataString('tab');
+                $tab = Request::verifyGPDataString('tab');
                 $this->newsRedirect(empty($tab) ? 'aktiv' : $tab, $this->msg);
             }
         } else {
-            $newsCategories = $this->getAllNewsCategories(false);
+            $newsCategories = $this->getAllNewsCategories();
             $newsItem       = new Item($this->db);
             $this->step     = 'news_editieren';
             $this->smarty->assign('cPostVar_arr', $post)
@@ -490,7 +486,7 @@ class Controller
             $seoData->cKey     = 'kNewsKategorie';
             $seoData->kKey     = $categoryID;
             $seoData->kSprache = $loc->languageID;
-            $seoData->cSeo     = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($cSeo));
+            $seoData->cSeo     = SeoHelper::checkSeo(SeoHelper::getSeo($cSeo));
             if (empty($seoData->cSeo)) {
                 continue;
             }
@@ -776,7 +772,7 @@ class Controller
             }
             $this->flushCache();
             $this->setMsg('Ihre markierten Kommentare wurden erfolgreich gelöscht.');
-            $tab    = \Helpers\Request::verifyGPDataString('tab');
+            $tab    = Request::verifyGPDataString('tab');
             $params = [
                 'news'  => '1',
                 'nd'    => '1',
@@ -870,10 +866,10 @@ class Controller
             }
             $urlParams['tab'] = $tab;
             if (isset($tabPageMapping[$tab])
-                && \Helpers\Request::verifyGPCDataInt($tabPageMapping[$tab]) > 1
+                && Request::verifyGPCDataInt($tabPageMapping[$tab]) > 1
                 && !\array_key_exists($tabPageMapping[$tab], $urlParams)
             ) {
-                $urlParams[$tabPageMapping[$tab]] = \Helpers\Request::verifyGPCDataInt($tabPageMapping[$tab]);
+                $urlParams[$tabPageMapping[$tab]] = Request::verifyGPCDataInt($tabPageMapping[$tab]);
             }
         }
 

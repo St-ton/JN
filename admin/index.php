@@ -32,41 +32,41 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
             case AdminLoginStatus::ERROR_LOCKED:
             case AdminLoginStatus::ERROR_INVALID_PASSWORD_LOCKED:
                 $lockTime = $oAccount->getLockedMinutes();
-                $cFehler  = 'Gesperrt für ' . $lockTime . ' Minute' . ($lockTime !== 1 ? 'n' : '');
+                $cFehler  = sprintf(__('lockForMinutes'), $lockTime);
                 break;
 
             case AdminLoginStatus::ERROR_USER_NOT_FOUND:
             case AdminLoginStatus::ERROR_INVALID_PASSWORD:
-                $cFehler = 'Benutzername oder Passwort falsch';
+                $cFehler = __('errorWrongPasswordUser');
                 if (isset($_SESSION['AdminAccount']->TwoFA_expired)
                     && $_SESSION['AdminAccount']->TwoFA_expired === true
                 ) {
-                    $cFehler = '2-Faktor-Auth-Code abgelaufen';
+                    $cFehler = __('errorTwoFactorExpired');
                 }
                 break;
 
             case AdminLoginStatus::ERROR_USER_DISABLED:
-                $cFehler = 'Anmeldung zur Zeit nicht möglich';
+                $cFehler = __('errorLoginTemporaryNotPossible');
                 break;
 
             case AdminLoginStatus::ERROR_LOGIN_EXPIRED:
-                $cFehler = 'Anmeldedaten nicht mehr gültig';
+                $cFehler = __('errorLoginDataExpired');
                 break;
 
             case AdminLoginStatus::ERROR_TWO_FACTOR_AUTH_EXPIRED:
                 if (isset($_SESSION['AdminAccount']->TwoFA_expired)
                     && $_SESSION['AdminAccount']->TwoFA_expired === true
                 ) {
-                    $cFehler = '2-Faktor-Authentifizierungs-Code abgelaufen';
+                    $cFehler = __('errorTwoFactorExpired');
                 }
                 break;
 
             case AdminLoginStatus::ERROR_NOT_AUTHORIZED:
-                $cFehler = 'Keine Berechtigungen vorhanden';
+                $cFehler = __('errorNoPermission');
                 break;
 
             case AdminLoginStatus::LOGIN_OK:
-                \Session\AdminSession::getInstance()->reHash();
+                \Session\Backend::getInstance()->reHash();
                 $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
                 if ($oAccount->permission('SHOP_UPDATE_VIEW') && $oUpdater->hasPendingUpdates()) {
                     header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'dbupdater.php');
@@ -81,7 +81,7 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
                 break;
         }
     } elseif ($csrfOK !== true) {
-        $cFehler = 'Cross site request forgery! Sind Cookies aktiviert?';
+        $cFehler = __('errorCSRF');
     }
 }
 $type          = '';
@@ -126,8 +126,9 @@ $smarty->assign('bProfilerActive', $profilerState !== 0)
  */
 function openDashboard()
 {
-    global $oAccount, $smarty;
+    global $oAccount;
 
+    $smarty = Shop::Smarty();
     if (isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0) {
         redirectToURI($_REQUEST['uri']);
     }
@@ -135,14 +136,14 @@ function openDashboard()
     if ($oAccount->permission('DASHBOARD_VIEW')) {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
 
-        $oFsCheck = new Systemcheck_Platform_Filesystem(PFAD_ROOT);
-        $oFsCheck->getFoldersChecked();
+        $fsCheck = new Systemcheck_Platform_Filesystem(PFAD_ROOT);
+        $fsCheck->getFoldersChecked();
 
         $smarty->assign('bDashboard', true)
-               ->assign('oPermissionStat', $oFsCheck->getFolderStats())
+               ->assign('oPermissionStat', $fsCheck->getFolderStats())
                ->assign('bUpdateError', ((isset($_POST['shopupdate']) && $_POST['shopupdate'] === '1') ? '1' : false))
                ->assign('bTemplateDiffers', APPLICATION_VERSION !== Template::getInstance()->getVersion())
-               ->assign('oActiveWidget_arr', getWidgets(true))
+               ->assign('oActiveWidget_arr', getWidgets())
                ->assign('oAvailableWidget_arr', getWidgets(false))
                ->assign('bInstallExists', is_dir(PFAD_ROOT . 'install'));
     }
@@ -194,12 +195,8 @@ if ($oAccount->getIsAuthenticated()) {
     openDashboard();
 } else {
     $oAccount->redirectOnUrl();
-    if (isset($_GET['errCode'])) {
-        switch ((int)$_GET['errCode']) {
-            case AdminLoginStatus::ERROR_SESSION_INVALID:
-                $cFehler = 'Ihre Sitzung wurde zurückgesetzt! Bitte melden Sie sich neu an.';
-                break;
-        }
+    if (isset($_GET['errCode']) && (int)$_GET['errCode'] === AdminLoginStatus::ERROR_SESSION_INVALID) {
+        $cFehler = __('errorSessionExpired');
     }
     \Shop::Container()->getGetText()->loadAdminLocale('pages/login');
     $smarty->assign('uri', isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0

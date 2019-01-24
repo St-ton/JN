@@ -13,6 +13,7 @@ use Filter\Join;
 use Filter\Option;
 use Filter\ProductFilter;
 use Filter\StateSQL;
+use Session\Frontend;
 use function Functional\filter;
 
 /**
@@ -105,9 +106,9 @@ class BaseSearchQuery extends AbstractFilter
             \preg_match(
                 '/[\w' . \utf8_decode('äÄüÜöÖß') . '\.\-]{' . $minChars . ',}/',
                 \str_replace(' ', '', $name),
-                $cTreffer_arr
+                $hits
             );
-            if (\count($cTreffer_arr) === 0) {
+            if (\count($hits) === 0) {
                 $this->error = \Shop::Lang()->get('expressionHasTo') . ' ' .
                     $minChars . ' ' .
                     \Shop::Lang()->get('lettersDigits');
@@ -225,21 +226,21 @@ class BaseSearchQuery extends AbstractFilter
      */
     public function getSQLJoin()
     {
-        $kSucheCache_arr = [];
-        $searchFilter    = $this->productFilter->getBaseState();
+        $searchCacheIDs = [];
+        $searchFilter   = $this->productFilter->getBaseState();
         if (\is_array($searchFilter)) {
             $count = \count($searchFilter);
             foreach ($searchFilter as $oSuchFilter) {
                 if ($oSuchFilter->getSearchCacheID() > 0) {
-                    $kSucheCache_arr[] = $oSuchFilter->getSearchCacheID();
+                    $searchCacheIDs[] = $oSuchFilter->getSearchCacheID();
                 }
             }
         } elseif ($searchFilter->getSearchCacheID() > 0) {
-            $kSucheCache_arr[] = $searchFilter->getSearchCacheID();
-            $count             = 1;
+            $searchCacheIDs[] = $searchFilter->getSearchCacheID();
+            $count            = 1;
         } else {
-            $kSucheCache_arr = [$searchFilter->getValue()];
-            $count           = 1;
+            $searchCacheIDs = [$searchFilter->getValue()];
+            $count          = 1;
         }
 
         return (new Join())
@@ -247,12 +248,12 @@ class BaseSearchQuery extends AbstractFilter
             ->setTable('(SELECT tsuchcachetreffer.kArtikel, tsuchcachetreffer.kSuchCache, 
                           MIN(tsuchcachetreffer.nSort) AS nSort
                               FROM tsuchcachetreffer
-                              WHERE tsuchcachetreffer.kSuchCache IN (' . \implode(',', $kSucheCache_arr) . ') 
+                              WHERE tsuchcachetreffer.kSuchCache IN (' . \implode(',', $searchCacheIDs) . ') 
                               #JOIN tsuchcache
                               #    ON tsuchcachetreffer.kSuchCache = tsuchcache.kSuchCache
                               #JOIN tsuchanfrage
                               #    ON tsuchanfrage.cSuche = tsuchcache.cSuche
-                              #    AND tsuchanfrage.kSuchanfrage IN (' . \implode(',', $kSucheCache_arr) . ') 
+                              #    AND tsuchanfrage.kSuchanfrage IN (' . \implode(',', $searchCacheIDs) . ') 
                               GROUP BY tsuchcachetreffer.kArtikel
                               HAVING COUNT(*) = ' . $count . '
                           ) AS jSuche')
@@ -879,58 +880,58 @@ class BaseSearchQuery extends AbstractFilter
     }
 
     /**
-     * @param \stdClass $oSuchCache
-     * @param array     $searchColumnn_arr
-     * @param array     $cSuch_arr
-     * @param int       $nLimit
-     * @param string    $cFullText
+     * @param \stdClass $searchCache
+     * @param array     $searchCols
+     * @param array     $searchQueries
+     * @param int       $limit
+     * @param string    $fullText
      * @return int
      * @former bearbeiteSuchCacheFulltext
      */
     private function editFullTextSearchCache(
-        $oSuchCache,
-        $searchColumnn_arr,
-        $cSuch_arr,
-        int $nLimit = 0,
-        $cFullText = 'Y'
+        $searchCache,
+        $searchCols,
+        $searchQueries,
+        int $limit = 0,
+        $fullText = 'Y'
     ): int {
-        if ($oSuchCache->kSuchCache > 0) {
-            $cArtikelSpalten_arr = \array_map(function ($item) {
-                $item_arr = \explode('.', $item, 2);
+        if ($searchCache->kSuchCache > 0) {
+            $productCols = \array_map(function ($item) {
+                $items = \explode('.', $item, 2);
 
-                return 'tartikel.' . $item_arr[1];
-            }, $searchColumnn_arr);
+                return 'tartikel.' . $items[1];
+            }, $searchCols);
 
-            $cSprachSpalten_arr = \array_filter($searchColumnn_arr, function ($item) {
+            $langCols = \array_filter($searchCols, function ($item) {
                 return \preg_match('/tartikelsprache\.(.*)/', $item) ? true : false;
             });
 
-            $score = 'MATCH (' . \implode(', ', $cArtikelSpalten_arr) . ")
-                        AGAINST ('" . \implode(' ', $cSuch_arr) . "' IN NATURAL LANGUAGE MODE)";
-            if ($cFullText === 'B') {
-                $match = 'MATCH (' . \implode(', ', $cArtikelSpalten_arr) . ")
-                        AGAINST ('" . \implode('* ', $cSuch_arr) . "*' IN BOOLEAN MODE)";
+            $score = 'MATCH (' . \implode(', ', $productCols) . ")
+                        AGAINST ('" . \implode(' ', $searchQueries) . "' IN NATURAL LANGUAGE MODE)";
+            if ($fullText === 'B') {
+                $match = 'MATCH (' . \implode(', ', $productCols) . ")
+                        AGAINST ('" . \implode('* ', $searchQueries) . "*' IN BOOLEAN MODE)";
             } else {
                 $match = $score;
             }
 
-            $cSQL = "SELECT {$oSuchCache->kSuchCache} AS kSuchCache,
+            $sql = "SELECT {$searchCache->kSuchCache} AS kSuchCache,
                     IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP,
                     $score AS score
                     FROM tartikel
                     WHERE $match " . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
 
             if (\Shop::getLanguage() > 0 && !\Sprache::isDefaultLanguageActive()) {
-                $score = 'MATCH (' . \implode(', ', $cSprachSpalten_arr) . ")
-                            AGAINST ('" . \implode(' ', $cSuch_arr) . "' IN NATURAL LANGUAGE MODE)";
-                if ($cFullText === 'B') {
-                    $score = 'MATCH (' . \implode(', ', $cSprachSpalten_arr) . ")
-                            AGAINST ('" . \implode('* ', $cSuch_arr) . "*' IN BOOLEAN MODE)";
+                $score = 'MATCH (' . \implode(', ', $langCols) . ")
+                            AGAINST ('" . \implode(' ', $searchQueries) . "' IN NATURAL LANGUAGE MODE)";
+                if ($fullText === 'B') {
+                    $score = 'MATCH (' . \implode(', ', $langCols) . ")
+                            AGAINST ('" . \implode('* ', $searchQueries) . "*' IN BOOLEAN MODE)";
                 } else {
                     $match = $score;
                 }
-                $cSQL .= "UNION DISTINCT
-                SELECT {$oSuchCache->kSuchCache} AS kSuchCache,
+                $sql .= "UNION DISTINCT
+                SELECT {$searchCache->kSuchCache} AS kSuchCache,
                     IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP,
                     $score AS score
                     FROM tartikel
@@ -938,30 +939,31 @@ class BaseSearchQuery extends AbstractFilter
                     WHERE $match " . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
             }
 
-            $cISQL = "INSERT INTO tsuchcachetreffer
+            $this->productFilter->getDB()->query(
+                "INSERT INTO tsuchcachetreffer
                         SELECT kSuchCache, kArtikelTMP, ROUND(MAX(15 - score) * 10)
-                        FROM ($cSQL) AS i
+                        FROM ($sql) AS i
                         LEFT JOIN tartikelsichtbarkeit 
                             ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
-                            AND tartikelsichtbarkeit.kKundengruppe = " . \Session::getCustomerGroup()->getID() . '
+                            AND tartikelsichtbarkeit.kKundengruppe = " . Frontend::getCustomerGroup()->getID() . '
                         WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
-                        GROUP BY kSuchCache, kArtikelTMP' . ($nLimit > 0 ? ' LIMIT ' . $nLimit : '');
-
-            $this->productFilter->getDB()->query($cISQL, ReturnType::AFFECTED_ROWS);
+                        GROUP BY kSuchCache, kArtikelTMP' . ($limit > 0 ? ' LIMIT ' . $limit : ''),
+                ReturnType::AFFECTED_ROWS
+            );
         }
 
-        return $oSuchCache->kSuchCache;
+        return $searchCache->kSuchCache;
     }
 
     /**
-     * @param array $searchColumns
+     * @param array $searchCols
      * @return array
      */
-    public function getSearchColumnClasses($searchColumns): array
+    public function getSearchColumnClasses($searchCols): array
     {
         $result = [];
-        if (\is_array($searchColumns) && \count($searchColumns) > 0) {
-            foreach ($searchColumns as $columns) {
+        if (\is_array($searchCols) && \count($searchCols) > 0) {
+            foreach ($searchCols as $columns) {
                 // Klasse 1: Artikelname und Artikel SEO
                 if (\strpos($columns, 'cName') !== false
                     || \strpos($columns, 'cSeo') !== false
@@ -991,23 +993,23 @@ class BaseSearchQuery extends AbstractFilter
     }
 
     /**
-     * @param array  $searchColumns
-     * @param string $searchColumn
+     * @param array  $searchCols
+     * @param string $searchCol
      * @param array  $nonAllowed
      * @return bool
      */
-    public function checkColumnClasses($searchColumns, $searchColumn, $nonAllowed): bool
+    public function checkColumnClasses($searchCols, $searchCol, $nonAllowed): bool
     {
-        if (\is_array($searchColumns)
+        if (\is_array($searchCols)
             && \is_array($nonAllowed)
-            && \count($searchColumns) > 0
-            && \strlen($searchColumn) > 0
+            && \count($searchCols) > 0
+            && \strlen($searchCol) > 0
             && \count($nonAllowed) > 0
         ) {
             foreach ($nonAllowed as $class) {
-                if (isset($searchColumns[$class]) && \count($searchColumns[$class]) > 0) {
-                    foreach ($searchColumns[$class] as $searchColumnnKlasse) {
-                        if ($searchColumnnKlasse === $searchColumn) {
+                if (isset($searchCols[$class]) && \count($searchCols[$class]) > 0) {
+                    foreach ($searchCols[$class] as $searchColumnnKlasse) {
+                        if ($searchColumnnKlasse === $searchCol) {
                             return false;
                         }
                     }

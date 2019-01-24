@@ -10,7 +10,7 @@ use Filter\Pagination\Info;
 use Tightenco\Collect\Support\Collection;
 
 /**
- * Class SearchResults
+ * Interface SearchResultsInterface
  * @package Filter
  */
 interface SearchResultsInterface

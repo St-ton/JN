@@ -16,16 +16,14 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Shop::setPageType(PAGE_ARTIKELLISTE);
 /** @global \Smarty\JTLSmarty $smarty */
 /** @global \Filter\ProductFilter $NaviFilter*/
-$Einstellungen      = Shopsetting::getInstance()->getAll();
-$conf               = $Einstellungen;
+$conf               = Shopsetting::getInstance()->getAll();
 $bestsellers        = [];
-$suchanfrage        = '';
 $doSearch           = true;
-$KategorieInhalt    = null;
+$categoryContent    = null;
 $AktuelleKategorie  = new Kategorie();
 $expandedCategories = new KategorieListe();
 $hasError           = false;
-$cParameter_arr     = Shop::getParameters();
+$params             = Shop::getParameters();
 /** @var \Filter\ProductFilter $NaviFilter */
 if ($NaviFilter->hasCategory()) {
     $kKategorie                  = $NaviFilter->getCategory()->getValue();
@@ -35,8 +33,8 @@ if ($NaviFilter->hasCategory()) {
         if (Category::categoryExists($kKategorie)) {
             $AktuelleKategorie->loadFromDB($kKategorie);
         } else {
-            Shop::$is404             = true;
-            $cParameter_arr['is404'] = true;
+            Shop::$is404     = true;
+            $params['is404'] = true;
 
             return;
         }
@@ -82,8 +80,8 @@ if ($conf['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y'
     });
     $bestsellers = Bestseller::buildBestsellers(
         $productsIDs,
-        \Session\Session::getCustomerGroup()->getID(),
-        \Session\Session::getCustomerGroup()->mayViewCategories(),
+        \Session\Frontend::getCustomerGroup()->getID(),
+        \Session\Frontend::getCustomerGroup()->mayViewCategories(),
         false,
         (int)$conf['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'],
         (int)$conf['global']['global_bestseller_minanzahl']
@@ -94,9 +92,7 @@ if ($conf['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y'
 if (Request::verifyGPCDataInt('zahl') > 0) {
     $_SESSION['ArtikelProSeite'] = Request::verifyGPCDataInt('zahl');
 }
-if (!isset($_SESSION['ArtikelProSeite'])
-    && $conf['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'N'
-) {
+if (!isset($_SESSION['ArtikelProSeite']) && $conf['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'N') {
     $_SESSION['ArtikelProSeite'] = min(
         (int)$conf['artikeluebersicht']['artikeluebersicht_artikelproseite'],
         ARTICLES_PER_PAGE_HARD_LIMIT
@@ -112,24 +108,24 @@ $oSuchergebnisse->getProducts()->transform(function ($product) use ($conf) {
 });
 if ($oSuchergebnisse->getProducts()->count() === 0) {
     if ($NaviFilter->hasCategory()) {
-        $KategorieInhalt                  = new stdClass();
-        $KategorieInhalt->Unterkategorien = new KategorieListe();
+        $categoryContent                  = new stdClass();
+        $categoryContent->Unterkategorien = new KategorieListe();
         $h                                = Category::getInstance();
         $children                         = $h->getCategoryById($NaviFilter->getCategory()->getValue());
         if ($children !== false && isset($children->Unterkategorien)) {
-            $KategorieInhalt->Unterkategorien->elemente = $children->Unterkategorien;
+            $categoryContent->Unterkategorien->elemente = $children->Unterkategorien;
         }
 
         $tb = $conf['artikeluebersicht']['topbest_anzeigen'];
         if ($tb === 'Top' || $tb === 'TopBest') {
-            $KategorieInhalt->TopArtikel = new ArtikelListe();
-            $KategorieInhalt->TopArtikel->holeTopArtikel($KategorieInhalt->Unterkategorien);
+            $categoryContent->TopArtikel = new ArtikelListe();
+            $categoryContent->TopArtikel->holeTopArtikel($categoryContent->Unterkategorien);
         }
         if ($tb === 'Bestseller' || $tb === 'TopBest') {
-            $KategorieInhalt->BestsellerArtikel = new ArtikelListe();
-            $KategorieInhalt->BestsellerArtikel->holeBestsellerArtikel(
-                $KategorieInhalt->Unterkategorien,
-                $KategorieInhalt->TopArtikel ?? null
+            $categoryContent->BestsellerArtikel = new ArtikelListe();
+            $categoryContent->BestsellerArtikel->holeBestsellerArtikel(
+                $categoryContent->Unterkategorien,
+                $categoryContent->TopArtikel ?? null
             );
         }
     } else {
@@ -142,9 +138,9 @@ if (strpos(basename($NaviFilter->getFilterURL()->getURL()), '.php') === false) {
         ? SEP_SEITE . $pages->getCurrentPage()
         : '');
 }
-AuswahlAssistent::startIfRequired(
+\Extensions\AuswahlAssistent::startIfRequired(
     AUSWAHLASSISTENT_ORT_KATEGORIE,
-    $cParameter_arr['kKategorie'],
+    $params['kKategorie'],
     Shop::getLanguageID(),
     $smarty,
     [],
@@ -153,8 +149,8 @@ AuswahlAssistent::startIfRequired(
 $pagination = new \Filter\Pagination\Pagination($NaviFilter, new \Filter\Pagination\ItemFactory());
 $pagination->create($pages);
 $smarty->assign('NaviFilter', $NaviFilter)
-       ->assign('KategorieInhalt', $KategorieInhalt)
-       ->assign('oErweiterteDarstellung', $NaviFilter->getMetaData()->getExtendedView($cParameter_arr['nDarstellung']))
+       ->assign('KategorieInhalt', $categoryContent)
+       ->assign('oErweiterteDarstellung', $NaviFilter->getMetaData()->getExtendedView($params['nDarstellung']))
        ->assign('oBestseller_arr', $bestsellers)
        ->assign('oNaviSeite_arr', $pagination->getItemsCompat())
        ->assign('filterPagination', $pagination)
@@ -165,12 +161,12 @@ $smarty->assign('NaviFilter', $NaviFilter)
 
 executeHook(HOOK_FILTER_PAGE);
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-$oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
+$globalMetaData = \Filter\Metadata::getGlobalMetaData();
 $smarty->assign(
     'meta_title',
     $oNavigationsinfo->generateMetaTitle(
         $oSuchergebnisse,
-        $oGlobaleMetaAngabenAssoc_arr,
+        $globalMetaData,
         $AktuelleKategorie
     )
 )->assign(
@@ -178,7 +174,7 @@ $smarty->assign(
     $oNavigationsinfo->generateMetaDescription(
         $oSuchergebnisse->getProducts()->all(),
         $oSuchergebnisse,
-        $oGlobaleMetaAngabenAssoc_arr,
+        $globalMetaData,
         $AktuelleKategorie
     )
 )->assign(

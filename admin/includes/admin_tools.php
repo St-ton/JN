@@ -117,7 +117,7 @@ function saveAdminSettings(array $settingsIDs, array &$cPost_arr, $tags = [CACHI
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     if (count($confData) === 0) {
-        return 'Fehler beim Speichern Ihrer Einstellungen.';
+        return __('errorConfigSave');
     }
     foreach ($confData as $config) {
         $val                        = new stdClass();
@@ -150,7 +150,7 @@ function saveAdminSettings(array $settingsIDs, array &$cPost_arr, $tags = [CACHI
     }
     Shop::Container()->getCache()->flushTags($tags);
 
-    return 'Ihre Einstellungen wurden erfolgreich übernommen.';
+    return __('successConfigSave');
 }
 
 /**
@@ -160,8 +160,9 @@ function saveAdminSettings(array $settingsIDs, array &$cPost_arr, $tags = [CACHI
  */
 function bearbeiteListBox($listBoxes, $cWertName, int $configSectionID)
 {
+    $db = Shop::Container()->getDB();
     if (is_array($listBoxes) && count($listBoxes) > 0) {
-        Shop::Container()->getDB()->delete(
+        $db->delete(
             'teinstellungen',
             ['kEinstellungenSektion', 'cName'],
             [$configSectionID, $cWertName]
@@ -172,13 +173,13 @@ function bearbeiteListBox($listBoxes, $cWertName, int $configSectionID)
             $oAktWert->cName                 = $cWertName;
             $oAktWert->kEinstellungenSektion = $configSectionID;
 
-            Shop::Container()->getDB()->insert('teinstellungen', $oAktWert);
+            $db->insert('teinstellungen', $oAktWert);
         }
     } elseif ($cWertName === 'bewertungserinnerung_kundengruppen' || $cWertName === 'kwk_kundengruppen') {
         // Leere Kundengruppen Work Around
-        $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
+        $oKundengruppe = $db->select('tkundengruppe', 'cStandard', 'Y');
         if ($oKundengruppe->kKundengruppe > 0) {
-            Shop::Container()->getDB()->delete(
+            $db->delete(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [$configSectionID, $cWertName]
@@ -188,7 +189,7 @@ function bearbeiteListBox($listBoxes, $cWertName, int $configSectionID)
             $oAktWert->cName                 = $cWertName;
             $oAktWert->kEinstellungenSektion = CONF_BEWERTUNG;
 
-            Shop::Container()->getDB()->insert('teinstellungen', $oAktWert);
+            $db->insert('teinstellungen', $oAktWert);
         }
     }
 }
@@ -202,7 +203,7 @@ function bearbeiteListBox($listBoxes, $cWertName, int $configSectionID)
 function saveAdminSectionSettings(int $configSectionID, array &$cPost_arr, $tags = [CACHING_GROUP_OPTION])
 {
     if (!Form::validateToken()) {
-        return 'Fehler: Cross site request forgery.';
+        return __('errorCSRF');
     }
     $confData = Shop::Container()->getDB()->selectAll(
         'teinstellungenconf',
@@ -212,7 +213,7 @@ function saveAdminSectionSettings(int $configSectionID, array &$cPost_arr, $tags
         'nSort'
     );
     if (count($confData) === 0) {
-        return 'Fehler beim Speichern Ihrer Einstellungen.';
+        return __('errorConfigSave');
     }
     foreach ($confData as $config) {
         $val                        = new stdClass();
@@ -247,7 +248,7 @@ function saveAdminSectionSettings(int $configSectionID, array &$cPost_arr, $tags
     }
     Shop::Container()->getCache()->flushTags($tags);
 
-    return 'Ihre Einstellungen wurden erfolgreich übernommen.';
+    return __('successConfigSave');
 }
 
 /**

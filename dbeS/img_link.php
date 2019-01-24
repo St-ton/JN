@@ -39,9 +39,10 @@ function bildartikellink_xml(SimpleXMLElement $xml)
     $items           = get_array($xml);
     $articleIDs      = [];
     $cacheArticleIDs = [];
+    $db              = Shop::Container()->getDB();
     foreach ($items as $item) {
         // delete link first. Important because jtl-wawi does not send del_bildartikellink when image is updated.
-        Shop::Container()->getDB()->delete(
+        $db->delete(
             'tartikelpict',
             ['kArtikel', 'nNr'],
             [(int)$item->kArtikel, (int)$item->nNr]
@@ -80,21 +81,22 @@ function del_bildartikellink_xml(SimpleXMLElement $xml)
  */
 function del_img_item($item)
 {
-    $image = Shop::Container()->getDB()->select('tartikelpict', 'kArtikel', $item->kArtikel, 'nNr', $item->nNr);
+    $db    = Shop::Container()->getDB();
+    $image = $db->select('tartikelpict', 'kArtikel', $item->kArtikel, 'nNr', $item->nNr);
     if (is_object($image)) {
         // is last reference
-        $res = Shop::Container()->getDB()->query(
+        $res = $db->query(
             'SELECT COUNT(*) AS cnt FROM tartikelpict WHERE kBild = ' . (int)$image->kBild,
             \DB\ReturnType::SINGLE_OBJECT
         );
         if ((int)$res->cnt === 1) {
-            Shop::Container()->getDB()->delete('tbild', 'kBild', (int)$image->kBild);
+            $db->delete('tbild', 'kBild', (int)$image->kBild);
             $storage = PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $image->cPfad;
             if (file_exists($storage)) {
                 @unlink($storage);
             }
         }
-        Shop::Container()->getDB()->delete(
+        $db->delete(
             'tartikelpict',
             ['kArtikel', 'nNr'],
             [(int)$item->kArtikel, (int)$item->nNr]
@@ -127,6 +129,7 @@ function get_del_array(SimpleXMLElement $xml)
 function get_array(SimpleXMLElement $xml)
 {
     $items = [];
+    $db    = Shop::Container()->getDB();
     /** @var SimpleXMLElement $child */
     foreach ($xml->children() as $child) {
         $item    = (object)[
@@ -137,7 +140,7 @@ function get_array(SimpleXMLElement $xml)
             'kArtikelPict' => (int)$child->attributes()->kArtikelPict
         ];
         $imageId = (int)$child->attributes()->kBild;
-        $image   = Shop::Container()->getDB()->select('tbild', 'kBild', $imageId);
+        $image   = $db->select('tbild', 'kBild', $imageId);
         if (is_object($image)) {
             $item->cPfad = $image->cPfad;
             $items[]     = $item;

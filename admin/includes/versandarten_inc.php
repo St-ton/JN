@@ -236,12 +236,12 @@ function getZuschlagNames(int $kVersandzuschlag)
  */
 function getShippingByName(string $cSearch)
 {
-    $cSearch_arr        = explode(',', $cSearch);
-    $allShippingsByName = [];
-    foreach ($cSearch_arr as $cSearchPos) {
+    $byName = [];
+    $db     = Shop::Container()->getDB();
+    foreach (explode(',', $cSearch) as $cSearchPos) {
         $cSearchPos = trim($cSearchPos);
         if (strlen($cSearchPos) > 2) {
-            $shippingByName_arr = Shop::Container()->getDB()->queryPrepared(
+            $shippingByName_arr = $db->queryPrepared(
                 'SELECT va.kVersandart, va.cName
                     FROM tversandart AS va
                     LEFT JOIN tversandartsprache AS vs 
@@ -255,16 +255,16 @@ function getShippingByName(string $cSearch)
             if (!empty($shippingByName_arr)) {
                 if (count($shippingByName_arr) > 1) {
                     foreach ($shippingByName_arr as $shippingByName) {
-                        $allShippingsByName[$shippingByName->kVersandart] = $shippingByName;
+                        $byName[$shippingByName->kVersandart] = $shippingByName;
                     }
                 } else {
-                    $allShippingsByName[$shippingByName_arr[0]->kVersandart] = $shippingByName_arr[0];
+                    $byName[$shippingByName_arr[0]->kVersandart] = $shippingByName_arr[0];
                 }
             }
         }
     }
 
-    return $allShippingsByName;
+    return $byName;
 }
 
 /**

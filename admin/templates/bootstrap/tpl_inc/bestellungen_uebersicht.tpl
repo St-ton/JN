@@ -93,7 +93,7 @@
                             <td class="check">
                                 <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
                             </td>
-                            <td colspan="8"><label for="ALLMSGS">Alle ausw&auml;hlen</label></td>
+                            <td colspan="8"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
                         </tr>
                         </tfoot>
                     </table>
@@ -104,6 +104,6 @@
             </div>
         </form>
     {else}
-        <div class="alert alert-info"><i class="fa fa-info-circle"></i> Keine Daten vorhanden.</div>
+        <div class="alert alert-info"><i class="fa fa-info-circle"></i> {__('noDataAvailable')}</div>
     {/if}
 </div>

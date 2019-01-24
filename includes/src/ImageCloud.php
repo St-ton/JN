@@ -28,7 +28,7 @@ final class ImageCloud
     /**
      * @param string $uid
      */
-    public static function setId($uid)
+    public static function setId($uid): void
     {
         self::$uid = $uid;
     }
@@ -52,7 +52,7 @@ final class ImageCloud
      * @param  string $hash image hash
      * @return string|null
      */
-    public function get($hash)
+    public function get($hash): ?string
     {
         return $this->getCloudEndpoint($hash);
     }
@@ -63,7 +63,7 @@ final class ImageCloud
      * @param  string $hash image hash
      * @return $this
      */
-    public function exists($hash)
+    public function exists($hash): self
     {
         $res = Guzzle\Http\StaticClient::head($this->getCloudEndpoint($hash), [
             'headers' => [
@@ -115,7 +115,7 @@ final class ImageCloud
      * @return string
      * @throws Exception
      */
-    public function getHash($filename)
+    public function getHash($filename): string
     {
         $size = @getimagesize($filename);
 

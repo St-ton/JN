@@ -4,7 +4,7 @@
     @param string importerId - the id string for this CSV importer
     @param bool bCustomStrategy - Show modal dialog to choose the import strategy (default: false)
 *}
-{assign var='bCustomStrategy' value=$bCustomStrategy|default:true}
+{assign var=bCustomStrategy value=$bCustomStrategy|default:true}
 <script>
     var $form_{$importerId} = null;
     var $fileInput_{$importerId} = null;

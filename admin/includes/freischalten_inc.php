@@ -224,7 +224,7 @@ function schalteTagsFrei($kTag_arr): bool
     if (!is_array($kTag_arr) || count($kTag_arr) === 0) {
         return false;
     }
-    $kTag_arr = array_map('intval', $kTag_arr);
+    $kTag_arr = array_map('\intval', $kTag_arr);
     $tags     = [];
     $articles = Shop::Container()->getDB()->query(
         'SELECT DISTINCT kArtikel
@@ -273,7 +273,7 @@ function schalteNewskommentareFrei($kNewsKommentar_arr): bool
     if (!is_array($kNewsKommentar_arr) || count($kNewsKommentar_arr) === 0) {
         return false;
     }
-    $kNewsKommentar_arr = array_map('intval', $kNewsKommentar_arr);
+    $kNewsKommentar_arr = array_map('\intval', $kNewsKommentar_arr);
 
     Shop::Container()->getDB()->query(
         'UPDATE tnewskommentar
@@ -294,7 +294,7 @@ function schalteNewsletterempfaengerFrei($kNewsletterEmpfaenger_arr): bool
     if (!is_array($kNewsletterEmpfaenger_arr) || count($kNewsletterEmpfaenger_arr) === 0) {
         return false;
     }
-    $kNewsletterEmpfaenger_arr = array_map('intval', $kNewsletterEmpfaenger_arr);
+    $kNewsletterEmpfaenger_arr = array_map('\intval', $kNewsletterEmpfaenger_arr);
 
     Shop::Container()->getDB()->query(
         'UPDATE tnewsletterempfaenger
@@ -315,7 +315,7 @@ function loescheBewertung($kBewertung_arr): bool
     if (!is_array($kBewertung_arr) || count($kBewertung_arr) === 0) {
         return false;
     }
-    $kBewertung_arr = array_map('intval', $kBewertung_arr);
+    $kBewertung_arr = array_map('\intval', $kBewertung_arr);
 
     Shop::Container()->getDB()->query(
         'DELETE FROM tbewertung
@@ -335,7 +335,7 @@ function loescheSuchanfragen($kSuchanfrage_arr): bool
     if (!is_array($kSuchanfrage_arr) || count($kSuchanfrage_arr) === 0) {
         return false;
     }
-    $kSuchanfrage_arr = array_map('intval', $kSuchanfrage_arr);
+    $kSuchanfrage_arr = array_map('\intval', $kSuchanfrage_arr);
 
     Shop::Container()->getDB()->query(
         'DELETE FROM tsuchanfrage
@@ -361,7 +361,7 @@ function loescheTags($kTag_arr): bool
     if (!is_array($kTag_arr) || count($kTag_arr) === 0) {
         return false;
     }
-    $kTag_arr = array_map('intval', $kTag_arr);
+    $kTag_arr = array_map('\intval', $kTag_arr);
 
     Shop::Container()->getDB()->query(
         'DELETE ttag, ttagartikel 
@@ -384,7 +384,7 @@ function loescheNewskommentare($kNewsKommentar_arr): bool
     if (!is_array($kNewsKommentar_arr) || count($kNewsKommentar_arr) === 0) {
         return false;
     }
-    $kNewsKommentar_arr = array_map('intval', $kNewsKommentar_arr);
+    $kNewsKommentar_arr = array_map('\intval', $kNewsKommentar_arr);
 
     Shop::Container()->getDB()->query(
         'DELETE FROM tnewskommentar
@@ -404,7 +404,7 @@ function loescheNewsletterempfaenger($kNewsletterEmpfaenger_arr): bool
     if (!is_array($kNewsletterEmpfaenger_arr) || count($kNewsletterEmpfaenger_arr) === 0) {
         return false;
     }
-    $kNewsletterEmpfaenger_arr = array_map('intval', $kNewsletterEmpfaenger_arr);
+    $kNewsletterEmpfaenger_arr = array_map('\intval', $kNewsletterEmpfaenger_arr);
 
     Shop::Container()->getDB()->query(
         'DELETE FROM tnewsletterempfaenger
@@ -425,15 +425,16 @@ function mappeLiveSuche($queryIDs, $cMapping): int
     if (!is_array($queryIDs) || count($queryIDs) === 0 || strlen($cMapping) === 0) {
         return 2; // Leere Übergabe
     }
+    $db = Shop::Container()->getDB();
     foreach ($queryIDs as $kSuchanfrage) {
-        $oSuchanfrage = Shop::Container()->getDB()->select('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage);
+        $oSuchanfrage = $db->select('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage);
         if ($oSuchanfrage === null || empty($oSuchanfrage->kSuchanfrage)) {
             return 3; // Mindestens eine Suchanfrage wurde nicht in der Datenbank gefunden.
         }
         if (strtolower($oSuchanfrage->cSuche) === strtolower($cMapping)) {
             return 6; // Es kann nicht auf sich selbst gemappt werden
         }
-        $oSuchanfrageNeu = Shop::Container()->getDB()->select('tsuchanfrage', 'cSuche', $cMapping);
+        $oSuchanfrageNeu = $db->select('tsuchanfrage', 'cSuche', $cMapping);
         if ($oSuchanfrageNeu === null || empty($oSuchanfrageNeu->kSuchanfrage)) {
             return 5; // Sie haben versucht auf eine nicht existierende Suchanfrage zu mappen
         }
@@ -443,12 +444,12 @@ function mappeLiveSuche($queryIDs, $cMapping): int
         $mapping->cSucheNeu      = $cMapping;
         $mapping->nAnzahlGesuche = $oSuchanfrage->nAnzahlGesuche;
 
-        $kSuchanfrageMapping = Shop::Container()->getDB()->insert('tsuchanfragemapping', $mapping);
+        $kSuchanfrageMapping = $db->insert('tsuchanfragemapping', $mapping);
 
         if (empty($kSuchanfrageMapping)) {
             return 4; // Mapping konnte nicht gespeichert werden
         }
-        Shop::Container()->getDB()->queryPrepared(
+        $db->queryPrepared(
             'UPDATE tsuchanfrage
                 SET nAnzahlGesuche = nAnzahlGesuche + :cnt
                 WHERE kSprache = :lid
@@ -460,8 +461,8 @@ function mappeLiveSuche($queryIDs, $cMapping): int
             ],
             \DB\ReturnType::DEFAULT
         );
-        Shop::Container()->getDB()->delete('tsuchanfrage', 'kSuchanfrage', (int)$oSuchanfrage->kSuchanfrage);
-        Shop::Container()->getDB()->queryPrepared(
+        $db->delete('tsuchanfrage', 'kSuchanfrage', (int)$oSuchanfrage->kSuchanfrage);
+        $db->queryPrepared(
             "UPDATE tseo
                 SET kKey = :sqid
                 WHERE cKey = 'kSuchanfrage'

@@ -11,11 +11,13 @@ if (auth()) {
     $zipFile   = checkFile();
     $return    = 2;
     $unzipPath = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($zipFile) . '_' . date('dhis') . '/';
+    $db        = Shop::Container()->getDB();
     if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
         Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile . ' to ' . $unzipPath);
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
+        $db->query('START TRANSACTION', \DB\ReturnType::DEFAULT);
         foreach ($syncFiles as $xmlFile) {
             $d   = file_get_contents($xmlFile);
             $xml = XML_unserialize($d);
@@ -34,6 +36,7 @@ if (auth()) {
         }
 
         LastJob::getInstance()->run(LASTJOBS_KATEGORIEUPDATE, 'Kategorien_xml');
+        $db->query('COMMIT', \DB\ReturnType::DEFAULT);
         removeTemporaryFiles(substr($unzipPath, 0, -1), true);
     }
 }
@@ -48,11 +51,6 @@ function bearbeiteDeletes($xml)
     if (!isset($xml['del_kategorien']['kKategorie'])) {
         return;
     }
-    $db             = Shop::Container()->getDB();
-    $customerGroups = $db->query(
-        'SELECT kKundengruppe FROM tkundengruppe',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
-    );
     if (!is_array($xml['del_kategorien']['kKategorie']) && (int)$xml['del_kategorien']['kKategorie'] > 0) {
         $xml['del_kategorien']['kKategorie'] = [$xml['del_kategorien']['kKategorie']];
     }
@@ -64,16 +62,7 @@ function bearbeiteDeletes($xml)
         $kKategorie = (int)$kKategorie;
         if ($kKategorie > 0) {
             loescheKategorie($kKategorie);
-            //hole alle artikel raus in dieser Kategorie
-            $oArtikel_arr = $db->selectAll(
-                'tkategorieartikel',
-                'kKategorie',
-                $kKategorie,
-                'kArtikel'
-            );
-            foreach ($oArtikel_arr as $oArtikel) {
-                $productIDs[] = fuelleArtikelKategorieRabatt($oArtikel, $customerGroups);
-            }
+            setCategoryDiscount($kKategorie);
 
             executeHook(HOOK_KATEGORIE_XML_BEARBEITEDELETES, ['kKategorie' => $kKategorie]);
         }
@@ -184,10 +173,6 @@ function bearbeiteInsert($xml)
             );
         }
     }
-    $customerGroups = $db->query(
-        'SELECT kKundengruppe FROM tkundengruppe',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
-    );
     updateXMLinDB(
         $xml['tkategorie'],
         'tkategoriekundengruppe',
@@ -195,16 +180,7 @@ function bearbeiteInsert($xml)
         'kKundengruppe',
         'kKategorie'
     );
-    $productIDs   = [];
-    $oArtikel_arr = $db->selectAll(
-        'tkategorieartikel',
-        'kKategorie',
-        $kategorie_arr[0]->kKategorie,
-        'kArtikel'
-    );
-    foreach ($oArtikel_arr as $oArtikel) {
-        $productIDs[] = fuelleArtikelKategorieRabatt($oArtikel, $customerGroups);
-    }
+    setCategoryDiscount((int)$kategorie_arr[0]->kKategorie);
 
     updateXMLinDB($xml['tkategorie'], 'tkategorieattribut', $GLOBALS['mKategorieAttribut'], 'kKategorieAttribut');
     updateXMLinDB(
@@ -223,10 +199,6 @@ function bearbeiteInsert($xml)
             saveKategorieAttribut($parentXML, $oAttribut);
         }
     }
-    $tags = \Functional\map(array_unique(\Functional\flatten($productIDs)), function ($e) {
-        return CACHING_GROUP_ARTICLE . '_' . $e;
-    });
-    Shop::Container()->getCache()->flushTags($tags);
 
 //        $flushArray = [];
 //        $flushArray[] = CACHING_GROUP_CATEGORY . '_' . $Kategorie->kKategorie;

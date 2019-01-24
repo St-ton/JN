@@ -9,7 +9,7 @@ namespace Helpers;
 use DB\ReturnType;
 use Exception;
 use Kundengruppe;
-use Session\Session;
+use Session\Frontend;
 use Shop;
 use SimpleMail;
 use StringHandler;
@@ -31,7 +31,7 @@ class Form
         $valid = Shop::Container()->getCaptchaService()->validate($requestData);
 
         if ($valid) {
-            Session::set('bAnti_spam_already_checked', true);
+            Frontend::set('bAnti_spam_already_checked', true);
         } else {
             Shop::Smarty()->assign('bAnti_spam_failed', true);
         }
@@ -236,7 +236,7 @@ class Form
      */
     public static function checkSubject(): bool
     {
-        $kKundengruppe = Session::getCustomerGroup()->getID();
+        $kKundengruppe = Frontend::getCustomerGroup()->getID();
         if (!$kKundengruppe) {
             $kKundengruppe = (int)$_SESSION['Kunde']->kKundengruppe;
             if (!$kKundengruppe) {
@@ -279,12 +279,12 @@ class Form
         $Objekt->tnachricht           = self::baueKontaktFormularVorgaben();
         $Objekt->tnachricht->cBetreff = $betreffSprache->cName;
 
-        $conf     = Shop::getSettings([\CONF_KONTAKTFORMULAR, \CONF_GLOBAL]);
-        $from     = new \stdClass();
-        $from_arr = Shop::Container()->getDB()->selectAll('temailvorlageeinstellungen', 'kEmailvorlage', 11);
-        $mail     = new \stdClass();
-        if (\is_array($from_arr) && \count($from_arr)) {
-            foreach ($from_arr as $f) {
+        $conf    = Shop::getSettings([\CONF_KONTAKTFORMULAR, \CONF_GLOBAL]);
+        $from    = new \stdClass();
+        $senders = Shop::Container()->getDB()->selectAll('temailvorlageeinstellungen', 'kEmailvorlage', 11);
+        $mail    = new \stdClass();
+        if (\is_array($senders) && \count($senders)) {
+            foreach ($senders as $f) {
                 $from->{$f->cKey} = $f->cValue;
             }
             $mail->fromEmail = $from->cEmailOut;

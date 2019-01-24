@@ -73,7 +73,7 @@ class MigrationManager
                 }
                 if (!in_array($migration->getId(), $executedMigrations)) {
                     $executed[] = $migration;
-                    $this->executeMigration($migration, IMigration::UP);
+                    $this->executeMigration($migration);
                 }
             }
         } catch (PDOException $e) {

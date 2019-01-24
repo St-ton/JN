@@ -233,7 +233,7 @@ class MediaImage implements IMedia
             }
 
             if (!is_file($thumbPath)) {
-                Image::render($mediaReq, null);
+                Image::render($mediaReq);
             }
 
             $imanee = new Imanee($thumbPath);
@@ -265,7 +265,7 @@ class MediaImage implements IMedia
         }
 
         header('Accept-Ranges: none');
-        header('Content-Encoding: None', true);
+        header('Content-Encoding: None');
 
         header('Content-Length: ' . strlen($data));
         header('Content-Type: ' . $imanee->getMime());

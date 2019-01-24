@@ -9,7 +9,7 @@ namespace Filter;
 use MyCLabs\Enum\Enum;
 
 /**
- * Class ComponentPropertyType
+ * Class Type
  *
  * @package Filter
  * @method static Type OR()

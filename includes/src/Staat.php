@@ -139,21 +139,21 @@ class Staat
     public static function getRegions(string $cLandIso): ?array
     {
         if (strlen($cLandIso) === 2) {
-            $oObj_arr = Shop::Container()->getDB()->selectAll('tstaat', 'cLandIso', $cLandIso, '*', 'cName');
-            if (is_array($oObj_arr) && count($oObj_arr) > 0) {
-                $oStaat_arr = [];
-                foreach ($oObj_arr as $oObj) {
+            $countries = Shop::Container()->getDB()->selectAll('tstaat', 'cLandIso', $cLandIso, '*', 'cName');
+            if (is_array($countries) && count($countries) > 0) {
+                $states = [];
+                foreach ($countries as $country) {
                     $options = [
-                        'Staat'   => $oObj->kStaat,
-                        'LandIso' => $oObj->cLandIso,
-                        'Name'    => $oObj->cName,
-                        'Code'    => $oObj->cCode,
+                        'Staat'   => $country->kStaat,
+                        'LandIso' => $country->cLandIso,
+                        'Name'    => $country->cName,
+                        'Code'    => $country->cCode,
                     ];
 
-                    $oStaat_arr[] = new self($options);
+                    $states[] = new self($options);
                 }
 
-                return $oStaat_arr;
+                return $states;
             }
         }
 

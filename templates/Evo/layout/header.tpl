@@ -137,7 +137,7 @@
                                 <meta itemprop="logo" content="{$imageBaseURL}{$ShopLogoURL}">
                                 <a href="{$ShopURL}" title="{$Einstellungen.global.global_shopname}">
                                     {if isset($ShopLogoURL)}
-                                        {image src=$ShopLogoURL alt=$Einstellungen.global.global_shopname class="img-responsive"}
+                                        {imageTag src=$ShopLogoURL alt=$Einstellungen.global.global_shopname class="img-responsive"}
                                     {else}
                                         <span class="h1">{$Einstellungen.global.global_shopname}</span>
                                     {/if}
@@ -221,4 +221,7 @@
     {block name='header-breadcrumb'}
         {include file='layout/breadcrumb.tpl'}
     {/block}
+
+    {include file='snippets/alert_list.tpl'}
+
 {/block}{* /content-all-starttags *}

@@ -66,13 +66,13 @@ function plzimportDoImport($target, array $sessData, $result): void
 
     if ($fHandle === false) {
         $result->type    = 'danger';
-        $result->message = 'Importdatei für ' . $target . ' kann nicht gelesen werden!';
+        $result->message = sprintf(__('errorImportInvalid'), $target);
 
         return;
     }
 
     plzimportWriteSession('Import', $sessData);
-
+    $db = Shop::Container()->getDB();
     if (preg_match(PLZIMPORT_ISO_REGEX, $target, $hits)) {
         $isoLand = $hits[1];
 
@@ -82,7 +82,7 @@ function plzimportDoImport($target, array $sessData, $result): void
             $read = $sessData['currentPos'];
             fseek($fHandle, $sessData['currentPos']);
         } else {
-            Shop::Container()->getDB()->delete('tplz', 'cLandISO', 'IMP');
+            $db->delete('tplz', 'cLandISO', 'IMP');
             // Erste Zeile nur Headerinformationen
             $data = fgetcsv($fHandle, 0, "\t");
         }
@@ -99,7 +99,7 @@ function plzimportDoImport($target, array $sessData, $result): void
                     $oPLZOrt->cPLZ = $plz;
 
                     if (!empty($oPLZOrt->cPLZ) && !empty($oPLZOrt->cOrt)) {
-                        Shop::Container()->getDB()->insert('tplz', $oPLZOrt);
+                        $db->insert('tplz', $oPLZOrt);
                     }
                 }
 
@@ -133,27 +133,25 @@ function plzimportDoImport($target, array $sessData, $result): void
         $sessData['status'] = 'Erstelle Backup von ' . $isoLand . '...';
         plzimportWriteSession('Import', $sessData);
 
-        Shop::Container()->getDB()->delete('tplz_backup', 'cLandISO', $isoLand);
-        Shop::Container()->getDB()->queryPrepared(
+        $db->delete('tplz_backup', 'cLandISO', $isoLand);
+        $db->queryPrepared(
             'INSERT INTO tplz_backup SELECT * FROM tplz WHERE cLandISO = :isoCode',
             ['isoCode' => $isoLand],
             \DB\ReturnType::AFFECTED_ROWS
         );
-        Shop::Container()->getDB()->delete('tplz', 'cLandISO', $isoLand);
+        $db->delete('tplz', 'cLandISO', $isoLand);
 
         $sessData['step']   = 95;
-        $sessData['status'] = 'Aktualisiere ' . $isoLand . ' in Datenbank...';
+        $sessData['status'] = sprintf(__('importProgress'), $isoLand);
         plzimportWriteSession('Import', $sessData);
 
-        Shop::Container()->getDB()->update('tplz', 'cLandISO', 'IMP', (object)[
-            'cLandISO' => $isoLand,
-        ]);
+        $db->update('tplz', 'cLandISO', 'IMP', (object)['cLandISO' => $isoLand]);
 
         $result->type    = 'success';
-        $result->message = 'Import erfolgreich!';
+        $result->message = __('successImport');
     } else {
         $result->type    = 'danger';
-        $result->message = 'Falscher Parameter angegeben!';
+        $result->message = __('errorParameterInvalid');
     }
 
     fclose($fHandle);
@@ -181,7 +179,7 @@ function plzimportDoDownload($target, array $sessData, $result): void
     $ioLength           = 0;
     if ($ioHandle === false) {
         $result->type    = 'danger';
-        $result->message = $target . ' kann nicht heruntergeladen werden!';
+        $result->message = $target . __('errorDownload');
 
         if (!empty($errStr)) {
             $result->message .= ' ' . $errStr;
@@ -192,7 +190,7 @@ function plzimportDoDownload($target, array $sessData, $result): void
 
     if ($fHandle === false) {
         $result->type    = 'danger';
-        $result->message = 'Downloaddatei für ' . $target . ' kann nicht erstellt werden!';
+        $result->message = __('errorDownloadFileCreate');
 
         return;
     }
@@ -222,7 +220,7 @@ function plzimportDoDownload($target, array $sessData, $result): void
             fclose($ioHandle);
 
             $result->type    = 'danger';
-            $result->message = $target . ' kann nicht heruntergeladen werden!';
+            $result->message = $target . __('errorDownload');
 
             return;
         }
@@ -235,7 +233,7 @@ function plzimportDoDownload($target, array $sessData, $result): void
         if ($runtime > 0 && time() >= $endTime) {
             // max_execution_time erreicht - restart
             $result->type    = 'danger';
-            $result->message = 'Der Download von ' . $target . ' dauert zu lange!';
+            $result->message = sprintf(__('errorDownloadTimeLong'), $target);
 
             return;
         }
@@ -252,7 +250,7 @@ function plzimportDoDownload($target, array $sessData, $result): void
     plzimportWriteSession('Import', $sessData);
 
     $result->type    = 'success';
-    $result->message = $target . ' wurde erfolgreich heruntergeladen!';
+    $result->message = $target . __('successDownload');
     // Download fertig - weiter mit dem Import
     $cRedirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'io.php?io=' .
         urlencode(
@@ -275,7 +273,7 @@ function plzimportActionIndex(Smarty\JTLSmarty $smarty, array &$messages): void
 {
     $status = plzimportActionCheckStatus();
     if (isset($status->running) && $status->running) {
-        $messages['notice'] = 'Es läuft bereits ein Import. Bitte warten Sie bis dieser abgeschlossen ist!';
+        $messages['notice'] = __('errorImportRunning');
     }
 
     $smarty->assign('oPlzOrt_arr', plzimportGetPLZOrt());
@@ -313,7 +311,7 @@ function plzimportActionDoImport($target = '', $part = '', $step = 0): stdClass
     $step   = (int)$step;
     $result = (object)[
         'type'    => 'danger',
-        'message' => 'Import kann nicht gestartet werden!',
+        'message' => __('errorImportStart')
     ];
 
     if (!empty($target) && (plzimportOpenSession('Import') || $step > 0)) {
@@ -322,7 +320,7 @@ function plzimportActionDoImport($target = '', $part = '', $step = 0): stdClass
                 'running' => true,
                 'start'   => time(),
                 'step'    => 0,
-                'status'  => 'Importiere ' . $target . '...',
+                'status'  => 'Import ' . $target . '...',
             ];
         } else {
             $sessData         = plzimportReadSession('Import');
@@ -436,7 +434,7 @@ function plzimportActionDelTempImport(): array
 
     return [
         'type'    => 'success',
-        'message' => 'Temporärer Import wurde gelöscht!',
+        'message' => __('successImportTempDelete')
     ];
 }
 

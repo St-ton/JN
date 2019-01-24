@@ -13,7 +13,8 @@ use JTLShop\SemVer\Version;
  */
 function resetteUpdateDB()
 {
-    $columns = Shop::Container()->getDB()->query('SHOW COLUMNS FROM tversion', \DB\ReturnType::ARRAY_OF_OBJECTS);
+    $db      = Shop::Container()->getDB();
+    $columns = $db->query('SHOW COLUMNS FROM tversion', \DB\ReturnType::ARRAY_OF_OBJECTS);
     if (is_array($columns) && count($columns) > 0) {
         $colNames = [];
         foreach ($columns as $col) {
@@ -21,43 +22,43 @@ function resetteUpdateDB()
         }
         if (count($colNames) > 0) {
             if (!in_array('nZeileVon', $colNames, true)) {
-                Shop::Container()->getDB()->query(
+                $db->query(
                     'ALTER TABLE tversion ADD nZeileVon INT UNSIGNED NOT NULL AFTER nVersion',
                     \DB\ReturnType::DEFAULT
                 );
             }
             if (!in_array('nZeileBis', $colNames, true)) {
-                Shop::Container()->getDB()->query(
+                $db->query(
                     'ALTER TABLE tversion ADD nZeileBis INT UNSIGNED NOT NULL AFTER nZeileVon',
                     \DB\ReturnType::DEFAULT
                 );
             }
             if (!in_array('nInArbeit', $colNames, true)) {
-                Shop::Container()->getDB()->query(
+                $db->query(
                     'ALTER TABLE tversion ADD nInArbeit TINYINT NOT NULL AFTER nZeileBis',
                     \DB\ReturnType::DEFAULT
                 );
             }
             if (!in_array('nFehler', $colNames, true)) {
-                Shop::Container()->getDB()->query(
+                $db->query(
                     'ALTER TABLE tversion ADD nFehler TINYINT UNSIGNED NOT NULL AFTER nInArbeit',
                     \DB\ReturnType::DEFAULT
                 );
             }
             if (!in_array('nTyp', $colNames, true)) {
-                Shop::Container()->getDB()->query(
+                $db->query(
                     'ALTER TABLE tversion ADD nTyp TINYINT UNSIGNED NOT NULL AFTER nFehler',
                     \DB\ReturnType::DEFAULT
                 );
             }
             if (!in_array('cFehlerSQL', $colNames, true)) {
-                Shop::Container()->getDB()->query(
+                $db->query(
                     'ALTER TABLE tversion ADD cFehlerSQL VARCHAR(255) NOT NULL AFTER nTyp',
                     \DB\ReturnType::DEFAULT
                 );
             }
         }
-        Shop::Container()->getDB()->query(
+        $db->query(
             "UPDATE tversion
                 SET nZeileVon = 1,
                 nZeileBis = 0,
@@ -128,7 +129,7 @@ function loescheVerzeichnisUpdater($cPfad)
 
         return false;
     }
-    echo $cPfad . ' ist kein Verzeichnis<br>';
+    echo $cPfad . __('errorIsNoDir') . '<br>';
 
     return false;
 }
@@ -190,23 +191,20 @@ function mappeFehlerCode(int $nFehlerCode)
     if ($nFehlerCode > 0) {
         switch ($nFehlerCode) {
             case 1:
-                return 'Fehler: Ein SQL-Befehl im Update konnte nicht ausgeführt werden. ' .
-                    'Bitte versuchen Sie es erneut.';
+                return __('errorSqlUpdate');
                 break;
             case 100:
-                return 'Das Update wurde erfolgreich abgeschlossen.<br>';
+                return __('successUpdate') . '<br />';
                 break;
             case 999:
-                return 'Fehler: Ein SQL-Befehl im Update hat 3 mal nicht funktioniert. ' .
-                    'Das Update wurde abgebrochen. Bitte kontaktieren Sie den Support!<br /><br />' .
-                    '<a href="mailto:' . JTLSUPPORT_EMAIL . '?subject=Shop-Update Fehler">Support kontaktieren</a>';
+                return __('errorUpdate') . '<br /><br />' .
+                    '<a href="mailto:' . JTLSUPPORT_EMAIL . '?subject=Shop-Update Fehler">' .
+                    __('contactSupport') . '</a>';
                 break;
             default:
-                return 'Unbekannter Fehler';
+                return __('errorUnknown');
         }
     }
-
-    return 'Unbekannter Fehler';
 }
 
 /**

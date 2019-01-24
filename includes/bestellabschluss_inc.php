@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Product;
 use Helpers\Date;
+use Helpers\Product;
 use Helpers\Request;
 use Helpers\Tax;
 
@@ -17,7 +17,7 @@ function bestellungKomplett(): int
     $oCheckBox               = new CheckBox();
     $_SESSION['cPlausi_arr'] = $oCheckBox->validateCheckBox(
         CHECKBOX_ORT_BESTELLABSCHLUSS,
-        \Session\Session::getCustomerGroup()->getID(),
+        \Session\Frontend::getCustomerGroup()->getID(),
         $_POST,
         true
     );
@@ -71,15 +71,15 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
 {
     unhtmlSession();
     $order             = new Bestellung();
-    $customer          = \Session\Session::getCustomer();
-    $deliveryAddress   = \Session\Session::getDeliveryAddress();
+    $customer          = \Session\Frontend::getCustomer();
+    $deliveryAddress   = \Session\Frontend::getDeliveryAddress();
     $order->cBestellNr = empty($orderNo) ? baueBestellnummer() : $orderNo;
     $cartPositions     = [];
     $db                = Shop::Container()->getDB();
-    $cart              = \Session\Session::getCart();
-    if (\Session\Session::getCustomer()->getID() <= 0) {
+    $cart              = \Session\Frontend::getCart();
+    if (\Session\Frontend::getCustomer()->getID() <= 0) {
         $customerAttributes      = $customer->cKundenattribut_arr;
-        $customer->kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+        $customer->kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
         $customer->kSprache      = Shop::getLanguageID();
         $customer->cAbgeholt     = 'N';
         $customer->cAktiv        = 'Y';
@@ -187,7 +187,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
                 }
             }
             //bestseller tabelle füllen
-            if ($position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
+            if ($position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && is_object($position->Artikel)) {
                 //Lagerbestand verringern
                 aktualisiereLagerbestand(
                     $position->Artikel,
@@ -265,8 +265,8 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     $order->kZahlungsart      = $_SESSION['Zahlungsart']->kZahlungsart;
     $order->kVersandart       = $_SESSION['Versandart']->kVersandart;
     $order->kSprache          = Shop::getLanguage();
-    $order->kWaehrung         = \Session\Session::getCurrency()->getID();
-    $order->fGesamtsumme      = \Session\Session::getCart()->gibGesamtsummeWaren(true);
+    $order->kWaehrung         = \Session\Frontend::getCurrency()->getID();
+    $order->fGesamtsumme      = \Session\Frontend::getCart()->gibGesamtsummeWaren(true);
     $order->cVersandartName   = $_SESSION['Versandart']->angezeigterName[$_SESSION['cISOSprache']];
     $order->cZahlungsartName  = $_SESSION['Zahlungsart']->angezeigterName[$_SESSION['cISOSprache']];
     $order->cSession          = session_id();
@@ -275,7 +275,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     $order->cStatus           = BESTELLUNG_STATUS_OFFEN;
     $order->dErstellt         = 'NOW()';
     $order->berechneEstimatedDelivery();
-    if (isset($_SESSION['Bestellung']->GuthabenNutzen) && $_SESSION['Bestellung']->GuthabenNutzen == 1) {
+    if (isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1) {
         $order->fGuthaben = -$_SESSION['Bestellung']->fGuthabenGenutzt;
         $db->queryPrepared(
             'UPDATE tkunde
@@ -298,7 +298,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     // no anonymization is done here anymore, cause we got a contract
     $order->cIP = $_SESSION['IP']->cIP ?? Request::getRealIP();
     //#8544
-    $order->fWaehrungsFaktor = \Session\Session::getCurrency()->getConversionFactor();
+    $order->fWaehrungsFaktor = \Session\Frontend::getCurrency()->getConversionFactor();
 
     executeHook(HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB, ['oBestellung' => &$order]);
 
@@ -316,9 +316,9 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     ) {
         $ts                    = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
         $ts->tsProductId       = $_SESSION['TrustedShops']->cKaeuferschutzProdukt;
-        $ts->amount            = \Session\Session::getCurrency()->getConversionFactor() *
-            \Session\Session::getCart()->gibGesamtsummeWaren(true);
-        $ts->currency          = \Session\Session::getCurrency()->getCode();
+        $ts->amount            = \Session\Frontend::getCurrency()->getConversionFactor() *
+            \Session\Frontend::getCart()->gibGesamtsummeWaren(true);
+        $ts->currency          = \Session\Frontend::getCurrency()->getCode();
         $ts->paymentType       = $_SESSION['Zahlungsart']->cTSCode;
         $ts->buyerEmail        = $customer->cMail;
         $ts->shopCustomerID    = $customer->kKunde;
@@ -419,7 +419,7 @@ function saveZahlungsInfo(int $kKunde, int $kBestellung, bool $bZahlungAgain = f
         : null;
 
     if (!$bZahlungAgain) {
-        $cart                = \Session\Session::getCart();
+        $cart                = \Session\Frontend::getCart();
         $cart->kZahlungsInfo = $_SESSION['ZahlungsInfo']->insertInDB();
         $cart->updateInDB();
     } else {
@@ -442,7 +442,7 @@ function speicherKundenKontodaten($oZahlungsinfo): void
 {
     $cryptoService   = Shop::Container()->getCryptoService();
     $data            = new stdClass();
-    $data->kKunde    = \Session\Session::getCart()->kKunde;
+    $data->kKunde    = \Session\Frontend::getCart()->kKunde;
     $data->cBLZ      = $cryptoService->encryptXTEA($oZahlungsinfo->cBLZ ?? '');
     $data->nKonto    = $cryptoService->encryptXTEA($oZahlungsinfo->cKontoNr ?? '');
     $data->cInhaber  = $cryptoService->encryptXTEA($oZahlungsinfo->cInhaber ?? '');
@@ -459,11 +459,11 @@ function speicherKundenKontodaten($oZahlungsinfo): void
 function unhtmlSession(): void
 {
     $customer        = new Kunde();
-    $sessionCustomer = \Session\Session::getCustomer();
+    $sessionCustomer = \Session\Frontend::getCustomer();
     if ($sessionCustomer->kKunde > 0) {
         $customer->kKunde = $sessionCustomer->kKunde;
     }
-    $customer->kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+    $customer->kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
     if ($sessionCustomer->kKundengruppe > 0) {
         $customer->kKundengruppe = $sessionCustomer->kKundengruppe;
     }
@@ -521,7 +521,7 @@ function unhtmlSession(): void
     $_SESSION['Kunde'] = $customer;
 
     $shippingAddress = new Lieferadresse();
-    $deliveryAddress = \Session\Session::getDeliveryAddress();
+    $deliveryAddress = \Session\Frontend::getDeliveryAddress();
     if (($cid = $deliveryAddress->kKunde) > 0) {
         $shippingAddress->kKunde = $cid;
     }
@@ -703,7 +703,7 @@ function aktualisiereStuecklistenLagerbestand($partListProduct, $amount)
         return $bestandNeu;
     }
     // Gibt es lagerrelevante Komponenten in der Stückliste?
-    $oKomponente_arr = Shop::Container()->getDB()->queryPrepared(
+    $components = Shop::Container()->getDB()->queryPrepared(
         "SELECT tstueckliste.kArtikel, tstueckliste.fAnzahl
             FROM tstueckliste
             JOIN tartikel
@@ -714,21 +714,21 @@ function aktualisiereStuecklistenLagerbestand($partListProduct, $amount)
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
-    if (is_array($oKomponente_arr) && count($oKomponente_arr) > 0) {
+    if (is_array($components) && count($components) > 0) {
         // wenn ja, dann wird für diese auch der Bestand aktualisiert
         $options = Artikel::getDefaultOptions();
 
         $options->nKeineSichtbarkeitBeachten = 1;
-        foreach ($oKomponente_arr as $oKomponente) {
+        foreach ($components as $component) {
             $tmpArtikel = new Artikel();
-            $tmpArtikel->fuelleArtikel($oKomponente->kArtikel, $options);
+            $tmpArtikel->fuelleArtikel($component->kArtikel, $options);
 
             $komponenteBestand = floor(
                 aktualisiereLagerbestand(
                     $tmpArtikel,
-                    $amount * $oKomponente->fAnzahl,
+                    $amount * $component->fAnzahl,
                     null
-                ) / $oKomponente->fAnzahl
+                ) / $component->fAnzahl
             );
 
             if ($komponenteBestand < $bestandNeu && $tmpArtikel->cLagerKleinerNull !== 'Y') {
@@ -861,87 +861,79 @@ function AktualisiereLagerStuecklisten($product, $amount = null, $bStueckliste =
 }
 
 /**
- * @param $oBestellung
+ * @param $order
  */
-function KuponVerwendungen($oBestellung): void
+function KuponVerwendungen($order): void
 {
     $db               = Shop::Container()->getDB();
-    $cart             = \Session\Session::getCart();
+    $cart             = \Session\Frontend::getCart();
     $kKupon           = 0;
     $cKuponTyp        = '';
     $fKuponwertBrutto = 0;
     if (isset($_SESSION['VersandKupon']->kKupon) && $_SESSION['VersandKupon']->kKupon > 0) {
-        $kKupon           = $_SESSION['VersandKupon']->kKupon;
-        $cKuponTyp        = 'versand';
+        $kKupon           = (int)$_SESSION['VersandKupon']->kKupon;
+        $cKuponTyp        = Kupon::TYPE_SHIPPING;
         $fKuponwertBrutto = $_SESSION['Versandart']->fPreis;
     }
     if (isset($_SESSION['NeukundenKupon']->kKupon) && $_SESSION['NeukundenKupon']->kKupon > 0) {
-        $kKupon    = $_SESSION['NeukundenKupon']->kKupon;
-        $cKuponTyp = 'neukunden';
+        $kKupon    = (int)$_SESSION['NeukundenKupon']->kKupon;
+        $cKuponTyp = Kupon::TYPE_NEWCUSTOMER;
     }
     if (isset($_SESSION['Kupon']->kKupon) && $_SESSION['Kupon']->kKupon > 0) {
-        $kKupon = $_SESSION['Kupon']->kKupon;
-        if (isset($_SESSION['Kupon']->cWertTyp)
-            && ($_SESSION['Kupon']->cWertTyp === 'prozent' || $_SESSION['Kupon']->cWertTyp === 'festpreis')
-        ) {
-            $cKuponTyp = $_SESSION['Kupon']->cWertTyp;
-        }
+        $kKupon    = (int)$_SESSION['Kupon']->kKupon;
+        $cKuponTyp = Kupon::TYPE_STANDARD;
     }
-    foreach ($cart->PositionenArr as $Position) {
-        $Position->nPosTyp = (int)$Position->nPosTyp;
+    foreach ($cart->PositionenArr as $position) {
+        $position->nPosTyp = (int)$position->nPosTyp;
         if (!isset($_SESSION['VersandKupon'])
-            && ($Position->nPosTyp === C_WARENKORBPOS_TYP_KUPON
-                || $Position->nPosTyp === C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
+            && ($position->nPosTyp === C_WARENKORBPOS_TYP_KUPON
+                || $position->nPosTyp === C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
         ) {
             $fKuponwertBrutto = Tax::getGross(
-                $Position->fPreisEinzelNetto,
-                Tax::getSalesTax($Position->kSteuerklasse)
+                $position->fPreisEinzelNetto,
+                Tax::getSalesTax($position->kSteuerklasse)
             ) * (-1);
         }
     }
-    $kKupon = (int)$kKupon;
     if ($kKupon > 0) {
-        $db->query(
-            'UPDATE tkupon SET nVerwendungenBisher = nVerwendungenBisher + 1 WHERE kKupon = ' . $kKupon,
+        $db->queryPrepared(
+            'UPDATE tkupon
+              SET nVerwendungenBisher = nVerwendungenBisher + 1
+              WHERE kKupon = :couponID',
+            ['couponID' => $kKupon],
             \DB\ReturnType::DEFAULT
         );
-        $KuponKunde                = new stdClass();
-        $KuponKunde->kKupon        = $kKupon;
-        $KuponKunde->kKunde        = $cart->kKunde;
-        $KuponKunde->cMail         = StringHandler::filterXSS(\Session\Session::getCustomer()->cMail);
-        $KuponKunde->dErstellt     = 'NOW()';
-        $KuponKunde->nVerwendungen = 1;
-        $KuponKundeBisher          = $db->queryPrepared(
-            'SELECT SUM(nVerwendungen) AS nVerwendungen
-                FROM tkuponkunde
-                WHERE cMail = :mail',
-            ['mail' => $KuponKunde->cMail],
-            \DB\ReturnType::SINGLE_OBJECT
+
+        $db->queryPrepared(
+            'INSERT INTO `tkuponkunde` (kKupon, cMail, dErstellt, nVerwendungen)
+                VALUES (:couponID, :email, NOW(), :used)
+                ON DUPLICATE KEY UPDATE
+                  nVerwendungen = nVerwendungen + 1',
+            [
+                'couponID'   => $kKupon,
+                'email' => Kupon::hash(\Session\Frontend::getCustomer()->cMail),
+                'used' => 1
+            ],
+            \DB\ReturnType::DEFAULT
         );
-        if (isset($KuponKundeBisher->nVerwendungen) && $KuponKundeBisher->nVerwendungen > 0) {
-            $KuponKunde->nVerwendungen += $KuponKundeBisher->nVerwendungen;
-        }
-        $db->delete('tkuponkunde', ['kKunde', 'kKupon'], [(int)$KuponKunde->kKunde, $kKupon]);
-        $db->insert('tkuponkunde', $KuponKunde);
 
-        if (isset($_SESSION['NeukundenKupon']->kKupon) && $_SESSION['NeukundenKupon']->kKupon > 0) {
-            $db->delete(
-                'tkuponneukunde',
-                ['kKupon', 'cEmail'],
-                [$kKupon, \Session\Session::getCustomer()->cMail]
-            );
-        }
+        $db->insert('tkuponflag', (object)[
+            'cKuponTyp'  => $cKuponTyp,
+            'cEmailHash' => Kupon::hash(\Session\Frontend::getCustomer()->cMail),
+            'dErstellt'  => 'NOW()'
+        ]);
 
-        $oKuponBestellung                     = new KuponBestellung();
-        $oKuponBestellung->kKupon             = $kKupon;
-        $oKuponBestellung->kBestellung        = $oBestellung->kBestellung;
-        $oKuponBestellung->kKunde             = $cart->kKunde;
-        $oKuponBestellung->cBestellNr         = $oBestellung->cBestellNr;
-        $oKuponBestellung->fGesamtsummeBrutto = $oBestellung->fGesamtsumme;
-        $oKuponBestellung->fKuponwertBrutto   = $fKuponwertBrutto;
-        $oKuponBestellung->cKuponTyp          = $cKuponTyp;
-        $oKuponBestellung->dErstellt          = 'NOW()';
-        $oKuponBestellung->save();
+        $couponOrder                     = new KuponBestellung();
+        $couponOrder->kKupon             = $kKupon;
+        $couponOrder->kBestellung        = $order->kBestellung;
+        $couponOrder->kKunde             = $cart->kKunde;
+        $couponOrder->cBestellNr         = $order->cBestellNr;
+        $couponOrder->fGesamtsummeBrutto = $order->fGesamtsumme;
+        $couponOrder->fKuponwertBrutto   = $fKuponwertBrutto;
+        $couponOrder->cKuponTyp          = $cKuponTyp;
+        $couponOrder->dErstellt          = 'NOW()';
+
+        $couponOrder->save();
     }
 }
 
@@ -987,8 +979,8 @@ function baueBestellnummer(): string
  */
 function speicherUploads($oBestellung): void
 {
-    if (!empty($oBestellung->kBestellung) && class_exists('Upload')) {
-        Upload::speicherUploadDateien(\Session\Session::getCart(), $oBestellung->kBestellung);
+    if (!empty($oBestellung->kBestellung) && \Extensions\Upload::checkLicense()) {
+        \Extensions\Upload::speicherUploadDateien(\Session\Frontend::getCart(), $oBestellung->kBestellung);
     }
 }
 
@@ -1050,8 +1042,8 @@ function fakeBestellung()
     if (isset($_POST['kommentar'])) {
         $_SESSION['kommentar'] = substr(strip_tags(Shop::Container()->getDB()->escape($_POST['kommentar'])), 0, 1000);
     }
-    $cart                    = \Session\Session::getCart();
-    $customer                = \Session\Session::getCustomer();
+    $cart                    = \Session\Frontend::getCart();
+    $customer                = \Session\Frontend::getCustomer();
     $order                   = new Bestellung();
     $order->kKunde           = $cart->kKunde;
     $order->kWarenkorb       = $cart->kWarenkorb;
@@ -1059,8 +1051,8 @@ function fakeBestellung()
     $order->kZahlungsart     = $_SESSION['Zahlungsart']->kZahlungsart;
     $order->kVersandart      = $_SESSION['Versandart']->kVersandart;
     $order->kSprache         = Shop::getLanguageID();
-    $order->kWaehrung        = \Session\Session::getCurrency()->getID();
-    $order->fGesamtsumme     = \Session\Session::getCart()->gibGesamtsummeWaren(true);
+    $order->kWaehrung        = \Session\Frontend::getCurrency()->getID();
+    $order->fGesamtsumme     = \Session\Frontend::getCart()->gibGesamtsummeWaren(true);
     $order->fWarensumme      = $order->fGesamtsumme;
     $order->cVersandartName  = $_SESSION['Versandart']->angezeigterName[$_SESSION['cISOSprache']];
     $order->cZahlungsartName = $_SESSION['Zahlungsart']->angezeigterName[$_SESSION['cISOSprache']];
@@ -1072,11 +1064,10 @@ function fakeBestellung()
     $order->Zahlungsart      = $_SESSION['Zahlungsart'];
     $order->Positionen       = [];
     $order->Waehrung         = $_SESSION['Waehrung']; // @todo - check if this matches the new Currency class
-    $order->kWaehrung        = \Session\Session::getCurrency()->getID();
-    $order->fWaehrungsFaktor = \Session\Session::getCurrency()->getConversionFactor();
-    if ($order->oRechnungsadresse === null) {
-        $order->oRechnungsadresse = new stdClass();
-    }
+    $order->kWaehrung        = \Session\Frontend::getCurrency()->getID();
+    $order->fWaehrungsFaktor = \Session\Frontend::getCurrency()->getConversionFactor();
+
+    $order->oRechnungsadresse              = $order->oRechnungsadresse ?? new stdClass();
     $order->oRechnungsadresse->cVorname    = $customer->cVorname;
     $order->oRechnungsadresse->cNachname   = $customer->cNachname;
     $order->oRechnungsadresse->cFirma      = $customer->cFirma;
@@ -1095,7 +1086,7 @@ function fakeBestellung()
     $order->oRechnungsadresse->cWWW        = $customer->cWWW;
     $order->oRechnungsadresse->cMail       = $customer->cMail;
 
-    if (strlen(\Session\Session::getDeliveryAddress()->cVorname) > 0) {
+    if (strlen(\Session\Frontend::getDeliveryAddress()->cVorname) > 0) {
         $order->Lieferadresse = gibLieferadresseAusSession();
     }
     $order->cBestellNr = date('dmYHis') . substr($order->cSession, 0, 4);
@@ -1112,7 +1103,7 @@ function fakeBestellung()
             $order->Positionen[$i]->setzeGesamtpreisLocalized();
         }
     }
-    if (isset($_SESSION['Bestellung']->GuthabenNutzen) && $_SESSION['Bestellung']->GuthabenNutzen == 1) {
+    if (isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1) {
         $order->fGuthaben = -$_SESSION['Bestellung']->fGuthabenGenutzt;
     }
     $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
@@ -1129,7 +1120,7 @@ function fakeBestellung()
  */
 function gibLieferadresseAusSession()
 {
-    $deliveryAddress = \Session\Session::getDeliveryAddress();
+    $deliveryAddress = \Session\Frontend::getDeliveryAddress();
     if (empty($deliveryAddress->cVorname)) {
         return null;
     }
@@ -1165,7 +1156,7 @@ function pruefeVerfuegbarkeit(): array
 {
     $res  = ['cArtikelName_arr' => []];
     $conf = Shop::getSettings([CONF_GLOBAL]);
-    foreach (\Session\Session::getCart()->PositionenArr as $oPosition) {
+    foreach (\Session\Frontend::getCart()->PositionenArr as $oPosition) {
         if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
             && isset($oPosition->Artikel->cLagerBeachten)
             && $oPosition->Artikel->cLagerBeachten === 'Y'
@@ -1178,8 +1169,7 @@ function pruefeVerfuegbarkeit(): array
     }
 
     if (count($res['cArtikelName_arr']) > 0) {
-        $cHinweis        = str_replace('%s', '', Shop::Lang()->get('orderExpandInventory', 'basket'));
-        $res['cHinweis'] = $cHinweis;
+        $res['cHinweis'] = str_replace('%s', '', Shop::Lang()->get('orderExpandInventory', 'basket'));
     }
 
     return $res;
@@ -1200,24 +1190,11 @@ function finalisiereBestellung($orderNo = '', bool $sendMail = true): Bestellung
     $order = new Bestellung($_SESSION['kBestellung']);
     $order->fuelleBestellung(false);
 
-    if ($order->oRechnungsadresse !== null) {
-        $hash = Kuponneukunde::hash(
-            null,
-            trim($order->oRechnungsadresse->cNachname),
-            trim($order->oRechnungsadresse->cStrasse),
-            null,
-            trim($order->oRechnungsadresse->cPLZ),
-            trim($order->oRechnungsadresse->cOrt),
-            trim($order->oRechnungsadresse->cLand)
-        );
-        Shop::Container()->getDB()->update('tkuponneukunde', 'cDatenHash', $hash, (object)['cVerwendet' => 'Y']);
-    }
-
     $upd              = new stdClass();
-    $upd->kKunde      = \Session\Session::getCart()->kKunde;
+    $upd->kKunde      = \Session\Frontend::getCart()->kKunde;
     $upd->kBestellung = (int)$order->kBestellung;
     Shop::Container()->getDB()->update('tbesucher', 'kKunde', $upd->kKunde, $upd);
-    $obj->tkunde      = \Session\Session::getCustomer();
+    $obj->tkunde      = \Session\Frontend::getCustomer();
     $obj->tbestellung = $order;
 
     if (isset($order->oEstimatedDelivery->longestMin, $order->oEstimatedDelivery->longestMax)) {
@@ -1233,16 +1210,16 @@ function finalisiereBestellung($orderNo = '', bool $sendMail = true): Bestellung
         sendeMail(MAILTEMPLATE_BESTELLBESTAETIGUNG, $obj);
     }
     $_SESSION['Kunde'] = $oKunde;
-    $kKundengruppe     = \Session\Session::getCustomerGroup()->getID();
-    $oCheckBox         = new CheckBox();
-    $oCheckBox->triggerSpecialFunction(
+    $kKundengruppe     = \Session\Frontend::getCustomerGroup()->getID();
+    $checkBox          = new CheckBox();
+    $checkBox->triggerSpecialFunction(
         CHECKBOX_ORT_BESTELLABSCHLUSS,
         $kKundengruppe,
         true,
         $_POST,
         ['oBestellung' => $order, 'oKunde' => $oKunde]
     );
-    $oCheckBox->checkLogging(CHECKBOX_ORT_BESTELLABSCHLUSS, $kKundengruppe, $_POST, true);
+    $checkBox->checkLogging(CHECKBOX_ORT_BESTELLABSCHLUSS, $kKundengruppe, $_POST, true);
 
     return $order;
 }

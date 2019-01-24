@@ -24,11 +24,11 @@ function baueFilterSQL($bActiveOnly = false)
  * @param string $cName
  * @param string $cEmail
  * @param int    $kNews
- * @param array  $Einstellungen
+ * @param array  $conf
  * @return array
  * @deprecated since 5.0.0
  */
-function pruefeKundenKommentar($cKommentar, $cName, $cEmail, $kNews, $Einstellungen)
+function pruefeKundenKommentar($cKommentar, $cName, $cEmail, $kNews, $conf)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use \News\Controller::checkComment() instead.', E_USER_DEPRECATED);
     if (!isset($_POST['cEmail'])) {
@@ -39,7 +39,7 @@ function pruefeKundenKommentar($cKommentar, $cName, $cEmail, $kNews, $Einstellun
     }
     $_POST['cKommentar'] = $cKommentar;
 
-    return \News\Controller::checkComment($_POST, (int)$kNews, $Einstellungen);
+    return \News\Controller::checkComment($_POST, (int)$kNews, $conf);
 }
 
 /**
@@ -231,7 +231,7 @@ function getNewsArchive(int $kNews, bool $bActiveOnly = false)
                 AND tseo.kSprache = " . Shop::getLanguageID() . "
             WHERE tnews.kNews = " . $kNews . " 
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                    OR FIND_IN_SET('" . \Session\Session::getCustomerGroup()->getID()
+                    OR FIND_IN_SET('" . \Session\Frontend::getCustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                 AND t.languageID = " . Shop::getLanguageID()
                 . $activeFilter,
@@ -396,7 +396,7 @@ function getNewsOverview($oSQL, $cLimitSQL)
             WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= NOW()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                    OR FIND_IN_SET('" . \Session\Session::getCustomerGroup()->getID()
+                    OR FIND_IN_SET('" . \Session\Frontend::getCustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                 AND t.languageID = " . Shop::getLanguageID() . "
                 " . $oSQL->cDatumSQL . "
@@ -424,7 +424,7 @@ function getFullNewsOverview($oSQL)
             WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= NOW()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                    OR FIND_IN_SET('" . \Session\Session::getCustomerGroup()->getID()
+                    OR FIND_IN_SET('" . \Session\Frontend::getCustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                 " . $oSQL->cDatumSQL . "
                 AND t.languageID = " . Shop::getLanguageID(),
@@ -449,7 +449,7 @@ function getNewsDateArray($oSQL)
             WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= NOW()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                    OR FIND_IN_SET('" . \Session\Session::getCustomerGroup()->getID()
+                    OR FIND_IN_SET('" . \Session\Frontend::getCustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                 AND t.languageID = " . Shop::getLanguageID() . "
             GROUP BY nJahr, nMonat
@@ -472,31 +472,31 @@ function cmp_obj($a, $b)
 
 /**
  * @param int    $kNews
- * @param string $cUploadVerzeichnis
+ * @param string $uploadDir
  * @return array
  * @deprecated since 5.0.0
  */
-function holeNewsBilder(int $kNews, $cUploadVerzeichnis)
+function holeNewsBilder(int $kNews, $uploadDir)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $oDatei_arr = [];
-    if ($kNews > 0 && is_dir($cUploadVerzeichnis . $kNews)) {
-        $DirHandle    = opendir($cUploadVerzeichnis . $kNews);
-        $imageBaseURL = Shop::getURL() . '/';
-        while (false !== ($Datei = readdir($DirHandle))) {
-            if ($Datei !== '.' && $Datei !== '..') {
-                $oDatei           = new stdClass();
-                $oDatei->cName    = substr($Datei, 0, strpos($Datei, '.'));
-                $oDatei->cURL     = PFAD_NEWSBILDER . $kNews . '/' . $Datei;
-                $oDatei->cURLFull = $imageBaseURL . PFAD_NEWSBILDER . $kNews . '/' . $Datei;
-                $oDatei->cDatei   = $Datei;
+    $images = [];
+    if ($kNews > 0 && is_dir($uploadDir . $kNews)) {
+        $handle  = opendir($uploadDir . $kNews);
+        $baseURL = Shop::getURL() . '/';
+        while (false !== ($file = readdir($handle))) {
+            if ($file !== '.' && $file !== '..') {
+                $image           = new stdClass();
+                $image->cName    = substr($file, 0, strpos($file, '.'));
+                $image->cURL     = PFAD_NEWSBILDER . $kNews . '/' . $file;
+                $image->cURLFull = $baseURL . PFAD_NEWSBILDER . $kNews . '/' . $file;
+                $image->cDatei   = $file;
 
-                $oDatei_arr[] = $oDatei;
+                $images[] = $image;
             }
         }
 
-        usort($oDatei_arr, 'cmp_obj');
+        usort($images, 'cmp_obj');
     }
 
-    return $oDatei_arr;
+    return $images;
 }

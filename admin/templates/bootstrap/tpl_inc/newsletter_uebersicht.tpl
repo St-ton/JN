@@ -11,7 +11,7 @@
                 <span class="input-group-wrap last">
                     <select id="{__('changeLanguage')}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
                         {foreach $Sprachen as $sprache}
-                            <option value="{$sprache->kSprache}" {if $sprache->kSprache==$smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
+                            <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
                         {/foreach}
                     </select>
                 </span>
@@ -204,7 +204,7 @@
                 {/if}
             {/if}
         </div>
-        <div id="neuerabonnenten" class="tab-pane fade{if isset($cTab) && $cTab == 'neuerabonnenten'} active in{/if}">
+        <div id="neuerabonnenten" class="tab-pane fade{if isset($cTab) && $cTab === 'neuerabonnenten'} active in{/if}">
             <form method="post" action="newsletter.php">
                 {$jtl_token}
                 <input type="hidden" name="newsletterabonnent_neu" value="1">
@@ -299,7 +299,7 @@
                                                 <td>{$oNewsletterQueue->nAnzahlEmpfaenger}</td>
                                                 <td>
                                                     {foreach $oNewsletterQueue->cKundengruppe_arr as $cKundengruppe}
-                                                        {if $cKundengruppe == "0"}Newsletterempf&auml;nger ohne Kundenkonto{if !$cKundengruppe@last}, {/if}{/if}
+                                                        {if $cKundengruppe == '0'}Newsletterempfänger ohne Kundenkonto{if !$cKundengruppe@last}, {/if}{/if}
                                                         {foreach $oKundengruppe_arr as $oKundengruppe}
                                                             {if $cKundengruppe == $oKundengruppe->kKundengruppe}{$oKundengruppe->cName}{if !$oKundengruppe@last}, {/if}{/if}
                                                         {/foreach}
@@ -326,7 +326,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="newslettervorlagen" class="tab-pane fade{if isset($cTab) && $cTab == 'newslettervorlagen'} active in{/if}">
+        <div id="newslettervorlagen" class="tab-pane fade{if isset($cTab) && $cTab === 'newslettervorlagen'} active in{/if}">
             {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
                 {include file='tpl_inc/pagination.tpl' oPagination=$oPagiVorlagen cAnchor='newslettervorlagen'}
                 <form method="post" action="newsletter.php">
@@ -416,7 +416,7 @@
                 </form>
             {/if}
         </div>
-        <div id="newslettervorlagenstd" class="tab-pane fade{if isset($cTab) && $cTab == 'newslettervorlagenstd'} active in{/if}">
+        <div id="newslettervorlagenstd" class="tab-pane fade{if isset($cTab) && $cTab === 'newslettervorlagenstd'} active in{/if}">
             {if isset($oNewslettervorlageStd_arr) && $oNewslettervorlageStd_arr|@count > 0}
                 <form method="post" action="newsletter.php">
                     {$jtl_token}

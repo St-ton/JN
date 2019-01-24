@@ -2060,7 +2060,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
     } elseif (pruefeEmailblacklist($data['email'])) {
         $ret['email'] = 3;
     }
-    if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
+    if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 && $data['editRechnungsadresse']) {
         if (isset($ret['email']) && $ret['email'] !== 1 && $data['email'] !== $_SESSION['Kunde']->cMail &&
             !isEmailAvailable($data['email'])
         ) {
@@ -2174,7 +2174,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
                 break;
             }
         }
-        if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
+        if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 && $data['editRechnungsadresse']) {
             //emailadresse anders und existiert dennoch?
             $mail = Shop::DB()->select('tkunde', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
             if (isset($mail->cMail) && $data['email'] === $mail->cMail) {

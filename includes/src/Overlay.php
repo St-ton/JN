@@ -199,6 +199,8 @@ class Overlay
      */
     private function setFallbackPath(string $templateName): void
     {
+        $fallbackPath      = false;
+        $fallbackImageName = '';
         if ($templateName === self::DEFAULT_TEMPLATE
             || !\file_exists(PFAD_ROOT . $this->getPathSize(IMAGE_SIZE_SM) . $this->getImageName())
         ) {
@@ -216,7 +218,9 @@ class Overlay
                 $overlayDefaultLanguage = $this->getDataForLanguage(Sprache::getDefaultLanguage()->kSprache);
                 if (!empty($overlayDefaultLanguage)) {
                     if ($overlayDefaultLanguage->cTemplate !== self::DEFAULT_TEMPLATE
-                        && \file_exists(PFAD_ROOT . $this->getPathSize(IMAGE_SIZE_SM) . $overlayDefaultLanguage->cBildPfad)
+                        && \file_exists(
+                            PFAD_ROOT . $this->getPathSize(IMAGE_SIZE_SM) . $overlayDefaultLanguage->cBildPfad
+                        )
                     ) {
                         // fallback path for default language
                         $fallbackImageName = $overlayDefaultLanguage->cBildPfad;
@@ -229,11 +233,11 @@ class Overlay
             }
         }
 
-        if (isset($fallbackPath)) {
+        if ($fallbackPath) {
             $this->setPath(PFAD_SUCHSPECIALOVERLAY)
                  ->setPathSizes(true);
         }
-        if (isset($fallbackImageName)) {
+        if ($fallbackImageName !== '') {
             $this->setImageName($fallbackImageName);
         }
     }
@@ -365,7 +369,7 @@ class Overlay
             IMAGE_SIZE_XS => $default ? PFAD_SUCHSPECIALOVERLAY_KLEIN : $this->getPath() . IMAGE_SIZE_XS . '/',
             IMAGE_SIZE_SM => $default ? PFAD_SUCHSPECIALOVERLAY_NORMAL : $this->getPath() . IMAGE_SIZE_SM . '/',
             IMAGE_SIZE_MD => $default ? PFAD_SUCHSPECIALOVERLAY_GROSS : $this->getPath() . IMAGE_SIZE_MD . '/',
-            IMAGE_SIZE_LG => $default ? PFAD_SUCHSPECIALOVERLAY_RETINA : $this->getPath() . IMAGE_SIZE_LG . '/',
+            IMAGE_SIZE_LG => $default ? PFAD_SUCHSPECIALOVERLAY_RETINA : $this->getPath() . IMAGE_SIZE_LG . '/'
         ];
 
         return $this;
@@ -390,7 +394,7 @@ class Overlay
             IMAGE_SIZE_XS  => $shopURL . $this->getPathSize(IMAGE_SIZE_XS) . $this->getImageName(),
             IMAGE_SIZE_SM => $shopURL . $this->getPathSize(IMAGE_SIZE_SM) . $this->getImageName(),
             IMAGE_SIZE_MD  => $shopURL . $this->getPathSize(IMAGE_SIZE_MD) . $this->getImageName(),
-            IMAGE_SIZE_LG => $shopURL . $this->getPathSize(IMAGE_SIZE_LG) . $this->getImageName(),
+            IMAGE_SIZE_LG => $shopURL . $this->getPathSize(IMAGE_SIZE_LG) . $this->getImageName()
         ];
 
         return $this;

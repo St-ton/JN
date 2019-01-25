@@ -4,8 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+namespace dbeS;
+
 /**
  * Class SystemFolder
+ * @package dbeS
  */
 class SystemFolder
 {

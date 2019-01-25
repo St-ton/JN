@@ -23,7 +23,7 @@ $cPass  = utf8_encode($_POST['uPWD']);
 $_POST['uID']  = '*';
 $_POST['uPWD'] = '*';
 
-$login      = new Synclogin();
+$login      = new \dbeS\Synclogin();
 $versionStr = null;
 
 if ($login->checkLogin($cName, $cPass) === true) {

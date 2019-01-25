@@ -45,7 +45,9 @@ class Status
      */
     protected function getObjectCache(): JTLCacheInterface
     {
-        return Shop::Container()->getCache()->setJtlCacheConfig();
+        return Shop::Container()->getCache()->setJtlCacheConfig(
+            Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)
+        );
     }
 
     /**

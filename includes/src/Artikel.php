@@ -6575,17 +6575,16 @@ class Artikel
         $net = isset($_SESSION['Kundengruppe']->nNettoPreise)
             ? \Session\Frontend::getCustomerGroup()->isMerchant()
             : false;
-        // Standards
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = (new Kundengruppe())->loadDefaultGroup();
             $net                      = \Session\Frontend::getCustomerGroup()->isMerchant();
         }
         if (!isset($_SESSION['Link_Versandseite'])) {
-            Session\Frontend::setSpecialLinks();
+            \Session\Frontend::setSpecialLinks();
         }
         $taxText = $this->AttributeAssoc[ART_ATTRIBUT_STEUERTEXT] ?? false;
 
-        if (!$taxText) {
+        if (!$taxText && $this->AttributeAssoc === null) {
             $taxText = $this->gibAttributWertNachName(ART_ATTRIBUT_STEUERTEXT);
         }
 

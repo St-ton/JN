@@ -35,7 +35,6 @@ class Storage
         if ($res !== true) {
             throw new \RuntimeException('Failed to set session handler');
         }
-        $this->handler->setSessionData($_SESSION);
     }
 
     /**

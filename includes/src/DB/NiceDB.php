@@ -10,6 +10,7 @@ use Exceptions\InvalidEntityNameException;
 use \PDO;
 use \PDOStatement;
 use Shop;
+use Tightenco\Collect\Support\Collection;
 
 /**
  * Class NiceDB
@@ -942,8 +943,8 @@ class NiceDB implements DbInterface
             throw new \InvalidArgumentException("\$type parameter must be 0 or 1, given '{$type}'");
         }
 
-        if ($return <= 0 || $return > 11) {
-            throw new \InvalidArgumentException("\$return parameter must be between 1 - 11, given '{$return}'");
+        if ($return <= 0 || $return > 12) {
+            throw new \InvalidArgumentException("\$return parameter must be between 1 - 12, given '{$return}'");
         }
 
         if ($fnInfo !== null && !\is_callable($fnInfo)) {
@@ -1024,6 +1025,12 @@ class NiceDB implements DbInterface
                 $ret = [];
                 while (($row = $res->fetchObject()) !== false) {
                     $ret[] = $row;
+                }
+                break;
+            case ReturnType::COLLECTION:
+                $ret = new Collection();
+                while (($row = $res->fetchObject()) !== false) {
+                    $ret->push($row);
                 }
                 break;
             case ReturnType::AFFECTED_ROWS:

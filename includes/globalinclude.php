@@ -61,13 +61,15 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 
 try {
-    Shop::Container()->getDB();
+    $db = Shop::Container()->getDB();
 } catch (Exception $exc) {
     die($exc->getMessage());
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
-Shop::Container()->getCache()->setJtlCacheConfig();
+$cache = Shop::Container()->getCache();
+$cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
 $config = Shop::getSettings([CONF_GLOBAL])['global'];
+$lang   = Sprache::getInstance($db, $cache);
 if (PHP_SAPI !== 'cli'
     && $config['kaufabwicklung_ssl_nutzen'] === 'P'
     && (!isset($_SERVER['HTTPS']) || (strtolower($_SERVER['HTTPS']) !== 'on' && (int)$_SERVER['HTTPS'] !== 1))
@@ -113,7 +115,6 @@ if (!JTL_INCLUDE_ONLY_DB) {
         }
         $bAdminWartungsmodus = true;
     }
-    Sprache::getInstance();
     Shop::bootstrap();
     require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
     $debugbar->addCollector(new Smarty(Shop::Smarty()));

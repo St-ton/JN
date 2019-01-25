@@ -496,7 +496,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
             try {
                 $cache = Shop::Container()->getCache();
                 if ($cache !== null) {
-                    $cache->setJtlCacheConfig();
+                    $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
                     $cache->flushAll();
                 }
             } catch (Exception $e) {

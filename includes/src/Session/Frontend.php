@@ -18,6 +18,8 @@ use Link\LinkGroupCollection;
  */
 class Frontend extends AbstractSession
 {
+    private const DEFAULT_SESSION = 'JTLSHOP';
+
     /**
      * @var Frontend
      */
@@ -47,7 +49,6 @@ class Frontend extends AbstractSession
     {
         parent::__construct($start, $sessionName);
         self::$instance = $this;
-
         $this->setStandardSessionVars();
         \Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
 
@@ -64,7 +65,7 @@ class Frontend extends AbstractSession
     {
         $updateGlobals  = true;
         $updateLanguage = false;
-        \Shop::Lang()->autoload();
+        \Sprache::getInstance()->autoload();
         $_SESSION['FremdParameter'] = [];
 
         if (!isset($_SESSION['Warenkorb'])) {
@@ -162,7 +163,7 @@ class Frontend extends AbstractSession
         $_SESSION['oKategorie_arr']                   = [];
         $_SESSION['kKategorieVonUnterkategorien_arr'] = [];
         $_SESSION['ks']                               = [];
-        $_SESSION['Sprachen']                         = \Sprache::getInstance(false)->gibInstallierteSprachen();
+        $_SESSION['Sprachen']                         = \Sprache::getInstance()->gibInstallierteSprachen();
         \Currency::setCurrencies(true);
 
         if (!isset($_SESSION['jtl_token'])) {
@@ -443,10 +444,10 @@ class Frontend extends AbstractSession
      */
     public function getLanguage(): \Sprache
     {
-        $lang              = \Sprache::getInstance(false);
-        $lang->kSprache    = (int)$_SESSION['kSprache'];
-        $lang->kSprachISO  = (int)$_SESSION['kSprache'];
-        $lang->cISOSprache = $_SESSION['cISOSprache'];
+        $lang                    = \Sprache::getInstance();
+        $lang->kSprache          = (int)$_SESSION['kSprache'];
+        $lang->currentLanguageID = (int)$_SESSION['kSprache'];
+        $lang->cISOSprache       = $_SESSION['cISOSprache'];
 
         return $lang;
     }
@@ -825,7 +826,7 @@ class Frontend extends AbstractSession
                 }
             }
         }
-        \Shop::Lang()->autoload();
+        \Sprache::getInstance()->autoload();
     }
 
     /**

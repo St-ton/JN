@@ -25,10 +25,7 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
         ? StringHandler::filterXSS(Shop::Container()->getDB()->escape($_POST['benutzer']))
         : '---';
     if ($csrfOK === true) {
-        $cLogin  = $_POST['benutzer'];
-        $cPass   = $_POST['passwort'];
-        $nReturn = $oAccount->login($cLogin, $cPass);
-        switch ($nReturn) {
+        switch ($oAccount->login($_POST['benutzer'], $_POST['passwort'])) {
             case \Backend\AdminLoginStatus::ERROR_LOCKED:
             case \Backend\AdminLoginStatus::ERROR_INVALID_PASSWORD_LOCKED:
                 $lockTime = $oAccount->getLockedMinutes();

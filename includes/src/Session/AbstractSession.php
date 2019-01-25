@@ -19,21 +19,23 @@ abstract class AbstractSession
      */
     protected static $handler;
 
-    protected const DEFAULT_SESSION = 'JTLSHOP';
-
-    protected static $sessionName = self::DEFAULT_SESSION;
+    /**
+     * @var string
+     */
+    protected static $sessionName;
 
     /**
      * AbstractSession constructor.
      * @param bool   $start
      * @param string $sessionName
      */
-    public function __construct(bool $start = true, string $sessionName = self::DEFAULT_SESSION)
+    public function __construct(bool $start, string $sessionName)
     {
         self::$sessionName = $sessionName;
         \session_name(self::$sessionName);
-        $this->initCookie(\Shop::getSettings([\CONF_GLOBAL])['global'], $start);
         self::$handler = (new Storage())->getHandler();
+        $this->initCookie(\Shop::getSettings([\CONF_GLOBAL])['global'], $start);
+        self::$handler->setSessionData($_SESSION);
     }
 
     /**
@@ -69,7 +71,6 @@ abstract class AbstractSession
             $path = $conf['global_cookie_path'];
         }
         $secure = $secure && ($conf['kaufabwicklung_ssl_nutzen'] === 'P' || \strpos(URL_SHOP, 'https://') === 0);
-
         if ($start) {
             \session_start([
                 'use_cookies'     => '1',

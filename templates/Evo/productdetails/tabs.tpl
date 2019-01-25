@@ -135,7 +135,7 @@
                     {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
                     <li role="presentation"
                         {if $setActiveClass.mediaGroup && $cMedienTyp@first} class="active"{/if}>
-                        <a href="#tab-{$cMedienTypId|@seofy}" aria-controls="tab-{$cMedienTypId}" role="tab" data-toggle="tab">
+                        <a href="#tab-{$cMedienTypId|@seofy}" aria-controls="tab-{$cMedienTypId|@seofy}" role="tab" data-toggle="tab">
                             {$cMedienTyp}
                         </a>
                     </li>

@@ -1119,14 +1119,17 @@ class Kupon
 
     /**
      * @former resetNeuKundenKupon()
-     * @since 5.0.0
+     * @since  5.0.0
+     * @param bool $priceRecalculation
      */
-    public static function resetNewCustomerCoupon(): void
+    public static function resetNewCustomerCoupon(bool $priceRecalculation = true): void
     {
         unset($_SESSION['NeukundenKupon'], $_SESSION['NeukundenKuponAngenommen']);
-        \Session\Frontend::getCart()
-                         ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
-                         ->setzePositionsPreise();
+        $cart = \Session\Frontend::getCart();
+        $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON);
+        if ($priceRecalculation) {
+            $cart->setzePositionsPreise();
+        }
     }
 
     /**

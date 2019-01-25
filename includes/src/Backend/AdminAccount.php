@@ -6,7 +6,7 @@
 
 namespace Backend;
 
-use AdminFavorite;
+use Backend\AdminFavorite;
 use AdminLoginStatus;
 use DateTime;
 use DB\DbInterface;

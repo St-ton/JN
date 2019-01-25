@@ -29,14 +29,14 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
         $cPass   = $_POST['passwort'];
         $nReturn = $oAccount->login($cLogin, $cPass);
         switch ($nReturn) {
-            case AdminLoginStatus::ERROR_LOCKED:
-            case AdminLoginStatus::ERROR_INVALID_PASSWORD_LOCKED:
+            case \Backend\AdminLoginStatus::ERROR_LOCKED:
+            case \Backend\AdminLoginStatus::ERROR_INVALID_PASSWORD_LOCKED:
                 $lockTime = $oAccount->getLockedMinutes();
                 $cFehler  = sprintf(__('lockForMinutes'), $lockTime);
                 break;
 
-            case AdminLoginStatus::ERROR_USER_NOT_FOUND:
-            case AdminLoginStatus::ERROR_INVALID_PASSWORD:
+            case \Backend\AdminLoginStatus::ERROR_USER_NOT_FOUND:
+            case \Backend\AdminLoginStatus::ERROR_INVALID_PASSWORD:
                 $cFehler = __('errorWrongPasswordUser');
                 if (isset($_SESSION['AdminAccount']->TwoFA_expired)
                     && $_SESSION['AdminAccount']->TwoFA_expired === true
@@ -45,15 +45,15 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
                 }
                 break;
 
-            case AdminLoginStatus::ERROR_USER_DISABLED:
+            case \Backend\AdminLoginStatus::ERROR_USER_DISABLED:
                 $cFehler = __('errorLoginTemporaryNotPossible');
                 break;
 
-            case AdminLoginStatus::ERROR_LOGIN_EXPIRED:
+            case \Backend\AdminLoginStatus::ERROR_LOGIN_EXPIRED:
                 $cFehler = __('errorLoginDataExpired');
                 break;
 
-            case AdminLoginStatus::ERROR_TWO_FACTOR_AUTH_EXPIRED:
+            case \Backend\AdminLoginStatus::ERROR_TWO_FACTOR_AUTH_EXPIRED:
                 if (isset($_SESSION['AdminAccount']->TwoFA_expired)
                     && $_SESSION['AdminAccount']->TwoFA_expired === true
                 ) {
@@ -61,11 +61,11 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
                 }
                 break;
 
-            case AdminLoginStatus::ERROR_NOT_AUTHORIZED:
+            case \Backend\AdminLoginStatus::ERROR_NOT_AUTHORIZED:
                 $cFehler = __('errorNoPermission');
                 break;
 
-            case AdminLoginStatus::LOGIN_OK:
+            case \Backend\AdminLoginStatus::LOGIN_OK:
                 \Session\Backend::getInstance()->reHash();
                 $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
                 if ($oAccount->permission('SHOP_UPDATE_VIEW') && $oUpdater->hasPendingUpdates()) {
@@ -190,7 +190,7 @@ if ($oAccount->getIsAuthenticated()) {
     openDashboard();
 } else {
     $oAccount->redirectOnUrl();
-    if (isset($_GET['errCode']) && (int)$_GET['errCode'] === AdminLoginStatus::ERROR_SESSION_INVALID) {
+    if (isset($_GET['errCode']) && (int)$_GET['errCode'] === \Backend\AdminLoginStatus::ERROR_SESSION_INVALID) {
         $cFehler = __('errorSessionExpired');
     }
     \Shop::Container()->getGetText()->loadAdminLocale('pages/login');

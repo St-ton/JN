@@ -64,7 +64,7 @@ Shop::bootstrap();
 if ($oAccount->logged()) {
     if (!$session->isValid()) {
         $oAccount->logout();
-        $oAccount->redirectOnFailure(AdminLoginStatus::ERROR_SESSION_INVALID);
+        $oAccount->redirectOnFailure(\Backend\AdminLoginStatus::ERROR_SESSION_INVALID);
     }
 
     Shop::fire('backend.notification', Notification::getInstance()->buildDefault());

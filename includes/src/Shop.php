@@ -1894,10 +1894,10 @@ final class Shop
             $loggingConf = self::getConfig([CONF_GLOBAL])['global']['admin_login_logger_mode'] ?? [];
             $handlers    = [];
             foreach ($loggingConf as $value) {
-                if ($value === AdminLoginConfig::CONFIG_DB) {
+                if ($value === \Backend\AdminLoginConfig::CONFIG_DB) {
                     $handlers[] = (new NiceDBHandler($container->getDB(), Logger::INFO))
                         ->setFormatter(new LineFormatter('%message%', null, false, true));
-                } elseif ($value === AdminLoginConfig::CONFIG_FILE) {
+                } elseif ($value === \Backend\AdminLoginConfig::CONFIG_FILE) {
                     $handlers[] = (new StreamHandler(PFAD_LOGFILES . 'auth.log', Logger::INFO))
                         ->setFormatter(new LineFormatter(null, null, false, true));
                 }

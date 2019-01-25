@@ -135,7 +135,7 @@
                     {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
                     <li role="presentation"
                         {if $setActiveClass.mediaGroup && $cMedienTyp@first} class="active"{/if}>
-                        <a href="#tab-{$cMedienTypId}" aria-controls="tab-{$cMedienTypId}" role="tab" data-toggle="tab">
+                        <a href="#tab-{$cMedienTypId|@seofy}" aria-controls="tab-{$cMedienTypId}" role="tab" data-toggle="tab">
                             {$cMedienTyp}
                         </a>
                     </li>
@@ -319,7 +319,7 @@
                 {if $tabanzeige}
                     <div role="tabpanel"
                         class="tab-pane fade{if $setActiveClass.mediaGroup && $cMedienTyp@first} in active{/if}"
-                        id="tab-{$cMedienTypId}">
+                        id="tab-{$cMedienTypId|@seofy}">
                 {else}
                     <div class="panel panel-default">
                         <div class="panel-heading">

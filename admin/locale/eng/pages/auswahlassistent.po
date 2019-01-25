@@ -29,6 +29,9 @@ msgstr "Fragengruppe erstellen"
 msgid "aaGroupEdit"
 msgstr "Fragengruppe bearbeiten"
 
+msgid "active"
+msgstr "Active"
+
 msgid "aaName"
 msgstr "Name"
 

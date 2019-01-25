@@ -92,7 +92,7 @@ class JTLSmarty extends \SmartyBC
     {
         $parent         = null;
         $this->template = $this->context === ContextType::BACKEND
-            ? \AdminTemplate::getInstance()
+            ? \Backend\AdminTemplate::getInstance()
             : \Template::getInstance();
         $tplDir         = $this->template->getDir();
         if ($this->context !== ContextType::BACKEND) {

@@ -143,6 +143,10 @@ class Kupon
         }
     }
 
+    public const TYPE_STANDARD    = 'standard';
+    public const TYPE_SHIPPING    = 'versandkupon';
+    public const TYPE_NEWCUSTOMER = 'neukundenkupon';
+
     /**
      * @param int $kKupon
      * @return bool|Kupon
@@ -153,9 +157,8 @@ class Kupon
 
         if ($couponResult !== null && $couponResult->kKupon > 0) {
             $couponResult->translationList = $this->getTranslation($couponResult->kKupon);
-            $cMember_arr                   = array_keys(get_object_vars($couponResult));
-            foreach ($cMember_arr as $cMember) {
-                $this->$cMember = $couponResult->$cMember;
+            foreach (array_keys(get_object_vars($couponResult)) as $member) {
+                $this->$member = $couponResult->$member;
             }
 
             return $this;
@@ -175,7 +178,7 @@ class Kupon
             $ins->$cMember = $this->$cMember;
         }
 
-        unset($ins->kKupon);
+        unset($ins->kKupon, $ins->translationList);
         if (empty($ins->dGueltigBis)) {
             $ins->dGueltigBis = '_DBNULL_';
         }
@@ -676,9 +679,8 @@ class Kupon
 
         if (isset($couponResult->kKupon) && $couponResult->kKupon > 0) {
             $couponResult->translationList = $this->getTranslation($couponResult->kKupon);
-            $cMember_arr                   = array_keys(get_object_vars($couponResult));
-            foreach ($cMember_arr as $cMember) {
-                $this->$cMember = $couponResult->$cMember;
+            foreach (array_keys(get_object_vars($couponResult)) as $member) {
+                $this->$member = $couponResult->$member;
             }
 
             return $this;
@@ -719,11 +721,11 @@ class Kupon
      */
     public function getNewCustomerCoupon()
     {
-        $newCustomerCoupons_arr = [];
-        $newCustomerCoupons     = Shop::Container()->getDB()->selectAll(
+        $coupons            = [];
+        $newCustomerCoupons = Shop::Container()->getDB()->selectAll(
             'tkupon',
             ['cKuponTyp', 'cAktiv'],
-            ['neukundenkupon', 'Y'],
+            [self::TYPE_NEWCUSTOMER, 'Y'],
             '*',
             'fWert DESC'
         );
@@ -732,11 +734,11 @@ class Kupon
             if (isset($newCustomerCoupon->kKupon) && $newCustomerCoupon->kKupon > 0) {
                 $newCustomerCoupon->translationList = $this->getTranslation($newCustomerCoupon->kKupon);
 
-                $newCustomerCoupons_arr[] = $newCustomerCoupon;
+                $coupons[] = $newCustomerCoupon;
             }
         }
 
-        return $newCustomerCoupons_arr;
+        return $coupons;
     }
 
     /**
@@ -787,7 +789,7 @@ class Kupon
         if (isset($_SESSION['Kupon']) && $_SESSION['Kupon']->cWertTyp === 'prozent') {
             $oKupon = $_SESSION['Kupon'];
             unset($_SESSION['Kupon']);
-            \Session\Session::getCart()->setzePositionsPreise();
+            \Session\Frontend::getCart()->setzePositionsPreise();
             require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
             self::acceptCoupon($oKupon);
         }
@@ -800,7 +802,7 @@ class Kupon
      */
     public static function couponsAvailable(): int
     {
-        $cart        = \Session\Session::getCart();
+        $cart        = \Session\Frontend::getCart();
         $productQry  = '';
         $manufQry    = '';
         $categories  = [];
@@ -860,11 +862,11 @@ class Kupon
                     AND (dGueltigBis > NOW()
                         OR dGueltigBis IS NULL)
                     AND fMindestbestellwert <= " . $cart->gibGesamtsummeWaren(true, false) . "
-                    AND (cKuponTyp = 'versandkupon'
-                        OR cKuponTyp = 'standard')
+                    AND (cKuponTyp = '" . self::TYPE_SHIPPING . "'
+                        OR cKuponTyp = '" . self::TYPE_STANDARD . "')
                     AND (kKundengruppe = -1
                         OR kKundengruppe = 0
-                        OR kKundengruppe = " . \Session\Session::getCustomerGroup()->getID() . ")
+                        OR kKundengruppe = " . \Session\Frontend::getCustomerGroup()->getID() . ")
                     AND (nVerwendungen = 0
                         OR nVerwendungen > nVerwendungenBisher)
                     AND (cArtikel = '' $productQry)
@@ -889,128 +891,110 @@ class Kupon
     {
         $ret = [];
         if ($Kupon->cAktiv !== 'Y') {
+            //not active
             $ret['ungueltig'] = 1;
-        }
-        if (!empty($Kupon->dGueltigBis) && date_create($Kupon->dGueltigBis) < date_create()) {
+        } elseif (!empty($Kupon->dGueltigBis) && date_create($Kupon->dGueltigBis) < date_create()) {
+            //expired
             $ret['ungueltig'] = 2;
-        }
-        if (date_create($Kupon->dGueltigAb) > date_create()) {
+        } elseif (date_create($Kupon->dGueltigAb) > date_create()) {
+            //invalid at the moment
             $ret['ungueltig'] = 3;
-        }
-        if ($Kupon->fMindestbestellwert > \Session\Session::getCart()->gibGesamtsummeWarenExt(
+        } elseif ($Kupon->fMindestbestellwert > \Session\Frontend::getCart()->gibGesamtsummeWarenExt(
             [C_WARENKORBPOS_TYP_ARTIKEL],
             true
-        )) {
-            $ret['ungueltig'] = 4;
-        }
-        if ($Kupon->cWertTyp === 'festpreis'
-            && $Kupon->nGanzenWKRabattieren === '0'
-            && $Kupon->fMindestbestellwert > gibGesamtsummeKuponartikelImWarenkorb(
-                $Kupon,
-                \Session\Session::getCart()->PositionenArr
+        )
+            || ($Kupon->cWertTyp === 'festpreis'
+                && $Kupon->nGanzenWKRabattieren === '0'
+                && $Kupon->fMindestbestellwert > gibGesamtsummeKuponartikelImWarenkorb(
+                    $Kupon,
+                    \Session\Frontend::getCart()->PositionenArr
+                )
             )
         ) {
+            //minimum order value not reached for whole cart or the products which are valid for this coupon
             $ret['ungueltig'] = 4;
-        }
-        if ($Kupon->kKundengruppe > 0 && $Kupon->kKundengruppe != \Session\Session::getCustomerGroup()->getID()) {
+        } elseif ($Kupon->kKundengruppe > 0
+            && (int)$Kupon->kKundengruppe !== \Session\Frontend::getCustomerGroup()->getID()
+        ) {
+            //invalid customer group
             $ret['ungueltig'] = 5;
-        }
-        if ($Kupon->nVerwendungen > 0 && $Kupon->nVerwendungen <= $Kupon->nVerwendungenBisher) {
+        } elseif ($Kupon->nVerwendungen > 0 && $Kupon->nVerwendungen <= $Kupon->nVerwendungenBisher) {
+            //maximum usage reached
             $ret['ungueltig'] = 6;
-        }
-        if ($Kupon->cArtikel && !warenkorbKuponFaehigArtikel($Kupon, \Session\Session::getCart()->PositionenArr)) {
+        } elseif (!warenkorbKuponFaehigArtikel($Kupon, \Session\Frontend::getCart()->PositionenArr)) {
+            //cart needs at least one product for which this coupon is valid
             $ret['ungueltig'] = 7;
-        }
-        if ($Kupon->cKategorien
-            && $Kupon->cKategorien != -1
-            && !warenkorbKuponFaehigKategorien($Kupon, \Session\Session::getCart()->PositionenArr)
-        ) {
+        } elseif (!warenkorbKuponFaehigKategorien($Kupon, \Session\Frontend::getCart()->PositionenArr)) {
+            //cart needs at least one category for which this coupon is valid
             $ret['ungueltig'] = 8;
-        }
-        if (($Kupon->cKunden != -1 && !empty($_SESSION['Kunde']->kKunde)
-                && strpos($Kupon->cKunden, $_SESSION['Kunde']->kKunde . ';') === false
-                && $Kupon->cKuponTyp !== 'neukundenkupon')
-            || ($Kupon->cKunden != -1 && $Kupon->cKuponTyp !== 'neukundenkupon' && !isset($_SESSION['Kunde']->kKunde))
+        } elseif ($Kupon->cKuponTyp !== self::TYPE_NEWCUSTOMER
+            && (int)$Kupon->cKunden !== -1
+            && (!empty($_SESSION['Kunde']->kKunde
+                    && strpos($Kupon->cKunden, $_SESSION['Kunde']->kKunde . ';') === false)
+                || !isset($_SESSION['Kunde']->kKunde)
+            )
         ) {
+            //invalid for account
             $ret['ungueltig'] = 9;
-        }
-        if ($Kupon->cKuponTyp === 'versandkupon'
+        } elseif ($Kupon->cKuponTyp === self::TYPE_SHIPPING
             && isset($_SESSION['Lieferadresse'])
             && strpos($Kupon->cLieferlaender, $_SESSION['Lieferadresse']->cLand) === false
         ) {
+            //invalid for shipping country
             $ret['ungueltig'] = 10;
-        }
-        // Neukundenkupon
-        if ($Kupon->cKuponTyp === 'neukundenkupon') {
-            $Hash = Kuponneukunde::hash(
-                null,
-                trim($_SESSION['Kunde']->cNachname),
-                trim($_SESSION['Kunde']->cStrasse),
-                null,
-                trim($_SESSION['Kunde']->cPLZ),
-                trim($_SESSION['Kunde']->cOrt),
-                trim($_SESSION['Kunde']->cLand)
-            );
-
-            $Kuponneukunde = Kuponneukunde::load($_SESSION['Kunde']->cMail, $Hash);
-            if ($Kuponneukunde !== null && $Kuponneukunde->cVerwendet === 'Y') {
-                $ret['ungueltig'] = 11;
-            }
-        }
-        //Hersteller
-        if ((int)$Kupon->cHersteller !== -1
-            && !empty($Kupon->cHersteller)
-            && !warenkorbKuponFaehigHersteller($Kupon, \Session\Session::getCart()->PositionenArr)
-        ) {
+        } elseif (!warenkorbKuponFaehigHersteller($Kupon, \Session\Frontend::getCart()->PositionenArr)) {
+            //invalid for manufacturer
             $ret['ungueltig'] = 12;
-        }
-        $alreadyUsedSQL = '';
-        $bindings       = [];
-        if (!empty($_SESSION['Kunde']->kKunde) && !empty($_SESSION['Kunde']->cMail)) {
-            $alreadyUsedSQL = 'SELECT SUM(nVerwendungen) AS nVerwendungen
-                                  FROM tkuponkunde
-                                  WHERE (kKunde = :customer OR cMail = :mail)
-                                      AND kKupon = :coupon';
-            $bindings       = [
-                'customer' => (int)$_SESSION['Kunde']->kKunde,
-                'mail'     => $_SESSION['Kunde']->cMail,
-                'coupon'   => (int)$Kupon->kKupon
-            ];
         } elseif (!empty($_SESSION['Kunde']->cMail)) {
-            $alreadyUsedSQL = 'SELECT SUM(nVerwendungen) AS nVerwendungen
-                                  FROM tkuponkunde
-                                  WHERE cMail = :mail
-                                      AND kKupon = :coupon';
-            $bindings       = [
-                'mail'   => $_SESSION['Kunde']->cMail,
-                'coupon' => (int)$Kupon->kKupon
-            ];
-        } elseif (!empty($_SESSION['Kunde']->kKunde)) {
-            $alreadyUsedSQL = 'SELECT SUM(nVerwendungen) AS nVerwendungen
-                                  FROM tkuponkunde
-                                  WHERE kKunde = :customer
-                                      AND kKupon = :coupon';
-            $bindings       = [
-                'customer' => (int)$_SESSION['Kunde']->kKunde,
-                'coupon'   => (int)$Kupon->kKupon
-            ];
-        }
-        if ($alreadyUsedSQL !== '') {
-            //hat der kunde schon die max. Verwendungsanzahl erreicht?
-            $anz = Shop::Container()->getDB()->executeQueryPrepared(
-                $alreadyUsedSQL,
-                $bindings,
-                \DB\ReturnType::SINGLE_OBJECT
-            );
-            if (isset($Kupon->nVerwendungenProKunde, $anz->nVerwendungen)
-                && $anz->nVerwendungen >= $Kupon->nVerwendungenProKunde
-                && $Kupon->nVerwendungenProKunde > 0
+            if ($Kupon->cKuponTyp === self::TYPE_NEWCUSTOMER
+                && self::newCustomerCouponUsed($_SESSION['Kunde']->cMail)
             ) {
-                $ret['ungueltig'] = 6;
+                //email already used for a new-customer coupon
+                $ret['ungueltig'] = 11;
+            } elseif (!empty($Kupon->nVerwendungenProKunde) && $Kupon->nVerwendungenProKunde > 0) {
+                //check if max usage of coupon is reached for cutomer
+                $countCouponUsed = Shop::Container()->getDB()->executeQueryPrepared(
+                    'SELECT nVerwendungen
+                      FROM tkuponkunde
+                      WHERE kKupon = :coupon
+                        AND cMail = :email',
+                    [
+                        'coupon' => (int)$Kupon->kKupon,
+                        'email'  => self::hash($_SESSION['Kunde']->cMail)
+                    ],
+                    \DB\ReturnType::SINGLE_OBJECT
+                );
+                if (isset($countCouponUsed->nVerwendungen)
+                    && $countCouponUsed->nVerwendungen >= $Kupon->nVerwendungenProKunde
+                ) {
+                    $ret['ungueltig'] = 6;
+                }
             }
         }
 
         return $ret;
+    }
+
+    /**
+     * check if a new customer coupon was already used for an email
+     * @param string $email
+     * @return bool
+     */
+    public static function newCustomerCouponUsed(string $email): bool
+    {
+        $newCustomerCouponUsed = Shop::Container()->getDB()->queryPrepared(
+            'SELECT kKuponFlag
+                FROM tkuponflag
+                WHERE cEmailHash = :email
+                  AND cKuponTyp = :newCustomer',
+            [
+                'email'       => self::hash($email),
+                'newCustomer' => self::TYPE_NEWCUSTOMER
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
+        );
+
+        return !empty($newCustomerCouponUsed);
     }
 
     /**
@@ -1020,7 +1004,7 @@ class Kupon
      */
     public static function acceptCoupon($Kupon): void
     {
-        $cart                        = \Session\Session::getCart();
+        $cart                        = \Session\Frontend::getCart();
         $logger                      = Shop::Container()->getLogService();
         $Kupon->nGanzenWKRabattieren = (int)$Kupon->nGanzenWKRabattieren;
         if ((!empty($_SESSION['oVersandfreiKupon']) || !empty($_SESSION['VersandKupon']) || !empty($_SESSION['Kupon']))
@@ -1043,13 +1027,13 @@ class Kupon
         } elseif ($Kupon->cWertTyp === 'prozent') {
             // Alle Positionen prüfen ob der Kupon greift und falls ja, dann Position rabattieren
             if ($Kupon->nGanzenWKRabattieren === 0) {
-                $articleName_arr = [];
+                $productNames = [];
                 if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
                     $articlePrice = 0;
                     foreach ($cart->PositionenArr as $oWKPosition) {
                         $articlePrice += Cart::checkSetPercentCouponWKPos($oWKPosition, $Kupon)->fPreis;
                         if (!empty(Cart::checkSetPercentCouponWKPos($oWKPosition, $Kupon)->cName)) {
-                            $articleName_arr[] = Cart::checkSetPercentCouponWKPos(
+                            $productNames[] = Cart::checkSetPercentCouponWKPos(
                                 $oWKPosition,
                                 $Kupon
                             )->cName;
@@ -1069,7 +1053,7 @@ class Kupon
         foreach ($_SESSION['Sprachen'] as $Sprache) {
             if ($Kupon->cWertTyp === 'prozent'
                 && $Kupon->nGanzenWKRabattieren === 0
-                && $Kupon->cKuponTyp !== 'neukundenkupon'
+                && $Kupon->cKuponTyp !== self::TYPE_NEWCUSTOMER
             ) {
                 $Spezialpos->cName[$Sprache->cISO] .= ' ' . $Kupon->fWert . '% ';
                 $discountForArticle                 = Shop::Container()->getDB()->select(
@@ -1089,17 +1073,17 @@ class Kupon
                 $Spezialpos->cName[$Sprache->cISO] .= ' ' . $Kupon->fWert . '%';
             }
         }
-        if (isset($articleName_arr)) {
-            $Spezialpos->cArticleNameAffix = $articleName_arr;
+        if (isset($productNames)) {
+            $Spezialpos->cArticleNameAffix = $productNames;
         }
 
         $postyp = C_WARENKORBPOS_TYP_KUPON;
-        if ($Kupon->cKuponTyp === 'standard') {
+        if ($Kupon->cKuponTyp === self::TYPE_STANDARD) {
             $_SESSION['Kupon'] = $Kupon;
             if ($logger->isHandling(JTLLOG_LEVEL_NOTICE)) {
                 $logger->notice('Der Standardkupon' . print_r($Kupon, true) . ' wurde genutzt.');
             }
-        } elseif ($Kupon->cKuponTyp === 'neukundenkupon') {
+        } elseif ($Kupon->cKuponTyp === self::TYPE_NEWCUSTOMER) {
             $postyp = C_WARENKORBPOS_TYP_NEUKUNDENKUPON;
             $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON);
             $_SESSION['NeukundenKupon']           = $Kupon;
@@ -1108,7 +1092,7 @@ class Kupon
             if ($logger->isHandling(JTLLOG_LEVEL_NOTICE)) {
                 $logger->notice('Der Neukundenkupon' . print_r($Kupon, true) . ' wurde genutzt.');
             }
-        } elseif ($Kupon->cKuponTyp === 'versandkupon') {
+        } elseif ($Kupon->cKuponTyp === self::TYPE_SHIPPING) {
             // Darf nicht gelöscht werden sondern den Preis nur auf 0 setzen!
             //$cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS);
             $cart->setzeVersandfreiKupon();
@@ -1135,26 +1119,38 @@ class Kupon
 
     /**
      * @former resetNeuKundenKupon()
-     * @since 5.0.0
+     * @since  5.0.0
+     * @param bool $priceRecalculation
      */
-    public static function resetNewCustomerCoupon(): void
+    public static function resetNewCustomerCoupon(bool $priceRecalculation = true): void
     {
-        if (\Session\Session::getCustomer()->isLoggedIn()) {
-            $hash = Kuponneukunde::hash(
-                null,
-                trim($_SESSION['Kunde']->cNachname),
-                trim($_SESSION['Kunde']->cStrasse),
-                null,
-                trim($_SESSION['Kunde']->cPLZ),
-                trim($_SESSION['Kunde']->cOrt),
-                trim($_SESSION['Kunde']->cLand)
-            );
-            Shop::Container()->getDB()->delete('tkuponneukunde', ['cDatenHash', 'cVerwendet'], [$hash, 'N']);
-        }
-
         unset($_SESSION['NeukundenKupon'], $_SESSION['NeukundenKuponAngenommen']);
-        \Session\Session::getCart()
-               ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
-               ->setzePositionsPreise();
+        $cart = \Session\Frontend::getCart();
+        $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON);
+        if ($priceRecalculation) {
+            $cart->setzePositionsPreise();
+        }
+    }
+
+    /**
+     * @param string $strToHash
+     * @param bool $strtolower
+     * @return string
+     */
+    public static function hash(string $strToHash, bool $strtolower = true): string
+    {
+        return $strToHash === '' ? '' : hash('sha256', $strtolower ? strtolower($strToHash) : $strToHash);
+    }
+
+    /**
+     * @return array
+     */
+    public static function getCouponTypes(): array
+    {
+        return [
+          'newCustomer' => self::TYPE_NEWCUSTOMER,
+          'standard'    => self::TYPE_STANDARD,
+          'shipping'    => self::TYPE_SHIPPING
+        ];
     }
 }

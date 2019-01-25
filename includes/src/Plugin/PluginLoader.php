@@ -57,7 +57,9 @@ class PluginLoader extends AbstractLoader
      */
     public function init(int $id, bool $invalidateCache = false, int $languageID = null)
     {
-        $languageID    = $languageID ?? \Shop::getLanguageID() ?? \Shop::Lang()::getDefaultLanguage()->kSprache;
+        if (($languageID = $languageID ?? \Shop::getLanguageID()) === 0) {
+            $languageID = \Shop::Lang()::getDefaultLanguage()->kSprache;
+        }
         $languageCode  = \Shop::Lang()->getIsoFromLangID($languageID)->cISO;
         $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id . '_' . $languageID;
         if ($this->plugin === null) {
@@ -196,7 +198,7 @@ class PluginLoader extends AbstractLoader
         $paths->setLicencePath($basePath . $versioned . \PFAD_PLUGIN_LICENCE);
         $paths->setUninstaller($basePath . $versioned . \PFAD_PLUGIN_UNINSTALL);
         $paths->setPortletsPath($basePath . $versioned . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS);
-        $paths->setExportPath($basePath . $versioned . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS);
+        $paths->setExportPath($basePath . $versioned . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_EXPORTFORMAT);
 
         return $paths;
     }
@@ -215,7 +217,7 @@ class PluginLoader extends AbstractLoader
 
             $configCompatItem          = new \stdClass();
             $configCompatItem->kPlugin = $id;
-            $configCompatItem->cName   = $option->niceName;
+            $configCompatItem->cName   = $option->valueID;
             $configCompatItem->cWert   = $option->value;
             $configCompat[]            = $configCompatItem;
 

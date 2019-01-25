@@ -69,14 +69,14 @@ function executeHook(int $hookID, $args_arr = [])
 
 /**
  * @param \Plugin\Plugin $oPlugin
- * @param array          $xParam_arr
+ * @param array          $params
  * @return bool
  * @deprecated since 5.0.0
  */
-function pluginLizenzpruefung($oPlugin, array $xParam_arr = []): bool
+function pluginLizenzpruefung($oPlugin, array $params = []): bool
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Plugin\Helper::licenseCheck($oPlugin, $xParam_arr);
+    return \Plugin\Helper::licenseCheck($oPlugin, $params);
 }
 
 /**
@@ -166,8 +166,8 @@ function gibkPluginAuscPluginID(string $cPluginID): int
 function gibPluginExtendedTemplates(): array
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    $cTemplate_arr = [];
-    $oTemplate_arr = Shop::Container()->getDB()->queryPrepared(
+    $templates = [];
+    $data      = Shop::Container()->getDB()->queryPrepared(
         'SELECT tplugintemplate.cTemplate, tplugin.cVerzeichnis, tplugin.nVersion
             FROM tplugintemplate
             JOIN tplugin 
@@ -177,14 +177,14 @@ function gibPluginExtendedTemplates(): array
         ['state' => \Plugin\State::ACTIVATED],
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    foreach ($oTemplate_arr as $oTemplate) {
-        $cTemplatePfad = PFAD_ROOT . PFAD_PLUGIN . $oTemplate->cVerzeichnis . '/' .
-            PFAD_PLUGIN_VERSION . $oTemplate->nVersion . '/' .
-            PFAD_PLUGIN_FRONTEND . PFAD_PLUGIN_TEMPLATE . $oTemplate->cTemplate;
-        if (file_exists($cTemplatePfad)) {
-            $cTemplate_arr[] = $cTemplatePfad;
+    foreach ($data as $tpl) {
+        $path = PFAD_ROOT . PFAD_PLUGIN . $tpl->cVerzeichnis . '/' .
+            PFAD_PLUGIN_VERSION . $tpl->nVersion . '/' .
+            PFAD_PLUGIN_FRONTEND . PFAD_PLUGIN_TEMPLATE . $tpl->cTemplate;
+        if (file_exists($path)) {
+            $templates[] = $path;
         }
     }
 
-    return $cTemplate_arr;
+    return $templates;
 }

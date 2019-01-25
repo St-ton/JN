@@ -381,85 +381,85 @@ class Sprache
             $this->langVars[$this->cISOSprache][$cSektion] = $this->gibSektionsWerte($cSektion);
             $save                                          = true;
         }
-        $cValue = $this->langVars[$this->cISOSprache][$cSektion][$cName] ?? null;
+        $value = $this->langVars[$this->cISOSprache][$cSektion][$cName] ?? null;
         if ($save === true) {
             // only save if values changed
             $this->saveLangVars();
         }
         $argsCount = func_num_args();
-        if ($cValue === null) {
+        if ($value === null) {
             $this->logWert($cSektion, $cName);
-            $cValue = '#' . $cSektion . '.' . $cName . '#';
+            $value = '#' . $cSektion . '.' . $cName . '#';
         } elseif ($argsCount > 2) {
             // String formatieren, vsprintf gibt false zurück,
             // sollte die Anzahl der Parameter nicht der Anzahl der Format-Liste entsprechen!
-            $cArg_arr = [];
+            $args = [];
             for ($i = 2; $i < $argsCount; $i++) {
-                $cArg_arr[] = func_get_arg($i);
+                $args[] = func_get_arg($i);
             }
-            if (vsprintf($cValue, $cArg_arr) !== false) {
-                $cValue = vsprintf($cValue, $cArg_arr);
+            if (vsprintf($value, $args) !== false) {
+                $value = vsprintf($value, $args);
             }
         }
 
-        return $cValue;
+        return $value;
     }
 
     /**
-     * @param string   $cSektion
-     * @param int|null $kSektion
+     * @param string   $sectionName
+     * @param int|null $sectionID
      * @return array
      */
-    public function gibSektionsWerte($cSektion, $kSektion = null): array
+    public function gibSektionsWerte($sectionName, $sectionID = null): array
     {
-        $oWerte_arr       = [];
-        $oSprachWerte_arr = [];
-        if ($kSektion === null) {
-            $oSektion = Shop::Container()->getDB()->select('tsprachsektion', 'cName', $cSektion);
-            $kSektion = $oSektion->kSprachsektion ?? 0;
+        $values        = [];
+        $localizations = [];
+        if ($sectionID === null) {
+            $oSektion  = Shop::Container()->getDB()->select('tsprachsektion', 'cName', $sectionName);
+            $sectionID = $oSektion->kSprachsektion ?? 0;
         }
-        $kSektion = (int)$kSektion;
-        if ($kSektion > 0) {
-            $oSprachWerte_arr = Shop::Container()->getDB()->selectAll(
+        $sectionID = (int)$sectionID;
+        if ($sectionID > 0) {
+            $localizations = Shop::Container()->getDB()->selectAll(
                 'tsprachwerte',
                 ['kSprachISO', 'kSprachsektion'],
-                [$this->kSprachISO, $kSektion],
+                [$this->kSprachISO, $sectionID],
                 'cName, cWert'
             );
         }
-        foreach ($oSprachWerte_arr as $oSprachWert) {
-            $oWerte_arr[$oSprachWert->cName] = $oSprachWert->cWert;
+        foreach ($localizations as $translation) {
+            $values[$translation->cName] = $translation->cWert;
         }
 
-        return $oWerte_arr;
+        return $values;
     }
 
     /**
      * Nicht gesetzte Werte loggen
      *
-     * @param string $cSektion
-     * @param string $cName
+     * @param string $sectionName
+     * @param string $varName
      * @return $this
      */
-    public function logWert($cSektion, $cName): self
+    public function logWert($sectionName, $varName): self
     {
-        $cName    = Shop::Container()->getDB()->escape($cName);
-        $cSektion = Shop::Container()->getDB()->escape($cSektion);
-        $exists   = Shop::Container()->getDB()->select(
+        $varName     = Shop::Container()->getDB()->escape($varName);
+        $sectionName = Shop::Container()->getDB()->escape($sectionName);
+        $exists      = Shop::Container()->getDB()->select(
             'tsprachlog',
             'kSprachISO',
             (int)$this->kSprachISO,
             'cSektion',
-            $cSektion,
+            $sectionName,
             'cName',
-            $cName
+            $varName
         );
         if ($exists === null) {
-            $oLog             = new stdClass();
-            $oLog->kSprachISO = $this->kSprachISO;
-            $oLog->cSektion   = $cSektion;
-            $oLog->cName      = $cName;
-            Shop::Container()->getDB()->insert('tsprachlog', $oLog);
+            $ins             = new stdClass();
+            $ins->kSprachISO = $this->kSprachISO;
+            $ins->cSektion   = $sectionName;
+            $ins->cName      = $varName;
+            Shop::Container()->getDB()->insert('tsprachlog', $ins);
         }
 
         return $this;
@@ -662,16 +662,16 @@ class Sprache
     }
 
     /**
-     * @param int $nTyp
+     * @param int $type
      * @return string
      */
-    public function _export(int $nTyp = 0): string
+    public function _export(int $type = 0): string
     {
-        $cCSVData_arr = [];
-        switch ($nTyp) {
+        $csvData = [];
+        switch ($type) {
             default:
             case 0: // Alle
-                $oWerte_arr = Shop::Container()->getDB()->queryPrepared(
+                $values = Shop::Container()->getDB()->queryPrepared(
                     'SELECT tsprachsektion.cName AS cSektionName, tsprachwerte.cName, 
                         tsprachwerte.cWert, tsprachwerte.bSystem
                         FROM tsprachwerte
@@ -684,7 +684,7 @@ class Sprache
                 break;
 
             case 1: // System
-                $oWerte_arr = Shop::Container()->getDB()->queryPrepared(
+                $values = Shop::Container()->getDB()->queryPrepared(
                     'SELECT tsprachsektion.cName AS cSektionName, tsprachwerte.cName, 
                         tsprachwerte.cWert, tsprachwerte.bSystem
                         FROM tsprachwerte
@@ -698,7 +698,7 @@ class Sprache
                 break;
 
             case 2: // Eigene
-                $oWerte_arr = Shop::Container()->getDB()->queryPrepared(
+                $values = Shop::Container()->getDB()->queryPrepared(
                     'SELECT tsprachsektion.cName AS cSektionName, tsprachwerte.cName, 
                         tsprachwerte.cWert, tsprachwerte.bSystem
                         FROM tsprachwerte
@@ -712,57 +712,54 @@ class Sprache
                 break;
         }
 
-        foreach ($oWerte_arr as $oWert) {
-            if (strlen($oWert->cWert) === 0) {
-                $oWert->cWert = $oWert->cStandard ?? null;
+        foreach ($values as $value) {
+            if (strlen($value->cWert) === 0) {
+                $value->cWert = $value->cStandard ?? null;
             }
-            $cCSVData_arr[] = [
-                $oWert->cSektionName,
-                $oWert->cName,
-                $oWert->cWert,
-                $oWert->bSystem
+            $csvData[] = [
+                $value->cSektionName,
+                $value->cName,
+                $value->cWert,
+                $value->bSystem
             ];
         }
-
-        $cFileName = tempnam('../' . PFAD_DBES_TMP, 'csv');
-        $hFile     = fopen($cFileName, 'w');
-
-        foreach ($cCSVData_arr as $cCSVData) {
-            fputcsv($hFile, $cCSVData, ';');
+        $fileName = tempnam('../' . PFAD_DBES_TMP, 'csv');
+        $handle   = fopen($fileName, 'w');
+        foreach ($csvData as $csv) {
+            fputcsv($handle, $csv, ';');
         }
+        fclose($handle);
 
-        fclose($hFile);
-
-        return $cFileName;
+        return $fileName;
     }
 
     /**
-     * @param string $cFileName
-     * @param string $cISO
-     * @param int    $nTyp
+     * @param string $fileName
+     * @param string $iso
+     * @param int    $type
      * @return bool|int
      */
-    public function _import(string $cFileName, string $cISO, int $nTyp)
+    public function _import(string $fileName, string $iso, int $type)
     {
-        $hFile = fopen($cFileName, 'r');
-        if (!$hFile) {
+        $handle = fopen($fileName, 'r');
+        if (!$handle) {
             return false;
         }
 
-        $bDeleteFlag  = false;
-        $nUpdateCount = 0;
-        $kSprachISO   = $this->mappekISO($cISO);
+        $deleteFlag  = false;
+        $updateCount = 0;
+        $kSprachISO  = $this->mappekISO($iso);
         if ($kSprachISO === 0 || $kSprachISO === false) {
             // Sprache noch nicht installiert
             $oSprachISO       = new stdClass();
-            $oSprachISO->cISO = $cISO;
+            $oSprachISO->cISO = $iso;
             $kSprachISO       = Shop::Container()->getDB()->insert('tsprachiso', $oSprachISO);
         }
 
-        while (($cData_arr = fgetcsv($hFile, 4048, ';')) !== false) {
-            if (count($cData_arr) === 4) {
+        while (($data = fgetcsv($handle, 4048, ';')) !== false) {
+            if (count($data) === 4) {
                 // Sektion holen und ggf neu anlegen
-                $cSektion = $cData_arr[0];
+                $cSektion = $data[0];
                 $oSektion = Shop::Container()->getDB()->select('tsprachsektion', 'cName', $cSektion);
                 if (isset($oSektion->kSprachsektion)) {
                     $kSprachsektion = $oSektion->kSprachsektion;
@@ -773,26 +770,26 @@ class Sprache
                     $kSprachsektion  = Shop::Container()->getDB()->insert('tsprachsektion', $oSektion);
                 }
 
-                $cName   = $cData_arr[1];
-                $cWert   = $cData_arr[2];
-                $bSystem = (int)$cData_arr[3];
+                $cName   = $data[1];
+                $cWert   = $data[2];
+                $bSystem = (int)$data[3];
 
-                switch ($nTyp) {
+                switch ($type) {
                     case 0: // Neu importieren
                         // Gültige Zeile, vorhandene Variablen löschen
-                        if (!$bDeleteFlag) {
+                        if (!$deleteFlag) {
                             Shop::Container()->getDB()->delete('tsprachwerte', 'kSprachISO', $kSprachISO);
-                            $bDeleteFlag = true;
+                            $deleteFlag = true;
                         }
                         $val                 = new stdClass();
                         $val->kSprachISO     = $kSprachISO;
                         $val->kSprachsektion = $kSprachsektion;
-                        $val->cName          = $cData_arr[1];
-                        $val->cWert          = $cData_arr[2];
-                        $val->cStandard      = $cData_arr[2];
+                        $val->cName          = $data[1];
+                        $val->cWert          = $data[2];
+                        $val->cStandard      = $data[2];
                         $val->bSystem        = $bSystem;
                         Shop::Container()->getDB()->insert('tsprachwerte', $val);
-                        $nUpdateCount++;
+                        $updateCount++;
                         break;
 
                     case 1: // Vorhandene Variablen überschreiben
@@ -813,7 +810,7 @@ class Sprache
                             ],
                             \DB\ReturnType::DEFAULT
                         );
-                        $nUpdateCount++;
+                        $updateCount++;
                         break;
 
                     case 2: // Vorhandene Variablen beibehalten
@@ -844,14 +841,14 @@ class Sprache
                                 ],
                                 \DB\ReturnType::DEFAULT
                             );
-                            $nUpdateCount++;
+                            $updateCount++;
                         }
                         break;
                 }
             }
         }
 
-        return $nUpdateCount;
+        return $updateCount;
     }
 
     /**
@@ -878,39 +875,39 @@ class Sprache
     }
 
     /**
-     * @param int   $kSprache
-     * @param array $oShopSpracheAssoc_arr
+     * @param int   $languageID
+     * @param array $languages
      * @return bool
      */
-    public static function isShopLanguage(int $kSprache, array $oShopSpracheAssoc_arr = []): bool
+    public static function isShopLanguage(int $languageID, array $languages = []): bool
     {
-        if ($kSprache > 0) {
-            if (!is_array($oShopSpracheAssoc_arr) || count($oShopSpracheAssoc_arr) === 0) {
-                $oShopSpracheAssoc_arr = self::getAllLanguages(1);
+        if ($languageID > 0) {
+            if (!is_array($languages) || count($languages) === 0) {
+                $languages = self::getAllLanguages(1);
             }
 
-            return isset($oShopSpracheAssoc_arr[$kSprache]);
+            return isset($languages[$languageID]);
         }
 
         return false;
     }
 
     /**
-     * @param string $cISO
-     * @param int    $kSprache
+     * @param string $iso
+     * @param int    $languageID
      * @return int|string|bool
      */
-    public function _getLanguageDataByType(string $cISO = '', int $kSprache = 0)
+    public function _getLanguageDataByType(string $iso = '', int $languageID = 0)
     {
-        if (strlen($cISO) > 0) {
-            $data = $this->_getLangIDFromIso($cISO);
+        if (strlen($iso) > 0) {
+            $data = $this->_getLangIDFromIso($iso);
 
             return $data === null
                 ? false
                 : $data->kSprachISO;
         }
-        if ($kSprache > 0) {
-            $data = $this->_getIsoFromLangID($kSprache);
+        if ($languageID > 0) {
+            $data = $this->_getIsoFromLangID($languageID);
 
             return $data === null
                 ? false
@@ -923,7 +920,7 @@ class Sprache
     /**
      * gibt alle Sprachen zurück
      *
-     * @param int $nOption
+     * @param int $returnType
      * 0 = Normales Array
      * 1 = Gib ein Assoc mit Key = kSprache
      * 2 = Gib ein Assoc mit Key = cISO
@@ -931,11 +928,11 @@ class Sprache
      * @former gibAlleSprachen()
      * @since 5.0.0
      */
-    public static function getAllLanguages(int $nOption = 0)
+    public static function getAllLanguages(int $returnType = 0)
     {
-        $languages = \Session\Session::getLanguages();
+        $languages = \Session\Frontend::getLanguages();
         if (count($languages) > 0) {
-            switch ($nOption) {
+            switch ($returnType) {
                 case 2:
                     return \Functional\reindex($languages, function ($e) {
                         return $e->cISO;
@@ -951,7 +948,7 @@ class Sprache
                     return $languages;
             }
         }
-        $oSprach_arr = array_map(
+        $languages = array_map(
             function ($s) {
                 $s->kSprache = (int)$s->kSprache;
 
@@ -964,42 +961,42 @@ class Sprache
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             )
         );
-        switch ($nOption) {
+        switch ($returnType) {
             case 2:
-                return \Functional\reindex($oSprach_arr, function ($e) {
+                return \Functional\reindex($languages, function ($e) {
                     return $e->cISO;
                 });
 
             case 1:
-                return \Functional\reindex($oSprach_arr, function ($e) {
+                return \Functional\reindex($languages, function ($e) {
                     return $e->kSprache;
                 });
 
             case 0:
             default:
-                return $oSprach_arr;
+                return $languages;
         }
     }
 
     /**
      * @param bool     $shop
-     * @param int|null $kSprache - optional lang id to check against instead of session value
+     * @param int|null $languageID - optional lang id to check against instead of session value
      * @return bool
      * @former standardspracheAktiv()
      * @since 5.0.0
      */
-    public static function isDefaultLanguageActive(bool $shop = false, int $kSprache = null): bool
+    public static function isDefaultLanguageActive(bool $shop = false, int $languageID = null): bool
     {
-        if ($kSprache === null && !isset($_SESSION['kSprache'])) {
+        if ($languageID === null && !isset($_SESSION['kSprache'])) {
             return true;
         }
-        $langToCheckAgainst = $kSprache !== null ? (int)$kSprache : Shop::getLanguageID();
+        $langToCheckAgainst = $languageID !== null ? (int)$languageID : Shop::getLanguageID();
         if ($langToCheckAgainst > 0) {
-            foreach (\Session\Session::getLanguages() as $Sprache) {
-                if ($Sprache->cStandard === 'Y' && (int)$Sprache->kSprache === $langToCheckAgainst && !$shop) {
+            foreach (\Session\Frontend::getLanguages() as $language) {
+                if ($language->cStandard === 'Y' && (int)$language->kSprache === $langToCheckAgainst && !$shop) {
                     return true;
                 }
-                if ($Sprache->cShopStandard === 'Y' && (int)$Sprache->kSprache === $langToCheckAgainst && $shop) {
+                if ($language->cShopStandard === 'Y' && (int)$language->kSprache === $langToCheckAgainst && $shop) {
                     return true;
                 }
             }
@@ -1018,7 +1015,7 @@ class Sprache
      */
     public static function getDefaultLanguage(bool $shop = true)
     {
-        foreach (\Session\Session::getLanguages() as $language) {
+        foreach (\Session\Frontend::getLanguages() as $language) {
             if ($language->cStandard === 'Y' && !$shop) {
                 return $language;
             }
@@ -1058,7 +1055,7 @@ class Sprache
         $mapped      = $mapper->map(Shop::getPageType());
         $specialPage = $mapped > 0 ? $ls->getSpecialPage($mapped) : null;
         $page        = $kLink > 0 ? $ls->getPageLink($kLink) : null;
-        if (count(\Session\Session::getLanguages()) > 1) {
+        if (count(\Session\Frontend::getLanguages()) > 1) {
             /** @var Artikel $AktuellerArtikel */
             if ($AktuellerArtikel !== null
                 && $AktuellerArtikel->kArtikel > 0
@@ -1066,7 +1063,7 @@ class Sprache
             ) {
                 $AktuellerArtikel->baueArtikelSprachURL();
             }
-            foreach (\Session\Session::getLanguages() as $lang) {
+            foreach (\Session\Frontend::getLanguages() as $lang) {
                 if (isset($AktuellerArtikel->cSprachURL_arr[$lang->cISO])) {
                     $lang->cURL     = $AktuellerArtikel->cSprachURL_arr[$lang->cISO];
                     $lang->cURLFull = $shopURL . $AktuellerArtikel->cSprachURL_arr[$lang->cISO];
@@ -1123,15 +1120,15 @@ class Sprache
                 }
             }
         }
-        if (count(\Session\Session::getCurrencies()) > 1) {
+        if (count(\Session\Frontend::getCurrencies()) > 1) {
             if ($AktuellerArtikel !== null
                 && $AktuellerArtikel->kArtikel > 0
                 && empty($AktuellerArtikel->cSprachURL_arr)
             ) {
                 $AktuellerArtikel->baueArtikelSprachURL(false);
             }
-            $currentCurrencyCode = Session\Session::getCurrency()->getID();
-            foreach (\Session\Session::getCurrencies() as $currency) {
+            $currentCurrencyCode = Session\Frontend::getCurrency()->getID();
+            foreach (\Session\Frontend::getCurrencies() as $currency) {
                 if (isset($AktuellerArtikel->cSprachURL_arr[Shop::getLanguageCode()])) {
                     $url = $AktuellerArtikel->cSprachURL_arr[Shop::getLanguageCode()];
                 } elseif ($specialPage !== null) {
@@ -1147,7 +1144,7 @@ class Sprache
                                 $url = $shopURL . $specialPage->getFileName();
                             } else {
                                 // there is a SEO link - make it a full URL
-                                $url = $helper->getStaticRoute($specialPage->getFileName(), true);
+                                $url = $helper->getStaticRoute($specialPage->getFileName());
                             }
                         }
                     }

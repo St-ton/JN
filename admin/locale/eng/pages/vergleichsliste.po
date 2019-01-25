@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "configureComparelist"
 msgstr "Vergleichsliste"
 
@@ -51,4 +55,3 @@ msgstr "Einstellungen"
 
 msgid "compareSave"
 msgstr "Speichern"
-

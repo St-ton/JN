@@ -6,7 +6,7 @@
 
 namespace Boxes\Items;
 
-use Session\Session;
+use Session\Frontend;
 
 /**
  * Class ProductCategories
@@ -22,7 +22,7 @@ final class ProductCategories extends AbstractBox
     {
         parent::__construct($config);
         $show = isset($config['global']['global_sichtbarkeit'])
-            && ((int)$config['global']['global_sichtbarkeit'] !== 3 || Session::getCustomer()->getID() > 0);
+            && ((int)$config['global']['global_sichtbarkeit'] !== 3 || Frontend::getCustomer()->getID() > 0);
         $this->setShow($show);
         if ($show === true) {
             $categories = $this->getCategories();

@@ -51,12 +51,10 @@ class Lieferscheinposinfo
      */
     private function loadFromDB(int $id = 0): self
     {
-        $oObj = Shop::Container()->getDB()->select('tlieferscheinposinfo', 'kLieferscheinPosInfo', $id);
-
-        if ($oObj !== null && $oObj->kLieferscheinPosInfo > 0) {
-            $cMember_arr = array_keys(get_object_vars($oObj));
-            foreach ($cMember_arr as $cMember) {
-                $this->$cMember = $oObj->$cMember;
+        $item = Shop::Container()->getDB()->select('tlieferscheinposinfo', 'kLieferscheinPosInfo', $id);
+        if ($item !== null && $item->kLieferscheinPosInfo > 0) {
+            foreach (array_keys(get_object_vars($item)) as $member) {
+                $this->$member = $item->$member;
             }
             $this->kLieferscheinPos     = (int)$this->kLieferscheinPos;
             $this->kLieferscheinPosInfo = (int)$this->kLieferscheinPosInfo;
@@ -71,17 +69,14 @@ class Lieferscheinposinfo
      */
     public function save(bool $bPrim = true)
     {
-        $oObj        = new stdClass();
-        $cMember_arr = array_keys(get_object_vars($this));
-        if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-            foreach ($cMember_arr as $cMember) {
-                $oObj->$cMember = $this->$cMember;
-            }
+        $ins = new stdClass();
+        foreach (array_keys(get_object_vars($this)) as $member) {
+            $ins->$member = $this->$member;
         }
 
-        unset($oObj->kLieferscheinPosInfo);
+        unset($ins->kLieferscheinPosInfo);
 
-        $kPrim = Shop::Container()->getDB()->insert('tlieferscheinposinfo', $oObj);
+        $kPrim = Shop::Container()->getDB()->insert('tlieferscheinposinfo', $ins);
 
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
@@ -95,17 +90,17 @@ class Lieferscheinposinfo
      */
     public function update(): int
     {
-        $_upd                   = new stdClass();
-        $_upd->kLieferscheinPos = $this->getLieferscheinPos();
-        $_upd->cSeriennummer    = $this->getSeriennummer();
-        $_upd->cChargeNr        = $this->getChargeNr();
-        $_upd->dMHD             = $this->getMHD();
+        $upd                   = new stdClass();
+        $upd->kLieferscheinPos = $this->getLieferscheinPos();
+        $upd->cSeriennummer    = $this->getSeriennummer();
+        $upd->cChargeNr        = $this->getChargeNr();
+        $upd->dMHD             = $this->getMHD();
 
         return Shop::Container()->getDB()->update(
             'tlieferscheinposinfo',
             'kLieferscheinPosInfo',
             $this->getLieferscheinPosInfo(),
-            $_upd
+            $upd
         );
     }
 

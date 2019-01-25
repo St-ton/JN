@@ -1,5 +1,5 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="navigationsfilter"}
+{config_load file="$lang.conf" section='navigationsfilter'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('navigationsfilter') cBeschreibung=__('navigationsfilterDesc')
          cDokuURL=__('navigationsfilterUrl')}
 
@@ -91,10 +91,10 @@
                     cFehler += 'Ein oder mehrere Felder sind nicht gesetzt.<br>';
                     $row.addClass('has-error');
                 } else if(fVon >= fBis) {
-                    cFehler += 'Die Preisspanne ' + fVon + ' bis ' + fBis + ' ist ung&uuml;tig.<br>';
+                    cFehler += 'Die Preisspanne ' + fVon + ' bis ' + fBis + ' ist ungütig.<br>';
                     $row.addClass('has-error');
                 } else if(fVon < lastUpperBound) {
-                    cFehler += 'Die Preisspanne ' + fVon + ' bis ' + fBis + ' &uuml;berschneidet sich mit anderen.<br>';
+                    cFehler += 'Die Preisspanne ' + fVon + ' bis ' + fBis + ' überschneidet sich mit anderen.<br>';
                     $row.addClass('has-error');
                 }
 
@@ -115,7 +115,7 @@
         <input type="hidden" name="speichern" value="1"/>
         <div id="settings">
             {assign var=open value=false}
-            {foreach name=conf from=$oConfig_arr item=oConfig}
+            {foreach $oConfig_arr as $oConfig}
                 {if $oConfig->cConf === 'Y'}
                     <div class="item input-group">
                         <span class="input-group-addon">
@@ -128,7 +128,7 @@
                                         {if $oConfig->cWertName === 'preisspannenfilter_anzeige_berechnung'}
                                             onChange="selectCheck(this);"
                                         {/if}>
-                                    {foreach name=selectfor from=$oConfig->ConfWerte item=wert}
+                                    {foreach $oConfig->ConfWerte as $wert}
                                         <option value="{$wert->cWert}"
                                                 {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>
                                             {$wert->cName}
@@ -195,5 +195,4 @@
         </p>
     </form>
 </div>
-
 {include file='tpl_inc/footer.tpl'}

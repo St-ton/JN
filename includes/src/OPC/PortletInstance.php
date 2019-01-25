@@ -353,7 +353,15 @@ class PortletInstance implements \JsonSerializable
      */
     public function getDataAttributeString(): string
     {
-        return 'data-portlet="' . \htmlspecialchars(\json_encode($this->jsonSerializeShort()), \ENT_QUOTES) . '"';
+        return 'data-portlet="' . $this->getDataAttribute() . '"';
+    }
+
+    /**
+     * @return string
+     */
+    public function getDataAttribute(): string
+    {
+        return \htmlspecialchars(\json_encode($this->jsonSerializeShort()), \ENT_QUOTES);
     }
 
     /**
@@ -463,8 +471,13 @@ class PortletInstance implements \JsonSerializable
      * @param null $default
      * @return string
      */
-    public function getImageAttributeString($src = null, $alt = null, $title = null, $divisor = 1, $default = null)
-    {
+    public function getImageAttributeString(
+        $src = null,
+        $alt = null,
+        $title = null,
+        $divisor = 1,
+        $default = null
+    ): string {
         $imgAttribs = $this->getImageAttributes($src, $alt, $title, $divisor, $default);
 
         return "srcset='{$imgAttribs['srcset']}' srcsizes='{$imgAttribs['srcsizes']}' src='{$imgAttribs['src']}'
@@ -476,9 +489,10 @@ class PortletInstance implements \JsonSerializable
      * @param string $alt
      * @param string $title
      * @param int    $divisor
+     * @param null   $default
      * @return $this
      */
-    public function setImageAttributes($src = null, $alt = null, $title = null, $divisor = 1, $default = null)
+    public function setImageAttributes($src = null, $alt = null, $title = null, $divisor = 1, $default = null): self
     {
         $imageAttributes = $this->getImageAttributes($src, $alt, $title, $divisor, $default);
 

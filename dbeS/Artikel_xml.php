@@ -17,13 +17,14 @@ if (auth()) {
     $zipFile    = checkFile();
     $return     = 2;
     $unzipPath  = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($zipFile) . '_' . date('dhis') . '/';
-
+    $db         = Shop::Container()->getDB();
     if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
         $logger->error('Error: Cannot extract zip file ' . $zipFile . ' to ' . $unzipPath);
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
         $conf   = Shop::getSettings([CONF_GLOBAL]);
+        $db->query('START TRANSACTION', \DB\ReturnType::DEFAULT);
         foreach ($syncFiles as $i => $xmlFile) {
             $d   = file_get_contents($xmlFile);
             $xml = XML_unserialize($d);
@@ -44,6 +45,8 @@ if (auth()) {
                 );
             }
         }
+        handlePriceRange($articleIDs);
+        $db->query('COMMIT', \DB\ReturnType::DEFAULT);
         removeTemporaryFiles(substr($unzipPath, 0, -1), true);
         clearProductCaches($articleIDs);
     }
@@ -65,13 +68,14 @@ function bearbeiteDeletes($xml, array $conf)
     if (!is_array($xml['del_artikel']['kArtikel'])) {
         $xml['del_artikel']['kArtikel'] = [$xml['del_artikel']['kArtikel']];
     }
+    $db = Shop::Container()->getDB();
     foreach ($xml['del_artikel']['kArtikel'] as $kArtikel) {
         $kArtikel      = (int)$kArtikel;
         $kVaterArtikel = Product::getParent($kArtikel);
         $nIstVater     = $kVaterArtikel > 0 ? 0 : 1;
         checkArtikelBildLoeschung($kArtikel);
 
-        Shop::Container()->getDB()->queryPrepared(
+        $db->queryPrepared(
             'DELETE teigenschaftkombiwert
                 FROM teigenschaftkombiwert
                 JOIN tartikel 
@@ -83,7 +87,7 @@ function bearbeiteDeletes($xml, array $conf)
         removeProductIdfromCoupons($kArtikel);
         $res[] = loescheArtikel($kArtikel, false, $conf);
         // Lösche Artikel aus tartikelkategorierabatt
-        Shop::Container()->getDB()->delete('tartikelkategorierabatt', 'kArtikel', $kArtikel);
+        $db->delete('tartikelkategorierabatt', 'kArtikel', $kArtikel);
         // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
         if ($kVaterArtikel > 0) {
             Artikel::beachteVarikombiMerkmalLagerbestand($kVaterArtikel);
@@ -118,9 +122,10 @@ function bearbeiteInsert($xml, array $conf)
     if (!is_array($xml['tartikel'])) {
         return $res;
     }
+    $db          = Shop::Container()->getDB();
     $artikel_arr = mapArray($xml, 'tartikel', $GLOBALS['mArtikel']);
     // Alten SEO-Pfad merken. Eintrag in tredirect, wenn sich der Pfad geändert hat.
-    $oSeoOld       = Shop::Container()->getDB()->select(
+    $oSeoOld       = $db->select(
         'tartikel',
         'kArtikel',
         (int)$Artikel->kArtikel,
@@ -140,7 +145,7 @@ function bearbeiteInsert($xml, array $conf)
         $newArticleCategories     = [];
         $flush                    = false;
         // get list of all categories the article is currently associated with
-        $currentArticleCategoriesObject = Shop::Container()->getDB()->selectAll(
+        $currentArticleCategoriesObject = $db->selectAll(
             'tkategorieartikel',
             'kArtikel',
             (int)$Artikel->kArtikel,
@@ -162,7 +167,7 @@ function bearbeiteInsert($xml, array $conf)
         foreach ($newArticleCategories as $newArticleCategory) {
             if (!in_array($newArticleCategory, $currentArticleCategories, true)) {
                 // the article was previously not associated with this category
-                $articleCount = Shop::Container()->getDB()->query(
+                $articleCount = $db->query(
                     'SELECT COUNT(tkategorieartikel.kArtikel) AS cnt
                         FROM tkategorieartikel
                         LEFT JOIN tartikel
@@ -183,7 +188,7 @@ function bearbeiteInsert($xml, array $conf)
                 // check if the article is removed from an existing category
                 if (!in_array($category, $newArticleCategories, true)) {
                     // check if the article was the only one in at least one of these categories
-                    $articleCount = Shop::Container()->getDB()->query(
+                    $articleCount = $db->query(
                         'SELECT COUNT(tkategorieartikel.kArtikel) AS cnt
                             FROM tkategorieartikel
                             LEFT JOIN tartikel
@@ -203,7 +208,7 @@ function bearbeiteInsert($xml, array $conf)
             && (int)$conf['global']['artikel_artikelanzeigefilter'] !== EINSTELLUNGEN_ARTIKELANZEIGEFILTER_ALLE
         ) {
             $check         = false;
-            $currentStatus = Shop::Container()->getDB()->select(
+            $currentStatus = $db->select(
                 'tartikel',
                 'kArtikel',
                 $Artikel->kArtikel,
@@ -231,7 +236,7 @@ function bearbeiteInsert($xml, array $conf)
                 if ($check === true) {
                     if (is_array($newArticleCategories) && !empty($newArticleCategories)) {
                         // get count of visible articles in the article's futre categories
-                        $articleCount = Shop::Container()->getDB()->query(
+                        $articleCount = $db->query(
                             'SELECT tkategorieartikel.kKategorie, COUNT(tkategorieartikel.kArtikel) AS cnt
                                 FROM tkategorieartikel
                                 LEFT JOIN tartikel
@@ -315,7 +320,7 @@ function bearbeiteInsert($xml, array $conf)
         }
         // any new orders since last wawi-sync? see https://gitlab.jtl-software.de/jtlshop/jtl-shop/issues/304
         if (isset($artikel_arr[0]->fLagerbestand) && $artikel_arr[0]->fLagerbestand > 0) {
-            $delta = Shop::Container()->getDB()->query(
+            $delta = $db->query(
                 "SELECT SUM(pos.nAnzahl) AS totalquantity
                     FROM tbestellung b
                     JOIN twarenkorbpos pos
@@ -341,7 +346,7 @@ function bearbeiteInsert($xml, array $conf)
         if (isset($oSeoOld->cSeo)) {
             checkDbeSXmlRedirect($oSeoOld->cSeo, $artikel_arr[0]->cSeo);
         }
-        Shop::Container()->getDB()->query(
+        $db->query(
             "INSERT INTO tseo
                 SELECT tartikel.cSeo, 'kArtikel', tartikel.kArtikel, tsprache.kSprache
                 FROM tartikel, tsprache
@@ -371,7 +376,7 @@ function bearbeiteInsert($xml, array $conf)
         $artikelsprache_arr[$i]->cSeo = \JTL\SeoHelper::checkSeo($artikelsprache_arr[$i]->cSeo);
 
         DBUpdateInsert('tartikelsprache', [$artikelsprache_arr[$i]], 'kArtikel', 'kSprache');
-        Shop::Container()->getDB()->delete(
+        $db->delete(
             'tseo',
             ['cKey', 'kKey', 'kSprache'],
             ['kArtikel', (int)$artikelsprache_arr[$i]->kArtikel, (int)$artikelsprache_arr[$i]->kSprache]
@@ -382,7 +387,7 @@ function bearbeiteInsert($xml, array $conf)
         $oSeo->cKey     = 'kArtikel';
         $oSeo->kKey     = $artikelsprache_arr[$i]->kArtikel;
         $oSeo->kSprache = $artikelsprache_arr[$i]->kSprache;
-        Shop::Container()->getDB()->insert('tseo', $oSeo);
+        $db->insert('tseo', $oSeo);
         // Insert into tredirect weil sich das SEO vom Artikel geändert hat
         if (isset($oSeoAssoc_arr[$artikelsprache_arr[$i]->kSprache])) {
             checkDbeSXmlRedirect(
@@ -542,7 +547,7 @@ function bearbeiteInsert($xml, array $conf)
             }
         }
     }
-    Shop::Container()->getDB()->delete('tartikelabnahme', 'kArtikel', $artikel_arr[0]->kArtikel);
+    $db->delete('tartikelabnahme', 'kArtikel', $artikel_arr[0]->kArtikel);
     if (isset($xml['tartikel']['tartikelabnahme']) && is_array($xml['tartikel']['tartikelabnahme'])) {
         $oArtikelAbnahmeIntervalle_arr = mapArray($xml['tartikel'], 'tartikelabnahme', $GLOBALS['mArtikelAbnahme']);
         DBUpdateInsert('tartikelabnahme', $oArtikelAbnahmeIntervalle_arr, 'kArtikel', 'kKundengruppe');
@@ -588,7 +593,7 @@ function bearbeiteInsert($xml, array $conf)
     updateXMLinDB($xml['tartikel'], 'txsell', $GLOBALS['mXSell'], 'kXSell');
     updateXMLinDB($xml['tartikel'], 'tartikelmerkmal', $GLOBALS['mArtikelSichtbarkeit'], 'kMermalWert');
     if ((int)$artikel_arr[0]->nIstVater === 1) {
-        Shop::Container()->getDB()->query(
+        $db->query(
             'UPDATE tartikel SET fLagerbestand =
                 (SELECT * FROM
                     (SELECT SUM(fLagerbestand) 
@@ -604,7 +609,7 @@ function bearbeiteInsert($xml, array $conf)
             $conf['global']['artikel_artikelanzeigefilter']
         );
     } elseif (isset($artikel_arr[0]->kVaterArtikel) && $artikel_arr[0]->kVaterArtikel > 0) {
-        Shop::Container()->getDB()->query(
+        $db->query(
             'UPDATE tartikel SET fLagerbestand =
                 (SELECT * FROM
                     (SELECT SUM(fLagerbestand) 
@@ -628,7 +633,7 @@ function bearbeiteInsert($xml, array $conf)
         $cSQL_arr = explode("\n", $xml['tartikel']['SQLDEL']);
         foreach ($cSQL_arr as $cSQL) {
             if (strlen($cSQL) > 10) {
-                Shop::Container()->getDB()->query($cSQL, \DB\ReturnType::AFFECTED_ROWS);
+                $db->query($cSQL, \DB\ReturnType::AFFECTED_ROWS);
             }
         }
     }
@@ -651,19 +656,19 @@ function bearbeiteInsert($xml, array $conf)
                     foreach ($cDel_arr as $cDel) {
                         $kKey_arr[] = (int)substr($cDel, 0, strpos($cDel, ','));
                     }
-                    Shop::Container()->getDB()->query(
+                    $db->query(
                         'DELETE
                             FROM teigenschaftkombiwert 
                             WHERE kEigenschaftKombi IN (' . implode(',', $kKey_arr) . ')',
                         \DB\ReturnType::AFFECTED_ROWS
                     );
                 }
-                Shop::Container()->getDB()->query($cSQL, \DB\ReturnType::AFFECTED_ROWS);
+                $db->query($cSQL, \DB\ReturnType::AFFECTED_ROWS);
             }
         }
     }
     // Artikel Warenlager
-    Shop::Container()->getDB()->delete('tartikelwarenlager', 'kArtikel', (int)$xml['tartikel attr']['kArtikel']);
+    $db->delete('tartikelwarenlager', 'kArtikel', (int)$xml['tartikel attr']['kArtikel']);
     if (isset($xml['tartikel']['tartikelwarenlager']) && is_array($xml['tartikel']['tartikelwarenlager'])) {
         $oArtikelWarenlager_arr = mapArray($xml['tartikel'], 'tartikelwarenlager', $GLOBALS['mArtikelWarenlager']);
 
@@ -672,7 +677,7 @@ function bearbeiteInsert($xml, array $conf)
                 $oArtikelWarenlager->dZulaufDatum = null;
             }
             // Prevent SQL-Exception if duplicate datasets will be sent falsely
-            Shop::Container()->getDB()->queryPrepared(
+            $db->queryPrepared(
                 'INSERT INTO tartikelwarenlager (kArtikel, kWarenlager, fBestand, fZulauf, dZulaufDatum)
                     VALUES (:kArtikel, :kWarenlager, :fBestand, :fZulauf, :dZulaufDatum)
                     ON DUPLICATE KEY UPDATE
@@ -700,7 +705,7 @@ function bearbeiteInsert($xml, array $conf)
         if ($ArtikelSonderpreis_arr[0]->cAktiv === 'Y') {
             $specialPriceStart = explode('-', $ArtikelSonderpreis_arr[0]->dStart);
             if (count($specialPriceStart) > 2) {
-                list($start_jahr, $start_monat, $start_tag) = $specialPriceStart;
+                [$start_jahr, $start_monat, $start_tag] = $specialPriceStart;
             } else {
                 $start_jahr  = null;
                 $start_monat = null;
@@ -708,7 +713,7 @@ function bearbeiteInsert($xml, array $conf)
             }
             $specialPriceEnd = explode('-', $ArtikelSonderpreis_arr[0]->dEnde);
             if (count($specialPriceEnd) > 2) {
-                list($ende_jahr, $ende_monat, $ende_tag) = $specialPriceEnd;
+                [$ende_jahr, $ende_monat, $ende_tag] = $specialPriceEnd;
             } else {
                 $ende_jahr  = null;
                 $ende_monat = null;
@@ -956,7 +961,7 @@ function bearbeiteInsert($xml, array $conf)
         DBUpdateInsert('teigenschaft', $Eigenschaft_arr, 'kEigenschaft');
     }
     // Alle Shop Kundengruppen holen
-    $oKundengruppe_arr = Shop::Container()->getDB()->query(
+    $oKundengruppe_arr = $db->query(
         'SELECT kKundengruppe FROM tkundengruppe',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
@@ -965,7 +970,6 @@ function bearbeiteInsert($xml, array $conf)
     if (!empty($artikel_arr[0]->kVaterartikel)) {
         $res[] = (int)$artikel_arr[0]->kVaterartikel;
     }
-    handlePriceRange((int)$Artikel->kArtikel);
     // emailbenachrichtigung, wenn verfügbar
     versendeVerfuegbarkeitsbenachrichtigung($artikel_arr[0]);
 

@@ -10,7 +10,7 @@
                 </span>
                 <span class="input-group-wrap last">
                     <select id="{__('changeLanguage')}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
-                        {foreach name=sprachen from=$Sprachen item=sprache}
+                        {foreach $Sprachen as $sprache}
                             <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
                         {/foreach}
                     </select>
@@ -30,8 +30,7 @@
             </tr>
             </thead>
             <tbody>
-            {foreach name=kundengruppe from=$oKundengruppe_arr item=oKundengruppe}
-                {assign var=kKundengruppe value=$oKundengruppe->kKundengruppe}
+            {foreach $oKundengruppe_arr as $oKundengruppe}
                 <tr>
                     <td class="">{$oKundengruppe->cName}</td>
                     <td class="tcenter">

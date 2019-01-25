@@ -30,7 +30,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach from=$oAdminList_arr item="oAdmin" name="admin"}
+                        {foreach $oAdminList_arr as $oAdmin}
                             <tr>
                                 <td class="tleft">{$oAdmin->kAdminlogin}</td>
                                 <td class="tcenter">{$oAdmin->cLogin}</td>
@@ -96,7 +96,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach from=$oAdminGroup_arr item="oGroup"}
+                        {foreach $oAdminGroup_arr as $oGroup}
                             <tr>
                                 <td class="tleft">{$oGroup->kAdminlogingruppe}</td>
                                 <td class="tleft">{$oGroup->cGruppe}</td>

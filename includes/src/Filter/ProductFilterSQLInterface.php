@@ -7,7 +7,8 @@
 namespace Filter;
 
 /**
- * Class ProductFilterSQL
+ * Interface ProductFilterSQLInterface
+ * @package Filter
  */
 interface ProductFilterSQLInterface
 {

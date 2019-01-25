@@ -8,7 +8,7 @@ namespace Survey;
 
 use DB\DbInterface;
 use DB\ReturnType;
-use Session\Session;
+use Session\Frontend;
 use Smarty\JTLSmarty;
 use Tightenco\Collect\Support\Collection;
 
@@ -253,7 +253,7 @@ class Controller
     {
         $msg = \Shop::Lang()->get('pollAdd', 'messages');
         $this->save();
-        if (Session::getCustomer()->getID() > 0) {
+        if (Frontend::getCustomer()->getID() > 0) {
             // Bekommt der Kunde einen Kupon und ist dieser gültig?
             if ($this->survey->getCouponID() > 0) {
                 $oKupon = $this->db->queryPrepared(
@@ -272,7 +272,7 @@ class Controller
                                 tkupon.kKundengruppe = -1 
                                 OR tkupon.kKundengruppe = :cgid)",
                     [
-                        'cgid' => Session::getCustomer()->kKundengruppe,
+                        'cgid' => Frontend::getCustomer()->kKundengruppe,
                         'cid'  => $this->survey->getCouponID(),
                         'liso' => \Shop::getLanguageCode()
                     ],
@@ -283,7 +283,7 @@ class Controller
                 } else {
                     \Shop::Container()->getLogService()->error(\sprintf(
                         'Fehlerhafter Kupon in Umfragebelohnung. Kunde: %s  Kupon: %s',
-                        Session::getCustomer()->getID(),
+                        Frontend::getCustomer()->getID(),
                         $this->survey->getCouponID()
                     ));
                     $this->errorMsg = \Shop::Lang()->get('pollError', 'messages');
@@ -296,7 +296,7 @@ class Controller
                 if (!$this->updateCustomerCredits($this->survey->getCredits(), $_SESSION['Kunde']->kKunde)) {
                     \Shop::Container()->getLogService()->error(\sprintf(
                         'Umfragebelohnung: Guthaben konnte nicht verrechnet werden. Kunde: %s',
-                        Session::getCustomer()->getID()
+                        Frontend::getCustomer()->getID()
                     ));
                     $this->errorMsg = \Shop::Lang()->get('pollError', 'messages');
                 }
@@ -376,8 +376,8 @@ class Controller
         }
         // Eintrag in tumfragedurchfuehrung
         $participation = new \stdClass();
-        if (Session::getCustomer()->getID() > 0) {
-            $participation->kKunde = Session::getCustomer()->getID();
+        if (Frontend::getCustomer()->getID() > 0) {
+            $participation->kKunde = Frontend::getCustomer()->getID();
             $participation->cIP    = '';
         } else {
             $participation->kKunde = 0;

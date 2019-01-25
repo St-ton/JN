@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "suchspecials"
 msgstr "Besondere Produkte SEO"
 
@@ -31,3 +35,23 @@ msgstr "Top bewertet"
 msgid "suchsepcialsSettings"
 msgstr "Einstellungen"
 
+msgid "errorBestsellerExistRename"
+msgstr "Das BestSeller Seo %s war bereits vorhanden und wurde in %s umbenannt."
+
+msgid "errorSpecialExistRename"
+msgstr "Das Sonderangebot Seo %s war bereits vorhanden und wurde auf %s umbenannt."
+
+msgid "errorNewExistRename"
+msgstr "Das Neu im Sortiment Seo %s war bereits vorhanden und wurde auf %s umbenannt."
+
+msgid "errorTopProductsExistRename"
+msgstr "Das Top Angebote Seo %s war bereits vorhanden und wurde auf %s umbenannt."
+
+msgid "errorSoonExistRename"
+msgstr "Das In kürze Verfügbar Seo %s war bereits vorhanden und wurde auf %s umbenannt."
+
+msgid "errorTopRatingExistRename"
+msgstr "Das Top Bewertet Seo %s war bereits vorhanden und wurde auf %s umbenannt."
+
+msgid "successSeoSave"
+msgstr "Ihre Seos wurden erfolgreich gespeichert bzw. aktualisiert."

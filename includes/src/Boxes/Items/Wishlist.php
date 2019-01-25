@@ -6,7 +6,7 @@
 
 namespace Boxes\Items;
 
-use Session\Session;
+use Session\Frontend;
 
 /**
  * Class Wishlist
@@ -26,12 +26,12 @@ final class Wishlist extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        parent::addMapping('nBilderAnzeigen', 'ShowImages');
-        parent::addMapping('CWunschlistePos_arr', 'Items');
+        $this->addMapping('nBilderAnzeigen', 'ShowImages');
+        $this->addMapping('CWunschlistePos_arr', 'Items');
         $this->setShow(true);
-        if (!empty(Session::getWishList()->kWunschliste)) {
-            $this->setWishListID(Session::getWishList()->kWunschliste);
-            $wishlistItems    = Session::getWishList()->CWunschlistePos_arr;
+        if (!empty(Frontend::getWishList()->kWunschliste)) {
+            $this->setWishListID(Frontend::getWishList()->kWunschliste);
+            $wishlistItems    = Frontend::getWishList()->CWunschlistePos_arr;
             $validPostVars    = ['a', 'k', 's', 'h', 'l', 'm', 't', 'hf', 'kf', 'show', 'suche'];
             $additionalParams = '';
             $postMembers      = \array_keys($_REQUEST);
@@ -67,7 +67,7 @@ final class Wishlist extends AbstractBox
                     $cDeleteParam .
                     $wishlistItem->kWunschlistePos .
                     $additionalParams;
-                if (Session::getCustomerGroup()->isMerchant()) {
+                if (Frontend::getCustomerGroup()->isMerchant()) {
                     $fPreis = isset($wishlistItem->Artikel->Preise->fVKNetto)
                         ? (int)$wishlistItem->fAnzahl * $wishlistItem->Artikel->Preise->fVKNetto
                         : 0;
@@ -77,7 +77,7 @@ final class Wishlist extends AbstractBox
                             (100 + $_SESSION['Steuersatz'][$wishlistItem->Artikel->kSteuerklasse]) / 100)
                         : 0;
                 }
-                $wishlistItem->cPreis = \Preise::getLocalizedPriceString($fPreis, Session::getCurrency());
+                $wishlistItem->cPreis = \Preise::getLocalizedPriceString($fPreis, Frontend::getCurrency());
             }
             $this->setItemCount((int)$this->config['boxen']['boxen_wunschzettel_anzahl']);
             $this->setItems(\array_reverse($wishlistItems));

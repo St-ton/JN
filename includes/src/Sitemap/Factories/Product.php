@@ -22,7 +22,7 @@ final class Product extends AbstractFactory
     public function getCollection(array $languages, array $customerGroups): \Generator
     {
         $defaultCustomerGroupID  = first($customerGroups);
-        $defaultLang             = \Sprache::getDefaultLanguage(true);
+        $defaultLang             = \Sprache::getDefaultLanguage();
         $defaultLangID           = (int)$defaultLang->kSprache;
         $_SESSION['kSprache']    = $defaultLangID;
         $_SESSION['cISOSprache'] = $defaultLang->cISO;

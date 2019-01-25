@@ -508,7 +508,7 @@ class Profiler
             }
             $html = '<div class="profile-wrapper" style="position:fixed;z-index:9999;bottom:5px;left:5px;">
                         <a class="btn btn-danger" target="_blank" rel="nofollow" href="' .
-                Shop::getURL() . '/xhprof_html/index.php?run=' . $runID . '&source=xhprof_jtl">
+                Shop::getURL() . '/xhprof_html/index.php?run=' . $runID . '&source=xhprof_jtl&sort=excl_wt">
                         View profile
                         </a>
                     </div>';

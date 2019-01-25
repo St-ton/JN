@@ -15,7 +15,7 @@ class ContentAuthor
      * @param string   $realm
      * @param int      $contentID
      * @param int|null $authorID
-     * @return int|boolean
+     * @return int|bool
      */
     public function setAuthor(string $realm, int $contentID, int $authorID = null)
     {
@@ -48,9 +48,9 @@ class ContentAuthor
     }
 
     /**
-     * @param string  $realm
-     * @param int     $contentID
-     * @param boolean $activeOnly
+     * @param string $realm
+     * @param int    $contentID
+     * @param bool   $activeOnly
      * @return object
      */
     public function getAuthor(string $realm, int $contentID, bool $activeOnly = false)

@@ -37,7 +37,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {foreach name="slide" from=$oSlider->getSlides() item=oSlide}
+                    {foreach $oSlider->getSlides() as $oSlide}
                         {slide kSlide=$oSlide->getID() oSlide=$oSlide}
                     {/foreach}
                     </tbody>
@@ -46,10 +46,10 @@
             <table class="hidden"><tbody id="newSlide">{slide oSlide=null kSlide='NEU'}</tbody></table>
             <div class="panel-footer">
                 <div class="btn-group">
-                    <button type="button" class="btn btn-default" onclick="window.location.href = 'slider.php';"><i class="fa fa-angle-double-left"></i> zur&uuml;ck</button>
-                    <button type="button" class="btn btn-success" onclick="addSlide();"><i class="glyphicon glyphicon-plus"></i> Hinzuf&uuml;gen</button>
-                    <button type="button" class="btn btn-danger" onclick="location.reload();"><i class="glyphicon glyphicon-remove"></i> Abbrechen</button>
-                    <button type="submit" class="btn btn-primary" id="saveButton"><i class=" fa fa-save"></i> Speichern</button>
+                    <button type="button" class="btn btn-default" onclick="window.location.href = 'slider.php';"><i class="fa fa-angle-double-left"></i> {__('pageBack')}</button>
+                    <button type="button" class="btn btn-success" onclick="addSlide();"><i class="glyphicon glyphicon-plus"></i> {__('add')}</button>
+                    <button type="button" class="btn btn-danger" onclick="location.reload();"><i class="glyphicon glyphicon-remove"></i> {__('cancel')}</button>
+                    <button type="submit" class="btn btn-primary" id="saveButton"><i class=" fa fa-save"></i> {__('save')}</button>
                 </div>
             </div>
         </div>

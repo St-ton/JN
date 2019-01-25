@@ -46,11 +46,11 @@ class Checker
             'SELECT tcron.*
                 FROM tcron
                 LEFT JOIN tjobqueue 
-                    ON tjobqueue.kCron = tcron.kCron
-                WHERE (tcron.dLetzterStart IS NULL 
-                    OR (NOW() > ADDDATE(tcron.dLetzterStart, INTERVAL tcron.nAlleXStd HOUR)))
-                    AND tcron.dStart < NOW()
-                    AND tjobqueue.kJobQueue IS NULL',
+                    ON tjobqueue.cronID = tcron.cronID
+                WHERE (tcron.lastStart IS NULL 
+                    OR (NOW() > ADDDATE(tcron.lastStart, INTERVAL tcron.frequency HOUR)))
+                    AND tcron.startDate < NOW()
+                    AND tjobqueue.jobQueueID IS NULL',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $this->logger->debug('Found ' . \count($jobs) . ' new cron jobs.');

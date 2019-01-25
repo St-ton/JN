@@ -126,7 +126,7 @@
                 <div class="panel-body">
                     {if $sub === null}
                         <div class="alert alert-danger alert-sm">
-                            <p><i class="fa fa-exclamation-circle"></i> Vor&uuml;bergehend keine Informationen verf&uuml;gbar.</p>
+                            <p><i class="fa fa-exclamation-circle"></i> Vorübergehend keine Informationen verfügbar.</p>
                         </div>
                     {else}
                         <div class="row vertical-align">
@@ -134,14 +134,14 @@
                                 <div class="text-center">
                                     {if intval($sub->bUpdate) === 0}
                                         <i class="fa fa-check-circle text-four-times text-success"></i>
-                                        <h3 style="margin-top:10px;margin-bottom:0">G&uuml;ltig</h3>
+                                        <h3 style="margin-top:10px;margin-bottom:0">Gültig</h3>
                                     {else}
                                         {if $sub->nDayDiff <= 0}
                                             <i class="fa fa-exclamation-circle text-four-times text-danger"></i>
                                             <h3 style="margin-top:10px;margin-bottom:0">Abgelaufen</h3>
                                         {else}
                                             <i class="fa fa-exclamation-circle text-four-times text-info"></i>
-                                            <h3 style="margin-top:10px;margin-bottom:0">L&auml;uft in {$sub->nDayDiff} Tagen ab</h3>
+                                            <h3 style="margin-top:10px;margin-bottom:0">Läuft in {$sub->nDayDiff} Tagen ab</h3>
                                         {/if}
                                     {/if}
                                 </div>
@@ -159,7 +159,7 @@
                                                 <td>{$sub->cDomain}</td>
                                             </tr>
                                             <tr>
-                                                <td class="text-muted text-right"><strong>G&uuml;ltig bis</strong></td>
+                                                <td class="text-muted text-right"><strong>Gültig bis</strong></td>
                                                 <td>{$sub->dDownloadBis_DE} <span class="text-muted">({$sub->nDayDiff} Tage)</span></td>
                                             </tr>
                                         </tbody>
@@ -281,7 +281,7 @@
                         </table>
                     {else}
                         <div class="alert alert-success">
-                            <p>Alle Vorraussetzungen wurden erf&uuml;llt</p>
+                            <p>Alle Vorraussetzungen wurden erfüllt</p>
                         </div>
                     {/if}
                 </div>

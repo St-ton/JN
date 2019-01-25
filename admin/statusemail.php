@@ -23,10 +23,9 @@ if (Form::validateToken()) {
         $statusMail->sendAllActiveStatusMails();
     } elseif (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
         if ($statusMail->updateConfig()) {
-            $cHinweis .= 'Ihre Einstellungen wurden übernommen.<br>';
+            $cHinweis .= __('successChangesSave') . '<br>';
         } else {
-            $cFehler .= 'Fehler: Ihre Einstellungen konnte nicht gespeichert werden. ' .
-                'Bitte prüfen Sie Ihre Eingaben.<br>';
+            $cFehler .= __('errorConfigSave') . '<br>';
         }
         $step = 'statusemail_uebersicht';
     }

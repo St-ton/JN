@@ -14,7 +14,7 @@ use Filter\Option;
 use Filter\ProductFilter;
 use Filter\StateSQL;
 use Filter\Type;
-use Session\Session;
+use Session\Frontend;
 
 /**
  * Class SearchSpecial
@@ -89,7 +89,7 @@ class SearchSpecial extends AbstractFilter
             if (!\is_array($val)) {
                 $val = [$val];
             }
-            $oSeo_arr = $this->productFilter->getDB()->query(
+            $seoData = $this->productFilter->getDB()->query(
                 "SELECT tseo.cSeo, tseo.kSprache
                     FROM tseo
                     WHERE cKey = 'suchspecial' 
@@ -99,10 +99,10 @@ class SearchSpecial extends AbstractFilter
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
-                foreach ($oSeo_arr as $oSeo) {
-                    $oSeo->kSprache = (int)$oSeo->kSprache;
-                    if ($language->kSprache === $oSeo->kSprache) {
-                        $this->cSeo[$language->kSprache] = $oSeo->cSeo;
+                foreach ($seoData as $seo) {
+                    $seo->kSprache = (int)$seo->kSprache;
+                    if ($language->kSprache === $seo->kSprache) {
+                        $this->cSeo[$language->kSprache] = $seo->cSeo;
                     }
                 }
             }
@@ -177,7 +177,7 @@ class SearchSpecial extends AbstractFilter
                                         AND " . $tasp . '.dStart <= NOW()
                                         AND (' . $tasp . '.dEnde >= CURDATE() 
                                             OR ' . $tasp . '.dEnde IS NULL)
-                                        AND ' . $tsp . ' .kKundengruppe = ' . Session::getCustomerGroup()->getID();
+                                        AND ' . $tsp . ' .kKundengruppe = ' . Frontend::getCustomerGroup()->getID();
                     break;
 
                 case \SEARCHSPECIALS_NEWPRODUCTS:

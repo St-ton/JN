@@ -64,7 +64,7 @@
                         <span class="input-group-wrap">
                             <select id="kKampagne" name="kKampagne" class="form-control combo" onChange="selectSubmit(this);">
                                 {if isset($oKampagne_arr) && $oKampagne_arr|@count > 0}
-                                    {foreach name=kampagnen from=$oKampagne_arr item=oKampagneTMP}
+                                    {foreach $oKampagne_arr as $oKampagneTMP}
                                         <option value="{$oKampagneTMP->kKampagne}"{if $oKampagneTMP->kKampagne == $oKampagne->kKampagne} selected{/if}>{$oKampagneTMP->cName}</option>
                                     {/foreach}
                                 {/if}
@@ -91,7 +91,7 @@
                             <select name="cFromMonth" class="form-control combo">
                                 <option value="1"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 1} selected{/if}>Januar</option>
                                 <option value="2"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 2} selected{/if}>Februar</option>
-                                <option value="3"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 3} selected{/if}>M&auml;rz</option>
+                                <option value="3"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 3} selected{/if}>März</option>
                                 <option value="4"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 4} selected{/if}>April</option>
                                 <option value="5"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 5} selected{/if}>Mai</option>
                                 <option value="6"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 6} selected{/if}>Juni</option>
@@ -104,7 +104,7 @@
                             </select>
                         </span>
                         <span class="input-group-wrap">
-                            {assign var=cJahr value=$smarty.now|date_format:"%Y"}
+                            {assign var=cJahr value=$smarty.now|date_format:'%Y'}
                             <select name="cFromYear" class="form-control combo">
                                 {section name=fromYear loop=$cJahr+1 start=2005 step=1}
                                     <option value="{$smarty.section.fromYear.index}"
@@ -133,7 +133,7 @@
                             <select name="cToMonth" class="form-control combo">
                                 <option value="1"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 1} selected{/if}>Januar</option>
                                 <option value="2"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 2} selected{/if}>Februar</option>
-                                <option value="3"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 3} selected{/if}>M&auml;rz</option>
+                                <option value="3"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 3} selected{/if}>März</option>
                                 <option value="4"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 4} selected{/if}>April</option>
                                 <option value="5"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 5} selected{/if}>Mai</option>
                                 <option value="6"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 6} selected{/if}>Juni</option>
@@ -145,7 +145,7 @@
                                 <option value="12"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 12} selected{/if}>Dezember</option>
                             </select>
                         </span>
-                        {assign var=cJahr value=$smarty.now|date_format:"%Y"}
+                        {assign var=cJahr value=$smarty.now|date_format:'%Y'}
                         <span class="input-group-wrap">
                             <select name="cToYear" class="form-control combo">
                                 {section name=toYear loop=$cJahr+1 start=2005 step=1}
@@ -182,19 +182,19 @@
                         <table class="table table-striped">
                             <tr>
                                 <th class="th-1"></th>
-                                {foreach name="kampagnendefs" from=$oKampagneDef_arr item=oKampagneDef}
+                                {foreach $oKampagneDef_arr as $oKampagneDef}
                                     <th class="th-2">{$oKampagneDef->cName}</th>
                                 {/foreach}
                             </tr>
 
-                            {foreach name="kampagnenstats" from=$oKampagneStat_arr key=kKey item=oKampagneStatDef_arr}
-                                {if $kKey != "Gesamt"}
+                            {foreach name='kampagnenstats' from=$oKampagneStat_arr key=kKey item=oKampagneStatDef_arr}
+                                {if $kKey !== 'Gesamt'}
                                     <tr>
                                         {if isset($oKampagneStat_arr[$kKey].cDatum)}
                                             <td>{$oKampagneStat_arr[$kKey].cDatum}</td>
                                         {/if}
-                                        {foreach name="kampagnendefs" from=$oKampagneStatDef_arr key=kKampagneDef item=oKampagneStatDef_arrItem}
-                                            {if $kKampagneDef != "cDatum"}
+                                        {foreach name='kampagnendefs' from=$oKampagneStatDef_arr key=kKampagneDef item=oKampagneStatDef_arrItem}
+                                            {if $kKampagneDef !== 'cDatum'}
                                                 <td style="text-align: center;">
                                                     <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&defdetail=1&kKampagneDef={$kKampagneDef}&cStamp={$kKey}&token={$smarty.session.jtl_token}">
                                                         {$oKampagneStat_arr[$kKey][$kKampagneDef]}
@@ -207,7 +207,7 @@
                             {/foreach}
                             <tr>
                                 <td>{__('kampagneOverall')}</td>
-                                {foreach name="kampagnendefs" from=$oKampagneStatDef_arr key=kKampagneDef item=oKampagneStatDef_arrItem}
+                                {foreach name='kampagnendefs' from=$oKampagneStatDef_arr key=kKampagneDef item=oKampagneStatDef_arrItem}
                                     <td style="text-align: center;">
                                         {$oKampagneStat_arr.Gesamt[$kKampagneDef]}
                                     </td>

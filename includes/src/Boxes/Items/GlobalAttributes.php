@@ -6,7 +6,7 @@
 
 namespace Boxes\Items;
 
-use Session\Session;
+use Session\Frontend;
 
 /**
  * Class GlobalAttributes
@@ -23,7 +23,7 @@ final class GlobalAttributes extends AbstractBox
         parent::__construct($config);
         $this->addMapping('globaleMerkmale', 'Items');
         $this->setShow(true);
-        $attributes = Session::getCustomerGroup()->mayViewCategories()
+        $attributes = Frontend::getCustomerGroup()->mayViewCategories()
             ? $this->getGlobalAttributes()
             : [];
         $this->setItems($attributes);

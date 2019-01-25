@@ -71,20 +71,21 @@ function holeTagDetail(int $kTag, int $kSprache, $cLimit)
 }
 
 /**
- * @param array $kArtikel_arr
+ * @param array $productIDs
  * @param int   $kTag
  * @return bool
  */
-function loescheTagsVomArtikel($kArtikel_arr, int $kTag)
+function loescheTagsVomArtikel($productIDs, int $kTag)
 {
-    if ($kTag > 0 && is_array($kArtikel_arr) && count($kArtikel_arr) > 0) {
-        foreach ($kArtikel_arr as $kArtikel) {
-            $kArtikel = (int)$kArtikel;
-            Shop::Container()->getDB()->delete('ttagartikel', ['kArtikel', 'kTag'], [$kArtikel, $kTag]);
-            $oTagArtikel_arr = Shop::Container()->getDB()->selectAll('ttagartikel', 'kTag', $kTag);
+    if ($kTag > 0 && is_array($productIDs) && count($productIDs) > 0) {
+        $db = Shop::Container()->getDB();
+        foreach ($productIDs as $productID) {
+            $productID = (int)$productID;
+            $db->delete('ttagartikel', ['kArtikel', 'kTag'], [$productID, $kTag]);
+            $taggedProducts = $db->selectAll('ttagartikel', 'kTag', $kTag);
             // Es gibt keine Artikel mehr zu dem Tag => Tag aus ttag / tseo löschen
-            if (count($oTagArtikel_arr) === 0) {
-                Shop::Container()->getDB()->query(
+            if (count($taggedProducts) === 0) {
+                $db->query(
                     "DELETE ttag, tseo
                         FROM ttag
                         LEFT JOIN tseo 
@@ -94,7 +95,7 @@ function loescheTagsVomArtikel($kArtikel_arr, int $kTag)
                     \DB\ReturnType::DEFAULT
                 );
             }
-            Shop::Container()->getCache()->flushTags(['CACHING_GROUP_ARTICLE_' . $kArtikel]);
+            Shop::Container()->getCache()->flushTags(['CACHING_GROUP_ARTICLE_' . $productID]);
         }
 
         return true;
@@ -110,15 +111,15 @@ function loescheTagsVomArtikel($kArtikel_arr, int $kTag)
 function flushAffectedArticleCache(array $tagIDs)
 {
     // get tagged article IDs to invalidate their cache
-    $_affectedArticles = Shop::Container()->getDB()->query(
+    $affected = Shop::Container()->getDB()->query(
         'SELECT DISTINCT kArtikel
             FROM ttagartikel
             WHERE kTag IN (' . implode(', ', $tagIDs) . ')',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    if (count($_affectedArticles) > 0) {
+    if (count($affected) > 0) {
         $articleCacheIDs = [];
-        foreach ($_affectedArticles as $_article) {
+        foreach ($affected as $_article) {
             $articleCacheIDs[] = CACHING_GROUP_ARTICLE . '_' . $_article->kArtikel;
         }
 

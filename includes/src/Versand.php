@@ -68,14 +68,13 @@ class Versand
      */
     private function loadFromDB(int $kVersand = 0, $oData = null): void
     {
-        $oObj = Shop::Container()->getDB()->select('tversand', 'kVersand', $kVersand);
+        $item = Shop::Container()->getDB()->select('tversand', 'kVersand', $kVersand);
 
         $this->oData = $oData;
 
-        if (!empty($oObj->kVersand)) {
-            $cMember_arr = array_keys(get_object_vars($oObj));
-            foreach ($cMember_arr as $cMember) {
-                $this->$cMember = $oObj->$cMember;
+        if (!empty($item->kVersand)) {
+            foreach (array_keys(get_object_vars($item)) as $member) {
+                $this->$member = $item->$member;
             }
         }
     }
@@ -86,17 +85,13 @@ class Versand
      */
     public function save(bool $bPrim = true)
     {
-        $oObj        = new stdClass();
-        $cMember_arr = array_keys(get_object_vars($this));
-        if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-            foreach ($cMember_arr as $cMember) {
-                $oObj->$cMember = $this->$cMember;
-            }
+        $ins = new stdClass();
+        foreach (array_keys(get_object_vars($this)) as $member) {
+            $ins->$member = $this->$member;
         }
+        unset($ins->kVersand);
 
-        unset($oObj->kVersand);
-
-        $kPrim = Shop::Container()->getDB()->insert('tversand', $oObj);
+        $kPrim = Shop::Container()->getDB()->insert('tversand', $ins);
 
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
@@ -110,15 +105,15 @@ class Versand
      */
     public function update(): int
     {
-        $_upd                = new stdClass();
-        $_upd->kLieferschein = (int)$this->kLieferschein;
-        $_upd->cLogistik     = $this->cLogistik;
-        $_upd->cLogistikURL  = $this->cLogistikURL;
-        $_upd->cIdentCode    = $this->cIdentCode;
-        $_upd->cHinweis      = $this->cHinweis;
-        $_upd->dErstellt     = $this->dErstellt;
+        $upd                = new stdClass();
+        $upd->kLieferschein = (int)$this->kLieferschein;
+        $upd->cLogistik     = $this->cLogistik;
+        $upd->cLogistikURL  = $this->cLogistikURL;
+        $upd->cIdentCode    = $this->cIdentCode;
+        $upd->cHinweis      = $this->cHinweis;
+        $upd->dErstellt     = $this->dErstellt;
 
-        return Shop::Container()->getDB()->update('tversand', 'kVersand', (int)$this->kVersand, $_upd);
+        return Shop::Container()->getDB()->update('tversand', 'kVersand', (int)$this->kVersand, $upd);
     }
 
     /**

@@ -1,7 +1,7 @@
 {if (isset($oGruppe->kAuswahlAssistentGruppe) && $oGruppe->kAuswahlAssistentGruppe > 0) || (isset($kAuswahlAssistentGruppe) && $kAuswahlAssistentGruppe > 0)}
-    {assign var="cTitel" value=__('auswahlassistent')|cat:' - '|cat:__('aaGroupEdit')}
+    {assign var=cTitel value=__('auswahlassistent')|cat:' - '|cat:__('aaGroupEdit')}
 {else}
-    {assign var="cTitel" value=__('auswahlassistent')|cat:' - '|cat:__('aaGroup')}
+    {assign var=cTitel value=__('auswahlassistent')|cat:' - '|cat:__('aaGroup')}
 {/if}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__('auswahlassistentDesc') cDokuURL=__('auswahlassistentURL')}
@@ -40,7 +40,7 @@
 
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='categoryPicker'
-                        modalTitle='Kategorien ausw&auml;hlen'
+                        modalTitle='Kategorien auswählen'
                         searchInputLabel='Suche Kategorien'
                     }
                     <script>
@@ -94,16 +94,16 @@
                         <span class="input-group-wrap">
                             {if $oLink_arr|count > 0}
                                 <select id="kLink_arr" name="kLink_arr[]"  class="form-control{if isset($cPlausi_arr.cOrt)} fieldfillout{/if}" multiple>
-                                    {foreach name="links" from=$oLink_arr item=oLink}
+                                    {foreach $oLink_arr as $oLink}
                                         {assign var=bAOSelect value=false}
                                         {if isset($oGruppe->oAuswahlAssistentOrt_arr) && $oGruppe->oAuswahlAssistentOrt_arr|@count > 0}
-                                            {foreach name=gruppelinks from=$oGruppe->oAuswahlAssistentOrt_arr item=oAuswahlAssistentOrt}
+                                            {foreach $oGruppe->oAuswahlAssistentOrt_arr as $oAuswahlAssistentOrt}
                                                 {if $oLink->kLink == $oAuswahlAssistentOrt->kKey && $oAuswahlAssistentOrt->cKey == $AUSWAHLASSISTENT_ORT_LINK}
                                                     {assign var=bAOSelect value=true}
                                                 {/if}
                                             {/foreach}
                                         {elseif isset($cPost_arr.kLink_arr) && $cPost_arr.kLink_arr|@count > 0}
-                                            {foreach name=gruppelinks from=$cPost_arr.kLink_arr item=kLink}
+                                            {foreach $cPost_arr.kLink_arr as $kLink}
                                                 {if $kLink == $oLink->kLink}
                                                     {assign var=bAOSelect value=true}
                                                 {/if}
@@ -117,7 +117,7 @@
                             {/if}
                         </span>
                         <span class="input-group-addon">
-                            {getHelpDesc cDesc="Auf welcher Spezialseite soll die Gruppe angezeigt werden? (Mehrfachauswahl und Abwahl mit STRG m&ouml;glich)"}
+                            {getHelpDesc cDesc="Auf welcher Spezialseite soll die Gruppe angezeigt werden? (Mehrfachauswahl und Abwahl mit STRG möglich)"}
                         </span>
                     </div>
 
@@ -166,7 +166,7 @@
                     </div>
                 </div>
             </div>
-            <div id="ajax_list_picker" class="ajax_list_picker categories">{include file="tpl_inc/popup_kategoriesuche.tpl"}</div>
+            <div id="ajax_list_picker" class="ajax_list_picker categories">{include file='tpl_inc/popup_kategoriesuche.tpl'}</div>
         </form>
     {else}
         <div class="alert alert-danger">{__('noModuleAvailable')}</div>

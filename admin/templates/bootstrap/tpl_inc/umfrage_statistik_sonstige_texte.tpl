@@ -25,12 +25,12 @@
                                 <th class="th-3" style="width: 10%;">{__('umfrageQResPercent')}</th>
                                 <th class="th-4" style="width: 10%;">{__('umfrageQResCount')}</th>
                             </tr>
-                        {foreach name=umfragefrageantwort from=$oUmfrageFrage->oUmfrageFrageAntwort_arr item=oUmfrageFrageAntwort}
+                        {foreach $oUmfrageFrage->oUmfrageFrageAntwort_arr as $oUmfrageFrageAntwort}
                             <tr>
                                 <td style="width: 20%;">{$oUmfrageFrageAntwort->cName}</td>
                                 <td style="width: 60%;"><div class="freqbar" style="width: {$oUmfrageFrageAntwort->nProzent}%; height: 10px;"></div></td>
                                 <td style="width: 10%;">
-                                {if $smarty.foreach.umfragefrageantwort.first}
+                                {if $oUmfrageFrageAntwort@first}
                                     <b>{$oUmfrageFrageAntwort->nProzent} %</b>
                                 {elseif $oUmfrageFrageAntwort->nAnzahlAntwort == $oUmfrageFrage->oUmfrageFrageAntwort_arr[0]->nAnzahlAntwort}
                                     <b>{$oUmfrageFrageAntwort->nProzent} %</b>
@@ -40,7 +40,7 @@
                                 </td>
                                 <td style="width: 10%;">{$oUmfrageFrageAntwort->nAnzahlAntwort}</td>
                             </tr>
-                            {if $smarty.foreach.umfragefrageantwort.last}
+                            {if $oUmfrageFrageAntwort@last}
                             <tr>
                                 <td></td>
                                 <td colspan="2" align="right">{__('umfrageQMax')}</td>

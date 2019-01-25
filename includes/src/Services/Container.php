@@ -24,6 +24,7 @@ use Services\JTL\CryptoServiceInterface;
 use Services\JTL\LinkServiceInterface;
 use Services\JTL\NewsServiceInterface;
 use Services\JTL\PasswordServiceInterface;
+use Services\JTL\AlertServiceInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -175,6 +176,11 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
+    public function getAlertService(): AlertServiceInterface
+    {
+        return $this->get(AlertServiceInterface::class);
+    }
+
     public function getGetText(): GetText
     {
         return $this->get(GetText::class);

@@ -118,18 +118,6 @@ msgstr "Kundenkonto wann aktiv"
 msgid "global_kundenkonto_aktiv_desc"
 msgstr "Soll das Kundenkonto direkt nach Erstellung nutzbar sein oder soll der Shopbetreiber vorerst das Konto freischalten (z.B. reine B2B Shops)?"
 
-msgid "global_google_analytics_id_name"
-msgstr "Google Analytics ID"
-
-msgid "global_google_analytics_id_desc"
-msgstr "Falls Sie einen Google Analytics Account haben, tragen Sie hier Ihre ID ein (z.B. UA-xxxxxxx-x)"
-
-msgid "global_google_ecommerce_name"
-msgstr "Google Analytics eCommerce Erweiterung nutzen"
-
-msgid "global_google_ecommerce_desc"
-msgstr "M&ouml;chten Sie, dass Google alle Ihre Verk&auml;ufe trackt?"
-
 msgid "kaufabwicklung_ssl_nutzen_name"
 msgstr "Automatischer Seitenwechsel zwischen http/https"
 

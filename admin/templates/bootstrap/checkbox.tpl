@@ -163,7 +163,7 @@
                                             <label for="cText_{$oSprache->cISO}">Text ({$oSprache->cNameDeutsch}){if isset($cPlausi_arr.cText)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                                         </span>
                                         <textarea id="cText_{$oSprache->cISO}" placeholder="Text ({$oSprache->cNameDeutsch})" class="form-control {if isset($cPlausi_arr.cText)}fieldfillout{else}field{/if}" name="cText_{$oSprache->cISO}">{if isset($cPost_arr.$cISOText)}{$cPost_arr.$cISOText}{elseif isset($oCheckBox->oCheckBoxSprache_arr[$kSprache]->cText)}{$oCheckBox->oCheckBoxSprache_arr[$kSprache]->cText}{/if}</textarea>
-                                        <span class="input-group-addon">{getHelpDesc cDesc="Welcher Text soll hinter der Checkbox stehen?"}</span>
+                                        <span class="input-group-addon">{getHelpDesc cDesc='Welcher Text soll hinter der Checkbox stehen?'}</span>
                                     </div>
                                 {/foreach}
 
@@ -176,7 +176,7 @@
                                             <label for="cBeschreibung_{$oSprache->cISO}">Beschreibung ({$oSprache->cNameDeutsch}){if isset($cPlausi_arr.cBeschreibung)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                                         </span>
                                         <textarea id="cBeschreibung_{$oSprache->cISO}" class="form-control {if isset($cPlausi_arr.cBeschreibung)}fieldfillout{else}field{/if}" name="cBeschreibung_{$oSprache->cISO}">{if isset($cPost_arr.$cISOBeschreibung)}{$cPost_arr.$cISOBeschreibung}{elseif isset($oCheckBox->oCheckBoxSprache_arr[$kSprache]->cBeschreibung)}{$oCheckBox->oCheckBoxSprache_arr[$kSprache]->cBeschreibung}{/if}</textarea>
-                                        <span class="input-group-addon">{getHelpDesc cDesc="Soll die Checkbox eine Beschreibung erhalten?"}</span>
+                                        <span class="input-group-addon">{getHelpDesc cDesc='Soll die Checkbox eine Beschreibung erhalten?'}</span>
                                     </div>
                                 {/foreach}
                             {/if}
@@ -202,7 +202,7 @@
                                             </div>
                                             <div id="InterneLinks" style="display: none;" class="input-group-wrap col-xs-6">
                                                 <select name="kLink" class="form-control">
-                                                    {foreach name="links" from=$oLink_arr item=oLink}
+                                                    {foreach $oLink_arr as $oLink}
                                                         <option value="{$oLink->kLink}"{if (isset($cPost_arr.kLink) && $cPost_arr.kLink == $oLink->kLink) || (isset($oCheckBox->kLink) && $oCheckBox->kLink == $oLink->kLink)} selected{/if}>{$oLink->cName}</option>
                                                     {/foreach}
                                                 </select>
@@ -218,18 +218,18 @@
                                     <label for="cAnzeigeOrt">Anzeigeort{if isset($cPlausi_arr.cAnzeigeOrt)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                                 </span>
                                 <select id="cAnzeigeOrt" name="cAnzeigeOrt[]" class="form-control{if isset($cPlausi_arr.cAnzeigeOrt)} fieldfillout{/if}" multiple onClick="checkFunctionDependency();">
-                                    {foreach name="anzeigeortarr" from=$cAnzeigeOrt_arr key=key item=cAnzeigeOrt}
+                                    {foreach name=anzeigeortarr from=$cAnzeigeOrt_arr key=key item=cAnzeigeOrt}
                                         {assign var=bAOSelect value=false}
                                         {if !isset($cPost_arr.cAnzeigeOrt) && !isset($cPlausi_arr.cAnzeigeOrt) && !isset($oCheckBox->kAnzeigeOrt_arr) && $key == $CHECKBOX_ORT_REGISTRIERUNG}
                                             {assign var=bAOSelect value=true}
                                         {elseif isset($oCheckBox->kAnzeigeOrt_arr) && $oCheckBox->kAnzeigeOrt_arr|@count > 0}
-                                            {foreach name=boxenanzeigeort from=$oCheckBox->kAnzeigeOrt_arr item=kAnzeigeOrt}
+                                            {foreach $oCheckBox->kAnzeigeOrt_arr as $kAnzeigeOrt}
                                                 {if $key == $kAnzeigeOrt}
                                                     {assign var=bAOSelect value=true}
                                                 {/if}
                                             {/foreach}
                                         {elseif isset($cPost_arr.cAnzeigeOrt) && $cPost_arr.cAnzeigeOrt|@count > 0}
-                                            {foreach name=boxenanzeigeort from=$cPost_arr.cAnzeigeOrt item=cBoxAnzeigeOrt}
+                                            {foreach $cPost_arr.cAnzeigeOrt as $cBoxAnzeigeOrt}
                                                 {if $cBoxAnzeigeOrt == $key}
                                                     {assign var=bAOSelect value=true}
                                                 {/if}
@@ -308,7 +308,7 @@
                                     <span class="input-group-wrap">
                                         <select class="form-control" id="kCheckBoxFunktion" name="kCheckBoxFunktion" onclick="checkFunctionDependency();">
                                             <option value="0"></option>
-                                            {foreach name="checkboxfunktion" from=$oCheckBoxFunktion_arr item=oCheckBoxFunktion}
+                                            {foreach $oCheckBoxFunktion_arr as $oCheckBoxFunktion}
                                                 <option value="{$oCheckBoxFunktion->kCheckBoxFunktion}"{if (isset($cPost_arr.kCheckBoxFunktion) && $cPost_arr.kCheckBoxFunktion == $oCheckBoxFunktion->kCheckBoxFunktion) || (isset($oCheckBox->kCheckBoxFunktion) && $oCheckBox->kCheckBoxFunktion == $oCheckBoxFunktion->kCheckBoxFunktion)} selected{/if}>{$oCheckBoxFunktion->cName}</option>
                                             {/foreach}
                                         </select>
@@ -323,12 +323,12 @@
                                         <label for="kKundengruppe">Kundengruppe{if isset($cPlausi_arr.kKundengruppe)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                                     </span>
                                     <select id="kKundengruppe" name="kKundengruppe[]" class="form-control{if isset($cPlausi_arr.kKundengruppe)} fieldfillout{/if}" multiple>
-                                        {foreach name="kundengruppen" from=$oKundengruppe_arr key=key item=oKundengruppe}
+                                        {foreach name=kundengruppen from=$oKundengruppe_arr key=key item=oKundengruppe}
                                             {assign var=bKGSelect value=false}
                                             {if !isset($cPost_arr.kKundengruppe) && !isset($cPlausi_arr.kKundengruppe) && !isset($oCheckBox->kKundengruppe_arr) && $oKundengruppe->cStandard === 'Y'}
                                                 {assign var=bKGSelect value=true}
                                             {elseif isset($oCheckBox->kKundengruppe_arr) && $oCheckBox->kKundengruppe_arr|@count > 0}
-                                                {foreach name=boxenkundengruppe from=$oCheckBox->kKundengruppe_arr item=kKundengruppe}
+                                                {foreach $oCheckBox->kKundengruppe_arr as $kKundengruppe}
                                                     {if $kKundengruppe == $oKundengruppe->kKundengruppe}
                                                         {assign var=bKGSelect value=true}
                                                     {/if}
@@ -362,5 +362,4 @@
         aenderAnzeigeLinks(true);
     </script>
 {/if}
-
 {include file='tpl_inc/footer.tpl'}

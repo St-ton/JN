@@ -33,7 +33,7 @@
  * @method static string getIsoCodeByCountryName(string $country)
  * @method static string getCountryCodeByCountryName(string $iso)
  * @method static stdClass getDefaultLanguage(bool $shop = true)
- * @method static array|int|string getAllLanguages(int $returnType)
+ * @method static array|int|string getAllLanguages(int $returnType = 0)
  */
 class Sprache
 {

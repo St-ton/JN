@@ -114,7 +114,7 @@ class Controller
             $newsItem->dGueltigVon   = \DateTime::createFromFormat('d.m.Y H:i', $dateValidFrom)->format('Y-m-d H:i:00');
             $newsItem->cPreviewImage = $previewImage;
             if ($update === true) {
-                $revision = new \Revision();
+                $revision = new \Backend\Revision();
                 $revision->addRevision('news', $newsItemID, true);
                 $this->db->update('tnews', 'kNews', $newsItemID, $newsItem);
                 $this->db->delete('tseo', ['cKey', 'kKey'], ['kNews', $newsItemID]);

@@ -471,7 +471,7 @@ final class LinkAdmin
             $this->db->insert('tlinkgroupassociations', $assoc);
         } else {
             $kLink    = (int)$post['kLink'];
-            $revision = new \Revision();
+            $revision = new \Backend\Revision();
             $revision->addRevision('link', (int)$post['kLink'], true);
             $this->db->update('tlink', 'kLink', $kLink, $link);
         }

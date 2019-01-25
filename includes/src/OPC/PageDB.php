@@ -96,7 +96,7 @@ class PageDB
      */
     public function getRevisionRow(int $revId)
     {
-        $revision    = new \Revision();
+        $revision    = new \Backend\Revision();
         $revisionRow = $revision->getRevision($revId);
 
         if (!\is_object($revisionRow)) {
@@ -192,7 +192,7 @@ class PageDB
      */
     public function getRevisionList(int $key): array
     {
-        $revision = new \Revision();
+        $revision = new \Backend\Revision();
 
         return $revision->getRevisions('opcpage', $key);
     }
@@ -248,7 +248,7 @@ class PageDB
             $newAreasJson = $pageDB->cAreasJson;
 
             if ($oldAreasJson !== $newAreasJson) {
-                $revision = new \Revision();
+                $revision = new \Backend\Revision();
                 $revision->addRevision('opcpage', $dbPage->kPage);
             }
 

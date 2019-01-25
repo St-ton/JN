@@ -5,6 +5,7 @@
  */
 
 use Backend\Notification;
+use Backend\Revision;
 use Helpers\Form;
 use JTLShop\SemVer\Version;
 

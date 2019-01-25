@@ -4,8 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Backend;
+
 /**
  * Class NotificationEntry
+ * @package Backend
  */
 class NotificationEntry
 {
@@ -56,17 +59,17 @@ class NotificationEntry
 
     /**
      * NotificationEntry constructor.
-     * @param int $type
-     * @param string $title
+     * @param int         $type
+     * @param string      $title
      * @param null|string $description
      * @param null|string $url
      */
     public function __construct($type, $title, $description = null, $url = null)
     {
         $this->setType($type)
-             ->setTitle($title)
-             ->setDescription($description)
-             ->setUrl($url);
+            ->setTitle($title)
+            ->setDescription($description)
+            ->setUrl($url);
     }
 
     /**
@@ -150,7 +153,7 @@ class NotificationEntry
      */
     public function hasDescription(): bool
     {
-        return $this->description !== null && strlen($this->description) > 0;
+        return $this->description !== null && \strlen($this->description) > 0;
     }
 
     /**
@@ -177,6 +180,6 @@ class NotificationEntry
      */
     public function hasUrl(): bool
     {
-        return $this->url !== null && strlen($this->url) > 0;
+        return $this->url !== null && \strlen($this->url) > 0;
     }
 }

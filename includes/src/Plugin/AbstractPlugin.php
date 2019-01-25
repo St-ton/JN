@@ -76,7 +76,7 @@ abstract class AbstractPlugin implements PluginInterface
      */
     final public function addNotify($type, $title, $description = null)
     {
-        $this->notifications[] = (new \NotificationEntry($type, $title, $description))->setPluginId($this->pluginId);
+        $this->notifications[] = (new \Backend\NotificationEntry($type, $title, $description))->setPluginId($this->pluginId);
     }
 
     /**

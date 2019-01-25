@@ -6,28 +6,20 @@
 
 namespace Backend;
 
-use Exception;
+use Cache\JTLCacheInterface;
+use DB\ReturnType;
 use Helpers\Template as TemplateHelper;
 use function Functional\some;
-use Image;
-use MediaImage;
-use Profiler;
+use Plugin\State;
 use Shop;
-use SingletonTrait;
-use stdClass;
-use Systemcheck_Environment;
-use Systemcheck_Platform_Filesystem;
-use Systemcheck_Platform_Hosting;
-use Template;
-use Updater;
-use ZahlungsLog;
 
 /**
  * Class Status
+ * @package Backend
  */
 class Status
 {
-    use SingletonTrait;
+    use \SingletonTrait;
 
     /**
      * @var array
@@ -42,40 +34,40 @@ class Status
     public function __call($name, $arguments)
     {
         if (!isset($this->cache[$name])) {
-            $this->cache[$name] = call_user_func_array([&$this, $name], $arguments);
+            $this->cache[$name] = \call_user_func_array([&$this, $name], $arguments);
         }
 
         return $this->cache[$name];
     }
 
     /**
-     * @return \Cache\JTLCacheInterface
+     * @return JTLCacheInterface
      */
-    protected function getObjectCache(): \Cache\JTLCacheInterface
+    protected function getObjectCache(): JTLCacheInterface
     {
         return Shop::Container()->getCache()->setJtlCacheConfig();
     }
 
     /**
-     * @return stdClass
-     * @throws Exception
+     * @return \stdClass
+     * @throws \Exception
      */
-    protected function getImageCache(): stdClass
+    protected function getImageCache(): \stdClass
     {
-        return MediaImage::getStats(Image::TYPE_PRODUCT);
+        return \MediaImage::getStats(\Image::TYPE_PRODUCT);
     }
 
     /**
-     * @return stdClass
+     * @return \stdClass
      */
-    protected function getSystemLogInfo(): stdClass
+    protected function getSystemLogInfo(): \stdClass
     {
-        $conf = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
+        $conf = Shop::getConfigValue(\CONF_GLOBAL, 'systemlog_flag');
 
         return (object)[
-            'error'  => $conf >= JTLLOG_LEVEL_ERROR,
-            'notice' => $conf >= JTLLOG_LEVEL_NOTICE,
-            'debug'  => $conf >= JTLLOG_LEVEL_NOTICE
+            'error'  => $conf >= \JTLLOG_LEVEL_ERROR,
+            'notice' => $conf >= \JTLLOG_LEVEL_NOTICE,
+            'debug'  => $conf >= \JTLLOG_LEVEL_NOTICE
         ];
     }
 
@@ -86,12 +78,12 @@ class Status
      */
     protected function validDatabaseStruct(): bool
     {
-        require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
+        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'dbcheck_inc.php';
 
-        $current  = getDBStruct(true);
-        $original = getDBFileStruct();
+        $current  = \getDBStruct(true);
+        $original = \getDBFileStruct();
 
-        return is_array($current) && is_array($original) && count(compareDBStruct($original, $current)) === 0;
+        return \is_array($current) && \is_array($original) && \count(\compareDBStruct($original, $current)) === 0;
     }
 
     /**
@@ -101,12 +93,12 @@ class Status
      */
     protected function validModifiedFileStruct(): bool
     {
-        require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
+        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'filecheck_inc.php';
 
         $files = [];
         $stats = 0;
 
-        return getAllModifiedFiles($files, $stats) === 1
+        return \getAllModifiedFiles($files, $stats) === 1
             ? $stats === 0
             : false;
     }
@@ -118,12 +110,12 @@ class Status
      */
     protected function validOrphanedFilesStruct(): bool
     {
-        require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
+        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'filecheck_inc.php';
 
         $files = [];
         $stats = 0;
 
-        return getAllOrphanedFiles($files, $stats) === 1
+        return \getAllOrphanedFiles($files, $stats) === 1
             ? $stats === 0
             : false;
     }
@@ -133,7 +125,7 @@ class Status
      */
     protected function validFolderPermissions(): bool
     {
-        $permissionStat = (new Systemcheck_Platform_Filesystem(PFAD_ROOT))->getFolderStats();
+        $permissionStat = (new \Systemcheck_Platform_Filesystem(PFAD_ROOT))->getFolderStats();
 
         return $permissionStat->nCountInValid === 0;
     }
@@ -149,7 +141,7 @@ class Status
                 FROM tpluginhook
                 GROUP BY nHook
                 HAVING COUNT(DISTINCT kPlugin) > 1',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($sharedHookIds as $hookData) {
             $hookID                 = (int)$hookData->nHook;
@@ -163,9 +155,9 @@ class Status
                         AND tplugin.nStatus = :state',
                 [
                     'hook'  => $hookID,
-                    'state' => \Plugin\State::ACTIVATED
+                    'state' => State::ACTIVATED
                 ],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($plugins as $plugin) {
                 $sharedPlugins[$hookID][$plugin->cPluginID] = $plugin;
@@ -177,11 +169,11 @@ class Status
 
     /**
      * @return bool
-     * @throws Exception
+     * @throws \Exception
      */
     protected function hasPendingUpdates(): bool
     {
-        return (new Updater())->hasPendingUpdates();
+        return (new \Updater())->hasPendingUpdates();
     }
 
     /**
@@ -189,7 +181,7 @@ class Status
      */
     protected function hasActiveProfiler(): bool
     {
-        return Profiler::getIsActive() !== 0;
+        return \Profiler::getIsActive() !== 0;
     }
 
     /**
@@ -197,7 +189,7 @@ class Status
      */
     protected function hasInstallDir(): bool
     {
-        return is_dir(PFAD_ROOT . 'install');
+        return \is_dir(\PFAD_ROOT . 'install');
     }
 
     /**
@@ -205,7 +197,7 @@ class Status
      */
     protected function hasDifferentTemplateVersion(): bool
     {
-        return APPLICATION_VERSION !== Template::getInstance()->getVersion();
+        return \APPLICATION_VERSION !== \Template::getInstance()->getVersion();
     }
 
     /**
@@ -219,9 +211,9 @@ class Status
             if ($oTplData->bResponsive) {
                 $oMobileTpl = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'mobil');
                 if ($oMobileTpl !== null) {
-                    $cXMLFile = PFAD_ROOT . PFAD_TEMPLATES . $oMobileTpl->cTemplate .
-                        DIRECTORY_SEPARATOR . TEMPLATE_XML;
-                    if (file_exists($cXMLFile)) {
+                    $cXMLFile = \PFAD_ROOT . \PFAD_TEMPLATES . $oMobileTpl->cTemplate .
+                        \DIRECTORY_SEPARATOR . \TEMPLATE_XML;
+                    if (\file_exists($cXMLFile)) {
                         return true;
                     }
                     // Wenn ein Template aktiviert aber physisch nicht vorhanden ist,
@@ -247,7 +239,7 @@ class Status
      */
     protected function hasValidEnvironment(): bool
     {
-        $systemcheck = new Systemcheck_Environment();
+        $systemcheck = new \Systemcheck_Environment();
         $systemcheck->executeTestGroup('Shop4');
 
         return $systemcheck->getIsPassed();
@@ -258,15 +250,15 @@ class Status
      */
     protected function getEnvironmentTests(): array
     {
-        return (new Systemcheck_Environment())->executeTestGroup('Shop4');
+        return (new \Systemcheck_Environment())->executeTestGroup('Shop4');
     }
 
     /**
-     * @return Systemcheck_Platform_Hosting
+     * @return \Systemcheck_Platform_Hosting
      */
-    protected function getPlatform(): Systemcheck_Platform_Hosting
+    protected function getPlatform(): \Systemcheck_Platform_Hosting
     {
-        return new Systemcheck_Platform_Hosting();
+        return new \Systemcheck_Platform_Hosting();
     }
 
     /**
@@ -276,15 +268,15 @@ class Status
     {
         $stats = Shop::Container()->getDB()->stats();
         $info  = Shop::Container()->getDB()->info();
-        $lines = explode('  ', $stats);
+        $lines = \explode('  ', $stats);
 
-        $lines = array_map(function ($v) {
-            [$key, $value] = explode(':', $v, 2);
+        $lines = \array_map(function ($v) {
+            [$key, $value] = \explode(':', $v, 2);
 
-            return ['key' => trim($key), 'value' => trim($value)];
+            return ['key' => \trim($key), 'value' => \trim($value)];
         }, $lines);
 
-        return array_merge([['key' => 'Version', 'value' => $info]], $lines);
+        return \array_merge([['key' => 'Version', 'value' => $info]], $lines);
     }
 
     /**
@@ -301,7 +293,7 @@ class Status
             'cAnbieter, cName, nSort, kZahlungsart'
         );
         foreach ($paymentMethods as $method) {
-            if (($logCount = ZahlungsLog::count($method->cModulId, JTLLOG_LEVEL_ERROR)) > 0) {
+            if (($logCount = \ZahlungsLog::count($method->cModulId, \JTLLOG_LEVEL_ERROR)) > 0) {
                 $method->logCount          = $logCount;
                 $incorrectPaymentMethods[] = $method;
             }
@@ -349,11 +341,11 @@ class Status
                 FROM tkategorie
                 WHERE kOberkategorie > 0
                     AND kOberkategorie NOT IN (SELECT DISTINCT kKategorie FROM tkategorie)',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
 
         return $has === true
-            ? count($categories) === 0
+            ? \count($categories) === 0
             : $categories;
     }
 
@@ -362,22 +354,22 @@ class Status
      */
     protected function hasFullTextIndexError(): bool
     {
-        $conf = Shop::getSettings([CONF_ARTIKELUEBERSICHT])['artikeluebersicht'];
+        $conf = Shop::getSettings([\CONF_ARTIKELUEBERSICHT])['artikeluebersicht'];
 
         return isset($conf['suche_fulltext'])
             && $conf['suche_fulltext'] !== 'N'
             && (!Shop::Container()->getDB()->query(
-                    "SHOW INDEX 
-                FROM tartikel 
-                WHERE KEY_NAME = 'idx_tartikel_fulltext'",
-                    \DB\ReturnType::SINGLE_OBJECT
-                )
-                || !Shop::Container()->getDB()->query(
-                    "SHOW INDEX 
+                "SHOW INDEX 
+                    FROM tartikel 
+                    WHERE KEY_NAME = 'idx_tartikel_fulltext'",
+                ReturnType::SINGLE_OBJECT
+            )
+            || !Shop::Container()->getDB()->query(
+                "SHOW INDEX 
                     FROM tartikelsprache 
                     WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
-                    \DB\ReturnType::SINGLE_OBJECT
-                ));
+                ReturnType::SINGLE_OBJECT
+            ));
     }
 
     /**
@@ -390,9 +382,9 @@ class Status
         $oPluginsDB = Shop::Container()->getDB()->query(
             'SELECT `cVerzeichnis`, `nVersion` 
                 FROM `tplugin`',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!is_array($oPluginsDB) || 1 > count($oPluginsDB)) {
+        if (!\is_array($oPluginsDB) || 1 > \count($oPluginsDB)) {
             return false; // there are no plugins installed
         }
         $vPluginsDB = [];
@@ -401,17 +393,17 @@ class Status
         }
         // check against plugins, found in file-system
         foreach ($vPluginsDB as $szFolder => $nVersion) {
-            $szPluginInfo = PFAD_ROOT . PFAD_PLUGIN . $szFolder . '/info.xml';
+            $szPluginInfo = PFAD_ROOT . \PFAD_PLUGIN . $szFolder . '/info.xml';
             $oXml         = null;
-            if (file_exists($szPluginInfo)) {
-                $oXml = simplexml_load_file($szPluginInfo);
+            if (\file_exists($szPluginInfo)) {
+                $oXml = \simplexml_load_file($szPluginInfo);
                 // read all pluginversions from 'info.xml'
                 $vPluginXmlVersions = [0];
                 foreach ($oXml->Install->Version as $oElement) {
                     $vPluginXmlVersions[] = (int)$oElement['nr'];
                 }
                 // check for the highest and set marker, if it's different from installed db-version
-                if (max($vPluginXmlVersions) !== (int)$nVersion) {
+                if (\max($vPluginXmlVersions) !== (int)$nVersion) {
                     $fNewVersions = true;
                 }
             }
@@ -433,11 +425,11 @@ class Status
                 JOIN temailvorlage 
                 ON lang.kEmailvorlage = temailvorlage.kEmailvorlage
                 WHERE temailvorlage.cName = 'Passwort vergessen'",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($translations as $t) {
             $old = '{$neues_passwort}';
-            if (strpos($t->cContentHtml, $old) !== false || strpos($t->cContentText, $old) !== false) {
+            if (\strpos($t->cContentHtml, $old) !== false || \strpos($t->cContentText, $old) !== false) {
                 return true;
             }
         }
@@ -453,14 +445,14 @@ class Status
      */
     public function hasInsecureMailConfig(): bool
     {
-        $emailConf = Shop::getConfig([CONF_EMAILS])['emails'];
+        $emailConf = Shop::getConfig([\CONF_EMAILS])['emails'];
 
-        return $emailConf['email_methode'] === 'smtp' && empty(trim($emailConf['email_smtp_verschluesselung']));
+        return $emailConf['email_methode'] === 'smtp' && empty(\trim($emailConf['email_smtp_verschluesselung']));
     }
 
     /**
      * @return bool
-     * @throws Exception
+     * @throws \Exception
      */
     protected function needPasswordRehash2FA(): bool
     {
@@ -469,7 +461,7 @@ class Status
             'SELECT *
                 FROM tadmin2facodes
                 GROUP BY kAdminlogin',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
 
         return some($hashes, function ($hash) use ($passwordService) {
@@ -486,7 +478,7 @@ class Status
             'SELECT * FROM tlinkgruppe
                 GROUP BY cTemplatename
                 HAVING COUNT(*) > 1',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
     }
 }

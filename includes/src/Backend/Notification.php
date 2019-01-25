@@ -6,21 +6,15 @@
 
 namespace Backend;
 
-use ArrayIterator;
-use Backend\Status;
-use Countable;
-use Exception;
-use IteratorAggregate;
-use NotificationEntry;
 use Shop;
-use SingletonTrait;
 
 /**
- * Class Notification.
+ * Class Notification
+ * @package Backend
  */
-class Notification implements IteratorAggregate, Countable
+class Notification implements \IteratorAggregate, \Countable
 {
-    use SingletonTrait;
+    use \SingletonTrait;
 
     /**
      * @var NotificationEntry[]
@@ -53,6 +47,7 @@ class Notification implements IteratorAggregate, Countable
     {
         $type = NotificationEntry::TYPE_NONE;
         foreach ($this as $notify) {
+            /** @var NotificationEntry $notify */
             if ($notify->getType() > $type) {
                 $type = $notify->getType();
             }
@@ -66,19 +61,19 @@ class Notification implements IteratorAggregate, Countable
      */
     public function count(): int
     {
-        return count($this->array);
+        return \count($this->array);
     }
 
     /**
-     * @return ArrayIterator
+     * @return \ArrayIterator
      */
-    public function getIterator(): ArrayIterator
+    public function getIterator(): \ArrayIterator
     {
-        usort($this->array, function (NotificationEntry $a, NotificationEntry $b) {
+        \usort($this->array, function (NotificationEntry $a, NotificationEntry $b) {
             return $b->getType() <=> $a->getType();
         });
 
-        return new ArrayIterator($this->array);
+        return new \ArrayIterator($this->array);
     }
 
     /**
@@ -86,7 +81,7 @@ class Notification implements IteratorAggregate, Countable
      *
      * @todo Remove translated messages
      * @return $this
-     * @throws Exception
+     * @throws \Exception
      */
     public function buildDefault(): self
     {
@@ -228,7 +223,7 @@ class Notification implements IteratorAggregate, Countable
                 'Sie haben SMTP als Mail-Methode gewählt, allerdings keine Verschlüsselungsmethode ausgewählt.<br>' .
                 'Wir empfehlen Ihnen dringend, Ihre Mail-Einstellungen anzupassen.<br>' .
                 'Sie finden die Optionen unter "System &gt; E-Mails &gt; Emaileinstellungen &gt; SMTP Security".',
-                Shop::getURL() . '/' . PFAD_ADMIN . 'einstellungen.php?kSektion=3'
+                Shop::getURL() . '/' . \PFAD_ADMIN . 'einstellungen.php?kSektion=3'
             );
         }
 
@@ -242,7 +237,7 @@ class Notification implements IteratorAggregate, Countable
                     'benutzerverwaltung.php'
                 );
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
                 'Datenbank-Update',
@@ -252,12 +247,12 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
-        if (count($status->getDuplicateLinkGroupTemplateNames()) > 0) {
+        if (\count($status->getDuplicateLinkGroupTemplateNames()) > 0) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
                 'Ungültige Linkgruppen',
                 'Eine oder mehrere Linkgruppen nutzen nicht-eindeutige Template-Namen: ' .
-                implode(', ', \Functional\pluck($status->getDuplicateLinkGroupTemplateNames(), 'cName')),
+                \implode(', ', \Functional\pluck($status->getDuplicateLinkGroupTemplateNames(), 'cName')),
                 'links.php'
             );
         }

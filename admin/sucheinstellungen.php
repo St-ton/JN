@@ -5,6 +5,7 @@
  */
 
 use Backend\Notification;
+use Backend\NotificationEntry;
 use Helpers\Form;
 use Helpers\Request;
 

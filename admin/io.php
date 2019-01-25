@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Backend\JSONAPI;
 use Helpers\Form;
 use Backend\AdminIO;
 

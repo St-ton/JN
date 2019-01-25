@@ -4,12 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Backend\AdminAccount;
+namespace Backend;
 
 /**
  * Class AdminIO
+ * @package Backend
  */
-class AdminIO extends IO
+class AdminIO extends \IO
 {
     /**
      * @var AdminAccount
@@ -41,7 +42,7 @@ class AdminIO extends IO
      * @param null $include
      * @param null $permission
      * @return $this
-     * @throws Exception
+     * @throws \Exception
      */
     public function register($name, $function = null, $include = null, $permission = null)
     {
@@ -55,18 +56,18 @@ class AdminIO extends IO
      * @param string $name
      * @param mixed $params
      * @return mixed
-     * @throws Exception
+     * @throws \Exception
      */
     public function execute($name, $params)
     {
         if (!$this->exists($name)) {
-            return new IOError('Function not registered');
+            return new \IOError('Function not registered');
         }
 
         $permission = $this->functions[$name][2];
 
         if ($permission !== null && !$this->oAccount->permission($permission)) {
-            return new IOError('User has not the required permission to execute this function', 401);
+            return new \IOError('User has not the required permission to execute this function', 401);
         }
 
         return parent::execute($name, $params);

@@ -259,7 +259,7 @@ if ($step === 'newvar') {
             FROM tsprachlog AS sl
                 LEFT JOIN tsprachsektion AS ss
                     ON ss.cName = sl.cSektion
-            WHERE kSprachISO = ' . (int)$lang->kSprachISO,
+            WHERE kSprachISO = ' . (int)$lang->currentLanguageID,
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 

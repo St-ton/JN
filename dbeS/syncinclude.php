@@ -606,8 +606,7 @@ function versendeVerfuegbarkeitsbenachrichtigung($product)
     $subCount      = count($subscriptions);
     if ($subCount === 0
         || (($product->fLagerbestand / $subCount) < ($conf['artikeldetails']['benachrichtigung_min_lagernd'] / 100)
-            && (!isset($product->cLagerKleinerNull)
-                || $product->cLagerKleinerNull !== 'Y')
+            && ($product->cLagerKleinerNull ?? '') !== 'Y'
             && (!isset($product->cLagerBeachten)
                 || $product->cLagerBeachten === 'Y')
         )

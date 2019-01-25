@@ -179,6 +179,8 @@ echo $return;
 /**
  * @param array  $xml
  * @param string $unzipPath
+ * @throws \Exceptions\CircularReferenceException
+ * @throws \Exceptions\ServiceNotFoundException
  */
 function bearbeite($xml, string $unzipPath)
 {
@@ -229,8 +231,7 @@ function bearbeite($xml, string $unzipPath)
                     'tartikelpict',
                     'kArtikelPict',
                     (int)$img->kMainArtikelBild
-                )
-                ;
+                );
                 if (isset($oMainArtikelBild->cPfad) && strlen($oMainArtikelBild->cPfad) > 0) {
                     $img->cPfad = neuerDateiname($oMainArtikelBild->cPfad);
                     DBUpdateInsert('tartikelpict', [$img], 'kArtikel', 'kArtikelpict');
@@ -289,7 +290,6 @@ function bearbeite($xml, string $unzipPath)
                 PFAD_KATEGORIEBILDER . $Kategoriebild->cPfad,
                 $GLOBALS['Einstellungen']['bilder']['bilder_kategorien_breite'],
                 $GLOBALS['Einstellungen']['bilder']['bilder_kategorien_hoehe'],
-                1,
                 $GLOBALS['Einstellungen']['bilder']['bilder_jpg_quali'],
                 1,
                 $GLOBALS['Einstellungen']['bilder']['container_verwenden']
@@ -319,7 +319,6 @@ function bearbeite($xml, string $unzipPath)
                 PFAD_VARIATIONSBILDER_GROSS . $Eigenschaftwertbild->cPfad,
                 $GLOBALS['Einstellungen']['bilder']['bilder_variationen_gross_breite'],
                 $GLOBALS['Einstellungen']['bilder']['bilder_variationen_gross_hoehe'],
-                0,
                 $GLOBALS['Einstellungen']['bilder']['bilder_jpg_quali'],
                 1,
                 $GLOBALS['Einstellungen']['bilder']['container_verwenden']
@@ -375,7 +374,6 @@ function bearbeite($xml, string $unzipPath)
                 PFAD_HERSTELLERBILDER_NORMAL . $Herstellerbild->cPfad,
                 $GLOBALS['Einstellungen']['bilder']['bilder_hersteller_normal_breite'],
                 $GLOBALS['Einstellungen']['bilder']['bilder_hersteller_normal_hoehe'],
-                0,
                 $GLOBALS['Einstellungen']['bilder']['bilder_jpg_quali'],
                 1,
                 $GLOBALS['Einstellungen']['bilder']['container_verwenden']
@@ -429,7 +427,6 @@ function bearbeite($xml, string $unzipPath)
                 PFAD_MERKMALBILDER_NORMAL . $Merkmalbild->cPfad,
                 $GLOBALS['Einstellungen']['bilder']['bilder_merkmal_normal_breite'],
                 $GLOBALS['Einstellungen']['bilder']['bilder_merkmal_normal_hoehe'],
-                0,
                 $GLOBALS['Einstellungen']['bilder']['bilder_jpg_quali'],
                 1,
                 $GLOBALS['Einstellungen']['bilder']['container_verwenden']
@@ -472,7 +469,6 @@ function bearbeite($xml, string $unzipPath)
                 PFAD_MERKMALWERTBILDER_NORMAL . $Merkmalwertbild->cPfad,
                 $GLOBALS['Einstellungen']['bilder']['bilder_merkmalwert_normal_breite'],
                 $GLOBALS['Einstellungen']['bilder']['bilder_merkmalwert_normal_hoehe'],
-                0,
                 $GLOBALS['Einstellungen']['bilder']['bilder_jpg_quali'],
                 1,
                 $GLOBALS['Einstellungen']['bilder']['container_verwenden']
@@ -530,7 +526,6 @@ function bearbeite($xml, string $unzipPath)
                 PFAD_KONFIGURATOR_KLEIN . $oKonfig->cBildPfad,
                 $GLOBALS['Einstellungen']['bilder']['bilder_konfiggruppe_klein_breite'],
                 $GLOBALS['Einstellungen']['bilder']['bilder_konfiggruppe_klein_hoehe'],
-                1,
                 $GLOBALS['Einstellungen']['bilder']['bilder_jpg_quali'],
                 1,
                 $GLOBALS['Einstellungen']['bilder']['container_verwenden']
@@ -562,6 +557,8 @@ function bearbeite($xml, string $unzipPath)
  * @param string   $Bildformat
  * @param string   $unzipPath
  * @param string   $imgFilename
+ * @throws \Exceptions\CircularReferenceException
+ * @throws \Exceptions\ServiceNotFoundException
  */
 function erstelleArtikelBild($img, $Bildformat, $unzipPath, $imgFilename)
 {
@@ -575,7 +572,6 @@ function erstelleArtikelBild($img, $Bildformat, $unzipPath, $imgFilename)
         PFAD_PRODUKTBILDER_GROSS . $img->cPfad,
         $conf['bilder']['bilder_artikel_gross_breite'],
         $conf['bilder']['bilder_artikel_gross_hoehe'],
-        1,
         $conf['bilder']['bilder_jpg_quali'],
         1,
         $conf['bilder']['container_verwenden']
@@ -883,6 +879,8 @@ function streicheSonderzeichen($str)
  * @param int    $quality
  * @param string $container
  * @return int
+ * @throws \Exceptions\CircularReferenceException
+ * @throws \Exceptions\ServiceNotFoundException
  */
 function erstelleThumbnailBranded($imgFilename, $zielbild, $breite, $hoehe, int $quality = 80, $container = 'N')
 {
@@ -890,9 +888,9 @@ function erstelleThumbnailBranded($imgFilename, $zielbild, $breite, $hoehe, int 
     if ($GLOBALS['Einstellungen']['bilder']['bilder_skalieren'] === 'Y') {
         $vergroessern = 1;
     }
-    $ret                         = 0;
-    $Bildformat                  = $GLOBALS['Einstellungen']['bilder']['bilder_dateiformat'];//gibBildformat($imgFilename);
-    list($width, $height, $type) = getimagesize($imgFilename);
+    $ret                  = 0;
+    $Bildformat           = $GLOBALS['Einstellungen']['bilder']['bilder_dateiformat'];//gibBildformat($imgFilename);
+    list($width, $height) = getimagesize($imgFilename);
     if ($width > 0 && $height > 0) {
         if (!$vergroessern && $width < $breite && $height < $hoehe) {
             if ($container === 'Y') {
@@ -936,11 +934,12 @@ function erstelleThumbnailBranded($imgFilename, $zielbild, $breite, $hoehe, int 
  * @param string       $zielbild
  * @param int          $breite
  * @param int          $hoehe
- * @param int          $vergroessern
  * @param int          $quality
  * @param int|resource $brand
  * @param string       $container
  * @return int
+ * @throws \Exceptions\CircularReferenceException
+ * @throws \Exceptions\ServiceNotFoundException
  */
 function erstelleThumbnail(
     $oBranding,
@@ -948,7 +947,6 @@ function erstelleThumbnail(
     $zielbild,
     $breite,
     $hoehe,
-    $vergroessern = 0,
     $quality = 80,
     $brand = 0,
     $container = 'N'
@@ -962,7 +960,7 @@ function erstelleThumbnail(
     $im         = imageload_alpha($imgFilename);
     if ($im) {
         //bild skalieren
-        list($width, $height, $type) = getimagesize($imgFilename);
+        list($width, $height) = getimagesize($imgFilename);
         if (!$vergroessern && $width < $breite && $height < $hoehe) {
             //Bild nicht neu berechnen, nur verschieben
             if ($container === 'Y') {
@@ -1548,6 +1546,10 @@ function imageload_alpha($img, int $nWidth = 0, int $nHeight = 0, bool $branding
         case 3:
             $im = imagecreatefrompng($img);
             break;
+
+        default:
+            $im = imagecreatefromjpeg($img);
+            break;
     }
 
     if ($nWidth === 0 && $nHeight === 0) {
@@ -1560,7 +1562,7 @@ function imageload_alpha($img, int $nWidth = 0, int $nHeight = 0, bool $branding
     $newImg  = imagecreatetruecolor($nWidth, $nHeight);
 
     if (!$newImg) {
-        return $img;
+        return $im;
     }
 
     // hintergrundfarbe

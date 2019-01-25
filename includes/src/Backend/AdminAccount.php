@@ -87,16 +87,16 @@ class AdminAccount
     private function initDefaults(): void
     {
         if (!isset($_SESSION['adminAccount'])) {
-            $default                          = \Sprache::getDefaultLanguage();
-            $adminAccount                     = new \stdClass();
-            $adminAccount->kSprache           = $default->kSprache;
-            $adminAccount->cISO               = $default->cISO;
-            $adminAccount->kAdminlogin        = null;
-            $adminAccount->oGroup             = null;
-            $adminAccount->cLogin             = null;
-            $adminAccount->cMail              = null;
-            $adminAccount->cPass              = null;
-            $_SESSION['AdminAccount'] = $adminAccount;
+            $default                   = \Sprache::getDefaultLanguage();
+            $adminAccount              = new \stdClass();
+            $adminAccount->kSprache    = $default->kSprache;
+            $adminAccount->cISO        = $default->cISO;
+            $adminAccount->kAdminlogin = null;
+            $adminAccount->oGroup      = null;
+            $adminAccount->cLogin      = null;
+            $adminAccount->cMail       = null;
+            $adminAccount->cPass       = null;
+            $_SESSION['AdminAccount']  = $adminAccount;
         }
     }
 

@@ -1,5 +1,5 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="wunschliste"}
+{config_load file="$lang.conf" section='wunschliste'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('wishlistName') cBeschreibung=__('wishlistDesc') cDokuURL=__('wishlistURL')}
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
@@ -28,7 +28,7 @@
                             <th class="th-3">{__('wishlistPosCount')}</th>
                             <th class="th-4">{__('wishlistDate')}</th>
                         </tr>
-                        {foreach name=wunschliste from=$CWunschliste_arr item=CWunschliste}
+                        {foreach $CWunschliste_arr as $CWunschliste}
                             <tr>
                                 <td>
                                     {if $CWunschliste->nOeffentlich == 1}
@@ -58,7 +58,7 @@
                             <th class="th-2">{__('wishlistPosCount')}</th>
                             <th class="th-3">{__('wishlistLastAdded')}</th>
                         </tr>
-                        {foreach name=wunschlistepos from=$CWunschlistePos_arr item=CWunschlistePos}
+                        {foreach $CWunschlistePos_arr as $CWunschlistePos}
                             <tr>
                                 <td>
                                     <a href="{$shopURL}/index.php?a={$CWunschlistePos->kArtikel}&" rel="external">{$CWunschlistePos->cArtikelName}</a>
@@ -85,7 +85,7 @@
                             <th class="th-4">{__('wishlistPosCount')}</th>
                             <th class="th-5">{__('wishlistDate')}</th>
                         </tr>
-                        {foreach name=wunschlisteversand from=$CWunschlisteVersand_arr item=CWunschlisteVersand}
+                        {foreach $CWunschlisteVersand_arr as $CWunschlisteVersand}
                             <tr>
                                 <td>
                                     <a href="{$shopURL}/index.php?wlid={$CWunschlisteVersand->cURLID}" rel="external">{$CWunschlisteVersand->cName}</a>
@@ -107,5 +107,4 @@
         </div>
     </div>
 </div>
-
 {include file='tpl_inc/footer.tpl'}

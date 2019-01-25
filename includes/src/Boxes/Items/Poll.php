@@ -7,7 +7,8 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
-use Session\Session;
+use Helpers\URL;
+use Session\Frontend;
 
 /**
  * Class Poll
@@ -22,12 +23,12 @@ final class Poll extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        parent::addMapping('oUmfrage_arr', 'Items');
-        $cSQL      = ($conf = $this->config['umfrage']['umfrage_box_anzahl']) > 0
+        $this->addMapping('oUmfrage_arr', 'Items');
+        $sql       = ($conf = $this->config['umfrage']['umfrage_box_anzahl']) > 0
             ? ' LIMIT ' . (int)$conf
             : '';
         $langID    = \Shop::getLanguageID();
-        $cacheID   = 'bu_' . $langID . '_' . Session::getCustomerGroup()->getID() . \md5($cSQL);
+        $cacheID   = 'bu_' . $langID . '_' . Frontend::getCustomerGroup()->getID() . \md5($sql);
         $cacheTags = [\CACHING_GROUP_BOX, \CACHING_GROUP_CORE];
         $cached    = true;
         if (($polls = \Shop::Container()->getCache()->get($cacheID)) === false) {
@@ -52,15 +53,15 @@ final class Poll extends AbstractBox
                             OR FIND_IN_SET(':cid', REPLACE(cKundengruppe, ';', ',')) > 0)
                         AND NOW() BETWEEN dGueltigVon AND COALESCE(dGueltigBis, NOW())
                     GROUP BY tumfrage.kUmfrage
-                    ORDER BY tumfrage.dGueltigVon DESC" . $cSQL,
-                ['lid' => $langID, 'cid' => Session::getCustomerGroup()->getID()],
+                    ORDER BY tumfrage.dGueltigVon DESC" . $sql,
+                ['lid' => $langID, 'cid' => Frontend::getCustomerGroup()->getID()],
                 ReturnType::ARRAY_OF_OBJECTS
             );
             \Shop::Container()->getCache()->set($cacheID, $polls, $cacheTags);
         }
         foreach ($polls as $poll) {
-            $poll->cURL     = \Helpers\URL::buildURL($poll, \URLART_UMFRAGE);
-            $poll->cURLFull = \Helpers\URL::buildURL($poll, \URLART_UMFRAGE, true);
+            $poll->cURL     = URL::buildURL($poll, \URLART_UMFRAGE);
+            $poll->cURLFull = URL::buildURL($poll, \URLART_UMFRAGE, true);
         }
         $this->setItems($polls);
         $this->setShow(\count($polls) > 0);

@@ -60,7 +60,7 @@ class ServerSettings extends AbstractWidget
         if (\class_exists('Systemcheck_Environment')) {
             $oSystemCheck  = new \Systemcheck_Environment();
             $vCheckResults = $oSystemCheck->executeTestGroup('Shop4');
-            if (\in_array('recommendations', \array_keys($vCheckResults), true)) {
+            if (\array_key_exists('recommendations', $vCheckResults)) {
                 foreach ($vCheckResults['recommendations'] as $object) {
                     if ($object instanceof \Systemcheck_Tests_Shop4_PhpSoapExtension) {
                         // SOAP is OFF

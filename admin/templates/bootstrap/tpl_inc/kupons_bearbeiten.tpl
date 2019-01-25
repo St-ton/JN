@@ -4,19 +4,19 @@
     {assign var=cTitel value=__('modifyCoupon')}
 {/if}
 
-{if $oKupon->cKuponTyp === 'standard'}
+{if $oKupon->cKuponTyp === $couponTypes.standard}
     {assign var=cTitel value="$cTitel : Standardkupon"}
-{elseif $oKupon->cKuponTyp === 'versandkupon'}
+{elseif $oKupon->cKuponTyp === $couponTypes.shipping}
     {assign var=cTitel value="$cTitel : Versandkostenfrei-Kupon"}
-{elseif $oKupon->cKuponTyp === 'neukundenkupon'}
-    {assign var=cTitel value="$cTitel : Neukunden-/Begr&uuml;&szlig;ungskupon"}
+{elseif $oKupon->cKuponTyp === $couponTypes.newCustomer}
+    {assign var=cTitel value="$cTitel : Neukunden-/Begrüßungskupon"}
 {/if}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__('couponsDesc') cDokuURL=__('couponsURL')}
 
 <script>
     $(function () {
-        {if $oKupon->cKuponTyp == 'standard' || $oKupon->cKuponTyp == 'neukundenkupon'}
+        {if $oKupon->cKuponTyp == $couponTypes.standard || $oKupon->cKuponTyp == $couponTypes.newCustomer}
             makeCurrencyTooltip('fWert');
         {/if}
         makeCurrencyTooltip('fMindestbestellwert');
@@ -71,7 +71,7 @@
                 {/foreach}
             </div>
         </div>
-        {if empty($oKupon->kKupon) && isset($oKupon->cKuponTyp) && $oKupon->cKuponTyp !== 'neukundenkupon'}
+        {if empty($oKupon->kKupon) && isset($oKupon->cKuponTyp) && $oKupon->cKuponTyp !== $couponTypes.newCustomer}
             <div class="panel panel-default settings">
                 <div class="panel-heading">
                     <h3 class="panel-title"><label><input type="checkbox" name="couponCreation" id="couponCreation" class="checkfield"{if isset($oKupon->massCreationCoupon->cActiv) && $oKupon->massCreationCoupon->cActiv == 1} checked{/if} value="1" />{__('couponsCreation')}</label></h3>
@@ -133,7 +133,7 @@
                 <h3 class="panel-title">{__('general')}</h3>
             </div>
             <div class="panel-body">
-                {if $oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'neukundenkupon'}
+                {if $oKupon->cKuponTyp === $couponTypes.standard || $oKupon->cKuponTyp === $couponTypes.newCustomer}
                     <div class="input-group">
                         <span class="input-group-addon">
                             <label for="fWert">{__('value')} ({__('gross')})</label>
@@ -151,7 +151,7 @@
                                 </option>
                             </select>
                         </span>
-                        <span class="input-group-addon" {if $oKupon->cWertTyp == 'prozent'} style="display: none;"{/if}>
+                        <span class="input-group-addon" {if $oKupon->cWertTyp === 'prozent'} style="display: none;"{/if}>
                             {getCurrencyConversionTooltipButton inputId='fWert'}
                         </span>
                     </div>
@@ -186,7 +186,7 @@
                         </span>
                     </div>
                 {/if}
-                {if $oKupon->cKuponTyp === 'versandkupon'}
+                {if $oKupon->cKuponTyp === $couponTypes.shipping}
                     <div class="input-group">
                         <span class="input-group-addon">
                             <label for="cZusatzgebuehren">{__('additionalShippingCosts')}</label>
@@ -208,7 +208,7 @@
                         {getCurrencyConversionTooltipButton inputId='fMindestbestellwert'}
                     </span>
                 </div>
-                {if $oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon'}
+                {if $oKupon->cKuponTyp === $couponTypes.standard || $oKupon->cKuponTyp === $couponTypes.shipping}
                     <div class="input-group{if isset($oKupon->massCreationCoupon)} hidden{/if}" id="singleCouponCode">
                         <span class="input-group-addon">
                             <label for="cCode">{__('code')}</label>
@@ -219,7 +219,7 @@
                         <span class="input-group-addon">{getHelpDesc cDesc=__('codeHint')}</span>
                     </div>
                 {/if}
-                {if $oKupon->cKuponTyp === 'versandkupon'}
+                {if $oKupon->cKuponTyp === $couponTypes.shipping}
                     <div class="input-group">
                         <span class="input-group-addon">
                             <label for="cLieferlaender">{__('shippingCountries')}</label>
@@ -238,7 +238,7 @@
                         <input type="text" class="form-control" name="nVerwendungen" id="nVerwendungen" value="{$oKupon->nVerwendungen}">
                     </span>
                 </div>
-                {if $oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon'}
+                {if $oKupon->cKuponTyp === $couponTypes.standard || $oKupon->cKuponTyp === $couponTypes.shipping}
                     <div class="input-group">
                         <span class="input-group-addon">
                             <label for="nVerwendungenProKunde">{__('usesPerCustomer')}</label>
@@ -299,7 +299,7 @@
             <div class="panel-body">
                 {include file='tpl_inc/searchpicker_modal.tpl'
                     searchPickerName='articlePicker'
-                    modalTitle='Artikel ausw&auml;hlen'
+                    modalTitle='Artikel auswählen'
                     searchInputLabel='Suche nach Artikelnamen'
                 }
                 <script>
@@ -403,10 +403,10 @@
                     </span>
                     <span class="input-group-addon">{getHelpDesc cDesc=__('multipleChoice')}</span>
                 </div>
-                {if $oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon'}
+                {if $oKupon->cKuponTyp === $couponTypes.standard || $oKupon->cKuponTyp === $couponTypes.shipping}
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='customerPicker'
-                        modalTitle='Kunden ausw&auml;hlen'
+                        modalTitle='Kunden auswählen'
                         searchInputLabel='Suche nach Vornamen, E-Mail-Adresse, Wohnort oder Postleitzahl'
                     }
                     <script>

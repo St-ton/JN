@@ -21,16 +21,16 @@ $cAction         = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] :
 if ($cAction === 'delete') {
     if (isset($_POST['remove_all'])) {
         if (true !== $oEmailhistory->deleteAll()) {
-            $cFehler = 'Fehler: eMail-History konnte nicht gelöscht werden!';
+            $cFehler = __('errorHistoryDelete');
         }
     } elseif (isset($_POST['kEmailhistory'])
         && is_array($_POST['kEmailhistory'])
         && count($_POST['kEmailhistory']) > 0
     ) {
         $oEmailhistory->deletePack($_POST['kEmailhistory']);
-        $cHinweis = 'Ihre markierten Logbucheinträge wurden erfolgreich gelöscht.';
+        $cHinweis = __('successHistoryDelete');
     } else {
-        $cFehler = 'Fehler: Bitte markieren Sie mindestens einen Logbucheintrag.';
+        $cFehler = __('errorSelectEntry');
     }
 }
 

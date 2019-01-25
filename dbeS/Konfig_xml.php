@@ -90,9 +90,9 @@ function bearbeiteDeletes($oXml)
  */
 function loescheKonfiggruppe(int $kKonfiggruppe)
 {
-    if ($kKonfiggruppe > 0 && class_exists('Konfiggruppe')) {
+    if ($kKonfiggruppe > 0 && \Extensions\Konfiggruppe::checkLicense()) {
         // todo: alle items löschen
-        $oKonfig = new Konfiggruppe($kKonfiggruppe);
+        $oKonfig = new \Extensions\Konfiggruppe($kKonfiggruppe);
         $nRows   = $oKonfig->delete();
         Shop::Container()->getLogService()->debug($nRows . ' Konfiggruppen gelöscht');
     }
@@ -113,8 +113,8 @@ function loescheKonfigitem(int $kKonfiggruppe)
  */
 function loescheKonfigitempreis(int $kKonfigitem)
 {
-    if ($kKonfigitem > 0 && class_exists('Konfigitempreis')) {
-        $oKonfig = new Konfigitempreis($kKonfigitem);
+    if ($kKonfigitem > 0 && \Extensions\Konfigitempreis::checkLicense()) {
+        $oKonfig = new \Extensions\Konfigitempreis($kKonfigitem);
         $nRows   = $oKonfig->delete();
         Shop::Container()->getLogService()->debug($nRows . ' Konfigitempreise gelöscht');
     }

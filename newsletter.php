@@ -19,7 +19,7 @@ $oLink->kLink = 0;
 foreach ($links as $l) {
     $customerGroupIDs = StringHandler::parseSSK($l->cKundengruppen);
     $ok               = array_reduce($customerGroupIDs, function ($c, $p) {
-        return $c === true || $p === 'NULL' || (int)$p === \Session\Session::getCustomerGroup()->getID();
+        return $c === true || $p === 'NULL' || (int)$p === \Session\Frontend::getCustomerGroup()->getID();
     }, false);
     if ($ok === true) {
         $oLink = $l;
@@ -30,24 +30,19 @@ $linkHelper = Shop::Container()->getLinkService();
 if (isset($oLink->kLink) && $oLink->kLink > 0) {
     $link = $linkHelper->getLinkByID($oLink->kLink);
 } else {
-    $oLink                   = $db->select('tlink', 'nLinkart', LINKTYP_404);
-    $bFileNotFound           = true;
-    Shop::$kLink             = (int)$oLink->kLink;
-    Shop::$bFileNotFound     = true;
-    Shop::$is404             = true;
-    $cParameter_arr['is404'] = true;
+    $oLink               = $db->select('tlink', 'nLinkart', LINKTYP_404);
+    $bFileNotFound       = true;
+    Shop::$kLink         = (int)$oLink->kLink;
+    Shop::$bFileNotFound = true;
+    Shop::$is404         = true;
 
     return;
 }
 
-$cHinweis               = '';
-$cFehler                = '';
-$cCanonicalURL          = '';
-$Einstellungen          = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_NEWSLETTER]);
-$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$option                 = 'eintragen';
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
+$cHinweis      = '';
+$cFehler       = '';
+$cCanonicalURL = '';
+$option        = 'eintragen';
 if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
     $option     = 'freischalten';
     $optCode    = StringHandler::htmlentities(StringHandler::filterXSS(strip_tags($_GET['fc'])));
@@ -203,7 +198,7 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
         $smarty->assign('oFehlendeAngaben', (object)['cUnsubscribeEmail' => 1]);
     }
 } elseif (isset($_GET['show']) && (int)$_GET['show'] > 0) {
-    $kKundengruppe = \Session\Session::getCustomer()->getID();
+    $kKundengruppe = \Session\Frontend::getCustomer()->getID();
     $option        = 'anzeigen';
     $history       = $db->query(
         "SELECT kNewsletterHistory, nAnzahl, cBetreff, cHTMLStatic, cKundengruppeKey,
@@ -216,16 +211,12 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
         $smarty->assign('oNewsletterHistory', $history);
     }
 }
-if (\Session\Session::getCustomer()->getID() > 0) {
-    $customer = new Kunde(\Session\Session::getCustomer()->getID());
+if (\Session\Frontend::getCustomer()->getID() > 0) {
+    $customer = new Kunde(\Session\Frontend::getCustomer()->getID());
     $smarty->assign('bBereitsAbonnent', pruefeObBereitsAbonnent($customer->kKunde))
            ->assign('oKunde', $customer);
 }
-$cCanonicalURL    = Shop::getURL() . '/newsletter.php';
-$oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_NEWSLETTER);
-$cMetaTitle       = $oMeta->cTitle;
-$cMetaDescription = $oMeta->cDesc;
-$cMetaKeywords    = $oMeta->cKeywords;
+$cCanonicalURL = Shop::getURL() . '/newsletter.php';
 
 $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)

@@ -10,8 +10,8 @@
                     </span>
                     <span class="input-group-wrap last">
                         <select id="{__('changeLanguage')}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
-                            {foreach name=sprachen from=$Sprachen item=sprache}
-                                <option value="{$sprache->kSprache}" {if $sprache->kSprache==$smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
+                            {foreach $Sprachen as $sprache}
+                                <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
                             {/foreach}
                         </select>
                     </span>
@@ -62,16 +62,14 @@
                                                 <th class="th-7">{__('umfrageDate')}</th>
                                                 <th class="th-8">Aktionen</th>
                                             </tr>
-                                            {foreach name=umfrage from=$oUmfrage_arr item=oUmfrage}
+                                            {foreach $oUmfrage_arr as $oUmfrage}
                                                 <tr>
                                                     <td><input type="checkbox" name="kUmfrage[]" value="{$oUmfrage->kUmfrage}" /></td>
                                                     <td>
                                                         <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&ud=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage">{$oUmfrage->cName}</a>
                                                     </td>
                                                     <td>
-                                                        {foreach name=kundengruppen from=$oUmfrage->cKundengruppe_arr item=cKundengruppe}
-                                                            {$cKundengruppe}{if !$smarty.foreach.kundengruppen.last},{/if}
-                                                        {/foreach}
+                                                        {$oUmfrage->cKundengruppe_arr|implode:','}
                                                     </td>
                                                     <td>{$oUmfrage->dGueltigVon_de}-{if $oUmfrage->dGueltigBis === null}{__('umfrageInfinite')}{else}{$oUmfrage->dGueltigBis_de}{/if}</td>
                                                     <td>{$oUmfrage->nAktiv}</td>

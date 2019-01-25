@@ -33,7 +33,7 @@ if (isset($_GET['kExportformat'])
 
     if (isset($_GET['err'])) {
         $smarty->assign('oSmartyError', $oSmartyError);
-        $fehler = '<b>Smarty-Syntax Fehler.</b><br />';
+        $fehler = __('smartySyntaxError') . '<br />';
         if (is_array($_SESSION['last_error'])) {
             $fehler .= $_SESSION['last_error']['message'];
             unset($_SESSION['last_error']);
@@ -50,14 +50,14 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
             $revision      = new Revision();
             $revision->addRevision('export', $kExportformat);
             $ef->update();
-            $hinweis .= 'Das Exportformat <strong>' . $ef->getName() . '</strong> wurde erfolgreich geändert.';
+            $hinweis .= sprintf(__('successFormatEdit'), $ef->getName());
         } else {
             $kExportformat = $ef->save();
-            $hinweis      .= 'Das Exportformat <strong>' . $ef->getName() . '</strong> wurde erfolgreich erstellt.';
+            $hinweis      .= sprintf(__('successFormatCreate'), $ef->getName());
         }
 
         $db->delete('texportformateinstellungen', 'kExportformat', $kExportformat);
-        $Conf        = $db->selectAll(
+        $Conf = $db->selectAll(
             'teinstellungenconf',
             'kEinstellungenSektion',
             CONF_EXPORTFORMATE,
@@ -98,7 +98,7 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
         $smarty->assign('cPlausiValue_arr', $checkResult)
                ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
         $step   = 'neuer Export';
-        $fehler = 'Fehler: Bitte überprüfen Sie Ihre Eingaben.';
+        $fehler = __('errorCheckInput');
     }
 }
 $cAction       = null;
@@ -164,9 +164,9 @@ if ($cAction !== null && $kExportformat !== null && Form::validateToken()) {
             );
 
             if ($bDeleted > 0) {
-                $hinweis = 'Exportformat erfolgreich gelöscht.';
+                $hinweis = __('successFormatDelete');
             } else {
-                $fehler = 'Exportformat konnte nicht gelöscht werden.';
+                $fehler = __('errorFormatDelete');
             }
             break;
         case 'exported':
@@ -177,13 +177,12 @@ if ($cAction !== null && $kExportformat !== null && Form::validateToken()) {
                     || (isset($exportformat->nSplitgroesse) && (int)$exportformat->nSplitgroesse > 0))
             ) {
                 if (empty($_GET['hasError'])) {
-                    $hinweis = 'Das Exportformat <b>' . $exportformat->cName . '</b> wurde erfolgreich erstellt.';
+                    $hinweis = sprintf(__('successFormatCreate'), $exportformat->cName);
                 } else {
-                    $fehler = 'Das Exportformat <b>' . $exportformat->cName . '</b> konnte nicht erstellt werden.' .
-                        ' Fehlende Schreibrechte?';
+                    $fehler = sprintf(__('errorFormatCreate'), $exportformat->cName);
                 }
             } else {
-                $fehler = 'Das Exportformat <b>' . $exportformat->cName . '</b> konnte nicht erstellt werden.';
+                $fehler = sprintf(__('errorFormatCreate'), $exportformat->cName);
             }
             break;
         default:
@@ -256,11 +255,12 @@ if ($step === 'neuer Export') {
         }
         $smarty->assign('Exportformat', $exportformat);
     }
+    $gettext = \Shop::Container()->getGetText();
     $configs = getAdminSectionSettings(CONF_EXPORTFORMATE);
-    \Shop::Container()->getGetText()->localizeConfigs($configs);
+    $gettext->localizeConfigs($configs);
 
     foreach ($configs as $config) {
-        \Shop::Container()->getGetText()->localizeConfigValues($config, $config->ConfWerte);
+        $gettext->localizeConfigValues($config, $config->ConfWerte);
     }
 
     $smarty->assign('Conf', $configs);

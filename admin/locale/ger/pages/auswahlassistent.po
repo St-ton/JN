@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "auswahlassistent"
 msgstr "Auswahlassistent"
 
@@ -88,3 +92,20 @@ msgstr "Eine andere Gruppe wird bereits auf einer ausgewählten Spezialseite ang
 msgid "aaMerkmalTaken"
 msgstr "Eine andere Frage hat bereits in dieser Gruppe das ausgewählte Merkmal gewählt"
 
+msgid "successGroupSaved"
+msgstr "Ihre Gruppe wurde erfolgreich gespeichert."
+
+msgid "successGroupDeleted"
+msgstr "Ihre ausgewählten Gruppen wurden erfolgreich gelöscht."
+
+msgid "errorGroupDeleted"
+msgstr "Fehler: Ihre ausgewählten Gruppen konnten nicht gelöscht werden."
+
+msgid "successQuestionSaved"
+msgstr "Ihre Frage wurde erfolgreich gespeichert."
+
+msgid "successQuestionDeleted"
+msgstr "Ihre ausgewählte Frage wurden erfolgreich gelöscht."
+
+msgid "errorQuestionDeleted"
+msgstr "Fehler: Ihre ausgewählte Frage konnten nicht gelöscht werden."

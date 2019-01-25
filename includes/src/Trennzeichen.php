@@ -70,9 +70,8 @@ class Trennzeichen
             Shop::Container()->getCache()->set($cacheID, $data, [CACHING_GROUP_CORE]);
         }
         if (isset($data->kTrennzeichen) && $data->kTrennzeichen > 0) {
-            $cMember_arr = array_keys(get_object_vars($data));
-            foreach ($cMember_arr as $cMember) {
-                $this->$cMember = $data->$cMember;
+            foreach (array_keys(get_object_vars($data)) as $member) {
+                $this->$member = $data->$member;
             }
         }
 
@@ -130,7 +129,7 @@ class Trennzeichen
     public static function getUnit(int $nEinheit, int $kSprache, $fAmount = -1)
     {
         if (!$kSprache) {
-            $oSprache = Sprache::getDefaultLanguage(true);
+            $oSprache = Sprache::getDefaultLanguage();
             $kSprache = (int)$oSprache->kSprache;
         }
 
@@ -157,35 +156,35 @@ class Trennzeichen
     /**
      * Insert missing trennzeichen
      *
-     * @param int $nEinheit
-     * @param int $kSprache
+     * @param int $unit
+     * @param int $languageID
      * @return mixed|bool
      */
-    public static function insertMissingRow(int $nEinheit, int $kSprache)
+    public static function insertMissingRow(int $unit, int $languageID)
     {
         // Standardwert [kSprache][nEinheit]
-        $xRowAssoc_arr = [];
+        $rows = [];
         foreach (Sprache::getAllLanguages() as $language) {
-            $xRowAssoc_arr[$language->kSprache][JTL_SEPARATOR_WEIGHT] = [
+            $rows[$language->kSprache][JTL_SEPARATOR_WEIGHT] = [
                 'nDezimalstellen'   => 2,
                 'cDezimalZeichen'   => ',',
                 'cTausenderZeichen' => '.'
             ];
-            $xRowAssoc_arr[$language->kSprache][JTL_SEPARATOR_LENGTH] = [
+            $rows[$language->kSprache][JTL_SEPARATOR_LENGTH] = [
                 'nDezimalstellen'   => 2,
                 'cDezimalZeichen'   => ',',
                 'cTausenderZeichen' => '.'
             ];
-            $xRowAssoc_arr[$language->kSprache][JTL_SEPARATOR_AMOUNT] = [
+            $rows[$language->kSprache][JTL_SEPARATOR_AMOUNT] = [
                 'nDezimalstellen'   => 2,
                 'cDezimalZeichen'   => ',',
                 'cTausenderZeichen' => '.'
             ];
         }
-        if ($nEinheit > 0 && $kSprache > 0) {
-            if (!isset($xRowAssoc_arr[$kSprache][$nEinheit])) {
-                $xRowAssoc_arr[$kSprache]            = [];
-                $xRowAssoc_arr[$kSprache][$nEinheit] = [
+        if ($unit > 0 && $languageID > 0) {
+            if (!isset($rows[$languageID][$unit])) {
+                $rows[$languageID]        = [];
+                $rows[$languageID][$unit] = [
                     'nDezimalstellen'   => 2,
                     'cDezimalZeichen'   => ',',
                     'cTausenderZeichen' => '.'
@@ -197,9 +196,9 @@ class Trennzeichen
                 "INSERT INTO `ttrennzeichen` 
                     (`kTrennzeichen`, `kSprache`, `nEinheit`, `nDezimalstellen`, `cDezimalZeichen`, `cTausenderZeichen`)
                     VALUES (
-                      NULL, {$kSprache}, {$nEinheit}, {$xRowAssoc_arr[$kSprache][$nEinheit]['nDezimalstellen']}, 
-                      '{$xRowAssoc_arr[$kSprache][$nEinheit]['cDezimalZeichen']}',
-                    '{$xRowAssoc_arr[$kSprache][$nEinheit]['cTausenderZeichen']}')",
+                      NULL, {$languageID}, {$unit}, {$rows[$languageID][$unit]['nDezimalstellen']}, 
+                      '{$rows[$languageID][$unit]['cDezimalZeichen']}',
+                    '{$rows[$languageID][$unit]['cTausenderZeichen']}')",
                 \DB\ReturnType::AFFECTED_ROWS
             );
         }
@@ -242,11 +241,8 @@ class Trennzeichen
     public function save(bool $bPrim = true)
     {
         $data        = new stdClass();
-        $cMember_arr = array_keys(get_object_vars($this));
-        if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-            foreach ($cMember_arr as $cMember) {
-                $data->$cMember = $this->$cMember;
-            }
+        foreach (array_keys(get_object_vars($this)) as $member) {
+            $data->$member = $this->$member;
         }
         unset($data->kTrennzeichen);
 

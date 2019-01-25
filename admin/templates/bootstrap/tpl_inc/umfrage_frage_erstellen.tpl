@@ -571,7 +571,7 @@ function checkSelect(selectBox) {ldelim}
                     <th class="th-2">{__('umfrageQType')}</th>
                     <th class="th-3">{__('umfrageSort')}</th>
                 </tr>
-            {foreach name=umfragefrage from=$oUmfrageFrage_arr item=oUmfrageFrageTMP}
+            {foreach $oUmfrageFrage_arr as $oUmfrageFrageTMP}
                 <tr>
                     <td>{$oUmfrageFrageTMP->cName}</td>
                     <td>{$oUmfrageFrageTMP->cTyp}</td>
@@ -666,10 +666,10 @@ function checkSelect(selectBox) {ldelim}
                                 </td>
                             </tr>
                             {if isset($oUmfrageFrage->oUmfrageMatrixOption_arr) && $oUmfrageFrage->oUmfrageMatrixOption_arr|@count > 0}
-                                {foreach name=umfragematrixoption from=$oUmfrageFrage->oUmfrageMatrixOption_arr item=oUmfrageMatrixOption}
+                                {foreach $oUmfrageFrage->oUmfrageMatrixOption_arr as $oUmfrageMatrixOption}
                                     <input name="kUmfrageMatrixOption[]" type="hidden" value="{$oUmfrageMatrixOption->kUmfrageMatrixOption}" />
                                     <tr>
-                                        <td>Option {$smarty.foreach.umfragematrixoption.iteration}<input name="cNameOption[]" class="form-control" type="text" value="{$oUmfrageMatrixOption->cName}" /> {__('umfrageQSort')} <input name="nSortOption[]" class="form-control"  type="text" value="{$oUmfrageMatrixOption->nSort}" style="width: 40px;"></td>
+                                        <td>Option {$oUmfrageMatrixOption@iteration}<input name="cNameOption[]" class="form-control" type="text" value="{$oUmfrageMatrixOption->cName}" /> {__('umfrageQSort')} <input name="nSortOption[]" class="form-control"  type="text" value="{$oUmfrageMatrixOption->nSort}" style="width: 40px;"></td>
                                     </tr>
                                 {/foreach}
                             {/if}
@@ -686,15 +686,15 @@ function checkSelect(selectBox) {ldelim}
                                 </td>
                             </tr>
                             {if isset($oUmfrageFrage->oUmfrageFrageAntwort_arr) && $oUmfrageFrage->oUmfrageFrageAntwort_arr|@count > 0}
-                                {foreach name=umfragefrageantwort from=$oUmfrageFrage->oUmfrageFrageAntwort_arr item=oUmfrageFrageAntwort}
+                                {foreach $oUmfrageFrage->oUmfrageFrageAntwort_arr as $oUmfrageFrageAntwort}
                                 <tr>
                                     <td>
                                         <p class="form-inline">
                                             <input name="kUmfrageFrageAntwort[]" type="hidden" value="{$oUmfrageFrageAntwort->kUmfrageFrageAntwort}" />
-                                            <label for="cNameAntwort-{$smarty.foreach.umfragefrageantwort.index}">Antwort {$smarty.foreach.umfragefrageantwort.iteration}</label>
-                                            <input class="form-control" id="cNameAntwort-{$smarty.foreach.umfragefrageantwort.index}" name="cNameAntwort[]"  type="text" value="{$oUmfrageFrageAntwort->cName}" />
-                                            <label for="nSortAntwort-{$smarty.foreach.umfragefrageantwort.index}">{__('umfrageQSort')}</label>
-                                            <input id="nSortAntwort-{$smarty.foreach.umfragefrageantwort.index}" name="nSortAntwort[]"  type="text" class="form-control" value="{$oUmfrageFrageAntwort->nSort}" style="width: 40px;" />
+                                            <label for="cNameAntwort-{$oUmfrageFrageAntwort@index}">Antwort {$oUmfrageFrageAntwort@iteration}</label>
+                                            <input class="form-control" id="cNameAntwort-{$oUmfrageFrageAntwort@index}" name="cNameAntwort[]"  type="text" value="{$oUmfrageFrageAntwort->cName}" />
+                                            <label for="nSortAntwort-{$oUmfrageFrageAntwort@index}">{__('umfrageQSort')}</label>
+                                            <input id="nSortAntwort-{$oUmfrageFrageAntwort@index}" name="nSortAntwort[]"  type="text" class="form-control" value="{$oUmfrageFrageAntwort->nSort}" style="width: 40px;" />
                                         </p>
                                     </td>
                                 </tr>

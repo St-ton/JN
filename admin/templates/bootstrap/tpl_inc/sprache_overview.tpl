@@ -17,8 +17,8 @@
     </div>
 {/function}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('lang') cBeschreibung=__('langDesc') cDokuURL=__('langURL')}
-{assign var="cSearchString" value=$oFilter->getField(1)->getValue()}
-{assign var="bAllSections" value=((int)$oFilter->getField(0)->getValue() === 0)}
+{assign var=cSearchString value=$oFilter->getField(1)->getValue()}
+{assign var=bAllSections value=((int)$oFilter->getField(0)->getValue() === 0)}
 <script>
     function toggleTextarea(kSektion, cWertName)
     {

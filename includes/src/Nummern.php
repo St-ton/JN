@@ -41,11 +41,10 @@ class Nummern
      */
     private function loadFromDB(int $nArt = 0): self
     {
-        $oObj = Shop::Container()->getDB()->select('tnummern', 'nArt', $nArt);
-        if ($oObj !== null && $oObj->nArt > 0) {
-            $cMember_arr = array_keys(get_object_vars($oObj));
-            foreach ($cMember_arr as $cMember) {
-                $this->$cMember = $oObj->$cMember;
+        $item = Shop::Container()->getDB()->select('tnummern', 'nArt', $nArt);
+        if ($item !== null && $item->nArt > 0) {
+            foreach (array_keys(get_object_vars($item)) as $member) {
+                $this->$member = $item->$member;
             }
         }
 
@@ -58,14 +57,11 @@ class Nummern
      */
     public function save(bool $bPrim = true)
     {
-        $oObj        = new stdClass();
-        $cMember_arr = array_keys(get_object_vars($this));
-        if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-            foreach ($cMember_arr as $cMember) {
-                $oObj->$cMember = $this->$cMember;
-            }
+        $ins = new stdClass();
+        foreach (array_keys(get_object_vars($this)) as $member) {
+            $ins->$member = $this->$member;
         }
-        $kPrim = Shop::Container()->getDB()->insert('tnummern', $oObj);
+        $kPrim = Shop::Container()->getDB()->insert('tnummern', $ins);
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
         }
@@ -82,11 +78,11 @@ class Nummern
         if ($bDate) {
             $this->setAktualisiert('NOW()');
         }
-        $_upd                = new stdClass();
-        $_upd->nNummer       = $this->nNummer;
-        $_upd->dAktualisiert = $this->dAktualisiert;
+        $upd                = new stdClass();
+        $upd->nNummer       = $this->nNummer;
+        $upd->dAktualisiert = $this->dAktualisiert;
 
-        return Shop::Container()->getDB()->update('tnummern', 'nArt', $this->nArt, $_upd);
+        return Shop::Container()->getDB()->update('tnummern', 'nArt', $this->nArt, $upd);
     }
 
     /**

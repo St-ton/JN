@@ -16,8 +16,8 @@
         </div>
         <div class="tcenter">
             <div class="btn-group">
-                <a href="#" class="btn btn-primary button add">speichern</a>
-                <a href="#" class="btn btn-danger button remove"><i class="fa fa-exclamation"></i> abbrechen</a>
+                <a href="#" class="btn btn-primary button add">{__('save')}</a>
+                <a href="#" class="btn btn-danger button remove"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
             </div>
         </div>
     </fieldset>

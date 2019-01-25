@@ -63,11 +63,11 @@ class PriceRange
     public function __construct(int $articleID, int $customerGroupID = 0, int $customerID = 0)
     {
         if ($customerGroupID === 0) {
-            $customerGroupID = \Session\Session::getCustomerGroup()->getID();
+            $customerGroupID = \Session\Frontend::getCustomerGroup()->getID();
         }
 
         if ($customerID === 0) {
-            $customerID = \Session\Session::getCustomer()->kKunde ?? 0;
+            $customerID = \Session\Frontend::getCustomer()->kKunde ?? 0;
         }
 
         $this->customerGroupID            = $customerGroupID;
@@ -128,7 +128,7 @@ class PriceRange
             $this->maxNettoPrice = $this->articleData->fNettoPreis;
         }
 
-        if (class_exists('Konfigurator') && Konfigurator::hasKonfig($this->articleData->kArtikel)) {
+        if (\Extensions\Konfigurator::hasKonfig($this->articleData->kArtikel)) {
             $this->loadConfiguratorRange();
         }
 
@@ -328,7 +328,7 @@ class PriceRange
      */
     public function getMinLocalized(int $netto = null)
     {
-        $currency = \Session\Session::getCurrency();
+        $currency = \Session\Frontend::getCurrency();
 
         if ($netto !== null) {
             return $netto === 0
@@ -349,7 +349,7 @@ class PriceRange
      */
     public function getMaxLocalized(int $netto = null)
     {
-        $currency = \Session\Session::getCurrency();
+        $currency = \Session\Frontend::getCurrency();
 
         if ($netto !== null) {
             return $netto === 0

@@ -1,11 +1,6 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- *}
-
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='einstellungen'}
-{config_load file="$lang.conf" section="billpay"}
+{config_load file="$lang.conf" section='billpay'}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('billpay') cBeschreibung=__('billpayDesc') cDokuURL=__('billpayURL')}
 <div id="content">
@@ -64,7 +59,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {foreach from=$oLog_arr item="oLog"}
+                            {foreach $oLog_arr as $oLog}
                                 <tr class="text-vcenter">
                                     <td>{$oLog->cLog}</td>
                                     <td class="text-center">
@@ -78,7 +73,7 @@
                                         {/if}
                                         </h4>
                                     </td>
-                                    <td class="text-center">{$oLog->dDatum|date_format:"%d.%m.%Y - %H:%M:%S"}</td>
+                                    <td class="text-center">{$oLog->dDatum|date_format:'%d.%m.%Y - %H:%M:%S'}</td>
                                     <td class="text-center" style="width:24px">
                                         {if $oLog->cLogData|strlen > 0}
                                             <a href="#" onclick="$('#data{$oLog->kZahlunglog}').toggle();return false;" class="btn btn-default btn-sm"><i class="fa fa-bars"></i></a>
@@ -86,14 +81,14 @@
                                     </td>
                                 </tr>
                                 {if $oLog->cLogData|strlen > 0}
-                                    {assign var="oKunde" value=$oLog->cLogData|unserialize}
+                                    {assign var=oKunde value=$oLog->cLogData|unserialize}
                                     <tr class="hidden" id="data{$oLog->kZahlunglog}">
                                         <td colspan="4">
                                             {if $oKunde->kKunde > 0}
                                                 <p><strong>Kdn:</strong> {$oKunde->kKunde}</p>
                                             {/if}
                                             <p><strong>Name:</strong> {$oKunde->cVorname} {$oKunde->cNachname}</p>
-                                            <p><strong>Stra&szlig;e:</strong> {$oKunde->cStrasse} {$oKunde->cHausnummer}</p>
+                                            <p><strong>Straße:</strong> {$oKunde->cStrasse} {$oKunde->cHausnummer}</p>
                                             <p><strong>Ort:</strong> {$oKunde->cPLZ} {$oKunde->cOrt}</p>
                                             <p><strong>E-Mail:</strong> {$oKunde->cMail}</p>
                                         </td>

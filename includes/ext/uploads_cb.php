@@ -17,7 +17,7 @@ function retCode($bOk)
 {
     die(json_encode(['status' => $bOk ? 'ok' : 'error']));
 }
-$session = \Session\Session::getInstance();
+$session = \Session\Frontend::getInstance();
 if (!Form::validateToken()) {
     retCode(0);
 }
@@ -91,7 +91,7 @@ if (!empty($_REQUEST['action'])) {
             break;
 
         case 'preview':
-            $oUpload   = new UploadDatei();
+            $oUpload   = new \Extensions\UploadDatei();
             $kKunde    = (int)$_SESSION['Kunde']->kKunde;
             $cFilePath = PFAD_ROOT . BILD_UPLOAD_ZUGRIFF_VERWEIGERT;
             $kUpload   = (int)Shop::Container()->getCryptoService()->decryptXTEA(rawurldecode($_REQUEST['secret']));

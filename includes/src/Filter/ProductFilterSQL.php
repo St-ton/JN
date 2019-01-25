@@ -10,6 +10,7 @@ use function Functional\reduce_left;
 
 /**
  * Class ProductFilterSQL
+ * @package Filter
  */
 class ProductFilterSQL implements ProductFilterSQLInterface
 {

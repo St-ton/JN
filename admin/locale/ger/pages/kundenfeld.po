@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "kundenfeld"
 msgstr "Selbstdefinierbare Kundenfelder"
 
@@ -66,3 +70,33 @@ msgstr "Einstellungen"
 
 msgid "kundenfeldCreate"
 msgstr "Neues Kundenfeld erstellen"
+
+msgid "successCustomerFieldDelete"
+msgstr "Die ausgewählten Kundenfelder wurden erfolgreich gelöscht."
+
+msgid "errorCustomerFieldDelete"
+msgstr "Die ausgewählten Kundenfelder konnten nicht gelöscht werden."
+
+msgid "errorAtLeastOneCustomerField"
+msgstr "Fehler: Bitte wählen Sie mindestens ein Kundenfeld aus."
+
+msgid "successCustomerFieldRefresh"
+msgstr "Ihre Kundenfelder wurden erfolgreich aktualisiert."
+
+msgid "errorCustomerFieldRefresh"
+msgstr "Ihre Kundenfelder konnten nicht aktualisiert werden."
+
+msgid "successCustomerFieldSave"
+msgstr "Ihr Kundenfeld wurde erfolgreich gespeichert."
+
+msgid "errorCustomerFieldSave"
+msgstr "Ihr Kundenfeld konnte nicht gespeichert werden."
+
+msgid "errorCustomerFieldNameExists"
+msgstr "Ein Feld mit diesen Namen existiert bereits!"
+
+msgid "errorLoginTemporaryNotPossible"
+msgstr "Anmeldung zur Zeit nicht möglich."
+
+msgid "errorLoginDataExpired"
+msgstr "Anmeldedaten nicht mehr gültig."

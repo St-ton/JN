@@ -33,12 +33,10 @@ class Bootstrapper extends AbstractItem
             return InstallCode::MISSING_BOOTSTRAP_CLASS;
         }
 
-        $bootstrapper = new $class((object)['cPluginID' => $namespace]);
+        $bootstrapper = new $class((object)['cPluginID' => $namespace], null, null);
 
-        if (!\is_subclass_of($bootstrapper, AbstractPlugin::class)) {
-            return InstallCode::INVALID_BOOTSTRAP_IMPLEMENTATION;
-        }
-
-        return InstallCode::OK;
+        return \is_subclass_of($bootstrapper, AbstractPlugin::class)
+            ? InstallCode::OK
+            : InstallCode::INVALID_BOOTSTRAP_IMPLEMENTATION;
     }
 }

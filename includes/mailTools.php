@@ -80,7 +80,7 @@ function sendeMail($ModulId, $Object, $mail = null)
     $kopie         = '';
     $mailSmarty    = new \Smarty\JTLSmarty(true, \Smarty\ContextType::MAIL);
     $mailSmarty->registerResource('db', new \Smarty\SmartyResourceNiceDB($db, \Smarty\ContextType::MAIL))
-               ->registerPlugin('function', 'includeMailTemplate', 'includeMailTemplate')
+               ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'includeMailTemplate', 'includeMailTemplate')
                ->setCaching(0)
                ->setDebugging(0)
                ->setCompileDir(PFAD_ROOT . PFAD_COMPILEDIR)
@@ -199,11 +199,10 @@ function sendeMail($ModulId, $Object, $mail = null)
             'kEmailvorlage',
             $mailTPL->kEmailvorlage
         );
-        // Assoc bauen
         if (is_array($mailTPL->oEinstellung_arr) && count($mailTPL->oEinstellung_arr) > 0) {
             $mailTPL->oEinstellungAssoc_arr = [];
-            foreach ($mailTPL->oEinstellung_arr as $oEinstellung) {
-                $mailTPL->oEinstellungAssoc_arr[$oEinstellung->cKey] = $oEinstellung->cValue;
+            foreach ($mailTPL->oEinstellung_arr as $conf) {
+                $mailTPL->oEinstellungAssoc_arr[$conf->cKey] = $conf->cValue;
             }
         }
     }
@@ -363,7 +362,8 @@ function sendeMail($ModulId, $Object, $mail = null)
             break;
 
         case MAILTEMPLATE_KUPON:
-            $mailSmarty->assign('Kupon', $Object->tkupon);
+            $mailSmarty->assign('Kupon', $Object->tkupon)
+                       ->assign('couponTypes', Kupon::getCouponTypes());
             break;
 
         case MAILTEMPLATE_KONTAKTFORMULAR:
@@ -728,10 +728,10 @@ function verschickeMail($mail)
         if (isset($mail->cPDFS_arr) && count($mail->cPDFS_arr) > 0) {
             $cUploadVerzeichnis = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
 
-            foreach ($mail->cPDFS_arr as $i => $cPDFS) {
+            foreach ($mail->cPDFS_arr as $i => $pdf) {
                 $phpmailer->addAttachment(
-                    $cUploadVerzeichnis . $cPDFS->fileName,
-                    $cPDFS->publicName . '.pdf',
+                    $cUploadVerzeichnis . $pdf->fileName,
+                    $pdf->publicName . '.pdf',
                     'base64',
                     'application/pdf'
                 );
@@ -906,16 +906,15 @@ function lokalisiereLieferadresse($oSprache, $oLieferadresse)
 function bauePDFArrayZumVeschicken($cPDF)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $cPDFTMP_arr        = explode(';', $cPDF);
-    $cPDF_arr           = [];
-    $cUploadVerzeichnis = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
-    foreach ($cPDFTMP_arr as $cPDFTMP) {
-        if (strlen($cPDFTMP) > 0 && file_exists($cUploadVerzeichnis . $cPDFTMP)) {
-            $cPDF_arr[] = $cPDFTMP;
+    $files     = [];
+    $uploadDir = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
+    foreach (explode(';', $cPDF) as $item) {
+        if (strlen($item) > 0 && file_exists($uploadDir . $item)) {
+            $files[] = $item;
         }
     }
 
-    return $cPDF_arr;
+    return $files;
 }
 
 /**
@@ -926,17 +925,17 @@ function bauePDFArrayZumVeschicken($cPDF)
  */
 function getPDFAttachments($cPDFs, $cNames)
 {
-    $result      = [];
-    $cPDFs_arr   = StringHandler::parseSSK(trim($cPDFs, ";\t\n\r\0"));
-    $cNames_arr  = StringHandler::parseSSK(trim($cNames, ";\t\n\r\0"));
-    $cUploadPath = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
+    $result    = [];
+    $pdfData   = StringHandler::parseSSK(trim($cPDFs, ";\t\n\r\0"));
+    $names     = StringHandler::parseSSK(trim($cNames, ";\t\n\r\0"));
+    $uploadDir = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
 
-    if (is_array($cPDFs_arr)) {
-        foreach ($cPDFs_arr as $key => $pdfFile) {
-            if (!empty($pdfFile) && file_exists($cUploadPath . $pdfFile)) {
+    if (is_array($pdfData)) {
+        foreach ($pdfData as $key => $pdfFile) {
+            if (!empty($pdfFile) && file_exists($uploadDir . $pdfFile)) {
                 $result[] = (object)[
                     'fileName'   => $pdfFile,
-                    'publicName' => $cNames_arr[$key] ?? $pdfFile,
+                    'publicName' => $names[$key] ?? $pdfFile,
                 ];
             }
         }
@@ -946,24 +945,21 @@ function getPDFAttachments($cPDFs, $cNames)
 }
 
 /**
- * @param string $cDateiname
+ * @param string $fileName
  * @return array
  * @deprecated since 4.05 - use getPDFAttachments instead
  */
-function baueDateinameArrayZumVeschicken($cDateiname)
+function baueDateinameArrayZumVeschicken($fileName)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $cDateinameTMP_arr = explode(';', $cDateiname);
-    $cDateiname_arr    = [];
-    if (count($cDateinameTMP_arr) > 0) {
-        foreach ($cDateinameTMP_arr as $cDateinameTMP) {
-            if (strlen($cDateinameTMP) > 0) {
-                $cDateiname_arr[] = $cDateinameTMP;
-            }
+    $fileNames = [];
+    foreach (explode(';', $fileName) as $item) {
+        if (strlen($item) > 0) {
+            $fileNames[] = $item;
         }
     }
 
-    return $cDateiname_arr;
+    return $fileNames;
 }
 
 /**

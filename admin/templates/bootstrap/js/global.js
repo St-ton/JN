@@ -520,6 +520,18 @@ $(document).ready(function () {
         massCreationCoupons();
     });
 
+    /*
+     * alert actions
+     */
+    $('.alert .close').on('click', function (){
+        $(this).parent().fadeOut(1000);
+    });
+
+    $('.alert').each(function(){
+        if ($(this).data('fade-out') > 0) {
+            $(this).fadeOut($(this).data('fade-out'));
+        }
+    });
 
     $("input[type=checkbox].tristate").prop("indeterminate", true).prop("readonly", true);
     $("input[type=checkbox].tristate").change(function(e){

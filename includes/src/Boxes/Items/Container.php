@@ -21,8 +21,8 @@ class Container extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        parent::addMapping('innerHTML', 'HTML');
-        parent::addMapping('oContainer_arr', 'Children');
+        $this->addMapping('innerHTML', 'HTML');
+        $this->addMapping('oContainer_arr', 'Children');
     }
 
     /**

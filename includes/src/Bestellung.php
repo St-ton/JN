@@ -7,6 +7,8 @@
 use Helpers\Tax;
 use Helpers\ShippingMethod;
 use Helpers\Cart;
+use Extensions\Download;
+use Extensions\Upload;
 
 /**
  * Class Bestellung
@@ -405,9 +407,10 @@ class Bestellung
         if (!($this->kWarenkorb > 0 || $nZahlungExtern > 0)) {
             return $this;
         }
+        $db               = Shop::Container()->getDB();
         $warenwert        = null;
         $date             = null;
-        $this->Positionen = Shop::Container()->getDB()->selectAll(
+        $this->Positionen = $db->selectAll(
             'twarenkorbpos',
             'kWarenkorb',
             (int)$this->kWarenkorb,
@@ -442,19 +445,19 @@ class Bestellung
             }
         }
 
-        $bestellstatus          = Shop::Container()->getDB()->select(
+        $bestellstatus          = $db->select(
             'tbestellstatus',
             'kBestellung',
             (int)$this->kBestellung
         );
         $this->BestellstatusURL = Shop::getURL() . '/status.php?uid=' . $bestellstatus->cUID;
-        $warenwert              = Shop::Container()->getDB()->query(
+        $warenwert              = $db->query(
             'SELECT sum(((fPreis*fMwSt)/100+fPreis)*nAnzahl) AS wert
                 FROM twarenkorbpos
                 WHERE kWarenkorb = ' . (int)$this->kWarenkorb,
             \DB\ReturnType::SINGLE_OBJECT
         );
-        $date                   = Shop::Container()->getDB()->query(
+        $date                   = $db->query(
             "SELECT date_format(dVersandDatum,'%d.%m.%Y') AS dVersanddatum_de,
                 date_format(dBezahltDatum,'%d.%m.%Y') AS dBezahldatum_de,
                 date_format(dErstellt,'%d.%m.%Y %H:%i:%s') AS dErstelldatum_de,
@@ -475,7 +478,7 @@ class Bestellung
         // Hole Netto- oder Bruttoeinstellung der Kundengruppe
         $nNettoPreis = 0;
         if ($this->kBestellung > 0) {
-            $oKundengruppeBestellung = Shop::Container()->getDB()->query(
+            $oKundengruppeBestellung = $db->query(
                 'SELECT tkundengruppe.nNettoPreise
                     FROM tkundengruppe
                     JOIN tbestellung 
@@ -492,7 +495,7 @@ class Bestellung
         $this->cBestellwertLocalized = Preise::getLocalizedPriceString($warenwert->wert ?? 0, $htmlWaehrung);
         $this->Status                = lang_bestellstatus((int)$this->cStatus);
         if ($this->kWaehrung > 0) {
-            $this->Waehrung = Shop::Container()->getDB()->select('twaehrung', 'kWaehrung', (int)$this->kWaehrung);
+            $this->Waehrung = $db->select('twaehrung', 'kWaehrung', (int)$this->kWaehrung);
             if ($this->fWaehrungsFaktor !== null && $this->fWaehrungsFaktor != 1 && isset($this->Waehrung->fFaktor)) {
                 $this->Waehrung->fFaktor = $this->fWaehrungsFaktor;
             }
@@ -507,7 +510,7 @@ class Bestellung
             );
             if ($this->kZahlungsart > 0) {
                 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-                $this->Zahlungsart = Shop::Container()->getDB()->select(
+                $this->Zahlungsart = $db->select(
                     'tzahlungsart',
                     'kZahlungsart',
                     (int)$this->kZahlungsart
@@ -570,16 +573,10 @@ class Bestellung
                 if ($bArtikel) {
                     $position->Artikel = (new Artikel())->fuelleArtikel($position->kArtikel, $defaultOptions);
                 }
-                // Downloads
-                if (class_exists('Download')) {
-                    $this->oDownload_arr = Download::getDownloads(['kBestellung' => $this->kBestellung], $kSprache);
-                }
-                // Uploads
-                if (class_exists('Upload')) {
-                    $this->oUpload_arr = Upload::gibBestellungUploads($this->kBestellung);
-                }
+                $this->oDownload_arr = Download::getDownloads(['kBestellung' => $this->kBestellung], $kSprache);
+                $this->oUpload_arr   = Upload::gibBestellungUploads($this->kBestellung);
                 if ($position->kWarenkorbPos > 0) {
-                    $position->WarenkorbPosEigenschaftArr = Shop::Container()->getDB()->selectAll(
+                    $position->WarenkorbPosEigenschaftArr = $db->selectAll(
                         'twarenkorbposeigenschaft',
                         'kWarenkorbPos',
                         (int)$position->kWarenkorbPos
@@ -610,7 +607,7 @@ class Bestellung
                 );
             }
             if (!isset($position->kSteuerklasse)) {
-                $taxClass = Shop::Container()->getDB()->select('tsteuersatz', 'fSteuersatz', $position->fMwSt);
+                $taxClass = $db->select('tsteuersatz', 'fSteuersatz', $position->fMwSt);
                 if ($taxClass !== null) {
                     $position->kSteuerklasse = $taxClass->kSteuerklasse;
                 }
@@ -716,7 +713,7 @@ class Bestellung
         $oData->cPLZ             = $this->oRechnungsadresse->cPLZ ?? ($this->Lieferadresse->cPLZ ?? '');
         $this->oLieferschein_arr = [];
         if ((int)$this->kBestellung > 0) {
-            $kLieferschein_arr = Shop::Container()->getDB()->selectAll(
+            $kLieferschein_arr = $db->selectAll(
                 'tlieferschein',
                 'kInetBestellung',
                 (int)$this->kBestellung,
@@ -796,11 +793,10 @@ class Bestellung
         }
         // Fallback for Non-Beta
         if ((int)$this->cStatus === BESTELLUNG_STATUS_VERSANDT) {
-            $positionCountB = count($this->Positionen);
-            for ($i = 0; $i < $positionCountB; $i++) {
-                $this->Positionen[$i]->nAusgeliefertGesamt = $this->Positionen[$i]->nAnzahl;
-                $this->Positionen[$i]->bAusgeliefert       = true;
-                $this->Positionen[$i]->nOffenGesamt        = 0;
+            foreach ($this->Positionen as $position) {
+                $position->nAusgeliefertGesamt = $position->nAnzahl;
+                $position->bAusgeliefert       = true;
+                $position->nOffenGesamt        = 0;
             }
         }
 
@@ -826,15 +822,15 @@ class Bestellung
         foreach ($this->Positionen as $position) {
             $position->nPosTyp = (int)$position->nPosTyp;
             if ($position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && $position->kArtikel > 0) {
-                $artikel                = new Artikel();
-                $artikel->kArtikel      = $position->kArtikel;
-                $AufgeklappteKategorien = new KategorieListe();
-                $kategorie              = new Kategorie($artikel->gibKategorie());
-                $AufgeklappteKategorien->getOpenCategories($kategorie);
+                $artikel            = new Artikel();
+                $artikel->kArtikel  = $position->kArtikel;
+                $expandedCategories = new KategorieListe();
+                $kategorie          = new Kategorie($artikel->gibKategorie());
+                $expandedCategories->getOpenCategories($kategorie);
                 $position->Category = '';
-                $elemCount          = count($AufgeklappteKategorien->elemente) - 1;
+                $elemCount          = count($expandedCategories->elemente) - 1;
                 for ($o = $elemCount; $o >= 0; $o--) {
-                    $position->Category = $AufgeklappteKategorien->elemente[$o]->cName;
+                    $position->Category = $expandedCategories->elemente[$o]->cName;
                     if ($o > 0) {
                         $position->Category .= ' / ';
                     }

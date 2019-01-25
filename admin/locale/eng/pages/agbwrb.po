@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "agbwrb"
 msgstr "AGB/Widerrufsbelehrung"
 
@@ -40,3 +44,11 @@ msgstr "Nein"
 msgid "trustedShopInfo"
 msgstr "Kostenlose Mustertexte zur Formulierung Ihrer AGB und WRB<br />finden Sie auf <i class=\"fa fa-external-link\"></i> <a href=\"http://www.trustedshops.de/shop-info/musterformulierungen\" target=\"_blank\">http://www.trustedshops.de/shop-info/musterformulierungen</a> Passwort: mustertexte<br /><br />Oder nutzen Sie alternativ das <b>Plugin janolaw AGB-Hosting</b> und erstellen Sie direkt online mithilfe eines Assistenten <b>individuell angepasste</b> und <b>dauerhaft abmahnsichere</b> AGB für Ihren Shop. Das Plugin bietet zusätzlich <b>alle weiteren wichtigen Shop-Dokumente - inklusive automatischer Updates bei neuer Rechtslage und Abmahnkostenhaftung</b>. Besser und günstiger kann man seinen Shop nicht vor Abmahnungen schützen. <br /><br /><i class=\"fa fa-external-link\"></i> <a href=\"http://www.janolaw.de/partner/jtl/agb-hosting-service/index.html?partnerid=8732#menu\" target=\"_blank\">Hier</a> können Sie den Service unseres Partners janolaw buchen."
 
+msgid "errorInvalidCustomerGroup"
+msgstr "Fehler: Bitte geben Sie eine gültige Kundengruppe an."
+
+msgid "successSave"
+msgstr "Ihre AGB bzw. WRB wurde erfolgreich gespeichert."
+
+msgid "errorSave"
+msgstr "Fehler: Ihre AGB/WRB konnte nicht gespeichert werden."

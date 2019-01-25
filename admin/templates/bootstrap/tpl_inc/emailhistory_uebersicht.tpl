@@ -26,12 +26,12 @@
                             <h4 class="modal-title">Achtung!</h4>
                         </div>
                         <div class="modal-body">
-                            <p>Wollen Sie wirklich das komplette eMail-Log l&ouml;schen?</p>
+                            <p>Wollen Sie wirklich das komplette eMail-Log löschen?</p>
                         </div>
                         <div class="modal-footer">
                             <div class="btn-group">
                                 <button type="button" class="btn btn-success" name="ok" id="submitForm"><i class="fa fa-check"></i>&nbsp;Ok</button>
-                                <button type="button" class="btn btn-danger" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;Abbrechen</button>
+                                <button type="button" class="btn btn-danger" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;{__('cancel')}</button>
                             </div>
                             </div>
                         </div>
@@ -58,7 +58,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach name=emailhistory from=$oEmailhistory_arr item=oEmailhistory}
+                        {foreach $oEmailhistory_arr as $oEmailhistory}
                             <tr>
                                 <td class="check">
                                     <input type="checkbox" name="kEmailhistory[]" value="{$oEmailhistory->getEmailhistory()}" />
@@ -76,7 +76,7 @@
                         <tr>
                             <td class="check">
                                 <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                            <td colspan="8"><label for="ALLMSGS">Alle ausw&auml;hlen</label></td>
+                            <td colspan="8"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
                         </tr>
                         </tfoot>
                     </table>

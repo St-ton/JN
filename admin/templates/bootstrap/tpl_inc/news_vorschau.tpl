@@ -21,7 +21,7 @@
             {/if}
             <input type="hidden" name="nd" value="1" />
             <div class="category">{__('newsComments')}</div>
-            {foreach name=kommentare from=$oNewsKommentar_arr item=oNewsKommentar}
+            {foreach $oNewsKommentar_arr as $oNewsKommentar}
                 <table width="100%" cellpadding="5" cellspacing="5" class="kundenfeld">
                     <tr>
                         <td valign="top" align="left" style="width: 33%;">
@@ -33,7 +33,7 @@
                                     <td>
                                         <strong>
                                             {*{if $oNewsKommentar->cVorname|strlen > 0}*}
-                                                {*<label for="nk-{$oNewsKommentar->getID()}">{$oNewsKommentar->cVorname} {$oNewsKommentar->cNachname|truncate:1:""}., {$oNewsKommentar->dErstellt_de}</label>*}
+                                                {*<label for="nk-{$oNewsKommentar->getID()}">{$oNewsKommentar->cVorname} {$oNewsKommentar->cNachname|truncate:1:''}., {$oNewsKommentar->dErstellt_de}</label>*}
                                             {*{else}*}
                                                 <label for="nk-{$oNewsKommentar->getID()}">{$oNewsKommentar->getName()}, {$oNewsKommentar->getDateCreated()->format('d.m.Y H:i')}</label>
                                             {*{/if}*}

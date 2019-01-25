@@ -1,4 +1,4 @@
-<select class="form-control {$class}" name="{$propname}" {if $required}required{/if}>
+<select id="config-{$propname}" class="form-control {$class}" name="{$propname}" {if $required}required{/if}>
     {foreach $options as $key => $val}
         {if stripos($key, 'optgroup') !== false}
             <optgroup label="{$val.label}">

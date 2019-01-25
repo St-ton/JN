@@ -8,10 +8,13 @@ namespace Mapper;
 
 use Cron\JobInterface;
 use Cron\Jobs\Export;
+use Cron\Jobs\ImageCache;
 use Cron\Jobs\Newsletter;
 use Cron\Jobs\Statusmail;
 use Cron\Jobs\GeneralDataProtect;
 use Cron\Type;
+use Events\Dispatcher;
+use Events\Event;
 
 /**
  * Class JobTypeToJob
@@ -26,6 +29,8 @@ class JobTypeToJob
     public function map(string $type): string
     {
         switch ($type) {
+            case Type::IMAGECACHE:
+                return ImageCache::class;
             case Type::EXPORT:
                 return Export::class;
             case Type::STATUSMAIL:
@@ -36,7 +41,7 @@ class JobTypeToJob
                 return GeneralDataProtect::class;
             default:
                 $mapping = null;
-                \Shop::Event()->fire(\Events\Event::MAP_CRONJOB_TYPE, ['type' => $type, 'mapping' => &$mapping]);
+                Dispatcher::getInstance()->fire(Event::MAP_CRONJOB_TYPE, ['type' => $type, 'mapping' => &$mapping]);
                 if ($mapping === null) {
                     throw new \InvalidArgumentException('Invalid job type: ' . $type);
                 }

@@ -24,7 +24,7 @@
                         <td style="width:{$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px;" class="text-center">
                             <div class="thumbnail">
                                 <a href="{$oArtikel->cURLFull}">
-                                    {image src=$oArtikel->cVorschaubild alt=$oArtikel->cName class="image"}
+                                    {imageTag src=$oArtikel->cVorschaubild alt=$oArtikel->cName class="image"}
                                 </a>
                             </div>
                             <p>

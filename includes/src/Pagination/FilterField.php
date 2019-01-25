@@ -53,10 +53,10 @@ abstract class FilterField
      * @param Filter       $filter
      * @param string       $type
      * @param string|array $title - either title-string for this field or a pair of short title and long title
-     * @param string       $column
+     * @param string|array $column
      * @param string       $defaultValue
      */
-    public function __construct($filter, string $type, $title, string $column, $defaultValue = '')
+    public function __construct($filter, string $type, $title, $column, $defaultValue = '')
     {
         $this->filter    = $filter;
         $this->type      = $type;

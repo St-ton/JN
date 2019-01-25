@@ -1,5 +1,5 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="bilder"}
+{config_load file="$lang.conf" section='bilder'}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('bilder') cBeschreibung=__('bilderDesc') cDokuURL=__('bilderURL')}
 <div id="content">
@@ -9,17 +9,17 @@
         <div id="settings">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Bildgr&ouml;&szlig;en</h3>
+                    <h3 class="panel-title">Bildgrößen</h3>
                 </div>
                 <div class="table-responsive">
                     <table class="list table table-images">
                         <thead>
                         <tr>
                             <th class="tleft">Typ</th>
-                            <th class="tcenter">Mini <small>(Breite x H&ouml;he)</small></th>
-                            <th class="tcenter">Klein <small>(Breite x H&ouml;he)</small></th>
-                            <th class="tcenter">Normal <small>(Breite x H&ouml;he)</small></th>
-                            <th class="tcenter">Gro&szlig; <small>(Breite x H&ouml;he)</small></th>
+                            <th class="tcenter">Mini <small>(Breite x Höhe)</small></th>
+                            <th class="tcenter">Klein <small>(Breite x Höhe)</small></th>
+                            <th class="tcenter">Normal <small>(Breite x Höhe)</small></th>
+                            <th class="tcenter">Groß <small>(Breite x Höhe)</small></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -144,7 +144,7 @@
                 </div>
             </div>
             {assign var=open value=false}
-            {foreach name=conf from=$oConfig_arr item=cnf}
+            {foreach $oConfig_arr as $cnf}
             {if $cnf->kEinstellungenConf == 267 || $cnf->kEinstellungenConf == 268 || $cnf->kEinstellungenConf == 269 || $cnf->kEinstellungenConf == 1135 || $cnf->kEinstellungenConf == 1421 || $cnf->kEinstellungenConf == 172 || $cnf->kEinstellungenConf == 161  || $cnf->kEinstellungenConf == 1483  || $cnf->kEinstellungenConf == 1484 || $cnf->kEinstellungenConf == 1485}
                 {if $cnf->cConf === 'Y'}
                     <div class="input-group item{if isset($cSuche) && $cnf->kEinstellungenConf == $cSuche} highlight{/if}">
@@ -154,8 +154,8 @@
                         {if $cnf->cInputTyp === 'selectbox'}
                             <span class="input-group-wrap">
                                 <select class="form-control" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
-                                    {foreach name=selectfor from=$cnf->ConfWerte item=wert}
-                                        <option value="{$wert->cWert}" {if $cnf->gesetzterWert==$wert->cWert}selected{/if}>{$wert->cName}</option>
+                                    {foreach $cnf->ConfWerte as $wert}
+                                        <option value="{$wert->cWert}" {if $cnf->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                     {/foreach}
                                 </select>
                             </span>

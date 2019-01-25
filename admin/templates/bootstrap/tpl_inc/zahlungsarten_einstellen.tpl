@@ -11,8 +11,8 @@
             </div>
             <div class="panel-body">
                 <ul class="jtl-list-group">
-                    {foreach name=sprachen from=$sprachen item=sprache}
-                        {assign var="cISO" value=$sprache->cISO}
+                    {foreach $sprachen as $sprache}
+                        {assign var=cISO value=$sprache->cISO}
                         <li class="input-group">
                             <span class="input-group-addon">
                                 <label for="cName_{$cISO}">{__('showedName')} ({$sprache->cNameDeutsch})</label>
@@ -27,8 +27,8 @@
                         <input class="form-control" type="text" name="cBild" id="cBild" value="{if isset($zahlungsart->cBild)}{$zahlungsart->cBild}{/if}" tabindex="1" />
                         <span class="input-group-addon">{getHelpDesc cDesc=__('pictureDesc')}</span>
                     </li>
-                    {foreach name=sprachen from=$sprachen item=sprache}
-                        {assign var="cISO" value=$sprache->cISO}
+                    {foreach $sprachen as $sprache}
+                        {assign var=cISO value=$sprache->cISO}
                         <li class="input-group">
                             <span class="input-group-addon">
                                 <label for="cGebuehrname_{$cISO}">{__('feeName')} ({$sprache->cNameDeutsch})</label>
@@ -43,8 +43,8 @@
                         <span class="input-group-wrap">
                             <select name="kKundengruppe[]" multiple size="6" id="kKundengruppe" class="form-control combo">
                                 <option value="0" {if isset($gesetzteKundengruppen[0]) && $gesetzteKundengruppen[0]}selected{/if}>{__('allCustomerGroups')}</option>
-                                {foreach name=kdgrp from=$kundengruppen item=kundengruppe}
-                                    {assign var="kKundengruppe" value=$kundengruppe->kKundengruppe}
+                                {foreach $kundengruppen as $kundengruppe}
+                                    {assign var=kKundengruppe value=$kundengruppe->kKundengruppe}
                                     <option value="{$kundengruppe->kKundengruppe}" {if isset($gesetzteKundengruppen[$kKundengruppe]) && $gesetzteKundengruppen[$kKundengruppe]}selected{/if}>{$kundengruppe->cName}</option>
                                 {/foreach}
                             </select>
@@ -58,8 +58,8 @@
                         <input class="form-control" type="text" name="nSort" id="nSort" value="{if isset($zahlungsart->nSort)}{$zahlungsart->nSort}{/if}" tabindex="3" />
                     </li>
 
-                    {foreach name=sprachen from=$sprachen item=sprache}
-                        {assign var="cISO" value=$sprache->cISO}
+                    {foreach $sprachen as $sprache}
+                        {assign var=cISO value=$sprache->cISO}
                         <li class="input-group">
                             <span class="input-group-addon">
                                 <label for="cHinweisTextShop_{$cISO}">{__('noticeTextShop')} ({$sprache->cNameDeutsch})</label>
@@ -68,8 +68,8 @@
                         </li>
                     {/foreach}
 
-                    {foreach name=sprachen from=$sprachen item=sprache}
-                        {assign var="cISO" value=$sprache->cISO}
+                    {foreach $sprachen as $sprache}
+                        {assign var=cISO value=$sprache->cISO}
                         <li class="input-group">
                             <span class="input-group-addon">
                                 <label for="cHinweisText_{$cISO}">{__('noticeTextEmail')} ({$sprache->cNameDeutsch})</label>
@@ -145,7 +145,7 @@
         </div>
         <div class="panel panel-default">
             {assign var=hasBody value=false}
-            {foreach name=conf from=$Conf item=cnf}
+            {foreach $Conf as $cnf}
             {if $cnf->cConf === 'Y'}
             {if $hasBody === false}<div class="panel-body">{assign var=hasBody value=true}{/if}
             <div class="input-group">
@@ -155,8 +155,8 @@
                 {if $cnf->cInputTyp === 'selectbox'}
                     <span class="input-group-wrap">
                         <select name="{$cnf->cWertName}" id="{$cnf->cWertName}" class="form-control combo">
-                            {foreach name=selectfor from=$cnf->ConfWerte item=wert}
-                                <option value="{$wert->cWert}" {if isset($cnf->gesetzterWert) && $cnf->gesetzterWert==$wert->cWert}selected{/if}>{$wert->cName}</option>
+                            {foreach $cnf->ConfWerte as $wert}
+                                <option value="{$wert->cWert}" {if isset($cnf->gesetzterWert) && $cnf->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                             {/foreach}
                         </select>
                     </span>

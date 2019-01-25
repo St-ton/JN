@@ -24,8 +24,8 @@
                 </span>
                 <input type="text" name="cTemplatename" id="cTemplatename" class="form-control{if isset($xPlausiVar_arr.cTemplatename)} fieldfillout{/if}" value="{if isset($xPostVar_arr.cTemplatename)}{$xPostVar_arr.cTemplatename}{elseif isset($Linkgruppe->cTemplatename)}{$Linkgruppe->cTemplatename}{/if}" />
             </div>
-            {foreach name=sprachen from=$sprachen item=sprache}
-                {assign var="cISO" value=$sprache->cISO}
+            {foreach $sprachen as $sprache}
+                {assign var=cISO value=$sprache->cISO}
                 <div class="input-group">
                     <span class="input-group-addon">
                         <label for="cName_{$cISO}">{__('showedName')} ({$sprache->cNameDeutsch})</label>

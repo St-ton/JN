@@ -12,11 +12,13 @@ if (auth()) {
     $zipFile   = checkFile();
     $return    = 2;
     $unzipPath = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($zipFile) . '_' . date('dhis') . '/';
+    $db        = Shop::Container()->getDB();
     if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
         Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile . ' to ' . $unzipPath);
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
+        $db->query('START TRANSACTION', \DB\ReturnType::DEFAULT);
         foreach ($syncFiles as $i => $xmlFile) {
             $d   = file_get_contents($xmlFile);
             $xml = XML_unserialize($d);
@@ -27,6 +29,7 @@ if (auth()) {
 
             removeTemporaryFiles($xmlFile);
         }
+        $db->query('COMMIT', \DB\ReturnType::DEFAULT);
         removeTemporaryFiles(substr($unzipPath, 0, -1), true);
     }
 }
@@ -106,7 +109,6 @@ function bearbeiteInsert($xml)
         $upd->dLetzteAktualisierung = 'NOW()';
         $db->update('tartikel', 'kArtikel', (int)$oArtikel->kArtikel, $upd);
         executeHook(HOOK_QUICKSYNC_XML_BEARBEITEINSERT, ['oArtikel' => $oArtikel]);
-        handlePriceRange((int)$oArtikel->kArtikel);
         // clear object cache for this article and its parent if there is any
         $parentArticle = $db->select(
             'tartikel',
@@ -125,6 +127,7 @@ function bearbeiteInsert($xml)
         $clearTags[] = (int)$oArtikel->kArtikel;
         versendeVerfuegbarkeitsbenachrichtigung($oArtikel);
     }
+    handlePriceRange($clearTags);
     Shop::Container()->getCache()->flushTags(\Functional\map(array_unique($clearTags), function ($e) {
         return CACHING_GROUP_ARTICLE . '_' . $e;
     }));

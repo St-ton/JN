@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Backend\AdminAccount;
 use DB\Services as DbService;
 use Filter\ProductFilter;
 use Helpers\Product;
@@ -1976,7 +1977,7 @@ final class Shop
         $container->setSingleton(\L10n\GetText::class, function () {
             return new \L10n\GetText();
         });
-        $container->setSingleton(\AdminAccount::class, function (Container $container) {
+        $container->setSingleton(AdminAccount::class, function (Container $container) {
             return new AdminAccount(
                 $container->getDB(),
                 $container->getBackendLogService(),

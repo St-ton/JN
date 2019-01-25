@@ -4,13 +4,24 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Backend;
+
+use AdminFavorite;
+use AdminLoginStatus;
+use DateTime;
+use Exception;
 use Helpers\Request;
 use Mapper\AdminLoginStatusMessageMapper;
 use Mapper\AdminLoginStatusToLogLevel;
 use Psr\Log\LoggerInterface;
+use Shop;
+use Sprache;
+use stdClass;
+use TwoFA;
 
 /**
  * Class AdminAccount
+ * @package Backend
  */
 class AdminAccount
 {
@@ -61,7 +72,8 @@ class AdminAccount
         LoggerInterface $logger,
         AdminLoginStatusMessageMapper $statusMessageMapper,
         AdminLoginStatusToLogLevel $levelMapper
-    ) {
+    )
+    {
         $this->db            = $db;
         $this->authLogger    = $logger;
         $this->messageMapper = $statusMessageMapper;
@@ -76,17 +88,17 @@ class AdminAccount
      */
     private function initDefaults(): void
     {
-        if (!isset($_SESSION['AdminAccount'])) {
-            $default                   = Sprache::getDefaultLanguage();
-            $adminAccount              = new stdClass();
-            $adminAccount->kSprache    = $default->kSprache;
-            $adminAccount->cISO        = $default->cISO;
-            $adminAccount->kAdminlogin = null;
-            $adminAccount->oGroup      = null;
-            $adminAccount->cLogin      = null;
-            $adminAccount->cMail       = null;
-            $adminAccount->cPass       = null;
-            $_SESSION['AdminAccount']  = $adminAccount;
+        if (!isset($_SESSION['adminAccount'])) {
+            $default                          = Sprache::getDefaultLanguage();
+            $adminAccount                     = new stdClass();
+            $adminAccount->kSprache           = $default->kSprache;
+            $adminAccount->cISO               = $default->cISO;
+            $adminAccount->kAdminlogin        = null;
+            $adminAccount->oGroup             = null;
+            $adminAccount->cLogin             = null;
+            $adminAccount->cMail              = null;
+            $adminAccount->cPass              = null;
+            $_SESSION['AdminAccount'] = $adminAccount;
         }
     }
 
@@ -127,9 +139,9 @@ class AdminAccount
                 $now       = new DateTime();
                 $diff      = $now->diff($createdAt);
                 $secs      = ($diff->format('%a') * (60 * 60 * 24)); // total days
-                $secs     += (int)$diff->format('%h') * (60 * 60); // hours
-                $secs     += (int)$diff->format('%i') * 60; // minutes
-                $secs     += (int)$diff->format('%s'); // seconds
+                $secs      += (int)$diff->format('%h') * (60 * 60); // hours
+                $secs      += (int)$diff->format('%i') * 60; // minutes
+                $secs      += (int)$diff->format('%s'); // seconds
                 if ($secs > (60 * 60 * 24)) {
                     return false;
                 }
@@ -247,7 +259,7 @@ class AdminAccount
             // login successful - update password hash
             $_SESSION['AdminAccount']->cPass  = md5($cPass);
             $_SESSION['AdminAccount']->cLogin = $cLogin;
-            $verified                         = true;
+            $verified                                 = true;
             if ($this->checkAndUpdateHash($cPass) === true) {
                 $oAdmin = $this->db->select(
                     'tadminlogin',
@@ -394,8 +406,8 @@ class AdminAccount
     }
 
     /**
-     * @param int $nAdminLoginGroup
-     * @param int $nAdminMenuGroup
+     * @param int    $nAdminLoginGroup
+     * @param int    $nAdminMenuGroup
      * @param string $keyPrefix
      * @return array
      * @deprecated since 5.0.0
@@ -487,8 +499,8 @@ class AdminAccount
         if (isset($_SESSION['AdminAccount']->cLogin, $_POST['TwoFA_code'])) {
             $twoFA = new TwoFA();
             $twoFA->setUserByName($_SESSION['AdminAccount']->cLogin);
-            $valid                                 = $twoFA->isCodeValid($_POST['TwoFA_code']);
-            $this->twoFaAuthenticated              = $valid;
+            $valid                                         = $twoFA->isCodeValid($_POST['TwoFA_code']);
+            $this->twoFaAuthenticated                      = $valid;
             $_SESSION['AdminAccount']->TwoFA_valid = $valid;
 
             return $valid;
@@ -532,8 +544,8 @@ class AdminAccount
             $_SESSION['AdminAccount']->oGroup = $group;
 
             $this->setLastLogin($admin->cLogin)
-                 ->setRetryCount($admin->cLogin, true)
-                 ->validateSession();
+                ->setRetryCount($admin->cLogin, true)
+                ->validateSession();
         }
 
         return $this;

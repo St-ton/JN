@@ -503,7 +503,7 @@ class Konfigitem implements \JsonSerializable
     public function getBildPfad(): ?string
     {
         return $this->oArtikel && $this->oArtikel->Bilder[0]->cPfadKlein !== \BILD_KEIN_ARTIKELBILD_VORHANDEN
-            ? $this->oArtikel->Bilder[0]
+            ? $this->oArtikel->Bilder[0]->cPfadKlein
             : null;
     }
 

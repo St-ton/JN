@@ -9,8 +9,8 @@ use JTLShop\SemVer\Version;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-/** @global Smarty\JTLSmarty $smarty */
-/** @global AdminAccount $oAccount */
+/** @global \Smarty\JTLSmarty     $smarty */
+/** @global \Backend\AdminAccount $oAccount */
 $oUpdater = new Updater();
 $cFehler  = '';
 if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
@@ -164,27 +164,22 @@ function redirectToURI($szURI)
 
 unset($_SESSION['AdminAccount']->TwoFA_active);
 if ($oAccount->getIsAuthenticated()) {
-    // at this point, the user is logged in with his regular credentials
     if (!$oAccount->getIsTwoFaAuthenticated()) {
-        // activate the 2FA-code input-field in the login-template(-page)
         $_SESSION['AdminAccount']->TwoFA_active = true;
-        $_SESSION['jtl_token']                  = $_POST['jtl_token'] ?? ''; // restore first generated token from POST!
-        // if our check failed, we redirect to login
+        // restore first generated token from POST
+        $_SESSION['jtl_token'] = $_POST['jtl_token'] ?? '';
         if (isset($_POST['TwoFA_code']) && '' !== $_POST['TwoFA_code']) {
             if ($oAccount->doTwoFA()) {
                 $_SESSION['AdminAccount']->TwoFA_expired = false;
                 $_SESSION['AdminAccount']->TwoFA_valid   = true;
-                $_SESSION['loginIsValid']                = true; // "enable" the "header.tpl"-navigation again
-                $smarty->assign('cFehler', ''); // reset a previously (falsely arised) error-message
-
-                openDashboard(); // and exit here
+                $_SESSION['loginIsValid']                = true;
+                $smarty->assign('cFehler', '');
+                openDashboard();
             }
         } else {
             $_SESSION['AdminAccount']->TwoFA_expired = true;
         }
         \Shop::Container()->getGetText()->loadAdminLocale('pages/login');
-        // "redirect" to the "login not valid"
-        // (we've received a wrong code and give the user the chance to retry)
         $oAccount->redirectOnUrl();
         $smarty->assign('uri', isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0
             ? trim($_REQUEST['uri'])

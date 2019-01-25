@@ -6,7 +6,7 @@
 
 use Helpers\Form;
 
-/** @global AdminAccount $oAccount */
+/** @global \Backend\AdminAccount $oAccount */
 
 require_once __DIR__ . '/includes/admininclude.php';
 

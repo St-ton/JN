@@ -47,3 +47,4 @@ class_alias(\Backend\Status::class, 'Status', true);
 class_alias(\Backend\Notification::class, 'Notification', true);
 class_alias(\Backend\NotificationEntry::class, 'NotificationEntry', true);
 class_alias(\Backend\AdminAccount::class, 'AdminAccount', true);
+class_alias(\Backend\AdminTemplate::class, 'AdminTemplate', true);

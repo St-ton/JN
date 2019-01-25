@@ -265,7 +265,7 @@ class Warenkorb
             }
             $neuePos = false;
             // hat diese Position schon einen EigenschaftWert ausgewaehlt
-            // und ist das dieselbe eigenschaft wie ausgewaehlt?
+            // und ist das dieselbe Eigenschaft wie ausgewaehlt?
             if (!$cUnique) {
                 foreach ($Position->WarenkorbPosEigenschaftArr as $wke) {
                     foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {
@@ -273,8 +273,8 @@ class Warenkorb
                         if ($oEigenschaftwerte->kEigenschaft != $wke->kEigenschaft) {
                             continue;
                         }
-                        // ist es ein Freifeld mit unterschieldichem Inhalt
-                        // oder eine Eigenschaft mit unterschielichem Wert?
+                        // ist es ein Freifeld mit unterschiedlichem Inhalt
+                        // oder eine Eigenschaft mit unterschiedlichem Wert?
                         if (($wke->kEigenschaftWert > 0
                                 && $wke->kEigenschaftWert != $oEigenschaftwerte->kEigenschaftWert)
                             || (($wke->cTyp === 'FREIFELD' || $wke->cTyp === 'PFLICHT-FREIFELD')

@@ -86,7 +86,7 @@ class AdminAccount
      */
     private function initDefaults(): void
     {
-        if (!isset($_SESSION['adminAccount'])) {
+        if (!isset($_SESSION['AdminAccount'])) {
             $default                   = \Sprache::getDefaultLanguage();
             $adminAccount              = new \stdClass();
             $adminAccount->kSprache    = $default->kSprache;

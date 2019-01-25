@@ -4,8 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Backend;
+
 /**
  * Class DirManager
+ * @package Backend
  */
 class DirManager
 {
@@ -34,27 +37,26 @@ class DirManager
      */
     public function getData(string $path, callable $userfunc = null, array $parameters = null): self
     {
-        // Linux or Windows?
         $islinux = true;
-        if (strpos($path, '\\') !== false) {
+        if (\strpos($path, '\\') !== false) {
             $islinux = false;
         }
         if ($islinux) {
-            if (strpos(substr($path, strlen($path) - 1, 1), '/') === false) {
+            if (\strpos(\substr($path, \strlen($path) - 1, 1), '/') === false) {
                 $path .= '/';
             }
-        } elseif (strpos(substr($path, strlen($path) - 1, 1), '\\') === false) {
+        } elseif (\strpos(\substr($path, \strlen($path) - 1, 1), '\\') === false) {
             $path .= '\\';
         }
-        if (is_dir($path)) {
+        if (\is_dir($path)) {
             $this->path = $path;
-            $dirhandle  = @opendir($path);
+            $dirhandle  = @\opendir($path);
             if ($dirhandle) {
-                while (($file = readdir($dirhandle)) !== false) {
+                while (($file = \readdir($dirhandle)) !== false) {
                     if ($file !== '.' && $file !== '..' && $file !== '.svn' && $file !== '.git') {
                         $this->filename = $file;
                         // Go 1 level deeper
-                        if (is_dir($path . $file)) {
+                        if (\is_dir($path . $file)) {
                             $this->isdir = true;
                             $this->getData($path . $file, $userfunc, $parameters);
                         }
@@ -64,11 +66,11 @@ class DirManager
                             'path'     => $path,
                             'isdir'    => false
                         ];
-                        if (is_dir($path . $file)) {
+                        if (\is_dir($path . $file)) {
                             $options['isdir'] = true;
                         }
-                        if ($parameters !== null && is_array($parameters)) {
-                            $options = array_merge($options, $parameters);
+                        if ($parameters !== null && \is_array($parameters)) {
+                            $options = \array_merge($options, $parameters);
                         }
                         if ($userfunc !== null) {
                             $userfunc($options);
@@ -76,7 +78,7 @@ class DirManager
                     }
                 }
 
-                @closedir($dirhandle);
+                @\closedir($dirhandle);
             }
         }
 

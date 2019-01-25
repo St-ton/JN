@@ -6,6 +6,7 @@
 
 namespace Plugin;
 
+use Backend\Notification;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use Events\Dispatcher;
@@ -60,7 +61,7 @@ abstract class AbstractPlugin implements PluginInterface
      */
     public function boot(Dispatcher $dispatcher)
     {
-        $dispatcher->listen('backend.notification', function (\Notification $notify) use (&$dispatcher) {
+        $dispatcher->listen('backend.notification', function (Notification $notify) use (&$dispatcher) {
             $dispatcher->forget('backend.notification');
             foreach ($this->notifications as $n) {
                 $notify->addNotify($n);

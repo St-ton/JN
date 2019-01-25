@@ -4,8 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Backend;
+
+use Exception;
 use Helpers\Template as TemplateHelper;
 use function Functional\some;
+use Image;
+use MediaImage;
+use Profiler;
+use Shop;
+use SingletonTrait;
+use stdClass;
+use Systemcheck_Environment;
+use Systemcheck_Platform_Filesystem;
+use Systemcheck_Platform_Hosting;
+use Template;
+use Updater;
+use ZahlungsLog;
 
 /**
  * Class Status
@@ -352,17 +367,17 @@ class Status
         return isset($conf['suche_fulltext'])
             && $conf['suche_fulltext'] !== 'N'
             && (!Shop::Container()->getDB()->query(
-                "SHOW INDEX 
+                    "SHOW INDEX 
                 FROM tartikel 
                 WHERE KEY_NAME = 'idx_tartikel_fulltext'",
-                \DB\ReturnType::SINGLE_OBJECT
-            )
-            || !Shop::Container()->getDB()->query(
-                "SHOW INDEX 
+                    \DB\ReturnType::SINGLE_OBJECT
+                )
+                || !Shop::Container()->getDB()->query(
+                    "SHOW INDEX 
                     FROM tartikelsprache 
                     WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
-                \DB\ReturnType::SINGLE_OBJECT
-            ));
+                    \DB\ReturnType::SINGLE_OBJECT
+                ));
     }
 
     /**

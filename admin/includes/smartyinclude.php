@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Backend\Notification;
 use Helpers\Form;
-use Helpers\GeneralObject;
 use Helpers\Request;
 
 require_once __DIR__ . '/admin_menu.php';

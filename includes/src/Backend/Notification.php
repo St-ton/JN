@@ -4,6 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Backend;
+
+use ArrayIterator;
+use Backend\Status;
+use Countable;
+use Exception;
+use IteratorAggregate;
+use NotificationEntry;
+use Shop;
+use SingletonTrait;
+
 /**
  * Class Notification.
  */
@@ -130,7 +141,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_INFO,
                 'Template',
                 'Sie nutzen ein Full-Responsive-Template. ' .
-                    'Die Aktivierung eines separaten Mobile-Templates ist in diesem Fall nicht notwendig.',
+                'Die Aktivierung eines separaten Mobile-Templates ist in diesem Fall nicht notwendig.',
                 'shoptemplate.php'
             );
         }
@@ -205,8 +216,8 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_WARNING,
                 'E-Mail-Vorlage defekt',
                 'Die E-Mail-Vorlage "Passwort Vergessen" ist veraltet.<br>' .
-                    'Die Variable $neues_passwort ist nicht mehr verfügbar.<br>' .
-                    'Bitte ersetzen Sie diese durch $passwordResetLink oder setzen Sie die Vorlage zurück.'
+                'Die Variable $neues_passwort ist nicht mehr verfügbar.<br>' .
+                'Bitte ersetzen Sie diese durch $passwordResetLink oder setzen Sie die Vorlage zurück.'
             );
         }
 

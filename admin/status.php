@@ -12,6 +12,6 @@
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->redirectOnFailure();
 
-$smarty->assign('status', Status::getInstance())
+$smarty->assign('status', \Backend\Status::getInstance())
        ->assign('sub', Shop::Container()->get(\Network\JTLApi::class)->getSubscription())
        ->display('status.tpl');

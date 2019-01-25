@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Backend\Notification;
 use Helpers\Form;
 use JTLShop\SemVer\Version;
 

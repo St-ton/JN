@@ -289,11 +289,12 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
-     * @return $this
+     * @return string
      */
-    public function updateAttributes(): self
+    public function getStyleString(): string
     {
         $styleString = '';
+
         foreach ($this->getStyles() as $styleName => $styleValue) {
             if (!empty($styleValue)) {
                 if (\strpos($styleName, 'hidden-') !== false && !empty($styleValue)) {
@@ -311,7 +312,15 @@ class PortletInstance implements \JsonSerializable
             }
         }
 
-        $this->setAttribute('style', $styleString);
+        return $styleString;
+    }
+
+    /**
+     * @return $this
+     */
+    public function updateAttributes(): self
+    {
+        $this->setAttribute('style', $this->getStyleString());
 
         foreach ($this->getAnimations() as $aniName => $aniValue) {
             if ($aniName === 'animation-style' && !empty($aniValue)) {
@@ -360,6 +369,14 @@ class PortletInstance implements \JsonSerializable
      * @return string
      */
     public function getDataAttribute(): string
+    {
+        return \htmlspecialchars(\json_encode($this->jsonSerializeShort()), \ENT_QUOTES);
+    }
+
+    /**
+     * @return string
+     */
+    public function getDataArray(): array
     {
         return \htmlspecialchars(\json_encode($this->jsonSerializeShort()), \ENT_QUOTES);
     }

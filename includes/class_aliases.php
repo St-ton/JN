@@ -42,3 +42,7 @@ class_alias(\Extensions\AuswahlAssistent::class, 'AuswahlAssistent', true);
 class_alias(\Extensions\AuswahlAssistentFrage::class, 'AuswahlAssistentFrage', true);
 class_alias(\Extensions\AuswahlAssistentGruppe::class, 'AuswahlAssistentGruppe', true);
 class_alias(\Extensions\AuswahlAssistentOrt::class, 'AuswahlAssistentOrt', true);
+class_alias(\Backend\Revision::class, 'Revision', true);
+class_alias(\Backend\Status::class, 'Status', true);
+class_alias(\Backend\Notification::class, 'Notification', true);
+class_alias(\Backend\NotificationEntry::class, 'NotificationEntry', true);

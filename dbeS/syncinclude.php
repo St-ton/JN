@@ -55,8 +55,10 @@ if (!function_exists('Shop')) {
     }
 }
 
-$DB    = new \DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-$cache = Shop::Container()->getCache()->setJtlCacheConfig();
+$db    = new \DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+$cache = Shop::Container()->getCache()->setJtlCacheConfig(
+    $db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)
+);
 
 $GLOBALS['bSeo'] = true; //compatibility!
 $pluginHooks     = \Plugin\Helper::getHookList();
@@ -185,47 +187,48 @@ function DBinsert($tablename, $object)
 
 /**
  * @param string   $tablename
- * @param array    $object_arr
+ * @param array    $objects
  * @param int|bool $del
  */
-function DBDelInsert($tablename, $object_arr, $del)
+function DBDelInsert($tablename, $objects, $del)
 {
-    if (is_array($object_arr)) {
-        $db = Shop::Container()->getDB();
-        if ($del) {
-            $db->query('DELETE FROM ' . $tablename, \DB\ReturnType::DEFAULT);
+    if (!is_array($objects)) {
+        return;
+    }
+    $db = Shop::Container()->getDB();
+    if ($del) {
+        $db->query('DELETE FROM ' . $tablename, \DB\ReturnType::DEFAULT);
+    }
+    foreach ($objects as $object) {
+        //hack? unset arrays/objects that would result in nicedb exceptions
+        foreach (get_object_vars($object) as $key => $var) {
+            if (is_array($var) || is_object($var)) {
+                unset($object->$key);
+            }
         }
-        foreach ($object_arr as $object) {
-            //hack? unset arrays/objects that would result in nicedb exceptions
-            foreach (get_object_vars($object) as $key => $var) {
-                if (is_array($var) || is_object($var)) {
-                    unset($object->$key);
-                }
-            }
-            $key = $db->insert($tablename, $object);
-            if (!$key) {
-                Shop::Container()->getLogService()->error(
-                    'DBDelInsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' .
-                    print_r($object, true)
-                );
-            }
+        $key = $db->insert($tablename, $object);
+        if (!$key) {
+            Shop::Container()->getLogService()->error(
+                'DBDelInsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' .
+                print_r($object, true)
+            );
         }
     }
 }
 
 /**
  * @param string     $tablename
- * @param array      $object_arr
+ * @param array      $objects
  * @param string     $pk1
  * @param string|int $pk2
  */
-function DBUpdateInsert($tablename, $object_arr, $pk1, $pk2 = 0)
+function DBUpdateInsert($tablename, $objects, $pk1, $pk2 = 0)
 {
-    if (!is_array($object_arr)) {
+    if (!is_array($objects)) {
         return;
     }
     $db = Shop::Container()->getDB();
-    foreach ($object_arr as $object) {
+    foreach ($objects as $object) {
         if (isset($object->$pk1) && !$pk2 && $pk1 && $object->$pk1) {
             $db->delete($tablename, $pk1, $object->$pk1);
         }

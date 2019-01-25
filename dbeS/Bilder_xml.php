@@ -192,7 +192,8 @@ function bearbeite($xml, string $unzipPath)
     $merkmalbild_arr         = mapArray($xml['bilder'], 'tMerkmalbild', $GLOBALS['mEigenschaftWertPict']);
     $konfigartikelbild_arr   = mapArray($xml['bilder'], 'tkonfiggruppebild', $GLOBALS['mKonfiggruppePict']);
 
-    $db = Shop::Container()->getDB();
+    $db   = Shop::Container()->getDB();
+    $conf = Shop::getSettings([CONF_BILDER]);
 
     executeHook(HOOK_BILDER_XML_BEARBEITE, [
         'Pfad'             => $unzipPath,
@@ -288,11 +289,11 @@ function bearbeite($xml, string $unzipPath)
                 $GLOBALS['oBranding_arr']['Kategorie'],
                 $unzipPath . $imgFilename,
                 PFAD_KATEGORIEBILDER . $Kategoriebild->cPfad,
-                $GLOBALS['Einstellungen']['bilder']['bilder_kategorien_breite'],
-                $GLOBALS['Einstellungen']['bilder']['bilder_kategorien_hoehe'],
-                $GLOBALS['Einstellungen']['bilder']['bilder_jpg_quali'],
+                $conf['bilder']['bilder_kategorien_breite'],
+                $conf['bilder']['bilder_kategorien_hoehe'],
+                $conf['bilder']['bilder_jpg_quali'],
                 1,
-                $GLOBALS['Einstellungen']['bilder']['container_verwenden']
+                $conf['bilder']['container_verwenden']
             )) {
                 DBUpdateInsert('tkategoriepict', [$Kategoriebild], 'kKategorie');
             }
@@ -317,27 +318,27 @@ function bearbeite($xml, string $unzipPath)
                 $GLOBALS['oBranding_arr']['Variationen'],
                 $unzipPath . $imgFilename,
                 PFAD_VARIATIONSBILDER_GROSS . $Eigenschaftwertbild->cPfad,
-                $GLOBALS['Einstellungen']['bilder']['bilder_variationen_gross_breite'],
-                $GLOBALS['Einstellungen']['bilder']['bilder_variationen_gross_hoehe'],
-                $GLOBALS['Einstellungen']['bilder']['bilder_jpg_quali'],
+                $conf['bilder']['bilder_variationen_gross_breite'],
+                $conf['bilder']['bilder_variationen_gross_hoehe'],
+                $conf['bilder']['bilder_jpg_quali'],
                 1,
-                $GLOBALS['Einstellungen']['bilder']['container_verwenden']
+                $conf['bilder']['container_verwenden']
             );
             erstelleThumbnailBranded(
                 PFAD_ROOT . PFAD_VARIATIONSBILDER_GROSS . $Eigenschaftwertbild->cPfad,
                 PFAD_VARIATIONSBILDER_NORMAL . $Eigenschaftwertbild->cPfad,
-                $GLOBALS['Einstellungen']['bilder']['bilder_variationen_breite'],
-                $GLOBALS['Einstellungen']['bilder']['bilder_variationen_hoehe'],
-                $GLOBALS['Einstellungen']['bilder']['bilder_jpg_quali'],
-                $GLOBALS['Einstellungen']['bilder']['container_verwenden']
+                $conf['bilder']['bilder_variationen_breite'],
+                $conf['bilder']['bilder_variationen_hoehe'],
+                $conf['bilder']['bilder_jpg_quali'],
+                $conf['bilder']['container_verwenden']
             );
             if (erstelleThumbnailBranded(
                 PFAD_ROOT . PFAD_VARIATIONSBILDER_GROSS . $Eigenschaftwertbild->cPfad,
                 PFAD_VARIATIONSBILDER_MINI . $Eigenschaftwertbild->cPfad,
-                $GLOBALS['Einstellungen']['bilder']['bilder_variationen_mini_breite'],
-                $GLOBALS['Einstellungen']['bilder']['bilder_variationen_mini_hoehe'],
-                $GLOBALS['Einstellungen']['bilder']['bilder_jpg_quali'],
-                $GLOBALS['Einstellungen']['bilder']['container_verwenden']
+                $conf['bilder']['bilder_variationen_mini_breite'],
+                $conf['bilder']['bilder_variationen_mini_hoehe'],
+                $conf['bilder']['bilder_jpg_quali'],
+                $conf['bilder']['container_verwenden']
             )) {
                 DBUpdateInsert('teigenschaftwertpict', [$Eigenschaftwertbild], 'kEigenschaftWert');
             }
@@ -372,19 +373,19 @@ function bearbeite($xml, string $unzipPath)
                 $GLOBALS['oBranding_arr']['Hersteller'],
                 $unzipPath . $imgFilename,
                 PFAD_HERSTELLERBILDER_NORMAL . $Herstellerbild->cPfad,
-                $GLOBALS['Einstellungen']['bilder']['bilder_hersteller_normal_breite'],
-                $GLOBALS['Einstellungen']['bilder']['bilder_hersteller_normal_hoehe'],
-                $GLOBALS['Einstellungen']['bilder']['bilder_jpg_quali'],
+                $conf['bilder']['bilder_hersteller_normal_breite'],
+                $conf['bilder']['bilder_hersteller_normal_hoehe'],
+                $conf['bilder']['bilder_jpg_quali'],
                 1,
-                $GLOBALS['Einstellungen']['bilder']['container_verwenden']
+                $conf['bilder']['container_verwenden']
             );
             if (erstelleThumbnailBranded(
                 PFAD_ROOT . PFAD_HERSTELLERBILDER_NORMAL . $Herstellerbild->cPfad,
                 PFAD_HERSTELLERBILDER_KLEIN . $Herstellerbild->cPfad,
-                $GLOBALS['Einstellungen']['bilder']['bilder_hersteller_klein_breite'],
-                $GLOBALS['Einstellungen']['bilder']['bilder_hersteller_klein_hoehe'],
-                $GLOBALS['Einstellungen']['bilder']['bilder_jpg_quali'],
-                $GLOBALS['Einstellungen']['bilder']['container_verwenden']
+                $conf['bilder']['bilder_hersteller_klein_breite'],
+                $conf['bilder']['bilder_hersteller_klein_hoehe'],
+                $conf['bilder']['bilder_jpg_quali'],
+                $conf['bilder']['container_verwenden']
             )) {
                 //thersteller updaten
                 $db->update(
@@ -425,19 +426,19 @@ function bearbeite($xml, string $unzipPath)
                 $GLOBALS['oBranding_arr']['Merkmale'],
                 $unzipPath . $imgFilename,
                 PFAD_MERKMALBILDER_NORMAL . $Merkmalbild->cPfad,
-                $GLOBALS['Einstellungen']['bilder']['bilder_merkmal_normal_breite'],
-                $GLOBALS['Einstellungen']['bilder']['bilder_merkmal_normal_hoehe'],
-                $GLOBALS['Einstellungen']['bilder']['bilder_jpg_quali'],
+                $conf['bilder']['bilder_merkmal_normal_breite'],
+                $conf['bilder']['bilder_merkmal_normal_hoehe'],
+                $conf['bilder']['bilder_jpg_quali'],
                 1,
-                $GLOBALS['Einstellungen']['bilder']['container_verwenden']
+                $conf['bilder']['container_verwenden']
             );
             if (erstelleThumbnailBranded(
                 PFAD_ROOT . PFAD_MERKMALBILDER_NORMAL . $Merkmalbild->cPfad,
                 PFAD_MERKMALBILDER_KLEIN . $Merkmalbild->cPfad,
-                $GLOBALS['Einstellungen']['bilder']['bilder_merkmal_klein_breite'],
-                $GLOBALS['Einstellungen']['bilder']['bilder_merkmal_klein_hoehe'],
-                $GLOBALS['Einstellungen']['bilder']['bilder_jpg_quali'],
-                $GLOBALS['Einstellungen']['bilder']['container_verwenden']
+                $conf['bilder']['bilder_merkmal_klein_breite'],
+                $conf['bilder']['bilder_merkmal_klein_hoehe'],
+                $conf['bilder']['bilder_jpg_quali'],
+                $conf['bilder']['container_verwenden']
             )) {
                 $db->update(
                     'tmerkmal',
@@ -467,19 +468,19 @@ function bearbeite($xml, string $unzipPath)
                 $GLOBALS['oBranding_arr']['Merkmalwerte'],
                 $unzipPath . $imgFilename,
                 PFAD_MERKMALWERTBILDER_NORMAL . $Merkmalwertbild->cPfad,
-                $GLOBALS['Einstellungen']['bilder']['bilder_merkmalwert_normal_breite'],
-                $GLOBALS['Einstellungen']['bilder']['bilder_merkmalwert_normal_hoehe'],
-                $GLOBALS['Einstellungen']['bilder']['bilder_jpg_quali'],
+                $conf['bilder']['bilder_merkmalwert_normal_breite'],
+                $conf['bilder']['bilder_merkmalwert_normal_hoehe'],
+                $conf['bilder']['bilder_jpg_quali'],
                 1,
-                $GLOBALS['Einstellungen']['bilder']['container_verwenden']
+                $conf['bilder']['container_verwenden']
             );
             if (erstelleThumbnailBranded(
                 PFAD_ROOT . PFAD_MERKMALWERTBILDER_NORMAL . $Merkmalwertbild->cPfad,
                 PFAD_MERKMALWERTBILDER_KLEIN . $Merkmalwertbild->cPfad,
-                $GLOBALS['Einstellungen']['bilder']['bilder_merkmalwert_klein_breite'],
-                $GLOBALS['Einstellungen']['bilder']['bilder_merkmalwert_klein_hoehe'],
-                $GLOBALS['Einstellungen']['bilder']['bilder_jpg_quali'],
-                $GLOBALS['Einstellungen']['bilder']['container_verwenden']
+                $conf['bilder']['bilder_merkmalwert_klein_breite'],
+                $conf['bilder']['bilder_merkmalwert_klein_hoehe'],
+                $conf['bilder']['bilder_jpg_quali'],
+                $conf['bilder']['container_verwenden']
             )) {
                 $db->update(
                     'tmerkmalwert',
@@ -524,11 +525,11 @@ function bearbeite($xml, string $unzipPath)
                 $oBranding,
                 $unzipPath . $imgFilename,
                 PFAD_KONFIGURATOR_KLEIN . $oKonfig->cBildPfad,
-                $GLOBALS['Einstellungen']['bilder']['bilder_konfiggruppe_klein_breite'],
-                $GLOBALS['Einstellungen']['bilder']['bilder_konfiggruppe_klein_hoehe'],
-                $GLOBALS['Einstellungen']['bilder']['bilder_jpg_quali'],
+                $conf['bilder']['bilder_konfiggruppe_klein_breite'],
+                $conf['bilder']['bilder_konfiggruppe_klein_hoehe'],
+                $conf['bilder']['bilder_jpg_quali'],
                 1,
-                $GLOBALS['Einstellungen']['bilder']['container_verwenden']
+                $conf['bilder']['container_verwenden']
             )) {
                 $db->update(
                     'tkonfiggruppe',
@@ -613,7 +614,9 @@ function gibEigenschaftwertbildname($Eigenschaftwertbild, $Bildformat)
 {
     global $cSQL;
 
-    if (!$Eigenschaftwertbild->kEigenschaftWert || !$GLOBALS['Einstellungen']['bilder']['bilder_variation_namen']) {
+    $conf = Shop::getSettings([CONF_BILDER]);
+
+    if (!$Eigenschaftwertbild->kEigenschaftWert || !$conf['bilder']['bilder_variation_namen']) {
         return (stripos(strrev($Eigenschaftwertbild->cPfad), strrev($Bildformat)) === 0)
             ? $Eigenschaftwertbild->cPfad
             : $Eigenschaftwertbild->cPfad . '.' . $Bildformat;
@@ -626,7 +629,7 @@ function gibEigenschaftwertbildname($Eigenschaftwertbild, $Bildformat)
     );
     $Bildname        = $Eigenschaftwert->kEigenschaftWert;
     if ($Eigenschaftwert->cName) {
-        switch ($GLOBALS['Einstellungen']['bilder']['bilder_variation_namen']) {
+        switch ($conf['bilder']['bilder_variation_namen']) {
             case 1:
                 if (!empty($Eigenschaftwert->cArtNr)) {
                     $Bildname = 'var' . gibAusgeschriebeneUmlaute($Eigenschaftwert->cArtNr);
@@ -702,7 +705,9 @@ function gibKategoriebildname($Kategoriebild, $Bildformat)
 {
     global $cSQL;
 
-    if (!$Kategoriebild->kKategorie || !$GLOBALS['Einstellungen']['bilder']['bilder_kategorie_namen']) {
+    $conf = Shop::getSettings([CONF_BILDER]);
+
+    if (!$Kategoriebild->kKategorie || !$conf['bilder']['bilder_kategorie_namen']) {
         return (stripos(strrev($Kategoriebild->cPfad), strrev($Bildformat)) === 0)
             ? $Kategoriebild->cPfad
             : $Kategoriebild->cPfad . '.' . $Bildformat;
@@ -733,7 +738,7 @@ function gibKategoriebildname($Kategoriebild, $Bildformat)
     );
     $Bildname  = $Kategoriebild->cPfad;
     if ($Kategorie->cName) {
-        switch ($GLOBALS['Einstellungen']['bilder']['bilder_kategorie_namen']) {
+        switch ($conf['bilder']['bilder_kategorie_namen']) {
             case 1:
                 if ($Kategorie->cSeo) {
                     $Bildname = $Kategorie->cSeo;
@@ -761,6 +766,8 @@ function gibArtikelbildname($img, $Bildformat)
 {
     global $cSQL;
 
+    $conf = Shop::getSettings([CONF_BILDER]);
+
     if ($img->kArtikel) {
         $attr = Shop::Container()->getDB()->select(
             'tkategorieattribut',
@@ -782,7 +789,7 @@ function gibArtikelbildname($img, $Bildformat)
         }
     }
 
-    if (!$img->kArtikel || !$GLOBALS['Einstellungen']['bilder']['bilder_artikel_namen']) {
+    if (!$img->kArtikel || !$conf['bilder']['bilder_artikel_namen']) {
         return $img->cPfad . '.' . $Bildformat;
     }
     $Artikel  = Shop::Container()->getDB()->query(
@@ -797,7 +804,7 @@ function gibArtikelbildname($img, $Bildformat)
     );
     $Bildname = $img->cPfad;
     if ($Artikel->cName) {
-        switch ($GLOBALS['Einstellungen']['bilder']['bilder_artikel_namen']) {
+        switch ($conf['bilder']['bilder_artikel_namen']) {
             case 1:
                 if ($Artikel->cArtNr) {
                     $Bildname = gibAusgeschriebeneUmlaute($Artikel->cArtNr);
@@ -839,7 +846,7 @@ function gibArtikelbildname($img, $Bildformat)
     if ($img->nNr > 1 && $Bildname !== $img->cPfad) {
         $Bildname .= '_b' . $img->nNr;
     }
-    if ($Bildname !== $img->cPfad && (int)$GLOBALS['Einstellungen']['bilder']['bilder_artikel_namen'] !== 5) {
+    if ($Bildname !== $img->cPfad && (int)$conf['bilder']['bilder_artikel_namen'] !== 5) {
         $Bildname = streicheSonderzeichen($Bildname) . '.' . $Bildformat;
     } else {
         $Bildname .= '.' . $Bildformat;
@@ -884,12 +891,13 @@ function streicheSonderzeichen($str)
  */
 function erstelleThumbnailBranded($imgFilename, $zielbild, $breite, $hoehe, int $quality = 80, $container = 'N')
 {
+    $conf         = Shop::getSettings([CONF_BILDER]);
     $vergroessern = 0;
-    if ($GLOBALS['Einstellungen']['bilder']['bilder_skalieren'] === 'Y') {
+    if ($conf['bilder']['bilder_skalieren'] === 'Y') {
         $vergroessern = 1;
     }
     $ret                  = 0;
-    $Bildformat           = $GLOBALS['Einstellungen']['bilder']['bilder_dateiformat'];//gibBildformat($imgFilename);
+    $Bildformat           = $conf['bilder']['bilder_dateiformat'];//gibBildformat($imgFilename);
     list($width, $height) = getimagesize($imgFilename);
     if ($width > 0 && $height > 0) {
         if (!$vergroessern && $width < $breite && $height < $hoehe) {
@@ -951,12 +959,13 @@ function erstelleThumbnail(
     $brand = 0,
     $container = 'N'
 ) {
+    $conf         = Shop::getSettings([CONF_BILDER]);
     $vergroessern = 0;
-    if ($GLOBALS['Einstellungen']['bilder']['bilder_skalieren'] === 'Y') {
+    if ($conf['bilder']['bilder_skalieren'] === 'Y') {
         $vergroessern = 1;
     }
     $ret        = 0;
-    $Bildformat = $GLOBALS['Einstellungen']['bilder']['bilder_dateiformat'];//gibBildformat($imgFilename);
+    $Bildformat = $conf['bilder']['bilder_dateiformat'];//gibBildformat($imgFilename);
     $im         = imageload_alpha($imgFilename);
     if ($im) {
         //bild skalieren
@@ -1480,6 +1489,7 @@ function gibBildformat(string $imgFilename)
  */
 function imageload_container($img, int $nWidth, int $nHeight, $nContainerWidth, $nContainerHeight)
 {
+    $conf    = Shop::getSettings([CONF_BILDER]);
     $imgInfo = getimagesize($img);
     switch ($imgInfo[2]) {
         case 1:
@@ -1504,9 +1514,9 @@ function imageload_container($img, int $nWidth, int $nHeight, $nContainerWidth, 
     $nHeight = round($nHeight);
     $newImg  = imagecreatetruecolor($nContainerWidth, $nContainerHeight);
     // hintergrundfarbe
-    $format = strtolower($GLOBALS['Einstellungen']['bilder']['bilder_dateiformat']);
+    $format = strtolower($conf['bilder']['bilder_dateiformat']);
     if ($format === 'jpg') {
-        $rgb   = html2rgb($GLOBALS['Einstellungen']['bilder']['bilder_hintergrundfarbe']);
+        $rgb   = html2rgb($conf['bilder']['bilder_hintergrundfarbe']);
         $color = imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
         imagealphablending($newImg, true);
     } else {
@@ -1533,6 +1543,7 @@ function imageload_container($img, int $nWidth, int $nHeight, $nContainerWidth, 
  */
 function imageload_alpha($img, int $nWidth = 0, int $nHeight = 0, bool $branding = false)
 {
+    $conf    = Shop::getSettings([CONF_BILDER]);
     $imgInfo = getimagesize($img);
     switch ($imgInfo[2]) {
         case 1:
@@ -1566,9 +1577,9 @@ function imageload_alpha($img, int $nWidth = 0, int $nHeight = 0, bool $branding
     }
 
     // hintergrundfarbe
-    $format = strtolower($GLOBALS['Einstellungen']['bilder']['bilder_dateiformat']);
+    $format = strtolower($conf['bilder']['bilder_dateiformat']);
     if ($format === 'jpg') {
-        $rgb   = html2rgb($GLOBALS['Einstellungen']['bilder']['bilder_hintergrundfarbe']);
+        $rgb   = html2rgb($conf['bilder']['bilder_hintergrundfarbe']);
         $color = imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
         if ($branding) {
             imagealphablending($newImg, false);
@@ -1593,7 +1604,8 @@ function imageload_alpha($img, int $nWidth = 0, int $nHeight = 0, bool $branding
  */
 function neuerDateiname(string $path): string
 {
-    $format = strtolower($GLOBALS['Einstellungen']['bilder']['bilder_dateiformat']);
+    $conf   = Shop::getSettings([CONF_BILDER]);
+    $format = strtolower($conf['bilder']['bilder_dateiformat']);
     $path   = substr($path, 0, -3);
     $path  .= $format;
 

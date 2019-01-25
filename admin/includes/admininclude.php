@@ -53,6 +53,7 @@ $db       = new \DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
 $cache    = Shop::Container()->getCache()->setJtlCacheConfig(
     $db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)
 );
+$lang     = Sprache::getInstance($db, $cache);
 $session  = \Session\Backend::getInstance();
 $oAccount = Shop::Container()->getAdminAccount();
 

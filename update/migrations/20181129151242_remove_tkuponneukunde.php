@@ -41,7 +41,7 @@ class Migration_20181129151242 extends Migration implements IMigration
         //add flags for already used new customer coupons
         $this->execute(
             "INSERT INTO tkuponflag (cEmailHash, dErstellt, cKuponTyp)
-              SELECT SHA2(tkuponkunde.cMail, 256) AS cEmailHash,
+              SELECT SHA2(LOWER(tkuponkunde.cMail), 256) AS cEmailHash,
                 MAX(tkuponkunde.dErstellt) AS dErstellt,
                 tkupon.cKuponTyp
               FROM tkuponkunde
@@ -69,7 +69,7 @@ class Migration_20181129151242 extends Migration implements IMigration
         $check = $this->execute(
             "INSERT INTO tkuponkunde (kKupon, cMail, nVerwendungen, dErstellt)
                 SELECT tkuponkunde_backup.kKupon,
-                       SHA2(tkuponkunde_backup.cMail, 256) AS cMail,
+                       SHA2(LOWER(tkuponkunde_backup.cMail), 256) AS cMail,
                        COUNT(tkuponkunde_backup.cMail) AS nVerwendungen,
                        MAX(tkuponkunde_backup.dErstellt) AS dErstellt
                     FROM tkuponkunde_backup

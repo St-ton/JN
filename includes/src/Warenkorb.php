@@ -265,39 +265,42 @@ class Warenkorb
             }
             $neuePos = false;
             // hat diese Position schon einen EigenschaftWert ausgewaehlt
-            // und ist das dieselbe eigenschaft wie ausgewaehlt?
-            foreach ($Position->WarenkorbPosEigenschaftArr as $wke) {
-                foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {
-                    // gleiche Eigenschaft suchen
-                    if ($oEigenschaftwerte->kEigenschaft != $wke->kEigenschaft) {
-                        continue;
-                    }
-                    // ist es ein Freifeld mit unterschieldichem Inhalt oder eine Eigenschaft mit unterschielichem Wert?
-                    if (($wke->kEigenschaftWert > 0
-                            && $wke->kEigenschaftWert != $oEigenschaftwerte->kEigenschaftWert)
-                        || (($wke->cTyp === 'FREIFELD' || $wke->cTyp === 'PFLICHT-FREIFELD')
-                            && $wke->cEigenschaftWertName[$iso] != $oEigenschaftwerte->cFreifeldWert)
-                    ) {
-                        $neuePos = true;
-                        break;
+            // und ist das dieselbe Eigenschaft wie ausgewaehlt?
+            if (!$cUnique) {
+                foreach ($Position->WarenkorbPosEigenschaftArr as $wke) {
+                    foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {
+                        // gleiche Eigenschaft suchen
+                        if ($oEigenschaftwerte->kEigenschaft != $wke->kEigenschaft) {
+                            continue;
+                        }
+                        // ist es ein Freifeld mit unterschiedlichem Inhalt
+                        // oder eine Eigenschaft mit unterschiedlichem Wert?
+                        if (($wke->kEigenschaftWert > 0
+                                && $wke->kEigenschaftWert != $oEigenschaftwerte->kEigenschaftWert)
+                            || (($wke->cTyp === 'FREIFELD' || $wke->cTyp === 'PFLICHT-FREIFELD')
+                                && $wke->cEigenschaftWertName[$iso] != $oEigenschaftwerte->cFreifeldWert)
+                        ) {
+                            $neuePos = true;
+                            break;
+                        }
                     }
                 }
-            }
-            if (!$neuePos && !$cUnique) {
-                //erhoehe Anzahl dieser Position
-                $this->PositionenArr[$i]->nZeitLetzteAenderung = time();
-                $this->PositionenArr[$i]->nAnzahl             += $anzahl;
-                if ($setzePositionsPreise === true) {
-                    $this->setzePositionsPreise();
-                }
-                executeHook(HOOK_WARENKORB_CLASS_FUEGEEIN, [
-                    'kArtikel'      => $kArtikel,
-                    'oPosition_arr' => &$this->PositionenArr,
-                    'nAnzahl'       => &$anzahl,
-                    'exists'        => true
-                ]);
+                if (!$neuePos && !$cUnique) {
+                    //erhoehe Anzahl dieser Position
+                    $this->PositionenArr[$i]->nZeitLetzteAenderung = time();
+                    $this->PositionenArr[$i]->nAnzahl             += $anzahl;
+                    if ($setzePositionsPreise === true) {
+                        $this->setzePositionsPreise();
+                    }
+                    executeHook(HOOK_WARENKORB_CLASS_FUEGEEIN, [
+                        'kArtikel'      => $kArtikel,
+                        'oPosition_arr' => &$this->PositionenArr,
+                        'nAnzahl'       => &$anzahl,
+                        'exists'        => true
+                    ]);
 
-                return $this;
+                    return $this;
+                }
             }
         }
         $options = Artikel::getDefaultOptions();
@@ -860,7 +863,7 @@ class Warenkorb
             if ($pos->kArtikel > 0 && $pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
                 $_oldPosition = clone $pos;
                 $oArtikel     = new Artikel();
-                if (!$oArtikel->fuelleArtikel($pos->kArtikel, $defaultOptions)) {
+                if (!$oArtikel->fuelleArtikel($pos->kArtikel, $defaultOptions) || $oArtikel->kArtikel === null) {
                     continue;
                 }
                 // Baue Variationspreise im Warenkorb neu, aber nur wenn es ein gültiger Artikel ist

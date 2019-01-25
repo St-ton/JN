@@ -3613,7 +3613,7 @@ class Artikel
         }
         $given = get_object_vars($options);
         $mask  = '';
-        if (isset($options->nDownload) && $options->nDownload === 1 && Download::checkLicense()) {
+        if (isset($options->nDownload) && $options->nDownload === 1 && !Download::checkLicense()) {
             //unset download-option if there is no license for the download module
             $options->nDownload = 0;
         }

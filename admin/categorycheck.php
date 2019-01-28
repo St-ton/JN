@@ -7,7 +7,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->redirectOnFailure();
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 
 $status             = \Backend\Status::getInstance();
 $orphanedCategories = $status->getOrphanedCategories(false);

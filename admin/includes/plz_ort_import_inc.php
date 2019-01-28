@@ -266,10 +266,10 @@ function plzimportDoDownload($target, array $sessData, $result): void
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
- * @param array            $messages
+ * @param \Smarty\JTLSmarty $smarty
+ * @param array             $messages
  */
-function plzimportActionIndex(Smarty\JTLSmarty $smarty, array &$messages): void
+function plzimportActionIndex(\Smarty\JTLSmarty $smarty, array &$messages): void
 {
     $status = plzimportActionCheckStatus();
     if (isset($status->running) && $status->running) {
@@ -551,10 +551,10 @@ function plzimportActionRestoreBackup($target = ''): stdClass
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
- * @param array            $messages
+ * @param \Smarty\JTLSmarty $smarty
+ * @param array             $messages
  */
-function plzimportFinalize(Smarty\JTLSmarty $smarty, array &$messages): void
+function plzimportFinalize(\Smarty\JTLSmarty $smarty, array &$messages): void
 {
     if (isset($_SESSION['plzimport.notice'])) {
         $messages['notice'] = $_SESSION['plzimport.notice'];

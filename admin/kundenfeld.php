@@ -11,7 +11,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_CUSTOMERFIELDS_VIEW', true, true);
 
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cf       = CustomerFields::getInstance((int)$_SESSION['kSprache']);
 $cHinweis = '';
 $cFehler  = '';

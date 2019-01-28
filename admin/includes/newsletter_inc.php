@@ -33,15 +33,15 @@ function bereiteNewsletterVor($conf)
 }
 
 /**
- * @param Smarty\JTLSmarty $mailSmarty
- * @param object           $newsletter
- * @param array            $conf
- * @param string           $recipients
- * @param array            $products
- * @param array            $manufacturers
- * @param array            $categories
- * @param string           $campaign
- * @param string           $oKunde
+ * @param \Smarty\JTLSmarty $mailSmarty
+ * @param object            $newsletter
+ * @param array             $conf
+ * @param string            $recipients
+ * @param array             $products
+ * @param array             $manufacturers
+ * @param array             $categories
+ * @param string            $campaign
+ * @param string            $oKunde
  * @return string|bool
  */
 function versendeNewsletter(

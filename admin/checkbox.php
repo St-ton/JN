@@ -13,7 +13,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CHECKBOXES_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'checkbox_inc.php';
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cHinweis        = '';
 $cFehler         = '';
 $cStep           = 'uebersicht';

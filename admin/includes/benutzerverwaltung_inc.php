@@ -273,11 +273,11 @@ function benutzerverwaltungActionAccountUnLock(array &$messages)
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
- * @param array            $messages
+ * @param \Smarty\JTLSmarty $smarty
+ * @param array             $messages
  * @return string
  */
-function benutzerverwaltungActionAccountEdit(Smarty\JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungActionAccountEdit(\Smarty\JTLSmarty $smarty, array &$messages)
 {
     $_SESSION['AdminAccount']->TwoFA_valid = true;
 
@@ -526,11 +526,11 @@ function benutzerverwaltungActionAccountDelete(array &$messages)
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
+ * @param \Smarty\JTLSmarty $smarty
  * @param array            $messages
  * @return string
  */
-function benutzerverwaltungActionGroupEdit(Smarty\JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungActionGroupEdit(\Smarty\JTLSmarty $smarty, array &$messages)
 {
     $bDebug            = isset($_POST['debug']);
     $kAdminlogingruppe = isset($_POST['id'])
@@ -628,8 +628,7 @@ function benutzerverwaltungActionGroupEdit(Smarty\JTLSmarty $smarty, array &$mes
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
- * @param array            $messages
+ * @param array $messages
  * @return string
  */
 function benutzerverwaltungActionGroupDelete(array &$messages)
@@ -659,10 +658,10 @@ function benutzerverwaltungActionGroupDelete(array &$messages)
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
- * @param array            $messages
+ * @param \Smarty\JTLSmarty $smarty
+ * @param array             $messages
  */
-function benutzerverwaltungActionQuickChangeLanguage(Smarty\JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungActionQuickChangeLanguage(\Smarty\JTLSmarty $smarty, array &$messages)
 {
     $kSprache = Request::verifyGPCDataInt('kSprache');
     changeAdminUserLanguage($kSprache);
@@ -699,12 +698,12 @@ function benutzerverwaltungRedirect($cTab = '', array &$messages = null)
 }
 
 /**
- * @param                   $step
+ * @param string            $step
  * @param \Smarty\JTLSmarty $smarty
  * @param array             $messages
  * @throws SmartyException
  */
-function benutzerverwaltungFinalize($step, Smarty\JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungFinalize($step, \Smarty\JTLSmarty $smarty, array &$messages)
 {
     if (isset($_SESSION['benutzerverwaltung.notice'])) {
         $messages['notice'] = $_SESSION['benutzerverwaltung.notice'];

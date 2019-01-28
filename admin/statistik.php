@@ -33,7 +33,7 @@ switch ($statsType) {
         $oAccount->redirectOnFailure();
         break;
 }
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cHinweis          = '';
 $cFehler           = '';
 $nAnzeigeIntervall = 0;

@@ -7,6 +7,7 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
+use Helpers\SearchSpecial;
 use Session\Frontend;
 
 /**
@@ -76,7 +77,7 @@ final class BestsellingProducts extends AbstractBox
                 $products = new \ArtikelListe();
                 $products->getArtikelByKeys($res, 0, \count($res));
                 $this->setProducts($products);
-                $this->setURL(\Helpers\SearchSpecial::buildURL(\SEARCHSPECIALS_BESTSELLER));
+                $this->setURL(SearchSpecial::buildURL(\SEARCHSPECIALS_BESTSELLER));
             }
 
             \executeHook(\HOOK_BOXEN_INC_BESTSELLER, [

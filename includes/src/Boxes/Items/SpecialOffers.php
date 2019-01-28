@@ -7,6 +7,7 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
+use Helpers\SearchSpecial;
 use Session\Frontend;
 
 /**
@@ -66,7 +67,7 @@ final class SpecialOffers extends AbstractBox
                 $products = new \ArtikelListe();
                 $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
                 $this->setProducts($products);
-                $this->setURL(\Helpers\SearchSpecial::buildURL(\SEARCHSPECIALS_SPECIALOFFERS));
+                $this->setURL(SearchSpecial::buildURL(\SEARCHSPECIALS_SPECIALOFFERS));
                 \executeHook(\HOOK_BOXEN_INC_SONDERANGEBOTE, [
                     'box'        => &$this,
                     'cache_tags' => &$cacheTags,

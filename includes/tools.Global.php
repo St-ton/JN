@@ -1999,7 +1999,7 @@ function setzeSpracheUndWaehrungLink()
         __FUNCTION__ . ' is deprecated. Use Sprache::generateLanguageAndCurrencyLinks() instead.',
         E_USER_DEPRECATED
     );
-    Sprache::generateLanguageAndCurrencyLinks();
+    Shop::Lang()->generateLanguageAndCurrencyLinks();
 }
 
 /**

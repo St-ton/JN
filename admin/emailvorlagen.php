@@ -616,7 +616,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
     }
     $localized->kEmailvorlage = (int)$_POST['kEmailvorlage'];
 
-    $revision = new Revision();
+    $revision = new Revision($db);
     $revision->addRevision('mail', (int)$_POST['kEmailvorlage'], true);
     foreach ($availableLanguages as $lang) {
         $filenames    = [];

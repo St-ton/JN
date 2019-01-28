@@ -90,7 +90,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             if ($eTyp === 'text') {
                 $oldBox = $boxAdmin->getByID($boxID);
                 if ($oldBox->supportsRevisions === true) {
-                    $revision = new Revision();
+                    $revision = new Revision(Shop::Container()->getDB());
                     $revision->addRevision('box', $boxID, true);
                 }
                 $bOk = $boxAdmin->update($boxID, $cTitel);

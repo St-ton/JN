@@ -74,7 +74,7 @@ if ($oAccount->logged()) {
     if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id'])
         && Form::validateToken()
     ) {
-        $revision = new Revision();
+        $revision = new Revision($db);
         if ($_POST['revision-action'] === 'restore') {
             $revision->restoreRevision(
                 $_POST['revision-type'],

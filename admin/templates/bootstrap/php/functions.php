@@ -37,7 +37,7 @@ function getRevisions(array $params, $smarty): string
 {
     $secondary = $params['secondary'] ?? false;
     $data      = $params['data'] ?? null;
-    $revision  = new Revision();
+    $revision  = new Revision(Shop::Container()->getDB());
 
     return $smarty->assign('revisions', $revision->getRevisions($params['type'], $params['key']))
                   ->assign('secondary', $secondary)

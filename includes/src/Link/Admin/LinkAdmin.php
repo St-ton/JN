@@ -6,9 +6,11 @@
 
 namespace Link\Admin;
 
+use Backend\Revision;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\ReturnType;
+use JTL\SeoHelper;
 use Link\Link;
 use Link\LinkGroupCollection;
 use Link\LinkGroupInterface;
@@ -471,7 +473,7 @@ final class LinkAdmin
             $this->db->insert('tlinkgroupassociations', $assoc);
         } else {
             $kLink    = (int)$post['kLink'];
-            $revision = new \Backend\Revision();
+            $revision = new Revision($this->db);
             $revision->addRevision('link', (int)$post['kLink'], true);
             $this->db->update('tlink', 'kLink', $kLink, $link);
         }
@@ -526,7 +528,7 @@ final class LinkAdmin
             $this->db->delete('tlinksprache', ['kLink', 'cISOSprache'], [$kLink, $sprache->cISO]);
             $linkSprache->cSeo = $link->nLinkart === \LINKTYP_EXTERNE_URL
                 ? $linkSprache->cSeo
-                : \JTL\SeoHelper::getSeo($linkSprache->cSeo);
+                : SeoHelper::getSeo($linkSprache->cSeo);
             $this->db->insert('tlinksprache', $linkSprache);
             $oSpracheTMP = $this->db->select('tsprache', 'cISO ', $linkSprache->cISOSprache);
             if (isset($oSpracheTMP->kSprache) && $oSpracheTMP->kSprache > 0) {
@@ -536,7 +538,7 @@ final class LinkAdmin
                     ['kLink', (int)$linkSprache->kLink, (int)$oSpracheTMP->kSprache]
                 );
                 $oSeo           = new \stdClass();
-                $oSeo->cSeo     = \JTL\SeoHelper::checkSeo($linkSprache->cSeo);
+                $oSeo->cSeo     = SeoHelper::checkSeo($linkSprache->cSeo);
                 $oSeo->kKey     = $linkSprache->kLink;
                 $oSeo->cKey     = 'kLink';
                 $oSeo->kSprache = $oSpracheTMP->kSprache;

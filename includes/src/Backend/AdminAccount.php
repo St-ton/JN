@@ -493,7 +493,7 @@ class AdminAccount
     public function doTwoFA(): bool
     {
         if (isset($_SESSION['AdminAccount']->cLogin, $_POST['TwoFA_code'])) {
-            $twoFA = new TwoFA();
+            $twoFA = new TwoFA($this->db);
             $twoFA->setUserByName($_SESSION['AdminAccount']->cLogin);
             $valid                                 = $twoFA->isCodeValid($_POST['TwoFA_code']);
             $this->twoFaAuthenticated              = $valid;

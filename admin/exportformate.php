@@ -48,7 +48,7 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
         $kExportformat = $ef->getExportformat();
         if ($kExportformat > 0) {
             $kExportformat = (int)$_POST['kExportformat'];
-            $revision      = new Revision();
+            $revision      = new Revision($db);
             $revision->addRevision('export', $kExportformat);
             $ef->update();
             $hinweis .= sprintf(__('successFormatEdit'), $ef->getName());

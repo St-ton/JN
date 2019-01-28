@@ -243,7 +243,7 @@ function speicherVorlage($post)
             ? $dt->format('Y-m-d H:i:s')
             : $now->format('Y-m-d H:i:s');
         if (isset($post['kNewsletterVorlage']) && (int)$post['kNewsletterVorlage'] > 0) {
-            $revision = new Revision();
+            $revision = new Revision(Shop::Container()->getDB());
             $revision->addRevision('newsletter', $kNewsletterVorlage, true);
             $upd                = new stdClass();
             $upd->cName         = $tpl->cName;
@@ -355,7 +355,7 @@ function speicherVorlageStd($defaultTpl, int $kNewslettervorlageStd, $post, int 
         : $now->format('Y-m-d H:i:s');
 
     if ($templateID > 0) {
-        $revision = new Revision();
+        $revision = new Revision($db);
         $revision->addRevision('newsletterstd', $templateID, true);
 
         $upd                = new stdClass();

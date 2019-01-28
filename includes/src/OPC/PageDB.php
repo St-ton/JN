@@ -6,6 +6,7 @@
 
 namespace OPC;
 
+use Backend\Revision;
 use DB\DbInterface;
 use DB\ReturnType;
 
@@ -96,7 +97,7 @@ class PageDB
      */
     public function getRevisionRow(int $revId)
     {
-        $revision    = new \Backend\Revision();
+        $revision    = new Revision($this->shopDB);
         $revisionRow = $revision->getRevision($revId);
 
         if (!\is_object($revisionRow)) {
@@ -192,7 +193,7 @@ class PageDB
      */
     public function getRevisionList(int $key): array
     {
-        $revision = new \Backend\Revision();
+        $revision = new Revision($this->shopDB);
 
         return $revision->getRevisions('opcpage', $key);
     }
@@ -248,7 +249,7 @@ class PageDB
             $newAreasJson = $pageDB->cAreasJson;
 
             if ($oldAreasJson !== $newAreasJson) {
-                $revision = new \Backend\Revision();
+                $revision = new Revision($this->shopDB);
                 $revision->addRevision('opcpage', $dbPage->kPage);
             }
 

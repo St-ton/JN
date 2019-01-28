@@ -6,6 +6,7 @@
 
 namespace Backend;
 
+use DB\DbInterface;
 use DB\ReturnType;
 use Exception;
 use Shop;
@@ -29,6 +30,20 @@ class TwoFAEmergency
      * @var int
      */
     private $codeCount = 10;
+
+    /**
+     * @var DbInterface
+     */
+    private $db;
+
+    /**
+     * TwoFAEmergency constructor.
+     * @param DbInterface $db
+     */
+    public function __construct(DbInterface $db)
+    {
+        $this->db = $db;
+    }
 
     /**
      * create a pool of emergency-codes
@@ -64,7 +79,7 @@ class TwoFAEmergency
             $valCount++;
         }
         // now write into the DB what we got till now
-        Shop::Container()->getDB()->queryPrepared(
+        $this->db->queryPrepared(
             'INSERT INTO `tadmin2facodes`(`kAdminlogin`, `cEmergencyCode`) VALUES' . $rowValues,
             $bindings,
             ReturnType::AFFECTED_ROWS
@@ -80,7 +95,7 @@ class TwoFAEmergency
      */
     public function removeExistingCodes($userTuple): void
     {
-        $effected = Shop::Container()->getDB()->deleteRow(
+        $effected = $this->db->deleteRow(
             'tadmin2facodes',
             'kAdminlogin',
             $userTuple->kAdminlogin
@@ -102,7 +117,7 @@ class TwoFAEmergency
      */
     public function isValidEmergencyCode($adminID, $code): bool
     {
-        $hashes = Shop::Container()->getDB()->selectArray('tadmin2facodes', 'kAdminlogin', $adminID);
+        $hashes = $this->db->selectArray('tadmin2facodes', 'kAdminlogin', $adminID);
         if (1 > \count($hashes)) {
             return false; // no emergency-codes are there
         }
@@ -110,7 +125,7 @@ class TwoFAEmergency
         foreach ($hashes as $item) {
             if (\password_verify($code, $item->cEmergencyCode) === true) {
                 // valid code found. remove it from DB and return a 'true'
-                $effected = Shop::Container()->getDB()->delete(
+                $effected = $this->db->delete(
                     'tadmin2facodes',
                     ['kAdminlogin', 'cEmergencyCode'],
                     [$adminID, $item->cEmergencyCode],

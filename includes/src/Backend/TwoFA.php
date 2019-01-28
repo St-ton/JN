@@ -6,6 +6,7 @@
 
 namespace Backend;
 
+use DB\DbInterface;
 use PHPGangsta_GoogleAuthenticator;
 use qrcodegenerator\QRCode\QRCode;
 use qrcodegenerator\QRCode\Output\QRString;
@@ -39,10 +40,17 @@ class TwoFA
     private $shopName;
 
     /**
-     * constructor
+     * @var DbInterface
      */
-    public function __construct()
+    protected $db;
+
+    /**
+     * TwoFA constructor.
+     * @param DbInterface $db
+     */
+    public function __construct(DbInterface $db)
     {
+        $this->db                         = $db;
         $this->oUserTuple                 = new \stdClass();
         $this->oUserTuple->kAdminlogin    = 0;
         $this->oUserTuple->cLogin         = '';
@@ -115,7 +123,7 @@ class TwoFA
         // codes with a length over 6 chars are emergency-codes
         if (6 < \strlen($code)) {
             // try to find this code in the emergency-code-pool
-            $o2FAemergency = new TwoFAEmergency();
+            $o2FAemergency = new TwoFAEmergency($this->db);
 
             return $o2FAemergency->isValidEmergencyCode($this->oUserTuple->kAdminlogin, $code);
         }
@@ -167,7 +175,7 @@ class TwoFA
      */
     public function setUserByID(int $iID): void
     {
-        $this->oUserTuple = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $iID);
+        $this->oUserTuple = $this->db->select('tadminlogin', 'kAdminlogin', $iID);
     }
 
     /**
@@ -182,7 +190,7 @@ class TwoFA
         // write at least the user's name we get via e.g. ajax
         $this->oUserTuple->cLogin = $userName;
         // check if we know that user yet
-        if (($oTuple = Shop::Container()->getDB()->select('tadminlogin', 'cLogin', $userName)) !== null) {
+        if (($oTuple = $this->db->select('tadminlogin', 'cLogin', $userName)) !== null) {
             $this->oUserTuple = $oTuple;
         }
     }
@@ -205,7 +213,7 @@ class TwoFA
     public function getShopName(): string
     {
         if ($this->shopName !== '') {
-            $result         = Shop::Container()->getDB()->select('teinstellungen', 'cName', 'global_shopname');
+            $result         = $this->db->select('teinstellungen', 'cName', 'global_shopname');
             $this->shopName = $result->cWert;
         }
 
@@ -230,7 +238,7 @@ class TwoFA
      */
     public static function getNewTwoFA($userName): string
     {
-        $twoFA = new TwoFA();
+        $twoFA = new self(Shop::Container()->getDB());
         $twoFA->setUserByName($userName);
 
         $userData           = new \stdClass();
@@ -246,14 +254,15 @@ class TwoFA
      */
     public static function genTwoFAEmergencyCodes(string $userName): \stdClass
     {
-        $twoFA = new TwoFA();
+        $db    = Shop::Container()->getDB();
+        $twoFA = new self($db);
         $twoFA->setUserByName($userName);
 
         $data            = new \stdClass();
         $data->loginName = $twoFA->getUserTuple()->cLogin;
         $data->shopName  = $twoFA->getShopName();
 
-        $emergencyCodes = new TwoFAEmergency();
+        $emergencyCodes = new TwoFAEmergency($db);
         $emergencyCodes->removeExistingCodes($twoFA->getUserTuple());
 
         $data->vCodes = $emergencyCodes->createNewCodes($twoFA->getUserTuple());

@@ -1764,7 +1764,7 @@ class Artikel
             $tabExists = false;
             foreach ($cMedienTyp_arr as $cMedienTyp) {
                 if (strlen($mediaFile->cAttributTab) > 0) {
-                    if ($cMedienTyp === $mediaFile->cAttributTab) {
+                    if ($this->getSeoString($cMedienTyp) === $this->getSeoString($mediaFile->cAttributTab)) {
                         $tabExists = true;
                         break;
                     }
@@ -6849,5 +6849,21 @@ class Artikel
         }
 
         return $depProducts;
+    }
+
+    /**
+     * prepares a string optimized for SEO
+     * @param String $optStr
+     * @return String SEO optimized String
+     */
+    private function getSeoString($optStr = ''): string
+    {
+        $optStr = preg_replace('/[^\\pL\d_]+/u', '-', $optStr);
+        $optStr = trim($optStr, '-');
+        $optStr = transliterator_transliterate('Latin-ASCII;', $optStr);
+        $optStr = strtolower($optStr);
+        $optStr = preg_replace('/[^-a-z0-9_]+/', '', $optStr);
+
+        return $optStr;
     }
 }

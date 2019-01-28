@@ -151,11 +151,39 @@ class Warenkorb
     {
         static $depAmount = null;
 
-        if ($excludePos !== null || !isset($depAmount, $depAmount[$productID])) {
-            $depAmount = $this->getAllDependentAmount($onlyStockRelevant, $excludePos);
+        if ($excludePos !== null) {
+            $tmpAmount = $this->getAllDependentAmount($onlyStockRelevant, $excludePos);
+
+            return $tmpAmount[$productID] ?? 0;
+        }
+
+        if (!isset($depAmount, $depAmount[$productID])) {
+            $depAmount = $this->getAllDependentAmount($onlyStockRelevant);
         }
 
         return $depAmount[$productID] ?? 0;
+    }
+
+    /**
+     * @param int   $position
+     * @param float $amount
+     * @return float
+     */
+    public function getMaxAvailableAmount(int $position, float $amount): float
+    {
+        foreach ($this->PositionenArr[$position]->Artikel->getAllDependentProducts(true) as $dependent) {
+            $depProduct = $dependent->product;
+            $depAmount  = $this->getDependentAmount($depProduct->kArtikel, true, [$position]);
+            $newAmount  = floor(
+                ($depProduct->fLagerbestand - $depAmount) / $depProduct->fPackeinheit / $dependent->stockFactor
+            );
+
+            if ($newAmount < $amount) {
+                $amount = $newAmount;
+            }
+        }
+
+        return $amount;
     }
 
     /**
@@ -1351,6 +1379,10 @@ class Warenkorb
                                 - ($reservedStock[$productID] ?? 0))
                             / $depProducts[$productID]->product->fPackeinheit
                             / $depProducts[$productID]->stockFactor);
+
+                        if ($newAmount > $this->PositionenArr[$i]->nAnzahl) {
+                            $newAmount = $this->PositionenArr[$i]->nAnzahl;
+                        }
 
                         if ($newAmount > 0) {
                             $this->PositionenArr[$i]->nAnzahl = $newAmount;

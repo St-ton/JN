@@ -178,7 +178,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Visitor::generateData();
 Kampagne::checkCampaignParameters();
-Sprache::generateLanguageAndCurrencyLinks();
+Shop::Lang()->generateLanguageAndCurrencyLinks();
 $ep = new ExtensionPoint($pagetType, Shop::getParameters(), Shop::getLanguageID(), $customerGroupID);
 $ep->load();
 executeHook(HOOK_LETZTERINCLUDE_INC);

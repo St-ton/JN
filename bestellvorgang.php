@@ -116,13 +116,13 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
         $plz           = $_SESSION['Lieferadresse']->cPLZ ?? $_SESSION['Kunde']->cPLZ;
         $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
 
-        $oVersandart_arr  = ShippingMethod::getPossibleShippingMethods(
+        $shippingMethods  = ShippingMethod::getPossibleShippingMethods(
             $land,
             $plz,
             ShippingMethod::getShippingClasses($cart),
             $kKundengruppe
         );
-        $activeVersandart = gibAktiveVersandart($oVersandart_arr);
+        $activeVersandart = gibAktiveVersandart($shippingMethods);
 
         pruefeVersandartWahl(
             $activeVersandart,
@@ -130,7 +130,6 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
         );
     }
 }
-// Download-Artikel vorhanden?
 if (empty($_SESSION['Kunde']->cPasswort) && \Extensions\Download::hasDownloads($cart)) {
     // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
     $step = 'accountwahl';
@@ -142,7 +141,7 @@ if (empty($_SESSION['Kunde']->cPasswort) && \Extensions\Download::hasDownloads($
     );
 
     unset($_SESSION['Kunde']);
-    //unset not needed values to ensure the correct $step
+    // unset not needed values to ensure the correct $step
     $_POST = [];
     if (isset($_GET['editRechnungsadresse'])) {
         unset($_GET['editRechnungsadresse']);

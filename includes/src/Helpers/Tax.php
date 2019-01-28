@@ -134,11 +134,11 @@ class Tax
             }
 
             if ($redirURL === $urlHelper->normalize()) {
-                Shop::Smarty()->assign(
-                    'cFehler',
-                    Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages')
-                    . '<br/>'
-                    . Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country)
+                Shop::Container()->getAlertService()->addAlert(
+                    \Alert::TYPE_ERROR,
+                    Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages') . '<br/>'
+                    . Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country),
+                    'missingParamShippingDetermination'
                 );
 
                 return;

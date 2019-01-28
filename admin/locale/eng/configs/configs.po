@@ -1000,6 +1000,12 @@ msgstr "Spamschutz aktivieren"
 msgid "benachrichtigung_abfragen_captcha_desc"
 msgstr "Soll ein Sicherheitscode abgefragt werden, damit die Benachrichtigungsanfrage akzeptiert wird?"
 
+msgid "benachrichtigung_min_lagernd_name"
+msgstr "Notification when minimum stock level percentage is"
+
+msgid "benachrichtigung_min_lagernd_desc"
+msgstr "Here you define the ratio of available stock and availability requests that must be reached before an availability notification is sent out. Example: 10 customers made availability requests. Your new stock level amounts to 3 units. In order to send availability notifications at this point, you should set this value to no more than 30%"
+
 msgid "artikeldetails_vergleichsliste_anzeigen_name"
 msgstr "Button zur Vergleichsliste hinzufügen anzeigen"
 

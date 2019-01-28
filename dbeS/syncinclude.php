@@ -596,7 +596,8 @@ function setCategoryDiscount(int $categoryID)
  */
 function versendeVerfuegbarkeitsbenachrichtigung($product)
 {
-    if (!($product->fLagerbestand > 0 && $product->kArtikel)) {
+    $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
+    if ($product->kArtikel <= 0) {
         return;
     }
     $db            = Shop::Container()->getDB();
@@ -605,13 +606,22 @@ function versendeVerfuegbarkeitsbenachrichtigung($product)
         ['nStatus', 'kArtikel'],
         [0, $product->kArtikel]
     );
-    if (count($subscriptions) === 0) {
+    $subCount      = count($subscriptions);
+    if ($subCount === 0
+        || (($product->fLagerbestand / $subCount) < ($conf['artikeldetails']['benachrichtigung_min_lagernd'] / 100)
+            && ($product->cLagerKleinerNull ?? '') !== 'Y'
+            && (!isset($product->cLagerBeachten)
+                || $product->cLagerBeachten === 'Y')
+        )
+    ) {
         return;
     }
     require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 
-    $Artikel = (new Artikel())->fuelleArtikel($product->kArtikel, Artikel::getDefaultOptions());
+    $options                             = Artikel::getDefaultOptions();
+    $options->nKeineSichtbarkeitBeachten = 1;
+    $Artikel                             = (new Artikel())->fuelleArtikel($product->kArtikel, $options);
     if ($Artikel === null) {
         return;
     }

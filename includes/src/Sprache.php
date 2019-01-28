@@ -298,7 +298,7 @@ class Sprache
      * @param int $kSprache
      * @return stdClass|null
      */
-    private function mappedGetIsoFromLangID(int $kSprache)
+    private function mappedGetIsoFromLangID(int $kSprache): ?stdClass
     {
         return $this->byLangID[$kSprache] ?? null;
     }
@@ -307,7 +307,7 @@ class Sprache
      * @param string $cISO
      * @return stdClass|null
      */
-    private function mappedGetLangIDFromIso(string $cISO)
+    private function mappedGetLangIDFromIso(string $cISO): ?stdClass
     {
         return $this->byISO[$cISO] ?? null;
     }

@@ -167,6 +167,7 @@ if ($oAccount->getIsAuthenticated()) {
         $_SESSION['jtl_token'] = $_POST['jtl_token'] ?? '';
         if (isset($_POST['TwoFA_code']) && '' !== $_POST['TwoFA_code']) {
             if ($oAccount->doTwoFA()) {
+                \Session\Backend::getInstance()->reHash();
                 $_SESSION['AdminAccount']->TwoFA_expired = false;
                 $_SESSION['AdminAccount']->TwoFA_valid   = true;
                 $_SESSION['loginIsValid']                = true;

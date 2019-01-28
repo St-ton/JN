@@ -45,9 +45,9 @@ if ($cart !== null
     && $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
 ) {
     // Kupon darf nicht im leeren Warenkorb eingelöst werden
-    $coupon             = new Kupon();
-    $coupon             = $coupon->getByCode($_POST['Kuponcode']);
-    $invalidCouponCode  = 11;
+    $coupon            = new Kupon();
+    $coupon            = $coupon->getByCode($_POST['Kuponcode']);
+    $invalidCouponCode = 11;
     if ($coupon !== false && $coupon->kKupon > 0) {
         $couponError       = Kupon::checkCoupon($coupon);
         $check             = angabenKorrekt($couponError);
@@ -66,7 +66,8 @@ if ($cart !== null
                 $_SESSION['oVersandfreiKupon'] = $coupon;
                 $alertHelper->addAlert(
                     Alert::TYPE_SUCCESS,
-                    Shop::Lang()->get('couponSucc1') . ' ' . trim(str_replace(';', ', ', $coupon->cLieferlaender), ', '),
+                    Shop::Lang()->get('couponSucc1') . ' ' .
+                        trim(str_replace(';', ', ', $coupon->cLieferlaender), ', '),
                     'shippingFreeSuccess'
                 );
             }
@@ -97,7 +98,7 @@ if (isset($_POST['gratis_geschenk'], $_POST['gratisgeschenk']) && (int)$_POST['g
         \DB\ReturnType::SINGLE_OBJECT
     );
     if (isset($gift->kArtikel) && $gift->kArtikel > 0) {
-        if ($gift->fLagerbestand <= 0 && $gift->cLagerKleinerNull === 'N'  && $gift->cLagerBeachten === 'Y') {
+        if ($gift->fLagerbestand <= 0 && $gift->cLagerKleinerNull === 'N' && $gift->cLagerBeachten === 'Y') {
             $warning = Shop::Lang()->get('freegiftsNostock', 'errorMessages');
         } else {
             executeHook(HOOK_WARENKORB_PAGE_GRATISGESCHENKEINFUEGEN);
@@ -139,10 +140,10 @@ if (!empty($_SESSION['Warenkorbhinweise'])) {
     }
     unset($_SESSION['Warenkorbhinweise']);
 }
-if ($MsgWarning !== '') {
-    $alertHelper->addAlert(Alert::TYPE_DANGER, $MsgWarning, 'cartWarning', ['id' => 'msgWarning']);
+if ($warning !== '') {
+    $alertHelper->addAlert(Alert::TYPE_DANGER, $warning, 'cartWarning', ['id' => 'msgWarning']);
 }
-if (($orderAmountStock = Cart::checkOrderAmountAndStock($Einstellungen)) !== '') {
+if (($orderAmountStock = Cart::checkOrderAmountAndStock($conf)) !== '') {
     $alertHelper->addAlert(Alert::TYPE_WARNING, $orderAmountStock, 'orderAmountStock');
 }
 

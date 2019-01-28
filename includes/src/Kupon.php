@@ -953,7 +953,7 @@ class Kupon
                 $ret['ungueltig'] = 11;
             } elseif (!empty($Kupon->nVerwendungenProKunde) && $Kupon->nVerwendungenProKunde > 0) {
                 //check if max usage of coupon is reached for cutomer
-                $countCouponUsed= Shop::Container()->getDB()->executeQueryPrepared(
+                $countCouponUsed = Shop::Container()->getDB()->executeQueryPrepared(
                     'SELECT nVerwendungen
                       FROM tkuponkunde
                       WHERE kKupon = :coupon
@@ -1119,23 +1119,27 @@ class Kupon
 
     /**
      * @former resetNeuKundenKupon()
-     * @since 5.0.0
+     * @since  5.0.0
+     * @param bool $priceRecalculation
      */
-    public static function resetNewCustomerCoupon(): void
+    public static function resetNewCustomerCoupon(bool $priceRecalculation = true): void
     {
         unset($_SESSION['NeukundenKupon'], $_SESSION['NeukundenKuponAngenommen']);
-        \Session\Frontend::getCart()
-                         ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
-                         ->setzePositionsPreise();
+        $cart = \Session\Frontend::getCart();
+        $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON);
+        if ($priceRecalculation) {
+            $cart->setzePositionsPreise();
+        }
     }
 
     /**
      * @param string $strToHash
+     * @param bool $strtolower
      * @return string
      */
-    public static function hash(string $strToHash): string
+    public static function hash(string $strToHash, bool $strtolower = true): string
     {
-        return $strToHash === '' ? '' : hash('sha256', $strToHash);
+        return $strToHash === '' ? '' : hash('sha256', $strtolower ? strtolower($strToHash) : $strToHash);
     }
 
     /**

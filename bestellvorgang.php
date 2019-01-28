@@ -130,36 +130,22 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
         );
     }
 }
-if (\Extensions\Download::hasDownloads($cart)) {
-    if ($step !== 'accountwahl' && empty($_SESSION['Kunde']->cPasswort)) {
-        // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
-        $step     = 'accountwahl';
-        $postData = StringHandler::filterXSS($_POST);
+// Download-Artikel vorhanden?
+if (empty($_SESSION['Kunde']->cPasswort) && \Extensions\Download::hasDownloads($cart)) {
+    // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
+    $step = 'accountwahl';
 
-        $alertHelper->addAlert(
-            Alert::TYPE_NOTE,
-            Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout'),
-            'digitalProductsRegisterInfo'
-        );
+    $alertHelper->addAlert(
+        Alert::TYPE_NOTE,
+        Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout'),
+        'digitalProductsRegisterInfo'
+    );
 
-        Shop::Smarty()->assign('cKundenattribut_arr', getKundenattribute($postData))
-            ->assign('kLieferadresse', $postData['kLieferadresse'])
-            ->assign('cPost_var', $postData);
-
-        if ((int)$postData['shipping_address'] === 1) {
-            Shop::Smarty()->assign(
-                'Lieferadresse',
-                mappeLieferadresseKontaktdaten($postData['register']['shipping_address'])
-            );
-        }
-
-        unset($_SESSION['Kunde']);
-    } elseif ($step === 'accountwahl') {
-        $alertHelper->addAlert(
-            Alert::TYPE_NOTE,
-            Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout'),
-            'digitalProductsRegisterInfo'
-        );
+    unset($_SESSION['Kunde']);
+    //unset not needed values to ensure the correct $step
+    $_POST = [];
+    if (isset($_GET['editRechnungsadresse'])) {
+        unset($_GET['editRechnungsadresse']);
     }
 }
 // autom. step ermitteln

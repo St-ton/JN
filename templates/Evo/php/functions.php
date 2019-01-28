@@ -33,7 +33,8 @@ $smarty->registerPlugin(Smarty::PLUGIN_FUNCTION, 'gibPreisStringLocalizedSmarty'
        ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'trans', 'get_translation')
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_product_list', 'get_product_list')
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'captchaMarkup', 'captchaMarkup')
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getStates', 'getStates');
+       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getStates', 'getStates')
+       ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'seofy', 'seofy');
 
 /**
  * @param array                        $params
@@ -743,4 +744,20 @@ function getStates($params, $smarty)
     }
 
     return $oStates;
+}
+
+/**
+ * prepares a string optimized for SEO
+ * @param String $optStr
+ * @return String SEO optimized String
+ */
+function seofy ($optStr = '')
+{
+    $optStr = preg_replace('/[^\\pL\d_]+/u', '-', $optStr);
+    $optStr = trim($optStr, '-');
+    $optStr = transliterator_transliterate('Latin-ASCII;', $optStr);
+    $optStr = strtolower($optStr);
+    $optStr = preg_replace('/[^-a-z0-9_]+/', '', $optStr);
+
+    return $optStr;
 }

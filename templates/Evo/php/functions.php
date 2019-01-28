@@ -24,7 +24,8 @@ $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisSt
        ->registerPlugin('function', 'hasOnlyListableVariations', 'hasOnlyListableVariations')
        ->registerPlugin('modifier', 'has_trans', 'has_translation')
        ->registerPlugin('modifier', 'trans', 'get_translation')
-       ->registerPlugin('function', 'get_product_list', 'get_product_list');
+       ->registerPlugin('function', 'get_product_list', 'get_product_list')
+       ->registerPlugin('modifier', 'seofy', 'seofy');
 
 
 /**
@@ -793,4 +794,21 @@ function has_translation($mixed, $to = null)
     $to = $to ?: Shop::getLanguage(true);
 
     return is_string($mixed) ?: isset($mixed[$to]);
+}
+
+/**
+ * prepares a string optimized for SEO
+ * @param String $optStr
+ * @return String SEO optimized String
+ */
+function seofy ($optStr = '')
+{
+    $optStr = StringHandler::convertUTF8($optStr);
+    $optStr = preg_replace('/[^\\pL\d_]+/u', '-', $optStr);
+    $optStr = trim($optStr, '-');
+    $optStr = transliterator_transliterate('Latin-ASCII', $optStr);
+    $optStr = strtolower($optStr);
+    $optStr = preg_replace('/[^-a-z0-9_]+/', '', $optStr);
+
+    return $optStr;
 }

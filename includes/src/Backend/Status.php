@@ -46,7 +46,7 @@ class Status
     protected function getObjectCache(): JTLCacheInterface
     {
         return Shop::Container()->getCache()->setJtlCacheConfig(
-            Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)
+            Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING)
         );
     }
 
@@ -207,15 +207,15 @@ class Status
      */
     protected function hasMobileTemplateIssue(): bool
     {
-        $oTemplate = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
-        if ($oTemplate !== null && isset($oTemplate->cTemplate)) {
-            $oTplData = TemplateHelper::getInstance()->getData($oTemplate->cTemplate);
-            if ($oTplData->bResponsive) {
-                $oMobileTpl = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'mobil');
-                if ($oMobileTpl !== null) {
-                    $cXMLFile = \PFAD_ROOT . \PFAD_TEMPLATES . $oMobileTpl->cTemplate .
+        $template = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
+        if ($template !== null && isset($template->cTemplate)) {
+            $tplData = TemplateHelper::getInstance()->getData($template->cTemplate);
+            if ($tplData->bResponsive) {
+                $mobileTpl = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'mobil');
+                if ($mobileTpl !== null) {
+                    $xmlFile = \PFAD_ROOT . \PFAD_TEMPLATES . $mobileTpl->cTemplate .
                         \DIRECTORY_SEPARATOR . \TEMPLATE_XML;
-                    if (\file_exists($cXMLFile)) {
+                    if (\file_exists($xmlFile)) {
                         return true;
                     }
                     // Wenn ein Template aktiviert aber physisch nicht vorhanden ist,
@@ -271,7 +271,6 @@ class Status
         $stats = Shop::Container()->getDB()->stats();
         $info  = Shop::Container()->getDB()->info();
         $lines = \explode('  ', $stats);
-
         $lines = \array_map(function ($v) {
             [$key, $value] = \explode(':', $v, 2);
 
@@ -309,14 +308,14 @@ class Status
      */
     protected function hasInvalidPollCoupons(): bool
     {
-        $aPollCoupons        = Shop::Container()->getDB()->selectAll('tumfrage', 'nAktiv', 1);
+        $pollCoupons         = Shop::Container()->getDB()->selectAll('tumfrage', 'nAktiv', 1);
         $invalidCouponsFound = false;
-        foreach ($aPollCoupons as $Kupon) {
-            if ($Kupon->kKupon > 0) {
+        foreach ($pollCoupons as $coupon) {
+            if ($coupon->kKupon > 0) {
                 $kKupon = Shop::Container()->getDB()->select(
                     'tkupon',
                     'kKupon',
-                    $Kupon->kKupon,
+                    $coupon->kKupon,
                     'cAktiv',
                     'Y',
                     null,
@@ -379,39 +378,38 @@ class Status
      */
     protected function hasNewPluginVersions(): bool
     {
-        $fNewVersions = false;
-        // get installed plugins from DB
-        $oPluginsDB = Shop::Container()->getDB()->query(
+        $newVersions = false;
+        $data        = Shop::Container()->getDB()->query(
             'SELECT `cVerzeichnis`, `nVersion` 
                 FROM `tplugin`',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!\is_array($oPluginsDB) || 1 > \count($oPluginsDB)) {
+        if (!\is_array($data) || 1 > \count($data)) {
             return false; // there are no plugins installed
         }
-        $vPluginsDB = [];
-        foreach ($oPluginsDB as $oElement) {
-            $vPluginsDB[$oElement->cVerzeichnis] = $oElement->nVersion;
+        $pluginsDB = [];
+        foreach ($data as $oElement) {
+            $pluginsDB[$oElement->cVerzeichnis] = $oElement->nVersion;
         }
         // check against plugins, found in file-system
-        foreach ($vPluginsDB as $szFolder => $nVersion) {
-            $szPluginInfo = PFAD_ROOT . \PFAD_PLUGIN . $szFolder . '/info.xml';
-            $oXml         = null;
-            if (\file_exists($szPluginInfo)) {
-                $oXml = \simplexml_load_file($szPluginInfo);
+        foreach ($pluginsDB as $szFolder => $nVersion) {
+            $info = PFAD_ROOT . \PFAD_PLUGIN . $szFolder . '/info.xml';
+            $xml  = null;
+            if (\file_exists($info)) {
+                $xml = \simplexml_load_file($info);
                 // read all pluginversions from 'info.xml'
-                $vPluginXmlVersions = [0];
-                foreach ($oXml->Install->Version as $oElement) {
-                    $vPluginXmlVersions[] = (int)$oElement['nr'];
+                $pluginXmlVersions = [0];
+                foreach ($xml->Install->Version as $oElement) {
+                    $pluginXmlVersions[] = (int)$oElement['nr'];
                 }
                 // check for the highest and set marker, if it's different from installed db-version
-                if (\max($vPluginXmlVersions) !== (int)$nVersion) {
-                    $fNewVersions = true;
+                if (\max($pluginXmlVersions) !== (int)$nVersion) {
+                    $newVersions = true;
                 }
             }
         }
 
-        return $fNewVersions;
+        return $newVersions;
     }
 
     /**

@@ -5,6 +5,8 @@ stages:
   - build
   - deploy
   - cleanUp
+  - staging php72
+  - staging php73
 
 .testingScript: &testingScript |
   export CI_CONTAINER_NAME=ci_job_$CI_PROJECT_NAME_testing_$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
@@ -113,6 +115,18 @@ stages:
       docker stop $CI_CONTAINER_NAME && docker rm -fv $CI_CONTAINER_NAME
     fi
   }
+
+.devCheckoutScripts: &devCheckoutScripts |
+ function deployProcess() {
+   export FILENAME="${CI_COMMIT_REF_NAME//[\/\.]/-}";
+   export DOWNLOAD_PATH="$STAGING_USER_PATH/php$1/$CI_COMMIT_REF_NAME";
+   export DOWNLOAD_PATH_ZIP="$DOWNLOAD_PATH.zip";
+   export DOWNLOAD_URL="https://build.jtl-shop.de/get/shop-$FILENAME.zip";
+
+   curl -o $DOWNLOAD_PATH_ZIP $DOWNLOAD_URL
+
+   unzip -o $DOWNLOAD_PATH_ZIP -d $DOWNLOAD_PATH
+ }
 
 #code_quality:
 #  stage: codeclimate
@@ -269,3 +283,29 @@ removeContainer:
   when: on_failure
   tags:
     - build
+
+stagingDevPhp72:
+  stage: staging php72
+  script:
+    - *devCheckoutScripts
+    - deployProcess 72
+  environment:
+    name: staging php 7.2
+    url: https://$STAGING_USER-72-master.$STAGING_DOMAIN
+  only:
+    - master
+  tags:
+    - dev-checkout
+
+stagingDevPhp73:
+  stage: staging php73
+  script:
+    - *devCheckoutScripts
+    - deployProcess 73
+  environment:
+    name: staging php 7.3
+    url: https://$STAGING_USER-73-master.$STAGING_DOMAIN
+  only:
+    - master
+  tags:
+    - dev-checkout

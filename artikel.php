@@ -184,12 +184,12 @@ foreach ($AktuellerArtikel->Variationen as $Variation) {
         $nonAllowed[$value->kEigenschaftWert] = Product::getNonAllowedAttributeValues($value->kEigenschaftWert);
     }
 }
-$nav     = $conf['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
+$nav = $conf['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
     ? Product::getProductNavigation($AktuellerArtikel->kArtikel ?? 0, $AktuelleKategorie->kKategorie ?? 0)
     : null;
 
 //alerts
-if (($productNote = Product::editProductTags($AktuellerArtikel)) !== null) {
+if (($productNote = Product::editProductTags($AktuellerArtikel, $conf)) !== null) {
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, $productNote, 'editProductTags');
 }
 

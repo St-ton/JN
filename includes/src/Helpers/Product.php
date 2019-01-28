@@ -1698,7 +1698,7 @@ class Product
                         $newTag->cSeo     = SeoHelper::getSeo($tagString);
                         $newTag->cSeo     = SeoHelper::checkSeo($newTag->cSeo);
                         $newTag->nAktiv   = 0;
-                        $tagID             = $newTag->insertInDB();
+                        $tagID            = $newTag->insertInDB();
                         if ($tagID > 0) {
                             $tagArticle                 = new TagArticle();
                             $tagArticle->kTag           = $tagID;

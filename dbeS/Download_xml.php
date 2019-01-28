@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use dbeS\TableMapper as Mapper;
+
 require_once __DIR__ . '/syncinclude.php';
 
 $zipFile = $_FILES['data']['tmp_name'];
@@ -56,31 +58,31 @@ function bearbeiteInsert($xml)
 {
     if (isset($xml['tDownloads']['tDownload attr']) && is_array($xml['tDownloads']['tDownload attr'])) {
         // 1 Download
-        $oDownload_arr = mapArray($xml['tDownloads'], 'tDownload', $GLOBALS['mDownload']);
-        if ($oDownload_arr[0]->kDownload > 0) {
+        $downloads = mapArray($xml['tDownloads'], 'tDownload', Mapper::getMapping('mDownload'));
+        if ($downloads[0]->kDownload > 0) {
             $oDownloadSprache_arr = mapArray(
                 $xml['tDownloads']['tDownload'],
                 'tDownloadSprache',
-                $GLOBALS['mDownloadSprache']
+                Mapper::getMapping('mDownloadSprache')
             );
             if (count($oDownloadSprache_arr) > 0) {
-                DBUpdateInsert('tdownload', $oDownload_arr, 'kDownload');
+                DBUpdateInsert('tdownload', $downloads, 'kDownload');
                 $lCount = count($oDownloadSprache_arr);
                 for ($i = 0; $i < $lCount; ++$i) {
-                    $oDownloadSprache_arr[$i]->kDownload = $oDownload_arr[0]->kDownload;
+                    $oDownloadSprache_arr[$i]->kDownload = $downloads[0]->kDownload;
                     DBUpdateInsert('tdownloadsprache', [$oDownloadSprache_arr[$i]], 'kDownload', 'kSprache');
                 }
             }
         }
     } else {
         // N-Downloads
-        $oDownload_arr = mapArray($xml['tDownloads'], 'tDownload', $GLOBALS['mDownload']);
-        foreach ($oDownload_arr as $i => $oDownload) {
+        $downloads = mapArray($xml['tDownloads'], 'tDownload', Mapper::getMapping('mDownload'));
+        foreach ($downloads as $i => $oDownload) {
             if ($oDownload->kDownload > 0) {
                 $oDownloadSprache_arr = mapArray(
                     $xml['tDownloads']['tDownload'][$i],
                     'tDownloadSprache',
-                    $GLOBALS['mDownloadSprache']
+                    Mapper::getMapping('mDownloadSprache')
                 );
                 if (count($oDownloadSprache_arr) > 0) {
                     DBUpdateInsert('tdownload', [$oDownload], 'kDownload');

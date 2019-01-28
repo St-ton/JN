@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use dbeS\TableMapper as Mapper;
+
 require_once __DIR__ . '/syncinclude.php';
 
 $zipFile = $_FILES['data']['tmp_name'];
@@ -59,128 +61,132 @@ function bearbeiteUpdates($xml)
         && is_array($xml['globals']['tfirma'])
         && $xml['globals']['tfirma attr']['kFirma'] > 0
     ) {
-        mappe($Firma, $xml['globals']['tfirma'], $GLOBALS['mFirma']);
+        mappe($Firma, $xml['globals']['tfirma'], Mapper::getMapping('mFirma'));
         DBDelInsert('tfirma', [$Firma], 1);
     }
     $db = Shop::Container()->getDB();
     if (isset($xml['globals'])) {
-        //Sprache inserten
-        $oSprache_arr = mapArray($xml['globals'], 'tsprache', $GLOBALS['mSprache']);
-        $langCount    = count($oSprache_arr);
+        $languages = mapArray($xml['globals'], 'tsprache', Mapper::getMapping('mSprache'));
+        $langCount = count($languages);
         for ($i = 0; $i < $langCount; $i++) {
-            $oSprache_arr[$i]->cStandard = $oSprache_arr[$i]->cWawiStandard;
-            unset($oSprache_arr[$i]->cWawiStandard);
+            $languages[$i]->cStandard = $languages[$i]->cWawiStandard;
+            unset($languages[$i]->cWawiStandard);
         }
         Shop::Container()->getCache()->flushTags([CACHING_GROUP_LANGUAGE]);
-        if (count($oSprache_arr) > 0) {
-            DBDelInsert('tsprache', $oSprache_arr, 1);
+        if (count($languages) > 0) {
+            DBDelInsert('tsprache', $languages, 1);
         }
 
-        XML2DB($xml['globals'], 'tlieferstatus', $GLOBALS['mLieferstatus']);
-        XML2DB($xml['globals'], 'txsellgruppe', $GLOBALS['mXsellgruppe']);
-        XML2DB($xml['globals'], 'teinheit', $GLOBALS['mEinheit']);
-        XML2DB($xml['globals'], 'twaehrung', $GLOBALS['mWaehrung']);
-        XML2DB($xml['globals'], 'tsteuerklasse', $GLOBALS['mSteuerklasse']);
-        XML2DB($xml['globals'], 'tsteuersatz', $GLOBALS['mSteuersatz']);
-        XML2DB($xml['globals'], 'tversandklasse', $GLOBALS['mVersandklasse']);
+        XML2DB($xml['globals'], 'tlieferstatus', Mapper::getMapping('mLieferstatus'));
+        XML2DB($xml['globals'], 'txsellgruppe', Mapper::getMapping('mXsellgruppe'));
+        XML2DB($xml['globals'], 'teinheit', Mapper::getMapping('mEinheit'));
+        XML2DB($xml['globals'], 'twaehrung', Mapper::getMapping('mWaehrung'));
+        XML2DB($xml['globals'], 'tsteuerklasse', Mapper::getMapping('mSteuerklasse'));
+        XML2DB($xml['globals'], 'tsteuersatz', Mapper::getMapping('mSteuersatz'));
+        XML2DB($xml['globals'], 'tversandklasse', Mapper::getMapping('mVersandklasse'));
 
         if (isset($xml['globals']['tsteuerzone']) && is_array($xml['globals']['tsteuerzone'])) {
-            $steuerzonen_arr = mapArray($xml['globals'], 'tsteuerzone', $GLOBALS['mSteuerzone']);
-            DBDelInsert('tsteuerzone', $steuerzonen_arr, 1);
+            $taxZones = mapArray($xml['globals'], 'tsteuerzone', Mapper::getMapping('mSteuerzone'));
+            DBDelInsert('tsteuerzone', $taxZones, 1);
             $db->query('DELETE FROM tsteuerzoneland', \DB\ReturnType::DEFAULT);
-            $taxCount = count($steuerzonen_arr);
+            $taxCount = count($taxZones);
             for ($i = 0; $i < $taxCount; $i++) {
-                if (count($steuerzonen_arr) < 2) {
-                    XML2DB($xml['globals']['tsteuerzone'], 'tsteuerzoneland', $GLOBALS['mSteuerzoneland'], 0);
+                if (count($taxZones) < 2) {
+                    XML2DB($xml['globals']['tsteuerzone'], 'tsteuerzoneland', Mapper::getMapping('mSteuerzoneland'), 0);
                 } else {
-                    XML2DB($xml['globals']['tsteuerzone'][$i], 'tsteuerzoneland', $GLOBALS['mSteuerzoneland'], 0);
+                    XML2DB(
+                        $xml['globals']['tsteuerzone'][$i],
+                        'tsteuerzoneland',
+                        Mapper::getMapping('mSteuerzoneland'),
+                        0
+                    );
                 }
             }
         }
         if (isset($xml['globals']['tkundengruppe']) && is_array($xml['globals']['tkundengruppe'])) {
-            $kundengruppen_arr = mapArray($xml['globals'], 'tkundengruppe', $GLOBALS['mKundengruppe']);
-            DBDelInsert('tkundengruppe', $kundengruppen_arr, 1);
+            $customerGroups = mapArray($xml['globals'], 'tkundengruppe', Mapper::getMapping('mKundengruppe'));
+            DBDelInsert('tkundengruppe', $customerGroups, 1);
             $db->query('TRUNCATE TABLE tkundengruppensprache', \DB\ReturnType::DEFAULT);
             $db->query('TRUNCATE TABLE tkundengruppenattribut', \DB\ReturnType::DEFAULT);
-            $cgCount = count($kundengruppen_arr);
+            $cgCount = count($customerGroups);
             for ($i = 0; $i < $cgCount; $i++) {
-                if (count($kundengruppen_arr) < 2) {
+                if (count($customerGroups) < 2) {
                     XML2DB(
                         $xml['globals']['tkundengruppe'],
                         'tkundengruppensprache',
-                        $GLOBALS['mKundengruppensprache'],
+                        Mapper::getMapping('mKundengruppensprache'),
                         0
                     );
                     XML2DB(
                         $xml['globals']['tkundengruppe'],
                         'tkundengruppenattribut',
-                        $GLOBALS['mKundengruppenattribut'],
+                        Mapper::getMapping('mKundengruppenattribut'),
                         0
                     );
                 } else {
                     XML2DB(
                         $xml['globals']['tkundengruppe'][$i],
                         'tkundengruppensprache',
-                        $GLOBALS['mKundengruppensprache'],
+                        Mapper::getMapping('mKundengruppensprache'),
                         0
                     );
                     XML2DB(
                         $xml['globals']['tkundengruppe'][$i],
                         'tkundengruppenattribut',
-                        $GLOBALS['mKundengruppenattribut'],
+                        Mapper::getMapping('mKundengruppenattribut'),
                         0
                     );
                 }
             }
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]);
         }
-        // Warenlager
         if (isset($xml['globals']['twarenlager']) && is_array($xml['globals']['twarenlager'])) {
-            $oWarenlager_arr = mapArray($xml['globals'], 'twarenlager', $GLOBALS['mWarenlager']);
-            //Lagersichtbarkeit für Shop zwischenspeichern
-            $lagersichtbarkeit_arr = $db->query(
+            $storages   = mapArray($xml['globals'], 'twarenlager', Mapper::getMapping('mWarenlager'));
+            $visibility = $db->query(
                 'SELECT kWarenlager, nAktiv FROM twarenlager WHERE nAktiv = 1',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            //Alle Einträge in twarenlager löschen - Wawi 1.0.1 sendet immer alle Warenlager.
+            // Alle Einträge in twarenlager löschen - Wawi 1.0.1 sendet immer alle Warenlager.
             $db->query('DELETE FROM twarenlager WHERE 1', \DB\ReturnType::DEFAULT);
-
-            DBUpdateInsert('twarenlager', $oWarenlager_arr, 'kWarenlager');
-            //Lagersichtbarkeit übertragen
-            if (!empty($lagersichtbarkeit_arr)) {
-                foreach ($lagersichtbarkeit_arr as $lager) {
+            DBUpdateInsert('twarenlager', $storages, 'kWarenlager');
+            // Lagersichtbarkeit übertragen
+            if (!empty($visibility)) {
+                foreach ($visibility as $lager) {
                     $db->update('twarenlager', 'kWarenlager', $lager->kWarenlager, $lager);
                 }
             }
         }
-        // Masseinheit
         if (isset($xml['globals']['tmasseinheit']) && is_array($xml['globals']['tmasseinheit'])) {
-            $oMasseinheit_arr = mapArray($xml['globals'], 'tmasseinheit', $GLOBALS['mMasseinheit']);
-            foreach ($oMasseinheit_arr as &$_me) {
+            $units = mapArray($xml['globals'], 'tmasseinheit', Mapper::getMapping('mMasseinheit'));
+            foreach ($units as &$_me) {
                 //hack?
                 unset($_me->kBezugsMassEinheit);
             }
             unset($_me);
-            DBDelInsert('tmasseinheit', $oMasseinheit_arr, 1);
+            DBDelInsert('tmasseinheit', $units, 1);
             $db->query('TRUNCATE TABLE tmasseinheitsprache', \DB\ReturnType::DEFAULT);
-            $meCount = count($oMasseinheit_arr);
+            $meCount = count($units);
             for ($i = 0; $i < $meCount; $i++) {
-                if (count($oMasseinheit_arr) < 2) {
-                    XML2DB($xml['globals']['tmasseinheit'], 'tmasseinheitsprache', $GLOBALS['mMasseinheitsprache'], 0);
+                if (count($units) < 2) {
+                    XML2DB(
+                        $xml['globals']['tmasseinheit'],
+                        'tmasseinheitsprache',
+                        Mapper::getMapping('mMasseinheitsprache'),
+                        0
+                    );
                 } else {
                     XML2DB(
                         $xml['globals']['tmasseinheit'][$i],
                         'tmasseinheitsprache',
-                        $GLOBALS['mMasseinheitsprache'],
+                        Mapper::getMapping('mMasseinheitsprache'),
                         0
                     );
                 }
             }
         }
     }
-    // Warengruppe
     if (isset($xml['globals_wg']['tWarengruppe']) && is_array($xml['globals_wg']['tWarengruppe'])) {
-        $oWarengruppe_arr = mapArray($xml['globals_wg'], 'tWarengruppe', $GLOBALS['mWarengruppe']);
+        $oWarengruppe_arr = mapArray($xml['globals_wg'], 'tWarengruppe', Mapper::getMapping('mWarengruppe'));
         DBUpdateInsert('twarengruppe', $oWarengruppe_arr, 'kWarengruppe');
     }
 }

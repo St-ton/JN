@@ -56,14 +56,12 @@ if (!function_exists('Shop')) {
     }
 }
 
-$db    = new \DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-$cache = Shop::Container()->getCache()->setJtlCacheConfig(
+$db          = new \DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+$cache       = Shop::Container()->getCache()->setJtlCacheConfig(
     $db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)
 );
-
-$GLOBALS['bSeo'] = true; //compatibility!
-$pluginHooks     = \Plugin\Helper::getHookList();
-$oSprache        = Sprache::getInstance($db, $cache);
+$pluginHooks = \Plugin\Helper::getHookList();
+$oSprache    = Sprache::getInstance($db, $cache);
 
 /**
  * @param string     $cacheID
@@ -576,8 +574,10 @@ function setCategoryDiscount(int $categoryID)
             SELECT tkategorieartikel.kArtikel, tkategoriekundengruppe.kKundengruppe, tkategorieartikel.kKategorie,
                    MAX(tkategoriekundengruppe.fRabatt) fRabatt
             FROM tkategoriekundengruppe
-            INNER JOIN tkategorieartikel ON tkategorieartikel.kKategorie = tkategoriekundengruppe.kKategorie
-            LEFT JOIN tkategoriesichtbarkeit ON tkategoriesichtbarkeit.kKategorie = tkategoriekundengruppe.kKategorie
+            INNER JOIN tkategorieartikel 
+                ON tkategorieartikel.kKategorie = tkategoriekundengruppe.kKategorie
+            LEFT JOIN tkategoriesichtbarkeit 
+                ON tkategoriesichtbarkeit.kKategorie = tkategoriekundengruppe.kKategorie
                 AND tkategoriesichtbarkeit.kKundengruppe = tkategoriekundengruppe.kKundengruppe
             WHERE tkategoriekundengruppe.kKategorie = :categoryID
                 AND tkategoriesichtbarkeit.kKategorie IS NULL
@@ -612,19 +612,19 @@ function versendeVerfuegbarkeitsbenachrichtigung($product)
     require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 
-    $Artikel = (new Artikel())->fuelleArtikel($product->kArtikel, Artikel::getDefaultOptions());
-    if ($Artikel === null) {
+    $product = (new Artikel())->fuelleArtikel($product->kArtikel, Artikel::getDefaultOptions());
+    if ($product === null) {
         return;
     }
     $campaign = new Kampagne(KAMPAGNE_INTERN_VERFUEGBARKEIT);
     if ($campaign->kKampagne > 0) {
-        $cSep           = strpos($Artikel->cURL, '.php') === false ? '?' : '&';
-        $Artikel->cURL .= $cSep . $campaign->cParameter . '=' . $campaign->cWert;
+        $cSep           = strpos($product->cURL, '.php') === false ? '?' : '&';
+        $product->cURL .= $cSep . $campaign->cParameter . '=' . $campaign->cWert;
     }
     foreach ($subscriptions as $msg) {
         $obj                                   = new stdClass();
         $obj->tverfuegbarkeitsbenachrichtigung = $msg;
-        $obj->tartikel                         = $Artikel;
+        $obj->tartikel                         = $product;
         $obj->tartikel->cName                  = StringHandler::htmlentitydecode($obj->tartikel->cName);
         $mail                                  = new stdClass();
         $mail->toEmail                         = $msg->cMail;
@@ -648,11 +648,11 @@ function versendeVerfuegbarkeitsbenachrichtigung($product)
 }
 
 /**
- * @param int   $kArtikel
- * @param int   $kKundengruppe
+ * @param int   $productID
+ * @param int   $customerGroupID
  * @param float $fVKNetto
  */
-function setzePreisverlauf(int $kArtikel, int $kKundengruppe, float $fVKNetto)
+function setzePreisverlauf(int $productID, int $customerGroupID, float $fVKNetto)
 {
     $db      = Shop::Container()->getDB();
     $history = $db->queryPrepared(
@@ -662,8 +662,8 @@ function setzePreisverlauf(int $kArtikel, int $kKundengruppe, float $fVKNetto)
 	            AND kKundengruppe = :kKundengruppe
             ORDER BY dDate DESC LIMIT 2',
         [
-            'kArtikel'      => $kArtikel,
-            'kKundengruppe' => $kKundengruppe,
+            'kArtikel'      => $productID,
+            'kKundengruppe' => $customerGroupID,
         ],
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
@@ -693,8 +693,8 @@ function setzePreisverlauf(int $kArtikel, int $kKundengruppe, float $fVKNetto)
             return;
         }
         $db->insert('tpreisverlauf', (object)[
-            'kArtikel'      => $kArtikel,
-            'kKundengruppe' => $kKundengruppe,
+            'kArtikel'      => $productID,
+            'kKundengruppe' => $customerGroupID,
             'fVKNetto'      => $fVKNetto,
             'dDate'         => 'NOW()',
         ]);
@@ -702,11 +702,11 @@ function setzePreisverlauf(int $kArtikel, int $kKundengruppe, float $fVKNetto)
 }
 
 /**
- * @param string $cFehler
+ * @param string $error
  */
-function unhandledError($cFehler)
+function unhandledError($error)
 {
-    syncException($cFehler, FREIDEFINIERBARER_FEHLER);
+    syncException($error, FREIDEFINIERBARER_FEHLER);
 }
 
 /**
@@ -721,20 +721,20 @@ function convert($size)
 }
 
 /**
- * @param string $cMessage
+ * @param string $error
  * @return string
  */
-function translateError($cMessage)
+function translateError($error)
 {
-    if (preg_match('/Maximum execution time of (\d+) second.? exceeded/', $cMessage, $cMatch_arr)) {
-        $nSeconds = (int)$cMatch_arr[1];
-        $cMessage = 'Maximale Ausführungszeit von ' . $nSeconds . ' Sekunden überschritten';
-    } elseif (preg_match('/Allowed memory size of (\d+) bytes exhausted/', $cMessage, $cMatch_arr)) {
-        $nLimit   = (int)$cMatch_arr[1];
-        $cMessage = 'Erlaubte Speichergröße von ' . $nLimit . ' Bytes erschöpft';
+    if (preg_match('/Maximum execution time of (\d+) second.? exceeded/', $error, $matches)) {
+        $seconds = (int)$matches[1];
+        $error   = 'Maximale Ausführungszeit von ' . $seconds . ' Sekunden überschritten';
+    } elseif (preg_match('/Allowed memory size of (\d+) bytes exhausted/', $error, $matches)) {
+        $limit = (int)$matches[1];
+        $error = 'Erlaubte Speichergröße von ' . $limit . ' Bytes erschöpft';
     }
 
-    return $cMessage;
+    return $error;
 }
 
 /**
@@ -745,144 +745,143 @@ function handleError($output)
 {
     $error = error_get_last();
     if ($error['type'] === 1) {
-        $cError  = translateError($error['message']) . "\n";
-        $cError .= 'Datei: ' . $error['file'];
-        Shop::Container()->getLogService()->error($cError);
+        $error  = translateError($error['message']) . "\n";
+        $error .= 'Datei: ' . $error['file'];
+        Shop::Container()->getLogService()->error($error);
 
-        return $cError;
+        return $error;
     }
 
     return $output;
 }
 
 /**
- * @param null|stdClass $oArtikelPict
- * @param int           $kArtikel
+ * @param null|stdClass $image
+ * @param int           $productID
  * @param int           $kArtikelPict
  */
-function deleteArticleImage($oArtikelPict = null, int $kArtikel = 0, int $kArtikelPict = 0)
+function deleteArticleImage($image = null, int $productID = 0, int $kArtikelPict = 0)
 {
     $db = Shop::Container()->getDB();
-    if ($oArtikelPict === null && $kArtikelPict > 0) {
-        $oArtikelPict = $db->select('tartikelpict', 'kArtikelPict', $kArtikelPict);
-        $kArtikel     = isset($oArtikelPict->kArtikel) ? (int)$oArtikelPict->kArtikel : 0;
+    if ($image === null && $kArtikelPict > 0) {
+        $image     = $db->select('tartikelpict', 'kArtikelPict', $kArtikelPict);
+        $productID = isset($image->kArtikel) ? (int)$image->kArtikel : 0;
     }
     // Das Bild ist eine Verknüpfung
-    if (isset($oArtikelPict->kMainArtikelBild) && $oArtikelPict->kMainArtikelBild > 0 && $kArtikel > 0) {
+    if (isset($image->kMainArtikelBild) && $image->kMainArtikelBild > 0 && $productID > 0) {
         // Existiert der Artikel vom Mainbild noch?
-        $oMainArtikel = $db->query(
+        $main = $db->query(
             'SELECT kArtikel
                 FROM tartikel
                 WHERE kArtikel = (
                     SELECT kArtikel
                         FROM tartikelpict
-                        WHERE kArtikelPict = ' . (int)$oArtikelPict->kMainArtikelBild . ')',
+                        WHERE kArtikelPict = ' . (int)$image->kMainArtikelBild . ')',
             \DB\ReturnType::SINGLE_OBJECT
         );
         // Main Artikel existiert nicht mehr
-        if (!isset($oMainArtikel->kArtikel) || (int)$oMainArtikel->kArtikel === 0) {
+        if (!isset($main->kArtikel) || (int)$main->kArtikel === 0) {
             // Existiert noch eine andere aktive Verknüpfung auf das Mainbild?
-            $oArtikelPictPara_arr = $db->query(
+            $productImages = $db->query(
                 'SELECT kArtikelPict
                     FROM tartikelpict
-                    WHERE kMainArtikelBild = ' . (int)$oArtikelPict->kMainArtikelBild . '
-                        AND kArtikel != ' . $kArtikel,
+                    WHERE kMainArtikelBild = ' . (int)$image->kMainArtikelBild . '
+                        AND kArtikel != ' . $productID,
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             // Lösche das MainArtikelBild
-            if (count($oArtikelPictPara_arr) === 0) {
+            if (count($productImages) === 0) {
                 // Bild von der Platte löschen
-                @unlink(PFAD_ROOT . PFAD_PRODUKTBILDER_MINI . $oArtikelPict->cPfad);
-                @unlink(PFAD_ROOT . PFAD_PRODUKTBILDER_KLEIN . $oArtikelPict->cPfad);
-                @unlink(PFAD_ROOT . PFAD_PRODUKTBILDER_NORMAL . $oArtikelPict->cPfad);
-                @unlink(PFAD_ROOT . PFAD_PRODUKTBILDER_GROSS . $oArtikelPict->cPfad);
+                @unlink(PFAD_ROOT . PFAD_PRODUKTBILDER_MINI . $image->cPfad);
+                @unlink(PFAD_ROOT . PFAD_PRODUKTBILDER_KLEIN . $image->cPfad);
+                @unlink(PFAD_ROOT . PFAD_PRODUKTBILDER_NORMAL . $image->cPfad);
+                @unlink(PFAD_ROOT . PFAD_PRODUKTBILDER_GROSS . $image->cPfad);
                 // Bild vom Main aus DB löschen
-                $db->delete('tartikelpict', 'kArtikelPict', (int)$oArtikelPict->kMainArtikelBild);
+                $db->delete('tartikelpict', 'kArtikelPict', (int)$image->kMainArtikelBild);
             }
         }
         // Bildverknüpfung aus DB löschen
-        $db->delete('tartikelpict', 'kArtikelPict', (int)$oArtikelPict->kArtikelPict);
-    } elseif (isset($oArtikelPict->kMainArtikelBild) && $oArtikelPict->kMainArtikelBild == 0) {
+        $db->delete('tartikelpict', 'kArtikelPict', (int)$image->kArtikelPict);
+    } elseif (isset($image->kMainArtikelBild) && $image->kMainArtikelBild == 0) {
         // Das Bild ist ein Hauptbild
         // Gibt es Artikel die auf Bilder des zu löschenden Artikel verknüpfen?
-        $oVerknuepfteArtikel_arr = $db->queryPrepared(
+        $childProducts = $db->queryPrepared(
             'SELECT kArtikelPict
                 FROM tartikelpict
                 WHERE kMainArtikelBild = :img',
-            ['img' => (int)$oArtikelPict->kArtikelPict],
+            ['img' => (int)$image->kArtikelPict],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (count($oVerknuepfteArtikel_arr) === 0) {
+        if (count($childProducts) === 0) {
             // Gibt ein neue Artikel die noch auf den physikalischen Pfad zeigen?
             $oObj = $db->queryPrepared(
                 'SELECT COUNT(*) AS nCount
                     FROM tartikelpict
                     WHERE cPfad = :pth',
-                ['pth' => $oArtikelPict->cPfad],
+                ['pth' => $image->cPfad],
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oObj->nCount) && $oObj->nCount < 2) {
                 // Bild von der Platte löschen
-                @unlink(PFAD_ROOT . PFAD_PRODUKTBILDER_MINI . $oArtikelPict->cPfad);
-                @unlink(PFAD_ROOT . PFAD_PRODUKTBILDER_KLEIN . $oArtikelPict->cPfad);
-                @unlink(PFAD_ROOT . PFAD_PRODUKTBILDER_NORMAL . $oArtikelPict->cPfad);
-                @unlink(PFAD_ROOT . PFAD_PRODUKTBILDER_GROSS . $oArtikelPict->cPfad);
+                @unlink(PFAD_ROOT . PFAD_PRODUKTBILDER_MINI . $image->cPfad);
+                @unlink(PFAD_ROOT . PFAD_PRODUKTBILDER_KLEIN . $image->cPfad);
+                @unlink(PFAD_ROOT . PFAD_PRODUKTBILDER_NORMAL . $image->cPfad);
+                @unlink(PFAD_ROOT . PFAD_PRODUKTBILDER_GROSS . $image->cPfad);
             }
         } else {
-            //Reorder linked images because master imagelink will be deleted
-            $kArtikelPictNext = $oVerknuepfteArtikel_arr[0]->kArtikelPict;
-            //this will be the next masterimage
+            // Reorder linked images because master imagelink will be deleted
+            $kArtikelPictNext = $childProducts[0]->kArtikelPict;
+            // this will be the next masterimage
             $db->update(
                 'tartikelpict',
                 'kArtikelPict',
                 (int)$kArtikelPictNext,
                 (object)['kMainArtikelBild' => 0]
             );
-            //now link other images to the new masterimage
+            // now link other images to the new masterimage
             $db->update(
                 'tartikelpict',
                 'kMainArtikelBild',
-                (int)$oArtikelPict->kArtikelPict,
+                (int)$image->kArtikelPict,
                 (object)['kMainArtikelBild' => (int)$kArtikelPictNext]
             );
         }
-        $db->delete('tartikelpict', 'kArtikelPict', (int)$oArtikelPict->kArtikelPict);
+        $db->delete('tartikelpict', 'kArtikelPict', (int)$image->kArtikelPict);
     }
-    $cache = Shop::Container()->getCache();
-    $cache->flushTags([CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $productID]);
 }
 
 /**
- * @param object $oObject
+ * @param object $object
  */
-function extractStreet(&$oObject)
+function extractStreet(&$object)
 {
-    $cData_arr = explode(' ', $oObject->cStrasse);
-    if (count($cData_arr) > 1) {
-        $oObject->cHausnummer = $cData_arr[count($cData_arr) - 1];
-        unset($cData_arr[count($cData_arr) - 1]);
-        $oObject->cStrasse = implode(' ', $cData_arr);
+    $data = explode(' ', $object->cStrasse);
+    if (count($data) > 1) {
+        $object->cHausnummer = $data[count($data) - 1];
+        unset($data[count($data) - 1]);
+        $object->cStrasse = implode(' ', $data);
     }
 }
 
 /**
- * @param string $cSeoOld
- * @param string $cSeoNew
+ * @param string $oldSeo
+ * @param string $newSeo
  * @return bool
  */
-function checkDbeSXmlRedirect($cSeoOld, $cSeoNew)
+function checkDbeSXmlRedirect($oldSeo, $newSeo)
 {
     // Insert into tredirect weil sich das SEO von der Kategorie geändert hat
-    if ($cSeoOld !== $cSeoNew && strlen($cSeoOld) > 0 && strlen($cSeoNew) > 0) {
+    if ($oldSeo !== $newSeo && strlen($oldSeo) > 0 && strlen($newSeo) > 0) {
         $oRedirect = new Redirect();
         $xPath_arr = parse_url(Shop::getURL());
         if (isset($xPath_arr['path'])) {
-            $cSource = "{$xPath_arr['path']}/{$cSeoOld}";
+            $cSource = "{$xPath_arr['path']}/{$oldSeo}";
         } else {
-            $cSource = '/' . $cSeoOld;
+            $cSource = '/' . $oldSeo;
         }
 
-        return $oRedirect->saveExt($cSource, $cSeoNew, true);
+        return $oRedirect->saveExt($cSource, $newSeo, true);
     }
 
     return false;
@@ -895,9 +894,8 @@ function checkDbeSXmlRedirect($cSeoOld, $cSeoNew)
  * @param string|null $cAssoc
  * @return array|null|stdClass
  */
-function getSeoFromDB($kKey, $cKey, $kSprache = null, $cAssoc = null)
+function getSeoFromDB(int $kKey, $cKey, $kSprache = null, $cAssoc = null)
 {
-    $kKey = (int)$kKey;
     if (!($kKey > 0 && strlen($cKey) > 0)) {
         return null;
     }
@@ -911,14 +909,14 @@ function getSeoFromDB($kKey, $cKey, $kSprache = null, $cAssoc = null)
         $seo = Shop::Container()->getDB()->selectAll('tseo', ['kKey', 'cKey'], [$kKey, $cKey]);
         if (is_array($seo) && count($seo) > 0) {
             if ($cAssoc !== null && strlen($cAssoc) > 0) {
-                $oAssoc_arr = [];
+                $seoData = [];
                 foreach ($seo as $oSeo) {
                     if (isset($oSeo->{$cAssoc})) {
-                        $oAssoc_arr[$oSeo->{$cAssoc}] = $oSeo;
+                        $seoData[$oSeo->{$cAssoc}] = $oSeo;
                     }
                 }
-                if (count($oAssoc_arr) > 0) {
-                    $seo = $oAssoc_arr;
+                if (count($seoData) > 0) {
+                    $seo = $seoData;
                 }
             }
 
@@ -937,15 +935,15 @@ function getSeoFromDB($kKey, $cKey, $kSprache = null, $cAssoc = null)
  */
 function handlePriceFormat(int $kArtikel, int $kKundengruppe, int $kKunde = null)
 {
-    $o                = new stdClass();
-    $o->kArtikel      = $kArtikel;
-    $o->kKundengruppe = $kKundengruppe;
+    $ins                = new stdClass();
+    $ins->kArtikel      = $kArtikel;
+    $ins->kKundengruppe = $kKundengruppe;
     if ($kKunde !== null && $kKunde > 0) {
-        $o->kKunde = $kKunde;
-        flushCustomerPriceCache($o->kKunde);
+        $ins->kKunde = $kKunde;
+        flushCustomerPriceCache($ins->kKunde);
     }
 
-    return Shop::Container()->getDB()->insert('tpreis', $o);
+    return Shop::Container()->getDB()->insert('tpreis', $ins);
 }
 
 /**
@@ -990,22 +988,22 @@ function handleNewPriceFormat($xml)
     if (!is_array($xml) || !isset($xml['tpreis'])) {
         return;
     }
-    $preise = mapArray($xml, 'tpreis', $GLOBALS['mPreis']);
-    if (count($preise) === 0) {
+    $prices = mapArray($xml, 'tpreis', \dbeS\TableMapper::getMapping('mPreis'));
+    if (count($prices) === 0) {
         return;
     }
     $db        = Shop::Container()->getDB();
-    $kArtikel  = (int)$preise[0]->kArtikel;
+    $productID = (int)$prices[0]->kArtikel;
     $customers = $db->selectAll(
         'tpreis',
         ['kArtikel', 'kKundengruppe'],
-        [$kArtikel, 0],
+        [$productID, 0],
         'kKunde'
     );
     foreach ($customers as $customer) {
-        $kKunde = (int)$customer->kKunde;
-        if ($kKunde > 0) {
-            flushCustomerPriceCache($kKunde);
+        $customerID = (int)$customer->kKunde;
+        if ($customerID > 0) {
+            flushCustomerPriceCache($customerID);
         }
     }
     $db->query(
@@ -1013,53 +1011,49 @@ function handleNewPriceFormat($xml)
             FROM tpreis AS p
             LEFT JOIN tpreisdetail AS d 
                 ON d.kPreis = p.kPreis
-            WHERE p.kArtikel = ' . $kArtikel,
+            WHERE p.kArtikel = ' . $productID,
         \DB\ReturnType::DEFAULT
     );
     $customerGroupHandled = [];
-    foreach ($preise as $i => $preis) {
-        $kPreis = handlePriceFormat($preis->kArtikel, $preis->kKundenGruppe, (int)$preis->kKunde);
-        if (!empty($xml['tpreis'][$i])) {
-            $preisdetails = mapArray($xml['tpreis'][$i], 'tpreisdetail', $GLOBALS['mPreisDetail']);
-        } else {
-            $preisdetails = mapArray($xml['tpreis'], 'tpreisdetail', $GLOBALS['mPreisDetail']);
-        }
+    foreach ($prices as $i => $price) {
+        $priceID         = handlePriceFormat($price->kArtikel, $price->kKundenGruppe, (int)$price->kKunde);
+        $details         = empty($xml['tpreis'][$i])
+            ? mapArray($xml['tpreis'], 'tpreisdetail', \dbeS\TableMapper::getMapping('mPreisDetail'))
+            : mapArray($xml['tpreis'][$i], 'tpreisdetail', \dbeS\TableMapper::getMapping('mPreisDetail'));
         $hasDefaultPrice = false;
-        foreach ($preisdetails as $preisdetail) {
-            $o = (object)[
-                'kPreis'    => $kPreis,
+        foreach ($details as $preisdetail) {
+            $ins = (object)[
+                'kPreis'    => $priceID,
                 'nAnzahlAb' => $preisdetail->nAnzahlAb,
                 'fVKNetto'  => $preisdetail->fNettoPreis
             ];
-            $db->insert('tpreisdetail', $o);
-            if ((int)$o->nAnzahlAb === 0) {
+            $db->insert('tpreisdetail', $ins);
+            if ((int)$ins->nAnzahlAb === 0) {
                 $hasDefaultPrice = true;
             }
         }
         // default price for customergroup set?
         if (!$hasDefaultPrice && isset($xml['fStandardpreisNetto'])) {
-            $o = (object)[
-                'kPreis'    => $kPreis,
+            $ins = (object)[
+                'kPreis'    => $priceID,
                 'nAnzahlAb' => 0,
                 'fVKNetto'  => $xml['fStandardpreisNetto']
             ];
-            $db->insert('tpreisdetail', $o);
+            $db->insert('tpreisdetail', $ins);
         }
-        $customerGroupHandled[] = (int)$preis->kKundenGruppe;
+        $customerGroupHandled[] = (int)$price->kKundenGruppe;
     }
-    //any customergroups with missing tpreis node left?
-    $kKundengruppen_arr = Kundengruppe::getGroups();
-    /** @var Kundengruppe $customergroup */
-    foreach ($kKundengruppen_arr as $customergroup) {
-        $kKundengruppe = $customergroup->getID();
-        if (isset($xml['fStandardpreisNetto']) && !in_array($kKundengruppe, $customerGroupHandled, true)) {
-            $kPreis = handlePriceFormat($kArtikel, $kKundengruppe);
-            $o      = (object)[
-                'kPreis'    => $kPreis,
+    // any customergroups with missing tpreis node left?
+    foreach (Kundengruppe::getGroups() as $customergroup) {
+        $id = $customergroup->getID();
+        if (isset($xml['fStandardpreisNetto']) && !in_array($id, $customerGroupHandled, true)) {
+            $priceID = handlePriceFormat($productID, $id);
+            $ins     = (object)[
+                'kPreis'    => $priceID,
                 'nAnzahlAb' => 0,
                 'fVKNetto'  => $xml['fStandardpreisNetto']
             ];
-            $db->insert('tpreisdetail', $o);
+            $db->insert('tpreisdetail', $ins);
         }
     }
 }
@@ -1072,11 +1066,11 @@ function handleOldPriceFormat($objs)
     if (!is_array($objs) || count($objs) === 0) {
         return;
     }
-    $kArtikel  = (int)$objs[0]->kArtikel;
+    $productID = (int)$objs[0]->kArtikel;
     $customers = Shop::Container()->getDB()->selectAll(
         'tpreis',
         ['kArtikel', 'kKundengruppe'],
-        [$kArtikel, 0],
+        [$productID, 0],
         'kKunde'
     );
     foreach ($customers as $customer) {
@@ -1087,14 +1081,14 @@ function handleOldPriceFormat($objs)
             FROM tpreis AS p
             LEFT JOIN tpreisdetail AS d 
                 ON d.kPreis = p.kPreis
-            WHERE p.kArtikel = ' . $kArtikel,
+            WHERE p.kArtikel = ' . $productID,
         \DB\ReturnType::DEFAULT
     );
     foreach ($objs as $obj) {
-        $kPreis = handlePriceFormat((int)$obj->kArtikel, (int)$obj->kKundengruppe);
-        insertPriceDetail($obj, 0, $kPreis);
+        $priceID = handlePriceFormat((int)$obj->kArtikel, (int)$obj->kKundengruppe);
+        insertPriceDetail($obj, 0, $priceID);
         for ($i = 1; $i <= 5; $i++) {
-            insertPriceDetail($obj, $i, $kPreis);
+            insertPriceDetail($obj, $i, $priceID);
         }
     }
 }
@@ -1217,26 +1211,26 @@ function insertPriceDetail($obj, $index, $priceId)
     $price = 'fPreis' . $index;
 
     if ((isset($obj->{$count}) && (int)$obj->{$count} > 0) || $index === 0) {
-        $o            = new stdClass();
-        $o->kPreis    = $priceId;
-        $o->nAnzahlAb = $index === 0 ? 0 : $obj->{$count};
-        $o->fVKNetto  = $index === 0 ? $obj->fVKNetto : $obj->{$price};
+        $ins            = new stdClass();
+        $ins->kPreis    = $priceId;
+        $ins->nAnzahlAb = $index === 0 ? 0 : $obj->{$count};
+        $ins->fVKNetto  = $index === 0 ? $obj->fVKNetto : $obj->{$price};
 
-        Shop::Container()->getDB()->insert('tpreisdetail', $o);
+        Shop::Container()->getDB()->insert('tpreisdetail', $ins);
     }
 }
 
 /**
- * @param string $cAnrede
+ * @param string $salutation
  * @return string
  */
-function mappeWawiAnrede2ShopAnrede($cAnrede)
+function mappeWawiAnrede2ShopAnrede($salutation)
 {
-    $cAnrede = strtolower($cAnrede);
-    if ($cAnrede === 'w' || $cAnrede === 'm') {
-        return $cAnrede;
+    $salutation = strtolower($salutation);
+    if ($salutation === 'w' || $salutation === 'm') {
+        return $salutation;
     }
-    if ($cAnrede === 'frau' || $cAnrede === 'mrs' || $cAnrede === 'mrs.') {
+    if ($salutation === 'frau' || $salutation === 'mrs' || $salutation === 'mrs.') {
         return 'w';
     }
 

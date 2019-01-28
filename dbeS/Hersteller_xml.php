@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use dbeS\TableMapper as Mapper;
+
 require_once __DIR__ . '/syncinclude.php';
 
 $return  = 3;
@@ -79,26 +81,26 @@ function bearbeiteHersteller($xml)
     if (!isset($xml['hersteller']['thersteller']) || !is_array($xml['hersteller']['thersteller'])) {
         return;
     }
-    $manufacturers = mapArray($xml['hersteller'], 'thersteller', $GLOBALS['mHersteller']);
-    $oSprache_arr  = Sprache::getAllLanguages();
+    $manufacturers = mapArray($xml['hersteller'], 'thersteller', Mapper::getMapping('mHersteller'));
+    $languages     = Sprache::getAllLanguages();
     $mfCount       = count($manufacturers);
     $cacheTags     = [];
     $db            = Shop::Container()->getDB();
     for ($i = 0; $i < $mfCount; $i++) {
         $id               = (int)$manufacturers[$i]->kHersteller;
-        $affectedArticles = $db->selectAll('tartikel', 'kHersteller', $id, 'kArtikel');
+        $affectedProducts = $db->selectAll('tartikel', 'kHersteller', $id, 'kArtikel');
         $db->delete('tseo', ['kKey', 'cKey'], [$id, 'kHersteller']);
         if (!trim($manufacturers[$i]->cSeo)) {
             $manufacturers[$i]->cSeo = \JTL\SeoHelper::getFlatSeoPath($manufacturers[$i]->cName);
         }
-        //alten Bildpfad merken
-        $oHerstellerBild              = $db->query(
+        // alten Bildpfad merken
+        $manufacturerImage           = $db->query(
             'SELECT cBildPfad 
                 FROM thersteller 
                 WHERE kHersteller = ' . $id,
             \DB\ReturnType::SINGLE_OBJECT
         );
-        $manufacturers[$i]->cBildPfad = $oHerstellerBild->cBildPfad ?? '';
+        $manufacturers[$i]->cBildPfad = $manufacturerImage->cBildPfad ?? '';
         $manufacturers[$i]->cSeo      = \JTL\SeoHelper::getSeo($manufacturers[$i]->cSeo);
         $manufacturers[$i]->cSeo      = \JTL\SeoHelper::checkSeo($manufacturers[$i]->cSeo);
         DBUpdateInsert('thersteller', [$manufacturers[$i]], 'kHersteller');
@@ -109,11 +111,11 @@ function bearbeiteHersteller($xml)
         } elseif (isset($xml['hersteller']['thersteller']['therstellersprache'])) {
             $cXMLSprache = $xml['hersteller']['thersteller'];
         }
-        $_herstellerSeo = mapArray($cXMLSprache, 'therstellersprache', $GLOBALS['mHerstellerSpracheSeo']);
-        foreach ($oSprache_arr as $oSprache) {
+        $_herstellerSeo = mapArray($cXMLSprache, 'therstellersprache', Mapper::getMapping('mHerstellerSpracheSeo'));
+        foreach ($languages as $language) {
             $_baseSeo = $manufacturers[$i]->cSeo;
             foreach ($_herstellerSeo as $_hs) {
-                if (isset($_hs->kSprache) && (int)$_hs->kSprache === (int)$oSprache->kSprache && !empty($_hs->cSeo)) {
+                if (isset($_hs->kSprache) && (int)$_hs->kSprache === (int)$language->kSprache && !empty($_hs->cSeo)) {
                     $_baseSeo = \JTL\SeoHelper::getSeo($_hs->cSeo);
                     break;
                 }
@@ -122,18 +124,24 @@ function bearbeiteHersteller($xml)
             $oSeo->cSeo     = \JTL\SeoHelper::checkSeo($_baseSeo);
             $oSeo->cKey     = 'kHersteller';
             $oSeo->kKey     = $id;
-            $oSeo->kSprache = (int)$oSprache->kSprache;
+            $oSeo->kSprache = (int)$language->kSprache;
             $db->insert('tseo', $oSeo);
         }
         $db->delete('therstellersprache', 'kHersteller', $id);
 
-        updateXMLinDB($cXMLSprache, 'therstellersprache', $GLOBALS['mHerstellerSprache'], 'kHersteller', 'kSprache');
+        updateXMLinDB(
+            $cXMLSprache,
+            'therstellersprache',
+            Mapper::getMapping('mHerstellerSprache'),
+            'kHersteller',
+            'kSprache'
+        );
 
         executeHook(HOOK_HERSTELLER_XML_BEARBEITEINSERT, ['oHersteller' => $manufacturers[$i]]);
         $cacheTags[] = CACHING_GROUP_MANUFACTURER . '_' . $id;
-        if (is_array($affectedArticles)) {
+        if (is_array($affectedProducts)) {
             $articleCacheTags = [];
-            foreach ($affectedArticles as $article) {
+            foreach ($affectedProducts as $article) {
                 $articleCacheTags[] = CACHING_GROUP_ARTICLE . '_' . $article->kArtikel;
             }
             Shop::Container()->getCache()->flushTags($articleCacheTags);

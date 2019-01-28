@@ -28,49 +28,42 @@ if (auth()) {
  */
 function handleData(int $kBestellung, $dRechnungErstellt, int $kSprache)
 {
-    if ($kBestellung > 0 && $kSprache > 0) {
-        $oBestellung = Shop::Container()->getDB()->query(
-            'SELECT tbestellung.kBestellung, tbestellung.fGesamtsumme, tzahlungsart.cModulId
-                FROM tbestellung
-                LEFT JOIN tzahlungsart
-                  ON tbestellung.kZahlungsart = tzahlungsart.kZahlungsart
-                WHERE tbestellung.kBestellung = ' . $kBestellung . ' 
-                LIMIT 1',
-            \DB\ReturnType::SINGLE_OBJECT
-        );
-
-        if ($oBestellung) {
-            $oPaymentMethod = PaymentMethod::create($oBestellung->cModulId);
-            if ($oPaymentMethod) {
-                $oInvoice = $oPaymentMethod->createInvoice($kBestellung, $kSprache);
-                if (is_object($oInvoice)) {
-                    // response xml
-                    if ($oInvoice->nType === 0 && strlen($oInvoice->cInfo) === 0) {
-                        $oInvoice->cInfo = 'Funktion in Zahlungsmethode nicht implementiert';
-                    }
-
-                    $cResponse = createResponse(
-                        $oBestellung->kBestellung,
-                        ($oInvoice->nType === 0 ? 'FAILURE' : 'SUCCESS'),
-                        $oInvoice->cInfo
-                    );
-                    zipRedirect(time() . '.jtl', $cResponse);
-                    exit;
-                }
-                pushError('Fehler beim Erstellen der Rechnung (kBestellung: ' . $oBestellung->kBestellung . ').');
-            } else {
-                // payment method does not exist
-                pushError(
-                    'Invoice handleData: Für die Zahlungsart ' . $oPaymentMethod->cName .
-                    ' kann keine Rechnung erstellt werden (kBestellung: ' . $oBestellung->kBestellung . ').'
-                );
-            }
-        } else {
-            pushError('Keine Bestellung mit kBestellung ' . $kBestellung . ' gefunden!');
-        }
-    } else {
+    if ($kBestellung <= 0 || $kSprache <= 0) {
         pushError('Fehlerhafte Parameter (kBestellung: ' . $kBestellung . ', kSprache: ' . $kSprache . ').');
+        return;
     }
+    $order = Shop::Container()->getDB()->query(
+        'SELECT tbestellung.kBestellung, tbestellung.fGesamtsumme, tzahlungsart.cModulId
+            FROM tbestellung
+            LEFT JOIN tzahlungsart
+              ON tbestellung.kZahlungsart = tzahlungsart.kZahlungsart
+            WHERE tbestellung.kBestellung = ' . $kBestellung . ' 
+            LIMIT 1',
+        \DB\ReturnType::SINGLE_OBJECT
+    );
+    if (!$order) {
+        pushError('Keine Bestellung mit kBestellung ' . $kBestellung . ' gefunden!');
+        return;
+    }
+    $paymentMethod = PaymentMethod::create($order->cModulId);
+    if (!$paymentMethod) {
+        pushError('Keine Bestellung mit kBestellung ' . $kBestellung . ' gefunden!');
+        return;
+    }
+    $invoice = $paymentMethod->createInvoice($kBestellung, $kSprache);
+    if (is_object($invoice)) {
+        if ($invoice->nType === 0 && strlen($invoice->cInfo) === 0) {
+            $invoice->cInfo = 'Funktion in Zahlungsmethode nicht implementiert';
+        }
+        $response = createResponse(
+            $order->kBestellung,
+            ($invoice->nType === 0 ? 'FAILURE' : 'SUCCESS'),
+            $invoice->cInfo
+        );
+        zipRedirect(time() . '.jtl', $response);
+        exit;
+    }
+    pushError('Fehler beim Erstellen der Rechnung (kBestellung: ' . $order->kBestellung . ').');
 }
 
 /**
@@ -96,12 +89,12 @@ function createResponse(int $kBestellung, $cTyp, $cComment)
 }
 
 /**
- * @param string $cMessage
+ * @param string $message
  */
-function pushError($cMessage)
+function pushError($message)
 {
-    Shop::Container()->getLogService()->error('Error @ invoice_xml: ' . $cMessage);
-    $aResponse = createResponse(0, 'FAILURE', $cMessage);
+    Shop::Container()->getLogService()->error('Error @ invoice_xml: ' . $message);
+    $aResponse = createResponse(0, 'FAILURE', $message);
     zipRedirect(time() . '.jtl', $aResponse);
     exit;
 }

@@ -9,8 +9,8 @@ require_once __DIR__ . '/syncinclude.php';
 $return = 3;
 $xml    = [];
 if (auth()) {
-    $return          = 0;
-    $oBestellung_arr = Shop::Container()->getDB()->query(
+    $return = 0;
+    $orders = Shop::Container()->getDB()->query(
         "SELECT tbestellung.kBestellung, tbestellung.kWarenkorb, tbestellung.kKunde, tbestellung.kLieferadresse,
             tbestellung.kRechnungsadresse,  tbestellung.kZahlungsart, tbestellung.kVersandart, tbestellung.kSprache, 
             tbestellung.kWaehrung, '0' AS nZahlungsTyp, tbestellung.fGuthaben,  tbestellung.cSession, 
@@ -28,11 +28,11 @@ if (auth()) {
         \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
     );
 
-    foreach ($oBestellung_arr as $i => $oBestellung) {
-        if (strlen($oBestellung['cPUIZahlungsdaten']) > 0
-            && preg_match('/^kPlugin_(\d+)_paypalexpress$/', $oBestellung['cModulId'], $matches)
+    foreach ($orders as $i => $order) {
+        if (strlen($order['cPUIZahlungsdaten']) > 0
+            && preg_match('/^kPlugin_(\d+)_paypalexpress$/', $order['cModulId'], $matches)
         ) {
-            $oBestellung_arr[$i]['cModulId'] = 'za_paypal_pui_jtl';
+            $orders[$i]['cModulId'] = 'za_paypal_pui_jtl';
         }
 
         // workaround; ACHTUNG: NUR BIS AUSSCHLIESSLICH WAWI 1.0.9.2
@@ -41,7 +41,7 @@ if (auth()) {
         }*/
     }
 
-    $xml['bestellungen']['tbestellung'] = $oBestellung_arr;
+    $xml['bestellungen']['tbestellung'] = $orders;
     if (is_array($xml['bestellungen']['tbestellung'])) {
         $cryptoService                      = Shop::Container()->getCryptoService();
         $db                                 = Shop::Container()->getDB();

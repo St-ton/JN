@@ -43,29 +43,28 @@ echo $return;
  */
 function aktiviereKunden($xml)
 {
-    $kunden = mapArray($xml['aktiviere_kunden'], 'tkunde', []);
+    $customers = mapArray($xml['aktiviere_kunden'], 'tkunde', []);
     $db     = Shop::Container()->getDB();
-    foreach ($kunden as $kunde) {
-        if (!($kunde->kKunde > 0 && $kunde->kKundenGruppe > 0)) {
+    foreach ($customers as $customerData) {
+        if (!($customerData->kKunde > 0 && $customerData->kKundenGruppe > 0)) {
             continue;
         }
-        $kunde_db = new Kunde($kunde->kKunde);
-
-        if ($kunde_db->kKunde > 0 && $kunde_db->kKundengruppe != $kunde->kKundenGruppe) {
+        $customer = new Kunde($customerData->kKunde);
+        if ($customer->kKunde > 0 && $customer->kKundengruppe != $customerData->kKundenGruppe) {
             $db->update(
                 'tkunde',
                 'kKunde',
-                (int)$kunde->kKunde,
-                (object)['kKundengruppe' => (int)$kunde->kKundenGruppe]
+                (int)$customerData->kKunde,
+                (object)['kKundengruppe' => (int)$customerData->kKundenGruppe]
             );
-            $kunde_db->kKundengruppe = (int)$kunde->kKundenGruppe;
+            $customer->kKundengruppe = (int)$customerData->kKundenGruppe;
             $obj                     = new stdClass();
-            $obj->tkunde             = $kunde_db;
-            if ($kunde_db->cMail) {
+            $obj->tkunde             = $customer;
+            if ($customer->cMail) {
                 sendeMail(MAILTEMPLATE_KUNDENGRUPPE_ZUWEISEN, $obj);
             }
         }
-        $db->update('tkunde', 'kKunde', (int)$kunde->kKunde, (object)['cAktiv' => 'Y']);
+        $db->update('tkunde', 'kKunde', (int)$customerData->kKunde, (object)['cAktiv' => 'Y']);
     }
 }
 
@@ -74,18 +73,19 @@ function aktiviereKunden($xml)
  */
 function generiereNeuePasswoerter($xml)
 {
-    $oKundeXML_arr = mapArray($xml['passwort_kunden'], 'tkunde', []);
-    foreach ($oKundeXML_arr as $oKundeXML) {
-        if (isset($oKundeXML->kKunde) && $oKundeXML->kKunde > 0) {
-            $oKunde = new Kunde((int)$oKundeXML->kKunde);
-            if ($oKunde->nRegistriert === 1 && $oKunde->cMail) {
-                $oKunde->prepareResetPassword();
-            } else {
-                syncException(
-                    'Kunde hat entweder keine Emailadresse oder es ist ein unregistrierter Kunde',
-                    FREIDEFINIERBARER_FEHLER
-                );
-            }
+    $customers = mapArray($xml['passwort_kunden'], 'tkunde', []);
+    foreach ($customers as $customerData) {
+        if (empty($customerData->kKunde)) {
+            continue;
+        }
+        $customer = new Kunde((int)$customerData->kKunde);
+        if ($customer->nRegistriert === 1 && $customer->cMail) {
+            $customer->prepareResetPassword();
+        } else {
+            syncException(
+                'Kunde hat entweder keine Emailadresse oder es ist ein unregistrierter Kunde',
+                FREIDEFINIERBARER_FEHLER
+            );
         }
     }
 }
@@ -138,7 +138,7 @@ function bearbeiteGutscheine($xml)
     }
     $db       = Shop::Container()->getDB();
     $logger   = Shop::Container()->getLogService();
-    $vouchers = mapArray($xml['gutscheine'], 'gutschein', $GLOBALS['mGutschein']);
+    $vouchers = mapArray($xml['gutscheine'], 'gutschein', \dbeS\TableMapper::getMapping('mGutschein'));
     foreach ($vouchers as $voucher) {
         if (!($voucher->kGutschein > 0 && $voucher->kKunde > 0)) {
             continue;
@@ -164,11 +164,11 @@ function bearbeiteGutscheine($xml)
                         AND fGuthaben < 0',
                 \DB\ReturnType::AFFECTED_ROWS
             );
-            $kunde           = new Kunde((int)$voucher->kKunde);
+            $customer        = new Kunde((int)$voucher->kKunde);
             $obj             = new stdClass();
-            $obj->tkunde     = $kunde;
+            $obj->tkunde     = $customer;
             $obj->tgutschein = $voucher;
-            if ($kunde->cMail) {
+            if ($customer->cMail) {
                 sendeMail(MAILTEMPLATE_GUTSCHEIN, $obj);
             }
         }

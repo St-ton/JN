@@ -4,8 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Backend;
+
+use DB\ReturnType;
+use Exception;
+use Shop;
+
 /**
  * Class TwoFAEmergency
+ * @package Backend
  */
 class TwoFAEmergency
 {
@@ -38,7 +45,7 @@ class TwoFAEmergency
         $rowValues       = '';
         $valCount        = 'a';
         for ($i = 0; $i < $this->codeCount; $i++) {
-            $code          = substr(md5(rand(1000, 9000)), 0, 16);
+            $code          = \substr(\md5(\rand(1000, 9000)), 0, 16);
             $this->codes[] = $code;
 
             if ($rowValues !== '') {
@@ -57,10 +64,10 @@ class TwoFAEmergency
             $valCount++;
         }
         // now write into the DB what we got till now
-        Shop::Container()->getDB()->executeQueryPrepared(
+        Shop::Container()->getDB()->queryPrepared(
             'INSERT INTO `tadmin2facodes`(`kAdminlogin`, `cEmergencyCode`) VALUES' . $rowValues,
             $bindings,
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
 
         return $this->codes;
@@ -96,18 +103,18 @@ class TwoFAEmergency
     public function isValidEmergencyCode($adminID, $code): bool
     {
         $hashes = Shop::Container()->getDB()->selectArray('tadmin2facodes', 'kAdminlogin', $adminID);
-        if (1 > count($hashes)) {
+        if (1 > \count($hashes)) {
             return false; // no emergency-codes are there
         }
 
         foreach ($hashes as $item) {
-            if (true === password_verify($code, $item->cEmergencyCode)) {
+            if (\password_verify($code, $item->cEmergencyCode) === true) {
                 // valid code found. remove it from DB and return a 'true'
                 $effected = Shop::Container()->getDB()->delete(
                     'tadmin2facodes',
                     ['kAdminlogin', 'cEmergencyCode'],
                     [$adminID, $item->cEmergencyCode],
-                    \DB\ReturnType::AFFECTED_ROWS
+                    ReturnType::AFFECTED_ROWS
                 );
                 if (1 !== $effected) {
                     Shop::Container()->getLogService()->error('2FA-Notfall-Code konnte nicht gelöscht werden.');

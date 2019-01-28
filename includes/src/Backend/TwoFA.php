@@ -4,11 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Backend;
+
+use PHPGangsta_GoogleAuthenticator;
 use qrcodegenerator\QRCode\QRCode;
 use qrcodegenerator\QRCode\Output\QRString;
+use Shop;
 
 /**
  * Class TwoFA
+ * @package Backend
  */
 class TwoFA
 {
@@ -22,7 +27,7 @@ class TwoFA
     /**
      * user-account data
      *
-     * @var stdClass
+     * @var \stdClass
      */
     private $oUserTuple;
 
@@ -38,7 +43,7 @@ class TwoFA
      */
     public function __construct()
     {
-        $this->oUserTuple                 = new stdClass();
+        $this->oUserTuple                 = new \stdClass();
         $this->oUserTuple->kAdminlogin    = 0;
         $this->oUserTuple->cLogin         = '';
         $this->oUserTuple->b2FAauth       = false;
@@ -78,7 +83,7 @@ class TwoFA
         $this->oGA = new PHPGangsta_GoogleAuthenticator();
 
         if ($this->oUserTuple === null) {
-            $this->oUserTuple = new stdClass();
+            $this->oUserTuple = new \stdClass();
         }
         $this->oUserTuple->c2FAauthSecret = $this->oGA->createSecret();
 
@@ -108,7 +113,7 @@ class TwoFA
         // (only if we check any credential! (something like lazy loading))
         $this->oGA = new PHPGangsta_GoogleAuthenticator();
         // codes with a length over 6 chars are emergency-codes
-        if (6 < strlen($code)) {
+        if (6 < \strlen($code)) {
             // try to find this code in the emergency-code-pool
             $o2FAemergency = new TwoFAEmergency();
 
@@ -126,17 +131,17 @@ class TwoFA
     public function getQRcode(): string
     {
         if ($this->oUserTuple->c2FAauthSecret !== '') {
-            $totpUrl = rawurlencode('JTL-Shop ' . $this->oUserTuple->cLogin . '@' . $this->getShopName());
+            $totpUrl = \rawurlencode('JTL-Shop ' . $this->oUserTuple->cLogin . '@' . $this->getShopName());
             // by the QR-Code there are 63 bytes allowed for this URL-appendix
             // so we shorten that string (and we take care about the hex-character-replacements!)
-            $overflow = strlen($totpUrl) - 63;
+            $overflow = \strlen($totpUrl) - 63;
             if (0 < $overflow) {
-                for ($i=0; $i < $overflow; $i++) {
-                    if ('%' === $totpUrl[strlen($totpUrl)-3]) {
-                        $totpUrl  = substr($totpUrl, 0, -3); // shorten by 3 byte..
+                for ($i = 0; $i < $overflow; $i++) {
+                    if ($totpUrl[\strlen($totpUrl) - 3] === '%') {
+                        $totpUrl   = \substr($totpUrl, 0, -3); // shorten by 3 byte..
                         $overflow -= 2;                         // ..and correct the counter (here nOverhang)
                     } else {
-                        $totpUrl = substr($totpUrl, 0, -1);  // shorten by 1 byte
+                        $totpUrl = \substr($totpUrl, 0, -1);  // shorten by 1 byte
                     }
                 }
             }
@@ -204,7 +209,7 @@ class TwoFA
             $this->shopName = $result->cWert;
         }
 
-        return trim($this->shopName);
+        return \trim($this->shopName);
     }
 
 
@@ -228,23 +233,23 @@ class TwoFA
         $twoFA = new TwoFA();
         $twoFA->setUserByName($userName);
 
-        $userData           = new stdClass();
+        $userData           = new \stdClass();
         $userData->szSecret = $twoFA->createNewSecret()->getSecret();
         $userData->szQRcode = $twoFA->getQRcode();
 
-        return json_encode($userData);
+        return \json_encode($userData);
     }
 
     /**
      * @param string $userName
-     * @return stdClass
+     * @return \stdClass
      */
-    public static function genTwoFAEmergencyCodes(string $userName): stdClass
+    public static function genTwoFAEmergencyCodes(string $userName): \stdClass
     {
         $twoFA = new TwoFA();
         $twoFA->setUserByName($userName);
 
-        $data            = new stdClass();
+        $data            = new \stdClass();
         $data->loginName = $twoFA->getUserTuple()->cLogin;
         $data->shopName  = $twoFA->getShopName();
 

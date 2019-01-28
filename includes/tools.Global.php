@@ -705,15 +705,12 @@ function gibAlleKategorienNoHTML($nKategorieBox = 0)
  * @param Artikel $oArtikel
  * @param float   $fAnzahl
  * @return int|null
- * @deprecated since 5.0.0
+ * @deprecated since 4.06.10 - should not be used anymore; is replaced by SHOP-1861
  */
 function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
 {
-    trigger_error(
-        __FUNCTION__ . ' is deprecated. Use WarenkorbHelper::checkCartPartComponent() instead.',
-        E_USER_DEPRECATED
-    );
-    return Cart::checkCartPartComponent($oArtikel, $fAnzahl);
+    trigger_error(__FUNCTION__ . ' is deprecated. This function should not be used anymore..', E_USER_DEPRECATED);
+    return null;
 }
 
 /**

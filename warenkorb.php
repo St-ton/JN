@@ -23,13 +23,12 @@ $conf    = Shop::getSettings([
     CONF_SONSTIGES
 ]);
 Shop::setPageType(PAGE_WARENKORB);
-$Schnellkaufhinweis = Cart::checkQuickBuy();
-$linkHelper         = Shop::Container()->getLinkService();
-$couponCodeValid    = true;
-$cart               = \Session\Frontend::getCart();
-$kLink              = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
-$link               = $linkHelper->getPageLink($kLink);
-$alertHelper        = Shop::Container()->getAlertService();
+$linkHelper      = Shop::Container()->getLinkService();
+$couponCodeValid = true;
+$cart            = \Session\Frontend::getCart();
+$kLink           = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
+$link            = $linkHelper->getPageLink($kLink);
+$alertHelper     = Shop::Container()->getAlertService();
 // Warenkorbaktualisierung?
 Cart::applyCartChanges();
 Cart::validateCartConfig();
@@ -62,7 +61,6 @@ if ($cart !== null
                 executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
             } elseif (!empty($coupon->kKupon) && $coupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
                 $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
-                // Versandfrei Kupon
                 $_SESSION['oVersandfreiKupon'] = $coupon;
                 $alertHelper->addAlert(
                     Alert::TYPE_SUCCESS,
@@ -131,8 +129,8 @@ $uploads         = \Extensions\Upload::gibWarenkorbUploads($cart);
 $maxSize         = \Extensions\Upload::uploadMax();
 
 //alerts
-if ($Schnellkaufhinweis !== '') {
-    $alertHelper->addAlert(Alert::TYPE_INFO, $Schnellkaufhinweis, 'quickBuyNote');
+if (($quickBuyNote = Cart::checkQuickBuy()) !== '') {
+    $alertHelper->addAlert(Alert::TYPE_INFO, $quickBuyNote, 'quickBuyNote');
 }
 if (!empty($_SESSION['Warenkorbhinweise'])) {
     foreach ($_SESSION['Warenkorbhinweise'] as $key => $cartNotice) {

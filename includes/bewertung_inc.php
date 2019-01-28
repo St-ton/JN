@@ -291,15 +291,15 @@ function pruefeKundeArtikelBewertet(int $productID, int $customerID): int
 
 /**
  * @param int $productID
- * @param Kunde $customerID
+ * @param Kunde $customer
  * @return bool
  */
-function pruefeKundeArtikelGekauft(int $productID, \Kunde $customerID): bool
+function pruefeKundeArtikelGekauft(int $productID, \Kunde $customer): bool
 {
     // Prüfen ob der Bewerter diesen Artikel bereits gekauft hat
     if ($productID > 0
         && Shop::getSettingValue(CONF_BEWERTUNG, 'bewertung_artikel_gekauft') === 'Y'
-        && $customerID->isLoggedIn()
+        && $customer->isLoggedIn()
     ) {
         $order = Shop::Container()->getDB()->queryPrepared(
             'SELECT tbestellung.kBestellung
@@ -315,7 +315,7 @@ function pruefeKundeArtikelGekauft(int $productID, \Kunde $customerID): bool
                     OR twarenkorbpos.kArtikel = tartikel.kArtikel)',
             [
                 'aid' => $productID,
-                'cid' => $customerID->getID()
+                'cid' => $customer->getID()
             ],
             \DB\ReturnType::SINGLE_OBJECT
         );

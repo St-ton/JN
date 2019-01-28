@@ -21,7 +21,6 @@ $rated          = false;
 $productNotices = [];
 $nonAllowed     = [];
 $conf           = Shopsetting::getInstance()->getAll();
-$cHinweis       = $smarty->getTemplateVars('hinweis');
 $shopURL        = Shop::getURL() . '/';
 $alertHelper    = Shop::Container()->getAlertService();
 if ($cHinweis = Product::mapErrorCode(
@@ -37,7 +36,7 @@ if (isset($_POST['a'])
     && Request::verifyGPCDataInt('addproductbundle') === 1
     && Product::addProductBundleToCart($_POST['a'])
 ) {
-    $cHinweis       = Shop::Lang()->get('basketAllAdded', 'messages');
+    $alertHelper->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('basketAllAdded', 'messages'), 'allAdded');
     Shop::$kArtikel = (int)$_POST['aBundle'];
 }
 $AktuellerArtikel = (new Artikel())->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions());

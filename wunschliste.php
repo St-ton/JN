@@ -21,7 +21,6 @@ $kWunschliste     = (Request::verifyGPCDataInt('wl') > 0 && Request::verifyGPCDa
     : ($params['kWunschliste'] //default wishlist from Shop class
         ?? $cURLID); //public link
 $wishlistTargetID = Request::verifyGPCDataInt('kWunschlisteTarget');
-
 $searchQuery      = null;
 $step             = null;
 $wishlist         = null;
@@ -92,7 +91,6 @@ if ($action !== null && Form::validateToken()) {
                                 Wunschliste::send($mails, $kWunschliste),
                                 'sendWL'
                             );
-                            // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
                             $wishlist = Wunschliste::buildPrice(new Wunschliste($kWunschliste));
                         }
                     } else {

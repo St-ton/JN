@@ -129,7 +129,7 @@ if (Form::validateToken()) {
         } elseif (isset($_GET['anzeigen'])) {
             $step               = 'history_anzeigen';
             $kNewsletterHistory = (int)$_GET['anzeigen'];
-            $oNewsletterHistory = $db->queryPrepared(
+            $hist               = $db->queryPrepared(
                 "SELECT kNewsletterHistory, cBetreff, cHTMLStatic, cKundengruppe, 
                     DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
                     FROM tnewsletterhistory
@@ -139,8 +139,8 @@ if (Form::validateToken()) {
                 \DB\ReturnType::SINGLE_OBJECT
             );
 
-            if (isset($oNewsletterHistory->kNewsletterHistory) && $oNewsletterHistory->kNewsletterHistory > 0) {
-                $smarty->assign('oNewsletterHistory', $oNewsletterHistory);
+            if (isset($hist->kNewsletterHistory) && $hist->kNewsletterHistory > 0) {
+                $smarty->assign('oNewsletterHistory', $hist);
             }
         }
     } elseif (strlen(Request::verifyGPDataString('cSucheInaktiv')) > 0) { // Inaktive Abonnentensuche
@@ -390,15 +390,15 @@ if (Form::validateToken()) {
                 );
                 $jobQueue->speicherJobInDB();
                 // Baue Arrays mit kKeys
-                $kArtikel_arr    = gibAHKKeys($newsletterTPL->cArtikel, true);
-                $kHersteller_arr = gibAHKKeys($newsletterTPL->cHersteller);
-                $kKategorie_arr  = gibAHKKeys($newsletterTPL->cKategorie);
+                $productIDs      = gibAHKKeys($newsletterTPL->cArtikel, true);
+                $manufacturerIDs = gibAHKKeys($newsletterTPL->cHersteller);
+                $categoryIDs     = gibAHKKeys($newsletterTPL->cKategorie);
                 // Baue Kampagnenobjekt, falls vorhanden in der Newslettervorlage
-                $oKampagne = new Kampagne($newsletterTPL->kKampagne);
+                $campaign = new Kampagne($newsletterTPL->kKampagne);
                 // Baue Arrays von Objekten
-                $oArtikel_arr    = gibArtikelObjekte($kArtikel_arr, $oKampagne);
-                $oHersteller_arr = gibHerstellerObjekte($kHersteller_arr, $oKampagne);
-                $oKategorie_arr  = gibKategorieObjekte($kKategorie_arr, $oKampagne);
+                $products      = gibArtikelObjekte($productIDs, $campaign);
+                $manufacturers = gibHerstellerObjekte($manufacturerIDs, $campaign);
+                $categories    = gibKategorieObjekte($categoryIDs, $campaign);
                 // Kunden Dummy bauen
                 $oKunde            = new stdClass();
                 $oKunde->cAnrede   = 'm';
@@ -462,47 +462,42 @@ if (Form::validateToken()) {
                 if (strlen($cKundengruppe) > 0) {
                     $cKundengruppe = substr($cKundengruppe, 0, -2);
                 }
-                // tnewsletterhistory objekt bauen
-                $oNewsletterHistory                   = new stdClass();
-                $oNewsletterHistory->kSprache         = $oNewsletter->kSprache;
-                $oNewsletterHistory->nAnzahl          = $recipient->nAnzahl;
-                $oNewsletterHistory->cBetreff         = $oNewsletter->cBetreff;
-                $oNewsletterHistory->cHTMLStatic      = gibStaticHtml(
+                $hist                   = new stdClass();
+                $hist->kSprache         = $oNewsletter->kSprache;
+                $hist->nAnzahl          = $recipient->nAnzahl;
+                $hist->cBetreff         = $oNewsletter->cBetreff;
+                $hist->cHTMLStatic      = gibStaticHtml(
                     $mailSmarty,
                     $oNewsletter,
-                    $oArtikel_arr,
-                    $oHersteller_arr,
-                    $oKategorie_arr,
-                    $oKampagne,
+                    $products,
+                    $manufacturers,
+                    $categories,
+                    $campaign,
                     $oEmailempfaenger,
                     $oKunde
                 );
-                $oNewsletterHistory->cKundengruppe    = $cKundengruppe;
-                $oNewsletterHistory->cKundengruppeKey = ';' . $cKundengruppeKey . ';';
-                $oNewsletterHistory->dStart           = $newsletterTPL->dStartZeit;
-                // tnewsletterhistory fuellen
-                $db->insert('tnewsletterhistory', $oNewsletterHistory);
+                $hist->cKundengruppe    = $cKundengruppe;
+                $hist->cKundengruppeKey = ';' . $cKundengruppeKey . ';';
+                $hist->dStart           = $newsletterTPL->dStartZeit;
+                $db->insert('tnewsletterhistory', $hist);
 
                 $cHinweis .= sprintf(__('successNewsletterPrepared'), $oNewsletter->cName) .'<br />';
             }
         } elseif (isset($_POST['speichern_und_testen'])) { // Vorlage speichern und testen
-            $newsletterTPL = speicherVorlage($_POST);
-            // Baue Arrays mit kKeys
-            $kArtikel_arr    = gibAHKKeys($newsletterTPL->cArtikel, true);
-            $kHersteller_arr = gibAHKKeys($newsletterTPL->cHersteller);
-            $kKategorie_arr  = gibAHKKeys($newsletterTPL->cKategorie);
-            // Baue Kampagnenobjekt, falls vorhanden in der Newslettervorlage
-            $oKampagne = new Kampagne($newsletterTPL->kKampagne);
-            // Baue Arrays von Objekten
-            $oArtikel_arr    = gibArtikelObjekte($kArtikel_arr, $oKampagne);
-            $oHersteller_arr = gibHerstellerObjekte($kHersteller_arr, $oKampagne);
-            $oKategorie_arr  = gibKategorieObjekte($kKategorie_arr, $oKampagne);
-            // Kunden Dummy bauen
+            $newsletterTPL   = speicherVorlage($_POST);
+            $productIDs      = gibAHKKeys($newsletterTPL->cArtikel, true);
+            $manufacturerIDs = gibAHKKeys($newsletterTPL->cHersteller);
+            $categoryIDs     = gibAHKKeys($newsletterTPL->cKategorie);
+            $campaign        = new Kampagne($newsletterTPL->kKampagne);
+            $products        = gibArtikelObjekte($productIDs, $campaign);
+            $manufacturers   = gibHerstellerObjekte($manufacturerIDs, $campaign);
+            $categories      = gibKategorieObjekte($categoryIDs, $campaign);
+            // dummy customer
             $oKunde            = new stdClass();
             $oKunde->cAnrede   = 'm';
             $oKunde->cVorname  = 'Max';
             $oKunde->cNachname = 'Mustermann';
-            // Emailempfaenger dummy bauen
+            // dummy recipient
             $oEmailempfaenger              = new stdClass();
             $oEmailempfaenger->cEmail      = $conf['newsletter']['newsletter_emailtest'];
             $oEmailempfaenger->cLoeschCode = '78rev6gj8er6we87gw6er8';
@@ -518,10 +513,10 @@ if (Form::validateToken()) {
                     $newsletterTPL,
                     $conf,
                     $oEmailempfaenger,
-                    $oArtikel_arr,
-                    $oHersteller_arr,
-                    $oKategorie_arr,
-                    $oKampagne,
+                    $products,
+                    $manufacturers,
+                    $categories,
+                    $campaign,
                     $oKunde
                 );
             }

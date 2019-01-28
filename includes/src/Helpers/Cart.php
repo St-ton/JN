@@ -798,10 +798,12 @@ class Cart
                 /** @var Artikel $product */
                 $depProduct = $dependent->product;
                 if ($depProduct->fPackeinheit
-                    * ($qty + Frontend::getCart()->getDependentAmount($depProduct->kArtikel, true))
-                    > $depProduct->fLagerbestand
+                    * ($qty * $dependent->stockFactor + Frontend::getCart()->getDependentAmount(
+                        $depProduct->kArtikel, true
+                        )
+                    ) > $depProduct->fLagerbestand
                 ) {
-                    $redirectParam[] = \R_LAGER;
+                    $redirectParam[] = R_LAGER;
                     break;
                 }
             }
@@ -842,11 +844,6 @@ class Cart
             && $conf['global']['global_preis0'] === 'N'
         ) {
             $redirectParam[] = \R_AUFANFRAGE;
-        }
-        // Stücklistenkomponente oder Stückliste und ein Teil ist bereits im Warenkorb?
-        $xReturn = self::checkCartPartComponent($product, $qty);
-        if ($xReturn !== null) {
-            $redirectParam[] = $xReturn;
         }
         // fehlen zu einer Variation werte?
         foreach ($product->Variationen as $var) {
@@ -1618,7 +1615,7 @@ class Cart
                     $_POST['anzahl'][$i] = \str_replace(',', '.', $_POST['anzahl'][$i]);
 
                     if ((int)$_POST['anzahl'][$i] != $_POST['anzahl'][$i] && $Artikel->cTeilbar !== 'Y') {
-                        $_POST['anzahl'][$i] = \min((int)$_POST['anzahl'][$i], 1);
+                        $_POST['anzahl'][$i] = \ceil($_POST['anzahl'][$i]);
                     }
                     $gueltig = true;
                     if ($Artikel->fAbnahmeintervall > 0) {
@@ -1656,20 +1653,24 @@ class Cart
                         foreach ($Artikel->getAllDependentProducts(true) as $dependent) {
                             /** @var Artikel $product */
                             $product = $dependent->product;
-                            if ($product->fPackeinheit * ((float)$_POST['anzahl'][$i]
+                            if ($product->fPackeinheit * ((float)$_POST['anzahl'][$i] * $dependent->stockFactor
                                     + Frontend::getCart()->getDependentAmount(
                                         $product->kArtikel,
                                         true,
                                         [$i]
                                     )) > $product->fLagerbestand
                             ) {
-                                $gueltig       = false;
-                                $cartNotices[] = Shop::Lang()->get(
-                                    'quantityNotAvailable',
-                                    'messages'
-                                );
+                                $gueltig = false;
                                 break;
                             }
+                        }
+
+                        if (!$gueltig) {
+                            $msg = Shop::Lang()->get('quantityNotAvailable', 'messages');
+                            if (!isset($cartNotices) || !in_array($msg, $cartNotices)) {
+                                $cartNotices[] = $msg;
+                            }
+                            $_SESSION['Warenkorb']->PositionenArr[$i]->nAnzahl = $_SESSION['Warenkorb']->getMaxAvailableAmount($i, (float)$_POST['anzahl'][$i]);
                         }
                     }
                     // maximale Bestellmenge des Artikels beachten
@@ -1702,12 +1703,6 @@ class Cart
                                 break;
                             }
                         }
-                    }
-                    // Stücklistenkomponente oder Stückliste und ein Teil ist bereits im Warenkorb?
-                    $xReturn = self::checkCartPartComponent($Artikel, $_POST['anzahl'][$i]);
-                    if ($xReturn !== null) {
-                        $gueltig       = false;
-                        $cartNotices[] = Shop::Lang()->get('quantityNotAvailableVar', 'messages');
                     }
 
                     if ($gueltig) {

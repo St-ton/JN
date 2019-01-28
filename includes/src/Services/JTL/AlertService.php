@@ -32,7 +32,7 @@ class AlertService implements AlertServiceInterface
 
         if (!empty($alerts)) {
             foreach ($alerts as $alertSerialized) {
-                $alert                             = unserialize($alertSerialized, ['allowed_classes', 'Alert']);
+                $alert                             = \unserialize($alertSerialized, ['allowed_classes', 'Alert']);
                 $this->alertList[$alert->getKey()] = $alert;
             }
         }

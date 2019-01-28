@@ -188,13 +188,13 @@ class IpAnonymizer
         }
         $readableIP = \inet_ntop(\inet_pton($this->ipMask) & $this->rawIp);
         if ($this->beautifyFlag === true && \strpos($readableIP, '::') !== false) {
-            $colonPos      = \strpos($readableIP, '::');
-            $strEnd        = \strlen($readableIP) - 2;
-            $blockCount    = \count(
+            $colonPos    = \strpos($readableIP, '::');
+            $strEnd      = \strlen($readableIP) - 2;
+            $blockCount  = \count(
                 \preg_split('/:/', \str_replace('::', ':', $readableIP), -1, \PREG_SPLIT_NO_EMPTY)
             );
-            $replacement   = '';
-            $diff          = 8 - $blockCount;
+            $replacement = '';
+            $diff        = 8 - $blockCount;
             for ($i = 0; $i < $diff; $i++) {
                 ($replacement === '') ? $replacement .= '0' : $replacement .= ':0';
             }

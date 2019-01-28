@@ -7,6 +7,7 @@
 namespace Plugin;
 
 use Backend\Notification;
+use Backend\NotificationEntry;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use Events\Dispatcher;
@@ -76,7 +77,7 @@ abstract class AbstractPlugin implements PluginInterface
      */
     final public function addNotify($type, $title, $description = null)
     {
-        $this->notifications[] = (new \Backend\NotificationEntry($type, $title, $description))->setPluginId($this->pluginId);
+        $this->notifications[] = (new NotificationEntry($type, $title, $description))->setPluginId($this->pluginId);
     }
 
     /**

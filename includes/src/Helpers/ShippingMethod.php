@@ -604,18 +604,15 @@ class ShippingMethod
             }
         }
 
-        if (isset($cart->PositionenArr)
-            && \is_array($cart->PositionenArr)
-            && \count($cart->PositionenArr) > 0
-        ) {
+        if (isset($cart->PositionenArr) && \is_array($cart->PositionenArr) && \count($cart->PositionenArr) > 0) {
             // Wenn etwas im Warenkorb ist, dann Vesandart vom Warenkorb rausfinden
-            $oVersandartNurWK                   = self::getFavourableShippingMethod(
+            $oVersandartNurWK = self::getFavourableShippingMethod(
                 $cLandISO,
                 $shippingClasses,
                 $kKundengruppe,
                 null
             );
-            $depending = self::gibArtikelabhaengigeVersandkostenImWK(
+            $depending        = self::gibArtikelabhaengigeVersandkostenImWK(
                 $cLandISO,
                 $cart->PositionenArr
             );
@@ -925,7 +922,6 @@ class ShippingMethod
     {
         $arrVersandpositionen = [];
         if (!\is_array($positions)) {
-
             return $arrVersandpositionen;
         }
         $positions = \array_filter($positions, function ($pos) {
@@ -1268,25 +1264,25 @@ class ShippingMethod
     }
 
     /**
-     * @param Versandart|object $oVersandart
-     * @param float             $fWarenkorbSumme
+     * @param Versandart|object $method
+     * @param float             $cartSum
      * @return string
      * @former baueVersandkostenfreiString()
      */
-    public static function getShippingFreeString($oVersandart, $fWarenkorbSumme): string
+    public static function getShippingFreeString($method, $cartSum): string
     {
         if (isset($_SESSION['oVersandfreiKupon'])) {
             return '';
         }
-        if (!\is_object($oVersandart)
-            || (float)$oVersandart->fVersandkostenfreiAbX <= 0
+        if (!\is_object($method)
+            || (float)$method->fVersandkostenfreiAbX <= 0
             || !isset($_SESSION['Warenkorb'], $_SESSION['Steuerland'])
         ) {
             return '';
         }
-        $fSummeDiff = (float)$oVersandart->fVersandkostenfreiAbX - (float)$fWarenkorbSumme;
+        $fSummeDiff = (float)$method->fVersandkostenfreiAbX - (float)$cartSum;
         // check if vkfreiabx is calculated net or gross
-        if ($oVersandart->eSteuer === 'netto') {
+        if ($method->eSteuer === 'netto') {
             // calculate net with default tax class
             $defaultTaxClass = Shop::Container()->getDB()->select('tsteuerklasse', 'cStandard', 'Y');
             if ($defaultTaxClass !== null && isset($defaultTaxClass->kSteuerklasse)) {
@@ -1294,31 +1290,31 @@ class ShippingMethod
                 $defaultTax = Shop::Container()->getDB()->select('tsteuersatz', 'kSteuerklasse', $taxClasss);
                 if ($defaultTax !== null) {
                     $defaultTaxValue = $defaultTax->fSteuersatz;
-                    $fSummeDiff      = (float)$oVersandart->fVersandkostenfreiAbX -
-                        Tax::getNet((float)$fWarenkorbSumme, $defaultTaxValue);
+                    $fSummeDiff      = (float)$method->fVersandkostenfreiAbX -
+                        Tax::getNet((float)$cartSum, $defaultTaxValue);
                 }
             }
         }
-        if (isset($oVersandart->cNameLocalized)) {
-            $name = $oVersandart->cNameLocalized;
+        if (isset($method->cNameLocalized)) {
+            $name = $method->cNameLocalized;
         } else {
-            $VersandartSprache = Shop::Container()->getDB()->select(
+            $localized = Shop::Container()->getDB()->select(
                 'tversandartsprache',
                 'kVersandart',
-                $oVersandart->kVersandart,
+                $method->kVersandart,
                 'cISOSprache',
                 Shop::getLanguageCode()
             );
-            $name             = !empty($VersandartSprache->cName)
-                ? $VersandartSprache->cName
-                : $oVersandart->cName;
+            $name      = !empty($localized->cName)
+                ? $localized->cName
+                : $method->cName;
         }
         if ($fSummeDiff <= 0) {
             return \sprintf(
                 Shop::Lang()->get('noShippingCostsReached', 'basket'),
                 $name,
-                self::getShippingFreeCountriesString($oVersandart),
-                (string)$oVersandart->cLaender
+                self::getShippingFreeCountriesString($method),
+                (string)$method->cLaender
             );
         }
 
@@ -1326,7 +1322,7 @@ class ShippingMethod
             Shop::Lang()->get('noShippingCostsAt', 'basket'),
             Preise::getLocalizedPriceString($fSummeDiff),
             $name,
-            self::getShippingFreeCountriesString($oVersandart)
+            self::getShippingFreeCountriesString($method)
         );
     }
 

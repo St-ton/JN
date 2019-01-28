@@ -115,7 +115,7 @@ class Revision
     {
         $mapping = $this->getMapping($type);
         if ($key === 0 || $mapping === null) {
-            throw new \InvalidArgumentException("Invalid revision type $type");
+            throw new \InvalidArgumentException('Invalid revision type ' . $type);
         }
 
         $latestRevision = Shop::Container()->getDB()->queryPrepared(

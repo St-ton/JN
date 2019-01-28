@@ -137,9 +137,9 @@ class AdminAccount
                 $now       = new DateTime();
                 $diff      = $now->diff($createdAt);
                 $secs      = ($diff->format('%a') * (60 * 60 * 24)); // total days
-                $secs      += (int)$diff->format('%h') * (60 * 60); // hours
-                $secs      += (int)$diff->format('%i') * 60; // minutes
-                $secs      += (int)$diff->format('%s'); // seconds
+                $secs     += (int)$diff->format('%h') * (60 * 60); // hours
+                $secs     += (int)$diff->format('%i') * 60; // minutes
+                $secs     += (int)$diff->format('%s'); // seconds
                 if ($secs > (60 * 60 * 24)) {
                     return false;
                 }
@@ -254,7 +254,7 @@ class AdminAccount
             }
             $_SESSION['AdminAccount']->cPass  = \md5($cPass);
             $_SESSION['AdminAccount']->cLogin = $cLogin;
-            $verified                                 = true;
+            $verified                         = true;
             if ($this->checkAndUpdateHash($cPass) === true) {
                 $oAdmin = $this->db->select(
                     'tadminlogin',
@@ -495,8 +495,8 @@ class AdminAccount
         if (isset($_SESSION['AdminAccount']->cLogin, $_POST['TwoFA_code'])) {
             $twoFA = new \TwoFA();
             $twoFA->setUserByName($_SESSION['AdminAccount']->cLogin);
-            $valid                                         = $twoFA->isCodeValid($_POST['TwoFA_code']);
-            $this->twoFaAuthenticated                      = $valid;
+            $valid                                 = $twoFA->isCodeValid($_POST['TwoFA_code']);
+            $this->twoFaAuthenticated              = $valid;
             $_SESSION['AdminAccount']->TwoFA_valid = $valid;
 
             return $valid;

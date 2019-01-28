@@ -409,7 +409,8 @@ class NiceDB implements DbInterface
                 $assigns[':' . $_key] = $_val;
             }
         }
-        $stmt = 'INSERT INTO ' . $tableName . ' (' . \implode(', ', $keys) . ') VALUES (' . \implode(', ', $values) . ')';
+        $stmt = 'INSERT INTO ' . $tableName .
+            ' (' . \implode(', ', $keys) . ') VALUES (' . \implode(', ', $values) . ')';
         if ($echo) {
             echo $stmt;
         }
@@ -1477,7 +1478,7 @@ class NiceDB implements DbInterface
     {
         if (!\is_object($obj)) {
             $type = \gettype($obj);
-            throw new \InvalidArgumentException("got var of type $type where object was expected");
+            throw new \InvalidArgumentException('Got var of type ' . $type . ' where object was expected');
         }
         foreach ($obj as $key => $value) {
             if (!$this->isValidEntityName($key)) {

@@ -124,7 +124,7 @@ stages:
 
    curl -o $DOWNLOAD_PATH_ZIP $DOWNLOAD_URL
 
-   unzip -o $DOWNLOAD_PATH_ZIP -d $DOWNLOAD_PATH
+   unzip -qo $DOWNLOAD_PATH_ZIP -d $DOWNLOAD_PATH
  }
 
 #code_quality:

@@ -9,6 +9,7 @@ ifndef('JTL_CHARSET', 'utf-8');
 ifndef('DB_CHARSET', 'utf8');
 ifndef('DB_COLLATE', 'utf8_unicode_ci');
 ini_set('default_charset', JTL_CHARSET);
+mb_internal_encoding(strtoupper(JTL_CHARSET));
 date_default_timezone_set('Europe/Berlin');
 ifndef('DS', DIRECTORY_SEPARATOR);
 // Log-Levels

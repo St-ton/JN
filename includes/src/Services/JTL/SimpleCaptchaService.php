@@ -127,13 +127,13 @@ class SimpleCaptchaService implements CaptchaServiceInterface
         }
         $cryptoService = Shop::Container()->getCryptoService();
         $key           = \BLOWFISH_KEY;
-        $mod1          = (\ord($key[0]) + \ord($key[1]) + \ord($key[2])) % 9 + 1;
+        $mod1          = (\mb_ord($key[0]) + \mb_ord($key[1]) + \mb_ord($key[2])) % 9 + 1;
         $mod2          = \strlen($_SERVER['DOCUMENT_ROOT']) % 9 + 1;
 
-        $s1 = \ord($plain{0}) - $mod2 + $mod1 + 123;
-        $s2 = \ord($plain{1}) - $mod1 + $mod2 + 234;
-        $s3 = \ord($plain{2}) + $mod1 + 345;
-        $s4 = \ord($plain{3}) + $mod2 + 456;
+        $s1 = \mb_ord($plain{0}) - $mod2 + $mod1 + 123;
+        $s2 = \mb_ord($plain{1}) - $mod1 + $mod2 + 234;
+        $s3 = \mb_ord($plain{2}) + $mod1 + 345;
+        $s4 = \mb_ord($plain{3}) + $mod2 + 456;
 
         $r1 = $cryptoService->randomInt(100, 999);
         $r2 = $cryptoService->randomInt(0, 9);

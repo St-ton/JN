@@ -1117,13 +1117,13 @@ function plausiIban($iban)
     }
     $iban  = str_replace(' ', '', $iban);
     $iban1 = substr($iban, 4)
-        . (string)(ord($iban{0}) - 55)
-        . (string)(ord($iban{1}) - 55)
+        . (string)(mb_ord($iban{0}) - 55)
+        . (string)(mb_ord($iban{1}) - 55)
         . substr($iban, 2, 2);
     $len   = strlen($iban1);
     for ($i = 0; $i < $len; $i++) {
-        if (ord($iban1{$i}) > 64 && ord($iban1{$i}) < 91) {
-            $iban1 = substr($iban1, 0, $i) . (string)(ord($iban1{$i}) - 55) . substr($iban1, $i + 1);
+        if (mb_ord($iban1{$i}) > 64 && mb_ord($iban1{$i}) < 91) {
+            $iban1 = substr($iban1, 0, $i) . (string)(mb_ord($iban1{$i}) - 55) . substr($iban1, $i + 1);
         }
     }
 

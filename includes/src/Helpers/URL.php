@@ -191,10 +191,10 @@ class URL
             $unreserved[] = \dechex($octet);
         }
 
-        $unreserved[] = \dechex(\ord('-'));
-        $unreserved[] = \dechex(\ord('.'));
-        $unreserved[] = \dechex(\ord('_'));
-        $unreserved[] = \dechex(\ord('~'));
+        $unreserved[] = \dechex(\mb_ord('-'));
+        $unreserved[] = \dechex(\mb_ord('.'));
+        $unreserved[] = \dechex(\mb_ord('_'));
+        $unreserved[] = \dechex(\mb_ord('~'));
 
         return \preg_replace_callback(\array_map(
             function ($str) {

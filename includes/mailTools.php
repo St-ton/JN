@@ -1049,7 +1049,7 @@ function encode_iso88591($string)
     $text = '=?' . JTL_CHARSET . '?Q?';
     $max  = strlen($string);
     for ($i = 0; $i < $max; $i++) {
-        $val = ord($string[$i]);
+        $val = mb_ord($string[$i]);
         if ($val > 127 || $val === 63) {
             $val   = dechex($val);
             $text .= '=' . $val;

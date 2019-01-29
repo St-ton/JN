@@ -332,6 +332,8 @@ removeContainer:
 
 stagingDevPhp56:
   stage: staging
+  variables:
+    GIT_STRATEGY: none
   script:
     - *devCheckoutScripts
     - deployProcess 56
@@ -345,6 +347,8 @@ stagingDevPhp56:
 
 stagingDevPhp71:
   stage: staging
+  variables:
+    GIT_STRATEGY: none
   script:
     - *devCheckoutScripts
     - deployProcess 71
@@ -358,6 +362,8 @@ stagingDevPhp71:
 
 stagingDevPhp72:
   stage: staging
+  variables:
+    GIT_STRATEGY: none
   script:
     - *devCheckoutScripts
     - deployProcess 72
@@ -371,6 +377,8 @@ stagingDevPhp72:
 
 stagingDevPhp73:
   stage: staging
+  variables:
+    GIT_STRATEGY: none
   script:
     - *devCheckoutScripts
     - deployProcess 73

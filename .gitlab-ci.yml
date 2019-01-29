@@ -126,6 +126,7 @@ stages:
 
     curl -o $DOWNLOAD_PATH_ZIP $DOWNLOAD_URL
     unzip -qo $DOWNLOAD_PATH_ZIP -d $DOWNLOAD_PATH
+    rm $DOWNLOAD_PATH_ZIP
 
     export MIGRATION_COUNT_AFTER=$(ls -1 $DOWNLOAD_PATH/update/migrations/ | wc -l)
 

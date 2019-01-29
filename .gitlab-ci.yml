@@ -116,16 +116,35 @@ stages:
   }
 
 .devCheckoutScripts: &devCheckoutScripts |
- function deployProcess() {
-   export FILENAME="${CI_COMMIT_REF_NAME//[\/\.]/-}";
-   export DOWNLOAD_PATH="$STAGING_USER_PATH/php$1/$CI_COMMIT_REF_NAME";
-   export DOWNLOAD_PATH_ZIP="$DOWNLOAD_PATH.zip";
-   export DOWNLOAD_URL="https://build.jtl-shop.de/get/shop-$FILENAME.zip";
+  function deployProcess() {
+    export PHP_VERSION=$1;
+    export FILENAME="${CI_COMMIT_REF_NAME//[\/\.]/-}";
+    export DOWNLOAD_PATH="$STAGING_USER_PATH/php$PHP_VERSION/$FILENAME";
+    export DOWNLOAD_PATH_ZIP="$DOWNLOAD_PATH.zip";
+    export DOWNLOAD_URL="https://build.jtl-shop.de/get/shop-$FILENAME.zip";
+    export MIGRATION_COUNT_BEFORE=$(ls -1 $DOWNLOAD_PATH/update/migrations/ | wc -l)
 
-   curl -o $DOWNLOAD_PATH_ZIP $DOWNLOAD_URL
+    curl -o $DOWNLOAD_PATH_ZIP $DOWNLOAD_URL
+    unzip -qo $DOWNLOAD_PATH_ZIP -d $DOWNLOAD_PATH
 
-   unzip -qo $DOWNLOAD_PATH_ZIP -d $DOWNLOAD_PATH
- }
+    export MIGRATION_COUNT_AFTER=$(ls -1 $DOWNLOAD_PATH/update/migrations/ | wc -l)
+
+    if [[ $MIGRATION_COUNT_AFTER -gt $MIGRATION_COUNT_BEFORE ]]; then
+      php -r "
+        require_once '${DOWNLOAD_PATH}/includes/globalinclude.php'; \
+        \$manager = new MigrationManager(null); \
+        \$manager->migrate(null); \
+        try {
+          \$result = \$manager->migrate(null);
+        } catch (Exception \$e) {
+          \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations())));
+          \$result = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage());
+          echo \$result;
+          exit(1);
+        }
+      ";
+    fi
+  }
 
 #code_quality:
 #  stage: codeclimate

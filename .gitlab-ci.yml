@@ -332,11 +332,13 @@ removeContainer:
 
 stagingDevPhp56:
   stage: staging
+  variables:
+    GIT_STRATEGY: none
   script:
     - *devCheckoutScripts
     - deployProcess 56
   environment:
-    name: staging php 5.6
+    name: staging release/4.06 php 5.6
     url: https://$STAGING_USER-56-release-4-06.$STAGING_DOMAIN
   only:
     - release/4.06
@@ -345,11 +347,13 @@ stagingDevPhp56:
 
 stagingDevPhp71:
   stage: staging
+  variables:
+    GIT_STRATEGY: none
   script:
     - *devCheckoutScripts
     - deployProcess 71
   environment:
-    name: staging php 7.1
+    name: staging release/4.06 php 7.1
     url: https://$STAGING_USER-71-release-4-06.$STAGING_DOMAIN
   only:
     - release/4.06
@@ -358,11 +362,13 @@ stagingDevPhp71:
 
 stagingDevPhp72:
   stage: staging
+  variables:
+    GIT_STRATEGY: none
   script:
     - *devCheckoutScripts
     - deployProcess 72
   environment:
-    name: staging php 7.2
+    name: staging release/4.06 php 7.2
     url: https://$STAGING_USER-72-release-4-06.$STAGING_DOMAIN
   only:
     - release/4.06
@@ -371,11 +377,13 @@ stagingDevPhp72:
 
 stagingDevPhp73:
   stage: staging
+  variables:
+    GIT_STRATEGY: none
   script:
     - *devCheckoutScripts
     - deployProcess 73
   environment:
-    name: staging php 7.3
+    name: staging release/4.06 php 7.3
     url: https://$STAGING_USER-73-release-4-06.$STAGING_DOMAIN
   only:
     - release/4.06

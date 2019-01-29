@@ -28,7 +28,7 @@ function pruefeBestellungMoeglich()
  */
 function pruefeVersandartWahl($shippingMethod, $formValues = 0, $bMsg = true): bool
 {
-    global $hinweis, $step;
+    global $step;
 
     $nReturnValue = versandartKorrekt($shippingMethod, $formValues);
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPVERSAND_PLAUSI);
@@ -39,7 +39,11 @@ function pruefeVersandartWahl($shippingMethod, $formValues = 0, $bMsg = true): b
         return true;
     }
     if ($bMsg) {
-        $hinweis = Shop::Lang()->get('fillShipping', 'checkout');
+        Shop::Container()->getAlertService()->addAlert(
+            Alert::TYPE_NOTE,
+            Shop::Lang()->get('fillShipping', 'checkout'),
+            'fillShipping'
+        );
     }
     $step = 'Versand';
 
@@ -442,7 +446,7 @@ function pruefeVersandartStep($get): void
  */
 function pruefeZahlungsartStep($get): void
 {
-    global $step, $hinweis;
+    global $step;
     // sondersteps Zahlungsart ändern
     if (isset($_SESSION['Zahlungsart'], $get['editZahlungsart']) && (int)$get['editZahlungsart'] === 1) {
         Kupon::resetNewCustomerCoupon();
@@ -454,8 +458,13 @@ function pruefeZahlungsartStep($get): void
         $step = 'Zahlung';
         pruefeVersandartStep(['editVersandart' => 1]);
     }
+
     if (isset($get['nHinweis']) && (int)$get['nHinweis'] > 0) {
-        $hinweis = mappeBestellvorgangZahlungshinweis((int)$get['nHinweis']);
+        Shop::Container()->getAlertService()->addAlert(
+            Alert::TYPE_NOTE,
+            mappeBestellvorgangZahlungshinweis((int)$get['nHinweis']),
+            'paymentNote'
+        );
     }
 }
 
@@ -465,7 +474,7 @@ function pruefeZahlungsartStep($get): void
  */
 function pruefeZahlungsartwahlStep($post)
 {
-    global $zahlungsangaben, $hinweis, $step;
+    global $zahlungsangaben, $step;
     if (!isset($post['zahlungsartwahl']) || (int)$post['zahlungsartwahl'] !== 1) {
         return null;
     }
@@ -505,7 +514,11 @@ function pruefeZahlungsartwahlStep($post)
 
     switch ($zahlungsangaben) {
         case 0:
-            $hinweis = Shop::Lang()->get('fillPayment', 'checkout');
+            Shop::Container()->getAlertService()->addAlert(
+                Alert::TYPE_NOTE,
+                Shop::Lang()->get('fillPayment', 'checkout'),
+                'fillPayment'
+            );
             $step    = 'Zahlung';
 
             return 0;
@@ -561,11 +574,14 @@ function pruefeFehlendeAngaben($context = null): bool
  */
 function gibStepAccountwahl(): void
 {
-    global $hinweis;
     // Einstellung global_kundenkonto_aktiv ist auf 'A'
     // und Kunde wurde nach der Registrierung zurück zur Accountwahl geleitet
     if (isset($_REQUEST['reg']) && (int)$_REQUEST['reg'] === 1) {
-        $hinweis = Shop::Lang()->get('accountCreated') . '<br />' . Shop::Lang()->get('loginNotActivated');
+        Shop::Container()->getAlertService()->addAlert(
+            Alert::TYPE_NOTE,
+            Shop::Lang()->get('accountCreated') . '<br />' . Shop::Lang()->get('loginNotActivated'),
+            'accountCreatedLoginNotActivated'
+        );
     }
     Shop::Smarty()->assign('untertitel', lang_warenkorb_bestellungEnthaeltXArtikel(\Session\Frontend::getCart()));
 
@@ -813,7 +829,6 @@ function gibStepZahlungZusatzschritt($post): void
  */
 function gibStepBestaetigung($get)
 {
-    global $hinweis;
     $linkHelper = Shop::Container()->getLinkService();
     //check currenct shipping method again to avoid using invalid methods when using one click method (#9566)
     if (isset($_SESSION['Versandart']->kVersandart) && !versandartKorrekt($_SESSION['Versandart']->kVersandart)) {
@@ -826,9 +841,14 @@ function gibStepBestaetigung($get)
     ) {
         header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?editZahlungsart=1', true, 303);
     }
+
     if (isset($get['fillOut']) && $get['fillOut'] > 0) {
         if ((int)$get['fillOut'] === 5) {
-            $hinweis = Shop::Lang()->get('acceptAgb', 'checkout');
+            Shop::Container()->getAlertService()->addAlert(
+                Alert::TYPE_NOTE,
+                Shop::Lang()->get('acceptAgb', 'checkout'),
+                'acceptAgb'
+            );
         }
     } else {
         unset($_SESSION['cPlausi_arr'], $_SESSION['cPost_arr']);
@@ -867,8 +887,6 @@ function gibStepBestaetigung($get)
     }
 
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPBESTAETIGUNG);
-
-    return $hinweis;
 }
 
 /**
@@ -959,14 +977,13 @@ function plausiKupon($post)
                 if ($coupon->cKuponTyp === Kupon::TYPE_SHIPPING) { // Versandfrei Kupon
                     $_SESSION['oVersandfreiKupon'] = $coupon;
                 }
-            } else {
-                Shop::Smarty()->assign('cKuponfehler_arr', $errors);
             }
         } else {
             $errors['ungueltig'] = 11;
         }
     }
     plausiNeukundenKupon();
+    Kupon::mapCouponErrorMessage($errors['ungueltig'] ?? 0);
 
     return (count($errors) > 0)
         ? $errors
@@ -3134,7 +3151,11 @@ function setzeSmartyAccountwahl()
  */
 function setzeFehlerSmartyAccountwahl($cFehler)
 {
-    Shop::Smarty()->assign('hinweis', $cFehler);
+    Shop::Container()->getAlertService()->addAlert(
+        Alert::TYPE_NOTE,
+        $cFehler,
+        'smartyAccountwahlError'
+    );
 }
 
 /**
@@ -3472,7 +3493,11 @@ function setzeSmartyVersandart(): void
  */
 function setzeFehlerSmartyVersandart(): void
 {
-    Shop::Smarty()->assign('hinweis', Shop::Lang()->get('fillShipping', 'checkout'));
+    Shop::Container()->getAlertService()->addAlert(
+        Alert::TYPE_NOTE,
+        Shop::Lang()->get('fillShipping', 'checkout'),
+        'fillShipping'
+    );
 }
 
 /**
@@ -3544,7 +3569,11 @@ function setzeSmartyZahlungsartZusatz($post, $missingData = 0): void
 function setzeFehlerSmartyZahlungsart()
 {
     gibStepZahlung();
-    Shop::Smarty()->assign('hinweis', Shop::Lang()->get('fillPayment', 'checkout'));
+    Shop::Container()->getAlertService()->addAlert(
+        Alert::TYPE_NOTE,
+        Shop::Lang()->get('fillPayment', 'checkout'),
+        'fillPayment'
+    );
 }
 
 /**
@@ -3589,7 +3618,7 @@ function setzeFehlendeAngaben($missingData, $context = null)
  */
 function globaleAssigns()
 {
-    global $step, $hinweis;
+    global $step;
     Shop::Smarty()->assign(
         'AGB',
         Shop::Container()->getLinkService()->getAGBWRB(
@@ -3600,7 +3629,7 @@ function globaleAssigns()
         ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
         ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
         ->assign('Einstellungen', Shopsetting::getInstance()->getAll())
-        ->assign('hinweis', $hinweis)
+        ->assign('alertNote', Shop::Container()->getAlertService()->alertTypeExists(Alert::TYPE_NOTE))
         ->assign('step', $step)
         ->assign('WarensummeLocalized', \Session\Frontend::getCart()->gibGesamtsummeWarenLocalized())
         ->assign('Warensumme', \Session\Frontend::getCart()->gibGesamtsummeWaren())
@@ -3697,26 +3726,26 @@ function loescheSession(int $step)
 }
 
 /**
- * @param int $nHinweisCode
+ * @param int $noteCode
  * @return string
  * @todo: check if this is only used by the old EOS payment method
  */
-function mappeBestellvorgangZahlungshinweis(int $nHinweisCode)
+function mappeBestellvorgangZahlungshinweis(int $noteCode)
 {
-    $cHinweis = '';
-    if ($nHinweisCode > 0) {
-        switch ($nHinweisCode) {
+    $note = '';
+    if ($noteCode > 0) {
+        switch ($noteCode) {
             // 1-30 EOS
             case 1: // EOS_BACKURL_CODE
-                $cHinweis = Shop::Lang()->get('eosErrorBack', 'checkout');
+                $note = Shop::Lang()->get('eosErrorBack', 'checkout');
                 break;
 
             case 3: // EOS_FAILURL_CODE
-                $cHinweis = Shop::Lang()->get('eosErrorFailure', 'checkout');
+                $note = Shop::Lang()->get('eosErrorFailure', 'checkout');
                 break;
 
             case 4: // EOS_ERRORURL_CODE
-                $cHinweis = Shop::Lang()->get('eosErrorError', 'checkout');
+                $note = Shop::Lang()->get('eosErrorError', 'checkout');
                 break;
             default:
                 break;
@@ -3724,11 +3753,11 @@ function mappeBestellvorgangZahlungshinweis(int $nHinweisCode)
     }
 
     executeHook(HOOK_BESTELLVORGANG_INC_MAPPEBESTELLVORGANGZAHLUNGSHINWEIS, [
-        'cHinweis'     => &$cHinweis,
-        'nHinweisCode' => $nHinweisCode
+        'cHinweis'     => &$note,
+        'nHinweisCode' => $noteCode
     ]);
 
-    return $cHinweis;
+    return $note;
 }
 
 /**

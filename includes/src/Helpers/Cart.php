@@ -28,6 +28,7 @@ use Warenkorb;
 use WarenkorbPers;
 use WarenkorbPos;
 use Wunschliste;
+use Alert;
 
 /**
  * Class Cart
@@ -311,18 +312,6 @@ class Cart
      */
     public static function checkAdditions(): bool
     {
-        // prg
-        if (isset($_SESSION['bWarenkorbHinzugefuegt'], $_SESSION['bWarenkorbAnzahl'], $_SESSION['hinweis'])) {
-            if (isset($_POST['a'])) {
-                require_once \PFAD_ROOT . \PFAD_INCLUDES . 'artikel_inc.php';
-            }
-            Shop::Smarty()
-                ->assign('bWarenkorbHinzugefuegt', $_SESSION['bWarenkorbHinzugefuegt'])
-                ->assign('bWarenkorbAnzahl', $_SESSION['bWarenkorbAnzahl'])
-                ->assign('hinweis', $_SESSION['hinweis'])
-                ->assign('Xselling', isset($_POST['a']) ? Product::getXSelling($_POST['a']) : null);
-            unset($_SESSION['hinweis'], $_SESSION['bWarenkorbAnzahl'], $_SESSION['bWarenkorbHinzugefuegt']);
-        }
         $fAnzahl = 0;
         if (isset($_POST['anzahl'])) {
             $_POST['anzahl'] = \str_replace(',', '.', $_POST['anzahl']);
@@ -547,9 +536,14 @@ class Cart
             }
             Frontend::getCart()->redirectTo();
         } else {
+            Shop::Container()->getAlertService()->addAlert(
+                Alert::TYPE_ERROR,
+                Shop::Lang()->get('configError', 'productDetails'),
+                'configError'
+            );
             Shop::Smarty()->assign('aKonfigerror_arr', $errors)
-                ->assign('aKonfigitemerror_arr', $itemErrors)
-                ->assign('fehler', Shop::Lang()->get('configError', 'productDetails'));
+                ->assign('aKonfigitemerror_arr', $itemErrors);
+
         }
 
         $nKonfigitem_arr = [];
@@ -571,11 +565,16 @@ class Cart
      */
     private static function checkCompareList(int $kArtikel, int $maxItems): bool
     {
+        $alertHelper = Shop::Container()->getAlertService();
         // Prüfen ob nicht schon die maximale Anzahl an Artikeln auf der Vergleichsliste ist
         if (isset($_SESSION['Vergleichsliste']->oArtikel_arr)
             && $maxItems <= \count($_SESSION['Vergleichsliste']->oArtikel_arr)
         ) {
-            Shop::Smarty()->assign('fehler', Shop::Lang()->get('compareMaxlimit', 'errorMessages'));
+            Shop::Container()->getAlertService()->addAlert(
+                Alert::TYPE_ERROR,
+                Shop::Lang()->get('compareMaxlimit', 'errorMessages'),
+                'compareMaxlimit'
+            );
 
             return false;
         }
@@ -632,21 +631,28 @@ class Cart
                                 $compareList->oArtikel_arr[] = $oArtikel;
                             }
                             $_SESSION['Vergleichsliste'] = $compareList;
-                            Shop::Smarty()->assign(
-                                'hinweis',
-                                Shop::Lang()->get('comparelistProductadded', 'messages')
+                            $alertHelper->addAlert(
+                                Alert::TYPE_NOTE,
+                                Shop::Lang()->get('comparelistProductadded', 'messages'),
+                                'comparelistProductadded'
                             );
                         } else {
-                            Shop::Smarty()->assign(
-                                'fehler',
-                                Shop::Lang()->get('comparelistProductexists', 'messages')
+                            $alertHelper->addAlert(
+                                Alert::TYPE_ERROR,
+                                Shop::Lang()->get('comparelistProductexists', 'messages'),
+                                'comparelistProductexists'
                             );
                         }
                     }
                 } else {
                     // Vergleichsliste neu in der Session anlegen
                     $_SESSION['Vergleichsliste'] = $compareList;
-                    Shop::Smarty()->assign('hinweis', Shop::Lang()->get('comparelistProductadded', 'messages'));
+                    $alertHelper->addAlert(
+                        Alert::TYPE_NOTE,
+                        Shop::Lang()->get('comparelistProductadded', 'messages'),
+                        'comparelistProductadded'
+                    );
+
                 }
             }
         }
@@ -740,7 +746,11 @@ class Cart
                             'AktuellerArtikel' => &$obj
                         ]);
 
-                        Shop::Smarty()->assign('hinweis', Shop::Lang()->get('wishlistProductadded', 'messages'));
+                        Shop::Container()->getAlertService()->addAlert(
+                            Alert::TYPE_NOTE,
+                            Shop::Lang()->get('wishlistProductadded', 'messages'),
+                            'wishlistProductadded'
+                        );
                         if ($redirect === true) {
                             \header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php'), true, 302);
                             exit;
@@ -1467,7 +1477,7 @@ class Cart
             WarenkorbPers::addToCheck($kArtikel, $anzahl, $oEigenschaftwerte_arr, $cUnique, $kKonfigitem);
         }
         Shop::Smarty()
-            ->assign('hinweis', Shop::Lang()->get('basketAdded', 'messages'))
+            ->assign('cartNote', Shop::Lang()->get('basketAdded', 'messages'))
             ->assign('bWarenkorbHinzugefuegt', true)
             ->assign('bWarenkorbAnzahl', $anzahl);
         if (isset($_SESSION['Kampagnenbesucher'])) {

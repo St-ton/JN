@@ -42,8 +42,7 @@ function unique_NewsletterCode($dbfeld, $code): bool
  */
 function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
 {
-    global $cFehler, $cHinweis;
-
+    $alertHelper         = Shop::Container()->getAlertService();
     $conf                = Shop::getSettings([CONF_NEWSLETTER]);
     $plausi              = new stdClass();
     $plausi->nPlausi_arr = [];
@@ -84,7 +83,11 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
             if ((isset($recipient->cEmail) && strlen($recipient->cEmail) > 0)
                 || (isset($nlCustomer->kKunde) && $nlCustomer->kKunde > 0)
             ) {
-                $cFehler = Shop::Lang()->get('newsletterExists', 'errorMessages');
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    Shop::Lang()->get('newsletterExists', 'errorMessages'),
+                    'newsletterExists'
+                );
             } else {
                 $checkBox->triggerSpecialFunction(
                     CHECKBOX_ORT_NEWSLETTERANMELDUNG,
@@ -157,15 +160,27 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
                         $historyID,
                         (object)['cEmailBodyHtml' => $mail->bodyHtml]
                     );
-                    $cHinweis = Shop::Lang()->get('newsletterAdd', 'messages');
-                    $plausi   = new stdClass();
+                    $alertHelper->addAlert(
+                        Alert::TYPE_NOTE,
+                        Shop::Lang()->get('newsletterAdd', 'newsletterAdd'),
+                        'newsletterAdd'
+                    );
+                    $plausi = new stdClass();
                 } else {
-                    $cHinweis = Shop::Lang()->get('newsletterNomailAdd', 'messages');
+                    $alertHelper->addAlert(
+                        Alert::TYPE_NOTE,
+                        Shop::Lang()->get('newsletterNomailAdd', 'messages'),
+                        'newsletterNomailAdd'
+                    );
                 }
             }
         }
     } else {
-        $cFehler = Shop::Lang()->get('newsletterWrongemail', 'errorMessages');
+        $alertHelper->addAlert(
+            Alert::TYPE_ERROR,
+            Shop::Lang()->get('newsletterWrongemail', 'errorMessages'),
+            'newsletterWrongemail'
+        );
     }
 
     return $plausi;

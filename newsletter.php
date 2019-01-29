@@ -13,6 +13,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 Shop::setPageType(PAGE_NEWSLETTER);
 $db           = Shop::Container()->getDB();
 $smarty       = Shop::Smarty();
+$alertHelper  = Shop::Container()->getAlertService();
 $links        = $db->selectAll('tlink', 'nLinkart', LINKTYP_NEWSLETTER);
 $oLink        = new stdClass();
 $oLink->kLink = 0;
@@ -39,8 +40,6 @@ if (isset($oLink->kLink) && $oLink->kLink > 0) {
     return;
 }
 
-$cHinweis      = '';
-$cFehler       = '';
 $cCanonicalURL = '';
 $option        = 'eintragen';
 if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
@@ -71,9 +70,17 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
             [$optCode, 'Eingetragen'],
             $upd
         );
-        $cHinweis = Shop::Lang()->get('newsletterActive', 'messages');
+        $alertHelper->addAlert(
+            Alert::TYPE_NOTE,
+            Shop::Lang()->get('newsletterActive', 'errorMessages'),
+            'newsletterActive'
+        );
     } else {
-        $cFehler = Shop::Lang()->get('newsletterNoactive', 'errorMessages');
+        $alertHelper->addAlert(
+            Alert::TYPE_ERROR,
+            Shop::Lang()->get('newsletterNoactive', 'errorMessages'),
+            'newsletterNoactive'
+        );
     }
 } elseif (isset($_GET['lc']) && strlen($_GET['lc']) > 0) { // Loeschcode wurde uebergeben
     $option     = 'loeschen';
@@ -110,9 +117,17 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
         $blacklist->dErstellt = 'NOW()';
         $db->insert('tnewsletterempfaengerblacklist', $blacklist);
 
-        $cHinweis = Shop::Lang()->get('newsletterDelete', 'messages');
+        $alertHelper->addAlert(
+            Alert::TYPE_NOTE,
+            Shop::Lang()->get('newsletterDelete', 'errorMessages'),
+            'newsletterDelete'
+        );
     } else {
-        $cFehler = Shop::Lang()->get('newsletterNocode', 'errorMessages');
+        $alertHelper->addAlert(
+            Alert::TYPE_ERROR,
+            Shop::Lang()->get('newsletterNocode', 'errorMessages'),
+            'newsletterNocode'
+        );
     }
 }
 if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
@@ -136,9 +151,13 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
         $smarty->assign('oPlausi', fuegeNewsletterEmpfaengerEin($customer, true));
         $db->delete('tnewsletterempfaengerblacklist', 'cMail', $customer->cEmail);
     } else {
-        $cFehler .= StringHandler::filterEmailAddress($_POST['cEmail']) !== false
-            ? (Shop::Lang()->get('kwkEmailblocked', 'errorMessages') . '<br />')
-            : (Shop::Lang()->get('invalidEmail') . '<br />');
+        $alertHelper->addAlert(
+            Alert::TYPE_ERROR,
+            StringHandler::filterEmailAddress($_POST['cEmail']) !== false
+                ? (Shop::Lang()->get('kwkEmailblocked', 'errorMessages') . '<br />')
+                : (Shop::Lang()->get('invalidEmail') . '<br />'),
+            'newsletterBlockedInvalid'
+        );
     }
     $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST));
 } elseif (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 2) {
@@ -189,12 +208,24 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
             $blacklist->dErstellt = 'NOW()';
             $db->insert('tnewsletterempfaengerblacklist', $blacklist);
 
-            $cHinweis = Shop::Lang()->get('newsletterDelete', 'messages');
+            $alertHelper->addAlert(
+                Alert::TYPE_NOTE,
+                Shop::Lang()->get('newsletterDelete', 'errorMessages'),
+                'newsletterDelete'
+            );
         } else {
-            $cFehler = Shop::Lang()->get('newsletterNoexists', 'errorMessages');
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                Shop::Lang()->get('newsletterNoexists', 'errorMessages'),
+                'newsletterNoexists'
+            );
         }
     } else {
-        $cFehler = Shop::Lang()->get('newsletterWrongemail', 'errorMessages');
+        $alertHelper->addAlert(
+            Alert::TYPE_ERROR,
+            Shop::Lang()->get('newsletterWrongemail', 'errorMessages'),
+            'newsletterWrongemail'
+        );
         $smarty->assign('oFehlendeAngaben', (object)['cUnsubscribeEmail' => 1]);
     }
 } elseif (isset($_GET['show']) && (int)$_GET['show'] > 0) {
@@ -218,9 +249,7 @@ if (\Session\Frontend::getCustomer()->getID() > 0) {
 }
 $cCanonicalURL = Shop::getURL() . '/newsletter.php';
 
-$smarty->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
-       ->assign('cOption', $option)
+$smarty->assign('cOption', $option)
        ->assign('Link', $link)
        ->assign('nAnzeigeOrt', CHECKBOX_ORT_NEWSLETTERANMELDUNG)
        ->assign('code_newsletter', false);

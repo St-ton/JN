@@ -12,13 +12,15 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'kontakt_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_KONTAKT);
-$smarty        = Shop::Smarty();
-$conf          = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
-$linkHelper    = Shop::Container()->getLinkService();
-$kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
-$link          = $linkHelper->getPageLink($kLink);
-$cCanonicalURL = '';
-$lang          = Shop::getLanguageCode();
+$smarty         = Shop::Smarty();
+$conf           = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
+$linkHelper     = Shop::Container()->getLinkService();
+$kLink          = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
+$link           = $linkHelper->getPageLink($kLink);
+$cCanonicalURL  = '';
+$specialContent = new stdClass();
+$alertHelper    = Shop::Container()->getAlertService();
+$lang           = Shop::getLanguageCode();
 if (Form::checkSubject()) {
     $step            = 'formular';
     $fehlendeAngaben = [];
@@ -51,12 +53,12 @@ if (Form::checkSubject()) {
             }
         }
     }
-    $contents       = Shop::Container()->getDB()->selectAll(
+
+    $contents = Shop::Container()->getDB()->selectAll(
         'tspezialcontentsprache',
         ['nSpezialContent', 'cISOSprache'],
         [(int)SC_KONTAKTFORMULAR, $lang]
     );
-    $specialContent = new stdClass();
     foreach ($contents as $content) {
         $specialContent->{$content->cTyp} = $content->cContent;
     }
@@ -81,19 +83,29 @@ if (Form::checkSubject()) {
             $subject->AngezeigterName = $localization->cName;
         }
     }
+
+    if ($step === 'nachricht versendet') {
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, Shop::Lang()->get('messageSent', 'contact'), 'messageSent');
+    } elseif ($step === 'floodschutz') {
+        $alertHelper->addAlert(
+            Alert::TYPE_DANGER,
+            Shop::Lang()->get('youSentUsAMessageShortTimeBefore', 'contact'),
+            'youSentUsAMessageShortTimeBefore'
+        );
+    }
     $cCanonicalURL = $linkHelper->getStaticRoute('kontakt.php');
+
     $smarty->assign('step', $step)
            ->assign('code', false)
            ->assign('betreffs', $subjects)
-           ->assign('hinweis', $hinweis ?? null)
            ->assign('Vorgaben', Form::baueKontaktFormularVorgaben())
            ->assign('fehlendeAngaben', $fehlendeAngaben)
            ->assign('nAnzeigeOrt', CHECKBOX_ORT_KONTAKT);
 } else {
     Shop::Container()->getLogService()->error('Kein Kontaktbetreff vorhanden! Bitte im Backend unter ' .
         'Einstellungen -> Kontaktformular -> Betreffs einen Betreff hinzuf&uuml;gen.');
-    $smarty->assign('hinweis', Shop::Lang()->get('noSubjectAvailable', 'contact'));
-    $specialContent = new stdClass();
+
+    $alertHelper->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('noSubjectAvailable', 'contact'), 'noSubjectAvailable');
 }
 
 $smarty->assign('Link', $link)

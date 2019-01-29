@@ -7,19 +7,24 @@
 namespace Services\JTL;
 
 use Alert;
+use Tightenco\Collect\Support\Collection;
 
 /**
  * Class AlertService
  */
 class AlertService implements AlertServiceInterface
 {
-    private $alertList = [];
+    /**
+    * @var Collection
+    */
+    private $alertList;
 
     /**
      * Alertservice constructor.
      */
     public function __construct()
     {
+        $this->alertList = new Collection();
         $this->initFromSession();
     }
 
@@ -32,8 +37,10 @@ class AlertService implements AlertServiceInterface
 
         if (!empty($alerts)) {
             foreach ($alerts as $alertSerialized) {
-                $alert                             = unserialize($alertSerialized, ['allowed_classes', 'Alert']);
-                $this->alertList[$alert->getKey()] = $alert;
+                $alert = unserialize($alertSerialized, ['allowed_classes', 'Alert']);
+                if ($alert !== false) {
+                    $this->pushAlert($alert);
+                }
             }
         }
     }
@@ -41,10 +48,13 @@ class AlertService implements AlertServiceInterface
     /**
      * @inheritdoc
      */
-    public function addAlert(string $type, string $message, string $key, array $options = null): Alert
+    public function addAlert(string $type, string $message, string $key, array $options = null): ?Alert
     {
-        $alert                 = new Alert($type, $message, $key, $options);
-        $this->alertList[$key] = $alert;
+        if (trim($message) === '' || trim($type) === '' || trim($key) === '') {
+            return null;
+        }
+        $alert = new Alert($type, $message, $key, $options);
+        $this->pushAlert($alert);
 
         return $alert;
     }
@@ -54,14 +64,58 @@ class AlertService implements AlertServiceInterface
      */
     public function getAlert(string $key): ?Alert
     {
-        return $this->alertList[$key] ?? null;
+        return $this->getAlertList()->filter(function (Alert $alert) use ($key) {
+            return $alert->getKey() === $key;
+        })->pop();
     }
 
     /**
      * @inheritdoc
      */
-    public function getAlertList(): array
+    public function displayAlertByKey(string $key): void
+    {
+        if ($alert = $this->getAlert($key)) {
+            $alert->display();
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAlertList(): Collection
     {
         return $this->alertList;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function alertTypeExists(string $type): bool
+    {
+        return count($this->getAlertList()->filter(function (Alert $alert) use ($type) {
+            return $alert->getType() === $type;
+        })) > 0;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function removeAlertByKey(string $key): void
+    {
+        $key = $this->getAlertList()->search(function (Alert $alert) use ($key) {
+            return $alert->getKey() === $key;
+        });
+        if ($key !== false) {
+            $this->getAlertList()->pull($key);
+        }
+    }
+
+    /**
+     * @param Alert $alert
+     */
+    private function pushAlert(Alert $alert): void
+    {
+        $this->removeAlertByKey($alert->getKey());
+        $this->getAlertList()->push($alert);
     }
 }

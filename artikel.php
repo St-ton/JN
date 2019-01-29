@@ -21,23 +21,22 @@ $rated          = false;
 $productNotices = [];
 $nonAllowed     = [];
 $conf           = Shopsetting::getInstance()->getAll();
-$cHinweis       = $smarty->getTemplateVars('hinweis');
 $shopURL        = Shop::getURL() . '/';
-if (empty($cHinweis)) {
-    $cHinweis = Product::mapErrorCode(
-        Request::verifyGPDataString('cHinweis'),
-        (isset($_GET['fB']) && (float)$_GET['fB'] > 0) ? (float)$_GET['fB'] : 0.0
-    );
+$alertHelper    = Shop::Container()->getAlertService();
+if ($cHinweis = Product::mapErrorCode(
+    Request::verifyGPDataString('cHinweis'),
+    (isset($_GET['fB']) && (float)$_GET['fB'] > 0) ? (float)$_GET['fB'] : 0.0
+)) {
+    $alertHelper->addAlert(Alert::TYPE_NOTE, $cHinweis, 'productNote', ['showInAlertListTemplate' => false]);
 }
-$cFehler = $smarty->getTemplateVars('fehler');
-if (empty($cFehler)) {
-    $cFehler = Product::mapErrorCode(Request::verifyGPDataString('cFehler'));
+if ($cFehler = Product::mapErrorCode(Request::verifyGPDataString('cFehler'))) {
+    $alertHelper->addAlert(Alert::TYPE_ERROR, $cFehler, 'productError');
 }
 if (isset($_POST['a'])
     && Request::verifyGPCDataInt('addproductbundle') === 1
     && Product::addProductBundleToCart($_POST['a'])
 ) {
-    $cHinweis       = Shop::Lang()->get('basketAllAdded', 'messages');
+    $alertHelper->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('basketAllAdded', 'messages'), 'allAdded');
     Shop::$kArtikel = (int)$_POST['aBundle'];
 }
 $AktuellerArtikel = (new Artikel())->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions());
@@ -185,9 +184,15 @@ foreach ($AktuellerArtikel->Variationen as $Variation) {
         $nonAllowed[$value->kEigenschaftWert] = Product::getNonAllowedAttributeValues($value->kEigenschaftWert);
     }
 }
-$nav     = $conf['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
+$nav = $conf['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
     ? Product::getProductNavigation($AktuellerArtikel->kArtikel ?? 0, $AktuelleKategorie->kKategorie ?? 0)
     : null;
+
+//alerts
+if (($productNote = Product::editProductTags($AktuellerArtikel, $conf)) !== null) {
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, $productNote, 'editProductTags');
+}
+
 $uploads = \Extensions\Upload::gibArtikelUploads($AktuellerArtikel->kArtikel);
 $maxSize = \Extensions\Upload::uploadMax();
 $smarty->assign('nMaxUploadSize', $maxSize)
@@ -214,8 +219,7 @@ $smarty->assign('nMaxUploadSize', $maxSize)
        ->assign('ProduktTagging', $AktuellerArtikel->tags)
        ->assign('BlaetterNavi', $ratingNav)
        ->assign('BewertungsTabAnzeigen', ($ratingPage || $ratingStars || $showRatings || $allLanguages) ? 1 : 0)
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
+       ->assign('alertNote', $alertHelper->alertTypeExists(Alert::TYPE_NOTE))
        ->assign('PFAD_MEDIAFILES', $shopURL . PFAD_MEDIAFILES)
        ->assign('PFAD_BILDER', PFAD_BILDER)
        ->assign('FKT_ATTRIBUT_ATTRIBUTEANHAENGEN', FKT_ATTRIBUT_ATTRIBUTEANHAENGEN)

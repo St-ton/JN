@@ -1193,6 +1193,11 @@ class Product
         $history->dErstellt  = 'NOW()';
 
         $inquiryID = Shop::Container()->getDB()->insert('tproduktanfragehistory', $history);
+        Shop::Container()->getAlertService()->addAlert(
+            \Alert::TYPE_SUCCESS,
+            Shop::Lang()->get('thankYouForQuestion', 'messages'),
+            'thankYouForQuestion'
+        );
         if (isset($_SESSION['Kampagnenbesucher'])) {
             Kampagne::setCampaignAction(\KAMPAGNE_DEF_FRAGEZUMPRODUKT, $inquiryID, 1.0);
         }
@@ -1282,9 +1287,10 @@ class Product
                 if (isset($_SESSION['Kampagnenbesucher'])) {
                     Kampagne::setCampaignAction(\KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE, $inquiryID, 1.0);
                 }
-                Shop::Smarty()->assign(
-                    'PositiveFeedback',
-                    Shop::Lang()->get('thankYouForNotificationSubscription', 'messages')
+                Shop::Container()->getAlertService()->addAlert(
+                    \Alert::TYPE_SUCCESS,
+                    Shop::Lang()->get('thankYouForNotificationSubscription', 'messages'),
+                    'thankYouForNotificationSubscription'
                 );
             } else {
                 $notices[] = Shop::Lang()->get('notificationNotPossible', 'messages');
@@ -1692,7 +1698,7 @@ class Product
                         $newTag->cSeo     = SeoHelper::getSeo($tagString);
                         $newTag->cSeo     = SeoHelper::checkSeo($newTag->cSeo);
                         $newTag->nAktiv   = 0;
-                        $tagID             = $newTag->insertInDB();
+                        $tagID            = $newTag->insertInDB();
                         if ($tagID > 0) {
                             $tagArticle                 = new TagArticle();
                             $tagArticle->kTag           = $tagID;
@@ -1849,6 +1855,9 @@ class Product
                 break;
             case 'f03':
                 $error = Shop::Lang()->get('bewertungBewnotbought', 'errorMessages');
+                break;
+            case 'f04':
+                $error = Shop::Lang()->get('loginFirst', 'product rating');
                 break;
             case 'h01':
                 $error = Shop::Lang()->get('bewertungBewadd', 'messages');

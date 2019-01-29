@@ -122,23 +122,23 @@ class Tax
                 $link->setLinkType(\LINKTYP_STARTSEITE);
                 $link->setTitle(Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'));
 
+                Shop::Container()->getAlertService()->addAlert(
+                    \Alert::TYPE_ERROR,
+                    Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country),
+                    'missingTaxZoneForDeliveryCountry'
+                );
                 Shop::Smarty()
-                    ->assign('cFehler', Shop::Lang()->get(
-                        'missingTaxZoneForDeliveryCountry',
-                        'errorMessages',
-                        $country
-                    ))
                     ->assign('Link', $link)
                     ->display('layout/index.tpl');
                 exit;
             }
 
             if ($redirURL === $urlHelper->normalize()) {
-                Shop::Smarty()->assign(
-                    'cFehler',
-                    Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages')
-                    . '<br/>'
-                    . Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country)
+                Shop::Container()->getAlertService()->addAlert(
+                    \Alert::TYPE_ERROR,
+                    Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages') . '<br/>'
+                    . Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country),
+                    'missingParamShippingDetermination'
                 );
 
                 return;

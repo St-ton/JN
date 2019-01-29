@@ -11,8 +11,9 @@ require_once PFAD_INCLUDES . 'bewertung_inc.php';
 
 Shop::run();
 Shop::setPageType(PAGE_BEWERTUNG);
-$params = Shop::getParameters();
-$conf   = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_BEWERTUNG]);
+$params         = Shop::getParameters();
+$conf           = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_BEWERTUNG]);
+$ratingAllowed  = true;
 if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     speicherBewertung(
         $params['kArtikel'],
@@ -59,16 +60,24 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
         );
         $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguageID());
     }
-
-    if ($conf['bewertung']['bewertung_artikel_gekauft'] === 'Y') {
-        Shop::Smarty()->assign(
-            'nArtikelNichtGekauft',
-            pruefeKundeArtikelGekauft(
-                $AktuellerArtikel->kArtikel,
-                $_SESSION['Kunde']->kKunde
-            )
+    if (!\Session\Frontend::getCustomer()->isLoggedIn()) {
+        Shop::Container()->getAlertService()->addAlert(
+            Alert::TYPE_DANGER,
+            Shop::Lang()->get('loginFirst', 'product rating'),
+            'loginFirst',
+            ['showInAlertListTemplate' => false]
         );
+        $ratingAllowed = false;
+    } elseif (pruefeKundeArtikelGekauft($AktuellerArtikel->kArtikel, \Session\Frontend::getCustomer()) === false) {
+        Shop::Container()->getAlertService()->addAlert(
+            Alert::TYPE_DANGER,
+            Shop::Lang()->get('productNotBuyed', 'product rating'),
+            'productNotBuyed',
+            ['showInAlertListTemplate' => false]
+        );
+        $ratingAllowed = false;
     }
+
     Shop::Smarty()->assign(
         'BereitsBewertet',
         pruefeKundeArtikelBewertet(
@@ -77,6 +86,7 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
         )
     )
         ->assign('Artikel', $AktuellerArtikel)
+        ->assign('ratingAllowed', $ratingAllowed)
         ->assign(
             'oBewertung',
             Shop::Container()->getDB()->select(

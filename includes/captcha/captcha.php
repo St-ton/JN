@@ -112,10 +112,10 @@ function decodeCode($encoded)
     $mod1 = (mb_ord($key[0]) + mb_ord($key[1]) + mb_ord($key[2])) % 9 + 1;
     $mod2 = mb_strlen($_SERVER['DOCUMENT_ROOT']) % 9 + 1;
 
-    $s1e = (int)substr($encoded, 12, 3) + $mod2 - $mod1 - 123;
-    $s2e = (int)substr($encoded, 15, 3) + $mod1 - $mod2 - 234;
-    $s3e = (int)substr($encoded, 3, 3) - $mod1 - 345;
-    $s4e = (int)substr($encoded, 7, 3) - $mod2 - 456;
+    $s1e = (int)mb_substr($encoded, 12, 3) + $mod2 - $mod1 - 123;
+    $s2e = (int)mb_substr($encoded, 15, 3) + $mod1 - $mod2 - 234;
+    $s3e = (int)mb_substr($encoded, 3, 3) - $mod1 - 345;
+    $s4e = (int)mb_substr($encoded, 7, 3) - $mod2 - 456;
 
     return chr($s1e) . chr($s2e) . chr($s3e) . chr($s4e);
 }

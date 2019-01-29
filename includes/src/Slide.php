@@ -191,11 +191,11 @@ class Slide
             $cPfad2 = $cShopUrl2 . PFAD_MEDIAFILES;
             if (mb_strpos($this->image, $cPfad) !== false) {
                 $nStrLength      = mb_strlen($cPfad);
-                $this->image     = substr($this->image, $nStrLength);
+                $this->image     = mb_substr($this->image, $nStrLength);
                 $this->thumbnail = '.thumbs/' . $this->image;
             } elseif (mb_strpos($this->image, $cPfad2) !== false) {
                 $nStrLength      = mb_strlen($cPfad2);
-                $this->image     = substr($this->image, $nStrLength);
+                $this->image     = mb_substr($this->image, $nStrLength);
                 $this->thumbnail = '.thumbs/' . $this->image;
             }
         }

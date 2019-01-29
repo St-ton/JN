@@ -133,7 +133,7 @@ function saveAdminSettings(array $settingsIDs, array &$cPost_arr, $tags = [CACHI
                 $val->cWert = (int)$val->cWert;
                 break;
             case 'text':
-                $val->cWert = substr($val->cWert, 0, 255);
+                $val->cWert = mb_substr($val->cWert, 0, 255);
                 break;
             case 'listbox':
                 bearbeiteListBox($val->cWert, $val->cName, $val->kEinstellungenSektion);
@@ -229,7 +229,7 @@ function saveAdminSectionSettings(int $configSectionID, array &$cPost_arr, $tags
                 $val->cWert = (int)$val->cWert;
                 break;
             case 'text':
-                $val->cWert = substr($val->cWert, 0, 255);
+                $val->cWert = mb_substr($val->cWert, 0, 255);
                 break;
             case 'listbox':
             case 'selectkdngrp':
@@ -511,7 +511,7 @@ function getJTLVersionDB(bool $bDate = false)
  */
 function getMaxFileSize($size_str)
 {
-    switch (substr($size_str, -1)) {
+    switch (mb_substr($size_str, -1)) {
         case 'M':
         case 'm':
             return (int)$size_str * 1048576;

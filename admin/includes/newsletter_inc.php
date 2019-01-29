@@ -687,9 +687,9 @@ function holeNewslettervorlageStd(int $kNewsletterVorlageStd, int $kNewsletterVo
             $defaultTpl->cName              = $tpl->cName;
             $defaultTpl->cBetreff           = $tpl->cBetreff;
             $defaultTpl->cArt               = $tpl->cArt;
-            $defaultTpl->cArtikel           = substr(substr($tpl->cArtikel, 1), 0, -1);
-            $defaultTpl->cHersteller        = substr(substr($tpl->cHersteller, 1), 0, -1);
-            $defaultTpl->cKategorie         = substr(substr($tpl->cKategorie, 1), 0, -1);
+            $defaultTpl->cArtikel           = mb_substr(substr($tpl->cArtikel, 1), 0, -1);
+            $defaultTpl->cHersteller        = mb_substr(substr($tpl->cHersteller, 1), 0, -1);
+            $defaultTpl->cKategorie         = mb_substr(substr($tpl->cKategorie, 1), 0, -1);
             $defaultTpl->cKundengruppe      = $tpl->cKundengruppe;
             $defaultTpl->dStartZeit         = $tpl->dStartZeit;
         }

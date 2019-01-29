@@ -88,8 +88,8 @@ function splitteExportDatei($oExportformat)
         if ($nFileTypePos === false) {
             $cDateinameSplit_arr[0] = $oExportformat->cDateiname;
         } else {
-            $cDateinameSplit_arr[0] = substr($oExportformat->cDateiname, 0, $nFileTypePos);
-            $cDateinameSplit_arr[1] = substr($oExportformat->cDateiname, $nFileTypePos);
+            $cDateinameSplit_arr[0] = mb_substr($oExportformat->cDateiname, 0, $nFileTypePos);
+            $cDateinameSplit_arr[1] = mb_substr($oExportformat->cDateiname, $nFileTypePos);
         }
         // Ist die angelegte Datei größer als die Einstellung im Exportformat?
         clearstatcache();

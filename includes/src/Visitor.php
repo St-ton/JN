@@ -222,7 +222,7 @@ class Visitor
             $mobile = '/Mobile';
         }
         if (mb_strpos($agent, 'msie') !== false) {
-            return 'Internet Explorer ' . (int)substr($agent, mb_strpos($agent, 'msie') + 4) . $mobile;
+            return 'Internet Explorer ' . (int)mb_substr($agent, mb_strpos($agent, 'msie') + 4) . $mobile;
         }
         if (mb_strpos($agent, 'opera') !== false || mb_stripos($agent, 'opr') !== false) {
             return 'Opera' . $mobile;
@@ -334,7 +334,7 @@ class Visitor
         }
         if ($param !== '') {
             preg_match("/(\?$param|&$param)=[^&]+/i", $ref, $treffer);
-            $term->cSuchanfrage = isset($treffer[0]) ? urldecode(substr($treffer[0], 3)) : null;
+            $term->cSuchanfrage = isset($treffer[0]) ? urldecode(mb_substr($treffer[0], 3)) : null;
             if ($term->cSuchanfrage) {
                 Shop::Container()->getDB()->insert('tbesuchersuchausdruecke', $term);
             }
@@ -927,7 +927,7 @@ class Visitor
             '|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)' .
             '|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)' .
             '|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|xda(\-|2|g)|yas\-|your|zeto|zte\-/i',
-            substr($userAgent, 0, 4),
+            mb_substr($userAgent, 0, 4),
             $matches
         );
     }

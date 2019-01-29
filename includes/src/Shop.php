@@ -985,7 +985,7 @@ final class Shop
         $shopURLdata  = parse_url(self::getURL());
         $baseURLdata = parse_url($uri);
         $seo          = isset($baseURLdata['path'])
-            ? substr($baseURLdata['path'], isset($shopURLdata['path'])
+            ? mb_substr($baseURLdata['path'], isset($shopURLdata['path'])
                 ? (mb_strlen($shopURLdata['path']) + 1)
                 : 1)
             : false;
@@ -1034,13 +1034,13 @@ final class Shop
                 }
             }
             // change Opera Fix
-            if (substr($seo, mb_strlen($seo) - 1, 1) === '?') {
-                $seo = substr($seo, 0, -1);
+            if (mb_substr($seo, mb_strlen($seo) - 1, 1) === '?') {
+                $seo = mb_substr($seo, 0, -1);
             }
             $nMatch = preg_match('/[^_](' . SEP_SEITE . '([0-9]+))/', $seo, $matches, PREG_OFFSET_CAPTURE);
             if ($nMatch === 1) {
                 $seite = (int)$matches[2][0];
-                $seo   = substr($seo, 0, $matches[1][1]);
+                $seo   = mb_substr($seo, 0, $matches[1][1]);
             }
             // duplicate content work around
             if ($seite === 1 && mb_strlen($seo) > 0) {
@@ -1766,7 +1766,7 @@ final class Shop
         }
 
         return isset($baseURLdata['path'])
-            ? substr($baseURLdata['path'], mb_strlen($shopURLdata['path']))
+            ? mb_substr($baseURLdata['path'], mb_strlen($shopURLdata['path']))
             : '';
     }
 

@@ -1116,27 +1116,27 @@ function plausiIban($iban)
         return false;
     }
     $iban  = str_replace(' ', '', $iban);
-    $iban1 = substr($iban, 4)
+    $iban1 = mb_substr($iban, 4)
         . (string)(mb_ord($iban{0}) - 55)
         . (string)(mb_ord($iban{1}) - 55)
-        . substr($iban, 2, 2);
+        . mb_substr($iban, 2, 2);
     $len   = mb_strlen($iban1);
     for ($i = 0; $i < $len; $i++) {
         if (mb_ord($iban1{$i}) > 64 && mb_ord($iban1{$i}) < 91) {
-            $iban1 = substr($iban1, 0, $i) . (string)(mb_ord($iban1{$i}) - 55) . substr($iban1, $i + 1);
+            $iban1 = mb_substr($iban1, 0, $i) . (string)(mb_ord($iban1{$i}) - 55) . mb_substr($iban1, $i + 1);
         }
     }
 
     $rest = 0;
     $len  = mb_strlen($iban1);
     for ($pos = 0; $pos < $len; $pos += 7) {
-        $part = (string)$rest . substr($iban1, $pos, 7);
+        $part = (string)$rest . mb_substr($iban1, $pos, 7);
         $rest = (int)$part % 97;
     }
 
     $pz = sprintf('%02d', 98 - $rest);
 
-    if (substr($iban, 2, 2) == '00') {
+    if (mb_substr($iban, 2, 2) == '00') {
         return substr_replace($iban, $pz, 2, 2);
     }
 
@@ -2124,7 +2124,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         $ret['email'] = 3;
     } elseif (isset($conf['kunden']['kundenregistrierung_pruefen_email'])
         && $conf['kunden']['kundenregistrierung_pruefen_email'] === 'Y'
-        && !checkdnsrr(substr($data['email'], mb_strpos($data['email'], '@') + 1))
+        && !checkdnsrr(mb_substr($data['email'], mb_strpos($data['email'], '@') + 1))
     ) {
         $ret['email'] = 4;
     }
@@ -2200,9 +2200,9 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                                     // build a string with error-code and error-information
                                     $ret['ustid_err'] = $viesResult['errorcode'].
                                         ','.
-                                        substr($data['ustid'], 0, $viesResult['errorinfo']).
+                                        mb_substr($data['ustid'], 0, $viesResult['errorinfo']).
                                         '<span style="color:red;">'.
-                                        substr($data['ustid'], $viesResult['errorinfo']).
+                                        mb_substr($data['ustid'], $viesResult['errorinfo']).
                                         '</span>';
                                     break;
                                 case 130:

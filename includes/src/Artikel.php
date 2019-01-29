@@ -1741,7 +1741,7 @@ class Artikel
             }
             if ($mediaFile->cPfad !== '' && $mediaFile->cPfad[0] === '/') {
                 //remove double slashes
-                $mediaFile->cPfad = substr($mediaFile->cPfad, 1);
+                $mediaFile->cPfad = mb_substr($mediaFile->cPfad, 1);
             }
             // Hole alle Attribute zu einer Mediendatei (falls vorhanden)
             $mediaFile->oMedienDateiAttribut_arr = $db->selectAll(
@@ -1877,7 +1877,7 @@ class Artikel
      */
     public function filterAttribut($attributeName): bool
     {
-        $sub = substr($attributeName, 0, 7);
+        $sub = mb_substr($attributeName, 0, 7);
         if ($sub === 'intern_' || $sub === 'img_alt') {
             return true;
         }

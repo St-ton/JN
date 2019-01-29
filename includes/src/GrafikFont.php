@@ -145,7 +145,7 @@ class GrafikFont
             if ($bCent) {
                 $nCentCounter++;
             }
-            $c = substr($strInputString, $i, 1);
+            $c = mb_substr($strInputString, $i, 1);
 
             switch ($c) {
                 case '!':

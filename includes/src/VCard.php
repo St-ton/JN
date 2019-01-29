@@ -450,7 +450,7 @@ class VCard
 
                 foreach ($result as $key => $value) {
                     if (mb_stripos($value['Value'], 'uri:') === 0) {
-                        $result[$key]['Value']    = substr($value, 4);
+                        $result[$key]['Value']    = mb_substr($value, 4);
                         $result[$key]['Encoding'] = 'uri';
                     }
                 }

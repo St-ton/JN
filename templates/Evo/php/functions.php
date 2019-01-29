@@ -277,8 +277,8 @@ function has_boxes($params, $smarty)
 function truncate($text, $numb)
 {
     if (mb_strlen($text) > $numb) {
-        $text = substr($text, 0, $numb);
-        $text = substr($text, 0, mb_strrpos($text, ' '));
+        $text = mb_substr($text, 0, $numb);
+        $text = mb_substr($text, 0, mb_strrpos($text, ' '));
         $text .= '...';
     }
 
@@ -438,13 +438,13 @@ function aaURLEncode($params, $smarty)
     foreach ($params as $cParameter) {
         $aaEnthalten = mb_strpos($cURL, $cParameter);
         if ($aaEnthalten !== false) {
-            $cURL = substr($cURL, 0, $aaEnthalten);
+            $cURL = mb_substr($cURL, 0, $aaEnthalten);
             break;
         }
         $aaEnthalten = false;
     }
     if ($aaEnthalten !== false) {
-        $cURL = substr($cURL, 0, $aaEnthalten);
+        $cURL = mb_substr($cURL, 0, $aaEnthalten);
     }
     if (isset($params['bUrlOnly']) && (int)$params['bUrlOnly'] === 1) {
         return $cURL;

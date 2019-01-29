@@ -55,7 +55,7 @@ function pruefeNewsKategorie($cName, $nNewskategorieEditSpeichern = 0)
 function convertDate($string)
 {
     list($dDatum, $dZeit) = explode(' ', $string);
-    if (substr_count(':', $dZeit) === 2) {
+    if (mb_substr_count(':', $dZeit) === 2) {
         list($nStunde, $nMinute) = explode(':', $dZeit);
     } else {
         list($nStunde, $nMinute, $nSekunde) = explode(':', $dZeit);
@@ -86,7 +86,7 @@ function gibLetzteBildNummer($kNews)
     $imageCount = count($cBild_arr);
     if ($imageCount > 0) {
         for ($i = 0; $i < $imageCount; $i++) {
-            $cNummer = substr($cBild_arr[$i], 4, (mb_strlen($cBild_arr[$i]) - mb_strpos($cBild_arr[$i], '.')) - 3);
+            $cNummer = mb_substr($cBild_arr[$i], 4, (mb_strlen($cBild_arr[$i]) - mb_strpos($cBild_arr[$i], '.')) - 3);
 
             if ($cNummer > $nMax) {
                 $nMax = $cNummer;

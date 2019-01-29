@@ -253,7 +253,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     $kRechnungsadresse = $oRechnungsadresse->insertInDB();
 
     if (isset($_POST['kommentar'])) {
-        $_SESSION['kommentar'] = substr(strip_tags($_POST['kommentar']), 0, 1000);
+        $_SESSION['kommentar'] = mb_substr(strip_tags($_POST['kommentar']), 0, 1000);
     } elseif (!isset($_SESSION['kommentar'])) {
         $_SESSION['kommentar'] = '';
     }
@@ -1040,7 +1040,7 @@ function fakeBestellung()
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
 
     if (isset($_POST['kommentar'])) {
-        $_SESSION['kommentar'] = substr(strip_tags(Shop::Container()->getDB()->escape($_POST['kommentar'])), 0, 1000);
+        $_SESSION['kommentar'] = mb_substr(strip_tags(Shop::Container()->getDB()->escape($_POST['kommentar'])), 0, 1000);
     }
     $cart                    = \Session\Frontend::getCart();
     $customer                = \Session\Frontend::getCustomer();
@@ -1089,7 +1089,7 @@ function fakeBestellung()
     if (mb_strlen(\Session\Frontend::getDeliveryAddress()->cVorname) > 0) {
         $order->Lieferadresse = gibLieferadresseAusSession();
     }
-    $order->cBestellNr = date('dmYHis') . substr($order->cSession, 0, 4);
+    $order->cBestellNr = date('dmYHis') . mb_substr($order->cSession, 0, 4);
     if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
         $order->Positionen = [];
         foreach ($cart->PositionenArr as $i => $position) {

@@ -101,10 +101,10 @@ function loescheVerzeichnisUpdater($cPfad)
     }
 
     if ($bLinux) {
-        if (mb_strpos(substr($cPfad, mb_strlen($cPfad) - 1, 1), '/') === false) {
+        if (mb_strpos(mb_substr($cPfad, mb_strlen($cPfad) - 1, 1), '/') === false) {
             $cPfad .= '/';
         }
-    } elseif (mb_strpos(substr($cPfad, mb_strlen($cPfad) - 1, 1), '\\') === false) {
+    } elseif (mb_strpos(mb_substr($cPfad, mb_strlen($cPfad) - 1, 1), '\\') === false) {
         $cPfad .= '\\';
     }
 

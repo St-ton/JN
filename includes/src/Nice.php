@@ -80,8 +80,8 @@ class Nice
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if (!empty($data->cBrocken)) {
-                $passA   = substr(base64_decode($data->cBrocken), 0, 9);
-                $passE   = substr(
+                $passA   = mb_substr(base64_decode($data->cBrocken), 0, 9);
+                $passE   = mb_substr(
                     base64_decode($data->cBrocken),
                     mb_strlen(base64_decode($data->cBrocken)) - 11
                 );

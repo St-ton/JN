@@ -48,7 +48,7 @@ final class CompareList extends AbstractBox
                 $nPosWD    = \mb_strpos($requestURI, 'vlplo=');
 
                 if ($nPosWD) {
-                    $requestURI = \substr($requestURI, 0, $nPosWD);
+                    $requestURI = \mb_substr($requestURI, 0, $nPosWD);
                 }
                 $del = '?vlplo=';
                 if ($nPosAnd === \mb_strlen($requestURI) - 1) {

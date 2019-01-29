@@ -45,7 +45,7 @@ function gibLetzteBildNummer($kLink)
     }
     $nMax = 0;
     foreach ($cBild_arr as $image) {
-        $cNummer = substr($image, 4, (mb_strlen($image) - mb_strpos($image, '.')) - 3);
+        $cNummer = mb_substr($image, 4, (mb_strlen($image) - mb_strpos($image, '.')) - 3);
         if ($cNummer > $nMax) {
             $nMax = $cNummer;
         }
@@ -68,7 +68,7 @@ function parseText($cText, $kLink)
         $DirHandle = opendir($cUploadVerzeichnis . $kLink);
         while (false !== ($Datei = readdir($DirHandle))) {
             if ($Datei !== '.' && $Datei !== '..') {
-                $nBild             = (int)substr(
+                $nBild             = (int)mb_substr(
                     str_replace('Bild', '', $Datei),
                     0,
                     mb_strpos(str_replace('Bild', '', $Datei), '.')

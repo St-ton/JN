@@ -117,7 +117,7 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
                     $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
-                    $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                    $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                     break;
             }
             $db->delete(
@@ -152,7 +152,7 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
                     $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
-                    $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                    $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                     break;
             }
             $db->delete(

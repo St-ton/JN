@@ -269,7 +269,7 @@ function shop_writeable_paths()
 
     return array_map(function ($v) {
         if (mb_strpos($v, PFAD_ROOT) === 0) {
-            $v = substr($v, mb_strlen(PFAD_ROOT));
+            $v = mb_substr($v, mb_strlen(PFAD_ROOT));
         }
 
         return trim($v, '/\\');

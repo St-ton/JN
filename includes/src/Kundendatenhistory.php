@@ -209,7 +209,7 @@ class Kundendatenhistory extends MainModel
         $members = array_keys(get_object_vars($this));
         if (is_array($members) && count($members) > 0) {
             foreach ($members as $member) {
-                $method = 'get' . substr($member, 1);
+                $method = 'get' . mb_substr($member, 1);
                 if (method_exists($this, $method)) {
                     $val        = $this->$method();
                     $mValue     = $val === null

@@ -749,7 +749,7 @@ class Metadata implements MetadataInterface
     public function truncateMetaTitle($cTitle): string
     {
         return ($length = (int)$this->conf['metaangaben']['global_meta_maxlaenge_title']) > 0
-            ? \substr($cTitle, 0, $length)
+            ? \mb_substr($cTitle, 0, $length)
             : $cTitle;
     }
 
@@ -970,7 +970,7 @@ class Metadata implements MetadataInterface
         $metaProposal = \str_replace('"', '', \StringHandler::unhtmlentities($metaProposal));
         $metaSuffix   = !empty($metaSuffix) ? $metaSuffix : '';
         if (!empty($maxLength) && $maxLength > 0) {
-            $metaProposal = \substr($metaProposal, 0, $maxLength);
+            $metaProposal = \mb_substr($metaProposal, 0, $maxLength);
         }
 
         return \StringHandler::htmlentities(\trim(\preg_replace('/\s\s+/', ' ', $metaProposal))) . $metaSuffix;

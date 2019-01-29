@@ -296,7 +296,7 @@ class Kampagne
 
             if ($customData !== null) {
                 $oKampagnenVorgang->cCustomData = mb_strlen($customData) > 255
-                    ? substr($customData, 0, 255)
+                    ? mb_substr($customData, 0, 255)
                     : $customData;
             }
 

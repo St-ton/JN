@@ -78,7 +78,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
                     $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
-                    $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                    $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                     break;
                 case 'listbox':
                     bearbeiteListBox($aktWert->cWert, $confData[$i]->cWertName, CONF_TRUSTEDSHOPS);
@@ -170,7 +170,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
                 $aktWert->cWert = (int)$aktWert->cWert;
                 break;
             case 'text':
-                $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                 break;
             case 'listbox':
                 bearbeiteListBox($aktWert->cWert, $confData[$i]->cWertName, CONF_TRUSTEDSHOPS);

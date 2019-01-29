@@ -516,7 +516,7 @@ class Controller
             $this->setErrorMsg('Verzeichnis konnte nicht erstellt werden: ' . $dir);
         }
         if (isset($_FILES['previewImage']['name']) && \mb_strlen($_FILES['previewImage']['name']) > 0) {
-            $extension = \substr(
+            $extension = \mb_substr(
                 $_FILES['previewImage']['type'],
                 \mb_strpos($_FILES['previewImage']['type'], '/') + 1,
                 \mb_strlen($_FILES['previewImage']['type']) - \mb_strpos($_FILES['previewImage']['type'], '/') + 1
@@ -552,7 +552,7 @@ class Controller
         if (empty($_FILES['previewImage']['name'])) {
             return '';
         }
-        $extension = \substr(
+        $extension = \mb_substr(
             $_FILES['previewImage']['type'],
             \mb_strpos($_FILES['previewImage']['type'], '/') + 1,
             \mb_strlen($_FILES['previewImage']['type']) - \mb_strpos($_FILES['previewImage']['type'], '/') + 1
@@ -592,7 +592,7 @@ class Controller
                 && $_FILES['Bilder']['error'][$i - $counter] === \UPLOAD_ERR_OK
             ) {
                 $type      = $_FILES['Bilder']['type'][$i - $counter];
-                $extension = \substr(
+                $extension = \mb_substr(
                     $type,
                     \mb_strpos($type, '/') + 1,
                     \mb_strlen($type) - \mb_strpos($type, '/') + 1
@@ -746,7 +746,7 @@ class Controller
                 continue;
             }
             $image           = new \stdClass();
-            $image->cName    = \substr($fileName, 0, \mb_strpos($fileName, '.' . $fileinfo->getExtension()));
+            $image->cName    = \mb_substr($fileName, 0, \mb_strpos($fileName, '.' . $fileinfo->getExtension()));
             $image->cURL     = $base . $itemID . '/' . $fileName;
             $image->cURLFull = $imageBaseURL . $base . $itemID . '/' . $fileName;
             $image->cDatei   = $fileName;

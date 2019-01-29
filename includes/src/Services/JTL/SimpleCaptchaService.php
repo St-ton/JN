@@ -107,7 +107,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
         Frontend::set('simplecaptcha.token', null);
         Frontend::set('simplecaptcha.code', null);
 
-        $time = \substr($code, \mb_strpos($code, ':') + 1);
+        $time = \mb_substr($code, \mb_strpos($code, ':') + 1);
 
         // if form is filled out during lower than 5 seconds it must be a bot...
         return \time() > $time + 5

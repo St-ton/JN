@@ -40,10 +40,10 @@ class DirManager
             $islinux = false;
         }
         if ($islinux) {
-            if (mb_strpos(substr($path, mb_strlen($path) - 1, 1), '/') === false) {
+            if (mb_strpos(mb_substr($path, mb_strlen($path) - 1, 1), '/') === false) {
                 $path .= '/';
             }
-        } elseif (mb_strpos(substr($path, mb_strlen($path) - 1, 1), '\\') === false) {
+        } elseif (mb_strpos(mb_substr($path, mb_strlen($path) - 1, 1), '\\') === false) {
             $path .= '\\';
         }
         if (is_dir($path)) {

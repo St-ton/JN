@@ -54,10 +54,10 @@ class Visitors extends AbstractWidget
         $currentMonth = $this->getVisitorsOfCurrentMonth();
         $lastMonth    = $this->getVisitorsOfLastMonth();
         foreach ($currentMonth as $oCurrentMonth) {
-            $oCurrentMonth->dZeit = \substr($oCurrentMonth->dZeit, 0, 2);
+            $oCurrentMonth->dZeit = \mb_substr($oCurrentMonth->dZeit, 0, 2);
         }
         foreach ($lastMonth as $oLastMonth) {
-            $oLastMonth->dZeit = \substr($oLastMonth->dZeit, 0, 2);
+            $oLastMonth->dZeit = \mb_substr($oLastMonth->dZeit, 0, 2);
         }
 
         $series = [

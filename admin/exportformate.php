@@ -80,7 +80,7 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
                     $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
-                    $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                    $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                     break;
             }
             $db->insert('texportformateinstellungen', $aktWert);

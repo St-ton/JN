@@ -104,7 +104,7 @@ class StringHandler
             : str_replace(['\"', '\\\'', '\\', '"', '\''], '', $string);
 
         if ((int)$nSuche === 1 && mb_strlen($string) > 10) {
-            $string = substr(str_replace(['(', ')', ';'], '', $string), 0, 50);
+            $string = mb_substr(str_replace(['(', ')', ';'], '', $string), 0, 50);
         }
 
         return $string;
@@ -657,17 +657,17 @@ class StringHandler
             'l' => URLART_LIVESUCHE
         ];
         foreach ($hits[0] as $hit) {
-            $cParameter = substr($hit, mb_strpos($hit, '#') + 1, 1);
+            $cParameter = mb_substr($hit, mb_strpos($hit, '#') + 1, 1);
             $nBis       = mb_strpos($hit, ':', 4);
             // Es wurde kein Name angegeben
             if ($nBis === false) {
                 $nBis  = mb_strpos($hit, ':', 3);
                 $nVon  = mb_strpos($hit, '#', $nBis);
-                $cKey  = substr($hit, $nBis + 1, ($nVon - 1) - $nBis);
+                $cKey  = mb_substr($hit, $nBis + 1, ($nVon - 1) - $nBis);
                 $cName = '';
             } else {
-                $cKey  = substr($hit, 4, $nBis - 4);
-                $cName = substr($hit, $nBis + 1, mb_strpos($hit, '#', $nBis) - ($nBis + 1));
+                $cKey  = mb_substr($hit, 4, $nBis - 4);
+                $cName = mb_substr($hit, $nBis + 1, mb_strpos($hit, '#', $nBis) - ($nBis + 1));
             }
 
             $oObjekt = new stdClass();

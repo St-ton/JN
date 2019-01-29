@@ -759,7 +759,7 @@ class Wunschliste
     {
         $db = Shop::Container()->getDB();
         if (isset($_POST['WunschlisteName']) && mb_strlen($_POST['WunschlisteName']) > 0) {
-            $cName = StringHandler::htmlentities(StringHandler::filterXSS(substr($_POST['WunschlisteName'], 0, 254)));
+            $cName = StringHandler::htmlentities(StringHandler::filterXSS(mb_substr($_POST['WunschlisteName'], 0, 254)));
             $db->update('twunschliste', 'kWunschliste', $id, (object)['cName' => $cName]);
         }
         $positions = $db->selectAll(
@@ -778,7 +778,7 @@ class Wunschliste
             if (mb_strlen($_POST['Kommentar_' . $kWunschlistePos]) > 0) {
                 $upd             = new stdClass();
                 $upd->cKommentar = StringHandler::htmlentities(
-                    StringHandler::filterXSS($db->escape(substr($_POST['Kommentar_' . $kWunschlistePos], 0, 254)))
+                    StringHandler::filterXSS($db->escape(mb_substr($_POST['Kommentar_' . $kWunschlistePos], 0, 254)))
                 );
                 $db->update('twunschlistepos', 'kWunschlistePos', $kWunschlistePos, $upd);
             }
@@ -903,7 +903,7 @@ class Wunschliste
             foreach ($cValidEmail_arr as $cValidEmail) {
                 $msg .= $cValidEmail . ', ';
             }
-            $msg = substr($msg, 0, -2) . '<br />';
+            $msg = mb_substr($msg, 0, -2) . '<br />';
         }
         // Hat der benutzer mehr Emails angegeben als erlaubt sind?
         if (count($recipients) > (int)$conf['global']['global_wunschliste_max_email']) {

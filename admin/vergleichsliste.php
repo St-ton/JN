@@ -61,7 +61,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form
                 $aktWert->cWert = (int)$aktWert->cWert;
                 break;
             case 'text':
-                $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                 break;
         }
         Shop::Container()->getDB()->delete(
@@ -216,7 +216,7 @@ function checkName($cName)
 
     if (mb_strlen($cName) > 20) {
         // Wenn der String laenger als 20 Zeichen ist
-        $cName = substr($cName, 0, 20) . '...';
+        $cName = mb_substr($cName, 0, 20) . '...';
     }
 
     return $cName;

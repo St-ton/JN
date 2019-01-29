@@ -100,7 +100,7 @@ function generatePW($length = 8, $myseed = 1)
         $dummy[0]     = $tmp;
     }
 
-    return substr(implode('', $dummy), 0, $length);
+    return mb_substr(implode('', $dummy), 0, $length);
 }
 
 /**

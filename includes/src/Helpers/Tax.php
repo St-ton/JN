@@ -90,9 +90,9 @@ class Tax
         if ($merchantCountryCode !== $deliveryCountryCode
             && $merchantCountryCode !== $billingCountryCode
             && !empty(Frontend::getCustomer()->cUSTID)
-            && (\strcasecmp($billingCountryCode, \substr(Frontend::getCustomer()->cUSTID, 0, 2)) === 0
+            && (\strcasecmp($billingCountryCode, \mb_substr(Frontend::getCustomer()->cUSTID, 0, 2)) === 0
                 || (\strcasecmp($billingCountryCode, 'GR') === 0
-                    && \strcasecmp(\substr(Frontend::getCustomer()->cUSTID, 0, 2), 'EL') === 0))
+                    && \strcasecmp(\mb_substr(Frontend::getCustomer()->cUSTID, 0, 2), 'EL') === 0))
         ) {
             $deliveryCountry = $db->select('tland', 'cISO', $deliveryCountryCode);
             $shopCountry     = $db->select('tland', 'cISO', $merchantCountryCode);

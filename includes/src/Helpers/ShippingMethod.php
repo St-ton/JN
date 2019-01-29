@@ -483,7 +483,7 @@ class ShippingMethod
             ) { // Normale Variation
                 if ($product['cInputData']{0} === '_') {
                     // 1D
-                    $cVariation0                         = \substr($product['cInputData'], 1);
+                    $cVariation0                         = \mb_substr($product['cInputData'], 1);
                     [$kEigenschaft0, $kEigenschaftWert0] = \explode(':', $cVariation0);
 
                     $oVariation = Product::findVariation(
@@ -531,7 +531,7 @@ class ShippingMethod
                 $child = new Artikel();
                 if ($product['cInputData']{0} === '_') {
                     // 1D
-                    $cVariation0                         = \substr($product['cInputData'], 1);
+                    $cVariation0                         = \mb_substr($product['cInputData'], 1);
                     [$kEigenschaft0, $kEigenschaftWert0] = \explode(':', $cVariation0);
                     $kKindArtikel                        = Product::getChildProdctIDByAttribute(
                         $tmpProduct->kArtikel,

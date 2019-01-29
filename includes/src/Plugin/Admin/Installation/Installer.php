@@ -343,7 +343,7 @@ final class Installer
                     $line .= \trim($data);
                 }
 
-                if (\substr($data, \mb_strlen($data) - 1, 1) === ';') {
+                if (\mb_substr($data, \mb_strlen($data) - 1, 1) === ';') {
                     $sqlLines[] = $line;
                     $line       = '';
                 }

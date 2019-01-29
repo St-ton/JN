@@ -505,7 +505,7 @@ class MediaImage implements IMedia
             return null;
         }
         if (mb_strpos($request, '/') === 0) {
-            $request = substr($request, 1);
+            $request = mb_substr($request, 1);
         }
 
         return preg_match(MEDIAIMAGE_REGEX, $request, $matches)

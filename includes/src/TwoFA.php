@@ -133,10 +133,10 @@ class TwoFA
             if (0 < $overflow) {
                 for ($i=0; $i < $overflow; $i++) {
                     if ('%' === $totpUrl[mb_strlen($totpUrl)-3]) {
-                        $totpUrl  = substr($totpUrl, 0, -3); // shorten by 3 byte..
+                        $totpUrl  = mb_substr($totpUrl, 0, -3); // shorten by 3 byte..
                         $overflow -= 2;                         // ..and correct the counter (here nOverhang)
                     } else {
-                        $totpUrl = substr($totpUrl, 0, -1);  // shorten by 1 byte
+                        $totpUrl = mb_substr($totpUrl, 0, -1);  // shorten by 1 byte
                     }
                 }
             }

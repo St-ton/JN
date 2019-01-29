@@ -85,7 +85,7 @@ class Controller
         if ((int)$params['cDatum'] === -1) {
             $_SESSION['NewsNaviFilter']->cDatum = -1;
         } elseif (\mb_strlen($params['cDatum']) > 0) {
-            $_SESSION['NewsNaviFilter']->cDatum = \substr_count($params['cDatum'], '-') > 0
+            $_SESSION['NewsNaviFilter']->cDatum = \mb_substr_count($params['cDatum'], '-') > 0
                 ? \StringHandler::filterXSS($params['cDatum'])
                 : -1;
         } elseif (!isset($_SESSION['NewsNaviFilter']->cDatum)) {

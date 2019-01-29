@@ -119,7 +119,7 @@ class MediaImageCompatibility implements IMedia
         }
 
         if (mb_strpos($request, '/') === 0) {
-            $request = substr($request, 1);
+            $request = mb_substr($request, 1);
         }
 
         return preg_match(self::REGEX, $request, $matches)

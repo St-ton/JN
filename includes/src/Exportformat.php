@@ -972,8 +972,8 @@ class Exportformat
         if ($nFileTypePos === false) {
             $fileNameSplit_arr[0] = $this->cDateiname;
         } else {
-            $fileNameSplit_arr[0] = substr($this->cDateiname, 0, $nFileTypePos);
-            $fileNameSplit_arr[1] = substr($this->cDateiname, $nFileTypePos);
+            $fileNameSplit_arr[0] = mb_substr($this->cDateiname, 0, $nFileTypePos);
+            $fileNameSplit_arr[1] = mb_substr($this->cDateiname, $nFileTypePos);
         }
         // Ist die angelegte Datei größer als die Einstellung im Exportformat?
         clearstatcache();

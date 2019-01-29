@@ -86,12 +86,12 @@ class PluginCollection
         if (\mb_strlen($string) > $length) {
             $length -= \min($length, \mb_strlen($etc));
             if (!$break && !$middle) {
-                $string = \preg_replace('/\s+?(\S+)?$/', '', \substr($string, 0, $length + 1));
+                $string = \preg_replace('/\s+?(\S+)?$/', '', \mb_substr($string, 0, $length + 1));
             }
 
             return !$middle
-                ? \substr($string, 0, $length) . $etc
-                : \substr($string, 0, $length / 2) . $etc . \substr($string, -$length / 2);
+                ? \mb_substr($string, 0, $length) . $etc
+                : \mb_substr($string, 0, $length / 2) . $etc . \mb_substr($string, -$length / 2);
         }
 
         return $string;

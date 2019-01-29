@@ -105,7 +105,7 @@ if (Form::validateToken()) {
                     $db->delete('tnewsletterqueue', 'kNewsletterQueue', (int)$kNewsletterQueue);
                     $cHinweis .= $entry->cBetreff . '", ';
                 }
-                $cHinweis  = substr($cHinweis, 0, -2);
+                $cHinweis  = mb_substr($cHinweis, 0, -2);
                 $cHinweis .= __('successDelete') . '<br />';
             } else {
                 $cFehler .= __('errorAtLeastOneNewsletter') . '.<br />';
@@ -121,7 +121,7 @@ if (Form::validateToken()) {
                     $db->delete('tnewsletterhistory', 'kNewsletterHistory', (int)$kNewsletterHistory);
                     $cHinweis .= $kNewsletterHistory . ', ';
                 }
-                $cHinweis  = substr($cHinweis, 0, -2);
+                $cHinweis  = mb_substr($cHinweis, 0, -2);
                 $cHinweis .= __('successDelete') . '<br />';
             } else {
                 $cFehler .= __('errorAtLeastOneHistory') . '<br />';
@@ -314,20 +314,20 @@ if (Form::validateToken()) {
 
             if ($newsletterTPL->kNewsletterVorlage > 0) {
                 $oExplodedArtikel           = explodecArtikel($newsletterTPL->cArtikel);
-                $newsletterTPL->cArtikel    = substr(
-                    substr($newsletterTPL->cArtikel, 1),
+                $newsletterTPL->cArtikel    = mb_substr(
+                    mb_substr($newsletterTPL->cArtikel, 1),
                     0,
-                    mb_strlen(substr($newsletterTPL->cArtikel, 1)) - 1
+                    mb_strlen(mb_substr($newsletterTPL->cArtikel, 1)) - 1
                 );
-                $newsletterTPL->cHersteller = substr(
-                    substr($newsletterTPL->cHersteller, 1),
+                $newsletterTPL->cHersteller = mb_substr(
+                    mb_substr($newsletterTPL->cHersteller, 1),
                     0,
-                    mb_strlen(substr($newsletterTPL->cHersteller, 1)) - 1
+                    mb_strlen(mb_substr($newsletterTPL->cHersteller, 1)) - 1
                 );
-                $newsletterTPL->cKategorie  = substr(
-                    substr($newsletterTPL->cKategorie, 1),
+                $newsletterTPL->cKategorie  = mb_substr(
+                    mb_substr($newsletterTPL->cKategorie, 1),
                     0,
-                    mb_strlen(substr($newsletterTPL->cKategorie, 1)) - 1
+                    mb_strlen(mb_substr($newsletterTPL->cKategorie, 1)) - 1
                 );
                 $kKundengruppe_arr          = explodecKundengruppe($newsletterTPL->cKundengruppe);
                 $smarty->assign('kArtikel_arr', $oExplodedArtikel->kArtikel_arr)
@@ -460,7 +460,7 @@ if (Form::validateToken()) {
                     }
                 }
                 if (mb_strlen($cKundengruppe) > 0) {
-                    $cKundengruppe = substr($cKundengruppe, 0, -2);
+                    $cKundengruppe = mb_substr($cKundengruppe, 0, -2);
                 }
                 // tnewsletterhistory objekt bauen
                 $oNewsletterHistory                   = new stdClass();

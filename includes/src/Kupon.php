@@ -770,7 +770,7 @@ class Kupon
         while (empty($cCode) || ($count === 0
                 ? empty($cCode)
                 : Shop::Container()->getDB()->select('tkupon', 'cCode', $cCode))) {
-            $cCode = $prefix . substr(str_shuffle(str_repeat(
+            $cCode = $prefix . mb_substr(str_shuffle(str_repeat(
                 $lowerString . $upperString . $numbersString,
                 $len
             )), 0, $len) . $suffix;

@@ -85,7 +85,7 @@ class LanguageVariables extends AbstractItem
 
                     if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($i)) {
                         $cISO                             = $loc['iso'];
-                        $yx                               = \substr($i, 0, \mb_strpos($i, ' '));
+                        $yx                               = \mb_substr($i, 0, \mb_strpos($i, ' '));
                         $cName                            = $langVar['VariableLocalized'][$yx];
                         $localized                        = new \stdClass();
                         $localized->kPluginSprachvariable = $id;

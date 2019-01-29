@@ -799,9 +799,9 @@ function injectSubject($Object, $subject)
                         && !is_object($Object->$obj->$member)
                     ) {
                         $a[] = '#'
-                            . mb_convert_case(substr($obj, 1), MB_CASE_LOWER)
+                            . mb_convert_case(mb_substr($obj, 1), MB_CASE_LOWER)
                             . '.'
-                            . mb_convert_case(substr($member, 1), MB_CASE_LOWER)
+                            . mb_convert_case(mb_substr($member, 1), MB_CASE_LOWER)
                             . '#';
                         $b[] = $Object->$obj->$member;
                     }

@@ -285,7 +285,7 @@ class NiceDB implements DbInterface
                     $tableData->statement = null;
                     $tableData->backtrace = null;
                     if ($this->debugLevel > 1) {
-                        $tableData->statement = \preg_replace('/\s\s+/', ' ', \substr($stmt, 0, 500));
+                        $tableData->statement = \preg_replace('/\s\s+/', ' ', \mb_substr($stmt, 0, 500));
                         $tableData->backtrace = $backtrace;
                     }
                     \Profiler::setSQLProfile($tableData);

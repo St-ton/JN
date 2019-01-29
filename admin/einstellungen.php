@@ -123,10 +123,10 @@ if (isset($_POST['einstellungen_bearbeiten'])
                     $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
-                    $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                    $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                     break;
                 case 'pass':
-                    $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                    $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                     break;
             }
             if ($oSection->validate($Conf[$i], $_POST[$Conf[$i]->cWertName])) {

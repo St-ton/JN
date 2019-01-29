@@ -45,7 +45,7 @@ function speicherBewertung(int $productID, int $customerID, int $langID, $title,
     $rating->kArtikel        = $productID;
     $rating->kKunde          = $customerID;
     $rating->kSprache        = $langID;
-    $rating->cName           = $_SESSION['Kunde']->cVorname . ' ' . substr($_SESSION['Kunde']->cNachname, 0, 1);
+    $rating->cName           = $_SESSION['Kunde']->cVorname . ' ' . mb_substr($_SESSION['Kunde']->cNachname, 0, 1);
     $rating->cTitel          = $title;
     $rating->cText           = strip_tags($text);
     $rating->nHilfreich      = 0;

@@ -22,7 +22,7 @@ class PHPSettings
      */
     private function shortHandToInt($shorthand): int
     {
-        switch (\substr($shorthand, -1)) {
+        switch (\mb_substr($shorthand, -1)) {
             case 'M':
             case 'm':
                 return (int)$shorthand * 1048576;

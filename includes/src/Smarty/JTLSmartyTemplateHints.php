@@ -42,7 +42,7 @@ class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
         $tplName = null;
         $tplID   = null;
         $tplName = \mb_strpos($template, ':') !== false
-            ? \substr($template, \mb_strpos($template, ':') + 1)
+            ? \mb_substr($template, \mb_strpos($template, ':') + 1)
             : $template;
         if (\SHOW_TEMPLATE_HINTS === 1) {
             echo '<!-- start ' . $tplName . '-->';

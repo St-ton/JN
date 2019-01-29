@@ -69,12 +69,12 @@ function cryptPasswort($cPasswort, $cHashPasswort = null)
     $nLaenge = mb_strlen($cSalt);
     $nLaenge = max($nLaenge >> 3, ($nLaenge >> 2) - mb_strlen($cPasswort));
     $cSalt   = $cHashPasswort
-        ? substr($cHashPasswort, min(mb_strlen($cPasswort), mb_strlen($cHashPasswort) - $nLaenge), $nLaenge)
-        : strrev(substr($cSalt, 0, $nLaenge));
+        ? mb_substr($cHashPasswort, min(mb_strlen($cPasswort), mb_strlen($cHashPasswort) - $nLaenge), $nLaenge)
+        : strrev(mb_substr($cSalt, 0, $nLaenge));
     $cHash   = sha1($cPasswort);
-    $cHash   = sha1(substr($cHash, 0, mb_strlen($cPasswort)) . $cSalt . substr($cHash, mb_strlen($cPasswort)));
-    $cHash   = substr($cHash, $nLaenge);
-    $cHash   = substr($cHash, 0, mb_strlen($cPasswort)) . $cSalt . substr($cHash, mb_strlen($cPasswort));
+    $cHash   = sha1(mb_substr($cHash, 0, mb_strlen($cPasswort)) . $cSalt . mb_substr($cHash, mb_strlen($cPasswort)));
+    $cHash   = mb_substr($cHash, $nLaenge);
+    $cHash   = mb_substr($cHash, 0, mb_strlen($cPasswort)) . $cSalt . mb_substr($cHash, mb_strlen($cPasswort));
 
     return $cHashPasswort && $cHashPasswort !== $cHash ? false : $cHash;
 }
@@ -93,7 +93,7 @@ function gibUID(int $nAnzahlStellen = 40, string $cString = '')
     $cSaltBuchstaben = 'aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789';
     // Gen SALT
     for ($j = 0; $j < 30; $j++) {
-        $cSalt .= substr($cSaltBuchstaben, mt_rand(0, mb_strlen($cSaltBuchstaben) - 1), 1);
+        $cSalt .= mb_substr($cSaltBuchstaben, mt_rand(0, mb_strlen($cSaltBuchstaben) - 1), 1);
     }
     $cSalt = md5($cSalt);
     mt_srand();
@@ -114,7 +114,7 @@ function gibUID(int $nAnzahlStellen = 40, string $cString = '')
                 if (((int)date('w') % 2) <= mb_strlen($cString)) {
                     $nPos = (int)date('w') % 2;
                 }
-                $cUID .= md5(substr($cString, $nPos, 1) . $cSalt . md5(PFAD_ROOT . (microtime(true) - mt_rand())));
+                $cUID .= md5(mb_substr($cString, $nPos, 1) . $cSalt . md5(PFAD_ROOT . (microtime(true) - mt_rand())));
             }
         }
         $cUID = cryptPasswort($cUID . $cSalt);
@@ -122,7 +122,7 @@ function gibUID(int $nAnzahlStellen = 40, string $cString = '')
         $cUID = cryptPasswort(md5(M_PI . $cSalt . md5(time() - mt_rand())));
     }
     // Anzahl Stellen beachten
-    return $nAnzahlStellen > 0 ? substr($cUID, 0, $nAnzahlStellen) : $cUID;
+    return $nAnzahlStellen > 0 ? mb_substr($cUID, 0, $nAnzahlStellen) : $cUID;
 }
 
 /**
@@ -407,8 +407,8 @@ function formatCurrency($fSumme)
             $fCents = '0' . $fCents;
         }
         for ($i = 0; $i < floor((mb_strlen($fSumme) - (1 + $i)) / 3); $i++) {
-            $fSumme = substr($fSumme, 0, mb_strlen($fSumme) - (4 * $i + 3)) . '.' .
-                substr($fSumme, 0, mb_strlen($fSumme) - (4 * $i + 3));
+            $fSumme = mb_substr($fSumme, 0, mb_strlen($fSumme) - (4 * $i + 3)) . '.' .
+                mb_substr($fSumme, 0, mb_strlen($fSumme) - (4 * $i + 3));
         }
     }
 
@@ -1972,7 +1972,7 @@ function gibTokenName(bool $bAlten = false)
         }
     }
 
-    return substr(sha1(md5(microtime(true)) . (rand(0, 1000000000) * 1000)), 0, 4);
+    return mb_substr(sha1(md5(microtime(true)) . (rand(0, 1000000000) * 1000)), 0, 4);
 }
 
 /**

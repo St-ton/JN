@@ -48,7 +48,7 @@ final class Wishlist extends AbstractBox
                 $nPosWD       = \mb_strpos($cRequestURI, 'wlplo=');
                 $cDeleteParam = '?wlplo='; // z.b. index.php
                 if ($nPosWD) {
-                    $cRequestURI = \substr($cRequestURI, 0, $nPosWD);
+                    $cRequestURI = \mb_substr($cRequestURI, 0, $nPosWD);
                 }
                 if ($nPosAnd === \mb_strlen($cRequestURI) - 1) {
                     // z.b. index.php?a=4&

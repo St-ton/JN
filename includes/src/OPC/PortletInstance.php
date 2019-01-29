@@ -412,7 +412,7 @@ class PortletInstance implements \JsonSerializable
             $srcset .= \PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';
         }
 
-        $srcset = \substr($srcset, 0, -1); // remove trailing comma
+        $srcset = \mb_substr($srcset, 0, -1); // remove trailing comma
 
         if (\is_array($widthHeuristics)) {
             foreach ($widthHeuristics as $breakpoint => $col) {

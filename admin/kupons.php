@@ -35,7 +35,7 @@ $res              = handleCsvImportAction('kupon', function ($obj, &$importDelet
 
     foreach (get_object_vars($obj) as $key => $val) {
         if (mb_strpos($key, 'cName_') === 0) {
-            $couponNames[substr($key, 6)] = $val;
+            $couponNames[mb_substr($key, 6)] = $val;
             unset($obj->$key);
         }
     }

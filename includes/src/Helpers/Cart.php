@@ -1269,7 +1269,7 @@ class Cart
             }
             // Switch zwischen 1 Vari und 2
             if ($cKeys[0] === '_') { // 1
-                $cVariation0                         = \substr($cKeys, 1);
+                $cVariation0                         = \mb_substr($cKeys, 1);
                 [$kEigenschaft0, $kEigenschaftWert0] = \explode(':', $cVariation0);
                 // In die Session einbauen
                 $oVariKombi                                 = new stdClass();

@@ -2176,7 +2176,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
             $analizeCheck = false;
             $viesResult   = null;
             if ($conf['kunden']['shop_ustid_bzstpruefung'] === 'Y') {
-                $oVies        = new UstIDvies();
+                $oVies        = new VATCheck();
                 $viesResult   = $oVies->doCheckID(trim($data['ustid']));
                 $analizeCheck = true; // flag to signalize further analization
             }
@@ -2550,7 +2550,7 @@ function warenkorbKuponFaehigKategorien($coupon, array $cartPositions): bool
         }
         //check if at least one product is in at least one category valid for this coupon
         $category = Shop::Container()->getDB()->query(
-            'SELECT kKategorie 
+            'SELECT kKategorie
                 FROM tkategorieartikel
                   WHERE kArtikel IN (' . \implode(',', $products) . ')
                     AND kKategorie IN (' . str_replace(';', ',', trim($coupon->cKategorien, ';')) . ')

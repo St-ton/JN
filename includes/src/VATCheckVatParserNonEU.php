@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-class UstIDviesVatParserNonEU
+class VATCheckVatParserNonEU
 {
     /**
      * @var $vCountryPattern
@@ -115,12 +115,12 @@ class UstIDviesVatParserNonEU
             if (0 === $nParseResult) {
                 return true; // if we found a valid pattern-match, we've done our job here
             }
-            $this->nErrorCode  = UstIDviesInterface::PATTERN_NOT_MATCH; // error 120: id did not match any pattern of this country
+            $this->nErrorCode  = VATCheckInterface::ERR_PATTERN_MISMATCH; // error 120: id did not match any pattern of this country
             $this->szErrorInfo = $nParseResult; // interrupt-/error-position
 
             return false;
         }
-        $this->nErrorCode = UstIDviesInterface::PATTERNLENGTH_NOT_FOUND; // error 110: no length was matching
+        $this->nErrorCode = VATCheckInterface::ERR_PATTERNLENGTH_NOT_FOUND; // error 110: no length was matching
 
         return false;
     }

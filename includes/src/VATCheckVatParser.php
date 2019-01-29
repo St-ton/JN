@@ -5,9 +5,9 @@
  */
 
 /**
- * class UstIDviesVatParser
+ * class VATCheckVatParser
  */
-class UstIDviesVatParser
+class VATCheckVatParser
 {
     /**
      * @var array
@@ -252,7 +252,7 @@ class UstIDviesVatParser
         }
         // there is no country starting with this 2 letters
         if (!isset($this->vCountryPattern[$this->vIdParts[1]])) {
-            $this->nErrorCode  = UstIDviesInterface::COUNTRY_NOT_FOUND; // error 130: no pattern for such a country
+            $this->nErrorCode  = VATCheckInterface::ERR_COUNTRY_NOT_FOUND; // error 130: no pattern for such a country
             $this->szErrorInfo = $this->vIdParts[1];
 
             return false;
@@ -270,12 +270,12 @@ class UstIDviesVatParser
                 return true; // if we found a valid pattern-match, we've done our job here
             }
 
-            $this->nErrorCode  = UstIDviesInterface::PATTERN_NOT_MATCH; // error 120: id did not match any pattern of this country
+            $this->nErrorCode  = VATCheckInterface::ERR_PATTERN_MISMATCH; // error 120: id did not match any pattern of this country
             $this->szErrorInfo = $nParseResult; // interrupt-/error-position
 
             return false;
         }
-        $this->nErrorCode = UstIDviesInterface::PATTERNLENGTH_NOT_FOUND; // error 110: no length was matching
+        $this->nErrorCode = VATCheckInterface::ERR_PATTERNLENGTH_NOT_FOUND; // error 110: no length was matching
 
         return false;
     }

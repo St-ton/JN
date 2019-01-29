@@ -6,9 +6,9 @@
 
 
 /**
- * class UstIDviesDownSlots
+ * class VATCheckDownSlots
  */
-class UstIDviesDownSlots
+class VATCheckDownSlots
 {
     /**
      * @var array

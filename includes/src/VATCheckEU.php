@@ -5,7 +5,7 @@
  */
 
 /**
- * Class UstIDvies
+ * Class VATCheckEU
  *
  *
  * External documentation
@@ -16,7 +16,7 @@
  * VIES (VAT Information Exchange System)
  * @link https://ec.europa.eu/taxation_customs/business/vat/eu-vat-rules-topic/vies-vat-information-exchange-system-enquiries_en
  */
-class UstIDviesEU implements UstIDviesInterface
+class VATCheckEU implements VATCheckInterface
 {
     /**
      * @var string
@@ -24,7 +24,7 @@ class UstIDviesEU implements UstIDviesInterface
     private $szViesWSDL = 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
 
     /**
-     * @var UstIDviesDownSlots
+     * @var VATCheckDownSlots
      */
     private $oDownTimes;
 
@@ -49,7 +49,7 @@ class UstIDviesEU implements UstIDviesInterface
      */
     public function __construct()
     {
-        $this->oDownTimes = new UstIDviesDownSlots();
+        $this->oDownTimes = new VATCheckDownSlots();
     }
 
     /**
@@ -81,7 +81,7 @@ class UstIDviesEU implements UstIDviesInterface
     public function doCheckID($szUstID)
     {
         // parse the ID-string
-        $oVatParser = new UstIDviesVatParser($this->condenseSpaces($szUstID));
+        $oVatParser = new VATCheckVatParser($this->condenseSpaces($szUstID));
         if (true === $oVatParser->parseVatId()) {
             list($szCountryCode, $szVatNumber) = $oVatParser->getIdAsParams();
         } else {

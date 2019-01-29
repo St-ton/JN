@@ -5,9 +5,9 @@
  */
 
 /**
- * Class UstIDviesNonEU
+ * Class VATCheckNonEU
  */
-class UstIDviesNonEU implements UstIDviesInterface
+class VATCheckNonEU implements VATCheckInterface
 {
     /**
      *
@@ -31,7 +31,7 @@ class UstIDviesNonEU implements UstIDviesInterface
      */
     public function doCheckID($szUstID)
     {
-        $oVatParser = new UstIDviesVatParserNonEU($szUstID);
+        $oVatParser = new VATCheckVatParserNonEU($szUstID);
         if (true === $oVatParser->parseVatId()) {
             return [
                 'success'   => true,
@@ -43,7 +43,7 @@ class UstIDviesNonEU implements UstIDviesInterface
         return [
             'success'   => false,
             'errortype' => 'parse',
-            'errorcode' => UstIDviesInterface::PATTERN_NOT_MATCH,
+            'errorcode' => VATCheckInterface::ERR_PATTERN_MISMATCH,
             'errorinfo' => '' !== ($szErrorInfo = $oVatParser->getErrorInfo()) ? $szErrorInfo : ''
         ];
     }

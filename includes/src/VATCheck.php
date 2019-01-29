@@ -5,9 +5,9 @@
  */
 
 /**
- * Class UstIDvies
+ * Class VATCheck
  */
-class UstIDvies
+class VATCheck
 {
     /**
      * @var object
@@ -28,10 +28,10 @@ class UstIDvies
 
         switch (true) {
             case $this->startsWith($this->szUstID, 'CHE'):
-                $this->oLocation = new UstIDviesNonEU();
+                $this->oLocation = new VATCheckNonEU();
                 break;
             default:
-                $this->oLocation = new UstIDviesEU();
+                $this->oLocation = new VATCheckEU();
         }
     }
 
@@ -55,7 +55,7 @@ class UstIDvies
             return [
                 'success'   => false,
                 'errortype' => 'parse',
-                'errorcode' => UstIDviesInterface::NO_ID_GIVEN,  // error: no $szUstID was given
+                'errorcode' => VATCheckInterface::ERR_NO_ID_GIVEN,  // error: no $szUstID was given
                 'errorinfo' => ''
             ];
         }

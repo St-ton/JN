@@ -99,7 +99,7 @@ class PaymentMethods extends AbstractItem
                 \preg_match('/[0-9]+\sattr/', $l, $hits1);
                 \preg_match('/[0-9]+/', $l, $hits2);
                 if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($l)) {
-                    $iso = \strtolower($loc['iso']);
+                    $iso = \mb_convert_case($loc['iso'], MB_CASE_LOWER);
                 } elseif (\strlen($hits2[0]) === \strlen($l)) {
                     $localizedMethod               = new \stdClass();
                     $localizedMethod->kZahlungsart = $methodID;

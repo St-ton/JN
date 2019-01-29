@@ -186,7 +186,7 @@ class Adresse
      */
     public function mappeAnrede(string $anrede): string
     {
-        switch (strtolower($anrede)) {
+        switch (mb_convert_case($anrede, MB_CASE_LOWER)) {
             case 'm':
                 return Shop::Lang()->get('salutationM');
             case 'w':

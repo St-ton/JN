@@ -28,7 +28,7 @@ class MediaImageCompatibility implements IMedia
     public function handle($request)
     {
         $req      = $this->parse($request);
-        $path     = strtolower($req['path']);
+        $path     = mb_convert_case($req['path'], MB_CASE_LOWER);
         $fallback = Shop::Container()->getDB()->executeQueryPrepared(
             'SELECT h.kArtikel, h.nNr, a.cSeo, a.cName, a.cArtNr, a.cBarcode 
                 FROM tartikelpicthistory h 
@@ -61,10 +61,10 @@ class MediaImageCompatibility implements IMedia
             $articleNumber = $this->replaceVowelMutation($articleNumber);
             $barcode       = $this->replaceVowelMutation($barcode);
             // lowercase + escape
-            $name          = strtolower(Shop::Container()->getDB()->escape($name));
-            $articleNumber = strtolower(Shop::Container()->getDB()->escape($articleNumber));
-            $barcode       = strtolower(Shop::Container()->getDB()->escape($barcode));
-            $seo           = strtolower(Shop::Container()->getDB()->escape($seo));
+            $name          = mb_convert_case(Shop::Container()->getDB()->escape($name), MB_CASE_LOWER);
+            $articleNumber = mb_convert_case(Shop::Container()->getDB()->escape($articleNumber), MB_CASE_LOWER);
+            $barcode       = mb_convert_case(Shop::Container()->getDB()->escape($barcode), MB_CASE_LOWER);
+            $seo           = mb_convert_case(Shop::Container()->getDB()->escape($seo), MB_CASE_LOWER);
 
             $fallback = Shop::Container()->getDB()->query(
                 "SELECT a.kArtikel, a.cSeo, a.cName, a.cArtNr, a.cBarcode 

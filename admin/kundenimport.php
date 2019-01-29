@@ -168,10 +168,10 @@ function processImport($fmt, $data)
     if (isset($old_mail->kKunde) && $old_mail->kKunde > 0) {
         return sprintf(__('errorEmailDuplicate'), $kunde->cMail);
     }
-    if ($kunde->cAnrede === 'f' || strtolower($kunde->cAnrede) === 'frau') {
+    if ($kunde->cAnrede === 'f' || mb_convert_case($kunde->cAnrede, MB_CASE_LOWER) === 'frau') {
         $kunde->cAnrede = 'w';
     }
-    if ($kunde->cAnrede === 'h' || strtolower($kunde->cAnrede) === 'herr') {
+    if ($kunde->cAnrede === 'h' || mb_convert_case($kunde->cAnrede, MB_CASE_LOWER) === 'herr') {
         $kunde->cAnrede = 'm';
     }
     if ($kunde->cNewsletter == 0 || $kunde->cNewsletter == 'NULL') {

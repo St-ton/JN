@@ -31,8 +31,8 @@ class GeneralObject
                 $dataJ  = $data[$j]->$key;
                 $dataJ1 = $data[$j + 1]->$key;
                 if ($bStringToLower) {
-                    $dataJ  = \strtolower($dataJ);
-                    $dataJ1 = \strtolower($dataJ1);
+                    $dataJ  = \mb_convert_case($dataJ, MB_CASE_LOWER);
+                    $dataJ1 = \mb_convert_case($dataJ1, MB_CASE_LOWER);
                 }
                 if ($dataJ > $dataJ1) {
                     $tmp          = $data[$j];

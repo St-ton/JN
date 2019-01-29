@@ -241,7 +241,7 @@ function gravatarImage(array $params, $smarty): string
     $params = array_merge(['email' => null, 's' => 80, 'd' => 'mm', 'r' => 'g'], $params);
 
     $url = 'https://www.gravatar.com/avatar/';
-    $url .= md5(strtolower(trim($email)));
+    $url .= md5(mb_convert_case(trim($email), MB_CASE_LOWER));
     $url .= '?' . http_build_query($params, '', '&');
 
     executeHook(HOOK_BACKEND_FUNCTIONS_GRAVATAR, [

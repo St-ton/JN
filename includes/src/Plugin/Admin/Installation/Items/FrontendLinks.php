@@ -69,7 +69,7 @@ class FrontendLinks extends AbstractItem
                 \preg_match('/[0-9]+\sattr/', $l, $hits1);
                 \preg_match('/[0-9]+/', $l, $hits2);
                 if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($l)) {
-                    $linkLang->cISOSprache = \strtolower($localized['iso']);
+                    $linkLang->cISOSprache = \mb_convert_case($localized['iso'], MB_CASE_LOWER);
                 } elseif (\strlen($hits2[0]) === \strlen($l)) {
                     $linkLang->cSeo             = SeoHelper::checkSeo(SeoHelper::getSeo($localized['Seo']));
                     $linkLang->cName            = $localized['Name'];

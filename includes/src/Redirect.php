@@ -277,7 +277,7 @@ class Redirect
                     AND tseo.kSprache = tsprache.kSprache
                 WHERE tartikel.cArtNr = :artno
                 LIMIT 1",
-            ['iso' => strtolower($iso), 'artno' => $artNo],
+            ['iso' => mb_convert_case($iso, MB_CASE_LOWER), 'artno' => $artNo],
             \DB\ReturnType::SINGLE_OBJECT
         );
 
@@ -446,7 +446,7 @@ class Redirect
             'png'
         ];
         if (isset($pathInfo['extension']) && strlen($pathInfo['extension']) > 0) {
-            $extension = strtolower($pathInfo['extension']);
+            $extension = mb_convert_case($pathInfo['extension'], MB_CASE_LOWER);
             if (in_array($extension, $invalidExtensions, true)) {
                 return false;
             }

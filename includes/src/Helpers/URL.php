@@ -137,12 +137,12 @@ class URL
 
         $scheme = '';
         if ($this->scheme) {
-            $this->scheme = \strtolower($this->scheme);
+            $this->scheme = \mb_convert_case($this->scheme, MB_CASE_LOWER);
             $scheme       = $this->scheme . '://';
         }
 
         if ($this->host) {
-            $this->host = \strtolower($this->host);
+            $this->host = \mb_convert_case($this->host, MB_CASE_LOWER);
         }
 
         $this->schemeBasedNormalization();

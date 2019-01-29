@@ -24,7 +24,7 @@ if (isset($_POST['path']) && Form::validateToken()) {
             || strpos($path . DIRECTORY_SEPARATOR, PFAD_ROOT . PFAD_PLUGIN) === 0)
     ) {
         $info = pathinfo($path);
-        if (strtolower($info['extension']) === 'md') {
+        if (mb_convert_case($info['extension'], MB_CASE_LOWER) === 'md') {
             $oParseDown       = new Parsedown();
             $szLicenseContent = mb_convert_encoding(
                 $oParseDown->text(StringHandler::convertUTF8(file_get_contents($path))),

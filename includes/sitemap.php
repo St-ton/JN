@@ -88,7 +88,7 @@ function sendRequestFile($cFile)
     $cAbsoluteFile  = PFAD_ROOT . PFAD_EXPORT . basename($cFile);
     $cFileExtension = pathinfo($cAbsoluteFile, PATHINFO_EXTENSION);
 
-    switch (strtolower($cFileExtension)) {
+    switch (mb_convert_case($cFileExtension, MB_CASE_LOWER)) {
         case 'xml':
             $cContentType = 'application/xml';
             break;

@@ -367,7 +367,7 @@ class KategorieListe
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 foreach ($categoryAttributes as $categoryAttribute) {
-                    $id = strtolower($categoryAttribute->cName);
+                    $id = mb_convert_case($categoryAttribute->cName, MB_CASE_LOWER);
                     if ($categoryAttribute->bIstFunktionsAttribut) {
                         $category->categoryFunctionAttributes[$id] = $categoryAttribute->cWert;
                     } else {

@@ -210,7 +210,7 @@ function getGesetzteKundengruppen($link)
 
         return $ret;
     }
-    if (!isset($link->cKundengruppen) || !$link->cKundengruppen || strtolower($link->cKundengruppen) === 'null') {
+    if (!isset($link->cKundengruppen) || !$link->cKundengruppen || mb_convert_case($link->cKundengruppen, MB_CASE_LOWER) === 'null') {
         $ret[0] = true;
 
         return $ret;

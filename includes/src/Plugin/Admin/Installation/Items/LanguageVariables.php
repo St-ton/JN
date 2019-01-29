@@ -70,9 +70,9 @@ class LanguageVariables extends AbstractItem
                     $bVariableStandard   = true;
                 }
 
-                if (isset($languages[\strtolower($localized->cISO)])) {
+                if (isset($languages[\mb_convert_case($localized->cISO, MB_CASE_LOWER)])) {
                     // Resette aktuelle Sprache
-                    unset($languages[\strtolower($localized->cISO)]);
+                    unset($languages[\mb_convert_case($localized->cISO, MB_CASE_LOWER)]);
                     $languages = \array_merge($languages);
                 }
             } elseif (isset($langVar['VariableLocalized'])
@@ -99,8 +99,8 @@ class LanguageVariables extends AbstractItem
                             $bVariableStandard   = true;
                         }
 
-                        if (isset($languages[\strtolower($localized->cISO)])) {
-                            unset($languages[\strtolower($localized->cISO)]);
+                        if (isset($languages[\mb_convert_case($localized->cISO, MB_CASE_LOWER)])) {
+                            unset($languages[\mb_convert_case($localized->cISO, MB_CASE_LOWER)]);
                             $languages = \array_merge($languages);
                         }
                     }

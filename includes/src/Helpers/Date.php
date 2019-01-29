@@ -71,7 +71,7 @@ class Date
     {
         $parts = [];
         if (\strlen($dateString) > 0) {
-            if (\strtolower($dateString) === 'now()') {
+            if (\mb_convert_case($dateString, MB_CASE_LOWER) === 'now()') {
                 $dateString = 'now';
             }
             try {

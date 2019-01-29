@@ -1335,7 +1335,7 @@ class Exportformat
                     ],
                     ReturnType::DEFAULT
                 );
-                $protocol = ((isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) === 'on')
+                $protocol = ((isset($_SERVER['HTTPS']) && mb_convert_case($_SERVER['HTTPS'], MB_CASE_LOWER) === 'on')
                     || Request::checkSSL() === 2)
                     ? 'https://'
                     : 'http://';
@@ -1458,7 +1458,7 @@ class Exportformat
             $validation['cDateiname'] = 2;
         } elseif (strpos(realpath($pathinfo['dirname']), realpath(PFAD_ROOT)) === false) {
             $validation['cDateiname'] = 3;
-        } elseif (!in_array(strtolower($pathinfo['extension']), $extensionWhitelist, true)) {
+        } elseif (!in_array(mb_convert_case($pathinfo['extension'], MB_CASE_LOWER), $extensionWhitelist, true)) {
             $validation['cDateiname'] = 4;
         } else {
             $this->setDateiname($post['cDateiname']);

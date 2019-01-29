@@ -610,7 +610,7 @@ class Kundengruppe
                 (int)$this->id
             );
             foreach ($attributes as $attribute) {
-                $this->Attribute[strtolower($attribute->cName)] = $attribute->cWert;
+                $this->Attribute[mb_convert_case($attribute->cName, MB_CASE_LOWER)] = $attribute->cWert;
             }
         }
 
@@ -649,7 +649,7 @@ class Kundengruppe
                 $kKundengruppe
             );
             foreach ($attributes as $Att) {
-                $attributes[strtolower($Att->cName)] = $Att->cWert;
+                $attributes[mb_convert_case($Att->cName, MB_CASE_LOWER)] = $Att->cWert;
             }
         }
 

@@ -255,7 +255,7 @@ class StringHandler
     {
         $mappings = self::getISOMappings();
         foreach ($mappings as $cISO639 => $cISO) {
-            if (strtolower($cISO) === strtolower($ISO)) {
+            if (mb_convert_case($cISO, MB_CASE_LOWER) === mb_convert_case($ISO, MB_CASE_LOWER)) {
                 return $cISO639;
             }
         }

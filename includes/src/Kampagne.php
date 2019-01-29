@@ -204,8 +204,8 @@ class Kampagne
                 && ((int)$oKampagne->nDynamisch === 1
                     || ((int)$oKampagne->nDynamisch === 0
                         && isset($oKampagne->cWert)
-                        && strtolower($oKampagne->cWert) ===
-                        strtolower(Request::verifyGPDataString($oKampagne->cParameter)))
+                        && mb_convert_case($oKampagne->cWert, MB_CASE_LOWER) ===
+                        mb_convert_case(Request::verifyGPDataString($oKampagne->cParameter), MB_CASE_LOWER))
                 )
             ) {
                 $referrer = Visitor::getReferer();

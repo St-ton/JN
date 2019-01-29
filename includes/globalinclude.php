@@ -72,7 +72,7 @@ $config = Shop::getSettings([CONF_GLOBAL])['global'];
 $lang   = Sprache::getInstance($db, $cache);
 if (PHP_SAPI !== 'cli'
     && $config['kaufabwicklung_ssl_nutzen'] === 'P'
-    && (!isset($_SERVER['HTTPS']) || (strtolower($_SERVER['HTTPS']) !== 'on' && (int)$_SERVER['HTTPS'] !== 1))
+    && (!isset($_SERVER['HTTPS']) || (mb_convert_case($_SERVER['HTTPS'], MB_CASE_LOWER) !== 'on' && (int)$_SERVER['HTTPS'] !== 1))
 ) {
     $https = ((isset($_SERVER['HTTP_X_FORWARDED_HOST']) && $_SERVER['HTTP_X_FORWARDED_HOST'] === 'ssl.webpack.de')
         || (isset($_SERVER['SCRIPT_URI']) && preg_match('/^ssl-id/', $_SERVER['SCRIPT_URI']))

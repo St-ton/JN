@@ -1139,7 +1139,7 @@ class Kupon
      */
     public static function hash(string $strToHash, bool $strtolower = true): string
     {
-        return $strToHash === '' ? '' : hash('sha256', $strtolower ? strtolower($strToHash) : $strToHash);
+        return $strToHash === '' ? '' : hash('sha256', $strtolower ? mb_convert_case($strToHash, MB_CASE_LOWER) : $strToHash);
     }
 
     /**

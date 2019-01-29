@@ -188,7 +188,7 @@ switch (true) {
                     if ($dbname !== null && strcasecmp($dbname, DB_NAME) !== 0) {
                         throw new \Exception(sprintf('Well, at least u tried :)'));
                     }
-                    if (in_array(strtolower($table), $restrictedTables, true)) {
+                    if (in_array(mb_convert_case($table, MB_CASE_LOWER), $restrictedTables, true)) {
                         throw new \Exception(sprintf('Permission denied for table `%s`', $table));
                     }
                 }

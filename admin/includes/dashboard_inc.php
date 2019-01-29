@@ -38,7 +38,10 @@ function getWidgets(bool $bActive = true)
             $className          = '\Widgets\\' . $widget->cClass;
             $classPath          = null;
             $widget->cNiceTitle = str_replace(['--', ' '], '-', $widget->cTitle);
-            $widget->cNiceTitle = strtolower(preg_replace('/[äüöß\(\)\/\\\]/iu', '', $widget->cNiceTitle));
+            $widget->cNiceTitle = mb_convert_case(
+                preg_replace('/[äüöß\(\)\/\\\]/iu', '', $widget->cNiceTitle),
+                MB_CASE_LOWER
+            );
             $plugin             = null;
             if ($widget->kPlugin > 0) {
                 $loader = \Plugin\Helper::getLoader($widget->bExtension === 1, $db, $cache);

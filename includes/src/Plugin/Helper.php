@@ -265,7 +265,10 @@ class Helper
     public static function getModuleIDByPluginID(int $id, string $paymentMethodName): string
     {
         return $id > 0 && \strlen($paymentMethodName) > 0
-            ? 'kPlugin_' . $id . '_' . \strtolower(\str_replace([' ', '-', '_'], '', $paymentMethodName))
+            ? 'kPlugin_' . $id . '_' . \mb_convert_case(
+                \str_replace([' ', '-', '_'], '', $paymentMethodName),
+                MB_CASE_LOWER
+            )
             : '';
     }
 

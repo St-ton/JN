@@ -798,7 +798,11 @@ function injectSubject($Object, $subject)
                         && !is_array($Object->$obj->$member)
                         && !is_object($Object->$obj->$member)
                     ) {
-                        $a[] = '#' . strtolower(substr($obj, 1)) . '.' . strtolower(substr($member, 1)) . '#';
+                        $a[] = '#'
+                            . mb_convert_case(substr($obj, 1), MB_CASE_LOWER)
+                            . '.'
+                            . mb_convert_case(substr($member, 1), MB_CASE_LOWER)
+                            . '#';
                         $b[] = $Object->$obj->$member;
                     }
                 }
@@ -846,7 +850,7 @@ function lokalisiereKunde($sprache, $kunde)
     if (isset($kunde->cLand)) {
         $cISOLand = $kunde->cLand;
         $sel_var  = 'cDeutsch';
-        if (strtolower($sprache->cISO) !== 'ger') {
+        if (mb_convert_case($sprache->cISO, MB_CASE_LOWER) !== 'ger') {
             $sel_var = 'cEnglisch';
         }
         $land = Shop::Container()->getDB()->select(
@@ -878,7 +882,7 @@ function lokalisiereKunde($sprache, $kunde)
  */
 function lokalisiereLieferadresse($oSprache, $oLieferadresse)
 {
-    $langRow = (strtolower($oSprache->cISO) === 'ger') ? 'cDeutsch' : 'cEnglisch';
+    $langRow = (mb_convert_case($oSprache->cISO, MB_CASE_LOWER) === 'ger') ? 'cDeutsch' : 'cEnglisch';
     $land    = Shop::Container()->getDB()->select(
         'tland',
         'cISO',
@@ -999,12 +1003,12 @@ function SendNiceMailReply($FromName, $FromMail, $ReplyAdresse, $To, $Subject, $
     $headers       = '';
 
     if (strpos($To, 'freenet')) {
-        $headers .= 'From: ' . strtolower($FromMail) . $eol;
+        $headers .= 'From: ' . mb_convert_case($FromMail, MB_CASE_LOWER) . $eol;
     } else {
-        $headers .= 'From: ' . $FromName . ' <' . strtolower($FromMail) . '>' . $eol;
+        $headers .= 'From: ' . $FromName . ' <' . mb_convert_case($FromMail, MB_CASE_LOWER) . '>' . $eol;
     }
 
-    $headers .= 'Reply-To: ' . strtolower($ReplyAdresse) . $eol;
+    $headers .= 'Reply-To: ' . mb_convert_case($ReplyAdresse, MB_CASE_LOWER) . $eol;
     $headers .= 'MIME-Version: 1.0' . $eol;
     if (!$Html) {
         $headers .= 'Content-Type: text/plain; charset=' . JTL_CHARSET . $eol;

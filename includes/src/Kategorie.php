@@ -308,9 +308,9 @@ class Kategorie
                     $this->cMetaKeywords = $attribute->cWert;
                 }
                 if ($attribute->bIstFunktionsAttribut) {
-                    $this->categoryFunctionAttributes[strtolower($attribute->cName)] = $attribute->cWert;
+                    $this->categoryFunctionAttributes[mb_convert_case($attribute->cName, MB_CASE_LOWER)] = $attribute->cWert;
                 } else {
-                    $this->categoryAttributes[strtolower($attribute->cName)] = $attribute;
+                    $this->categoryAttributes[mb_convert_case($attribute->cName, MB_CASE_LOWER)] = $attribute;
                 }
             }
         }

@@ -166,7 +166,7 @@ class Request
             $_SERVER['HTTPS'] = 'on';
         }
         // Ist im Server SSL aktiv?
-        if (isset($_SERVER['HTTPS']) && (\strtolower($_SERVER['HTTPS']) === 'on' || $_SERVER['HTTPS'] === '1')) {
+        if (isset($_SERVER['HTTPS']) && (\mb_convert_case($_SERVER['HTTPS'], MB_CASE_LOWER) === 'on' || $_SERVER['HTTPS'] === '1')) {
             if ($cSSLNutzen === 'P') { // SSL durch Einstellung erlaubt?
                 return 2;
             }
@@ -326,7 +326,7 @@ class Request
     {
         return isset($_REQUEST['isAjax'])
             || (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-                && \strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
+                && \mb_convert_case($_SERVER['HTTP_X_REQUESTED_WITH'], MB_CASE_LOWER) === 'xmlhttprequest');
     }
 
     /**

@@ -179,7 +179,7 @@ class VCard
         // Parameter in (key, value) pairs aufteilen
         $params = [];
         foreach ($rawParams as $item) {
-            $params[] = explode('=', strtolower($item));
+            $params[] = explode('=', mb_convert_case($item, MB_CASE_LOWER));
         }
 
         foreach ($params as $index => $param) {
@@ -215,7 +215,7 @@ class VCard
                         $type = array_merge($type, explode(',', $param[1]));
                         break;
                     case 'value':
-                        if (strtolower($param[1]) === 'url') {
+                        if (mb_convert_case($param[1], MB_CASE_LOWER) === 'url') {
                             $result['encoding'] = 'uri';
                         }
                         break;
@@ -264,7 +264,7 @@ class VCard
     {
         [$key, $rawValue] = explode(':', $line, 2);
 
-        $key = strtolower(trim(self::unescape($key)));
+        $key = mb_convert_case(trim(self::unescape($key)), MB_CASE_LOWER);
         if (in_array($key, ['begin', 'end'], true)) {
             // begin und end müssen nicht weiter geparst werden
             return;
@@ -413,7 +413,7 @@ class VCard
      */
     public function __get($property)
     {
-        $property = strtolower($property);
+        $property = mb_convert_case($property, MB_CASE_LOWER);
 
         if ($property === 'mode') {
             return $this->mode;
@@ -492,7 +492,7 @@ class VCard
      */
     public function __isset($property)
     {
-        $property = strtolower($property);
+        $property = mb_convert_case($property, MB_CASE_LOWER);
 
         if ($property === 'mode') {
             return isset($this->mode);

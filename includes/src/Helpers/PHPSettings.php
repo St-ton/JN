@@ -201,7 +201,7 @@ class PHPSettings
         $errno  = null;
         $errstr = null;
         $url    = \parse_url(\trim($url));
-        $scheme = \strtolower($url['scheme']);
+        $scheme = \mb_convert_case($url['scheme'], MB_CASE_LOWER);
         if ($scheme !== 'http' && $scheme !== 'https') {
             return false;
         }

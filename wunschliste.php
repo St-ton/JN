@@ -357,7 +357,7 @@ require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 if (isset($wishlist->kWunschliste) && $wishlist->kWunschliste > 0) {
     $campaign = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
     if (isset($campaign->kKampagne, $campaign->cWert)
-        && strtolower($campaign->cWert) === strtolower(Request::verifyGPDataString($campaign->cParameter))
+        && mb_convert_case($campaign->cWert, MB_CASE_LOWER) === strtolower(Request::verifyGPDataString($campaign->cParameter))
     ) {
         $event               = new stdClass();
         $event->kKampagne    = $campaign->kKampagne;

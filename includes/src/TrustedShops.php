@@ -675,7 +675,7 @@ class TrustedShops
             return 4; // Das Zertifikat ist gesperrt
         }
         if (strlen($returnValue->certificationLanguage) > 0
-            && strtolower($returnValue->certificationLanguage) !== strtolower($cISOSprache)
+            && mb_convert_case($returnValue->certificationLanguage, MB_CASE_LOWER) !== mb_convert_case($cISOSprache, MB_CASE_LOWER)
         ) {
             Shop::Container()->getLogService()->error(
                 "TrustedShops Zertifikat {$cTSID} wurde aufgrund falscher " .

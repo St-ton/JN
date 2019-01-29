@@ -324,8 +324,12 @@ class Frontend extends AbstractSession
                 ? (float)$matches[2]
                 : 1.0;
             while (\count($codes)) {
-                if ($langQuality > $quality && \in_array(\strtolower(\implode('-', $codes)), $allowed, true)) {
-                    $current = \strtolower(\implode('-', $codes));
+                if ($langQuality > $quality && \in_array(\mb_convert_case(
+                    \implode('-', $codes),
+                    MB_CASE_LOWER
+                ), $allowed, true)
+                ) {
+                    $current = \mb_convert_case(\implode('-', $codes), MB_CASE_LOWER);
                     $quality = $langQuality;
                     break;
                 }

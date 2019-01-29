@@ -402,7 +402,7 @@ class NiceDB implements DbInterface
             } elseif ($_val === null) {
                 $_val = '';
             }
-            if (\strtolower($_val) === 'now()') {
+            if (\mb_convert_case($_val, MB_CASE_LOWER) === 'now()') {
                 $values[] = $_val;
             } else {
                 $values[]             = ':' . $_key;
@@ -481,7 +481,7 @@ class NiceDB implements DbInterface
                     $columns .= $property . ', ';
                     if ($object->$property === '_DBNULL_') {
                         $values .= 'null' . ', ';
-                    } elseif (\strtolower($object->$property) === 'now()') {
+                    } elseif (\mb_convert_case($object->$property, MB_CASE_LOWER) === 'now()') {
                         $values .= $object->$property . ', ';
                     } else {
                         $values .= $this->pdo->quote($object->$property) . ', ';
@@ -544,7 +544,7 @@ class NiceDB implements DbInterface
             } elseif ($_val === null) {
                 $_val = '';
             }
-            if (\strtolower($_val) === 'now()') {
+            if (\mb_convert_case($_val, MB_CASE_LOWER) === 'now()') {
                 $updates[] = $_key . '=' . $_val;
             } else {
                 $updates[] = $_key . '=?';

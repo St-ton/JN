@@ -207,7 +207,7 @@ class Visitor
      */
     public static function getBrowser(): string
     {
-        $agent  = strtolower($_SERVER['HTTP_USER_AGENT'] ?? '');
+        $agent  = mb_convert_case($_SERVER['HTTP_USER_AGENT'] ?? '', MB_CASE_LOWER);
         $mobile = '';
         if (stripos($agent, 'iphone') !== false
             || stripos($agent, 'ipad') !== false
@@ -254,7 +254,7 @@ class Visitor
             return '';
         }
 
-        return StringHandler::filterXSS(strtolower(explode('/', $_SERVER['HTTP_REFERER'])[2]));
+        return StringHandler::filterXSS(mb_convert_case(explode('/', $_SERVER['HTTP_REFERER'])[2], MB_CASE_LOWER));
     }
 
     /**
@@ -264,7 +264,7 @@ class Visitor
      */
     public static function getBot(): string
     {
-        $agent = strtolower($_SERVER['HTTP_USER_AGENT']);
+        $agent = mb_convert_case($_SERVER['HTTP_USER_AGENT'], MB_CASE_LOWER);
         if (strpos($agent, 'googlebot') !== false) {
             return 'Google';
         }

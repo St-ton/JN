@@ -342,8 +342,8 @@ class Pagination
             // Sort array if exists
             if (\is_array($this->items)) {
                 \usort($this->items, function ($a, $b) use ($cSortBy, $nSortFac) {
-                    $valueA = \is_string($a->$cSortBy) ? \strtolower($a->$cSortBy) : $a->$cSortBy;
-                    $valueB = \is_string($b->$cSortBy) ? \strtolower($b->$cSortBy) : $b->$cSortBy;
+                    $valueA = \is_string($a->$cSortBy) ? \mb_convert_case($a->$cSortBy, MB_CASE_LOWER) : $a->$cSortBy;
+                    $valueB = \is_string($b->$cSortBy) ? \mb_convert_case($b->$cSortBy, MB_CASE_LOWER) : $b->$cSortBy;
 
                     return $valueA == $valueB ? 0 : ($valueA < $valueB ? -$nSortFac : +$nSortFac);
                 });

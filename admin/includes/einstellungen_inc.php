@@ -72,7 +72,7 @@ function bearbeiteEinstellungsSuche($cSuche, $bSpeichern = false)
                 $oSQL->cSearch    = 'Suche nach ID: ' . $cSuche;
                 $oSQL->cWHERE    .= " AND kEinstellungenConf = '" . (int)$cSuche . "'";
             } else {
-                $cSuche    = strtolower($cSuche);
+                $cSuche    = mb_convert_case($cSuche, MB_CASE_LOWER);
                 $cSucheEnt = StringHandler::htmlentities($cSuche); // HTML Entities
 
                 $oSQL->nSuchModus = 4;

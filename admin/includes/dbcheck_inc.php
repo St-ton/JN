@@ -394,7 +394,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
     $result       = new stdClass();
     $db           = Shop::Container()->getDB();
 
-    switch (strtolower($status)) {
+    switch (mb_convert_case($status, MB_CASE_LOWER)) {
         case 'start':
             $shopTables = array_keys(getDBFileStruct());
             $oTable     = DBMigrationHelper::getNextTableNeedMigration($exclude);

@@ -146,7 +146,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
         }
         foreach ($Suchanfragen as $sucheanfrage) {
             if (!isset($_POST['mapping_' . $sucheanfrage->kSuchanfrage])
-                || strtolower($sucheanfrage->cSuche) !== strtolower($_POST['mapping_' . $sucheanfrage->kSuchanfrage])
+                || mb_convert_case($sucheanfrage->cSuche, MB_CASE_LOWER) !== mb_convert_case($_POST['mapping_' . $sucheanfrage->kSuchanfrage], MB_CASE_LOWER)
             ) {
                 if (!empty($_POST['mapping_' . $sucheanfrage->kSuchanfrage])) {
                     $nMappingVorhanden                      = 1;
@@ -210,7 +210,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                     $query = $db->select('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage);
 
                     if ($query->kSuchanfrage > 0) {
-                        if (strtolower($query->cSuche) !== strtolower($cMapping)) {
+                        if (mb_convert_case($query->cSuche, MB_CASE_LOWER) !== mb_convert_case($cMapping, MB_CASE_LOWER)) {
                             $oSuchanfrageNeu = $db->select('tsuchanfrage', 'cSuche', $cMapping);
                             if (isset($oSuchanfrageNeu->kSuchanfrage) && $oSuchanfrageNeu->kSuchanfrage > 0) {
                                 $queryMapping                 = new stdClass();
@@ -311,7 +311,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
         foreach ($Suchanfragenerfolglos as $Suchanfrageerfolglos) {
             $idx = 'mapping_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos;
             if (isset($_POST[$idx]) && strlen($_POST[$idx]) > 0) {
-                if (strtolower($Suchanfrageerfolglos->cSuche) !== strtolower($_POST[$idx])) {
+                if (mb_convert_case($Suchanfrageerfolglos->cSuche, MB_CASE_LOWER) !== mb_convert_case($_POST[$idx], MB_CASE_LOWER)) {
                     $suchanfragemapping_obj                 = new stdClass();
                     $suchanfragemapping_obj->kSprache       = $_SESSION['kSprache'];
                     $suchanfragemapping_obj->cSuche         = $Suchanfrageerfolglos->cSuche;

@@ -84,7 +84,7 @@ class DBMigrationHelper
                 \DB\ReturnType::SINGLE_OBJECT
             )->Value;
             $versionInfo->innodb->size    = $innodbSize;
-            $versionInfo->collation_utf8  = $utf8Support && strtolower($utf8Support->IS_COMPILED) === 'yes';
+            $versionInfo->collation_utf8  = $utf8Support && mb_convert_case($utf8Support->IS_COMPILED, MB_CASE_LOWER) === 'yes';
         }
 
         return $versionInfo;

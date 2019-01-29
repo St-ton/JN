@@ -1458,7 +1458,7 @@ class Artikel
                 'kArtikelAttribut'
             );
             foreach ($ArtikelAttribute as $att) {
-                $this->FunktionsAttribute[strtolower($att->cName)] = $att->cWert;
+                $this->FunktionsAttribute[mb_convert_case($att->cName, MB_CASE_LOWER)] = $att->cWert;
             }
         }
 
@@ -1511,7 +1511,7 @@ class Artikel
             if ($attribute->cName && $attribute->cWert) {
                 $this->AttributeAssoc[$attribute->cName] = $attribute->cWert;
             }
-            if (!$this->filterAttribut(strtolower($attribute->cName))) {
+            if (!$this->filterAttribut(mb_convert_case($attribute->cName, MB_CASE_LOWER))) {
                 $this->Attribute[] = $attribute;
             }
         }
@@ -1883,7 +1883,7 @@ class Artikel
         }
         if (stripos($attributeName, 'T') === 0) {
             for ($i = 1; $i < 11; $i++) {
-                $stl = strtolower($attributeName);
+                $stl = mb_convert_case($attributeName, MB_CASE_LOWER);
                 if ($stl === 'tab' . $i . ' name' || $stl === 'tab' . $i . ' inhalt') {
                     return true;
                 }
@@ -6861,7 +6861,7 @@ class Artikel
         $optStr = preg_replace('/[^\\pL\d_]+/u', '-', $optStr);
         $optStr = trim($optStr, '-');
         $optStr = transliterator_transliterate('Latin-ASCII;', $optStr);
-        $optStr = strtolower($optStr);
+        $optStr = mb_convert_case($optStr, MB_CASE_LOWER);
         $optStr = preg_replace('/[^-a-z0-9_]+/', '', $optStr);
 
         return $optStr;

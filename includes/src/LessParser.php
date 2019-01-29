@@ -109,7 +109,7 @@ class LessParser
     {
         $matches = [];
 
-        switch (strtolower($type)) {
+        switch (mb_convert_case($type, MB_CASE_LOWER)) {
             case 'color':
                 // rgb(255,255,255)
                 if (preg_match('/rgb(\s*)\(([\d\s]+),([\d\s]+),([\d\s]+)\)/', $value, $matches)) {

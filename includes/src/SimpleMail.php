@@ -483,7 +483,7 @@ class SimpleMail
      */
     public static function checkBlacklist(?string $mail): bool
     {
-        $mail = strtolower(StringHandler::filterXSS($mail));
+        $mail = mb_convert_case(StringHandler::filterXSS($mail), MB_CASE_LOWER);
         if (StringHandler::filterEmailAddress($mail) === false) {
             return true;
         }
@@ -516,7 +516,7 @@ class SimpleMail
 
                     return true;
                 }
-            } elseif (strtolower($item->cEmail) === strtolower($mail)) {
+            } elseif (mb_convert_case($item->cEmail, MB_CASE_LOWER) === mb_convert_case($mail, MB_CASE_LOWER)) {
                 // Email schonmal geblockt worden?
                 $block = Shop::Container()->getDB()->select('temailblacklistblock', 'cEmail', $mail);
 

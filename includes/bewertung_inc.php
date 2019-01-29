@@ -20,7 +20,7 @@ function speicherBewertung(int $productID, int $customerID, int $langID, $title,
     $article = new Artikel();
     $article->fuelleArtikel($productID, Artikel::getDefaultOptions());
     $url = !empty($article->cURLFull)
-        ? (strpos($article->cURLFull, '?') === false ? $article->cURLFull . '?' : $article->cURLFull . '&')
+        ? (mb_strpos($article->cURLFull, '?') === false ? $article->cURLFull . '?' : $article->cURLFull . '&')
         : (Shop::getURL() . '/?a=' . $productID . '&');
     if ($customerID <= 0 || $conf['bewertung']['bewertung_anzeigen'] !== 'Y') {
         header('Location: ' . $url . 'cFehler=f04', true, 303);

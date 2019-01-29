@@ -29,7 +29,7 @@ switch ($action) {
         for ($i = 0; $i < $count; $i++) {
             $slide  = new Slide();
             $aSlide = $_REQUEST['aSlide'][$aSlideKey[$i]];
-            if (strpos($aSlideKey[$i], 'neu') === false) {
+            if (mb_strpos($aSlideKey[$i], 'neu') === false) {
                 $slide->setID((int)$aSlideKey[$i]);
             }
 

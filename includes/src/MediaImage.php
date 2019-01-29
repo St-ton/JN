@@ -504,7 +504,7 @@ class MediaImage implements IMedia
         if (!is_string($request) || strlen($request) === 0) {
             return null;
         }
-        if (strpos($request, '/') === 0) {
+        if (mb_strpos($request, '/') === 0) {
             $request = substr($request, 1);
         }
 

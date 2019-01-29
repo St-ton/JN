@@ -1094,7 +1094,7 @@ class Sprache
                     executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_SETZESPRACHEUNDWAEHRUNG_SPRACHE);
                 } elseif ($page !== null) {
                     $lang->cURL = $page->getURL($lang->kSprache);
-                    if (strpos($lang->cURL, '/?s=') !== false) {
+                    if (mb_strpos($lang->cURL, '/?s=') !== false) {
                         $lang->cURL     .= '&amp;lang=' . $lang->cISO;
                         $lang->cURLFull = rtrim($shopURL, '/') . $lang->cURL;
                     } else {
@@ -1106,7 +1106,7 @@ class Sprache
                     $url = $productFilter->getFilterURL()->getURL($oZusatzFilter);
                     $productFilter->getFilterConfig()->setLanguageID($originalLanguage);
                     if ($productFilter->getPage() > 1) {
-                        if (strpos($url, 'navi.php') !== false) {
+                        if (mb_strpos($url, 'navi.php') !== false) {
                             $url .= '&amp;seite=' . $productFilter->getPage();
                         } else {
                             $url .= SEP_SEITE . $productFilter->getPage();
@@ -1151,10 +1151,10 @@ class Sprache
                     $url = $productFilter->getFilterURL()->getURL($oZusatzFilter);
                 }
                 if ($currency->getID() !== $currentCurrencyCode) {
-                    $url = $url . (strpos($url, '?') === false ? '?' : '&') . 'curr=' . $currency->getCode();
+                    $url = $url . (mb_strpos($url, '?') === false ? '?' : '&') . 'curr=' . $currency->getCode();
                 }
                 $currency->setURL($url);
-                $currency->setURLFull(strpos($url, Shop::getURL()) === false
+                $currency->setURLFull(mb_strpos($url, Shop::getURL()) === false
                     ? ($shopURL . $url)
                     : $url);
             }

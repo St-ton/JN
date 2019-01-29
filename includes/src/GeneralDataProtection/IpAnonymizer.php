@@ -116,7 +116,7 @@ class IpAnonymizer
      */
     private function init(): void
     {
-        if ($this->ip === '' || \strpos($this->ip, '*') !== false) {
+        if ($this->ip === '' || \mb_strpos($this->ip, '*') !== false) {
             // if there is an old fashioned anonymization or
             // an empty string, we do nothing (but set a flag)
             $this->oldFashionedAnon = true;
@@ -125,7 +125,7 @@ class IpAnonymizer
         }
         // any ':' means, we got an IPv6-address
         // ("::127.0.0.1" or "::ffff:127.0.0.3" is valid too!)
-        if (\strpos($this->ip, ':') !== false) {
+        if (\mb_strpos($this->ip, ':') !== false) {
             $this->rawIp = @\inet_pton($this->ip);
         } else {
             $this->rawIp = @\inet_pton($this->rmLeadingZero($this->ip));
@@ -187,8 +187,8 @@ class IpAnonymizer
             return $this->ip;
         }
         $readableIP = \inet_ntop(\inet_pton($this->ipMask) & $this->rawIp);
-        if ($this->beautifyFlag === true && \strpos($readableIP, '::') !== false) {
-            $colonPos      = \strpos($readableIP, '::');
+        if ($this->beautifyFlag === true && \mb_strpos($readableIP, '::') !== false) {
+            $colonPos      = \mb_strpos($readableIP, '::');
             $strEnd        = \strlen($readableIP) - 2;
             $blockCount    = \count(
                 \preg_split('/:/', \str_replace('::', ':', $readableIP), -1, \PREG_SPLIT_NO_EMPTY)
@@ -282,7 +282,7 @@ class IpAnonymizer
     private function rmLeadingZero(string $szIpString): string
     {
         $ipParts = \preg_split('/[\.:]/', $szIpString);
-        $glue    = \strpos($szIpString, '.') !== false ? '.' : ':';
+        $glue    = \mb_strpos($szIpString, '.') !== false ? '.' : ':';
 
         return \implode($glue, \array_map(function ($e) {
             return (int)$e;

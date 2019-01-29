@@ -202,7 +202,7 @@ function pruefeLieferdaten($post, &$fehlendeAngaben = null): void
         && $_SESSION['Lieferadresse']
         && $_SESSION['Versandart']
     ) {
-        $delVersand = stripos($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand) === false;
+        $delVersand = mb_stripos($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand) === false;
         //ist die plz im zuschlagsbereich?
         $plz_x = Shop::Container()->getDB()->executeQueryPrepared(
             'SELECT kVersandzuschlagPlz
@@ -1372,7 +1372,7 @@ function zahlungsartKorrekt(int $paymentMethodID): int
             }
             $paymentMethod->ZahlungsInfo = $info;
         }
-        if (isset($paymentMethod) && strpos($paymentMethod->cModulId, 'za_billpay') === 0 && $paymentMethod) {
+        if (isset($paymentMethod) && mb_strpos($paymentMethod->cModulId, 'za_billpay') === 0 && $paymentMethod) {
             /** @var Billpay $paymentMethod */
             return $paymentMethod->preauthRequest() ? 2 : 1;
         }
@@ -2124,7 +2124,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         $ret['email'] = 3;
     } elseif (isset($conf['kunden']['kundenregistrierung_pruefen_email'])
         && $conf['kunden']['kundenregistrierung_pruefen_email'] === 'Y'
-        && !checkdnsrr(substr($data['email'], strpos($data['email'], '@') + 1))
+        && !checkdnsrr(substr($data['email'], mb_strpos($data['email'], '@') + 1))
     ) {
         $ret['email'] = 4;
     }
@@ -2755,7 +2755,7 @@ function guthabenMoeglich(): bool
 {
     return (\Session\Frontend::getCustomer()->fGuthaben > 0
             && (empty($_SESSION['Bestellung']->GuthabenNutzen) || !$_SESSION['Bestellung']->GuthabenNutzen))
-        && strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') !== 0;
+        && mb_strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') !== 0;
 }
 
 /**
@@ -3309,7 +3309,7 @@ function plausiLieferadresse(array $post): array
     Tax::setTaxRates();
     //lieferland hat sich geändert und versandart schon gewählt?
     if ($_SESSION['Lieferadresse'] && $_SESSION['Versandart']) {
-        $delVersand = (stripos($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand) === false);
+        $delVersand = (mb_stripos($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand) === false);
         //ist die plz im zuschlagsbereich?
         $plzData = Shop::Container()->getDB()->executeQueryPrepared(
             'SELECT kVersandzuschlagPlz

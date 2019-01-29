@@ -43,9 +43,9 @@ final class CompareList extends AbstractBox
                 $requestURI = \LinkHelper::getInstance()->getStaticRoute('vergleichsliste.php');
             }
             foreach ($productList as $_prod) {
-                $nPosAnd   = \strrpos($requestURI, '&');
-                $nPosQuest = \strrpos($requestURI, '?');
-                $nPosWD    = \strpos($requestURI, 'vlplo=');
+                $nPosAnd   = \mb_strrpos($requestURI, '&');
+                $nPosQuest = \mb_strrpos($requestURI, '?');
+                $nPosWD    = \mb_strpos($requestURI, 'vlplo=');
 
                 if ($nPosWD) {
                     $requestURI = \substr($requestURI, 0, $nPosWD);

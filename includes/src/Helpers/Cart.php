@@ -1422,7 +1422,7 @@ class Cart
                 return false;
             }
             if ($nWeiterleitung === 0) {
-                $con = (\strpos($Artikel->cURLFull, '?') === false) ? '?' : '&';
+                $con = (\mb_strpos($Artikel->cURLFull, '?') === false) ? '?' : '&';
                 if ($Artikel->kEigenschaftKombi > 0) {
                     $url = empty($Artikel->cURLFull)
                         ? (Shop::getURL() . '/?a=' . $Artikel->kVaterArtikel .

@@ -244,7 +244,7 @@ class Kampagne
 
             if (!$bKampagnenHit
                 && isset($_SERVER['HTTP_REFERER'])
-                && strpos($_SERVER['HTTP_REFERER'], '.google.') !== false
+                && mb_strpos($_SERVER['HTTP_REFERER'], '.google.') !== false
             ) {
                 // Besucher kommt von Google und hat vorher keine Kampagne getroffen
                 $oVorgang = Shop::Container()->getDB()->select(

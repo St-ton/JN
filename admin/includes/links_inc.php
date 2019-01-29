@@ -45,7 +45,7 @@ function gibLetzteBildNummer($kLink)
     }
     $nMax = 0;
     foreach ($cBild_arr as $image) {
-        $cNummer = substr($image, 4, (strlen($image) - strpos($image, '.')) - 3);
+        $cNummer = substr($image, 4, (strlen($image) - mb_strpos($image, '.')) - 3);
         if ($cNummer > $nMax) {
             $nMax = $cNummer;
         }
@@ -71,7 +71,7 @@ function parseText($cText, $kLink)
                 $nBild             = (int)substr(
                     str_replace('Bild', '', $Datei),
                     0,
-                    strpos(str_replace('Bild', '', $Datei), '.')
+                    mb_strpos(str_replace('Bild', '', $Datei), '.')
                 );
                 $cBild_arr[$nBild] = $Datei;
                 $nSort_arr[]       = $nBild;

@@ -910,12 +910,12 @@ class Wunschliste
             $nZuviel = count($recipients) - (int)$conf['global']['global_wunschliste_max_email'];
             $msg    .= '<br />';
 
-            if (strpos($msg, Shop::Lang()->get('novalidEmail', 'messages')) === false) {
+            if (mb_strpos($msg, Shop::Lang()->get('novalidEmail', 'messages')) === false) {
                 $msg = Shop::Lang()->get('novalidEmail', 'messages');
             }
 
             for ($i = 0; $i < $nZuviel; $i++) {
-                if (strpos($msg, $recipients[(count($recipients) - 1) - $i]) === false) {
+                if (mb_strpos($msg, $recipients[(count($recipients) - 1) - $i]) === false) {
                     if ($i > 0) {
                         $msg .= ', ' . $recipients[(count($recipients) - 1) - $i];
                     } else {

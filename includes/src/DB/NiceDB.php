@@ -261,7 +261,7 @@ class NiceDB implements DbInterface
                 }
                 if (isset($_bt['file'])
                     && !($_bt['class'] === __CLASS__ && $_bt['function'] === '__call')
-                    && \strpos($_bt['file'], 'class.core.NiceDB.php') === false
+                    && \mb_strpos($_bt['file'], 'class.core.NiceDB.php') === false
                 ) {
                     $strippedBacktrace[] = [
                         'file'     => $_bt['file'],
@@ -448,7 +448,7 @@ class NiceDB implements DbInterface
             return 0;
         }
         $id = $this->pdo->lastInsertId();
-        if (($this->debug === true || $this->collectData === true) && \strpos($tableName, 'tprofiler') !== 0) {
+        if (($this->debug === true || $this->collectData === true) && \mb_strpos($tableName, 'tprofiler') !== 0) {
             $end       = \microtime(true);
             $backtrace = null;
             if ($this->debugLevel > 2) {
@@ -606,7 +606,7 @@ class NiceDB implements DbInterface
             $ret = $s->rowCount();
         }
 
-        if (($this->debug === true || $this->collectData === true) && \strpos($tableName, 'tprofiler') !== 0) {
+        if (($this->debug === true || $this->collectData === true) && \mb_strpos($tableName, 'tprofiler') !== 0) {
             $end       = \microtime(true);
             $backtrace = null;
             if ($this->debugLevel > 2) {

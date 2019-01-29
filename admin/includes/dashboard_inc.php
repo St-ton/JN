@@ -165,7 +165,7 @@ function getRemoteDataIO($url, $dataName, $tpl, $wrapperID, $post = null, $callb
         $cData = Request::http_get_contents($url, 15, $post);
     }
 
-    if (strpos($cData, '<?xml') === 0) {
+    if (mb_strpos($cData, '<?xml') === 0) {
         $data = simplexml_load_string($cData);
     } else {
         $data = json_decode($cData);

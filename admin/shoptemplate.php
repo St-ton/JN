@@ -91,7 +91,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
         $name    = Shop::Container()->getDB()->escape($_POST['cName'][$i]);
         $value   = Shop::Container()->getDB()->escape($_POST['cWert'][$i]);
         // for uploads, the value of an input field is the $_FILES index of the uploaded file
-        if (strpos($value, 'upload-') === 0) {
+        if (mb_strpos($value, 'upload-') === 0) {
             // all upload fields have to start with "upload-" - so check for that
             if (!empty($_FILES[$value]['name']) && $_FILES[$value]['error'] === UPLOAD_ERR_OK) {
                 // we have an upload field and the file is set in $_FILES array
@@ -114,7 +114,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
                             $value = $_setting->rawAttributes['targetFileName'];
                         }
                         $targetFile = $base . $value;
-                        if (strpos($targetFile, $base) !== 0
+                        if (mb_strpos($targetFile, $base) !== 0
                             || !move_uploaded_file($file['tmp_name'], $targetFile)
                         ) {
                             $uploadError = '&uploadError=true';

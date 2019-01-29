@@ -49,7 +49,7 @@ class DBMigrationHelper
             );
             $innodbSize    = 'auto';
 
-            if ($innodbPath && stripos($innodbPath->path, 'autoextend') === false) {
+            if ($innodbPath && mb_stripos($innodbPath->path, 'autoextend') === false) {
                 $innodbSize = 0;
                 $paths      = explode(';', $innodbPath->path);
                 foreach ($paths as $path) {
@@ -244,7 +244,7 @@ class DBMigrationHelper
         if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
             $oTable = self::getTable($cTable);
 
-            return strpos($oTable->TABLE_COMMENT, ':Migrating') !== false;
+            return mb_strpos($oTable->TABLE_COMMENT, ':Migrating') !== false;
         }
 
         $tableStatus = Shop::Container()->getDB()->queryPrepared(

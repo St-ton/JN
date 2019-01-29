@@ -220,7 +220,7 @@ class Frontend extends AbstractSession
         foreach ($_SESSION['Sprachen'] as $lang) {
             if (\defined('URL_SHOP_' . \mb_convert_case($lang->cISO, MB_CASE_UPPER))) {
                 $shopLangURL = \constant('URL_SHOP_' . \mb_convert_case($lang->cISO, MB_CASE_UPPER));
-                if (\strpos($shopLangURL, $_SERVER['HTTP_HOST']) !== false) {
+                if (\mb_strpos($shopLangURL, $_SERVER['HTTP_HOST']) !== false) {
                     $_SESSION['kSprache']    = $lang->kSprache;
                     $_SESSION['cISOSprache'] = \trim($lang->cISO);
                     \Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
@@ -285,7 +285,7 @@ class Frontend extends AbstractSession
                 // Positionen Array in der Wunschliste neu nummerieren
                 $_SESSION['Vergleichsliste']->oArtikel_arr = \array_merge($_SESSION['Vergleichsliste']->oArtikel_arr);
             }
-            if (!isset($_SERVER['REQUEST_URI']) || \strpos($_SERVER['REQUEST_URI'], 'index.php') !== false) {
+            if (!isset($_SERVER['REQUEST_URI']) || \mb_strpos($_SERVER['REQUEST_URI'], 'index.php') !== false) {
                 \http_response_code(301);
                 \header('Location: ' . \Shop::getURL() . '/');
                 exit;

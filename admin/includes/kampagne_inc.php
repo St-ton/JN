@@ -1523,10 +1523,10 @@ function PrepareLineChartKamp($Stats, $Type)
         $chart->setActive(true);
         $data = [];
         foreach ($Stats as $Date => $Dates) {
-            if (strpos($Date, 'Gesamt') === false) {
+            if (mb_strpos($Date, 'Gesamt') === false) {
                 $x = '';
                 foreach ($Dates as $Key => $Stat) {
-                    if (strpos($Key, 'cDatum') !== false) {
+                    if (mb_strpos($Key, 'cDatum') !== false) {
                         $x = $Dates[$Key];
                     }
 

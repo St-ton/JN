@@ -181,19 +181,19 @@ class Slide
         if (!empty($this->image)) {
             $cShopUrl  = parse_url(Shop::getURL(), PHP_URL_PATH);
             $cShopUrl2 = parse_url(URL_SHOP, PHP_URL_PATH);
-            if (strrpos($cShopUrl, '/') !== (strlen($cShopUrl) - 1)) {
+            if (mb_strrpos($cShopUrl, '/') !== (strlen($cShopUrl) - 1)) {
                 $cShopUrl .= '/';
             }
-            if (strrpos($cShopUrl2, '/') !== (strlen($cShopUrl2) - 1)) {
+            if (mb_strrpos($cShopUrl2, '/') !== (strlen($cShopUrl2) - 1)) {
                 $cShopUrl2 .= '/';
             }
             $cPfad  = $cShopUrl . PFAD_MEDIAFILES;
             $cPfad2 = $cShopUrl2 . PFAD_MEDIAFILES;
-            if (strpos($this->image, $cPfad) !== false) {
+            if (mb_strpos($this->image, $cPfad) !== false) {
                 $nStrLength      = strlen($cPfad);
                 $this->image     = substr($this->image, $nStrLength);
                 $this->thumbnail = '.thumbs/' . $this->image;
-            } elseif (strpos($this->image, $cPfad2) !== false) {
+            } elseif (mb_strpos($this->image, $cPfad2) !== false) {
                 $nStrLength      = strlen($cPfad2);
                 $this->image     = substr($this->image, $nStrLength);
                 $this->thumbnail = '.thumbs/' . $this->image;

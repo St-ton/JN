@@ -142,8 +142,8 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && Form::validate
                     $cUploadDatei = $cUploadVerzeichnis . $kLink . '/Bild' . ($i + 1) . '.' .
                         substr(
                             $type,
-                            strpos($type, '/') + 1,
-                            strlen($type) - strpos($type, '/') + 1
+                            mb_strpos($type, '/') + 1,
+                            strlen($type) - mb_strpos($type, '/') + 1
                         );
                     move_uploaded_file($_FILES['Bilder']['tmp_name'][$i - $nZaehler], $cUploadDatei);
                 }
@@ -193,14 +193,14 @@ if ($continue
                     120
                 );
                 $oDatei            = new stdClass();
-                $oDatei->cName     = substr($Datei, 0, strpos($Datei, '.'));
+                $oDatei->cName     = substr($Datei, 0, mb_strpos($Datei, '.'));
                 $oDatei->cNameFull = $Datei;
                 $oDatei->cURL      = '<img class="link_image" src="' .
                     $shopURL . PFAD_BILDER . PFAD_LINKBILDER . $link->getID() . '/' . $Datei . '" />';
                 $oDatei->nBild     = (int)substr(
                     str_replace('Bild', '', $Datei),
                     0,
-                    strpos(str_replace('Bild', '', $Datei), '.')
+                    mb_strpos(str_replace('Bild', '', $Datei), '.')
                 );
                 $cDatei_arr[]      = $oDatei;
             }

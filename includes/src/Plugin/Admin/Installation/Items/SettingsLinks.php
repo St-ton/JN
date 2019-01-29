@@ -162,7 +162,7 @@ class SettingsLinks extends AbstractItem
                                     if (isset($hits6[0]) && \strlen($hits6[0]) === \strlen($y)) {
                                         $cWert = $option['value'];
                                         $sort  = $option['sort'];
-                                        $yx    = \substr($y, 0, \strpos($y, ' '));
+                                        $yx    = \substr($y, 0, \mb_strpos($y, ' '));
                                         $cName = $optNode['Option'][$yx];
 
                                         $plgnConfValues                           = new \stdClass();
@@ -194,7 +194,7 @@ class SettingsLinks extends AbstractItem
                                     if (isset($hits6[0]) && \strlen($hits6[0]) === \strlen($y)) {
                                         $cWert = $option['value'];
                                         $sort  = $option['sort'];
-                                        $yx    = \substr($y, 0, \strpos($y, ' '));
+                                        $yx    = \substr($y, 0, \mb_strpos($y, ' '));
                                         $cName = $optNode['Option'][$yx];
 
                                         $plgnConfValues                           = new \stdClass();

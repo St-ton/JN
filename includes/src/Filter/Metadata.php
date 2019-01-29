@@ -543,7 +543,7 @@ class Metadata implements MetadataInterface
                     $products[$i]->cName,
                     $excludedKeywords
                 ); // Filter nicht erlaubte Keywords
-                if (\strpos($extProductName, ' ') !== false) {
+                if (\mb_strpos($extProductName, ' ') !== false) {
                     // Wenn der Dateiname aus mehreren Wörtern besteht
                     $subName = '';
                     foreach (\explode(' ', $extProductName) as $j => $tmp) {
@@ -900,7 +900,7 @@ class Metadata implements MetadataInterface
             }
         }
         $naviURL  = $this->productFilter->getFilterURL()->getURL();
-        $naviURL .= \strpos($naviURL, '?') === false ? '?ed=' : '&amp;ed=';
+        $naviURL .= \mb_strpos($naviURL, '?') === false ? '?ed=' : '&amp;ed=';
 
         $extendedView->cURL_arr[\ERWDARSTELLUNG_ANSICHT_LISTE]   = $naviURL . \ERWDARSTELLUNG_ANSICHT_LISTE;
         $extendedView->cURL_arr[\ERWDARSTELLUNG_ANSICHT_GALERIE] = $naviURL . \ERWDARSTELLUNG_ANSICHT_GALERIE;

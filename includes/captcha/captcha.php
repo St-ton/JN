@@ -91,7 +91,7 @@ function erstelleCaptcha($font, $text, $sec)
 $fonts  = [];
 $folder = dir('ttf/');
 while ($font = $folder->read()) {
-    if (stripos($font, '.ttf') !== false) {
+    if (mb_stripos($font, '.ttf') !== false) {
         $fonts[] = $font;
     }
 }

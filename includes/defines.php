@@ -268,7 +268,7 @@ function shop_writeable_paths()
     global $shop_writeable_paths;
 
     return array_map(function ($v) {
-        if (strpos($v, PFAD_ROOT) === 0) {
+        if (mb_strpos($v, PFAD_ROOT) === 0) {
             $v = substr($v, strlen(PFAD_ROOT));
         }
 

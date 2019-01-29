@@ -857,7 +857,7 @@ class BaseSearchQuery extends AbstractFilter
         $query_stripped = \stripslashes($query);
         if ($query_stripped{0} !== '"' || $query_stripped{\strlen($query_stripped) - 1} !== '"') {
             foreach ($parts as $i => $searchString) {
-                if (\strpos($searchString, '+') !== false) {
+                if (\mb_strpos($searchString, '+') !== false) {
                     $searchPart = \explode('+', $searchString);
                     foreach ($searchPart as $part) {
                         $part = \trim($part);
@@ -965,24 +965,24 @@ class BaseSearchQuery extends AbstractFilter
         if (\is_array($searchCols) && \count($searchCols) > 0) {
             foreach ($searchCols as $columns) {
                 // Klasse 1: Artikelname und Artikel SEO
-                if (\strpos($columns, 'cName') !== false
-                    || \strpos($columns, 'cSeo') !== false
-                    || \strpos($columns, 'cSuchbegriffe') !== false
+                if (\mb_strpos($columns, 'cName') !== false
+                    || \mb_strpos($columns, 'cSeo') !== false
+                    || \mb_strpos($columns, 'cSuchbegriffe') !== false
                 ) {
                     $result[1][] = $columns;
                 }
                 // Klasse 2: Artikelname und Artikel SEO
-                if (\strpos($columns, 'cKurzBeschreibung') !== false
-                    || \strpos($columns, 'cBeschreibung') !== false
-                    || \strpos($columns, 'cAnmerkung') !== false
+                if (\mb_strpos($columns, 'cKurzBeschreibung') !== false
+                    || \mb_strpos($columns, 'cBeschreibung') !== false
+                    || \mb_strpos($columns, 'cAnmerkung') !== false
                 ) {
                     $result[2][] = $columns;
                 }
                 // Klasse 3: Artikelname und Artikel SEO
-                if (\strpos($columns, 'cArtNr') !== false
-                    || \strpos($columns, 'cBarcode') !== false
-                    || \strpos($columns, 'cISBN') !== false
-                    || \strpos($columns, 'cHAN') !== false
+                if (\mb_strpos($columns, 'cArtNr') !== false
+                    || \mb_strpos($columns, 'cBarcode') !== false
+                    || \mb_strpos($columns, 'cISBN') !== false
+                    || \mb_strpos($columns, 'cHAN') !== false
                 ) {
                     $result[3][] = $columns;
                 }

@@ -664,8 +664,8 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                     && strlen($_POST['dateiname_' . $i . '_' . $lang->kSprache]) > 0
                 ) {
                     if ($_FILES['pdf_' . $i . '_' . $lang->kSprache]['size'] <= 2097152) {
-                        if (!strrpos($_FILES['pdf_' . $i . '_' . $lang->kSprache]['name'], ';')
-                            && !strrpos($_POST['dateiname_' . $i . '_' . $lang->kSprache], ';')
+                        if (!mb_strrpos($_FILES['pdf_' . $i . '_' . $lang->kSprache]['name'], ';')
+                            && !mb_strrpos($_POST['dateiname_' . $i . '_' . $lang->kSprache], ';')
                         ) {
                             $cPlugin = '';
                             if (Request::verifyGPCDataInt('kPlugin') > 0) {

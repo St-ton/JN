@@ -46,7 +46,7 @@ function pruefeExportformat()
         $cPlausiValue_arr['cDateiname'] = 1;
     }
     // Dateiname Endung fehlt
-    if (strpos($_POST['cDateiname'], '.') === false) {
+    if (mb_strpos($_POST['cDateiname'], '.') === false) {
         $cPlausiValue_arr['cDateiname'] = 2;
     }
     // Content
@@ -83,7 +83,7 @@ function splitteExportDatei($oExportformat)
     ) {
         $nDateiZaehler       = 1;
         $cDateinameSplit_arr = [];
-        $nFileTypePos        = strrpos($oExportformat->cDateiname, '.');
+        $nFileTypePos        = mb_strrpos($oExportformat->cDateiname, '.');
         // Dateiname splitten nach Name + Typ
         if ($nFileTypePos === false) {
             $cDateinameSplit_arr[0] = $oExportformat->cDateiname;
@@ -181,7 +181,7 @@ function loescheExportDateien($cDateiname, $cDateinameSplit)
         $dir = opendir(PFAD_ROOT . PFAD_EXPORT);
         if ($dir !== false) {
             while (($cDatei = readdir($dir)) !== false) {
-                if ($cDatei !== $cDateiname && strpos($cDatei, $cDateinameSplit) !== false) {
+                if ($cDatei !== $cDateiname && mb_strpos($cDatei, $cDateinameSplit) !== false) {
                     @unlink(PFAD_ROOT . PFAD_EXPORT . $cDatei);
                 }
             }

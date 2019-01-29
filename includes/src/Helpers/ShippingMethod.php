@@ -471,7 +471,7 @@ class ShippingMethod
                 $additionalProduct->fGewicht        += $product['fAnzahl'] * $tmpProduct->fGewicht;
 
                 if (\strlen($shippingClasses) > 0
-                    && \strpos($shippingClasses, $tmpProduct->kVersandklasse) === false
+                    && \mb_strpos($shippingClasses, $tmpProduct->kVersandklasse) === false
                 ) {
                     $shippingClasses = '-' . $tmpProduct->kVersandklasse;
                 } elseif (\strlen($shippingClasses) === 0) {
@@ -521,7 +521,7 @@ class ShippingMethod
                         ($tmpProduct->fGewicht + $oVariation0->fGewichtDiff + $oVariation1->fGewichtDiff);
                 }
                 if (\strlen($shippingClasses) > 0
-                    && \strpos($shippingClasses, $tmpProduct->kVersandklasse) === false
+                    && \mb_strpos($shippingClasses, $tmpProduct->kVersandklasse) === false
                 ) {
                     $shippingClasses = '-' . $tmpProduct->kVersandklasse;
                 } elseif (\strlen($shippingClasses) === 0) {
@@ -596,7 +596,7 @@ class ShippingMethod
                     $additionalProduct->fWarenwertNetto += $product['fAnzahl'] * $child->Preise->fVKNetto;
                     $additionalProduct->fGewicht        += $product['fAnzahl'] * $child->fGewicht;
                 }
-                if (\strlen($shippingClasses) > 0 && \strpos($shippingClasses, $child->kVersandklasse) === false) {
+                if (\strlen($shippingClasses) > 0 && \mb_strpos($shippingClasses, $child->kVersandklasse) === false) {
                     $shippingClasses = '-' . $child->kVersandklasse;
                 } elseif (\strlen($shippingClasses) === 0) {
                     $shippingClasses = $child->kVersandklasse;

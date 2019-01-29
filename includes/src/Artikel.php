@@ -1797,9 +1797,9 @@ class Artikel
         if (!isset($mediaFile->cURL)) {
             return $this;
         }
-        if (strpos($mediaFile->cURL, 'youtube') !== false) {
+        if (mb_strpos($mediaFile->cURL, 'youtube') !== false) {
             $mediaFile->oEmbed = new stdClass();
-            if (strpos($mediaFile->cURL, 'watch?v=') !== false) {
+            if (mb_strpos($mediaFile->cURL, 'watch?v=') !== false) {
                 $height     = 'auto';
                 $width      = '100%';
                 $related    = '?rel=0';
@@ -1828,12 +1828,12 @@ class Artikel
                     'related'    => $related,
                     'fullscreen' => $fullscreen
                 ];
-            } elseif (strpos($mediaFile->cURL, 'embed') !== false) {
+            } elseif (mb_strpos($mediaFile->cURL, 'embed') !== false) {
                 $mediaFile->oEmbed->code = $mediaFile->cURL;
             }
-        } elseif (strpos($mediaFile->cURL, 'youtu.be') !== false) {
+        } elseif (mb_strpos($mediaFile->cURL, 'youtu.be') !== false) {
             $mediaFile->oEmbed = new stdClass();
-            if (strpos($mediaFile->cURL, 'embed') !== false) {
+            if (mb_strpos($mediaFile->cURL, 'embed') !== false) {
                 $mediaFile->oEmbed->code = $mediaFile->cURL;
             } else {
                 $height     = 'auto';
@@ -1881,7 +1881,7 @@ class Artikel
         if ($sub === 'intern_' || $sub === 'img_alt') {
             return true;
         }
-        if (stripos($attributeName, 'T') === 0) {
+        if (mb_stripos($attributeName, 'T') === 0) {
             for ($i = 1; $i < 11; $i++) {
                 $stl = mb_convert_case($attributeName, MB_CASE_LOWER);
                 if ($stl === 'tab' . $i . ' name' || $stl === 'tab' . $i . ' inhalt') {

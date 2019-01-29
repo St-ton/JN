@@ -999,29 +999,29 @@ final class Shop
                 $customFilterArr = explode($seoParam, $seo);
                 if (count($customFilterArr) > 1) {
                     [$seo, $customFilterSeo] = $customFilterArr;
-                    if (strpos($customFilterSeo, SEP_HST) !== false) {
+                    if (mb_strpos($customFilterSeo, SEP_HST) !== false) {
                         $arr             = explode(SEP_HST, $customFilterSeo);
                         $customFilterSeo = $arr[0];
                         $seo            .= SEP_HST . $arr[1];
                     }
-                    if (($idx = strpos($customFilterSeo, SEP_KAT)) !== false
-                        && $idx !== strpos($customFilterSeo, SEP_HST)
+                    if (($idx = mb_strpos($customFilterSeo, SEP_KAT)) !== false
+                        && $idx !== mb_strpos($customFilterSeo, SEP_HST)
                     ) {
                         $manufacturers   = explode(SEP_KAT, $customFilterSeo);
                         $customFilterSeo = $manufacturers[0];
                         $seo            .= SEP_KAT . $manufacturers[1];
                     }
-                    if (strpos($customFilterSeo, SEP_MERKMAL) !== false) {
+                    if (mb_strpos($customFilterSeo, SEP_MERKMAL) !== false) {
                         $arr             = explode(SEP_MERKMAL, $customFilterSeo);
                         $customFilterSeo = $arr[0];
                         $seo            .= SEP_MERKMAL . $arr[1];
                     }
-                    if (strpos($customFilterSeo, SEP_MM_MMW) !== false) {
+                    if (mb_strpos($customFilterSeo, SEP_MM_MMW) !== false) {
                         $arr             = explode(SEP_MM_MMW, $customFilterSeo);
                         $customFilterSeo = $arr[0];
                         $seo            .= SEP_MM_MMW . $arr[1];
                     }
-                    if (strpos($customFilterSeo, SEP_SEITE) !== false) {
+                    if (mb_strpos($customFilterSeo, SEP_SEITE) !== false) {
                         $arr             = explode(SEP_SEITE, $customFilterSeo);
                         $customFilterSeo = $arr[0];
                         $seo            .= SEP_SEITE . $arr[1];
@@ -1054,22 +1054,22 @@ final class Shop
                 if ($i === 0) {
                     continue;
                 }
-                if (($idx = strpos($merkmal, SEP_KAT)) !== false && $idx !== strpos($merkmal, SEP_HST)) {
+                if (($idx = mb_strpos($merkmal, SEP_KAT)) !== false && $idx !== mb_strpos($merkmal, SEP_HST)) {
                     $arr     = explode(SEP_KAT, $merkmal);
                     $merkmal = $arr[0];
                     $seo    .= SEP_KAT . $arr[1];
                 }
-                if (strpos($merkmal, SEP_HST) !== false) {
+                if (mb_strpos($merkmal, SEP_HST) !== false) {
                     $arr     = explode(SEP_HST, $merkmal);
                     $merkmal = $arr[0];
                     $seo    .= SEP_HST . $arr[1];
                 }
-                if (strpos($merkmal, SEP_MM_MMW) !== false) {
+                if (mb_strpos($merkmal, SEP_MM_MMW) !== false) {
                     $arr     = explode(SEP_MM_MMW, $merkmal);
                     $merkmal = $arr[0];
                     $seo    .= SEP_MM_MMW . $arr[1];
                 }
-                if (strpos($merkmal, SEP_SEITE) !== false) {
+                if (mb_strpos($merkmal, SEP_SEITE) !== false) {
                     $arr     = explode(SEP_SEITE, $merkmal);
                     $merkmal = $arr[0];
                     $seo    .= SEP_SEITE . $arr[1];
@@ -1086,22 +1086,22 @@ final class Shop
                     }
                 }
                 foreach ($manufSeo as $i => $hstseo) {
-                    if (($idx = strpos($hstseo, SEP_KAT)) !== false && $idx !== strpos($hstseo, SEP_HST)) {
+                    if (($idx = mb_strpos($hstseo, SEP_KAT)) !== false && $idx !== mb_strpos($hstseo, SEP_HST)) {
                         $manufacturers[] = explode(SEP_KAT, $hstseo);
                         $manufSeo[$i]    = $manufacturers[0];
                         $seo            .= SEP_KAT . $manufacturers[1];
                     }
-                    if (strpos($hstseo, SEP_MERKMAL) !== false) {
+                    if (mb_strpos($hstseo, SEP_MERKMAL) !== false) {
                         $arr          = explode(SEP_MERKMAL, $hstseo);
                         $manufSeo[$i] = $arr[0];
                         $seo         .= SEP_MERKMAL . $arr[1];
                     }
-                    if (strpos($hstseo, SEP_MM_MMW) !== false) {
+                    if (mb_strpos($hstseo, SEP_MM_MMW) !== false) {
                         $arr          = explode(SEP_MM_MMW, $hstseo);
                         $manufSeo[$i] = $arr[0];
                         $seo         .= SEP_MM_MMW . $arr[1];
                     }
-                    if (strpos($hstseo, SEP_SEITE) !== false) {
+                    if (mb_strpos($hstseo, SEP_SEITE) !== false) {
                         $arr          = explode(SEP_SEITE, $hstseo);
                         $manufSeo[$i] = $arr[0];
                         $seo         .= SEP_SEITE . $arr[1];
@@ -1113,22 +1113,22 @@ final class Shop
             $categories = explode(SEP_KAT, $seo);
             if (is_array($categories) && count($categories) > 1) {
                 [$seo, $katseo] = $categories;
-                if (strpos($katseo, SEP_HST) !== false) {
+                if (mb_strpos($katseo, SEP_HST) !== false) {
                     $arr    = explode(SEP_HST, $katseo);
                     $katseo = $arr[0];
                     $seo   .= SEP_HST . $arr[1];
                 }
-                if (strpos($katseo, SEP_MERKMAL) !== false) {
+                if (mb_strpos($katseo, SEP_MERKMAL) !== false) {
                     $arr    = explode(SEP_MERKMAL, $katseo);
                     $katseo = $arr[0];
                     $seo   .= SEP_MERKMAL . $arr[1];
                 }
-                if (strpos($katseo, SEP_MM_MMW) !== false) {
+                if (mb_strpos($katseo, SEP_MM_MMW) !== false) {
                     $arr    = explode(SEP_MM_MMW, $katseo);
                     $katseo = $arr[0];
                     $seo   .= SEP_MM_MMW . $arr[1];
                 }
-                if (strpos($katseo, SEP_SEITE) !== false) {
+                if (mb_strpos($katseo, SEP_SEITE) !== false) {
                     $arr    = explode(SEP_SEITE, $katseo);
                     $katseo = $arr[0];
                     $seo   .= SEP_SEITE . $arr[1];
@@ -1678,7 +1678,7 @@ final class Shop
                 return '';
             }
             while (($cDatei = readdir($dir)) !== false) {
-                if ($cDatei !== '.' && $cDatei !== '..' && strpos($cDatei, SHOPLOGO_NAME) !== false) {
+                if ($cDatei !== '.' && $cDatei !== '..' && mb_strpos($cDatei, SHOPLOGO_NAME) !== false) {
                     $ret = PFAD_SHOPLOGO . $cDatei;
                     break;
                 }

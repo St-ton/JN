@@ -55,9 +55,9 @@ if (strlen($cFehler) === 0) {
 
 if (count($dbErrors) > 0) {
     $engineErrors = array_filter($dbErrors, function ($item) {
-        return strpos($item, __('errorNoInnoTable')) !== false
-            || strpos($item, __('errorWrongCollation')) !== false
-            || strpos($item, __('errorDatatTypeInRow')) !== false;
+        return mb_strpos($item, __('errorNoInnoTable')) !== false
+            || mb_strpos($item, __('errorWrongCollation')) !== false
+            || mb_strpos($item, __('errorDatatTypeInRow')) !== false;
     });
     if (count($engineErrors) > 5) {
         $engineUpdate    = determineEngineUpdate($dbStruct);

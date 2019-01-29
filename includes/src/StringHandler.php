@@ -657,17 +657,17 @@ class StringHandler
             'l' => URLART_LIVESUCHE
         ];
         foreach ($hits[0] as $hit) {
-            $cParameter = substr($hit, strpos($hit, '#') + 1, 1);
-            $nBis       = strpos($hit, ':', 4);
+            $cParameter = substr($hit, mb_strpos($hit, '#') + 1, 1);
+            $nBis       = mb_strpos($hit, ':', 4);
             // Es wurde kein Name angegeben
             if ($nBis === false) {
-                $nBis  = strpos($hit, ':', 3);
-                $nVon  = strpos($hit, '#', $nBis);
+                $nBis  = mb_strpos($hit, ':', 3);
+                $nVon  = mb_strpos($hit, '#', $nBis);
                 $cKey  = substr($hit, $nBis + 1, ($nVon - 1) - $nBis);
                 $cName = '';
             } else {
                 $cKey  = substr($hit, 4, $nBis - 4);
-                $cName = substr($hit, $nBis + 1, strpos($hit, '#', $nBis) - ($nBis + 1));
+                $cName = substr($hit, $nBis + 1, mb_strpos($hit, '#', $nBis) - ($nBis + 1));
             }
 
             $oObjekt = new stdClass();
@@ -971,7 +971,7 @@ class StringHandler
      */
     public static function removeNumerousWhitespaces($string): string
     {
-        while (strpos($string, '  ')) {
+        while (mb_strpos($string, '  ')) {
             $string = str_replace('  ', ' ', $string);
         }
 

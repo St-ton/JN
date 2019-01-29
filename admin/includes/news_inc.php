@@ -86,7 +86,7 @@ function gibLetzteBildNummer($kNews)
     $imageCount = count($cBild_arr);
     if ($imageCount > 0) {
         for ($i = 0; $i < $imageCount; $i++) {
-            $cNummer = substr($cBild_arr[$i], 4, (strlen($cBild_arr[$i]) - strpos($cBild_arr[$i], '.')) - 3);
+            $cNummer = substr($cBild_arr[$i], 4, (strlen($cBild_arr[$i]) - mb_strpos($cBild_arr[$i], '.')) - 3);
 
             if ($cNummer > $nMax) {
                 $nMax = $cNummer;

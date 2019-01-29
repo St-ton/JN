@@ -809,7 +809,7 @@ class Kupon
         $catQry      = '';
         $customerQry = '';
         if ((isset($_SESSION['Zahlungsart']->cModulId)
-                && strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0)
+                && mb_strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0)
             || (isset($_SESSION['NeukundenKuponAngenommen']) && $_SESSION['NeukundenKuponAngenommen'])
         ) {
             return 0;
@@ -930,7 +930,7 @@ class Kupon
         } elseif ($Kupon->cKuponTyp !== self::TYPE_NEWCUSTOMER
             && (int)$Kupon->cKunden !== -1
             && (!empty($_SESSION['Kunde']->kKunde
-                    && strpos($Kupon->cKunden, $_SESSION['Kunde']->kKunde . ';') === false)
+                    && mb_strpos($Kupon->cKunden, $_SESSION['Kunde']->kKunde . ';') === false)
                 || !isset($_SESSION['Kunde']->kKunde)
             )
         ) {
@@ -938,7 +938,7 @@ class Kupon
             $ret['ungueltig'] = 9;
         } elseif ($Kupon->cKuponTyp === self::TYPE_SHIPPING
             && isset($_SESSION['Lieferadresse'])
-            && strpos($Kupon->cLieferlaender, $_SESSION['Lieferadresse']->cLand) === false
+            && mb_strpos($Kupon->cLieferlaender, $_SESSION['Lieferadresse']->cLand) === false
         ) {
             //invalid for shipping country
             $ret['ungueltig'] = 10;

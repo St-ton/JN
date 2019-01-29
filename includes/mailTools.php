@@ -171,7 +171,7 @@ function sendeMail($ModulId, $Object, $mail = null)
     $cTableSprache = 'temailvorlagesprache';
     $cTableSetting = 'temailvorlageeinstellungen';
     $cSQLWhere     = " cModulId = '" . $ModulId . "'";
-    if (strpos($ModulId, 'kPlugin') !== false) {
+    if (mb_strpos($ModulId, 'kPlugin') !== false) {
         [$cPlugin, $kPlugin, $cModulId] = explode('_', $ModulId);
         $cTable                         = 'tpluginemailvorlage';
         $cTableSprache                  = 'tpluginemailvorlagesprache';
@@ -982,9 +982,9 @@ function SendNiceMailReply($FromName, $FromMail, $ReplyAdresse, $To, $Subject, $
 {
     //endl definieren
     $eol = "\n";
-    if (stripos(PHP_OS, 'WIN') === 0) {
+    if (mb_stripos(PHP_OS, 'WIN') === 0) {
         $eol = "\r\n";
-    } elseif (stripos(PHP_OS, 'MAC') === 0) {
+    } elseif (mb_stripos(PHP_OS, 'MAC') === 0) {
         $eol = "\r";
     }
 
@@ -1002,7 +1002,7 @@ function SendNiceMailReply($FromName, $FromMail, $ReplyAdresse, $To, $Subject, $
     $mime_boundary = md5(time()) . '_jtlshop2';
     $headers       = '';
 
-    if (strpos($To, 'freenet')) {
+    if (mb_strpos($To, 'freenet')) {
         $headers .= 'From: ' . mb_convert_case($FromMail, MB_CASE_LOWER) . $eol;
     } else {
         $headers .= 'From: ' . $FromName . ' <' . mb_convert_case($FromMail, MB_CASE_LOWER) . '>' . $eol;

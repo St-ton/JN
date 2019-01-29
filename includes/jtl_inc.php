@@ -467,7 +467,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
             executeHook(HOOK_JTL_PAGE_REDIRECT);
             Cart::checkAdditions();
             if (strlen($cURL) > 0) {
-                if (strpos($cURL, 'http') !== 0) {
+                if (mb_strpos($cURL, 'http') !== 0) {
                     $cURL = Shop::getURL() . '/' . ltrim($cURL, '/');
                 }
                 header('Location: ' . $cURL, true, 301);

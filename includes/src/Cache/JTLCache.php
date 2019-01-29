@@ -738,7 +738,7 @@ final class JTLCache implements JTLCacheInterface
 //
 //        return \array_filter(\array_map(
 //            function ($m) {
-//                return \strpos($m, 'class.cachingMethod') !== false
+//                return \mb_strpos($m, 'class.cachingMethod') !== false
 //                    ? \str_replace(['class.cachingMethod.', '.php'], '', $m)
 //                    : false;
 //            },

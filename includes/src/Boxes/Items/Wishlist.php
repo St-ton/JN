@@ -43,9 +43,9 @@ final class Wishlist extends AbstractBox
             $additionalParams = \StringHandler::filterXSS($additionalParams);
             foreach ($wishlistItems as $wishlistItem) {
                 $cRequestURI  = $_SERVER['REQUEST_URI'] ?? $_SERVER['SCRIPT_NAME'];
-                $nPosAnd      = \strrpos($cRequestURI, '&');
-                $nPosQuest    = \strrpos($cRequestURI, '?');
-                $nPosWD       = \strpos($cRequestURI, 'wlplo=');
+                $nPosAnd      = \mb_strrpos($cRequestURI, '&');
+                $nPosQuest    = \mb_strrpos($cRequestURI, '?');
+                $nPosWD       = \mb_strpos($cRequestURI, 'wlplo=');
                 $cDeleteParam = '?wlplo='; // z.b. index.php
                 if ($nPosWD) {
                     $cRequestURI = \substr($cRequestURI, 0, $nPosWD);

@@ -235,7 +235,7 @@ function holdInputOnError($oVerpackung, $kKundengruppe_arr, $kVerpackung, &$smar
 {
     $oVerpackung->oSprach_arr = [];
     foreach ($_POST as $key => $value) {
-        if (strpos($key, 'cName') !== false) {
+        if (mb_strpos($key, 'cName') !== false) {
             $cISO                                   = explode('cName_', $key)[1];
             $idx                                    = 'cBeschreibung_' . $cISO;
             $oVerpackung->oSprach_arr[$cISO]        = new stdClass();

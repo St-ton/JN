@@ -518,8 +518,8 @@ class Controller
         if (isset($_FILES['previewImage']['name']) && \strlen($_FILES['previewImage']['name']) > 0) {
             $extension = \substr(
                 $_FILES['previewImage']['type'],
-                \strpos($_FILES['previewImage']['type'], '/') + 1,
-                \strlen($_FILES['previewImage']['type']) - \strpos($_FILES['previewImage']['type'], '/') + 1
+                \mb_strpos($_FILES['previewImage']['type'], '/') + 1,
+                \strlen($_FILES['previewImage']['type']) - \mb_strpos($_FILES['previewImage']['type'], '/') + 1
             );
             if ($extension === 'jpe') { // not elegant, but since it's 99% jpg..
                 $extension = 'jpg';
@@ -554,14 +554,14 @@ class Controller
         }
         $extension = \substr(
             $_FILES['previewImage']['type'],
-            \strpos($_FILES['previewImage']['type'], '/') + 1,
-            \strlen($_FILES['previewImage']['type']) - \strpos($_FILES['previewImage']['type'], '/') + 1
+            \mb_strpos($_FILES['previewImage']['type'], '/') + 1,
+            \strlen($_FILES['previewImage']['type']) - \mb_strpos($_FILES['previewImage']['type'], '/') + 1
         );
         if ($extension === 'jpe') {
             $extension = 'jpg';
         }
         foreach ($oldImages as $image) {
-            if (\strpos($image->cDatei, 'preview') !== false) {
+            if (\mb_strpos($image->cDatei, 'preview') !== false) {
                 $this->deleteNewsImage($image->cName, $newsItemID, self::UPLOAD_DIR);
             }
         }
@@ -594,8 +594,8 @@ class Controller
                 $type      = $_FILES['Bilder']['type'][$i - $counter];
                 $extension = \substr(
                     $type,
-                    \strpos($type, '/') + 1,
-                    \strlen($type) - \strpos($type, '/') + 1
+                    \mb_strpos($type, '/') + 1,
+                    \strlen($type) - \mb_strpos($type, '/') + 1
                 );
                 // not elegant, but since it's 99% jpg..
                 if ($extension === 'jpe') {
@@ -603,7 +603,7 @@ class Controller
                 }
                 // check if image exists and delete
                 foreach ($oldImages as $image) {
-                    if (\strpos($image->cDatei, 'Bild' . ($i + 1) . '.') !== false
+                    if (\mb_strpos($image->cDatei, 'Bild' . ($i + 1) . '.') !== false
                         && $_FILES['Bilder']['name'][$i - $counter] !== ''
                     ) {
                         $this->deleteNewsImage($image->cName, $newsItemID, self::UPLOAD_DIR);
@@ -746,7 +746,7 @@ class Controller
                 continue;
             }
             $image           = new \stdClass();
-            $image->cName    = \substr($fileName, 0, \strpos($fileName, '.' . $fileinfo->getExtension()));
+            $image->cName    = \substr($fileName, 0, \mb_strpos($fileName, '.' . $fileinfo->getExtension()));
             $image->cURL     = $base . $itemID . '/' . $fileName;
             $image->cURLFull = $imageBaseURL . $base . $itemID . '/' . $fileName;
             $image->cDatei   = $fileName;
@@ -810,7 +810,7 @@ class Controller
             if ($imageName === 'preview') {
                 $upd                = new \stdClass();
                 $upd->cPreviewImage = '';
-                if (\strpos($uploadDir, \PFAD_NEWSKATEGORIEBILDER) === false) {
+                if (\mb_strpos($uploadDir, \PFAD_NEWSKATEGORIEBILDER) === false) {
                     $this->db->update('tnews', 'kNews', $id, $upd);
                 } else {
                     $this->db->update('tnewskategorie', 'kNewsKategorie', $id, $upd);
@@ -838,7 +838,7 @@ class Controller
         $imgPath1 = \realpath(\PFAD_ROOT . \PFAD_NEWSKATEGORIEBILDER);
         $imgPath2 = \realpath(\PFAD_ROOT . \PFAD_NEWSBILDER);
 
-        return \strpos($real, $imgPath1) === 0 || \strpos($real, $imgPath2) === 0;
+        return \mb_strpos($real, $imgPath1) === 0 || \mb_strpos($real, $imgPath2) === 0;
     }
 
 
@@ -909,7 +909,7 @@ class Controller
                 $text
             );
         }
-        if (\count($images) > 0 && \strpos(\end($images), 'preview') !== false) {
+        if (\count($images) > 0 && \mb_strpos(\end($images), 'preview') !== false) {
             $text = \str_replace(
                 '$#preview#$',
                 '<img alt="" src="' . $shopURL . \PFAD_NEWSBILDER . $id . '/' . $images[\count($images) - 1] . '" />',

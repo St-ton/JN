@@ -334,10 +334,10 @@ final class Installer
         $line     = '';
         while (($data = \fgets($handle)) !== false) {
             $data = \trim($data);
-            if ($data !== '' && \strpos($data, '--') !== 0) {
-                if (\strpos($data, 'CREATE TABLE') !== false) {
+            if ($data !== '' && \mb_strpos($data, '--') !== 0) {
+                if (\mb_strpos($data, 'CREATE TABLE') !== false) {
                     $line .= \trim($data);
-                } elseif (\strpos($data, 'INSERT') !== false) {
+                } elseif (\mb_strpos($data, 'INSERT') !== false) {
                     $line .= \trim($data);
                 } else {
                     $line .= \trim($data);
@@ -398,9 +398,9 @@ final class Installer
         $sqlRegEx = '/xplugin[_]{1}' . $plugin->cPluginID . '[_]{1}[a-zA-Z0-9_]+/';
         foreach ($lines as $sql) {
             $sql = \StringHandler::removeNumerousWhitespaces($sql);
-            if (\stripos($sql, 'create table') !== false) {
+            if (\mb_stripos($sql, 'create table') !== false) {
                 // when using "create table if not exists" statement, the table name is at index 5, otherwise at 2
-                $index = (\stripos($sql, 'create table if not exists') !== false) ? 5 : 2;
+                $index = (\mb_stripos($sql, 'create table if not exists') !== false) ? 5 : 2;
                 $tmp   = \explode(' ', $sql);
                 $table = \str_replace(["'", '`'], '', $tmp[$index]);
                 \preg_match($sqlRegEx, $table, $hits);
@@ -415,10 +415,10 @@ final class Installer
 
                     $this->db->insert('tplugincustomtabelle', $customTable);
                 }
-            } elseif (\stripos($sql, 'drop table') !== false) {
+            } elseif (\mb_stripos($sql, 'drop table') !== false) {
                 // SQL versucht eine Tabelle zu löschen => prüfen ob es sich um eine Plugintabelle handelt
                 // when using "drop table if exists" statement, the table name is at index 5, otherwise at 2
-                $index = (\stripos($sql, 'drop table if exists') !== false) ? 4 : 2;
+                $index = (\mb_stripos($sql, 'drop table if exists') !== false) ? 4 : 2;
                 $tmp   = \explode(' ', \StringHandler::removeNumerousWhitespaces($sql));
                 $table = \str_replace(["'", '`'], '', $tmp[$index]);
                 \preg_match($sqlRegEx, $table, $hits);

@@ -48,7 +48,7 @@ sendRequestFile($cDatei);
 function getRequestBot(): int
 {
     foreach (array_keys(Visitor::getSpiders()) as $agent) {
-        if (stripos($_SERVER['HTTP_USER_AGENT'], $agent) !== false) {
+        if (mb_stripos($_SERVER['HTTP_USER_AGENT'], $agent) !== false) {
             $oBesucherBot = Shop::Container()->getDB()->select('tbesucherbot', 'cUserAgent', $agent);
 
             return isset($oBesucherBot->kBesucherBot) ? (int)$oBesucherBot->kBesucherBot : 0;

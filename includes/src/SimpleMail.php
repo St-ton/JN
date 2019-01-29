@@ -496,7 +496,7 @@ class SimpleMail
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($blacklist as $item) {
-            if (strpos($item->cEmail, '*') !== false) {
+            if (mb_strpos($item->cEmail, '*') !== false) {
                 preg_match('/' . str_replace('*', '[a-z0-9\-\_\.\@\+]*', $item->cEmail) . '/', $mail, $hits);
                 // Blocked
                 if (isset($hits[0]) && strlen($mail) === strlen($hits[0])) {

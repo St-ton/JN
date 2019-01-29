@@ -163,7 +163,7 @@ function isSitemapBlocked($cUrl)
     ];
 
     foreach ($cExclude_arr as $cExclude) {
-        if (strpos($cUrl, $cExclude) !== false) {
+        if (mb_strpos($cUrl, $cExclude) !== false) {
             return true;
         }
     }
@@ -1090,7 +1090,7 @@ function loescheSitemaps()
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if (is_dir(PFAD_ROOT . PFAD_EXPORT) && $dh = opendir(PFAD_ROOT . PFAD_EXPORT)) {
         while (($file = readdir($dh)) !== false) {
-            if ($file === 'sitemap_index.xml' || strpos($file, 'sitemap_') !== false) {
+            if ($file === 'sitemap_index.xml' || mb_strpos($file, 'sitemap_') !== false) {
                 unlink(PFAD_ROOT . PFAD_EXPORT . $file);
             }
         }

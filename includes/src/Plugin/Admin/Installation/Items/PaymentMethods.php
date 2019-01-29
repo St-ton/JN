@@ -246,7 +246,7 @@ class PaymentMethods extends AbstractItem
                                     if (isset($hits6[0]) && \strlen($hits6[0]) === \strlen($y)) {
                                         $cWert = $option['value'];
                                         $nSort = $option['sort'];
-                                        $yx    = \substr($y, 0, \strpos($y, ' '));
+                                        $yx    = \substr($y, 0, \mb_strpos($y, ' '));
                                         $cName = $config['SelectboxOptions'][0]['Option'][$yx];
 
                                         $plgnConfValues                           = new \stdClass();
@@ -283,7 +283,7 @@ class PaymentMethods extends AbstractItem
                                     if (\strlen($hits6[0]) === \strlen($y)) {
                                         $cWert = $option['value'];
                                         $nSort = $option['sort'];
-                                        $yx    = \substr($y, 0, \strpos($y, ' '));
+                                        $yx    = \substr($y, 0, \mb_strpos($y, ' '));
                                         $cName = $config['RadioOptions'][0]['Option'][$yx];
 
                                         $plgnConfValues                           = new \stdClass();

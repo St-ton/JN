@@ -1018,7 +1018,7 @@ function setzeSmartyWeiterleitung(Bestellung $bestellung): void
         $paymentMethod           = new SofortUeberweisung($_SESSION['Zahlungsart']->cModulId);
         $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
         $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif (strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0) {
+    } elseif (mb_strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0) {
         require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
         $paymentMethod           = PaymentMethod::create($_SESSION['Zahlungsart']->cModulId);
         $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;

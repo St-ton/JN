@@ -1239,7 +1239,7 @@ function gibArtikelObjekte($productIDs, $campaign = '', int $customerGroupID = 0
             $product->cURL = $shopURL . $product->cURL;
             if (isset($campaign->cParameter) && strlen($campaign->cParameter) > 0) {
                 $product->cURL = $product->cURL .
-                    (strpos($product->cURL, '.php') !== false ? '&' : '?') .
+                    (mb_strpos($product->cURL, '.php') !== false ? '&' : '?') .
                     $campaign->cParameter . '=' . $campaign->cWert;
             }
             foreach ($product->Bilder as $image) {
@@ -1277,12 +1277,12 @@ function gibHerstellerObjekte($manufacturerIDs, $campaign = 0, int $langID = 0)
         $id = (int)$id;
         if ($id > 0) {
             $manufacturer = new Hersteller($id, $langID);
-            if (strpos($manufacturer->cURL, $shopURL) === false) {
+            if (mb_strpos($manufacturer->cURL, $shopURL) === false) {
                 $manufacturer->cURL = $manufacturer->cURL = $shopURL . $manufacturer->cURL;
             }
             if (isset($campaign->cParameter) && strlen($campaign->cParameter) > 0) {
                 $cSep = '?';
-                if (strpos($manufacturer->cURL, '.php') !== false) {
+                if (mb_strpos($manufacturer->cURL, '.php') !== false) {
                     $cSep = '&';
                 }
                 $manufacturer->cURL = $manufacturer->cURL . $cSep . $campaign->cParameter . '=' . $campaign->cWert;
@@ -1315,13 +1315,13 @@ function gibKategorieObjekte($categoryIDs, $oKampagne = 0)
         $id = (int)$id;
         if ($id > 0) {
             $category = new Kategorie($id);
-            if (strpos($category->cURL, $shopURL) === false) {
+            if (mb_strpos($category->cURL, $shopURL) === false) {
                 $category->cURL = $shopURL . $category->cURL;
             }
             // Kampagne URL
             if (isset($oKampagne->cParameter) && strlen($oKampagne->cParameter) > 0) {
                 $cSep = '?';
-                if (strpos($category->cURL, '.php') !== false) {
+                if (mb_strpos($category->cURL, '.php') !== false) {
                     $cSep = '&';
                 }
                 $category->cURL = $category->cURL . $cSep . $oKampagne->cParameter . '=' . $oKampagne->cWert;

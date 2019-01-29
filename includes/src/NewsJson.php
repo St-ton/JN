@@ -79,7 +79,7 @@ class NewsJson
 
         if (strlen($link) > 3) {
             foreach ($media as $cMedia) {
-                if (strpos($link, $cMedia) !== false) {
+                if (mb_strpos($link, $cMedia) !== false) {
                     return true;
                 }
             }

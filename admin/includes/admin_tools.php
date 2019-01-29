@@ -619,7 +619,7 @@ function getCsvDelimiter(string $filename)
     $firstLine = fgets($file);
 
     foreach ([';', ',', '|', '\t'] as $delim) {
-        if (strpos($firstLine, $delim) !== false) {
+        if (mb_strpos($firstLine, $delim) !== false) {
             fclose($file);
 
             return $delim;

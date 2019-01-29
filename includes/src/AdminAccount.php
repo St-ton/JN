@@ -348,11 +348,11 @@ class AdminAccount
     public function redirectOnFailure(int $errCode = 0): void
     {
         if (!$this->logged()) {
-            $url = strpos(basename($_SERVER['REQUEST_URI']), 'logout.php') === false
+            $url = mb_strpos(basename($_SERVER['REQUEST_URI']), 'logout.php') === false
                 ? '?uri=' . base64_encode(basename($_SERVER['REQUEST_URI']))
                 : '';
             if ($errCode !== 0) {
-                $url .= (strpos($url, '?') === false ? '?' : '&') . 'errCode=' . $errCode;
+                $url .= (mb_strpos($url, '?') === false ? '?' : '&') . 'errCode=' . $errCode;
             }
             header('Location: index.php' . $url);
             exit();

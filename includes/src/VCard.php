@@ -270,7 +270,7 @@ class VCard
             return;
         }
 
-        if ((strpos($key, 'agent') === 0) && (stripos($rawValue, 'begin:vcard') !== false)) {
+        if ((mb_strpos($key, 'agent') === 0) && (mb_stripos($rawValue, 'begin:vcard') !== false)) {
             $vCard = $this->createInstance(str_replace('-wrap-', "\n", $rawValue));
 
             if (!isset($this->data[$key])) {
@@ -288,7 +288,7 @@ class VCard
         $type     = false;
         $params   = [];
 
-        if (strpos($key, 'item') === 0) {
+        if (mb_strpos($key, 'item') === 0) {
             $tmpKey = explode('.', $key, 2);
             $key    = $tmpKey[1];
         }
@@ -318,7 +318,7 @@ class VCard
 
         // prüfe auf zusätzliche Doppelpunk getrennte parameter (z.B. Apples "X-ABCROP-RECTANGLE" für photos)
         if (isset($params['encoding'])
-            && strpos($rawValue, ':') !== false
+            && mb_strpos($rawValue, ':') !== false
             && in_array($key, self::$elementsFile, true)
             && in_array($params['encoding'], ['b', 'base64'], true)
         ) {
@@ -396,7 +396,7 @@ class VCard
 
                 foreach ($lines as $line) {
                     // Zeilen ohne Doppelpunkt überspringen
-                    if (strpos($line, ':') === false) {
+                    if (mb_strpos($line, ':') === false) {
                         continue;
                     }
 
@@ -449,7 +449,7 @@ class VCard
                 $result = $propData[$property];
 
                 foreach ($result as $key => $value) {
-                    if (stripos($value['Value'], 'uri:') === 0) {
+                    if (mb_stripos($value['Value'], 'uri:') === 0) {
                         $result[$key]['Value']    = substr($value, 4);
                         $result[$key]['Encoding'] = 'uri';
                     }

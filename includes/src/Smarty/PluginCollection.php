@@ -164,11 +164,11 @@ class PluginCollection
         if (\DIRECTORY_SEPARATOR === '\\') {
             $_win_from = ['%D', '%h', '%n', '%r', '%R', '%t', '%T'];
             $_win_to   = ['%m/%d/%y', '%b', "\n", '%I:%M:%S %p', '%H:%M', "\t", '%H:%M:%S'];
-            if (\strpos($format, '%e') !== false) {
+            if (\mb_strpos($format, '%e') !== false) {
                 $_win_from[] = '%e';
                 $_win_to[]   = \sprintf('%\' 2d', \date('j', $timestamp));
             }
-            if (\strpos($format, '%l') !== false) {
+            if (\mb_strpos($format, '%l') !== false) {
                 $_win_from[] = '%l';
                 $_win_to[]   = \sprintf('%\' 2d', \date('h', $timestamp));
             }

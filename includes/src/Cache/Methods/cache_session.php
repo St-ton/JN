@@ -116,7 +116,7 @@ class cache_session implements ICachingMethod
     public function flushAll(): bool
     {
         foreach ($_SESSION as $_sessionKey => $_sessionValue) {
-            if (\strpos($_sessionKey, $this->options['prefix']) === 0) {
+            if (\mb_strpos($_sessionKey, $this->options['prefix']) === 0) {
                 unset($_SESSION[$_sessionKey]);
             }
         }
@@ -140,7 +140,7 @@ class cache_session implements ICachingMethod
         $num = 0;
         $tmp = [];
         foreach ($_SESSION as $_sessionKey => $_sessionValue) {
-            if (\strpos($_sessionKey, $this->options['prefix']) === 0) {
+            if (\mb_strpos($_sessionKey, $this->options['prefix']) === 0) {
                 $num++;
                 $tmp[] = $_sessionKey;
             }

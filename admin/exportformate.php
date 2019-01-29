@@ -216,7 +216,7 @@ if ($step === 'uebersicht') {
         );
         $exportformate[$i]->bPluginContentExtern = false;
         if ($exportformate[$i]->kPlugin > 0
-            && strpos($exportformate[$i]->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false
+            && mb_strpos($exportformate[$i]->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false
         ) {
             $exportformate[$i]->bPluginContentExtern = true;
         }
@@ -250,7 +250,7 @@ if ($step === 'neuer Export') {
         $exportformat->cKopfzeile = str_replace("\t", '<tab>', $exportformat->cKopfzeile);
         $exportformat->cContent   = str_replace("\t", '<tab>', $exportformat->cContent);
         $exportformat->cFusszeile = str_replace("\t", '<tab>', $exportformat->cFusszeile);
-        if ($exportformat->kPlugin > 0 && strpos($exportformat->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
+        if ($exportformat->kPlugin > 0 && mb_strpos($exportformat->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
             $exportformat->bPluginContentFile = true;
         }
         $smarty->assign('Exportformat', $exportformat);

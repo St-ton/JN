@@ -28,7 +28,6 @@ class UstIDviesVatParser
      * "_"  - wildcard for any character
      */
     private $vCountryPattern = [
-
         // AT-Oesterreich                ATU99999999          1 Block mit 9 Ziffern    (comment: 8 !?)
         'AT' => ['ATU99999999'],         // example: ATU48075808(ok)
 
@@ -181,11 +180,6 @@ class UstIDviesVatParser
     private $szErrorInfo = '';
 
     /**
-     * @var int
-     */
-    private $nErrorPos = -1;
-
-    /**
      * @param string $szVATid
      */
     public function __construct($szVATid)
@@ -195,13 +189,13 @@ class UstIDviesVatParser
 
     /**
      * parses the VAT-ID-string.
-     * returns the position of a possigble check-interrupt or 0 if all was fine.
+     * returns the position of a possible check-interrupt or 0 if all was fine.
      *
      * @param string $szVATid
      * @param string $szPattern
      * @return int
      */
-    private function isIdPatternValid($szVATid, $szPattern): int
+    private function isIdPatternValid($szVATid, $szPattern)
     {
         $len = strlen($szVATid);
         for ($i = 0; $i < $len; $i++) {
@@ -212,16 +206,19 @@ class UstIDviesVatParser
                     if ($szPattern[$i] === $szVATid[$i]) {
                         continue 2; // check-space OK
                     }
+
                     break 2; // check-space FAIL
                 case is_numeric($szPattern[$i]):
                     if (is_numeric($szVATid[$i])) {
                         continue 2; // check-num OK
                     }
+
                     break 2; // check-num FAIL
                 default:
                     if ('_' === $szPattern[$i]) {
                         continue 2;
                     }
+
                     break 2;
             }
         }
@@ -243,7 +240,7 @@ class UstIDviesVatParser
      *
      * @return bool
      */
-    public function parseVatId(): bool
+    public function parseVatId()
     {
         // guess a country - the first 2 characters should allways be the country-code
         // (store the result-array in this object, $this->vIdParts)
@@ -254,8 +251,8 @@ class UstIDviesVatParser
             return false;
         }
         // there is no country starting with this 2 letters
-        if (! isset($this->vCountryPattern[$this->vIdParts[1]])) {
-            $this->nErrorCode  = 130; // error: no pattern for such a country
+        if (!isset($this->vCountryPattern[$this->vIdParts[1]])) {
+            $this->nErrorCode  = UstIDviesInterface::COUNTRY_NOT_FOUND; // error 130: no pattern for such a country
             $this->szErrorInfo = $this->vIdParts[1];
 
             return false;
@@ -273,12 +270,12 @@ class UstIDviesVatParser
                 return true; // if we found a valid pattern-match, we've done our job here
             }
 
-            $this->nErrorCode  = 120; // error: id did not match any pattern of this country
+            $this->nErrorCode  = UstIDviesInterface::PATTERN_NOT_MATCH; // error 120: id did not match any pattern of this country
             $this->szErrorInfo = $nParseResult; // interrupt-/error-position
 
             return false;
         }
-        $this->nErrorCode = 110; // error: no length was matching
+        $this->nErrorCode = UstIDviesInterface::PATTERNLENGTH_NOT_FOUND; // error 110: no length was matching
 
         return false;
     }
@@ -292,7 +289,7 @@ class UstIDviesVatParser
      *
      * @return array
      */
-    public function getIdAsParams(): array
+    public function getIdAsParams()
     {
         return [$this->vIdParts[1], $this->vIdParts[2]];
     }
@@ -300,9 +297,9 @@ class UstIDviesVatParser
     /**
      * returns a descriptive string of the last ocurred error
      *
-     * @return string
+     * @return integer
      */
-    public function getErrorCode(): int
+    public function getErrorCode()
     {
         return $this->nErrorCode;
     }
@@ -312,18 +309,8 @@ class UstIDviesVatParser
      *
      * @return string
      */
-    public function getErrorInfo(): string
+    public function getErrorInfo()
     {
         return $this->szErrorInfo;
-    }
-
-    /**
-     * returns the position, in the VAT-ID-string, at which the last error was ocurred
-     *
-     * @return int
-     */
-    public function getErrorPos(): int
-    {
-        return $this->nErrorPos;
     }
 }

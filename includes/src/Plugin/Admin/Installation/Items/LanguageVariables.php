@@ -107,7 +107,7 @@ class LanguageVariables extends AbstractItem
                 }
             }
             foreach ($languages as $oSprachAssoc) {
-                $oVariableSpracheStd->cISO = \strtoupper($oSprachAssoc->cISO);
+                $oVariableSpracheStd->cISO = \mb_convert_case($oSprachAssoc->cISO, MB_CASE_UPPER);
                 if (!$this->db->insert('tpluginsprachvariablesprache', $oVariableSpracheStd)) {
                     return InstallCode::SQL_CANNOT_SAVE_LANG_VAR_LOCALIZATION;
                 }

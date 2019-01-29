@@ -82,7 +82,7 @@ class MigrationHelper
             return preg_replace_callback(
                 '/(^|_)([a-z])/',
                 function ($m) {
-                    return (strlen($m[1]) ? ' ' : '') . strtoupper($m[2]);
+                    return (strlen($m[1]) ? ' ' : '') . mb_convert_case($m[2], MB_CASE_UPPER);
                 },
                 $matches[2]
             );

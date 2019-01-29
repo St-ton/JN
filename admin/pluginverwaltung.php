@@ -282,7 +282,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 foreach (\Plugin\Helper::getLanguageVariables($kPlugin) as $langVar) {
                     $kPluginSprachvariable = $langVar->kPluginSprachvariable;
                     $cSprachvariable       = $langVar->cName;
-                    $cISO                  = strtoupper($oSprache->cISO);
+                    $cISO                  = mb_convert_case($oSprache->cISO, MB_CASE_UPPER);
                     $idx                   = $kPluginSprachvariable . '_' . $cISO;
                     if (!isset($_POST[$idx])) {
                         continue;

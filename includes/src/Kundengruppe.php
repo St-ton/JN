@@ -171,7 +171,7 @@ class Kundengruppe
         $obj               = new stdClass();
         $obj->cName        = $this->name;
         $obj->fRabatt      = $this->discount;
-        $obj->cStandard    = strtoupper($this->default);
+        $obj->cStandard    = mb_convert_case($this->default, MB_CASE_UPPER);
         $obj->cShopLogin   = $this->cShopLogin;
         $obj->nNettoPreise = (int)$this->isMerchant;
         $kPrim             = Shop::Container()->getDB()->insert('tkundengruppe', $obj);

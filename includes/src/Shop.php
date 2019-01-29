@@ -1705,8 +1705,8 @@ final class Shop
         }
         // EXPERIMENTAL_MULTILANG_SHOP
         $cShopURL  = ($bMultilang === true && isset($_SESSION['cISOSprache'])
-            && defined('URL_SHOP_' . strtoupper($_SESSION['cISOSprache'])))
-            ? constant('URL_SHOP_' . strtoupper($_SESSION['cISOSprache']))
+            && defined('URL_SHOP_' . mb_convert_case($_SESSION['cISOSprache'], MB_CASE_UPPER)))
+            ? constant('URL_SHOP_' . mb_convert_case($_SESSION['cISOSprache'], MB_CASE_UPPER))
             : URL_SHOP;
         $sslStatus = Request::checkSSL();
         if ($sslStatus === 2) {

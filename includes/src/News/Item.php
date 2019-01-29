@@ -420,7 +420,7 @@ class Item extends AbstractItem
     {
         $idx = $idx ?? \Shop::getLanguageID();
 
-        return \strtoupper($this->titles[$idx] ?? '');
+        return \mb_convert_case($this->titles[$idx] ?? '', MB_CASE_UPPER);
     }
 
     /**

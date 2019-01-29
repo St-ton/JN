@@ -125,7 +125,7 @@ class URL
             $this->path = \preg_replace_callback(
                 '/(%([0-9abcdef][0-9abcdef]))/x',
                 function ($x) {
-                    return '%' . \strtoupper($x[2]);
+                    return '%' . \mb_convert_case($x[2], MB_CASE_UPPER);
                 },
                 $this->path
             );
@@ -198,7 +198,7 @@ class URL
 
         return \preg_replace_callback(\array_map(
             function ($str) {
-                return '/%' . \strtoupper($str) . '/x';
+                return '/%' . \mb_convert_case($str, MB_CASE_UPPER) . '/x';
             },
             $unreserved
         ), function ($matches) {

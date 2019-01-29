@@ -14,7 +14,7 @@ include __DIR__ . '/../config.JTL-Shop.ini.php';
 function erstelleCaptcha($font, $text, $sec)
 {
     $font = PFAD_ROOT . 'includes/captcha/' . $font;
-    $text = strtoupper($text);
+    $text = mb_convert_case($text, MB_CASE_UPPER);
     $im   = imagecreatetruecolor(200, 60);
     imagefilledrectangle($im, 0, 0, 199, 59, imagecolorallocate($im, 255, 255, 255));
 

@@ -104,14 +104,14 @@ abstract class AbstractSession
             return $domain;
         }
         foreach (\Sprache::getAllLanguages() as $Sprache) {
-            if (!\defined('URL_SHOP_' . \strtoupper($Sprache->cISO))) {
+            if (!\defined('URL_SHOP_' . \mb_convert_case($Sprache->cISO, MB_CASE_UPPER))) {
                 continue;
             }
-            $shopLangURL = \constant('URL_SHOP_' . \strtoupper($Sprache->cISO));
+            $shopLangURL = \constant('URL_SHOP_' . \mb_convert_case($Sprache->cISO, MB_CASE_UPPER));
             if (\strpos($shopLangURL, $_SERVER['HTTP_HOST']) !== false
-                && \defined('COOKIE_DOMAIN_' . \strtoupper($Sprache->cISO))
+                && \defined('COOKIE_DOMAIN_' . \mb_convert_case($Sprache->cISO, MB_CASE_UPPER))
             ) {
-                return \constant('COOKIE_DOMAIN_' . \strtoupper($Sprache->cISO));
+                return \constant('COOKIE_DOMAIN_' . \mb_convert_case($Sprache->cISO, MB_CASE_UPPER));
             }
         }
 

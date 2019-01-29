@@ -156,7 +156,7 @@ class Kundendatenhistory extends MainModel
      */
     public function setErstellt($dErstellt): self
     {
-        $this->dErstellt = (strtoupper($dErstellt) === 'NOW()')
+        $this->dErstellt = (mb_convert_case($dErstellt, MB_CASE_UPPER) === 'NOW()')
             ? date('Y-m-d H:i:s')
             : $dErstellt;
 

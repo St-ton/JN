@@ -310,7 +310,7 @@ class Helper
         $return = [];
         $cSQL   = '';
         if (\strlen($cISO) > 0) {
-            $cSQL = " AND tpluginsprachvariablesprache.cISO = '" . \strtoupper($cISO) . "'";
+            $cSQL = " AND tpluginsprachvariablesprache.cISO = '" . \mb_convert_case($cISO, MB_CASE_UPPER) . "'";
         }
         $langVars = \Shop::Container()->getDB()->query(
             'SELECT t.kPluginSprachvariable,
@@ -336,7 +336,7 @@ class Helper
                 tpluginsprachvariable.cName,
                 tpluginsprachvariable.cBeschreibung,
                 CONCAT('#', tpluginsprachvariable.cName, '#') AS customValue, '" .
-                \strtoupper($cISO) . "' AS cISO
+                \mb_convert_case($cISO, MB_CASE_UPPER) . "' AS cISO
                     FROM tpluginsprachvariable
                     WHERE tpluginsprachvariable.kPlugin = " . $id,
                 ReturnType::ARRAY_OF_ASSOC_ARRAYS

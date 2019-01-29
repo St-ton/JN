@@ -1042,7 +1042,7 @@ function checkAdditionalPayment($paymentMethod): array
 {
     foreach (['iban', 'bic'] as $dataKey) {
         if (!empty($_POST[$dataKey])) {
-            $_POST[$dataKey] = strtoupper($_POST[$dataKey]);
+            $_POST[$dataKey] = mb_convert_case($_POST[$dataKey], MB_CASE_UPPER);
         }
     }
 
@@ -2814,7 +2814,7 @@ function valid_plzort(string $plz, string $ort, string $land): bool
 {
     // Länder die wir mit Ihren Postleitzahlen in der Datenbank haben
     $supportedCountryCodes = ['DE', 'AT', 'CH'];
-    if (!in_array(strtoupper($land), $supportedCountryCodes, true)) {
+    if (!in_array(mb_convert_case($land, MB_CASE_UPPER), $supportedCountryCodes, true)) {
         return true;
     }
     $obj = Shop::Container()->getDB()->executeQueryPrepared(

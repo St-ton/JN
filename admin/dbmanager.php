@@ -110,7 +110,7 @@ switch (true) {
                 if (!empty($filter['where']['col'][$i]) && !empty($filter['where']['op'][$i])) {
                     $col = $filter['where']['col'][$i];
                     $val = $filter['where']['val'][$i];
-                    $op  = strtoupper($filter['where']['op'][$i]);
+                    $op  = mb_convert_case($filter['where']['op'][$i], MB_CASE_UPPER);
                     if ($op === 'LIKE %%') {
                         $op  = 'LIKE';
                         $val = sprintf('%%%s%%', trim($val, '%'));

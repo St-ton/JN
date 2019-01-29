@@ -304,11 +304,13 @@ removeContainer:
 
 stagingDevPhp72:
   stage: staging
+  variables:
+    GIT_STRATEGY: none
   script:
     - *devCheckoutScripts
     - deployProcess 72
   environment:
-    name: staging php 7.2
+    name: staging master php 7.2
     url: https://$STAGING_USER-72-master.$STAGING_DOMAIN
   only:
     - master
@@ -317,11 +319,13 @@ stagingDevPhp72:
 
 stagingDevPhp73:
   stage: staging
+  variables:
+    GIT_STRATEGY: none
   script:
     - *devCheckoutScripts
     - deployProcess 73
   environment:
-    name: staging php 7.3
+    name: staging master php 7.3
     url: https://$STAGING_USER-73-master.$STAGING_DOMAIN
   only:
     - master

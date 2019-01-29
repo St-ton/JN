@@ -30,7 +30,7 @@ class Migration implements JsonSerializable
      */
     public function __construct($info = null, DateTime $executed = null)
     {
-        $this->info     = ucfirst(mb_convert_case($info, MB_CASE_LOWER));
+        $this->info     = ucfirst(strtolower($info));
         $this->executed = $executed;
     }
 

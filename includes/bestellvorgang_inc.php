@@ -842,15 +842,7 @@ function gibStepBestaetigung($get)
         header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?editZahlungsart=1', true, 303);
     }
 
-    if (isset($get['fillOut']) && $get['fillOut'] > 0) {
-        if ((int)$get['fillOut'] === 5) {
-            Shop::Container()->getAlertService()->addAlert(
-                Alert::TYPE_NOTE,
-                Shop::Lang()->get('acceptAgb', 'checkout'),
-                'acceptAgb'
-            );
-        }
-    } else {
+    if (!(isset($get['fillOut']) && $get['fillOut'] > 0)) {
         unset($_SESSION['cPlausi_arr'], $_SESSION['cPost_arr']);
     }
     if (!empty(\Session\Frontend::getCustomer()->cKundenattribut_arr)) {
@@ -3072,13 +3064,12 @@ function ladeAjaxEinKlick(): void
     gibStepZahlung();
     gibStepBestaetigung($aFormValues);
 
-    Shop::Smarty()->assign('L_CHECKOUT_ACCEPT_AGB', Shop::Lang()->get('acceptAgb', 'checkout'))
-        ->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
-            Shop::getLanguage(),
-            \Session\Frontend::getCustomerGroup()->getID()
-        ))
-        ->assign('WarensummeLocalized', \Session\Frontend::getCart()->gibGesamtsummeWarenLocalized())
-        ->assign('Warensumme', \Session\Frontend::getCart()->gibGesamtsummeWaren());
+    Shop::Smarty()->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
+        Shop::getLanguage(),
+        \Session\Frontend::getCustomerGroup()->getID()
+    ))
+    ->assign('WarensummeLocalized', \Session\Frontend::getCart()->gibGesamtsummeWarenLocalized())
+    ->assign('Warensumme', \Session\Frontend::getCart()->gibGesamtsummeWaren());
 }
 
 /**
@@ -3583,7 +3574,6 @@ function setzeSmartyBestaetigung()
 {
     Shop::Smarty()->assign('Kunde', \Session\Frontend::getCustomer())
         ->assign('Lieferadresse', $_SESSION['Lieferadresse'])
-        ->assign('L_CHECKOUT_ACCEPT_AGB', Shop::Lang()->get('acceptAgb', 'checkout'))
         ->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
             Shop::getLanguage(),
             \Session\Frontend::getCustomerGroup()->getID()

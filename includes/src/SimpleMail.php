@@ -499,7 +499,7 @@ class SimpleMail
             if (mb_strpos($item->cEmail, '*') !== false) {
                 preg_match('/' . str_replace('*', '[a-z0-9\-\_\.\@\+]*', $item->cEmail) . '/', $mail, $hits);
                 // Blocked
-                if (isset($hits[0]) && strlen($mail) === strlen($hits[0])) {
+                if (isset($hits[0]) && mb_strlen($mail) === mb_strlen($hits[0])) {
                     // Email schonmal geblockt worden?
                     $block = Shop::Container()->getDB()->select('temailblacklistblock', 'cEmail', $mail);
                     if (!empty($block->cEmail)) {

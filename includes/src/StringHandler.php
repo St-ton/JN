@@ -103,7 +103,7 @@ class StringHandler
             ? str_replace(['\\\'', '\\'], '', $string)
             : str_replace(['\"', '\\\'', '\\', '"', '\''], '', $string);
 
-        if ((int)$nSuche === 1 && strlen($string) > 10) {
+        if ((int)$nSuche === 1 && mb_strlen($string) > 10) {
             $string = substr(str_replace(['(', ')', ';'], '', $string), 0, 50);
         }
 
@@ -859,7 +859,7 @@ class StringHandler
             }
             executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_PARSENEWSTEXT);
 
-            if (strlen($cName) > 0) {
+            if (mb_strlen($cName) > 0) {
                 $oObjekt->cName = $cName;
                 $cName          = ':' . $cName;
             }

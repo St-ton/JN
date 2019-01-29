@@ -125,13 +125,13 @@ class ImageMap implements IExtensionPoint
                         'cName'
                     )->cName;
                 }
-                if (strlen($area->cTitel) === 0) {
+                if (mb_strlen($area->cTitel) === 0) {
                     $area->cTitel = $area->oArtikel->cName;
                 }
-                if (strlen($area->cUrl) === 0) {
+                if (mb_strlen($area->cUrl) === 0) {
                     $area->cUrl = $area->oArtikel->cURL;
                 }
-                if (strlen($area->cBeschreibung) === 0) {
+                if (mb_strlen($area->cBeschreibung) === 0) {
                     $area->cBeschreibung = $area->oArtikel->cKurzBeschreibung;
                 }
             }

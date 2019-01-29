@@ -339,7 +339,7 @@ class JobQueue
      */
     public function holeJobArt(): ?stdClass
     {
-        if ($this->kKey > 0 && strlen($this->cTabelle) > 0) {
+        if ($this->kKey > 0 && mb_strlen($this->cTabelle) > 0) {
             return Shop::Container()->getDB()->select(
                 $this->cTabelle,
                 $this->cKey,
@@ -357,10 +357,10 @@ class JobQueue
     {
         if ($this->kKey > 0
             && $this->nLimitM > 0
-            && strlen($this->cJobArt) > 0
-            && strlen($this->cKey) > 0
-            && strlen($this->cTabelle) > 0
-            && strlen($this->dStartZeit) > 0
+            && mb_strlen($this->cJobArt) > 0
+            && mb_strlen($this->cKey) > 0
+            && mb_strlen($this->cTabelle) > 0
+            && mb_strlen($this->dStartZeit) > 0
         ) {
             $ins                = new stdClass();
             $ins->cronID        = (int)$this->kCron;

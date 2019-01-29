@@ -211,7 +211,7 @@ class Helper
                     '" hat keinen gültigen Lizenzschlüssel und wurde daher deaktiviert!',
                     [$plugin->getID()]
                 );
-                if (isset($params['cModulId']) && \strlen($params['cModulId']) > 0) {
+                if (isset($params['cModulId']) && \mb_strlen($params['cModulId']) > 0) {
                     self::updatePaymentMethodState($plugin, 0);
                 }
                 \Shop::Container()->getCache()->flush('hook_list');
@@ -264,7 +264,7 @@ class Helper
      */
     public static function getModuleIDByPluginID(int $id, string $paymentMethodName): string
     {
-        return $id > 0 && \strlen($paymentMethodName) > 0
+        return $id > 0 && \mb_strlen($paymentMethodName) > 0
             ? 'kPlugin_' . $id . '_' . \mb_convert_case(
                 \str_replace([' ', '-', '_'], '', $paymentMethodName),
                 MB_CASE_LOWER
@@ -309,7 +309,7 @@ class Helper
     {
         $return = [];
         $cSQL   = '';
-        if (\strlen($cISO) > 0) {
+        if (\mb_strlen($cISO) > 0) {
             $cSQL = " AND tpluginsprachvariablesprache.cISO = '" . \mb_convert_case($cISO, MB_CASE_UPPER) . "'";
         }
         $langVars = \Shop::Container()->getDB()->query(

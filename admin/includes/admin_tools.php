@@ -384,7 +384,7 @@ function setzeSpracheTrustedShops()
         $_SESSION['TrustedShops']->oSprache->cNameSprache = $cISOSprache_arr['de'];
     }
     // setze explizit ausgewählte Sprache
-    if (isset($_POST['sprachwechsel']) && (int)$_POST['sprachwechsel'] === 1 && strlen($_POST['cISOSprache']) > 0) {
+    if (isset($_POST['sprachwechsel']) && (int)$_POST['sprachwechsel'] === 1 && mb_strlen($_POST['cISOSprache']) > 0) {
         $_SESSION['TrustedShops']->oSprache->cISOSprache  =
             StringHandler::htmlentities(StringHandler::filterXSS($_POST['cISOSprache']));
         $_SESSION['TrustedShops']->oSprache->cNameSprache =
@@ -437,7 +437,7 @@ function lastDayOfMonth(int $month = -1, int $year = -1)
  */
 function ermittleDatumWoche(string $cDatum)
 {
-    if (strlen($cDatum) < 0) {
+    if (mb_strlen($cDatum) < 0) {
         return [];
     }
     list($cJahr, $cMonat, $cTag) = explode('-', $cDatum);

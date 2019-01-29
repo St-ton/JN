@@ -134,7 +134,7 @@ class GrafikFont
             $Waehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
         }
         $strTrennzeichenCent = $Waehrung->cTrennzeichenCent;
-        $nLength             = strlen($strInputString);
+        $nLength             = mb_strlen($strInputString);
         for ($i = 0; $i <= $nLength; $i++) {
             $strFileName = '';
             $bMakeHTML   = true;

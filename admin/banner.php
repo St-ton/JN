@@ -20,7 +20,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
     $oBanner     = new ImageMap();
     $kImageMap   = (isset($_POST['kImageMap']) ? (int)$_POST['kImageMap'] : null);
     $cName       = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-    if (strlen($cName) === 0) {
+    if (mb_strlen($cName) === 0) {
         $cPlausi_arr['cName'] = 1;
     }
     $cBannerPath = (isset($_POST['cPath']) && $_POST['cPath'] !== '' ? $_POST['cPath'] : null);
@@ -54,7 +54,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
     if ($bDatum !== null && $bDatum < $vDatum) {
         $cPlausi_arr['bDatum'] = 2;
     }
-    if (strlen($cBannerPath) === 0) {
+    if (mb_strlen($cBannerPath) === 0) {
         $cPlausi_arr['cBannerPath'] = 1;
     }
     if (count($cPlausi_arr) === 0) {

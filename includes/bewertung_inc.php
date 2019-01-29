@@ -369,7 +369,7 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
     ) {
         return $reward;
     }
-    if ((int)$conf['bewertung']['bewertung_stufe2_anzahlzeichen'] <= strlen($rating->cText)) {
+    if ((int)$conf['bewertung']['bewertung_stufe2_anzahlzeichen'] <= mb_strlen($rating->cText)) {
         // Prüfen ob die max. Belohnung + das aktuelle Guthaben, das Max des Monats überscchreitet
         // Falls ja, nur die Differenz von Kundenguthaben zu Max im Monat auszahlen
         if (((float)$ratingBonus->fGuthabenProMonat +

@@ -22,15 +22,15 @@ $cStep   = 'uebersicht';
 
 /** @global Smarty\JTLSmarty $smarty */
 $smarty->assign('cTab', $cStep);
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 /** @var Billpay $oBillpay */
 $oBillpay = PaymentMethod::create('za_billpay_jtl');
 
-if (strlen($oBillpay->getSetting('pid')) > 0
-    && strlen($oBillpay->getSetting('mid')) > 0
-    && strlen($oBillpay->getSetting('bpsecure')) > 0
+if (mb_strlen($oBillpay->getSetting('pid')) > 0
+    && mb_strlen($oBillpay->getSetting('mid')) > 0
+    && mb_strlen($oBillpay->getSetting('bpsecure')) > 0
 ) {
     $oItem_arr = [];
     $oConfig   = $oBillpay->getApi('module_config');

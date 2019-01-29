@@ -676,7 +676,7 @@ class ProductFilter
         if ($params['nBewertungSterneFilter'] > 0) {
             $this->addActiveFilter($this->ratingFilter, $params['nBewertungSterneFilter']);
         }
-        if (\strlen($params['cPreisspannenFilter']) > 0) {
+        if (\mb_strlen($params['cPreisspannenFilter']) > 0) {
             $this->addActiveFilter($this->priceRangeFilter, $params['cPreisspannenFilter']);
         }
         $this->initAttributeFilters($params['MerkmalFilter_arr']);
@@ -701,14 +701,14 @@ class ProductFilter
         if ($params['nArtikelProSeite'] !== 0) {
             $this->productLimit = (int)$params['nArtikelProSeite'];
         }
-        // @todo: how to handle \strlen($params['cSuche']) === 0?
+        // @todo: how to handle \mb_strlen($params['cSuche']) === 0?
         if ($params['kSuchanfrage'] > 0) {
             $oSuchanfrage = $this->db->select(
                 'tsuchanfrage',
                 'kSuchanfrage',
                 $params['kSuchanfrage']
             );
-            if (isset($oSuchanfrage->cSuche) && \strlen($oSuchanfrage->cSuche) > 0) {
+            if (isset($oSuchanfrage->cSuche) && \mb_strlen($oSuchanfrage->cSuche) > 0) {
                 $this->search->setName($oSuchanfrage->cSuche);
             }
             // Suchcache beachten / erstellen
@@ -722,7 +722,7 @@ class ProductFilter
                     $this->baseState = $this->searchQuery;
                 }
             }
-        } elseif ($params['cSuche'] !== null && \strlen($params['cSuche']) > 0) {
+        } elseif ($params['cSuche'] !== null && \mb_strlen($params['cSuche']) > 0) {
             $params['cSuche'] = \StringHandler::filterXSS($params['cSuche']);
             $this->search->setName($params['cSuche']);
             $this->searchQuery->setName($params['cSuche']);

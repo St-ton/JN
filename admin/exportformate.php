@@ -103,10 +103,10 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
 }
 $cAction       = null;
 $kExportformat = null;
-if (isset($_POST['action']) && strlen($_POST['action']) > 0 && (int)$_POST['kExportformat'] > 0) {
+if (isset($_POST['action']) && mb_strlen($_POST['action']) > 0 && (int)$_POST['kExportformat'] > 0) {
     $cAction       = $_POST['action'];
     $kExportformat = (int)$_POST['kExportformat'];
-} elseif (isset($_GET['action']) && strlen($_GET['action']) > 0 && (int)$_GET['kExportformat'] > 0) {
+} elseif (isset($_GET['action']) && mb_strlen($_GET['action']) > 0 && (int)$_GET['kExportformat'] > 0) {
     $cAction       = $_GET['action'];
     $kExportformat = (int)$_GET['kExportformat'];
 }

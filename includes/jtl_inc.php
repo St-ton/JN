@@ -466,7 +466,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
             pruefeWarenkorbArtikelSichtbarkeit($_SESSION['Kunde']->kKundengruppe);
             executeHook(HOOK_JTL_PAGE_REDIRECT);
             Cart::checkAdditions();
-            if (strlen($cURL) > 0) {
+            if (mb_strlen($cURL) > 0) {
                 if (mb_strpos($cURL, 'http') !== 0) {
                     $cURL = Shop::getURL() . '/' . ltrim($cURL, '/');
                 }

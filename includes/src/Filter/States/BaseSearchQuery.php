@@ -102,7 +102,7 @@ class BaseSearchQuery extends AbstractFilter
         $minChars    = ($min = (int)$this->getConfig('artikeluebersicht')['suche_min_zeichen']) > 0
             ? $min
             : 3;
-        if (\strlen($name) > 0 || (isset($_GET['qs']) && $_GET['qs'] === '')) {
+        if (\mb_strlen($name) > 0 || (isset($_GET['qs']) && $_GET['qs'] === '')) {
             \preg_match(
                 '/[\w' . \utf8_decode('äÄüÜöÖß') . '\.\-]{' . $minChars . ',}/',
                 \str_replace(' ', '', $name),
@@ -390,7 +390,7 @@ class BaseSearchQuery extends AbstractFilter
         $langID = $langIDExt > 0
             ? $langIDExt
             : $this->getLanguageID();
-        if (\strlen($query) > 0) {
+        if (\mb_strlen($query) > 0) {
             $querymappingTMP = $this->productFilter->getDB()->select(
                 'tsuchanfragemapping',
                 'kSprache',
@@ -464,7 +464,7 @@ class BaseSearchQuery extends AbstractFilter
         $nMindestzeichen = ($min = (int)$this->getConfig('artikeluebersicht')['suche_min_zeichen']) > 0
             ? $min
             : 3;
-        if (\strlen($cSuche) < $nMindestzeichen) {
+        if (\mb_strlen($cSuche) < $nMindestzeichen) {
             require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
             $this->error = \lang_suche_mindestanzahl($cSuche, $nMindestzeichen);
 
@@ -855,7 +855,7 @@ class BaseSearchQuery extends AbstractFilter
         $searchArray    = [];
         $parts          = \explode(' ', $query);
         $query_stripped = \stripslashes($query);
-        if ($query_stripped{0} !== '"' || $query_stripped{\strlen($query_stripped) - 1} !== '"') {
+        if ($query_stripped{0} !== '"' || $query_stripped{\mb_strlen($query_stripped) - 1} !== '"') {
             foreach ($parts as $i => $searchString) {
                 if (\mb_strpos($searchString, '+') !== false) {
                     $searchPart = \explode('+', $searchString);
@@ -1003,7 +1003,7 @@ class BaseSearchQuery extends AbstractFilter
         if (\is_array($searchCols)
             && \is_array($nonAllowed)
             && \count($searchCols) > 0
-            && \strlen($searchCol) > 0
+            && \mb_strlen($searchCol) > 0
             && \count($nonAllowed) > 0
         ) {
             foreach ($nonAllowed as $class) {

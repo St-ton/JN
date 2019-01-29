@@ -122,13 +122,13 @@ class SimpleCaptchaService implements CaptchaServiceInterface
      */
     public static function encodeCode(string $plain): string
     {
-        if (\strlen($plain) !== 4) {
+        if (\mb_strlen($plain) !== 4) {
             return '0';
         }
         $cryptoService = Shop::Container()->getCryptoService();
         $key           = \BLOWFISH_KEY;
         $mod1          = (\mb_ord($key[0]) + \mb_ord($key[1]) + \mb_ord($key[2])) % 9 + 1;
-        $mod2          = \strlen($_SERVER['DOCUMENT_ROOT']) % 9 + 1;
+        $mod2          = \mb_strlen($_SERVER['DOCUMENT_ROOT']) % 9 + 1;
 
         $s1 = \mb_ord($plain{0}) - $mod2 + $mod1 + 123;
         $s2 = \mb_ord($plain{1}) - $mod1 + $mod2 + 234;

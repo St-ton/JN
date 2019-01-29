@@ -312,7 +312,7 @@ class Wunschliste
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($wlPositionAttributes as $wlPositionAttribute) {
-                if (strlen($wlPositionAttribute->cFreifeldWert) > 0) {
+                if (mb_strlen($wlPositionAttribute->cFreifeldWert) > 0) {
                     $wlPositionAttribute->cEigenschaftName     = $wlPositionAttribute->cName;
                     $wlPositionAttribute->cEigenschaftWertName = $wlPositionAttribute->cFreifeldWert;
                 }
@@ -445,7 +445,7 @@ class Wunschliste
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($wlPositionAttributes as $wlPositionAttribute) {
-                if (strlen($wlPositionAttribute->cFreifeldWert) > 0) {
+                if (mb_strlen($wlPositionAttribute->cFreifeldWert) > 0) {
                     if (empty($wlPositionAttribute->cName)) {
                         $_cName                     = Shop::Container()->getDB()->queryPrepared(
                             'SELECT IF(LENGTH(teigenschaftsprache.cName) > 0, 
@@ -481,7 +481,7 @@ class Wunschliste
             }
             $wlPosition->Artikel = new Artikel();
             $wlPosition->Artikel->fuelleArtikel($wlPosition->kArtikel, $defaultOptions);
-            $wlPosition->cArtikelName    = strlen($wlPosition->Artikel->cName) === 0
+            $wlPosition->cArtikelName    = mb_strlen($wlPosition->Artikel->cName) === 0
                 ? $cArtikelName
                 : $wlPosition->Artikel->cName;
             $this->CWunschlistePos_arr[] = $wlPosition;
@@ -654,7 +654,7 @@ class Wunschliste
     {
         $cURLID = StringHandler::filterXSS(Request::verifyGPDataString('wlid'));
 
-        if (strlen($cURLID) > 0) {
+        if (mb_strlen($cURLID) > 0) {
             $campaing = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
             $id       = $campaing->kKampagne > 0
                 ? ($cURLID . '&' . $campaing->cParameter . '=' . $campaing->cWert)
@@ -758,7 +758,7 @@ class Wunschliste
     public static function update(int $id): string
     {
         $db = Shop::Container()->getDB();
-        if (isset($_POST['WunschlisteName']) && strlen($_POST['WunschlisteName']) > 0) {
+        if (isset($_POST['WunschlisteName']) && mb_strlen($_POST['WunschlisteName']) > 0) {
             $cName = StringHandler::htmlentities(StringHandler::filterXSS(substr($_POST['WunschlisteName'], 0, 254)));
             $db->update('twunschliste', 'kWunschliste', $id, (object)['cName' => $cName]);
         }
@@ -775,7 +775,7 @@ class Wunschliste
         foreach ($positions as $position) {
             $kWunschlistePos = (int)$position->kWunschlistePos;
             // Ist ein Kommentar vorhanden
-            if (strlen($_POST['Kommentar_' . $kWunschlistePos]) > 0) {
+            if (mb_strlen($_POST['Kommentar_' . $kWunschlistePos]) > 0) {
                 $upd             = new stdClass();
                 $upd->cKommentar = StringHandler::htmlentities(
                     StringHandler::filterXSS($db->escape(substr($_POST['Kommentar_' . $kWunschlistePos], 0, 254)))

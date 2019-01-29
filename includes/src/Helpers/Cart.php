@@ -867,7 +867,7 @@ class Cart
             foreach ($attributes as $oEigenschaftwerte) {
                 $oEigenschaftwerte->kEigenschaft = (int)$oEigenschaftwerte->kEigenschaft;
                 if ($var->cTyp === 'PFLICHT-FREIFELD' && $oEigenschaftwerte->kEigenschaft === $var->kEigenschaft) {
-                    if (\strlen($oEigenschaftwerte->cFreifeldWert) > 0) {
+                    if (\mb_strlen($oEigenschaftwerte->cFreifeldWert) > 0) {
                         $bEigenschaftWertDa = true;
                     } else {
                         $redirectParam[] = \R_VARWAEHLEN;

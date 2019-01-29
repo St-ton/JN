@@ -18,7 +18,7 @@ function bearbeiteEinstellungsSuche($cSuche, $bSpeichern = false)
     $oSQL->nSuchModus       = 0;
     $oSQL->cSuche           = $cSuche;
     $oSQL->oEinstellung_arr = [];
-    if (strlen($cSuche) > 0) {
+    if (mb_strlen($cSuche) > 0) {
         //Einstellungen die zu den Exportformaten gehören nicht holen
         $oSQL->cWHERE = 'AND kEinstellungenSektion != 101 ';
         // Einstellungen Kommagetrennt?
@@ -102,7 +102,7 @@ function bearbeiteEinstellungsSuche($cSuche, $bSpeichern = false)
  */
 function holeEinstellungen($oSQL, $bSpeichern)
 {
-    if (strlen($oSQL->cWHERE) <= 0) {
+    if (mb_strlen($oSQL->cWHERE) <= 0) {
         return $oSQL;
     }
     $oSQL->oEinstellung_arr = Shop::Container()->getDB()->query(

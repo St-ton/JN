@@ -267,7 +267,7 @@ class MediaImage implements IMedia
         header('Accept-Ranges: none');
         header('Content-Encoding: None');
 
-        header('Content-Length: ' . strlen($data));
+        header('Content-Length: ' . mb_strlen($data));
         header('Content-Type: ' . $imanee->getMime());
 
         if ($nocache === true) {
@@ -501,7 +501,7 @@ class MediaImage implements IMedia
      */
     private function parse(?string $request): ?array
     {
-        if (!is_string($request) || strlen($request) === 0) {
+        if (!is_string($request) || mb_strlen($request) === 0) {
             return null;
         }
         if (mb_strpos($request, '/') === 0) {

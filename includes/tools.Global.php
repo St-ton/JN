@@ -66,15 +66,15 @@ function cryptPasswort($cPasswort, $cHashPasswort = null)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 
     $cSalt   = sha1(uniqid(mt_rand(), true));
-    $nLaenge = strlen($cSalt);
-    $nLaenge = max($nLaenge >> 3, ($nLaenge >> 2) - strlen($cPasswort));
+    $nLaenge = mb_strlen($cSalt);
+    $nLaenge = max($nLaenge >> 3, ($nLaenge >> 2) - mb_strlen($cPasswort));
     $cSalt   = $cHashPasswort
-        ? substr($cHashPasswort, min(strlen($cPasswort), strlen($cHashPasswort) - $nLaenge), $nLaenge)
+        ? substr($cHashPasswort, min(mb_strlen($cPasswort), mb_strlen($cHashPasswort) - $nLaenge), $nLaenge)
         : strrev(substr($cSalt, 0, $nLaenge));
     $cHash   = sha1($cPasswort);
-    $cHash   = sha1(substr($cHash, 0, strlen($cPasswort)) . $cSalt . substr($cHash, strlen($cPasswort)));
+    $cHash   = sha1(substr($cHash, 0, mb_strlen($cPasswort)) . $cSalt . substr($cHash, mb_strlen($cPasswort)));
     $cHash   = substr($cHash, $nLaenge);
-    $cHash   = substr($cHash, 0, strlen($cPasswort)) . $cSalt . substr($cHash, strlen($cPasswort));
+    $cHash   = substr($cHash, 0, mb_strlen($cPasswort)) . $cSalt . substr($cHash, mb_strlen($cPasswort));
 
     return $cHashPasswort && $cHashPasswort !== $cHash ? false : $cHash;
 }
@@ -93,12 +93,12 @@ function gibUID(int $nAnzahlStellen = 40, string $cString = '')
     $cSaltBuchstaben = 'aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789';
     // Gen SALT
     for ($j = 0; $j < 30; $j++) {
-        $cSalt .= substr($cSaltBuchstaben, mt_rand(0, strlen($cSaltBuchstaben) - 1), 1);
+        $cSalt .= substr($cSaltBuchstaben, mt_rand(0, mb_strlen($cSaltBuchstaben) - 1), 1);
     }
     $cSalt = md5($cSalt);
     mt_srand();
     // Wurde ein String übergeben?
-    if (strlen($cString) > 0) {
+    if (mb_strlen($cString) > 0) {
         // Hat der String Elemente?
         [$strings] = explode(';', $cString);
         if (is_array($strings) && count($strings) > 0) {
@@ -108,10 +108,10 @@ function gibUID(int $nAnzahlStellen = 40, string $cString = '')
 
             $cUID = md5($cUID . $cSalt);
         } else {
-            $sl = strlen($cString);
+            $sl = mb_strlen($cString);
             for ($i = 0; $i < $sl; $i++) {
-                $nPos = mt_rand(0, strlen($cString) - 1);
-                if (((int)date('w') % 2) <= strlen($cString)) {
+                $nPos = mt_rand(0, mb_strlen($cString) - 1);
+                if (((int)date('w') % 2) <= mb_strlen($cString)) {
                     $nPos = (int)date('w') % 2;
                 }
                 $cUID .= md5(substr($cString, $nPos, 1) . $cSalt . md5(PFAD_ROOT . (microtime(true) - mt_rand())));
@@ -406,9 +406,9 @@ function formatCurrency($fSumme)
         if ($fCents < 10) {
             $fCents = '0' . $fCents;
         }
-        for ($i = 0; $i < floor((strlen($fSumme) - (1 + $i)) / 3); $i++) {
-            $fSumme = substr($fSumme, 0, strlen($fSumme) - (4 * $i + 3)) . '.' .
-                substr($fSumme, 0, strlen($fSumme) - (4 * $i + 3));
+        for ($i = 0; $i < floor((mb_strlen($fSumme) - (1 + $i)) / 3); $i++) {
+            $fSumme = substr($fSumme, 0, mb_strlen($fSumme) - (4 * $i + 3)) . '.' .
+                substr($fSumme, 0, mb_strlen($fSumme) - (4 * $i + 3));
         }
     }
 
@@ -630,7 +630,7 @@ function pruefeVariBoxAnzahl($variBoxAnzahl_arr = [])
  */
 function gibArtikelBildPfad($cPfad)
 {
-    return strlen(trim($cPfad)) > 0
+    return mb_strlen(trim($cPfad)) > 0
         ? $cPfad
         : BILD_KEIN_ARTIKELBILD_VORHANDEN;
 }
@@ -939,7 +939,7 @@ function getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays)
 /**
  * @param string $metaProposal the proposed meta text value.
  * @param string $metaSuffix append suffix to meta value that wont be shortened
- * @param int $maxLength $metaProposal will be truncated to $maxlength - strlen($metaSuffix) characters
+ * @param int $maxLength $metaProposal will be truncated to $maxlength - mb_strlen($metaSuffix) characters
  * @return string truncated meta value with optional suffix (always appended if set),
  * @deprecated since 5.0.0
  */
@@ -1758,7 +1758,7 @@ function gibKeyStringFuerKeyArray($cKey_arr, $cSeperator)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $cKeys = '';
-    if (is_array($cKey_arr) && count($cKey_arr) > 0 && strlen($cSeperator) > 0) {
+    if (is_array($cKey_arr) && count($cKey_arr) > 0 && mb_strlen($cSeperator) > 0) {
         $cKeys .= ';';
         foreach ($cKey_arr as $i => $cKey) {
             if ($i > 0) {
@@ -1787,7 +1787,7 @@ function gibKeyArrayFuerKeyString($cKeys, $seperator)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $keys = [];
     foreach (explode($seperator, $cKeys) as $cTMP) {
-        if (strlen($cTMP) > 0) {
+        if (mb_strlen($cTMP) > 0) {
             $keys[] = (int)$cTMP;
         }
     }

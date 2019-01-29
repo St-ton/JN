@@ -145,7 +145,7 @@ class SimpleCSS
             foreach ($this->cCSS_arr as $selector => $attribute) {
                 $ret .= $selector . ' {' . LF;
                 foreach ($attribute as $cKey => $cValue) {
-                    if (strlen($cKey) && strlen($cValue)) {
+                    if (mb_strlen($cKey) && mb_strlen($cValue)) {
                         $ret .= '   ' . $cKey . ': ' . $cValue . ';' . LF;
                     }
                 }
@@ -230,9 +230,9 @@ class SimpleCSS
         $g = dechex($g < 0 ? 0 : ($g > 255 ? 255 : $g));
         $b = dechex($b < 0 ? 0 : ($b > 255 ? 255 : $b));
 
-        $color  = (strlen($r) < 2 ? '0' : '') . $r;
-        $color .= (strlen($g) < 2 ? '0' : '') . $g;
-        $color .= (strlen($b) < 2 ? '0' : '') . $b;
+        $color  = (mb_strlen($r) < 2 ? '0' : '') . $r;
+        $color .= (mb_strlen($g) < 2 ? '0' : '') . $g;
+        $color .= (mb_strlen($b) < 2 ? '0' : '') . $b;
 
         return '#' . $color;
     }
@@ -246,13 +246,13 @@ class SimpleCSS
         if (mb_strpos($color, '#') === 0) {
             $color = substr($color, 1);
         }
-        if (strlen($color) === 6) {
+        if (mb_strlen($color) === 6) {
             [$r, $g, $b] = [
                 $color[0] . $color[1],
                 $color[2] . $color[3],
                 $color[4] . $color[5]
             ];
-        } elseif (strlen($color) === 3) {
+        } elseif (mb_strlen($color) === 3) {
             [$r, $g, $b] = [$color[0] . $color[0], $color[1] . $color[1], $color[2] . $color[2]];
         } else {
             return false;

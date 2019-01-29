@@ -618,7 +618,7 @@ class Warenlager extends MainModel
                 $warehouse->fBestand     = $item->fBestand;
                 $warehouse->fZulauf      = $item->fZulauf;
                 $warehouse->dZulaufDatum = $item->dZulaufDatum;
-                if (strlen($warehouse->dZulaufDatum) > 1) {
+                if (mb_strlen($warehouse->dZulaufDatum) > 1) {
                     try {
                         $warehouse->dZulaufDatum_de = (new DateTime($item->dZulaufDatum))->format('d.m.Y');
                     } catch (Exception $exc) {

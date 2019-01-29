@@ -49,7 +49,7 @@ if (empty($dbFileStruct)) {
     $cFehler = __('errorReadStructureFile');
 }
 
-if (strlen($cFehler) === 0) {
+if (mb_strlen($cFehler) === 0) {
     $dbErrors = compareDBStruct($dbFileStruct, $dbStruct);
 }
 

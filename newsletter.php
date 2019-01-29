@@ -42,7 +42,7 @@ if (isset($oLink->kLink) && $oLink->kLink > 0) {
 
 $cCanonicalURL = '';
 $option        = 'eintragen';
-if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
+if (isset($_GET['fc']) && mb_strlen($_GET['fc']) > 0) {
     $option     = 'freischalten';
     $optCode    = StringHandler::htmlentities(StringHandler::filterXSS(strip_tags($_GET['fc'])));
     $recicpient = $db->select('tnewsletterempfaenger', 'cOptCode', $optCode);
@@ -82,7 +82,7 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
             'newsletterNoactive'
         );
     }
-} elseif (isset($_GET['lc']) && strlen($_GET['lc']) > 0) { // Loeschcode wurde uebergeben
+} elseif (isset($_GET['lc']) && mb_strlen($_GET['lc']) > 0) { // Loeschcode wurde uebergeben
     $option     = 'loeschen';
     $deleteCode = StringHandler::htmlentities(strip_tags($_GET['lc']));
     $recicpient = $db->select('tnewsletterempfaenger', 'cLoeschCode', $deleteCode);

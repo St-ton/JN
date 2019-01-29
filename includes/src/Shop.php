@@ -827,9 +827,9 @@ final class Shop
         self::$cDatum   = Request::verifyGPDataString('cDatum');
         self::$nAnzahl  = Request::verifyGPCDataInt('nAnzahl');
 
-        if (strlen(Request::verifyGPDataString('qs')) > 0) {
+        if (mb_strlen(Request::verifyGPDataString('qs')) > 0) {
             self::$cSuche = StringHandler::xssClean(Request::verifyGPDataString('qs'));
-        } elseif (strlen(Request::verifyGPDataString('suchausdruck')) > 0) {
+        } elseif (mb_strlen(Request::verifyGPDataString('suchausdruck')) > 0) {
             self::$cSuche = StringHandler::xssClean(Request::verifyGPDataString('suchausdruck'));
         } else {
             self::$cSuche = StringHandler::xssClean(Request::verifyGPDataString('suche'));
@@ -869,7 +869,7 @@ final class Shop
 
         if (self::$kWunschliste === 0
             && Request::verifyGPDataString('error') === ''
-            && strlen(Request::verifyGPDataString('wlid')) > 0
+            && mb_strlen(Request::verifyGPDataString('wlid')) > 0
         ) {
             header(
                 'Location: ' . LinkHelper::getInstance()->getStaticRoute('wunschliste.php') .
@@ -986,7 +986,7 @@ final class Shop
         $baseURLdata = parse_url($uri);
         $seo          = isset($baseURLdata['path'])
             ? substr($baseURLdata['path'], isset($shopURLdata['path'])
-                ? (strlen($shopURLdata['path']) + 1)
+                ? (mb_strlen($shopURLdata['path']) + 1)
                 : 1)
             : false;
         $seo          = Request::extractExternalParams($seo);
@@ -1034,7 +1034,7 @@ final class Shop
                 }
             }
             // change Opera Fix
-            if (substr($seo, strlen($seo) - 1, 1) === '?') {
+            if (substr($seo, mb_strlen($seo) - 1, 1) === '?') {
                 $seo = substr($seo, 0, -1);
             }
             $nMatch = preg_match('/[^_](' . SEP_SEITE . '([0-9]+))/', $seo, $matches, PREG_OFFSET_CAPTURE);
@@ -1043,7 +1043,7 @@ final class Shop
                 $seo   = substr($seo, 0, $matches[1][1]);
             }
             // duplicate content work around
-            if ($seite === 1 && strlen($seo) > 0) {
+            if ($seite === 1 && mb_strlen($seo) > 0) {
                 http_response_code(301);
                 header('Location: ' . self::getURL() . '/' . $seo);
                 exit();
@@ -1159,7 +1159,7 @@ final class Shop
                 }
             }
             // category filter
-            if (strlen($katseo) > 0) {
+            if (mb_strlen($katseo) > 0) {
                 $oSeo = self::Container()->getDB()->select('tseo', 'cKey', 'kKategorie', 'cSeo', $katseo);
                 if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $katseo) === 0) {
                     self::$kKategorieFilter = (int)$oSeo->kKey;
@@ -1211,7 +1211,7 @@ final class Shop
                 }
                 self::$bSEOMerkmalNotFound = false;
                 foreach ($seoAttributes as $i => $cSEOMerkmal) {
-                    if ($i > 0 && strlen($cSEOMerkmal) > 0) {
+                    if ($i > 0 && mb_strlen($cSEOMerkmal) > 0) {
                         $oSeo = self::Container()->getDB()->select(
                             'tseo',
                             'cKey',
@@ -1766,7 +1766,7 @@ final class Shop
         }
 
         return isset($baseURLdata['path'])
-            ? substr($baseURLdata['path'], strlen($shopURLdata['path']))
+            ? substr($baseURLdata['path'], mb_strlen($shopURLdata['path']))
             : '';
     }
 

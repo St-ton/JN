@@ -127,14 +127,14 @@ class Redirect
      */
     public function saveExt(string $source, string $destination, bool $force = false): bool
     {
-        if (strlen($source) > 0 && $source[0] !== '/') {
+        if (mb_strlen($source) > 0 && $source[0] !== '/') {
             $source = '/' . $source;
         }
 
         if ($force
             || (self::checkAvailability($destination)
-                && strlen($source) > 1
-                && strlen($destination) > 1
+                && mb_strlen($source) > 1
+                && mb_strlen($destination) > 1
                 && $source !== $destination)
         ) {
             if ($this->isDeadlock($source, $destination)) {
@@ -263,7 +263,7 @@ class Redirect
      */
     public function getArtNrUrl($artNo, string $iso): ?string
     {
-        if (strlen($artNo) === 0) {
+        if (mb_strlen($artNo) === 0) {
             return null;
         }
         $item = Shop::Container()->getDB()->executeQueryPrepared(
@@ -338,7 +338,7 @@ class Redirect
                 || $filename === 'warenkorb.php'
                 || $filename === 'kontakt.php'
                 || $filename === 'news.php'
-                || (isset($seoPath->cSeo) && strlen($seoPath->cSeo) > 0)
+                || (isset($seoPath->cSeo) && mb_strlen($seoPath->cSeo) > 0)
             ) {
                 return $lastPath;
             }
@@ -359,7 +359,7 @@ class Redirect
         }
         $redirectUrl = false;
         $url         = $this->normalize($url);
-        if (is_string($url) && strlen($url) > 0 && $this->isValid($url)) {
+        if (is_string($url) && mb_strlen($url) > 0 && $this->isValid($url)) {
             $parsedUrl   = parse_url($url);
             $queryString = null;
             if (isset($parsedUrl['query'], $parsedUrl['path'])) {
@@ -387,14 +387,14 @@ class Redirect
                     unset($item->kRedirect);
                     $item->kRedirect = Shop::Container()->getDB()->insert('tredirect', $item);
                 }
-            } elseif (strlen($item->cToUrl) > 0) {
+            } elseif (mb_strlen($item->cToUrl) > 0) {
                 $redirectUrl = $item->cToUrl;
                 $redirectUrl .= $queryString !== null && !$foundRedirectWithQuery
                     ? '?' . $queryString
                     : '';
             }
             $referer = $_SERVER['HTTP_REFERER'] ?? '';
-            if (strlen($referer) > 0) {
+            if (mb_strlen($referer) > 0) {
                 $referer = $this->normalize($referer);
             }
             $ip = Request::getRealIP();
@@ -445,7 +445,7 @@ class Redirect
             'txt',
             'png'
         ];
-        if (isset($pathInfo['extension']) && strlen($pathInfo['extension']) > 0) {
+        if (isset($pathInfo['extension']) && mb_strlen($pathInfo['extension']) > 0) {
             $extension = mb_convert_case($pathInfo['extension'], MB_CASE_LOWER);
             if (in_array($extension, $invalidExtensions, true)) {
                 return false;
@@ -770,7 +770,7 @@ class Redirect
                     if ($seo && !empty($data->getSeo($languageID))) {
                         $url = $data->getSeo($languageID);
                     }
-                    if (strlen($url) > 0) {
+                    if (mb_strlen($url) > 0) {
                         header('Location: ' . $url, true, 301);
                         exit();
                     }

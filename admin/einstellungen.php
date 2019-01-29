@@ -90,7 +90,7 @@ if (isset($_POST['einstellungen_bearbeiten'])
     }
     $step = 'einstellungen bearbeiten';
     $Conf = [];
-    if (strlen($oSQL->cWHERE) > 0) {
+    if (mb_strlen($oSQL->cWHERE) > 0) {
         $Conf = $oSQL->oEinstellung_arr;
         $smarty->assign('cSearch', $oSQL->cSearch);
     } else {
@@ -196,7 +196,7 @@ if ($step === 'einstellungen bearbeiten') {
         $oSQL->cWHERE = '';
     }
     $Conf = [];
-    if (strlen($oSQL->cWHERE) > 0) {
+    if (mb_strlen($oSQL->cWHERE) > 0) {
         $Conf = $oSQL->oEinstellung_arr;
         $smarty->assign('cSearch', $oSQL->cSearch)
                ->assign('cSuche', $oSQL->cSuche);

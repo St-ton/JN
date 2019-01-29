@@ -159,9 +159,9 @@ class LessParser
         $g = dechex($g < 0 ? 0 : ($g > 255 ? 255 : $g));
         $b = dechex($b < 0 ? 0 : ($b > 255 ? 255 : $b));
 
-        $color  = (strlen($r) < 2 ? '0' : '') . $r;
-        $color .= (strlen($g) < 2 ? '0' : '') . $g;
-        $color .= (strlen($b) < 2 ? '0' : '') . $b;
+        $color  = (mb_strlen($r) < 2 ? '0' : '') . $r;
+        $color .= (mb_strlen($g) < 2 ? '0' : '') . $g;
+        $color .= (mb_strlen($b) < 2 ? '0' : '') . $b;
 
         return '#' . $color;
     }

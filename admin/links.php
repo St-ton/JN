@@ -143,7 +143,7 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && Form::validate
                         substr(
                             $type,
                             mb_strpos($type, '/') + 1,
-                            strlen($type) - mb_strpos($type, '/') + 1
+                            mb_strlen($type) - mb_strpos($type, '/') + 1
                         );
                     move_uploaded_file($_FILES['Bilder']['tmp_name'][$i - $nZaehler], $cUploadDatei);
                 }

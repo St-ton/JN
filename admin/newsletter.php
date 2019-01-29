@@ -33,7 +33,7 @@ $customerGroup             = $db->select('tkundengruppe', 'cStandard', 'Y');
 $_SESSION['Kundengruppe']  = new Kundengruppe($customerGroup->kKundengruppe);
 
 setzeSprache();
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 if (Form::validateToken()) {
@@ -143,20 +143,20 @@ if (Form::validateToken()) {
                 $smarty->assign('oNewsletterHistory', $oNewsletterHistory);
             }
         }
-    } elseif (strlen(Request::verifyGPDataString('cSucheInaktiv')) > 0) { // Inaktive Abonnentensuche
+    } elseif (mb_strlen(Request::verifyGPDataString('cSucheInaktiv')) > 0) { // Inaktive Abonnentensuche
         $cSuche = $db->escape(StringHandler::filterXSS(Request::verifyGPDataString('cSucheInaktiv')));
 
-        if (strlen($cSuche) > 0) {
+        if (mb_strlen($cSuche) > 0) {
             $inactiveSearchSQL->cWHERE = " AND (tnewsletterempfaenger.cVorname LIKE '%" . $cSuche .
                 "%' OR tnewsletterempfaenger.cNachname LIKE '%" . $cSuche .
                 "%' OR tnewsletterempfaenger.cEmail LIKE '%" . $cSuche . "%')";
         }
 
         $smarty->assign('cSucheInaktiv', $cSuche);
-    } elseif (strlen(Request::verifyGPDataString('cSucheAktiv')) > 0) { // Aktive Abonnentensuche
+    } elseif (mb_strlen(Request::verifyGPDataString('cSucheAktiv')) > 0) { // Aktive Abonnentensuche
         $cSuche = $db->escape(StringHandler::filterXSS(Request::verifyGPDataString('cSucheAktiv')));
 
-        if (strlen($cSuche) > 0) {
+        if (mb_strlen($cSuche) > 0) {
             $activeSearchSQL->cWHERE = " AND (tnewsletterempfaenger.cVorname LIKE '%" . $cSuche .
                 "%' OR tnewsletterempfaenger.cNachname LIKE '%" . $cSuche .
                 "%' OR tnewsletterempfaenger.cEmail LIKE '%" . $cSuche . "%')";
@@ -317,17 +317,17 @@ if (Form::validateToken()) {
                 $newsletterTPL->cArtikel    = substr(
                     substr($newsletterTPL->cArtikel, 1),
                     0,
-                    strlen(substr($newsletterTPL->cArtikel, 1)) - 1
+                    mb_strlen(substr($newsletterTPL->cArtikel, 1)) - 1
                 );
                 $newsletterTPL->cHersteller = substr(
                     substr($newsletterTPL->cHersteller, 1),
                     0,
-                    strlen(substr($newsletterTPL->cHersteller, 1)) - 1
+                    mb_strlen(substr($newsletterTPL->cHersteller, 1)) - 1
                 );
                 $newsletterTPL->cKategorie  = substr(
                     substr($newsletterTPL->cKategorie, 1),
                     0,
-                    strlen(substr($newsletterTPL->cKategorie, 1)) - 1
+                    mb_strlen(substr($newsletterTPL->cKategorie, 1)) - 1
                 );
                 $kKundengruppe_arr          = explodecKundengruppe($newsletterTPL->cKundengruppe);
                 $smarty->assign('kArtikel_arr', $oExplodedArtikel->kArtikel_arr)
@@ -427,7 +427,7 @@ if (Form::validateToken()) {
                     foreach ($recipient->cKundengruppe_arr as $cKundengruppeTMP) {
                         if ($cKundengruppeTMP != '0') {
                             $oKundengruppeTMP = $db->select('tkundengruppe', 'kKundengruppe', (int)$cKundengruppeTMP);
-                            if (strlen($oKundengruppeTMP->cName) > 0) {
+                            if (mb_strlen($oKundengruppeTMP->cName) > 0) {
                                 if ($nCount_arr[0] > 0) {
                                     $cKundengruppe .= ', ' . $oKundengruppeTMP->cName;
                                 } else {
@@ -459,7 +459,7 @@ if (Form::validateToken()) {
                         }
                     }
                 }
-                if (strlen($cKundengruppe) > 0) {
+                if (mb_strlen($cKundengruppe) > 0) {
                     $cKundengruppe = substr($cKundengruppe, 0, -2);
                 }
                 // tnewsletterhistory objekt bauen

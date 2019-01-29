@@ -298,7 +298,7 @@ function pruefeBestaetigungStep(): void
         $step = 'Bestaetigung';
     }
     if (isset($_SESSION['Zahlungsart'], $_SESSION['Zahlungsart']->cZusatzschrittTemplate)
-        && strlen($_SESSION['Zahlungsart']->cZusatzschrittTemplate) > 0
+        && mb_strlen($_SESSION['Zahlungsart']->cZusatzschrittTemplate) > 0
     ) {
         $paymentMethod = PaymentMethod::create($_SESSION['Zahlungsart']->cModulId);
         if (is_object($paymentMethod) && !$paymentMethod->validateAdditional()) {
@@ -748,7 +748,7 @@ function gibStepZahlung()
                 }
                 if (isset($oTrustedShops->tsId)
                     && $oTrustedShops->eType === TS_BUYERPROT_EXCELLENCE
-                    && strlen($oTrustedShops->tsId) > 0
+                    && mb_strlen($oTrustedShops->tsId) > 0
                 ) {
                     $_SESSION['TrustedShopsZahlung'] = true;
                     gibStepZahlung();
@@ -1112,7 +1112,7 @@ function checkBIC($bic): bool
  */
 function plausiIban($iban)
 {
-    if ($iban === '' || strlen($iban) < 6) {
+    if ($iban === '' || mb_strlen($iban) < 6) {
         return false;
     }
     $iban  = str_replace(' ', '', $iban);
@@ -1120,7 +1120,7 @@ function plausiIban($iban)
         . (string)(mb_ord($iban{0}) - 55)
         . (string)(mb_ord($iban{1}) - 55)
         . substr($iban, 2, 2);
-    $len   = strlen($iban1);
+    $len   = mb_strlen($iban1);
     for ($i = 0; $i < $len; $i++) {
         if (mb_ord($iban1{$i}) > 64 && mb_ord($iban1{$i}) < 91) {
             $iban1 = substr($iban1, 0, $i) . (string)(mb_ord($iban1{$i}) - 55) . substr($iban1, $i + 1);
@@ -1128,7 +1128,7 @@ function plausiIban($iban)
     }
 
     $rest = 0;
-    $len  = strlen($iban1);
+    $len  = mb_strlen($iban1);
     for ($pos = 0; $pos < $len; $pos += 7) {
         $part = (string)$rest . substr($iban1, $pos, 7);
         $rest = (int)$part % 97;
@@ -1218,7 +1218,7 @@ function zahlungsartKorrekt(int $paymentMethodID): int
                 return 0;
             }
         }
-        if (isset($paymentMethod->cModulId) && strlen($paymentMethod->cModulId) > 0) {
+        if (isset($paymentMethod->cModulId) && mb_strlen($paymentMethod->cModulId) > 0) {
             $config = Shop::Container()->getDB()->selectAll(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cModulId'],
@@ -1539,22 +1539,22 @@ function gibKundenKontodaten(?int $customerID)
 
     if (isset($accountData->kKunde) && $accountData->kKunde > 0) {
         $cryptoService = Shop::Container()->getCryptoService();
-        if (strlen($accountData->cBLZ) > 0) {
+        if (mb_strlen($accountData->cBLZ) > 0) {
             $accountData->cBLZ = (int)$cryptoService->decryptXTEA($accountData->cBLZ);
         }
-        if (strlen($accountData->cInhaber) > 0) {
+        if (mb_strlen($accountData->cInhaber) > 0) {
             $accountData->cInhaber = trim($cryptoService->decryptXTEA($accountData->cInhaber));
         }
-        if (strlen($accountData->cBankName) > 0) {
+        if (mb_strlen($accountData->cBankName) > 0) {
             $accountData->cBankName = trim($cryptoService->decryptXTEA($accountData->cBankName));
         }
-        if (strlen($accountData->nKonto) > 0) {
+        if (mb_strlen($accountData->nKonto) > 0) {
             $accountData->nKonto = trim($cryptoService->decryptXTEA($accountData->nKonto));
         }
-        if (strlen($accountData->cIBAN) > 0) {
+        if (mb_strlen($accountData->cIBAN) > 0) {
             $accountData->cIBAN = trim($cryptoService->decryptXTEA($accountData->cIBAN));
         }
-        if (strlen($accountData->cBIC) > 0) {
+        if (mb_strlen($accountData->cBIC) > 0) {
             $accountData->cBIC = trim($cryptoService->decryptXTEA($accountData->cBIC));
         }
 
@@ -2244,7 +2244,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
             if ($data['pass'] !== $data['pass2']) {
                 $ret['pass_ungleich'] = 1;
             }
-            if (strlen($data['pass']) < $conf['kunden']['kundenregistrierung_passwortlaenge']) {
+            if (mb_strlen($data['pass']) < $conf['kunden']['kundenregistrierung_passwortlaenge']) {
                 $ret['pass_zu_kurz'] = 1;
             }
         }
@@ -2738,7 +2738,7 @@ function getArtikelQry(array $cartPositions): string
 {
     $ret = '';
     foreach ($cartPositions as $Pos) {
-        if (isset($Pos->Artikel->cArtNr) && strlen($Pos->Artikel->cArtNr) > 0) {
+        if (isset($Pos->Artikel->cArtNr) && mb_strlen($Pos->Artikel->cArtNr) > 0) {
             $ret .= " OR FIND_IN_SET('" .
                 str_replace('%', '\%', Shop::Container()->getDB()->escape($Pos->Artikel->cArtNr))
                 . "', REPLACE(cArtikel, ';', ',')) > 0";
@@ -3040,7 +3040,7 @@ function pruefeAjaxEinKlick(): int
             if ($nZahglungsartStatus === 2) {
                 // Prüfen ab es ein Trusted Shops Zertifikat gibt
                 $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
-                if (strlen($oTrustedShops->tsId) > 0) {
+                if (mb_strlen($oTrustedShops->tsId) > 0) {
                     return 4;
                 }
                 gibStepZahlung();
@@ -3089,7 +3089,7 @@ function ladeAjaxEinKlick(): void
 function plausiAccountwahlLogin($cUserLogin, $cUserPass): int
 {
     global $Kunde;
-    if (strlen($cUserLogin) > 0 && strlen($cUserPass) > 0) {
+    if (mb_strlen($cUserLogin) > 0 && mb_strlen($cUserPass) > 0) {
         $Kunde = new Kunde();
         $Kunde->holLoginKunde($cUserLogin, $cUserPass);
         if ($Kunde->kKunde > 0) {

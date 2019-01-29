@@ -618,7 +618,7 @@ function baueSeitenNaviURL($NaviFilter, $seo, $pages, $maxPages = 7, $filterURL 
         $p->setCurrentPage($pages->AktuelleSeite);
         $pages = $p;
     }
-    if (strlen($filterURL) > 0) {
+    if (mb_strlen($filterURL) > 0) {
         $seo = false;
     }
     $res     = [];

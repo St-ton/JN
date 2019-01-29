@@ -234,7 +234,7 @@ class AdminAccount
         }
         $verified     = false;
         $cPassCrypted = null;
-        if (strlen($oAdmin->cPass) === 32) {
+        if (mb_strlen($oAdmin->cPass) === 32) {
             // old md5 hash support
             if (md5($cPass) !== $oAdmin->cPass) {
                 $this->setRetryCount($oAdmin->cLogin);
@@ -261,7 +261,7 @@ class AdminAccount
                     '*, UNIX_TIMESTAMP(dGueltigBis) AS dGueltigTS'
                 );
             }
-        } elseif (strlen($oAdmin->cPass) === 40) {
+        } elseif (mb_strlen($oAdmin->cPass) === 40) {
             // default login until Shop4
             $cPassCrypted = cryptPasswort($cPass, $oAdmin->cPass);
         } else {
@@ -448,7 +448,7 @@ class AdminAccount
         if (!empty($parsed['port']) && (int)$parsed['port'] > 0) {
             $host .= ':' . $parsed['port'];
         }
-        if (isset($_SERVER['HTTP_HOST']) && $host !== $_SERVER['HTTP_HOST'] && strlen($_SERVER['HTTP_HOST']) > 0) {
+        if (isset($_SERVER['HTTP_HOST']) && $host !== $_SERVER['HTTP_HOST'] && mb_strlen($_SERVER['HTTP_HOST']) > 0) {
             header('Location: ' . $url);
             exit;
         }

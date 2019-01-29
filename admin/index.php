@@ -69,7 +69,7 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
                     header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'dbupdater.php');
                     exit;
                 }
-                if (isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0) {
+                if (isset($_REQUEST['uri']) && mb_strlen(trim($_REQUEST['uri'])) > 0) {
                     redirectToURI($_REQUEST['uri']);
                 }
                 header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'index.php');
@@ -126,7 +126,7 @@ function openDashboard()
     global $oAccount;
 
     $smarty = Shop::Smarty();
-    if (isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0) {
+    if (isset($_REQUEST['uri']) && mb_strlen(trim($_REQUEST['uri'])) > 0) {
         redirectToURI($_REQUEST['uri']);
     }
     $_SESSION['loginIsValid'] = true;
@@ -183,7 +183,7 @@ if ($oAccount->getIsAuthenticated()) {
         // "redirect" to the "login not valid"
         // (we've received a wrong code and give the user the chance to retry)
         $oAccount->redirectOnUrl();
-        $smarty->assign('uri', isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0
+        $smarty->assign('uri', isset($_REQUEST['uri']) && mb_strlen(trim($_REQUEST['uri'])) > 0
             ? trim($_REQUEST['uri'])
             : '')
                ->display('login.tpl');
@@ -196,7 +196,7 @@ if ($oAccount->getIsAuthenticated()) {
         $cFehler = __('errorSessionExpired');
     }
     \Shop::Container()->getGetText()->loadAdminLocale('pages/login');
-    $smarty->assign('uri', isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0
+    $smarty->assign('uri', isset($_REQUEST['uri']) && mb_strlen(trim($_REQUEST['uri'])) > 0
         ? trim($_REQUEST['uri'])
         : '')
            ->assign('cFehler', $cFehler)

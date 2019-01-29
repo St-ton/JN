@@ -30,7 +30,7 @@ class PlausiTrennzeichen extends Plausi
             }
             // Dezimaltrennzeichen
             $idx = 'cDezZeichen_' . $unit;
-            if (!isset($this->xPostVar_arr[$idx]) || strlen($this->xPostVar_arr[$idx]) === 0) {
+            if (!isset($this->xPostVar_arr[$idx]) || mb_strlen($this->xPostVar_arr[$idx]) === 0) {
                 $this->xPlausiVar_arr[$idx] = 1;
             }
             // Tausendertrennzeichen

@@ -163,7 +163,7 @@ class Search extends AbstractFilter
     public function setQueryID(string $searchTerm, int $languageID): FilterInterface
     {
         $searchQuery = null;
-        if ($languageID > 0 && \strlen($searchTerm) > 0) {
+        if ($languageID > 0 && \mb_strlen($searchTerm) > 0) {
             $searchQuery = $this->productFilter->getDB()->select(
                 'tsuchanfrage',
                 'cSuche',

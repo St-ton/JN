@@ -41,10 +41,10 @@ class PaymentMethods
             $method->nSOCKETS               = (int)$method->nSOCKETS;
             $method->nNutzbar               = (int)$method->nNutzbar;
             $method->kPlugin                = (int)$method->kPlugin;
-            $method->cZusatzschrittTemplate = \strlen($method->cZusatzschrittTemplate)
+            $method->cZusatzschrittTemplate = \mb_strlen($method->cZusatzschrittTemplate)
                 ? $path . \PFAD_PLUGIN_PAYMENTMETHOD . $method->cZusatzschrittTemplate
                 : '';
-            $method->cTemplateFileURL       = \strlen($method->cPluginTemplate)
+            $method->cTemplateFileURL       = \mb_strlen($method->cPluginTemplate)
                 ? $path . \PFAD_PLUGIN_PAYMENTMETHOD . $method->cPluginTemplate
                 : '';
             foreach ($method->oZahlungsmethodeEinstellung_arr as $conf) {

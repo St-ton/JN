@@ -422,7 +422,7 @@ function loescheNewsletterempfaenger($kNewsletterEmpfaenger_arr): bool
  */
 function mappeLiveSuche($queryIDs, $cMapping): int
 {
-    if (!is_array($queryIDs) || count($queryIDs) === 0 || strlen($cMapping) === 0) {
+    if (!is_array($queryIDs) || count($queryIDs) === 0 || mb_strlen($cMapping) === 0) {
         return 2; // Leere Übergabe
     }
     $db = Shop::Container()->getDB();

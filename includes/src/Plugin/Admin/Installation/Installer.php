@@ -182,8 +182,8 @@ final class Installer
             ? []
             : \explode(',', $baseNode['Install'][0]['FlushTags']);
         if (isset($baseNode['LicenceClass'], $baseNode['LicenceClassFile'])
-            && \strlen($baseNode['LicenceClass']) > 0
-            && \strlen($baseNode['LicenceClassFile']) > 0
+            && \mb_strlen($baseNode['LicenceClass']) > 0
+            && \mb_strlen($baseNode['LicenceClassFile']) > 0
         ) {
             $licenceClass     = $baseNode['LicenceClass'];
             $licenceClassName = $baseNode['LicenceClassFile'];
@@ -263,7 +263,7 @@ final class Installer
             $i = (string)$i;
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
 
-            if (!isset($hits1[0]) || \strlen($hits1[0]) !== \strlen($i)) {
+            if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($i)) {
                 continue;
             }
             $nVersionTMP = (int)$versionData['nr'];
@@ -343,7 +343,7 @@ final class Installer
                     $line .= \trim($data);
                 }
 
-                if (\substr($data, \strlen($data) - 1, 1) === ';') {
+                if (\substr($data, \mb_strlen($data) - 1, 1) === ';') {
                     $sqlLines[] = $line;
                     $line       = '';
                 }
@@ -404,7 +404,7 @@ final class Installer
                 $tmp   = \explode(' ', $sql);
                 $table = \str_replace(["'", '`'], '', $tmp[$index]);
                 \preg_match($sqlRegEx, $table, $hits);
-                if (!isset($hits[0]) || \strlen($hits[0]) !== \strlen($table)) {
+                if (!isset($hits[0]) || \mb_strlen($hits[0]) !== \mb_strlen($table)) {
                     return InstallCode::SQL_WRONG_TABLE_NAME_CREATE;
                 }
                 $exists = $this->db->select('tplugincustomtabelle', 'cTabelle', $table);
@@ -422,7 +422,7 @@ final class Installer
                 $tmp   = \explode(' ', \StringHandler::removeNumerousWhitespaces($sql));
                 $table = \str_replace(["'", '`'], '', $tmp[$index]);
                 \preg_match($sqlRegEx, $table, $hits);
-                if (\strlen($hits[0]) !== \strlen($table)) {
+                if (\mb_strlen($hits[0]) !== \mb_strlen($table)) {
                     return InstallCode::SQL_WRONG_TABLE_NAME_DELETE;
                 }
             }

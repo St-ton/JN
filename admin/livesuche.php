@@ -19,16 +19,16 @@ $hinweis     = '';
 $fehler      = '';
 $settingsIDs = [423, 425, 422, 437, 438];
 $db          = Shop::Container()->getDB();
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 $cLivesucheSQL         = new stdClass();
 $cLivesucheSQL->cWhere = '';
 $cLivesucheSQL->cOrder = ' tsuchanfrage.nAnzahlGesuche DESC ';
-if (strlen(Request::verifyGPDataString('cSuche')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('cSuche')) > 0) {
     $cSuche = $db->escape(StringHandler::filterXSS(Request::verifyGPDataString('cSuche')));
 
-    if (strlen($cSuche) > 0) {
+    if (mb_strlen($cSuche) > 0) {
         $cLivesucheSQL->cWhere = " AND tsuchanfrage.cSuche LIKE '%" . $cSuche . "%'";
         $smarty->assign('cSuche', $cSuche);
     } else {
@@ -72,7 +72,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
     if (isset($_POST['suchanfragenUpdate'])) {
         if (is_array($_POST['kSuchanfrageAll']) && count($_POST['kSuchanfrageAll']) > 0) {
             foreach ($_POST['kSuchanfrageAll'] as $kSuchanfrage) {
-                if (strlen($_POST['nAnzahlGesuche_' . $kSuchanfrage]) > 0
+                if (mb_strlen($_POST['nAnzahlGesuche_' . $kSuchanfrage]) > 0
                     && (int)$_POST['nAnzahlGesuche_' . $kSuchanfrage] > 0
                 ) {
                     $_upd                 = new stdClass();
@@ -204,7 +204,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
     } elseif (isset($_POST['submitMapping'])) { // Auswahl mappen
         $cMapping = Request::verifyGPDataString('cMapping');
 
-        if (strlen($cMapping) > 0) {
+        if (mb_strlen($cMapping) > 0) {
             if (is_array($_POST['kSuchanfrage']) && count($_POST['kSuchanfrage']) > 0) {
                 foreach ($_POST['kSuchanfrage'] as $kSuchanfrage) {
                     $query = $db->select('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage);
@@ -310,7 +310,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
         );
         foreach ($Suchanfragenerfolglos as $Suchanfrageerfolglos) {
             $idx = 'mapping_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos;
-            if (isset($_POST[$idx]) && strlen($_POST[$idx]) > 0) {
+            if (isset($_POST[$idx]) && mb_strlen($_POST[$idx]) > 0) {
                 if (mb_convert_case($Suchanfrageerfolglos->cSuche, MB_CASE_LOWER) !== mb_convert_case($_POST[$idx], MB_CASE_LOWER)) {
                     $suchanfragemapping_obj                 = new stdClass();
                     $suchanfragemapping_obj->kSprache       = $_SESSION['kSprache'];
@@ -432,7 +432,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                     'kSuchanfrageMapping',
                     (int)$kSuchanfrageMapping
                 );
-                if (isset($queryMapping->cSuche) && strlen($queryMapping->cSuche) > 0) {
+                if (isset($queryMapping->cSuche) && mb_strlen($queryMapping->cSuche) > 0) {
                     $db->delete(
                         'tsuchanfragemapping',
                         'kSuchanfrageMapping',
@@ -493,7 +493,7 @@ $Suchanfragen = $db->query(
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 
-if (isset($Suchanfragen->tcSeo) && strlen($Suchanfragen->tcSeo) > 0) {
+if (isset($Suchanfragen->tcSeo) && mb_strlen($Suchanfragen->tcSeo) > 0) {
     $Suchanfragen->cSeo = $Suchanfragen->tcSeo;
 }
 unset($Suchanfragen->tcSeo);

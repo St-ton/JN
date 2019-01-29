@@ -38,11 +38,11 @@ function pruefeExportformat()
 {
     $cPlausiValue_arr = [];
     // Name
-    if (!isset($_POST['cName']) || strlen($_POST['cName']) === 0) {
+    if (!isset($_POST['cName']) || mb_strlen($_POST['cName']) === 0) {
         $cPlausiValue_arr['cName'] = 1;
     }
     // Dateiname
-    if (!isset($_POST['cDateiname']) || strlen($_POST['cDateiname']) === 0) {
+    if (!isset($_POST['cDateiname']) || mb_strlen($_POST['cDateiname']) === 0) {
         $cPlausiValue_arr['cDateiname'] = 1;
     }
     // Dateiname Endung fehlt
@@ -50,7 +50,7 @@ function pruefeExportformat()
         $cPlausiValue_arr['cDateiname'] = 2;
     }
     // Content
-    if (!isset($_POST['cContent']) || strlen($_POST['cContent']) === 0) {
+    if (!isset($_POST['cContent']) || mb_strlen($_POST['cContent']) === 0) {
         $cPlausiValue_arr['cContent'] = 1;
     }
     // Sprache
@@ -103,7 +103,7 @@ function splitteExportDatei($oExportformat)
             $nSizeDatei = 0;
             while (($cContent = fgets($handle)) !== false) {
                 if ($nZeile > 1) {
-                    $nSizeZeile = strlen($cContent) + 2;
+                    $nSizeZeile = mb_strlen($cContent) + 2;
                     //Schwelle erreicht?
                     if ($nSizeDatei <= ($oExportformat->nSplitgroesse * 1024 * 1024 - 102400)) {
                         // Schreibe Content
@@ -161,7 +161,7 @@ function schreibeKopfzeile($dateiHandle, $cKopfzeile, $cKodierung)
  */
 function schreibeFusszeile($dateiHandle, $cFusszeile, $cKodierung)
 {
-    if (strlen($cFusszeile) > 0) {
+    if (mb_strlen($cFusszeile) > 0) {
         if ($cKodierung === 'UTF-8' || $cKodierung === 'UTF-8noBOM') {
             fwrite($dateiHandle, $cFusszeile);
         } else {

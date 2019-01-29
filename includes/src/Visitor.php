@@ -1021,7 +1021,7 @@ class Visitor
         } else {
             $browser->cVersion = $browserMatches['version'][0];
         }
-        if (strlen($browser->cVersion) === 0) {
+        if (mb_strlen($browser->cVersion) === 0) {
             $browser->cVersion = '0';
         }
 

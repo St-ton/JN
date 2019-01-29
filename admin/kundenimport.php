@@ -18,7 +18,7 @@ if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
     && (int)$_POST['kundenimport'] === 1
     && $_FILES['csv']
     && Form::validateToken()
-    && strlen($_FILES['csv']['tmp_name']) > 0
+    && mb_strlen($_FILES['csv']['tmp_name']) > 0
 ) {
     $delimiter = getCsvDelimiter($_FILES['csv']['tmp_name']);
     $file      = fopen($_FILES['csv']['tmp_name'], 'r');
@@ -182,7 +182,7 @@ function processImport($fmt, $data)
     }
 
     if (empty($kunde->cLand)) {
-        if (isset($_SESSION['kundenimport']['cLand']) && strlen($_SESSION['kundenimport']['cLand']) > 0) {
+        if (isset($_SESSION['kundenimport']['cLand']) && mb_strlen($_SESSION['kundenimport']['cLand']) > 0) {
             $kunde->cLand = $_SESSION['kundenimport']['cLand'];
         } else {
             $oRes = Shop::Container()->getDB()->query(
@@ -191,7 +191,7 @@ function processImport($fmt, $data)
                     WHERE cName = 'kundenregistrierung_standardland'",
                 \DB\ReturnType::SINGLE_OBJECT
             );
-            if (is_object($oRes) && isset($oRes->cLand) && strlen($oRes->cLand) > 0) {
+            if (is_object($oRes) && isset($oRes->cLand) && mb_strlen($oRes->cLand) > 0) {
                 $_SESSION['kundenimport']['cLand'] = $oRes->cLand;
                 $kunde->cLand                      = $oRes->cLand;
             }

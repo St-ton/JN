@@ -20,7 +20,7 @@ $step     = 'uebersicht';
 setzeSprache();
 
 $smarty->assign('cTab', $cStep ?? null);
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 

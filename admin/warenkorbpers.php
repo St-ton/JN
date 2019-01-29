@@ -20,12 +20,12 @@ $settingsIDs       = [540];
 $searchSQL         = new stdClass();
 $searchSQL->cJOIN  = '';
 $searchSQL->cWHERE = '';
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
-if (strlen(Request::verifyGPDataString('cSuche')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('cSuche')) > 0) {
     $cSuche = Shop::Container()->getDB()->escape(StringHandler::filterXSS(Request::verifyGPDataString('cSuche')));
-    if (strlen($cSuche) > 0) {
+    if (mb_strlen($cSuche) > 0) {
         $searchSQL->cWHERE = " WHERE (tkunde.cKundenNr LIKE '%" . $cSuche . "%'
             OR tkunde.cVorname LIKE '%" . $cSuche . "%' 
             OR tkunde.cMail LIKE '%" . $cSuche . "%')";

@@ -145,7 +145,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
         PFAD_ADMIN . 'shoptemplate.php?check=' .
         ($bCheck ? 'true' : 'false') . $uploadError, true, 301);
 }
-if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && Form::validateToken()) {
+if (isset($_GET['settings']) && mb_strlen($_GET['settings']) > 0 && Form::validateToken()) {
     $dir          = Shop::Container()->getDB()->escape($_GET['settings']);
     $oTpl         = $templateHelper->getData($dir, $admin);
     $tplXML       = $templateHelper->getXML($dir, false);
@@ -241,7 +241,7 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && Form::validateT
            ->assign('themesLessColorsSkin', $lessColorsSkin)
            ->assign('themesLessColorsJSON', json_encode($lessColors_arr))
            ->assign('oEinstellungenXML', $tplConfXML);
-} elseif (isset($_GET['switch']) && strlen($_GET['switch']) > 0) {
+} elseif (isset($_GET['switch']) && mb_strlen($_GET['switch']) > 0) {
     if (__switchTemplate($_GET['switch'], ($admin === true ? 'admin' : 'standard'))) {
         $cHinweis = __('successTemplateSave');
     } else {

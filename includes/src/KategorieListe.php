@@ -346,7 +346,7 @@ class KategorieListe
 
                 $category->cURL     = URL::buildURL($category, URLART_KATEGORIE);
                 $category->cURLFull = URL::buildURL($category, URLART_KATEGORIE, true);
-                if ($languageID > 0 && !Sprache::isDefaultLanguageActive() && strlen($category->cName_spr) > 0) {
+                if ($languageID > 0 && !Sprache::isDefaultLanguageActive() && mb_strlen($category->cName_spr) > 0) {
                     $category->cName         = $category->cName_spr;
                     $category->cBeschreibung = $category->cBeschreibung_spr;
                 }

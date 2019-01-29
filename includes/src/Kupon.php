@@ -815,12 +815,12 @@ class Kupon
             return 0;
         }
         foreach ($cart->PositionenArr as $Pos) {
-            if (isset($Pos->Artikel->cArtNr) && strlen($Pos->Artikel->cArtNr) > 0) {
+            if (isset($Pos->Artikel->cArtNr) && mb_strlen($Pos->Artikel->cArtNr) > 0) {
                 $productQry .= " OR FIND_IN_SET('" .
                     str_replace('%', '\%', Shop::Container()->getDB()->escape($Pos->Artikel->cArtNr))
                     . "', REPLACE(cArtikel, ';', ',')) > 0";
             }
-            if (isset($Pos->Artikel->cHersteller) && strlen($Pos->Artikel->cHersteller) > 0) {
+            if (isset($Pos->Artikel->cHersteller) && mb_strlen($Pos->Artikel->cHersteller) > 0) {
                 $manufQry .= " OR FIND_IN_SET('" .
                     str_replace('%', '\%', Shop::Container()->getDB()->escape($Pos->Artikel->kHersteller))
                     . "', REPLACE(cHersteller, ';', ',')) > 0";

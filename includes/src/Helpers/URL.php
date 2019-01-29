@@ -292,7 +292,7 @@ class URL
                         : $prefix . '?k=' . $obj->kKategorie . $lang;
                 case \URLART_SEITE:
                     if (isset($_SESSION['cISOSprache'], $obj->cLocalizedSeo[$_SESSION['cISOSprache']])
-                        && \strlen($obj->cLocalizedSeo[$_SESSION['cISOSprache']])
+                        && \mb_strlen($obj->cLocalizedSeo[$_SESSION['cISOSprache']])
                     ) {
                         return $prefix . $obj->cLocalizedSeo[$_SESSION['cISOSprache']];
                     }

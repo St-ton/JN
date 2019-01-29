@@ -155,9 +155,9 @@ function permission($cRecht): bool
  */
 function SmartyConvertDate(array $params, $smarty)
 {
-    if (isset($params['date']) && strlen($params['date']) > 0) {
+    if (isset($params['date']) && mb_strlen($params['date']) > 0) {
         $oDateTime = new DateTime($params['date']);
-        if (isset($params['format']) && strlen($params['format']) > 1) {
+        if (isset($params['format']) && mb_strlen($params['format']) > 1) {
             $cDate = $oDateTime->format($params['format']);
         } else {
             $cDate = $oDateTime->format('d.m.Y H:i:s');

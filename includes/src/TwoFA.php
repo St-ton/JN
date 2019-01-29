@@ -108,7 +108,7 @@ class TwoFA
         // (only if we check any credential! (something like lazy loading))
         $this->oGA = new PHPGangsta_GoogleAuthenticator();
         // codes with a length over 6 chars are emergency-codes
-        if (6 < strlen($code)) {
+        if (6 < mb_strlen($code)) {
             // try to find this code in the emergency-code-pool
             $o2FAemergency = new TwoFAEmergency();
 
@@ -129,10 +129,10 @@ class TwoFA
             $totpUrl = rawurlencode('JTL-Shop ' . $this->oUserTuple->cLogin . '@' . $this->getShopName());
             // by the QR-Code there are 63 bytes allowed for this URL-appendix
             // so we shorten that string (and we take care about the hex-character-replacements!)
-            $overflow = strlen($totpUrl) - 63;
+            $overflow = mb_strlen($totpUrl) - 63;
             if (0 < $overflow) {
                 for ($i=0; $i < $overflow; $i++) {
-                    if ('%' === $totpUrl[strlen($totpUrl)-3]) {
+                    if ('%' === $totpUrl[mb_strlen($totpUrl)-3]) {
                         $totpUrl  = substr($totpUrl, 0, -3); // shorten by 3 byte..
                         $overflow -= 2;                         // ..and correct the counter (here nOverhang)
                     } else {

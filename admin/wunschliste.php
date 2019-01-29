@@ -13,7 +13,7 @@ $oAccount->permission('MODULE_WISHLIST_VIEW', true, true);
 /** @global Smarty\JTLSmarty $smarty */
 $cHinweis    = '';
 $settingsIDs = [442, 443, 440, 439, 445, 446, 1460];
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 if (Request::verifyGPCDataInt('einstellungen') === 1) {

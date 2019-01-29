@@ -19,7 +19,7 @@ $fehler  = '';
 if (isset($_POST['newsletterimport'], $_FILES['csv']['tmp_name'])
     && (int)$_POST['newsletterimport'] === 1
     && Form::validateToken()
-    && strlen($_FILES['csv']['tmp_name']) > 0
+    && mb_strlen($_FILES['csv']['tmp_name']) > 0
 ) {
     $file = fopen($_FILES['csv']['tmp_name'], 'r');
     if ($file !== false) {

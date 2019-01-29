@@ -515,11 +515,11 @@ class Controller
             $error = true;
             $this->setErrorMsg('Verzeichnis konnte nicht erstellt werden: ' . $dir);
         }
-        if (isset($_FILES['previewImage']['name']) && \strlen($_FILES['previewImage']['name']) > 0) {
+        if (isset($_FILES['previewImage']['name']) && \mb_strlen($_FILES['previewImage']['name']) > 0) {
             $extension = \substr(
                 $_FILES['previewImage']['type'],
                 \mb_strpos($_FILES['previewImage']['type'], '/') + 1,
-                \strlen($_FILES['previewImage']['type']) - \mb_strpos($_FILES['previewImage']['type'], '/') + 1
+                \mb_strlen($_FILES['previewImage']['type']) - \mb_strpos($_FILES['previewImage']['type'], '/') + 1
             );
             if ($extension === 'jpe') { // not elegant, but since it's 99% jpg..
                 $extension = 'jpg';
@@ -555,7 +555,7 @@ class Controller
         $extension = \substr(
             $_FILES['previewImage']['type'],
             \mb_strpos($_FILES['previewImage']['type'], '/') + 1,
-            \strlen($_FILES['previewImage']['type']) - \mb_strpos($_FILES['previewImage']['type'], '/') + 1
+            \mb_strlen($_FILES['previewImage']['type']) - \mb_strpos($_FILES['previewImage']['type'], '/') + 1
         );
         if ($extension === 'jpe') {
             $extension = 'jpg';
@@ -595,7 +595,7 @@ class Controller
                 $extension = \substr(
                     $type,
                     \mb_strpos($type, '/') + 1,
-                    \strlen($type) - \mb_strpos($type, '/') + 1
+                    \mb_strlen($type) - \mb_strpos($type, '/') + 1
                 );
                 // not elegant, but since it's 99% jpg..
                 if ($extension === 'jpe') {

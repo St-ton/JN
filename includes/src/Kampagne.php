@@ -199,7 +199,7 @@ class Kampagne
         $bKampagnenHit = false;
         foreach ($campaigns as $oKampagne) {
             // Wurde für die aktuelle Kampagne der Parameter via GET oder POST uebergeben?
-            if (strlen(Request::verifyGPDataString($oKampagne->cParameter)) > 0
+            if (mb_strlen(Request::verifyGPDataString($oKampagne->cParameter)) > 0
                 && isset($oKampagne->nDynamisch)
                 && ((int)$oKampagne->nDynamisch === 1
                     || ((int)$oKampagne->nDynamisch === 0
@@ -295,7 +295,7 @@ class Kampagne
             $oKampagnenVorgang->dErstellt    = 'NOW()';
 
             if ($customData !== null) {
-                $oKampagnenVorgang->cCustomData = strlen($customData) > 255
+                $oKampagnenVorgang->cCustomData = mb_strlen($customData) > 255
                     ? substr($customData, 0, 255)
                     : $customData;
             }

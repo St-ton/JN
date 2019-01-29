@@ -50,7 +50,7 @@ $pluginsErroneous = $pluginsAll->filter(function (\Plugin\Admin\ListingItem $ite
 if (isset($_SESSION['plugin_msg'])) {
     $cHinweis = $_SESSION['plugin_msg'];
     unset($_SESSION['plugin_msg']);
-} elseif (strlen(Request::verifyGPDataString('h')) > 0) {
+} elseif (mb_strlen(Request::verifyGPDataString('h')) > 0) {
     $cHinweis = StringHandler::filterXSS(base64_decode(Request::verifyGPDataString('h')));
 }
 if (!empty($_FILES['file_data'])) {

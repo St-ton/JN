@@ -33,7 +33,7 @@ class Licence extends AbstractItem
                     && \mb_strpos($content, 'extension_loaded') !== false)
                 || \mb_strpos($content, '<?php') === false);
         }
-        if (isset($node['LicenceClassFile']) && \strlen($node['LicenceClassFile']) > 0) {
+        if (isset($node['LicenceClassFile']) && \mb_strlen($node['LicenceClassFile']) > 0) {
             if (!\file_exists($dir . \PFAD_PLUGIN_LICENCE . $node['LicenceClassFile'])) {
                 return InstallCode::MISSING_LICENCE_FILE;
             }

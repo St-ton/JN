@@ -231,7 +231,7 @@ if ($customerID > 0) {
             header(
                 'Location: ' . $linkHelper->getStaticRoute('jtl.php') .
                 '?wl=' . $kWunschliste .
-                '&wlidmsg=1' . strlen($cURLID) > 0 ? ('&wlid=' . $cURLID) : '',
+                '&wlidmsg=1' . mb_strlen($cURLID) > 0 ? ('&wlid=' . $cURLID) : '',
                 true,
                 303
             );
@@ -304,7 +304,7 @@ if ($customerID > 0) {
             false,
             'kWunschliste, cURLID'
         );
-        if (isset($wishlist->kWunschliste) && $wishlist->kWunschliste > 0 && strlen($wishlist->cURLID) > 0) {
+        if (isset($wishlist->kWunschliste) && $wishlist->kWunschliste > 0 && mb_strlen($wishlist->cURLID) > 0) {
             $step = 'wunschliste anzeigen';
             if (isset($_POST['send']) && (int)$_POST['send'] === 1) {
                 if ($conf['global']['global_wunschliste_anzeigen'] === 'Y') {
@@ -497,7 +497,7 @@ if ($customerID > 0) {
             );
         }
         if (isset($_POST['neuesPasswort1'])
-            && strlen($_POST['neuesPasswort1']) < $conf['kunden']['kundenregistrierung_passwortlaenge']
+            && mb_strlen($_POST['neuesPasswort1']) < $conf['kunden']['kundenregistrierung_passwortlaenge']
         ) {
             $alertHelper->addAlert(
                 Alert::TYPE_ERROR,
@@ -508,7 +508,7 @@ if ($customerID > 0) {
         }
         if (isset($_POST['neuesPasswort1'], $_POST['neuesPasswort2'])
             && $_POST['neuesPasswort1'] && $_POST['neuesPasswort1'] === $_POST['neuesPasswort2']
-            && strlen($_POST['neuesPasswort1']) >= $conf['kunden']['kundenregistrierung_passwortlaenge']
+            && mb_strlen($_POST['neuesPasswort1']) >= $conf['kunden']['kundenregistrierung_passwortlaenge']
         ) {
             $cstm = new Kunde($customerID);
             $user = Shop::Container()->getDB()->select(

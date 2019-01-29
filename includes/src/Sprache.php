@@ -333,11 +333,11 @@ class Sprache
     {
         $this->initLangVars();
         $this->initLangData();
-        if (isset($_SESSION['cISOSprache']) && strlen($_SESSION['cISOSprache']) > 0) {
+        if (isset($_SESSION['cISOSprache']) && mb_strlen($_SESSION['cISOSprache']) > 0) {
             $this->currentISOCode = $_SESSION['cISOSprache'];
         } else {
             $language = $this->mappedGetDefaultLanguage();
-            if (isset($language->cISO) && strlen($language->cISO) > 0) {
+            if (isset($language->cISO) && mb_strlen($language->cISO) > 0) {
                 $this->currentISOCode = $language->cISO;
             }
         }
@@ -366,7 +366,7 @@ class Sprache
      */
     public function mappekISO(string $cISO)
     {
-        if (strlen($cISO) > 0) {
+        if (mb_strlen($cISO) > 0) {
             if (isset($this->byISO[$cISO]->kSprachISO)) {
                 return (int)$this->byISO[$cISO]->kSprachISO;
             }
@@ -739,7 +739,7 @@ class Sprache
         }
 
         foreach ($values as $value) {
-            if (strlen($value->cWert) === 0) {
+            if (mb_strlen($value->cWert) === 0) {
                 $value->cWert = $value->cStandard ?? null;
             }
             $csvData[] = [
@@ -910,7 +910,7 @@ class Sprache
      */
     private function mappedGetLanguageDataByType(string $iso = '', int $languageID = 0)
     {
-        if (strlen($iso) > 0) {
+        if (mb_strlen($iso) > 0) {
             $data = $this->mappedGetLangIDFromIso($iso);
 
             return $data === null
@@ -1178,7 +1178,7 @@ class Sprache
      */
     private function mappedGetCountryCodeByCountryName(string $iso): string
     {
-        if (strlen($iso) > 2) {
+        if (mb_strlen($iso) > 2) {
             return $iso;
         }
         $column = Shop::getLanguageCode() === 'ger' ? 'cDeutsch' : 'cEnglisch';

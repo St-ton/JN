@@ -312,7 +312,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     if (isset($_SESSION['TrustedShops']->cKaeuferschutzProdukt)
         && $_SESSION['Zahlungsart']->nWaehrendBestellung == 0
         && $conf['trustedshops']['trustedshops_nutzen'] === 'Y'
-        && strlen($_SESSION['TrustedShops']->cKaeuferschutzProdukt) > 0
+        && mb_strlen($_SESSION['TrustedShops']->cKaeuferschutzProdukt) > 0
     ) {
         $ts                    = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
         $ts->tsProductId       = $_SESSION['TrustedShops']->cKaeuferschutzProdukt;
@@ -326,13 +326,13 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
         $ts->orderDate         = date('Y-m-d') . 'T' . date('H:i:s');
         $ts->shopSystemVersion = 'JTL-Shop ' . APPLICATION_VERSION;
 
-        if (strlen($ts->tsProductId) > 0
-            && strlen($ts->amount) > 0
-            && strlen($ts->currency) > 0
-            && strlen($ts->paymentType) > 0
-            && strlen($ts->buyerEmail) > 0
-            && strlen($ts->shopCustomerID) > 0
-            && strlen($ts->shopOrderID) > 0
+        if (mb_strlen($ts->tsProductId) > 0
+            && mb_strlen($ts->amount) > 0
+            && mb_strlen($ts->currency) > 0
+            && mb_strlen($ts->paymentType) > 0
+            && mb_strlen($ts->buyerEmail) > 0
+            && mb_strlen($ts->shopCustomerID) > 0
+            && mb_strlen($ts->shopOrderID) > 0
         ) {
             $ts->sendeBuchung();
         }
@@ -1086,7 +1086,7 @@ function fakeBestellung()
     $order->oRechnungsadresse->cWWW        = $customer->cWWW;
     $order->oRechnungsadresse->cMail       = $customer->cMail;
 
-    if (strlen(\Session\Frontend::getDeliveryAddress()->cVorname) > 0) {
+    if (mb_strlen(\Session\Frontend::getDeliveryAddress()->cVorname) > 0) {
         $order->Lieferadresse = gibLieferadresseAusSession();
     }
     $order->cBestellNr = date('dmYHis') . substr($order->cSession, 0, 4);

@@ -242,7 +242,7 @@ function sendeMail($ModulId, $Object, $mail = null)
                        ->assign('Verfuegbarkeit_arr', $Object->cVerfuegbarkeit_arr ?? null)
                        ->assign('oTrustedShopsBewertenButton', null);
             if (isset($Object->tbestellung->Zahlungsart->cModulId)
-                && strlen($Object->tbestellung->Zahlungsart->cModulId) > 0
+                && mb_strlen($Object->tbestellung->Zahlungsart->cModulId) > 0
             ) {
                 $cModulId         = $Object->tbestellung->Zahlungsart->cModulId;
                 $oZahlungsartConf = $db->queryPrepared(
@@ -267,7 +267,7 @@ function sendeMail($ModulId, $Object, $mail = null)
                     StringHandler::convertISO2ISO639($langID)
                 );
                 if ($oTrustedShopsKundenbewertung !== false
-                    && strlen($oTrustedShopsKundenbewertung->cTSID) > 0
+                    && mb_strlen($oTrustedShopsKundenbewertung->cTSID) > 0
                     && $oTrustedShopsKundenbewertung->nStatus == 1
                 ) {
                     $mailSmarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
@@ -283,7 +283,7 @@ function sendeMail($ModulId, $Object, $mail = null)
             $mailSmarty->assign('Bestellung', $Object->tbestellung);
             // Zahlungsart Einstellungen
             if (isset($Object->tbestellung->Zahlungsart->cModulId)
-                && strlen($Object->tbestellung->Zahlungsart->cModulId) > 0
+                && mb_strlen($Object->tbestellung->Zahlungsart->cModulId) > 0
             ) {
                 $cModulId         = $Object->tbestellung->Zahlungsart->cModulId;
                 $oZahlungsartConf = $db->queryPrepared(
@@ -309,7 +309,7 @@ function sendeMail($ModulId, $Object, $mail = null)
                 $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(
                     StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
                 );
-                if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
+                if (mb_strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
                     $mailSmarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
                         $Object->tbestellung->oRechnungsadresse->cMail,
                         $Object->tbestellung->cBestellNr
@@ -345,7 +345,7 @@ function sendeMail($ModulId, $Object, $mail = null)
                 $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(
                     StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
                 );
-                if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
+                if (mb_strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
                     $mailSmarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
                         $Object->tbestellung->oRechnungsadresse->cMail,
                         $Object->tbestellung->cBestellNr
@@ -406,7 +406,7 @@ function sendeMail($ModulId, $Object, $mail = null)
                 $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(
                     StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
                 );
-                if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
+                if (mb_strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
                     $mailSmarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
                         $Object->tbestellung->oRechnungsadresse->cMail,
                         $Object->tbestellung->cBestellNr
@@ -483,35 +483,35 @@ function sendeMail($ModulId, $Object, $mail = null)
         $akzHtml = $mailSmarty->fetch('db:html_core_jtl_anbieterkennzeichnung_' . $lang->kSprache . $pluginBody);
         $akzText = $mailSmarty->fetch('db:text_core_jtl_anbieterkennzeichnung_' . $lang->kSprache . $pluginBody);
 
-        if (strlen($bodyHtml) > 0) {
+        if (mb_strlen($bodyHtml) > 0) {
             $bodyHtml .= '<br /><br />' . $akzHtml;
         }
         $bodyText .= "\n\n" . $akzText;
     }
     if ((int)$mailTPL->nWRB === 1) {
         $heading = Shop::Lang()->get('wrb');
-        if (strlen($bodyHtml) > 0) {
+        if (mb_strlen($bodyHtml) > 0) {
             $bodyHtml .= '<br /><br /><h3>' . $heading . '</h3>' . $WRB->cContentHtml;
         }
         $bodyText .= "\n\n" . $heading . "\n\n" . $WRB->cContentText;
     }
     if ((int)$mailTPL->nWRBForm === 1) {
         $heading = Shop::Lang()->get('wrbform');
-        if (strlen($bodyHtml) > 0) {
+        if (mb_strlen($bodyHtml) > 0) {
             $bodyHtml .= '<br /><br /><h3>' . $heading . '</h3>' . $WRBForm->cContentHtml;
         }
         $bodyText .= "\n\n" . $heading . "\n\n" . $WRBForm->cContentText;
     }
     if ((int)$mailTPL->nAGB === 1) {
         $heading = Shop::Lang()->get('agb');
-        if (strlen($bodyHtml) > 0) {
+        if (mb_strlen($bodyHtml) > 0) {
             $bodyHtml .= '<br /><br /><h3>' . $heading . '</h3>' . $AGB->cContentHtml;
         }
         $bodyText .= "\n\n" . $heading . "\n\n" . $AGB->cContentText;
     }
     if ((int)$mailTPL->nDSE === 1) {
         $heading = 'Datenschutzerklärung';//Shop::Lang()->get('agb');
-        if (strlen($bodyHtml) > 0) {
+        if (mb_strlen($bodyHtml) > 0) {
             $bodyHtml .= '<br /><br /><h3>' . $heading . '</h3>' . $DSE->cContentHtml;
         }
         $bodyText .= "\n\n" . $heading . "\n\n" . $DSE->cContentText;
@@ -519,13 +519,13 @@ function sendeMail($ModulId, $Object, $mail = null)
     if (isset($Object->tkunde->cMail)) {
         $mail->toEmail = $Object->tkunde->cMail;
         $mail->toName  = $Object->tkunde->cVorname . ' ' . $Object->tkunde->cNachname;
-    } elseif (isset($Object->NewsletterEmpfaenger->cEmail) && strlen($Object->NewsletterEmpfaenger->cEmail) > 0) {
+    } elseif (isset($Object->NewsletterEmpfaenger->cEmail) && mb_strlen($Object->NewsletterEmpfaenger->cEmail) > 0) {
         $mail->toEmail = $Object->NewsletterEmpfaenger->cEmail;
     }
     //some mail servers seem to have problems with very long lines - wordwrap() if necessary
     $hasLongLines = false;
     foreach (preg_split('/((\r?\n)|(\r\n?))/', $bodyHtml) as $line) {
-        if (strlen($line) > 987) {
+        if (mb_strlen($line) > 987) {
             $hasLongLines = true;
             break;
         }
@@ -535,7 +535,7 @@ function sendeMail($ModulId, $Object, $mail = null)
     }
     $hasLongLines = false;
     foreach (preg_split('/((\r?\n)|(\r\n?))/', $bodyText) as $line) {
-        if (strlen($line) > 987) {
+        if (mb_strlen($line) > 987) {
             $hasLongLines = true;
             break;
         }
@@ -582,7 +582,7 @@ function sendeMail($ModulId, $Object, $mail = null)
     if (isset($Object->mail->replyToName)) {
         $mail->replyToName = $Object->mail->replyToName;
     }
-    if (isset($localization->cPDFS) && strlen($localization->cPDFS) > 0) {
+    if (isset($localization->cPDFS) && mb_strlen($localization->cPDFS) > 0) {
         $mail->cPDFS_arr = getPDFAttachments($localization->cPDFS, $localization->cDateiname);
     }
     executeHook(HOOK_MAILTOOLS_SENDEMAIL_ENDE, [
@@ -609,7 +609,7 @@ function sendeMail($ModulId, $Object, $mail = null)
         }
     }
     // Kopie Plugin
-    if (isset($Object->oKopie, $Object->oKopie->cToMail) && strlen($Object->oKopie->cToMail) > 0) {
+    if (isset($Object->oKopie, $Object->oKopie->cToMail) && mb_strlen($Object->oKopie->cToMail) > 0) {
         $mail->toEmail      = $Object->oKopie->cToMail;
         $mail->toName       = $Object->oKopie->cToMail;
         $mail->fromEmail    = $absender_mail;
@@ -630,7 +630,7 @@ function pruefeGlobaleEmailBlacklist($cEmail)
 {
     $oEmailBlacklist = Shop::Container()->getDB()->select('temailblacklist', 'cEmail', $cEmail);
 
-    if (isset($oEmailBlacklist->cEmail) && strlen($oEmailBlacklist->cEmail) > 0) {
+    if (isset($oEmailBlacklist->cEmail) && mb_strlen($oEmailBlacklist->cEmail) > 0) {
         $oEmailBlacklistBlock                = new stdClass();
         $oEmailBlacklistBlock->cEmail        = $oEmailBlacklist->cEmail;
         $oEmailBlacklistBlock->dLetzterBlock = 'NOW()';
@@ -913,7 +913,7 @@ function bauePDFArrayZumVeschicken($cPDF)
     $files     = [];
     $uploadDir = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
     foreach (explode(';', $cPDF) as $item) {
-        if (strlen($item) > 0 && file_exists($uploadDir . $item)) {
+        if (mb_strlen($item) > 0 && file_exists($uploadDir . $item)) {
             $files[] = $item;
         }
     }
@@ -958,7 +958,7 @@ function baueDateinameArrayZumVeschicken($fileName)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $fileNames = [];
     foreach (explode(';', $fileName) as $item) {
-        if (strlen($item) > 0) {
+        if (mb_strlen($item) > 0) {
             $fileNames[] = $item;
         }
     }
@@ -1047,7 +1047,7 @@ function SendNiceMailReply($FromName, $FromMail, $ReplyAdresse, $To, $Subject, $
 function encode_iso88591($string)
 {
     $text = '=?' . JTL_CHARSET . '?Q?';
-    $max  = strlen($string);
+    $max  = mb_strlen($string);
     for ($i = 0; $i < $max; $i++) {
         $val = mb_ord($string[$i]);
         if ($val > 127 || $val === 63) {

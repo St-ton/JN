@@ -45,7 +45,7 @@ function get_product_list($params, $smarty)
 {
     $limit            = (int)($params['nLimit'] ?? 10);
     $sort             = (int)($params['nSortierung'] ?? 0);
-    $cAssign          = (isset($params['cAssign']) && strlen($params['cAssign']) > 0)
+    $cAssign          = (isset($params['cAssign']) && mb_strlen($params['cAssign']) > 0)
         ? $params['cAssign']
         : 'oCustomArtikel_arr';
     $attributeFilters = isset($params['cMerkmalFilter'])
@@ -276,7 +276,7 @@ function has_boxes($params, $smarty)
  */
 function truncate($text, $numb)
 {
-    if (strlen($text) > $numb) {
+    if (mb_strlen($text) > $numb) {
         $text = substr($text, 0, $numb);
         $text = substr($text, 0, mb_strrpos($text, ' '));
         $text .= '...';
@@ -470,7 +470,7 @@ function get_navigation($params, $smarty)
 {
     $linkgroupIdentifier = $params['linkgroupIdentifier'];
     $oLinkGruppe         = null;
-    if (strlen($linkgroupIdentifier) > 0) {
+    if (mb_strlen($linkgroupIdentifier) > 0) {
         $linkGroups  = Shop::Container()->getLinkService()->getVisibleLinkGroups();
         $oLinkGruppe = $linkGroups->getLinkgroupByTemplate($linkgroupIdentifier);
     }

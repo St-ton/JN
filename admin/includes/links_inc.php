@@ -45,7 +45,7 @@ function gibLetzteBildNummer($kLink)
     }
     $nMax = 0;
     foreach ($cBild_arr as $image) {
-        $cNummer = substr($image, 4, (strlen($image) - mb_strpos($image, '.')) - 3);
+        $cNummer = substr($image, 4, (mb_strlen($image) - mb_strpos($image, '.')) - 3);
         if ($cNummer > $nMax) {
             $nMax = $cNummer;
         }

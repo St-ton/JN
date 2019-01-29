@@ -446,7 +446,7 @@ class Metadata implements MetadataInterface
                 }
             }
 
-            if (\strlen($catDescription) > 1) {
+            if (\mb_strlen($catDescription) > 1) {
                 $catDescription   = \str_replace('"', '', $catDescription);
                 $catDescription   = \StringHandler::htmlentitydecode($catDescription, \ENT_NOQUOTES);
                 $cMetaDescription = !empty($globalMeta[$languageID]->Meta_Description_Praefix)
@@ -547,7 +547,7 @@ class Metadata implements MetadataInterface
                     // Wenn der Dateiname aus mehreren Wörtern besteht
                     $subName = '';
                     foreach (\explode(' ', $extProductName) as $j => $tmp) {
-                        if (\strlen($tmp) > 2) {
+                        if (\mb_strlen($tmp) > 2) {
                             $tmp = \str_replace(',', '', $tmp);
                             $subName   .= $j > 0
                                 ? ', ' . $tmp
@@ -962,7 +962,7 @@ class Metadata implements MetadataInterface
     /**
      * @param string $metaProposal the proposed meta text value.
      * @param string $metaSuffix append suffix to meta value that wont be shortened
-     * @param int    $maxLength $metaProposal will be truncated to $maxlength - \strlen($metaSuffix) characters
+     * @param int    $maxLength $metaProposal will be truncated to $maxlength - \mb_strlen($metaSuffix) characters
      * @return string truncated meta value with optional suffix (always appended if set)
      */
     public static function prepareMeta(string $metaProposal, string $metaSuffix = null, int $maxLength = null): string

@@ -45,9 +45,9 @@ class SettingsLinks extends AbstractItem
             $i = (string)$i;
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
-            if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($i)) {
+            if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($i)) {
                 $sort = (int)$settingsLinks['sort'];
-            } elseif (\strlen($hits2[0]) === \strlen($i)) {
+            } elseif (\mb_strlen($hits2[0]) === \mb_strlen($i)) {
                 $menuItem             = new \stdClass();
                 $menuItem->kPlugin    = $pluginID;
                 $menuItem->cName      = $settingsLinks['Name'];
@@ -68,7 +68,7 @@ class SettingsLinks extends AbstractItem
                     $j = (string)$j;
                     \preg_match('/[0-9]+\sattr/', $j, $hits3);
                     \preg_match('/[0-9]+/', $j, $hits4);
-                    if (isset($hits3[0]) && \strlen($hits3[0]) === \strlen($j)) {
+                    if (isset($hits3[0]) && \mb_strlen($hits3[0]) === \mb_strlen($j)) {
                         $type         = $setting['type'];
                         $multiple     = (isset($setting['multiple'])
                             && $setting['multiple'] === 'Y'
@@ -78,7 +78,7 @@ class SettingsLinks extends AbstractItem
                             : $setting['initialValue'];
                         $sort         = $setting['sort'];
                         $cConf        = $setting['conf'];
-                    } elseif (\strlen($hits4[0]) === \strlen($j)) {
+                    } elseif (\mb_strlen($hits4[0]) === \mb_strlen($j)) {
                         $plgnConf          = new \stdClass();
                         $plgnConf->kPlugin = $pluginID;
                         $plgnConf->cName   = \is_array($setting['ValueName'])
@@ -159,7 +159,7 @@ class SettingsLinks extends AbstractItem
                                 foreach ($optNode['Option'] as $y => $option) {
                                     $y = (string)$y;
                                     \preg_match('/[0-9]+\sattr/', $y, $hits6);
-                                    if (isset($hits6[0]) && \strlen($hits6[0]) === \strlen($y)) {
+                                    if (isset($hits6[0]) && \mb_strlen($hits6[0]) === \mb_strlen($y)) {
                                         $cWert = $option['value'];
                                         $sort  = $option['sort'];
                                         $yx    = \substr($y, 0, \mb_strpos($y, ' '));
@@ -191,7 +191,7 @@ class SettingsLinks extends AbstractItem
                             } elseif (\count($optNode) === 1) { // Es gibt mehr als eine Option
                                 foreach ($optNode['Option'] as $y => $option) {
                                     \preg_match('/[0-9]+\sattr/', $y, $hits6);
-                                    if (isset($hits6[0]) && \strlen($hits6[0]) === \strlen($y)) {
+                                    if (isset($hits6[0]) && \mb_strlen($hits6[0]) === \mb_strlen($y)) {
                                         $cWert = $option['value'];
                                         $sort  = $option['sort'];
                                         $yx    = \substr($y, 0, \mb_strpos($y, ' '));

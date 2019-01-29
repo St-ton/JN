@@ -50,7 +50,7 @@ final class Wishlist extends AbstractBox
                 if ($nPosWD) {
                     $cRequestURI = \substr($cRequestURI, 0, $nPosWD);
                 }
-                if ($nPosAnd === \strlen($cRequestURI) - 1) {
+                if ($nPosAnd === \mb_strlen($cRequestURI) - 1) {
                     // z.b. index.php?a=4&
                     $cDeleteParam = 'wlplo=';
                 } elseif ($nPosAnd) {
@@ -59,7 +59,7 @@ final class Wishlist extends AbstractBox
                 } elseif ($nPosQuest) {
                     // z.b. index.php?a=4
                     $cDeleteParam = '&wlplo=';
-                } elseif ($nPosQuest === \strlen($cRequestURI) - 1) {
+                } elseif ($nPosQuest === \mb_strlen($cRequestURI) - 1) {
                     // z.b. index.php?
                     $cDeleteParam = 'wlplo=';
                 }

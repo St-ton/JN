@@ -442,8 +442,8 @@ function validateCoupon($oKupon)
     }
     if (isset($oKupon->massCreationCoupon)) {
         $cCodeLength = (int)$oKupon->massCreationCoupon->hashLength
-            + (int)strlen($oKupon->massCreationCoupon->prefixHash)
-            + (int)strlen($oKupon->massCreationCoupon->suffixHash);
+            + (int)mb_strlen($oKupon->massCreationCoupon->prefixHash)
+            + (int)mb_strlen($oKupon->massCreationCoupon->suffixHash);
         if ($cCodeLength > 32) {
             $cFehler_arr[] = __('errorCouponCodeLong');
         }
@@ -456,7 +456,7 @@ function validateCoupon($oKupon)
         ) {
             $cFehler_arr[] = __('errorCouponCodeOptionSelect');
         }
-    } elseif (strlen($oKupon->cCode) > 32) {
+    } elseif (mb_strlen($oKupon->cCode) > 32) {
         $cFehler_arr[] = __('errorCouponCodeLong');
     }
     if ($oKupon->cCode !== ''

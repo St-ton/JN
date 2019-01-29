@@ -1554,7 +1554,7 @@ class Artikel
             $this->cMerkmalAssoc_arr = [];
             foreach ($this->oMerkmale_arr as $attribute) {
                 $cMerkmalname = preg_replace('/[^öäüÖÄÜßa-zA-Z0-9\.\-_]/u', '', $attribute->cName);
-                if (strlen($attribute->cName) > 0) {
+                if (mb_strlen($attribute->cName) > 0) {
                     $values                                 = array_filter(array_map(function ($e) {
                         return $e->cWert ?? null;
                     }, $attribute->oMerkmalWert_arr));
@@ -1734,7 +1734,7 @@ class Artikel
             $mediaFile->oMedienDateiAttribut_arr = [];
             $mediaFile->nErreichbar              = 1; // Beschreibt, ob eine Datei vorhanden ist
             $mediaFile->cMedienTyp               = ''; // Wird zum Aufbau der Reiter gebraucht
-            if (strlen($mediaFile->cTyp) > 0) {
+            if (mb_strlen($mediaFile->cTyp) > 0) {
                 $oMappedTyp               = $this->mappeMedienTyp($mediaFile->cTyp);
                 $mediaFile->cMedienTyp = $oMappedTyp->cName;
                 $mediaFile->nMedienTyp = $oMappedTyp->nTyp;
@@ -1763,7 +1763,7 @@ class Artikel
             // Pruefen, ob Reiter bereits vorhanden
             $tabExists = false;
             foreach ($cMedienTyp_arr as $cMedienTyp) {
-                if (strlen($mediaFile->cAttributTab) > 0) {
+                if (mb_strlen($mediaFile->cAttributTab) > 0) {
                     if ($this->getSeoString($cMedienTyp) === $this->getSeoString($mediaFile->cAttributTab)) {
                         $tabExists = true;
                         break;
@@ -1775,7 +1775,7 @@ class Artikel
             }
             // Falls nicht enthalten => eintragen
             if (!$tabExists) {
-                $cMedienTyp_arr[] = strlen($mediaFile->cAttributTab) > 0
+                $cMedienTyp_arr[] = mb_strlen($mediaFile->cAttributTab) > 0
                     ? $mediaFile->cAttributTab
                     : $mediaFile->cMedienTyp;
             }
@@ -2363,7 +2363,7 @@ class Artikel
                 $variation->nLieferbareVariationswerte = 0;
                 if ($kSprache > 0
                     && !$isDefaultLang
-                    && strlen($tmpVariation->cName_teigenschaftsprache) > 0
+                    && mb_strlen($tmpVariation->cName_teigenschaftsprache) > 0
                 ) {
                     $variation->cName = $tmpVariation->cName_teigenschaftsprache;
                 }
@@ -2426,7 +2426,7 @@ class Artikel
 
                 $value->oVariationsKombi = $varCombi;
             }
-            if ($kSprache > 0 && !$isDefaultLang && strlen($tmpVariation->cName_teigenschaftwertsprache) > 0) {
+            if ($kSprache > 0 && !$isDefaultLang && mb_strlen($tmpVariation->cName_teigenschaftwertsprache) > 0) {
                 $value->cName = $tmpVariation->cName_teigenschaftwertsprache;
             }
             //kundengrp spezif. Aufpreis?
@@ -3556,7 +3556,7 @@ class Artikel
                         $bSprachSeo = false;
                         break;
                     }
-                    if (strlen($oSeo->cSeo) > 0) {
+                    if (mb_strlen($oSeo->cSeo) > 0) {
                         $oSeoAssoc_arr[$oSeo->kSprache] = $oSeo;
                     }
                 }
@@ -4122,7 +4122,7 @@ class Artikel
             $oArtikelTMP->dEnde_de          = null;
             $oArtikelTMP->fNettoPreis       = null;
         }
-        if ($oArtikelTMP->cBildpfad_thersteller !== null && strlen($oArtikelTMP->cBildpfad_thersteller) > 0) {
+        if ($oArtikelTMP->cBildpfad_thersteller !== null && mb_strlen($oArtikelTMP->cBildpfad_thersteller) > 0) {
             $this->cBildpfad_thersteller = Shop::getImageBaseURL() .
                 PFAD_HERSTELLERBILDER_KLEIN . $oArtikelTMP->cBildpfad_thersteller;
         }
@@ -4138,7 +4138,7 @@ class Artikel
                                             AND kSprache = " . $kSprache . " LIMIT 0, 1",
                 \DB\ReturnType::SINGLE_OBJECT
             );
-            if (isset($oVPEEinheitRes->cName) && strlen($oVPEEinheitRes->cName) > 0) {
+            if (isset($oVPEEinheitRes->cName) && mb_strlen($oVPEEinheitRes->cName) > 0) {
                 $this->cVPEEinheit = $oVPEEinheitRes->cName;
             }
         }
@@ -4279,7 +4279,7 @@ class Artikel
             $this->cHerstellerMetaDescription = $oArtikelTMP->cMetaDescription_spr;
             $this->cHerstellerBeschreibung    = StringHandler::parseNewsText($oArtikelTMP->cBeschreibung_hst_spr);
             $this->cHerstellerSortNr          = $oArtikelTMP->nSortNr_thersteller;
-            if (strlen($oArtikelTMP->cBildpfad_thersteller) > 0) {
+            if (mb_strlen($oArtikelTMP->cBildpfad_thersteller) > 0) {
                 $imageBaseURL = Shop::getImageBaseURL();
 
                 $this->cHerstellerBildKlein     = PFAD_HERSTELLERBILDER_KLEIN . $oArtikelTMP->cBildpfad_thersteller;
@@ -5499,8 +5499,8 @@ class Artikel
             return '';
         }
         // set default values
-        $minDeliveryDays = (strlen(trim($favShipping->nMinLiefertage)) > 0) ? (int)$favShipping->nMinLiefertage : 2;
-        $maxDeliveryDays = (strlen(trim($favShipping->nMaxLiefertage)) > 0) ? (int)$favShipping->nMaxLiefertage : 3;
+        $minDeliveryDays = (mb_strlen(trim($favShipping->nMinLiefertage)) > 0) ? (int)$favShipping->nMinLiefertage : 2;
+        $maxDeliveryDays = (mb_strlen(trim($favShipping->nMaxLiefertage)) > 0) ? (int)$favShipping->nMaxLiefertage : 3;
         // get all pieces (even invisible) to calc delivery
         $nAllPieces = Shop::Container()->getDB()->query(
             'SELECT tartikel.kArtikel, tstueckliste.fAnzahl
@@ -5688,7 +5688,7 @@ class Artikel
      */
     public function mappeMedienTyp($type)
     {
-        if (strlen($type) > 0) {
+        if (mb_strlen($type) > 0) {
             $mapping = new stdClass();
             switch ($type) {
                 case '.bmp':
@@ -6069,10 +6069,10 @@ class Artikel
             $mwst2 = number_format((float)$mwst, 2, ',', '.');
             $mwst1 = number_format((float)$mwst, 1, ',', '.');
             $mwst  = (int)$mwst;
-            if ($mwst2{strlen($mwst2) - 1} != '0') {
+            if ($mwst2{mb_strlen($mwst2) - 1} != '0') {
                 return $mwst2;
             }
-            if ($mwst1{strlen($mwst1) - 1} != '0') {
+            if ($mwst1{mb_strlen($mwst1) - 1} != '0') {
                 return $mwst1;
             }
 
@@ -6184,7 +6184,7 @@ class Artikel
             : '';
         if ($shippingFreeCountries) {
             $codes   = array_filter(\Functional\map(explode(',', $shippingFreeCountries), function ($e) {
-                return strlen($e) > 0 ? "'" . trim($e) . "'" : null;
+                return mb_strlen($e) > 0 ? "'" . trim($e) . "'" : null;
             }));
             $count   = count($codes);
             $sql     = 'cISO IN (' . implode(',', $codes) . ')';
@@ -6325,7 +6325,7 @@ class Artikel
             preg_replace('/[^a-zA-Z0-9üÜäÄöÖß-]/u', ' ', $description)
         ));
         $descriptionKeywords  = array_filter($_descriptionKeywords, function ($value) use ($confMinKeyLen) {
-            return strlen($value) >= $confMinKeyLen;
+            return mb_strlen($value) >= $confMinKeyLen;
         });
 
         if (($excludeWords = Shop::Container()->getCache()->get($cacheID)) === false) {
@@ -6419,13 +6419,13 @@ class Artikel
         $cDesc = '';
         executeHook(HOOK_ARTIKEL_INC_METADESCRIPTION, ['cDesc' => &$cDesc, 'oArtikel' => &$this]);
 
-        if (strlen($cDesc) > 1) {
+        if (mb_strlen($cDesc) > 1) {
             return $cDesc;
         }
 
         $globalMeta = \Filter\Metadata::getGlobalMetaData();
         $prefix     = (isset($globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix)
-            && strlen($globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix) > 0)
+            && mb_strlen($globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix) > 0)
             ? $globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix . ' '
             : '';
         // Hat der Artikel per Attribut eine MetaDescription gesetzt?
@@ -6435,15 +6435,15 @@ class Artikel
             );
         }
         // Kurzbeschreibung vorhanden? Wenn ja, nimm dies als MetaDescription
-        $description = ($this->cKurzBeschreibung !== null && strlen(strip_tags($this->cKurzBeschreibung)) > 6)
+        $description = ($this->cKurzBeschreibung !== null && mb_strlen(strip_tags($this->cKurzBeschreibung)) > 6)
             ? $this->cKurzBeschreibung
             : '';
         // Beschreibung vorhanden? Wenn ja, nimm dies als MetaDescription
-        if ($description === '' && $this->cBeschreibung !== null && strlen(strip_tags($this->cBeschreibung)) > 6) {
+        if ($description === '' && $this->cBeschreibung !== null && mb_strlen(strip_tags($this->cBeschreibung)) > 6) {
             $description = $this->cBeschreibung;
         }
 
-        if (strlen($description) > 0) {
+        if (mb_strlen($description) > 0) {
             return \Filter\Metadata::truncateMetaDescription(
                 $prefix . strip_tags(str_replace(
                     ['<br>', '<br />', '</p>', '</li>', "\n", "\r", '.'],
@@ -6463,15 +6463,15 @@ class Artikel
     public function getMetaDescription(KategorieListe $KategorieListe): string
     {
         $description = $this->metaDescription;
-        if ($description !== null && strlen($description) > 0) {
+        if ($description !== null && mb_strlen($description) > 0) {
             return $description;
         }
         $globalMeta  = \Filter\Metadata::getGlobalMetaData();
         $prefix      = (isset($globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix)
-            && strlen($globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix) > 0)
+            && mb_strlen($globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix) > 0)
             ? $globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix . ' '
             : '';
-        $description = ($this->cName !== null && strlen($this->cName) > 0)
+        $description = ($this->cName !== null && mb_strlen($this->cName) > 0)
             ? ($prefix . $this->cName . ' in ')
             : '';
         if (count($KategorieListe->elemente) > 0) {

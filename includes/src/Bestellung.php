@@ -755,14 +755,14 @@ class Bestellung
                             $mhd    = $_lieferscheinPosInfo->getMHD();
                             $serial = $_lieferscheinPosInfo->getSeriennummer();
                             $charge = $_lieferscheinPosInfo->getChargeNr();
-                            if (strlen($charge) > 0) {
+                            if (mb_strlen($charge) > 0) {
                                 $_lieferscheinPos->oPosition->cChargeNr = $charge;
                             }
-                            if ($mhd !== null && strlen($mhd) > 0) {
+                            if ($mhd !== null && mb_strlen($mhd) > 0) {
                                 $_lieferscheinPos->oPosition->dMHD    = $mhd;
                                 $_lieferscheinPos->oPosition->dMHD_de = date_format(date_create($mhd), 'd.m.Y');
                             }
-                            if (strlen($serial) > 0) {
+                            if (mb_strlen($serial) > 0) {
                                 $_lieferscheinPos->oPosition->cSeriennummer = $serial;
                             }
                         }
@@ -981,7 +981,7 @@ class Bestellung
             'cBestellNr'
         );
 
-        return isset($data->cBestellNr) && strlen($data->cBestellNr) > 0 ? $data->cBestellNr : false;
+        return isset($data->cBestellNr) && mb_strlen($data->cBestellNr) > 0 ? $data->cBestellNr : false;
     }
 
     /**

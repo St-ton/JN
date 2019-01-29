@@ -110,7 +110,7 @@ function decodeCode($encoded)
 
     $key  = BLOWFISH_KEY;
     $mod1 = (mb_ord($key[0]) + mb_ord($key[1]) + mb_ord($key[2])) % 9 + 1;
-    $mod2 = strlen($_SERVER['DOCUMENT_ROOT']) % 9 + 1;
+    $mod2 = mb_strlen($_SERVER['DOCUMENT_ROOT']) % 9 + 1;
 
     $s1e = (int)substr($encoded, 12, 3) + $mod2 - $mod1 - 123;
     $s2e = (int)substr($encoded, 15, 3) + $mod1 - $mod2 - 234;

@@ -101,7 +101,7 @@ if (isset($_POST['resetEmailvorlage'])
                 'kEmailvorlage',
                 (int)$_POST['kEmailvorlage']
             );
-            if (isset($vorlage->cDateiname) && strlen($vorlage->cDateiname) > 0) {
+            if (isset($vorlage->cDateiname) && mb_strlen($vorlage->cDateiname) > 0) {
                 foreach ($languages as $_lang) {
                     $path      = PFAD_ROOT . PFAD_EMAILVORLAGEN . $_lang->cISO;
                     $fileHtml  = $path . '/' . $vorlage->cDateiname . '_html.tpl';
@@ -627,21 +627,21 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
             ? baueDateinameArray($localizedTPLs[$lang->kSprache]->cDateiname)
             : [];
         if (!isset($localizedTPLs[$lang->kSprache]->cPDFS)
-            || strlen($localizedTPLs[$lang->kSprache]->cPDFS) === 0
+            || mb_strlen($localizedTPLs[$lang->kSprache]->cPDFS) === 0
             || count($tmpPDFs) < 3
         ) {
             if (count($tmpPDFs) < 3) {
                 foreach ($tmpPDFs as $i => $cPDFSTMP) {
                     $pdfFiles[] = $cPDFSTMP;
 
-                    if (strlen($_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache]) > 0) {
+                    if (mb_strlen($_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache]) > 0) {
                         $regs = [];
                         preg_match(
                             '/[A-Za-z0-9_-]+/',
                             $_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache],
                             $regs
                         );
-                        if (strlen($regs[0]) === strlen($_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache])) {
+                        if (mb_strlen($regs[0]) === mb_strlen($_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache])) {
                             $filenames[] = $_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache];
                             unset($_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache]);
                         } else {
@@ -660,8 +660,8 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
 
             for ($i = 1; $i <= 3; $i++) {
                 if (isset($_FILES['pdf_' . $i . '_' . $lang->kSprache]['name'])
-                    && strlen($_FILES['pdf_' . $i . '_' . $lang->kSprache]['name']) > 0
-                    && strlen($_POST['dateiname_' . $i . '_' . $lang->kSprache]) > 0
+                    && mb_strlen($_FILES['pdf_' . $i . '_' . $lang->kSprache]['name']) > 0
+                    && mb_strlen($_POST['dateiname_' . $i . '_' . $lang->kSprache]) > 0
                 ) {
                     if ($_FILES['pdf_' . $i . '_' . $lang->kSprache]['size'] <= 2097152) {
                         if (!mb_strrpos($_FILES['pdf_' . $i . '_' . $lang->kSprache]['name'], ';')
@@ -698,8 +698,8 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                     $_FILES['pdf_' . $i . '_' . $lang->kSprache]['name'],
                     $_POST['dateiname_' . $i . '_' . $lang->kSprache]
                 )
-                    && strlen($_FILES['pdf_' . $i . '_' . $lang->kSprache]['name']) > 0
-                    && strlen($_POST['dateiname_' . $i . '_' . $lang->kSprache]) === 0
+                    && mb_strlen($_FILES['pdf_' . $i . '_' . $lang->kSprache]['name']) > 0
+                    && mb_strlen($_POST['dateiname_' . $i . '_' . $lang->kSprache]) === 0
                 ) {
                     $attachmentErrors[$lang->kSprache][$i] = 1;
                     $cFehler                              .= __('errorFileNamePdfMissing') . '<br />';
@@ -712,10 +712,10 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
             foreach ($pdfFiles as $i => $pdf) {
                 $j   = $i + 1;
                 $idx = 'dateiname_' . $j . '_' . $lang->kSprache;
-                if (strlen($_POST['dateiname_' . $j . '_' . $lang->kSprache]) > 0 && strlen($pdfFiles[$j - 1]) > 0) {
+                if (mb_strlen($_POST['dateiname_' . $j . '_' . $lang->kSprache]) > 0 && mb_strlen($pdfFiles[$j - 1]) > 0) {
                     $regs = [];
                     preg_match('/[A-Za-z0-9_-]+/', $_POST[$idx], $regs);
-                    if (strlen($regs[0]) === strlen($_POST[$idx])) {
+                    if (mb_strlen($regs[0]) === mb_strlen($_POST[$idx])) {
                         $filenames[] = $_POST[$idx];
                     } else {
                         $cFehler .= __('errorFileName') . '<br />';
@@ -738,14 +738,14 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
         if (count($pdfFiles) > 0) {
             $localized->cPDFS = ';' . implode(';', $pdfFiles) . ';';
         } elseif (isset($localizedTPLs[$lang->kSprache]->cPDFS)
-            && strlen($localizedTPLs[$lang->kSprache]->cPDFS) > 0
+            && mb_strlen($localizedTPLs[$lang->kSprache]->cPDFS) > 0
         ) {
             $localized->cPDFS = $localizedTPLs[$lang->kSprache]->cPDFS;
         }
         if (count($filenames) > 0) {
             $localized->cDateiname = ';' . implode(';', $filenames) . ';';
         } elseif (isset($localizedTPLs[$lang->kSprache]->cDateiname)
-            && strlen($localizedTPLs[$lang->kSprache]->cDateiname) > 0
+            && mb_strlen($localizedTPLs[$lang->kSprache]->cDateiname) > 0
         ) {
             $localized->cDateiname = $localizedTPLs[$lang->kSprache]->cDateiname;
         }
@@ -790,13 +790,13 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
     $upd->nDSE     = isset($_POST['nDSE']) ? (int)$_POST['nDSE'] : 0;
     $db->update($tableName, 'kEmailvorlage', $kEmailvorlage, $upd);
     $db->delete($settingsTableName, 'kEmailvorlage', $kEmailvorlage);
-    if (isset($_POST['cEmailOut']) && strlen($_POST['cEmailOut']) > 0) {
+    if (isset($_POST['cEmailOut']) && mb_strlen($_POST['cEmailOut']) > 0) {
         saveEmailSetting($settingsTableName, $kEmailvorlage, 'cEmailOut', $_POST['cEmailOut']);
     }
-    if (isset($_POST['cEmailSenderName']) && strlen($_POST['cEmailSenderName']) > 0) {
+    if (isset($_POST['cEmailSenderName']) && mb_strlen($_POST['cEmailSenderName']) > 0) {
         saveEmailSetting($settingsTableName, $kEmailvorlage, 'cEmailSenderName', $_POST['cEmailSenderName']);
     }
-    if (isset($_POST['cEmailCopyTo']) && strlen($_POST['cEmailCopyTo']) > 0) {
+    if (isset($_POST['cEmailCopyTo']) && mb_strlen($_POST['cEmailCopyTo']) > 0) {
         saveEmailSetting($settingsTableName, $kEmailvorlage, 'cEmailCopyTo', $_POST['cEmailCopyTo']);
     }
 
@@ -931,7 +931,7 @@ function bauePDFArray($cPDF)
 {
     $pdf = [];
     foreach (explode(';', $cPDF) as $cPDFTMP) {
-        if (strlen($cPDFTMP) > 0) {
+        if (mb_strlen($cPDFTMP) > 0) {
             $pdf[] = $cPDFTMP;
         }
     }
@@ -947,7 +947,7 @@ function baueDateinameArray($fileName)
 {
     $fileNames = [];
     foreach (explode(';', $fileName) as $cDateinameTMP) {
-        if (strlen($cDateinameTMP) > 0) {
+        if (mb_strlen($cDateinameTMP) > 0) {
             $fileNames[] = $cDateinameTMP;
         }
     }
@@ -978,7 +978,7 @@ function setzeFehler($kEmailvorlage, $error = true, $force = false)
  */
 function saveEmailSetting($settingsTable, $kEmailvorlage, $key, $value)
 {
-    if ((int)$kEmailvorlage > 0 && strlen($settingsTable) > 0 && strlen($key) > 0 && strlen($value) > 0) {
+    if ((int)$kEmailvorlage > 0 && mb_strlen($settingsTable) > 0 && mb_strlen($key) > 0 && mb_strlen($value) > 0) {
         $conf                = new stdClass();
         $conf->kEmailvorlage = (int)$kEmailvorlage;
         $conf->cKey          = $key;

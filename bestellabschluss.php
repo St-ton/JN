@@ -89,7 +89,7 @@ if (isset($_GET['i'])) {
 }
 if ($conf['trustedshops']['trustedshops_nutzen'] === 'Y') {
     $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
-    if ((int)$oTrustedShops->nAktiv === 1 && strlen($oTrustedShops->tsId) > 0) {
+    if ((int)$oTrustedShops->nAktiv === 1 && mb_strlen($oTrustedShops->tsId) > 0) {
         $smarty->assign('oTrustedShops', $oTrustedShops);
     }
 }

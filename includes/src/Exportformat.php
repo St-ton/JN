@@ -925,7 +925,7 @@ class Exportformat
     private function writeHeader($handle): int
     {
         $header = $this->getKopfzeile();
-        if (strlen($header) === 0) {
+        if (mb_strlen($header) === 0) {
             return 0;
         }
         $encoding = $this->getKodierung();
@@ -946,7 +946,7 @@ class Exportformat
     private function writeFooter($handle): int
     {
         $footer = $this->getFusszeile();
-        if (strlen($footer) === 0) {
+        if (mb_strlen($footer) === 0) {
             return 0;
         }
         $encoding = $this->getKodierung();
@@ -986,7 +986,7 @@ class Exportformat
             $nSizeDatei = 0;
             while (($cContent = fgets($handle)) !== false) {
                 if ($nZeile > 1) {
-                    $nSizeZeile = strlen($cContent) + 2;
+                    $nSizeZeile = mb_strlen($cContent) + 2;
                     // Schwelle erreicht?
                     if ($nSizeDatei <= ($this->nSplitgroesse * 1024 * 1024 - 102400)) {
                         // Schreibe Content
@@ -1313,7 +1313,7 @@ class Exportformat
                 }
             }
         }
-        if (strlen($cOutput) > 0) {
+        if (mb_strlen($cOutput) > 0) {
             fwrite($datei, (($this->cKodierung === 'UTF-8' || $this->cKodierung === 'UTF-8noBOM')
                 ? StringHandler::convertUTF8($cOutput)
                 : $cOutput));

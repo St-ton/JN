@@ -117,7 +117,7 @@ function getPaymentMethodsByName($cSearch)
         // Leerzeichen löschen
         trim($cSearchPos);
         // Nur Eingaben mit mehr als 2 Zeichen
-        if (strlen($cSearchPos) > 2) {
+        if (mb_strlen($cSearchPos) > 2) {
             $paymentMethodsByName_arr = Shop::Container()->getDB()->queryPrepared(
                 'SELECT za.kZahlungsart, za.cName
                     FROM tzahlungsart AS za

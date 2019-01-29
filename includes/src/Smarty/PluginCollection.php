@@ -83,8 +83,8 @@ class PluginCollection
         if ($length === 0) {
             return '';
         }
-        if (\strlen($string) > $length) {
-            $length -= \min($length, \strlen($etc));
+        if (\mb_strlen($string) > $length) {
+            $length -= \min($length, \mb_strlen($etc));
             if (!$break && !$middle) {
                 $string = \preg_replace('/\s+?(\S+)?$/', '', \substr($string, 0, $length + 1));
             }
@@ -113,7 +113,7 @@ class PluginCollection
         if (isset($params['section'], $params['key'])) {
             $cValue = $this->lang->get($params['key'], $params['section']);
             // Für vsprintf ein String der :: exploded wird
-            if (isset($params['printf']) && \strlen($params['printf']) > 0) {
+            if (isset($params['printf']) && \mb_strlen($params['printf']) > 0) {
                 $cValue = \vsprintf($cValue, \explode(':::', $params['printf']));
             }
         }
@@ -133,7 +133,7 @@ class PluginCollection
      */
     public function countCharacters(?string $text): int
     {
-        return $text === null ? 0 : \strlen($text);
+        return $text === null ? 0 : \mb_strlen($text);
     }
 
     /**

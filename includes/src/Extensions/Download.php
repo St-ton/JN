@@ -580,7 +580,7 @@ class Download
      */
     public function hasPreview(): bool
     {
-        return \strlen($this->cPfadVorschau) > 0;
+        return \mb_strlen($this->cPfadVorschau) > 0;
     }
 
     /**
@@ -588,7 +588,7 @@ class Download
      */
     public function getExtension(): string
     {
-        if (\strlen($this->cPfad) > 0) {
+        if (\mb_strlen($this->cPfad) > 0) {
             $pathInfo = \pathinfo($this->cPfad);
             if (\is_array($pathInfo)) {
                 return \mb_convert_case($pathInfo['extension'], MB_CASE_UPPER);
@@ -603,7 +603,7 @@ class Download
      */
     public function getPreviewExtension(): string
     {
-        if (\strlen($this->cPfadVorschau) > 0) {
+        if (\mb_strlen($this->cPfadVorschau) > 0) {
             $pathInfo = \pathinfo($this->cPfadVorschau);
             if (\is_array($pathInfo)) {
                 return \mb_convert_case($pathInfo['extension'], MB_CASE_UPPER);

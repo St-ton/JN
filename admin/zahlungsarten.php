@@ -37,7 +37,7 @@ if (($action = Request::verifyGPDataString('a')) !== ''
 ) {
     $method = $db->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
 
-    if (isset($method->cModulId) && strlen($method->cModulId) > 0) {
+    if (isset($method->cModulId) && mb_strlen($method->cModulId) > 0) {
         (new ZahlungsLog($method->cModulId))->loeschen();
         $hinweis = sprintf(__('successLogReset'), $method->cName);
     }
@@ -296,7 +296,7 @@ if ($step === 'einstellen') {
     $filterStandard->addDaterangefield('Zeitraum', 'dDatum');
     $filterStandard->assemble();
 
-    if (isset($method->cModulId) && strlen($method->cModulId) > 0) {
+    if (isset($method->cModulId) && mb_strlen($method->cModulId) > 0) {
         $paginationPaymentLog = (new Pagination('standard'))
             ->setItemCount(ZahlungsLog::count($method->cModulId, -1, $filterStandard->getWhereSQL()))
             ->assemble();

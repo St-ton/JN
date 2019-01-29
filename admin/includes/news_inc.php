@@ -16,11 +16,11 @@ function pruefeNewsPost($cBetreff, $cText, $kKundengruppe_arr, $kNewsKategorie_a
 {
     $cPlausiValue_arr = [];
     // Betreff prüfen
-    if (strlen($cBetreff) === 0) {
+    if (mb_strlen($cBetreff) === 0) {
         $cPlausiValue_arr['cBetreff'] = 1;
     }
     // Text prüfen
-    if (strlen($cText) === 0) {
+    if (mb_strlen($cText) === 0) {
         $cPlausiValue_arr['cText'] = 1;
     }
     // Kundengruppe prüfen
@@ -86,7 +86,7 @@ function gibLetzteBildNummer($kNews)
     $imageCount = count($cBild_arr);
     if ($imageCount > 0) {
         for ($i = 0; $i < $imageCount; $i++) {
-            $cNummer = substr($cBild_arr[$i], 4, (strlen($cBild_arr[$i]) - mb_strpos($cBild_arr[$i], '.')) - 3);
+            $cNummer = substr($cBild_arr[$i], 4, (mb_strlen($cBild_arr[$i]) - mb_strpos($cBild_arr[$i], '.')) - 3);
 
             if ($cNummer > $nMax) {
                 $nMax = $cNummer;

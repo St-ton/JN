@@ -51,13 +51,13 @@ final class CompareList extends AbstractBox
                     $requestURI = \substr($requestURI, 0, $nPosWD);
                 }
                 $del = '?vlplo=';
-                if ($nPosAnd === \strlen($requestURI) - 1) {
+                if ($nPosAnd === \mb_strlen($requestURI) - 1) {
                     $del = 'vlplo=';
                 } elseif ($nPosAnd) {
                     $del = '&vlplo=';
                 } elseif ($nPosQuest) {
                     $del = '&vlplo=';
-                } elseif ($nPosQuest === \strlen($requestURI) - 1) {
+                } elseif ($nPosQuest === \mb_strlen($requestURI) - 1) {
                     $del = 'vlplo=';
                 }
                 $product = new \Artikel();

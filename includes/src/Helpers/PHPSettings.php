@@ -155,7 +155,7 @@ class PHPSettings
      */
     public static function checkSOAP(string $cURL = ''): bool
     {
-        return !(\strlen($cURL) > 0 && !self::phpLinkCheck($cURL)) && \class_exists('SoapClient');
+        return !(\mb_strlen($cURL) > 0 && !self::phpLinkCheck($cURL)) && \class_exists('SoapClient');
     }
 
     /**
@@ -166,7 +166,7 @@ class PHPSettings
      */
     public static function checkCURL(string $cURL = ''): bool
     {
-        return !(\strlen($cURL) > 0 && !self::phpLinkCheck($cURL)) && \function_exists('curl_init');
+        return !(\mb_strlen($cURL) > 0 && !self::phpLinkCheck($cURL)) && \function_exists('curl_init');
     }
 
     /**
@@ -187,7 +187,7 @@ class PHPSettings
      */
     public static function checkSockets(string $cSOCKETS = ''): bool
     {
-        return !(\strlen($cSOCKETS) > 0 && !self::phpLinkCheck($cSOCKETS)) && \function_exists('fsockopen');
+        return !(\mb_strlen($cSOCKETS) > 0 && !self::phpLinkCheck($cSOCKETS)) && \function_exists('fsockopen');
     }
 
     /**

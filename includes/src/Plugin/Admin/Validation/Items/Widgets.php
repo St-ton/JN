@@ -36,7 +36,7 @@ class Widgets extends AbstractItem
             $i = (string)$i;
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
-            if (\strlen($hits2[0]) !== \strlen($i)) {
+            if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }
             \preg_match(
@@ -44,11 +44,11 @@ class Widgets extends AbstractItem
                 $widget['Title'],
                 $hits1
             );
-            if (\strlen($hits1[0]) !== \strlen($widget['Title'])) {
+            if (\mb_strlen($hits1[0]) !== \mb_strlen($widget['Title'])) {
                 return InstallCode::INVALID_WIDGET_TITLE;
             }
             \preg_match('/[a-zA-Z0-9\/_\-.]+/', $widget['Class'], $hits1);
-            if (\strlen($hits1[0]) !== \strlen($widget['Class'])) {
+            if (\mb_strlen($hits1[0]) !== \mb_strlen($widget['Class'])) {
                 return InstallCode::INVALID_WIDGET_CLASS;
             }
             if (!\file_exists($base . 'class.Widget' . $widget['Class'] . '_' . $pluginID . '.php')) {
@@ -58,15 +58,15 @@ class Widgets extends AbstractItem
                 return InstallCode::INVALID_WIDGET_CONTAINER;
             }
             \preg_match('/[0-9]+/', $widget['Pos'], $hits1);
-            if (\strlen($hits1[0]) !== \strlen($widget['Pos'])) {
+            if (\mb_strlen($hits1[0]) !== \mb_strlen($widget['Pos'])) {
                 return InstallCode::INVALID_WIDGET_POS;
             }
             \preg_match('/[0-1]{1}/', $widget['Expanded'], $hits1);
-            if (\strlen($hits1[0]) !== \strlen($widget['Expanded'])) {
+            if (\mb_strlen($hits1[0]) !== \mb_strlen($widget['Expanded'])) {
                 return InstallCode::INVALID_WIDGET_EXPANDED;
             }
             \preg_match('/[0-1]{1}/', $widget['Active'], $hits1);
-            if (\strlen($hits1[0]) !== \strlen($widget['Active'])) {
+            if (\mb_strlen($hits1[0]) !== \mb_strlen($widget['Active'])) {
                 return InstallCode::INVALID_WIDGET_ACTIVE;
             }
         }

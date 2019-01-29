@@ -83,7 +83,7 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
     if (Request::verifyGPCDataInt('kPluginAdminMenu') > 0) {
         $smarty->assign('defaultTabbertab', Request::verifyGPCDataInt('kPluginAdminMenu'));
     }
-    if (strlen(Request::verifyGPDataString('cPluginTab')) > 0) {
+    if (mb_strlen(Request::verifyGPDataString('cPluginTab')) > 0) {
         $smarty->assign('defaultTabbertab', Request::verifyGPDataString('cPluginTab'));
     }
     $data = $db->select('tplugin', 'kPlugin', $kPlugin);

@@ -118,8 +118,8 @@ class AnonymizeIps extends Method implements MethodInterface
         $anonymizer = new IpAnonymizer('', true); // anonymize "beautified"
         $ipMaskV4   = $anonymizer->getMaskV4();
         $ipMaskV6   = $anonymizer->getMaskV6();
-        $ipMaskV4   = \substr($ipMaskV4, \strpos($ipMaskV4, '.0'), \strlen($ipMaskV4) - 1);
-        $ipMaskV6   = \substr($ipMaskV6, \strpos($ipMaskV6, ':0000'), \strlen($ipMaskV6) - 1);
+        $ipMaskV4   = \mb_substr($ipMaskV4, \mb_strpos($ipMaskV4, '.0'), \mb_strlen($ipMaskV4) - 1);
+        $ipMaskV6   = \mb_substr($ipMaskV6, \mb_strpos($ipMaskV6, ':0000'), \mb_strlen($ipMaskV6) - 1);
         $dtNow      = $this->now->format('Y-m-d H:i:s');
         foreach ($this->tablesToUpdate as $tableName => $colData) {
             $sql = "SELECT

@@ -96,15 +96,15 @@ function loescheVerzeichnisUpdater($cPfad)
 {
     $bLinux = true;
     // Linux oder Windows?
-    if (strpos($cPfad, '\\') !== false) {
+    if (mb_strpos($cPfad, '\\') !== false) {
         $bLinux = false;
     }
 
     if ($bLinux) {
-        if (strpos(substr($cPfad, strlen($cPfad) - 1, 1), '/') === false) {
+        if (mb_strpos(mb_substr($cPfad, mb_strlen($cPfad) - 1, 1), '/') === false) {
             $cPfad .= '/';
         }
-    } elseif (strpos(substr($cPfad, strlen($cPfad) - 1, 1), '\\') === false) {
+    } elseif (mb_strpos(mb_substr($cPfad, mb_strlen($cPfad) - 1, 1), '\\') === false) {
         $cPfad .= '\\';
     }
 

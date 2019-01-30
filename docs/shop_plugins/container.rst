@@ -13,7 +13,7 @@ im Internet. Wir empfehlen Entwicklern daher zunächst, sich mit SOLID und im Be
 zu machen.
 
 Container / Komponente holen
--------------------------
+----------------------------
 
 .. code-block:: php
 

@@ -253,7 +253,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     $kRechnungsadresse = $oRechnungsadresse->insertInDB();
 
     if (isset($_POST['kommentar'])) {
-        $_SESSION['kommentar'] = substr(strip_tags($_POST['kommentar']), 0, 1000);
+        $_SESSION['kommentar'] = mb_substr(strip_tags($_POST['kommentar']), 0, 1000);
     } elseif (!isset($_SESSION['kommentar'])) {
         $_SESSION['kommentar'] = '';
     }
@@ -312,7 +312,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     if (isset($_SESSION['TrustedShops']->cKaeuferschutzProdukt)
         && $_SESSION['Zahlungsart']->nWaehrendBestellung == 0
         && $conf['trustedshops']['trustedshops_nutzen'] === 'Y'
-        && strlen($_SESSION['TrustedShops']->cKaeuferschutzProdukt) > 0
+        && mb_strlen($_SESSION['TrustedShops']->cKaeuferschutzProdukt) > 0
     ) {
         $ts                    = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
         $ts->tsProductId       = $_SESSION['TrustedShops']->cKaeuferschutzProdukt;
@@ -326,13 +326,13 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
         $ts->orderDate         = date('Y-m-d') . 'T' . date('H:i:s');
         $ts->shopSystemVersion = 'JTL-Shop ' . APPLICATION_VERSION;
 
-        if (strlen($ts->tsProductId) > 0
-            && strlen($ts->amount) > 0
-            && strlen($ts->currency) > 0
-            && strlen($ts->paymentType) > 0
-            && strlen($ts->buyerEmail) > 0
-            && strlen($ts->shopCustomerID) > 0
-            && strlen($ts->shopOrderID) > 0
+        if (mb_strlen($ts->tsProductId) > 0
+            && mb_strlen($ts->amount) > 0
+            && mb_strlen($ts->currency) > 0
+            && mb_strlen($ts->paymentType) > 0
+            && mb_strlen($ts->buyerEmail) > 0
+            && mb_strlen($ts->shopCustomerID) > 0
+            && mb_strlen($ts->shopOrderID) > 0
         ) {
             $ts->sendeBuchung();
         }
@@ -1018,7 +1018,7 @@ function setzeSmartyWeiterleitung(Bestellung $bestellung): void
         $paymentMethod           = new SofortUeberweisung($_SESSION['Zahlungsart']->cModulId);
         $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
         $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif (strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0) {
+    } elseif (mb_strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0) {
         require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
         $paymentMethod           = PaymentMethod::create($_SESSION['Zahlungsart']->cModulId);
         $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
@@ -1040,7 +1040,7 @@ function fakeBestellung()
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
 
     if (isset($_POST['kommentar'])) {
-        $_SESSION['kommentar'] = substr(strip_tags(Shop::Container()->getDB()->escape($_POST['kommentar'])), 0, 1000);
+        $_SESSION['kommentar'] = mb_substr(strip_tags(Shop::Container()->getDB()->escape($_POST['kommentar'])), 0, 1000);
     }
     $cart                    = \Session\Frontend::getCart();
     $customer                = \Session\Frontend::getCustomer();
@@ -1086,10 +1086,10 @@ function fakeBestellung()
     $order->oRechnungsadresse->cWWW        = $customer->cWWW;
     $order->oRechnungsadresse->cMail       = $customer->cMail;
 
-    if (strlen(\Session\Frontend::getDeliveryAddress()->cVorname) > 0) {
+    if (mb_strlen(\Session\Frontend::getDeliveryAddress()->cVorname) > 0) {
         $order->Lieferadresse = gibLieferadresseAusSession();
     }
-    $order->cBestellNr = date('dmYHis') . substr($order->cSession, 0, 4);
+    $order->cBestellNr = date('dmYHis') . mb_substr($order->cSession, 0, 4);
     if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
         $order->Positionen = [];
         foreach ($cart->PositionenArr as $i => $position) {

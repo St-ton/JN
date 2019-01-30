@@ -77,9 +77,9 @@ class NewsJson
             'soundcloud.com/'
         ];
 
-        if (strlen($link) > 3) {
+        if (mb_strlen($link) > 3) {
             foreach ($media as $cMedia) {
-                if (strpos($link, $cMedia) !== false) {
+                if (mb_strpos($link, $cMedia) !== false) {
                     return true;
                 }
             }

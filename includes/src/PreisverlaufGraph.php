@@ -829,10 +829,10 @@ class PreisverlaufGraph
         foreach ($this->oConfig_arr as $i => $config) {
             if (preg_match('/#[A-Fa-f0-9]{6}/', $config->cWert) == 1) {
                 $decimals   = [];
-                $cWertSub   = substr($config->cWert, 1);
-                $decimals[] = hexdec(substr($cWertSub, 0, 2));
-                $decimals[] = hexdec(substr($cWertSub, 2, 2));
-                $decimals[] = hexdec(substr($cWertSub, 4, 2));
+                $cWertSub   = mb_substr($config->cWert, 1);
+                $decimals[] = hexdec(mb_substr($cWertSub, 0, 2));
+                $decimals[] = hexdec(mb_substr($cWertSub, 2, 2));
+                $decimals[] = hexdec(mb_substr($cWertSub, 4, 2));
 
                 switch ($config->cName) {
                     case 'preisverlauf_hintergrundfarbe':

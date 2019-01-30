@@ -273,7 +273,7 @@ class Versandart
      */
     private static function getShippingSection($table, $key, int $value): array
     {
-        if ($value > 0 && strlen($table) > 0 && strlen($key) > 0) {
+        if ($value > 0 && mb_strlen($table) > 0 && mb_strlen($key) > 0) {
             $Objs = Shop::Container()->getDB()->selectAll($table, $key, $value);
 
             if (is_array($Objs)) {
@@ -293,7 +293,7 @@ class Versandart
      */
     private static function cloneShippingSection(array $objectArr, $table, $key, int $value, $unsetKey = null): void
     {
-        if ($value > 0 && is_array($objectArr) && count($objectArr) > 0 && strlen($key) > 0) {
+        if ($value > 0 && is_array($objectArr) && count($objectArr) > 0 && mb_strlen($key) > 0) {
             foreach ($objectArr as $Obj) {
                 $kKeyPrim = $Obj->$unsetKey;
                 if ($unsetKey !== null) {

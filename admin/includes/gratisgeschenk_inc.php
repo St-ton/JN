@@ -14,7 +14,7 @@ function holeAktiveGeschenke($cSQL): array
 {
     $data = [];
     $res  = [];
-    if (strlen($cSQL) > 0) {
+    if (mb_strlen($cSQL) > 0) {
         $data = Shop::Container()->getDB()->query(
             "SELECT kArtikel
                 FROM tartikelattribut
@@ -46,7 +46,7 @@ function holeHaeufigeGeschenke($cSQL): array
 {
     $res  = [];
     $data = [];
-    if (strlen($cSQL) > 0) {
+    if (mb_strlen($cSQL) > 0) {
         $data = Shop::Container()->getDB()->query(
             'SELECT tgratisgeschenk.kArtikel, COUNT(*) AS nAnzahl, 
                 MAX(tbestellung.dErstellt) AS lastOrdered, AVG(tbestellung.fGesamtsumme) AS avgOrderValue
@@ -91,7 +91,7 @@ function holeLetzten100Geschenke($cSQL): array
 {
     $res  = [];
     $data = [];
-    if (strlen($cSQL) > 0) {
+    if (mb_strlen($cSQL) > 0) {
         $data = Shop::Container()->getDB()->query(
             'SELECT tgratisgeschenk.*, tbestellung.dErstellt AS orderCreated, tbestellung.fGesamtsumme
                 FROM tgratisgeschenk

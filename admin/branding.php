@@ -84,7 +84,7 @@ function speicherEinstellung(int $kBranding, $cPost_arr, $cFiles_arr)
     $oBrandingEinstellung->dTransparenz = $cPost_arr['dTransparenz'];
     $oBrandingEinstellung->dGroesse     = $cPost_arr['dGroesse'];
 
-    if (strlen($cFiles_arr['cBrandingBild']['name']) > 0) {
+    if (mb_strlen($cFiles_arr['cBrandingBild']['name']) > 0) {
         $oBrandingEinstellung->cBrandingBild = 'kBranding_' . $kBranding .
             mappeFileTyp($cFiles_arr['cBrandingBild']['type']);
     } else {
@@ -99,13 +99,13 @@ function speicherEinstellung(int $kBranding, $cPost_arr, $cFiles_arr)
     }
 
     if ($oBrandingEinstellung->kBranding > 0
-        && strlen($oBrandingEinstellung->cPosition) > 0
-        && strlen($oBrandingEinstellung->cBrandingBild) > 0
+        && mb_strlen($oBrandingEinstellung->cPosition) > 0
+        && mb_strlen($oBrandingEinstellung->cBrandingBild) > 0
     ) {
         // Alte Einstellung loeschen
         Shop::Container()->getDB()->delete('tbrandingeinstellung', 'kBranding', $kBranding);
 
-        if (strlen($cFiles_arr['cBrandingBild']['name']) > 0) {
+        if (mb_strlen($cFiles_arr['cBrandingBild']['name']) > 0) {
             loescheBrandingBild($oBrandingEinstellung->kBranding);
             speicherBrandingBild($cFiles_arr, $oBrandingEinstellung->kBranding);
         }

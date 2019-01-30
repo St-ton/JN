@@ -26,7 +26,7 @@ class TSRating extends Job
         foreach ($validLanguageCodes as $languageCode) {
             $ts     = new \TrustedShops(-1, $languageCode);
             $rating = $ts->holeKundenbewertungsstatus($languageCode);
-            if ((int)$rating->nStatus === 1 && \strlen($rating->cTSID) > 0) {
+            if ((int)$rating->nStatus === 1 && \mb_strlen($rating->cTSID) > 0) {
                 $res = $ts->aenderKundenbewertungsstatus(
                     $rating->cTSID,
                     1,

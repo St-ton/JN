@@ -18,10 +18,10 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 
 Shop::setPageType(PAGE_BESTELLVORGANG);
-$conf     = Shopsetting::getInstance()->getAll();
-$step     = 'accountwahl';
-$cHinweis = '';
-$cart     = \Session\Frontend::getCart();
+$conf        = Shopsetting::getInstance()->getAll();
+$step        = 'accountwahl';
+$cart        = \Session\Frontend::getCart();
+$alertHelper = Shop::Container()->getAlertService();
 unset($_SESSION['ajaxcheckout']);
 if (isset($_POST['login']) && (int)$_POST['login'] === 1) {
     fuehreLoginAus($_POST['email'], $_POST['passwort']);
@@ -132,8 +132,14 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
 }
 if (empty($_SESSION['Kunde']->cPasswort) && \Extensions\Download::hasDownloads($cart)) {
     // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
-    $step     = 'accountwahl';
-    $cHinweis = Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
+    $step = 'accountwahl';
+
+    $alertHelper->addAlert(
+        Alert::TYPE_NOTE,
+        Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout'),
+        'digitalProductsRegisterInfo'
+    );
+
     unset($_SESSION['Kunde']);
     // unset not needed values to ensure the correct $step
     $_POST = [];
@@ -180,7 +186,7 @@ if ($step === 'ZahlungZusatzschritt') {
 if ($step === 'Bestaetigung') {
     validateCouponInCheckout();
     plausiGuthaben($_POST);
-    Shop::Smarty()->assign('cKuponfehler_arr', plausiKupon($_POST));
+    plausiKupon($_POST);
     //evtl genutztes guthaben anpassen
     pruefeGuthabenNutzen();
     // Eventuellen Zahlungsarten Aufpreis/Rabatt neusetzen
@@ -231,7 +237,7 @@ Shop::Smarty()->assign(
     ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
     ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
     ->assign('Link', $link)
-    ->assign('hinweis', $cHinweis)
+    ->assign('alertNote', $alertHelper->alertTypeExists(Alert::TYPE_NOTE))
     ->assign('step', $step)
     ->assign('editRechnungsadresse', Request::verifyGPCDataInt('editRechnungsadresse'))
     ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())

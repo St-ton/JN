@@ -113,7 +113,7 @@ if (isset($_GET['delzus']) && (int)$_GET['delzus'] > 0 && Form::validateToken())
 if (Request::verifyGPCDataInt('editzus') > 0 && Form::validateToken()) {
     $kVersandzuschlag = Request::verifyGPCDataInt('editzus');
     $cISO             = StringHandler::convertISO6392ISO(Request::verifyGPDataString('cISO'));
-    if ($kVersandzuschlag > 0 && (strlen($cISO) > 0 && $cISO !== 'noISO')) {
+    if ($kVersandzuschlag > 0 && (mb_strlen($cISO) > 0 && $cISO !== 'noISO')) {
         $step = 'Zuschlagsliste';
         $fee  = $db->select('tversandzuschlag', 'kVersandzuschlag', $kVersandzuschlag);
         if (isset($fee->kVersandzuschlag) && $fee->kVersandzuschlag > 0) {
@@ -201,24 +201,24 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
         // (multiple single ZIP or multiple ZIP-ranges)
         $szPLZ = $szPLZRange = $szOverlap = '';
         foreach ($plz_x as $oResult) {
-            if (!empty($oResult->cPLZ) && (0 < strlen($szPLZ))) {
+            if (!empty($oResult->cPLZ) && (0 < mb_strlen($szPLZ))) {
                 $szPLZ .= ', ' . $oResult->cPLZ;
-            } elseif (!empty($oResult->cPLZ) && (0 === strlen($szPLZ))) {
+            } elseif (!empty($oResult->cPLZ) && (0 === mb_strlen($szPLZ))) {
                 $szPLZ = $oResult->cPLZ;
             }
-            if (!empty($oResult->cPLZAb) && (0 < strlen($szPLZRange))) {
+            if (!empty($oResult->cPLZAb) && (0 < mb_strlen($szPLZRange))) {
                 $szPLZRange .= ', ' . $oResult->cPLZAb . '-' . $oResult->cPLZBis;
-            } elseif (!empty($oResult->cPLZAb) && (0 === strlen($szPLZRange))) {
+            } elseif (!empty($oResult->cPLZAb) && (0 === mb_strlen($szPLZRange))) {
                 $szPLZRange = $oResult->cPLZAb . '-' . $oResult->cPLZBis;
             }
         }
-        if ((0 < strlen($szPLZ)) && (0 < strlen($szPLZRange))) {
+        if ((0 < mb_strlen($szPLZ)) && (0 < mb_strlen($szPLZRange))) {
             $szOverlap = $szPLZ . ' und ' . $szPLZRange;
         } else {
-            $szOverlap = (0 < strlen($szPLZ)) ? $szPLZ : $szPLZRange;
+            $szOverlap = (0 < mb_strlen($szPLZ)) ? $szPLZ : $szPLZRange;
         }
         // form an error-string, if there are any errors, or insert the input into the DB
-        if (0 < strlen($szOverlap)) {
+        if (0 < mb_strlen($szOverlap)) {
             $cFehler = '&nbsp;';
             if (!empty($ZuschlagPLZ->cPLZ)) {
                 $cFehler .= sprintf(
@@ -362,15 +362,15 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
         }
         //preisstaffel beachten
         if (!isset($_POST['bis'][0])
-            || strlen($_POST['bis'][0]) === 0
+            || mb_strlen($_POST['bis'][0]) === 0
             || !isset($_POST['preis'][0])
-            || strlen($_POST['preis'][0]) === 0
+            || mb_strlen($_POST['preis'][0]) === 0
         ) {
             $staffelDa = false;
         }
         if (is_array($_POST['bis']) && is_array($_POST['preis'])) {
             foreach ($_POST['bis'] as $i => $fBis) {
-                if (isset($_POST['preis'][$i]) && strlen($fBis) > 0) {
+                if (isset($_POST['preis'][$i]) && mb_strlen($fBis) > 0) {
                     unset($oVersandstaffel);
                     $oVersandstaffel         = new stdClass();
                     $oVersandstaffel->fBis   = (float)str_replace(',', '.', $fBis);

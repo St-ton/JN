@@ -194,7 +194,7 @@ class Form
         if (isset($_POST['nachricht']) && $_POST['nachricht']) {
             $msg->cNachricht = StringHandler::filterXSS($_POST['nachricht']);
         }
-        if (isset($msg->cAnrede) && \strlen($msg->cAnrede) === 1) {
+        if (isset($msg->cAnrede) && \mb_strlen($msg->cAnrede) === 1) {
             if ($msg->cAnrede === 'm') {
                 $msg->cAnredeLocalized = Shop::Lang()->get('salutationM');
             } elseif ($msg->cAnrede === 'w') {

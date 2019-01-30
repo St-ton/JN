@@ -13,9 +13,10 @@ if (!defined('PFAD_ROOT')) {
     exit();
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
-$smarty     = Shop::Smarty();
-$conf       = Shopsetting::getInstance()->getAll();
-$linkHelper = Shop::Container()->getLinkService();
+$smarty      = Shop::Smarty();
+$conf        = Shopsetting::getInstance()->getAll();
+$linkHelper  = Shop::Container()->getLinkService();
+$alertHelper = Shop::Container()->getAlertService();
 if (Shop::$isInitialized === true) {
     $kLink = Shop::$kLink;
 }
@@ -27,7 +28,7 @@ if ($link === null || !$link->isVisible()) {
 $requestURL = URL::buildURL($link, URLART_SEITE);
 if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     $cCanonicalURL = Shop::getURL() . '/';
-} elseif (strpos($requestURL, '.php') === false) {
+} elseif (mb_strpos($requestURL, '.php') === false) {
     $cCanonicalURL = Shop::getURL() . '/' . $requestURL;
 }
 if ($link->getLinkType() === LINKTYP_STARTSEITE) {
@@ -52,7 +53,11 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     ));
 } elseif ($link->getLinkType() === LINKTYP_VERSAND) {
     if (isset($_POST['land'], $_POST['plz']) && !ShippingMethod::getShippingCosts($_POST['land'], $_POST['plz'])) {
-        $smarty->assign('fehler', Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'));
+        $alertHelper->addAlert(
+            Alert::TYPE_ERROR,
+            Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'),
+            'missingParamShippingDetermination'
+        );
     }
     $smarty->assign(
         'laender',
@@ -61,8 +66,13 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
         )
     );
 } elseif ($link->getLinkType() === LINKTYP_LIVESUCHE) {
-    $smarty->assign('LivesucheTop', CMSHelper::getLiveSearchTop($conf))
-           ->assign('LivesucheLast', CMSHelper::getLiveSearchLast($conf));
+    $liveSearchTop  = CMSHelper::getLiveSearchTop($conf);
+    $liveSearchLast = CMSHelper::getLiveSearchLast($conf);
+    if (count($liveSearchTop) === 0 && count($liveSearchLast) === 0) {
+        $alertHelper->addAlert(Alert::TYPE_WARNING, Shop::Lang()->get('noDataAvailable'), 'noDataAvailable');
+    }
+    $smarty->assign('LivesucheTop', $liveSearchTop)
+           ->assign('LivesucheLast', $liveSearchLast);
 } elseif ($link->getLinkType() === LINKTYP_TAGGING) {
     $smarty->assign('Tagging', CMSHelper::getTagging($conf));
 } elseif ($link->getLinkType() === LINKTYP_HERSTELLER) {
@@ -77,13 +87,18 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     $sitemap = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), $conf);
     $sitemap->assignData($smarty);
     Shop::setPageType(PAGE_404);
+    $alertHelper->addAlert(Alert::TYPE_DANGER, Shop::Lang()->get('pageNotFound'), 'pageNotFound');
 } elseif ($link->getLinkType() === LINKTYP_GRATISGESCHENK) {
     if ($conf['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {
         $oArtikelGeschenk_arr = CMSHelper::getFreeGifts($conf);
         if (is_array($oArtikelGeschenk_arr) && count($oArtikelGeschenk_arr) > 0) {
             $smarty->assign('oArtikelGeschenk_arr', $oArtikelGeschenk_arr);
         } else {
-            $cFehler .= Shop::Lang()->get('freegiftsNogifts', 'errorMessages');
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                Shop::Lang()->get('freegiftsNogifts', 'errorMessages'),
+                'freegiftsNogifts'
+            );
         }
     }
 } elseif ($link->getLinkType() === LINKTYP_AUSWAHLASSISTENT) {
@@ -97,9 +112,7 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_SEITE_PAGE_IF_LINKART);
-$smarty->assign('Link', $link)
-       ->assign('bSeiteNichtGefunden', Shop::getPageType() === PAGE_404)
-       ->assign('cFehler', !empty($cFehler) ? $cFehler : null);
+$smarty->assign('Link', $link);
 
 executeHook(HOOK_SEITE_PAGE);
 

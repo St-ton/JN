@@ -117,7 +117,7 @@ class AdminFavorite
         foreach ($favs as &$fav) {
             $fav->bExtern = true;
             $fav->cAbsUrl = $fav->cUrl;
-            if (\strpos($fav->cUrl, 'http') !== 0) {
+            if (\mb_strpos($fav->cUrl, 'http') !== 0) {
                 $fav->bExtern = false;
                 $fav->cAbsUrl = Shop::getURL() . '/' . $fav->cUrl;
             }
@@ -157,7 +157,7 @@ class AdminFavorite
             'nSort'       => $sort
         ];
 
-        if ($id > 0 && \strlen($item->cTitel) > 0 && \strlen($item->cUrl) > 0) {
+        if ($id > 0 && \mb_strlen($item->cTitel) > 0 && \mb_strlen($item->cUrl) > 0) {
             Shop::Container()->getDB()->insertRow('tadminfavs', $item);
 
             return true;

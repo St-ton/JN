@@ -248,7 +248,7 @@ class Kunde
      */
     public function holRegKundeViaEmail($cEmail): ?Kunde
     {
-        if (strlen($cEmail) > 0) {
+        if (mb_strlen($cEmail) > 0) {
             $oKundeTMP = Shop::Container()->getDB()->select(
                 'tkunde',
                 'cMail',
@@ -280,7 +280,7 @@ class Kunde
         if (isset($conf['kunden']['kundenlogin_max_loginversuche'])
             && $conf['kunden']['kundenlogin_max_loginversuche'] !== ''
             && $conf['kunden']['kundenlogin_max_loginversuche'] > 1
-            && strlen($cBenutzername) > 0
+            && mb_strlen($cBenutzername) > 0
         ) {
             $attempts = Shop::Container()->getDB()->select(
                 'tkunde',
@@ -317,7 +317,7 @@ class Kunde
     public function holLoginKunde($cBenutzername, $cPasswort): int
     {
         $passwordService = Shop::Container()->getPasswordService();
-        if (strlen($cBenutzername) > 0 && strlen($cPasswort) > 0) {
+        if (mb_strlen($cBenutzername) > 0 && mb_strlen($cPasswort) > 0) {
             $oUser = $this->checkCredentials($cBenutzername, $cPasswort);
             if ($oUser === false) {
                 return 0;
@@ -642,9 +642,9 @@ class Kunde
     public function pruefeLandISO(string $iso): string
     {
         preg_match('/[a-zA-Z]{2}/', $iso, $hits);
-        if (strlen($hits[0]) !== strlen($iso)) {
+        if (mb_strlen($hits[0]) !== mb_strlen($iso)) {
             $cISO = Sprache::getIsoCodeByCountryName($iso);
-            if ($cISO !== 'noISO' && strlen($cISO) > 0) {
+            if ($cISO !== 'noISO' && mb_strlen($cISO) > 0) {
                 $iso = $cISO;
             }
         }
@@ -841,7 +841,7 @@ class Kunde
      */
     public static function mapSalutation($cAnrede, int $kSprache, int $kKunde = 0)
     {
-        if (($kSprache > 0 || $kKunde > 0) && strlen($cAnrede) > 0) {
+        if (($kSprache > 0 || $kKunde > 0) && mb_strlen($cAnrede) > 0) {
             if ($kSprache === 0 && $kKunde > 0) {
                 $oKunde = Shop::Container()->getDB()->queryPrepared(
                     'SELECT kSprache
@@ -877,7 +877,7 @@ class Kunde
                 ['ciso' => $cISOSprache, 'cname' => $cName],
                 \DB\ReturnType::SINGLE_OBJECT
             );
-            if (isset($oSprachWert->cWert) && strlen($oSprachWert->cWert) > 0) {
+            if (isset($oSprachWert->cWert) && mb_strlen($oSprachWert->cWert) > 0) {
                 $cAnrede = $oSprachWert->cWert;
             }
         }

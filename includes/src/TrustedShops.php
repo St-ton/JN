@@ -177,11 +177,11 @@ class TrustedShops
      */
     public function __construct($tsId = '', $cISOSprache = '')
     {
-        if ($tsId !== -1 && strlen($tsId) > 0 && strlen($cISOSprache) > 0) {
+        if ($tsId !== -1 && mb_strlen($tsId) > 0 && mb_strlen($cISOSprache) > 0) {
             $this->fuelleTrustedShops($tsId, $cISOSprache);
-        } elseif ($tsId !== -1 && strlen($tsId) > 0) {
+        } elseif ($tsId !== -1 && mb_strlen($tsId) > 0) {
             $this->fuelleTrustedShops($tsId);
-        } elseif (strlen($cISOSprache) > 0) {
+        } elseif (mb_strlen($cISOSprache) > 0) {
             $this->fuelleTrustedShops($tsId, $cISOSprache);
         }
         if ($this->eType === TS_BUYERPROT_CLASSIC) {
@@ -205,9 +205,9 @@ class TrustedShops
 
             return $this;
         }
-        if ($tsId != -1 && strlen($tsId) > 0 && strlen($cISOSprache) > 0) {
+        if ($tsId != -1 && mb_strlen($tsId) > 0 && mb_strlen($cISOSprache) > 0) {
             $this->oZertifikat = $this->gibTrustedShopsZertifikatISO($cISOSprache, $tsId);
-            if (strlen($this->oZertifikat->cTSID) > 0) {
+            if (mb_strlen($this->oZertifikat->cTSID) > 0) {
                 $this->kTrustedShopsZertifikat = $this->oZertifikat->kTrustedShopsZertifikat;
                 $this->tsId                    = $this->oZertifikat->cTSID;
                 $this->wsUser                  = $this->oZertifikat->cWSUser;
@@ -218,7 +218,7 @@ class TrustedShops
             }
         } elseif ($tsId == -1) {
             $this->oZertifikat = $this->gibTrustedShopsZertifikatISO($cISOSprache);
-            if (isset($this->oZertifikat->cTSID) && strlen($this->oZertifikat->cTSID) > 0) {
+            if (isset($this->oZertifikat->cTSID) && mb_strlen($this->oZertifikat->cTSID) > 0) {
                 $this->kTrustedShopsZertifikat = $this->oZertifikat->kTrustedShopsZertifikat;
                 $this->tsId                    = $this->oZertifikat->cTSID;
                 $this->wsUser                  = $this->oZertifikat->cWSUser;
@@ -229,7 +229,7 @@ class TrustedShops
             }
         } else {
             $this->oZertifikat = $this->gibTrustedShopsZertifikatTSID($tsId);
-            if (isset($this->oZertifikat->cTSID) && strlen($this->oZertifikat->cTSID) > 0) {
+            if (isset($this->oZertifikat->cTSID) && mb_strlen($this->oZertifikat->cTSID) > 0) {
                 $this->kTrustedShopsZertifikat = $this->oZertifikat->kTrustedShopsZertifikat;
                 $this->tsId                    = $this->oZertifikat->cTSID;
                 $this->wsUser                  = $this->oZertifikat->cWSUser;
@@ -247,7 +247,7 @@ class TrustedShops
             $this->holeKaeuferschutzProdukteDB($this->oZertifikat->cISOSprache);
 
             $cShopName = 'JTL-Shop';
-            if (isset($conf['global']['global_shopname']) && strlen($conf['global']['global_shopname']) > 0) {
+            if (isset($conf['global']['global_shopname']) && mb_strlen($conf['global']['global_shopname']) > 0) {
                 $cShopName = $conf['global']['global_shopname'];
             }
 
@@ -467,7 +467,7 @@ class TrustedShops
         $cSQL        = '';
         if ($bWaehrendBestellung) {
             $cISOWaehrung = 'EUR';
-            if (strlen($_SESSION['cWaehrungName']) > 0) {
+            if (mb_strlen($_SESSION['cWaehrungName']) > 0) {
                 $cISOWaehrung = $_SESSION['cWaehrungName'];
             }
 
@@ -674,8 +674,8 @@ class TrustedShops
 
             return 4; // Das Zertifikat ist gesperrt
         }
-        if (strlen($returnValue->certificationLanguage) > 0
-            && strtolower($returnValue->certificationLanguage) !== strtolower($cISOSprache)
+        if (mb_strlen($returnValue->certificationLanguage) > 0
+            && mb_convert_case($returnValue->certificationLanguage, MB_CASE_LOWER) !== mb_convert_case($cISOSprache, MB_CASE_LOWER)
         ) {
             Shop::Container()->getLogService()->error(
                 "TrustedShops Zertifikat {$cTSID} wurde aufgrund falscher " .
@@ -743,7 +743,7 @@ class TrustedShops
      */
     public function deaktiviereZertifikat($cTSID, $cISOSprache): bool
     {
-        if (strlen($cTSID) > 0) {
+        if (mb_strlen($cTSID) > 0) {
             $this->nAktiv = 0;
             // Prüfe ob das Zertifikat vorhanden ist
             $oZertifikat = Shop::Container()->getDB()->select(
@@ -784,7 +784,7 @@ class TrustedShops
     public function gibTrustedShopsZertifikatISO($cISOSprache, $tsId = ''): ?stdClass
     {
         $certificate = null;
-        if (strlen($cISOSprache) > 0 && strlen($tsId) > 0) {
+        if (mb_strlen($cISOSprache) > 0 && mb_strlen($tsId) > 0) {
             $certificate = Shop::Container()->getDB()->select(
                 'ttrustedshopszertifikat',
                 'cISOSprache',
@@ -793,7 +793,7 @@ class TrustedShops
                 $tsId
             );
             $certificate = $this->entschluesselTSDaten($certificate);
-        } elseif (strlen($cISOSprache) > 0) {
+        } elseif (mb_strlen($cISOSprache) > 0) {
             $certificate = Shop::Container()->getDB()->select('ttrustedshopszertifikat', 'cISOSprache', $cISOSprache);
             $certificate = $this->entschluesselTSDaten($certificate);
         }
@@ -810,7 +810,7 @@ class TrustedShops
     public function gibTrustedShopsZertifikatTSID($cTSID): ?stdClass
     {
         $certificate = null;
-        if (strlen($cTSID) > 0) {
+        if (mb_strlen($cTSID) > 0) {
             $certificate = Shop::Container()->getDB()->select('ttrustedshopszertifikat', 'cTSID', $cTSID);
             $certificate = $this->entschluesselTSDaten($certificate);
         }
@@ -837,7 +837,7 @@ class TrustedShops
      */
     public function speicherTrustedShopsZertifikat($certificate, $kTrustedShopsZertifikat = 0): int
     {
-        if (strlen($certificate->cISOSprache) > 0 && strlen($certificate->cTSID) > 0) {
+        if (mb_strlen($certificate->cISOSprache) > 0 && mb_strlen($certificate->cTSID) > 0) {
             if ($kTrustedShopsZertifikat > 0) {
                 $certificate->kTrustedShopsZertifikat = $kTrustedShopsZertifikat;
                 $this->kTrustedShopsZertifikat        = $kTrustedShopsZertifikat;
@@ -958,7 +958,7 @@ class TrustedShops
      */
     public function holeKundenbewertungsstatus($cISOSprache)
     {
-        if (strlen($cISOSprache) > 0) {
+        if (mb_strlen($cISOSprache) > 0) {
             $rating = Shop::Container()->getDB()->select(
                 'ttrustedshopskundenbewertung',
                 'cISOSprache',
@@ -983,7 +983,7 @@ class TrustedShops
     public function pruefeKundenbewertungsstatusAndereSprache($cTSID, $cISOSprache): bool
     {
         $ratings = [];
-        if (strlen($cTSID) > 0 && strlen($cISOSprache) > 0) {
+        if (mb_strlen($cTSID) > 0 && mb_strlen($cISOSprache) > 0) {
             $ratings = Shop::Container()->getDB()->queryPrepared(
                 'SELECT *
                     FROM ttrustedshopskundenbewertung
@@ -1004,7 +1004,7 @@ class TrustedShops
      */
     public function aenderKundenbewertungsstatusDB($nStatus, $cISOSprache): self
     {
-        if (strlen($cISOSprache) > 0) {
+        if (mb_strlen($cISOSprache) > 0) {
             $rating = $this->holeKundenbewertungsstatus($cISOSprache);
 
             if (isset($rating->kTrustedshopsKundenbewertung) && $rating->kTrustedshopsKundenbewertung > 0) {
@@ -1039,7 +1039,7 @@ class TrustedShops
      */
     public function aenderKundenbewertungtsIDDB($cTSID, $cISOSprache): self
     {
-        if (strlen($cISOSprache) > 0 && strlen($cTSID) > 0) {
+        if (mb_strlen($cISOSprache) > 0 && mb_strlen($cTSID) > 0) {
             $rating = $this->holeKundenbewertungsstatus($cISOSprache);
 
             if (isset($rating->kTrustedshopsKundenbewertung) && $rating->kTrustedshopsKundenbewertung > 0) {
@@ -1326,7 +1326,7 @@ class TrustedShops
     public static function getRatingButton(string $cMail, string $cBestellNr): ?stdClass
     {
         $button = null;
-        if (strlen($cMail) > 0 && strlen($cBestellNr) > 0) {
+        if (mb_strlen($cMail) > 0 && mb_strlen($cBestellNr) > 0) {
             $languageCode = StringHandler::convertISO2ISO639(Shop::getLanguageCode());
             $langCodes    = ['de', 'en', 'fr', 'pl', 'es'];
             if (in_array($languageCode, $langCodes, true)) {

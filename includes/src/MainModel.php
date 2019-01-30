@@ -62,7 +62,7 @@ abstract class MainModel
     {
         $item = new stdClass();
         foreach (array_keys(get_object_vars($this)) as $member) {
-            $method = 'get' . substr($member, 1);
+            $method = 'get' . mb_substr($member, 1);
             if (method_exists($this, $method)) {
                 $item->$member = $this->$method();
             }
@@ -78,7 +78,7 @@ abstract class MainModel
     {
         $csv = '';
         foreach (array_keys(get_object_vars($this)) as $i => $member) {
-            $method = 'get' . substr($member, 1);
+            $method = 'get' . mb_substr($member, 1);
             if (method_exists($this, $method)) {
                 $sep = '';
                 if ($i > 0) {
@@ -114,7 +114,7 @@ abstract class MainModel
     public function loadObject($obj)
     {
         foreach (array_keys(get_object_vars($obj)) as $member) {
-            $method = 'set' . substr($member, 1);
+            $method = 'set' . mb_substr($member, 1);
             if (method_exists($this, $method)) {
                 $this->$method($obj->$member);
             }

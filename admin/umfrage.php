@@ -23,7 +23,7 @@ $kUmfrageTMP = Request::verifyGPCDataInt('kUmfrage') > 0
     ? Request::verifyGPCDataInt('kUmfrage')
     : Request::verifyGPCDataInt('kU');
 setzeSprache();
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 $Sprachen    = Sprache::getAllLanguages();
@@ -125,9 +125,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             $dGueltigBis = $_POST['dGueltigBis'];
 
             // Sind die wichtigen Daten vorhanden?
-            if (strlen($cName) > 0
+            if (mb_strlen($cName) > 0
                 && (is_array($customerGroupIDs) && count($customerGroupIDs) > 0)
-                && strlen($dGueltigVon) > 0
+                && mb_strlen($dGueltigVon) > 0
             ) {
                 if (($kKupon === 0 && $fGuthaben === 0 && $nBonuspunkte === 0)
                     || ($kKupon > 0 && $fGuthaben === 0 && $nBonuspunkte === 0)
@@ -161,7 +161,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         $db->delete('tseo', ['cKey', 'kKey'], ['kUmfrage', $kUmfrage]);
                     }
                     $survey->cSeo = \JTL\SeoHelper::checkSeo(
-                        \JTL\SeoHelper::getSeo(strlen($cSeo) > 0 ? $cSeo : $cName)
+                        \JTL\SeoHelper::getSeo(mb_strlen($cSeo) > 0 ? $cSeo : $cName)
                     );
                     if (isset($kUmfrage) && $kUmfrage > 0) {
                         $survey->kUmfrage = $kUmfrage;
@@ -212,7 +212,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $step = 'umfrage_frage_erstellen';
             }
 
-            if ($kUmfrage > 0 && strlen($cName) > 0 && strlen($cTyp) > 0) {
+            if ($kUmfrage > 0 && mb_strlen($cName) > 0 && mb_strlen($cTyp) > 0) {
                 $question                = new stdClass();
                 $question->kUmfrage      = $kUmfrage;
                 $question->cTyp          = $cTyp;

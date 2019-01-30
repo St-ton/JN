@@ -36,7 +36,7 @@ class Banner extends Portlet
         $imgPath             = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . \basename($instance->getProperty('src'));
         $parsed              = \parse_url($imageMap->cBildPfad);
         $imageMap->cBildPfad = \Shop::getURL() . $imageMap->cBildPfad;
-        $imageMap->cBild     = \substr($parsed['path'], \strrpos($parsed['path'], '/') + 1);
+        $imageMap->cBild     = \mb_substr($parsed['path'], \mb_strrpos($parsed['path'], '/') + 1);
         [$width, $height]    = \getimagesize($imgPath);
         $imageMap->fWidth    = $width;
         $imageMap->fHeight   = $height;

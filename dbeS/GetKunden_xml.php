@@ -40,8 +40,8 @@ if (auth()) {
         $customer['cZusatz']         = trim($cryptoService->decryptXTEA($additional));
         $customer['tkundenattribut'] = $db->query(
             'SELECT * 
-                    FROM tkundenattribut 
-                    WHERE kKunde = ' . (int)$attribute['kKunde'],
+                FROM tkundenattribut 
+                WHERE kKunde = ' . (int)$attribute['kKunde'],
             \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
         $attributeCount              = count($customer['tkundenattribut']);

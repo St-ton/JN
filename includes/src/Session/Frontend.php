@@ -218,9 +218,9 @@ class Frontend extends AbstractSession
         }
         // EXPERIMENTAL_MULTILANG_SHOP
         foreach ($_SESSION['Sprachen'] as $lang) {
-            if (\defined('URL_SHOP_' . \strtoupper($lang->cISO))) {
-                $shopLangURL = \constant('URL_SHOP_' . \strtoupper($lang->cISO));
-                if (\strpos($shopLangURL, $_SERVER['HTTP_HOST']) !== false) {
+            if (\defined('URL_SHOP_' . \mb_convert_case($lang->cISO, \MB_CASE_UPPER))) {
+                $shopLangURL = \constant('URL_SHOP_' . \mb_convert_case($lang->cISO, \MB_CASE_UPPER));
+                if (\mb_strpos($shopLangURL, $_SERVER['HTTP_HOST']) !== false) {
                     $_SESSION['kSprache']    = $lang->kSprache;
                     $_SESSION['cISOSprache'] = \trim($lang->cISO);
                     \Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
@@ -285,7 +285,7 @@ class Frontend extends AbstractSession
                 // Positionen Array in der Wunschliste neu nummerieren
                 $_SESSION['Vergleichsliste']->oArtikel_arr = \array_merge($_SESSION['Vergleichsliste']->oArtikel_arr);
             }
-            if (!isset($_SERVER['REQUEST_URI']) || \strpos($_SERVER['REQUEST_URI'], 'index.php') !== false) {
+            if (!isset($_SERVER['REQUEST_URI']) || \mb_strpos($_SERVER['REQUEST_URI'], 'index.php') !== false) {
                 \http_response_code(301);
                 \header('Location: ' . \Shop::getURL() . '/');
                 exit;
@@ -324,8 +324,10 @@ class Frontend extends AbstractSession
                 ? (float)$matches[2]
                 : 1.0;
             while (\count($codes)) {
-                if ($langQuality > $quality && \in_array(\strtolower(\implode('-', $codes)), $allowed, true)) {
-                    $current = \strtolower(\implode('-', $codes));
+                if ($langQuality > $quality
+                    && \in_array(\mb_convert_case(\implode('-', $codes), \MB_CASE_LOWER), $allowed, true)
+                ) {
+                    $current = \mb_convert_case(\implode('-', $codes), \MB_CASE_LOWER);
                     $quality = $langQuality;
                     break;
                 }

@@ -49,12 +49,12 @@ class DBMigrationHelper
             );
             $innodbSize    = 'auto';
 
-            if ($innodbPath && stripos($innodbPath->path, 'autoextend') === false) {
+            if ($innodbPath && mb_stripos($innodbPath->path, 'autoextend') === false) {
                 $innodbSize = 0;
                 $paths      = explode(';', $innodbPath->path);
                 foreach ($paths as $path) {
                     if (preg_match('/:([0-9]+)([MGTKmgtk]+)/', $path, $hits)) {
-                        switch (strtoupper($hits[2])) {
+                        switch (mb_convert_case($hits[2], MB_CASE_UPPER)) {
                             case 'T':
                                 $innodbSize += $hits[1] * 1024 * 1024 * 1024 * 1024;
                                 break;
@@ -84,7 +84,7 @@ class DBMigrationHelper
                 \DB\ReturnType::SINGLE_OBJECT
             )->Value;
             $versionInfo->innodb->size    = $innodbSize;
-            $versionInfo->collation_utf8  = $utf8Support && strtolower($utf8Support->IS_COMPILED) === 'yes';
+            $versionInfo->collation_utf8  = $utf8Support && mb_convert_case($utf8Support->IS_COMPILED, MB_CASE_LOWER) === 'yes';
         }
 
         return $versionInfo;
@@ -244,7 +244,7 @@ class DBMigrationHelper
         if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
             $oTable = self::getTable($cTable);
 
-            return strpos($oTable->TABLE_COMMENT, ':Migrating') !== false;
+            return mb_strpos($oTable->TABLE_COMMENT, ':Migrating') !== false;
         }
 
         $tableStatus = Shop::Container()->getDB()->queryPrepared(

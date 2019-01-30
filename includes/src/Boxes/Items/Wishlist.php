@@ -43,14 +43,14 @@ final class Wishlist extends AbstractBox
             $additionalParams = \StringHandler::filterXSS($additionalParams);
             foreach ($wishlistItems as $wishlistItem) {
                 $cRequestURI  = $_SERVER['REQUEST_URI'] ?? $_SERVER['SCRIPT_NAME'];
-                $nPosAnd      = \strrpos($cRequestURI, '&');
-                $nPosQuest    = \strrpos($cRequestURI, '?');
-                $nPosWD       = \strpos($cRequestURI, 'wlplo=');
+                $nPosAnd      = \mb_strrpos($cRequestURI, '&');
+                $nPosQuest    = \mb_strrpos($cRequestURI, '?');
+                $nPosWD       = \mb_strpos($cRequestURI, 'wlplo=');
                 $cDeleteParam = '?wlplo='; // z.b. index.php
                 if ($nPosWD) {
-                    $cRequestURI = \substr($cRequestURI, 0, $nPosWD);
+                    $cRequestURI = \mb_substr($cRequestURI, 0, $nPosWD);
                 }
-                if ($nPosAnd === \strlen($cRequestURI) - 1) {
+                if ($nPosAnd === \mb_strlen($cRequestURI) - 1) {
                     // z.b. index.php?a=4&
                     $cDeleteParam = 'wlplo=';
                 } elseif ($nPosAnd) {
@@ -59,7 +59,7 @@ final class Wishlist extends AbstractBox
                 } elseif ($nPosQuest) {
                     // z.b. index.php?a=4
                     $cDeleteParam = '&wlplo=';
-                } elseif ($nPosQuest === \strlen($cRequestURI) - 1) {
+                } elseif ($nPosQuest === \mb_strlen($cRequestURI) - 1) {
                     // z.b. index.php?
                     $cDeleteParam = 'wlplo=';
                 }

@@ -95,7 +95,7 @@ final class Controller
         $ins->frequency = (int)$post['frequency'];
         $ins->jobType   = $post['type'];
         $ins->name      = 'manuell@' . \date('Y-m-d H:i:s');
-        $ins->startTime = \strlen($post['time']) === 5 ? $post['time'] . ':00' : $post['time'];
+        $ins->startTime = \mb_strlen($post['time']) === 5 ? $post['time'] . ':00' : $post['time'];
         $ins->startDate = $date->format('Y-m-d H:i:s');
 
         return $this->db->insert('tcron', $ins);

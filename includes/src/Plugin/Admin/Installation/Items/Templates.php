@@ -29,7 +29,7 @@ class Templates extends AbstractItem
     {
         foreach ($this->getNode() as $template) {
             \preg_match('/[a-zA-Z0-9\/_\-]+\.tpl/', $template, $hits);
-            if (\strlen($hits[0]) !== \strlen($template)) {
+            if (\mb_strlen($hits[0]) !== \mb_strlen($template)) {
                 continue;
             }
             $plgnTpl            = new \stdClass();

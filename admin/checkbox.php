@@ -21,7 +21,7 @@ $nAnzahlProSeite = 15;
 $oSprach_arr     = Sprache::getAllLanguages();
 $oCheckBox       = new CheckBox();
 $cTab            = $cStep;
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $cTab = Request::verifyGPDataString('tab');
 }
 if (isset($_POST['erstellenShowButton'])) {

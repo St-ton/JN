@@ -867,7 +867,7 @@ class Cart
             foreach ($attributes as $oEigenschaftwerte) {
                 $oEigenschaftwerte->kEigenschaft = (int)$oEigenschaftwerte->kEigenschaft;
                 if ($var->cTyp === 'PFLICHT-FREIFELD' && $oEigenschaftwerte->kEigenschaft === $var->kEigenschaft) {
-                    if (\strlen($oEigenschaftwerte->cFreifeldWert) > 0) {
+                    if (\mb_strlen($oEigenschaftwerte->cFreifeldWert) > 0) {
                         $bEigenschaftWertDa = true;
                     } else {
                         $redirectParam[] = \R_VARWAEHLEN;
@@ -1269,7 +1269,7 @@ class Cart
             }
             // Switch zwischen 1 Vari und 2
             if ($cKeys[0] === '_') { // 1
-                $cVariation0                         = \substr($cKeys, 1);
+                $cVariation0                         = \mb_substr($cKeys, 1);
                 [$kEigenschaft0, $kEigenschaftWert0] = \explode(':', $cVariation0);
                 // In die Session einbauen
                 $oVariKombi                                 = new stdClass();
@@ -1422,7 +1422,7 @@ class Cart
                 return false;
             }
             if ($nWeiterleitung === 0) {
-                $con = (\strpos($Artikel->cURLFull, '?') === false) ? '?' : '&';
+                $con = (\mb_strpos($Artikel->cURLFull, '?') === false) ? '?' : '&';
                 if ($Artikel->kEigenschaftKombi > 0) {
                     $url = empty($Artikel->cURLFull)
                         ? (Shop::getURL() . '/?a=' . $Artikel->kVaterArtikel .

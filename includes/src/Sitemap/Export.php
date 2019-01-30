@@ -223,7 +223,7 @@ final class Export
     private function isURLBlocked(string $url): bool
     {
         return \Functional\some($this->blockedURLs, function ($e) use ($url) {
-            return \strpos($url, $e) !== false;
+            return \mb_strpos($url, $e) !== false;
         });
     }
 
@@ -259,7 +259,7 @@ final class Export
             return false;
         }
         while (($file = \readdir($dh)) !== false) {
-            if ($file === 'sitemap_index.xml' || \strpos($file, 'sitemap_') !== false) {
+            if ($file === 'sitemap_index.xml' || \mb_strpos($file, 'sitemap_') !== false) {
                 \unlink(self::EXPORT_DIR . $file);
             }
         }

@@ -770,7 +770,7 @@ class Kupon
         while (empty($cCode) || ($count === 0
                 ? empty($cCode)
                 : Shop::Container()->getDB()->select('tkupon', 'cCode', $cCode))) {
-            $cCode = $prefix . substr(str_shuffle(str_repeat(
+            $cCode = $prefix . mb_substr(str_shuffle(str_repeat(
                 $lowerString . $upperString . $numbersString,
                 $len
             )), 0, $len) . $suffix;
@@ -809,18 +809,18 @@ class Kupon
         $catQry      = '';
         $customerQry = '';
         if ((isset($_SESSION['Zahlungsart']->cModulId)
-                && strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0)
+                && mb_strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0)
             || (isset($_SESSION['NeukundenKuponAngenommen']) && $_SESSION['NeukundenKuponAngenommen'])
         ) {
             return 0;
         }
         foreach ($cart->PositionenArr as $Pos) {
-            if (isset($Pos->Artikel->cArtNr) && strlen($Pos->Artikel->cArtNr) > 0) {
+            if (isset($Pos->Artikel->cArtNr) && mb_strlen($Pos->Artikel->cArtNr) > 0) {
                 $productQry .= " OR FIND_IN_SET('" .
                     str_replace('%', '\%', Shop::Container()->getDB()->escape($Pos->Artikel->cArtNr))
                     . "', REPLACE(cArtikel, ';', ',')) > 0";
             }
-            if (isset($Pos->Artikel->cHersteller) && strlen($Pos->Artikel->cHersteller) > 0) {
+            if (isset($Pos->Artikel->cHersteller) && mb_strlen($Pos->Artikel->cHersteller) > 0) {
                 $manufQry .= " OR FIND_IN_SET('" .
                     str_replace('%', '\%', Shop::Container()->getDB()->escape($Pos->Artikel->kHersteller))
                     . "', REPLACE(cHersteller, ';', ',')) > 0";
@@ -930,7 +930,7 @@ class Kupon
         } elseif ($Kupon->cKuponTyp !== self::TYPE_NEWCUSTOMER
             && (int)$Kupon->cKunden !== -1
             && (!empty($_SESSION['Kunde']->kKunde
-                    && strpos($Kupon->cKunden, $_SESSION['Kunde']->kKunde . ';') === false)
+                    && mb_strpos($Kupon->cKunden, $_SESSION['Kunde']->kKunde . ';') === false)
                 || !isset($_SESSION['Kunde']->kKunde)
             )
         ) {
@@ -938,7 +938,7 @@ class Kupon
             $ret['ungueltig'] = 9;
         } elseif ($Kupon->cKuponTyp === self::TYPE_SHIPPING
             && isset($_SESSION['Lieferadresse'])
-            && strpos($Kupon->cLieferlaender, $_SESSION['Lieferadresse']->cLand) === false
+            && mb_strpos($Kupon->cLieferlaender, $_SESSION['Lieferadresse']->cLand) === false
         ) {
             //invalid for shipping country
             $ret['ungueltig'] = 10;
@@ -1139,7 +1139,7 @@ class Kupon
      */
     public static function hash(string $strToHash, bool $strtolower = true): string
     {
-        return $strToHash === '' ? '' : hash('sha256', $strtolower ? strtolower($strToHash) : $strToHash);
+        return $strToHash === '' ? '' : hash('sha256', $strtolower ? mb_convert_case($strToHash, MB_CASE_LOWER) : $strToHash);
     }
 
     /**

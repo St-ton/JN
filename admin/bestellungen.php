@@ -35,7 +35,7 @@ if (Request::verifyGPCDataInt('zuruecksetzen') === 1 && Form::validateToken()) {
     }
 } elseif (Request::verifyGPCDataInt('Suche') === 1) { // Bestellnummer gesucht
     $cSuche = StringHandler::filterXSS(Request::verifyGPDataString('cSuche'));
-    if (strlen($cSuche) > 0) {
+    if (mb_strlen($cSuche) > 0) {
         $cSuchFilter = $cSuche;
     } else {
         $cFehler = __('errorMissingOrderNumber');

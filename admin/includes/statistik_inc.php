@@ -221,7 +221,7 @@ function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
             // x achse daten
             $x_labels_arr = [];
             foreach ($oStat_arr as $oStat) {
-                if (strlen($oStat->$cSpalteX) > 0) {
+                if (mb_strlen($oStat->$cSpalteX) > 0) {
                     $x_labels_arr[] = (string) $oStat->$cSpalteX;
                 } else {
                     $cSpalteX       = 'cName';

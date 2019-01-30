@@ -38,7 +38,7 @@ class TwoFAEmergency
         $rowValues       = '';
         $valCount        = 'a';
         for ($i = 0; $i < $this->codeCount; $i++) {
-            $code          = substr(md5(rand(1000, 9000)), 0, 16);
+            $code          = mb_substr(md5(rand(1000, 9000)), 0, 16);
             $this->codes[] = $code;
 
             if ($rowValues !== '') {

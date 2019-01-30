@@ -23,7 +23,7 @@ $db           = Shop::Container()->getDB();
 $getText      = Shop::Container()->getGetText();
 $getText->loadConfigLocales();
 
-if (0 < strlen(Request::verifyGPDataString('tab'))) {
+if (0 < mb_strlen(Request::verifyGPDataString('tab'))) {
     $smarty->assign('tab', Request::verifyGPDataString('tab'));
 }
 try {
@@ -125,7 +125,7 @@ switch ($action) {
         if ($cache !== null && $cache->flushAll() !== false) {
             $notice = __('successCacheDelete');
         } else {
-            if (0 < strlen($error)) {
+            if (0 < mb_strlen($error)) {
                 $error .= '<br />';
             }
             $error .= __('errorCacheDelete');
@@ -157,7 +157,7 @@ switch ($action) {
                         $value->cWert = (int)$value->cWert;
                         break;
                     case 'text':
-                        $value->cWert = (strlen($value->cWert) > 0) ? substr($value->cWert, 0, 255) : $value->cWert;
+                        $value->cWert = (mb_strlen($value->cWert) > 0) ? mb_substr($value->cWert, 0, 255) : $value->cWert;
                         break;
                     case 'listbox':
                         bearbeiteListBox($value->cWert, $settings[$i]->cWertName, CONF_CACHING);

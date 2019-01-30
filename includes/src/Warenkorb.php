@@ -386,7 +386,7 @@ class Warenkorb
                 );
             }
             //Wenn fuer die gewaehlte Sprache kein Name vorhanden ist dann StdSprache nehmen
-            $pos->cName[$lang->cISO] = (isset($localized->cName) && strlen(trim($localized->cName)) > 0)
+            $pos->cName[$lang->cISO] = (isset($localized->cName) && mb_strlen(trim($localized->cName)) > 0)
                 ? $localized->cName
                 : $pos->Artikel->cName;
             $lieferstatus_spr        = $db->select(
@@ -448,7 +448,7 @@ class Warenkorb
                             // und der Artikel hat nur eine Dimension als Variation?
                             if (isset($EigenschaftWert->cArtNr)
                                 && count($pos->Artikel->Variationen) === 1
-                                && strlen($EigenschaftWert->cArtNr) > 0
+                                && mb_strlen($EigenschaftWert->cArtNr) > 0
                             ) {
                                 $pos->cArtNr          = $EigenschaftWert->cArtNr;
                                 $pos->Artikel->cArtNr = $EigenschaftWert->cArtNr;
@@ -492,7 +492,7 @@ class Warenkorb
 
             case C_WARENKORBPOS_TYP_VERSANDPOS:
                 if (isset($_SESSION['Versandart']->angezeigterHinweistext[Shop::getLanguageCode()])
-                    && strlen($_SESSION['Versandart']->angezeigterHinweistext[Shop::getLanguageCode()]) > 0
+                    && mb_strlen($_SESSION['Versandart']->angezeigterHinweistext[Shop::getLanguageCode()]) > 0
                 ) {
                     $pos->cHinweis = $_SESSION['Versandart']->angezeigterHinweistext[Shop::getLanguageCode()];
                 }
@@ -809,7 +809,7 @@ class Warenkorb
         $anz = 0;
         foreach ($this->PositionenArr as $Position) {
             if (in_array($Position->nPosTyp, $posTypes)
-                && (empty($Position->cUnique) || (strlen($Position->cUnique) > 0 && $Position->kKonfigitem == 0))
+                && (empty($Position->cUnique) || (mb_strlen($Position->cUnique) > 0 && $Position->kKonfigitem == 0))
             ) {
                 $anz += ($Position->Artikel->cTeilbar === 'Y') ? 1 : $Position->nAnzahl;
             }
@@ -832,7 +832,7 @@ class Warenkorb
         $anz = 0;
         foreach ($this->PositionenArr as $pos) {
             if (in_array($pos->nPosTyp, $posTypes)
-                && (empty($pos->cUnique) || (strlen($pos->cUnique) > 0 && $pos->kKonfigitem == 0))
+                && (empty($pos->cUnique) || (mb_strlen($pos->cUnique) > 0 && $pos->kKonfigitem == 0))
             ) {
                 ++$anz;
             }

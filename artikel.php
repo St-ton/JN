@@ -42,14 +42,14 @@ if (isset($_POST['a'])
 $AktuellerArtikel = (new Artikel())->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions());
 // Warenkorbmatrix Anzeigen auf Artikel Attribut pruefen und falls vorhanden setzen
 if (isset($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigen'])
-    && strlen($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigen']) > 0
+    && mb_strlen($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigen']) > 0
 ) {
     $conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] =
         $AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigen'];
 }
 // Warenkorbmatrix Anzeigeformat auf Artikel Attribut pruefen und falls vorhanden setzen
 if (isset($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigeformat'])
-    && strlen($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigeformat']) > 0
+    && mb_strlen($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigeformat']) > 0
 ) {
     $conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] =
         $AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigeformat'];

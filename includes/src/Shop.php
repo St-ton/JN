@@ -827,9 +827,9 @@ final class Shop
         self::$cDatum   = Request::verifyGPDataString('cDatum');
         self::$nAnzahl  = Request::verifyGPCDataInt('nAnzahl');
 
-        if (strlen(Request::verifyGPDataString('qs')) > 0) {
+        if (mb_strlen(Request::verifyGPDataString('qs')) > 0) {
             self::$cSuche = StringHandler::xssClean(Request::verifyGPDataString('qs'));
-        } elseif (strlen(Request::verifyGPDataString('suchausdruck')) > 0) {
+        } elseif (mb_strlen(Request::verifyGPDataString('suchausdruck')) > 0) {
             self::$cSuche = StringHandler::xssClean(Request::verifyGPDataString('suchausdruck'));
         } else {
             self::$cSuche = StringHandler::xssClean(Request::verifyGPDataString('suche'));
@@ -869,7 +869,7 @@ final class Shop
 
         if (self::$kWunschliste === 0
             && Request::verifyGPDataString('error') === ''
-            && strlen(Request::verifyGPDataString('wlid')) > 0
+            && mb_strlen(Request::verifyGPDataString('wlid')) > 0
         ) {
             header(
                 'Location: ' . LinkHelper::getInstance()->getStaticRoute('wunschliste.php') .
@@ -985,8 +985,8 @@ final class Shop
         $shopURLdata  = parse_url(self::getURL());
         $baseURLdata = parse_url($uri);
         $seo          = isset($baseURLdata['path'])
-            ? substr($baseURLdata['path'], isset($shopURLdata['path'])
-                ? (strlen($shopURLdata['path']) + 1)
+            ? mb_substr($baseURLdata['path'], isset($shopURLdata['path'])
+                ? (mb_strlen($shopURLdata['path']) + 1)
                 : 1)
             : false;
         $seo          = Request::extractExternalParams($seo);
@@ -999,29 +999,29 @@ final class Shop
                 $customFilterArr = explode($seoParam, $seo);
                 if (count($customFilterArr) > 1) {
                     [$seo, $customFilterSeo] = $customFilterArr;
-                    if (strpos($customFilterSeo, SEP_HST) !== false) {
+                    if (mb_strpos($customFilterSeo, SEP_HST) !== false) {
                         $arr             = explode(SEP_HST, $customFilterSeo);
                         $customFilterSeo = $arr[0];
                         $seo            .= SEP_HST . $arr[1];
                     }
-                    if (($idx = strpos($customFilterSeo, SEP_KAT)) !== false
-                        && $idx !== strpos($customFilterSeo, SEP_HST)
+                    if (($idx = mb_strpos($customFilterSeo, SEP_KAT)) !== false
+                        && $idx !== mb_strpos($customFilterSeo, SEP_HST)
                     ) {
                         $manufacturers   = explode(SEP_KAT, $customFilterSeo);
                         $customFilterSeo = $manufacturers[0];
                         $seo            .= SEP_KAT . $manufacturers[1];
                     }
-                    if (strpos($customFilterSeo, SEP_MERKMAL) !== false) {
+                    if (mb_strpos($customFilterSeo, SEP_MERKMAL) !== false) {
                         $arr             = explode(SEP_MERKMAL, $customFilterSeo);
                         $customFilterSeo = $arr[0];
                         $seo            .= SEP_MERKMAL . $arr[1];
                     }
-                    if (strpos($customFilterSeo, SEP_MM_MMW) !== false) {
+                    if (mb_strpos($customFilterSeo, SEP_MM_MMW) !== false) {
                         $arr             = explode(SEP_MM_MMW, $customFilterSeo);
                         $customFilterSeo = $arr[0];
                         $seo            .= SEP_MM_MMW . $arr[1];
                     }
-                    if (strpos($customFilterSeo, SEP_SEITE) !== false) {
+                    if (mb_strpos($customFilterSeo, SEP_SEITE) !== false) {
                         $arr             = explode(SEP_SEITE, $customFilterSeo);
                         $customFilterSeo = $arr[0];
                         $seo            .= SEP_SEITE . $arr[1];
@@ -1034,16 +1034,16 @@ final class Shop
                 }
             }
             // change Opera Fix
-            if (substr($seo, strlen($seo) - 1, 1) === '?') {
-                $seo = substr($seo, 0, -1);
+            if (mb_substr($seo, mb_strlen($seo) - 1, 1) === '?') {
+                $seo = mb_substr($seo, 0, -1);
             }
             $nMatch = preg_match('/[^_](' . SEP_SEITE . '([0-9]+))/', $seo, $matches, PREG_OFFSET_CAPTURE);
             if ($nMatch === 1) {
                 $seite = (int)$matches[2][0];
-                $seo   = substr($seo, 0, $matches[1][1]);
+                $seo   = mb_substr($seo, 0, $matches[1][1]);
             }
             // duplicate content work around
-            if ($seite === 1 && strlen($seo) > 0) {
+            if ($seite === 1 && mb_strlen($seo) > 0) {
                 http_response_code(301);
                 header('Location: ' . self::getURL() . '/' . $seo);
                 exit();
@@ -1054,22 +1054,22 @@ final class Shop
                 if ($i === 0) {
                     continue;
                 }
-                if (($idx = strpos($merkmal, SEP_KAT)) !== false && $idx !== strpos($merkmal, SEP_HST)) {
+                if (($idx = mb_strpos($merkmal, SEP_KAT)) !== false && $idx !== mb_strpos($merkmal, SEP_HST)) {
                     $arr     = explode(SEP_KAT, $merkmal);
                     $merkmal = $arr[0];
                     $seo    .= SEP_KAT . $arr[1];
                 }
-                if (strpos($merkmal, SEP_HST) !== false) {
+                if (mb_strpos($merkmal, SEP_HST) !== false) {
                     $arr     = explode(SEP_HST, $merkmal);
                     $merkmal = $arr[0];
                     $seo    .= SEP_HST . $arr[1];
                 }
-                if (strpos($merkmal, SEP_MM_MMW) !== false) {
+                if (mb_strpos($merkmal, SEP_MM_MMW) !== false) {
                     $arr     = explode(SEP_MM_MMW, $merkmal);
                     $merkmal = $arr[0];
                     $seo    .= SEP_MM_MMW . $arr[1];
                 }
-                if (strpos($merkmal, SEP_SEITE) !== false) {
+                if (mb_strpos($merkmal, SEP_SEITE) !== false) {
                     $arr     = explode(SEP_SEITE, $merkmal);
                     $merkmal = $arr[0];
                     $seo    .= SEP_SEITE . $arr[1];
@@ -1086,22 +1086,22 @@ final class Shop
                     }
                 }
                 foreach ($manufSeo as $i => $hstseo) {
-                    if (($idx = strpos($hstseo, SEP_KAT)) !== false && $idx !== strpos($hstseo, SEP_HST)) {
+                    if (($idx = mb_strpos($hstseo, SEP_KAT)) !== false && $idx !== mb_strpos($hstseo, SEP_HST)) {
                         $manufacturers[] = explode(SEP_KAT, $hstseo);
                         $manufSeo[$i]    = $manufacturers[0];
                         $seo            .= SEP_KAT . $manufacturers[1];
                     }
-                    if (strpos($hstseo, SEP_MERKMAL) !== false) {
+                    if (mb_strpos($hstseo, SEP_MERKMAL) !== false) {
                         $arr          = explode(SEP_MERKMAL, $hstseo);
                         $manufSeo[$i] = $arr[0];
                         $seo         .= SEP_MERKMAL . $arr[1];
                     }
-                    if (strpos($hstseo, SEP_MM_MMW) !== false) {
+                    if (mb_strpos($hstseo, SEP_MM_MMW) !== false) {
                         $arr          = explode(SEP_MM_MMW, $hstseo);
                         $manufSeo[$i] = $arr[0];
                         $seo         .= SEP_MM_MMW . $arr[1];
                     }
-                    if (strpos($hstseo, SEP_SEITE) !== false) {
+                    if (mb_strpos($hstseo, SEP_SEITE) !== false) {
                         $arr          = explode(SEP_SEITE, $hstseo);
                         $manufSeo[$i] = $arr[0];
                         $seo         .= SEP_SEITE . $arr[1];
@@ -1113,22 +1113,22 @@ final class Shop
             $categories = explode(SEP_KAT, $seo);
             if (is_array($categories) && count($categories) > 1) {
                 [$seo, $katseo] = $categories;
-                if (strpos($katseo, SEP_HST) !== false) {
+                if (mb_strpos($katseo, SEP_HST) !== false) {
                     $arr    = explode(SEP_HST, $katseo);
                     $katseo = $arr[0];
                     $seo   .= SEP_HST . $arr[1];
                 }
-                if (strpos($katseo, SEP_MERKMAL) !== false) {
+                if (mb_strpos($katseo, SEP_MERKMAL) !== false) {
                     $arr    = explode(SEP_MERKMAL, $katseo);
                     $katseo = $arr[0];
                     $seo   .= SEP_MERKMAL . $arr[1];
                 }
-                if (strpos($katseo, SEP_MM_MMW) !== false) {
+                if (mb_strpos($katseo, SEP_MM_MMW) !== false) {
                     $arr    = explode(SEP_MM_MMW, $katseo);
                     $katseo = $arr[0];
                     $seo   .= SEP_MM_MMW . $arr[1];
                 }
-                if (strpos($katseo, SEP_SEITE) !== false) {
+                if (mb_strpos($katseo, SEP_SEITE) !== false) {
                     $arr    = explode(SEP_SEITE, $katseo);
                     $katseo = $arr[0];
                     $seo   .= SEP_SEITE . $arr[1];
@@ -1159,7 +1159,7 @@ final class Shop
                 }
             }
             // category filter
-            if (strlen($katseo) > 0) {
+            if (mb_strlen($katseo) > 0) {
                 $oSeo = self::Container()->getDB()->select('tseo', 'cKey', 'kKategorie', 'cSeo', $katseo);
                 if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $katseo) === 0) {
                     self::$kKategorieFilter = (int)$oSeo->kKey;
@@ -1211,7 +1211,7 @@ final class Shop
                 }
                 self::$bSEOMerkmalNotFound = false;
                 foreach ($seoAttributes as $i => $cSEOMerkmal) {
-                    if ($i > 0 && strlen($cSEOMerkmal) > 0) {
+                    if ($i > 0 && mb_strlen($cSEOMerkmal) > 0) {
                         $oSeo = self::Container()->getDB()->select(
                             'tseo',
                             'cKey',
@@ -1678,7 +1678,7 @@ final class Shop
                 return '';
             }
             while (($cDatei = readdir($dir)) !== false) {
-                if ($cDatei !== '.' && $cDatei !== '..' && strpos($cDatei, SHOPLOGO_NAME) !== false) {
+                if ($cDatei !== '.' && $cDatei !== '..' && mb_strpos($cDatei, SHOPLOGO_NAME) !== false) {
                     $ret = PFAD_SHOPLOGO . $cDatei;
                     break;
                 }
@@ -1705,8 +1705,8 @@ final class Shop
         }
         // EXPERIMENTAL_MULTILANG_SHOP
         $cShopURL  = ($bMultilang === true && isset($_SESSION['cISOSprache'])
-            && defined('URL_SHOP_' . strtoupper($_SESSION['cISOSprache'])))
-            ? constant('URL_SHOP_' . strtoupper($_SESSION['cISOSprache']))
+            && defined('URL_SHOP_' . mb_convert_case($_SESSION['cISOSprache'], MB_CASE_UPPER)))
+            ? constant('URL_SHOP_' . mb_convert_case($_SESSION['cISOSprache'], MB_CASE_UPPER))
             : URL_SHOP;
         $sslStatus = Request::checkSSL();
         if ($sslStatus === 2) {
@@ -1766,7 +1766,7 @@ final class Shop
         }
 
         return isset($baseURLdata['path'])
-            ? substr($baseURLdata['path'], strlen($shopURLdata['path']))
+            ? mb_substr($baseURLdata['path'], mb_strlen($shopURLdata['path']))
             : '';
     }
 

@@ -205,7 +205,7 @@ class PageService
             $res .= 'newscat:' . $params->kNewsKategorie;
         } elseif ($params->kUmfrage > 0) {
             $res .= 'poll:' . $params->kUmfrage;
-        } elseif (\strlen($params->cSuche) > 0) {
+        } elseif (\mb_strlen($params->cSuche) > 0) {
             $res .= 'search:' . \base64_encode($params->cSuche);
         } else {
             $res .= 'other:' . \md5(\serialize($params));
@@ -214,7 +214,7 @@ class PageService
         if (\is_array($params->MerkmalFilter) && \count($params->MerkmalFilter) > 0) {
             $res .= ';attribs:' . \implode(',', $params->MerkmalFilter);
         }
-        if (\strlen($params->cPreisspannenFilter) > 0) {
+        if (\mb_strlen($params->cPreisspannenFilter) > 0) {
             $res .= ';range:' . $params->cPreisspannenFilter;
         }
 

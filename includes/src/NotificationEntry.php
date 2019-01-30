@@ -150,7 +150,7 @@ class NotificationEntry
      */
     public function hasDescription(): bool
     {
-        return $this->description !== null && strlen($this->description) > 0;
+        return $this->description !== null && mb_strlen($this->description) > 0;
     }
 
     /**
@@ -177,6 +177,6 @@ class NotificationEntry
      */
     public function hasUrl(): bool
     {
-        return $this->url !== null && strlen($this->url) > 0;
+        return $this->url !== null && mb_strlen($this->url) > 0;
     }
 }

@@ -56,7 +56,7 @@ class XMLParser
             echo '<?xml version="1.0" ?>', "\n";
         }
         foreach ($data as $key => $value) {
-            if (!\strpos($key, ' attr')) {
+            if (!\mb_strpos($key, ' attr')) {
                 if (\is_array($value) && \array_key_exists(0, $value)) {
                     $this->serializeXML($value, $level, $key);
                 } else {
@@ -101,7 +101,7 @@ class XMLParser
         $keys  = \array_keys($xml);
         $count = \count($xml);
         for ($i = 0; $i < $count; $i++) {
-            if (\strpos($keys[$i], ' attr') !== false) {
+            if (\mb_strpos($keys[$i], ' attr') !== false) {
                 // attribut array -> nicht beachten -> weiter
                 continue;
             }

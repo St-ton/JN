@@ -179,7 +179,7 @@ class VCard
         // Parameter in (key, value) pairs aufteilen
         $params = [];
         foreach ($rawParams as $item) {
-            $params[] = explode('=', strtolower($item));
+            $params[] = explode('=', mb_convert_case($item, MB_CASE_LOWER));
         }
 
         foreach ($params as $index => $param) {
@@ -215,7 +215,7 @@ class VCard
                         $type = array_merge($type, explode(',', $param[1]));
                         break;
                     case 'value':
-                        if (strtolower($param[1]) === 'url') {
+                        if (mb_convert_case($param[1], MB_CASE_LOWER) === 'url') {
                             $result['encoding'] = 'uri';
                         }
                         break;
@@ -264,13 +264,13 @@ class VCard
     {
         [$key, $rawValue] = explode(':', $line, 2);
 
-        $key = strtolower(trim(self::unescape($key)));
+        $key = mb_convert_case(trim(self::unescape($key)), MB_CASE_LOWER);
         if (in_array($key, ['begin', 'end'], true)) {
             // begin und end müssen nicht weiter geparst werden
             return;
         }
 
-        if ((strpos($key, 'agent') === 0) && (stripos($rawValue, 'begin:vcard') !== false)) {
+        if ((mb_strpos($key, 'agent') === 0) && (mb_stripos($rawValue, 'begin:vcard') !== false)) {
             $vCard = $this->createInstance(str_replace('-wrap-', "\n", $rawValue));
 
             if (!isset($this->data[$key])) {
@@ -288,7 +288,7 @@ class VCard
         $type     = false;
         $params   = [];
 
-        if (strpos($key, 'item') === 0) {
+        if (mb_strpos($key, 'item') === 0) {
             $tmpKey = explode('.', $key, 2);
             $key    = $tmpKey[1];
         }
@@ -318,7 +318,7 @@ class VCard
 
         // prüfe auf zusätzliche Doppelpunk getrennte parameter (z.B. Apples "X-ABCROP-RECTANGLE" für photos)
         if (isset($params['encoding'])
-            && strpos($rawValue, ':') !== false
+            && mb_strpos($rawValue, ':') !== false
             && in_array($key, self::$elementsFile, true)
             && in_array($params['encoding'], ['b', 'base64'], true)
         ) {
@@ -396,7 +396,7 @@ class VCard
 
                 foreach ($lines as $line) {
                     // Zeilen ohne Doppelpunkt überspringen
-                    if (strpos($line, ':') === false) {
+                    if (mb_strpos($line, ':') === false) {
                         continue;
                     }
 
@@ -413,7 +413,7 @@ class VCard
      */
     public function __get($property)
     {
-        $property = strtolower($property);
+        $property = mb_convert_case($property, MB_CASE_LOWER);
 
         if ($property === 'mode') {
             return $this->mode;
@@ -449,8 +449,8 @@ class VCard
                 $result = $propData[$property];
 
                 foreach ($result as $key => $value) {
-                    if (stripos($value['Value'], 'uri:') === 0) {
-                        $result[$key]['Value']    = substr($value, 4);
+                    if (mb_stripos($value['Value'], 'uri:') === 0) {
+                        $result[$key]['Value']    = mb_substr($value, 4);
                         $result[$key]['Encoding'] = 'uri';
                     }
                 }
@@ -492,7 +492,7 @@ class VCard
      */
     public function __isset($property)
     {
-        $property = strtolower($property);
+        $property = mb_convert_case($property, MB_CASE_LOWER);
 
         if ($property === 'mode') {
             return isset($this->mode);

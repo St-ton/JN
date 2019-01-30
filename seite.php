@@ -28,7 +28,7 @@ if ($link === null || !$link->isVisible()) {
 $requestURL = URL::buildURL($link, URLART_SEITE);
 if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     $cCanonicalURL = Shop::getURL() . '/';
-} elseif (strpos($requestURL, '.php') === false) {
+} elseif (mb_strpos($requestURL, '.php') === false) {
     $cCanonicalURL = Shop::getURL() . '/' . $requestURL;
 }
 if ($link->getLinkType() === LINKTYP_STARTSEITE) {

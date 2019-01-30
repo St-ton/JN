@@ -289,7 +289,7 @@ final class JTLCache implements JTLCacheInterface
         // merge defaults with assigned options and set them
         $this->options = \array_merge($defaults, $options);
         // always add trailing slash
-        if (\substr($this->options['cache_dir'], \strlen($this->options['cache_dir']) - 1) !== '/') {
+        if (\mb_substr($this->options['cache_dir'], \mb_strlen($this->options['cache_dir']) - 1) !== '/') {
             $this->options['cache_dir'] .= '/';
         }
         if ($this->options['method'] !== 'redis' && (int)$this->options['lifetime'] < 0) {
@@ -738,7 +738,7 @@ final class JTLCache implements JTLCacheInterface
 //
 //        return \array_filter(\array_map(
 //            function ($m) {
-//                return \strpos($m, 'class.cachingMethod') !== false
+//                return \mb_strpos($m, 'class.cachingMethod') !== false
 //                    ? \str_replace(['class.cachingMethod.', '.php'], '', $m)
 //                    : false;
 //            },

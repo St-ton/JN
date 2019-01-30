@@ -261,7 +261,7 @@ class NiceDB implements DbInterface
                 }
                 if (isset($_bt['file'])
                     && !($_bt['class'] === __CLASS__ && $_bt['function'] === '__call')
-                    && \strpos($_bt['file'], 'class.core.NiceDB.php') === false
+                    && \mb_strpos($_bt['file'], 'class.core.NiceDB.php') === false
                 ) {
                     $strippedBacktrace[] = [
                         'file'     => $_bt['file'],
@@ -285,7 +285,7 @@ class NiceDB implements DbInterface
                     $tableData->statement = null;
                     $tableData->backtrace = null;
                     if ($this->debugLevel > 1) {
-                        $tableData->statement = \preg_replace('/\s\s+/', ' ', \substr($stmt, 0, 500));
+                        $tableData->statement = \preg_replace('/\s\s+/', ' ', \mb_substr($stmt, 0, 500));
                         $tableData->backtrace = $backtrace;
                     }
                     \Profiler::setSQLProfile($tableData);
@@ -402,7 +402,7 @@ class NiceDB implements DbInterface
             } elseif ($_val === null) {
                 $_val = '';
             }
-            if (\strtolower($_val) === 'now()') {
+            if (\mb_convert_case($_val, \MB_CASE_LOWER) === 'now()') {
                 $values[] = $_val;
             } else {
                 $values[]             = ':' . $_key;
@@ -448,7 +448,7 @@ class NiceDB implements DbInterface
             return 0;
         }
         $id = $this->pdo->lastInsertId();
-        if (($this->debug === true || $this->collectData === true) && \strpos($tableName, 'tprofiler') !== 0) {
+        if (($this->debug === true || $this->collectData === true) && \mb_strpos($tableName, 'tprofiler') !== 0) {
             $end       = \microtime(true);
             $backtrace = null;
             if ($this->debugLevel > 2) {
@@ -481,7 +481,7 @@ class NiceDB implements DbInterface
                     $columns .= $property . ', ';
                     if ($object->$property === '_DBNULL_') {
                         $values .= 'null' . ', ';
-                    } elseif (\strtolower($object->$property) === 'now()') {
+                    } elseif (\mb_convert_case($object->$property, \MB_CASE_LOWER) === 'now()') {
                         $values .= $object->$property . ', ';
                     } else {
                         $values .= $this->pdo->quote($object->$property) . ', ';
@@ -544,7 +544,7 @@ class NiceDB implements DbInterface
             } elseif ($_val === null) {
                 $_val = '';
             }
-            if (\strtolower($_val) === 'now()') {
+            if (\mb_convert_case($_val, \MB_CASE_LOWER) === 'now()') {
                 $updates[] = $_key . '=' . $_val;
             } else {
                 $updates[] = $_key . '=?';
@@ -606,7 +606,7 @@ class NiceDB implements DbInterface
             $ret = $s->rowCount();
         }
 
-        if (($this->debug === true || $this->collectData === true) && \strpos($tableName, 'tprofiler') !== 0) {
+        if (($this->debug === true || $this->collectData === true) && \mb_strpos($tableName, 'tprofiler') !== 0) {
             $end       = \microtime(true);
             $backtrace = null;
             if ($this->debugLevel > 2) {

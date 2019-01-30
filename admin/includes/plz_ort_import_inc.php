@@ -88,7 +88,7 @@ function plzimportDoImport($target, array $sessData, $result): void
         }
 
         while (!feof($fHandle)) {
-            $read += strlen(implode(',', $data));
+            $read += mb_strlen(implode(',', $data));
             $data  = fgetcsv($fHandle, 0, "\t");
 
             if (isset($data[13]) && in_array($data[13], [6, 8])) {

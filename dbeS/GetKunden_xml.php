@@ -1,17 +1,19 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
 
 require_once __DIR__ . '/syncinclude.php';
-$return = 3;
-$xml    = [];
+require_once __DIR__ . '/compare.php';
+$return        = 3;
+$xml           = [];
+$customerCount = 0;
 
 if (auth()) {
-    $return                  = 0;
-    $db                      = Shop::Container()->getDB();
-    $xml['kunden']['tkunde'] = $db->query(
+    $return        = 0;
+    $db            = Shop::Container()->getDB();
+    $customers     = $db->query(
         "SELECT kKunde, kKundengruppe, kSprache, cKundenNr, cPasswort, cAnrede, cTitel, cVorname,
             cNachname, cFirma, cStrasse, cHausnummer, cAdressZusatz, cPLZ, cOrt, cBundesland, cLand, cTel,
             cMobil, cFax, cMail, cUSTID, cWWW, fGuthaben, cNewsletter, dGeburtstag, fRabatt,
@@ -22,47 +24,42 @@ if (auth()) {
                 ORDER BY kKunde LIMIT " . LIMIT_KUNDEN,
         \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
     );
-    if (is_array($xml['kunden']['tkunde']) && count($xml['kunden']['tkunde']) > 0) {
-        $cryptoService                = Shop::Container()->getCryptoService();
-        $xml['kunden attr']['anzahl'] = count($xml['kunden']['tkunde']);
-        for ($i = 0; $i < $xml['kunden attr']['anzahl']; ++$i) {
-            $xml['kunden']['tkunde'][$i]['cAnrede']   = Kunde::mapSalutation(
-                $xml['kunden']['tkunde'][$i]['cAnrede'],
-                $xml['kunden']['tkunde'][$i]['kSprache']
-            );
-            $xml['kunden']['tkunde'][$i]['cNachname'] = trim(
-                $cryptoService->decryptXTEA($xml['kunden']['tkunde'][$i]['cNachname'])
-            );
-            $xml['kunden']['tkunde'][$i]['cFirma']    = trim(
-                $cryptoService->decryptXTEA($xml['kunden']['tkunde'][$i]['cFirma'])
-            );
-            $xml['kunden']['tkunde'][$i]['cStrasse']  = trim(
-                $cryptoService->decryptXTEA($xml['kunden']['tkunde'][$i]['cStrasse'])
-            );
-            // Strasse und Hausnummer zusammenfuehren
-            $xml['kunden']['tkunde'][$i]['cStrasse'] .= ' ' . trim($xml['kunden']['tkunde'][$i]['cHausnummer']);
-            unset($xml['kunden']['tkunde'][$i]['cHausnummer'], $xml['kunden']['tkunde'][$i]['cPasswort']);
-            $xml['kunden']['tkunde'][$i . ' attr'] = buildAttributes($xml['kunden']['tkunde'][$i]);
-            $cZusatz                               = $xml['kunden']['tkunde'][$i]['cZusatz'];
-            unset($xml['kunden']['tkunde'][$i]['cZusatz']);
-            $xml['kunden']['tkunde'][$i]['cZusatz']         = trim($cryptoService->decryptXTEA($cZusatz));
-            $xml['kunden']['tkunde'][$i]['tkundenattribut'] = $db->query(
-                'SELECT * 
+    $customerCount = count($customers);
+    $cryptoService = Shop::Container()->getCryptoService();
+    $attributes    = [];
+    foreach ($customers as &$customer) {
+        $customer['cAnrede']   = Kunde::mapSalutation($customer['cAnrede'], $customer['kSprache']);
+        $customer['cNachname'] = trim($cryptoService->decryptXTEA($customer['cNachname']));
+        $customer['cFirma']    = trim($cryptoService->decryptXTEA($customer['cFirma']));
+        $customer['cStrasse']  = trim($cryptoService->decryptXTEA($customer['cStrasse']));
+        // Strasse und Hausnummer zusammenfuehren
+        $customer['cStrasse'] .= ' ' . trim($customer['cHausnummer']);
+        unset($customer['cHausnummer'], $customer['cPasswort']);
+        $attribute  = buildAttributes($customer);
+        $additional = $customer['cZusatz'];
+        unset($customer['cZusatz']);
+        $customer['cZusatz']         = trim($cryptoService->decryptXTEA($additional));
+        $customer['tkundenattribut'] = $db->query(
+            'SELECT * 
                     FROM tkundenattribut 
-                    WHERE kKunde = ' . (int)$xml['kunden']['tkunde'][$i . ' attr']['kKunde'],
-                \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
-            );
-
-            $attributeCount = count($xml['kunden']['tkunde'][$i]['tkundenattribut']);
-            for ($o = 0; $o < $attributeCount; $o++) {
-                $xml['kunden']['tkunde'][$i]['tkundenattribut'][$o . ' attr'] =
-                    buildAttributes($xml['kunden']['tkunde'][$i]['tkundenattribut'][$o]);
-            }
+                    WHERE kKunde = ' . (int)$attribute['kKunde'],
+            \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
+        );
+        $attributeCount              = count($customer['tkundenattribut']);
+        for ($o = 0; $o < $attributeCount; $o++) {
+            $customer['tkundenattribut'][$o . ' attr'] = buildAttributes($customer['tkundenattribut'][$o]);
         }
+        $attributes[] = $attribute;
     }
+    unset($customer);
+    foreach ($attributes as $i => $attribute) {
+        $customers[$i . ' attr'] = $attribute;
+    }
+    $xml['kunden']['tkunde']      = $customers;
+    $xml['kunden attr']['anzahl'] = $customerCount;
 }
 
-if (isset($xml['kunden attr']['anzahl']) && $xml['kunden attr']['anzahl'] > 0) {
+if ($customerCount > 0) {
     zipRedirect(time() . '.jtl', $xml);
 }
 echo $return;

@@ -18,6 +18,7 @@ class Panel extends Portlet
     /**
      * @param PortletInstance $instance
      * @return string
+     * @throws \Exception
      */
     public function getPreviewHtml(PortletInstance $instance): string
     {
@@ -31,6 +32,7 @@ class Panel extends Portlet
     /**
      * @param PortletInstance $instance
      * @return string
+     * @throws \Exception
      */
     public function getFinalHtml(PortletInstance $instance): string
     {

@@ -629,3 +629,17 @@ function getCsvDelimiter(string $filename)
 
     return ';';
 }
+
+/**
+ * @return \Smarty\JTLSmarty
+ */
+function getFrontendSmarty()
+{
+    static $frontendSmarty = null;
+
+    if ($frontendSmarty === null) {
+        $frontendSmarty = new \Smarty\JTLSmarty();
+    }
+
+    return $frontendSmarty;
+}

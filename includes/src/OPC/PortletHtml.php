@@ -71,10 +71,10 @@ trait PortletHtml
      */
     final protected function getPreviewHtmlFromTpl(PortletInstance $instance): string
     {
-        return \Shop::Smarty()
-                    ->assign('portlet', $this)
-                    ->assign('instance', $instance)
-                    ->fetch($this->getTemplatePath() . 'preview.tpl');
+        return getFrontendSmarty()
+            ->assign('portlet', $this)
+            ->assign('instance', $instance)
+            ->fetch($this->getTemplatePath() . 'preview.tpl');
     }
 
     /**
@@ -86,9 +86,9 @@ trait PortletHtml
     {
 
         return \Shop::Smarty()
-                    ->assign('portlet', $this)
-                    ->assign('instance', $instance)
-                    ->fetch($this->getTemplatePath() . 'final.tpl');
+            ->assign('portlet', $this)
+            ->assign('instance', $instance)
+            ->fetch($this->getTemplatePath() . 'final.tpl');
     }
 
     /**
@@ -99,9 +99,9 @@ trait PortletHtml
     final protected function getConfigPanelHtmlFromTpl(PortletInstance $instance): string
     {
         return \Shop::Smarty()
-                    ->assign('portlet', $this)
-                    ->assign('instance', $instance)
-                    ->fetch($this->getTemplatePath() . 'configpanel.tpl');
+            ->assign('portlet', $this)
+            ->assign('instance', $instance)
+            ->fetch($this->getTemplatePath() . 'configpanel.tpl');
     }
 
     /**

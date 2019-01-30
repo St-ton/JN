@@ -129,14 +129,15 @@ if (auth()) {
             // Am Ende zusätzlich Ländercode cISO mitgeben
             $address['cISO'] = $iso;
         }
-        $order['tlieferadresse attr'] = buildAttributes($address);
+        $attr = buildAttributes($address);
         // Strasse und Hausnummer zusammenführen
         if (isset($address['cHausnummer'])) {
             $address['cStrasse'] .= ' ' . trim($address['cHausnummer']);
         }
         $address['cStrasse'] = trim($address['cStrasse'] ?? '');
         unset($address['cHausnummer']);
-        $order['tlieferadresse'] = $address;
+        $order['tlieferadresse']      = $address;
+        $order['tlieferadresse attr'] = $attr;
 
         $billingAddress        = new Rechnungsadresse($orderAttribute['kRechnungsadresse']);
         $country               = $db->select(
@@ -161,12 +162,13 @@ if (auth()) {
             // Am Ende zusätzlich Ländercode cISO mitgeben
             $address['cISO'] = $iso;
         }
-        $order['trechnungsadresse attr'] = buildAttributes($address);
+        $attr = buildAttributes($address);
         // Strasse und Hausnummer zusammenführen
         $address['cStrasse'] .= ' ' . trim($address['cHausnummer']);
         $address['cStrasse'] = trim($address['cStrasse']);
         unset($address['cHausnummer']);
-        $order['trechnungsadresse'] = $address;
+        $order['trechnungsadresse']      = $address;
+        $order['trechnungsadresse attr'] = $attr;
 
         $item = $db->query(
             'SELECT *
@@ -186,8 +188,9 @@ if (auth()) {
         if (strlen($item['cCVV']) > 4) {
             $item['cCVV'] = substr($item['cCVV'], 0, 4);
         }
-        $order['tzahlungsinfo attr'] = buildAttributes($item);
+        $attr = buildAttributes($item);
         $order['tzahlungsinfo']      = $item;
+        $order['tzahlungsinfo attr'] = $attr;
         unset($orderAttribute['kVersandArt'], $orderAttribute['kWarenkorb']);
 
         $order['tbestellattribut'] = $db->query(

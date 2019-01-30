@@ -233,9 +233,11 @@ class Category
             foreach ($catAttributes as $catAttribute) {
                 $catID = (int)$catAttribute->kKategorie;
                 if ($catAttribute->bIstFunktionsAttribut) {
-                    $functionAttributes[$catID][\mb_convert_case($catAttribute->cName, MB_CASE_LOWER)] = $catAttribute->cWert;
+                    $functionAttributes[$catID][\mb_convert_case($catAttribute->cName, \MB_CASE_LOWER)] =
+                        $catAttribute->cWert;
                 } else {
-                    $localizedAttributes[$catID][\mb_convert_case($catAttribute->cName, MB_CASE_LOWER)] = $catAttribute;
+                    $localizedAttributes[$catID][\mb_convert_case($catAttribute->cName, \MB_CASE_LOWER)] =
+                        $catAttribute;
                 }
             }
             foreach ($nodes as &$cat) {
@@ -439,9 +441,11 @@ class Category
         foreach ($catAttributes as $catAttribute) {
             $catID = (int)$catAttribute->kKategorie;
             if ($catAttribute->bIstFunktionsAttribut) {
-                $functionAttributes[$catID][\mb_convert_case($catAttribute->cName, MB_CASE_LOWER)] = $catAttribute->cWert;
+                $functionAttributes[$catID][\mb_convert_case($catAttribute->cName, \MB_CASE_LOWER)] =
+                    $catAttribute->cWert;
             } else {
-                $localizedAttributes[$catID][\mb_convert_case($catAttribute->cName, MB_CASE_LOWER)] = $catAttribute;
+                $localizedAttributes[$catID][\mb_convert_case($catAttribute->cName, \MB_CASE_LOWER)] =
+                    $catAttribute;
             }
         }
         foreach ($nodes as &$cat) {

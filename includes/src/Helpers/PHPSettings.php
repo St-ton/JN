@@ -148,14 +148,14 @@ class PHPSettings
     }
 
     /**
-     * @param string $cURL
+     * @param string $url
      * @return bool
      * @former pruefeSOAP()
      * @since 5.0.0
      */
-    public static function checkSOAP(string $cURL = ''): bool
+    public static function checkSOAP(string $url = ''): bool
     {
-        return !(\mb_strlen($cURL) > 0 && !self::phpLinkCheck($cURL)) && \class_exists('SoapClient');
+        return !(\mb_strlen($url) > 0 && !self::phpLinkCheck($url)) && \class_exists('SoapClient');
     }
 
     /**
@@ -201,7 +201,7 @@ class PHPSettings
         $errno  = null;
         $errstr = null;
         $url    = \parse_url(\trim($url));
-        $scheme = \mb_convert_case($url['scheme'], MB_CASE_LOWER);
+        $scheme = \mb_convert_case($url['scheme'], \MB_CASE_LOWER);
         if ($scheme !== 'http' && $scheme !== 'https') {
             return false;
         }

@@ -70,9 +70,9 @@ class LanguageVariables extends AbstractItem
                     $bVariableStandard   = true;
                 }
 
-                if (isset($languages[\mb_convert_case($localized->cISO, MB_CASE_LOWER)])) {
+                if (isset($languages[\mb_convert_case($localized->cISO, \MB_CASE_LOWER)])) {
                     // Resette aktuelle Sprache
-                    unset($languages[\mb_convert_case($localized->cISO, MB_CASE_LOWER)]);
+                    unset($languages[\mb_convert_case($localized->cISO, \MB_CASE_LOWER)]);
                     $languages = \array_merge($languages);
                 }
             } elseif (isset($langVar['VariableLocalized'])
@@ -99,15 +99,15 @@ class LanguageVariables extends AbstractItem
                             $bVariableStandard   = true;
                         }
 
-                        if (isset($languages[\mb_convert_case($localized->cISO, MB_CASE_LOWER)])) {
-                            unset($languages[\mb_convert_case($localized->cISO, MB_CASE_LOWER)]);
+                        if (isset($languages[\mb_convert_case($localized->cISO, \MB_CASE_LOWER)])) {
+                            unset($languages[\mb_convert_case($localized->cISO, \MB_CASE_LOWER)]);
                             $languages = \array_merge($languages);
                         }
                     }
                 }
             }
             foreach ($languages as $oSprachAssoc) {
-                $oVariableSpracheStd->cISO = \mb_convert_case($oSprachAssoc->cISO, MB_CASE_UPPER);
+                $oVariableSpracheStd->cISO = \mb_convert_case($oSprachAssoc->cISO, \MB_CASE_UPPER);
                 if (!$this->db->insert('tpluginsprachvariablesprache', $oVariableSpracheStd)) {
                     return InstallCode::SQL_CANNOT_SAVE_LANG_VAR_LOCALIZATION;
                 }

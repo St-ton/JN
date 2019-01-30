@@ -125,7 +125,7 @@ class URL
             $this->path = \preg_replace_callback(
                 '/(%([0-9abcdef][0-9abcdef]))/x',
                 function ($x) {
-                    return '%' . \mb_convert_case($x[2], MB_CASE_UPPER);
+                    return '%' . \mb_convert_case($x[2], \MB_CASE_UPPER);
                 },
                 $this->path
             );
@@ -137,12 +137,12 @@ class URL
 
         $scheme = '';
         if ($this->scheme) {
-            $this->scheme = \mb_convert_case($this->scheme, MB_CASE_LOWER);
+            $this->scheme = \mb_convert_case($this->scheme, \MB_CASE_LOWER);
             $scheme       = $this->scheme . '://';
         }
 
         if ($this->host) {
-            $this->host = \mb_convert_case($this->host, MB_CASE_LOWER);
+            $this->host = \mb_convert_case($this->host, \MB_CASE_LOWER);
         }
 
         $this->schemeBasedNormalization();
@@ -198,7 +198,7 @@ class URL
 
         return \preg_replace_callback(\array_map(
             function ($str) {
-                return '/%' . \mb_convert_case($str, MB_CASE_UPPER) . '/x';
+                return '/%' . \mb_convert_case($str, \MB_CASE_UPPER) . '/x';
             },
             $unreserved
         ), function ($matches) {

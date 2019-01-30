@@ -332,26 +332,21 @@ class Pagination
         $this->sortDir = $this->sortByDir % 2;
 
         if (isset($this->sortByOptions[$this->sortBy])) {
-            // Create ORDER SQL clauses
             $this->sortBySQL  = $this->sortByOptions[$this->sortBy][0];
             $this->sortDirSQL = $this->sortDir === 0 ? 'ASC' : 'DESC';
             $this->orderSQL   = $this->sortBySQL . ' ' . $this->sortDirSQL;
             $nSortFac         = $this->sortDir === 0 ? +1 : -1;
             $cSortBy          = $this->sortBySQL;
-
-            // Sort array if exists
             if (\is_array($this->items)) {
                 \usort($this->items, function ($a, $b) use ($cSortBy, $nSortFac) {
-                    $valueA = \is_string($a->$cSortBy) ? \mb_convert_case($a->$cSortBy, MB_CASE_LOWER) : $a->$cSortBy;
-                    $valueB = \is_string($b->$cSortBy) ? \mb_convert_case($b->$cSortBy, MB_CASE_LOWER) : $b->$cSortBy;
+                    $valueA = \is_string($a->$cSortBy) ? \mb_convert_case($a->$cSortBy, \MB_CASE_LOWER) : $a->$cSortBy;
+                    $valueB = \is_string($b->$cSortBy) ? \mb_convert_case($b->$cSortBy, \MB_CASE_LOWER) : $b->$cSortBy;
 
                     return $valueA == $valueB ? 0 : ($valueA < $valueB ? -$nSortFac : +$nSortFac);
                 });
             }
         }
-
         $this->limitSQL = $this->firstPageItem . ',' . $this->pageItemCount;
-        // Slice array if exists
         if (\is_array($this->items)) {
             $this->pageItems = \array_slice($this->items, $this->firstPageItem, $this->pageItemCount);
         } elseif ($this->items instanceof \Tightenco\Collect\Support\Collection) {

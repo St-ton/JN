@@ -591,7 +591,7 @@ class Download
         if (\mb_strlen($this->cPfad) > 0) {
             $pathInfo = \pathinfo($this->cPfad);
             if (\is_array($pathInfo)) {
-                return \mb_convert_case($pathInfo['extension'], MB_CASE_UPPER);
+                return \mb_convert_case($pathInfo['extension'], \MB_CASE_UPPER);
             }
         }
 
@@ -606,7 +606,7 @@ class Download
         if (\mb_strlen($this->cPfadVorschau) > 0) {
             $pathInfo = \pathinfo($this->cPfadVorschau);
             if (\is_array($pathInfo)) {
-                return \mb_convert_case($pathInfo['extension'], MB_CASE_UPPER);
+                return \mb_convert_case($pathInfo['extension'], \MB_CASE_UPPER);
             }
         }
 

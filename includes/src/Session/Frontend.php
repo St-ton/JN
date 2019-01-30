@@ -218,8 +218,8 @@ class Frontend extends AbstractSession
         }
         // EXPERIMENTAL_MULTILANG_SHOP
         foreach ($_SESSION['Sprachen'] as $lang) {
-            if (\defined('URL_SHOP_' . \mb_convert_case($lang->cISO, MB_CASE_UPPER))) {
-                $shopLangURL = \constant('URL_SHOP_' . \mb_convert_case($lang->cISO, MB_CASE_UPPER));
+            if (\defined('URL_SHOP_' . \mb_convert_case($lang->cISO, \MB_CASE_UPPER))) {
+                $shopLangURL = \constant('URL_SHOP_' . \mb_convert_case($lang->cISO, \MB_CASE_UPPER));
                 if (\mb_strpos($shopLangURL, $_SERVER['HTTP_HOST']) !== false) {
                     $_SESSION['kSprache']    = $lang->kSprache;
                     $_SESSION['cISOSprache'] = \trim($lang->cISO);
@@ -324,12 +324,10 @@ class Frontend extends AbstractSession
                 ? (float)$matches[2]
                 : 1.0;
             while (\count($codes)) {
-                if ($langQuality > $quality && \in_array(\mb_convert_case(
-                    \implode('-', $codes),
-                    MB_CASE_LOWER
-                ), $allowed, true)
+                if ($langQuality > $quality
+                    && \in_array(\mb_convert_case(\implode('-', $codes), \MB_CASE_LOWER), $allowed, true)
                 ) {
-                    $current = \mb_convert_case(\implode('-', $codes), MB_CASE_LOWER);
+                    $current = \mb_convert_case(\implode('-', $codes), \MB_CASE_LOWER);
                     $quality = $langQuality;
                     break;
                 }

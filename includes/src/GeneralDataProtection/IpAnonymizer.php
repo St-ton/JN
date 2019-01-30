@@ -269,7 +269,7 @@ class IpAnonymizer
      */
     public function getPlaceholder(): string
     {
-        return $this->szPlaceholderIP;
+        return $this->placeholderIP;
     }
 
     /**

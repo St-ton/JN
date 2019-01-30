@@ -5,7 +5,6 @@
  */
 
 require_once __DIR__ . '/syncinclude.php';
-require_once __DIR__ . '/compare.php';
 
 $return     = 3;
 $xml        = [];
@@ -14,11 +13,11 @@ if (auth()) {
     $return = 0;
     $orders = Shop::Container()->getDB()->query(
         "SELECT tbestellung.kBestellung, tbestellung.kWarenkorb, tbestellung.kKunde, tbestellung.kLieferadresse,
-            tbestellung.kRechnungsadresse,  tbestellung.kZahlungsart, tbestellung.kVersandart, tbestellung.kSprache, 
-            tbestellung.kWaehrung, '0' AS nZahlungsTyp, tbestellung.fGuthaben,  tbestellung.cSession, 
+            tbestellung.kRechnungsadresse, tbestellung.kZahlungsart, tbestellung.kVersandart, tbestellung.kSprache, 
+            tbestellung.kWaehrung, '0' AS nZahlungsTyp, tbestellung.fGuthaben, tbestellung.cSession, 
             tbestellung.cZahlungsartName, tbestellung.cBestellNr, tbestellung.cVersandInfo, tbestellung.dVersandDatum, 
             tbestellung.cTracking, tbestellung.cKommentar, tbestellung.cAbgeholt, tbestellung.cStatus, 
-            date_format(tbestellung.dErstellt, \"%d.%m.%Y\") AS dErstellt_formatted,  tbestellung.dErstellt, 
+            date_format(tbestellung.dErstellt, \"%d.%m.%Y\") AS dErstellt_formatted, tbestellung.dErstellt, 
             tzahlungsart.cModulId, tbestellung.cPUIZahlungsdaten, tbestellung.nLongestMinDelivery, 
             tbestellung.nLongestMaxDelivery, tbestellung.fWaehrungsFaktor
             FROM tbestellung
@@ -50,9 +49,7 @@ if (auth()) {
         $orderAttribute     = buildAttributes($order);
         $orderID            = (int)$orderAttribute['kBestellung'];
         $order['tkampagne'] = $db->query(
-            "SELECT tkampagne.cName,
-                    tkampagne.cParameter cIdentifier,
-                    COALESCE(tkampagnevorgang.cParamWert, '') cWert
+            "SELECT tkampagne.cName, tkampagne.cParameter cIdentifier, COALESCE(tkampagnevorgang.cParamWert, '') cWert
                 FROM tkampagnevorgang
                 INNER JOIN tkampagne 
                     ON tkampagne.kKampagne = tkampagnevorgang.kKampagne

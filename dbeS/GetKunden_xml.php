@@ -5,7 +5,6 @@
  */
 
 require_once __DIR__ . '/syncinclude.php';
-require_once __DIR__ . '/compare.php';
 $return        = 3;
 $xml           = [];
 $customerCount = 0;

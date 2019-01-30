@@ -8,12 +8,6 @@
     <h1>{lang key='umfrage' section='umfrage'}</h1>
 {/if}
 
-{if !empty($hinweis)}
-    <div class="alert alert-info">{$hinweis}</div>
-{/if}
-{if !empty($fehler)}
-    <div class="alert alert-danger">{$fehler}</div>
-{/if}
 {include file='snippets/opc_mount_point.tpl' id='opc_poll_content_prepend'}
 
 {if $oUmfrage->getQuestionCount() > 0}

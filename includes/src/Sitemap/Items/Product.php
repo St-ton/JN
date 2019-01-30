@@ -28,7 +28,7 @@ final class Product extends AbstractItem
                 \Image::SIZE_LG,
                 $number
             );
-            if (\strlen($cGoogleImage) > 0) {
+            if (\mb_strlen($cGoogleImage) > 0) {
                 $cGoogleImage = $this->baseImageURL . $cGoogleImage;
                 $this->setImage($cGoogleImage);
             }

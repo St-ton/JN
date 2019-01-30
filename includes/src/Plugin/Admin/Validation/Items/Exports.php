@@ -34,27 +34,27 @@ class Exports extends AbstractItem
         foreach ($node['ExportFormat'][0]['Format'] as $i => $export) {
             $i = (string)$i;
             \preg_match('/[0-9]+/', $i, $hits2);
-            if (\strlen($hits2[0]) !== \strlen($i)) {
+            if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }
-            if (\strlen($export['Name']) === 0) {
+            if (\mb_strlen($export['Name']) === 0) {
                 return InstallCode::INVALID_FORMAT_NAME;
             }
-            if (\strlen($export['FileName']) === 0) {
+            if (\mb_strlen($export['FileName']) === 0) {
                 return InstallCode::INVALID_FORMAT_FILE_NAME;
             }
-            if ((!isset($export['Content']) || \strlen($export['Content']) === 0)
-                && (!isset($export['ContentFile']) || \strlen($export['ContentFile']) === 0)
+            if ((!isset($export['Content']) || \mb_strlen($export['Content']) === 0)
+                && (!isset($export['ContentFile']) || \mb_strlen($export['ContentFile']) === 0)
             ) {
                 return InstallCode::MISSING_FORMAT_CONTENT;
             }
             if ($export['Encoding'] !== 'ASCII' && $export['Encoding'] !== 'UTF-8') {
                 return InstallCode::INVALID_FORMAT_ENCODING;
             }
-            if (\strlen($export['ShippingCostsDeliveryCountry']) === 0) {
+            if (\mb_strlen($export['ShippingCostsDeliveryCountry']) === 0) {
                 return InstallCode::INVALID_FORMAT_SHIPPING_COSTS_DELIVERY_COUNTRY;
             }
-            if (\strlen($export['ContentFile']) > 0 && !\file_exists($base . $export['ContentFile'])) {
+            if (\mb_strlen($export['ContentFile']) > 0 && !\file_exists($base . $export['ContentFile'])) {
                 return InstallCode::INVALID_FORMAT_CONTENT_FILE;
             }
         }

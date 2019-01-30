@@ -17,7 +17,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 $cHinweis    = '';
 $cfehler     = '';
 $settingsIDs = [1143, 1144, 1145, 1146];
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 if (Request::verifyGPCDataInt('einstellungen') === 1) {

@@ -3,32 +3,10 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {has_boxes position='left' assign='hasLeftBox'}
-{if !empty($hinweis)}
-    {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
-        {include file='productdetails/pushed_success.tpl'}
-    {else}
-        <div class="alert alert-success">
-            {$hinweis}
-        </div>
-    {/if}
-{/if}
-{if !empty($fehler)}
-    <div class="alert alert-danger">
-        {$fehler}
-    </div>
-{/if}
-{if !empty($ProdukttagHinweis)}
-    <div class="alert alert-success">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-        {$ProdukttagHinweis}
-    </div>
-{/if}
-{if isset($PositiveFeedback) && count($PositiveFeedback) > 0}
-    {foreach $PositiveFeedback as $feedback}
-        <div class="alert alert-success">{$feedback}</div>
-    {/foreach}
+{if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
+    {include file='productdetails/pushed_success.tpl'}
+{else}
+    {$alertList->displayAlertByKey('productNote')}
 {/if}
 {if isset($Artikelhinweise) && count($Artikelhinweise) > 0}
     {foreach $Artikelhinweise as $Artikelhinweis}

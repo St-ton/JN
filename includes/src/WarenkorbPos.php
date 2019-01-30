@@ -255,7 +255,7 @@ class WarenkorbPos
                 }
             }
 
-            if ($freifeld || strlen(trim($freifeld)) > 0) {
+            if ($freifeld || mb_strlen(trim($freifeld)) > 0) {
                 $newAttributes->cEigenschaftWertName[$Sprache->cISO] = $db->escape($freifeld);
             }
         }

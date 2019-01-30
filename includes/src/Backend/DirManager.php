@@ -38,14 +38,14 @@ class DirManager
     public function getData(string $path, callable $userfunc = null, array $parameters = null): self
     {
         $islinux = true;
-        if (\strpos($path, '\\') !== false) {
+        if (\mb_strpos($path, '\\') !== false) {
             $islinux = false;
         }
         if ($islinux) {
-            if (\strpos(\substr($path, \strlen($path) - 1, 1), '/') === false) {
+            if (\mb_strpos(\mb_substr($path, \mb_substr($path) - 1, 1), '/') === false) {
                 $path .= '/';
             }
-        } elseif (\strpos(\substr($path, \strlen($path) - 1, 1), '\\') === false) {
+        } elseif (\mb_strpos(\mb_substr($path, \mb_substr($path) - 1, 1), '\\') === false) {
             $path .= '\\';
         }
         if (\is_dir($path)) {

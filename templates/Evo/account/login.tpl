@@ -15,7 +15,7 @@
            {rdelim}
        {rdelim});
     </script>
-{elseif empty($cHinweis)}
+{elseif !$alertNote}
     <div class="alert alert-info">{lang key='loginDesc' section='login'} {if isset($oRedirect) && $oRedirect->cName}{lang key='redirectDesc1'} {$oRedirect->cName} {lang key='redirectDesc2'}.{/if}</div>
 {/if}
 

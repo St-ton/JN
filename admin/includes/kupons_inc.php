@@ -332,7 +332,7 @@ function createCouponFromInput()
     $oKupon->kSteuerklasse         = !empty($_POST['kSteuerklasse']) ? (int)$_POST['kSteuerklasse'] : null;
     $oKupon->fMindestbestellwert   = (float)str_replace(',', '.', $_POST['fMindestbestellwert']);
     $oKupon->cCode                 = !empty($_POST['cCode']) ? $_POST['cCode'] : '';
-    $oKupon->cLieferlaender        = !empty($_POST['cLieferlaender']) ? strtoupper($_POST['cLieferlaender']) : '';
+    $oKupon->cLieferlaender        = !empty($_POST['cLieferlaender']) ? mb_convert_case($_POST['cLieferlaender'], MB_CASE_UPPER) : '';
     $oKupon->nVerwendungen         = !empty($_POST['nVerwendungen']) ? (int)$_POST['nVerwendungen'] : 0;
     $oKupon->nVerwendungenProKunde = !empty($_POST['nVerwendungenProKunde']) ? (int)$_POST['nVerwendungenProKunde'] : 0;
     $oKupon->cArtikel              = !empty($_POST['cArtikel']) ? ';' . trim($_POST['cArtikel'], ";\t\n\r") . ';' : '';
@@ -442,8 +442,8 @@ function validateCoupon($oKupon)
     }
     if (isset($oKupon->massCreationCoupon)) {
         $cCodeLength = (int)$oKupon->massCreationCoupon->hashLength
-            + (int)strlen($oKupon->massCreationCoupon->prefixHash)
-            + (int)strlen($oKupon->massCreationCoupon->suffixHash);
+            + (int)mb_strlen($oKupon->massCreationCoupon->prefixHash)
+            + (int)mb_strlen($oKupon->massCreationCoupon->suffixHash);
         if ($cCodeLength > 32) {
             $cFehler_arr[] = __('errorCouponCodeLong');
         }
@@ -456,7 +456,7 @@ function validateCoupon($oKupon)
         ) {
             $cFehler_arr[] = __('errorCouponCodeOptionSelect');
         }
-    } elseif (strlen($oKupon->cCode) > 32) {
+    } elseif (mb_strlen($oKupon->cCode) > 32) {
         $cFehler_arr[] = __('errorCouponCodeLong');
     }
     if ($oKupon->cCode !== ''

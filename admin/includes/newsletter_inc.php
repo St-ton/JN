@@ -397,7 +397,7 @@ function speicherVorlageStd($defaultTpl, int $kNewslettervorlageStd, $post, int 
                     mkdir($uploadDir . $templateID);
                 }
                 $idx = 'kNewslettervorlageStdVar_' . $nlTplStdVar->kNewslettervorlageStdVar;
-                if (isset($_FILES[$idx]['name']) && strlen($_FILES[$idx]['name']) > 0) {
+                if (isset($_FILES[$idx]['name']) && mb_strlen($_FILES[$idx]['name']) > 0) {
                     $file = $uploadDir . $templateID .
                         '/kNewslettervorlageStdVar_' . $nlTplStdVar->kNewslettervorlageStdVar .
                         mappeFileTyp($_FILES['kNewslettervorlageStdVar_' .
@@ -409,10 +409,10 @@ function speicherVorlageStd($defaultTpl, int $kNewslettervorlageStd, $post, int 
                         $_FILES['kNewslettervorlageStdVar_' . $nlTplStdVar->kNewslettervorlageStdVar]['tmp_name'],
                         $file
                     );
-                    if (isset($post['cLinkURL']) && strlen($post['cLinkURL']) > 0) {
+                    if (isset($post['cLinkURL']) && mb_strlen($post['cLinkURL']) > 0) {
                         $defaultTpl->oNewslettervorlageStdVar_arr[$i]->cLinkURL = $post['cLinkURL'];
                     }
-                    if (isset($post['cAltTag']) && strlen($post['cAltTag']) > 0) {
+                    if (isset($post['cAltTag']) && mb_strlen($post['cAltTag']) > 0) {
                         $defaultTpl->oNewslettervorlageStdVar_arr[$i]->cAltTag = $post['cAltTag'];
                     }
                     $defaultTpl->oNewslettervorlageStdVar_arr[$i]->cInhalt =
@@ -435,10 +435,10 @@ function speicherVorlageStd($defaultTpl, int $kNewslettervorlageStd, $post, int 
             } elseif ($nlTplStdVar->cTyp === 'BILD') {
                 if ($imageExists) {
                     $nlTplContent->cInhalt = $defaultTpl->oNewslettervorlageStdVar_arr[$i]->cInhalt;
-                    if (isset($post['cLinkURL']) && strlen($post['cLinkURL']) > 0) {
+                    if (isset($post['cLinkURL']) && mb_strlen($post['cLinkURL']) > 0) {
                         $nlTplContent->cLinkURL = $post['cLinkURL'];
                     }
-                    if (isset($post['cAltTag']) && strlen($post['cAltTag']) > 0) {
+                    if (isset($post['cAltTag']) && mb_strlen($post['cAltTag']) > 0) {
                         $nlTplContent->cAltTag = $post['cAltTag'];
                     }
                     $upd              = new stdClass();
@@ -459,10 +459,10 @@ function speicherVorlageStd($defaultTpl, int $kNewslettervorlageStd, $post, int 
                     );
                 } else {
                     $nlTplContent->cInhalt = $nlTplStdVar->cInhalt;
-                    if (isset($post['cLinkURL']) && strlen($post['cLinkURL']) > 0) {
+                    if (isset($post['cLinkURL']) && mb_strlen($post['cLinkURL']) > 0) {
                         $nlTplContent->cLinkURL = $post['cLinkURL'];
                     }
-                    if (isset($post['cAltTag']) && strlen($post['cAltTag']) > 0) {
+                    if (isset($post['cAltTag']) && mb_strlen($post['cAltTag']) > 0) {
                         $nlTplContent->cAltTag = $post['cAltTag'];
                     }
                 }
@@ -544,11 +544,11 @@ function mappeVorlageStdVar($text, $stdVars, $noHTML = false)
                 ));
             } else {
                 $cAltTag = '';
-                if (isset($stdVar->cAltTag) && strlen($stdVar->cAltTag) > 0) {
+                if (isset($stdVar->cAltTag) && mb_strlen($stdVar->cAltTag) > 0) {
                     $cAltTag = $stdVar->cAltTag;
                 }
 
-                if (isset($stdVar->cLinkURL) && strlen($stdVar->cLinkURL) > 0) {
+                if (isset($stdVar->cLinkURL) && mb_strlen($stdVar->cLinkURL) > 0) {
                     $text = str_replace(
                         '$#' . $stdVar->cName . '#$',
                         '<a href="' .
@@ -675,9 +675,9 @@ function holeNewslettervorlageStd(int $defaultTemplateID, int $templateID = 0)
             $defaultTpl->cName              = $tpl->cName;
             $defaultTpl->cBetreff           = $tpl->cBetreff;
             $defaultTpl->cArt               = $tpl->cArt;
-            $defaultTpl->cArtikel           = substr(substr($tpl->cArtikel, 1), 0, -1);
-            $defaultTpl->cHersteller        = substr(substr($tpl->cHersteller, 1), 0, -1);
-            $defaultTpl->cKategorie         = substr(substr($tpl->cKategorie, 1), 0, -1);
+            $defaultTpl->cArtikel           = mb_substr(mb_substr($tpl->cArtikel, 1), 0, -1);
+            $defaultTpl->cHersteller        = mb_substr(mb_substr($tpl->cHersteller, 1), 0, -1);
+            $defaultTpl->cKategorie         = mb_substr(mb_substr($tpl->cKategorie, 1), 0, -1);
             $defaultTpl->cKundengruppe      = $tpl->cKundengruppe;
             $defaultTpl->dStartZeit         = $tpl->dStartZeit;
         }
@@ -705,16 +705,16 @@ function holeNewslettervorlageStd(int $defaultTemplateID, int $templateID = 0)
                 );
             }
 
-            if (isset($nlTplContent->cInhalt) && strlen($nlTplContent->cInhalt) > 0) {
+            if (isset($nlTplContent->cInhalt) && mb_strlen($nlTplContent->cInhalt) > 0) {
                 $defaultTpl->oNewslettervorlageStdVar_arr[$j]->cInhalt = str_replace(
                     NEWSLETTER_STD_VORLAGE_URLSHOP,
                     Shop::getURL() . '/',
                     $nlTplContent->cInhalt
                 );
-                if (isset($nlTplContent->cLinkURL) && strlen($nlTplContent->cLinkURL) > 0) {
+                if (isset($nlTplContent->cLinkURL) && mb_strlen($nlTplContent->cLinkURL) > 0) {
                     $defaultTpl->oNewslettervorlageStdVar_arr[$j]->cLinkURL = $nlTplContent->cLinkURL;
                 }
-                if (isset($nlTplContent->cAltTag) && strlen($nlTplContent->cAltTag) > 0) {
+                if (isset($nlTplContent->cAltTag) && mb_strlen($nlTplContent->cAltTag) > 0) {
                     $defaultTpl->oNewslettervorlageStdVar_arr[$j]->cAltTag = $nlTplContent->cAltTag;
                 }
             } else {
@@ -745,7 +745,7 @@ function explodecArtikel($productString): stdClass
         // hole zu den kArtikeln die passende cArtNr
         foreach ($productData->kArtikel_arr as $kArtikel) {
             $cArtNr = holeArtikelnummer($kArtikel);
-            if (strlen($cArtNr) > 0) {
+            if (mb_strlen($cArtNr) > 0) {
                 $productData->cArtNr_arr[] = $cArtNr;
             }
         }
@@ -762,7 +762,7 @@ function explodecKundengruppe($cKundengruppe): array
 {
     $groupIDs = [];
     foreach (explode(';', $cKundengruppe) as $item) {
-        if (strlen($item) > 0) {
+        if (mb_strlen($item) > 0) {
             $groupIDs[] = $item;
         }
     }
@@ -808,7 +808,7 @@ function getNewsletterEmpfaenger(int $kNewsletter)
             if ($kKundengruppe > 0) {
                 $groupIDs[] = $kKundengruppe;
             }
-            if (strlen($cKundengruppe) > 0) {
+            if (mb_strlen($cKundengruppe) > 0) {
                 $cKundengruppe_arr[] = $cKundengruppe;
             }
         }
@@ -858,7 +858,7 @@ function baueZeitAusDB($dZeitDB)
 {
     $oZeit = new stdClass();
 
-    if (strlen($dZeitDB) > 0) {
+    if (mb_strlen($dZeitDB) > 0) {
         [$dDatum, $dUhrzeit]            = explode(' ', $dZeitDB);
         [$dJahr, $dMonat, $dTag]        = explode('-', $dDatum);
         [$dStunde, $dMinute, $dSekunde] = explode(':', $dUhrzeit);
@@ -1025,17 +1025,17 @@ function gibAbonnent($post)
     }
     // SQL bauen
     $cSQL = '';
-    if (strlen($cVorname) > 0) {
+    if (mb_strlen($cVorname) > 0) {
         $cSQL .= "tnewsletterempfaenger.cVorname LIKE '%" . strip_tags($db->realEscape($cVorname)) . "%'";
     }
-    if (strlen($cNachname) > 0 && strlen($cVorname) > 0) {
+    if (mb_strlen($cNachname) > 0 && mb_strlen($cVorname) > 0) {
         $cSQL .= " AND tnewsletterempfaenger.cNachname LIKE '%" . strip_tags($db->realEscape($cNachname)) . "%'";
-    } elseif (strlen($cNachname) > 0) {
+    } elseif (mb_strlen($cNachname) > 0) {
         $cSQL .= "tnewsletterempfaenger.cNachname LIKE '%" . strip_tags($db->realEscape($cNachname)) . "%'";
     }
-    if (strlen($cEmail) > 0 && (strlen($cVorname) > 0 || strlen($cNachname) > 0)) {
+    if (mb_strlen($cEmail) > 0 && (mb_strlen($cVorname) > 0 || mb_strlen($cNachname) > 0)) {
         $cSQL .= " AND tnewsletterempfaenger.cEmail LIKE '%" . strip_tags($db->realEscape($cEmail)) . "%'";
-    } elseif (strlen($cEmail) > 0) {
+    } elseif (mb_strlen($cEmail) > 0) {
         $cSQL .= "tnewsletterempfaenger.cEmail LIKE '%" . strip_tags($db->realEscape($cEmail)) . "%'";
     }
     $oAbonnent = $db->query(
@@ -1135,7 +1135,7 @@ function gibAHKKeys($cKey, $bArtikelnummer = false)
     $keys = explode(';', $cKey);
     if (is_array($keys) && count($keys) > 0) {
         foreach ($keys as $key) {
-            if (strlen($key) > 0) {
+            if (mb_strlen($key) > 0) {
                 if ($bArtikelnummer) {
                     $res[] = "'" . $key . "'";
                 } else {
@@ -1202,9 +1202,9 @@ function gibArtikelObjekte($productIDs, $campaign = '', int $customerGroupID = 0
                 continue;
             }
             $product->cURL = $shopURL . $product->cURL;
-            if (isset($campaign->cParameter) && strlen($campaign->cParameter) > 0) {
+            if (isset($campaign->cParameter) && mb_strlen($campaign->cParameter) > 0) {
                 $product->cURL = $product->cURL .
-                    (strpos($product->cURL, '.php') !== false ? '&' : '?') .
+                    (mb_strpos($product->cURL, '.php') !== false ? '&' : '?') .
                     $campaign->cParameter . '=' . $campaign->cWert;
             }
             foreach ($product->Bilder as $image) {
@@ -1242,12 +1242,12 @@ function gibHerstellerObjekte($manufacturerIDs, $campaign = 0, int $langID = 0)
         $id = (int)$id;
         if ($id > 0) {
             $manufacturer = new Hersteller($id, $langID);
-            if (strpos($manufacturer->cURL, $shopURL) === false) {
+            if (mb_strpos($manufacturer->cURL, $shopURL) === false) {
                 $manufacturer->cURL = $manufacturer->cURL = $shopURL . $manufacturer->cURL;
             }
-            if (isset($campaign->cParameter) && strlen($campaign->cParameter) > 0) {
+            if (isset($campaign->cParameter) && mb_strlen($campaign->cParameter) > 0) {
                 $cSep = '?';
-                if (strpos($manufacturer->cURL, '.php') !== false) {
+                if (mb_strpos($manufacturer->cURL, '.php') !== false) {
                     $cSep = '&';
                 }
                 $manufacturer->cURL = $manufacturer->cURL . $cSep . $campaign->cParameter . '=' . $campaign->cWert;
@@ -1280,10 +1280,10 @@ function gibKategorieObjekte($categoryIDs, $campaign = 0)
         $id = (int)$id;
         if ($id > 0) {
             $category = new Kategorie($id);
-            if (strpos($category->cURL, $shopURL) === false) {
+            if (mb_strpos($category->cURL, $shopURL) === false) {
                 $category->cURL = $shopURL . $category->cURL;
             }
-            if (isset($campaign->cParameter) && strlen($campaign->cParameter) > 0) {
+            if (isset($campaign->cParameter) && mb_strlen($campaign->cParameter) > 0) {
                 $sep = '?';
                 if (strpos($category->cURL, '.php') !== false) {
                     $sep = '&';

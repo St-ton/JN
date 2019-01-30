@@ -151,7 +151,7 @@ function generiereRSSXML()
  */
 function bauerfc2822datum($dErstellt)
 {
-    return strlen($dErstellt) > 0
+    return mb_strlen($dErstellt) > 0
         ? (new DateTime($dErstellt))->format(DATE_RSS)
         : false;
 }
@@ -162,7 +162,7 @@ function bauerfc2822datum($dErstellt)
  */
 function wandelXMLEntitiesUm($cText)
 {
-    return strlen($cText) > 0
+    return mb_strlen($cText) > 0
         ? '<![CDATA[ ' . StringHandler::htmlentitydecode($cText) . ' ]]>'
         : '';
 }

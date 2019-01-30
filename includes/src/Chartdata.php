@@ -106,7 +106,7 @@ class Chartdata
         $array   = [];
         $members = array_keys(get_object_vars($this));
         foreach ($members as $member) {
-            $array[substr($member, 1)] = $this->$member;
+            $array[mb_substr($member, 1)] = $this->$member;
         }
 
         return $array;

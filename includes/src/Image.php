@@ -149,7 +149,7 @@ class Image
         self::$settings = [
             'background' => $settings['bilder_hintergrundfarbe'],
             'container'  => $settings['container_verwenden'] === 'Y',
-            'format'     => strtolower($settings['bilder_dateiformat']),
+            'format'     => mb_convert_case($settings['bilder_dateiformat'], MB_CASE_LOWER),
             'scale'      => $settings['bilder_skalieren'] === 'Y',
             'quality'    => (int)$settings['bilder_jpg_quali'],
             'branding'   => $branding[self::TYPE_PRODUCT] ?? null,
@@ -190,7 +190,7 @@ class Image
      */
     public static function mapSize($size, $flip = false)
     {
-        $size   = strtolower($size);
+        $size   = mb_convert_case($size, MB_CASE_LOWER);
         $mapper = $flip ? array_flip(self::$sizeMapper) : self::$sizeMapper;
         
         return $mapper[$size] ?? null;
@@ -205,7 +205,7 @@ class Image
      */
     public static function mapType($type, $flip = false)
     {
-        $type   = strtolower($type);
+        $type   = mb_convert_case($type, MB_CASE_LOWER);
         $mapper = $flip ? array_flip(self::$typeMapper) : self::$typeMapper;
         
         return $mapper[$type] ?? null;
@@ -220,7 +220,7 @@ class Image
      */
     public static function mapPosition($position, $flip = false)
     {
-        $position = strtolower($position);
+        $position = mb_convert_case($position, MB_CASE_LOWER);
         $mapper   = $flip ? array_flip(self::$positionMapper) : self::$positionMapper;
         
         return $mapper[$position] ?? null;
@@ -334,7 +334,7 @@ class Image
      */
     public static function getCleanFilename(string $filename): string
     {
-        $filename = strtolower($filename);
+        $filename = mb_convert_case($filename, MB_CASE_LOWER);
 
         $source   = ['.', ' ', '/', 'ä', 'ö', 'ü', 'ß'];
         $replace  = ['-', '-', '-', 'ae', 'oe', 'ue', 'ss'];

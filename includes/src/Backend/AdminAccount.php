@@ -243,7 +243,7 @@ class AdminAccount
         }
         $verified     = false;
         $cPassCrypted = null;
-        if (\strlen($oAdmin->cPass) === 32) {
+        if (\mb_strlen($oAdmin->cPass) === 32) {
             if (\md5($cPass) !== $oAdmin->cPass) {
                 $this->setRetryCount($oAdmin->cLogin);
 
@@ -268,7 +268,7 @@ class AdminAccount
                     '*, UNIX_TIMESTAMP(dGueltigBis) AS dGueltigTS'
                 );
             }
-        } elseif (\strlen($oAdmin->cPass) === 40) {
+        } elseif (\mb_strlen($oAdmin->cPass) === 40) {
             // default login until Shop4
             $cPassCrypted = \cryptPasswort($cPass, $oAdmin->cPass);
         } else {
@@ -360,7 +360,7 @@ class AdminAccount
                 ? '?uri=' . \base64_encode(\basename($_SERVER['REQUEST_URI']))
                 : '';
             if ($errCode !== 0) {
-                $url .= (\strpos($url, '?') === false ? '?' : '&') . 'errCode=' . $errCode;
+                $url .= (\mb_strpos($url, '?') === false ? '?' : '&') . 'errCode=' . $errCode;
             }
             \header('Location: index.php' . $url);
             exit();
@@ -456,7 +456,7 @@ class AdminAccount
         if (!empty($parsed['port']) && (int)$parsed['port'] > 0) {
             $host .= ':' . $parsed['port'];
         }
-        if (isset($_SERVER['HTTP_HOST']) && $host !== $_SERVER['HTTP_HOST'] && \strlen($_SERVER['HTTP_HOST']) > 0) {
+        if (isset($_SERVER['HTTP_HOST']) && $host !== $_SERVER['HTTP_HOST'] && \mb_strlen($_SERVER['HTTP_HOST']) > 0) {
             \header('Location: ' . $url);
             exit;
         }
@@ -479,7 +479,7 @@ class AdminAccount
                 $_SESSION['AdminAccount']->cPass
             );
             $this->twoFaAuthenticated = (isset($account->b2FAauth) && $account->b2FAauth === '1')
-                ? (isset($_SESSION['AdminAccount']->TwoFA_valid) && true === $_SESSION['AdminAccount']->TwoFA_valid)
+                ? (isset($_SESSION['AdminAccount']->TwoFA_valid) && $_SESSION['AdminAccount']->TwoFA_valid === true)
                 : true;
             $this->loggedIn           = isset($account->cLogin);
         }

@@ -2,14 +2,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{if !empty($hinweis)}
-    <div class="alert alert-danger">
-        {$hinweis}
-    </div>
-{/if}
-{if !empty($cFehler)}
-    <div class="alert alert-danger">{$cFehler}</div>
-{/if}
 <div class="row">
     <div class="col-xs-12">
         {if !isset($Versandarten)}

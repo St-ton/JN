@@ -124,7 +124,7 @@ class ShippingMethod
                 && (float)$_method->fVersandkostenfreiAbX < $wert
             ) {
                 foreach (\explode(' ', $_method->cLaender) as $_country) {
-                    if (\strlen($_country) > 0) {
+                    if (\mb_strlen($_country) > 0) {
                         $shippingFreeCountries[] = $_country;
                     }
                 }
@@ -332,7 +332,7 @@ class ShippingMethod
      */
     public static function getShippingCosts($cLand, $cPLZ, &$cError = ''): bool
     {
-        if ($cLand !== null && $cPLZ !== null && \strlen($cLand) > 0 && \strlen($cPLZ) > 0) {
+        if ($cLand !== null && $cPLZ !== null && \mb_strlen($cLand) > 0 && \mb_strlen($cPLZ) > 0) {
             $kKundengruppe = Frontend::getCustomerGroup()->getID();
             if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
                 $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
@@ -361,7 +361,7 @@ class ShippingMethod
             return true;
         }
 
-        return !(isset($_POST['versandrechnerBTN']) && (\strlen($cLand) === 0 || \strlen($cPLZ) === 0));
+        return !(isset($_POST['versandrechnerBTN']) && (\mb_strlen($cLand) === 0 || \mb_strlen($cPLZ) === 0));
     }
 
     /**
@@ -470,11 +470,11 @@ class ShippingMethod
                 $additionalProduct->fWarenwertNetto += $product['fAnzahl'] * $tmpProduct->Preise->fVKNetto;
                 $additionalProduct->fGewicht        += $product['fAnzahl'] * $tmpProduct->fGewicht;
 
-                if (\strlen($shippingClasses) > 0
-                    && \strpos($shippingClasses, $tmpProduct->kVersandklasse) === false
+                if (\mb_strlen($shippingClasses) > 0
+                    && \mb_strpos($shippingClasses, $tmpProduct->kVersandklasse) === false
                 ) {
                     $shippingClasses = '-' . $tmpProduct->kVersandklasse;
-                } elseif (\strlen($shippingClasses) === 0) {
+                } elseif (\mb_strlen($shippingClasses) === 0) {
                     $shippingClasses = $tmpProduct->kVersandklasse;
                 }
             } elseif ($tmpProduct->nIstVater === 0
@@ -483,7 +483,7 @@ class ShippingMethod
             ) { // Normale Variation
                 if ($product['cInputData']{0} === '_') {
                     // 1D
-                    $cVariation0                         = \substr($product['cInputData'], 1);
+                    $cVariation0                         = \mb_substr($product['cInputData'], 1);
                     [$kEigenschaft0, $kEigenschaftWert0] = \explode(':', $cVariation0);
 
                     $oVariation = Product::findVariation(
@@ -520,18 +520,18 @@ class ShippingMethod
                     $additionalProduct->fGewicht        += $product['fAnzahl'] *
                         ($tmpProduct->fGewicht + $oVariation0->fGewichtDiff + $oVariation1->fGewichtDiff);
                 }
-                if (\strlen($shippingClasses) > 0
-                    && \strpos($shippingClasses, $tmpProduct->kVersandklasse) === false
+                if (\mb_strlen($shippingClasses) > 0
+                    && \mb_strpos($shippingClasses, $tmpProduct->kVersandklasse) === false
                 ) {
                     $shippingClasses = '-' . $tmpProduct->kVersandklasse;
-                } elseif (\strlen($shippingClasses) === 0) {
+                } elseif (\mb_strlen($shippingClasses) === 0) {
                     $shippingClasses = $tmpProduct->kVersandklasse;
                 }
             } elseif ($tmpProduct->nIstVater > 0) { // Variationskombination (Vater)
                 $child = new Artikel();
                 if ($product['cInputData']{0} === '_') {
                     // 1D
-                    $cVariation0                         = \substr($product['cInputData'], 1);
+                    $cVariation0                         = \mb_substr($product['cInputData'], 1);
                     [$kEigenschaft0, $kEigenschaftWert0] = \explode(':', $cVariation0);
                     $kKindArtikel                        = Product::getChildProdctIDByAttribute(
                         $tmpProduct->kArtikel,
@@ -596,9 +596,9 @@ class ShippingMethod
                     $additionalProduct->fWarenwertNetto += $product['fAnzahl'] * $child->Preise->fVKNetto;
                     $additionalProduct->fGewicht        += $product['fAnzahl'] * $child->fGewicht;
                 }
-                if (\strlen($shippingClasses) > 0 && \strpos($shippingClasses, $child->kVersandklasse) === false) {
+                if (\mb_strlen($shippingClasses) > 0 && \mb_strpos($shippingClasses, $child->kVersandklasse) === false) {
                     $shippingClasses = '-' . $child->kVersandklasse;
-                } elseif (\strlen($shippingClasses) === 0) {
+                } elseif (\mb_strlen($shippingClasses) === 0) {
                     $shippingClasses = $child->kVersandklasse;
                 }
             }
@@ -1338,7 +1338,7 @@ class ShippingMethod
         }
         $cacheID = 'bvkfls_' .
             $oVersandart->fVersandkostenfreiAbX .
-            \strlen($oVersandart->cLaender) . '_' .
+            \mb_strlen($oVersandart->cLaender) . '_' .
             Shop::getLanguageID();
         if (($vkfls = Shop::Container()->getCache()->get($cacheID)) === false) {
             // remove empty strings
@@ -1382,7 +1382,7 @@ class ShippingMethod
         $cacheID         = 'vkfrei_' . $customerGroupID . '_' .
             $country . '_' . $shippingClasses . '_' . Shop::getLanguageCode();
         if (($oVersandart = Shop::Container()->getCache()->get($cacheID)) === false) {
-            if (\strlen($country) > 0) {
+            if (\mb_strlen($country) > 0) {
                 $customerSQL = " AND cLaender LIKE '%" . StringHandler::filterXSS($country) . "%'";
             } else {
                 $landIso     = Shop::Container()->getDB()->query(

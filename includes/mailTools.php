@@ -170,7 +170,7 @@ function sendeMail($moduleID, $data, $mail = null)
     $cTableSprache = 'temailvorlagesprache';
     $cTableSetting = 'temailvorlageeinstellungen';
     $cSQLWhere     = " cModulId = '" . $moduleID . "'";
-    if (strpos($moduleID, 'kPlugin') !== false) {
+    if (mb_strpos($moduleID, 'kPlugin') !== false) {
         [$cPlugin, $kPlugin, $cModulId] = explode('_', $moduleID);
         $cTable                         = 'tpluginemailvorlage';
         $cTableSprache                  = 'tpluginemailvorlagesprache';
@@ -241,7 +241,7 @@ function sendeMail($moduleID, $data, $mail = null)
                        ->assign('Verfuegbarkeit_arr', $data->cVerfuegbarkeit_arr ?? null)
                        ->assign('oTrustedShopsBewertenButton', null);
             if (isset($data->tbestellung->Zahlungsart->cModulId)
-                && strlen($data->tbestellung->Zahlungsart->cModulId) > 0
+                && mb_strlen($data->tbestellung->Zahlungsart->cModulId) > 0
             ) {
                 $cModulId         = $data->tbestellung->Zahlungsart->cModulId;
                 $oZahlungsartConf = $db->queryPrepared(
@@ -266,7 +266,7 @@ function sendeMail($moduleID, $data, $mail = null)
                     StringHandler::convertISO2ISO639($langID)
                 );
                 if ($tsRating !== false
-                    && strlen($tsRating->cTSID) > 0
+                    && mb_strlen($tsRating->cTSID) > 0
                     && $tsRating->nStatus == 1
                 ) {
                     $smarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
@@ -282,7 +282,7 @@ function sendeMail($moduleID, $data, $mail = null)
             $smarty->assign('Bestellung', $data->tbestellung);
             // Zahlungsart Einstellungen
             if (isset($data->tbestellung->Zahlungsart->cModulId)
-                && strlen($data->tbestellung->Zahlungsart->cModulId) > 0
+                && mb_strlen($data->tbestellung->Zahlungsart->cModulId) > 0
             ) {
                 $cModulId         = $data->tbestellung->Zahlungsart->cModulId;
                 $oZahlungsartConf = $db->queryPrepared(
@@ -304,7 +304,7 @@ function sendeMail($moduleID, $data, $mail = null)
                 $langCode = StringHandler::convertISO2ISO639($_SESSION['cISOSprache']);
                 $ts       = new TrustedShops(-1, $langCode);
                 $tsRating = $ts->holeKundenbewertungsstatus($langCode);
-                if (strlen($tsRating->cTSID) > 0 && $tsRating->nStatus == 1) {
+                if (mb_strlen($tsRating->cTSID) > 0 && $tsRating->nStatus == 1) {
                     $smarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
                         $data->tbestellung->oRechnungsadresse->cMail,
                         $data->tbestellung->cBestellNr
@@ -336,7 +336,7 @@ function sendeMail($moduleID, $data, $mail = null)
                 $langCode = StringHandler::convertISO2ISO639($_SESSION['cISOSprache']);
                 $ts       = new TrustedShops(-1, $langCode);
                 $tsRating = $ts->holeKundenbewertungsstatus($langCode);
-                if (strlen($tsRating->cTSID) > 0 && $tsRating->nStatus == 1) {
+                if (mb_strlen($tsRating->cTSID) > 0 && $tsRating->nStatus == 1) {
                     $smarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
                         $data->tbestellung->oRechnungsadresse->cMail,
                         $data->tbestellung->cBestellNr
@@ -397,7 +397,7 @@ function sendeMail($moduleID, $data, $mail = null)
                 $tsRating = $ts->holeKundenbewertungsstatus(
                     StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
                 );
-                if (strlen($tsRating->cTSID) > 0 && $tsRating->nStatus == 1) {
+                if (mb_strlen($tsRating->cTSID) > 0 && $tsRating->nStatus == 1) {
                     $smarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
                         $data->tbestellung->oRechnungsadresse->cMail,
                         $data->tbestellung->cBestellNr
@@ -474,35 +474,35 @@ function sendeMail($moduleID, $data, $mail = null)
         $akzHtml = $smarty->fetch('db:html_core_jtl_anbieterkennzeichnung_' . $lang->kSprache . $pluginBody);
         $akzText = $smarty->fetch('db:text_core_jtl_anbieterkennzeichnung_' . $lang->kSprache . $pluginBody);
 
-        if (strlen($bodyHtml) > 0) {
+        if (mb_strlen($bodyHtml) > 0) {
             $bodyHtml .= '<br /><br />' . $akzHtml;
         }
         $bodyText .= "\n\n" . $akzText;
     }
     if ((int)$mailTPL->nWRB === 1) {
         $heading = Shop::Lang()->get('wrb');
-        if (strlen($bodyHtml) > 0) {
+        if (mb_strlen($bodyHtml) > 0) {
             $bodyHtml .= '<br /><br /><h3>' . $heading . '</h3>' . $WRB->cContentHtml;
         }
         $bodyText .= "\n\n" . $heading . "\n\n" . $WRB->cContentText;
     }
     if ((int)$mailTPL->nWRBForm === 1) {
         $heading = Shop::Lang()->get('wrbform');
-        if (strlen($bodyHtml) > 0) {
+        if (mb_strlen($bodyHtml) > 0) {
             $bodyHtml .= '<br /><br /><h3>' . $heading . '</h3>' . $WRBForm->cContentHtml;
         }
         $bodyText .= "\n\n" . $heading . "\n\n" . $WRBForm->cContentText;
     }
     if ((int)$mailTPL->nAGB === 1) {
         $heading = Shop::Lang()->get('agb');
-        if (strlen($bodyHtml) > 0) {
+        if (mb_strlen($bodyHtml) > 0) {
             $bodyHtml .= '<br /><br /><h3>' . $heading . '</h3>' . $AGB->cContentHtml;
         }
         $bodyText .= "\n\n" . $heading . "\n\n" . $AGB->cContentText;
     }
     if ((int)$mailTPL->nDSE === 1) {
         $heading = 'Datenschutzerklärung';//Shop::Lang()->get('agb');
-        if (strlen($bodyHtml) > 0) {
+        if (mb_strlen($bodyHtml) > 0) {
             $bodyHtml .= '<br /><br /><h3>' . $heading . '</h3>' . $DSE->cContentHtml;
         }
         $bodyText .= "\n\n" . $heading . "\n\n" . $DSE->cContentText;
@@ -510,13 +510,13 @@ function sendeMail($moduleID, $data, $mail = null)
     if (isset($data->tkunde->cMail)) {
         $mail->toEmail = $data->tkunde->cMail;
         $mail->toName  = $data->tkunde->cVorname . ' ' . $data->tkunde->cNachname;
-    } elseif (isset($data->NewsletterEmpfaenger->cEmail) && strlen($data->NewsletterEmpfaenger->cEmail) > 0) {
+    } elseif (isset($data->NewsletterEmpfaenger->cEmail) && mb_strlen($data->NewsletterEmpfaenger->cEmail) > 0) {
         $mail->toEmail = $data->NewsletterEmpfaenger->cEmail;
     }
     //some mail servers seem to have problems with very long lines - wordwrap() if necessary
     $hasLongLines = false;
     foreach (preg_split('/((\r?\n)|(\r\n?))/', $bodyHtml) as $line) {
-        if (strlen($line) > 987) {
+        if (mb_strlen($line) > 987) {
             $hasLongLines = true;
             break;
         }
@@ -526,7 +526,7 @@ function sendeMail($moduleID, $data, $mail = null)
     }
     $hasLongLines = false;
     foreach (preg_split('/((\r?\n)|(\r\n?))/', $bodyText) as $line) {
-        if (strlen($line) > 987) {
+        if (mb_strlen($line) > 987) {
             $hasLongLines = true;
             break;
         }
@@ -573,7 +573,7 @@ function sendeMail($moduleID, $data, $mail = null)
     if (isset($data->mail->replyToName)) {
         $mail->replyToName = $data->mail->replyToName;
     }
-    if (isset($localization->cPDFS) && strlen($localization->cPDFS) > 0) {
+    if (isset($localization->cPDFS) && mb_strlen($localization->cPDFS) > 0) {
         $mail->cPDFS_arr = getPDFAttachments($localization->cPDFS, $localization->cDateiname);
     }
     executeHook(HOOK_MAILTOOLS_SENDEMAIL_ENDE, [
@@ -599,7 +599,7 @@ function sendeMail($moduleID, $data, $mail = null)
             verschickeMail($mail);
         }
     }
-    if (isset($data->oKopie, $data->oKopie->cToMail) && strlen($data->oKopie->cToMail) > 0) {
+    if (isset($data->oKopie, $data->oKopie->cToMail) && mb_strlen($data->oKopie->cToMail) > 0) {
         $mail->toEmail      = $data->oKopie->cToMail;
         $mail->toName       = $data->oKopie->cToMail;
         $mail->fromEmail    = $senderMail;
@@ -619,7 +619,7 @@ function sendeMail($moduleID, $data, $mail = null)
 function pruefeGlobaleEmailBlacklist($cEmail)
 {
     $blackList = Shop::Container()->getDB()->select('temailblacklist', 'cEmail', $cEmail);
-    if (isset($blackList->cEmail) && strlen($blackList->cEmail) > 0) {
+    if (isset($blackList->cEmail) && mb_strlen($blackList->cEmail) > 0) {
         $block                = new stdClass();
         $block->cEmail        = $blackList->cEmail;
         $block->dLetzterBlock = 'NOW()';
@@ -779,7 +779,11 @@ function injectSubject($object, $subject)
                         && !is_array($object->$obj->$member)
                         && !is_object($object->$obj->$member)
                     ) {
-                        $a[] = '#' . strtolower(substr($obj, 1)) . '.' . strtolower(substr($member, 1)) . '#';
+                        $a[] = '#'
+                            . mb_convert_case(mb_substr($obj, 1), MB_CASE_LOWER)
+                            . '.'
+                            . mb_convert_case(mb_substr($member, 1), MB_CASE_LOWER)
+                            . '#';
                         $b[] = $object->$obj->$member;
                     }
                 }
@@ -826,7 +830,7 @@ function lokalisiereKunde($lang, $customer)
     if (isset($customer->cLand)) {
         $cISOLand = $customer->cLand;
         $sel_var  = 'cDeutsch';
-        if (strtolower($lang->cISO) !== 'ger') {
+        if (mb_convert_case($lang->cISO, MB_CASE_LOWER) !== 'ger') {
             $sel_var = 'cEnglisch';
         }
         $land = Shop::Container()->getDB()->select(
@@ -858,7 +862,7 @@ function lokalisiereKunde($lang, $customer)
  */
 function lokalisiereLieferadresse($lang, $deliveryAddress)
 {
-    $langRow = (strtolower($lang->cISO) === 'ger') ? 'cDeutsch' : 'cEnglisch';
+    $langRow = (mb_convert_case($lang->cISO, MB_CASE_LOWER) === 'ger') ? 'cDeutsch' : 'cEnglisch';
     $land    = Shop::Container()->getDB()->select(
         'tland',
         'cISO',
@@ -889,7 +893,7 @@ function bauePDFArrayZumVeschicken($pdfString)
     $files     = [];
     $uploadDir = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
     foreach (explode(';', $pdfString) as $item) {
-        if (strlen($item) > 0 && file_exists($uploadDir . $item)) {
+        if (mb_strlen($item) > 0 && file_exists($uploadDir . $item)) {
             $files[] = $item;
         }
     }
@@ -932,7 +936,7 @@ function baueDateinameArrayZumVeschicken($fileName)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $fileNames = [];
     foreach (explode(';', $fileName) as $item) {
-        if (strlen($item) > 0) {
+        if (mb_strlen($item) > 0) {
             $fileNames[] = $item;
         }
     }
@@ -955,9 +959,9 @@ function baueDateinameArrayZumVeschicken($fileName)
 function SendNiceMailReply($fromName, $fromMail, $replyTo, $to, $subject, $text, $html = '')
 {
     $eol = "\n";
-    if (stripos(PHP_OS, 'WIN') === 0) {
+    if (mb_stripos(PHP_OS, 'WIN') === 0) {
         $eol = "\r\n";
-    } elseif (stripos(PHP_OS, 'MAC') === 0) {
+    } elseif (mb_stripos(PHP_OS, 'MAC') === 0) {
         $eol = "\r";
     }
 
@@ -973,12 +977,12 @@ function SendNiceMailReply($fromName, $fromMail, $replyTo, $to, $subject, $text,
     }
     $mime_boundary = md5(time()) . '_jtlshop2';
     $headers       = '';
-    if (strpos($to, 'freenet')) {
-        $headers .= 'From: ' . strtolower($fromMail) . $eol;
+    if (mb_strpos($to, 'freenet')) {
+        $headers .= 'From: ' . mb_convert_case($fromMail, MB_CASE_LOWER) . $eol;
     } else {
-        $headers .= 'From: ' . $fromName . ' <' . strtolower($fromMail) . '>' . $eol;
+        $headers .= 'From: ' . $fromName . ' <' . mb_convert_case($fromMail, MB_CASE_LOWER) . '>' . $eol;
     }
-    $headers .= 'Reply-To: ' . strtolower($replyTo) . $eol;
+    $headers .= 'Reply-To: ' . mb_convert_case($replyTo, MB_CASE_LOWER) . $eol;
     $headers .= 'MIME-Version: 1.0' . $eol;
     if (!$html) {
         $headers .= 'Content-Type: text/plain; charset=' . JTL_CHARSET . $eol;
@@ -1012,9 +1016,9 @@ function SendNiceMailReply($fromName, $fromMail, $replyTo, $to, $subject, $text,
 function encode_iso88591($string)
 {
     $text = '=?' . JTL_CHARSET . '?Q?';
-    $max  = strlen($string);
+    $max  = mb_strlen($string);
     for ($i = 0; $i < $max; $i++) {
-        $val = ord($string[$i]);
+        $val = mb_ord($string[$i]);
         if ($val > 127 || $val === 63) {
             $val   = dechex($val);
             $text .= '=' . $val;

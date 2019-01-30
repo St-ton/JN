@@ -9,10 +9,6 @@
 {block name='content'}
     {if isset($smarty.get.reg)}
         <div class="alert alert-success">{lang key='accountCreated' section='global'}</div>
-    {elseif !isset($hinweis)}
-        <div class="alert alert-info">{lang key='myAccountDesc' section='login'}</div>
-    {elseif !empty($hinweis)}
-        <div class="alert alert-info">{$hinweis}</div>
     {/if}
 
     {include file='snippets/extension.tpl'}

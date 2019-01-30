@@ -357,7 +357,7 @@ class News extends MainModel
      */
     public function setErstellt($dErstellt): self
     {
-        $this->dErstellt = (strtoupper($dErstellt) === 'NOW()')
+        $this->dErstellt = (mb_convert_case($dErstellt, MB_CASE_UPPER) === 'NOW()')
             ? date('Y-m-d H:i:s')
             : $dErstellt;
 
@@ -378,7 +378,7 @@ class News extends MainModel
      */
     public function setGueltigVon($dGueltigVon): self
     {
-        $this->dGueltigVon = (strtoupper($dGueltigVon) === 'NOW()')
+        $this->dGueltigVon = (mb_convert_case($dGueltigVon, MB_CASE_UPPER) === 'NOW()')
             ? date('Y-m-d H:i:s')
             : $dGueltigVon;
 
@@ -399,7 +399,7 @@ class News extends MainModel
      */
     public function setGueltigVonJS($dGueltigVonJS): self
     {
-        $this->dGueltigVonJS = (strtoupper($dGueltigVonJS) === 'NOW()')
+        $this->dGueltigVonJS = (mb_convert_case($dGueltigVonJS, MB_CASE_UPPER) === 'NOW()')
             ? date('Y-m-d H:i:s')
             : $dGueltigVonJS;
 

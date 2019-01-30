@@ -31,14 +31,14 @@ function getAllModifiedFiles(&$files, &$errorsCount)
     }
     if (file_exists($md5file)) {
         $cShopFileAll = file_get_contents($md5file);
-        if (strlen($cShopFileAll) > 0) {
+        if (mb_strlen($cShopFileAll) > 0) {
             $cShopFile_arr = explode("\n", $cShopFileAll);
             if (is_array($cShopFile_arr) && count($cShopFile_arr) > 0) {
                 $errorsCount = 0;
 
                 array_multisort($cShopFile_arr);
                 foreach ($cShopFile_arr as $cShopFile) {
-                    if (strlen($cShopFile) === 0) {
+                    if (mb_strlen($cShopFile) === 0) {
                         continue;
                     }
 
@@ -93,14 +93,14 @@ function getAllOrphanedFiles(&$files, &$errorsCount)
     }
     if (file_exists($csvFile)) {
         $cShopFileAll = file_get_contents($csvFile);
-        if (strlen($cShopFileAll) > 0) {
+        if (mb_strlen($cShopFileAll) > 0) {
             $cShopFile_arr = explode("\n", $cShopFileAll);
             if (is_array($cShopFile_arr) && count($cShopFile_arr) > 0) {
                 $errorsCount = 0;
 
                 array_multisort($cShopFile_arr);
                 foreach ($cShopFile_arr as $cShopFile) {
-                    if (strlen($cShopFile) === 0) {
+                    if (mb_strlen($cShopFile) === 0) {
                         continue;
                     }
 

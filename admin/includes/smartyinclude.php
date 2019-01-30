@@ -118,7 +118,7 @@ foreach ($adminMenu as $rootName => $rootEntry) {
                 if (empty($urlParts['query'])) {
                     $urlParts['query'] = [];
                 } else {
-                    parse_str($urlParts['query'], $urlParts['query']);
+                    mb_parse_str($urlParts['query'], $urlParts['query']);
                 }
 
                 if ($link->cURL === $curScriptFileName

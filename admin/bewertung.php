@@ -25,7 +25,7 @@ $cacheTags = [];
 
 setzeSprache();
 
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $cTab = Request::verifyGPDataString('tab');
 }
 if (Form::validateToken()) {

@@ -60,7 +60,7 @@ class TwoFAEmergency
         $rowValues       = '';
         $valCount        = 'a';
         for ($i = 0; $i < $this->codeCount; $i++) {
-            $code          = \substr(\md5(\rand(1000, 9000)), 0, 16);
+            $code          = \mb_substr(\md5(\rand(1000, 9000)), 0, 16);
             $this->codes[] = $code;
 
             if ($rowValues !== '') {
@@ -131,7 +131,7 @@ class TwoFAEmergency
                     [$adminID, $item->cEmergencyCode],
                     ReturnType::AFFECTED_ROWS
                 );
-                if (1 !== $effected) {
+                if ($effected !== 1) {
                     Shop::Container()->getLogService()->error('2FA-Notfall-Code konnte nicht gelöscht werden.');
                 }
 

@@ -288,7 +288,7 @@ class Item extends AbstractItem
             while (false !== ($file = \readdir($handle))) {
                 if ($file !== '.' && $file !== '..') {
                     $image           = new \stdClass();
-                    $image->cName    = \substr($file, 0, \strpos($file, '.'));
+                    $image->cName    = \mb_substr($file, 0, \mb_strpos($file, '.'));
                     $image->cURL     = \PFAD_NEWSBILDER . $this->id . '/' . $file;
                     $image->cURLFull = $imageBaseURL . \PFAD_NEWSBILDER . $this->id . '/' . $file;
                     $image->cDatei   = $file;
@@ -420,7 +420,7 @@ class Item extends AbstractItem
     {
         $idx = $idx ?? \Shop::getLanguageID();
 
-        return \strtoupper($this->titles[$idx] ?? '');
+        return \mb_convert_case($this->titles[$idx] ?? '', \MB_CASE_UPPER);
     }
 
     /**

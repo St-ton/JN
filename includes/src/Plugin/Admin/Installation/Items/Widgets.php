@@ -33,7 +33,7 @@ class Widgets extends AbstractItem
         foreach ($this->getNode() as $i => $widgetData) {
             $i = (string)$i;
             \preg_match('/[0-9]+/', $i, $hits);
-            if (\strlen($hits[0]) !== \strlen($i)) {
+            if (\mb_strlen($hits[0]) !== \mb_strlen($i)) {
                 continue;
             }
             $widget               = new \stdClass();

@@ -130,7 +130,7 @@ class Jtllog
         $kKey = 0
     ): bool {
         trigger_error(__METHOD__ . ' is deprecated. Use the log service instead.', E_USER_DEPRECATED);
-        if (strlen($cLog) > 0 && ($bForce || self::doLog($nLevel))) {
+        if (mb_strlen($cLog) > 0 && ($bForce || self::doLog($nLevel))) {
             $logger = Shop::Container()->getLogService();
             if ($cKey !== '') {
                 $logger = $logger->withName($cKey);
@@ -156,7 +156,7 @@ class Jtllog
         $logs       = [];
         $conditions = [];
         $values     = ['limitfrom' => $nLimitN, 'limitto' => $nLimitM];
-        if (strlen($cFilter) > 0) {
+        if (mb_strlen($cFilter) > 0) {
             $conditions[]   = 'cLog LIKE :clog';
             $values['clog'] = '%' . $cFilter . '%';
         }
@@ -212,8 +212,8 @@ class Jtllog
         $cSQLWhere = $nLevel > 0
             ? ' WHERE nLevel = ' . $nLevel
             : '';
-        if (strlen($cFilter) > 0) {
-            if (strlen($cSQLWhere) === 0) {
+        if (mb_strlen($cFilter) > 0) {
+            if (mb_strlen($cSQLWhere) === 0) {
                 $cSQLWhere .= " WHERE cLog LIKE '%" . $cFilter . "%'";
             } else {
                 $cSQLWhere .= " AND cLog LIKE '%" . $cFilter . "%'";

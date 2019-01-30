@@ -4,17 +4,6 @@
  *}
 <h1>{lang key='newsMonthOverview' section='news'}</h1>
 
-{if !empty($hinweis)}
-    <div class="alert alert-info">
-        {$hinweis}
-    </div>
-{/if}
-{if !empty($fehler)}
-    <div class="alert alert-danger">
-        {$fehler}
-    </div>
-{/if}
-
 {if $noarchiv}
     {lang key='noNewsArchiv' section='news'}.
 {else}

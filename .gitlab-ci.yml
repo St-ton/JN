@@ -5,6 +5,7 @@ stages:
   - build
   - deploy
   - cleanUp
+  - staging
 
 .testingScript: &testingScript |
   export CI_CONTAINER_NAME=ci_job_$CI_PROJECT_NAME_testing_$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
@@ -111,6 +112,38 @@ stages:
     if [[ ! -z "$running" ]]; then
       docker network disconnect mysql-php-network $CI_CONTAINER_NAME
       docker stop $CI_CONTAINER_NAME && docker rm -fv $CI_CONTAINER_NAME
+    fi
+  }
+
+.devCheckoutScripts: &devCheckoutScripts |
+  function deployProcess() {
+    export PHP_VERSION=$1;
+    export FILENAME="${CI_COMMIT_REF_NAME//[\/\.]/-}";
+    export DOWNLOAD_PATH="$STAGING_USER_PATH/php$PHP_VERSION/$FILENAME";
+    export DOWNLOAD_PATH_ZIP="$DOWNLOAD_PATH.zip";
+    export DOWNLOAD_URL="https://build.jtl-shop.de/get/shop-$FILENAME.zip";
+    export MIGRATION_COUNT_BEFORE=$(ls -1 $DOWNLOAD_PATH/update/migrations/ | wc -l)
+
+    curl -o $DOWNLOAD_PATH_ZIP $DOWNLOAD_URL
+    unzip -qo $DOWNLOAD_PATH_ZIP -d $DOWNLOAD_PATH
+    rm $DOWNLOAD_PATH_ZIP
+
+    export MIGRATION_COUNT_AFTER=$(ls -1 $DOWNLOAD_PATH/update/migrations/ | wc -l)
+
+    if [[ $MIGRATION_COUNT_AFTER -gt $MIGRATION_COUNT_BEFORE ]]; then
+      php -r "
+        require_once '${DOWNLOAD_PATH}/includes/globalinclude.php'; \
+        \$manager = new MigrationManager(null); \
+        \$manager->migrate(null); \
+        try {
+          \$result = \$manager->migrate(null);
+        } catch (Exception \$e) {
+          \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations())));
+          \$result = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage());
+          echo \$result;
+          exit(1);
+        }
+      ";
     fi
   }
 
@@ -269,3 +302,33 @@ removeContainer:
   when: on_failure
   tags:
     - build
+
+stagingDevPhp72:
+  stage: staging
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - *devCheckoutScripts
+    - deployProcess 72
+  environment:
+    name: staging master php 7.2
+    url: https://$STAGING_USER-72-master.$STAGING_DOMAIN
+  only:
+    - master
+  tags:
+    - dev-checkout
+
+stagingDevPhp73:
+  stage: staging
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - *devCheckoutScripts
+    - deployProcess 73
+  environment:
+    name: staging master php 7.3
+    url: https://$STAGING_USER-73-master.$STAGING_DOMAIN
+  only:
+    - master
+  tags:
+    - dev-checkout

@@ -19,7 +19,7 @@ $cFehler  = '';
 $step     = 'kwk_uebersicht';
 
 setzeSprache();
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {

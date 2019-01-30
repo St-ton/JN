@@ -311,7 +311,7 @@ class JTLSmarty extends \SmartyBC
         }
         $file   = \basename($filename, '.tpl');
         $dir    = \dirname($filename);
-        $custom = \strpos($dir, \PFAD_ROOT) === false
+        $custom = \mb_strpos($dir, \PFAD_ROOT) === false
             ? $this->getTemplateDir($this->context) . (($dir === '.')
                 ? ''
                 : ($dir . '/')) . $file . '_custom.tpl'
@@ -394,10 +394,10 @@ class JTLSmarty extends \SmartyBC
     public function getResourceName(string $resourceName): string
     {
         $transform = false;
-        if (\strpos($resourceName, 'string:') === 0) {
+        if (\mb_strpos($resourceName, 'string:') === 0) {
             return $resourceName;
         }
-        if (\strpos($resourceName, 'file:') === 0) {
+        if (\mb_strpos($resourceName, 'file:') === 0) {
             $resourceName = \str_replace('file:', '', $resourceName);
             $transform    = true;
         }

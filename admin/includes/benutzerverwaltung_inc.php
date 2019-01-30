@@ -306,7 +306,7 @@ function benutzerverwaltungActionAccountEdit(\Smarty\JTLSmarty $smarty, array &$
         $oTmpAcc->b2FAauth    = (int)$_POST['b2FAauth'];
         $tmpAttribs           = $_POST['extAttribs'] ?? [];
 
-        if (0 < strlen($_POST['c2FAsecret'])) {
+        if (0 < mb_strlen($_POST['c2FAsecret'])) {
             $oTmpAcc->c2FAauthSecret = trim($_POST['c2FAsecret']);
         }
 
@@ -326,21 +326,21 @@ function benutzerverwaltungActionAccountEdit(\Smarty\JTLSmarty $smarty, array &$
         if ((bool)$oTmpAcc->b2FAauth && !isset($oTmpAcc->c2FAauthSecret)) {
             $errors['c2FAsecret'] = 1;
         }
-        if (strlen($oTmpAcc->cName) === 0) {
+        if (mb_strlen($oTmpAcc->cName) === 0) {
             $errors['cName'] = 1;
         }
-        if (strlen($oTmpAcc->cMail) === 0) {
+        if (mb_strlen($oTmpAcc->cMail) === 0) {
             $errors['cMail'] = 1;
         }
-        if (strlen($oTmpAcc->cPass) === 0 && $oTmpAcc->kAdminlogin === 0) {
+        if (mb_strlen($oTmpAcc->cPass) === 0 && $oTmpAcc->kAdminlogin === 0) {
             $errors['cPass'] = 1;
         }
-        if (strlen($oTmpAcc->cLogin) === 0) {
+        if (mb_strlen($oTmpAcc->cLogin) === 0) {
             $errors['cLogin'] = 1;
         } elseif ($oTmpAcc->kAdminlogin === 0 && getInfoInUse('cLogin', $oTmpAcc->cLogin)) {
             $errors['cLogin'] = 2;
         }
-        if ($dGueltigBisAktiv && $oTmpAcc->kAdminlogingruppe !== ADMINGROUP && strlen($oTmpAcc->dGueltigBis) === 0) {
+        if ($dGueltigBisAktiv && $oTmpAcc->kAdminlogingruppe !== ADMINGROUP && mb_strlen($oTmpAcc->dGueltigBis) === 0) {
             $errors['dGueltigBis'] = 1;
         }
         if ($oTmpAcc->kAdminlogin > 0) {
@@ -373,7 +373,7 @@ function benutzerverwaltungActionAccountEdit(\Smarty\JTLSmarty $smarty, array &$
                 && $oTmpAcc->cLogin !== $_SESSION['AdminAccount']->cLogin) {
                 $_SESSION['AdminAccount']->cLogin = $oTmpAcc->cLogin;
             }
-            if (strlen($oTmpAcc->cPass) > 0) {
+            if (mb_strlen($oTmpAcc->cPass) > 0) {
                 $oTmpAcc->cPass = Shop::Container()->getPasswordService()->hash($oTmpAcc->cPass);
                 // if we change the current admin-user, we have to update his session-credentials too!
                 if ((int)$oTmpAcc->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin) {
@@ -411,7 +411,7 @@ function benutzerverwaltungActionAccountEdit(\Smarty\JTLSmarty $smarty, array &$
             $oTmpAcc->bAktiv        = 1;
             $oTmpAcc->nLoginVersuch = 0;
             $oTmpAcc->dLetzterLogin = '_DBNULL_';
-            if (!isset($oTmpAcc->dGueltigBis) || strlen($oTmpAcc->dGueltigBis) === 0) {
+            if (!isset($oTmpAcc->dGueltigBis) || mb_strlen($oTmpAcc->dGueltigBis) === 0) {
                 $oTmpAcc->dGueltigBis = '_DBNULL_';
             }
             $oTmpAcc->cPass = Shop::Container()->getPasswordService()->hash($oTmpAcc->cPass);
@@ -553,10 +553,10 @@ function benutzerverwaltungActionGroupEdit(\Smarty\JTLSmarty $smarty, array &$me
         );
         $oAdminGroupPermission_arr      = $_POST['perm'];
 
-        if (strlen($oAdminGroup->cGruppe) === 0) {
+        if (mb_strlen($oAdminGroup->cGruppe) === 0) {
             $cError_arr['cGruppe'] = 1;
         }
-        if (strlen($oAdminGroup->cBeschreibung) === 0) {
+        if (mb_strlen($oAdminGroup->cBeschreibung) === 0) {
             $cError_arr['cBeschreibung'] = 1;
         }
         if (count($oAdminGroupPermission_arr) === 0) {

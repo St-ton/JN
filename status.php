@@ -11,7 +11,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_BESTELLSTATUS);
 $smarty     = Shop::Smarty();
-$hinweis    = '';
 $linkHelper = Shop::Container()->getLinkService();
 
 if (isset($_GET['uid'])) {
@@ -40,7 +39,6 @@ if (isset($_GET['uid'])) {
 
 $step = 'bestellung';
 $smarty->assign('step', $step)
-       ->assign('hinweis', $hinweis)
        ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
        ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)
        ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN);

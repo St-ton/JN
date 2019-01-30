@@ -5,13 +5,6 @@
 
 <h1>{lang key='umfrage' section='umfrage'}</h1>
 
-{if !empty($hinweis)}
-    <div class="alert aler-info">{$hinweis}</div>
-{/if}
-{if !empty($fehler)}
-    <div class="alert alert-danger">{$fehler}</div>
-{/if}
-
 {include file='snippets/extension.tpl'}
 
 {if $oUmfrage_arr|@count > 0}

@@ -100,7 +100,7 @@ class ZahlungsLog
      */
     public static function add($cModulId, $cLog, $cLogData = '', $nLevel = LOGLEVEL_ERROR): int
     {
-        if (strlen($cModulId) === 0) {
+        if (mb_strlen($cModulId) === 0) {
             return 0;
         }
 

@@ -228,7 +228,7 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && Form
                     $uploadfiles = glob(PFAD_UPLOADS . '*');
 
                     foreach ($uploadfiles as $file) {
-                        if (is_file($file) && strpos($file, '.') !== 0) {
+                        if (is_file($file) && mb_strpos($file, '.') !== 0) {
                             unlink($file);
                         }
                     }

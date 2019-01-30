@@ -38,7 +38,7 @@ $tab                   = Request::verifyGPDataString('tab');
 if (Request::verifyGPCDataInt('Suche') === 1) {
     $search = Shop::Container()->getDB()->escape(StringHandler::filterXSS(Request::verifyGPDataString('cSuche')));
 
-    if (strlen($search) > 0) {
+    if (mb_strlen($search) > 0) {
         switch (Request::verifyGPDataString('cSuchTyp')) {
             case 'Bewertung':
                 $tab                = 'bewertungen';
@@ -135,7 +135,7 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
         // Mappen
         if (isset($_POST['submitMapping'])) {
             $cMapping = Request::verifyGPDataString('cMapping');
-            if (strlen($cMapping) > 0) {
+            if (mb_strlen($cMapping) > 0) {
                 $nReturnValue = 0;
                 if (is_array($_POST['kSuchanfrage']) && count($_POST['kSuchanfrage']) > 0) {
                     $nReturnValue = mappeLiveSuche($_POST['kSuchanfrage'], $cMapping);

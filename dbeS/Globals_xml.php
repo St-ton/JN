@@ -186,8 +186,8 @@ function bearbeiteUpdates($xml)
         }
     }
     if (isset($xml['globals_wg']['tWarengruppe']) && is_array($xml['globals_wg']['tWarengruppe'])) {
-        $oWarengruppe_arr = mapArray($xml['globals_wg'], 'tWarengruppe', Mapper::getMapping('mWarengruppe'));
-        DBUpdateInsert('twarengruppe', $oWarengruppe_arr, 'kWarengruppe');
+        $groups = mapArray($xml['globals_wg'], 'tWarengruppe', Mapper::getMapping('mWarengruppe'));
+        DBUpdateInsert('twarengruppe', $groups, 'kWarengruppe');
     }
 }
 

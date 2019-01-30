@@ -118,14 +118,14 @@ if (auth()) {
     if (!$conf['bilder']['bilder_skalieren']) {
         $conf['bilder']['bilder_skalieren'] = 'N';
     }
-    $lang = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
-    $cSQL = '';
-    if (!$lang->kSprache) {
-        $lang->kSprache = $_SESSION['kSprache'];
-        $cSQL           = 'AND tseo.kSprache = ' . $lang->kSprache;
+    $lang   = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
+    $langID = (int)($lang->kSprache ?? 0);
+    $sql    = '';
+    if (!$langID) {
+        $langID = $_SESSION['kSprache'] ?? 0;
     }
-    if ($lang->kSprache > 0) {
-        $cSQL = ' AND tseo.kSprache = ' . $lang->kSprache;
+    if ($langID > 0) {
+        $sql = ' AND tseo.kSprache = ' . $lang->kSprache;
     }
     $return    = 2;
     $zipFile   = $_FILES['data']['tmp_name'];
@@ -152,7 +152,7 @@ if (auth()) {
                 case 'bilder_h.xml':
                     $d   = file_get_contents($xmlFile);
                     $xml = XML_unserialize($d);
-                    bearbeite($xml, $unzipPath, $brandingConf);
+                    bearbeite($xml, $unzipPath, $brandingConf, $sql);
                     removeTemporaryFiles($xmlFile);
                     break;
 
@@ -181,10 +181,11 @@ echo $return;
  * @param array  $xml
  * @param string $unzipPath
  * @param array  $brandingConf
+ * @param string $sql
  * @throws \Exceptions\CircularReferenceException
  * @throws \Exceptions\ServiceNotFoundException
  */
-function bearbeite($xml, string $unzipPath, array $brandingConf)
+function bearbeite($xml, string $unzipPath, array $brandingConf, string $sql)
 {
     $productImages      = mapArray($xml['bilder'], 'tartikelpict', Mapper::getMapping('mArtikelPict'));
     $categoryImages     = mapArray($xml['bilder'], 'tkategoriepict', Mapper::getMapping('mKategoriePict'));
@@ -233,11 +234,11 @@ function bearbeite($xml, string $unzipPath, array $brandingConf)
                 'kArtikelPict',
                 (int)$image->kMainArtikelBild
             );
-            if (isset($main->cPfad) && strlen($main->cPfad) > 0) {
+            if (!empty($main->cPfad)) {
                 $image->cPfad = neuerDateiname($main->cPfad);
                 DBUpdateInsert('tartikelpict', [$image], 'kArtikel', 'kArtikelpict');
             } else {
-                erstelleArtikelBild($image, $format, $unzipPath, $imgFilename, $brandingConf);
+                erstelleArtikelBild($image, $format, $unzipPath, $imgFilename, $brandingConf, $sql);
             }
         } else {
             $productImage = $db->select(
@@ -246,7 +247,7 @@ function bearbeite($xml, string $unzipPath, array $brandingConf)
                 (int)$image->kArtikelPict
             );
             // update all references, if img is used by other products
-            if (isset($productImage->cPfad) && strlen($productImage->cPfad) > 0) {
+            if (!empty($productImage->cPfad)) {
                 $db->update(
                     'tartikelpict',
                     'kMainArtikelBild',
@@ -254,12 +255,12 @@ function bearbeite($xml, string $unzipPath, array $brandingConf)
                     (object)['cPfad' => $productImage->cPfad]
                 );
             }
-            erstelleArtikelBild($image, $format, $unzipPath, $imgFilename, $brandingConf);
+            erstelleArtikelBild($image, $format, $unzipPath, $imgFilename, $brandingConf, $sql);
         }
     }
     if (count($productImages) > 0) {
         $handle = @opendir($unzipPath);
-        while (false !== ($file = readdir($handle))) {
+        while (($file = readdir($handle)) !== false) {
             if ($file !== '.' && $file !== '..' && $file !== 'bilder_a.xml' && file_exists($unzipPath . $file)) {
                 if (!unlink($unzipPath . $file)) {
                     Shop::Container()->getLogService()->error('Artikelbild konnte nicht geloescht werden: ' . $file);
@@ -269,270 +270,275 @@ function bearbeite($xml, string $unzipPath, array $brandingConf)
         @closedir($handle);
     }
     foreach ($categoryImages as $categoryImage) {
-        if (strlen($categoryImage->cPfad) > 0) {
-            $imgFilename = $categoryImage->cPfad;
-            $format      = gibBildformat($unzipPath . $imgFilename);
-            if (!$format) {
-                Shop::Container()->getLogService()->error(
-                    'Bildformat des Kategoriebildes konnte nicht ermittelt werden. Datei ' .
-                    $imgFilename . ' keine Bilddatei?'
-                );
-                continue;
-            }
-
-            $categoryImage->cPfad = gibKategoriebildname($categoryImage, $format);
-            $categoryImage->cPfad = neuerDateiname($categoryImage->cPfad);
-            if (erstelleThumbnail(
-                $brandingConf['Kategorie'],
-                $unzipPath . $imgFilename,
-                PFAD_KATEGORIEBILDER . $categoryImage->cPfad,
-                $conf['bilder']['bilder_kategorien_breite'],
-                $conf['bilder']['bilder_kategorien_hoehe'],
-                $conf['bilder']['bilder_jpg_quali'],
-                1,
-                $conf['bilder']['container_verwenden']
-            )) {
-                DBUpdateInsert('tkategoriepict', [$categoryImage], 'kKategorie');
-            }
-            unlink($unzipPath . $imgFilename);
+        if (empty($categoryImage->cPfad)) {
+            continue;
         }
+        $imgFilename = $categoryImage->cPfad;
+        $format      = gibBildformat($unzipPath . $imgFilename);
+        if (!$format) {
+            Shop::Container()->getLogService()->error(
+                'Bildformat des Kategoriebildes konnte nicht ermittelt werden. Datei ' .
+                $imgFilename . ' keine Bilddatei?'
+            );
+            continue;
+        }
+
+        $categoryImage->cPfad = gibKategoriebildname($categoryImage, $format, $sql);
+        $categoryImage->cPfad = neuerDateiname($categoryImage->cPfad);
+        if (erstelleThumbnail(
+            $brandingConf['Kategorie'],
+            $unzipPath . $imgFilename,
+            PFAD_KATEGORIEBILDER . $categoryImage->cPfad,
+            $conf['bilder']['bilder_kategorien_breite'],
+            $conf['bilder']['bilder_kategorien_hoehe'],
+            $conf['bilder']['bilder_jpg_quali'],
+            1,
+            $conf['bilder']['container_verwenden']
+        )) {
+            DBUpdateInsert('tkategoriepict', [$categoryImage], 'kKategorie');
+        }
+        unlink($unzipPath . $imgFilename);
     }
     foreach ($propertyImages as $propertyImage) {
-        if (strlen($propertyImage->cPfad) > 0) {
-            $imgFilename = $propertyImage->cPfad;
-            $format      = gibBildformat($unzipPath . $imgFilename);
-            if (!$format) {
-                Shop::Container()->getLogService()->error(
-                    'Bildformat des Eigenschaftwertbildes konnte nicht ermittelt werden. Datei ' .
-                    $imgFilename . ' keine Bilddatei?'
-                );
-                continue;
-            }
-            $propertyImage->cPfad = gibEigenschaftwertbildname($propertyImage, $format);
-            $propertyImage->cPfad = neuerDateiname($propertyImage->cPfad);
-            erstelleThumbnail(
-                $brandingConf['Variationen'],
-                $unzipPath . $imgFilename,
-                PFAD_VARIATIONSBILDER_GROSS . $propertyImage->cPfad,
-                $conf['bilder']['bilder_variationen_gross_breite'],
-                $conf['bilder']['bilder_variationen_gross_hoehe'],
-                $conf['bilder']['bilder_jpg_quali'],
-                1,
-                $conf['bilder']['container_verwenden']
-            );
-            erstelleThumbnailBranded(
-                PFAD_ROOT . PFAD_VARIATIONSBILDER_GROSS . $propertyImage->cPfad,
-                PFAD_VARIATIONSBILDER_NORMAL . $propertyImage->cPfad,
-                $conf['bilder']['bilder_variationen_breite'],
-                $conf['bilder']['bilder_variationen_hoehe'],
-                $conf['bilder']['bilder_jpg_quali'],
-                $conf['bilder']['container_verwenden']
-            );
-            if (erstelleThumbnailBranded(
-                PFAD_ROOT . PFAD_VARIATIONSBILDER_GROSS . $propertyImage->cPfad,
-                PFAD_VARIATIONSBILDER_MINI . $propertyImage->cPfad,
-                $conf['bilder']['bilder_variationen_mini_breite'],
-                $conf['bilder']['bilder_variationen_mini_hoehe'],
-                $conf['bilder']['bilder_jpg_quali'],
-                $conf['bilder']['container_verwenden']
-            )) {
-                DBUpdateInsert('teigenschaftwertpict', [$propertyImage], 'kEigenschaftWert');
-            }
-            unlink($unzipPath . $imgFilename);
+        if (empty($propertyImage->cPfad)) {
+            continue;
         }
+        $imgFilename = $propertyImage->cPfad;
+        $format      = gibBildformat($unzipPath . $imgFilename);
+        if (!$format) {
+            Shop::Container()->getLogService()->error(
+                'Bildformat des Eigenschaftwertbildes konnte nicht ermittelt werden. Datei ' .
+                $imgFilename . ' keine Bilddatei?'
+            );
+            continue;
+        }
+        $propertyImage->cPfad = gibEigenschaftwertbildname($propertyImage, $format, $sql);
+        $propertyImage->cPfad = neuerDateiname($propertyImage->cPfad);
+        erstelleThumbnail(
+            $brandingConf['Variationen'],
+            $unzipPath . $imgFilename,
+            PFAD_VARIATIONSBILDER_GROSS . $propertyImage->cPfad,
+            $conf['bilder']['bilder_variationen_gross_breite'],
+            $conf['bilder']['bilder_variationen_gross_hoehe'],
+            $conf['bilder']['bilder_jpg_quali'],
+            1,
+            $conf['bilder']['container_verwenden']
+        );
+        erstelleThumbnailBranded(
+            PFAD_ROOT . PFAD_VARIATIONSBILDER_GROSS . $propertyImage->cPfad,
+            PFAD_VARIATIONSBILDER_NORMAL . $propertyImage->cPfad,
+            $conf['bilder']['bilder_variationen_breite'],
+            $conf['bilder']['bilder_variationen_hoehe'],
+            $conf['bilder']['bilder_jpg_quali'],
+            $conf['bilder']['container_verwenden']
+        );
+        if (erstelleThumbnailBranded(
+            PFAD_ROOT . PFAD_VARIATIONSBILDER_GROSS . $propertyImage->cPfad,
+            PFAD_VARIATIONSBILDER_MINI . $propertyImage->cPfad,
+            $conf['bilder']['bilder_variationen_mini_breite'],
+            $conf['bilder']['bilder_variationen_mini_hoehe'],
+            $conf['bilder']['bilder_jpg_quali'],
+            $conf['bilder']['container_verwenden']
+        )) {
+            DBUpdateInsert('teigenschaftwertpict', [$propertyImage], 'kEigenschaftWert');
+        }
+        unlink($unzipPath . $imgFilename);
     }
     foreach ($manufacturerImages as $manufacturerImage) {
         $manufacturerImage->kHersteller = (int)$manufacturerImage->kHersteller;
-        if (strlen($manufacturerImage->cPfad) > 0 && $manufacturerImage->kHersteller > 0) {
-            $imgFilename = $manufacturerImage->cPfad;
-            $format      = gibBildformat($unzipPath . $imgFilename);
-            if (!$format) {
-                Shop::Container()->getLogService()->error(
-                    'Bildformat des Herstellerbildes konnte nicht ermittelt werden. Datei ' .
-                    $imgFilename . ' keine Bilddatei?'
-                );
-                continue;
-            }
-            $manufacturer = $db->query(
-                'SELECT cSeo
-                    FROM thersteller
-                    WHERE kHersteller = ' . (int)$manufacturerImage->kHersteller,
-                \DB\ReturnType::SINGLE_OBJECT
+        if (empty($manufacturerImage->cPfad) || $manufacturerImage->kHersteller <= 0) {
+            continue;
+        }
+        $imgFilename = $manufacturerImage->cPfad;
+        $format      = gibBildformat($unzipPath . $imgFilename);
+        if (!$format) {
+            Shop::Container()->getLogService()->error(
+                'Bildformat des Herstellerbildes konnte nicht ermittelt werden. Datei ' .
+                $imgFilename . ' keine Bilddatei?'
             );
-            if (isset($manufacturer->cSeo) && strlen($manufacturer->cSeo) > 0) {
-                $manufacturerImage->cPfad = str_replace('/', '_', $manufacturer->cSeo . '.' . $format);
-            } elseif (stripos(strrev($manufacturerImage->cPfad), strrev($format)) !== 0) {
-                $manufacturerImage->cPfad .= '.' . $format;
-            }
-            $manufacturerImage->cPfad = neuerDateiname($manufacturerImage->cPfad);
-            erstelleThumbnail(
-                $brandingConf['Hersteller'],
-                $unzipPath . $imgFilename,
-                PFAD_HERSTELLERBILDER_NORMAL . $manufacturerImage->cPfad,
-                $conf['bilder']['bilder_hersteller_normal_breite'],
-                $conf['bilder']['bilder_hersteller_normal_hoehe'],
-                $conf['bilder']['bilder_jpg_quali'],
-                1,
-                $conf['bilder']['container_verwenden']
-            );
-            if (erstelleThumbnailBranded(
-                PFAD_ROOT . PFAD_HERSTELLERBILDER_NORMAL . $manufacturerImage->cPfad,
-                PFAD_HERSTELLERBILDER_KLEIN . $manufacturerImage->cPfad,
-                $conf['bilder']['bilder_hersteller_klein_breite'],
-                $conf['bilder']['bilder_hersteller_klein_hoehe'],
-                $conf['bilder']['bilder_jpg_quali'],
-                $conf['bilder']['container_verwenden']
-            )) {
-                $db->update(
-                    'thersteller',
-                    'kHersteller',
-                    (int)$manufacturerImage->kHersteller,
-                    (object)['cBildpfad' => $manufacturerImage->cPfad]
-                );
-            }
-            $cacheTags = [];
-            foreach ($db->selectAll(
-                'tartikel',
+            continue;
+        }
+        $manufacturer = $db->query(
+            'SELECT cSeo
+                FROM thersteller
+                WHERE kHersteller = ' . (int)$manufacturerImage->kHersteller,
+            \DB\ReturnType::SINGLE_OBJECT
+        );
+        if (!empty($manufacturer->cSeo)) {
+            $manufacturerImage->cPfad = str_replace('/', '_', $manufacturer->cSeo . '.' . $format);
+        } elseif (stripos(strrev($manufacturerImage->cPfad), strrev($format)) !== 0) {
+            $manufacturerImage->cPfad .= '.' . $format;
+        }
+        $manufacturerImage->cPfad = neuerDateiname($manufacturerImage->cPfad);
+        erstelleThumbnail(
+            $brandingConf['Hersteller'],
+            $unzipPath . $imgFilename,
+            PFAD_HERSTELLERBILDER_NORMAL . $manufacturerImage->cPfad,
+            $conf['bilder']['bilder_hersteller_normal_breite'],
+            $conf['bilder']['bilder_hersteller_normal_hoehe'],
+            $conf['bilder']['bilder_jpg_quali'],
+            1,
+            $conf['bilder']['container_verwenden']
+        );
+        if (erstelleThumbnailBranded(
+            PFAD_ROOT . PFAD_HERSTELLERBILDER_NORMAL . $manufacturerImage->cPfad,
+            PFAD_HERSTELLERBILDER_KLEIN . $manufacturerImage->cPfad,
+            $conf['bilder']['bilder_hersteller_klein_breite'],
+            $conf['bilder']['bilder_hersteller_klein_hoehe'],
+            $conf['bilder']['bilder_jpg_quali'],
+            $conf['bilder']['container_verwenden']
+        )) {
+            $db->update(
+                'thersteller',
                 'kHersteller',
                 (int)$manufacturerImage->kHersteller,
-                'kArtikel'
-            ) as $article) {
-                $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . $article->kArtikel;
-            }
-            Shop::Container()->getCache()->flushTags($cacheTags);
-            unlink($unzipPath . $imgFilename);
+                (object)['cBildpfad' => $manufacturerImage->cPfad]
+            );
         }
+        $cacheTags = [];
+        foreach ($db->selectAll(
+            'tartikel',
+            'kHersteller',
+            (int)$manufacturerImage->kHersteller,
+            'kArtikel'
+        ) as $product) {
+            $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . $product->kArtikel;
+        }
+        Shop::Container()->getCache()->flushTags($cacheTags);
+        unlink($unzipPath . $imgFilename);
     }
     foreach ($attributeImages as $attributeImage) {
         $attributeImage->kMerkmal = (int)$attributeImage->kMerkmal;
-        if (strlen($attributeImage->cPfad) > 0 && $attributeImage->kMerkmal > 0) {
-            $imgFilename = $attributeImage->cPfad;
-            $format  = gibBildformat($unzipPath . $imgFilename);
-            if (!$format) {
-                Shop::Container()->getLogService()->error(
-                    'Bildformat des Merkmalbildes konnte nicht ermittelt werden. Datei ' .
-                    $imgFilename . ' keine Bilddatei?'
-                );
-                continue;
-            }
-            $attributeImage->cPfad .= '.' . $format;
-            $attributeImage->cPfad  = neuerDateiname($attributeImage->cPfad);
-            erstelleThumbnail(
-                $brandingConf['Merkmale'],
-                $unzipPath . $imgFilename,
-                PFAD_MERKMALBILDER_NORMAL . $attributeImage->cPfad,
-                $conf['bilder']['bilder_merkmal_normal_breite'],
-                $conf['bilder']['bilder_merkmal_normal_hoehe'],
-                $conf['bilder']['bilder_jpg_quali'],
-                1,
-                $conf['bilder']['container_verwenden']
-            );
-            if (erstelleThumbnailBranded(
-                PFAD_ROOT . PFAD_MERKMALBILDER_NORMAL . $attributeImage->cPfad,
-                PFAD_MERKMALBILDER_KLEIN . $attributeImage->cPfad,
-                $conf['bilder']['bilder_merkmal_klein_breite'],
-                $conf['bilder']['bilder_merkmal_klein_hoehe'],
-                $conf['bilder']['bilder_jpg_quali'],
-                $conf['bilder']['container_verwenden']
-            )) {
-                $db->update(
-                    'tmerkmal',
-                    'kMerkmal',
-                    (int)$attributeImage->kMerkmal,
-                    (object)['cBildpfad' => $attributeImage->cPfad]
-                );
-            }
-            unlink($unzipPath . $imgFilename);
+        if (empty($attributeImage->cPfad) || $attributeImage->kMerkmal <= 0) {
+            continue;
         }
+        $imgFilename = $attributeImage->cPfad;
+        $format      = gibBildformat($unzipPath . $imgFilename);
+        if (!$format) {
+            Shop::Container()->getLogService()->error(
+                'Bildformat des Merkmalbildes konnte nicht ermittelt werden. Datei ' .
+                $imgFilename . ' keine Bilddatei?'
+            );
+            continue;
+        }
+        $attributeImage->cPfad .= '.' . $format;
+        $attributeImage->cPfad  = neuerDateiname($attributeImage->cPfad);
+        erstelleThumbnail(
+            $brandingConf['Merkmale'],
+            $unzipPath . $imgFilename,
+            PFAD_MERKMALBILDER_NORMAL . $attributeImage->cPfad,
+            $conf['bilder']['bilder_merkmal_normal_breite'],
+            $conf['bilder']['bilder_merkmal_normal_hoehe'],
+            $conf['bilder']['bilder_jpg_quali'],
+            1,
+            $conf['bilder']['container_verwenden']
+        );
+        if (erstelleThumbnailBranded(
+            PFAD_ROOT . PFAD_MERKMALBILDER_NORMAL . $attributeImage->cPfad,
+            PFAD_MERKMALBILDER_KLEIN . $attributeImage->cPfad,
+            $conf['bilder']['bilder_merkmal_klein_breite'],
+            $conf['bilder']['bilder_merkmal_klein_hoehe'],
+            $conf['bilder']['bilder_jpg_quali'],
+            $conf['bilder']['container_verwenden']
+        )) {
+            $db->update(
+                'tmerkmal',
+                'kMerkmal',
+                (int)$attributeImage->kMerkmal,
+                (object)['cBildpfad' => $attributeImage->cPfad]
+            );
+        }
+        unlink($unzipPath . $imgFilename);
     }
     foreach ($attrValImages as $attrValImage) {
         $attrValImage->kMerkmalWert = (int)$attrValImage->kMerkmalWert;
-        if (strlen($attrValImage->cPfad) > 0 && $attrValImage->kMerkmalWert > 0) {
-            $imgFilename = $attrValImage->cPfad;
-            $format      = gibBildformat($unzipPath . $imgFilename);
-            if (!$format) {
-                Shop::Container()->getLogService()->error(
-                    'Bildformat des Merkmalwertbildes konnte nicht ermittelt werden. Datei ' .
-                    $imgFilename . ' keine Bilddatei?'
-                );
-                continue;
-            }
-            $attrValImage->cPfad .= '.' . $format;
-            $attrValImage->cPfad  = neuerDateiname($attrValImage->cPfad);
-            erstelleThumbnail(
-                $brandingConf['Merkmalwerte'],
-                $unzipPath . $imgFilename,
-                PFAD_MERKMALWERTBILDER_NORMAL . $attrValImage->cPfad,
-                $conf['bilder']['bilder_merkmalwert_normal_breite'],
-                $conf['bilder']['bilder_merkmalwert_normal_hoehe'],
-                $conf['bilder']['bilder_jpg_quali'],
-                1,
-                $conf['bilder']['container_verwenden']
-            );
-            if (erstelleThumbnailBranded(
-                PFAD_ROOT . PFAD_MERKMALWERTBILDER_NORMAL . $attrValImage->cPfad,
-                PFAD_MERKMALWERTBILDER_KLEIN . $attrValImage->cPfad,
-                $conf['bilder']['bilder_merkmalwert_klein_breite'],
-                $conf['bilder']['bilder_merkmalwert_klein_hoehe'],
-                $conf['bilder']['bilder_jpg_quali'],
-                $conf['bilder']['container_verwenden']
-            )) {
-                $db->update(
-                    'tmerkmalwert',
-                    'kMerkmalWert',
-                    (int)$attrValImage->kMerkmalWert,
-                    (object)['cBildpfad' => $attrValImage->cPfad]
-                );
-                $oMerkmalwertbild               = new stdClass();
-                $oMerkmalwertbild->kMerkmalWert = (int)$attrValImage->kMerkmalWert;
-                $oMerkmalwertbild->cBildpfad    = $attrValImage->cPfad;
-
-                DBUpdateInsert('tmerkmalwertbild', [$oMerkmalwertbild], 'kMerkmalWert');
-            }
-            unlink($unzipPath . $imgFilename);
+        if (empty($attrValImage->cPfad) || $attrValImage->kMerkmalWert <= 0) {
+            continue;
         }
+        $imgFilename = $attrValImage->cPfad;
+        $format      = gibBildformat($unzipPath . $imgFilename);
+        if (!$format) {
+            Shop::Container()->getLogService()->error(
+                'Bildformat des Merkmalwertbildes konnte nicht ermittelt werden. Datei ' .
+                $imgFilename . ' keine Bilddatei?'
+            );
+            continue;
+        }
+        $attrValImage->cPfad .= '.' . $format;
+        $attrValImage->cPfad  = neuerDateiname($attrValImage->cPfad);
+        erstelleThumbnail(
+            $brandingConf['Merkmalwerte'],
+            $unzipPath . $imgFilename,
+            PFAD_MERKMALWERTBILDER_NORMAL . $attrValImage->cPfad,
+            $conf['bilder']['bilder_merkmalwert_normal_breite'],
+            $conf['bilder']['bilder_merkmalwert_normal_hoehe'],
+            $conf['bilder']['bilder_jpg_quali'],
+            1,
+            $conf['bilder']['container_verwenden']
+        );
+        if (erstelleThumbnailBranded(
+            PFAD_ROOT . PFAD_MERKMALWERTBILDER_NORMAL . $attrValImage->cPfad,
+            PFAD_MERKMALWERTBILDER_KLEIN . $attrValImage->cPfad,
+            $conf['bilder']['bilder_merkmalwert_klein_breite'],
+            $conf['bilder']['bilder_merkmalwert_klein_hoehe'],
+            $conf['bilder']['bilder_jpg_quali'],
+            $conf['bilder']['container_verwenden']
+        )) {
+            $db->update(
+                'tmerkmalwert',
+                'kMerkmalWert',
+                (int)$attrValImage->kMerkmalWert,
+                (object)['cBildpfad' => $attrValImage->cPfad]
+            );
+            $oMerkmalwertbild               = new stdClass();
+            $oMerkmalwertbild->kMerkmalWert = (int)$attrValImage->kMerkmalWert;
+            $oMerkmalwertbild->cBildpfad    = $attrValImage->cPfad;
+
+            DBUpdateInsert('tmerkmalwertbild', [$oMerkmalwertbild], 'kMerkmalWert');
+        }
+        unlink($unzipPath . $imgFilename);
     }
     foreach ($configImages as $configImage) {
         $item                = new stdClass();
         $item->cBildPfad     = $configImage->cPfad;
         $item->kKonfiggruppe = $configImage->kKonfiggruppe;
-
-        if (strlen($item->cBildPfad) > 0) {
-            $imgFilename = $item->cBildPfad;
-            $format  = gibBildformat($unzipPath . $imgFilename);
-            if (!$format) {
-                Shop::Container()->getLogService()->error(
-                    'Bildformat des Konfiggruppenbildes konnte nicht ermittelt werden. Datei ' .
-                    $imgFilename . ' keine Bilddatei?'
-                );
-                continue;
-            }
-            $item->cBildPfad = $item->kKonfiggruppe . '.' . $format;
-            $item->cBildPfad = neuerDateiname($item->cBildPfad);
-
-            $branding                               = new stdClass();
-            $branding->oBrandingEinstellung         = new stdClass();
-            $branding->oBrandingEinstellung->nAktiv = 0;
-
-            if (erstelleThumbnail(
-                $branding,
-                $unzipPath . $imgFilename,
-                PFAD_KONFIGURATOR_KLEIN . $item->cBildPfad,
-                $conf['bilder']['bilder_konfiggruppe_klein_breite'],
-                $conf['bilder']['bilder_konfiggruppe_klein_hoehe'],
-                $conf['bilder']['bilder_jpg_quali'],
-                1,
-                $conf['bilder']['container_verwenden']
-            )) {
-                $db->update(
-                    'tkonfiggruppe',
-                    'kKonfiggruppe',
-                    (int)$item->kKonfiggruppe,
-                    (object)['cBildPfad' => $item->cBildPfad]
-                );
-            }
-            unlink($unzipPath . $imgFilename);
+        if (empty($item->cBildPfad)) {
+            continue;
         }
+        $imgFilename = $item->cBildPfad;
+        $format      = gibBildformat($unzipPath . $imgFilename);
+        if (!$format) {
+            Shop::Container()->getLogService()->error(
+                'Bildformat des Konfiggruppenbildes konnte nicht ermittelt werden. Datei ' .
+                $imgFilename . ' keine Bilddatei?'
+            );
+            continue;
+        }
+        $item->cBildPfad = $item->kKonfiggruppe . '.' . $format;
+        $item->cBildPfad = neuerDateiname($item->cBildPfad);
+
+        $branding                               = new stdClass();
+        $branding->oBrandingEinstellung         = new stdClass();
+        $branding->oBrandingEinstellung->nAktiv = 0;
+
+        if (erstelleThumbnail(
+            $branding,
+            $unzipPath . $imgFilename,
+            PFAD_KONFIGURATOR_KLEIN . $item->cBildPfad,
+            $conf['bilder']['bilder_konfiggruppe_klein_breite'],
+            $conf['bilder']['bilder_konfiggruppe_klein_hoehe'],
+            $conf['bilder']['bilder_jpg_quali'],
+            1,
+            $conf['bilder']['container_verwenden']
+        )) {
+            $db->update(
+                'tkonfiggruppe',
+                'kKonfiggruppe',
+                (int)$item->kKonfiggruppe,
+                (object)['cBildPfad' => $item->cBildPfad]
+            );
+        }
+        unlink($unzipPath . $imgFilename);
     }
 
     executeHook(HOOK_BILDER_XML_BEARBEITE_ENDE, [
@@ -552,13 +558,14 @@ function bearbeite($xml, string $unzipPath, array $brandingConf)
  * @param string   $unzipPath
  * @param string   $imgFilename
  * @param array    $brandingConf
+ * @param string   $sql
  * @throws \Exceptions\CircularReferenceException
  * @throws \Exceptions\ServiceNotFoundException
  */
-function erstelleArtikelBild($img, $format, $unzipPath, $imgFilename, $brandingConf)
+function erstelleArtikelBild($img, $format, $unzipPath, $imgFilename, $brandingConf, $sql)
 {
     $conf       = Shop::getSettings([CONF_BILDER]);
-    $img->cPfad = gibArtikelbildname($img, $conf['bilder']['container_verwenden'] === 'Y' ? 'png' : $format);
+    $img->cPfad = gibArtikelbildname($img, $conf['bilder']['container_verwenden'] === 'Y' ? 'png' : $format, $sql);
     $img->cPfad = neuerDateiname($img->cPfad);
     erstelleThumbnail(
         $brandingConf['Artikel'],
@@ -601,12 +608,11 @@ function erstelleArtikelBild($img, $format, $unzipPath, $imgFilename, $brandingC
 /**
  * @param object $image
  * @param string $format
+ * @param string $sql
  * @return mixed|string
  */
-function gibEigenschaftwertbildname($image, $format)
+function gibEigenschaftwertbildname($image, $format, $sql)
 {
-    global $cSQL;
-
     $conf = Shop::getSettings([CONF_BILDER]);
 
     if (!$image->kEigenschaftWert || !$conf['bilder']['bilder_variation_namen']) {
@@ -636,7 +642,7 @@ function gibEigenschaftwertbildname($image, $format)
                         LEFT JOIN tseo
                             ON tseo.cKey = 'kArtikel'
                             AND tseo.kKey = tartikel.kArtikel
-                            " . $cSQL . '
+                            " . $sql . '
                         WHERE teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
                             AND teigenschaft.kArtikel = tartikel.kArtikel
                             AND teigenschaftwert.kEigenschaftWert = ' . (int)$image->kEigenschaftWert,
@@ -656,7 +662,7 @@ function gibEigenschaftwertbildname($image, $format)
                         LEFT JOIN tseo
                             ON tseo.cKey = 'kArtikel'
                             AND tseo.kKey = tartikel.kArtikel
-                            " . $cSQL . '
+                            " . $sql . '
                         WHERE teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
                             AND teigenschaft.kArtikel = tartikel.kArtikel
                             AND teigenschaftwert.kEigenschaftWert = ' . $image->kEigenschaftWert,
@@ -691,14 +697,12 @@ function gibEigenschaftwertbildname($image, $format)
 /**
  * @param object $image
  * @param string $format
+ * @param string $sql
  * @return mixed|string
  */
-function gibKategoriebildname($image, $format)
+function gibKategoriebildname($image, $format, $sql)
 {
-    global $cSQL;
-
     $conf = Shop::getSettings([CONF_BILDER]);
-
     if (!$image->kKategorie || !$conf['bilder']['bilder_kategorie_namen']) {
         return (stripos(strrev($image->cPfad), strrev($format)) === 0)
             ? $image->cPfad
@@ -724,7 +728,7 @@ function gibKategoriebildname($image, $format)
             LEFT JOIN tseo
                 ON tseo.cKey = 'kKategorie'
                 AND tseo.kKey = tkategorie.kKategorie
-                " . $cSQL . '
+                " . $sql . '
             WHERE tkategorie.kKategorie = ' . (int)$image->kKategorie,
         \DB\ReturnType::SINGLE_OBJECT
     );
@@ -752,14 +756,12 @@ function gibKategoriebildname($image, $format)
 /**
  * @param object $image
  * @param string $format
+ * @param string $sql
  * @return mixed|string
  */
-function gibArtikelbildname($image, $format)
+function gibArtikelbildname($image, $format, $sql)
 {
-    global $cSQL;
-
     $conf = Shop::getSettings([CONF_BILDER]);
-
     if ($image->kArtikel) {
         $attr = Shop::Container()->getDB()->select(
             'tkategorieattribut',
@@ -790,7 +792,7 @@ function gibArtikelbildname($image, $format)
             LEFT JOIN tseo
                 ON tseo.cKey = 'kArtikel'
                 AND tseo.kKey = tartikel.kArtikel
-                " . $cSQL . '
+                " . $sql . '
             WHERE tartikel.kArtikel = ' . (int)$image->kArtikel,
         \DB\ReturnType::SINGLE_OBJECT
     );

@@ -60,17 +60,17 @@ function bearbeiteInsert($xml)
         // 1 Download
         $downloads = mapArray($xml['tDownloads'], 'tDownload', Mapper::getMapping('mDownload'));
         if ($downloads[0]->kDownload > 0) {
-            $oDownloadSprache_arr = mapArray(
+            $localized = mapArray(
                 $xml['tDownloads']['tDownload'],
                 'tDownloadSprache',
                 Mapper::getMapping('mDownloadSprache')
             );
-            if (count($oDownloadSprache_arr) > 0) {
+            if (count($localized) > 0) {
                 DBUpdateInsert('tdownload', $downloads, 'kDownload');
-                $lCount = count($oDownloadSprache_arr);
+                $lCount = count($localized);
                 for ($i = 0; $i < $lCount; ++$i) {
-                    $oDownloadSprache_arr[$i]->kDownload = $downloads[0]->kDownload;
-                    DBUpdateInsert('tdownloadsprache', [$oDownloadSprache_arr[$i]], 'kDownload', 'kSprache');
+                    $localized[$i]->kDownload = $downloads[0]->kDownload;
+                    DBUpdateInsert('tdownloadsprache', [$localized[$i]], 'kDownload', 'kSprache');
                 }
             }
         }
@@ -79,17 +79,17 @@ function bearbeiteInsert($xml)
         $downloads = mapArray($xml['tDownloads'], 'tDownload', Mapper::getMapping('mDownload'));
         foreach ($downloads as $i => $oDownload) {
             if ($oDownload->kDownload > 0) {
-                $oDownloadSprache_arr = mapArray(
+                $localized = mapArray(
                     $xml['tDownloads']['tDownload'][$i],
                     'tDownloadSprache',
                     Mapper::getMapping('mDownloadSprache')
                 );
-                if (count($oDownloadSprache_arr) > 0) {
+                if (count($localized) > 0) {
                     DBUpdateInsert('tdownload', [$oDownload], 'kDownload');
-                    $cdsaCount = count($oDownloadSprache_arr);
+                    $cdsaCount = count($localized);
                     for ($j = 0; $j < $cdsaCount; ++$j) {
-                        $oDownloadSprache_arr[$j]->kDownload = $oDownload->kDownload;
-                        DBUpdateInsert('tdownloadsprache', [$oDownloadSprache_arr[$j]], 'kDownload', 'kSprache');
+                        $localized[$j]->kDownload = $oDownload->kDownload;
+                        DBUpdateInsert('tdownloadsprache', [$localized[$j]], 'kDownload', 'kSprache');
                     }
                 }
             }

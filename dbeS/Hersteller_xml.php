@@ -48,7 +48,7 @@ function bearbeiteHerstellerDeletes($xml)
         foreach ($xml['del_hersteller']['kHersteller'] as $kHersteller) {
             $kHersteller = (int)$kHersteller;
             if ($kHersteller > 0) {
-                $affectedArticles = $db->selectAll(
+                $affectedProducts = $db->selectAll(
                     'tartikel',
                     'kHersteller',
                     $kHersteller,
@@ -60,12 +60,12 @@ function bearbeiteHerstellerDeletes($xml)
 
                 executeHook(HOOK_HERSTELLER_XML_BEARBEITEDELETES, ['kHersteller' => $kHersteller]);
                 $cacheTags[] = CACHING_GROUP_MANUFACTURER . '_' . $kHersteller;
-                if (is_array($affectedArticles)) {
-                    $articleCacheTags = [];
-                    foreach ($affectedArticles as $article) {
-                        $articleCacheTags[] = CACHING_GROUP_ARTICLE . '_' . $article->kArtikel;
+                if (is_array($affectedProducts)) {
+                    $productCacheTags = [];
+                    foreach ($affectedProducts as $product) {
+                        $productCacheTags[] = CACHING_GROUP_ARTICLE . '_' . $product->kArtikel;
                     }
-                    Shop::Container()->getCache()->flushTags($articleCacheTags);
+                    Shop::Container()->getCache()->flushTags($productCacheTags);
                 }
             }
         }

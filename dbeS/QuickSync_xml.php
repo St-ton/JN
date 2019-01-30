@@ -47,8 +47,8 @@ function bearbeiteInsert($xml)
         return;
     }
     $products = mapArray($xml['quicksync'], 'tartikel', Mapper::getMapping('mArtikelQuickSync'));
-    $nCount   = count($products);
-    if ($nCount < 2) {
+    $count    = count($products);
+    if ($count < 2) {
         updateXMLinDB(
             $xml['quicksync']['tartikel'],
             'tpreise',
@@ -62,12 +62,12 @@ function bearbeiteInsert($xml)
         } else {
             handleOldPriceFormat(mapArray($xml['quicksync']['tartikel'], 'tpreise', Mapper::getMapping('mPreise')));
         }
-        $oPreis_arr = mapArray($xml['quicksync']['tartikel'], 'tpreise', Mapper::getMapping('mPreise'));
-        foreach ($oPreis_arr as $oPreis) {
-            setzePreisverlauf($oPreis->kArtikel, $oPreis->kKundengruppe, $oPreis->fVKNetto);
+        $prices = mapArray($xml['quicksync']['tartikel'], 'tpreise', Mapper::getMapping('mPreise'));
+        foreach ($prices as $price) {
+            setzePreisverlauf($price->kArtikel, $price->kKundengruppe, $price->fVKNetto);
         }
     } else {
-        for ($i = 0; $i < $nCount; ++$i) {
+        for ($i = 0; $i < $count; ++$i) {
             updateXMLinDB(
                 $xml['quicksync']['tartikel'][$i],
                 'tpreise',
@@ -75,7 +75,6 @@ function bearbeiteInsert($xml)
                 'kKundengruppe',
                 'kArtikel'
             );
-
             if (isset($xml['quicksync']['tartikel'][$i]['tpreis'])) {
                 handleNewPriceFormat($xml['quicksync']['tartikel'][$i]);
             } else {
@@ -83,11 +82,10 @@ function bearbeiteInsert($xml)
                     mapArray($xml['quicksync']['tartikel'][$i], 'tpreise', Mapper::getMapping('mPreise'))
                 );
             }
-
             // Preise für Preisverlauf
-            $oPreis_arr = mapArray($xml['quicksync']['tartikel'][$i], 'tpreise', Mapper::getMapping('mPreise'));
-            foreach ($oPreis_arr as $oPreis) {
-                setzePreisverlauf($oPreis->kArtikel, $oPreis->kKundengruppe, $oPreis->fVKNetto);
+            $prices = mapArray($xml['quicksync']['tartikel'][$i], 'tpreise', Mapper::getMapping('mPreise'));
+            foreach ($prices as $price) {
+                setzePreisverlauf($price->kArtikel, $price->kKundengruppe, $price->fVKNetto);
             }
         }
     }

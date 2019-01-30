@@ -251,7 +251,7 @@ function DBUpdateInsert($tablename, $objects, $pk1, $pk2 = 0)
  */
 function getObjectArray($elements, $child)
 {
-    $obj_arr = [];
+    $objects = [];
     if (is_array($elements) && (is_array($elements[$child]) || is_array($elements[$child . ' attr']))) {
         $cnt = count($elements[$child]);
         if (is_array($elements[$child . ' attr'])) {
@@ -272,7 +272,7 @@ function getObjectArray($elements, $child)
                     $obj->$key = $elements[$child][$key];
                 }
             }
-            $obj_arr[] = $obj;
+            $objects[] = $obj;
         } elseif ($cnt > 1) {
             for ($i = 0; $i < $cnt / 2; $i++) {
                 unset($obj);
@@ -296,12 +296,12 @@ function getObjectArray($elements, $child)
                         $obj->$key = $elements[$child][$i][$key];
                     }
                 }
-                $obj_arr[] = $obj;
+                $objects[] = $obj;
             }
         }
     }
 
-    return $obj_arr;
+    return $objects;
 }
 
 /**
@@ -318,34 +318,34 @@ function removeTemporaryFiles(string $file, bool $isDir = false)
 
 /**
  * @param array $arr
- * @param array $cExclude_arr
+ * @param array $excludes
  * @return array
  */
-function buildAttributes(&$arr, $cExclude_arr = [])
+function buildAttributes(&$arr, $excludes = [])
 {
-    $attr_arr = [];
+    $attributes = [];
     if (is_array($arr)) {
         $keys     = array_keys($arr);
         $keyCount = count($keys);
         for ($i = 0; $i < $keyCount; $i++) {
-            if (!in_array($keys[$i], $cExclude_arr) && $keys[$i]{0} === 'k') {
-                $attr_arr[$keys[$i]] = $arr[$keys[$i]];
+            if (!in_array($keys[$i], $excludes) && $keys[$i]{0} === 'k') {
+                $attributes[$keys[$i]] = $arr[$keys[$i]];
                 unset($arr[$keys[$i]]);
             }
         }
     }
 
-    return $attr_arr;
+    return $attributes;
 }
 
 /**
  * @param string       $zip
- * @param object|array $xml_obj
+ * @param object|array $xml
  */
-function zipRedirect($zip, $xml_obj)
+function zipRedirect($zip, $xml)
 {
     $xmlfile = fopen(PFAD_SYNC_TMP . FILENAME_XML, 'w');
-    fwrite($xmlfile, strtr(StringHandler::convertISO(XML_serialize($xml_obj)), "\0", ' '));
+    fwrite($xmlfile, strtr(StringHandler::convertISO(XML_serialize($xml)), "\0", ' '));
     fclose($xmlfile);
     if (file_exists(PFAD_SYNC_TMP . FILENAME_XML)) {
         if (class_exists('ZipArchive')) {
@@ -883,15 +883,15 @@ function checkDbeSXmlRedirect($oldSeo, $newSeo)
 {
     // Insert into tredirect weil sich das SEO von der Kategorie geändert hat
     if ($oldSeo !== $newSeo && strlen($oldSeo) > 0 && strlen($newSeo) > 0) {
-        $oRedirect = new Redirect();
-        $xPath_arr = parse_url(Shop::getURL());
-        if (isset($xPath_arr['path'])) {
-            $cSource = "{$xPath_arr['path']}/{$oldSeo}";
+        $redirect = new Redirect();
+        $parsed   = parse_url(Shop::getURL());
+        if (isset($parsed['path'])) {
+            $source = "{$parsed['path']}/{$oldSeo}";
         } else {
-            $cSource = '/' . $oldSeo;
+            $source = '/' . $oldSeo;
         }
 
-        return $oRedirect->saveExt($cSource, $newSeo, true);
+        return $redirect->saveExt($source, $newSeo, true);
     }
 
     return false;

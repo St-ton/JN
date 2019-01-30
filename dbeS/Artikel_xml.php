@@ -674,16 +674,15 @@ function bearbeiteInsert($xml, array $conf)
                     && !isset($xml['tartikel']['SQLDEL'])
                     && strpos($cSQL, 'teigenschaftkombiwert') !== false
                 ) {
-                    $cDel     = substr($cSQL, strpos($cSQL, 'values ') + strlen('values '));
-                    $cDel_arr = str_replace(['(', ')'], '', explode('),(', $cDel));
-                    $kKey_arr = [];
-                    foreach ($cDel_arr as $cDel) {
-                        $kKey_arr[] = (int)substr($cDel, 0, strpos($cDel, ','));
+                    $del     = substr($cSQL, strpos($cSQL, 'values ') + strlen('values '));
+                    $itemIDs = [];
+                    foreach (str_replace(['(', ')'], '', explode('),(', $del)) as $del) {
+                        $itemIDs[] = (int)substr($del, 0, strpos($del, ','));
                     }
                     $db->query(
                         'DELETE
                             FROM teigenschaftkombiwert 
-                            WHERE kEigenschaftKombi IN (' . implode(',', $kKey_arr) . ')',
+                            WHERE kEigenschaftKombi IN (' . implode(',', $itemIDs) . ')',
                         \DB\ReturnType::AFFECTED_ROWS
                     );
                 }

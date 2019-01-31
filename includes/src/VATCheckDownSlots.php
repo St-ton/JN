@@ -4,7 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-
 /**
  * class VATCheckDownSlots
  */
@@ -19,7 +18,7 @@ class VATCheckDownSlots
      * http://ec.europa.eu/taxation_customs/vies/help.html
      *
      */
-    private $vDownTimeSlots = [
+    private $downTimeSlots = [
         //
         // array-item example:
         //
@@ -35,16 +34,16 @@ class VATCheckDownSlots
         ],
 
         // Available 24/7 (Belgien)
-        'BE' => [ ],
+        'BE' => [],
 
         // Unknown (Bulgarien)
-        'BG' => [ ],
+        'BG' => [],
 
         // Unknown (Kroatien)
-        'HR' => [ ],
+        'HR' => [],
 
         // Available 24/7 (Zypern)
-        'CY' => [ ],
+        'CY' => [],
 
         // Unavailable everyday around 07:00 AM for about 20 minutes (Tschechische Republik)
         'CZ' => [
@@ -57,16 +56,16 @@ class VATCheckDownSlots
         ],
 
         // Available 24/7 (Daenemark)
-        'DK' => [   ],
+        'DK' => [],
 
         // Available 24/7 (Estland)
-        'EE' => [   ],
+        'EE' => [],
 
         // Available 24/7 (Griechenland)
-        'EL' => [   ],
+        'EL' => [],
 
         // Unavailable daily around 11:00 PM for a few minutes (Spanien)
-        'ES' => [   ],
+        'ES' => [],
 
         // Unavailable every Sunday between 05:40 AM and 05:50 AM (Finnland)
         'FI' => [
@@ -81,11 +80,11 @@ class VATCheckDownSlots
         // Unavailable every Saturday from 07:30 AM to 10:30 AM and almost daily from around 04:30 AM to 04:40 AM (Vereinigtes Königreich)
         'GB' => [
             ['Sat', '07:30', '10:30'],
-            [   '', '04:30', '04:40']
+            ['', '04:30', '04:40']
         ],
 
         // Available 24/7 (Ungarn)
-        'HU' => [   ],
+        'HU' => [],
 
         // Unavailable on Sunday nights for maximum 2 hours (Irland)
         'IE' => [
@@ -98,13 +97,13 @@ class VATCheckDownSlots
         ],
 
         // Available 24/7 (Litauen)
-        'LT' => [   ],
+        'LT' => [],
 
         // Available 24/7 (Luxemburg)
-        'LU' => [   ],
+        'LU' => [],
 
         // Available 24/7 (Lettland)
-        'LV' => [   ],
+        'LV' => [],
 
         // Unavailable every Thursday from 07:00 AM to 07:30 AM (Malta)
         'MT' => [
@@ -118,7 +117,7 @@ class VATCheckDownSlots
         ],
 
         // Available 24/7 (Polen)
-        'PL' => [   ],
+        'PL' => [],
 
         // Unavailable every Friday from around 23:30 for about 30 minutes or more (Portugal)
         'PT' => [
@@ -132,21 +131,21 @@ class VATCheckDownSlots
         ],
 
         // Available 24/7 (Schweden)
-        'SE' => [   ],
+        'SE' => [],
 
         // Available 24/7 (Slowakei)
-        'SK' => [   ]
+        'SK' => []
     ];
 
     /**
      * @var DateTime
      */
-    private $oNow;
+    private $Now;
 
     /**
-     * @var string - zero-terminated
+     * @var string
      */
-    private $szDownInfo = '';
+    private $downInfo = '';
 
     public const WEEKDAY = 0;
     public const START   = 1;
@@ -157,7 +156,7 @@ class VATCheckDownSlots
      */
     public function __construct()
     {
-        $this->oNow = new DateTime();
+        $this->Now = new DateTime();
     }
 
     /**
@@ -168,42 +167,42 @@ class VATCheckDownSlots
      */
     public function getDownInfo(): string
     {
-        return $this->szDownInfo;
+        return $this->downInfo;
     }
 
     /**
      * return the availablity  of a country VAT-office
      * ('true' = "service down", 'false' = "service available")
      *
-     * @param string $szCountryCode
+     * @param string $countryCode
      * @return bool
      */
-    public function isDown($szCountryCode): bool
+    public function isDown($countryCode): bool
     {
-        if (! isset($this->vDownTimeSlots[$szCountryCode])) {
+        if (!isset($this->downTimeSlots[$countryCode])) {
             // at the moment, we skip unknown countries (use string-parsing only)
             return false;
         }
 
-        foreach ($this->vDownTimeSlots[$szCountryCode] as $vCountryDownTimes) {
+        foreach ($this->downTimeSlots[$countryCode] as $countryDownTimes) {
             // if no weekday was given (which means "every weekday"),
             // we replace the weekday in the check-array with the current weekday here
-            if ('' === $vCountryDownTimes[self::WEEKDAY]) {
-                $vCountryDownTimes[self::WEEKDAY] = $this->oNow->format('D');
+            if ($countryDownTimes[self::WEEKDAY] === '') {
+                $countryDownTimes[self::WEEKDAY] = $this->Now->format('D');
             }
 
-            $oStartTime = DateTime::createFromFormat(
+            $startTime = DateTime::createFromFormat(
                 'D:H:i',
-                $vCountryDownTimes[self::WEEKDAY] . ':' . $vCountryDownTimes[self::START]
+                $countryDownTimes[self::WEEKDAY] . ':' . $countryDownTimes[self::START]
             );
-            $oEndTime   = DateTime::createFromFormat(
+            $endTime   = DateTime::createFromFormat(
                 'D:H:i',
-                $vCountryDownTimes[self::WEEKDAY] . ':' . $vCountryDownTimes[self::ENDING]
+                $countryDownTimes[self::WEEKDAY] . ':' . $countryDownTimes[self::ENDING]
             );
 
-            if ($oStartTime <= $this->oNow && $this->oNow <= $oEndTime) {
+            if ($startTime <= $this->Now && $this->Now <= $endTime) {
                 // inform the user about this event
-                $this->szDownInfo = $oEndTime->format('H:i');
+                $this->downInfo = $endTime->format('H:i');
                 // the VAT-service of this country is down till this time
 
                 // if we see ANY VALID DOWNTIME, we go back with TRUE (what means "service is DOWN NOW")

@@ -27,7 +27,7 @@ class VATCheckVatParser
      * " "  - spaces has to match too - but can't handled by the VIES-system, so we have to left out them here
      * "_"  - wildcard for any character
      */
-    private $vCountryPattern = [
+    private $countryPattern = [
         // AT-Oesterreich                ATU99999999          1 Block mit 9 Ziffern    (comment: 8 !?)
         'AT' => ['ATU99999999'],         // example: ATU48075808(ok)
 
@@ -162,60 +162,60 @@ class VATCheckVatParser
     /**
      * @var string
      */
-    private $szVATid;
+    private $vatID;
 
     /**
      * @var array
      */
-    private $vIdParts = [];
+    private $idParts = [];
 
     /**
      * @var integer
      */
-    private $nErrorCode = 0;
+    private $errorCode = 0;
 
     /**
      * @var string
      */
-    private $szErrorInfo = '';
+    private $errorInfo = '';
 
     /**
-     * @param string $szVATid
+     * @param string $vatID
      */
-    public function __construct($szVATid)
+    public function __construct($vatID)
     {
-        $this->szVATid = $szVATid;
+        $this->vatID = $vatID;
     }
 
     /**
      * parses the VAT-ID-string.
      * returns the position of a possible check-interrupt or 0 if all was fine.
      *
-     * @param string $szVATid
-     * @param string $szPattern
+     * @param string $vatID
+     * @param string $pattern
      * @return int
      */
-    private function isIdPatternValid($szVATid, $szPattern)
+    private function isIdPatternValid($vatID, $pattern)
     {
-        $len = strlen($szVATid);
+        $len = strlen($vatID);
         for ($i = 0; $i < $len; $i++) {
             // each character and white-space is compared exactly, while digits can be [1..9]
             switch (true) {
-                case ctype_alpha($szPattern[$i]):
-                case ctype_space($szPattern[$i]):
-                    if ($szPattern[$i] === $szVATid[$i]) {
+                case ctype_alpha($pattern[$i]):
+                case ctype_space($pattern[$i]):
+                    if ($pattern[$i] === $vatID[$i]) {
                         continue 2; // check-space OK
                     }
 
                     break 2; // check-space FAIL
-                case is_numeric($szPattern[$i]):
-                    if (is_numeric($szVATid[$i])) {
+                case is_numeric($pattern[$i]):
+                    if (is_numeric($vatID[$i])) {
                         continue 2; // check-num OK
                     }
 
                     break 2; // check-num FAIL
                 default:
-                    if ('_' === $szPattern[$i]) {
+                    if ($pattern[$i] === '_') {
                         continue 2;
                     }
 
@@ -224,7 +224,7 @@ class VATCheckVatParser
         }
         // check, if we iterate the whole given VAT-ID,
         // and if not, return the position, at which we sopped
-        if (strlen($szVATid) !== $i) {
+        if (strlen($vatID) !== $i) {
             $this->nErrorPos = $i; // store the error-position for later usage too
 
             return $i;
@@ -243,39 +243,35 @@ class VATCheckVatParser
     public function parseVatId()
     {
         // guess a country - the first 2 characters should allways be the country-code
-        // (store the result-array in this object, $this->vIdParts)
-        $nResult = preg_match('/([A-Z]{2})(.*)/', $this->szVATid, $this->vIdParts);
-        if (0 === $nResult) {
-            $this->nErrorCode = 100; // error: the ID did not start with 2 big letters
+        $result = preg_match('/([A-Z]{2})(.*)/', $this->vatID, $this->idParts);
+        if ($result === 0) {
+            $this->errorCode = 100; // error: the ID did not start with 2 big letters
 
             return false;
         }
         // there is no country starting with this 2 letters
-        if (!isset($this->vCountryPattern[$this->vIdParts[1]])) {
-            $this->nErrorCode  = VATCheckInterface::ERR_COUNTRY_NOT_FOUND; // error 130: no pattern for such a country
-            $this->szErrorInfo = $this->vIdParts[1];
+        if (!isset($this->countryPattern[$this->idParts[1]])) {
+            $this->errorCode = VATCheckInterface::ERR_COUNTRY_NOT_FOUND; // error 130: no pattern for such a country
+            $this->errorInfo = $this->idParts[1];
 
             return false;
         }
 
-        // compare our VAT-ID to all pattern of the guessed country
-        foreach ($this->vCountryPattern[$this->vIdParts[1]] as $szPattern) {
-            // length-check (and go back, if nothing matches)
-            if (strlen($this->szVATid) !== strlen($szPattern)) {
+        foreach ($this->countryPattern[$this->idParts[1]] as $pattern) {
+            if (strlen($this->vatID) !== strlen($pattern)) {
                 continue; // skipt this pattern, if the length did not match. try the next one
             }
-            // checking the given pattern (return a possible interrupt-position)
-            $nParseResult = $this->isIdPatternValid($this->szVATid, $szPattern);
-            if (0 === $nParseResult) {
+            $parseResult = $this->isIdPatternValid($this->vatID, $pattern);
+            if ($parseResult === 0) {
                 return true; // if we found a valid pattern-match, we've done our job here
             }
 
-            $this->nErrorCode  = VATCheckInterface::ERR_PATTERN_MISMATCH; // error 120: id did not match any pattern of this country
-            $this->szErrorInfo = $nParseResult; // interrupt-/error-position
+            $this->errorCode = VATCheckInterface::ERR_PATTERN_MISMATCH; // error 120: id did not match any pattern of this country
+            $this->errorInfo = $parseResult; // interrupt-/error-position
 
             return false;
         }
-        $this->nErrorCode = VATCheckInterface::ERR_PATTERNLENGTH_NOT_FOUND; // error 110: no length was matching
+        $this->errorCode = VATCheckInterface::ERR_PATTERNLENGTH_NOT_FOUND; // error 110: no length was matching
 
         return false;
     }
@@ -291,7 +287,7 @@ class VATCheckVatParser
      */
     public function getIdAsParams()
     {
-        return [$this->vIdParts[1], $this->vIdParts[2]];
+        return [$this->idParts[1], $this->idParts[2]];
     }
 
     /**
@@ -301,7 +297,7 @@ class VATCheckVatParser
      */
     public function getErrorCode()
     {
-        return $this->nErrorCode;
+        return $this->errorCode;
     }
 
     /**
@@ -311,6 +307,6 @@ class VATCheckVatParser
      */
     public function getErrorInfo()
     {
-        return $this->szErrorInfo;
+        return $this->errorInfo;
     }
 }

@@ -15,7 +15,7 @@ interface VATCheckInterface
     public const ERR_PATTERN_MISMATCH        = 120; // error: id did not match any pattern of this country
 
     /**
-     * @param string $szUstID
+     * @param string $ustID
      */
-    public function doCheckID($szUstID);
+    public function doCheckID($ustID);
 }

@@ -10,28 +10,28 @@
 class VATCheck
 {
     /**
-     * @var object
+     * @var VATCheckInterface
      */
-    private $oLocation;
+    private $Location;
 
     /**
      * @var string
      */
-    private $szUstID;
+    private $ustID;
 
     /**
-     * @param string $szUstID
+     * @param string $ustID
      */
-    public function __construct(string $szUstID = '')
+    public function __construct(string $ustID = '')
     {
-        $this->szUstID = $szUstID;
+        $this->ustID = $ustID;
 
         switch (true) {
-            case $this->startsWith($this->szUstID, 'CHE'):
-                $this->oLocation = new VATCheckNonEU();
+            case $this->startsWith($this->ustID, 'CHE'):
+                $this->Location = new VATCheckNonEU();
                 break;
             default:
-                $this->oLocation = new VATCheckEU();
+                $this->Location = new VATCheckEU();
         }
     }
 
@@ -51,32 +51,32 @@ class VATCheck
     public function doCheckID()
     {
         // if there was nothing given, we tell the caller this
-        if ('' === $this->szUstID) {
+        if ($this->ustID === '') {
             return [
                 'success'   => false,
                 'errortype' => 'parse',
-                'errorcode' => VATCheckInterface::ERR_NO_ID_GIVEN,  // error: no $szUstID was given
+                'errorcode' => VATCheckInterface::ERR_NO_ID_GIVEN,  // error: no $ustID was given
                 'errorinfo' => ''
             ];
         }
 
-        return $this->oLocation->doCheckID($this->szUstID);
+        return $this->Location->doCheckID($this->ustID);
     }
 
     /**
-     * @param string $szString
-     * @param string $szPattern
+     * @param string $sourceString
+     * @param string $pattern
      * @return bool
      */
-    public function startsWith(string $szString = '', string $szPattern = '') : bool
+    public function startsWith(string $sourceString = '', string $pattern = '') : bool
     {
-        if ('' === $szString) {
+        if ($sourceString === '') {
             return false
         };
-        if ('' === $szPattern) {
+        if ($pattern === '') {
             return true
         };
 
-        return ($szPattern === substr($szString, 0, strlen($szPattern))) ?: false;
+        return ($pattern === substr($sourceString, 0, strlen($pattern))) ?: false;
     }
 }

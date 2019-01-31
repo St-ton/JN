@@ -27,12 +27,12 @@ class VATCheckNonEU implements VATCheckInterface
      *      , errorinfo : additional information to show it the user in the frontend
      * ]
      *
-     * @param string $szUstID
+     * @param string $ustID
      */
-    public function doCheckID($szUstID)
+    public function doCheckID($ustID)
     {
-        $oVatParser = new VATCheckVatParserNonEU($szUstID);
-        if (true === $oVatParser->parseVatId()) {
+        $VatParser = new VATCheckVatParserNonEU($ustID);
+        if ($VatParser->parseVatId() === true) {
             return [
                 'success'   => true,
                 'errortype' => 'parse',
@@ -44,7 +44,7 @@ class VATCheckNonEU implements VATCheckInterface
             'success'   => false,
             'errortype' => 'parse',
             'errorcode' => VATCheckInterface::ERR_PATTERN_MISMATCH,
-            'errorinfo' => '' !== ($szErrorInfo = $oVatParser->getErrorInfo()) ? $szErrorInfo : ''
+            'errorinfo' => '' !== ($szErrorInfo = $VatParser->getErrorInfo()) ? $szErrorInfo : ''
         ];
     }
 }

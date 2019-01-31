@@ -21,12 +21,12 @@ class VATCheckEU implements VATCheckInterface
     /**
      * @var string
      */
-    private $szViesWSDL = 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
+    private $viesWSDL = 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
 
     /**
      * @var VATCheckDownSlots
      */
-    private $oDownTimes;
+    private $DownTimes;
 
     /**
      * At this moment, the VIES-system, does not return any information other than "valid" or "invalid"
@@ -35,7 +35,7 @@ class VATCheckEU implements VATCheckInterface
      *
      * @var array
      */
-    private $vMiasAnswerStrings = [
+    private $miasAnswerStrings = [
         0  => 'MwSt-Nummer gültig.',
         10 => 'MwSt-Nummer ungültig.', // (D.h. die eingegebene Nummer ist zumindest an dem angegebenen Tag ungültig)
         20 => 'Bearbeitung derzeit nicht möglich. Bitte wiederholen Sie Ihre Anfrage später.', // (D.h. es gibt ein Problem mit dem Netz oder mit der Web-Anwendung)
@@ -49,19 +49,19 @@ class VATCheckEU implements VATCheckInterface
      */
     public function __construct()
     {
-        $this->oDownTimes = new VATCheckDownSlots();
+        $this->DownTimes = new VATCheckDownSlots();
     }
 
     /**
      * spaces can't handled by the VIES-system,
      * so we condense the ID-string here and let them out
      *
-     * @param string $szString
+     * @param string $sourceString
      * @return string
      */
-    public function condenseSpaces($szString)
+    public function condenseSpaces($sourceString): string
     {
-        return str_replace(' ', '', $szString);
+        return str_replace(' ', '', $sourceString);
     }
 
     /**
@@ -75,37 +75,37 @@ class VATCheckEU implements VATCheckInterface
      *      , errorinfo : additional information to show it the user in the frontend
      * ]
      *
-     * @param string $szUstID
+     * @param string $ustID
      * @return array
      */
-    public function doCheckID($szUstID)
+    public function doCheckID($ustID)
     {
         // parse the ID-string
-        $oVatParser = new VATCheckVatParser($this->condenseSpaces($szUstID));
-        if (true === $oVatParser->parseVatId()) {
-            list($szCountryCode, $szVatNumber) = $oVatParser->getIdAsParams();
+        $VatParser = new VATCheckVatParser($this->condenseSpaces($ustID));
+        if ($VatParser->parseVatId() === true) {
+            list($countryCode, $vatNumber) = $VatParser->getIdAsParams();
         } else {
             return [
                 'success'   => false,
                 'errortype' => 'parse',
-                'errorcode' => $oVatParser->getErrorCode(),
-                'errorinfo' => '' !== ($szErrorInfo = $oVatParser->getErrorInfo()) ? $szErrorInfo : ''
+                'errorcode' => $VatParser->getErrorCode(),
+                'errorinfo' => '' !== ($errorInfo = $VatParser->getErrorInfo()) ? $errorInfo : ''
             ];
         }
 
         // asking the remote service, if the VAT-office is reachable
-        if (false === $this->oDownTimes->isDown($szCountryCode)) {
-            $oSoapClient = new SoapClient($this->szViesWSDL);
-            $oViesResult = null;
+        if ($this->DownTimes->isDown($countryCode) === false) {
+            $SoapClient = new SoapClient($this->viesWSDL);
+            $ViesResult = null;
 
             try {
-                $oViesResult = $oSoapClient->checkVat(['countryCode' => $szCountryCode, 'vatNumber' => $szVatNumber]);
+                $ViesResult = $SoapClient->checkVat(['countryCode' => $countryCode, 'vatNumber' => $vatNumber]);
             } catch (Exception $e) {
                 Shop::Container()->getLogService()->warn('MwStID Problem: ' . $e->getMessage());
             }
 
-            if (null !== $oViesResult && true === $oViesResult->valid) {
-                Shop::Container()->getLogService()->notice('MwStID valid. (' . print_r($oViesResult, true) . ')');
+            if ($ViesResult !== null && $ViesResult->valid === true) {
+                Shop::Container()->getLogService()->notice('MwStID valid. (' . print_r($ViesResult, true) . ')');
 
                 return [
                     'success'   => true,
@@ -113,7 +113,7 @@ class VATCheckEU implements VATCheckInterface
                     'errorcode' => ''
                 ];
             }
-            Shop::Container()->getLogService()->notice('MwStID invalid! (' . print_r($oViesResult, true) . ')');
+            Shop::Container()->getLogService()->notice('MwStID invalid! (' . print_r($ViesResult, true) . ')');
 
             return [
                 'success'   => false,
@@ -122,13 +122,13 @@ class VATCheckEU implements VATCheckInterface
             ];
         }
         // inform the user:"The VAT-office in this country has closed this time."
-        Shop::Container()->getLogService()->notice('MIAS-Amt aktuell nicht erreichbar. (ID: ' . $szUstID . ')');
+        Shop::Container()->getLogService()->notice('MIAS-Amt aktuell nicht erreichbar. (ID: ' . $ustID . ')');
 
         return [
             'success'   => false,
             'errortype' => 'time',
             'errorcode' => 200,
-            'errorinfo' => $this->oDownTimes->getDownInfo() // the time, till which the office has closed
+            'errorinfo' => $this->DownTimes->getDownInfo() // the time, till which the office has closed
         ];
     }
 }

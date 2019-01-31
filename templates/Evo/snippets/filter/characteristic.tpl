@@ -46,4 +46,12 @@
             </li>
         {/if}
     {/foreach}
+    {if ($Merkmal->getOptions()|count < $Merkmal->getCount())}
+        <li>
+            <button class="btn-link btn-block filter-show-all" name="attributeValue" value='{getFilterParams filter_val=$Merkmal->getValue() filter_class=$Merkmal->getClassName()}' rel="nofollow">
+                <span class="badge pull-right">99+</span>
+                <span class="value">alle anzeigen</span>
+            </button>
+        </li>
+    {/if}
 </ul>

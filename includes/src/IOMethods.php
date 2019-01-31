@@ -53,7 +53,8 @@ class IOMethods
                         ->register('getRegionsByCountry', [$this, 'getRegionsByCountry'])
                         ->register('checkDeliveryCountry', [$this, 'checkDeliveryCountry'])
                         ->register('setSelectionWizardAnswers', [$this, 'setSelectionWizardAnswers'])
-                        ->register('getCitiesByZip', [$this, 'getCitiesByZip']);
+                        ->register('getCitiesByZip', [$this, 'getCitiesByZip'])
+                        ->register('showAllFilterValues',[$this, 'showAllFilterValues']);
     }
 
     /**
@@ -1198,5 +1199,48 @@ class IOMethods
         $objResponse->script("doXcsrfToken('" . $cName . "', '" . $cToken . "');");
 
         return $objResponse;
+    }
+
+    /**
+     * @param string $params
+     * @return IOResponse
+     */
+    public function showAllFilterValues(string $params): IOResponse
+    {
+        $smarty   = Shop::Smarty();
+        $response = new IOResponse();
+
+        $params = json_decode($params, true);
+
+        $filter = Shop::buildProductFilter($params);
+
+        $filter->getActiveFilterByClassName($params['filterClass']);
+        Shop::dbg($filter);
+
+
+        $searchResults = $filter->generateSearchResults();
+
+
+        $options = $searchResults->getAllFilterOptions();
+
+        $af = $searchResults->getAttributeFilterOptions();
+
+
+
+        foreach ($options as $option) {
+
+            if ($option['className'] == $params['filterClass']) {
+                Shop::dbg('gesuchte Option');
+            }
+        }
+
+
+//      Shop::dbg($filter);
+        Shop::dbg($searchResults->getAllFilterOptions()->getsearch(),true);
+
+
+        $response->script('this.response = ' . json_encode($smarty->fetch('snippets/filter/characteristic.tpl')) . ';');
+
+        return $response;
     }
 }

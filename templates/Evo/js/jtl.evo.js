@@ -439,6 +439,30 @@
             }
         },
 
+        filterShowAll: function() {
+            $('aside .box-filter-characteristics .filter-show-all').on('click', function (e) {
+                var val = $(this).val();
+                console.log(val);
+
+                $.evo.io().call('showAllFilterValues', [val], {}, function (error, data) {
+                    console.log(error);
+                    console.log(data);
+
+                    /*if (data.response) {
+                        $shippingSwitch.removeAttr('disabled');
+                        $shippingSwitch.parent().removeClass('hidden');
+                    } else {
+                        $shippingSwitch.attr('disabled', true);
+                        $shippingSwitch.parent().addClass('hidden');
+                        if ($shippingSwitch.prop('checked')) {
+                            $shippingSwitch.prop('checked', false);
+                            $('#select_shipping_address').collapse('show');
+                        }
+                    }*/
+                });
+            });
+        },
+
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */
@@ -460,6 +484,7 @@
             this.preventDropdownToggle();
             this.smoothScroll();
             this.checkout();
+            this.filterShowAll();
         }
     };
 

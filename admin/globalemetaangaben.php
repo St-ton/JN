@@ -9,7 +9,7 @@ use Helpers\Form;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_GLOBAL_META_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $chinweis = '';
 $cfehler  = '';
 $db       = Shop::Container()->getDB();

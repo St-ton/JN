@@ -6,7 +6,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->redirectOnFailure();
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 
 $admin    = new Cron\Admin\Controller(
     Shop::Container()->getDB(),

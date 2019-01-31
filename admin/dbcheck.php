@@ -2,8 +2,8 @@
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
- * @global AdminAccount $oAccount
- * @global JTLSmarty $smarty
+ * @global \Backend\AdminAccount $oAccount
+ * @global \Smarty\JTLSmarty     $smarty
  */
 
 use Helpers\Form;

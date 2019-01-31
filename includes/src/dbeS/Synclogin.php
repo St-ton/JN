@@ -4,8 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace dbeS;
+
 /**
  * Class Synclogin
+ * @package dbeS
  */
 class Synclogin
 {
@@ -30,14 +33,13 @@ class Synclogin
      */
     public function __construct()
     {
-        $obj = Shop::Container()->getDB()->select('tsynclogin', 'kSynclogin', 1);
+        $obj = \Shop::Container()->getDB()->select('tsynclogin', 'kSynclogin', 1);
         if ($obj !== null) {
-            $members = array_keys(get_object_vars($obj));
-            foreach ($members as $member) {
+            foreach (\array_keys(\get_object_vars($obj)) as $member) {
                 $this->$member = $obj->$member;
             }
         } else {
-            Shop::Container()->getLogService()->error('Kein Sync-Login gefunden.');
+            \Shop::Container()->getLogService()->error('Kein Sync-Login gefunden.');
         }
     }
 
@@ -45,13 +47,13 @@ class Synclogin
      * @param string $user
      * @param string $pass
      * @return bool
-     * @throws Exception
+     * @throws \Exception
      */
     public function checkLogin($user, $pass): bool
     {
         return $this->cName !== null
             && $this->cPass !== null
             && $this->cName === $user
-            && Shop::Container()->getPasswordService()->verify($pass, $this->cPass) === true;
+            && \Shop::Container()->getPasswordService()->verify($pass, $this->cPass) === true;
     }
 }

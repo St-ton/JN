@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Backend\AdminFavorite;
+use Backend\Notification;
 use Helpers\Form;
 use Helpers\Request;
 

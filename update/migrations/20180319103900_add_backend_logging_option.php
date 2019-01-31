@@ -49,8 +49,8 @@ class Migration_20180319103900 extends Migration implements IMigration
             (object) [
                 'cBeschreibung' => 'Sollen Backend-Loginversuche geloggt werden?',
                 'inputOptions'  => [
-                    AdminLoginConfig::CONFIG_DB   => 'in Datenbank',
-                    AdminLoginConfig::CONFIG_FILE => 'in Textdatei'
+                    \Backend\AdminLoginConfig::CONFIG_DB   => 'in Datenbank',
+                    \Backend\AdminLoginConfig::CONFIG_FILE => 'in Textdatei'
                 ]
             ]
         );

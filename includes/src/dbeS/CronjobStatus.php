@@ -4,11 +4,19 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+namespace dbeS;
+
 /**
  * Class CronjobStatus
+ * @package dbeS
  */
 class CronjobStatus
 {
+    /**
+     * @var int
+     */
+    public $kCron;
+
     /**
      * @var string
      */

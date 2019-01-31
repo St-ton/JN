@@ -743,7 +743,7 @@ class Download
 
         $size = @\filesize($filename);
         if ($size) {
-            \header("Content-length: $size");
+            \header('Content-length: ' . $size);
         }
 
         \readfile($filename);

@@ -201,7 +201,7 @@ class Category
                 $visibilityJoin       = '';
                 $visibilityWhere      = '';
             }
-            $nodes            = Shop::Container()->getDB()->query(
+            $nodes         = Shop::Container()->getDB()->query(
                 'SELECT node.kKategorie, node.kOberKategorie' . $nameSelect .
                 $descriptionSelect . $imageSelect . $seoSelect . $countSelect . '
                     FROM tkategorie AS node INNER JOIN tkategorie AS parent ' . $langJoin . '                    
@@ -274,30 +274,30 @@ class Category
                     : $cat->cName;
                 if ($cat->kOberKategorie === 0) {
                     $fullCats[$cat->kKategorie] = $cat;
-                    $current                     = $cat;
-                    $currentParent               = $cat;
-                    $hierarchy                   = [$cat->kKategorie];
+                    $current                    = $cat;
+                    $currentParent              = $cat;
+                    $hierarchy                  = [$cat->kKategorie];
                 } elseif ($current !== null && $cat->kOberKategorie === $current->kKategorie) {
                     $current->bUnterKategorien = 1;
                     if (!isset($current->Unterkategorien)) {
                         $current->Unterkategorien = [];
                     }
                     $current->Unterkategorien[$cat->kKategorie] = $cat;
-                    $current                                     = $cat;
-                    $hierarchy[]                                 = $cat->kOberKategorie;
-                    $hierarchy                                   = \array_unique($hierarchy);
+                    $current                                    = $cat;
+                    $hierarchy[]                                = $cat->kOberKategorie;
+                    $hierarchy                                  = \array_unique($hierarchy);
                 } elseif ($currentParent !== null && $cat->kOberKategorie === $currentParent->kKategorie) {
-                    $currentParent->bUnterKategorien                   = 1;
+                    $currentParent->bUnterKategorien                  = 1;
                     $currentParent->Unterkategorien[$cat->kKategorie] = $cat;
-                    $current                                           = $cat;
-                    $hierarchy                                         = [$cat->kOberKategorie, $cat->kKategorie];
+                    $current                                          = $cat;
+                    $hierarchy                                        = [$cat->kOberKategorie, $cat->kKategorie];
                 } else {
                     $newCurrent = $fullCats;
                     $i          = 0;
                     foreach ($hierarchy as $_i) {
                         if ($newCurrent[$_i]->kKategorie === $cat->kOberKategorie) {
-                            $current                                     = $newCurrent[$_i];
-                            $current->bUnterKategorien                   = 1;
+                            $current                                    = $newCurrent[$_i];
+                            $current->bUnterKategorien                  = 1;
                             $current->Unterkategorien[$cat->kKategorie] = $cat;
                             \array_splice($hierarchy, $i);
                             $hierarchy[] = $cat->kOberKategorie;
@@ -408,7 +408,7 @@ class Category
             $visibilityJoin       = '';
             $visibilityWhere      = '';
         }
-        $nodes            = Shop::Container()->getDB()->query(
+        $nodes         = Shop::Container()->getDB()->query(
             'SELECT parent.kKategorie, parent.kOberKategorie' . $nameSelect .
             $descriptionSelect . $imageSelect . $seoSelect . $countSelect . '
                 FROM tkategorie AS node INNER JOIN tkategorie AS parent ' . $langJoin . '                    
@@ -476,7 +476,7 @@ class Category
             $cat->cBeschreibung    = StringHandler::parseNewsText($cat->cBeschreibung);
             $cat->bUnterKategorien = 0;
             $cat->Unterkategorien  = [];
-            $fullCats[]             = $cat;
+            $fullCats[]            = $cat;
         }
         unset($cat);
         if ($filterEmpty) {

@@ -4,8 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Backend;
+
+use DB\ReturnType;
+use Shop;
+
 /**
  * Class JSONAPI
+ * @package Backend
  */
 class JSONAPI
 {
@@ -31,7 +37,7 @@ class JSONAPI
     /**
      * @return JSONAPI
      */
-    public static function getInstance()
+    public static function getInstance(): self
     {
         return self::$instance ?? self::$instance = new self();
     }
@@ -40,14 +46,14 @@ class JSONAPI
      * @param string|array|null $search
      * @param int               $limit
      * @param string            $keyName
-     * @return mixed|string
+     * @return string|bool
      */
     public function getSeos($search = null, $limit = 0, $keyName = 'cSeo')
     {
         $searchIn = null;
-        if (is_string($search)) {
+        if (\is_string($search)) {
             $searchIn = ['cSeo'];
-        } elseif (is_array($search)) {
+        } elseif (\is_array($search)) {
             $searchIn = $keyName;
         }
         $items = $this->getItems('tseo', ['cSeo', 'cKey', 'kKey'], null, $searchIn, $search, $limit);
@@ -57,16 +63,16 @@ class JSONAPI
 
     /**
      * @param string|array|null $search
-     * @param int $limit
-     * @param string $keyName
-     * @return string
+     * @param int               $limit
+     * @param string            $keyName
+     * @return string|bool
      */
     public function getPages($search = null, $limit = 0, $keyName = 'kLink')
     {
         $searchIn = null;
-        if (is_string($search)) {
+        if (\is_string($search)) {
             $searchIn = ['cName'];
-        } elseif (is_array($search)) {
+        } elseif (\is_array($search)) {
             $searchIn = $keyName;
         }
 
@@ -75,23 +81,23 @@ class JSONAPI
 
     /**
      * @param string|array|null $search
-     * @param int $limit
-     * @param string $keyName
-     * @return string
+     * @param int               $limit
+     * @param string            $keyName
+     * @return string|bool
      */
     public function getCategories($search = null, $limit = 0, $keyName = 'kKategorie')
     {
         $searchIn = null;
-        if (is_string($search)) {
+        if (\is_string($search)) {
             $searchIn = ['cName'];
-        } elseif (is_array($search)) {
+        } elseif (\is_array($search)) {
             $searchIn = $keyName;
         }
 
         return $this->itemsToJson($this->getItems(
             'tkategorie',
             ['kKategorie', 'cName'],
-            CACHING_GROUP_CATEGORY,
+            \CACHING_GROUP_CATEGORY,
             $searchIn,
             $search,
             $limit
@@ -100,16 +106,16 @@ class JSONAPI
 
     /**
      * @param string|array|null $search
-     * @param int $limit
-     * @param string $keyName
-     * @return string
+     * @param int               $limit
+     * @param string            $keyName
+     * @return string|bool
      */
     public function getProducts($search = null, $limit = 0, $keyName = 'kArtikel')
     {
         $searchIn = null;
-        if (is_string($search)) {
+        if (\is_string($search)) {
             $searchIn = ['cName', 'cArtNr'];
-        } elseif (is_array($search)) {
+        } elseif (\is_array($search)) {
             $searchIn = $keyName;
         }
 
@@ -117,7 +123,7 @@ class JSONAPI
             $this->getItems(
                 'tartikel',
                 ['kArtikel', 'cName', 'cArtNr'],
-                CACHING_GROUP_ARTICLE,
+                \CACHING_GROUP_ARTICLE,
                 $searchIn,
                 $search,
                 $limit
@@ -127,23 +133,23 @@ class JSONAPI
 
     /**
      * @param string|array|null $search
-     * @param int $limit
-     * @param string $keyName
-     * @return string
+     * @param int               $limit
+     * @param string            $keyName
+     * @return string|bool
      */
     public function getManufacturers($search = null, $limit = 0, $keyName = 'kHersteller')
     {
         $searchIn = null;
-        if (is_string($search)) {
+        if (\is_string($search)) {
             $searchIn = ['cName'];
-        } elseif (is_array($search)) {
+        } elseif (\is_array($search)) {
             $searchIn = $keyName;
         }
 
         return $this->itemsToJson($this->getItems(
             'thersteller',
             ['kHersteller', 'cName'],
-            CACHING_GROUP_MANUFACTURER,
+            \CACHING_GROUP_MANUFACTURER,
             $searchIn,
             $search,
             $limit
@@ -152,16 +158,16 @@ class JSONAPI
 
     /**
      * @param string|array|null $search
-     * @param int $limit
-     * @param string $keyName
-     * @return string
+     * @param int               $limit
+     * @param string            $keyName
+     * @return string|bool
      */
     public function getCustomers($search = null, $limit = 0, $keyName = 'kKunde')
     {
         $searchIn = null;
-        if (is_string($search)) {
+        if (\is_string($search)) {
             $searchIn = ['cVorname', 'cMail', 'cOrt', 'cPLZ'];
-        } elseif (is_array($search)) {
+        } elseif (\is_array($search)) {
             $searchIn = $keyName;
         }
 
@@ -175,8 +181,8 @@ class JSONAPI
         );
         $cryptoService = Shop::Container()->getCryptoService();
         foreach ($items as $item) {
-            $item->cNachname = trim($cryptoService->decryptXTEA($item->cNachname));
-            $item->cStrasse  = trim($cryptoService->decryptXTEA($item->cStrasse));
+            $item->cNachname = \trim($cryptoService->decryptXTEA($item->cNachname));
+            $item->cStrasse  = \trim($cryptoService->decryptXTEA($item->cStrasse));
         }
 
         return $this->itemsToJson($items);
@@ -184,23 +190,23 @@ class JSONAPI
 
     /**
      * @param string|array|null $search
-     * @param int $limit
-     * @param string $keyName
-     * @return string
+     * @param int               $limit
+     * @param string            $keyName
+     * @return string|bool
      */
     public function getTags($search = null, $limit = 0, $keyName = 'kTag')
     {
         $searchIn = null;
-        if (is_string($search)) {
+        if (\is_string($search)) {
             $searchIn = ['cName'];
-        } elseif (is_array($search)) {
+        } elseif (\is_array($search)) {
             $searchIn = $keyName;
         }
 
         return $this->itemsToJson($this->getItems(
             'ttag',
             ['kTag', 'cName'],
-            CACHING_GROUP_ARTICLE,
+            \CACHING_GROUP_ARTICLE,
             $searchIn,
             $search,
             $limit
@@ -209,23 +215,23 @@ class JSONAPI
 
     /**
      * @param string|array|null $search
-     * @param int $limit
-     * @param string $keyName
-     * @return string
+     * @param int               $limit
+     * @param string            $keyName
+     * @return string|bool
      */
     public function getAttributes($search = null, $limit = 0, $keyName = 'kMerkmalWert')
     {
         $searchIn = null;
-        if (is_string($search)) {
+        if (\is_string($search)) {
             $searchIn = ['cWert'];
-        } elseif (is_array($search)) {
+        } elseif (\is_array($search)) {
             $searchIn = $keyName;
         }
 
         return $this->itemsToJson($this->getItems(
             'tmerkmalwertsprache',
             ['kMerkmalWert', 'cWert'],
-            CACHING_GROUP_ARTICLE,
+            \CACHING_GROUP_ARTICLE,
             $searchIn,
             $search,
             $limit
@@ -233,12 +239,12 @@ class JSONAPI
     }
 
     /**
-     * @param string $table
-     * @param string[] $columns
-     * @param string $addCacheTag
+     * @param string               $table
+     * @param string[]             $columns
+     * @param string               $addCacheTag
      * @param string[]|string|null $searchIn
      * @param string|string[]|null $searchFor
-     * @param int $limit
+     * @param int                  $limit
      * @return array
      */
     public function getItems($table, $columns, $addCacheTag = null, $searchIn = null, $searchFor = null, $limit = 0)
@@ -246,8 +252,8 @@ class JSONAPI
         $table     = Shop::Container()->getDB()->escape($table);
         $limit     = (int)$limit;
         $cacheId   = 'jsonapi_' . $table . '_' . $limit . '_';
-        $cacheId  .= md5(serialize($columns) . serialize($searchIn) . serialize($searchFor));
-        $cacheTags = [CACHING_GROUP_CORE];
+        $cacheId  .= \md5(\serialize($columns) . \serialize($searchIn) . \serialize($searchFor));
+        $cacheTags = [\CACHING_GROUP_CORE];
 
         if ($addCacheTag !== null) {
             $cacheTags[] = $addCacheTag;
@@ -261,7 +267,7 @@ class JSONAPI
             $columns[$i] = Shop::Container()->getDB()->escape($column);
         }
 
-        if (is_array($searchIn) && is_string($searchFor)) {
+        if (\is_array($searchIn) && \is_string($searchFor)) {
             // full text search
             $searchFor  = Shop::Container()->getDB()->escape($searchFor);
             $conditions = [];
@@ -271,13 +277,13 @@ class JSONAPI
             }
 
             $result = Shop::Container()->getDB()->query(
-                'SELECT ' . implode(',', $columns) . '
+                'SELECT ' . \implode(',', $columns) . '
                     FROM ' . $table . '
-                    WHERE ' . implode(' OR ', $conditions) . '
+                    WHERE ' . \implode(' OR ', $conditions) . '
                     ' . ($limit > 0 ? 'LIMIT ' . $limit : ''),
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
-        } elseif (is_string($searchIn) && is_array($searchFor)) {
+        } elseif (\is_string($searchIn) && \is_array($searchFor)) {
             // key array select
             $searchIn = Shop::Container()->getDB()->escape($searchIn);
 
@@ -286,26 +292,26 @@ class JSONAPI
             }
 
             $result = Shop::Container()->getDB()->query(
-                'SELECT ' . implode(',', $columns) . '
+                'SELECT ' . \implode(',', $columns) . '
                     FROM ' . $table . '
-                    WHERE ' . $searchIn . ' IN (' . implode(',', $searchFor) . ')
+                    WHERE ' . $searchIn . ' IN (' . \implode(',', $searchFor) . ')
                     ' . ($limit > 0 ? 'LIMIT ' . $limit : ''),
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
         } elseif ($searchIn === null && $searchFor === null) {
             // select all
             $result = Shop::Container()->getDB()->query(
-                'SELECT ' . implode(',', $columns) . '
+                'SELECT ' . \implode(',', $columns) . '
                     FROM ' . $table . '
                     ' . ($limit > 0 ? 'LIMIT ' . $limit : ''),
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
         } else {
             // invalid arguments
             $result = [];
         }
 
-        if (!is_array($result)) {
+        if (!\is_array($result)) {
             $result = [];
         }
 
@@ -316,10 +322,10 @@ class JSONAPI
 
     /**
      * @param array $items
-     * @return string
+     * @return string|bool
      */
     public function itemsToJson($items)
     {
-        return json_encode($items);
+        return \json_encode($items);
     }
 }

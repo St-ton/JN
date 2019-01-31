@@ -4,13 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Backend;
+
+use DateTime;
+use DB\DbInterface;
+use DB\ReturnType;
+use Exception;
 use Helpers\Request;
 use Mapper\AdminLoginStatusMessageMapper;
 use Mapper\AdminLoginStatusToLogLevel;
+use Model\AuthLogEntry;
 use Psr\Log\LoggerInterface;
+use Session\Backend;
+use Shop;
 
 /**
  * Class AdminAccount
+ * @package Backend
  */
 class AdminAccount
 {
@@ -51,13 +61,13 @@ class AdminAccount
 
     /**
      * AdminAccount constructor.
-     * @param \DB\DbInterface               $db
+     * @param DbInterface               $db
      * @param LoggerInterface               $logger
      * @param AdminLoginStatusMessageMapper $statusMessageMapper
      * @param AdminLoginStatusToLogLevel    $levelMapper
      */
     public function __construct(
-        \DB\DbInterface $db,
+        DbInterface $db,
         LoggerInterface $logger,
         AdminLoginStatusMessageMapper $statusMessageMapper,
         AdminLoginStatusToLogLevel $levelMapper
@@ -66,7 +76,7 @@ class AdminAccount
         $this->authLogger    = $logger;
         $this->messageMapper = $statusMessageMapper;
         $this->levelMapper   = $levelMapper;
-        \Session\Backend::getInstance();
+        Backend::getInstance();
         $this->initDefaults();
         $this->validateSession();
     }
@@ -77,8 +87,8 @@ class AdminAccount
     private function initDefaults(): void
     {
         if (!isset($_SESSION['AdminAccount'])) {
-            $default                   = Sprache::getDefaultLanguage();
-            $adminAccount              = new stdClass();
+            $default                   = \Sprache::getDefaultLanguage();
+            $adminAccount              = new \stdClass();
             $adminAccount->kSprache    = $default->kSprache;
             $adminAccount->cISO        = $default->cISO;
             $adminAccount->kAdminlogin = null;
@@ -119,8 +129,8 @@ class AdminAccount
         $user = $this->db->select('tadminlogin', 'cMail', $mail);
         if ($user !== null) {
             // there should be a string <created_timestamp>:<hash> in the DB
-            $timestampAndHash = explode(':', $user->cResetPasswordHash);
-            if (count($timestampAndHash) === 2) {
+            $timestampAndHash = \explode(':', $user->cResetPasswordHash);
+            if (\count($timestampAndHash) === 2) {
                 [$timeStamp, $originalHash] = $timestampAndHash;
                 // check if the link is not expired (=24 hours valid)
                 $createdAt = (new DateTime())->setTimestamp((int)$timeStamp);
@@ -151,19 +161,19 @@ class AdminAccount
     public function prepareResetPassword(string $mail): bool
     {
         $now  = (new DateTime())->format('U');
-        $hash = md5($mail . Shop::Container()->getCryptoService()->randomString(30));
+        $hash = \md5($mail . Shop::Container()->getCryptoService()->randomString(30));
         $upd  = (object)['cResetPasswordHash' => $now . ':' . Shop::Container()->getPasswordService()->hash($hash)];
         $res  = Shop::Container()->getDB()->update('tadminlogin', 'cMail', $mail, $upd);
         if ($res > 0) {
-            require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
+            require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
             $user                   = Shop::Container()->getDB()->select('tadminlogin', 'cMail', $mail);
-            $obj                    = new stdClass();
+            $obj                    = new \stdClass();
             $obj->passwordResetLink = Shop::getAdminURL() . '/pass.php?fpwh=' . $hash . '&mail=' . $mail;
             $obj->cHash             = $hash;
-            $obj->mail              = new stdClass();
+            $obj->mail              = new \stdClass();
             $obj->mail->toEmail     = $mail;
             $obj->mail->toName      = $user->cLogin;
-            sendeMail(MAILTEMPLATE_ADMINLOGIN_PASSWORT_VERGESSEN, $obj);
+            \sendeMail(\MAILTEMPLATE_ADMINLOGIN_PASSWORT_VERGESSEN, $obj);
 
             return true;
         }
@@ -178,7 +188,7 @@ class AdminAccount
      */
     private function handleLoginResult(int $code, string $user): int
     {
-        $log = new \Model\AuthLogEntry();
+        $log = new AuthLogEntry();
 
         $log->setIP(Request::getRealIP());
         $log->setCode($code);
@@ -212,40 +222,37 @@ class AdminAccount
             false,
             '*, UNIX_TIMESTAMP(dGueltigBis) AS dGueltigTS'
         );
-        if ($oAdmin === null || !is_object($oAdmin)) {
+        if ($oAdmin === null || !\is_object($oAdmin)) {
             return $this->handleLoginResult(AdminLoginStatus::ERROR_USER_NOT_FOUND, $cLogin);
         }
         $oAdmin->kAdminlogingruppe = (int)$oAdmin->kAdminlogingruppe;
-        if (!$oAdmin->bAktiv && $oAdmin->kAdminlogingruppe !== ADMINGROUP) {
+        if (!$oAdmin->bAktiv && $oAdmin->kAdminlogingruppe !== \ADMINGROUP) {
             return $this->handleLoginResult(AdminLoginStatus::ERROR_USER_DISABLED, $cLogin);
         }
-        if ($oAdmin->dGueltigTS && $oAdmin->kAdminlogingruppe !== ADMINGROUP && $oAdmin->dGueltigTS < time()) {
+        if ($oAdmin->dGueltigTS && $oAdmin->kAdminlogingruppe !== \ADMINGROUP && $oAdmin->dGueltigTS < \time()) {
             return $this->handleLoginResult(AdminLoginStatus::ERROR_LOGIN_EXPIRED, $cLogin);
         }
-        if ($oAdmin->nLoginVersuch >= MAX_LOGIN_ATTEMPTS && !empty($oAdmin->locked_at)) {
+        if ($oAdmin->nLoginVersuch >= \MAX_LOGIN_ATTEMPTS && !empty($oAdmin->locked_at)) {
             $time        = new DateTime($oAdmin->locked_at);
-            $now         = new DateTime('NOW');
-            $diffMinutes = ($now->getTimestamp() - $time->getTimestamp()) / 60;
-            if ($diffMinutes < LOCK_TIME) {
-                $this->setLockedMinutes((int)ceil(LOCK_TIME - $diffMinutes));
+            $diffMinutes = ((new DateTime('NOW'))->getTimestamp() - $time->getTimestamp()) / 60;
+            if ($diffMinutes < \LOCK_TIME) {
+                $this->setLockedMinutes((int)\ceil(\LOCK_TIME - $diffMinutes));
 
                 return AdminLoginStatus::ERROR_LOCKED;
             }
         }
         $verified     = false;
         $cPassCrypted = null;
-        if (mb_strlen($oAdmin->cPass) === 32) {
-            // old md5 hash support
-            if (md5($cPass) !== $oAdmin->cPass) {
+        if (\mb_strlen($oAdmin->cPass) === 32) {
+            if (\md5($cPass) !== $oAdmin->cPass) {
                 $this->setRetryCount($oAdmin->cLogin);
 
                 return $this->handleLoginResult(AdminLoginStatus::ERROR_INVALID_PASSWORD, $cLogin);
             }
             if (!isset($_SESSION['AdminAccount'])) {
-                $_SESSION['AdminAccount'] = new stdClass();
+                $_SESSION['AdminAccount'] = new \stdClass();
             }
-            // login successful - update password hash
-            $_SESSION['AdminAccount']->cPass  = md5($cPass);
+            $_SESSION['AdminAccount']->cPass  = \md5($cPass);
             $_SESSION['AdminAccount']->cLogin = $cLogin;
             $verified                         = true;
             if ($this->checkAndUpdateHash($cPass) === true) {
@@ -261,17 +268,20 @@ class AdminAccount
                     '*, UNIX_TIMESTAMP(dGueltigBis) AS dGueltigTS'
                 );
             }
-        } elseif (mb_strlen($oAdmin->cPass) === 40) {
+        } elseif (\mb_strlen($oAdmin->cPass) === 40) {
             // default login until Shop4
-            $cPassCrypted = cryptPasswort($cPass, $oAdmin->cPass);
+            $cPassCrypted = \cryptPasswort($cPass, $oAdmin->cPass);
         } else {
-            //new default login from 4.0 on
-            $verified = password_verify($cPass, $oAdmin->cPass);
+            // new default login from 4.0 on
+            $verified = \password_verify($cPass, $oAdmin->cPass);
         }
         if ($verified === true || ($cPassCrypted !== null && $oAdmin->cPass === $cPassCrypted)) {
-            $settings = Shop::getSettings(CONF_GLOBAL);
-            if (is_array($_SESSION) && $settings['global']['wartungsmodus_aktiviert'] === 'N' && count($_SESSION) > 0) {
-                foreach (array_keys($_SESSION) as $i) {
+            $settings = Shop::getSettings(\CONF_GLOBAL);
+            if (\is_array($_SESSION)
+                && $settings['global']['wartungsmodus_aktiviert'] === 'N'
+                && \count($_SESSION) > 0
+            ) {
+                foreach (\array_keys($_SESSION) as $i) {
                     unset($_SESSION[$i]);
                 }
             }
@@ -280,9 +290,7 @@ class AdminAccount
                 $oAdmin->kSprache = Shop::getLanguage();
             }
             $oAdmin->cISO = Shop::Lang()->getIsoFromLangID($oAdmin->kSprache)->cISO;
-
             $this->toSession($oAdmin);
-            // check password hash and update if necessary
             $this->checkAndUpdateHash($cPass);
             if (!$this->getIsTwoFaAuthenticated()) {
                 return $this->handleLoginResult(AdminLoginStatus::ERROR_TWO_FACTOR_AUTH_EXPIRED, $cLogin);
@@ -303,7 +311,7 @@ class AdminAccount
     public function logout(): self
     {
         $this->loggedIn = false;
-        session_destroy();
+        \session_destroy();
 
         return $this;
     }
@@ -348,19 +356,19 @@ class AdminAccount
     public function redirectOnFailure(int $errCode = 0): void
     {
         if (!$this->logged()) {
-            $url = mb_strpos(basename($_SERVER['REQUEST_URI']), 'logout.php') === false
-                ? '?uri=' . base64_encode(basename($_SERVER['REQUEST_URI']))
+            $url = \strpos(\basename($_SERVER['REQUEST_URI']), 'logout.php') === false
+                ? '?uri=' . \base64_encode(\basename($_SERVER['REQUEST_URI']))
                 : '';
             if ($errCode !== 0) {
-                $url .= (mb_strpos($url, '?') === false ? '?' : '&') . 'errCode=' . $errCode;
+                $url .= (\mb_strpos($url, '?') === false ? '?' : '&') . 'errCode=' . $errCode;
             }
-            header('Location: index.php' . $url);
+            \header('Location: index.php' . $url);
             exit();
         }
     }
 
     /**
-     * @return bool|stdClass
+     * @return bool|\stdClass
      */
     public function account()
     {
@@ -379,12 +387,12 @@ class AdminAccount
             $this->redirectOnFailure();
         }
         // grant full access to admin
-        if ($this->account() !== false && (int)$this->account()->oGroup->kAdminlogingruppe === ADMINGROUP) {
+        if ($this->account() !== false && (int)$this->account()->oGroup->kAdminlogingruppe === \ADMINGROUP) {
             return true;
         }
-        $bAccess = (isset($_SESSION['AdminAccount']->oGroup) && is_object($_SESSION['AdminAccount']->oGroup)
-            && is_array($_SESSION['AdminAccount']->oGroup->oPermission_arr)
-            && in_array($permission, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true));
+        $bAccess = (isset($_SESSION['AdminAccount']->oGroup) && \is_object($_SESSION['AdminAccount']->oGroup)
+            && \is_array($_SESSION['AdminAccount']->oGroup->oPermission_arr)
+            && \in_array($permission, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true));
         if ($showNoAccessPage && !$bAccess) {
             Shop::Smarty()->display('tpl_inc/berechtigung.tpl');
             exit;
@@ -394,15 +402,15 @@ class AdminAccount
     }
 
     /**
-     * @param int $nAdminLoginGroup
-     * @param int $nAdminMenuGroup
+     * @param int    $nAdminLoginGroup
+     * @param int    $nAdminMenuGroup
      * @param string $keyPrefix
      * @return array
      * @deprecated since 5.0.0
      */
     public function getVisibleMenu(int $nAdminLoginGroup, int $nAdminMenuGroup, string $keyPrefix): array
     {
-        if ($nAdminLoginGroup === ADMINGROUP) {
+        if ($nAdminLoginGroup === \ADMINGROUP) {
             $links = $this->db->selectAll(
                 'tadminmenu',
                 'kAdminmenueGruppe',
@@ -423,7 +431,7 @@ class AdminAccount
                     'kAdminmenueGruppe' => $nAdminMenuGroup,
                     'kAdminlogingruppe' => $nAdminLoginGroup
                 ],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
         }
 
@@ -442,14 +450,14 @@ class AdminAccount
      */
     public function redirectOnUrl(): void
     {
-        $url    = Shop::getURL() . '/' . PFAD_ADMIN . 'index.php';
-        $parsed = parse_url($url);
+        $url    = Shop::getURL() . '/' . \PFAD_ADMIN . 'index.php';
+        $parsed = \parse_url($url);
         $host   = $parsed['host'];
         if (!empty($parsed['port']) && (int)$parsed['port'] > 0) {
             $host .= ':' . $parsed['port'];
         }
-        if (isset($_SERVER['HTTP_HOST']) && $host !== $_SERVER['HTTP_HOST'] && mb_strlen($_SERVER['HTTP_HOST']) > 0) {
-            header('Location: ' . $url);
+        if (isset($_SERVER['HTTP_HOST']) && $host !== $_SERVER['HTTP_HOST'] && \mb_strlen($_SERVER['HTTP_HOST']) > 0) {
+            \header('Location: ' . $url);
             exit;
         }
     }
@@ -471,7 +479,7 @@ class AdminAccount
                 $_SESSION['AdminAccount']->cPass
             );
             $this->twoFaAuthenticated = (isset($account->b2FAauth) && $account->b2FAauth === '1')
-                ? (isset($_SESSION['AdminAccount']->TwoFA_valid) && true === $_SESSION['AdminAccount']->TwoFA_valid)
+                ? (isset($_SESSION['AdminAccount']->TwoFA_valid) && $_SESSION['AdminAccount']->TwoFA_valid === true)
                 : true;
             $this->loggedIn           = isset($account->cLogin);
         }
@@ -485,7 +493,7 @@ class AdminAccount
     public function doTwoFA(): bool
     {
         if (isset($_SESSION['AdminAccount']->cLogin, $_POST['TwoFA_code'])) {
-            $twoFA = new TwoFA();
+            $twoFA = new TwoFA($this->db);
             $twoFA->setUserByName($_SESSION['AdminAccount']->cLogin);
             $valid                                 = $twoFA->isCodeValid($_POST['TwoFA_code']);
             $this->twoFaAuthenticated              = $valid;
@@ -508,14 +516,14 @@ class AdminAccount
     }
 
     /**
-     * @param stdClass $admin
+     * @param \stdClass $admin
      * @return $this
      */
     private function toSession($admin): self
     {
         $group = $this->getPermissionsByGroup($admin->kAdminlogingruppe);
-        if (is_object($group) || (int)$admin->kAdminlogingruppe === ADMINGROUP) {
-            $_SESSION['AdminAccount']              = new stdClass();
+        if (\is_object($group) || (int)$admin->kAdminlogingruppe === \ADMINGROUP) {
+            $_SESSION['AdminAccount']              = new \stdClass();
             $_SESSION['AdminAccount']->cURL        = Shop::getURL();
             $_SESSION['AdminAccount']->kAdminlogin = (int)$admin->kAdminlogin;
             $_SESSION['AdminAccount']->cLogin      = $admin->cLogin;
@@ -524,9 +532,9 @@ class AdminAccount
             $_SESSION['AdminAccount']->kSprache    = (int)$admin->kSprache;
             $_SESSION['AdminAccount']->cISO        = $admin->cISO;
 
-            if (!is_object($group)) {
-                $group                    = new stdClass();
-                $group->kAdminlogingruppe = ADMINGROUP;
+            if (!\is_object($group)) {
+                $group                    = new \stdClass();
+                $group->kAdminlogingruppe = \ADMINGROUP;
             }
 
             $_SESSION['AdminAccount']->oGroup = $group;
@@ -572,11 +580,11 @@ class AdminAccount
                 SET nLoginVersuch = nLoginVersuch+1
                 WHERE cLogin = :login',
             ['login' => $cLogin],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
         $data   = $this->db->select('tadminlogin', 'cLogin', $cLogin);
-        $locked = (int)$data->nLoginVersuch >= MAX_LOGIN_ATTEMPTS;
-        if ($locked === true && array_key_exists('locked_at', (array)$data)) {
+        $locked = (int)$data->nLoginVersuch >= \MAX_LOGIN_ATTEMPTS;
+        if ($locked === true && \array_key_exists('locked_at', (array)$data)) {
             $this->db->update('tadminlogin', 'cLogin', $cLogin, (object)['locked_at' => 'NOW()']);
         }
 

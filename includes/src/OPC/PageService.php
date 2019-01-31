@@ -6,6 +6,8 @@
 
 namespace OPC;
 
+use Backend\AdminIO;
+
 /**
  * Class PageService
  * @package OPC
@@ -73,10 +75,10 @@ class PageService
     }
 
     /**
-     * @param \AdminIO $io
+     * @param AdminIO $io
      * @throws \Exception
      */
-    public function registerAdminIOFunctions(\AdminIO $io): void
+    public function registerAdminIOFunctions(AdminIO $io): void
     {
         $adminAccount = $io->getAccount();
 

@@ -4,8 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Backend;
+
+use DB\DbInterface;
+use DB\ReturnType;
+use Exception;
+use Shop;
+
 /**
  * Class TwoFAEmergency
+ * @package Backend
  */
 class TwoFAEmergency
 {
@@ -24,6 +32,20 @@ class TwoFAEmergency
     private $codeCount = 10;
 
     /**
+     * @var DbInterface
+     */
+    private $db;
+
+    /**
+     * TwoFAEmergency constructor.
+     * @param DbInterface $db
+     */
+    public function __construct(DbInterface $db)
+    {
+        $this->db = $db;
+    }
+
+    /**
      * create a pool of emergency-codes
      * for the current admin-account and store them in the DB.
      *
@@ -38,7 +60,7 @@ class TwoFAEmergency
         $rowValues       = '';
         $valCount        = 'a';
         for ($i = 0; $i < $this->codeCount; $i++) {
-            $code          = mb_substr(md5(rand(1000, 9000)), 0, 16);
+            $code          = \mb_substr(\md5(\rand(1000, 9000)), 0, 16);
             $this->codes[] = $code;
 
             if ($rowValues !== '') {
@@ -57,10 +79,10 @@ class TwoFAEmergency
             $valCount++;
         }
         // now write into the DB what we got till now
-        Shop::Container()->getDB()->executeQueryPrepared(
+        $this->db->queryPrepared(
             'INSERT INTO `tadmin2facodes`(`kAdminlogin`, `cEmergencyCode`) VALUES' . $rowValues,
             $bindings,
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
 
         return $this->codes;
@@ -73,7 +95,7 @@ class TwoFAEmergency
      */
     public function removeExistingCodes($userTuple): void
     {
-        $effected = Shop::Container()->getDB()->deleteRow(
+        $effected = $this->db->deleteRow(
             'tadmin2facodes',
             'kAdminlogin',
             $userTuple->kAdminlogin
@@ -95,21 +117,21 @@ class TwoFAEmergency
      */
     public function isValidEmergencyCode($adminID, $code): bool
     {
-        $hashes = Shop::Container()->getDB()->selectArray('tadmin2facodes', 'kAdminlogin', $adminID);
-        if (1 > count($hashes)) {
+        $hashes = $this->db->selectArray('tadmin2facodes', 'kAdminlogin', $adminID);
+        if (1 > \count($hashes)) {
             return false; // no emergency-codes are there
         }
 
         foreach ($hashes as $item) {
-            if (true === password_verify($code, $item->cEmergencyCode)) {
+            if (\password_verify($code, $item->cEmergencyCode) === true) {
                 // valid code found. remove it from DB and return a 'true'
-                $effected = Shop::Container()->getDB()->delete(
+                $effected = $this->db->delete(
                     'tadmin2facodes',
                     ['kAdminlogin', 'cEmergencyCode'],
                     [$adminID, $item->cEmergencyCode],
-                    \DB\ReturnType::AFFECTED_ROWS
+                    ReturnType::AFFECTED_ROWS
                 );
-                if (1 !== $effected) {
+                if ($effected !== 1) {
                     Shop::Container()->getLogService()->error('2FA-Notfall-Code konnte nicht gelöscht werden.');
                 }
 

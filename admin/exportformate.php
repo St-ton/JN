@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Backend\Revision;
 use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -12,7 +13,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 \Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 $oAccount->permission('EXPORT_FORMATS_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $fehler              = '';
 $hinweis             = '';
 $step                = 'uebersicht';
@@ -47,7 +48,7 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
         $kExportformat = $ef->getExportformat();
         if ($kExportformat > 0) {
             $kExportformat = (int)$_POST['kExportformat'];
-            $revision      = new Revision();
+            $revision      = new Revision($db);
             $revision->addRevision('export', $kExportformat);
             $ef->update();
             $hinweis .= sprintf(__('successFormatEdit'), $ef->getName());

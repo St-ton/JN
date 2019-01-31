@@ -6,6 +6,8 @@
 
 namespace Model;
 
+use Backend\AdminLoginStatus;
+
 /**
  * Class AuthLogEntry
  *
@@ -26,7 +28,7 @@ class AuthLogEntry
     /**
      * @var int
      */
-    public $code = \AdminLoginStatus::ERROR_UNKNOWN;
+    public $code = AdminLoginStatus::ERROR_UNKNOWN;
 
     /**
      * @return array

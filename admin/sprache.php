@@ -14,7 +14,7 @@ use Pagination\Pagination;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('LANGUAGE_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 

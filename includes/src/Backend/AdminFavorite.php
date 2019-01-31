@@ -4,11 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Backend;
+
+use Exception;
 use Helpers\GeneralObject;
 use Helpers\URL;
+use Shop;
 
 /**
  * Class AdminFavorite
+ * @package Backend
  */
 class AdminFavorite
 {
@@ -56,10 +61,10 @@ class AdminFavorite
     public function loadFromDB(int $kAdminfav): self
     {
         $obj = Shop::Container()->getDB()->select('tadminfavs', 'kAdminfav', $kAdminfav);
-        foreach (get_object_vars($obj) as $k => $v) {
+        foreach (\get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }
-        executeHook(HOOK_ATTRIBUT_CLASS_LOADFROMDB);
+        \executeHook(\HOOK_ATTRIBUT_CLASS_LOADFROMDB);
 
         return $this;
     }
@@ -107,12 +112,12 @@ class AdminFavorite
             return [];
         }
 
-        $favs = is_array($favs) ? $favs : [];
+        $favs = \is_array($favs) ? $favs : [];
 
         foreach ($favs as &$fav) {
             $fav->bExtern = true;
             $fav->cAbsUrl = $fav->cUrl;
-            if (mb_strpos($fav->cUrl, 'http') !== 0) {
+            if (\mb_strpos($fav->cUrl, 'http') !== 0) {
                 $fav->bExtern = false;
                 $fav->cAbsUrl = Shop::getURL() . '/' . $fav->cUrl;
             }
@@ -131,18 +136,18 @@ class AdminFavorite
     public static function add(int $id, $title, $url, int $sort = -1): bool
     {
         $urlHelper = new URL($url);
-        $url       = str_replace(
+        $url       = \str_replace(
             [Shop::getURL(), Shop::getURL(true)],
             '',
             $urlHelper->normalize()
         );
 
-        $url = strip_tags($url);
-        $url = ltrim($url, '/');
-        $url = filter_var($url, FILTER_SANITIZE_URL);
+        $url = \strip_tags($url);
+        $url = \ltrim($url, '/');
+        $url = \filter_var($url, \FILTER_SANITIZE_URL);
 
         if ($sort < 0) {
-            $sort = count(static::fetchAll($id));
+            $sort = \count(static::fetchAll($id));
         }
 
         $item = (object)[
@@ -152,7 +157,7 @@ class AdminFavorite
             'nSort'       => $sort
         ];
 
-        if ($id > 0 && mb_strlen($item->cTitel) > 0 && mb_strlen($item->cUrl) > 0) {
+        if ($id > 0 && \mb_strlen($item->cTitel) > 0 && \mb_strlen($item->cUrl) > 0) {
             Shop::Container()->getDB()->insertRow('tadminfavs', $item);
 
             return true;

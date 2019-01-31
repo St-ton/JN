@@ -4,8 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Backend;
+
 /**
  * Class AdminLoginConfig
+ * @package Backend
  */
 abstract class AdminLoginConfig
 {

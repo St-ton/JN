@@ -620,7 +620,7 @@ if ($customerID > 0) {
 
             executeHook(HOOK_JTL_PAGE_KUNDENACCOUNTLOESCHEN);
             session_destroy();
-            header('Location: ' . Shop::getURL() . '?accountDeleted=1', true, 303);
+            header('Location: ' . $linkHelper->getStaticRoute('registrieren.php') . '?accountDeleted=1', true, 303);
             exit;
         }
     }

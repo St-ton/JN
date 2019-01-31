@@ -73,6 +73,14 @@ if (isset($conf['kunden']['kundenregistrierung_pruefen_zeit'])
     $_SESSION['dRegZeit'] = time();
 }
 
+if (Request::verifyGPCDataInt('accountDeleted') === 1) {
+    Shop::Container()->getAlertService()->addAlert(
+        Alert::TYPE_SUCCESS,
+        Shop::Lang()->get('accountDeleted', 'messages'),
+        'accountDeleted'
+    );
+}
+
 executeHook(HOOK_REGISTRIEREN_PAGE);
 
 Shop::Smarty()->display('register/index.tpl');

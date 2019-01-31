@@ -212,10 +212,6 @@ if (isset($hinweis)) {
     \trigger_error('global $hinweis is deprecated.', \E_USER_DEPRECATED);
 }
 
-if (Request::verifyGPCDataInt('accountDeleted') === 1) {
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, Shop::Lang()->get('accountDeleted', 'messages'), 'accountDeleted');
-}
-
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('Brotnavi', $nav->createNavigation())
        ->assign('nIsSSL', Request::checkSSL())

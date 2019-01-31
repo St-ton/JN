@@ -15,10 +15,12 @@ $cHinweis      = '';
 $cFehler       = '';
 $shopSettings  = Shopsetting::getInstance();
 
-if (!empty($_POST) && FormHelper::validateToken()) {
+\Shop::Container()->getGetText()->loadConfigLocales(true, true);
+
+if (!empty($_POST) && Form::validateToken()) {
     $cHinweis = saveAdminSectionSettings(CONF_FTP, $_POST);
     $shopSettings->reset();
-    
+
     if (isset($_POST['test'])) {
         unset($cHinweis);
 
@@ -41,7 +43,12 @@ if (!empty($_POST) && FormHelper::validateToken()) {
     }
 }
 
-$smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_FTP))
+$oConfig_arr = getAdminSectionSettings(CONF_FTP);
+$x = \Shop::Container()->getGetText()->localizeConfig($oConfig_arr);
+
+dd($x, $oConfig_arr);
+
+$smarty->assign('oConfig_arr', $oConfig_arr)
        ->assign('oConfig', Shop::getSettings([CONF_FTP])['ftp'])
        ->assign('cHinweis', $cHinweis)
        ->assign('cFehler', $cFehler)

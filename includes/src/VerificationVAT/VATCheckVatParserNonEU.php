@@ -3,6 +3,12 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+namespace VerificationVAT;
+
+/**
+ * class VATCheckVatParserNonEU
+ */
 class VATCheckVatParserNonEU
 {
     /**

@@ -2176,7 +2176,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
             $analizeCheck = false;
             $viesResult   = null;
             if ($conf['kunden']['shop_ustid_bzstpruefung'] === 'Y') {
-                $oVies        = new VATCheck();
+                $oVies        = new \VerificationVAT\VATCheck();
                 $viesResult   = $oVies->doCheckID(trim($data['ustid']));
                 $analizeCheck = true; // flag to signalize further analization
             }

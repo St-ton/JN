@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace VerificationVAT;
+
 /**
  * class VATCheckDownSlots
  */

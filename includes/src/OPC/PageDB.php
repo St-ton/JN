@@ -200,7 +200,8 @@ class PageDB
 
     /**
      * @param string $id
-     * @return null|Page
+     * @return Page|null
+     * @throws \Exception
      */
     public function getPublicPage(string $id): ?Page
     {
@@ -331,8 +332,9 @@ class PageDB
     }
 
     /**
-     * @param object $row
+     * @param $row
      * @return Page
+     * @throws \Exception
      */
     protected function getPageFromRow($row): Page
     {

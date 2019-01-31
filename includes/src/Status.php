@@ -38,7 +38,9 @@ class Status
      */
     protected function getObjectCache(): \Cache\JTLCacheInterface
     {
-        return Shop::Container()->getCache()->setJtlCacheConfig();
+        return Shop::Container()->getCache()->setJtlCacheConfig(
+            Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)
+        );
     }
 
     /**
@@ -422,7 +424,7 @@ class Status
         );
         foreach ($translations as $t) {
             $old = '{$neues_passwort}';
-            if (strpos($t->cContentHtml, $old) !== false || strpos($t->cContentText, $old) !== false) {
+            if (mb_strpos($t->cContentHtml, $old) !== false || mb_strpos($t->cContentText, $old) !== false) {
                 return true;
             }
         }

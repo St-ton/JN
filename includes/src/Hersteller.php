@@ -187,12 +187,12 @@ class Hersteller
         $imageBaseURL = Shop::getImageBaseURL();
         if (isset($obj->kHersteller) && $obj->kHersteller > 0) {
             // URL bauen
-            $this->cURL          = (isset($obj->cSeo) && strlen($obj->cSeo) > 0)
+            $this->cURL          = (isset($obj->cSeo) && mb_strlen($obj->cSeo) > 0)
                 ? $shopURL . $obj->cSeo
                 : $shopURL . '?h=' . $obj->kHersteller;
             $this->cBeschreibung = StringHandler::parseNewsText($this->cBeschreibung);
         }
-        if (strlen($this->cBildpfad) > 0) {
+        if (mb_strlen($this->cBildpfad) > 0) {
             $this->cBildpfadKlein  = PFAD_HERSTELLERBILDER_KLEIN . $this->cBildpfad;
             $this->cBildpfadNormal = PFAD_HERSTELLERBILDER_NORMAL . $this->cBildpfad;
         } else {

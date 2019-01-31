@@ -18,10 +18,10 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 
 Shop::setPageType(PAGE_BESTELLVORGANG);
-$conf     = Shopsetting::getInstance()->getAll();
-$step     = 'accountwahl';
-$cHinweis = '';
-$cart     = \Session\Frontend::getCart();
+$conf        = Shopsetting::getInstance()->getAll();
+$step        = 'accountwahl';
+$cart        = \Session\Frontend::getCart();
+$alertHelper = Shop::Container()->getAlertService();
 unset($_SESSION['ajaxcheckout']);
 if (isset($_POST['login']) && (int)$_POST['login'] === 1) {
     fuehreLoginAus($_POST['email'], $_POST['passwort']);
@@ -116,13 +116,13 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
         $plz           = $_SESSION['Lieferadresse']->cPLZ ?? $_SESSION['Kunde']->cPLZ;
         $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
 
-        $oVersandart_arr  = ShippingMethod::getPossibleShippingMethods(
+        $shippingMethods  = ShippingMethod::getPossibleShippingMethods(
             $land,
             $plz,
             ShippingMethod::getShippingClasses($cart),
             $kKundengruppe
         );
-        $activeVersandart = gibAktiveVersandart($oVersandart_arr);
+        $activeVersandart = gibAktiveVersandart($shippingMethods);
 
         pruefeVersandartWahl(
             $activeVersandart,
@@ -130,27 +130,21 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
         );
     }
 }
-if (\Extensions\Download::hasDownloads($cart)) {
-    if ($step !== 'accountwahl' && empty($_SESSION['Kunde']->cPasswort)) {
-        // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
-        $step     = 'accountwahl';
-        $cHinweis = Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
-        $postData = StringHandler::filterXSS($_POST);
+if (empty($_SESSION['Kunde']->cPasswort) && \Extensions\Download::hasDownloads($cart)) {
+    // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
+    $step = 'accountwahl';
 
-        Shop::Smarty()->assign('cKundenattribut_arr', getKundenattribute($postData))
-            ->assign('kLieferadresse', $postData['kLieferadresse'])
-            ->assign('cPost_var', $postData);
+    $alertHelper->addAlert(
+        Alert::TYPE_NOTE,
+        Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout'),
+        'digitalProductsRegisterInfo'
+    );
 
-        if ((int)$postData['shipping_address'] === 1) {
-            Shop::Smarty()->assign(
-                'Lieferadresse',
-                mappeLieferadresseKontaktdaten($postData['register']['shipping_address'])
-            );
-        }
-
-        unset($_SESSION['Kunde']);
-    } elseif ($step === 'accountwahl') {
-        $cHinweis .= Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
+    unset($_SESSION['Kunde']);
+    // unset not needed values to ensure the correct $step
+    $_POST = [];
+    if (isset($_GET['editRechnungsadresse'])) {
+        unset($_GET['editRechnungsadresse']);
     }
 }
 // autom. step ermitteln
@@ -192,7 +186,7 @@ if ($step === 'ZahlungZusatzschritt') {
 if ($step === 'Bestaetigung') {
     validateCouponInCheckout();
     plausiGuthaben($_POST);
-    Shop::Smarty()->assign('cKuponfehler_arr', plausiKupon($_POST));
+    plausiKupon($_POST);
     //evtl genutztes guthaben anpassen
     pruefeGuthabenNutzen();
     // Eventuellen Zahlungsarten Aufpreis/Rabatt neusetzen
@@ -243,7 +237,7 @@ Shop::Smarty()->assign(
     ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
     ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
     ->assign('Link', $link)
-    ->assign('hinweis', $cHinweis)
+    ->assign('alertNote', $alertHelper->alertTypeExists(Alert::TYPE_NOTE))
     ->assign('step', $step)
     ->assign('editRechnungsadresse', Request::verifyGPCDataInt('editRechnungsadresse'))
     ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())

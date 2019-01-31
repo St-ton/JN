@@ -14,13 +14,9 @@
     <div class="panel-wrap">
         <form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" class="evo-validate">
             {$jtl_token}
-            {if isset($nArtikelNichtGekauft) && $nArtikelNichtGekauft == 1}
-                <div class="alert alert-danger">{lang key='productNotBuyed' section='product rating'}</div>
-            {/if}
-    
-            {if empty($smarty.session.Kunde->kKunde)}
-                <div class="alert alert-danger">{lang key='loginFirst' section='product rating'}</div>
-            {elseif $smarty.session.Kunde->kKunde > 0 && empty($nArtikelNichtGekauft)}
+            {$alertList->displayAlertByKey('productNotBuyed')}
+            {$alertList->displayAlertByKey('loginFirst')}
+            {if $ratingAllowed}
                 <div class="alert alert-info">{lang key='shareYourRatingGuidelines' section='product rating'}.</div>
                 <div class="vmiddle">
                     {if !empty($Artikel->Bilder[0]->cPfadMini)}

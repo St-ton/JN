@@ -70,8 +70,8 @@ class Date
     public static function getDateParts(string $dateString): array
     {
         $parts = [];
-        if (\strlen($dateString) > 0) {
-            if (\strtolower($dateString) === 'now()') {
+        if (\mb_strlen($dateString) > 0) {
+            if (\mb_convert_case($dateString, \MB_CASE_LOWER) === 'now()') {
                 $dateString = 'now';
             }
             try {

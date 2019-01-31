@@ -23,7 +23,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';
 
 Shop::setPageType(PAGE_REGISTRIERUNG);
-$conf    = Shop::getSettings([
+$conf  = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
     CONF_KUNDEN,
@@ -31,12 +31,11 @@ $conf    = Shop::getSettings([
     CONF_KUNDENWERBENKUNDEN,
     CONF_NEWSLETTER
 ]);
-$kLink   = $linkHelper->getSpecialPageLinkKey(LINKTYP_REGISTRIEREN);
-$link    = $linkHelper->getPageLink($kLink);
-$step    = 'formular';
-$hinweis = '';
-$titel   = Shop::Lang()->get('newAccount', 'login');
-$edit    = isset($_GET['editRechnungsadresse'])
+$kLink = $linkHelper->getSpecialPageLinkKey(LINKTYP_REGISTRIEREN);
+$link  = $linkHelper->getPageLink($kLink);
+$step  = 'formular';
+$titel = Shop::Lang()->get('newAccount', 'login');
+$edit  = isset($_GET['editRechnungsadresse'])
     ? (int)$_GET['editRechnungsadresse']
     : 0;
 if (isset($_POST['editRechnungsadresse'])) {
@@ -60,7 +59,6 @@ if (isset($_FILES['vcard'])
 Shop::Smarty()->assign('editRechnungsadresse', $edit)
     ->assign('Ueberschrift', $titel)
     ->assign('Link', $link)
-    ->assign('hinweis', $hinweis)
     ->assign('step', $step)
     ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
     ->assign('code_registrieren', false)

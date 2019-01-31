@@ -330,12 +330,12 @@ function pruefeWarenkorbArtikelSichtbarkeit(int $customerGroupID): void
  */
 function fuehreLoginAus($userLogin, $passLogin): void
 {
-    global $cHinweis;
-    $oKupons  = [];
-    $Kunde    = new Kunde();
-    $csrfTest = Form::validateToken();
+    $alertHelper = Shop::Container()->getAlertService();
+    $oKupons     = [];
+    $Kunde       = new Kunde();
+    $csrfTest    = Form::validateToken();
     if ($csrfTest === false) {
-        $cHinweis .= Shop::Lang()->get('csrfValidationFailed');
+        $alertHelper->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('csrfValidationFailed'), 'csrfValidationFailed');
         Shop::Container()->getLogService()->warning('CSRF-Warnung für Login: ' . $_POST['login']);
 
         return;
@@ -466,8 +466,8 @@ function fuehreLoginAus($userLogin, $passLogin): void
             pruefeWarenkorbArtikelSichtbarkeit($_SESSION['Kunde']->kKundengruppe);
             executeHook(HOOK_JTL_PAGE_REDIRECT);
             Cart::checkAdditions();
-            if (strlen($cURL) > 0) {
-                if (strpos($cURL, 'http') !== 0) {
+            if (mb_strlen($cURL) > 0) {
+                if (mb_strpos($cURL, 'http') !== 0) {
                     $cURL = Shop::getURL() . '/' . ltrim($cURL, '/');
                 }
                 header('Location: ' . $cURL, true, 301);
@@ -522,12 +522,12 @@ function fuehreLoginAus($userLogin, $passLogin): void
                 Shop::Lang()->setzeSprache($oISOSprache->cISO);
             }
         } else {
-            $cHinweis .= Shop::Lang()->get('loginNotActivated');
+            $alertHelper->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('loginNotActivated'), 'loginNotActivated');
         }
     } elseif ($nReturnValue === 2) { // Kunde ist gesperrt
-        $cHinweis .= Shop::Lang()->get('accountLocked');
+        $alertHelper->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('accountLocked'), 'accountLocked');
     } elseif ($nReturnValue === 3) { // Kunde ist nicht aktiv
-        $cHinweis .= Shop::Lang()->get('accountInactive');
+        $alertHelper->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('accountInactive'), 'accountInactive');
     } else {
         if (isset($config['kunden']['kundenlogin_max_loginversuche'])
             && $config['kunden']['kundenlogin_max_loginversuche'] !== ''
@@ -537,6 +537,6 @@ function fuehreLoginAus($userLogin, $passLogin): void
                 $_SESSION['showLoginCaptcha'] = true;
             }
         }
-        $cHinweis .= Shop::Lang()->get('incorrectLogin');
+        $alertHelper->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('incorrectLogin'), 'incorrectLogin');
     }
 }

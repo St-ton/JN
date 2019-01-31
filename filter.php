@@ -133,7 +133,7 @@ if ($oSuchergebnisse->getProducts()->count() === 0) {
     }
 }
 $oNavigationsinfo = $NaviFilter->getMetaData()->getNavigationInfo($AktuelleKategorie, $expandedCategories);
-if (strpos(basename($NaviFilter->getFilterURL()->getURL()), '.php') === false) {
+if (mb_strpos(basename($NaviFilter->getFilterURL()->getURL()), '.php') === false) {
     $cCanonicalURL = $NaviFilter->getFilterURL()->getURL(null, true) . ($pages->getCurrentPage() > 1
         ? SEP_SEITE . $pages->getCurrentPage()
         : '');

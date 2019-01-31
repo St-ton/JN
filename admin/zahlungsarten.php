@@ -37,7 +37,7 @@ if (($action = Request::verifyGPDataString('a')) !== ''
 ) {
     $method = $db->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
 
-    if (isset($method->cModulId) && strlen($method->cModulId) > 0) {
+    if (isset($method->cModulId) && mb_strlen($method->cModulId) > 0) {
         (new ZahlungsLog($method->cModulId))->loeschen();
         $hinweis = sprintf(__('successLogReset'), $method->cName);
     }
@@ -91,7 +91,7 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
     $upd->nWaehrendBestellung = $nWaehrendBestellung;
     $db->update('tzahlungsart', 'kZahlungsart', (int)$zahlungsart->kZahlungsart, $upd);
     // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
-    if (strpos($zahlungsart->cModulId, 'kPlugin_') !== false) {
+    if (mb_strpos($zahlungsart->cModulId, 'kPlugin_') !== false) {
         $kPlugin     = \Plugin\Helper::getIDByModuleID($zahlungsart->cModulId);
         $cModulId    = \Plugin\Helper::getModuleIDByPluginID($kPlugin, $zahlungsart->cName);
         $Conf        = $db->query(
@@ -117,7 +117,7 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
                     $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
-                    $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                    $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                     break;
             }
             $db->delete(
@@ -152,7 +152,7 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
                     $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
-                    $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                    $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                     break;
             }
             $db->delete(
@@ -208,7 +208,7 @@ if ($step === 'einstellen') {
             PaymentMethod::activatePaymentMethod($zahlungsart);
         }
         // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
-        if (strpos($zahlungsart->cModulId, 'kPlugin_') !== false) {
+        if (mb_strpos($zahlungsart->cModulId, 'kPlugin_') !== false) {
             $kPlugin     = \Plugin\Helper::getIDByModuleID($zahlungsart->cModulId);
             $cModulId    = \Plugin\Helper::getModuleIDByPluginID($kPlugin, $zahlungsart->cName);
             $Conf        = $db->query(
@@ -296,7 +296,7 @@ if ($step === 'einstellen') {
     $filterStandard->addDaterangefield('Zeitraum', 'dDatum');
     $filterStandard->assemble();
 
-    if (isset($method->cModulId) && strlen($method->cModulId) > 0) {
+    if (isset($method->cModulId) && mb_strlen($method->cModulId) > 0) {
         $paginationPaymentLog = (new Pagination('standard'))
             ->setItemCount(ZahlungsLog::count($method->cModulId, -1, $filterStandard->getWhereSQL()))
             ->assemble();

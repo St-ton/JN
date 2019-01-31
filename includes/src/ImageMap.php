@@ -87,7 +87,7 @@ class ImageMap implements IExtensionPoint
         );
         $imageMap->cBildPfad = Shop::getImageBaseURL() . PFAD_IMAGEMAP . $imageMap->cBildPfad;
         $parsed              = parse_url($imageMap->cBildPfad);
-        $imageMap->cBild     = substr($parsed['path'], strrpos($parsed['path'], '/') + 1);
+        $imageMap->cBild     = mb_substr($parsed['path'], mb_strrpos($parsed['path'], '/') + 1);
         $defaultOptions      = Artikel::getDefaultOptions();
 
         [$imageMap->fWidth, $imageMap->fHeight]    = getimagesize(PFAD_ROOT . PFAD_IMAGEMAP . $imageMap->cBildPfad);
@@ -125,13 +125,13 @@ class ImageMap implements IExtensionPoint
                         'cName'
                     )->cName;
                 }
-                if (strlen($area->cTitel) === 0) {
+                if (mb_strlen($area->cTitel) === 0) {
                     $area->cTitel = $area->oArtikel->cName;
                 }
-                if (strlen($area->cUrl) === 0) {
+                if (mb_strlen($area->cUrl) === 0) {
                     $area->cUrl = $area->oArtikel->cURL;
                 }
-                if (strlen($area->cBeschreibung) === 0) {
+                if (mb_strlen($area->cBeschreibung) === 0) {
                     $area->cBeschreibung = $area->oArtikel->cKurzBeschreibung;
                 }
             }

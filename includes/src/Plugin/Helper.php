@@ -211,7 +211,7 @@ class Helper
                     '" hat keinen gültigen Lizenzschlüssel und wurde daher deaktiviert!',
                     [$plugin->getID()]
                 );
-                if (isset($params['cModulId']) && \strlen($params['cModulId']) > 0) {
+                if (isset($params['cModulId']) && \mb_strlen($params['cModulId']) > 0) {
                     self::updatePaymentMethodState($plugin, 0);
                 }
                 \Shop::Container()->getCache()->flush('hook_list');
@@ -264,8 +264,11 @@ class Helper
      */
     public static function getModuleIDByPluginID(int $id, string $paymentMethodName): string
     {
-        return $id > 0 && \strlen($paymentMethodName) > 0
-            ? 'kPlugin_' . $id . '_' . \strtolower(\str_replace([' ', '-', '_'], '', $paymentMethodName))
+        return $id > 0 && \mb_strlen($paymentMethodName) > 0
+            ? 'kPlugin_' . $id . '_' . \mb_convert_case(
+                \str_replace([' ', '-', '_'], '', $paymentMethodName),
+                \MB_CASE_LOWER
+            )
             : '';
     }
 
@@ -297,17 +300,17 @@ class Helper
 
     /**
      * @param int    $id
-     * @param string $cISO
+     * @param string $iso
      * @return array
      * @former gibPluginSprachvariablen()
      * @since 5.0.0
      */
-    public static function getLanguageVariablesByID(int $id, $cISO = ''): array
+    public static function getLanguageVariablesByID(int $id, $iso = ''): array
     {
         $return = [];
         $cSQL   = '';
-        if (\strlen($cISO) > 0) {
-            $cSQL = " AND tpluginsprachvariablesprache.cISO = '" . \strtoupper($cISO) . "'";
+        if (\mb_strlen($iso) > 0) {
+            $cSQL = " AND tpluginsprachvariablesprache.cISO = '" . \mb_convert_case($iso, \MB_CASE_UPPER) . "'";
         }
         $langVars = \Shop::Container()->getDB()->query(
             'SELECT t.kPluginSprachvariable,
@@ -333,7 +336,7 @@ class Helper
                 tpluginsprachvariable.cName,
                 tpluginsprachvariable.cBeschreibung,
                 CONCAT('#', tpluginsprachvariable.cName, '#') AS customValue, '" .
-                \strtoupper($cISO) . "' AS cISO
+                \mb_convert_case($iso, MB_CASE_UPPER) . "' AS cISO
                     FROM tpluginsprachvariable
                     WHERE tpluginsprachvariable.kPlugin = " . $id,
                 ReturnType::ARRAY_OF_ASSOC_ARRAYS

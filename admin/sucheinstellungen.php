@@ -34,7 +34,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
     header('Pragma: no-cache');
     header('Content-type: application/json');
 
-    $index = strtolower(StringHandler::xssClean($_GET['index']));
+    $index = mb_convert_case(StringHandler::xssClean($_GET['index']), MB_CASE_LOWER);
 
     if (!in_array($index, ['tartikel', 'tartikelsprache'], true)) {
         header(Request::makeHTTPHeader(403), true);

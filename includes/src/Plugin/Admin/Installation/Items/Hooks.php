@@ -40,10 +40,10 @@ class Hooks extends AbstractItem
                 $i = (string)$i;
                 \preg_match('/[0-9]+\sattr/', $i, $hits1);
                 \preg_match('/[0-9]+/', $i, $hits2);
-                if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($i)) {
+                if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($i)) {
                     $nHookID   = (int)$hook['id'];
                     $nPriority = isset($hook['priority']) ? (int)$hook['priority'] : 5;
-                } elseif (isset($hits2[0]) && \strlen($hits2[0]) === \strlen($i)) {
+                } elseif (isset($hits2[0]) && \mb_strlen($hits2[0]) === \mb_strlen($i)) {
                     $plugin             = new \stdClass();
                     $plugin->kPlugin    = $this->plugin->kPlugin;
                     $plugin->nHook      = $nHookID;

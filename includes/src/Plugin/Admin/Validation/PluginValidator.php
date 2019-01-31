@@ -85,7 +85,7 @@ final class PluginValidator extends AbstractValidator
         }
         \preg_match('/[0-9]{3}/', $baseNode['XMLVersion'], $hits);
         if (\count($hits) === 0
-            || (\strlen($hits[0]) !== \strlen($baseNode['XMLVersion']) && (int)$baseNode['XMLVersion'] >= 100)
+            || (\mb_strlen($hits[0]) !== \mb_strlen($baseNode['XMLVersion']) && (int)$baseNode['XMLVersion'] >= 100)
         ) {
             return InstallCode::INVALID_XML_VERSION;
         }
@@ -151,15 +151,15 @@ final class PluginValidator extends AbstractValidator
             $i = (string)$i;
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
-            if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($i)) {
+            if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($i)) {
                 $version = $Version['nr'];
                 \preg_match('/[0-9]+/', $Version['nr'], $hits);
-                if (\strlen($hits[0]) !== \strlen($Version['nr'])) {
+                if (\mb_strlen($hits[0]) !== \mb_strlen($Version['nr'])) {
                     return InstallCode::INVALID_VERSION_NUMBER;
                 }
-            } elseif (\strlen($hits2[0]) === \strlen($i)) {
+            } elseif (\mb_strlen($hits2[0]) === \mb_strlen($i)) {
                 if (isset($Version['SQL'])
-                    && \strlen($Version['SQL']) > 0
+                    && \mb_strlen($Version['SQL']) > 0
                     && !\file_exists($dir . '/' . \PFAD_PLUGIN_VERSION . $version . '/' .
                         \PFAD_PLUGIN_SQL . $Version['SQL'])
                 ) {
@@ -173,7 +173,7 @@ final class PluginValidator extends AbstractValidator
                     $Version['CreateDate'],
                     $hits
                 );
-                if (!isset($hits[0]) || \strlen($hits[0]) !== \strlen($Version['CreateDate'])) {
+                if (!isset($hits[0]) || \mb_strlen($hits[0]) !== \mb_strlen($Version['CreateDate'])) {
                     return InstallCode::INVALID_DATE;
                 }
             }

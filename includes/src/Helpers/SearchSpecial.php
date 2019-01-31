@@ -29,14 +29,14 @@ class SearchSpecial
         $langID  = $langID > 0 ? $langID : Shop::getLanguageID();
         $cacheID = 'haso_' . $langID;
         if (($overlays = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $overlays                  = [];
-            $searchspecialOverlayTypes = Shop::Container()->getDB()->query(
+            $overlays = [];
+            $types    = Shop::Container()->getDB()->query(
                 'SELECT kSuchspecialOverlay
                     FROM tsuchspecialoverlay',
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            foreach ($searchspecialOverlayTypes as $searchspecialOverlayType) {
-                $overlay = \Overlay::getInstance($searchspecialOverlayType->kSuchspecialOverlay, $langID);
+            foreach ($types as $type) {
+                $overlay = \Overlay::getInstance((int)$type->kSuchspecialOverlay, $langID);
                 if ($overlay->getActive() === 1) {
                     $overlays[] = $overlay;
                 }

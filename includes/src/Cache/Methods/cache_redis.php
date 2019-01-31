@@ -310,7 +310,7 @@ class cache_redis implements ICachingMethod
         if (isset($stats[$idx])) {
             $dbStats = \explode(',', $stats[$idx]);
             foreach ($dbStats as $stat) {
-                if (\strpos($stat, 'keys=') !== false) {
+                if (\mb_strpos($stat, 'keys=') !== false) {
                     $numEntries = \str_replace('keys=', '', $stat);
                 }
             }

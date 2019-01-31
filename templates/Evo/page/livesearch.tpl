@@ -2,11 +2,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{if count($LivesucheTop) === 0 && count($LivesucheLast) === 0}
-    <div class="alert alert-warning">
-        {lang key='noDataAvailable' section='global'}
-    </div>
-{else}
+{if count($LivesucheTop) > 0 || count($LivesucheLast) > 0}
     {include file='snippets/opc_mount_point.tpl' id='opc_livesearch_prepend'}
     <div class="row" id="livesearch">
         <div class="col-xs-6">

@@ -6,13 +6,6 @@
     <h1>{$Suchergebnisse->getSearchTermWrite()}</h1>
 {/if}
 
-{if !empty($hinweis)}
-    <div class="alert alert-success">{$hinweis}</div>
-{/if}
-{if !empty($fehler)}
-    <div class="alert alert-danger">{$fehler}</div>
-{/if}
-
 {if $Suchergebnisse->getSearchUnsuccessful() == true}
     <div class="alert alert-info">{lang key='noResults' section='productOverview'}</div>
     <form id="suche2" action="{$ShopURL}" method="get" class="form">

@@ -446,7 +446,7 @@ class Metadata implements MetadataInterface
                 }
             }
 
-            if (\strlen($catDescription) > 1) {
+            if (\mb_strlen($catDescription) > 1) {
                 $catDescription   = \str_replace('"', '', $catDescription);
                 $catDescription   = \StringHandler::htmlentitydecode($catDescription, \ENT_NOQUOTES);
                 $cMetaDescription = !empty($globalMeta[$languageID]->Meta_Description_Praefix)
@@ -543,11 +543,11 @@ class Metadata implements MetadataInterface
                     $products[$i]->cName,
                     $excludedKeywords
                 ); // Filter nicht erlaubte Keywords
-                if (\strpos($extProductName, ' ') !== false) {
+                if (\mb_strpos($extProductName, ' ') !== false) {
                     // Wenn der Dateiname aus mehreren Wörtern besteht
                     $subName = '';
                     foreach (\explode(' ', $extProductName) as $j => $tmp) {
-                        if (\strlen($tmp) > 2) {
+                        if (\mb_strlen($tmp) > 2) {
                             $tmp = \str_replace(',', '', $tmp);
                             $subName   .= $j > 0
                                 ? ', ' . $tmp
@@ -749,7 +749,7 @@ class Metadata implements MetadataInterface
     public function truncateMetaTitle($cTitle): string
     {
         return ($length = (int)$this->conf['metaangaben']['global_meta_maxlaenge_title']) > 0
-            ? \substr($cTitle, 0, $length)
+            ? \mb_substr($cTitle, 0, $length)
             : $cTitle;
     }
 
@@ -900,7 +900,7 @@ class Metadata implements MetadataInterface
             }
         }
         $naviURL  = $this->productFilter->getFilterURL()->getURL();
-        $naviURL .= \strpos($naviURL, '?') === false ? '?ed=' : '&amp;ed=';
+        $naviURL .= \mb_strpos($naviURL, '?') === false ? '?ed=' : '&amp;ed=';
 
         $extendedView->cURL_arr[\ERWDARSTELLUNG_ANSICHT_LISTE]   = $naviURL . \ERWDARSTELLUNG_ANSICHT_LISTE;
         $extendedView->cURL_arr[\ERWDARSTELLUNG_ANSICHT_GALERIE] = $naviURL . \ERWDARSTELLUNG_ANSICHT_GALERIE;
@@ -962,7 +962,7 @@ class Metadata implements MetadataInterface
     /**
      * @param string $metaProposal the proposed meta text value.
      * @param string $metaSuffix append suffix to meta value that wont be shortened
-     * @param int    $maxLength $metaProposal will be truncated to $maxlength - \strlen($metaSuffix) characters
+     * @param int    $maxLength $metaProposal will be truncated to $maxlength - \mb_strlen($metaSuffix) characters
      * @return string truncated meta value with optional suffix (always appended if set)
      */
     public static function prepareMeta(string $metaProposal, string $metaSuffix = null, int $maxLength = null): string
@@ -970,7 +970,7 @@ class Metadata implements MetadataInterface
         $metaProposal = \str_replace('"', '', \StringHandler::unhtmlentities($metaProposal));
         $metaSuffix   = !empty($metaSuffix) ? $metaSuffix : '';
         if (!empty($maxLength) && $maxLength > 0) {
-            $metaProposal = \substr($metaProposal, 0, $maxLength);
+            $metaProposal = \mb_substr($metaProposal, 0, $maxLength);
         }
 
         return \StringHandler::htmlentities(\trim(\preg_replace('/\s\s+/', ' ', $metaProposal))) . $metaSuffix;

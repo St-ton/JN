@@ -89,7 +89,7 @@ class Lieferschein
         $item = Shop::Container()->getDB()->select('tlieferschein', 'kLieferschein', $kLieferschein);
         if ($item !== null && $item->kLieferschein > 0) {
             foreach (array_keys(get_object_vars($item)) as $member) {
-                $setter = 'set' . substr($member, 1);
+                $setter = 'set' . mb_substr($member, 1);
                 if (is_callable([$this, $setter])) {
                     $this->$setter($item->$member);
                 } else {

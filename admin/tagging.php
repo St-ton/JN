@@ -22,7 +22,7 @@ $cFehler     = '';
 $step        = 'uebersicht';
 $settingsIDs = [427, 428, 431, 433, 434, 435, 430];
 $db          = Shop::Container()->getDB();
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateToken()) {
@@ -93,7 +93,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
         );
         foreach ($tags as $tag) {
             if ($tag->cName !== $_POST['mapping_' . $tag->kTag]) {
-                if (strlen($_POST['mapping_' . $tag->kTag]) > 0) {
+                if (mb_strlen($_POST['mapping_' . $tag->kTag]) > 0) {
                     $tagmapping_obj           = new stdClass();
                     $tagmapping_obj->kSprache = (int)$_SESSION['kSprache'];
                     $tagmapping_obj->cName    = $tag->cName;
@@ -155,7 +155,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
             foreach ($_POST['kTag'] as $kTag) {
                 $kTag = (int)$kTag;
                 $oTag = $db->select('ttag', 'kTag', $kTag);
-                if (strlen($oTag->cName) > 0) {
+                if (mb_strlen($oTag->cName) > 0) {
                     $db->query(
                         "DELETE ttag, tseo
                             FROM ttag
@@ -183,7 +183,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
             foreach ($_POST['kTagMapping'] as $kTagMapping) {
                 $kTagMapping = (int)$kTagMapping;
                 $oMapping    = $db->select('ttagmapping', 'kTagMapping', $kTagMapping);
-                if (strlen($oMapping->cName) > 0) {
+                if (mb_strlen($oMapping->cName) > 0) {
                     $db->delete('ttagmapping', 'kTagMapping', $kTagMapping);
 
                     $cHinweis .= sprintf(__('successMapDelete'), $oMapping->cName) . '<br />';

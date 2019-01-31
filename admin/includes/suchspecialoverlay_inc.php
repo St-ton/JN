@@ -57,11 +57,12 @@ function speicherEinstellung(
             ->setPosition((int)($post['nPosition'] ?? 0))
             ->setPriority((int)$post['nPrio']);
 
-    if (strlen($files['name']) > 0) {
+    if (mb_strlen($files['name']) > 0) {
         loescheBild($overlay);
         $overlay->setImageName(Overlay::IMAGENAME_TEMPLATE . '_' .
-            $overlay->getLanguage() . '_' . $overlay->getType()
-                . mappeFileTyp($files['type']));
+            $overlay->getLanguage() . '_' . $overlay->getType() .
+            mappeFileTyp($files['type'])
+        );
         speicherBild($files, $overlay);
     }
     $overlay->save();

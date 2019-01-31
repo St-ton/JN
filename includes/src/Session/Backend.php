@@ -12,9 +12,9 @@ namespace Session;
  */
 class Backend extends AbstractSession
 {
-    public const DEFAULT_SESSION = 'eSIdAdm';
+    private const DEFAULT_SESSION = 'eSIdAdm';
 
-    public const SESSION_HASH_KEY = 'session.hash';
+    private const SESSION_HASH_KEY = 'session.hash';
 
     /**
      * @var Backend
@@ -38,7 +38,6 @@ class Backend extends AbstractSession
     {
         parent::__construct(true, self::DEFAULT_SESSION);
         self::$instance = $this;
-
         $_SESSION['jtl_token'] = $_SESSION['jtl_token'] ?? \Shop::Container()->getCryptoService()->randomString(32);
         if (!isset($_SESSION['kSprache'], $_SESSION['cISOSprache'])) {
             $lang                    = \Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
@@ -53,7 +52,7 @@ class Backend extends AbstractSession
             $_SESSION['Waehrung'] = new \Currency($_SESSION['Waehrung']->kWaehrung);
         }
         if (empty($_SESSION['Sprachen'])) {
-            $_SESSION['Sprachen'] = \Sprache::getInstance(false)->gibInstallierteSprachen();
+            $_SESSION['Sprachen'] = \Sprache::getInstance()->gibInstallierteSprachen();
         }
     }
 

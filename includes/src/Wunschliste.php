@@ -312,7 +312,7 @@ class Wunschliste
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($wlPositionAttributes as $wlPositionAttribute) {
-                if (strlen($wlPositionAttribute->cFreifeldWert) > 0) {
+                if (mb_strlen($wlPositionAttribute->cFreifeldWert) > 0) {
                     $wlPositionAttribute->cEigenschaftName     = $wlPositionAttribute->cName;
                     $wlPositionAttribute->cEigenschaftWertName = $wlPositionAttribute->cFreifeldWert;
                 }
@@ -445,7 +445,7 @@ class Wunschliste
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($wlPositionAttributes as $wlPositionAttribute) {
-                if (strlen($wlPositionAttribute->cFreifeldWert) > 0) {
+                if (mb_strlen($wlPositionAttribute->cFreifeldWert) > 0) {
                     if (empty($wlPositionAttribute->cName)) {
                         $_cName                     = Shop::Container()->getDB()->queryPrepared(
                             'SELECT IF(LENGTH(teigenschaftsprache.cName) > 0, 
@@ -481,7 +481,7 @@ class Wunschliste
             }
             $wlPosition->Artikel = new Artikel();
             $wlPosition->Artikel->fuelleArtikel($wlPosition->kArtikel, $defaultOptions);
-            $wlPosition->cArtikelName    = strlen($wlPosition->Artikel->cName) === 0
+            $wlPosition->cArtikelName    = mb_strlen($wlPosition->Artikel->cName) === 0
                 ? $cArtikelName
                 : $wlPosition->Artikel->cName;
             $this->CWunschlistePos_arr[] = $wlPosition;
@@ -586,8 +586,10 @@ class Wunschliste
                 $this->delWunschlistePosSess($wlPosition->kArtikel);
             }
         }
+        $hinweis .= implode(', ', $cArtikel_arr);
+        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $hinweis, 'wlNote');
 
-        return $hinweis . implode(', ', $cArtikel_arr);
+        return $hinweis;
     }
 
     /**
@@ -652,7 +654,7 @@ class Wunschliste
     {
         $cURLID = StringHandler::filterXSS(Request::verifyGPDataString('wlid'));
 
-        if (strlen($cURLID) > 0) {
+        if (mb_strlen($cURLID) > 0) {
             $campaing = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
             $id       = $campaing->kKampagne > 0
                 ? ($cURLID . '&' . $campaing->cParameter . '=' . $campaing->cWert)
@@ -681,7 +683,7 @@ class Wunschliste
             );
             if (isset($oWunschliste->kWunschliste)) {
                 $_SESSION['Wunschliste'] = new Wunschliste((int)$oWunschliste->kWunschliste);
-                $GLOBALS['hinweis']      = $_SESSION['Wunschliste']->ueberpruefePositionen();
+                $_SESSION['Wunschliste']->ueberpruefePositionen();
             }
         }
     }
@@ -739,7 +741,7 @@ class Wunschliste
                     );
                     // Neue Standard Wunschliste in die Session laden
                     $_SESSION['Wunschliste'] = new Wunschliste($oWunschliste->kWunschliste);
-                    $GLOBALS['hinweis']      = $_SESSION['Wunschliste']->ueberpruefePositionen();
+                    $_SESSION['Wunschliste']->ueberpruefePositionen();
                 }
             }
 
@@ -756,8 +758,8 @@ class Wunschliste
     public static function update(int $id): string
     {
         $db = Shop::Container()->getDB();
-        if (isset($_POST['WunschlisteName']) && strlen($_POST['WunschlisteName']) > 0) {
-            $cName = StringHandler::htmlentities(StringHandler::filterXSS(substr($_POST['WunschlisteName'], 0, 254)));
+        if (isset($_POST['WunschlisteName']) && mb_strlen($_POST['WunschlisteName']) > 0) {
+            $cName = StringHandler::htmlentities(StringHandler::filterXSS(mb_substr($_POST['WunschlisteName'], 0, 254)));
             $db->update('twunschliste', 'kWunschliste', $id, (object)['cName' => $cName]);
         }
         $positions = $db->selectAll(
@@ -773,10 +775,10 @@ class Wunschliste
         foreach ($positions as $position) {
             $kWunschlistePos = (int)$position->kWunschlistePos;
             // Ist ein Kommentar vorhanden
-            if (strlen($_POST['Kommentar_' . $kWunschlistePos]) > 0) {
+            if (mb_strlen($_POST['Kommentar_' . $kWunschlistePos]) > 0) {
                 $upd             = new stdClass();
                 $upd->cKommentar = StringHandler::htmlentities(
-                    StringHandler::filterXSS($db->escape(substr($_POST['Kommentar_' . $kWunschlistePos], 0, 254)))
+                    StringHandler::filterXSS($db->escape(mb_substr($_POST['Kommentar_' . $kWunschlistePos], 0, 254)))
                 );
                 $db->update('twunschlistepos', 'kWunschlistePos', $kWunschlistePos, $upd);
             }
@@ -819,7 +821,7 @@ class Wunschliste
             // Session updaten
             unset($_SESSION['Wunschliste']);
             $_SESSION['Wunschliste'] = new Wunschliste($id);
-            $GLOBALS['hinweis']      = $_SESSION['Wunschliste']->ueberpruefePositionen();
+            $_SESSION['Wunschliste']->ueberpruefePositionen();
 
             $msg = Shop::Lang()->get('wishlistStandard', 'messages');
         }
@@ -901,19 +903,19 @@ class Wunschliste
             foreach ($cValidEmail_arr as $cValidEmail) {
                 $msg .= $cValidEmail . ', ';
             }
-            $msg = substr($msg, 0, -2) . '<br />';
+            $msg = mb_substr($msg, 0, -2) . '<br />';
         }
         // Hat der benutzer mehr Emails angegeben als erlaubt sind?
         if (count($recipients) > (int)$conf['global']['global_wunschliste_max_email']) {
             $nZuviel = count($recipients) - (int)$conf['global']['global_wunschliste_max_email'];
             $msg    .= '<br />';
 
-            if (strpos($msg, Shop::Lang()->get('novalidEmail', 'messages')) === false) {
+            if (mb_strpos($msg, Shop::Lang()->get('novalidEmail', 'messages')) === false) {
                 $msg = Shop::Lang()->get('novalidEmail', 'messages');
             }
 
             for ($i = 0; $i < $nZuviel; $i++) {
-                if (strpos($msg, $recipients[(count($recipients) - 1) - $i]) === false) {
+                if (mb_strpos($msg, $recipients[(count($recipients) - 1) - $i]) === false) {
                     if ($i > 0) {
                         $msg .= ', ' . $recipients[(count($recipients) - 1) - $i];
                     } else {

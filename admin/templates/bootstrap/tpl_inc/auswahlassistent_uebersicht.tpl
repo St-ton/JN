@@ -40,8 +40,8 @@
                                 <table class="list table">
                                     <thead>
                                         <tr>
-                                            <th class="tcenter"></th>
-                                            <th class="check">&nbsp;</th>
+                                            <th class="check" style="width:35px">&nbsp;</th>
+                                            <th class="tcenter">{__('active')}</th>
                                             <th class="tleft">{__('aaName')}</th>
                                             <th class="tcenter">{__('aaLocation')}</th>
                                             <th class="tright">&nbsp;</th>
@@ -50,12 +50,12 @@
                                     <tbody>
                                         {foreach $oAuswahlAssistentGruppe_arr as $oAuswahlAssistentGruppe}
                                             <tr{if !$oAuswahlAssistentGruppe->nAktiv} class="text-danger"{/if}>
-                                                <td>{if !$oAuswahlAssistentGruppe->nAktiv}<i class="fa fa-times"></i>{/if}</td>
                                                 <td class="check">
                                                     <input name="kAuswahlAssistentGruppe_arr[]" type="checkbox"
                                                            value="{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}"
                                                            id="group-{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}"/>
                                                 </td>
+                                                <td>{if !$oAuswahlAssistentGruppe->nAktiv}<i class="fa fa-times"></i>{else}<i class="fa fa-check"></i>{/if}</td>
                                                 <td class="tleft">
                                                     <label for="group-{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}">
                                                         {$oAuswahlAssistentGruppe->cName}
@@ -132,11 +132,11 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <td></td>
                                             <td class="check">
                                                 <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                            <td colspan="4">
+                                                <label for="ALLMSGS">{__('globalSelectAll')}</label>
                                             </td>
-                                            <td colspan="3" class="tleft"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
                                         </tr>
                                     </tfoot>
                                 </table>

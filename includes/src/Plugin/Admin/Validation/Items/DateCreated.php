@@ -29,7 +29,7 @@ class DateCreated extends AbstractItem
             $hits
         );
 
-        return !isset($hits[0]) || \strlen($hits[0]) !== \strlen($baseNode['CreateDate'])
+        return !isset($hits[0]) || \mb_strlen($hits[0]) !== \mb_strlen($baseNode['CreateDate'])
             ? InstallCode::INVALID_DATE
             : InstallCode::OK;
     }

@@ -80,7 +80,7 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
                     $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
-                    $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                    $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                     break;
             }
             $db->insert('texportformateinstellungen', $aktWert);
@@ -103,10 +103,10 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
 }
 $cAction       = null;
 $kExportformat = null;
-if (isset($_POST['action']) && strlen($_POST['action']) > 0 && (int)$_POST['kExportformat'] > 0) {
+if (isset($_POST['action']) && mb_strlen($_POST['action']) > 0 && (int)$_POST['kExportformat'] > 0) {
     $cAction       = $_POST['action'];
     $kExportformat = (int)$_POST['kExportformat'];
-} elseif (isset($_GET['action']) && strlen($_GET['action']) > 0 && (int)$_GET['kExportformat'] > 0) {
+} elseif (isset($_GET['action']) && mb_strlen($_GET['action']) > 0 && (int)$_GET['kExportformat'] > 0) {
     $cAction       = $_GET['action'];
     $kExportformat = (int)$_GET['kExportformat'];
 }
@@ -216,7 +216,7 @@ if ($step === 'uebersicht') {
         );
         $exportformate[$i]->bPluginContentExtern = false;
         if ($exportformate[$i]->kPlugin > 0
-            && strpos($exportformate[$i]->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false
+            && mb_strpos($exportformate[$i]->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false
         ) {
             $exportformate[$i]->bPluginContentExtern = true;
         }
@@ -250,7 +250,7 @@ if ($step === 'neuer Export') {
         $exportformat->cKopfzeile = str_replace("\t", '<tab>', $exportformat->cKopfzeile);
         $exportformat->cContent   = str_replace("\t", '<tab>', $exportformat->cContent);
         $exportformat->cFusszeile = str_replace("\t", '<tab>', $exportformat->cFusszeile);
-        if ($exportformat->kPlugin > 0 && strpos($exportformat->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
+        if ($exportformat->kPlugin > 0 && mb_strpos($exportformat->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
             $exportformat->bPluginContentFile = true;
         }
         $smarty->assign('Exportformat', $exportformat);

@@ -499,13 +499,13 @@ class CheckBox
         $this->oCheckBoxSprache_arr = [];
 
         foreach ($texts as $cISO => $cTextAssoc) {
-            if (strlen($cTextAssoc) > 0) {
+            if (mb_strlen($cTextAssoc) > 0) {
                 $this->oCheckBoxSprache_arr[$cISO]                = new stdClass();
                 $this->oCheckBoxSprache_arr[$cISO]->kCheckBox     = $this->kCheckBox;
                 $this->oCheckBoxSprache_arr[$cISO]->kSprache      = $this->getSprachKeyByISO($cISO);
                 $this->oCheckBoxSprache_arr[$cISO]->cText         = $cTextAssoc;
                 $this->oCheckBoxSprache_arr[$cISO]->cBeschreibung = '';
-                if (isset($descriptions[$cISO]) && strlen($descriptions[$cISO]) > 0) {
+                if (isset($descriptions[$cISO]) && mb_strlen($descriptions[$cISO]) > 0) {
                     $this->oCheckBoxSprache_arr[$cISO]->cBeschreibung = $descriptions[$cISO];
                 }
                 $this->oCheckBoxSprache_arr[$cISO]->kCheckBoxSprache = Shop::Container()->getDB()->insert(
@@ -524,7 +524,7 @@ class CheckBox
      */
     private function getSprachKeyByISO(string $cISO): int
     {
-        if (strlen($cISO) > 0) {
+        if (mb_strlen($cISO) > 0) {
             $oSprache = Shop::Container()->getDB()->select('tsprache', 'cISO', $cISO);
             if ($oSprache !== null && $oSprache->kSprache > 0) {
                 return (int)$oSprache->kSprache;
@@ -568,7 +568,7 @@ class CheckBox
             return false;
         }
         $conf = Shop::getSettings([CONF_EMAILS]);
-        if (isset($conf['emails']['email_master_absender']) && strlen($conf['emails']['email_master_absender']) > 0) {
+        if (isset($conf['emails']['email_master_absender']) && mb_strlen($conf['emails']['email_master_absender']) > 0) {
             require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
             $mail                = new stdClass();
             $mail->oCheckBox     = $oCheckBox;

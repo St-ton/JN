@@ -90,7 +90,7 @@ if (isset($_POST['einstellungen_bearbeiten'])
     }
     $step = 'einstellungen bearbeiten';
     $Conf = [];
-    if (strlen($oSQL->cWHERE) > 0) {
+    if (mb_strlen($oSQL->cWHERE) > 0) {
         $Conf = $oSQL->oEinstellung_arr;
         $smarty->assign('cSearch', $oSQL->cSearch);
     } else {
@@ -123,10 +123,10 @@ if (isset($_POST['einstellungen_bearbeiten'])
                     $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
-                    $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                    $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                     break;
                 case 'pass':
-                    $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                    $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                     break;
             }
             if ($oSection->validate($Conf[$i], $_POST[$Conf[$i]->cWertName])) {
@@ -196,7 +196,7 @@ if ($step === 'einstellungen bearbeiten') {
         $oSQL->cWHERE = '';
     }
     $Conf = [];
-    if (strlen($oSQL->cWHERE) > 0) {
+    if (mb_strlen($oSQL->cWHERE) > 0) {
         $Conf = $oSQL->oEinstellung_arr;
         $smarty->assign('cSearch', $oSQL->cSearch)
                ->assign('cSuche', $oSQL->cSuche);

@@ -99,24 +99,24 @@ class Overlay
 
     /**
      * Overlay constructor.
-     * @param int $type
-     * @param int $language
+     * @param int         $type
+     * @param int         $language
      * @param string|null $template
      */
     public function __construct(int $type, int $language, string $template = null)
     {
         $this->setType($type)
-             ->setLanguage($language)
-             ->setTemplateName($template)
-             ->setPath(\PFAD_TEMPLATES . $this->getTemplateName() . \PFAD_OVERLAY_TEMPLATE)
-             ->setPathSizes();
+            ->setLanguage($language)
+            ->setTemplateName($template)
+            ->setPath(\PFAD_TEMPLATES . $this->getTemplateName() . \PFAD_OVERLAY_TEMPLATE)
+            ->setPathSizes();
     }
 
     /**
-     * @param int $type
-     * @param int $language
+     * @param int         $type
+     * @param int         $language
      * @param string|null $template
-     * @param bool|null $setFallbackPath
+     * @param bool|null   $setFallbackPath
      * @return Overlay
      */
     public static function getInstance(
@@ -139,13 +139,13 @@ class Overlay
         $overlay = $overlay ?? $this->getDataForLanguage(Sprache::getDefaultLanguage()->kSprache);
         if (!empty($overlay)) {
             $this->setActive($overlay->nAktiv)
-                 ->setMargin($overlay->nMargin)
-                 ->setPosition($overlay->nPosition)
-                 ->setPriority($overlay->nPrio)
-                 ->setTransparence($overlay->nTransparenz)
-                 ->setSize($overlay->nGroesse)
-                 ->setImageName($overlay->cBildPfad)
-                 ->setName($overlay->cSuchspecial);
+                ->setMargin($overlay->nMargin)
+                ->setPosition($overlay->nPosition)
+                ->setPriority($overlay->nPrio)
+                ->setTransparence($overlay->nTransparenz)
+                ->setSize($overlay->nGroesse)
+                ->setImageName($overlay->cBildPfad)
+                ->setName($overlay->cSuchspecial);
 
             if ($setFallbackPath) {
                 $this->setFallbackPath($overlay->cTemplate);
@@ -154,13 +154,13 @@ class Overlay
         } else {
             // fallback overlay is missing
             $this->setActive(0)
-                 ->setMargin(0)
-                 ->setPosition(0)
-                 ->setPriority(0)
-                 ->setTransparence(0)
-                 ->setSize(0)
-                 ->setImageName('')
-                 ->setName('');
+                ->setMargin(0)
+                ->setPosition(0)
+                ->setPriority(0)
+                ->setTransparence(0)
+                ->setSize(0)
+                ->setImageName('')
+                ->setName('');
         }
 
         return $this;
@@ -174,14 +174,14 @@ class Overlay
     {
         $overlay = Shop::Container()->getDB()->queryPrepared(
             'SELECT ssos.*, sso.cSuchspecial
-              FROM tsuchspecialoverlaysprache ssos
-              LEFT JOIN tsuchspecialoverlay sso
-                ON ssos.kSuchspecialOverlay = sso.kSuchspecialOverlay
-              WHERE ssos.kSprache = :languageID
-                AND ssos.kSuchspecialOverlay = :overlayID
-                AND ssos.cTemplate IN (:templateName, :defaultTemplate)
-              ORDER BY FIELD(ssos.cTemplate, :templateName, :defaultTemplate)
-              LIMIT 1',
+                 FROM tsuchspecialoverlaysprache ssos
+                 LEFT JOIN tsuchspecialoverlay sso
+                     ON ssos.kSuchspecialOverlay = sso.kSuchspecialOverlay
+                 WHERE ssos.kSprache = :languageID
+                     AND ssos.kSuchspecialOverlay = :overlayID
+                     AND ssos.cTemplate IN (:templateName, :defaultTemplate)
+                 ORDER BY FIELD(ssos.cTemplate, :templateName, :defaultTemplate)
+                 LIMIT 1',
             [
                 'languageID'      => $language,
                 'overlayID'       => $this->getType(),
@@ -235,7 +235,7 @@ class Overlay
 
         if ($fallbackPath) {
             $this->setPath(PFAD_SUCHSPECIALOVERLAY)
-                 ->setPathSizes(true);
+                ->setPathSizes(true);
         }
         if ($fallbackImageName !== '') {
             $this->setImageName($fallbackImageName);
@@ -391,9 +391,9 @@ class Overlay
     {
         $shopURL        = Shop::getURL() . '/';
         $this->urlSizes = [
-            IMAGE_SIZE_XS  => $shopURL . $this->getPathSize(IMAGE_SIZE_XS) . $this->getImageName(),
+            IMAGE_SIZE_XS => $shopURL . $this->getPathSize(IMAGE_SIZE_XS) . $this->getImageName(),
             IMAGE_SIZE_SM => $shopURL . $this->getPathSize(IMAGE_SIZE_SM) . $this->getImageName(),
-            IMAGE_SIZE_MD  => $shopURL . $this->getPathSize(IMAGE_SIZE_MD) . $this->getImageName(),
+            IMAGE_SIZE_MD => $shopURL . $this->getPathSize(IMAGE_SIZE_MD) . $this->getImageName(),
             IMAGE_SIZE_LG => $shopURL . $this->getPathSize(IMAGE_SIZE_LG) . $this->getImageName()
         ];
 

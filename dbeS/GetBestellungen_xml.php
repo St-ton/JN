@@ -161,8 +161,8 @@ if (auth()) {
         }
         $attr = buildAttributes($address);
         // Strasse und Hausnummer zusammenführen
-        $address['cStrasse'] .= ' ' . trim($address['cHausnummer']);
-        $address['cStrasse'] = trim($address['cStrasse']);
+        $address['cStrasse'] .= ' ' . trim($address['cHausnummer'] ?? '');
+        $address['cStrasse'] = trim($address['cStrasse'] ?? '');
         unset($address['cHausnummer']);
         $order['trechnungsadresse']      = $address;
         $order['trechnungsadresse attr'] = $attr;

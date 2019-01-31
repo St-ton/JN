@@ -6,7 +6,7 @@
         "php": ">=7.1",
         "Imanee/Imanee": "dev-master",
         "ifsnop/mysqldump-php": "^2.1",
-        "symfony/var-dumper": "^3.0",
+        "symfony/var-dumper": "^4.2",
         "jtlshop/shop4-systemcheck": "^1.1",
         "jtlshop/scc": "dev-master",
         "smarty/smarty": "~3.1",

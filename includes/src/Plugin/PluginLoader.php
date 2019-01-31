@@ -111,6 +111,7 @@ class PluginLoader extends AbstractLoader
 
         $this->plugin->setID((int)$obj->kPlugin);
         $this->plugin->setPluginID($obj->cPluginID);
+        $this->plugin->setStoreID($obj->cStoreID);
         $this->plugin->setState((int)$obj->nStatus);
         $this->plugin->setPriority((int)$obj->nPrio);
         $this->plugin->setBootstrap((int)$obj->bBootstrap === 1);

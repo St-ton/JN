@@ -157,3 +157,44 @@ msgstr "Die Gruppe kann nicht entfernt werden, da sich noch ein oder mehrere Mit
 
 msgid "errorKeyChange"
 msgstr " konnte nicht geändert werden!"
+
+msgid "sureDeleteGroup"
+msgstr "Sind Sie sicher, dass die Gruppe entfernt werden soll?"
+
+msgid "usernameNotAvailable"
+msgstr "Benutzername <strong>%s</strong> bereits vergeben"
+
+msgid "timelyAccess"
+msgstr "Zeitlich begrenzter Zugriff"
+
+msgid "tillInclusive"
+msgstr "... bis einschließlich"
+
+msgid "errorUsernameMissing"
+msgstr "Bitte legen Sie zuerst, in den Anmeldedaten, einen Benutzernamen fest!"
+
+msgid "warningAuthSecretOverwrite"
+msgstr "Das bisherige 'Authentication Secret' wird ersetzt! Wirklich fortfahren?"
+
+msgid "warningNoPermissionToBackendAfter"
+msgstr "<strong>Achtung:</strong> Bitte beachten Sie, dass Sie mit diesem Account keine Möglichkeit mehr haben, in das Shop-Backend zu gelangen, falls Sie keinen Zugriff mehr auf die Google-Authenticator-App auf Ihrem Mobilgerät haben sollten!<br>"
+
+msgid "infoScanQR"
+msgstr "Scannen Sie den hier abgebildeten QR-Code mit der \"Google-Authenticator\"-app auf Ihrem Handy."
+
+msgid "emergencyCode"
+msgstr "Notfall-Codes"
+
+msgid "codeCreateAgain"
+msgstr "Codes neu erzeugen"
+
+msgid "clickHereToCreateQR"
+msgstr "Um einen neuen QR-Code zu erzeugen, klicken Sie bitte hier:"
+
+msgid "codeCreate"
+msgstr "Neuen Code erstellen"
+
+msgid "emergencyCodeCreate"
+msgstr "Notfall-Codes neu erstellen"
+
+

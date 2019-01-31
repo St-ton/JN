@@ -3,7 +3,7 @@
 {if $missingShippingClassCombis === -1}
     <p>
         {__('coverageShippingClassCombination')}
-        {__('noShipClassCombiValidation')|sprintf:$smarty.const.SHIPPING_CLASS_MAX_VALIDATION_COUNT}
+        {{__('noShipClassCombiValidation')|sprintf:$smarty.const.SHIPPING_CLASS_MAX_VALIDATION_COUNT}}
     </p>
 {/if}
 {if $missingShippingClassCombis !== -1}

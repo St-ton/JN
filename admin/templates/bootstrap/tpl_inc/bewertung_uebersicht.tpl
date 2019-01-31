@@ -272,7 +272,7 @@
                                             </select>
                                         {elseif $oConfig->cInputTyp === 'listbox'}
                                             <select name="{$oConfig->cWertName}[]" id="{$oConfig->cWertName}" multiple="multiple" class="form-control combo">
-                                                {foreach $oConfig->ConfWerte $wert}
+                                                {foreach $oConfig->ConfWerte as $wert}
                                                     <option value="{$wert->kKundengruppe}" {foreach $oConfig->gesetzterWert as $gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
                                                 {/foreach}
                                             </select>

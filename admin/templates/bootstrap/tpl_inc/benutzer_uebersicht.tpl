@@ -61,7 +61,7 @@
                                             {else}
                                                 <button class="notext btn btn-warning" name="action" value="account_unlock" title="{__('entsperrenLabel')}"><i class="fa fa-unlock"></i></button>
                                             {/if}
-                                            <button class="notext btn btn-danger" name="action" value="account_delete" onclick="return confirm('Sind Sie sicher, dass der Benutzer entfernt werden soll?');" title="{__('loeschenLabel')}"><i class="fa fa-trash"></i></button>
+                                            <button class="notext btn btn-danger" name="action" value="account_delete" onclick="return confirm('{__('sureDeleteGroup')}');" title="{__('loeschenLabel')}"><i class="fa fa-trash"></i></button>
                                         </div>
                                     </form>
                                 </td>
@@ -109,7 +109,7 @@
                                             <input type="hidden" value="{$oGroup->kAdminlogingruppe}" name="id" />
                                             <div class="btn-group">
                                                 <button type="submit" class="edit btn btn-default" name="action" value="group_edit" title="{__('modify')}"><i class="fa fa-edit"></i></button>
-                                                <button type="submit" class="delete btn btn-danger" name="action" value="group_delete" onclick="return confirm('Sind Sie sicher, dass die Gruppe entfernt werden soll?');" {if 0 < (int)$oGroup->nCount}title="{__('loeschenLabelDeaktiviert')}" disabled="disabled"{else}title="{__('loeschenLabel')}"{/if}><i class="fa fa-trash"></i></button>
+                                                <button type="submit" class="delete btn btn-danger" name="action" value="group_delete" onclick="return confirm('{__('sureDeleteGroup')}');" {if 0 < (int)$oGroup->nCount}title="{__('loeschenLabelDeaktiviert')}" disabled="disabled"{else}title="{__('loeschenLabel')}"{/if}><i class="fa fa-trash"></i></button>
                                             </div>
                                         </form>
                                     {/if}

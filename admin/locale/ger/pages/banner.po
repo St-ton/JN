@@ -25,3 +25,31 @@ msgstr "Erfolgreich entfernt."
 
 msgid "errorDeleted"
 msgstr "Banner konnte nicht entfernt werden."
+
+msgid "errorDate"
+msgstr "Konnte Ihre Eingabe für das 'Aktiv von Datum' nicht verarbeiten."
+
+msgid "errorDateActiveToGreater"
+msgstr "Das Datum bis wann ein Banner aktiv ist muss größer sein als das 'Aktiv von Datum'."
+
+msgid "internalName"
+msgstr "Interner Name "
+
+msgid "chooseBanner"
+msgstr "Banner wählen"
+
+msgid "warningNoBannerInDir"
+msgstr "Kein Banner im Ordner <strong>%s</strong> vorhanden"
+
+msgid "viewingOptions"
+msgstr "Anzeigeoptionen"
+
+msgid "availableBanner"
+msgstr "Vorhandene Banner"
+
+msgid "saveBanner"
+msgstr "Banner speichern"
+
+msgid "addBanner"
+msgstr "Banner hinzufügen"
+

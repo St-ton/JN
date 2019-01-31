@@ -52,9 +52,9 @@
                         <table class="list table">
                             <thead>
                             <tr>
-                                <th class="text-left">Meldung</th>
-                                <th class="text-center">Typ</th>
-                                <th class="text-center">Datum</th>
+                                <th class="text-left">{__('notice')}</th>
+                                <th class="text-center">{__('type')}</th>
+                                <th class="text-center">{__('date')}</th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -85,12 +85,12 @@
                                     <tr class="hidden" id="data{$oLog->kZahlunglog}">
                                         <td colspan="4">
                                             {if $oKunde->kKunde > 0}
-                                                <p><strong>Kdn:</strong> {$oKunde->kKunde}</p>
+                                                <p><strong>{__('customerNumberShort')}:</strong> {$oKunde->kKunde}</p>
                                             {/if}
-                                            <p><strong>Name:</strong> {$oKunde->cVorname} {$oKunde->cNachname}</p>
-                                            <p><strong>Straße:</strong> {$oKunde->cStrasse} {$oKunde->cHausnummer}</p>
-                                            <p><strong>Ort:</strong> {$oKunde->cPLZ} {$oKunde->cOrt}</p>
-                                            <p><strong>E-Mail:</strong> {$oKunde->cMail}</p>
+                                            <p><strong>{__('name')}:</strong> {$oKunde->cVorname} {$oKunde->cNachname}</p>
+                                            <p><strong>{__('street')}:</strong> {$oKunde->cStrasse} {$oKunde->cHausnummer}</p>
+                                            <p><strong>{__('city')}:</strong> {$oKunde->cPLZ} {$oKunde->cOrt}</p>
+                                            <p><strong>{__('email')}:</strong> {$oKunde->cMail}</p>
                                         </td>
                                     </tr>
                                 {/if}

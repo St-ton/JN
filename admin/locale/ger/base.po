@@ -331,3 +331,214 @@ msgstr "Ungültiger Hash übergeben."
 
 msgid "errorPasswordMismatch"
 msgstr "Passwörter stimmen nicht überein."
+
+msgid "action"
+msgstr "Aktion"
+
+msgid "available"
+msgstr "Vorhandene"
+
+msgid "html"
+msgstr "Html"
+
+msgid "text"
+msgstr "Text"
+
+msgid "forCustomerGroup"
+msgstr "für Kundengruppe"
+
+msgid "customerGroup"
+msgstr "Kundengruppe"
+
+msgid "chooseCategory"
+msgstr "Kategorien auswählen"
+
+msgid "searchCategory"
+msgstr "suche Kategorien"
+
+msgid "category"
+msgstr "Kategorien"
+
+msgid "showQuestions"
+msgstr "Fragen anzeigen"
+
+msgid "errorImageSizeTooLarge"
+msgstr "Die Bilddatei ist zu groß."
+
+msgid "errorUploadSizeLimit"
+msgstr "Die Datei ist größer als das Uploadlimit des Servers."
+
+msgid "general"
+msgstr "Allgemein"
+
+msgid "chooseAvailableFile"
+msgstr "vorhandene Datei wählen"
+
+msgid "pageType"
+msgstr "Seitentyp"
+
+msgid "tag"
+msgstr "Tag"
+
+msgid "attribute"
+msgstr "Merkmal"
+
+msgid "attributes"
+msgstr "Merkmale"
+
+msgid "attributeValues"
+msgstr "Merkmalwerte"
+
+msgid "searchTerm"
+msgstr "Suchbegriff"
+
+msgid "runTime"
+msgstr "Laufzeit"
+
+msgid "status"
+msgstr "Status"
+
+msgid "manufacturer"
+msgstr "Hersteller"
+
+msgid "pageSelf"
+msgstr "Eigene Seite"
+
+msgid "product"
+msgstr "Artikel"
+
+msgid "chhoseProduct"
+msgstr "Artikel wählen"
+
+msgid "deleteProduct"
+msgstr "Artikel löschen"
+
+msgid "filter"
+msgstr "Filter"
+
+msgid "noFilter"
+msgstr "Kein Filter"
+
+msgid "to"
+msgstr "bis"
+
+msgid "zones"
+msgstr "Zonen"
+
+msgid "zone"
+msgstr "Zone"
+
+msgid "title"
+msgstr "Titel"
+
+msgid "description"
+msgstr "Beschreibung"
+
+msgid "url"
+msgstr "Url"
+
+msgid "cssClass"
+msgstr "Css-Klasse"
+
+msgid "new"
+msgstr "neu"
+
+msgid "active"
+msgstr "Aktiv"
+
+msgid "inactive"
+msgstr "Inaktiv"
+
+msgid "emailAddress"
+msgstr "E-Mail Adresse"
+
+msgid "preSurName"
+msgstr "Vor- und Nachname"
+
+msgid "language"
+msgstr "Sprache"
+
+msgid "username"
+msgstr "Benutzername"
+
+msgid "logindata"
+msgstr "Anmeldedaten"
+
+msgid "password"
+msgstr "Passwort"
+
+msgid "twoFactorAuth"
+msgstr "2-Faktor-Authentifizierung"
+
+msgid "activate"
+msgstr "aktivieren"
+
+msgid "permissions"
+msgstr "Berechtigungen"
+
+msgid "permissionDenied"
+msgstr "Zugriff verweigert"
+
+msgid "userGroup"
+msgstr "Benutzergruppe"
+
+msgid "noPermissionForPage"
+msgstr "Sie haben keine Berechtigung, diese Seite zu betreten."
+
+msgid "contactAdminForPermission"
+msgstr "Falls Sie Zugang zu diesem Bereich benötigen, kontaktieren Sie den Administrator, damit er Ihnen die entsprechenden Rechte zuweist."
+
+msgid "imageSizes"
+msgstr "Bildgrößen"
+
+msgid "variations"
+msgstr "Variationen"
+
+msgid "configGroup"
+msgstr "Konfig-Gruppe"
+
+msgid "type"
+msgstr "Type"
+
+msgid "xs"
+msgstr "Mini"
+
+msgid "sm"
+msgstr "Klein"
+
+msgid "md"
+msgstr "Normal"
+
+msgid "lg"
+msgstr "Gross"
+
+msgid "widthXHeight"
+msgstr "(Breite x Höhe)"
+
+msgid "notice"
+msgstr "Meldung"
+
+msgid "name"
+msgstr "Name"
+
+msgid "street"
+msgstr "Straße"
+
+msgid "city"
+msgstr "Ort"
+
+msgid "email"
+msgstr "E-Mail"
+
+msgid "customerNumberShort"
+msgstr "Knr."
+
+msgid "minOrderValue"
+msgstr "Mindestbestellwert"
+
+msgid "maxOrderValue"
+msgstr "Maximaler Bestellwert"
+
+msgid "directDebit"
+msgstr "Lastschriftverfahren"
+

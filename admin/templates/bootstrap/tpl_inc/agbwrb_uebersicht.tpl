@@ -20,13 +20,13 @@
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Vorhandene {__('agbwrb')}</h3>
+            <h3 class="panel-title">{__('available')} {__('agbwrb')}</h3>
         </div>
         <table class="table table-striped">
             <thead>
             <tr>
                 <th class="tleft">{__('agbwrbCustomerGrp')}</th>
-                <th>Aktion</th>
+                <th>{__('action')}</th>
             </tr>
             </thead>
             <tbody>

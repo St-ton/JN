@@ -71,7 +71,7 @@
                                                         <div class="btn-group">
                                                             <a class="btn btn-default button down"
                                                                id="btn_toggle_{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}"
-                                                               title="Fragen anzeigen">
+                                                               title="{__('showQuestions')}">
                                                                 <i class="fa fa-question-circle-o"></i>
                                                             </a>
                                                     {else}

@@ -43,3 +43,18 @@ msgstr "Log zurücksetzen"
 
 msgid "errorBillpayNotConfigured"
 msgstr "Billpay wurde bisher nicht konfiguriert."
+
+msgid "buyInvoiceB2B"
+msgstr "Kauf auf Rechnung B2B"
+
+msgid "buyInvoice"
+msgstr "Kauf auf Rechnung"
+
+msgid "payLaterB2B"
+msgstr "Paylater B2B"
+
+msgid "payLater"
+msgstr "Paylater B2B"
+
+msgid "payTimely"
+msgstr "Ratenzahlung"

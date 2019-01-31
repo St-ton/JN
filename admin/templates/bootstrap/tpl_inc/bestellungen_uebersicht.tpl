@@ -12,7 +12,7 @@
                     </span>
                     <input class="form-control" name="cSuche" type="text" value="{if isset($cSuche)}{$cSuche}{/if}" id="orderSearch" />
                     <span class="input-group-btn">
-                        <button name="submitSuche" type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Suchen</button>
+                        <button name="submitSuche" type="submit" class="btn btn-primary"><i class="fa fa-search"></i> {__('confSearch')}</button>
                     </span>
                 </div>
             </form>

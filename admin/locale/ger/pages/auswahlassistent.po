@@ -112,3 +112,39 @@ msgstr "Ihre ausgewählte Frage wurden erfolgreich gelöscht."
 
 msgid "errorQuestionDeleted"
 msgstr "Fehler: Ihre ausgewählte Frage konnten nicht gelöscht werden."
+
+msgid "hintName"
+msgstr "Welchen Namen soll die Gruppe erhalten?"
+
+msgid "hintDesc"
+msgstr "Wie soll die Beschreibung lauten?"
+
+msgid "questionCatInGroup"
+msgstr "In welcher Kategorie soll die Gruppe angezeigt werden?"
+
+msgid "noSpecialPageAvailable"
+msgstr "Keine Spezialseite &quot;Auswahlassistent&quot; vorhanden."
+
+msgid "hintSpecialPage"
+msgstr "Auf welcher Spezialseite soll die Gruppe angezeigt werden? (Mehrfachauswahl und Abwahl mit STRG möglich)"
+
+msgid "hintGroupOnHome"
+msgstr "Soll die Gruppe auf der Startseite angezeigt werden? (Es darf immer nur eine Gruppe auf der Startseite aktiv sein)"
+
+msgid "hintShowCheckbox"
+msgstr "Soll die Checkbox im Frontend aktiv und somit sichtbar sein?"
+
+msgid "hintQuestionName"
+msgstr "Wie soll die Frage lauten?"
+
+msgid "hintQuestionGroup"
+msgstr "In welche Gruppe soll die Frage hinzugefügt werden?"
+
+msgid "hintQuestionAttribute"
+msgstr "Welches Merkmal soll die Frage erhalten?"
+
+msgid "hintQuestionPosition"
+msgstr "An welcher Position soll die Frage stehen? (Umso höher desto weiter unten, z.b. 3)"
+
+msgid "hintQuestionActive"
+msgstr "Soll die Frage aktiviert sein? (Aktivierte Fragen werden angezeigt)"

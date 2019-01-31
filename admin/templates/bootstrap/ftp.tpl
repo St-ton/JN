@@ -71,7 +71,7 @@
                     {if $open}</div></div>{/if}
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">{$cnf->cName} {__($cnf->cName)}
+                            <h3 class="panel-title">{$cnf->cName}
                             <span class="pull-right">{getHelpDesc cID=$cnf->kEinstellungenConf}</span>
                             {if isset($cnf->cSektionsPfad) && $cnf->cSektionsPfad|strlen > 0}
                                 <span class="path"><strong>{__('settingspath')}:</strong> {$cnf->cSektionsPfad}</span>

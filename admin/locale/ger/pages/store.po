@@ -1,6 +1,3 @@
-msgid "queueEntries"
-msgstr "Queueeinträge"
-
 msgid "store"
 msgstr "JTL-Store"
 

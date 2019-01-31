@@ -65,9 +65,9 @@ class MissingPortlet extends Portlet
 
     /**
      * @param string $missingClass
-     * @return $this
+     * @return MissingPortlet
      */
-    public function setMissingClass(string $missingClass)
+    public function setMissingClass(string $missingClass): self
     {
         $this->missingClass = $missingClass;
 

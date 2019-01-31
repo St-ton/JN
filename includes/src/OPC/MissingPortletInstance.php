@@ -8,6 +8,10 @@ namespace OPC;
 
 use OPC\Portlets\MissingPortlet;
 
+/**
+ * Class MissingPortletInstance
+ * @package OPC
+ */
 class MissingPortletInstance extends PortletInstance
 {
     /**

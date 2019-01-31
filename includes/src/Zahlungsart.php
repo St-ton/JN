@@ -115,9 +115,9 @@ class Zahlungsart extends MainModel
     public $einstellungen;
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getZahlungsart()
+    public function getZahlungsart(): ?int
     {
         return $this->kZahlungsart;
     }
@@ -134,9 +134,9 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->cName;
     }
@@ -153,9 +153,9 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getModulId()
+    public function getModulId(): ?string
     {
         return $this->cModulId;
     }
@@ -172,9 +172,9 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getKundengruppen()
+    public function getKundengruppen(): ?string
     {
         return $this->cKundengruppen;
     }
@@ -191,9 +191,9 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getZusatzschrittTemplate()
+    public function getZusatzschrittTemplate(): ?string
     {
         return $this->cZusatzschrittTemplate;
     }
@@ -210,9 +210,9 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPluginTemplate()
+    public function getPluginTemplate(): ?string
     {
         return $this->cPluginTemplate;
     }
@@ -229,9 +229,9 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getBild()
+    public function getBild(): ?string
     {
         return $this->cBild;
     }
@@ -248,9 +248,9 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getSort()
+    public function getSort(): ?int
     {
         return $this->nSort;
     }
@@ -267,9 +267,9 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getMailSenden()
+    public function getMailSenden(): ?int
     {
         return $this->nMailSenden;
     }
@@ -286,9 +286,9 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getActive()
+    public function getActive(): ?int
     {
         return $this->nActive;
     }
@@ -305,9 +305,9 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getAnbieter()
+    public function getAnbieter(): ?string
     {
         return $this->cAnbieter;
     }
@@ -324,9 +324,9 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getTSCode()
+    public function getTSCode(): ?string
     {
         return $this->cTSCode;
     }
@@ -343,9 +343,9 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getWaehrendBestellung()
+    public function getWaehrendBestellung(): ?int
     {
         return $this->nWaehrendBestellung;
     }
@@ -362,9 +362,9 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getCURL()
+    public function getCURL(): ?string
     {
         return $this->nCURL;
     }
@@ -381,9 +381,9 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getSOAP()
+    public function getSOAP(): ?int
     {
         return $this->nSOAP;
     }
@@ -400,9 +400,9 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getSOCKETS()
+    public function getSOCKETS(): ?int
     {
         return $this->nSOCKETS;
     }
@@ -419,9 +419,9 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getNutzbar()
+    public function getNutzbar(): ?int
     {
         return $this->nNutzbar;
     }
@@ -438,9 +438,9 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getHinweisText()
+    public function getHinweisText(): ?string
     {
         return $this->cHinweisText;
     }
@@ -457,9 +457,9 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getHinweisTextShop()
+    public function getHinweisTextShop(): ?string
     {
         return $this->cHinweisTextShop;
     }
@@ -476,9 +476,9 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getGebuehrname()
+    public function getGebuehrname(): ?string
     {
         return $this->cGebuehrname;
     }
@@ -500,7 +500,7 @@ class Zahlungsart extends MainModel
      * @param null|array  $xOption
      * @return $this
      */
-    public function load($kKey, $oObj = null, $xOption = null)
+    public function load($kKey, $oObj = null, $xOption = null): self
     {
         $kKey = (int)$kKey;
         if ($kKey > 0) {
@@ -509,7 +509,7 @@ class Zahlungsart extends MainModel
             } elseif (isset($_SESSION['cISOSprache'])) {
                 $iso = $_SESSION['cISOSprache'];
             } else {
-                $language = Sprache::getDefaultLanguage(true);
+                $language = Sprache::getDefaultLanguage();
                 $iso      = $language->cISO;
             }
 
@@ -548,7 +548,7 @@ class Zahlungsart extends MainModel
             if (isset($_SESSION['cISOSprache'])) {
                 $iso = $_SESSION['cISOSprache'];
             } else {
-                $language = Sprache::getDefaultLanguage(true);
+                $language = Sprache::getDefaultLanguage();
                 $iso      = $language->cISO;
             }
         }

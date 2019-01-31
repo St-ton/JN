@@ -61,7 +61,8 @@ class Vergleichsliste
             $linkHelper     = Shop::Container()->getLinkService();
             $baseURL        = $linkHelper->getStaticRoute('vergleichsliste.php');
             foreach ($compareList->oArtikel_arr as $oArtikel) {
-                $product          = (new Artikel())->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
+                $product = new Artikel();
+                $product->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
                 $product->cURLDEL = $baseURL . '?vlplo=' . $oArtikel->kArtikel;
                 if (isset($oArtikel->oVariationen_arr) && count($oArtikel->oVariationen_arr) > 0) {
                     $product->Variationen = $oArtikel->oVariationen_arr;
@@ -100,9 +101,9 @@ class Vergleichsliste
             //new slim variant for compare list
             $product           = new Artikel();
             $product->kArtikel = $kArtikel;
-            if ($kKonfigitem > 0 && class_exists('Konfigitem')) {
+            if ($kKonfigitem > 0) {
                 // Falls Konfigitem gesetzt Preise + Name überschreiben
-                $oKonfigitem = new Konfigitem($kKonfigitem);
+                $oKonfigitem = new \Extensions\Konfigitem($kKonfigitem);
                 if ($oKonfigitem->getKonfigitem() > 0) {
                     $product->Preise->cVKLocalized[0] = $oKonfigitem->getPreisLocalized(true, false);
                     $product->Preise->cVKLocalized[1] = $oKonfigitem->getPreisLocalized(true, false, true);

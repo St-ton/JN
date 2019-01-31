@@ -142,7 +142,7 @@ class Slider implements IExtensionPoint
      */
     public function init($kSlider)
     {
-        $loaded = $this->load($kSlider, true);
+        $loaded = $this->load($kSlider);
         if ($kSlider > 0 && $loaded === true) {
             Shop::Smarty()->assign('oSlider', $this);
         }

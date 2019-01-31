@@ -21,7 +21,7 @@ class Banner extends Portlet
      */
     public function getImageMap(PortletInstance $instance)
     {
-        $oImageMap = (object)[
+        $imageMap = (object)[
             'cTitel'    => $instance->getProperty('kImageMap'),
             'cBildPfad' => $instance->getProperty('src'),
             'oArea_arr' => !empty($instance->getProperty('zones'))
@@ -29,41 +29,41 @@ class Banner extends Portlet
                 : [],
         ];
 
-        if (empty($oImageMap->cBildPfad)) {
-            return $oImageMap;
+        if (empty($imageMap->cBildPfad)) {
+            return $imageMap;
         }
 
-        $cBildPfad            = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . \basename($instance->getProperty('src'));
-        $oImageMap->cBildPfad = \Shop::getURL() . $oImageMap->cBildPfad;
-        $cParse_arr           = \parse_url($oImageMap->cBildPfad);
-        $oImageMap->cBild     = \substr($cParse_arr['path'], \strrpos($cParse_arr['path'], '/') + 1);
-        [$width, $height]     = \getimagesize($cBildPfad);
-        $oImageMap->fWidth    = $width;
-        $oImageMap->fHeight   = $height;
-        $defaultOptions       = \Artikel::getDefaultOptions();
+        $imgPath             = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . \basename($instance->getProperty('src'));
+        $parsed              = \parse_url($imageMap->cBildPfad);
+        $imageMap->cBildPfad = \Shop::getURL() . $imageMap->cBildPfad;
+        $imageMap->cBild     = \substr($parsed['path'], \strrpos($parsed['path'], '/') + 1);
+        [$width, $height]    = \getimagesize($imgPath);
+        $imageMap->fWidth    = $width;
+        $imageMap->fHeight   = $height;
+        $defaultOptions      = \Artikel::getDefaultOptions();
 
-        if (!empty($oImageMap->oArea_arr)) {
-            foreach ($oImageMap->oArea_arr as &$oArea) {
-                $oArea->oArtikel = null;
+        if (!empty($imageMap->oArea_arr)) {
+            foreach ($imageMap->oArea_arr as &$area) {
+                $area->oArtikel = null;
 
-                if ((int)$oArea->kArtikel > 0) {
-                    $oArea->oArtikel = new \Artikel();
-                    $oArea->oArtikel->fuelleArtikel($oArea->kArtikel, $defaultOptions);
+                if ((int)$area->kArtikel > 0) {
+                    $area->oArtikel = new \Artikel();
+                    $area->oArtikel->fuelleArtikel($area->kArtikel, $defaultOptions);
 
-                    if ($oArea->cTitel === '') {
-                        $oArea->cTitel = $oArea->oArtikel->cName;
+                    if ($area->cTitel === '') {
+                        $area->cTitel = $area->oArtikel->cName;
                     }
-                    if ($oArea->cUrl === '') {
-                        $oArea->cUrl = $oArea->oArtikel->cURL;
+                    if ($area->cUrl === '') {
+                        $area->cUrl = $area->oArtikel->cURL;
                     }
-                    if ($oArea->cBeschreibung === '') {
-                        $oArea->cBeschreibung = $oArea->oArtikel->cKurzBeschreibung;
+                    if ($area->cBeschreibung === '') {
+                        $area->cBeschreibung = $area->oArtikel->cKurzBeschreibung;
                     }
                 }
             }
         }
 
-        return $oImageMap;
+        return $imageMap;
     }
 
     /**

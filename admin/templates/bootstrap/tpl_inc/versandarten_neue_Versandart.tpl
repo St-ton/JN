@@ -98,8 +98,8 @@
                             </span>
                             <input class="form-control" type="text" id="cName" name="cName" value="{if isset($Versandart->cName)}{$Versandart->cName}{/if}" />
                         </li>
-                        {foreach name=sprachen from=$sprachen item=sprache}
-                            {assign var="cISO" value=$sprache->cISO}
+                        {foreach $sprachen as $sprache}
+                            {assign var=cISO value=$sprache->cISO}
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
@@ -116,8 +116,8 @@
                             <input class="form-control" type="text" id="cBild" name="cBild" value="{if isset($Versandart->cBild)}{$Versandart->cBild}{/if}" />
                             <span class="input-group-addon">{getHelpDesc cDesc=__('pictureDesc')}</span>
                         </li>
-                        {foreach name=sprachen from=$sprachen item=sprache}
-                            {assign var="cISO" value=$sprache->cISO}
+                        {foreach $sprachen as $sprache}
+                            {assign var=cISO value=$sprache->cISO}
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
@@ -195,7 +195,7 @@
 
                         <li class="input-group">
                             <span class="input-group-addon">
-                                <label for="cSendConfirmationMail">Versandbest&auml;tigung senden?</label>
+                                <label for="cSendConfirmationMail">Versandbestätigung senden?</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select name="cSendConfirmationMail" id="cSendConfirmationMail" class="combo form-control">
@@ -221,8 +221,8 @@
                             <span class="input-group-wrap">
                                 <select name="kKundengruppe[]" id="kKundengruppe" multiple="multiple" class="combo form-control">
                                     <option value="-1" {if $gesetzteKundengruppen.alle}selected{/if}>{__('all')}</option>
-                                    {foreach name=kundengruppen from=$kundengruppen item=oKundengruppe}
-                                        {assign var="klasse" value=$oKundengruppe->kKundengruppe}
+                                    {foreach $kundengruppen as $oKundengruppe}
+                                        {assign var=klasse value=$oKundengruppe->kKundengruppe}
                                         <option value="{$oKundengruppe->kKundengruppe}" {if isset($gesetzteKundengruppen.$klasse) && $gesetzteKundengruppen.$klasse}selected{/if}>{$oKundengruppe->cName}</option>
                                     {/foreach}
                                 </select>
@@ -230,8 +230,8 @@
                             <span class="input-group-addon">{getHelpDesc cDesc=__('customerclassDesc')}</span>
                         </li>
 
-                        {foreach name=sprachen from=$sprachen item=sprache}
-                            {assign var="cISO" value=$sprache->cISO}
+                        {foreach $sprachen as $sprache}
+                            {assign var=cISO value=$sprache->cISO}
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
@@ -242,8 +242,8 @@
                             {/if}
                         {/foreach}
 
-                        {foreach name=sprachen from=$sprachen item=sprache}
-                            {assign var="cISO" value=$sprache->cISO}
+                        {foreach $sprachen as $sprache}
+                            {assign var=cISO value=$sprache->cISO}
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
@@ -270,7 +270,7 @@
                                          onchange="checkCombination();updateVK();"
                                          multiple>
                                     <option value="-1">{__('allCombinations')}</option>
-                                    {foreach from=$versandKlassen item=vk}
+                                    {foreach $versandKlassen as $vk}
                                         <option value="{$vk->kVersandklasse}">{$vk->cName}</option>
                                     {/foreach}
                                 </selectX>
@@ -284,27 +284,26 @@
                         </li>
                         {if !empty($Versandart->cVersandklassen)}
                             {$aVK = ' '|explode:$Versandart->cVersandklassen}
-                            {foreach name="vKombi" from=$aVK item=VK}
+                            {foreach $aVK as $VK}
                                 <li class="input-group">
                                     <span class="input-group-wrap">
                                         <select class="select2 form-control" name="Versandklassen"
                                                 onchange="checkCombination();updateVK();" multiple="multiple">
-                                            <option value="-1"{if $smarty.foreach.vKombi.iteration >1} disabled="disabled"{/if}{if $VK === '-1'} selected{/if}>{__('allCombinations')}</option>
+                                            <option value="-1"{if $VK@iteration > 1} disabled="disabled"{/if}{if $VK === '-1'} selected{/if}>{__('allCombinations')}</option>
                                             {if $VK === '-1'}
-                                                {foreach from=$versandKlassen item=vk}
-                                                    <option value="{$vk->kVersandklasse}">{$vk->cName}</option>
+                                                {foreach $versandKlassen as $vclass}
+                                                    <option value="{$vclass->kVersandklasse}">{$vclass->cName}</option>
                                                 {/foreach}
                                             {else}
                                                 {$vkID = '-'|explode:$VK}
-                                                {foreach from=$versandKlassen item=vk}
-                                                    <option value="{$vk->kVersandklasse}"
-                                                            {if $vk->kVersandklasse|in_array:$vkID}selected{/if}>{$vk->cName}</option>
+                                                {foreach $versandKlassen as $vclass}
+                                                    <option value="{$vclass->kVersandklasse}"{if $vclass->kVersandklasse|in_array:$vkID} selected{/if}>{$vclass->cName}</option>
                                                 {/foreach}
                                             {/if}
                                         </select>
                                     </span>
                                     <span class="input-group-addon">{getHelpDesc cDesc=__('shippingclassDesc')}</span>
-                                    {if  $smarty.foreach.vKombi.iteration != 1}
+                                    {if $VK@iteration != 1}
                                     <div class="input-group-btn">
                                         <button class="btn btn-danger" type="button"
                                                 onclick="$(this).parent().parent().detach(); updateVK();">
@@ -315,15 +314,15 @@
                             {/foreach}
                         {else}
                             <li class="input-group">
-                                        <span class="input-group-wrap">
-                                            <select class="select2 form-control" name="Versandklassen"
-                                                    onchange="checkCombination();updateVK();" multiple="multiple">
-                                                <option value="-1"{if $smarty.foreach.vKombi.iteration >1} disabled="disabled"{/if} selected>{__('allCombinations')}</option>
-                                                {foreach from=$versandKlassen item=vk}
-                                                    <option value="{$vk->kVersandklasse}">{$vk->cName}</option>
-                                                {/foreach}
-                                            </select>
-                                        </span>
+                                <span class="input-group-wrap">
+                                    <select class="select2 form-control" name="Versandklassen"
+                                            onchange="checkCombination();updateVK();" multiple="multiple">
+                                        <option value="-1"{if $VK@iteration >1} disabled="disabled"{/if} selected>{__('allCombinations')}</option>
+                                        {foreach $versandKlassen as $vclass}
+                                            <option value="{$vclass->kVersandklasse}">{$vclass->cName}</option>
+                                        {/foreach}
+                                    </select>
+                                </span>
                                 <span class="input-group-addon">{getHelpDesc cDesc=__('shippingclassDesc')}</span>
                             </li>
                         {/if}
@@ -379,14 +378,14 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {foreach name=zahlungsarten from=$zahlungsarten item=zahlungsart}
-                                    {assign var="kZahlungsart" value=$zahlungsart->kZahlungsart}
+                                {foreach $zahlungsarten as $zahlungsart}
+                                    {assign var=kZahlungsart value=$zahlungsart->kZahlungsart}
                                     <tr>
                                         <td class="check">
-                                            <input type="checkbox" id="kZahlungsart{$smarty.foreach.zahlungsarten.index}" name="kZahlungsart[]" class="boxen" value="{$kZahlungsart}" {if isset($VersandartZahlungsarten[$kZahlungsart]->checked)}{$VersandartZahlungsarten[$kZahlungsart]->checked}{/if} />
+                                            <input type="checkbox" id="kZahlungsart{$zahlungsart@index}" name="kZahlungsart[]" class="boxen" value="{$kZahlungsart}" {if isset($VersandartZahlungsarten[$kZahlungsart]->checked)}{$VersandartZahlungsarten[$kZahlungsart]->checked}{/if} />
                                         </td>
                                         <td>
-                                            <label for="kZahlungsart{$smarty.foreach.zahlungsarten.index}">
+                                            <label for="kZahlungsart{$zahlungsart@index}">
                                                 {$zahlungsart->cName}{if isset($zahlungsart->cAnbieter) && $zahlungsart->cAnbieter|strlen > 0} ({$zahlungsart->cAnbieter}){/if}
                                             </label>
                                         </td>
@@ -484,20 +483,20 @@
                                 <tbody>
 
                                 {if isset($VersandartStaffeln) && $VersandartStaffeln|@count > 0}
-                                    {foreach name="preisstaffel" from=$VersandartStaffeln item=oPreisstaffel}
+                                    {foreach $VersandartStaffeln as $oPreisstaffel}
                                         {if $oPreisstaffel->fBis != 999999999}
                                             <tr>
                                                 <td>
                                                     <div class="input-group">
                                                         <span class="input-group-addon"><label>{__('upTo')}</label></span>
-                                                        <input type="text" id="bis{$smarty.foreach.preisstaffel.index}" name="bis[]" value="{if isset($VersandartStaffeln[$smarty.foreach.preisstaffel.index]->fBis)}{$VersandartStaffeln[$smarty.foreach.preisstaffel.index]->fBis}{/if}" class="form-control kilogram" />
+                                                        <input type="text" id="bis{$oPreisstaffel@index}" name="bis[]" value="{if isset($VersandartStaffeln[$oPreisstaffel@index]->fBis)}{$VersandartStaffeln[$oPreisstaffel@index]->fBis}{/if}" class="form-control kilogram" />
                                                         <span class="input-group-addon"><label>{$einheit}</label></span>
                                                    </div>
                                                 </td>
                                                 <td>
                                                     <div class="input-group">
                                                         <span class="input-group-addon"><label>{__('amount')}:</label></span>
-                                                        <input type="text" id="preis{$smarty.foreach.preisstaffel.index}" name="preis[]" value="{if isset($VersandartStaffeln[$smarty.foreach.preisstaffel.index]->fPreis)}{$VersandartStaffeln[$smarty.foreach.preisstaffel.index]->fPreis}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxpreisstaffel{$smarty.foreach.preisstaffel.index}', this)" /> <span id="ajaxpreisstaffel{$smarty.foreach.preisstaffel.index}"></span>*}
+                                                        <input type="text" id="preis{$oPreisstaffel@index}" name="preis[]" value="{if isset($VersandartStaffeln[$oPreisstaffel@index]->fPreis)}{$VersandartStaffeln[$oPreisstaffel@index]->fPreis}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxpreisstaffel{$oPreisstaffel@index}', this)" /> <span id="ajaxpreisstaffel{$oPreisstaffel@index}"></span>*}
                                                     </div>
                                                 </td>
                                             </tr>
@@ -659,8 +658,8 @@
                     <table class="table" style="margin-top: 10px;">
                         <tbody>
                         <tr>
-                            {foreach name=versandlaender from=$versandlaender item=versandland}
-                            {if $smarty.foreach.versandlaender.index%3==0}
+                            {foreach $versandlaender as $versandland}
+                            {if $versandland@index % 3 === 0}
                             <td style="height:0;border:0 none;" colspan="4"></td>
                         </tr>
                         <tr>

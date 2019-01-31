@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "emailhistory"
 msgstr "E-Mail-Logbuch"
 
@@ -30,3 +34,12 @@ msgstr "Löschen"
 
 msgid "nodata"
 msgstr "Keine Daten vorhanden"
+
+msgid "errorHistoryDelete"
+msgstr "Fehler: eMail-History konnte nicht gelöscht werden!"
+
+msgid "successHistoryDelete"
+msgstr "Ihre markierten Logbucheinträge wurden erfolgreich gelöscht."
+
+msgid "errorSelectEntry"
+msgstr "Fehler: Bitte markieren Sie mindestens einen Logbucheintrag."

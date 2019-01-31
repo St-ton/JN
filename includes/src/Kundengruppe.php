@@ -487,19 +487,19 @@ class Kundengruppe
      */
     public static function getGroups(): array
     {
-        $oKdngrp_arr = [];
-        $oObj_arr    = Shop::Container()->getDB()->query(
+        $groups = [];
+        $items  = Shop::Container()->getDB()->query(
             'SELECT kKundengruppe 
                 FROM tkundengruppe',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($oObj_arr as $oObj) {
-            if (isset($oObj->kKundengruppe) && $oObj->kKundengruppe > 0) {
-                $oKdngrp_arr[] = new self($oObj->kKundengruppe);
+        foreach ($items as $item) {
+            if (isset($item->kKundengruppe) && $item->kKundengruppe > 0) {
+                $groups[] = new self((int)$item->kKundengruppe);
             }
         }
 
-        return $oKdngrp_arr;
+        return $groups;
     }
 
     /**

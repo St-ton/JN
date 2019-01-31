@@ -13,7 +13,7 @@
                 </span>
                     <span class="input-group-wrap last">
                     <select id="lang-changer" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
-                        {foreach name=sprachen from=$Sprachen item=sprache}
+                        {foreach $Sprachen as $sprache}
                             <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
                         {/foreach}
                     </select>
@@ -40,30 +40,30 @@
                                 <table class="list table">
                                     <thead>
                                         <tr>
-                                            <th class="tcenter"></th>
-                                            <th class="check">&nbsp;</th>
+                                            <th class="check" style="width:35px">&nbsp;</th>
+                                            <th class="tcenter">{__('active')}</th>
                                             <th class="tleft">{__('aaName')}</th>
                                             <th class="tcenter">{__('aaLocation')}</th>
                                             <th class="tright">&nbsp;</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {foreach name=auswahlgruppen from=$oAuswahlAssistentGruppe_arr item=oAuswahlAssistentGruppe}
+                                        {foreach $oAuswahlAssistentGruppe_arr as $oAuswahlAssistentGruppe}
                                             <tr{if !$oAuswahlAssistentGruppe->nAktiv} class="text-danger"{/if}>
-                                                <td>{if !$oAuswahlAssistentGruppe->nAktiv}<i class="fa fa-times"></i>{/if}</td>
                                                 <td class="check">
                                                     <input name="kAuswahlAssistentGruppe_arr[]" type="checkbox"
                                                            value="{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}"
                                                            id="group-{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}"/>
                                                 </td>
+                                                <td>{if !$oAuswahlAssistentGruppe->nAktiv}<i class="fa fa-times"></i>{else}<i class="fa fa-check"></i>{/if}</td>
                                                 <td class="tleft">
                                                     <label for="group-{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}">
                                                         {$oAuswahlAssistentGruppe->cName}
                                                     </label>
                                                 </td>
                                                 <td class="tcenter">
-                                                    {foreach name=anzeigeort from=$oAuswahlAssistentGruppe->oAuswahlAssistentOrt_arr item=oAuswahlAssistentOrt}
-                                                        {$oAuswahlAssistentOrt->cOrt}{if !$smarty.foreach.anzeigeort.last}, {/if}
+                                                    {foreach $oAuswahlAssistentGruppe->oAuswahlAssistentOrt_arr as $oAuswahlAssistentOrt}
+                                                        {$oAuswahlAssistentOrt->cOrt}{if !$oAuswahlAssistentOrt@last}, {/if}
                                                     {/foreach}
                                                 </td>
                                                 <td class="tright" width="265">
@@ -99,7 +99,7 @@
                                                                     <th class="tcenter">{__('aaSort')}</th>
                                                                     <th class="tright">&nbsp;</th>
                                                                 </tr>
-                                                                {foreach name=auswahlfragen from=$oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr item=oAuswahlAssistentFrage}
+                                                                {foreach $oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr as $oAuswahlAssistentFrage}
                                                                     <tr{if !$oAuswahlAssistentFrage->nAktiv} class="text-danger"{/if}>
                                                                         <td>{if !$oAuswahlAssistentFrage->nAktiv}<i class="fa fa-times"></i>{/if}</td>
                                                                         <td class="tleft">{$oAuswahlAssistentFrage->cFrage}</td>
@@ -132,11 +132,11 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <td></td>
                                             <td class="check">
                                                 <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                            <td colspan="4">
+                                                <label for="ALLMSGS">{__('globalSelectAll')}</label>
                                             </td>
-                                            <td colspan="3" class="tleft"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
                                         </tr>
                                     </tfoot>
                                 </table>

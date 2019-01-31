@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "redirect"
 msgstr "Weiterleitungen"
 
@@ -40,3 +44,14 @@ msgstr "Direkteinstieg"
 msgid "redirectCsvImport"
 msgstr "CSV-Import"
 
+msgid "errorURLNotReachable"
+msgstr "Änderungen konnten nicht gespeichert werden, da die weiterzuleitende URL %s nicht erreichbar ist."
+
+msgid "successRedirectSave"
+msgstr "Ihre Weiterleitung wurde erfolgreich gespeichert."
+
+msgid "errorImport"
+msgstr "Fehler: Der Import konnte nicht durchgeführt werden. Bitte prüfen Sie die CSV-Datei"
+
+msgid "successImport"
+msgstr "Der Import wurde erfolgreich durchgeführt"

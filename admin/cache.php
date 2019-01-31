@@ -19,20 +19,21 @@ $tab          = 'uebersicht';
 $action       = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : null;
 $cache        = null;
 $opcacheStats = null;
-
-\Shop::Container()->getGetText()->loadConfigLocales();
+$db           = Shop::Container()->getDB();
+$getText      = Shop::Container()->getGetText();
+$getText->loadConfigLocales();
 
 if (0 < strlen(Request::verifyGPDataString('tab'))) {
     $smarty->assign('tab', Request::verifyGPDataString('tab'));
 }
 try {
     $cache = Shop::Container()->getCache();
-    $cache->setJtlCacheConfig();
+    $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
 } catch (Exception $exc) {
     $error = 'Ausnahme: ' . $exc->getMessage();
 }
-//get disabled cache types
-$deactivated       = Shop::Container()->getDB()->select(
+// get disabled cache types
+$deactivated       = $db->select(
     'teinstellungen',
     ['kEinstellungenSektion', 'cName'],
     [CONF_CACHING, 'caching_types_disabled']
@@ -58,16 +59,16 @@ switch ($action) {
                         $hookInfo = ['type' => $cacheType, 'key' => null, 'isTag' => true];
                         $flush    = $cache->flushTags([$cacheType], $hookInfo);
                         if ($flush === false) {
-                            $error .= '<br />Konnte Cache "' . $cacheType . '" nicht löschen (evtl. bereits leer).';
+                            $error .= '<br />' . sprintf(__('errorCacheTypeDelete'), $cacheType);
                         } else {
                             $okCount++;
                         }
                     }
                     if ($okCount > 0) {
-                        $notice .= $okCount . ' Caches erfolgreich geleert.';
+                        $notice .= $okCount . __('successCacheEmptied');
                     }
                 } else {
-                    $error .= 'Kein Cache-Typ ausgewählt.';
+                    $error .= __('errorNoCacheType');
                 }
                 break;
             case 'activate':
@@ -80,17 +81,17 @@ switch ($action) {
                     }
                     $upd        = new stdClass();
                     $upd->cWert = serialize($currentlyDisabled);
-                    $res        = Shop::Container()->getDB()->update(
+                    $res        = $db->update(
                         'teinstellungen',
                         ['kEinstellungenSektion', 'cName'],
                         [CONF_CACHING, 'caching_types_disabled'],
                         $upd
                     );
                     if ($res > 0) {
-                        $notice .= 'Ausgewählte Typen erfolgreich aktiviert.';
+                        $notice .= __('successCacheTypeActivate');
                     }
                 } else {
-                    $error .= 'Kein Cache-Typ ausgewählt.';
+                    $error .= __('errorNoCacheType');
                 }
                 break;
             case 'deactivate':
@@ -102,17 +103,17 @@ switch ($action) {
                     $currentlyDisabled = array_unique($currentlyDisabled);
                     $upd               = new stdClass();
                     $upd->cWert        = serialize($currentlyDisabled);
-                    $res               = Shop::Container()->getDB()->update(
+                    $res               = $db->update(
                         'teinstellungen',
                         ['kEinstellungenSektion', 'cName'],
                         [CONF_CACHING, 'caching_types_disabled'],
                         $upd
                     );
                     if ($res > 0) {
-                        $notice .= 'Ausgewählte Typen erfolgreich deaktiviert.';
+                        $notice .= __('successCacheTypeDeactivate');
                     }
                 } else {
-                    $error .= 'Kein Cache-Typ ausgewählt.';
+                    $error .= __('errorNoCacheType');
                 }
                 break;
             default:
@@ -122,16 +123,16 @@ switch ($action) {
     case 'flush_object_cache':
         $tab = 'massaction';
         if ($cache !== null && $cache->flushAll() !== false) {
-            $notice = 'Object Cache wurde erfolgreich gelöscht.';
+            $notice = __('successCacheDelete');
         } else {
             if (0 < strlen($error)) {
                 $error .= '<br />';
             }
-            $error .= 'Der Cache konnte nicht gelöscht werden.';
+            $error .= __('errorCacheDelete');
         }
         break;
     case 'settings':
-        $settings      = Shop::Container()->getDB()->selectAll(
+        $settings      = $db->selectAll(
             'teinstellungenconf',
             ['kEinstellungenSektion', 'cConf'],
             [CONF_CACHING, 'Y'],
@@ -194,23 +195,23 @@ switch ($action) {
                         $value->cWert = 'null';
                     }
                     if ($value->cWert !== 'null') {
-                        $notice .= '<strong>' . $value->cWert . '</strong> wurde als Cache-Methode gespeichert.<br />';
+                        $notice .= '<strong>' . $value->cWert . '</strong>' . __('successCacheMethodSave') . '<br />';
                     } else {
-                        $notice .= 'Konnte keine funktionierende Cache-Methode auswählen.';
+                        $notice .= __('errorCacheMethodSelect');
                     }
                 }
-                Shop::Container()->getDB()->delete(
+                $db->delete(
                     'teinstellungen',
                     ['kEinstellungenSektion', 'cName'],
                     [CONF_CACHING, $settings[$i]->cWertName]
                 );
-                Shop::Container()->getDB()->insert('teinstellungen', $value);
+                $db->insert('teinstellungen', $value);
             }
             ++$i;
         }
         $cache->flushAll();
-        $cache->setJtlCacheConfig();
-        $notice .= 'Ihre Einstellungen wurden übernommen.<br />';
+        $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
+        $notice .= __('successConfigSave') . '<br />';
         $tab     = 'settings';
         break;
     case 'benchmark':
@@ -258,12 +259,16 @@ switch ($action) {
                 if (@unlink($pParameters['path'] . $pParameters['filename'])) {
                     $pParameters['count']++;
                 } else {
-                    $pParameters['error'] .= 'Datei <strong>' . $pParameters['path'] . $pParameters['filename'] .
-                        '</strong> konnte nicht gelöscht werden!<br/>';
+                    $pParameters['error'] .= sprintf(
+                        __('errorFileDelete'),
+                        '<strong>' . $pParameters['path'] . $pParameters['filename'] . '</strong>'
+                    ) . '<br/>';
                 }
             } elseif (!@rmdir($pParameters['path'] . $pParameters['filename'])) {
-                $pParameters['error'] .= 'Verzeichnis <strong>' . $pParameters['path'] . $pParameters['filename'] .
-                    '</strong> konnte nicht gelöscht werden!<br/>';
+                $pParameters['error'] .= sprintf(
+                    __('errorDirDelete'),
+                    '<strong>' . $pParameters['path'] . $pParameters['filename'] . '</strong>'
+                ) . '<br/>';
             }
         };
         $deleteCount  = 0;
@@ -276,9 +281,10 @@ switch ($action) {
         $dirMan       = new DirManager();
         $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $template->getDir(), $callback, $cbParameters);
         $dirMan->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback, $cbParameters);
-        $notice .= 'Es wurden <strong>' .
-            number_format($cbParameters['count']) .
-            '</strong> Dateien im Templatecache gelöscht!';
+        $notice .= sprintf(
+            __('successTemplateCacheDelete'),
+            '<strong>' . number_format($cbParameters['count']) . '</strong> '
+        );
         break;
     default:
         break;
@@ -289,7 +295,7 @@ if ($cache !== null) {
            ->assign('all_methods', $cache->getAllMethods())
            ->assign('stats', $cache->getStats());
 }
-$settings = Shop::Container()->getDB()->selectAll(
+$settings = $db->selectAll(
     'teinstellungenconf',
     ['nStandardAnzeigen', 'kEinstellungenSektion'],
     [1, CONF_CACHING],
@@ -297,30 +303,30 @@ $settings = Shop::Container()->getDB()->selectAll(
     'nSort'
 );
 
-\Shop::Container()->getGetText()->localizeConfigs($settings);
+$getText->localizeConfigs($settings);
 foreach ($settings as $i => $setting) {
     if ($setting->cName === 'caching_types_disabled') {
         unset($settings[$i]);
         continue;
     }
     if ($setting->cInputTyp === 'selectbox') {
-        $setting->ConfWerte = Shop::Container()->getDB()->selectAll(
+        $setting->ConfWerte = $db->selectAll(
             'teinstellungenconfwerte',
             'kEinstellungenConf',
             (int)$setting->kEinstellungenConf,
             '*',
             'nSort'
         );
-        \Shop::Container()->getGetText()->localizeConfigValues($setting, $setting->ConfWerte);
+        $getText->localizeConfigValues($setting, $setting->ConfWerte);
     }
-    $oSetValue              = Shop::Container()->getDB()->select(
+    $oSetValue              = $db->select(
         'teinstellungen',
         ['kEinstellungenSektion', 'cName'],
         [CONF_CACHING, $setting->cWertName]
     );
     $setting->gesetzterWert = $oSetValue->cWert ?? null;
 }
-$advancedSettings = Shop::Container()->getDB()->query(
+$advancedSettings = $db->query(
     'SELECT * 
         FROM teinstellungenconf 
         WHERE (nStandardAnzeigen = 0 OR nStandardAnzeigen = 2)
@@ -328,23 +334,20 @@ $advancedSettings = Shop::Container()->getDB()->query(
         ORDER BY nSort',
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
-
-\Shop::Container()->getGetText()->localizeConfigs($advancedSettings);
-
+$getText->localizeConfigs($advancedSettings);
 $settingsCount = count($advancedSettings);
-
 for ($i = 0; $i < $settingsCount; ++$i) {
     if ($advancedSettings[$i]->cInputTyp === 'selectbox') {
-        $advancedSettings[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
+        $advancedSettings[$i]->ConfWerte = $db->selectAll(
             'teinstellungenconfwerte',
             'kEinstellungenConf',
             (int)$advancedSettings[$i]->kEinstellungenConf,
             '*',
             'nSort'
         );
-        \Shop::Container()->getGetText()->localizeConfigValues($advancedSettings[$i], $advancedSettings[$i]->ConfWerte);
+        $getText->localizeConfigValues($advancedSettings[$i], $advancedSettings[$i]->ConfWerte);
     }
-    $oSetValue                           = Shop::Container()->getDB()->select(
+    $oSetValue                           = $db->select(
         'teinstellungen',
         ['kEinstellungenSektion', 'cName'],
         [CONF_CACHING, $advancedSettings[$i]->cWertName]

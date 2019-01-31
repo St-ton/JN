@@ -347,30 +347,27 @@ final class JTLCache implements JTLCacheInterface
     /**
      * @inheritdoc
      */
-    public function getJtlCacheConfig(): array
+    public function getJtlCacheConfig(array $config): array
     {
         // the DB class is needed for this
         if (!\class_exists('Shop')) {
             return [];
         }
-        $cacheConfig = \Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING);
         $cacheInit   = [];
-        if (!empty($cacheConfig)) {
-            foreach ($cacheConfig as $_conf) {
-                if ($_conf->cWert === 'Y' || $_conf->cWert === 'y') {
-                    $value = true;
-                } elseif ($_conf->cWert === 'N' || $_conf->cWert === 'n') {
-                    $value = false;
-                } elseif ($_conf->cWert === '') {
-                    $value = null;
-                } elseif (\is_numeric($_conf->cWert)) {
-                    $value = (int)$_conf->cWert;
-                } else {
-                    $value = $_conf->cWert;
-                }
-                // naming convention is 'caching_'<var-name> for options saved in database
-                $cacheInit[\str_replace('caching_', '', $_conf->cName)] = $value;
+        foreach ($config as $_conf) {
+            if ($_conf->cWert === 'Y' || $_conf->cWert === 'y') {
+                $value = true;
+            } elseif ($_conf->cWert === 'N' || $_conf->cWert === 'n') {
+                $value = false;
+            } elseif ($_conf->cWert === '') {
+                $value = null;
+            } elseif (\is_numeric($_conf->cWert)) {
+                $value = (int)$_conf->cWert;
+            } else {
+                $value = $_conf->cWert;
             }
+            // naming convention is 'caching_'<var-name> for options saved in database
+            $cacheInit[\str_replace('caching_', '', $_conf->cName)] = $value;
         }
         // disabled cache types are saved as serialized string in db
         if (isset($cacheInit['types_disabled'])
@@ -386,9 +383,9 @@ final class JTLCache implements JTLCacheInterface
     /**
      * @inheritdoc
      */
-    public function setJtlCacheConfig(): JTLCacheInterface
+    public function setJtlCacheConfig(array $config): JTLCacheInterface
     {
-        $this->setOptions($this->getJtlCacheConfig())->init();
+        $this->setOptions($this->getJtlCacheConfig($config))->init();
 
         return $this;
     }
@@ -404,7 +401,6 @@ final class JTLCache implements JTLCacheInterface
             // preload shop settings and lang vars to avoid single cache/mysql requests
             $settings = \Shopsetting::getInstance();
             $settings->preLoad();
-            \Shop::Lang()->preLoad();
         } else {
             // set fallback null method
             $this->setCache('null');

@@ -4,8 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Extensions;
+
+use DB\ReturnType;
+
 /**
  * Class AuswahlAssistentFrage
+ *
+ * @package Extensions
  */
 class AuswahlAssistentFrage
 {
@@ -76,7 +82,7 @@ class AuswahlAssistentFrage
      */
     private function loadFromDB(int $questionID, bool $activeOnly = true): void
     {
-        $oDbResult = Shop::Container()->getDB()->query(
+        $oDbResult = \Shop::Container()->getDB()->query(
             'SELECT af.*, m.cBildpfad, COALESCE(ms.cName, m.cName) AS cName, m.cBildpfad
                 FROM tauswahlassistentfrage AS af
                     JOIN tauswahlassistentgruppe as ag
@@ -88,10 +94,10 @@ class AuswahlAssistentFrage
                             AND ms.kSprache = ag.kSprache
                 WHERE af.kAuswahlAssistentFrage = ' . $questionID .
                     ($activeOnly ? ' AND af.nAktiv = 1' : ''),
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
         if ($oDbResult !== null && $oDbResult !== false) {
-            foreach (get_object_vars($oDbResult) as $name => $value) {
+            foreach (\get_object_vars($oDbResult) as $name => $value) {
                 $this->$name = $value;
             }
             $this->kAuswahlAssistentFrage  = (int)$this->kAuswahlAssistentFrage;
@@ -109,26 +115,26 @@ class AuswahlAssistentFrage
      */
     public static function getQuestions(int $groupID, bool $activeOnly = true): array
     {
-        $oAuswahlAssistentFrage_arr = [];
+        $questions = [];
         if ($groupID > 0) {
             $cAktivSQL = '';
             if ($activeOnly) {
                 $cAktivSQL = ' AND nAktiv = 1';
             }
-            $oFrage_arr = Shop::Container()->getDB()->query(
+            $data = \Shop::Container()->getDB()->query(
                 'SELECT *
                     FROM tauswahlassistentfrage
                     WHERE kAuswahlAssistentGruppe = ' . $groupID .
                     $cAktivSQL . '
                     ORDER BY nSort',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
-            foreach ($oFrage_arr as $oFrage) {
-                $oAuswahlAssistentFrage_arr[] = new self($oFrage->kAuswahlAssistentFrage, $activeOnly);
+            foreach ($data as $question) {
+                $questions[] = new self((int)$question->kAuswahlAssistentFrage, $activeOnly);
             }
         }
 
-        return $oAuswahlAssistentFrage_arr;
+        return $questions;
     }
 
     /**
@@ -137,16 +143,16 @@ class AuswahlAssistentFrage
      */
     public function saveQuestion(bool $bPrimary = false)
     {
-        $cPlausi_arr = $this->checkQuestion();
-        if (count($cPlausi_arr) === 0) {
-            $obj                          = new stdClass();
-            $obj->kAuswahlAssistentFrage  = $this->kAuswahlAssistentFrage;
-            $obj->kAuswahlAssistentGruppe = $this->kAuswahlAssistentGruppe;
-            $obj->kMerkmal                = $this->kMerkmal;
-            $obj->cFrage                  = $this->cFrage;
-            $obj->nSort                   = $this->nSort;
-            $obj->nAktiv                  = $this->nAktiv;
-            $kAuswahlAssistentFrage       = Shop::Container()->getDB()->insert('tauswahlassistentfrage', $obj);
+        $checks = $this->checkQuestion();
+        if (\count($checks) === 0) {
+            $ins                          = new \stdClass();
+            $ins->kAuswahlAssistentFrage  = $this->kAuswahlAssistentFrage;
+            $ins->kAuswahlAssistentGruppe = $this->kAuswahlAssistentGruppe;
+            $ins->kMerkmal                = $this->kMerkmal;
+            $ins->cFrage                  = $this->cFrage;
+            $ins->nSort                   = $this->nSort;
+            $ins->nAktiv                  = $this->nAktiv;
+            $kAuswahlAssistentFrage       = \Shop::Container()->getDB()->insert('tauswahlassistentfrage', $ins);
 
             if ($kAuswahlAssistentFrage > 0) {
                 return $bPrimary ? $kAuswahlAssistentFrage : true;
@@ -155,7 +161,7 @@ class AuswahlAssistentFrage
             return false;
         }
 
-        return $cPlausi_arr;
+        return $checks;
     }
 
     /**
@@ -163,40 +169,40 @@ class AuswahlAssistentFrage
      */
     public function updateQuestion()
     {
-        $cPlausi_arr = $this->checkQuestion(true);
-        if (count($cPlausi_arr) === 0) {
-            $_upd                          = new stdClass();
-            $_upd->kAuswahlAssistentGruppe = $this->kAuswahlAssistentGruppe;
-            $_upd->kMerkmal                = $this->kMerkmal;
-            $_upd->cFrage                  = $this->cFrage;
-            $_upd->nSort                   = $this->nSort;
-            $_upd->nAktiv                  = $this->nAktiv;
+        $checks = $this->checkQuestion(true);
+        if (\count($checks) === 0) {
+            $upd                          = new \stdClass();
+            $upd->kAuswahlAssistentGruppe = $this->kAuswahlAssistentGruppe;
+            $upd->kMerkmal                = $this->kMerkmal;
+            $upd->cFrage                  = $this->cFrage;
+            $upd->nSort                   = $this->nSort;
+            $upd->nAktiv                  = $this->nAktiv;
 
-            Shop::Container()->getDB()->update(
+            \Shop::Container()->getDB()->update(
                 'tauswahlassistentfrage',
                 'kAuswahlAssistentFrage',
                 (int)$this->kAuswahlAssistentFrage,
-                $_upd
+                $upd
             );
 
             return true;
         }
 
-        return $cPlausi_arr;
+        return $checks;
     }
 
     /**
-     * @param array $cParam_arr
+     * @param array $params
      * @return bool
      */
-    public static function deleteQuestion(array $cParam_arr): bool
+    public static function deleteQuestion(array $params): bool
     {
-        if (isset($cParam_arr['kAuswahlAssistentFrage_arr'])
-            && is_array($cParam_arr['kAuswahlAssistentFrage_arr'])
-            && count($cParam_arr['kAuswahlAssistentFrage_arr']) > 0
+        if (isset($params['kAuswahlAssistentFrage_arr'])
+            && \is_array($params['kAuswahlAssistentFrage_arr'])
+            && \count($params['kAuswahlAssistentFrage_arr']) > 0
         ) {
-            foreach ($cParam_arr['kAuswahlAssistentFrage_arr'] as $kAuswahlAssistentFrage) {
-                Shop::Container()->getDB()->delete(
+            foreach ($params['kAuswahlAssistentFrage_arr'] as $kAuswahlAssistentFrage) {
+                \Shop::Container()->getDB()->delete(
                     'tauswahlassistentfrage',
                     'kAuswahlAssistentFrage',
                     (int)$kAuswahlAssistentFrage
@@ -210,40 +216,35 @@ class AuswahlAssistentFrage
     }
 
     /**
-     * @param bool $bUpdate
+     * @param bool $update
      * @return array
      */
-    public function checkQuestion(bool $bUpdate = false): array
+    public function checkQuestion(bool $update = false): array
     {
-        $cPlausi_arr = [];
-        // Frage
-        if (strlen($this->cFrage) === 0) {
-            $cPlausi_arr['cFrage'] = 1;
+        $checks = [];
+        if (\strlen($this->cFrage) === 0) {
+            $checks['cFrage'] = 1;
         }
-        // Gruppe
         if ($this->kAuswahlAssistentGruppe === null
             || $this->kAuswahlAssistentGruppe === 0
             || $this->kAuswahlAssistentGruppe === -1
         ) {
-            $cPlausi_arr['kAuswahlAssistentGruppe'] = 1;
+            $checks['kAuswahlAssistentGruppe'] = 1;
         }
-        // Merkmal
         if ($this->kMerkmal === null || $this->kMerkmal === 0 || $this->kMerkmal === -1) {
-            $cPlausi_arr['kMerkmal'] = 1;
+            $checks['kMerkmal'] = 1;
         }
-        if (!$bUpdate && $this->isMerkmalTaken($this->kMerkmal, $this->kAuswahlAssistentGruppe)) {
-            $cPlausi_arr['kMerkmal'] = 2;
+        if (!$update && $this->isMerkmalTaken($this->kMerkmal, $this->kAuswahlAssistentGruppe)) {
+            $checks['kMerkmal'] = 2;
         }
-        // Sortierung
         if ($this->nSort <= 0) {
-            $cPlausi_arr['nSort'] = 1;
+            $checks['nSort'] = 1;
         }
-        // Aktiv
         if ($this->nAktiv !== 0 && $this->nAktiv !== 1) {
-            $cPlausi_arr['nAktiv'] = 1;
+            $checks['nAktiv'] = 1;
         }
 
-        return $cPlausi_arr;
+        return $checks;
     }
 
     /**
@@ -254,7 +255,7 @@ class AuswahlAssistentFrage
     private function isMerkmalTaken(int $kMerkmal, int $kAuswahlAssistentGruppe): bool
     {
         if ($kMerkmal > 0 && $kAuswahlAssistentGruppe > 0) {
-            $oFrage = Shop::Container()->getDB()->select(
+            $oFrage = \Shop::Container()->getDB()->select(
                 'tauswahlassistentfrage',
                 'kMerkmal',
                 $kMerkmal,
@@ -271,12 +272,12 @@ class AuswahlAssistentFrage
     /**
      * @param int  $kMerkmal
      * @param bool $bMMW
-     * @return Merkmal|stdClass
+     * @return \Merkmal|\stdClass
      */
     public static function getMerkmal(int $kMerkmal, bool $bMMW = false)
     {
         return $kMerkmal > 0
-            ? new Merkmal($kMerkmal, $bMMW)
-            : new stdClass();
+            ? new \Merkmal($kMerkmal, $bMMW)
+            : new \stdClass();
     }
 }

@@ -5,27 +5,27 @@
     </div>
 
     <ul id="menu">
-        {foreach name=linkobergruppen from=$oLinkOberGruppe_arr item=oLinkOberGruppe}
-            <li class="topmenu {if $smarty.foreach.linkobergruppen.first}topfirst{elseif $smarty.foreach.linkobergruppen.last}toplast{/if}">
+        {foreach $oLinkOberGruppe_arr as $oLinkOberGruppe}
+            <li class="topmenu {if $oLinkOberGruppe@first}topfirst{elseif $oLinkOberGruppe@last}toplast{/if}">
                 <p class="menu-link-title"><a href="#" class="parent">
                     <span></span>
                     {$oLinkOberGruppe->cName}
                     <button class="collapse-menu"></button>
                 </a></p>
                 <ul>
-                    {foreach name=linkuntergruppen from=$oLinkOberGruppe->oLinkGruppe_arr item=oLinkGruppe}
-                        <li {if $smarty.foreach.linkuntergruppen.first}class="subfirst"{/if}><a href="#"><span>{$oLinkGruppe->cName}</span></a>
+                    {foreach $oLinkOberGruppe->oLinkGruppe_arr as $oLinkGruppe}
+                        <li {if $oLinkGruppe@first}class="subfirst"{/if}><a href="#"><span>{$oLinkGruppe->cName}</span></a>
                             {if $oLinkGruppe->oLink_arr|@count > 0}
                                 <ul>
-                                    {foreach name=linkgruppenlinks from=$oLinkGruppe->oLink_arr item=oLink}
-                                        <li class="{if $smarty.foreach.linkgruppenlinks.first}subfirst {if !$oLink->cRecht|permission}noperm{/if}{/if}"><a href="{$oLink->cURL}">{$oLink->cLinkname}</a></li>
+                                    {foreach $oLinkGruppe->oLink_arr as $oLink}
+                                        <li class="{if $oLink@first}subfirst {if !$oLink->cRecht|permission}noperm{/if}{/if}"><a href="{$oLink->cURL}">{$oLink->cLinkname}</a></li>
                                     {/foreach}
                                 </ul>
                             {/if}
                         </li>
                     {/foreach}
-                    {foreach name=linkuntergruppenlinks from=$oLinkOberGruppe->oLink_arr item=oLink}
-                        <li class="{if $smarty.foreach.linkuntergruppenlinks.first}subfirst{/if} {if !$oLink->cRecht|permission}noperm{/if}"><a href="{$oLink->cURL}">{$oLink->cLinkname}</a></li>
+                    {foreach $oLinkOberGruppe->oLink_arr as $oLink}
+                        <li class="{if $oLink@first}subfirst{/if} {if !$oLink->cRecht|permission}noperm{/if}"><a href="{$oLink->cURL}">{$oLink->cLinkname}</a></li>
                     {/foreach}
                 </ul>
             </li>

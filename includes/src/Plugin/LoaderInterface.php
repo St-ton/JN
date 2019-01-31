@@ -8,7 +8,6 @@ namespace Plugin;
 
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
-use Plugin\ExtensionData\Config;
 
 /**
  * Interface LoaderInterface

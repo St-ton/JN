@@ -8,14 +8,14 @@
             </select>
         </div>
         <div class="added">
-            <h2>Gew&auml;hlte Hersteller</h2>
+            <h2>Gewählte Hersteller</h2>
             <select multiple="multiple" name="manufacturer_list_selected">
             </select>
         </div>
         <div class="clear"></div>
     </div>
     <div class="tcenter btn-group">
-        <a href="#" class="btn btn-primary" id="manufacturer_list_save"><i class="fa fa-save"></i>Speichern</a>
-        <a href="#" class="btn btn-danger" id="manufacturer_list_cancel"><i class="fa fa-exclamation"></i>Abbrechen</a>
+        <a href="#" class="btn btn-primary" id="manufacturer_list_save"><i class="fa fa-save"></i>{__('save')}</a>
+        <a href="#" class="btn btn-danger" id="manufacturer_list_cancel"><i class="fa fa-exclamation"></i>{__('cancel')}</a>
     </div>
 </fieldset>

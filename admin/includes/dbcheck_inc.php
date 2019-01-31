@@ -185,15 +185,15 @@ function compareDBStruct(array $dbFileStruct, array $dbStruct)
     $errors = [];
     foreach ($dbFileStruct as $table => $columns) {
         if (!array_key_exists($table, $dbStruct)) {
-            $errors[$table] = 'Tabelle nicht vorhanden';
+            $errors[$table] = __('errorNoTable');
             continue;
         }
         if (($dbStruct[$table]->Migration & DBMigrationHelper::MIGRATE_INNODB) === DBMigrationHelper::MIGRATE_INNODB) {
-            $errors[$table] = "Tabelle $table ist keine InnoDB-Tabelle";
+            $errors[$table] = $table . __('errorNoInnoTable');
             continue;
         }
         if (($dbStruct[$table]->Migration & DBMigrationHelper::MIGRATE_UTF8) === DBMigrationHelper::MIGRATE_UTF8) {
-            $errors[$table] = "Tabelle $table hat die falsche Kollation";
+            $errors[$table] = $table . __('errorWrongCollation');
             continue;
         }
 
@@ -202,7 +202,7 @@ function compareDBStruct(array $dbFileStruct, array $dbStruct)
                 ? array_keys($dbStruct[$table]->Columns)
                 : $dbStruct[$table], true)
             ) {
-                $errors[$table] = "Spalte $cColumn in $table nicht vorhanden";
+                $errors[$table] = sprintf(__('errorRowMissing'), $cColumn, $table);
                 break;
             }
 
@@ -210,11 +210,11 @@ function compareDBStruct(array $dbFileStruct, array $dbStruct)
                 if (!empty($dbStruct[$table]->Columns[$cColumn]->COLLATION_NAME)
                     && $dbStruct[$table]->Columns[$cColumn]->COLLATION_NAME !== 'utf8_unicode_ci'
                 ) {
-                    $errors[$table] = "Inkonsistente Kollation in Spalte $cColumn";
+                    $errors[$table] = sprintf(__('errorWrongCollationRow'), $cColumn);
                     break;
                 }
                 if ($dbStruct[$table]->Columns[$cColumn]->DATA_TYPE === 'text') {
-                    $errors[$table] = "Datentyp text in Spalte $cColumn";
+                    $errors[$table] = __('errorDatatTypeInRow') . $cColumn;
                     break;
                 }
             }
@@ -496,12 +496,12 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
             try {
                 $cache = Shop::Container()->getCache();
                 if ($cache !== null) {
-                    $cache->setJtlCacheConfig();
+                    $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
                     $cache->flushAll();
                 }
             } catch (Exception $e) {
                 Shop::Container()->getLogService()->error(
-                    'Leeren des Objektcache fehlgeschlagen! (' . $e->getMessage() . ')'
+                    sprintf(__('errorEmptyCache'), $e->getMessage())
                 );
             }
             $callback    = function (array $pParameters) {

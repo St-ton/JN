@@ -13,8 +13,6 @@ $oAccount->permission('IMPORT_NEWSLETTER_RECEIVER_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
-//jtl2
-$format  = ['cAnrede', 'cVorname', 'cNachname', 'cEmail'];
 $hinweis = '';
 $fehler  = '';
 
@@ -25,20 +23,21 @@ if (isset($_POST['newsletterimport'], $_FILES['csv']['tmp_name'])
 ) {
     $file = fopen($_FILES['csv']['tmp_name'], 'r');
     if ($file !== false) {
+        $format   = ['cAnrede', 'cVorname', 'cNachname', 'cEmail'];
         $row      = 0;
         $formatId = -1;
         $fmt      = [];
         while ($data = fgetcsv($file, 2000, ';', '"')) {
             if ($row === 0) {
-                $hinweis .= 'Checke Kopfzeile ...';
-                $fmt      = checkformat($data);
+                $hinweis .= __('checkHead');
+                $fmt      = checkformat($data, $format);
                 if ($fmt === -1) {
-                    $fehler = 'Format nicht erkannt!';
+                    $fehler = __('errorFormatUnknown');
                     break;
                 }
-                $hinweis .= '<br /><br />Importiere...<br />';
+                $hinweis .= '<br /><br />' . __('importPending') . '<br />';
             } else {
-                $hinweis .= '<br />Zeile ' . $row . ': ' . processImport($fmt, $data);
+                $hinweis .= '<br />' . __('row') . $row . ': ' . processImport($fmt, $data);
             }
             $row++;
         }
@@ -108,15 +107,15 @@ function pruefeNLEBlacklist($cMail)
 
 /**
  * @param array $data
+ * @param array $format
  * @return array|int
  */
-function checkformat($data)
+function checkformat($data, $format)
 {
     $fmt = [];
     $cnt = count($data);
     for ($i = 0; $i < $cnt; $i++) {
-        // jtl-shop/issues#296
-        if (!empty($data[$i]) && in_array($data[$i], $GLOBALS['format'], true)) {
+        if (!empty($data[$i]) && in_array($data[$i], $format, true)) {
             $fmt[$i] = $data[$i];
         }
     }
@@ -173,20 +172,18 @@ function processImport($fmt, $data)
     }
 
     if (StringHandler::filterEmailAddress($recipient->cEmail) === false) {
-        return "keine gültige Email ($recipient->cEmail)! Übergehe diesen Datensatz.";
+        return sprintf(__('errorEmailInvalid'), $recipient->cEmail);
     }
     if (pruefeNLEBlacklist($recipient->cEmail)) {
-        return 'keine gültige Email: ' . $recipient->cEmail . '!' .
-            ' Kunde hat sich auf die Blacklist setzen lassen! Übergehe diesen Datensatz.';
+        return __('errorEmailInvalidBlacklist');
     }
     if (!$recipient->cNachname) {
-        return 'kein Nachname! Übergehe diesen Datensatz.';
+        return __('errorSurnameMissing');
     }
 
     $oldMail = Shop::Container()->getDB()->select('tnewsletterempfaenger', 'cEmail', $recipient->cEmail);
     if (isset($oldMail->kNewsletterEmpfaenger) && $oldMail->kNewsletterEmpfaenger > 0) {
-        return 'Newsletterempfänger mit dieser Emailadresse bereits vorhanden: (' .
-            $recipient->cEmail . ')! Übergehe Datensatz.';
+        return sprintf(__('errorEmailExists'), $recipient->cEmail);
     }
 
     if ($recipient->cAnrede === 'f') {
@@ -231,11 +228,11 @@ function processImport($fmt, $data)
         $ins->cAktion      = 'Daten-Import';
         $res               = Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $ins);
         if ($res) {
-            return 'Datensatz OK. Importiere: ' .
+            return __('successImport') .
                 $recipient->cVorname . ' ' .
                 $recipient->cNachname;
         }
     }
 
-    return 'Fehler beim Import dieser Zeile!';
+    return __('errorImportRow');
 }

@@ -193,6 +193,7 @@ define('HOOK_JTL_PAGE_KUNDENACCOUNTLOESCHEN', 26);
  * Anzeige des Kundenkontos
  *
  * @file jtl.php
+ * @param Lieferadresse[] deliveryAddresses - since 5.0.0
  */
 define('HOOK_JTL_PAGE_MEINKKONTO', 27);
 

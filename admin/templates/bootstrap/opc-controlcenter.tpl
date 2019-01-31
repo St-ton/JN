@@ -17,9 +17,9 @@
 <div class="tab-content">
     <div class="tab-pane fade active in" id="pages">
         <div class="panel panel-default">
-            {assign var="allPages" value=$opcPageDB->getPages()}
+            {assign var=allPages value=$opcPageDB->getPages()}
             {if $allPages|@count > 0}
-                {assign var="pages" value=array_slice(
+                {assign var=pages value=array_slice(
                     $allPages,
                     $pagesPagi->getFirstPageItem(),
                     $pagesPagi->getPageItemCount()
@@ -36,8 +36,8 @@
                         </thead>
                         <tbody>
                             {foreach $pages as $page}
-                                {assign var="pageIdHash" value=$page->cPageId|md5}
-                                {assign var="publicPageRow" value=$opcPageDB->getPublicPageRow($page->cPageId)}
+                                {assign var=pageIdHash value=$page->cPageId|md5}
+                                {assign var=publicPageRow value=$opcPageDB->getPublicPageRow($page->cPageId)}
                                 <tr>
                                     <td>
                                         <a href="{$URL_SHOP}{$page->cPageUrl}" target="_blank">{$page->cPageUrl}</a>
@@ -172,7 +172,7 @@
     </div>
     <div class="tab-pane fade" id="blueprints">
         <div class="panel panel-default">
-            {assign var="blueprints" value=$opc->getBlueprints()}
+            {assign var=blueprints value=$opc->getBlueprints()}
             {if $blueprints|@count > 0}
                 <div class="table-responsive">
                     <table class="list table">
@@ -230,5 +230,4 @@
         $('.collapse.in').collapse('hide');
     });
 </script>
-
 {include file='tpl_inc/footer.tpl'}

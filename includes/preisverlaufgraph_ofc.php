@@ -35,36 +35,36 @@ function expandPriceArray($data, $max)
 
 if (isset($_GET['kArtikel'])) {
     $session       = \Session\Frontend::getInstance();
-    $Einstellungen = Shop::getSettings([CONF_PREISVERLAUF]);
+    $conf          = Shop::getSettings([CONF_PREISVERLAUF]);
     $kArtikel      = (int)$_GET['kArtikel'];
     $kKundengruppe = (int)$_GET['kKundengruppe'];
     $kSteuerklasse = (int)$_GET['kSteuerklasse'];
-    $nMonat        = (int)$Einstellungen['preisverlauf']['preisverlauf_anzahl_monate'];
+    $nMonat        = (int)$conf['preisverlauf']['preisverlauf_anzahl_monate'];
 
-    if (count($Einstellungen) > 0) {
-        $oPreisConfig           = new stdClass();
-        $oPreisConfig->Waehrung = \Session\Frontend::getCurrency()->getName();
-        $oPreisConfig->Netto    = \Session\Frontend::getCustomerGroup()->isMerchant()
+    if (count($conf) > 0) {
+        $priceConfig           = new stdClass();
+        $priceConfig->Waehrung = \Session\Frontend::getCurrency()->getName();
+        $priceConfig->Netto    = \Session\Frontend::getCustomerGroup()->isMerchant()
             ? 0
             : $_GET['fMwSt'];
 
-        $oVerlauf_arr = (new Preisverlauf())->gibPreisverlauf($kArtikel, $kKundengruppe, $nMonat);
-        $oVerlauf_arr = array_reverse($oVerlauf_arr);
-        $data         = [];
-        foreach ($oVerlauf_arr as $oItem) {
-            $fPreis = round((float)($oItem->fVKNetto + ($oItem->fVKNetto * ($oPreisConfig->Netto / 100.0))), 2);
+        $history = (new Preisverlauf())->gibPreisverlauf($kArtikel, $kKundengruppe, $nMonat);
+        $history = array_reverse($history);
+        $data    = [];
+        foreach ($history as $item) {
+            $fPreis = round((float)($item->fVKNetto + ($item->fVKNetto * ($priceConfig->Netto / 100.0))), 2);
             $data[] = $fPreis;
         }
         $d = new solid_dot();
         $d->size(3);
         $d->halo_size(1);
         $d->colour('#000');
-        $d->tooltip('#val# ' . $oPreisConfig->Waehrung);
+        $d->tooltip('#val# ' . $priceConfig->Waehrung);
 
         $bar = new bar();
         $bar->set_values($data);
         $bar->set_colour('#8cb9fd');
-        $bar->set_tooltip('#val# ' . $oPreisConfig->Waehrung);
+        $bar->set_tooltip('#val# ' . $priceConfig->Waehrung);
 
         // min und max berechnen @todo: $data must contain at least one element
         $fMaxPreis = round((float)max($data), 2);
@@ -76,8 +76,8 @@ if (isset($_GET['kArtikel'])) {
         $x->set_grid_colour('#f0f0f0');
         $x_labels = [];
 
-        foreach ($oVerlauf_arr as $oItem) {
-            $x_labels[] = date('d.m.', $oItem->timestamp);
+        foreach ($history as $item) {
+            $x_labels[] = date('d.m.', $item->timestamp);
         }
         $x->labels         = new stdClass();
         $x->labels->labels = $x_labels;

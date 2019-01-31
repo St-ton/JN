@@ -338,19 +338,19 @@ class ShippingMethod
                 $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
             }
 
-            $oVersandart_arr = self::getPossibleShippingMethods(
+            $shippingMethods = self::getPossibleShippingMethods(
                 StringHandler::filterXSS($cLand),
                 StringHandler::filterXSS($cPLZ),
                 self::getShippingClasses(Frontend::getCart()),
                 $kKundengruppe
             );
-            if (\count($oVersandart_arr) > 0) {
+            if (\count($shippingMethods) > 0) {
                 Shop::Smarty()
                     ->assign('ArtikelabhaengigeVersandarten', self::gibArtikelabhaengigeVersandkostenImWK(
                         $cLand,
                         Frontend::getCart()->PositionenArr
                     ))
-                    ->assign('Versandarten', $oVersandart_arr)
+                    ->assign('Versandarten', $shippingMethods)
                     ->assign('Versandland', Sprache::getCountryCodeByCountryName($cLand))
                     ->assign('VersandPLZ', StringHandler::filterXSS($cPLZ));
             } else {
@@ -398,14 +398,14 @@ class ShippingMethod
         $kSteuerklasse                  = 0;
         // Vorkonditionieren -- Gleiche kartikel aufsummieren
         // aber nur, wenn artikelabhaengiger Versand bei dem jeweiligen kArtikel
-        $nArtikelAssoc_arr = [];
+        $productIDs = [];
         foreach ($products as $product) {
-            $kArtikel                     = (int)$product['kArtikel'];
-            $nArtikelAssoc_arr[$kArtikel] = isset($nArtikelAssoc_arr[$kArtikel]) ? 1 : 0;
+            $kArtikel              = (int)$product['kArtikel'];
+            $productIDs[$kArtikel] = isset($productIDs[$kArtikel]) ? 1 : 0;
         }
         $bMerge         = false;
         $defaultOptions = Artikel::getDefaultOptions();
-        foreach ($nArtikelAssoc_arr as $kArtikel => $nArtikelAssoc) {
+        foreach ($productIDs as $kArtikel => $nArtikelAssoc) {
             if ($nArtikelAssoc !== 1) {
                 continue;
             }
@@ -596,8 +596,7 @@ class ShippingMethod
                     $additionalProduct->fWarenwertNetto += $product['fAnzahl'] * $child->Preise->fVKNetto;
                     $additionalProduct->fGewicht        += $product['fAnzahl'] * $child->fGewicht;
                 }
-                if (\strlen($shippingClasses) > 0 && \strpos($shippingClasses, $child->kVersandklasse) === false
-                ) {
+                if (\strlen($shippingClasses) > 0 && \strpos($shippingClasses, $child->kVersandklasse) === false) {
                     $shippingClasses = '-' . $child->kVersandklasse;
                 } elseif (\strlen($shippingClasses) === 0) {
                     $shippingClasses = $child->kVersandklasse;
@@ -616,16 +615,14 @@ class ShippingMethod
                 $kKundengruppe,
                 null
             );
-            $oArtikelAbhaenigeVersandkosten_arr = self::gibArtikelabhaengigeVersandkostenImWK(
+            $depending = self::gibArtikelabhaengigeVersandkostenImWK(
                 $cLandISO,
                 $cart->PositionenArr
             );
 
             $fSumme = 0;
-            if (\count($oArtikelAbhaenigeVersandkosten_arr) > 0) {
-                foreach ($oArtikelAbhaenigeVersandkosten_arr as $oArtikelAbhaenigeVersandkosten) {
-                    $fSumme += $oArtikelAbhaenigeVersandkosten->fKosten;
-                }
+            foreach ($depending as $oArtikelAbhaenigeVersandkosten) {
+                $fSumme += $oArtikelAbhaenigeVersandkosten->fKosten;
             }
 
             $oVersandartNurWK->fEndpreis += $fSumme;
@@ -928,10 +925,12 @@ class ShippingMethod
     {
         $arrVersandpositionen = [];
         if (!\is_array($positions)) {
+
             return $arrVersandpositionen;
         }
         $positions = \array_filter($positions, function ($pos) {
-            return (int)$pos->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL;
+            
+            return (int)$pos->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL && \is_object($pos->Artikel);
         });
         foreach ($positions as $pos) {
             $shippingPos = self::gibArtikelabhaengigeVersandkosten(
@@ -1347,7 +1346,7 @@ class ShippingMethod
             Shop::getLanguageID();
         if (($vkfls = Shop::Container()->getCache()->get($cacheID)) === false) {
             // remove empty strings
-            $cLaender_arr = \array_filter(\explode(' ', $oVersandart->cLaender));
+            $countryCodes = \array_filter(\explode(' ', $oVersandart->cLaender));
             // only select the needed row
             $select = $_SESSION['cISOSprache'] === 'ger'
                 ? 'cDeutsch'
@@ -1355,7 +1354,7 @@ class ShippingMethod
             // generate IN sql statement with stringified country isos
             $sql       = ' cISO IN (' . \implode(', ', \array_map(function ($iso) {
                 return "'" . $iso . "'";
-            }, $cLaender_arr)) . ')';
+            }, $countryCodes)) . ')';
             $countries = Shop::Container()->getDB()->query(
                 'SELECT ' . $select . ' AS name
                 FROM tland

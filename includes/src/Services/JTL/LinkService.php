@@ -379,41 +379,29 @@ final class LinkService implements LinkServiceInterface
 
     /**
      * @inheritdoc
-     * @todo: use $cISOSprache?
      */
-    public function buildSpecialPageMeta(int $type, string $cISOSprache = null): \stdClass
+    public function buildSpecialPageMeta(int $type): \stdClass
     {
-        $first = null;
+        $first           = null;
+        $meta            = new \stdClass();
+        $meta->cTitle    = '';
+        $meta->cDesc     = '';
+        $meta->cKeywords = '';
         foreach ($this->linkGroups as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
             $first = $linkGroup->getLinks()->first(function (LinkInterface $link) use ($type) {
                 return $link->getLinkType() === $type;
             });
             if ($first !== null) {
-                break;
+                $meta->cTitle    = $first->getMetaTitle();
+                $meta->cDesc     = $first->getMetaDescription();
+                $meta->cKeywords = $first->getMetaKeyword();
+
+                return $meta;
             }
         }
-//        if ($cISOSprache !== null) {
-//            $shopISO = \Shop::getLanguageCode();
-//            if ($shopISO !== null && \strlen($shopISO) > 0) {
-//                $cISOSprache = $shopISO;
-//            } else {
-//                $oSprache    = gibStandardsprache();
-//                $cISOSprache = $oSprache->cISO;
-//            }
-//        }
-        $oMeta            = new \stdClass();
-        $oMeta->cTitle    = '';
-        $oMeta->cDesc     = '';
-        $oMeta->cKeywords = '';
-        if ($first !== null) {
-            /** @var LinkInterface $first */
-            $oMeta->cTitle    = $first->getMetaTitle();
-            $oMeta->cDesc     = $first->getMetaDescription();
-            $oMeta->cKeywords = $first->getMetaKeyword();
-        }
 
-        return $oMeta;
+        return $meta;
     }
 
     /**
@@ -521,34 +509,34 @@ final class LinkService implements LinkServiceInterface
         if ($langID <= 0 || $customerGroupID <= 0) {
             return false;
         }
-        $oLinkAGB = null;
-        $oLinkWRB = null;
+        $linkAGB = null;
+        $linkWRB = null;
         // kLink für AGB und WRB suchen
         foreach ($this->getSpecialPages() as $sp) {
             /** @var \Link\LinkInterface $sp */
             if ($sp->getLinkType() === \LINKTYP_AGB) {
-                $oLinkAGB = $sp;
+                $linkAGB = $sp;
             } elseif ($sp->getLinkType() === \LINKTYP_WRB) {
-                $oLinkWRB = $sp;
+                $linkWRB = $sp;
             }
         }
-        $oAGBWRB = $this->db->select(
+        $data = $this->db->select(
             'ttext',
             'kKundengruppe',
             $customerGroupID,
             'kSprache',
             $langID
         );
-        if (empty($oAGBWRB->kText)) {
-            $oAGBWRB = $this->db->select('ttext', 'nStandard', 1);
+        if (empty($data->kText)) {
+            $data = $this->db->select('ttext', 'nStandard', 1);
         }
-        if (!empty($oAGBWRB->kText)) {
-            $oAGBWRB->cURLAGB  = $oLinkAGB !== null ? $oLinkAGB->getURL() : '';
-            $oAGBWRB->cURLWRB  = $oLinkWRB !== null ? $oLinkWRB->getURL() : '';
-            $oAGBWRB->kLinkAGB = $oLinkAGB !== null ? $oLinkAGB->getID() : 0;
-            $oAGBWRB->kLinkWRB = $oLinkWRB !== null ? $oLinkWRB->getID() : 0;
+        if (!empty($data->kText)) {
+            $data->cURLAGB  = $linkAGB !== null ? $linkAGB->getURL() : '';
+            $data->cURLWRB  = $linkWRB !== null ? $linkWRB->getURL() : '';
+            $data->kLinkAGB = $linkAGB !== null ? $linkAGB->getID() : 0;
+            $data->kLinkWRB = $linkWRB !== null ? $linkWRB->getID() : 0;
 
-            return $oAGBWRB;
+            return $data;
         }
 
         return false;

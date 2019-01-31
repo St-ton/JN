@@ -1,4 +1,9 @@
 <nav class="backend-sidebar">
+    <script>
+        if (window.sessionStorage.sidebarState === 'collapsed') {
+            $('.backend-sidebar').addClass('collapsed');
+        }
+    </script>
     <div class="backend-brandbar">
         <a class="backend-brand" href="index.php" title="Dashboard">
             <img src="{$currentTemplateDir}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
@@ -11,7 +16,7 @@
     <div class="backend-navigation">
         <ul class="backend-menu toplevel">
             {foreach $oLinkOberGruppe_arr as $oLinkOberGruppe}
-                {assign var='rootEntryName' value=$oLinkOberGruppe->cName|regex_replace:'/[^a-zA-Z0-9]/':'-'|lower}
+                {assign var=rootEntryName value=$oLinkOberGruppe->cName|regex_replace:'/[^a-zA-Z0-9]/':'-'|lower}
                 {if $oLinkOberGruppe->oLinkGruppe_arr|@count === 0 && $oLinkOberGruppe->oLink_arr|@count === 1}
                     <li class="single {if isset($oLinkOberGruppe->class)}{$oLinkOberGruppe->class}{/if}
                                {if $oLinkOberGruppe->key === $currentMenuPath[0]}current{/if}">
@@ -23,7 +28,7 @@
                         </div>
                     </li>
                 {else}
-                    {*{assign var='rootEntryName' value=$oLinkOberGruppe->cName|regex_replace:'/[^a-zA-Z0-9]/':'-'|lower}*}
+                    {*{assign var=rootEntryName value=$oLinkOberGruppe->cName|regex_replace:'/[^a-zA-Z0-9]/':'-'|lower}*}
                     <li id="root-menu-entry-{$rootEntryName}"
                         class="{if isset($oLinkOberGruppe->class)}{$oLinkOberGruppe->class}{/if}
                                {if $oLinkOberGruppe->key === $currentMenuPath[0]}current{/if}">
@@ -37,8 +42,7 @@
                         <ul class="backend-menu secondlevel" id="group-{$rootEntryName}">
                             {foreach $oLinkOberGruppe->oLinkGruppe_arr as $oLinkGruppe}
                                 {if $oLinkGruppe->oLink_arr|@count > 0}
-                                    {assign var='entryName'
-                                            value=$oLinkGruppe->cName|replace:' ':'-'|replace:'&':''|lower}
+                                    {assign var=entryName value=$oLinkGruppe->cName|replace:' ':'-'|replace:'&':''|lower}
                                     <li id="dropdown-header-{$entryName}"
                                         class="backend-dropdown-header
                                                {if $oLinkGruppe->key === $currentMenuPath[1]}expanded current{/if}">
@@ -75,31 +79,45 @@
                 var width, endWidth;
 
                 if(sidebar.hasClass('collapsed')) {
-                    sidebar.removeClass('collapsed');
-                    sidebar.css('width', 'auto');
-                    width = sidebar.width();
-                    sidebar.addClass('collapsed');
-                    sidebar.css({ width: '' });
-                    sidebar.animate({ width: width }, 200, 'swing', function() {
-                        sidebar.css({ width: '' });
-                        sidebar.removeClass('collapsed');
-                    });
+                    expandSidebar();
                 } else {
-                    width = sidebar.width();
-                    sidebar.addClass('collapsed');
-                    endWidth = sidebar.width();
-                    sidebar.removeClass('collapsed');
-                    sidebar.css({ width: width + 'px' });
-                    sidebar.animate({ width: endWidth }, 200, 'swing', function() {
-                        sidebar.css({ width: '' });
-                    });
-                    sidebar.addClass('collapsed');
+                    collapseSidebar();
                 }
 
                 collapseAll();
                 collapseAllRoot();
 
                 return false;
+            }
+
+            function collapseSidebar()
+            {
+                var sidebar = $('.backend-sidebar');
+                var width   = sidebar.width();
+                sidebar.addClass('collapsed');
+                var endWidth = sidebar.width();
+                sidebar.removeClass('collapsed');
+                sidebar.css({ width: width + 'px' });
+                sidebar.animate({ width: endWidth }, 200, 'swing', function() {
+                    sidebar.css({ width: '' });
+                });
+                sidebar.addClass('collapsed');
+                window.sessionStorage.sidebarState = 'collapsed';
+            }
+
+            function expandSidebar()
+            {
+                var sidebar = $('.backend-sidebar');
+                sidebar.removeClass('collapsed');
+                sidebar.css('width', 'auto');
+                var width = sidebar.width();
+                sidebar.addClass('collapsed');
+                sidebar.css({ width: '' });
+                sidebar.animate({ width: width }, 200, 'swing', function() {
+                    sidebar.css({ width: '' });
+                    sidebar.removeClass('collapsed');
+                    window.sessionStorage.sidebarState = 'expanded';
+                });
             }
 
             function collapseAll()

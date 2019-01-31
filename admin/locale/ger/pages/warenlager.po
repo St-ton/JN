@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "warenlager"
 msgstr "Warenlager"
 
@@ -28,3 +32,5 @@ msgstr "Aktualisieren"
 msgid "warenlagerDesignation"
 msgstr "Bezeichnung ändern"
 
+msgid "successStoreRefresh"
+msgstr "Ihre Warenlager wurden erfolgreich aktualisiert"

@@ -371,12 +371,13 @@ final class Installer
             return $targetVersion;
         }
 
-        return $manager->migrate(null);
+        return $manager->migrate();
     }
 
     /**
-     * @param string $sqlFile
-     * @param int    $version
+     * @param string    $sqlFile
+     * @param int       $version
+     * @param \stdClass $plugin
      * @return int
      * @throws \Exceptions\CircularReferenceException
      * @throws \Exceptions\ServiceNotFoundException

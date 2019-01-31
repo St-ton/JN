@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "couponstatisticsURL"
 msgstr "https://jtl-url.de/v5h81"
 
@@ -96,4 +100,3 @@ msgstr "Gesamtpreis"
 
 msgid "totalAmount"
 msgstr "Gesamtsumme"
-

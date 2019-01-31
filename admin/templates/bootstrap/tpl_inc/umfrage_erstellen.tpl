@@ -72,9 +72,9 @@ function clearInput(inputField) {ldelim}
                             <td><label for="kKundengruppe">{__('umfrageCustomerGrp')}</label></td>
                             <td>
                                 <select id="kKundengruppe" name="kKundengruppe[]" multiple="multiple" class="combo form-control">
-                                    <option value="-1" {if isset($oUmfrage->kKundengruppe_arr)}{foreach name=kundengruppen from=$oUmfrage->kKundengruppe_arr item=kKundengruppe}{if $kKundengruppe == '-1'}selected{/if}{/foreach}{/if}>Alle</option>
-                                {foreach name=kundengruppen from=$oKundengruppe_arr item=oKundengruppe}
-                                    <option value="{$oKundengruppe->kKundengruppe}" {if isset($oUmfrage->kKundengruppe_arr)}{foreach name=kkundengruppen from=$oUmfrage->kKundengruppe_arr item=kKundengruppe}{if $oKundengruppe->kKundengruppe == $kKundengruppe}selected{/if}{/foreach}{/if}>{$oKundengruppe->cName}</option>
+                                    <option value="-1" {if isset($oUmfrage->kKundengruppe_arr)}{foreach $oUmfrage->kKundengruppe_arr as $kKundengruppe}{if $kKundengruppe == '-1'}selected{/if}{/foreach}{/if}>Alle</option>
+                                {foreach $oKundengruppe_arr as $oKundengruppe}
+                                    <option value="{$oKundengruppe->kKundengruppe}" {if isset($oUmfrage->kKundengruppe_arr)}{foreach $oUmfrage->kKundengruppe_arr as $kKundengruppe}{if $oKundengruppe->kKundengruppe == $kKundengruppe}selected{/if}{/foreach}{/if}>{$oKundengruppe->cName}</option>
                                 {/foreach}
                                 </select>
                             </td>
@@ -102,7 +102,7 @@ function clearInput(inputField) {ldelim}
                                 <td valign="top">
                                     <select id="kupon" name="kKupon" class="combo form-control" onchange="selectCheck(this);" style="width: 180px;">
                                         <option value="0"{if isset($oUmfrage->kKupon) && $oUmfrage->kKupon == 0} selected{/if} index=0>{__('umfrageNoCoupon')}</option>
-                                        {foreach name=kupon from=$oKupon_arr item=oKupon}
+                                        {foreach $oKupon_arr as $oKupon}
                                             <option value="{$oKupon->kKupon}"{if isset($oUmfrage->kKupon) && $oKupon->kKupon == $oUmfrage->kKupon} selected{/if}>{$oKupon->cName}</option>
                                         {/foreach}
                                     </select>
@@ -124,7 +124,7 @@ function clearInput(inputField) {ldelim}
             <div class="panel-footer">
                 <div class="btn-group">
                     <button class="btn btn-primary" name="speichern" type="button" value="{__('umfrageSave')}" onclick="document.umfrage.submit();"><i class="fa fa-save"></i> {__('umfrageSave')}</button>
-                    <a class="btn btn-default" href="umfrage.php"><i class="fa fa-angle-double-left"></i> Zur&uuml;ck</a>
+                    <a class="btn btn-default" href="umfrage.php"><i class="fa fa-angle-double-left"></i> {__('pageBack')}</a>
                 </div>
             </div>
         </div>

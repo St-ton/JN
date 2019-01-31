@@ -114,7 +114,7 @@ class IpAnonymizer
      *
      * @throws \RuntimeException
      */
-    private function init()
+    private function init(): void
     {
         if ($this->ip === '' || \strpos($this->ip, '*') !== false) {
             // if there is an old fashioned anonymization or

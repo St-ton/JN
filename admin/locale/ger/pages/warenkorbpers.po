@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "warenkorbpers"
 msgstr "Gespeicherte Warenkörbe"
 
@@ -46,3 +50,5 @@ msgstr "Suchen"
 msgid "warenkorbpersAction"
 msgstr "Aktion"
 
+msgid "successCartPersPosDelete"
+msgstr "Ihr ausgewählter Warenkorb wurde erfolgreich gelöscht."

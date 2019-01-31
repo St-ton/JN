@@ -103,10 +103,10 @@ switch ($action) {
                 header('Location: ' . $redirectUrl);
                 exit;
             }
-            $cFehler .= 'Slider konnte nicht gespeichert werden.';
+            $cFehler .= __('errorSliderSave');
 
             if (empty($cFehler)) {
-                $cHinweis = 'Änderungen erfolgreich gespeichert.';
+                $cHinweis = __('successSliderSave');
             }
         }
         break;
@@ -117,7 +117,7 @@ switch ($action) {
         $slider->load($kSlider, false);
         $smarty->assign('oSlider', $slider);
         if (!is_object($slider)) {
-            $cFehler = 'Slider wurde nicht gefunden.';
+            $cFehler = __('errorSliderNotFound');
             $action  = 'view';
         }
         break;
@@ -128,7 +128,7 @@ switch ($action) {
         }
         $slider = new Slider();
         $slider->load($kSlider, false);
-        $smarty->assign('oSprachen_arr', Sprache::getInstance(false)->gibInstallierteSprachen())
+        $smarty->assign('oSprachen_arr', Sprache::getInstance()->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
                ->assign('oExtension', holeExtension($kSlider));
 
@@ -146,7 +146,7 @@ switch ($action) {
         $smarty->assign('oSlider', $slider);
 
         if (!is_object($slider)) {
-            $cFehler = 'Slider wurde nicht gefunden.';
+            $cFehler = __('errorSliderNotFound');
             $action  = 'view';
             break;
         }
@@ -154,7 +154,7 @@ switch ($action) {
 
     case 'new':
         $smarty->assign('checked', 'checked="checked"')
-               ->assign('oSprachen_arr', Sprache::getInstance(false)->gibInstallierteSprachen())
+               ->assign('oSprachen_arr', Sprache::getInstance()->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
                ->assign('oSlider', new Slider());
         break;
@@ -166,7 +166,7 @@ switch ($action) {
             header('Location: ' . $redirectUrl);
             exit;
         }
-        $cFehler = 'Slider konnte nicht entfernt werden.';
+        $cFehler = __('errorSliderRemove');
         break;
 
     default:

@@ -26,8 +26,8 @@ final class Wishlist extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        parent::addMapping('nBilderAnzeigen', 'ShowImages');
-        parent::addMapping('CWunschlistePos_arr', 'Items');
+        $this->addMapping('nBilderAnzeigen', 'ShowImages');
+        $this->addMapping('CWunschlistePos_arr', 'Items');
         $this->setShow(true);
         if (!empty(Frontend::getWishList()->kWunschliste)) {
             $this->setWishListID(Frontend::getWishList()->kWunschliste);

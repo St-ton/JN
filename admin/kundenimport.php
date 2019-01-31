@@ -14,13 +14,6 @@ require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 
-$format = [
-    'cPasswort', 'cAnrede', 'cTitel', 'cVorname', 'cNachname', 'cFirma',
-    'cStrasse', 'cHausnummer', 'cAdressZusatz', 'cPLZ', 'cOrt', 'cBundesland',
-    'cLand', 'cTel', 'cMobil', 'cFax', 'cMail', 'cUSTID', 'cWWW', 'fGuthaben',
-    'cNewsletter', 'dGeburtstag', 'fRabatt', 'cHerkunft', 'dErstellt', 'cAktiv'
-];
-
 if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
     && (int)$_POST['kundenimport'] === 1
     && $_FILES['csv']
@@ -30,21 +23,49 @@ if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
     $delimiter = getCsvDelimiter($_FILES['csv']['tmp_name']);
     $file      = fopen($_FILES['csv']['tmp_name'], 'r');
     if ($file !== false) {
+        $format   = [
+            'cPasswort',
+            'cAnrede',
+            'cTitel',
+            'cVorname',
+            'cNachname',
+            'cFirma',
+            'cStrasse',
+            'cHausnummer',
+            'cAdressZusatz',
+            'cPLZ',
+            'cOrt',
+            'cBundesland',
+            'cLand',
+            'cTel',
+            'cMobil',
+            'cFax',
+            'cMail',
+            'cUSTID',
+            'cWWW',
+            'fGuthaben',
+            'cNewsletter',
+            'dGeburtstag',
+            'fRabatt',
+            'cHerkunft',
+            'dErstellt',
+            'cAktiv'
+        ];
         $row      = 0;
         $fmt      = [];
         $formatId = -1;
         $hinweis  = '';
         while ($data = fgetcsv($file, 2000, $delimiter, '"')) {
             if ($row === 0) {
-                $hinweis .= 'Checke Kopfzeile ...';
-                $fmt      = checkformat($data);
+                $hinweis .= __('checkHead');
+                $fmt      = checkformat($data, $format);
                 if ($fmt === -1) {
-                    $hinweis .= ' - Format nicht erkannt!';
+                    $hinweis .= __('errorFormatNotFound');
                     break;
                 }
-                $hinweis .= '<br><br>Importiere...<br>';
+                $hinweis .= '<br /><br />' . __('importPending') . '<br />';
             } else {
-                $hinweis .= '<br>Zeile ' . $row . ': ' . processImport($fmt, $data);
+                $hinweis .= '<br />' . __('row') . $row . ': ' . processImport($fmt, $data);
             }
 
             $row++;
@@ -84,14 +105,15 @@ function generatePW($length = 8, $myseed = 1)
 
 /**
  * @param array $data
+ * @param array $format
  * @return array|int
  */
-function checkformat($data)
+function checkformat($data, $format)
 {
     $fmt = [];
     $cnt = count($data);
     for ($i = 0; $i < $cnt; $i++) {
-        if (in_array($data[$i], $GLOBALS['format'], true)) {
+        if (in_array($data[$i], $format, true)) {
             $fmt[$i] = $data[$i];
         } else {
             $fmt[$i] = '';
@@ -131,20 +153,20 @@ function processImport($fmt, $data)
         }
     }
     if (StringHandler::filterEmailAddress($kunde->cMail) === false) {
-        return 'keine gültige Email ($kunde->cMail) ! Übergehe diesen Datensatz.';
+        return __('errorInvalidEmail');
     }
     if ((int)$_POST['PasswortGenerieren'] !== 1
         && (!$kunde->cPasswort || $kunde->cPasswort === 'd41d8cd98f00b204e9800998ecf8427e')
     ) {
-        return 'kein Passwort! Übergehe diesen Datensatz. (Kann unregstrierter JTL Shop Kunde sein)';
+        return __('errorNoPassword');
     }
     if (!$kunde->cNachname) {
-        return 'kein Nachname! Übergehe diesen Datensatz.';
+        return __('errorNoSurname');
     }
 
     $old_mail = Shop::Container()->getDB()->select('tkunde', 'cMail', $kunde->cMail);
     if (isset($old_mail->kKunde) && $old_mail->kKunde > 0) {
-        return 'Kunde mit dieser Emailadresse bereits vorhanden: ' . $kunde->cMail . '! Übergehe Datensatz.';
+        return sprintf(__('errorEmailDuplicate'), $kunde->cMail);
     }
     if ($kunde->cAnrede === 'f' || strtolower($kunde->cAnrede) === 'frau') {
         $kunde->cAnrede = 'w';
@@ -180,25 +202,25 @@ function processImport($fmt, $data)
         $cPasswortKlartext = Shop::Container()->getPasswordService()->generate(PASSWORD_DEFAULT_LENGTH);
         $kunde->cPasswort  = Shop::Container()->getPasswordService()->hash($cPasswortKlartext);
     }
-    $oTMP              = new stdClass();
-    $oTMP->cNachname   = $kunde->cNachname;
-    $oTMP->cFirma      = $kunde->cFirma;
-    $oTMP->cStrasse    = $kunde->cStrasse;
-    $oTMP->cHausnummer = $kunde->cHausnummer;
+    $tmp              = new stdClass();
+    $tmp->cNachname   = $kunde->cNachname;
+    $tmp->cFirma      = $kunde->cFirma;
+    $tmp->cStrasse    = $kunde->cStrasse;
+    $tmp->cHausnummer = $kunde->cHausnummer;
     if ($kunde->insertInDB()) {
         if ((int)$_POST['PasswortGenerieren'] === 1) {
             $kunde->cPasswortKlartext = $cPasswortKlartext;
-            $kunde->cNachname         = $oTMP->cNachname;
-            $kunde->cFirma            = $oTMP->cFirma;
-            $kunde->cStrasse          = $oTMP->cStrasse;
-            $kunde->cHausnummer       = $oTMP->cHausnummer;
+            $kunde->cNachname         = $tmp->cNachname;
+            $kunde->cFirma            = $tmp->cFirma;
+            $kunde->cStrasse          = $tmp->cStrasse;
+            $kunde->cHausnummer       = $tmp->cHausnummer;
             $obj                      = new stdClass();
             $obj->tkunde              = $kunde;
             sendeMail(MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj);
         }
 
-        return 'Datensatz OK. Importiere: ' . $kunde->cVorname . ' ' . $kunde->cNachname;
+        return __('importRecord') . $kunde->cVorname . ' ' . $kunde->cNachname;
     }
 
-    return 'Fehler beim Import dieser Zeile! Bitte in ShopRoot/logs/ nachschauen!';
+    return __('errorImportRecord');
 }

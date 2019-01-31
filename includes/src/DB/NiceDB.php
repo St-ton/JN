@@ -10,6 +10,7 @@ use Exceptions\InvalidEntityNameException;
 use \PDO;
 use \PDOStatement;
 use Shop;
+use Tightenco\Collect\Support\Collection;
 
 /**
  * Class NiceDB
@@ -942,8 +943,8 @@ class NiceDB implements DbInterface
             throw new \InvalidArgumentException("\$type parameter must be 0 or 1, given '{$type}'");
         }
 
-        if ($return <= 0 || $return > 11) {
-            throw new \InvalidArgumentException("\$return parameter must be between 1 - 11, given '{$return}'");
+        if ($return <= 0 || $return > 12) {
+            throw new \InvalidArgumentException("\$return parameter must be between 1 - 12, given '{$return}'");
         }
 
         if ($fnInfo !== null && !\is_callable($fnInfo)) {
@@ -1024,6 +1025,12 @@ class NiceDB implements DbInterface
                 $ret = [];
                 while (($row = $res->fetchObject()) !== false) {
                     $ret[] = $row;
+                }
+                break;
+            case ReturnType::COLLECTION:
+                $ret = new Collection();
+                while (($row = $res->fetchObject()) !== false) {
+                    $ret->push($row);
                 }
                 break;
             case ReturnType::AFFECTED_ROWS:
@@ -1376,7 +1383,7 @@ class NiceDB implements DbInterface
      * @param mixed        $value
      * @param int|null     $type
      */
-    protected function _bind(PDOStatement $stmt, $parameter, $value, $type = null)
+    protected function _bind(PDOStatement $stmt, $parameter, $value, $type = null): void
     {
         $parameter = $this->_bindName($parameter);
 
@@ -1452,7 +1459,7 @@ class NiceDB implements DbInterface
      * @param string $name
      * @throws InvalidEntityNameException
      */
-    protected function validateEntityName(string $name)
+    protected function validateEntityName(string $name): void
     {
         if (!$this->isValidEntityName($name)) {
             throw new InvalidEntityNameException($name);
@@ -1466,7 +1473,7 @@ class NiceDB implements DbInterface
      * @throws InvalidEntityNameException
      * @throws \InvalidArgumentException
      */
-    protected function validateDbObject($obj)
+    protected function validateDbObject($obj): void
     {
         if (!\is_object($obj)) {
             $type = \gettype($obj);

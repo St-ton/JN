@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="login"}
-{config_load file="$lang.conf" section="shopupdate"}
+{config_load file="$lang.conf" section='login'}
+{config_load file="$lang.conf" section='shopupdate'}
 
 <script type="text/javascript">
     {literal}
@@ -40,11 +40,11 @@
                             </div>
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-unlock"></i></span>
-                                <input type="password" tabindex="10" size="20" value="" id="user_pw_confirm" name="pw_new_confirm" placeholder="Neues Passwort best&auml;tigen" class="form-control" />
+                                <input type="password" tabindex="10" size="20" value="" id="user_pw_confirm" name="pw_new_confirm" placeholder="Neues Passwort bestätigen" class="form-control" />
                             </div>
                         {/if}
                         <p class="tcenter">
-                            <button type="submit" value="Passwort zur&uuml;cksetzen" tabindex="100" class="btn btn-primary btn-block btn-lg">Passwort zur&uuml;cksetzen</button>
+                            <button type="submit" value="Passwort zurücksetzen" tabindex="100" class="btn btn-primary btn-block btn-lg">Passwort zurücksetzen</button>
                         </p>
                     </form>
                 </div>

@@ -157,9 +157,8 @@ class Kupon
 
         if ($couponResult !== null && $couponResult->kKupon > 0) {
             $couponResult->translationList = $this->getTranslation($couponResult->kKupon);
-            $cMember_arr                   = array_keys(get_object_vars($couponResult));
-            foreach ($cMember_arr as $cMember) {
-                $this->$cMember = $couponResult->$cMember;
+            foreach (array_keys(get_object_vars($couponResult)) as $member) {
+                $this->$member = $couponResult->$member;
             }
 
             return $this;
@@ -680,9 +679,8 @@ class Kupon
 
         if (isset($couponResult->kKupon) && $couponResult->kKupon > 0) {
             $couponResult->translationList = $this->getTranslation($couponResult->kKupon);
-            $cMember_arr                   = array_keys(get_object_vars($couponResult));
-            foreach ($cMember_arr as $cMember) {
-                $this->$cMember = $couponResult->$cMember;
+            foreach (array_keys(get_object_vars($couponResult)) as $member) {
+                $this->$member = $couponResult->$member;
             }
 
             return $this;
@@ -723,8 +721,8 @@ class Kupon
      */
     public function getNewCustomerCoupon()
     {
-        $newCustomerCoupons_arr = [];
-        $newCustomerCoupons     = Shop::Container()->getDB()->selectAll(
+        $coupons            = [];
+        $newCustomerCoupons = Shop::Container()->getDB()->selectAll(
             'tkupon',
             ['cKuponTyp', 'cAktiv'],
             [self::TYPE_NEWCUSTOMER, 'Y'],
@@ -736,11 +734,11 @@ class Kupon
             if (isset($newCustomerCoupon->kKupon) && $newCustomerCoupon->kKupon > 0) {
                 $newCustomerCoupon->translationList = $this->getTranslation($newCustomerCoupon->kKupon);
 
-                $newCustomerCoupons_arr[] = $newCustomerCoupon;
+                $coupons[] = $newCustomerCoupon;
             }
         }
 
-        return $newCustomerCoupons_arr;
+        return $coupons;
     }
 
     /**
@@ -902,9 +900,9 @@ class Kupon
             //invalid at the moment
             $ret['ungueltig'] = 3;
         } elseif ($Kupon->fMindestbestellwert > \Session\Frontend::getCart()->gibGesamtsummeWarenExt(
-                [C_WARENKORBPOS_TYP_ARTIKEL],
-                true
-            )
+            [C_WARENKORBPOS_TYP_ARTIKEL],
+            true
+        )
             || ($Kupon->cWertTyp === 'festpreis'
                 && $Kupon->nGanzenWKRabattieren === '0'
                 && $Kupon->fMindestbestellwert > gibGesamtsummeKuponartikelImWarenkorb(
@@ -915,7 +913,9 @@ class Kupon
         ) {
             //minimum order value not reached for whole cart or the products which are valid for this coupon
             $ret['ungueltig'] = 4;
-        } elseif ($Kupon->kKundengruppe > 0 && (int)$Kupon->kKundengruppe !== \Session\Frontend::getCustomerGroup()->getID()) {
+        } elseif ($Kupon->kKundengruppe > 0
+            && (int)$Kupon->kKundengruppe !== \Session\Frontend::getCustomerGroup()->getID()
+        ) {
             //invalid customer group
             $ret['ungueltig'] = 5;
         } elseif ($Kupon->nVerwendungen > 0 && $Kupon->nVerwendungen <= $Kupon->nVerwendungenBisher) {
@@ -953,7 +953,7 @@ class Kupon
                 $ret['ungueltig'] = 11;
             } elseif (!empty($Kupon->nVerwendungenProKunde) && $Kupon->nVerwendungenProKunde > 0) {
                 //check if max usage of coupon is reached for cutomer
-                $countCouponUsed= Shop::Container()->getDB()->executeQueryPrepared(
+                $countCouponUsed = Shop::Container()->getDB()->executeQueryPrepared(
                     'SELECT nVerwendungen
                       FROM tkuponkunde
                       WHERE kKupon = :coupon
@@ -1027,13 +1027,13 @@ class Kupon
         } elseif ($Kupon->cWertTyp === 'prozent') {
             // Alle Positionen prüfen ob der Kupon greift und falls ja, dann Position rabattieren
             if ($Kupon->nGanzenWKRabattieren === 0) {
-                $articleName_arr = [];
+                $productNames = [];
                 if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
                     $articlePrice = 0;
                     foreach ($cart->PositionenArr as $oWKPosition) {
                         $articlePrice += Cart::checkSetPercentCouponWKPos($oWKPosition, $Kupon)->fPreis;
                         if (!empty(Cart::checkSetPercentCouponWKPos($oWKPosition, $Kupon)->cName)) {
-                            $articleName_arr[] = Cart::checkSetPercentCouponWKPos(
+                            $productNames[] = Cart::checkSetPercentCouponWKPos(
                                 $oWKPosition,
                                 $Kupon
                             )->cName;
@@ -1073,8 +1073,8 @@ class Kupon
                 $Spezialpos->cName[$Sprache->cISO] .= ' ' . $Kupon->fWert . '%';
             }
         }
-        if (isset($articleName_arr)) {
-            $Spezialpos->cArticleNameAffix = $articleName_arr;
+        if (isset($productNames)) {
+            $Spezialpos->cArticleNameAffix = $productNames;
         }
 
         $postyp = C_WARENKORBPOS_TYP_KUPON;
@@ -1119,23 +1119,27 @@ class Kupon
 
     /**
      * @former resetNeuKundenKupon()
-     * @since 5.0.0
+     * @since  5.0.0
+     * @param bool $priceRecalculation
      */
-    public static function resetNewCustomerCoupon(): void
+    public static function resetNewCustomerCoupon(bool $priceRecalculation = true): void
     {
         unset($_SESSION['NeukundenKupon'], $_SESSION['NeukundenKuponAngenommen']);
-        \Session\Frontend::getCart()
-                         ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
-                         ->setzePositionsPreise();
+        $cart = \Session\Frontend::getCart();
+        $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON);
+        if ($priceRecalculation) {
+            $cart->setzePositionsPreise();
+        }
     }
 
     /**
      * @param string $strToHash
+     * @param bool $strtolower
      * @return string
      */
-    public static function hash(string $strToHash): string
+    public static function hash(string $strToHash, bool $strtolower = true): string
     {
-        return $strToHash === '' ? '' : hash('sha256', $strToHash);
+        return $strToHash === '' ? '' : hash('sha256', $strtolower ? strtolower($strToHash) : $strToHash);
     }
 
     /**

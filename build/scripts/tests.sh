@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "Execute composer install...";
-composer install -q -d includes;
+composer install -d includes;
 
 echo "Build components...";
 for component in build/components/*/ ; do

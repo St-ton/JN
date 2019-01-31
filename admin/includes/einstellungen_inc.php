@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_menu.php';
+
 /**
  * @param string $cSuche
  * @param bool   $bSpeichern
@@ -225,6 +227,22 @@ function holeEinstellungHeadline(int $nSort, int $sectionID)
  */
 function gibEinstellungsSektionsPfad(int $sectionID)
 {
+    global $adminMenu;
+
+    foreach ($adminMenu as $menuName => $menu) {
+        foreach ($menu as $subMenuName => $subMenu) {
+            if (is_array($subMenu)) {
+                foreach ($subMenu as $itemName => $item) {
+                    if (isset($item->section) && $item->section === $sectionID) {
+                        return $menuName . ' -&gt; ' . $subMenuName . ' -&gt; ' . $itemName;
+                    }
+                }
+            }
+        }
+    }
+
+    return '';
+
     if ($sectionID >= 100) {
         // Einstellungssektion ist in den Defines
         switch ($sectionID) {

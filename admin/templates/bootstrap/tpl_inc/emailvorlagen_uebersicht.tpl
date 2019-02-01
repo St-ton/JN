@@ -32,12 +32,12 @@
                         <td class="tcenter">
                             <h4 class="label-wrap">
                             {if $emailvorlage->cAktiv === 'Y'}
-                                <span class="label label-success success">aktiv</span>
+                                <span class="label label-success success">{__('active')}</span>
                             {else}
                                 {if $emailvorlage->nFehlerhaft == 1}
-                                    <span class="label label-danger error">fehlerhaft</span>
+                                    <span class="label label-danger error">{__('faulty')}</span>
                                 {else}
-                                    <span class="label label-info error">inaktiv</span>
+                                    <span class="label label-info error">{__('inactive')}</span>
                                 {/if}
                             {/if}
                             </h4>
@@ -61,7 +61,7 @@
     {if isset($oPluginEmailvorlage_arr) && $oPluginEmailvorlage_arr|count > 0}
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Plugin-Vorlagen</h3>
+            <h3 class="panel-title">{__('pluginTemplates')}</h3>
         </div>
         <div class="panel-body table-responsive">
             <table class="list table">
@@ -81,12 +81,12 @@
                         <td class="tcenter">
                             <h4 class="label-wrap">
                             {if $oPluginEmailvorlage->cAktiv === 'Y'}
-                                <span class="success label label-success">aktiv</span>
+                                <span class="success label label-success">{__('active')}</span>
                             {else}
                                 {if $emailvorlage->nFehlerhaft == 1}
-                                    <span class="label label-error error">fehlerhaft</span>
+                                    <span class="label label-error error">{__('faulty')}</span>
                                 {else}
-                                    <span class="label label-info">inaktiv</span>
+                                    <span class="label label-info">{__('inactive')}</span>
                                 {/if}
                             {/if}
                             </h4>

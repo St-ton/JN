@@ -142,3 +142,18 @@ msgstr "Emailvorlage erfolgreich geändert."
 
 msgid "successFileAppendixDelete"
 msgstr "Ihre Dateianhänge für Ihre gewählte Sprache, wurden erfolgreich gelöscht."
+
+msgid "multipleDividedColon"
+msgstr "(mehrere durch Semikolon getrennt)"
+
+msgid "textHtml"
+msgstr "text/html"
+
+msgid "resetEmailTemplate"
+msgstr "Ihre Emailvorlage wird zurückgesetzt!"
+
+msgid "sureResetEmailTemplate"
+msgstr "Wollen Sie die Emailvorlage \"<b>%s</b>\" wirklich zurücksetzen?"
+
+msgid "pluginTemplates"
+msgstr "Plugin-Vorlagen"

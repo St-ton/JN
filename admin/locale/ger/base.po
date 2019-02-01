@@ -542,3 +542,158 @@ msgstr "Maximaler Bestellwert"
 msgid "directDebit"
 msgstr "Lastschriftverfahren"
 
+msgid "top"
+msgstr "oben"
+
+msgid "topRight"
+msgstr "oben-rechts"
+
+msgid "topLeft"
+msgstr "oben-links"
+
+msgid "bottom"
+msgstr "unten-rechts"
+
+msgid "bottomRight"
+msgstr "unten-rechts"
+
+msgid "bottomLeft"
+msgstr "unten-links"
+
+msgid "left"
+msgstr "links"
+
+msgid "right"
+msgstr "rechts"
+
+msgid "centered"
+msgstr "zentriert"
+
+msgid "activated"
+msgstr "Aktiviert"
+
+msgid "files"
+msgstr "Dateien"
+
+msgid "frontend"
+msgstr "Frontend"
+
+msgid "backend"
+msgstr "Backend"
+
+msgid "methods"
+msgstr "Methoden"
+
+msgid "entries"
+msgstr "Einträge"
+
+msgid "extended"
+msgstr "Erweitert"
+
+msgid "requiredEntry"
+msgstr "Pflichtangabe"
+
+msgid "noMoreInfo"
+msgstr "Es stehen keine weiteren Informationen zur Verfügung."
+
+msgid "structure"
+msgstr "Struktur"
+
+msgid "show"
+msgstr "Anzeigen"
+
+msgid "table"
+msgstr "Tabelle"
+
+msgid "any"
+msgstr "beliebig"
+
+msgid "overview"
+msgstr "Übersicht"
+
+msgid "consistency"
+msgstr "Konsistenz"
+
+msgid "execute"
+msgstr "Ausführen"
+
+msgid "collation"
+msgstr "Kollation"
+
+msgid "dataEntries"
+msgstr "Datensätze"
+
+msgid "autoIncrement"
+msgstr "Autoinkrement"
+
+msgid "column"
+msgstr "Spalte"
+
+msgid "indices"
+msgstr "Indizes"
+
+msgid "count"
+msgstr "Anzahl"
+
+msgid "showData"
+msgstr "Daten anzeigen"
+
+msgid "noData"
+msgstr "Keine Datensätze"
+
+msgid "database"
+msgstr "Datenbank"
+
+msgid "saveCopy"
+msgstr "Sicherungskopie"
+
+msgid "migration"
+msgstr "Migration"
+
+msgid "executed"
+msgstr "Ausgeführt"
+
+msgid "download"
+msgstr "Herunterladen"
+
+msgid "updateNow"
+msgstr "Jetzt aktualisieren"
+
+msgid "danger"
+msgstr "Achtung"
+
+msgid "ok"
+msgstr "Ok"
+
+msgid "placeholder"
+msgstr "Platzhalter"
+
+msgid "example"
+msgstr "Beispiel"
+
+msgid "mister"
+msgstr "Herr"
+
+msgid "maleShort"
+msgstr "m"
+
+msgid "madame"
+msgstr "Frau"
+
+msgid "femaleShort"
+msgstr "w"
+
+msgid "content"
+msgstr "Inhalt"
+
+msgid "firstNameStub"
+msgstr "Max"
+
+msgid "lastNameStub"
+msgstr "Mustermann"
+
+msgid "companyStub"
+msgstr "Muster Gmbh"
+
+msgid "faulty"
+msgstr "fehlerhaft"

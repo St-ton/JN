@@ -43,3 +43,6 @@ msgstr "Ihre markierten Logbucheinträge wurden erfolgreich gelöscht."
 
 msgid "errorSelectEntry"
 msgstr "Fehler: Bitte markieren Sie mindestens einen Logbucheintrag."
+
+msgid "sureEmailDelete"
+msgstr "Wollen Sie wirklich das komplette eMail-Log löschen?"

@@ -73,3 +73,57 @@ msgstr "Ihre markierten Checkboxen wurden erfolgreich gelöscht."
 
 msgid "successCheckboxCreate"
 msgstr "Ihre Checkbox wurde erfolgreich erstellt."
+
+msgid "availableCheckboxes"
+msgstr "Vorhandene Checkboxen"
+
+msgid "checkboxCreate"
+msgstr "neue Checkbox erstellen"
+
+msgid "internalLink"
+msgstr "Interner Link"
+
+msgid "noLink"
+msgstr "Kein Link"
+
+msgid "hintInternalPage"
+msgstr "Interne Shop CMS Seite. Einstellbar unter Inhalt->CMS"
+
+msgid "hintPlaceToShowCheckbox"
+msgstr "Stelle im Shopfrontend an der die Checkboxen angezeigt werden (Mehrfachauswahl mit STRG möglich)."
+
+msgid "hintCheckCheckboxActivation"
+msgstr "Soll die Checkbox geprüft werden, ob diese aktiviert wurde?"
+
+msgid "hintCheckboxActive"
+msgstr "Soll die Checkbox im Frontend aktiv und somit sichtbar sein?"
+
+msgid "checkboxLogging"
+msgstr "Checkbox Logging"
+
+msgid "hintCheckboxLogActivate"
+msgstr "Soll die Eingabe der Checkbox protokolliert werden?"
+
+msgid "sortHigherBottom"
+msgstr "Sortierung (höher = weiter unten)"
+
+msgid "specialShopFunction"
+msgstr "Spezielle Shopfunktion"
+
+msgid "hintCheckboxFunction"
+msgstr "Soll die Checkbox eine Funktion ausführen, wenn sie aktiviert wurde?"
+
+msgid "hintCheckboxName"
+msgstr "Name der Checkbox"
+
+msgid "hintCheckboxText"
+msgstr "Welcher Text soll hinter der Checkbox stehen?"
+
+msgid "hintCheckboxDescription"
+msgstr "Soll die Checkbox eine Beschreibung erhalten?"
+
+msgid "hintCheckboxOrder"
+msgstr "Anzeigereihenfolge von Checkboxen."
+
+msgid "hintCheckboxCustomerGroup"
+msgstr "Für welche Kundengruppen soll die Checkbox sichtbar sein (Mehrfachauswahl mit STRG möglich)?"

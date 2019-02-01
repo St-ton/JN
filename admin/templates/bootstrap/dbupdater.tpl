@@ -6,15 +6,15 @@
 <div id="content" class="container-fluid">
     <div class="container-fluid2">
         <div id="resultLog" {if !$updatesAvailable}style="display: none;"{/if}>
-            <h4>Ereignisprotokoll</h4>
+            <h4>{__('eventProtocol')}</h4>
             <pre id="debug">
 {__('currentShopVersion')}
-     System: {$currentFileVersion}
-     Datenbank: {$currentDatabaseVersion}
+     {__('system')}: {$currentFileVersion}
+    {__('database')}: {$currentDatabaseVersion}
 {if $currentTemplateFileVersion != $currentTemplateDatabaseVersion}
     {__('currentTemplateVersion')}
-         System: {$currentTemplateFileVersion}
-         Datenbank: {$currentTemplateDatabaseVersion}
+    {__('system')}: {$currentTemplateFileVersion}
+    {__('database')}: {$currentTemplateDatabaseVersion}
 {/if}</pre>
             <br /><br />
         </div>
@@ -42,10 +42,10 @@
                 disableUpdateControl(false);
 
                 var message = error
-                    ? 'Sicherungskopie konnte nicht erstellt werden'
+                    ? {/literal}{__('errorSaveCopy')}{literal}
                     : (download
-                        ? 'Sicherungskopie "<strong>' + result.file + '</strong>" wird heruntergeladen'
-                        : 'Sicherungskopie "<strong>' + result.file + '</strong>" wurde erfolgreich erstellt');
+                        ? {/literal}{__('saveCopy')}{literal} + '"<strong>' + result.file + '</strong>"' + {/literal}{__('isDownloaded')}{literal}
+                        : {/literal}{__('saveCopy')}{literal} + '"<strong>' + result.file + '</strong>"' + {/literal}{__('createSuccess')}{literal});
 
                 showNotify(error ? 'danger' : 'success', 'Sicherungskopie', message);
                 pushEvent(message);
@@ -85,8 +85,8 @@
         doUpdate(function(data, error) {
             var _once = function() {
                 var message = error
-                        ? 'Update wurde angehalten: ' + error.message
-                        : 'Update wurde erfolgreich durchgef&uuml;hrt'
+                        ? {/literal}{__('infoUpdatePause')}{literal} + error.message
+                        : {/literal}{__('successUpdate')}{literal}
 
                 showNotify(error ? 'danger' : 'success', 'Update', message);
                 disableUpdateControl(false);
@@ -147,7 +147,7 @@
                     ? result.data.migrations.length : 0);
             var message = error
                     ? error.message
-                    : '<strong>' + count + '</strong> Migrations wurden ausgef&uuml;hrt';
+                    : '<strong>' + count + '</strong>' + {/literal}{__('successMigrations')}{literal};
 
             $ladda.stop();
             updateStatusTpl();
@@ -181,14 +181,14 @@
 
             var message = error
                 ? error.message
-                : 'Migration wurde erfolgreich ausgef&uuml;hrt';
+                : {/literal}{__('successMigration')}{literal};
 
             showNotify(error ? 'danger' : 'success', 'Migration', message);
 
             if (!error) {
                 updateStatusTpl();
                 if (dir === 'up') {
-                    pushEvent('     Update auf ' + formatVersion(result.result) + ' erfolgreich');
+                    pushEvent({/literal}{__('updtaeTo')}{literal} + formatVersion(result.result) + {/literal}{__('successfull')}{literal});
                 }
             }
 
@@ -209,8 +209,8 @@
         ajaxCall(url, params, function(result, xhr) {
             if (xhr && xhr.error && xhr.error.code === 401) {
                 createNotify({
-                    title: 'Sitzung abgelaufen',
-                    message: 'Sie werden zur Anmelde-Maske weitergeleitet...',
+                    title: {/literal}{__('sessionExpired')}{literal},
+                    message: {/literal}{__('redirectToLogin')}{literal},
                     icon: 'fa fa-lock'
                 }, {
                     type: 'danger',

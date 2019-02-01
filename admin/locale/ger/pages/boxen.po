@@ -160,3 +160,12 @@ msgstr "Box konnte nicht bearbeitet werden."
 
 msgid "successBoxRefresh"
 msgstr "Die Boxen wurden aktualisiert."
+
+msgid "visibleOnAllPages"
+msgstr "sichtbar auf allen Seiten"
+
+msgid "visibleOnSomePages"
+msgstr "sichtbar auf manchen Seiten"
+
+msgid "deactivatedOnAllPages"
+msgstr "auf allen Seiten deaktiviert"

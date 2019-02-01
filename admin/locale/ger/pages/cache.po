@@ -184,3 +184,63 @@ msgstr "Das Verzeichnis %s konnte nicht gelöscht werden!"
 
 msgid "successTemplateCacheDelete"
 msgstr "Es wurden %d Dateien im Templatecache gelöscht!"
+
+msgid "uptime"
+msgstr "Uptime"
+
+msgid "fullSize"
+msgstr "Komplette Größe"
+
+msgid "entriesCount"
+msgstr "Anzahl Einträge"
+
+msgid "misses"
+msgstr "Misses"
+
+msgid "hits"
+msgstr "Hits"
+
+msgid "inserts"
+msgstr "Inserts"
+
+msgid "slowlog"
+msgstr "Slowlog"
+
+msgid "hitRate"
+msgstr "Hit-Rate"
+
+msgid "emptySpace"
+msgstr "Freier Speicher"
+
+msgid "busySpace"
+msgstr "Belegter Speicher"
+
+msgid "scriptCountInCache"
+msgstr "Anzahl Skripte im Cache"
+
+msgid "keyCountInCache"
+msgstr "Anzahl Keys im Cache"
+
+msgid "templateCache"
+msgstr "Template Cache"
+
+msgid "filesFrontend"
+msgstr "Dateien Frontend"
+
+msgid "runs"
+msgstr "Durchläufe"
+
+msgid "repeats"
+msgstr "Wiederholungen"
+
+msgid "testData"
+msgstr "Testdaten"
+
+msgid "time"
+msgstr "Zeit"
+
+msgid "errorBenchmark"
+msgstr "Konnte Benchmark nicht ausführen."
+
+msgid "errorMethodNotFound"
+msgstr "Keine Methoden gefunden."

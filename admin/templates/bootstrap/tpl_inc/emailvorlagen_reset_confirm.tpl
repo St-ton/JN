@@ -9,9 +9,9 @@
         <input type="hidden" name="kEmailvorlage" value="{$oEmailvorlage->kEmailvorlage}" />
 
         <div class="alert alert-danger">
-            <p><strong>Vorsicht</strong>: Ihre Emailvorlage wird zurückgesetzt!</p>
+            <p><strong>{__('danger')}</strong>: {__('resetEmailTemplate')}</p>
 
-            <p>Wollen Sie die Emailvorlage "<b>{$oEmailvorlage->cName}</b>" wirklich zurücksetzen?</p>
+            <p>{{__('sureResetEmailTemplate')}|sprintf:{$oEmailvorlage->cName}}</p>
         </div>
         <div class="btn-group">
             <button name="resetConfirmJaSubmit" type="submit" value="{__('resetEmailvorlageYes')}" class="btn btn-danger"><i class="fa fa-check"></i> {__('resetEmailvorlageYes')}</button>

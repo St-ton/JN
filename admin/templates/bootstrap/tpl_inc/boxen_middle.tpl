@@ -10,7 +10,7 @@
                 <div class="panel-heading">
                     <input type="checkbox" name="box_show" id="box_{$direction}_show" value="1"
                            {if isset($bBoxenAnzeigen.$direction) && $bBoxenAnzeigen.$direction}checked{/if}>
-                    <label for="box_{$direction}_show">Container anzeigen</label>
+                    <label for="box_{$direction}_show">{__('showContainer')}</label>
 
                 </div><!-- .panel-heading -->
                 {if $oBox_arr|@count > 0}

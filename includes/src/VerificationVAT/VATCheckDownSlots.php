@@ -142,7 +142,7 @@ class VATCheckDownSlots
     /**
      * @var DateTime
      */
-    private $Now;
+    private $now;
 
     /**
      * @var string
@@ -158,7 +158,7 @@ class VATCheckDownSlots
      */
     public function __construct()
     {
-        $this->Now = new DateTime();
+        $this->now = new DateTime();
     }
 
     /**
@@ -190,7 +190,7 @@ class VATCheckDownSlots
             // if no weekday was given (which means "every weekday"),
             // we replace the weekday in the check-array with the current weekday here
             if ($countryDownTimes[self::WEEKDAY] === '') {
-                $countryDownTimes[self::WEEKDAY] = $this->Now->format('D');
+                $countryDownTimes[self::WEEKDAY] = $this->now->format('D');
             }
 
             $startTime = DateTime::createFromFormat(
@@ -202,7 +202,7 @@ class VATCheckDownSlots
                 $countryDownTimes[self::WEEKDAY] . ':' . $countryDownTimes[self::ENDING]
             );
 
-            if ($startTime <= $this->Now && $this->Now <= $endTime) {
+            if ($startTime <= $this->now && $this->now <= $endTime) {
                 // inform the user about this event
                 $this->downInfo = $endTime->format('H:i');
                 // the VAT-service of this country is down till this time

@@ -39,12 +39,12 @@ class VATCheckVatParserNonEU
     private $errorInfo = '';
 
     /**
-     * @var integer
+     * @var int
      */
     private $errorCode = 0;
 
     /**
-     *
+     * @param string
      */
     public function __construct(string $vatID)
     {
@@ -59,7 +59,7 @@ class VATCheckVatParserNonEU
      * @param string $pattern
      * @return int
      */
-    private function isIdPatternValid($vatID, $pattern)
+    private function isIdPatternValid(string $vatID, string $pattern): int
     {
         $len = strlen($vatID);
         for ($i = 0; $i < $len; $i++) {
@@ -100,14 +100,14 @@ class VATCheckVatParserNonEU
     /**
      * @return bool
      */
-    public function parseVatId()
+    public function parseVatId(): bool
     {
         // check, if there is a country, which matches the starting chars of the given ID
         $limit = 4; // first three(!) for now
         $hit   = false;
         for ($i = 1; $limit > $i && !$hit; $i++) {
             $startPattern = substr($this->vatID, 0, $i);
-            isset($this->countryPattern[$startPattern]) ? $hit = true : $hit = false;
+            $hit = isset($this->countryPattern[$startPattern]);
         }
 
         // compare our VAT-ID to all pattern of the guessed country
@@ -134,15 +134,15 @@ class VATCheckVatParserNonEU
     /**
      * @return string
      */
-    public function getErrorInfo()
+    public function getErrorInfo(): string
     {
         return $this->errorInfo;
     }
 
     /**
-     * @return integer
+     * @return int
      */
-    public function getErrorCode()
+    public function getErrorCode(): int
     {
         return $this->errorCode;
     }

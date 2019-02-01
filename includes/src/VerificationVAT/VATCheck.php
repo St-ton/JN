@@ -14,7 +14,7 @@ class VATCheck
     /**
      * @var VATCheckInterface
      */
-    private $Location;
+    private $location;
 
     /**
      * @var string
@@ -30,10 +30,10 @@ class VATCheck
 
         switch (true) {
             case $this->startsWith($this->ustID, 'CHE'):
-                $this->Location = new VATCheckNonEU();
+                $this->location = new VATCheckNonEU();
                 break;
             default:
-                $this->Location = new VATCheckEU();
+                $this->location = new VATCheckEU();
         }
     }
 
@@ -48,7 +48,7 @@ class VATCheck
      *      , errorinfo : additional information to show it the user in the frontend
      * ]
      *
-     * @return array
+     * @return mixed  array if error, location-object otherwise
      */
     public function doCheckID()
     {
@@ -62,7 +62,7 @@ class VATCheck
             ];
         }
 
-        return $this->Location->doCheckID($this->ustID);
+        return $this->location->doCheckID($this->ustID);
     }
 
     /**
@@ -74,10 +74,10 @@ class VATCheck
     {
         if ($sourceString === '') {
             return false
-        };
+        }
         if ($pattern === '') {
             return true
-        };
+        }
 
         return ($pattern === substr($sourceString, 0, strlen($pattern))) ?: false;
     }

@@ -172,7 +172,7 @@ class VATCheckVatParser
     private $idParts = [];
 
     /**
-     * @var integer
+     * @var int
      */
     private $errorCode = 0;
 
@@ -295,7 +295,7 @@ class VATCheckVatParser
     /**
      * returns a descriptive string of the last ocurred error
      *
-     * @return integer
+     * @return int
      */
     public function getErrorCode()
     {

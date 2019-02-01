@@ -30,8 +30,9 @@ class VATCheckNonEU implements VATCheckInterface
      * ]
      *
      * @param string $ustID
+     * @return array
      */
-    public function doCheckID($ustID)
+    public function doCheckID($ustID): array
     {
         $VatParser = new VATCheckVatParserNonEU($ustID);
         if ($VatParser->parseVatId() === true) {

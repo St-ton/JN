@@ -28,7 +28,7 @@ class VATCheckEU implements VATCheckInterface
     /**
      * @var VATCheckDownSlots
      */
-    private $DownTimes;
+    private $downTimes;
 
     /**
      * At this moment, the VIES-system, does not return any information other than "valid" or "invalid"
@@ -51,7 +51,7 @@ class VATCheckEU implements VATCheckInterface
      */
     public function __construct()
     {
-        $this->DownTimes = new VATCheckDownSlots();
+        $this->downTimes = new VATCheckDownSlots();
     }
 
     /**
@@ -80,7 +80,7 @@ class VATCheckEU implements VATCheckInterface
      * @param string $ustID
      * @return array
      */
-    public function doCheckID($ustID)
+    public function doCheckID($ustID): array
     {
         // parse the ID-string
         $VatParser = new VATCheckVatParser($this->condenseSpaces($ustID));
@@ -96,7 +96,7 @@ class VATCheckEU implements VATCheckInterface
         }
 
         // asking the remote service, if the VAT-office is reachable
-        if ($this->DownTimes->isDown($countryCode) === false) {
+        if ($this->downTimes->isDown($countryCode) === false) {
             $SoapClient = new SoapClient($this->viesWSDL);
             $ViesResult = null;
 
@@ -130,7 +130,7 @@ class VATCheckEU implements VATCheckInterface
             'success'   => false,
             'errortype' => 'time',
             'errorcode' => 200,
-            'errorinfo' => $this->DownTimes->getDownInfo() // the time, till which the office has closed
+            'errorinfo' => $this->downTimes->getDownInfo() // the time, till which the office has closed
         ];
     }
 }

@@ -86,7 +86,7 @@ build_create()
 
 build_composer_execute()
 {
-    composer install --no-dev -q -d ${REPOSITORY_DIR}/includes;
+    composer install --no-dev -a -o -q -d ${REPOSITORY_DIR}/includes;
 }
 
 build_create_deleted_files_csv()
@@ -138,7 +138,7 @@ build_add_old_files()
 }
 
 build_create_shop_installer() {
-    composer install --no-dev -q -d ${REPOSITORY_DIR}/build/components/vue-installer;
+    composer install --no-dev -a -o -q -d ${REPOSITORY_DIR}/build/components/vue-installer;
 }
 
 build_create_md5_hashfile()
@@ -326,7 +326,7 @@ build_add_files_to_patch_dir()
         mkdir /tmp_composer/includes;
         touch /tmp_composer/includes/composer.json;
         git show ${PATCH_VERSION}:includes/composer.json > /tmp_composer/includes/composer.json;
-        composer install --no-dev -q -d /tmp_composer/includes;
+        composer install --no-dev -a -o -q -d /tmp_composer/includes;
 
         while read -r line;
         do

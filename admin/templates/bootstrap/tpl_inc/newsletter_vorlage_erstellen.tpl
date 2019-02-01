@@ -39,7 +39,7 @@ function checkNewsletterSend() {ldelim}
             {/if}
             <div class="panel panel-default settings">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Vorlage erstellen</h3>
+                    <h3 class="panel-title">{__('newsletterdraftcreate')}</h3>
                 </div>
                 <div class="panel-body">
                     <div class="input-group">
@@ -72,7 +72,7 @@ function checkNewsletterSend() {ldelim}
                                                 {if $kKundengruppe == '0'}selected{/if}
                                             {/foreach}
                                         {/if}
-                                        >Newsletterempfänger ohne Kundenkonto</option>
+                                        >{__('newsletterNoAccount')}</option>
                                 {foreach $oKundengruppe_arr as $oKundengruppe}
                                     <option value="{$oKundengruppe->kKundengruppe}"
                                             {if isset($kKundengruppe_arr)}
@@ -96,8 +96,8 @@ function checkNewsletterSend() {ldelim}
                         </span>
                         <span class="input-group-wrap">
                             <select id="cArt" name="cArt" class="form-control combo">
-                                <option {if isset($oNewsletterVorlage->cArt) && $oNewsletterVorlage->cArt === 'text/html'}selected{/if}>text/html</option>
-                                <option {if isset($oNewsletterVorlage->cArt) && $oNewsletterVorlage->cArt === 'text'}selected{/if}>text</option>
+                                <option {if isset($oNewsletterVorlage->cArt) && $oNewsletterVorlage->cArt === 'text/html'}selected{/if}>{__('textHtml')}</option>
+                                <option {if isset($oNewsletterVorlage->cArt) && $oNewsletterVorlage->cArt === 'text'}selected{/if}>{__('text')}</option>
                             </select>
                         </span>
                     </div>
@@ -174,8 +174,8 @@ function checkNewsletterSend() {ldelim}
                     </div>
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='articlePicker'
-                        modalTitle='Artikel auswählen'
-                        searchInputLabel='Suche nach Artikelnamen'
+                        modalTitle="{__('chooseProduct')}"
+                        searchInputLabel="{__('searchProductName')}"
                     }
                     <script>
                         $(function () {
@@ -192,7 +192,7 @@ function checkNewsletterSend() {ldelim}
                         function onApplySelectedArticles(selected)
                         {
                             $('#articleSelectionInfo')
-                                .val(selected.length > 0 ? selected.length + ' Artikel' : '');
+                                .val(selected.length > 0 ? selected.length + {__('product')} : '');
                             $('#cArtikel')
                                 .val(selected.length > 0 ? selected.join(';') + ';' : '');
                         }
@@ -215,8 +215,8 @@ function checkNewsletterSend() {ldelim}
                     </div>
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='manufacturerPicker'
-                        modalTitle='Hersteller auswählen'
-                        searchInputLabel='Suche nach Herstellernamen'
+                        modalTitle="{__('chooseManufacturer')}"
+                        searchInputLabel="{__('searchManufacturerName')}"
                     }
                     <script>
                         $(function () {
@@ -233,7 +233,7 @@ function checkNewsletterSend() {ldelim}
                         function onApplySelectedManufacturers(selected)
                         {
                             $('#manufacturerSelectionInfo')
-                                .val(selected.length > 0 ? selected.length + ' Hersteller' : '');
+                                .val(selected.length > 0 ? selected.length + {__('manufacturer')} : '');
                             $('#cHersteller')
                                 .val(selected.length > 0 ? selected.join(';') + ';' : '');
                         }
@@ -256,8 +256,8 @@ function checkNewsletterSend() {ldelim}
                     </div>
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='categoryPicker'
-                        modalTitle='Kategorien auswählen'
-                        searchInputLabel='Suche nach Kategorienamen'
+                        modalTitle="{__('chooseCatgeory')}"
+                        searchInputLabel="{__('searchCatgeoryName')}"
                     }
                     <script>
                         $(function () {
@@ -274,7 +274,7 @@ function checkNewsletterSend() {ldelim}
                         function onApplySelectedCategories(selected)
                         {
                             $('#categorySelectionInfo')
-                                .val(selected.length > 0 ? selected.length + ' Kategorien' : '');
+                                .val(selected.length > 0 ? selected.length + {__('category')} : '');
                             $('#cKategorie')
                                 .val(selected.length > 0 ? selected.join(';') + ';' : '');
                         }

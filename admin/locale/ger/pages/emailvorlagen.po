@@ -146,9 +146,6 @@ msgstr "Ihre Dateianhänge für Ihre gewählte Sprache, wurden erfolgreich gelö
 msgid "multipleDividedColon"
 msgstr "(mehrere durch Semikolon getrennt)"
 
-msgid "textHtml"
-msgstr "text/html"
-
 msgid "resetEmailTemplate"
 msgstr "Ihre Emailvorlage wird zurückgesetzt!"
 

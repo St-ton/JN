@@ -44,7 +44,7 @@
                 <h3 class="panel-title">{__('mbHeaderEmail')}</h3>
             </div>
             <div class="panel-body">
-                <p>{{__('mbEmailValidationSuccess')|sprintf:$email:$customerId}}</p>
+                <p>{{__('mbEmailValidationSuccess')}|sprintf:{$email}:{$customerId}}</p>
             </div>
             <div class="panel-footer">
                 <form method="post" action="">

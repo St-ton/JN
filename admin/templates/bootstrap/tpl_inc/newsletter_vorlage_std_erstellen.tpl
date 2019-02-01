@@ -31,14 +31,14 @@
 <div id="content" class="container-fluid">
     {if !empty($cPlausiValue_arr)}
         <div class="alert alert-danger">
-            <p>Bitte füllen Sie alle Pflichtfelder aus.</p>
+            <p>{__('errorFillRequired')}</p>
         </div>
     {/if}
     <form name="formnewslettervorlagestd" id="formnewslettervorlagestd" method="post" action="newsletter.php" enctype="multipart/form-data">
         {$jtl_token}
         <div class="panel panel-default settings">
             <div class="panel-heading">
-                <h3 class="panel-title">{if isset($cPostVar_arr.cName)}{$cPostVar_arr.cName}{elseif isset($oNewslettervorlageStd->cName)}{$oNewslettervorlageStd->cName}{/if} bearbeiten</h3>
+                <h3 class="panel-title">{if isset($cPostVar_arr.cName)}{$cPostVar_arr.cName}{elseif isset($oNewslettervorlageStd->cName)}{$oNewslettervorlageStd->cName}{/if} {__('edit')}</h3>
             </div>
             <div class="panel-body">
                 {$jtl_token}
@@ -85,7 +85,7 @@
                                     {foreach $cPostVar_arr.kKundengruppe as $kKundengruppe}
                                         {if $kKundengruppe == '0'}selected{/if}
                                     {/foreach}
-                                {/if}>Newsletterempfänger ohne Kundenkonto
+                                {/if}>{__('newsletterNoAccount')}
                             </option>
                             {foreach $oKundengruppe_arr as $oKundengruppe}
                                 <option value="{$oKundengruppe->kKundengruppe}"
@@ -109,8 +109,8 @@
                     </div>
                     <div class="input-group-wrap">
                         <select id="cArt" name="cArt" class="form-control combo">
-                            <option {if isset($oNewslettervorlageStd->cArt) && $oNewslettervorlageStd->cArt === 'text/html'}selected{/if}>text/html</option>
-                            <option {if isset($oNewslettervorlageStd->cArt) && $oNewslettervorlageStd->cArt === 'text'}selected{/if}>text</option>
+                            <option {if isset($oNewslettervorlageStd->cArt) && $oNewslettervorlageStd->cArt === 'text/html'}selected{/if}>{__('textHtml')}</option>
+                            <option {if isset($oNewslettervorlageStd->cArt) && $oNewslettervorlageStd->cArt === 'text'}selected{/if}>{__('text')}</option>
                         </select>
                     </div>
                 </div>
@@ -222,8 +222,8 @@
 
                 {include file='tpl_inc/searchpicker_modal.tpl'
                     searchPickerName='articlePicker'
-                    modalTitle='Artikel auswählen'
-                    searchInputLabel='Suche nach Artikelnamen'
+                    modalTitle="{__('chooseProduct')}"
+                    searchInputLabel="{__('searchProductName')}"
                 }
                 <script>
                     $(function () {
@@ -240,7 +240,7 @@
                     function onApplySelectedArticles(selected)
                     {
                         $('#articleSelectionInfo')
-                            .val(selected.length > 0 ? selected.length + ' Artikel' : '');
+                            .val(selected.length > 0 ? selected.length + {__('product')} : '');
                         $('#cArtikel')
                             .val(selected.length > 0 ? selected.join(';') + ';' : '');
                     }
@@ -263,8 +263,8 @@
                 </div>
                 {include file='tpl_inc/searchpicker_modal.tpl'
                     searchPickerName='manufacturerPicker'
-                    modalTitle='Hersteller auswählen'
-                    searchInputLabel='Suche nach Herstellernamen'
+                    modalTitle="{__('chooseManufacturer')}"
+                    searchInputLabel="{__('searchManufacturerName')}"
                 }
                 <script>
                     $(function () {
@@ -281,7 +281,7 @@
                     function onApplySelectedManufacturers(selected)
                     {
                         $('#manufacturerSelectionInfo')
-                            .val(selected.length > 0 ? selected.length + ' Hersteller' : '');
+                            .val(selected.length > 0 ? selected.length + {__('manufacturer')} : '');
                         $('#cHersteller')
                             .val(selected.length > 0 ? selected.join(';') + ';' : '');
                     }
@@ -304,8 +304,8 @@
                 </div>
                 {include file='tpl_inc/searchpicker_modal.tpl'
                     searchPickerName='categoryPicker'
-                    modalTitle='Kategorien auswählen'
-                    searchInputLabel='Suche nach Kategorienamen'
+                    modalTitle="{__('chooseCatgeory')}"
+                    searchInputLabel="{__('searchCatgeoryName')}"
                 }
                 <script>
                     $(function () {
@@ -322,7 +322,7 @@
                     function onApplySelectedCategories(selected)
                     {
                         $('#categorySelectionInfo')
-                            .val(selected.length > 0 ? selected.length + ' Kategorien' : '');
+                            .val(selected.length > 0 ? selected.length + {__('category')} : '');
                         $('#cKategorie')
                             .val(selected.length > 0 ? selected.join(';') + ';' : '');
                     }

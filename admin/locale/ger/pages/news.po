@@ -193,3 +193,12 @@ msgstr "Ihre markierten Newskommentare wurden erfolgreich freigeschaltet."
 
 msgid "errorAtLeastOneNewsComment"
 msgstr "Fehler: Bitte markieren Sie mindestens einen Newskommentar."
+
+msgid "goOnEdit"
+msgstr " und weiter bearbeiten"
+
+msgid "mainCategory"
+msgstr "Hauptkategorie"
+
+msgid "deleteComment"
+msgstr "Kommentare löschen?"

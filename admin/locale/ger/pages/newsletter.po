@@ -283,3 +283,9 @@ msgstr "Die Newslettervorlage %s wurde zum Testen an %s gesendet."
 
 msgid "successNewsletterTemplateDelete"
 msgstr "Die Newslettervorlage wurde erfolgreich gelöscht."
+
+msgid "availableTemplates"
+msgstr "Vorhandene Vorlagen"
+
+msgid "newsletterNoAccount"
+msgstr "Newsletterempfänger ohne Kundenkonto"

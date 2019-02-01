@@ -109,7 +109,7 @@
                             <div class="panel-footer">
                                 <div class="btn-group">
                                     <button name="abonnentfreischaltenSubmit" type="submit" value="{__('newsletterUnlock')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('newsletterUnlock')}</button>
-                                    <button class="btn btn-danger" name="abonnentloeschenSubmit" type="submit" value="{__('newsletterdelete')}"><i class="fa fa-trash"></i> markierte {__('newsletterdelete')}</button>
+                                    <button class="btn btn-danger" name="abonnentloeschenSubmit" type="submit" value="{__('newsletterdelete')}"><i class="fa fa-trash"></i> {__('marked')} {__('newsletterdelete')}</button>
                                 </div>
                             </div>
                         </div>
@@ -220,8 +220,8 @@
                             </span>
                             <span class="input-group-wrap">
                                 <select class="form-control" name="cAnrede" id="cAnrede">
-                                    <option value="m">Herr</option>
-                                    <option value="w">Frau</option>
+                                    <option value="m">{__('mister')}</option>
+                                    <option value="w">{__('madame')}</option>
                                 </select>
                             </span>
                         </div>
@@ -299,7 +299,7 @@
                                                 <td>{$oNewsletterQueue->nAnzahlEmpfaenger}</td>
                                                 <td>
                                                     {foreach $oNewsletterQueue->cKundengruppe_arr as $cKundengruppe}
-                                                        {if $cKundengruppe == '0'}Newsletterempfänger ohne Kundenkonto{if !$cKundengruppe@last}, {/if}{/if}
+                                                        {if $cKundengruppe == '0'}{__('newsletterNoAccount')}{if !$cKundengruppe@last}, {/if}{/if}
                                                         {foreach $oKundengruppe_arr as $oKundengruppe}
                                                             {if $cKundengruppe == $oKundengruppe->kKundengruppe}{$oKundengruppe->cName}{if !$oKundengruppe@last}, {/if}{/if}
                                                         {/foreach}
@@ -336,7 +336,7 @@
                     <div id="newsletter-vorlagen-content">
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h3 class="panel-title">Vorhandene Vorlagen</h3>
+                                <h3 class="panel-title">{__('marked')}</h3>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-striped">

@@ -20,3 +20,12 @@ msgstr "Bis"
 msgid "navigationsfilterUrl"
 msgstr "https://jtl-url.de/5u1xg"
 
+msgid "thePriceRange"
+msgstr "Die Preisspanne "
+
+msgid "isInvalid"
+msgstr " ist ungültig."
+
+msgid "overlapps"
+msgstr " überschneidet sich mit anderen."
+

@@ -57,7 +57,7 @@
             var maxsize = {$nMaxFileSize};
             {literal}
             if (filesize >= maxsize) {
-                $(this).after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist größer als das Uploadlimit des Servers.</div>').slideDown();
+                $(this).after('<div class="alert alert-danger"><i class="fa fa-warning"></i>{/literal}{__('errorUploadSizeLimit')}{literal}</div>').slideDown();
                 file2large = true;
             } else {
                 $(this).closest('div.alert').slideUp();
@@ -169,8 +169,8 @@
                                 <label for="nAktiv">{__('newsActive')} *</label>
                             </span>
                             <select class="form-control" id="nAktiv" name="nAktiv">
-                                <option value="1"{if isset($cPostVar_arr.nAktiv)}{if $cPostVar_arr.nAktiv == 1} selected{/if}{elseif $oNews->getIsActive() === true} selected{/if}>Ja</option>
-                                <option value="0"{if isset($cPostVar_arr.nAktiv)}{if $cPostVar_arr.nAktiv == 0} selected{/if}{elseif $oNews->getIsActive() === false} selected{/if}>Nein
+                                <option value="1"{if isset($cPostVar_arr.nAktiv)}{if $cPostVar_arr.nAktiv == 1} selected{/if}{elseif $oNews->getIsActive() === true} selected{/if}>{__('yes')}</option>
+                                <option value="0"{if isset($cPostVar_arr.nAktiv)}{if $cPostVar_arr.nAktiv == 0} selected{/if}{elseif $oNews->getIsActive() === false} selected{/if}>{__('no')}
                                 </option>
                             </select>
                         </div>
@@ -222,12 +222,12 @@
                         {/if}
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="lang">Sprache</label>
+                                <label for="lang">{__('language')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select class="form-control" name="cISO" id="lang">
                                     {foreach $sprachen as $sprache}
-                                        <option value="{$sprache->cISO}" {if $sprache->cShopStandard === 'Y'}selected="selected"{/if}>{$sprache->cNameDeutsch} {if $sprache->cShopStandard === 'Y'}(Standard){/if}</option>
+                                        <option value="{$sprache->cISO}" {if $sprache->cShopStandard === 'Y'}selected="selected"{/if}>{$sprache->cNameDeutsch} {if $sprache->cShopStandard === 'Y'}({__('standard')}){/if}</option>
                                     {/foreach}
                                 </select>
                             </span>
@@ -242,7 +242,7 @@
                 <div id="iso_{$cISO}" class="iso_wrapper{if $sprache->cShopStandard !== 'Y'} hidden-soft{/if}">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Meta/Seo ({$sprache->cNameDeutsch})</h3>
+                            <h3 class="panel-title">{__('metaSeo')} ({$sprache->cNameDeutsch})</h3>
                         </div>
                         <div class="panel-body">
                             <div class="input-group">
@@ -295,7 +295,7 @@
             <div class="panel btn-group">
                 <button name="speichern" type="button" value="{__('newsSave')}" onclick="checkfile(event);" class="btn btn-primary"><i class="fa fa-save"></i> {__('newsSave')}</button>
                 {if $oNews->getID() > 0}
-                    <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{__('newsSave')} und weiter bearbeiten</button>
+                    <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{__('newsSave')} {__('goOnEdit')}</button>
                 {/if}
                 <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> {__('Cancel')}</a>
             </div>

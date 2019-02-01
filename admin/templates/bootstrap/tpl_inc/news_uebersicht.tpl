@@ -115,7 +115,7 @@
                                 <tfoot>
                                     <tr>
                                         <td class="check"><input name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                                        <td colspan="5"><label for="ALLMSGS1">Alle auswählen</label></td>
+                                        <td colspan="5"><label for="ALLMSGS1">{__('globalSelectAll')}</label></td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -367,7 +367,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Kommentare löschen?</h4>
+                <h4 class="modal-title">{__('deleteComment')}</h4>
             </div>
             <div class="modal-body"></div>
             <div class="modal-footer">

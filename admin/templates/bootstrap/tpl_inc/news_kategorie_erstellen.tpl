@@ -16,7 +16,7 @@
             var maxsize = {$nMaxFileSize};
             {literal}
             if (filesize >= maxsize) {
-                $(this).after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist größer als das Uploadlimit des Servers.</div>').slideDown();
+                $(this).after('<div class="alert alert-danger"><i class="fa fa-warning"></i> {/literal}{__('errorUploadSizeLimit')}{literal}</div>').slideDown();
                 file2large = true;
             } else {
                 $(this).closest('div.alert').slideUp();
@@ -52,7 +52,7 @@
         <div class="settings">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{if $oNewsKategorie->getID() > 0}{__('newsCatNew')} (ID {$oNewsKategorie->getID()}){else}{__('newsCatAdd')}{/if}</h3>
+                    <h3 class="panel-title">{if $oNewsKategorie->getID() > 0}{__('newsCatNew')} ({__('id')} {$oNewsKategorie->getID()}){else}{__('newsCatAdd')}{/if}</h3>
                 </div>
                 <div class="table-responsive">
                     <div class="panel-body" id="formtable">
@@ -61,7 +61,7 @@
                                 <label for="kParent">{__('newsCatParent')}</label>
                             </span>
                             <select class="form-control" id="kParent" name="kParent">
-                                <option value="0"> - Hauptkategorie - </option>
+                                <option value="0"> - {__('mainCategory')} - </option>
                                 {if $oNewsKategorie->getParentID()}
                                     {assign var=selectedCat value=$oNewsKategorie->getParentID()}
                                 {else}
@@ -110,7 +110,7 @@
                                     {foreach $oDatei_arr as $oDatei}
                                         <div class="well col-xs-3">
                                             <div class="thumbnail"><img src="{$oDatei->cURLFull}" alt=""></div>
-                                            <label>Link: </label>
+                                            <label>{__('link')}: </label>
                                             <div class="input-group">
                                                 <input class="form-control" type="text" disabled="disabled" value="$#{$oDatei->cName}#$">
                                                 <div class="input-group-addon">
@@ -124,12 +124,12 @@
                         {/if}
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="lang">Sprache</label>
+                                <label for="lang">{__('language')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select class="form-control" name="cISO" id="lang">
                                     {foreach $sprachen as $sprache}
-                                        <option value="{$sprache->cISO}" {if $sprache->cShopStandard === 'Y'}selected="selected"{/if}>{$sprache->cNameDeutsch} {if $sprache->cShopStandard === 'Y'}(Standard){/if}</option>
+                                        <option value="{$sprache->cISO}" {if $sprache->cShopStandard === 'Y'}selected="selected"{/if}>{$sprache->cNameDeutsch} {if $sprache->cShopStandard === 'Y'}({__('standard')}){/if}</option>
                                     {/foreach}
                                 </select>
                             </span>
@@ -144,7 +144,7 @@
                 <div id="iso_{$cISO}" class="iso_wrapper{if $sprache->cShopStandard !== 'Y'} hidden-soft{/if}">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Meta/Seo ({$sprache->cNameDeutsch})</h3>
+                            <h3 class="panel-title">{__('metaSeo')} ({$sprache->cNameDeutsch})</h3>
                         </div>
                         <div class="table-responsive">
                             <div class="panel-body" id="formtable">

@@ -53,7 +53,7 @@
                 <h4><i class="fa fa-question-circle"></i> {__('plz_ort_import')}</h4>
             </div>
             <div class="modal-body">
-                {{__('plz_ort_import_help')|sprintf:$smarty.const.PLZIMPORT_URL}}
+                {{__('plz_ort_import_help')}|sprintf:{$smarty.const.PLZIMPORT_URL}}
             </div>
             <div class="modal-footer">
                 <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-check"></i> {__('plz_ort_import_ok')}</a>

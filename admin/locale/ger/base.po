@@ -832,3 +832,69 @@ msgstr "Artikel"
 
 msgid "only"
 msgstr "nur"
+
+msgid "deactivated"
+msgstr "Deaktiviert"
+
+msgid "standard"
+msgstr "Standard"
+
+msgid "forced"
+msgstr "erwzungen"
+
+msgid "images"
+msgstr "Bilder"
+
+msgid "plugin"
+msgstr "Plugin"
+
+msgid "missingTranslations"
+msgstr "Fehlende Übersetzungen"
+
+msgid "login"
+msgstr "Anmelden"
+
+msgid "forgotPassword"
+msgstr "Passwort vergessen?"
+
+msgid "metaSeo"
+msgstr "Meta/Seo"
+
+msgid "id"
+msgstr "ID"
+
+msgid "marked"
+msgstr "markiert"
+
+msgid "textHtml"
+msgstr "text/html"
+
+msgid "searchProductName"
+msgstr "Suche nach Artikelnamen"
+
+msgid "searchManufacturerName"
+msgstr "Suche nach Herstellernamen"
+
+msgid "chooseManufacturer"
+msgstr "Hersteller wählen"
+
+msgid "searchCatgeoryName"
+msgstr "Suche nach Kategorienamen"
+
+msgid "chooseCatgeory"
+msgstr "Kategorie wählen"
+
+msgid "entriesPerPage"
+msgstr "Einträge/Seite"
+
+msgid "sorting"
+msgstr "Sortierung"
+
+msgid "ascending"
+msgstr "aufsteigend"
+
+msgid "descending"
+msgstr "absteigend"
+
+msgid "allEntries"
+msgstr "Einträge gesamt"

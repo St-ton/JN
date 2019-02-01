@@ -88,13 +88,13 @@
                 $row.removeClass('has-error');
 
                 if(nVon === '' || nBis === '') {
-                    cFehler += 'Ein oder mehrere Felder sind nicht gesetzt.<br>';
+                    cFehler += {__('errorFillRequired')} + '<br>';
                     $row.addClass('has-error');
                 } else if(fVon >= fBis) {
-                    cFehler += 'Die Preisspanne ' + fVon + ' bis ' + fBis + ' ist ungütig.<br>';
+                    cFehler += {__('thePriceRange')} + fVon + ' {__('to')} ' + fBis + {__('isInvalid')} + '<br>';
                     $row.addClass('has-error');
                 } else if(fVon < lastUpperBound) {
-                    cFehler += 'Die Preisspanne ' + fVon + ' bis ' + fBis + ' überschneidet sich mit anderen.<br>';
+                    cFehler += {__('thePriceRange')} + fVon + ' {__('to')} ' + fBis + {__('overlapps')} + '<br>';
                     $row.addClass('has-error');
                 }
 

@@ -13,3 +13,9 @@ msgstr "Benutzername"
 
 msgid "password"
 msgstr "Passwort"
+
+msgid "successPasswordChange"
+msgstr "Passwort wurde erfolgreich geändert."
+
+msgid "changerUser"
+msgstr "Benutzer wechseln"

@@ -259,3 +259,27 @@ msgstr "Fehler: Der Link konnte nicht kopiert werden, da er bereits in der Zielg
 
 msgid "successLinkCopy"
 msgstr "Sie haben den Link %s erfolgreich kopiert."
+
+msgid "dangerDeleteAllLinksInLinkGroup"
+msgstr "Alle Links innerhalb dieser Linkgruppe werden ebenfalls gelöscht."
+
+msgid "dangerDeleteLinksAlso"
+msgstr "Die folgenden Links werden in anderen Linkgruppen referenziert und werden ebenfalls gelöscht"
+
+msgid "sureDeleteLinkGroup"
+msgstr "Wollen Sie die Linkgruppe \"<strong>%s</strong>\" wirklich löschen?"
+
+msgid "continueEdit"
+msgstr "und weiter bearbeiten"
+
+msgid "createWithSearchEngineName"
+msgstr "(anlegen unter \"Suchmaschinenname\")"
+
+msgid "sureDeleteLink"
+msgstr "Möchten Sie den Link wirklich löschen?\nBitte beachten Sie, dass auch untergeordnete Links und alle Kopien gelöscht werden!"
+
+msgid "linksWithoutLinkGroup"
+msgstr "Links ohne Linkgruppe"
+
+msgid "dangerLinkWillGetDeleted"
+msgstr "Achtung: Link ist in %s Linkgruppen vorhanden und wird aus allen gelöscht!"

@@ -430,3 +430,20 @@ $adminMenu = [
         __('Plugins')  => 'DYNAMIC_PLUGINS',
     ],
 ];
+
+$sectionMenuMapping = [];
+
+foreach ($adminMenu as $menuName => $menu) {
+    foreach ($menu as $subMenuName => $subMenu) {
+        if (is_array($subMenu)) {
+            foreach ($subMenu as $itemName => $item) {
+                if (isset($item->section)) {
+                    $sectionMenuMapping[$item->section] = (object)[
+                        'path' => $menuName . ' -&gt; ' . $subMenuName . ' -&gt; ' . $itemName,
+                        'url'  => $item->link,
+                    ];
+                }
+            }
+        }
+    }
+}

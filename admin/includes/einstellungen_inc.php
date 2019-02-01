@@ -114,7 +114,10 @@ function holeEinstellungen($oSQL, $bSpeichern)
             ORDER BY kEinstellungenSektion, nSort',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
+    Shop::Container()->getGetText()->loadConfigLocales();
     foreach ($oSQL->oEinstellung_arr as $j => $oEinstellung) {
+        Shop::Container()->getGetText()->localizeConfig($oEinstellung);
+
         if ((int)$oSQL->nSuchModus === 3 && $oEinstellung->cConf === 'Y') {
             $oSQL->oEinstellung_arr = [];
             $configHead             = holeEinstellungHeadline(
@@ -213,6 +216,7 @@ function holeEinstellungHeadline(int $nSort, int $sectionID)
             if ($oEinstellungTMP->cConf === 'N') {
                 $configHead                = $oEinstellungTMP;
                 $configHead->cSektionsPfad = gibEinstellungsSektionsPfad($sectionID);
+                $configHead->cURL          = getSectionMenuPath($sectionID);
                 break;
             }
         }
@@ -227,75 +231,25 @@ function holeEinstellungHeadline(int $nSort, int $sectionID)
  */
 function gibEinstellungsSektionsPfad(int $sectionID)
 {
-    global $adminMenu;
+    global $sectionMenuMapping;
 
-    foreach ($adminMenu as $menuName => $menu) {
-        foreach ($menu as $subMenuName => $subMenu) {
-            if (is_array($subMenu)) {
-                foreach ($subMenu as $itemName => $item) {
-                    if (isset($item->section) && $item->section === $sectionID) {
-                        return $menuName . ' -&gt; ' . $subMenuName . ' -&gt; ' . $itemName;
-                    }
-                }
-            }
-        }
+    if (isset($sectionMenuMapping[$sectionID])) {
+        return $sectionMenuMapping[$sectionID]->path;
     }
 
     return '';
+}
 
-    if ($sectionID >= 100) {
-        // Einstellungssektion ist in den Defines
-        switch ($sectionID) {
-            case CONF_ZAHLUNGSARTEN:
-                return 'Storefront-&gt;Zahlungsarten-&gt;Übersicht';
-            case CONF_EXPORTFORMATE:
-                return 'System-&gt;Export-&gt;Exportformate';
-            case CONF_KONTAKTFORMULAR:
-                return 'Storefront-&gt;Formulare-&gt;Kontaktformular';
-            case CONF_SHOPINFO:
-                return 'System-&gt;Export-&gt;Exportformate';
-            case CONF_RSS:
-                return 'System-&gt;Export-&gt;RSS Feed';
-            case CONF_PREISVERLAUF:
-                return 'Storefront-&gt;Artikel-&gt;Preisverlauf';
-            case CONF_VERGLEICHSLISTE:
-                return 'Storefront-&gt;Artikel-&gt;Vergleichsliste';
-            case CONF_BEWERTUNG:
-                return 'Storefront-&gt;Artikel-&gt;Bewertungen';
-            case CONF_NEWSLETTER:
-                return 'System-&gt;E-Mails-&gt;Newsletter';
-            case CONF_KUNDENFELD:
-                return 'Storefront-&gt;Formulare-&gt;Eigene Kundenfelder';
-            case CONF_NAVIGATIONSFILTER:
-                return 'Storefront-&gt;Suche-&gt;Filter';
-            case CONF_EMAILBLACKLIST:
-                return 'System-&gt;E-Mails-&gt;Blacklist';
-            case CONF_METAANGABEN:
-                return 'System-&gt;E-Mails-&gt;Globale Einstellungen-&gt;Globale Meta-Angaben';
-            case CONF_NEWS:
-                return 'Inhalte-&gt;News';
-            case CONF_SITEMAP:
-                return 'System-&gt;Export-&gt;Sitemap';
-            case CONF_UMFRAGE:
-                return 'Inhalte-&gt;Umfragen';
-            case CONF_KUNDENWERBENKUNDEN:
-                return 'System-&gt;Benutzer- &amp; Kundenverwaltung-&gt;Kunden werben Kunden';
-            case CONF_TRUSTEDSHOPS:
-                return 'Storefront-&gt;Kaufabwicklung-&gt;Trusted Shops';
-            case CONF_SUCHSPECIAL:
-                return 'Storefront-&gt;Artikel-&gt;Besondere Produkte';
-            default:
-                return '';
-        }
-    } else {
-        $section = Shop::Container()->getDB()->select(
-            'teinstellungensektion',
-            'kEinstellungenSektion',
-            $sectionID
-        );
-        if (isset($section->kEinstellungenSektion) && $section->kEinstellungenSektion > 0) {
-            return 'Einstellungen-&gt;' . $section->cName;
-        }
+/**
+ * @param int $sectionID
+ * @return string
+ */
+function getSectionMenuPath(int $sectionID)
+{
+    global $sectionMenuMapping;
+
+    if (isset($sectionMenuMapping[$sectionID])) {
+        return $sectionMenuMapping[$sectionID]->url;
     }
 
     return '';

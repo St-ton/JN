@@ -22,13 +22,11 @@ if (auth()) {
         $return = 0;
         $db->query('START TRANSACTION', \DB\ReturnType::DEFAULT);
         foreach ($syncFiles as $i => $xmlFile) {
-            $d   = file_get_contents($xmlFile);
-            $xml = XML_unserialize($d);
-
+            $data = file_get_contents($xmlFile);
+            $xml  = \JTL\XML::unserialize($data);
             if (strpos($xmlFile, 'quicksync.xml') !== false) {
                 bearbeiteInsert($xml);
             }
-
             removeTemporaryFiles($xmlFile);
         }
         $db->query('COMMIT', \DB\ReturnType::DEFAULT);

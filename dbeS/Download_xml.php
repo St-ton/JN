@@ -20,8 +20,8 @@ if (auth()) {
     } else {
         $return = 0;
         foreach ($syncFiles as $i => $xmlFile) {
-            $d   = file_get_contents($xmlFile);
-            $xml = XML_unserialize($d);
+            $data = file_get_contents($xmlFile);
+            $xml  = \JTL\XML::unserialize($data);
             if (strpos($xmlFile, 'del_download.xml') !== false) {
                 bearbeiteDeletes($xml);
             } else {

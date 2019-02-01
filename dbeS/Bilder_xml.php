@@ -150,8 +150,8 @@ if (auth()) {
                 case 'bilder_m.xml':
                 case 'bilder_mw.xml':
                 case 'bilder_h.xml':
-                    $d   = file_get_contents($xmlFile);
-                    $xml = XML_unserialize($d);
+                    $data = file_get_contents($xmlFile);
+                    $xml  = \JTL\XML::unserialize($data);
                     bearbeite($xml, $unzipPath, $brandingConf, $sql);
                     removeTemporaryFiles($xmlFile);
                     break;
@@ -163,8 +163,8 @@ if (auth()) {
                 case 'del_bilder_m.xml':
                 case 'del_bilder_mw.xml':
                 case 'del_bilder_h.xml':
-                    $d   = file_get_contents($xmlFile);
-                    $xml = XML_unserialize($d);
+                    $data = file_get_contents($xmlFile);
+                    $xml  = \JTL\XML::unserialize($data);
                     bearbeiteDeletes($xml);
                     removeTemporaryFiles($xmlFile);
                     break;

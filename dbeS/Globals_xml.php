@@ -19,8 +19,8 @@ if (auth()) {
     } else {
         $return = 0;
         foreach ($syncFiles as $xmlFile) {
-            $d   = file_get_contents($xmlFile);
-            $xml = XML_unserialize($d);
+            $data = file_get_contents($xmlFile);
+            $xml  = \JTL\XML::unserialize($data);
             if (strpos($xmlFile, 'del_globals.xml') !== false) {
                 bearbeiteDeletes($xml);
             } elseif (strpos($xmlFile, 'globals.xml') !== false) {
@@ -28,12 +28,12 @@ if (auth()) {
             }
         }
     }
+    Shop::Container()->getDB()->query(
+        'UPDATE tglobals SET dLetzteAenderung = NOW()',
+        \DB\ReturnType::DEFAULT
+    );
 }
 
-Shop::Container()->getDB()->query(
-    'UPDATE tglobals SET dLetzteAenderung = NOW()',
-    \DB\ReturnType::DEFAULT
-);
 echo $return;
 
 /**

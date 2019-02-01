@@ -18,8 +18,8 @@ if (auth()) {
     } else {
         $return = 0;
         foreach ($syncFiles as $xmlFile) {
-            $d        = file_get_contents($xmlFile);
-            $xml      = XML_unserialize($d);
+            $data     = file_get_contents($xmlFile);
+            $xml      = \JTL\XML::unserialize($data);
             $fileName = pathinfo($xmlFile)['basename'];
             if ($fileName === 'del_kunden.xml') {
                 bearbeiteDeletes($xml);

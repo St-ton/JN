@@ -24,20 +24,20 @@ if (auth()) {
         \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
     );
     $customerCount = count($customers);
-    $cryptoService = Shop::Container()->getCryptoService();
+    $crypto        = Shop::Container()->getCryptoService();
     $attributes    = [];
     foreach ($customers as &$customer) {
         $customer['cAnrede']   = Kunde::mapSalutation($customer['cAnrede'], $customer['kSprache']);
-        $customer['cNachname'] = trim($cryptoService->decryptXTEA($customer['cNachname']));
-        $customer['cFirma']    = trim($cryptoService->decryptXTEA($customer['cFirma']));
-        $customer['cStrasse']  = trim($cryptoService->decryptXTEA($customer['cStrasse']));
+        $customer['cNachname'] = trim($crypto->decryptXTEA($customer['cNachname']));
+        $customer['cFirma']    = trim($crypto->decryptXTEA($customer['cFirma']));
+        $customer['cStrasse']  = trim($crypto->decryptXTEA($customer['cStrasse']));
         // Strasse und Hausnummer zusammenfuehren
         $customer['cStrasse'] .= ' ' . trim($customer['cHausnummer']);
         unset($customer['cHausnummer'], $customer['cPasswort']);
         $attribute  = buildAttributes($customer);
         $additional = $customer['cZusatz'];
         unset($customer['cZusatz']);
-        $customer['cZusatz']         = trim($cryptoService->decryptXTEA($additional));
+        $customer['cZusatz']         = trim($crypto->decryptXTEA($additional));
         $customer['tkundenattribut'] = $db->query(
             'SELECT * 
                 FROM tkundenattribut 

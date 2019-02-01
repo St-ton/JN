@@ -41,8 +41,8 @@ if (auth()) {
         }*/
     }
 
-    $cryptoService = Shop::Container()->getCryptoService();
-    $db            = Shop::Container()->getDB();
+    $crypto          = Shop::Container()->getCryptoService();
+    $db              = Shop::Container()->getDB();
     $orderAttributes = [];
 
     foreach ($orders as &$order) {
@@ -174,14 +174,14 @@ if (auth()) {
                 ORDER BY kZahlungsInfo DESC LIMIT 1",
             \DB\ReturnType::SINGLE_ASSOC_ARRAY
         );
-        $item['cBankName'] = isset($item['cBankName']) ? $cryptoService->decryptXTEA($item['cBankName']) : null;
-        $item['cBLZ']      = isset($item['cBLZ']) ? $cryptoService->decryptXTEA($item['cBLZ']) : null;
-        $item['cInhaber']  = isset($item['cInhaber']) ? $cryptoService->decryptXTEA($item['cInhaber']) : null;
-        $item['cKontoNr']  = isset($item['cKontoNr']) ? $cryptoService->decryptXTEA($item['cKontoNr']) : null;
-        $item['cIBAN']     = isset($item['cIBAN']) ? $cryptoService->decryptXTEA($item['cIBAN']) : null;
-        $item['cBIC']      = isset($item['cBIC']) ? $cryptoService->decryptXTEA($item['cBIC']) : null;
-        $item['cKartenNr'] = isset($item['cKartenNr']) ? $cryptoService->decryptXTEA($item['cKartenNr']) : null;
-        $item['cCVV']      = isset($item['cCVV']) ? trim($cryptoService->decryptXTEA($item['cCVV'])) : null;
+        $item['cBankName'] = isset($item['cBankName']) ? $crypto->decryptXTEA($item['cBankName']) : null;
+        $item['cBLZ']      = isset($item['cBLZ']) ? $crypto->decryptXTEA($item['cBLZ']) : null;
+        $item['cInhaber']  = isset($item['cInhaber']) ? $crypto->decryptXTEA($item['cInhaber']) : null;
+        $item['cKontoNr']  = isset($item['cKontoNr']) ? $crypto->decryptXTEA($item['cKontoNr']) : null;
+        $item['cIBAN']     = isset($item['cIBAN']) ? $crypto->decryptXTEA($item['cIBAN']) : null;
+        $item['cBIC']      = isset($item['cBIC']) ? $crypto->decryptXTEA($item['cBIC']) : null;
+        $item['cKartenNr'] = isset($item['cKartenNr']) ? $crypto->decryptXTEA($item['cKartenNr']) : null;
+        $item['cCVV']      = isset($item['cCVV']) ? trim($crypto->decryptXTEA($item['cCVV'])) : null;
         if (strlen($item['cCVV']) > 4) {
             $item['cCVV'] = substr($item['cCVV'], 0, 4);
         }

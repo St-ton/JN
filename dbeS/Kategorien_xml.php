@@ -22,14 +22,12 @@ if (auth()) {
         $return = 0;
         $db->query('START TRANSACTION', \DB\ReturnType::DEFAULT);
         foreach ($syncFiles as $xmlFile) {
-            $d   = file_get_contents($xmlFile);
-            $xml = XML_unserialize($d);
-
+            $data = file_get_contents($xmlFile);
+            $xml  = \JTL\XML::unserialize($data);
             if (isset($xml['tkategorie attr']['nGesamt']) || isset($xml['tkategorie attr']['nAktuell'])) {
                 setMetaLimit($xml['tkategorie attr']['nAktuell'], $xml['tkategorie attr']['nGesamt']);
                 unset($xml['tkategorie attr']['nGesamt'], $xml['tkategorie attr']['nAktuell']);
             }
-
             if (strpos($xmlFile, 'katdel.xml') !== false) {
                 bearbeiteDeletes($xml);
             } else {
@@ -37,7 +35,6 @@ if (auth()) {
             }
             removeTemporaryFiles($xmlFile);
         }
-
         \dbeS\LastJob::getInstance()->run(LASTJOBS_KATEGORIEUPDATE, 'Kategorien_xml');
         $db->query('COMMIT', \DB\ReturnType::DEFAULT);
         removeTemporaryFiles(substr($unzipPath, 0, -1), true);

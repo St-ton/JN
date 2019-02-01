@@ -27,8 +27,8 @@ if (auth()) {
         $conf   = Shop::getSettings([CONF_GLOBAL]);
         $db->query('START TRANSACTION', \DB\ReturnType::DEFAULT);
         foreach ($syncFiles as $i => $xmlFile) {
-            $d   = file_get_contents($xmlFile);
-            $xml = XML_unserialize($d);
+            $data = file_get_contents($xmlFile);
+            $xml  = \JTL\XML::unserialize($data);
 
             if (strpos($xmlFile, 'artdel.xml') !== false) {
                 $articleIDs = array_merge($articleIDs, bearbeiteDeletes($xml, $conf));

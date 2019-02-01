@@ -50,8 +50,8 @@
                     <select name="nDynamisch" class="form-control combo" id="cWertSelect"
                             onChange="changeWertSelect(this);"
                             {if isset($oKampagne->kKampagne) && $oKampagne->kKampagne < 1000} disabled{/if}>
-                        <option value="0"{if isset($oKampagne->nDynamisch) && $oKampagne->nDynamisch == 0} selected{/if}>Fester Wert</option>
-                        <option value="1"{if isset($oKampagne->nDynamisch) && $oKampagne->nDynamisch == 1} selected{/if}>Dynamisch</option>
+                        <option value="0"{if isset($oKampagne->nDynamisch) && $oKampagne->nDynamisch == 0} selected{/if}>{__('fixedValue')}</option>
+                        <option value="1"{if isset($oKampagne->nDynamisch) && $oKampagne->nDynamisch == 1} selected{/if}>{__('dynamic')}</option>
                     </select>
                 </span>
             </div>
@@ -67,8 +67,8 @@
                 <span class="input-group-addon"><label for="nAktiv">{__('kampagnenActive')}</label></span>
                 <span class="input-group-wrap">
                     <select id="nAktiv" name="nAktiv" class="combo form-control">
-                        <option value="0"{if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 0} selected{/if}>Nein</option>
-                        <option value="1"{if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 1} selected{/if}>Ja</option>
+                        <option value="0"{if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 0} selected{/if}>{__('no')}</option>
+                        <option value="1"{if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 1} selected{/if}>{__('yes')}</option>
                     </select>
                 </span>
             </div>

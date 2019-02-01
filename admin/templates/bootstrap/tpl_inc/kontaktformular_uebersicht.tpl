@@ -64,7 +64,7 @@
                             <th class="tleft">{__('subject')}</th>
                             <th class="tleft">{__('mail')}</th>
                             <th>{__('custgrp')}</th>
-                            <th>Aktionen</th>
+                            <th>{__('actions')}</th>
                         </tr>
                         </thead>
                         <tbody>

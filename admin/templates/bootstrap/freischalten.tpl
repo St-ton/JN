@@ -100,7 +100,7 @@
                                     <th class="tleft">{__('freischaltenReviewsCustomer')}</th>
                                     <th>{__('freischaltenReviewsStars')}</th>
                                     <th>{__('freischaltenReviewsDate')}</th>
-                                    <th>Aktionen</th>
+                                    <th>{__('actions')}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -141,7 +141,7 @@
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group">
-                                <button name="freischaltensubmit" type="submit" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> Markierte freischalten</button>
+                                <button name="freischaltensubmit" type="submit" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
                                 <button name="freischaltenleoschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
                             </div>
                         </div>
@@ -201,18 +201,18 @@
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group p50">
-                                <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> Markierte freischalten</button>
+                                <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
                                 <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
                                     <i class="fa fa-trash"></i> {__('deleteSelected')}
                                 </button>
                             </div>
                             <div class="input-group right p50" data-toggle="tooltip" data-placement="bottom" title='{__('freischaltenMappingDesc')}'>
                                 <span class="input-group-addon">
-                                    <label for="cMapping">Markierte verknüpfen mit</label>
+                                    <label for="cMapping">{__('linkMarked')}</label>
                                 </span>
                                 <input class="form-control" name="cMapping" id="cMapping" type="text" value="" />
                                 <span class="input-group-btn">
-                                    <button name="submitMapping" type="submit" value="Verknüpfen" class="btn btn-primary">Verknüpfen</button>
+                                    <button name="submitMapping" type="submit" value="Verknüpfen" class="btn btn-primary">{__('linkVerb')}</button>
                                 </span>
                             </div>
                         </div>
@@ -261,7 +261,7 @@
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group">
-                                <button name="freischaltensubmit" type="submit" value="{__('freischaltenActivate')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> Markierte freischalten</button>
+                                <button name="freischaltensubmit" type="submit" value="{__('freischaltenActivate')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
                                 <button name="freischaltenleoschen" type="submit" value="{__('freischaltenDelete')}" class="btn btn-danger">
                                     <i class="fa fa-trash"></i> {__('deleteSelected')}
                                 </button>
@@ -290,7 +290,7 @@
                                         <th class="tleft">{__('freischaltenNewsCommentsVisitor')}</th>
                                         <th class="tleft">{__('freischaltenNewsCommentsText')}</th>
                                         <th>{__('freischaltenNewsCommentsDate')}</th>
-                                        <th>Aktionen</th>
+                                        <th>{__('actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -327,7 +327,7 @@
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group">
-                                <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> Markierte freischalten</button>
+                                <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
                                 <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
                                     <i class="fa fa-trash"></i> {__('deleteSelected')}
                                 </button>
@@ -359,7 +359,7 @@
                                         <th class="tleft">{__('freischaltenNewsletterReceiverEmail')}</th>
                                         <th class="tleft">{__('freischaltenNewsletterReceiverFirstName')}</th>
                                         <th class="tleft">{__('freischaltenNewsletterReceiverLastName')}</th>
-                                        <th>(<a href="freischalten.php?tab=newsletter&{$cSuchStr}nSort=4{if !isset($nSort) || $nSort != 44}4{/if}&token={$smarty.session.jtl_token}">{if !isset($nSort) || $nSort != 44}Alt...Neu{elseif isset($nSort) && $nSort == 44}Neu...Alt{/if}</a>) {__('freischaltenNewsletterReceiverDate')}</th>
+                                        <th>(<a href="freischalten.php?tab=newsletter&{$cSuchStr}nSort=4{if !isset($nSort) || $nSort != 44}4{/if}&token={$smarty.session.jtl_token}">{if !isset($nSort) || $nSort != 44}{__('old')}...{__('new')}{elseif isset($nSort) && $nSort == 44}{__('new')}...{__('old')}{/if}</a>) {__('freischaltenNewsletterReceiverDate')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -383,7 +383,7 @@
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group">
-                                <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> Markierte freischalten</button>
+                                <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
                                 <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
                                     <i class="fa fa-trash"></i> {__('deleteSelected')}
                                 </button>

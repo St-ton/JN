@@ -1,0 +1,9 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "favorites"
+msgstr "Favoriten"
+
+msgid "manageFavorites"
+msgstr "Verwalten Sie Ihre Favoriten"

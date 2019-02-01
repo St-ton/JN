@@ -190,3 +190,9 @@ msgstr "Fehler: Bitte markieren Sie mindestens einen Newsletterempfänger."
 
 msgid "successNewsletterDelete"
 msgstr "Ihre markierten Newsletterempfänger wurden erfolgreich gelöscht."
+
+msgid "unlockMarked"
+msgstr "Markierte freischalten"
+
+msgid "linkMarked"
+msgstr "Markierte verknüpfen mit"

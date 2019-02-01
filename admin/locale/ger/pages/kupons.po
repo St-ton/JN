@@ -274,3 +274,10 @@ msgstr "Bitte geben sie das Ende des Gültigkeitszeitraumes im Format (<strong>t
 
 msgid "errorPeriodEndAfterBegin"
 msgstr "Das Ende des Gültigkeitszeitraumes muss nach dem Beginn des Gültigkeitszeitraumes liegen!"
+
+msgid "searchNameZipEmail"
+msgstr "Suche nach Vornamen, E-Mail-Adresse, Wohnort oder Postleitzahl"
+
+msgid "searchProductName"
+msgstr "Suche nach Artikelnamen"
+

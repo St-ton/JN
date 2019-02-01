@@ -407,7 +407,7 @@ msgstr "Eigene Seite"
 msgid "product"
 msgstr "Artikel"
 
-msgid "chhoseProduct"
+msgid "chooseProduct"
 msgstr "Artikel wählen"
 
 msgid "deleteProduct"
@@ -697,3 +697,138 @@ msgstr "Muster Gmbh"
 
 msgid "faulty"
 msgstr "fehlerhaft"
+
+msgid "week"
+msgstr "Woche"
+
+msgid "weeks"
+msgstr "Wochen"
+
+msgid "own"
+msgstr "eigene"
+
+msgid "questionUseCache"
+msgstr "Cache nutzen?"
+
+msgid "link"
+msgstr "Link"
+
+msgid "startsWith"
+msgstr "beginnt mit"
+
+msgid "endsWith"
+msgstr "endet mit"
+
+msgid "isEqual"
+msgstr "ist gleich"
+
+msgid "isNotEqual"
+msgstr "ist ungleich"
+
+msgid "contains"
+msgstr "enthält"
+
+msgid "firstSteps"
+msgstr "Erste Schritte"
+
+msgid "jtlGuide"
+msgstr "JTL Guide"
+
+msgid "jtlForum"
+msgstr "JTL Forum"
+
+msgid "training"
+msgstr "Training"
+
+msgid "servicePartners"
+msgstr "Servicepartner"
+
+msgid "actions"
+msgstr "Aktionen"
+
+msgid "linkVerb"
+msgstr "Verknüpfen"
+
+msgid "old"
+msgstr "alt"
+
+msgid "january"
+msgstr "Januar"
+
+msgid "february"
+msgstr "Februar"
+
+msgid "march"
+msgstr "März"
+
+msgid "april"
+msgstr "April"
+
+msgid "may"
+msgstr "Mai"
+
+msgid "june"
+msgstr "Juni"
+
+msgid "july"
+msgstr "Juli"
+
+msgid "august"
+msgstr "August"
+
+msgid "september"
+msgstr "September"
+
+msgid "october"
+msgstr "Oktober"
+
+msgid "november"
+msgstr "November"
+
+msgid "december"
+msgstr "Dezember"
+
+msgid "dynamic"
+msgstr "dynamisch"
+
+msgid "fixedValue"
+msgstr "Fester Wert"
+
+msgid "earlier"
+msgstr "Früher"
+
+msgid "later"
+msgstr "später"
+
+msgid "value"
+msgstr "Wert"
+
+msgid "number"
+msgstr "Zahl"
+
+msgid "selection"
+msgstr "Auswahl"
+
+msgid "addValue"
+msgstr "Wert hinzufügen."
+
+msgid "sortShort"
+msgstr "Sort"
+
+msgid "remove"
+msgstr "Entfernen"
+
+msgid "amount"
+msgstr "Betrag"
+
+msgid "chooseCustomer"
+msgstr "Kunden auswählen"
+
+msgid "customers"
+msgstr "Kunden"
+
+msgid "products"
+msgstr "Artikel"
+
+msgid "only"
+msgstr "nur"

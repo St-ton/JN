@@ -136,3 +136,15 @@ msgstr "Exportformat konnte nicht gelöscht werden."
 
 msgid "errorFormatCreate"
 msgstr "Das Exportformat %s konnte nicht erstellt werden. Fehlende Schreibrechte?"
+
+msgid "errorExport"
+msgstr "Es ist ein Fehler beim Erstellen der Exportdatei aufgetreten."
+
+msgid "availableFormats"
+msgstr "Vorhandene Exportformate"
+
+msgid "exportAll"
+msgstr "Alle exportieren"
+
+msgid "sureDeleteFormat"
+msgstr "Exportformat löschen?"

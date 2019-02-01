@@ -30,7 +30,7 @@
             </div>
             <div class="form-group">
                 <select id="kKupon" name="kKupon" class="combo form-control">
-                    <option value="-1">Alle</option>
+                    <option value="-1">{__('all')}</option>
                     {foreach $coupons_arr as $coupon_arr}
                         <option value="{$coupon_arr.kKupon}"{if isset($coupon_arr.aktiv) && $coupon_arr.aktiv} selected{/if}>{$coupon_arr.cName}</option>
                     {/foreach}

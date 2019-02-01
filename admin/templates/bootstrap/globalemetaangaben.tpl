@@ -92,7 +92,7 @@
                     {if $open}</div></div>{/if}
                     <div class="panel panel-default">
                         {if $oConfig->cName}
-                            <div class="panel-heading"><h3 class="panel-title">Einstellungen</h3></div>
+                            <div class="panel-heading"><h3 class="panel-title">{__('settings')}</h3></div>
                         {/if}
                         <div class="panel-body">
                         {assign var=open value=true}

@@ -100,3 +100,15 @@ msgstr "Anmeldung zur Zeit nicht möglich."
 
 msgid "errorLoginDataExpired"
 msgstr "Anmeldedaten nicht mehr gültig."
+
+msgid "errorFieldNeedsAtLeastOneValue"
+msgstr "Das Feld muss mindestens einen Wert haben!"
+
+msgid "errorChooseField"
+msgstr "Bitte wählen Sie zuerst ein Feld aus!"
+
+msgid "sureDeleteSelected"
+msgstr "Wollen Sie wirklich die ausgewählten Felder löschen? Alle zugeordneten Kundenwerte gehen dabei verloren!"
+
+msgid "infoChangeFieldType"
+msgstr "Wenn Sie den Feldtyp ändern, werden alle Kundenwerte - soweit möglich - automatisch an den neuen Typ angepasst!"

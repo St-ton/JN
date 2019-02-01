@@ -14,7 +14,7 @@
                 .click(function() {
                     addKundenfeldWert();
                 })
-                .append('<i class="fa fa-plus-square-o"></i>&nbsp;Wert hinzufügen'))
+                .append('<i class="fa fa-plus-square-o"></i>&nbsp;' + {/literal}{__('addValue')}{literal}))
         );
         addKundenfeldWert();
     }
@@ -77,7 +77,7 @@
                             .click(function() {
                                 delKundenfeldWert(this);
                             })
-                            .append('<i class="fa fa-trash"></i>&nbsp;Entfernen')
+                            .append('<i class="fa fa-trash"></i>&nbsp;'  + {/literal}{__('remove')}{literal})
                         )
                     )
                 )
@@ -88,10 +88,10 @@
         if (countKundenfeldwert() > 1) {
             $(pThis).closest('tr.kundenfeld_wert').remove();
             $('#formtable tr.kundenfeld_wert td.kundenfeld_wert_label').each(function(pIndex) {
-                $(this).html('Wert ' + (pIndex + 1) + ':');
+                $(this).html({/literal}{__('value')}{literal} + (pIndex + 1) + ':');
             });
         } else {
-            alert('Das Feld muss mindestens einen Wert haben!');
+            alert('{/literal}{__('errorFieldNeedsAtLeastOneValue')}{literal}');
         }
     }
 
@@ -187,10 +187,10 @@
                                 <td>
                                     <select id="nPflicht" name="nPflicht" class="{if isset($xPlausiVar_arr.nPflicht)} fieldfillout {/if}form-control">
                                         <option value="1"{if (isset($xPostVar_arr.nPflicht) && $xPostVar_arr.nPflicht == 1) || (isset($oKundenfeld->nPflicht) && $oKundenfeld->nPflicht == 1)} selected{/if}>
-                                            Ja
+                                            {__('yes')}
                                         </option>
                                         <option value="0"{if (isset($xPostVar_arr.nPflicht) && $xPostVar_arr.nPflicht == 0) || (isset($oKundenfeld->nPflicht) && $oKundenfeld->nPflicht == 0)} selected{/if}>
-                                            Nein
+                                            {__('no')}
                                         </option>
                                     </select>
                                 </td>
@@ -200,10 +200,10 @@
                                 <td>
                                     <select id="nEdit" name="nEdit" class="{if isset($xPlausiVar_arr.nEdit)} fieldfillout{/if} form-control">
                                         <option value="1"{if (isset($xPostVar_arr.nEdit) && $xPostVar_arr.nEdit == 1) || (isset($oKundenfeld->nEdit) && $oKundenfeld->nEdit == 1)} selected{/if}>
-                                            Ja
+                                            {__('yes')}
                                         </option>
                                         <option value="0"{if (isset($xPostVar_arr.nEdit) && $xPostVar_arr.nEdit == 0) || (isset($oKundenfeld->nEdit) && $oKundenfeld->nEdit == 1)} selected{/if}>
-                                            Nein
+                                            {__('no')}
                                         </option>
                                     </select>
                                 </td>
@@ -213,21 +213,21 @@
                                 <td>
                                     <select id="cTyp" name="cTyp" onchange="selectCheck(this);" class="{if isset($xPlausiVar_arr.cTyp)} fieldfillout{/if} form-control">
                                         <option value="text"{if (isset($xPostVar_arr.cTyp) && $xPostVar_arr.cTyp === 'text') || (isset($oKundenfeld->cTyp) && $oKundenfeld->cTyp === 'text')} selected{/if}>
-                                            Text
+                                            {__('text')}
                                         </option>
                                         <option value="zahl"{if (isset($xPostVar_arr.cTyp) && $xPostVar_arr.cTyp === 'zahl') || (isset($oKundenfeld->cTyp) && $oKundenfeld->cTyp === 'zahl')} selected{/if}>
-                                            Zahl
+                                            {__('number')}
                                         </option>
                                         <option value="datum"{if (isset($xPostVar_arr.cTyp) && $xPostVar_arr.cTyp === 'datum') || (isset($oKundenfeld->cTyp) && $oKundenfeld->cTyp === 'datum')} selected{/if}>
-                                            Datum
+                                            {__('Date')}
                                         </option>
                                         <option value="auswahl"{if (isset($xPostVar_arr.cTyp) && $xPostVar_arr.cTyp === 'auswahl') || (isset($oKundenfeld->cTyp) && $oKundenfeld->cTyp === 'auswahl')} selected{/if}>
-                                            Auswahl
+                                            {__('selection')}
                                         </option>
                                     </select>
                                     {if (isset($xPostVar_arr.cTyp) && $xPostVar_arr.cTyp === 'auswahl') || (isset($oKundenfeld->cTyp) && $oKundenfeld->cTyp === 'auswahl')}
                                         <div class="kundenfeld_wert">
-                                            <button name="button" type="button" class="btn btn-primary add" value="Wert hinzufügen" onclick="addKundenfeldWert()"><i class="fa fa-plus-square-o"></i> Wert hinzufügen</button>
+                                            <button name="button" type="button" class="btn btn-primary add" value="Wert hinzufügen" onclick="addKundenfeldWert()"><i class="fa fa-plus-square-o"></i> {__('addValue')}</button>
                                         </div>
                                     {/if}
                                 </td>
@@ -237,19 +237,19 @@
                                     {assign var=i value=$key+1}
                                     {assign var=j value=$key+6}
                                     <tr class="kundenfeld_wert">
-                                        <td class="kundenfeld_wert_label">Wert {$i}:</td>
+                                        <td class="kundenfeld_wert_label">{__('value')} {$i}:</td>
                                         <td class="row">
                                             <div class="col-lg-3 jtl-list-group">
                                                 <input name="cfValues[{$key}][cWert]" type="text" class="field form-control" value="{$oKundenfeldWert->cWert}" />
                                             </div>
                                             <div class="col-lg-2 jtl-list-group">
                                                 <div class="input-group">
-                                                    <span class="input-group-addon">Sort.</span>
+                                                    <span class="input-group-addon">{__('sortShort')}.</span>
                                                     <input name="cfValues[{$key}][nSort]" type="text" class="field form-control" value="{$oKundenfeldWert->nSort}" />
                                                 </div>
                                             </div>
                                             <div class="btn-group">
-                                                <button name="delete" type="button" class="btn btn-danger" value="Entfernen" onclick="delKundenfeldWert(this)"><i class="fa fa-trash"></i> Entfernen</button>
+                                                <button name="delete" type="button" class="btn btn-danger" value="Entfernen" onclick="delKundenfeldWert(this)"><i class="fa fa-trash"></i> {__('remove')}</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -259,19 +259,19 @@
                                     {assign var=i value=$key+1}
                                     {assign var=j value=$key+6}
                                     <tr class="kundenfeld_wert">
-                                        <td class="kundenfeld_wert_label">Wert {$i}:</td>
+                                        <td class="kundenfeld_wert_label">{__('value')} {$i}:</td>
                                         <td class="row">
                                             <div class="col-lg-3 jtl-list-group">
                                                 <input name="cfValues[{$key}][cWert]" type="text" class="field form-control" value="{$cKundenfeldWert.cWert}" />
                                             </div>
                                             <div class="col-lg-2 jtl-list-group">
                                                 <div class="input-group">
-                                                    <span class="input-group-addon">Sort.</span>
+                                                    <span class="input-group-addon">{__('sortShort')}.</span>
                                                     <input name="cfValues[{$key}][nSort]" type="text" class="field form-control" value="{$cKundenfeldWert.nSort}" />
                                                 </div>
                                             </div>
                                             <div class="btn-group">
-                                                <button name="delete" type="button" class="btn btn-danger" value="Entfernen" onclick="delKundenfeldWert(this)"><i class="fa fa-trash"></i> Entfernen</button>
+                                                <button name="delete" type="button" class="btn btn-danger" value="Entfernen" onclick="delKundenfeldWert(this)"><i class="fa fa-trash"></i> {__('remove')}</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -369,13 +369,13 @@
     $('button[name="loeschen"]').on('click', function (e) {
         var checkedCount = $('input[name="kKundenfeld[]"]').filter(':checked').length;
         if (checkedCount === 0) {
-            alert('Bitte wählen Sie zuerst ein Feld aus!');
+            alert('{__('errorChooseField')}');
             e.preventDefault();
 
             return false;
         }
 
-        if (!confirm('Wollen Sie wirklich die ausgewählten Felder löschen? Alle zugeordneten Kundenwerte gehen dabei verloren!')) {
+        if (!confirm('{__('sureDeleteSelected')}')) {
             e.preventDefault();
 
             return false;
@@ -384,7 +384,7 @@
     {if isset($oKundenfeld->cTyp)}
     $('form[name="kundenfeld"').on('submit', function (e) {
         if ('{$oKundenfeld->cTyp}' !== $('#cTyp').val()) {
-            if (!confirm('Wenn Sie den Feldtyp ändern, werden alle Kundenwerte - soweit möglich - automatisch an den neuen Typ angepasst!')) {
+            if (!confirm('{__('infoChangeFieldType')}')) {
                 e.preventDefault();
 
                 return false;

@@ -95,7 +95,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                 $cDBStruct_arr[$cTable]->Migration = DBMigrationHelper::MIGRATE_NONE;
 
                 if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-                    $cDBStruct_arr[$cTable]->Locked = strpos($oData->TABLE_COMMENT, ':Migrating') !== false ? 1 : 0;
+                    $cDBStruct_arr[$cTable]->Locked = mb_strpos($oData->TABLE_COMMENT, ':Migrating') !== false ? 1 : 0;
                 } else {
                     $cDBStruct_arr[$cTable]->Locked = $dbLocked[$cTable] ?? 0;
                 }
@@ -394,7 +394,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
     $result       = new stdClass();
     $db           = Shop::Container()->getDB();
 
-    switch (strtolower($status)) {
+    switch (mb_convert_case($status, MB_CASE_LOWER)) {
         case 'start':
             $shopTables = array_keys(getDBFileStruct());
             $oTable     = DBMigrationHelper::getNextTableNeedMigration($exclude);
@@ -513,7 +513,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
             };
             $template    = Template::getInstance();
             $templateDir = $template->getDir();
-            $dirMan      = new DirManager();
+            $dirMan      = new \Backend\DirManager();
             $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $templateDir, $callback);
             $dirMan->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback);
             // Clear special category session array

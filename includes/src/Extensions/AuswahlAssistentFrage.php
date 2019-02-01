@@ -222,7 +222,7 @@ class AuswahlAssistentFrage
     public function checkQuestion(bool $update = false): array
     {
         $checks = [];
-        if (\strlen($this->cFrage) === 0) {
+        if (\mb_strlen($this->cFrage) === 0) {
             $checks['cFrage'] = 1;
         }
         if ($this->kAuswahlAssistentGruppe === null

@@ -26,6 +26,6 @@ class ServiceNotFoundException extends \Exception implements NotFoundExceptionIn
     public function __construct($interface)
     {
         $this->interface = $interface;
-        parent::__construct("The Service '$interface', could not be found.");
+        parent::__construct('The Service "' . $interface . '" could not be found.');
     }
 }

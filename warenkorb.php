@@ -40,7 +40,7 @@ if (isset($_POST['land'], $_POST['plz'])
 }
 if ($cart !== null
     && isset($_POST['Kuponcode'])
-    && strlen($_POST['Kuponcode']) > 0
+    && mb_strlen($_POST['Kuponcode']) > 0
     && $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
 ) {
     // Kupon darf nicht im leeren Warenkorb eingelöst werden

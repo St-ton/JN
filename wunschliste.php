@@ -80,7 +80,7 @@ if ($action !== null && Form::validateToken()) {
                     ['kWunschliste', 'kKunde'],
                     [$kWunschliste, $customerID]
                 );
-                if (!empty($wlData->kWunschliste) && strlen($wlData->cURLID) > 0) {
+                if (!empty($wlData->kWunschliste) && mb_strlen($wlData->cURLID) > 0) {
                     $step = 'wunschliste anzeigen';
                     require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
                     if (isset($_POST['send']) && (int)$_POST['send'] === 1) {
@@ -259,7 +259,7 @@ if ($action !== null && Form::validateToken()) {
 
             case 'search':
                 $searchQuery = StringHandler::filterXSS(Request::verifyGPDataString('cSuche'));
-                if ($userOK === true && strlen($searchQuery) > 0) {
+                if ($userOK === true && mb_strlen($searchQuery) > 0) {
                     $wishlist                      = new Wunschliste($kWunschliste);
                     $wishlist->CWunschlistePos_arr = $wishlist->sucheInWunschliste($searchQuery);
                 }
@@ -270,7 +270,7 @@ if ($action !== null && Form::validateToken()) {
         }
     } elseif ($action === 'search' && $kWunschliste > 0) {
         $searchQuery = StringHandler::filterXSS(Request::verifyGPDataString('cSuche'));
-        if (strlen($searchQuery) > 0) {
+        if (mb_strlen($searchQuery) > 0) {
             $wishlist                      = new Wunschliste($kWunschliste);
             $wishlist->CWunschlistePos_arr = $wishlist->sucheInWunschliste($searchQuery);
         }
@@ -285,7 +285,7 @@ if (Request::verifyGPCDataInt('wlidmsg') > 0) {
     );
 }
 if (Request::verifyGPCDataInt('error') === 1) {
-    if (strlen($cURLID) > 0) {
+    if (mb_strlen($cURLID) > 0) {
         $wl = Shop::Container()->getDB()->select('twunschliste', 'cURLID', $cURLID);
         if (!isset($wl->kWunschliste, $wl->nOeffentlich) || $wl->kWunschliste >= 0 || $wl->nOeffentlich <= 0) {
             $alertHelper->addAlert(
@@ -357,7 +357,7 @@ require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 if (isset($wishlist->kWunschliste) && $wishlist->kWunschliste > 0) {
     $campaign = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
     if (isset($campaign->kKampagne, $campaign->cWert)
-        && strtolower($campaign->cWert) === strtolower(Request::verifyGPDataString($campaign->cParameter))
+        && mb_convert_case($campaign->cWert, MB_CASE_LOWER) === strtolower(Request::verifyGPDataString($campaign->cParameter))
     ) {
         $event               = new stdClass();
         $event->kKampagne    = $campaign->kKampagne;

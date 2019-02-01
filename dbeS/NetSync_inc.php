@@ -9,13 +9,6 @@ ob_start();
 require_once __DIR__ . '/syncinclude.php';
 require_once __DIR__ . '/../includes/config.JTL-Shop.ini.php';
 require_once __DIR__ . '/../includes/defines.php';
-require_once __DIR__ . '/NetSyncRequest.php';
-require_once __DIR__ . '/NetSyncResponse.php';
-require_once __DIR__ . '/SystemFile.php';
-require_once __DIR__ . '/SystemFolder.php';
-require_once __DIR__ . '/CronjobStatus.php';
-require_once __DIR__ . '/CronjobHistory.php';
-require_once __DIR__ . '/NetSyncHandler.php';
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 error_reporting(SYNC_LOG_LEVEL);
 $oSprache = Sprache::getInstance();
@@ -35,7 +28,7 @@ function getFolderStruct(string $baseDir): array
         }
         $pathName = $baseDir . DIRECTORY_SEPARATOR . $folder;
         if (is_dir($pathName)) {
-            $systemFolder              = new SystemFolder($folder, $pathName);
+            $systemFolder              = new \dbeS\SystemFolder($folder, $pathName);
             $systemFolder->oSubFolders = getFolderStruct($pathName);
             $folders[]                 = $systemFolder;
         }
@@ -61,7 +54,7 @@ function getFilesStruct(string $baseDir, $preview = false): array
         $pathName = $baseDir . DIRECTORY_SEPARATOR . $file;
         if (is_file($pathName)) {
             $pathinfo = pathinfo($pathName);
-            $files[]  = new SystemFile(
+            $files[]  = new \dbeS\SystemFile(
                 $index++,
                 $pathName,
                 substr($pathName, strlen($preview ? PFAD_DOWNLOADS_PREVIEW : PFAD_DOWNLOADS)),

@@ -202,7 +202,7 @@ function pruefeLieferdaten($post, &$fehlendeAngaben = null): void
         && $_SESSION['Lieferadresse']
         && $_SESSION['Versandart']
     ) {
-        $delVersand = stripos($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand) === false;
+        $delVersand = mb_stripos($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand) === false;
         //ist die plz im zuschlagsbereich?
         $plz_x = Shop::Container()->getDB()->executeQueryPrepared(
             'SELECT kVersandzuschlagPlz
@@ -298,7 +298,7 @@ function pruefeBestaetigungStep(): void
         $step = 'Bestaetigung';
     }
     if (isset($_SESSION['Zahlungsart'], $_SESSION['Zahlungsart']->cZusatzschrittTemplate)
-        && strlen($_SESSION['Zahlungsart']->cZusatzschrittTemplate) > 0
+        && mb_strlen($_SESSION['Zahlungsart']->cZusatzschrittTemplate) > 0
     ) {
         $paymentMethod = PaymentMethod::create($_SESSION['Zahlungsart']->cModulId);
         if (is_object($paymentMethod) && !$paymentMethod->validateAdditional()) {
@@ -748,7 +748,7 @@ function gibStepZahlung()
                 }
                 if (isset($oTrustedShops->tsId)
                     && $oTrustedShops->eType === TS_BUYERPROT_EXCELLENCE
-                    && strlen($oTrustedShops->tsId) > 0
+                    && mb_strlen($oTrustedShops->tsId) > 0
                 ) {
                     $_SESSION['TrustedShopsZahlung'] = true;
                     gibStepZahlung();
@@ -1042,7 +1042,7 @@ function checkAdditionalPayment($paymentMethod): array
 {
     foreach (['iban', 'bic'] as $dataKey) {
         if (!empty($_POST[$dataKey])) {
-            $_POST[$dataKey] = strtoupper($_POST[$dataKey]);
+            $_POST[$dataKey] = mb_convert_case($_POST[$dataKey], MB_CASE_UPPER);
         }
     }
 
@@ -1112,31 +1112,31 @@ function checkBIC($bic): bool
  */
 function plausiIban($iban)
 {
-    if ($iban === '' || strlen($iban) < 6) {
+    if ($iban === '' || mb_strlen($iban) < 6) {
         return false;
     }
     $iban  = str_replace(' ', '', $iban);
-    $iban1 = substr($iban, 4)
-        . (string)(ord($iban{0}) - 55)
-        . (string)(ord($iban{1}) - 55)
-        . substr($iban, 2, 2);
-    $len   = strlen($iban1);
+    $iban1 = mb_substr($iban, 4)
+        . (string)(mb_ord($iban{0}) - 55)
+        . (string)(mb_ord($iban{1}) - 55)
+        . mb_substr($iban, 2, 2);
+    $len   = mb_strlen($iban1);
     for ($i = 0; $i < $len; $i++) {
-        if (ord($iban1{$i}) > 64 && ord($iban1{$i}) < 91) {
-            $iban1 = substr($iban1, 0, $i) . (string)(ord($iban1{$i}) - 55) . substr($iban1, $i + 1);
+        if (mb_ord($iban1{$i}) > 64 && mb_ord($iban1{$i}) < 91) {
+            $iban1 = mb_substr($iban1, 0, $i) . (string)(mb_ord($iban1{$i}) - 55) . mb_substr($iban1, $i + 1);
         }
     }
 
     $rest = 0;
-    $len  = strlen($iban1);
+    $len  = mb_strlen($iban1);
     for ($pos = 0; $pos < $len; $pos += 7) {
-        $part = (string)$rest . substr($iban1, $pos, 7);
+        $part = (string)$rest . mb_substr($iban1, $pos, 7);
         $rest = (int)$part % 97;
     }
 
     $pz = sprintf('%02d', 98 - $rest);
 
-    if (substr($iban, 2, 2) == '00') {
+    if (mb_substr($iban, 2, 2) == '00') {
         return substr_replace($iban, $pz, 2, 2);
     }
 
@@ -1218,7 +1218,7 @@ function zahlungsartKorrekt(int $paymentMethodID): int
                 return 0;
             }
         }
-        if (isset($paymentMethod->cModulId) && strlen($paymentMethod->cModulId) > 0) {
+        if (isset($paymentMethod->cModulId) && mb_strlen($paymentMethod->cModulId) > 0) {
             $config = Shop::Container()->getDB()->selectAll(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cModulId'],
@@ -1372,7 +1372,7 @@ function zahlungsartKorrekt(int $paymentMethodID): int
             }
             $paymentMethod->ZahlungsInfo = $info;
         }
-        if (isset($paymentMethod) && strpos($paymentMethod->cModulId, 'za_billpay') === 0 && $paymentMethod) {
+        if (isset($paymentMethod) && mb_strpos($paymentMethod->cModulId, 'za_billpay') === 0 && $paymentMethod) {
             /** @var Billpay $paymentMethod */
             return $paymentMethod->preauthRequest() ? 2 : 1;
         }
@@ -1539,22 +1539,22 @@ function gibKundenKontodaten(?int $customerID)
 
     if (isset($accountData->kKunde) && $accountData->kKunde > 0) {
         $cryptoService = Shop::Container()->getCryptoService();
-        if (strlen($accountData->cBLZ) > 0) {
+        if (mb_strlen($accountData->cBLZ) > 0) {
             $accountData->cBLZ = (int)$cryptoService->decryptXTEA($accountData->cBLZ);
         }
-        if (strlen($accountData->cInhaber) > 0) {
+        if (mb_strlen($accountData->cInhaber) > 0) {
             $accountData->cInhaber = trim($cryptoService->decryptXTEA($accountData->cInhaber));
         }
-        if (strlen($accountData->cBankName) > 0) {
+        if (mb_strlen($accountData->cBankName) > 0) {
             $accountData->cBankName = trim($cryptoService->decryptXTEA($accountData->cBankName));
         }
-        if (strlen($accountData->nKonto) > 0) {
+        if (mb_strlen($accountData->nKonto) > 0) {
             $accountData->nKonto = trim($cryptoService->decryptXTEA($accountData->nKonto));
         }
-        if (strlen($accountData->cIBAN) > 0) {
+        if (mb_strlen($accountData->cIBAN) > 0) {
             $accountData->cIBAN = trim($cryptoService->decryptXTEA($accountData->cIBAN));
         }
-        if (strlen($accountData->cBIC) > 0) {
+        if (mb_strlen($accountData->cBIC) > 0) {
             $accountData->cBIC = trim($cryptoService->decryptXTEA($accountData->cBIC));
         }
 
@@ -2124,7 +2124,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         $ret['email'] = 3;
     } elseif (isset($conf['kunden']['kundenregistrierung_pruefen_email'])
         && $conf['kunden']['kundenregistrierung_pruefen_email'] === 'Y'
-        && !checkdnsrr(substr($data['email'], strpos($data['email'], '@') + 1))
+        && !checkdnsrr(mb_substr($data['email'], mb_strpos($data['email'], '@') + 1))
     ) {
         $ret['email'] = 4;
     }
@@ -2200,9 +2200,9 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                                     // build a string with error-code and error-information
                                     $ret['ustid_err'] = $viesResult['errorcode'].
                                         ','.
-                                        substr($data['ustid'], 0, $viesResult['errorinfo']).
+                                        mb_substr($data['ustid'], 0, $viesResult['errorinfo']).
                                         '<span style="color:red;">'.
-                                        substr($data['ustid'], $viesResult['errorinfo']).
+                                        mb_substr($data['ustid'], $viesResult['errorinfo']).
                                         '</span>';
                                     break;
                                 case 130:
@@ -2244,7 +2244,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
             if ($data['pass'] !== $data['pass2']) {
                 $ret['pass_ungleich'] = 1;
             }
-            if (strlen($data['pass']) < $conf['kunden']['kundenregistrierung_passwortlaenge']) {
+            if (mb_strlen($data['pass']) < $conf['kunden']['kundenregistrierung_passwortlaenge']) {
                 $ret['pass_zu_kurz'] = 1;
             }
         }
@@ -2611,7 +2611,7 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
         }
     }
 
-    $customer->cMail                 = strtolower($customer->cMail);
+    $customer->cMail                 = mb_convert_case($customer->cMail, MB_CASE_LOWER);
     $customer->dGeburtstag           = Date::convertDateToMysqlStandard($customer->dGeburtstag ?? '');
     $customer->dGeburtstag_formatted = $customer->dGeburtstag === '_DBNULL_'
         ? ''
@@ -2738,7 +2738,7 @@ function getArtikelQry(array $cartPositions): string
 {
     $ret = '';
     foreach ($cartPositions as $Pos) {
-        if (isset($Pos->Artikel->cArtNr) && strlen($Pos->Artikel->cArtNr) > 0) {
+        if (isset($Pos->Artikel->cArtNr) && mb_strlen($Pos->Artikel->cArtNr) > 0) {
             $ret .= " OR FIND_IN_SET('" .
                 str_replace('%', '\%', Shop::Container()->getDB()->escape($Pos->Artikel->cArtNr))
                 . "', REPLACE(cArtikel, ';', ',')) > 0";
@@ -2755,7 +2755,7 @@ function guthabenMoeglich(): bool
 {
     return (\Session\Frontend::getCustomer()->fGuthaben > 0
             && (empty($_SESSION['Bestellung']->GuthabenNutzen) || !$_SESSION['Bestellung']->GuthabenNutzen))
-        && strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') !== 0;
+        && mb_strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') !== 0;
 }
 
 /**
@@ -2814,7 +2814,7 @@ function valid_plzort(string $plz, string $ort, string $land): bool
 {
     // Länder die wir mit Ihren Postleitzahlen in der Datenbank haben
     $supportedCountryCodes = ['DE', 'AT', 'CH'];
-    if (!in_array(strtoupper($land), $supportedCountryCodes, true)) {
+    if (!in_array(mb_convert_case($land, MB_CASE_UPPER), $supportedCountryCodes, true)) {
         return true;
     }
     $obj = Shop::Container()->getDB()->executeQueryPrepared(
@@ -3040,7 +3040,7 @@ function pruefeAjaxEinKlick(): int
             if ($nZahglungsartStatus === 2) {
                 // Prüfen ab es ein Trusted Shops Zertifikat gibt
                 $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
-                if (strlen($oTrustedShops->tsId) > 0) {
+                if (mb_strlen($oTrustedShops->tsId) > 0) {
                     return 4;
                 }
                 gibStepZahlung();
@@ -3089,7 +3089,7 @@ function ladeAjaxEinKlick(): void
 function plausiAccountwahlLogin($cUserLogin, $cUserPass): int
 {
     global $Kunde;
-    if (strlen($cUserLogin) > 0 && strlen($cUserPass) > 0) {
+    if (mb_strlen($cUserLogin) > 0 && mb_strlen($cUserPass) > 0) {
         $Kunde = new Kunde();
         $Kunde->holLoginKunde($cUserLogin, $cUserPass);
         if ($Kunde->kKunde > 0) {
@@ -3309,7 +3309,7 @@ function plausiLieferadresse(array $post): array
     Tax::setTaxRates();
     //lieferland hat sich geändert und versandart schon gewählt?
     if ($_SESSION['Lieferadresse'] && $_SESSION['Versandart']) {
-        $delVersand = (stripos($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand) === false);
+        $delVersand = (mb_stripos($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand) === false);
         //ist die plz im zuschlagsbereich?
         $plzData = Shop::Container()->getDB()->executeQueryPrepared(
             'SELECT kVersandzuschlagPlz

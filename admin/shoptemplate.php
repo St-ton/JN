@@ -8,7 +8,7 @@ use Helpers\Form;
 use Helpers\Template as TemplateHelper;
 
 /**
- * @global Smarty\JTLSmarty $smarty
+ * @global \Smarty\JTLSmarty $smarty
  */
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'template_inc.php';
@@ -91,7 +91,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
         $name    = Shop::Container()->getDB()->escape($_POST['cName'][$i]);
         $value   = Shop::Container()->getDB()->escape($_POST['cWert'][$i]);
         // for uploads, the value of an input field is the $_FILES index of the uploaded file
-        if (strpos($value, 'upload-') === 0) {
+        if (mb_strpos($value, 'upload-') === 0) {
             // all upload fields have to start with "upload-" - so check for that
             if (!empty($_FILES[$value]['name']) && $_FILES[$value]['error'] === UPLOAD_ERR_OK) {
                 // we have an upload field and the file is set in $_FILES array
@@ -114,7 +114,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
                             $value = $_setting->rawAttributes['targetFileName'];
                         }
                         $targetFile = $base . $value;
-                        if (strpos($targetFile, $base) !== 0
+                        if (mb_strpos($targetFile, $base) !== 0
                             || !move_uploaded_file($file['tmp_name'], $targetFile)
                         ) {
                             $uploadError = '&uploadError=true';
@@ -145,7 +145,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
         PFAD_ADMIN . 'shoptemplate.php?check=' .
         ($bCheck ? 'true' : 'false') . $uploadError, true, 301);
 }
-if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && Form::validateToken()) {
+if (isset($_GET['settings']) && mb_strlen($_GET['settings']) > 0 && Form::validateToken()) {
     $dir          = Shop::Container()->getDB()->escape($_GET['settings']);
     $oTpl         = $templateHelper->getData($dir, $admin);
     $tplXML       = $templateHelper->getXML($dir, false);
@@ -241,7 +241,7 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && Form::validateT
            ->assign('themesLessColorsSkin', $lessColorsSkin)
            ->assign('themesLessColorsJSON', json_encode($lessColors_arr))
            ->assign('oEinstellungenXML', $tplConfXML);
-} elseif (isset($_GET['switch']) && strlen($_GET['switch']) > 0) {
+} elseif (isset($_GET['switch']) && mb_strlen($_GET['switch']) > 0) {
     if (__switchTemplate($_GET['switch'], ($admin === true ? 'admin' : 'standard'))) {
         $cHinweis = __('successTemplateSave');
     } else {

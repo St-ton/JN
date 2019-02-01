@@ -9,7 +9,7 @@ use Helpers\Form;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('IMPORT_NEWSLETTER_RECEIVER_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
@@ -19,7 +19,7 @@ $fehler  = '';
 if (isset($_POST['newsletterimport'], $_FILES['csv']['tmp_name'])
     && (int)$_POST['newsletterimport'] === 1
     && Form::validateToken()
-    && strlen($_FILES['csv']['tmp_name']) > 0
+    && mb_strlen($_FILES['csv']['tmp_name']) > 0
 ) {
     $file = fopen($_FILES['csv']['tmp_name'], 'r');
     if ($file !== false) {
@@ -87,7 +87,7 @@ function generatePW($length = 8, $myseed = 1)
         $dummy[0]     = $tmp;
     }
 
-    return substr(implode('', $dummy), 0, $length);
+    return mb_substr(implode('', $dummy), 0, $length);
 }
 
 /**

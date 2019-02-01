@@ -29,7 +29,7 @@ if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {
     Vergleichsliste::setComparison($compareList);
     for ($i = 0; $i < 8; ++$i) {
         $elem = Vergleichsliste::gibMaxPrioSpalteV($prioRows, $conf);
-        if (strlen($elem) > 1) {
+        if (mb_strlen($elem) > 1) {
             $prioRows[] = $elem;
         }
     }

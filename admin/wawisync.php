@@ -7,7 +7,7 @@
 use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $oAccount->permission('WAWI_SYNC_VIEW', true, true);
 
 $cFehler  = '';

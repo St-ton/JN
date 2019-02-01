@@ -199,7 +199,7 @@ class VATCheckVatParser
      */
     private function isIdPatternValid($vatID, $pattern)
     {
-        $len = strlen($vatID);
+        $len = mb_strlen($vatID);
         for ($i = 0; $i < $len; $i++) {
             // each character and white-space is compared exactly, while digits can be [1..9]
             switch (true) {
@@ -226,7 +226,7 @@ class VATCheckVatParser
         }
         // check, if we iterate the whole given VAT-ID,
         // and if not, return the position, at which we sopped
-        if (strlen($vatID) !== $i) {
+        if (mb_strlen($szVATid) !== $i) {
             $this->nErrorPos = $i; // store the error-position for later usage too
 
             return $i;
@@ -259,8 +259,8 @@ class VATCheckVatParser
             return false;
         }
 
-        foreach ($this->countryPattern[$this->idParts[1]] as $pattern) {
-            if (strlen($this->vatID) !== strlen($pattern)) {
+        foreach ($this->vCountryPattern[$this->vIdParts[1]] as $szPattern) {
+            if (mb_strlen($this->szVATid) !== mb_strlen($szPattern)) {
                 continue; // skipt this pattern, if the length did not match. try the next one
             }
             $parseResult = $this->isIdPatternValid($this->vatID, $pattern);

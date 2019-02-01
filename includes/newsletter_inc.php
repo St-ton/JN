@@ -80,7 +80,7 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
                     (int)$_SESSION['Kunde']->kKunde
                 );
             }
-            if ((isset($recipient->cEmail) && strlen($recipient->cEmail) > 0)
+            if ((isset($recipient->cEmail) && mb_strlen($recipient->cEmail) > 0)
                 || (isset($nlCustomer->kKunde) && $nlCustomer->kKunde > 0)
             ) {
                 $alertHelper->addAlert(
@@ -220,10 +220,10 @@ function pruefeObBereitsAbonnent(int $kKunde): bool
  */
 function pruefeNLHistoryKundengruppe(int $groupID, $groupKeys): bool
 {
-    if (strlen($groupKeys) > 0) {
+    if (mb_strlen($groupKeys) > 0) {
         $groupIDs = [];
         foreach (explode(';', $groupKeys) as $id) {
-            if ((int)$id > 0 || (strlen($id) > 0 && (int)$id === 0)) {
+            if ((int)$id > 0 || (mb_strlen($id) > 0 && (int)$id === 0)) {
                 $groupIDs[] = (int)$id;
             }
         }

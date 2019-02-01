@@ -407,7 +407,7 @@ class Trennzeichen
                     $sep = new self();
                     if ($unit === JTL_SEPARATOR_WEIGHT) {
                         $dec = isset($conf['artikeldetails']['artikeldetails_gewicht_stellenanzahl'])
-                        && strlen($conf['artikeldetails']['artikeldetails_gewicht_stellenanzahl']) > 0
+                        && mb_strlen($conf['artikeldetails']['artikeldetails_gewicht_stellenanzahl']) > 0
                             ? $conf['artikeldetails']['artikeldetails_gewicht_stellenanzahl']
                             : 2;
                         $sep->setDezimalstellen($dec);
@@ -415,11 +415,11 @@ class Trennzeichen
                         $sep->setDezimalstellen(2);
                     }
                     $sep10   = isset($conf['artikeldetails']['artikeldetails_zeichen_nachkommatrenner'])
-                    && strlen($conf['artikeldetails']['artikeldetails_zeichen_nachkommatrenner']) > 0
+                    && mb_strlen($conf['artikeldetails']['artikeldetails_zeichen_nachkommatrenner']) > 0
                         ? $conf['artikeldetails']['artikeldetails_zeichen_nachkommatrenner']
                         : ',';
                     $sep1000 = isset($conf['artikeldetails']['artikeldetails_zeichen_tausendertrenner'])
-                    && strlen($conf['artikeldetails']['artikeldetails_zeichen_tausendertrenner']) > 0
+                    && mb_strlen($conf['artikeldetails']['artikeldetails_zeichen_tausendertrenner']) > 0
                         ? $conf['artikeldetails']['artikeldetails_zeichen_tausendertrenner']
                         : '.';
                     $sep->setDezimalZeichen($sep10)

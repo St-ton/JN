@@ -192,7 +192,7 @@ trait PortletHtml
                     if ($props[$propDesc['showOnProp']]['type'] === 'checkbox'
                         || $props[$propDesc['showOnProp']]['type'] === 'radio'
                     ) {
-                        $res .="    
+                        $res .= "    
                                     if ($('[name=\"" . $propDesc['showOnProp'] . '"][value="' .
                                         $propDesc['showOnPropValue'] . "\"]').prop('checked') == true){
                                         $('#collapseContainer$cllpsID').show();
@@ -200,7 +200,7 @@ trait PortletHtml
                                 });
                             </script>";
                     } else {
-                        $res .="    
+                        $res .= "    
                                     if ($('[name=\"" . $propDesc['showOnProp'] . "\"]').val() == '" .
                                         $propDesc['showOnPropValue'] . "'){
                                         $('#collapseContainer$cllpsID').show();

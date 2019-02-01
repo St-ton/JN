@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use dbeS\Synclogin;
 use Helpers\FileSystem;
 
 define('DEFINES_PFAD', '../includes/');

@@ -33,7 +33,7 @@
  * @method static string getIsoCodeByCountryName(string $country)
  * @method static string getCountryCodeByCountryName(string $iso)
  * @method static stdClass getDefaultLanguage(bool $shop = true)
- * @method static array|int|string getAllLanguages(int $returnType)
+ * @method static array|int|string getAllLanguages(int $returnType = 0)
  */
 class Sprache
 {
@@ -298,7 +298,7 @@ class Sprache
      * @param int $kSprache
      * @return stdClass|null
      */
-    private function mappedGetIsoFromLangID(int $kSprache)
+    private function mappedGetIsoFromLangID(int $kSprache): ?stdClass
     {
         return $this->byLangID[$kSprache] ?? null;
     }
@@ -307,7 +307,7 @@ class Sprache
      * @param string $cISO
      * @return stdClass|null
      */
-    private function mappedGetLangIDFromIso(string $cISO)
+    private function mappedGetLangIDFromIso(string $cISO): ?stdClass
     {
         return $this->byISO[$cISO] ?? null;
     }
@@ -333,11 +333,11 @@ class Sprache
     {
         $this->initLangVars();
         $this->initLangData();
-        if (isset($_SESSION['cISOSprache']) && strlen($_SESSION['cISOSprache']) > 0) {
+        if (isset($_SESSION['cISOSprache']) && mb_strlen($_SESSION['cISOSprache']) > 0) {
             $this->currentISOCode = $_SESSION['cISOSprache'];
         } else {
             $language = $this->mappedGetDefaultLanguage();
-            if (isset($language->cISO) && strlen($language->cISO) > 0) {
+            if (isset($language->cISO) && mb_strlen($language->cISO) > 0) {
                 $this->currentISOCode = $language->cISO;
             }
         }
@@ -366,7 +366,7 @@ class Sprache
      */
     public function mappekISO(string $cISO)
     {
-        if (strlen($cISO) > 0) {
+        if (mb_strlen($cISO) > 0) {
             if (isset($this->byISO[$cISO]->kSprachISO)) {
                 return (int)$this->byISO[$cISO]->kSprachISO;
             }
@@ -739,7 +739,7 @@ class Sprache
         }
 
         foreach ($values as $value) {
-            if (strlen($value->cWert) === 0) {
+            if (mb_strlen($value->cWert) === 0) {
                 $value->cWert = $value->cStandard ?? null;
             }
             $csvData[] = [
@@ -910,7 +910,7 @@ class Sprache
      */
     private function mappedGetLanguageDataByType(string $iso = '', int $languageID = 0)
     {
-        if (strlen($iso) > 0) {
+        if (mb_strlen($iso) > 0) {
             $data = $this->mappedGetLangIDFromIso($iso);
 
             return $data === null
@@ -1094,7 +1094,7 @@ class Sprache
                     executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_SETZESPRACHEUNDWAEHRUNG_SPRACHE);
                 } elseif ($page !== null) {
                     $lang->cURL = $page->getURL($lang->kSprache);
-                    if (strpos($lang->cURL, '/?s=') !== false) {
+                    if (mb_strpos($lang->cURL, '/?s=') !== false) {
                         $lang->cURL     .= '&amp;lang=' . $lang->cISO;
                         $lang->cURLFull = rtrim($shopURL, '/') . $lang->cURL;
                     } else {
@@ -1106,7 +1106,7 @@ class Sprache
                     $url = $productFilter->getFilterURL()->getURL($oZusatzFilter);
                     $productFilter->getFilterConfig()->setLanguageID($originalLanguage);
                     if ($productFilter->getPage() > 1) {
-                        if (strpos($url, 'navi.php') !== false) {
+                        if (mb_strpos($url, 'navi.php') !== false) {
                             $url .= '&amp;seite=' . $productFilter->getPage();
                         } else {
                             $url .= SEP_SEITE . $productFilter->getPage();
@@ -1151,10 +1151,10 @@ class Sprache
                     $url = $productFilter->getFilterURL()->getURL($oZusatzFilter);
                 }
                 if ($currency->getID() !== $currentCurrencyCode) {
-                    $url = $url . (strpos($url, '?') === false ? '?' : '&') . 'curr=' . $currency->getCode();
+                    $url = $url . (mb_strpos($url, '?') === false ? '?' : '&') . 'curr=' . $currency->getCode();
                 }
                 $currency->setURL($url);
-                $currency->setURLFull(strpos($url, Shop::getURL()) === false
+                $currency->setURLFull(mb_strpos($url, Shop::getURL()) === false
                     ? ($shopURL . $url)
                     : $url);
             }
@@ -1178,7 +1178,7 @@ class Sprache
      */
     private function mappedGetCountryCodeByCountryName(string $iso): string
     {
-        if (strlen($iso) > 2) {
+        if (mb_strlen($iso) > 2) {
             return $iso;
         }
         $column = Shop::getLanguageCode() === 'ger' ? 'cDeutsch' : 'cEnglisch';

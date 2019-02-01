@@ -7,6 +7,7 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
+use Helpers\SearchSpecial;
 
 /**
  * Class TopRatedProducts
@@ -67,7 +68,7 @@ final class TopRatedProducts extends AbstractBox
             }
             $this->setShow(true);
             $this->setProducts($this->products);
-            $this->setURL(\Helpers\SearchSpecial::buildURL(\SEARCHSPECIALS_TOPREVIEWS));
+            $this->setURL(SearchSpecial::buildURL(\SEARCHSPECIALS_TOPREVIEWS));
 
             \executeHook(\HOOK_BOXEN_INC_TOPBEWERTET, [
                 'box'        => &$this,

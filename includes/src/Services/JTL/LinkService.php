@@ -287,7 +287,7 @@ final class LinkService implements LinkServiceInterface
             }
         }
 
-        return $full && \strpos($id, 'http') !== 0
+        return $full && \mb_strpos($id, 'http') !== 0
             ? \Shop::getURL($secure) . '/' . $id
             : $id;
     }

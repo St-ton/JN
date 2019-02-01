@@ -10,7 +10,7 @@ use Helpers\Request;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
@@ -83,7 +83,7 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
     if (Request::verifyGPCDataInt('kPluginAdminMenu') > 0) {
         $smarty->assign('defaultTabbertab', Request::verifyGPCDataInt('kPluginAdminMenu'));
     }
-    if (strlen(Request::verifyGPDataString('cPluginTab')) > 0) {
+    if (mb_strlen(Request::verifyGPDataString('cPluginTab')) > 0) {
         $smarty->assign('defaultTabbertab', Request::verifyGPDataString('cPluginTab'));
     }
     $data = $db->select('tplugin', 'kPlugin', $kPlugin);

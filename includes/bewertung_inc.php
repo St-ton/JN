@@ -20,7 +20,7 @@ function speicherBewertung(int $productID, int $customerID, int $langID, $title,
     $article = new Artikel();
     $article->fuelleArtikel($productID, Artikel::getDefaultOptions());
     $url = !empty($article->cURLFull)
-        ? (strpos($article->cURLFull, '?') === false ? $article->cURLFull . '?' : $article->cURLFull . '&')
+        ? (mb_strpos($article->cURLFull, '?') === false ? $article->cURLFull . '?' : $article->cURLFull . '&')
         : (Shop::getURL() . '/?a=' . $productID . '&');
     if ($customerID <= 0 || $conf['bewertung']['bewertung_anzeigen'] !== 'Y') {
         header('Location: ' . $url . 'cFehler=f04', true, 303);
@@ -45,7 +45,7 @@ function speicherBewertung(int $productID, int $customerID, int $langID, $title,
     $rating->kArtikel        = $productID;
     $rating->kKunde          = $customerID;
     $rating->kSprache        = $langID;
-    $rating->cName           = $_SESSION['Kunde']->cVorname . ' ' . substr($_SESSION['Kunde']->cNachname, 0, 1);
+    $rating->cName           = $_SESSION['Kunde']->cVorname . ' ' . mb_substr($_SESSION['Kunde']->cNachname, 0, 1);
     $rating->cTitel          = $title;
     $rating->cText           = strip_tags($text);
     $rating->nHilfreich      = 0;
@@ -369,7 +369,7 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
     ) {
         return $reward;
     }
-    if ((int)$conf['bewertung']['bewertung_stufe2_anzahlzeichen'] <= strlen($rating->cText)) {
+    if ((int)$conf['bewertung']['bewertung_stufe2_anzahlzeichen'] <= mb_strlen($rating->cText)) {
         // Prüfen ob die max. Belohnung + das aktuelle Guthaben, das Max des Monats überscchreitet
         // Falls ja, nur die Differenz von Kundenguthaben zu Max im Monat auszahlen
         if (((float)$ratingBonus->fGuthabenProMonat +

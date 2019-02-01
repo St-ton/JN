@@ -507,7 +507,7 @@ class Warenlager extends MainModel
         $members = array_keys(get_object_vars($this));
         if (is_array($members) && count($members) > 0) {
             foreach ($members as $cMember) {
-                $cMethod = 'get' . substr($cMember, 1);
+                $cMethod = 'get' . mb_substr($cMember, 1);
                 if (method_exists($this, $cMethod)) {
                     $val    = $this->$cMethod();
                     $mValue = $val === null
@@ -618,7 +618,7 @@ class Warenlager extends MainModel
                 $warehouse->fBestand     = $item->fBestand;
                 $warehouse->fZulauf      = $item->fZulauf;
                 $warehouse->dZulaufDatum = $item->dZulaufDatum;
-                if (strlen($warehouse->dZulaufDatum) > 1) {
+                if (mb_strlen($warehouse->dZulaufDatum) > 1) {
                     try {
                         $warehouse->dZulaufDatum_de = (new DateTime($item->dZulaufDatum))->format('d.m.Y');
                     } catch (Exception $exc) {

@@ -68,7 +68,7 @@ class Extractor
             $response->messages[] = 'Cannot open archive';
         } else {
             for ($i = 0; $i < $zip->numFiles; $i++) {
-                if ($i === 0 && \strpos($zip->getNameIndex($i), '.') !== false) {
+                if ($i === 0 && \mb_strpos($zip->getNameIndex($i), '.') !== false) {
                     $response->status     = 'FAILED';
                     $response->messages[] = 'Invalid archive';
 
@@ -101,7 +101,7 @@ class Extractor
     {
         $zip     = new \PclZip($zipFile);
         $content = $zip->listContent();
-        if (!isset($content[0]['filename']) || \strpos($content[0]['filename'], '.') !== false) {
+        if (!isset($content[0]['filename']) || \mb_strpos($content[0]['filename'], '.') !== false) {
             $response->status     = 'FAILED';
             $response->messages[] = 'Invalid archive';
         } else {

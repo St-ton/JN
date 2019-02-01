@@ -84,8 +84,8 @@ class Controller
         }
         if ((int)$params['cDatum'] === -1) {
             $_SESSION['NewsNaviFilter']->cDatum = -1;
-        } elseif (\strlen($params['cDatum']) > 0) {
-            $_SESSION['NewsNaviFilter']->cDatum = \substr_count($params['cDatum'], '-') > 0
+        } elseif (\mb_strlen($params['cDatum']) > 0) {
+            $_SESSION['NewsNaviFilter']->cDatum = \mb_substr_count($params['cDatum'], '-') > 0
                 ? \StringHandler::filterXSS($params['cDatum'])
                 : -1;
         } elseif (!isset($_SESSION['NewsNaviFilter']->cDatum)) {
@@ -378,7 +378,7 @@ class Controller
         ];
         if (empty($post['cKommentar'])) {
             $checks['cKommentar'] = 1;
-        } elseif (\strlen($post['cKommentar']) > 1000) {
+        } elseif (\mb_strlen($post['cKommentar']) > 1000) {
             $checks['cKommentar'] = 2;
         }
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 && $newsID > 0) {
@@ -482,7 +482,7 @@ class Controller
                 $sql->cSortSQL = ' ORDER BY nNewsKommentarAnzahl';
                 break;
         }
-        if ($_SESSION['NewsNaviFilter']->cDatum !== -1 && \strlen($_SESSION['NewsNaviFilter']->cDatum) > 0) {
+        if ($_SESSION['NewsNaviFilter']->cDatum !== -1 && \mb_strlen($_SESSION['NewsNaviFilter']->cDatum) > 0) {
             $date = \explode('-', $_SESSION['NewsNaviFilter']->cDatum);
             if (\count($date) > 1) {
                 [$nMonat, $nJahr] = $date;

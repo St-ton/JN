@@ -11,7 +11,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_CUSTOMERFIELDS_VIEW', true, true);
 
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cf       = CustomerFields::getInstance((int)$_SESSION['kSprache']);
 $cHinweis = '';
 $cFehler  = '';
@@ -20,7 +20,7 @@ $step     = 'uebersicht';
 setzeSprache();
 
 $smarty->assign('cTab', $cStep ?? null);
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 

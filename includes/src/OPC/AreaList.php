@@ -92,8 +92,9 @@ class AreaList implements \JsonSerializable
 
     /**
      * @param array $data
+     * @throws \Exception
      */
-    public function deserialize($data): void
+    public function deserialize(array $data): void
     {
         $this->clear();
 

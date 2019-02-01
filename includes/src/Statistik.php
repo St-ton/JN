@@ -56,7 +56,7 @@ class Statistik
         $this->nStampVon         = 0;
         $this->nStampBis         = 0;
 
-        if (strlen($cDatumVon) > 0 && strlen($cDatumBis) > 0) {
+        if (mb_strlen($cDatumVon) > 0 && mb_strlen($cDatumBis) > 0) {
             $this->cDatumVon_arr = Date::getDateParts($cDatumVon);
             $this->cDatumBis_arr = Date::getDateParts($cDatumBis);
         } elseif ((int)$nStampVon > 0 && (int)$nStampBis > 0) {
@@ -316,12 +316,12 @@ class Statistik
 
         if (count($this->cDatumVon_arr) > 0 && count($this->cDatumBis_arr) > 0) {
             $cZeitVon = '00:00:00';
-            if (isset($this->cDatumVon_arr['cZeit']) && strlen($this->cDatumVon_arr['cZeit']) > 0) {
+            if (isset($this->cDatumVon_arr['cZeit']) && mb_strlen($this->cDatumVon_arr['cZeit']) > 0) {
                 $cZeitVon = $this->cDatumVon_arr['cZeit'];
             }
 
             $cZeitBis = '23:59:59';
-            if (isset($this->cDatumBis_arr['cZeit']) && strlen($this->cDatumBis_arr['cZeit']) > 0) {
+            if (isset($this->cDatumBis_arr['cZeit']) && mb_strlen($this->cDatumBis_arr['cZeit']) > 0) {
                 $cZeitBis = $this->cDatumBis_arr['cZeit'];
             }
 

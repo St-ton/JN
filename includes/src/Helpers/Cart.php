@@ -779,7 +779,6 @@ class Cart
         $kArtikel      = (int)$product->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
         $redirectParam = [];
         $conf          = Shop::getSettings([\CONF_GLOBAL]);
-        // Abnahmeintervall
         if ($product->fAbnahmeintervall > 0) {
             $dVielfache = \function_exists('bcdiv')
                 ? \round(
@@ -795,11 +794,9 @@ class Cart
         if ((int)$qty != $qty && $product->cTeilbar !== 'Y') {
             $qty = \max((int)$qty, 1);
         }
-        // mbm
         if ($product->fMindestbestellmenge > $qty + $cart->gibAnzahlEinesArtikels($kArtikel)) {
             $redirectParam[] = \R_MINDESTMENGE;
         }
-        // lager beachten
         if ($product->cLagerBeachten === 'Y'
             && $product->cLagerVariation !== 'Y'
             && $product->cLagerKleinerNull !== 'Y'
@@ -808,12 +805,14 @@ class Cart
                 /** @var Artikel $product */
                 $depProduct = $dependent->product;
                 if ($depProduct->fPackeinheit
-                    * ($qty * $dependent->stockFactor + Frontend::getCart()->getDependentAmount(
-                        $depProduct->kArtikel, true
+                    * ($qty * $dependent->stockFactor +
+                        Frontend::getCart()->getDependentAmount(
+                            $depProduct->kArtikel,
+                            true
                         )
                     ) > $depProduct->fLagerbestand
                 ) {
-                    $redirectParam[] = R_LAGER;
+                    $redirectParam[] = \R_LAGER;
                     break;
                 }
             }
@@ -867,7 +866,7 @@ class Cart
             foreach ($attributes as $oEigenschaftwerte) {
                 $oEigenschaftwerte->kEigenschaft = (int)$oEigenschaftwerte->kEigenschaft;
                 if ($var->cTyp === 'PFLICHT-FREIFELD' && $oEigenschaftwerte->kEigenschaft === $var->kEigenschaft) {
-                    if (\strlen($oEigenschaftwerte->cFreifeldWert) > 0) {
+                    if (\mb_strlen($oEigenschaftwerte->cFreifeldWert) > 0) {
                         $bEigenschaftWertDa = true;
                     } else {
                         $redirectParam[] = \R_VARWAEHLEN;
@@ -930,7 +929,6 @@ class Cart
     public static function checkVariboxAmount(array $amounts): bool
     {
         if (\is_array($amounts) && \count($amounts) > 0) {
-            // Wurde die variBox überhaupt mit einer Anzahl gefüllt?
             foreach (\array_keys($amounts) as $cKeys) {
                 if ((float)$amounts[$cKeys] > 0) {
                     return true;
@@ -1089,7 +1087,8 @@ class Cart
             $categoryQRY .= " OR FIND_IN_SET('" . $id . "', REPLACE(cKategorien, ';', ',')) > 0";
         }
         if (Frontend::getCustomer()->isLoggedIn()) {
-            $customerQRY = " OR FIND_IN_SET('" . Frontend::getCustomer()->getID() . "', REPLACE(cKunden, ';', ',')) > 0";
+            $customerQRY = " OR FIND_IN_SET('" .
+                Frontend::getCustomer()->getID() . "', REPLACE(cKunden, ';', ',')) > 0";
         }
         $couponsOK = Shop::Container()->getDB()->queryPrepared(
             "SELECT *
@@ -1203,7 +1202,8 @@ class Cart
             $categoryQRY .= " OR FIND_IN_SET('" . $id . "', REPLACE(cKategorien, ';', ',')) > 0";
         }
         if (Frontend::getCustomer()->isLoggedIn()) {
-            $customerQRY = " OR FIND_IN_SET('" . Frontend::getCustomer()->getID() . "', REPLACE(cKunden, ';', ',')) > 0";
+            $customerQRY = " OR FIND_IN_SET('" .
+                Frontend::getCustomer()->getID() . "', REPLACE(cKunden, ';', ',')) > 0";
         }
         $couponOK = Shop::Container()->getDB()->queryPrepared(
             "SELECT *
@@ -1269,7 +1269,7 @@ class Cart
             }
             // Switch zwischen 1 Vari und 2
             if ($cKeys[0] === '_') { // 1
-                $cVariation0                         = \substr($cKeys, 1);
+                $cVariation0                         = \mb_substr($cKeys, 1);
                 [$kEigenschaft0, $kEigenschaftWert0] = \explode(':', $cVariation0);
                 // In die Session einbauen
                 $oVariKombi                                 = new stdClass();
@@ -1422,7 +1422,7 @@ class Cart
                 return false;
             }
             if ($nWeiterleitung === 0) {
-                $con = (\strpos($Artikel->cURLFull, '?') === false) ? '?' : '&';
+                $con = (\mb_strpos($Artikel->cURLFull, '?') === false) ? '?' : '&';
                 if ($Artikel->kEigenschaftKombi > 0) {
                     $url = empty($Artikel->cURLFull)
                         ? (Shop::getURL() . '/?a=' . $Artikel->kVaterArtikel .
@@ -1680,7 +1680,8 @@ class Cart
                             if (!isset($cartNotices) || !in_array($msg, $cartNotices)) {
                                 $cartNotices[] = $msg;
                             }
-                            $_SESSION['Warenkorb']->PositionenArr[$i]->nAnzahl = $_SESSION['Warenkorb']->getMaxAvailableAmount($i, (float)$_POST['anzahl'][$i]);
+                            $_SESSION['Warenkorb']->PositionenArr[$i]->nAnzahl =
+                                $_SESSION['Warenkorb']->getMaxAvailableAmount($i, (float)$_POST['anzahl'][$i]);
                         }
                     }
                     // maximale Bestellmenge des Artikels beachten
@@ -1951,7 +1952,8 @@ class Cart
             } elseif ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'L') {
                 $cSQLSort = ' ORDER BY tartikel.fLagerbestand DESC';
             }
-
+            $limit    = $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0 ?
+                    ' LIMIT ' . $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] : '';
             $giftsTmp = Shop::Container()->getDB()->query(
                 "SELECT tartikel.kArtikel, tartikelattribut.cWert
                     FROM tartikel
@@ -1963,7 +1965,7 @@ class Cart
                         AND tartikelattribut.cName = '" . \FKT_ATTRIBUT_GRATISGESCHENK . "'
                         AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
                 Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true) .
-                $cSQLSort . ' LIMIT 20',
+                $cSQLSort . $limit,
                 ReturnType::ARRAY_OF_OBJECTS
             );
 

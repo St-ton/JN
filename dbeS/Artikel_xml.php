@@ -711,7 +711,7 @@ function bearbeiteInsert($xml, array $conf)
                     'kWarenlager'  => $storage->kWarenlager,
                     'fBestand'     => $storage->fBestand,
                     'fZulauf'      => $storage->fZulauf,
-                    'dZulaufDatum' => $storage->dZulaufDatum ?? '_DBNULL_',
+                    'dZulaufDatum' => $storage->dZulaufDatum ?? null,
                 ],
                 \DB\ReturnType::QUERYSINGLE
             );

@@ -7,7 +7,8 @@
 namespace VerificationVAT;
 
 /**
- * class VATCheckDownSlots
+ * Class VATCheckDownSlots
+ * @package VerificationVAT
  */
 class VATCheckDownSlots
 {
@@ -140,7 +141,7 @@ class VATCheckDownSlots
     ];
 
     /**
-     * @var DateTime
+     * @var \DateTime
      */
     private $now;
 
@@ -154,11 +155,12 @@ class VATCheckDownSlots
     public const ENDING  = 2;
 
     /**
-     *
+     * VATCheckDownSlots constructor.
+     * @throws \Exception
      */
     public function __construct()
     {
-        $this->now = new DateTime();
+        $this->now = new \DateTime();
     }
 
     /**
@@ -193,11 +195,11 @@ class VATCheckDownSlots
                 $countryDownTimes[self::WEEKDAY] = $this->now->format('D');
             }
 
-            $startTime = DateTime::createFromFormat(
+            $startTime = \DateTime::createFromFormat(
                 'D:H:i',
                 $countryDownTimes[self::WEEKDAY] . ':' . $countryDownTimes[self::START]
             );
-            $endTime   = DateTime::createFromFormat(
+            $endTime   = \DateTime::createFromFormat(
                 'D:H:i',
                 $countryDownTimes[self::WEEKDAY] . ':' . $countryDownTimes[self::ENDING]
             );

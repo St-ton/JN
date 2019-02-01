@@ -8,6 +8,7 @@ namespace VerificationVAT;
 
 /**
  * Interface VATCheckInterface
+ * @package VerificationVAT
  */
 interface VATCheckInterface
 {
@@ -18,6 +19,7 @@ interface VATCheckInterface
 
     /**
      * @param string $ustID
+     * @return array
      */
-    public function doCheckID($ustID);
+    public function doCheckID(string $ustID): array;
 }

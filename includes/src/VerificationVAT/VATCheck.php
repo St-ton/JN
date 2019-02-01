@@ -8,6 +8,7 @@ namespace VerificationVAT;
 
 /**
  * Class VATCheck
+ * @package VerificationVAT
  */
 class VATCheck
 {
@@ -22,18 +23,16 @@ class VATCheck
     private $ustID;
 
     /**
+     * VATCheck constructor.
      * @param string $ustID
      */
     public function __construct(string $ustID = '')
     {
         $this->ustID = $ustID;
-
-        switch (true) {
-            case $this->startsWith($this->ustID, 'CHE'):
-                $this->location = new VATCheckNonEU();
-                break;
-            default:
-                $this->location = new VATCheckEU();
+        if ($this->startsWith($this->ustID, 'CHE')) {
+            $this->location = new VATCheckNonEU();
+        } else {
+            $this->location = new VATCheckEU();
         }
     }
 
@@ -52,7 +51,6 @@ class VATCheck
      */
     public function doCheckID()
     {
-        // if there was nothing given, we tell the caller this
         if ($this->ustID === '') {
             return [
                 'success'   => false,
@@ -73,12 +71,12 @@ class VATCheck
     public function startsWith(string $sourceString = '', string $pattern = '') : bool
     {
         if ($sourceString === '') {
-            return false
+            return false;
         }
         if ($pattern === '') {
-            return true
+            return true;
         }
 
-        return ($pattern === substr($sourceString, 0, strlen($pattern))) ?: false;
+        return \strpos($sourceString, $pattern) === 0;
     }
 }

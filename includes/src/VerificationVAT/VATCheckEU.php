@@ -9,7 +9,7 @@ namespace VerificationVAT;
 /**
  * Class VATCheckEU
  *
- *
+ * @package VerificationVAT
  * External documentation
  *
  * @link http://ec.europa.eu/taxation_customs/vies/faq.html
@@ -40,14 +40,17 @@ class VATCheckEU implements VATCheckInterface
     private $miasAnswerStrings = [
         0  => 'MwSt-Nummer gültig.',
         10 => 'MwSt-Nummer ungültig.', // (D.h. die eingegebene Nummer ist zumindest an dem angegebenen Tag ungültig)
-        20 => 'Bearbeitung derzeit nicht möglich. Bitte wiederholen Sie Ihre Anfrage später.', // (D.h. es gibt ein Problem mit dem Netz oder mit der Web-Anwendung)
-        30 => 'Bearbeitung im Mitgliedstaat derzeit nicht möglich. Bitte wiederholen Sie Ihre Anfrage später.', // (D.h. die Anwendung ist in dem Mitgliedstaat, der die von Ihnen eingegebene MwSt-Nummer erteilt hat, derzeit nicht möglich)
+        20 => 'Bearbeitung derzeit nicht möglich. Bitte wiederholen Sie Ihre Anfrage später.',
+        // (D.h. es gibt ein Problem mit dem Netz oder mit der Web-Anwendung)
+        30 => 'Bearbeitung im Mitgliedstaat derzeit nicht möglich. Bitte wiederholen Sie Ihre Anfrage später.',
+        // (D.h. die Anwendung ist in dem Mitgliedstaat, der die von Ihnen eingegebene MwSt-Nummer erteilt hat,
+        // derzeit nicht möglich)
         40 => 'Unvollständige oder fehlerhafte Dateneingabe', // (MwSt-Nummer + Mitgliedstaat)
         50 => 'Zeitüberschreitung. Bitte wiederholen Sie Ihre Anfrage später.'
     ];
 
     /**
-     *
+     * VATCheckEU constructor.
      */
     public function __construct()
     {
@@ -63,7 +66,7 @@ class VATCheckEU implements VATCheckInterface
      */
     public function condenseSpaces($sourceString): string
     {
-        return str_replace(' ', '', $sourceString);
+        return \str_replace(' ', '', $sourceString);
     }
 
     /**
@@ -80,12 +83,12 @@ class VATCheckEU implements VATCheckInterface
      * @param string $ustID
      * @return array
      */
-    public function doCheckID($ustID): array
+    public function doCheckID(string $ustID): array
     {
         // parse the ID-string
         $VatParser = new VATCheckVatParser($this->condenseSpaces($ustID));
         if ($VatParser->parseVatId() === true) {
-            list($countryCode, $vatNumber) = $VatParser->getIdAsParams();
+            [$countryCode, $vatNumber] = $VatParser->getIdAsParams();
         } else {
             return [
                 'success'   => false,
@@ -94,20 +97,18 @@ class VATCheckEU implements VATCheckInterface
                 'errorinfo' => '' !== ($errorInfo = $VatParser->getErrorInfo()) ? $errorInfo : ''
             ];
         }
-
         // asking the remote service, if the VAT-office is reachable
         if ($this->downTimes->isDown($countryCode) === false) {
-            $SoapClient = new SoapClient($this->viesWSDL);
-            $ViesResult = null;
-
+            $soap   = new \SoapClient($this->viesWSDL);
+            $result = null;
             try {
-                $ViesResult = $SoapClient->checkVat(['countryCode' => $countryCode, 'vatNumber' => $vatNumber]);
-            } catch (Exception $e) {
-                Shop::Container()->getLogService()->warn('MwStID Problem: ' . $e->getMessage());
+                $result = $soap->checkVat(['countryCode' => $countryCode, 'vatNumber' => $vatNumber]);
+            } catch (\Exception $e) {
+                \Shop::Container()->getLogService()->warn('MwStID Problem: ' . $e->getMessage());
             }
 
-            if ($ViesResult !== null && $ViesResult->valid === true) {
-                Shop::Container()->getLogService()->notice('MwStID valid. (' . print_r($ViesResult, true) . ')');
+            if ($result !== null && $result->valid === true) {
+                \Shop::Container()->getLogService()->notice('MwStID valid. (' . \print_r($result, true) . ')');
 
                 return [
                     'success'   => true,
@@ -115,7 +116,7 @@ class VATCheckEU implements VATCheckInterface
                     'errorcode' => ''
                 ];
             }
-            Shop::Container()->getLogService()->notice('MwStID invalid! (' . print_r($ViesResult, true) . ')');
+            \Shop::Container()->getLogService()->notice('MwStID invalid! (' . \print_r($result, true) . ')');
 
             return [
                 'success'   => false,
@@ -124,7 +125,7 @@ class VATCheckEU implements VATCheckInterface
             ];
         }
         // inform the user:"The VAT-office in this country has closed this time."
-        Shop::Container()->getLogService()->notice('MIAS-Amt aktuell nicht erreichbar. (ID: ' . $ustID . ')');
+        \Shop::Container()->getLogService()->notice('MIAS-Amt aktuell nicht erreichbar. (ID: ' . $ustID . ')');
 
         return [
             'success'   => false,

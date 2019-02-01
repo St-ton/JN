@@ -8,16 +8,10 @@ namespace VerificationVAT;
 
 /**
  * Class VATCheckNonEU
+ * @package VerificationVAT
  */
 class VATCheckNonEU implements VATCheckInterface
 {
-    /**
-     *
-     */
-    public function __construct()
-    {
-    }
-
     /**
      * parse the non-EU string by convention
      *
@@ -32,7 +26,7 @@ class VATCheckNonEU implements VATCheckInterface
      * @param string $ustID
      * @return array
      */
-    public function doCheckID($ustID): array
+    public function doCheckID(string $ustID): array
     {
         $VatParser = new VATCheckVatParserNonEU($ustID);
         if ($VatParser->parseVatId() === true) {

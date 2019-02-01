@@ -418,11 +418,14 @@
             , left: '50%'           // center horizontally
             , shadow: false         // Whether to render a shadow
             , hwaccel: false        // Whether to use hardware acceleration (might be buggy)
-            , position: 'fixed'     // Element positioning
+            , position: 'absolute'  // Element positioning
             };
 
             if (typeof target === 'undefined') {
                 target = document.getElementsByClassName('product-offer')[0];
+            }
+            if (target.id === 'result-wrapper' || $(target).hasClass('product-offer')) {
+                opts.position = 'fixed';
             }
 
             return new Spinner(opts).spin(target);

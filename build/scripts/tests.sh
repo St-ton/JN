@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 echo "Execute composer install...";
-composer install -q -d includes;
+composer install -a -o -q -d includes;
 
 echo "Build components...";
 for component in build/components/*/ ; do
-    composer install -q -d ${component};
+    composer install -a -o -q -d ${component};
 done
 
 echo "Execute tests...";

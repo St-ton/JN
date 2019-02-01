@@ -620,7 +620,7 @@ if ($customerID > 0) {
 
             executeHook(HOOK_JTL_PAGE_KUNDENACCOUNTLOESCHEN);
             session_destroy();
-            header('Location: ' . Shop::getURL(), true, 303);
+            header('Location: ' . $linkHelper->getStaticRoute('registrieren.php') . '?accountDeleted=1', true, 303);
             exit;
         }
     }
@@ -775,8 +775,8 @@ if ($customerID > 0) {
     $smarty->assign('Kunde', $_SESSION['Kunde'])
            ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr);
 }
-$hinweis = $alertHelper->alertTypeExists(Alert::TYPE_NOTE);
-if (!$hinweis && $step === 'mein Konto' && \Session\Frontend::getCustomer()->isLoggedIn()) {
+$alertNote = $alertHelper->alertTypeExists(Alert::TYPE_NOTE);
+if (!$alertNote && $step === 'mein Konto' && \Session\Frontend::getCustomer()->isLoggedIn()) {
     $alertHelper->addAlert(Alert::TYPE_INFO, Shop::Lang()->get('myAccountDesc', 'login'), 'myAccountDesc');
 }
 
@@ -785,7 +785,7 @@ $link          = $linkHelper->getPageLink($kLink);
 $smarty->assign('bewertungen', $ratings)
        ->assign('step', $step)
        ->assign('Link', $link)
-       ->assign('alertNote', $hinweis)
+       ->assign('alertNote', $alertNote)
        ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
        ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)
        ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN)

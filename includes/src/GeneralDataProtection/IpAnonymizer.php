@@ -137,7 +137,7 @@ class IpAnonymizer
             );
             $this->rawIp = '';
         }
-        switch (\mb_strlen($this->rawIp)) {
+        switch (\strlen($this->rawIp)) {
             case 4:
                 $this->placeholderIP = '0.0.0.0';
                 $this->ipMask        = $this->getMaskV4();
@@ -269,7 +269,7 @@ class IpAnonymizer
      */
     public function getPlaceholder(): string
     {
-        return $this->szPlaceholderIP;
+        return $this->placeholderIP;
     }
 
     /**

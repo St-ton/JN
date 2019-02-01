@@ -1952,7 +1952,8 @@ class Cart
             } elseif ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'L') {
                 $cSQLSort = ' ORDER BY tartikel.fLagerbestand DESC';
             }
-
+            $limit    = $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0 ?
+                    ' LIMIT ' . $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] : '';
             $giftsTmp = Shop::Container()->getDB()->query(
                 "SELECT tartikel.kArtikel, tartikelattribut.cWert
                     FROM tartikel
@@ -1964,7 +1965,7 @@ class Cart
                         AND tartikelattribut.cName = '" . \FKT_ATTRIBUT_GRATISGESCHENK . "'
                         AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
                 Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true) .
-                $cSQLSort . ' LIMIT 20',
+                $cSQLSort . $limit,
                 ReturnType::ARRAY_OF_OBJECTS
             );
 

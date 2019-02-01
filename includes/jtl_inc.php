@@ -275,6 +275,13 @@ function setzeWarenkorbPersInWarenkorb(int $customerID): bool
                     true,
                     $position->cResponsibility
                 );
+            } else {
+                Shop::Container()->getAlertService()->addAlert(
+                    Alert::TYPE_WARNING,
+                    sprintf(Shop::Lang()->get('cartPersRemoved', 'errorMessages'), $position->cArtikelName),
+                    'cartPersRemoved' . $position->kArtikel,
+                    ['saveInSession' => true]
+                );
             }
         }
     }
@@ -508,7 +515,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
                         }
                     } else {
                         \Session\Frontend::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
-                        Shop::Smarty()->assign('cKuponfehler', $Kuponfehler['ungueltig']);
+                        Kupon::mapCouponErrorMessage($Kuponfehler['ungueltig']);
                     }
                 }
             }

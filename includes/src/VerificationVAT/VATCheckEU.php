@@ -104,11 +104,11 @@ class VATCheckEU implements VATCheckInterface
             try {
                 $result = $soap->checkVat(['countryCode' => $countryCode, 'vatNumber' => $vatNumber]);
             } catch (\Exception $e) {
-                \Shop::Container()->getLogService()->warn('MwStID Problem: ' . $e->getMessage());
+                \Shop::Container()->getLogService()->warn('VAT ID problem: ' . $e->getMessage());
             }
 
             if ($result !== null && $result->valid === true) {
-                \Shop::Container()->getLogService()->notice('MwStID valid. (' . \print_r($result, true) . ')');
+                \Shop::Container()->getLogService()->notice('VAT ID valid. (' . \print_r($result, true) . ')');
 
                 return [
                     'success'   => true,
@@ -116,7 +116,7 @@ class VATCheckEU implements VATCheckInterface
                     'errorcode' => ''
                 ];
             }
-            \Shop::Container()->getLogService()->notice('MwStID invalid! (' . \print_r($result, true) . ')');
+            \Shop::Container()->getLogService()->notice('VAT ID invalid! (' . \print_r($result, true) . ')');
 
             return [
                 'success'   => false,
@@ -125,7 +125,7 @@ class VATCheckEU implements VATCheckInterface
             ];
         }
         // inform the user:"The VAT-office in this country has closed this time."
-        \Shop::Container()->getLogService()->notice('MIAS-Amt aktuell nicht erreichbar. (ID: ' . $ustID . ')');
+        \Shop::Container()->getLogService()->notice('TAX authority of this country currently not available. (ID: ' . $ustID . ')');
 
         return [
             'success'   => false,

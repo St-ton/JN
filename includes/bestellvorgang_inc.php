@@ -579,8 +579,13 @@ function gibStepAccountwahl(): void
     if (isset($_REQUEST['reg']) && (int)$_REQUEST['reg'] === 1) {
         Shop::Container()->getAlertService()->addAlert(
             Alert::TYPE_NOTE,
-            Shop::Lang()->get('accountCreated') . '<br />' . Shop::Lang()->get('loginNotActivated'),
+            Shop::Lang()->get('accountCreated') . '. ' . Shop::Lang()->get('activateAccountDesc'),
             'accountCreatedLoginNotActivated'
+        );
+        Shop::Container()->getAlertService()->addAlert(
+            Alert::TYPE_NOTE,
+            Shop::Lang()->get('continueAfterActivation', 'messages'),
+            'continueAfterActivation'
         );
     }
     Shop::Smarty()->assign('untertitel', lang_warenkorb_bestellungEnthaeltXArtikel(\Session\Frontend::getCart()));

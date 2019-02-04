@@ -23,14 +23,14 @@ $nonAllowed     = [];
 $conf           = Shopsetting::getInstance()->getAll();
 $shopURL        = Shop::getURL() . '/';
 $alertHelper    = Shop::Container()->getAlertService();
-if ($cHinweis = Product::mapErrorCode(
+if ($productNote = Product::mapErrorCode(
     Request::verifyGPDataString('cHinweis'),
     (isset($_GET['fB']) && (float)$_GET['fB'] > 0) ? (float)$_GET['fB'] : 0.0
 )) {
-    $alertHelper->addAlert(Alert::TYPE_NOTE, $cHinweis, 'productNote', ['showInAlertListTemplate' => false]);
+    $alertHelper->addAlert(Alert::TYPE_NOTE, $productNote, 'productNote', ['showInAlertListTemplate' => false]);
 }
-if ($cFehler = Product::mapErrorCode(Request::verifyGPDataString('cFehler'))) {
-    $alertHelper->addAlert(Alert::TYPE_ERROR, $cFehler, 'productError');
+if ($productError = Product::mapErrorCode(Request::verifyGPDataString('cFehler'))) {
+    $alertHelper->addAlert(Alert::TYPE_ERROR, $productError, 'productError');
 }
 if (isset($_POST['a'])
     && Request::verifyGPCDataInt('addproductbundle') === 1

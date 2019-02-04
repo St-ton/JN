@@ -116,17 +116,23 @@ stages:
   }
 
 .devCheckoutScripts: &devCheckoutScripts |
+  export FILENAME="${CI_COMMIT_REF_NAME//[\/\.]/-}";
+  export EXTRACTION_PATH="$RUNNER_PATH/shop-$FILENAME";
+
+  function downloadProcess() {
+    export RUNNER_PATH_ZIP="$EXTRACTION_PATH.zip";
+    export DOWNLOAD_URL="https://build.jtl-shop.de/get/shop-$FILENAME.zip";
+
+    curl -o $RUNNER_PATH_ZIP $DOWNLOAD_URL
+    unzip -qo $RUNNER_PATH_ZIP -d $EXTRACTION_PATH
+    rm $RUNNER_PATH_ZIP
+  }
   function deployProcess() {
     export PHP_VERSION=$1;
-    export FILENAME="${CI_COMMIT_REF_NAME//[\/\.]/-}";
-    export DOWNLOAD_PATH="$STAGING_USER_PATH/php$PHP_VERSION/$FILENAME";
-    export DOWNLOAD_PATH_ZIP="$DOWNLOAD_PATH.zip";
-    export DOWNLOAD_URL="https://build.jtl-shop.de/get/shop-$FILENAME.zip";
+    export DEPLOY_PATH="$STAGING_USER_PATH/php$PHP_VERSION/$FILENAME";
     export MIGRATION_COUNT_BEFORE=$(ls -1 $DOWNLOAD_PATH/update/migrations/ | wc -l)
 
-    curl -o $DOWNLOAD_PATH_ZIP $DOWNLOAD_URL
-    unzip -qo $DOWNLOAD_PATH_ZIP -d $DOWNLOAD_PATH
-    rm $DOWNLOAD_PATH_ZIP
+    sudo /usr/bin/rsync -rt -og --chown=www-data:www-data $EXTRACTION_PATH/. $DEPLOY_PATH
 
     export MIGRATION_COUNT_AFTER=$(ls -1 $DOWNLOAD_PATH/update/migrations/ | wc -l)
 
@@ -302,6 +308,18 @@ removeContainer:
   when: on_failure
   tags:
     - build
+
+stagingPreDeploy:
+  stage: staging
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - *devCheckoutScripts
+    - downloadProcess
+  only:
+    - master
+  tags:
+    - dev-checkout
 
 stagingDevPhp72:
   stage: staging

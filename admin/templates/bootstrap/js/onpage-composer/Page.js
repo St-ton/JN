@@ -264,6 +264,10 @@ Page.prototype = {
         var result   = {"class": data.class, title: data.title, properties: data.properties, subareas: {}};
         var subareas = portlet.find('.opc-area').not(portlet.find('[data-portlet] .opc-area'));
 
+        if (data.class === 'MissingPortlet') {
+            result.missingClass = data.missingClass;
+        }
+
         for(var i=0; i<subareas.length; i++) {
             var subarea     = this.jq(subareas[i]);
             var subareaData = this.areaToJSON(subarea, withDom);

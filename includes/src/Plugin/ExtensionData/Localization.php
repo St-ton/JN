@@ -75,7 +75,7 @@ class Localization
      */
     public function getTranslation(string $name, string $iso = null): ?string
     {
-        $iso   = \strtoupper($iso ?? $this->currentLanguageCode);
+        $iso   = \mb_convert_case($iso ?? $this->currentLanguageCode, \MB_CASE_UPPER);
         $first = $this->langVars->firstWhere('name', $name);
 
         return $first->values[$iso] ?? null;
@@ -86,7 +86,7 @@ class Localization
      */
     public function getTranslations(): array
     {
-        $iso = \strtoupper($this->currentLanguageCode);
+        $iso = \mb_convert_case($this->currentLanguageCode, \MB_CASE_UPPER);
 
         return $this->langVars->mapWithKeys(function ($item) use ($iso) {
             return [$item->name => $item->values[$iso] ?? null];

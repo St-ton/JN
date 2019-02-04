@@ -11,7 +11,7 @@ use Pagination\Pagination;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_NEWSLETTER_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'newsletter_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
@@ -33,7 +33,7 @@ $customerGroup             = $db->select('tkundengruppe', 'cStandard', 'Y');
 $_SESSION['Kundengruppe']  = new Kundengruppe($customerGroup->kKundengruppe);
 
 setzeSprache();
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 if (Form::validateToken()) {
@@ -105,7 +105,7 @@ if (Form::validateToken()) {
                     $db->delete('tnewsletterqueue', 'kNewsletterQueue', (int)$kNewsletterQueue);
                     $cHinweis .= $entry->cBetreff . '", ';
                 }
-                $cHinweis  = substr($cHinweis, 0, -2);
+                $cHinweis  = mb_substr($cHinweis, 0, -2);
                 $cHinweis .= __('successDelete') . '<br />';
             } else {
                 $cFehler .= __('errorAtLeastOneNewsletter') . '.<br />';
@@ -121,7 +121,7 @@ if (Form::validateToken()) {
                     $db->delete('tnewsletterhistory', 'kNewsletterHistory', (int)$kNewsletterHistory);
                     $cHinweis .= $kNewsletterHistory . ', ';
                 }
-                $cHinweis  = substr($cHinweis, 0, -2);
+                $cHinweis  = mb_substr($cHinweis, 0, -2);
                 $cHinweis .= __('successDelete') . '<br />';
             } else {
                 $cFehler .= __('errorAtLeastOneHistory') . '<br />';
@@ -129,7 +129,7 @@ if (Form::validateToken()) {
         } elseif (isset($_GET['anzeigen'])) {
             $step               = 'history_anzeigen';
             $kNewsletterHistory = (int)$_GET['anzeigen'];
-            $oNewsletterHistory = $db->queryPrepared(
+            $hist               = $db->queryPrepared(
                 "SELECT kNewsletterHistory, cBetreff, cHTMLStatic, cKundengruppe, 
                     DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
                     FROM tnewsletterhistory
@@ -139,24 +139,24 @@ if (Form::validateToken()) {
                 \DB\ReturnType::SINGLE_OBJECT
             );
 
-            if (isset($oNewsletterHistory->kNewsletterHistory) && $oNewsletterHistory->kNewsletterHistory > 0) {
-                $smarty->assign('oNewsletterHistory', $oNewsletterHistory);
+            if (isset($hist->kNewsletterHistory) && $hist->kNewsletterHistory > 0) {
+                $smarty->assign('oNewsletterHistory', $hist);
             }
         }
-    } elseif (strlen(Request::verifyGPDataString('cSucheInaktiv')) > 0) { // Inaktive Abonnentensuche
+    } elseif (mb_strlen(Request::verifyGPDataString('cSucheInaktiv')) > 0) { // Inaktive Abonnentensuche
         $cSuche = $db->escape(StringHandler::filterXSS(Request::verifyGPDataString('cSucheInaktiv')));
 
-        if (strlen($cSuche) > 0) {
+        if (mb_strlen($cSuche) > 0) {
             $inactiveSearchSQL->cWHERE = " AND (tnewsletterempfaenger.cVorname LIKE '%" . $cSuche .
                 "%' OR tnewsletterempfaenger.cNachname LIKE '%" . $cSuche .
                 "%' OR tnewsletterempfaenger.cEmail LIKE '%" . $cSuche . "%')";
         }
 
         $smarty->assign('cSucheInaktiv', $cSuche);
-    } elseif (strlen(Request::verifyGPDataString('cSucheAktiv')) > 0) { // Aktive Abonnentensuche
+    } elseif (mb_strlen(Request::verifyGPDataString('cSucheAktiv')) > 0) { // Aktive Abonnentensuche
         $cSuche = $db->escape(StringHandler::filterXSS(Request::verifyGPDataString('cSucheAktiv')));
 
-        if (strlen($cSuche) > 0) {
+        if (mb_strlen($cSuche) > 0) {
             $activeSearchSQL->cWHERE = " AND (tnewsletterempfaenger.cVorname LIKE '%" . $cSuche .
                 "%' OR tnewsletterempfaenger.cNachname LIKE '%" . $cSuche .
                 "%' OR tnewsletterempfaenger.cEmail LIKE '%" . $cSuche . "%')";
@@ -314,20 +314,20 @@ if (Form::validateToken()) {
 
             if ($newsletterTPL->kNewsletterVorlage > 0) {
                 $oExplodedArtikel           = explodecArtikel($newsletterTPL->cArtikel);
-                $newsletterTPL->cArtikel    = substr(
-                    substr($newsletterTPL->cArtikel, 1),
+                $newsletterTPL->cArtikel    = mb_substr(
+                    mb_substr($newsletterTPL->cArtikel, 1),
                     0,
-                    strlen(substr($newsletterTPL->cArtikel, 1)) - 1
+                    mb_strlen(mb_substr($newsletterTPL->cArtikel, 1)) - 1
                 );
-                $newsletterTPL->cHersteller = substr(
-                    substr($newsletterTPL->cHersteller, 1),
+                $newsletterTPL->cHersteller = mb_substr(
+                    mb_substr($newsletterTPL->cHersteller, 1),
                     0,
-                    strlen(substr($newsletterTPL->cHersteller, 1)) - 1
+                    mb_strlen(mb_substr($newsletterTPL->cHersteller, 1)) - 1
                 );
-                $newsletterTPL->cKategorie  = substr(
-                    substr($newsletterTPL->cKategorie, 1),
+                $newsletterTPL->cKategorie  = mb_substr(
+                    mb_substr($newsletterTPL->cKategorie, 1),
                     0,
-                    strlen(substr($newsletterTPL->cKategorie, 1)) - 1
+                    mb_strlen(mb_substr($newsletterTPL->cKategorie, 1)) - 1
                 );
                 $kKundengruppe_arr          = explodecKundengruppe($newsletterTPL->cKundengruppe);
                 $smarty->assign('kArtikel_arr', $oExplodedArtikel->kArtikel_arr)
@@ -390,15 +390,15 @@ if (Form::validateToken()) {
                 );
                 $jobQueue->speicherJobInDB();
                 // Baue Arrays mit kKeys
-                $kArtikel_arr    = gibAHKKeys($newsletterTPL->cArtikel, true);
-                $kHersteller_arr = gibAHKKeys($newsletterTPL->cHersteller);
-                $kKategorie_arr  = gibAHKKeys($newsletterTPL->cKategorie);
+                $productIDs      = gibAHKKeys($newsletterTPL->cArtikel, true);
+                $manufacturerIDs = gibAHKKeys($newsletterTPL->cHersteller);
+                $categoryIDs     = gibAHKKeys($newsletterTPL->cKategorie);
                 // Baue Kampagnenobjekt, falls vorhanden in der Newslettervorlage
-                $oKampagne = new Kampagne($newsletterTPL->kKampagne);
+                $campaign = new Kampagne($newsletterTPL->kKampagne);
                 // Baue Arrays von Objekten
-                $oArtikel_arr    = gibArtikelObjekte($kArtikel_arr, $oKampagne);
-                $oHersteller_arr = gibHerstellerObjekte($kHersteller_arr, $oKampagne);
-                $oKategorie_arr  = gibKategorieObjekte($kKategorie_arr, $oKampagne);
+                $products      = gibArtikelObjekte($productIDs, $campaign);
+                $manufacturers = gibHerstellerObjekte($manufacturerIDs, $campaign);
+                $categories    = gibKategorieObjekte($categoryIDs, $campaign);
                 // Kunden Dummy bauen
                 $oKunde            = new stdClass();
                 $oKunde->cAnrede   = 'm';
@@ -427,7 +427,7 @@ if (Form::validateToken()) {
                     foreach ($recipient->cKundengruppe_arr as $cKundengruppeTMP) {
                         if ($cKundengruppeTMP != '0') {
                             $oKundengruppeTMP = $db->select('tkundengruppe', 'kKundengruppe', (int)$cKundengruppeTMP);
-                            if (strlen($oKundengruppeTMP->cName) > 0) {
+                            if (mb_strlen($oKundengruppeTMP->cName) > 0) {
                                 if ($nCount_arr[0] > 0) {
                                     $cKundengruppe .= ', ' . $oKundengruppeTMP->cName;
                                 } else {
@@ -459,50 +459,45 @@ if (Form::validateToken()) {
                         }
                     }
                 }
-                if (strlen($cKundengruppe) > 0) {
-                    $cKundengruppe = substr($cKundengruppe, 0, -2);
+                if (mb_strlen($cKundengruppe) > 0) {
+                    $cKundengruppe = mb_substr($cKundengruppe, 0, -2);
                 }
-                // tnewsletterhistory objekt bauen
-                $oNewsletterHistory                   = new stdClass();
-                $oNewsletterHistory->kSprache         = $oNewsletter->kSprache;
-                $oNewsletterHistory->nAnzahl          = $recipient->nAnzahl;
-                $oNewsletterHistory->cBetreff         = $oNewsletter->cBetreff;
-                $oNewsletterHistory->cHTMLStatic      = gibStaticHtml(
+                $hist                   = new stdClass();
+                $hist->kSprache         = $oNewsletter->kSprache;
+                $hist->nAnzahl          = $recipient->nAnzahl;
+                $hist->cBetreff         = $oNewsletter->cBetreff;
+                $hist->cHTMLStatic      = gibStaticHtml(
                     $mailSmarty,
                     $oNewsletter,
-                    $oArtikel_arr,
-                    $oHersteller_arr,
-                    $oKategorie_arr,
-                    $oKampagne,
+                    $products,
+                    $manufacturers,
+                    $categories,
+                    $campaign,
                     $oEmailempfaenger,
                     $oKunde
                 );
-                $oNewsletterHistory->cKundengruppe    = $cKundengruppe;
-                $oNewsletterHistory->cKundengruppeKey = ';' . $cKundengruppeKey . ';';
-                $oNewsletterHistory->dStart           = $newsletterTPL->dStartZeit;
-                // tnewsletterhistory fuellen
-                $db->insert('tnewsletterhistory', $oNewsletterHistory);
+                $hist->cKundengruppe    = $cKundengruppe;
+                $hist->cKundengruppeKey = ';' . $cKundengruppeKey . ';';
+                $hist->dStart           = $newsletterTPL->dStartZeit;
+                $db->insert('tnewsletterhistory', $hist);
 
                 $cHinweis .= sprintf(__('successNewsletterPrepared'), $oNewsletter->cName) .'<br />';
             }
         } elseif (isset($_POST['speichern_und_testen'])) { // Vorlage speichern und testen
-            $newsletterTPL = speicherVorlage($_POST);
-            // Baue Arrays mit kKeys
-            $kArtikel_arr    = gibAHKKeys($newsletterTPL->cArtikel, true);
-            $kHersteller_arr = gibAHKKeys($newsletterTPL->cHersteller);
-            $kKategorie_arr  = gibAHKKeys($newsletterTPL->cKategorie);
-            // Baue Kampagnenobjekt, falls vorhanden in der Newslettervorlage
-            $oKampagne = new Kampagne($newsletterTPL->kKampagne);
-            // Baue Arrays von Objekten
-            $oArtikel_arr    = gibArtikelObjekte($kArtikel_arr, $oKampagne);
-            $oHersteller_arr = gibHerstellerObjekte($kHersteller_arr, $oKampagne);
-            $oKategorie_arr  = gibKategorieObjekte($kKategorie_arr, $oKampagne);
-            // Kunden Dummy bauen
+            $newsletterTPL   = speicherVorlage($_POST);
+            $productIDs      = gibAHKKeys($newsletterTPL->cArtikel, true);
+            $manufacturerIDs = gibAHKKeys($newsletterTPL->cHersteller);
+            $categoryIDs     = gibAHKKeys($newsletterTPL->cKategorie);
+            $campaign        = new Kampagne($newsletterTPL->kKampagne);
+            $products        = gibArtikelObjekte($productIDs, $campaign);
+            $manufacturers   = gibHerstellerObjekte($manufacturerIDs, $campaign);
+            $categories      = gibKategorieObjekte($categoryIDs, $campaign);
+            // dummy customer
             $oKunde            = new stdClass();
             $oKunde->cAnrede   = 'm';
             $oKunde->cVorname  = 'Max';
             $oKunde->cNachname = 'Mustermann';
-            // Emailempfaenger dummy bauen
+            // dummy recipient
             $oEmailempfaenger              = new stdClass();
             $oEmailempfaenger->cEmail      = $conf['newsletter']['newsletter_emailtest'];
             $oEmailempfaenger->cLoeschCode = '78rev6gj8er6we87gw6er8';
@@ -518,10 +513,10 @@ if (Form::validateToken()) {
                     $newsletterTPL,
                     $conf,
                     $oEmailempfaenger,
-                    $oArtikel_arr,
-                    $oHersteller_arr,
-                    $oKategorie_arr,
-                    $oKampagne,
+                    $products,
+                    $manufacturers,
+                    $categories,
+                    $campaign,
                     $oKunde
                 );
             }

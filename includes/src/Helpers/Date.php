@@ -70,12 +70,12 @@ class Date
     public static function getDateParts(string $dateString): array
     {
         $parts = [];
-        if (\strlen($dateString) > 0) {
-            if (\strtolower($dateString) === 'now()') {
+        if (\mb_strlen($dateString) > 0) {
+            if (\mb_convert_case($dateString, \MB_CASE_LOWER) === 'now()') {
                 $dateString = 'now';
             }
             try {
-                $date                 = new DateTime($dateString);
+                $date              = new DateTime($dateString);
                 $parts['cDatum']   = $date->format('Y-m-d');
                 $parts['cZeit']    = $date->format('H:m:s');
                 $parts['cJahr']    = $date->format('Y');

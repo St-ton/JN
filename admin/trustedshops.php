@@ -16,7 +16,7 @@ define('SHOP_SOFTWARE', 'JTL');
 
 $oAccount->permission('ORDER_TRUSTEDSHOPS_VIEW', true, true);
 
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 $step     = 'uebersicht';
@@ -78,7 +78,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
                     $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
-                    $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                    $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                     break;
                 case 'listbox':
                     bearbeiteListBox($aktWert->cWert, $confData[$i]->cWertName, CONF_TRUSTEDSHOPS);
@@ -97,9 +97,9 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
             $settings->reset();
         }
 
-        if (strlen($_POST['tsId']) > 0
-            && (strlen($_POST['wsUser']) > 0
-                && strlen($_POST['wsPassword']) > 0
+        if (mb_strlen($_POST['tsId']) > 0
+            && (mb_strlen($_POST['wsUser']) > 0
+                && mb_strlen($_POST['wsPassword']) > 0
                 || $_POST['eType'] === TS_BUYERPROT_CLASSIC)
         ) {
             $cert              = new stdClass();
@@ -113,7 +113,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
 
             $ts = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
 
-            $nReturnValue = (strlen($ts->kTrustedShopsZertifikat) > 0)
+            $nReturnValue = (mb_strlen($ts->kTrustedShopsZertifikat) > 0)
                 ? $ts->speicherTrustedShopsZertifikat($cert, $ts->kTrustedShopsZertifikat)
                 : $ts->speicherTrustedShopsZertifikat($cert);
 
@@ -170,7 +170,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
                 $aktWert->cWert = (int)$aktWert->cWert;
                 break;
             case 'text':
-                $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                 break;
             case 'listbox':
                 bearbeiteListBox($aktWert->cWert, $confData[$i]->cWertName, CONF_TRUSTEDSHOPS);
@@ -194,7 +194,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
         $ts->aenderKundenbewertungsstatus(0, $_SESSION['TrustedShops']->oSprache->cISOSprache);
     }
 
-    if (strlen($_POST['kb-tsId']) > 0) {
+    if (mb_strlen($_POST['kb-tsId']) > 0) {
         $ts->aenderKundenbewertungtsIDDB(
             trim($_POST['kb-tsId']),
             $_SESSION['TrustedShops']->oSprache->cISOSprache
@@ -215,7 +215,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
             $_SESSION['TrustedShops']->oSprache->cISOSprache
         );
 
-        if (strlen($tscRating->cTSID) > 0) {
+        if (mb_strlen($tscRating->cTSID) > 0) {
             $nReturnValue = $ts->aenderKundenbewertungsstatus(
                 $tscRating->cTSID,
                 $nStatus,
@@ -363,7 +363,7 @@ if ($step === 'uebersicht') {
     ];
 
     $customerRatingURLs = [];
-    if (isset($tscRating->cTSID) && strlen($tscRating->cTSID) > 0) {
+    if (isset($tscRating->cTSID) && mb_strlen($tscRating->cTSID) > 0) {
         $customerRatingURLs = [
             'de' => 'https://www.trustedshops.com/bewertung/info_' . $tscRating->cTSID . '.html',
             'en' => 'https://www.trustedshops.com/buyerrating/info_' . $tscRating->cTSID . '.html',

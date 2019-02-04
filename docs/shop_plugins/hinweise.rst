@@ -85,7 +85,7 @@ Bestellung mit der Meldung
 
 .. note::
 
-Ihr Warenkorb wurde aufgrund von Preis- oder Lagerbestandsänderungen aktualisiert. Bitte prüfen Sie die Warenkorbpositionen.
+    Ihr Warenkorb wurde aufgrund von Preis- oder Lagerbestandsänderungen aktualisiert. Bitte prüfen Sie die Warenkorbpositionen.
 
 quittiert und der Kunde zurück zum Warenkorb geleitet.
 

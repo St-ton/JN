@@ -297,13 +297,13 @@ class PortletInstance implements \JsonSerializable
 
         foreach ($this->getStyles() as $styleName => $styleValue) {
             if (!empty($styleValue)) {
-                if (\strpos($styleName, 'hidden-') !== false && !empty($styleValue)) {
+                if (\mb_strpos($styleName, 'hidden-') !== false && !empty($styleValue)) {
                     $this->addClass($styleName);
-                } elseif (\stripos($styleName, 'margin-') !== false
-                    || \stripos($styleName, 'padding-') !== false
-                    || \stripos($styleName, 'border-width') !== false
-                    || \stripos($styleName, '-width') !== false
-                    || \stripos($styleName, '-height') !== false
+                } elseif (\mb_stripos($styleName, 'margin-') !== false
+                    || \mb_stripos($styleName, 'padding-') !== false
+                    || \mb_stripos($styleName, 'border-width') !== false
+                    || \mb_stripos($styleName, '-width') !== false
+                    || \mb_stripos($styleName, '-height') !== false
                 ) {
                     $styleString .= $styleName . ':' . \htmlspecialchars($styleValue, \ENT_QUOTES) . 'px; ';
                 } else {
@@ -429,7 +429,7 @@ class PortletInstance implements \JsonSerializable
             $srcset .= \PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';
         }
 
-        $srcset = \substr($srcset, 0, -1); // remove trailing comma
+        $srcset = \mb_substr($srcset, 0, -1); // remove trailing comma
 
         if (\is_array($widthHeuristics)) {
             foreach ($widthHeuristics as $breakpoint => $col) {

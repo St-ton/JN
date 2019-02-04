@@ -13,13 +13,13 @@ require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
 $oAccount->permission('MODULE_CAC_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 $step     = 'kwk_uebersicht';
 
 setzeSprache();
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {

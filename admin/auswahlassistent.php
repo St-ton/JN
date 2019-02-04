@@ -25,7 +25,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     $step = 'uebersicht';
     setzeSprache();
 
-    if (strlen(Request::verifyGPDataString('tab')) > 0) {
+    if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
         $tab = Request::verifyGPDataString('tab');
     }
     if (isset($_POST['a']) && Form::validateToken()) {

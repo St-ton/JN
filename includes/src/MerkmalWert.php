@@ -184,7 +184,7 @@ class MerkmalWert
         $this->kSprache             = (int)$this->kSprache;
         $this->kMerkmal             = (int)$this->kMerkmal;
         $this->kMerkmalWert         = (int)$this->kMerkmalWert;
-        if ($this->cBildpfad !== null && strlen($this->cBildpfad) > 0) {
+        if ($this->cBildpfad !== null && mb_strlen($this->cBildpfad) > 0) {
             if (file_exists(PFAD_MERKMALWERTBILDER_KLEIN . $this->cBildpfad)) {
                 $this->cBildpfadKlein      = PFAD_MERKMALWERTBILDER_KLEIN . $this->cBildpfad;
                 $this->nBildKleinVorhanden = 1;
@@ -251,7 +251,7 @@ class MerkmalWert
         foreach ($data as $value) {
             $value->cURL     = URL::buildURL($value, URLART_MERKMAL);
             $value->cURLFull = URL::buildURL($value, URLART_MERKMAL, true);
-            if (isset($value->cBildpfad) && strlen($value->cBildpfad) > 0) {
+            if (isset($value->cBildpfad) && mb_strlen($value->cBildpfad) > 0) {
                 $value->cBildpfadKlein  = PFAD_MERKMALWERTBILDER_KLEIN . $value->cBildpfad;
                 $value->cBildpfadNormal = PFAD_MERKMALWERTBILDER_NORMAL . $value->cBildpfad;
             } else {

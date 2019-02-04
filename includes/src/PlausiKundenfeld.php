@@ -19,13 +19,13 @@ class PlausiKundenfeld extends Plausi
         if (count($this->xPostVar_arr) === 0) {
             return false;
         }
-        if (!isset($this->xPostVar_arr['cName']) || strlen($this->xPostVar_arr['cName']) === 0) {
+        if (!isset($this->xPostVar_arr['cName']) || mb_strlen($this->xPostVar_arr['cName']) === 0) {
             $this->xPlausiVar_arr['cName'] = 1;
         }
-        if (!isset($this->xPostVar_arr['cWawi']) || strlen($this->xPostVar_arr['cWawi']) === 0) {
+        if (!isset($this->xPostVar_arr['cWawi']) || mb_strlen($this->xPostVar_arr['cWawi']) === 0) {
             $this->xPlausiVar_arr['cWawi'] = 1;
         }
-        if (!isset($this->xPostVar_arr['cTyp']) || strlen($this->xPostVar_arr['cTyp']) === 0) {
+        if (!isset($this->xPostVar_arr['cTyp']) || mb_strlen($this->xPostVar_arr['cTyp']) === 0) {
             $this->xPlausiVar_arr['cTyp'] = 1;
         }
         if (!isset($this->xPostVar_arr['nSort'])) {

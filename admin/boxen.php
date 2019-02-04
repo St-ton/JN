@@ -4,12 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Backend\Revision;
 use Helpers\Form;
 use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('BOXES_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 
 $cHinweis   = '';
 $cFehler    = '';
@@ -89,7 +90,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             if ($eTyp === 'text') {
                 $oldBox = $boxAdmin->getByID($boxID);
                 if ($oldBox->supportsRevisions === true) {
-                    $revision = new Revision();
+                    $revision = new Revision(Shop::Container()->getDB());
                     $revision->addRevision('box', $boxID, true);
                 }
                 $bOk = $boxAdmin->update($boxID, $cTitel);

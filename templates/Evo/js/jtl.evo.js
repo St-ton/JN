@@ -424,6 +424,9 @@
             if (typeof target === 'undefined') {
                 target = document.getElementsByClassName('product-offer')[0];
             }
+            if (target.id === 'result-wrapper' || $(target).hasClass('product-offer')) {
+                opts.position = 'fixed';
+            }
 
             return new Spinner(opts).spin(target);
         },

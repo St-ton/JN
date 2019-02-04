@@ -10,7 +10,7 @@ use Helpers\Request;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'pluginverwaltung_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 
@@ -50,7 +50,7 @@ $pluginsErroneous = $pluginsAll->filter(function (\Plugin\Admin\ListingItem $ite
 if (isset($_SESSION['plugin_msg'])) {
     $cHinweis = $_SESSION['plugin_msg'];
     unset($_SESSION['plugin_msg']);
-} elseif (strlen(Request::verifyGPDataString('h')) > 0) {
+} elseif (mb_strlen(Request::verifyGPDataString('h')) > 0) {
     $cHinweis = StringHandler::filterXSS(base64_decode(Request::verifyGPDataString('h')));
 }
 if (!empty($_FILES['file_data'])) {
@@ -282,7 +282,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 foreach (\Plugin\Helper::getLanguageVariables($kPlugin) as $langVar) {
                     $kPluginSprachvariable = $langVar->kPluginSprachvariable;
                     $cSprachvariable       = $langVar->cName;
-                    $cISO                  = strtoupper($oSprache->cISO);
+                    $cISO                  = mb_convert_case($oSprache->cISO, MB_CASE_UPPER);
                     $idx                   = $kPluginSprachvariable . '_' . $cISO;
                     if (!isset($_POST[$idx])) {
                         continue;

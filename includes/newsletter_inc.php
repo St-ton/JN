@@ -42,8 +42,7 @@ function unique_NewsletterCode($dbfeld, $code): bool
  */
 function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
 {
-    global $cFehler, $cHinweis;
-
+    $alertHelper         = Shop::Container()->getAlertService();
     $conf                = Shop::getSettings([CONF_NEWSLETTER]);
     $plausi              = new stdClass();
     $plausi->nPlausi_arr = [];
@@ -81,10 +80,14 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
                     (int)$_SESSION['Kunde']->kKunde
                 );
             }
-            if ((isset($recipient->cEmail) && strlen($recipient->cEmail) > 0)
+            if ((isset($recipient->cEmail) && mb_strlen($recipient->cEmail) > 0)
                 || (isset($nlCustomer->kKunde) && $nlCustomer->kKunde > 0)
             ) {
-                $cFehler = Shop::Lang()->get('newsletterExists', 'errorMessages');
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    Shop::Lang()->get('newsletterExists', 'errorMessages'),
+                    'newsletterExists'
+                );
             } else {
                 $checkBox->triggerSpecialFunction(
                     CHECKBOX_ORT_NEWSLETTERANMELDUNG,
@@ -157,15 +160,27 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
                         $historyID,
                         (object)['cEmailBodyHtml' => $mail->bodyHtml]
                     );
-                    $cHinweis = Shop::Lang()->get('newsletterAdd', 'messages');
-                    $plausi   = new stdClass();
+                    $alertHelper->addAlert(
+                        Alert::TYPE_NOTE,
+                        Shop::Lang()->get('newsletterAdd', 'newsletterAdd'),
+                        'newsletterAdd'
+                    );
+                    $plausi = new stdClass();
                 } else {
-                    $cHinweis = Shop::Lang()->get('newsletterNomailAdd', 'messages');
+                    $alertHelper->addAlert(
+                        Alert::TYPE_NOTE,
+                        Shop::Lang()->get('newsletterNomailAdd', 'messages'),
+                        'newsletterNomailAdd'
+                    );
                 }
             }
         }
     } else {
-        $cFehler = Shop::Lang()->get('newsletterWrongemail', 'errorMessages');
+        $alertHelper->addAlert(
+            Alert::TYPE_ERROR,
+            Shop::Lang()->get('newsletterWrongemail', 'errorMessages'),
+            'newsletterWrongemail'
+        );
     }
 
     return $plausi;
@@ -205,10 +220,10 @@ function pruefeObBereitsAbonnent(int $kKunde): bool
  */
 function pruefeNLHistoryKundengruppe(int $groupID, $groupKeys): bool
 {
-    if (strlen($groupKeys) > 0) {
+    if (mb_strlen($groupKeys) > 0) {
         $groupIDs = [];
         foreach (explode(';', $groupKeys) as $id) {
-            if ((int)$id > 0 || (strlen($id) > 0 && (int)$id === 0)) {
+            if ((int)$id > 0 || (mb_strlen($id) > 0 && (int)$id === 0)) {
                 $groupIDs[] = (int)$id;
             }
         }

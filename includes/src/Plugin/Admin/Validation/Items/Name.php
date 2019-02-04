@@ -29,7 +29,7 @@ class Name extends AbstractItem
             $hits
         );
 
-        return !isset($hits[0]) || \strlen($hits[0]) !== \strlen($baseNode['Name'])
+        return !isset($hits[0]) || \mb_strlen($hits[0]) !== \mb_strlen($baseNode['Name'])
             ? InstallCode::INVALID_NAME
             : InstallCode::OK;
     }

@@ -64,7 +64,7 @@ class Konfigitemsprache
         if (!self::checkLicense()) {
             return;
         }
-        $item = \Shop::Container()->getDB()->select(
+        $item            = \Shop::Container()->getDB()->select(
             'tkonfigitemsprache',
             'kKonfigitem',
             $kKonfigitem,

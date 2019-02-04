@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Backend\Notification;
+use Backend\NotificationEntry;
 use Helpers\Form;
 use Helpers\Request;
 
@@ -11,7 +13,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 
 $oAccount->permission('SETTINGS_ARTICLEOVERVIEW_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $kSektion         = CONF_ARTIKELUEBERSICHT;
 $conf             = Shop::getSettings([$kSektion]);
 $standardwaehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
@@ -34,7 +36,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
     header('Pragma: no-cache');
     header('Content-type: application/json');
 
-    $index = strtolower(StringHandler::xssClean($_GET['index']));
+    $index = mb_convert_case(StringHandler::xssClean($_GET['index']), MB_CASE_LOWER);
 
     if (!in_array($index, ['tartikel', 'tartikelsprache'], true)) {
         header(Request::makeHTTPHeader(403), true);

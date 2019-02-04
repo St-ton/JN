@@ -59,10 +59,10 @@ class SalesVolume extends AbstractWidget
         $currentMonth  = $this->calcVolumeOfMonth((int)\date('n'), (int)\date('Y'));
         $lastMonth     = $this->calcVolumeOfMonth((int)\date('n', $dateLastMonth), (int)\date('Y', $dateLastMonth));
         foreach ($currentMonth as $month) {
-            $month->dZeit = \substr($month->dZeit, 0, 2);
+            $month->dZeit = \mb_substr($month->dZeit, 0, 2);
         }
         foreach ($lastMonth as $month) {
-            $month->dZeit = \substr($month->dZeit, 0, 2);
+            $month->dZeit = \mb_substr($month->dZeit, 0, 2);
         }
         $series = [
             'Letzter Monat' => $lastMonth,

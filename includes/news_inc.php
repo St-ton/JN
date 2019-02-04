@@ -68,7 +68,7 @@ function holeNewsKategorien($cDatumSQL, $bActiveOnly = false)
     $kSprache     = Shop::getLanguageID();
     $cSQL         = '';
     $activeFilter = $bActiveOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
-    if (strlen($cDatumSQL) > 0) {
+    if (mb_strlen($cDatumSQL) > 0) {
         $cSQL = '   JOIN tnewskategorienews 
                         ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
                     JOIN tnews 
@@ -486,7 +486,7 @@ function holeNewsBilder(int $kNews, $uploadDir)
         while (false !== ($file = readdir($handle))) {
             if ($file !== '.' && $file !== '..') {
                 $image           = new stdClass();
-                $image->cName    = substr($file, 0, strpos($file, '.'));
+                $image->cName    = mb_substr($file, 0, mb_strpos($file, '.'));
                 $image->cURL     = PFAD_NEWSBILDER . $kNews . '/' . $file;
                 $image->cURLFull = $baseURL . PFAD_NEWSBILDER . $kNews . '/' . $file;
                 $image->cDatei   = $file;

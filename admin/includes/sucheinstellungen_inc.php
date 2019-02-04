@@ -13,7 +13,7 @@ function createSearchIndex($index, $create)
 {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 
-    $index    = strtolower(StringHandler::xssClean($index));
+    $index    = mb_convert_case(StringHandler::xssClean($index), MB_CASE_LOWER);
     $cHinweis = '';
     $cFehler  = '';
 

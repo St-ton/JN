@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Backend\Notification;
+use Backend\Revision;
 use Helpers\Form;
 use JTLShop\SemVer\Version;
 
@@ -47,8 +49,11 @@ if (!function_exists('Shop')) {
         return Shop::getInstance();
     }
 }
-$DB       = new \DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
-$cache    = Shop::Container()->getCache()->setJtlCacheConfig();
+$db       = new \DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
+$cache    = Shop::Container()->getCache()->setJtlCacheConfig(
+    $db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)
+);
+$lang     = Sprache::getInstance($db, $cache);
 $session  = \Session\Backend::getInstance();
 $oAccount = Shop::Container()->getAdminAccount();
 
@@ -62,14 +67,14 @@ Shop::bootstrap();
 if ($oAccount->logged()) {
     if (!$session->isValid()) {
         $oAccount->logout();
-        $oAccount->redirectOnFailure(AdminLoginStatus::ERROR_SESSION_INVALID);
+        $oAccount->redirectOnFailure(\Backend\AdminLoginStatus::ERROR_SESSION_INVALID);
     }
 
     Shop::fire('backend.notification', Notification::getInstance()->buildDefault());
     if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id'])
         && Form::validateToken()
     ) {
-        $revision = new Revision();
+        $revision = new Revision($db);
         if ($_POST['revision-action'] === 'restore') {
             $revision->restoreRevision(
                 $_POST['revision-type'],

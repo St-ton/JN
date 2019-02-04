@@ -364,7 +364,7 @@ class Product
                 unset($propValue);
                 if ($oEigenschaft->cTyp === 'PFLICHT-FREIFELD'
                     && self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)
-                    && \strlen(self::getSelectedVariationValue($oEigenschaft->kEigenschaft)) === 0
+                    && \mb_strlen(self::getSelectedVariationValue($oEigenschaft->kEigenschaft)) === 0
                 ) {
                     \header('Location: ' . Shop::getURL() .
                         '/?a=' . $productID .
@@ -488,7 +488,7 @@ class Product
                 if ($prop->cTyp === 'PFLICHT-FREIFELD'
                     && $redirect
                     && self::hasSelectedVariationValue($prop->kEigenschaft)
-                    && \strlen(self::getSelectedVariationValue($prop->kEigenschaft)) === 0
+                    && \mb_strlen(self::getSelectedVariationValue($prop->kEigenschaft)) === 0
                 ) {
                     \header('Location: ' . Shop::getURL() .
                         '/?a=' . $productID .
@@ -1118,7 +1118,7 @@ class Product
         $msg->cFax       = isset($_POST['fax']) ? StringHandler::filterXSS($_POST['fax']) : null;
         $msg->cTel       = isset($_POST['tel']) ? StringHandler::filterXSS($_POST['tel']) : null;
         $msg->cMobil     = isset($_POST['mobil']) ? StringHandler::filterXSS($_POST['mobil']) : null;
-        if (\strlen($msg->cAnrede) === 1) {
+        if (\mb_strlen($msg->cAnrede) === 1) {
             if ($msg->cAnrede === 'm') {
                 $msg->cAnredeLocalized = Shop::Lang()->get('salutationM');
             } elseif ($msg->cAnrede === 'w') {
@@ -1193,6 +1193,11 @@ class Product
         $history->dErstellt  = 'NOW()';
 
         $inquiryID = Shop::Container()->getDB()->insert('tproduktanfragehistory', $history);
+        Shop::Container()->getAlertService()->addAlert(
+            \Alert::TYPE_SUCCESS,
+            Shop::Lang()->get('thankYouForQuestion', 'messages'),
+            'thankYouForQuestion'
+        );
         if (isset($_SESSION['Kampagnenbesucher'])) {
             Kampagne::setCampaignAction(\KAMPAGNE_DEF_FRAGEZUMPRODUKT, $inquiryID, 1.0);
         }
@@ -1282,9 +1287,10 @@ class Product
                 if (isset($_SESSION['Kampagnenbesucher'])) {
                     Kampagne::setCampaignAction(\KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE, $inquiryID, 1.0);
                 }
-                Shop::Smarty()->assign(
-                    'PositiveFeedback',
-                    Shop::Lang()->get('thankYouForNotificationSubscription', 'messages')
+                Shop::Container()->getAlertService()->addAlert(
+                    \Alert::TYPE_SUCCESS,
+                    Shop::Lang()->get('thankYouForNotificationSubscription', 'messages'),
+                    'thankYouForNotificationSubscription'
                 );
             } else {
                 $notices[] = Shop::Lang()->get('notificationNotPossible', 'messages');
@@ -1603,7 +1609,7 @@ class Product
         }
         $tagString       = StringHandler::filterXSS(Request::verifyGPDataString('tag'));
         $variKindArtikel = Request::verifyGPDataString('variKindArtikel');
-        if (\strlen($tagString) > 0) {
+        if (\mb_strlen($tagString) > 0) {
             if (empty($_SESSION['Kunde']->kKunde) && $conf['artikeldetails']['tagging_freischaltung'] === 'Y') {
                 $linkHelper = Shop::Container()->getLinkService();
                 \header('Location: ' . $linkHelper->getStaticRoute('jtl.php') .
@@ -1653,7 +1659,7 @@ class Product
                         'cName',
                         Shop::Container()->getDB()->escape($tagString)
                     );
-                    if (isset($mapping->cNameNeu) && \strlen($mapping->cNameNeu) > 0) {
+                    if (isset($mapping->cNameNeu) && \mb_strlen($mapping->cNameNeu) > 0) {
                         $tagString = $mapping->cNameNeu;
                     }
                     $tag = new Tag();
@@ -1692,7 +1698,7 @@ class Product
                         $newTag->cSeo     = SeoHelper::getSeo($tagString);
                         $newTag->cSeo     = SeoHelper::checkSeo($newTag->cSeo);
                         $newTag->nAktiv   = 0;
-                        $tagID             = $newTag->insertInDB();
+                        $tagID            = $newTag->insertInDB();
                         if ($tagID > 0) {
                             $tagArticle                 = new TagArticle();
                             $tagArticle->kTag           = $tagID;
@@ -1849,6 +1855,9 @@ class Product
                 break;
             case 'f03':
                 $error = Shop::Lang()->get('bewertungBewnotbought', 'errorMessages');
+                break;
+            case 'f04':
+                $error = Shop::Lang()->get('loginFirst', 'product rating');
                 break;
             case 'h01':
                 $error = Shop::Lang()->get('bewertungBewadd', 'messages');

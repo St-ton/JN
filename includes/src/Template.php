@@ -571,7 +571,7 @@ class Template
                             break;
                         }
                     }
-                    $setting->bEditable = strlen($setting->bEditable) === 0
+                    $setting->bEditable = mb_strlen($setting->bEditable) === 0
                         ? true
                         : (bool)(int)$setting->bEditable;
                     if ($setting->bEditable && isset($oDBSettings[$oSection->cKey][$setting->cKey])) {
@@ -722,7 +722,7 @@ class Template
                 return false;
             }
             while (($obj = readdir($dh)) !== false) {
-                if (strpos($obj, '.') === 0) {
+                if (mb_strpos($obj, '.') === 0) {
                     continue;
                 }
                 if (!is_dir(PFAD_ROOT . PFAD_COMPILEDIR . $obj)) {

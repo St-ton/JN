@@ -12,7 +12,7 @@ use Pagination\Pagination;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_COUPON_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kupons_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
@@ -34,8 +34,8 @@ $res              = handleCsvImportAction('kupon', function ($obj, &$importDelet
     $couponNames = [];
 
     foreach (get_object_vars($obj) as $key => $val) {
-        if (strpos($key, 'cName_') === 0) {
-            $couponNames[substr($key, 6)] = $val;
+        if (mb_strpos($key, 'cName_') === 0) {
+            $couponNames[mb_substr($key, 6)] = $val;
             unset($obj->$key);
         }
     }

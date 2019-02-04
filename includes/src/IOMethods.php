@@ -64,7 +64,7 @@ class IOMethods
     public function suggestions($keyword): array
     {
         $results = [];
-        if (strlen($keyword) < 2) {
+        if (mb_strlen($keyword) < 2) {
             return $results;
         }
         $smarty     = Shop::Smarty();
@@ -1125,7 +1125,7 @@ class IOMethods
     {
         $response = new IOResponse();
 
-        if (strlen($country) === 2) {
+        if (mb_strlen($country) === 2) {
             $regions = Staat::getRegions($country);
             $response->script('this.response = ' . json_encode($regions) . ';');
         }
@@ -1141,7 +1141,7 @@ class IOMethods
     {
         $response = new IOResponse();
 
-        if (strlen($country) === 2) {
+        if (mb_strlen($country) === 2) {
             $deliveryCountries = ShippingMethod::getPossibleShippingCountries(
                 \Session\Frontend::getCustomerGroup()->getID(),
                 false,

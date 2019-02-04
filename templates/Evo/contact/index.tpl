@@ -192,14 +192,6 @@
                         {$Spezialcontent->unten}
                     </div>
                 {/if}
-            {elseif $step === 'nachricht versendet'}
-                <div class="alert alert-success">
-                    {lang key='messageSent' section='contact'}
-                </div>
-            {elseif $step === 'floodschutz'}
-                <div class="alert alert-danger">
-                    {lang key='youSentUsAMessageShortTimeBefore' section='contact'}
-                </div>
             {/if}
         {/if}
         {include file='snippets/opc_mount_point.tpl' id='opc_contact_append'}

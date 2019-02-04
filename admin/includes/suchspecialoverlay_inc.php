@@ -69,7 +69,7 @@ function speicherEinstellung(int $overlayID, $post, $files)
     $overlay->nPrio     = (int)$post['nPrio'];
     $overlay->cBildPfad = '';
 
-    if (strlen($files['cSuchspecialOverlayBild']['name']) > 0) {
+    if (mb_strlen($files['cSuchspecialOverlayBild']['name']) > 0) {
         $overlay->cBildPfad = 'kSuchspecialOverlay_' . $_SESSION['kSprache'] . '_' .
             $overlayID . mappeFileTyp($files['cSuchspecialOverlayBild']['type']);
     } else {
@@ -80,13 +80,13 @@ function speicherEinstellung(int $overlayID, $post, $files)
             'kSprache',
             (int)$_SESSION['kSprache']
         );
-        if (isset($oSuchspecialoverlaySpracheTMP->cBildPfad) && strlen($oSuchspecialoverlaySpracheTMP->cBildPfad)) {
+        if (isset($oSuchspecialoverlaySpracheTMP->cBildPfad) && mb_strlen($oSuchspecialoverlaySpracheTMP->cBildPfad)) {
             $overlay->cBildPfad = $oSuchspecialoverlaySpracheTMP->cBildPfad;
         }
     }
 
     if ($overlay->kSuchspecialOverlay > 0) {
-        if (strlen($files['cSuchspecialOverlayBild']['name']) > 0) {
+        if (mb_strlen($files['cSuchspecialOverlayBild']['name']) > 0) {
             loescheBild($overlay);
             speicherBild($files, $overlay);
         }

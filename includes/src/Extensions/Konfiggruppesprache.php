@@ -215,6 +215,6 @@ class Konfiggruppesprache implements \JsonSerializable
      */
     public function hatBeschreibung(): bool
     {
-        return \strlen($this->cBeschreibung) > 0;
+        return \mb_strlen($this->cBeschreibung) > 0;
     }
 }

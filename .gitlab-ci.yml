@@ -6,6 +6,7 @@ stages:
   - deploy
   - cleanUp
   - staging
+  - stagingPre
 
 .testingScript: &testingScript |
   export CI_CONTAINER_NAME=ci_job_$CI_PROJECT_NAME_testing_$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
@@ -130,19 +131,20 @@ stages:
   function deployProcess() {
     export PHP_VERSION=$1;
     export DEPLOY_PATH="$STAGING_USER_PATH/php$PHP_VERSION/$FILENAME";
-    export MIGRATION_COUNT_BEFORE=$(ls -1 $DOWNLOAD_PATH/update/migrations/ | wc -l)
+    export MIGRATION_COUNT_BEFORE=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l)
 
     sudo /usr/bin/rsync -rt -og --chown=www-data:www-data $EXTRACTION_PATH/. $DEPLOY_PATH
 
-    export MIGRATION_COUNT_AFTER=$(ls -1 $DOWNLOAD_PATH/update/migrations/ | wc -l)
+    export MIGRATION_COUNT_AFTER=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l)
 
     if [[ $MIGRATION_COUNT_AFTER -gt $MIGRATION_COUNT_BEFORE ]]; then
       php -r "
         require_once '${DOWNLOAD_PATH}/includes/globalinclude.php'; \
-        \$manager = new MigrationManager(null); \
-        \$manager->migrate(null); \
+        \$time    = date('YmdHis'); \
+        \$manager = new MigrationManager(); \
+
         try {
-          \$result = \$manager->migrate(null);
+          \$result = \$manager->migrate($time);
         } catch (Exception \$e) {
           \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations())));
           \$result = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage());
@@ -310,7 +312,7 @@ removeContainer:
     - build
 
 stagingPreDeploy:
-  stage: staging
+  stage: stagingPre
   variables:
     GIT_STRATEGY: none
   script:

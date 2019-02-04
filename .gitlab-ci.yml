@@ -5,8 +5,8 @@ stages:
   - build
   - deploy
   - cleanUp
-  - staging
   - stagingPre
+  - staging
 
 .testingScript: &testingScript |
   export CI_CONTAINER_NAME=ci_job_$CI_PROJECT_NAME_testing_$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP

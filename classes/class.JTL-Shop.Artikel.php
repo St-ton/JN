@@ -1683,7 +1683,7 @@ class Artikel
                     $nTabEnthalten = 0;
                     foreach ($cMedienTyp_arr as $cMedienTyp) {
                         if (strlen($oMedienDatei->cAttributTab) > 0) {
-                            if ($cMedienTyp === $oMedienDatei->cAttributTab) {
+                            if ($this->getSeoString($cMedienTyp) === $this->getSeoString($oMedienDatei->cAttributTab)) {
                                 $nTabEnthalten = 1;
                                 break;
                             }
@@ -6785,4 +6785,27 @@ class Artikel
 
         return $depProducts;
     }
+
+    /**
+     * prepares a string optimized for SEO
+     * @param String $optStr
+     * @return String SEO optimized String
+     */
+    private function getSeoString($optStr = '')
+    {
+
+        $optStr = StringHandler::convertUTF8($optStr);
+        $optStr = preg_replace('/[^\\pL\d_]+/u', '-', $optStr);
+        $optStr = trim($optStr, '-');
+        if (function_exists('transliterator_transliterate')) {
+            $optStr = transliterator_transliterate('Latin-ASCII;', $optStr);
+        } else {
+            $optStr = StringHandler::remove_accent($optStr);
+        }
+        $optStr = strtolower($optStr);
+        $optStr = preg_replace('/[^-a-z0-9_]+/', '', $optStr);
+
+        return $optStr;
+    }
+
 }

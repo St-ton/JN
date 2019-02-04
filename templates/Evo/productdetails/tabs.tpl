@@ -109,7 +109,7 @@
             {/if}
             {if $useMediaGroup}
                 {foreach name="mediendateigruppen" from=$Artikel->cMedienTyp_arr item=cMedienTyp}
-                    {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
+                    {$cMedienTypId = $cMedienTyp|@seofy}
                     <li role="presentation"
                         {if $setActiveClass.mediaGroup && $smarty.foreach.mediendateigruppen.first} class="active"{/if}>
                         <a href="#tab-{$cMedienTypId}" aria-controls="tab-{$cMedienTypId}" role="tab" data-toggle="tab">
@@ -282,7 +282,7 @@
         {/if}
         {if $useMediaGroup}
             {foreach name="mediendateigruppen" from=$Artikel->cMedienTyp_arr item=cMedienTyp}
-                {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
+                {$cMedienTypId = $cMedienTyp|@seofy}
                 {if $tabanzeige}
                     <div role="tabpanel" class="tab-pane fade
                         {if $setActiveClass.mediaGroup && $smarty.foreach.mediendateigruppen.first} in active{/if}"

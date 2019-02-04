@@ -10,25 +10,25 @@ $return = 3;
 if (auth()) {
     $return = 2;
     if (isset($_POST['b']) && strlen($_POST['b']) > 0) {
-        $cBrocken = StringHandler::filterXSS($_POST['b']);
-        $oBrocken = Shop::Container()->getDB()->query(
+        $input = StringHandler::filterXSS($_POST['b']);
+        $data  = Shop::Container()->getDB()->query(
             'SELECT cBrocken
                 FROM tbrocken
                 ORDER BY dErstellt DESC
                 LIMIT 1',
             \DB\ReturnType::SINGLE_OBJECT
         );
-        if (empty($oBrocken->cBrocken)) {
-            $oBrocken            = new stdClass();
-            $oBrocken->cBrocken  = $cBrocken;
-            $oBrocken->dErstellt = 'NOW()';
-            Shop::Container()->getDB()->insert('tbrocken', $oBrocken);
-        } elseif (isset($oBrocken->cBrocken) && $oBrocken->cBrocken !== $cBrocken && strlen($oBrocken->cBrocken) > 0) {
+        if (empty($data->cBrocken)) {
+            $data            = new stdClass();
+            $data->cBrocken  = $input;
+            $data->dErstellt = 'NOW()';
+            Shop::Container()->getDB()->insert('tbrocken', $data);
+        } elseif (isset($data->cBrocken) && $data->cBrocken !== $input && strlen($data->cBrocken) > 0) {
             Shop::Container()->getDB()->update(
                 'tbrocken',
                 'cBrocken',
-                $oBrocken->cBrocken,
-                (object)['cBrocken' => $cBrocken, 'dErstellt' => 'NOW()']
+                $data->cBrocken,
+                (object)['cBrocken' => $input, 'dErstellt' => 'NOW()']
             );
         }
         $return = 0;

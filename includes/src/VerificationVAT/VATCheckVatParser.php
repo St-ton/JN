@@ -182,6 +182,11 @@ class VATCheckVatParser
     private $errorInfo = '';
 
     /**
+     * @var string
+     */
+    private $errorPos = 0;
+
+    /**
      * VATCheckVatParser constructor.
      * @param $vatID
      */
@@ -228,7 +233,7 @@ class VATCheckVatParser
         // check, if we iterate the whole given VAT-ID,
         // and if not, return the position, at which we sopped
         if (\mb_strlen($vatID) !== $i) {
-            $this->nErrorPos = $i; // store the error-position for later usage too
+            $this->errorPos = $i; // store the error-position for later usage too
 
             return $i;
         }
@@ -311,5 +316,15 @@ class VATCheckVatParser
     public function getErrorInfo(): string
     {
         return $this->errorInfo;
+    }
+
+    /**
+     * returns the position, in the VAT-ID-string, at which the last error was ocurred
+     *
+     * @return int
+     */
+    public function getErrorPos(): int
+    {
+        return $this->errorPos;
     }
 }

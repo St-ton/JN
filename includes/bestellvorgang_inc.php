@@ -2178,45 +2178,45 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
             || (isset(\Session\Frontend::getCustomer()->cUSTID)
                 && \Session\Frontend::getCustomer()->cUSTID !== $data['ustid'])
         ) {
-            $analizeCheck = false;
-            $viesResult   = null;
+            $analizeCheck   = false;
+            $resultVatCheck = null;
             if ($conf['kunden']['shop_ustid_bzstpruefung'] === 'Y') {
-                $oVies        = new \VerificationVAT\VATCheck();
-                $viesResult   = $oVies->doCheckID(trim($data['ustid']));
-                $analizeCheck = true; // flag to signalize further analization
+                $VatCheck       = new \VerificationVAT\VATCheck(trim($data['ustid']));
+                $resultVatCheck = $VatCheck->doCheckID();
+                $analizeCheck   = true; // flag to signalize further analization
             }
-            if ($analizeCheck === true && $viesResult['success'] === true) {
+            if ($analizeCheck === true && $resultVatCheck['success'] === true) {
                 // "all was fine"
                 $ret['ustid'] = 0;
-            } elseif (isset($viesResult)) {
-                switch ($viesResult['errortype']) {
+            } elseif (isset($resultVatCheck)) {
+                switch ($resultVatCheck['errortype']) {
                     case 'vies':
                         // vies-error: the ID is invalid according to the VIES-system
-                        $ret['ustid'] = $viesResult['errorcode']; // (old value 5)
+                        $ret['ustid'] = $resultVatCheck['errorcode']; // (old value 5)
                         break;
                     case 'parse':
                         // parse-error: the ID-string is misspelled in any way
-                        if ($viesResult['errorcode'] === 1) {
+                        if ($resultVatCheck['errorcode'] === 1) {
                             $ret['ustid'] = 1; // parse-error: no id was given
-                        } elseif ($viesResult['errorcode'] > 1) {
+                        } elseif ($resultVatCheck['errorcode'] > 1) {
                             $ret['ustid'] = 2; // parse-error: with the position of error in given ID-string
-                            switch ($viesResult['errorcode']) {
+                            switch ($resultVatCheck['errorcode']) {
                                 case 120:
                                     // build a string with error-code and error-information
-                                    $ret['ustid_err'] = $viesResult['errorcode'].
+                                    $ret['ustid_err'] = $resultVatCheck['errorcode'].
                                         ','.
-                                        mb_substr($data['ustid'], 0, $viesResult['errorinfo']).
+                                        mb_substr($data['ustid'], 0, $resultVatCheck['errorinfo']).
                                         '<span style="color:red;">'.
-                                        mb_substr($data['ustid'], $viesResult['errorinfo']).
+                                        mb_substr($data['ustid'], $resultVatCheck['errorinfo']).
                                         '</span>';
                                     break;
                                 case 130:
-                                    $ret['ustid_err'] = $viesResult['errorcode'].
+                                    $ret['ustid_err'] = $resultVatCheck['errorcode'].
                                         ','.
-                                        $viesResult['errorinfo'];
+                                        $resultVatCheck['errorinfo'];
                                     break;
                                 default:
-                                    $ret['ustid_err'] = $viesResult['errorcode'];
+                                    $ret['ustid_err'] = $resultVatCheck['errorcode'];
                                     break;
                             }
                         }
@@ -2227,9 +2227,9 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                         if ($conf['kunden']['shop_ustid_force_remote_check'] === 'Y') {
                             // parsing ok, but the remote-service is in a down slot and unreachable
                             $ret['ustid']     = 4;
-                            $ret['ustid_err'] = $viesResult['errorcode'].
+                            $ret['ustid_err'] = $resultVatCheck['errorcode'].
                                 ','.
-                                $viesResult['errorinfo'];
+                                $resultVatCheck['errorinfo'];
                         }
                         break;
                 }

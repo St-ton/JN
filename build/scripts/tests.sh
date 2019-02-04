@@ -5,7 +5,7 @@ composer install -a -o -q -d includes;
 
 echo "Check composer packages vulnerabilities.";
 includes/vendor/bin/security-checker security:check "includes/composer.lock"
-if [[ $? -eq 1 ]]; then
+if [[ $? -ne 0 ]]; then
     exit 1;
 fi
 
@@ -15,7 +15,7 @@ for component in build/components/*/ ; do
 
     echo "Check composer packages vulnerabilities for ${component}.";
     includes/vendor/bin/security-checker security:check "${component}composer.lock"
-    if [[ $? -eq 1 ]]; then
+    if [[ $? -ne 0 ]]; then
         exit 1;
     fi
 done

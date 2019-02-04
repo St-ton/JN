@@ -120,7 +120,7 @@ stages:
   export EXTRACTION_PATH="$RUNNER_PATH/shop-$FILENAME";
 
   function downloadProcess() {
-    export RUNNER_PATH_ZIP="$RUNNER_PATH/shop-$FILENAME.zip";
+    export RUNNER_PATH_ZIP="$EXTRACTION_PATH.zip";
     export DOWNLOAD_URL="https://build.jtl-shop.de/get/shop-$FILENAME.zip";
 
     curl -o $RUNNER_PATH_ZIP $DOWNLOAD_URL

@@ -131,7 +131,7 @@
                 a='saveSettings'
                 action='tagging.php'
                 buttonCaption=__('save')
-                title='Einstellungen'
+                title=__('settings')
                 tab='einstellungen'}
         </div>
     </div>

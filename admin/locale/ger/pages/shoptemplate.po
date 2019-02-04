@@ -43,3 +43,27 @@ msgstr "Style-Datei konnte nicht geschrieben werden. Überprüfen Sie die Dateir
 
 msgid "successLayoutSave"
 msgstr "Layout wurde erfolgreich angepasst."
+
+msgid "standardTemplateMobil"
+msgstr "Standard-Template für mobile Endgeräte?"
+
+msgid "optimizeBrowser"
+msgstr "Nein (optimiert für Standard-Browser)"
+
+msgid "optimizeMobile"
+msgstr "Ja (optimiert für mobile Endgeräte)"
+
+msgid "activateTemplate"
+msgstr "Template aktivieren"
+
+msgid "inheritsFrom"
+msgstr "Erbt von"
+
+msgid "originalExists"
+msgstr "Originalversion vorhanden"
+
+msgid "mobileDevices"
+msgstr "Mobile Endgeräte"
+
+msgid "parentTemplateMissing"
+msgstr "Parent-Template fehlt"

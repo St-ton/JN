@@ -85,3 +85,6 @@ msgstr "Ihre markierten Sitemap Downloads für %s wurden erfolgreich gelöscht."
 
 msgid "successSitemapReportDeleteByYear"
 msgstr "Ihre Sitemap Reports für %s wurden erfolgreich gelöscht."
+
+msgid "sureDeleteEntries"
+msgstr "Wollen Sie wirklich alle Einträge für das ausgewählte Jahr löschen?"

@@ -169,7 +169,7 @@ function checkSelect(selectBox) {ldelim}
             button.type = 'button';
             button.name = 'button';
             button.setAttribute('class', 'btn btn-primary');
-            button.innerHTML = 'Antwort hinzufügen';
+            button.innerHTML = '{__('addAnswer')}';
             button.onclick = function() {ldelim} addInputRow(); {rdelim};
 
             document.getElementById('buttons').appendChild(button);
@@ -221,7 +221,7 @@ function checkSelect(selectBox) {ldelim}
             button.type = 'button';
             button.name = 'button';
             button.setAttribute('class', 'btn btn-primary');
-            button.innerHTML = 'Antwort hinzufügen';
+            button.innerHTML = '{__('addAnswer')}';
             button.onclick = function() {ldelim} addInputRow(); {rdelim};
 
             document.getElementById('buttons').appendChild(button);
@@ -274,7 +274,7 @@ function checkSelect(selectBox) {ldelim}
             button.type = 'button';
             button.name = 'button';
             button.setAttribute('class', 'btn btn-primary');
-            button.innerHTML = 'Antwort hinzufügen';
+            button.innerHTML = '{__('addAnswer')}';
             button.onclick = function() {ldelim} addInputRow(); {rdelim};
 
             document.getElementById('buttons').appendChild(button);
@@ -326,7 +326,7 @@ function checkSelect(selectBox) {ldelim}
             button.type = 'button';
             button.name = 'button';
             button.setAttribute('class', 'btn btn-primary');
-            button.innerHTML = 'Antwort hinzufügen';
+            button.innerHTML = '{__('addAnswer')}';
             button.onclick = function() {ldelim} addInputRow(); {rdelim};
 
             document.getElementById('buttons').appendChild(button);
@@ -387,7 +387,7 @@ function checkSelect(selectBox) {ldelim}
             button.type = 'button';
             button.name = 'button';
             button.setAttribute('class', 'btn btn-primary');
-            button.innerHTML = 'Option hinzufügen';
+            button.innerHTML = '{__('addOption')}';
             button.onclick = function() {ldelim} addInputRowOption(); {rdelim};
 
             document.getElementById('buttonsOption').appendChild(button);
@@ -438,7 +438,7 @@ function checkSelect(selectBox) {ldelim}
             button.type = 'button';
             button.name = 'button';
             button.setAttribute('class', 'btn btn-primary');
-            button.innerHTML = 'Antwort hinzufügen';
+            button.innerHTML = '{__('addAnswer')}';
             button.onclick = function() {ldelim} addInputRow(); {rdelim};
 
             document.getElementById('buttons').appendChild(button);
@@ -490,7 +490,7 @@ function checkSelect(selectBox) {ldelim}
             button.type = 'button';
             button.name = 'button';
             button.setAttribute('class', 'btn btn-primary');
-            button.innerHTML = 'Option hinzufügen';
+            button.innerHTML = '{__('addOption')}';
             button.onclick = function() {ldelim} addInputRowOption(); {rdelim};
 
             document.getElementById('buttonsOption').appendChild(button);
@@ -540,7 +540,7 @@ function checkSelect(selectBox) {ldelim}
             button.type = 'button';
             button.name = 'button';
             button.setAttribute('class', 'btn btn-primary');
-            button.innerHTML = 'Antwort hinzufügen';
+            button.innerHTML = '{__('addAnswer')}';
             button.onclick = function() {ldelim} addInputRow(); {rdelim};
 
             document.getElementById('buttons').appendChild(button);
@@ -610,16 +610,16 @@ function checkSelect(selectBox) {ldelim}
                                 <span class="input-group-wrap">
                                     <select name="cTyp" id="cTypSelect" class="form-control combo" onchange="checkSelect(this);">
                                         <option {if isset($oUmfrageFrage->kUmfrageFrage) && $oUmfrageFrage->kUmfrageFrage > 0}{else}selected{/if}></option>
-                                        <option value="{\Survey\QuestionType::MULTI_SINGLE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::MULTI_SINGLE}selected{/if}>Multiple Choice (Eine Antwort)</option>
-                                        <option value="{\Survey\QuestionType::MULTI}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::MULTI}selected{/if}>Multiple Choice (Viele Antworten)</option>
-                                        <option value="{\Survey\QuestionType::SELECT_SINGLE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::SELECT_SINGLE}selected{/if}>Selectbox (Eine Antwort)</option>
-                                        <option value="{\Survey\QuestionType::SELECT_MULTI}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::SELECT_MULTI}selected{/if}>SelectBox (Viele Antworten)</option>
-                                        <option value="{\Survey\QuestionType::TEXT_SMALL}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::TEXT_SMALL}selected{/if}>Textfeld (klein)</option>
-                                        <option value="{\Survey\QuestionType::TEXT_BIG}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::TEXT_BIG}selected{/if}>Textfeld (groß)</option>
-                                        <option value="{\Survey\QuestionType::MATRIX_SINGLE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::MATRIX_SINGLE}selected{/if}>Matrix (Eine Antwort pro Zeile)</option>
-                                        <option value="{\Survey\QuestionType::MATRIX_MULTI}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::MATRIX_MULTI}selected{/if}>Matrix (Viele Antworten pro Zeile)</option>
-                                        <option value="{\Survey\QuestionType::TEXT_STATIC}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::TEXT_STATIC}selected{/if}>Statischer Trenntext</option>
-                                        <option value="{\Survey\QuestionType::TEXT_PAGE_CHANGE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::TEXT_PAGE_CHANGE}selected{/if}>Statischer Trenntext + Seitenwechsel</option>
+                                        <option value="{\Survey\QuestionType::MULTI_SINGLE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::MULTI_SINGLE}selected{/if}>{__('questionTypeMultipleChoiceOne')}</option>
+                                        <option value="{\Survey\QuestionType::MULTI}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::MULTI}selected{/if}>{__('questionTypeMultipleChoiceMany')}</option>
+                                        <option value="{\Survey\QuestionType::SELECT_SINGLE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::SELECT_SINGLE}selected{/if}>{__('questionTypeSelectboxOne')}</option>
+                                        <option value="{\Survey\QuestionType::SELECT_MULTI}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::SELECT_MULTI}selected{/if}>{__('questionTypeSelectboxMany')}</option>
+                                        <option value="{\Survey\QuestionType::TEXT_SMALL}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::TEXT_SMALL}selected{/if}>{__('questionTypeTextSmall')}</option>
+                                        <option value="{\Survey\QuestionType::TEXT_BIG}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::TEXT_BIG}selected{/if}>{__('questionTypeTextBig')}</option>
+                                        <option value="{\Survey\QuestionType::MATRIX_SINGLE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::MATRIX_SINGLE}selected{/if}>{__('questionTypeMatrixOne')}</option>
+                                        <option value="{\Survey\QuestionType::MATRIX_MULTI}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::MATRIX_MULTI}selected{/if}>{__('questionTypeMatrixMany')}</option>
+                                        <option value="{\Survey\QuestionType::TEXT_STATIC}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::TEXT_STATIC}selected{/if}>{__('questionTypeDivider')}</option>
+                                        <option value="{\Survey\QuestionType::TEXT_PAGE_CHANGE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::TEXT_PAGE_CHANGE}selected{/if}>{__('questionTypeDividerNewPage')}</option>
                                     </select>
                                 </span>
                             </td>
@@ -634,8 +634,8 @@ function checkSelect(selectBox) {ldelim}
                             <td><label for="nFreifeld">{__('umfrageQFreeField')}</label></td>
                             <td>
                                 <select id="nFreifeld" name="nFreifeld" class="form-control combo">
-                                    <option value="1"{if isset($oUmfrageFrage->nFreifeld) && $oUmfrageFrage->nFreifeld == 1}selected{/if}>Ja</option>
-                                    <option value="0"{if !isset($oUmfrageFrage->nFreifeld) || (isset($oUmfrageFrage->nFreifeld) && $oUmfrageFrage->nFreifeld == 0)}selected{/if}>Nein</option>
+                                    <option value="1"{if isset($oUmfrageFrage->nFreifeld) && $oUmfrageFrage->nFreifeld == 1}selected{/if}>{__('yes')}</option>
+                                    <option value="0"{if !isset($oUmfrageFrage->nFreifeld) || (isset($oUmfrageFrage->nFreifeld) && $oUmfrageFrage->nFreifeld == 0)}selected{/if}>{__('no')}</option>
                                 </select>
                             </td>
                         </tr>
@@ -644,8 +644,8 @@ function checkSelect(selectBox) {ldelim}
                             <td><label for="nNotwendig">{__('umfrageQEssential')}</label></td>
                             <td>
                                 <select id="nNotwendig" name="nNotwendig" class="form-control combo">
-                                    <option value="1"{if isset($oUmfrageFrage->nNotwendig) && $oUmfrageFrage->nNotwendig == 1}selected{/if}>Ja</option>
-                                    <option value="0"{if isset($oUmfrageFrage->nNotwendig) && $oUmfrageFrage->nNotwendig == 0}selected{/if}>Nein</option>
+                                    <option value="1"{if isset($oUmfrageFrage->nNotwendig) && $oUmfrageFrage->nNotwendig == 1}selected{/if}>{__('yes')}</option>
+                                    <option value="0"{if isset($oUmfrageFrage->nNotwendig) && $oUmfrageFrage->nNotwendig == 0}selected{/if}>{__('no')}</option>
                                 </select>
                             </td>
                         </tr>
@@ -661,7 +661,7 @@ function checkSelect(selectBox) {ldelim}
                             <tr>
                                 <td id="buttonsOption">
                                     {if isset($oUmfrageFrage->oUmfrageMatrixOption_arr) && $oUmfrageFrage->oUmfrageMatrixOption_arr|@count > 0}
-                                        <button name="button" type="button" value="Option hinzufügen" onclick="addInputRowOption();" class="btn btn-primary"><i class="fa fa-share"></i> Option hinzufügen</button>
+                                        <button name="button" type="button" value="Option hinzufügen" onclick="addInputRowOption();" class="btn btn-primary"><i class="fa fa-share"></i> {__('addOption')}</button>
                                     {/if}
                                 </td>
                             </tr>
@@ -669,7 +669,7 @@ function checkSelect(selectBox) {ldelim}
                                 {foreach $oUmfrageFrage->oUmfrageMatrixOption_arr as $oUmfrageMatrixOption}
                                     <input name="kUmfrageMatrixOption[]" type="hidden" value="{$oUmfrageMatrixOption->kUmfrageMatrixOption}" />
                                     <tr>
-                                        <td>Option {$oUmfrageMatrixOption@iteration}<input name="cNameOption[]" class="form-control" type="text" value="{$oUmfrageMatrixOption->cName}" /> {__('umfrageQSort')} <input name="nSortOption[]" class="form-control"  type="text" value="{$oUmfrageMatrixOption->nSort}" style="width: 40px;"></td>
+                                        <td>{__('option')} {$oUmfrageMatrixOption@iteration}<input name="cNameOption[]" class="form-control" type="text" value="{$oUmfrageMatrixOption->cName}" /> {__('umfrageQSort')} <input name="nSortOption[]" class="form-control"  type="text" value="{$oUmfrageMatrixOption->nSort}" style="width: 40px;"></td>
                                     </tr>
                                 {/foreach}
                             {/if}
@@ -681,7 +681,7 @@ function checkSelect(selectBox) {ldelim}
                             <tr>
                                 <td id="buttons">
                                     {if isset($oUmfrageFrage->oUmfrageFrageAntwort_arr) && $oUmfrageFrage->oUmfrageFrageAntwort_arr|@count > 0}
-                                        <button class="btn btn-succcess" name="button" value="Antwort hinzufügen" type="button" onclick="addInputRow();"><i class="fa fa-share"></i> Antwort hinzufügen</button>
+                                        <button class="btn btn-succcess" name="button" value="Antwort hinzufügen" type="button" onclick="addInputRow();"><i class="fa fa-share"></i> {__('addAnswer')}</button>
                                     {/if}
                                 </td>
                             </tr>

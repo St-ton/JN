@@ -22,3 +22,6 @@ msgstr "RSS Feed konnte nicht erstellt werden!"
 
 msgid "errorRSSCreatePermissions"
 msgstr "Datei %s kann nicht geschrieben werden. Bitte achten Sie darauf, dass diese Datei ausreichende Schreibrechte besitzt. Ansonsten kann keine RSS XML Datei erstellt werden."
+
+msgid "xmlCreate"
+msgstr "RSS-Feed XML-Datei erstellen"

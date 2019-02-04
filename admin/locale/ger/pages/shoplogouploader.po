@@ -36,4 +36,13 @@ msgid "errorFileType"
 msgstr "Fehler: Dateityp entspricht nicht der Konvention (nur jpg/gif/png/bmp) oder fehlt."
 
 msgid "errorFileMove"
-msgstr "Fehler beim Verschieben des Logos.'"
+msgstr "Fehler beim Verschieben des Logos."
+
+msgid "yourLogo"
+msgstr "Ihr Logo"
+
+msgid "successLogoUpload"
+msgstr "Logo erfolgreich hochgeladen."
+
+msgid "errorLogoUpload"
+msgstr "Logo konnte nicht hochgeladen werden."

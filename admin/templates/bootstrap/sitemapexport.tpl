@@ -7,10 +7,10 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Achtung!</h4>
+                    <h4 class="modal-title">{__('danger')}!</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Wollen Sie wirklich alle Einträge für das ausgewählte Jahr löschen?</p>
+                    <p>{__('sureDeleteEntries')}</p>
                 </div>
                 <div class="modal-footer">
                     <div class="btn-group">
@@ -75,9 +75,9 @@
                             </select>
                         </div>
                         <div class="btn-group">
-                            <button name="action[year_downloads]" type="submit" value="1" class="btn btn-info"><i class="fa fa-search"></i>&nbsp;Zeigen</button>
+                            <button name="action[year_downloads]" type="submit" value="1" class="btn btn-info"><i class="fa fa-search"></i>&nbsp;{__('show')}</button>
                             <button type="button" class="btn btn-danger"
-                                    data-form="#formDeleteSitemapExport" data-action="year_downloads_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapDownload')} löschen"><i class="fa fa-trash"></i>&nbsp;Löschen</button>
+                                    data-form="#formDeleteSitemapExport" data-action="year_downloads_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapDownload')} löschen"><i class="fa fa-trash"></i>&nbsp;{__('delete')}</button>
                         </div>
                     </form>
                 </div>
@@ -145,7 +145,7 @@
                             <input type="hidden" name="action" value="">
                             <input type="hidden" name="tab" value="report">
                             <input type="hidden" name="SitemapReport_nPage" value="0">
-                            <label for="nYear">Jahr</label>
+                            <label for="nYear">{__('year')}</label>
                             <select id="nYear" name="nYear_reports">
                                 {foreach $oSitemapReportYears_arr as $oSitemapReportYear}
                                     <option value="{$oSitemapReportYear->year}"{if isset($nSitemapReportYear) && $nSitemapReportYear == $oSitemapReportYear->year} selected="selected"{/if}>{$oSitemapReportYear->year}</option>
@@ -153,9 +153,9 @@
                             </select>
                         </div>
                         <div class="btn-group">
-                            <button name="action[year_reports]" type="submit" value="1" class="btn btn-info"><i class="fa fa-search"></i>&nbsp;Zeigen</button>
+                            <button name="action[year_reports]" type="submit" value="1" class="btn btn-info"><i class="fa fa-search"></i>&nbsp;{__('show')}</button>
                             <button type="button" class="btn btn-danger"
-                                    data-form="#formDeleteSitemapReport" data-action="year_reports_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapReport')} löschen"><i class="fa fa-trash"></i>&nbsp;Löschen</button>
+                                    data-form="#formDeleteSitemapReport" data-action="year_reports_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapReport')} löschen"><i class="fa fa-trash"></i>&nbsp;{__('delete')}</button>
                         </div>
                     </form>
                 </div>
@@ -238,7 +238,7 @@
             {/if}
         </div>
         <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
-            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='sitemapexport.php' buttonCaption=__('save') title='Einstellungen' tab='einstellungen'}
+            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='sitemapexport.php' buttonCaption=__('save') title=__('settings') tab='einstellungen'}
         </div>
     </div>
 </div>

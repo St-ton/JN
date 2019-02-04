@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
-msgid "Image"
+msgid "image"
 msgstr "Bild"
 
 msgid "Cancel"
@@ -336,7 +336,7 @@ msgid "action"
 msgstr "Aktion"
 
 msgid "available"
-msgstr "Vorhandene"
+msgstr "Vorhanden"
 
 msgid "html"
 msgstr "Html"
@@ -357,7 +357,7 @@ msgid "searchCategory"
 msgstr "suche Kategorien"
 
 msgid "category"
-msgstr "Kategorien"
+msgstr "Kategorie"
 
 msgid "showQuestions"
 msgstr "Fragen anzeigen"
@@ -898,3 +898,231 @@ msgstr "absteigend"
 
 msgid "allEntries"
 msgstr "Einträge gesamt"
+
+msgid "templates"
+msgstr "Vorlagen"
+
+msgid "draft"
+msgstr "Entwurf"
+
+msgid "publicFrom"
+msgstr "Veröffentlichen ab"
+
+msgid "publicTill"
+msgstr "Veröffentlichen bis"
+
+msgid "replaced"
+msgstr "Ersetzt"
+
+msgid "group"
+msgstr "Gruppe"
+
+msgid "portlet"
+msgstr "Portlet"
+
+msgid "preview"
+msgstr "Vorschau"
+
+msgid "pageID"
+msgstr "Seiten-ID"
+
+msgid "entry"
+msgstr "Eintrag"
+
+msgid "resetPassword"
+msgstr "Passwort zurücksetzen"
+
+msgid "newPassword"
+msgstr "Neues Passwort"
+
+msgid "confirmNewPassword"
+msgstr "Neues Passwort bestätigen"
+
+msgid "showAll"
+msgstr "Alle anzeigen"
+
+msgid "problems"
+msgstr "Probleme"
+
+msgid "upload"
+msgstr "Upload"
+
+msgid "selected"
+msgstr "Gewählte"
+
+msgid "found"
+msgstr "Gefundene"
+
+msgid "categories"
+msgstr "Kategorien"
+
+msgid "revisions"
+msgstr "Revisionen"
+
+msgid "noRevisions"
+msgstr "Keine Revision vorhanden."
+
+msgid "revisionDelete"
+msgstr "Revision löschen."
+
+msgid "revisionRestore"
+msgstr "Revision wiederherstellen."
+
+msgid "hook"
+msgstr "Hook"
+
+msgid "calls"
+msgstr "Aufrufe"
+
+msgid "plugins"
+msgstr "Plugin"
+
+msgid "sql"
+msgstr "SQL"
+
+msgid "deleteEntry"
+msgstr "Eintrag löschen"
+
+msgid "tables"
+msgstr "Tabellen"
+
+msgid "totalQueries"
+msgstr "Total Queries"
+
+msgid "errorMessage"
+msgstr "Fehlermeldung"
+
+msgid "backtrace"
+msgstr "Backtrace"
+
+msgid "statement"
+msgstr "Statement"
+
+msgid "internalName"
+msgstr "Interner Name "
+
+msgid "randomStart"
+msgstr "zufälliger Start"
+
+msgid "searchThrough"
+msgstr "Durchsuchen"
+
+msgid "options"
+msgstr "Optionen"
+
+msgid "presentation"
+msgstr "Darstellung"
+
+msgid "navigation"
+msgstr "Navigation"
+
+msgid "hide"
+msgstr "Ausblenden"
+
+msgid "thumbnail"
+msgstr "Thumbnail"
+
+msgid "direction"
+msgstr "Richtung"
+
+msgid "effects"
+msgstr "Effekte"
+
+msgid "theme"
+msgstr "Theme"
+
+msgid "displayOptions"
+msgstr "Anzeigeoptionen"
+
+msgid "mobile"
+msgstr "Mobil"
+
+msgid "version"
+msgstr "Version"
+
+msgid "create"
+msgstr "erstellen"
+
+msgid "visitors"
+msgstr "Besucher"
+
+msgid "visitor"
+msgstr "Besucher"
+
+msgid "customerHeritage"
+msgstr "Kundenherkunft"
+
+msgid "searchEngines"
+msgstr "Suchmaschinen"
+
+msgid "sales"
+msgstr "Umsatz"
+
+msgid "entryPages"
+msgstr "Einstiegsseiten"
+
+msgid "details"
+msgstr "Details"
+
+msgid "server"
+msgstr "Server"
+
+msgid "subscription"
+msgstr "Subscription"
+
+msgid "valid"
+msgstr "gültig"
+
+msgid "expired"
+msgstr "abgelaufen"
+
+msgid "domain"
+msgstr "Domain"
+
+msgid "paymentTypes"
+msgstr "Zahlungsarten"
+
+msgid "cache"
+msgstr "Cache"
+
+msgid "settingNumberShort"
+msgstr "Einstellungsnr."
+
+msgid "shippingTypesOverview"
+msgstr "Versandartenübersicht."
+
+msgid "paymentTypesOverview"
+msgstr "Zahlungsartenübersicht."
+
+msgid "yourSystem"
+msgstr "Ihr System"
+
+msgid "installedSoftware"
+msgstr "Installierte Software"
+
+msgid "software"
+msgstr "Software"
+
+msgid "requirements"
+msgstr "Voraussetzung"
+
+msgid "designation"
+msgstr "Bezeichnung"
+
+msgid "setting"
+msgstr "Einstellung"
+
+msgid "divider"
+msgstr "Trennzeichen"
+
+msgid "unit"
+msgstr "Einheit"
+
+msgid "quantity"
+msgstr "Menge"
+
+msgid "weight"
+msgstr "Gewicht"
+
+msgid "option"
+msgstr "Option"

@@ -191,32 +191,41 @@ msgstr "Fehler: Für diese Umfrage gibt es noch keine Stastistik."
 msgid "errorPollSelect"
 msgstr "Fehler: Bitte wählen Sie eine korrekte Umfrage aus."
 
-msgid "errorQuestionTypeMultipleChoiceOne"
+msgid "questionTypeMultipleChoiceOne"
 msgstr "Multiple Choice (Eine Antwort)"
 
-msgid "errorQuestionTypeMultipleChoiceMany"
+msgid "questionTypeMultipleChoiceMany"
 msgstr "Multiple Choice (Viele Antworten)"
 
-msgid "errorQuestionTypeSelectboxOne"
+msgid "questionTypeSelectboxOne"
 msgstr "Selectbox (Eine Antwort)"
 
-msgid "errorQuestionTypeSelectboxMany"
+msgid "questionTypeSelectboxMany"
 msgstr "SelectBox (Viele Antworten)"
 
-msgid "errorQuestionTypeTextSmall"
+msgid "questionTypeTextSmall"
 msgstr "Textfeld (klein)"
 
-msgid "errorQuestionTypeTextBig"
+msgid "questionTypeTextBig"
 msgstr "Textfeld (groß)"
 
-msgid "errorQuestionTypeMatrixOne"
+msgid "questionTypeMatrixOne"
 msgstr "Matrix (Eine Antwort pro Zeile)"
 
-msgid "errorQuestionTypeMatrixMany"
+msgid "questionTypeMatrixMany"
 msgstr "Matrix (Viele Antworten pro Zeile)"
 
-msgid "errorQuestionTypeDivider"
+msgid "questionTypeDivider"
 msgstr "Statischer Trenntext"
 
-msgid "errorQuestionTypeDividerNewPage"
+msgid "questionTypeDividerNewPage"
 msgstr "Statischer Trenntext + Seitenwechsel"
+
+msgid "addAnswer"
+msgstr "Antwort hinzufügen"
+
+msgid "addOption"
+msgstr "Option hinzufügen'"
+
+msgid "activePolls"
+msgstr "Aktive Umfragen"

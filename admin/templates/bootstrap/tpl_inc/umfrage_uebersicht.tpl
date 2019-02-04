@@ -48,7 +48,7 @@
                             <div id="tabellenLivesuche">
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
-                                        <h3 class="panel-title">Aktive Umfragen</h3>
+                                        <h3 class="panel-title">{__('activePolls')}</h3>
                                     </div>
                                     <div class="table-responsive">
                                         <table class="table table-striped">
@@ -60,7 +60,7 @@
                                                 <th class="th-5">{__('umfrageActive')}</th>
                                                 <th class="th-6">{__('umfrageQCount')}</th>
                                                 <th class="th-7">{__('umfrageDate')}</th>
-                                                <th class="th-8">Aktionen</th>
+                                                <th class="th-8">{__('actions')}</th>
                                             </tr>
                                             {foreach $oUmfrage_arr as $oUmfrage}
                                                 <tr>
@@ -99,7 +99,7 @@
                 {/if}
             </div>
             <div id="einstellungen" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
-                {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='umfrage.php' buttonCaption=__('umfrageSave') title='Einstellungen' tab='einstellungen'}
+                {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='umfrage.php' buttonCaption=__('umfrageSave') title=__('settings') tab='einstellungen'}
             </div>
         </div>
     {else}

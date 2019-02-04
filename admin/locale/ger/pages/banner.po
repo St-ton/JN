@@ -32,9 +32,6 @@ msgstr "Konnte Ihre Eingabe für das 'Aktiv von Datum' nicht verarbeiten."
 msgid "errorDateActiveToGreater"
 msgstr "Das Datum bis wann ein Banner aktiv ist muss größer sein als das 'Aktiv von Datum'."
 
-msgid "internalName"
-msgstr "Interner Name "
-
 msgid "chooseBanner"
 msgstr "Banner wählen"
 

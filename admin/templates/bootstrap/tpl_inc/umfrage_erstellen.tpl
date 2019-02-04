@@ -72,7 +72,7 @@ function clearInput(inputField) {ldelim}
                             <td><label for="kKundengruppe">{__('umfrageCustomerGrp')}</label></td>
                             <td>
                                 <select id="kKundengruppe" name="kKundengruppe[]" multiple="multiple" class="combo form-control">
-                                    <option value="-1" {if isset($oUmfrage->kKundengruppe_arr)}{foreach $oUmfrage->kKundengruppe_arr as $kKundengruppe}{if $kKundengruppe == '-1'}selected{/if}{/foreach}{/if}>Alle</option>
+                                    <option value="-1" {if isset($oUmfrage->kKundengruppe_arr)}{foreach $oUmfrage->kKundengruppe_arr as $kKundengruppe}{if $kKundengruppe == '-1'}selected{/if}{/foreach}{/if}>{__('all')}</option>
                                 {foreach $oKundengruppe_arr as $oKundengruppe}
                                     <option value="{$oKundengruppe->kKundengruppe}" {if isset($oUmfrage->kKundengruppe_arr)}{foreach $oUmfrage->kKundengruppe_arr as $kKundengruppe}{if $oKundengruppe->kKundengruppe == $kKundengruppe}selected{/if}{/foreach}{/if}>{$oKundengruppe->cName}</option>
                                 {/foreach}
@@ -91,8 +91,8 @@ function clearInput(inputField) {ldelim}
                             <td><label for="nAktiv">{__('umfrageActive')}:</label></td>
                             <td>
                                 <select id="nAktiv" name="nAktiv" class="combo form-control" style="width: 80px;">
-                                    <option value="1"{if isset($oUmfrage->nAktiv) && $oUmfrage->nAktiv == 1} selected{/if}>Ja</option>
-                                    <option value="0"{if isset($oUmfrage->nAktiv) && $oUmfrage->nAktiv == 0} selected{/if}>Nein</option>
+                                    <option value="1"{if isset($oUmfrage->nAktiv) && $oUmfrage->nAktiv == 1} selected{/if}>{__('yes')}</option>
+                                    <option value="0"{if isset($oUmfrage->nAktiv) && $oUmfrage->nAktiv == 0} selected{/if}>{__('no')}</option>
                                 </select>
                             </td>
                         </tr>

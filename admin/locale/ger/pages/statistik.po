@@ -367,3 +367,6 @@ msgstr "Versendet"
 
 msgid "productName"
 msgstr "Name"
+
+msgid "statisticType"
+msgstr "Statistiktyp"

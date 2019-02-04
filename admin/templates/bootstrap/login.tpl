@@ -30,7 +30,7 @@
                         <div class="alert alert-success" role="alert"><i class="fa fa-info-circle"></i> {__('successPasswordChange')}</div>
                     {else}
                         {if !isset($smarty.session.AdminAccount->TwoFA_active) || false === $smarty.session.AdminAccount->TwoFA_active }  {* added for 2FA *}
-                            <p class="text-muted">{__('login')}</p>
+                            <p class="text-muted">{__('loginLong')}</p>
                         {else}
                         {/if}
                     {/if}

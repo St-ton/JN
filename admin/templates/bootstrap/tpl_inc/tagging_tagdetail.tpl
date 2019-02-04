@@ -3,7 +3,7 @@
     {if !empty($cTagName)}
         <p>{__('taggingdetailTag')} <strong>{$cTagName}</strong></p>
     {else}
-        <p class="alert alert-info">Keine Daten vorhanden.</p>
+        <p class="alert alert-info">{__('noDataAvailable')}</p>
     {/if}
     {if isset($oTagArtikel_arr) && $oTagArtikel_arr|@count > 0}
         {include file='tpl_inc/pagination.tpl' oPagination=$oPagiTagDetail}

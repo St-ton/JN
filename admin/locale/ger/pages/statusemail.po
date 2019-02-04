@@ -37,3 +37,6 @@ msgstr "Berichtsinhalt"
 
 msgid "statusemailContentDesc"
 msgstr "Welchen Inhalt soll der E-Mail-Bericht enthalten? Mehrfachauswahl möglich."
+
+msgid "sendEmail"
+msgstr "E-Mail-Berichte jetzt senden"

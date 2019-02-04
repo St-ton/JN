@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
-msgid "login"
+msgid "loginLong"
 msgstr "Melden Sie sich mit Ihren Kontodaten an."
 
 msgid "TwoFALogin"

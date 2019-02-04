@@ -39,7 +39,7 @@
             <input type="hidden" name="sprachwechsel" value="1">
             <div class="input-group p25">
                 <div class="input-group-addon">
-                    <label for="kSprache">Sprache:</label>
+                    <label for="kSprache">{__('language')}:</label>
                 </div>
                 <select id="kSprache" name="kSprache" class="form-control" onchange="this.form.submit();">
                     {foreach $oSprache_arr as $oSprache}
@@ -47,7 +47,7 @@
                                 {if (int)$smarty.session.kSprache === (int)$oSprache->kSprache}selected{/if}
                                 {if !$oSprache->bImported}class="alert-success"{/if}>
                             {$oSprache->cNameDeutsch}
-                            {if $oSprache->cShopStandard === 'Y'}(Standard){/if}
+                            {if $oSprache->cShopStandard === 'Y'}({__('standard')}){/if}
                         </option>
                     {/foreach}
                 </select>
@@ -164,7 +164,7 @@
                                     <td>
                                         <div class="btn-group right">
                                             <a href="sprache.php?token={$smarty.session.jtl_token}&action=newvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}&tab=notfound"
-                                               class="btn btn-default" title="erstellen">
+                                               class="btn btn-default" title="{__('create')}">
                                                 <i class="fa fa-plus"></i>
                                             </a>
                                         </div>

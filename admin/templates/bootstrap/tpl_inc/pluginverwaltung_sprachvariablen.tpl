@@ -1,10 +1,7 @@
 <script type="text/javascript">
     function ackCheck(kPluginSprachvariable, kPlugin)
     {
-        var bCheck = confirm(
-            'Wollen Sie diese Sprachvariable wirklich wieder auf den Installationszustand zurücksetzen?\n\n' +
-            '*Vorsicht* Alle geänderten Übersetzungen der Variable gehen dabei verloren.'
-        );
+        var bCheck = confirm('{__('surePluginUpdate')}');
 
         if(bCheck) {
             window.location.href = 'pluginverwaltung.php?pluginverwaltung_sprachvariable=1&kPlugin=' + kPlugin +

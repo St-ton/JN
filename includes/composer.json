@@ -27,7 +27,7 @@
         "jtlshop/shop4-systemcheck": "^1.1",
         "jtlshop/sccbs3": "dev-master",
         "jtlshop/scc": "dev-master",
-        "smarty/smarty": "~3.1",
+        "smarty/smarty": "~2.6",
         "jdorn/sql-formatter": "^1.2",
         "phpmyadmin/sql-parser": "^3.4",
         "phpgangsta/googleauthenticator": "dev-master",
@@ -45,7 +45,8 @@
         "jtlshop/semver": "~0.0.5",
         "studio-42/elfinder": "^2.1",
         "maximebf/debugbar": "^1.15",
-        "gettext/gettext": "^4.6"
+        "gettext/gettext": "^4.6",
+        "sensiolabs/security-checker": "^5.0"
     },
     "require-dev": {
         "phpunit/php-token-stream": "^3.0",

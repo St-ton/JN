@@ -20,6 +20,7 @@ function bearbeiteEinstellungsSuche($cSuche, $bSpeichern = false)
     $oSQL->nSuchModus       = 0;
     $oSQL->cSuche           = $cSuche;
     $oSQL->oEinstellung_arr = [];
+
     if (mb_strlen($cSuche) > 0) {
         //Einstellungen die zu den Exportformaten gehören nicht holen
         $oSQL->cWHERE = 'AND kEinstellungenSektion != 101 ';
@@ -107,6 +108,20 @@ function holeEinstellungen($oSQL, $bSpeichern)
     if (mb_strlen($oSQL->cWHERE) <= 0) {
         return $oSQL;
     }
+
+    $getText            = Shop::Container()->getGetText();
+    $configTranslations = $getText->getAdminTranslations('configs/configs');
+    $results            = [];
+
+    foreach ($configTranslations->getIterator() as $translation) {
+        $orig  = $translation->getOriginal();
+        $trans = $translation->getTranslation();
+
+        if (strpos($trans, $oSQL->cSuche) !== false) {
+            $results[] = $orig;
+        }
+    }
+
     $oSQL->oEinstellung_arr = Shop::Container()->getDB()->query(
         "SELECT *
             FROM teinstellungenconf

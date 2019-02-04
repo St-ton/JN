@@ -120,8 +120,8 @@ build_migrate()
 {
     php -r "
         require_once '${REPOSITORY_DIR}/includes/globalinclude.php'; \
-        \$manager = new MigrationManager(null); \
-        \$manager->migrate(null); \
+        \$manager = new MigrationManager(); \
+
         try {
             \$result = \$manager->migrate(null);
         } catch (Exception \$e) {

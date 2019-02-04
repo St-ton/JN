@@ -347,7 +347,7 @@ stagingPreDeploy:
     - *devCheckoutScripts
     - downloadProcess
   only:
-    - master
+    - release/4.06
   tags:
     - dev-checkout
 

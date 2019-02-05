@@ -77,9 +77,6 @@ msgstr "Ja"
 msgid "resetEmailvorlageNo"
 msgstr "Nein"
 
-msgid "resetEmailTemplate"
-msgstr "Zurücksetzen"
-
 msgid "emailAddAKZ"
 msgstr "Dieser E-Mailart Ihre Anbieterkennzeichnung anhängen"
 

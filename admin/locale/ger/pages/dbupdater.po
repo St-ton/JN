@@ -89,11 +89,5 @@ msgstr "Klicken Sie auf <a href=\"dbupdater.php?action=update\" data-callback=\"
 msgid "dbUpdate"
 msgstr "Datenbankaktualisierung"
 
-msgid "fromVersion"
-msgstr "von Version"
-
-msgid "toVersion"
-msgstr "auf Version"
-
 msgid "required"
 msgstr "erforderlich"

@@ -48,7 +48,7 @@
                                 <div class="btn-group">
                                     <button type="submit" name="preview" value="{$emailvorlage->kEmailvorlage}" class="btn btn-default mail"><i class="fa fa-envelope"></i> {__('testmail')}</button>
                                     <button type="submit" name="kEmailvorlage" value="{$emailvorlage->kEmailvorlage}" class="btn btn-primary" title="{__('modify')}"><i class="fa fa-edit"></i></button>
-                                    <button type="submit" name="resetConfirm" value="{$emailvorlage->kEmailvorlage}" class="btn btn-danger reset" title="{__('resetEmailTemplate')}"><i class="fa fa-refresh"></i></button>
+                                    <button type="submit" name="resetConfirm" value="{$emailvorlage->kEmailvorlage}" class="btn btn-danger reset" title="{__('reset')}"><i class="fa fa-refresh"></i></button>
                                 </div>
                             </form>
                         </td>
@@ -98,7 +98,7 @@
                                 <div class="btn-group">
                                     <button name="preview" value="{$oPluginEmailvorlage->kEmailvorlage}" class="btn btn-default button mail"><i class="fa fa-envelope"></i> {__('testmail')}</button>
                                     <button name="kEmailvorlage" value="{$oPluginEmailvorlage->kEmailvorlage}" class="btn btn-primary" title="{__('modify')}"><i class="fa fa-edit"></i></button>
-                                    <button name="resetConfirm" value="{$oPluginEmailvorlage->kEmailvorlage}" class="btn btn-danger reset" title="{__('resetEmailTemplate')}"><i class="fa fa-refresh"></i></button>
+                                    <button name="resetConfirm" value="{$oPluginEmailvorlage->kEmailvorlage}" class="btn btn-danger reset" title="{__('reset')}"><i class="fa fa-refresh"></i></button>
                                 </div>
                             </form>
                         </td>

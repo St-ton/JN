@@ -38,7 +38,7 @@
             <a data-toggle="tab" role="tab" href="#uebersicht">{__('checkboxOverview')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'erstellen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#erstellen">{__('checkboxCreate')}</a>
+            <a data-toggle="tab" role="tab" href="#erstellen">{__('create')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -132,7 +132,7 @@
         <div id="erstellen" class="tab-pane fade {if isset($cTab) && $cTab === 'erstellen'} active in{/if}">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{if isset($oCheckBox->kCheckBox) && $oCheckBox->kCheckBox > 0}{__('edit')}{else}{__('checkboxCreate')}{/if}</h3>
+                    <h3 class="panel-title">{if isset($oCheckBox->kCheckBox) && $oCheckBox->kCheckBox > 0}{__('edit')}{else}{__('create')}{/if}</h3>
                 </div>
                 <div class="panel-body">
                     <form method="post" action="checkbox.php" >

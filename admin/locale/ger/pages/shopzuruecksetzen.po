@@ -38,9 +38,6 @@ msgstr "News löschen"
 msgid "deleteBestseller"
 msgstr "Bestseller löschen"
 
-msgid "deleteBestseller"
-msgstr "Bestseller löschen"
-
 msgid "deleteVisitorStatistics"
 msgstr "Besucherstatistiken löschen"
 

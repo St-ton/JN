@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
-msgid "image"
+msgid "Image"
 msgstr "Bild"
 
 msgid "Cancel"
@@ -1082,6 +1082,9 @@ msgstr "Domain"
 msgid "paymentTypes"
 msgstr "Zahlungsarten"
 
+msgid "paymentType"
+msgstr "Zahlungsart"
+
 msgid "cache"
 msgstr "Cache"
 
@@ -1126,3 +1129,85 @@ msgstr "Gewicht"
 
 msgid "option"
 msgstr "Option"
+
+msgid "last"
+msgstr "letzte"
+
+msgid "lastYear"
+msgstr "letztes Jahr"
+
+msgid "duplicate"
+msgstr "Duplizieren"
+
+msgid "user"
+msgstr "Benutzer"
+
+msgid "change"
+msgstr "ändern"
+
+msgid "noMoreWidgets"
+msgstr "Keine weiteren Widgets vorhanden."
+
+msgid "note"
+msgstr "hinweis"
+
+msgid "level"
+msgstr "Level"
+
+msgid "orderNumberShort"
+msgstr "Bestell-Nr."
+
+msgid "currency"
+msgstr "Währung"
+
+msgid "paymentDue"
+msgstr "Zahlungsgebühr"
+
+msgid "rows"
+msgstr "Zeilen"
+
+msgid "engine"
+msgstr "Engine"
+
+msgid "databaseStructure"
+msgstr "Datenbankstruktur"
+
+msgid "showModified"
+msgstr "Modifizierte anzeigen"
+
+msgid "markAll"
+msgstr "Alle markieren"
+
+msgid "optimize"
+msgstr "optimieren"
+
+msgid "repair"
+msgstr "reparieren"
+
+msgid "check"
+msgstr "prüfen"
+
+msgid "analyse"
+msgstr "analysieren"
+
+msgid "send"
+msgstr "senden"
+
+msgid "step"
+msgstr "Schritt"
+
+msgid "automatic"
+msgstr "Automatisch"
+
+msgid "approximately"
+msgstr "ca."
+
+msgid "minute"
+msgstr "Minute"
+
+msgid "minutes"
+msgstr "Minuten"
+
+msgid "continueQuestion"
+msgstr "Fortfahren?"
+

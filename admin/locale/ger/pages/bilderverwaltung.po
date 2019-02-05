@@ -58,3 +58,24 @@ msgstr "Mehr"
 
 msgid "successCacheReset"
 msgstr "Cache wurde erfolgreich zurückgesetzt"
+
+msgid "successImageCleanup"
+msgstr "Bilder erfolgreich aufgeräumt"
+
+msgid "pendingImageCleanup"
+msgstr "Bilder werden aufgeräumt"
+
+msgid "successImageDelete"
+msgstr "Bilder gelöscht"
+
+msgid "successImageGenerate"
+msgstr "Bilder erfolgreich generiert."
+
+msgid "pendingImageDelete"
+msgstr "Lösche Bilder..."
+
+msgid "pendingStatisticCalc"
+msgstr "Statistiken werden berechnet..."
+
+msgid "pendingImageGenerate"
+msgstr "Bilder werden generiert."

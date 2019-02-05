@@ -16,6 +16,3 @@ msgstr "Anzahl Verzeichnisse:"
 
 msgid "dirCountNotWriteable"
 msgstr "Anzahl nicht beschreibbarer Verzeichnisse:"
-
-msgid "showModified"
-msgstr "Modifizierte anzeigen"

@@ -127,3 +127,18 @@ msgstr "Ihre Zahlungsarten wurden auf Nutzbarkeit geprüft."
 
 msgid "successLogReset"
 msgstr "Der Fehlerlog von %s wurde erfolgreich zurückgesetzt."
+
+msgid "noLogs"
+msgstr "Keine Logs vorhanden."
+
+msgid "amountPayed"
+msgstr "Gezahlter Betrag"
+
+msgid "syncedWithWawi"
+msgstr "Abgeholt durch Wawi"
+
+msgid "wawiSyncReset"
+msgstr "Wawi-Abholung zurücksetzen"
+
+msgid "installedPaymentTypes"
+msgstr "Installierte Zahlungsarten"

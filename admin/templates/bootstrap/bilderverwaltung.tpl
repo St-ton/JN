@@ -161,7 +161,7 @@
         running = true;
         lastResults = [];
         lastTick = new Date();
-        notify = showGenerateNotify('Bilder werden aufgeräumt', 'Lösche Bilder...');
+        notify = showGenerateNotify('{/literal}{__('pendingImageCleanup')}{literal}', '{/literal}{__('successImageDelete')}{literal}');
         $('.action-buttons a').attr('disabled', true);
         doCleanup(0);
     }
@@ -176,9 +176,9 @@
 
         notify.update({
             progress: 100,
-            message: 'Insgesamt ' + result.deletedImages + ' Bilder gelöscht.',
+            message: result.deletedImages + '{/literal}{__('successImageDelete')}{literal}',
             type: 'success',
-            title: 'Bilder erfolgreich aufgeräumt'
+            title: '{/literal}{__('successImageCleanup')}{literal}'
         });
     }
 
@@ -255,7 +255,7 @@
         running = true;
         lastResults = [];
         lastTick = new Date();
-        notify = showGenerateNotify('Bilder werden generiert', 'Statistiken werden berechnet...');
+        notify = showGenerateNotify('{/literal}{__('pendingImageGenerate')}{literal}', '{/literal}{__('pendingStatisticCalc')}{literal}');
 
         $('.action-buttons a').attr('disabled', true);
         doGenerate(type, 0);
@@ -274,7 +274,7 @@
             progress: 100,
             message: '&nbsp;',
             type: 'success',
-            title: 'Bilder erfolgreich generiert'
+            title: '{/literal}{__('successImageGenerate')}{literal}'
         });
     }
 

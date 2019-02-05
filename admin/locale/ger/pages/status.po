@@ -17,9 +17,6 @@ msgstr "Bilder-Cache"
 msgid "imagesInCache"
 msgstr "Bilder im Cache"
 
-msgid "databaseStructure"
-msgstr "Datenbankstruktur"
-
 msgid "fileStructure"
 msgstr "Dateistruktur"
 

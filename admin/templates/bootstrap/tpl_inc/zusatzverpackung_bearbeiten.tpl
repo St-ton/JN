@@ -62,7 +62,7 @@
                     <td><label for="kKundengruppe">{__('zusatzverpackungCustomerGrp')}</label></td>
                     <td>
                         <select id="kKundengruppe" name="kKundengruppe[]" multiple="multiple" class="form-control combo" required>
-                            <option value="-1"{if isset($oVerpackungEdit) && $oVerpackungEdit->cKundengruppe == '-1'} selected{/if}>Alle</option>
+                            <option value="-1"{if isset($oVerpackungEdit) && $oVerpackungEdit->cKundengruppe == '-1'} selected{/if}>{__('all')}</option>
                             {foreach $oKundengruppe_arr as $oKundengruppe}
                                 {if (isset($oVerpackungEdit->cKundengruppe) && $oVerpackungEdit->cKundengruppe == '-1') || !isset($oVerpackungEdit) || !$oVerpackungEdit}
                                     <option value="{$oKundengruppe->kKundengruppe}">{$oKundengruppe->cName}</option>
@@ -82,8 +82,8 @@
                     <td><label for="nAktiv">{__('zusatzverpackungActive')}</label></td>
                     <td>
                         <select id="nAktiv" name="nAktiv" class="form-control combo">
-                            <option value="1"{if isset($oVerpackungEdit) && (int)$oVerpackungEdit->nAktiv === 1} selected{/if}>Ja</option>
-                            <option value="0"{if isset($oVerpackungEdit) && (int)$oVerpackungEdit->nAktiv === 0} selected{/if}>Nein</option>
+                            <option value="1"{if isset($oVerpackungEdit) && (int)$oVerpackungEdit->nAktiv === 1} selected{/if}>{__('yes')}</option>
+                            <option value="0"{if isset($oVerpackungEdit) && (int)$oVerpackungEdit->nAktiv === 0} selected{/if}>{__('no')}</option>
                         </select>
                     </td>
                 </tr>

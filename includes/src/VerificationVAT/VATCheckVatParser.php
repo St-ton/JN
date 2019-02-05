@@ -93,7 +93,7 @@ class VATCheckVatParser
         //]
         // modification in place of original documentation, because the VIES can not handle spaces
         'GB' => [
-            'GB999999999',               // example: GB862906405(ok), 'GB 117 8490 96'(ok, spaces are removed before parsing)
+            'GB999999999',  // example: GB862906405(ok), 'GB 117 8490 96'(ok, spaces are removed before parsing)
             'GB999999999999',
             'GBGD999',
             'GBHA999'

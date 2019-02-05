@@ -18,17 +18,12 @@ namespace VerificationVAT;
  * VIES (VAT Information Exchange System)
  * @link https://ec.europa.eu/taxation_customs/business/vat/eu-vat-rules-topic/vies-vat-information-exchange-system-enquiries_en
  */
-class VATCheckEU implements VATCheckInterface
+class VATCheckEU extends AbstractVATCheck
 {
     /**
      * @var string
      */
     private $viesWSDL = 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
-
-    /**
-     * @var VATCheckDownSlots
-     */
-    private $downTimes;
 
     /**
      * At this moment, the VIES-system, does not return any information other than "valid" or "invalid"
@@ -50,26 +45,6 @@ class VATCheckEU implements VATCheckInterface
     ];
 
     /**
-     * VATCheckEU constructor.
-     */
-    public function __construct()
-    {
-        $this->downTimes = new VATCheckDownSlots();
-    }
-
-    /**
-     * spaces can't handled by the VIES-system,
-     * so we condense the ID-string here and let them out
-     *
-     * @param string $sourceString
-     * @return string
-     */
-    public function condenseSpaces($sourceString): string
-    {
-        return \str_replace(' ', '', $sourceString);
-    }
-
-    /**
      * ask the remote APIs of the VIES-online-system
      *
      * return a array of check-results
@@ -85,19 +60,18 @@ class VATCheckEU implements VATCheckInterface
      */
     public function doCheckID(string $ustID): array
     {
-        // parse the ID-string
-        $VatParser = new VATCheckVatParser($this->condenseSpaces($ustID));
-        if ($VatParser->parseVatId() === true) {
-            [$countryCode, $vatNumber] = $VatParser->getIdAsParams();
+        $vatParser = new VATCheckVatParser($this->condenseSpaces($ustID));
+        if ($vatParser->parseVatId() === true) {
+            [$countryCode, $vatNumber] = $vatParser->getIdAsParams();
         } else {
             return [
                 'success'   => false,
                 'errortype' => 'parse',
-                'errorcode' => $VatParser->getErrorCode(),
-                'errorinfo' => '' !== ($errorInfo = $VatParser->getErrorInfo()) ? $errorInfo : ''
+                'errorcode' => $vatParser->getErrorCode(),
+                'errorinfo' => '' !== ($errorInfo = $vatParser->getErrorInfo()) ? $errorInfo : ''
             ];
         }
-        // asking the remote service, if the VAT-office is reachable
+        // asking the remote service if the VAT-office is reachable
         if ($this->downTimes->isDown($countryCode) === false) {
             $soap   = new \SoapClient($this->viesWSDL);
             $result = null;
@@ -108,7 +82,7 @@ class VATCheckEU implements VATCheckInterface
             }
 
             if ($result !== null && $result->valid === true) {
-                \Shop::Container()->getLogService()->notice('VAT ID valid. (' . \print_r($result, true) . ')');
+                $this->logger->notice('VAT ID valid. (' . \print_r($result, true) . ')');
 
                 return [
                     'success'   => true,
@@ -116,7 +90,7 @@ class VATCheckEU implements VATCheckInterface
                     'errorcode' => ''
                 ];
             }
-            \Shop::Container()->getLogService()->notice('VAT ID invalid! (' . \print_r($result, true) . ')');
+            $this->logger->notice('VAT ID invalid! (' . \print_r($result, true) . ')');
 
             return [
                 'success'   => false,
@@ -124,8 +98,8 @@ class VATCheckEU implements VATCheckInterface
                 'errorcode' => 5 // error: ID is invalid according to the VIES-system
             ];
         }
-        // inform the user:"The VAT-office in this country has closed this time."
-        \Shop::Container()->getLogService()->notice('TAX authority of this country currently not available. (ID: ' . $ustID . ')');
+        // inform the user: "The VAT-office in this country has closed this time."
+        $this->logger->notice('TAX authority of this country currently not available. (ID: ' . $ustID . ')');
 
         return [
             'success'   => false,

@@ -80,7 +80,8 @@ class VATCheckDownSlots
             ['', '01:30', '01:40']
         ],
 
-        // Unavailable every Saturday from 07:30 AM to 10:30 AM and almost daily from around 04:30 AM to 04:40 AM (Vereinigtes Königreich)
+        // Unavailable every Saturday from 07:30 AM to 10:30 AM
+        // and almost daily from around 04:30 AM to 04:40 AM (Vereinigtes Königreich)
         'GB' => [
             ['Sat', '07:30', '10:30'],
             ['', '04:30', '04:40']

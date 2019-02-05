@@ -28,11 +28,13 @@ class VATCheck
      */
     public function __construct(string $ustID = '')
     {
+        $slots       = new VATCheckDownSlots();
+        $logger      = \Shop::Container()->getLogService();
         $this->ustID = $ustID;
         if ($this->startsWith($this->ustID, 'CHE')) {
-            $this->location = new VATCheckNonEU();
+            $this->location = new VATCheckNonEU($slots, $logger);
         } else {
-            $this->location = new VATCheckEU();
+            $this->location = new VATCheckEU($slots, $logger);
         }
     }
 

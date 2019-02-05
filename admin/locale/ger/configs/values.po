@@ -1759,11 +1759,18 @@ msgstr "Ja"
 msgid "bewertung_hilfreich_anzeigen_value(N)"
 msgstr "Nein"
 
+#msgid "bewertungserinnerung_nutzen_value(Y)"
+#msgstr "Ja"
+
+#msgid "bewertungserinnerung_nutzen_value(N)"
+#msgstr "Nein"
+# ------
 msgid "bewertungserinnerung_nutzen_value(Y)"
 msgstr "Ja"
 
 msgid "bewertungserinnerung_nutzen_value(N)"
 msgstr "Nein"
+# ------
 
 msgid "bewertung_guthaben_nutzen_value(Y)"
 msgstr "Ja"

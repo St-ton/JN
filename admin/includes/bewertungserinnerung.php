@@ -51,20 +51,42 @@ function baueBewertungsErinnerung()
     if ($shippingDays === 1) {
         $maxDays = 4;
     }
-    $orders = Shop::Container()->getDB()->query(
-        'SELECT kBestellung
-            FROM tbestellung
-            JOIN tkunde 
-                ON tkunde.kKunde = tbestellung.kKunde
-            WHERE dVersandDatum IS NOT NULL
-                AND DATE_ADD(dVersandDatum, INTERVAL ' . $shippingDays . ' DAY) <= NOW()
-                AND DATE_ADD(dVersandDatum, INTERVAL ' . $maxDays . ' DAY) > NOW()
-                AND cStatus = 4
-                AND (' . $sql . ')
-                AND dBewertungErinnerung IS NULL',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
-    );
-    if (count($orders) === 0) {
+
+    // --TO-CHECK--
+    $config = Shop::getSettings([    // --TODO-- create a config for that (migration, db, and so on)
+        CONF_EMAILS
+    ]);
+    /* fake */ $config['emails']['email_reviewreminder_allowed'] = 'bound_to_newsletter'; // e.g. [1|2|3] or better ['bound_to_newsletter'|'allways'|'never']
+    if ($config['emails']['email_reviewreminder_allowed'] === 'bound_to_newsletter') {
+        $cQuery = 'SELECT kBestellung
+                FROM tbestellung
+                    JOIN tkunde ON tkunde.kKunde = tbestellung.kKunde
+                    LEFT JOIN tnewsletterempfaenger ON tkunde.kKunde = tnewsletterempfaenger.kKunde
+                WHERE dVersandDatum IS NOT NULL
+                    AND DATE_ADD(dVersandDatum, INTERVAL ' . $nVersandTage . ' DAY) <= NOW()
+                    AND DATE_ADD(dVersandDatum, INTERVAL ' . $nMaxTage . ' DAY) > NOW()
+                    AND cStatus = 4
+                    AND (' . $cSQL . ')
+                    AND dBewertungErinnerung IS NULL
+                    AND tnewsletterempfaenger.nAktiv = 1';
+    } elseif ($config['emails']['email_reviewreminder_allowed'] === 'allways') {
+        $cQuery = 'SELECT kBestellung
+                FROM tbestellung
+                JOIN tkunde
+                    ON tkunde.kKunde = tbestellung.kKunde
+                WHERE dVersandDatum IS NOT NULL
+                    AND DATE_ADD(dVersandDatum, INTERVAL ' . $nVersandTage . ' DAY) <= NOW()
+                    AND DATE_ADD(dVersandDatum, INTERVAL ' . $nMaxTage . ' DAY) > NOW()
+                    AND cStatus = 4
+                    AND (' . $cSQL . ')
+                    AND dBewertungErinnerung IS NULL';
+    } else {
+        return;  // --TO-CHECK-- (do nothing (?)this way ... the "send never"-thing)
+    }
+    // --TO-CHECK--
+
+    $oBestellungen_arr = Shop::Container()->getDB()->query($cQuery, \DB\ReturnType::ARRAY_OF_OBJECTS);
+    if (count($oBestellungen_arr) === 0) {
         Shop::Container()->getLogService()->debug('Keine Bestellungen für Bewertungserinnerungen gefunden.');
         return;
     }

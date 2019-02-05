@@ -149,7 +149,7 @@
                             <thead>
                             <tr>
                                 <th class="check"></th>
-                                <th class="tleft">{__('hadline')}</th>
+                                <th class="tleft">{__('headline')}</th>
                                 {*<th class="tleft">{__('category')}</th>*}
                                 <th class="tleft">{__('customerGroup')}</th>
                                 <th class="tleft">{__('newsValidation')}</th>

@@ -6,7 +6,7 @@ msgid "order"
 msgstr "Bestellungen"
 
 msgid "orderDesc"
-msgstr ""
+msgstr " "
 
 msgid "orderURL"
 msgstr "https://jtl-url.de/p5rq7"

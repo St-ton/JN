@@ -257,6 +257,7 @@ function naechsterUpdateStep(int $nTyp, int $nZeileBis = 1)
  */
 function dbUpdateIO()
 {
+    Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
     $template = Template::getInstance();
     $updater  = new Updater();
 
@@ -303,6 +304,8 @@ function dbUpdateIO()
  */
 function dbupdaterBackup()
 {
+    Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
+
     $updater = new Updater();
 
     try {
@@ -329,6 +332,8 @@ function dbupdaterBackup()
  */
 function dbupdaterDownload($file)
 {
+    Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
+
     if (!preg_match('/^([0-9_a-z]+).sql.gz$/', $file, $m)) {
         return new IOError('Wrong download request');
     }
@@ -349,6 +354,8 @@ function dbupdaterDownload($file)
  */
 function dbupdaterStatusTpl()
 {
+    Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
+
     $smarty   = Shop::Smarty();
     $updater  = new Updater();
     $template = Template::getInstance();
@@ -388,6 +395,7 @@ function dbupdaterStatusTpl()
  */
 function dbupdaterMigration($id = null, $version = null, $dir = null)
 {
+    Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
     try {
         $manager = new MigrationManager();
 

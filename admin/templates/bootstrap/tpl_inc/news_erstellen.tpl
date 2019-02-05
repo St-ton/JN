@@ -247,7 +247,7 @@
                         <div class="panel-body">
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="cName_{$cISO}">{__('hadline')} *</label>
+                                    <label for="cName_{$cISO}">{__('headline')} *</label>
                                 </span>
                                 <input class="form-control{if !empty($cPlausiValue_arr.cBetreff)} error{/if}" id="cName_{$cISO}" type="text" name="cName_{$cISO}" value="{if isset($cPostVar_arr.betreff) && $cPostVar_arr.betreff}{$cPostVar_arr.betreff}{else}{$oNews->getTitle($langID)}{/if}" />
                             </div>

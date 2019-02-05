@@ -42,10 +42,10 @@
                 disableUpdateControl(false);
 
                 var message = error
-                    ? {/literal}{__('errorSaveCopy')}{literal}
+                    ? '{/literal}{__('errorSaveCopy')}{literal}'
                     : (download
-                        ? {/literal}{__('saveCopy')}{literal} + '"<strong>' + result.file + '</strong>"' + {/literal}{__('isDownloaded')}{literal}
-                        : {/literal}{__('saveCopy')}{literal} + '"<strong>' + result.file + '</strong>"' + {/literal}{__('createSuccess')}{literal});
+                        ? '{/literal}{__('saveCopy')}{literal}' + '"<strong>' + result.file + '</strong>"' + '{/literal}{__('isDownloaded')}{literal}'
+                        : '{/literal}{__('saveCopy')}{literal}' + '"<strong>' + result.file + '</strong>"' + '{/literal}{__('createSuccess')}{literal}');
 
                 showNotify(error ? 'danger' : 'success', 'Sicherungskopie', message);
                 pushEvent(message);
@@ -85,8 +85,8 @@
         doUpdate(function(data, error) {
             var _once = function() {
                 var message = error
-                        ? {/literal}{__('infoUpdatePause')}{literal} + error.message
-                        : {/literal}{__('successUpdate')}{literal}
+                        ? '{/literal}{__('infoUpdatePause')}{literal}' + error.message
+                        : '{/literal}{__('successUpdate')}{literal}'
 
                 showNotify(error ? 'danger' : 'success', 'Update', message);
                 disableUpdateControl(false);
@@ -147,7 +147,7 @@
                     ? result.data.migrations.length : 0);
             var message = error
                     ? error.message
-                    : '<strong>' + count + '</strong>' + {/literal}{__('successMigrations')}{literal};
+                    : '<strong>' + count + '</strong>' + '{/literal}{__('successMigrations')}{literal}';
 
             $ladda.stop();
             updateStatusTpl();
@@ -181,14 +181,14 @@
 
             var message = error
                 ? error.message
-                : {/literal}{__('successMigration')}{literal};
+                : '{/literal}{__('successMigration')}{literal}';
 
             showNotify(error ? 'danger' : 'success', 'Migration', message);
 
             if (!error) {
                 updateStatusTpl();
                 if (dir === 'up') {
-                    pushEvent({/literal}{__('updtaeTo')}{literal} + formatVersion(result.result) + {/literal}{__('successfull')}{literal});
+                    pushEvent('{/literal}{__('updtaeTo')}{literal}' + formatVersion(result.result) + '{/literal}{__('successfull')}{literal}');
                 }
             }
 
@@ -209,8 +209,8 @@
         ajaxCall(url, params, function(result, xhr) {
             if (xhr && xhr.error && xhr.error.code === 401) {
                 createNotify({
-                    title: {/literal}{__('sessionExpired')}{literal},
-                    message: {/literal}{__('redirectToLogin')}{literal},
+                    title: '{/literal}{__('sessionExpired')}{literal}',
+                    message: '{/literal}{__('redirectToLogin')}{literal}',
                     icon: 'fa fa-lock'
                 }, {
                     type: 'danger',

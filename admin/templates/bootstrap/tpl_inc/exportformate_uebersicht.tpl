@@ -34,7 +34,7 @@
         }
 
         function error_export(cb) {
-            alert({/literal}{__('errorExport')}{literal};
+            alert('{/literal}{__('errorExport')}{literal}');
         }
 
         function show_export_info(cb) {

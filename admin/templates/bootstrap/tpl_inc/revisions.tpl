@@ -69,7 +69,7 @@
                 {/foreach}
             </div>
         {else}
-            <div class="alert alert-info">{__('noRevision')}</div>
+            <div class="alert alert-info">{__('noRevisions')}</div>
         {/if}
     </div>
 </div>

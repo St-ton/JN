@@ -6,7 +6,7 @@ msgid "kampagne"
 msgstr "Kampagnen"
 
 msgid "kampagneDesc"
-msgstr ""
+msgstr " "
 
 msgid "kampagneURL"
 msgstr "https://jtl-url.de/v5kan"

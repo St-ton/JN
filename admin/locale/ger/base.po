@@ -98,7 +98,7 @@ msgstr "von"
 msgid "next"
 msgstr "Nächste"
 
-msgid "back"
+msgid "previous"
 msgstr "Vorherige"
 
 msgid "changeLanguage"
@@ -1435,3 +1435,9 @@ msgstr "Brutto"
 
 msgid "price"
 msgstr "Preis"
+
+msgid "favorites"
+msgstr "Favoriten"
+
+msgid "manageFavorites"
+msgstr "Verwalten Sie Ihre Favoriten"

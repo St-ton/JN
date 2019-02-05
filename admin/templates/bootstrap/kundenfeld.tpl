@@ -88,7 +88,7 @@
         if (countKundenfeldwert() > 1) {
             $(pThis).closest('tr.kundenfeld_wert').remove();
             $('#formtable tr.kundenfeld_wert td.kundenfeld_wert_label').each(function(pIndex) {
-                $(this).html({/literal}{__('value')}{literal} + (pIndex + 1) + ':');
+                $(this).html('{/literal}{__('value')}{literal}' + (pIndex + 1) + ':');
             });
         } else {
             alert('{/literal}{__('errorFieldNeedsAtLeastOneValue')}{literal}');

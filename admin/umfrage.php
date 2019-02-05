@@ -467,7 +467,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         $question->oUmfrageFrageAntwort_arr = $db->selectAll(
                             'tumfragefrageantwort',
                             'kUmfrageFrage',
-                            (int)$$question->kUmfrageFrage,
+                            (int)$question->kUmfrageFrage,
                             'kUmfrageFrageAntwort, kUmfrageFrage, cName',
                             'nSort'
                         );

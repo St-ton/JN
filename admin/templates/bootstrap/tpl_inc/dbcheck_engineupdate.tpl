@@ -74,7 +74,7 @@
                         {/if}
                         {{__('notePatienceTwo')}|sprintf:{$shopURL}:{$smarty.const.PFAD_ADMIN}}
                     </p>
-                    <div class="alert alert-warning">{_('warningDoBackup')}</div>
+                    <div class="alert alert-warning">{__('warningDoBackup')}</div>
                     <form method="post" action="dbcheck.php">
                         <div id="settings" class="panel panel-default">
                             <div class="panel-body">

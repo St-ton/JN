@@ -297,6 +297,8 @@ function plzimportActionUpdateIndex(): array
  */
 function plzimportActionDoImport($target = '', $part = '', $step = 0): stdClass
 {
+    Shop::Container()->getGetText()->loadAdminLocale('pages/plz_ort_import');
+
     $target = StringHandler::filterXSS($target);
     $part   = StringHandler::filterXSS($part);
     $step   = (int)$step;
@@ -430,6 +432,7 @@ function plzimportActionCheckStatus(): stdClass
  */
 function plzimportActionDelTempImport(): array
 {
+    Shop::Container()->getGetText()->loadAdminLocale('pages/plz_ort_import');
     Shop::Container()->getDB()->delete('tplz', 'cLandISO', 'IMP');
 
     return [

@@ -8,9 +8,6 @@ msgstr "Das OPC Update wurde nicht ordnungsgemäß installiert. Bitte aktualisie
 msgid "Draft"
 msgstr "Entwurf"
 
-msgid "extended"
-msgstr "erweitert"
-
 msgid "replaced"
 msgstr "ersetzt"
 
@@ -21,9 +18,6 @@ msgstr "Import"
 
 msgid "Export"
 msgstr "Export"
-
-msgid "Help"
-msgstr "Hilfe"
 
 msgid "Publicate"
 msgstr "Veröffentlichen"
@@ -58,9 +52,6 @@ msgstr "Aktuelle Version"
 msgid "Please wait..."
 msgstr "Bitte warten..."
 
-msgid "Error"
-msgstr "Fehler"
-
 msgid "Edit Portlet"
 msgstr "Portlet bearbeiten"
 
@@ -73,13 +64,7 @@ msgstr "Vorlagen-Name"
 msgid "Delete Blueprint?"
 msgstr "Vorlage löschen?"
 
-msgid "Delete"
-msgstr "Löschen"
-
 # Config Tabs
-
-msgid "General"
-msgstr "Allgemein"
 
 msgid "Styles"
 msgstr "Stile"

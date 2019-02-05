@@ -77,10 +77,10 @@ msgstr "Zum Shop"
 msgid "help"
 msgstr "Hilfe"
 
-msgid "start"
+msgid "startPage"
 msgstr "Startseite"
 
-msgid "backendSitemapTitle"
+msgid "sitemap"
 msgstr "Sitemap"
 
 msgid "yes"
@@ -498,7 +498,7 @@ msgid "configGroup"
 msgstr "Konfig-Gruppe"
 
 msgid "type"
-msgstr "Type"
+msgstr "Typ"
 
 msgid "xs"
 msgstr "Mini"
@@ -639,7 +639,7 @@ msgid "showData"
 msgstr "Daten anzeigen"
 
 msgid "noData"
-msgstr "Keine Datensätze"
+msgstr "Keine Daten vorhanden"
 
 msgid "database"
 msgstr "Datenbank"
@@ -802,6 +802,9 @@ msgstr "später"
 
 msgid "value"
 msgstr "Wert"
+
+msgid "values"
+msgstr "Werte"
 
 msgid "number"
 msgstr "Zahl"
@@ -1214,3 +1217,221 @@ msgstr "Fortfahren?"
 msgid "reset"
 msgstr "Zurücksetzen"
 
+msgid "question"
+msgstr "Frage"
+
+msgid "orderNumber"
+msgstr "Bestellnummer"
+
+msgid "customer"
+msgstr "Kunde"
+
+msgid "search"
+msgstr "Suchen"
+
+msgid "more"
+msgstr "Mehr"
+
+msgid "insert"
+msgstr "einfügen"
+
+msgid "pages"
+msgstr "Seiten"
+
+msgid "manufacturers"
+msgstr "Hersteller"
+
+msgid "transparency"
+msgstr "Transparenz"
+
+msgid "size"
+msgstr "Grösse"
+
+msgid "position"
+msgstr "Position"
+
+msgid "deactivate"
+msgstr "deaktivieren"
+
+msgid "newsletter"
+msgstr "Newsletter"
+
+msgid "exportformat"
+msgstr "Exportformat"
+
+msgid "exportformats"
+msgstr "Exportformate"
+
+msgid "progress"
+msgstr "Fortschritt"
+
+msgid "configure"
+msgstr "einstellen"
+
+msgid "subject"
+msgstr "Betreff"
+
+msgid "subjects"
+msgstr "Betreffs"
+
+msgid "filename"
+msgstr "Dateiname"
+
+msgid "module"
+msgstr "Modul"
+
+msgid "template"
+msgstr "Vorlage"
+
+msgid "repetition"
+msgstr "Wiederholung"
+
+msgid "header"
+msgstr "Kopfzeile"
+
+msgid "footer"
+msgstr "Fusszeile"
+
+msgid "firstName"
+msgstr "Vorname"
+
+msgid "lastName"
+msgstr "Nachname"
+
+msgid "reviews"
+msgstr "Bewertungen"
+
+msgid "stars"
+msgstr "Sterne"
+
+msgid "productName"
+msgstr "Artikelname"
+
+msgid "back"
+msgstr "zurück"
+
+msgid "annual"
+msgstr "Jährlich"
+
+msgid "monthly"
+msgstr "Monatlich"
+
+msgid "weekly"
+msgstr "Wöchentlich"
+
+msgid "daily"
+msgstr "Täglich"
+
+msgid "contents"
+msgstr "inhalte"
+
+msgid "format"
+msgstr "Format"
+
+msgid "credit"
+msgstr "Guthaben"
+
+msgid "newCustomer"
+msgstr "Neukunde"
+
+msgid "registered"
+msgstr "Registriert"
+
+msgid "names"
+msgstr "Namen"
+
+msgid "optional"
+msgstr "optional"
+
+msgid "coupon"
+msgstr "Kupon"
+
+msgid "coupons"
+msgstr "Kupons"
+
+msgid "orderValue"
+msgstr "Bestellwert"
+
+msgid "order"
+msgstr "Bestellung"
+
+msgid "orders"
+msgstr "Bestellungen"
+
+msgid "unitPrice"
+msgstr "Stückpreis"
+
+msgid "totalPrice"
+msgstr "Gesamtpreis"
+
+msgid "totalAmount"
+msgstr "Gesamtsumme"
+
+msgid "linkGroup"
+msgstr "Linkgruppe"
+
+msgid "register"
+msgstr "Registrieren"
+
+msgid "basket"
+msgstr "Warenkorb"
+
+msgid "contact"
+msgstr "Kontakt"
+
+msgid "news"
+msgstr "News"
+
+msgid "poll"
+msgstr "Umfrage"
+
+msgid "mapping"
+msgstr "Mapping"
+
+msgid "blacklist"
+msgstr "Blacklist"
+
+msgid "headline"
+msgstr "Überschrift"
+
+msgid "campaign"
+msgstr "Kampagne"
+
+msgid "error"
+msgstr "Fehler"
+
+msgid "selectAll"
+msgstr "Alle auswählen"
+
+msgid "continent"
+msgstr "Kontinent"
+
+msgid "country"
+msgstr "Land"
+
+msgid "iso"
+msgstr "ISO"
+
+msgid "areas"
+msgstr "Bereiche"
+
+msgid "current"
+msgstr "aktuell"
+
+msgid "bestseller"
+msgstr "Bestseller"
+
+msgid "seo"
+msgstr "SEO"
+
+msgid "read"
+msgstr "lesen"
+
+msgid "net"
+msgstr "Netto"
+
+msgid "gross"
+msgstr "Brutto"
+
+msgid "price"
+msgstr "Preis"

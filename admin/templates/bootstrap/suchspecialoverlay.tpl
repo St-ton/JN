@@ -98,7 +98,7 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="nTransparenz">{__('suchspecialoverlayClarity')}</label>
+                                <label for="nTransparenz">{__('transparancy')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select name="nTransparenz" class="form-control combo" id="nTransparenz">
@@ -124,7 +124,7 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="nPosition">{__('suchspecialoverlayPosition')}</label>
+                                <label for="nPosition">{__('position')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select name="nPosition" id="nPosition" class="combo form-control"{if !empty($isDeprecated)} disabled="disabled"{/if}>

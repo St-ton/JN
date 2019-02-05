@@ -33,7 +33,7 @@
                             <td class="check">
                                 <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
                             </td>
-                            <td colspan="5"><label for="ALLMSGS">{__('taggingSelectAll')}</label></td>
+                            <td colspan="5"><label for="ALLMSGS">{__('selectAll')}</label></td>
                         </tr>
                     </table>
                 </div>

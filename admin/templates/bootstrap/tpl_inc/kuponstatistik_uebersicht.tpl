@@ -69,9 +69,9 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>{__('couponName')}</th>
-                        <th>{__('customerName')}</th>
-                        <th>{__('orderNumber')}</th>
+                        <th>{__('coupon')}</th>
+                        <th>{__('customer')}</th>
+                        <th>{__('orderNumberShort')}</th>
                         <th>{__('couponValue')}</th>
                         <th>{__('orderValue')}</th>
                         <th>{__('date')}</th>
@@ -107,7 +107,7 @@
                                                     <thead>
                                                     <tr>
                                                         <th>{__('orderPosition')}</th>
-                                                        <th>{__('amount')}</th>
+                                                        <th>{__('count')}</th>
                                                         <th>{__('unitPrice')}</th>
                                                         <th>{__('totalPrice')}</th>
                                                     </tr>

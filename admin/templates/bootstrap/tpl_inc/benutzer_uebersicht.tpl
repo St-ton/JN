@@ -19,14 +19,14 @@
                         <thead>
                         <tr>
                             <th class="tleft">#</th>
-                            <th class="tcenter">{__('benutzerLogin')}</th>
+                            <th class="tcenter">{__('username')}</th>
                             <th class="tcenter">{__('benutzer2FA')}</th>
-                            <th class="tcenter">{__('benutzerMail')}</th>
-                            <th class="tcenter">{__('benutzerGruppe')}</th>
+                            <th class="tcenter">{__('email')}</th>
+                            <th class="tcenter">{__('group')}</th>
                             <th class="tcenter">{__('benutzerLoginVersuche')}</th>
                             <th class="tcenter">{__('benutzerLetzterLogin')}</th>
                             <th class="tcenter">{__('benutzerGueltigBis')}</th>
-                            <th class="tcenter" width="135">{__('benutzerAktion')}</th>
+                            <th class="tcenter" width="135">{__('action')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -61,7 +61,7 @@
                                             {else}
                                                 <button class="notext btn btn-warning" name="action" value="account_unlock" title="{__('entsperrenLabel')}"><i class="fa fa-unlock"></i></button>
                                             {/if}
-                                            <button class="notext btn btn-danger" name="action" value="account_delete" onclick="return confirm('{__('sureDeleteGroup')}');" title="{__('loeschenLabel')}"><i class="fa fa-trash"></i></button>
+                                            <button class="notext btn btn-danger" name="action" value="account_delete" onclick="return confirm('{__('sureDeleteGroup')}');" title="{__('delete')}"><i class="fa fa-trash"></i></button>
                                         </div>
                                     </form>
                                 </td>
@@ -89,10 +89,10 @@
                         <thead>
                         <tr>
                             <th class="tleft">#</th>
-                            <th class="tleft">{__('gruppenName')}</th>
-                            <th class="tleft">{__('gruppenDesc')}</th>
-                            <th class="tcenter">{__('gruppenBenutzer')}</th>
-                            <th class="tcenter">{__('benutzerAktion')}</th>
+                            <th class="tleft">{__('group')}</th>
+                            <th class="tleft">{__('description')}</th>
+                            <th class="tcenter">{__('user')}</th>
+                            <th class="tcenter">{__('action')}</th>
                         </tr>
                         </thead>
                         <tbody>

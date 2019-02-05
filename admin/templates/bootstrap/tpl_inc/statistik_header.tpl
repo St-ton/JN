@@ -4,7 +4,7 @@
     {rdelim}
 </script>
 {if $nTyp == $STATS_ADMIN_TYPE_BESUCHER}
-    {assign var=cTitel value=__('statisticTitle')|cat:': '|cat:__('statisticBesucher')}
+    {assign var=cTitel value=__('statisticTitle')|cat:': '|cat:__('visitors')}
     {assign var=cURL value=__('statisticBesucherURL')}
 {elseif $nTyp == $STATS_ADMIN_TYPE_KUNDENHERKUNFT}
     {assign var=cTitel value=__('statisticTitle')|cat:': '|cat:__('statisticKundenherkunft')}

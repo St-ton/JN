@@ -2,7 +2,7 @@
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'config'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#config">{__('config')}</a>
+            <a data-toggle="tab" role="tab" href="#config">{__('settings')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'subjects'} active{/if}">
             <a data-toggle="tab" role="tab" href="#subjects">{__('subjects')}</a>
@@ -63,7 +63,7 @@
                         <tr>
                             <th class="tleft">{__('subject')}</th>
                             <th class="tleft">{__('mail')}</th>
-                            <th>{__('custgrp')}</th>
+                            <th>{__('customerGroup')}</th>
                             <th>{__('actions')}</th>
                         </tr>
                         </thead>

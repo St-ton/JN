@@ -23,12 +23,6 @@ msgstr "Von Version"
 msgid "toVersion"
 msgstr "Nach Version"
 
-msgid "row"
-msgstr "Zeile"
-
-msgid "progress"
-msgstr "Fortschritt"
-
 msgid "errorSqlUpdate"
 msgstr "Fehler: Ein SQL-Befehl im Update konnte nicht ausgeführt werden. Bitte versuchen Sie es erneut."
 

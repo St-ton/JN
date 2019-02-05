@@ -48,10 +48,10 @@
                         </span>
                         <span class="input-group-wrap">
                             <select id="nAnsicht" name="nAnsicht" class="form-control combo" onChange="changeSelect(this);">
-                                <option value="1"{if $smarty.session.Kampagne->nDetailAnsicht == 1} selected{/if}>{__('kampagneStatYear')}</option>
-                                <option value="2"{if $smarty.session.Kampagne->nDetailAnsicht == 2} selected{/if}>{__('kampagneStatMonth')}</option>
-                                <option value="3"{if $smarty.session.Kampagne->nDetailAnsicht == 3} selected{/if}>{__('kampagneStatWeek')}</option>
-                                <option value="4"{if $smarty.session.Kampagne->nDetailAnsicht == 4} selected{/if}>{__('kampagneStatDay')}</option>
+                                <option value="1"{if $smarty.session.Kampagne->nDetailAnsicht == 1} selected{/if}>{__('annual')}</option>
+                                <option value="2"{if $smarty.session.Kampagne->nDetailAnsicht == 2} selected{/if}>{__('monthly')}</option>
+                                <option value="3"{if $smarty.session.Kampagne->nDetailAnsicht == 3} selected{/if}>{__('weekly')}</option>
+                                <option value="4"{if $smarty.session.Kampagne->nDetailAnsicht == 4} selected{/if}>{__('daily')}</option>
                             </select>
                         </span>
                     </div>
@@ -75,7 +75,7 @@
                 <div class="col-sm-5">
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="SelectFromDay">{__('kampagneDateFrom')}</label>
+                            <label for="SelectFromDay">{__('from')}</label>
                         </span>
 
                         <select name="cFromDay" class="form-control combo" id="SelectFromDay">
@@ -243,7 +243,7 @@
         
     </div>
     <div class="panel-footer">
-        <a href="kampagne.php?tab=globalestats&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {__('kampagneBackBTN')}</a>
+        <a href="kampagne.php?tab=globalestats&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
     </div>
 </div>
 

@@ -32,7 +32,7 @@
             <a data-toggle="tab" role="tab" href="#report">{__('sitemapReport')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einstellungen">{__('sitemapSettings')}</a>
+            <a data-toggle="tab" role="tab" href="#einstellungen">{__('settings')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -126,7 +126,7 @@
                             </div>
                             <div class="panel-footer">
                                 <div class="button-group">
-                                    <button class="btn btn-danger" name="loeschen" type="submit" value="{__('sitemapDelete')}"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
+                                    <button class="btn btn-danger" name="loeschen" type="submit" value="{__('delete')}"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
                                 </div>
                             </div>
                         </div>
@@ -228,7 +228,7 @@
                         </div>
                         <div class="panel-footer">
                             <div class="button-group">
-                                <button name="loeschen" type="submit" value="{__('sitemapDelete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
+                                <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
                             </div>
                         </div>
                     </form>

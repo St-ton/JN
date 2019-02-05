@@ -30,7 +30,7 @@
                 <div class="panel-body">
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="Title">{__('globalemetaangabenTitle')}</label>
+                            <label for="Title">{__('title')}</label>
                         </span>
                         <input type="text" class="form-control" id="Title" name="Title" value="{if isset($oMetaangaben_arr.Title)}{$oMetaangaben_arr.Title}{/if}" tabindex="1" />
                     </div>
@@ -105,7 +105,7 @@
         </div>
 
         <div class="submit">
-            <button name="speichern" type="submit" value="{__('globalemetaangabenSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('globalemetaangabenSave')}</button>
+            <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
         </div>
     </form>
 </div>

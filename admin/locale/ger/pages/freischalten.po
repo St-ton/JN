@@ -11,29 +11,14 @@ msgstr "https://jtl-url.de/ihwlq"
 msgid "freischaltenDesc"
 msgstr "Hier können Bewertungen, Livesuchen, Tags, Newskommentare und Newsletterempfänger auf einem Blick in der aktuell ausgewählten Sprache freigeschaltet werden."
 
-msgid "freischaltenSelectAll"
-msgstr "Alle auswählen"
-
 msgid "freischaltenActivate"
 msgstr "Freischalten"
-
-msgid "freischaltenDelete"
-msgstr "Löschen"
-
-msgid "freischaltenReviews"
-msgstr "Bewertungen"
-
-msgid "freischaltenReviewsProduct"
-msgstr "Artikel"
 
 msgid "freischaltenReviewsCustomer"
 msgstr "Kundenname"
 
 msgid "freischaltenReviewsText"
 msgstr "Bewertungstext"
-
-msgid "freischaltenReviewsStars"
-msgstr "Sterne"
 
 msgid "freischaltenReviewsDate"
 msgstr "Erstellt am"
@@ -53,29 +38,14 @@ msgstr "Suchtreffer"
 msgid "freischaltenLiveseachDate"
 msgstr "Zuletzt gesucht am"
 
-msgid "freischaltenTags"
-msgstr "Tags"
-
-msgid "freischaltenTagsName"
-msgstr "Name"
-
-msgid "freischaltenTagsProductName"
-msgstr "Artikel"
-
 msgid "freischaltenTagsCount"
 msgstr "Taganzahl"
 
 msgid "freischaltenNewsComments"
 msgstr "Newskommentare"
 
-msgid "freischaltenNewsCommentsVisitor"
-msgstr "Besucher"
-
 msgid "freischaltenNewsCommentsHeadline"
 msgstr "Überschrift"
-
-msgid "freischaltenNewsCommentsText"
-msgstr "Text"
 
 msgid "freischaltenNewsCommentsDate"
 msgstr "Erstellt am"
@@ -92,9 +62,6 @@ msgstr "Suchbegriff"
 msgid "freischaltenSearchType"
 msgstr "Suchkategorie"
 
-msgid "freischaltenSearchBTN"
-msgstr "Suchen"
-
 msgid "freischaltenMappingOn"
 msgstr "Mappen auf"
 
@@ -103,18 +70,6 @@ msgstr "Mappen"
 
 msgid "freischaltenMappingDesc"
 msgstr "* Achtung * Bei einem Mapping werden die Livesuchen direkt freigeschaltet."
-
-msgid "freischaltenNewsletterReceiverFirstName"
-msgstr "Vorname"
-
-msgid "freischaltenNewsletterReceiverLastName"
-msgstr "Nachname"
-
-msgid "freischaltenNewsletterReceiverEmail"
-msgstr "E-Mail"
-
-msgid "freischaltenNewsletterReceiverDate"
-msgstr "Datum"
 
 msgid "errorSearchTermMissing"
 msgstr "Fehler: Bitte geben Sie einen Suchbegriff ein."

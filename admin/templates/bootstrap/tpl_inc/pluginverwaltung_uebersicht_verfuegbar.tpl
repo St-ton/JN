@@ -111,7 +111,7 @@
                         <tfoot>
                         <tr>
                             <td class="check"><input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessagesExcept(this.form, vLicenses);" /></td>
-                            <td colspan="5"><label for="ALLMSGS4">{__('pluginSelectAll')}</label></td>
+                            <td colspan="5"><label for="ALLMSGS4">{__('selectAll')}</label></td>
                         </tr>
                         </tfoot>
                     </table>

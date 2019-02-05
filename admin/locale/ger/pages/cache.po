@@ -2,9 +2,6 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
-msgid "cache"
-msgstr "Cache"
-
 msgid "objectcache"
 msgstr "Object Cache"
 
@@ -112,18 +109,6 @@ msgstr "Typ"
 
 msgid "description"
 msgstr "Beschreibung"
-
-msgid "active"
-msgstr "aktiv"
-
-msgid "inactive"
-msgstr "inaktiv"
-
-msgid "activate"
-msgstr "aktivieren"
-
-msgid "deactivate"
-msgstr "deaktivieren"
 
 msgid "empty"
 msgstr "leeren"

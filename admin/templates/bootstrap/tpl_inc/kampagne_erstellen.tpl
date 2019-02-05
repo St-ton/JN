@@ -64,7 +64,7 @@
                 </span>
             </div>
             <div class="input-group">
-                <span class="input-group-addon"><label for="nAktiv">{__('kampagnenActive')}</label></span>
+                <span class="input-group-addon"><label for="nAktiv">{__('activated')}</label></span>
                 <span class="input-group-wrap">
                     <select id="nAktiv" name="nAktiv" class="combo form-control">
                         <option value="0"{if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 0} selected{/if}>{__('no')}</option>
@@ -76,7 +76,7 @@
         <div class="panel-footer">
             <div class="btn-group">
                 <button name="submitSave" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
-                <a href="kampagne.php?tab=uebersicht" class="button btn btn-default"><i class="fa fa-angle-double-left"></i> {__('kampagneBackBTN')}</a>
+                <a href="kampagne.php?tab=uebersicht" class="button btn btn-default"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
             </div>
         </div>
     </div>

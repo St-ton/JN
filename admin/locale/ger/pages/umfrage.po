@@ -11,32 +11,14 @@ msgstr "Das Umfragesystem erlaubt es Ihnen, vielseitige Umfragen im Shop durchzu
 msgid "umfrageURL"
 msgstr "https://jtl-url.de/nx0d7"
 
-msgid "umfrageSave"
-msgstr "Speichern"
-
 msgid "umfrageAdd"
 msgstr "Neue Umfrage erstellen"
 
 msgid "umfrageOverview"
 msgstr "Umfragen"
 
-msgid "umfrageName"
-msgstr "Name"
-
-msgid "umfrageSeo"
-msgstr "SEO"
-
-msgid "umfrageCustomerGrp"
-msgstr "Kundengruppe"
-
 msgid "umfrageValidation"
 msgstr "Gültigkeit"
-
-msgid "umfrageActive"
-msgstr "Aktiv"
-
-msgid "umfrageText"
-msgstr "Beschreibung"
 
 msgid "umfrageDate"
 msgstr "Erstellt am"
@@ -44,32 +26,11 @@ msgstr "Erstellt am"
 msgid "umfrageInfinite"
 msgstr "immer"
 
-msgid "umfrageEdit"
-msgstr "Editieren"
-
-msgid "umfrageDelete"
-msgstr "Löschen"
-
-msgid "umfrageFrom"
-msgstr "vom"
-
-msgid "umfrageTo"
-msgstr "bis"
-
-msgid "umfrageCoupon"
-msgstr "Kupon"
-
-msgid "umfrageCredits"
-msgstr "Guthaben"
-
 msgid "umfrageExtraPoints"
 msgstr "Bonuspunkte"
 
 msgid "umfrageNoCoupon"
 msgstr "Keinen"
-
-msgid "umfrageSort"
-msgstr "Sortierung"
 
 msgid "umfrageType"
 msgstr "Typ"
@@ -103,9 +64,6 @@ msgstr "Antwort"
 
 msgid "umfrageQO"
 msgstr "Optionen"
-
-msgid "umfrageBack"
-msgstr "zurück"
 
 msgid "umfrageQAdd"
 msgstr "Frage hinzufügen"
@@ -145,9 +103,6 @@ msgstr "Option löschen"
 
 msgid "umfrageQSort"
 msgstr "Sortierung"
-
-msgid "umfrageSettings"
-msgstr "Einstellungen"
 
 msgid "errorPollNotFound"
 msgstr "Fehler: Ihre Umfrage konnte nicht gefunden werden."

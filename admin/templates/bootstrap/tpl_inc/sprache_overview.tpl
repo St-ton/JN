@@ -78,7 +78,7 @@
                                     <tr>
                                         {if $bAllSections}<th>{__('section')}</th>{/if}
                                         <th>{__('variableName')}</th>
-                                        <th>{__('variableContent')}</th>
+                                        <th>{__('content')}</th>
                                         <th></th>
                                     </tr>
                                 </thead>

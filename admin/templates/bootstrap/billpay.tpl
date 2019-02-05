@@ -6,13 +6,13 @@
 <div id="content">
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'uebersicht'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#overview">{__('billpayOverview')}</a>
+            <a data-toggle="tab" role="tab" href="#overview">{__('overview')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'log'} active{/if}">
             <a data-toggle="tab" role="tab" href="#log">{__('billpayLog')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'config'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#config">{__('billpayConfig')}</a>
+            <a data-toggle="tab" role="tab" href="#config">{__('settings')}</a>
         </li>
     </ul>
     <div class="container-fluid2">

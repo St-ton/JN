@@ -35,7 +35,7 @@
     {/literal}
 </script>
 
-{include file='tpl_inc/seite_header.tpl' cTitel=__('newsCat')}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('category')}
 <div id="content">
     <form name="news" method="post" action="news.php" enctype="multipart/form-data">
         {$jtl_token}
@@ -78,7 +78,7 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="nAktiv">{__('newsActive')}</label>
+                                <label for="nAktiv">{__('active')}</label>
                             </span>
                             <select class="form-control" id="nAktiv" name="nAktiv">
                                 <option value="1"{if $oNewsKategorie->getIsActive() === true} selected{/if}>
@@ -91,7 +91,7 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="previewImage">{__('newsPreview')}</label>
+                                <label for="previewImage">{__('preview')}</label>
                             </span>
                             <div class="input-group-wrap">
                                 {if !empty($oNewsKategorie->getPreviewImage())}
@@ -150,7 +150,7 @@
                             <div class="panel-body" id="formtable">
                                 <div class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cName_{$cISO}">{__('newsCatName')}</label>
+                                        <label for="cName_{$cISO}">{__('name')}</label>
                                     </span>
                                     <input class="form-control{if !empty($cPlausiValue_arr.cName)} error{/if}" id="cName_{$cISO}" name="cName_{$cISO}" type="text" value="{if $oNewsKategorie->getName($langID) !== ''}{$oNewsKategorie->getName($langID)}{/if}" />{if isset($cPlausiValue_arr.cName) && $cPlausiValue_arr.cName == 2} {__('newsAlreadyExists')}{/if}
                                 </div>
@@ -174,7 +174,7 @@
                                 </div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cBeschreibung_{$cISO}">{__('newsCatDesc')}</label>
+                                        <label for="cBeschreibung_{$cISO}">{__('description')}</label>
                                     </span>
                                     <textarea id="cBeschreibung_{$cISO}" class="ckeditor" name="cBeschreibung_{$cISO}" rows="15" cols="60">{$oNewsKategorie->getDescription($langID)}</textarea>
                                 </div>
@@ -182,7 +182,7 @@
                         </div>
                         <div class="panel-footer">
                             <span class="btn-group">
-                                <button name="speichern" type="button" value="{__('newsSave')}" onclick="document.news.submit();" class="btn btn-primary"><i class="fa fa-save"></i> {__('newsSave')}</button>
+                                <button name="speichern" type="button" value="{__('save')}" onclick="document.news.submit();" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                                 <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> {__('Cancel')}</a>
                             </span>
                         </div>

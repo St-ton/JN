@@ -14,9 +14,9 @@
                 <th class="tleft">{__('headlineTyp')}</th>
                 <th class="text-center">{__('headlineTotal')}</th>
                 <th class="text-center abbr">{__('headlineCache')}</th>
-                <th class="text-center">{__('headlineCorrupted')}</th>
+                <th class="text-center">{__('faulty')}</th>
                 <th class="text-center" width="125">{__('headlineSize')}</th>
-                <th class="text-center" width="200">{__('headlineAction')}</th>
+                <th class="text-center" width="200">{__('actions')}</th>
             </tr>
             </thead>
             <tbody>

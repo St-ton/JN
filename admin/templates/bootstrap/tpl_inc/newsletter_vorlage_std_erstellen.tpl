@@ -66,7 +66,7 @@
 
                 <div class="input-group{if isset($cPlausiValue_arr.cBetreff)} error{/if}">
                     <div class="input-group-addon">
-                        <label for="cBetreff">{__('newsletterdraftsubject')}</label>
+                        <label for="cBetreff">{__('subject')}</label>
                     </div>
                     <input{if isset($cPlausiValue_arr.cBetreff)} placeholder="{__('newsletterdraftFillOut')}"{/if} id="cBetreff" name="cBetreff" type="text" class="form-control {if isset($cPlausiValue_arr.cBetreff)}fieldfillout{else}field{/if}" value="{if isset($cPostVar_arr.cBetreff)}{$cPostVar_arr.cBetreff}{elseif isset($oNewslettervorlageStd->cBetreff)}{$oNewslettervorlageStd->cBetreff}{/if}">
                 </div>
@@ -206,7 +206,7 @@
 
                 <div class="input-group">
                     <div class="input-group-addon">
-                        <label for="kKampagneselect">{__('newslettercampaign')}</label>
+                        <label for="kKampagneselect">{__('campaign')}</label>
                     </div>
                     <div class="input-group-wrap">
                         <select id="kKampagneselect" name="kKampagne" class="form-control">
@@ -288,7 +288,7 @@
                 </script>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="manufacturerSelectionInfo">{__('newslettermanufacturer')}</label>
+                        <label for="manufacturerSelectionInfo">{__('manufacturer')}</label>
                     </span>
                     <span class="input-group-wrap">
                         <input type="text" class="form-control" readonly="readonly" id="manufacturerSelectionInfo">
@@ -329,7 +329,7 @@
                 </script>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="categorySelectionInfo">{__('newslettercategory')}</label>
+                        <label for="categorySelectionInfo">{__('categories')}</label>
                     </span>
                     <span class="input-group-wrap">
                         <input type="text" class="form-control" readonly="readonly" id="categorySelectionInfo">
@@ -386,11 +386,11 @@
             <div class="panel-footer">
                 <div class="btn-group">
                     {if (isset($oNewslettervorlageStd->kNewsletterVorlage) && $oNewslettervorlageStd->kNewsletterVorlage > 0) || (isset($cPostVar_arr.kNewslettervorlage) && $cPostVar_arr.kNewslettervorlage > 0)}
-                        <a class="btn btn-default" href="newsletter.php?tab=newslettervorlagen&token={$smarty.session.jtl_token}"><i class="fa fa-angle-double-left"></i> {__('newsletterback')}</a>
+                        <a class="btn btn-default" href="newsletter.php?tab=newslettervorlagen&token={$smarty.session.jtl_token}"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
                     {else}
-                        <a class="btn btn-default" href="newsletter.php?tab=newslettervorlagenstd&token={$smarty.session.jtl_token}"><i class="fa fa-angle-double-left"></i> {__('newsletterback')}</a>
+                        <a class="btn btn-default" href="newsletter.php?tab=newslettervorlagenstd&token={$smarty.session.jtl_token}"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
                     {/if}
-                    <button class="btn btn-primary" name="speichern" type="submit" value="{__('newsletterdraftsave')}"><i class="fa fa-save"></i> {__('newsletterdraftsave')}</button>
+                    <button class="btn btn-primary" name="speichern" type="submit" value="{__('save')}"><i class="fa fa-save"></i> {__('save')}</button>
                 </div>
             </div>
         </div>

@@ -76,7 +76,7 @@
                 </div>
                 <div class="panel-footer">
                     <div class="btn-group">
-                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('statusemailSave')}</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                         <button type="submit" class="btn btn-default" name="action" value="sendnow">
                             <i class="fa fa-envelope-o"></i> {__('sendEmail')}</button>
                     </div>

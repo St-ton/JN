@@ -11,9 +11,6 @@ msgstr " "
 msgid "auswahlassistentURL"
 msgstr "https://jtl-url.de/usgio"
 
-msgid "aaConfig"
-msgstr "Einstellungen"
-
 msgid "aaOverview"
 msgstr "Fragengruppen"
 
@@ -29,53 +26,11 @@ msgstr "Fragengruppe erstellen"
 msgid "aaGroupEdit"
 msgstr "Fragengruppe bearbeiten"
 
-msgid "active"
-msgstr "Aktiv"
-
-msgid "aaName"
-msgstr "Name"
-
-msgid "aaDesc"
-msgstr "Beschreibung"
-
-msgid "aaKat"
-msgstr "Kategorie"
-
 msgid "aaSpecialSite"
 msgstr "CMS (Eigene Seite)"
 
 msgid "aaLocation"
 msgstr "Anzeigeorte"
-
-msgid "aaStartSite"
-msgstr "Startseite"
-
-msgid "aaQuestionName"
-msgstr "Frage"
-
-msgid "aaMerkmal"
-msgstr "Merkmal"
-
-msgid "aaActive"
-msgstr "Aktiv"
-
-msgid "aaLanguage"
-msgstr "Sprache"
-
-msgid "aaSort"
-msgstr "Sortierung"
-
-msgid "aaActivate"
-msgstr "Aktivieren"
-
-msgid "aaDeactivate"
-msgstr "Deaktivieren"
-
-msgid "aaDelete"
-msgstr "Löschen"
-
-msgid "aaEdit"
-msgstr "Editieren"
 
 msgid "aaChoose"
 msgstr "bitte auswählen"

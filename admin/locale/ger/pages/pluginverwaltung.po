@@ -68,9 +68,6 @@ msgstr "Aktualisiert am"
 msgid "pluginFolder"
 msgstr "Verzeichnis"
 
-msgid "status"
-msgstr "Status"
-
 msgid "statusInstalled"
 msgstr "Installiert"
 
@@ -89,12 +86,6 @@ msgstr "Updaten"
 msgid "pluginBtnInstall"
 msgstr "Installieren"
 
-msgid "pluginBtnActivate"
-msgstr "Aktivieren"
-
-msgid "pluginBtnDeActivate"
-msgstr "Deaktivieren"
-
 msgid "pluginBtnDeInstall"
 msgstr "Deinstallieren"
 
@@ -110,12 +101,6 @@ msgstr "ändern"
 msgid "pluginBtnLicence"
 msgstr "Lizenz"
 
-msgid "pluginBtnSave"
-msgstr "Speichern"
-
-msgid "pluginBtnBack"
-msgstr "zurück"
-
 msgid "pluginLocalesStd"
 msgstr "auf den Installationszustand zurücksetzen"
 
@@ -124,9 +109,6 @@ msgstr "Sprachvariablen"
 
 msgid "pluginEditLinkgrps"
 msgstr "Linkgruppen"
-
-msgid "pluginSelectAll"
-msgstr "Alle auswählen"
 
 msgid "pluginUpdateExists"
 msgstr "Das Plugin wurde in einer aktuelleren Version hochgeladen und kann geupdated werden"

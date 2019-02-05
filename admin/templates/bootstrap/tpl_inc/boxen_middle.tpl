@@ -26,13 +26,13 @@
                                 <strong>{__('boxLabel')}</strong>
                             </div>
                             <div class="col-sm-2">
-                                <strong>{__('boxState')}</strong>
+                                <strong>{__('status')}</strong>
                             </div>
                             <div class="col-sm-2">
-                                <strong>{__('boxSort')}</strong>
+                                <strong>{__('sorting')}</strong>
                             </div>
                             <div class="col-sm-2">
-                                <strong>{__('boxActions')}</strong>
+                                <strong>{__('actions')}</strong>
                             </div>
                         </li>
                         {foreach $oBox_arr as $oBox}

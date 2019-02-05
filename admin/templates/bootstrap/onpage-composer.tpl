@@ -84,7 +84,7 @@
                                 <li role="separator" class="divider"></li>
                                 <li>
                                     <a href="#" id="btnHelp" data-toggle="tooltip" data-placement="right">
-                                        <i class="fa fa-question-circle"></i> {__('Help')}
+                                        <i class="fa fa-question-circle"></i> {__('help')}
                                     </a>
                                 </li>
                             </ul>
@@ -226,7 +226,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">{__('Error')}</h4>
+                    <h4 class="modal-title">{__('error')}</h4>
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-danger" id="errorAlert">
@@ -294,8 +294,8 @@
                     <div class="modal-footer">
                         <div class="btn-group">
                             <input type="hidden" id="blueprintDeleteId" name="id" value="">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">{__('Cancel')}</button>
-                            <button class="btn btn-primary">{__('Delete')}</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">{__('cancel')}</button>
+                            <button class="btn btn-primary">{__('delete')}</button>
                         </div>
                     </div>
                 </form>
@@ -307,7 +307,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">{__('Help')}</h4>
+                    <h4 class="modal-title">{__('help')}</h4>
                 </div>
                 <div class="modal-body">
                     <div class="row">

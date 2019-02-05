@@ -23,7 +23,7 @@
                 <a data-toggle="tab" role="tab" href="#umfrage">{__('umfrageOverview')}</a>
             </li>
             <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-                <a data-toggle="tab" role="tab" href="#einstellungen">{__('umfrageSettings')}</a>
+                <a data-toggle="tab" role="tab" href="#einstellungen">{__('settings')}</a>
             </li>
         </ul>
         <div class="tab-content">
@@ -54,10 +54,10 @@
                                         <table class="table table-striped">
                                             <tr>
                                                 <th class="th-1"></th>
-                                                <th class="th-2">{__('umfrageName')}</th>
-                                                <th class="th-3">{__('umfrageCustomerGrp')}</th>
+                                                <th class="th-2">{__('name')}</th>
+                                                <th class="th-3">{__('customerGroup')}</th>
                                                 <th class="th-4">{__('umfrageValidation')}</th>
-                                                <th class="th-5">{__('umfrageActive')}</th>
+                                                <th class="th-5">{__('ative')}</th>
                                                 <th class="th-6">{__('umfrageQCount')}</th>
                                                 <th class="th-7">{__('umfrageDate')}</th>
                                                 <th class="th-8">{__('actions')}</th>
@@ -99,7 +99,7 @@
                 {/if}
             </div>
             <div id="einstellungen" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
-                {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='umfrage.php' buttonCaption=__('umfrageSave') title=__('settings') tab='einstellungen'}
+                {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='umfrage.php' buttonCaption=__('save') title=__('settings') tab='einstellungen'}
             </div>
         </div>
     {else}

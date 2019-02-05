@@ -11,9 +11,6 @@ msgstr "https://jtl-url.de/koyfj"
 msgid "emailhistoryDesc"
 msgstr "Eine Übersicht der vom Shop versendeten E-Mails"
 
-msgid "subject"
-msgstr "Betreff"
-
 msgid "fromname"
 msgstr "Absender Name"
 
@@ -28,12 +25,6 @@ msgstr "Empfänger E-Mail"
 
 msgid "date"
 msgstr "Versendet am"
-
-msgid "delete"
-msgstr "Löschen"
-
-msgid "nodata"
-msgstr "Keine Daten vorhanden"
 
 msgid "errorHistoryDelete"
 msgstr "Fehler: eMail-History konnte nicht gelöscht werden!"

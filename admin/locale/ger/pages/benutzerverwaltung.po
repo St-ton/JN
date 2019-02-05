@@ -17,23 +17,11 @@ msgstr "Benutzer"
 msgid "benutzerKategorie"
 msgstr "Benutzer verwalten"
 
-msgid "benutzerLogin"
-msgstr "Benutzername"
-
 msgid "benutzer2FA"
 msgstr "2FA"
 
-msgid "benutzerName"
-msgstr "Vor- und Nachname"
-
-msgid "benutzerMail"
-msgstr "E-Mail"
-
 msgid "benutzerLoginVersuche"
 msgstr "Loginversuche"
-
-msgid "benutzerGruppe"
-msgstr "Gruppe"
 
 msgid "benutzerLetzterLogin"
 msgstr "Letzte Anmeldung"
@@ -59,14 +47,8 @@ msgstr "sperren"
 msgid "entsperrenLabel"
 msgstr "entsperren"
 
-msgid "loeschenLabel"
-msgstr "löschen"
-
 msgid "loeschenLabelDeaktiviert"
 msgstr "Gruppe enthält noch Mitglieder!"
-
-msgid "benutzerAktion"
-msgstr "Aktion"
 
 msgid "gruppenTab"
 msgstr "Gruppen"
@@ -76,15 +58,6 @@ msgstr "Gruppenverwaltung"
 
 msgid "gruppenKategorie"
 msgstr "Gruppen verwalten"
-
-msgid "gruppenName"
-msgstr "Gruppe"
-
-msgid "gruppenBenutzer"
-msgstr "Benutzer"
-
-msgid "gruppenDesc"
-msgstr "Beschreibung"
 
 msgid "gruppeNeu"
 msgstr "Neue Gruppe anlegen"

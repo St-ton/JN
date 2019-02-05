@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=__('exportformatFormat')}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('exportformats')}
 {literal}
     <script type="text/javascript">
         $(document).ready(function () {
@@ -29,7 +29,7 @@
                 </div>
                 <table class="kundenfeld table" id="formtable">
                     <tr>
-                        <td><label for="kExportformat">{__('exportformatFormat')}</label></td>
+                        <td><label for="kExportformat">{__('exportformats')}</label></td>
                         <td>
                             <select name="kExportformat" id="kExportformat" class="form-control">
                                 <option value="-1"></option>

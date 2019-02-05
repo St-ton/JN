@@ -104,14 +104,14 @@
                         <tfoot>
                         <tr>
                             <td class="check"><input name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                            <td colspan="10"><label for="ALLMSGS1">{__('pluginSelectAll')}</label></td>
+                            <td colspan="10"><label for="ALLMSGS1">{__('selectAll')}</label></td>
                         </tr>
                         </tfoot>
                     </table>
                 </div>
                 <div class="panel-footer">
                     <div class="save btn-group">
-                        <button name="deaktivieren" type="submit" class="btn btn-warning"><i class="fa fa-close"></i> {__('pluginBtnDeActivate')}</button>
+                        <button name="deaktivieren" type="submit" class="btn btn-warning"><i class="fa fa-close"></i> {__('deactivate')}</button>
                         <button name="deinstallieren" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('pluginBtnDeInstall')}</button>
                     </div>
                 </div>

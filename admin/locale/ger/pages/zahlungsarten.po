@@ -20,23 +20,8 @@ msgstr "Zahlungsart"
 msgid "moduleid"
 msgstr "Modul"
 
-msgid "doc"
-msgstr "Hilfe"
-
-msgid "active"
-msgstr "Aktiv"
-
-msgid "read"
-msgstr "lesen"
-
-msgid "configure"
-msgstr "einstellen"
-
 msgid "configurePaymentmethod"
 msgstr "Einstellungen für Zahlungsart"
-
-msgid "save"
-msgstr "speichern"
 
 msgid "restrictedToCustomerGroups"
 msgstr "Erlaubte Kundengruppen"
@@ -70,15 +55,6 @@ msgstr "Anbieter"
 
 msgid "duringOrder"
 msgstr "Zahlung vor Bestellabschluss"
-
-msgid "requirements"
-msgstr "Anforderungen"
-
-msgid "yes"
-msgstr "Ja"
-
-msgid "no"
-msgstr "Nein"
 
 msgid "paymentmethodsCheckAll"
 msgstr "Anforderungen aller Zahlungsarten prüfen"

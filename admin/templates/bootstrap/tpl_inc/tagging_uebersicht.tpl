@@ -24,7 +24,7 @@
             <a data-toggle="tab" role="tab" href="#mapping">{__('mapping')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einstellungen">{__('taggingSettings')}</a>
+            <a data-toggle="tab" role="tab" href="#einstellungen">{__('settings')}</a>
         </li>
     </ul>
     <div class="tab-content">

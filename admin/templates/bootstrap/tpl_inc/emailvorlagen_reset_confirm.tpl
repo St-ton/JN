@@ -14,8 +14,8 @@
             <p>{{__('sureResetEmailTemplate')}|sprintf:{$oEmailvorlage->cName}}</p>
         </div>
         <div class="btn-group">
-            <button name="resetConfirmJaSubmit" type="submit" value="{__('resetEmailvorlageYes')}" class="btn btn-danger"><i class="fa fa-check"></i> {__('resetEmailvorlageYes')}</button>
-            <button name="resetConfirmNeinSubmit" type="submit" value="{__('resetEmailvorlageNo')}" class="btn btn-info"><i class="fa fa-close"></i> {__('resetEmailvorlageNo')}</button>
+            <button name="resetConfirmJaSubmit" type="submit" value="{__('yes')}" class="btn btn-danger"><i class="fa fa-check"></i> {__('yes')}</button>
+            <button name="resetConfirmNeinSubmit" type="submit" value="{__('no')}" class="btn btn-info"><i class="fa fa-close"></i> {__('no')}</button>
         </div>
     </form>
 </div>

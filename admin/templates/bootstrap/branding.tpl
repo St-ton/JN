@@ -53,7 +53,7 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cPosition">{__('brandingPosition')}</label>
+                                <label for="cPosition">{__('position')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select name="cPosition" id="cPosition" class="form-control combo">
@@ -90,7 +90,7 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="dTransparenz">{__('brandingTransparency')}</label>
+                                <label for="dTransparenz">{__('transparency')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <input class="form-control" type="text" name="dTransparenz" id="dTransparenz" value="{$oBranding->dTransparenz}" tabindex="1" />
@@ -99,7 +99,7 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="dGroesse">{__('brandingSize')}</label>
+                                <label for="dGroesse">{__('size')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <input class="form-control" type="text" name="dGroesse" id="dGroesse" value="{$oBranding->dGroesse}" tabindex="1" />

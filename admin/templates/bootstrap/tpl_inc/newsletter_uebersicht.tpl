@@ -41,7 +41,7 @@
             <a data-toggle="tab" role="tab" href="#newsletterhistory">{__('newsletterhistory')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einstellungen">{__('newsletterconfig')}</a>
+            <a data-toggle="tab" role="tab" href="#einstellungen">{__('settings')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -80,10 +80,10 @@
                                 <table class="table table-striped">
                                     <tr>
                                         <th class="th-1">&nbsp;</th>
-                                        <th class="tleft">{__('newslettersubscriberfirstname')}</th>
-                                        <th class="tleft">{__('newslettersubscriberlastname')}</th>
-                                        <th class="tleft">{__('newslettersubscriberCustomerGrp')}</th>
-                                        <th class="tleft">{__('newslettersubscriberemail')}</th>
+                                        <th class="tleft">{__('firstName')}</th>
+                                        <th class="tleft">{__('lastName')}</th>
+                                        <th class="tleft">{__('customerGroup')}</th>
+                                        <th class="tleft">{__('email')}</th>
                                         <th class="tcenter">{__('newslettersubscriberdate')}</th>
                                     </tr>
                                     {foreach $oNewsletterEmpfaenger_arr as $oNewsletterEmpfaenger}
@@ -109,7 +109,7 @@
                             <div class="panel-footer">
                                 <div class="btn-group">
                                     <button name="abonnentfreischaltenSubmit" type="submit" value="{__('newsletterUnlock')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('newsletterUnlock')}</button>
-                                    <button class="btn btn-danger" name="abonnentloeschenSubmit" type="submit" value="{__('newsletterdelete')}"><i class="fa fa-trash"></i> {__('marked')} {__('newsletterdelete')}</button>
+                                    <button class="btn btn-danger" name="abonnentloeschenSubmit" type="submit" value="{__('delete')}"><i class="fa fa-trash"></i> {__('marked')} {__('delete')}</button>
                                 </div>
                             </div>
                         </div>
@@ -158,8 +158,8 @@
                                     <tr>
                                         <th class="th-1">&nbsp;</th>
                                         <th class="tleft">{__('newslettersubscribername')}</th>
-                                        <th class="tleft">{__('newslettersubscriberCustomerGrp')}</th>
-                                        <th class="tleft">{__('newslettersubscriberemail')}</th>
+                                        <th class="tleft">{__('customerGroup')}</th>
+                                        <th class="tleft">{__('email')}</th>
                                         <th class="tcenter">{__('newslettersubscriberdate')}</th>
                                         <th class="tcenter">{__('newslettersubscriberLastNewsletter')}</th>
                                         <th class="tleft">{__('newsletterOptInIp')}</th>
@@ -227,28 +227,28 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cVorname">{__('newslettersubscriberfirstname')}</label>
+                                <label for="cVorname">{__('firstName')}</label>
                             </span>
                             <input class="form-control" type="text" name="cVorname" id="cVorname" value="{if isset($oNewsletter->cVorname)}{$oNewsletter->cVorname}{/if}" />
                         </div>
 
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cNachname">{__('newslettersubscriberlastname')}</label>
+                                <label for="cNachname">{__('lastName')}</label>
                             </span>
                             <input class="form-control" type="text" name="cNachname" id="cNachname" value="{if isset($oNewsletter->cNachname)}{$oNewsletter->cNachname}{/if}" />
                         </div>
 
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cEmail">{__('newslettersubscriberemail')}</label>
+                                <label for="cEmail">{__('email')}</label>
                             </span>
                             <input class="form-control" type="text" name="cEmail" id="cEmail" value="{if isset($oNewsletter->cEmail)}{$oNewsletter->cEmail}{/if}" />
                         </div>
 
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="kSprache">{__('newslettersubscriberlang')}</label>
+                                <label for="kSprache">{__('language')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select class="form-control" name="kSprache" id="kSprache">
@@ -281,7 +281,7 @@
                                 <table class="table table-striped">
                                     <tr>
                                         <th class="th-1" style="width: 4%;">&nbsp;</th>
-                                        <th class="th-2" style="width: 40%;">{__('newsletterqueuesubject')}</th>
+                                        <th class="th-2" style="width: 40%;">{__('subject')}</th>
                                         <th class="th-3" style="width: 30%;">{__('newsletterqueuedate')}</th>
                                         <th class="th-4" style="width: 26%;">{__('newsletterqueueimprovement')}</th>
                                         <th class="th-5" style="width: 26%;">{__('newsletterqueuecount')}</th>
@@ -317,7 +317,7 @@
                                 </table>
                             </div>
                             <div class="panel-footer">
-                                <button name="loeschen" type="submit" value="{__('newsletterdelete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('newsletterdelete')}</button>
+                                <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
                             </div>
                         </div>
                     </div>
@@ -343,9 +343,9 @@
                                     <tr>
                                         <th class="th-1">&nbsp;</th>
                                         <th class="th-2">{__('newsletterdraftname')}</th>
-                                        <th class="th-3">{__('newsletterdraftsubject')}</th>
+                                        <th class="th-3">{__('subject')}</th>
                                         <th class="th-4">{__('newsletterdraftStdShort')}</th>
-                                        <th class="th-5" style="width: 385px;">{__('newsletterdraftoptions')}</th>
+                                        <th class="th-5" style="width: 385px;">{__('options')}</th>
                                     </tr>
                                     {foreach $oNewsletterVorlage_arr as $oNewsletterVorlage}
                                         <tr>
@@ -365,7 +365,7 @@
                                                 <div class="btn-group">
                                                     <a class="btn btn-default"
                                                        href="newsletter.php?&vorschau={$oNewsletterVorlage->kNewsletterVorlage}&iframe=1&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
-                                                       title="{__('newsletterPreview')}"><i class="fa fa-eye"></i></a>
+                                                       title="{__('preview')}"><i class="fa fa-eye"></i></a>
                                                     {if $oNewsletterVorlage->kNewslettervorlageStd > 0}
                                                         <a class="btn btn-default"
                                                            href="newsletter.php?newslettervorlagenstd=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
@@ -394,7 +394,7 @@
                                 <div class="{if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}btn-group{/if}">
                                     <button name="vorlage_erstellen" class="btn btn-primary" type="submit">{__('newsletterdraftcreate')}</button>
                                     {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
-                                        <button class="btn btn-danger" name="loeschen" type="submit" value="{__('newsletterdelete')}"><i class="fa fa-trash"></i> {__('newsletterdelete')}</button>
+                                        <button class="btn btn-danger" name="loeschen" type="submit" value="{__('delete')}"><i class="fa fa-trash"></i> {__('delete')}</button>
                                     {/if}
                                 </div>
                             </div>
@@ -410,7 +410,7 @@
                         <div class="submit {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}btn-group{/if}">
                             <button name="vorlage_erstellen" class="btn btn-primary" type="submit">{__('newsletterdraftcreate')}</button>
                             {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
-                                <button class="btn btn-danger" name="loeschen" type="submit" value="{__('newsletterdelete')}"><i class="fa fa-trash"></i> {__('newsletterdelete')}</button>
+                                <button class="btn btn-danger" name="loeschen" type="submit" value="{__('delete')}"><i class="fa fa-trash"></i> {__('delete')}</button>
                             {/if}
                         </div>
                 </form>
@@ -433,7 +433,7 @@
                                 <table class="table table-striped">
                                     <tr>
                                         <th class="th-1">{__('newsletterdraftname')}</th>
-                                        <th class="th-2">{__('newsletterdraftStdPicture')}</th>
+                                        <th class="th-2">{__('preview')}</th>
                                     </tr>
                                     {foreach $oNewslettervorlageStd_arr as $oNewslettervorlageStd}
                                         <tr>
@@ -498,7 +498,7 @@
                                 </table>
                             </div>
                             <div class="panel-footer">
-                                <button name="loeschen" type="submit" class="btn btn-danger" value="{__('newsletterdelete')}"><i class="fa fa-trash"></i> {__('newsletterdelete')}</button>
+                                <button name="loeschen" type="submit" class="btn btn-danger" value="{__('delete')}"><i class="fa fa-trash"></i> {__('delete')}</button>
                             </div>
                         </div>
                     </div>

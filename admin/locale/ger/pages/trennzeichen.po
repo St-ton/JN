@@ -11,9 +11,6 @@ msgstr "https://jtl-url.de/xiepq"
 msgid "trennzeichenDesc"
 msgstr ""
 
-msgid "trennzeichenSave"
-msgstr "Speichern"
-
 msgid "errorWeightDecimals"
 msgstr "Fehler: Die Anzahl der Dezimalstellen beim Gewicht dürfen nicht größer 4 sein!"
 

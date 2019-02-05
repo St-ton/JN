@@ -8,12 +8,6 @@ msgstr "Melden Sie sich mit Ihren Kontodaten an."
 msgid "TwoFALogin"
 msgstr "Google-Authenticator-Code eingeben:"
 
-msgid "username"
-msgstr "Benutzername"
-
-msgid "password"
-msgstr "Passwort"
-
 msgid "successPasswordChange"
 msgstr "Passwort wurde erfolgreich geändert."
 

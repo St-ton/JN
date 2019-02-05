@@ -1,7 +1,7 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='bilder'}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=__('bilder') cBeschreibung=__('bilderDesc') cDokuURL=__('bilderURL')}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('imageTitle') cBeschreibung=__('bilderDesc') cDokuURL=__('bilderURL')}
 <div id="content">
     <form method="post" action="bilder.php">
         {$jtl_token}
@@ -218,7 +218,7 @@
             </div><!-- /.panel -->
             {/if}
             <p class="submit">
-                <button name="speichern" type="submit" value="{__('bilderSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('bilderSave')}</button>
+                <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
             </p>
         </div>
     </form>

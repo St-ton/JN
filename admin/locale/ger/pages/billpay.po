@@ -11,23 +11,8 @@ msgstr " "
 msgid "billpayURL"
 msgstr "https://jtl-url.de/0kqhs"
 
-msgid "billpayOverview"
-msgstr "Übersicht"
-
 msgid "billpayLog"
 msgstr "Log"
-
-msgid "billpayConfig"
-msgstr "Einstellungen"
-
-msgid "logText"
-msgstr "Text"
-
-msgid "logDate"
-msgstr "Datum"
-
-msgid "logLevel"
-msgstr "Fehlerlevel"
 
 msgid "logError"
 msgstr "Error"

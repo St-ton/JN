@@ -135,7 +135,7 @@
             <a data-toggle="tab" role="tab" href="#overview">{__('kundenfeld')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#config">{__('kundenfeldSettings')}</a>
+            <a data-toggle="tab" role="tab" href="#config">{__('settings')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -172,7 +172,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td><label for="nSort">{__('kundenfeldSort')}</label></td>
+                                <td><label for="nSort">{__('sorting')}</label></td>
                                 <td>
                                     {if !empty($nHighestSortValue)}
                                         {assign var=nNextHighestSort value=$nHighestSortValue|intval + $nHighestSortDiff|intval}
@@ -280,7 +280,7 @@
                         </table>
                     </div>
                     <div class="panel-footer">
-                        <button name="speichern" type="submit" class="btn btn-primary" value="{__('kundenfeldSave')}"><i class="fa fa-save"></i> {__('kundenfeldSave')}</button>
+                        <button name="speichern" type="submit" class="btn btn-primary" value="{__('save')}"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </div>
 
@@ -304,9 +304,9 @@
                                     <th class="tleft">{__('kundenfeldNameShort')}</th>
                                     <th class="tleft">{__('kundenfeldWawiShort')}</th>
                                     <th class="tleft">{__('kundenfeldTyp')}</th>
-                                    <th class="tleft">{__('kundenfeldValue')}</th>
+                                    <th class="tleft">{__('values')}</th>
                                     <th class="th-6">{__('kundenfeldEdit')}</th>
-                                    <th class="th-7">{__('kundenfeldSort')}</th>
+                                    <th class="th-7">{__('sorting')}</th>
                                     <th class="th-8"></th>
                                 </tr>
                                 </thead>
@@ -326,7 +326,7 @@
                                                 {/foreach}
                                             {/if}
                                         </td>
-                                        <td class="tcenter">{if $oKundenfeld->nEditierbar == 1}{__('kundenfeldYes')}{else}{__('kundenfeldNo')}{/if}</td>
+                                        <td class="tcenter">{if $oKundenfeld->nEditierbar == 1}{__('yes')}{else}{__('no')}{/if}</td>
                                         <td class="tcenter">
                                             <input class="form-control" name="nSort_{$oKundenfeld->kKundenfeld}" type="text" value="{$oKundenfeld->nSort}" size="5" />
                                         </td>
@@ -346,8 +346,8 @@
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group">
-                                <button name="aktualisieren" type="submit" value="{__('kundenfeldUpdate')}" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('kundenfeldUpdate')}</button>
-                                <button name="loeschen" type="submit" value="{__('kundenfeldDel')}" class="btn btn-danger">
+                                <button name="aktualisieren" type="submit" value="{__('refresh')}" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('refresh')}</button>
+                                <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger">
                                     <i class="fa fa-trash"></i> {__('deleteSelected')}
                                 </button>
                             </div>

@@ -25,7 +25,7 @@
         <table class="table table-striped">
             <thead>
             <tr>
-                <th class="tleft">{__('agbwrbCustomerGrp')}</th>
+                <th class="tleft">{__('customerGroup')}</th>
                 <th>{__('action')}</th>
             </tr>
             </thead>

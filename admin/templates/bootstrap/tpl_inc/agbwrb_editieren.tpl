@@ -65,7 +65,7 @@
                     </tr>
                 </table>
                 <div class="panel-footer">
-                    <button name="agbwrbsubmit" type="submit" value="{__('agbwrbSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('agbwrbSave')}</button>
+                    <button name="agbwrbsubmit" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 </div>
             </div>
         </form>

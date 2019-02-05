@@ -11,41 +11,17 @@ msgstr "https://jtl-url.de/w07rb"
 msgid "couponsDesc"
 msgstr "Erstellen und Verwalten von Kupons"
 
-msgid "delete"
-msgstr "Markierte löschen"
-
-msgid "create"
-msgstr "erstellen"
-
 msgid "emptySetMessage1"
 msgstr "Zurzeit sind keine"
 
 msgid "emptySetMessage2"
 msgstr "vorhanden."
 
-msgid "names"
-msgstr "Namen"
-
-msgid "general"
-msgstr "Allgemein"
-
 msgid "validityPeriod"
 msgstr "Gültigkeitszeitraum"
 
 msgid "restrictions"
 msgstr "Einschränkungen"
-
-msgid "save"
-msgstr "Speichern"
-
-msgid "name"
-msgstr "Name"
-
-msgid "value"
-msgstr "Wert"
-
-msgid "code"
-msgstr "Code"
 
 msgid "codeHint"
 msgstr "Wird kein Code eingegeben, wird ein Code automatisch erstellt."
@@ -77,9 +53,6 @@ msgstr "Kupon ändern"
 msgid "minOrderValue"
 msgstr "Mindestbestellwert"
 
-msgid "optional"
-msgstr "optional"
-
 msgid "uses"
 msgstr "max. Verwendungen"
 
@@ -92,18 +65,6 @@ msgstr "Beschränken auf Artikelnummern"
 msgid "restrictionToCustomerGroup"
 msgstr "Gilt nur für"
 
-msgid "from"
-msgstr "von"
-
-msgid "to"
-msgstr "bis"
-
-msgid "all"
-msgstr "Alle"
-
-msgid "active"
-msgstr "Aktiv"
-
 msgid "restrictedToManufacturers"
 msgstr "Beschränken auf Hersteller"
 
@@ -112,18 +73,6 @@ msgstr "Beschränken auf Kategorien"
 
 msgid "restrictedToCustomers"
 msgstr "Beschränken auf Kunden"
-
-msgid "products"
-msgstr "Artikel"
-
-msgid "manufacturers"
-msgstr "Hersteller"
-
-msgid "categories"
-msgstr "Kategorie(n)"
-
-msgid "customers"
-msgstr "Kunde(n)"
 
 msgid "allCategories"
 msgstr "alle Kategorien"

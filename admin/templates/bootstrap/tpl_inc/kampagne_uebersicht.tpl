@@ -26,7 +26,7 @@
                                 <th class="tleft">{__('kampagneName')}</th>
                                 <th class="tleft">{__('kampagneParam')}</th>
                                 <th class="tleft">{__('kampagneValue')}</th>
-                                <th class="th-4">{__('kampagnenActive')}</th>
+                                <th class="th-4">{__('activated')}</th>
                                 <th class="th-5">{__('kampagnenDate')}</th>
                                 <th class="th-6"></th>
                             </tr>
@@ -40,7 +40,7 @@
                                         <td>{$oKampagne->cParameter}</td>
                                         <td>
                                             {if isset($oKampagne->nDynamisch) && $oKampagne->nDynamisch == 1}
-                                                {__('kampagneDynamic')}
+                                                {__('dynamic')}
                                             {else}
                                                 {__('kampagneStatic')}
                                                 <br />
@@ -76,7 +76,7 @@
                                     <th class="tleft">{__('kampagneName')}</th>
                                     <th class="tleft">{__('kampagneParam')}</th>
                                     <th class="tleft">{__('kampagneValue')}</th>
-                                    <th class="th-4">{__('kampagnenActive')}</th>
+                                    <th class="th-4">{__('activated')}</th>
                                     <th class="th-5">{__('kampagnenDate')}</th>
                                     <th class="th-6"></th>
                                 </tr>
@@ -93,7 +93,7 @@
                                             <td>{$oKampagne->cParameter}</td>
                                             <td>
                                                 {if isset($oKampagne->nDynamisch) && $oKampagne->nDynamisch == 1}
-                                                    {__('kampagneDynamic')}
+                                                    {__('dynamic')}
                                                 {else}
                                                     {__('kampagneStatic')}
                                                     <br />
@@ -142,9 +142,9 @@
                         </span>
                     <select id="nAnsicht" name="nAnsicht" class="form-control combo" onchange="changeZeitSelect(this);">
                         <option value="-1"></option>
-                        <option value="1"{if $smarty.session.Kampagne->nAnsicht == 1} selected{/if}>{__('kampagneStatMonth')}</option>
-                        <option value="2"{if $smarty.session.Kampagne->nAnsicht == 2} selected{/if}>{__('kampagneStatWeek')}</option>
-                        <option value="3"{if $smarty.session.Kampagne->nAnsicht == 3} selected{/if}>{__('kampagneStatDay')}</option>
+                        <option value="1"{if $smarty.session.Kampagne->nAnsicht == 1} selected{/if}>{__('monthly')}</option>
+                        <option value="2"{if $smarty.session.Kampagne->nAnsicht == 2} selected{/if}>{__('weekly')}</option>
+                        <option value="3"{if $smarty.session.Kampagne->nAnsicht == 3} selected{/if}>{__('daily')}</option>
                     </select>
                     <span class="input-group-addon">
                             <strong>{__('kampagnePeriod')}:</strong> {$cZeitraum}

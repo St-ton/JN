@@ -18,8 +18,8 @@
             <p>{{__('sureDeleteLinkGroup')}|sprintf:{$oLinkgruppe->cName}}</p>
         </div>
         <div class="btn-group">
-            <input name="loeschConfirmJaSubmit" type="submit" value="{__('loeschlinkgruppeYes')}" class="btn btn-danger" />
-            <input name="loeschConfirmNeinSubmit" type="submit" value="{__('loeschlinkgruppeNo')}" class="btn btn-default" />
+            <input name="loeschConfirmJaSubmit" type="submit" value="{__('yes')}" class="btn btn-danger" />
+            <input name="loeschConfirmNeinSubmit" type="submit" value="{__('no')}" class="btn btn-default" />
         </div>
     </form>
 </div>

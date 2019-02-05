@@ -308,7 +308,7 @@
             {if !empty($all_methods) && $all_methods|@count > 0}
                 <div class="panel panel-default settings">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{__('config')}</h3>
+                        <h3 class="panel-title">{__('settings')}</h3>
                     </div>
                     <form method="post" action="cache.php">
                         {$jtl_token}

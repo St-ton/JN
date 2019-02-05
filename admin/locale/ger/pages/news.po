@@ -17,56 +17,20 @@ msgstr "Neuen Beitrag erstellen"
 msgid "newEdit"
 msgstr "Beitrag bearbeiten"
 
-msgid "newsSave"
-msgstr "Speichern"
-
-msgid "newsHeadline"
-msgstr "Überschrift"
-
-msgid "newsCategory"
-msgstr "Kategorie"
-
-msgid "newsCustomerGrp"
-msgstr "Kundengruppe"
-
-msgid "newsText"
-msgstr "Text"
-
 msgid "newsPreviewText"
 msgstr "Vorschautext"
-
-msgid "newsActive"
-msgstr "Aktiv"
 
 msgid "newsValidation"
 msgstr "Erstellt am"
 
-msgid "newsFrom"
-msgstr "vom"
-
-msgid "newsTo"
-msgstr "bis"
-
-msgid "newsEdit"
-msgstr "Editieren"
-
-msgid "newsPreview"
-msgstr "Vorschau"
-
 msgid "newsDate"
 msgstr "Erstellt am"
-
-msgid "newsBack"
-msgstr "zurück"
 
 msgid "newsArchive"
 msgstr "Archivieren"
 
 msgid "newsArchiveLast"
 msgstr "Archivierte Beiträge"
-
-msgid "newsPictures"
-msgstr "Bilder"
 
 msgid "newsPicAdd"
 msgstr "weiteres Bild"
@@ -76,9 +40,6 @@ msgstr "Verfügbare Bilder"
 
 msgid "newsActivate"
 msgstr "freischalten"
-
-msgid "newsUser"
-msgstr "Besucher"
 
 msgid "newsCommentActivate"
 msgstr "Nicht aktive Beitragskommentare"
@@ -92,15 +53,6 @@ msgstr "SEO"
 msgid "newsPraefix"
 msgstr "Monatsübersicht-Präfix"
 
-msgid "newsCat"
-msgstr "Kategorie"
-
-msgid "newsCatDesc"
-msgstr "Beschreibung"
-
-msgid "newsCatName"
-msgstr "Name"
-
 msgid "newsCatAdd"
 msgstr "Neue Kategorie erstellen"
 
@@ -112,9 +64,6 @@ msgstr "Kategorie Sortierung"
 
 msgid "newsCatParent"
 msgstr "Oberkategorie"
-
-msgid "newsCatSortShort"
-msgstr "Sortierung"
 
 msgid "newsCatLastUpdate"
 msgstr "Letzte Aktualisierung"
@@ -142,9 +91,6 @@ msgstr "Meta Keywords"
 
 msgid "newsAuthor"
 msgstr "Autor"
-
-msgid "newsSettings"
-msgstr "Einstellungen"
 
 msgid "newsMandatoryFields"
 msgstr "(*) Pflichtfelder"

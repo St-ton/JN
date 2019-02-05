@@ -569,7 +569,7 @@ function checkSelect(selectBox) {ldelim}
                 <tr>
                     <th class="th-1">{__('umfrageQ')}</th>
                     <th class="th-2">{__('umfrageQType')}</th>
-                    <th class="th-3">{__('umfrageSort')}</th>
+                    <th class="th-3">{__('sorting')}</th>
                 </tr>
             {foreach $oUmfrageFrage_arr as $oUmfrageFrageTMP}
                 <tr>
@@ -626,7 +626,7 @@ function checkSelect(selectBox) {ldelim}
                         </tr>
 
                         <tr>
-                            <td><label for="nSort">{__('umfrageSort')}</label></td>
+                            <td><label for="nSort">{__('sorting')}</label></td>
                             <td><input class="form-control" id="nSort" name="nSort" type="text"  value="{if isset($oUmfrageFrage->nSort)}{$oUmfrageFrage->nSort}{/if}" /></td>
                         </tr>
 
@@ -651,7 +651,7 @@ function checkSelect(selectBox) {ldelim}
                         </tr>
 
                         <tr>
-                            <td><label for="cBeschreibung">{__('umfrageText')}</label></td>
+                            <td><label for="cBeschreibung">{__('description')}</label></td>
                             <td><textarea id="cBeschreibung" class="ckeditor" name="cBeschreibung" rows="15" cols="60">{if isset($oUmfrageFrage->cBeschreibung)}{$oUmfrageFrage->cBeschreibung}{/if}</textarea></td>
                         </tr>
                     </table>
@@ -704,7 +704,7 @@ function checkSelect(selectBox) {ldelim}
                     </div>
                     <div class="panel-footer">
                         {if isset($oUmfrageFrage->kUmfrageFrage) && $oUmfrageFrage->kUmfrageFrage > 0}
-                            <button class="btn btn-primary" name="speichern" type="submit" value="{__('umfrageSave')}"><i class="fa fa-save"></i> {__('umfrageSave')}</button>
+                            <button class="btn btn-primary" name="speichern" type="submit" value="{__('save')}"><i class="fa fa-save"></i> {__('save')}</button>
                         {else}
                             <div class="btn-group">
                                 <button class="btn btn-success" name="nocheinefrage" type="submit" value="{__('umfrageAnotherQ')}"><i class="fa fa-share"></i> {__('umfrageAnotherQ')}</button>

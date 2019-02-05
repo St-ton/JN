@@ -11,24 +11,6 @@ msgstr "https://jtl-url.de/wjkma"
 msgid "emailTemplatesHint"
 msgstr "Hier können Vorlagen für alle E-Mails angepasst werden, die der Shop verschicken kann. Diese Vorlagen werden von der Smarty-Template Engine bearbeitet. Wenn Sie eine Test-E-Mail anfordern, so erhalten Sie E-Mails in jeder im Shop verfügbaren Sprache."
 
-msgid "template"
-msgstr "Vorlage"
-
-msgid "module"
-msgstr "Modul"
-
-msgid "active"
-msgstr "Aktiv"
-
-msgid "type"
-msgstr "Typ"
-
-msgid "options"
-msgstr "Auswahl"
-
-msgid "preview"
-msgstr "Vorschau"
-
 msgid "testmail"
 msgstr "Testmail anfordern"
 
@@ -41,20 +23,11 @@ msgstr "Keine Master-E-Mailadresse hinterlegt! Bitte tragen Sie eine Master-Abse
 msgid "emailTemplateModifyHint"
 msgstr "Hier können Sie den Betreff zu dieser E-Mail verändern. Der Inhalt der E-Mail im HTML- und Textformat wird in den unten aufgeführten Textfeldern spezifiziert."
 
-msgid "subject"
-msgstr "Betreff"
-
 msgid "mailText"
 msgstr "Inhalt Text"
 
 msgid "mailHtml"
 msgstr "Inhalt Html"
-
-msgid "save"
-msgstr "Speichern"
-
-msgid "description"
-msgstr "Beschreibung"
 
 msgid "mailType"
 msgstr "Diese E-Mailart versenden als"
@@ -62,20 +35,8 @@ msgstr "Diese E-Mailart versenden als"
 msgid "pdf"
 msgstr "PDF-Datei"
 
-msgid "filename"
-msgstr "Dateiname"
-
 msgid "currentFiles"
 msgstr "Aktuelle Anhänge"
-
-msgid "deleteAll"
-msgstr "Alle löschen"
-
-msgid "resetEmailvorlageYes"
-msgstr "Ja"
-
-msgid "resetEmailvorlageNo"
-msgstr "Nein"
 
 msgid "emailAddAKZ"
 msgstr "Dieser E-Mailart Ihre Anbieterkennzeichnung anhängen"

@@ -61,15 +61,15 @@ function clearInput(inputField) {ldelim}
                     {/if}
                     <table class="kundenfeld table" id="formtable">
                         <tr>
-                            <td><label for="cName">{__('umfrageName')}</label></td>
+                            <td><label for="cName">{__('name')}</label></td>
                             <td><input class="form-control" id="cName" name="cName" type="text"  value="{if isset($oUmfrage->cName)}{$oUmfrage->cName}{/if}" /></td>
                         </tr>
                         <tr>
-                            <td><label for="cSeo">{__('umfrageSeo')}</label></td>
+                            <td><label for="cSeo">{__('seo')}</label></td>
                             <td><input class="form-control" id="cSeo" name="cSeo" type="text"  value="{if isset($oUmfrage->cSeo)}{$oUmfrage->cSeo}{/if}" /></td>
                         </tr>
                         <tr>
-                            <td><label for="kKundengruppe">{__('umfrageCustomerGrp')}</label></td>
+                            <td><label for="kKundengruppe">{__('customerGroup')}</label></td>
                             <td>
                                 <select id="kKundengruppe" name="kKundengruppe[]" multiple="multiple" class="combo form-control">
                                     <option value="-1" {if isset($oUmfrage->kKundengruppe_arr)}{foreach $oUmfrage->kKundengruppe_arr as $kKundengruppe}{if $kKundengruppe == '-1'}selected{/if}{/foreach}{/if}>{__('all')}</option>
@@ -83,12 +83,12 @@ function clearInput(inputField) {ldelim}
                             <td><label for="dGueltigVon">{__('umfrageValidation')}</label></td>
                             <td>
                                 <input class="form-control" id="dGueltigVon" name="dGueltigVon" type="text"  value="{if isset($oUmfrage->dGueltigVon_de) && $oUmfrage->dGueltigVon_de|strlen > 0}{$oUmfrage->dGueltigVon_de}{else}{$smarty.now|date_format:'%d.%m.%Y %H:%M'}{/if}" style="width: 150px;" />
-                                <label for="dGueltigBis">{__('umfrageTo')}</label>
+                                <label for="dGueltigBis">{__('to')}</label>
                                 <input class="form-control" id="dGueltigBis" name="dGueltigBis" type="text"  value="{if isset($oUmfrage->dGueltigBis_de)}{$oUmfrage->dGueltigBis_de}{/if}" style="width: 150px;" />
                             </td>
                         </tr>
                         <tr>
-                            <td><label for="nAktiv">{__('umfrageActive')}:</label></td>
+                            <td><label for="nAktiv">{__('active')}:</label></td>
                             <td>
                                 <select id="nAktiv" name="nAktiv" class="combo form-control" style="width: 80px;">
                                     <option value="1"{if isset($oUmfrage->nAktiv) && $oUmfrage->nAktiv == 1} selected{/if}>{__('yes')}</option>
@@ -98,7 +98,7 @@ function clearInput(inputField) {ldelim}
                         </tr>
                         {if $oKupon_arr|@count > 0 && $oKupon_arr}
                             <tr>
-                                <td><label for="kupon">{__('umfrageCoupon')}:</label></td>
+                                <td><label for="kupon">{__('coupon')}:</label></td>
                                 <td valign="top">
                                     <select id="kupon" name="kKupon" class="combo form-control" onchange="selectCheck(this);" style="width: 180px;">
                                         <option value="0"{if isset($oUmfrage->kKupon) && $oUmfrage->kKupon == 0} selected{/if} index=0>{__('umfrageNoCoupon')}</option>
@@ -110,12 +110,12 @@ function clearInput(inputField) {ldelim}
                             </tr>
                         {/if}
                         <tr>
-                            <td><label for="fGuthaben">{__('umfrageCredits')}:</label></td>
+                            <td><label for="fGuthaben">{__('credits')}:</label></td>
                             <td><input class="form-control" name="fGuthaben" id="fGuthaben" type="text"  value="{if isset($oUmfrage->fGuthaben)}{$oUmfrage->fGuthaben}{/if}" onclick="checkInput(this,'fGuthaben');" onblur="clearInput(this);" /></td>
                             <input id="nBonuspunkte" type="hidden" />{*placeholder to avoid js errors*}
                         </tr>
                         <tr>
-                            <td><label for="cBeschreibung">{__('umfrageText')}:</label></td>
+                            <td><label for="cBeschreibung">{__('description')}:</label></td>
                             <td><textarea id="cBeschreibung" class="ckeditor" name="cBeschreibung" rows="15" cols="60">{if isset($oUmfrage->cBeschreibung)}{$oUmfrage->cBeschreibung}{/if}</textarea></td>
                         </tr>
                     </table>
@@ -123,7 +123,7 @@ function clearInput(inputField) {ldelim}
             </div>
             <div class="panel-footer">
                 <div class="btn-group">
-                    <button class="btn btn-primary" name="speichern" type="button" value="{__('umfrageSave')}" onclick="document.umfrage.submit();"><i class="fa fa-save"></i> {__('umfrageSave')}</button>
+                    <button class="btn btn-primary" name="speichern" type="button" value="{__('save')}" onclick="document.umfrage.submit();"><i class="fa fa-save"></i> {__('save')}</button>
                     <a class="btn btn-default" href="umfrage.php"><i class="fa fa-angle-double-left"></i> {__('pageBack')}</a>
                 </div>
             </div>

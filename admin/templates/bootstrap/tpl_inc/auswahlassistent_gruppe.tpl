@@ -21,7 +21,7 @@
                 <div class="panel-body">
                     <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="cName">{__('aaName')}{if isset($cPlausi_arr.cName)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
+                        <label for="cName">{__('name')}{if isset($cPlausi_arr.cName)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                     </span>
                         <input name="cName" id="cName" type="text"
                                class="form-control{if isset($cPlausi_arr.cName)} fieldfillout{/if}"
@@ -31,7 +31,7 @@
 
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="cBeschreibung">{__('aaDesc')}</label>
+                            <label for="cBeschreibung">{__('description')}</label>
                         </span>
                         <textarea id="cBeschreibung" name="cBeschreibung"
                                   class="form-control description">{if isset($cPost_arr.cBeschreibung)}{$cPost_arr.cBeschreibung}{elseif isset($oGruppe->cBeschreibung)}{$oGruppe->cBeschreibung}{/if}</textarea>
@@ -66,7 +66,7 @@
 
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="assign_categories_list">{__('aaKat')}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{__('FillOut')}</span>{/if}
+                            <label for="assign_categories_list">{__('category')}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{__('FillOut')}</span>{/if}
                                 {if isset($cPlausi_arr.cKategorie) && $cPlausi_arr.cKategorie != 3} <span class="fillout">{__('aaKatSyntax')}</span>{/if}
                                 {if isset($cPlausi_arr.cKategorie) && $cPlausi_arr.cKategorie == 3} <span class="fillout">{__('aaKatTaken')}</span>{/if}
                             </label>
@@ -123,7 +123,7 @@
 
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="nStartseite">{__('aaStartSite')}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{__('FillOut')}</span>{/if}
+                            <label for="nStartseite">{__('startPage')}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{__('FillOut')}</span>{/if}
                                 {if isset($cPlausi_arr.nStartseite)} <span class="fillout">{__('aaStartseiteTaken')}</span>{/if}
                             </label>
                         </span>
@@ -142,7 +142,7 @@
 
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="nAktiv">{__('aaActive')}</label>
+                            <label for="nAktiv">{__('active')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <select id="nAktiv" class="form-control" name="nAktiv">

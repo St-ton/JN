@@ -20,17 +20,8 @@ msgstr "Insgesamt"
 msgid "headlineCache"
 msgstr "Im Cache (Fallback *)"
 
-msgid "headlineCorrupted"
-msgstr "Fehlerhaft"
-
 msgid "headlineSize"
 msgstr "Größe"
-
-msgid "headlineAction"
-msgstr "Aktionen"
-
-msgid "typeProduct"
-msgstr "Artikel"
 
 msgid "deleteCachedPics"
 msgstr " Cache leeren"
@@ -52,9 +43,6 @@ msgstr "Fehlerhafte Bilder sind Bilder, die zwar einen Eintrag in der Datenbank 
 
 msgid "fallbackNote"
 msgstr "*Fallback: Bilder, die sich im Ordner „bilder/“ und nicht im Ordner „media/“ befinden."
-
-msgid "more"
-msgstr "Mehr"
 
 msgid "successCacheReset"
 msgstr "Cache wurde erfolgreich zurückgesetzt"

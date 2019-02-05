@@ -35,7 +35,7 @@
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'uebersicht'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#uebersicht">{__('checkboxOverview')}</a>
+            <a data-toggle="tab" role="tab" href="#uebersicht">{__('overview')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'erstellen'} active{/if}">
             <a data-toggle="tab" role="tab" href="#erstellen">{__('create')}</a>
@@ -58,15 +58,15 @@
                                 <table class="table table-striped">
                                     <tr>
                                         <th class="th-1">&nbsp;</th>
-                                        <th class="th-1">{__('checkboxName')}</th>
+                                        <th class="th-1">{__('name')}</th>
                                         <th class="th-2">{__('checkboxLink')}</th>
                                         <th class="th-3">{__('checkboxLocation')}</th>
                                         <th class="th-4">{__('checkboxFunction')}</th>
-                                        <th class="th-4">{__('checkboxRequired')}</th>
-                                        <th class="th-5">{__('checkboxActive')}</th>
+                                        <th class="th-4">{__('requiredEntry')}</th>
+                                        <th class="th-5">{__('active')}</th>
                                         <th class="th-5">{__('checkboxLogging')}</th>
-                                        <th class="th-6">{__('checkboxSort')}</th>
-                                        <th class="th-7">{__('checkboxGroup')}</th>
+                                        <th class="th-6">{__('sorting')}</th>
+                                        <th class="th-7">{__('customerGroup')}</th>
                                         <th class="th-8" colspan="2">{__('checkboxDate')}</th>
                                     </tr>
                                     {foreach $oCheckBox_arr as $oCheckBoxUebersicht}
@@ -112,9 +112,9 @@
                             <div class="panel-footer">
                                 <div class="btn-group submit">
                                     <button name="erstellenShowButton" type="submit" class="btn btn-primary" value="neue Checkbox erstellen"><i class="fa fa-share"></i> {__('checkboxCreate')}</button>
-                                    <button name="checkboxAktivierenSubmit" type="submit" class="btn btn-default" value="{__('checkboxActivate')}"><i class="fa fa-check"></i> {__('checkboxActivate')}</button>
-                                    <button name="checkboxDeaktivierenSubmit" class="btn btn-warning" type="submit" value="{__('checkboxDeactivate')}"><i class="fa fa-close"></i> {__('checkboxDeactivate')}</button>
-                                    <button name="checkboxLoeschenSubmit" class="btn btn-danger" type="submit" value="{__('checkboxDelete')}"><i class="fa fa-trash"></i> {__('checkboxDelete')}</button>
+                                    <button name="checkboxAktivierenSubmit" type="submit" class="btn btn-default" value="{__('activate')}"><i class="fa fa-check"></i> {__('activate')}</button>
+                                    <button name="checkboxDeaktivierenSubmit" class="btn btn-warning" type="submit" value="{__('deactivate')}"><i class="fa fa-close"></i> {__('deactivate')}</button>
+                                    <button name="checkboxLoeschenSubmit" class="btn btn-danger" type="submit" value="{__('delete')}"><i class="fa fa-trash"></i> {__('delete')}</button>
                                 </div>
                             </div>
                         </div>

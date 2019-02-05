@@ -239,7 +239,7 @@
                             </div>
                             <div class="input-group">
                                 {assign var=cContent_ISO value="cContent_"|cat:$cISO}
-                                <span class="input-group-addon"><label for="cContent_{$cISO}">{__('linkContent')}</label></span>
+                                <span class="input-group-addon"><label for="cContent_{$cISO}">{__('content')}</label></span>
                                 <span class="input-group-wrap">
                                     <textarea class="form-control ckeditor" id="cContent_{$cISO}" name="cContent_{$cISO}" rows="10" cols="40">{if isset($xPostVar_arr.$cContent_ISO) && $xPostVar_arr.$cContent_ISO}{$xPostVar_arr.$cContent_ISO}{elseif !empty($Link->getContent($langID))}{$Link->getContent($langID)}{/if}</textarea>
                                 </span>

@@ -15,7 +15,7 @@ function getItems(bool $filesize = false): array
 {
     return [
         Image::TYPE_PRODUCT => (object)[
-            'name'  => __('typeProduct'),
+            'name'  => __('product'),
             'type'  => Image::TYPE_PRODUCT,
             'stats' => MediaImage::getStats(Image::TYPE_PRODUCT, $filesize)
         ]

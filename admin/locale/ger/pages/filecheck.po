@@ -32,9 +32,6 @@ msgstr "Anzahl modifizierter Dateien"
 msgid "fileCheckNumberOrphanedFiles"
 msgstr "Anzahl verwaister Dateien"
 
-msgid "fileCheckFile"
-msgstr "Datei"
-
 msgid "errorFileNotFound"
 msgstr "Fehler: Die Datei mit der aktuellen Dateiliste existiert nicht."
 

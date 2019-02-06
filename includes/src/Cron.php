@@ -100,7 +100,7 @@ class Cron
      */
     public function holeCronArt()
     {
-        return ($this->kKey > 0 && strlen($this->cTabelle) > 0)
+        return ($this->kKey > 0 && mb_strlen($this->cTabelle) > 0)
             ? Shop::Container()->getDB()->selectAll($this->cTabelle, $this->cKey, (int)$this->kKey)
             : false;
     }
@@ -135,7 +135,7 @@ class Cron
      */
     public function speicherInJobQueue($cJobArt, $dStart, $nLimitM)
     {
-        if ($dStart && $nLimitM > 0 && strlen($cJobArt) > 0) {
+        if ($dStart && $nLimitM > 0 && mb_strlen($cJobArt) > 0) {
             $ins                = new stdClass();
             $ins->cronID        = $this->kCron;
             $ins->foreignKeyID  = $this->kKey;

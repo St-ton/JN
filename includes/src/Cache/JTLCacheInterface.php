@@ -34,14 +34,16 @@ interface JTLCacheInterface
     /**
      * load shop cache config from db
      *
+     * @param array $config
      * @return array
      */
-    public function getJtlCacheConfig(): array;
+    public function getJtlCacheConfig(array $config): array;
 
     /**
+     * @param array $config
      * @return JTLCacheInterface
      */
-    public function setJtlCacheConfig(): JTLCacheInterface;
+    public function setJtlCacheConfig(array $config): JTLCacheInterface;
 
     /**
      * @return JTLCacheInterface

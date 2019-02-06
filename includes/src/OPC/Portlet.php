@@ -152,7 +152,7 @@ abstract class Portlet implements \JsonSerializable
 
     /**
      * @param string $title
-     * @return Portlet
+     * @return self
      */
     public function setTitle(string $title): self
     {
@@ -163,7 +163,7 @@ abstract class Portlet implements \JsonSerializable
 
     /**
      * @param string $group
-     * @return Portlet
+     * @return self
      */
     public function setGroup(string $group): self
     {

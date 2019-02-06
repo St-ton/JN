@@ -69,23 +69,14 @@ function resetteUpdateDB()
             \DB\ReturnType::DEFAULT
         );
     }
-    loescheTPLCacheUpdater();
+    loescheVerzeichnisUpdater(PFAD_ROOT . PFAD_COMPILEDIR);
+    loescheVerzeichnisUpdater(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR);
 
     if (!Shop::Container()->getDB()->getErrorCode()) {
         return true;
     }
 
     return false;
-}
-
-/**
- * @return bool
- */
-function loescheTPLCacheUpdater()
-{
-    return (loescheVerzeichnisUpdater(PFAD_ROOT . PFAD_COMPILEDIR)
-        && loescheVerzeichnisUpdater(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR)
-    );
 }
 
 /**
@@ -96,15 +87,15 @@ function loescheVerzeichnisUpdater($cPfad)
 {
     $bLinux = true;
     // Linux oder Windows?
-    if (strpos($cPfad, '\\') !== false) {
+    if (mb_strpos($cPfad, '\\') !== false) {
         $bLinux = false;
     }
 
     if ($bLinux) {
-        if (strpos(substr($cPfad, strlen($cPfad) - 1, 1), '/') === false) {
+        if (mb_strpos(mb_substr($cPfad, mb_strlen($cPfad) - 1, 1), '/') === false) {
             $cPfad .= '/';
         }
-    } elseif (strpos(substr($cPfad, strlen($cPfad) - 1, 1), '\\') === false) {
+    } elseif (mb_strpos(mb_substr($cPfad, mb_strlen($cPfad) - 1, 1), '\\') === false) {
         $cPfad .= '\\';
     }
 
@@ -157,57 +148,6 @@ function updateZeilenBis($cDatei)
 }
 
 /**
- * @return stdClass
- */
-function gibShopVersion()
-{
-    return Shop::Container()->getDB()->query('SELECT * FROM tversion', \DB\ReturnType::SINGLE_OBJECT);
-}
-
-/**
- * @param int $nVersion
- * @return int
- */
-function gibZielVersion(int $nVersion)
-{
-    $nMajor_arr = [
-        219 => 300,
-        320 => 400
-    ];
-
-    if (array_key_exists($nVersion, $nMajor_arr)) {
-        return $nMajor_arr[$nVersion];
-    }
-
-    return ++$nVersion;
-}
-
-/**
- * @param int $nFehlerCode
- * @return string
- */
-function mappeFehlerCode(int $nFehlerCode)
-{
-    if ($nFehlerCode > 0) {
-        switch ($nFehlerCode) {
-            case 1:
-                return __('errorSqlUpdate');
-                break;
-            case 100:
-                return __('successUpdate') . '<br />';
-                break;
-            case 999:
-                return __('errorUpdate') . '<br /><br />' .
-                    '<a href="mailto:' . JTLSUPPORT_EMAIL . '?subject=Shop-Update Fehler">' .
-                    __('contactSupport') . '</a>';
-                break;
-            default:
-                return __('errorUnknown');
-        }
-    }
-}
-
-/**
  * @param int $nVersion
  */
 function updateFertig(int $nVersion)
@@ -230,33 +170,12 @@ function updateFertig(int $nVersion)
 }
 
 /**
- * @param int $nTyp
- * @param int $nZeileBis
- */
-function naechsterUpdateStep(int $nTyp, int $nZeileBis = 1)
-{
-    Shop::Container()->getDB()->query(
-        'UPDATE tversion
-            SET nZeileVon = 1,
-            nZeileBis = ' . $nZeileBis . ',
-            nFehler = 0,
-            nInArbeit = 0,
-            nTyp = ' . $nTyp . ",
-            cFehlerSQL = ''",
-        \DB\ReturnType::DEFAULT
-    );
-
-    Shop::Container()->getDB()->query('UPDATE tversion SET nInArbeit = 0', \DB\ReturnType::DEFAULT);
-    header('Location: ' . Shop::getURL() . '/' . PFAD_ADMIN . 'dbupdater.php?nErrorCode=-1');
-    exit();
-}
-
-/**
  * @return array|IOError
  * @throws Exception
  */
 function dbUpdateIO()
 {
+    Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
     $template = Template::getInstance();
     $updater  = new Updater();
 
@@ -303,11 +222,13 @@ function dbUpdateIO()
  */
 function dbupdaterBackup()
 {
+    Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
+
     $updater = new Updater();
 
     try {
-        $file = $updater->createSqlDumpFile(true);
-        $updater->createSqlDump($file, true);
+        $file = $updater->createSqlDumpFile();
+        $updater->createSqlDump($file);
 
         $file   = basename($file);
         $params = http_build_query(['action' => 'download', 'file' => $file], '', '&');
@@ -329,6 +250,8 @@ function dbupdaterBackup()
  */
 function dbupdaterDownload($file)
 {
+    Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
+
     if (!preg_match('/^([0-9_a-z]+).sql.gz$/', $file, $m)) {
         return new IOError('Wrong download request');
     }
@@ -349,6 +272,8 @@ function dbupdaterDownload($file)
  */
 function dbupdaterStatusTpl()
 {
+    Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
+
     $smarty   = Shop::Smarty();
     $updater  = new Updater();
     $template = Template::getInstance();
@@ -363,16 +288,15 @@ function dbupdaterStatusTpl()
         $smarty->assign('manager', new MigrationManager());
     }
 
-    $smarty
-        ->assign('updatesAvailable', $updatesAvailable)
-        ->assign('currentFileVersion', $currentFileVersion)
-        ->assign('currentDatabaseVersion', $currentDatabaseVersion)
-        ->assign('hasDifferentVersions', !Version::parse($currentDatabaseVersion)
+    $smarty->assign('updatesAvailable', $updatesAvailable)
+           ->assign('currentFileVersion', $currentFileVersion)
+           ->assign('currentDatabaseVersion', $currentDatabaseVersion)
+           ->assign('hasDifferentVersions', !Version::parse($currentDatabaseVersion)
                                                  ->equals(Version::parse($currentFileVersion)))
-        ->assign('version', $version)
-        ->assign('updateError', $updateError)
-        ->assign('currentTemplateFileVersion', $template->xmlData->cVersion)
-        ->assign('currentTemplateDatabaseVersion', $template->version);
+           ->assign('version', $version)
+           ->assign('updateError', $updateError)
+           ->assign('currentTemplateFileVersion', $template->xmlData->cVersion)
+           ->assign('currentTemplateDatabaseVersion', $template->version);
 
     return [
         'tpl'  => $smarty->fetch('tpl_inc/dbupdater_status.tpl'),
@@ -388,6 +312,7 @@ function dbupdaterStatusTpl()
  */
 function dbupdaterMigration($id = null, $version = null, $dir = null)
 {
+    Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
     try {
         $manager = new MigrationManager();
 

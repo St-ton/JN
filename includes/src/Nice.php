@@ -48,7 +48,7 @@ class Nice
     protected function __construct()
     {
         $this->brocken = $this->load();
-        if (strlen($this->brocken) > 0) {
+        if (mb_strlen($this->brocken) > 0) {
             $parts = explode(';', $this->brocken);
             if (!empty($parts[0])) {
                 $this->apiKey = $parts[0];
@@ -80,10 +80,10 @@ class Nice
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if (!empty($data->cBrocken)) {
-                $passA   = substr(base64_decode($data->cBrocken), 0, 9);
-                $passE   = substr(
+                $passA   = mb_substr(base64_decode($data->cBrocken), 0, 9);
+                $passE   = mb_substr(
                     base64_decode($data->cBrocken),
-                    strlen(base64_decode($data->cBrocken)) - 11
+                    mb_strlen(base64_decode($data->cBrocken)) - 11
                 );
                 $xtea    = new XTEA($passA . $passE);
                 $brocken = $xtea->decrypt(
@@ -107,7 +107,7 @@ class Nice
     public function checkErweiterung(int $moduleID): bool
     {
         return ($this->apiKey !== ''
-            && strlen($this->apiKey) > 0
+            && mb_strlen($this->apiKey) > 0
             && !empty($this->domain)
             && count($this->moduleIDs) > 0)
             ? in_array($moduleID, $this->moduleIDs, true)

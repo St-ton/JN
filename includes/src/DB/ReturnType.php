@@ -56,4 +56,9 @@ abstract class ReturnType
      * Equivalent to PDO's $stmt->fetchAll(PDO::FETCH_BOTH);
      */
     public const ARRAY_OF_BOTH_ARRAYS = 11;
+
+    /**
+     * return a collection object
+     */
+    public const COLLECTION = 12;
 }

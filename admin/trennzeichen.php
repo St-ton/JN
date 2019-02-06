@@ -12,7 +12,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SETTINGS_SEPARATOR_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'trennzeichen_inc.php';
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 setzeSprache();
 
 $cHinweis = '';

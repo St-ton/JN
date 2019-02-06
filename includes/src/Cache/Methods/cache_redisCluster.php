@@ -299,7 +299,7 @@ class cache_redisCluster implements ICachingMethod
             if (isset($stat[$idx])) {
                 $dbStats = \explode(',', $stat[$idx]);
                 foreach ($dbStats as $dbStat) {
-                    if (\strpos($dbStat, 'keys=') !== false) {
+                    if (\mb_strpos($dbStat, 'keys=') !== false) {
                         $numEntries[] = \str_replace('keys=', '', $dbStat);
                     }
                 }

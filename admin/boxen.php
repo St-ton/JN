@@ -4,12 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Backend\Revision;
 use Helpers\Form;
 use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('BOXES_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 
 $cHinweis   = '';
 $cFehler    = '';
@@ -71,16 +72,14 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             foreach ($oBox->oSprache_arr as $lang) {
                 $revisionData[$lang->cISO] = $lang;
             }
+            $links = Shop::Container()->getLinkService()->getAllLinkGroups()->filter(
+                function (\Link\LinkGroupInterface $e) {
+                    return $e->isSpecial() === false;
+                }
+            );
             $smarty->assign('oEditBox', $oBox)
                    ->assign('revisionData', $revisionData)
-                   ->assign(
-                       'oLink_arr',
-                       Shop::Container()->getLinkService()->getAllLinkGroups()->filter(
-                            function (\Link\LinkGroupInterface $e) {
-                                return $e->isSpecial() === false;
-                            }
-                       )
-                   );
+                   ->assign('oLink_arr', $links);
             break;
 
         case 'edit':
@@ -89,7 +88,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             if ($eTyp === 'text') {
                 $oldBox = $boxAdmin->getByID($boxID);
                 if ($oldBox->supportsRevisions === true) {
-                    $revision = new Revision();
+                    $revision = new Revision(Shop::Container()->getDB());
                     $revision->addRevision('box', $boxID, true);
                 }
                 $bOk = $boxAdmin->update($boxID, $cTitel);

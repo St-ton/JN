@@ -11,9 +11,6 @@ msgstr "https://jtl-url.de/0jlfk"
 msgid "taggingDesc"
 msgstr "Shop-Besucher können Artikel im Shop mit Schlagworten versehen (\"taggen\"). Nach Freischaltung der Tag-Begriffe sind diese im Shop öffentlich und können zur Navigation und Filterung genutzt werden. Bitte beachten Sie, dass Produkttags pro Sprache verwaltet werden. Einstellungen zu Produkttags finden Sie unter Einstellungen -> Artikeldetails"
 
-msgid "tag"
-msgstr "Tag"
-
 msgid "tags"
 msgstr "Aktive Tags"
 
@@ -25,9 +22,6 @@ msgstr "Aktive Tag-Mappings"
 
 msgid "tagcount"
 msgstr "Taganzahl"
-
-msgid "active"
-msgstr "Aktiv"
 
 msgid "taggingdetail"
 msgstr "Produkttagging Detailansicht"
@@ -41,20 +35,8 @@ msgstr "Produkt"
 msgid "taggingdelete"
 msgstr "Markierte löschen"
 
-msgid "taggingSelectAll"
-msgstr "Alle auswählen"
-
-msgid "taggingback"
-msgstr "zurück"
-
 msgid "taggingdetailTag"
 msgstr "Artikel zum Produkttag:"
-
-msgid "taggingSettings"
-msgstr "Einstellungen"
-
-msgid "taggingSave"
-msgstr "Speichern"
 
 msgid "errorTagMapSelf"
 msgstr "Der Tag %s kann nicht auf den gleichen Tagbegriff gemappt werden."

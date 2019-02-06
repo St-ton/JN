@@ -422,7 +422,7 @@ function loescheNewsletterempfaenger($kNewsletterEmpfaenger_arr): bool
  */
 function mappeLiveSuche($queryIDs, $cMapping): int
 {
-    if (!is_array($queryIDs) || count($queryIDs) === 0 || strlen($cMapping) === 0) {
+    if (!is_array($queryIDs) || count($queryIDs) === 0 || mb_strlen($cMapping) === 0) {
         return 2; // Leere Übergabe
     }
     $db = Shop::Container()->getDB();
@@ -431,7 +431,7 @@ function mappeLiveSuche($queryIDs, $cMapping): int
         if ($oSuchanfrage === null || empty($oSuchanfrage->kSuchanfrage)) {
             return 3; // Mindestens eine Suchanfrage wurde nicht in der Datenbank gefunden.
         }
-        if (strtolower($oSuchanfrage->cSuche) === strtolower($cMapping)) {
+        if (mb_convert_case($oSuchanfrage->cSuche, MB_CASE_LOWER) === mb_convert_case($cMapping, MB_CASE_LOWER)) {
             return 6; // Es kann nicht auf sich selbst gemappt werden
         }
         $oSuchanfrageNeu = $db->select('tsuchanfrage', 'cSuche', $cMapping);

@@ -11,12 +11,6 @@ msgstr "am häufigsten gekauft"
 msgid "ggLast100Products"
 msgstr "Letzten 100"
 
-msgid "ggSettings"
-msgstr "Einstellungen"
-
-msgid "ggProductName"
-msgstr "Artikelname"
-
 msgid "ggOrderValueMin"
 msgstr "Bestellbar ab"
 

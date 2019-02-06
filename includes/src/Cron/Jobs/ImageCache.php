@@ -70,7 +70,7 @@ class ImageCache extends Job
     {
         parent::start($queueEntry);
         $this->logger->debug('Generating image cache - max. ' . $this->getLimit());
-        $res                   = $this->generateImageCache($queueEntry->tasksExecuted);
+        $res                       = $this->generateImageCache($queueEntry->tasksExecuted);
         $queueEntry->tasksExecuted = $this->nextIndex;
         $this->setFinished($res);
 

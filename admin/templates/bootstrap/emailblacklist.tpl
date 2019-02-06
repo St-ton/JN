@@ -56,7 +56,7 @@
             </div>
         </div>
         <div class="save_wrapper">
-            <button name="speichern" type="submit" value="{__('emailblacklistSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('emailblacklistSave')}</button>
+            <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
         </div>
     </form>
     {if isset($oEmailBlacklistBlock_arr) && $oEmailBlacklistBlock_arr|@count > 0}

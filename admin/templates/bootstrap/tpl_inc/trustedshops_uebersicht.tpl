@@ -104,7 +104,7 @@
             </div>
             <div class="panel-footer">
                 <div class="btn-group">
-                    <button name="saveSettings" type="submit" value="{__('settingsSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('settingsSave')}</button>
+                    <button name="saveSettings" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     <button name="delZertifikat" type="submit" value="{__('tsDelCertificate')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('tsDelCertificate')}</button>
                 </div>
             </div>
@@ -125,7 +125,7 @@
                 <tr>
                     <th class="th-1">{__('tsProduct')}</th>
                     <th class="th-2">{__('tsCoverage')}</th>
-                    <th class="th-3">{__('tsCurrency')}</th>
+                    <th class="th-3">{__('currency')}</th>
                 </tr>
                 {foreach $oKaeuferschutzProdukteDB->item as $oKaeuferschutzProdukt}
                     <tr>
@@ -191,7 +191,7 @@
                             {/if}
                         </div>
                         <div class="panel-footer">
-                            <button type="submit" value="{__('settingsSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('settingsSave')}</button>
+                            <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                         </div>
                     </div>
                 </form>

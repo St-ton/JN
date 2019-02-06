@@ -4,16 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Backend\Settings\Manager;
 use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
-/** @global Smarty\JTLSmarty $smarty */
-/** @global AdminAccount $oAccount */
+/** @global \Smarty\JTLSmarty     $smarty */
+/** @global \Backend\AdminAccount $oAccount */
 $kSektion = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
 $bSuche   = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
+$db       = Shop::Container()->getDB();
+$getText  = Shop::Container()->getGetText();
 
-\Shop::Container()->getGetText()->loadConfigLocales(true, true);
+$getText->loadConfigLocales(true, true);
 
 if ($bSuche) {
     $oAccount->permission('SETTINGS_SEARCH_VIEW', true, true);
@@ -55,7 +58,7 @@ switch ($kSektion) {
         break;
 }
 
-$standardwaehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
+$standardwaehrung = $db->select('twaehrung', 'cStandard', 'Y');
 $cHinweis         = '';
 $cFehler          = '';
 $section          = null;
@@ -63,14 +66,14 @@ $step             = 'uebersicht';
 $oSections        = [];
 if ($kSektion > 0) {
     $step    = 'einstellungen bearbeiten';
-    $section = Shop::Container()->getDB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
+    $section = $db->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
     $smarty->assign('kEinstellungenSektion', $section->kEinstellungenSektion);
 } else {
-    $section = Shop::Container()->getDB()->select('teinstellungensektion', 'kEinstellungenSektion', CONF_GLOBAL);
+    $section = $db->select('teinstellungensektion', 'kEinstellungenSektion', CONF_GLOBAL);
     $smarty->assign('kEinstellungenSektion', CONF_GLOBAL);
 }
 
-\Shop::Container()->getGetText()->localizeConfigSection($section);
+$getText->localizeConfigSection($section);
 
 if ($bSuche) {
     $step = 'einstellungen bearbeiten';
@@ -88,66 +91,65 @@ if (isset($_POST['einstellungen_bearbeiten'])
     if (!isset($oSQL->cWHERE)) {
         $oSQL->cWHERE = '';
     }
-    $step = 'einstellungen bearbeiten';
-    $Conf = [];
-    if (strlen($oSQL->cWHERE) > 0) {
-        $Conf = $oSQL->oEinstellung_arr;
+    $step     = 'einstellungen bearbeiten';
+    $confData = [];
+    if (mb_strlen($oSQL->cWHERE) > 0) {
+        $confData = $oSQL->oEinstellung_arr;
         $smarty->assign('cSearch', $oSQL->cSearch);
     } else {
-        $section = Shop::Container()->getDB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
-        $Conf    = Shop::Container()->getDB()->query(
+        $section  = $db->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
+        $confData = $db->query(
             'SELECT *
                 FROM teinstellungenconf
                 WHERE kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . "
                     AND cConf = 'Y'
                     AND nModul = 0
-                    AND nStandardanzeigen = 1
-                    {$oSQL->cWHERE}
+                    AND nStandardanzeigen = 1 . ' .$oSQL->cWHERE . '
                 ORDER BY nSort",
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
-    foreach ($Conf as $i => $oConfig) {
-        $aktWert  = new stdClass();
-        $oSection = SettingSection::getInstance((int)$oConfig->kEinstellungenSektion);
-        if (isset($_POST[$Conf[$i]->cWertName])) {
-            $aktWert->cWert                 = $_POST[$Conf[$i]->cWertName];
-            $aktWert->cName                 = $Conf[$i]->cWertName;
-            $aktWert->kEinstellungenSektion = $Conf[$i]->kEinstellungenSektion;
-            switch ($Conf[$i]->cInputTyp) {
+    $settingSection = new Manager($db, $smarty);
+    foreach ($confData as $i => $sectionData) {
+        $value       = new stdClass();
+        $sectionItem = $settingSection->getInstance((int)$sectionData->kEinstellungenSektion);
+        if (isset($_POST[$confData[$i]->cWertName])) {
+            $value->cWert                 = $_POST[$confData[$i]->cWertName];
+            $value->cName                 = $confData[$i]->cWertName;
+            $value->kEinstellungenSektion = $confData[$i]->kEinstellungenSektion;
+            switch ($confData[$i]->cInputTyp) {
                 case 'kommazahl':
-                    $aktWert->cWert = (float)str_replace(',', '.', $aktWert->cWert);
+                    $value->cWert = (float)str_replace(',', '.', $value->cWert);
                     break;
                 case 'zahl':
                 case 'number':
-                    $aktWert->cWert = (int)$aktWert->cWert;
+                    $value->cWert = (int)$value->cWert;
                     break;
                 case 'text':
-                    $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                    $value->cWert = mb_substr($value->cWert, 0, 255);
                     break;
                 case 'pass':
-                    $aktWert->cWert = substr($aktWert->cWert, 0, 255);
                     break;
             }
-            if ($oSection->validate($Conf[$i], $_POST[$Conf[$i]->cWertName])) {
-                Shop::Container()->getDB()->delete(
+            if ($sectionItem->validate($confData[$i], $_POST[$confData[$i]->cWertName])) {
+                $db->delete(
                     'teinstellungen',
                     ['kEinstellungenSektion', 'cName'],
-                    [$Conf[$i]->kEinstellungenSektion, $Conf[$i]->cWertName]
+                    [$confData[$i]->kEinstellungenSektion, $confData[$i]->cWertName]
                 );
-                if (is_array($_POST[$Conf[$i]->cWertName])) {
-                    foreach ($_POST[$Conf[$i]->cWertName] as $cWert) {
-                        $aktWert->cWert = $cWert;
-                        Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
+                if (is_array($_POST[$confData[$i]->cWertName])) {
+                    foreach ($_POST[$confData[$i]->cWertName] as $cWert) {
+                        $value->cWert = $cWert;
+                        $db->insert('teinstellungen', $value);
                     }
                 } else {
-                    Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
+                    $db->insert('teinstellungen', $value);
                 }
             }
         }
     }
 
-    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
+    $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
     $cHinweis    = __('successConfigSave');
     $tagsToFlush = [CACHING_GROUP_OPTION];
     if ($kSektion === 1 || $kSektion === 4 || $kSektion === 5) {
@@ -162,7 +164,7 @@ if (isset($_POST['einstellungen_bearbeiten'])
 }
 
 if ($step === 'uebersicht') {
-    $sections     = Shop::Container()->getDB()->query(
+    $sections     = $db->query(
         'SELECT * 
             FROM teinstellungensektion 
             ORDER BY kEinstellungenSektion',
@@ -170,7 +172,7 @@ if ($step === 'uebersicht') {
     );
     $sectionCount = count($sections);
     for ($i = 0; $i < $sectionCount; $i++) {
-        $anz_einstellunen = Shop::Container()->getDB()->queryPrepared(
+        $anz_einstellunen = $db->queryPrepared(
             "SELECT COUNT(*) AS anz
                 FROM teinstellungenconf
                 WHERE kEinstellungenSektion = :sid
@@ -182,26 +184,26 @@ if ($step === 'uebersicht') {
         );
 
         $sections[$i]->anz = $anz_einstellunen->anz;
-        \Shop::Container()->getGetText()->localizeConfigSection($sections[$i]);
+        $getText->localizeConfigSection($sections[$i]);
     }
     $smarty->assign('Sektionen', $sections);
 }
 if ($step === 'einstellungen bearbeiten') {
-    $Conf = [];
-    $oSQL = new stdClass();
+    $confData = [];
+    $oSQL     = new stdClass();
     if ($bSuche) {
         $oSQL = bearbeiteEinstellungsSuche($_REQUEST['cSuche']);
     }
     if (!isset($oSQL->cWHERE)) {
         $oSQL->cWHERE = '';
     }
-    $Conf = [];
-    if (strlen($oSQL->cWHERE) > 0) {
-        $Conf = $oSQL->oEinstellung_arr;
+    $confData = [];
+    if (mb_strlen($oSQL->cWHERE) > 0) {
+        $confData = $oSQL->oEinstellung_arr;
         $smarty->assign('cSearch', $oSQL->cSearch)
                ->assign('cSuche', $oSQL->cSuche);
     } else {
-        $Conf = Shop::Container()->getDB()->query(
+        $confData = $db->query(
             'SELECT *
                 FROM teinstellungenconf
                 WHERE nModul = 0 
@@ -212,25 +214,26 @@ if ($step === 'einstellungen bearbeiten') {
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
-    foreach ($Conf as $config) {
+    $settingSection = new Manager($db, $smarty);
+    foreach ($confData as $config) {
         $config->kEinstellungenConf    = (int)$config->kEinstellungenConf;
         $config->kEinstellungenSektion = (int)$config->kEinstellungenSektion;
         $config->nStandardAnzeigen     = (int)$config->nStandardAnzeigen;
         $config->nSort                 = (int)$config->nSort;
         $config->nModul                = (int)$config->nModul;
-        $oSection                      = SettingSection::getInstance((int)$config->kEinstellungenSektion);
-        \Shop::Container()->getGetText()->localizeConfig($config);
+        $sectionItem                   = $settingSection->getInstance((int)$config->kEinstellungenSektion);
+        $getText->localizeConfig($config);
         //@ToDo: Setting 492 is the only one listbox at the moment.
         //But In special case of setting 492 values come from kKundengruppe instead of teinstellungenconfwerte
         if ($config->cInputTyp === 'listbox' && $config->kEinstellungenConf === 492) {
-            $config->ConfWerte = Shop::Container()->getDB()->query(
+            $config->ConfWerte = $db->query(
                 'SELECT kKundengruppe AS cWert, cName
                     FROM tkundengruppe
                     ORDER BY cStandard DESC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         } elseif (in_array($config->cInputTyp, ['selectbox', 'listbox'], true)) {
-            $config->ConfWerte = Shop::Container()->getDB()->selectAll(
+            $config->ConfWerte = $db->selectAll(
                 'teinstellungenconfwerte',
                 'kEinstellungenConf',
                 (int)$config->kEinstellungenConf,
@@ -238,17 +241,17 @@ if ($step === 'einstellungen bearbeiten') {
                 'nSort'
             );
 
-            \Shop::Container()->getGetText()->localizeConfigValues($config, $config->ConfWerte);
+            $getText->localizeConfigValues($config, $config->ConfWerte);
         }
         if ($config->cInputTyp === 'listbox') {
-            $setValue              = Shop::Container()->getDB()->selectAll(
+            $setValue              = $db->selectAll(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [(int)$config->kEinstellungenSektion, $config->cWertName]
             );
             $config->gesetzterWert = $setValue;
         } else {
-            $setValue              = Shop::Container()->getDB()->select(
+            $setValue              = $db->select(
                 'teinstellungen',
                 'kEinstellungenSektion',
                 (int)$config->kEinstellungenSektion,
@@ -259,12 +262,12 @@ if ($step === 'einstellungen bearbeiten') {
                 ? StringHandler::htmlentities($setValue->cWert)
                 : null;
         }
-        $oSection->setValue($config, $setValue);
-        $oSections[(int)$config->kEinstellungenSektion] = $oSection;
+        $sectionItem->setValue($config, $setValue);
+        $oSections[(int)$config->kEinstellungenSektion] = $sectionItem;
     }
 
     $smarty->assign('Sektion', $section)
-           ->assign('Conf', $Conf)
+           ->assign('Conf', $confData)
            ->assign('oSections', $oSections);
 }
 

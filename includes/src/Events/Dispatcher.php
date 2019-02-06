@@ -48,7 +48,7 @@ final class Dispatcher
     public function listen($eventNames, $listener): void
     {
         foreach ((array)$eventNames as $event) {
-            if (\strpos($event, '*') !== false) {
+            if (\mb_strpos($event, '*') !== false) {
                 $this->wildcards[$event][] = $listener;
             } else {
                 $this->listeners[$event][] = $listener;
@@ -77,7 +77,7 @@ final class Dispatcher
      */
     public function forget($eventName): void
     {
-        if (\strpos($eventName, '*') !== false) {
+        if (\mb_strpos($eventName, '*') !== false) {
             if (isset($this->wildcards[$eventName])) {
                 unset($this->wildcards[$eventName]);
             }

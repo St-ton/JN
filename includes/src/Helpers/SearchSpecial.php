@@ -55,7 +55,10 @@ class SearchSpecial
                 $sso->nGroesse            = (int)$sso->nGroesse;
                 $sso->nPosition           = (int)$sso->nPosition;
 
-                $idx                         = \strtolower(\str_replace([' ', '-', '_'], '', $sso->cSuchspecial));
+                $idx                         = \mb_convert_case(
+                    \str_replace([' ', '-', '_'], '', $sso->cSuchspecial),
+                    MB_CASE_LOWER
+                );
                 $idx                         = \preg_replace(
                     ['/Ä/', '/Ö/', '/Ü/', '/ä/', '/ö/', '/ü/', '/ß/'],
                     ['ae', 'oe', 'ue', 'ae', 'oe', 'ue', 'ss'],

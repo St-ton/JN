@@ -22,7 +22,7 @@ class Uninstaller extends AbstractItem
         $node = $this->getBaseNode();
         $dir  = $this->getDir();
         if (isset($node['Uninstall'])
-            && \strlen($node['Uninstall']) > 0
+            && \mb_strlen($node['Uninstall']) > 0
             && !\file_exists($dir . \PFAD_PLUGIN_UNINSTALL . $node['Uninstall'])
         ) {
             return InstallCode::MISSING_UNINSTALL_FILE;

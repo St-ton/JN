@@ -95,21 +95,21 @@
 
         {if !$passed}
             <div class="alert alert-warning">
-                Um einen einwandfreien Betrieb gewährleisten zu können ist es zwingend erforderlich, alle <code>markierten</code> Eigeschaften zu überprüfen.
+                {__('noteImportantCheckSettings')}
             </div>
         {/if}
         
         {if $tests.recommendations|count > 0}
             <div class="page-header">
-                <h1>Empfohlene Anpassungen</h1>
+                <h1>{__('suggestedAdjustments')}</h1>
             </div>
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
                             <th class="col-xs-7">&nbsp;</th>
-                            <th class="col-xs-3 text-center">Empfohlener Wert</th>
-                            <th class="col-xs-2 text-center">Ihr System</th>
+                            <th class="col-xs-3 text-center">{__('suggestedValue')}</th>
+                            <th class="col-xs-2 text-center">{__('yourSystem')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -135,15 +135,15 @@
 
         {if $tests.programs|count > 0}
             <div class="page-header">
-                <h1>Installierte Software</h1>
+                <h1>{__('installedSoftware')}</h1>
             </div>
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th class="col-xs-7">Software</th>
-                            <th class="col-xs-3 text-center">Voraussetzung</th>
-                            <th class="col-xs-2 text-center">Vorhanden</th>
+                            <th class="col-xs-7">{__('software')}</th>
+                            <th class="col-xs-3 text-center">{__('requirements')}</th>
+                            <th class="col-xs-2 text-center">{__('available')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -171,14 +171,14 @@
 
         {if $tests.php_modules|count > 0}
             <div class="page-header">
-                <h1>Benötigte PHP-Erweiterungen und -Funktionen</h1>
+                <h1>{__('neededPHPExtensions')}</h1>
             </div>
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th class="col-xs-10">Bezeichnung</th>
-                            <th class="col-xs-2 text-center">Status</th>
+                            <th class="col-xs-10">{__('designation')}</th>
+                            <th class="col-xs-2 text-center">{__('status')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -205,15 +205,15 @@
 
         {if $tests.php_config|count > 0}
             <div class="page-header">
-                <h1>Benötigte PHP-Einstellungen</h1>
+                <h1>{__('needPHPSetting')}</h1>
             </div>
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th class="col-xs-7">Einstellung</th>
-                            <th class="col-xs-3 text-center">Benötigter Wert</th>
-                            <th class="col-xs-2 text-center">Ihr System</th>
+                            <th class="col-xs-7">{__('setting')}</th>
+                            <th class="col-xs-3 text-center">{__('neededValue')}</th>
+                            <th class="col-xs-2 text-center">{__('yourSystem')}</th>
                         </tr>
                     </thead>
                     <tbody>

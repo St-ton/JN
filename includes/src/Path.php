@@ -69,6 +69,6 @@ class Path
      */
     public static function hasExtension(string $path): bool
     {
-        return strlen(self::getExtension($path)) > 0;
+        return mb_strlen(self::getExtension($path)) > 0;
     }
 }

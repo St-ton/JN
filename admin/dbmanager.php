@@ -10,7 +10,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
 
 $oAccount->permission('DBCHECK_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $tables = DBManager::getStatus(DB_NAME);
 $smarty->assign('tables', $tables);
 
@@ -110,7 +110,7 @@ switch (true) {
                 if (!empty($filter['where']['col'][$i]) && !empty($filter['where']['op'][$i])) {
                     $col = $filter['where']['col'][$i];
                     $val = $filter['where']['val'][$i];
-                    $op  = strtoupper($filter['where']['op'][$i]);
+                    $op  = mb_convert_case($filter['where']['op'][$i], MB_CASE_UPPER);
                     if ($op === 'LIKE %%') {
                         $op  = 'LIKE';
                         $val = sprintf('%%%s%%', trim($val, '%'));
@@ -188,7 +188,7 @@ switch (true) {
                     if ($dbname !== null && strcasecmp($dbname, DB_NAME) !== 0) {
                         throw new \Exception(sprintf('Well, at least u tried :)'));
                     }
-                    if (in_array(strtolower($table), $restrictedTables, true)) {
+                    if (in_array(mb_convert_case($table, MB_CASE_LOWER), $restrictedTables, true)) {
                         throw new \Exception(sprintf('Permission denied for table `%s`', $table));
                     }
                 }

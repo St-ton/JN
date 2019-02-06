@@ -45,7 +45,7 @@ function gibLetzteBildNummer($kLink)
     }
     $nMax = 0;
     foreach ($cBild_arr as $image) {
-        $cNummer = substr($image, 4, (strlen($image) - strpos($image, '.')) - 3);
+        $cNummer = mb_substr($image, 4, (mb_strlen($image) - mb_strpos($image, '.')) - 3);
         if ($cNummer > $nMax) {
             $nMax = $cNummer;
         }
@@ -68,10 +68,10 @@ function parseText($cText, $kLink)
         $DirHandle = opendir($cUploadVerzeichnis . $kLink);
         while (false !== ($Datei = readdir($DirHandle))) {
             if ($Datei !== '.' && $Datei !== '..') {
-                $nBild             = (int)substr(
+                $nBild             = (int)mb_substr(
                     str_replace('Bild', '', $Datei),
                     0,
-                    strpos(str_replace('Bild', '', $Datei), '.')
+                    mb_strpos(str_replace('Bild', '', $Datei), '.')
                 );
                 $cBild_arr[$nBild] = $Datei;
                 $nSort_arr[]       = $nBild;
@@ -210,7 +210,7 @@ function getGesetzteKundengruppen($link)
 
         return $ret;
     }
-    if (!isset($link->cKundengruppen) || !$link->cKundengruppen || strtolower($link->cKundengruppen) === 'null') {
+    if (!isset($link->cKundengruppen) || !$link->cKundengruppen || mb_convert_case($link->cKundengruppen, MB_CASE_LOWER) === 'null') {
         $ret[0] = true;
 
         return $ret;

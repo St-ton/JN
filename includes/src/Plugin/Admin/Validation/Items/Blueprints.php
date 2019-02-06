@@ -35,13 +35,13 @@ class Blueprints extends AbstractItem
             $i = (string)$i;
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
-            if (\strlen($hits2[0]) === \strlen($i)) {
+            if (\mb_strlen($hits2[0]) === \mb_strlen($i)) {
                 \preg_match(
                     '/[a-zA-Z0-9\/_\-\ äÄüÜöÖß' . \utf8_decode('äÄüÜöÖß') . '\(\) ]+/',
                     $blueprint['Name'],
                     $hits1
                 );
-                if (\strlen($hits1[0]) !== \strlen($blueprint['Name'])) {
+                if (\mb_strlen($hits1[0]) !== \mb_strlen($blueprint['Name'])) {
                     return InstallCode::INVALID_BLUEPRINT_NAME;
                 }
                 if (!\is_file($base . $blueprint['JSONFile'])) {

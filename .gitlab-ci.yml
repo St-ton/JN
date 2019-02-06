@@ -5,6 +5,8 @@ stages:
   - build
   - deploy
   - cleanUp
+  - stagingPre
+  - staging
 
 .testingScript: &testingScript |
   export CI_CONTAINER_NAME=ci_job_$CI_PROJECT_NAME_testing_$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
@@ -111,6 +113,45 @@ stages:
     if [[ ! -z "$running" ]]; then
       docker network disconnect mysql-php-network $CI_CONTAINER_NAME
       docker stop $CI_CONTAINER_NAME && docker rm -fv $CI_CONTAINER_NAME
+    fi
+  }
+
+.devCheckoutScripts: &devCheckoutScripts |
+  export FILENAME="${CI_COMMIT_REF_NAME//[\/\.]/-}";
+  export EXTRACTION_PATH="$RUNNER_PATH/shop-$FILENAME";
+
+  function downloadProcess() {
+    export RUNNER_PATH_ZIP="$EXTRACTION_PATH.zip";
+    export DOWNLOAD_URL="https://build.jtl-shop.de/get/shop-$FILENAME.zip";
+
+    curl -o $RUNNER_PATH_ZIP $DOWNLOAD_URL
+    unzip -qo $RUNNER_PATH_ZIP -d $EXTRACTION_PATH
+    rm $RUNNER_PATH_ZIP
+  }
+  function deployProcess() {
+    export PHP_VERSION=$1;
+    export DEPLOY_PATH="$STAGING_USER_PATH/php$PHP_VERSION/$FILENAME";
+    export MIGRATION_COUNT_BEFORE=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l)
+
+    sudo /usr/bin/rsync -rt -og --chown=www-data:www-data $EXTRACTION_PATH/. $DEPLOY_PATH
+
+    export MIGRATION_COUNT_AFTER=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l)
+
+    if [[ $MIGRATION_COUNT_AFTER -gt 224 ]]; then
+      php -r "
+        require_once '${DEPLOY_PATH}/includes/globalinclude.php'; \
+        \$time    = date('YmdHis'); \
+        \$manager = new MigrationManager(); \
+        try { \
+          \$result = \$manager->migrate($time); \
+          echo \$result; \
+        } catch (Exception \$e) { \
+          \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations()))); \
+          \$result = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage()); \
+          echo \$result; \
+          exit(1); \
+        } \
+      ";
     fi
   }
 
@@ -269,3 +310,45 @@ removeContainer:
   when: on_failure
   tags:
     - build
+
+stagingPreDeploy:
+  stage: stagingPre
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - *devCheckoutScripts
+    - downloadProcess
+  only:
+    - master
+  tags:
+    - dev-checkout
+
+stagingDevPhp72:
+  stage: staging
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - *devCheckoutScripts
+    - deployProcess 72
+  environment:
+    name: staging master php 7.2
+    url: https://$STAGING_USER-72-master.$STAGING_DOMAIN
+  only:
+    - master
+  tags:
+    - dev-checkout
+
+stagingDevPhp73:
+  stage: staging
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - *devCheckoutScripts
+    - deployProcess 73
+  environment:
+    name: staging master php 7.3
+    url: https://$STAGING_USER-73-master.$STAGING_DOMAIN
+  only:
+    - master
+  tags:
+    - dev-checkout

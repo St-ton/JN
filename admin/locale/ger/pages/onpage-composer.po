@@ -8,9 +8,6 @@ msgstr "Das OPC Update wurde nicht ordnungsgemäß installiert. Bitte aktualisie
 msgid "Draft"
 msgstr "Entwurf"
 
-msgid "extended"
-msgstr "erweitert"
-
 msgid "replaced"
 msgstr "ersetzt"
 
@@ -21,9 +18,6 @@ msgstr "Import"
 
 msgid "Export"
 msgstr "Export"
-
-msgid "Help"
-msgstr "Hilfe"
 
 msgid "Publicate"
 msgstr "Veröffentlichen"
@@ -58,9 +52,6 @@ msgstr "Aktuelle Version"
 msgid "Please wait..."
 msgstr "Bitte warten..."
 
-msgid "Error"
-msgstr "Fehler"
-
 msgid "Edit Portlet"
 msgstr "Portlet bearbeiten"
 
@@ -73,13 +64,7 @@ msgstr "Vorlagen-Name"
 msgid "Delete Blueprint?"
 msgstr "Vorlage löschen?"
 
-msgid "Delete"
-msgstr "Löschen"
-
 # Config Tabs
-
-msgid "General"
-msgstr "Allgemein"
 
 msgid "Styles"
 msgstr "Stile"
@@ -132,3 +117,81 @@ msgstr "Animation beginnt sobald der Scroll-Abstand erreicht ist (von der Unterk
 
 msgid "Number of times the animation is repeated"
 msgstr "Wie oft wird die Animation wiederholt"
+
+msgid "onPageComposer"
+msgstr "OnPage Composer"
+
+msgid "toggleNavigation"
+msgstr "Toggle navigation"
+
+msgid "somethingHappend"
+msgstr "Something happened"
+
+msgid "noteInfoInGuide"
+msgstr "Du findest neben den, nachfolgend aufgelisteten, Touren auch ausführliche Informationen in unserem <a href=\"https://guide.jtl-software.de\" target=\"_blank\"><i class=\"fa fa-external-link\"></i> Guide</a>."
+
+msgid "generalIntroduction"
+msgstr "Allgemeine Einführung"
+
+msgid "getToKnowComposer"
+msgstr "lerne den Composer kennen und lege dein erstes Portlet an"
+
+msgid "animation"
+msgstr "Animation"
+
+msgid "noteMovementOnPage"
+msgstr "du möchtest etwas Bewegung auf deinen Seiten, lerne hier wie`s geht"
+
+msgid "noteSaveAsTemplate"
+msgstr "Du hast eine tolle Ansicht angelegt die du häufig wiederverwenden möchtest?<br> Leg' sie doch als Vorlage an und greife so einfach immer wieder darauf zu."
+
+msgid "settingsMore"
+msgstr "Einstellungen (Vertiefung)"
+
+msgid "noteTricks"
+msgstr "Lerne hier ein paar Tricks um deine Seiten für die verschiedenen Displayformate fit zu machen."
+
+msgid "startTour"
+msgstr "Tour starten"
+
+msgid "draftPublic"
+msgstr "Diesen Entwurf veröffentlichen..."
+
+msgid "draftName"
+msgstr "Interner Name des Entwurfes"
+
+msgid "restoreChanges"
+msgstr "Lokale Änderungen wiederherstellen?"
+
+msgid "restoreUnsaved"
+msgstr "Dieser Entwurf hat lokal ungespeicherte Änderungen. Wollen Sie diese wiederherstellen?"
+
+msgid "noCurrent"
+msgstr "Nein, Aktuelle Version bearbeiten!"
+
+msgid "yesRestore"
+msgstr "Ja, wiederherstellen!"
+
+msgid "portletLabel"
+msgstr "Portlet-Label"
+
+msgid "editSettings"
+msgstr "Einstellungen bearbeiten"
+
+msgid "copySelect"
+msgstr "Auswahl kopieren"
+
+msgid "saveTemplate"
+msgstr "Auswahl als Vorlage speichern"
+
+msgid "goUp"
+msgstr "Gehe eine Ebene höher"
+
+msgid "deleteSelect"
+msgstr "Auswahl löschen [Entf]"
+
+msgid "portletPreviewLabel"
+msgstr "Portlet-Preview-Label"
+
+msgid "templateTitle"
+msgstr "Vorlagen-Titel"

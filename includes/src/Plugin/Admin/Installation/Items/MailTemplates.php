@@ -34,7 +34,7 @@ class MailTemplates extends AbstractItem
             $i = (string)$i;
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
-            if (\strlen($hits2[0]) !== \strlen($i)) {
+            if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }
             $mailTpl                = new \stdClass();
@@ -71,9 +71,9 @@ class MailTemplates extends AbstractItem
                 $l = (string)$l;
                 \preg_match('/[0-9]+\sattr/', $l, $hits1);
                 \preg_match('/[0-9]+/', $l, $hits2);
-                if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($l)) {
-                    $iso = \strtolower($localized['iso']);
-                } elseif (isset($hits2[0]) && \strlen($hits2[0]) === \strlen($l)) {
+                if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($l)) {
+                    $iso = \mb_convert_case($localized['iso'], \MB_CASE_LOWER);
+                } elseif (isset($hits2[0]) && \mb_strlen($hits2[0]) === \mb_strlen($l)) {
                     $localizedTpl->kEmailvorlage = $mailTplID;
                     $localizedTpl->kSprache      = $allLanguages[$iso]->kSprache;
                     $localizedTpl->cBetreff      = $localized['Subject'];

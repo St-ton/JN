@@ -19,10 +19,10 @@ var pies = [];
     </div>
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($tab) || $tab === 'plugin' || $tab === 'uebersicht'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#plugins">Plugins</a>
+            <a data-toggle="tab" role="tab" href="#plugins">{__('plugins')}</a>
         </li>
         <li class="tab{if isset($tab) && $tab === 'sqlprofiler'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#sqlprofiler">SQL</a>
+            <a data-toggle="tab" role="tab" href="#sqlprofiler">{__('sql')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -46,7 +46,7 @@ var pies = [];
                                         <div class="list-group-item">
                                             <h5 class="list-group-item-heading">{$file->filename|replace:$smarty.const.PFAD_ROOT:''}</h5>
                                             <p class="list-group-item-text">
-                                                Hook: {$file->hookID}<br />Zeit: {$file->runtime}s<br />Aufrufe: {$file->runcount}
+                                                {__('hook')}: {$file->hookID}<br />{__('time')}: {$file->runtime}s<br />{__('calls')}: {$file->runcount}
                                             </p>
                                         </div>
                                     {/foreach}
@@ -56,7 +56,7 @@ var pies = [];
                                 <form class="delete-run" action="profiler.php" method="post">
                                     {$jtl_token}
                                     <input type="hidden" value="{$profile->runID}" name="run-id" />
-                                    <button type="submit" class="btn btn-default" name="delete-run-submit"><i class="fa fa-trash"></i> Eintrag löschen</button>
+                                    <button type="submit" class="btn btn-default" name="delete-run-submit"><i class="fa fa-trash"></i> {__('deleteEntry')}</button>
                                 </form>
                             </div>
                         </div>
@@ -81,26 +81,26 @@ var pies = [];
                             </div>
                             <div id="sql-profile-{$run@index}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-sql-profile-{$run@index}">
                                 <div class="panel-body">
-                                    <p><span class="label2">Total Queries: </span> <span class="text"> {$run->total_count}</span></p>
-                                    <p><span class="label2">Runtime: </span> <span class="text"> {$run->total_time}</span></p>
-                                    <p><span class="label2">Tables:</span></p>
+                                    <p><span class="label2">{__('totalQueries')}: </span> <span class="text"> {$run->total_count}</span></p>
+                                    <p><span class="label2">{__('runtime')}: </span> <span class="text"> {$run->total_time}</span></p>
+                                    <p><span class="label2">{__('tables')}:</span></p>
                                     <ul class="affacted-tables">
                                         {foreach $run->data as $query}
                                             <li class="list a-table">
                                                 <strong>{$query->tablename}</strong> ({$query->runcount} times, {$query->runtime}s)<br />
                                                 {if $query->statement !== null}
-                                                    <strong>Statement:</strong> <code class="sql">{$query->statement}</code><br />
+                                                    <strong>{__('statement')}:</strong> <code class="sql">{$query->statement}</code><br />
                                                 {/if}
                                                 {if $query->data !== null}
                                                     {assign var=data value=$query->data|@unserialize}
-                                                    <strong>Backtrace:</strong>
+                                                    <strong>{__('backtrace')}:</strong>
                                                     <ol class="backtrace">
                                                         {foreach $data.backtrace as $backtrace}
                                                             <li class="list bt-item">{$backtrace.file}:{$backtrace.line} - {if $backtrace.class !== ''}{$backtrace.class}::{/if}{$backtrace.function}()</li>
                                                         {/foreach}
                                                     </ol>
                                                     {if isset($data.message)}
-                                                        <strong>Error message:</strong>
+                                                        <strong>{__('errorMessage')}:</strong>
                                                         {$data.message}
                                                     {/if}
                                                 {/if}
@@ -112,7 +112,7 @@ var pies = [];
                                     <form class="delete-run" action="profiler.php" method="post">
                                         {$jtl_token}
                                         <input type="hidden" value="{$run->runID}" name="run-id" />
-                                        <button type="submit" class="btn btn-default" name="delete-run-submit">Eintrag löschen</button>
+                                        <button type="submit" class="btn btn-default" name="delete-run-submit">{__('deleteEntry')}</button>
                                     </form>
                                 </div>
                             </div>

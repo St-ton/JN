@@ -8,11 +8,7 @@
 
 {block name='content'}
     <h1>{lang key='compare' section='global'}</h1>
-    
-    {if !empty($cHinweis)}
-        <p class="alert alert-success">{$cHinweis}</p>
-    {/if}
-    
+
     {include file='snippets/extension.tpl'}
     
     {if $oVergleichsliste->oArtikel_arr|@count > 1}
@@ -210,14 +206,7 @@
     {else}
         {lang key='compareListNoItems'}
     {/if}
-    
-    {if !empty($cFehler)}
-        <br>
-        <div class="alert alert-danger">
-            {$cFehler}
-        </div>
-    {/if}
-    
+
     {if isset($bAjaxRequest) && $bAjaxRequest}
         <script type="text/javascript">
             $('.modal a.remove').click(function(e) {

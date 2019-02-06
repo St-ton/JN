@@ -132,7 +132,7 @@
             {/if}
             {if $useMediaGroup}
                 {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
-                    {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
+                    {$cMedienTypId = $cMedienTyp|@seofy}
                     <li role="presentation"
                         {if $setActiveClass.mediaGroup && $cMedienTyp@first} class="active"{/if}>
                         <a href="#tab-{$cMedienTypId}" aria-controls="tab-{$cMedienTypId}" role="tab" data-toggle="tab">
@@ -244,7 +244,7 @@
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{lang section='productDownloads' key='downloadSection'}</h3>
+                        <h3 class="panel-title">{lang key='Votes'}</h3>
                     </div>
                     <div class="panel-body" id="tab-votes">
             {/if}
@@ -315,7 +315,7 @@
         {/if}
         {if $useMediaGroup}
             {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
-                {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
+                {$cMedienTypId = $cMedienTyp|@seofy}
                 {if $tabanzeige}
                     <div role="tabpanel"
                         class="tab-pane fade{if $setActiveClass.mediaGroup && $cMedienTyp@first} in active{/if}"

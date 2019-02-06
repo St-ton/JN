@@ -37,9 +37,9 @@
                     </span>
                     <span class="input-group-wrap">
                         <select class="form-control" name="cSuchTyp" id="search_type">
-                            <option value="Bewertung"{if isset($cSuchTyp) && $cSuchTyp === 'Bewertung'} selected{/if}>{__('freischaltenReviews')}</option>
+                            <option value="Bewertung"{if isset($cSuchTyp) && $cSuchTyp === 'Bewertung'} selected{/if}>{__('reviews')}</option>
                             <option value="Livesuche"{if isset($cSuchTyp) && $cSuchTyp === 'Livesuche'} selected{/if}>{__('freischaltenLivesearch')}</option>
-                            <option value="Tag"{if isset($cSuchTyp) && $cSuchTyp === 'Tag'} selected{/if}>{__('freischaltenTags')}</option>
+                            <option value="Tag"{if isset($cSuchTyp) && $cSuchTyp === 'Tag'} selected{/if}>{__('tags')}</option>
                             <option value="Newskommentar"{if isset($cSuchTyp) && $cSuchTyp === 'Newskommentar'} selected{/if}>{__('freischaltenNewsComments')}</option>
                             <option value="Newsletterempfaenger"{if isset($cSuchTyp) && $cSuchTyp === 'Newsletterempfaenger'} selected{/if}>{__('freischaltenNewsletterReceiver')}</option>
                         </select>
@@ -63,13 +63,13 @@
     </div>
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || empty($cTab) || $cTab === 'bewertungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#bewertungen">{__('freischaltenReviews')} <span class="badge">{$oPagiBewertungen->getItemCount()}</span></a>
+            <a data-toggle="tab" role="tab" href="#bewertungen">{__('reviews')} <span class="badge">{$oPagiBewertungen->getItemCount()}</span></a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'livesearch'} active{/if}">
             <a data-toggle="tab" role="tab" href="#livesearch">{__('freischaltenLivesearch')} <span class="badge">{$oPagiSuchanfragen->getItemCount()}</span></a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'tags'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#tags">{__('freischaltenTags')} <span class="badge">{$oPagiTags->getItemCount()}</span></a>
+            <a data-toggle="tab" role="tab" href="#tags">{__('tags')} <span class="badge">{$oPagiTags->getItemCount()}</span></a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'newscomments'} active{/if}">
             <a data-toggle="tab" role="tab" href="#newscomments">{__('freischaltenNewsComments')} <span class="badge">{$oPagiNewskommentare->getItemCount()}</span></a>
@@ -89,18 +89,18 @@
                     <input type="hidden" name="tab" value="bewertungen" />
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">{__('freischaltenReviews')}</h3>
+                            <h3 class="panel-title">{__('reviews')}</h3>
                         </div>
                         <div class="table-responsive">
                             <table class="list table">
                                 <thead>
                                 <tr>
                                     <th class="check"></th>
-                                    <th class="tleft">{__('freischaltenReviewsProduct')}</th>
+                                    <th class="tleft">{__('product')}</th>
                                     <th class="tleft">{__('freischaltenReviewsCustomer')}</th>
-                                    <th>{__('freischaltenReviewsStars')}</th>
+                                    <th>{__('stars')}</th>
                                     <th>{__('freischaltenReviewsDate')}</th>
-                                    <th>Aktionen</th>
+                                    <th>{__('actions')}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -134,14 +134,14 @@
                                 <tfoot>
                                 <tr>
                                     <td class="check"><input name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                                    <td colspan="5"><label for="ALLMSGS1">{__('freischaltenSelectAll')}</label></td>
+                                    <td colspan="5"><label for="ALLMSGS1">{__('globalSelectAll')}</label></td>
                                 </tr>
                                 </tfoot>
                             </table>
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group">
-                                <button name="freischaltensubmit" type="submit" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> Markierte freischalten</button>
+                                <button name="freischaltensubmit" type="submit" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
                                 <button name="freischaltenleoschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
                             </div>
                         </div>
@@ -194,25 +194,25 @@
                                 <tfoot>
                                 <tr>
                                     <td class="check"><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                                    <td colspan="5"><label for="ALLMSGS2">{__('freischaltenSelectAll')}</label></td>
+                                    <td colspan="5"><label for="ALLMSGS2">{__('globalSelectAll')}</label></td>
                                 </tr>
                                 </tfoot>
                             </table>
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group p50">
-                                <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> Markierte freischalten</button>
+                                <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
                                 <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
                                     <i class="fa fa-trash"></i> {__('deleteSelected')}
                                 </button>
                             </div>
                             <div class="input-group right p50" data-toggle="tooltip" data-placement="bottom" title='{__('freischaltenMappingDesc')}'>
                                 <span class="input-group-addon">
-                                    <label for="cMapping">Markierte verknüpfen mit</label>
+                                    <label for="cMapping">{__('linkMarked')}</label>
                                 </span>
                                 <input class="form-control" name="cMapping" id="cMapping" type="text" value="" />
                                 <span class="input-group-btn">
-                                    <button name="submitMapping" type="submit" value="Verknüpfen" class="btn btn-primary">Verknüpfen</button>
+                                    <button name="submitMapping" type="submit" value="Verknüpfen" class="btn btn-primary">{__('linkVerb')}</button>
                                 </span>
                             </div>
                         </div>
@@ -236,8 +236,8 @@
                                 <thead>
                                     <tr>
                                         <th class="check">&nbsp;</th>
-                                        <th class="tleft">{__('freischaltenTagsName')}</th>
-                                        <th>{__('freischaltenTagsProductName')}</th>
+                                        <th class="tleft">{__('name')}</th>
+                                        <th>{__('product')}</th>
                                         <th>{__('freischaltenTagsCount')}</th>
                                     </tr>
                                 </thead>
@@ -254,15 +254,15 @@
                                 <tfoot>
                                     <tr>
                                         <td class="check"><input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                                        <td colspan="5"><label for="ALLMSGS3">{__('freischaltenSelectAll')}</label></td>
+                                        <td colspan="5"><label for="ALLMSGS3">{__('globalSelectAll')}</label></td>
                                     </tr>
                                 </tfoot>
                             </table>
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group">
-                                <button name="freischaltensubmit" type="submit" value="{__('freischaltenActivate')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> Markierte freischalten</button>
-                                <button name="freischaltenleoschen" type="submit" value="{__('freischaltenDelete')}" class="btn btn-danger">
+                                <button name="freischaltensubmit" type="submit" value="{__('activate')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
+                                <button name="freischaltenleoschen" type="submit" value="{__('delete')}" class="btn btn-danger">
                                     <i class="fa fa-trash"></i> {__('deleteSelected')}
                                 </button>
                             </div>
@@ -287,10 +287,10 @@
                                 <thead>
                                     <tr>
                                         <th class="check">&nbsp;</th>
-                                        <th class="tleft">{__('freischaltenNewsCommentsVisitor')}</th>
-                                        <th class="tleft">{__('freischaltenNewsCommentsText')}</th>
+                                        <th class="tleft">{__('visitor')}</th>
+                                        <th class="tleft">{__('text')}</th>
                                         <th>{__('freischaltenNewsCommentsDate')}</th>
-                                        <th>Aktionen</th>
+                                        <th>{__('actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -320,14 +320,14 @@
                                 <tfoot>
                                     <tr>
                                         <td class="check"><input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                                        <td colspan="5"><label for="ALLMSGS4">{__('freischaltenSelectAll')}</label></td>
+                                        <td colspan="5"><label for="ALLMSGS4">{__('globalSelectAll')}</label></td>
                                     </tr>
                                 </tfoot>
                             </table>
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group">
-                                <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> Markierte freischalten</button>
+                                <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
                                 <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
                                     <i class="fa fa-trash"></i> {__('deleteSelected')}
                                 </button>
@@ -356,10 +356,10 @@
                                 <thead>
                                     <tr>
                                         <th class="check">&nbsp;</th>
-                                        <th class="tleft">{__('freischaltenNewsletterReceiverEmail')}</th>
-                                        <th class="tleft">{__('freischaltenNewsletterReceiverFirstName')}</th>
-                                        <th class="tleft">{__('freischaltenNewsletterReceiverLastName')}</th>
-                                        <th>(<a href="freischalten.php?tab=newsletter&{$cSuchStr}nSort=4{if !isset($nSort) || $nSort != 44}4{/if}&token={$smarty.session.jtl_token}">{if !isset($nSort) || $nSort != 44}Alt...Neu{elseif isset($nSort) && $nSort == 44}Neu...Alt{/if}</a>) {__('freischaltenNewsletterReceiverDate')}</th>
+                                        <th class="tleft">{__('email')}</th>
+                                        <th class="tleft">{__('firstName')}</th>
+                                        <th class="tleft">{__('lastName')}</th>
+                                        <th>(<a href="freischalten.php?tab=newsletter&{$cSuchStr}nSort=4{if !isset($nSort) || $nSort != 44}4{/if}&token={$smarty.session.jtl_token}">{if !isset($nSort) || $nSort != 44}{__('old')}...{__('new')}{elseif isset($nSort) && $nSort == 44}{__('new')}...{__('old')}{/if}</a>) {__('date')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -376,14 +376,14 @@
                                 <tfoot>
                                     <tr>
                                         <td class="check"><input name="ALLMSGS" id="ALLMSGS5" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                                        <td colspan="5"><label for="ALLMSGS5">{__('freischaltenSelectAll')}</label></td>
+                                        <td colspan="5"><label for="ALLMSGS5">{__('globalSelectAll')}</label></td>
                                     </tr>
                                 </tfoot>
                             </table>
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group">
-                                <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> Markierte freischalten</button>
+                                <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
                                 <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
                                     <i class="fa fa-trash"></i> {__('deleteSelected')}
                                 </button>

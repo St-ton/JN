@@ -11,32 +11,14 @@ msgstr "Das Umfragesystem erlaubt es Ihnen, vielseitige Umfragen im Shop durchzu
 msgid "umfrageURL"
 msgstr "https://jtl-url.de/nx0d7"
 
-msgid "umfrageSave"
-msgstr "Speichern"
-
 msgid "umfrageAdd"
 msgstr "Neue Umfrage erstellen"
 
 msgid "umfrageOverview"
 msgstr "Umfragen"
 
-msgid "umfrageName"
-msgstr "Name"
-
-msgid "umfrageSeo"
-msgstr "SEO"
-
-msgid "umfrageCustomerGrp"
-msgstr "Kundengruppe"
-
 msgid "umfrageValidation"
 msgstr "Gültigkeit"
-
-msgid "umfrageActive"
-msgstr "Aktiv"
-
-msgid "umfrageText"
-msgstr "Beschreibung"
 
 msgid "umfrageDate"
 msgstr "Erstellt am"
@@ -44,32 +26,11 @@ msgstr "Erstellt am"
 msgid "umfrageInfinite"
 msgstr "immer"
 
-msgid "umfrageEdit"
-msgstr "Editieren"
-
-msgid "umfrageDelete"
-msgstr "Löschen"
-
-msgid "umfrageFrom"
-msgstr "vom"
-
-msgid "umfrageTo"
-msgstr "bis"
-
-msgid "umfrageCoupon"
-msgstr "Kupon"
-
-msgid "umfrageCredits"
-msgstr "Guthaben"
-
 msgid "umfrageExtraPoints"
 msgstr "Bonuspunkte"
 
 msgid "umfrageNoCoupon"
 msgstr "Keinen"
-
-msgid "umfrageSort"
-msgstr "Sortierung"
 
 msgid "umfrageType"
 msgstr "Typ"
@@ -103,9 +64,6 @@ msgstr "Antwort"
 
 msgid "umfrageQO"
 msgstr "Optionen"
-
-msgid "umfrageBack"
-msgstr "zurück"
 
 msgid "umfrageQAdd"
 msgstr "Frage hinzufügen"
@@ -145,9 +103,6 @@ msgstr "Option löschen"
 
 msgid "umfrageQSort"
 msgstr "Sortierung"
-
-msgid "umfrageSettings"
-msgstr "Einstellungen"
 
 msgid "errorPollNotFound"
 msgstr "Fehler: Ihre Umfrage konnte nicht gefunden werden."
@@ -191,32 +146,41 @@ msgstr "Fehler: Für diese Umfrage gibt es noch keine Stastistik."
 msgid "errorPollSelect"
 msgstr "Fehler: Bitte wählen Sie eine korrekte Umfrage aus."
 
-msgid "errorQuestionTypeMultipleChoiceOne"
+msgid "questionTypeMultipleChoiceOne"
 msgstr "Multiple Choice (Eine Antwort)"
 
-msgid "errorQuestionTypeMultipleChoiceMany"
+msgid "questionTypeMultipleChoiceMany"
 msgstr "Multiple Choice (Viele Antworten)"
 
-msgid "errorQuestionTypeSelectboxOne"
+msgid "questionTypeSelectboxOne"
 msgstr "Selectbox (Eine Antwort)"
 
-msgid "errorQuestionTypeSelectboxMany"
+msgid "questionTypeSelectboxMany"
 msgstr "SelectBox (Viele Antworten)"
 
-msgid "errorQuestionTypeTextSmall"
+msgid "questionTypeTextSmall"
 msgstr "Textfeld (klein)"
 
-msgid "errorQuestionTypeTextBig"
+msgid "questionTypeTextBig"
 msgstr "Textfeld (groß)"
 
-msgid "errorQuestionTypeMatrixOne"
+msgid "questionTypeMatrixOne"
 msgstr "Matrix (Eine Antwort pro Zeile)"
 
-msgid "errorQuestionTypeMatrixMany"
+msgid "questionTypeMatrixMany"
 msgstr "Matrix (Viele Antworten pro Zeile)"
 
-msgid "errorQuestionTypeDivider"
+msgid "questionTypeDivider"
 msgstr "Statischer Trenntext"
 
-msgid "errorQuestionTypeDividerNewPage"
+msgid "questionTypeDividerNewPage"
 msgstr "Statischer Trenntext + Seitenwechsel"
+
+msgid "addAnswer"
+msgstr "Antwort hinzufügen"
+
+msgid "addOption"
+msgstr "Option hinzufügen'"
+
+msgid "activePolls"
+msgstr "Aktive Umfragen"

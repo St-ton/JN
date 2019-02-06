@@ -207,36 +207,36 @@ class Visitor
      */
     public static function getBrowser(): string
     {
-        $agent  = strtolower($_SERVER['HTTP_USER_AGENT'] ?? '');
+        $agent  = mb_convert_case($_SERVER['HTTP_USER_AGENT'] ?? '', MB_CASE_LOWER);
         $mobile = '';
-        if (stripos($agent, 'iphone') !== false
-            || stripos($agent, 'ipad') !== false
-            || stripos($agent, 'ipod') !== false
-            || stripos($agent, 'android') !== false
-            || stripos($agent, 'opera mobi') !== false
-            || stripos($agent, 'blackberry') !== false
-            || stripos($agent, 'playbook') !== false
-            || stripos($agent, 'kindle') !== false
-            || stripos($agent, 'windows phone') !== false
+        if (mb_stripos($agent, 'iphone') !== false
+            || mb_stripos($agent, 'ipad') !== false
+            || mb_stripos($agent, 'ipod') !== false
+            || mb_stripos($agent, 'android') !== false
+            || mb_stripos($agent, 'opera mobi') !== false
+            || mb_stripos($agent, 'blackberry') !== false
+            || mb_stripos($agent, 'playbook') !== false
+            || mb_stripos($agent, 'kindle') !== false
+            || mb_stripos($agent, 'windows phone') !== false
         ) {
             $mobile = '/Mobile';
         }
-        if (strpos($agent, 'msie') !== false) {
-            return 'Internet Explorer ' . (int)substr($agent, strpos($agent, 'msie') + 4) . $mobile;
+        if (mb_strpos($agent, 'msie') !== false) {
+            return 'Internet Explorer ' . (int)mb_substr($agent, mb_strpos($agent, 'msie') + 4) . $mobile;
         }
-        if (strpos($agent, 'opera') !== false || stripos($agent, 'opr') !== false) {
+        if (mb_strpos($agent, 'opera') !== false || mb_stripos($agent, 'opr') !== false) {
             return 'Opera' . $mobile;
         }
-        if (stripos($agent, 'vivaldi') !== false) {
+        if (mb_stripos($agent, 'vivaldi') !== false) {
             return 'Vivaldi' . $mobile;
         }
-        if (strpos($agent, 'safari') !== false) {
+        if (mb_strpos($agent, 'safari') !== false) {
             return 'Safari' . $mobile;
         }
-        if (strpos($agent, 'firefox') !== false) {
+        if (mb_strpos($agent, 'firefox') !== false) {
             return 'Firefox' . $mobile;
         }
-        if (strpos($agent, 'chrome') !== false) {
+        if (mb_strpos($agent, 'chrome') !== false) {
             return 'Chrome' . $mobile;
         }
 
@@ -254,7 +254,7 @@ class Visitor
             return '';
         }
 
-        return StringHandler::filterXSS(strtolower(explode('/', $_SERVER['HTTP_REFERER'])[2]));
+        return StringHandler::filterXSS(mb_convert_case(explode('/', $_SERVER['HTTP_REFERER'])[2], MB_CASE_LOWER));
     }
 
     /**
@@ -264,35 +264,35 @@ class Visitor
      */
     public static function getBot(): string
     {
-        $agent = strtolower($_SERVER['HTTP_USER_AGENT']);
-        if (strpos($agent, 'googlebot') !== false) {
+        $agent = mb_convert_case($_SERVER['HTTP_USER_AGENT'], MB_CASE_LOWER);
+        if (mb_strpos($agent, 'googlebot') !== false) {
             return 'Google';
         }
-        if (strpos($agent, 'bingbot') !== false) {
+        if (mb_strpos($agent, 'bingbot') !== false) {
             return 'Bing';
         }
-        if (strpos($agent, 'inktomi.com') !== false) {
+        if (mb_strpos($agent, 'inktomi.com') !== false) {
             return 'Inktomi';
         }
-        if (strpos($agent, 'yahoo! slurp') !== false) {
+        if (mb_strpos($agent, 'yahoo! slurp') !== false) {
             return 'Yahoo!';
         }
-        if (strpos($agent, 'msnbot') !== false) {
+        if (mb_strpos($agent, 'msnbot') !== false) {
             return 'MSN';
         }
-        if (strpos($agent, 'teoma') !== false) {
+        if (mb_strpos($agent, 'teoma') !== false) {
             return 'Teoma';
         }
-        if (strpos($agent, 'crawler') !== false) {
+        if (mb_strpos($agent, 'crawler') !== false) {
             return 'Crawler';
         }
-        if (strpos($agent, 'scooter') !== false) {
+        if (mb_strpos($agent, 'scooter') !== false) {
             return 'Scooter';
         }
-        if (strpos($agent, 'fireball') !== false) {
+        if (mb_strpos($agent, 'fireball') !== false) {
             return 'Fireball';
         }
-        if (strpos($agent, 'ask jeeves') !== false) {
+        if (mb_strpos($agent, 'ask jeeves') !== false) {
             return 'Ask';
         }
 
@@ -312,29 +312,29 @@ class Visitor
         $term->kBesucher = $visitorID;
         $term->cRohdaten = StringHandler::filterXSS($_SERVER['HTTP_REFERER']);
         $param           = '';
-        if (strpos($referer, '.google.') !== false
-            || strpos($referer, 'suche.t-online.') !== false
-            || strpos($referer, 'search.live.') !== false
-            || strpos($referer, '.aol.') !== false
-            || strpos($referer, '.aolsvc.') !== false
-            || strpos($referer, '.ask.') !== false
-            || strpos($referer, 'search.icq.') !== false
-            || strpos($referer, 'search.msn.') !== false
-            || strpos($referer, '.exalead.') !== false
+        if (mb_strpos($referer, '.google.') !== false
+            || mb_strpos($referer, 'suche.t-online.') !== false
+            || mb_strpos($referer, 'search.live.') !== false
+            || mb_strpos($referer, '.aol.') !== false
+            || mb_strpos($referer, '.aolsvc.') !== false
+            || mb_strpos($referer, '.ask.') !== false
+            || mb_strpos($referer, 'search.icq.') !== false
+            || mb_strpos($referer, 'search.msn.') !== false
+            || mb_strpos($referer, '.exalead.') !== false
         ) {
             $param = 'q';
-        } elseif (strpos($referer, 'suche.web') !== false) {
+        } elseif (mb_strpos($referer, 'suche.web') !== false) {
             $param = 'su';
-        } elseif (strpos($referer, 'suche.aolsvc') !== false) {
+        } elseif (mb_strpos($referer, 'suche.aolsvc') !== false) {
             $param = 'query';
-        } elseif (strpos($referer, 'search.yahoo') !== false) {
+        } elseif (mb_strpos($referer, 'search.yahoo') !== false) {
             $param = 'p';
-        } elseif (strpos($referer, 'search.ebay') !== false) {
+        } elseif (mb_strpos($referer, 'search.ebay') !== false) {
             $param = 'satitle';
         }
         if ($param !== '') {
             preg_match("/(\?$param|&$param)=[^&]+/i", $ref, $treffer);
-            $term->cSuchanfrage = isset($treffer[0]) ? urldecode(substr($treffer[0], 3)) : null;
+            $term->cSuchanfrage = isset($treffer[0]) ? urldecode(mb_substr($treffer[0], 3)) : null;
             if ($term->cSuchanfrage) {
                 Shop::Container()->getDB()->insert('tbesuchersuchausdruecke', $term);
             }
@@ -352,17 +352,17 @@ class Visitor
         if (!$referer) {
             return 0;
         }
-        if (strpos($referer, '.google.') !== false
-            || strpos($referer, '.bing.') !== false
-            || strpos($referer, 'suche.') !== false
-            || strpos($referer, 'search.') !== false
-            || strpos($referer, '.yahoo.') !== false
-            || strpos($referer, '.fireball.') !== false
-            || strpos($referer, '.seekport.') !== false
-            || strpos($referer, '.keywordspy.') !== false
-            || strpos($referer, '.hotfrog.') !== false
-            || strpos($referer, '.altavista.') !== false
-            || strpos($referer, '.ask.') !== false
+        if (mb_strpos($referer, '.google.') !== false
+            || mb_strpos($referer, '.bing.') !== false
+            || mb_strpos($referer, 'suche.') !== false
+            || mb_strpos($referer, 'search.') !== false
+            || mb_strpos($referer, '.yahoo.') !== false
+            || mb_strpos($referer, '.fireball.') !== false
+            || mb_strpos($referer, '.seekport.') !== false
+            || mb_strpos($referer, '.keywordspy.') !== false
+            || mb_strpos($referer, '.hotfrog.') !== false
+            || mb_strpos($referer, '.altavista.') !== false
+            || mb_strpos($referer, '.ask.') !== false
         ) {
             return 1;
         }
@@ -380,7 +380,7 @@ class Visitor
     {
         $bot = null;
         foreach (array_keys(self::getSpiders()) as $botUserAgent) {
-            if (strpos($userAgent, $botUserAgent) !== false) {
+            if (mb_strpos($userAgent, $botUserAgent) !== false) {
                 $bot = Shop::Container()->getDB()->select('tbesucherbot', 'cUserAgent', $botUserAgent);
                 break;
             }
@@ -927,7 +927,7 @@ class Visitor
             '|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)' .
             '|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)' .
             '|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|xda(\-|2|g)|yas\-|your|zeto|zte\-/i',
-            substr($userAgent, 0, 4),
+            mb_substr($userAgent, 0, 4),
             $matches
         );
     }
@@ -1012,7 +1012,7 @@ class Visitor
         if (count($browserMatches['browser']) !== 1) {
             $browser->cVersion = '0';
             if (isset($browserMatches['version'][0])
-                && strripos($userAgent, 'Version') < strripos($userAgent, $browser->cBrowser)
+                && mb_strripos($userAgent, 'Version') < mb_strripos($userAgent, $browser->cBrowser)
             ) {
                 $browser->cVersion = $browserMatches['version'][0];
             } elseif (isset($browserMatches['version'][1])) {
@@ -1021,7 +1021,7 @@ class Visitor
         } else {
             $browser->cVersion = $browserMatches['version'][0];
         }
-        if (strlen($browser->cVersion) === 0) {
+        if (mb_strlen($browser->cVersion) === 0) {
             $browser->cVersion = '0';
         }
 

@@ -349,7 +349,7 @@ function holeUmfrageStatistik(int $surveyID)
                 $opt->nAnzahlOption        = $matrixOptTMP->nAnzahlOption;
                 $opt->cName                = $matrixOptTMP->cName;
                 $opt->kUmfrageMatrixOption = $matrixOptTMP->kUmfrageMatrixOption;
-                $matrixOptions[]                 = $opt;
+                $matrixOptions[]           = $opt;
             }
             //Leereinträge in die Matrix einfügen
             foreach ($answers as $answer) {
@@ -591,34 +591,34 @@ function mappeFragenTyp(string $cTyp): string
 {
     switch ($cTyp) {
         case \Survey\QuestionType::MULTI_SINGLE:
-            return __('errorQuestionTypeMultipleChoice');
+            return __('questionTypeMultipleChoice');
 
         case \Survey\QuestionType::MULTI:
-            return __('errorQuestionTypeMultipleChoiceMany');
+            return __('questionTypeMultipleChoiceMany');
 
         case \Survey\QuestionType::SELECT_SINGLE:
-            return __('errorQuestionTypeSelectboxOne');
+            return __('questionTypeSelectboxOne');
 
         case \Survey\QuestionType::SELECT_MULTI:
-            return __('errorQuestionTypeSelectboxMany');
+            return __('questionTypeSelectboxMany');
 
         case \Survey\QuestionType::TEXT_SMALL:
-            return __('errorQuestionTypeTextSmall');
+            return __('questionTypeTextSmall');
 
         case \Survey\QuestionType::TEXT_BIG:
-            return __('errorQuestionTypeTextBig');
+            return __('questionTypeTextBig');
 
         case \Survey\QuestionType::MATRIX_SINGLE:
-            return __('errorQuestionTypeMatrixOne');
+            return __('questionTypeMatrixOne');
 
         case \Survey\QuestionType::MATRIX_MULTI:
-            return __('errorQuestionTypeMatrixMany');
+            return __('questionTypeMatrixMany');
 
         case \Survey\QuestionType::TEXT_STATIC:
-            return __('errorQuestionTypeDivider');
+            return __('questionTypeDivider');
 
         case \Survey\QuestionType::TEXT_PAGE_CHANGE:
-            return __('errorQuestionTypeDividerNewPage');
+            return __('questionTypeDividerNewPage');
 
         default:
             return '';

@@ -1441,3 +1441,9 @@ msgstr "Favoriten"
 
 msgid "manageFavorites"
 msgstr "Verwalten Sie Ihre Favoriten"
+
+msgid "account"
+msgstr "Konto"
+
+msgid "shop"
+msgstr "Shop"

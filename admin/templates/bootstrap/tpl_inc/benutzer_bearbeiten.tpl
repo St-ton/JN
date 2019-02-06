@@ -218,11 +218,11 @@ $(document).ready(function() {
                         <script>
                             function createNewSecret() {
                                 if('' === $('[id$=cLogin]').val()) {
-                                    alert({/literal}"{__('errorUsernameMissing')}"{literal});
+                                    alert('{/literal}{__('errorUsernameMissing')}{literal}');
                                     return(false);
                                 }
 
-                                if(confirm({/literal}"{__('warningAuthSecretOverwrite')}"{literal})) {
+                                if(confirm('{/literal}{__('warningAuthSecretOverwrite')}{literal}')) {
                                     var userName = $('#cLogin').val();
                                     $('#QRcode').html('<img src="templates/bootstrap/gfx/widgets/ajax-loader.gif">');
                                     ioCall('getNewTwoFA', [userName], function (data) {
@@ -243,9 +243,9 @@ $(document).ready(function() {
                                 ioCall('genTwoFAEmergencyCodes', [userName], function (data) {
                                     var iframeHtml = '';
 
-                                    iframeHtml += '<h4>JTL-shop Backend Notfall-Codes</h4>';
-                                    iframeHtml += 'Account: <b>' + data.loginName + '</b><br>';
-                                    iframeHtml += 'Shop: <b>' + data.shopName + '</b><br><br>';
+                                    iframeHtml += '<h4>{/literal}{__('shopEmergencyCodes')}{literal}</h4>';
+                                    iframeHtml += '{/literal}{__('account')}{literal}: <b>' + data.loginName + '</b><br>';
+                                    iframeHtml += '{/literal}{__('shop')}{literal}: <b>' + data.shopName + '</b><br><br>';
                                     iframeHtml += '<pre>';
 
                                     data.vCodes.forEach(function (code, i) {

@@ -147,7 +147,7 @@ msgid "errorUsernameMissing"
 msgstr "Bitte legen Sie zuerst, in den Anmeldedaten, einen Benutzernamen fest!"
 
 msgid "warningAuthSecretOverwrite"
-msgstr "Das bisherige 'Authentication Secret' wird ersetzt! Wirklich fortfahren?"
+msgstr "Das bisherige \"Authentication Secret\" wird ersetzt! Wirklich fortfahren?"
 
 msgid "warningNoPermissionToBackendAfter"
 msgstr "<strong>Achtung:</strong> Bitte beachten Sie, dass Sie mit diesem Account keine Möglichkeit mehr haben, in das Shop-Backend zu gelangen, falls Sie keinen Zugriff mehr auf die Google-Authenticator-App auf Ihrem Mobilgerät haben sollten!<br>"
@@ -170,4 +170,5 @@ msgstr "Neuen Code erstellen"
 msgid "emergencyCodeCreate"
 msgstr "Notfall-Codes neu erstellen"
 
-
+msgid "shopEmergencyCodes"
+msgstr "JTL-shop Backend Notfall-Codes"

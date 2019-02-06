@@ -139,7 +139,7 @@ stages:
 
     if [[ $MIGRATION_COUNT_AFTER -gt $MIGRATION_COUNT_BEFORE ]]; then
       php -r "
-        require_once '${DOWNLOAD_PATH}/includes/globalinclude.php'; \
+        require_once '${DEPLOY_PATH}/includes/globalinclude.php'; \
         \$time    = date('YmdHis'); \
         \$manager = new MigrationManager(); \
 

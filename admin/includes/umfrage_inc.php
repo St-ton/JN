@@ -349,7 +349,7 @@ function holeUmfrageStatistik(int $surveyID)
                 $opt->nAnzahlOption        = $matrixOptTMP->nAnzahlOption;
                 $opt->cName                = $matrixOptTMP->cName;
                 $opt->kUmfrageMatrixOption = $matrixOptTMP->kUmfrageMatrixOption;
-                $matrixOptions[]                 = $opt;
+                $matrixOptions[]           = $opt;
             }
             //Leereinträge in die Matrix einfügen
             foreach ($answers as $answer) {

@@ -297,8 +297,8 @@ function holeMaxExportArtikelAnzahl(&$export)
                 ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = " . (int)$export->kKundengruppe . '
             ' . $data['Join'] . '
-            WHERE tartikelattribut.kArtikelAttribut IS NULL' . $data['Where'] . "
-                AND tartikelsichtbarkeit.kArtikel IS NULL " . $sql,
+            WHERE tartikelattribut.kArtikelAttribut IS NULL' . $data['Where'] . '
+                AND tartikelsichtbarkeit.kArtikel IS NULL ' . $sql,
         \DB\ReturnType::SINGLE_OBJECT
     );
     Shop::Container()->getCache()->set($cid, $count, [CACHING_GROUP_CORE], 120);

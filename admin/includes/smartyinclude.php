@@ -20,7 +20,6 @@ $db                 = Shop::Container()->getDB();
 $currentTemplateDir = str_replace(PFAD_ROOT . PFAD_ADMIN, '', $templateDir);
 $resourcePaths      = $template->getResources(isset($config['template']['general']['use_minify'])
     && $config['template']['general']['use_minify'] === 'Y');
-
 $adminLoginGruppe   = !empty($oAccount->account()->oGroup->kAdminlogingruppe)
     ? (int)$oAccount->account()->oGroup->kAdminlogingruppe
     : -1;

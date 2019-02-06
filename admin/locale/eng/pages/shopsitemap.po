@@ -10,7 +10,3 @@ msgstr "https://jtl-url.de/zhv8l"
 
 msgid "shopsitemapDesc"
 msgstr "Treffen Sie eine Einstellung, wie die Spezialseite Sitemap auszuschauen hat. Um einen Sitemaplink im Shop anzuzeigen, legen Sie diesen unter Grundeinstellungen -> Links an und wählen Sie als Linktyp Spezialseite Sitemap."
-
-msgid "shopsitemapSave"
-msgstr "Speichern"
-

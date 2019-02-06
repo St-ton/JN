@@ -11,9 +11,6 @@ msgstr "https://jtl-url.de/2uknw"
 msgid "boxenDesc"
 msgstr "Mithilfe der Boxenverwaltung fügen Sie Boxen hinzu, ändern die Reihenfolge oder ändern die Sichtbarkeit von Boxen-Containern auf bestimmten Seiten. Eine Box befindet sich immer in einem vom Template vordefinierten Boxen-Container (z.B. Container links oder Container rechts) und kann dort mit Hilfe der Sortiernummer neu angeordnet werden. <br />Sie können eigene Boxen z.B. Linkgruppen oder Boxen mit eigenem xHTML-Inhalt in einem Boxen-Container anlegen. Bei Eigenen Boxen und Linkgruppen-Boxen erscheint eine Editieren-Grafik neben dem Boxnamen. Über diesen Grafischen Link verknüpfen Sie die Box mit einer Linkgruppe bzw. weisen der Box eigene xHTML-Inhalte zu.<br />"
 
-msgid "page"
-msgstr "Seite"
-
 msgid "showContainer"
 msgstr "Container anzeigen"
 
@@ -32,20 +29,8 @@ msgstr "Typ"
 msgid "boxLabel"
 msgstr "Bezeichnung"
 
-msgid "boxSort"
-msgstr "Sortierung"
-
-msgid "boxActions"
-msgstr "Aktionen"
-
 msgid "boxTemplate"
 msgstr "Template"
-
-msgid "boxState"
-msgstr "Status"
-
-msgid "boxPosition"
-msgstr "Position"
 
 msgid "catBoxNum"
 msgstr "Kategoriebox-Nummer"
@@ -59,14 +44,8 @@ msgstr "Linkgruppe"
 msgid "remove"
 msgstr "Aus Liste entfernen"
 
-msgid "insert"
-msgstr "einfügen"
-
 msgid "confirmDeleteBox"
 msgstr "Sind Sie sicher, dass Sie die Box \"%s\" löschen möchten? Alle Boxen innerhalb eines Containers werden ggf. ebenfalls gelöscht!"
-
-msgid "edit"
-msgstr "Bearbeiten"
 
 msgid "new"
 msgstr "Neue Box"
@@ -110,18 +89,6 @@ msgstr "Unsichtbare Boxen"
 msgid "deleteSelected"
 msgstr "Markierte löschen"
 
-msgid "products"
-msgstr "Produkte"
-
-msgid "pages"
-msgstr "Seiten"
-
-msgid "categories"
-msgstr "Kategorien"
-
-msgid "manufacturers"
-msgstr "Hersteller"
-
 msgid "sectionLeft"
 msgstr "Linke Seitenleiste"
 
@@ -160,3 +127,12 @@ msgstr "Box konnte nicht bearbeitet werden."
 
 msgid "successBoxRefresh"
 msgstr "Die Boxen wurden aktualisiert."
+
+msgid "visibleOnAllPages"
+msgstr "sichtbar auf allen Seiten"
+
+msgid "visibleOnSomePages"
+msgstr "sichtbar auf manchen Seiten"
+
+msgid "deactivatedOnAllPages"
+msgstr "auf allen Seiten deaktiviert"

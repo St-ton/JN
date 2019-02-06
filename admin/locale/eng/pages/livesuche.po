@@ -20,20 +20,11 @@ msgstr "Neue Suche"
 msgid "searchcount"
 msgstr "Suchanzahl"
 
-msgid "active"
-msgstr "Aktiv"
-
-msgid "mapping"
-msgstr "Mapping"
-
 msgid "mappingDelete"
 msgstr "Markierte Mappings lösen"
 
 msgid "lastsearch"
 msgstr "Zuletzt gesucht"
-
-msgid "blacklist"
-msgstr "Blacklist"
 
 msgid "blacklistDescription"
 msgstr "Mehrere Begriffe mit Semikolon getrennt"
@@ -53,9 +44,6 @@ msgstr "Suchbegriff"
 msgid "livesucheSearchType"
 msgstr "Suchkategorie"
 
-msgid "livesucheSearchBTN"
-msgstr "Suchen"
-
 msgid "livesucheMappingOn"
 msgstr "Markierte mappen auf"
 
@@ -64,12 +52,6 @@ msgstr "Mappen"
 
 msgid "livesucheEdit"
 msgstr "Suche editieren"
-
-msgid "livesucheSettings"
-msgstr "Einstellungen"
-
-msgid "livesucheSave"
-msgstr "Speichern"
 
 msgid "livesucheSelectAll"
 msgstr "Alle auswählen"

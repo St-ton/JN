@@ -11,9 +11,6 @@ msgstr " "
 msgid "orderURL"
 msgstr "https://jtl-url.de/p5rq7"
 
-msgid "orderNumber"
-msgstr "Bestellnummer"
-
 msgid "orderShippingName"
 msgstr "Versandart"
 
@@ -22,9 +19,6 @@ msgstr "Zahlungsart"
 
 msgid "orderWawiPickedUp"
 msgstr "Abgeholt durch Wawi"
-
-msgid "orderCostumer"
-msgstr "Kunde"
 
 msgid "orderCostumerRegistered"
 msgstr "Kunde registriert"
@@ -38,23 +32,14 @@ msgstr "Bestelldatum"
 msgid "orderPickedUpResetBTN"
 msgstr "Wawi-Abholung zurücksetzen"
 
-msgid "orderSearchBTN"
-msgstr "suchen"
-
 msgid "orderSearch"
 msgstr "Suche"
 
 msgid "orderSearchItem"
 msgstr "Bestellnummer"
 
-msgid "orderStatus"
-msgstr "Status"
-
 msgid "orderCanceled"
 msgstr "storniert"
-
-msgid "orderNew"
-msgstr "neu"
 
 msgid "orderInProgress"
 msgstr "in Bearbeitung"

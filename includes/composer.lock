@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
     "content-hash": "28cb36ea6753827ff8911c3a5313d076",
@@ -614,7 +614,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.jtl-software.de/jtlshop/scc.git",
-                "reference": "1a27f068a05dd7b2d242fa313361d40c9605de19"
+                "reference": "bddc6c618e938ecefbca41ac233ca7e051ed4080"
             },
             "require": {
                 "myclabs/php-enum": "^1.5",
@@ -641,7 +641,7 @@
             "keywords": [
                 "jtl-shop"
             ],
-            "time": "2019-01-31T16:16:57+00:00"
+            "time": "2019-02-06T13:57:07+00:00"
         },
         {
             "name": "jtlshop/sccbs3",
@@ -3875,7 +3875,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "BackEndTea@gmail.com"
+                    "email": "backendtea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",

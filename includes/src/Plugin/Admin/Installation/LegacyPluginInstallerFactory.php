@@ -7,9 +7,9 @@
 namespace Plugin\Admin\Installation;
 
 /**
- * Class ExtensionInstallerFactory
+ * Class LegacyPluginInstallerFactory
  * @package Plugin\Admin\Installation
  */
-class ExtensionInstallerFactory extends AbstractInstallerFactory
+class LegacyPluginInstallerFactory extends AbstractInstallerFactory
 {
 }

@@ -9,8 +9,8 @@ namespace OPC;
 use DB\DbInterface;
 use DB\ReturnType;
 use OPC\Portlets\MissingPortlet;
-use Plugin\Extension;
-use Plugin\ExtensionLoader;
+use Plugin\Plugin;
+use Plugin\PluginLoader;
 
 /**
  * Class DB
@@ -219,8 +219,8 @@ class DB
         $fromPlugin  = $isInstalled && (int)$portletDB->kPlugin > 0;
 
         if ($fromPlugin) {
-            $loader = new ExtensionLoader($this->shopDB, \Shop::Container()->getCache());
-            /** @var Extension $plugin */
+            $loader  = new PluginLoader($this->shopDB, \Shop::Container()->getCache());
+            /** @var Plugin $plugin */
             $plugin  = $loader->init((int)$portletDB->kPlugin);
             $include = $plugin->getPaths()->getPortletsPath() . $portletDB->cClass . '/' . $portletDB->cClass
                 . '.php';

@@ -4,14 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\ExtensionData;
+namespace Plugin\Data;
 
 use Link\LinkList;
 use Tightenco\Collect\Support\Collection;
 
 /**
  * Class Links
- * @package Plugin\ExtensionData
+ * @package Plugin\Data
  */
 class Links
 {

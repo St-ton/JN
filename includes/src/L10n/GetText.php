@@ -8,7 +8,8 @@ namespace L10n;
 
 use Gettext\Translations;
 use Gettext\Translator;
-use Plugin\AbstractExtension;
+use Plugin\AbstractPlugin;
+use Plugin\PluginInterface;
 
 /**
  * Class GetText
@@ -67,11 +68,11 @@ class GetText
     }
 
     /**
-     * @param string            $domain
-     * @param AbstractExtension $plugin
+     * @param string          $domain
+     * @param PluginInterface $plugin
      * @return GetText
      */
-    public function loadPluginLocale(string $domain, AbstractExtension $plugin): self
+    public function loadPluginLocale(string $domain, PluginInterface $plugin): self
     {
         return $this->addLocale($plugin->getPaths()->getBasePath(), $domain);
     }

@@ -8,7 +8,8 @@ namespace OPC\Portlets;
 
 use OPC\Portlet;
 use OPC\PortletInstance;
-use Plugin\Extension;
+use Plugin\Plugin;
+use Plugin\PluginInterface;
 
 /**
  * Class MissingPortlet
@@ -22,9 +23,9 @@ class MissingPortlet extends Portlet
     protected $missingClass = '';
 
     /**
-     * @var null|Extension
+     * @var null|PluginInterface
      */
-    protected $inactivePlugin = null;
+    protected $inactivePlugin;
 
     /**
      * @param PortletInstance $instance
@@ -75,18 +76,18 @@ class MissingPortlet extends Portlet
     }
 
     /**
-     * @return Extension|null
+     * @return PluginInterface|null
      */
-    public function getInactivePlugin(): ?Extension
+    public function getInactivePlugin(): ?PluginInterface
     {
         return $this->inactivePlugin;
     }
 
     /**
-     * @param Extension|null $inactivePlugin
+     * @param PluginInterface|null $inactivePlugin
      * @return MissingPortlet
      */
-    public function setInactivePlugin(?Extension $inactivePlugin): MissingPortlet
+    public function setInactivePlugin(?PluginInterface $inactivePlugin): MissingPortlet
     {
         $this->inactivePlugin = $inactivePlugin;
 

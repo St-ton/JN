@@ -138,7 +138,22 @@ stages:
     export MIGRATION_COUNT_AFTER=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l);
 
     if [[ $MIGRATION_COUNT_AFTER -gt 224 ]]; then
-      php $DEPLOY_PATH/build/scripts/migrating.php $DEPLOY_PATH 1;
+      php -r "
+      require_once "$DEPLOY_PATH/includes/globalinclude.php"; \
+      \$time    = date('YmdHis'); \
+      \$manager = new MigrationManager(); \
+      try { \
+          \$migrations = \$manager->migrate(\$time); \
+          foreach (\$migrations as \$migration) { \
+              echo \$migration; \
+          } \
+      } catch (Exception \$e) { \
+          \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations()))); \
+          \$result    = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage()); \
+          echo \$result->message; \
+          return 1; \
+      } \
+      ";
     fi
   }
 

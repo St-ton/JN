@@ -697,11 +697,11 @@ class Link extends MainModel
             foreach ($members as $cMember) {
                 $cMethod = 'get' . mb_substr($cMember, 1);
                 if (method_exists($this, $cMethod)) {
-                    $val        = $this->$cMethod();
-                    $mValue     = $val === null
+                    $val    = $this->$cMethod();
+                    $mValue = $val === null
                         ? 'NULL'
                         : ("'" . Shop::Container()->getDB()->realEscape($val) . "'");
-                    $set[] = "{$cMember} = {$mValue}";
+                    $set[]  = "{$cMember} = {$mValue}";
                 }
             }
 

@@ -38,5 +38,16 @@ class Migration_20190129150943 extends Migration implements IMigration
 
     public function down()
     {
+        $this->setLocalization('eng', 'global', 'goToContactForm', 'Contact us');
+        $this->setLocalization('eng', 'global', 'payWithUosCc', 'Pay now with credit card (via United Online Services)');
+        $this->setLocalization('eng', 'global', 'payWithUosDd', 'Pay now with direct debit (via United Online Services)');
+        $this->setLocalization('eng', 'product rating', 'next', 'Next');
+        $this->setLocalization('eng', 'product rating', 'previous', 'Previous');
+
+        $this->setLocalization('eng', 'checkout', 'acceptAgb', 'Please accept our terms and conditions!');
+        $this->setLocalization('ger', 'checkout', 'acceptAgb', 'Zum Fortfahren müssen Sie unsere AGB akzeptieren.');
+
+        $this->setLocalization('eng', 'global', 'available', 'Available');
+        $this->setLocalization('ger', 'global', 'available', 'Verfügbar ab');
     }
 }

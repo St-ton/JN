@@ -842,7 +842,7 @@ function gibStepBestaetigung($get)
         header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?editZahlungsart=1', true, 303);
     }
 
-    if (!(isset($get['fillOut']) && $get['fillOut'] > 0)) {
+    if (empty($get['fillOut'])) {
         unset($_SESSION['cPlausi_arr'], $_SESSION['cPost_arr']);
     }
     if (!empty(\Session\Frontend::getCustomer()->cKundenattribut_arr)) {

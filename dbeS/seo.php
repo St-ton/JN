@@ -71,7 +71,7 @@ function iso2ascii($str)
         chr(254) => 't', chr(32) => '-', chr(58) => '-', chr(59) => '-',
         chr(92)  => '-', chr(43) => '-', chr(38) => '-', chr(180) => ''
     ];
-    $str = preg_replace('~[^\w-/]~', '', strtr($str, $arr));
+    $str = preg_replace('~[^\w\-/]~', '', strtr($str, $arr));
 
     while (strpos($str, '--') !== false) {
         $str = str_replace('--', '-', $str);

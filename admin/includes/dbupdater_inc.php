@@ -102,7 +102,7 @@ function loescheVerzeichnisUpdater($cPfad)
     if (is_dir($cPfad) && is_writable($cPfad)) {
         if (($dirhandle = opendir($cPfad)) !== false) {
             while (($file = readdir($dirhandle)) !== false) {
-                if ($file !== '.' && $file !== '..' && $file !== '.svn'  && $file !== '.git'  && $file !== '.gitkeep') {
+                if ($file !== '.' && $file !== '..' && $file !== '.svn' && $file !== '.git' && $file !== '.gitkeep') {
                     if (is_dir($cPfad . $file) && is_writable($cPfad . $file)) {
                         loescheVerzeichnisUpdater($cPfad . $file);
                     }

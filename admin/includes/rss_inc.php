@@ -56,7 +56,7 @@ function generiereRSSXML()
         $products = $db->query(
             "SELECT tartikel.kArtikel, tartikel.cName, tartikel.cKurzBeschreibung, tseo.cSeo, 
                 tartikel.dLetzteAktualisierung, tartikel.dErstellt, 
-                DATE_FORMAT(tartikel.dErstellt, \"%a, %d %b %Y %H:%i:%s UTC\") AS erstellt
+                DATE_FORMAT(tartikel.dErstellt, '%a, %d %b %Y %H:%i:%s UTC') AS erstellt
                 FROM tartikel
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel

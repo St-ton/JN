@@ -8,17 +8,17 @@
                 -{if $oUmfrage->dGueltigBis === null}{__('umfrageInfinite')}{else}{$oUmfrage->dGueltigBis_de}{/if}
             </div>
             <div class="col-md-3">
-                <strong>{__('umfrageCustomerGrp')}:</strong><br/>
+                <strong>{__('customerGroup')}:</strong><br/>
                 {$oUmfrage->cKundengruppe_arr|implode:','}
             </div>
             <div class="col-md-3">
-                <strong>{__('umfrageActive')}:</strong><br/>
+                <strong>{__('active')}:</strong><br/>
                 {$oUmfrage->nAktiv}
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-                <strong>{__('umfrageText')}:</strong><br/>
+                <strong>{__('description')}:</strong><br/>
                 {$oUmfrage->cBeschreibung}
             </div>
         </div>
@@ -54,7 +54,7 @@
                     <div class="panel-heading">
                         <strong>{$oUmfrageFrage@iteration}.</strong>
                         <input id="question-{$oUmfrageFrage@iteration}" name="kUmfrageFrage[]" type="checkbox" value="{$oUmfrageFrage->kUmfrageFrage}">
-                        <label for="question-{$oUmfrageFrage@iteration}">{$oUmfrageFrage->cName}</label> [<a href="umfrage.php?umfrage=1&kUmfrage={$oUmfrage->kUmfrage}&kUmfrageFrage={$oUmfrageFrage->kUmfrageFrage}&fe=1&token={$smarty.session.jtl_token}">{__('umfrageEdit')}</a>]
+                        <label for="question-{$oUmfrageFrage@iteration}">{$oUmfrageFrage->cName}</label> [<a href="umfrage.php?umfrage=1&kUmfrage={$oUmfrage->kUmfrage}&kUmfrageFrage={$oUmfrageFrage->kUmfrageFrage}&fe=1&token={$smarty.session.jtl_token}">{__('edit')}</a>]
                     </div>
                     <div class="panel-body">
                         <strong>{$oUmfrageFrage->cTypMapped}: </strong>
@@ -92,12 +92,12 @@
                 </div>
             {/foreach}
                 <p class="btn-group">
-                    <a class="btn btn-default" href="umfrage.php"><i class="fa fa-angle-double-left"></i> {__('umfrageBack')}</a>
+                    <a class="btn btn-default" href="umfrage.php"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
                     <button class="btn btn-danger" name="umfragefrageloeschen" type="submit" value="{__('delete')}"><i class="fa fa-trash"></i> {__('delete')}</button>
                 </p>
             </form>
         {else}
-            <a class="btn btn-default" href="umfrage.php"><i class="fa fa-angle-double-left"></i> {__('umfrageBack')}</a>
+            <a class="btn btn-default" href="umfrage.php"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
         {/if}
     </div>
 </div>

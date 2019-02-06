@@ -1,7 +1,7 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='bilder'}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=__('bilder') cBeschreibung=__('bilderDesc') cDokuURL=__('bilderURL')}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('imageTitle') cBeschreibung=__('bilderDesc') cDokuURL=__('bilderURL')}
 <div id="content">
     <form method="post" action="bilder.php">
         {$jtl_token}
@@ -9,22 +9,22 @@
         <div id="settings">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Bildgrößen</h3>
+                    <h3 class="panel-title">{__('imageSizes')}</h3>
                 </div>
                 <div class="table-responsive">
                     <table class="list table table-images">
                         <thead>
                         <tr>
-                            <th class="tleft">Typ</th>
-                            <th class="tcenter">Mini <small>(Breite x Höhe)</small></th>
-                            <th class="tcenter">Klein <small>(Breite x Höhe)</small></th>
-                            <th class="tcenter">Normal <small>(Breite x Höhe)</small></th>
-                            <th class="tcenter">Groß <small>(Breite x Höhe)</small></th>
+                            <th class="tleft">{__('type')}</th>
+                            <th class="tcenter">{__('xs')}<small>{__('widthXHeight')}</small></th>
+                            <th class="tcenter">{__('sm')}<small>{__('widthXHeight')}</small></th>
+                            <th class="tcenter">{__('md')}<small>{__('widthXHeight')}</small></th>
+                            <th class="tcenter">{__('lg')}<small>{__('widthXHeight')}</small></th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td class="tleft">Kategorien</td>
+                            <td class="tleft">{__('category')}</td>
                             <td class="tcenter"></td>
                             <td class="tcenter"></td>
                             <td class="widthheight tcenter">
@@ -36,7 +36,7 @@
                         </tr>
 
                         <tr>
-                            <td class="tleft">Variationen</td>
+                            <td class="tleft">{__('variations')}</td>
                             <td class="widthheight tcenter">
                                 <input size="4" class="form-control left" type="number" name="bilder_variationen_mini_breite" value="{$oConfig.bilder_variationen_mini_breite}" />
                                 <span class="cross-sign left">x</span>
@@ -56,7 +56,7 @@
                         </tr>
 
                         <tr>
-                            <td class="tleft">Produkte</td>
+                            <td class="tleft">{__('product')}</td>
                             <td class="widthheight tcenter">
                                 <input size="4" class="form-control left" type="number" name="bilder_artikel_mini_breite" value="{$oConfig.bilder_artikel_mini_breite}" />
                                 <span class="cross-sign left">x</span>
@@ -80,7 +80,7 @@
                         </tr>
 
                         <tr>
-                            <td class="tleft">Hersteller</td>
+                            <td class="tleft">{__('manufacturer')}</td>
                             <td class="tcenter"></td>
                             <td class="widthheight tcenter">
                                 <input size="4" class="form-control left" type="number" name="bilder_hersteller_klein_breite" value="{$oConfig.bilder_hersteller_klein_breite}" />
@@ -96,7 +96,7 @@
                         </tr>
 
                         <tr>
-                            <td class="tleft">Merkmale</td>
+                            <td class="tleft">{__('attributes')}</td>
                             <td class="tcenter"></td>
                             <td class="widthheight tcenter">
                                 <input size="4" class="form-control left" type="number" name="bilder_merkmal_klein_breite" value="{$oConfig.bilder_merkmal_klein_breite}" />
@@ -112,7 +112,7 @@
                         </tr>
 
                         <tr>
-                            <td class="tleft">Merkmalwerte</td>
+                            <td class="tleft">{__('attributeValues')}</td>
                             <td class="tcenter"></td>
                             <td class="widthheight tcenter">
                                 <input size="4" class="form-control left" type="number" name="bilder_merkmalwert_klein_breite" value="{$oConfig.bilder_merkmalwert_klein_breite}" />
@@ -128,7 +128,7 @@
                         </tr>
 
                         <tr>
-                            <td class="tleft">Konfiggruppe</td>
+                            <td class="tleft">{__('configGroup')}</td>
                             <td class="tcenter"></td>
                             <td class="widthheight tcenter">
                                 <input size="4" class="form-control left" type="number" name="bilder_konfiggruppe_klein_breite" value="{$oConfig.bilder_konfiggruppe_klein_breite}" />
@@ -218,7 +218,7 @@
             </div><!-- /.panel -->
             {/if}
             <p class="submit">
-                <button name="speichern" type="submit" value="{__('bilderSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('bilderSave')}</button>
+                <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
             </p>
         </div>
     </form>

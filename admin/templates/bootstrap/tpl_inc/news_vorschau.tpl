@@ -51,13 +51,13 @@
                 </table>
             {/foreach}
             <div class="btn-group">
-                <a class="btn btn-primary" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-angle-double-left"></i> zurück</a>
+                <a class="btn btn-primary" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
                 <button name="kommentar_loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
             </div>
         </form>
     {else}
         <p>
-            <a class="btn btn-primary" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-angle-double-left"></i> zurück</a>
+            <a class="btn btn-primary" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
         </p>
     {/if}
 </div>

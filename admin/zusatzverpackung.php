@@ -43,7 +43,9 @@ if ($action === 'save') {
         JTL_CHARSET
     );
 
-    if (!(isset($_POST['cName_' . $oSprache_arr[0]->cISO]) && mb_strlen($_POST['cName_' . $oSprache_arr[0]->cISO]) > 0)) {
+    if (!(isset($_POST['cName_' . $oSprache_arr[0]->cISO])
+        && mb_strlen($_POST['cName_' . $oSprache_arr[0]->cISO]) > 0)
+    ) {
         $cFehler .= __('errorNameMissing') . '<br />';
     }
     if (!(is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0)) {

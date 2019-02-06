@@ -16,7 +16,7 @@
             <a data-toggle="tab" role="tab" href="#letzten100geschenke">{__('ggLast100Products')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einstellungen">{__('ggSettings')}</a>
+            <a data-toggle="tab" role="tab" href="#einstellungen">{__('settings')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -27,7 +27,7 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
-                            <th class="tleft">{__('ggProductName')}</th>
+                            <th class="tleft">{__('productName')}</th>
                             <th class="th-2">{__('ggOrderValueMin')}</th>
                             <th class="th-3">{__('ggDate')}</th>
                         </tr>
@@ -56,7 +56,7 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
-                            <th class="tleft">{__('ggProductName')}</th>
+                            <th class="tleft">{__('productName')}</th>
                             <th class="th-2">{__('ggOrderValueMin')}</th>
                             <th class="th-3">{__('ggCount')}</th>
                             <th class="th-3">{__('ggOrderValueAverage')}</th>
@@ -89,7 +89,7 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
-                            <th class="tleft">{__('ggProductName')}</th>
+                            <th class="tleft">{__('productName')}</th>
                             <th class="th-2">{__('ggOrderValueMin')}</th>
                             <th class="th-4">{__('ggOrderValue')}</th>
                             <th class="th-4">{__('ggOrdered')}</th>
@@ -114,7 +114,7 @@
             {/if}
         </div>
         <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
-            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='gratisgeschenk.php' buttonCaption=__('save') title=__('ggSettings') tab='einstellungen'}
+            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='gratisgeschenk.php' buttonCaption=__('save') title=__('settings') tab='einstellungen'}
         </div>
     </div>
 </div>

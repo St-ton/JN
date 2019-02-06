@@ -72,16 +72,14 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             foreach ($oBox->oSprache_arr as $lang) {
                 $revisionData[$lang->cISO] = $lang;
             }
+            $links = Shop::Container()->getLinkService()->getAllLinkGroups()->filter(
+                function (\Link\LinkGroupInterface $e) {
+                    return $e->isSpecial() === false;
+                }
+            );
             $smarty->assign('oEditBox', $oBox)
                    ->assign('revisionData', $revisionData)
-                   ->assign(
-                       'oLink_arr',
-                       Shop::Container()->getLinkService()->getAllLinkGroups()->filter(
-                            function (\Link\LinkGroupInterface $e) {
-                                return $e->isSpecial() === false;
-                            }
-                       )
-                   );
+                   ->assign('oLink_arr', $links);
             break;
 
         case 'edit':

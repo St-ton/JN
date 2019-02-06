@@ -52,3 +52,30 @@ msgstr "Ihr Systemlog wurde erfolgreich gelöscht."
 
 msgid "successEntriesDelete"
 msgstr " markierte Log-Einträge wurden gelöscht."
+
+msgid "minLogLevel"
+msgstr "Min. Loglevel"
+
+msgid "logLevelEmergency"
+msgstr "Emergency"
+
+msgid "logLevelAlert"
+msgstr "Alert"
+
+msgid "logLevelCritical"
+msgstr "Critical"
+
+msgid "logLevelError"
+msgstr "Error"
+
+msgid "logLevelWarning"
+msgstr "Warning"
+
+msgid "logLevelNotice"
+msgstr "Notice"
+
+msgid "logLevelInfo"
+msgstr "Info"
+
+msgid "logLevelDebug"
+msgstr "Debug"

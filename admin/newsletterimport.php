@@ -55,23 +55,6 @@ $smarty->assign('sprachen', Sprache::getAllLanguages())
        ->display('newsletterimport.tpl');
 
 /**
- * Class NewsletterEmpfaenger
- */
-class NewsletterEmpfaenger
-{
-    public $cAnrede;
-    public $cEmail;
-    public $cVorname;
-    public $cNachname;
-    public $kKunde = 0;
-    public $kSprache;
-    public $cOptCode;
-    public $cLoeschCode;
-    public $dEingetragen;
-    public $nAktiv = 1;
-}
-
-/**
  * @param int $length
  * @param int $myseed
  * @return string
@@ -163,7 +146,18 @@ function unique_NewsletterCode($dbfeld, $code)
  */
 function processImport($fmt, $data)
 {
-    $recipient = new NewsletterEmpfaenger();
+    $recipient = new class {
+        public $cAnrede;
+        public $cEmail;
+        public $cVorname;
+        public $cNachname;
+        public $kKunde = 0;
+        public $kSprache;
+        public $cOptCode;
+        public $cLoeschCode;
+        public $dEingetragen;
+        public $nAktiv = 1;
+    };
     $cnt       = count($fmt); // only columns that have no empty header jtl-shop/issues#296
     for ($i = 0; $i < $cnt; $i++) {
         if (!empty($fmt[$i])) {
@@ -198,10 +192,10 @@ function processImport($fmt, $data)
     $recipient->kSprache     = $_POST['kSprache'];
     $recipient->kKunde       = 0;
 
-    $KundenDaten = Shop::Container()->getDB()->select('tkunde', 'cMail', $recipient->cEmail);
-    if ($KundenDaten->kKunde > 0) {
-        $recipient->kKunde   = $KundenDaten->kKunde;
-        $recipient->kSprache = $KundenDaten->kSprache;
+    $customerData = Shop::Container()->getDB()->select('tkunde', 'cMail', $recipient->cEmail);
+    if ($customerData !== null && $customerData->kKunde > 0) {
+        $recipient->kKunde   = (int)$customerData->kKunde;
+        $recipient->kSprache = (int)$customerData->kSprache;
     }
     $ins               = new stdClass();
     $ins->cAnrede      = $recipient->cAnrede;

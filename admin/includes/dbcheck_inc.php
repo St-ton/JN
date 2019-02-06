@@ -389,6 +389,8 @@ function doEngineUpdateScript(string $fileName, array $shopTables)
  */
 function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', int $step = 1, array $exclude = [])
 {
+    Shop::Container()->getGetText()->loadAdminLocale('pages/dbcheck');
+
     $mysqlVersion = DBMigrationHelper::getMySQLVersion();
     $table        = StringHandler::filterXSS($table);
     $result       = new stdClass();

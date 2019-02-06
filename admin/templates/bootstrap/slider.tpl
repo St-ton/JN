@@ -22,9 +22,9 @@
                     <table class="table">
                         <thead>
                         <tr>
-                            <th class="tleft" width="50%">Name</th>
-                            <th width="20%">Status</th>
-                            <th width="30%">Optionen</th>
+                            <th class="tleft" width="50%">{__('name')}</th>
+                            <th width="20%">{__('status')}</th>
+                            <th width="30%">{__('options')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -34,15 +34,15 @@
                                 <td class="tcenter">
                                     <h4 class="label-wrap">
                                     {if $oSlider->bAktiv == 1}
-                                        <span class="label label-success">aktiv</span>
+                                        <span class="label label-success">{__('active')}</span>
                                     {else}
-                                        <span class="label label-danger">inaktiv</span>
+                                        <span class="label label-danger">{__('inactive')}</span>
                                     {/if}
                                     </h4>
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <a class="btn btn-default add" href="slider.php?action=slides&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="Slides"><i class="fa fa-image"></i></a>
+                                        <a class="btn btn-default add" href="slider.php?action=slides&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('slides')}"><i class="fa fa-image"></i></a>
                                         <a class="btn btn-default" href="slider.php?action=edit&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('modify')}"><i class="fa fa-edit"></i></a>
                                         <a class="btn btn-danger" href="slider.php?action=delete&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fa fa-trash"></i></a>
                                     </div>
@@ -53,7 +53,7 @@
                     </table>
                 {/if}
                 <div class="panel-footer">
-                    <a class="btn btn-primary" href="slider.php?action=new&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> Slider hinzufügen</a>
+                    <a class="btn btn-primary" href="slider.php?action=new&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('sliderAdd')}</a>
                 </div>
             </div>
         </div>

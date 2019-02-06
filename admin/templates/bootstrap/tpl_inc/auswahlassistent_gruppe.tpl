@@ -21,27 +21,27 @@
                 <div class="panel-body">
                     <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="cName">{__('aaName')}{if isset($cPlausi_arr.cName)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
+                        <label for="cName">{__('name')}{if isset($cPlausi_arr.cName)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                     </span>
                         <input name="cName" id="cName" type="text"
                                class="form-control{if isset($cPlausi_arr.cName)} fieldfillout{/if}"
                                value="{if isset($cPost_arr.cName)}{$cPost_arr.cName}{elseif isset($oGruppe->cName)}{$oGruppe->cName}{/if}">
-                        <span class="input-group-addon">{getHelpDesc cDesc="Welchen Namen soll die Gruppe erhalten?"}</span>
+                        <span class="input-group-addon">{getHelpDesc cDesc="{__('hintName')}"}</span>
                     </div>
 
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="cBeschreibung">{__('aaDesc')}</label>
+                            <label for="cBeschreibung">{__('description')}</label>
                         </span>
                         <textarea id="cBeschreibung" name="cBeschreibung"
                                   class="form-control description">{if isset($cPost_arr.cBeschreibung)}{$cPost_arr.cBeschreibung}{elseif isset($oGruppe->cBeschreibung)}{$oGruppe->cBeschreibung}{/if}</textarea>
-                        <span class="input-group-addon">{getHelpDesc cDesc="Wie soll die Beschreibung lauten?"}</span>
+                        <span class="input-group-addon">{getHelpDesc cDesc="{__('hintDesc')}"}</span>
                     </div>
 
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='categoryPicker'
-                        modalTitle='Kategorien auswählen'
-                        searchInputLabel='Suche Kategorien'
+                        modalTitle="{__('chooseCategory')}"
+                        searchInputLabel="{__('searchCategory')}"
                     }
                     <script>
                         $(function () {
@@ -66,7 +66,7 @@
 
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="assign_categories_list">{__('aaKat')}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{__('FillOut')}</span>{/if}
+                            <label for="assign_categories_list">{__('category')}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{__('FillOut')}</span>{/if}
                                 {if isset($cPlausi_arr.cKategorie) && $cPlausi_arr.cKategorie != 3} <span class="fillout">{__('aaKatSyntax')}</span>{/if}
                                 {if isset($cPlausi_arr.cKategorie) && $cPlausi_arr.cKategorie == 3} <span class="fillout">{__('aaKatTaken')}</span>{/if}
                             </label>
@@ -79,7 +79,7 @@
                         <span class="input-group-addon">
                             <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
                                     data-target="#categoryPicker-modal"
-                                    title="In welcher Kategorie soll die Gruppe angezeigt werden?">
+                                    title="{__('questionCatInGroup')}">
                                 <i class="fa fa-edit"></i>
                             </button>
                         </span>
@@ -113,17 +113,17 @@
                                     {/foreach}
                                 </select>
                             {else}
-                                <input type="text" disabled value="Keine Spezialseite &quot;Auswahlassistent&quot; vorhanden." class="form-control" />
+                                <input type="text" disabled value="{__('noSpecialPageAvailable')}" class="form-control" />
                             {/if}
                         </span>
                         <span class="input-group-addon">
-                            {getHelpDesc cDesc="Auf welcher Spezialseite soll die Gruppe angezeigt werden? (Mehrfachauswahl und Abwahl mit STRG möglich)"}
+                            {getHelpDesc cDesc="{__('hintSpecialPage')}"}
                         </span>
                     </div>
 
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="nStartseite">{__('aaStartSite')}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{__('FillOut')}</span>{/if}
+                            <label for="nStartseite">{__('startPage')}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{__('FillOut')}</span>{/if}
                                 {if isset($cPlausi_arr.nStartseite)} <span class="fillout">{__('aaStartseiteTaken')}</span>{/if}
                             </label>
                         </span>
@@ -137,12 +137,12 @@
                                 </option>
                             </select>
                         </span>
-                        <span class="input-group-addon">{getHelpDesc cDesc="Soll die Gruppe auf der Startseite angezeigt werden? (Es darf immer nur eine Gruppe auf der Startseite aktiv sein)"}</span>
+                        <span class="input-group-addon">{getHelpDesc cDesc="{__('hintGroupOnHome')}"}</span>
                     </div>
 
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="nAktiv">{__('aaActive')}</label>
+                            <label for="nAktiv">{__('active')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <select id="nAktiv" class="form-control" name="nAktiv">
@@ -155,7 +155,7 @@
                             </select>
                         </span>
                         <span class="input-group-addon">
-                            {getHelpDesc cDesc="Soll die Checkbox im Frontend aktiv und somit sichtbar sein?"}
+                            {getHelpDesc cDesc="{__('hintShowCheckbox')}"}
                         </span>
                     </div>
                 </div>

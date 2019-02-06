@@ -11,7 +11,7 @@
             </div>
             <table class="newsletter table">
                 <tr>
-                    <td><strong>{__('newsletterdraftsubject')}</strong>:</td>
+                    <td><strong>{__('subject')}</strong>:</td>
                     <td>{$oNewsletterHistory->cBetreff}</td>
                 </tr>
                 <tr>
@@ -22,7 +22,7 @@
             <h3>{__('newsletterHtml')}:</h3>
             <p>{$oNewsletterHistory->cHTMLStatic}</p>
             <p class="submit-wrapper">
-                <button class="btn btn-primary" name="back" type="submit" value="{__('newsletterback')}"><i class="fa fa-angle-double-left"></i> {__('newsletterback')}</button>
+                <button class="btn btn-primary" name="back" type="submit" value="{__('back')}"><i class="fa fa-angle-double-left"></i> {__('back')}</button>
             </p>
         </form>
     </div>

@@ -29,8 +29,8 @@
                     <table class="list table">
                         <thead>
                         <tr>
-                            <th>URL</th>
-                            <th>Seiten-ID</th>
+                            <th>{__('url')}</th>
+                            <th>{__('pageID')}</th>
                             <th></th>
                         </tr>
                         </thead>
@@ -47,16 +47,16 @@
                                     </td>
                                     <td>
                                         <div class="btn-group pull-right">
-                                            <button class="btn btn-default" title="Vorschau"
+                                            <button class="btn btn-default" title="{__('preview')}"
                                                     data-src="{$URL_SHOP}{$page->cPageUrl}"
                                                     data-toggle="modal"
                                                     data-target="#previewModal">
                                                 <i class="fa fa-eye"></i>
                                             </button>
-                                            <a class="btn btn-danger" title="Alle Entwürfe löschen"
+                                            <a class="btn btn-danger" title="{__('deleteDraftAll')}"
                                                href="{strip}?token={$smarty.session.jtl_token}&
                                                      action=restore&pageId={$page->cPageId}{/strip}"
-                                               onclick="return confirm('Wollen Sie wirklich alle Entwürfe für die Seite löschen?');">
+                                               onclick="return confirm('{__('sureDeleteAll')}');">
                                                 <i class="fa fa-trash"></i>
                                             </a>
                                         </div>
@@ -68,12 +68,12 @@
                                         <table class="list table ">
                                             <thead>
                                             <tr>
-                                                <th>Entwurf</th>
-                                                <th>Veröffentlichen Ab</th>
-                                                <th>Veröffentlichen Bis</th>
-                                                <th>Ersetzt/Erweitert</th>
-                                                <th>Letzte Änderung</th>
-                                                <th>Gerade bearbeitet</th>
+                                                <th>{__('draft')}</th>
+                                                <th>{__('publicFrom')}</th>
+                                                <th>{__('publicTill')}</th>
+                                                <th>{__('replaceExtend')}</th>
+                                                <th>{__('lastChange')}</th>
+                                                <th>{__('changedNow')}</th>
                                                 <th></th>
                                             </tr>
                                             </thead>
@@ -83,7 +83,7 @@
                                                     <td>{$draft->getName()}</td>
                                                     <td>
                                                         {if empty($draft->getPublishFrom())}
-                                                            <span class="text-danger">Unveröffentlicht</span>
+                                                            <span class="text-danger">{__('unpublished')}</span>
                                                         {elseif $publicPageRow->kPage == $draft->getKey()}
                                                             <span class="text-success">
                                                                 {$draft->getPublishFrom()|date_format:'%c'}
@@ -94,30 +94,30 @@
                                                     </td>
                                                     <td>
                                                         {if empty($draft->getPublishTo())}
-                                                            Auf unbestimmte Zeit
+                                                            {__('tillUnknown')}
                                                         {else}
                                                             {$draft->getPublishTo()|date_format:'%c'}
                                                         {/if}
                                                     </td>
-                                                    <td>{if $draft->isReplace()}Ersetzt{else}Erweitert{/if}</td>
+                                                    <td>{if $draft->isReplace()}{__('replaced')}{else}{__('extended')}{/if}</td>
                                                     <td>{$draft->getLastModified()|date_format:'%c'}</td>
                                                     <td>
                                                         {if empty($draft->getLockedBy())}{else}{$draft->getLockedBy()}{/if}
                                                     </td>
                                                     <td>
                                                         <div class="btn-group pull-right">
-                                                            <a class="btn btn-primary" title="Bearbeiten" target="_blank"
+                                                            <a class="btn btn-primary" title="{__('edit')}" target="_blank"
                                                                href="{strip}./onpage-composer.php?
                                                                     token={$smarty.session.jtl_token}&
                                                                     pageKey={$draft->getKey()}&
                                                                     action=edit{/strip}">
                                                                 <i class="fa fa-pencil"></i>
                                                             </a>
-                                                            <a class="btn btn-danger" title="Entwurf löschen"
+                                                            <a class="btn btn-danger" title="{__('deleteDraft')}"
                                                                href="{strip}?token={$smarty.session.jtl_token}&
                                                                      action=discard&
                                                                      pageKey={$draft->getKey()}{/strip}"
-                                                               onclick="return confirm('Wollen Sie diesen Entwurf wirklich löschen?');">
+                                                               onclick="return confirm('{__('sureDelete')}');">
                                                                 <i class="fa fa-trash"></i>
                                                             </a>
                                                         </div>
@@ -146,9 +146,9 @@
                 <table class="list table">
                     <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Gruppe</th>
-                        <th>Plugin</th>
+                        <th>{__('name')}</th>
+                        <th>{__('group')}</th>
+                        <th>{__('plugin')}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -178,8 +178,8 @@
                     <table class="list table">
                         <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Portlet</th>
+                            <th>{__('name')}</th>
+                            <th>{__('portlet')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -206,13 +206,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">×</button>
-                <h3>Preview</h3>
+                <h3>{__('preview')}</h3>
             </div>
             <div class="modal-body">
                 <iframe id="previewFrame" src="" style="zoom:0.60" width="99.6%" height="850" frameborder="0"></iframe>
             </div>
             <div class="modal-footer">
-                <button class="btn" data-dismiss="modal">OK</button>
+                <button class="btn" data-dismiss="modal">{__('ok')}</button>
             </div>
         </div>
     </div>

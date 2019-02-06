@@ -1,59 +1,90 @@
-msgid "queueEntries"
-msgstr "Queue entries"
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
 
-msgid "headingType"
-msgstr "Type"
+msgid "checkbox"
+msgstr "Checkboxverwaltung"
 
-msgid "headingStartTime"
-msgstr "Start time"
+msgid "checkboxDesc"
+msgstr " "
 
-msgid "headingStartDate"
-msgstr "Start date"
+msgid "checkboxURL"
+msgstr "https://jtl-url.de/daufo"
 
-msgid "headingLastStarted"
-msgstr "Last start"
+msgid "checkboxLink"
+msgstr "Link"
 
-msgid "headingFrequency"
-msgstr "Frequency"
+msgid "checkboxLocation"
+msgstr "Anzeigeort"
 
-msgid "headingRunning"
-msgstr "Currently running"
+msgid "checkboxDate"
+msgstr "Erstellt am"
 
-msgid "headingAction"
-msgstr "Action"
+msgid "checkboxFunction"
+msgstr "Spezialfunktion"
 
-msgid "btnDelete"
-msgstr "delete"
+msgid "successCheckboxActivate"
+msgstr "Ihre markierten Checkboxen wurden erfolgreich aktiviert."
 
-msgid "btnReset"
-msgstr "reset"
+msgid "successCheckboxDeactivate"
+msgstr "Ihre markierten Checkboxen wurden erfolgreich deaktiviert."
 
-msgid "createQueueEntry"
-msgstr "Create queue entry"
+msgid "successCheckboxDelete"
+msgstr "Ihre markierten Checkboxen wurden erfolgreich gelöscht."
 
-msgid "btnCreate"
-msgstr "create"
+msgid "successCheckboxCreate"
+msgstr "Ihre Checkbox wurde erfolgreich erstellt."
 
-msgid "msgCreated"
-msgstr "Successfully created."
+msgid "availableCheckboxes"
+msgstr "Vorhandene Checkboxen"
 
-msgid "msgUpdated"
-msgstr "Successfully updated."
+msgid "checkboxCreate"
+msgstr "neue Checkbox erstellen"
 
-msgid "msgDeleted"
-msgstr "Successfully deleted."
+msgid "internalLink"
+msgstr "Interner Link"
 
-msgid "imagecache"
-msgstr "Image cache"
+msgid "noLink"
+msgstr "Kein Link"
 
-msgid "statusemail"
-msgstr "Status mails"
+msgid "hintInternalPage"
+msgstr "Interne Shop CMS Seite. Einstellbar unter Inhalt->CMS"
 
-msgid "newsletter"
-msgstr "Newsletter"
+msgid "hintPlaceToShowCheckbox"
+msgstr "Stelle im Shopfrontend an der die Checkboxen angezeigt werden (Mehrfachauswahl mit STRG möglich)."
 
-msgid "dataprotection"
-msgstr "Customer data anonymization"
+msgid "hintCheckCheckboxActivation"
+msgstr "Soll die Checkbox geprüft werden, ob diese aktiviert wurde?"
 
-msgid "exportformat"
-msgstr "Export"
+msgid "hintCheckboxActive"
+msgstr "Soll die Checkbox im Frontend aktiv und somit sichtbar sein?"
+
+msgid "checkboxLogging"
+msgstr "Checkbox Logging"
+
+msgid "hintCheckboxLogActivate"
+msgstr "Soll die Eingabe der Checkbox protokolliert werden?"
+
+msgid "sortHigherBottom"
+msgstr "Sortierung (höher = weiter unten)"
+
+msgid "specialShopFunction"
+msgstr "Spezielle Shopfunktion"
+
+msgid "hintCheckboxFunction"
+msgstr "Soll die Checkbox eine Funktion ausführen, wenn sie aktiviert wurde?"
+
+msgid "hintCheckboxName"
+msgstr "Name der Checkbox"
+
+msgid "hintCheckboxText"
+msgstr "Welcher Text soll hinter der Checkbox stehen?"
+
+msgid "hintCheckboxDescription"
+msgstr "Soll die Checkbox eine Beschreibung erhalten?"
+
+msgid "hintCheckboxOrder"
+msgstr "Anzeigereihenfolge von Checkboxen."
+
+msgid "hintCheckboxCustomerGroup"
+msgstr "Für welche Kundengruppen soll die Checkbox sichtbar sein (Mehrfachauswahl mit STRG möglich)?"

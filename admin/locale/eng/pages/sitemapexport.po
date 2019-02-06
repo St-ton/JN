@@ -26,12 +26,6 @@ msgstr "Download-Link:"
 msgid "xml"
 msgstr "sitemap_index.xml"
 
-msgid "sitemapSettings"
-msgstr "Einstellungen"
-
-msgid "sitemapSave"
-msgstr "Speichern"
-
 msgid "sitemapName"
 msgstr "Datei"
 
@@ -49,9 +43,6 @@ msgstr "User Agent"
 
 msgid "sitemapDate"
 msgstr "Erstellt"
-
-msgid "sitemapDelete"
-msgstr "Löschen"
 
 msgid "sitemapSelectAll"
 msgstr "Alle auswählen"
@@ -85,3 +76,6 @@ msgstr "Ihre markierten Sitemap Downloads für %s wurden erfolgreich gelöscht."
 
 msgid "successSitemapReportDeleteByYear"
 msgstr "Ihre Sitemap Reports für %s wurden erfolgreich gelöscht."
+
+msgid "sureDeleteEntries"
+msgstr "Wollen Sie wirklich alle Einträge für das ausgewählte Jahr löschen?"

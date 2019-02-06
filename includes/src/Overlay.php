@@ -5,12 +5,40 @@
  */
 
 use DB\ReturnType;
+use JTL\MagicCompatibilityTrait;
 
 /**
  * Class Overlay
  */
 class Overlay
 {
+    use MagicCompatibilityTrait;
+
+    /**
+     * @var array
+     */
+    protected static $mapping = [
+        'cURLKlein'           => 'URLKlein',
+        'cURLNormal'          => 'URLNormal',
+        'cURLGross'           => 'URLGross',
+        'cURLRetina'          => 'URLRetina',
+        'nPosition'           => 'Position',
+        'nGroesse'            => 'Size',
+        'nTransparenz'        => 'Transparance',
+        'nMargin'             => 'Margin',
+        'nAktiv'              => 'Active',
+        'nPrio'               => 'Priority',
+        'kSprache'            => 'Language',
+        'kSuchspecialOverlay' => 'Type',
+        'cTemplate'           => 'TemplateName',
+        'cSuchspecial'        => 'Name',
+        'cPfadKlein'          => 'PathKlein',
+        'cPfadNormal'         => 'PathNormal',
+        'cPfadGross'          => 'PathGross',
+        'cPfadRetina'         => 'PathRetina',
+        'cBildPfad'           => 'ImageName'
+    ];
+
     /**
      * @var Overlay
      */
@@ -561,5 +589,158 @@ class Overlay
     public function getActive(): int
     {
         return $this->active;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMargin(): int
+    {
+        return $this->margin;
+    }
+
+    /**
+     * @return string
+     * @deprecated since 5.0.0
+     */
+    public function getPathKlein(): string
+    {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+        return $this->getPathSize(IMAGE_SIZE_XS);
+    }
+
+    /**
+     * @return string
+     * @deprecated since 5.0.0
+     */
+    public function getPathNormal(): string
+    {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+        return $this->getPathSize(IMAGE_SIZE_SM);
+    }
+
+    /**
+     * @return string
+     * @deprecated since 5.0.0
+     */
+    public function getPathGross(): string
+    {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+        return $this->getPathSize(IMAGE_SIZE_MD);
+    }
+
+    /**
+     * @return string
+     * @deprecated since 5.0.0
+     */
+    public function getPathRetina(): string
+    {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+        return $this->getPathSize(IMAGE_SIZE_LG);
+    }
+
+    /**
+     * @return string
+     * @deprecated since 5.0.0
+     */
+    public function getURLKlein(): string
+    {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+        return $this->getURL(IMAGE_SIZE_XS);
+    }
+
+    /**
+     * @return string
+     * @deprecated since 5.0.0
+     */
+    public function getURLNormal(): string
+    {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+        return $this->getURL(IMAGE_SIZE_SM);
+    }
+
+    /**
+     * @return string
+     * @deprecated since 5.0.0
+     */
+    public function getURLGross(): string
+    {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+        return $this->getURL(IMAGE_SIZE_MD);
+    }
+
+    /**
+     * @return string
+     * @deprecated since 5.0.0
+     */
+    public function getURLRetina(): string
+    {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+        return $this->getURL(IMAGE_SIZE_LG);
+    }
+
+
+    /**
+     * @param string $path
+     */
+    public function setPathKlein(string $path): void
+    {
+        trigger_error(__CLASS__ . ': setting pathklein here is not possible anymore.', E_USER_DEPRECATED);
+    }
+
+    /**
+     * @param string $path
+     */
+    public function setPathNormal(string $path): void
+    {
+        trigger_error(__CLASS__ . ': setting pathnormal here is not possible anymore.', E_USER_DEPRECATED);
+    }
+
+    /**
+     * @param string $path
+     */
+    public function setPathGross(string $path): void
+    {
+        trigger_error(__CLASS__ . ': setting pathgross here is not possible anymore.', E_USER_DEPRECATED);
+    }
+
+    /**
+     * @param string $path
+     */
+    public function setPathRetina(string $path): void
+    {
+        trigger_error(__CLASS__ . ': setting pathretina here is not possible anymore.', E_USER_DEPRECATED);
+    }
+
+    /**
+     * @param string $url
+     */
+    public function setURLKlein(string $url): void
+    {
+        trigger_error(__CLASS__ . ': setting urlklein here is not possible anymore.', E_USER_DEPRECATED);
+    }
+
+    /**
+     * @param string $url
+     */
+    public function setURLNormal(string $url): void
+    {
+        trigger_error(__CLASS__ . ': setting urlnormal here is not possible anymore.', E_USER_DEPRECATED);
+    }
+
+    /**
+     * @param string $url
+     */
+    public function setURLGross(string $url): void
+    {
+        trigger_error(__CLASS__ . ': setting urlgross here is not possible anymore.', E_USER_DEPRECATED);
+    }
+
+    /**
+     * @param string $url
+     */
+    public function setURLRetina(string $url): void
+    {
+        trigger_error(__CLASS__ . ': setting urlretina here is not possible anymore.', E_USER_DEPRECATED);
     }
 }

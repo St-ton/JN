@@ -4,8 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\FileSystem;
-
 require_once __DIR__ . '/syncinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
@@ -13,10 +11,10 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 if (auth()) {
     Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
     if (!KEEP_SYNC_FILES) {
-        FileSystem::delDirRecursively(PFAD_ROOT . PFAD_DBES_TMP);
+        \Helpers\FileSystem::delDirRecursively(PFAD_ROOT . PFAD_DBES_TMP);
     }
 
-    LastJob::getInstance()->finishStdJobs();
+    \dbeS\LastJob::getInstance()->finishStdJobs();
 
     $cError = '';
     $jobs   = getJobs();
@@ -84,7 +82,7 @@ function getJobs()
     $GLOBALS['nIntervall'] = defined('LASTJOBS_INTERVALL') ? LASTJOBS_INTERVALL : 12;
     executeHook(HOOK_LASTJOBS_HOLEJOBS);
 
-    return LastJob::getInstance()->getRepeatedJobs($GLOBALS['nIntervall']);
+    return \dbeS\LastJob::getInstance()->getRepeatedJobs($GLOBALS['nIntervall']);
 }
 
 /**
@@ -95,5 +93,5 @@ function getJobs()
  */
 function updateJob($nJob)
 {
-    return LastJob::getInstance()->restartJob($nJob);
+    return \dbeS\LastJob::getInstance()->restartJob($nJob);
 }

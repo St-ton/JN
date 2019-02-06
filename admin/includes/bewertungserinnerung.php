@@ -16,93 +16,99 @@ function baueBewertungsErinnerung()
     if (!is_array($conf) || count($conf) === 0) {
         return;
     }
-    $kKundengruppen_arr = $conf['bewertungserinnerung_kundengruppen'];
+    $customerGroups = $conf['bewertungserinnerung_kundengruppen'];
     if ($conf['bewertungserinnerung_nutzen'] !== 'Y' || $conf['bewertung_anzeigen'] !== 'Y') {
         return;
     }
-    $nVersandTage = (int)$conf['bewertungserinnerung_versandtage'];
-    if ($nVersandTage <= 0) {
+    $shippingDays = (int)$conf['bewertungserinnerung_versandtage'];
+    if ($shippingDays <= 0) {
         Shop::Container()->getLogService()->error('Einstellung bewertungserinnerung_versandtage ist 0');
         return;
     }
     // Baue SQL mit allen erlaubten Kundengruppen
-    $cSQL = '';
-    if (is_array($kKundengruppen_arr) && count($kKundengruppen_arr) > 0) {
-        foreach ($kKundengruppen_arr as $i => $kKundengruppen) {
-            if (is_numeric($kKundengruppen)) {
+    $sql = '';
+    if (is_array($customerGroups) && count($customerGroups) > 0) {
+        foreach ($customerGroups as $i => $groupID) {
+            if (is_numeric($groupID)) {
                 if ($i > 0) {
-                    $cSQL .= ' OR tkunde.kKundengruppe = ' . $kKundengruppen;
+                    $sql .= ' OR tkunde.kKundengruppe = ' . (int)$groupID;
                 } else {
-                    $cSQL .= ' tkunde.kKundengruppe = ' . $kKundengruppen;
+                    $sql .= ' tkunde.kKundengruppe = ' . (int)$groupID;
                 }
             }
         }
     } else {
         // Hole standard Kundengruppe
-        $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
-        if ($oKundengruppe->kKundengruppe > 0) {
-            $cSQL = ' tkunde.kKundengruppe = ' . $oKundengruppe->kKundengruppe;
+        $default = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
+        if (isset($default->kKundengruppe) && $default->kKundengruppe > 0) {
+            $sql = ' tkunde.kKundengruppe = ' . (int)$default->kKundengruppe;
         }
     }
-    if (empty($cSQL)) {
+    if (empty($sql)) {
         return;
     }
-    $nMaxTage = $nVersandTage * 2;
-    if ($nVersandTage === 1) {
-        $nMaxTage = 4;
+    $maxDays = $shippingDays * 2;
+    if ($shippingDays === 1) {
+        $maxDays = 4;
     }
-    $cQuery            = 'SELECT kBestellung
+    $orders = Shop::Container()->getDB()->query(
+        'SELECT kBestellung
             FROM tbestellung
             JOIN tkunde 
                 ON tkunde.kKunde = tbestellung.kKunde
             WHERE dVersandDatum IS NOT NULL
-                AND DATE_ADD(dVersandDatum, INTERVAL ' . $nVersandTage . ' DAY) <= NOW()
-                AND DATE_ADD(dVersandDatum, INTERVAL ' . $nMaxTage . ' DAY) > NOW()
+                AND DATE_ADD(dVersandDatum, INTERVAL ' . $shippingDays . ' DAY) <= NOW()
+                AND DATE_ADD(dVersandDatum, INTERVAL ' . $maxDays . ' DAY) > NOW()
                 AND cStatus = 4
-                AND (' . $cSQL . ')
-                AND dBewertungErinnerung IS NULL';
-    $oBestellungen_arr = Shop::Container()->getDB()->query($cQuery, \DB\ReturnType::ARRAY_OF_OBJECTS);
-    if (count($oBestellungen_arr) === 0) {
+                AND (' . $sql . ')
+                AND dBewertungErinnerung IS NULL',
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+    if (count($orders) === 0) {
         Shop::Container()->getLogService()->debug('Keine Bestellungen für Bewertungserinnerungen gefunden.');
         return;
     }
-    foreach ($oBestellungen_arr as $oBestellungen) {
-        $oBestellung = new Bestellung($oBestellungen->kBestellung);
-        $oBestellung->fuelleBestellung(false);
-        $oKunde            = new Kunde($oBestellung->kKunde ?? 0);
-        $obj               = new stdClass();
-        $obj->tkunde       = $oKunde;
-        $obj->tbestellung  = $oBestellung;
-        $openReviewPos_arr = [];
-
-        foreach ($oBestellung->Positionen as $Pos) {
-            if ($Pos->kArtikel > 0) {
-                $productVisible = (new Artikel())->fuelleArtikel($Pos->kArtikel, null, $oKunde->kKundengruppe);
-                if ($productVisible->kArtikel > 0) {
-                    $res = Shop::Container()->getDB()->query(
-                        'SELECT kBewertung
-                            FROM tbewertung
-                            WHERE kArtikel = ' . (int)$Pos->kArtikel . '
-                                AND kKunde = ' . (int)$oBestellung->kKunde,
-                        \DB\ReturnType::SINGLE_OBJECT
-                    );
-                    if ($res === false) {
-                        $openReviewPos_arr[] = $Pos;
-                    }
+    foreach ($orders as $orderData) {
+        $openReviews = [];
+        $order       = new Bestellung($orderData->kBestellung);
+        $order->fuelleBestellung(false);
+        $customer         = new Kunde($order->kKunde ?? 0);
+        $obj              = new stdClass();
+        $obj->tkunde      = $customer;
+        $obj->tbestellung = $order;
+        foreach ($order->Positionen as $position) {
+            if ($position->kArtikel <= 0) {
+                continue;
+            }
+            $productVisible = (new Artikel())->fuelleArtikel(
+                (int)$position->kArtikel,
+                null,
+                (int)$customer->kKundengruppe
+            );
+            if ($productVisible !== null && $productVisible->kArtikel > 0) {
+                $res = Shop::Container()->getDB()->query(
+                    'SELECT kBewertung
+                        FROM tbewertung
+                        WHERE kArtikel = ' . (int)$position->kArtikel . '
+                            AND kKunde = ' . (int)$order->kKunde,
+                    \DB\ReturnType::SINGLE_OBJECT
+                );
+                if ($res === false) {
+                    $openReviews[] = $position;
                 }
             }
         }
 
-        if (count($openReviewPos_arr) === 0) {
+        if (count($openReviews) === 0) {
             continue;
         }
 
-        $oBestellung->Positionen = $openReviewPos_arr;
+        $order->Positionen = $openReviews;
 
         Shop::Container()->getDB()->query(
             'UPDATE tbestellung
                 SET dBewertungErinnerung = NOW()
-                WHERE kBestellung = ' . (int)$oBestellungen->kBestellung,
+                WHERE kBestellung = ' . (int)$orderData->kBestellung,
             \DB\ReturnType::AFFECTED_ROWS
         );
         $logger = Shop::Container()->getLogService();
@@ -111,7 +117,7 @@ function baueBewertungsErinnerung()
                 'Kunde und Bestellung aus baueBewertungsErinnerung (Mail versendet): <pre>' .
                 print_r($obj, true) .
                 '</pre>',
-                [$oBestellungen->kBestellung]
+                [$orderData->kBestellung]
             );
         }
 

@@ -66,6 +66,39 @@ class XML
     }
 
     /**
+     * takes raw XML as a parameter (a string)
+     * and returns an equivalent PHP data structure
+     *
+     * @param string $xml
+     * @param string $encoding
+     * @return array|null
+     */
+    public static function unserialize(&$xml, $encoding = 'UTF-8'): ?array
+    {
+        $parser = new self($encoding);
+        $data   = $parser->parse($xml);
+        $parser->destruct();
+
+        return $data;
+    }
+
+    /**
+     * serializes any PHP data structure into XML
+     * Takes one parameter: the data to serialize. Must be an array.
+     *
+     * @param mixed $data
+     * @param int   $level
+     * @param null  $prevKey
+     * @return string
+     */
+    public static function serialize($data, $level = 0, $prevKey = null)
+    {
+        $parser = new XMLParser();
+
+        return $parser->serializeXML($data, $level, $prevKey);
+    }
+
+    /**
      * @param mixed $data
      * @return array|null
      */

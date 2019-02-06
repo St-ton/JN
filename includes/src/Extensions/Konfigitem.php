@@ -338,7 +338,7 @@ class Konfigitem implements \JsonSerializable
         );
         foreach ($data as &$item) {
             $kKonfigitem = (int)$item->kKonfigitem;
-            $item       = new self($kKonfigitem);
+            $item        = new self($kKonfigitem);
             if ($item->isValid()) {
                 $items[] = $item;
             }

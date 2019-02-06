@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use dbeS\TableMapper as Mapper;
+
 require_once __DIR__ . '/syncinclude.php';
 
 $return  = 3;
@@ -19,14 +22,12 @@ if (auth()) {
         $return = 0;
         $db->query('START TRANSACTION', \DB\ReturnType::DEFAULT);
         foreach ($syncFiles as $xmlFile) {
-            $d   = file_get_contents($xmlFile);
-            $xml = XML_unserialize($d);
-
+            $data = file_get_contents($xmlFile);
+            $xml  = \JTL\XML::unserialize($data);
             if (isset($xml['tkategorie attr']['nGesamt']) || isset($xml['tkategorie attr']['nAktuell'])) {
                 setMetaLimit($xml['tkategorie attr']['nAktuell'], $xml['tkategorie attr']['nGesamt']);
                 unset($xml['tkategorie attr']['nGesamt'], $xml['tkategorie attr']['nAktuell']);
             }
-
             if (strpos($xmlFile, 'katdel.xml') !== false) {
                 bearbeiteDeletes($xml);
             } else {
@@ -34,8 +35,7 @@ if (auth()) {
             }
             removeTemporaryFiles($xmlFile);
         }
-
-        LastJob::getInstance()->run(LASTJOBS_KATEGORIEUPDATE, 'Kategorien_xml');
+        \dbeS\LastJob::getInstance()->run(LASTJOBS_KATEGORIEUPDATE, 'Kategorien_xml');
         $db->query('COMMIT', \DB\ReturnType::DEFAULT);
         removeTemporaryFiles(substr($unzipPath, 0, -1), true);
     }
@@ -78,14 +78,14 @@ function bearbeiteDeletes($xml)
  */
 function bearbeiteInsert($xml)
 {
-    $Kategorie                 = new stdClass();
-    $Kategorie->kKategorie     = 0;
-    $Kategorie->kOberKategorie = 0;
+    $category                 = new stdClass();
+    $category->kKategorie     = 0;
+    $category->kOberKategorie = 0;
     if (is_array($xml['tkategorie attr'])) {
-        $Kategorie->kKategorie     = (int)$xml['tkategorie attr']['kKategorie'];
-        $Kategorie->kOberKategorie = (int)$xml['tkategorie attr']['kOberKategorie'];
+        $category->kKategorie     = (int)$xml['tkategorie attr']['kKategorie'];
+        $category->kOberKategorie = (int)$xml['tkategorie attr']['kOberKategorie'];
     }
-    if (!$Kategorie->kKategorie) {
+    if (!$category->kKategorie) {
         Shop::Container()->getLogService()->error('kKategorie fehlt! XML: ' . print_r($xml, true));
 
         return;
@@ -98,56 +98,54 @@ function bearbeiteInsert($xml)
     $oDataOld      = $db->query(
         'SELECT cSeo, lft, rght, nLevel
             FROM tkategorie
-            WHERE kKategorie = ' . $Kategorie->kKategorie,
+            WHERE kKategorie = ' . $category->kKategorie,
         \DB\ReturnType::SINGLE_OBJECT
     );
-    $oSeoAssoc_arr = getSeoFromDB($Kategorie->kKategorie, 'kKategorie', null, 'kSprache');
-
-    loescheKategorie($Kategorie->kKategorie);
-    //Kategorie
-    $kategorie_arr = mapArray($xml, 'tkategorie', $GLOBALS['mKategorie']);
-    if ($kategorie_arr[0]->kKategorie > 0) {
-        if (!$kategorie_arr[0]->cSeo) {
-            $kategorie_arr[0]->cSeo = \JTL\SeoHelper::getFlatSeoPath($kategorie_arr[0]->cName);
+    $seoData = getSeoFromDB($category->kKategorie, 'kKategorie', null, 'kSprache');
+    loescheKategorie($category->kKategorie);
+    $categories = mapArray($xml, 'tkategorie', Mapper::getMapping('mKategorie'));
+    if ($categories[0]->kKategorie > 0) {
+        if (!$categories[0]->cSeo) {
+            $categories[0]->cSeo = \JTL\SeoHelper::getFlatSeoPath($categories[0]->cName);
         }
-        $kategorie_arr[0]->cSeo                  = \JTL\SeoHelper::getSeo($kategorie_arr[0]->cSeo);
-        $kategorie_arr[0]->cSeo                  = \JTL\SeoHelper::checkSeo($kategorie_arr[0]->cSeo);
-        $kategorie_arr[0]->dLetzteAktualisierung = 'NOW()';
-        $kategorie_arr[0]->lft                   = $oDataOld->lft ?? 0;
-        $kategorie_arr[0]->rght                  = $oDataOld->rght ?? 0;
-        $kategorie_arr[0]->nLevel                = $oDataOld->nLevel ?? 0;
-        DBUpdateInsert('tkategorie', $kategorie_arr, 'kKategorie');
+        $categories[0]->cSeo                  = \JTL\SeoHelper::getSeo($categories[0]->cSeo);
+        $categories[0]->cSeo                  = \JTL\SeoHelper::checkSeo($categories[0]->cSeo);
+        $categories[0]->dLetzteAktualisierung = 'NOW()';
+        $categories[0]->lft                   = $oDataOld->lft ?? 0;
+        $categories[0]->rght                  = $oDataOld->rght ?? 0;
+        $categories[0]->nLevel                = $oDataOld->nLevel ?? 0;
+        DBUpdateInsert('tkategorie', $categories, 'kKategorie');
         if (isset($oDataOld->cSeo)) {
-            checkDbeSXmlRedirect($oDataOld->cSeo, $kategorie_arr[0]->cSeo);
+            checkDbeSXmlRedirect($oDataOld->cSeo, $categories[0]->cSeo);
         }
         $db->query(
             "INSERT INTO tseo
                 SELECT tkategorie.cSeo, 'kKategorie', tkategorie.kKategorie, tsprache.kSprache
                     FROM tkategorie, tsprache
-                    WHERE tkategorie.kKategorie = " . (int)$kategorie_arr[0]->kKategorie . "
+                    WHERE tkategorie.kKategorie = " . (int)$categories[0]->kKategorie . "
                         AND tsprache.cStandard = 'Y'
                         AND tkategorie.cSeo != ''",
             \DB\ReturnType::DEFAULT
         );
 
-        executeHook(HOOK_KATEGORIE_XML_BEARBEITEINSERT, ['oKategorie' => $kategorie_arr[0]]);
+        executeHook(HOOK_KATEGORIE_XML_BEARBEITEINSERT, ['oKategorie' => $categories[0]]);
     }
-    $catLanguages          = mapArray($xml['tkategorie'], 'tkategoriesprache', $GLOBALS['mKategorieSprache']);
-    $oShopSpracheAssoc_arr = Sprache::getAllLanguages(1);
-    $lCount                = count($catLanguages);
+    $catLanguages = mapArray($xml['tkategorie'], 'tkategoriesprache', Mapper::getMapping('mKategorieSprache'));
+    $allLanguages = Sprache::getAllLanguages(1);
+    $lCount       = count($catLanguages);
     for ($i = 0; $i < $lCount; ++$i) {
         // Sprachen die nicht im Shop vorhanden sind überspringen
-        if (!Sprache::isShopLanguage($catLanguages[$i]->kSprache, $oShopSpracheAssoc_arr)) {
+        if (!Sprache::isShopLanguage($catLanguages[$i]->kSprache, $allLanguages)) {
             continue;
         }
         if (!$catLanguages[$i]->cSeo) {
             $catLanguages[$i]->cSeo = $catLanguages[$i]->cName;
         }
         if (!$catLanguages[$i]->cSeo) {
-            $catLanguages[$i]->cSeo = $kategorie_arr[0]->cSeo;
+            $catLanguages[$i]->cSeo = $categories[0]->cSeo;
         }
         if (!$catLanguages[$i]->cSeo) {
-            $catLanguages[$i]->cSeo = $kategorie_arr[0]->cName;
+            $catLanguages[$i]->cSeo = $categories[0]->cName;
         }
         $catLanguages[$i]->cSeo = \JTL\SeoHelper::getSeo($catLanguages[$i]->cSeo);
         $catLanguages[$i]->cSeo = \JTL\SeoHelper::checkSeo($catLanguages[$i]->cSeo);
@@ -166,9 +164,9 @@ function bearbeiteInsert($xml)
         $oSeo->kSprache = $catLanguages[$i]->kSprache;
         $db->insert('tseo', $oSeo);
         // Insert into tredirect weil sich das SEO vom geändert hat
-        if (isset($oSeoAssoc_arr[$catLanguages[$i]->kSprache])) {
+        if (isset($seoData[$catLanguages[$i]->kSprache])) {
             checkDbeSXmlRedirect(
-                $oSeoAssoc_arr[$catLanguages[$i]->kSprache]->cSeo,
+                $seoData[$catLanguages[$i]->kSprache]->cSeo,
                 $catLanguages[$i]->cSeo
             );
         }
@@ -176,27 +174,32 @@ function bearbeiteInsert($xml)
     updateXMLinDB(
         $xml['tkategorie'],
         'tkategoriekundengruppe',
-        $GLOBALS['mKategorieKundengruppe'],
+        Mapper::getMapping('mKategorieKundengruppe'),
         'kKundengruppe',
         'kKategorie'
     );
-    setCategoryDiscount((int)$kategorie_arr[0]->kKategorie);
+    setCategoryDiscount((int)$categories[0]->kKategorie);
 
-    updateXMLinDB($xml['tkategorie'], 'tkategorieattribut', $GLOBALS['mKategorieAttribut'], 'kKategorieAttribut');
+    updateXMLinDB(
+        $xml['tkategorie'],
+        'tkategorieattribut',
+        Mapper::getMapping('mKategorieAttribut'),
+        'kKategorieAttribut'
+    );
     updateXMLinDB(
         $xml['tkategorie'],
         'tkategoriesichtbarkeit',
-        $GLOBALS['mKategorieSichtbarkeit'],
+        Mapper::getMapping('mKategorieSichtbarkeit'),
         'kKundengruppe',
         'kKategorie'
     );
-    $oAttribute_arr = mapArray($xml['tkategorie'], 'tattribut', $GLOBALS['mNormalKategorieAttribut']);
-    if (count($oAttribute_arr) > 0) {
+    $attributes = mapArray($xml['tkategorie'], 'tattribut', Mapper::getMapping('mNormalKategorieAttribut'));
+    if (count($attributes) > 0) {
         $single = isset($xml['tkategorie']['tattribut attr']) && is_array($xml['tkategorie']['tattribut attr']);
         $i      = 0;
-        foreach ($oAttribute_arr as $oAttribut) {
+        foreach ($attributes as $attribute) {
             $parentXML = $single ? $xml['tkategorie']['tattribut'] : $xml['tkategorie']['tattribut'][$i++];
-            saveKategorieAttribut($parentXML, $oAttribut);
+            saveKategorieAttribut($parentXML, $attribute);
         }
     }
 
@@ -253,15 +256,15 @@ function saveKategorieAttribut($xmlParent, $oAttribut)
         unset($oAttribut->kAttribut);
     }
     DBUpdateInsert('tkategorieattribut', [$oAttribut], 'kKategorieAttribut', 'kKategorie');
-    $oAttribSprache_arr = mapArray($xmlParent, 'tattributsprache', $GLOBALS['mKategorieAttributSprache']);
+    $localized = mapArray($xmlParent, 'tattributsprache', Mapper::getMapping('mKategorieAttributSprache'));
     // Die Standardsprache wird nicht separat übertragen und wird deshalb aus den Attributwerten gesetzt
-    array_unshift($oAttribSprache_arr, (object)[
+    array_unshift($localized, (object)[
         'kAttribut' => $oAttribut->kKategorieAttribut,
         'kSprache'  => Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y')->kSprache,
         'cName'     => $oAttribut->cName,
         'cWert'     => $oAttribut->cWert,
     ]);
-    DBUpdateInsert('tkategorieattributsprache', $oAttribSprache_arr, 'kAttribut', 'kSprache');
+    DBUpdateInsert('tkategorieattributsprache', $localized, 'kAttribut', 'kSprache');
 
     return $oAttribut->kKategorieAttribut;
 }

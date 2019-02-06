@@ -75,7 +75,7 @@ class Date
                 $dateString = 'now';
             }
             try {
-                $date                 = new DateTime($dateString);
+                $date              = new DateTime($dateString);
                 $parts['cDatum']   = $date->format('Y-m-d');
                 $parts['cZeit']    = $date->format('H:m:s');
                 $parts['cJahr']    = $date->format('Y');

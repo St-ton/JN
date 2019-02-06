@@ -18,8 +18,8 @@ GUI.prototype = {
     {
         debuglog('GUI init');
 
-        this.iframe    = iframe;
-        this.tutorial  = tutorial;
+        this.iframe   = iframe;
+        this.tutorial = tutorial;
 
         installGuiElements(this, [
             'sidebarPanel',
@@ -32,6 +32,8 @@ GUI.prototype = {
             'configModalTitle',
             'configModalBody',
             'configForm',
+            'stdConfigButtons',
+            'missingConfigButtons',
             'blueprintModal',
             'blueprintForm',
             'blueprintName',
@@ -63,6 +65,8 @@ GUI.prototype = {
             'restoreUnsavedModal',
             'restoreUnsavedForm',
         ]);
+
+        this.missingConfigButtons.hide();
 
         if(typeof error === 'string' && error.length > 0) {
             this.showError(error);
@@ -278,13 +282,28 @@ GUI.prototype = {
 
         this.setConfigSaveCallback(noop);
         this.setImageSelectCallback(noop);
-        this.io.getConfigPanelHtml(portletData.class, portletData.properties, this.onGetConfigPanelHtml);
+
+        this.io.getConfigPanelHtml(
+            portletData.class,
+            portletData.missingClass,
+            portletData.properties,
+            this.onGetConfigPanelHtml
+        );
+
         this.curPortlet = portlet;
     },
 
     onGetConfigPanelHtml: function(html)
     {
         var portletData = this.curPortlet.data('portlet');
+
+        if (portletData.class === 'MissingPortlet') {
+            this.stdConfigButtons.hide();
+            this.missingConfigButtons.show();
+        } else {
+            this.stdConfigButtons.show();
+            this.missingConfigButtons.hide();
+        }
 
         this.configModalBody.html(html);
         this.configModalTitle.html(portletData.title + ' bearbeiten');

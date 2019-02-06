@@ -6,6 +6,7 @@
 
 namespace News\Admin;
 
+use Backend\Revision;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\ReturnType;
@@ -114,7 +115,7 @@ class Controller
             $newsItem->dGueltigVon   = \DateTime::createFromFormat('d.m.Y H:i', $dateValidFrom)->format('Y-m-d H:i:00');
             $newsItem->cPreviewImage = $previewImage;
             if ($update === true) {
-                $revision = new \Revision();
+                $revision = new Revision($this->db);
                 $revision->addRevision('news', $newsItemID, true);
                 $this->db->update('tnews', 'kNews', $newsItemID, $newsItem);
                 $this->db->delete('tseo', ['cKey', 'kKey'], ['kNews', $newsItemID]);

@@ -7,8 +7,8 @@
 use Helpers\Form;
 
 /**
- * @global Smarty\JTLSmarty $smarty
- * @global AdminAccount     $oAccount
+ * @global \Smarty\JTLSmarty     $smarty
+ * @global \Backend\AdminAccount $oAccount
  */
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SETTINGS_NAVIGATION_FILTER_VIEW', true, true);

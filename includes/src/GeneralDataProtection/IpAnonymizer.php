@@ -137,7 +137,7 @@ class IpAnonymizer
             );
             $this->rawIp = '';
         }
-        switch (\mb_strlen($this->rawIp)) {
+        switch (\strlen($this->rawIp)) {
             case 4:
                 $this->placeholderIP = '0.0.0.0';
                 $this->ipMask        = $this->getMaskV4();
@@ -188,13 +188,13 @@ class IpAnonymizer
         }
         $readableIP = \inet_ntop(\inet_pton($this->ipMask) & $this->rawIp);
         if ($this->beautifyFlag === true && \mb_strpos($readableIP, '::') !== false) {
-            $colonPos      = \mb_strpos($readableIP, '::');
-            $strEnd        = \mb_strlen($readableIP) - 2;
-            $blockCount    = \count(
+            $colonPos    = \mb_strpos($readableIP, '::');
+            $strEnd      = \mb_strlen($readableIP) - 2;
+            $blockCount  = \count(
                 \preg_split('/:/', \str_replace('::', ':', $readableIP), -1, \PREG_SPLIT_NO_EMPTY)
             );
-            $replacement   = '';
-            $diff          = 8 - $blockCount;
+            $replacement = '';
+            $diff        = 8 - $blockCount;
             for ($i = 0; $i < $diff; $i++) {
                 ($replacement === '') ? $replacement .= '0' : $replacement .= ':0';
             }

@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Backend\Revision;
 use Helpers\Date;
 use Helpers\Form;
 use Helpers\Request;
@@ -14,7 +15,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_EMAIL_TEMPLATE_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $mailTpl             = null;
 $hinweis             = '';
 $cHinweis            = '';
@@ -615,7 +616,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
     }
     $localized->kEmailvorlage = (int)$_POST['kEmailvorlage'];
 
-    $revision = new Revision();
+    $revision = new Revision($db);
     $revision->addRevision('mail', (int)$_POST['kEmailvorlage'], true);
     foreach ($availableLanguages as $lang) {
         $filenames    = [];
@@ -759,7 +760,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                 ]
             );
             $db->insert($localizedTableName, $localized);
-            $mailSmarty = new Smarty\JTLSmarty(true, \Smarty\ContextType::MAIL);
+            $mailSmarty = new \Smarty\JTLSmarty(true, \Smarty\ContextType::MAIL);
             $mailSmarty->registerResource('db', new \Smarty\SmartyResourceNiceDB($db, \Smarty\ContextType::MAIL))
                        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'includeMailTemplate', 'includeMailTemplate')
                        ->setCaching(Smarty::CACHING_OFF)

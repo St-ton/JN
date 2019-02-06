@@ -515,7 +515,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
             };
             $template    = Template::getInstance();
             $templateDir = $template->getDir();
-            $dirMan      = new DirManager();
+            $dirMan      = new \Backend\DirManager();
             $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $templateDir, $callback);
             $dirMan->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback);
             // Clear special category session array

@@ -6,11 +6,12 @@ RUN mkdir /archive
 RUN echo "[GLOBAL]" > /root/.my.cnf
 RUN echo "max_allowed_packet=64M" >> /root/.my.cnf
 RUN apt-get update \
-    && apt-get install -y apt-transport-https curl git gnupg iputils-ping lsb-release patchutils software-properties-common wget unzip zip \
+    && apt-get install -y apt-transport-https curl git gnupg iputils-ping libxml2-dev lsb-release patchutils software-properties-common wget unzip zip zlib1g-dev \
     && add-apt-repository ppa:ondrej/php \
     && apt-get update \
-    && apt-get install -y php7.1 php7.1-bcmath php7.1-bz2 php7.1-cli php7.1-common php7.1-curl php7.1-intl php7.1-json \
-        php7.1-mbstring php7.1-mysql php7.1-readline php7.1-soap php7.1-sqlite3 php7.1-xml php7.1-xsl php7.1-zip
+    && apt-get install -y php7.1 php7.1-bcmath php7.1-bz2 php7.1-cli php7.1-common php7.1-curl php7.1-dom php7.1-gd \
+        php7.1-iconv php7.1-intl php7.1-json php7.1-mbstring php7.1-mysql php7.1-pdo php7.1-readline php7.1-simplexml \
+        php7.1-soap php7.1-sqlite3 php7.1-xml php7.1-xsl php7.1-zip
 RUN curl -sL https://deb.nodesource.com/setup_11.x | bash -
 RUN apt-get install -y nodejs
 RUN cd /root \

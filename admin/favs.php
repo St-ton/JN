@@ -4,12 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Backend\AdminFavorite;
 use Helpers\Form;
 use Helpers\Request;
 
 /**
- * @global Smarty\JTLSmarty $smarty
- * @global AdminAccount $oAccount
+ * @global \Smarty\JTLSmarty     $smarty
+ * @global \Backend\AdminAccount $oAccount
  */
 
 require_once __DIR__ . '/includes/admininclude.php';

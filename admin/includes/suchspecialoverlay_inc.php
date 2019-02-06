@@ -16,7 +16,10 @@ function gibAlleSuchspecialOverlays()
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($searchspecialOverlayTypes as $searchspecialOverlayType) {
-        $overlays[] = Overlay::getInstance($searchspecialOverlayType->kSuchspecialOverlay, (int)$_SESSION['kSprache']);
+        $overlays[] = Media\Image\Overlay::getInstance(
+            $searchspecialOverlayType->kSuchspecialOverlay,
+            (int)$_SESSION['kSprache']
+        );
     }
 
     return $overlays;
@@ -24,11 +27,11 @@ function gibAlleSuchspecialOverlays()
 
 /**
  * @param int $overlayID
- * @return Overlay
+ * @return Media\Image\Overlay
  */
 function gibSuchspecialOverlay(int $overlayID)
 {
-    return Overlay::getInstance($overlayID, (int)$_SESSION['kSprache']);
+    return Media\Image\Overlay::getInstance($overlayID, (int)$_SESSION['kSprache']);
 }
 
 /**
@@ -46,7 +49,7 @@ function speicherEinstellung(
     int $lang = null,
     string $template = null
 ): bool {
-    $overlay = Overlay::getInstance($overlayID, $lang ?? (int)$_SESSION['kSprache'], $template, false);
+    $overlay = Media\Image\Overlay::getInstance($overlayID, $lang ?? (int)$_SESSION['kSprache'], $template, false);
 
     if ($overlay->getType() <= 0) {
         return false;
@@ -59,8 +62,8 @@ function speicherEinstellung(
 
     if (mb_strlen($files['name']) > 0) {
         loescheBild($overlay);
-        $overlay->setImageName(Overlay::IMAGENAME_TEMPLATE . '_' .
-            $overlay->getLanguage() . '_' . $overlay->getType() .
+        $overlay->setImageName(
+            Media\Image\Overlay::IMAGENAME_TEMPLATE . '_' . $overlay->getLanguage() . '_' . $overlay->getType() .
             mappeFileTyp($files['type'])
         );
         speicherBild($files, $overlay);
@@ -298,10 +301,10 @@ function erstelleFixedOverlay(string $image, int $size, int $transparency, strin
 
 /**
  * @param array $files
- * @param Overlay $overlay
+ * @param \Media\Image\Overlay $overlay
  * @return bool
  */
-function speicherBild(array $files, Overlay $overlay): bool
+function speicherBild(array $files, Media\Image\Overlay $overlay): bool
 {
     if ($files['type'] === 'image/jpeg'
         || $files['type'] === 'image/pjpeg'
@@ -343,9 +346,9 @@ function speicherBild(array $files, Overlay $overlay): bool
 }
 
 /**
- * @param Overlay $overlay
+ * @param \Media\Image\Overlay $overlay
  */
-function loescheBild(Overlay $overlay): void
+function loescheBild(Media\Image\Overlay $overlay): void
 {
     foreach ($overlay->getPathSizes() as $path) {
         $path = PFAD_ROOT . $path . $overlay->getImageName();

@@ -20,7 +20,7 @@ class SearchSpecial
 {
     /**
      * @param int $langID
-     * @return \Overlay[]
+     * @return \Media\Image\Overlay[]
      * @former holeAlleSuchspecialOverlays()
      * @since 5.0.0
      */
@@ -36,12 +36,12 @@ class SearchSpecial
                 ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($types as $type) {
-                $overlay = \Overlay::getInstance((int)$type->kSuchspecialOverlay, $langID);
+                $overlay = \Media\Image\Overlay::getInstance((int)$type->kSuchspecialOverlay, $langID);
                 if ($overlay->getActive() === 1) {
                     $overlays[] = $overlay;
                 }
             }
-            $overlays = \Functional\sort($overlays, function (\Overlay $left, \Overlay $right) {
+            $overlays = \Functional\sort($overlays, function (\Media\Image\Overlay $left, \Media\Image\Overlay $right) {
                 return $left->getPriority() > $right->getPriority();
             });
             Shop::Container()->getCache()->set($cacheID, $overlays, [\CACHING_GROUP_OPTION]);

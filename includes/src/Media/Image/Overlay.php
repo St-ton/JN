@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Media\Image;
+
 use DB\ReturnType;
 use JTL\MagicCompatibilityTrait;
 
@@ -164,7 +166,7 @@ class Overlay
     {
         $overlay = $this->getDataForLanguage($this->getLanguage());
         // get overlay data for fallback language
-        $overlay = $overlay ?? $this->getDataForLanguage(Sprache::getDefaultLanguage()->kSprache);
+        $overlay = $overlay ?? $this->getDataForLanguage(\Sprache::getDefaultLanguage()->kSprache);
         if (!empty($overlay)) {
             $this->setActive($overlay->nAktiv)
                 ->setMargin($overlay->nMargin)
@@ -196,11 +198,11 @@ class Overlay
 
     /**
      * @param int $language
-     * @return stdClass|null
+     * @return \stdClass|null
      */
-    private function getDataForLanguage(int $language): ?stdClass
+    private function getDataForLanguage(int $language): ?\stdClass
     {
-        $overlay = Shop::Container()->getDB()->queryPrepared(
+        $overlay = \Shop::Container()->getDB()->queryPrepared(
             'SELECT ssos.*, sso.cSuchspecial
                  FROM tsuchspecialoverlaysprache ssos
                  LEFT JOIN tsuchspecialoverlay sso
@@ -235,7 +237,7 @@ class Overlay
             $defaultImgName = self::IMAGE_DEFAULT['name'] . '_' . $this->getLanguage() . '_'
                 . $this->getType() . self::IMAGE_DEFAULT['extension'];
             $imgName        = self::IMAGE_DEFAULT['name'] . '_' .
-                Sprache::getDefaultLanguage()->kSprache . '_' .
+                \Sprache::getDefaultLanguage()->kSprache . '_' .
                 $this->getType() . self::IMAGE_DEFAULT['extension'];
 
             if (\file_exists(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_NORMAL . $defaultImgName)) {
@@ -243,7 +245,7 @@ class Overlay
                 $fallbackImageName = $defaultImgName;
                 $fallbackPath      = true;
             } else {
-                $overlayDefaultLanguage = $this->getDataForLanguage(Sprache::getDefaultLanguage()->kSprache);
+                $overlayDefaultLanguage = $this->getDataForLanguage(\Sprache::getDefaultLanguage()->kSprache);
                 if (!empty($overlayDefaultLanguage)) {
                     if ($overlayDefaultLanguage->cTemplate !== self::DEFAULT_TEMPLATE
                         && \file_exists(
@@ -275,7 +277,7 @@ class Overlay
      */
     public function save(): void
     {
-        $db          = Shop::Container()->getDB();
+        $db          = \Shop::Container()->getDB();
         $overlayData = (object)[
             'nAktiv'       => $this->getActive(),
             'nPrio'        => $this->getPriority(),
@@ -357,7 +359,7 @@ class Overlay
      */
     public function setTemplateName(string $template = null): self
     {
-        $this->templateName = $template ?: Template::getInstance()->getName();
+        $this->templateName = $template ?: \Template::getInstance()->getName();
 
         return $this;
     }
@@ -417,7 +419,7 @@ class Overlay
      */
     public function setURLSizes(): self
     {
-        $shopURL        = Shop::getURL() . '/';
+        $shopURL        = \Shop::getURL() . '/';
         $this->urlSizes = [
             IMAGE_SIZE_XS => $shopURL . $this->getPathSize(IMAGE_SIZE_XS) . $this->getImageName(),
             IMAGE_SIZE_SM => $shopURL . $this->getPathSize(IMAGE_SIZE_SM) . $this->getImageName(),

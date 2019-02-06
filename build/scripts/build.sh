@@ -183,7 +183,7 @@ build_create_config_file()
 build_migrate()
 {
     php -r "
-    require_once "${REPOSITORY_DIR}/includes/globalinclude.php"; \
+    require_once '${REPOSITORY_DIR}/includes/globalinclude.php'; \
       \$time    = date('YmdHis'); \
       \$manager = new MigrationManager(); \
       try { \

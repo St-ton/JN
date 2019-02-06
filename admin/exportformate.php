@@ -251,7 +251,9 @@ if ($step === 'neuer Export') {
         $exportformat->cKopfzeile = str_replace("\t", '<tab>', $exportformat->cKopfzeile);
         $exportformat->cContent   = str_replace("\t", '<tab>', $exportformat->cContent);
         $exportformat->cFusszeile = str_replace("\t", '<tab>', $exportformat->cFusszeile);
-        if ($exportformat->kPlugin > 0 && mb_strpos($exportformat->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
+        if ($exportformat->kPlugin > 0
+            && mb_strpos($exportformat->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false
+        ) {
             $exportformat->bPluginContentFile = true;
         }
         $smarty->assign('Exportformat', $exportformat);

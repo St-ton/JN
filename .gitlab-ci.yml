@@ -138,7 +138,7 @@ stages:
     export MIGRATION_COUNT_AFTER=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l);
 
     if [[ $MIGRATION_COUNT_AFTER -gt 224 ]]; then
-      php build/scripts/migrating.php $DEPLOY_PATH 1;
+      php $DEPLOY_PATH/build/scripts/migrating.php $DEPLOY_PATH 1;
     fi
   }
 

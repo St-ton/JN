@@ -324,7 +324,7 @@ function erstelleFixedOverlay($image, $size, $transparency, $extension, $path)
     [$width, $height] = getimagesize($image);
     $factor           = $size / $width;
 
-    $im = ladeOverlay($image, $size, $height*$factor, $transparency);
+    $im = ladeOverlay($image, $size, $height * $factor, $transparency);
     speicherOverlay($im, $extension, $path);
 }
 

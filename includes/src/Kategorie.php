@@ -307,10 +307,11 @@ class Kategorie
                 } elseif ($attribute->cName === 'meta_keywords') {
                     $this->cMetaKeywords = $attribute->cWert;
                 }
+                $idx = mb_convert_case($attribute->cName, MB_CASE_LOWER);
                 if ($attribute->bIstFunktionsAttribut) {
-                    $this->categoryFunctionAttributes[mb_convert_case($attribute->cName, MB_CASE_LOWER)] = $attribute->cWert;
+                    $this->categoryFunctionAttributes[$idx] = $attribute->cWert;
                 } else {
-                    $this->categoryAttributes[mb_convert_case($attribute->cName, MB_CASE_LOWER)] = $attribute;
+                    $this->categoryAttributes[$idx] = $attribute;
                 }
             }
         }

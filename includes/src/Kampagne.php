@@ -95,16 +95,15 @@ class Kampagne
      */
     public function insertInDB(): int
     {
-        $obj             = new stdClass();
-        $obj->cName      = $this->cName;
-        $obj->cParameter = $this->cParameter;
-        $obj->cWert      = $this->cWert;
-        $obj->nDynamisch = $this->nDynamisch;
-        $obj->nAktiv     = $this->nAktiv;
-        $obj->dErstellt  = $this->dErstellt;
-
-        $this->kKampagne  = Shop::Container()->getDB()->insert('tkampagne', $obj);
-        $parts            = Date::getDateParts($this->dErstellt);
+        $obj                = new stdClass();
+        $obj->cName         = $this->cName;
+        $obj->cParameter    = $this->cParameter;
+        $obj->cWert         = $this->cWert;
+        $obj->nDynamisch    = $this->nDynamisch;
+        $obj->nAktiv        = $this->nAktiv;
+        $obj->dErstellt     = $this->dErstellt;
+        $this->kKampagne    = Shop::Container()->getDB()->insert('tkampagne', $obj);
+        $parts              = Date::getDateParts($this->dErstellt);
         $this->dErstellt_DE = $parts['cTag'] . '.' . $parts['cMonat'] . '.' . $parts['cJahr'] . ' ' .
             $parts['cStunde'] . ':' . $parts['cMinute'] . ':' . $parts['cSekunde'];
 

@@ -214,7 +214,7 @@ ifndef('MAILTEMPLATE_USE_SECURITY', true);
 ifndef('EXPORTFORMAT_USE_SECURITY', true);
 ifndef('EXPORTFORMAT_ALLOWED_FORMATS', 'txt,csv,xml,html,htm,json,yaml,yml');
 ifndef('PASSWORD_DEFAULT_LENGTH', 12);
-ifndef('SECURE_PHP_FUNCTIONS', "
+ifndef('SECURE_PHP_FUNCTIONS', '
     addcslashes, addslashes, bin2hex, chop, chr, chunk_split, count_chars, crypt, explode, html_entity_decode,
     htmlentities, htmlspecialchars_decode, htmlspecialchars, implode, join, lcfirst, levenshtein, ltrim, md5, metaphone,
     money_format, nl2br, number_format, ord, rtrim, sha1, similar_text, soundex, sprintf, str_ireplace, str_pad,
@@ -244,7 +244,7 @@ ifndef('SECURE_PHP_FUNCTIONS', "
     json_decode, json_encode, json_last_error_msg, json_last_error,
     
     yaml_emit, yaml_parse,
-");
+');
 
 // 0 => off, 1 => html comments, 2 => static badges, 3 => scrolling badges with borders
 ifndef('SHOW_TEMPLATE_HINTS', 0);

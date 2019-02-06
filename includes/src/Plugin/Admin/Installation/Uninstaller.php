@@ -9,11 +9,12 @@ namespace Plugin\Admin\Installation;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\ReturnType;
-use Plugin\AbstractExtension;
-use Plugin\ExtensionLoader;
+use Plugin\AbstractPlugin;
+use Plugin\PluginInterface;
+use Plugin\PluginLoader;
 use Plugin\Helper;
 use Plugin\InstallCode;
-use Plugin\PluginLoader;
+use Plugin\LegacyPluginLoader;
 
 /**
  * Class Uninstaller
@@ -60,10 +61,10 @@ final class Uninstaller
         }
         $data = $this->db->select('tplugin', 'kPlugin', $pluginID);
         if ((int)$data->bExtension === 1) {
-            $loader = new ExtensionLoader($this->db, $this->cache);
+            $loader = new PluginLoader($this->db, $this->cache);
             $plugin = $loader->init($pluginID);
         } else {
-            $loader = new PluginLoader($this->db, $this->cache);
+            $loader = new LegacyPluginLoader($this->db, $this->cache);
             $plugin = $loader->init($pluginID);//
         }
         if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
@@ -95,7 +96,7 @@ final class Uninstaller
     }
 
     /**
-     * @param AbstractExtension $plugin
+     * @param PluginInterface $plugin
      * @return array
      * @throws \Exception
      */

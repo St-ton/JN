@@ -7,7 +7,7 @@
 namespace Plugin\Admin\Installation\Items;
 
 use Plugin\Admin\InputType;
-use Plugin\ExtensionData\Config;
+use Plugin\Data\Config;
 use Plugin\Helper;
 use Plugin\InstallCode;
 

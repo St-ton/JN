@@ -770,8 +770,8 @@ final class Shop
             $cache->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
         }
         $dispatcher      = \Events\Dispatcher::getInstance();
-        $extensionLoader = new \Plugin\ExtensionLoader($db, $cache);
-        $pluginLoader    = new \Plugin\PluginLoader($db, $cache);
+        $extensionLoader = new \Plugin\PluginLoader($db, $cache);
+        $pluginLoader    = new \Plugin\LegacyPluginLoader($db, $cache);
         foreach ($plugins as $plugin) {
             $loader = isset($plugin->bExtension) && (int)$plugin->bExtension === 1 ? $extensionLoader : $pluginLoader;
             if (($p = \Plugin\Helper::bootstrap($plugin->kPlugin, $loader)) !== null) {

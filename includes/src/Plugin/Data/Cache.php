@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\ExtensionData;
+namespace Plugin\Data;
 
 /**
  * Class Cache
- * @package Plugin\ExtensionData
+ * @package Plugin\Data
  */
 class Cache
 {

@@ -7,10 +7,10 @@
 namespace Plugin;
 
 /**
- * Class ExtensionBC
+ * Class PluginBC
  * @package Plugin
  */
-class ExtensionBC extends AbstractExtension
+class PluginBC extends AbstractPlugin
 {
     use \JTL\MagicCompatibilityTrait;
 

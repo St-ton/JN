@@ -11,12 +11,13 @@ use DB\DbInterface;
 use DB\ReturnType;
 use JTL\XMLParser;
 use Mapper\PluginValidation;
-use Plugin\AbstractExtension;
+use Plugin\AbstractPlugin;
 use Plugin\Admin\Validation\ValidatorInterface;
-use Plugin\ExtensionLoader;
-use Plugin\InstallCode;
-use Plugin\Plugin;
+use Plugin\PluginInterface;
 use Plugin\PluginLoader;
+use Plugin\InstallCode;
+use Plugin\LegacyPlugin;
+use Plugin\LegacyPluginLoader;
 use Tightenco\Collect\Support\Collection;
 use function Functional\map;
 
@@ -28,7 +29,7 @@ final class Listing
 {
     private const PLUGINS_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
 
-    private const EXTENSIONS_DIR = \PFAD_ROOT . \PFAD_EXTENSIONS;
+    private const EXTENSIONS_DIR = \PFAD_ROOT . \PLUGIN_DIR;
 
     /**
      * @var DbInterface
@@ -102,13 +103,13 @@ final class Listing
                 return $e;
             }
         );
-        $pluginLoader    = new PluginLoader($this->db, $this->cache);
-        $extensionLoader = new ExtensionLoader($this->db, $this->cache);
+        $pluginLoader    = new LegacyPluginLoader($this->db, $this->cache);
+        $extensionLoader = new PluginLoader($this->db, $this->cache);
         foreach ($pluginIDs as $pluginID) {
             if ($pluginID->bExtension === 1) {
                 $plugin = $extensionLoader->init($pluginID->kPlugin, true);
             } else {
-                $pluginLoader->setPlugin(new Plugin());
+                $pluginLoader->setPlugin(new LegacyPlugin());
                 $plugin = $pluginLoader->init($pluginID->kPlugin, true);
             }
             $plugin->getMeta()->setUpdateAvailable($plugin->getMeta()->getVersion() < $plugin->getCurrentVersion());
@@ -133,7 +134,7 @@ final class Listing
      */
     public function getAll(Collection $installed): Collection
     {
-        $installedPlugins = $installed->map(function (AbstractExtension $item) {
+        $installedPlugins = $installed->map(function (PluginInterface $item) {
             return $item->getPaths()->getBaseDir();
         });
         $parser           = new XMLParser();

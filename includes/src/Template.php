@@ -212,7 +212,7 @@ class Template
         foreach ($items as $item) {
             $frontend = PFAD_PLUGIN_FRONTEND . $item->type . '/' . $item->path;
             if ((int)$item->bExtension === 1) {
-                $item->rel = PFAD_EXTENSIONS . $item->cVerzeichnis . '/';
+                $item->rel = PLUGIN_DIR . $item->cVerzeichnis . '/';
             } else {
                 $item->rel = PFAD_PLUGIN . $item->cVerzeichnis . '/';
                 $frontend  = PFAD_PLUGIN_VERSION . $item->nVersion . '/' . $frontend;

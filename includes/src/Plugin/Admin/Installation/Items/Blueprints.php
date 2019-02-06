@@ -31,7 +31,7 @@ class Blueprints extends AbstractItem
     public function install(): int
     {
         $base = $this->plugin->bExtension === 1
-            ? \PFAD_ROOT . \PFAD_EXTENSIONS .
+            ? \PFAD_ROOT . \PLUGIN_DIR .
             $this->plugin->cVerzeichnis . '/' .
             \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_BLUEPRINTS
             : \PFAD_ROOT . \PFAD_PLUGIN .

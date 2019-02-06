@@ -104,7 +104,7 @@ if (isset($_POST['einstellungen_bearbeiten'])
                 WHERE kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . "
                     AND cConf = 'Y'
                     AND nModul = 0
-                    AND nStandardanzeigen = 1 . ' .$oSQL->cWHERE . '
+                    AND nStandardanzeigen = 1 ' . $oSQL->cWHERE . '
                 ORDER BY nSort",
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );

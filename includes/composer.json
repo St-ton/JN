@@ -45,15 +45,15 @@
         "jtlshop/semver": "~0.0.5",
         "studio-42/elfinder": "^2.1",
         "maximebf/debugbar": "^1.15",
-        "gettext/gettext": "^4.6",
-        "sensiolabs/security-checker": "^5.0"
+        "gettext/gettext": "^4.6"
     },
     "require-dev": {
         "phpunit/php-token-stream": "^3.0",
         "nikic/php-parser": "^2.1",
         "symfony/finder": "^4.0",
         "phpmd/phpmd": "@stable",
-        "phpunit/phpunit": "^7.3"
+        "phpunit/phpunit": "^7.3",
+        "sensiolabs/security-checker": "^5.0"
     },
     "suggest": {
         "ext-redis": "Better caching method",

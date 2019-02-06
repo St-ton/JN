@@ -211,15 +211,15 @@ class Kundendatenhistory extends MainModel
             foreach ($members as $member) {
                 $method = 'get' . mb_substr($member, 1);
                 if (method_exists($this, $method)) {
-                    $val        = $this->$method();
-                    $mValue     = $val === null
+                    $val    = $this->$method();
+                    $mValue = $val === null
                         ? 'NULL'
                         : ("'" . Shop::Container()->getDB()->escape($val) . "'");
-                    $set[] = "{$member} = {$mValue}";
+                    $set[]  = "{$member} = {$mValue}";
                 }
             }
             $sql .= implode(', ', $set);
-            $sql .= " WHERE kKundendatenHistory = {$this->getKundendatenHistory()}";
+            $sql .= ' WHERE kKundendatenHistory = ' . $this->getKundendatenHistory();
 
             return Shop::Container()->getDB()->query($sql, \DB\ReturnType::AFFECTED_ROWS);
         }

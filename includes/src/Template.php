@@ -544,7 +544,7 @@ class Template
                         // we insert our default "no resizable"
                         $setting->vTextAreaAttr_arr['Resizable'] = 'none';
                         foreach ($attr as $_key => $_val) {
-                            $_val                               = (string)$_val; // cast the value(!)
+                            $_val                              = (string)$_val; // cast the value(!)
                             $setting->vTextAreaAttr_arr[$_key] = $_val;
                             // multiple values of 'disable resizing' are allowed,
                             // but only vertical is ok, if 'resizable' is required
@@ -567,7 +567,7 @@ class Template
                     foreach ($oSection->oSettings_arr as $_setting) {
                         if ($_setting->cKey === $setting->cKey) {
                             $settingExists = true;
-                            $setting      = $_setting;
+                            $setting       = $_setting;
                             break;
                         }
                     }
@@ -606,9 +606,9 @@ class Template
                             $optgroup->oValues_arr = [];
                             /** @var SimpleXMLElement $XMLOptgroupOption */
                             foreach ($XMLOptgroup->Option as $XMLOptgroupOption) {
-                                $oOptgroupValues          = new stdClass();
-                                $oOptgroupValues->cName   = (string)$XMLOptgroupOption;
-                                $oOptgroupValues->cValue  = (string)$XMLOptgroupOption->attributes()->Value;
+                                $oOptgroupValues         = new stdClass();
+                                $oOptgroupValues->cName  = (string)$XMLOptgroupOption;
+                                $oOptgroupValues->cValue = (string)$XMLOptgroupOption->attributes()->Value;
                                 $optgroup->oValues_arr[] = $oOptgroupValues;
                             }
                             $setting->oOptgroup_arr[] = $optgroup;
@@ -671,8 +671,8 @@ class Template
             $theme->cName      = (string)$oXMLTheme->attributes()->Name;
             $theme->oFiles_arr = [];
             foreach ($oXMLTheme->File as $cFile) {
-                $oThemeFiles          = new stdClass();
-                $oThemeFiles->cPath   = (string)$cFile->attributes()->Path;
+                $oThemeFiles         = new stdClass();
+                $oThemeFiles->cPath  = (string)$cFile->attributes()->Path;
                 $theme->oFiles_arr[] = $oThemeFiles;
             }
             $lessFiles[$theme->cName] = $theme;

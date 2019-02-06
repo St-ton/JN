@@ -311,8 +311,8 @@ if ($customerID > 0) {
                     $alertHelper->addAlert(
                         Alert::TYPE_NOTE,
                         Wunschliste::send(
-                            explode(' ', StringHandler::htmlentities(StringHandler::filterXSS($_POST['email'])))
-                            , $kWunschliste
+                            explode(' ', StringHandler::htmlentities(StringHandler::filterXSS($_POST['email']))),
+                            $kWunschliste
                         ),
                         'sendWL'
                     );

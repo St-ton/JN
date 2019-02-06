@@ -185,15 +185,14 @@ build_migrate()
     php -r "
         require_once '${REPOSITORY_DIR}/includes/globalinclude.php'; \
         \$manager = new MigrationManager(null); \
-        \$manager->migrate(null); \
-        try {
-            \$result = \$manager->migrate(null);
-        } catch (Exception \$e) {
-            \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations())));
-            \$result = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage());
-            echo \$result;
-            exit(1);
-        }
+        try { \
+            \$result = \$manager->migrate(null); \
+        } catch (Exception \$e) { \
+            \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations()))); \
+            \$result = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage()); \
+            echo \$result; \
+            exit(1); \
+        } \
     ";
 
     echo 'TRUNCATE tversion' | mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};

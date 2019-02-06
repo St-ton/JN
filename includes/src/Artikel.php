@@ -2183,7 +2183,7 @@ class Artikel
                 $combinations    = array_reduce($allCombinations, function ($cArry, $item) {
                     return (empty($cArry) ? '' : $cArry . ', ') . $item->combine;
                 }, '');
-                $variations      = Shop::Container()->getDB()->query(
+                $variations      = empty($combinations) ? [] : Shop::Container()->getDB()->query(
                     $baseQuery .
                     ' AND (teigenschaftkombiwert.kEigenschaftWert, COALESCE(ek.score, 0)) IN (' .
                             $combinations . '

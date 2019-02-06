@@ -232,7 +232,7 @@ class Statistik
             $this->gibDifferenz();
             $this->gibAnzeigeIntervall();
 
-            $oDatumSQL    = $this->baueDatumSQL('dZeit');
+            $oDatumSQL = $this->baueDatumSQL('dZeit');
 
             return Shop::Container()->getDB()->query(
                 "SELECT *, SUM(t.nCount) AS nCount
@@ -381,7 +381,7 @@ class Statistik
                         date('Y', $this->nStampVon)
                     );
                     $oStat->nCount = 0;
-                    $stats[]   = $oStat;
+                    $stats[]       = $oStat;
                 }
                 break;
 
@@ -397,7 +397,7 @@ class Statistik
                         date('Y', $this->nStampVon)
                     );
                     $oStat->nCount = 0;
-                    $stats[]   = $oStat;
+                    $stats[]       = $oStat;
                 }
                 break;
 
@@ -413,7 +413,7 @@ class Statistik
                         date('Y', $this->nStampVon)
                     );
                     $oStat->nCount = 0;
-                    $stats[]   = $oStat;
+                    $stats[]       = $oStat;
                 }
                 break;
 
@@ -432,7 +432,7 @@ class Statistik
                     $oStat         = new stdClass();
                     $oStat->dZeit  = mktime(0, 0, 0, 1, 1, $i);
                     $oStat->nCount = 0;
-                    $stats[]   = $oStat;
+                    $stats[]       = $oStat;
                 }
                 break;
         }
@@ -521,7 +521,7 @@ class Statistik
                             if (date('H', $oStat->dZeit) === $oStatTMP->nHour) {
                                 $stats[$i]->nCount = $oStatTMP->nCount;
                                 $stats[$i]->dZeit  = $oStatTMP->nHour;
-                                $bBreak                = true;
+                                $bBreak            = true;
                             }
                             break;
 
@@ -529,7 +529,7 @@ class Statistik
                             if (date('d.m.', $oStat->dZeit) === $oStatTMP->nDay . '.' . $oStatTMP->nMonth . '.') {
                                 $stats[$i]->nCount = $oStatTMP->nCount;
                                 $stats[$i]->dZeit  = $oStatTMP->nDay . '.' . $oStatTMP->nMonth . '.';
-                                $bBreak                = true;
+                                $bBreak            = true;
                             }
                             break;
 
@@ -537,7 +537,7 @@ class Statistik
                             if (date('m.Y', $oStat->dZeit) === $oStatTMP->nMonth . '.' . $oStatTMP->nYear) {
                                 $stats[$i]->nCount = $oStatTMP->nCount;
                                 $stats[$i]->dZeit  = $oStatTMP->nMonth . '.' . $oStatTMP->nYear;
-                                $bBreak                = true;
+                                $bBreak            = true;
                             }
                             break;
 
@@ -545,7 +545,7 @@ class Statistik
                             if (date('Y', $oStat->dZeit) === $oStatTMP->nYear) {
                                 $stats[$i]->nCount = $oStatTMP->nCount;
                                 $stats[$i]->dZeit  = $oStatTMP->nYear;
-                                $bBreak                = true;
+                                $bBreak            = true;
                             }
                             break;
                     }

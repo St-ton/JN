@@ -137,7 +137,7 @@ stages:
 
     export MIGRATION_COUNT_AFTER=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l);
 
-    if [[ $MIGRATION_COUNT_AFTER -gt 224 ]]; then
+    if [[ $MIGRATION_COUNT_AFTER -gt $MIGRATION_COUNT_BEFORE ]]; then
       php -r "
       require_once '$DEPLOY_PATH/includes/globalinclude.php'; \
       \$time    = date('YmdHis'); \
@@ -145,7 +145,7 @@ stages:
       try { \
           \$migrations = \$manager->migrate(\$time); \
           foreach (\$migrations as \$migration) { \
-              echo \$migration; \
+              echo \$migration->getName().' '.\$migration->getDescription().PHP_EOL; \
           } \
       } catch (Exception \$e) { \
           \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations()))); \

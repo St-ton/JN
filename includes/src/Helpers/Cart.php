@@ -543,7 +543,6 @@ class Cart
             );
             Shop::Smarty()->assign('aKonfigerror_arr', $errors)
                 ->assign('aKonfigitemerror_arr', $itemErrors);
-
         }
 
         $nKonfigitem_arr = [];
@@ -652,7 +651,6 @@ class Cart
                         Shop::Lang()->get('comparelistProductadded', 'messages'),
                         'comparelistProductadded'
                     );
-
                 }
             }
         }

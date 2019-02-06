@@ -53,7 +53,7 @@ class MissingPortletInstance extends PortletInstance
      */
     public function jsonSerializeShort()
     {
-        $result                     = parent::jsonSerializeShort();
+        $result                 = parent::jsonSerializeShort();
         $result['missingClass'] = $this->getMissingClass();
 
         return $result;

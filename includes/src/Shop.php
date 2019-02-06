@@ -979,18 +979,18 @@ final class Shop
         self::$bKatFilterNotFound        = false;
         self::$bHerstellerFilterNotFound = false;
         executeHook(HOOK_SEOCHECK_ANFANG, ['uri' => &$uri]);
-        $seite        = 0;
-        $manufSeo     = [];
-        $katseo       = '';
-        $customSeo    = [];
-        $shopURLdata  = parse_url(self::getURL());
+        $seite       = 0;
+        $manufSeo    = [];
+        $katseo      = '';
+        $customSeo   = [];
+        $shopURLdata = parse_url(self::getURL());
         $baseURLdata = parse_url($uri);
-        $seo          = isset($baseURLdata['path'])
+        $seo         = isset($baseURLdata['path'])
             ? mb_substr($baseURLdata['path'], isset($shopURLdata['path'])
                 ? (mb_strlen($shopURLdata['path']) + 1)
                 : 1)
             : false;
-        $seo          = Request::extractExternalParams($seo);
+        $seo         = Request::extractExternalParams($seo);
         if ($seo) {
             foreach (self::$productFilter->getCustomFilters() as $customFilter) {
                 $seoParam = $customFilter->getUrlParamSEO();

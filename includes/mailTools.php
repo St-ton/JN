@@ -65,7 +65,7 @@ function sendeMail($moduleID, $data, $mail = null)
     if (!is_object($mail)) {
         $mail = new stdClass();
     }
-    $config        = Shop::getSettings([
+    $config     = Shop::getSettings([
         CONF_EMAILS,
         CONF_ZAHLUNGSARTEN,
         CONF_GLOBAL,
@@ -76,7 +76,7 @@ function sendeMail($moduleID, $data, $mail = null)
     ]);
     $senderName = $config['emails']['email_master_absender_name'];
     $senderMail = $config['emails']['email_master_absender'];
-    $sendCopy      = '';
+    $sendCopy   = '';
     $smarty     = new \Smarty\JTLSmarty(true, \Smarty\ContextType::MAIL);
     $smarty->registerResource('db', new \Smarty\SmartyResourceNiceDB($db, \Smarty\ContextType::MAIL))
                ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'includeMailTemplate', 'includeMailTemplate')
@@ -259,9 +259,8 @@ function sendeMail($moduleID, $data, $mail = null)
                 }
             }
             if ($config['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
-                $langID = $_SESSION['cISOSprache'] ?? 'ger'; //workaround for testmails from backend
-
-                $ts                = new TrustedShops(-1, StringHandler::convertISO2ISO639($langID));
+                $langID   = $_SESSION['cISOSprache'] ?? 'ger'; //workaround for testmails from backend
+                $ts       = new TrustedShops(-1, StringHandler::convertISO2ISO639($langID));
                 $tsRating = $ts->holeKundenbewertungsstatus(
                     StringHandler::convertISO2ISO639($langID)
                 );
@@ -390,7 +389,7 @@ function sendeMail($moduleID, $data, $mail = null)
         case MAILTEMPLATE_BEWERTUNGERINNERUNG:
             $smarty->assign('Bestellung', $data->tbestellung);
             if ($config['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
-                $ts                = new TrustedShops(
+                $ts       = new TrustedShops(
                     -1,
                     StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
                 );
@@ -422,8 +421,8 @@ function sendeMail($moduleID, $data, $mail = null)
             break;
 
         case MAILTEMPLATE_STATUSEMAIL:
-            $data->mail->toName   = $data->tfirma->cName . ' ' . $data->cIntervall;
-            $mailTPL->cBetreff = $data->tfirma->cName . ' ' . $data->cIntervall;
+            $data->mail->toName = $data->tfirma->cName . ' ' . $data->cIntervall;
+            $mailTPL->cBetreff  = $data->tfirma->cName . ' ' . $data->cIntervall;
             $smarty->assign('oMailObjekt', $data);
             break;
 
@@ -737,7 +736,7 @@ function verschickeMail($mail)
             }
         }
 
-        $sent         = $phpmailer->send();
+        $sent          = $phpmailer->send();
         $mail->cFehler = $phpmailer->ErrorInfo;
     }
     if ($sent) {

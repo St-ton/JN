@@ -103,7 +103,7 @@ class ipl_get_installment_request extends ipl_xml_request
         $plans             = [];
         $installment_plans = $json->instlPlanList;
         foreach ($installment_plans->instlPlan as $installment_plan) {
-            $plans[(int) $installment_plan->numInst] = (array) $installment_plan->calc;
+            $plans[(int)$installment_plan->numInst] = (array)$installment_plan->calc;
         }
         $this->plans = $plans;
     }

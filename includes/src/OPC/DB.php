@@ -219,7 +219,7 @@ class DB
         $fromPlugin  = $isInstalled && (int)$portletDB->kPlugin > 0;
 
         if ($fromPlugin) {
-            $loader  = new ExtensionLoader($this->shopDB, \Shop::Container()->getCache());
+            $loader = new ExtensionLoader($this->shopDB, \Shop::Container()->getCache());
             /** @var Extension $plugin */
             $plugin  = $loader->init((int)$portletDB->kPlugin);
             $include = $plugin->getPaths()->getPortletsPath() . $portletDB->cClass . '/' . $portletDB->cClass

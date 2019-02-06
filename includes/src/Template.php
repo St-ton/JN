@@ -218,7 +218,7 @@ class Template
                 $frontend  = PFAD_PLUGIN_VERSION . $item->nVersion . '/' . $frontend;
             }
             $item->rel .= $frontend;
-            $item->abs = PFAD_ROOT . $item->rel;
+            $item->abs  = PFAD_ROOT . $item->rel;
         }
 
         return $items;

@@ -473,7 +473,7 @@ class ipl_preauthorize_request extends ipl_xml_request
      */
     public function get_base_amount()
     {
-        return (int) $this->base_amount;
+        return (int)$this->base_amount;
     }
 
     /**
@@ -482,7 +482,7 @@ class ipl_preauthorize_request extends ipl_xml_request
      */
     public function get_cart_amount()
     {
-        return (int) $this->cart_amount;
+        return (int)$this->cart_amount;
     }
 
     /**
@@ -491,7 +491,7 @@ class ipl_preauthorize_request extends ipl_xml_request
      */
     public function get_surcharge()
     {
-        return (int) $this->surcharge;
+        return (int)$this->surcharge;
     }
 
     /**
@@ -501,7 +501,7 @@ class ipl_preauthorize_request extends ipl_xml_request
      */
     public function get_interest()
     {
-        return (int) $this->interest;
+        return (int)$this->interest;
     }
 
     /**
@@ -655,8 +655,8 @@ class ipl_preauthorize_request extends ipl_xml_request
     public function add_order_history_attributes($iMerchantCustomerLimit, $iRepeatCustomer)
     {
         $this->_order_history_attr = [
-            'merchant_customer_limit' => (int) $iMerchantCustomerLimit,
-            'repeat_customer'         => (int) $iRepeatCustomer,
+            'merchant_customer_limit' => (int)$iMerchantCustomerLimit,
+            'repeat_customer'         => (int)$iRepeatCustomer,
         ];
 
         return $this;

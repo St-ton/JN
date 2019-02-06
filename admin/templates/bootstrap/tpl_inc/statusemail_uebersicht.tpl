@@ -15,8 +15,8 @@
                         </span>
                         <span class="input-group-wrap">
                             <select class="form-control" name="nAktiv" id="nAktiv">
-                                <option value="1" {if isset($oStatusemailEinstellungen->nAktiv) && $oStatusemailEinstellungen->nAktiv == 1}selected{/if}>Ja</option>
-                                <option value="0" {if isset($oStatusemailEinstellungen->nAktiv) && $oStatusemailEinstellungen->nAktiv == 0}selected{/if}>Nein</option>
+                                <option value="1" {if isset($oStatusemailEinstellungen->nAktiv) && $oStatusemailEinstellungen->nAktiv == 1}selected{/if}>{__('yes')}</option>
+                                <option value="0" {if isset($oStatusemailEinstellungen->nAktiv) && $oStatusemailEinstellungen->nAktiv == 0}selected{/if}>{__('no')}</option>
                             </select>
                         </span>
                         <span class="input-group-addon">
@@ -76,9 +76,9 @@
                 </div>
                 <div class="panel-footer">
                     <div class="btn-group">
-                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('statusemailSave')}</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                         <button type="submit" class="btn btn-default" name="action" value="sendnow">
-                            <i class="fa fa-envelope-o"></i> E-Mail-Berichte jetzt senden</button>
+                            <i class="fa fa-envelope-o"></i> {__('sendEmail')}</button>
                     </div>
                 </div>
             </div>

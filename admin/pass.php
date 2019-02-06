@@ -7,7 +7,7 @@
 use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $step     = 'prepare';
 $cFehler  = '';
 $cHinweis = '';

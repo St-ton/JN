@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use dbeS\TableMapper as Mapper;
+
 require_once __DIR__ . '/syncinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
@@ -24,8 +26,8 @@ if (auth()) {
         $return = 0;
         if (count($syncFiles) === 1) {
             $xmlFile = array_shift($syncFiles);
-            $d       = file_get_contents($xmlFile);
-            $res     = bearbeite(XML_unserialize($d));
+            $data    = file_get_contents($xmlFile);
+            $res     = bearbeite(\JTL\XML::unserialize($data));
         } else {
             $errMsg = 'Error : Es kann nur ein Kunde pro Aufruf verarbeitet werden!';
             syncException($errMsg);
@@ -33,7 +35,7 @@ if (auth()) {
     }
 }
 if (is_array($res)) {
-    echo $return . ";\n" . StringHandler::convertISO(XML_serialize($res));
+    echo $return . ";\n" . StringHandler::convertISO(\JTL\XML::serialize($res));
 } else {
     echo $return . ';' . $res;
 }
@@ -44,220 +46,200 @@ if (is_array($res)) {
  */
 function bearbeite($xml)
 {
-    $res_obj              = [];
-    $nr                   = 0;
-    $Kunde                = new Kunde();
-    $Kunde->kKundengruppe = 0;
-    $oKundenattribut_arr  = [];
+    $res                     = [];
+    $nr                      = 0;
+    $customer                = new Kunde();
+    $customer->kKundengruppe = 0;
+    $customerAttributes      = [];
 
     if (is_array($xml['tkunde attr'])) {
-        $Kunde->kKundengruppe = (int)$xml['tkunde attr']['kKundengruppe'];
-        $Kunde->kSprache      = (int)$xml['tkunde attr']['kSprache'];
+        $customer->kKundengruppe = (int)$xml['tkunde attr']['kKundengruppe'];
+        $customer->kSprache      = (int)$xml['tkunde attr']['kSprache'];
     }
     if (!is_array($xml['tkunde'])) {
-        return $res_obj;
+        return $res;
     }
-    $cryptoService = Shop::Container()->getCryptoService();
-    $db            = Shop::Container()->getDB();
-    mappe($Kunde, $xml['tkunde'], $GLOBALS['mKunde']);
+    $crypto = Shop::Container()->getCryptoService();
+    $db     = Shop::Container()->getDB();
+    mappe($customer, $xml['tkunde'], Mapper::getMapping('mKunde'));
     // Kundenattribute
     if (isset($xml['tkunde']['tkundenattribut'])
         && is_array($xml['tkunde']['tkundenattribut'])
         && count($xml['tkunde']['tkundenattribut']) > 0
     ) {
-        $cMember_arr = array_keys($xml['tkunde']['tkundenattribut']);
+        $members = array_keys($xml['tkunde']['tkundenattribut']);
 
-        if ($cMember_arr[0] == '0') {
-            foreach ($xml['tkunde']['tkundenattribut'] as $oKundenattributTMP) {
-                unset($oKundenattribut);
-                $oKundenattribut        = new stdClass();
-                $oKundenattribut->cName = $oKundenattributTMP['cName'];
-                $oKundenattribut->cWert = $oKundenattributTMP['cWert'];
-                $oKundenattribut_arr[]  = $oKundenattribut;
+        if ($members[0] == '0') {
+            foreach ($xml['tkunde']['tkundenattribut'] as $data) {
+                unset($customerAttribute);
+                $customerAttribute        = new stdClass();
+                $customerAttribute->cName = $data['cName'];
+                $customerAttribute->cWert = $data['cWert'];
+                $customerAttributes[]     = $customerAttribute;
             }
         } else {
-            unset($oKundenattribut);
-            $oKundenattribut        = new stdClass();
-            $oKundenattribut->cName = $xml['tkunde']['tkundenattribut']['cName'];
-            $oKundenattribut->cWert = $xml['tkunde']['tkundenattribut']['cWert'];
-            $oKundenattribut_arr[]  = $oKundenattribut;
+            unset($customerAttribute);
+            $customerAttribute        = new stdClass();
+            $customerAttribute->cName = $xml['tkunde']['tkundenattribut']['cName'];
+            $customerAttribute->cWert = $xml['tkunde']['tkundenattribut']['cWert'];
+            $customerAttributes[]     = $customerAttribute;
         }
     }
-    $Kunde->cAnrede = mappeWawiAnrede2ShopAnrede($Kunde->cAnrede);
+    $customer->cAnrede = mappeWawiAnrede2ShopAnrede($customer->cAnrede);
 
-    $oSprache = $db->select('tsprache', 'kSprache', (int)$Kunde->kSprache);
-    if (empty($oSprache->kSprache)) {
-        $oSprache        = $db->select('tsprache', 'cShopStandard', 'Y');
-        $Kunde->kSprache = $oSprache->kSprache;
+    $lang = $db->select('tsprache', 'kSprache', (int)$customer->kSprache);
+    if (empty($lang->kSprache)) {
+        $lang               = $db->select('tsprache', 'cShopStandard', 'Y');
+        $customer->kSprache = $lang->kSprache;
     }
 
-    $kInetKunde = (int)$xml['tkunde attr']['kKunde'];
-    $oKundeAlt  = new stdClass();
+    $kInetKunde  = (int)$xml['tkunde attr']['kKunde'];
+    $oldCustomer = new stdClass();
     if ($kInetKunde > 0) {
-        $oKundeAlt = new Kunde($kInetKunde);
+        $oldCustomer = new Kunde($kInetKunde);
     }
     // Kunde existiert mit dieser kInetKunde
     // Kunde wird aktualisiert bzw. seine KdGrp wird geändert
-    if (isset($oKundeAlt->kKunde) && $oKundeAlt->kKunde > 0) {
-        //Angaben vom alten Kunden übernehmen
-        $Kunde->kKunde      = $kInetKunde;
-        $Kunde->cAbgeholt   = 'Y';
-        $Kunde->cAktiv      = 'Y';
-        $Kunde->dVeraendert = 'NOW()';
+    if (isset($oldCustomer->kKunde) && $oldCustomer->kKunde > 0) {
+        // Angaben vom alten Kunden übernehmen
+        $customer->kKunde      = $kInetKunde;
+        $customer->cAbgeholt   = 'Y';
+        $customer->cAktiv      = 'Y';
+        $customer->dVeraendert = 'NOW()';
 
-        if ($Kunde->cMail !== $oKundeAlt->cMail) {
+        if ($customer->cMail !== $oldCustomer->cMail) {
             // E-Mail Adresse geändert - Verwendung prüfen!
-            if (StringHandler::filterEmailAddress($Kunde->cMail) === false
-                || SimpleMail::checkBlacklist($Kunde->cMail)
-                || $db->select('tkunde', 'cMail', $Kunde->cMail, 'nRegistriert', 1) !== null
+            if (StringHandler::filterEmailAddress($customer->cMail) === false
+                || SimpleMail::checkBlacklist($customer->cMail)
+                || $db->select('tkunde', 'cMail', $customer->cMail, 'nRegistriert', 1) !== null
             ) {
                 // E-Mail ist invalide, blacklisted bzw. wird bereits im Shop verwendet
-                $res_obj['keys']['tkunde attr']['kKunde'] = 0;
-                $res_obj['keys']['tkunde']                = '';
+                $res['keys']['tkunde attr']['kKunde'] = 0;
+                $res['keys']['tkunde']                = '';
 
-                return $res_obj;
+                return $res;
             }
 
             // Mail an Kunden mit Info, dass Zugang verändert wurde
             $obj         = new stdClass();
-            $obj->tkunde = $Kunde;
+            $obj->tkunde = $customer;
             sendeMail(MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj);
         }
 
-        $Kunde->cPasswort    = $oKundeAlt->cPasswort;
-        $Kunde->nRegistriert = $oKundeAlt->nRegistriert;
-        $Kunde->dErstellt    = $oKundeAlt->dErstellt;
-        $Kunde->fGuthaben    = $oKundeAlt->fGuthaben;
-        $Kunde->cHerkunft    = $oKundeAlt->cHerkunft;
-        //schaue, ob dieser Kunde diese Kundengruppe schon hat
-        if ($oKundeAlt->kKundengruppe != $Kunde->kKundengruppe && $Kunde->cMail) {
-            //Mail an Kunden mit Info, dass Kundengruppe verändert wurde
+        $customer->cPasswort    = $oldCustomer->cPasswort;
+        $customer->nRegistriert = $oldCustomer->nRegistriert;
+        $customer->dErstellt    = $oldCustomer->dErstellt;
+        $customer->fGuthaben    = $oldCustomer->fGuthaben;
+        $customer->cHerkunft    = $oldCustomer->cHerkunft;
+        // schaue, ob dieser Kunde diese Kundengruppe schon hat
+        if ($oldCustomer->kKundengruppe != $customer->kKundengruppe && $customer->cMail) {
+            // Mail an Kunden mit Info, dass Kundengruppe verändert wurde
             $obj         = new stdClass();
-            $obj->tkunde = $Kunde;
+            $obj->tkunde = $customer;
             sendeMail(MAILTEMPLATE_KUNDENGRUPPE_ZUWEISEN, $obj);
         }
         // Hausnummer extrahieren
-        extractStreet($Kunde);
-        //DBUpdateInsert('tkunde', [$Kunde], 'kKunde');
-
-        $Kunde->updateInDB();
-        // Kundendatenhistory
-        Kundendatenhistory::saveHistory($oKundeAlt, $Kunde, Kundendatenhistory::QUELLE_DBES);
-
-        if (count($oKundenattribut_arr) > 0) {
-            speicherKundenattribut($Kunde->kKunde, $Kunde->kSprache, $oKundenattribut_arr, false);
+        extractStreet($customer);
+        // DBUpdateInsert('tkunde', [$Kunde], 'kKunde');
+        $customer->updateInDB();
+        Kundendatenhistory::saveHistory($oldCustomer, $customer, Kundendatenhistory::QUELLE_DBES);
+        if (count($customerAttributes) > 0) {
+            speicherKundenattribut($customer->kKunde, $customer->kSprache, $customerAttributes, false);
         }
-        $res_obj['keys']['tkunde attr']['kKunde'] = $kInetKunde;
-        $res_obj['keys']['tkunde']                = '';
+        $res['keys']['tkunde attr']['kKunde'] = $kInetKunde;
+        $res['keys']['tkunde']                = '';
     } else {
         // Kunde existiert mit dieser kInetKunde im Shop nicht. Gib diese Info zurück an Wawi
         if ($kInetKunde > 0) {
-            $res_obj['keys']['tkunde attr']['kKunde'] = 0;
-            $res_obj['keys']['tkunde']                = '';
+            $res['keys']['tkunde attr']['kKunde'] = 0;
+            $res['keys']['tkunde']                = '';
             Shop::Container()->getLogService()->error(
                 'Verknuepfter Kunde in Wawi existiert nicht im Shop: ' .
-                XML_serialize($res_obj)
+                \JTL\XML::serialize($res)
             );
 
-            return $res_obj;
+            return $res;
         }
         // Kunde existiert nicht im Shop - check, ob email schon belegt
-        $oKundeAlt = $db->select(
+        $oldCustomer = $db->select(
             'tkunde',
             'nRegistriert',
             1,
             'cMail',
-            $Kunde->cMail,
+            $customer->cMail,
             null,
             null,
             false,
             'kKunde'
         );
-        if (isset($oKundeAlt->kKunde) && $oKundeAlt->kKunde > 0) {
+        if (isset($oldCustomer->kKunde) && $oldCustomer->kKunde > 0) {
             // Email vergeben -> Kunde wird nicht neu angelegt, sondern der Kunde wird an Wawi zurückgegeben
-            $xml_obj['kunden']['tkunde']      = $db->query(
+            $cstmr      = $db->query(
                 "SELECT kKunde, kKundengruppe, kSprache, cKundenNr, cPasswort, cAnrede, cTitel, cVorname,
                     cNachname, cFirma, cZusatz, cStrasse, cHausnummer, cAdressZusatz, cPLZ, cOrt, cBundesland, 
                     cLand, cTel, cMobil, cFax, cMail, cUSTID, cWWW, fGuthaben, cNewsletter, dGeburtstag, fRabatt,
                     cHerkunft, dErstellt, dVeraendert, cAktiv, cAbgeholt,
                     date_format(dGeburtstag, '%d.%m.%Y') AS dGeburtstag_formatted, nRegistriert
                     FROM tkunde
-                    WHERE kKunde = " . (int)$oKundeAlt->kKunde,
+                    WHERE kKunde = " . (int)$oldCustomer->kKunde,
                 \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
             );
-            $xml_obj['kunden attr']['anzahl'] = 1;
+            $xml['kunden attr']['anzahl'] = 1;
 
-            $xml_obj['kunden']['tkunde'][0]['cNachname'] = trim(
-                $cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][0]['cNachname'])
-            );
-            $xml_obj['kunden']['tkunde'][0]['cFirma']    = trim(
-                $cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][0]['cFirma'])
-            );
-            $xml_obj['kunden']['tkunde'][0]['cZusatz']   = trim(
-                $cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][0]['cZusatz'])
-            );
-            $xml_obj['kunden']['tkunde'][0]['cStrasse']  = trim(
-                $cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][0]['cStrasse'])
-            );
-            $xml_obj['kunden']['tkunde'][0]['cAnrede']   = Kunde::mapSalutation(
-                $xml_obj['kunden']['tkunde'][0]['cAnrede'],
-                $xml_obj['kunden']['tkunde'][0]['kSprache']
-            );
-            //Strasse und Hausnummer zusammenführen
-            $xml_obj['kunden']['tkunde'][0]['cStrasse'] .= ' ' . $xml_obj['kunden']['tkunde'][0]['cHausnummer'];
-            unset($xml_obj['kunden']['tkunde'][0]['cHausnummer']);
-            //Land ausgeschrieben der Wawi geben
-            $xml_obj['kunden']['tkunde'][0]['cLand'] = Sprache::getCountryCodeByCountryName(
-                $xml_obj['kunden']['tkunde'][0]['cLand']
-            );
-
-            unset($xml_obj['kunden']['tkunde'][0]['cPasswort']);
-            $xml_obj['kunden']['tkunde']['0 attr']             = buildAttributes($xml_obj['kunden']['tkunde'][0]);
-            $xml_obj['kunden']['tkunde'][0]['tkundenattribut'] = $db->query(
+            $cstmr[0]['cNachname'] = trim($crypto->decryptXTEA($cstmr[0]['cNachname']));
+            $cstmr[0]['cFirma']    = trim($crypto->decryptXTEA($cstmr[0]['cFirma']));
+            $cstmr[0]['cZusatz']   = trim($crypto->decryptXTEA($cstmr[0]['cZusatz']));
+            $cstmr[0]['cStrasse']  = trim($crypto->decryptXTEA($cstmr[0]['cStrasse']));
+            $cstmr[0]['cAnrede']   = Kunde::mapSalutation($cstmr[0]['cAnrede'], $cstmr[0]['kSprache']);
+            // Strasse und Hausnummer zusammenführen
+            $cstmr[0]['cStrasse'] .= ' ' . $cstmr[0]['cHausnummer'];
+            unset($cstmr[0]['cHausnummer']);
+            // Land ausgeschrieben der Wawi geben
+            $cstmr[0]['cLand'] = Sprache::getCountryCodeByCountryName($cstmr[0]['cLand']);
+            unset($cstmr[0]['cPasswort']);
+            $cstmr['0 attr']             = buildAttributes($cstmr[0]);
+            $cstmr[0]['tkundenattribut'] = $db->query(
                 'SELECT *
                     FROM tkundenattribut
-                     WHERE kKunde = ' . (int)$xml_obj['kunden']['tkunde']['0 attr']['kKunde'],
+                     WHERE kKunde = ' . (int)$cstmr['0 attr']['kKunde'],
                 \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
             );
-
-            $attributeCount = count($xml_obj['kunden']['tkunde'][0]['tkundenattribut']);
+            $attributeCount = count($cstmr[0]['tkundenattribut']);
             for ($o = 0; $o < $attributeCount; $o++) {
-                $xml_obj['kunden']['tkunde'][0]['tkundenattribut'][$o . ' attr'] =
-                    buildAttributes($xml_obj['kunden']['tkunde'][0]['tkundenattribut'][$o]);
+                $cstmr[0]['tkundenattribut'][$o . ' attr'] = buildAttributes($cstmr[0]['tkundenattribut'][$o]);
             }
-            Shop::Container()->getLogService()->error('Dieser Kunde existiert: ' . XML_serialize($xml_obj));
+            $xml['kunden']['tkunde'] = $cstmr;
+            Shop::Container()->getLogService()->error('Dieser Kunde existiert: ' . \JTL\XML::serialize($xml));
 
-            return $xml_obj;
+            return $xml;
         }
-        //Email noch nicht belegt, der Kunde muss neu erstellt werden -> KUNDE WIRD NEU ERSTELLT
+        // Email noch nicht belegt, der Kunde muss neu erstellt werden -> KUNDE WIRD NEU ERSTELLT
         $passwordService          = Shop::Container()->getPasswordService();
-        $Kunde->dErstellt         = 'NOW()';
-        $Kunde->cPasswortKlartext = $passwordService->generate(12);
-        $Kunde->cPasswort         = $passwordService->hash($Kunde->cPasswortKlartext);
-        $Kunde->nRegistriert      = 1;
-        $Kunde->cAbgeholt         = 'Y';
-        $Kunde->cAktiv            = 'Y';
-        $Kunde->cSperre           = 'N';
-        //mail an Kunden mit Accounterstellung durch Shopbetreiber
+        $customer->dErstellt         = 'NOW()';
+        $customer->cPasswortKlartext = $passwordService->generate(12);
+        $customer->cPasswort         = $passwordService->hash($customer->cPasswortKlartext);
+        $customer->nRegistriert      = 1;
+        $customer->cAbgeholt         = 'Y';
+        $customer->cAktiv            = 'Y';
+        $customer->cSperre           = 'N';
+        // mail an Kunden mit Accounterstellung durch Shopbetreiber
         $obj         = new stdClass();
-        $obj->tkunde = $Kunde;
-        if ($Kunde->cMail) {
+        $obj->tkunde = $customer;
+        if ($customer->cMail) {
             sendeMail(MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj);
         }
-        unset($Kunde->cPasswortKlartext, $Kunde->Anrede);
-        $kInetKunde = $Kunde->insertInDB();
-
-        if (count($oKundenattribut_arr) > 0) {
-            speicherKundenattribut($Kunde->kKunde, $Kunde->kSprache, $oKundenattribut_arr, true);
+        unset($customer->cPasswortKlartext, $customer->Anrede);
+        $kInetKunde = $customer->insertInDB();
+        if (count($customerAttributes) > 0) {
+            speicherKundenattribut($customer->kKunde, $customer->kSprache, $customerAttributes, true);
         }
 
-        $res_obj['keys']['tkunde attr']['kKunde'] = $kInetKunde;
-        $res_obj['keys']['tkunde']                = '';
+        $res['keys']['tkunde attr']['kKunde'] = $kInetKunde;
+        $res['keys']['tkunde']                = '';
     }
 
     if ($kInetKunde > 0) {
-        //kunde akt. bzw. neu inserted
-        //lieferadressen
+        // kunde akt. bzw. neu inserted
         if (isset($xml['tkunde']['tadresse'])
             && is_array($xml['tkunde']['tadresse'])
             && count($xml['tkunde']['tadresse']) > 0
@@ -266,86 +248,86 @@ function bearbeite($xml)
             //mehrere adressen
             $cntLieferadressen = count($xml['tkunde']['tadresse']) / 2;
             for ($i = 0; $i < $cntLieferadressen; $i++) {
-                unset($Lieferadresse);
-                $Lieferadresse = new stdClass();
+                unset($deliveryAddress);
+                $deliveryAddress = new stdClass();
                 if ($xml['tkunde']['tadresse'][$i . ' attr']['kInetAdresse'] > 0) {
                     //update
-                    $Lieferadresse->kLieferadresse = $xml['tkunde']['tadresse'][$i . ' attr']['kInetAdresse'];
-                    $Lieferadresse->kKunde         = $kInetKunde;
-                    mappe($Lieferadresse, $xml['tkunde']['tadresse'][$i], $GLOBALS['mLieferadresse']);
+                    $deliveryAddress->kLieferadresse = $xml['tkunde']['tadresse'][$i . ' attr']['kInetAdresse'];
+                    $deliveryAddress->kKunde         = $kInetKunde;
+                    mappe($deliveryAddress, $xml['tkunde']['tadresse'][$i], Mapper::getMapping('mLieferadresse'));
                     // Hausnummer extrahieren
-                    extractStreet($Lieferadresse);
-                    //verschlüsseln: Nachname, Firma, Strasse
-                    $Lieferadresse->cNachname = $cryptoService->encryptXTEA(trim($Lieferadresse->cNachname));
-                    $Lieferadresse->cFirma    = $cryptoService->encryptXTEA(trim($Lieferadresse->cFirma));
-                    $Lieferadresse->cZusatz   = $cryptoService->encryptXTEA(trim($Lieferadresse->cZusatz));
-                    $Lieferadresse->cStrasse  = $cryptoService->encryptXTEA(trim($Lieferadresse->cStrasse));
-                    $Lieferadresse->cAnrede   = mappeWawiAnrede2ShopAnrede($Lieferadresse->cAnrede);
-                    DBUpdateInsert('tlieferadresse', [$Lieferadresse], 'kLieferadresse');
+                    extractStreet($deliveryAddress);
+                    // verschlüsseln: Nachname, Firma, Strasse
+                    $deliveryAddress->cNachname = $crypto->encryptXTEA(trim($deliveryAddress->cNachname));
+                    $deliveryAddress->cFirma    = $crypto->encryptXTEA(trim($deliveryAddress->cFirma));
+                    $deliveryAddress->cZusatz   = $crypto->encryptXTEA(trim($deliveryAddress->cZusatz));
+                    $deliveryAddress->cStrasse  = $crypto->encryptXTEA(trim($deliveryAddress->cStrasse));
+                    $deliveryAddress->cAnrede   = mappeWawiAnrede2ShopAnrede($deliveryAddress->cAnrede);
+                    DBUpdateInsert('tlieferadresse', [$deliveryAddress], 'kLieferadresse');
                 } else {
-                    $Lieferadresse->kKunde = $kInetKunde;
-                    mappe($Lieferadresse, $xml['tkunde']['tadresse'][$i], $GLOBALS['mLieferadresse']);
+                    $deliveryAddress->kKunde = $kInetKunde;
+                    mappe($deliveryAddress, $xml['tkunde']['tadresse'][$i], Mapper::getMapping('mLieferadresse'));
                     // Hausnummer extrahieren
-                    extractStreet($Lieferadresse);
-                    //verschlüsseln: Nachname, Firma, Strasse
-                    $Lieferadresse->cNachname = $cryptoService->encryptXTEA(trim($Lieferadresse->cNachname));
-                    $Lieferadresse->cFirma    = $cryptoService->encryptXTEA(trim($Lieferadresse->cFirma));
-                    $Lieferadresse->cZusatz   = $cryptoService->encryptXTEA(trim($Lieferadresse->cZusatz));
-                    $Lieferadresse->cStrasse  = $cryptoService->encryptXTEA(trim($Lieferadresse->cStrasse));
-                    $Lieferadresse->cAnrede   = mappeWawiAnrede2ShopAnrede($Lieferadresse->cAnrede);
-                    $kInetLieferadresse       = DBinsert('tlieferadresse', $Lieferadresse);
+                    extractStreet($deliveryAddress);
+                    // verschlüsseln: Nachname, Firma, Strasse
+                    $deliveryAddress->cNachname = $crypto->encryptXTEA(trim($deliveryAddress->cNachname));
+                    $deliveryAddress->cFirma    = $crypto->encryptXTEA(trim($deliveryAddress->cFirma));
+                    $deliveryAddress->cZusatz   = $crypto->encryptXTEA(trim($deliveryAddress->cZusatz));
+                    $deliveryAddress->cStrasse  = $crypto->encryptXTEA(trim($deliveryAddress->cStrasse));
+                    $deliveryAddress->cAnrede   = mappeWawiAnrede2ShopAnrede($deliveryAddress->cAnrede);
+                    $kInetLieferadresse         = DBinsert('tlieferadresse', $deliveryAddress);
                     if ($kInetLieferadresse > 0) {
-                        if (!is_array($res_obj['keys']['tkunde'])) {
-                            $res_obj['keys']['tkunde'] = [
+                        if (!is_array($res['keys']['tkunde'])) {
+                            $res['keys']['tkunde'] = [
                                 'tadresse' => []
                             ];
                         }
-                        $res_obj['keys']['tkunde']['tadresse'][$nr . ' attr'] = [
+                        $res['keys']['tkunde']['tadresse'][$nr . ' attr'] = [
                             'kAdresse'     => $xml['tkunde']['tadresse'][$i . ' attr']['kAdresse'],
                             'kInetAdresse' => $kInetLieferadresse,
                         ];
-                        $res_obj['keys']['tkunde']['tadresse'][$nr]           = '';
+                        $res['keys']['tkunde']['tadresse'][$nr]           = '';
 
                         $nr++;
                     }
                 }
             }
         } elseif (isset($xml['tkunde']['tadresse attr']) && is_array($xml['tkunde']['tadresse attr'])) {
-            //nur eine lieferadresse
+            // nur eine lieferadresse
             if ($xml['tkunde']['tadresse attr']['kInetAdresse'] > 0) {
                 //update
-                if (!isset($Lieferadresse)) {
-                    $Lieferadresse = new stdClass();
+                if (!isset($deliveryAddress)) {
+                    $deliveryAddress = new stdClass();
                 }
-                $Lieferadresse->kLieferadresse = $xml['tkunde']['tadresse attr']['kInetAdresse'];
-                $Lieferadresse->kKunde         = $kInetKunde;
-                mappe($Lieferadresse, $xml['tkunde']['tadresse'], $GLOBALS['mLieferadresse']);
+                $deliveryAddress->kLieferadresse = $xml['tkunde']['tadresse attr']['kInetAdresse'];
+                $deliveryAddress->kKunde         = $kInetKunde;
+                mappe($deliveryAddress, $xml['tkunde']['tadresse'], Mapper::getMapping('mLieferadresse'));
                 // Hausnummer extrahieren
-                extractStreet($Lieferadresse);
-                //verschlüsseln: Nachname, Firma, Strasse
-                $Lieferadresse->cNachname = $cryptoService->encryptXTEA(trim($Lieferadresse->cNachname));
-                $Lieferadresse->cFirma    = $cryptoService->encryptXTEA(trim($Lieferadresse->cFirma));
-                $Lieferadresse->cZusatz   = $cryptoService->encryptXTEA(trim($Lieferadresse->cZusatz));
-                $Lieferadresse->cStrasse  = $cryptoService->encryptXTEA(trim($Lieferadresse->cStrasse));
-                $Lieferadresse->cAnrede   = mappeWawiAnrede2ShopAnrede($Lieferadresse->cAnrede);
-                DBUpdateInsert('tlieferadresse', [$Lieferadresse], 'kLieferadresse');
+                extractStreet($deliveryAddress);
+                // verschlüsseln: Nachname, Firma, Strasse
+                $deliveryAddress->cNachname = $crypto->encryptXTEA(trim($deliveryAddress->cNachname));
+                $deliveryAddress->cFirma    = $crypto->encryptXTEA(trim($deliveryAddress->cFirma));
+                $deliveryAddress->cZusatz   = $crypto->encryptXTEA(trim($deliveryAddress->cZusatz));
+                $deliveryAddress->cStrasse  = $crypto->encryptXTEA(trim($deliveryAddress->cStrasse));
+                $deliveryAddress->cAnrede   = mappeWawiAnrede2ShopAnrede($deliveryAddress->cAnrede);
+                DBUpdateInsert('tlieferadresse', [$deliveryAddress], 'kLieferadresse');
             } else {
-                if (!isset($Lieferadresse)) {
-                    $Lieferadresse = new stdClass();
+                if (!isset($deliveryAddress)) {
+                    $deliveryAddress = new stdClass();
                 }
-                $Lieferadresse->kKunde = $kInetKunde;
-                mappe($Lieferadresse, $xml['tkunde']['tadresse'], $GLOBALS['mLieferadresse']);
+                $deliveryAddress->kKunde = $kInetKunde;
+                mappe($deliveryAddress, $xml['tkunde']['tadresse'], Mapper::getMapping('mLieferadresse'));
                 // Hausnummer extrahieren
-                extractStreet($Lieferadresse);
-                //verschlüsseln: Nachname, Firma, Strasse
-                $Lieferadresse->cNachname = $cryptoService->encryptXTEA(trim($Lieferadresse->cNachname));
-                $Lieferadresse->cFirma    = $cryptoService->encryptXTEA(trim($Lieferadresse->cFirma));
-                $Lieferadresse->cZusatz   = $cryptoService->encryptXTEA(trim($Lieferadresse->cZusatz));
-                $Lieferadresse->cStrasse  = $cryptoService->encryptXTEA(trim($Lieferadresse->cStrasse));
-                $Lieferadresse->cAnrede   = mappeWawiAnrede2ShopAnrede($Lieferadresse->cAnrede);
-                $kInetLieferadresse       = DBinsert('tlieferadresse', $Lieferadresse);
+                extractStreet($deliveryAddress);
+                // verschlüsseln: Nachname, Firma, Strasse
+                $deliveryAddress->cNachname = $crypto->encryptXTEA(trim($deliveryAddress->cNachname));
+                $deliveryAddress->cFirma    = $crypto->encryptXTEA(trim($deliveryAddress->cFirma));
+                $deliveryAddress->cZusatz   = $crypto->encryptXTEA(trim($deliveryAddress->cZusatz));
+                $deliveryAddress->cStrasse  = $crypto->encryptXTEA(trim($deliveryAddress->cStrasse));
+                $deliveryAddress->cAnrede   = mappeWawiAnrede2ShopAnrede($deliveryAddress->cAnrede);
+                $kInetLieferadresse         = DBinsert('tlieferadresse', $deliveryAddress);
                 if ($kInetLieferadresse > 0) {
-                    $res_obj['keys']['tkunde'] = [
+                    $res['keys']['tkunde'] = [
                         'tadresse attr' => [
                             'kAdresse'     => $xml['tkunde']['tadresse attr']['kAdresse'],
                             'kInetAdresse' => $kInetLieferadresse,
@@ -357,49 +339,50 @@ function bearbeite($xml)
         }
     }
 
-    return $res_obj;
+    return $res;
 }
 
 /**
- * @param int   $kKunde
- * @param int   $kSprache
- * @param array $oKundenattribut_arr
- * @param bool  $bNeu
+ * @param int   $customerID
+ * @param int   $languageID
+ * @param array $attributes
+ * @param bool  $isNews
  */
-function speicherKundenattribut(int $kKunde, int $kSprache, $oKundenattribut_arr, $bNeu)
+function speicherKundenattribut(int $customerID, int $languageID, $attributes, $isNews)
 {
-    if ($kKunde > 0 && $kSprache > 0 && is_array($oKundenattribut_arr) && count($oKundenattribut_arr) > 0) {
-        $db = Shop::Container()->getDB();
-        foreach ($oKundenattribut_arr as $oKundenattribut) {
-            $oKundenfeld = $db->queryPrepared(
-                'SELECT tkundenfeld.kKundenfeld, tkundenfeldwert.cWert
-                     FROM tkundenfeld
-                     LEFT JOIN tkundenfeldwert
-                        ON tkundenfeldwert.kKundenfeld = tkundenfeld.kKundenfeld
-                     WHERE tkundenfeld.cWawi = :nm
-                        AND tkundenfeld.kSprache = :lid',
-                ['nm' => $oKundenattribut->cName, 'lid' => $kSprache],
-                \DB\ReturnType::SINGLE_OBJECT
-            );
-            if (isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0) {
-                if (strlen($oKundenfeld->cWert) > 0 && $oKundenfeld->cWert != $oKundenattribut->cWert) {
-                    continue;
-                }
-                if (!$bNeu) {
-                    $db->delete(
-                        'tkundenattribut',
-                        ['kKunde', 'kKundenfeld'],
-                        [$kKunde, (int)$oKundenfeld->kKundenfeld]
-                    );
-                }
-                $oKundenattributTMP              = new stdClass();
-                $oKundenattributTMP->kKunde      = $kKunde;
-                $oKundenattributTMP->kKundenfeld = (int)$oKundenfeld->kKundenfeld;
-                $oKundenattributTMP->cName       = $oKundenattribut->cName;
-                $oKundenattributTMP->cWert       = $oKundenattribut->cWert;
-
-                $db->insert('tkundenattribut', $oKundenattributTMP);
+    if ($customerID <= 0 || $languageID <= 0 || !is_array($attributes) || count($attributes) === 0) {
+        return;
+    }
+    $db = Shop::Container()->getDB();
+    foreach ($attributes as $attribute) {
+        $field = $db->queryPrepared(
+            'SELECT tkundenfeld.kKundenfeld, tkundenfeldwert.cWert
+                 FROM tkundenfeld
+                 LEFT JOIN tkundenfeldwert
+                    ON tkundenfeldwert.kKundenfeld = tkundenfeld.kKundenfeld
+                 WHERE tkundenfeld.cWawi = :nm
+                    AND tkundenfeld.kSprache = :lid',
+            ['nm' => $attribute->cName, 'lid' => $languageID],
+            \DB\ReturnType::SINGLE_OBJECT
+        );
+        if (isset($field->kKundenfeld) && $field->kKundenfeld > 0) {
+            if (strlen($field->cWert) > 0 && $field->cWert != $attribute->cWert) {
+                continue;
             }
+            if (!$isNews) {
+                $db->delete(
+                    'tkundenattribut',
+                    ['kKunde', 'kKundenfeld'],
+                    [$customerID, (int)$field->kKundenfeld]
+                );
+            }
+            $ins              = new stdClass();
+            $ins->kKunde      = $customerID;
+            $ins->kKundenfeld = (int)$field->kKundenfeld;
+            $ins->cName       = $attribute->cName;
+            $ins->cWert       = $attribute->cWert;
+
+            $db->insert('tkundenattribut', $ins);
         }
     }
 }

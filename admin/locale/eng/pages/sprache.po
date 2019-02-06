@@ -23,9 +23,6 @@ msgstr "Sektion"
 msgid "variableName"
 msgstr "Variable"
 
-msgid "variableContent"
-msgstr "Inhalt"
-
 msgid "btnAddVar"
 msgstr "Variable hinzufügen"
 
@@ -37,12 +34,6 @@ msgstr "Neue Sprachvariable"
 
 msgid "langSection"
 msgstr "Sprachsektion"
-
-msgid "new"
-msgstr "neu"
-
-msgid "current"
-msgstr "aktuell"
 
 msgid "notImportedYet"
 msgstr "Sprache wurde noch nicht importiert"

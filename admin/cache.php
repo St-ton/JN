@@ -4,11 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Backend\DirManager;
 use Helpers\Form;
 use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 setzeSprache();
 $oAccount->permission('OBJECTCACHE_VIEW', true, true);
 $notice       = '';
@@ -157,7 +158,7 @@ switch ($action) {
                         $value->cWert = (int)$value->cWert;
                         break;
                     case 'text':
-                        $value->cWert = (mb_strlen($value->cWert) > 0) ? mb_substr($value->cWert, 0, 255) : $value->cWert;
+                        $value->cWert = mb_strlen($value->cWert) > 0 ? mb_substr($value->cWert, 0, 255) : $value->cWert;
                         break;
                     case 'listbox':
                         bearbeiteListBox($value->cWert, $settings[$i]->cWertName, CONF_CACHING);

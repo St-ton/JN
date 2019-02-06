@@ -56,9 +56,9 @@
                             </span>
                             <span class="input-group-wrap">
                                 <select name="nAktiv" id="nAktiv" class="form-control combo">
-                                    <option value="1"{if $oSuchspecialOverlay->getActive() == 1} selected{/if}>Ja
+                                    <option value="1"{if $oSuchspecialOverlay->getActive() == 1} selected{/if}>{__('yes')}
                                     </option>
-                                    <option value="0"{if $oSuchspecialOverlay->getActive() == 0} selected{/if}>Nein
+                                    <option value="0"{if $oSuchspecialOverlay->getActive() == 0} selected{/if}>{__('no')}
                                     </option>
                                 </select>
                             </span>
@@ -96,7 +96,7 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="nTransparenz">{__('suchspecialoverlayClarity')}</label>
+                                <label for="nTransparenz">{__('transparancy')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select name="nTransparenz" class="form-control combo" id="nTransparenz">
@@ -122,36 +122,36 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="nPosition">{__('suchspecialoverlayPosition')}</label>
+                                <label for="nPosition">{__('position')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select name="nPosition" id="nPosition" class="combo form-control"{if !empty($isDeprecated)} disabled="disabled"{/if}>
                                     <option value="1"{if $oSuchspecialOverlay->getPosition() === 1} selected{/if}>
-                                        oben-links
+                                        {__('topLeft')}
                                     </option>
                                     <option value="2"{if $oSuchspecialOverlay->getPosition() === 2} selected{/if}>
-                                        oben
+                                        {__('top')}
                                     </option>
                                     <option value="3"{if $oSuchspecialOverlay->getPosition() === 3} selected{/if}>
-                                        oben-rechts
+                                        {__('topRight')}
                                     </option>
                                     <option value="4"{if $oSuchspecialOverlay->getPosition() === 4} selected{/if}>
-                                        rechts
+                                        {__('right')}
                                     </option>
                                     <option value="5"{if $oSuchspecialOverlay->getPosition() === 5} selected{/if}>
-                                        unten-rechts
+                                        {__('bottomRight')}
                                     </option>
                                     <option value="6"{if $oSuchspecialOverlay->getPosition() === 6} selected{/if}>
-                                        unten
+                                        {__('bottom')}
                                     </option>
                                     <option value="7"{if $oSuchspecialOverlay->getPosition() === 7} selected{/if}>
-                                        unten-links
+                                        {__('bottomLeft')}
                                     </option>
                                     <option value="8"{if $oSuchspecialOverlay->getPosition() === 8} selected{/if}>
-                                        links
+                                        {__('left')}
                                     </option>
                                     <option value="9"{if $oSuchspecialOverlay->getPosition() === 9} selected{/if}>
-                                        zentriert
+                                        {__('centered')}
                                     </option>
                                 </select>
                             </span>
@@ -187,7 +187,7 @@
             var maxsize = {$nMaxFileSize};
             {literal}
             if (filesize >= maxsize) {
-                $('.input-group.file-input').after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist größer als das Uploadlimit des Servers.</div>').slideDown();
+                $('.input-group.file-input').after('<div class="alert alert-danger"><i class="fa fa-warning"></i>{/literal}{__('errorUploadSizeLimit')}{literal}</div>').slideDown();
                 file2large = true;
             } else {
                 $('form div.alert').slideUp();

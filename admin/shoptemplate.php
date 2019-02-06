@@ -10,7 +10,7 @@ use Helpers\Request;
 use Helpers\Template as TemplateHelper;
 
 /**
- * @global Smarty\JTLSmarty $smarty
+ * @global \Smarty\JTLSmarty $smarty
  */
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'template_inc.php';

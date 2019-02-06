@@ -1,7 +1,7 @@
 <script type="text/javascript">
     {literal}
     function confirmDelete(cName) {
-        return confirm('Sind Sie sicher, dass Sie die Versandart "' + cName + '" löschen möchten?');
+        return confirm('{/literal}{__('deleteShippingMethod')}{literal}"' + cName + '"?');
     }
     {/literal}
 </script>
@@ -57,7 +57,7 @@
                     </tr>
                     <tr>
                         <td>{__('shippingtime')}</td>
-                        <td>{$versandart->nMinLiefertage} - {$versandart->nMaxLiefertage} Tage</td>
+                        <td>{$versandart->nMinLiefertage} - {$versandart->nMaxLiefertage} {__('days')}</td>
                     </tr>
                     <tr>
                         <td>{__('paymentMethods')}</td>
@@ -108,9 +108,9 @@
                 <form method="post" action="versandarten.php">
                     {$jtl_token}
                     <div class="btn-group">
-                        <button name="edit" value="{$versandart->kVersandart}" class="btn btn-primary"><i class="fa fa-edit"></i> Bearbeiten</button>
-                        <button name="clone" value="{$versandart->kVersandart}" class="btn btn-default clone">Duplizieren</button>
-                        <button name="del" value="{$versandart->kVersandart}" class="btn btn-danger" onclick="return confirmDelete('{$versandart->cName}');"><i class="fa fa-trash"></i> Löschen</button>
+                        <button name="edit" value="{$versandart->kVersandart}" class="btn btn-primary"><i class="fa fa-edit"></i> {__('edit')}</button>
+                        <button name="clone" value="{$versandart->kVersandart}" class="btn btn-default clone">{__('duplicate')}</button>
+                        <button name="del" value="{$versandart->kVersandart}" class="btn btn-danger" onclick="return confirmDelete('{$versandart->cName}');"><i class="fa fa-trash"></i> {__('delete')}</button>
                     </div>
                 </form>
             </div>

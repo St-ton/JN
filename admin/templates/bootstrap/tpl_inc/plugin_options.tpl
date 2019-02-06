@@ -108,8 +108,8 @@
                 </div><!-- .panel-body -->
                 </div><!-- .panel -->
             {/if}
-            <button name="speichern" type="submit" value="{__('pluginSettingSave')}" class="btn btn-primary">
-                <i class="fa fa-save"></i> {__('pluginSettingSave')}
+            <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary">
+                <i class="fa fa-save"></i> {__('save')}
             </button>
         </form>
     </div>

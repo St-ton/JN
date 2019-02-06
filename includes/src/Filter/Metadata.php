@@ -548,8 +548,8 @@ class Metadata implements MetadataInterface
                     $subName = '';
                     foreach (\explode(' ', $extProductName) as $j => $tmp) {
                         if (\mb_strlen($tmp) > 2) {
-                            $tmp = \str_replace(',', '', $tmp);
-                            $subName   .= $j > 0
+                            $tmp      = \str_replace(',', '', $tmp);
+                            $subName .= $j > 0
                                 ? ', ' . $tmp
                                 : $tmp;
                         }
@@ -562,8 +562,8 @@ class Metadata implements MetadataInterface
                 }
             }
             $keywordsMeta = $productName;
-            $unique        = [];
-            $metaArr       = \explode(', ', $keywordsMeta);
+            $unique       = [];
+            $metaArr      = \explode(', ', $keywordsMeta);
             if (\is_array($metaArr) && \count($metaArr) > 1) {
                 foreach ($metaArr as $cMeta) {
                     if (!\in_array($cMeta, $unique, true)) {
@@ -578,7 +578,7 @@ class Metadata implements MetadataInterface
                 $helper = Category::getInstance();
                 $sub    = $helper->getCategoryById($category->kKategorie);
                 if ($sub !== false && !empty($sub->Unterkategorien) && \count($sub->Unterkategorien) > 0) {
-                    $catNames     = map($sub->Unterkategorien, function ($e) {
+                    $catNames    = map($sub->Unterkategorien, function ($e) {
                         return \strip_tags($e->cName);
                     });
                     $catKeyWords = \implode(', ', \array_filter($catNames));

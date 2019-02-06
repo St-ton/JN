@@ -11,26 +11,8 @@ msgstr "https://jtl-url.de/0hqn3"
 msgid "zusatzverpackungDesc"
 msgstr "Zusatzverpackungsoptionen werden in der Kaufabwicklung im Schritt der Versandartauswahl angezeigt und abgefragt. Mit Hilfe der Zusatzverpackungen können z.B. Geschenkverpackungen oder Versicherungen als optionale Zusatzleistungen definiert werden."
 
-msgid "zusatzverpackungName"
-msgstr "Name"
-
 msgid "zusatzverpackungISOLang"
 msgstr "SprachISO"
-
-msgid "zusatzverpackungDescLang"
-msgstr "Beschreibung"
-
-msgid "zusatzverpackungPrice"
-msgstr "Preis"
-
-msgid "zusatzverpackungNet"
-msgstr "Netto"
-
-msgid "zusatzverpackungGross"
-msgstr "Brutto"
-
-msgid "zusatzverpackungMinValue"
-msgstr "Mindestbestellwert"
 
 msgid "zusatzverpackungExemptFromCharge"
 msgstr "Kostenfrei ab"
@@ -38,23 +20,8 @@ msgstr "Kostenfrei ab"
 msgid "zusatzverpackungTaxClass"
 msgstr "Steuerklasse"
 
-msgid "zusatzverpackungCustomerGrp"
-msgstr "Kundengruppe"
-
-msgid "zusatzverpackungActive"
-msgstr "Aktiv"
-
 msgid "zusatzverpackungSave"
 msgstr "Zusatzverpackung speichern"
-
-msgid "zusatzverpackungUpdate"
-msgstr "Aktualisieren"
-
-msgid "zusatzverpackungDelete"
-msgstr "Löschen"
-
-msgid "zusatzverpackungBack"
-msgstr "zurück"
 
 msgid "zusatzverpackungAutoTax"
 msgstr "automatisch berechnen"

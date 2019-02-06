@@ -267,7 +267,8 @@ class MediaImage implements IMedia
         header('Accept-Ranges: none');
         header('Content-Encoding: None');
 
-        header('Content-Length: ' . mb_strlen($data));
+        // no multibyte string here
+        header('Content-Length: ' . strlen($data));
         header('Content-Type: ' . $imanee->getMime());
 
         if ($nocache === true) {

@@ -40,7 +40,7 @@
                     {/foreach}
                 </div>
                 <div class="panel-footer">
-                    <button name="speichern" type="submit" value="{__('shopsitemapSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('shopsitemapSave')}</button>
+                    <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 </div>
             </div>
         </div>

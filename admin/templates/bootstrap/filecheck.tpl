@@ -27,7 +27,7 @@
                                 <table class="table req">
                                     <thead>
                                     <tr>
-                                        <th>{__('fileCheckFile')}</th>
+                                        <th>{__('file')}</th>
                                     </tr>
                                     </thead>
                                     {foreach $modifiedFiles as $file}
@@ -65,7 +65,7 @@
                                 <table class="table req">
                                     <thead>
                                         <tr>
-                                            <th>{__('fileCheckFile')}</th>
+                                            <th>{__('file')}</th>
                                         </tr>
                                     </thead>
                                     {foreach $orphanedFiles as $file}

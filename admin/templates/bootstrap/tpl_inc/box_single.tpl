@@ -19,11 +19,11 @@
         <div class="col-sm-2">
             {if $nPage === 0}
                 {if $oBox->getFilter($nPage) === true}
-                    sichtbar auf allen Seiten
+                    {__('visibleOnAllPages')}
                 {elseif empty($oBox->getFilter($nPage))}
-                   auf allen Seiten deaktiviert
+                    {__('deactivatedOnAllPages')}
                 {else}
-                    sichtbar auf manchen Seiten
+                    {__('visibleOnSomePages')}
                 {/if}
             {else}
                 <ul class="box-active-filters" id="box-active-filters-{$oBox->getID()}">

@@ -779,7 +779,6 @@ class Cart
         $kArtikel      = (int)$product->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
         $redirectParam = [];
         $conf          = Shop::getSettings([\CONF_GLOBAL]);
-        // Abnahmeintervall
         if ($product->fAbnahmeintervall > 0) {
             $dVielfache = \function_exists('bcdiv')
                 ? \round(
@@ -795,11 +794,9 @@ class Cart
         if ((int)$qty != $qty && $product->cTeilbar !== 'Y') {
             $qty = \max((int)$qty, 1);
         }
-        // mbm
         if ($product->fMindestbestellmenge > $qty + $cart->gibAnzahlEinesArtikels($kArtikel)) {
             $redirectParam[] = \R_MINDESTMENGE;
         }
-        // lager beachten
         if ($product->cLagerBeachten === 'Y'
             && $product->cLagerVariation !== 'Y'
             && $product->cLagerKleinerNull !== 'Y'
@@ -808,12 +805,14 @@ class Cart
                 /** @var Artikel $product */
                 $depProduct = $dependent->product;
                 if ($depProduct->fPackeinheit
-                    * ($qty * $dependent->stockFactor + Frontend::getCart()->getDependentAmount(
-                        $depProduct->kArtikel, true
+                    * ($qty * $dependent->stockFactor +
+                        Frontend::getCart()->getDependentAmount(
+                            $depProduct->kArtikel,
+                            true
                         )
                     ) > $depProduct->fLagerbestand
                 ) {
-                    $redirectParam[] = R_LAGER;
+                    $redirectParam[] = \R_LAGER;
                     break;
                 }
             }
@@ -930,7 +929,6 @@ class Cart
     public static function checkVariboxAmount(array $amounts): bool
     {
         if (\is_array($amounts) && \count($amounts) > 0) {
-            // Wurde die variBox überhaupt mit einer Anzahl gefüllt?
             foreach (\array_keys($amounts) as $cKeys) {
                 if ((float)$amounts[$cKeys] > 0) {
                     return true;
@@ -1089,7 +1087,8 @@ class Cart
             $categoryQRY .= " OR FIND_IN_SET('" . $id . "', REPLACE(cKategorien, ';', ',')) > 0";
         }
         if (Frontend::getCustomer()->isLoggedIn()) {
-            $customerQRY = " OR FIND_IN_SET('" . Frontend::getCustomer()->getID() . "', REPLACE(cKunden, ';', ',')) > 0";
+            $customerQRY = " OR FIND_IN_SET('" .
+                Frontend::getCustomer()->getID() . "', REPLACE(cKunden, ';', ',')) > 0";
         }
         $couponsOK = Shop::Container()->getDB()->queryPrepared(
             "SELECT *
@@ -1203,7 +1202,8 @@ class Cart
             $categoryQRY .= " OR FIND_IN_SET('" . $id . "', REPLACE(cKategorien, ';', ',')) > 0";
         }
         if (Frontend::getCustomer()->isLoggedIn()) {
-            $customerQRY = " OR FIND_IN_SET('" . Frontend::getCustomer()->getID() . "', REPLACE(cKunden, ';', ',')) > 0";
+            $customerQRY = " OR FIND_IN_SET('" .
+                Frontend::getCustomer()->getID() . "', REPLACE(cKunden, ';', ',')) > 0";
         }
         $couponOK = Shop::Container()->getDB()->queryPrepared(
             "SELECT *
@@ -1680,7 +1680,8 @@ class Cart
                             if (!isset($cartNotices) || !in_array($msg, $cartNotices)) {
                                 $cartNotices[] = $msg;
                             }
-                            $_SESSION['Warenkorb']->PositionenArr[$i]->nAnzahl = $_SESSION['Warenkorb']->getMaxAvailableAmount($i, (float)$_POST['anzahl'][$i]);
+                            $_SESSION['Warenkorb']->PositionenArr[$i]->nAnzahl =
+                                $_SESSION['Warenkorb']->getMaxAvailableAmount($i, (float)$_POST['anzahl'][$i]);
                         }
                     }
                     // maximale Bestellmenge des Artikels beachten

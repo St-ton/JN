@@ -11,17 +11,8 @@ msgstr "Nehmen Sie hier Einstellungen zum Kontaktformular vor. <strong>Bitte bea
 msgid "contanctformSubjectDesc"
 msgstr "Mit Betreffs können Sie Kontaktanfragen an die richtige Abteilung leiten. Der Kunde wählt im Kontaktformular den Betreff aus, die Anfrage kommt als E-Mail an die im Betreff hinterlegte E-Mailadresse."
 
-msgid "subjects"
-msgstr "Betreffs"
-
-msgid "subject"
-msgstr "Betreff"
-
 msgid "mail"
 msgstr "Empfänger-E-Mail"
-
-msgid "custgrp"
-msgstr "Kundengruppen"
 
 msgid "newSubject"
 msgstr "Neuer Betreff"
@@ -46,12 +37,6 @@ msgstr "Überschrift des Kontaktformulars"
 
 msgid "cURL"
 msgstr "https://jtl-url.de/5s4el"
-
-msgid "contents"
-msgstr "Inhalte"
-
-msgid "config"
-msgstr "Einstellungen"
 
 msgid "successContentSave"
 msgstr "Inhalt wurde erfolgreich gespeichert."

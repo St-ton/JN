@@ -6,7 +6,7 @@
     <fieldset>
         <div class="input-group">
             <span class="input-group-addon">
-                Durchsuchen
+                {__('searchThrough')}
                 <img id="loaderimg" src="templates/bootstrap/gfx/widgets/ajax-loader.gif">
             </span>
             <input type="text" value="" autocomplete="off" class="form-control" />

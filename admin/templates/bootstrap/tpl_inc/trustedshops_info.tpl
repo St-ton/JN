@@ -64,5 +64,5 @@
     </div>
     
     <br />
-    <strong><a href="trustedshops.php">{__('tsBack')}</a></strong>
+    <strong><a href="trustedshops.php">{__('back')}</a></strong>
 </div>

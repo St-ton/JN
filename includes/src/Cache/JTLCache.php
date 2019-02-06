@@ -353,7 +353,7 @@ final class JTLCache implements JTLCacheInterface
         if (!\class_exists('Shop')) {
             return [];
         }
-        $cacheInit   = [];
+        $cacheInit = [];
         foreach ($config as $_conf) {
             if ($_conf->cWert === 'Y' || $_conf->cWert === 'y') {
                 $value = true;

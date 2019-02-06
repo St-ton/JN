@@ -297,10 +297,10 @@ function holeExportformatQueueBearbeitet($hours)
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
+ * @param \Smarty\JTLSmarty $smarty
  * @return string
  */
-function exportformatQueueActionErstellen(Smarty\JTLSmarty $smarty)
+function exportformatQueueActionErstellen(\Smarty\JTLSmarty $smarty)
 {
     $smarty->assign('oExportformat_arr', holeAlleExportformate());
 
@@ -308,11 +308,11 @@ function exportformatQueueActionErstellen(Smarty\JTLSmarty $smarty)
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
- * @param array            $messages
+ * @param \Smarty\JTLSmarty $smarty
+ * @param array             $messages
  * @return string
  */
-function exportformatQueueActionEditieren(Smarty\JTLSmarty $smarty, array &$messages)
+function exportformatQueueActionEditieren(\Smarty\JTLSmarty $smarty, array &$messages)
 {
     $kCron = Request::verifyGPCDataInt('kCron');
     $oCron = $kCron > 0 ? holeCron($kCron) : 0;
@@ -384,10 +384,10 @@ function exportformatQueueActionTriggern(array &$messages)
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
+ * @param \Smarty\JTLSmarty $smarty
  * @return string
  */
-function exportformatQueueActionFertiggestellt(Smarty\JTLSmarty $smarty)
+function exportformatQueueActionFertiggestellt(\Smarty\JTLSmarty $smarty)
 {
     $nStunden = Request::verifyGPCDataInt('nStunden');
     if ($nStunden <= 0) {
@@ -401,11 +401,11 @@ function exportformatQueueActionFertiggestellt(Smarty\JTLSmarty $smarty)
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
- * @param array            $messages
+ * @param \Smarty\JTLSmarty $smarty
+ * @param array             $messages
  * @return string
  */
-function exportformatQueueActionErstellenEintragen(Smarty\JTLSmarty $smarty, array &$messages)
+function exportformatQueueActionErstellenEintragen(\Smarty\JTLSmarty $smarty, array &$messages)
 {
     $kExportformat = (int)$_POST['kExportformat'];
     $dStart        = $_POST['dStart'];
@@ -484,11 +484,11 @@ function exportformatQueueRedirect($cTab = '', array &$messages = null)
 
 /**
  * @param string           $step
- * @param Smarty\JTLSmarty $smarty
+ * @param \Smarty\JTLSmarty $smarty
  * @param array            $messages
  * @return void
  */
-function exportformatQueueFinalize($step, Smarty\JTLSmarty $smarty, array &$messages)
+function exportformatQueueFinalize($step, \Smarty\JTLSmarty $smarty, array &$messages)
 {
     if (isset($_SESSION['exportformatQueue.notice'])) {
         $messages['notice'] = $_SESSION['exportformatQueue.notice'];

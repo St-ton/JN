@@ -13,7 +13,7 @@
             <a data-toggle="tab" role="tab" href="#wunschlistefreunde">{__('wishlistSend')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einstellungen">{__('wishlistSettings')}</a>
+            <a data-toggle="tab" role="tab" href="#einstellungen">{__('settings')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -24,9 +24,9 @@
                     <table class="table table-striped">
                         <tr>
                             <th class="tleft">{__('wishlistName')}</th>
-                            <th class="tleft">{__('wishlistAccount')}</th>
+                            <th class="tleft">{__('customer')}</th>
                             <th class="th-3">{__('wishlistPosCount')}</th>
-                            <th class="th-4">{__('wishlistDate')}</th>
+                            <th class="th-4">{__('date')}</th>
                         </tr>
                         {foreach $CWunschliste_arr as $CWunschliste}
                             <tr>
@@ -80,10 +80,10 @@
                     <table class="table table-striped">
                         <tr>
                             <th class="tleft">{__('wishlistName')}</th>
-                            <th class="tleft">{__('wishlistAccount')}</th>
+                            <th class="tleft">{__('customer')}</th>
                             <th class="th-3">{__('wishlistReceiverCount')}</th>
                             <th class="th-4">{__('wishlistPosCount')}</th>
-                            <th class="th-5">{__('wishlistDate')}</th>
+                            <th class="th-5">{__('date')}</th>
                         </tr>
                         {foreach $CWunschlisteVersand_arr as $CWunschlisteVersand}
                             <tr>
@@ -103,7 +103,7 @@
             {/if}
         </div>
         <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
-            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='wunschliste.php' buttonCaption=__('save') title='Einstellungen' tab='einstellungen'}
+            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='wunschliste.php' buttonCaption=__('save') title=__('settings') tab='einstellungen'}
         </div>
     </div>
 </div>

@@ -939,7 +939,7 @@ class Warenkorb
                     }
                 }
             }
-            $fMaxValue = max($nSteuersatz_arr);
+            $fMaxValue = count($nSteuersatz_arr) > 0 ? max($nSteuersatz_arr) : 0;
             foreach ($nSteuersatz_arr as $i => $nSteuersatz) {
                 if ($nSteuersatz == $fMaxValue) {
                     $kSteuerklasse = $i;
